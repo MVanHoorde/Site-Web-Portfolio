@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2nde — Physique-Chimie · M. Van Hoorde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Même palette que la page d'accueil — un jour, on déplacera
+     tout ce CSS dans un fichier partagé style.css */
+  :root {
+    --encre: #141a26;
+    --papier: #fdfcf8;
+    --grille: #e8e4d8;
+    --h-alpha: #d6402b;
+    --h-beta: #1d9aaa;
+    --h-gamma: #4a3f9e;
+    --gris: #6b6f7a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Spectral', Georgia, serif;
+    color: var(--encre);
+    background-color: var(--papier);
+    background-image:
+      linear-gradient(var(--grille) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+    background-size: 32px 32px;
+    line-height: 1.65;
+  }
+
+  .spectre {
+    height: 6px;
+    background: var(--encre);
+    position: relative;
+    overflow: hidden;
+  }
+  .spectre::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg,
+        transparent 0%, transparent 18%,
+        var(--h-gamma) 18%, var(--h-gamma) 19.2%,
+        transparent 19.2%, transparent 31%,
+        var(--h-beta) 31%, var(--h-beta) 32.4%,
+        transparent 32.4%, transparent 76%,
+        var(--h-alpha) 76%, var(--h-alpha) 77.8%,
+        transparent 77.8%);
+  }
+
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(253, 252, 248, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--encre);
+    z-index: 10;
+  }
+  .nav-inner {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .nav-logo span { color: var(--h-alpha); }
+  .retour {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--encre);
+    text-decoration: none;
+    border-bottom: 2px solid var(--h-beta);
+    padding-bottom: 2px;
+  }
+  .retour:hover, .retour:focus-visible { color: var(--h-beta); }
+  .retour:focus-visible { outline: 2px solid var(--h-beta); outline-offset: 3px; }
+
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 4rem;
+  }
+
+  .fil-ariane {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--gris);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+  .fil-ariane .niveau { color: var(--h-beta); }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+    line-height: 1.12;
+    margin-bottom: 1rem;
+  }
+  .chapeau {
+    font-size: 1.1rem;
+    max-width: 60ch;
+    margin-bottom: 3rem;
+  }
+
+  /* Titre de thème, pour regrouper les chapitres */
+  h2.theme {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.35rem;
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--h-beta);
+  }
+
+  .chapitre {
+    border: 1px solid var(--encre);
+    background: var(--papier);
+    margin-bottom: 1.5rem;
+  }
+  .chapitre-entete {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px dashed var(--gris);
+  }
+  .chapitre-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--h-beta);
+  }
+  .chapitre h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.25rem;
+  }
+  .chapitre-corps { padding: 1.2rem 1.5rem; }
+  .chapitre-corps p { margin-bottom: 0.8rem; max-width: 65ch; }
+  .chapitre-corps ul {
+    margin: 0 0 0.8rem 1.2rem;
+  }
+  .chapitre-corps li { margin-bottom: 0.3rem; }
+
+  .docs {
+    list-style: none;
+    margin: 1rem 0 0 0 !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .docs a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--encre);
+    text-decoration: none;
+    border: 1px solid var(--encre);
+    padding: 0.35rem 0.75rem;
+    display: inline-block;
+    transition: background 0.15s, color 0.15s;
+  }
+  .docs a:hover, .docs a:focus-visible {
+    background: var(--encre);
+    color: var(--papier);
+  }
+
+  footer { border-top: 1px solid var(--encre); }
+  .footer-inner {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--gris);
+  }
+</style>
+</head>
+<body>
+
+<div class="spectre" aria-hidden="true"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
+    <!-- Lien retour : "index.html" désigne le fichier d'accueil
+         situé dans le même dossier que cette page -->
+    <a class="retour" href="index.html">← Retour à l'accueil</a>
+  </div>
+</nav>
+
+<main>
+  <p class="fil-ariane">Cours · <span class="niveau">Lycée — 2nde</span></p>
+  <h1>Physique-Chimie</h1>
+  <p class="chapeau">
+    Toutes les ressources de l'année de seconde, organisées par thème :
+    fiches de cours, exercices, protocoles de TP et évaluations.
+  </p>
+
+  <!-- ========== THÈME 1 ========== -->
+  <h2 class="theme">Thème 1 — Constitution et transformations de la matière</h2>
+
+  <article class="chapitre">
+    <div class="chapitre-entete">
+      <span class="chapitre-num">CH. 1</span>
+      <h3>Corps purs et mélanges</h3>
+    </div>
+    <div class="chapitre-corps">
+      <p>Espèces chimiques, identification, composition d'un mélange.</p>
+      <ul class="docs">
+        <li><a href="#">Fiche de cours (PDF)</a></li>
+        <li><a href="#">Exercices</a></li>
+        <li><a href="#">TP</a></li>
+        <li><a href="#">Évaluations</a></li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ========== THÈME 2 ========== -->
+  <h2 class="theme">Thème 2 — Mouvement et interactions</h2>
+
+  <article class="chapitre">
+    <div class="chapitre-entete">
+      <span class="chapitre-num">CH. 1</span>
+      <h3>Décrire un mouvement</h3>
+    </div>
+    <div class="chapitre-corps">
+      <p>Référentiel, trajectoire, vitesse.</p>
+      <ul class="docs">
+        <li><a href="#">Fiche de cours (PDF)</a></li>
+        <li><a href="#">Exercices</a></li>
+        <li><a href="#">TP</a></li>
+        <li><a href="#">Évaluations</a></li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ========== THÈME 3 ========== -->
+  <h2 class="theme">Thème 3 — Ondes et signaux</h2>
+
+  <article class="chapitre">
+    <div class="chapitre-entete">
+      <span class="chapitre-num">CH. 1</span>
+      <h3>Émission et perception d'un son</h3>
+    </div>
+    <div class="chapitre-corps">
+      <p>
+        Comment un son est-il produit, comment se propage-t-il, et comment
+        notre oreille le perçoit-elle ? Notions abordées :
+      </p>
+      <ul>
+        <li>Vibration d'un objet, propagation d'un signal sonore</li>
+        <li>Vitesse de propagation du son dans l'air</li>
+        <li>Fréquence, période, hauteur et timbre d'un son</li>
+        <li>Niveau d'intensité sonore et dangers pour l'audition</li>
+      </ul>
+      <ul class="docs">
+        <li><a href="#">Fiche de cours (PDF)</a></li>
+        <li><a href="#">Exercices</a></li>
+        <li><a href="#">TP — célérité du son</a></li>
+        <li><a href="#">Évaluations</a></li>
+      </ul>
+    </div>
+  </article>
+
+  <article class="chapitre">
+    <div class="chapitre-entete">
+      <span class="chapitre-num">CH. 2</span>
+      <h3>Vision et image — spectres lumineux</h3>
+    </div>
+    <div class="chapitre-corps">
+      <p>
+        La lumière blanche cache un arc-en-ciel : décomposition de la lumière,
+        spectres d'émission et longueurs d'onde. Notions abordées :
+      </p>
+      <ul>
+        <li>Dispersion de la lumière blanche par un prisme ou un réseau</li>
+        <li>Spectre continu d'origine thermique</li>
+        <li>Spectres de raies d'émission — dont celles de l'hydrogène,
+            que vous reconnaîtrez peut-être dans le décor de ce site</li>
+        <li>Longueur d'onde dans le vide et couleur</li>
+      </ul>
+      <ul class="docs">
+        <li><a href="#">Fiche de cours (PDF)</a></li>
+        <li><a href="#">Exercices</a></li>
+        <li><a href="#">TP — spectroscope</a></li>
+        <li><a href="#">Évaluations</a></li>
+      </ul>
+    </div>
+  </article>
+
+  <article class="chapitre">
+    <div class="chapitre-entete">
+      <span class="chapitre-num">CH. 3</span>
+      <h3>Signaux et capteurs</h3>
+    </div>
+    <div class="chapitre-corps">
+      <p>
+        Des grandeurs physiques aux signaux électriques : comment un capteur
+        traduit le monde en données exploitables. Notions abordées :
+      </p>
+      <ul>
+        <li>Loi des nœuds, loi des mailles dans un circuit</li>
+        <li>Caractéristique tension-courant d'un dipôle</li>
+        <li>Capteurs résistifs (thermistance, photorésistance)</li>
+        <li>Utilisation d'un microcontrôleur en TP</li>
+      </ul>
+      <ul class="docs">
+        <li><a href="#">Fiche de cours (PDF)</a></li>
+        <li><a href="#">Exercices</a></li>
+        <li><a href="#">TP — capteur de température</a></li>
+        <li><a href="#">Évaluations</a></li>
+      </ul>
+    </div>
+  </article>
+</main>
+
+<footer>
+  <div class="footer-inner">© 2026 · M. Van Hoorde — Physique-Chimie · 2nde</div>
+</footer>
+
+<div class="spectre" aria-hidden="true"></div>
+
+</body>
+</html>
