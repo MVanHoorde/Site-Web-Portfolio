@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M. Van Hoorde — Physique-Chimie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     PALETTE — inspirée du cahier de laboratoire et des raies
+     d'émission de l'hydrogène (série de Balmer)
+     ============================================================ */
+  :root {
+    --encre: #141a26;          /* texte principal, bleu-noir d'encre */
+    --papier: #fdfcf8;         /* fond, blanc cassé de papier */
+    --grille: #e8e4d8;         /* lignes du papier millimétré */
+    --h-alpha: #d6402b;        /* raie Hα — 656 nm, rouge */
+    --h-beta: #1d9aaa;         /* raie Hβ — 486 nm, cyan */
+    --h-gamma: #4a3f9e;        /* raie Hγ — 434 nm, violet */
+    --gris: #6b6f7a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+  }
+
+  body {
+    font-family: 'Spectral', Georgia, serif;
+    color: var(--encre);
+    background-color: var(--papier);
+    /* Papier millimétré discret */
+    background-image:
+      linear-gradient(var(--grille) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+    background-size: 32px 32px;
+    line-height: 1.65;
+  }
+
+  /* ============================================================
+     ÉLÉMENT SIGNATURE : le spectre d'émission
+     ============================================================ */
+  .spectre {
+    height: 6px;
+    background: var(--encre);
+    position: relative;
+    overflow: hidden;
+  }
+  .spectre::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg,
+        transparent 0%, transparent 18%,
+        var(--h-gamma) 18%, var(--h-gamma) 19.2%,
+        transparent 19.2%, transparent 31%,
+        var(--h-beta) 31%, var(--h-beta) 32.4%,
+        transparent 32.4%, transparent 76%,
+        var(--h-alpha) 76%, var(--h-alpha) 77.8%,
+        transparent 77.8%);
+  }
+
+  /* ============================================================
+     NAVIGATION
+     ============================================================ */
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(253, 252, 248, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--encre);
+    z-index: 10;
+  }
+  .nav-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+  }
+  .nav-logo span { color: var(--h-alpha); }
+  nav ul {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+  }
+  nav a {
+    color: var(--encre);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 2px;
+    transition: border-color 0.2s;
+  }
+  nav a:hover, nav a:focus-visible { border-color: var(--h-beta); }
+  nav a:focus-visible { outline: 2px solid var(--h-beta); outline-offset: 3px; }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  header.hero {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 5rem 1.5rem 4rem;
+  }
+  .hero-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--gris);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 1.2rem;
+  }
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.2rem, 5.5vw, 4rem);
+    line-height: 1.08;
+    max-width: 17ch;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--h-beta);
+  }
+  .hero p.intro {
+    font-size: 1.15rem;
+    max-width: 56ch;
+    color: var(--encre);
+  }
+  .hero p.intro strong { color: var(--h-alpha); font-weight: 600; }
+
+  /* ============================================================
+     SECTIONS
+     ============================================================ */
+  section {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem;
+  }
+  .section-titre {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .section-titre h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+  }
+  .section-titre .lambda {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--gris);
+  }
+
+  /* Cartes de cours : une par ligne, pleine largeur */
+  .grille-cartes {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .carte {
+    background: var(--papier);
+    border: 1px solid var(--encre);
+    padding: 1.5rem;
+    position: relative;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .carte:hover {
+    transform: translateY(-3px);
+    box-shadow: 4px 4px 0 var(--encre);
+  }
+  .carte .niveau {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid currentColor;
+    display: inline-block;
+    margin-bottom: 0.9rem;
+  }
+  /* Une couleur par niveau */
+  .carte.seconde .niveau   { color: var(--h-beta); }
+  .carte.premiere .niveau  { color: var(--h-gamma); }
+  .carte.terminale .niveau { color: var(--h-alpha); }
+  .carte h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.12rem;
+    margin-bottom: 0.5rem;
+  }
+  .carte p { font-size: 0.95rem; color: var(--gris); }
+  .carte a.lien {
+    display: inline-block;
+    margin-top: 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--encre);
+    text-decoration: none;
+    border-bottom: 2px solid var(--h-beta);
+  }
+  .carte a.lien:hover { color: var(--h-beta); }
+
+  /* ============================================================
+     APERÇU AU SURVOL : carte mentale du programme
+     Replié par défaut (max-height: 0), déplié au survol grâce
+     au sélecteur .carte:hover .apercu, avec une transition douce
+     ============================================================ */
+  .carte .apercu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .carte:hover .apercu,
+  .carte:focus-within .apercu {
+    max-height: 500px;
+  }
+
+  .apercu-titre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gris);
+    margin: 1.2rem 0 0.8rem;
+    border-top: 1px dashed var(--gris);
+    padding-top: 1rem;
+  }
+  .mindmap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+  }
+  .mindmap > li {
+    flex: 1 1 180px;
+    border-left: 3px solid var(--h-beta);
+    padding-left: 0.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.92rem;
+    color: var(--encre);
+  }
+  .mindmap ul {
+    list-style: none;
+    margin-top: 0.3rem;
+    font-family: 'Spectral', serif;
+    font-size: 0.88rem;
+    color: var(--gris);
+  }
+  .mindmap ul li::before {
+    content: "— ";
+    color: var(--h-beta);
+  }
+
+  /* Sur mobile, pas de souris donc pas de survol :
+     l'aperçu est affiché en permanence (media query) */
+  @media (max-width: 700px) {
+    .carte .apercu { max-height: none; }
+  }
+
+  /* ============================================================
+     PROJET FIL ROUGE
+     ============================================================ */
+  .fil-rouge {
+    border: 2px solid var(--h-alpha);
+    background: var(--papier);
+    padding: 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 760px) {
+    .fil-rouge { grid-template-columns: 2fr 1fr; align-items: center; }
+  }
+  .fil-rouge h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .fil-rouge .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--h-alpha);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.6rem;
+  }
+  .fil-rouge p { color: var(--encre); }
+  .compteur {
+    text-align: center;
+    border-left: 1px dashed var(--gris);
+    padding-left: 1.5rem;
+  }
+  @media (max-width: 759px) {
+    .compteur { border-left: none; border-top: 1px dashed var(--gris); padding: 1.5rem 0 0; }
+  }
+  .compteur .nombre {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--h-alpha);
+    line-height: 1;
+  }
+  .compteur .legende {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--gris);
+    margin-top: 0.4rem;
+  }
+
+  /* ============================================================
+     À PROPOS / CONTACT
+     ============================================================ */
+  .a-propos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 760px) {
+    .a-propos { grid-template-columns: 1.4fr 1fr; }
+  }
+  .a-propos p { max-width: 60ch; margin-bottom: 1rem; }
+  .contact-bloc {
+    border: 1px solid var(--encre);
+    padding: 1.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.88rem;
+    align-self: start;
+  }
+  .contact-bloc dt { color: var(--gris); margin-top: 0.8rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .contact-bloc dt:first-child { margin-top: 0; }
+  .contact-bloc dd { margin: 0.15rem 0 0; }
+  .contact-bloc a { color: var(--h-beta); text-decoration: none; }
+  .contact-bloc a:hover { text-decoration: underline; }
+
+  footer {
+    border-top: 1px solid var(--encre);
+    margin-top: 2rem;
+  }
+  .footer-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--gris);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="spectre" aria-hidden="true"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
+    <ul>
+      <li><a href="#cours">Cours</a></li>
+      <li><a href="#projets">Projets</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <p class="hero-label">Cahier de bord — année 2026-2027</p>
+  <h1>La physique-chimie, du <em>cahier</em> au <em>laboratoire</em>.</h1>
+  <p class="intro">
+    Bienvenue ! Vous trouverez ici mes cours, travaux pratiques et projets
+    pédagogiques. Cette année, un <strong>jeu de rôle fil rouge</strong> accompagnera
+    nos chapitres : chaque notion débloquera une nouvelle étape de l'aventure.
+  </p>
+</header>
+
+<section id="cours">
+  <div class="section-titre">
+    <h2>Cours</h2>
+    <span class="lambda">λ = 656 nm — mes classes</span>
+  </div>
+  <div class="grille-cartes">
+
+    <article class="carte seconde">
+      <span class="niveau">2nde</span>
+      <h3>Physique-Chimie</h3>
+      <p>Cours, TP et exercices de l'année de seconde.</p>
+      <div class="apercu">
+        <p class="apercu-titre">Carte mentale du programme</p>
+        <ul class="mindmap">
+          <li>Constitution de la matière
+            <ul>
+              <li>Corps purs et mélanges</li>
+              <li>Solutions aqueuses</li>
+              <li>De l'atome à l'élément</li>
+            </ul>
+          </li>
+          <li>Mouvement et interactions
+            <ul>
+              <li>Décrire un mouvement</li>
+              <li>Modéliser une action</li>
+            </ul>
+          </li>
+          <li>Ondes et signaux
+            <ul>
+              <li>Émission et perception d'un son</li>
+              <li>Spectres lumineux</li>
+              <li>Signaux et capteurs</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <a class="lien" href="2nde-physique-chimie.html">Consulter →</a>
+    </article>
+
+    <article class="carte seconde">
+      <span class="niveau">2nde</span>
+      <h3>SNT</h3>
+      <p>Sciences numériques et technologie : comprendre le monde numérique qui nous entoure.</p>
+      <div class="apercu">
+        <p class="apercu-titre">Carte mentale du programme</p>
+        <ul class="mindmap">
+          <li>Réseaux et communication
+            <ul>
+              <li>Internet</li>
+              <li>Le Web</li>
+              <li>Les réseaux sociaux</li>
+            </ul>
+          </li>
+          <li>Données et information
+            <ul>
+              <li>Les données structurées</li>
+              <li>Localisation et cartographie</li>
+            </ul>
+          </li>
+          <li>Objets numériques
+            <ul>
+              <li>Informatique embarquée</li>
+              <li>La photographie numérique</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <a class="lien" href="2nde-snt.html">Consulter →</a>
+    </article>
+
+    <article class="carte premiere">
+      <span class="niveau">1re</span>
+      <h3>Enseignement scientifique</h3>
+      <p>Une culture scientifique commune, de la matière au son.</p>
+      <div class="apercu">
+        <p class="apercu-titre">Carte mentale du programme</p>
+        <ul class="mindmap">
+          <li>Une longue histoire de la matière
+            <ul>
+              <li>Niveaux d'organisation</li>
+              <li>Les cristaux</li>
+              <li>Une structure complexe : la cellule</li>
+            </ul>
+          </li>
+          <li>Le Soleil, notre source d'énergie
+            <ul>
+              <li>Rayonnement solaire</li>
+              <li>Bilan radiatif terrestre</li>
+            </ul>
+          </li>
+          <li>Son et musique
+            <ul>
+              <li>Le son, phénomène vibratoire</li>
+              <li>La musique ou l'art de faire entendre les nombres</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <a class="lien" href="1ere-enseignement-scientifique.html">Consulter →</a>
+    </article>
+
+    <article class="carte terminale">
+      <span class="niveau">Term</span>
+      <h3>Enseignement scientifique</h3>
+      <p>Climat, énergies, histoire du vivant : la science face aux grands enjeux.</p>
+      <div class="apercu">
+        <p class="apercu-titre">Carte mentale du programme</p>
+        <ul class="mindmap">
+          <li>Science, climat et société
+            <ul>
+              <li>L'atmosphère et la vie</li>
+              <li>Le réchauffement climatique</li>
+            </ul>
+          </li>
+          <li>Le futur des énergies
+            <ul>
+              <li>Deux siècles d'énergie électrique</li>
+              <li>Optimisation du transport</li>
+            </ul>
+          </li>
+          <li>Une histoire du vivant
+            <ul>
+              <li>Biodiversité et évolution</li>
+              <li>L'intelligence artificielle</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <a class="lien" href="terminale-enseignement-scientifique.html">Consulter →</a>
+    </article>
+
+    <article class="carte terminale">
+      <span class="niveau">Term · Spé</span>
+      <h3>Spécialité Physique-Chimie</h3>
+      <p>Le programme approfondi pour les futurs scientifiques.</p>
+      <div class="apercu">
+        <p class="apercu-titre">Carte mentale du programme</p>
+        <ul class="mindmap">
+          <li>Constitution et transformations de la matière
+            <ul>
+              <li>Acides et bases</li>
+              <li>Cinétique chimique</li>
+            </ul>
+          </li>
+          <li>Mouvement et interactions
+            <ul>
+              <li>Mécanique newtonienne</li>
+              <li>Mouvement dans un champ</li>
+            </ul>
+          </li>
+          <li>Énergie, ondes et signaux
+            <ul>
+              <li>Conversions et transferts</li>
+              <li>Ondes, lumière et photon</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <a class="lien" href="terminale-spe-physique-chimie.html">Consulter →</a>
+    </article>
+
+  </div>
+</section>
+
+<section id="projets">
+  <div class="section-titre">
+    <h2>Projet fil rouge</h2>
+    <span class="lambda">λ = 434 nm — en construction</span>
+  </div>
+  <div class="fil-rouge">
+    <div>
+      <p class="badge">Jeu de rôle · toute l'année</p>
+      <h3>Mission Spectra</h3>
+      <p>
+        Un jeu de rôle scientifique qui se déroule sur l'année entière : votre classe
+        incarne une équipe de recherche. Chaque chapitre du programme débloque des
+        indices, des expériences et des points de compétence. Lancement prévu à la rentrée —
+        l'application web est en cours de développement.
+      </p>
+    </div>
+    <div class="compteur">
+      <div class="nombre" id="jours">—</div>
+      <div class="legende">jours avant la rentrée</div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-titre">
+    <h2>À propos</h2>
+    <span class="lambda">contact &amp; informations</span>
+  </div>
+  <div class="a-propos">
+    <div>
+      <p>
+        Enseignant de Physique-Chimie, je conçois mes séquences autour de la
+        démarche d'investigation : observer, questionner, expérimenter. Ce site
+        rassemble mes ressources pour que les élèves (et leurs parents) puissent
+        retrouver cours, protocoles et projets à tout moment.
+      </p>
+      <p>
+        Les documents sont librement réutilisables par mes collègues dans un
+        cadre pédagogique.
+      </p>
+    </div>
+    <dl class="contact-bloc">
+      <dt>Courriel</dt>
+      <dd><a href="mailto:prenom.nom@exemple.fr">prenom.nom@exemple.fr</a></dd>
+      <dt>Établissement</dt>
+      <dd>Isaac de l'Étoile</dd>
+      <dt>ENT</dt>
+      <dd><a href="#">Espace classe sur l'ENT</a></dd>
+    </dl>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <span>© 2026 · M. Van Hoorde — Physique-Chimie</span>
+    <span>fait main en HTML / CSS / JS</span>
+  </div>
+</footer>
+
+<div class="spectre" aria-hidden="true"></div>
+
+<script>
+  // ============================================================
+  // Premier pas en JavaScript : un compteur dynamique.
+  // On calcule le nombre de jours restant avant la rentrée
+  // et on l'affiche dans l'élément dont l'id est "jours".
+  // ============================================================
+  const rentree = new Date("2026-09-01");       // date cible
+  const aujourdhui = new Date();                 // date du jour
+  const msParJour = 1000 * 60 * 60 * 24;         // millisecondes dans un jour
+  const restant = Math.max(0, Math.ceil((rentree - aujourdhui) / msParJour));
+  document.getElementById("jours").textContent = restant;
+</script>
+
+</body>
+</html>
