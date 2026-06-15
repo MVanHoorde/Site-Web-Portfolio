@@ -1,0 +1,216 @@
+/* ============================================================
+   style.css — FEUILLE DE STYLE PARTAGÉE
+   ------------------------------------------------------------
+   Un seul fichier de styles pour toutes les pages du site.
+   Chaque page le charge avec :  <link rel="stylesheet" href="style.css">
+   Modifier une couleur ICI met à jour TOUT le site d'un coup.
+   ============================================================ */
+
+/* PALETTE — inspirée du cahier de laboratoire et des raies
+   d'émission de l'hydrogène (série de Balmer) */
+:root {
+  --encre: #141a26;          /* texte principal, bleu-noir d'encre */
+  --papier: #fdfcf8;         /* fond, blanc cassé de papier */
+  --grille: #e8e4d8;         /* lignes du papier millimétré */
+  --h-alpha: #d6402b;        /* raie Hα — 656 nm, rouge */
+  --h-beta: #1d9aaa;         /* raie Hβ — 486 nm, cyan */
+  --h-gamma: #4a3f9e;        /* raie Hγ — 434 nm, violet */
+  --gris: #6b6f7a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Spectral', Georgia, serif;
+  color: var(--encre);
+  background-color: var(--papier);
+  background-image:
+    linear-gradient(var(--grille) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+  background-size: 32px 32px;
+  line-height: 1.65;
+}
+
+/* ÉLÉMENT SIGNATURE : le spectre d'émission */
+.spectre {
+  height: 6px;
+  background: var(--encre);
+  position: relative;
+  overflow: hidden;
+}
+.spectre::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg,
+      transparent 0%, transparent 18%,
+      var(--h-gamma) 18%, var(--h-gamma) 19.2%,
+      transparent 19.2%, transparent 31%,
+      var(--h-beta) 31%, var(--h-beta) 32.4%,
+      transparent 32.4%, transparent 76%,
+      var(--h-alpha) 76%, var(--h-alpha) 77.8%,
+      transparent 77.8%);
+}
+
+/* NAVIGATION */
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(253, 252, 248, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--encre);
+  z-index: 10;
+}
+.nav-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.nav-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.nav-logo span { color: var(--h-alpha); }
+.retour {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--encre);
+  text-decoration: none;
+  border-bottom: 2px solid var(--h-beta);
+  padding-bottom: 2px;
+}
+.retour:hover, .retour:focus-visible { color: var(--h-beta); }
+.retour:focus-visible { outline: 2px solid var(--h-beta); outline-offset: 3px; }
+
+/* CONTENU PRINCIPAL */
+main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 4rem;
+}
+
+.fil-ariane {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--gris);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+.fil-ariane .niveau { color: var(--h-beta); }
+
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+  line-height: 1.12;
+  margin-bottom: 1rem;
+}
+.chapeau {
+  font-size: 1.1rem;
+  max-width: 60ch;
+  margin-bottom: 2rem;
+}
+
+/* ENCART D'INFORMATION (ex. : accès aux cours Quizéo) */
+.note {
+  border: 1px solid var(--encre);
+  border-left: 4px solid var(--h-beta);
+  background: rgba(29, 154, 170, 0.06);
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 3rem;
+  max-width: 65ch;
+}
+.note .note-label {
+  display: block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--h-beta);
+  margin-bottom: 0.4rem;
+}
+.note p { font-size: 0.98rem; }
+.note a {
+  color: var(--encre);
+  text-decoration: none;
+  border-bottom: 2px solid var(--h-beta);
+}
+.note a:hover, .note a:focus-visible { color: var(--h-beta); }
+
+/* Titre de thème, pour regrouper les chapitres */
+h2.theme {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.35rem;
+  margin: 2.5rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--h-beta);
+}
+
+/* CARTE DE CHAPITRE */
+.chapitre {
+  border: 1px solid var(--encre);
+  background: var(--papier);
+  margin-bottom: 1.5rem;
+}
+.chapitre-entete {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px dashed var(--gris);
+}
+.chapitre-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--h-beta);
+  white-space: nowrap;
+}
+.chapitre h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+}
+.chapitre-corps { padding: 1.2rem 1.5rem; }
+.chapitre-corps p { margin-bottom: 0.8rem; max-width: 65ch; }
+.chapitre-corps ul { margin: 0 0 0.8rem 1.2rem; }
+.chapitre-corps li { margin-bottom: 0.3rem; }
+
+/* Boutons de ressources (liens cours / TP / exos…) */
+.docs {
+  list-style: none;
+  margin: 1rem 0 0 0 !important;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.docs a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--encre);
+  text-decoration: none;
+  border: 1px solid var(--encre);
+  padding: 0.35rem 0.75rem;
+  display: inline-block;
+  transition: background 0.15s, color 0.15s;
+}
+.docs a:hover, .docs a:focus-visible {
+  background: var(--encre);
+  color: var(--papier);
+}
+
+/* PIED DE PAGE */
+footer { border-top: 1px solid var(--encre); }
+.footer-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--gris);
+}
