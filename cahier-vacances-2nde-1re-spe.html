@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cahier de vacances — vers la 1re spé · M. Van Hoorde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ============================================================
+     PAGE AUTONOME.
+     Elle NE charge PAS style.css : elle reprend l'identité du PDF
+     (bleu nuit + orange) pour ne pas se télescoper avec le reste
+     du site. Tout le style propre à cette page vit dans ce <style>.
+     ============================================================ -->
+<style>
+  :root{
+    /* Palette reprise du PDF de la collègue */
+    --nuit:#0e2545;          /* bleu nuit profond (couverture, bandeaux) */
+    --nuit-haut:#173d6b;     /* haut du dégradé des bandeaux */
+    --nuit-bas:#0b1d39;      /* bas du dégradé */
+    --papier:#eef3f8;        /* fond clair des pages intérieures */
+    --carte:#ffffff;
+    --orange:#e8743b;        /* accent principal */
+    --cyan:#3fa7d6;          /* accent secondaire (icônes) */
+    --encre:#15233a;         /* texte sur fond clair */
+    --gris:#5d6b7e;
+    --ligne:#d8e1ea;
+    /* Les "feux" tricolores (résultat du diagnostic) */
+    --vert:#2fae6a;
+    --ambre:#f0a72e;
+    --rouge:#d6402b;
+    /* Texte sur fond nuit */
+    --clair:#eaf1f9;
+    --clair-attenue:#9fb2c9;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  body{
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    color:var(--encre);
+    background:var(--papier);
+    line-height:1.6;
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+
+  /* --- NAVIGATION (version nuit, autonome) --- */
+  nav{
+    position:sticky;top:0;z-index:10;
+    background:var(--nuit);
+    border-bottom:1px solid rgba(255,255,255,.12);
+  }
+  .nav-inner{
+    max-width:980px;margin:0 auto;padding:.85rem 1.5rem;
+    display:flex;justify-content:space-between;align-items:center;
+    gap:1rem;flex-wrap:wrap;
+  }
+  .nav-logo{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:1.05rem;color:var(--clair);
+  }
+  .nav-logo span{color:var(--orange)}
+  .retour{
+    font-family:'IBM Plex Mono',monospace;font-size:.82rem;
+    color:var(--clair);text-decoration:none;
+    border-bottom:2px solid var(--orange);padding-bottom:2px;
+  }
+  .retour:hover,.retour:focus-visible{color:var(--orange)}
+  :focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+
+  /* --- HERO / COUVERTURE (reprend la 1re page du PDF) --- */
+  .hero{
+    background:
+      radial-gradient(900px 500px at 80% -10%, rgba(63,167,214,.18), transparent 60%),
+      linear-gradient(160deg,var(--nuit-haut),var(--nuit-bas));
+    color:var(--clair);
+    position:relative;overflow:hidden;
+  }
+  /* Quadrillage "blueprint" discret en fond */
+  .hero::before{
+    content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:34px 34px;
+  }
+  .hero-inner{
+    position:relative;max-width:980px;margin:0 auto;
+    padding:4.5rem 1.5rem 4rem;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:.78rem;
+    letter-spacing:.18em;text-transform:uppercase;
+    color:var(--clair-attenue);margin-bottom:1.1rem;
+  }
+  .hero h1{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:clamp(2.4rem,7vw,4.4rem);line-height:.98;
+    text-transform:uppercase;letter-spacing:-.01em;
+  }
+  .hero .vers{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:clamp(1.3rem,3.6vw,2rem);margin-top:.4rem;
+  }
+  .hero .vers b{color:var(--orange)}
+  .hero p.tagline{
+    margin-top:1.4rem;max-width:52ch;color:var(--clair);
+    font-size:1.05rem;
+  }
+  .chips{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.8rem}
+  .chip{
+    font-family:'IBM Plex Mono',monospace;font-size:.78rem;
+    border:1px solid rgba(255,255,255,.35);border-radius:999px;
+    padding:.35rem .9rem;color:var(--clair);
+  }
+
+  /* --- CONTENEUR DE SECTIONS --- */
+  main{max-width:980px;margin:0 auto;padding:0 1.5rem}
+  section{padding:3rem 0;border-bottom:1px solid var(--ligne)}
+  section:last-of-type{border-bottom:none}
+
+  /* En-tête de section avec petit carré orange (signature du PDF) */
+  .titre-section{
+    display:flex;align-items:center;gap:.7rem;margin-bottom:1.4rem;
+  }
+  .titre-section::before{
+    content:"";width:14px;height:14px;background:var(--orange);
+    flex:0 0 auto;
+  }
+  .titre-section h2{
+    font-family:'Space Grotesk',sans-serif;font-size:1.45rem;
+  }
+
+  /* --- MODE D'EMPLOI / CONSIGNES --- */
+  .consignes{
+    list-style:none;display:grid;gap:.8rem;
+  }
+  .consignes li{
+    background:var(--carte);border:1px solid var(--ligne);
+    border-left:4px solid var(--cyan);padding:.9rem 1.1rem;
+  }
+  .placeholder{
+    border:1.5px dashed var(--gris);background:rgba(0,0,0,.015);
+    padding:1rem 1.2rem;color:var(--gris);
+    font-family:'IBM Plex Mono',monospace;font-size:.82rem;
+    margin-top:.9rem;
+  }
+
+  /* --- LÉGENDE DES SABLIERS --- */
+  .legende-sabliers{
+    display:flex;flex-wrap:wrap;gap:1.2rem;margin-top:1rem;
+    font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--gris);
+  }
+  .legende-sabliers span{display:inline-flex;align-items:center;gap:.35rem}
+  .sablier{width:16px;height:16px;color:var(--orange)}
+  .sablier.vide{color:var(--ligne)}
+
+  /* --- GRILLE DES JOURS --- */
+  .jours{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media (min-width:640px){.jours{grid-template-columns:1fr 1fr}}
+
+  .jour{
+    background:var(--carte);border:1px solid var(--ligne);
+    display:flex;flex-direction:column;
+    transition:transform .15s ease,box-shadow .15s ease;
+  }
+  .jour:hover{transform:translateY(-3px);box-shadow:4px 4px 0 var(--nuit)}
+  .jour-entete{
+    display:flex;align-items:center;gap:.8rem;
+    padding:1rem 1.1rem;border-bottom:1px dashed var(--ligne);
+  }
+  .jour-num{
+    flex:0 0 auto;width:42px;height:42px;border-radius:50%;
+    background:var(--orange);color:#fff;
+    display:grid;place-items:center;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.82rem;
+    text-align:center;line-height:1;
+  }
+  .jour-titre{
+    font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:1.02rem;
+  }
+  .jour-corps{padding:.9rem 1.1rem;display:flex;flex-direction:column;gap:.8rem;flex:1}
+  .jour-duree{display:flex;align-items:center;gap:.3rem}
+  .jour-duree .lib{
+    font-family:'IBM Plex Mono',monospace;font-size:.72rem;
+    color:var(--gris);margin-right:.4rem;text-transform:uppercase;letter-spacing:.08em;
+  }
+  .btn-diag{
+    margin-top:auto;align-self:flex-start;
+    font-family:'IBM Plex Mono',monospace;font-size:.8rem;
+    text-decoration:none;color:var(--nuit);
+    border:1px solid var(--nuit);padding:.45rem .9rem;
+    transition:background .15s,color .15s;
+  }
+  .btn-diag:hover,.btn-diag:focus-visible{background:var(--nuit);color:#fff}
+
+  /* --- COMMENT ÇA MARCHE (diagnostic + pop-up tricolore) --- */
+  .etapes{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media (min-width:760px){.etapes{grid-template-columns:repeat(3,1fr)}}
+  .etape{background:var(--carte);border:1px solid var(--ligne);padding:1.1rem;border-top:3px solid var(--cyan)}
+  .etape h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;margin-bottom:.4rem}
+  .etape p{font-size:.92rem;color:var(--gris)}
+  .feux{display:flex;gap:1.2rem;margin-top:1.2rem;flex-wrap:wrap;font-size:.9rem}
+  .feux span{display:inline-flex;align-items:center;gap:.5rem}
+  .pastille{width:12px;height:12px;border-radius:50%;flex:0 0 auto}
+  .pastille.v{background:var(--vert)} .pastille.a{background:var(--ambre)} .pastille.r{background:var(--rouge)}
+
+  /* --- CALENDRIER (proposition) --- */
+  .cal{background:var(--carte);border:1px solid var(--ligne);padding:1.2rem}
+  .cal-tete{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--gris);margin-bottom:.8rem;text-transform:uppercase;letter-spacing:.08em}
+  .grille-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .grille-cal .jsem{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--gris);text-align:center;padding:.2rem 0}
+  .case{aspect-ratio:1;border:1px solid var(--ligne);display:grid;place-items:center;font-size:.82rem;color:var(--gris)}
+  .case.vide{border-color:transparent}
+  .case.fenetre{background:rgba(232,116,59,.12);border-color:var(--orange);color:var(--encre);font-weight:600}
+  .case.rentree{background:var(--nuit);color:#fff;border-color:var(--nuit);font-weight:600}
+  .cal-note{margin-top:.9rem;font-size:.85rem;color:var(--gris)}
+
+  /* --- PIED DE PAGE --- */
+  footer{background:var(--nuit);color:var(--clair-attenue)}
+  .footer-inner{
+    max-width:980px;margin:0 auto;padding:1.4rem 1.5rem;
+    font-family:'IBM Plex Mono',monospace;font-size:.78rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- Symbole sablier réutilisé partout (couleur via currentColor) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-sablier" viewBox="0 0 24 24">
+    <path d="M6 3h12M6 21h12M7 3c0 5 4 6 5 9 1-3 5-4 5-9M7 21c0-5 4-6 5-9 1 3 5 4 5 9"
+      fill="none" stroke="currentColor" stroke-width="1.7"
+      stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
+    <a class="retour" href="index.html">← Retour à l'accueil</a>
+  </div>
+</nav>
+
+<!-- ============== HERO / COUVERTURE ============== -->
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Physique &amp; Chimie · Été 2026</p>
+    <h1>Cahier de<br>vacances</h1>
+    <p class="vers">vers la <b>1<sup>re</sup> spécialité</b></p>
+    <p class="tagline">
+      Ton pont entre la Seconde et la spécialité : de courtes séances pour
+      réactiver l'essentiel, à faire à ton rythme avant la rentrée.
+    </p>
+    <!-- Les puces de la couverture du PDF disaient "1 h/jour · corrigés inclus".
+         Ici la version web est un DIAGNOSTIC, et la durée est variable. -->
+    <div class="chips">
+      <span class="chip">10 séances</span>
+      <span class="chip">30 min – 1 h 30 / jour</span>
+      <span class="chip">diagnostic interactif</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============== MODE D'EMPLOI ============== -->
+  <!-- Consignes = CONTENU → reprises du fichier ODT (pas du PDF).
+       Le reste est à compléter par l'équipe. -->
+  <section>
+    <div class="titre-section"><h2>Mode d'emploi</h2></div>
+    <ul class="consignes">
+      <li>
+        Les <strong>sabliers</strong> indiquent le temps de chaque journée.
+        Tu peux faire les séances <strong>dans l'ordre que tu veux</strong>,
+        selon le temps dont tu disposes.
+      </li>
+    </ul>
+    <p class="placeholder">
+      [ À compléter par l'équipe : autres consignes générales du cahier. ]
+    </p>
+    <div class="legende-sabliers">
+      <span><svg class="sablier"><use href="#ic-sablier"/></svg> ≈ 30 min</span>
+      <span>
+        <svg class="sablier"><use href="#ic-sablier"/></svg>
+        <svg class="sablier"><use href="#ic-sablier"/></svg> ≈ 1 h
+      </span>
+      <span>
+        <svg class="sablier"><use href="#ic-sablier"/></svg>
+        <svg class="sablier"><use href="#ic-sablier"/></svg>
+        <svg class="sablier"><use href="#ic-sablier"/></svg> ≈ 1 h 30
+      </span>
+    </div>
+  </section>
+
+  <!-- ============== LES JOURS ============== -->
+  <!-- Titres repris EXACTEMENT du fichier ODT (brouillon V1).
+       Numérotation provisoire conservée telle quelle (4 / 4b / 4c, saut à 7).
+       La lettre en commentaire = responsable pressenti (interne). -->
+  <section>
+    <div class="titre-section"><h2>Les séances</h2></div>
+    <div class="jours">
+
+      <!-- resp. G -->
+      <article class="jour">
+        <div class="jour-entete">
+          <div class="jour-num">J01</div>
+          <div class="jour-titre">Conversions, chiffres significatifs &amp; ordres de grandeur</div>
+        </div>
+        <div class="jour-corps">
+          <div class="jour-duree"><span class="lib">Durée</span>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+          </div>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+        </div>
+      </article>
+
+      <!-- resp. L -->
+      <article class="jour">
+        <div class="jour-entete">
+          <div class="jour-num">J02</div>
+          <div class="jour-titre">Stabilité d'un atome</div>
+        </div>
+        <div class="jour-corps">
+          <div class="jour-duree"><span class="lib">Durée</span>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+          </div>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+        </div>
+      </article>
+
+      <!-- resp. G -->
+      <article class="jour">
+        <div class="jour-entete">
+          <div class="jour-num">J03</div>
+          <div class="jour-titre">Formation d'une image</div>
+        </div>
+        <div class="jour-corps">
+          <div class="jour-duree"><span class="lib">Durée</span>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+          </div>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+        </div>
+      </article>
+
+      <!-- resp. I -->
+      <article class="jour">
+        <div class="jour-entete">
+          <div class="jour-num">J04</div>
+          <div class="jour-titre">Protocoles &amp; formules de chimie</div>
+        </div>
+        <div class="jour-corps">
+          <div class="jour-duree"><span class="lib">Durée</span>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+          </div>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+        </div>
+      </article>
+
+      <!-- resp. I -->
+      <article class="jour">
+        <div class="jour-entete">
+          <div class="jour-num">J04b</div>
+          <div class="jour-titre">Dosages</div>
+        </div>
+        <div class="jour-corps">
+          <div class="jour-duree"><span class="lib">Durée</span>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+          </div>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+        </div>
+      </article>
+
+      <!-- resp. ? -->
+      <article class="jour">
+        <div class="jour-entete">
+          <div class="jour-num">J04c</div>
+          <div class="jour-titre">Dilution</div>
+        </div>
+        <div class="jour-corps">
+          <div class="jour-duree"><span class="lib">Durée</span>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+          </div>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+        </div>
+      </article>
+
+      <!-- resp. L -->
+      <article class="jour">
+        <div class="jour-entete">
+          <div class="jour-num">J07</div>
+          <div class="jour-titre">Découvertes des youtubeurs scientifiques</div>
+        </div>
+        <div class="jour-corps">
+          <div class="jour-duree"><span class="lib">Durée</span>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+          </div>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+        </div>
+      </article>
+
+      <!-- resp. J -->
+      <article class="jour">
+        <div class="jour-entete">
+          <div class="jour-num">J08</div>
+          <div class="jour-titre">Principe d'inertie</div>
+        </div>
+        <div class="jour-corps">
+          <div class="jour-duree"><span class="lib">Durée</span>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+          </div>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+        </div>
+      </article>
+
+      <!-- resp. J -->
+      <article class="jour">
+        <div class="jour-entete">
+          <div class="jour-num">J09</div>
+          <div class="jour-titre">Forces</div>
+        </div>
+        <div class="jour-corps">
+          <div class="jour-duree"><span class="lib">Durée</span>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+          </div>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+        </div>
+      </article>
+
+      <!-- resp. ? -->
+      <article class="jour">
+        <div class="jour-entete">
+          <div class="jour-num">J10</div>
+          <div class="jour-titre">Signal sonore &amp; vitesse du son</div>
+        </div>
+        <div class="jour-corps">
+          <div class="jour-duree"><span class="lib">Durée</span>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+            <svg class="sablier vide"><use href="#ic-sablier"/></svg>
+          </div>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+        </div>
+      </article>
+
+    </div>
+    <p class="placeholder">
+      [ Chaque bouton ouvrira la page de diagnostic du jour : QCM par blocs →
+        score → pop-up d'orientation. Un seul gabarit réutilisé, on changera
+        juste les questions et les liens. ]
+    </p>
+  </section>
+
+  <!-- ============== COMMENT ÇA MARCHE ============== -->
+  <section>
+    <div class="titre-section"><h2>Comment ça marche</h2></div>
+    <div class="etapes">
+      <div class="etape">
+        <h3>1 · Le diagnostic</h3>
+        <p>Un mini-QCM organisé en blocs pour chaque notion. Aucune note : c'est juste pour situer où tu en es.</p>
+      </div>
+      <div class="etape">
+        <h3>2 · Ton score par bloc</h3>
+        <p>Chaque bloc est évalué séparément, pour repérer précisément ce qui est acquis ou non.</p>
+      </div>
+      <div class="etape">
+        <h3>3 · Ton orientation</h3>
+        <p>Une pop-up te renvoie vers une vidéo, un exercice ou une partie à revoir, selon tes résultats.</p>
+      </div>
+    </div>
+    <div class="feux">
+      <span><span class="pastille v"></span> Acquis</span>
+      <span><span class="pastille a"></span> À revoir</span>
+      <span><span class="pastille r"></span> À retravailler</span>
+    </div>
+  </section>
+
+  <!-- ============== CALENDRIER (proposition) ============== -->
+  <!-- Proposition de planning. Comme l'élève choisit son ordre, on met en
+       avant une FENÊTRE conseillée plutôt qu'un jour fixe par séance. -->
+  <section>
+    <div class="titre-section"><h2>Quand s'y mettre&nbsp;?</h2></div>
+    <div class="cal">
+      <div class="cal-tete">Août 2026 — fenêtre conseillée</div>
+      <div class="grille-cal">
+        <div class="jsem">L</div><div class="jsem">M</div><div class="jsem">M</div>
+        <div class="jsem">J</div><div class="jsem">V</div><div class="jsem">S</div><div class="jsem">D</div>
+        <!-- Août 2026 commence un samedi -->
+        <div class="case vide"></div><div class="case vide"></div><div class="case vide"></div>
+        <div class="case vide"></div><div class="case vide"></div>
+        <div class="case">1</div><div class="case">2</div>
+        <div class="case">3</div><div class="case">4</div><div class="case">5</div><div class="case">6</div><div class="case">7</div><div class="case">8</div><div class="case">9</div>
+        <div class="case">10</div><div class="case">11</div><div class="case">12</div><div class="case">13</div><div class="case">14</div><div class="case">15</div><div class="case">16</div>
+        <div class="case">17</div><div class="case">18</div><div class="case">19</div>
+        <div class="case fenetre">20</div><div class="case fenetre">21</div><div class="case fenetre">22</div><div class="case fenetre">23</div>
+        <div class="case fenetre">24</div><div class="case fenetre">25</div><div class="case fenetre">26</div><div class="case fenetre">27</div><div class="case fenetre">28</div><div class="case fenetre">29</div><div class="case fenetre">30</div>
+        <div class="case fenetre">31</div>
+      </div>
+      <p class="cal-note">
+        Dix séances à répartir sur la dernière quinzaine d'août, dans l'ordre
+        que tu veux, jusqu'à la <strong>rentrée (≈ 1<sup>er</sup> septembre)</strong>.
+        Les sabliers t'aident à caler une séance courte ou longue selon ta journée.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">© 2026 · M. Van Hoorde — Cahier de vacances · vers la 1re spécialité</div>
+</footer>
+
+</body>
+</html>
