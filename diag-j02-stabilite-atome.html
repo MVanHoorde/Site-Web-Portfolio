@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostic J02 — Stabilité d'un atome</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ============================================================
+     PROTOTYPE — page autonome, identité du cahier (bleu nuit + orange).
+     Tout le contenu de la notion vit dans l'objet NOTION (en bas).
+     Pour un autre jour, on ne change QUE cet objet ; le moteur JS
+     au-dessus reste identique.
+     Chaque question a deux explications :
+       - siFaux  : un petit bout de cours (affiché si l'élève se trompe)
+       - siJuste : une précision légère (affichée s'il a bon)
+     ============================================================ -->
+<style>
+  :root{
+    --nuit:#0e2545;--nuit-haut:#173d6b;--nuit-bas:#0b1d39;
+    --papier:#eef3f8;--carte:#fff;--orange:#e8743b;--cyan:#3fa7d6;
+    --encre:#15233a;--gris:#5d6b7e;--ligne:#d8e1ea;
+    --vert:#2fae6a;--ambre:#f0a72e;--rouge:#d6402b;
+    --clair:#eaf1f9;--clair-attenue:#9fb2c9;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    color:var(--encre);background:var(--papier);line-height:1.6}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  :focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+
+  nav{position:sticky;top:0;z-index:10;background:var(--nuit);border-bottom:1px solid rgba(255,255,255,.12)}
+  .nav-inner{max-width:760px;margin:0 auto;padding:.85rem 1.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+  .nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;color:var(--clair)}
+  .nav-logo span{color:var(--orange)}
+  .retour{font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--clair);text-decoration:none;border-bottom:2px solid var(--orange);padding-bottom:2px}
+  .retour:hover,.retour:focus-visible{color:var(--orange)}
+
+  .bandeau{background:linear-gradient(160deg,var(--nuit-haut),var(--nuit-bas));color:var(--clair)}
+  .bandeau-inner{max-width:760px;margin:0 auto;padding:2.2rem 1.5rem}
+  .bandeau .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--clair-attenue);margin-bottom:.5rem}
+  .bandeau h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,4.5vw,2.2rem)}
+
+  main{max-width:760px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+  .intro p{margin-bottom:1rem}
+  .note-simple{background:rgba(63,167,214,.08);border-left:4px solid var(--cyan);padding:.9rem 1.1rem;font-size:.95rem;margin:1.2rem 0}
+  .btn{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.9rem;border:none;cursor:pointer;background:var(--orange);color:#fff;padding:.7rem 1.4rem}
+  .btn:hover{filter:brightness(1.06)}
+  .btn.fant{background:transparent;color:var(--nuit);border:1px solid var(--nuit)}
+  .btn.fant:hover{background:var(--nuit);color:#fff;filter:none}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+
+  .topbar{display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--gris);margin-bottom:.6rem;gap:1rem}
+  .axe-tag{color:var(--orange);text-align:right}
+  .barre{height:6px;background:var(--ligne);margin-bottom:1.6rem;overflow:hidden}
+  .barre>i{display:block;height:100%;background:var(--orange);transition:width .25s ease}
+  .enonce{font-size:1.12rem;font-weight:600;margin-bottom:1rem;font-family:'Space Grotesk',sans-serif}
+  .opts{display:grid;gap:.6rem;margin-bottom:1.2rem}
+  .opt{text-align:left;background:var(--carte);border:1px solid var(--ligne);padding:.8rem 1rem;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--encre);display:flex;gap:.7rem;align-items:flex-start}
+  .opt .lettre{font-family:'IBM Plex Mono',monospace;color:var(--gris);flex:0 0 auto}
+  .opt:hover{border-color:var(--orange)}
+  .opt.sel{border-color:var(--orange);box-shadow:inset 0 0 0 1px var(--orange)}
+  .opt.juste{border-color:var(--vert);background:rgba(47,174,106,.10)}
+  .opt.juste .lettre{color:var(--vert)}
+  .opt.faux{border-color:var(--rouge);background:rgba(214,64,43,.10)}
+  .opt.faux .lettre{color:var(--rouge)}
+  .opt:disabled{cursor:default}
+
+  .feedback{border:1px solid var(--ligne);border-left:4px solid var(--cyan);background:var(--carte);padding:.9rem 1.1rem;margin-bottom:1.2rem;font-size:.96rem}
+  .feedback .res{font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:.4rem}
+  .feedback .res.ok{color:var(--vert)} .feedback .res.ko{color:var(--rouge)}
+
+  /* Illustrations (SVG dessinés dans la page) */
+  .illus{display:flex;flex-direction:column;align-items:center;gap:.35rem;margin:.9rem 0;color:var(--encre)}
+  .illus .cap{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--gris);text-align:center}
+
+  .actions{display:flex;justify-content:flex-end;gap:.7rem}
+
+  .res-note{font-size:.95rem;color:var(--gris);background:rgba(0,0,0,.025);border:1px dashed var(--ligne);padding:.9rem 1.1rem;margin-bottom:1.5rem}
+  details.axe{border:1px solid var(--ligne);border-left:5px solid var(--gris);background:var(--carte);margin-bottom:1rem}
+  details.axe.v{border-left-color:var(--vert)} details.axe.a{border-left-color:var(--ambre)} details.axe.r{border-left-color:var(--rouge)}
+  details.axe>summary{list-style:none;cursor:pointer;padding:1rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+  details.axe>summary::-webkit-details-marker{display:none}
+  .badge{font-family:'IBM Plex Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;padding:.2rem .55rem;border-radius:999px;color:#fff;flex:0 0 auto}
+  .badge.v{background:var(--vert)} .badge.a{background:var(--ambre)} .badge.r{background:var(--rouge)}
+  .axe-nom{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;flex:1}
+  .axe-score{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--gris)}
+  .axe-corps{padding:0 1.2rem 1.2rem}
+  .pourquoi{background:rgba(63,167,214,.07);border-left:3px solid var(--cyan);padding:.8rem 1rem;margin-bottom:1rem;font-size:.95rem}
+  .pourquoi b{display:block;font-family:'IBM Plex Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);margin-bottom:.3rem}
+  .placeholder{border:1.5px dashed var(--gris);color:var(--gris);font-family:'IBM Plex Mono',monospace;font-size:.8rem;padding:.8rem 1rem;margin-bottom:.7rem}
+  .conseil-temps{background:var(--nuit);color:var(--clair);padding:1rem 1.2rem;font-size:.95rem;margin-top:1rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
+    <a class="retour" href="cahier-vacances-2nde-1re-spe.html">← Retour au cahier</a>
+  </div>
+</nav>
+
+<div class="bandeau">
+  <div class="bandeau-inner">
+    <p class="eyebrow">Cahier de vacances · Diagnostic</p>
+    <h1>J02 — Stabilité d'un atome</h1>
+  </div>
+</div>
+
+<main>
+  <div id="app"></div>
+</main>
+
+<script>
+/* ============================================================
+   1) CONTENU DE LA NOTION  (seule partie à changer par jour)
+   ============================================================ */
+const NOTION = {
+  titre: "J02 — Stabilité d'un atome",
+  axes: [
+    {
+      id: "A",
+      nom: "Configuration électronique",
+      pourquoi: "En 1re spé, la configuration électronique et les électrons de valence expliquent la place d'un élément dans le tableau périodique et sa réactivité. C'est le socle de tout le chapitre sur la structure des entités.",
+      questions: [
+        { q:"La configuration électronique d'un atome indique :",
+          opts:["La répartition des électrons dans les couches et sous-couches","La répartition des protons dans le noyau","La masse de l'atome","Le nombre de neutrons uniquement"],
+          bonne:0,
+          siFaux:"La configuration électronique décrit la répartition des électrons dans les couches et les sous-couches de l'atome. Au programme de seconde, pour les atomes jusqu'au numéro atomique 18, on rencontre trois couches successives et deux types de sous-couches, notées s et p.",
+          siJuste:"Il s'agit bien de la répartition des électrons, décrite à l'aide des couches et des sous-couches s et p." },
+
+        { q:"Pour un atome de numéro atomique 8, le nombre d'électrons est :",
+          opts:["2","6","8","16"],
+          bonne:2,
+          siFaux:"Le numéro atomique indique le nombre de protons du noyau. Comme un atome est électriquement neutre, il possède autant d'électrons que de protons. Le numéro atomique donne donc aussi le nombre d'électrons : pour un atome de numéro atomique 8, on compte huit électrons.",
+          siJuste:"Comme l'atome est neutre, il possède autant d'électrons que de protons, c'est-à-dire huit." },
+
+        { q:"Pour les atomes jusqu'au numéro atomique 18, l'ordre de remplissage des sous-couches est :",
+          opts:["1s, puis 2s, 2p, 3s, 3p","1s, puis 2p, 2s, 3p, 3s","1p, puis 2s, 2p, 3s","1s, puis 3s, 2s, 2p"],
+          bonne:0,
+          siFaux:"Les sous-couches se remplissent toujours dans le même ordre, de la plus basse à la plus haute en énergie : d'abord 1s, puis 2s, ensuite 2p, puis 3s et enfin 3p.",
+          siJuste:"Cet ordre correspond à l'énergie croissante des sous-couches." },
+
+        { q:"La configuration électronique de l'oxygène (numéro atomique 8) est :",
+          opts:["1s² 2s² 2p⁴","1s² 2s⁴ 2p²","1s⁸","1s² 2s² 3p⁴"],
+          bonne:0,
+          siFaux:"Pour écrire une configuration, on remplit les sous-couches dans l'ordre 1s, 2s, 2p, 3s, 3p. Une sous-couche s peut contenir au maximum deux électrons et une sous-couche p au maximum six électrons. On ne passe à la suivante qu'une fois la précédente complète. L'oxygène possède huit électrons, ce qui donne 1s² 2s² 2p⁴.",
+          siJuste:"On retrouve les huit électrons de l'oxygène en remplissant 1s, 2s puis 2p, ce qui donne 1s² 2s² 2p⁴." },
+
+        { q:"Les électrons de valence sont :",
+          opts:["Les électrons de la couche la plus proche du noyau uniquement","Les électrons situés dans le noyau","Les électrons de la couche la plus éloignée du noyau","Tous les électrons de l'atome"],
+          bonne:2,
+          siFaux:"Les électrons de valence sont les électrons de la couche externe, c'est-à-dire la couche occupée la plus éloignée du noyau. On parle aussi de couche de valence. Ce sont eux qui interviennent dans les réactions chimiques.",
+          siJuste:"Ce sont les électrons de la couche externe, aussi appelée couche de valence, la plus éloignée du noyau." }
+      ]
+    },
+    {
+      id: "B",
+      /* Le .docx nommait cet axe "règle du duet / octet". Ta consigne :
+         rester en 2nde sans nommer ces règles -> axe renommé et explications
+         formulées avec couche externe saturée, gaz noble, gain/perte/partage. */
+      nom: "Stabilité : ions & molécules",
+      pourquoi: "Savoir prévoir les ions formés et le partage d'électrons prépare directement l'étude des liaisons, de la polarité et de la solubilité en 1re spé.",
+      questions: [
+        { q:"Les gaz nobles sont chimiquement très stables car :",
+          opts:["Ils possèdent beaucoup de neutrons","Leur couche externe est saturée","Ils n'ont pas d'électrons","Ils sont toujours solides"],
+          bonne:1,
+          siFaux:"Une couche est dite saturée lorsqu'elle contient le nombre maximal d'électrons qu'elle peut accueillir : elle est pleine. Les gaz nobles ont une couche externe saturée, ce qui les rend stables. Être stable signifie ici qu'ils n'ont presque aucune tendance à gagner, perdre ou partager des électrons, et donc qu'ils réagissent très peu.",
+          siJuste:"Leur couche externe est saturée, c'est-à-dire pleine, ce qui leur donne une grande stabilité." },
+
+        { q:"Pour former un ion stable, un atome peut :",
+          opts:["Gagner ou perdre des électrons","Gagner ou perdre des protons","Gagner ou perdre des neutrons","Modifier la masse de son noyau"],
+          bonne:0,
+          siFaux:"Un ion se forme lorsqu'un atome gagne ou perd un ou plusieurs électrons. Les protons et les neutrons restent dans le noyau et ne sont pas échangés, car les électrons sont bien plus faciles à arracher ou à capter. Modifier le noyau relève de la physique nucléaire ; en chimie, on s'intéresse uniquement aux échanges d'électrons.",
+          siJuste:"Un ion résulte d'un gain ou d'une perte d'électrons. En chimie, seuls les électrons sont échangés, jamais les protons ni les neutrons." },
+
+        { q:"En formant une molécule, un atome peut gagner en stabilité en :",
+          opts:["Partageant des électrons avec d'autres atomes","Perdant des protons","Transformant ses neutrons en électrons","Supprimant sa couche externe"],
+          bonne:0,
+          siFaux:"Dans une molécule, les atomes se lient en partageant des électrons. Ce partage d'électrons entre deux atomes s'appelle une liaison covalente : c'est elle qui maintient les atomes ensemble au sein de la molécule.",
+          siJuste:"Ce partage d'électrons entre deux atomes porte un nom : la liaison covalente." },
+
+        { q:"L'atome de chlore (numéro atomique 17) a pour configuration électronique 1s² 2s² 2p⁶ 3s² 3p⁵. Combien d'électrons possède-t-il sur sa couche externe ?",
+          opts:["5","7","8","17"],
+          bonne:1,
+          siFaux:"La couche externe est la couche dont le numéro est le plus élevé, ici la couche numéro 3. Pour compter ses électrons, on additionne ceux de toutes ses sous-couches. La couche 3 contient 3s² et 3p⁵, soit deux puis cinq électrons : cela fait sept électrons au total sur la couche externe.",
+          siJuste:"La couche externe est celle de numéro le plus élevé, ici la couche 3 : deux électrons en 3s et cinq en 3p, soit sept au total." },
+
+        { q:"Le magnésium (1s² 2s² 2p⁶ 3s²) a tendance, pour être plus stable, à :",
+          opts:["Gagner 2 électrons","Perdre 2 électrons","Gagner 6 protons","Perdre 8 électrons"],
+          bonne:1,
+          siFaux:"Pour gagner en stabilité, un atome cherche à se rapprocher de la structure électronique du gaz noble le plus proche, qui possède une couche externe saturée. Le magnésium part de 1s² 2s² 2p⁶ 3s². En perdant ses deux électrons de la sous-couche 3s, il obtient 1s² 2s² 2p⁶, qui est la configuration du néon, le gaz noble le plus proche.",
+          siJuste:"En perdant ses deux électrons 3s, le magnésium prend la configuration du néon, le gaz noble le plus proche, avec une couche externe saturée." }
+      ]
+    },
+    {
+      id: "C",
+      nom: "Schémas de Lewis",
+      pourquoi: "Les schémas de Lewis sont approfondis en 1re spé : ils servent à déterminer la géométrie et la polarité des molécules. Les maîtriser maintenant fait gagner beaucoup de temps.",
+      questions: [
+        { q:"Dans un schéma de Lewis, en plus des liaisons entre atomes, on représente également :",
+          opts:["Les protons du noyau","Les neutrons du noyau","Les électrons de valence","Tous les électrons de l'atome"],
+          bonne:2,
+          siFaux:"Un schéma de Lewis ne représente pas tous les électrons de l'atome, mais uniquement ses électrons de valence, ceux de la couche externe. On les figure par des points autour du symbole de l'atome, comme dans l'exemple ci-dessous.",
+          siJuste:"Le schéma de Lewis se concentre sur les électrons de valence, représentés par des points autour du symbole de l'atome.",
+          imgR:`<svg viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Symbole de Lewis de l'oxygene : la lettre O entouree de six points representant les electrons de valence"><text x="60" y="62" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-size="34" fill="currentColor">O</text><circle cx="52" cy="20" r="4" fill="currentColor"/><circle cx="68" cy="20" r="4" fill="currentColor"/><circle cx="100" cy="52" r="4" fill="currentColor"/><circle cx="100" cy="68" r="4" fill="currentColor"/><circle cx="60" cy="102" r="4" fill="currentColor"/><circle cx="18" cy="60" r="4" fill="currentColor"/></svg><div class="cap">L'oxygène et ses six électrons de valence</div>` },
+
+        { q:"Un doublet liant correspond à :",
+          opts:["Deux électrons partagés entre deux atomes","Deux électrons appartenant uniquement au noyau","Deux protons partagés entre deux atomes","Deux neutrons échangés entre deux atomes"],
+          bonne:0,
+          siFaux:"Un doublet liant est constitué de deux électrons partagés entre deux atomes : il correspond à une liaison covalente. C'est ce partage qui relie les atomes entre eux à l'intérieur d'une molécule.",
+          siJuste:"Un doublet liant, ce sont deux électrons partagés : il forme une liaison covalente entre deux atomes." },
+
+        { q:"La molécule de dioxygène O₂ a pour schéma de Lewis la représentation ci-dessous. Que peut-on y observer ?",
+          opts:["Uniquement des doublets liants","Uniquement des doublets non liants","À la fois des doublets liants et des doublets non liants","Aucun doublet d'électrons"],
+          bonne:2,
+          imgQ:`<svg viewBox="0 0 240 100" width="240" height="100" role="img" aria-label="Schema de Lewis du dioxygene : deux atomes d'oxygene relies par une double liaison, chacun portant deux doublets non liants"><text x="55" y="52" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-size="30" fill="currentColor">O</text><text x="185" y="52" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-size="30" fill="currentColor">O</text><line x1="80" y1="44" x2="160" y2="44" stroke="currentColor" stroke-width="2.5"/><line x1="80" y1="56" x2="160" y2="56" stroke="currentColor" stroke-width="2.5"/><circle cx="46" cy="20" r="3.5" fill="currentColor"/><circle cx="64" cy="20" r="3.5" fill="currentColor"/><circle cx="46" cy="84" r="3.5" fill="currentColor"/><circle cx="64" cy="84" r="3.5" fill="currentColor"/><circle cx="176" cy="20" r="3.5" fill="currentColor"/><circle cx="194" cy="20" r="3.5" fill="currentColor"/><circle cx="176" cy="84" r="3.5" fill="currentColor"/><circle cx="194" cy="84" r="3.5" fill="currentColor"/></svg><div class="cap">Schéma de Lewis du dioxygène O₂</div>`,
+          siFaux:"Dans le dioxygène, les deux atomes d'oxygène sont reliés par des doublets liants, c'est-à-dire des électrons partagés entre eux. Mais chaque atome d'oxygène porte aussi des doublets non liants, des paires d'électrons qui restent autour d'un seul atome. Le dioxygène présente donc les deux types de doublets à la fois.",
+          siJuste:"Le dioxygène est un bon exemple : il possède à la fois des doublets liants entre les atomes et des doublets non liants autour de chaque atome." },
+
+        { q:"Un doublet non liant est :",
+          opts:["Un doublet d'électrons partagé entre deux atomes","Un doublet d'électrons de valence qui ne participe à aucune liaison","Un doublet formé par deux protons","Un doublet d'électrons situé dans le noyau"],
+          bonne:1,
+          siFaux:"Un doublet non liant est une paire d'électrons de valence qui ne participe à aucune liaison. Contrairement au doublet liant, il n'est pas partagé : il reste autour d'un seul atome.",
+          siJuste:"Un doublet non liant est une paire d'électrons de valence qui reste autour d'un seul atome, sans former de liaison." },
+
+        { q:"Dans la molécule d'eau H₂O, l'atome d'oxygène (1s² 2s² 2p⁴) possède :",
+          opts:["Deux liaisons covalentes et deux doublets non liants","Une liaison covalente et trois doublets non liants","Quatre liaisons covalentes et aucun doublet non liant","Aucun doublet non liant et aucune liaison"],
+          bonne:0,
+          siFaux:"L'atome d'oxygène possède six électrons de valence. Dans la molécule d'eau, il forme deux liaisons covalentes avec les deux atomes d'hydrogène : ce sont deux doublets liants. Les électrons de valence restants forment deux doublets non liants, qui demeurent autour de l'atome d'oxygène. L'oxygène présente donc deux liaisons covalentes et deux doublets non liants.",
+          siJuste:"Dans l'eau, l'oxygène engage deux doublets liants avec les hydrogènes et conserve deux doublets non liants autour de lui." }
+      ]
+    }
+  ]
+};
+
+/* ============================================================
+   2) MOTEUR  (identique pour toutes les notions)
+   ============================================================ */
+const app = document.getElementById("app");
+const LETTRES = ["A","B","C","D","E"];
+
+const FLAT = [];
+NOTION.axes.forEach((axe,ai)=> axe.questions.forEach(qu=> FLAT.push({...qu, ai})));
+
+let idx = 0;
+let choisi = null;
+let valide = false;
+const fautes = NOTION.axes.map(()=>0);
+
+// Seuils de priorité : 0 faute -> vert · 1 ou 2 -> orange · 3 et + -> rouge
+function priorite(f){
+  if(f===0) return {cls:"v", label:"À survoler"};
+  if(f<=2)  return {cls:"a", label:"À revoir"};
+  return     {cls:"r", label:"À retravailler"};
+}
+
+function ecranIntro(){
+  app.innerHTML = `
+    <div class="intro">
+      <p>Ce diagnostic de <strong>15 questions</strong> (3 axes) sert à repérer ce que tu maîtrises déjà. Ce n'est pas une note.</p>
+      <div class="note-simple">Les questions sont parfois <strong>très simples</strong> et, surtout, elles <strong>ne couvrent pas l'ensemble des notions</strong> de la séance. Bien y répondre ne veut donc pas dire que tout est maîtrisé : ça t'aide seulement à voir par où commencer.</div>
+      <button class="btn" id="go">Commencer le diagnostic →</button>
+    </div>`;
+  document.getElementById("go").onclick = ()=>{ idx=0; ecranQuestion(); };
+}
+
+function ecranQuestion(){
+  choisi=null; valide=false;
+  const item = FLAT[idx];
+  const axe = NOTION.axes[item.ai];
+  const pct = Math.round((idx/FLAT.length)*100);
+  app.innerHTML = `
+    <div class="topbar">
+      <span>Question ${idx+1} / ${FLAT.length}</span>
+      <span class="axe-tag">Axe ${axe.id} · ${axe.nom}</span>
+    </div>
+    <div class="barre"><i style="width:${pct}%"></i></div>
+    <p class="enonce">${item.q}</p>
+    ${item.imgQ ? `<div class="illus">${item.imgQ}</div>` : ""}
+    <div class="opts" id="opts">
+      ${item.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="lettre">${LETTRES[i]}</span><span>${o}</span></button>`).join("")}
+    </div>
+    <div id="zone-feedback"></div>
+    <div class="actions">
+      <button class="btn" id="valider" disabled>Valider</button>
+    </div>`;
+
+  document.querySelectorAll("#opts .opt").forEach(b=>{
+    b.onclick = ()=>{
+      if(valide) return;
+      choisi = +b.dataset.i;
+      document.querySelectorAll("#opts .opt").forEach(x=>x.classList.remove("sel"));
+      b.classList.add("sel");
+      document.getElementById("valider").disabled = false;
+    };
+  });
+  document.getElementById("valider").onclick = onValider;
+}
+
+function onValider(){
+  if(!valide){
+    valide = true;
+    const item = FLAT[idx];
+    const opts = document.querySelectorAll("#opts .opt");
+    opts.forEach((b,i)=>{
+      b.disabled = true;
+      if(i===item.bonne) b.classList.add("juste");
+      else if(i===choisi) b.classList.add("faux");
+    });
+    const ok = choisi===item.bonne;
+    if(!ok) fautes[item.ai]++;
+    const texte = ok ? item.siJuste : item.siFaux;
+    document.getElementById("zone-feedback").innerHTML = `
+      <div class="feedback">
+        <p class="res ${ok?'ok':'ko'}">${ok ? 'Bonne réponse' : 'Réponse incorrecte'}</p>
+        <p>${texte}</p>
+        ${item.imgR ? `<div class="illus">${item.imgR}</div>` : ""}
+      </div>`;
+    const b = document.getElementById("valider");
+    b.textContent = (idx===FLAT.length-1) ? "Voir mon plan →" : "Suivant →";
+  } else {
+    idx++;
+    if(idx<FLAT.length) ecranQuestion();
+    else ecranResultats();
+  }
+}
+
+function ecranResultats(){
+  const ordre = NOTION.axes.map((axe,i)=>({axe, i, f:fautes[i]}))
+                           .sort((a,b)=> b.f - a.f);
+  const maxF = Math.max(...fautes);   // axes à ce niveau -> dépliés
+
+  const cartes = ordre.map(({axe,f})=>{
+    const p = priorite(f);
+    const ouvert = (f===maxF) ? "open" : "";
+    return `
+      <details class="axe ${p.cls}" ${ouvert}>
+        <summary>
+          <span class="badge ${p.cls}">${p.label}</span>
+          <span class="axe-nom">Axe ${axe.id} — ${axe.nom}</span>
+          <span class="axe-score">${5-f}/5</span>
+        </summary>
+        <div class="axe-corps">
+          <div class="pourquoi"><b>Pourquoi c'est important</b>${axe.pourquoi}</div>
+          <div class="placeholder">[ Ressources (vidéo / audio / jeu) — à compléter ]</div>
+          <div class="placeholder">[ Exercices (site / lien / jeu intégré) — à compléter ]</div>
+          <div class="placeholder">[ Durée estimée — à définir ]</div>
+        </div>
+      </details>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="topbar"><span>Ton plan de révision</span><span class="axe-tag">classé par priorité</span></div>
+    <div class="res-note">Rappel : ces questions sont simples et ne couvrent pas tout. Même un axe « à survoler » mérite un coup d'œil pour bien démarrer la 1re.</div>
+    ${cartes}
+    <div class="conseil-temps">Peu de temps ? Commence par les axes en haut de la liste, ce sont les plus prioritaires.</div>
+    <div class="actions" style="margin-top:1.4rem;justify-content:flex-start">
+      <button class="btn fant" id="recommencer">↻ Refaire le diagnostic</button>
+    </div>`;
+  document.getElementById("recommencer").onclick = ()=>{ fautes.fill(0); ecranIntro(); };
+}
+
+ecranIntro();
+</script>
+
+</body>
+</html>
