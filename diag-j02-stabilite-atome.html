@@ -119,6 +119,22 @@
   .btn-exemple:hover{background:var(--cyan);color:#fff}
   .exo-exemple{margin-top:.6rem;background:rgba(63,167,214,.07);border-left:3px solid var(--cyan);padding:.7rem .9rem;font-size:.9rem}
   .exo-corr{margin-top:.6rem;border-left:3px solid var(--vert);background:rgba(47,174,106,.07);padding:.7rem .9rem;font-size:.92rem}
+  .gate{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;margin:0 0 1rem;padding:.8rem 1rem;background:rgba(232,116,59,.07);border:1px solid var(--ligne)}
+  .gate label{display:flex;align-items:center;gap:.45rem;font-size:.9rem;cursor:pointer}
+  .gate input{width:16px;height:16px;accent-color:var(--orange);flex:0 0 auto}
+  .verrou-msg{font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--gris);margin-bottom:.6rem}
+  .choix-msg{font-size:.9rem;color:var(--encre);background:rgba(63,167,214,.08);border-left:3px solid var(--cyan);padding:.6rem .9rem;margin-bottom:.8rem}
+  details.media{border:1px solid var(--ligne);margin-bottom:.6rem;background:rgba(0,0,0,.012)}
+  details.media>summary{list-style:none;cursor:pointer;padding:.7rem .9rem;font-family:'IBM Plex Mono',monospace;font-size:.85rem;display:flex;gap:.5rem;align-items:center}
+  details.media>summary::-webkit-details-marker{display:none}
+  details.media>summary::before{content:"▸";color:var(--orange)}
+  details.media[open]>summary::before{content:"▾"}
+  details.media .flash{padding:.2rem .9rem 1rem}
+  details.media .video{margin:.2rem .9rem 1rem}
+  .exos.verrou{opacity:.45;pointer-events:none}
+  .chk-fait{display:flex;align-items:center;gap:.45rem;font-size:.85rem;color:var(--gris);margin-top:.9rem;cursor:pointer}
+  .chk-fait input{width:15px;height:15px;accent-color:var(--vert);flex:0 0 auto}
+  .fait-mark{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--vert)}
   [hidden]{display:none}
 </style>
 </head>
@@ -402,20 +418,27 @@ function onValider(){
     b.textContent = (idx===FLAT.length-1) ? "Voir mon plan →" : "Suivant →";
   } else {
     idx++;
-    if(idx<FLAT.length) ecranQuestion(); else ecranResultats();
+    if(idx<FLAT.length) ecranQuestion(); else { freshProg(fautes); ecranResultats(false); }
   }
 }
 
-function ecranResultats(){
-  const ordre = NOTION.axes.map((axe,i)=>({axe, i, f:fautes[i]})).sort((a,b)=> b.f - a.f);
-  const maxF = Math.max(...fautes);
+function ecranResultats(autoOpen){
+  if(!PROG) PROG = { fautes:fautes.slice(), lu:{}, vu:{}, faits:{} };
+
+  // Ordre : axes non-verts d'abord, en respectant A puis B puis C.
+  // Les axes verts (aucune faute) sont renvoyés à la fin.
+  const ordre = NOTION.axes.map((axe,i)=>({axe, i, f:fautes[i]}));
+  ordre.sort((a,b)=>{
+    const ga = a.f===0 ? 1 : 0, gb = b.f===0 ? 1 : 0;
+    if(ga!==gb) return ga - gb;   // non-vert avant vert
+    return a.i - b.i;             // sinon ordre A, B, C
+  });
 
   const cartes = ordre.map(({axe,f})=>{
     const p = priorite(f);
-    const ouvert = ""; // tous les axes repliés au départ
     const exos = axe.exercices.map((ex,j)=>`
-      <details class="exo" data-timer="${ex.timer}">
-        <summary><span class="exo-num">Exercice ${j+1}</span> <span class="exo-titre">${ex.titre}</span></summary>
+      <details class="exo" data-timer="${ex.timer}" data-ax="${axe.id}" data-j="${j}">
+        <summary><span class="exo-num">Exercice ${j+1}</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
         <div class="exo-body">
           <p class="exo-enonce">${ex.enonce}</p>
           <p class="exo-consigne">✏️ Fais cet exercice sur ta feuille, puis vérifie. Le corrigé se débloque après un court instant.</p>
@@ -425,10 +448,11 @@ function ecranResultats(){
           </div>
           ${ex.exemple ? `<div class="exo-exemple" hidden>${ex.exemple}</div>` : ''}
           <div class="exo-corr" hidden>${ex.correction}</div>
+          <label class="chk-fait"><input type="checkbox"> J'ai fait cet exercice</label>
         </div>
       </details>`).join("");
     return `
-      <details class="axe ${p.cls}" ${ouvert}>
+      <details class="axe ${p.cls}" data-axe="${axe.id}">
         <summary>
           <span class="badge ${p.cls}">${p.label}</span>
           <span class="axe-nom">Axe ${axe.id} — ${axe.nom}</span>
@@ -436,25 +460,53 @@ function ecranResultats(){
         </summary>
         <div class="axe-corps">
           <div class="pourquoi"><b>Pourquoi c'est important</b>${axe.pourquoi}</div>
-          <section class="bloc"><h4>Capsule flash</h4><div class="flash">${axe.flash}</div></section>
-          <section class="bloc"><h4>Vidéo</h4><div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></section>
-          <section class="bloc"><h4>Exercices</h4>${exos}</section>
+          <p class="choix-msg">Choisis le format qui te convient : <strong>lis la capsule</strong> <em>ou</em> <strong>regarde la vidéo</strong>. Pas besoin des deux — l'essentiel est de revoir la notion sans te surcharger.</p>
+          <details class="media"><summary>📖 Lire la capsule (rappel de cours)</summary><div class="flash">${axe.flash}</div></details>
+          <details class="media"><summary>🎬 Regarder la vidéo</summary><div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>
+          <div class="gate">
+            <label><input type="checkbox" class="chk-lu"> J'ai lu la capsule</label>
+            <label><input type="checkbox" class="chk-vu"> J'ai regardé la vidéo</label>
+          </div>
+          <section class="bloc">
+            <h4>Exercices</h4>
+            <p class="verrou-msg">🔒 Consulte la capsule <strong>ou</strong> la vidéo (au choix), puis coche-la pour débloquer les exercices.</p>
+            <div class="exos verrou">${exos}</div>
+          </section>
         </div>
       </details>`;
   }).join("");
 
   app.innerHTML = `
     <div class="topbar"><span>Ton plan de révision</span><span class="axe-tag">classé par priorité</span></div>
-    <div class="res-note">Rappel : ces questions sont simples et ne couvrent pas tout. Même un axe « à survoler » mérite un coup d'œil pour bien démarrer la 1re.</div>
+    <div class="res-note">Rappel : ces questions sont simples et ne couvrent pas tout. Même un axe « à survoler » mérite un coup d'œil pour bien démarrer la 1re. Ton avancement est gardé en mémoire sur cet appareil.</div>
     ${cartes}
-    <div class="conseil-temps" style="background:var(--nuit);color:var(--clair);padding:1rem 1.2rem;font-size:.95rem;margin-top:1rem">Peu de temps ? Commence par les axes en haut de la liste, ce sont les plus prioritaires.</div>
+    <div class="conseil-temps" style="background:var(--nuit);color:var(--clair);padding:1rem 1.2rem;font-size:.95rem;margin-top:1rem">Peu de temps ? Suis l'ordre proposé : les axes en haut sont les plus prioritaires.</div>
     <div class="actions" style="margin-top:1.4rem;justify-content:flex-start">
       <button class="btn fant" id="recommencer">↻ Refaire le diagnostic</button>
     </div>`;
 
-  // Le compte à rebours d'un exercice démarre quand on le déplie.
+  // Verrou cours/vidéo par axe + restauration depuis la sauvegarde
+  document.querySelectorAll('details.axe').forEach(ax=>{
+    const id = ax.dataset.axe;
+    const chkLu = ax.querySelector('.chk-lu');
+    const chkVu = ax.querySelector('.chk-vu');
+    const exos = ax.querySelector('.exos');
+    const msg = ax.querySelector('.verrou-msg');
+    chkLu.checked = !!(PROG.lu && PROG.lu[id]);
+    chkVu.checked = !!(PROG.vu && PROG.vu[id]);
+    function updateGate(){
+      const ouvert = chkLu.checked || chkVu.checked;
+      exos.classList.toggle('verrou', !ouvert);
+      msg.hidden = ouvert;
+    }
+    updateGate();
+    chkLu.addEventListener('change', ()=>{ PROG.lu = PROG.lu||{}; PROG.lu[id]=chkLu.checked; saveProg(); updateGate(); });
+    chkVu.addEventListener('change', ()=>{ PROG.vu = PROG.vu||{}; PROG.vu[id]=chkVu.checked; saveProg(); updateGate(); });
+  });
+
+  // Exercices : minuteur à l'ouverture + case « fait »
   document.querySelectorAll('details.exo').forEach(exo=>{
-    const sec = +exo.dataset.timer;
+    const sec = +exo.dataset.timer, axId = exo.dataset.ax, j = exo.dataset.j;
     const bc = exo.querySelector('.btn-corr');
     const corr = exo.querySelector('.exo-corr');
     let started = false;
@@ -467,15 +519,28 @@ function ecranResultats(){
       tick();
     }
     exo.addEventListener('toggle', ()=>{ if(exo.open && !started){ started=true; startTimer(); } });
-    bc.addEventListener('click',()=>{ if(bc.disabled) return; corr.hidden=!corr.hidden; bc.textContent = corr.hidden?'Voir la correction':'Masquer la correction'; });
+    bc.addEventListener('click', ()=>{ if(bc.disabled) return; corr.hidden=!corr.hidden; bc.textContent = corr.hidden?'Voir la correction':'Masquer la correction'; });
     const be = exo.querySelector('.btn-exemple');
-    if(be){ const ex=exo.querySelector('.exo-exemple'); be.addEventListener('click',()=>{ ex.hidden=!ex.hidden; be.textContent = ex.hidden?'Voir un exemple':"Masquer l'exemple"; }); }
+    if(be){ const ex=exo.querySelector('.exo-exemple'); be.addEventListener('click', ()=>{ ex.hidden=!ex.hidden; be.textContent = ex.hidden?'Voir un exemple':"Masquer l'exemple"; }); }
+    const cf = exo.querySelector('.chk-fait input');
+    const mark = exo.querySelector('.fait-mark');
+    const fait = !!(PROG.faits && PROG.faits[axId] && PROG.faits[axId][j]);
+    cf.checked = fait; if(mark) mark.hidden = !fait;
+    cf.addEventListener('change', ()=>{ PROG.faits = PROG.faits||{}; PROG.faits[axId] = PROG.faits[axId]||{}; PROG.faits[axId][j]=cf.checked; saveProg(); if(mark) mark.hidden = !cf.checked; });
   });
 
-  document.getElementById("recommencer").onclick = ()=>{ fautes.fill(0); ecranIntro(); };
+  if(autoOpen){ const first = document.querySelector('details.axe'); if(first) first.open = true; }
+
+  document.getElementById("recommencer").onclick = ()=>{ clearProg(); fautes.fill(0); ecranIntro(); };
 }
 
-ecranIntro();
+// Démarrage : si une session est sauvegardée, on reprend le plan sans refaire le diagnostic.
+if(PROG && Array.isArray(PROG.fautes)){
+  PROG.fautes.forEach((v,i)=> fautes[i]=v);
+  ecranResultats(true);
+} else {
+  ecranIntro();
+}
 </script>
 
 </body>
