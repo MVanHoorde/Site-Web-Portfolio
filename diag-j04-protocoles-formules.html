@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnostic J04 — Protocoles et formules de chimie</title>
+<title>Diagnostic Jour 4 — Protocoles et formules de chimie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -143,7 +143,7 @@
 <div class="bandeau">
   <div class="bandeau-inner">
     <p class="eyebrow">Cahier de vacances · Diagnostic</p>
-    <h1>J04 — Protocoles et formules de chimie</h1>
+    <h1>Jour 4 — Protocoles et formules de chimie</h1>
   </div>
 </div>
 
@@ -528,5 +528,39 @@ if(PROG && Array.isArray(PROG.fautes)){
 }
 </script>
 
+<script>
+/* Jour 4 — publication du contrat "cahier-progression" (page seule juge de sa structure).
+   Parties 1-4 ; nombre d'exercices : 0, 1, 1, 0.
+   Chaque partie = (rappel consulté) + ses exercices. */
+(function(){
+  var JOUR=4, TITRE="Protocoles et formules", CLE='cahier-j04';
+  var AXES=[{id:'1',exos:0},{id:'2',exos:1},{id:'3',exos:1},{id:'4',exos:0}];
+  function lire(){ try{var r=localStorage.getItem(CLE);return r?JSON.parse(r):null;}catch(e){return null;} }
+  function deuxch(n){ return (n<10?'0':'')+n; }
+  function ajd(){ var d=new Date();return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
+  function publier(){
+    var P=lire();
+    var all={}; try{all=JSON.parse(localStorage.getItem('cahier-progression'))||{};}catch(e){}
+    if(!P||!Array.isArray(P.fautes)){ if(all[JOUR]){delete all[JOUR]; try{localStorage.setItem('cahier-progression',JSON.stringify(all));}catch(e){}} return; }
+    var pasFaits=0, pasTotal=0, axes=[];
+    AXES.forEach(function(ax){
+      var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
+      var n=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) n++; }
+      var steps=(consulte?1:0)+n, total=1+ax.exos; pasFaits+=steps; pasTotal+=total;
+      var acquis=consulte&&n===ax.exos, touche=consulte||n>0;
+      axes.push({id:ax.id,etat:acquis?'done':(touche?'prog':'none'),pct:Math.round(steps/total*100)});
+    });
+    var faits=0; axes.forEach(function(a){if(a.etat==='done')faits++;});
+    var pct=pasTotal?Math.round(pasFaits/pasTotal*100):0;
+    var date=(all[JOUR]&&all[JOUR].date)?all[JOUR].date:ajd();
+    all[JOUR]={titre:TITRE,date:date,axes:axes,axesFaits:faits,axesTotal:axes.length,pct:pct,termine:(faits===axes.length)};
+    try{localStorage.setItem('cahier-progression',JSON.stringify(all));}catch(e){}
+  }
+  publier();
+  document.addEventListener('change',publier);
+  var root=document.getElementById('app');
+  if(root){ try{ new MutationObserver(publier).observe(root,{childList:true,subtree:true}); }catch(e){} }
+})();
+</script>
 </body>
 </html>

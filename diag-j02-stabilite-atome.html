@@ -566,15 +566,18 @@ if(PROG && Array.isArray(PROG.fautes)){
   </div>
 </div>
 <script>
-/* Barre de progression par axe — autonome, lit "cahier-j02".
+/* Jour 2 — barre de progression + publication du contrat "cahier-progression".
+   La page est seule juge de sa structure (axes A/B/C, 2 exercices chacun).
    Chaque axe = 3 pas : rappel consulté (lu OU vu) + ses 2 exercices.
-   % global = total des pas cochés / total des pas (chaque coche compte).
-   Le cadre pointillé s'active dès que le menu déroulant de l'axe est ouvert. */
+   Le cadre pointillé s'active dès l'ouverture du menu d'un axe. */
 (function(){
+  var JOUR=2, TITRE="Stabilité d'un atome", CLE='cahier-j02';
   var AXES=[{id:'A',exos:2},{id:'B',exos:2},{id:'C',exos:2}];
-  function lire(){ try{var r=localStorage.getItem('cahier-j02');return r?JSON.parse(r):null;}catch(e){return null;} }
+  function lire(){ try{var r=localStorage.getItem(CLE);return r?JSON.parse(r):null;}catch(e){return null;} }
   function lireOuv(){ try{var r=localStorage.getItem('cahier-j02-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
   function saveOuv(o){ try{localStorage.setItem('cahier-j02-ouverts',JSON.stringify(o));}catch(e){} }
+  function deuxch(n){ return (n<10?'0':'')+n; }
+  function ajd(){ var d=new Date();return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
 
   function setCell(id,state,frac){
     var c=document.querySelector('#prog-bar .pb-cell[data-axe="'+id+'"]'); if(!c) return;
@@ -582,30 +585,39 @@ if(PROG && Array.isArray(PROG.fautes)){
     var fill=c.querySelector('.pb-fill');
     if(fill){ fill.className='pb-fill'+(state==='done'?' g':(state==='prog'?' h':'')); fill.style.height=Math.round(frac*100)+'%'; }
   }
+  function publier(axes,pasFaits,pasTotal){
+    try{
+      var all={}; try{all=JSON.parse(localStorage.getItem('cahier-progression'))||{};}catch(e){}
+      var faits=0; axes.forEach(function(a){if(a.etat==='done')faits++;});
+      var pct=pasTotal?Math.round(pasFaits/pasTotal*100):0;
+      var date=(all[JOUR]&&all[JOUR].date)?all[JOUR].date:ajd();
+      all[JOUR]={titre:TITRE,date:date,axes:axes,axesFaits:faits,axesTotal:axes.length,pct:pct,termine:(faits===axes.length)};
+      localStorage.setItem('cahier-progression',JSON.stringify(all));
+    }catch(e){}
+  }
+  function retirer(){ try{var all=JSON.parse(localStorage.getItem('cahier-progression'))||{}; if(all[JOUR]){delete all[JOUR];localStorage.setItem('cahier-progression',JSON.stringify(all));}}catch(e){} }
 
   function maj(){
-    var P=lire(), pct=document.querySelector('#prog-bar .pb-pct');
-    if(!P){ saveOuv({}); AXES.forEach(function(ax){ setCell(ax.id,'none',0); }); if(pct) pct.textContent='0 %'; return; }
-    var ouv=lireOuv(), pasFaits=0, pasTotal=0;
+    var P=lire(), pctEl=document.querySelector('#prog-bar .pb-pct');
+    if(!P){ saveOuv({}); AXES.forEach(function(ax){setCell(ax.id,'none',0);}); if(pctEl)pctEl.textContent='0 %'; retirer(); return; }
+    var ouv=lireOuv(), pasFaits=0, pasTotal=0, axes=[];
     AXES.forEach(function(ax){
       var det=document.querySelector('details.axe[data-axe="'+ax.id+'"]');
-      if(det){
-        if(det.open) ouv[ax.id]=true;
-        if(!det._barHook){ det._barHook=true; det.addEventListener('toggle',function(){ if(det.open){var o=lireOuv();o[ax.id]=true;saveOuv(o);} maj(); }); }
-      }
+      if(det){ if(det.open) ouv[ax.id]=true; if(!det._barHook){det._barHook=true;det.addEventListener('toggle',function(){if(det.open){var o=lireOuv();o[ax.id]=true;saveOuv(o);}maj();});} }
       var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
       var n=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) n++; }
-      var steps=(consulte?1:0)+n, total=1+ax.exos;
-      pasFaits+=steps; pasTotal+=total;
-      var acquis=consulte && n===ax.exos, ouvert=!!ouv[ax.id], touche=ouvert||consulte||n>0;
-      setCell(ax.id, acquis?'done':(touche?'prog':'none'), steps/total);
+      var steps=(consulte?1:0)+n, total=1+ax.exos; pasFaits+=steps; pasTotal+=total;
+      var acquis=consulte&&n===ax.exos, ouvert=!!ouv[ax.id], touche=ouvert||consulte||n>0;
+      var state=acquis?'done':(touche?'prog':'none');
+      setCell(ax.id,state,steps/total);
+      axes.push({id:ax.id,etat:state,pct:Math.round(steps/total*100)});
     });
     saveOuv(ouv);
-    if(pct) pct.textContent=Math.round(pasFaits/pasTotal*100)+' %';
+    if(pctEl)pctEl.textContent=Math.round(pasFaits/pasTotal*100)+' %';
+    publier(axes,pasFaits,pasTotal);
   }
-
   maj();
-  document.addEventListener('change', maj);
+  document.addEventListener('change',maj);
   var root=document.getElementById('app');
   if(root){ try{ new MutationObserver(maj).observe(root,{childList:true,subtree:true}); }catch(e){} }
 })();
