@@ -400,7 +400,7 @@
             <svg class="sablier vide"><use href="#ic-sablier"/></svg>
             <svg class="sablier vide"><use href="#ic-sablier"/></svg>
           </div>
-          <a class="btn-diag" href="diag-j04-protocoles-formules.html#">Commencer le diagnostic →</a>
+          <a class="btn-diag" href="diag-j04-protocoles-formules.html">Commencer le diagnostic →</a>
         </div>
       </article>
 
@@ -542,16 +542,16 @@
       <div id="cal-journal" class="cal-multi"></div>
       <div class="cal-legende">
         <span><i style="background:var(--cyan)"></i> aujourd'hui</span>
-        <span><i style="background:var(--vert)"></i> bien maîtrisé</span>
-        <span><i style="background:var(--ambre)"></i> à revoir</span>
-        <span><i style="background:var(--rouge)"></i> à retravailler</span>
+        <span><i style="background:var(--ambre)"></i> en cours</span>
+        <span><i style="background:var(--vert)"></i> terminé (tous les axes)</span>
       </div>
       <div id="cal-liste" class="cal-journal-liste"></div>
       <p class="cal-note">
-        Chaque séance terminée vient se poser ici, à sa date, avec sa couleur de
-        maîtrise — ton carnet de bord de l'été. La <strong>fenêtre conseillée</strong>
-        reste la dernière quinzaine d'août, jusqu'à la
-        <strong>rentrée (≈ 1<sup>er</sup> septembre)</strong>.
+        Chaque séance commencée se pose ici à sa date, en orange, et passe au
+        <strong>vert quand tout le travail de ses axes est terminé</strong> (rappel
+        consulté + exercices cochés) — ton carnet de bord de l'été. La
+        <strong>fenêtre conseillée</strong> reste la dernière quinzaine d'août,
+        jusqu'à la <strong>rentrée (≈ 1<sup>er</sup> septembre)</strong>.
       </p>
     </div>
   </section>
@@ -624,37 +624,50 @@
 
 <script>
 /* Journal de bord du calendrier — autonome, lecture seule du localStorage.
-   N'inscrit que les séances qui ont une page de diagnostic (J2, J4…). */
+   Couleur = progression du travail : VERT quand TOUS les axes du jour sont
+   terminés (rappel consulté + tous les exercices cochés), sinon ORANGE « en cours ».
+   La structure (axes + nombre d'exercices) est figée ici : à resynchroniser
+   si le contenu d'un jour change. */
 (function(){
   var MONTHS = [{y:2026,m:5,nom:'juin'},{y:2026,m:6,nom:'juillet'},{y:2026,m:7,nom:'août'}];
   var JOURS = ['L','M','M','J','V','S','D'];
-  var SEANCES = [{n:2, cle:'cahier-j02'}, {n:4, cle:'cahier-j04'}];
-  var LABELS = {v:'bien maîtrisé', a:'à revoir', r:'à retravailler'};
+  // Jours ayant une page de diagnostic + leurs axes (id, nb d'exercices attendus)
+  var STRUCT = {
+    2:{ cle:'cahier-j02', axes:[{id:'A',exos:2},{id:'B',exos:2},{id:'C',exos:2}] },
+    4:{ cle:'cahier-j04', axes:[{id:'1',exos:0},{id:'2',exos:1},{id:'3',exos:1},{id:'4',exos:0}] }
+  };
+  var LABELS = {v:'terminé', a:'en cours'};
 
   function lire(c){ try{ var r=localStorage.getItem(c); return r?JSON.parse(r):null; }catch(e){ return null; } }
   function deuxch(n){ return (n<10?'0':'')+n; }
   function ajd(){ var d=new Date(); return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
-  function couleur(f){
-    var pire='v';
-    for(var i=0;i<f.length;i++){ var c = f[i]===0?'v':(f[i]<=2?'a':'r'); if(c==='r') pire='r'; else if(c==='a'&&pire!=='r') pire='a'; }
-    return pire;
+
+  // Un axe est "terminé" si le rappel a été consulté (lu OU vu) ET tous ses exercices sont cochés.
+  function axeComplet(P, ax){
+    var consulte = !!((P.lu && P.lu[ax.id]) || (P.vu && P.vu[ax.id]));
+    if(!consulte) return false;
+    for(var j=0;j<ax.exos;j++){ if(!(P.faits && P.faits[ax.id] && P.faits[ax.id][j])) return false; }
+    return true;
   }
 
-  // (Re)construire le journal à partir des séances réellement faites,
-  // en conservant la date de première réalisation déjà enregistrée.
+  // (Re)construire le journal depuis les séances réellement commencées,
+  // en gardant la date de première réalisation.
   var stored = lire('cahier-journal') || {};
   var journal = {};
-  SEANCES.forEach(function(s){
-    var p = lire(s.cle);
-    if(p && Array.isArray(p.fautes)){
-      var date = (stored[s.n] && stored[s.n].date) ? stored[s.n].date : ajd();
-      journal[s.n] = { date: date, couleur: couleur(p.fautes) };
+  Object.keys(STRUCT).forEach(function(n){
+    var S = STRUCT[n], P = lire(S.cle);
+    if(P && Array.isArray(P.fautes)){
+      var faits = 0;
+      S.axes.forEach(function(ax){ if(axeComplet(P, ax)) faits++; });
+      var total = S.axes.length;
+      var date = (stored[n] && stored[n].date) ? stored[n].date : ajd();
+      journal[n] = { date:date, faits:faits, total:total, couleur:(faits===total?'v':'a') };
     }
   });
   try{ localStorage.setItem('cahier-journal', JSON.stringify(journal)); }catch(e){}
 
   var parDate = {};
-  Object.keys(journal).forEach(function(n){ var e=journal[n]; (parDate[e.date]=parDate[e.date]||[]).push({n:n,couleur:e.couleur}); });
+  Object.keys(journal).forEach(function(n){ var e=journal[n]; (parDate[e.date]=parDate[e.date]||[]).push({n:n,e:e}); });
   var today = ajd();
 
   var cont = document.getElementById('cal-journal');
@@ -667,7 +680,10 @@
       for(var d=1; d<=nb; d++){
         var iso = M.y+'-'+deuxch(M.m+1)+'-'+deuxch(d);
         var cls='case', titre='';
-        if(parDate[iso]){ var e=parDate[iso][0]; cls+=' fait m-'+e.couleur; titre=' title="Jour '+e.n+' — '+LABELS[e.couleur]+'"'; }
+        if(parDate[iso]){ var it=parDate[iso][0], e=it.e;
+          cls+=' fait m-'+e.couleur;
+          titre=' title="Jour '+it.n+' — '+e.faits+'/'+e.total+' axes — '+LABELS[e.couleur]+'"';
+        }
         if(iso===today) cls+=' aujourdhui';
         cells += '<div class="'+cls+'"'+titre+'>'+d+'</div>';
       }
@@ -679,9 +695,11 @@
   if(liste){
     var ns = Object.keys(journal).sort(function(a,b){return a-b;});
     if(!ns.length){
-      liste.innerHTML = '<p class="vide">Aucune séance terminée pour l\'instant — fais un diagnostic, et il s\'inscrira ici tout seul.</p>';
+      liste.innerHTML = '<p class="vide">Aucune séance commencée — fais un diagnostic, et elle s\'inscrira ici toute seule.</p>';
     } else {
-      liste.innerHTML = '<ul>'+ns.map(function(n){ var e=journal[n], p=e.date.split('-'); return '<li>Jour '+n+' — fait le '+p[2]+'/'+p[1]+' · '+LABELS[e.couleur]+'</li>'; }).join('')+'</ul>';
+      liste.innerHTML = '<ul>'+ns.map(function(n){ var e=journal[n], p=e.date.split('-');
+        return '<li>Jour '+n+' — fait le '+p[2]+'/'+p[1]+' · '+e.faits+'/'+e.total+' axes terminés · '+LABELS[e.couleur]+'</li>';
+      }).join('')+'</ul>';
     }
   }
 })();
