@@ -129,6 +129,23 @@
   .chk-fait{display:flex;align-items:center;gap:.45rem;font-size:.85rem;color:var(--gris);margin-top:.9rem;cursor:pointer}
   .chk-fait input{width:15px;height:15px;accent-color:var(--vert);flex:0 0 auto}
   [hidden]{display:none}
+  .flash ul.notations{margin:.4rem 0 .6rem;padding-left:1.1rem}
+  .flash ul.notations li{margin:.15rem 0}
+  .attention{background:rgba(214,64,43,.08);border-left:3px solid var(--rouge);padding:.5rem .8rem;font-size:.9rem;color:var(--encre);border-radius:4px;margin:.4rem 0}
+  .exo-attente{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--gris);background:rgba(0,0,0,.03);border:1px dashed var(--ligne);border-radius:8px;padding:.8rem .9rem}
+  #prog-bar{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;align-items:center;gap:5px;width:64px;padding:9px 8px;background:rgba(255,255,255,.92);border:1px solid var(--ligne);border-radius:10px}
+  #prog-bar .pb-title{font-family:system-ui,sans-serif;font-size:.55rem;letter-spacing:.02em;text-transform:uppercase;color:var(--gris);white-space:nowrap}
+  #prog-bar .pb-pct{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;color:var(--encre)}
+  #prog-bar .pb-seg{display:flex;flex-direction:column;gap:5px;height:180px;width:28px}
+  #prog-bar .pb-cell{position:relative;overflow:hidden;flex:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;border:1px solid var(--ligne);color:var(--gris)}
+  #prog-bar .pb-cell.done{border-color:var(--vert);color:var(--vert)}
+  #prog-bar .pb-cell.prog{border:1.6px dashed var(--ambre);color:var(--ambre)}
+  #prog-bar .pb-cell.none{border:1px solid var(--ligne);color:var(--gris)}
+  #prog-bar .pb-lab{position:relative;z-index:1}
+  #prog-bar .pb-fill{position:absolute;left:0;right:0;bottom:0;height:0;transition:height .3s ease}
+  #prog-bar .pb-fill.h{background:repeating-linear-gradient(45deg,var(--ambre) 0 2px,transparent 2px 6px)}
+  #prog-bar .pb-fill.g{background:rgba(47,174,106,.32)}
+  @media (max-width:720px){ #prog-bar{right:6px;width:58px;padding:7px 6px} #prog-bar .pb-seg{width:22px;height:150px} #prog-bar .pb-title{font-size:.5rem} }
 </style>
 </head>
 <body>
@@ -159,12 +176,8 @@ const WOOCLAP_SRC = "https://app.wooclap.com/DGDCRNL/questionnaires/6a33e40adf28
 const NOTION = {
   axes:[
     {
-      id:1, nom:"Masse volumique", video:null,
+      id:"A", nom:"Masse volumique", video:"fDo__Czsngs", flash:null,
       pourquoi:"La masse volumique relie masse et volume : on l'utilise sans cesse en 1re pour passer d'un volume mesuré à une masse (et inversement).",
-      flash:`<p>La <strong>masse volumique</strong> ρ relie la masse m d'un échantillon à son volume V :</p>
-        <p class="formule">ρ = m / V&nbsp;·&nbsp;m = ρ × V&nbsp;·&nbsp;V = m / ρ</p>
-        <p>Unités usuelles : g·mL⁻¹, g·cm⁻³, g·L⁻¹, kg·m⁻³. « kg·L » n'est pas une unité de masse volumique (il manque la division par un volume).</p>
-        <p>Exemple : l'éthanol a ρ = 0,789 g/mL. Pour 10 mL : m = ρ × V = 0,789 × 10 ≈ <strong>7,9 g</strong>.</p>`,
       exercices:[],
       questions:[
         { q:`Comment exprimer la masse m d'un échantillon en fonction de sa masse volumique ρ et de son volume V ?`,
@@ -182,16 +195,21 @@ const NOTION = {
       ]
     },
     {
-      id:2, nom:"Mole & masse molaire", video:null,
+      id:"B", nom:"Mole & masse molaire", video:"sok3lW2uY-E",
       pourquoi:"La quantité de matière est l'outil central de la chimie de 1re : doser, suivre une transformation, équilibrer… tout passe par la mole.",
-      flash:`<p>Une <strong>mole</strong> est un paquet de 6,02 × 10²³ entités (atomes, molécules ou ions) ; ce nombre est la constante d'Avogadro N<sub>A</sub>. La <strong>quantité de matière</strong> n se mesure en mol.</p>
-        <p>La <strong>masse molaire</strong> M est la masse d'une mole d'entités, en g·mol⁻¹ ; pour une molécule, on additionne les masses molaires atomiques.</p>
-        <p class="formule">n = m / M&nbsp;·&nbsp;m = n × M&nbsp;·&nbsp;n = N / N<sub>A</sub></p>
-        <p>Exemple : M(CH₄O) = 12,0 + 4×1,01 + 16,0 = <strong>32,0 g·mol⁻¹</strong>.</p>`,
-      exercices:[
-        { type:"wooclap", titre:"Questionnaire Wooclap", src:WOOCLAP_SRC,
-          consigne:`Réponds à ce questionnaire interactif (aucun compte ni installation nécessaire).` }
-      ],
+      flash:`<p>Une <strong>mole</strong> est un paquet de N<sub>A</sub> = 6,02 × 10²³ entités (atomes, molécules ou ions). La <strong>quantité de matière</strong> n compte ces paquets.</p>
+        <p class="formule">n = m / M</p>
+        <p class="formule">n = N / N<sub>A</sub></p>
+        <ul class="notations">
+          <li><strong>n</strong> : quantité de matière, en mol</li>
+          <li><strong>m</strong> : masse de l'échantillon, en g</li>
+          <li><strong>M</strong> : masse molaire, en g·mol⁻¹</li>
+          <li><strong>N</strong> : nombre d'entités (sans unité)</li>
+          <li><strong>N<sub>A</sub></strong> : constante d'Avogadro, 6,02 × 10²³ mol⁻¹</li>
+        </ul>
+        <p>On distingue la <strong>masse molaire atomique</strong> M(X) — masse d'une mole d'atomes X, lue dans la classification périodique — de la <strong>masse molaire moléculaire</strong>, obtenue en additionnant les masses molaires atomiques de tous les atomes de la molécule.</p>
+        <p>Exemple (masse molaire <em>moléculaire</em> du méthanol CH₄O) : M = M(C) + 4×M(H) + M(O) = 12,0 + 4×1,01 + 16,0 = <strong>32,0 g·mol⁻¹</strong>.</p>`,
+      exercices:[],
       questions:[
         { q:`Que représente une mole ?`,
           opts:[`Un paquet de 6,02 × 10²³ grammes d'une substance`,`Un paquet de 6,02 × 10²³ entités (atomes, molécules…)`,`Le nombre d'atomes contenus dans 1 g de n'importe quelle substance`,`La masse de 6,02 × 10²³ éléments chimiques`], bonne:1,
@@ -216,29 +234,41 @@ const NOTION = {
       ]
     },
     {
-      id:3, nom:"Concentration massique", video:null,
+      id:"C", nom:"Concentration massique", video:"OFEbrx1UZQ8",
       pourquoi:"La concentration (massique, puis molaire en 1re) est au cœur des solutions, des dilutions et des dosages.",
-      flash:`<p>La <strong>concentration massique</strong> Cm d'une solution est la masse de soluté dissous divisée par le volume de solution :</p>
-        <p class="formule">Cm = m / V&nbsp;·&nbsp;m = Cm × V&nbsp;·&nbsp;V = m / Cm</p>
-        <p>Unité usuelle : g·L⁻¹ (volume en litres — penser à convertir les mL en L).</p>
-        <p>Exemple : 5,0 g de sel dans 250 mL d'eau, soit 0,250 L : Cm = 5,0 / 0,250 = <strong>20 g·L⁻¹</strong>.</p>`,
+      flash:`<p>La <strong>concentration massique</strong> C<sub>m</sub> d'une solution est la masse de soluté dissous divisée par le volume de solution :</p>
+        <p class="formule">C<sub>m</sub> = m / V</p>
+        <ul class="notations">
+          <li><strong>C<sub>m</sub></strong> : concentration massique, en g·L⁻¹</li>
+          <li><strong>m</strong> : masse de soluté dissous, en g</li>
+          <li><strong>V</strong> : volume de solution, en L</li>
+        </ul>
+        <p>Bien convertir le volume en litres (mL → L). Pour chercher une masse, on isole : m = C<sub>m</sub> × V.</p>
+        <p>Exemple : 5,0 g de sel dans 250 mL (= 0,250 L) : C<sub>m</sub> = 5,0 / 0,250 = <strong>20 g·L⁻¹</strong>.</p>`,
       exercices:[
+        { type:"wooclap", titre:"Questionnaire Wooclap", src:WOOCLAP_SRC,
+          consigne:`Réponds à ce questionnaire interactif (aucun compte ni installation nécessaire).` },
         { titre:"La fabrication du savon", timer:90,
-          enonce:`La <strong>saponification</strong> : une matière grasse (huile d'olive, acide oléique C₁₈H₃₄O₂) réagit avec une base forte (soude caustique, NaOH).
-            <div class="donnees"><strong>Données</strong> — M(Na)=23,0 ; M(O)=16,0 ; M(H)=1,0 ; M(C)=12,0 (g·mol⁻¹). La recette nécessite 3,75 mol de soude et 600 g d'huile.</div>
-            <strong>Q1.</strong> Calculer M(NaOH) et M(C₁₈H₃₄O₂).<br>
-            <strong>Q2.</strong> Quelle masse de soude pour la recette (3,75 mol) ?<br>
-            <strong>Q3.</strong> Pour un second lot, n = 1,5 mol : quelle masse peser ?
-            <div class="donnees">Solution de soude : m = 20 g de NaOH dans V = 500 mL d'eau ; ρ = 1,04 g/mL.</div>
-            <strong>Q4.</strong> Calculer la concentration massique Cm.<br>
-            <strong>Q5.</strong> Un flacon indique Cm = 80 g/L pour V = 250 mL : quelle masse de soude ?<br>
-            <strong>Q6.</strong> Calculer la masse de la solution (Q4) à partir de ρ, puis en déduire la masse d'eau. Surprenant ?`,
-          correction:`<p><strong>Q1.</strong> M(NaOH) = 23,0+16,0+1,0 = <strong>40,0 g·mol⁻¹</strong> ; M(C₁₈H₃₄O₂) = 18×12,0 + 34×1,0 + 2×16,0 = <strong>282 g·mol⁻¹</strong>.</p>
-            <p><strong>Q2.</strong> m = n × M = 3,75 × 40,0 = <strong>150 g</strong>.</p>
-            <p><strong>Q3.</strong> m = 1,5 × 40,0 = <strong>60 g</strong>.</p>
-            <p><strong>Q4.</strong> Cm = m / V = 20 / 0,500 = <strong>40 g·L⁻¹</strong>.</p>
-            <p><strong>Q5.</strong> m = Cm × V = 80 × 0,250 = <strong>20 g</strong>.</p>
-            <p><strong>Q6.</strong> m(solution) = ρ × V = 1,04 × 500 = <strong>520 g</strong> ; masse d'eau = 520 − 20 = <strong>500 g</strong>. Peu surprenant : les 20 g de soluté pèsent peu devant l'eau.</p>` }
+          enonce:`<p>La <strong>saponification</strong> : une matière grasse (huile d'olive, principalement de l'acide oléique C₁₈H₃₄O₂) réagit avec une base forte, la soude caustique (hydroxyde de sodium NaOH), pour donner du savon.</p>
+            <p class="attention">⚠️ La soude caustique est une base forte très corrosive : brûlures graves sur la peau et les yeux.</p>
+            <div class="donnees"><strong>Données</strong> — M(Na) = 23,0 ; M(O) = 16,0 ; M(H) = 1,0 ; M(C) = 12,0 (g·mol⁻¹). La recette nécessite 1,88 mol de soude et 0,60 kg d'huile d'olive. Masse volumique de la solution de soude : ρ = 1,04 g/mL.</div>
+            <p><strong>Partie 1 — quantité de matière</strong></p>
+            <strong>Q1.</strong> Calculer les masses molaires moléculaires M(NaOH) et M(C₁₈H₃₄O₂) (bien rédiger le calcul).<br>
+            <strong>Q2.</strong> Quelle masse de soude m(soude) doit-elle peser pour la recette (1,88 mol) ?<br>
+            <strong>Q3.</strong> Pour 0,60 kg d'huile, quelle quantité de matière n(huile) a-t-elle ajoutée ?
+            <p><strong>Partie 2 — concentration & masse volumique</strong></p>
+            <strong>Q4.</strong> Sous quelle forme se présente la soude ? En déduire le type de protocole à utiliser.<br>
+            <strong>Q5.</strong> Elle souhaite préparer 260 g de solution. À quel volume V(solution) cela correspond-il ?<br>
+            <strong>Q6.</strong> Pour un savon doux, la solution doit avoir C<sub>m</sub>(NaOH) = 300 g·L⁻¹. Quelle masse de soude peser pour ce volume V(solution) ?<br>
+            <strong>Q7.</strong> Donner les étapes du protocole de dissolution.`,
+          correction:`<p><strong>Q1.</strong> M(NaOH) = M(Na)+M(O)+M(H) = 23,0+16,0+1,0 = <strong>40,0 g·mol⁻¹</strong>.<br>
+            M(C₁₈H₃₄O₂) = 18×M(C) + 34×M(H) + 2×M(O) = 18×12,0 + 34×1,0 + 2×16,0 = 216+34+32 = <strong>282 g·mol⁻¹</strong>.</p>
+            <p><strong>Q2.</strong> m(soude) = n × M(NaOH) = 1,88 × 40,0 = <strong>75,2 g</strong>.</p>
+            <p><strong>Q3.</strong> n(huile) = m / M = 600 / 282 ≈ <strong>2,1 mol</strong> (0,60 kg = 600 g ; on garde 2 chiffres significatifs).</p>
+            <p><strong>Q4.</strong> La soude est <strong>solide</strong> (paillettes) : il faut donc réaliser une <strong>dissolution</strong>.</p>
+            <p><strong>Q5.</strong> V(solution) = m / ρ = 260 / 1,04 = <strong>250 mL</strong>.</p>
+            <p><strong>Q6.</strong> m(soude) = C<sub>m</sub> × V = 300 × 0,250 = <strong>75,0 g</strong> (V = 0,250 L).</p>
+            <p><strong>Q7.</strong> Peser 75,0 g de soude ; les introduire dans une fiole jaugée de 250 mL (entonnoir) ; ajouter de l'eau distillée aux 2/3, boucher et agiter pour dissoudre ; compléter jusqu'au trait de jauge ; boucher et homogénéiser.</p>` }
       ],
       questions:[
         { q:`La concentration massique d'une solution est définie par :`,
@@ -264,18 +294,11 @@ const NOTION = {
       ]
     },
     {
-      id:4, nom:"Protocoles de dissolution", video:null,
+      id:"D", nom:"Protocoles de dissolution", video:null, videoAttente:true, flash:null,
       pourquoi:"Préparer proprement une solution est un geste de base, évalué en TP tout au long de la 1re.",
-      flash:`<p>Préparer une solution par <strong>dissolution</strong> d'un solide, étape par étape :</p>
-        <ol>
-          <li>Calculer la masse de soluté à peser : m = Cm × V.</li>
-          <li>Peser cette masse à la balance (coupelle + spatule).</li>
-          <li>Introduire le soluté dans une <strong>fiole jaugée</strong> (entonnoir si besoin).</li>
-          <li>Ajouter un peu d'eau distillée et agiter pour dissoudre.</li>
-          <li>Compléter jusqu'au <strong>trait de jauge</strong>, boucher, puis homogénéiser.</li>
-        </ol>
-        <p>La fiole jaugée sert à mesurer un <strong>volume précis</strong> de solution. Verrerie utile : fiole jaugée, balance, spatule, entonnoir, eau distillée.</p>`,
-      exercices:[],
+      programme:`<p>La <strong>dissolution</strong> relève du thème de seconde « Constitution et transformations de la matière », dans l'étude des <strong>solutions aqueuses</strong> : c'est, avec la dilution, l'une des deux façons de préparer une solution à une <strong>concentration en masse</strong> voulue.</p>
+        <p>La compétence attendue est de <strong>choisir la verrerie adaptée</strong> et de <strong>mettre en œuvre le protocole</strong> en respectant les règles de sécurité. C'est un geste expérimental fondateur, réinvesti toute l'année puis en 1re (dilutions, dosages).</p>`,
+      exercices:[ { attente:true, titre:"Exercice — dissolution" } ],
       questions:[
         { q:`Lors d'une dissolution, dans quel ordre procéder ?`,
           opts:[`Verser le soluté dans la fiole jaugée, puis compléter en deux temps avec le solvant`,`Remplir la fiole aux 2/3 d'eau, ajouter le soluté, agiter, puis compléter au trait de jauge`,`Compléter la fiole au trait de jauge avec le solvant, puis ajouter le soluté pesé`,`Peser le solvant, puis ajouter le soluté`], bonne:0,
@@ -350,7 +373,7 @@ function ecranQuestion(){
   app.innerHTML = `
     <div class="topbar">
       <span>Question ${idx+1} / ${FLAT.length}</span>
-      <span class="axe-tag">Partie ${axe.id} · ${axe.nom}</span>
+      <span class="axe-tag">Bloc ${axe.id} · ${axe.nom}</span>
     </div>
     <div class="barre"><i style="width:${pct}%"></i></div>
     <p class="enonce">${item.q}</p>
@@ -415,6 +438,9 @@ function ecranResultats(autoOpen){
     const p = priorite(f);
     const nb = axe.questions.length;
     const exos = axe.exercices.length ? axe.exercices.map((ex,j)=>{
+      if(ex.attente){
+        return `<div class="exo-attente">⏳ Exercice en attente — il sera ajouté prochainement.</div>`;
+      }
       if(ex.type==="wooclap"){
         return `
         <details class="exo" data-type="wooclap" data-ax="${axe.id}" data-j="${j}">
@@ -440,31 +466,32 @@ function ecranResultats(autoOpen){
         </details>`;
     }).join("") : `<p class="vide">Exercices à ajouter (depuis ton cours du Jour 4).</p>`;
 
+    const gateLu = axe.flash ? `<label><input type="checkbox" class="chk-lu"> J'ai lu le rappel</label>` : ``;
     const gateVu = axe.video ? `<label><input type="checkbox" class="chk-vu"> J'ai regardé la vidéo</label>` : ``;
     const videoBloc = axe.video
       ? `<div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`
-      : `<div class="video-slot">🎬 Vidéo à intégrer — envoie le lien YouTube (ou ton cours J4) et je la place ici.</div>`;
+      : (axe.videoAttente ? `<div class="video-slot">🎬 Vidéo en attente — elle sera ajoutée prochainement.</div>` : ``);
+    const rappelBloc = axe.flash
+      ? `<section class="bloc"><h4>Rappel de cours</h4><div class="flash">${axe.flash}</div></section>`
+      : (axe.programme ? `<section class="bloc"><h4>Où ça se place dans le programme</h4><div class="flash">${axe.programme}</div></section>` : ``);
+    const videoSection = (axe.video || axe.videoAttente) ? `<section class="bloc"><h4>Vidéo</h4>${videoBloc}</section>` : ``;
+    const gateBloc = (gateLu || gateVu) ? `<div class="gate">${gateLu}${gateVu}</div>` : ``;
+    const verrouMsg = (gateLu || gateVu) ? `<p class="verrou-msg">🔒 Consulte ${axe.flash?'le rappel':''}${axe.flash&&axe.video?' ou ':''}${axe.video?'la vidéo':''} pour débloquer les exercices.</p>` : ``;
+    const exosSection = (axe.exercices && axe.exercices.length) ? `<section class="bloc"><h4>Exercices</h4>${verrouMsg}<div class="exos${(gateLu||gateVu)?' verrou':''}">${exos}</div></section>` : ``;
 
     return `
       <details class="axe ${p.cls}" data-axe="${axe.id}">
         <summary>
           <span class="badge ${p.cls}">${p.label}</span>
-          <span class="axe-nom">Partie ${axe.id} — ${axe.nom}</span>
+          <span class="axe-nom">Bloc ${axe.id} — ${axe.nom}</span>
           <span class="axe-score">${nb-f}/${nb}</span>
         </summary>
         <div class="axe-corps">
           <div class="pourquoi"><b>Pourquoi c'est important</b>${axe.pourquoi}</div>
-          <section class="bloc"><h4>Rappel de cours</h4><div class="flash">${axe.flash}</div></section>
-          <section class="bloc"><h4>Vidéo</h4>${videoBloc}</section>
-          <div class="gate">
-            <label><input type="checkbox" class="chk-lu"> J'ai lu le rappel</label>
-            ${gateVu}
-          </div>
-          <section class="bloc">
-            <h4>Exercices</h4>
-            <p class="verrou-msg">🔒 Coche ${axe.video?'« rappel lu » et « vidéo regardée »':'« rappel lu »'} pour débloquer les exercices.</p>
-            <div class="exos verrou">${exos}</div>
-          </section>
+          ${rappelBloc}
+          ${videoSection}
+          ${gateBloc}
+          ${exosSection}
         </div>
       </details>`;
   }).join("");
@@ -481,19 +508,19 @@ function ecranResultats(autoOpen){
   // Verrou lu/vu par partie
   document.querySelectorAll('details.axe').forEach(ax=>{
     const id = ax.dataset.axe;
-    const chkLu = ax.querySelector('.chk-lu');
+    const chkLu = ax.querySelector('.chk-lu'); // peut être absent
     const chkVu = ax.querySelector('.chk-vu'); // peut être absent
     const exos = ax.querySelector('.exos');
     const msg = ax.querySelector('.verrou-msg');
-    chkLu.checked = !!(PROG.lu && PROG.lu[id]);
+    if(chkLu) chkLu.checked = !!(PROG.lu && PROG.lu[id]);
     if(chkVu) chkVu.checked = !!(PROG.vu && PROG.vu[id]);
     function updateGate(){
-      const ouvert = chkLu.checked && (chkVu ? chkVu.checked : true);
-      exos.classList.toggle('verrou', !ouvert);
-      msg.hidden = ouvert;
+      const consulte = (chkLu && chkLu.checked) || (chkVu && chkVu.checked);
+      if(exos) exos.classList.toggle('verrou', !consulte);
+      if(msg) msg.hidden = consulte;
     }
     updateGate();
-    chkLu.addEventListener('change', ()=>{ PROG.lu=PROG.lu||{}; PROG.lu[id]=chkLu.checked; saveProg(); updateGate(); });
+    if(chkLu) chkLu.addEventListener('change', ()=>{ PROG.lu=PROG.lu||{}; PROG.lu[id]=chkLu.checked; saveProg(); updateGate(); });
     if(chkVu) chkVu.addEventListener('change', ()=>{ PROG.vu=PROG.vu||{}; PROG.vu[id]=chkVu.checked; saveProg(); updateGate(); });
   });
 
@@ -528,38 +555,67 @@ if(PROG && Array.isArray(PROG.fautes)){
 }
 </script>
 
+<div id="prog-bar" aria-label="Progression par bloc">
+  <div class="pb-title">Progression</div>
+  <div class="pb-pct">0 %</div>
+  <div class="pb-seg">
+    <div class="pb-cell none" data-axe="C"><span class="pb-fill"></span><span class="pb-lab">C</span></div>
+    <div class="pb-cell none" data-axe="B"><span class="pb-fill"></span><span class="pb-lab">B</span></div>
+    <div class="pb-cell none" data-axe="A"><span class="pb-fill"></span><span class="pb-lab">A</span></div>
+  </div>
+</div>
 <script>
-/* Jour 4 — publication du contrat "cahier-progression" (page seule juge de sa structure).
-   Parties 1-4 ; nombre d'exercices : 0, 1, 1, 0.
-   Chaque partie = (rappel consulté) + ses exercices. */
+/* Jour 4 — barre de progression (blocs A, B, C) + publication du contrat "cahier-progression".
+   Le bloc D (dissolution) est en attente : il rejoindra la barre dès que sa vidéo et son
+   exercice seront ajoutés. Chaque bloc = rappel/vidéo consulté + ses exercices.
+   Le cadre pointillé s'active dès l'ouverture du menu d'un bloc. */
 (function(){
   var JOUR=4, TITRE="Protocoles et formules", CLE='cahier-j04';
-  var AXES=[{id:'1',exos:0},{id:'2',exos:1},{id:'3',exos:1},{id:'4',exos:0}];
+  var AXES=[{id:'A',exos:0},{id:'B',exos:0},{id:'C',exos:2}];
   function lire(){ try{var r=localStorage.getItem(CLE);return r?JSON.parse(r):null;}catch(e){return null;} }
+  function lireOuv(){ try{var r=localStorage.getItem('cahier-j04-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
+  function saveOuv(o){ try{localStorage.setItem('cahier-j04-ouverts',JSON.stringify(o));}catch(e){} }
   function deuxch(n){ return (n<10?'0':'')+n; }
   function ajd(){ var d=new Date();return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
-  function publier(){
-    var P=lire();
-    var all={}; try{all=JSON.parse(localStorage.getItem('cahier-progression'))||{};}catch(e){}
-    if(!P||!Array.isArray(P.fautes)){ if(all[JOUR]){delete all[JOUR]; try{localStorage.setItem('cahier-progression',JSON.stringify(all));}catch(e){}} return; }
-    var pasFaits=0, pasTotal=0, axes=[];
+  function setCell(id,state,frac){
+    var c=document.querySelector('#prog-bar .pb-cell[data-axe="'+id+'"]'); if(!c) return;
+    c.className='pb-cell '+state;
+    var fill=c.querySelector('.pb-fill');
+    if(fill){ fill.className='pb-fill'+(state==='done'?' g':(state==='prog'?' h':'')); fill.style.height=Math.round(frac*100)+'%'; }
+  }
+  function publier(axes,pf,pt){
+    try{
+      var all={}; try{all=JSON.parse(localStorage.getItem('cahier-progression'))||{};}catch(e){}
+      var faits=0; axes.forEach(function(a){if(a.etat==='done')faits++;});
+      var date=(all[JOUR]&&all[JOUR].date)?all[JOUR].date:ajd();
+      all[JOUR]={titre:TITRE,date:date,axes:axes,axesFaits:faits,axesTotal:axes.length,pct:(pt?Math.round(pf/pt*100):0),termine:(faits===axes.length)};
+      localStorage.setItem('cahier-progression',JSON.stringify(all));
+    }catch(e){}
+  }
+  function retirer(){ try{var all=JSON.parse(localStorage.getItem('cahier-progression'))||{}; if(all[JOUR]){delete all[JOUR];localStorage.setItem('cahier-progression',JSON.stringify(all));}}catch(e){} }
+  function maj(){
+    var P=lire(), pctEl=document.querySelector('#prog-bar .pb-pct');
+    if(!P){ saveOuv({}); AXES.forEach(function(ax){setCell(ax.id,'none',0);}); if(pctEl)pctEl.textContent='0 %'; retirer(); return; }
+    var ouv=lireOuv(), pf=0, pt=0, axes=[];
     AXES.forEach(function(ax){
+      var det=document.querySelector('details.axe[data-axe="'+ax.id+'"]');
+      if(det){ if(det.open) ouv[ax.id]=true; if(!det._barHook){det._barHook=true;det.addEventListener('toggle',function(){if(det.open){var o=lireOuv();o[ax.id]=true;saveOuv(o);}maj();});} }
       var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
       var n=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) n++; }
-      var steps=(consulte?1:0)+n, total=1+ax.exos; pasFaits+=steps; pasTotal+=total;
-      var acquis=consulte&&n===ax.exos, touche=consulte||n>0;
-      axes.push({id:ax.id,etat:acquis?'done':(touche?'prog':'none'),pct:Math.round(steps/total*100)});
+      var steps=(consulte?1:0)+n, total=1+ax.exos; pf+=steps; pt+=total;
+      var acquis=consulte&&n===ax.exos, ouvert=!!ouv[ax.id], touche=ouvert||consulte||n>0;
+      var state=acquis?'done':(touche?'prog':'none');
+      setCell(ax.id,state,steps/total);
+      axes.push({id:ax.id,etat:state,pct:Math.round(steps/total*100)});
     });
-    var faits=0; axes.forEach(function(a){if(a.etat==='done')faits++;});
-    var pct=pasTotal?Math.round(pasFaits/pasTotal*100):0;
-    var date=(all[JOUR]&&all[JOUR].date)?all[JOUR].date:ajd();
-    all[JOUR]={titre:TITRE,date:date,axes:axes,axesFaits:faits,axesTotal:axes.length,pct:pct,termine:(faits===axes.length)};
-    try{localStorage.setItem('cahier-progression',JSON.stringify(all));}catch(e){}
+    saveOuv(ouv);
+    if(pctEl)pctEl.textContent=Math.round((pt?pf/pt:0)*100)+' %';
+    publier(axes,pf,pt);
   }
-  publier();
-  document.addEventListener('change',publier);
+  maj();
+  document.addEventListener('change',maj);
   var root=document.getElementById('app');
-  if(root){ try{ new MutationObserver(publier).observe(root,{childList:true,subtree:true}); }catch(e){} }
+  if(root){ try{ new MutationObserver(maj).observe(root,{childList:true,subtree:true}); }catch(e){} }
 })();
 </script>
 </body>
