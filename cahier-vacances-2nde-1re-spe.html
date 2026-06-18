@@ -174,11 +174,11 @@
     padding:1rem 1.1rem;border-bottom:1px dashed var(--ligne);
   }
   .jour-num{
-    flex:0 0 auto;width:42px;height:42px;border-radius:50%;
+    flex:0 0 auto;border-radius:999px;
     background:var(--orange);color:#fff;
-    display:grid;place-items:center;
-    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.82rem;
-    text-align:center;line-height:1;
+    padding:.34rem .72rem;white-space:nowrap;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.8rem;
+    line-height:1;
   }
   .jour-titre{
     font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:1.02rem;
@@ -197,6 +197,24 @@
     transition:background .15s,color .15s;
   }
   .btn-diag:hover,.btn-diag:focus-visible{background:var(--nuit);color:#fff}
+
+  .jour.locked{opacity:.62;cursor:pointer}
+  .jour.locked:hover{transform:none;box-shadow:none}
+  .jour.locked .jour-num{background:var(--gris)}
+  .btn-diag.lock{border-color:var(--gris);color:var(--gris);cursor:pointer}
+  .btn-diag.lock:hover{background:var(--gris);color:#fff}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(14,37,69,.55);display:none;align-items:center;justify-content:center;padding:1.2rem;z-index:100}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--carte);max-width:440px;width:100%;border:1px solid var(--ligne);box-shadow:6px 6px 0 var(--nuit)}
+  .modal-h{background:var(--nuit);color:var(--clair);padding:.9rem 1.2rem;font-family:'Space Grotesk',sans-serif;font-weight:700}
+  .modal-b{padding:1.1rem 1.2rem;font-size:.95rem;color:var(--encre)}
+  .modal-b p{margin-bottom:1rem}
+  .modal-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+  .modal-actions .b{font-family:'IBM Plex Mono',monospace;font-size:.82rem;cursor:pointer;border:1px solid var(--nuit);padding:.5rem .9rem;background:#fff;color:var(--nuit)}
+  .modal-actions .b.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+  .modal-actions .b:hover{filter:brightness(1.06)}
+  .modal-lien{display:inline-block;margin-top:.9rem;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--cyan)}
 
   /* --- COMMENT ÇA MARCHE (diagnostic + pop-up tricolore) --- */
   .etapes{display:grid;gap:1rem;grid-template-columns:1fr}
@@ -308,7 +326,7 @@
       <!-- resp. G -->
       <article class="jour">
         <div class="jour-entete">
-          <div class="jour-num">J01</div>
+          <div class="jour-num">Jour 1</div>
           <div class="jour-titre">Conversions, chiffres significatifs &amp; ordres de grandeur</div>
         </div>
         <div class="jour-corps">
@@ -324,7 +342,7 @@
       <!-- resp. L -->
       <article class="jour">
         <div class="jour-entete">
-          <div class="jour-num">J02</div>
+          <div class="jour-num">Jour 2</div>
           <div class="jour-titre">Stabilité d'un atome</div>
         </div>
         <div class="jour-corps">
@@ -333,14 +351,14 @@
             <svg class="sablier vide"><use href="#ic-sablier"/></svg>
             <svg class="sablier vide"><use href="#ic-sablier"/></svg>
           </div>
-          <a class="btn-diag" href="diag-j02-stabilite-atome.html">Commencer le diagnostic →</a>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
         </div>
       </article>
 
       <!-- resp. G -->
       <article class="jour">
         <div class="jour-entete">
-          <div class="jour-num">J03</div>
+          <div class="jour-num">Jour 3</div>
           <div class="jour-titre">Formation d'une image</div>
         </div>
         <div class="jour-corps">
@@ -356,7 +374,7 @@
       <!-- resp. I -->
       <article class="jour">
         <div class="jour-entete">
-          <div class="jour-num">J04</div>
+          <div class="jour-num">Jour 4</div>
           <div class="jour-titre">Protocoles &amp; formules de chimie</div>
         </div>
         <div class="jour-corps">
@@ -365,14 +383,14 @@
             <svg class="sablier vide"><use href="#ic-sablier"/></svg>
             <svg class="sablier vide"><use href="#ic-sablier"/></svg>
           </div>
-          <a class="btn-diag" href="diag-j04-protocoles-formules.html">Commencer le diagnostic →</a>
+          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
         </div>
       </article>
 
       <!-- resp. I -->
-      <article class="jour">
+      <article class="jour locked" data-lock="1">
         <div class="jour-entete">
-          <div class="jour-num">J04b</div>
+          <div class="jour-num">Jour 5</div>
           <div class="jour-titre">Dosages</div>
         </div>
         <div class="jour-corps">
@@ -381,14 +399,14 @@
             <svg class="sablier vide"><use href="#ic-sablier"/></svg>
             <svg class="sablier vide"><use href="#ic-sablier"/></svg>
           </div>
-          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+          <a class="btn-diag lock" href="#" data-lockbtn>🔒 Après le Jour 4</a>
         </div>
       </article>
 
       <!-- resp. ? -->
-      <article class="jour">
+      <article class="jour locked" data-lock="1">
         <div class="jour-entete">
-          <div class="jour-num">J04c</div>
+          <div class="jour-num">Jour 6</div>
           <div class="jour-titre">Dilution</div>
         </div>
         <div class="jour-corps">
@@ -397,14 +415,14 @@
             <svg class="sablier vide"><use href="#ic-sablier"/></svg>
             <svg class="sablier vide"><use href="#ic-sablier"/></svg>
           </div>
-          <a class="btn-diag" href="#">Commencer le diagnostic →</a>
+          <a class="btn-diag lock" href="#" data-lockbtn>🔒 Après le Jour 4</a>
         </div>
       </article>
 
       <!-- resp. L -->
       <article class="jour">
         <div class="jour-entete">
-          <div class="jour-num">J07</div>
+          <div class="jour-num">Jour 7</div>
           <div class="jour-titre">Découvertes des youtubeurs scientifiques</div>
         </div>
         <div class="jour-corps">
@@ -420,7 +438,7 @@
       <!-- resp. J -->
       <article class="jour">
         <div class="jour-entete">
-          <div class="jour-num">J08</div>
+          <div class="jour-num">Jour 8</div>
           <div class="jour-titre">Principe d'inertie</div>
         </div>
         <div class="jour-corps">
@@ -436,7 +454,7 @@
       <!-- resp. J -->
       <article class="jour">
         <div class="jour-entete">
-          <div class="jour-num">J09</div>
+          <div class="jour-num">Jour 9</div>
           <div class="jour-titre">Forces</div>
         </div>
         <div class="jour-corps">
@@ -452,7 +470,7 @@
       <!-- resp. ? -->
       <article class="jour">
         <div class="jour-entete">
-          <div class="jour-num">J10</div>
+          <div class="jour-num">Jour 10</div>
           <div class="jour-titre">Signal sonore &amp; vitesse du son</div>
         </div>
         <div class="jour-corps">
@@ -531,6 +549,66 @@
 <footer>
   <div class="footer-inner">© 2026 · M. Van Hoorde — Cahier de vacances · vers la 1re spécialité</div>
 </footer>
+
+<div class="modal-overlay" id="modal-j4">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-titre">
+    <div class="modal-h" id="m-titre">Disponible après le Jour 4</div>
+    <div class="modal-b">
+      <p>Les séances <strong>Dosages</strong> et <strong>Dilution</strong> (Jour 5 et Jour 6) réutilisent ce que tu travailles au <strong>Jour 4</strong> (quantité de matière, concentration). Mieux vaut donc avoir fait le Jour 4 d'abord.</p>
+      <p>As-tu déjà fait le Jour 4 ?</p>
+      <div class="modal-actions">
+        <button class="b primary" id="m-oui" type="button">Oui, je l'ai fait</button>
+        <button class="b" id="m-non" type="button">Pas encore</button>
+      </div>
+      <a class="modal-lien" href="diag-j04-protocoles-formules.html">→ Aller au Jour 4</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Le Jour 4 est-il fait ? Soit la confirmation manuelle, soit la sauvegarde
+  // laissée par la page du Jour 4 (clé "cahier-j04").
+  function jour4Fait(){
+    try{
+      if(localStorage.getItem('cahier-jour4-ok')==='1') return true;
+      var p = localStorage.getItem('cahier-j04');
+      if(!p) return false;
+      var o = JSON.parse(p);
+      return !!(o && Array.isArray(o.fautes));
+    }catch(e){ return false; }
+  }
+  var lockes = Array.prototype.slice.call(document.querySelectorAll('.jour[data-lock="1"]'));
+  function unlock(j){
+    j.classList.remove('locked');
+    var b = j.querySelector('.btn-diag');
+    if(b){ b.classList.remove('lock'); b.removeAttribute('data-lockbtn'); b.textContent='Commencer le diagnostic →'; }
+  }
+  var overlay = document.getElementById('modal-j4');
+  function ouvrir(){ if(overlay) overlay.classList.add('open'); }
+  function fermer(){ if(overlay) overlay.classList.remove('open'); }
+
+  if(jour4Fait()){
+    lockes.forEach(unlock);
+  } else {
+    lockes.forEach(function(j){
+      j.addEventListener('click', function(e){
+        if(j.classList.contains('locked')){ e.preventDefault(); ouvrir(); }
+      });
+    });
+  }
+
+  if(overlay){
+    document.getElementById('m-oui').addEventListener('click', function(){
+      try{ localStorage.setItem('cahier-jour4-ok','1'); }catch(e){}
+      lockes.forEach(unlock);
+      fermer();
+    });
+    document.getElementById('m-non').addEventListener('click', fermer);
+    overlay.addEventListener('click', function(e){ if(e.target===overlay) fermer(); });
+  }
+})();
+</script>
 
 </body>
 </html>
