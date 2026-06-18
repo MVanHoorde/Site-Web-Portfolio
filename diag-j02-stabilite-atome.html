@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnostic J02 — Stabilité d'un atome</title>
+<title>Diagnostic Jour 2 — Stabilité d'un atome</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -136,6 +136,19 @@
   .chk-fait input{width:15px;height:15px;accent-color:var(--vert);flex:0 0 auto}
   .fait-mark{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--vert)}
   [hidden]{display:none}
+  #prog-bar{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;align-items:center;gap:5px;width:64px;padding:9px 8px;background:rgba(255,255,255,.92);border:1px solid var(--ligne);border-radius:10px}
+  #prog-bar .pb-title{font-family:system-ui,sans-serif;font-size:.55rem;letter-spacing:.02em;text-transform:uppercase;color:var(--gris);white-space:nowrap}
+  #prog-bar .pb-pct{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;color:var(--encre)}
+  #prog-bar .pb-seg{display:flex;flex-direction:column;gap:5px;height:180px;width:28px}
+  #prog-bar .pb-cell{position:relative;overflow:hidden;flex:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;border:1px solid var(--ligne);color:var(--gris)}
+  #prog-bar .pb-cell.done{border-color:var(--vert);color:var(--vert)}
+  #prog-bar .pb-cell.prog{border:1.6px dashed var(--ambre);color:var(--ambre)}
+  #prog-bar .pb-cell.none{border:1px solid var(--ligne);color:var(--gris)}
+  #prog-bar .pb-lab{position:relative;z-index:1}
+  #prog-bar .pb-fill{position:absolute;left:0;right:0;bottom:0;height:0;transition:height .3s ease}
+  #prog-bar .pb-fill.h{background:repeating-linear-gradient(45deg,var(--ambre) 0 2px,transparent 2px 6px)}
+  #prog-bar .pb-fill.g{background:rgba(47,174,106,.32)}
+  @media (max-width:720px){ #prog-bar{right:6px;width:58px;padding:7px 6px} #prog-bar .pb-seg{width:22px;height:150px} #prog-bar .pb-title{font-size:.5rem} }
 </style>
 </head>
 <body>
@@ -150,7 +163,7 @@
 <div class="bandeau">
   <div class="bandeau-inner">
     <p class="eyebrow">Cahier de vacances · Diagnostic</p>
-    <h1>J02 — Stabilité d'un atome</h1>
+    <h1>Jour 2 — Stabilité d'un atome</h1>
   </div>
 </div>
 
@@ -184,7 +197,7 @@ const SCH_h2s = `<svg viewBox="0 0 220 150" width="220" height="150" role="img" 
    1) CONTENU DE LA NOTION
    ============================================================ */
 const NOTION = {
-  titre: "J02 — Stabilité d'un atome",
+  titre: "Jour 2 — Stabilité d'un atome",
   axes: [
     {
       id:"A", nom:"Configuration électronique",
@@ -543,5 +556,59 @@ if(PROG && Array.isArray(PROG.fautes)){
 }
 </script>
 
+<div id="prog-bar" aria-label="Progression par axe">
+  <div class="pb-title">Progression</div>
+  <div class="pb-pct">0 %</div>
+  <div class="pb-seg">
+    <div class="pb-cell none" data-axe="C"><span class="pb-fill"></span><span class="pb-lab">C</span></div>
+    <div class="pb-cell none" data-axe="B"><span class="pb-fill"></span><span class="pb-lab">B</span></div>
+    <div class="pb-cell none" data-axe="A"><span class="pb-fill"></span><span class="pb-lab">A</span></div>
+  </div>
+</div>
+<script>
+/* Barre de progression par axe — autonome, lit "cahier-j02".
+   Chaque axe = 3 pas : rappel consulté (lu OU vu) + ses 2 exercices.
+   % global = total des pas cochés / total des pas (chaque coche compte).
+   Le cadre pointillé s'active dès que le menu déroulant de l'axe est ouvert. */
+(function(){
+  var AXES=[{id:'A',exos:2},{id:'B',exos:2},{id:'C',exos:2}];
+  function lire(){ try{var r=localStorage.getItem('cahier-j02');return r?JSON.parse(r):null;}catch(e){return null;} }
+  function lireOuv(){ try{var r=localStorage.getItem('cahier-j02-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
+  function saveOuv(o){ try{localStorage.setItem('cahier-j02-ouverts',JSON.stringify(o));}catch(e){} }
+
+  function setCell(id,state,frac){
+    var c=document.querySelector('#prog-bar .pb-cell[data-axe="'+id+'"]'); if(!c) return;
+    c.className='pb-cell '+state;
+    var fill=c.querySelector('.pb-fill');
+    if(fill){ fill.className='pb-fill'+(state==='done'?' g':(state==='prog'?' h':'')); fill.style.height=Math.round(frac*100)+'%'; }
+  }
+
+  function maj(){
+    var P=lire(), pct=document.querySelector('#prog-bar .pb-pct');
+    if(!P){ saveOuv({}); AXES.forEach(function(ax){ setCell(ax.id,'none',0); }); if(pct) pct.textContent='0 %'; return; }
+    var ouv=lireOuv(), pasFaits=0, pasTotal=0;
+    AXES.forEach(function(ax){
+      var det=document.querySelector('details.axe[data-axe="'+ax.id+'"]');
+      if(det){
+        if(det.open) ouv[ax.id]=true;
+        if(!det._barHook){ det._barHook=true; det.addEventListener('toggle',function(){ if(det.open){var o=lireOuv();o[ax.id]=true;saveOuv(o);} maj(); }); }
+      }
+      var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
+      var n=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) n++; }
+      var steps=(consulte?1:0)+n, total=1+ax.exos;
+      pasFaits+=steps; pasTotal+=total;
+      var acquis=consulte && n===ax.exos, ouvert=!!ouv[ax.id], touche=ouvert||consulte||n>0;
+      setCell(ax.id, acquis?'done':(touche?'prog':'none'), steps/total);
+    });
+    saveOuv(ouv);
+    if(pct) pct.textContent=Math.round(pasFaits/pasTotal*100)+' %';
+  }
+
+  maj();
+  document.addEventListener('change', maj);
+  var root=document.getElementById('app');
+  if(root){ try{ new MutationObserver(maj).observe(root,{childList:true,subtree:true}); }catch(e){} }
+})();
+</script>
 </body>
 </html>
