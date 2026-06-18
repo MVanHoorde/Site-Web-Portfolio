@@ -242,11 +242,9 @@
   .mois-titre{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.45rem;text-transform:capitalize;color:var(--encre)}
   .case.aujourdhui{outline:2px solid var(--cyan);outline-offset:-2px;color:var(--encre);font-weight:700}
   .case.fait{position:relative;color:var(--encre);font-weight:600}
-  .case.m-v{background:rgba(47,174,106,.16);border-color:var(--vert)}
-  .case.m-a{background:rgba(240,167,46,.18);border-color:var(--ambre)}
-  .case.m-r{background:rgba(214,64,43,.16);border-color:var(--rouge)}
-  .case.fait::after{content:"";position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%}
-  .case.m-v::after{background:var(--vert)} .case.m-a::after{background:var(--ambre)} .case.m-r::after{background:var(--rouge)}
+  .case .pts{position:absolute;bottom:3px;left:0;right:0;display:flex;gap:3px;justify-content:center;flex-wrap:wrap;padding:0 2px}
+  .case .pt{width:7px;height:7px;border-radius:50%}
+  .pt.v{background:var(--vert)} .pt.a{background:var(--ambre)} .pt.r{background:var(--rouge)}
   .cal-legende{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:.9rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--gris)}
   .cal-legende span{display:inline-flex;align-items:center;gap:.35rem}
   .cal-legende i{width:10px;height:10px;border-radius:50%;display:inline-block}
@@ -679,13 +677,15 @@
       for(var k=0;k<offset;k++) cells += '<div class="case vide"></div>';
       for(var d=1; d<=nb; d++){
         var iso = M.y+'-'+deuxch(M.m+1)+'-'+deuxch(d);
-        var cls='case', titre='';
-        if(parDate[iso]){ var it=parDate[iso][0], e=it.e;
-          cls+=' fait m-'+e.couleur;
-          titre=' title="Jour '+it.n+' — '+e.faits+'/'+e.total+' axes — '+LABELS[e.couleur]+'"';
+        var cls='case', titre='', pts='';
+        if(parDate[iso]){
+          var arr=parDate[iso].slice().sort(function(a,b){return a.n-b.n;});
+          cls+=' fait';
+          pts='<span class="pts">'+arr.map(function(it){return '<i class="pt '+it.e.couleur+'"></i>';}).join('')+'</span>';
+          titre=' title="'+arr.map(function(it){return 'Jour '+it.n+' — '+it.e.faits+'/'+it.e.total+' axes ('+LABELS[it.e.couleur]+')';}).join(' · ')+'"';
         }
         if(iso===today) cls+=' aujourdhui';
-        cells += '<div class="'+cls+'"'+titre+'>'+d+'</div>';
+        cells += '<div class="'+cls+'"'+titre+'>'+d+pts+'</div>';
       }
       return '<div class="mois"><div class="mois-titre">'+M.nom+' '+M.y+'</div><div class="grille-cal">'+cells+'</div></div>';
     }).join('');
