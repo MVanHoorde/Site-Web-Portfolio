@@ -144,10 +144,14 @@
   #prog-bar .pb-cell.done{border-color:var(--vert);color:var(--vert)}
   #prog-bar .pb-cell.prog{border:1.6px dashed var(--ambre);color:var(--ambre)}
   #prog-bar .pb-cell.none{border:1px solid var(--ligne);color:var(--gris)}
+  #prog-bar .pb-cell.revoir{border:1.6px solid var(--ambre);color:var(--ambre)}
   #prog-bar .pb-lab{position:relative;z-index:1}
   #prog-bar .pb-fill{position:absolute;left:0;right:0;bottom:0;height:0;transition:height .3s ease}
   #prog-bar .pb-fill.h{background:repeating-linear-gradient(45deg,var(--ambre) 0 2px,transparent 2px 6px)}
   #prog-bar .pb-fill.g{background:rgba(47,174,106,.32)}
+  body.en-diagnostic #prog-bar{display:none}
+  #prog-bar .pb-cell[data-diag] .pb-lab{font-size:.5rem;letter-spacing:-.01em}
+  .review-note{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--gris);margin:.6rem 0 0}
   @media (max-width:720px){ #prog-bar{right:6px;width:58px;padding:7px 6px} #prog-bar .pb-seg{width:22px;height:150px} #prog-bar .pb-title{font-size:.5rem} }
 </style>
 </head>
@@ -350,6 +354,21 @@ NOTION.axes.forEach((axe,ai)=> axe.questions.forEach(qu=> FLAT.push({...qu, ai})
 
 let idx = 0, choisi = null, valide = false;
 const fautes = NOTION.axes.map(()=>0);
+let answers = [];   // réponses validées : answers[i] = { choisi:int, ok:bool }
+
+function feedbackHTML(item, ok){
+  return `<div class="feedback ${ok?'ok':'ko'}">
+        <span class="res">${ok ? 'Bonne réponse' : 'Réponse incorrecte'}</span>
+        <p>${ok ? item.siJuste : item.siFaux}</p>
+        ${item.imgR ? `<div class="illus">${item.imgR}</div>` : ""}
+      </div>`;
+}
+function finDiagnostic(){ freshProg(fautes, true); ecranResultats(false); }
+function passerDiagnostic(){
+  for(let i=answers.length; i<FLAT.length; i++){ fautes[FLAT[i].ai]++; }  // restantes = fausses
+  freshProg(fautes, false);
+  ecranResultats(false);
+}
 
 /* --- Sauvegarde dans le navigateur (localStorage) ---
    Tout est entouré de try/catch : si le stockage est indisponible
@@ -357,7 +376,7 @@ const fautes = NOTION.axes.map(()=>0);
 const STORE_KEY = "cahier-j02";
 let PROG = (function(){ try{ const r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } })();
 function saveProg(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROG)); }catch(e){} }
-function freshProg(f){ PROG = { fautes:f.slice(), lu:{}, vu:{}, faits:{} }; saveProg(); }
+function freshProg(f, complet){ PROG = { fautes:f.slice(), lu:{}, vu:{}, faits:{}, diagComplet:!!complet }; saveProg(); }
 function clearProg(){ PROG=null; try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
 
 function priorite(f){
@@ -367,6 +386,8 @@ function priorite(f){
 }
 
 function ecranIntro(){
+  document.body.classList.add('en-diagnostic');
+  answers=[]; idx=0;
   app.innerHTML = `
     <div class="intro">
       <p>Ce diagnostic de <strong>15 questions</strong> (3 axes) sert à repérer ce que tu maîtrises déjà. Ce n'est pas une note.</p>
@@ -378,14 +399,33 @@ function ecranIntro(){
       <p style="font-size:.8rem;color:var(--gris);margin-top:.8rem">« Passer le diagnostic » marque tous les axes « à retravailler » et ouvre directement le plan complet (utile en cas de bug, ou pour aller droit aux révisions).</p>
     </div>`;
   document.getElementById("go").onclick = ()=>{ idx=0; ecranQuestion(); };
-  document.getElementById("skip").onclick = ()=>{ fautes.fill(5); freshProg(fautes); ecranResultats(false); };
+  document.getElementById("skip").onclick = ()=>{ fautes.fill(5); freshProg(fautes,false); ecranResultats(false); };
 }
 
 function ecranQuestion(){
-  choisi=null; valide=false;
+  document.body.classList.add('en-diagnostic');
   const item = FLAT[idx];
   const axe = NOTION.axes[item.ai];
   const pct = Math.round((idx/FLAT.length)*100);
+  const repondue = idx < answers.length;            // déjà validée → lecture seule
+  const prev = repondue ? answers[idx] : null;
+  if(repondue){ choisi = prev.choisi; valide = true; }
+  else { choisi = null; valide = false; }
+
+  const optsHTML = item.opts.map((o,i)=>{
+    let cls = "opt";
+    if(repondue){
+      if(i===prev.choisi) cls += " sel";
+      if(i===item.bonne) cls += " juste";
+      else if(i===prev.choisi) cls += " faux";
+    }
+    return `<button class="${cls}" data-i="${i}"${repondue?' disabled':''}><span class="lettre">${LETTRES[i]}</span><span>${o}</span></button>`;
+  }).join("");
+
+  const actionBtn = repondue
+    ? `<button class="btn" id="suivant">${idx===FLAT.length-1?'Voir mon plan →':'Suivant →'}</button>`
+    : `<button class="btn" id="valider" disabled>Valider</button>`;
+
   app.innerHTML = `
     <div class="topbar">
       <span>Question ${idx+1} / ${FLAT.length}</span>
@@ -394,49 +434,52 @@ function ecranQuestion(){
     <div class="barre"><i style="width:${pct}%"></i></div>
     <p class="enonce">${item.q}</p>
     ${item.imgQ ? `<div class="illus">${item.imgQ}</div>` : ""}
-    <div class="opts" id="opts">
-      ${item.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="lettre">${LETTRES[i]}</span><span>${o}</span></button>`).join("")}
+    <div class="opts" id="opts">${optsHTML}</div>
+    <div id="zone-feedback">${repondue?feedbackHTML(item, prev.ok):''}</div>
+    <div class="actions" style="flex-wrap:wrap;gap:.6rem">
+      ${idx>0?`<button class="btn fant" id="prec">← Précédent</button>`:``}
+      ${actionBtn}
+      <button class="btn fant" id="passer">Passer le diagnostic →</button>
     </div>
-    <div id="zone-feedback"></div>
-    <div class="actions"><button class="btn" id="valider" disabled>Valider</button></div>`;
+    ${repondue?`<p class="review-note">Question déjà répondue : tu la revois en lecture seule (réponse non modifiable).</p>`:''}`;
 
-  document.querySelectorAll("#opts .opt").forEach(b=>{
-    b.onclick = ()=>{
-      if(valide) return;
-      choisi = +b.dataset.i;
-      document.querySelectorAll("#opts .opt").forEach(x=>x.classList.remove("sel"));
-      b.classList.add("sel");
-      document.getElementById("valider").disabled = false;
-    };
-  });
-  document.getElementById("valider").onclick = onValider;
+  if(!repondue){
+    document.querySelectorAll("#opts .opt").forEach(b=>{
+      b.onclick = ()=>{
+        if(valide) return;
+        choisi = +b.dataset.i;
+        document.querySelectorAll("#opts .opt").forEach(x=>x.classList.remove("sel"));
+        b.classList.add("sel");
+        document.getElementById("valider").disabled = false;
+      };
+    });
+    document.getElementById("valider").onclick = onValider;
+  } else {
+    document.getElementById("suivant").onclick = ()=>{ idx++; if(idx<FLAT.length) ecranQuestion(); else finDiagnostic(); };
+  }
+  const prec = document.getElementById("prec"); if(prec) prec.onclick = ()=>{ idx--; ecranQuestion(); };
+  document.getElementById("passer").onclick = passerDiagnostic;
 }
 
 function onValider(){
-  if(!valide){
-    valide = true;
-    const item = FLAT[idx];
-    const opts = document.querySelectorAll("#opts .opt");
-    opts.forEach((b,i)=>{ b.disabled = true; if(i===item.bonne) b.classList.add("juste"); else if(i===choisi) b.classList.add("faux"); });
-    const ok = choisi===item.bonne;
-    if(!ok) fautes[item.ai]++;
-    const texte = ok ? item.siJuste : item.siFaux;
-    document.getElementById("zone-feedback").innerHTML = `
-      <div class="feedback ${ok?'ok':'ko'}">
-        <span class="res">${ok ? 'Bonne réponse' : 'Réponse incorrecte'}</span>
-        <p>${texte}</p>
-        ${item.imgR ? `<div class="illus">${item.imgR}</div>` : ""}
-      </div>`;
-    const b = document.getElementById("valider");
-    b.textContent = (idx===FLAT.length-1) ? "Voir mon plan →" : "Suivant →";
-  } else {
-    idx++;
-    if(idx<FLAT.length) ecranQuestion(); else { freshProg(fautes); ecranResultats(false); }
-  }
+  if(valide) return;
+  valide = true;
+  const item = FLAT[idx];
+  const opts = document.querySelectorAll("#opts .opt");
+  opts.forEach((b,i)=>{ b.disabled = true; if(i===item.bonne) b.classList.add("juste"); else if(i===choisi) b.classList.add("faux"); });
+  const ok = choisi===item.bonne;
+  if(!ok) fautes[item.ai]++;
+  answers[idx] = { choisi, ok };
+  document.getElementById("zone-feedback").innerHTML = feedbackHTML(item, ok);
+  const b = document.getElementById("valider");
+  b.textContent = (idx===FLAT.length-1) ? "Voir mon plan →" : "Suivant →";
+  b.disabled = false;
+  b.onclick = ()=>{ idx++; if(idx<FLAT.length) ecranQuestion(); else finDiagnostic(); };
 }
 
 function ecranResultats(autoOpen){
-  if(!PROG) PROG = { fautes:fautes.slice(), lu:{}, vu:{}, faits:{} };
+  document.body.classList.remove('en-diagnostic');
+  if(!PROG) PROG = { fautes:fautes.slice(), lu:{}, vu:{}, faits:{}, diagComplet:true };
 
   // Ordre : axes non-verts d'abord, en respectant A puis B puis C.
   // Les axes verts (aucune faute) sont renvoyés à la fin.
@@ -560,9 +603,10 @@ if(PROG && Array.isArray(PROG.fautes)){
   <div class="pb-title">Progression</div>
   <div class="pb-pct">0 %</div>
   <div class="pb-seg">
-    <div class="pb-cell none" data-axe="C"><span class="pb-fill"></span><span class="pb-lab">C</span></div>
-    <div class="pb-cell none" data-axe="B"><span class="pb-fill"></span><span class="pb-lab">B</span></div>
+    <div class="pb-cell none" data-diag="1" title="Diagnostic"><span class="pb-fill"></span><span class="pb-lab">Diag</span></div>
     <div class="pb-cell none" data-axe="A"><span class="pb-fill"></span><span class="pb-lab">A</span></div>
+    <div class="pb-cell none" data-axe="B"><span class="pb-fill"></span><span class="pb-lab">B</span></div>
+    <div class="pb-cell none" data-axe="C"><span class="pb-fill"></span><span class="pb-lab">C</span></div>
   </div>
 </div>
 <script>
@@ -579,12 +623,14 @@ if(PROG && Array.isArray(PROG.fautes)){
   function deuxch(n){ return (n<10?'0':'')+n; }
   function ajd(){ var d=new Date();return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
 
-  function setCell(id,state,frac){
-    var c=document.querySelector('#prog-bar .pb-cell[data-axe="'+id+'"]'); if(!c) return;
-    c.className='pb-cell '+state;
+  function paint(c,state,frac,extra){
+    if(!c) return;
+    c.className='pb-cell '+state+(extra?(' '+extra):'');
     var fill=c.querySelector('.pb-fill');
     if(fill){ fill.className='pb-fill'+(state==='done'?' g':(state==='prog'?' h':'')); fill.style.height=Math.round(frac*100)+'%'; }
   }
+  function setCell(id,state,frac,extra){ paint(document.querySelector('#prog-bar .pb-cell[data-axe="'+id+'"]'),state,frac,extra); }
+  function setDiag(state,frac){ paint(document.querySelector('#prog-bar .pb-cell[data-diag]'),state,frac); }
   function publier(axes,pasFaits,pasTotal){
     try{
       var all={}; try{all=JSON.parse(localStorage.getItem('cahier-progression'))||{};}catch(e){}
@@ -599,17 +645,24 @@ if(PROG && Array.isArray(PROG.fautes)){
 
   function maj(){
     var P=lire(), pctEl=document.querySelector('#prog-bar .pb-pct');
-    if(!P){ saveOuv({}); AXES.forEach(function(ax){setCell(ax.id,'none',0);}); if(pctEl)pctEl.textContent='0 %'; retirer(); return; }
+    if(!P){ saveOuv({}); setDiag('none',0); AXES.forEach(function(ax){setCell(ax.id,'none',0);}); if(pctEl)pctEl.textContent='0 %'; retirer(); return; }
     var ouv=lireOuv(), pasFaits=0, pasTotal=0, axes=[];
-    AXES.forEach(function(ax){
+    var diagFini=!!P.diagComplet;
+    setDiag(diagFini?'done':'prog', diagFini?1:0.5);
+    pasFaits+=(diagFini?1:0); pasTotal+=1;
+    AXES.forEach(function(ax, i){
       var det=document.querySelector('details.axe[data-axe="'+ax.id+'"]');
       if(det){ if(det.open) ouv[ax.id]=true; if(!det._barHook){det._barHook=true;det.addEventListener('toggle',function(){if(det.open){var o=lireOuv();o[ax.id]=true;saveOuv(o);}maj();});} }
+      var fa=(P.fautes&&typeof P.fautes[i]==='number')?P.fautes[i]:null;
+      var vert=fa===0, revoir=(fa>=1&&fa<=2);
       var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
       var n=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) n++; }
-      var steps=(consulte?1:0)+n, total=1+ax.exos; pasFaits+=steps; pasTotal+=total;
-      var acquis=consulte&&n===ax.exos, ouvert=!!ouv[ax.id], touche=ouvert||consulte||n>0;
+      var total=1+ax.exos;
+      var acquis=vert||(consulte&&n===ax.exos);
+      var steps=acquis?total:((consulte?1:0)+n); pasFaits+=steps; pasTotal+=total;
+      var ouvert=!!ouv[ax.id], touche=acquis||ouvert||consulte||n>0;
       var state=acquis?'done':(touche?'prog':'none');
-      setCell(ax.id,state,steps/total);
+      setCell(ax.id,state,steps/total,(revoir&&!acquis)?'revoir':'');
       axes.push({id:ax.id,etat:state,pct:Math.round(steps/total*100)});
     });
     saveOuv(ouv);

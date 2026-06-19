@@ -639,6 +639,9 @@
 
   function rendre(){
     var prog=lireProg(), parDate={}, today=ajd();
+    // Unité affichée par jour : "axes" par défaut, "contenus" pour le Jour 7
+    // (table des ressources, sans axes). Un jour peut aussi publier son propre champ "unite".
+    var UNITE=function(n,e){ return (e&&e.unite) || ({7:'contenus'})[n] || 'axes'; };
     Object.keys(prog).forEach(function(n){
       var e=prog[n]; if(!e||!e.date) return;
       (parDate[e.date]=parDate[e.date]||[]).push({n:n, e:e, couleur:(e.termine?'v':'a')});
@@ -655,7 +658,7 @@
           if(parDate[iso]){
             var arr=parDate[iso].slice().sort(function(a,b){return a.n-b.n;});
             cls+=' fait';
-            var txt=function(it){ return 'Jour '+it.n+' \u2014 '+(it.e.pct||0)+' % \u00b7 '+(it.e.axesFaits||0)+'/'+(it.e.axesTotal||0)+' axes \u00b7 '+LABELS[it.couleur]; };
+            var txt=function(it){ return 'Jour '+it.n+' \u2014 '+(it.e.pct||0)+' % \u00b7 '+(it.e.axesFaits||0)+'/'+(it.e.axesTotal||0)+' '+UNITE(it.n,it.e)+' \u00b7 '+LABELS[it.couleur]; };
             pts='<span class="pts">'+arr.map(function(it){return '<i class="pt '+it.couleur+'" title="'+txt(it)+'"></i>';}).join('')+'</span>';
             var info=arr.map(txt).join(' \u2022 ');
             attrs=' title="'+info+'" data-info="'+info+'"';
@@ -675,7 +678,7 @@
       } else {
         liste.innerHTML='<ul>'+ns.map(function(n){
           var e=prog[n], p=(e.date||'').split('-'), dt=(p.length===3?p[2]+'/'+p[1]:'—');
-          return '<li>Jour '+n+' — fait le '+dt+' · '+(e.pct||0)+' % · '+(e.axesFaits||0)+'/'+(e.axesTotal||0)+' axes · '+LABELS[e.termine?'v':'a']+'</li>';
+          return '<li>Jour '+n+' — fait le '+dt+' · '+(e.pct||0)+' % · '+(e.axesFaits||0)+'/'+(e.axesTotal||0)+' '+UNITE(n,e)+' · '+LABELS[e.termine?'v':'a']+'</li>';
         }).join('')+'</ul>';
       }
     }

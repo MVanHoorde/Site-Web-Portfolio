@@ -166,6 +166,7 @@
   #prog-bar .pb-cell.done{border-color:var(--vert);color:var(--vert)}
   #prog-bar .pb-cell.prog{border:1.6px dashed var(--ambre);color:var(--ambre)}
   #prog-bar .pb-cell.none{border:1px solid var(--ligne);color:var(--gris)}
+  #prog-bar .pb-cell.revoir{border:1.6px solid var(--ambre);color:var(--ambre)}
   #prog-bar .pb-lab{position:relative;z-index:1}
   #prog-bar .pb-fill{position:absolute;left:0;right:0;bottom:0;height:0;transition:height .3s ease}
   #prog-bar .pb-fill.h{background:repeating-linear-gradient(45deg,var(--ambre) 0 2px,transparent 2px 6px)}
@@ -388,7 +389,11 @@ function feedbackHTML(item, ok){
       </div>`;
 }
 function finDiagnostic(){ freshProg(fautes, true); ecranResultats(false); }
-function passerDiagnostic(){ freshProg(fautes, false); ecranResultats(false); }
+function passerDiagnostic(){
+  for(let i=answers.length; i<FLAT.length; i++){ fautes[FLAT[i].ai]++; }  // restantes = fausses
+  freshProg(fautes, false);
+  ecranResultats(false);
+}
 
 const STORE_KEY = "cahier-j04";
 let PROG = (function(){ try{ const r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } })();
@@ -696,13 +701,13 @@ if(PROG && Array.isArray(PROG.fautes)){
   function saveOuv(o){ try{localStorage.setItem('cahier-j04-ouverts',JSON.stringify(o));}catch(e){} }
   function deuxch(n){ return (n<10?'0':'')+n; }
   function ajd(){ var d=new Date();return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
-  function paint(c,state,frac){
+  function paint(c,state,frac,extra){
     if(!c) return;
-    c.className='pb-cell '+state;
+    c.className='pb-cell '+state+(extra?(' '+extra):'');
     var fill=c.querySelector('.pb-fill');
     if(fill){ fill.className='pb-fill'+(state==='done'?' g':(state==='prog'?' h':'')); fill.style.height=Math.round(frac*100)+'%'; }
   }
-  function setCell(id,state,frac){ paint(document.querySelector('#prog-bar .pb-cell[data-axe="'+id+'"]'),state,frac); }
+  function setCell(id,state,frac,extra){ paint(document.querySelector('#prog-bar .pb-cell[data-axe="'+id+'"]'),state,frac,extra); }
   function setDiag(state,frac){ paint(document.querySelector('#prog-bar .pb-cell[data-diag]'),state,frac); }
   function publier(axes,pf,pt){
     try{
@@ -721,16 +726,20 @@ if(PROG && Array.isArray(PROG.fautes)){
     var diagFini=!!P.diagComplet;
     setDiag(diagFini?'done':'prog', diagFini?1:0.5);
     pf+=(diagFini?1:0); pt+=1;
-    AXES.forEach(function(ax){
+    AXES.forEach(function(ax, i){
       var det=document.querySelector('details.axe[data-axe="'+ax.id+'"]');
       if(det){ if(det.open) ouv[ax.id]=true; if(!det._barHook){det._barHook=true;det.addEventListener('toggle',function(){if(det.open){var o=lireOuv();o[ax.id]=true;saveOuv(o);}maj();});} }
+      var fa=(P.fautes&&typeof P.fautes[i]==='number')?P.fautes[i]:null;
+      var vert=fa===0, revoir=(fa>=1&&fa<=2);
       var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
       var nE=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) nE++; }
       var nA=0; for(var k=0;k<ax.act;k++){ if(P.act&&P.act[ax.id]&&P.act[ax.id][k]) nA++; }
-      var steps=(consulte?1:0)+nE+nA, total=1+ax.exos+ax.act; pf+=steps; pt+=total;
-      var acquis=consulte&&nE===ax.exos&&nA===ax.act, ouvert=!!ouv[ax.id], touche=ouvert||consulte||nE>0||nA>0;
+      var total=1+ax.exos+ax.act;
+      var acquis=vert||(consulte&&nE===ax.exos&&nA===ax.act);
+      var steps=acquis?total:((consulte?1:0)+nE+nA); pf+=steps; pt+=total;
+      var ouvert=!!ouv[ax.id], touche=acquis||ouvert||consulte||nE>0||nA>0;
       var state=acquis?'done':(touche?'prog':'none');
-      setCell(ax.id,state,steps/total);
+      setCell(ax.id,state,steps/total,(revoir&&!acquis)?'revoir':'');
       axes.push({id:ax.id,etat:state,pct:Math.round(steps/total*100)});
     });
     saveOuv(ouv);
