@@ -94,6 +94,9 @@
   .flash ol{margin:.3rem 0 .6rem 1.2rem;font-size:.95rem}
   .flash ol li{margin-bottom:.25rem}
   .formule{font-family:'IBM Plex Mono',monospace;font-size:.92rem;background:rgba(63,167,214,.10);border-left:3px solid var(--cyan);padding:.55rem .8rem;text-align:center}
+  .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .18em;line-height:1.05}
+  .frac .num{padding:0 .4em}
+  .frac .den{padding:0 .4em;border-top:1.6px solid currentColor}
   .video{position:relative;padding-top:56.25%;background:#000}
   .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
   .video-slot{border:1px dashed var(--orange);background:rgba(232,116,59,.06);color:var(--gris);padding:1rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;text-align:center}
@@ -132,6 +135,28 @@
   .flash ul.notations{margin:.4rem 0 .6rem;padding-left:1.1rem}
   .flash ul.notations li{margin:.15rem 0}
   .attention{background:rgba(214,64,43,.08);border-left:3px solid var(--rouge);padding:.5rem .8rem;font-size:.9rem;color:var(--encre);border-radius:4px;margin:.4rem 0}
+  .la-grid{display:grid;gap:1rem;margin:.5rem 0}
+  .la-item h5{margin:.2rem 0 .35rem;font-size:.9rem;color:var(--encre)}
+  .la-item iframe{width:100%;height:480px;border:0;border-radius:8px;background:#fff}
+  .dl-row{display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0 .2rem}
+  .dl-btn{display:inline-block;background:var(--cyan);color:#fff;text-decoration:none;font-weight:600;font-size:.88rem;padding:.55rem .85rem;border-radius:8px}
+  .dl-btn:hover{filter:brightness(1.06)}
+  .choix-msg{font-size:.9rem;color:var(--encre);background:rgba(63,167,214,.08);border-left:3px solid var(--cyan);padding:.6rem .9rem;margin-bottom:.8rem}
+  details.media{border:1px solid var(--ligne);margin-bottom:.6rem;background:rgba(0,0,0,.012);border-radius:6px}
+  details.media>summary{list-style:none;cursor:pointer;padding:.7rem .9rem;font-family:'IBM Plex Mono',monospace;font-size:.85rem;display:flex;gap:.5rem;align-items:center}
+  details.media>summary::-webkit-details-marker{display:none}
+  details.media>summary::before{content:"▸";color:var(--orange)}
+  details.media[open]>summary::before{content:"▾"}
+  details.media .flash{padding:.2rem .9rem 1rem}
+  details.media .video{padding:.2rem .9rem 1rem}
+  details.media .act-body{padding:.2rem .9rem 1rem}
+  details.media.activite>summary{color:var(--encre);font-weight:600}
+  details.media.activite .fait-mark{margin-left:auto;color:var(--vert);font-size:.78rem}
+  .woo-act{margin:.6rem 0}
+  .woo-act iframe{width:100%;height:480px;border:0;border-radius:8px;background:#fff}
+  .review-note{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--gris);margin:.6rem 0 0}
+  body.en-diagnostic #prog-bar{display:none}
+  #prog-bar .pb-cell[data-diag] .pb-lab{font-size:.5rem;letter-spacing:-.01em}
   .exo-attente{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--gris);background:rgba(0,0,0,.03);border:1px dashed var(--ligne);border-radius:8px;padding:.8rem .9rem}
   #prog-bar{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;align-items:center;gap:5px;width:64px;padding:9px 8px;background:rgba(255,255,255,.92);border:1px solid var(--ligne);border-radius:10px}
   #prog-bar .pb-title{font-family:system-ui,sans-serif;font-size:.55rem;letter-spacing:.02em;text-transform:uppercase;color:var(--gris);white-space:nowrap}
@@ -173,6 +198,7 @@ const WOOCLAP_SRC = "https://app.wooclap.com/DGDCRNL/questionnaires/6a33e40adf28
 /* ============================================================
    CONTENU — 4 parties (axes). Questions : single (bonne) ou multi (multi:true, bonnes:[]).
    ============================================================ */
+function frac(a,b){return '<span class="frac"><span class="num">'+a+'</span><span class="den">'+b+'</span></span>';}
 const NOTION = {
   axes:[
     {
@@ -190,16 +216,16 @@ const NOTION = {
           siJuste:`Bien vu : seules les unités du type masse/volume conviennent ; « kg·L » est à exclure.` },
         { q:`La masse volumique de l'éthanol est 0,789 g/mL. Quelle est la masse d'un échantillon de 10 mL ?`,
           opts:[`7,9 g`,`0,79 g`,`0,079 g`,`78,9 mg`], bonne:0,
-          siFaux:`m = ρ × V = 0,789 × 10 = <strong>7,9 g</strong> (volume en mL, masse volumique en g/mL).`,
-          siJuste:`Exact : 0,789 × 10 ≈ 7,9 g.` }
+          siFaux:`m = ρ × V = 0,789 × 10 = <strong>7,9 g</strong>.<br><em>Unités :</em> elles sont cohérentes (g/mL avec des mL) — pas besoin de convertir avant de calculer.<br><em>Chiffres significatifs :</em> le volume n'a que 2 chiffres, on arrondit donc le résultat à <strong>7,9 g</strong>.`,
+          siJuste:`Exact : 0,789 × 10 ≈ <strong>7,9 g</strong>. Les unités sont déjà cohérentes (g/mL et mL), et comme le volume n'a que 2 chiffres significatifs, on garde 2 chiffres : 7,9 g.` }
       ]
     },
     {
       id:"B", nom:"Mole & masse molaire", video:"sok3lW2uY-E",
       pourquoi:"La quantité de matière est l'outil central de la chimie de 1re : doser, suivre une transformation, équilibrer… tout passe par la mole.",
       flash:`<p>Une <strong>mole</strong> est un paquet de N<sub>A</sub> = 6,02 × 10²³ entités (atomes, molécules ou ions). La <strong>quantité de matière</strong> n compte ces paquets.</p>
-        <p class="formule">n = m / M</p>
-        <p class="formule">n = N / N<sub>A</sub></p>
+        <p class="formule">n = ${frac('m','M')}</p>
+        <p class="formule">n = ${frac('N','N<sub>A</sub>')}</p>
         <ul class="notations">
           <li><strong>n</strong> : quantité de matière, en mol</li>
           <li><strong>m</strong> : masse de l'échantillon, en g</li>
@@ -224,20 +250,20 @@ const NOTION = {
           siFaux:`La masse molaire est la <strong>masse d'une mole</strong> d'entités — ce qui revient à la masse d'un échantillon contenant 6,02 × 10²³ entités. Elle ne se limite pas aux atomes.`,
           siJuste:`Exact : c'est la masse d'une mole d'entités (donc de 6,02 × 10²³ entités).` },
         { q:`Quelles relations sont exactes ?`, multi:true,
-          opts:[`n = m / M`,`n = m × M`,`m = n × M`,`m = n / M`,`n = N / N<sub>A</sub>`,`n = N<sub>A</sub> / N`], bonnes:[0,2,4],
-          siFaux:`Les relations exactes : <strong>n = m / M</strong>, <strong>m = n × M</strong> et <strong>n = N / N<sub>A</sub></strong>.`,
-          siJuste:`Exact : n = m/M, m = n×M et n = N/N<sub>A</sub>.` },
+          opts:[`n = ${frac('m','M')}`,`n = m × M`,`m = n × M`,`m = ${frac('n','M')}`,`n = ${frac('N','N<sub>A</sub>')}`,`n = ${frac('N<sub>A</sub>','N')}`], bonnes:[0,2,4],
+          siFaux:`Les relations exactes : <strong>n = ${frac('m','M')}</strong>, <strong>m = n × M</strong> et <strong>n = ${frac('N','N<sub>A</sub>')}</strong>.`,
+          siJuste:`Exact : n = ${frac('m','M')}, m = n × M et n = ${frac('N','N<sub>A</sub>')}.` },
         { q:`Quelle est la masse molaire du méthanol CH₄O ? (M(C)=12,0 ; M(O)=16,0 ; M(H)=1,01 g·mol⁻¹)`,
           opts:[`32,0 g·mol⁻¹`,`32,01 g·mol⁻¹`,`77,01 g·mol⁻¹`,`29,01 g·mol⁻¹`], bonne:0,
-          siFaux:`M(CH₄O) = 12,0 + 4×1,01 + 16,0 = <strong>32,0 g·mol⁻¹</strong>.`,
-          siJuste:`Exact : 12,0 + 4×1,01 + 16,0 ≈ 32,0 g·mol⁻¹.` }
+          siFaux:`La masse molaire <em>moléculaire</em> est la <strong>somme des masses molaires atomiques</strong> : M(CH₄O) = M(C) + 4×M(H) + M(O) = 12,0 + 4×1,01 + 16,0 = 32,04 → <strong>32,0 g·mol⁻¹</strong>.<br><em>Chiffres significatifs :</em> les données sont au dixième, sauf M(H) au centième ; on garde la précision de la donnée la moins précise (le dixième), soit <strong>32,0 g·mol⁻¹</strong>.`,
+          siJuste:`Exact : on additionne les masses molaires atomiques (12,0 + 4×1,01 + 16,0 = 32,04). Les données étant au dixième près (sauf M(H)), on garde le dixième : <strong>32,0 g·mol⁻¹</strong>.` }
       ]
     },
     {
       id:"C", nom:"Concentration massique", video:"OFEbrx1UZQ8",
       pourquoi:"La concentration (massique, puis molaire en 1re) est au cœur des solutions, des dilutions et des dosages.",
       flash:`<p>La <strong>concentration massique</strong> C<sub>m</sub> d'une solution est la masse de soluté dissous divisée par le volume de solution :</p>
-        <p class="formule">C<sub>m</sub> = m / V</p>
+        <p class="formule">C<sub>m</sub> = ${frac('m','V')}</p>
         <ul class="notations">
           <li><strong>C<sub>m</sub></strong> : concentration massique, en g·L⁻¹</li>
           <li><strong>m</strong> : masse de soluté dissous, en g</li>
@@ -246,8 +272,6 @@ const NOTION = {
         <p>Bien convertir le volume en litres (mL → L). Pour chercher une masse, on isole : m = C<sub>m</sub> × V.</p>
         <p>Exemple : 5,0 g de sel dans 250 mL (= 0,250 L) : C<sub>m</sub> = 5,0 / 0,250 = <strong>20 g·L⁻¹</strong>.</p>`,
       exercices:[
-        { type:"wooclap", titre:"Questionnaire Wooclap", src:WOOCLAP_SRC,
-          consigne:`Réponds à ce questionnaire interactif (aucun compte ni installation nécessaire).` },
         { titre:"La fabrication du savon", timer:90,
           enonce:`<p>La <strong>saponification</strong> : une matière grasse (huile d'olive, principalement de l'acide oléique C₁₈H₃₄O₂) réagit avec une base forte, la soude caustique (hydroxyde de sodium NaOH), pour donner du savon.</p>
             <p class="attention">⚠️ La soude caustique est une base forte très corrosive : brûlures graves sur la peau et les yeux.</p>
@@ -270,35 +294,54 @@ const NOTION = {
             <p><strong>Q6.</strong> m(soude) = C<sub>m</sub> × V = 300 × 0,250 = <strong>75,0 g</strong> (V = 0,250 L).</p>
             <p><strong>Q7.</strong> Peser 75,0 g de soude ; les introduire dans une fiole jaugée de 250 mL (entonnoir) ; ajouter de l'eau distillée aux 2/3, boucher et agiter pour dissoudre ; compléter jusqu'au trait de jauge ; boucher et homogénéiser.</p>` }
       ],
+      activites:[
+        { titre:"Cartes mentales à compléter", icone:"📐", faitLabel:"J'ai complété mes cartes mentales",
+          html:`<p class="exo-consigne">Imprime les deux cartes mentales, complète les relations entre les grandeurs, puis vérifie-toi avec le Wooclap ci-dessous.</p>
+            <div class="dl-row">
+              <a class="dl-btn" href="carte-mentale-mole.pdf" download>⬇️ Carte mentale — la mole (PDF)</a>
+              <a class="dl-btn" href="carte-mentale-mole-Cm.pdf" download>⬇️ Carte mentale — mole &amp; concentration (PDF)</a>
+            </div>
+            <div class="woo-act"><iframe src="${WOOCLAP_SRC}" title="Wooclap — vérifier ses cartes mentales" allow="fullscreen" loading="lazy"></iframe></div>
+            <p class="woo-note">Rien ne s'affiche ? <a href="${WOOCLAP_SRC}" target="_blank" rel="noopener">ouvrir le Wooclap dans un onglet</a>.</p>` }
+      ],
       questions:[
         { q:`La concentration massique d'une solution est définie par :`,
           opts:[`Le nombre de moles de soluté divisé par le volume de solution`,`La masse de solution divisée par le volume de solution`,`La masse de soluté divisée par le volume de solution`,`Le volume de soluté divisé par le volume de solution`], bonne:2,
-          siFaux:`La concentration massique est la <strong>masse de soluté</strong> divisée par le <strong>volume de solution</strong> : Cm = m / V.`,
-          siJuste:`Exact : Cm = masse de soluté / volume de solution.` },
+          siFaux:`La concentration massique est la <strong>masse de soluté</strong> divisée par le <strong>volume de solution</strong> : C<sub>m</sub> = ${frac('m<sub>soluté</sub>','V<sub>solution</sub>')}.<br>⚠️ Ne pas confondre avec la <strong>masse volumique</strong> ρ = ${frac('m<sub>solution</sub>','V<sub>solution</sub>')} : au numérateur, le <em>soluté seul</em> pour C<sub>m</sub>, mais <em>toute la solution</em> pour ρ.`,
+          siJuste:`Exact : C<sub>m</sub> = masse de soluté / volume de solution. À distinguer de la masse volumique ρ, dont le numérateur est la masse de <em>toute</em> la solution.` },
         { q:`Quelle est l'unité usuelle de la concentration massique ?`,
           opts:[`mol/L`,`g/L`,`kg/m³ uniquement`,`g/mL uniquement`], bonne:1,
           siFaux:`L'unité usuelle est le <strong>g/L</strong>. (mol/L est l'unité de la concentration en quantité de matière.)`,
           siJuste:`Exact : g/L.` },
         { q:`On dissout 5,0 g de sel dans 250 mL d'eau. Quelle est la concentration massique ?`,
           opts:[`0,02 g/L`,`20 g/L`,`1250 g/L`,`0,5 g/L`], bonne:1,
-          siFaux:`Cm = m / V = 5,0 / 0,250 = <strong>20 g/L</strong> (250 mL = 0,250 L).`,
-          siJuste:`Exact : 5,0 / 0,250 = 20 g/L.` },
+          siFaux:`C<sub>m</sub> = ${frac('m','V')} = ${frac('5,0','0,250')} = 5,0 × 4 = <strong>20 g/L</strong> (250 mL = 0,250 L ; diviser par 0,250 revient à multiplier par 4).`,
+          siJuste:`Exact : 5,0 / 0,250 = 20 g/L (diviser par 0,250, c'est multiplier par 4).` },
         { q:`Une solution a Cm = 12 g/L. Quelle masse de soluté contient 500 mL ?`,
           opts:[`24 g`,`6 g`,`0,6 g`,`2,4 g`], bonne:1,
-          siFaux:`m = Cm × V = 12 × 0,500 = <strong>6 g</strong>.`,
-          siJuste:`Exact : 12 × 0,500 = 6 g.` },
+          siFaux:`m = C<sub>m</sub> × V = 12 × 0,500 = <strong>6 g</strong>.<br>Autre façon de voir : C<sub>m</sub> = 12 g/L, c'est 12 g pour <strong>1 L</strong> ; pour 500 mL (la moitié d'un litre), la masse est la moitié, soit <strong>6 g</strong>.`,
+          siJuste:`Exact : 12 × 0,500 = 6 g (12 g par litre, donc la moitié pour un demi-litre).` },
         { q:`Quelle(s) relation(s) est/sont exacte(s) ?`, multi:true,
-          opts:[`Cm = m × V`,`Cm = m / V`,`m = Cm × V`,`m = Cm / V`], bonnes:[1,2],
-          siFaux:`Les relations exactes : <strong>Cm = m / V</strong> et <strong>m = Cm × V</strong>.`,
-          siJuste:`Exact : Cm = m/V et m = Cm×V.` }
+          opts:[`Cm = m × V`,`Cm = ${frac('m','V')}`,`m = Cm × V`,`m = ${frac('Cm','V')}`], bonnes:[1,2],
+          siFaux:`Les relations exactes : <strong>Cm = ${frac('m','V')}</strong> et <strong>m = Cm × V</strong>.`,
+          siJuste:`Exact : Cm = ${frac('m','V')} et m = Cm × V.` }
       ]
     },
     {
-      id:"D", nom:"Protocoles de dissolution", video:null, videoAttente:true, flash:null,
+      id:"D", nom:"Protocoles de dissolution", video:null, flash:null,
       pourquoi:"Préparer proprement une solution est un geste de base, évalué en TP tout au long de la 1re.",
       programme:`<p>La <strong>dissolution</strong> relève du thème de seconde « Constitution et transformations de la matière », dans l'étude des <strong>solutions aqueuses</strong> : c'est, avec la dilution, l'une des deux façons de préparer une solution à une <strong>concentration en masse</strong> voulue.</p>
         <p>La compétence attendue est de <strong>choisir la verrerie adaptée</strong> et de <strong>mettre en œuvre le protocole</strong> en respectant les règles de sécurité. C'est un geste expérimental fondateur, réinvesti toute l'année puis en 1re (dilutions, dosages).</p>`,
-      exercices:[ { attente:true, titre:"Exercice — dissolution" } ],
+      exercices:[],
+      activites:[ { titre:"Activités interactives — protocoles", icone:"🧩", faitLabel:"J'ai fait les activités",
+        html:`<p class="exo-consigne">Pour t'entraîner sur les protocoles (plutôt qu'une vidéo) : remets les étapes dans l'ordre, puis complète les protocoles à trous.</p>
+          <div class="la-grid">
+            <div class="la-item"><h5>Dilution — ordre chronologique</h5><iframe src="https://learningapps.org/watch?v=pvofd0x9526" allowfullscreen loading="lazy"></iframe></div>
+            <div class="la-item"><h5>Dissolution — ordre chronologique</h5><iframe src="https://learningapps.org/watch?v=pbwn6iaan26" allowfullscreen loading="lazy"></iframe></div>
+            <div class="la-item"><h5>Dilution — protocole à trous</h5><iframe src="https://learningapps.org/watch?v=po7n4gef526" allowfullscreen loading="lazy"></iframe></div>
+            <div class="la-item"><h5>Dilution — association</h5><iframe src="https://learningapps.org/watch?v=pqtgt77z526" allowfullscreen loading="lazy"></iframe></div>
+            <div class="la-item"><h5>Dissolution — protocole à trous</h5><iframe src="https://learningapps.org/watch?v=pyrcv4wia26" allowfullscreen loading="lazy"></iframe></div>
+          </div>` } ],
       questions:[
         { q:`Lors d'une dissolution, dans quel ordre procéder ?`,
           opts:[`Verser le soluté dans la fiole jaugée, puis compléter en deux temps avec le solvant`,`Remplir la fiole aux 2/3 d'eau, ajouter le soluté, agiter, puis compléter au trait de jauge`,`Compléter la fiole au trait de jauge avec le solvant, puis ajouter le soluté pesé`,`Peser le solvant, puis ajouter le soluté`], bonne:0,
@@ -335,12 +378,22 @@ NOTION.axes.forEach((axe,ai)=> axe.questions.forEach(qu=> FLAT.push({...qu, ai})
 const NBQ = NOTION.axes.map(a=> a.questions.length);
 
 let idx = 0, selection = [], valide = false;
+let answers = [];   // réponses validées : answers[i] = { sel:[...], ok:bool }
 const fautes = NOTION.axes.map(()=>0);
+
+function feedbackHTML(item, ok){
+  return `<div class="feedback ${ok?'ok':'ko'}">
+        <span class="res">${ok ? 'Bonne réponse' : 'Réponse incorrecte'}</span>
+        <p>${ok ? item.siJuste : item.siFaux}</p>
+      </div>`;
+}
+function finDiagnostic(){ freshProg(fautes, true); ecranResultats(false); }
+function passerDiagnostic(){ freshProg(fautes, false); ecranResultats(false); }
 
 const STORE_KEY = "cahier-j04";
 let PROG = (function(){ try{ const r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } })();
 function saveProg(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROG)); }catch(e){} }
-function freshProg(f){ PROG = { fautes:f.slice(), lu:{}, vu:{}, faits:{} }; saveProg(); }
+function freshProg(f, complet){ PROG = { fautes:f.slice(), lu:{}, vu:{}, faits:{}, act:{}, diagComplet:!!complet }; saveProg(); }
 function clearProg(){ PROG=null; try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
 
 function bonnesDe(q){ return q.multi ? q.bonnes : [q.bonne]; }
@@ -351,6 +404,8 @@ function priorite(f){
 }
 
 function ecranIntro(){
+  document.body.classList.add('en-diagnostic');
+  answers=[]; idx=0;
   app.innerHTML = `
     <div class="intro">
       <p>Ce diagnostic de <strong>18 questions</strong> (4 parties) sert à repérer ce que tu maîtrises déjà. Ce n'est pas une note. Certaines questions ont <strong>plusieurs réponses</strong> : elles te le signalent.</p>
@@ -362,14 +417,34 @@ function ecranIntro(){
       <p style="font-size:.8rem;color:var(--gris);margin-top:.8rem">« Passer le diagnostic » marque toutes les parties « à retravailler » et ouvre directement le plan complet.</p>
     </div>`;
   document.getElementById("go").onclick = ()=>{ idx=0; ecranQuestion(); };
-  document.getElementById("skip").onclick = ()=>{ NBQ.forEach((n,i)=> fautes[i]=n); freshProg(fautes); ecranResultats(false); };
+  document.getElementById("skip").onclick = ()=>{ NBQ.forEach((n,i)=> fautes[i]=n); freshProg(fautes,false); ecranResultats(false); };
 }
 
 function ecranQuestion(){
-  selection=[]; valide=false;
+  document.body.classList.add('en-diagnostic');
   const item = FLAT[idx];
   const axe = NOTION.axes[item.ai];
   const pct = Math.round((idx/FLAT.length)*100);
+  const repondue = idx < answers.length;            // déjà validée → lecture seule
+  const prev = repondue ? answers[idx] : null;
+  const bonnes = bonnesDe(item);
+  if(repondue){ selection = prev.sel.slice(); valide = true; }
+  else { selection = []; valide = false; }
+
+  const optsHTML = item.opts.map((o,i)=>{
+    let cls = "opt";
+    if(repondue){
+      if(prev.sel.includes(i)) cls += " sel";
+      if(bonnes.includes(i)) cls += " juste";
+      else if(prev.sel.includes(i)) cls += " faux";
+    }
+    return `<button class="${cls}" data-i="${i}"${repondue?' disabled':''}><span class="lettre">${item.multi?'▢':LETTRES[i]}</span><span>${o}</span></button>`;
+  }).join("");
+
+  const actionBtn = repondue
+    ? `<button class="btn" id="suivant">${idx===FLAT.length-1?'Voir mon plan →':'Suivant →'}</button>`
+    : `<button class="btn" id="valider" disabled>Valider</button>`;
+
   app.innerHTML = `
     <div class="topbar">
       <span>Question ${idx+1} / ${FLAT.length}</span>
@@ -378,54 +453,60 @@ function ecranQuestion(){
     <div class="barre"><i style="width:${pct}%"></i></div>
     <p class="enonce">${item.q}</p>
     ${item.multi ? `<p class="multi-hint">Plusieurs réponses possibles.</p>` : ``}
-    <div class="opts" id="opts">
-      ${item.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="lettre">${item.multi?'▢':LETTRES[i]}</span><span>${o}</span></button>`).join("")}
+    <div class="opts" id="opts">${optsHTML}</div>
+    <div id="zone-feedback">${repondue?feedbackHTML(item, prev.ok):''}</div>
+    <div class="actions" style="flex-wrap:wrap;gap:.6rem">
+      ${idx>0?`<button class="btn fant" id="prec">← Précédent</button>`:``}
+      ${actionBtn}
+      <button class="btn fant" id="passer">Passer le diagnostic →</button>
     </div>
-    <div id="zone-feedback"></div>
-    <div class="actions"><button class="btn" id="valider" disabled>Valider</button></div>`;
+    ${repondue?`<p class="review-note">Question déjà répondue : tu la revois en lecture seule (réponse non modifiable).</p>`:''}`;
 
-  document.querySelectorAll("#opts .opt").forEach(b=>{
-    b.onclick = ()=>{
-      if(valide) return;
-      const i = +b.dataset.i;
-      if(item.multi){
-        const k = selection.indexOf(i);
-        if(k>=0){ selection.splice(k,1); b.classList.remove("sel"); }
-        else { selection.push(i); b.classList.add("sel"); }
-      } else {
-        selection = [i];
-        document.querySelectorAll("#opts .opt").forEach(x=>x.classList.remove("sel"));
-        b.classList.add("sel");
-      }
-      document.getElementById("valider").disabled = selection.length===0;
-    };
-  });
-  document.getElementById("valider").onclick = onValider;
+  if(!repondue){
+    document.querySelectorAll("#opts .opt").forEach(b=>{
+      b.onclick = ()=>{
+        if(valide) return;
+        const i = +b.dataset.i;
+        if(item.multi){
+          const k = selection.indexOf(i);
+          if(k>=0){ selection.splice(k,1); b.classList.remove("sel"); }
+          else { selection.push(i); b.classList.add("sel"); }
+        } else {
+          selection = [i];
+          document.querySelectorAll("#opts .opt").forEach(x=>x.classList.remove("sel"));
+          b.classList.add("sel");
+        }
+        document.getElementById("valider").disabled = selection.length===0;
+      };
+    });
+    document.getElementById("valider").onclick = onValider;
+  } else {
+    document.getElementById("suivant").onclick = ()=>{ idx++; if(idx<FLAT.length) ecranQuestion(); else finDiagnostic(); };
+  }
+  const prec = document.getElementById("prec"); if(prec) prec.onclick = ()=>{ idx--; ecranQuestion(); };
+  document.getElementById("passer").onclick = passerDiagnostic;
 }
 
 function onValider(){
-  if(!valide){
-    valide = true;
-    const item = FLAT[idx];
-    const bonnes = bonnesDe(item);
-    const opts = document.querySelectorAll("#opts .opt");
-    opts.forEach((b,i)=>{ b.disabled=true; if(bonnes.includes(i)) b.classList.add("juste"); else if(selection.includes(i)) b.classList.add("faux"); });
-    const ok = selection.length===bonnes.length && selection.every(i=>bonnes.includes(i));
-    if(!ok) fautes[item.ai]++;
-    document.getElementById("zone-feedback").innerHTML = `
-      <div class="feedback ${ok?'ok':'ko'}">
-        <span class="res">${ok ? 'Bonne réponse' : 'Réponse incorrecte'}</span>
-        <p>${ok ? item.siJuste : item.siFaux}</p>
-      </div>`;
-    document.getElementById("valider").textContent = (idx===FLAT.length-1) ? "Voir mon plan →" : "Suivant →";
-  } else {
-    idx++;
-    if(idx<FLAT.length) ecranQuestion(); else { freshProg(fautes); ecranResultats(false); }
-  }
+  if(valide) return;
+  valide = true;
+  const item = FLAT[idx];
+  const bonnes = bonnesDe(item);
+  const opts = document.querySelectorAll("#opts .opt");
+  opts.forEach((b,i)=>{ b.disabled=true; if(bonnes.includes(i)) b.classList.add("juste"); else if(selection.includes(i)) b.classList.add("faux"); });
+  const ok = selection.length===bonnes.length && selection.every(i=>bonnes.includes(i));
+  if(!ok) fautes[item.ai]++;
+  answers[idx] = { sel:selection.slice(), ok };
+  document.getElementById("zone-feedback").innerHTML = feedbackHTML(item, ok);
+  const vb = document.getElementById("valider");
+  vb.textContent = (idx===FLAT.length-1) ? "Voir mon plan →" : "Suivant →";
+  vb.disabled = false;
+  vb.onclick = ()=>{ idx++; if(idx<FLAT.length) ecranQuestion(); else finDiagnostic(); };
 }
 
 function ecranResultats(autoOpen){
-  if(!PROG) PROG = { fautes:fautes.slice(), lu:{}, vu:{}, faits:{} };
+  document.body.classList.remove('en-diagnostic');
+  if(!PROG) PROG = { fautes:fautes.slice(), lu:{}, vu:{}, faits:{}, act:{}, diagComplet:true };
 
   const ordre = NOTION.axes.map((axe,i)=>({axe, i, f:fautes[i]}));
   ordre.sort((a,b)=>{
@@ -453,6 +534,16 @@ function ecranResultats(autoOpen){
           </div>
         </details>`;
       }
+      if(ex.type==="html"){
+        return `
+        <details class="exo" data-ax="${axe.id}" data-j="${j}">
+          <summary><span class="exo-num">${ex.num||'Activité'}</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
+          <div class="exo-body">
+            ${ex.html}
+            <label class="chk-fait"><input type="checkbox"> ${ex.faitLabel||"J'ai fait cette activité"}</label>
+          </div>
+        </details>`;
+      }
       return `
         <details class="exo" data-timer="${ex.timer}" data-ax="${axe.id}" data-j="${j}">
           <summary><span class="exo-num">Exercice ${j+1}</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
@@ -466,17 +557,32 @@ function ecranResultats(autoOpen){
         </details>`;
     }).join("") : `<p class="vide">Exercices à ajouter (depuis ton cours du Jour 4).</p>`;
 
-    const gateLu = axe.flash ? `<label><input type="checkbox" class="chk-lu"> J'ai lu le rappel</label>` : ``;
+    const hasCapsule = !!(axe.flash || axe.programme);
+    const capsuleLabel = axe.flash ? "📖 Lire la capsule (rappel de cours)" : "📖 Lire — où ça se place dans le programme";
+    const capsuleDetails = hasCapsule
+      ? `<details class="media"><summary>${capsuleLabel}</summary><div class="flash">${axe.flash||axe.programme}</div></details>`
+      : ``;
+    const videoDetails = axe.video
+      ? `<details class="media"><summary>🎬 Regarder la vidéo</summary><div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`
+      : ``;
+    const choixMsg = (hasCapsule && axe.video)
+      ? `<p class="choix-msg">Choisis le format qui te convient : <strong>lis la capsule</strong> <em>ou</em> <strong>regarde la vidéo</strong>. Pas besoin des deux.</p>`
+      : ``;
+    const gateLu = hasCapsule ? `<label><input type="checkbox" class="chk-lu"> J'ai ${axe.flash?'lu la capsule':'lu le programme'}</label>` : ``;
     const gateVu = axe.video ? `<label><input type="checkbox" class="chk-vu"> J'ai regardé la vidéo</label>` : ``;
-    const videoBloc = axe.video
-      ? `<div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`
-      : (axe.videoAttente ? `<div class="video-slot">🎬 Vidéo en attente — elle sera ajoutée prochainement.</div>` : ``);
-    const rappelBloc = axe.flash
-      ? `<section class="bloc"><h4>Rappel de cours</h4><div class="flash">${axe.flash}</div></section>`
-      : (axe.programme ? `<section class="bloc"><h4>Où ça se place dans le programme</h4><div class="flash">${axe.programme}</div></section>` : ``);
-    const videoSection = (axe.video || axe.videoAttente) ? `<section class="bloc"><h4>Vidéo</h4>${videoBloc}</section>` : ``;
     const gateBloc = (gateLu || gateVu) ? `<div class="gate">${gateLu}${gateVu}</div>` : ``;
-    const verrouMsg = (gateLu || gateVu) ? `<p class="verrou-msg">🔒 Consulte ${axe.flash?'le rappel':''}${axe.flash&&axe.video?' ou ':''}${axe.video?'la vidéo':''} pour débloquer les exercices.</p>` : ``;
+
+    const activites = (axe.activites && axe.activites.length) ? axe.activites.map((ac,k)=>`
+        <details class="media activite" data-ax="${axe.id}" data-act="${k}">
+          <summary>${ac.icone||'📐'} ${ac.titre}<span class="fait-mark" hidden>✓ fait</span></summary>
+          <div class="act-body">
+            ${ac.html}
+            <label class="chk-fait"><input type="checkbox"> ${ac.faitLabel||"J'ai fait cette activité"}</label>
+          </div>
+        </details>`).join("") : ``;
+    const activitesSection = activites ? `<section class="bloc"><h4>Activité${axe.activites.length>1?'s':''}</h4>${activites}</section>` : ``;
+
+    const verrouMsg = (gateLu || gateVu) ? `<p class="verrou-msg">🔒 Consulte ${hasCapsule?(axe.flash?'la capsule':'le programme'):''}${hasCapsule&&axe.video?' ou ':''}${axe.video?'la vidéo':''}, puis coche pour débloquer les exercices.</p>` : ``;
     const exosSection = (axe.exercices && axe.exercices.length) ? `<section class="bloc"><h4>Exercices</h4>${verrouMsg}<div class="exos${(gateLu||gateVu)?' verrou':''}">${exos}</div></section>` : ``;
 
     return `
@@ -488,9 +594,11 @@ function ecranResultats(autoOpen){
         </summary>
         <div class="axe-corps">
           <div class="pourquoi"><b>Pourquoi c'est important</b>${axe.pourquoi}</div>
-          ${rappelBloc}
-          ${videoSection}
+          ${choixMsg}
+          ${capsuleDetails}
+          ${videoDetails}
           ${gateBloc}
+          ${activitesSection}
           ${exosSection}
         </div>
       </details>`;
@@ -542,7 +650,16 @@ function ecranResultats(autoOpen){
     cf.addEventListener('change', ()=>{ PROG.faits=PROG.faits||{}; PROG.faits[axId]=PROG.faits[axId]||{}; PROG.faits[axId][j]=cf.checked; saveProg(); if(mark) mark.hidden=!cf.checked; });
   });
 
-  if(autoOpen){ const first=document.querySelector('details.axe'); if(first) first.open=true; }
+  // Activités : case « fait » (libres d'accès, stockées dans PROG.act)
+  document.querySelectorAll('details.activite').forEach(ac=>{
+    const axId = ac.dataset.ax, k = ac.dataset.act;
+    const cf = ac.querySelector('.chk-fait input');
+    const mark = ac.querySelector('.fait-mark');
+    if(!cf) return;
+    const fait = !!(PROG.act && PROG.act[axId] && PROG.act[axId][k]);
+    cf.checked = fait; if(mark) mark.hidden = !fait;
+    cf.addEventListener('change', ()=>{ PROG.act=PROG.act||{}; PROG.act[axId]=PROG.act[axId]||{}; PROG.act[axId][k]=cf.checked; saveProg(); if(mark) mark.hidden=!cf.checked; });
+  });
   document.getElementById("recommencer").onclick = ()=>{ clearProg(); fautes.fill(0); ecranIntro(); };
 }
 
@@ -559,30 +676,34 @@ if(PROG && Array.isArray(PROG.fautes)){
   <div class="pb-title">Progression</div>
   <div class="pb-pct">0 %</div>
   <div class="pb-seg">
-    <div class="pb-cell none" data-axe="C"><span class="pb-fill"></span><span class="pb-lab">C</span></div>
-    <div class="pb-cell none" data-axe="B"><span class="pb-fill"></span><span class="pb-lab">B</span></div>
+    <div class="pb-cell none" data-diag="1" title="Diagnostic"><span class="pb-fill"></span><span class="pb-lab">Diag</span></div>
     <div class="pb-cell none" data-axe="A"><span class="pb-fill"></span><span class="pb-lab">A</span></div>
+    <div class="pb-cell none" data-axe="B"><span class="pb-fill"></span><span class="pb-lab">B</span></div>
+    <div class="pb-cell none" data-axe="C"><span class="pb-fill"></span><span class="pb-lab">C</span></div>
+    <div class="pb-cell none" data-axe="D"><span class="pb-fill"></span><span class="pb-lab">D</span></div>
   </div>
 </div>
 <script>
-/* Jour 4 — barre de progression (blocs A, B, C) + publication du contrat "cahier-progression".
-   Le bloc D (dissolution) est en attente : il rejoindra la barre dès que sa vidéo et son
-   exercice seront ajoutés. Chaque bloc = rappel/vidéo consulté + ses exercices.
-   Le cadre pointillé s'active dès l'ouverture du menu d'un bloc. */
+/* Jour 4 — barre de progression : Diagnostic + blocs A, B, C, D.
+   Publie le contrat "cahier-progression" lu par l'accueil. Chaque bloc =
+   (capsule/vidéo consultée) + exercices faits + activités faites.
+   La barre est masquée pendant le diagnostic (classe body.en-diagnostic). */
 (function(){
   var JOUR=4, TITRE="Protocoles et formules", CLE='cahier-j04';
-  var AXES=[{id:'A',exos:0},{id:'B',exos:0},{id:'C',exos:2}];
+  var AXES=[{id:'A',exos:0,act:0},{id:'B',exos:0,act:0},{id:'C',exos:1,act:1},{id:'D',exos:0,act:1}];
   function lire(){ try{var r=localStorage.getItem(CLE);return r?JSON.parse(r):null;}catch(e){return null;} }
   function lireOuv(){ try{var r=localStorage.getItem('cahier-j04-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
   function saveOuv(o){ try{localStorage.setItem('cahier-j04-ouverts',JSON.stringify(o));}catch(e){} }
   function deuxch(n){ return (n<10?'0':'')+n; }
   function ajd(){ var d=new Date();return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
-  function setCell(id,state,frac){
-    var c=document.querySelector('#prog-bar .pb-cell[data-axe="'+id+'"]'); if(!c) return;
+  function paint(c,state,frac){
+    if(!c) return;
     c.className='pb-cell '+state;
     var fill=c.querySelector('.pb-fill');
     if(fill){ fill.className='pb-fill'+(state==='done'?' g':(state==='prog'?' h':'')); fill.style.height=Math.round(frac*100)+'%'; }
   }
+  function setCell(id,state,frac){ paint(document.querySelector('#prog-bar .pb-cell[data-axe="'+id+'"]'),state,frac); }
+  function setDiag(state,frac){ paint(document.querySelector('#prog-bar .pb-cell[data-diag]'),state,frac); }
   function publier(axes,pf,pt){
     try{
       var all={}; try{all=JSON.parse(localStorage.getItem('cahier-progression'))||{};}catch(e){}
@@ -595,15 +716,19 @@ if(PROG && Array.isArray(PROG.fautes)){
   function retirer(){ try{var all=JSON.parse(localStorage.getItem('cahier-progression'))||{}; if(all[JOUR]){delete all[JOUR];localStorage.setItem('cahier-progression',JSON.stringify(all));}}catch(e){} }
   function maj(){
     var P=lire(), pctEl=document.querySelector('#prog-bar .pb-pct');
-    if(!P){ saveOuv({}); AXES.forEach(function(ax){setCell(ax.id,'none',0);}); if(pctEl)pctEl.textContent='0 %'; retirer(); return; }
+    if(!P){ saveOuv({}); setDiag('none',0); AXES.forEach(function(ax){setCell(ax.id,'none',0);}); if(pctEl)pctEl.textContent='0 %'; retirer(); return; }
     var ouv=lireOuv(), pf=0, pt=0, axes=[];
+    var diagFini=!!P.diagComplet;
+    setDiag(diagFini?'done':'prog', diagFini?1:0.5);
+    pf+=(diagFini?1:0); pt+=1;
     AXES.forEach(function(ax){
       var det=document.querySelector('details.axe[data-axe="'+ax.id+'"]');
       if(det){ if(det.open) ouv[ax.id]=true; if(!det._barHook){det._barHook=true;det.addEventListener('toggle',function(){if(det.open){var o=lireOuv();o[ax.id]=true;saveOuv(o);}maj();});} }
       var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
-      var n=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) n++; }
-      var steps=(consulte?1:0)+n, total=1+ax.exos; pf+=steps; pt+=total;
-      var acquis=consulte&&n===ax.exos, ouvert=!!ouv[ax.id], touche=ouvert||consulte||n>0;
+      var nE=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) nE++; }
+      var nA=0; for(var k=0;k<ax.act;k++){ if(P.act&&P.act[ax.id]&&P.act[ax.id][k]) nA++; }
+      var steps=(consulte?1:0)+nE+nA, total=1+ax.exos+ax.act; pf+=steps; pt+=total;
+      var acquis=consulte&&nE===ax.exos&&nA===ax.act, ouvert=!!ouv[ax.id], touche=ouvert||consulte||nE>0||nA>0;
       var state=acquis?'done':(touche?'prog':'none');
       setCell(ax.id,state,steps/total);
       axes.push({id:ax.id,etat:state,pct:Math.round(steps/total*100)});
