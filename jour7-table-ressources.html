@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jour 7 — La table des ressources</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--nuit-haut:#173d6b;--nuit-bas:#0b1d39;--papier:#eef3f8;--carte:#fff;--orange:#e8743b;--cyan:#3fa7d6;--encre:#15233a;--gris:#5d6b7e;--ligne:#d8e1ea;--clair:#eaf1f9;--clair-attenue:#9fb2c9;--vert:#2fae6a;--ambre:#f0a72e;--rouge:#d6402b;--or:#b8922f}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--papier);color:var(--encre);line-height:1.5}
+  a{color:var(--cyan)}
+  .hd{background:linear-gradient(var(--nuit-haut),var(--nuit-bas));color:var(--clair)}
+  .hd-in{max-width:1180px;margin:0 auto;padding:1.1rem 1.2rem}
+  .hd .retour{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--clair-attenue);text-decoration:none}
+  .hd h1{margin:.5rem 0 .25rem;font-family:'Space Grotesk',sans-serif;font-size:1.55rem}
+  .hd p{margin:.3rem 0 0;color:var(--clair-attenue);font-size:.92rem;max-width:82ch}
+  .hd p strong{color:#fff}
+  main{max-width:1180px;margin:0 auto;padding:1rem 1.2rem 3rem}
+  .obj{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:.7rem 1rem;margin:.2rem 0 1rem}
+  .obj .t{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem}
+  .obj .dots{display:flex;gap:6px}
+  .obj .dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--ligne)}
+  .obj .dot.on{background:var(--vert);border-color:var(--vert)}
+  .obj .cnt{font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--gris)}
+  .obj .reset{margin-left:auto;font-size:.74rem;color:var(--gris);background:none;border:none;cursor:pointer;text-decoration:underline}
+  details.howto{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:.5rem 1rem;margin-bottom:1rem;font-size:.9rem}
+  details.howto summary{cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;list-style:none}
+  details.howto summary::-webkit-details-marker{display:none}
+  details.howto summary::before{content:"▸ ";color:var(--orange)}
+  details.howto[open] summary::before{content:"▾ "}
+  details.howto p{margin:.6rem 0;color:var(--encre)}
+  .legend{display:flex;gap:6px;flex-wrap:wrap;margin:.2rem 0 .8rem}
+  .chip-f{font-size:.72rem;padding:.25rem .55rem;border-radius:999px;color:#fff;font-weight:600}
+  .tools{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+  .tools input[type=search]{flex:1;min-width:180px;padding:.5rem .7rem;border:1px solid var(--ligne);border-radius:8px;font:inherit}
+  .tools label{font-size:.85rem;color:var(--gris);display:flex;align-items:center;gap:.4rem;cursor:pointer}
+  .tscroll{overflow-x:auto;padding-bottom:6px}
+  .pt{display:grid;gap:5px;min-width:660px}
+  .hc{display:flex;align-items:center;justify-content:center;text-align:center;font-size:.7rem;line-height:1.1;padding:4px;color:#fff;font-weight:600;border-radius:6px;cursor:pointer}
+  .rl{display:flex;align-items:center;font-size:.72rem;line-height:1.15;color:var(--clair);background:var(--nuit-bas);border-radius:6px;padding:.35rem .45rem;font-family:'Space Grotesk',sans-serif;font-weight:600;cursor:pointer}
+  .tile{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:58px;border-radius:4px;border:1px solid var(--ligne);border-top:3px solid var(--cat);padding:4px 4px 3px;cursor:pointer}
+  .tile:hover{outline:2px solid var(--cat)}
+  .tile.sel{outline:2px solid var(--encre)}
+  .tile.hide{display:none}
+  .tile.dim{opacity:.16}
+  .tile .sym{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.82rem;color:var(--encre);line-height:1}
+  .tile .nm{font-size:.6rem;line-height:1.05;color:var(--gris);margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .tile .ic{display:flex;gap:3px;margin-top:3px;font-size:.66rem;line-height:1;filter:grayscale(.6) opacity(.8)}
+  .tile .wn{position:absolute;top:1px;right:3px;font-size:.62rem}
+  .tile .more{position:absolute;bottom:0;right:3px;font-size:.62rem;color:var(--gris);font-family:'IBM Plex Mono',monospace}
+  .tile .seen{position:absolute;top:1px;left:3px;font-size:.6rem;color:var(--vert)}
+  .empty{min-height:58px;border-radius:4px;border:1px dashed var(--ligne);opacity:.5;cursor:pointer}
+  .empty:hover{opacity:.8;outline:2px dashed var(--ligne)}
+  .panel{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:1rem;margin-top:14px;min-height:90px;scroll-margin-top:12px}
+  .panel .hint{color:var(--gris);font-size:.9rem}
+  .panel .phead{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:.5rem}
+  .panel .pq{font-size:.82rem;color:var(--gris);margin-bottom:.5rem}
+  .crow{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;padding:.4rem .7rem;margin:0 6px 6px 0;border:1px solid var(--ligne);border-radius:8px;background:var(--clair);color:var(--encre);cursor:pointer;font-family:inherit}
+  .crow:hover{border-color:var(--cyan)}
+  .back{display:inline-flex;align-items:center;gap:5px;background:none;border:none;color:var(--cyan);cursor:pointer;font-size:.82rem;font-weight:600;padding:0;margin-bottom:.7rem;font-family:inherit}
+  .thumb{width:160px;max-width:100%;height:90px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.9rem;color:#fff;margin-bottom:.6rem;position:relative}
+  .thumb .ph{position:absolute;bottom:4px;right:7px;font-size:.58rem;font-weight:400;color:rgba(255,255,255,.9)}
+  .dname{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;margin:.1rem 0 .4rem}
+  .coord{display:inline-block;font-size:.68rem;padding:.2rem .5rem;border-radius:999px;background:var(--clair);color:var(--encre);margin:0 5px 5px 0}
+  .coord.warn{background:rgba(214,64,43,.12);color:var(--rouge)}
+  .dchips{margin:.2rem 0 .5rem}
+  .dchip{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;padding:.18rem .5rem;margin:0 5px 5px 0;border-radius:999px;background:var(--clair);color:var(--gris)}
+  .dchip .em{filter:grayscale(.6) opacity(.85);font-style:normal}
+  .dsyn{font-size:.92rem;line-height:1.55;color:var(--encre);max-width:70ch}
+  .vidnote{font-size:.72rem;color:var(--gris);margin-top:.7rem}
+  a.act{display:inline-flex;align-items:center;gap:5px;font-size:.84rem;margin:.35rem 14px 0 0;color:var(--cyan);font-weight:600;text-decoration:none}
+  .tray{margin-top:1.4rem}
+  .tray h3{font-family:'Space Grotesk',sans-serif;font-size:.95rem;margin:0 0 .5rem}
+  .tray .row{display:flex;gap:6px;flex-wrap:wrap}
+  .note{margin-top:1.4rem;font-size:.82rem;color:var(--gris);border-top:1px solid var(--ligne);padding-top:.8rem}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-in">
+    <a class="retour" href="cahier-vacances-2nde-1re-spe.html">← Cahier de vacances</a>
+    <h1>Jour 7 — La table des ressources</h1>
+    <p>Une carte à explorer, organisée comme une classification périodique. Chaque case est une chaîne. <strong>De haut en bas</strong>, la profondeur scientifique augmente. <strong>De gauche à droite</strong>, on passe du plaisir et de l'émerveillement vers la méthode, le cours et les références. Tout à droite, les <strong>« gaz nobles »</strong> sont les valeurs sûres. <strong>Clique une case</strong> : ses chaînes s'ouvrent dans le panneau en dessous.</p>
+  </div>
+</header>
+<main>
+  <div class="obj">
+    <span class="t">🎯 Mission du jour</span>
+    <span>Découvre <strong>3 chaînes dans 3 familles différentes</strong>.</span>
+    <span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+    <span class="cnt" id="objcnt">0 chaîne · 0 famille</span>
+    <button class="reset" id="reset">réinitialiser</button>
+  </div>
+
+  <details class="howto">
+    <summary>Comment lire et utiliser cette table ?</summary>
+    <p><strong>Les lignes</strong> vont du plus accessible (Découvrir) au plus pointu (Explorer). <strong>Les colonnes</strong> sont des familles : Fun, Émerveillement, Culture scientifique, Vulgarisation/compréhension, Méthode/cours, et les Gaz nobles (valeurs sûres) à droite. Sur chaque case, une ou deux petites icônes rappellent le domaine (🧪 chimie, ⚙️ physique, 🌌 astronomie…).</p>
+    <p><strong>Survole</strong> une case pour la surligner. <strong>Clique-la</strong> : le panneau en dessous affiche ses chaînes ; clique alors une chaîne pour ouvrir sa fiche (description, mots-clés, recherche vidéo, lien direct vers la chaîne), avec un retour à la liste. Une <strong>⚠️</strong> signale une chaîne encore à vérifier.</p>
+  </details>
+
+  <div class="legend" id="legend"></div>
+  <div class="tools">
+    <input type="search" id="q" placeholder="🔍 Chercher une chaîne…" aria-label="Chercher une chaîne">
+    <label><input type="checkbox" id="hideWarn"> Masquer les chaînes « à vérifier »</label>
+  </div>
+
+  <div class="tscroll"><div class="pt" id="pt"></div></div>
+  <div class="panel" id="panel"><p class="hint">Clique une case du tableau : ses chaînes apparaîtront ici, puis clique une chaîne pour la découvrir.<br>Astuce : clique un <strong>en-tête</strong> de ligne ou de colonne pour savoir ce qu'il signifie.</p></div>
+
+  <div class="tray" id="tray"></div>
+  <p class="note">Carte volontairement incomplète : une base à enrichir au fil des visionnages. Les chaînes <strong>⚠️</strong> ne sont pas encore validées ; les liens vidéo seront ajoutés après vérification.</p>
+</main>
+<script>
+var FAM=[{nom:'Fun',w:1,c:'#b07a86'},{nom:'Émerveillement',w:1,c:'#8a82a8'},{nom:'Culture scientifique',w:1,c:'#6f93ad'},{nom:'Vulgarisation / compréhension',w:2,c:'#5fa295'},{nom:'Méthode / cours',w:3,c:'#b5805f'},{nom:'Gaz nobles',w:1,c:'#b8922f'}];
+var ROWS=['Découvrir','Comprendre','Approfondir','Relier','Formaliser','Maîtriser','Explorer'];
+var RDESC={'Découvrir':"Accessible sans prérequis : entrer dans un sujet, éveiller la curiosité.",'Comprendre':"Construire une première compréhension solide, sans formalisme lourd.",'Approfondir':"Aller au-delà du cours ; quelques bases de lycée aident.",'Relier':"Connecter plusieurs domaines : sciences, société, esprit critique, histoire.",'Formaliser':"Modèles, équations et raisonnements prennent de l'importance.",'Maîtriser':"Niveau solide, plutôt terminale, post-bac ou élève très curieux.",'Explorer':"Recherche, conférences, idées difficiles : on peut regarder sans tout comprendre."};
+var FDESC={'Fun':"Léger, spectaculaire ou amusant : pour le plaisir.",'Émerveillement':"Donne envie de science, montre des phénomènes étonnants.",'Culture scientifique':"Enrichir sa vision du monde sans suivre un vrai cours.",'Vulgarisation / compréhension':"Expliquer des notions et aider à comprendre en profondeur.",'Méthode / cours':"Cours proches du programme, exercices, démarches et méthodes.",'Gaz nobles':"Valeurs sûres : fiables et claires, à recommander en priorité."};
+var DOMK={chimie:['🧪','chimie'],physique:['⚙️','physique / tech'],astro:['🌌','astronomie'],maths:['🔢','maths'],donnees:['📊','données / société'],critique:['🧠','esprit critique'],info:['💻','numérique'],culture:['📚','culture sci.'],diy:['🧰','manip / DIY'],cours:['🎓','cours / révisions'],institution:['🏛️','institution'],philo:['👁️','philosophie'],fun:['🎭','divertissement'],anglais:['🇬🇧','anglophone'],bio:['🧬','biologie']};
+var CH=[{"s": "Bp", "nom": "Les Bons Profs", "r": 1, "f": 4, "av": 0, "dom": ["cours"], "syn": "Cours et révisions lycée, utiles pour reprendre une notion rapidement."}, {"s": "Ep", "nom": "e-profs – Physique Chimie", "r": 2, "f": 4, "av": 0, "dom": ["chimie", "physique", "cours"], "syn": "Quatre professeurs de physique-chimie proposent plus de 600 vidéos courtes : rappels de cours, méthodes et exercices corrigés, du collège au lycée et conformes aux programmes. Documents téléchargeables sur eprofs.fr ; parfait en classe inversée ou en révision.", "url": "https://www.youtube.com/c/eprofs"}, {"s": "Pc", "nom": "Physique Chimie au lycée et au collège", "r": 1, "f": 4, "av": 0, "dom": ["chimie", "physique", "cours"], "syn": "Cours et ressources scolaires de physique-chimie pour collège/lycée."}, {"s": "Fr", "nom": "Florence Raffin", "r": 2, "f": 4, "av": 0, "dom": ["cours"], "syn": "Exercices corrigés et révisions, utile pour accompagner un travail autonome."}, {"s": "Po", "nom": "Paul Olivier", "r": 1, "f": 5, "av": 0, "dom": ["chimie", "physique", "cours"], "syn": "Chaîne très structurée par niveau et thème, intéressante pour cours et outils mathématiques."}, {"s": "Ma", "nom": "Mathrix", "r": 1, "f": 4, "av": 1, "dom": ["cours"], "syn": "Cours rapides, révisions et méthodes, plutôt appui scolaire direct."}, {"s": "Rp", "nom": "Richard Paut", "r": 1, "f": 4, "av": 1, "dom": ["cours"], "syn": "Diaporamas, essentiels de chapitre et supports scolaires."}, {"s": "Nf", "nom": "Nathan FV", "r": 1, "f": 4, "av": 1, "dom": ["chimie", "physique", "cours"], "syn": "Notions collège/lycée, méthodes et formats courts autour de la physique-chimie."}, {"s": "Pa", "nom": "La Physique Autrement", "r": 0, "f": 1, "av": 0, "dom": ["physique", "astro"], "syn": "Vulgarisation et mise en image de la physique, souvent très stimulante pour l'intuition."}, {"s": "Sc", "nom": "Scilabus", "r": 3, "f": 2, "av": 0, "dom": ["chimie", "physique", "culture"], "syn": "Viviane Lalande, docteure en génie mécanique, décrypte scientifiquement des sujets du quotidien souvent surprenants, avec rigueur et curiosité. Chaîne née en 2013, environ deux vidéos par mois ; idéale pour relier la science au réel.", "url": "https://www.youtube.com/user/scilabus"}, {"s": "Zs", "nom": "Zeste de Science", "r": 0, "f": 2, "av": 0, "dom": ["culture", "institution"], "syn": "Vulgarisation scientifique issue de recherches, format court et institutionnel."}, {"s": "Sé", "nom": "Science Étonnante", "r": 2, "f": 5, "av": 0, "dom": ["physique", "astro", "maths"], "syn": "Animée par David Louapre, docteur en physique, la chaîne (lancée en 2015, environ 1,5 million d'abonnés) explore la physique, les mathématiques, la chimie et la biologie avec clarté et humour. Les sujets vont des phénomènes du quotidien à la physique quantique, avec les sources citées en description et sur le blog scienceetonnante.com.", "url": "https://www.youtube.com/@ScienceEtonnante"}, {"s": "Es", "nom": "L'Esprit Sorcier TV", "r": 0, "f": 2, "av": 1, "dom": ["chimie", "physique", "culture"], "syn": "Média éducatif fondé par Frédéric Courant et une partie de l'équipe de C'est pas Sorcier : vidéos de science et de société pour comprendre le monde et se forger une opinion."}, {"s": "De", "nom": "Deus Ex Silicium", "r": 5, "f": 3, "av": 0, "dom": ["physique", "info", "diy"], "syn": "Électronique, composants, semi-conducteurs et culture technique avancée."}, {"s": "Fo", "nom": "Fouloscopie", "r": 3, "f": 3, "av": 0, "dom": ["donnees", "critique"], "syn": "Sciences des foules, comportements collectifs et réseaux sociaux."}, {"s": "Mi", "nom": "Micmaths", "r": 4, "f": 3, "av": 0, "dom": ["maths"], "syn": "Culture mathématique et explications visuelles utiles pour formaliser des notions."}, {"s": "Sa", "nom": "Sciences Actives", "r": 4, "f": 4, "av": 1, "dom": ["chimie", "cours"], "syn": "Chimie plus spécialisée : équilibres, calorimétrie, acides-bases, précipitation."}, {"s": "Fc", "nom": "France CAO", "r": 3, "f": 2, "av": 1, "dom": ["info", "diy"], "syn": "Électronique, conception ou outils techniques selon les contenus sélectionnés."}, {"s": "Pp", "nom": "Le Prof de Physique", "r": 1, "f": 4, "av": 1, "dom": ["physique", "cours"], "syn": "Ressource potentielle de cours en physique, à valider par playlist."}, {"s": "Ps", "nom": "Passe-Science", "r": 2, "f": 3, "av": 1, "dom": ["physique", "culture"], "syn": "Vulgarisation scientifique et culture générale scientifique."}, {"s": "Ve", "nom": "Veritasium", "r": 2, "f": 3, "av": 0, "dom": ["physique", "astro", "anglais"], "syn": "Vulgarisation anglophone exigeante et visuelle autour de la physique et des sciences."}, {"s": "3b", "nom": "3Blue1Brown", "r": 4, "f": 5, "av": 0, "dom": ["maths", "anglais"], "syn": "Animations mathématiques remarquables, très utiles pour l'intuition et la formalisation."}, {"s": "Ku", "nom": "Kurzgesagt", "r": 1, "f": 1, "av": 0, "dom": ["astro", "culture", "anglais"], "syn": "Vulgarisation très visuelle et narrative, surtout pour émerveiller et contextualiser."}, {"s": "Ep", "nom": "E-penser 2.0", "r": 1, "f": 3, "av": 0, "dom": ["physique", "astro", "culture"], "syn": "Créée par Bruce Benamran en 2013 puis relancée en « 2.0 », la chaîne fait de la vulgarisation surtout scientifique (univers, corps humain, physique) au ton enlevé, avec aussi des sujets plus variés. Débit rapide assumé : on peut ralentir la lecture si besoin.", "url": "https://www.youtube.com/@Epenser1"}, {"s": "Ax", "nom": "Axolot", "r": 0, "f": 1, "av": 0, "dom": ["culture", "fun"], "syn": "Cabinet de curiosités : histoires étonnantes, faits étranges, sciences, histoire et culture générale."}, {"s": "Hm", "nom": "Hygiène mentale", "r": 3, "f": 4, "av": 0, "dom": ["critique"], "syn": "Esprit critique : biais, raisonnement, information et pièges argumentatifs."}, {"s": "Se", "nom": "La statistique expliquée à mon chat", "r": 3, "f": 0, "av": 0, "dom": ["maths", "donnees"], "syn": "Statistiques, probabilités, données et interprétation du monde réel."}, {"s": "El", "nom": "e-learning physics", "r": 1, "f": 4, "av": 1, "dom": ["physique", "cours", "anglais"], "syn": "Ressource probable de cours ou d'explications en physique ; à identifier précisément."}, {"s": "Bl", "nom": "Blablareau au labo", "r": 2, "f": 4, "av": 1, "dom": ["chimie", "diy"], "syn": "Ressource potentielle de laboratoire ou d'expériences ; à vérifier par visionnage."}, {"s": "Dg", "nom": "Data Gueule", "r": 3, "f": 2, "av": 0, "dom": ["donnees", "critique"], "syn": "Datajournalisme : données pour comprendre des enjeux sociaux, économiques, politiques ou environnementaux."}, {"s": "Ce", "nom": "Cogito Ergo Sum", "r": 3, "f": 3, "av": 0, "dom": ["astro", "culture", "philo"], "syn": "Histoire des sciences et culture scientifique ; utile pour contextualiser les notions."}, {"s": "Nu", "nom": "Numberphile", "r": 5, "f": 2, "av": 0, "dom": ["maths", "institution", "anglais"], "syn": "Mathématiques anglophones avec intervenants spécialisés, souvent stimulant et parfois avancé."}, {"s": "Vs", "nom": "Vsauce", "r": 2, "f": 1, "av": 0, "dom": ["astro", "critique", "fun"], "syn": "Curiosité scientifique anglophone : sciences, perception, maths, philosophie et questions inattendues."}, {"s": "Op", "nom": "L'Observatoire de Paris", "r": 6, "f": 5, "av": 0, "dom": ["astro", "institution"], "syn": "Source institutionnelle en astronomie et astrophysique."}, {"s": "St", "nom": "Science Trash", "r": 0, "f": 0, "av": 1, "dom": ["culture", "fun"], "syn": "Vulgarisation très divertissante, ton accrocheur, à utiliser plutôt comme entrée ludique."}, {"s": "Tb", "nom": "La Tronche en Biais", "r": 3, "f": 5, "av": 0, "dom": ["critique", "institution"], "syn": "Zététique, esprit critique, biais cognitifs, pseudosciences et méthode."}, {"s": "Ss", "nom": "Science Story", "r": 0, "f": 2, "av": 1, "dom": ["culture"], "syn": "Nom suggérant récits scientifiques ou historiques ; qualité et niveau à confirmer."}, {"s": "Mj", "nom": "Le Monde de Jamy", "r": 1, "f": 2, "av": 0, "dom": ["donnees", "culture", "institution"], "syn": "Documentaires scientifiques et sociétaux accessibles, très grand public."}, {"s": "Sc", "nom": "ScienceClic", "r": 1, "f": 3, "av": 0, "dom": ["physique", "astro"], "syn": "Alessandro Roussel, diplômé en physique théorique, explique en quelques minutes les grandes théories de la physique moderne (relativité, quantique, cosmologie) à l'aide d'animations visuelles. Parfait pour revoir en images des notions abstraites.", "url": "https://www.youtube.com/@ScienceClic"}, {"s": "Dn", "nom": "Dr Nozman", "r": 0, "f": 0, "av": 0, "dom": ["chimie", "fun"], "syn": "Germain Carrère anime l'une des plus grosses chaînes de vulgarisation scientifique francophone : expériences spectaculaires et phénomènes du quotidien expliqués avec enthousiasme, souvent en physique et en chimie — efficace pour éveiller la curiosité.", "url": "https://www.youtube.com/@DrNozman"}, {"s": "5m", "nom": "5 minutes pour comprendre", "r": 1, "f": 4, "av": 1, "dom": ["cours"], "syn": "Format court d'explication ou de révision ; chaîne exacte et qualité à valider."}, {"s": "Fo", "nom": "Fabien Olicard", "r": 1, "f": 1, "av": 0, "dom": ["critique", "fun"], "syn": "Mentalisme, mémoire, attention et psychologie populaire ; périphérique à la physique-chimie.", "vh": "réviser ses cours mémoire flash-cards"}, {"s": "Tt", "nom": "TEDx Talks", "r": 3, "f": 2, "av": 1, "dom": ["donnees", "culture"], "syn": "Conférences très variées ; à recommander uniquement par sélection de vidéos."}, {"s": "Mp", "nom": "Monsieur Phi", "r": 3, "f": 3, "av": 0, "dom": ["critique", "philo"], "syn": "Philosophie, logique, raisonnement, sciences humaines et esprit critique."}, {"s": "Ap", "nom": "Antoine vs physique", "r": 1, "f": 4, "av": 1, "dom": ["physique", "cours"], "syn": "Ressource potentielle de physique ; à vérifier pour cours, vulgarisation ou exercices."}, {"s": "An", "nom": "L'Antisèche", "r": 1, "f": 4, "av": 0, "dom": ["culture", "cours"], "syn": "Révisions scolaires, méthodes, fiches et notions expliquées rapidement."}, {"s": "Mi", "nom": "Micode", "r": 3, "f": 3, "av": 0, "dom": ["critique", "info"], "syn": "Informatique, cybersécurité, arnaques en ligne, IA et culture numérique."}, {"s": "Un", "nom": "Underscore", "r": 3, "f": 2, "av": 0, "dom": ["info", "culture"], "syn": "Émission/discussions autour de la tech, de l'IA et de la cybersécurité."}, {"s": "Mb", "nom": "Monsieur Bidouille", "r": 3, "f": 2, "av": 0, "dom": ["physique", "info", "diy"], "syn": "Bricolage, électronique, bidouille technique et compréhension concrète des systèmes."}, {"s": "Ce", "nom": "C'est pas Sorcier", "r": 0, "f": 5, "av": 0, "dom": ["chimie", "physique", "culture"], "syn": "Chaîne officielle de l'émission culte de France 3 (1993-2014) avec Jamy, Fred et Sabine. Vulgarisation ludique à base de maquettes et d'expériences, accessible à toute la famille — idéale comme accroche de cours sur une notion de physique-chimie.", "url": "https://www.youtube.com/@Cestpassorcierofficiel"}, {"s": "Ns", "nom": "National STEM Center", "r": 5, "f": 5, "av": 0, "dom": ["cours", "institution", "anglais"], "syn": "Ressources éducatives anglophones STEM, plutôt pour enseignants ou élèves autonomes."}, {"s": "Ng", "nom": "Nicolas Gallo", "r": 1, "f": 4, "av": 1, "dom": ["cours"], "syn": "Ressource potentielle de cours ou d'explications ; à vérifier."}, {"s": "Jé", "nom": "Jamy Épicurieux", "r": 0, "f": 2, "av": 0, "dom": ["chimie", "culture", "fun"], "syn": "Vulgarisation courte, très accessible, utile pour nourrir la curiosité."}, {"s": "Pi", "nom": "Perimeter Institute for Theoretical Physics", "r": 6, "f": 5, "av": 0, "dom": ["physique", "astro", "institution"], "syn": "Physique théorique, cosmologie, quantique et recherche fondamentale ; niveau élevé."}, {"s": "Ce", "nom": "CEA", "r": 3, "f": 2, "av": 0, "dom": ["chimie", "physique", "institution"], "syn": "Source institutionnelle pour énergie, nucléaire, climat, technologies et recherche."}, {"s": "Ss", "nom": "Sick Science", "r": 0, "f": 1, "av": 0, "dom": ["chimie", "diy", "anglais"], "syn": "Expériences courtes et spectaculaires, utiles pour susciter l'étonnement."}, {"s": "Pf", "nom": "Poisson Fécond", "r": 1, "f": 1, "av": 1, "dom": ["culture", "fun"], "syn": "Culture générale, sciences et curiosités avec ton accrocheur ; à cadrer."}, {"s": "Al", "nom": "Aloprof", "r": 1, "f": 4, "av": 0, "dom": ["cours", "institution"], "syn": "Ressource pédagogique claire pour reprendre des bases scolaires, malgré un alignement non français à vérifier."}, {"s": "Ph", "nom": "Philoxime", "r": 3, "f": 3, "av": 0, "dom": ["critique", "philo"], "syn": "Philosophie, droit, société et raisonnement ; utile pour relier sciences, éthique et esprit critique."}, {"s": "Ke", "nom": "Kezako", "r": 0, "f": 2, "av": 1, "nw": 1, "dom": ["chimie", "physique", "culture"], "syn": "Série produite par Unisciel et l'Université de Lille : plus de 80 vidéos courtes qui répondent à une question du quotidien en montrant que la physique se niche partout. Primée et très utilisée du collège au supérieur comme support de cours.", "url": "https://www.youtube.com/user/Unisciel"}, {"s": "Pm", "nom": "Physique à main levée", "r": 0, "f": 1, "av": 1, "nw": 1, "dom": ["physique", "diy"], "syn": "Démonstrations de physique filmées (équipe de la Sorbonne) : idéal pour montrer un phénomène en image."}, {"s": "Mp", "nom": "Merci la physique", "r": 1, "f": 3, "av": 1, "nw": 1, "dom": ["physique", "culture"], "syn": "La physique du quotidien expliquée par Jean-Michel Courty, professeur à la Sorbonne."}, {"s": "Ré", "nom": "Le Réveilleur", "r": 2, "f": 3, "av": 1, "nw": 1, "dom": ["physique", "donnees", "culture"], "syn": "Énergie, climat et ressources, de façon rigoureuse et sourcée : utile pour les chapitres d'énergie."}, {"s": "Fu", "nom": "Futura", "r": 0, "f": 2, "av": 1, "nw": 1, "dom": ["culture", "astro", "chimie"], "syn": "Actualités scientifiques et vidéos courtes, faciles à utiliser en accroche de cours."}, {"s": "De", "nom": "Defakator", "r": 3, "f": 4, "av": 1, "nw": 1, "dom": ["critique", "institution"], "syn": "Déconstruit fausses informations et pseudo-sciences ; bon support d'esprit critique (ton parfois cash)."}, {"s": "As", "nom": "Astronogeek", "r": 3, "f": 2, "av": 1, "nw": 1, "dom": ["astro", "critique"], "syn": "Astronomie et espace sur un ton direct ; à cadrer selon les vidéos."}, {"s": "Ym", "nom": "Yvan Monka", "r": 1, "f": 4, "av": 1, "nw": 1, "dom": ["maths", "cours"], "syn": "Le professeur de maths le plus suivi : cours et méthodes, du collège au lycée."}, {"s": "Bm", "nom": "Balade Mentale", "r": 0, "f": 1, "av": 1, "nw": 1, "dom": ["astro", "culture"], "syn": "Émerveillement scientifique : belles images de synthèse et voix posée (univers, sciences)."}, {"s": "Fp", "nom": "Florence Porcel", "r": 1, "f": 2, "av": 1, "nw": 1, "dom": ["astro", "culture"], "syn": "Astronomie et exploration spatiale, vulgarisation accessible."}, {"s": "Ms", "nom": "La Minute Scientifique", "r": 1, "f": 3, "av": 1, "nw": 1, "dom": ["physique", "chimie"], "syn": "Vulgarisation de la physique et de la chimie en formats courts."}, {"s": "Pr", "nom": "Prof Roques", "r": 1, "f": 4, "av": 1, "nw": 1, "dom": ["physique", "chimie", "cours"], "syn": "Cours de physique-chimie pour le lycée, par un enseignant."}, {"s": "St", "nom": "String Theory FR", "r": 2, "f": 3, "av": 1, "nw": 1, "dom": ["physique", "maths"], "syn": "Physique théorique et fondamentale, pour les plus curieux."}, {"s": "Di", "nom": "DirtyBiology", "r": 2, "f": 3, "av": 1, "nw": 1, "dom": ["bio", "culture"], "syn": "Biologie et évolution, vulgarisation exigeante (Léo Grasset)."}, {"s": "Tl", "nom": "Tania Louis", "r": 1, "f": 3, "av": 1, "nw": 1, "dom": ["bio", "culture"], "syn": "Biologie accessible et rigoureuse (Tania Louis)."}, {"s": "Cn", "nom": "Cyrus North", "r": 3, "f": 3, "av": 1, "nw": 1, "dom": ["philo", "critique"], "syn": "Philosophie et grandes idées, vulgarisation dynamique."}, {"s": "Cs", "nom": "Chat Sceptique", "r": 3, "f": 4, "av": 1, "nw": 1, "dom": ["critique", "institution"], "syn": "Zététique et esprit critique, déconstruction des fausses idées."}, {"s": "Dé", "nom": "DeBunker des Étoiles", "r": 3, "f": 4, "av": 1, "nw": 1, "dom": ["critique", "astro"], "syn": "Esprit critique appliqué à l'astronomie et au complotisme."}];
+var byNom={}; CH.forEach(function(c){byNom[c.nom]=c;});
+var start=[],acc=1; FAM.forEach(function(f){start.push(acc);acc+=f.w;}); var NCOL=acc-1;
+var groups={}; CH.forEach(function(c){var k=c.r+'-'+c.f;(groups[k]=groups[k]||[]).push(c);});
+function el(t,c){var e=document.createElement(t);if(c)e.className=c;return e;}
+function tint(hex,p){return 'color-mix(in srgb, '+hex+' '+p+'%, #fff)';}
+function ed(emojis){return emojis.map(function(k){return DOMK[k]?DOMK[k][0]:'';}).join(' ');}
+function load(k){try{var r=localStorage.getItem(k);return r?JSON.parse(r):null;}catch(e){return null;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+var VUS=load('cahier-j07-vues')||[];
+var panel=document.getElementById('panel');
+var legend=document.getElementById('legend');
+FAM.forEach(function(f){var b=el('span','chip-f');b.style.background=f.c;b.textContent=f.nom;legend.appendChild(b);});
+
+var pt=document.getElementById('pt'); pt.style.gridTemplateColumns='66px repeat('+NCOL+',1fr)';
+var corner=el('div'); corner.style.gridRow='1'; corner.style.gridColumn='1'; pt.appendChild(corner);
+FAM.forEach(function(f,fi){var h=el('div','hc');h.textContent=f.nom;h.style.background=f.c;h.style.gridRow='1';h.style.gridColumn=(start[fi]+1)+'/'+(start[fi]+f.w+1);h.title=FDESC[f.nom]||'';h.onclick=function(){axis('Colonne',f.nom,FDESC[f.nom]);};pt.appendChild(h);});
+ROWS.forEach(function(rn,ri){
+  var lab=el('div','rl');lab.textContent=rn;lab.style.gridRow=(ri+2);lab.style.gridColumn='1';lab.title=RDESC[rn]||'';lab.onclick=function(){axis('Ligne',rn,RDESC[rn]);};pt.appendChild(lab);
+  FAM.forEach(function(f,fi){
+    var list=groups[ri+'-'+fi]||[];
+    for(var i=0;i<f.w;i++){
+      var col=start[fi]+i, ch=list[i], cell;
+      if(ch){cell=el('div','tile');cell.style.setProperty('--cat',f.c);cell.style.background=tint(f.c,12);
+        var extra=(i===f.w-1&&list.length>f.w)?('<span class="more">+'+(list.length-f.w)+'</span>'):'';
+        var icons=(ch.dom&&ch.dom.length)?('<span class="ic">'+ed(ch.dom.slice(0,2))+'</span>'):'';
+        var seen=(VUS.indexOf(ch.nom)>=0)?'<span class="seen">✓</span>':'';
+        cell.innerHTML='<span class="sym">'+ch.s+'</span><span class="nm">'+ch.nom+'</span>'+icons+(ch.av?'<span class="wn">⚠️</span>':'')+extra+seen;
+        cell.setAttribute('data-nom',ch.nom.toLowerCase());cell.setAttribute('data-warn',ch.av?'1':'0');
+        cell.title=list.length+' chaîne'+(list.length>1?'s':'')+' — clique pour ouvrir';
+      } else {cell=el('div','empty');cell.title='Case à découvrir';}
+      (function(r,fx,t){t.addEventListener('click',function(){selectTile(t);openCase(r,fx);});})(ri,fi,cell);
+      cell.style.gridRow=(ri+2);cell.style.gridColumn=(col+1);pt.appendChild(cell);
+    }
+  });
+});
+
+var selEl=null;
+function selectTile(t){if(selEl)selEl.classList.remove('sel');t.classList.add('sel');selEl=t;}
+function show(){panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function axis(type,name,desc){if(selEl){selEl.classList.remove('sel');selEl=null;}panel.innerHTML='<div class="dname">'+type+' — '+name+'</div><div class="dsyn">'+(desc||'')+'</div>';}
+function openCase(r,fi){var list=groups[r+'-'+fi]||[]; if(list.length===1){openDetail(list[0],r,fi);} else {openList(r,fi);} show();}
+function openList(r,fi){
+  var list=groups[r+'-'+fi]||[],f=FAM[fi];
+  var h='<div class="phead"><span class="coord" style="background:'+tint(f.c,18)+'">'+ROWS[r]+'</span><span class="coord">'+f.nom+'</span></div>';
+  if(!list.length){h+='<p class="hint">Aucune chaîne ici pour l\'instant — case à découvrir.</p>';panel.innerHTML=h;return;}
+  h+='<div class="pq">'+list.length+' chaîne'+(list.length>1?'s':'')+' à cette position — choisis-en une :</div><div id="clist"></div>';
+  panel.innerHTML=h;
+  var box=document.getElementById('clist');
+  list.forEach(function(c){var b=el('button','crow');b.innerHTML=c.nom+(c.av?' ⚠️':'');b.onclick=function(){openDetail(c,r,fi);show();};box.appendChild(b);});
+}
+function openDetail(c,r,fi){
+  var f=FAM[c.f];
+  var doms=c.dom.map(function(k){var d=DOMK[k];return d?'<span class="dchip"><span class="em">'+d[0]+'</span> '+d[1]+'</span>':'';}).join('');
+  var qv=encodeURIComponent(c.nom+' '+(c.vh||'physique chimie lycée'));
+  var churl=c.url||('https://www.youtube.com/results?search_query='+encodeURIComponent(c.nom));
+  var multi=(groups[r+'-'+fi]||[]).length>1;
+  var h=(multi?'<button class="back" id="bk">← retour à la liste ('+ROWS[r]+' · '+f.nom+')</button>':'');
+  h+='<div class="thumb" style="background:'+tint(f.c,55)+'">'+c.s+'<span class="ph">miniature à ajouter</span></div>';
+  h+='<div class="dname">'+c.nom+'</div>';
+  h+='<div><span class="coord" style="background:'+tint(f.c,18)+'">'+ROWS[c.r]+'</span><span class="coord">'+f.nom+'</span>'+(c.av?'<span class="coord warn">⚠️ à vérifier</span>':'')+'</div>';
+  h+='<div class="dchips">'+doms+'</div>';
+  h+='<div class="dsyn">'+c.syn+'</div>';
+  h+='<div class="vidnote">Vidéo clé (lien exact à confirmer) :</div>';
+  h+='<a class="act" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query='+qv+'">▷ Recherche vidéo ciblée</a>';
+  h+='<a class="act" target="_blank" rel="noopener" href="'+churl+'">↗ Voir la chaîne'+(c.url?'':' (recherche)')+'</a>';
+  panel.innerHTML=h;
+  var bk=document.getElementById('bk'); if(bk) bk.onclick=function(){openList(r,fi);show();};
+  markSeen(c);
+}
+function markSeen(c){
+  if(VUS.indexOf(c.nom)<0){VUS.push(c.nom);save('cahier-j07-vues',VUS);
+    var t=document.querySelector('.tile[data-nom="'+c.nom.toLowerCase()+'"]');
+    if(t&&!t.querySelector('.seen')){var s=el('span','seen');s.textContent='✓';t.appendChild(s);}
+  }
+  updateObj();
+}
+function distinctFams(){var o={};VUS.forEach(function(n){var c=byNom[n];if(c)o[c.f]=1;});return Object.keys(o).length;}
+function updateObj(){
+  var d=distinctFams(),n3=Math.min(d,3);
+  document.querySelectorAll('.obj .dot').forEach(function(dt,i){dt.classList.toggle('on',i<n3);});
+  document.getElementById('objcnt').textContent=VUS.length+' chaîne'+(VUS.length>1?'s':'')+' · '+d+' famille'+(d>1?'s':'');
+  publish(d);
+}
+function publish(d){
+  try{
+    var all=JSON.parse(localStorage.getItem('cahier-progression'))||{};
+    if(VUS.length===0){if(all['7']){delete all['7'];localStorage.setItem('cahier-progression',JSON.stringify(all));}return;}
+    function p2(n){return(n<10?'0':'')+n;}var dt=new Date();var today=dt.getFullYear()+'-'+p2(dt.getMonth()+1)+'-'+p2(dt.getDate());
+    var date=(all['7']&&all['7'].date)?all['7'].date:today;
+    all['7']={titre:"La table des ressources",date:date,axes:[],axesFaits:Math.min(d,3),axesTotal:3,pct:Math.min(100,Math.round(d/3*100)),termine:d>=3};
+    localStorage.setItem('cahier-progression',JSON.stringify(all));
+  }catch(e){}
+}
+document.getElementById('reset').addEventListener('click',function(){
+  VUS=[];save('cahier-j07-vues',VUS);
+  document.querySelectorAll('.tile .seen').forEach(function(s){s.remove();});
+  updateObj();
+});
+
+var tray=document.getElementById('tray');
+tray.innerHTML='<h3>À placer / à confirmer</h3>';
+var row=el('div','row');
+[{s:'Jg',nom:'Jamil Gram'},{s:'Eg',nom:'Ego'}].forEach(function(c){var t=el('div','tile');t.style.setProperty('--cat','#9aa6b4');t.style.background='#f1f4f8';t.style.minWidth='120px';t.style.cursor='default';t.innerHTML='<span class="sym">'+c.s+'</span><span class="nm">'+c.nom+'</span><span class="wn">⚠️</span>';row.appendChild(t);});
+tray.appendChild(row);
+
+var q=document.getElementById('q'),hw=document.getElementById('hideWarn');
+function applyFilters(){var term=(q.value||'').trim().toLowerCase();
+  document.querySelectorAll('.pt .tile').forEach(function(t){
+    var okW=!(hw.checked&&t.getAttribute('data-warn')==='1');
+    var okT=!term||(t.getAttribute('data-nom')||'').indexOf(term)>=0;
+    t.classList.toggle('hide',!okW);t.classList.toggle('dim',okW&&!okT);
+  });}
+q.addEventListener('input',applyFilters);hw.addEventListener('change',applyFilters);
+updateObj();
+</script>
+</body>
+</html>
