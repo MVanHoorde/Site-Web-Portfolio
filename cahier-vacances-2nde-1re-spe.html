@@ -204,6 +204,12 @@
   .btn-diag.lock{border-color:var(--gris);color:var(--gris);cursor:pointer}
   .btn-diag.lock:hover{background:var(--gris);color:#fff}
 
+  /* États de progression — doux : on garde le cadre, juste une teinte translucide */
+  .btn-diag.etat-fini{border-color:var(--nuit);background:rgba(47,174,106,.14);color:#1f7a4a}
+  .btn-diag.etat-fini:hover,.btn-diag.etat-fini:focus-visible{background:rgba(47,174,106,.26);color:#176038}
+  .btn-diag.etat-cours{border-color:var(--nuit);background:rgba(240,167,46,.20);color:#8a5e00}
+  .btn-diag.etat-cours:hover,.btn-diag.etat-cours:focus-visible{background:rgba(240,167,46,.34);color:#6e4b00}
+
   .modal-overlay{position:fixed;inset:0;background:rgba(14,37,69,.55);display:none;align-items:center;justify-content:center;padding:1.2rem;z-index:100}
   .modal-overlay.open{display:flex}
   .modal{background:var(--carte);max-width:440px;width:100%;border:1px solid var(--ligne);box-shadow:6px 6px 0 var(--nuit)}
@@ -710,5 +716,38 @@
 })();
 </script>
 
+<script>
+/* État des séances sur les boutons — lit le même contrat "cahier-progression"
+   que le calendrier. Ne touche qu'aux séances réelles, non verrouillées.
+   Tourne après le script de verrouillage (placé plus haut). */
+(function(){
+  function lireProg(){ try{ return JSON.parse(localStorage.getItem('cahier-progression'))||{}; }catch(e){ return {}; } }
+  function numJour(card){ var el=card.querySelector('.jour-num'); var m=el?el.textContent.match(/(\d+)/):null; return m?parseInt(m[1],10):null; }
+  function maj(){
+    var prog=lireProg();
+    Array.prototype.forEach.call(document.querySelectorAll('article.jour'), function(card){
+      var b=card.querySelector('.btn-diag'); if(!b) return;
+      if(card.classList.contains('locked') || b.classList.contains('lock')) return; // séance verrouillée : on n'y touche pas
+      var href=b.getAttribute('href')||'';
+      if(!href || href==='#') return;                       // séance pas encore disponible
+      if(!b.dataset.libBase) b.dataset.libBase=b.textContent; // on mémorise le libellé d'origine
+      var n=numJour(card), e=(n!=null)?prog[n]:null;
+      b.classList.remove('etat-fini','etat-cours');
+      if(n===7){                                            // « découverte » : libellé toujours « Continuer », jamais « Terminé »
+        if(e && e.termine){ b.classList.add('etat-fini'); b.textContent='Continuer →'; }   // vert
+        else if(e){ b.classList.add('etat-cours'); b.textContent='Continuer →'; }           // jaune
+        else { b.textContent=b.dataset.libBase; }
+        return;
+      }
+      if(e && e.termine){ b.classList.add('etat-fini'); b.textContent='Terminé ✓'; }
+      else if(e){ b.classList.add('etat-cours'); b.textContent='Continuer →'; }
+      else { b.textContent=b.dataset.libBase; }
+    });
+  }
+  maj();
+  window.addEventListener('storage', function(ev){ if(ev.key==='cahier-progression') maj(); });
+  window.addEventListener('pageshow', maj);
+})();
+</script>
 </body>
 </html>
