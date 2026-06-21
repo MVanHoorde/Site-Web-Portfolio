@@ -153,6 +153,16 @@
   #prog-bar .pb-cell[data-diag] .pb-lab{font-size:.5rem;letter-spacing:-.01em}
   .review-note{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--gris);margin:.6rem 0 0}
   @media (max-width:720px){ #prog-bar{right:6px;width:58px;padding:7px 6px} #prog-bar .pb-seg{width:22px;height:150px} #prog-bar .pb-title{font-size:.5rem} }
+  .easter-egg{display:none;margin-top:1.1rem}
+  .easter-egg.egg-on{display:block;animation:eggpop .45s ease}
+  @keyframes eggpop{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+  .egg-inner{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;background:linear-gradient(120deg,rgba(232,116,59,.12),rgba(63,167,214,.12));border:1px dashed var(--orange);border-radius:12px;padding:.9rem 1.1rem}
+  .egg-spark{font-size:1.7rem;line-height:1}
+  .egg-inner>div{flex:1 1 220px}
+  .egg-titre{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;margin:0}
+  .egg-txt{font-size:.86rem;color:var(--gris);margin:.18rem 0 0;line-height:1.4}
+  .btn-egg{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.92rem;text-decoration:none;color:#fff;background:var(--orange);border-radius:10px;padding:.6rem 1.1rem;white-space:nowrap;box-shadow:0 4px 14px rgba(232,116,59,.3);transition:transform .12s}
+  .btn-egg:hover{transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -528,6 +538,16 @@ function ecranResultats(autoOpen){
             <p class="verrou-msg">🔒 Consulte la capsule <strong>ou</strong> la vidéo (au choix), puis coche-la pour débloquer les exercices.</p>
             <div class="exos verrou">${exos}</div>
           </section>
+          ${axe.id==='A' ? `<div class="easter-egg" id="egg-jeu">
+            <div class="egg-inner">
+              <span class="egg-spark">🎮</span>
+              <div>
+                <p class="egg-titre">Bloc A bouclé — envie de jouer ?</p>
+                <p class="egg-txt">Un jeu bonus pour relier configurations électroniques et tableau périodique. Facultatif : juste pour le plaisir, ça ne compte pas dans ta progression.</p>
+              </div>
+              <a class="btn-egg" href="jeu-config-electroniques.html" target="_blank" rel="noopener">Lancer le jeu →</a>
+            </div>
+          </div>` : ``}
         </div>
       </details>`;
   }).join("");
@@ -663,6 +683,7 @@ if(PROG && Array.isArray(PROG.fautes)){
       var ouvert=!!ouv[ax.id], touche=acquis||ouvert||consulte||n>0;
       var state=acquis?'done':(touche?'prog':'none');
       setCell(ax.id,state,steps/total,(revoir&&!acquis)?'revoir':'');
+      if(ax.id==='A'){ var egg=document.getElementById('egg-jeu'); if(egg) egg.classList.toggle('egg-on', acquis); }
       axes.push({id:ax.id,etat:state,pct:Math.round(steps/total*100)});
     });
     saveOuv(ouv);
