@@ -3,19 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnostic Jour 4 — Protocoles et formules de chimie</title>
+<title>Diagnostic Jour 5 — La dilution</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- ============================================================
-     JOUR 4 — même schéma que le J02 :
-       diagnostic QCM (18 questions, 4 parties, avec multi-sélection)
-       -> plan priorisé par partie : capsule (rappel) + vidéo + exercices,
+     JOUR 5 — Dilution — même moteur que le J04 :
+       diagnostic QCM (15 questions, 3 blocs A/B/C, avec multi-sélection)
+       -> plan priorisé par bloc : capsule (rappel) + vidéo + exercices,
           verrou lu/vu, minuteur + case fait par exercice, sauvegarde.
-     Le Wooclap est un EXERCICE (type "wooclap"), pas le diagnostic.
-     Vidéos = emplacements en attente (video:null) ; rappels rédigés
-     d'après le QCM + programme (à vérifier vs cours J4).
+       Blocs A & B : 1 exercice chacun. Bloc C : activités LearningApps
+       (protocole) + vidéo bonus, pas d'exercice. Pas d'item obligatoire.
      ============================================================ -->
 <style>
   :root{
@@ -117,7 +116,9 @@
   .exo-titre{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600}
   .fait-mark{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--vert)}
   .exo-body{padding:0 1rem 1rem}
-  .exo-enonce{font-weight:600;margin-bottom:.4rem}
+  .exo-enonce{margin-bottom:.4rem}
+  .exo-situation{font-weight:400;margin-bottom:.5rem}
+  .exo-question{font-style:italic;margin:.5rem 0 .2rem}
   .exo-consigne{font-size:.85rem;color:var(--gris);margin-bottom:.6rem}
   .exo-btns{display:flex;gap:.5rem;flex-wrap:wrap}
   .mini{font-family:'IBM Plex Mono',monospace;font-size:.76rem;cursor:pointer;border:1px solid var(--nuit);background:#fff;color:var(--nuit);padding:.35rem .7rem}
@@ -194,16 +195,13 @@
 <div class="bandeau">
   <div class="bandeau-inner">
     <p class="eyebrow">Cahier de vacances · Diagnostic</p>
-    <h1>Jour 4 — Protocoles et formules de chimie</h1>
+    <h1>Jour 5 — La dilution</h1>
   </div>
 </div>
 
 <main><div id="app"></div></main>
 
 <script>
-/* ====== Lien Wooclap (exercice) — remplaçable par le code iFrame officiel ====== */
-const WOOCLAP_SRC = "https://app.wooclap.com/DGDCRNL/questionnaires/6a33e40adf2865a64a34d16a";
-
 /* ============================================================
    CONTENU — 4 parties (axes). Questions : single (bonne) ou multi (multi:true, bonnes:[]).
    ============================================================ */
@@ -211,168 +209,126 @@ function frac(a,b){return '<span class="frac"><span class="num">'+a+'</span><spa
 const NOTION = {
   axes:[
     {
-      id:"A", nom:"Masse volumique", video:"fDo__Czsngs", flash:null,
-      pourquoi:"En 1re spé, on la retrouve des deux côtés : en chimie (lien volume ↔ masse ↔ mole, et volume molaire d'un gaz) et en physique, dans la <strong>statique des fluides</strong> — c'est le ρ de la loi P = ρ·g·h, qui explique pourquoi la pression grimpe quand on descend en profondeur.",
-      exercices:[],
-      questions:[
-        { q:`Comment exprimer la masse m d'un échantillon en fonction de sa masse volumique ρ et de son volume V ?`,
-          opts:[`m = ρ × V`,`m = ρ / V`,`m = V / ρ`,`m = ρ + V`], bonne:0,
-          siFaux:`La masse volumique est ρ = m / V. On en tire <strong>m = ρ × V</strong>.`,
-          siJuste:`Exact : <strong>m = ρ × V</strong>.` },
-        { q:`Quelles unités peuvent être celles d'une masse volumique ?`, multi:true,
-          opts:[`g·L⁻¹`,`g·mL⁻¹`,`kg·m⁻³`,`g·cm⁻³`,`kg·L`], bonnes:[0,1,2,3],
-          siFaux:`Une masse volumique est une masse divisée par un volume : g·L⁻¹, g·mL⁻¹, kg·m⁻³ et g·cm⁻³ conviennent. « kg·L » n'en est pas une (pas de division par un volume).`,
-          siJuste:`Bien vu : seules les unités du type masse/volume conviennent ; « kg·L » est à exclure.` },
-        { q:`La masse volumique de l'éthanol est 0,789 g/mL. Quelle est la masse d'un échantillon de 10 mL ?`,
-          opts:[`7,9 g`,`0,79 g`,`0,079 g`,`78,9 mg`], bonne:0,
-          siFaux:`m<sub>échantillon</sub> = ρ<sub>éthanol</sub> × V<sub>solution</sub> = 0,789 × 10 = <strong>7,9 g</strong>.<br>• Attention aux unités données avant de faire le calcul, ici pas besoin de convertir, les unités sont cohérentes entre elles.<br>• Attention aux chiffres significatifs : ici le volume n'a que 2 chiffres, on arrondit donc le résultat à <strong>7,9 g</strong>.`,
-          siJuste:`Exact : m<sub>échantillon</sub> = ρ<sub>éthanol</sub> × V<sub>solution</sub> = 0,789 × 10 = <strong>7,9 g</strong>.<br>• Attention aux unités données avant de faire le calcul, ici pas besoin de convertir, les unités sont cohérentes entre elles.<br>• Attention aux chiffres significatifs : ici le volume n'a que 2 chiffres, on arrondit donc le résultat à <strong>7,9 g</strong>.` }
-      ]
-    },
-    {
-      id:"B", nom:"Mole & masse molaire", video:"sok3lW2uY-E",
-      pourquoi:"Point de départ de toute la chimie de 1re spé : <strong>tableau d'avancement</strong>, mélanges <strong>stœchiométriques</strong>, concentration en <strong>mol/L</strong>, <strong>dosages</strong>. Sans elle, impossible de prévoir combien de produit se forme, ni de doser quoi que ce soit.",
-      flash:`<p>Une <strong>mole</strong> est un paquet de N<sub>A</sub> = 6,02 × 10²³ entités (atomes, molécules ou ions). La <strong>quantité de matière</strong> n compte ces paquets.</p>
-        <p class="formule">n = ${frac('m','M')}</p>
-        <p class="formule">n = ${frac('N','N<sub>A</sub>')}</p>
+      id:"A", nom:"Les grandeurs de la dilution", video:"011dPQnPPg8",
+      pourquoi:"Diluer, c'est obtenir une solution moins concentrée à partir d'une plus concentrée — le geste pour viser pile la bonne concentration. En 1re spé, c'est ce qui sert à préparer une <strong>gamme d'étalons</strong> pour le <strong>dosage par étalonnage</strong> (sérums, sirops, analyses : on dilue partout).",
+      flash:`<p>Une <strong>dilution</strong> prépare une solution moins concentrée (la <strong>solution fille</strong>) en ajoutant de l'eau distillée à une solution plus concentrée (la <strong>solution mère</strong>).</p>
+        <p>La masse de soluté se conserve : on en tire la <strong>relation de dilution</strong>.</p>
+        <p class="formule">c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille)</p>
         <ul class="notations">
-          <li><strong>n</strong> : quantité de matière, en mol</li>
-          <li><strong>m</strong> : masse de l'échantillon, en g</li>
-          <li><strong>M</strong> : masse molaire, en g·mol⁻¹</li>
-          <li><strong>N</strong> : nombre d'entités (sans unité)</li>
-          <li><strong>N<sub>A</sub></strong> : constante d'Avogadro, 6,02 × 10²³ mol⁻¹</li>
+          <li><strong>c<sub>m</sub>(mère)</strong> : concentration de la solution mère, en g·L⁻¹</li>
+          <li><strong>V(mère)</strong> : volume de solution mère prélevé, en L (ou mL)</li>
+          <li><strong>c<sub>m</sub>(fille)</strong> : concentration de la solution fille, en g·L⁻¹</li>
+          <li><strong>V(fille)</strong> : volume de la solution fille préparée, en L (ou mL)</li>
         </ul>
-        <p>On distingue la <strong>masse molaire atomique</strong> M(X) — masse d'une mole d'atomes X, lue dans la classification périodique — de la <strong>masse molaire moléculaire</strong>, obtenue en additionnant les masses molaires atomiques de tous les atomes de la molécule.</p>
-        <p>Exemple (masse molaire <em>moléculaire</em> du méthanol CH₄O) : M = M(C) + 4×M(H) + M(O) = 12,0 + 4×1,01 + 16,0 = <strong>32,0 g·mol⁻¹</strong>.</p>`,
-      exercices:[],
-      questions:[
-        { q:`Que représente une mole ?`,
-          opts:[`Un paquet de 6,02 × 10²³ grammes d'une substance`,`Un paquet de 6,02 × 10²³ entités (atomes, molécules…)`,`Le nombre d'atomes contenus dans 1 g de n'importe quelle substance`,`La masse de 6,02 × 10²³ éléments chimiques`], bonne:1,
-          siFaux:`Une mole est un <strong>nombre d'entités</strong> : 6,02 × 10²³ atomes, molécules ou ions. Ce n'est ni une masse, ni « par gramme ».`,
-          siJuste:`Oui : une mole = 6,02 × 10²³ entités.` },
-        { q:`Quelle est l'unité de la quantité de matière ?`,
-          opts:[`g·mol`,`g·mol⁻¹`,`mol`,`mol/L`], bonne:2,
-          siFaux:`La quantité de matière n se mesure en <strong>mol</strong>. (g·mol⁻¹ est l'unité de la masse molaire ; mol/L celle d'une concentration.)`,
-          siJuste:`Exact : la quantité de matière est en mol.` },
-        { q:`Que représente la masse molaire ?`, multi:true,
-          opts:[`Le nombre d'atomes dans un échantillon de 6,02 × 10²³ éléments`,`La masse d'une mole d'éléments chimiques (atomes ou molécules)`,`La masse d'une mole d'atomes uniquement`,`La masse d'un échantillon contenant 6,02 × 10²³ éléments chimiques`], bonnes:[1,3],
-          siFaux:`La masse molaire est la <strong>masse d'une mole</strong> d'entités — ce qui revient à la masse d'un échantillon contenant 6,02 × 10²³ entités. Elle ne se limite pas aux atomes.`,
-          siJuste:`Exact : c'est la masse d'une mole d'entités (donc de 6,02 × 10²³ entités).` },
-        { q:`Quelles relations sont exactes ?`, multi:true,
-          opts:[`n = ${frac('m','M')}`,`n = m × M`,`m = n × M`,`m = ${frac('n','M')}`,`n = ${frac('N','N<sub>A</sub>')}`,`n = ${frac('N<sub>A</sub>','N')}`], bonnes:[0,2,4],
-          siFaux:`Les relations exactes : <strong>n = ${frac('m','M')}</strong>, <strong>m = n × M</strong> et <strong>n = ${frac('N','N<sub>A</sub>')}</strong>.`,
-          siJuste:`Exact : n = ${frac('m','M')}, m = n × M et n = ${frac('N','N<sub>A</sub>')}.` },
-        { q:`Quelle est la masse molaire du méthanol CH₄O ? (M(C)=12,0 ; M(O)=16,0 ; M(H)=1,01 g·mol⁻¹)`,
-          opts:[`32,0 g·mol⁻¹`,`32,01 g·mol⁻¹`,`77,01 g·mol⁻¹`,`29,01 g·mol⁻¹`], bonne:0,
-          siFaux:`La masse molaire moléculaire correspond à la <strong>somme des masses molaires atomiques</strong> : M(CH₄O) = M(C) + 4×M(H) + M(O) = 12,0 + 4×1,01 + 16,0 = <strong>32,0 g·mol⁻¹</strong>.<br>Attention, ici les masses molaires sont données au dixième près sauf celle de l'hydrogène donnée au centième près. Quand on fera la somme on gardera la précision de la donnée la moins précise, on restera donc au dixième près, soit <strong>32,0 g/mol</strong>.`,
-          siJuste:`Exact. La masse molaire moléculaire correspond à la <strong>somme des masses molaires atomiques</strong> : M(CH₄O) = 12,0 + 4×1,01 + 16,0 = <strong>32,0 g·mol⁻¹</strong>.<br>Attention, ici les masses molaires sont données au dixième près sauf celle de l'hydrogène donnée au centième près. Quand on fera la somme on gardera la précision de la donnée la moins précise, on restera donc au dixième près, soit <strong>32,0 g/mol</strong>.` }
-      ]
-    },
-    {
-      id:"C", nom:"Concentration massique", video:"OFEbrx1UZQ8", obligatoire:true,
-      pourquoi:"En 1re spé, la concentration passe en <strong>mol/L</strong> et surtout on apprend à la <strong>mesurer sans la connaître</strong> : par <strong>dosage par étalonnage</strong> (la couleur d'une solution, loi de Beer-Lambert) ou par <strong>titrage</strong>. C'est comme ça qu'on dose la vitamine C d'un jus ou le diiode d'une Bétadine.",
-      flash:`<p>La <strong>concentration massique</strong> C<sub>m</sub> d'une solution est la masse de soluté dissous divisée par le volume de solution :</p>
-        <p class="formule">C<sub>m</sub> = ${frac('m','V')}</p>
-        <ul class="notations">
-          <li><strong>C<sub>m</sub></strong> : concentration massique, en g·L⁻¹</li>
-          <li><strong>m</strong> : masse de soluté dissous, en g</li>
-          <li><strong>V</strong> : volume de solution, en L</li>
-        </ul>
-        <p>Bien convertir le volume en litres (mL → L). Pour chercher une masse, on isole : m = C<sub>m</sub> × V.</p>
-        <p>Exemple : 5,0 g de sel dans 250 mL (= 0,250 L) : C<sub>m</sub> = 5,0 / 0,250 = <strong>20 g·L⁻¹</strong>.</p>`,
+        <p>De chaque côté, on a les mêmes grandeurs : il suffit que les deux <em>concentrations</em> soient dans la même unité, et les deux <em>volumes</em> dans la même unité (pas besoin d'accorder c<sub>m</sub> et V entre eux).</p>`,
       exercices:[
-        { titre:"La fabrication du savon", timer:90,
-          enonce:`<p>La <strong>saponification</strong> : une matière grasse (huile d'olive, principalement de l'acide oléique C₁₈H₃₄O₂) réagit avec une base forte, la soude caustique (hydroxyde de sodium NaOH), pour donner du savon.</p>
-            <p class="attention">⚠️ La soude caustique est une base forte très corrosive : brûlures graves sur la peau et les yeux.</p>
-            <div class="donnees"><strong>Données</strong> — M(Na) = 23,0 ; M(O) = 16,0 ; M(H) = 1,0 ; M(C) = 12,0 (g·mol⁻¹). La recette nécessite 1,88 mol de soude et 0,60 kg d'huile d'olive. Masse volumique de la solution de soude : ρ = 1,04 g/mL.</div>
-            <p><strong>Partie 1 — quantité de matière</strong></p>
-            <strong>Q1.</strong> Calculer les masses molaires moléculaires M(NaOH) et M(C₁₈H₃₄O₂) (bien rédiger le calcul).<br>
-            <strong>Q2.</strong> Quelle masse de soude m(soude) doit-elle peser pour la recette (1,88 mol) ?<br>
-            <strong>Q3.</strong> Pour 0,60 kg d'huile, quelle quantité de matière n(huile) a-t-elle ajoutée ?
-            <p><strong>Partie 2 — concentration & masse volumique</strong></p>
-            <strong>Q4.</strong> Sous quelle forme se présente la soude ? En déduire le type de protocole à utiliser.
-            <details class="indice"><summary>💡 Voir un indice</summary><div class="indice-corps"><p>Bien relire l'énoncé pour vérifier si la soude est donnée sous forme solide, liquide ou gazeuse.</p></div></details>
-            <strong>Q5.</strong> Elle souhaite préparer 260 g de solution. À quel volume V(solution) cela correspond-il ?
-            <details class="indice"><summary>💡 Voir un indice</summary><div class="indice-corps"><p>Ici on nous donne la masse totale de solution et non uniquement la masse de soluté dissout. Il faut donc bien faire attention à la formule que tu choisis d'utiliser.</p></div></details>
-            <strong>Q6.</strong> Pour un savon doux, la solution doit avoir C<sub>m</sub>(NaOH) = 300 g·L⁻¹. Quelle masse de soude peser pour ce volume V(solution) ?
-            <details class="indice"><summary>💡 Voir l'indice 1</summary><div class="indice-corps"><p>Utilise le volume de solution calculé à la question précédente.</p></div></details>
-            <details class="indice"><summary>💡 Voir l'indice 2</summary><div class="indice-corps"><p>Utilise une formule qui lie masse, volume de solution et concentration massique, et écris-la de manière à isoler la grandeur recherchée. Attention aux unités de ta formule.</p></div></details>
-            <strong>Q7.</strong> Donner les étapes du protocole de dissolution.`,
-          correction:`<p><strong>Q1.</strong> M(NaOH) = M(Na)+M(O)+M(H) = 23,0+16,0+1,0 = <strong>40,0 g·mol⁻¹</strong>.<br>
-            M(C₁₈H₃₄O₂) = 18×M(C) + 34×M(H) + 2×M(O) = 18×12,0 + 34×1,0 + 2×16,0 = 216+34+32 = <strong>282 g·mol⁻¹</strong>.</p>
-            <p><strong>Q2.</strong> m(soude) = n × M(NaOH) = 1,88 × 40,0 = <strong>75,2 g</strong>.</p>
-            <p><strong>Q3.</strong> n(huile) = m / M = 600 / 282 ≈ <strong>2,1 mol</strong> (0,60 kg = 600 g ; on garde 2 chiffres significatifs).</p>
-            <p><strong>Q4.</strong> La soude est <strong>solide</strong> (paillettes) : il faut donc réaliser une <strong>dissolution</strong>.</p>
-            <p><strong>Q5.</strong> V(solution) = m / ρ = 260 / 1,04 = <strong>250 mL</strong>.</p>
-            <p><strong>Q6.</strong> m(soude) = C<sub>m</sub> × V = 300 × 0,250 = <strong>75,0 g</strong> (V = 0,250 L).</p>
-            <p><strong>Q7.</strong> Peser 75,0 g de soude ; les introduire dans une fiole jaugée de 250 mL (entonnoir) ; ajouter de l'eau distillée aux 2/3, boucher et agiter pour dissoudre ; compléter jusqu'au trait de jauge ; boucher et homogénéiser.</p>` }
-      ],
-      activites:[
-        { titre:"Cartes mentales à compléter", icone:"📐", faitLabel:"J'ai complété mes cartes mentales",
-          html:`<p class="exo-consigne">Imprime les deux cartes mentales, complète les relations entre les grandeurs, puis vérifie-toi avec le Wooclap ci-dessous.</p>
-            <div class="dl-row">
-              <a class="dl-btn" href="carte-mentale-mole.pdf" download>⬇️ Carte mentale — la mole (PDF)</a>
-              <a class="dl-btn" href="carte-mentale-mole-Cm.pdf" download>⬇️ Carte mentale — mole &amp; concentration (PDF)</a>
-            </div>
-            <div class="woo-act"><iframe src="${WOOCLAP_SRC}" title="Wooclap — vérifier ses cartes mentales" allow="fullscreen" loading="lazy"></iframe></div>
-            <p class="woo-note">Rien ne s'affiche ? <a href="${WOOCLAP_SRC}" target="_blank" rel="noopener">ouvrir le Wooclap dans un onglet</a>.</p>` }
+        { titre:"Préparer une solution diluée", timer:90,
+          enonce:`<p class="exo-situation">Au laboratoire, un technicien dispose d'un bidon de solution de sulfate de cuivre à 40 g·L⁻¹. Pour un TP, il doit préparer 500 mL d'une solution de sulfate de cuivre à 8,0 g·L⁻¹.</p>
+            <p class="exo-question">Quel volume doit-il prélever dans le bidon ? (Donner le résultat en mL.)</p>`,
+          correction:`<p>La solution du bidon (40 g·L⁻¹) est la <strong>solution mère</strong> ; celle à préparer (8,0 g·L⁻¹, 500 mL) est la <strong>solution fille</strong>.</p>
+            <p>Relation de dilution : c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille), d'où V(mère) = ${frac('c<sub>m</sub>(fille) × V(fille)','c<sub>m</sub>(mère)')} = ${frac('8,0 × 0,500','40')} = <strong>0,10 L = 100 mL</strong>.</p>
+            <p>(En gardant les mL : 8,0 × 500 / 40 = 100 mL.)</p>` }
       ],
       questions:[
-        { q:`La concentration massique d'une solution est définie par :`,
-          opts:[`Le nombre de moles de soluté divisé par le volume de solution`,`La masse de solution divisée par le volume de solution`,`La masse de soluté divisée par le volume de solution`,`Le volume de soluté divisé par le volume de solution`], bonne:2,
-          siFaux:`<strong>Attention ! ne pas confondre concentration et masse volumique.</strong><br>La concentration c'est la masse de <strong>soluté</strong> divisée par le volume de solution : C<sub>m</sub> = ${frac('m<sub>soluté</sub>','V<sub>solution</sub>')}, tandis que la masse volumique c'est bien la masse de <strong>solution</strong> (donc la masse totale de l'échantillon) divisée par le volume de solution : ρ = ${frac('m<sub>solution</sub>','V<sub>solution</sub>')}.`,
-          siJuste:`Exact. <strong>Attention à ne pas confondre concentration et masse volumique :</strong> la concentration c'est la masse de <strong>soluté</strong> divisée par le volume de solution, tandis que la masse volumique c'est la masse de <strong>solution</strong> (la masse totale de l'échantillon) divisée par le volume de solution.` },
-        { q:`Quelle est l'unité usuelle de la concentration massique ?`,
-          opts:[`mol/L`,`g/L`,`kg/m³ uniquement`,`g/mL uniquement`], bonne:1,
-          siFaux:`L'unité usuelle est le <strong>g/L</strong>. (mol/L est l'unité de la concentration en quantité de matière.)`,
-          siJuste:`Exact : g/L.` },
-        { q:`On dissout 5,0 g de sel dans 250 mL d'eau. Quelle est la concentration massique ?`,
-          opts:[`0,02 g/L`,`20 g/L`,`1250 g/L`,`0,5 g/L`], bonne:1,
-          siFaux:`C<sub>m</sub>(sel) = ${frac('m<sub>sel</sub>','V<sub>solution</sub>')} = ${frac('5,0','0,250')} = 5,0 × 4 = <strong>20 g/L</strong> (250 mL = 0,250 L ; diviser par 0,250 revient à multiplier par 4).`,
-          siJuste:`Exact : C<sub>m</sub>(sel) = ${frac('m<sub>sel</sub>','V<sub>solution</sub>')} = ${frac('5,0','0,250')} = 5,0 × 4 = <strong>20 g/L</strong>.` },
-        { q:`Une solution a Cm = 12 g/L. Quelle masse de soluté contient 500 mL ?`,
-          opts:[`24 g`,`6 g`,`0,6 g`,`2,4 g`], bonne:1,
-          siFaux:`La concentration correspond à la masse dissoute pour 1 litre de solution. Pour 500 mL la masse sera donc deux fois moins importante, ici <strong>6 g</strong>.<br>Autre possibilité de rédaction : m<sub>soluté</sub> = C<sub>m</sub>(soluté) × V = 12 × 0,500 = <strong>6,0 g</strong>.<br>• Penser à faire correspondre les unités, ici en convertissant le volume en litre.<br>• Attention chiffre significatif : si la concentration avait été de 12,0 g/L on aurait eu une masse de 6,00 g.`,
-          siJuste:`Exact. La concentration correspond à la masse dissoute pour 1 litre de solution ; pour 500 mL la masse est deux fois moins importante, soit <strong>6 g</strong>.<br>Autre rédaction : m<sub>soluté</sub> = C<sub>m</sub>(soluté) × V = 12 × 0,500 = <strong>6,0 g</strong>.<br>• Penser à faire correspondre les unités (volume en litre).<br>• Attention chiffre significatif : si la concentration avait été de 12,0 g/L on aurait eu 6,00 g.` },
-        { q:`Quelle(s) relation(s) est/sont exacte(s) ?`, multi:true,
-          opts:[`Cm = m × V`,`Cm = ${frac('m','V')}`,`m = Cm × V`,`m = ${frac('Cm','V')}`], bonnes:[1,2],
-          siFaux:`Les relations exactes : <strong>Cm = ${frac('m','V')}</strong> et <strong>m = Cm × V</strong>.`,
-          siJuste:`Exact : Cm = ${frac('m','V')} et m = Cm × V.` }
+        { q:`Lors d'une dilution, qu'est-ce qui se conserve ?`, multi:true,
+          opts:[`La quantité de matière de soluté`,`La masse de soluté`,`La concentration massique de soluté`,`Le volume de solution`], bonnes:[0,1],
+          siFaux:`Le fait d'ajouter de l'eau ne change pas la quantité (et donc la masse) de soluté versé initialement. La concentration, elle, diminue, et le volume augmente.`,
+          siJuste:`Exact : le fait d'ajouter de l'eau ne change pas la quantité (et donc la masse) de soluté versé initialement.` },
+        { q:`Quelle égalité est exacte ?`,
+          opts:[`c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille)`,`c<sub>m</sub>(mère) × V(fille) = c<sub>m</sub>(fille) × V(mère)`,`${frac('c<sub>m</sub>(mère)','V(mère)')} = ${frac('c<sub>m</sub>(fille)','V(fille)')}`], bonne:0,
+          siFaux:`La relation de dilution traduit la conservation de la masse de soluté : <strong>c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille)</strong>.`,
+          siJuste:`Exact : c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille).` },
+        { q:`Quelles affirmations sur la relation c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille) sont vraies ?`, multi:true,
+          opts:[`Elle traduit la conservation de la quantité de soluté`,`Elle s'applique uniquement aux solutions colorées`,`On a toujours c<sub>m</sub>(fille) < c<sub>m</sub>(mère)`,`V(fille) est toujours inférieur à V(mère)`], bonnes:[0,2],
+          siFaux:`Elle traduit la conservation de la quantité de soluté ; comme on ajoute de l'eau, la solution fille est toujours moins concentrée : c<sub>m</sub>(fille) < c<sub>m</sub>(mère). Elle ne se limite pas aux solutions colorées, et V(fille) est au contraire plus grand que V(mère).`,
+          siJuste:`Exact : elle traduit la conservation de la quantité de soluté, et la fille est toujours moins concentrée que la mère.` },
+        { q:`La relation c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille) est-elle valable si les concentrations sont en g/L et les volumes en mL ?`,
+          opts:[`Oui`,`Non, il faut obligatoirement convertir les deux volumes en L`], bonne:0,
+          siFaux:`Dans une relation qui comporte les mêmes grandeurs de part et d'autre d'une égalité, les grandeurs identiques doivent avoir la même unité. Ici les concentrations doivent avoir la même unité (g/L, g/mL, mol/L, etc.) et les volumes doivent avoir la même unité entre eux (mL ou L). Mais il n'est pas obligé de faire correspondre les unités des grandeurs différentes (c<sub>m</sub> et V).`,
+          siJuste:`Exact. Dans une relation où les mêmes grandeurs apparaissent de part et d'autre, il suffit que les deux concentrations aient la même unité et les deux volumes la même unité ; pas besoin d'accorder c<sub>m</sub> et V entre eux.` },
+        { q:`On veut préparer 200 mL d'une solution à 0,50 g/L à partir d'une solution à 5,0 g/L. Quel volume de solution mère faut-il prélever ?`,
+          opts:[`2,0 mL`,`20 mL`,`200 mL`,`2,0 L`], bonne:1,
+          siFaux:`V(mère) = ${frac('c<sub>m</sub>(fille) × V(fille)','c<sub>m</sub>(mère)')} = ${frac('0,50 × 200','5,0')} = <strong>20 mL</strong>.`,
+          siJuste:`Exact : V(mère) = ${frac('c<sub>m</sub>(fille) × V(fille)','c<sub>m</sub>(mère)')} = ${frac('0,50 × 200','5,0')} = <strong>20 mL</strong>.` }
       ]
     },
     {
-      id:"D", nom:"Protocoles de dissolution", video:null, flash:null,
-      pourquoi:"Dissolution et <strong>dilution</strong> sont le premier geste de tout dosage de 1re spé. La fiole jaugée, la pipette jaugée et la <strong>burette</strong> d'ici sont exactement la verrerie des <strong>titrages</strong> — et une solution mal préparée fausse toute la mesure.",
-      programme:`<p>La <strong>dissolution</strong> relève du thème de seconde « Constitution et transformations de la matière », dans l'étude des <strong>solutions aqueuses</strong> : c'est, avec la dilution, l'une des deux façons de préparer une solution à une <strong>concentration en masse</strong> voulue.</p>
-        <p>La compétence attendue est de <strong>choisir la verrerie adaptée</strong> et de <strong>mettre en œuvre le protocole</strong> en respectant les règles de sécurité. C'est un geste expérimental fondateur, réinvesti toute l'année puis en 1re (dilutions, dosages).</p>`,
+      id:"B", nom:"Facteur de dilution", video:"OuvsLVSLViA",
+      pourquoi:"Le facteur de dilution dit <em>combien de fois moins concentré</em>. Il structure les <strong>dilutions en série</strong> (10×, 100×, 1000×) — exactement la technique des gammes d'étalons en 1re spé, et un réflexe en biologie et en analyse médicale.",
+      flash:`<p>Lors d'une dilution, la <strong>solution mère</strong> est la solution de départ (la plus concentrée) et la <strong>solution fille</strong> celle obtenue après ajout d'eau distillée.</p>
+        <p>Le <strong>facteur de dilution</strong> F compare ces deux solutions. Il est <strong>toujours supérieur à 1</strong> et <strong>sans unité</strong> :</p>
+        <p class="formule">F = ${frac('c<sub>m</sub>(mère)','c<sub>m</sub>(fille)')} = ${frac('V(fille)','V(mère)')}</p>
+        <ul class="notations">
+          <li><strong>F</strong> : facteur de dilution, sans unité (toujours > 1)</li>
+          <li><strong>c<sub>m</sub>(mère)</strong> : concentration de la solution mère, en g·L⁻¹</li>
+          <li><strong>c<sub>m</sub>(fille)</strong> : concentration de la solution fille, en g·L⁻¹</li>
+          <li><strong>V(mère)</strong> : volume de solution mère prélevé, en L (ou mL)</li>
+          <li><strong>V(fille)</strong> : volume de la solution fille, en L (ou mL)</li>
+        </ul>
+        <p>On place toujours la plus grande valeur au numérateur. F = 10 signifie « 10 fois moins concentrée » ; le volume final vaut alors 10 fois le volume prélevé.</p>`,
+      exercices:[
+        { titre:"Facteur de dilution d'une boisson", timer:90,
+          enonce:`<p class="exo-situation">Pour une analyse, on prélève 25 mL d'un concentré de vitamine C titrant 80 mg·L⁻¹, que l'on complète avec de l'eau distillée jusqu'à 250 mL.</p>
+            <p class="exo-question">Déterminer le facteur de dilution, puis la concentration en vitamine C de la solution obtenue.</p>`,
+          correction:`<p>La solution mère est le concentré (volume prélevé 25 mL) ; la solution fille est la solution finale (250 mL).</p>
+            <p>F = ${frac('V(fille)','V(mère)')} = ${frac('250','25')} = <strong>10</strong> (sans unité).</p>
+            <p>c<sub>m</sub>(fille) = ${frac('c<sub>m</sub>(mère)','F')} = ${frac('80','10')} = <strong>8,0 mg·L⁻¹</strong>.</p>` }
+      ],
+      questions:[
+        { q:`Le facteur de dilution F est défini comme :`, multi:true,
+          opts:[`F = ${frac('V(fille)','V(mère)')}`,`F = ${frac('c<sub>m</sub>(fille)','c<sub>m</sub>(mère)')}`,`F = ${frac('c<sub>m</sub>(mère)','c<sub>m</sub>(fille)')}`,`Les deux premières propositions sont justes`], bonnes:[0,2],
+          siFaux:`Le facteur de dilution est toujours supérieur à 1 : F > 1. On a donc F = ${frac('valeur la plus grande','valeur la plus petite')}, soit F = ${frac('c<sub>m</sub>(mère)','c<sub>m</sub>(fille)')} = ${frac('V(fille)','V(mère)')}.`,
+          siJuste:`Exact : F = ${frac('c<sub>m</sub>(mère)','c<sub>m</sub>(fille)')} = ${frac('V(fille)','V(mère)')}, toujours supérieur à 1.` },
+        { q:`Un facteur de dilution F = 100 signifie que :`,
+          opts:[`La solution fille est 100 fois plus concentrée que la solution mère`,`La solution fille est 100 fois moins concentrée que la solution mère`,`On a prélevé 100 mL de solution mère`,`La solution finale a un volume de 100 mL`], bonne:1,
+          siFaux:`F = 100 signifie que la solution fille est <strong>100 fois moins concentrée</strong> que la solution mère.`,
+          siJuste:`Exact : la solution fille est 100 fois moins concentrée que la solution mère.` },
+        { q:`Lors d'une dilution, le facteur de dilution est F = 4 :`,
+          opts:[`Le volume final est 4 fois plus grand que le volume prélevé de solution mère`,`Le volume final est 4 fois plus petit que le volume prélevé de solution mère`,`Le volume ne change pas, c'est la concentration qui est modifiée`], bonne:0,
+          siFaux:`Puisque F = ${frac('V(fille)','V(mère)')} = 4, le volume final est <strong>4 fois plus grand</strong> que le volume prélevé de solution mère.`,
+          siJuste:`Exact : le volume final est 4 fois plus grand que le volume prélevé.` },
+        { q:`L'unité d'un facteur de dilution est :`,
+          opts:[`mol/L`,`L`,`sans unité`,`ça dépend des unités choisies pour le calcul`], bonne:2,
+          siFaux:`Le facteur de dilution est un rapport de deux grandeurs de même nature : il est <strong>sans unité</strong>.`,
+          siJuste:`Exact : c'est un rapport de grandeurs de même nature, donc sans unité.` },
+        { q:`On dilue 10 mL de solution mère pour obtenir une solution finale de 100 mL. Quel est le facteur de dilution ?`,
+          opts:[`0,1`,`1`,`10`,`1000`], bonne:2,
+          siFaux:`F = ${frac('V(fille)','V(mère)')} = ${frac('100','10')} = <strong>10</strong>.`,
+          siJuste:`Exact : F = ${frac('V(fille)','V(mère)')} = ${frac('100','10')} = <strong>10</strong>.` }
+      ]
+    },
+    {
+      id:"C", nom:"Protocole de dilution", video:"gykwsdZnWjE", videoBonus:true, flash:null,
+      pourquoi:"La <strong>pipette jaugée</strong> et la <strong>fiole jaugée</strong> d'ici sont la verrerie de précision des dilutions et des <strong>titrages</strong> de 1re spé. Un geste mal fait fausse toute la mesure.",
       exercices:[],
-      activites:[ { titre:"Activités interactives — protocoles", icone:"🧩", faitLabel:"J'ai fait les activités",
-        html:`<p class="exo-consigne">Pour t'entraîner sur les protocoles (plutôt qu'une vidéo) : remets les étapes de la dissolution dans l'ordre, puis complète le protocole à trous.</p>
+      activites:[ { titre:"Activités interactives — protocole", icone:"🧩", faitLabel:"J'ai fait les activités",
+        html:`<p class="exo-consigne">Pour t'entraîner sur le protocole de dilution : remets les étapes dans l'ordre, complète le protocole à trous, puis fais l'association.</p>
           <div class="la-grid">
-            <div class="la-item"><h5>Dissolution — ordre chronologique</h5><iframe src="https://learningapps.org/watch?v=pbwn6iaan26" allowfullscreen loading="lazy"></iframe></div>
-            <div class="la-item"><h5>Dissolution — protocole à trous</h5><iframe src="https://learningapps.org/watch?v=pyrcv4wia26" allowfullscreen loading="lazy"></iframe></div>
+            <div class="la-item"><h5>Dilution — ordre chronologique</h5><iframe src="https://learningapps.org/watch?v=pvofd0x9526" allowfullscreen loading="lazy"></iframe></div>
+            <div class="la-item"><h5>Dilution — protocole à trous</h5><iframe src="https://learningapps.org/watch?v=po7n4gef526" allowfullscreen loading="lazy"></iframe></div>
+            <div class="la-item"><h5>Dilution — association</h5><iframe src="https://learningapps.org/watch?v=pqtgt77z526" allowfullscreen loading="lazy"></iframe></div>
           </div>` } ],
       questions:[
-        { q:`Lors d'une dissolution, dans quel ordre procéder ?`,
-          opts:[`Verser le soluté dans la fiole jaugée, puis compléter en deux temps avec le solvant`,`Remplir la fiole aux 2/3 d'eau, ajouter le soluté, agiter, puis compléter au trait de jauge`,`Compléter la fiole au trait de jauge avec le solvant, puis ajouter le soluté pesé`,`Peser le solvant, puis ajouter le soluté`], bonne:0,
-          siFaux:`On introduit d'abord le <strong>soluté</strong> dans la fiole jaugée, puis on complète avec le solvant (en deux temps, avec agitation) jusqu'au trait de jauge.`,
-          siJuste:`Exact : soluté d'abord, puis on complète au trait de jauge.` },
-        { q:`Quel est le rôle de la fiole jaugée ?`,
-          opts:[`Peser précisément le soluté`,`Mesurer un volume précis et connu de solution`,`Chauffer la solution`,`Filtrer les impuretés`], bonne:1,
-          siFaux:`La fiole jaugée sert à <strong>mesurer un volume précis</strong> de solution (jusqu'au trait de jauge). La fiole jaugée fait partie de la <strong>verrerie de précision</strong>, tout comme la pipette jaugée par exemple.`,
-          siJuste:`Exact : elle mesure un volume précis de solution. La fiole jaugée fait partie de la <strong>verrerie de précision</strong>, tout comme la pipette jaugée par exemple.` },
-        { q:`Quelles précautions faut-il prendre lors d'une dissolution avec un solide ?`, multi:true,
-          opts:[`Peser le solide avec une balance de précision`,`Ajouter le solide dans une fiole déjà remplie au trait de jauge`,`Agiter pour homogénéiser avant de compléter au trait`,`Utiliser un entonnoir si nécessaire pour introduire le solide`,`Manipuler obligatoirement sous hotte avec gants et lunettes`], bonnes:[0,2,3],
-          siFaux:`On pèse le solide à la balance de précision, on agite pour homogénéiser avant de compléter au trait, et on utilise un entonnoir si nécessaire. En revanche, on n'ajoute pas le solide dans une fiole déjà remplie au trait de jauge. Et il n'est <strong>pas obligatoire</strong> de manipuler avec des gants et lunettes si par exemple on dissout juste du sucre dans l'eau.`,
-          siJuste:`Bien vu : balance de précision, agitation avant de compléter, entonnoir si besoin. À noter : il n'est <strong>pas obligatoire</strong> de manipuler avec des gants et lunettes si par exemple on dissout juste du sucre dans l'eau.` },
-        { q:`Quels matériels et verreries utilise-t-on pour une dissolution ?`, multi:true,
-          opts:[`Éprouvette graduée`,`Fiole jaugée`,`Erlenmeyer`,`Pipette jaugée`,`Balance`,`Spatule`,`Eau distillée`,`Burette graduée`], bonnes:[1,4,5,6],
-          siFaux:`Pour une dissolution : <strong>fiole jaugée, balance, spatule, eau distillée</strong> (et un entonnoir). L'éprouvette, l'erlenmeyer, la pipette ou la burette ne sont pas nécessaires ici.`,
-          siJuste:`Exact : fiole jaugée, balance, spatule, eau distillée.` },
-        { q:`Avant de commencer une dissolution, il faut calculer :`,
-          opts:[`La quantité de matière de soluté à peser`,`La masse de solution à peser`,`La masse de soluté à peser`,`La concentration massique de la solution`], bonne:2,
-          siFaux:`Avant de commencer, on calcule la <strong>masse de soluté à peser</strong> : m = Cm × V.`,
-          siJuste:`Exact : on calcule la masse de soluté à peser (m = Cm × V).` }
+        { q:`Sélectionner le matériel et la verrerie nécessaires pour une dilution.`, multi:true,
+          opts:[`Éprouvette`,`Erlenmeyer`,`Bécher`,`Fiole jaugée`,`Entonnoir`,`Pipette jaugée`,`Eau distillée`,`Spatule`,`Balance`], bonnes:[2,3,5,6],
+          siFaux:`Pour une dilution : <strong>bécher</strong> (pour y verser un peu de solution mère), <strong>fiole jaugée</strong>, <strong>pipette jaugée</strong> et <strong>eau distillée</strong>. Pas besoin de balance ni de spatule (on ne pèse rien), ni d'éprouvette, d'erlenmeyer ou d'entonnoir.`,
+          siJuste:`Exact : bécher, fiole jaugée, pipette jaugée, eau distillée.` },
+        { q:`Lors d'une dilution, dans quel ordre doit-on procéder ?`,
+          opts:[`Prélever la solution mère, puis compléter en deux temps avec le solvant dans la fiole jaugée`,`Remplir la fiole au 2/3 d'eau distillée, ajouter la solution mère, agiter, puis compléter au trait de jauge`,`Peser la solution mère, puis compléter avec le solvant dans la fiole jaugée`,`Compléter la fiole jaugée au trait de jauge puis ajouter la solution mère prélevée`], bonne:0,
+          siFaux:`On <strong>prélève la solution mère</strong> (pipette jaugée), on la verse dans la fiole jaugée, puis on complète en deux temps avec le solvant jusqu'au trait de jauge.`,
+          siJuste:`Exact : prélever la solution mère, puis compléter au trait de jauge avec le solvant.` },
+        { q:`Quels sont les points de vigilance lors d'un protocole de dilution ?`, multi:true,
+          opts:[`Rincer la pipette jaugée avant de l'utiliser`,`Regarder si la pipette jaugée possède deux traits de jauge avant de l'utiliser`,`Ne pas prélever directement dans la solution mère`,`Rincer la fiole jaugée avant de l'utiliser`,`Rincer et ranger la pipette jaugée dès le prélèvement terminé pour ne pas la casser`,`Utiliser une pipette en plastique si jamais l'eau ajoutée dépasse le trait de jauge`,`Ne pas boucher la fiole avec son doigt`,`Chanter une chanson pendant l'étape d'agitation accélère l'homogénéisation`], bonnes:[0,1,2,3,4,6],
+          siFaux:`Les bons réflexes : rincer la pipette jaugée, vérifier ses traits de jauge, ne pas prélever directement dans la solution mère, rincer la fiole jaugée, ranger la pipette dès le prélèvement, et ne pas boucher la fiole avec son doigt. En revanche, on ne « rattrape » pas un dépassement du trait de jauge, et chanter n'accélère évidemment pas l'homogénéisation.`,
+          siJuste:`Bien vu : pipette rincée et vérifiée, pas de prélèvement direct dans la mère, fiole rincée, pipette rangée, et on ne bouche pas la fiole avec son doigt.` },
+        { q:`Avant de commencer une dilution, il est indispensable (si la valeur n'est pas connue) de calculer :`,
+          opts:[`La quantité de matière de solution mère à peser`,`La masse de solution mère à peser`,`La concentration de la solution mère`,`Le volume de solution mère à prélever`,`Le facteur de dilution`], bonne:3,
+          siFaux:`Avant de commencer, on calcule le <strong>volume de solution mère à prélever</strong> : V(mère) = ${frac('c<sub>m</sub>(fille) × V(fille)','c<sub>m</sub>(mère)')}.`,
+          siJuste:`Exact : on calcule le volume de solution mère à prélever.` },
+        { q:`Quel est le rôle de la pipette jaugée ?`,
+          opts:[`Peser précisément la solution mère`,`Prélever un volume précis et connu de solution`,`Enlever un peu de la solution si le trait de jauge a été dépassé`,`Mesurer un volume approximatif de solution`], bonne:1,
+          siFaux:`La pipette jaugée sert à <strong>prélever un volume précis et connu</strong> de solution.`,
+          siJuste:`Exact : elle prélève un volume précis et connu de solution.` }
       ]
     }
   ]
@@ -404,7 +360,7 @@ function passerDiagnostic(){
   ecranResultats(false);
 }
 
-const STORE_KEY = "cahier-j04";
+const STORE_KEY = "cahier-j05";
 let PROG = (function(){ try{ const r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } })();
 function saveProg(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROG)); }catch(e){} }
 function freshProg(f, complet){
@@ -455,7 +411,7 @@ function ecranIntro(){
   answers=[]; idx=0;
   app.innerHTML = `
     <div class="intro">
-      <p>Ce diagnostic de <strong>18 questions</strong> (4 parties) sert à repérer ce que tu maîtrises déjà. Ce n'est pas une note. Certaines questions ont <strong>plusieurs réponses</strong> : elles te le signalent.</p>
+      <p>Ce diagnostic de <strong>15 questions</strong> (3 parties) sert à repérer ce que tu maîtrises déjà. Ce n'est pas une note. Certaines questions ont <strong>plusieurs réponses</strong> : elles te le signalent.</p>
       <div class="note-simple">Les questions ne couvrent <strong>pas tout</strong> le contenu de la séance : elles t'aident seulement à voir par où commencer.</div>
       <div class="actions" style="justify-content:flex-start;gap:.7rem;flex-wrap:wrap">
         <button class="btn" id="go">Commencer le diagnostic →</button>
@@ -595,14 +551,14 @@ function ecranResultats(autoOpen){
         <details class="exo" data-timer="${ex.timer}" data-ax="${axe.id}" data-j="${j}">
           <summary><span class="exo-num">Exercice ${j+1}</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
           <div class="exo-body">
-            <p class="exo-enonce">${ex.enonce}</p>
+            <div class="exo-enonce">${ex.enonce}</div>
             <p class="exo-consigne">✏️ Fais cet exercice sur ta feuille, puis vérifie. Le corrigé se débloque après un court instant.</p>
             <div class="exo-btns"><button type="button" class="mini btn-corr" disabled>Correction…</button></div>
             <div class="exo-corr" hidden>${ex.correction}</div>
             <label class="chk-fait"><input type="checkbox"> J'ai fait cet exercice</label>
           </div>
         </details>`;
-    }).join("") : `<p class="vide">Exercices à ajouter (depuis ton cours du Jour 4).</p>`;
+    }).join("") : `<p class="vide">Exercices à ajouter (depuis ton cours).</p>`;
 
     const hasCapsule = !!(axe.flash || axe.programme);
     const capsuleLabel = axe.flash ? "📖 Lire la capsule (rappel de cours)" : "📖 Lire — où ça se place dans le programme";
@@ -610,13 +566,13 @@ function ecranResultats(autoOpen){
       ? `<details class="media"><summary>${capsuleLabel}</summary><div class="flash">${axe.flash||axe.programme}</div></details>`
       : ``;
     const videoDetails = axe.video
-      ? `<details class="media"><summary>🎬 Regarder la vidéo</summary><div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`
+      ? `<details class="media"><summary>${axe.videoBonus?'🎬 Vidéo bonus — protocole de dilution':'🎬 Regarder la vidéo'}</summary><div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`
       : ``;
     const choixMsg = (hasCapsule && axe.video)
       ? `<p class="choix-msg">Choisis le format qui te convient : <strong>lis la capsule</strong> <em>ou</em> <strong>regarde la vidéo</strong>. Pas besoin des deux.</p>`
       : ``;
     const gateLu = hasCapsule ? `<label><input type="checkbox" class="chk-lu"> J'ai ${axe.flash?'lu la capsule':'lu le programme'}</label>` : ``;
-    const gateVu = axe.video ? `<label><input type="checkbox" class="chk-vu"> J'ai regardé la vidéo</label>` : ``;
+    const gateVu = (axe.video && !axe.videoBonus) ? `<label><input type="checkbox" class="chk-vu"> J'ai regardé la vidéo</label>` : ``;
     const gateBloc = (gateLu || gateVu) ? `<div class="gate">${gateLu}${gateVu}</div>` : ``;
 
     const activites = (axe.activites && axe.activites.length) ? axe.activites.map((ac,k)=>`
@@ -742,20 +698,19 @@ if(PROG && Array.isArray(PROG.fautes)){
     <div class="pb-cell none" data-axe="A"><span class="pb-fill"></span><span class="pb-lab">A</span></div>
     <div class="pb-cell none" data-axe="B"><span class="pb-fill"></span><span class="pb-lab">B</span></div>
     <div class="pb-cell none" data-axe="C"><span class="pb-fill"></span><span class="pb-lab">C</span></div>
-    <div class="pb-cell none" data-axe="D"><span class="pb-fill"></span><span class="pb-lab">D</span></div>
   </div>
 </div>
 <script>
-/* Jour 4 — barre de progression : Diagnostic + blocs A, B, C, D.
+/* Jour 5 — barre de progression : Diagnostic + blocs A, B, C.
    Publie le contrat "cahier-progression" lu par l'accueil. Chaque bloc =
    (capsule/vidéo consultée) + exercices faits + activités faites.
    La barre est masquée pendant le diagnostic (classe body.en-diagnostic). */
 (function(){
-  var JOUR=4, TITRE="Protocoles et formules", CLE='cahier-j04';
-  var AXES=[{id:'A',exos:0,act:0},{id:'B',exos:0,act:0},{id:'C',exos:1,act:1,oblig:true},{id:'D',exos:0,act:1}];
+  var JOUR=5, TITRE="La dilution", CLE='cahier-j05';
+  var AXES=[{id:'A',exos:1,act:0},{id:'B',exos:1,act:0},{id:'C',exos:0,act:1,nogate:true}];
   function lire(){ try{var r=localStorage.getItem(CLE);return r?JSON.parse(r):null;}catch(e){return null;} }
-  function lireOuv(){ try{var r=localStorage.getItem('cahier-j04-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
-  function saveOuv(o){ try{localStorage.setItem('cahier-j04-ouverts',JSON.stringify(o));}catch(e){} }
+  function lireOuv(){ try{var r=localStorage.getItem('cahier-j05-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
+  function saveOuv(o){ try{localStorage.setItem('cahier-j05-ouverts',JSON.stringify(o));}catch(e){} }
   function deuxch(n){ return (n<10?'0':'')+n; }
   function ajd(){ var d=new Date();return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
   function paint(c,state,frac,extra){
@@ -791,9 +746,10 @@ if(PROG && Array.isArray(PROG.fautes)){
       var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
       var nE=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) nE++; }
       var nA=0; for(var k=0;k<ax.act;k++){ if(P.act&&P.act[ax.id]&&P.act[ax.id][k]) nA++; }
-      var total=1+ax.exos+ax.act;
-      var acquis = ax.oblig ? (consulte&&nE===ax.exos&&nA===ax.act) : (vert||(consulte&&nE===ax.exos&&nA===ax.act));
-      var steps=acquis?total:((consulte?1:0)+nE+nA); pf+=steps; pt+=total;
+      var hasGate=!ax.nogate;
+      var total=(hasGate?1:0)+ax.exos+ax.act;
+      var acquis = ax.oblig ? (consulte&&nE===ax.exos&&nA===ax.act) : (vert||((hasGate?consulte:true)&&nE===ax.exos&&nA===ax.act));
+      var steps=acquis?total:((hasGate&&consulte?1:0)+nE+nA); pf+=steps; pt+=total;
       var ouvert=!!ouv[ax.id], touche=acquis||ouvert||consulte||nE>0||nA>0;
       var state=acquis?'done':(touche?'prog':'none');
       setCell(ax.id,state,steps/total,(revoir&&!acquis)?'revoir':'');
