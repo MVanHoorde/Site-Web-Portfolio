@@ -23,6 +23,8 @@
   .obj .dots{display:flex;gap:6px}
   .obj .dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--ligne)}
   .obj .dot.on{background:var(--vert);border-color:var(--vert)}
+  .obj.done{border-color:var(--vert);background:rgba(47,174,106,.08)}
+  .obj.done .cnt{color:var(--vert);font-weight:700}
   .obj .cnt{font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--gris)}
   .obj .reset{margin-left:auto;font-size:.74rem;color:var(--gris);background:none;border:none;cursor:pointer;text-decoration:underline}
   details.howto{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:.5rem 1rem;margin-bottom:1rem;font-size:.9rem}
@@ -102,16 +104,15 @@
   <div class="hd-in">
     <a class="retour" href="cahier-vacances-2nde-1re-spe.html">← Cahier de vacances</a>
     <h1>Jour 8 — Découverte des youtubeurs scientifiques <span style="color:var(--orange)">(2/2)</span></h1>
-    <p>Une carte à explorer, organisée comme une classification périodique. Chaque case est une chaîne. <strong>De haut en bas</strong>, la profondeur scientifique augmente. <strong>De gauche à droite</strong>, on passe du plaisir et de l'émerveillement vers la méthode, le cours et les références. Tout à droite, les <strong>« gaz nobles »</strong> sont les valeurs sûres. <strong>Clique une case</strong> : ses chaînes s'ouvrent dans le panneau en dessous.</p>
+    <p>Au Jour 4, vous avez parcouru des vulgarisateurs et vulgarisatrices des sciences. Aujourd'hui, il est temps d'en faire votre <strong>plan de révision</strong> pour la 1<sup>re</sup> spécialité : repérez les chaînes <strong>« Méthode &amp; cours »</strong> qui vous accompagneront toute l'année, puis classez votre <strong>top 3</strong> et validez-le. La table ci-dessous est là pour vous aider à choisir.</p>
   </div>
 </header>
 <main>
-  <div class="obj">
+  <div class="obj" id="obj">
     <span class="t">🎯 Mission du jour</span>
-    <span>Explore les chaînes <strong>« Méthode &amp; cours »</strong> de la table, puis classe ton <strong>top 3</strong> ci-dessous.</span>
+    <span>Créer ton <strong>top 3</strong> des chaînes « Méthode &amp; cours », puis le valider.</span>
     <span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
-    <span class="cnt" id="objcnt">0 chaîne · 0 famille</span>
-    <button class="reset" id="reset">réinitialiser</button>
+    <span class="cnt" id="objcnt">0 / 3</span>
   </div>
 
   <section class="top3" id="top3">
@@ -235,12 +236,7 @@ function markSeen(c){
   updateObj();
 }
 function distinctFams(){var o={};VUS.forEach(function(n){var c=byNom[n];if(c)o[c.f]=1;});return Object.keys(o).length;}
-function updateObj(){
-  var d=distinctFams(),n3=Math.min(d,3);
-  document.querySelectorAll('.obj .dot').forEach(function(dt,i){dt.classList.toggle('on',i<n3);});
-  document.getElementById('objcnt').textContent=VUS.length+' chaîne'+(VUS.length>1?'s':'')+' · '+d+' famille'+(d>1?'s':'');
-  publish(d);
-}
+function updateObj(){} /* mission pilotée par le top 3 */
 function publish(d){
   try{
     var all=JSON.parse(localStorage.getItem('cahier-progression'))||{};
@@ -251,11 +247,6 @@ function publish(d){
     localStorage.setItem('cahier-progression',JSON.stringify(all));
   }catch(e){}
 }
-document.getElementById('reset').addEventListener('click',function(){
-  VUS=[];save('cahier-j8-vues',VUS);
-  document.querySelectorAll('.tile .seen').forEach(function(s){s.remove();});
-  updateObj();
-});
 
 var tray=document.getElementById('tray');tray.style.display='none';
 
@@ -287,6 +278,22 @@ updateObj();
     });
     return h;
   }
+  function publishTop3(filled){
+    try{
+      var all=JSON.parse(localStorage.getItem('cahier-progression'))||{};
+      if(filled===0){ if(all['8']){ delete all['8']; localStorage.setItem('cahier-progression',JSON.stringify(all)); } return; }
+      function p2(n){return(n<10?'0':'')+n;} var d=new Date(); var today=d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+      var date=(all['8']&&all['8'].date)?all['8'].date:today;
+      all['8']={titre:"Youtubeurs (2/2) — mon top 3",date:date,axes:[],axesFaits:filled,axesTotal:3,pct:Math.round(filled/3*100),termine:filled>=3,unite:'choix'};
+      localStorage.setItem('cahier-progression',JSON.stringify(all));
+    }catch(e){}
+  }
+  function mission(filled){
+    var cnt=document.getElementById('objcnt'); if(cnt) cnt.textContent=(filled>=3?'✓ Top 3 validé':filled+' / 3');
+    var obj=document.getElementById('obj'); if(obj) obj.classList.toggle('done',filled>=3);
+    document.querySelectorAll('.obj .dot').forEach(function(dt,i){ dt.classList.toggle('on', i<filled); });
+    publishTop3(filled);
+  }
   function render(){
     sels.forEach(function(sel,i){
       var others=top.filter(function(x,j){return j!==i&&x;});
@@ -298,6 +305,7 @@ updateObj();
       var nom=top[o.i]; var vide=nom?'':' vide';
       return '<div class="col '+o.cls+vide+'"><div class="nom">'+(nom?esc(nom):'—')+'</div><div class="bar">'+o.m+'</div></div>';
     }).join('');
+    mission(top.filter(Boolean).length);
   }
   sels.forEach(function(sel,i){ sel.addEventListener('change',function(){ top[i]=sel.value||null; save(top); render(); }); });
   var rb=document.getElementById('top3reset');
