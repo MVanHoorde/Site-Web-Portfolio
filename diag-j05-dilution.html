@@ -442,6 +442,24 @@ function priorite(f){
   if(f<=2)  return {cls:"a", label:"À revoir"};
   return     {cls:"r", label:"À retravailler"};
 }
+function axeFini(axe){
+  const hasGate = !!(axe.flash || axe.programme || (axe.video && !axe.videoBonus));
+  const consulte = !!((PROG.lu&&PROG.lu[axe.id])||(PROG.vu&&PROG.vu[axe.id]));
+  const exosOk = (axe.exercices||[]).every((ex,j)=> !!(PROG.faits&&PROG.faits[axe.id]&&PROG.faits[axe.id][j]));
+  const actOk  = (axe.activites||[]).every((ac,k)=> !!(PROG.act&&PROG.act[axe.id]&&PROG.act[axe.id][k]));
+  return (hasGate?consulte:true) && exosOk && actOk;
+}
+function axeEnCours(axe){
+  const consulte = !!((PROG.lu&&PROG.lu[axe.id])||(PROG.vu&&PROG.vu[axe.id]));
+  const someFait = (axe.exercices||[]).some((ex,j)=> !!(PROG.faits&&PROG.faits[axe.id]&&PROG.faits[axe.id][j]));
+  const someAct  = (axe.activites||[]).some((ac,k)=> !!(PROG.act&&PROG.act[axe.id]&&PROG.act[axe.id][k]));
+  return consulte || someFait || someAct || !!(PROG.touche&&PROG.touche[axe.id]);
+}
+function etatAxe(axe,i){
+  if(axeFini(axe)) return {cls:"v", label:"Terminé"};
+  if(axeEnCours(axe)) return {cls:"a", label:"En cours"};
+  return priorite(fautes[i]);
+}
 
 function ecranIntro(){
   document.body.classList.add('en-diagnostic');
@@ -556,7 +574,7 @@ function ecranResultats(autoOpen){
   });
 
   const cartes = ordre.map(({axe,i,f})=>{
-    const p = badgeAxe(axe,i);
+    const p = etatAxe(axe,i);
     const nb = axe.questions.length;
     const exos = axe.exercices.length ? axe.exercices.map((ex,j)=>{
       if(ex.attente){
@@ -630,7 +648,7 @@ function ecranResultats(autoOpen){
         <summary>
           <span class="badge ${p.cls}">${p.label}</span>
           <span class="axe-nom">Bloc ${axe.id} — ${axe.nom}</span>
-          <span class="axe-score">${nb-f}/${nb}</span>
+          <span class="axe-score"${(PROG.ouvert&&PROG.ouvert[axe.id])?' hidden':''}>${nb-f}/${nb}</span>
         </summary>
         <div class="axe-corps">
           <div class="pourquoi"><b>Pourquoi c'est important</b>${axe.pourquoi}</div>
@@ -702,18 +720,30 @@ function ecranResultats(autoOpen){
     cf.addEventListener('change', ()=>{ PROG.act=PROG.act||{}; PROG.act[axId]=PROG.act[axId]||{}; PROG.act[axId][k]=cf.checked; saveProg(); if(mark) mark.hidden=!cf.checked; });
   });
   // Méthode B : rafraîchir en direct le badge (vert/jaune) des parties obligatoires
-  function refreshObligatoires(){
+  function refreshEtats(){
     NOTION.axes.forEach((axe,i)=>{
-      if(!axe.obligatoire) return;
       const det = document.querySelector('details.axe[data-axe="'+axe.id+'"]');
       if(!det) return;
-      const b = badgeAxe(axe,i);
+      const b = etatAxe(axe,i);
       det.className = 'axe '+b.cls;
       const badgeEl = det.querySelector('.badge');
       if(badgeEl){ badgeEl.className = 'badge '+b.cls; badgeEl.textContent = b.label; }
+      if(PROG.ouvert && PROG.ouvert[axe.id]){ const sc = det.querySelector('.axe-score'); if(sc) sc.hidden = true; }
     });
   }
-  document.addEventListener('change', refreshObligatoires);
+  NOTION.axes.forEach((axe,i)=>{
+    const det = document.querySelector('details.axe[data-axe="'+axe.id+'"]');
+    if(!det) return;
+    det.addEventListener('toggle', ()=>{
+      if(det.open){ PROG.ouvert = PROG.ouvert||{}; if(!PROG.ouvert[axe.id]){ PROG.ouvert[axe.id]=true; saveProg(); } }
+      refreshEtats();
+    });
+    det.querySelectorAll('details').forEach((sub)=>{
+      sub.addEventListener('toggle', ()=>{ if(sub.open){ PROG.touche = PROG.touche||{}; if(!PROG.touche[axe.id]){ PROG.touche[axe.id]=true; saveProg(); refreshEtats(); } } });
+    });
+  });
+  document.addEventListener('change', refreshEtats);
+  refreshEtats();
 
   document.getElementById("recommencer").onclick = ()=>{ clearProg(); fautes.fill(0); ecranIntro(); };
 }
