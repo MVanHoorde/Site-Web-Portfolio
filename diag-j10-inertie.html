@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnostic Jour 5 — La dilution</title>
+<title>Diagnostic Jour 10 — Le principe d'inertie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -93,6 +93,11 @@
   .flash ol{margin:.3rem 0 .6rem 1.2rem;font-size:.95rem}
   .flash ol li{margin-bottom:.25rem}
   .formule{font-family:'IBM Plex Mono',monospace;font-size:.92rem;background:rgba(63,167,214,.10);border-left:3px solid var(--cyan);padding:.55rem .8rem;text-align:center}
+  .vec{position:relative;display:inline-block}
+  .vec::before{content:"→";position:absolute;top:-.62em;left:0;width:100%;text-align:center;font-size:.58em;font-weight:400;line-height:1;color:var(--encre)}
+  .cap-titre{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;color:var(--encre);margin:1rem 0 .35rem}
+  .def{background:rgba(0,0,0,.025);border:1px solid var(--ligne);border-radius:6px;padding:.5rem .75rem;margin:.4rem 0;font-size:.95rem}
+  .def .def-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:var(--cyan);border:1px solid var(--cyan);border-radius:3px;padding:.04rem .3rem;margin-right:.45rem;vertical-align:.08em}
   .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .18em;line-height:1.05}
   .frac .num{padding:0 .4em}
   .frac .den{padding:0 .4em;border-top:1.6px solid currentColor}
@@ -198,7 +203,7 @@
 <div class="bandeau">
   <div class="bandeau-inner">
     <p class="eyebrow">Cahier de vacances · cap sur la 1re spé <span style="color:var(--orange)">&rarr;</span></p>
-    <h1>Jour 5 — La dilution</h1>
+    <h1>Jour 10 — Le principe d'inertie</h1>
   </div>
 </div>
 
@@ -212,160 +217,68 @@ function frac(a,b){return '<span class="frac"><span class="num">'+a+'</span><spa
 const NOTION = {
   axes:[
     {
-      id:"A", nom:"Les grandeurs de la dilution", video:"011dPQnPPg8",
-      pourquoi:"Diluer, c'est obtenir une solution moins concentrée à partir d'une plus concentrée — le geste pour viser pile la bonne concentration. En 1re spé, c'est ce qui sert à préparer une <strong>gamme d'étalons</strong> pour le <strong>dosage par étalonnage</strong> (sérums, sirops, analyses : on dilue partout).",
-      flash:`<p>Une <strong>dilution</strong> prépare une solution moins concentrée (la <strong>solution fille</strong>) en ajoutant de l'eau distillée à une solution plus concentrée (la <strong>solution mère</strong>).</p>
-        <p>La masse de soluté se conserve : on en tire la <strong>relation de dilution</strong>.</p>
-        <p class="formule">c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille)</p>
-        <ul class="notations">
-          <li><strong>c<sub>m</sub>(mère)</strong> : concentration de la solution mère, en g·L⁻¹</li>
-          <li><strong>V(mère)</strong> : volume de solution mère prélevé, en L (ou mL)</li>
-          <li><strong>c<sub>m</sub>(fille)</strong> : concentration de la solution fille, en g·L⁻¹</li>
-          <li><strong>V(fille)</strong> : volume de la solution fille préparée, en L (ou mL)</li>
-        </ul>
-        <p>De chaque côté, on a les mêmes grandeurs : il suffit que les deux <em>concentrations</em> soient dans la même unité, et les deux <em>volumes</em> dans la même unité (pas besoin d'accorder c<sub>m</sub> et V entre eux).</p>
-        <div class="exo-exemple"><span class="ex-lab">Exemple résolu</span>
-          <p>Un technicien dispose d'un bidon de sulfate de cuivre à 40 g·L⁻¹ et doit préparer 500 mL d'une solution à 8,0 g·L⁻¹. Quel volume prélever dans le bidon ?</p>
-          <p>V(mère) = ${frac('c<sub>m</sub>(fille) × V(fille)','c<sub>m</sub>(mère)')} = ${frac('8,0 × 0,500','40')} = <strong>0,10 L = 100 mL</strong>.</p></div>`,
+      id:"A", nom:"Le principe d'inertie", video:"mkUrxuKoMF8",
+      pourquoi:"Le principe d'inertie relie le <strong>mouvement</strong> d'un système au <strong>bilan des forces</strong> qui s'exercent sur lui. En 1re spé, il devient le <strong>principe d'inertie de Newton</strong> (1re loi) et la base de toute l'étude des mouvements : on s'en sert sans cesse pour prévoir une trajectoire ou retrouver une force manquante.",
+      flash:`<p>On se place dans un <strong>référentiel terrestre</strong> supposé galiléen.</p>
+        <p class="cap-titre">Définitions</p>
+        <div class="def"><span class="def-tag">Déf</span><strong>Repos</strong> — un système est au repos si son vecteur vitesse est nul à tout instant (<span class="vec">v</span> = <span class="vec">0</span>). Le repos n'existe que dans un référentiel donné : il n'y a pas de repos absolu.</div>
+        <div class="def"><span class="def-tag">Déf</span><strong>Inertie</strong> — difficulté à modifier le mouvement d'un système : plus sa masse est grande, plus il est inerte.</div>
+        <div class="def"><span class="def-tag">Déf</span><strong>Résultante des forces</strong> ∑<span class="vec">F</span> — somme vectorielle de toutes les forces qui s'appliquent sur le système.</div>
+        <p class="cap-titre">Le principe d'inertie</p>
+        <p class="formule">Si ∑<span class="vec">F</span> = <span class="vec">0</span> (les forces se compensent), le système est au repos <em>ou</em> en mouvement rectiligne uniforme — et réciproquement.</p>
+        <p class="cap-titre">La contraposée du principe d'inertie</p>
+        <p class="formule">Si le mouvement n'est ni le repos ni rectiligne uniforme, alors ∑<span class="vec">F</span> ≠ <span class="vec">0</span> (les forces ne se compensent pas) — et réciproquement.</p>
+        <img src="inertie-principe.png" alt="Forces compensées (2 ou 3 forces, triangle des forces fermé) : repos ou MRU ; forces non compensées : le mouvement change." style="display:block;max-width:100%;border:1px solid var(--ligne);border-radius:6px;margin:.5rem 0">
+        <p class="cap-titre">Lire une chronophotographie</p>
+        <p>Des positions alignées et régulièrement espacées indiquent un mouvement rectiligne uniforme. Si l'espacement augmente, le système accélère ; s'il diminue, il ralentit. Le vecteur vitesse <span class="vec">v</span> suit cet espacement.</p>
+        <img src="inertie-chrono.png" alt="Chronophotographies avec vecteurs vitesse : espacement régulier (uniforme), croissant (accéléré), décroissant (ralenti)." style="display:block;max-width:100%;border:1px solid var(--ligne);border-radius:6px;margin:.5rem 0">
+        <p class="cap-titre">Chute libre</p>
+        <p>Un corps est en chute libre si son <strong>poids</strong> est la seule force qui s'exerce sur lui. Son mouvement est alors rectiligne mais <em>non</em> uniforme : il accélère.</p>`,
       exercices:[
-        { titre:"Les boissons énergisantes — attention à la caféine !", timer:90,
-          enonce:`<p>Une étude de l'<strong>ANSES</strong> alerte sur la consommation croissante de boissons énergisantes chez les adolescents : certains en consomment plusieurs canettes par semaine, avant le sport, en soirée ou en période de révisions. Or la caféine présente des risques (troubles du sommeil, anxiété, troubles cardiaques) en cas de surconsommation, en particulier chez les jeunes.</p>
-            <div class="donnees"><img src="redbull.png" alt="Canette de Red Bull" style="height:130px;float:right;margin:.1rem 0 .4rem .9rem"><strong>Données</strong>
-              <ul style="margin:.35rem 0 .1rem 1.1rem">
-                <li>Une canette de Red Bull contient 250 mL de boisson.</li>
-                <li>Concentration en caféine du Red Bull : c<sub>m</sub>(caféine)<sub>Red Bull</sub> = 3,2×10⁻¹ g·L⁻¹.</li>
-                <li>Un adolescent consomme en moyenne 3 canettes par semaine.</li>
-              </ul>
-            </div>
-            <strong>Q1.</strong> Calculer le volume total de boisson énergisante bu par un adolescent chaque année (unité à adapter).<br>
-            <strong>Q2.</strong> En déduire la masse m de caféine ingérée par un adolescent chaque année rien qu'avec ces boissons.<br>
-            <strong>Q3.</strong> Pour réduire les risques, un médecin recommande de ne pas dépasser une concentration en caféine de 8,0×10⁻² g·L⁻¹ pour une boisson consommée régulièrement. Lucas décide de diluer sa boisson avec de l'eau : il vide une canette de 250 mL dans sa gourde de 0,750 L. La boisson dans la gourde de Lucas respecte-t-elle la recommandation du médecin ?
-            <details class="indice"><summary>💡 Voir l'indice 1</summary><div class="indice-corps"><p>Il s'agit d'une dilution : on va donc utiliser la relation de conservation de la matière. Commence par déterminer ce qu'on cherche. Ici, on veut savoir si Lucas suit la recommandation du médecin. Que recommande le médecin ? Donc que faut-il calculer ?</p></div></details>
-            <details class="indice"><summary>💡 Voir l'indice 2</summary><div class="indice-corps"><p>Le médecin recommande une concentration maximale de 80 mg·L⁻¹. Dans la dilution réalisée par Lucas, cherches-tu la concentration <em>mère</em> (de départ) ou la concentration <em>fille</em> (finale) ?</p></div></details>
-            <details class="indice"><summary>💡 Voir l'indice 3</summary><div class="indice-corps"><p>Quelle est la relation de conservation de la matière lors d'une dilution ?</p></div></details>
-            <details class="indice"><summary>💡 Voir l'indice 4</summary><div class="indice-corps"><p>Dans la relation c<sub>m</sub>(caféine)<sub>mère</sub> × V<sub>mère</sub> = c<sub>m</sub>(caféine)<sub>fille</sub> × V<sub>fille</sub>, ré-écris les annotations mère / fille : laquelle devient « gourde » et laquelle « Red Bull » ? Souligne la grandeur cherchée, puis isole-la.</p></div></details>
-            <details class="indice"><summary>💡 Voir l'indice 5</summary><div class="indice-corps"><p>Tu dois normalement obtenir : c<sub>m</sub>(caféine)<sub>gourde</sub> = c<sub>m</sub>(caféine)<sub>Red Bull</sub> × ${frac('V<sub>Red Bull</sub>','V<sub>gourde</sub>')}. Il ne reste plus qu'à remplacer par les valeurs de l'énoncé, en faisant attention aux unités.</p></div></details>`,
-          correction:`<p><strong>Q1.</strong> V<sub>total</sub> = 52 semaines × 3 canettes × 250 mL = <strong>39 000 mL = 39 L</strong>.</p>
-            <p><strong>Q2.</strong> m(caféine) = c<sub>m</sub>(caféine)<sub>Red Bull</sub> × V<sub>total</sub> = 0,32 × 39 ≈ <strong>12,5 g</strong> de caféine ingérée par an.</p>
-            <p><strong>Q3.</strong> On cherche la concentration de la gourde <em>après</em> dilution, donc la concentration <strong>fille</strong>. Lors d'une dilution, la quantité de matière se conserve :</p>
-            <p class="formule">c<sub>m</sub>(caféine)<sub>mère</sub> × V<sub>mère</sub> = c<sub>m</sub>(caféine)<sub>fille</sub> × V<sub>fille</sub></p>
-            <p>Avec les notations de l'énoncé : c<sub>m</sub>(caféine)<sub>Red Bull</sub> × V<sub>Red Bull</sub> = c<sub>m</sub>(caféine)<sub>gourde</sub> × V<sub>gourde</sub>, d'où :</p>
-            <p>c<sub>m</sub>(caféine)<sub>gourde</sub> = c<sub>m</sub>(caféine)<sub>Red Bull</sub> × ${frac('V<sub>Red Bull</sub>','V<sub>gourde</sub>')} = 0,320 × ${frac('0,250','0,750')} = <strong>0,11 g·L⁻¹</strong>.</p>
-            <p>Cette concentration (0,11 g·L⁻¹) reste <strong>supérieure</strong> aux 80 mg·L⁻¹ (= 0,080 g·L⁻¹) recommandés : Lucas n'a <strong>pas assez dilué</strong> sa boisson.</p>
-            <p style="font-size:.86rem;color:var(--gris)">Remarque : inutile de convertir les volumes en litres ici (le rapport se simplifie) ; en mL aussi, on retrouve 0,11 g·L⁻¹.</p>` }
+        { titre:"La pierre de curling", timer:90,
+          enonce:`<img src="curling.jpg" alt="Pierres de curling glissant sur la glace." style="display:block;max-width:100%;border-radius:6px;margin:0 0 .6rem">
+            <p class="exo-situation">Une pierre de curling, modélisée par son centre de gravité G, se déplace en ligne droite sur la piste de 42 m. L'action des balayeurs élimine la force de frottements exercée par la piste sur la pierre. Puisqu'il n'y a pas de force qui s'oppose au mouvement, la valeur de la vitesse de la pierre est alors constante.</p>
+            <div class="donnees"><strong>Donnée</strong> — Poids de la pierre : P = 200 N.</div>
+            <strong>Q1.</strong> Que peut-on dire des forces qui s'exercent sur la pierre dans le référentiel terrestre ?
+            <details class="indice"><summary>💡 Voir l'aide 1</summary><div class="indice-corps"><p>Indique d'abord la nature du mouvement, puis exploite le principe d'inertie.</p></div></details>
+            <strong>Q2.</strong> Faire le bilan des forces qui s'exercent sur la pierre, puis donner, en justifiant, leurs caractéristiques.
+            <details class="indice"><summary>💡 Voir l'aide 2</summary><div class="indice-corps"><p>Une force possède (au moins) trois caractéristiques : sa direction, son sens et sa valeur (norme).</p></div></details>
+            <strong>Q3.</strong> Que peut-on dire de la nature du mouvement et du vecteur vitesse <span class="vec">v</span><sub>G</sub> du centre d'inertie lorsque les balayeurs cessent leur action ?
+            <details class="indice"><summary>💡 Voir l'aide 3</summary><div class="indice-corps"><p>Fais la somme vectorielle des forces qui s'exercent alors sur la pierre.</p></div></details>`,
+          correction:`<p><strong>Q1.</strong> La trajectoire est une portion de droite et la valeur de la vitesse est constante : la pierre a un <strong>mouvement rectiligne uniforme</strong>. D'après le principe d'inertie, les forces qui s'exercent sur elle <strong>se compensent</strong>.</p>
+            <p><strong>Q2.</strong> Les forces sont le poids <span class="vec">P</span> et la force <span class="vec">F</span><sub>piste/pierre</sub> exercée par la piste. Comme elles se compensent (<span class="vec">F</span><sub>piste/pierre</sub> + <span class="vec">P</span> = <span class="vec">0</span>), elles ont :</p>
+            <ul style="margin:.2rem 0 .4rem 1.1rem">
+              <li>la même <strong>direction</strong> : verticale ;</li>
+              <li>la même <strong>valeur</strong> : ‖<span class="vec">F</span><sub>piste/pierre</sub>‖ = ‖<span class="vec">P</span>‖ = 200 N ;</li>
+              <li>des <strong>sens contraires</strong> : le poids vers le bas, la force de la piste vers le haut.</li>
+            </ul>
+            <p><strong>Q3.</strong> Quand les balayeurs cessent leur action, la force de frottements de la piste s'ajoute : la somme des forces n'est plus nulle (∑<span class="vec">F</span> ≠ <span class="vec">0</span>). D'après la <strong>contraposée</strong> du principe d'inertie, la pierre n'a plus un mouvement rectiligne uniforme : le vecteur vitesse <span class="vec">v</span><sub>G</sub> <strong>varie</strong> — c'est sa <strong>norme</strong> ‖<span class="vec">v</span><sub>G</sub>‖ (la valeur de la vitesse) qui diminue.</p>` }
       ],
       questions:[
-        { q:`Lors d'une dilution, qu'est-ce qui se conserve ?`, multi:true,
-          opts:[`La quantité de matière de soluté`,`La masse de soluté`,`La concentration massique de soluté`,`Le volume de solution`], bonnes:[0,1],
-          siFaux:`Le fait d'ajouter de l'eau ne change pas la quantité (et donc la masse) de soluté versé initialement. La concentration, elle, diminue, et le volume augmente.`,
-          siJuste:`Exact : le fait d'ajouter de l'eau ne change pas la quantité (et donc la masse) de soluté versé initialement.` },
-        { q:`Quelle égalité est exacte ?`,
-          opts:[`c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille)`,`c<sub>m</sub>(mère) × V(fille) = c<sub>m</sub>(fille) × V(mère)`,`${frac('c<sub>m</sub>(mère)','V(mère)')} = ${frac('c<sub>m</sub>(fille)','V(fille)')}`], bonne:0,
-          siFaux:`La relation de dilution traduit la conservation de la masse de soluté : <strong>c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille)</strong>.`,
-          siJuste:`Exact : c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille).` },
-        { q:`Quelles affirmations sur la relation c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille) sont vraies ?`, multi:true,
-          opts:[`Elle traduit la conservation de la quantité de soluté`,`Elle s'applique uniquement aux solutions colorées`,`On a toujours c<sub>m</sub>(fille) < c<sub>m</sub>(mère)`,`V(fille) est toujours inférieur à V(mère)`], bonnes:[0,2],
-          siFaux:`Elle traduit la conservation de la quantité de soluté ; comme on ajoute de l'eau, la solution fille est toujours moins concentrée : c<sub>m</sub>(fille) < c<sub>m</sub>(mère). Elle ne se limite pas aux solutions colorées, et V(fille) est au contraire plus grand que V(mère).`,
-          siJuste:`Exact : elle traduit la conservation de la quantité de soluté, et la fille est toujours moins concentrée que la mère.` },
-        { q:`La relation c<sub>m</sub>(mère) × V(mère) = c<sub>m</sub>(fille) × V(fille) est-elle valable si les concentrations sont en g/L et les volumes en mL ?`,
-          opts:[`Oui`,`Non, il faut obligatoirement convertir les deux volumes en L`], bonne:0,
-          siFaux:`Dans une relation qui comporte les mêmes grandeurs de part et d'autre d'une égalité, les grandeurs identiques doivent avoir la même unité. Ici les concentrations doivent avoir la même unité (g/L, g/mL, mol/L, etc.) et les volumes doivent avoir la même unité entre eux (mL ou L). Mais il n'est pas obligé de faire correspondre les unités des grandeurs différentes (c<sub>m</sub> et V).`,
-          siJuste:`Exact. Dans une relation où les mêmes grandeurs apparaissent de part et d'autre, il suffit que les deux concentrations aient la même unité et les deux volumes la même unité ; pas besoin d'accorder c<sub>m</sub> et V entre eux.` },
-        { q:`On veut préparer 200 mL d'une solution à 0,50 g/L à partir d'une solution à 5,0 g/L. Quel volume de solution mère faut-il prélever ?`,
-          opts:[`2,0 mL`,`20 mL`,`200 mL`,`2,0 L`], bonne:1,
-          siFaux:`V(mère) = ${frac('c<sub>m</sub>(fille) × V(fille)','c<sub>m</sub>(mère)')} = ${frac('0,50 × 200','5,0')} = <strong>20 mL</strong>.`,
-          siJuste:`Exact : V(mère) = ${frac('c<sub>m</sub>(fille) × V(fille)','c<sub>m</sub>(mère)')} = ${frac('0,50 × 200','5,0')} = <strong>20 mL</strong>.` }
-      ]
-    },
-    {
-      id:"B", nom:"Facteur de dilution", video:"OuvsLVSLViA",
-      pourquoi:"Le facteur de dilution dit <em>combien de fois moins concentré</em>. Il structure les <strong>dilutions en série</strong> (10×, 100×, 1000×) — exactement la technique des gammes d'étalons en 1re spé, et un réflexe en biologie et en analyse médicale.",
-      flash:`<p>Lors d'une dilution, la <strong>solution mère</strong> est la solution de départ (la plus concentrée) et la <strong>solution fille</strong> celle obtenue après ajout d'eau distillée.</p>
-        <p>Le <strong>facteur de dilution</strong> F compare ces deux solutions. Il est <strong>toujours supérieur à 1</strong> et <strong>sans unité</strong> :</p>
-        <p class="formule">F = ${frac('c<sub>m</sub>(mère)','c<sub>m</sub>(fille)')} = ${frac('V(fille)','V(mère)')}</p>
-        <ul class="notations">
-          <li><strong>F</strong> : facteur de dilution, sans unité (toujours > 1)</li>
-          <li><strong>c<sub>m</sub>(mère)</strong> : concentration de la solution mère, en g·L⁻¹</li>
-          <li><strong>c<sub>m</sub>(fille)</strong> : concentration de la solution fille, en g·L⁻¹</li>
-          <li><strong>V(mère)</strong> : volume de solution mère prélevé, en L (ou mL)</li>
-          <li><strong>V(fille)</strong> : volume de la solution fille, en L (ou mL)</li>
-        </ul>
-        <p>On place toujours la plus grande valeur au numérateur. F = 10 signifie « 10 fois moins concentrée » ; le volume final vaut alors 10 fois le volume prélevé.</p>
-        <div class="exo-exemple"><span class="ex-lab">Exemple résolu</span>
-          <p>On prélève 25 mL d'un concentré de vitamine C à 80 mg·L⁻¹, que l'on complète à 250 mL. Quel est le facteur de dilution ? Et la concentration finale ?</p>
-          <p>F = ${frac('V(fille)','V(mère)')} = ${frac('250','25')} = <strong>10</strong>. La solution est 10 fois moins concentrée : c<sub>m</sub>(fille) = ${frac('c<sub>m</sub>(mère)','F')} = ${frac('80','10')} = <strong>8,0 mg·L⁻¹</strong>.</p></div>`,
-      exercices:[
-        { titre:"Diluer un échantillon d'eau polluée", timer:90,
-          enonce:`<p>Un laboratoire d'analyse environnementale a prélevé une eau de rivière en aval d'une zone agricole. Cette eau, notée S<sub>0</sub>, présente une concentration en ions nitrate très élevée, c<sub>m,0</sub> = 1,20×10⁻¹ g·L⁻¹, qui dépasse la limite de détection fiable des appareils de mesure.</p>
-            <p>Pour effectuer un dosage précis, le technicien doit diluer cet échantillon afin d'obtenir 100,0 mL d'une solution S<sub>1</sub> de concentration c<sub>m,1</sub> = 2,4×10⁻² g·L⁻¹, compatible avec la gamme d'étalonnage de l'appareil.</p>
-            <strong>Q1.</strong> Déterminer le facteur de dilution de cette préparation. (Bien rédiger.)<br>
-            <strong>Q2.</strong> En utilisant le facteur de dilution calculé à la question précédente, déterminer le volume V<sub>0</sub> d'échantillon S<sub>0</sub> qu'il faudra prélever pour préparer la solution S<sub>1</sub>.<br>
-            <strong>Q3.</strong> Donner le protocole que devra suivre le technicien pour effectuer cette dilution. Bien préciser les volumes de la verrerie utilisée.`,
-          correction:`<p><strong>Q1.</strong> F = ${frac('c<sub>m</sub>(mère)','c<sub>m</sub>(fille)')} = ${frac('c<sub>m,0</sub>','c<sub>m,1</sub>')} = ${frac('1,20×10⁻¹','2,4×10⁻²')} = <strong>5,0</strong> (sans unité). La solution S<sub>1</sub> sera 5 fois moins concentrée que l'eau prélevée dans la rivière.</p>
-            <p><strong>Q2.</strong> On sait que F = ${frac('V(fille)','V(prélevé)')}, d'où V<sub>0</sub> = V(prélevé) = ${frac('V(fille)','F')} = ${frac('100','5,0')} = <strong>20 mL</strong>.</p>
-            <p><strong>Q3.</strong> Protocole :</p>
-            <ul style="margin:.2rem 0 .2rem 1.1rem">
-              <li>Prélever la solution mère (eau de rivière) avec une <strong>pipette jaugée de 20 mL</strong>, préalablement rincée à l'eau de rivière.</li>
-              <li>Verser ces 20 mL dans une <strong>fiole jaugée de 100 mL</strong>, préalablement rincée à l'eau distillée.</li>
-              <li>Ajouter de l'eau distillée aux 2/3, puis agiter.</li>
-              <li>Compléter jusqu'au trait de jauge, puis homogénéiser à nouveau.</li>
-            </ul>` }
-      ],
-      questions:[
-        { q:`Le facteur de dilution F est défini comme :`, multi:true,
-          opts:[`F = ${frac('V(fille)','V(mère)')}`,`F = ${frac('c<sub>m</sub>(fille)','c<sub>m</sub>(mère)')}`,`F = ${frac('c<sub>m</sub>(mère)','c<sub>m</sub>(fille)')}`,`Les deux premières propositions sont justes`], bonnes:[0,2],
-          siFaux:`Le facteur de dilution est toujours supérieur à 1 : F > 1. On a donc F = ${frac('valeur la plus grande','valeur la plus petite')}, soit F = ${frac('c<sub>m</sub>(mère)','c<sub>m</sub>(fille)')} = ${frac('V(fille)','V(mère)')}.`,
-          siJuste:`Exact : F = ${frac('c<sub>m</sub>(mère)','c<sub>m</sub>(fille)')} = ${frac('V(fille)','V(mère)')}, toujours supérieur à 1.` },
-        { q:`Un facteur de dilution F = 100 signifie que :`,
-          opts:[`La solution fille est 100 fois plus concentrée que la solution mère`,`La solution fille est 100 fois moins concentrée que la solution mère`,`On a prélevé 100 mL de solution mère`,`La solution finale a un volume de 100 mL`], bonne:1,
-          siFaux:`F = 100 signifie que la solution fille est <strong>100 fois moins concentrée</strong> que la solution mère.`,
-          siJuste:`Exact : la solution fille est 100 fois moins concentrée que la solution mère.` },
-        { q:`Lors d'une dilution, le facteur de dilution est F = 4 :`,
-          opts:[`Le volume final est 4 fois plus grand que le volume prélevé de solution mère`,`Le volume final est 4 fois plus petit que le volume prélevé de solution mère`,`Le volume ne change pas, c'est la concentration qui est modifiée`], bonne:0,
-          siFaux:`Puisque F = ${frac('V(fille)','V(mère)')} = 4, le volume final est <strong>4 fois plus grand</strong> que le volume prélevé de solution mère.`,
-          siJuste:`Exact : le volume final est 4 fois plus grand que le volume prélevé.` },
-        { q:`L'unité d'un facteur de dilution est :`,
-          opts:[`mol/L`,`L`,`sans unité`,`ça dépend des unités choisies pour le calcul`], bonne:2,
-          siFaux:`Le facteur de dilution est un rapport de deux grandeurs de même nature : il est <strong>sans unité</strong>.`,
-          siJuste:`Exact : c'est un rapport de grandeurs de même nature, donc sans unité.` },
-        { q:`On dilue 10 mL de solution mère pour obtenir une solution finale de 100 mL. Quel est le facteur de dilution ?`,
-          opts:[`0,1`,`1`,`10`,`1000`], bonne:2,
-          siFaux:`F = ${frac('V(fille)','V(mère)')} = ${frac('100','10')} = <strong>10</strong>.`,
-          siJuste:`Exact : F = ${frac('V(fille)','V(mère)')} = ${frac('100','10')} = <strong>10</strong>.` }
-      ]
-    },
-    {
-      id:"C", nom:"Protocole de dilution", video:"gykwsdZnWjE", videoBonus:true, flash:null,
-      pourquoi:"La <strong>pipette jaugée</strong> et la <strong>fiole jaugée</strong> d'ici sont la verrerie de précision des dilutions et des <strong>titrages</strong> de 1re spé. Un geste mal fait fausse toute la mesure.",
-      exercices:[],
-      activites:[ { titre:"Activités interactives — protocole", icone:"🧩", faitLabel:"J'ai fait les activités",
-        html:`<p class="exo-consigne">Pour t'entraîner sur le protocole de dilution : remets les étapes dans l'ordre, complète le protocole à trous, puis fais l'association.</p>
-          <div class="la-grid">
-            <div class="la-item"><h5>Dilution — ordre chronologique</h5><iframe src="https://learningapps.org/watch?v=pvofd0x9526" allowfullscreen loading="lazy"></iframe></div>
-            <div class="la-item"><h5>Dilution — protocole à trous</h5><iframe src="https://learningapps.org/watch?v=po7n4gef526" allowfullscreen loading="lazy"></iframe></div>
-            <div class="la-item"><h5>Dilution — association</h5><iframe src="https://learningapps.org/watch?v=pqtgt77z526" allowfullscreen loading="lazy"></iframe></div>
-          </div>` } ],
-      questions:[
-        { q:`Sélectionner le matériel et la verrerie nécessaires pour une dilution.`, multi:true,
-          opts:[`Éprouvette`,`Erlenmeyer`,`Bécher`,`Fiole jaugée`,`Entonnoir`,`Pipette jaugée`,`Eau distillée`,`Spatule`,`Balance`], bonnes:[2,3,5,6],
-          siFaux:`Pour une dilution : <strong>bécher</strong> (pour y verser un peu de solution mère), <strong>fiole jaugée</strong>, <strong>pipette jaugée</strong> et <strong>eau distillée</strong>. Pas besoin de balance ni de spatule (on ne pèse rien), ni d'éprouvette, d'erlenmeyer ou d'entonnoir.`,
-          siJuste:`Exact : bécher, fiole jaugée, pipette jaugée, eau distillée.` },
-        { q:`Lors d'une dilution, dans quel ordre doit-on procéder ?`,
-          opts:[`Prélever la solution mère, puis compléter en deux temps avec le solvant dans la fiole jaugée`,`Remplir la fiole au 2/3 d'eau distillée, ajouter la solution mère, agiter, puis compléter au trait de jauge`,`Peser la solution mère, puis compléter avec le solvant dans la fiole jaugée`,`Compléter la fiole jaugée au trait de jauge puis ajouter la solution mère prélevée`], bonne:0,
-          siFaux:`On <strong>prélève la solution mère</strong> (pipette jaugée), on la verse dans la fiole jaugée, puis on complète en deux temps avec le solvant jusqu'au trait de jauge.`,
-          siJuste:`Exact : prélever la solution mère, puis compléter au trait de jauge avec le solvant.` },
-        { q:`Quels sont les points de vigilance lors d'un protocole de dilution ?`, multi:true,
-          opts:[`Rincer la pipette jaugée avant de l'utiliser`,`Regarder si la pipette jaugée possède deux traits de jauge avant de l'utiliser`,`Ne pas prélever directement dans la solution mère`,`Rincer la fiole jaugée avant de l'utiliser`,`Rincer et ranger la pipette jaugée dès le prélèvement terminé pour ne pas la casser`,`Utiliser une pipette en plastique si jamais l'eau ajoutée dépasse le trait de jauge`,`Ne pas boucher la fiole avec son doigt`,`Chanter une chanson pendant l'étape d'agitation accélère l'homogénéisation`], bonnes:[0,1,2,3,4,6],
-          siFaux:`Les bons réflexes : rincer la pipette jaugée, vérifier ses traits de jauge, ne pas prélever directement dans la solution mère, rincer la fiole jaugée, ranger la pipette dès le prélèvement, et ne pas boucher la fiole avec son doigt. En revanche, on ne « rattrape » pas un dépassement du trait de jauge, et chanter n'accélère évidemment pas l'homogénéisation.`,
-          siJuste:`Bien vu : pipette rincée et vérifiée, pas de prélèvement direct dans la mère, fiole rincée, pipette rangée, et on ne bouche pas la fiole avec son doigt.` },
-        { q:`Avant de commencer une dilution, il est indispensable (si la valeur n'est pas connue) de calculer :`,
-          opts:[`La quantité de matière de solution mère à peser`,`La masse de solution mère à peser`,`La concentration de la solution mère`,`Le volume de solution mère à prélever`,`Le facteur de dilution`], bonne:3,
-          siFaux:`Avant de commencer, on calcule le <strong>volume de solution mère à prélever</strong> : V(mère) = ${frac('c<sub>m</sub>(fille) × V(fille)','c<sub>m</sub>(mère)')}.`,
-          siJuste:`Exact : on calcule le volume de solution mère à prélever.` },
-        { q:`Quel est le rôle de la pipette jaugée ?`,
-          opts:[`Peser précisément la solution mère`,`Prélever un volume précis et connu de solution`,`Enlever un peu de la solution si le trait de jauge a été dépassé`,`Mesurer un volume approximatif de solution`], bonne:1,
-          siFaux:`La pipette jaugée sert à <strong>prélever un volume précis et connu</strong> de solution.`,
-          siJuste:`Exact : elle prélève un volume précis et connu de solution.` }
+        { q:`Un palet glisse sur une table à coussin d'air horizontale, sans frottement notable. On le lance puis on ne le touche plus. Que va-t-il faire ?`,
+          opts:[`Ralentir progressivement puis s'arrêter`,`Continuer en ligne droite à vitesse constante`,`Accélérer tout seul`,`Tourner en rond`], bonne:1,
+          siFaux:`Un objet n'a pas besoin de force pour continuer à avancer : une force sert à <strong>modifier</strong> le mouvement (ralentir, accélérer, tourner). Sans frottement et forces compensées, le palet conserve son mouvement : ligne droite à vitesse constante.`,
+          siJuste:`Exact : forces compensées et frottements négligeables, le palet conserve son mouvement rectiligne uniforme.` },
+        { q:`D'après le principe d'inertie, si les forces qui s'exercent sur un objet se compensent, alors l'objet :`,
+          opts:[`est forcément immobile`,`est forcément en mouvement`,`est immobile ou en mouvement rectiligne uniforme`,`ralentit forcément`], bonne:2,
+          siFaux:`Attention au mot « forcément » : des forces qui se compensent ne rendent pas l'objet immobile. Il peut aussi se déplacer en ligne droite à vitesse constante.`,
+          siJuste:`Exact : forces compensées ⇒ repos <em>ou</em> mouvement rectiligne uniforme.` },
+        { q:`Un livre est posé, immobile, sur une table. Quelles forces principales s'exercent sur lui ?`,
+          opts:[`Seulement son poids`,`Son poids et la réaction de la table`,`Son poids et une force de propulsion`,`Aucune force, puisqu'il est immobile`], bonne:1,
+          siFaux:`Même immobile, un objet subit des forces. Le livre est attiré vers le bas (poids) et la table le retient vers le haut (réaction) : ces deux forces se compensent.`,
+          siJuste:`Bravo : le poids vers le bas et la réaction de la table vers le haut se compensent (livre immobile).` },
+        { q:`Une voiture roule en ligne droite à vitesse constante sur une route horizontale. Que peut-on dire des forces qui s'exercent sur elle ?`,
+          opts:[`Elles se compensent globalement`,`La force du moteur est forcément plus grande que les frottements`,`Il n'y a aucune force sur la voiture`,`Le poids de la voiture est nul`], bonne:0,
+          siFaux:`Si la force motrice dépassait les frottements, la voiture accélérerait. À vitesse constante en ligne droite, les forces se compensent globalement.`,
+          siJuste:`Exact : mouvement rectiligne uniforme ⇒ forces compensées (moteur ↔ frottements, route ↔ poids).` },
+        { q:`On lance une balle verticalement vers le haut. Une fois qu'elle a quitté la main, quelle force principale s'exerce sur elle si on néglige l'air ?`,
+          opts:[`Une force vers le haut qui la fait monter`,`Son poids, dirigé vers le bas`,`Aucune force pendant qu'elle monte`,`Une force vers le haut puis une force vers le bas`], bonne:1,
+          siFaux:`Erreur classique : aucune force ne « reste » vers le haut après le lancer. La balle monte grâce à sa vitesse initiale, mais son poids (vers le bas) la ralentit.`,
+          siJuste:`Très bien : une fois lâchée (air négligé), la balle ne subit plus que son poids, dirigé vers le bas.` },
+        { q:`Sur une chronophotographie, les positions successives d'un objet sont alignées et régulièrement espacées. Que peut-on conclure ?`,
+          opts:[`L'objet est immobile`,`L'objet accélère`,`L'objet ralentit`,`L'objet a un mouvement rectiligne uniforme`], bonne:3,
+          siFaux:`Regarde l'espacement entre les positions : s'il augmente, l'objet accélère ; s'il diminue, il ralentit. Ici il est régulier ⇒ vitesse constante.`,
+          siJuste:`Bravo : des positions alignées et régulièrement espacées ⇒ mouvement rectiligne uniforme.` }
       ]
     }
   ]
@@ -397,7 +310,7 @@ function passerDiagnostic(){
   ecranResultats(false);
 }
 
-const STORE_KEY = "cahier-j05";
+const STORE_KEY = "cahier-j10";
 let PROG = (function(){ try{ const r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } })();
 function saveProg(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROG)); }catch(e){} }
 function freshProg(f, complet){
@@ -466,13 +379,13 @@ function ecranIntro(){
   answers=[]; idx=0;
   app.innerHTML = `
     <div class="intro">
-      <p>Ce diagnostic de <strong>15 questions</strong> (3 parties) sert à repérer ce que tu maîtrises déjà. Ce n'est pas une note. Certaines questions ont <strong>plusieurs réponses</strong> : elles te le signalent.</p>
+      <p>Ce diagnostic de <strong>6 questions</strong> sert à repérer ce que tu maîtrises déjà. Ce n'est pas une note.</p>
       <div class="note-simple">Les questions ne couvrent <strong>pas tout</strong> le contenu de la séance : elles t'aident seulement à voir par où commencer.</div>
       <div class="actions" style="justify-content:flex-start;gap:.7rem;flex-wrap:wrap">
         <button class="btn" id="go">Commencer le diagnostic →</button>
         <button class="btn fant" id="skip">Passer le diagnostic</button>
       </div>
-      <p style="font-size:.8rem;color:var(--gris);margin-top:.8rem">« Passer le diagnostic » marque toutes les parties « à retravailler » et ouvre directement le plan complet.</p>
+      <p style="font-size:.8rem;color:var(--gris);margin-top:.8rem">« Passer le diagnostic » marque la partie « à retravailler » et ouvre directement le plan.</p>
     </div>`;
   document.getElementById("go").onclick = ()=>{ idx=0; ecranQuestion(); };
   document.getElementById("skip").onclick = ()=>{ NBQ.forEach((n,i)=> fautes[i]=n); freshProg(fautes,false); ecranResultats(false); };
@@ -604,7 +517,7 @@ function ecranResultats(autoOpen){
       }
       return `
         <details class="exo" data-timer="${ex.timer}" data-ax="${axe.id}" data-j="${j}">
-          <summary><span class="exo-num">Exercice ${j+1}</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
+          <summary><span class="exo-num">Exercice</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
           <div class="exo-body">
             <div class="exo-enonce">${ex.enonce}</div>
             <p class="exo-consigne">✏️ Fais cet exercice sur ta feuille, puis vérifie. Le corrigé se débloque après un court instant.</p>
@@ -647,7 +560,7 @@ function ecranResultats(autoOpen){
       <details class="axe ${p.cls}" data-axe="${axe.id}">
         <summary>
           <span class="badge ${p.cls}">${p.label}</span>
-          <span class="axe-nom">Bloc ${axe.id} — ${axe.nom}</span>
+          <span class="axe-nom">Bloc unique — ${axe.nom}</span>
           <span class="axe-score"${(PROG.ouvert&&PROG.ouvert[axe.id])?' hidden':''}>${nb-f}/${nb}</span>
         </summary>
         <div class="axe-corps">
@@ -664,10 +577,9 @@ function ecranResultats(autoOpen){
   }).join("");
 
   app.innerHTML = `
-    <div class="topbar"><span>Ton plan de révision</span><span class="axe-tag">classé par priorité</span></div>
-    <div class="res-note">Rappel : ces questions ne couvrent pas tout. Même une partie « à survoler » mérite un coup d'œil. Ton avancement est gardé en mémoire sur cet appareil.</div>
+    <div class="topbar"><span>Ton plan de révision</span></div>
+    <div class="res-note">Rappel : ces questions ne couvrent pas tout le contenu de la séance. Ton avancement est gardé en mémoire sur cet appareil.</div>
     ${cartes}
-    <div style="background:var(--nuit);color:var(--clair);padding:1rem 1.2rem;font-size:.95rem;margin-top:1rem">Peu de temps ? Suis l'ordre proposé : les parties en haut sont les plus prioritaires.</div>
     <div class="actions" style="margin-top:1.4rem;justify-content:flex-start">
       <button class="btn fant" id="recommencer">↻ Refaire le diagnostic</button>
     </div>`;
@@ -762,9 +674,7 @@ if(PROG && Array.isArray(PROG.fautes)){
   <div class="pb-pct">0 %</div>
   <div class="pb-seg">
     <div class="pb-cell none" data-diag="1" title="Diagnostic"><span class="pb-fill"></span><span class="pb-lab">Diag</span></div>
-    <div class="pb-cell none" data-axe="A"><span class="pb-fill"></span><span class="pb-lab">A</span></div>
-    <div class="pb-cell none" data-axe="B"><span class="pb-fill"></span><span class="pb-lab">B</span></div>
-    <div class="pb-cell none" data-axe="C"><span class="pb-fill"></span><span class="pb-lab">C</span></div>
+    <div class="pb-cell none" data-axe="A" title="Le principe d'inertie"><span class="pb-fill"></span><span class="pb-lab"></span></div>
   </div>
 </div>
 <script>
@@ -773,11 +683,11 @@ if(PROG && Array.isArray(PROG.fautes)){
    (capsule/vidéo consultée) + exercices faits + activités faites.
    La barre est masquée pendant le diagnostic (classe body.en-diagnostic). */
 (function(){
-  var JOUR=5, TITRE="La dilution", CLE='cahier-j05';
-  var AXES=[{id:'A',exos:1,act:0},{id:'B',exos:1,act:0},{id:'C',exos:0,act:1,nogate:true}];
+  var JOUR=10, TITRE="Le principe d'inertie", CLE='cahier-j10';
+  var AXES=[{id:'A',exos:1,act:0}];
   function lire(){ try{var r=localStorage.getItem(CLE);return r?JSON.parse(r):null;}catch(e){return null;} }
-  function lireOuv(){ try{var r=localStorage.getItem('cahier-j05-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
-  function saveOuv(o){ try{localStorage.setItem('cahier-j05-ouverts',JSON.stringify(o));}catch(e){} }
+  function lireOuv(){ try{var r=localStorage.getItem('cahier-j10-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
+  function saveOuv(o){ try{localStorage.setItem('cahier-j10-ouverts',JSON.stringify(o));}catch(e){} }
   function deuxch(n){ return (n<10?'0':'')+n; }
   function ajd(){ var d=new Date();return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
   function paint(c,state,frac,extra){

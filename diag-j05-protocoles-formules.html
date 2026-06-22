@@ -3,18 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnostic Jour 9 — Le principe d'inertie</title>
+<title>Diagnostic Jour 5 — Protocoles et formules de chimie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- ============================================================
-     JOUR 5 — Dilution — même moteur que le J04 :
-       diagnostic QCM (15 questions, 3 blocs A/B/C, avec multi-sélection)
-       -> plan priorisé par bloc : capsule (rappel) + vidéo + exercices,
+     JOUR 4 — même schéma que le J02 :
+       diagnostic QCM (18 questions, 4 parties, avec multi-sélection)
+       -> plan priorisé par partie : capsule (rappel) + vidéo + exercices,
           verrou lu/vu, minuteur + case fait par exercice, sauvegarde.
-       Blocs A & B : 1 exercice chacun. Bloc C : activités LearningApps
-       (protocole) + vidéo bonus, pas d'exercice. Pas d'item obligatoire.
+     Le Wooclap est un EXERCICE (type "wooclap"), pas le diagnostic.
+     Vidéos = emplacements en attente (video:null) ; rappels rédigés
+     d'après le QCM + programme (à vérifier vs cours J4).
      ============================================================ -->
 <style>
   :root{
@@ -93,11 +94,6 @@
   .flash ol{margin:.3rem 0 .6rem 1.2rem;font-size:.95rem}
   .flash ol li{margin-bottom:.25rem}
   .formule{font-family:'IBM Plex Mono',monospace;font-size:.92rem;background:rgba(63,167,214,.10);border-left:3px solid var(--cyan);padding:.55rem .8rem;text-align:center}
-  .vec{position:relative;display:inline-block}
-  .vec::before{content:"→";position:absolute;top:-.62em;left:0;width:100%;text-align:center;font-size:.58em;font-weight:400;line-height:1;color:var(--encre)}
-  .cap-titre{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;color:var(--encre);margin:1rem 0 .35rem}
-  .def{background:rgba(0,0,0,.025);border:1px solid var(--ligne);border-radius:6px;padding:.5rem .75rem;margin:.4rem 0;font-size:.95rem}
-  .def .def-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:var(--cyan);border:1px solid var(--cyan);border-radius:3px;padding:.04rem .3rem;margin-right:.45rem;vertical-align:.08em}
   .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .18em;line-height:1.05}
   .frac .num{padding:0 .4em}
   .frac .den{padding:0 .4em;border-top:1.6px solid currentColor}
@@ -121,9 +117,7 @@
   .exo-titre{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600}
   .fait-mark{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--vert)}
   .exo-body{padding:0 1rem 1rem}
-  .exo-enonce{margin-bottom:.4rem}
-  .exo-situation{font-weight:400;margin-bottom:.5rem}
-  .exo-question{font-style:italic;margin:.5rem 0 .2rem}
+  .exo-enonce{font-weight:600;margin-bottom:.4rem}
   .exo-consigne{font-size:.85rem;color:var(--gris);margin-bottom:.6rem}
   .exo-btns{display:flex;gap:.5rem;flex-wrap:wrap}
   .mini{font-family:'IBM Plex Mono',monospace;font-size:.76rem;cursor:pointer;border:1px solid var(--nuit);background:#fff;color:var(--nuit);padding:.35rem .7rem}
@@ -148,9 +142,6 @@
   details.indice[open]>summary{background:rgba(63,167,214,.10)}
   details.indice .indice-corps{background:rgba(63,167,214,.07);border-left:3px solid var(--cyan);padding:.55rem .8rem;margin:.4rem 0 .2rem;font-size:.92rem}
   details.indice .indice-corps p{margin:.2rem 0}
-  .exo-exemple{background:rgba(0,0,0,.025);border:1px solid var(--ligne);border-left:3px solid var(--orange);padding:.55rem .8rem;margin:.7rem 0 .2rem;font-size:.92rem;border-radius:4px}
-  .exo-exemple p{margin:.25rem 0}
-  .exo-exemple .ex-lab{font-family:'IBM Plex Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--orange);display:block;margin-bottom:.3rem}
   .oblig-note{background:rgba(240,167,46,.12);border-left:3px solid var(--ambre);padding:.6rem .9rem;font-size:.9rem;margin:0 0 1rem;border-radius:4px}
   .la-grid{display:grid;gap:1rem;margin:.5rem 0}
   .la-item h5{margin:.2rem 0 .35rem;font-size:.9rem;color:var(--encre)}
@@ -203,13 +194,16 @@
 <div class="bandeau">
   <div class="bandeau-inner">
     <p class="eyebrow">Cahier de vacances · cap sur la 1re spé <span style="color:var(--orange)">&rarr;</span></p>
-    <h1>Jour 9 — Le principe d'inertie</h1>
+    <h1>Jour 5 — Protocoles et formules de chimie</h1>
   </div>
 </div>
 
 <main><div id="app"></div></main>
 
 <script>
+/* ====== Lien Wooclap (exercice) — remplaçable par le code iFrame officiel ====== */
+const WOOCLAP_SRC = "https://app.wooclap.com/DGDCRNL/questionnaires/6a33e40adf2865a64a34d16a";
+
 /* ============================================================
    CONTENU — 4 parties (axes). Questions : single (bonne) ou multi (multi:true, bonnes:[]).
    ============================================================ */
@@ -217,68 +211,168 @@ function frac(a,b){return '<span class="frac"><span class="num">'+a+'</span><spa
 const NOTION = {
   axes:[
     {
-      id:"A", nom:"Le principe d'inertie", video:"mkUrxuKoMF8",
-      pourquoi:"Le principe d'inertie relie le <strong>mouvement</strong> d'un système au <strong>bilan des forces</strong> qui s'exercent sur lui. En 1re spé, il devient le <strong>principe d'inertie de Newton</strong> (1re loi) et la base de toute l'étude des mouvements : on s'en sert sans cesse pour prévoir une trajectoire ou retrouver une force manquante.",
-      flash:`<p>On se place dans un <strong>référentiel terrestre</strong> supposé galiléen.</p>
-        <p class="cap-titre">Définitions</p>
-        <div class="def"><span class="def-tag">Déf</span><strong>Repos</strong> — un système est au repos si son vecteur vitesse est nul à tout instant (<span class="vec">v</span> = <span class="vec">0</span>). Le repos n'existe que dans un référentiel donné : il n'y a pas de repos absolu.</div>
-        <div class="def"><span class="def-tag">Déf</span><strong>Inertie</strong> — difficulté à modifier le mouvement d'un système : plus sa masse est grande, plus il est inerte.</div>
-        <div class="def"><span class="def-tag">Déf</span><strong>Résultante des forces</strong> ∑<span class="vec">F</span> — somme vectorielle de toutes les forces qui s'appliquent sur le système.</div>
-        <p class="cap-titre">Le principe d'inertie</p>
-        <p class="formule">Si ∑<span class="vec">F</span> = <span class="vec">0</span> (les forces se compensent), le système est au repos <em>ou</em> en mouvement rectiligne uniforme — et réciproquement.</p>
-        <p class="cap-titre">La contraposée du principe d'inertie</p>
-        <p class="formule">Si le mouvement n'est ni le repos ni rectiligne uniforme, alors ∑<span class="vec">F</span> ≠ <span class="vec">0</span> (les forces ne se compensent pas) — et réciproquement.</p>
-        <img src="inertie-principe.png" alt="Forces compensées (2 ou 3 forces, triangle des forces fermé) : repos ou MRU ; forces non compensées : le mouvement change." style="display:block;max-width:100%;border:1px solid var(--ligne);border-radius:6px;margin:.5rem 0">
-        <p class="cap-titre">Lire une chronophotographie</p>
-        <p>Des positions alignées et régulièrement espacées indiquent un mouvement rectiligne uniforme. Si l'espacement augmente, le système accélère ; s'il diminue, il ralentit. Le vecteur vitesse <span class="vec">v</span> suit cet espacement.</p>
-        <img src="inertie-chrono.png" alt="Chronophotographies avec vecteurs vitesse : espacement régulier (uniforme), croissant (accéléré), décroissant (ralenti)." style="display:block;max-width:100%;border:1px solid var(--ligne);border-radius:6px;margin:.5rem 0">
-        <p class="cap-titre">Chute libre</p>
-        <p>Un corps est en chute libre si son <strong>poids</strong> est la seule force qui s'exerce sur lui. Son mouvement est alors rectiligne mais <em>non</em> uniforme : il accélère.</p>`,
+      id:"A", nom:"Masse volumique", video:"fDo__Czsngs", flash:null,
+      pourquoi:"En 1re spé, on la retrouve des deux côtés : en chimie (lien volume ↔ masse ↔ mole, et volume molaire d'un gaz) et en physique, dans la <strong>statique des fluides</strong> — c'est le ρ de la loi P = ρ·g·h, qui explique pourquoi la pression grimpe quand on descend en profondeur.",
+      exercices:[],
+      questions:[
+        { q:`Comment exprimer la masse m d'un échantillon en fonction de sa masse volumique ρ et de son volume V ?`,
+          opts:[`m = ρ × V`,`m = ρ / V`,`m = V / ρ`,`m = ρ + V`], bonne:0,
+          siFaux:`La masse volumique est ρ = m / V. On en tire <strong>m = ρ × V</strong>.`,
+          siJuste:`Exact : <strong>m = ρ × V</strong>.` },
+        { q:`Quelles unités peuvent être celles d'une masse volumique ?`, multi:true,
+          opts:[`g·L⁻¹`,`g·mL⁻¹`,`kg·m⁻³`,`g·cm⁻³`,`kg·L`], bonnes:[0,1,2,3],
+          siFaux:`Une masse volumique est une masse divisée par un volume : g·L⁻¹, g·mL⁻¹, kg·m⁻³ et g·cm⁻³ conviennent. « kg·L » n'en est pas une (pas de division par un volume).`,
+          siJuste:`Bien vu : seules les unités du type masse/volume conviennent ; « kg·L » est à exclure.` },
+        { q:`La masse volumique de l'éthanol est 0,789 g/mL. Quelle est la masse d'un échantillon de 10 mL ?`,
+          opts:[`7,9 g`,`0,79 g`,`0,079 g`,`78,9 mg`], bonne:0,
+          siFaux:`m<sub>échantillon</sub> = ρ<sub>éthanol</sub> × V<sub>solution</sub> = 0,789 × 10 = <strong>7,9 g</strong>.<br>• Attention aux unités données avant de faire le calcul, ici pas besoin de convertir, les unités sont cohérentes entre elles.<br>• Attention aux chiffres significatifs : ici le volume n'a que 2 chiffres, on arrondit donc le résultat à <strong>7,9 g</strong>.`,
+          siJuste:`Exact : m<sub>échantillon</sub> = ρ<sub>éthanol</sub> × V<sub>solution</sub> = 0,789 × 10 = <strong>7,9 g</strong>.<br>• Attention aux unités données avant de faire le calcul, ici pas besoin de convertir, les unités sont cohérentes entre elles.<br>• Attention aux chiffres significatifs : ici le volume n'a que 2 chiffres, on arrondit donc le résultat à <strong>7,9 g</strong>.` }
+      ]
+    },
+    {
+      id:"B", nom:"Mole & masse molaire", video:"sok3lW2uY-E",
+      pourquoi:"Point de départ de toute la chimie de 1re spé : <strong>tableau d'avancement</strong>, mélanges <strong>stœchiométriques</strong>, concentration en <strong>mol/L</strong>, <strong>dosages</strong>. Sans elle, impossible de prévoir combien de produit se forme, ni de doser quoi que ce soit.",
+      flash:`<p>Une <strong>mole</strong> est un paquet de N<sub>A</sub> = 6,02 × 10²³ entités (atomes, molécules ou ions). La <strong>quantité de matière</strong> n compte ces paquets.</p>
+        <p class="formule">n = ${frac('m','M')}</p>
+        <p class="formule">n = ${frac('N','N<sub>A</sub>')}</p>
+        <ul class="notations">
+          <li><strong>n</strong> : quantité de matière, en mol</li>
+          <li><strong>m</strong> : masse de l'échantillon, en g</li>
+          <li><strong>M</strong> : masse molaire, en g·mol⁻¹</li>
+          <li><strong>N</strong> : nombre d'entités (sans unité)</li>
+          <li><strong>N<sub>A</sub></strong> : constante d'Avogadro, 6,02 × 10²³ mol⁻¹</li>
+        </ul>
+        <p>On distingue la <strong>masse molaire atomique</strong> M(X) — masse d'une mole d'atomes X, lue dans la classification périodique — de la <strong>masse molaire moléculaire</strong>, obtenue en additionnant les masses molaires atomiques de tous les atomes de la molécule.</p>
+        <p>Exemple (masse molaire <em>moléculaire</em> du méthanol CH₄O) : M = M(C) + 4×M(H) + M(O) = 12,0 + 4×1,01 + 16,0 = <strong>32,0 g·mol⁻¹</strong>.</p>`,
+      exercices:[],
+      questions:[
+        { q:`Que représente une mole ?`,
+          opts:[`Un paquet de 6,02 × 10²³ grammes d'une substance`,`Un paquet de 6,02 × 10²³ entités (atomes, molécules…)`,`Le nombre d'atomes contenus dans 1 g de n'importe quelle substance`,`La masse de 6,02 × 10²³ éléments chimiques`], bonne:1,
+          siFaux:`Une mole est un <strong>nombre d'entités</strong> : 6,02 × 10²³ atomes, molécules ou ions. Ce n'est ni une masse, ni « par gramme ».`,
+          siJuste:`Oui : une mole = 6,02 × 10²³ entités.` },
+        { q:`Quelle est l'unité de la quantité de matière ?`,
+          opts:[`g·mol`,`g·mol⁻¹`,`mol`,`mol/L`], bonne:2,
+          siFaux:`La quantité de matière n se mesure en <strong>mol</strong>. (g·mol⁻¹ est l'unité de la masse molaire ; mol/L celle d'une concentration.)`,
+          siJuste:`Exact : la quantité de matière est en mol.` },
+        { q:`Que représente la masse molaire ?`, multi:true,
+          opts:[`Le nombre d'atomes dans un échantillon de 6,02 × 10²³ éléments`,`La masse d'une mole d'éléments chimiques (atomes ou molécules)`,`La masse d'une mole d'atomes uniquement`,`La masse d'un échantillon contenant 6,02 × 10²³ éléments chimiques`], bonnes:[1,3],
+          siFaux:`La masse molaire est la <strong>masse d'une mole</strong> d'entités — ce qui revient à la masse d'un échantillon contenant 6,02 × 10²³ entités. Elle ne se limite pas aux atomes.`,
+          siJuste:`Exact : c'est la masse d'une mole d'entités (donc de 6,02 × 10²³ entités).` },
+        { q:`Quelles relations sont exactes ?`, multi:true,
+          opts:[`n = ${frac('m','M')}`,`n = m × M`,`m = n × M`,`m = ${frac('n','M')}`,`n = ${frac('N','N<sub>A</sub>')}`,`n = ${frac('N<sub>A</sub>','N')}`], bonnes:[0,2,4],
+          siFaux:`Les relations exactes : <strong>n = ${frac('m','M')}</strong>, <strong>m = n × M</strong> et <strong>n = ${frac('N','N<sub>A</sub>')}</strong>.`,
+          siJuste:`Exact : n = ${frac('m','M')}, m = n × M et n = ${frac('N','N<sub>A</sub>')}.` },
+        { q:`Quelle est la masse molaire du méthanol CH₄O ? (M(C)=12,0 ; M(O)=16,0 ; M(H)=1,01 g·mol⁻¹)`,
+          opts:[`32,0 g·mol⁻¹`,`32,01 g·mol⁻¹`,`77,01 g·mol⁻¹`,`29,01 g·mol⁻¹`], bonne:0,
+          siFaux:`La masse molaire moléculaire correspond à la <strong>somme des masses molaires atomiques</strong> : M(CH₄O) = M(C) + 4×M(H) + M(O) = 12,0 + 4×1,01 + 16,0 = <strong>32,0 g·mol⁻¹</strong>.<br>Attention, ici les masses molaires sont données au dixième près sauf celle de l'hydrogène donnée au centième près. Quand on fera la somme on gardera la précision de la donnée la moins précise, on restera donc au dixième près, soit <strong>32,0 g/mol</strong>.`,
+          siJuste:`Exact. La masse molaire moléculaire correspond à la <strong>somme des masses molaires atomiques</strong> : M(CH₄O) = 12,0 + 4×1,01 + 16,0 = <strong>32,0 g·mol⁻¹</strong>.<br>Attention, ici les masses molaires sont données au dixième près sauf celle de l'hydrogène donnée au centième près. Quand on fera la somme on gardera la précision de la donnée la moins précise, on restera donc au dixième près, soit <strong>32,0 g/mol</strong>.` }
+      ]
+    },
+    {
+      id:"C", nom:"Concentration massique", video:"OFEbrx1UZQ8", obligatoire:true,
+      pourquoi:"En 1re spé, la concentration passe en <strong>mol/L</strong> et surtout on apprend à la <strong>mesurer sans la connaître</strong> : par <strong>dosage par étalonnage</strong> (la couleur d'une solution, loi de Beer-Lambert) ou par <strong>titrage</strong>. C'est comme ça qu'on dose la vitamine C d'un jus ou le diiode d'une Bétadine.",
+      flash:`<p>La <strong>concentration massique</strong> C<sub>m</sub> d'une solution est la masse de soluté dissous divisée par le volume de solution :</p>
+        <p class="formule">C<sub>m</sub> = ${frac('m','V')}</p>
+        <ul class="notations">
+          <li><strong>C<sub>m</sub></strong> : concentration massique, en g·L⁻¹</li>
+          <li><strong>m</strong> : masse de soluté dissous, en g</li>
+          <li><strong>V</strong> : volume de solution, en L</li>
+        </ul>
+        <p>Bien convertir le volume en litres (mL → L). Pour chercher une masse, on isole : m = C<sub>m</sub> × V.</p>
+        <p>Exemple : 5,0 g de sel dans 250 mL (= 0,250 L) : C<sub>m</sub> = 5,0 / 0,250 = <strong>20 g·L⁻¹</strong>.</p>`,
       exercices:[
-        { titre:"La pierre de curling", timer:90,
-          enonce:`<img src="curling.jpg" alt="Pierres de curling glissant sur la glace." style="display:block;max-width:100%;border-radius:6px;margin:0 0 .6rem">
-            <p class="exo-situation">Une pierre de curling, modélisée par son centre de gravité G, se déplace en ligne droite sur la piste de 42 m. L'action des balayeurs élimine la force de frottements exercée par la piste sur la pierre. Puisqu'il n'y a pas de force qui s'oppose au mouvement, la valeur de la vitesse de la pierre est alors constante.</p>
-            <div class="donnees"><strong>Donnée</strong> — Poids de la pierre : P = 200 N.</div>
-            <strong>Q1.</strong> Que peut-on dire des forces qui s'exercent sur la pierre dans le référentiel terrestre ?
-            <details class="indice"><summary>💡 Voir l'aide 1</summary><div class="indice-corps"><p>Indique d'abord la nature du mouvement, puis exploite le principe d'inertie.</p></div></details>
-            <strong>Q2.</strong> Faire le bilan des forces qui s'exercent sur la pierre, puis donner, en justifiant, leurs caractéristiques.
-            <details class="indice"><summary>💡 Voir l'aide 2</summary><div class="indice-corps"><p>Une force possède (au moins) trois caractéristiques : sa direction, son sens et sa valeur (norme).</p></div></details>
-            <strong>Q3.</strong> Que peut-on dire de la nature du mouvement et du vecteur vitesse <span class="vec">v</span><sub>G</sub> du centre d'inertie lorsque les balayeurs cessent leur action ?
-            <details class="indice"><summary>💡 Voir l'aide 3</summary><div class="indice-corps"><p>Fais la somme vectorielle des forces qui s'exercent alors sur la pierre.</p></div></details>`,
-          correction:`<p><strong>Q1.</strong> La trajectoire est une portion de droite et la valeur de la vitesse est constante : la pierre a un <strong>mouvement rectiligne uniforme</strong>. D'après le principe d'inertie, les forces qui s'exercent sur elle <strong>se compensent</strong>.</p>
-            <p><strong>Q2.</strong> Les forces sont le poids <span class="vec">P</span> et la force <span class="vec">F</span><sub>piste/pierre</sub> exercée par la piste. Comme elles se compensent (<span class="vec">F</span><sub>piste/pierre</sub> + <span class="vec">P</span> = <span class="vec">0</span>), elles ont :</p>
-            <ul style="margin:.2rem 0 .4rem 1.1rem">
-              <li>la même <strong>direction</strong> : verticale ;</li>
-              <li>la même <strong>valeur</strong> : ‖<span class="vec">F</span><sub>piste/pierre</sub>‖ = ‖<span class="vec">P</span>‖ = 200 N ;</li>
-              <li>des <strong>sens contraires</strong> : le poids vers le bas, la force de la piste vers le haut.</li>
-            </ul>
-            <p><strong>Q3.</strong> Quand les balayeurs cessent leur action, la force de frottements de la piste s'ajoute : la somme des forces n'est plus nulle (∑<span class="vec">F</span> ≠ <span class="vec">0</span>). D'après la <strong>contraposée</strong> du principe d'inertie, la pierre n'a plus un mouvement rectiligne uniforme : le vecteur vitesse <span class="vec">v</span><sub>G</sub> <strong>varie</strong> — c'est sa <strong>norme</strong> ‖<span class="vec">v</span><sub>G</sub>‖ (la valeur de la vitesse) qui diminue.</p>` }
+        { titre:"La fabrication du savon", timer:90,
+          enonce:`<p>La <strong>saponification</strong> : une matière grasse (huile d'olive, principalement de l'acide oléique C₁₈H₃₄O₂) réagit avec une base forte, la soude caustique (hydroxyde de sodium NaOH), pour donner du savon.</p>
+            <p class="attention">⚠️ La soude caustique est une base forte très corrosive : brûlures graves sur la peau et les yeux.</p>
+            <div class="donnees"><strong>Données</strong> — M(Na) = 23,0 ; M(O) = 16,0 ; M(H) = 1,0 ; M(C) = 12,0 (g·mol⁻¹). La recette nécessite 1,88 mol de soude et 0,60 kg d'huile d'olive. Masse volumique de la solution de soude : ρ = 1,04 g/mL.</div>
+            <p><strong>Partie 1 — quantité de matière</strong></p>
+            <strong>Q1.</strong> Calculer les masses molaires moléculaires M(NaOH) et M(C₁₈H₃₄O₂) (bien rédiger le calcul).<br>
+            <strong>Q2.</strong> Quelle masse de soude m(soude) doit-elle peser pour la recette (1,88 mol) ?<br>
+            <strong>Q3.</strong> Pour 0,60 kg d'huile, quelle quantité de matière n(huile) a-t-elle ajoutée ?
+            <p><strong>Partie 2 — concentration & masse volumique</strong></p>
+            <strong>Q4.</strong> Sous quelle forme se présente la soude ? En déduire le type de protocole à utiliser.
+            <details class="indice"><summary>💡 Voir un indice</summary><div class="indice-corps"><p>Bien relire l'énoncé pour vérifier si la soude est donnée sous forme solide, liquide ou gazeuse.</p></div></details>
+            <strong>Q5.</strong> Elle souhaite préparer 260 g de solution. À quel volume V(solution) cela correspond-il ?
+            <details class="indice"><summary>💡 Voir un indice</summary><div class="indice-corps"><p>Ici on nous donne la masse totale de solution et non uniquement la masse de soluté dissout. Il faut donc bien faire attention à la formule que tu choisis d'utiliser.</p></div></details>
+            <strong>Q6.</strong> Pour un savon doux, la solution doit avoir C<sub>m</sub>(NaOH) = 300 g·L⁻¹. Quelle masse de soude peser pour ce volume V(solution) ?
+            <details class="indice"><summary>💡 Voir l'indice 1</summary><div class="indice-corps"><p>Utilise le volume de solution calculé à la question précédente.</p></div></details>
+            <details class="indice"><summary>💡 Voir l'indice 2</summary><div class="indice-corps"><p>Utilise une formule qui lie masse, volume de solution et concentration massique, et écris-la de manière à isoler la grandeur recherchée. Attention aux unités de ta formule.</p></div></details>
+            <strong>Q7.</strong> Donner les étapes du protocole de dissolution.`,
+          correction:`<p><strong>Q1.</strong> M(NaOH) = M(Na)+M(O)+M(H) = 23,0+16,0+1,0 = <strong>40,0 g·mol⁻¹</strong>.<br>
+            M(C₁₈H₃₄O₂) = 18×M(C) + 34×M(H) + 2×M(O) = 18×12,0 + 34×1,0 + 2×16,0 = 216+34+32 = <strong>282 g·mol⁻¹</strong>.</p>
+            <p><strong>Q2.</strong> m(soude) = n × M(NaOH) = 1,88 × 40,0 = <strong>75,2 g</strong>.</p>
+            <p><strong>Q3.</strong> n(huile) = m / M = 600 / 282 ≈ <strong>2,1 mol</strong> (0,60 kg = 600 g ; on garde 2 chiffres significatifs).</p>
+            <p><strong>Q4.</strong> La soude est <strong>solide</strong> (paillettes) : il faut donc réaliser une <strong>dissolution</strong>.</p>
+            <p><strong>Q5.</strong> V(solution) = m / ρ = 260 / 1,04 = <strong>250 mL</strong>.</p>
+            <p><strong>Q6.</strong> m(soude) = C<sub>m</sub> × V = 300 × 0,250 = <strong>75,0 g</strong> (V = 0,250 L).</p>
+            <p><strong>Q7.</strong> Peser 75,0 g de soude ; les introduire dans une fiole jaugée de 250 mL (entonnoir) ; ajouter de l'eau distillée aux 2/3, boucher et agiter pour dissoudre ; compléter jusqu'au trait de jauge ; boucher et homogénéiser.</p>` }
+      ],
+      activites:[
+        { titre:"Cartes mentales à compléter", icone:"📐", faitLabel:"J'ai complété mes cartes mentales",
+          html:`<p class="exo-consigne">Imprime les deux cartes mentales, complète les relations entre les grandeurs, puis vérifie-toi avec le Wooclap ci-dessous.</p>
+            <div class="dl-row">
+              <a class="dl-btn" href="carte-mentale-mole.pdf" download>⬇️ Carte mentale — la mole (PDF)</a>
+              <a class="dl-btn" href="carte-mentale-mole-Cm.pdf" download>⬇️ Carte mentale — mole &amp; concentration (PDF)</a>
+            </div>
+            <div class="woo-act"><iframe src="${WOOCLAP_SRC}" title="Wooclap — vérifier ses cartes mentales" allow="fullscreen" loading="lazy"></iframe></div>
+            <p class="woo-note">Rien ne s'affiche ? <a href="${WOOCLAP_SRC}" target="_blank" rel="noopener">ouvrir le Wooclap dans un onglet</a>.</p>` }
       ],
       questions:[
-        { q:`Un palet glisse sur une table à coussin d'air horizontale, sans frottement notable. On le lance puis on ne le touche plus. Que va-t-il faire ?`,
-          opts:[`Ralentir progressivement puis s'arrêter`,`Continuer en ligne droite à vitesse constante`,`Accélérer tout seul`,`Tourner en rond`], bonne:1,
-          siFaux:`Un objet n'a pas besoin de force pour continuer à avancer : une force sert à <strong>modifier</strong> le mouvement (ralentir, accélérer, tourner). Sans frottement et forces compensées, le palet conserve son mouvement : ligne droite à vitesse constante.`,
-          siJuste:`Exact : forces compensées et frottements négligeables, le palet conserve son mouvement rectiligne uniforme.` },
-        { q:`D'après le principe d'inertie, si les forces qui s'exercent sur un objet se compensent, alors l'objet :`,
-          opts:[`est forcément immobile`,`est forcément en mouvement`,`est immobile ou en mouvement rectiligne uniforme`,`ralentit forcément`], bonne:2,
-          siFaux:`Attention au mot « forcément » : des forces qui se compensent ne rendent pas l'objet immobile. Il peut aussi se déplacer en ligne droite à vitesse constante.`,
-          siJuste:`Exact : forces compensées ⇒ repos <em>ou</em> mouvement rectiligne uniforme.` },
-        { q:`Un livre est posé, immobile, sur une table. Quelles forces principales s'exercent sur lui ?`,
-          opts:[`Seulement son poids`,`Son poids et la réaction de la table`,`Son poids et une force de propulsion`,`Aucune force, puisqu'il est immobile`], bonne:1,
-          siFaux:`Même immobile, un objet subit des forces. Le livre est attiré vers le bas (poids) et la table le retient vers le haut (réaction) : ces deux forces se compensent.`,
-          siJuste:`Bravo : le poids vers le bas et la réaction de la table vers le haut se compensent (livre immobile).` },
-        { q:`Une voiture roule en ligne droite à vitesse constante sur une route horizontale. Que peut-on dire des forces qui s'exercent sur elle ?`,
-          opts:[`Elles se compensent globalement`,`La force du moteur est forcément plus grande que les frottements`,`Il n'y a aucune force sur la voiture`,`Le poids de la voiture est nul`], bonne:0,
-          siFaux:`Si la force motrice dépassait les frottements, la voiture accélérerait. À vitesse constante en ligne droite, les forces se compensent globalement.`,
-          siJuste:`Exact : mouvement rectiligne uniforme ⇒ forces compensées (moteur ↔ frottements, route ↔ poids).` },
-        { q:`On lance une balle verticalement vers le haut. Une fois qu'elle a quitté la main, quelle force principale s'exerce sur elle si on néglige l'air ?`,
-          opts:[`Une force vers le haut qui la fait monter`,`Son poids, dirigé vers le bas`,`Aucune force pendant qu'elle monte`,`Une force vers le haut puis une force vers le bas`], bonne:1,
-          siFaux:`Erreur classique : aucune force ne « reste » vers le haut après le lancer. La balle monte grâce à sa vitesse initiale, mais son poids (vers le bas) la ralentit.`,
-          siJuste:`Très bien : une fois lâchée (air négligé), la balle ne subit plus que son poids, dirigé vers le bas.` },
-        { q:`Sur une chronophotographie, les positions successives d'un objet sont alignées et régulièrement espacées. Que peut-on conclure ?`,
-          opts:[`L'objet est immobile`,`L'objet accélère`,`L'objet ralentit`,`L'objet a un mouvement rectiligne uniforme`], bonne:3,
-          siFaux:`Regarde l'espacement entre les positions : s'il augmente, l'objet accélère ; s'il diminue, il ralentit. Ici il est régulier ⇒ vitesse constante.`,
-          siJuste:`Bravo : des positions alignées et régulièrement espacées ⇒ mouvement rectiligne uniforme.` }
+        { q:`La concentration massique d'une solution est définie par :`,
+          opts:[`Le nombre de moles de soluté divisé par le volume de solution`,`La masse de solution divisée par le volume de solution`,`La masse de soluté divisée par le volume de solution`,`Le volume de soluté divisé par le volume de solution`], bonne:2,
+          siFaux:`<strong>Attention ! ne pas confondre concentration et masse volumique.</strong><br>La concentration c'est la masse de <strong>soluté</strong> divisée par le volume de solution : C<sub>m</sub> = ${frac('m<sub>soluté</sub>','V<sub>solution</sub>')}, tandis que la masse volumique c'est bien la masse de <strong>solution</strong> (donc la masse totale de l'échantillon) divisée par le volume de solution : ρ = ${frac('m<sub>solution</sub>','V<sub>solution</sub>')}.`,
+          siJuste:`Exact. <strong>Attention à ne pas confondre concentration et masse volumique :</strong> la concentration c'est la masse de <strong>soluté</strong> divisée par le volume de solution, tandis que la masse volumique c'est la masse de <strong>solution</strong> (la masse totale de l'échantillon) divisée par le volume de solution.` },
+        { q:`Quelle est l'unité usuelle de la concentration massique ?`,
+          opts:[`mol/L`,`g/L`,`kg/m³ uniquement`,`g/mL uniquement`], bonne:1,
+          siFaux:`L'unité usuelle est le <strong>g/L</strong>. (mol/L est l'unité de la concentration en quantité de matière.)`,
+          siJuste:`Exact : g/L.` },
+        { q:`On dissout 5,0 g de sel dans 250 mL d'eau. Quelle est la concentration massique ?`,
+          opts:[`0,02 g/L`,`20 g/L`,`1250 g/L`,`0,5 g/L`], bonne:1,
+          siFaux:`C<sub>m</sub>(sel) = ${frac('m<sub>sel</sub>','V<sub>solution</sub>')} = ${frac('5,0','0,250')} = 5,0 × 4 = <strong>20 g/L</strong> (250 mL = 0,250 L ; diviser par 0,250 revient à multiplier par 4).`,
+          siJuste:`Exact : C<sub>m</sub>(sel) = ${frac('m<sub>sel</sub>','V<sub>solution</sub>')} = ${frac('5,0','0,250')} = 5,0 × 4 = <strong>20 g/L</strong>.` },
+        { q:`Une solution a Cm = 12 g/L. Quelle masse de soluté contient 500 mL ?`,
+          opts:[`24 g`,`6 g`,`0,6 g`,`2,4 g`], bonne:1,
+          siFaux:`La concentration correspond à la masse dissoute pour 1 litre de solution. Pour 500 mL la masse sera donc deux fois moins importante, ici <strong>6 g</strong>.<br>Autre possibilité de rédaction : m<sub>soluté</sub> = C<sub>m</sub>(soluté) × V = 12 × 0,500 = <strong>6,0 g</strong>.<br>• Penser à faire correspondre les unités, ici en convertissant le volume en litre.<br>• Attention chiffre significatif : si la concentration avait été de 12,0 g/L on aurait eu une masse de 6,00 g.`,
+          siJuste:`Exact. La concentration correspond à la masse dissoute pour 1 litre de solution ; pour 500 mL la masse est deux fois moins importante, soit <strong>6 g</strong>.<br>Autre rédaction : m<sub>soluté</sub> = C<sub>m</sub>(soluté) × V = 12 × 0,500 = <strong>6,0 g</strong>.<br>• Penser à faire correspondre les unités (volume en litre).<br>• Attention chiffre significatif : si la concentration avait été de 12,0 g/L on aurait eu 6,00 g.` },
+        { q:`Quelle(s) relation(s) est/sont exacte(s) ?`, multi:true,
+          opts:[`Cm = m × V`,`Cm = ${frac('m','V')}`,`m = Cm × V`,`m = ${frac('Cm','V')}`], bonnes:[1,2],
+          siFaux:`Les relations exactes : <strong>Cm = ${frac('m','V')}</strong> et <strong>m = Cm × V</strong>.`,
+          siJuste:`Exact : Cm = ${frac('m','V')} et m = Cm × V.` }
+      ]
+    },
+    {
+      id:"D", nom:"Protocoles de dissolution", video:null, flash:null,
+      pourquoi:"Dissolution et <strong>dilution</strong> sont le premier geste de tout dosage de 1re spé. La fiole jaugée, la pipette jaugée et la <strong>burette</strong> d'ici sont exactement la verrerie des <strong>titrages</strong> — et une solution mal préparée fausse toute la mesure.",
+      programme:`<p>La <strong>dissolution</strong> relève du thème de seconde « Constitution et transformations de la matière », dans l'étude des <strong>solutions aqueuses</strong> : c'est, avec la dilution, l'une des deux façons de préparer une solution à une <strong>concentration en masse</strong> voulue.</p>
+        <p>La compétence attendue est de <strong>choisir la verrerie adaptée</strong> et de <strong>mettre en œuvre le protocole</strong> en respectant les règles de sécurité. C'est un geste expérimental fondateur, réinvesti toute l'année puis en 1re (dilutions, dosages).</p>`,
+      exercices:[],
+      activites:[ { titre:"Activités interactives — protocoles", icone:"🧩", faitLabel:"J'ai fait les activités",
+        html:`<p class="exo-consigne">Pour t'entraîner sur les protocoles (plutôt qu'une vidéo) : remets les étapes de la dissolution dans l'ordre, puis complète le protocole à trous.</p>
+          <div class="la-grid">
+            <div class="la-item"><h5>Dissolution — ordre chronologique</h5><iframe src="https://learningapps.org/watch?v=pbwn6iaan26" allowfullscreen loading="lazy"></iframe></div>
+            <div class="la-item"><h5>Dissolution — protocole à trous</h5><iframe src="https://learningapps.org/watch?v=pyrcv4wia26" allowfullscreen loading="lazy"></iframe></div>
+          </div>` } ],
+      questions:[
+        { q:`Lors d'une dissolution, dans quel ordre procéder ?`,
+          opts:[`Verser le soluté dans la fiole jaugée, puis compléter en deux temps avec le solvant`,`Remplir la fiole aux 2/3 d'eau, ajouter le soluté, agiter, puis compléter au trait de jauge`,`Compléter la fiole au trait de jauge avec le solvant, puis ajouter le soluté pesé`,`Peser le solvant, puis ajouter le soluté`], bonne:0,
+          siFaux:`On introduit d'abord le <strong>soluté</strong> dans la fiole jaugée, puis on complète avec le solvant (en deux temps, avec agitation) jusqu'au trait de jauge.`,
+          siJuste:`Exact : soluté d'abord, puis on complète au trait de jauge.` },
+        { q:`Quel est le rôle de la fiole jaugée ?`,
+          opts:[`Peser précisément le soluté`,`Mesurer un volume précis et connu de solution`,`Chauffer la solution`,`Filtrer les impuretés`], bonne:1,
+          siFaux:`La fiole jaugée sert à <strong>mesurer un volume précis</strong> de solution (jusqu'au trait de jauge). La fiole jaugée fait partie de la <strong>verrerie de précision</strong>, tout comme la pipette jaugée par exemple.`,
+          siJuste:`Exact : elle mesure un volume précis de solution. La fiole jaugée fait partie de la <strong>verrerie de précision</strong>, tout comme la pipette jaugée par exemple.` },
+        { q:`Quelles précautions faut-il prendre lors d'une dissolution avec un solide ?`, multi:true,
+          opts:[`Peser le solide avec une balance de précision`,`Ajouter le solide dans une fiole déjà remplie au trait de jauge`,`Agiter pour homogénéiser avant de compléter au trait`,`Utiliser un entonnoir si nécessaire pour introduire le solide`,`Manipuler obligatoirement sous hotte avec gants et lunettes`], bonnes:[0,2,3],
+          siFaux:`On pèse le solide à la balance de précision, on agite pour homogénéiser avant de compléter au trait, et on utilise un entonnoir si nécessaire. En revanche, on n'ajoute pas le solide dans une fiole déjà remplie au trait de jauge. Et il n'est <strong>pas obligatoire</strong> de manipuler avec des gants et lunettes si par exemple on dissout juste du sucre dans l'eau.`,
+          siJuste:`Bien vu : balance de précision, agitation avant de compléter, entonnoir si besoin. À noter : il n'est <strong>pas obligatoire</strong> de manipuler avec des gants et lunettes si par exemple on dissout juste du sucre dans l'eau.` },
+        { q:`Quels matériels et verreries utilise-t-on pour une dissolution ?`, multi:true,
+          opts:[`Éprouvette graduée`,`Fiole jaugée`,`Erlenmeyer`,`Pipette jaugée`,`Balance`,`Spatule`,`Eau distillée`,`Burette graduée`], bonnes:[1,4,5,6],
+          siFaux:`Pour une dissolution : <strong>fiole jaugée, balance, spatule, eau distillée</strong> (et un entonnoir). L'éprouvette, l'erlenmeyer, la pipette ou la burette ne sont pas nécessaires ici.`,
+          siJuste:`Exact : fiole jaugée, balance, spatule, eau distillée.` },
+        { q:`Avant de commencer une dissolution, il faut calculer :`,
+          opts:[`La quantité de matière de soluté à peser`,`La masse de solution à peser`,`La masse de soluté à peser`,`La concentration massique de la solution`], bonne:2,
+          siFaux:`Avant de commencer, on calcule la <strong>masse de soluté à peser</strong> : m = Cm × V.`,
+          siJuste:`Exact : on calcule la masse de soluté à peser (m = Cm × V).` }
       ]
     }
   ]
@@ -310,7 +404,7 @@ function passerDiagnostic(){
   ecranResultats(false);
 }
 
-const STORE_KEY = "cahier-j09";
+const STORE_KEY = "cahier-j05";
 let PROG = (function(){ try{ const r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } })();
 function saveProg(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROG)); }catch(e){} }
 function freshProg(f, complet){
@@ -379,13 +473,13 @@ function ecranIntro(){
   answers=[]; idx=0;
   app.innerHTML = `
     <div class="intro">
-      <p>Ce diagnostic de <strong>6 questions</strong> sert à repérer ce que tu maîtrises déjà. Ce n'est pas une note.</p>
+      <p>Ce diagnostic de <strong>18 questions</strong> (4 parties) sert à repérer ce que tu maîtrises déjà. Ce n'est pas une note. Certaines questions ont <strong>plusieurs réponses</strong> : elles te le signalent.</p>
       <div class="note-simple">Les questions ne couvrent <strong>pas tout</strong> le contenu de la séance : elles t'aident seulement à voir par où commencer.</div>
       <div class="actions" style="justify-content:flex-start;gap:.7rem;flex-wrap:wrap">
         <button class="btn" id="go">Commencer le diagnostic →</button>
         <button class="btn fant" id="skip">Passer le diagnostic</button>
       </div>
-      <p style="font-size:.8rem;color:var(--gris);margin-top:.8rem">« Passer le diagnostic » marque la partie « à retravailler » et ouvre directement le plan.</p>
+      <p style="font-size:.8rem;color:var(--gris);margin-top:.8rem">« Passer le diagnostic » marque toutes les parties « à retravailler » et ouvre directement le plan complet.</p>
     </div>`;
   document.getElementById("go").onclick = ()=>{ idx=0; ecranQuestion(); };
   document.getElementById("skip").onclick = ()=>{ NBQ.forEach((n,i)=> fautes[i]=n); freshProg(fautes,false); ecranResultats(false); };
@@ -517,16 +611,16 @@ function ecranResultats(autoOpen){
       }
       return `
         <details class="exo" data-timer="${ex.timer}" data-ax="${axe.id}" data-j="${j}">
-          <summary><span class="exo-num">Exercice</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
+          <summary><span class="exo-num">Exercice ${j+1}</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
           <div class="exo-body">
-            <div class="exo-enonce">${ex.enonce}</div>
+            <p class="exo-enonce">${ex.enonce}</p>
             <p class="exo-consigne">✏️ Fais cet exercice sur ta feuille, puis vérifie. Le corrigé se débloque après un court instant.</p>
             <div class="exo-btns"><button type="button" class="mini btn-corr" disabled>Correction…</button></div>
             <div class="exo-corr" hidden>${ex.correction}</div>
             <label class="chk-fait"><input type="checkbox"> J'ai fait cet exercice</label>
           </div>
         </details>`;
-    }).join("") : `<p class="vide">Exercices à ajouter (depuis ton cours).</p>`;
+    }).join("") : `<p class="vide">Exercices à ajouter (depuis ton cours du Jour 4).</p>`;
 
     const hasCapsule = !!(axe.flash || axe.programme);
     const capsuleLabel = axe.flash ? "📖 Lire la capsule (rappel de cours)" : "📖 Lire — où ça se place dans le programme";
@@ -534,13 +628,13 @@ function ecranResultats(autoOpen){
       ? `<details class="media"><summary>${capsuleLabel}</summary><div class="flash">${axe.flash||axe.programme}</div></details>`
       : ``;
     const videoDetails = axe.video
-      ? `<details class="media"><summary>${axe.videoBonus?'🎬 Vidéo bonus — protocole de dilution':'🎬 Regarder la vidéo'}</summary><div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`
+      ? `<details class="media"><summary>🎬 Regarder la vidéo</summary><div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`
       : ``;
     const choixMsg = (hasCapsule && axe.video)
       ? `<p class="choix-msg">Choisis le format qui te convient : <strong>lis la capsule</strong> <em>ou</em> <strong>regarde la vidéo</strong>. Pas besoin des deux.</p>`
       : ``;
     const gateLu = hasCapsule ? `<label><input type="checkbox" class="chk-lu"> J'ai ${axe.flash?'lu la capsule':'lu le programme'}</label>` : ``;
-    const gateVu = (axe.video && !axe.videoBonus) ? `<label><input type="checkbox" class="chk-vu"> J'ai regardé la vidéo</label>` : ``;
+    const gateVu = axe.video ? `<label><input type="checkbox" class="chk-vu"> J'ai regardé la vidéo</label>` : ``;
     const gateBloc = (gateLu || gateVu) ? `<div class="gate">${gateLu}${gateVu}</div>` : ``;
 
     const activites = (axe.activites && axe.activites.length) ? axe.activites.map((ac,k)=>`
@@ -560,7 +654,7 @@ function ecranResultats(autoOpen){
       <details class="axe ${p.cls}" data-axe="${axe.id}">
         <summary>
           <span class="badge ${p.cls}">${p.label}</span>
-          <span class="axe-nom">Bloc unique — ${axe.nom}</span>
+          <span class="axe-nom">Bloc ${axe.id} — ${axe.nom}</span>
           <span class="axe-score"${(PROG.ouvert&&PROG.ouvert[axe.id])?' hidden':''}>${nb-f}/${nb}</span>
         </summary>
         <div class="axe-corps">
@@ -577,9 +671,10 @@ function ecranResultats(autoOpen){
   }).join("");
 
   app.innerHTML = `
-    <div class="topbar"><span>Ton plan de révision</span></div>
-    <div class="res-note">Rappel : ces questions ne couvrent pas tout le contenu de la séance. Ton avancement est gardé en mémoire sur cet appareil.</div>
+    <div class="topbar"><span>Ton plan de révision</span><span class="axe-tag">classé par priorité</span></div>
+    <div class="res-note">Rappel : ces questions ne couvrent pas tout. Même une partie « à survoler » mérite un coup d'œil. Ton avancement est gardé en mémoire sur cet appareil.</div>
     ${cartes}
+    <div style="background:var(--nuit);color:var(--clair);padding:1rem 1.2rem;font-size:.95rem;margin-top:1rem">Peu de temps ? Suis l'ordre proposé : les parties en haut sont les plus prioritaires.</div>
     <div class="actions" style="margin-top:1.4rem;justify-content:flex-start">
       <button class="btn fant" id="recommencer">↻ Refaire le diagnostic</button>
     </div>`;
@@ -674,20 +769,23 @@ if(PROG && Array.isArray(PROG.fautes)){
   <div class="pb-pct">0 %</div>
   <div class="pb-seg">
     <div class="pb-cell none" data-diag="1" title="Diagnostic"><span class="pb-fill"></span><span class="pb-lab">Diag</span></div>
-    <div class="pb-cell none" data-axe="A" title="Le principe d'inertie"><span class="pb-fill"></span><span class="pb-lab"></span></div>
+    <div class="pb-cell none" data-axe="A"><span class="pb-fill"></span><span class="pb-lab">A</span></div>
+    <div class="pb-cell none" data-axe="B"><span class="pb-fill"></span><span class="pb-lab">B</span></div>
+    <div class="pb-cell none" data-axe="C"><span class="pb-fill"></span><span class="pb-lab">C</span></div>
+    <div class="pb-cell none" data-axe="D"><span class="pb-fill"></span><span class="pb-lab">D</span></div>
   </div>
 </div>
 <script>
-/* Jour 5 — barre de progression : Diagnostic + blocs A, B, C.
+/* Jour 4 — barre de progression : Diagnostic + blocs A, B, C, D.
    Publie le contrat "cahier-progression" lu par l'accueil. Chaque bloc =
    (capsule/vidéo consultée) + exercices faits + activités faites.
    La barre est masquée pendant le diagnostic (classe body.en-diagnostic). */
 (function(){
-  var JOUR=9, TITRE="Le principe d'inertie", CLE='cahier-j09';
-  var AXES=[{id:'A',exos:1,act:0}];
+  var JOUR=5, TITRE="Protocoles et formules", CLE='cahier-j05';
+  var AXES=[{id:'A',exos:0,act:0},{id:'B',exos:0,act:0},{id:'C',exos:1,act:1,oblig:true},{id:'D',exos:0,act:1}];
   function lire(){ try{var r=localStorage.getItem(CLE);return r?JSON.parse(r):null;}catch(e){return null;} }
-  function lireOuv(){ try{var r=localStorage.getItem('cahier-j09-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
-  function saveOuv(o){ try{localStorage.setItem('cahier-j09-ouverts',JSON.stringify(o));}catch(e){} }
+  function lireOuv(){ try{var r=localStorage.getItem('cahier-j05-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
+  function saveOuv(o){ try{localStorage.setItem('cahier-j05-ouverts',JSON.stringify(o));}catch(e){} }
   function deuxch(n){ return (n<10?'0':'')+n; }
   function ajd(){ var d=new Date();return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
   function paint(c,state,frac,extra){
@@ -723,10 +821,9 @@ if(PROG && Array.isArray(PROG.fautes)){
       var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
       var nE=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) nE++; }
       var nA=0; for(var k=0;k<ax.act;k++){ if(P.act&&P.act[ax.id]&&P.act[ax.id][k]) nA++; }
-      var hasGate=!ax.nogate;
-      var total=(hasGate?1:0)+ax.exos+ax.act;
-      var acquis = ax.oblig ? (consulte&&nE===ax.exos&&nA===ax.act) : (vert||((hasGate?consulte:true)&&nE===ax.exos&&nA===ax.act));
-      var steps=acquis?total:((hasGate&&consulte?1:0)+nE+nA); pf+=steps; pt+=total;
+      var total=1+ax.exos+ax.act;
+      var acquis = ax.oblig ? (consulte&&nE===ax.exos&&nA===ax.act) : (vert||(consulte&&nE===ax.exos&&nA===ax.act));
+      var steps=acquis?total:((consulte?1:0)+nE+nA); pf+=steps; pt+=total;
       var ouvert=!!ouv[ax.id], touche=acquis||ouvert||consulte||nE>0||nA>0;
       var state=acquis?'done':(touche?'prog':'none');
       setCell(ax.id,state,steps/total,(revoir&&!acquis)?'revoir':'');
