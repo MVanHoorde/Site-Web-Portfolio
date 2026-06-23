@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostic Jour 7 — Dosage par étalonnage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ============================================================
+     JOUR 7 — Dosage par étalonnage — même moteur que le J06 :
+       diagnostic QCM (5 questions) -> plan priorisé par bloc :
+       (capsule) + vidéo + exercices, verrou lu/vu, minuteur +
+       case fait par exercice, sauvegarde, barre de progression.
+       Bloc A — Méthode de l'échelle de teintes : vidéo + animation
+         (bloc « découverte », pas de question au diagnostic).
+       Bloc B — Méthode de la courbe d'étalonnage : vidéo + exercice 2
+         + les 5 questions du diagnostic.
+       Vidéos en attente (liens à intégrer) -> rendu « video-slot ».
+     ============================================================ -->
+<style>
+  :root{
+    --nuit:#0e2545;--nuit-haut:#173d6b;--nuit-bas:#0b1d39;
+    --papier:#eef3f8;--carte:#fff;--orange:#e8743b;--cyan:#3fa7d6;
+    --encre:#15233a;--gris:#5d6b7e;--ligne:#d8e1ea;
+    --vert:#2fae6a;--ambre:#f0a72e;--rouge:#d6402b;
+    --clair:#eaf1f9;--clair-attenue:#9fb2c9;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--encre);background:var(--papier);line-height:1.6}
+  :focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+
+  nav{position:sticky;top:0;z-index:10;background:var(--nuit);border-bottom:1px solid rgba(255,255,255,.12)}
+  .nav-inner{max-width:760px;margin:0 auto;padding:.85rem 1.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+  .nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;color:var(--clair)}
+  .nav-logo span{color:var(--orange)}
+  .retour{font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--clair);text-decoration:none;border-bottom:2px solid var(--orange);padding-bottom:2px}
+  .retour:hover,.retour:focus-visible{color:var(--orange)}
+
+  .bandeau{background:linear-gradient(160deg,var(--nuit-haut),var(--nuit-bas));color:var(--clair)}
+  .bandeau-inner{max-width:760px;margin:0 auto;padding:2.2rem 1.5rem}
+  .bandeau .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--clair-attenue);margin-bottom:.5rem}
+  .bandeau h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,4.5vw,2.2rem)}
+
+  main{max-width:760px;margin:0 auto;padding:2rem 1.5rem 4rem}
+  .intro p{margin-bottom:1rem}
+  .note-simple{background:rgba(63,167,214,.08);border-left:4px solid var(--cyan);padding:.9rem 1.1rem;font-size:.95rem;margin:1.2rem 0}
+  .btn{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.9rem;border:none;cursor:pointer;background:var(--orange);color:#fff;padding:.7rem 1.4rem}
+  .btn:hover{filter:brightness(1.06)}
+  .btn.fant{background:transparent;color:var(--nuit);border:1px solid var(--nuit)}
+  .btn.fant:hover{background:var(--nuit);color:#fff;filter:none}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+
+  .topbar{display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--gris);margin-bottom:.6rem;gap:1rem}
+  .axe-tag{color:var(--orange);text-align:right}
+  .barre{height:6px;background:var(--ligne);margin-bottom:1.6rem;overflow:hidden}
+  .barre>i{display:block;height:100%;background:var(--orange);transition:width .25s ease}
+  .enonce{font-size:1.12rem;font-weight:600;margin-bottom:.4rem;font-family:'Space Grotesk',sans-serif}
+  .multi-hint{font-family:'IBM Plex Mono',monospace;font-size:.76rem;color:var(--cyan);margin-bottom:.8rem}
+  .opts{display:grid;gap:.6rem;margin-bottom:1.2rem}
+  .opt{text-align:left;background:var(--carte);border:1px solid var(--ligne);padding:.8rem 1rem;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--encre);display:flex;gap:.7rem;align-items:flex-start}
+  .opt .lettre{font-family:'IBM Plex Mono',monospace;color:var(--gris);flex:0 0 auto;min-width:1.1em}
+  .opt:hover{border-color:var(--orange)}
+  .opt.sel{border-color:var(--orange);box-shadow:inset 0 0 0 1px var(--orange)}
+  .opt.juste{border-color:var(--vert);background:rgba(47,174,106,.10)}
+  .opt.juste .lettre{color:var(--vert)}
+  .opt.faux{border-color:var(--rouge);background:rgba(214,64,43,.10)}
+  .opt.faux .lettre{color:var(--rouge)}
+  .opt:disabled{cursor:default}
+
+  .feedback{border:1px solid var(--ligne);border-left:4px solid var(--cyan);background:var(--carte);padding:1rem 1.1rem;margin-bottom:1.2rem;font-size:.97rem}
+  .feedback.ok{border-left-color:var(--vert)} .feedback.ko{border-left-color:var(--rouge)}
+  .feedback .res{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;padding:.25rem .6rem;border-radius:999px;color:#fff;margin-bottom:.7rem}
+  .feedback.ok .res{background:var(--vert)} .feedback.ko .res{background:var(--rouge)}
+  .feedback p{margin:0}
+  .feedback strong,.flash strong,.exo-corr strong,.exo-exemple strong{font-weight:700;color:var(--encre)}
+  .actions{display:flex;justify-content:flex-end;gap:.7rem}
+
+  .res-note{font-size:.95rem;color:var(--gris);background:rgba(0,0,0,.025);border:1px dashed var(--ligne);padding:.9rem 1.1rem;margin-bottom:1.5rem}
+  details.axe{border:1px solid var(--ligne);border-left:5px solid var(--gris);background:var(--carte);margin-bottom:1rem}
+  details.axe.v{border-left-color:var(--vert)} details.axe.a{border-left-color:var(--ambre)} details.axe.r{border-left-color:var(--rouge)}
+  details.axe>summary{list-style:none;cursor:pointer;padding:1rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+  details.axe>summary::-webkit-details-marker{display:none}
+  .badge{font-family:'IBM Plex Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;padding:.2rem .55rem;border-radius:999px;color:#fff;flex:0 0 auto}
+  .badge.v{background:var(--vert)} .badge.a{background:var(--ambre)} .badge.r{background:var(--rouge)}
+  .axe-nom{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.02rem;flex:1}
+  .axe-score{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--gris)}
+  .axe-corps{padding:0 1.2rem 1.2rem}
+  .pourquoi{background:rgba(63,167,214,.07);border-left:3px solid var(--cyan);padding:.8rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+  .pourquoi b{display:block;font-family:'IBM Plex Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);margin-bottom:.3rem}
+
+  .bloc{margin-bottom:1.3rem}
+  .bloc h4{font-family:'IBM Plex Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gris);margin-bottom:.6rem;border-bottom:1px dashed var(--ligne);padding-bottom:.3rem}
+  .flash p{font-size:.95rem;margin-bottom:.6rem}
+  .flash ol{margin:.3rem 0 .6rem 1.2rem;font-size:.95rem}
+  .flash ol li{margin-bottom:.25rem}
+  .formule{font-family:'IBM Plex Mono',monospace;font-size:.92rem;background:rgba(63,167,214,.10);border-left:3px solid var(--cyan);padding:.55rem .8rem;text-align:center}
+  .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .18em;line-height:1.05}
+  .frac .num{padding:0 .4em}
+  .frac .den{padding:0 .4em;border-top:1.6px solid currentColor}
+  .video{position:relative;padding-top:56.25%;background:#000}
+  .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .video-slot{border:1px dashed var(--orange);background:rgba(232,116,59,.06);color:var(--gris);padding:1rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;text-align:center}
+
+  .gate{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;margin:0 0 1rem;padding:.8rem 1rem;background:rgba(232,116,59,.07);border:1px solid var(--ligne)}
+  .gate label{display:flex;align-items:center;gap:.45rem;font-size:.9rem;cursor:pointer}
+  .gate input{width:16px;height:16px;accent-color:var(--orange);flex:0 0 auto}
+  .verrou-msg{font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--gris);margin-bottom:.6rem}
+  .exos.verrou{opacity:.45;pointer-events:none}
+  .vide{font-size:.9rem;color:var(--gris);font-style:italic}
+
+  details.exo{border:1px solid var(--ligne);margin-bottom:.7rem;background:rgba(0,0,0,.012)}
+  details.exo>summary{list-style:none;cursor:pointer;padding:.8rem 1rem;display:flex;gap:.6rem;align-items:baseline}
+  details.exo>summary::-webkit-details-marker{display:none}
+  details.exo>summary::before{content:"▸";color:var(--orange);font-size:.8rem;flex:0 0 auto}
+  details.exo[open]>summary::before{content:"▾"}
+  .exo-num{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:.06em;flex:0 0 auto}
+  .exo-titre{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600}
+  .fait-mark{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--vert)}
+  .exo-body{padding:0 1rem 1rem}
+  .exo-enonce{margin-bottom:.4rem}
+  .exo-situation{font-weight:400;margin-bottom:.5rem}
+  .exo-question{font-style:italic;margin:.5rem 0 .2rem}
+  .exo-consigne{font-size:.85rem;color:var(--gris);margin-bottom:.6rem}
+  .exo-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+  .mini{font-family:'IBM Plex Mono',monospace;font-size:.76rem;cursor:pointer;border:1px solid var(--nuit);background:#fff;color:var(--nuit);padding:.35rem .7rem}
+  .mini:hover:not(:disabled){background:var(--nuit);color:#fff}
+  .mini:disabled{opacity:.55;cursor:not-allowed;border-color:var(--gris);color:var(--gris)}
+  .exo-corr{margin-top:.6rem;border-left:3px solid var(--vert);background:rgba(47,174,106,.07);padding:.7rem .9rem;font-size:.92rem}
+  .exo-corr p{margin-bottom:.4rem}
+  .donnees{background:rgba(0,0,0,.03);border:1px solid var(--ligne);padding:.6rem .9rem;font-size:.9rem;margin:.5rem 0 .7rem}
+  .woo-exo{margin-top:.5rem;border:1px solid var(--ligne);overflow:hidden}
+  .woo-exo iframe{width:100%;height:600px;border:0;display:block}
+  .woo-note{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--gris);margin:.4rem 0 .6rem}
+  .chk-fait{display:flex;align-items:center;gap:.45rem;font-size:.85rem;color:var(--gris);margin-top:.9rem;cursor:pointer}
+  .chk-fait input{width:15px;height:15px;accent-color:var(--vert);flex:0 0 auto}
+  [hidden]{display:none}
+  .flash ul.notations{margin:.4rem 0 .6rem;padding-left:1.1rem}
+  .flash ul.notations li{margin:.15rem 0}
+  .attention{background:rgba(214,64,43,.08);border-left:3px solid var(--rouge);padding:.5rem .8rem;font-size:.9rem;color:var(--encre);border-radius:4px;margin:.4rem 0}
+  details.indice{margin:.35rem 0 .2rem}
+  details.indice>summary{list-style:none;display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.76rem;color:var(--cyan);border:1px solid var(--cyan);border-radius:999px;padding:.18rem .7rem;user-select:none}
+  details.indice>summary::-webkit-details-marker{display:none}
+  details.indice>summary:hover{background:rgba(63,167,214,.10)}
+  details.indice[open]>summary{background:rgba(63,167,214,.10)}
+  details.indice .indice-corps{background:rgba(63,167,214,.07);border-left:3px solid var(--cyan);padding:.55rem .8rem;margin:.4rem 0 .2rem;font-size:.92rem}
+  details.indice .indice-corps p{margin:.2rem 0}
+  .exo-exemple{background:rgba(0,0,0,.025);border:1px solid var(--ligne);border-left:3px solid var(--orange);padding:.55rem .8rem;margin:.7rem 0 .2rem;font-size:.92rem;border-radius:4px}
+  .exo-exemple p{margin:.25rem 0}
+  .exo-exemple .ex-lab{font-family:'IBM Plex Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--orange);display:block;margin-bottom:.3rem}
+  .oblig-note{background:rgba(240,167,46,.12);border-left:3px solid var(--ambre);padding:.6rem .9rem;font-size:.9rem;margin:0 0 1rem;border-radius:4px}
+  .la-grid{display:grid;gap:1rem;margin:.5rem 0}
+  .la-item h5{margin:.2rem 0 .35rem;font-size:.9rem;color:var(--encre)}
+  .la-item iframe{width:100%;height:480px;border:0;border-radius:8px;background:#fff}
+  .dl-row{display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0 .2rem}
+  .dl-btn{display:inline-block;background:var(--cyan);color:#fff;text-decoration:none;font-weight:600;font-size:.88rem;padding:.55rem .85rem;border-radius:8px}
+  .dl-btn:hover{filter:brightness(1.06)}
+  .choix-msg{font-size:.9rem;color:var(--encre);background:rgba(63,167,214,.08);border-left:3px solid var(--cyan);padding:.6rem .9rem;margin-bottom:.8rem}
+  details.media{border:1px solid var(--ligne);margin-bottom:.6rem;background:rgba(0,0,0,.012);border-radius:6px}
+  details.media>summary{list-style:none;cursor:pointer;padding:.7rem .9rem;font-family:'IBM Plex Mono',monospace;font-size:.85rem;display:flex;gap:.5rem;align-items:center}
+  details.media>summary::-webkit-details-marker{display:none}
+  details.media>summary::before{content:"▸";color:var(--orange)}
+  details.media[open]>summary::before{content:"▾"}
+  details.media .flash{padding:.2rem .9rem 1rem}
+  details.media .video{margin:.2rem .9rem 1rem}
+  details.media .act-body{padding:.2rem .9rem 1rem}
+  details.media.activite>summary{color:var(--encre);font-weight:600}
+  details.media.activite .fait-mark{margin-left:auto;color:var(--vert);font-size:.78rem}
+  .woo-act{margin:.6rem 0}
+  .woo-act iframe{width:100%;height:480px;border:0;border-radius:8px;background:#fff}
+  .review-note{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--gris);margin:.6rem 0 0}
+  body.en-diagnostic #prog-bar{display:none}
+  #prog-bar .pb-cell[data-diag] .pb-lab{font-size:.5rem;letter-spacing:-.01em}
+  .exo-attente{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--gris);background:rgba(0,0,0,.03);border:1px dashed var(--ligne);border-radius:8px;padding:.8rem .9rem}
+  #prog-bar{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;align-items:center;gap:5px;width:64px;padding:9px 8px;background:rgba(255,255,255,.92);border:1px solid var(--ligne);border-radius:10px}
+  #prog-bar .pb-title{font-family:system-ui,sans-serif;font-size:.55rem;letter-spacing:.02em;text-transform:uppercase;color:var(--gris);white-space:nowrap}
+  #prog-bar .pb-pct{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;color:var(--encre)}
+  #prog-bar .pb-seg{display:flex;flex-direction:column;gap:5px;height:180px;width:28px}
+  #prog-bar .pb-cell{position:relative;overflow:hidden;flex:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;border:1px solid var(--ligne);color:var(--gris)}
+  #prog-bar .pb-cell.done{border-color:var(--vert);color:var(--vert)}
+  #prog-bar .pb-cell.prog{border:1.6px dashed var(--ambre);color:var(--ambre)}
+  #prog-bar .pb-cell.none{border:1px solid var(--ligne);color:var(--gris)}
+  #prog-bar .pb-cell.revoir{border:1.6px solid var(--ambre);color:var(--ambre)}
+  #prog-bar .pb-lab{position:relative;z-index:1}
+  #prog-bar .pb-fill{position:absolute;left:0;right:0;bottom:0;height:0;transition:height .3s ease}
+  #prog-bar .pb-fill.h{background:repeating-linear-gradient(45deg,var(--ambre) 0 2px,transparent 2px 6px)}
+  #prog-bar .pb-fill.g{background:rgba(47,174,106,.32)}
+  @media (max-width:720px){ #prog-bar{right:6px;width:58px;padding:7px 6px} #prog-bar .pb-seg{width:22px;height:150px} #prog-bar .pb-title{font-size:.5rem} }
+
+  /* ---- Images du QCM (réponses illustrées) ---- */
+  .qcm-fig{display:block;width:100%;max-width:520px;height:auto;margin:.2rem 0 .6rem;border:1px solid var(--ligne);border-radius:6px;background:#fff}
+  .opt .qcm-fig{max-width:340px;margin:.1rem 0 0}
+  .opt{align-items:center}
+
+  /* ---- Graphiques SVG (exercice 2) ---- */
+  .fig{margin:.6rem 0 .2rem;border:1px solid var(--ligne);border-radius:8px;background:#fff;padding:.4rem}
+  .fig svg{display:block;width:100%;height:auto}
+  .fig figcaption{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--gris);text-align:center;padding:.3rem 0 .1rem}
+  .lab-v1{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--orange);padding:.12rem .5rem;border-radius:999px;margin-left:.4rem;vertical-align:middle}
+
+  /* ---- Animation : échelle de teintes (v1, à itérer ensemble) ---- */
+  .echelle{margin:.4rem 0 .2rem}
+  .echelle-rangee{display:flex;align-items:flex-end;gap:.5rem;flex-wrap:wrap;justify-content:center;margin:.6rem 0}
+  .tube{display:flex;flex-direction:column;align-items:center;gap:.35rem}
+  .tube .verre{width:42px;height:120px;border:2px solid var(--encre);border-top:none;border-radius:0 0 16px 16px;position:relative;overflow:hidden;background:rgba(255,255,255,.5)}
+  .tube .liquide{position:absolute;left:0;right:0;bottom:0;height:72%;transition:background .4s}
+  .tube .etiq{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--gris)}
+  .tube.inconnu .verre{border-color:var(--orange);box-shadow:0 0 0 2px rgba(232,116,59,.25)}
+  .tube.inconnu .etiq{color:var(--orange);font-weight:600}
+  .tube.match .verre{box-shadow:0 0 0 3px var(--vert);border-color:var(--vert)}
+  .echelle-ctrl{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;justify-content:center;margin:.6rem 0}
+  .echelle-ctrl input[type=range]{flex:1;min-width:160px;max-width:320px;accent-color:var(--orange)}
+  .echelle-lecture{text-align:center;font-size:.95rem;margin:.4rem 0}
+  .echelle-lecture b{font-family:'IBM Plex Mono',monospace;color:var(--orange)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Mme Castel <span>·</span> Mme Husson <span>·</span> M. Pintaud <span>·</span> M. Van Hoorde</div>
+    <a class="retour" href="cahier-vacances-2nde-1re-spe.html">← Retour au cahier</a>
+  </div>
+</nav>
+
+<div class="bandeau">
+  <div class="bandeau-inner">
+    <p class="eyebrow">Cahier de vacances · cap sur la 1re spé <span style="color:var(--orange)">&rarr;</span></p>
+    <h1>Jour 7 — Dosage par étalonnage</h1>
+  </div>
+</div>
+
+<main><div id="app"></div></main>
+
+<script>
+/* ============================================================
+   CONTENU — 4 parties (axes). Questions : single (bonne) ou multi (multi:true, bonnes:[]).
+   ============================================================ */
+function frac(a,b){return '<span class="frac"><span class="num">'+a+'</span><span class="den">'+b+'</span></span>';}
+const NOTION = {
+  axes:[
+    {
+      id:"A", nom:"Méthode de l'échelle de teintes", videoSlot:true,
+      pourquoi:"L'<strong>échelle de teintes</strong> est la version <em>visuelle</em> du dosage par étalonnage : on prépare une série de solutions de concentrations <strong>connues</strong> (la <strong>gamme d'étalons</strong>, obtenue par dilutions) et on compare la couleur de la solution inconnue pour l'<strong>encadrer</strong>. C'est rapide, semi-quantitatif, et c'est le réflexe d'analyse avant de passer à la mesure.",
+      flash:`<p><strong>Prérequis — la dilution (Jour 6).</strong> Une échelle de teintes se prépare par dilutions successives d'une solution mère. Avant d'attaquer ce bloc, tu dois savoir :</p>
+        <ul class="notations">
+          <li>écrire et exploiter la relation de dilution : c<sub>m</sub>(mère)×V(mère) = c<sub>m</sub>(fille)×V(fille) ;</li>
+          <li>choisir la verrerie (pipette jaugée, fiole jaugée) et rédiger le protocole ;</li>
+          <li>manipuler le <strong>facteur de dilution</strong> F.</li>
+        </ul>
+        <p>Besoin d'un rappel ? <a href="diag-j06-dilution.html" style="color:var(--cyan);font-weight:600">→ Revoir le Jour 6 — La dilution</a></p>`,
+      exercices:[],
+      activites:[ { titre:"Animation — l'échelle de teintes", icone:"🎨", faitLabel:"J'ai exploré l'animation",
+        html:`<p class="exo-consigne">Fais glisser le curseur pour préparer un « tube test », puis compare sa teinte à celle de l'échantillon inconnu (?). Quand les deux teintes se confondent, tu as encadré la concentration.</p>
+          <div class="echelle" id="echelle-v1">
+            <p class="etiq" style="text-align:center;margin:0 0 .2rem">Gamme d'étalons — concentrations connues</p>
+            <div class="echelle-rangee" id="ech-standards"></div>
+            <div class="echelle-ctrl">
+              <label class="etiq" for="ech-range">Tube test</label>
+              <input type="range" id="ech-range" min="0" max="10" step="0.5" value="0">
+              <span class="echelle-lecture">C = <b id="ech-val">0</b> mg·L⁻¹</span>
+            </div>
+            <div class="echelle-rangee">
+              <div class="tube" id="ech-test"><div class="verre"><div class="liquide"></div></div><div class="etiq">tube test</div></div>
+              <div class="tube inconnu" id="ech-unk"><div class="verre"><div class="liquide"></div></div><div class="etiq">échantillon&nbsp;?</div></div>
+            </div>
+            <div style="text-align:center"><button type="button" class="mini" id="ech-compare">Comparer à l'échantillon</button></div>
+            <div class="echelle-lecture" id="ech-feedback"></div>
+          </div>
+          <p class="review-note">Version 1, base de travail : on l'enrichira ensemble (remplissage animé, vraie espèce colorée, encadrement entre deux étalons…).</p>` } ],
+      questions:[]
+    },
+    {
+      id:"B", nom:"Méthode de la courbe d'étalonnage", videoSlot:true,
+      pourquoi:"La <strong>courbe d'étalonnage</strong> est la version <em>quantitative</em> du dosage par étalonnage : on <strong>mesure</strong> une grandeur physique (masse volumique, absorbance, conductivité…) pour des étalons de concentration connue, on trace la <strong>droite d'étalonnage</strong>, puis on lit la concentration inconnue par projection. C'est la méthode reine en 1re spé.",
+      flash:null,
+      exercices:[
+        { titre:"Concentration massique en alcool d'un vin", timer:120,
+          enonce:`<p>Une œnologue lit sur l'étiquette d'une bouteille de vin : « concentration massique en alcool : <strong>100 g·L⁻¹</strong> ». Elle souhaite vérifier cette information à partir d'une mesure de <strong>masse volumique</strong>.</p>
+            <p>Pour cela, elle prépare des mélanges <strong>étalons</strong> eau-éthanol de concentrations massiques en éthanol <strong>connues</strong>, dont elle mesure la masse volumique. Le volume total de la bouteille est V<sub>bouteille</sub> = 750 mL.</p>
+            <div class="donnees"><strong>Mesures sur les étalons</strong>
+              <div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;font-size:.86rem;margin:.4rem 0">
+                <tr><th style="border:1px solid var(--ligne);padding:.25rem .4rem;text-align:left">C<sub>m</sub> en éthanol (g·L⁻¹)</th><td style="border:1px solid var(--ligne);padding:.25rem .4rem">40</td><td style="border:1px solid var(--ligne);padding:.25rem .4rem">60</td><td style="border:1px solid var(--ligne);padding:.25rem .4rem">80</td><td style="border:1px solid var(--ligne);padding:.25rem .4rem">100</td><td style="border:1px solid var(--ligne);padding:.25rem .4rem">120</td><td style="border:1px solid var(--ligne);padding:.25rem .4rem">140</td></tr>
+                <tr><th style="border:1px solid var(--ligne);padding:.25rem .4rem;text-align:left">ρ (g·L⁻¹)</th><td style="border:1px solid var(--ligne);padding:.25rem .4rem">992</td><td style="border:1px solid var(--ligne);padding:.25rem .4rem">984</td><td style="border:1px solid var(--ligne);padding:.25rem .4rem">982</td><td style="border:1px solid var(--ligne);padding:.25rem .4rem">976</td><td style="border:1px solid var(--ligne);padding:.25rem .4rem">970</td><td style="border:1px solid var(--ligne);padding:.25rem .4rem">965</td></tr>
+              </table></div>
+              <strong>Données</strong> : ρ<sub>eau</sub> = 1000 g·L⁻¹ ; ρ<sub>éthanol</sub> = 789 g·L⁻¹.
+            </div>
+            <p><strong>a.</strong> Représenter l'évolution de la masse volumique des mélanges en fonction de leur concentration massique en éthanol (sur l'annexe ci-dessous).<br>
+            <strong>b.</strong> Ajouter le point correspondant à l'eau sans éthanol.<br>
+            <strong>c.</strong> Le contenu de la bouteille a une masse m<sub>solution</sub> = 732,0 g (bouteille vide non comprise). Déterminer la masse volumique du vin ρ<sub>vin</sub>.<br>
+            <strong>d.</strong> Déterminer, par lecture graphique, la concentration massique en éthanol du vin C<sub>m,vin</sub>(éthanol). Faire apparaître la méthode.<br>
+            <strong>e.</strong> En déduire la masse d'éthanol contenue dans la bouteille entière.<br>
+            <strong>f.</strong> L'indication de l'étiquette est-elle exacte ?<br>
+            <strong>g.</strong> <em>(facultatif, pour aller plus loin)</em> L'étiquette indique en réalité « titre alcoométrique 12 % vol. » (100 mL de vin contiennent 12 mL d'alcool). Vos résultats sont-ils cohérents ?</p>
+            <figure class="fig"><svg viewBox="0 0 580 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Titre : ……………………………………………"><rect x="0" y="0" width="580" height="372" fill="#fff"/><text x="303" y="13" font-size="12.5" fill="#15233a" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-weight="600">Titre : ……………………………………………</text><line x1="58" y1="18" x2="58" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="73.3" y1="18" x2="73.3" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="88.6" y1="18" x2="88.6" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="103.9" y1="18" x2="103.9" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="119.2" y1="18" x2="119.2" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="134.6" y1="18" x2="134.6" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="149.9" y1="18" x2="149.9" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="165.2" y1="18" x2="165.2" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="180.5" y1="18" x2="180.5" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="195.8" y1="18" x2="195.8" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="211.1" y1="18" x2="211.1" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="226.4" y1="18" x2="226.4" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="241.8" y1="18" x2="241.8" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="257.1" y1="18" x2="257.1" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="272.4" y1="18" x2="272.4" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="287.7" y1="18" x2="287.7" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="303" y1="18" x2="303" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="318.3" y1="18" x2="318.3" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="333.6" y1="18" x2="333.6" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="348.9" y1="18" x2="348.9" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="364.2" y1="18" x2="364.2" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="379.6" y1="18" x2="379.6" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="394.9" y1="18" x2="394.9" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="410.2" y1="18" x2="410.2" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="425.5" y1="18" x2="425.5" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="440.8" y1="18" x2="440.8" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="456.1" y1="18" x2="456.1" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="471.4" y1="18" x2="471.4" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="486.8" y1="18" x2="486.8" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="502.1" y1="18" x2="502.1" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="517.4" y1="18" x2="517.4" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="532.7" y1="18" x2="532.7" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="548" y1="18" x2="548" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="322" x2="548" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="315.2" x2="548" y2="315.2" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="308.5" x2="548" y2="308.5" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="301.7" x2="548" y2="301.7" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="295" x2="548" y2="295" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="288.2" x2="548" y2="288.2" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="281.5" x2="548" y2="281.5" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="274.7" x2="548" y2="274.7" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="268" x2="548" y2="268" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="261.2" x2="548" y2="261.2" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="254.4" x2="548" y2="254.4" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="247.7" x2="548" y2="247.7" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="240.9" x2="548" y2="240.9" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="234.2" x2="548" y2="234.2" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="227.4" x2="548" y2="227.4" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="220.7" x2="548" y2="220.7" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="213.9" x2="548" y2="213.9" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="207.2" x2="548" y2="207.2" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="200.4" x2="548" y2="200.4" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="193.6" x2="548" y2="193.6" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="186.9" x2="548" y2="186.9" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="180.1" x2="548" y2="180.1" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="173.4" x2="548" y2="173.4" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="166.6" x2="548" y2="166.6" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="159.9" x2="548" y2="159.9" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="153.1" x2="548" y2="153.1" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="146.4" x2="548" y2="146.4" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="139.6" x2="548" y2="139.6" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="132.8" x2="548" y2="132.8" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="126.1" x2="548" y2="126.1" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="119.3" x2="548" y2="119.3" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="112.6" x2="548" y2="112.6" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="105.8" x2="548" y2="105.8" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="99.1" x2="548" y2="99.1" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="92.3" x2="548" y2="92.3" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="85.6" x2="548" y2="85.6" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="78.8" x2="548" y2="78.8" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="72" x2="548" y2="72" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="65.3" x2="548" y2="65.3" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="58.5" x2="548" y2="58.5" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="51.8" x2="548" y2="51.8" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="45" x2="548" y2="45" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="38.3" x2="548" y2="38.3" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="31.5" x2="548" y2="31.5" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="24.8" x2="548" y2="24.8" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="18" x2="548" y2="18" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="18" x2="58" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="58" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">0</text><line x1="119.2" y1="18" x2="119.2" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="119.2" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">20</text><line x1="180.5" y1="18" x2="180.5" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="180.5" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">40</text><line x1="241.8" y1="18" x2="241.8" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="241.8" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">60</text><line x1="303" y1="18" x2="303" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="303" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">80</text><line x1="364.2" y1="18" x2="364.2" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="364.2" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">100</text><line x1="425.5" y1="18" x2="425.5" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="425.5" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">120</text><line x1="486.8" y1="18" x2="486.8" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="486.8" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">140</text><line x1="548" y1="18" x2="548" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="548" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">160</text><line x1="58" y1="322" x2="548" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="326" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">960</text><line x1="58" y1="288.2" x2="548" y2="288.2" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="292.2" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">965</text><line x1="58" y1="254.4" x2="548" y2="254.4" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="258.4" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">970</text><line x1="58" y1="220.7" x2="548" y2="220.7" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="224.7" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">975</text><line x1="58" y1="186.9" x2="548" y2="186.9" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="190.9" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">980</text><line x1="58" y1="153.1" x2="548" y2="153.1" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="157.1" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">985</text><line x1="58" y1="119.3" x2="548" y2="119.3" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="123.3" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">990</text><line x1="58" y1="85.6" x2="548" y2="85.6" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="89.6" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">995</text><line x1="58" y1="51.8" x2="548" y2="51.8" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="55.8" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">1000</text><line x1="58" y1="18" x2="548" y2="18" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="22" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">1005</text><line x1="58" y1="18" x2="58" y2="322" stroke="#15233a" stroke-width="1.6"/><line x1="58" y1="322" x2="548" y2="322" stroke="#15233a" stroke-width="1.6"/><text x="303" y="356" font-size="12" fill="#15233a" text-anchor="middle" font-family="Inter,sans-serif">C&#8344; (en g·L⁻¹)</text><text x="16" y="170" font-size="12" fill="#15233a" text-anchor="middle" font-family="Inter,sans-serif" transform="rotate(-90 16 170)">masse volumique ρ (g·L⁻¹)</text></svg><figcaption>Annexe à compléter (1 carreau = 20 g·L⁻¹ en abscisse ; 5 g·L⁻¹ en ordonnée)</figcaption></figure>
+            <details class="indice"><summary>💡 Indice 1 — échelle</summary><div class="indice-corps"><p>Échelle conseillée : abscisse 1 carreau = 20 g·L⁻¹ ; ordonnée 1 carreau = 5 g·L⁻¹.</p></div></details>
+            <details class="indice"><summary>💡 Indice 2 — axes & titre</summary><div class="indice-corps"><p>As-tu mis un titre aux axes, avec leurs unités ? Et un titre au graphique qui dit bien « grandeur en ordonnée en fonction de la grandeur en abscisse » ?</p></div></details>
+            <details class="indice"><summary>💡 Indice 3 — point de l'eau</summary><div class="indice-corps"><p>Quelle est la masse volumique d'une solution qui ne contient pas d'éthanol (C<sub>m</sub> = 0) ? Place le point (0 ; 1000).</p></div></details>
+            <details class="indice"><summary>💡 Indice 4 — question d</summary><div class="indice-corps"><p>Il faut une lecture graphique à partir de la valeur trouvée à la question c. On part de ρ<sub>vin</sub> sur l'axe vertical, on rejoint la droite, puis on descend vers l'axe horizontal. « Faire apparaître la méthode » = tracer cette construction en couleur en notant ρ<sub>vin</sub> et la valeur lue.</p></div></details>
+            <details class="indice"><summary>💡 Indice 5 — question e</summary><div class="indice-corps"><p>Attention à ne pas confondre la masse de toute la solution (formule de la masse volumique) et la masse de soluté seul (ici l'éthanol : on utilise la concentration massique m = C<sub>m</sub>×V).</p></div></details>`,
+          correction:`<p><strong>a. & b.</strong> Les points sont alignés ; on trace la droite moyenne, qui passe par le point de l'eau (0 ; 1000).</p>
+            <figure class="fig"><svg viewBox="0 0 580 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Masse volumique des mélanges eau-éthanol = f(C&#8344;)"><rect x="0" y="0" width="580" height="372" fill="#fff"/><text x="303" y="13" font-size="12.5" fill="#15233a" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-weight="600">Masse volumique des mélanges eau-éthanol = f(C&#8344;)</text><line x1="58" y1="18" x2="58" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="73.3" y1="18" x2="73.3" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="88.6" y1="18" x2="88.6" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="103.9" y1="18" x2="103.9" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="119.2" y1="18" x2="119.2" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="134.6" y1="18" x2="134.6" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="149.9" y1="18" x2="149.9" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="165.2" y1="18" x2="165.2" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="180.5" y1="18" x2="180.5" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="195.8" y1="18" x2="195.8" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="211.1" y1="18" x2="211.1" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="226.4" y1="18" x2="226.4" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="241.8" y1="18" x2="241.8" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="257.1" y1="18" x2="257.1" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="272.4" y1="18" x2="272.4" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="287.7" y1="18" x2="287.7" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="303" y1="18" x2="303" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="318.3" y1="18" x2="318.3" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="333.6" y1="18" x2="333.6" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="348.9" y1="18" x2="348.9" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="364.2" y1="18" x2="364.2" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="379.6" y1="18" x2="379.6" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="394.9" y1="18" x2="394.9" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="410.2" y1="18" x2="410.2" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="425.5" y1="18" x2="425.5" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="440.8" y1="18" x2="440.8" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="456.1" y1="18" x2="456.1" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="471.4" y1="18" x2="471.4" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="486.8" y1="18" x2="486.8" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="502.1" y1="18" x2="502.1" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="517.4" y1="18" x2="517.4" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="532.7" y1="18" x2="532.7" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="548" y1="18" x2="548" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="322" x2="548" y2="322" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="315.2" x2="548" y2="315.2" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="308.5" x2="548" y2="308.5" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="301.7" x2="548" y2="301.7" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="295" x2="548" y2="295" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="288.2" x2="548" y2="288.2" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="281.5" x2="548" y2="281.5" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="274.7" x2="548" y2="274.7" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="268" x2="548" y2="268" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="261.2" x2="548" y2="261.2" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="254.4" x2="548" y2="254.4" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="247.7" x2="548" y2="247.7" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="240.9" x2="548" y2="240.9" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="234.2" x2="548" y2="234.2" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="227.4" x2="548" y2="227.4" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="220.7" x2="548" y2="220.7" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="213.9" x2="548" y2="213.9" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="207.2" x2="548" y2="207.2" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="200.4" x2="548" y2="200.4" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="193.6" x2="548" y2="193.6" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="186.9" x2="548" y2="186.9" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="180.1" x2="548" y2="180.1" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="173.4" x2="548" y2="173.4" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="166.6" x2="548" y2="166.6" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="159.9" x2="548" y2="159.9" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="153.1" x2="548" y2="153.1" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="146.4" x2="548" y2="146.4" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="139.6" x2="548" y2="139.6" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="132.8" x2="548" y2="132.8" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="126.1" x2="548" y2="126.1" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="119.3" x2="548" y2="119.3" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="112.6" x2="548" y2="112.6" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="105.8" x2="548" y2="105.8" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="99.1" x2="548" y2="99.1" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="92.3" x2="548" y2="92.3" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="85.6" x2="548" y2="85.6" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="78.8" x2="548" y2="78.8" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="72" x2="548" y2="72" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="65.3" x2="548" y2="65.3" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="58.5" x2="548" y2="58.5" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="51.8" x2="548" y2="51.8" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="45" x2="548" y2="45" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="38.3" x2="548" y2="38.3" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="31.5" x2="548" y2="31.5" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="24.8" x2="548" y2="24.8" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="18" x2="548" y2="18" stroke="#eef1f4" stroke-width="1"/><line x1="58" y1="18" x2="58" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="58" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">0</text><line x1="119.2" y1="18" x2="119.2" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="119.2" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">20</text><line x1="180.5" y1="18" x2="180.5" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="180.5" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">40</text><line x1="241.8" y1="18" x2="241.8" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="241.8" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">60</text><line x1="303" y1="18" x2="303" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="303" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">80</text><line x1="364.2" y1="18" x2="364.2" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="364.2" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">100</text><line x1="425.5" y1="18" x2="425.5" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="425.5" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">120</text><line x1="486.8" y1="18" x2="486.8" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="486.8" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">140</text><line x1="548" y1="18" x2="548" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="548" y="338" font-size="11" fill="#5d6b7e" text-anchor="middle" font-family="IBM Plex Mono,monospace">160</text><line x1="58" y1="322" x2="548" y2="322" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="326" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">960</text><line x1="58" y1="288.2" x2="548" y2="288.2" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="292.2" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">965</text><line x1="58" y1="254.4" x2="548" y2="254.4" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="258.4" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">970</text><line x1="58" y1="220.7" x2="548" y2="220.7" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="224.7" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">975</text><line x1="58" y1="186.9" x2="548" y2="186.9" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="190.9" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">980</text><line x1="58" y1="153.1" x2="548" y2="153.1" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="157.1" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">985</text><line x1="58" y1="119.3" x2="548" y2="119.3" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="123.3" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">990</text><line x1="58" y1="85.6" x2="548" y2="85.6" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="89.6" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">995</text><line x1="58" y1="51.8" x2="548" y2="51.8" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="55.8" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">1000</text><line x1="58" y1="18" x2="548" y2="18" stroke="#d4dbe3" stroke-width="1.2"/><text x="52" y="22" font-size="11" fill="#5d6b7e" text-anchor="end" font-family="IBM Plex Mono,monospace">1005</text><line x1="58" y1="18" x2="58" y2="322" stroke="#15233a" stroke-width="1.6"/><line x1="58" y1="322" x2="548" y2="322" stroke="#15233a" stroke-width="1.6"/><text x="303" y="356" font-size="12" fill="#15233a" text-anchor="middle" font-family="Inter,sans-serif">C&#8344; (en g·L⁻¹)</text><text x="16" y="170" font-size="12" fill="#15233a" text-anchor="middle" font-family="Inter,sans-serif" transform="rotate(-90 16 170)">masse volumique ρ (g·L⁻¹)</text><line x1="58" y1="51.8" x2="548" y2="316.6" stroke="#d6402b" stroke-width="2"/><circle cx="58" cy="51.8" r="3.4" fill="#1d6fb8"/><circle cx="180.5" cy="105.8" r="3.4" fill="#1d6fb8"/><circle cx="241.8" cy="159.9" r="3.4" fill="#1d6fb8"/><circle cx="303" cy="173.4" r="3.4" fill="#1d6fb8"/><circle cx="364.2" cy="213.9" r="3.4" fill="#1d6fb8"/><circle cx="425.5" cy="254.4" r="3.4" fill="#1d6fb8"/><circle cx="486.8" cy="288.2" r="3.4" fill="#1d6fb8"/><line x1="58" y1="213.9" x2="358.1" y2="213.9" stroke="#2fae6a" stroke-width="1.8" stroke-dasharray="5 4"/><line x1="358.1" y1="213.9" x2="358.1" y2="322" stroke="#2fae6a" stroke-width="1.8" stroke-dasharray="5 4"/><circle cx="358.1" cy="213.9" r="4" fill="none" stroke="#2fae6a" stroke-width="2"/><text x="64" y="208.9" font-size="11" fill="#1f7a48" font-family="IBM Plex Mono,monospace" font-weight="600">ρ = 976</text><text x="363.1" y="316" font-size="11" fill="#1f7a48" font-family="IBM Plex Mono,monospace" font-weight="600">C&#8344; ≈ 98</text></svg><figcaption>Tracé corrigé + lecture graphique (en vert)</figcaption></figure>
+            <p><strong>c.</strong> ρ<sub>vin</sub> = ${frac('m<sub>solution</sub>','V<sub>bouteille</sub>')} = ${frac('732,0','0,750')} = <strong>976 g·L⁻¹</strong>.</p>
+            <p><strong>d.</strong> On reporte ρ<sub>vin</sub> = 976 g·L⁻¹ sur l'axe vertical, on rejoint la droite, on descend : <strong>C<sub>m,vin</sub>(éthanol) ≈ 98 g·L⁻¹</strong>.</p>
+            <p><strong>e.</strong> m<sub>éth</sub> = C<sub>m,vin</sub>(éthanol) × V<sub>bouteille</sub> = 98 × 0,750 = <strong>73,5 g</strong> d'éthanol dans la bouteille.</p>
+            <p><strong>f.</strong> L'étiquette annonce 100 g·L⁻¹ ; on mesure 98 g·L⁻¹. L'écart est de ${frac('|100−98|','100')} = 2 %. En l'absence d'incertitudes données, un écart inférieur à 5 % est jugé acceptable : <strong>l'indication est vérifiée</strong>.</p>
+            <p><strong>g.</strong> Masse d'éthanol dans 100 mL de vin : m = ${frac('73,5 × 100','750')} = 9,8 g. Volume d'éthanol pur correspondant : V = ${frac('m','ρ<sub>éthanol</sub>')} = ${frac('9,8','789')} = 0,0124 L ≈ <strong>12 mL pour 100 mL</strong>, soit 12 % vol. C'est cohérent avec l'étiquette.</p>` }
+      ],
+      questions:[
+        { q:`Un dosage permet de déterminer :`,
+          opts:[`La quantité (ou la concentration) d'une espèce chimique en solution`,`La masse molaire d'un composé`,`La couleur d'une solution`,`La température de fusion d'un solide`], bonne:0,
+          siFaux:`Un dosage sert à déterminer la <strong>quantité (ou la concentration)</strong> d'une espèce chimique en solution — pas une masse molaire, une couleur, ni une température de fusion.`,
+          siJuste:`Exact : un dosage détermine la quantité (ou la concentration) d'une espèce chimique en solution.` },
+        { q:`On obtient la courbe d'étalonnage ci-dessous. Cocher les affirmations exactes :<figure class="fig" style="border:none;padding:0;margin:.4rem 0"><img class="qcm-fig" src="j07-qcm-nuage.png" alt="Nuage de points : masse volumique en fonction de la concentration massique"></figure>`, multi:true,
+          opts:[`La courbe représente la masse volumique en fonction de la concentration massique`,`La courbe représente la concentration massique en fonction de la masse volumique`,`La courbe représente la masse volumique en fonction de la concentration molaire`,`Il y a une erreur dans l'une des unités`,`Les points ne sont pas alignés car ce sont des points expérimentaux`], bonnes:[0,4],
+          siFaux:`Deux affirmations sont exactes. On lit toujours « grandeur en <em>ordonnée</em> en fonction de la grandeur en <em>abscisse</em> » : ici masse volumique = f(concentration <strong>massique</strong>). Et les points ne sont jamais parfaitement alignés parce que ce sont des <strong>points expérimentaux</strong> (incertitudes de mesure). Les unités sont cohérentes, et l'abscisse est une concentration massique, pas molaire.`,
+          siJuste:`Exact : masse volumique en fonction de la concentration massique, et des points expérimentaux ne sont jamais parfaitement alignés.` },
+        { q:`On obtient la courbe d'étalonnage ci-dessous. Quelle proposition correspond à la droite d'étalonnage <strong>correctement tracée</strong> ?<figure class="fig" style="border:none;padding:0;margin:.4rem 0"><img class="qcm-fig" src="j07-qcm-nuage.png" alt="Nuage de points expérimentaux"></figure>`,
+          opts:[`Proposition A<img class="qcm-fig" src="j07-qcm-propA.png" alt="Proposition A">`,`Proposition B<img class="qcm-fig" src="j07-qcm-propB.png" alt="Proposition B">`,`Proposition C<img class="qcm-fig" src="j07-qcm-propC.png" alt="Proposition C">`,`Proposition D<img class="qcm-fig" src="j07-qcm-propD.png" alt="Proposition D">`], bonne:2,
+          siFaux:`La bonne réponse est la <strong>proposition C</strong> : une seule droite moyenne, tracée à la règle, qui équilibre les points de part et d'autre. On ne relie pas les points entre eux (proposition A), on ne suit pas une courbe à main levée (proposition B), et une droite mal placée qui laisse les points d'un seul côté (proposition D) ne convient pas.`,
+          siJuste:`Exact (proposition C) : une droite moyenne tracée à la règle, qui passe au plus près de tous les points.` },
+        { q:`On obtient la courbe d'étalonnage ci-dessous. Quelle est la fonction la plus adaptée pour modéliser la droite obtenue ?<figure class="fig" style="border:none;padding:0;margin:.4rem 0"><img class="qcm-fig" src="j07-qcm-droite.png" alt="Droite d'étalonnage"></figure>`,
+          opts:[`Une fonction linéaire`,`Une fonction affine`], bonne:0,
+          siFaux:`On pourrait en effet considérer que la droite est représentée par une fonction affine, mais on observe que la droite passe par l'origine. C'est donc une fonction linéaire de la forme y = a·x qui est la plus adaptée.`,
+          siJuste:`Exact : la droite passant par l'origine, une fonction linéaire (y = a·x) la modélise.` },
+        { q:`On obtient la courbe d'étalonnage ci-dessous. Quelle est la forme de l'équation de la droite obtenue ?<figure class="fig" style="border:none;padding:0;margin:.4rem 0"><img class="qcm-fig" src="j07-qcm-droite.png" alt="Droite d'étalonnage"></figure>`,
+          opts:[`y = a·x (avec a > 0)`,`y = a·x (avec a < 0)`,`y = a·x + b (avec b non nul)`,`y = a·x² + b·x + c`], bonne:0,
+          siFaux:`La droite passe par l'origine (donc pas de terme constant b, et ce n'est pas une parabole) et elle est croissante (le coefficient est positif) : <strong>y = a·x avec a > 0</strong>.`,
+          siJuste:`Exact : droite par l'origine et croissante, donc y = a·x avec a > 0.` }
+      ]
+    }
+  ]
+};
+
+/* ============================================================
+   MOTEUR
+   ============================================================ */
+const app = document.getElementById("app");
+const LETTRES = ["A","B","C","D","E","F","G","H"];
+const FLAT = [];
+NOTION.axes.forEach((axe,ai)=> axe.questions.forEach(qu=> FLAT.push({...qu, ai})));
+const NBQ = NOTION.axes.map(a=> a.questions.length);
+
+let idx = 0, selection = [], valide = false;
+let answers = [];   // réponses validées : answers[i] = { sel:[...], ok:bool }
+const fautes = NOTION.axes.map(()=>0);
+
+function feedbackHTML(item, ok){
+  return `<div class="feedback ${ok?'ok':'ko'}">
+        <span class="res">${ok ? 'Bonne réponse' : 'Réponse incorrecte'}</span>
+        <p>${ok ? item.siJuste : item.siFaux}</p>
+      </div>`;
+}
+function finDiagnostic(){ freshProg(fautes, true); ecranResultats(false); }
+function passerDiagnostic(){
+  for(let i=answers.length; i<FLAT.length; i++){ fautes[FLAT[i].ai]++; }  // restantes = fausses
+  freshProg(fautes, false);
+  ecranResultats(false);
+}
+
+const STORE_KEY = "cahier-j07";
+let PROG = (function(){ try{ const r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } })();
+function saveProg(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROG)); }catch(e){} }
+function freshProg(f, complet){
+  PROG = { fautes:f.slice(), lu:{}, vu:{}, faits:{}, act:{}, diagComplet:!!complet };
+  // Méthode B : à 0 faute sur une partie obligatoire, on pré-coche « lu/vu »
+  // (l'élève maîtrise visiblement) pour ne laisser à faire que l'exercice + cartes.
+  NOTION.axes.forEach((axe,i)=>{ if(axe.obligatoire && f[i]===0){ PROG.lu[axe.id]=true; PROG.vu[axe.id]=true; } });
+  saveProg();
+}
+function clearProg(){ PROG=null; try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
+
+function bonnesDe(q){ return q.multi ? q.bonnes : [q.bonne]; }
+
+/* Méthode B : une partie « obligatoire » n'est validée (verte) que si ses items
+   obligatoires sont faits (capsule/vidéo consultée + exercice(s) + activité(s)).
+   Le seul score au diagnostic (0 faute) ne suffit pas à la passer au vert. */
+function axeMandatoryDone(axe){
+  const consulte = !!((PROG.lu&&PROG.lu[axe.id])||(PROG.vu&&PROG.vu[axe.id]));
+  const exosOk = (axe.exercices||[]).every((ex,j)=> !!(PROG.faits&&PROG.faits[axe.id]&&PROG.faits[axe.id][j]));
+  const actOk  = (axe.activites||[]).every((ac,k)=> !!(PROG.act&&PROG.act[axe.id]&&PROG.act[axe.id][k]));
+  return consulte && exosOk && actOk;
+}
+function axeValide(axe,i){
+  if(axe.obligatoire) return axeMandatoryDone(axe);
+  return fautes[i]===0;
+}
+function badgeAxe(axe,i){
+  const f = fautes[i];
+  if(axe.obligatoire){
+    if(axeMandatoryDone(axe)) return {cls:"v", label:"Validé ✓"};
+    if(f===0) return {cls:"a", label:"À compléter"};   // diagnostic réussi mais exercice + cartes à faire
+    if(f<=2)  return {cls:"a", label:"À revoir"};
+    return     {cls:"r", label:"À retravailler"};
+  }
+  // Parties non obligatoires : comportement inchangé
+  if(f===0) return {cls:"v", label:"À survoler"};
+  if(f<=2)  return {cls:"a", label:"À revoir"};
+  return     {cls:"r", label:"À retravailler"};
+}
+function priorite(f){
+  if(f===0) return {cls:"v", label:"À survoler"};
+  if(f<=2)  return {cls:"a", label:"À revoir"};
+  return     {cls:"r", label:"À retravailler"};
+}
+function axeFini(axe){
+  const hasGate = !!(axe.flash || axe.programme || (axe.video && !axe.videoBonus));
+  const consulte = !!((PROG.lu&&PROG.lu[axe.id])||(PROG.vu&&PROG.vu[axe.id]));
+  const exosOk = (axe.exercices||[]).every((ex,j)=> !!(PROG.faits&&PROG.faits[axe.id]&&PROG.faits[axe.id][j]));
+  const actOk  = (axe.activites||[]).every((ac,k)=> !!(PROG.act&&PROG.act[axe.id]&&PROG.act[axe.id][k]));
+  return (hasGate?consulte:true) && exosOk && actOk;
+}
+function axeEnCours(axe){
+  const consulte = !!((PROG.lu&&PROG.lu[axe.id])||(PROG.vu&&PROG.vu[axe.id]));
+  const someFait = (axe.exercices||[]).some((ex,j)=> !!(PROG.faits&&PROG.faits[axe.id]&&PROG.faits[axe.id][j]));
+  const someAct  = (axe.activites||[]).some((ac,k)=> !!(PROG.act&&PROG.act[axe.id]&&PROG.act[axe.id][k]));
+  return consulte || someFait || someAct || !!(PROG.touche&&PROG.touche[axe.id]);
+}
+function etatAxe(axe,i){
+  if(axeFini(axe)) return {cls:"v", label:"Terminé"};
+  if(axeEnCours(axe)) return {cls:"a", label:"En cours"};
+  return priorite(fautes[i]);
+}
+
+function ecranIntro(){
+  document.body.classList.add('en-diagnostic');
+  answers=[]; idx=0;
+  app.innerHTML = `
+    <div class="intro">
+      <p>Ce court diagnostic de <strong>5 questions</strong> cible la <strong>méthode de la courbe d'étalonnage</strong> (bloc B). Ce n'est pas une note. Une question a <strong>plusieurs réponses</strong> : elle te le signale.</p>
+      <div class="note-simple">Les questions ne couvrent <strong>pas tout</strong> le contenu de la séance : elles t'aident seulement à voir par où commencer.</div>
+      <div class="actions" style="justify-content:flex-start;gap:.7rem;flex-wrap:wrap">
+        <button class="btn" id="go">Commencer le diagnostic →</button>
+        <button class="btn fant" id="skip">Passer le diagnostic</button>
+      </div>
+      <p style="font-size:.8rem;color:var(--gris);margin-top:.8rem">« Passer le diagnostic » marque toutes les parties « à retravailler » et ouvre directement le plan complet.</p>
+    </div>`;
+  document.getElementById("go").onclick = ()=>{ idx=0; ecranQuestion(); };
+  document.getElementById("skip").onclick = ()=>{ NBQ.forEach((n,i)=> fautes[i]=n); freshProg(fautes,false); ecranResultats(false); };
+}
+
+function ecranQuestion(){
+  document.body.classList.add('en-diagnostic');
+  const item = FLAT[idx];
+  const axe = NOTION.axes[item.ai];
+  const pct = Math.round((idx/FLAT.length)*100);
+  const repondue = idx < answers.length;            // déjà validée → lecture seule
+  const prev = repondue ? answers[idx] : null;
+  const bonnes = bonnesDe(item);
+  if(repondue){ selection = prev.sel.slice(); valide = true; }
+  else { selection = []; valide = false; }
+
+  const optsHTML = item.opts.map((o,i)=>{
+    let cls = "opt";
+    if(repondue){
+      if(prev.sel.includes(i)) cls += " sel";
+      if(bonnes.includes(i)) cls += " juste";
+      else if(prev.sel.includes(i)) cls += " faux";
+    }
+    return `<button class="${cls}" data-i="${i}"${repondue?' disabled':''}><span class="lettre">${item.multi?'▢':LETTRES[i]}</span><span>${o}</span></button>`;
+  }).join("");
+
+  const actionBtn = repondue
+    ? `<button class="btn" id="suivant">${idx===FLAT.length-1?'Voir mon plan →':'Suivant →'}</button>`
+    : `<button class="btn" id="valider" disabled>Valider</button>`;
+
+  app.innerHTML = `
+    <div class="topbar">
+      <span>Question ${idx+1} / ${FLAT.length}</span>
+      <span class="axe-tag">Bloc ${axe.id} · ${axe.nom}</span>
+    </div>
+    <div class="barre"><i style="width:${pct}%"></i></div>
+    <p class="enonce">${item.q}</p>
+    ${item.multi ? `<p class="multi-hint">Plusieurs réponses possibles.</p>` : ``}
+    <div class="opts" id="opts">${optsHTML}</div>
+    <div id="zone-feedback">${repondue?feedbackHTML(item, prev.ok):''}</div>
+    <div class="actions" style="flex-wrap:wrap;gap:.6rem">
+      ${idx>0?`<button class="btn fant" id="prec">← Précédent</button>`:``}
+      ${actionBtn}
+      <button class="btn fant" id="passer">Passer le diagnostic →</button>
+    </div>
+    ${repondue?`<p class="review-note">Question déjà répondue : tu la revois en lecture seule (réponse non modifiable).</p>`:''}`;
+
+  if(!repondue){
+    document.querySelectorAll("#opts .opt").forEach(b=>{
+      b.onclick = ()=>{
+        if(valide) return;
+        const i = +b.dataset.i;
+        if(item.multi){
+          const k = selection.indexOf(i);
+          if(k>=0){ selection.splice(k,1); b.classList.remove("sel"); }
+          else { selection.push(i); b.classList.add("sel"); }
+        } else {
+          selection = [i];
+          document.querySelectorAll("#opts .opt").forEach(x=>x.classList.remove("sel"));
+          b.classList.add("sel");
+        }
+        document.getElementById("valider").disabled = selection.length===0;
+      };
+    });
+    document.getElementById("valider").onclick = onValider;
+  } else {
+    document.getElementById("suivant").onclick = ()=>{ idx++; if(idx<FLAT.length) ecranQuestion(); else finDiagnostic(); };
+  }
+  const prec = document.getElementById("prec"); if(prec) prec.onclick = ()=>{ idx--; ecranQuestion(); };
+  document.getElementById("passer").onclick = passerDiagnostic;
+}
+
+function onValider(){
+  if(valide) return;
+  valide = true;
+  const item = FLAT[idx];
+  const bonnes = bonnesDe(item);
+  const opts = document.querySelectorAll("#opts .opt");
+  opts.forEach((b,i)=>{ b.disabled=true; if(bonnes.includes(i)) b.classList.add("juste"); else if(selection.includes(i)) b.classList.add("faux"); });
+  const ok = selection.length===bonnes.length && selection.every(i=>bonnes.includes(i));
+  if(!ok) fautes[item.ai]++;
+  answers[idx] = { sel:selection.slice(), ok };
+  document.getElementById("zone-feedback").innerHTML = feedbackHTML(item, ok);
+  const vb = document.getElementById("valider");
+  vb.textContent = (idx===FLAT.length-1) ? "Voir mon plan →" : "Suivant →";
+  vb.disabled = false;
+  vb.onclick = ()=>{ idx++; if(idx<FLAT.length) ecranQuestion(); else finDiagnostic(); };
+}
+
+function ecranResultats(autoOpen){
+  document.body.classList.remove('en-diagnostic');
+  if(!PROG) PROG = { fautes:fautes.slice(), lu:{}, vu:{}, faits:{}, act:{}, diagComplet:true };
+
+  const ordre = NOTION.axes.map((axe,i)=>({axe, i, f:fautes[i]}));
+  ordre.sort((a,b)=>{
+    const va = axeValide(a.axe,a.i)?1:0, vb = axeValide(b.axe,b.i)?1:0;
+    if(va!==vb) return va-vb;      // parties non validées avant parties validées
+    return a.i-b.i;               // sinon ordre des parties (1,2,3,4)
+  });
+
+  const cartes = ordre.map(({axe,i,f})=>{
+    const p = etatAxe(axe,i);
+    const nb = axe.questions.length;
+    const exos = axe.exercices.length ? axe.exercices.map((ex,j)=>{
+      if(ex.attente){
+        return `<div class="exo-attente">⏳ Exercice en attente — il sera ajouté prochainement.</div>`;
+      }
+      if(ex.type==="wooclap"){
+        return `
+        <details class="exo" data-type="wooclap" data-ax="${axe.id}" data-j="${j}">
+          <summary><span class="exo-num">Exercice</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
+          <div class="exo-body">
+            <p class="exo-consigne">${ex.consigne}</p>
+            <div class="woo-exo"><iframe src="${ex.src}" title="${ex.titre}" allow="fullscreen" loading="lazy"></iframe></div>
+            <p class="woo-note">Rien ne s'affiche ? <a href="${ex.src}" target="_blank" rel="noopener">ouvrir dans un onglet</a>.</p>
+            <label class="chk-fait"><input type="checkbox"> J'ai fait cet exercice</label>
+          </div>
+        </details>`;
+      }
+      if(ex.type==="html"){
+        return `
+        <details class="exo" data-ax="${axe.id}" data-j="${j}">
+          <summary><span class="exo-num">${ex.num||'Activité'}</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
+          <div class="exo-body">
+            ${ex.html}
+            <label class="chk-fait"><input type="checkbox"> ${ex.faitLabel||"J'ai fait cette activité"}</label>
+          </div>
+        </details>`;
+      }
+      return `
+        <details class="exo" data-timer="${ex.timer}" data-ax="${axe.id}" data-j="${j}">
+          <summary><span class="exo-num">Exercice ${j+1}</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
+          <div class="exo-body">
+            <div class="exo-enonce">${ex.enonce}</div>
+            <p class="exo-consigne">✏️ Fais cet exercice sur ta feuille, puis vérifie. Le corrigé se débloque après un court instant.</p>
+            <div class="exo-btns"><button type="button" class="mini btn-corr" disabled>Correction…</button></div>
+            <div class="exo-corr" hidden>${ex.correction}</div>
+            <label class="chk-fait"><input type="checkbox"> J'ai fait cet exercice</label>
+          </div>
+        </details>`;
+    }).join("") : `<p class="vide">Exercices à ajouter (depuis ton cours).</p>`;
+
+    const hasCapsule = !!(axe.flash || axe.programme);
+    const capsuleLabel = axe.flash ? "📖 Lire la capsule (rappel de cours)" : "📖 Lire — où ça se place dans le programme";
+    const capsuleDetails = hasCapsule
+      ? `<details class="media"><summary>${capsuleLabel}</summary><div class="flash">${axe.flash||axe.programme}</div></details>`
+      : ``;
+    const videoDetails = axe.video
+      ? `<details class="media"><summary>${axe.videoBonus?'🎬 Vidéo bonus':'🎬 Regarder la vidéo'}</summary><div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`
+      : (axe.videoSlot ? `<div class="video-slot">🎬 Vidéo « ${axe.nom} » — à intégrer (lien à venir)</div>` : ``);
+    const choixMsg = (hasCapsule && axe.video)
+      ? `<p class="choix-msg">Choisis le format qui te convient : <strong>lis la capsule</strong> <em>ou</em> <strong>regarde la vidéo</strong>. Pas besoin des deux.</p>`
+      : ``;
+    const gateLu = hasCapsule ? `<label><input type="checkbox" class="chk-lu"> J'ai ${axe.flash?'lu la capsule':'lu le programme'}</label>` : ``;
+    const gateVu = (axe.video && !axe.videoBonus) ? `<label><input type="checkbox" class="chk-vu"> J'ai regardé la vidéo</label>` : ``;
+    const gateBloc = (gateLu || gateVu) ? `<div class="gate">${gateLu}${gateVu}</div>` : ``;
+
+    const activites = (axe.activites && axe.activites.length) ? axe.activites.map((ac,k)=>`
+        <details class="media activite" data-ax="${axe.id}" data-act="${k}">
+          <summary>${ac.icone||'📐'} ${ac.titre}<span class="fait-mark" hidden>✓ fait</span></summary>
+          <div class="act-body">
+            ${ac.html}
+            <label class="chk-fait"><input type="checkbox"> ${ac.faitLabel||"J'ai fait cette activité"}</label>
+          </div>
+        </details>`).join("") : ``;
+    const activitesSection = activites ? `<section class="bloc"><h4>Activité${axe.activites.length>1?'s':''}</h4>${activites}</section>` : ``;
+
+    const verrouMsg = (gateLu || gateVu) ? `<p class="verrou-msg">🔒 Consulte ${hasCapsule?(axe.flash?'la capsule':'le programme'):''}${hasCapsule&&axe.video?' ou ':''}${axe.video?'la vidéo':''}, puis coche pour débloquer les exercices.</p>` : ``;
+    const exosSection = (axe.exercices && axe.exercices.length) ? `<section class="bloc"><h4>Exercices</h4>${verrouMsg}<div class="exos${(gateLu||gateVu)?' verrou':''}">${exos}</div></section>` : ``;
+
+    return `
+      <details class="axe ${p.cls}" data-axe="${axe.id}">
+        <summary>
+          <span class="badge ${p.cls}">${p.label}</span>
+          <span class="axe-nom">Bloc ${axe.id} — ${axe.nom}</span>
+          <span class="axe-score"${(PROG.ouvert&&PROG.ouvert[axe.id])?' hidden':''}>${nb-f}/${nb}</span>
+        </summary>
+        <div class="axe-corps">
+          <div class="pourquoi"><b>Pourquoi c'est important</b>${axe.pourquoi}</div>
+          ${axe.obligatoire ? `<p class="oblig-note">📌 Cette partie n'est <strong>validée</strong> que lorsque tu as <strong>fait l'exercice</strong> et <strong>complété les cartes mentales</strong> — à faire chez toi, même si tu as réussi le diagnostic.</p>` : ``}
+          ${choixMsg}
+          ${capsuleDetails}
+          ${videoDetails}
+          ${gateBloc}
+          ${activitesSection}
+          ${exosSection}
+        </div>
+      </details>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="topbar"><span>Ton plan de révision</span><span class="axe-tag">classé par priorité</span></div>
+    <div class="res-note">Rappel : ces questions ne couvrent pas tout. Même une partie « à survoler » mérite un coup d'œil. Ton avancement est gardé en mémoire sur cet appareil.</div>
+    ${cartes}
+    <div style="background:var(--nuit);color:var(--clair);padding:1rem 1.2rem;font-size:.95rem;margin-top:1rem">Peu de temps ? Suis l'ordre proposé : les parties en haut sont les plus prioritaires.</div>
+    <div class="actions" style="margin-top:1.4rem;justify-content:flex-start">
+      <button class="btn fant" id="recommencer">↻ Refaire le diagnostic</button>
+    </div>`;
+
+  // Verrou lu/vu par partie
+  document.querySelectorAll('details.axe').forEach(ax=>{
+    const id = ax.dataset.axe;
+    const chkLu = ax.querySelector('.chk-lu'); // peut être absent
+    const chkVu = ax.querySelector('.chk-vu'); // peut être absent
+    const exos = ax.querySelector('.exos');
+    const msg = ax.querySelector('.verrou-msg');
+    if(chkLu) chkLu.checked = !!(PROG.lu && PROG.lu[id]);
+    if(chkVu) chkVu.checked = !!(PROG.vu && PROG.vu[id]);
+    function updateGate(){
+      const consulte = (chkLu && chkLu.checked) || (chkVu && chkVu.checked);
+      if(exos) exos.classList.toggle('verrou', !consulte);
+      if(msg) msg.hidden = consulte;
+    }
+    updateGate();
+    if(chkLu) chkLu.addEventListener('change', ()=>{ PROG.lu=PROG.lu||{}; PROG.lu[id]=chkLu.checked; saveProg(); updateGate(); });
+    if(chkVu) chkVu.addEventListener('change', ()=>{ PROG.vu=PROG.vu||{}; PROG.vu[id]=chkVu.checked; saveProg(); updateGate(); });
+  });
+
+  // Exercices : minuteur (exos normaux) + case fait
+  document.querySelectorAll('details.exo').forEach(exo=>{
+    const axId = exo.dataset.ax, j = exo.dataset.j;
+    const bc = exo.querySelector('.btn-corr');
+    const corr = exo.querySelector('.exo-corr');
+    if(bc && corr){
+      const sec = +exo.dataset.timer; let started=false;
+      function startTimer(){ let left=sec; const tick=()=>{ if(left<=0){ bc.disabled=false; bc.textContent='Voir la correction'; return;} bc.textContent='Correction dans '+left+' s'; left--; setTimeout(tick,1000); }; tick(); }
+      exo.addEventListener('toggle', ()=>{ if(exo.open && !started){ started=true; startTimer(); } });
+      bc.addEventListener('click', ()=>{ if(bc.disabled) return; corr.hidden=!corr.hidden; bc.textContent = corr.hidden?'Voir la correction':'Masquer la correction'; });
+    }
+    const cf = exo.querySelector('.chk-fait input');
+    const mark = exo.querySelector('.fait-mark');
+    const fait = !!(PROG.faits && PROG.faits[axId] && PROG.faits[axId][j]);
+    cf.checked = fait; if(mark) mark.hidden = !fait;
+    cf.addEventListener('change', ()=>{ PROG.faits=PROG.faits||{}; PROG.faits[axId]=PROG.faits[axId]||{}; PROG.faits[axId][j]=cf.checked; saveProg(); if(mark) mark.hidden=!cf.checked; });
+  });
+
+  // Activités : case « fait » (libres d'accès, stockées dans PROG.act)
+  document.querySelectorAll('details.activite').forEach(ac=>{
+    const axId = ac.dataset.ax, k = ac.dataset.act;
+    const cf = ac.querySelector('.chk-fait input');
+    const mark = ac.querySelector('.fait-mark');
+    if(!cf) return;
+    const fait = !!(PROG.act && PROG.act[axId] && PROG.act[axId][k]);
+    cf.checked = fait; if(mark) mark.hidden = !fait;
+    cf.addEventListener('change', ()=>{ PROG.act=PROG.act||{}; PROG.act[axId]=PROG.act[axId]||{}; PROG.act[axId][k]=cf.checked; saveProg(); if(mark) mark.hidden=!cf.checked; });
+  });
+  // Méthode B : rafraîchir en direct le badge (vert/jaune) des parties obligatoires
+  function refreshEtats(){
+    NOTION.axes.forEach((axe,i)=>{
+      const det = document.querySelector('details.axe[data-axe="'+axe.id+'"]');
+      if(!det) return;
+      const b = etatAxe(axe,i);
+      det.className = 'axe '+b.cls;
+      const badgeEl = det.querySelector('.badge');
+      if(badgeEl){ badgeEl.className = 'badge '+b.cls; badgeEl.textContent = b.label; }
+      if(PROG.ouvert && PROG.ouvert[axe.id]){ const sc = det.querySelector('.axe-score'); if(sc) sc.hidden = true; }
+    });
+  }
+  NOTION.axes.forEach((axe,i)=>{
+    const det = document.querySelector('details.axe[data-axe="'+axe.id+'"]');
+    if(!det) return;
+    det.addEventListener('toggle', ()=>{
+      if(det.open){ PROG.ouvert = PROG.ouvert||{}; if(!PROG.ouvert[axe.id]){ PROG.ouvert[axe.id]=true; saveProg(); } }
+      refreshEtats();
+    });
+    det.querySelectorAll('details').forEach((sub)=>{
+      sub.addEventListener('toggle', ()=>{ if(sub.open){ PROG.touche = PROG.touche||{}; if(!PROG.touche[axe.id]){ PROG.touche[axe.id]=true; saveProg(); refreshEtats(); } } });
+    });
+  });
+  document.addEventListener('change', refreshEtats);
+  refreshEtats();
+
+  document.getElementById("recommencer").onclick = ()=>{ clearProg(); fautes.fill(0); ecranIntro(); };
+}
+
+// Démarrage : reprise si une session est sauvegardée
+if(PROG && Array.isArray(PROG.fautes)){
+  PROG.fautes.forEach((v,i)=> fautes[i]=v);
+  ecranResultats(true);
+} else {
+  ecranIntro();
+}
+</script>
+
+<div id="prog-bar" aria-label="Progression par bloc">
+  <div class="pb-title">Progression</div>
+  <div class="pb-pct">0 %</div>
+  <div class="pb-seg">
+    <div class="pb-cell none" data-diag="1" title="Diagnostic"><span class="pb-fill"></span><span class="pb-lab">Diag</span></div>
+    <div class="pb-cell none" data-axe="A"><span class="pb-fill"></span><span class="pb-lab">A</span></div>
+    <div class="pb-cell none" data-axe="B"><span class="pb-fill"></span><span class="pb-lab">B</span></div>
+  </div>
+</div>
+<script>
+/* Jour 7 — barre de progression : Diagnostic + blocs A, B.
+   Publie le contrat "cahier-progression" lu par l'accueil. Chaque bloc =
+   (capsule/vidéo consultée) + exercices faits + activités faites.
+   La barre est masquée pendant le diagnostic (classe body.en-diagnostic). */
+(function(){
+  var JOUR=7, TITRE="Dosage par étalonnage", CLE='cahier-j07';
+  var AXES=[{id:'A',exos:0,act:1},{id:'B',exos:1,act:0,nogate:true}];
+  function lire(){ try{var r=localStorage.getItem(CLE);return r?JSON.parse(r):null;}catch(e){return null;} }
+  function lireOuv(){ try{var r=localStorage.getItem('cahier-j07-ouverts');return r?JSON.parse(r):{};}catch(e){return {};} }
+  function saveOuv(o){ try{localStorage.setItem('cahier-j07-ouverts',JSON.stringify(o));}catch(e){} }
+  function deuxch(n){ return (n<10?'0':'')+n; }
+  function ajd(){ var d=new Date();return d.getFullYear()+'-'+deuxch(d.getMonth()+1)+'-'+deuxch(d.getDate()); }
+  function paint(c,state,frac,extra){
+    if(!c) return;
+    c.className='pb-cell '+state+(extra?(' '+extra):'');
+    var fill=c.querySelector('.pb-fill');
+    if(fill){ fill.className='pb-fill'+(state==='done'?' g':(state==='prog'?' h':'')); fill.style.height=Math.round(frac*100)+'%'; }
+  }
+  function setCell(id,state,frac,extra){ paint(document.querySelector('#prog-bar .pb-cell[data-axe="'+id+'"]'),state,frac,extra); }
+  function setDiag(state,frac){ paint(document.querySelector('#prog-bar .pb-cell[data-diag]'),state,frac); }
+  function publier(axes,pf,pt){
+    try{
+      var all={}; try{all=JSON.parse(localStorage.getItem('cahier-progression'))||{};}catch(e){}
+      var faits=0; axes.forEach(function(a){if(a.etat==='done')faits++;});
+      var date=(all[JOUR]&&all[JOUR].date)?all[JOUR].date:ajd();
+      all[JOUR]={titre:TITRE,date:date,axes:axes,axesFaits:faits,axesTotal:axes.length,pct:(pt?Math.round(pf/pt*100):0),termine:(faits===axes.length)};
+      localStorage.setItem('cahier-progression',JSON.stringify(all));
+    }catch(e){}
+  }
+  function retirer(){ try{var all=JSON.parse(localStorage.getItem('cahier-progression'))||{}; if(all[JOUR]){delete all[JOUR];localStorage.setItem('cahier-progression',JSON.stringify(all));}}catch(e){} }
+  function maj(){
+    var P=lire(), pctEl=document.querySelector('#prog-bar .pb-pct');
+    if(!P){ saveOuv({}); setDiag('none',0); AXES.forEach(function(ax){setCell(ax.id,'none',0);}); if(pctEl)pctEl.textContent='0 %'; retirer(); return; }
+    var ouv=lireOuv(), pf=0, pt=0, axes=[];
+    var diagFini=!!P.diagComplet;
+    setDiag(diagFini?'done':'prog', diagFini?1:0.5);
+    pf+=(diagFini?1:0); pt+=1;
+    AXES.forEach(function(ax, i){
+      var det=document.querySelector('details.axe[data-axe="'+ax.id+'"]');
+      if(det){ if(det.open) ouv[ax.id]=true; if(!det._barHook){det._barHook=true;det.addEventListener('toggle',function(){if(det.open){var o=lireOuv();o[ax.id]=true;saveOuv(o);}maj();});} }
+      var fa=(P.fautes&&typeof P.fautes[i]==='number')?P.fautes[i]:null;
+      var vert=fa===0, revoir=(fa>=1&&fa<=2);
+      var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
+      var nE=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) nE++; }
+      var nA=0; for(var k=0;k<ax.act;k++){ if(P.act&&P.act[ax.id]&&P.act[ax.id][k]) nA++; }
+      var hasGate=!ax.nogate;
+      var total=(hasGate?1:0)+ax.exos+ax.act;
+      var acquis = ax.oblig ? (consulte&&nE===ax.exos&&nA===ax.act) : (vert||((hasGate?consulte:true)&&nE===ax.exos&&nA===ax.act));
+      var steps=acquis?total:((hasGate&&consulte?1:0)+nE+nA); pf+=steps; pt+=total;
+      var ouvert=!!ouv[ax.id], touche=acquis||ouvert||consulte||nE>0||nA>0;
+      var state=acquis?'done':(touche?'prog':'none');
+      setCell(ax.id,state,steps/total,(revoir&&!acquis)?'revoir':'');
+      axes.push({id:ax.id,etat:state,pct:Math.round(steps/total*100)});
+    });
+    saveOuv(ouv);
+    if(pctEl)pctEl.textContent=Math.round((pt?pf/pt:0)*100)+' %';
+    publier(axes,pf,pt);
+  }
+  maj();
+  document.addEventListener('change',maj);
+  var root=document.getElementById('app');
+  if(root){ try{ new MutationObserver(maj).observe(root,{childList:true,subtree:true}); }catch(e){} }
+})();
+</script>
+
+<script>
+/* Animation échelle de teintes (bloc A). Les <script> injectés via innerHTML
+   ne s'exécutent pas : on initialise donc via un MutationObserver sur #app. */
+(function(){
+  function colorEch(c){ var a=(0.05+0.9*(c/10)); return 'rgba(38,116,180,'+a.toFixed(3)+')'; }
+  function initEchelle(){
+    var root=document.getElementById('echelle-v1');
+    if(!root || root.dataset.init) return; root.dataset.init='1';
+    var std=[0,2,4,6,8,10], cU=7;
+    var srow=root.querySelector('#ech-standards');
+    srow.innerHTML=std.map(function(c){
+      return '<div class="tube"><div class="verre"><div class="liquide" style="background:'+colorEch(c)+'"></div></div><div class="etiq">'+c+'</div></div>';
+    }).join('');
+    var test=root.querySelector('#ech-test .liquide');
+    var unkTube=root.querySelector('#ech-unk'), unk=unkTube.querySelector('.liquide');
+    unk.style.background=colorEch(cU);
+    var range=root.querySelector('#ech-range'), val=root.querySelector('#ech-val'), fb=root.querySelector('#ech-feedback');
+    function upd(){ var c=parseFloat(range.value); test.style.background=colorEch(c); val.textContent=(''+c).replace('.',','); }
+    range.addEventListener('input',upd); upd();
+    root.querySelector('#ech-compare').addEventListener('click',function(){
+      var c=parseFloat(range.value);
+      if(Math.abs(c-cU)<0.5){
+        unkTube.classList.add('match');
+        fb.innerHTML='✅ Les teintes se confondent : l\'échantillon a la même concentration que ton tube test, soit <b>C ≈ '+cU+' mg·L⁻¹</b>. Sur une vraie échelle, on l\'encadrerait entre les étalons 6 et 8 mg·L⁻¹.';
+      } else {
+        unkTube.classList.remove('match');
+        fb.innerHTML = (c<cU ? '➕ Ton tube test est <b>trop clair</b> : augmente la concentration.' : '➖ Ton tube test est <b>trop foncé</b> : diminue la concentration.');
+      }
+    });
+  }
+  var root=document.getElementById('app');
+  if(root){ try{ new MutationObserver(initEchelle).observe(root,{childList:true,subtree:true}); }catch(e){} }
+  document.addEventListener('click',function(e){ if(e.target && e.target.closest && e.target.closest('details')) setTimeout(initEchelle,0); });
+  initEchelle();
+})();
+</script>
+</body>
+</html>
