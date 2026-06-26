@@ -107,7 +107,7 @@
   .exo-num{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:.06em;flex:0 0 auto}
   .exo-titre{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600}
   .exo-body{padding:0 1rem 1rem}
-  .exo-enonce{font-weight:600;margin-bottom:.4rem}
+  .exo-enonce{margin-bottom:.4rem}
   .exo-consigne{font-size:.85rem;color:var(--gris);margin-bottom:.6rem}
   .exo-btns{display:flex;gap:.5rem;flex-wrap:wrap}
   .mini{font-family:'IBM Plex Mono',monospace;font-size:.76rem;cursor:pointer;border:1px solid var(--nuit);background:#fff;color:var(--nuit);padding:.35rem .7rem}
@@ -189,6 +189,14 @@
   .act-fait{display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:var(--gris);cursor:pointer;flex:0 0 auto}
   .act-fait input{width:15px;height:15px;accent-color:var(--vert)}
   .tier-tag{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--gris);font-weight:400;text-transform:none;letter-spacing:0}
+  /* --- Jour 1 : mise en forme des exercices --- */
+  .exo-img{margin:.5rem 0 .7rem;text-align:center}
+  .exo-img img{max-width:100%;max-height:240px;height:auto;border-radius:8px;border:1px solid var(--ligne)}
+  .exo-donnee{font-size:.9rem;background:rgba(0,0,0,.025);border:1px solid var(--ligne);border-radius:6px;padding:.45rem .75rem;margin:.1rem 0 .65rem}
+  .exo-donnee b{font-family:'IBM Plex Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--orange)}
+  .exo-sub{margin:.3rem 0 .7rem;padding-left:1.5rem;list-style:lower-alpha}
+  .exo-sub li{font-size:.95rem;margin-bottom:.4rem;padding-left:.2rem}
+  .exo-sub li::marker{font-family:'IBM Plex Mono',monospace;color:var(--orange);font-weight:600}
 </style>
 </head>
 
@@ -223,9 +231,9 @@ const NOTION = {
       id:"A", nom:"Conversions", type:"activites",
       pourquoi:"Les conversions d'unités et les puissances de dix reviennent dans tous les calculs de 1re spé (concentrations, énergies, longueurs d'onde…). Les automatiser maintenant évite des erreurs qui coûtent cher.",
       videos:[
-        {id:"Wd-tGvyKlTs", titre:"Vidéo 1 — Conversions d'unités"},
-        {id:"0chMr8GB_PQ", titre:"Vidéo 2 — Conversions d'unités"},
-        {id:"PUrZaMhtjyE", titre:"Vidéo 3 — Conversions d'unités"}
+        {id:"Wd-tGvyKlTs", titre:"Convertir des volumes avec un tableau de conversion"},
+        {id:"0chMr8GB_PQ", titre:"Conversions plus complexes : multiples et sous-multiples"},
+        {id:"PUrZaMhtjyE", titre:"Convertir avec les puissances de 10 (milli, kilo, méga…)"}
       ],
       activites:{
         rouge:[ {url:"https://wordwall.net/fr/resource/99347520", label:"Entraînement 1"},
@@ -285,8 +293,8 @@ const NOTION = {
              <div class="ce-regle"><span class="num">→</span><span>5 250 000 <span class="ce-ex">= 5,25 × 10⁶</span></span></div>
              <div class="ce-regle"><span class="num">→</span><span>0,0048 <span class="ce-ex">= 4,8 × 10⁻³</span></span></div>
            </div>
-           <div class="ce-op"><b>Ordre de grandeur</b>C'est la puissance de 10 la plus proche du nombre. On compare la mantisse a à √10 ≈ 3,16 : si a &lt; 3,16 → 10ⁿ ; sinon → 10ⁿ⁺¹. <span class="ce-ex">9,1×10⁻³¹ → 10⁻³⁰</span></div>
-           <div class="ce-warn"><b>À éviter :</b> une mantisse hors de [1 ; 10[ (0,12×10⁻⁶ ou 10,4×10²) et un exposant non entier (10²·³).</div>
+           <div class="ce-op"><b>Ordre de grandeur</b>C'est la puissance de 10 la plus proche du nombre. On compare a (le nombre devant la puissance de 10) à √10 ≈ 3,16 : si a &lt; 3,16 → 10ⁿ ; sinon → 10ⁿ⁺¹. <span class="ce-ex">9,1×10⁻³¹ → 10⁻³⁰</span></div>
+           <div class="ce-warn"><b>À éviter :</b> un nombre hors de [1 ; 10[ devant la puissance de 10 (0,12×10⁻⁶ ou 10,4×10²) et un exposant non entier (10²·³).</div>
          </div>`
       ],
       videos:[
@@ -294,23 +302,32 @@ const NOTION = {
         {id:"NxhvyT_Q6xc", titre:"L'écriture scientifique"}
       ],
       exercices:[
-        { timer:90,
+        { timer:20,
           titre:"Vitesse du son",
-          enonce:"L'écho en montagne est dû à la réflexion des ondes sonores sur les parois des falaises. Pour entendre son écho distinctement, Théo doit le recevoir au moins 1,0×10² ms après l'émission du son. (a) Fais un schéma de la situation : trajectoire de l'onde, et double flèche pour la distance minimale d entre Théo et la falaise. (b) En déduire, avec le bon nombre de chiffres significatifs, la distance minimale à laquelle Théo doit se trouver de la falaise. Donnée : vitesse du son dans l'air = 340 m·s⁻¹.",
+          enonce:"L'écho en montagne est dû à la réflexion des ondes sonores sur les parois des falaises. Pour entendre son écho distinctement, Théo doit le recevoir au moins 1,0×10² ms après l'émission du son.",
+          img:{src:"j01-ex1-montagne.jpg", alt:"Sommet enneigé en montagne"},
+          donnee:"vitesse du son dans l'air = 340 m·s⁻¹",
+          sous:[
+            "Fais un schéma de la situation : représente la trajectoire de l'onde sonore, et indique par une double flèche la distance minimale d entre Théo et la falaise.",
+            "En déduire, avec le bon nombre de chiffres significatifs, la distance minimale à laquelle Théo doit se trouver de la falaise."
+          ],
           correction:`<p>Le son parcourt deux fois la distance d (aller puis retour). On note Δt le temps de parcours : Δt = 1,0×10² ms = 1,0×10⁻¹ s.</p><p>2d = v<sub>son</sub> × Δt, donc d = v<sub>son</sub> × Δt ⁄ 2 = (340 × 1,0×10⁻¹) ⁄ 2 = <strong>17 m</strong>.<br>(La donnée limitante a deux chiffres significatifs → 17 m.)</p>` },
-        { timer:75,
+        { timer:20,
           titre:"Volume et précision",
           enonce:"Valentine prélève 500 μL de sirop de menthe à la micropipette et les verse dans un bécher. Elle prélève ensuite 100,0 mL d'eau distillée à la fiole jaugée, qu'elle ajoute au sirop. Calculer le volume total de sirop dilué ainsi formé.",
+          img:{src:"j01-ex2-pipettes.jpg", alt:"Pipettes plastique graduées"},
           correction:`<p>On exprime tout dans la même unité : V₁ = 500 μL = 500×10⁻³ mL = 0,500 mL.</p><p>V<sub>total</sub> = V<sub>eau</sub> + V₁ = 100,0 mL + 0,500 mL = <strong>100,5 mL</strong>.<br>(Addition : on garde le nombre de décimales de la valeur qui en a le moins ; 100,0 mL en a une → 100,5 mL.)</p><p style="margin-top:.5rem;background:rgba(63,167,214,.08);border-left:3px solid var(--cyan);padding:.5rem .8rem">💡 Pour additionner des grandeurs, on les met d'abord dans la même unité, puis on garde autant de décimales que la valeur qui en a le moins.</p>` },
-        { timer:60,
+        { timer:20,
           titre:"Un vol en parachute",
-          enonce:"Un parachutiste et son équipement ont une masse de 72 kg. Calculer le poids du parachutiste muni de son équipement. Donnée : intensité de pesanteur sur Terre g_T = 9,81 N·kg⁻¹.",
-          correction:`<p>Le poids est proportionnel à la masse : P = m × g_T = 72 × 9,81 = <strong>7,1×10² N</strong>.<br>(72 a deux chiffres significatifs → on garde deux chiffres significatifs.)</p>` },
-        { timer:60,
+          enonce:"Un parachutiste et son équipement ont une masse de 72 kg. Calculer le poids du parachutiste muni de son équipement.",
+          img:{src:"j01-ex3-parachute.jpg", alt:"Parachutistes en chute libre"},
+          donnee:"intensité de pesanteur sur Terre g<sub>T</sub> = 9,81 N·kg⁻¹",
+          correction:`<p>Le poids est proportionnel à la masse : P = m × g<sub>T</sub> = 72 × 9,81 = <strong>7,1×10² N</strong>.<br>(72 a deux chiffres significatifs → on garde deux chiffres significatifs.)</p>` },
+        { timer:20,
           titre:"Masse volumique d'un métal précieux",
           enonce:"Un collier en or pur a une masse de 3,8 g. Calculer son volume sachant que la masse volumique de l'or est ρ = 19,3 g·cm⁻³.",
           correction:`<p>V = m ⁄ ρ = 3,8 ⁄ 19,3 = <strong>0,20 cm³</strong>.<br>(3,8 a deux chiffres significatifs → 0,20 cm³.)</p>` },
-        { timer:60,
+        { timer:20,
           titre:"Loi d'Ohm",
           enonce:"Une résistance de 150 Ω est traversée par un courant de 25 mA. Calculer la tension à ses bornes.",
           correction:`<p>D'après la loi d'Ohm : U = R × I = 150 × 25×10⁻³ = <strong>3,8 V</strong>.<br>(25 a deux chiffres significatifs → 3,8 V.)</p>` }
@@ -326,12 +343,12 @@ const NOTION = {
           siJuste:`71 mL : pour une division, on garde le nombre de chiffres significatifs de la valeur qui en a le moins (ici deux, avec 7,9).` },
         { q:"Quel est l'ordre de grandeur de la masse d'un électron, 9,1×10⁻³¹ kg ?",
           opts:["10⁻³¹ kg","10⁻³⁰ kg","10⁻²⁸ g","10⁻³⁴ g"], bonne:1,
-          siFaux:`L'ordre de grandeur est la puissance de 10 la plus proche du nombre. On compare la mantisse à √10 ≈ 3,16 : comme 9,1 ≥ 3,16, on arrondit à la puissance supérieure. L'ordre de grandeur est donc <strong>10⁻³⁰ kg</strong>.`,
-          siJuste:`10⁻³⁰ kg : la mantisse 9,1 dépasse √10 ≈ 3,16, on arrondit donc à la puissance de 10 supérieure.` },
+          siFaux:`L'ordre de grandeur est la puissance de 10 la plus proche du nombre. On regarde le nombre placé devant la puissance de 10 (ici 9,1) : s'il dépasse √10 ≈ 3,16, on arrondit à la puissance supérieure. Comme 9,1 ≥ 3,16, l'ordre de grandeur est <strong>10⁻³⁰ kg</strong>.`,
+          siJuste:`10⁻³⁰ kg : le nombre devant la puissance de 10 (9,1) dépasse √10 ≈ 3,16, on arrondit donc à la puissance de 10 supérieure.` },
         { q:"Quel résultat est écrit correctement en écriture scientifique ?",
           opts:["0,12×10⁻⁶ kg","10,4×10² N","2,04×10⁶ daJ","2,04×10²·³ g"], bonne:2,
-          siFaux:`En écriture scientifique, le nombre s'écrit a × 10ⁿ avec 1 ≤ a < 10 (un seul chiffre non nul avant la virgule) et n entier. Seul <strong>2,04×10⁶ daJ</strong> respecte ces deux conditions. (0,12 et 10,4 ont une mantisse hors de [1 ; 10[, et 10²·³ a un exposant non entier.)`,
-          siJuste:`2,04×10⁶ daJ : la mantisse est bien comprise entre 1 et 10, et l'exposant est un entier.` },
+          siFaux:`En écriture scientifique, le nombre s'écrit a × 10ⁿ avec 1 ≤ a < 10 (un seul chiffre non nul avant la virgule) et n entier. Seul <strong>2,04×10⁶ daJ</strong> respecte ces deux conditions. (0,12 et 10,4 ne sont pas compris entre 1 et 10, et 10²·³ a un exposant non entier.)`,
+          siJuste:`2,04×10⁶ daJ : le nombre devant la puissance de 10 est bien compris entre 1 et 10, et l'exposant est un entier.` },
         { q:"Combien de chiffres significatifs compte le nombre 0,020540 ?",
           opts:["3","4","5","6"], bonne:2,
           siFaux:`Les zéros à gauche du premier chiffre non nul ne comptent pas (ils placent la virgule) ; ceux situés entre deux chiffres, ou à droite après la virgule, comptent. Dans 0,020540 on compte 2, 0, 5, 4 et le 0 final, soit <strong>5 chiffres significatifs</strong>.`,
@@ -496,6 +513,9 @@ function exoTemplate(axe, ex, j){
         <summary><span class="exo-num">Exercice ${j+1}</span> <span class="exo-titre">${ex.titre}</span><span class="fait-mark" hidden>✓ fait</span></summary>
         <div class="exo-body">
           <p class="exo-enonce">${ex.enonce}</p>
+          ${ex.img ? `<figure class="exo-img"><img src="${ex.img.src}" alt="${ex.img.alt}" loading="lazy"></figure>` : ''}
+          ${ex.donnee ? `<p class="exo-donnee"><b>Donnée</b> ${ex.donnee}</p>` : ''}
+          ${ex.sous ? `<ol class="exo-sub">${ex.sous.map(s=>`<li>${s}</li>`).join('')}</ol>` : ''}
           <p class="exo-consigne">✏️ Fais cet exercice sur ta feuille, puis vérifie. Le corrigé se débloque après un court instant.</p>
           <div class="exo-btns">
             ${ex.exemple ? '<button type="button" class="mini btn-exemple">Voir un exemple</button>' : ''}
