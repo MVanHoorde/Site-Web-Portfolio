@@ -9,6 +9,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!-- Tout le style vit désormais dans le fichier partagé style.css -->
 <link rel="stylesheet" href="style.css">
+<style>
+  /* Encart « Cahier de vacances » — en en-tête de mai à septembre, en pied le reste de l'année */
+  .cdv-encart{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.4rem;background:var(--papier);
+    border:1px solid var(--grille);border-left:4px solid var(--h-alpha);border-radius:10px;
+    padding:1.1rem 1.3rem;box-shadow:0 2px 14px rgba(20,26,38,.05)}
+  .cdv-txt{flex:1 1 260px}
+  .cdv-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--gris);margin-bottom:.3rem}
+  .cdv-titre{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.18rem;color:var(--encre);margin:0 0 .3rem;line-height:1.25}
+  .cdv-sous{font-size:.96rem;color:var(--encre);margin:0}
+  .cdv-cta{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.95rem;text-decoration:none;color:var(--papier);
+    background:var(--encre);border-radius:8px;padding:.6rem 1.2rem;white-space:nowrap;flex:0 0 auto;transition:transform .12s,background .15s}
+  .cdv-cta:hover{transform:translateY(-1px);background:var(--h-alpha)}
+  .cdv-slot{display:none}
+  .cdv-slot.cdv-on{display:block}
+  #cdv-header.cdv-on{margin:1.6rem 0 .4rem}
+  #cdv-footer.cdv-on{margin:0 0 1.4rem}
+</style>
 </head>
 <body>
 
@@ -30,6 +48,8 @@
     Toutes les ressources de l'année de seconde, organisées par thème :
     fiches de cours, exercices, protocoles de TP et évaluations.
   </p>
+
+  <div id="cdv-header" class="cdv-slot"></div>
 
   <!-- ========== THÈME 1 ========== -->
   <h2 class="theme">Thème 1 — Constitution et transformations de la matière</h2>
@@ -149,11 +169,34 @@
   </article>
 </main>
 
+<template id="cdv-tpl">
+  <div class="cdv-encart">
+    <div class="cdv-txt">
+      <p class="cdv-eyebrow">2nde · révisions d'été</p>
+      <p class="cdv-titre">Cahier de vacances — vers la 1re spé</p>
+      <p class="cdv-sous">Un diagnostic interactif, jour par jour, pour réviser la Seconde avant la spécialité Physique-Chimie.</p>
+    </div>
+    <a class="cdv-cta" href="cahier-vacances-2nde-1re-spe.html">Ouvrir le cahier →</a>
+  </div>
+</template>
+<div id="cdv-footer" class="cdv-slot"></div>
+
 <footer>
   <div class="footer-inner">© 2026 · M. Van Hoorde — Physique-Chimie · 2nde</div>
 </footer>
 
 <div class="spectre" aria-hidden="true"></div>
 
+<script>
+/* Place l'encart du cahier de vacances en en-tête de mai à septembre,
+   et en pied de page d'octobre à avril. */
+(function(){
+  var m = new Date().getMonth();          // 0 = janvier … 4 = mai … 9 = octobre
+  var enTete = (m >= 4 && m <= 8);         // mai → septembre : en-tête ; sinon : pied de page
+  var slot = document.getElementById(enTete ? 'cdv-header' : 'cdv-footer');
+  var tpl = document.getElementById('cdv-tpl');
+  if(slot && tpl){ slot.appendChild(tpl.content.cloneNode(true)); slot.classList.add('cdv-on'); }
+})();
+</script>
 </body>
 </html>
