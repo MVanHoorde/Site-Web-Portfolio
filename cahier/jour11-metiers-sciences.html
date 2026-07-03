@@ -263,6 +263,10 @@
       </details>
     </div>
   </section>
+
+  <div style="margin:2rem 0 0;text-align:right">
+    <button type="button" class="btn-imprimer" id="btn-reset-j11" title="Efface les étapes cochées et ta trace écrite sur cet appareil">↻ Réinitialiser ma séance</button>
+  </div>
 </main>
 
 <!-- Version imprimable du bilan (remplie depuis les champs) -->
@@ -440,6 +444,22 @@ document.getElementById("btn-imprimer").addEventListener("click", function(){
 });
 
 refresh();
+
+/* Réinitialisation de la séance (étapes + trace écrite + entrée calendrier) */
+(function(){
+  var b = document.getElementById('btn-reset-j11');
+  if(!b) return;
+  b.addEventListener('click', function(){
+    var ok = confirm("Réinitialiser la séance du Jour 11 ?\n\n• Les étapes cochées et ta trace écrite seront effacées sur cet appareil.\n• Le Jour 11 sera retiré de ta progression du calendrier.");
+    if(!ok) return;
+    try{ localStorage.removeItem('cahier-j11'); }catch(e){}
+    try{
+      var all = JSON.parse(localStorage.getItem('cahier-progression'))||{};
+      if(all[11]){ delete all[11]; localStorage.setItem('cahier-progression', JSON.stringify(all)); }
+    }catch(e){}
+    location.reload();
+  });
+})();
 </script>
 </body>
 </html>
