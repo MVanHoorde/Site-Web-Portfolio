@@ -397,6 +397,7 @@ function feedbackHTML(item, ok){
 }
 function finDiagnostic(){ freshProg(fautes, true); ecranResultats(false); }
 function passerDiagnostic(){
+  if(!confirm("Passer le diagnostic ?\n\nLes questions sans réponse seront comptées comme fausses et ton plan de révision sera généré tel quel.")) return;
   for(let i=answers.length; i<FLAT.length; i++){ fautes[FLAT[i].ai]++; }  // restantes = fausses
   freshProg(fautes, false);
   ecranResultats(false);
@@ -406,7 +407,7 @@ const STORE_KEY = "cahier-j05";
 let PROG = (function(){ try{ const r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } })();
 function saveProg(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROG)); }catch(e){} }
 function freshProg(f, complet){
-  PROG = { fautes:f.slice(), lu:{}, vu:{}, faits:{}, act:{}, diagComplet:!!complet };
+  PROG = { fautes:f.slice(), lu:(PROG&&PROG.lu)||{}, vu:(PROG&&PROG.vu)||{}, faits:(PROG&&PROG.faits)||{}, act:(PROG&&PROG.act)||{}, diagComplet:!!complet };
   // Méthode B : à 0 faute sur une partie obligatoire, on pré-coche « lu/vu »
   // (l'élève maîtrise visiblement) pour ne laisser à faire que l'exercice + cartes.
   NOTION.axes.forEach((axe,i)=>{ if(axe.obligatoire && f[i]===0){ PROG.lu[axe.id]=true; PROG.vu[axe.id]=true; } });
@@ -517,7 +518,7 @@ function ecranQuestion(){
     <p class="enonce">${item.q}</p>
     ${item.multi ? `<p class="multi-hint">Plusieurs réponses possibles.</p>` : ``}
     <div class="opts" id="opts">${optsHTML}</div>
-    <div id="zone-feedback">${repondue?feedbackHTML(item, prev.ok):''}</div>
+    <div id="zone-feedback" aria-live="polite">${repondue?feedbackHTML(item, prev.ok):''}</div>
     <div class="actions" style="flex-wrap:wrap;gap:.6rem">
       ${idx>0?`<button class="btn fant" id="prec">← Précédent</button>`:``}
       ${actionBtn}
@@ -626,7 +627,7 @@ function ecranResultats(autoOpen){
       ? `<details class="media"><summary>${capsuleLabel}</summary><div class="flash">${axe.flash||axe.programme}</div></details>`
       : ``;
     const videoDetails = axe.video
-      ? `<details class="media"><summary>🎬 Regarder la vidéo</summary><div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`
+      ? `<details class="media"><summary>🎬 Regarder la vidéo</summary><div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`
       : ``;
     const choixMsg = (hasCapsule && axe.video)
       ? `<p class="choix-msg">Choisis le format qui te convient : <strong>lis la capsule</strong> <em>ou</em> <strong>regarde la vidéo</strong>. Pas besoin des deux.</p>`
@@ -747,10 +748,15 @@ function ecranResultats(autoOpen){
       sub.addEventListener('toggle', ()=>{ if(sub.open){ PROG.touche = PROG.touche||{}; if(!PROG.touche[axe.id]){ PROG.touche[axe.id]=true; saveProg(); refreshEtats(); } } });
     });
   });
+  if(document._rfChg) document.removeEventListener('change', document._rfChg);
+  document._rfChg = refreshEtats;
   document.addEventListener('change', refreshEtats);
   refreshEtats();
 
-  document.getElementById("recommencer").onclick = ()=>{ clearProg(); fautes.fill(0); ecranIntro(); };
+  document.getElementById("recommencer").onclick = ()=>{
+    if(!confirm("Refaire le diagnostic ?\n\n• Tes réponses au diagnostic seront réinitialisées.\n• Tes cases déjà cochées (exercices, activités, « lu / vu ») sont conservées.")) return;
+    fautes.fill(0); answers=[]; idx=0; ecranIntro();
+  };
 }
 
 // Démarrage : reprise si une session est sauvegardée
@@ -820,7 +826,7 @@ if(PROG && Array.isArray(PROG.fautes)){
       var nE=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) nE++; }
       var nA=0; for(var k=0;k<ax.act;k++){ if(P.act&&P.act[ax.id]&&P.act[ax.id][k]) nA++; }
       var total=1+ax.exos+ax.act;
-      var acquis = ax.oblig ? (consulte&&nE===ax.exos&&nA===ax.act) : (vert||(consulte&&nE===ax.exos&&nA===ax.act));
+      var acquis = ax.oblig ? (consulte&&nE===ax.exos&&nA===ax.act) : (consulte&&nE===ax.exos&&nA===ax.act);
       var steps=acquis?total:((consulte?1:0)+nE+nA); pf+=steps; pt+=total;
       var ouvert=!!ouv[ax.id], touche=acquis||ouvert||consulte||nE>0||nA>0;
       var state=acquis?'done':(touche?'prog':'none');

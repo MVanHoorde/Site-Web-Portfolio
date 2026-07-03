@@ -373,6 +373,7 @@ function feedbackHTML(item, ok){
 }
 function finDiagnostic(){ freshProg(fautes, true); ecranResultats(false); }
 function passerDiagnostic(){
+  if(!confirm("Passer le diagnostic ?\n\nLes questions sans réponse seront comptées comme fausses et ton plan de révision sera généré tel quel.")) return;
   for(let i=answers.length; i<FLAT.length; i++){ fautes[FLAT[i].ai]++; }  // restantes = fausses
   freshProg(fautes, false);
   ecranResultats(false);
@@ -384,7 +385,7 @@ function passerDiagnostic(){
 const STORE_KEY = "cahier-j02";
 let PROG = (function(){ try{ const r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } })();
 function saveProg(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROG)); }catch(e){} }
-function freshProg(f, complet){ PROG = { fautes:f.slice(), lu:{}, vu:{}, faits:{}, diagComplet:!!complet }; saveProg(); }
+function freshProg(f, complet){ PROG = { fautes:f.slice(), lu:(PROG&&PROG.lu)||{}, vu:(PROG&&PROG.vu)||{}, faits:(PROG&&PROG.faits)||{}, diagComplet:!!complet }; saveProg(); }
 function clearProg(){ PROG=null; try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
 
 function priorite(f){
@@ -458,7 +459,7 @@ function ecranQuestion(){
     <p class="enonce">${item.q}</p>
     ${item.imgQ ? `<div class="illus">${item.imgQ}</div>` : ""}
     <div class="opts" id="opts">${optsHTML}</div>
-    <div id="zone-feedback">${repondue?feedbackHTML(item, prev.ok):''}</div>
+    <div id="zone-feedback" aria-live="polite">${repondue?feedbackHTML(item, prev.ok):''}</div>
     <div class="actions" style="flex-wrap:wrap;gap:.6rem">
       ${idx>0?`<button class="btn fant" id="prec">← Précédent</button>`:``}
       ${actionBtn}
@@ -541,7 +542,7 @@ function ecranResultats(autoOpen){
           <div class="pourquoi"><b>Pourquoi c'est important</b>${axe.pourquoi}</div>
           <p class="choix-msg">Choisis le format qui te convient : <strong>lis la capsule</strong> <em>ou</em> <strong>regarde la vidéo</strong>. Pas besoin des deux — l'essentiel est de revoir la notion sans te surcharger.</p>
           <details class="media"><summary>📖 Lire la capsule (rappel de cours)</summary><div class="flash">${axe.flash}</div></details>
-          <details class="media"><summary>🎬 Regarder la vidéo</summary><div class="video"><iframe src="https://www.youtube.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>
+          <details class="media"><summary>🎬 Regarder la vidéo</summary><div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${axe.video}" title="Vidéo — ${axe.nom}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>
           <div class="gate">
             <label><input type="checkbox" class="chk-lu"> J'ai lu la capsule</label>
             <label><input type="checkbox" class="chk-vu"> J'ai regardé la vidéo</label>
@@ -640,11 +641,16 @@ function ecranResultats(autoOpen){
       sub.addEventListener('toggle', ()=>{ if(sub.open){ PROG.touche = PROG.touche||{}; if(!PROG.touche[axe.id]){ PROG.touche[axe.id]=true; saveProg(); refreshEtats(); } } });
     });
   });
+  if(document._rfChg) document.removeEventListener('change', document._rfChg);
+  document._rfChg = refreshEtats;
   document.addEventListener('change', refreshEtats);
   refreshEtats();
   if(autoOpen){ const first = document.querySelector('details.axe'); if(first) first.open = true; }
 
-  document.getElementById("recommencer").onclick = ()=>{ clearProg(); fautes.fill(0); ecranIntro(); };
+  document.getElementById("recommencer").onclick = ()=>{
+    if(!confirm("Refaire le diagnostic ?\n\n• Tes réponses au diagnostic seront réinitialisées.\n• Tes cases déjà cochées (exercices, activités, « lu / vu ») sont conservées.")) return;
+    fautes.fill(0); answers=[]; idx=0; ecranIntro();
+  };
 }
 
 // Démarrage : si une session est sauvegardée, on reprend le plan sans refaire le diagnostic.
@@ -715,7 +721,7 @@ if(PROG && Array.isArray(PROG.fautes)){
       var consulte=!!((P.lu&&P.lu[ax.id])||(P.vu&&P.vu[ax.id]));
       var n=0; for(var j=0;j<ax.exos;j++){ if(P.faits&&P.faits[ax.id]&&P.faits[ax.id][j]) n++; }
       var total=1+ax.exos;
-      var acquis=vert||(consulte&&n===ax.exos);
+      var acquis=(consulte&&n===ax.exos);
       var steps=acquis?total:((consulte?1:0)+n); pasFaits+=steps; pasTotal+=total;
       var ouvert=!!ouv[ax.id], touche=acquis||ouvert||consulte||n>0;
       var state=acquis?'done':(touche?'prog':'none');

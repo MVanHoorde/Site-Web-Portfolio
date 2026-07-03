@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jour 1 — Conversions, chiffres significatifs &amp; ordres de grandeur</title>
+<title>Diagnostic Jour 1 — Conversions, chiffres significatifs &amp; ordres de grandeur</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
 
 <!-- Jour 1 — page autonome, identite du cahier (bleu nuit + orange).
@@ -246,7 +246,7 @@ const NOTION = {
           opts:["25,0 L","0,250 L","0,250 mL","2,50 L"], bonne:1,
           siFaux:`Pour passer des millilitres aux litres, on divise par 1000 (1 L = 1000 mL). Ici 250 mL = 250 ÷ 1000 = 0,250 L, en conservant les trois chiffres significatifs : <strong>0,250 L</strong>. Attention à l'unité : 0,250 mL serait mille fois trop petit.`,
           siJuste:`250 mL = 0,250 L : on divise par 1000 et on garde les trois chiffres significatifs.` },
-        { q:"Un volume d'eau de 0,0500 L correspond à :",
+        { q:"Un volume d'eau de 0,0500 L correspond, avec le bon nombre de chiffres significatifs, à :",
           opts:["500 mL","50 mL","50,0 mL","0,500 mL"], bonne:2,
           siFaux:`Pour passer des litres aux millilitres, on multiplie par 1000. Ici 0,0500 L × 1000 = 50,0 mL. Les trois chiffres significatifs de 0,0500 sont conservés : <strong>50,0 mL</strong>.`,
           siJuste:`0,0500 L = 50,0 mL : on multiplie par 1000 en gardant les trois chiffres significatifs.` },
@@ -312,9 +312,9 @@ const NOTION = {
           correction:`<p>Le son parcourt deux fois la distance d (aller puis retour). On note Δt le temps de parcours : Δt = 1,0×10² ms = 1,0×10⁻¹ s.</p><p>2d = v<sub>son</sub> × Δt, donc d = v<sub>son</sub> × Δt ⁄ 2 = (340 × 1,0×10⁻¹) ⁄ 2 = <strong>17 m</strong>.<br>(La donnée limitante a deux chiffres significatifs → 17 m.)</p>` },
         { timer:20,
           titre:"Volume et précision",
-          enonce:"Valentine prélève 500 μL de sirop de menthe à la micropipette et les verse dans un bécher. Elle prélève ensuite 100,0 mL d'eau distillée à la fiole jaugée, qu'elle ajoute au sirop. Calculer le volume total de sirop dilué ainsi formé.",
+          enonce:"Valentine prélève 5,00×10² μL de sirop de menthe à la micropipette et les verse dans un bécher. Elle prélève ensuite 100,0 mL d'eau distillée à la fiole jaugée, qu'elle ajoute au sirop. Calculer le volume total de sirop dilué ainsi formé.",
           img:{src:"../assets/img/j01-ex2-pipettes.jpg", alt:"Pipettes plastique graduées"},
-          correction:`<p>On exprime tout dans la même unité : V₁ = 500 μL = 500×10⁻³ mL = 0,500 mL.</p><p>V<sub>total</sub> = V<sub>eau</sub> + V₁ = 100,0 mL + 0,500 mL = <strong>100,5 mL</strong>.<br>(Addition : on garde le nombre de décimales de la valeur qui en a le moins ; 100,0 mL en a une → 100,5 mL.)</p><p style="margin-top:.5rem;background:rgba(63,167,214,.08);border-left:3px solid var(--cyan);padding:.5rem .8rem">💡 Pour additionner des grandeurs, on les met d'abord dans la même unité, puis on garde autant de décimales que la valeur qui en a le moins.</p>` },
+          correction:`<p>On exprime tout dans la même unité : V₁ = 5,00×10² μL = 5,00×10²×10⁻³ mL = 0,500 mL.</p><p>V<sub>total</sub> = V<sub>eau</sub> + V₁ = 100,0 mL + 0,500 mL = <strong>100,5 mL</strong>.<br>(Addition : on garde le nombre de décimales de la valeur qui en a le moins ; 100,0 mL en a une → 100,5 mL.)</p><p style="margin-top:.5rem;background:rgba(63,167,214,.08);border-left:3px solid var(--cyan);padding:.5rem .8rem">💡 Pour additionner des grandeurs, on les met d'abord dans la même unité, puis on garde autant de décimales que la valeur qui en a le moins.</p>` },
         { timer:20,
           titre:"Un vol en parachute",
           enonce:"Un parachutiste et son équipement ont une masse de 72 kg. Calculer le poids du parachutiste muni de son équipement.",
@@ -377,6 +377,7 @@ function feedbackHTML(item, ok){
 }
 function finDiagnostic(){ freshProg(fautes, true); ecranResultats(false); }
 function passerDiagnostic(){
+  if(!confirm("Passer le diagnostic ?\n\nLes questions sans réponse seront comptées comme fausses et ton plan de révision sera généré tel quel.")) return;
   for(let i=answers.length; i<FLAT.length; i++){ fautes[FLAT[i].ai]++; }
   freshProg(fautes, false);
   ecranResultats(false);
@@ -385,7 +386,25 @@ function passerDiagnostic(){
 const STORE_KEY = "cahier-j01";
 let PROG = (function(){ try{ const r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } })();
 function saveProg(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROG)); }catch(e){} }
-function freshProg(f, complet){ PROG = { fautes:f.slice(), lu:{}, vu:{}, faits:{}, diagComplet:!!complet }; saveProg(); }
+/* Au re-diagnostic, on préserve le travail déjà fait :
+   - cases « lu / vu » de tous les blocs ;
+   - exercices cochés des blocs de type "cours" (leur liste est fixe).
+   Seules les activités des blocs "activites" sont réinitialisées,
+   car elles changent de palier (vert/orange/rouge) avec le diagnostic. */
+function faitsAPreserver(){
+  const keep = {};
+  if(PROG && PROG.faits){
+    NOTION.axes.forEach(axe=>{
+      if(axe.type !== 'activites' && PROG.faits[axe.id]) keep[axe.id] = PROG.faits[axe.id];
+    });
+  }
+  return keep;
+}
+function freshProg(f, complet){
+  const lu = (PROG && PROG.lu) || {}, vu = (PROG && PROG.vu) || {};
+  PROG = { fautes:f.slice(), lu:lu, vu:vu, faits:faitsAPreserver(), diagComplet:!!complet };
+  saveProg();
+}
 function clearProg(){ PROG=null; try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
 
 function priorite(f){
@@ -463,7 +482,7 @@ function ecranQuestion(){
     <p class="enonce">${item.q}</p>
     ${item.imgQ ? `<div class="illus">${item.imgQ}</div>` : ""}
     <div class="opts" id="opts">${optsHTML}</div>
-    <div id="zone-feedback">${repondue?feedbackHTML(item, prev.ok):''}</div>
+    <div id="zone-feedback" aria-live="polite">${repondue?feedbackHTML(item, prev.ok):''}</div>
     <div class="actions" style="flex-wrap:wrap;gap:.6rem">
       ${idx>0?`<button class="btn fant" id="prec">← Précédent</button>`:``}
       ${actionBtn}
@@ -529,7 +548,7 @@ function exoTemplate(axe, ex, j){
 function corpsActivites(axe, f){
   const tierLabel = {vert:"diagnostic réussi", orange:"diagnostic à moitié réussi", rouge:"diagnostic à retravailler"}[couleurTier(f)];
   const vids = axe.videos.map(v=>`
-      <details class="media"><summary>🎬 ${v.titre}</summary><div class="video"><iframe src="https://www.youtube.com/embed/${v.id}" title="${v.titre}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`).join("");
+      <details class="media"><summary>🎬 ${v.titre}</summary><div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${v.id}" title="${v.titre}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`).join("");
   const acts = activitesDe(axe).map((a,j)=>`
         <div class="activite" data-ax="${axe.id}" data-j="${j}">
           <span class="act-nom">${a.label}</span>
@@ -554,7 +573,7 @@ function corpsActivites(axe, f){
 function corpsCours(axe){
   const flashes = axe.flashes.join("");
   const vids = axe.videos.map(v=>`
-      <details class="media"><summary>🎬 ${v.titre}</summary><div class="video"><iframe src="https://www.youtube.com/embed/${v.id}" title="${v.titre}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`).join("");
+      <details class="media"><summary>🎬 ${v.titre}</summary><div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${v.id}" title="${v.titre}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></details>`).join("");
   const exos = axe.exercices.map((ex,j)=>exoTemplate(axe,ex,j)).join("");
   return `
       <div class="pourquoi"><b>Pourquoi c'est important</b>${axe.pourquoi}</div>
@@ -683,11 +702,17 @@ function ecranResultats(autoOpen){
       sub.addEventListener('toggle', ()=>{ if(sub.open){ PROG.touche = PROG.touche||{}; if(!PROG.touche[axe.id]){ PROG.touche[axe.id]=true; saveProg(); refreshEtats(); } } });
     });
   });
+  if(document._rfChg) document.removeEventListener('change', document._rfChg);
+  document._rfChg = refreshEtats;
   document.addEventListener('change', refreshEtats);
   refreshEtats();
   if(autoOpen){ const first = document.querySelector('details.axe'); if(first) first.open = true; }
 
-  document.getElementById("recommencer").onclick = ()=>{ clearProg(); fautes.fill(0); ecranIntro(); };
+  document.getElementById("recommencer").onclick = ()=>{
+    const ok = confirm("Refaire le diagnostic ?\n\n• Tes réponses au diagnostic seront réinitialisées.\n• Les activités du bloc A pourront changer de niveau : leurs coches sont remises à zéro.\n• Tes exercices déjà cochés et tes cases « lu / vu » du bloc B sont conservés.");
+    if(!ok) return;
+    fautes.fill(0); answers=[]; idx=0; ecranIntro();
+  };
 }
 
 if(PROG && Array.isArray(PROG.fautes)){
@@ -759,7 +784,7 @@ if(PROG && Array.isArray(PROG.fautes)){
         total=ax.exos; acquis=(n===ax.exos); steps=n;
         touche=acquis||!!ouv[ax.id]||n>0;
       } else {
-        total=1+ax.exos; acquis=vert||(consulte&&n===ax.exos);
+        total=1+ax.exos; acquis=(consulte&&n===ax.exos);
         steps=acquis?total:((consulte?1:0)+n);
         touche=acquis||!!ouv[ax.id]||consulte||n>0;
       }
