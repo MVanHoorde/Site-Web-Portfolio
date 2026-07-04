@@ -134,6 +134,32 @@
   .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
     font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); }
 
+  /* ===== Verrou de fin de chapitre (v1 : porte à code) ===== */
+  body.verrouille aside.sommaire,
+  body.verrouille details.toc-mobile,
+  body.verrouille article.lecture > *:not(#porte) { display:none; }
+  #porte { display:none; }
+  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; }
+  #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }
+  #porte h1 { margin-bottom:.6rem; }
+  #porte .explication { max-width:52ch; margin:0 auto 1.6rem; color:var(--gris); }
+  #porte form { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+  #porte input {
+    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.45em;
+    text-transform:uppercase; text-align:center; width:11.5ch;
+    padding:.55rem .2rem .55rem .65rem; border:1.5px solid var(--encre);
+    border-radius:10px; background:var(--papier); color:var(--encre);
+  }
+  #porte input:focus { outline:2px solid var(--h-beta); }
+  #porte button {
+    font-family:'IBM Plex Mono',monospace; font-size:.9rem; cursor:pointer;
+    border:1.5px solid var(--encre); border-radius:10px; padding:.55rem 1.1rem;
+    background:var(--encre); color:var(--papier);
+  }
+  #porte button:hover { background:var(--h-beta); border-color:var(--h-beta); }
+  #porte .erreur { color:var(--h-alpha); font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; min-height:1.4em; margin-top:.8rem; }
+
   @media (max-width:960px) {
     .page { grid-template-columns:1fr; gap:1.2rem; padding:1.2rem .9rem 3rem; }
     aside.sommaire { display:none; }
@@ -153,7 +179,7 @@
   }
 </style>
 </head>
-<body>
+<body class="verrouille">
 
 <div class="spectre" aria-hidden="true"><i></i><i></i><i></i></div>
 <nav>
@@ -181,6 +207,21 @@
 </aside>
 
 <article class="lecture">
+
+<div id="porte">
+  <div class="cadenas" aria-hidden="true">🔒</div>
+  <h1>La matière à l'échelle macroscopique</h1>
+  <p class="explication">Ce chapitre sera débloqué <strong>en fin de séquence</strong>,
+  au rythme de la classe. Le code de déblocage est transmis via le cahier de textes —
+  il figure aussi en bas de ta fiche de cours.</p>
+  <form id="forme-code" autocomplete="off">
+    <input id="champ-code" type="text" maxlength="6" inputmode="text"
+           spellcheck="false" aria-label="Code de déblocage (6 caractères)"
+           placeholder="••••••">
+    <button type="submit">Déverrouiller</button>
+  </form>
+  <p class="erreur" id="erreur-code" role="alert"></p>
+</div>
 
 <details class="toc-mobile">
   <summary>Sommaire du chapitre</summary>
@@ -1110,6 +1151,77 @@ volumique par une masse volumique de référence :</p>
     b.addEventListener('change', function(){
       etat[b.id] = b.checked;
       try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch(e) {}
+    });
+  });
+})();
+</script>
+
+<script>
+/* ============================================================
+   Verrou de fin de chapitre — v1 (porte à code)
+   · Le code n'est jamais écrit ici : seule son EMPREINTE SHA-256
+     est stockée. Pour changer de code, recalculer l'empreinte.
+   · Déblocage mémorisé sur l'appareil (localStorage).
+   · Pour re-verrouiller (tests) : ouvrir la page avec ?verrou=1
+   · Limite assumée de la v1 : le contenu est présent dans la page,
+     un élève outillé peut le lire via les outils de développement.
+     La protection forte reste : publier la page au bon moment.
+   ============================================================ */
+(function(){
+  var EMPREINTE = '9ce2699293190b576c053441d721d540be2018ad3cfb858c309c63fdf0f6040f';
+  var CLE = 'deblocage-2nde-t1c1';
+
+  function deverrouiller(){
+    document.body.classList.remove('verrouille');
+    var porte = document.getElementById('porte');
+    if (porte) porte.remove();
+    window.scrollTo(0, 0);
+  }
+
+  /* re-verrouillage volontaire pour les tests : ?verrou=1 */
+  try {
+    if (new URLSearchParams(location.search).has('verrou')) {
+      localStorage.removeItem(CLE);
+    }
+  } catch(e) {}
+
+  /* déjà débloqué sur cet appareil ? */
+  try {
+    if (localStorage.getItem(CLE) === '1') { deverrouiller(); return; }
+  } catch(e) {}
+
+  var forme = document.getElementById('forme-code');
+  var champ = document.getElementById('champ-code');
+  var erreur = document.getElementById('erreur-code');
+
+  function empreinteHex(texte){
+    var donnees = new TextEncoder().encode(texte);
+    return crypto.subtle.digest('SHA-256', donnees).then(function(tampon){
+      return Array.prototype.map.call(new Uint8Array(tampon), function(o){
+        return o.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  forme.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var essai = (champ.value || '').trim().toUpperCase();
+    if (essai.length !== 6) {
+      erreur.textContent = 'Le code fait 6 caractères (lettres et chiffres).';
+      return;
+    }
+    if (!(window.crypto && crypto.subtle)) {
+      erreur.textContent = 'Navigateur incompatible — ouvre la page depuis le site.';
+      return;
+    }
+    empreinteHex(essai).then(function(h){
+      if (h === EMPREINTE) {
+        try { localStorage.setItem(CLE, '1'); } catch(e) {}
+        deverrouiller();
+      } else {
+        erreur.textContent = 'Code incorrect. Vérifie le cahier de textes !';
+        champ.select();
+      }
     });
   });
 })();
