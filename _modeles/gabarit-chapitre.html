@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIVEAU — TITRE DU CHAPITRE · Physique-Chimie</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     GABARIT DE PAGE DE COURS — ne pas publier tel quel.
+     CSS et scripts extraits de la page de référence (chapitre 1) :
+     pages/2nde-pc-t1-c1-matiere-macroscopique.html
+     Lire _modeles/CONSIGNES-production-chapitre.md AVANT usage.
+     ============================================================ -->
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e;
+    --gris:#6b6f7a; --carte:#ffffff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Spectral', Georgia, serif; color:var(--encre);
+    background-color:var(--papier);
+    background-image:linear-gradient(var(--grille) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+    background-size:32px 32px; line-height:1.7;
+  }
+  .spectre { height:6px; background:var(--encre); position:relative; }
+  .spectre i { position:absolute; top:0; bottom:0; width:4px; }
+  .spectre i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .spectre i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .spectre i:nth-child(3){ left:76%; background:var(--h-alpha); }
+  nav { background:var(--papier); border-bottom:1px solid var(--encre); }
+  .nav-inner { max-width:1200px; margin:0 auto; padding:.85rem 1.4rem;
+    display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+  .nav-logo { font-family:'Space Grotesk',sans-serif; font-weight:700; }
+  .nav-logo span { color:var(--h-alpha); }
+  .retour { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--encre); text-decoration:none; border-bottom:2px solid var(--h-beta); }
+  .retour:hover { color:var(--h-beta); }
+  #lecture { position:sticky; top:0; height:4px; z-index:50; }
+  #lecture .fait { height:100%; width:0%; background:var(--h-alpha); }
+
+  .page { max-width:1200px; margin:0 auto; padding:2rem 1.4rem 4rem;
+    display:grid; grid-template-columns:230px minmax(0,1fr); gap:2.2rem; align-items:start; }
+  aside.sommaire { position:sticky; top:1.4rem; font-family:'Space Grotesk',sans-serif; }
+  .sommaire .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--gris); margin-bottom:.7rem; }
+  .sommaire ol { list-style:none; }
+  .sommaire a { display:flex; gap:.6rem; align-items:baseline; padding:.42rem .65rem;
+    border-radius:8px; text-decoration:none; color:var(--encre); font-size:.92rem; line-height:1.3; }
+  .sommaire a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--h-beta); }
+  .sommaire a:hover { background:var(--carte); }
+  .sommaire a.actif { background:var(--carte); box-shadow:inset 3px 0 0 var(--h-alpha); font-weight:600; }
+  .sommaire .ds a .n { color:var(--h-gamma); }
+
+  article.lecture { background:var(--carte); border:1px solid var(--encre); border-radius:14px;
+    box-shadow:6px 6px 0 rgba(20,26,38,.08); padding:clamp(1.4rem,4vw,3rem); min-width:0; }
+  .fil-ariane { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); margin-bottom:.5rem; }
+  .fil-ariane .niveau { color:var(--h-alpha); }
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.7rem,4vw,2.4rem); line-height:1.12; margin-bottom:.4rem; }
+  .sous-titre { font-family:'IBM Plex Mono',monospace; font-size:.85rem; color:var(--gris); margin-bottom:2.4rem; }
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2.8rem 0 1rem;
+    display:flex; align-items:baseline; gap:.8rem; scroll-margin-top:2rem; }
+  h2 .num { font-family:'IBM Plex Mono',monospace; font-size:.9rem; color:var(--h-beta); }
+  p { margin-bottom:.9rem; max-width:70ch; }
+  strong { font-weight:600; }
+  ul.cours { max-width:70ch; margin:0 0 .9rem 1.2rem; }
+  ul.cours li { margin-bottom:.5rem; }
+
+  .definition { border:1px solid var(--encre); border-left:4px solid var(--h-beta);
+    background:var(--papier); border-radius:0 10px 10px 0; padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; }
+  .definition p:last-child { margin-bottom:0; }
+  .videos { display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0 1.6rem; }
+  .video-chip { font-family:'IBM Plex Mono',monospace; font-size:.78rem;
+    display:inline-flex; align-items:center; gap:.4em; border:1px solid var(--encre);
+    border-radius:999px; padding:.34rem .85rem; text-decoration:none; color:var(--encre);
+    background:var(--papier); transition:background .15s,color .15s; }
+  .video-chip:hover { background:var(--h-beta); color:#fff; }
+
+  figure { margin:1.6rem 0; }
+  figure svg, figure img { max-width:100%; height:auto; display:block; }
+  figure img.photo { border:1px solid var(--encre); border-radius:6px; }
+  figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
+    margin-top:.55rem; max-width:62ch; }
+  .fig-row { display:flex; gap:1.6rem; flex-wrap:wrap; align-items:flex-start; }
+  .fig-row figure { flex:1 1 240px; max-width:430px; }
+  .fig-etroite { max-width:300px; }
+  .duo { display:grid; grid-template-columns:minmax(220px,300px) minmax(0,1fr); gap:2rem; align-items:start; }
+  .defile { overflow-x:auto; }
+
+  table.tab { border-collapse:collapse; font-size:.95rem; }
+  table.tab caption { caption-side:top; text-align:left; font-family:'Space Grotesk',sans-serif;
+    font-size:.85rem; font-weight:600; padding-bottom:.4rem; }
+  table.tab th, table.tab td { border:1px solid var(--encre); padding:.42rem .8rem; text-align:center; }
+  table.tab thead th, table.tab .entete { font-family:'Space Grotesk',sans-serif; font-size:.82rem; background:var(--papier); }
+  .pastille { display:inline-block; width:.85em; height:.85em; border-radius:50%;
+    border:1px solid var(--encre); vertical-align:-.08em; margin-right:.35em; }
+
+  .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
+    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0; max-width:78ch;
+    background:#fdfdfb; }
+  .exercice .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    text-transform:uppercase; letter-spacing:.1em; color:var(--h-alpha); margin-bottom:.5rem; }
+  .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.82rem; color:var(--gris); margin-top:.6rem; }
+  details.correction { margin-top:.8rem; border-top:1px dashed var(--gris); padding-top:.6rem; }
+  details.correction summary { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--h-gamma); cursor:pointer; }
+  details.correction summary:hover { text-decoration:underline; }
+  details.correction[open] summary { margin-bottom:.6rem; }
+  .frac { display:inline-block; vertical-align:middle; text-align:center; margin:0 .25em; }
+  .frac .haut { display:block; border-bottom:1.5px solid var(--encre); padding:0 .3em .1em; }
+  .frac .bas { display:block; padding:.1em .3em 0; }
+  sub,sup { font-size:.72em; }
+  .formule { font-family:'Spectral',serif; font-style:italic; text-align:center; margin:1.2rem auto; font-size:1.12rem; }
+  .unites { font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); }
+
+  .checklist { border:1px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 12px 12px 0; padding:1.2rem 1.4rem; margin:2.6rem 0 0; }
+  .checklist h2 { margin-top:0; }
+  .checklist ol { list-style:none; }
+  .checklist li { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem;
+    align-items:baseline; padding:.55rem 0; border-bottom:1px dashed var(--grille); }
+  .checklist li:last-child { border-bottom:none; }
+  .checklist input[type="checkbox"] { transform:translateY(2px) scale(1.15); accent-color:var(--h-gamma); cursor:pointer; }
+  .checklist label { cursor:pointer; }
+  .checklist .refs { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); white-space:nowrap; }
+  .checklist .refs a { color:var(--h-beta); text-decoration:none; }
+  .checklist .refs a:hover { text-decoration:underline; }
+
+  #haut { position:fixed; right:1.2rem; bottom:1.2rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.8rem; background:var(--carte); border:1px solid var(--encre); border-radius:999px;
+    padding:.5rem .85rem; cursor:pointer; box-shadow:3px 3px 0 rgba(20,26,38,.12);
+    opacity:0; pointer-events:none; transition:opacity .2s; }
+  #haut.visible { opacity:1; pointer-events:auto; }
+  #haut:hover { background:var(--h-beta); color:#fff; }
+
+  details.toc-mobile { display:none; }
+  footer { border-top:1px solid var(--encre); margin-top:2rem; }
+  .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
+    font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); }
+
+  /* ===== Verrou de fin de chapitre (v1 : porte à code) ===== */
+  body.verrouille aside.sommaire,
+  body.verrouille details.toc-mobile,
+  body.verrouille article.lecture > *:not(#porte) { display:none; }
+  #porte { display:none; }
+  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; }
+  #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }
+  #porte h1 { margin-bottom:.6rem; }
+  #porte .explication { max-width:52ch; margin:0 auto 1.6rem; color:var(--gris); }
+  #porte form { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+  #porte input {
+    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.45em;
+    text-transform:uppercase; text-align:center; width:11.5ch;
+    padding:.55rem .2rem .55rem .65rem; border:1.5px solid var(--encre);
+    border-radius:10px; background:var(--papier); color:var(--encre);
+  }
+  #porte input:focus { outline:2px solid var(--h-beta); }
+  #porte button {
+    font-family:'IBM Plex Mono',monospace; font-size:.9rem; cursor:pointer;
+    border:1.5px solid var(--encre); border-radius:10px; padding:.55rem 1.1rem;
+    background:var(--encre); color:var(--papier);
+  }
+  #porte button:hover { background:var(--h-beta); border-color:var(--h-beta); }
+  #porte .erreur { color:var(--h-alpha); font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; min-height:1.4em; margin-top:.8rem; }
+
+  @media (max-width:960px) {
+    .page { grid-template-columns:1fr; gap:1.2rem; padding:1.2rem .9rem 3rem; }
+    aside.sommaire { display:none; }
+    details.toc-mobile { display:block; font-family:'Space Grotesk',sans-serif;
+      background:var(--carte); border:1px solid var(--encre); border-radius:12px;
+      padding:.7rem 1rem; margin-bottom:1.2rem; }
+    details.toc-mobile summary { font-family:'IBM Plex Mono',monospace; font-size:.8rem;
+      letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    details.toc-mobile ol { list-style:none; margin-top:.6rem; }
+    details.toc-mobile a { display:block; padding:.4rem .2rem; color:var(--encre);
+      text-decoration:none; border-bottom:1px dashed var(--grille); }
+    details.toc-mobile a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+      color:var(--h-beta); margin-right:.5rem; }
+    .duo { grid-template-columns:1fr; }
+    .checklist li { grid-template-columns:auto 1fr; }
+    .checklist .refs { grid-column:2; white-space:normal; }
+  }
+</style>
+</head>
+
+<body class="verrouille">
+<!-- ⚠ class="verrouille" = page à code. Pour un chapitre SANS verrou :
+     <body> simple, et supprimer le bloc #porte + le script du verrou. -->
+
+<div class="spectre" aria-hidden="true"><i></i><i></i><i></i></div>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
+    <a class="retour" href="NIVEAU-physique-chimie.html">← Retour aux cours de NIVEAU</a>
+  </div>
+</nav>
+<div id="lecture"><div class="fait"></div></div>
+
+<div class="page">
+
+<aside class="sommaire" aria-label="Sommaire du chapitre">
+  <div class="etiquette">Chapitre X — Sommaire</div>
+  <ol id="toc">
+    <!-- ⚠ Une entrée par section, ancres = id des h2. Dernière entrée = checklist. -->
+    <li><a href="#ancre-1"><span class="n">01</span> Titre section 1</a></li>
+    <li class="ds"><a href="#pour-le-ds"><span class="n">✓</span> Pour le DS, je sais</a></li>
+  </ol>
+</aside>
+
+<article class="lecture">
+
+<div id="porte">
+  <div class="cadenas" aria-hidden="true">🔒</div>
+  <h1>TITRE DU CHAPITRE</h1>
+  <p class="explication">Ce chapitre sera débloqué <strong>en fin de séquence</strong>,
+  au rythme de la classe. Le code de déblocage est transmis via le cahier de textes —
+  il figure aussi en bas de ta fiche de cours.</p>
+  <form id="forme-code" autocomplete="off">
+    <input id="champ-code" type="text" maxlength="6" inputmode="text"
+           spellcheck="false" aria-label="Code de déblocage (6 caractères)"
+           placeholder="••••••">
+    <button type="submit">Déverrouiller</button>
+  </form>
+  <p class="erreur" id="erreur-code" role="alert"></p>
+</div>
+
+<details class="toc-mobile">
+  <summary>Sommaire du chapitre</summary>
+  <ol>
+    <!-- ⚠ Répliquer les entrées du sommaire latéral -->
+    <li><a href="#ancre-1"><span class="n">01</span>Titre section 1</a></li>
+    <li><a href="#pour-le-ds"><span class="n">✓</span>Pour le DS, je sais</a></li>
+  </ol>
+</details>
+
+<p class="fil-ariane">Physique-Chimie · <span class="niveau">NIVEAU</span> · Thème X — INTITULÉ DU THÈME</p>
+<h1>TITRE DU CHAPITRE</h1>
+<p class="sous-titre">Thème X · Chapitre Y — cours &amp; exercices corrigés</p>
+
+<!-- ================================================================
+     SECTION MODÈLE — dupliquer ce bloc pour chaque section du cours.
+     Contenu = TEXTE FIDÈLE de la source (PPTX/PDF), pas de réécriture.
+     ================================================================ -->
+<h2 id="ancre-1"><span class="num">01</span> Titre section 1</h2>
+
+<p>Paragraphe de cours fidèle à la source…</p>
+<ul class="cours">
+  <li>Élément de liste si la source en contient…</li>
+</ul>
+
+<!-- Définition importante → encadré : -->
+<div class="definition">
+  <p>Une <strong>notion</strong> est …</p>
+</div>
+
+<!-- Vidéos de la section (QR codes décodés) → pastilles compactes : -->
+<div class="videos">
+  <a class="video-chip" href="URL_YOUTUBE_SANS_?si=" target="_blank" rel="noopener">▶ Réviser en vidéo — Sujet ↗</a>
+</div>
+
+<!-- PHOTO réelle (conservée depuis la source, ≤900px, dans assets/img/SLUG/) : -->
+<figure class="fig-etroite">
+  <img class="photo" src="../assets/img/SLUG/nom-image.jpg" alt="Description précise" loading="lazy">
+  <figcaption>Image N — Légende fidèle à la source.</figcaption>
+</figure>
+
+<!-- SCHÉMA/GRAPHIQUE/CLIPART → SVG maison inline dans la charte
+     (voir CONSIGNES §4 : couleurs, polices, exemples dans la page chap. 1).
+     Plusieurs figures côte à côte : les envelopper dans <div class="fig-row">. -->
+
+<!-- Exercice avec correction dépliable : -->
+<div class="exercice">
+  <div class="etiquette">Exercice N — intitulé éventuel</div>
+  <p>Énoncé fidèle…</p>
+  <p class="donnees">Données : … (si la source en donne)</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p>Correction complète, calculs VÉRIFIÉS À LA MAIN.
+    Fractions : <span class="frac"><span class="haut">m</span><span class="bas">V</span></span></p>
+  </details>
+</div>
+<!-- ============================ fin section modèle ============== -->
+
+<!-- ================= CHECKLIST FINALE ================= -->
+<section class="checklist" id="pour-le-ds">
+  <h2><span class="num">✓</span> Pour le DS, je sais :</h2>
+  <ol id="liste-ds">
+    <!-- ⚠ ids ds1, ds2, … ; refs = ancres de sections + exercices du manuel -->
+    <li><input type="checkbox" id="ds1"><label for="ds1">Compétence 1 (texte de la source)…</label><span class="refs"><a href="#ancre-1">01</a> · man. X p.Y</span></li>
+  </ol>
+  <div class="videos" style="margin:1rem 0 0;">
+    <a class="video-chip" href="URL_KAHOOT" target="_blank" rel="noopener">🎯 Kahoot bilan du chapitre ↗</a>
+    <a class="video-chip" href="URL_DS_SHAREPOINT" target="_blank" rel="noopener">📄 DS (corrigé) ↗</a>
+  </div>
+</section>
+
+</article>
+</div>
+
+<button id="haut" type="button" aria-label="Revenir en haut de page">↑ haut</button>
+
+<footer>
+  <div class="footer-inner">© ANNÉE · M. Van Hoorde — Physique-Chimie · NIVEAU · Thème X, Chapitre Y</div>
+</footer>
+
+<script>
+(function(){
+  var barre = document.querySelector('#lecture .fait');
+  var btn = document.getElementById('haut');
+  function maj(){
+    var h = document.documentElement;
+    var pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    barre.style.width = (pct || 0) + '%';
+    btn.classList.toggle('visible', h.scrollTop > 600);
+  }
+  document.addEventListener('scroll', maj, {passive:true});
+  btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  maj();
+
+  /* Sommaire : surligner la section en cours de lecture (calcul à la position) */
+  var liens = {};
+  document.querySelectorAll('#toc a').forEach(function(a){
+    liens[a.getAttribute('href').slice(1)] = a;
+  });
+  var cibles = Array.prototype.slice.call(document.querySelectorAll('h2[id], section[id]'));
+  function majToc(){
+    var repere = window.scrollY + window.innerHeight * 0.25;
+    var courant = null;
+    cibles.forEach(function(c){ if (c.offsetTop <= repere) courant = c; });
+    Object.keys(liens).forEach(function(k){ liens[k].classList.remove('actif'); });
+    if (courant && liens[courant.id]) liens[courant.id].classList.add('actif');
+  }
+  document.addEventListener('scroll', majToc, {passive:true});
+  majToc();
+
+  /* Checklist « Pour le DS » : cases persistées sur l'appareil */
+  var CLE = 'cours-SLUG-checklist' /* ⚠ REMPLACER SLUG (ex: 2nde-t1c2) */;
+  var boites = document.querySelectorAll('#liste-ds input[type="checkbox"]');
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE)) || {}; } catch(e) {}
+  boites.forEach(function(b){
+    if (etat[b.id]) b.checked = true;
+    b.addEventListener('change', function(){
+      etat[b.id] = b.checked;
+      try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch(e) {}
+    });
+  });
+})();
+</script>
+
+<script>
+/* ============================================================
+   Verrou de fin de chapitre — v1 (porte à code)
+   · Le code n'est jamais écrit ici : seule son EMPREINTE SHA-256
+     est stockée. Pour changer de code, recalculer l'empreinte.
+   · Déblocage mémorisé sur l'appareil (localStorage).
+   · Pour re-verrouiller (tests) : ouvrir la page avec ?verrou=1
+   · Limite assumée de la v1 : le contenu est présent dans la page,
+     un élève outillé peut le lire via les outils de développement.
+     La protection forte reste : publier la page au bon moment.
+   ============================================================ */
+(function(){
+  var EMPREINTE = 'EMPREINTE_SHA256_A_REMPLACER' /* ⚠ empreinte du code fourni par Loïc : python3 -c "import hashlib;print(hashlib.sha256('CODE6C'.encode()).hexdigest())" */;
+  var CLE = 'deblocage-SLUG' /* ⚠ REMPLACER SLUG */;
+
+  function deverrouiller(){
+    document.body.classList.remove('verrouille');
+    var porte = document.getElementById('porte');
+    if (porte) porte.remove();
+    window.scrollTo(0, 0);
+  }
+
+  /* re-verrouillage volontaire pour les tests : ?verrou=1 */
+  try {
+    if (new URLSearchParams(location.search).has('verrou')) {
+      localStorage.removeItem(CLE);
+    }
+  } catch(e) {}
+
+  /* déjà débloqué sur cet appareil ? */
+  try {
+    if (localStorage.getItem(CLE) === '1') { deverrouiller(); return; }
+  } catch(e) {}
+
+  var forme = document.getElementById('forme-code');
+  var champ = document.getElementById('champ-code');
+  var erreur = document.getElementById('erreur-code');
+
+  function empreinteHex(texte){
+    var donnees = new TextEncoder().encode(texte);
+    return crypto.subtle.digest('SHA-256', donnees).then(function(tampon){
+      return Array.prototype.map.call(new Uint8Array(tampon), function(o){
+        return o.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  forme.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var essai = (champ.value || '').trim().toUpperCase();
+    if (essai.length !== 6) {
+      erreur.textContent = 'Le code fait 6 caractères (lettres et chiffres).';
+      return;
+    }
+    if (!(window.crypto && crypto.subtle)) {
+      erreur.textContent = 'Navigateur incompatible — ouvre la page depuis le site.';
+      return;
+    }
+    empreinteHex(essai).then(function(h){
+      if (h === EMPREINTE) {
+        try { localStorage.setItem(CLE, '1'); } catch(e) {}
+        deverrouiller();
+      } else {
+        erreur.textContent = 'Code incorrect. Vérifie le cahier de textes !';
+        champ.select();
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
