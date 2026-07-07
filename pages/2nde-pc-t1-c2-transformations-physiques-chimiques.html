@@ -58,9 +58,9 @@
   h2 { font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2.8rem 0 1rem;
     display:flex; align-items:baseline; gap:.8rem; scroll-margin-top:2rem; }
   h2 .num { font-family:'IBM Plex Mono',monospace; font-size:.9rem; color:var(--h-beta); }
-  p { margin-bottom:.9rem; max-width:70ch; }
+  p { margin-bottom:.9rem; max-width:75ch; text-align:justify; hyphens:auto; }
   strong { font-weight:600; }
-  ul.cours { max-width:70ch; margin:0 0 .9rem 1.2rem; }
+  ul.cours { max-width:75ch; margin:0 0 .9rem 1.2rem; text-align:justify; }
   ul.cours li { margin-bottom:.5rem; }
   .nb { white-space:nowrap; }
   sub, sup { font-size:.68em; }
@@ -79,7 +79,7 @@
     font-weight:600; color:#0f6b76; }
   .propriete { border-left:4px solid var(--h-gamma); }
   .propriete .etq { color:var(--h-gamma); }
-  .exemple { border-left:4px solid var(--vert); background:#fff; max-width:74ch; }
+  .exemple { border-left:4px solid var(--vert); background:#fff; max-width:none; }
   .exemple .etq { color:var(--vert-fonce); }
   .exemple .duo-e { display:grid; grid-template-columns:220px 1fr; gap:1.2rem; align-items:center; }
   .exemple img { width:100%; border:1px solid var(--encre); border-radius:6px; }
@@ -97,7 +97,7 @@
   figure .a-noter { top:-.4rem; right:-.2rem; }
 
   /* Encart Formule (variante C validée) */
-  .formule-bloc { margin:1.4rem 0; max-width:60ch; border:1px solid var(--encre); border-radius:12px;
+  .formule-bloc { margin:1.4rem auto; max-width:60ch; border:1px solid var(--encre); border-radius:12px;
     background:#fff; box-shadow:4px 4px 0 rgba(74,63,158,.18);
     display:grid; grid-template-columns:auto minmax(0,1fr); position:relative; }
   .formule-bloc .eq { background:var(--encre); color:var(--papier); font-family:'Spectral',serif;
@@ -136,7 +136,7 @@
 
   /* Encart Histoire des sciences */
   .histoire { border:1.5px solid var(--sepia); outline:1px solid var(--sepia); outline-offset:3px;
-    background:#f8f2e2; padding:1.2rem 1.4rem; margin:1.8rem 3px; max-width:74ch; }
+    background:#f8f2e2; padding:1.2rem 1.4rem; margin:1.8rem 3px; }
   .histoire .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.18em;
     text-transform:uppercase; color:var(--sepia); text-align:center; margin-bottom:.8rem; }
   .histoire .etq::before, .histoire .etq::after { content:"❦"; margin:0 .6rem; }
@@ -152,7 +152,7 @@
 
   /* Encart Synthèse de TP (sobre) */
   .synthese-tp { border:1px dashed var(--gris); border-radius:10px; background:#fff;
-    padding:1.1rem 1.4rem; margin:1.6rem 0; max-width:78ch; }
+    padding:1.1rem 1.4rem; margin:1.6rem 0; }
   .synthese-tp .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
     text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
   .synthese-tp .contexte { font-size:.92rem; color:var(--gris); font-style:italic; margin-bottom:.8rem; }
@@ -198,7 +198,7 @@
 
   /* ===== Exercices (structure normalisée) ===== */
   .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
-    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0; max-width:78ch;
+    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0;
     background:#fdfdfb; }
   .exercice .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.75rem;
     text-transform:uppercase; letter-spacing:.1em; color:var(--h-alpha); margin-bottom:.5rem; }
@@ -226,6 +226,7 @@
   .frac .haut { display:block; border-bottom:1.5px solid var(--encre); padding:0 .3em .1em; }
   .frac .bas { display:block; padding:.1em .3em 0; }
   .unites { font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); }
+  .exercice p, .encart.exemple p, .histoire p, .synthese-tp p { max-width:none; }
   .aparte { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris);
     border-left:2px solid var(--grille); padding-left:.7rem; margin:.6rem 0; }
 
@@ -250,6 +251,18 @@
   #haut.visible { opacity:1; pointer-events:auto; }
   #haut:hover { background:var(--h-beta); color:#fff; }
 
+  details.partie { border-top:3px solid var(--encre); margin-top:2.4rem; }
+  details.partie > summary { list-style:none; cursor:pointer; }
+  details.partie > summary::-webkit-details-marker { display:none; }
+  details.partie > summary h2 { margin:1.1rem 0 1rem; }
+  details.partie > summary h2::after { content:"▾"; margin-left:auto; font-family:'IBM Plex Mono',monospace;
+    font-size:1rem; color:var(--gris); transition:transform .15s; }
+  details.partie:not([open]) > summary h2::after { content:"▸"; }
+  details.partie > summary:hover h2::after { color:var(--h-beta); }
+  .signature { text-align:right; font-family:'Space Grotesk',sans-serif; font-weight:600;
+    margin:2.4rem 0 0; }
+  .signature span { display:block; font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    color:var(--gris); font-weight:400; }
   details.toc-mobile { display:none; }
   footer { border-top:1px solid var(--encre); margin-top:2rem; }
   .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
@@ -370,7 +383,9 @@
 <h1>Transformations physiques et chimiques</h1>
 <p class="sous-titre">Thème 1 · Chapitre 2 — cours &amp; exercices corrigés</p>
 
-<h2 id="ancre-1"><span class="num">01</span> Physique ou chimique ?</h2>
+<details class="partie" open>
+<summary><h2 id="ancre-1"><span class="num">01</span> Physique ou chimique ?</h2></summary>
+<div class="partie-corps">
 
 <div class="encart definition">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
@@ -426,7 +441,12 @@
   </details>
 </div>
 
-<h2 id="ancre-2"><span class="num">02</span> Effet thermique des transformations</h2>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-2"><span class="num">02</span> Effet thermique des transformations</h2></summary>
+<div class="partie-corps">
 
 <div class="encart definition">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
@@ -482,10 +502,10 @@
     <img src="../assets/img/2nde-t1c2/t1c2-bougie-effet-thermique.jpg" alt="Bougie allumée tenue entre deux mains" loading="lazy">
     <div>
       <p>Le combustible de la bougie est la paraffine, de formule brute <span class="nb">C<sub>18</sub>H<sub>36</sub>O<sub>2</sub></span>, qui brûle dans l'air à l'aide du comburant dioxygène <span class="nb">O<sub>2</sub></span>. Les produits formés sont le dioxyde de carbone <span class="nb">CO<sub>2</sub></span> et l'eau <span class="nb">H<sub>2</sub>O</span>.</p>
-      <p class="eq-ligne">C<sub>18</sub>H<sub>36</sub>O<sub>2 (s)</sub> + 26 O<sub>2 (g)</sub> → 18 CO<sub>2 (g)</sub> + 26 H<sub>2</sub>O<sub>(l)</sub></p>
-      <p>Cette réaction produit de la chaleur : c'est une réaction exothermique.</p>
     </div>
   </div>
+  <p class="eq-ligne">C<sub>18</sub>H<sub>36</sub>O<sub>2 (s)</sub> + 26 O<sub>2 (g)</sub> → 18 CO<sub>2 (g)</sub> + 26 H<sub>2</sub>O<sub>(l)</sub></p>
+  <p>Cette réaction produit de la chaleur : c'est une réaction exothermique.</p>
 </div>
 
 <p>Autres exemples :</p>
@@ -498,7 +518,12 @@
   <a class="video-chip" href="https://www.youtube.com/watch?v=PT69dkr1B00" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
 </div>
 
-<h2 id="ancre-3"><span class="num">03</span> États et changements d'état</h2>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-3"><span class="num">03</span> États et changements d'état</h2></summary>
+<div class="partie-corps">
 
 <p>Dans les conditions de température et de pression à la surface de la Terre, on distingue principalement <strong>trois états de la matière</strong> :</p>
 <ul class="cours">
@@ -647,10 +672,12 @@
     <line x1="334" y1="199.5" x2="502" y2="199.5" stroke="#1d9aaa" stroke-width="5" opacity=".18"/>
     <polyline points="70,36.3 94,52.6 118,68.9 142,85.3 166,101.6 190,117.9 214,134.2 238,150.5 262,166.8 286,183.2 310,191.3 334,199.5 358,199.5 382,199.5 406,199.5 430,199.5 454,199.5 478,199.5 502,199.5 526,207.6 550,215.8 574,223.9 598,240.3 622,248.4 646,256.6 670,272.9" fill="none" stroke="#1d9aaa" stroke-width="2.2"/>
     <polyline points="70,68.9 94,112.2 118,153.0 142,195.4 166,223.9 190,229.7 214,235.4 238,241.1 262,246.8 286,280.2 310,317.8" fill="none" stroke="#d6402b" stroke-width="2.2"/>
-    <circle cx="418" cy="199.5" r="7" fill="none" stroke="#1d9aaa" stroke-width="1.8"/>
-    <text x="418" y="185" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#1d9aaa" font-weight="600">①</text>
-    <circle cx="166" cy="223.9" r="7" fill="none" stroke="#d6402b" stroke-width="1.8"/>
-    <text x="150" y="215" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#d6402b" font-weight="600">②</text>
+    <circle cx="418" cy="199.5" r="8" fill="none" stroke="#1d9aaa" stroke-width="1.8"/>
+    <line x1="418" y1="190" x2="418" y2="172" stroke="#1d9aaa" stroke-width="1"/>
+    <text x="418" y="162" text-anchor="middle" font-family="IBM Plex Mono" font-size="17" fill="#1d9aaa" font-weight="700">①</text>
+    <circle cx="166" cy="223.9" r="8" fill="none" stroke="#d6402b" stroke-width="1.8"/>
+    <line x1="158" y1="230" x2="132" y2="256" stroke="#d6402b" stroke-width="1"/>
+    <text x="120" y="274" text-anchor="middle" font-family="IBM Plex Mono" font-size="17" fill="#d6402b" font-weight="700">②</text>
     <line x1="440" y1="60" x2="470" y2="60" stroke="#1d9aaa" stroke-width="2.2"/>
     <text x="476" y="64" font-family="IBM Plex Mono" font-size="11">eau distillée (corps pur)</text>
     <line x1="440" y1="80" x2="470" y2="80" stroke="#d6402b" stroke-width="2.2"/>
@@ -678,7 +705,12 @@
   <a class="video-chip" href="https://www.youtube.com/watch?v=irFQ30SCsIM" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
 </div>
 
-<h2 id="ancre-4"><span class="num">04</span> Équation d'un changement d'état</h2>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-4"><span class="num">04</span> Équation d'un changement d'état</h2></summary>
+<div class="partie-corps">
 
 <div class="encart propriete">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
@@ -719,7 +751,12 @@
   <a class="video-chip" href="https://www.youtube.com/watch?v=T4G5EcJKeiE" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
 </div>
 
-<h2 id="ancre-5"><span class="num">05</span> Énergie de changement d'état</h2>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-5"><span class="num">05</span> Énergie de changement d'état</h2></summary>
+<div class="partie-corps">
 
 <div class="encart definition">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
@@ -770,17 +807,17 @@
       <path d="M542,129 L554,121"/><path d="M604,141 L592,131"/><path d="M570,185 L582,194"/><path d="M530,198 L540,189"/>
     </g>
     <path d="M205,150 L275,150" fill="none" stroke="#1d9aaa" stroke-width="2.2" marker-end="url(#e3)"/>
-    <text x="240" y="142" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#1d9aaa">fusion</text>
+    <text x="240" y="140" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#1d9aaa" paint-order="stroke" stroke="#fff" stroke-width="6" stroke-linejoin="round">fusion</text>
     <path d="M425,150 L495,150" fill="none" stroke="#1d9aaa" stroke-width="2.2" marker-end="url(#e3)"/>
-    <text x="460" y="142" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#1d9aaa">vaporisation</text>
+    <text x="460" y="140" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#1d9aaa" paint-order="stroke" stroke="#fff" stroke-width="6" stroke-linejoin="round">vaporisation</text>
     <path d="M130,82 Q350,32 564,82" fill="none" stroke="#1d9aaa" stroke-width="2.2" stroke-dasharray="5 4" marker-end="url(#e3)"/>
-    <text x="350" y="48" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#1d9aaa">sublimation</text>
+    <text x="350" y="42" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#1d9aaa" paint-order="stroke" stroke="#fff" stroke-width="6" stroke-linejoin="round">sublimation</text>
     <path d="M495,180 L425,180" fill="none" stroke="#d6402b" stroke-width="2.2" marker-end="url(#x3)"/>
-    <text x="460" y="196" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#d6402b">liquéfaction</text>
+    <text x="460" y="198" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#d6402b" paint-order="stroke" stroke="#fff" stroke-width="6" stroke-linejoin="round">liquéfaction</text>
     <path d="M275,180 L205,180" fill="none" stroke="#d6402b" stroke-width="2.2" marker-end="url(#x3)"/>
-    <text x="240" y="196" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#d6402b">solidification</text>
+    <text x="240" y="198" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#d6402b" paint-order="stroke" stroke="#fff" stroke-width="6" stroke-linejoin="round">solidification</text>
     <path d="M570,248 Q350,298 136,248" fill="none" stroke="#d6402b" stroke-width="2.2" stroke-dasharray="5 4" marker-end="url(#x3)"/>
-    <text x="350" y="284" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#d6402b">condensation</text>
+    <text x="350" y="292" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#d6402b" paint-order="stroke" stroke="#fff" stroke-width="6" stroke-linejoin="round">condensation</text>
     <text x="350" y="312" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="#d6402b">exothermiques · L &lt; 0 · la matière libère de l'énergie</text>
   </svg>
   <figcaption>Image 4 — Pour passer d'un état condensé (liaisons fortes) vers un état où les liaisons sont faibles ou inexistantes, la matière prend de l'énergie au milieu extérieur, et vice versa.</figcaption>
@@ -867,7 +904,12 @@
   <a class="video-chip" href="https://www.youtube.com/watch?v=AxxT6HMsHpQ" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
 </div>
 
-<h2 id="ancre-6"><span class="num">06</span> Système chimique et transformation chimique</h2>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-6"><span class="num">06</span> Système chimique et transformation chimique</h2></summary>
+<div class="partie-corps">
 
 <div class="notation">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
@@ -941,7 +983,12 @@
   </div>
 </div>
 
-<h2 id="ancre-7"><span class="num">07</span> Équation de réaction et stœchiométrie</h2>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-7"><span class="num">07</span> Équation de réaction et stœchiométrie</h2></summary>
+<div class="partie-corps">
 
 <div class="encart definition">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
@@ -1080,7 +1127,12 @@
   </details>
 </div>
 
-<h2 id="ancre-8"><span class="num">08</span> Réactif limitant</h2>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-8"><span class="num">08</span> Réactif limitant</h2></summary>
+<div class="partie-corps">
 
 <div class="encart definition">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
@@ -1141,6 +1193,9 @@
   <a class="video-chip" href="https://www.youtube.com/watch?v=6k7QyJ0WRbg" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
 </div>
 
+</div>
+</details>
+
 <!-- ================= CHECKLIST FINALE ================= -->
 <section class="checklist" id="pour-le-ds">
   <h2><span class="num">✓</span> Pour le DS, je sais :</h2>
@@ -1160,6 +1215,8 @@
     <a class="video-chip" href="https://isaacetoile-my.sharepoint.com/:b:/g/personal/l_vanhoorde_enseignant_isaac-etoile_fr/EcwJ4BTdXjRBn8Q1VFXwOlABKPT1Xz7-gS1qhRbgAn4BAg?e=OmcdnZ" target="_blank" rel="noopener">📄 DS 2024-2025 (corrigé) ↗</a>
   </div>
 </section>
+
+<p class="signature">M. Van Hoorde<span>Lycée général Isaac de l'Étoile · Poitiers</span></p>
 
 </article>
 </div>
@@ -1198,6 +1255,16 @@
   }
   document.addEventListener('scroll', majToc, {passive:true});
   majToc();
+
+  /* Sections repliables : un clic dans un sommaire ouvre la section visée */
+  document.querySelectorAll('#toc a, details.toc-mobile a').forEach(function(a){
+    a.addEventListener('click', function(){
+      var cible = document.querySelector(a.getAttribute('href'));
+      if (!cible) return;
+      var partie = cible.closest('details.partie');
+      if (partie) partie.open = true;
+    });
+  });
 
   var CLE = 'cours-2nde-t1c2-checklist';
   var boites = document.querySelectorAll('#liste-ds input[type="checkbox"]');

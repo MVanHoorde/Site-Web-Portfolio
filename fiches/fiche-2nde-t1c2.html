@@ -8,17 +8,16 @@
   :root {
     --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
     --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e; --gris:#6b6f7a;
+    --or-fonce:#b28a1d; --vert-fonce:#4c8a58;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { background:#9aa0ab; }
   body { font-family:'Spectral', Georgia, serif; color:var(--encre);
          font-size:10.5pt; line-height:1.5; }
-
-  .feuille {
-    width:210mm; min-height:297mm; margin:8mm auto; padding:10mm 13mm 16mm;
-    background:var(--papier); position:relative;
-    box-shadow:0 2px 14px rgba(0,0,0,.28);
-  }
+  .feuille { width:210mm; min-height:297mm; margin:8mm auto; padding:10mm 13mm 16mm;
+    background:var(--papier); position:relative; box-shadow:0 2px 14px rgba(0,0,0,.28);
+    display:flex; flex-direction:column; }
+  .feuille .corps { flex:1; }
   @page { size:A4; margin:0; }
   @media print {
     html, body { background:#fff; }
@@ -26,299 +25,577 @@
                page-break-after:always; }
     .feuille:last-child { page-break-after:auto; }
   }
-
   .bande { height:3.5px; background:var(--encre); position:relative; margin-bottom:3.5mm; }
   .bande i { position:absolute; top:0; bottom:0; width:3px; }
   .bande i:nth-child(1){ left:18%; background:var(--h-gamma); }
   .bande i:nth-child(2){ left:31%; background:var(--h-beta); }
   .bande i:nth-child(3){ left:76%; background:var(--h-alpha); }
-
   h1 { font-family:'Space Grotesk',sans-serif; font-size:13.5pt; line-height:1.15; }
-  .sous { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--gris);
-          margin:1mm 0 2mm; }
+  .sous { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--gris); margin:1mm 0 2mm; }
   .sous .rouge { color:var(--h-alpha); }
-  .idligne { font-family:'IBM Plex Mono',monospace; font-size:8.5pt; color:var(--encre);
+  .idligne { font-family:'IBM Plex Mono',monospace; font-size:8.5pt;
     display:flex; gap:3mm; align-items:baseline; margin-bottom:3.5mm; }
   .idligne .trou { border-bottom:1.3px dotted var(--encre); }
   .idligne .etire { flex:1; }
 
-  .corps { display:grid; grid-template-columns:minmax(0,1fr) 42mm; column-gap:5mm;
-           align-items:stretch; }
+  .corps { display:grid; grid-template-columns:minmax(0,1fr) 40mm; column-gap:5mm; align-items:stretch; }
   .principal { min-width:0; }
-  aside.marge-notes { border-left:1px dashed var(--gris); padding-left:3mm;
-    display:flex; flex-direction:column; }
+  aside.marge-notes { border-left:1px dashed var(--gris); padding-left:3mm; display:flex; flex-direction:column; }
   aside.marge-notes .etq-notes { font-family:'IBM Plex Mono',monospace; font-size:7pt;
     letter-spacing:.12em; text-transform:uppercase; color:var(--gris); margin-bottom:1.5mm; }
   aside.marge-notes .zone { flex:1; min-height:30mm;
     background:repeating-linear-gradient(to bottom, transparent, transparent 7mm,
       var(--grille) 7mm, var(--grille) 7.2mm); }
 
-  .pleine-largeur { margin-top:3mm; }
-
-  h2 { font-family:'Space Grotesk',sans-serif; font-size:11pt; margin:3.5mm 0 1.8mm;
-       display:flex; align-items:baseline; gap:2.5mm; }
+  /* Délimitation FORTE de chaque partie + champ date */
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:11.5pt; margin:4mm 0 2mm;
+       display:flex; align-items:baseline; gap:2.5mm;
+       border-top:2.5px solid var(--encre); padding-top:2mm; }
   h2 .n { font-family:'IBM Plex Mono',monospace; font-size:8pt; color:var(--h-beta); }
+  h2 .date-sec { margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:7.6pt;
+    font-weight:400; color:var(--gris); }
+  h2 .date-sec i { display:inline-block; width:22mm; border-bottom:1.2px dotted var(--encre); height:1em; vertical-align:-1px; }
   .principal h2:first-child { margin-top:0; }
+  .suite { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--gris);
+    letter-spacing:.1em; text-transform:uppercase; margin:0 0 2mm;
+    border-top:2.5px solid var(--encre); padding-top:2mm; }
+  .suite .n { color:var(--h-beta); }
 
-  p { margin-bottom:1.4mm; }
+  p { margin-bottom:1.4mm; text-align:justify; }
+  sub, sup { font-size:.68em; }
   .trou { display:inline-block; border-bottom:1.3px dotted var(--encre);
           min-width:24mm; height:1.05em; vertical-align:-1px; }
   .trou.court { min-width:14mm; } .trou.long { min-width:46mm; }
-  .ligne { display:block; border-bottom:1.3px dotted var(--encre); height:6mm; }
-  .ligne.demi { display:inline-block; height:1.05em; vertical-align:-1px; }
+  .ligne { display:block; border-bottom:1.3px dotted var(--encre); height:6.4mm; }
 
-  .encadre { border:1.1px solid var(--encre); border-left:3px solid var(--h-beta);
-             padding:2mm 3mm 2.2mm; margin:1.8mm 0 2.4mm; background:#fff; }
-  .encadre.exo { border-left-color:var(--h-alpha); }
-  .etq { font-family:'IBM Plex Mono',monospace; font-size:7.3pt; letter-spacing:.08em;
-         text-transform:uppercase; color:var(--h-alpha); margin-bottom:1mm; }
-  .etq.bleue { color:var(--h-beta); }
+  /* Encarts (miroir des composants du cours, sans crayon) */
+  .encart { border:1px solid var(--encre); border-radius:0 2mm 2mm 0;
+    padding:2mm 3mm 2.2mm; margin:1.8mm 0 2.6mm; background:#fff; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:7.3pt; letter-spacing:.08em;
+    text-transform:uppercase; margin-bottom:1mm; }
+  .definition { border-left:3px solid var(--h-beta); }
+  .definition .etq { color:var(--h-beta); }
+  .definition .partie-def { font-family:'Space Grotesk',sans-serif; font-size:8.8pt;
+    font-weight:600; margin:1.4mm 0 .4mm; }
+  .propriete { border-left:3px solid var(--h-gamma); }
+  .propriete .etq { color:var(--h-gamma); }
+  .exercice-f { border-left:3px solid var(--h-alpha); background:#fdfdfb; }
+  .exercice-f .etq { color:var(--h-alpha); }
+  .methode-f { border-left:3px solid #f0cf6e; background:#fffdf4; }
+  .methode-f .etq { color:var(--or-fonce); }
+  .methode-f ol { list-style:none; counter-reset:met; margin:0 0 0 1mm; }
+  .methode-f li { counter-increment:met; display:grid; grid-template-columns:7mm 1fr;
+    gap:1.5mm; margin-bottom:1mm; align-items:baseline; }
+  .methode-f li::before { content:counter(met,upper-roman) "."; font-family:'IBM Plex Mono',monospace;
+    font-weight:600; color:var(--or-fonce); text-align:right; }
+
+  /* Cadre formule sobre : formule à gauche, grandeurs & unités à droite */
+  .formule-s { border:1px solid var(--encre); border-radius:2.5mm; display:grid;
+    grid-template-columns:1fr 1.2fr; margin:2mm 0 2.6mm; background:#fff; }
+  .formule-s .eq { font-family:'Spectral',serif; font-style:italic; font-size:13pt;
+    display:flex; align-items:center; justify-content:center; gap:2mm; padding:3mm;
+    border-right:1px dashed var(--grille); }
+  .formule-s .grandeurs { padding:2mm 3mm; }
+  .formule-s .grandeurs .etq { font-family:'IBM Plex Mono',monospace; font-size:7.3pt;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--gris); margin-bottom:1mm; }
+  .boite { display:inline-block; width:9mm; height:6.4mm; border:1.2px solid var(--encre);
+           border-radius:1mm; vertical-align:middle; }
+  .boite.pt { width:6.5mm; height:5.4mm; }
 
   table.t { border-collapse:collapse; width:100%; font-size:9pt; }
   table.t th, table.t td { border:1px solid var(--encre); padding:1.2mm 2mm; text-align:center; }
   table.t th { font-family:'Space Grotesk',sans-serif; font-size:8pt; background:var(--papier); }
-  td.vide { height:10mm; }
+  td.vide { height:11mm; }
 
   .lignes { background:repeating-linear-gradient(to bottom, transparent, transparent 6.8mm,
             var(--grille) 6.8mm, var(--grille) 7mm); }
-  .calc { border:1px dashed var(--gris); border-radius:2px; margin-top:1mm; }
+  .calc { border:1px dashed var(--gris); border-radius:1mm; margin-top:1mm; }
 
-  .formule-vide { font-family:'Spectral',serif; font-style:italic; font-size:11.5pt;
-    display:flex; align-items:center; justify-content:center; gap:2.5mm; padding:1.6mm 0; }
-  .boite { display:inline-block; width:10mm; height:6.5mm; border:1.2px solid var(--encre);
-           border-radius:1.5px; vertical-align:middle; }
-  .fracv { display:inline-flex; flex-direction:column; align-items:center; gap:1mm; }
-  .fracv .b { border-bottom:1.4px solid var(--encre); padding-bottom:1mm; }
+  .eq-c { font-family:'Spectral',serif; font-style:italic; font-size:11.5pt;
+    text-align:center; margin:1.6mm 0; }
+  .eq-c sub, .eq-c sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.58em; }
   .mini { font-family:'IBM Plex Mono',monospace; font-size:7.3pt; color:var(--gris); }
-
+  .question-f { font-style:italic; font-size:9.3pt; }
   svg { display:block; }
-  .schema-muet { border:1px dashed var(--gris); border-radius:6px; padding:2mm; margin:1.8mm 0; background:#fff; }
+  .schema { border:1px solid var(--grille); border-radius:2mm; padding:2mm; margin:1.8mm 0; background:#fff; }
+  .schema .legende { font-family:'IBM Plex Mono',monospace; font-size:7.3pt; color:var(--gris);
+    margin-top:1mm; line-height:1.5; text-align:justify; }
   .pied { position:absolute; bottom:6mm; left:13mm; right:13mm;
           display:flex; justify-content:space-between;
           font-family:'IBM Plex Mono',monospace; font-size:7pt; color:var(--gris); }
-
   .deblocage { border:1.4px solid var(--encre); border-left:4px solid var(--h-gamma);
-    padding:3mm 3.5mm; display:flex; align-items:center; gap:4mm; flex-wrap:wrap; }
+    border-radius:0 2mm 2mm 0; padding:3mm 3.5mm; display:flex; align-items:center;
+    gap:4mm; flex-wrap:wrap; background:#fff; }
   .deblocage .cases { display:flex; gap:1.5mm; }
-  .deblocage .cases i { width:7mm; height:8mm; border:1.2px solid var(--encre);
-    border-radius:1.5px; display:block; }
+  .deblocage .cases i { width:7mm; height:8mm; border:1.2px solid var(--encre); border-radius:1mm; display:block; }
 </style>
 </head>
 <body>
 
-<!-- ================= FEUILLE 1/6 — RECTO ================= -->
+<!-- ================= PAGE 1/10 ================= -->
 <div class="feuille">
   <div class="bande"><i></i><i></i><i></i></div>
   <h1>Thème 1 · Chapitre 2 — Transformations physiques et chimiques</h1>
-  <p class="sous">Physique-Chimie · <span class="rouge">Seconde générale</span> · fiche d'accompagnement — à compléter en classe · M. Van Hoorde</p>
-  <div class="idligne"><b>Nom</b><span class="trou etire"></span><b>Prénom</b><span class="trou etire"></span><b>Classe</b><span class="trou" style="min-width:16mm;"></span><b>Date</b><span class="trou" style="min-width:22mm;"></span></div>
+  <p class="sous">Physique-Chimie · <span class="rouge">Seconde générale</span> · fiche de cours — à compléter en classe · M. Van Hoorde</p>
+  <div class="idligne"><b>Nom</b><span class="trou etire"></span><b>Prénom</b><span class="trou etire"></span><b>Classe</b><span class="trou" style="min-width:16mm;"></span></div>
 
   <div class="corps">
     <div class="principal">
-      <h2><span class="n">01</span> Physique ou chimique ?</h2>
-      <div class="encadre">
-        <p style="margin-bottom:1mm;">Une <strong>transformation physique</strong> est une transformation au cours de laquelle la matière change d'<span class="trou court"></span>, de <span class="trou court"></span>, d'<span class="trou court"></span> mais les <span class="trou"></span> ne changent pas.</p>
-        <p>Une <strong>transformation chimique</strong> est une transformation au cours de laquelle certaines <span class="trou"></span> disparaissent et d'autres <span class="trou court"></span>. Les espèces chimiques sont <span class="trou court"></span>.</p>
+      <h2><span class="n">01</span> Physique ou chimique ?<span class="date-sec">date : <i></i></span></h2>
+      <div class="encart definition">
+        <div class="etq">Définition — Transformation physique</div>
+        <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
       </div>
-      <div class="encadre exo">
-        <div class="etq">Exercice 1 — physique ou chimique ?</div>
-        <p style="font-size:9.3pt;">Classer : flamme d'un briquet · formation de la rosée · dissolution de sucre dans le café · récolte de sel dans un marais salant · détartrage d'une bouilloire · feux d'artifice.</p>
+      <div class="encart definition">
+        <div class="etq">Définition — Transformation chimique</div>
+        <span class="ligne"></span><span class="ligne"></span>
+      </div>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 1 — Transformation physique ou chimique ?</div>
+        <p class="question-f">Classer les neuf situations : a) flamme d'un briquet · b) rosée · c) dissolution de sucre dans le café · d) récolte de sel dans un marais salant · e) infusion de thé · f) formation du vin · g) détartrage d'une bouilloire · h) canon à neige · i) feux d'artifice.</p>
         <table class="t" style="margin-top:1.2mm;">
-          <thead><tr><th>Transformation physique</th><th>Transformation chimique</th></tr></thead>
+          <thead><tr><th>Transformations physiques</th><th>Transformations chimiques</th></tr></thead>
           <tbody><tr><td class="vide"></td><td class="vide"></td></tr></tbody>
         </table>
       </div>
 
-      <h2><span class="n">02</span> Effet thermique des transformations</h2>
-      <div class="encadre">
-        <p>Une transformation qui <span class="trou"></span> de l'énergie sous forme de chaleur est appelée réaction <strong>&nbsp;................................&nbsp;</strong>.</p>
-        <p>Une transformation qui <span class="trou"></span> de la chaleur au milieu extérieur est appelée réaction <strong>&nbsp;................................&nbsp;</strong>.</p>
+      <h2><span class="n">02</span> Effet thermique des transformations<span class="date-sec">date : <i></i></span></h2>
+      <div class="encart definition">
+        <div class="etq">Définition — Réaction exothermique</div>
+        <span class="ligne"></span><span class="ligne"></span>
       </div>
-      <div class="encadre exo">
-        <div class="etq">Combustion de la bougie (paraffine C₁₈H₃₆O₂)</div>
-        <div class="formule-vide">C₁₈H₃₆O₂<sub>(s)</sub> + <span class="boite"></span> O₂<sub>(g)</sub> → <span class="boite"></span> CO₂<sub>(g)</sub> + <span class="boite"></span> H₂O<sub>(l)</sub></div>
-        <p class="mini" style="text-align:center;">Cette réaction produit de la chaleur : c'est une réaction ....................................</p>
-      </div>
-    </div>
-    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
-  </div>
-
-  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 1/6 · lycée Isaac de l'étoile</span></div>
-</div>
-
-<!-- ================= FEUILLE 1/6 — VERSO ================= -->
-<div class="feuille">
-  <div class="bande"><i></i><i></i><i></i></div>
-  <div class="corps">
-    <div class="principal">
-      <h2><span class="n">03</span> États et changements d'état</h2>
-      <p>Dans les conditions de température et de pression à la surface de la Terre, on distingue trois états de la matière : l'état <span class="trou court"></span> (g), l'état <span class="trou court"></span> (l), l'état <span class="trou court"></span> (s).</p>
-
-      <div class="schema-muet">
-        <svg viewBox="0 0 560 110" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="160" height="90" fill="none" stroke="#141a26" stroke-dasharray="2 2"/>
-          <rect x="200" y="10" width="160" height="90" fill="none" stroke="#141a26" stroke-dasharray="2 2"/>
-          <rect x="390" y="10" width="160" height="90" fill="none" stroke="#141a26" stroke-dasharray="2 2"/>
-          <g fill="#141a26"><circle cx="35" cy="30" r="4"/><circle cx="60" cy="30" r="4"/><circle cx="85" cy="30" r="4"/><circle cx="35" cy="55" r="4"/><circle cx="60" cy="55" r="4"/><circle cx="85" cy="55" r="4"/><circle cx="35" cy="80" r="4"/><circle cx="60" cy="80" r="4"/><circle cx="85" cy="80" r="4"/></g>
-          <g fill="#141a26" opacity=".6"><circle cx="245" cy="40" r="4"/><circle cx="280" cy="30" r="4"/><circle cx="310" cy="55" r="4"/><circle cx="255" cy="75" r="4"/><circle cx="300" cy="80" r="4"/></g>
-          <g fill="#141a26" opacity=".6"><circle cx="420" cy="25" r="4"/><circle cx="500" cy="80" r="4"/><circle cx="450" cy="70" r="4"/><circle cx="520" cy="30" r="4"/></g>
-          <text x="90" y="105" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#6b6f7a">état : ..............</text>
-          <text x="280" y="105" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#6b6f7a">état : ..............</text>
-          <text x="470" y="105" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#6b6f7a">état : ..............</text>
-        </svg>
-      </div>
-
-      <p style="margin-top:2mm;">Les neuf changements d'état sont à connaître par cœur ! Compléter le schéma :</p>
-      <div class="schema-muet">
-        <svg viewBox="0 0 380 210" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="190" cy="30" rx="62" ry="24" fill="none" stroke="#141a26"/><text x="190" y="35" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="12">Gaz</text>
-          <ellipse cx="70" cy="175" rx="62" ry="24" fill="none" stroke="#141a26"/><text x="70" y="180" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="12">Liquide</text>
-          <ellipse cx="310" cy="175" rx="62" ry="24" fill="none" stroke="#141a26"/><text x="310" y="180" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="12">Solide</text>
-          <g stroke="#141a26" stroke-width="1.3" fill="none" stroke-dasharray="1 3">
-            <path d="M140,50 L100,150"/><path d="M240,50 L280,150"/><path d="M110,165 L270,165"/>
-            <path d="M95,145 L145,45"/><path d="M285,145 L235,45"/><path d="M265,190 L115,190"/>
-          </g>
-          <text x="80" y="100" font-family="IBM Plex Mono" font-size="9" fill="#6b6f7a">......................</text>
-          <text x="210" y="100" font-family="IBM Plex Mono" font-size="9" fill="#6b6f7a">......................</text>
-          <text x="190" y="150" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#6b6f7a">......................</text>
-          <text x="190" y="205" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#6b6f7a">......................</text>
-        </svg>
-      </div>
-
-      <h2><span class="n">04</span> Équation d'un changement d'état</h2>
-      <p>Au cours d'un changement d'état physique, les <span class="trou"></span> ne sont pas modifiées.</p>
-      <div class="formule-vide">A<sub>(état physique <span class="trou court"></span>)</sub> → A<sub>(état physique <span class="trou court"></span>)</sub></div>
-      <div class="encadre exo">
-        <div class="etq">Exercice — condensation / solidification</div>
-        <p>Établir l'équation de la condensation de l'eau, puis de la solidification du fer.</p>
+      <div class="encart definition">
+        <div class="etq">Définition — Réaction endothermique</div>
         <span class="ligne"></span><span class="ligne"></span>
       </div>
     </div>
     <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
   </div>
-  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 2/6 · lycée Isaac de l'étoile</span></div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 1/10 · lycée Isaac de l'étoile</span></div>
 </div>
 
-<!-- ================= FEUILLE 2/6 — RECTO ================= -->
+<!-- ================= PAGE 2/10 ================= -->
 <div class="feuille">
   <div class="bande"><i></i><i></i><i></i></div>
   <div class="corps">
     <div class="principal">
-      <h2><span class="n">05</span> Énergie de changement d'état</h2>
-      <div class="encadre">
-        <p style="margin-bottom:1mm;">L'<strong>énergie massique de changement d'état L</strong> d'un corps pur est l'énergie thermique que doit <span class="trou court"></span> ou <span class="trou court"></span> par transfert thermique 1 kg de ce corps pour le faire changer d'état à sa <span class="trou"></span>. Elle s'exprime en <span class="trou court"></span>.</p>
-      </div>
-
-      <p>Sublimation, fusion, vaporisation : réactions <strong>....................................</strong> (L .... 0). Solidification, liquéfaction, condensation : réactions <strong>....................................</strong> (L .... 0).</p>
-
-      <div class="encadre">
-        <div class="formule-vide"><span class="boite"></span> = <span class="fracv"><span class="b"><span class="boite"></span></span><span><span class="boite"></span></span></span></div>
-        <p class="mini" style="text-align:center;">unités à compléter : Q en ........ · m en ........ · L en ........</p>
-      </div>
-
-      <div class="encadre exo">
-        <div class="etq">Exercice 8 — Solidification de 200 g de fer</div>
-        <p style="font-size:9.3pt;">Données : L<sub>fusion fer</sub> = 270 kJ.kg⁻¹ ; L<sub>solidification fer</sub> = −270 kJ.kg⁻¹. Calculer l'énergie Q échangée et préciser si la réaction est exo- ou endothermique.</p>
-        <div class="calc lignes" style="height:34mm;"></div>
-      </div>
-    </div>
-    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
-  </div>
-  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 3/6 · lycée Isaac de l'étoile</span></div>
-</div>
-
-<!-- ================= FEUILLE 2/6 — VERSO ================= -->
-<div class="feuille">
-  <div class="bande"><i></i><i></i><i></i></div>
-  <div class="corps">
-    <div class="principal">
-      <h2><span class="n">06</span> Système chimique et transformation chimique</h2>
-      <div class="encadre">
-        <p>Un <strong>système chimique</strong> est un échantillon de matière décrit par : des <span class="trou court"></span> physiques ; les <span class="trou court"></span> qui le constituent ; leurs <span class="trou court"></span> physiques ; leurs <span class="trou court"></span> de matière.</p>
-      </div>
-      <p>Compléter :</p>
-      <ul style="margin:0 0 1.6mm 4mm;">
-        <li>État <strong>....................</strong> : état du système avant la transformation.</li>
-        <li>État <strong>....................</strong> : état du système après la transformation.</li>
-        <li>Espèces introduites à l'état initial = les <strong>....................</strong> ; espèces obtenues à l'état final = les <strong>....................</strong>.</li>
-        <li>Une espèce présente mais qui ne subit aucune modification est appelée espèce <strong>....................</strong>.</li>
-      </ul>
-
-      <p style="margin-top:1mm;">Compléter le bilan de la réaction cuivre / nitrate d'argent :</p>
-      <div class="schema-muet">
-        <svg viewBox="0 0 380 130" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="150" height="110" fill="none" stroke="#141a26" stroke-dasharray="2 2"/>
-          <rect x="220" y="10" width="150" height="110" fill="none" stroke="#141a26" stroke-dasharray="2 2"/>
-          <text x="85" y="28" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" font-weight="700">État initial</text>
-          <text x="295" y="28" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" font-weight="700">État final</text>
-          <text x="20" y="45" font-family="IBM Plex Mono" font-size="8">n(Cu) = 1,0 mol</text>
-          <text x="20" y="58" font-family="IBM Plex Mono" font-size="8">n(Ag⁺) = n(NO₃⁻) = 0,1 mol</text>
-          <text x="230" y="45" font-family="IBM Plex Mono" font-size="8">n(Ag) = .......... mol</text>
-          <text x="230" y="58" font-family="IBM Plex Mono" font-size="8">n(Cu²⁺) = .......... mol</text>
-          <text x="230" y="71" font-family="IBM Plex Mono" font-size="8">n(Cu) restant = .......... mol</text>
-          <path d="M165,65 L215,65" stroke="#141a26" stroke-width="1.5" marker-end="url(#fm)"/>
-          <defs><marker id="fm" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#141a26"/></marker></defs>
+      <p class="suite"><span class="n">02</span> · effet thermique — suite</p>
+      <div class="schema" style="max-width:118mm;">
+        <svg viewBox="0 0 420 230" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="fen" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1d9aaa"/></marker>
+            <marker id="fex" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#d6402b"/></marker>
+          </defs>
+          <circle cx="110" cy="125" r="58" fill="#fff" stroke="#1d9aaa" stroke-width="2"/>
+          <text x="110" y="35" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#1d9aaa">réaction endothermique</text>
+          <text x="110" y="122" text-anchor="middle" font-family="Space Grotesk" font-size="12">le système</text>
+          <text x="110" y="138" text-anchor="middle" font-family="Space Grotesk" font-size="12">reçoit la chaleur</text>
+          <g stroke="#1d9aaa" stroke-width="2" fill="none">
+            <path d="M110,50 L110,62" marker-end="url(#fen)"/><path d="M48,80 L58,89" marker-end="url(#fen)"/>
+            <path d="M172,80 L162,89" marker-end="url(#fen)"/><path d="M110,200 L110,188" marker-end="url(#fen)"/>
+            <path d="M48,170 L58,161" marker-end="url(#fen)"/><path d="M172,170 L162,161" marker-end="url(#fen)"/>
+          </g>
+          <circle cx="310" cy="125" r="58" fill="#fff" stroke="#d6402b" stroke-width="2"/>
+          <text x="310" y="35" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#d6402b">réaction exothermique</text>
+          <text x="310" y="122" text-anchor="middle" font-family="Space Grotesk" font-size="12">le système</text>
+          <text x="310" y="138" text-anchor="middle" font-family="Space Grotesk" font-size="12">libère la chaleur</text>
+          <g stroke="#d6402b" stroke-width="2" fill="none">
+            <path d="M310,62 L310,50" marker-end="url(#fex)"/><path d="M258,89 L248,80" marker-end="url(#fex)"/>
+            <path d="M362,89 L372,80" marker-end="url(#fex)"/><path d="M310,188 L310,200" marker-end="url(#fex)"/>
+            <path d="M258,161 L248,170" marker-end="url(#fex)"/><path d="M362,161 L372,170" marker-end="url(#fex)"/>
+          </g>
+          <text x="110" y="222" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#6b6f7a">chaleur entrante</text>
+          <text x="310" y="222" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#6b6f7a">chaleur sortante</text>
         </svg>
+        <p class="legende">Schéma aide-mémoire : les flèches indiquent le sens du transfert de chaleur entre le système et le milieu extérieur.</p>
+      </div>
+
+      <h2><span class="n">03</span> États et changements d'état<span class="date-sec">date : <i></i></span></h2>
+      <p>On distingue principalement trois états de la matière : l'état <span class="trou court"></span> (g), l'état <span class="trou court"></span> (l), l'état <span class="trou court"></span> (s).</p>
+      <div class="schema">
+        <svg viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg">
+          <text x="100" y="20" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700">SOLIDE (s)</text>
+          <text x="330" y="20" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700">LIQUIDE (l)</text>
+          <text x="560" y="20" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700">GAZ (g)</text>
+          <rect x="20" y="32" width="160" height="130" fill="#fff" stroke="#141a26"/>
+          <rect x="250" y="32" width="160" height="130" fill="#fff" stroke="#141a26"/>
+          <rect x="480" y="32" width="160" height="130" fill="#fff" stroke="#141a26"/>
+          <g stroke="#141a26" stroke-width="1.6">
+            <line x1="55" y1="62" x2="100" y2="62"/><line x1="100" y1="62" x2="145" y2="62"/>
+            <line x1="55" y1="97" x2="100" y2="97"/><line x1="100" y1="97" x2="145" y2="97"/>
+            <line x1="55" y1="132" x2="100" y2="132"/><line x1="100" y1="132" x2="145" y2="132"/>
+            <line x1="55" y1="62" x2="55" y2="97"/><line x1="55" y1="97" x2="55" y2="132"/>
+            <line x1="100" y1="62" x2="100" y2="97"/><line x1="100" y1="97" x2="100" y2="132"/>
+            <line x1="145" y1="62" x2="145" y2="97"/><line x1="145" y1="97" x2="145" y2="132"/>
+          </g>
+          <g fill="#5aa7c9" stroke="#141a26" stroke-width="1">
+            <circle cx="55" cy="62" r="8"/><circle cx="100" cy="62" r="8"/><circle cx="145" cy="62" r="8"/>
+            <circle cx="55" cy="97" r="8"/><circle cx="100" cy="97" r="8"/><circle cx="145" cy="97" r="8"/>
+            <circle cx="55" cy="132" r="8"/><circle cx="100" cy="132" r="8"/><circle cx="145" cy="132" r="8"/>
+          </g>
+          <g stroke="#141a26" stroke-width="1.3" stroke-dasharray="3 3">
+            <line x1="285" y1="70" x2="325" y2="60"/><line x1="325" y1="60" x2="365" y2="78"/>
+            <line x1="285" y1="70" x2="300" y2="110"/><line x1="365" y1="78" x2="378" y2="115"/>
+            <line x1="300" y1="110" x2="340" y2="128"/><line x1="340" y1="128" x2="378" y2="115"/>
+            <line x1="325" y1="60" x2="300" y2="110"/>
+          </g>
+          <g fill="#5aa7c9" stroke="#141a26" stroke-width="1">
+            <circle cx="285" cy="70" r="8"/><circle cx="325" cy="60" r="8"/><circle cx="365" cy="78" r="8"/>
+            <circle cx="300" cy="110" r="8"/><circle cx="340" cy="128" r="8"/><circle cx="378" cy="115" r="8"/>
+          </g>
+          <g fill="#5aa7c9" stroke="#141a26" stroke-width="1">
+            <circle cx="515" cy="60" r="8"/><circle cx="600" cy="74" r="8"/><circle cx="548" cy="105" r="8"/><circle cx="610" cy="135" r="8"/><circle cx="505" cy="140" r="8"/>
+          </g>
+          <g stroke="#6b6f7a" stroke-width="1.2" fill="none" marker-end="url(#agf)">
+            <path d="M526,54 L540,46"/><path d="M591,67 L578,56"/><path d="M556,112 L569,122"/><path d="M513,133 L524,123"/>
+          </g>
+          <defs><marker id="agf" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6b6f7a"/></marker></defs>
+          <line x1="60" y1="182" x2="90" y2="182" stroke="#141a26" stroke-width="1.6"/>
+          <text x="96" y="186" font-family="IBM Plex Mono" font-size="10" fill="#6b6f7a">liaisons fortes</text>
+          <line x1="250" y1="182" x2="280" y2="182" stroke="#141a26" stroke-width="1.3" stroke-dasharray="3 3"/>
+          <text x="286" y="186" font-family="IBM Plex Mono" font-size="10" fill="#6b6f7a">liaisons faibles</text>
+          <text x="480" y="186" font-family="IBM Plex Mono" font-size="10" fill="#6b6f7a">aucune liaison (agitation)</text>
+        </svg>
+        <p class="legende">Les trois états de la matière. Traits pleins = liaisons fortes et rigides (solide) ; pointillés = liaisons faibles (liquide) ; aucun trait pour le gaz (flèches d'agitation).</p>
       </div>
     </div>
     <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
   </div>
-  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 4/6 · lycée Isaac de l'étoile</span></div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 2/10 · lycée Isaac de l'étoile</span></div>
 </div>
 
-<!-- ================= FEUILLE 3/6 — RECTO ================= -->
+<!-- ================= PAGE 3/10 ================= -->
 <div class="feuille">
   <div class="bande"><i></i><i></i><i></i></div>
   <div class="corps">
     <div class="principal">
-      <h2><span class="n">07</span> Équation de réaction et stœchiométrie</h2>
-      <p>Méthode pour écrire et équilibrer une équation de réaction :</p>
-      <ol style="margin:0 0 1.8mm 4mm;">
-        <li>Identifier les <strong>....................</strong> et les <strong>....................</strong> de la réaction.</li>
-        <li>Écrire leurs formules brutes et leurs <strong>....................</strong> physiques de part et d'autre de la flèche.</li>
-        <li>Équilibrer les éléments chimiques en commençant par les éléments les <strong>....................</strong> présents.</li>
-        <li>Vérifier que les <strong>....................</strong> sont équilibrées.</li>
-      </ol>
-      <div class="encadre exo">
-        <div class="etq">Exercice — combustion du méthane</div>
-        <div class="formule-vide">CH₄ + <span class="boite"></span> O₂ → <span class="boite"></span> H₂O + <span class="boite"></span> CO₂</div>
+      <p class="suite"><span class="n">03</span> · états et changements d'état — suite</p>
+      <p>Les <b>six</b> changements d'état sont à connaître par cœur !</p>
+      <div class="schema" style="max-width:112mm; margin-left:auto; margin-right:auto;">
+        <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="mef" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1d9aaa"/></marker>
+            <marker id="mxf" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#d6402b"/></marker>
+          </defs>
+          <line x1="20" y1="16" x2="46" y2="16" stroke="#1d9aaa" stroke-width="2" marker-end="url(#mef)"/>
+          <text x="52" y="20" font-family="IBM Plex Mono" font-size="10" fill="#1d9aaa">endothermique (absorbe de l'énergie)</text>
+          <line x1="20" y1="34" x2="46" y2="34" stroke="#d6402b" stroke-width="2" marker-end="url(#mxf)"/>
+          <text x="52" y="38" font-family="IBM Plex Mono" font-size="10" fill="#d6402b">exothermique (libère de l'énergie)</text>
+          <ellipse cx="300" cy="60" rx="66" ry="28" fill="#fff" stroke="#141a26" stroke-width="1.5"/>
+          <text x="300" y="60" dominant-baseline="central" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="15">GAZ</text>
+          <ellipse cx="110" cy="300" rx="66" ry="28" fill="#fff" stroke="#141a26" stroke-width="1.5"/>
+          <text x="110" y="300" dominant-baseline="central" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="15">LIQUIDE</text>
+          <ellipse cx="490" cy="300" rx="66" ry="28" fill="#fff" stroke="#141a26" stroke-width="1.5"/>
+          <text x="490" y="300" dominant-baseline="central" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="15">SOLIDE</text>
+          <path d="M127,250 Q152,146 236,102" fill="none" stroke="#1d9aaa" stroke-width="2" marker-end="url(#mef)"/>
+          <path d="M272,118 Q244,214 157,267" fill="none" stroke="#d6402b" stroke-width="2" marker-end="url(#mxf)"/>
+          <path d="M473,250 Q448,146 364,102" fill="none" stroke="#1d9aaa" stroke-width="2" marker-end="url(#mef)"/>
+          <path d="M328,118 Q356,214 443,267" fill="none" stroke="#d6402b" stroke-width="2" marker-end="url(#mxf)"/>
+          <path d="M424,316 Q300,352 176,316" fill="none" stroke="#1d9aaa" stroke-width="2" marker-end="url(#mef)"/>
+          <path d="M176,284 Q300,248 424,284" fill="none" stroke="#d6402b" stroke-width="2" marker-end="url(#mxf)"/>
+          <g font-family="IBM Plex Mono" font-size="11" text-anchor="middle"
+             paint-order="stroke" stroke="#fff" stroke-width="7" stroke-linejoin="round">
+            <text x="169" y="166" fill="#1d9aaa">vaporisation</text>
+            <text x="229" y="208" fill="#d6402b">liquéfaction</text>
+            <text x="431" y="166" fill="#1d9aaa">sublimation</text>
+            <text x="371" y="208" fill="#d6402b">condensation</text>
+            <text x="300" y="336" fill="#1d9aaa">fusion</text>
+            <text x="300" y="270" fill="#d6402b">solidification</text>
+          </g>
+        </svg>
+        <p class="legende">Les six changements d'état : chaque paire d'états est reliée par deux flèches, une par sens (cyan = endothermique, rouge = exothermique).</p>
+      </div>
+      <div class="encart definition">
+        <div class="etq">Définition — Changement d'état</div>
+        <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      </div>
+      <div class="encart definition">
+        <div class="etq">Définition — Température de changement d'état</div>
+        <span class="ligne"></span><span class="ligne"></span>
+      </div>
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 3/10 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ================= PAGE 4/10 ================= -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <div class="corps">
+    <div class="principal">
+      <p class="suite"><span class="n">03</span> · états et changements d'état — suite</p>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 3 — Exemples de changement d'état</div>
+        <p class="question-f">Donner un exemple pour chacun des changements d'état suivants : vaporisation, solidification, condensation.</p>
+        <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      </div>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 6 — Corps pur ou mélange ?</div>
+        <p class="question-f">Une courbe de refroidissement présente un palier vers 6 °C ; celle d'un cola décroît sans palier. Corps pur ou mélange ? Température de changement d'état si possible ?</p>
+        <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
       </div>
 
-      <h2 style="margin-top:2.5mm;"><span class="n">08</span> Réactif limitant</h2>
-      <div class="encadre">
-        <p>Le <strong>réactif limitant</strong> est le réactif qui est <span class="trou"></span> consommé dans la réaction. Une fois entièrement consommé, il <span class="trou court"></span> la réaction.</p>
+      <h2><span class="n">04</span> Équation d'un changement d'état<span class="date-sec">date : <i></i></span></h2>
+      <div class="encart propriete">
+        <div class="etq">Propriété</div>
+        <p>Au cours d'un changement d'état physique, les <span class="trou"></span> ne sont pas modifiées. Pour modéliser le changement d'état d'une espèce chimique A :</p>
+        <p class="eq-c">A<sub>(état physique .................)</sub> → A<sub>(état physique .................)</sub></p>
       </div>
-      <div class="encadre exo">
-        <div class="etq">Exercice 15 — 150 molécules de CH₄ + 1000 molécules de O₂</div>
-        <p style="font-size:9.3pt;">Déterminer le réactif limitant et le nombre de molécules en excès à la fin de la réaction.</p>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 4 — Établir une équation de changement d'état</div>
+        <p class="question-f">Établir l'équation de la condensation de l'eau, puis de la solidification du fer Fe.</p>
+        <span class="ligne"></span><span class="ligne"></span>
+      </div>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 5 — Identifier un changement d'état</div>
+        <p class="question-f">Quels changements d'état décrivent ces équations ?</p>
+        <p class="eq-c">H<sub>2</sub>O<sub>(g)</sub> → H<sub>2</sub>O<sub>(s)</sub>&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Cu<sub>(s)</sub> → Cu<sub>(g)</sub></p>
+        <span class="ligne"></span><span class="ligne"></span>
+      </div>
+
+      <h2><span class="n">05</span> Énergie de changement d'état<span class="date-sec">date : <i></i></span></h2>
+      <div class="encart definition">
+        <div class="etq">Définition — Énergie massique de changement d'état L</div>
+        <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      </div>
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 4/10 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ================= PAGE 5/10 ================= -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <div class="corps">
+    <div class="principal">
+      <p class="suite"><span class="n">05</span> · énergie de changement d'état — suite</p>
+      <div class="encart propriete">
+        <div class="etq">Propriété</div>
+        <p>L'énergie nécessaire pour passer d'un état 1 à un état 2 est la même (au <span class="trou court"></span> près) que pour passer de l'état 2 à l'état 1 :</p>
+        <p class="eq-c">L<sub>fusion</sub> = <span class="trou court" style="min-width:8mm;"></span> L<sub>solidification</sub> &nbsp;&nbsp;·&nbsp;&nbsp; L<sub>sublimation</sub> = <span class="trou court" style="min-width:8mm;"></span> L<sub>condensation</sub></p>
+        <p>Sublimation, fusion, vaporisation : réactions <span class="trou long"></span> (L .... 0).<br>
+        Solidification, liquéfaction, condensation : réactions <span class="trou long"></span> (L .... 0).</p>
+      </div>
+
+      <div class="formule-s">
+        <div class="eq"><span class="boite"></span> = <span class="boite"></span> × <span class="boite"></span></div>
+        <div class="grandeurs">
+          <div class="etq">Grandeurs &amp; unités</div>
+          <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+        </div>
+      </div>
+
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 7 — Faire fondre 1 kg de glace</div>
+        <p class="question-f">Quelle quantité d'énergie faut-il pour faire fondre 1 kg de glace ? (L fusion = 336 kJ.kg⁻¹)</p>
+        <div class="calc lignes" style="height:14mm;"></div>
+      </div>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 8 — Solidification du fer</div>
+        <p class="question-f">On étudie la solidification de 200 g de fer pur en fusion. Quelle énergie est transférée avec le milieu extérieur ? Schématiser le transfert d'énergie.</p>
+        <p class="mini">Données : L fusion fer = 270 kJ.kg⁻¹ · L solidification fer = −270 kJ.kg⁻¹</p>
+        <div class="calc lignes" style="height:30mm;"></div>
+      </div>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 9 — Énergie de la tsar bomba</div>
+        <p class="question-f">La tsar bomba a libéré 57 mégatonnes de TNT. Quelle masse d'eau pourrait-on vaporiser avec cette énergie ?</p>
+        <p class="mini">Données : 1 Mt = 4,2 × 10¹⁵ J · L vaporisation eau = 2,3 × 10⁶ J.kg⁻¹</p>
+        <div class="calc lignes" style="height:30mm;"></div>
+      </div>
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 5/10 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ================= PAGE 6/10 ================= -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <div class="corps">
+    <div class="principal">
+      <h2><span class="n">06</span> Système chimique et transformation chimique<span class="date-sec">date : <i></i></span></h2>
+      <p>Les états physiques sont notés : (<span class="trou court" style="min-width:6mm;"></span>) solide · (<span class="trou court" style="min-width:6mm;"></span>) liquide · (<span class="trou court" style="min-width:6mm;"></span>) gazeux · (<span class="trou court" style="min-width:8mm;"></span>) aqueux, c'est-à-dire <span class="trou long"></span>.</p>
+      <div class="encart definition">
+        <div class="etq">Définition — Système chimique</div>
+        <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      </div>
+      <div class="encart definition">
+        <div class="etq">Définitions — Le vocabulaire de la transformation chimique</div>
+        <div class="partie-def">État initial</div>
+        <span class="ligne"></span>
+        <div class="partie-def">État final</div>
+        <span class="ligne"></span>
+        <div class="partie-def">Réactifs</div>
+        <span class="ligne"></span>
+        <div class="partie-def">Produits</div>
+        <span class="ligne"></span>
+        <div class="partie-def">Espèce spectatrice</div>
+        <span class="ligne"></span><span class="ligne"></span>
+      </div>
+
+      <h2><span class="n">07</span> Équation de réaction et stœchiométrie<span class="date-sec">date : <i></i></span></h2>
+      <div class="encart definition">
+        <div class="etq">Définition — Réaction chimique &amp; équation de réaction</div>
+        <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      </div>
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 6/10 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ================= PAGE 7/10 ================= -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <div class="corps">
+    <div class="principal">
+      <p class="suite"><span class="n">07</span> · équation de réaction et stœchiométrie — suite</p>
+      <div class="encart propriete">
+        <div class="etq">Propriété — Lois de conservation</div>
+        <p>Au cours d'une transformation chimique, il y a conservation des <span class="trou long"></span> (nature et quantités) et conservation de la <span class="trou long"></span>.</p>
+      </div>
+      <div class="encart methode-f">
+        <div class="etq">⚙ Méthode — écrire et équilibrer une équation de réaction</div>
+        <ol>
+          <li>Identifier les <b>....................</b> et les <b>....................</b> de la réaction.</li>
+          <li>Écrire leurs formules brutes et leurs <b>....................</b> physiques de part et d'autre de la flèche.</li>
+          <li>Équilibrer les <b>....................</b> chimiques, en commençant par les éléments les <b>....................</b> présents.</li>
+          <li>Vérifier que les <b>....................</b> sont équilibrées.</li>
+        </ol>
+      </div>
+      <div class="encart propriete">
+        <div class="etq">Propriété — Lire une équation en proportions</div>
+        <p>Les nombres stœchiométriques renseignent sur les <span class="trou"></span>, en nombre d'atomes, d'ions ou de molécules, dans lesquelles les réactifs <span class="trou court"></span> et les produits se <span class="trou court"></span>.</p>
+      </div>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 10 — Test de reconnaissance des ions fer (II)</div>
+        <p class="eq-c">Fe<sup>2+</sup><sub>(aq)</sub> + 2 HO<sup>−</sup><sub>(aq)</sub> → Fe(OH)<sub>2 (s)</sub></p>
+        <p class="question-f">Identifier les réactifs, les produits et les coefficients stœchiométriques, puis vérifier les deux lois de conservation.</p>
+        <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      </div>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 11 — Équilibrer des équations de réaction</div>
+        <p class="eq-c"><span class="boite pt"></span> H<sup>+</sup> + <span class="boite pt"></span> Fe → <span class="boite pt"></span> H<sub>2</sub> + <span class="boite pt"></span> Fe<sup>2+</sup></p>
+        <p class="eq-c"><span class="boite pt"></span> Cu<sup>2+</sup> + <span class="boite pt"></span> HO<sup>−</sup> → <span class="boite pt"></span> Cu(HO)<sub>2</sub></p>
+        <p class="eq-c"><span class="boite pt"></span> CaCO<sub>3</sub> + <span class="boite pt"></span> H<sup>+</sup> → <span class="boite pt"></span> Ca<sup>2+</sup> + <span class="boite pt"></span> HCO<sub>3</sub><sup>−</sup></p>
+        <p class="eq-c"><span class="boite pt"></span> CH<sub>4</sub> + <span class="boite pt"></span> O<sub>2</sub> → <span class="boite pt"></span> H<sub>2</sub>O + <span class="boite pt"></span> CO<sub>2</sub></p>
+      </div>
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 7/10 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ================= PAGE 8/10 ================= -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <div class="corps">
+    <div class="principal">
+      <p class="suite"><span class="n">07</span> · équation de réaction et stœchiométrie — suite</p>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 12 — Combustion du glucose</div>
+        <p class="question-f">Lors d'un effort prolongé, le glucose C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> est dégradé selon sa combustion complète dans le dioxygène, produisant de l'eau et du dioxyde de carbone. Écrire et équilibrer cette équation de réaction.</p>
+        <div class="calc lignes" style="height:16mm;"></div>
+      </div>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 13 — Lecture microscopique d'une équation</div>
+        <p class="eq-c">CH<sub>4</sub> + 2 O<sub>2</sub> → 2 H<sub>2</sub>O + CO<sub>2</sub></p>
+        <p class="question-f">Combien de molécules de chaque réactif sont consommées, et combien de molécules de chaque produit sont formées ? Rédiger une phrase sur le modèle du cours (« si … alors … »).</p>
+        <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      </div>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 14 — Proportions</div>
+        <p class="eq-c">Cu<sub>(s)</sub> + 2 Ag<sup>+</sup><sub>(aq)</sub> → Cu<sup>2+</sup><sub>(aq)</sub> + 2 Ag<sub>(s)</sub></p>
+        <p class="question-f">Combien d'atomes d'argent seront produits si 5 atomes de cuivre réagissent avec 10 ions Ag⁺ ?</p>
+        <span class="ligne"></span><span class="ligne"></span>
+      </div>
+
+      <h2><span class="n">08</span> Réactif limitant<span class="date-sec">date : <i></i></span></h2>
+      <div class="encart definition">
+        <div class="etq">Définition — Réactif limitant</div>
+        <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      </div>
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 8/10 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ================= PAGE 9/10 ================= -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <div class="corps">
+    <div class="principal">
+      <p class="suite"><span class="n">08</span> · réactif limitant — suite</p>
+      <div class="schema">
+        <svg viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="fhf" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#141a26"/></marker></defs>
+          <text x="80" y="24" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700">Saucisses</text>
+          <text x="80" y="40" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#6b6f7a">× 5</text>
+          <g fill="#d97a63" stroke="#141a26" stroke-width=".8">
+            <rect x="40" y="55" width="80" height="13" rx="6.5"/><rect x="40" y="77" width="80" height="13" rx="6.5"/>
+            <rect x="40" y="99" width="80" height="13" rx="6.5"/><rect x="40" y="121" width="80" height="13" rx="6.5"/>
+            <rect x="40" y="143" width="80" height="13" rx="6.5"/>
+          </g>
+          <text x="150" y="112" font-size="22" text-anchor="middle">+</text>
+          <text x="228" y="24" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700">Petits pains</text>
+          <text x="228" y="40" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#6b6f7a">× 4</text>
+          <g>
+            <g transform="translate(196,56)"><rect width="64" height="24" rx="11" fill="#e3c05e" stroke="#141a26" stroke-width=".8"/><path d="M4,12 Q32,7 60,12" fill="none" stroke="#b28a1d" stroke-width="1.2"/></g>
+            <g transform="translate(196,88)"><rect width="64" height="24" rx="11" fill="#e3c05e" stroke="#141a26" stroke-width=".8"/><path d="M4,12 Q32,7 60,12" fill="none" stroke="#b28a1d" stroke-width="1.2"/></g>
+            <g transform="translate(196,120)"><rect width="64" height="24" rx="11" fill="#e3c05e" stroke="#141a26" stroke-width=".8"/><path d="M4,12 Q32,7 60,12" fill="none" stroke="#b28a1d" stroke-width="1.2"/></g>
+            <g transform="translate(196,152)"><rect width="64" height="24" rx="11" fill="#e3c05e" stroke="#141a26" stroke-width=".8"/><path d="M4,12 Q32,7 60,12" fill="none" stroke="#b28a1d" stroke-width="1.2"/></g>
+          </g>
+          <path d="M285,110 L332,110" stroke="#141a26" stroke-width="2" marker-end="url(#fhf)"/>
+          <text x="428" y="24" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700">Hot-dogs complets</text>
+          <text x="428" y="40" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#6b6f7a">× 4</text>
+          <g>
+            <g transform="translate(362,56)"><rect x="14" y="6" width="104" height="13" rx="6.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/><rect x="26" y="0" width="80" height="24" rx="11" fill="#e3c05e" stroke="#141a26" stroke-width=".8"/><path d="M32,12 Q66,7 100,12" fill="none" stroke="#b28a1d" stroke-width="1.2"/><rect x="14" y="7" width="13" height="11" rx="5.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/><rect x="105" y="7" width="13" height="11" rx="5.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/></g>
+            <g transform="translate(362,88)"><rect x="14" y="6" width="104" height="13" rx="6.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/><rect x="26" y="0" width="80" height="24" rx="11" fill="#e3c05e" stroke="#141a26" stroke-width=".8"/><path d="M32,12 Q66,7 100,12" fill="none" stroke="#b28a1d" stroke-width="1.2"/><rect x="14" y="7" width="13" height="11" rx="5.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/><rect x="105" y="7" width="13" height="11" rx="5.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/></g>
+            <g transform="translate(362,120)"><rect x="14" y="6" width="104" height="13" rx="6.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/><rect x="26" y="0" width="80" height="24" rx="11" fill="#e3c05e" stroke="#141a26" stroke-width=".8"/><path d="M32,12 Q66,7 100,12" fill="none" stroke="#b28a1d" stroke-width="1.2"/><rect x="14" y="7" width="13" height="11" rx="5.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/><rect x="105" y="7" width="13" height="11" rx="5.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/></g>
+            <g transform="translate(362,152)"><rect x="14" y="6" width="104" height="13" rx="6.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/><rect x="26" y="0" width="80" height="24" rx="11" fill="#e3c05e" stroke="#141a26" stroke-width=".8"/><path d="M32,12 Q66,7 100,12" fill="none" stroke="#b28a1d" stroke-width="1.2"/><rect x="14" y="7" width="13" height="11" rx="5.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/><rect x="105" y="7" width="13" height="11" rx="5.5" fill="#d97a63" stroke="#141a26" stroke-width=".7"/></g>
+          </g>
+          <text x="520" y="112" font-size="22" text-anchor="middle">+</text>
+          <rect x="546" y="103" width="80" height="13" rx="6.5" fill="#d97a63" stroke="#141a26" stroke-width=".8"/>
+          <text x="586" y="136" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#6b6f7a">en excès : 5 − 4 = 1</text>
+        </svg>
+        <p class="legende">L'analogie du hot-dog. On dispose de 5 saucisses mais de seulement 4 petits pains ; 1 hot-dog nécessitant 1 pain et 1 saucisse, on ne peut assembler que 4 hot-dogs. Le petit pain, entièrement consommé, arrête la « réaction » : c'est le <b style="color:#b28a1d;">réactif limitant</b>. Il reste 5 − 4 = 1 saucisse : la saucisse est le <b style="color:#d6402b;">réactif en excès</b>.</p>
+      </div>
+      <div class="encart exercice-f">
+        <div class="etq">Exercice 15 — Combustion du méthane</div>
+        <p class="eq-c">CH<sub>4</sub> + 2 O<sub>2</sub> → 2 H<sub>2</sub>O + CO<sub>2</sub></p>
+        <p class="question-f">150 molécules de méthane réagissent avec 1000 molécules de dioxygène. Déterminer le réactif limitant et le nombre de molécules présentes à la fin de la réaction.</p>
         <div class="calc lignes" style="height:26mm;"></div>
       </div>
     </div>
     <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
   </div>
-  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 5/6 · lycée Isaac de l'étoile</span></div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 9/10 · lycée Isaac de l'étoile</span></div>
 </div>
 
-<!-- ================= FEUILLE 3/6 — VERSO : clôture ================= -->
+<!-- ================= PAGE 10/10 : clôture ================= -->
 <div class="feuille">
   <div class="bande"><i></i><i></i><i></i></div>
   <div class="corps">
     <div class="principal">
-      <div class="etq bleue" style="margin-top:1mm;">L'essentiel du chapitre, avec mes mots</div>
+      <p class="mini" style="letter-spacing:.1em;text-transform:uppercase;color:var(--h-beta);margin-bottom:2mm;">L'essentiel du chapitre, avec mes mots</p>
       <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
       <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      <span class="ligne"></span><span class="ligne"></span>
     </div>
     <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
   </div>
-  <div class="pleine-largeur">
+  <div class="pleine-largeur" style="margin-top:4mm;">
     <div class="deblocage">
       <span style="font-family:'Space Grotesk',sans-serif; font-weight:600;">🔓 Fin du chapitre —</span>
       <span>code de déblocage du cours en ligne :</span>
       <span class="cases"><i></i><i></i><i></i><i></i><i></i><i></i></span>
-      <span class="mini">→ vidéos, corrections, QCM et bonus sur le site</span>
+      <span class="mini">→ vidéos, corrections, Kahoots et bonus sur le site</span>
     </div>
   </div>
-  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2</span><span>page 6/6 · lycée Isaac de l'étoile</span></div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 2 · M. Van Hoorde — Lycée général Isaac de l'Étoile, Poitiers</span><span>page 10/10</span></div>
 </div>
 
 </body>

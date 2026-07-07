@@ -5,17 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NIVEAU — TITRE DU CHAPITRE · Physique-Chimie</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<!-- ============================================================
-     GABARIT DE PAGE DE COURS — ne pas publier tel quel.
-     CSS et scripts extraits de la page de référence (chapitre 1) :
-     pages/2nde-pc-t1-c1-matiere-macroscopique.html
-     Lire _modeles/CONSIGNES-production-chapitre.md AVANT usage.
-     ============================================================ -->
 <style>
   :root {
     --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
     --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e;
-    --gris:#6b6f7a; --carte:#ffffff;
+    --gris:#6b6f7a; --carte:#ffffff; --or:#f0cf6e; --or-fonce:#b28a1d;
+    --vert:#6fae7a; --vert-fonce:#4c8a58; --sepia:#8a6d3b;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
@@ -63,29 +58,135 @@
   h2 { font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2.8rem 0 1rem;
     display:flex; align-items:baseline; gap:.8rem; scroll-margin-top:2rem; }
   h2 .num { font-family:'IBM Plex Mono',monospace; font-size:.9rem; color:var(--h-beta); }
-  p { margin-bottom:.9rem; max-width:70ch; }
+  p { margin-bottom:.9rem; max-width:75ch; text-align:justify; hyphens:auto; }
   strong { font-weight:600; }
-  ul.cours { max-width:70ch; margin:0 0 .9rem 1.2rem; }
+  ul.cours { max-width:75ch; margin:0 0 .9rem 1.2rem; text-align:justify; }
   ul.cours li { margin-bottom:.5rem; }
+  .nb { white-space:nowrap; }
+  sub, sup { font-size:.68em; }
 
-  .definition { border:1px solid var(--encre); border-left:4px solid var(--h-beta);
-    background:var(--papier); border-radius:0 10px 10px 0; padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; }
-  .definition p:last-child { margin-bottom:0; }
+  /* ===== BIBLIOTHÈQUE DE COMPOSANTS (validée sur le chapitre T1-C2) ===== */
+
+  /* Encart générique : Définition (Hβ) / Propriété (Hγ) / Exemple (vert) */
+  .encart { border:1px solid var(--encre); border-radius:0 10px 10px 0;
+    background:var(--papier); padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.12em; text-transform:uppercase; margin-bottom:.35rem; }
+  .encart p:last-child { margin-bottom:0; }
+  .definition { border-left:4px solid var(--h-beta); }
+  .definition .etq { color:var(--h-beta); }
+  .terme { background:rgba(29,154,170,.16); border-radius:3px; padding:.02em .25em;
+    font-weight:600; color:#0f6b76; }
+  .propriete { border-left:4px solid var(--h-gamma); }
+  .propriete .etq { color:var(--h-gamma); }
+  .exemple { border-left:4px solid var(--vert); background:#fff; max-width:none; }
+  .exemple .etq { color:var(--vert-fonce); }
+  .exemple .duo-e { display:grid; grid-template-columns:220px 1fr; gap:1.2rem; align-items:center; }
+  .exemple img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+
+  /* Équation centrée hors paragraphe */
+  .eq-ligne { font-family:'Spectral',serif; font-style:italic; text-align:center;
+    font-size:1.15rem; margin:.7rem auto; max-width:none; white-space:nowrap; overflow-x:auto; }
+  .eq-ligne sub, .eq-ligne sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.58em; }
+
+  /* Pictogramme « à noter sur la fiche » (crayon, coin haut droit) */
+  .a-noter { position:absolute; top:-.7rem; right:.8rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; background:var(--carte); border:1.4px solid var(--encre); border-radius:50%;
+    width:1.7rem; height:1.7rem; display:flex; align-items:center; justify-content:center; }
+  figure { position:relative; }
+  figure .a-noter { top:-.4rem; right:-.2rem; }
+
+  /* Encart Formule (variante C validée) */
+  .formule-bloc { margin:1.4rem auto; max-width:60ch; border:1px solid var(--encre); border-radius:12px;
+    background:#fff; box-shadow:4px 4px 0 rgba(74,63,158,.18);
+    display:grid; grid-template-columns:auto minmax(0,1fr); position:relative; }
+  .formule-bloc .eq { background:var(--encre); color:var(--papier); font-family:'Spectral',serif;
+    font-style:italic; font-size:1.9rem; display:flex; align-items:center; padding:1rem 1.5rem;
+    white-space:nowrap; border-radius:11px 0 0 11px; }
+  .formule-bloc .eq sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.5em; }
+  .formule-bloc .grandeurs { padding:.9rem 1.3rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem; line-height:2.05; }
+  .formule-bloc .grandeurs b { color:var(--h-gamma); }
+  .formule-bloc .titre { font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--gris); display:block; margin-bottom:.15rem; }
+
+  /* Encart Notation */
+  .notation { border:1px dashed var(--encre); border-radius:10px; background:#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .notation .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .notation .chips { display:flex; gap:.9rem; flex-wrap:wrap; margin-bottom:.8rem; justify-content:center; }
+  .notation .chip { font-family:'IBM Plex Mono',monospace; font-size:.85rem; border:1px solid var(--encre);
+    border-radius:8px; padding:.35rem .8rem; background:var(--papier); }
+  .notation .chip b { color:var(--h-beta); }
+  .notation .aq { border-top:1px dashed var(--grille); padding-top:.7rem; margin-bottom:0; }
+  .notation .aq b { color:var(--h-beta); }
+
+  /* Encart Méthode (étapes en chiffres romains) */
+  .methode { border:1px solid var(--encre); border-left:4px solid var(--or); border-radius:0 10px 10px 0;
+    background:linear-gradient(0deg,rgba(240,207,110,.08),rgba(240,207,110,.08)),#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .methode .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--or-fonce); margin-bottom:.5rem; }
+  .methode ol { list-style:none; counter-reset:met; margin:0; }
+  .methode li { counter-increment:met; display:grid; grid-template-columns:2.2rem 1fr; gap:.5rem;
+    margin-bottom:.5rem; align-items:baseline; }
+  .methode li::before { content:counter(met,upper-roman) "."; font-family:'IBM Plex Mono',monospace;
+    font-weight:600; color:var(--or-fonce); text-align:right; }
+
+  /* Encart Histoire des sciences */
+  .histoire { border:1.5px solid var(--sepia); outline:1px solid var(--sepia); outline-offset:3px;
+    background:#f8f2e2; padding:1.2rem 1.4rem; margin:1.8rem 3px; }
+  .histoire .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--sepia); text-align:center; margin-bottom:.8rem; }
+  .histoire .etq::before, .histoire .etq::after { content:"❦"; margin:0 .6rem; }
+  .histoire .duo-h { display:grid; grid-template-columns:170px 1fr; gap:1.2rem; align-items:start; }
+  .histoire img { width:100%; border:1px solid var(--sepia); padding:3px; background:#fff; }
+  .histoire .credit { font-family:'IBM Plex Mono',monospace; font-size:.65rem; color:var(--sepia);
+    margin-top:.3rem; line-height:1.4; }
+  .histoire h4 { font-family:'Space Grotesk',sans-serif; font-size:1.02rem; margin-bottom:.4rem; }
+  .histoire p { font-size:.95rem; margin-bottom:.6rem; }
+  .histoire .citation { font-style:italic; text-align:center; font-size:1.05rem; margin:.7rem 0 .2rem; }
+  .histoire .source-cit { font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--sepia);
+    text-align:center; display:block; margin-bottom:.6rem; }
+
+  /* Encart Synthèse de TP (sobre) */
+  .synthese-tp { border:1px dashed var(--gris); border-radius:10px; background:#fff;
+    padding:1.1rem 1.4rem; margin:1.6rem 0; }
+  .synthese-tp .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .synthese-tp .contexte { font-size:.92rem; color:var(--gris); font-style:italic; margin-bottom:.8rem; }
+  .synthese-tp .sous-etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--gris); margin:.8rem 0 .2rem; display:flex; align-items:center; gap:.5rem; }
+  .synthese-tp .sous-etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .synthese-tp p:last-child { margin-bottom:0; }
+
+  /* Vidéos */
   .videos { display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0 1.6rem; }
   .video-chip { font-family:'IBM Plex Mono',monospace; font-size:.78rem;
-    display:inline-flex; align-items:center; gap:.4em; border:1px solid var(--encre);
+    display:inline-flex; align-items:center; gap:.45em; border:1px solid var(--encre);
     border-radius:999px; padding:.34rem .85rem; text-decoration:none; color:var(--encre);
     background:var(--papier); transition:background .15s,color .15s; }
   .video-chip:hover { background:var(--h-beta); color:#fff; }
 
+  /* Figures */
   figure { margin:1.6rem 0; }
   figure svg, figure img { max-width:100%; height:auto; display:block; }
   figure img.photo { border:1px solid var(--encre); border-radius:6px; }
   figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
-    margin-top:.55rem; max-width:62ch; }
+    margin-top:.55rem; max-width:66ch; line-height:1.55; }
+  figcaption .eqc { display:block; font-family:'Spectral',serif; font-style:italic; font-size:.95rem;
+    color:var(--encre); margin:.35rem 0; text-align:center; }
+  figcaption .eqc sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.6em; }
   .fig-row { display:flex; gap:1.6rem; flex-wrap:wrap; align-items:flex-start; }
-  .fig-row figure { flex:1 1 240px; max-width:430px; }
+  .fig-row figure { flex:1 1 240px; max-width:400px; }
+  .fig-row figure img { width:100%; height:220px; object-fit:cover; }
   .fig-etroite { max-width:300px; }
+  .pill-ex { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.66rem;
+    letter-spacing:.08em; text-transform:uppercase; color:#fff; border-radius:999px;
+    padding:.1rem .6rem; margin-bottom:.35rem; }
+  .pill-ex.phys { background:var(--h-beta); }
+  .pill-ex.chim { background:var(--h-alpha); }
   .duo { display:grid; grid-template-columns:minmax(220px,300px) minmax(0,1fr); gap:2rem; align-items:start; }
   .defile { overflow-x:auto; }
 
@@ -94,27 +195,42 @@
     font-size:.85rem; font-weight:600; padding-bottom:.4rem; }
   table.tab th, table.tab td { border:1px solid var(--encre); padding:.42rem .8rem; text-align:center; }
   table.tab thead th, table.tab .entete { font-family:'Space Grotesk',sans-serif; font-size:.82rem; background:var(--papier); }
-  .pastille { display:inline-block; width:.85em; height:.85em; border-radius:50%;
-    border:1px solid var(--encre); vertical-align:-.08em; margin-right:.35em; }
 
+  /* ===== Exercices (structure normalisée) ===== */
   .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
-    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0; max-width:78ch;
+    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0;
     background:#fdfdfb; }
   .exercice .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.75rem;
     text-transform:uppercase; letter-spacing:.1em; color:var(--h-alpha); margin-bottom:.5rem; }
-  .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.82rem; color:var(--gris); margin-top:.6rem; }
+  .exercice .duo-x { display:grid; grid-template-columns:1fr 200px; gap:1.1rem; align-items:start; }
+  .exercice .duo-x img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+  .exercice .question { font-style:italic; }
+  .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris);
+    margin-top:.5rem; border-top:1px dotted var(--grille); padding-top:.45rem; }
   details.correction { margin-top:.8rem; border-top:1px dashed var(--gris); padding-top:.6rem; }
   details.correction summary { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
     color:var(--h-gamma); cursor:pointer; }
   details.correction summary:hover { text-decoration:underline; }
   details.correction[open] summary { margin-bottom:.6rem; }
+  .etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--h-gamma); margin:.7rem 0 .2rem; display:flex;
+    align-items:center; gap:.5rem; }
+  .etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .resultat { border-bottom:2.5px solid var(--h-alpha); font-weight:600; padding-bottom:1px; white-space:nowrap; }
+  .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--gris);
+    text-align:center; margin-bottom:.1rem; }
+  .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem; margin:1rem 0 1rem 1rem; }
+  .eq-exo sub, .eq-exo sup { font-size:.6em; font-style:normal; font-family:'IBM Plex Mono',monospace; }
+  .coef-ok { color:var(--h-alpha); font-weight:700; font-style:normal; }
   .frac { display:inline-block; vertical-align:middle; text-align:center; margin:0 .25em; }
   .frac .haut { display:block; border-bottom:1.5px solid var(--encre); padding:0 .3em .1em; }
   .frac .bas { display:block; padding:.1em .3em 0; }
-  sub,sup { font-size:.72em; }
-  .formule { font-family:'Spectral',serif; font-style:italic; text-align:center; margin:1.2rem auto; font-size:1.12rem; }
   .unites { font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); }
+  .exercice p, .encart.exemple p, .histoire p, .synthese-tp p { max-width:none; }
+  .aparte { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris);
+    border-left:2px solid var(--grille); padding-left:.7rem; margin:.6rem 0; }
 
+  /* Checklist */
   .checklist { border:1px solid var(--encre); border-left:4px solid var(--h-gamma);
     border-radius:0 12px 12px 0; padding:1.2rem 1.4rem; margin:2.6rem 0 0; }
   .checklist h2 { margin-top:0; }
@@ -135,25 +251,40 @@
   #haut.visible { opacity:1; pointer-events:auto; }
   #haut:hover { background:var(--h-beta); color:#fff; }
 
+  details.partie { border-top:3px solid var(--encre); margin-top:2.4rem; }
+  details.partie > summary { list-style:none; cursor:pointer; }
+  details.partie > summary::-webkit-details-marker { display:none; }
+  details.partie > summary h2 { margin:1.1rem 0 1rem; }
+  details.partie > summary h2::after { content:"▾"; margin-left:auto; font-family:'IBM Plex Mono',monospace;
+    font-size:1rem; color:var(--gris); transition:transform .15s; }
+  details.partie:not([open]) > summary h2::after { content:"▸"; }
+  details.partie > summary:hover h2::after { color:var(--h-beta); }
+  .signature { text-align:right; font-family:'Space Grotesk',sans-serif; font-weight:600;
+    margin:2.4rem 0 0; }
+  .signature span { display:block; font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    color:var(--gris); font-weight:400; }
   details.toc-mobile { display:none; }
   footer { border-top:1px solid var(--encre); margin-top:2rem; }
   .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
     font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); }
 
-  /* ===== Verrou de fin de chapitre (v1 : porte à code) ===== */
+  /* ===== Verrou de fin de chapitre — v2 : porte centrée plein écran ===== */
   body.verrouille aside.sommaire,
   body.verrouille details.toc-mobile,
   body.verrouille article.lecture > *:not(#porte) { display:none; }
+  body.verrouille .page { grid-template-columns:minmax(0,1fr); max-width:720px; }
+  body.verrouille article.lecture { min-height:min(70vh, 620px); display:flex;
+    align-items:center; justify-content:center; }
   #porte { display:none; }
-  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; }
+  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; width:100%; }
   #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }
   #porte h1 { margin-bottom:.6rem; }
   #porte .explication { max-width:52ch; margin:0 auto 1.6rem; color:var(--gris); }
   #porte form { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
   #porte input {
-    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.45em;
-    text-transform:uppercase; text-align:center; width:11.5ch;
-    padding:.55rem .2rem .55rem .65rem; border:1.5px solid var(--encre);
+    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.4em;
+    text-transform:uppercase; text-align:center; width:16ch;
+    padding:.55rem .2rem .55rem .6rem; border:1.5px solid var(--encre);
     border-radius:10px; background:var(--papier); color:var(--encre);
   }
   #porte input:focus { outline:2px solid var(--h-beta); }
@@ -179,16 +310,15 @@
       text-decoration:none; border-bottom:1px dashed var(--grille); }
     details.toc-mobile a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
       color:var(--h-beta); margin-right:.5rem; }
-    .duo { grid-template-columns:1fr; }
+    .duo, .exemple .duo-e, .histoire .duo-h, .exercice .duo-x { grid-template-columns:1fr; }
+    .formule-bloc { grid-template-columns:1fr; }
+    .formule-bloc .eq { justify-content:center; }
     .checklist li { grid-template-columns:auto 1fr; }
     .checklist .refs { grid-column:2; white-space:normal; }
   }
 </style>
 </head>
-
 <body class="verrouille">
-<!-- ⚠ class="verrouille" = page à code. Pour un chapitre SANS verrou :
-     <body> simple, et supprimer le bloc #porte + le script du verrou. -->
 
 <div class="spectre" aria-hidden="true"><i></i><i></i><i></i></div>
 <nav>
@@ -241,47 +371,147 @@
 <p class="sous-titre">Thème X · Chapitre Y — cours &amp; exercices corrigés</p>
 
 <!-- ================================================================
-     SECTION MODÈLE — dupliquer ce bloc pour chaque section du cours.
-     Contenu = TEXTE FIDÈLE de la source (PPTX/PDF), pas de réécriture.
+     SECTION MODÈLE — dupliquer pour chaque section. Contenu = TEXTE
+     FIDÈLE de la source. Un exemplaire de CHAQUE COMPOSANT VALIDÉ
+     figure ci-dessous : conserver la structure exacte, remplacer le texte.
      ================================================================ -->
-<h2 id="ancre-1"><span class="num">01</span> Titre section 1</h2>
+<details class="partie" open>
+<summary><h2 id="ancre-1"><span class="num">01</span> Titre section 1</h2></summary>
+<div class="partie-corps">
 
-<p>Paragraphe de cours fidèle à la source…</p>
-<ul class="cours">
-  <li>Élément de liste si la source en contient…</li>
-</ul>
+<p>Paragraphe de cours fidèle à la source. Toujours envelopper valeur+unité :
+<span class="nb">1 kg</span>, <span class="nb">θ = 0 °C</span> (jamais de retour à la ligne entre les deux).</p>
 
-<!-- Définition importante → encadré : -->
-<div class="definition">
-  <p>Une <strong>notion</strong> est …</p>
+<!-- DÉFINITION : terme défini surligné avec .terme + picto fiche si repris sur la fiche -->
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Une <span class="terme">notion définie</span> est … (texte fidèle à la source).</p>
 </div>
 
-<!-- Vidéos de la section (QR codes décodés) → pastilles compactes : -->
+<!-- PROPRIÉTÉ : équations centrées HORS paragraphe avec .eq-ligne -->
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>Énoncé de la propriété…</p>
+  <p class="eq-ligne">L<sub>fusion</sub> = −L<sub>solidification</sub></p>
+</div>
+
+<!-- FORMULE (variante C validée) : formule en réserve sur fond encre, lettres des grandeurs en violet -->
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">Q = m × L</div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>Q</b> énergie échangée · J<br>
+    <b>m</b> masse · kg<br>
+    <b>L</b> énergie massique · <span class="nb">J.kg⁻¹</span>
+  </div>
+</div>
+
+<!-- NOTATION : chips centrées + cas particulier sous filet pointillé -->
+<div class="notation">
+  <div class="etq">✎ Notations — sujet</div>
+  <div class="chips">
+    <span class="chip"><b>(s)</b> solide</span>
+    <span class="chip"><b>(l)</b> liquide</span>
+  </div>
+  <p class="aq">Cas particulier : …</p>
+</div>
+
+<!-- MÉTHODE : étapes en chiffres ROMAINS automatiques -->
+<div class="methode">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">⚙ Méthode — intitulé</div>
+  <ol>
+    <li>Première étape…</li>
+    <li>Deuxième étape…</li>
+  </ol>
+</div>
+
+<!-- EXEMPLE détaillé (variante b validée) : étiquette mono verte, duo image+texte optionnel -->
+<div class="encart exemple">
+  <div class="etq">🕯 Exemple détaillé — intitulé</div>
+  <p>Texte de l'exemple… Équation de réaction TOUJOURS avec une flèche → (jamais =) :</p>
+  <p class="eq-ligne">A<sub>(s)</sub> + B<sub>(g)</sub> → C<sub>(g)</sub></p>
+</div>
+
+<!-- EXEMPLES ILLUSTRÉS côte à côte : pastilles pleines cyan (physique) / rouge (chimique) -->
+<div class="fig-row">
+  <figure>
+    <span class="pill-ex phys">Exemple — transformation physique</span>
+    <img class="photo" src="../assets/img/SLUG/nom-image.jpg" alt="Description" loading="lazy">
+    <figcaption>Légende… équation centrée dans la légende :
+    <span class="eqc">H<sub>2</sub>O<sub>(s)</sub> → H<sub>2</sub>O<sub>(g)</sub></span>
+    — crédit photo obligatoire (auteur, Wikimedia Commons / licence).</figcaption>
+  </figure>
+</div>
+
+<!-- HISTOIRE DES SCIENCES : double filet sépia, portrait + citation sourcée + pastille 🎬 -->
+<div class="histoire">
+  <div class="etq">Histoire des sciences</div>
+  <div class="duo-h">
+    <div>
+      <img src="../assets/img/SLUG/portrait.jpg" alt="Portrait…" loading="lazy">
+      <div class="credit">Auteur, titre, année — musée, licence.</div>
+    </div>
+    <div>
+      <h4>Nom du savant (dates), qualificatif</h4>
+      <p>Contexte historique bref…</p>
+      <p class="citation">« Citation vérifiée. »</p>
+      <span class="source-cit">source exacte de la citation</span>
+      <a class="video-chip" href="URL" target="_blank" rel="noopener">🎬 Titre de la vidéo — chaîne</a>
+    </div>
+  </div>
+</div>
+
+<!-- SYNTHÈSE DE TP (sobre) : contexte italique + graphique + Analyse/Conclusion -->
+<div class="synthese-tp">
+  <div class="etq">🧪 Synthèse du TPx — Titre du TP</div>
+  <p class="contexte">Manipulation réalisée : …</p>
+  <!-- Graphique SVG maison ici ; annotations par pastilles numérotées ①②, jamais de texte sur les tracés -->
+  <div class="sous-etape">Analyse</div>
+  <p>…</p>
+  <div class="sous-etape">Conclusion</div>
+  <p>…</p>
+</div>
+
+<!-- Vidéos de la section (QR codes décodés) -->
 <div class="videos">
-  <a class="video-chip" href="URL_YOUTUBE_SANS_?si=" target="_blank" rel="noopener">▶ Réviser en vidéo — Sujet ↗</a>
+  <a class="video-chip" href="URL_YOUTUBE_SANS_?si=" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
 </div>
 
-<!-- PHOTO réelle (conservée depuis la source, ≤900px, dans assets/img/SLUG/) : -->
-<figure class="fig-etroite">
-  <img class="photo" src="../assets/img/SLUG/nom-image.jpg" alt="Description précise" loading="lazy">
-  <figcaption>Image N — Légende fidèle à la source.</figcaption>
-</figure>
-
-<!-- SCHÉMA/GRAPHIQUE/CLIPART → SVG maison inline dans la charte
-     (voir CONSIGNES §4 : couleurs, polices, exemples dans la page chap. 1).
-     Plusieurs figures côte à côte : les envelopper dans <div class="fig-row">. -->
-
-<!-- Exercice avec correction dépliable : -->
+<!-- EXERCICE (structure normalisée) : contexte roman / QUESTION EN ITALIQUE /
+     données mono séparées / photo à CÔTÉ de l'énoncé (jamais dans la correction) /
+     correction séquencée par .etape -->
 <div class="exercice">
-  <div class="etiquette">Exercice N — intitulé éventuel</div>
-  <p>Énoncé fidèle…</p>
-  <p class="donnees">Données : … (si la source en donne)</p>
+  <div class="etiquette">Exercice N — intitulé</div>
+  <div class="duo-x">
+    <div>
+      <p>Contexte de l'exercice…</p>
+      <p class="question">Question posée, en italique ?</p>
+    </div>
+    <img src="../assets/img/SLUG/photo.jpg" alt="Description" loading="lazy">
+  </div>
+  <p class="donnees">Données : <span class="nb">L = 270 kJ.kg⁻¹</span></p>
   <details class="correction">
     <summary>Voir la correction</summary>
-    <p>Correction complète, calculs VÉRIFIÉS À LA MAIN.
-    Fractions : <span class="frac"><span class="haut">m</span><span class="bas">V</span></span></p>
+    <div class="etape">Extraction des informations</div>
+    <p>Conversions, choix de la bonne donnée…</p>
+    <div class="etape">Formule du cours</div>
+    <!-- ⚠ « Formule du cours » si application directe ; « Manipulation d'expression algébrique »
+         UNIQUEMENT s'il y a une vraie manipulation. Rappel générique petit, notations de
+         l'énoncé EN AVANT (grand) : -->
+    <p class="formule-cours-rappel">Q = m × L</p>
+    <p class="eq-ligne">Q = m<sub>fer</sub> × L<sub>solidification fer</sub></p>
+    <div class="etape">Application numérique</div>
+    <p>Q = … = <span class="resultat">résultat souligné</span> <!-- A.N. : … à partir du 2e exercice --></p>
+    <div class="etape">Conclusion</div>
+    <p>Interprétation physique du résultat (si pertinente).</p>
   </details>
 </div>
+</div>
+</details>
 <!-- ============================ fin section modèle ============== -->
 
 <!-- ================= CHECKLIST FINALE ================= -->
@@ -296,6 +526,8 @@
     <a class="video-chip" href="URL_DS_SHAREPOINT" target="_blank" rel="noopener">📄 DS (corrigé) ↗</a>
   </div>
 </section>
+
+<p class="signature">M. Van Hoorde<span>Lycée général Isaac de l'Étoile · Poitiers</span></p>
 
 </article>
 </div>
@@ -320,7 +552,6 @@
   btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
   maj();
 
-  /* Sommaire : surligner la section en cours de lecture (calcul à la position) */
   var liens = {};
   document.querySelectorAll('#toc a').forEach(function(a){
     liens[a.getAttribute('href').slice(1)] = a;
@@ -336,7 +567,16 @@
   document.addEventListener('scroll', majToc, {passive:true});
   majToc();
 
-  /* Checklist « Pour le DS » : cases persistées sur l'appareil */
+  /* Sections repliables : un clic dans un sommaire ouvre la section visée */
+  document.querySelectorAll('#toc a, details.toc-mobile a').forEach(function(a){
+    a.addEventListener('click', function(){
+      var cible = document.querySelector(a.getAttribute('href'));
+      if (!cible) return;
+      var partie = cible.closest('details.partie');
+      if (partie) partie.open = true;
+    });
+  });
+
   var CLE = 'cours-SLUG-checklist' /* ⚠ REMPLACER SLUG (ex: 2nde-t1c2) */;
   var boites = document.querySelectorAll('#liste-ds input[type="checkbox"]');
   var etat = {};
@@ -352,16 +592,9 @@
 </script>
 
 <script>
-/* ============================================================
-   Verrou de fin de chapitre — v1 (porte à code)
-   · Le code n'est jamais écrit ici : seule son EMPREINTE SHA-256
-     est stockée. Pour changer de code, recalculer l'empreinte.
-   · Déblocage mémorisé sur l'appareil (localStorage).
-   · Pour re-verrouiller (tests) : ouvrir la page avec ?verrou=1
-   · Limite assumée de la v1 : le contenu est présent dans la page,
-     un élève outillé peut le lire via les outils de développement.
-     La protection forte reste : publier la page au bon moment.
-   ============================================================ */
+/* Verrou de fin de chapitre — v2 (porte à code centrée)
+   Le code n'est jamais écrit ici : seule son EMPREINTE SHA-256 est stockée.
+   Re-verrouillage pour tests : ?verrou=1 */
 (function(){
   var EMPREINTE = 'EMPREINTE_SHA256_A_REMPLACER' /* ⚠ empreinte du code fourni par Loïc : python3 -c "import hashlib;print(hashlib.sha256('CODE6C'.encode()).hexdigest())" */;
   var CLE = 'deblocage-SLUG' /* ⚠ REMPLACER SLUG */;
@@ -373,14 +606,12 @@
     window.scrollTo(0, 0);
   }
 
-  /* re-verrouillage volontaire pour les tests : ?verrou=1 */
   try {
     if (new URLSearchParams(location.search).has('verrou')) {
       localStorage.removeItem(CLE);
     }
   } catch(e) {}
 
-  /* déjà débloqué sur cet appareil ? */
   try {
     if (localStorage.getItem(CLE) === '1') { deverrouiller(); return; }
   } catch(e) {}
