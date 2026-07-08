@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2nde — Constitution de l'atome · Physique-Chimie</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e;
+    --gris:#6b6f7a; --carte:#ffffff; --or:#f0cf6e; --or-fonce:#b28a1d;
+    --vert:#6fae7a; --vert-fonce:#4c8a58; --sepia:#8a6d3b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Spectral', Georgia, serif; color:var(--encre);
+    background-color:var(--papier);
+    background-image:linear-gradient(var(--grille) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+    background-size:32px 32px; line-height:1.7;
+  }
+  .spectre { height:6px; background:var(--encre); position:relative; }
+  .spectre i { position:absolute; top:0; bottom:0; width:4px; }
+  .spectre i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .spectre i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .spectre i:nth-child(3){ left:76%; background:var(--h-alpha); }
+  nav { background:var(--papier); border-bottom:1px solid var(--encre); }
+  .nav-inner { max-width:1200px; margin:0 auto; padding:.85rem 1.4rem;
+    display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+  .nav-logo { font-family:'Space Grotesk',sans-serif; font-weight:700; }
+  .nav-logo span { color:var(--h-alpha); }
+  .retour { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--encre); text-decoration:none; border-bottom:2px solid var(--h-beta); }
+  .retour:hover { color:var(--h-beta); }
+  #lecture { position:sticky; top:0; height:4px; z-index:50; }
+  #lecture .fait { height:100%; width:0%; background:var(--h-alpha); }
+
+  .page { max-width:1200px; margin:0 auto; padding:2rem 1.4rem 4rem;
+    display:grid; grid-template-columns:230px minmax(0,1fr); gap:2.2rem; align-items:start; }
+  aside.sommaire { position:sticky; top:1.4rem; font-family:'Space Grotesk',sans-serif; }
+  .sommaire .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--gris); margin-bottom:.7rem; }
+  .sommaire ol { list-style:none; }
+  .sommaire a { display:flex; gap:.6rem; align-items:baseline; padding:.42rem .65rem;
+    border-radius:8px; text-decoration:none; color:var(--encre); font-size:.92rem; line-height:1.3; }
+  .sommaire a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--h-beta); }
+  .sommaire a:hover { background:var(--carte); }
+  .sommaire a.actif { background:var(--carte); box-shadow:inset 3px 0 0 var(--h-alpha); font-weight:600; }
+  .sommaire .ds a .n { color:var(--h-gamma); }
+
+  article.lecture { background:var(--carte); border:1px solid var(--encre); border-radius:14px;
+    box-shadow:6px 6px 0 rgba(20,26,38,.08); padding:clamp(1.4rem,4vw,3rem); min-width:0; }
+  .fil-ariane { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); margin-bottom:.5rem; }
+  .fil-ariane .niveau { color:var(--h-alpha); }
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.7rem,4vw,2.4rem); line-height:1.12; margin-bottom:.4rem; }
+  .sous-titre { font-family:'IBM Plex Mono',monospace; font-size:.85rem; color:var(--gris); margin-bottom:2.4rem; }
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2.8rem 0 1rem;
+    display:flex; align-items:baseline; gap:.8rem; scroll-margin-top:2rem; }
+  h2 .num { font-family:'IBM Plex Mono',monospace; font-size:.9rem; color:var(--h-beta); }
+  p { margin-bottom:.9rem; max-width:75ch; text-align:justify; hyphens:auto; }
+  strong { font-weight:600; }
+  ul.cours { max-width:75ch; margin:0 0 .9rem 1.2rem; text-align:justify; }
+  ul.cours li { margin-bottom:.5rem; }
+  .nb { white-space:nowrap; }
+  sub, sup { font-size:.68em; }
+
+  /* ===== BIBLIOTHÈQUE DE COMPOSANTS (validée sur le chapitre T1-C2) ===== */
+
+  /* Encart générique : Définition (Hβ) / Propriété (Hγ) / Exemple (vert) */
+  .encart { border:1px solid var(--encre); border-radius:0 10px 10px 0;
+    background:var(--papier); padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.12em; text-transform:uppercase; margin-bottom:.35rem; }
+  .encart p:last-child { margin-bottom:0; }
+  .definition { border-left:4px solid var(--h-beta); }
+  .definition .etq { color:var(--h-beta); }
+  .terme { background:rgba(29,154,170,.16); border-radius:3px; padding:.02em .25em;
+    font-weight:600; color:#0f6b76; }
+  .propriete { border-left:4px solid var(--h-gamma); }
+  .propriete .etq { color:var(--h-gamma); }
+  .exemple { border-left:4px solid var(--vert); background:#fff; max-width:none; }
+  .exemple .etq { color:var(--vert-fonce); }
+  .exemple .duo-e { display:grid; grid-template-columns:220px 1fr; gap:1.2rem; align-items:center; }
+  .exemple img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+
+  /* Équation centrée hors paragraphe */
+  .eq-ligne { font-family:'Spectral',serif; font-style:italic; text-align:center;
+    font-size:1.15rem; margin:.7rem auto; max-width:none; white-space:nowrap; overflow-x:auto; }
+  .eq-ligne sub, .eq-ligne sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.58em; }
+
+  /* Pictogramme « à noter sur la fiche » (crayon, coin haut droit) */
+  .a-noter { position:absolute; top:-.7rem; right:.8rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; background:var(--carte); border:1.4px solid var(--encre); border-radius:50%;
+    width:1.7rem; height:1.7rem; display:flex; align-items:center; justify-content:center; }
+  figure { position:relative; }
+  figure .a-noter { top:-.4rem; right:-.2rem; }
+
+  /* Encart Formule (variante C validée) */
+  .formule-bloc { margin:1.4rem auto; max-width:60ch; border:1px solid var(--encre); border-radius:12px;
+    background:#fff; box-shadow:4px 4px 0 rgba(74,63,158,.18);
+    display:grid; grid-template-columns:auto minmax(0,1fr); position:relative; }
+  .formule-bloc .eq { background:var(--encre); color:var(--papier); font-family:'Spectral',serif;
+    font-style:italic; font-size:1.9rem; display:flex; align-items:center; padding:1rem 1.5rem;
+    white-space:nowrap; border-radius:11px 0 0 11px; }
+  .formule-bloc .eq sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.5em; }
+  .formule-bloc .grandeurs { padding:.9rem 1.3rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem; line-height:2.05; }
+  .formule-bloc .grandeurs b { color:var(--h-gamma); }
+  .formule-bloc .titre { font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--gris); display:block; margin-bottom:.15rem; }
+
+  /* Encart Notation */
+  .notation { border:1px dashed var(--encre); border-radius:10px; background:#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .notation .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .notation .chips { display:flex; gap:.9rem; flex-wrap:wrap; margin-bottom:.8rem; justify-content:center; }
+  .notation .chip { font-family:'IBM Plex Mono',monospace; font-size:.85rem; border:1px solid var(--encre);
+    border-radius:8px; padding:.35rem .8rem; background:var(--papier); }
+  .notation .chip b { color:var(--h-beta); }
+  .notation .aq { border-top:1px dashed var(--grille); padding-top:.7rem; margin-bottom:0; }
+  .notation .aq b { color:var(--h-beta); }
+
+  /* Encart Méthode (étapes en chiffres romains) */
+  .methode { border:1px solid var(--encre); border-left:4px solid var(--or); border-radius:0 10px 10px 0;
+    background:linear-gradient(0deg,rgba(240,207,110,.08),rgba(240,207,110,.08)),#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .methode .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--or-fonce); margin-bottom:.5rem; }
+  .methode ol { list-style:none; counter-reset:met; margin:0; }
+  .methode li { counter-increment:met; display:grid; grid-template-columns:2.2rem 1fr; gap:.5rem;
+    margin-bottom:.5rem; align-items:baseline; }
+  .methode li::before { content:counter(met,upper-roman) "."; font-family:'IBM Plex Mono',monospace;
+    font-weight:600; color:var(--or-fonce); text-align:right; }
+
+  /* Encart Histoire des sciences */
+  .histoire { border:1.5px solid var(--sepia); outline:1px solid var(--sepia); outline-offset:3px;
+    background:#f8f2e2; padding:1.2rem 1.4rem; margin:1.8rem 3px; }
+  .histoire .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--sepia); text-align:center; margin-bottom:.8rem; }
+  .histoire .etq::before, .histoire .etq::after { content:"❦"; margin:0 .6rem; }
+  .histoire .duo-h { display:grid; grid-template-columns:170px 1fr; gap:1.2rem; align-items:start; }
+  .histoire img { width:100%; border:1px solid var(--sepia); padding:3px; background:#fff; }
+  .histoire .credit { font-family:'IBM Plex Mono',monospace; font-size:.65rem; color:var(--sepia);
+    margin-top:.3rem; line-height:1.4; }
+  .histoire h4 { font-family:'Space Grotesk',sans-serif; font-size:1.02rem; margin-bottom:.4rem; }
+  .histoire p { font-size:.95rem; margin-bottom:.6rem; }
+  .histoire .citation { font-style:italic; text-align:center; font-size:1.05rem; margin:.7rem 0 .2rem; }
+  .histoire .source-cit { font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--sepia);
+    text-align:center; display:block; margin-bottom:.6rem; }
+
+  /* Encart Synthèse de TP (sobre) */
+  .synthese-tp { border:1px dashed var(--gris); border-radius:10px; background:#fff;
+    padding:1.1rem 1.4rem; margin:1.6rem 0; }
+  .synthese-tp .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .synthese-tp .contexte { font-size:.92rem; color:var(--gris); font-style:italic; margin-bottom:.8rem; }
+  .synthese-tp .sous-etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--gris); margin:.8rem 0 .2rem; display:flex; align-items:center; gap:.5rem; }
+  .synthese-tp .sous-etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .synthese-tp p:last-child { margin-bottom:0; }
+
+  /* Vidéos */
+  .videos { display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0 1.6rem; }
+  .video-chip { font-family:'IBM Plex Mono',monospace; font-size:.78rem;
+    display:inline-flex; align-items:center; gap:.45em; border:1px solid var(--encre);
+    border-radius:999px; padding:.34rem .85rem; text-decoration:none; color:var(--encre);
+    background:var(--papier); transition:background .15s,color .15s; }
+  .video-chip:hover { background:var(--h-beta); color:#fff; }
+
+  /* Figures */
+  figure { margin:1.6rem 0; }
+  figure svg, figure img { max-width:100%; height:auto; display:block; }
+  figure img.photo { border:1px solid var(--encre); border-radius:6px; }
+  figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
+    margin-top:.55rem; max-width:66ch; line-height:1.55; }
+  figcaption .eqc { display:block; font-family:'Spectral',serif; font-style:italic; font-size:.95rem;
+    color:var(--encre); margin:.35rem 0; text-align:center; }
+  figcaption .eqc sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.6em; }
+  .fig-row { display:flex; gap:1.6rem; flex-wrap:wrap; align-items:flex-start; }
+  .fig-row figure { flex:1 1 240px; max-width:400px; }
+  .fig-row figure img { width:100%; height:220px; object-fit:cover; }
+  .fig-etroite { max-width:300px; }
+  .pill-ex { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.66rem;
+    letter-spacing:.08em; text-transform:uppercase; color:#fff; border-radius:999px;
+    padding:.1rem .6rem; margin-bottom:.35rem; }
+  .pill-ex.phys { background:var(--h-beta); }
+  .pill-ex.chim { background:var(--h-alpha); }
+  .duo { display:grid; grid-template-columns:minmax(220px,300px) minmax(0,1fr); gap:2rem; align-items:start; }
+  .defile { overflow-x:auto; }
+
+  table.tab { border-collapse:collapse; font-size:.95rem; }
+  table.tab caption { caption-side:top; text-align:left; font-family:'Space Grotesk',sans-serif;
+    font-size:.85rem; font-weight:600; padding-bottom:.4rem; }
+  table.tab th, table.tab td { border:1px solid var(--encre); padding:.42rem .8rem; text-align:center; }
+  table.tab thead th, table.tab .entete { font-family:'Space Grotesk',sans-serif; font-size:.82rem; background:var(--papier); }
+
+  /* ===== Exercices (structure normalisée) ===== */
+  .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
+    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0;
+    background:#fdfdfb; }
+  .exercice .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    text-transform:uppercase; letter-spacing:.1em; color:var(--h-alpha); margin-bottom:.5rem; }
+  .exercice .duo-x { display:grid; grid-template-columns:1fr 200px; gap:1.1rem; align-items:start; }
+  .exercice .duo-x img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+  .exercice .question { font-style:italic; }
+  .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris);
+    margin-top:.5rem; border-top:1px dotted var(--grille); padding-top:.45rem; }
+  details.correction { margin-top:.8rem; border-top:1px dashed var(--gris); padding-top:.6rem; }
+  details.correction summary { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--h-gamma); cursor:pointer; }
+  details.correction summary:hover { text-decoration:underline; }
+  details.correction[open] summary { margin-bottom:.6rem; }
+  .etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--h-gamma); margin:.7rem 0 .2rem; display:flex;
+    align-items:center; gap:.5rem; }
+  .etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .resultat { border-bottom:2.5px solid var(--h-alpha); font-weight:600; padding-bottom:1px; white-space:nowrap; }
+  .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--gris);
+    text-align:center; margin-bottom:.1rem; }
+  .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem; margin:1rem 0 1rem 1rem; }
+  .eq-exo sub, .eq-exo sup { font-size:.6em; font-style:normal; font-family:'IBM Plex Mono',monospace; }
+  .coef-ok { color:var(--h-alpha); font-weight:700; font-style:normal; }
+  .frac { display:inline-block; vertical-align:middle; text-align:center; margin:0 .25em; }
+  .frac .haut { display:block; border-bottom:1.5px solid var(--encre); padding:0 .3em .1em; }
+  .frac .bas { display:block; padding:.1em .3em 0; }
+  .unites { font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); }
+  .exercice p, .encart.exemple p, .histoire p, .synthese-tp p { max-width:none; }
+  .aparte { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris);
+    border-left:2px solid var(--grille); padding-left:.7rem; margin:.6rem 0; }
+
+  /* Checklist */
+  .checklist { border:1px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 12px 12px 0; padding:1.2rem 1.4rem; margin:2.6rem 0 0; }
+  .checklist h2 { margin-top:0; }
+  .checklist ol { list-style:none; }
+  .checklist li { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem;
+    align-items:baseline; padding:.55rem 0; border-bottom:1px dashed var(--grille); }
+  .checklist li:last-child { border-bottom:none; }
+  .checklist input[type="checkbox"] { transform:translateY(2px) scale(1.15); accent-color:var(--h-gamma); cursor:pointer; }
+  .checklist label { cursor:pointer; }
+  .checklist .refs { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); white-space:nowrap; }
+  .checklist .refs a { color:var(--h-beta); text-decoration:none; }
+  .checklist .refs a:hover { text-decoration:underline; }
+
+  #haut { position:fixed; right:1.2rem; bottom:1.2rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.8rem; background:var(--carte); border:1px solid var(--encre); border-radius:999px;
+    padding:.5rem .85rem; cursor:pointer; box-shadow:3px 3px 0 rgba(20,26,38,.12);
+    opacity:0; pointer-events:none; transition:opacity .2s; }
+  #haut.visible { opacity:1; pointer-events:auto; }
+  #haut:hover { background:var(--h-beta); color:#fff; }
+
+  details.partie { border-top:3px solid var(--encre); margin-top:2.4rem; }
+  details.partie > summary { list-style:none; cursor:pointer; }
+  details.partie > summary::-webkit-details-marker { display:none; }
+  details.partie > summary h2 { margin:1.1rem 0 1rem; }
+  details.partie > summary h2::after { content:"▾"; margin-left:auto; font-family:'IBM Plex Mono',monospace;
+    font-size:1rem; color:var(--gris); transition:transform .15s; }
+  details.partie:not([open]) > summary h2::after { content:"▸"; }
+  details.partie > summary:hover h2::after { color:var(--h-beta); }
+  .signature { text-align:right; font-family:'Space Grotesk',sans-serif; font-weight:600;
+    margin:2.4rem 0 0; }
+  .signature span { display:block; font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    color:var(--gris); font-weight:400; }
+  details.toc-mobile { display:none; }
+  footer { border-top:1px solid var(--encre); margin-top:2rem; }
+  .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
+    font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); }
+
+  /* ===== Verrou de fin de chapitre — v2 : porte centrée plein écran ===== */
+  body.verrouille aside.sommaire,
+  body.verrouille details.toc-mobile,
+  body.verrouille article.lecture > *:not(#porte) { display:none; }
+  body.verrouille .page { grid-template-columns:minmax(0,1fr); max-width:720px; }
+  body.verrouille article.lecture { min-height:min(70vh, 620px); display:flex;
+    align-items:center; justify-content:center; }
+  #porte { display:none; }
+  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; width:100%; }
+  #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }
+  #porte h1 { margin-bottom:.6rem; }
+  #porte .explication { max-width:52ch; margin:0 auto 1.6rem; color:var(--gris); }
+  #porte form { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+  #porte input {
+    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.4em;
+    text-transform:uppercase; text-align:center; width:16ch;
+    padding:.55rem .2rem .55rem .6rem; border:1.5px solid var(--encre);
+    border-radius:10px; background:var(--papier); color:var(--encre);
+  }
+  #porte input:focus { outline:2px solid var(--h-beta); }
+  #porte button {
+    font-family:'IBM Plex Mono',monospace; font-size:.9rem; cursor:pointer;
+    border:1.5px solid var(--encre); border-radius:10px; padding:.55rem 1.1rem;
+    background:var(--encre); color:var(--papier);
+  }
+  #porte button:hover { background:var(--h-beta); border-color:var(--h-beta); }
+  #porte .erreur { color:var(--h-alpha); font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; min-height:1.4em; margin-top:.8rem; }
+
+  @media (max-width:960px) {
+    .page { grid-template-columns:1fr; gap:1.2rem; padding:1.2rem .9rem 3rem; }
+    aside.sommaire { display:none; }
+    details.toc-mobile { display:block; font-family:'Space Grotesk',sans-serif;
+      background:var(--carte); border:1px solid var(--encre); border-radius:12px;
+      padding:.7rem 1rem; margin-bottom:1.2rem; }
+    details.toc-mobile summary { font-family:'IBM Plex Mono',monospace; font-size:.8rem;
+      letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    details.toc-mobile ol { list-style:none; margin-top:.6rem; }
+    details.toc-mobile a { display:block; padding:.4rem .2rem; color:var(--encre);
+      text-decoration:none; border-bottom:1px dashed var(--grille); }
+    details.toc-mobile a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+      color:var(--h-beta); margin-right:.5rem; }
+    .duo, .exemple .duo-e, .histoire .duo-h, .exercice .duo-x { grid-template-columns:1fr; }
+    .formule-bloc { grid-template-columns:1fr; }
+    .formule-bloc .eq { justify-content:center; }
+    .checklist li { grid-template-columns:auto 1fr; }
+    .checklist .refs { grid-column:2; white-space:normal; }
+  }
+
+  /* ===== Composants spécifiques au chapitre 3 ===== */
+
+  /* Frise historique multi-portraits (dans .histoire) */
+  .frise-grille { display:grid; grid-template-columns:repeat(4,1fr); gap:1.2rem; position:relative; }
+  .frise-grille::before { content:""; position:absolute; top:38px; left:6%; right:6%; height:2px;
+    background:repeating-linear-gradient(to right, var(--sepia) 0 8px, transparent 8px 14px); z-index:0; }
+  .frise-item { text-align:center; position:relative; z-index:1; }
+  .frise-item .portrait-wrap { width:76px; height:76px; margin:0 auto .6rem; border-radius:50%;
+    overflow:hidden; border:3px solid var(--papier); outline:2px solid var(--sepia); background:#ccc; }
+  .frise-item .portrait-wrap img { width:100%; height:100%; object-fit:cover;
+    filter:grayscale(1) contrast(1.05); border:none; padding:0; }
+  .frise-item .annee { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--sepia);
+    background:var(--papier); border:1px solid var(--sepia); border-radius:999px; padding:.1rem .6rem;
+    display:inline-block; margin-bottom:.4rem; }
+  .frise-item h4 { font-family:'Space Grotesk',sans-serif; font-size:.88rem; margin-bottom:.3rem; }
+  .frise-item p { font-size:.78rem; text-align:left; max-width:none; margin:0; hyphens:auto; }
+  .frise-synthese { margin-top:1.1rem; padding-top:.8rem; border-top:1px dashed var(--sepia); }
+  .frise-synthese p { margin-bottom:0; }
+
+  /* Encadré notation conventionnelle A/Z X */
+  .notation-noyau { border:1px solid var(--encre); border-radius:10px; background:#fff;
+    padding:1.4rem 1.6rem; margin:1.2rem 0; max-width:640px;
+    display:grid; grid-template-columns:auto 1fr; gap:2.4rem; align-items:center; }
+  .notation-noyau .boite-symb { font-family:'Spectral',serif; text-align:center; position:relative;
+    padding:0 2.4rem 0 .8rem; }
+  .notation-noyau .boite-symb .A { display:block; font-size:2.1rem; line-height:1.05; }
+  .notation-noyau .boite-symb .Z { display:block; font-size:2.1rem; line-height:1.05; }
+  .notation-noyau .boite-symb .X { font-size:4rem; font-style:italic; position:absolute;
+    right:-.4rem; top:50%; transform:translateY(-50%); }
+  .notation-noyau .legende-liste { font-family:'IBM Plex Mono',monospace; font-size:.85rem; line-height:2.3; }
+  .notation-noyau .legende-liste b { color:var(--h-beta); }
+
+  /* Grille isotopes colorée */
+  .grille-isotopes { border:1px solid var(--encre); border-radius:10px; background:#fff;
+    padding:1rem 1.2rem; }
+  .grille-isotopes table { border-collapse:separate; border-spacing:5px; width:100%; }
+  .grille-isotopes td { text-align:center; padding:.5rem .3rem; }
+  .grille-isotopes .cellule { border-radius:6px; border:1px solid var(--encre); }
+  .grille-isotopes .cellule .a { display:block; font-family:'IBM Plex Mono',monospace;
+    font-size:.9rem; font-weight:700; line-height:1.2; }
+  .grille-isotopes .cellule .symb { display:block; font-family:'Spectral',serif;
+    font-size:1.35rem; font-style:italic; line-height:1.1; }
+  .grille-isotopes .oxygene { background:#f3c9c2; }
+  .grille-isotopes .azote { background:#c7e6c9; }
+  .grille-isotopes .carbone { background:#bcd9f0; }
+  .grille-isotopes .axes { display:flex; flex-direction:column; gap:.2rem; margin-top:.5rem;
+    font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--gris); }
+
+  /* Tableau périodique compact */
+  .ptable { display:grid; grid-template-columns:repeat(18, minmax(0,1fr)); gap:2px;
+    font-family:'IBM Plex Mono',monospace; margin:0; }
+  .ptable .el { border:1px solid var(--encre); border-radius:3px; text-align:center;
+    padding:.15rem .05rem .2rem; min-width:0; background:#fff; cursor:default; }
+  .ptable .el i { display:block; font-style:normal; font-size:.52rem; color:var(--gris); line-height:1.2; }
+  .ptable .el b { display:block; font-family:'Space Grotesk',sans-serif; font-size:.72rem; line-height:1.15; }
+  .ptable .el:hover { outline:2px solid var(--h-beta); position:relative; z-index:2; }
+  .ptable .alcalin { background:#f3b8b0; }
+  .ptable .alcalinoterreux { background:#f0d9a8; }
+  .ptable .transition { background:#f6d5dc; }
+  .ptable .pauvre { background:#d9d5c9; }
+  .ptable .lanthanide { background:#f2c4e0; }
+  .ptable .actinide { background:#e9b7d9; }
+  .ptable .metalloide { background:#d8d9a0; }
+  .ptable .nonmetal { background:#c7e6c9; }
+  .ptable .halogene { background:#f4ee9d; }
+  .ptable .noble { background:#a9d6dd; }
+  .ptable .nonclasse { background:#fff; }
+  .ptable .renvoi { background:var(--papier); border-style:dashed; }
+  .ptable .el[style*="grid-row:9"] { margin-top:10px; }
+  .ptable-legende { display:flex; flex-wrap:wrap; gap:.5rem 1.1rem; margin:.8rem 0 1.4rem;
+    font-family:'IBM Plex Mono',monospace; font-size:.7rem; color:var(--encre); }
+  .ptable-legende span { display:inline-flex; align-items:center; gap:.4em; }
+  .ptable-legende i { width:.9em; height:.9em; border:1px solid var(--encre); border-radius:2px; display:inline-block; }
+  .ptable-legende .alcalin { background:#f3b8b0; } .ptable-legende .alcalinoterreux { background:#f0d9a8; }
+  .ptable-legende .transition { background:#f6d5dc; } .ptable-legende .pauvre { background:#d9d5c9; }
+  .ptable-legende .lanthanide { background:#f2c4e0; } .ptable-legende .actinide { background:#e9b7d9; }
+  .ptable-legende .metalloide { background:#d8d9a0; } .ptable-legende .nonmetal { background:#c7e6c9; }
+  .ptable-legende .halogene { background:#f4ee9d; } .ptable-legende .noble { background:#a9d6dd; }
+  .ptable-legende .nonclasse { background:#fff; }
+
+  @media (max-width:960px) {
+    .frise-grille { grid-template-columns:repeat(2,1fr); }
+    .frise-grille::before { display:none; }
+    .notation-noyau { grid-template-columns:1fr; gap:1.2rem; justify-items:center; }
+    .ptable { overflow-x:auto; }
+  }
+
+</style>
+</head>
+<body class="verrouille">
+
+<div class="spectre" aria-hidden="true"><i></i><i></i><i></i></div>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>&middot;</span> Physique-Chimie</div>
+    <a class="retour" href="2nde-physique-chimie.html">← Retour aux cours de Seconde</a>
+  </div>
+</nav>
+<div id="lecture"><div class="fait"></div></div>
+
+<div class="page">
+
+<aside class="sommaire" aria-label="Sommaire du chapitre">
+  <div class="etiquette">Chapitre 3 — Sommaire</div>
+  <ol id="toc">
+    <li><a href="#ancre-1"><span class="n">01</span> Histoire du modèle atomique</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span> Le modèle de Bohr</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span> Écriture symbolique</a></li>
+    <li><a href="#ancre-4"><span class="n">04</span> Isotopes</a></li>
+    <li><a href="#ancre-5"><span class="n">05</span> Masse de l'atome</a></li>
+    <li><a href="#ancre-6"><span class="n">06</span> Charges électriques</a></li>
+    <li><a href="#ancre-7"><span class="n">07</span> Dimensions</a></li>
+    <li><a href="#ancre-8"><span class="n">08</span> Ions monoatomiques</a></li>
+    <li><a href="#ancre-9"><span class="n">09</span> Élément chimique</a></li>
+    <li class="ds"><a href="#pour-le-ds"><span class="n">✓</span> Pour le DS, je sais</a></li>
+  </ol>
+</aside>
+
+<article class="lecture">
+
+<div id="porte">
+  <div class="cadenas" aria-hidden="true">🔒</div>
+  <h1>Constitution de l'atome</h1>
+  <p class="explication">Ce chapitre sera débloqué <strong>en fin de séquence</strong>,
+  au rythme de la classe. Le code de déblocage est transmis via le cahier de textes —
+  il figure aussi en bas de ta fiche de cours.</p>
+  <form id="forme-code" autocomplete="off">
+    <input id="champ-code" type="text" maxlength="6" inputmode="text"
+           spellcheck="false" aria-label="Code de déblocage (6 caractères)"
+           placeholder="••••••">
+    <button type="submit">Déverrouiller</button>
+  </form>
+  <p class="erreur" id="erreur-code" role="alert"></p>
+</div>
+
+<details class="toc-mobile">
+  <summary>Sommaire du chapitre</summary>
+  <ol>
+    <li><a href="#ancre-1"><span class="n">01</span> Histoire du modèle atomique</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span> Le modèle de Bohr</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span> Écriture symbolique</a></li>
+    <li><a href="#ancre-4"><span class="n">04</span> Isotopes</a></li>
+    <li><a href="#ancre-5"><span class="n">05</span> Masse de l'atome</a></li>
+    <li><a href="#ancre-6"><span class="n">06</span> Charges électriques</a></li>
+    <li><a href="#ancre-7"><span class="n">07</span> Dimensions</a></li>
+    <li><a href="#ancre-8"><span class="n">08</span> Ions monoatomiques</a></li>
+    <li><a href="#ancre-9"><span class="n">09</span> Élément chimique</a></li>
+    <li class="ds"><a href="#pour-le-ds"><span class="n">✓</span> Pour le DS, je sais</a></li>
+  </ol>
+</details>
+
+<p class="fil-ariane">Physique-Chimie &middot; <span class="niveau">Seconde générale</span> &middot; Thème 1 — Constitution et transformations de la matière</p>
+<h1>Constitution de l'atome</h1>
+<p class="sous-titre">Thème 1 &middot; Chapitre 3 — cours &amp; exercices corrigés</p>
+
+<!-- ============ 01 — Histoire du modèle atomique ============ -->
+<details class="partie" open>
+<summary><h2 id="ancre-1"><span class="num">01</span> Histoire du modèle atomique</h2></summary>
+<div class="partie-corps">
+
+<p class="aparte">Synthèse de l'Activité 1 p. 90.</p>
+
+<p>Le modèle de l'atome que nous étudions en classe de Seconde est le <strong>modèle de Bohr</strong>.
+D'après ce modèle, l'atome est constitué d'un <strong>noyau positif</strong> autour duquel gravitent
+des <strong>électrons négatifs répartis sur des couches</strong>.</p>
+<p>Ce modèle hérite des avancées scientifiques qui ont permis de préciser nos connaissances sur un
+atome qui n'était au départ modélisé que par une simple sphère dure.</p>
+
+<div class="histoire">
+  <div class="etq">Histoire des sciences</div>
+  <div class="frise-grille">
+    <div class="frise-item">
+      <div class="portrait-wrap"><img src="../assets/img/2nde-t1c3/t1c3-portrait-thomson.jpg" alt="Portrait de J.J. Thomson écrivant à son bureau" loading="lazy"></div>
+      <span class="annee">1904</span>
+      <h4>J.J. Thomson</h4>
+      <p>Dans le modèle de Thomson, l'atome se dote d'une partie positive et d'une partie négative.</p>
+    </div>
+    <div class="frise-item">
+      <div class="portrait-wrap"><img src="../assets/img/2nde-t1c3/t1c3-portrait-rutherford.jpg" alt="Portrait d'Ernest Rutherford" loading="lazy"></div>
+      <span class="annee">1909</span>
+      <h4>E. Rutherford</h4>
+      <p>Rutherford découvre l'existence d'un noyau positif très petit et d'un nuage d'électrons.</p>
+    </div>
+    <div class="frise-item">
+      <div class="portrait-wrap"><img src="../assets/img/2nde-t1c3/t1c3-portrait-bohr.jpg" alt="Portrait de Niels Bohr" loading="lazy"></div>
+      <span class="annee">1913</span>
+      <h4>N. Bohr</h4>
+      <p>Bohr établit, grâce à la physique quantique, que les électrons sont disposés sur des couches.</p>
+    </div>
+    <div class="frise-item">
+      <div class="portrait-wrap"><img src="../assets/img/2nde-t1c3/t1c3-portrait-schrodinger.jpg" alt="Portrait d'Erwin Schrödinger" loading="lazy"></div>
+      <span class="annee">1925</span>
+      <h4>E. Schrödinger</h4>
+      <p>Schrödinger introduira plus tard la notion de nuage électronique.</p>
+    </div>
+  </div>
+  <div class="frise-synthese">
+    <p class="credit" style="text-align:left;">Portraits : photographies historiques (domaine public) — attributions Wikimedia Commons à confirmer avant publication.</p>
+  </div>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=GZlSapUc9nA&t=514s" target="_blank" rel="noopener">▶ L'évolution du modèle atomique en vidéo ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=GFswMotPhIY&t=102s" target="_blank" rel="noopener">🎬 M. Van Hoorde sur YouTube ↗</a>
+</div>
+
+</div>
+</details>
+
+<!-- ============ 02 — Le modèle de Bohr ============ -->
+<details class="partie" open>
+<summary><h2 id="ancre-2"><span class="num">02</span> Le modèle de Bohr</h2></summary>
+<div class="partie-corps">
+
+<p>L'atome est formé :</p>
+<ul class="cours">
+  <li>d'un <span class="terme">noyau</span>, constitué de <span class="terme">nucléons</span>,
+    <strong>chargé positivement</strong> ;</li>
+  <li>d'un <span class="terme">cortège électronique</span>, situé autour du noyau et constitué
+    d'<span class="terme">électrons</span>, <strong>chargé négativement</strong>.</li>
+</ul>
+
+<p>Les nucléons, signifiant littéralement « particules du noyau », peuvent être des
+<span class="terme">protons</span> ou des <span class="terme">neutrons</span>.</p>
+<ul class="cours">
+  <li>Les protons sont chargés positivement.</li>
+  <li>Les neutrons n'ont pas de charge.</li>
+</ul>
+
+<figure>
+  <svg viewBox="0 0 760 340" role="img" aria-label="Modèle de Bohr : atome avec noyau central et électrons sur des couches ; zoom sur le noyau montrant protons et neutrons" font-family="'IBM Plex Mono',monospace">
+    <!-- Atome -->
+    <g transform="translate(190,160)">
+      <ellipse rx="150" ry="60" fill="none" stroke="#141a26" stroke-width="1.6" transform="rotate(20)"/>
+      <ellipse rx="150" ry="60" fill="none" stroke="#141a26" stroke-width="1.6" transform="rotate(-20)"/>
+      <ellipse rx="150" ry="60" fill="none" stroke="#141a26" stroke-width="1.6" transform="rotate(90)"/>
+      <!-- noyau -->
+      <g>
+        <circle cx="-7" cy="-4" r="10" fill="#d6402b" stroke="#141a26" stroke-width="1.2"/>
+        <circle cx="8" cy="-6" r="10" fill="#7d95b5" stroke="#141a26" stroke-width="1.2"/>
+        <circle cx="0" cy="8" r="10" fill="#d6402b" stroke="#141a26" stroke-width="1.2"/>
+        <circle cx="12" cy="6" r="10" fill="#7d95b5" stroke="#141a26" stroke-width="1.2"/>
+        <text x="-7" y="-1" text-anchor="middle" font-size="10" fill="#fff">+</text>
+        <text x="0" y="11" text-anchor="middle" font-size="10" fill="#fff">+</text>
+      </g>
+      <!-- électrons -->
+      <g fill="#1d9aaa" stroke="#141a26" stroke-width="1.2">
+        <circle cx="141" cy="51" r="8" transform="rotate(20)"/>
+        <circle cx="-141" cy="51" r="8" transform="rotate(-20)"/>
+        <circle cx="0" cy="-148" r="8"/>
+      </g>
+      <g font-size="9" fill="#fff" text-anchor="middle">
+        <text x="150" y="26" transform="rotate(20 141 51)">−</text>
+      </g>
+    </g>
+    <text x="190" y="26" text-anchor="middle" font-size="12" font-weight="600" fill="#141a26" font-family="'Space Grotesk',sans-serif" letter-spacing="1">ATOME</text>
+    <line x1="80" y1="80" x2="120" y2="106" stroke="#6b6f7a" stroke-width="1.1"/>
+    <text x="76" y="72" text-anchor="end" font-size="11" fill="#6b6f7a">électron (−)</text>
+
+    <!-- Flèche de zoom -->
+    <path d="M 260 200 C 330 260, 400 270, 470 240" fill="none" stroke="#141a26" stroke-width="3"/>
+    <path d="M470 240 l-16 -2 8 14 z" fill="#141a26"/>
+
+    <!-- Zoom noyau -->
+    <g transform="translate(590,170)">
+      <rect x="-85" y="-85" width="170" height="170" fill="none" stroke="#141a26" stroke-width="1.8" rx="8"/>
+      <g stroke="#141a26" stroke-width="1.4">
+        <circle cx="-18" cy="-16" r="22" fill="#d6402b"/>
+        <circle cx="20" cy="-20" r="22" fill="#7d95b5"/>
+        <circle cx="-24" cy="20" r="22" fill="#7d95b5"/>
+        <circle cx="16" cy="22" r="22" fill="#d6402b"/>
+        <circle cx="0" cy="0" r="22" fill="#d6402b"/>
+      </g>
+      <g font-size="17" fill="#fff" text-anchor="middle" font-weight="700">
+        <text x="-18" y="-10">+</text><text x="16" y="28">+</text><text x="0" y="6">+</text>
+      </g>
+      <text x="0" y="108" text-anchor="middle" font-size="12" font-weight="600" fill="#141a26" font-family="'Space Grotesk',sans-serif" letter-spacing="1">NOYAU (+)</text>
+    </g>
+    <line x1="612" y1="150" x2="668" y2="96" stroke="#6b6f7a" stroke-width="1.1"/>
+    <text x="672" y="90" font-size="11" fill="#6b6f7a">neutron</text>
+    <line x1="572" y1="170" x2="500" y2="120" stroke="#6b6f7a" stroke-width="1.1"/>
+    <text x="496" y="112" text-anchor="end" font-size="11" fill="#6b6f7a">proton (+)</text>
+  </svg>
+  <figcaption>Image 2 — Le modèle planétaire de Rutherford est ici représenté, avec l'idée que
+  les électrons tournent sur des orbites particulières appelées couches électroniques.
+  Schrödinger introduira plus tard la notion de nuage électronique.</figcaption>
+</figure>
+
+<div class="notation">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">✎ Notations — écriture symbolique des particules</div>
+  <p style="text-align:center; max-width:none;">Pour simplifier, on utilisera parfois cette écriture symbolique :</p>
+  <div class="chips">
+    <span class="chip"><b>e⁻</b> électron</span>
+    <span class="chip"><b>p⁺</b> proton</span>
+    <span class="chip"><b>n⁰</b> neutron</span>
+  </div>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=KFpZCayLxGU" target="_blank" rel="noopener">▶ Rappels du collège ↗</a>
+</div>
+
+</div>
+</details>
+
+<!-- ============ 03 — Écriture symbolique ============ -->
+<details class="partie" open>
+<summary><h2 id="ancre-3"><span class="num">03</span> Écriture symbolique du noyau</h2></summary>
+<div class="partie-corps">
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>L'<span class="terme">écriture conventionnelle du noyau</span> <span class="nb"><sup>A</sup><sub>Z</sub>X</span> porte trois informations :</p>
+  <p><strong>X</strong> est le <strong>symbole de l'élément chimique</strong>. La première lettre s'écrit
+  toujours en majuscule et la seconde en minuscule (ex : C, He, U, Al etc.).</p>
+  <p><strong>A</strong> est le <strong>nombre de masse</strong>. Il correspond au nombre de nucléons
+  (protons et neutrons).</p>
+  <p><strong>Z</strong> est le <strong>numéro atomique</strong>. C'est le nombre de protons.</p>
+</div>
+
+<div class="notation-noyau">
+  <div class="boite-symb">
+    <span class="A">A</span>
+    <span class="Z">Z</span>
+    <span class="X">X</span>
+  </div>
+  <div class="legende-liste">
+    <div><b>X</b> — symbole de l'élément chimique</div>
+    <div><b>A</b> — nombre de masse (nombre de nucléons)</div>
+    <div><b>Z</b> — numéro atomique (nombre de protons)</div>
+  </div>
+</div>
+
+<p>Pour calculer le nombre de neutrons, on utilise la formule :</p>
+
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">N = A − Z</div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs</span>
+    <b>N</b> nombre de neutrons<br>
+    <b>A</b> nombre de masse (nucléons)<br>
+    <b>Z</b> numéro atomique (protons)
+  </div>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=J8Q24Q2x9d8" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 1 — Composition d'un noyau</div>
+  <p class="question">Donner la composition du noyau <span class="nb"><sup>35</sup><sub>17</sub>Cl</span>.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Extraction des informations</div>
+    <p><span class="nb">Z = 17</span> donc le noyau possède <span class="resultat">17 protons</span>.</p>
+    <div class="etape">Formule du cours</div>
+    <p class="formule-cours-rappel">N = A − Z</p>
+    <div class="etape">Application numérique</div>
+    <p>N = 35 − 17 = 18, donc il possède <span class="resultat">18 neutrons</span>.</p>
+  </details>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 2 — Notation symbolique</div>
+  <p class="question">Donner la notation symbolique du noyau d'oxygène possédant 8 protons et 8 neutrons.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Extraction des informations</div>
+    <p>Le noyau possède 8 protons donc <span class="nb">Z = 8</span>. D'après la classification
+    périodique, l'élément oxygène se note O. Il possède 8 neutrons donc <span class="nb">N = 8</span>.</p>
+    <div class="etape">Formule du cours</div>
+    <p class="formule-cours-rappel">N = A − Z, donc A = N + Z</p>
+    <div class="etape">Application numérique</div>
+    <p>A = 8 + 8 = <span class="nb">16</span>. Le noyau admet pour notation symbolique
+    <span class="resultat"><sup>16</sup><sub>8</sub>O</span>.</p>
+  </details>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 3 — De la composition à l'écriture conventionnelle</div>
+  <p class="question">Donner l'écriture conventionnelle de ces noyaux : un noyau d'aluminium
+  possédant 13 protons et 14 neutrons ; un noyau possédant 2 protons et 2 neutrons.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Noyau d'aluminium</div>
+    <p>13 protons donc <span class="nb">Z = 13</span>. L'élément aluminium se note Al. 14 neutrons
+    donc <span class="nb">N = 14</span> et ainsi A = N + Z = 14 + 13 = 27. Le noyau admet pour
+    notation symbolique <span class="resultat"><sup>27</sup><sub>13</sub>Al</span>.</p>
+    <div class="etape">Noyau à 2 protons</div>
+    <p>2 protons donc <span class="nb">Z = 2</span>. D'après la classification périodique, il s'agit
+    de l'hélium, qui se note He. 2 neutrons donc A = N + Z = 2 + 2 = 4. Le noyau admet pour notation
+    symbolique <span class="resultat"><sup>4</sup><sub>2</sub>He</span>.</p>
+  </details>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 4 — Schémas de noyaux atomiques</div>
+  <p class="question">Réaliser des schémas de noyaux atomiques à partir de ces écritures
+  conventionnelles : <span class="nb"><sup>1</sup><sub>1</sub>H</span>,
+  <span class="nb"><sup>14</sup><sub>6</sub>C</span>,
+  <span class="nb"><sup>9</sup><sub>4</sub>Be</span>.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Composition de chaque noyau</div>
+    <p><sup>1</sup><sub>1</sub>H : Z = 1 et N = 1 − 1 = 0, soit 1 proton seul.
+    <sup>14</sup><sub>6</sub>C : Z = 6 et N = 14 − 6 = 8, soit 6 protons et 8 neutrons.
+    <sup>9</sup><sub>4</sub>Be : Z = 4 et N = 9 − 4 = 5, soit 4 protons et 5 neutrons.</p>
+    <figure style="margin:.6rem 0 0;">
+      <svg viewBox="0 0 660 190" role="img" aria-label="Schémas des noyaux : hydrogène 1 proton, carbone 14 avec 6 protons et 8 neutrons, béryllium 9 avec 4 protons et 5 neutrons" font-family="'IBM Plex Mono',monospace">
+        <!-- légende -->
+        <circle cx="240" cy="16" r="7" fill="#d6402b" stroke="#141a26" stroke-width="1"/>
+        <text x="252" y="20" font-size="11" fill="#141a26">proton</text>
+        <circle cx="340" cy="16" r="7" fill="#7d95b5" stroke="#141a26" stroke-width="1"/>
+        <text x="352" y="20" font-size="11" fill="#141a26">neutron</text>
+        <!-- H : 1 proton -->
+        <circle cx="110" cy="100" r="13" fill="#d6402b" stroke="#141a26" stroke-width="1.3"/>
+        <text x="110" y="165" text-anchor="middle" font-size="13" fill="#141a26"><tspan font-size="9" dy="-4">1</tspan><tspan dy="4">H : 1 p⁺</tspan></text>
+        <!-- C-14 : 6p + 8n -->
+        <g stroke="#141a26" stroke-width="1.3">
+          <circle cx="315" cy="82" r="13" fill="#d6402b"/><circle cx="342" cy="76" r="13" fill="#7d95b5"/>
+          <circle cx="296" cy="104" r="13" fill="#7d95b5"/><circle cx="322" cy="106" r="13" fill="#7d95b5"/>
+          <circle cx="348" cy="100" r="13" fill="#d6402b"/><circle cx="306" cy="128" r="13" fill="#d6402b"/>
+          <circle cx="332" cy="128" r="13" fill="#7d95b5"/><circle cx="290" cy="80" r="13" fill="#d6402b"/>
+          <circle cx="360" cy="122" r="13" fill="#7d95b5"/><circle cx="368" cy="86" r="13" fill="#d6402b"/>
+          <circle cx="279" cy="120" r="13" fill="#7d95b5"/><circle cx="330" cy="58" r="13" fill="#7d95b5"/>
+          <circle cx="304" cy="60" r="13" fill="#7d95b5"/><circle cx="352" cy="146" r="13" fill="#d6402b"/>
+        </g>
+        <text x="325" y="180" text-anchor="middle" font-size="13" fill="#141a26">¹⁴C : 6 p⁺ + 8 n⁰</text>
+        <!-- Be-9 : 4p + 5n -->
+        <g stroke="#141a26" stroke-width="1.3">
+          <circle cx="530" cy="86" r="13" fill="#d6402b"/><circle cx="556" cy="92" r="13" fill="#7d95b5"/>
+          <circle cx="516" cy="110" r="13" fill="#7d95b5"/><circle cx="542" cy="114" r="13" fill="#d6402b"/>
+          <circle cx="566" cy="116" r="13" fill="#7d95b5"/><circle cx="528" cy="136" r="13" fill="#d6402b"/>
+          <circle cx="554" cy="138" r="13" fill="#7d95b5"/><circle cx="506" cy="86" r="13" fill="#7d95b5"/>
+          <circle cx="540" cy="66" r="13" fill="#d6402b"/>
+        </g>
+        <text x="538" y="180" text-anchor="middle" font-size="13" fill="#141a26">⁹Be : 4 p⁺ + 5 n⁰</text>
+      </svg>
+    </figure>
+  </details>
+</div>
+
+</div>
+</details>
+
+
+<!-- ============ 04 — Isotopes ============ -->
+<details class="partie" open>
+<summary><h2 id="ancre-4"><span class="num">04</span> Isotopes</h2></summary>
+<div class="partie-corps">
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Des noyaux atomiques <span class="terme">isotopes</span> sont des noyaux possédant le
+  <strong>même nombre de protons mais un nombre différent de neutrons</strong>.</p>
+</div>
+
+<p>Deux noyaux isotopes ont donc le <strong>même numéro atomique Z</strong> : ils appartiennent au
+même élément chimique. Ils ont cependant un <strong>nombre de masse A différent</strong>, ils n'ont
+donc pas la même masse.</p>
+
+<div class="duo">
+  <figure style="margin:.4rem 0;">
+    <div class="grille-isotopes">
+      <table>
+        <tr>
+          <td class="cellule oxygene"><span class="a">16</span><span class="symb">O</span></td>
+          <td class="cellule oxygene"><span class="a">17</span><span class="symb">O</span></td>
+          <td class="cellule oxygene"><span class="a">18</span><span class="symb">O</span></td>
+        </tr>
+        <tr>
+          <td class="cellule azote"><span class="a">13</span><span class="symb">N</span></td>
+          <td class="cellule azote"><span class="a">14</span><span class="symb">N</span></td>
+          <td class="cellule azote"><span class="a">15</span><span class="symb">N</span></td>
+        </tr>
+        <tr>
+          <td class="cellule carbone"><span class="a">12</span><span class="symb">C</span></td>
+          <td class="cellule carbone"><span class="a">13</span><span class="symb">C</span></td>
+          <td class="cellule carbone"><span class="a">14</span><span class="symb">C</span></td>
+        </tr>
+      </table>
+      <div class="axes"><span>↑ Z — éléments (nombre de protons)</span><span>→ A − Z — nombre de neutrons : isotopes (sosies)</span></div>
+    </div>
+    <figcaption>Chaque ligne est un élément (même Z) ; chaque colonne fait varier le nombre de
+    neutrons : les cases d'une même ligne sont des isotopes.</figcaption>
+  </figure>
+  <figure style="margin:.4rem 0;">
+    <svg viewBox="0 0 360 300" role="img" aria-label="Diagramme circulaire des abondances relatives des isotopes du plomb : plomb 208 à 52,4 %, plomb 206 à 24,1 %, plomb 207 à 22,1 %, plomb 204 à 1,4 %" font-family="'IBM Plex Mono',monospace">
+      <!-- parts calculées depuis le haut, sens horaire : 208 (52,4%), 206 (24,1%), 207 (22,1%), 204 (1,4%) -->
+      <path d="M150,130 L150,20 A110,110 0 1 1 134.4,239.0 Z" fill="#a9d6dd" stroke="#141a26" stroke-width="1.6"/>
+      <path d="M150,130 L134.4,239.0 A110,110 0 0 1 42.5,105.5 Z" fill="#eec292" stroke="#141a26" stroke-width="1.6"/>
+      <path d="M150,130 L42.5,105.5 A110,110 0 0 1 140.4,20.4 Z" fill="#c7e6c9" stroke="#141a26" stroke-width="1.6"/>
+      <path d="M150,130 L140.4,20.4 A110,110 0 0 1 150,20 Z" fill="#eec2ba" stroke="#141a26" stroke-width="1.6"/>
+      <text x="216" y="140" text-anchor="middle" font-size="13" font-weight="600" fill="#141a26">52,4 %</text>
+      <text x="112" y="212" text-anchor="middle" font-size="12" font-weight="600" fill="#141a26">24,1 %</text>
+      <text x="92" y="82" text-anchor="middle" font-size="12" font-weight="600" fill="#141a26">22,1 %</text>
+      <line x1="144" y1="22" x2="108" y2="8" stroke="#6b6f7a" stroke-width="1.1"/>
+      <text x="104" y="10" text-anchor="end" font-size="10.5" fill="#6b6f7a">1,4 %</text>
+      <g font-size="10.5" fill="#141a26">
+        <rect x="30" y="252" width="11" height="11" fill="#a9d6dd" stroke="#141a26" stroke-width="1"/><text x="46" y="261">plomb 208</text>
+        <rect x="130" y="252" width="11" height="11" fill="#eec292" stroke="#141a26" stroke-width="1"/><text x="146" y="261">plomb 206</text>
+        <rect x="230" y="252" width="11" height="11" fill="#c7e6c9" stroke="#141a26" stroke-width="1"/><text x="246" y="261">plomb 207</text>
+        <rect x="130" y="274" width="11" height="11" fill="#eec2ba" stroke="#141a26" stroke-width="1"/><text x="146" y="283">plomb 204</text>
+      </g>
+    </svg>
+    <figcaption>Abondances relatives des isotopes du plomb.</figcaption>
+  </figure>
+</div>
+
+<p>Dans la nature, différents isotopes d'un même élément sont présents selon certaines proportions :
+on parle d'<span class="terme">abondance isotopique</span>.</p>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=Ke4n5QvCq0A&list=PLFf1gA-ubk_Sql6gar3BHC8x7gzpJHGxc&index=10" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 5 — Isotopes de l'uranium</div>
+  <p class="question">Donner la composition des noyaux <span class="nb"><sup>238</sup><sub>92</sub>U</span>
+  et <span class="nb"><sup>235</sup><sub>92</sub>U</span> (uranium 238 et uranium 235) et justifier
+  que ce sont des isotopes.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Uranium 235</div>
+    <p>Pour <sup>235</sup><sub>92</sub>U : Z = 92 et N = A − Z = 235 − 92 = 143. Ce noyau d'uranium
+    a <span class="nb">92 protons</span> et <span class="nb">143 neutrons</span>.</p>
+    <div class="etape">Uranium 238</div>
+    <p>Pour <sup>238</sup><sub>92</sub>U : Z = 92 et N = A − Z = 238 − 92 = 146. Ce noyau d'uranium
+    a <span class="nb">92 protons</span> et <span class="nb">146 neutrons</span>.</p>
+    <div class="etape">Conclusion</div>
+    <p>Ces deux noyaux ont le même nombre de protons mais un nombre de neutrons différent :
+    <span class="resultat">ce sont des isotopes</span>.</p>
+  </details>
+</div>
+
+</div>
+</details>
+
+<!-- ============ 05 — Masse de l'atome ============ -->
+<details class="partie" open>
+<summary><h2 id="ancre-5"><span class="num">05</span> Masse de l'atome</h2></summary>
+<div class="partie-corps">
+
+<p>Les masses des particules composant l'atome sont données dans le tableau ci-dessous.</p>
+
+<figure class="fig-etroite" style="max-width:380px;">
+  <table class="tab" style="width:100%;">
+    <thead><tr><th>Particule</th><th>Masse (kg)</th></tr></thead>
+    <tbody>
+      <tr><td>Électron</td><td><span class="nb">9,109 × 10⁻³¹</span></td></tr>
+      <tr><td>Proton</td><td><span class="nb">1,673 × 10⁻²⁷</span></td></tr>
+      <tr><td>Neutron</td><td><span class="nb">1,675 × 10⁻²⁷</span></td></tr>
+    </tbody>
+  </table>
+</figure>
+
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>La masse d'un neutron est très proche de celle d'un proton, de telle manière qu'ils sont
+  considérés de même masse :</p>
+  <p class="eq-ligne">m<sub>neutron</sub> ≈ m<sub>proton</sub> = 1,67 × 10⁻²⁷ kg</p>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 6 — Masse d'un électron et masse d'un nucléon</div>
+  <p class="question">Comparer la masse d'un électron à celle d'un nucléon. Qu'en déduisez-vous ?</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne"><span class="frac"><span class="haut">m<sub>nucléon</sub></span><span class="bas">m<sub>électron</sub></span></span>
+    = <span class="frac"><span class="haut">1,67 × 10⁻²⁷</span><span class="bas">9,11 × 10⁻³¹</span></span>
+    ≈ <span class="resultat">1833</span></p>
+    <div class="etape">Conclusion</div>
+    <p>Un nucléon est plus de 1800 fois plus massif qu'un électron. On dit que <strong>la masse d'un
+    électron est négligeable devant la masse d'un nucléon</strong>. Lors du calcul de la masse d'un
+    atome, il n'est donc pas nécessaire de prendre en compte la participation des électrons.</p>
+  </details>
+</div>
+
+<p>La masse d'un atome m peut donc être approximée à celle de son noyau ; elle se calcule grâce à
+la relation suivante :</p>
+
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">m = A × m<sub>n</sub></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>m</b> masse de l'atome · kg<br>
+    <b>A</b> nombre de masse (nucléons)<br>
+    <b>m<sub>n</sub></b> masse d'un nucléon · <span class="nb">1,67 × 10⁻²⁷ kg</span>
+  </div>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=5cKzrWGsXRg" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=Gb_McqQTIKI&list=PLFf1gA-ubk_Sql6gar3BHC8x7gzpJHGxc&index=3" target="_blank" rel="noopener">✏ S'exercer en vidéo ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 7 — Masse du tritium</div>
+  <p>Le tritium est un atome d'hydrogène <span class="nb">(Z = 1)</span> possédant deux neutrons,
+  alors que l'hydrogène n'en possède généralement aucun.</p>
+  <p class="question">Calculer la masse du tritium.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Extraction des informations</div>
+    <p>Le tritium possède 1 proton (Z = 1) et 2 neutrons, donc A = Z + N = 1 + 2 = 3.</p>
+    <div class="etape">Formule du cours</div>
+    <p class="formule-cours-rappel">m = A × m<sub>n</sub></p>
+    <div class="etape">Application numérique</div>
+    <p>m = 3 × 1,67 × 10⁻²⁷ = <span class="resultat">5,01 × 10⁻²⁷ kg</span></p>
+  </details>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 8 — Masse d'un atome d'or</div>
+  <p class="question">Calculer la masse d'un atome d'or. Voici l'écriture conventionnelle de son
+  noyau : <span class="nb"><sup>197</sup><sub>79</sub>Au</span>.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Extraction des informations</div>
+    <p>A = 197.</p>
+    <div class="etape">Formule du cours</div>
+    <p class="formule-cours-rappel">m = A × m<sub>n</sub></p>
+    <div class="etape">Application numérique</div>
+    <p>m = 197 × 1,67 × 10⁻²⁷ ≈ <span class="resultat">3,29 × 10⁻²⁵ kg</span></p>
+  </details>
+</div>
+
+</div>
+</details>
+
+<!-- ============ 06 — Charges électriques ============ -->
+<details class="partie" open>
+<summary><h2 id="ancre-6"><span class="num">06</span> Charges électriques</h2></summary>
+<div class="partie-corps">
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>La <span class="terme">charge élémentaire</span> e est la plus petite valeur positive de charge
+  électrique, elle est portée par les protons. La charge portée par les électrons est l'opposé de
+  celle des protons et vaut −e.</p>
+</div>
+
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">e = 1,602 × 10⁻¹⁹ C</div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>e</b> charge élémentaire<br>
+    L'unité de la charge électrique<br>
+    est le <b>coulomb (C)</b>.
+  </div>
+</div>
+
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>Un noyau porte une charge positive qui se calcule en utilisant la formule :</p>
+  <p class="eq-ligne">Q<sub>noyau</sub> = Z × e</p>
+</div>
+
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété — neutralité électrique</div>
+  <p>L'atome est <span class="terme">électriquement neutre</span>, c'est-à-dire qu'il contient autant
+  de protons, chargés positivement, que d'électrons, chargés négativement. Ainsi la charge de
+  l'ensemble des électrons (cortège électronique) est l'opposée de la charge du noyau de l'atome :</p>
+  <p class="eq-ligne">Q<sub>électrons</sub> = −Q<sub>noyau</sub></p>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=x6lbVxYp-oE" target="_blank" rel="noopener">✏ S'exercer en vidéo ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 9 — Atome de chlore</div>
+  <p class="question">Quelle est la composition d'un atome de chlore qui a pour noyau
+  <span class="nb"><sup>35</sup><sub>17</sub>Cl</span> ? Quelle est la charge de son noyau ?
+  En déduire la charge de son cortège électronique.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Composition</div>
+    <p><span class="nb">Z = 17</span> donc le noyau possède <strong>17 protons</strong> et l'atome
+    <strong>17 électrons</strong>, car un atome possède autant de protons que d'électrons.
+    N = A − Z = 35 − 17 = 18, donc il possède <strong>18 neutrons</strong>.</p>
+    <div class="etape">Charge du noyau — formule du cours</div>
+    <p class="formule-cours-rappel">Q<sub>noyau</sub> = Z × e</p>
+    <div class="etape">Application numérique</div>
+    <p>Q<sub>noyau</sub> = 17 × 1,602 × 10⁻¹⁹ = <span class="resultat">2,7234 × 10⁻¹⁸ C</span></p>
+    <div class="etape">Charge du cortège électronique</div>
+    <p class="formule-cours-rappel">Q<sub>électrons</sub> = −Q<sub>noyau</sub></p>
+    <p>Q<sub>électrons</sub> = <span class="resultat">−2,7234 × 10⁻¹⁸ C</span></p>
+  </details>
+</div>
+
+</div>
+</details>
+
+
+<!-- ============ 07 — Dimensions ============ -->
+<details class="partie" open>
+<summary><h2 id="ancre-7"><span class="num">07</span> Dimensions de l'atome</h2></summary>
+<div class="partie-corps">
+
+<p>Le <span class="terme">rayon de l'atome</span>, assimilé à une sphère, est de l'ordre de
+<span class="nb">10⁻¹⁰ m</span>, soit un dixième de milliardième de mètre. Cette dimension a donné
+naissance à sa propre unité, l'angström <span class="nb">(10⁻¹⁰ m = 1 Å)</span>.</p>
+
+<p>Le <span class="terme">rayon du noyau de l'atome</span>, assimilé à une sphère, est de l'ordre de
+<span class="nb">10⁻¹⁵ m</span>, soit un millionième de milliardième de mètre. Il existe également
+une unité adaptée, le femtomètre <span class="nb">(10⁻¹⁵ m = 1 fm)</span>.</p>
+
+<p>La comparaison de ces deux rayons nous donne :</p>
+<p class="eq-ligne"><span class="frac"><span class="haut">10⁻¹⁰</span><span class="bas">10⁻¹⁵</span></span> = 10⁵ = 100 000</p>
+
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>L'atome est cent mille fois plus grand que son noyau : l'atome est donc essentiellement
+  constitué de vide. Sa structure est dite <span class="terme">lacunaire</span>.</p>
+</div>
+
+<figure class="fig-etroite" style="max-width:420px;">
+  <svg viewBox="0 0 440 400" role="img" aria-label="Un atome ramené à la taille d'un terrain de football : le noyau au centre a la taille d'une bille de stylo, un électron est en périphérie" font-family="'IBM Plex Mono',monospace">
+    <!-- terrain -->
+    <g transform="translate(150,60)">
+      <rect x="0" y="0" width="140" height="280" fill="#bfe0c2" stroke="#141a26" stroke-width="1.8"/>
+      <line x1="0" y1="140" x2="140" y2="140" stroke="#fff" stroke-width="2"/>
+      <circle cx="70" cy="140" r="26" fill="none" stroke="#fff" stroke-width="2"/>
+      <rect x="35" y="0" width="70" height="30" fill="none" stroke="#fff" stroke-width="2"/>
+      <rect x="35" y="250" width="70" height="30" fill="none" stroke="#fff" stroke-width="2"/>
+    </g>
+    <!-- cercle atome -->
+    <circle cx="220" cy="200" r="172" fill="none" stroke="#e3a04e" stroke-width="2.6"/>
+    <!-- rayon annoté -->
+    <line x1="220" y1="200" x2="100" y2="78" stroke="#141a26" stroke-width="1.6"/>
+    <path d="M100 78 l4 12 8 -9 z" fill="#141a26"/>
+    <text x="132" y="122" font-size="11" fill="#141a26" transform="rotate(-45 150 140)">50 mètres</text>
+    <!-- noyau -->
+    <circle cx="220" cy="200" r="4.5" fill="#d6402b" stroke="#141a26" stroke-width="1"/>
+    <line x1="228" y1="200" x2="330" y2="176" stroke="#6b6f7a" stroke-width="1.1"/>
+    <text x="334" y="170" font-size="10.5" fill="#6b6f7a">noyau = taille d'une</text>
+    <text x="334" y="184" font-size="10.5" fill="#6b6f7a">bille de stylo de 0,5 mm</text>
+    <!-- électron -->
+    <circle cx="382" cy="72" r="5" fill="#1d9aaa" stroke="#141a26" stroke-width="1.1"/>
+    <text x="374" y="56" text-anchor="end" font-size="10.5" fill="#1d9aaa">électron</text>
+  </svg>
+  <figcaption>Image 3 — Un atome ramené à la taille d'un terrain de football : si l'atome mesurait
+  50 m de rayon, son noyau aurait la taille d'une bille de stylo de 0,5 mm.</figcaption>
+</figure>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 10 — Un noyau comme une balle de tennis</div>
+  <p class="question">Quel serait le diamètre d'un atome si le rayon de son noyau était similaire à
+  celui d'une balle de tennis <span class="nb">(r<sub>BT</sub> = 3,2 cm)</span> ?</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Extraction des informations</div>
+    <p>r<sub>noyau</sub> = r<sub>BT</sub>. L'atome est 100 000 fois plus grand que son noyau.</p>
+    <div class="etape">Manipulation d'expression algébrique</div>
+    <p class="eq-ligne">d<sub>atome</sub> = 2 × r<sub>atome</sub> = 2 × 100 000 × r<sub>noyau</sub> = 2 × 100 000 × r<sub>BT</sub></p>
+    <div class="etape">Application numérique</div>
+    <p>d<sub>atome</sub> = 2 × 100 000 × 3,2 = 640 000 cm = 6 400 m = <span class="resultat">6,4 km</span></p>
+  </details>
+</div>
+
+</div>
+</details>
+
+<!-- ============ 08 — Les ions monoatomiques ============ -->
+<details class="partie" open>
+<summary><h2 id="ancre-8"><span class="num">08</span> Les ions monoatomiques</h2></summary>
+<div class="partie-corps">
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Un <span class="terme">ion monoatomique</span> est un atome ayant gagné ou perdu un ou plusieurs
+  électrons lors d'une réaction chimique. Il acquiert donc une charge en raison d'un déséquilibre
+  entre le nombre de protons et d'électrons.</p>
+</div>
+
+<p>Il en existe de deux types :</p>
+<ul class="cours">
+  <li>Les <span class="terme">anions</span> ont gagné un ou plusieurs électrons, ils sont
+    <strong>chargés négativement</strong> : Cl⁻ provient d'un atome de chlore ayant gagné un
+    électron, O²⁻ d'un atome d'oxygène qui en a gagné deux.</li>
+  <li>Les <span class="terme">cations</span> ont perdu un ou plusieurs électrons, ils sont
+    <strong>chargés positivement</strong> : K⁺ provient d'un atome de potassium ayant perdu un
+    électron, Fe³⁺ d'un atome de fer qui en a perdu trois.</li>
+</ul>
+
+<figure>
+  <svg viewBox="0 0 760 300" role="img" aria-label="L'atome de lithium avec 3 protons, 3 électrons et 3 neutrons perd un électron et devient le cation lithium plus, avec 3 protons, 2 électrons et 3 neutrons" font-family="'IBM Plex Mono',monospace">
+    <!-- Li atome -->
+    <text x="70" y="140" font-size="34" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#141a26">Li</text>
+    <g transform="translate(210,150)">
+      <circle r="52" fill="none" stroke="#4a3f9e" stroke-width="1.6"/>
+      <circle r="92" fill="none" stroke="#4a3f9e" stroke-width="1.6"/>
+      <!-- noyau -->
+      <g stroke="#141a26" stroke-width="1.1">
+        <circle cx="-8" cy="-4" r="9" fill="#d6402b"/><circle cx="8" cy="-6" r="9" fill="#b9bec9"/>
+        <circle cx="-2" cy="8" r="9" fill="#d6402b"/><circle cx="12" cy="7" r="9" fill="#b9bec9"/>
+        <circle cx="2" cy="-14" r="9" fill="#b9bec9"/><circle cx="-14" cy="9" r="9" fill="#d6402b"/>
+      </g>
+      <!-- électrons : 2 couche interne + 1 externe -->
+      <g fill="#5a3fd6" stroke="#141a26" stroke-width="1.1">
+        <circle cx="-52" cy="0" r="7"/><circle cx="52" cy="0" r="7"/>
+        <circle cx="0" cy="-92" r="7"/>
+      </g>
+    </g>
+    <!-- électron qui part -->
+    <path d="M 210 44 C 240 14, 290 6, 330 20" fill="none" stroke="#141a26" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <path d="M330 20 l-13 -6 3 13 z" fill="#141a26"/>
+    <circle cx="352" cy="28" r="7" fill="#5a3fd6" stroke="#141a26" stroke-width="1.1"/>
+    <text x="368" y="32" font-size="11" fill="#6b6f7a">électron perdu</text>
+
+    <!-- flèche -->
+    <line x1="330" y1="160" x2="420" y2="160" stroke="#141a26" stroke-width="2.4"/>
+    <path d="M420 160 l-14 -7 v14 z" fill="#141a26"/>
+
+    <!-- Li+ -->
+    <text x="450" y="140" font-size="34" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#141a26">Li<tspan font-size="20" dy="-12">+</tspan></text>
+    <g transform="translate(620,150)">
+      <circle r="52" fill="none" stroke="#4a3f9e" stroke-width="1.6"/>
+      <g stroke="#141a26" stroke-width="1.1">
+        <circle cx="-8" cy="-4" r="9" fill="#d6402b"/><circle cx="8" cy="-6" r="9" fill="#b9bec9"/>
+        <circle cx="-2" cy="8" r="9" fill="#d6402b"/><circle cx="12" cy="7" r="9" fill="#b9bec9"/>
+        <circle cx="2" cy="-14" r="9" fill="#b9bec9"/><circle cx="-14" cy="9" r="9" fill="#d6402b"/>
+      </g>
+      <g fill="#5a3fd6" stroke="#141a26" stroke-width="1.1">
+        <circle cx="-52" cy="0" r="7"/><circle cx="52" cy="0" r="7"/>
+      </g>
+    </g>
+    <!-- légende -->
+    <g font-size="10.5" fill="#141a26">
+      <circle cx="80" cy="262" r="7" fill="#b9bec9" stroke="#141a26" stroke-width="1"/><text x="94" y="266">neutron</text>
+      <circle cx="200" cy="262" r="7" fill="#d6402b" stroke="#141a26" stroke-width="1"/><text x="214" y="266">proton</text>
+      <circle cx="310" cy="262" r="7" fill="#5a3fd6" stroke="#141a26" stroke-width="1"/><text x="324" y="266">électron</text>
+    </g>
+  </svg>
+  <figcaption>Image 4 — Lorsque l'atome de lithium Li possédant
+  <span class="nb">3 p⁺ | 3 e⁻ | 3 n⁰</span> perd un électron, il devient le cation monoatomique Li⁺
+  possédant <span class="nb">3 p⁺ | 2 e⁻ | 3 n⁰</span>.</figcaption>
+</figure>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 11 — Composition d'ions monoatomiques</div>
+  <p class="question">Donner la composition des ions Mg²⁺, H⁺ et F⁻. On donne les écritures
+  conventionnelles de leurs noyaux : <span class="nb"><sup>24</sup><sub>12</sub>Mg</span>,
+  <span class="nb"><sup>1</sup><sub>1</sub>H</span>,
+  <span class="nb"><sup>19</sup><sub>9</sub>F</span>.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Ion Mg²⁺</div>
+    <p>Z = 12 donc <strong>12 protons</strong> ; <strong>10 électrons</strong> car l'ion Mg²⁺ possède
+    deux protons de plus qu'il n'a d'électrons ; N = A − Z = 24 − 12 = 12 donc il possède
+    <strong>12 neutrons</strong>. Soit <span class="resultat">12 p⁺ | 10 e⁻ | 12 n⁰</span>.</p>
+    <div class="etape">Ion H⁺</div>
+    <p>Z = 1 et N = 1 − 1 = 0 ; le cation H⁺ a perdu son unique électron. Soit
+    <span class="resultat">1 p⁺ | 0 e⁻ | 0 n⁰</span>.</p>
+    <div class="etape">Ion F⁻</div>
+    <p>Z = 9 et N = 19 − 9 = 10 ; l'anion F⁻ a gagné un électron (9 + 1 = 10). Soit
+    <span class="resultat">9 p⁺ | 10 e⁻ | 10 n⁰</span>.</p>
+  </details>
+</div>
+
+</div>
+</details>
+
+<!-- ============ 09 — Élément chimique ============ -->
+<details class="partie" open>
+<summary><h2 id="ancre-9"><span class="num">09</span> Élément chimique</h2></summary>
+<div class="partie-corps">
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Toutes les entités chimiques (noyaux, atomes, ions) possédant le
+  <span class="terme">même numéro atomique</span> Z appartiennent au
+  <span class="terme">même élément chimique</span>.</p>
+</div>
+
+<p>Tout élément chimique est identifié par son <span class="terme">symbole</span>. Chaque numéro
+atomique Z est donc associé à un symbole bien distinct. Les éléments chimiques sont rangés dans
+l'ordre de leur Z croissant dans le <span class="terme">tableau périodique des éléments
+chimiques</span>.</p>
+
+<div class="encart exemple">
+  <div class="etq">⚗ Exemple détaillé — l'élément fer</div>
+  <p>L'élément fer a pour numéro atomique <span class="nb">Z = 26</span> et son symbole est Fe.
+  L'atome de fer s'écrit Fe, les ions fer Fe²⁺ ou encore Fe³⁺, et le noyau de fer
+  <span class="nb"><sup>56</sup><sub>26</sub>Fe</span> ; tous appartiennent à l'élément fer.</p>
+</div>
+
+<figure>
+  <div class="ptable">
+<div class="el nonmetal" style="grid-row:1;grid-column:1;" title="Hydrogène (Z = 1)"><i>1</i><b>H</b></div>
+<div class="el noble" style="grid-row:1;grid-column:18;" title="Hélium (Z = 2)"><i>2</i><b>He</b></div>
+<div class="el alcalin" style="grid-row:2;grid-column:1;" title="Lithium (Z = 3)"><i>3</i><b>Li</b></div>
+<div class="el alcalinoterreux" style="grid-row:2;grid-column:2;" title="Béryllium (Z = 4)"><i>4</i><b>Be</b></div>
+<div class="el metalloide" style="grid-row:2;grid-column:13;" title="Bore (Z = 5)"><i>5</i><b>B</b></div>
+<div class="el nonmetal" style="grid-row:2;grid-column:14;" title="Carbone (Z = 6)"><i>6</i><b>C</b></div>
+<div class="el nonmetal" style="grid-row:2;grid-column:15;" title="Azote (Z = 7)"><i>7</i><b>N</b></div>
+<div class="el nonmetal" style="grid-row:2;grid-column:16;" title="Oxygène (Z = 8)"><i>8</i><b>O</b></div>
+<div class="el halogene" style="grid-row:2;grid-column:17;" title="Fluor (Z = 9)"><i>9</i><b>F</b></div>
+<div class="el noble" style="grid-row:2;grid-column:18;" title="Néon (Z = 10)"><i>10</i><b>Ne</b></div>
+<div class="el alcalin" style="grid-row:3;grid-column:1;" title="Sodium (Z = 11)"><i>11</i><b>Na</b></div>
+<div class="el alcalinoterreux" style="grid-row:3;grid-column:2;" title="Magnésium (Z = 12)"><i>12</i><b>Mg</b></div>
+<div class="el pauvre" style="grid-row:3;grid-column:13;" title="Aluminium (Z = 13)"><i>13</i><b>Al</b></div>
+<div class="el metalloide" style="grid-row:3;grid-column:14;" title="Silicium (Z = 14)"><i>14</i><b>Si</b></div>
+<div class="el nonmetal" style="grid-row:3;grid-column:15;" title="Phosphore (Z = 15)"><i>15</i><b>P</b></div>
+<div class="el nonmetal" style="grid-row:3;grid-column:16;" title="Soufre (Z = 16)"><i>16</i><b>S</b></div>
+<div class="el halogene" style="grid-row:3;grid-column:17;" title="Chlore (Z = 17)"><i>17</i><b>Cl</b></div>
+<div class="el noble" style="grid-row:3;grid-column:18;" title="Argon (Z = 18)"><i>18</i><b>Ar</b></div>
+<div class="el alcalin" style="grid-row:4;grid-column:1;" title="Potassium (Z = 19)"><i>19</i><b>K</b></div>
+<div class="el alcalinoterreux" style="grid-row:4;grid-column:2;" title="Calcium (Z = 20)"><i>20</i><b>Ca</b></div>
+<div class="el transition" style="grid-row:4;grid-column:3;" title="Scandium (Z = 21)"><i>21</i><b>Sc</b></div>
+<div class="el transition" style="grid-row:4;grid-column:4;" title="Titane (Z = 22)"><i>22</i><b>Ti</b></div>
+<div class="el transition" style="grid-row:4;grid-column:5;" title="Vanadium (Z = 23)"><i>23</i><b>V</b></div>
+<div class="el transition" style="grid-row:4;grid-column:6;" title="Chrome (Z = 24)"><i>24</i><b>Cr</b></div>
+<div class="el transition" style="grid-row:4;grid-column:7;" title="Manganèse (Z = 25)"><i>25</i><b>Mn</b></div>
+<div class="el transition" style="grid-row:4;grid-column:8;" title="Fer (Z = 26)"><i>26</i><b>Fe</b></div>
+<div class="el transition" style="grid-row:4;grid-column:9;" title="Cobalt (Z = 27)"><i>27</i><b>Co</b></div>
+<div class="el transition" style="grid-row:4;grid-column:10;" title="Nickel (Z = 28)"><i>28</i><b>Ni</b></div>
+<div class="el transition" style="grid-row:4;grid-column:11;" title="Cuivre (Z = 29)"><i>29</i><b>Cu</b></div>
+<div class="el transition" style="grid-row:4;grid-column:12;" title="Zinc (Z = 30)"><i>30</i><b>Zn</b></div>
+<div class="el pauvre" style="grid-row:4;grid-column:13;" title="Gallium (Z = 31)"><i>31</i><b>Ga</b></div>
+<div class="el metalloide" style="grid-row:4;grid-column:14;" title="Germanium (Z = 32)"><i>32</i><b>Ge</b></div>
+<div class="el metalloide" style="grid-row:4;grid-column:15;" title="Arsenic (Z = 33)"><i>33</i><b>As</b></div>
+<div class="el nonmetal" style="grid-row:4;grid-column:16;" title="Sélénium (Z = 34)"><i>34</i><b>Se</b></div>
+<div class="el halogene" style="grid-row:4;grid-column:17;" title="Brome (Z = 35)"><i>35</i><b>Br</b></div>
+<div class="el noble" style="grid-row:4;grid-column:18;" title="Krypton (Z = 36)"><i>36</i><b>Kr</b></div>
+<div class="el alcalin" style="grid-row:5;grid-column:1;" title="Rubidium (Z = 37)"><i>37</i><b>Rb</b></div>
+<div class="el alcalinoterreux" style="grid-row:5;grid-column:2;" title="Strontium (Z = 38)"><i>38</i><b>Sr</b></div>
+<div class="el transition" style="grid-row:5;grid-column:3;" title="Yttrium (Z = 39)"><i>39</i><b>Y</b></div>
+<div class="el transition" style="grid-row:5;grid-column:4;" title="Zirconium (Z = 40)"><i>40</i><b>Zr</b></div>
+<div class="el transition" style="grid-row:5;grid-column:5;" title="Niobium (Z = 41)"><i>41</i><b>Nb</b></div>
+<div class="el transition" style="grid-row:5;grid-column:6;" title="Molybdène (Z = 42)"><i>42</i><b>Mo</b></div>
+<div class="el transition" style="grid-row:5;grid-column:7;" title="Technétium (Z = 43)"><i>43</i><b>Tc</b></div>
+<div class="el transition" style="grid-row:5;grid-column:8;" title="Ruthénium (Z = 44)"><i>44</i><b>Ru</b></div>
+<div class="el transition" style="grid-row:5;grid-column:9;" title="Rhodium (Z = 45)"><i>45</i><b>Rh</b></div>
+<div class="el transition" style="grid-row:5;grid-column:10;" title="Palladium (Z = 46)"><i>46</i><b>Pd</b></div>
+<div class="el transition" style="grid-row:5;grid-column:11;" title="Argent (Z = 47)"><i>47</i><b>Ag</b></div>
+<div class="el transition" style="grid-row:5;grid-column:12;" title="Cadmium (Z = 48)"><i>48</i><b>Cd</b></div>
+<div class="el pauvre" style="grid-row:5;grid-column:13;" title="Indium (Z = 49)"><i>49</i><b>In</b></div>
+<div class="el pauvre" style="grid-row:5;grid-column:14;" title="Étain (Z = 50)"><i>50</i><b>Sn</b></div>
+<div class="el metalloide" style="grid-row:5;grid-column:15;" title="Antimoine (Z = 51)"><i>51</i><b>Sb</b></div>
+<div class="el metalloide" style="grid-row:5;grid-column:16;" title="Tellure (Z = 52)"><i>52</i><b>Te</b></div>
+<div class="el halogene" style="grid-row:5;grid-column:17;" title="Iode (Z = 53)"><i>53</i><b>I</b></div>
+<div class="el noble" style="grid-row:5;grid-column:18;" title="Xénon (Z = 54)"><i>54</i><b>Xe</b></div>
+<div class="el alcalin" style="grid-row:6;grid-column:1;" title="Césium (Z = 55)"><i>55</i><b>Cs</b></div>
+<div class="el alcalinoterreux" style="grid-row:6;grid-column:2;" title="Baryum (Z = 56)"><i>56</i><b>Ba</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:3;" title="Lanthane (Z = 57)"><i>57</i><b>La</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:4;" title="Cérium (Z = 58)"><i>58</i><b>Ce</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:5;" title="Praséodyme (Z = 59)"><i>59</i><b>Pr</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:6;" title="Néodyme (Z = 60)"><i>60</i><b>Nd</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:7;" title="Prométhium (Z = 61)"><i>61</i><b>Pm</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:8;" title="Samarium (Z = 62)"><i>62</i><b>Sm</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:9;" title="Europium (Z = 63)"><i>63</i><b>Eu</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:10;" title="Gadolinium (Z = 64)"><i>64</i><b>Gd</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:11;" title="Terbium (Z = 65)"><i>65</i><b>Tb</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:12;" title="Dysprosium (Z = 66)"><i>66</i><b>Dy</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:13;" title="Holmium (Z = 67)"><i>67</i><b>Ho</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:14;" title="Erbium (Z = 68)"><i>68</i><b>Er</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:15;" title="Thulium (Z = 69)"><i>69</i><b>Tm</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:16;" title="Ytterbium (Z = 70)"><i>70</i><b>Yb</b></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:17;" title="Lutécium (Z = 71)"><i>71</i><b>Lu</b></div>
+<div class="el transition" style="grid-row:6;grid-column:4;" title="Hafnium (Z = 72)"><i>72</i><b>Hf</b></div>
+<div class="el transition" style="grid-row:6;grid-column:5;" title="Tantale (Z = 73)"><i>73</i><b>Ta</b></div>
+<div class="el transition" style="grid-row:6;grid-column:6;" title="Tungstène (Z = 74)"><i>74</i><b>W</b></div>
+<div class="el transition" style="grid-row:6;grid-column:7;" title="Rhénium (Z = 75)"><i>75</i><b>Re</b></div>
+<div class="el transition" style="grid-row:6;grid-column:8;" title="Osmium (Z = 76)"><i>76</i><b>Os</b></div>
+<div class="el transition" style="grid-row:6;grid-column:9;" title="Iridium (Z = 77)"><i>77</i><b>Ir</b></div>
+<div class="el transition" style="grid-row:6;grid-column:10;" title="Platine (Z = 78)"><i>78</i><b>Pt</b></div>
+<div class="el transition" style="grid-row:6;grid-column:11;" title="Or (Z = 79)"><i>79</i><b>Au</b></div>
+<div class="el transition" style="grid-row:6;grid-column:12;" title="Mercure (Z = 80)"><i>80</i><b>Hg</b></div>
+<div class="el pauvre" style="grid-row:6;grid-column:13;" title="Thallium (Z = 81)"><i>81</i><b>Tl</b></div>
+<div class="el pauvre" style="grid-row:6;grid-column:14;" title="Plomb (Z = 82)"><i>82</i><b>Pb</b></div>
+<div class="el pauvre" style="grid-row:6;grid-column:15;" title="Bismuth (Z = 83)"><i>83</i><b>Bi</b></div>
+<div class="el pauvre" style="grid-row:6;grid-column:16;" title="Polonium (Z = 84)"><i>84</i><b>Po</b></div>
+<div class="el halogene" style="grid-row:6;grid-column:17;" title="Astate (Z = 85)"><i>85</i><b>At</b></div>
+<div class="el noble" style="grid-row:6;grid-column:18;" title="Radon (Z = 86)"><i>86</i><b>Rn</b></div>
+<div class="el alcalin" style="grid-row:7;grid-column:1;" title="Francium (Z = 87)"><i>87</i><b>Fr</b></div>
+<div class="el alcalinoterreux" style="grid-row:7;grid-column:2;" title="Radium (Z = 88)"><i>88</i><b>Ra</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:3;" title="Actinium (Z = 89)"><i>89</i><b>Ac</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:4;" title="Thorium (Z = 90)"><i>90</i><b>Th</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:5;" title="Protactinium (Z = 91)"><i>91</i><b>Pa</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:6;" title="Uranium (Z = 92)"><i>92</i><b>U</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:7;" title="Neptunium (Z = 93)"><i>93</i><b>Np</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:8;" title="Plutonium (Z = 94)"><i>94</i><b>Pu</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:9;" title="Américium (Z = 95)"><i>95</i><b>Am</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:10;" title="Curium (Z = 96)"><i>96</i><b>Cm</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:11;" title="Berkélium (Z = 97)"><i>97</i><b>Bk</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:12;" title="Californium (Z = 98)"><i>98</i><b>Cf</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:13;" title="Einsteinium (Z = 99)"><i>99</i><b>Es</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:14;" title="Fermium (Z = 100)"><i>100</i><b>Fm</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:15;" title="Mendélévium (Z = 101)"><i>101</i><b>Md</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:16;" title="Nobélium (Z = 102)"><i>102</i><b>No</b></div>
+<div class="el actinide" style="grid-row:10;grid-column:17;" title="Lawrencium (Z = 103)"><i>103</i><b>Lr</b></div>
+<div class="el transition" style="grid-row:7;grid-column:4;" title="Rutherfordium (Z = 104)"><i>104</i><b>Rf</b></div>
+<div class="el transition" style="grid-row:7;grid-column:5;" title="Dubnium (Z = 105)"><i>105</i><b>Db</b></div>
+<div class="el transition" style="grid-row:7;grid-column:6;" title="Seaborgium (Z = 106)"><i>106</i><b>Sg</b></div>
+<div class="el transition" style="grid-row:7;grid-column:7;" title="Bohrium (Z = 107)"><i>107</i><b>Bh</b></div>
+<div class="el transition" style="grid-row:7;grid-column:8;" title="Hassium (Z = 108)"><i>108</i><b>Hs</b></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:9;" title="Meitnérium (Z = 109)"><i>109</i><b>Mt</b></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:10;" title="Darmstadtium (Z = 110)"><i>110</i><b>Ds</b></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:11;" title="Roentgenium (Z = 111)"><i>111</i><b>Rg</b></div>
+<div class="el transition" style="grid-row:7;grid-column:12;" title="Copernicium (Z = 112)"><i>112</i><b>Cn</b></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:13;" title="Nihonium (Z = 113)"><i>113</i><b>Nh</b></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:14;" title="Flérovium (Z = 114)"><i>114</i><b>Fl</b></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:15;" title="Moscovium (Z = 115)"><i>115</i><b>Mc</b></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:16;" title="Livermorium (Z = 116)"><i>116</i><b>Lv</b></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:17;" title="Tennesse (Z = 117)"><i>117</i><b>Ts</b></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:18;" title="Oganesson (Z = 118)"><i>118</i><b>Og</b></div>
+<div class="el renvoi" style="grid-row:6;grid-column:3;" title="Lanthanides"><i>57-71</i><b>La-Lu</b></div>
+<div class="el renvoi" style="grid-row:7;grid-column:3;" title="Actinides"><i>89-103</i><b>Ac-Lr</b></div>
+</div>
+  <figcaption>Tableau périodique des éléments chimiques : les éléments sont rangés par numéro
+  atomique Z croissant. Chaque case indique Z et le symbole (survoler une case pour lire le nom).
+  Les lignes La–Lu (lanthanides) et Ac–Lr (actinides) sont détachées sous le tableau.</figcaption>
+</figure>
+
+<div class="ptable-legende">
+  <span><i class="alcalin"></i> alcalins</span>
+  <span><i class="alcalinoterreux"></i> alcalino-terreux</span>
+  <span><i class="transition"></i> métaux de transition</span>
+  <span><i class="pauvre"></i> métaux pauvres</span>
+  <span><i class="lanthanide"></i> lanthanides</span>
+  <span><i class="actinide"></i> actinides</span>
+  <span><i class="metalloide"></i> métalloïdes</span>
+  <span><i class="nonmetal"></i> non-métaux</span>
+  <span><i class="halogene"></i> halogènes</span>
+  <span><i class="noble"></i> gaz nobles</span>
+  <span><i class="nonclasse"></i> non classés</span>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=YFbytRomxzQ" target="_blank" rel="noopener">▶ Réviser le cours complet en vidéo (1/2) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=x2ib7IQGUX4" target="_blank" rel="noopener">▶ Réviser le cours complet en vidéo (2/2) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=o59_9k9wTJw" target="_blank" rel="noopener">🚀 Aller plus loin — la classification (1/2) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=tPLCgsQ2Aq8" target="_blank" rel="noopener">🚀 Aller plus loin — la classification (2/2) ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 12 — Un élément, plusieurs entités</div>
+  <p class="question">Associer les entités chimiques appartenant au même élément :
+  H · O · <span class="nb"><sup>19</sup><sub>9</sub>F</span> ·
+  <span class="nb"><sup>1</sup><sub>1</sub>H</span> · H⁺ · F⁻ · O²⁻ ·
+  <span class="nb"><sup>16</sup><sub>8</sub>O</span> · F²⁻.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Élément hydrogène (H)</div>
+    <p><span class="resultat">H | H⁺ | <sup>1</sup><sub>1</sub>H</span></p>
+    <div class="etape">Élément oxygène (O)</div>
+    <p><span class="resultat">O | O²⁻ | <sup>16</sup><sub>8</sub>O</span></p>
+    <div class="etape">Élément fluor (F)</div>
+    <p><span class="resultat">F⁻ | F²⁻ | <sup>19</sup><sub>9</sub>F</span></p>
+  </details>
+</div>
+
+</div>
+</details>
+
+<!-- ================= CHECKLIST FINALE ================= -->
+<section class="checklist" id="pour-le-ds">
+  <h2><span class="num">✓</span> Pour le DS, je sais :</h2>
+  <ol id="liste-ds">
+    <li><input type="checkbox" id="ds1"><label for="ds1">Établir l'écriture conventionnelle d'un noyau à partir de sa composition et inversement.</label><span class="refs"><a href="#ancre-3">03</a> · man. 10 p.80 | 12 p.81 | 28 p.84</span></li>
+    <li><input type="checkbox" id="ds2"><label for="ds2">Effectuer le quotient de deux grandeurs pour les comparer.</label><span class="refs"><a href="#ancre-5">05</a>-<a href="#ancre-7">07</a> · man. 15 p.81 | 22 p.83</span></li>
+    <li><input type="checkbox" id="ds3"><label for="ds3">Comparer la taille et la masse d'un atome et de son noyau.</label><span class="refs"><a href="#ancre-5">05</a>-<a href="#ancre-7">07</a> · man. 15 p.81 | 22 p.83</span></li>
+    <li><input type="checkbox" id="ds4"><label for="ds4">Citer l'ordre de grandeur de la valeur de la taille d'un atome.</label><span class="refs"><a href="#ancre-7">07</a></span></li>
+    <li><input type="checkbox" id="ds5"><label for="ds5">Identifier dans un document : la masse et la charge électrique d'un électron, d'un proton et d'un neutron ; la charge électrique élémentaire.</label><span class="refs"><a href="#ancre-5">05</a>-<a href="#ancre-6">06</a> · man. 21 p.83 | 28 p.84</span></li>
+    <li><input type="checkbox" id="ds6"><label for="ds6">Calculer la masse et la charge d'un noyau et d'un cortège électronique.</label><span class="refs"><a href="#ancre-5">05</a>-<a href="#ancre-6">06</a> · man. 13 p.81 | 14 p.81 | 21 p.83</span></li>
+    <li><input type="checkbox" id="ds7"><label for="ds7">Identifier des isotopes.</label><span class="refs"><a href="#ancre-4">04</a> · man. 11 p.80 | 25 p.83 | 28 p.84</span></li>
+  </ol>
+  <div class="videos" style="margin:1rem 0 0;">
+    <a class="video-chip" href="https://create.kahoot.it/share/bilan-constitution-de-l-atome/30d07b3b-4c6d-4eb4-8dee-3033011abd9e" target="_blank" rel="noopener">🎯 Kahoot bilan du chapitre ↗</a>
+    <a class="video-chip" href="https://isaacetoile-my.sharepoint.com/:b:/g/personal/l_vanhoorde_enseignant_isaac-etoile_fr/EcwJ4BTdXjRBn8Q1VFXwOlABKPT1Xz7-gS1qhRbgAn4BAg?e=OmcdnZ" target="_blank" rel="noopener">📄 DS 2024/2025 (corrigé) ↗</a>
+  </div>
+</section>
+
+
+<p class="signature">M. Van Hoorde<span>Lycée général Isaac de l'Étoile &middot; Poitiers</span></p>
+
+</article>
+</div>
+
+<button id="haut" type="button" aria-label="Revenir en haut de page">↑ haut</button>
+
+<footer>
+  <div class="footer-inner">© 2025/2026 &middot; M. Van Hoorde — Physique-Chimie &middot; Seconde générale &middot; Thème 1, Chapitre 3</div>
+</footer>
+
+<script>
+(function(){
+  var barre = document.querySelector('#lecture .fait');
+  var btn = document.getElementById('haut');
+  function maj(){
+    var h = document.documentElement;
+    var pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    barre.style.width = (pct || 0) + '%';
+    btn.classList.toggle('visible', h.scrollTop > 600);
+  }
+  document.addEventListener('scroll', maj, {passive:true});
+  btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  maj();
+
+  var liens = {};
+  document.querySelectorAll('#toc a').forEach(function(a){
+    liens[a.getAttribute('href').slice(1)] = a;
+  });
+  var cibles = Array.prototype.slice.call(document.querySelectorAll('h2[id], section[id]'));
+  function majToc(){
+    var repere = window.scrollY + window.innerHeight * 0.25;
+    var courant = null;
+    cibles.forEach(function(c){ if (c.offsetTop <= repere) courant = c; });
+    Object.keys(liens).forEach(function(k){ liens[k].classList.remove('actif'); });
+    if (courant && liens[courant.id]) liens[courant.id].classList.add('actif');
+  }
+  document.addEventListener('scroll', majToc, {passive:true});
+  majToc();
+
+  /* Sections repliables : un clic dans un sommaire ouvre la section visée */
+  document.querySelectorAll('#toc a, details.toc-mobile a').forEach(function(a){
+    a.addEventListener('click', function(){
+      var cible = document.querySelector(a.getAttribute('href'));
+      if (!cible) return;
+      var partie = cible.closest('details.partie');
+      if (partie) partie.open = true;
+    });
+  });
+
+  var CLE = 'cours-2nde-t1c3-checklist';
+  var boites = document.querySelectorAll('#liste-ds input[type="checkbox"]');
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE)) || {}; } catch(e) {}
+  boites.forEach(function(b){
+    if (etat[b.id]) b.checked = true;
+    b.addEventListener('change', function(){
+      etat[b.id] = b.checked;
+      try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch(e) {}
+    });
+  });
+})();
+</script>
+
+<script>
+/* Verrou de fin de chapitre — v2 (porte à code centrée)
+   Le code n'est jamais écrit ici : seule son EMPREINTE SHA-256 est stockée.
+   Re-verrouillage pour tests : ?verrou=1 */
+(function(){
+  var EMPREINTE = '9104714c08b3e8440a12b0ab17109e5a91a2059a3a0e825632bbf268220b5198' /* empreinte SHA-256 du code AT0MES */;
+  var CLE = 'deblocage-2nde-t1c3';
+
+  function deverrouiller(){
+    document.body.classList.remove('verrouille');
+    var porte = document.getElementById('porte');
+    if (porte) porte.remove();
+    window.scrollTo(0, 0);
+  }
+
+  try {
+    if (new URLSearchParams(location.search).has('verrou')) {
+      localStorage.removeItem(CLE);
+    }
+  } catch(e) {}
+
+  try {
+    if (localStorage.getItem(CLE) === '1') { deverrouiller(); return; }
+  } catch(e) {}
+
+  var forme = document.getElementById('forme-code');
+  var champ = document.getElementById('champ-code');
+  var erreur = document.getElementById('erreur-code');
+
+  function empreinteHex(texte){
+    var donnees = new TextEncoder().encode(texte);
+    return crypto.subtle.digest('SHA-256', donnees).then(function(tampon){
+      return Array.prototype.map.call(new Uint8Array(tampon), function(o){
+        return o.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  forme.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var essai = (champ.value || '').trim().toUpperCase();
+    if (essai.length !== 6) {
+      erreur.textContent = 'Le code fait 6 caractères (lettres et chiffres).';
+      return;
+    }
+    if (!(window.crypto && crypto.subtle)) {
+      erreur.textContent = 'Navigateur incompatible — ouvre la page depuis le site.';
+      return;
+    }
+    empreinteHex(essai).then(function(h){
+      if (h === EMPREINTE) {
+        try { localStorage.setItem(CLE, '1'); } catch(e) {}
+        deverrouiller();
+      } else {
+        erreur.textContent = 'Code incorrect. Vérifie le cahier de textes !';
+        champ.select();
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
