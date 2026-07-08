@@ -63,7 +63,15 @@
   ul.cours { max-width:75ch; margin:0 0 .9rem 1.2rem; text-align:justify; }
   ul.cours li { margin-bottom:.5rem; }
   .nb { white-space:nowrap; }
-  sub, sup { font-size:.68em; }
+  sub, sup { font-size:.68em; line-height:0; position:relative; }
+  sup { top:-.05em; } sub { bottom:-.04em; }
+  /* Écriture conventionnelle du noyau : A et Z empilés AVANT le symbole */
+  .azx { display:inline-flex; align-items:center; white-space:nowrap; font-style:normal; }
+  .azx .az { display:inline-flex; flex-direction:column; align-items:flex-end;
+    font-size:.62em; line-height:1.15; margin-right:.08em; font-family:'IBM Plex Mono',monospace; }
+  figcaption .fig-num { font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--encre); }
+  figure img.fig-svg { max-width:100%; height:auto; display:block; margin:0 auto;
+    background:#fff; border:1px solid var(--grille); border-radius:10px; }
 
   /* ===== BIBLIOTHÈQUE DE COMPOSANTS (validée sur le chapitre T1-C2) ===== */
 
@@ -217,7 +225,9 @@
     align-items:center; gap:.5rem; }
   .etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
   .resultat { border-bottom:2.5px solid var(--h-alpha); font-weight:600; padding-bottom:1px; white-space:nowrap; }
-  .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--gris);
+  /* Formule du cours rappelée telle quelle : taille normale (réduction inutile quand il n'y a
+     que la formule, sans notations spécifiques de l'énoncé) */
+  .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:1rem; color:var(--encre);
     text-align:center; margin-bottom:.1rem; }
   .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem; margin:1rem 0 1rem 1rem; }
   .eq-exo sub, .eq-exo sup { font-size:.6em; font-style:normal; font-family:'IBM Plex Mono',monospace; }
@@ -372,6 +382,7 @@
     padding:.15rem .05rem .2rem; min-width:0; background:#fff; cursor:default; }
   .ptable .el i { display:block; font-style:normal; font-size:.52rem; color:var(--gris); line-height:1.2; }
   .ptable .el b { display:block; font-family:'Space Grotesk',sans-serif; font-size:.72rem; line-height:1.15; }
+  .ptable .el u { display:block; text-decoration:none; font-size:.5rem; color:var(--gris); line-height:1.25; }
   .ptable .el:hover { outline:2px solid var(--h-beta); position:relative; z-index:2; }
   .ptable .alcalin { background:#f3b8b0; }
   .ptable .alcalinoterreux { background:#f0d9a8; }
@@ -485,38 +496,10 @@ des <strong>électrons négatifs répartis sur des couches</strong>.</p>
 <p>Ce modèle hérite des avancées scientifiques qui ont permis de préciser nos connaissances sur un
 atome qui n'était au départ modélisé que par une simple sphère dure.</p>
 
-<div class="histoire">
-  <div class="etq">Histoire des sciences</div>
-  <div class="frise-grille">
-    <div class="frise-item">
-      <div class="portrait-wrap"><img src="../assets/img/2nde-t1c3/t1c3-portrait-thomson.jpg" alt="Portrait de J.J. Thomson écrivant à son bureau" loading="lazy"></div>
-      <span class="annee">1904</span>
-      <h4>J.J. Thomson</h4>
-      <p>Dans le modèle de Thomson, l'atome se dote d'une partie positive et d'une partie négative.</p>
-    </div>
-    <div class="frise-item">
-      <div class="portrait-wrap"><img src="../assets/img/2nde-t1c3/t1c3-portrait-rutherford.jpg" alt="Portrait d'Ernest Rutherford" loading="lazy"></div>
-      <span class="annee">1909</span>
-      <h4>E. Rutherford</h4>
-      <p>Rutherford découvre l'existence d'un noyau positif très petit et d'un nuage d'électrons.</p>
-    </div>
-    <div class="frise-item">
-      <div class="portrait-wrap"><img src="../assets/img/2nde-t1c3/t1c3-portrait-bohr.jpg" alt="Portrait de Niels Bohr" loading="lazy"></div>
-      <span class="annee">1913</span>
-      <h4>N. Bohr</h4>
-      <p>Bohr établit, grâce à la physique quantique, que les électrons sont disposés sur des couches.</p>
-    </div>
-    <div class="frise-item">
-      <div class="portrait-wrap"><img src="../assets/img/2nde-t1c3/t1c3-portrait-schrodinger.jpg" alt="Portrait d'Erwin Schrödinger" loading="lazy"></div>
-      <span class="annee">1925</span>
-      <h4>E. Schrödinger</h4>
-      <p>Schrödinger introduira plus tard la notion de nuage électronique.</p>
-    </div>
-  </div>
-  <div class="frise-synthese">
-    <p class="credit" style="text-align:left;">Portraits : photographies historiques (domaine public) — attributions Wikimedia Commons à confirmer avant publication.</p>
-  </div>
-</div>
+<figure>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-histoire-lignees.svg" alt="Frise historique : trois lignées (chimique, expérimentale, quantique) convergent vers le modèle étudié en Seconde" loading="lazy">
+  <figcaption><b class="fig-num">Image 1</b> — La construction du modèle atomique : trois lignées convergent vers le modèle étudié en Seconde. (Version interactive à venir.)</figcaption>
+</figure>
 
 <div class="videos">
   <a class="video-chip" href="https://www.youtube.com/watch?v=GZlSapUc9nA&t=514s" target="_blank" rel="noopener">▶ L'évolution du modèle atomique en vidéo ↗</a>
@@ -530,6 +513,8 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
 <details class="partie" open>
 <summary><h2 id="ancre-2"><span class="num">02</span> Le modèle de Bohr</h2></summary>
 <div class="partie-corps">
+
+<p class="aparte">Nous adoptons donc le modèle de Bohr. Première question : de quoi l'atome est-il fait ?</p>
 
 <p>L'atome est formé :</p>
 <ul class="cours">
@@ -547,62 +532,8 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
 </ul>
 
 <figure>
-  <svg viewBox="0 0 760 340" role="img" aria-label="Modèle de Bohr : atome avec noyau central et électrons sur des couches ; zoom sur le noyau montrant protons et neutrons" font-family="'IBM Plex Mono',monospace">
-    <!-- Atome -->
-    <g transform="translate(190,160)">
-      <ellipse rx="150" ry="60" fill="none" stroke="#141a26" stroke-width="1.6" transform="rotate(20)"/>
-      <ellipse rx="150" ry="60" fill="none" stroke="#141a26" stroke-width="1.6" transform="rotate(-20)"/>
-      <ellipse rx="150" ry="60" fill="none" stroke="#141a26" stroke-width="1.6" transform="rotate(90)"/>
-      <!-- noyau -->
-      <g>
-        <circle cx="-7" cy="-4" r="10" fill="#d6402b" stroke="#141a26" stroke-width="1.2"/>
-        <circle cx="8" cy="-6" r="10" fill="#7d95b5" stroke="#141a26" stroke-width="1.2"/>
-        <circle cx="0" cy="8" r="10" fill="#d6402b" stroke="#141a26" stroke-width="1.2"/>
-        <circle cx="12" cy="6" r="10" fill="#7d95b5" stroke="#141a26" stroke-width="1.2"/>
-        <text x="-7" y="-1" text-anchor="middle" font-size="10" fill="#fff">+</text>
-        <text x="0" y="11" text-anchor="middle" font-size="10" fill="#fff">+</text>
-      </g>
-      <!-- électrons -->
-      <g fill="#1d9aaa" stroke="#141a26" stroke-width="1.2">
-        <circle cx="141" cy="51" r="8" transform="rotate(20)"/>
-        <circle cx="-141" cy="51" r="8" transform="rotate(-20)"/>
-        <circle cx="0" cy="-148" r="8"/>
-      </g>
-      <g font-size="9" fill="#fff" text-anchor="middle">
-        <text x="150" y="26" transform="rotate(20 141 51)">−</text>
-      </g>
-    </g>
-    <text x="190" y="26" text-anchor="middle" font-size="12" font-weight="600" fill="#141a26" font-family="'Space Grotesk',sans-serif" letter-spacing="1">ATOME</text>
-    <line x1="80" y1="80" x2="120" y2="106" stroke="#6b6f7a" stroke-width="1.1"/>
-    <text x="76" y="72" text-anchor="end" font-size="11" fill="#6b6f7a">électron (−)</text>
-
-    <!-- Flèche de zoom -->
-    <path d="M 260 200 C 330 260, 400 270, 470 240" fill="none" stroke="#141a26" stroke-width="3"/>
-    <path d="M470 240 l-16 -2 8 14 z" fill="#141a26"/>
-
-    <!-- Zoom noyau -->
-    <g transform="translate(590,170)">
-      <rect x="-85" y="-85" width="170" height="170" fill="none" stroke="#141a26" stroke-width="1.8" rx="8"/>
-      <g stroke="#141a26" stroke-width="1.4">
-        <circle cx="-18" cy="-16" r="22" fill="#d6402b"/>
-        <circle cx="20" cy="-20" r="22" fill="#7d95b5"/>
-        <circle cx="-24" cy="20" r="22" fill="#7d95b5"/>
-        <circle cx="16" cy="22" r="22" fill="#d6402b"/>
-        <circle cx="0" cy="0" r="22" fill="#d6402b"/>
-      </g>
-      <g font-size="17" fill="#fff" text-anchor="middle" font-weight="700">
-        <text x="-18" y="-10">+</text><text x="16" y="28">+</text><text x="0" y="6">+</text>
-      </g>
-      <text x="0" y="108" text-anchor="middle" font-size="12" font-weight="600" fill="#141a26" font-family="'Space Grotesk',sans-serif" letter-spacing="1">NOYAU (+)</text>
-    </g>
-    <line x1="612" y1="150" x2="668" y2="96" stroke="#6b6f7a" stroke-width="1.1"/>
-    <text x="672" y="90" font-size="11" fill="#6b6f7a">neutron</text>
-    <line x1="572" y1="170" x2="500" y2="120" stroke="#6b6f7a" stroke-width="1.1"/>
-    <text x="496" y="112" text-anchor="end" font-size="11" fill="#6b6f7a">proton (+)</text>
-  </svg>
-  <figcaption>Image 2 — Le modèle planétaire de Rutherford est ici représenté, avec l'idée que
-  les électrons tournent sur des orbites particulières appelées couches électroniques.
-  Schrödinger introduira plus tard la notion de nuage électronique.</figcaption>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-modele-bohr.svg" alt="Modèle de Bohr : noyau chargé positivement au centre, électrons sur des couches ; zoom sur le noyau montrant protons et neutrons" loading="lazy">
+  <figcaption><b class="fig-num">Image 2</b> — Le modèle de Bohr : un noyau (protons + neutrons) autour duquel les électrons occupent des couches. Schrödinger introduira plus tard la notion de nuage électronique.</figcaption>
 </figure>
 
 <div class="notation">
@@ -628,10 +559,12 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
 <summary><h2 id="ancre-3"><span class="num">03</span> Écriture symbolique du noyau</h2></summary>
 <div class="partie-corps">
 
+<p class="aparte">Protons, neutrons, électrons… Pour décrire un noyau sans le dessiner, les chimistes ont adopté une écriture compacte.</p>
+
 <div class="encart definition">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Définition</div>
-  <p>L'<span class="terme">écriture conventionnelle du noyau</span> <span class="nb"><sup>A</sup><sub>Z</sub>X</span> porte trois informations :</p>
+  <p>L'<span class="terme">écriture conventionnelle du noyau</span> <span class="azx"><span class="az"><span>A</span><span>Z</span></span>X</span> porte trois informations :</p>
   <p><strong>X</strong> est le <strong>symbole de l'élément chimique</strong>. La première lettre s'écrit
   toujours en majuscule et la seconde en minuscule (ex : C, He, U, Al etc.).</p>
   <p><strong>A</strong> est le <strong>nombre de masse</strong>. Il correspond au nombre de nucléons
@@ -639,18 +572,10 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
   <p><strong>Z</strong> est le <strong>numéro atomique</strong>. C'est le nombre de protons.</p>
 </div>
 
-<div class="notation-noyau">
-  <div class="boite-symb">
-    <span class="A">A</span>
-    <span class="Z">Z</span>
-    <span class="X">X</span>
-  </div>
-  <div class="legende-liste">
-    <div><b>X</b> — symbole de l'élément chimique</div>
-    <div><b>A</b> — nombre de masse (nombre de nucléons)</div>
-    <div><b>Z</b> — numéro atomique (nombre de protons)</div>
-  </div>
-</div>
+<figure>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-ecriture-azx.svg" alt="Écriture conventionnelle du noyau : A en haut à gauche (nombre de masse), Z en bas à gauche (numéro atomique), X le symbole de l'élément" loading="lazy">
+  <figcaption><b class="fig-num">Image 3</b> — L'écriture conventionnelle du noyau porte trois informations : A, Z et X.</figcaption>
+</figure>
 
 <p>Pour calculer le nombre de neutrons, on utilise la formule :</p>
 
@@ -671,7 +596,7 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
 
 <div class="exercice">
   <div class="etiquette">Exercice 1 — Composition d'un noyau</div>
-  <p class="question">Donner la composition du noyau <span class="nb"><sup>35</sup><sub>17</sub>Cl</span>.</p>
+  <p class="question">Donner la composition du noyau <span class="azx"><span class="az"><span>35</span><span>17</span></span>Cl</span>.</p>
   <details class="correction">
     <summary>Voir la correction</summary>
     <div class="etape">Extraction des informations</div>
@@ -695,71 +620,70 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
     <p class="formule-cours-rappel">N = A − Z, donc A = N + Z</p>
     <div class="etape">Application numérique</div>
     <p>A = 8 + 8 = <span class="nb">16</span>. Le noyau admet pour notation symbolique
-    <span class="resultat"><sup>16</sup><sub>8</sub>O</span>.</p>
+    <span class="resultat"><span class="azx"><span class="az"><span>16</span><span>8</span></span>O</span></span>.</p>
   </details>
 </div>
 
 <div class="exercice">
   <div class="etiquette">Exercice 3 — De la composition à l'écriture conventionnelle</div>
-  <p class="question">Donner l'écriture conventionnelle de ces noyaux : un noyau d'aluminium
-  possédant 13 protons et 14 neutrons ; un noyau possédant 2 protons et 2 neutrons.</p>
+  <p class="question">Donner l'écriture conventionnelle des deux noyaux représentés ci-dessous.</p>
+  <figure style="margin:.4rem 0 .6rem;">
+    <svg viewBox="0 0 640 210" role="img" aria-label="Deux schémas de noyaux à identifier : à gauche un noyau d'aluminium annoté 13 protons et 14 neutrons ; à droite un noyau à compter avec 2 protons et 2 neutrons" style="max-width:560px;display:block;margin:0 auto;" font-family="'IBM Plex Mono',monospace">
+      <!-- légende -->
+      <circle cx="200" cy="16" r="7" fill="#d6402b" stroke="#141a26" stroke-width="1"/>
+      <text x="212" y="20" font-size="11" fill="#141a26">proton</text>
+      <circle cx="300" cy="16" r="7" fill="#b9bec9" stroke="#141a26" stroke-width="1"/>
+      <text x="312" y="20" font-size="11" fill="#141a26">neutron</text>
+      <!-- Noyau a) aluminium, annoté -->
+      <g stroke="#141a26" stroke-width="1.1">
+        <circle cx="140" cy="105" r="34" fill="#f3c9c2"/>
+        <circle cx="128" cy="94" r="9" fill="#d6402b"/><circle cx="148" cy="90" r="9" fill="#b9bec9"/>
+        <circle cx="120" cy="112" r="9" fill="#b9bec9"/><circle cx="140" cy="110" r="9" fill="#d6402b"/>
+        <circle cx="158" cy="106" r="9" fill="#b9bec9"/><circle cx="132" cy="126" r="9" fill="#d6402b"/>
+        <circle cx="152" cy="124" r="9" fill="#b9bec9"/>
+      </g>
+      <line x1="172" y1="92" x2="228" y2="74" stroke="#6b6f7a" stroke-width="1.1"/>
+      <text x="232" y="72" font-size="11.5" fill="#141a26">13 protons</text>
+      <line x1="172" y1="120" x2="228" y2="140" stroke="#6b6f7a" stroke-width="1.1"/>
+      <text x="232" y="150" font-size="11.5" fill="#141a26">14 neutrons</text>
+      <text x="140" y="172" text-anchor="middle" font-size="12.5" fill="#141a26">a) noyau d'aluminium</text>
+      <!-- Noyau b) à compter -->
+      <g stroke="#141a26" stroke-width="1.3">
+        <circle cx="475" cy="98" r="15" fill="#d6402b"/><circle cx="505" cy="102" r="15" fill="#b9bec9"/>
+        <circle cx="480" cy="128" r="15" fill="#b9bec9"/><circle cx="508" cy="130" r="15" fill="#d6402b"/>
+      </g>
+      <text x="493" y="172" text-anchor="middle" font-size="12.5" fill="#141a26">b) noyau à identifier (compter !)</text>
+    </svg>
+  </figure>
   <details class="correction">
     <summary>Voir la correction</summary>
-    <div class="etape">Noyau d'aluminium</div>
+    <div class="etape">Noyau a) — aluminium</div>
     <p>13 protons donc <span class="nb">Z = 13</span>. L'élément aluminium se note Al. 14 neutrons
     donc <span class="nb">N = 14</span> et ainsi A = N + Z = 14 + 13 = 27. Le noyau admet pour
-    notation symbolique <span class="resultat"><sup>27</sup><sub>13</sub>Al</span>.</p>
-    <div class="etape">Noyau à 2 protons</div>
+    notation symbolique <span class="resultat"><span class="azx"><span class="az"><span>27</span><span>13</span></span>Al</span></span>.</p>
+    <div class="etape">Noyau b) — lecture du schéma : 2 protons et 2 neutrons</div>
     <p>2 protons donc <span class="nb">Z = 2</span>. D'après la classification périodique, il s'agit
     de l'hélium, qui se note He. 2 neutrons donc A = N + Z = 2 + 2 = 4. Le noyau admet pour notation
-    symbolique <span class="resultat"><sup>4</sup><sub>2</sub>He</span>.</p>
+    symbolique <span class="resultat"><span class="azx"><span class="az"><span>4</span><span>2</span></span>He</span></span>.</p>
   </details>
 </div>
 
 <div class="exercice">
   <div class="etiquette">Exercice 4 — Schémas de noyaux atomiques</div>
   <p class="question">Réaliser des schémas de noyaux atomiques à partir de ces écritures
-  conventionnelles : <span class="nb"><sup>1</sup><sub>1</sub>H</span>,
-  <span class="nb"><sup>14</sup><sub>6</sub>C</span>,
-  <span class="nb"><sup>9</sup><sub>4</sub>Be</span>.</p>
+  conventionnelles : <span class="azx"><span class="az"><span>1</span><span>1</span></span>H</span>,
+  <span class="azx"><span class="az"><span>14</span><span>6</span></span>C</span>,
+  <span class="azx"><span class="az"><span>9</span><span>4</span></span>Be</span>.</p>
   <details class="correction">
     <summary>Voir la correction</summary>
     <div class="etape">Composition de chaque noyau</div>
-    <p><sup>1</sup><sub>1</sub>H : Z = 1 et N = 1 − 1 = 0, soit 1 proton seul.
-    <sup>14</sup><sub>6</sub>C : Z = 6 et N = 14 − 6 = 8, soit 6 protons et 8 neutrons.
-    <sup>9</sup><sub>4</sub>Be : Z = 4 et N = 9 − 4 = 5, soit 4 protons et 5 neutrons.</p>
-    <figure style="margin:.6rem 0 0;">
-      <svg viewBox="0 0 660 190" role="img" aria-label="Schémas des noyaux : hydrogène 1 proton, carbone 14 avec 6 protons et 8 neutrons, béryllium 9 avec 4 protons et 5 neutrons" font-family="'IBM Plex Mono',monospace">
-        <!-- légende -->
-        <circle cx="240" cy="16" r="7" fill="#d6402b" stroke="#141a26" stroke-width="1"/>
-        <text x="252" y="20" font-size="11" fill="#141a26">proton</text>
-        <circle cx="340" cy="16" r="7" fill="#7d95b5" stroke="#141a26" stroke-width="1"/>
-        <text x="352" y="20" font-size="11" fill="#141a26">neutron</text>
-        <!-- H : 1 proton -->
-        <circle cx="110" cy="100" r="13" fill="#d6402b" stroke="#141a26" stroke-width="1.3"/>
-        <text x="110" y="165" text-anchor="middle" font-size="13" fill="#141a26"><tspan font-size="9" dy="-4">1</tspan><tspan dy="4">H : 1 p⁺</tspan></text>
-        <!-- C-14 : 6p + 8n -->
-        <g stroke="#141a26" stroke-width="1.3">
-          <circle cx="315" cy="82" r="13" fill="#d6402b"/><circle cx="342" cy="76" r="13" fill="#7d95b5"/>
-          <circle cx="296" cy="104" r="13" fill="#7d95b5"/><circle cx="322" cy="106" r="13" fill="#7d95b5"/>
-          <circle cx="348" cy="100" r="13" fill="#d6402b"/><circle cx="306" cy="128" r="13" fill="#d6402b"/>
-          <circle cx="332" cy="128" r="13" fill="#7d95b5"/><circle cx="290" cy="80" r="13" fill="#d6402b"/>
-          <circle cx="360" cy="122" r="13" fill="#7d95b5"/><circle cx="368" cy="86" r="13" fill="#d6402b"/>
-          <circle cx="279" cy="120" r="13" fill="#7d95b5"/><circle cx="330" cy="58" r="13" fill="#7d95b5"/>
-          <circle cx="304" cy="60" r="13" fill="#7d95b5"/><circle cx="352" cy="146" r="13" fill="#d6402b"/>
-        </g>
-        <text x="325" y="180" text-anchor="middle" font-size="13" fill="#141a26">¹⁴C : 6 p⁺ + 8 n⁰</text>
-        <!-- Be-9 : 4p + 5n -->
-        <g stroke="#141a26" stroke-width="1.3">
-          <circle cx="530" cy="86" r="13" fill="#d6402b"/><circle cx="556" cy="92" r="13" fill="#7d95b5"/>
-          <circle cx="516" cy="110" r="13" fill="#7d95b5"/><circle cx="542" cy="114" r="13" fill="#d6402b"/>
-          <circle cx="566" cy="116" r="13" fill="#7d95b5"/><circle cx="528" cy="136" r="13" fill="#d6402b"/>
-          <circle cx="554" cy="138" r="13" fill="#7d95b5"/><circle cx="506" cy="86" r="13" fill="#7d95b5"/>
-          <circle cx="540" cy="66" r="13" fill="#d6402b"/>
-        </g>
-        <text x="538" y="180" text-anchor="middle" font-size="13" fill="#141a26">⁹Be : 4 p⁺ + 5 n⁰</text>
-      </svg>
-    </figure>
+    <p><span class="azx"><span class="az"><span>1</span><span>1</span></span>H</span> : Z = 1 et N = 1 − 1 = 0, soit 1 proton seul.
+    <span class="azx"><span class="az"><span>14</span><span>6</span></span>C</span> : Z = 6 et N = 14 − 6 = 8, soit 6 protons et 8 neutrons.
+    <span class="azx"><span class="az"><span>9</span><span>4</span></span>Be</span> : Z = 4 et N = 9 − 4 = 5, soit 4 protons et 5 neutrons.</p>
+    <figure>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-noyaux-h-c14-be9.svg" alt="Schémas des noyaux : hydrogène 1 avec un proton ; carbone 14 avec 6 protons et 8 neutrons ; béryllium 9 avec 4 protons et 5 neutrons" loading="lazy">
+  <figcaption><b class="fig-num">Image 4</b> — Les trois noyaux schématisés : compter les protons (rouges) et les neutrons (gris).</figcaption>
+</figure>
   </details>
 </div>
 
@@ -772,6 +696,8 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
 <summary><h2 id="ancre-4"><span class="num">04</span> Isotopes</h2></summary>
 <div class="partie-corps">
 
+<p class="aparte">Même élément, mais pas toujours le même noyau : jouons sur le nombre de neutrons.</p>
+
 <div class="encart definition">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Définition</div>
@@ -783,53 +709,14 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
 même élément chimique. Ils ont cependant un <strong>nombre de masse A différent</strong>, ils n'ont
 donc pas la même masse.</p>
 
-<div class="duo">
-  <figure style="margin:.4rem 0;">
-    <div class="grille-isotopes">
-      <table>
-        <tr>
-          <td class="cellule oxygene"><span class="a">16</span><span class="symb">O</span></td>
-          <td class="cellule oxygene"><span class="a">17</span><span class="symb">O</span></td>
-          <td class="cellule oxygene"><span class="a">18</span><span class="symb">O</span></td>
-        </tr>
-        <tr>
-          <td class="cellule azote"><span class="a">13</span><span class="symb">N</span></td>
-          <td class="cellule azote"><span class="a">14</span><span class="symb">N</span></td>
-          <td class="cellule azote"><span class="a">15</span><span class="symb">N</span></td>
-        </tr>
-        <tr>
-          <td class="cellule carbone"><span class="a">12</span><span class="symb">C</span></td>
-          <td class="cellule carbone"><span class="a">13</span><span class="symb">C</span></td>
-          <td class="cellule carbone"><span class="a">14</span><span class="symb">C</span></td>
-        </tr>
-      </table>
-      <div class="axes"><span>↑ Z — éléments (nombre de protons)</span><span>→ A − Z — nombre de neutrons : isotopes (sosies)</span></div>
-    </div>
-    <figcaption>Chaque ligne est un élément (même Z) ; chaque colonne fait varier le nombre de
-    neutrons : les cases d'une même ligne sont des isotopes.</figcaption>
-  </figure>
-  <figure style="margin:.4rem 0;">
-    <svg viewBox="0 0 360 300" role="img" aria-label="Diagramme circulaire des abondances relatives des isotopes du plomb : plomb 208 à 52,4 %, plomb 206 à 24,1 %, plomb 207 à 22,1 %, plomb 204 à 1,4 %" font-family="'IBM Plex Mono',monospace">
-      <!-- parts calculées depuis le haut, sens horaire : 208 (52,4%), 206 (24,1%), 207 (22,1%), 204 (1,4%) -->
-      <path d="M150,130 L150,20 A110,110 0 1 1 134.4,239.0 Z" fill="#a9d6dd" stroke="#141a26" stroke-width="1.6"/>
-      <path d="M150,130 L134.4,239.0 A110,110 0 0 1 42.5,105.5 Z" fill="#eec292" stroke="#141a26" stroke-width="1.6"/>
-      <path d="M150,130 L42.5,105.5 A110,110 0 0 1 140.4,20.4 Z" fill="#c7e6c9" stroke="#141a26" stroke-width="1.6"/>
-      <path d="M150,130 L140.4,20.4 A110,110 0 0 1 150,20 Z" fill="#eec2ba" stroke="#141a26" stroke-width="1.6"/>
-      <text x="216" y="140" text-anchor="middle" font-size="13" font-weight="600" fill="#141a26">52,4 %</text>
-      <text x="112" y="212" text-anchor="middle" font-size="12" font-weight="600" fill="#141a26">24,1 %</text>
-      <text x="92" y="82" text-anchor="middle" font-size="12" font-weight="600" fill="#141a26">22,1 %</text>
-      <line x1="144" y1="22" x2="108" y2="8" stroke="#6b6f7a" stroke-width="1.1"/>
-      <text x="104" y="10" text-anchor="end" font-size="10.5" fill="#6b6f7a">1,4 %</text>
-      <g font-size="10.5" fill="#141a26">
-        <rect x="30" y="252" width="11" height="11" fill="#a9d6dd" stroke="#141a26" stroke-width="1"/><text x="46" y="261">plomb 208</text>
-        <rect x="130" y="252" width="11" height="11" fill="#eec292" stroke="#141a26" stroke-width="1"/><text x="146" y="261">plomb 206</text>
-        <rect x="230" y="252" width="11" height="11" fill="#c7e6c9" stroke="#141a26" stroke-width="1"/><text x="246" y="261">plomb 207</text>
-        <rect x="130" y="274" width="11" height="11" fill="#eec2ba" stroke="#141a26" stroke-width="1"/><text x="146" y="283">plomb 204</text>
-      </g>
-    </svg>
-    <figcaption>Abondances relatives des isotopes du plomb.</figcaption>
-  </figure>
-</div>
+<figure>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-isotopes-grille.svg" alt="Grille d'isotopes : chaque ligne est un élément (même Z), le nombre de neutrons varie vers la droite" loading="lazy">
+  <figcaption><b class="fig-num">Image 5</b> — Chaque ligne regroupe les isotopes d'un même élément : même Z, nombre de neutrons différent.</figcaption>
+</figure>
+<figure>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-abondances-plomb.svg" alt="Diagramme circulaire des abondances isotopiques du plomb : plomb 208 à 52,4 %, plomb 206 à 24,1 %, plomb 207 à 22,1 %, plomb 204 à 1,4 %" loading="lazy">
+  <figcaption><b class="fig-num">Image 6</b> — Abondances relatives des isotopes du plomb dans la nature.</figcaption>
+</figure>
 
 <p>Dans la nature, différents isotopes d'un même élément sont présents selon certaines proportions :
 on parle d'<span class="terme">abondance isotopique</span>.</p>
@@ -840,16 +727,16 @@ on parle d'<span class="terme">abondance isotopique</span>.</p>
 
 <div class="exercice">
   <div class="etiquette">Exercice 5 — Isotopes de l'uranium</div>
-  <p class="question">Donner la composition des noyaux <span class="nb"><sup>238</sup><sub>92</sub>U</span>
-  et <span class="nb"><sup>235</sup><sub>92</sub>U</span> (uranium 238 et uranium 235) et justifier
+  <p class="question">Donner la composition des noyaux <span class="azx"><span class="az"><span>238</span><span>92</span></span>U</span>
+  et <span class="azx"><span class="az"><span>235</span><span>92</span></span>U</span> (uranium 238 et uranium 235) et justifier
   que ce sont des isotopes.</p>
   <details class="correction">
     <summary>Voir la correction</summary>
     <div class="etape">Uranium 235</div>
-    <p>Pour <sup>235</sup><sub>92</sub>U : Z = 92 et N = A − Z = 235 − 92 = 143. Ce noyau d'uranium
+    <p>Pour <span class="azx"><span class="az"><span>235</span><span>92</span></span>U</span> : Z = 92 et N = A − Z = 235 − 92 = 143. Ce noyau d'uranium
     a <span class="nb">92 protons</span> et <span class="nb">143 neutrons</span>.</p>
     <div class="etape">Uranium 238</div>
-    <p>Pour <sup>238</sup><sub>92</sub>U : Z = 92 et N = A − Z = 238 − 92 = 146. Ce noyau d'uranium
+    <p>Pour <span class="azx"><span class="az"><span>238</span><span>92</span></span>U</span> : Z = 92 et N = A − Z = 238 − 92 = 146. Ce noyau d'uranium
     a <span class="nb">92 protons</span> et <span class="nb">146 neutrons</span>.</p>
     <div class="etape">Conclusion</div>
     <p>Ces deux noyaux ont le même nombre de protons mais un nombre de neutrons différent :
@@ -864,6 +751,8 @@ on parle d'<span class="terme">abondance isotopique</span>.</p>
 <details class="partie" open>
 <summary><h2 id="ancre-5"><span class="num">05</span> Masse de l'atome</h2></summary>
 <div class="partie-corps">
+
+<p class="aparte">Maintenant que l'on connaît les habitants de l'atome, pesons-les.</p>
 
 <p>Les masses des particules composant l'atome sont données dans le tableau ci-dessous.</p>
 
@@ -940,7 +829,7 @@ la relation suivante :</p>
 <div class="exercice">
   <div class="etiquette">Exercice 8 — Masse d'un atome d'or</div>
   <p class="question">Calculer la masse d'un atome d'or. Voici l'écriture conventionnelle de son
-  noyau : <span class="nb"><sup>197</sup><sub>79</sub>Au</span>.</p>
+  noyau : <span class="azx"><span class="az"><span>197</span><span>79</span></span>Au</span>.</p>
   <details class="correction">
     <summary>Voir la correction</summary>
     <div class="etape">Extraction des informations</div>
@@ -959,6 +848,8 @@ la relation suivante :</p>
 <details class="partie" open>
 <summary><h2 id="ancre-6"><span class="num">06</span> Charges électriques</h2></summary>
 <div class="partie-corps">
+
+<p class="aparte">Après la masse, l'autre carte d'identité des particules : leur charge électrique.</p>
 
 <div class="encart definition">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
@@ -995,6 +886,11 @@ la relation suivante :</p>
   <p class="eq-ligne">Q<sub>électrons</sub> = −Q<sub>noyau</sub></p>
 </div>
 
+<figure>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-charges-atome.svg" alt="Le noyau porte la charge +Z fois e, le cortège électronique la charge opposée : l'atome est neutre" loading="lazy">
+  <figcaption><b class="fig-num">Image 7</b> — Charges dans l'atome : le noyau porte Q = Z × e, le cortège électronique porte la charge opposée — l'atome est électriquement neutre.</figcaption>
+</figure>
+
 <div class="videos">
   <a class="video-chip" href="https://www.youtube.com/watch?v=x6lbVxYp-oE" target="_blank" rel="noopener">✏ S'exercer en vidéo ↗</a>
 </div>
@@ -1002,7 +898,7 @@ la relation suivante :</p>
 <div class="exercice">
   <div class="etiquette">Exercice 9 — Atome de chlore</div>
   <p class="question">Quelle est la composition d'un atome de chlore qui a pour noyau
-  <span class="nb"><sup>35</sup><sub>17</sub>Cl</span> ? Quelle est la charge de son noyau ?
+  <span class="azx"><span class="az"><span>35</span><span>17</span></span>Cl</span> ? Quelle est la charge de son noyau ?
   En déduire la charge de son cortège électronique.</p>
   <details class="correction">
     <summary>Voir la correction</summary>
@@ -1029,6 +925,8 @@ la relation suivante :</p>
 <summary><h2 id="ancre-7"><span class="num">07</span> Dimensions de l'atome</h2></summary>
 <div class="partie-corps">
 
+<p class="aparte">Dernière caractéristique, et pas des moindres : la taille. Préparez-vous à beaucoup de vide.</p>
+
 <p>Le <span class="terme">rayon de l'atome</span>, assimilé à une sphère, est de l'ordre de
 <span class="nb">10⁻¹⁰ m</span>, soit un dixième de milliardième de mètre. Cette dimension a donné
 naissance à sa propre unité, l'angström <span class="nb">(10⁻¹⁰ m = 1 Å)</span>.</p>
@@ -1047,33 +945,9 @@ une unité adaptée, le femtomètre <span class="nb">(10⁻¹⁵ m = 1 fm)</span
   constitué de vide. Sa structure est dite <span class="terme">lacunaire</span>.</p>
 </div>
 
-<figure class="fig-etroite" style="max-width:420px;">
-  <svg viewBox="0 0 440 400" role="img" aria-label="Un atome ramené à la taille d'un terrain de football : le noyau au centre a la taille d'une bille de stylo, un électron est en périphérie" font-family="'IBM Plex Mono',monospace">
-    <!-- terrain -->
-    <g transform="translate(150,60)">
-      <rect x="0" y="0" width="140" height="280" fill="#bfe0c2" stroke="#141a26" stroke-width="1.8"/>
-      <line x1="0" y1="140" x2="140" y2="140" stroke="#fff" stroke-width="2"/>
-      <circle cx="70" cy="140" r="26" fill="none" stroke="#fff" stroke-width="2"/>
-      <rect x="35" y="0" width="70" height="30" fill="none" stroke="#fff" stroke-width="2"/>
-      <rect x="35" y="250" width="70" height="30" fill="none" stroke="#fff" stroke-width="2"/>
-    </g>
-    <!-- cercle atome -->
-    <circle cx="220" cy="200" r="172" fill="none" stroke="#e3a04e" stroke-width="2.6"/>
-    <!-- rayon annoté -->
-    <line x1="220" y1="200" x2="100" y2="78" stroke="#141a26" stroke-width="1.6"/>
-    <path d="M100 78 l4 12 8 -9 z" fill="#141a26"/>
-    <text x="132" y="122" font-size="11" fill="#141a26" transform="rotate(-45 150 140)">50 mètres</text>
-    <!-- noyau -->
-    <circle cx="220" cy="200" r="4.5" fill="#d6402b" stroke="#141a26" stroke-width="1"/>
-    <line x1="228" y1="200" x2="330" y2="176" stroke="#6b6f7a" stroke-width="1.1"/>
-    <text x="334" y="170" font-size="10.5" fill="#6b6f7a">noyau = taille d'une</text>
-    <text x="334" y="184" font-size="10.5" fill="#6b6f7a">bille de stylo de 0,5 mm</text>
-    <!-- électron -->
-    <circle cx="382" cy="72" r="5" fill="#1d9aaa" stroke="#141a26" stroke-width="1.1"/>
-    <text x="374" y="56" text-anchor="end" font-size="10.5" fill="#1d9aaa">électron</text>
-  </svg>
-  <figcaption>Image 3 — Un atome ramené à la taille d'un terrain de football : si l'atome mesurait
-  50 m de rayon, son noyau aurait la taille d'une bille de stylo de 0,5 mm.</figcaption>
+<figure>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-dimensions-football.svg" alt="Si le noyau avait la taille d'une balle de tennis, l'atome aurait la taille d'un terrain de football : l'atome est essentiellement vide" loading="lazy">
+  <figcaption><b class="fig-num">Image 8</b> — Un atome ramené à l'échelle humaine : le rayon de l'atome vaut environ 100 000 fois celui de son noyau.</figcaption>
 </figure>
 
 <div class="exercice">
@@ -1099,6 +973,8 @@ une unité adaptée, le femtomètre <span class="nb">(10⁻¹⁵ m = 1 fm)</span
 <summary><h2 id="ancre-8"><span class="num">08</span> Les ions monoatomiques</h2></summary>
 <div class="partie-corps">
 
+<p class="aparte">Jusqu'ici l'atome était neutre. Que se passe-t-il s'il perd ou gagne des électrons ?</p>
+
 <div class="encart definition">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Définition</div>
@@ -1118,65 +994,16 @@ une unité adaptée, le femtomètre <span class="nb">(10⁻¹⁵ m = 1 fm)</span
 </ul>
 
 <figure>
-  <svg viewBox="0 0 760 300" role="img" aria-label="L'atome de lithium avec 3 protons, 3 électrons et 3 neutrons perd un électron et devient le cation lithium plus, avec 3 protons, 2 électrons et 3 neutrons" font-family="'IBM Plex Mono',monospace">
-    <!-- Li atome -->
-    <text x="70" y="140" font-size="34" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#141a26">Li</text>
-    <g transform="translate(210,150)">
-      <circle r="52" fill="none" stroke="#4a3f9e" stroke-width="1.6"/>
-      <circle r="92" fill="none" stroke="#4a3f9e" stroke-width="1.6"/>
-      <!-- noyau -->
-      <g stroke="#141a26" stroke-width="1.1">
-        <circle cx="-8" cy="-4" r="9" fill="#d6402b"/><circle cx="8" cy="-6" r="9" fill="#b9bec9"/>
-        <circle cx="-2" cy="8" r="9" fill="#d6402b"/><circle cx="12" cy="7" r="9" fill="#b9bec9"/>
-        <circle cx="2" cy="-14" r="9" fill="#b9bec9"/><circle cx="-14" cy="9" r="9" fill="#d6402b"/>
-      </g>
-      <!-- électrons : 2 couche interne + 1 externe -->
-      <g fill="#5a3fd6" stroke="#141a26" stroke-width="1.1">
-        <circle cx="-52" cy="0" r="7"/><circle cx="52" cy="0" r="7"/>
-        <circle cx="0" cy="-92" r="7"/>
-      </g>
-    </g>
-    <!-- électron qui part -->
-    <path d="M 210 44 C 240 14, 290 6, 330 20" fill="none" stroke="#141a26" stroke-width="1.6" stroke-dasharray="5 4"/>
-    <path d="M330 20 l-13 -6 3 13 z" fill="#141a26"/>
-    <circle cx="352" cy="28" r="7" fill="#5a3fd6" stroke="#141a26" stroke-width="1.1"/>
-    <text x="368" y="32" font-size="11" fill="#6b6f7a">électron perdu</text>
-
-    <!-- flèche -->
-    <line x1="330" y1="160" x2="420" y2="160" stroke="#141a26" stroke-width="2.4"/>
-    <path d="M420 160 l-14 -7 v14 z" fill="#141a26"/>
-
-    <!-- Li+ -->
-    <text x="450" y="140" font-size="34" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#141a26">Li<tspan font-size="20" dy="-12">+</tspan></text>
-    <g transform="translate(620,150)">
-      <circle r="52" fill="none" stroke="#4a3f9e" stroke-width="1.6"/>
-      <g stroke="#141a26" stroke-width="1.1">
-        <circle cx="-8" cy="-4" r="9" fill="#d6402b"/><circle cx="8" cy="-6" r="9" fill="#b9bec9"/>
-        <circle cx="-2" cy="8" r="9" fill="#d6402b"/><circle cx="12" cy="7" r="9" fill="#b9bec9"/>
-        <circle cx="2" cy="-14" r="9" fill="#b9bec9"/><circle cx="-14" cy="9" r="9" fill="#d6402b"/>
-      </g>
-      <g fill="#5a3fd6" stroke="#141a26" stroke-width="1.1">
-        <circle cx="-52" cy="0" r="7"/><circle cx="52" cy="0" r="7"/>
-      </g>
-    </g>
-    <!-- légende -->
-    <g font-size="10.5" fill="#141a26">
-      <circle cx="80" cy="262" r="7" fill="#b9bec9" stroke="#141a26" stroke-width="1"/><text x="94" y="266">neutron</text>
-      <circle cx="200" cy="262" r="7" fill="#d6402b" stroke="#141a26" stroke-width="1"/><text x="214" y="266">proton</text>
-      <circle cx="310" cy="262" r="7" fill="#5a3fd6" stroke="#141a26" stroke-width="1"/><text x="324" y="266">électron</text>
-    </g>
-  </svg>
-  <figcaption>Image 4 — Lorsque l'atome de lithium Li possédant
-  <span class="nb">3 p⁺ | 3 e⁻ | 3 n⁰</span> perd un électron, il devient le cation monoatomique Li⁺
-  possédant <span class="nb">3 p⁺ | 2 e⁻ | 3 n⁰</span>.</figcaption>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-ion-lithium.svg" alt="L'atome de lithium (3 protons, 3 électrons) perd un électron et devient l'ion lithium plus (3 protons, 2 électrons)" loading="lazy">
+  <figcaption><b class="fig-num">Image 9</b> — Lorsque l'atome de lithium Li (3 p⁺ | 3 e⁻ | 3 n⁰) perd un électron, il devient le cation monoatomique Li⁺ (3 p⁺ | 2 e⁻ | 3 n⁰).</figcaption>
 </figure>
 
 <div class="exercice">
   <div class="etiquette">Exercice 11 — Composition d'ions monoatomiques</div>
   <p class="question">Donner la composition des ions Mg²⁺, H⁺ et F⁻. On donne les écritures
-  conventionnelles de leurs noyaux : <span class="nb"><sup>24</sup><sub>12</sub>Mg</span>,
-  <span class="nb"><sup>1</sup><sub>1</sub>H</span>,
-  <span class="nb"><sup>19</sup><sub>9</sub>F</span>.</p>
+  conventionnelles de leurs noyaux : <span class="azx"><span class="az"><span>24</span><span>12</span></span>Mg</span>,
+  <span class="azx"><span class="az"><span>1</span><span>1</span></span>H</span>,
+  <span class="azx"><span class="az"><span>19</span><span>9</span></span>F</span>.</p>
   <details class="correction">
     <summary>Voir la correction</summary>
     <div class="etape">Ion Mg²⁺</div>
@@ -1200,6 +1027,8 @@ une unité adaptée, le femtomètre <span class="nb">(10⁻¹⁵ m = 1 fm)</span
 <summary><h2 id="ancre-9"><span class="num">09</span> Élément chimique</h2></summary>
 <div class="partie-corps">
 
+<p class="aparte">Noyaux, atomes, ions… Qu'ont en commun toutes ces entités ? Une seule chose : leur numéro atomique.</p>
+
 <div class="encart definition">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Définition</div>
@@ -1217,135 +1046,146 @@ chimiques</span>.</p>
   <div class="etq">⚗ Exemple détaillé — l'élément fer</div>
   <p>L'élément fer a pour numéro atomique <span class="nb">Z = 26</span> et son symbole est Fe.
   L'atome de fer s'écrit Fe, les ions fer Fe²⁺ ou encore Fe³⁺, et le noyau de fer
-  <span class="nb"><sup>56</sup><sub>26</sub>Fe</span> ; tous appartiennent à l'élément fer.</p>
+  <span class="azx"><span class="az"><span>56</span><span>26</span></span>Fe</span> ; tous appartiennent à l'élément fer.</p>
 </div>
 
 <figure>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-element-fer.svg" alt="Le noyau de fer, l'atome de fer, les ions fer II et fer III ont tous Z égal à 26 : ils appartiennent au même élément chimique" loading="lazy">
+  <figcaption><b class="fig-num">Image 10</b> — Autour de l'élément fer : noyau, atome et ions partagent le même numéro atomique Z = 26.</figcaption>
+</figure>
+<figure>
+  <img class="fig-svg" src="../assets/img/2nde-t1c3/t1c3-fig-classification-principe.svg" alt="Principe de rangement de la classification périodique : les éléments sont rangés par numéro atomique croissant" loading="lazy">
+  <figcaption><b class="fig-num">Image 11</b> — Le principe de rangement : numéro atomique Z croissant, de gauche à droite et de haut en bas.</figcaption>
+</figure>
+<figure>
   <div class="ptable">
-<div class="el nonmetal" style="grid-row:1;grid-column:1;" title="Hydrogène (Z = 1)"><i>1</i><b>H</b></div>
-<div class="el noble" style="grid-row:1;grid-column:18;" title="Hélium (Z = 2)"><i>2</i><b>He</b></div>
-<div class="el alcalin" style="grid-row:2;grid-column:1;" title="Lithium (Z = 3)"><i>3</i><b>Li</b></div>
-<div class="el alcalinoterreux" style="grid-row:2;grid-column:2;" title="Béryllium (Z = 4)"><i>4</i><b>Be</b></div>
-<div class="el metalloide" style="grid-row:2;grid-column:13;" title="Bore (Z = 5)"><i>5</i><b>B</b></div>
-<div class="el nonmetal" style="grid-row:2;grid-column:14;" title="Carbone (Z = 6)"><i>6</i><b>C</b></div>
-<div class="el nonmetal" style="grid-row:2;grid-column:15;" title="Azote (Z = 7)"><i>7</i><b>N</b></div>
-<div class="el nonmetal" style="grid-row:2;grid-column:16;" title="Oxygène (Z = 8)"><i>8</i><b>O</b></div>
-<div class="el halogene" style="grid-row:2;grid-column:17;" title="Fluor (Z = 9)"><i>9</i><b>F</b></div>
-<div class="el noble" style="grid-row:2;grid-column:18;" title="Néon (Z = 10)"><i>10</i><b>Ne</b></div>
-<div class="el alcalin" style="grid-row:3;grid-column:1;" title="Sodium (Z = 11)"><i>11</i><b>Na</b></div>
-<div class="el alcalinoterreux" style="grid-row:3;grid-column:2;" title="Magnésium (Z = 12)"><i>12</i><b>Mg</b></div>
-<div class="el pauvre" style="grid-row:3;grid-column:13;" title="Aluminium (Z = 13)"><i>13</i><b>Al</b></div>
-<div class="el metalloide" style="grid-row:3;grid-column:14;" title="Silicium (Z = 14)"><i>14</i><b>Si</b></div>
-<div class="el nonmetal" style="grid-row:3;grid-column:15;" title="Phosphore (Z = 15)"><i>15</i><b>P</b></div>
-<div class="el nonmetal" style="grid-row:3;grid-column:16;" title="Soufre (Z = 16)"><i>16</i><b>S</b></div>
-<div class="el halogene" style="grid-row:3;grid-column:17;" title="Chlore (Z = 17)"><i>17</i><b>Cl</b></div>
-<div class="el noble" style="grid-row:3;grid-column:18;" title="Argon (Z = 18)"><i>18</i><b>Ar</b></div>
-<div class="el alcalin" style="grid-row:4;grid-column:1;" title="Potassium (Z = 19)"><i>19</i><b>K</b></div>
-<div class="el alcalinoterreux" style="grid-row:4;grid-column:2;" title="Calcium (Z = 20)"><i>20</i><b>Ca</b></div>
-<div class="el transition" style="grid-row:4;grid-column:3;" title="Scandium (Z = 21)"><i>21</i><b>Sc</b></div>
-<div class="el transition" style="grid-row:4;grid-column:4;" title="Titane (Z = 22)"><i>22</i><b>Ti</b></div>
-<div class="el transition" style="grid-row:4;grid-column:5;" title="Vanadium (Z = 23)"><i>23</i><b>V</b></div>
-<div class="el transition" style="grid-row:4;grid-column:6;" title="Chrome (Z = 24)"><i>24</i><b>Cr</b></div>
-<div class="el transition" style="grid-row:4;grid-column:7;" title="Manganèse (Z = 25)"><i>25</i><b>Mn</b></div>
-<div class="el transition" style="grid-row:4;grid-column:8;" title="Fer (Z = 26)"><i>26</i><b>Fe</b></div>
-<div class="el transition" style="grid-row:4;grid-column:9;" title="Cobalt (Z = 27)"><i>27</i><b>Co</b></div>
-<div class="el transition" style="grid-row:4;grid-column:10;" title="Nickel (Z = 28)"><i>28</i><b>Ni</b></div>
-<div class="el transition" style="grid-row:4;grid-column:11;" title="Cuivre (Z = 29)"><i>29</i><b>Cu</b></div>
-<div class="el transition" style="grid-row:4;grid-column:12;" title="Zinc (Z = 30)"><i>30</i><b>Zn</b></div>
-<div class="el pauvre" style="grid-row:4;grid-column:13;" title="Gallium (Z = 31)"><i>31</i><b>Ga</b></div>
-<div class="el metalloide" style="grid-row:4;grid-column:14;" title="Germanium (Z = 32)"><i>32</i><b>Ge</b></div>
-<div class="el metalloide" style="grid-row:4;grid-column:15;" title="Arsenic (Z = 33)"><i>33</i><b>As</b></div>
-<div class="el nonmetal" style="grid-row:4;grid-column:16;" title="Sélénium (Z = 34)"><i>34</i><b>Se</b></div>
-<div class="el halogene" style="grid-row:4;grid-column:17;" title="Brome (Z = 35)"><i>35</i><b>Br</b></div>
-<div class="el noble" style="grid-row:4;grid-column:18;" title="Krypton (Z = 36)"><i>36</i><b>Kr</b></div>
-<div class="el alcalin" style="grid-row:5;grid-column:1;" title="Rubidium (Z = 37)"><i>37</i><b>Rb</b></div>
-<div class="el alcalinoterreux" style="grid-row:5;grid-column:2;" title="Strontium (Z = 38)"><i>38</i><b>Sr</b></div>
-<div class="el transition" style="grid-row:5;grid-column:3;" title="Yttrium (Z = 39)"><i>39</i><b>Y</b></div>
-<div class="el transition" style="grid-row:5;grid-column:4;" title="Zirconium (Z = 40)"><i>40</i><b>Zr</b></div>
-<div class="el transition" style="grid-row:5;grid-column:5;" title="Niobium (Z = 41)"><i>41</i><b>Nb</b></div>
-<div class="el transition" style="grid-row:5;grid-column:6;" title="Molybdène (Z = 42)"><i>42</i><b>Mo</b></div>
-<div class="el transition" style="grid-row:5;grid-column:7;" title="Technétium (Z = 43)"><i>43</i><b>Tc</b></div>
-<div class="el transition" style="grid-row:5;grid-column:8;" title="Ruthénium (Z = 44)"><i>44</i><b>Ru</b></div>
-<div class="el transition" style="grid-row:5;grid-column:9;" title="Rhodium (Z = 45)"><i>45</i><b>Rh</b></div>
-<div class="el transition" style="grid-row:5;grid-column:10;" title="Palladium (Z = 46)"><i>46</i><b>Pd</b></div>
-<div class="el transition" style="grid-row:5;grid-column:11;" title="Argent (Z = 47)"><i>47</i><b>Ag</b></div>
-<div class="el transition" style="grid-row:5;grid-column:12;" title="Cadmium (Z = 48)"><i>48</i><b>Cd</b></div>
-<div class="el pauvre" style="grid-row:5;grid-column:13;" title="Indium (Z = 49)"><i>49</i><b>In</b></div>
-<div class="el pauvre" style="grid-row:5;grid-column:14;" title="Étain (Z = 50)"><i>50</i><b>Sn</b></div>
-<div class="el metalloide" style="grid-row:5;grid-column:15;" title="Antimoine (Z = 51)"><i>51</i><b>Sb</b></div>
-<div class="el metalloide" style="grid-row:5;grid-column:16;" title="Tellure (Z = 52)"><i>52</i><b>Te</b></div>
-<div class="el halogene" style="grid-row:5;grid-column:17;" title="Iode (Z = 53)"><i>53</i><b>I</b></div>
-<div class="el noble" style="grid-row:5;grid-column:18;" title="Xénon (Z = 54)"><i>54</i><b>Xe</b></div>
-<div class="el alcalin" style="grid-row:6;grid-column:1;" title="Césium (Z = 55)"><i>55</i><b>Cs</b></div>
-<div class="el alcalinoterreux" style="grid-row:6;grid-column:2;" title="Baryum (Z = 56)"><i>56</i><b>Ba</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:3;" title="Lanthane (Z = 57)"><i>57</i><b>La</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:4;" title="Cérium (Z = 58)"><i>58</i><b>Ce</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:5;" title="Praséodyme (Z = 59)"><i>59</i><b>Pr</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:6;" title="Néodyme (Z = 60)"><i>60</i><b>Nd</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:7;" title="Prométhium (Z = 61)"><i>61</i><b>Pm</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:8;" title="Samarium (Z = 62)"><i>62</i><b>Sm</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:9;" title="Europium (Z = 63)"><i>63</i><b>Eu</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:10;" title="Gadolinium (Z = 64)"><i>64</i><b>Gd</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:11;" title="Terbium (Z = 65)"><i>65</i><b>Tb</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:12;" title="Dysprosium (Z = 66)"><i>66</i><b>Dy</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:13;" title="Holmium (Z = 67)"><i>67</i><b>Ho</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:14;" title="Erbium (Z = 68)"><i>68</i><b>Er</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:15;" title="Thulium (Z = 69)"><i>69</i><b>Tm</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:16;" title="Ytterbium (Z = 70)"><i>70</i><b>Yb</b></div>
-<div class="el lanthanide" style="grid-row:9;grid-column:17;" title="Lutécium (Z = 71)"><i>71</i><b>Lu</b></div>
-<div class="el transition" style="grid-row:6;grid-column:4;" title="Hafnium (Z = 72)"><i>72</i><b>Hf</b></div>
-<div class="el transition" style="grid-row:6;grid-column:5;" title="Tantale (Z = 73)"><i>73</i><b>Ta</b></div>
-<div class="el transition" style="grid-row:6;grid-column:6;" title="Tungstène (Z = 74)"><i>74</i><b>W</b></div>
-<div class="el transition" style="grid-row:6;grid-column:7;" title="Rhénium (Z = 75)"><i>75</i><b>Re</b></div>
-<div class="el transition" style="grid-row:6;grid-column:8;" title="Osmium (Z = 76)"><i>76</i><b>Os</b></div>
-<div class="el transition" style="grid-row:6;grid-column:9;" title="Iridium (Z = 77)"><i>77</i><b>Ir</b></div>
-<div class="el transition" style="grid-row:6;grid-column:10;" title="Platine (Z = 78)"><i>78</i><b>Pt</b></div>
-<div class="el transition" style="grid-row:6;grid-column:11;" title="Or (Z = 79)"><i>79</i><b>Au</b></div>
-<div class="el transition" style="grid-row:6;grid-column:12;" title="Mercure (Z = 80)"><i>80</i><b>Hg</b></div>
-<div class="el pauvre" style="grid-row:6;grid-column:13;" title="Thallium (Z = 81)"><i>81</i><b>Tl</b></div>
-<div class="el pauvre" style="grid-row:6;grid-column:14;" title="Plomb (Z = 82)"><i>82</i><b>Pb</b></div>
-<div class="el pauvre" style="grid-row:6;grid-column:15;" title="Bismuth (Z = 83)"><i>83</i><b>Bi</b></div>
-<div class="el pauvre" style="grid-row:6;grid-column:16;" title="Polonium (Z = 84)"><i>84</i><b>Po</b></div>
-<div class="el halogene" style="grid-row:6;grid-column:17;" title="Astate (Z = 85)"><i>85</i><b>At</b></div>
-<div class="el noble" style="grid-row:6;grid-column:18;" title="Radon (Z = 86)"><i>86</i><b>Rn</b></div>
-<div class="el alcalin" style="grid-row:7;grid-column:1;" title="Francium (Z = 87)"><i>87</i><b>Fr</b></div>
-<div class="el alcalinoterreux" style="grid-row:7;grid-column:2;" title="Radium (Z = 88)"><i>88</i><b>Ra</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:3;" title="Actinium (Z = 89)"><i>89</i><b>Ac</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:4;" title="Thorium (Z = 90)"><i>90</i><b>Th</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:5;" title="Protactinium (Z = 91)"><i>91</i><b>Pa</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:6;" title="Uranium (Z = 92)"><i>92</i><b>U</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:7;" title="Neptunium (Z = 93)"><i>93</i><b>Np</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:8;" title="Plutonium (Z = 94)"><i>94</i><b>Pu</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:9;" title="Américium (Z = 95)"><i>95</i><b>Am</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:10;" title="Curium (Z = 96)"><i>96</i><b>Cm</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:11;" title="Berkélium (Z = 97)"><i>97</i><b>Bk</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:12;" title="Californium (Z = 98)"><i>98</i><b>Cf</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:13;" title="Einsteinium (Z = 99)"><i>99</i><b>Es</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:14;" title="Fermium (Z = 100)"><i>100</i><b>Fm</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:15;" title="Mendélévium (Z = 101)"><i>101</i><b>Md</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:16;" title="Nobélium (Z = 102)"><i>102</i><b>No</b></div>
-<div class="el actinide" style="grid-row:10;grid-column:17;" title="Lawrencium (Z = 103)"><i>103</i><b>Lr</b></div>
-<div class="el transition" style="grid-row:7;grid-column:4;" title="Rutherfordium (Z = 104)"><i>104</i><b>Rf</b></div>
-<div class="el transition" style="grid-row:7;grid-column:5;" title="Dubnium (Z = 105)"><i>105</i><b>Db</b></div>
-<div class="el transition" style="grid-row:7;grid-column:6;" title="Seaborgium (Z = 106)"><i>106</i><b>Sg</b></div>
-<div class="el transition" style="grid-row:7;grid-column:7;" title="Bohrium (Z = 107)"><i>107</i><b>Bh</b></div>
-<div class="el transition" style="grid-row:7;grid-column:8;" title="Hassium (Z = 108)"><i>108</i><b>Hs</b></div>
-<div class="el nonclasse" style="grid-row:7;grid-column:9;" title="Meitnérium (Z = 109)"><i>109</i><b>Mt</b></div>
-<div class="el nonclasse" style="grid-row:7;grid-column:10;" title="Darmstadtium (Z = 110)"><i>110</i><b>Ds</b></div>
-<div class="el nonclasse" style="grid-row:7;grid-column:11;" title="Roentgenium (Z = 111)"><i>111</i><b>Rg</b></div>
-<div class="el transition" style="grid-row:7;grid-column:12;" title="Copernicium (Z = 112)"><i>112</i><b>Cn</b></div>
-<div class="el nonclasse" style="grid-row:7;grid-column:13;" title="Nihonium (Z = 113)"><i>113</i><b>Nh</b></div>
-<div class="el nonclasse" style="grid-row:7;grid-column:14;" title="Flérovium (Z = 114)"><i>114</i><b>Fl</b></div>
-<div class="el nonclasse" style="grid-row:7;grid-column:15;" title="Moscovium (Z = 115)"><i>115</i><b>Mc</b></div>
-<div class="el nonclasse" style="grid-row:7;grid-column:16;" title="Livermorium (Z = 116)"><i>116</i><b>Lv</b></div>
-<div class="el nonclasse" style="grid-row:7;grid-column:17;" title="Tennesse (Z = 117)"><i>117</i><b>Ts</b></div>
-<div class="el nonclasse" style="grid-row:7;grid-column:18;" title="Oganesson (Z = 118)"><i>118</i><b>Og</b></div>
+<div class="el nonmetal" style="grid-row:1;grid-column:1;" title="Hydrogène (Z = 1)"><i>1</i><b>H</b><u>1,008</u></div>
+<div class="el noble" style="grid-row:1;grid-column:18;" title="Hélium (Z = 2)"><i>2</i><b>He</b><u>4,003</u></div>
+<div class="el alcalin" style="grid-row:2;grid-column:1;" title="Lithium (Z = 3)"><i>3</i><b>Li</b><u>6,94</u></div>
+<div class="el alcalinoterreux" style="grid-row:2;grid-column:2;" title="Béryllium (Z = 4)"><i>4</i><b>Be</b><u>9,012</u></div>
+<div class="el metalloide" style="grid-row:2;grid-column:13;" title="Bore (Z = 5)"><i>5</i><b>B</b><u>10,81</u></div>
+<div class="el nonmetal" style="grid-row:2;grid-column:14;" title="Carbone (Z = 6)"><i>6</i><b>C</b><u>12,01</u></div>
+<div class="el nonmetal" style="grid-row:2;grid-column:15;" title="Azote (Z = 7)"><i>7</i><b>N</b><u>14,01</u></div>
+<div class="el nonmetal" style="grid-row:2;grid-column:16;" title="Oxygène (Z = 8)"><i>8</i><b>O</b><u>16,00</u></div>
+<div class="el halogene" style="grid-row:2;grid-column:17;" title="Fluor (Z = 9)"><i>9</i><b>F</b><u>19,00</u></div>
+<div class="el noble" style="grid-row:2;grid-column:18;" title="Néon (Z = 10)"><i>10</i><b>Ne</b><u>20,18</u></div>
+<div class="el alcalin" style="grid-row:3;grid-column:1;" title="Sodium (Z = 11)"><i>11</i><b>Na</b><u>22,99</u></div>
+<div class="el alcalinoterreux" style="grid-row:3;grid-column:2;" title="Magnésium (Z = 12)"><i>12</i><b>Mg</b><u>24,31</u></div>
+<div class="el pauvre" style="grid-row:3;grid-column:13;" title="Aluminium (Z = 13)"><i>13</i><b>Al</b><u>26,98</u></div>
+<div class="el metalloide" style="grid-row:3;grid-column:14;" title="Silicium (Z = 14)"><i>14</i><b>Si</b><u>28,09</u></div>
+<div class="el nonmetal" style="grid-row:3;grid-column:15;" title="Phosphore (Z = 15)"><i>15</i><b>P</b><u>30,97</u></div>
+<div class="el nonmetal" style="grid-row:3;grid-column:16;" title="Soufre (Z = 16)"><i>16</i><b>S</b><u>32,06</u></div>
+<div class="el halogene" style="grid-row:3;grid-column:17;" title="Chlore (Z = 17)"><i>17</i><b>Cl</b><u>35,45</u></div>
+<div class="el noble" style="grid-row:3;grid-column:18;" title="Argon (Z = 18)"><i>18</i><b>Ar</b><u>39,95</u></div>
+<div class="el alcalin" style="grid-row:4;grid-column:1;" title="Potassium (Z = 19)"><i>19</i><b>K</b><u>39,10</u></div>
+<div class="el alcalinoterreux" style="grid-row:4;grid-column:2;" title="Calcium (Z = 20)"><i>20</i><b>Ca</b><u>40,08</u></div>
+<div class="el transition" style="grid-row:4;grid-column:3;" title="Scandium (Z = 21)"><i>21</i><b>Sc</b><u>44,96</u></div>
+<div class="el transition" style="grid-row:4;grid-column:4;" title="Titane (Z = 22)"><i>22</i><b>Ti</b><u>47,87</u></div>
+<div class="el transition" style="grid-row:4;grid-column:5;" title="Vanadium (Z = 23)"><i>23</i><b>V</b><u>50,94</u></div>
+<div class="el transition" style="grid-row:4;grid-column:6;" title="Chrome (Z = 24)"><i>24</i><b>Cr</b><u>52,00</u></div>
+<div class="el transition" style="grid-row:4;grid-column:7;" title="Manganèse (Z = 25)"><i>25</i><b>Mn</b><u>54,94</u></div>
+<div class="el transition" style="grid-row:4;grid-column:8;" title="Fer (Z = 26)"><i>26</i><b>Fe</b><u>55,85</u></div>
+<div class="el transition" style="grid-row:4;grid-column:9;" title="Cobalt (Z = 27)"><i>27</i><b>Co</b><u>58,93</u></div>
+<div class="el transition" style="grid-row:4;grid-column:10;" title="Nickel (Z = 28)"><i>28</i><b>Ni</b><u>58,69</u></div>
+<div class="el transition" style="grid-row:4;grid-column:11;" title="Cuivre (Z = 29)"><i>29</i><b>Cu</b><u>63,55</u></div>
+<div class="el transition" style="grid-row:4;grid-column:12;" title="Zinc (Z = 30)"><i>30</i><b>Zn</b><u>65,38</u></div>
+<div class="el pauvre" style="grid-row:4;grid-column:13;" title="Gallium (Z = 31)"><i>31</i><b>Ga</b><u>69,72</u></div>
+<div class="el metalloide" style="grid-row:4;grid-column:14;" title="Germanium (Z = 32)"><i>32</i><b>Ge</b><u>72,63</u></div>
+<div class="el metalloide" style="grid-row:4;grid-column:15;" title="Arsenic (Z = 33)"><i>33</i><b>As</b><u>74,92</u></div>
+<div class="el nonmetal" style="grid-row:4;grid-column:16;" title="Sélénium (Z = 34)"><i>34</i><b>Se</b><u>78,97</u></div>
+<div class="el halogene" style="grid-row:4;grid-column:17;" title="Brome (Z = 35)"><i>35</i><b>Br</b><u>79,90</u></div>
+<div class="el noble" style="grid-row:4;grid-column:18;" title="Krypton (Z = 36)"><i>36</i><b>Kr</b><u>83,80</u></div>
+<div class="el alcalin" style="grid-row:5;grid-column:1;" title="Rubidium (Z = 37)"><i>37</i><b>Rb</b><u>85,47</u></div>
+<div class="el alcalinoterreux" style="grid-row:5;grid-column:2;" title="Strontium (Z = 38)"><i>38</i><b>Sr</b><u>87,62</u></div>
+<div class="el transition" style="grid-row:5;grid-column:3;" title="Yttrium (Z = 39)"><i>39</i><b>Y</b><u>88,91</u></div>
+<div class="el transition" style="grid-row:5;grid-column:4;" title="Zirconium (Z = 40)"><i>40</i><b>Zr</b><u>91,22</u></div>
+<div class="el transition" style="grid-row:5;grid-column:5;" title="Niobium (Z = 41)"><i>41</i><b>Nb</b><u>92,91</u></div>
+<div class="el transition" style="grid-row:5;grid-column:6;" title="Molybdène (Z = 42)"><i>42</i><b>Mo</b><u>95,95</u></div>
+<div class="el transition" style="grid-row:5;grid-column:7;" title="Technétium (Z = 43)"><i>43</i><b>Tc</b><u>[98]</u></div>
+<div class="el transition" style="grid-row:5;grid-column:8;" title="Ruthénium (Z = 44)"><i>44</i><b>Ru</b><u>101,1</u></div>
+<div class="el transition" style="grid-row:5;grid-column:9;" title="Rhodium (Z = 45)"><i>45</i><b>Rh</b><u>102,9</u></div>
+<div class="el transition" style="grid-row:5;grid-column:10;" title="Palladium (Z = 46)"><i>46</i><b>Pd</b><u>106,4</u></div>
+<div class="el transition" style="grid-row:5;grid-column:11;" title="Argent (Z = 47)"><i>47</i><b>Ag</b><u>107,9</u></div>
+<div class="el transition" style="grid-row:5;grid-column:12;" title="Cadmium (Z = 48)"><i>48</i><b>Cd</b><u>112,4</u></div>
+<div class="el pauvre" style="grid-row:5;grid-column:13;" title="Indium (Z = 49)"><i>49</i><b>In</b><u>114,8</u></div>
+<div class="el pauvre" style="grid-row:5;grid-column:14;" title="Étain (Z = 50)"><i>50</i><b>Sn</b><u>118,7</u></div>
+<div class="el metalloide" style="grid-row:5;grid-column:15;" title="Antimoine (Z = 51)"><i>51</i><b>Sb</b><u>121,8</u></div>
+<div class="el metalloide" style="grid-row:5;grid-column:16;" title="Tellure (Z = 52)"><i>52</i><b>Te</b><u>127,6</u></div>
+<div class="el halogene" style="grid-row:5;grid-column:17;" title="Iode (Z = 53)"><i>53</i><b>I</b><u>126,9</u></div>
+<div class="el noble" style="grid-row:5;grid-column:18;" title="Xénon (Z = 54)"><i>54</i><b>Xe</b><u>131,3</u></div>
+<div class="el alcalin" style="grid-row:6;grid-column:1;" title="Césium (Z = 55)"><i>55</i><b>Cs</b><u>132,9</u></div>
+<div class="el alcalinoterreux" style="grid-row:6;grid-column:2;" title="Baryum (Z = 56)"><i>56</i><b>Ba</b><u>137,3</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:3;" title="Lanthane (Z = 57)"><i>57</i><b>La</b><u>138,9</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:4;" title="Cérium (Z = 58)"><i>58</i><b>Ce</b><u>140,1</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:5;" title="Praséodyme (Z = 59)"><i>59</i><b>Pr</b><u>140,9</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:6;" title="Néodyme (Z = 60)"><i>60</i><b>Nd</b><u>144,2</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:7;" title="Prométhium (Z = 61)"><i>61</i><b>Pm</b><u>[145]</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:8;" title="Samarium (Z = 62)"><i>62</i><b>Sm</b><u>150,4</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:9;" title="Europium (Z = 63)"><i>63</i><b>Eu</b><u>152,0</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:10;" title="Gadolinium (Z = 64)"><i>64</i><b>Gd</b><u>157,3</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:11;" title="Terbium (Z = 65)"><i>65</i><b>Tb</b><u>158,9</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:12;" title="Dysprosium (Z = 66)"><i>66</i><b>Dy</b><u>162,5</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:13;" title="Holmium (Z = 67)"><i>67</i><b>Ho</b><u>164,9</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:14;" title="Erbium (Z = 68)"><i>68</i><b>Er</b><u>167,3</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:15;" title="Thulium (Z = 69)"><i>69</i><b>Tm</b><u>168,9</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:16;" title="Ytterbium (Z = 70)"><i>70</i><b>Yb</b><u>173,0</u></div>
+<div class="el lanthanide" style="grid-row:9;grid-column:17;" title="Lutécium (Z = 71)"><i>71</i><b>Lu</b><u>175,0</u></div>
+<div class="el transition" style="grid-row:6;grid-column:4;" title="Hafnium (Z = 72)"><i>72</i><b>Hf</b><u>178,5</u></div>
+<div class="el transition" style="grid-row:6;grid-column:5;" title="Tantale (Z = 73)"><i>73</i><b>Ta</b><u>180,9</u></div>
+<div class="el transition" style="grid-row:6;grid-column:6;" title="Tungstène (Z = 74)"><i>74</i><b>W</b><u>183,8</u></div>
+<div class="el transition" style="grid-row:6;grid-column:7;" title="Rhénium (Z = 75)"><i>75</i><b>Re</b><u>186,2</u></div>
+<div class="el transition" style="grid-row:6;grid-column:8;" title="Osmium (Z = 76)"><i>76</i><b>Os</b><u>190,2</u></div>
+<div class="el transition" style="grid-row:6;grid-column:9;" title="Iridium (Z = 77)"><i>77</i><b>Ir</b><u>192,2</u></div>
+<div class="el transition" style="grid-row:6;grid-column:10;" title="Platine (Z = 78)"><i>78</i><b>Pt</b><u>195,1</u></div>
+<div class="el transition" style="grid-row:6;grid-column:11;" title="Or (Z = 79)"><i>79</i><b>Au</b><u>197,0</u></div>
+<div class="el transition" style="grid-row:6;grid-column:12;" title="Mercure (Z = 80)"><i>80</i><b>Hg</b><u>200,6</u></div>
+<div class="el pauvre" style="grid-row:6;grid-column:13;" title="Thallium (Z = 81)"><i>81</i><b>Tl</b><u>204,4</u></div>
+<div class="el pauvre" style="grid-row:6;grid-column:14;" title="Plomb (Z = 82)"><i>82</i><b>Pb</b><u>207,2</u></div>
+<div class="el pauvre" style="grid-row:6;grid-column:15;" title="Bismuth (Z = 83)"><i>83</i><b>Bi</b><u>209,0</u></div>
+<div class="el pauvre" style="grid-row:6;grid-column:16;" title="Polonium (Z = 84)"><i>84</i><b>Po</b><u>[209]</u></div>
+<div class="el halogene" style="grid-row:6;grid-column:17;" title="Astate (Z = 85)"><i>85</i><b>At</b><u>[210]</u></div>
+<div class="el noble" style="grid-row:6;grid-column:18;" title="Radon (Z = 86)"><i>86</i><b>Rn</b><u>[222]</u></div>
+<div class="el alcalin" style="grid-row:7;grid-column:1;" title="Francium (Z = 87)"><i>87</i><b>Fr</b><u>[223]</u></div>
+<div class="el alcalinoterreux" style="grid-row:7;grid-column:2;" title="Radium (Z = 88)"><i>88</i><b>Ra</b><u>[226]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:3;" title="Actinium (Z = 89)"><i>89</i><b>Ac</b><u>[227]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:4;" title="Thorium (Z = 90)"><i>90</i><b>Th</b><u>232,0</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:5;" title="Protactinium (Z = 91)"><i>91</i><b>Pa</b><u>231,0</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:6;" title="Uranium (Z = 92)"><i>92</i><b>U</b><u>238,0</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:7;" title="Neptunium (Z = 93)"><i>93</i><b>Np</b><u>[237]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:8;" title="Plutonium (Z = 94)"><i>94</i><b>Pu</b><u>[244]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:9;" title="Américium (Z = 95)"><i>95</i><b>Am</b><u>[243]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:10;" title="Curium (Z = 96)"><i>96</i><b>Cm</b><u>[247]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:11;" title="Berkélium (Z = 97)"><i>97</i><b>Bk</b><u>[247]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:12;" title="Californium (Z = 98)"><i>98</i><b>Cf</b><u>[251]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:13;" title="Einsteinium (Z = 99)"><i>99</i><b>Es</b><u>[252]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:14;" title="Fermium (Z = 100)"><i>100</i><b>Fm</b><u>[257]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:15;" title="Mendélévium (Z = 101)"><i>101</i><b>Md</b><u>[258]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:16;" title="Nobélium (Z = 102)"><i>102</i><b>No</b><u>[259]</u></div>
+<div class="el actinide" style="grid-row:10;grid-column:17;" title="Lawrencium (Z = 103)"><i>103</i><b>Lr</b><u>[266]</u></div>
+<div class="el transition" style="grid-row:7;grid-column:4;" title="Rutherfordium (Z = 104)"><i>104</i><b>Rf</b><u>[267]</u></div>
+<div class="el transition" style="grid-row:7;grid-column:5;" title="Dubnium (Z = 105)"><i>105</i><b>Db</b><u>[268]</u></div>
+<div class="el transition" style="grid-row:7;grid-column:6;" title="Seaborgium (Z = 106)"><i>106</i><b>Sg</b><u>[269]</u></div>
+<div class="el transition" style="grid-row:7;grid-column:7;" title="Bohrium (Z = 107)"><i>107</i><b>Bh</b><u>[270]</u></div>
+<div class="el transition" style="grid-row:7;grid-column:8;" title="Hassium (Z = 108)"><i>108</i><b>Hs</b><u>[277]</u></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:9;" title="Meitnérium (Z = 109)"><i>109</i><b>Mt</b><u>[278]</u></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:10;" title="Darmstadtium (Z = 110)"><i>110</i><b>Ds</b><u>[281]</u></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:11;" title="Roentgenium (Z = 111)"><i>111</i><b>Rg</b><u>[282]</u></div>
+<div class="el transition" style="grid-row:7;grid-column:12;" title="Copernicium (Z = 112)"><i>112</i><b>Cn</b><u>[285]</u></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:13;" title="Nihonium (Z = 113)"><i>113</i><b>Nh</b><u>[286]</u></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:14;" title="Flérovium (Z = 114)"><i>114</i><b>Fl</b><u>[289]</u></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:15;" title="Moscovium (Z = 115)"><i>115</i><b>Mc</b><u>[290]</u></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:16;" title="Livermorium (Z = 116)"><i>116</i><b>Lv</b><u>[293]</u></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:17;" title="Tennesse (Z = 117)"><i>117</i><b>Ts</b><u>[294]</u></div>
+<div class="el nonclasse" style="grid-row:7;grid-column:18;" title="Oganesson (Z = 118)"><i>118</i><b>Og</b><u>[294]</u></div>
 <div class="el renvoi" style="grid-row:6;grid-column:3;" title="Lanthanides"><i>57-71</i><b>La-Lu</b></div>
 <div class="el renvoi" style="grid-row:7;grid-column:3;" title="Actinides"><i>89-103</i><b>Ac-Lr</b></div>
 </div>
-  <figcaption>Tableau périodique des éléments chimiques : les éléments sont rangés par numéro
-  atomique Z croissant. Chaque case indique Z et le symbole (survoler une case pour lire le nom).
-  Les lignes La–Lu (lanthanides) et Ac–Lr (actinides) sont détachées sous le tableau.</figcaption>
+  <figcaption><b class="fig-num">Image 12</b> — Tableau périodique des éléments chimiques, rangés par numéro atomique Z croissant.
+  Chaque case indique : le numéro atomique Z (en haut), le symbole, et la masse atomique en u
+  (survoler une case pour lire le nom de l'élément). Une masse entre crochets, comme [98] pour le
+  technétium, désigne le nombre de masse de l'isotope le plus stable — ces éléments n'existent pas
+  durablement dans la nature. Les lignes La–Lu (lanthanides) et Ac–Lr (actinides) sont détachées
+  sous le tableau.</figcaption>
 </figure>
 
 <div class="ptable-legende">
@@ -1372,17 +1212,17 @@ chimiques</span>.</p>
 <div class="exercice">
   <div class="etiquette">Exercice 12 — Un élément, plusieurs entités</div>
   <p class="question">Associer les entités chimiques appartenant au même élément :
-  H · O · <span class="nb"><sup>19</sup><sub>9</sub>F</span> ·
-  <span class="nb"><sup>1</sup><sub>1</sub>H</span> · H⁺ · F⁻ · O²⁻ ·
-  <span class="nb"><sup>16</sup><sub>8</sub>O</span> · F²⁻.</p>
+  H · O · <span class="azx"><span class="az"><span>19</span><span>9</span></span>F</span> ·
+  <span class="azx"><span class="az"><span>1</span><span>1</span></span>H</span> · H⁺ · F⁻ · O²⁻ ·
+  <span class="azx"><span class="az"><span>16</span><span>8</span></span>O</span> · F²⁻.</p>
   <details class="correction">
     <summary>Voir la correction</summary>
     <div class="etape">Élément hydrogène (H)</div>
-    <p><span class="resultat">H | H⁺ | <sup>1</sup><sub>1</sub>H</span></p>
+    <p><span class="resultat">H | H⁺ | <span class="azx"><span class="az"><span>1</span><span>1</span></span>H</span></span></p>
     <div class="etape">Élément oxygène (O)</div>
-    <p><span class="resultat">O | O²⁻ | <sup>16</sup><sub>8</sub>O</span></p>
+    <p><span class="resultat">O | O²⁻ | <span class="azx"><span class="az"><span>16</span><span>8</span></span>O</span></span></p>
     <div class="etape">Élément fluor (F)</div>
-    <p><span class="resultat">F⁻ | F²⁻ | <sup>19</sup><sub>9</sub>F</span></p>
+    <p><span class="resultat">F⁻ | F²⁻ | <span class="azx"><span class="az"><span>19</span><span>9</span></span>F</span></span></p>
   </details>
 </div>
 
