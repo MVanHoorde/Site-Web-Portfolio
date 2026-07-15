@@ -11,7 +11,7 @@ rigueur, pas de créativité de mise en page.
 | Fichier | Rôle |
 |---|---|
 | `_modeles/gabarit-chapitre.html` | Squelette de page de cours + **un exemplaire de chaque composant validé** (CSS/JS réels) |
-| `_modeles/gabarit-fiche.html` | Squelette de la fiche élève imprimable (style v2 aligné sur le site) |
+| `_modeles/gabarit-fiche.html` | Squelette de la fiche élève imprimable (style v4 aligné sur le site) |
 | `pages/2nde-pc-t1-c2-transformations-physiques-chimiques.html` | **Exemple complet de référence v2** (composants, exercices, SVG, verrou centré) |
 | `fiches/fiche-2nde-t1c2.html` | Exemple complet de fiche v2 |
 | `style.css`, `assets/css/fonts.css` | Charte du site (ne pas modifier) |
@@ -25,7 +25,174 @@ sa manière de faire.
 - Le niveau, le thème, le numéro de chapitre → **slug** : `2nde-t1c2`, etc.
 - Le code de déblocage à 6 caractères. S'il ne le donne pas : **demander**.
 
-## 2. Workflow imposé : maquettes AVANT implémentation
+## 1bis. Deux régimes de production
+
+La production d'un chapitre se fait en **deux temps**, à ne pas confondre :
+
+- **Régime A — Ébauche rapide** (§1ter) : transcription texte-only du cours,
+  manques signalés par des blocs `.a-faire` 🚧. But : **peupler le site d'un
+  coup**, avoir un ensemble navigable, à moindre coût en tokens. Plusieurs
+  chapitres peuvent s'enchaîner dans une même conversation.
+- **Régime B — Raffinage** (§2 et suivants) : reprise d'une ébauche, une
+  **conversation dédiée par chapitre**, pour traiter les `.a-faire` (images,
+  schémas SVG validés, fiche élève paginée, tests, delta). C'est le mode qui a
+  produit T1-C2 et T1-C4.
+
+Par défaut, si Loïc ne précise rien : demander lequel des deux régimes.
+
+## 1ter. Régime A — Ébauche rapide (chaîne de peuplement)
+
+**Objectif** : à partir du PPTX/PDF, produire *vite* une page de cours HTML
+fidèle dans le texte, structurée, verrouillée et liée depuis la page de niveau,
+où **tout ce qui demande un travail à part est remplacé par un bloc `.a-faire`
+visible** (🚧). On ne cherche pas la perfection visuelle : on cherche un site
+complet et honnête sur ses manques, prêt à être raffiné chapitre par chapitre.
+
+### Autonomie TOTALE — zéro interaction (règle capitale du régime A)
+
+En régime A, **ne JAMAIS interrompre Loïc, ne poser AUCUNE question, ne
+demander AUCUNE validation.** C'est une exception explicite et assumée à la
+règle générale « décisions silencieuses interdites » (qui, elle, reste
+pleinement en vigueur en régime B). Loïc dépose des fichiers et part vaquer à
+ses occupations ; il doit retrouver le travail **fait**, pas des questions en
+attente.
+
+Concrètement, en régime A :
+- prendre TOUTES les micro-décisions seul (choix de slug par convention,
+  placement des blocs 🚧, formulation des `.a-faire`, etc.) ;
+- **corriger automatiquement** les erreurs scientifiques évidentes, sans
+  demander — juste les lister dans le récap final ;
+- ne PAS reformuler le cours (fidélité au texte) ; **sauf** défaut manifeste
+  de formulation ou de guidage pédagogique : dans ce cas, un **mini-diagnostic
+  d'une ligne** dans le récap (« diapo 5 : l'énoncé de l'ex. 3 ne donne pas
+  l'unité de M — à préciser »), sans corriger le fond et sans y passer de
+  tokens ; Loïc jugera lui-même. Réservé aux défauts **gros et nets**.
+- ne s'arrêter que si une source est **inexploitable** (fichier corrompu,
+  contenu absent) : le signaler brièvement et passer au chapitre suivant.
+
+Le seul moment d'échange est **après** la chaîne, via le récap groupé. La
+phase riche en allers-retours, c'est le régime B.
+
+### Budget (ce qu'on NE fait PAS en régime A)
+
+Pour ne pas consommer de tokens inutilement :
+
+- ❌ pas d'extraction/optimisation d'images (aucune photo copiée) ;
+- ❌ pas de décodage de QR (les vidéos deviennent des `.a-faire`) ;
+- ❌ pas de maquette PNG, pas de SVG produit ;
+- ❌ pas de fiche élève, pas de PDF, pas de pagination ;
+- ❌ pas de Playwright, pas de captures d'écran ;
+- ❌ pas de vérification exhaustive des corrigés à la main (seulement les
+  erreurs **évidentes**, voir plus bas) ;
+- ❌ pas d'archive delta zippée par chapitre (livraison groupée en fin de
+  chaîne, §1ter-livraison).
+
+### Extraction (texte seul)
+
+Une seule extraction, le texte des diapositives, via `python-pptx` :
+
+```bash
+pip install python-pptx --break-system-packages -q
+python3 - <<'PY'
+from pptx import Presentation
+prs = Presentation('SOURCE.pptx')
+for i, s in enumerate(prs.slides, 1):
+    print(f"\n===== DIAPO {i} =====")
+    def walk(shapes):
+        for sh in shapes:
+            if sh.shape_type == 6:      # groupe
+                walk(sh.shapes); continue
+            if sh.has_text_frame and sh.text_frame.text.strip():
+                print(sh.text_frame.text.strip())
+    walk(s.shapes)
+PY
+```
+
+Le PPTX peut tronquer les exposants à l'affichage (ex. `10⁻²` au lieu de
+`10⁻²⁷`). En cas de doute sur une puissance de 10, **se fier au résultat
+numérique du corrigé** pour retrouver le bon exposant, et le signaler.
+
+### Détection : que devient chaque élément de la source
+
+| Élément dans la source | Action en régime A |
+|---|---|
+| Texte de cours, énoncé, corrigé | **Transcrit** directement (fidèle, §5) |
+| Photo réelle (halite, portrait, modèle 3D…) | Bloc `.a-faire type="image"` avec description ; **rien** dans le HTML |
+| Schéma pédagogique (cristal, atome, cycle…) | Bloc `.a-faire type="schéma"` : décrire ce qu'il faut produire |
+| QR code / lien vidéo | Bloc `.a-faire type="vidéo"` : « URL à décoder » (ou chip désactivé) |
+| Tableau complexe / classification | Bloc `.a-faire type="tableau"` : « à intégrer plus tard » |
+| Erreur scientifique **évidente** (exposant tronqué, formule ionique inversée type S₃Al₂→Al₂S₃, unité aberrante) | **Corrigée** + notée en une ligne dans le récap |
+| Corrigé au calcul non trivial | Transcrit tel quel ; vérification fine **reportée au régime B** |
+
+### Le bloc `.a-faire` (gabarit)
+
+Structure minimale (le CSS est dans `gabarit-chapitre.html`) :
+
+```html
+<div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Photo — cristal de halite (échantillon de sel gemme)</span>
+  <span class="detail">source : diapo 2 ; à extraire et optimiser en régime B</span>
+</div>
+```
+
+`type` ∈ { image, schéma, vidéo, tableau }. Le bloc se pose **exactement à
+l'emplacement du manque**, dans le fil du cours — pas de récapitulatif en fin
+de page (la navigation sur le site suffit à les repérer).
+
+### Ce qu'on fait quand même (non négociable même en ébauche)
+
+- structure complète : sections `<details class="partie">`, `h2 id="ancre-N"`,
+  sommaires latéral + mobile synchronisés, checklist finale, signature ;
+- typographie scientifique (`.nb`, `<sub>`/`<sup>`, flèches `→`) — §5.3 ;
+- verrou v2 : si Loïc donne le code, calculer l'empreinte et le poser ;
+  sinon, laisser les placeholders et le signaler ;
+- **lier la page depuis `pages/NIVEAU-physique-chimie.html`** en respectant la
+  règle anti-préfixe (§5.8).
+
+### Chaîne multi-chapitres & livraison groupée
+
+En régime A, on peut enchaîner plusieurs chapitres dans **une même
+conversation** : traiter les sources l'une après l'autre. À la fin de la
+chaîne seulement :
+
+1. une **archive delta unique** regroupant tous les chapitres ébauchés
+   (`pages/…-cN.html` + la page de niveau mise à jour) ;
+2. un récapitulatif compact : par chapitre, la liste des `.a-faire` posés et
+   les erreurs corrigées.
+
+Aucune capture, aucun PDF. Le contrôle se fait **par Loïc, sur le site en
+ligne**, après push : il repère ce qui doit être retravaillé et ouvre une
+conversation de régime B par chapitre.
+
+## 2. Régime B — Raffinage : workflow imposé (maquettes AVANT implémentation)
+
+Le régime B reprend une ébauche (§1ter) et traite ses blocs `.a-faire` un par
+un, jusqu'à un chapitre « utilisable en classe l'an prochain ». Une
+**conversation dédiée par chapitre**. Beaucoup d'échanges : ici, on valide.
+
+**Ordre de travail** : d'abord le **cours** (texte affiné, images, schémas,
+approfondissements) jusqu'à validation complète par Loïc ; **la fiche élève ne
+se fait qu'en tout dernier**, une fois le cours figé (sinon elle est à refaire
+à chaque changement).
+
+**Pour chaque bloc `.a-faire`, proposer l'outil adapté** (Loïc veut savoir où
+il doit intervenir et éviter les chantiers inadaptés) :
+
+| Nature du chantier | Qui / quel outil |
+|---|---|
+| Schéma pédagogique simple (cristal, atome, cycle, case…) | **Ici** (SVG à la charte, maquette PNG validée) |
+| Composant visuel complexe / exploration graphique | Proposer **Claude Design** (canvas), puis réintégrer le SVG |
+| Photo réelle présente dans la source | **Ici** (extraction + optimisation) |
+| Image libre à récupérer (Wikimedia…) | ⚠ accès réseau bloqué ici → **fournir le lien à Loïc** pour téléchargement, ou fabriquer un SVG maison |
+| Contenu sous droits (personnage, presse, IP) | Écarter, signaler, **remplacer** (SVG maison ou équivalent libre) |
+| Tableau complexe (classification…) | Selon le cas : réutiliser un existant du site, SVG, ou garder l'image en le signalant |
+| Push / commit sur le dépôt | **Loïc ou Claude Code** (je n'ai pas d'accès en écriture GitHub) |
+
+Signaler aussi, quand c'est pertinent, si un chantier **dépasse mes moyens
+actuels** (skill/outil manquant) plutôt que de produire un résultat médiocre.
+
+Étapes :
 
 1. Extraire et analyser les sources (§4).
 2. **Pour tout composant nouveau ou schéma refait : produire un PNG individuel**
@@ -34,8 +201,10 @@ sa manière de faire.
    variantes. Ne JAMAIS implémenter un visuel non validé (sauf accord explicite
    « sans me le montrer »).
 3. Implémenter après validation, d'un bloc.
-4. Proposer les choix de trous de la fiche, Loïc arbitre.
+4. **Une fois le cours entièrement validé**, proposer les choix de trous de la
+   fiche, Loïc arbitre, puis produire la fiche.
 5. Valider (§7) puis livrer (§8).
+6. Mettre à jour les flags du chapitre dans `_suivi/chapitres.md` (§10).
 
 ## 3. Bibliothèque de composants (validée — quand utiliser quoi)
 
@@ -129,9 +298,14 @@ Règles d'or (leçons des chapitres 1 et 2) :
    (commande en commentaire) et les deux `SLUG`. `crypto.subtle` exige un
    contexte sécurisé : ne pas « simplifier ».
 8. Lier la page depuis la page du niveau (`pages/NIVEAU-physique-chimie.html`).
+   **Règle anti-préfixe (bug rencontré au C4)** : la page de niveau est
+   elle-même dans `pages/`. Un lien vers un chapitre voisin s'écrit donc
+   `href="2nde-pc-t1-cN-….html"` — **jamais** `href="pages/2nde-pc-…"`, sinon
+   le navigateur cherche `pages/pages/…` → 404. Aligner tout nouveau lien sur
+   la forme des chapitres déjà présents (les vérifier par un `grep`).
 9. Gras minimal dans les textes pédagogiques.
 
-## 6. Règles de la fiche élève (v3)
+## 6. Règles de la fiche élève (v4)
 
 - Style aligné sur le site : mêmes encarts (`.definition`, `.propriete`,
   `.methode-f`, `.exercice-f`), **AUCUN pictogramme crayon** sur la fiche
@@ -144,6 +318,9 @@ Règles d'or (leçons des chapitres 1 et 2) :
   phrases complètes). Définition à plusieurs parties → sous-titres
   `.partie-def` pour chaque partie, dans le même cadre.
 - **TOUTES les propriétés**, à compléter (trous `.trou` sur les notions clés).
+- **Méthode (`.methode-f`) : PAS de texte à trous.** Une méthode se lit et se
+  suit, elle ne se mémorise pas par cœur comme une définition : les étapes
+  sont rédigées **en clair**, sans blancs à compléter.
 - **TOUS les exercices du chapitre**, systématiquement : énoncé abrégé fidèle
   + zone de réponse adaptée (`.ligne` pour du rédigé, `.calc.lignes` pour du
   calcul, boîtes `.boite.pt` pour des coefficients à trouver).
@@ -153,7 +330,9 @@ Règles d'or (leçons des chapitres 1 et 2) :
 - Seulement les **schémas essentiels**, identifiés chapitre par chapitre,
   repris **TELS QUELS du cours** (mêmes SVG, réduits, avec leur légende dans
   `.schema .legende`). Pour T1-C2 : endo/exo, trois états, six changements
-  (triangle), hot-dog avec sa légende.
+  (triangle), hot-dog avec sa légende. Un schéma contraint à une taille
+  arbitrairement petite (`max-width` trop serré) doit être agrandi — ça sert
+  aussi à équilibrer le remplissage des pages (voir pagination ci-dessous).
 - Formule : cadre sobre `.formule-s`, formule en boîtes vides à gauche,
   « Grandeurs & unités » en lignes vides à droite, **rien de pré-rempli**,
   pas de panneau sombre.
@@ -161,7 +340,21 @@ Règles d'or (leçons des chapitres 1 et 2) :
   page (`.feuille` en flex, `.corps { flex:1 }`).
 - Dernière page : « L'essentiel du chapitre, avec mes mots » + encadré code
   de déblocage (6 cases) ; signature dans le pied de la dernière page.
-- Nombre de pages **pair** (recto-verso) ; ~250 mm utiles par page.
+- Nombre de pages **pair** (recto-verso) ; ~250 mm utiles par page. Si le
+  compte tombe impair une fois le contenu réparti, **replier la clôture**
+  (« l'essentiel » + déblocage) sur la dernière page de contenu plutôt que
+  de lui dédier une page à part entière.
+- **Impression — fond blanc.** En `@media print`, le fond de `.feuille` est
+  blanc pur (`#fff`), jamais le papier crème `--papier` (réservé à l'écran) :
+  ça économise l'encre sur les tirages classe entière.
+- **Aération.** Marge haute de 8mm au-dessus de chaque `h2` (pas 4mm), pour
+  ne pas tasser les pages qui contiennent plusieurs grandes parties.
+- **Pagination — mesurer, ne jamais estimer à l'œil.** Écrire un script
+  Playwright qui mesure la hauteur réelle de chaque bloc de contenu
+  (`getBoundingClientRect`), avec les polices du site installées localement
+  (paquets `@fontsource/*` via npm — jamais de CDN) pour un rendu fidèle aux
+  vraies métriques. Cible ~75-98 % de remplissage par page ; aucun titre de
+  section (`h2`) seul en bas de page (le repousser à la page suivante).
 
 ## 7. Validation OBLIGATOIRE avant livraison
 
@@ -181,6 +374,10 @@ Règles d'or (leçons des chapitres 1 et 2) :
   nombre de pages EXACT et PAIR (pdfinfo) ; contrôle du débordement de chaque
   .feuille (scrollHeight vs limite 297mm) ET de la marge entre le bas du
   contenu et le pied absolu (.pied) ; aperçu PNG de CHAQUE page via pdftoppm
+□ Fiche — remplissage par page : mesurer (jamais estimer) la hauteur réelle
+  de chaque page via getBoundingClientRect, avec les polices du site
+  installées localement (@fontsource/*). Cible ~75-98 % par page, aucune
+  page avec un titre de section seul en bas.
 □ Contrôle visuel des captures AVANT livraison. Outil de visualisation en
   panne → contrôles automatiques (dimensions, contraste, couleurs charte,
   symétrie) + transparence dans le récapitulatif
@@ -194,6 +391,11 @@ Pièges connus (ne pas les reproduire) :
 - Sommaire actif : calcul à la position de défilement, PAS IntersectionObserver.
 - `.formule-bloc` : PAS d'overflow:hidden (rogne le picto ✎) ; l'arrondi est
   sur `.eq` (border-radius:11px 0 0 11px).
+- Repagination de la fiche : si le bloc de clôture (`.pleine-largeur`/
+  `.deblocage`) est repositionné pour équilibrer les pages, ne l'insérer
+  qu'à UN SEUL endroit — jamais à la fois dans la boucle normale des blocs de
+  contenu ET en ajout spécial hors grille, sinon il apparaît en double
+  silencieusement.
 - Citations historiques : vérifier l'exactitude et la source ; mention
   « formule attribuée à » si paraphrase.
 
@@ -208,14 +410,58 @@ Pièges connus (ne pas les reproduire) :
    collègues le cas échéant), décisions prises, **décisions laissées ouvertes**,
    licences des images à confirmer, le code de déblocage et son empreinte.
 
-## 9. Message-type que Loïc colle en début de session
+## 9. Messages-types que Loïc colle en début de session
+
+### 9a. Régime A — ébauche (chaîne de peuplement)
+
+> Voici le PPTX (+ PDF) du/des chapitre(s) [préciser]. **Régime A — ébauche.**
+> Applique le §1ter de `_modeles/CONSIGNES-production-chapitre.md` :
+> transcription texte-only sur `gabarit-chapitre.html`, tout élément à
+> retravailler (image, schéma, vidéo, tableau) remplacé par un bloc `.a-faire`
+> 🚧 à son emplacement, correction des seules erreurs évidentes. Pas de fiche,
+> pas d'images, pas de maquette, pas de Playwright, pas de captures. Slug(s) :
+> `SLUG`. Code(s) de déblocage : `XXXXXX` (ou « à laisser en placeholder »).
+> Lie chaque page depuis la page de niveau. En fin de chaîne : un seul delta
+> groupé + la liste des `.a-faire` par chapitre.
+
+### 9b. Régime B — raffinage (une conversation par chapitre)
 
 > Voici le PPTX et le PDF du chapitre [Thème X, Chapitre Y — TITRE, niveau
 > NIVEAU]. Slug : `SLUG`. Code de déblocage : `XXXXXX`.
-> Applique `_modeles/CONSIGNES-production-chapitre.md` : extraction complète
-> (images + QR, vérification visuelle des attributions), maquettes PNG des
-> composants nouveaux avant implémentation, page de cours sur
+> Applique `_modeles/CONSIGNES-production-chapitre.md` (**régime B**) :
+> extraction complète (images + QR, vérification visuelle des attributions),
+> maquettes PNG des composants nouveaux avant implémentation, page de cours sur
 > `gabarit-chapitre.html`, fiche élève sur `gabarit-fiche.html`, vérification
 > scientifique des corrigés, validation Playwright, livraison en delta +
 > fichiers HTML séparés + PDF + captures. Propose-moi les choix de trous de
 > la fiche avant de finaliser.
+
+## 10. Suivi de progression du projet (`_suivi/`)
+
+Trois documents Markdown vivent dans le dépôt et servent de tableau de bord.
+Les mettre à jour est **obligatoire** dès qu'un chapitre change d'état.
+
+| Fichier | Rôle |
+|---|---|
+| `_suivi/ETAT-PROJET.md` | Vue d'ensemble : avancement global, **priorités**, alertes (« ⚠ ce chapitre n'est pas prêt »), prochaines actions |
+| `_suivi/chapitres.md` | Tableau de bord détaillé **par chapitre** avec les flags de jalons |
+| `_suivi/IDEES.md` | Réservoir d'idées et d'améliorations à trier (Loïc en aura « au fil de l'eau ») |
+
+### Jalons d'un chapitre (dans l'ordre)
+
+Un chapitre progresse par ces étapes ; la **fiche élève est le dernier jalon**,
+faite seulement une fois le cours validé « utilisable en classe » :
+
+1. `⬜ Ébauche en ligne` — régime A poussé, page navigable
+2. `⬜ Texte & exercices validés` — Loïc a relu, corrigé, ok
+3. `⬜ Images retravaillées` — photos extraites, schémas SVG, droits OK
+4. `⬜ Ajouts & approfondissements` — les « on va plus loin » intégrés
+5. `⬜ Cours VALIDÉ` — « je peux l'utiliser l'an prochain » ✅
+6. `⬜ Fiche élève faite` — produite en tout dernier
+7. `⬜ CHAPITRE CLOS` — cours + fiche + ajouts présents, rien en attente
+
+Notation des flags : `⬜` à faire · `🔄` en cours · `✅` fait · `⚠` bloqué/attention.
+
+En **fin de chaîne de régime A**, mettre `chapitres.md` à jour (tous les
+chapitres ébauchés passent au jalon 1) et rafraîchir les priorités de
+`ETAT-PROJET.md`.
