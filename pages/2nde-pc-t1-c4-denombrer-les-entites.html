@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seconde — Dénombrer les entités · Physique-Chimie</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e;
+    --gris:#6b6f7a; --carte:#ffffff; --or:#f0cf6e; --or-fonce:#b28a1d;
+    --vert:#6fae7a; --vert-fonce:#4c8a58; --sepia:#8a6d3b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Spectral', Georgia, serif; color:var(--encre);
+    background-color:var(--papier);
+    background-image:linear-gradient(var(--grille) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+    background-size:32px 32px; line-height:1.7;
+  }
+  .spectre { height:6px; background:var(--encre); position:relative; }
+  .spectre i { position:absolute; top:0; bottom:0; width:4px; }
+  .spectre i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .spectre i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .spectre i:nth-child(3){ left:76%; background:var(--h-alpha); }
+  nav { background:var(--papier); border-bottom:1px solid var(--encre); }
+  .nav-inner { max-width:1200px; margin:0 auto; padding:.85rem 1.4rem;
+    display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+  .nav-logo { font-family:'Space Grotesk',sans-serif; font-weight:700; }
+  .nav-logo span { color:var(--h-alpha); }
+  .retour { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--encre); text-decoration:none; border-bottom:2px solid var(--h-beta); }
+  .retour:hover { color:var(--h-beta); }
+  #lecture { position:sticky; top:0; height:4px; z-index:50; }
+  #lecture .fait { height:100%; width:0%; background:var(--h-alpha); }
+
+  .page { max-width:1200px; margin:0 auto; padding:2rem 1.4rem 4rem;
+    display:grid; grid-template-columns:230px minmax(0,1fr); gap:2.2rem; align-items:start; }
+  aside.sommaire { position:sticky; top:1.4rem; font-family:'Space Grotesk',sans-serif; }
+  .sommaire .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--gris); margin-bottom:.7rem; }
+  .sommaire ol { list-style:none; }
+  .sommaire a { display:flex; gap:.6rem; align-items:baseline; padding:.42rem .65rem;
+    border-radius:8px; text-decoration:none; color:var(--encre); font-size:.92rem; line-height:1.3; }
+  .sommaire a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--h-beta); }
+  .sommaire a:hover { background:var(--carte); }
+  .sommaire a.actif { background:var(--carte); box-shadow:inset 3px 0 0 var(--h-alpha); font-weight:600; }
+  .sommaire .ds a .n { color:var(--h-gamma); }
+
+  article.lecture { background:var(--carte); border:1px solid var(--encre); border-radius:14px;
+    box-shadow:6px 6px 0 rgba(20,26,38,.08); padding:clamp(1.4rem,4vw,3rem); min-width:0; }
+  .fil-ariane { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); margin-bottom:.5rem; }
+  .fil-ariane .niveau { color:var(--h-alpha); }
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.7rem,4vw,2.4rem); line-height:1.12; margin-bottom:.4rem; }
+  .sous-titre { font-family:'IBM Plex Mono',monospace; font-size:.85rem; color:var(--gris); margin-bottom:2.4rem; }
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2.8rem 0 1rem;
+    display:flex; align-items:baseline; gap:.8rem; scroll-margin-top:2rem; }
+  h2 .num { font-family:'IBM Plex Mono',monospace; font-size:.9rem; color:var(--h-beta); }
+  p { margin-bottom:.9rem; max-width:75ch; text-align:justify; hyphens:auto; }
+  strong { font-weight:600; }
+  ul.cours { max-width:75ch; margin:0 0 .9rem 1.2rem; text-align:justify; }
+  ul.cours li { margin-bottom:.5rem; }
+  .nb { white-space:nowrap; }
+  sub, sup { font-size:.68em; }
+
+  /* ===== BIBLIOTHÈQUE DE COMPOSANTS (validée sur le chapitre T1-C2) ===== */
+
+  /* Encart générique : Définition (Hβ) / Propriété (Hγ) / Exemple (vert) */
+  .encart { border:1px solid var(--encre); border-radius:0 10px 10px 0;
+    background:var(--papier); padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.12em; text-transform:uppercase; margin-bottom:.35rem; }
+  .encart p:last-child { margin-bottom:0; }
+  .definition { border-left:4px solid var(--h-beta); }
+  .definition .etq { color:var(--h-beta); }
+  .terme { background:rgba(29,154,170,.16); border-radius:3px; padding:.02em .25em;
+    font-weight:600; color:#0f6b76; }
+  .propriete { border-left:4px solid var(--h-gamma); }
+  .propriete .etq { color:var(--h-gamma); }
+  .exemple { border-left:4px solid var(--vert); background:#fff; max-width:none; }
+  .exemple .etq { color:var(--vert-fonce); }
+  .exemple .duo-e { display:grid; grid-template-columns:220px 1fr; gap:1.2rem; align-items:center; }
+  .exemple img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+
+  /* Équation centrée hors paragraphe */
+  .eq-ligne { font-family:'Spectral',serif; font-style:italic; text-align:center;
+    font-size:1.15rem; margin:.7rem auto; max-width:none; white-space:nowrap; overflow-x:auto; }
+  .eq-ligne sub, .eq-ligne sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.58em; }
+
+  /* Pictogramme « à noter sur la fiche » (crayon, coin haut droit) */
+  .a-noter { position:absolute; top:-.7rem; right:.8rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; background:var(--carte); border:1.4px solid var(--encre); border-radius:50%;
+    width:1.7rem; height:1.7rem; display:flex; align-items:center; justify-content:center; }
+  figure { position:relative; }
+  figure .a-noter { top:-.4rem; right:-.2rem; }
+
+  /* Encart Formule (variante C validée) */
+  .formule-bloc { margin:1.4rem auto; max-width:60ch; border:1px solid var(--encre); border-radius:12px;
+    background:#fff; box-shadow:4px 4px 0 rgba(74,63,158,.18);
+    display:grid; grid-template-columns:auto minmax(0,1fr); position:relative; }
+  .formule-bloc .eq { background:var(--encre); color:var(--papier); font-family:'Spectral',serif;
+    font-style:italic; font-size:1.9rem; display:flex; align-items:center; padding:1rem 1.5rem;
+    white-space:nowrap; border-radius:11px 0 0 11px; }
+  .formule-bloc .eq sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.5em; }
+  .formule-bloc .grandeurs { padding:.9rem 1.3rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem; line-height:2.05; }
+  .formule-bloc .grandeurs b { color:var(--h-gamma); }
+  .formule-bloc .titre { font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--gris); display:block; margin-bottom:.15rem; }
+
+  /* Encart Notation */
+  .notation { border:1px dashed var(--encre); border-radius:10px; background:#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .notation .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .notation .chips { display:flex; gap:.9rem; flex-wrap:wrap; margin-bottom:.8rem; justify-content:center; }
+  .notation .chip { font-family:'IBM Plex Mono',monospace; font-size:.85rem; border:1px solid var(--encre);
+    border-radius:8px; padding:.35rem .8rem; background:var(--papier); }
+  .notation .chip b { color:var(--h-beta); }
+  .notation .aq { border-top:1px dashed var(--grille); padding-top:.7rem; margin-bottom:0; }
+  .notation .aq b { color:var(--h-beta); }
+
+  /* Encart Méthode (étapes en chiffres romains) */
+  .methode { border:1px solid var(--encre); border-left:4px solid var(--or); border-radius:0 10px 10px 0;
+    background:linear-gradient(0deg,rgba(240,207,110,.08),rgba(240,207,110,.08)),#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .methode .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--or-fonce); margin-bottom:.5rem; }
+  .methode ol { list-style:none; counter-reset:met; margin:0; }
+  .methode li { counter-increment:met; display:grid; grid-template-columns:2.2rem 1fr; gap:.5rem;
+    margin-bottom:.5rem; align-items:baseline; }
+  .methode li::before { content:counter(met,upper-roman) "."; font-family:'IBM Plex Mono',monospace;
+    font-weight:600; color:var(--or-fonce); text-align:right; }
+
+  /* Encart Histoire des sciences */
+  .histoire { border:1.5px solid var(--sepia); outline:1px solid var(--sepia); outline-offset:3px;
+    background:#f8f2e2; padding:1.2rem 1.4rem; margin:1.8rem 3px; }
+  .histoire .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--sepia); text-align:center; margin-bottom:.8rem; }
+  .histoire .etq::before, .histoire .etq::after { content:"❦"; margin:0 .6rem; }
+  .histoire .duo-h { display:grid; grid-template-columns:170px 1fr; gap:1.2rem; align-items:start; }
+  .histoire img { width:100%; border:1px solid var(--sepia); padding:3px; background:#fff; }
+  .histoire .credit { font-family:'IBM Plex Mono',monospace; font-size:.65rem; color:var(--sepia);
+    margin-top:.3rem; line-height:1.4; }
+  .histoire h4 { font-family:'Space Grotesk',sans-serif; font-size:1.02rem; margin-bottom:.4rem; }
+  .histoire p { font-size:.95rem; margin-bottom:.6rem; }
+  .histoire .citation { font-style:italic; text-align:center; font-size:1.05rem; margin:.7rem 0 .2rem; }
+  .histoire .source-cit { font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--sepia);
+    text-align:center; display:block; margin-bottom:.6rem; }
+
+  /* Encart Synthèse de TP (sobre) */
+  .synthese-tp { border:1px dashed var(--gris); border-radius:10px; background:#fff;
+    padding:1.1rem 1.4rem; margin:1.6rem 0; }
+  .synthese-tp .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .synthese-tp .contexte { font-size:.92rem; color:var(--gris); font-style:italic; margin-bottom:.8rem; }
+  .synthese-tp .sous-etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--gris); margin:.8rem 0 .2rem; display:flex; align-items:center; gap:.5rem; }
+  .synthese-tp .sous-etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .synthese-tp p:last-child { margin-bottom:0; }
+
+  /* Vidéos */
+  .videos { display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0 1.6rem; }
+  .video-chip { font-family:'IBM Plex Mono',monospace; font-size:.78rem;
+    display:inline-flex; align-items:center; gap:.45em; border:1px solid var(--encre);
+    border-radius:999px; padding:.34rem .85rem; text-decoration:none; color:var(--encre);
+    background:var(--papier); transition:background .15s,color .15s; }
+  .video-chip:hover { background:var(--h-beta); color:#fff; }
+
+  /* Figures */
+  figure { margin:1.6rem 0; }
+  figure svg, figure img { max-width:100%; height:auto; display:block; }
+  figure img.photo { border:1px solid var(--encre); border-radius:6px; }
+  figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
+    margin-top:.55rem; max-width:66ch; line-height:1.55; }
+  figcaption .eqc { display:block; font-family:'Spectral',serif; font-style:italic; font-size:.95rem;
+    color:var(--encre); margin:.35rem 0; text-align:center; }
+  figcaption .eqc sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.6em; }
+  .fig-row { display:flex; gap:1.6rem; flex-wrap:wrap; align-items:flex-start; }
+  .fig-row figure { flex:1 1 240px; max-width:400px; }
+  .fig-row figure img { width:100%; height:220px; object-fit:cover; }
+  .fig-etroite { max-width:300px; }
+  .pill-ex { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.66rem;
+    letter-spacing:.08em; text-transform:uppercase; color:#fff; border-radius:999px;
+    padding:.1rem .6rem; margin-bottom:.35rem; }
+  .pill-ex.phys { background:var(--h-beta); }
+  .pill-ex.chim { background:var(--h-alpha); }
+  .duo { display:grid; grid-template-columns:minmax(220px,300px) minmax(0,1fr); gap:2rem; align-items:start; }
+  .defile { overflow-x:auto; }
+
+  table.tab { border-collapse:collapse; font-size:.95rem; }
+  table.tab caption { caption-side:top; text-align:left; font-family:'Space Grotesk',sans-serif;
+    font-size:.85rem; font-weight:600; padding-bottom:.4rem; }
+  table.tab th, table.tab td { border:1px solid var(--encre); padding:.42rem .8rem; text-align:center; }
+  table.tab thead th, table.tab .entete { font-family:'Space Grotesk',sans-serif; font-size:.82rem; background:var(--papier); }
+
+  /* ===== Exercices (structure normalisée) ===== */
+  .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
+    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0;
+    background:#fdfdfb; }
+  .exercice .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    text-transform:uppercase; letter-spacing:.1em; color:var(--h-alpha); margin-bottom:.5rem; }
+  .exercice .duo-x { display:grid; grid-template-columns:1fr 200px; gap:1.1rem; align-items:start; }
+  .exercice .duo-x img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+  .exercice .question { font-style:italic; }
+  .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris);
+    margin-top:.5rem; border-top:1px dotted var(--grille); padding-top:.45rem; }
+  details.correction { margin-top:.8rem; border-top:1px dashed var(--gris); padding-top:.6rem; }
+  details.correction summary { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--h-gamma); cursor:pointer; }
+  details.correction summary:hover { text-decoration:underline; }
+  details.correction[open] summary { margin-bottom:.6rem; }
+  .etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--h-gamma); margin:.7rem 0 .2rem; display:flex;
+    align-items:center; gap:.5rem; }
+  .etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .resultat { border-bottom:2.5px solid var(--h-alpha); font-weight:600; padding-bottom:1px; white-space:nowrap; }
+  .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--gris);
+    text-align:center; margin-bottom:.1rem; }
+  .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem; margin:1rem 0 1rem 1rem; }
+  .eq-exo sub, .eq-exo sup { font-size:.6em; font-style:normal; font-family:'IBM Plex Mono',monospace; }
+  .coef-ok { color:var(--h-alpha); font-weight:700; font-style:normal; }
+  .frac { display:inline-block; vertical-align:middle; text-align:center; margin:0 .25em; }
+  .frac .haut { display:block; border-bottom:1.5px solid var(--encre); padding:0 .3em .1em; }
+  .frac .bas { display:block; padding:.1em .3em 0; }
+  .unites { font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); }
+  .exercice p, .encart.exemple p, .histoire p, .synthese-tp p { max-width:none; }
+  .aparte { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris);
+    border-left:2px solid var(--grille); padding-left:.7rem; margin:.6rem 0; }
+
+  /* Checklist */
+  .checklist { border:1px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 12px 12px 0; padding:1.2rem 1.4rem; margin:2.6rem 0 0; }
+  .checklist h2 { margin-top:0; }
+  .checklist ol { list-style:none; }
+  .checklist li { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem;
+    align-items:baseline; padding:.55rem 0; border-bottom:1px dashed var(--grille); }
+  .checklist li:last-child { border-bottom:none; }
+  .checklist input[type="checkbox"] { transform:translateY(2px) scale(1.15); accent-color:var(--h-gamma); cursor:pointer; }
+  .checklist label { cursor:pointer; }
+  .checklist .refs { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); white-space:nowrap; }
+  .checklist .refs a { color:var(--h-beta); text-decoration:none; }
+  .checklist .refs a:hover { text-decoration:underline; }
+
+  #haut { position:fixed; right:1.2rem; bottom:1.2rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.8rem; background:var(--carte); border:1px solid var(--encre); border-radius:999px;
+    padding:.5rem .85rem; cursor:pointer; box-shadow:3px 3px 0 rgba(20,26,38,.12);
+    opacity:0; pointer-events:none; transition:opacity .2s; }
+  #haut.visible { opacity:1; pointer-events:auto; }
+  #haut:hover { background:var(--h-beta); color:#fff; }
+
+  details.partie { border-top:3px solid var(--encre); margin-top:2.4rem; }
+  details.partie > summary { list-style:none; cursor:pointer; }
+  details.partie > summary::-webkit-details-marker { display:none; }
+  details.partie > summary h2 { margin:1.1rem 0 1rem; }
+  details.partie > summary h2::after { content:"▾"; margin-left:auto; font-family:'IBM Plex Mono',monospace;
+    font-size:1rem; color:var(--gris); transition:transform .15s; }
+  details.partie:not([open]) > summary h2::after { content:"▸"; }
+  details.partie > summary:hover h2::after { color:var(--h-beta); }
+  .signature { text-align:right; font-family:'Space Grotesk',sans-serif; font-weight:600;
+    margin:2.4rem 0 0; }
+  .signature span { display:block; font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    color:var(--gris); font-weight:400; }
+  details.toc-mobile { display:none; }
+  footer { border-top:1px solid var(--encre); margin-top:2rem; }
+  .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
+    font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); }
+
+  /* ===== Verrou de fin de chapitre — v2 : porte centrée plein écran ===== */
+  body.verrouille aside.sommaire,
+  body.verrouille details.toc-mobile,
+  body.verrouille article.lecture > *:not(#porte) { display:none; }
+  body.verrouille .page { grid-template-columns:minmax(0,1fr); max-width:720px; }
+  body.verrouille article.lecture { min-height:min(70vh, 620px); display:flex;
+    align-items:center; justify-content:center; }
+  #porte { display:none; }
+  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; width:100%; }
+  #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }
+  #porte h1 { margin-bottom:.6rem; }
+  #porte .explication { max-width:52ch; margin:0 auto 1.6rem; color:var(--gris); }
+  #porte form { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+  #porte input {
+    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.4em;
+    text-transform:uppercase; text-align:center; width:16ch;
+    padding:.55rem .2rem .55rem .6rem; border:1.5px solid var(--encre);
+    border-radius:10px; background:var(--papier); color:var(--encre);
+  }
+  #porte input:focus { outline:2px solid var(--h-beta); }
+  #porte button {
+    font-family:'IBM Plex Mono',monospace; font-size:.9rem; cursor:pointer;
+    border:1.5px solid var(--encre); border-radius:10px; padding:.55rem 1.1rem;
+    background:var(--encre); color:var(--papier);
+  }
+  #porte button:hover { background:var(--h-beta); border-color:var(--h-beta); }
+  #porte .erreur { color:var(--h-alpha); font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; min-height:1.4em; margin-top:.8rem; }
+
+  @media (max-width:960px) {
+    .page { grid-template-columns:1fr; gap:1.2rem; padding:1.2rem .9rem 3rem; }
+    aside.sommaire { display:none; }
+    details.toc-mobile { display:block; font-family:'Space Grotesk',sans-serif;
+      background:var(--carte); border:1px solid var(--encre); border-radius:12px;
+      padding:.7rem 1rem; margin-bottom:1.2rem; }
+    details.toc-mobile summary { font-family:'IBM Plex Mono',monospace; font-size:.8rem;
+      letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    details.toc-mobile ol { list-style:none; margin-top:.6rem; }
+    details.toc-mobile a { display:block; padding:.4rem .2rem; color:var(--encre);
+      text-decoration:none; border-bottom:1px dashed var(--grille); }
+    details.toc-mobile a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+      color:var(--h-beta); margin-right:.5rem; }
+    .duo, .exemple .duo-e, .histoire .duo-h, .exercice .duo-x { grid-template-columns:1fr; }
+    .formule-bloc { grid-template-columns:1fr; }
+    .formule-bloc .eq { justify-content:center; }
+    .checklist li { grid-template-columns:auto 1fr; }
+    .checklist .refs { grid-column:2; white-space:normal; }
+  }
+</style>
+</head>
+<body class="verrouille">
+
+<div class="spectre" aria-hidden="true"><i></i><i></i><i></i></div>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
+    <a class="retour" href="2nde-physique-chimie.html">← Retour aux cours de Seconde</a>
+  </div>
+</nav>
+<div id="lecture"><div class="fait"></div></div>
+
+<div class="page">
+
+<aside class="sommaire" aria-label="Sommaire du chapitre">
+  <div class="etiquette">Chapitre 4 — Sommaire</div>
+  <ol id="toc">
+    <li><a href="#ancre-1"><span class="n">01</span> Constitution de la matière</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span> Masse</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span> Quantité de matière</a></li>
+    <li class="ds"><a href="#pour-le-ds"><span class="n">✓</span> Pour le DS, je sais</a></li>
+  </ol>
+</aside>
+
+<article class="lecture">
+
+<div id="porte">
+  <div class="cadenas" aria-hidden="true">🔒</div>
+  <h1>Dénombrer les entités</h1>
+  <p class="explication">Ce chapitre sera débloqué <strong>en fin de séquence</strong>,
+  au rythme de la classe. Le code de déblocage est transmis via le cahier de textes —
+  il figure aussi en bas de ta fiche de cours.</p>
+  <form id="forme-code" autocomplete="off">
+    <input id="champ-code" type="text" maxlength="6" inputmode="text"
+           spellcheck="false" aria-label="Code de déblocage (6 caractères)"
+           placeholder="••••••">
+    <button type="submit">Déverrouiller</button>
+  </form>
+  <p class="erreur" id="erreur-code" role="alert"></p>
+</div>
+
+<details class="toc-mobile">
+  <summary>Sommaire du chapitre</summary>
+  <ol>
+    <li><a href="#ancre-1"><span class="n">01</span>Constitution de la matière</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span>Masse</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span>Quantité de matière</a></li>
+    <li><a href="#pour-le-ds"><span class="n">✓</span>Pour le DS, je sais</a></li>
+  </ol>
+</details>
+
+<p class="fil-ariane">Physique-Chimie · <span class="niveau">Seconde générale</span> · Thème 1 — Constitution et transformations de la matière</p>
+<h1>Dénombrer les entités</h1>
+<p class="sous-titre">Thème 1 · Chapitre 4 — cours &amp; exercices corrigés</p>
+
+<!-- ============================ SECTION I ============================ -->
+<details class="partie" open>
+<summary><h2 id="ancre-1"><span class="num">01</span> Constitution de la matière</h2></summary>
+<div class="partie-corps">
+
+<h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;margin:1.2rem 0 .6rem;color:var(--h-beta)">A — Électroneutralité</h3>
+
+<p>À l'échelle microscopique, la matière est constituée d'entités chimiques électriquement neutres, comme les atomes ou les molécules, ou chargées électriquement, comme les ions.</p>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>À l'échelle macroscopique, la matière est le plus souvent électriquement neutre. On parle alors d'<span class="terme">électroneutralité de la matière</span>.</p>
+</div>
+
+<div class="encart exemple">
+  <div class="etq">🕯 Exemple détaillé — cristal de chlorure de sodium</div>
+  <p>Dans la structure cristalline du sel (<span class="nb">NaCl</span>), on trouve autant d'ions sodium <span class="nb">Na<sup>+</sup></span> que d'ions chlorure <span class="nb">Cl<sup>−</sup></span> pour maintenir l'électroneutralité de l'ensemble.</p>
+  <figure>
+    <svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="s01-gNa" cx="35%" cy="35%"><stop offset="0%" stop-color="#8fd0dd"/><stop offset="100%" stop-color="#1d9aaa"/></radialGradient>
+    <radialGradient id="s01-gCl" cx="35%" cy="35%"><stop offset="0%" stop-color="#f0e59a"/><stop offset="100%" stop-color="#d6b53a"/></radialGradient>
+  </defs>
+  <text x="230" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#141a26">Cristal de chlorure de sodium (NaCl)</text>
+  <!-- liaisons -->
+  <g stroke="#b9b3a3" stroke-width="2">
+    <!-- horizontales -->
+    <line x1="95" y1="90" x2="285" y2="90"/><line x1="95" y1="160" x2="285" y2="160"/><line x1="95" y1="230" x2="285" y2="230"/>
+    <!-- verticales -->
+    <line x1="95" y1="90" x2="95" y2="230"/><line x1="190" y1="90" x2="190" y2="230"/><line x1="285" y1="90" x2="285" y2="230"/>
+  </g>
+  <!-- ions : alternance Na / Cl (échiquier) -->
+  <g stroke="#141a26" stroke-width="1">
+    <!-- ligne 1 -->
+    <circle cx="95"  cy="90"  r="22" fill="url(#s01-gNa)"/><circle cx="190" cy="90" r="26" fill="url(#s01-gCl)"/><circle cx="285" cy="90" r="22" fill="url(#s01-gNa)"/>
+    <!-- ligne 2 -->
+    <circle cx="95"  cy="160" r="26" fill="url(#s01-gCl)"/><circle cx="190" cy="160" r="22" fill="url(#s01-gNa)"/><circle cx="285" cy="160" r="26" fill="url(#s01-gCl)"/>
+    <!-- ligne 3 -->
+    <circle cx="95"  cy="230" r="22" fill="url(#s01-gNa)"/><circle cx="190" cy="230" r="26" fill="url(#s01-gCl)"/><circle cx="285" cy="230" r="22" fill="url(#s01-gNa)"/>
+  </g>
+  <g font-size="12" font-weight="700" text-anchor="middle" fill="#141a26" font-family="IBM Plex Mono">
+    <text x="95" y="94">Na⁺</text><text x="190" y="94">Cl⁻</text><text x="285" y="94">Na⁺</text>
+    <text x="95" y="164">Cl⁻</text><text x="190" y="164">Na⁺</text><text x="285" y="164">Cl⁻</text>
+    <text x="95" y="234">Na⁺</text><text x="190" y="234">Cl⁻</text><text x="285" y="234">Na⁺</text>
+  </g>
+  <!-- légende -->
+  <g font-size="13" font-family="Space Grotesk">
+    <circle cx="345" cy="120" r="11" fill="url(#s01-gNa)" stroke="#141a26"/><text x="364" y="125" fill="#141a26">ion sodium Na⁺</text>
+    <circle cx="345" cy="155" r="13" fill="url(#s01-gCl)" stroke="#141a26"/><text x="364" y="160" fill="#141a26">ion chlorure Cl⁻</text>
+  </g>
+  <text x="230" y="278" text-anchor="middle" font-size="12" fill="#6b6f7a" font-style="italic">autant de Na⁺ que de Cl⁻ → ensemble électriquement neutre</text>
+</svg>
+    <figcaption>Structure cristalline du sel : alternance régulière d'ions Na<sup>+</sup> et Cl<sup>−</sup> en quantités égales.</figcaption>
+  </figure>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=cU7B3W8dFYA" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 1 — composés ioniques</div>
+  <p>Un composé ionique est électriquement neutre.</p>
+  <p class="question">Comment se note le composé ionique dichlorure de magnésium formé à partir des ions <span class="nb">Cl<sup>−</sup></span> et <span class="nb">Mg<sup>2+</sup></span> ? Même question pour le sulfure d'aluminium formé à partir des ions <span class="nb">S<sup>2−</sup></span> et <span class="nb">Al<sup>3+</sup></span>.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Lecture en proportions</div>
+    <p>Le composé doit être globalement neutre : on ajuste le nombre de chaque ion pour que la somme des charges soit nulle.</p>
+    <p>Un ion <span class="nb">Mg<sup>2+</sup></span> (charge +2) doit être associé à deux ions <span class="nb">Cl<sup>−</sup></span> (charge −1 chacun), ce qui se note :</p>
+    <p class="eq-ligne">MgCl<sub>2</sub></p>
+    <p>Pour le sulfure d'aluminium : deux ions <span class="nb">Al<sup>3+</sup></span> (soit +6) compensent trois ions <span class="nb">S<sup>2−</sup></span> (soit −6), et par convention le cation s'écrit en premier :</p>
+    <p class="eq-ligne">Al<sub>2</sub>S<sub>3</sub></p>
+    <p class="aparte">Rappel de notation : dans la formule d'un composé ionique, le cation (ion positif) est toujours écrit avant l'anion (ion négatif).</p>
+  </details>
+</div>
+
+<h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;margin:1.8rem 0 .6rem;color:var(--h-beta)">B — Structures</h3>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>La matière peut adopter plusieurs types de structures, parmi lesquelles :</p>
+  <ul class="cours">
+    <li>une <span class="terme">structure atomique</span>, associée au symbole de l'élément chimique qui la compose ;</li>
+    <li>une <span class="terme">structure moléculaire</span>, associée à la formule brute de la molécule qui la compose ;</li>
+    <li>une <span class="terme">structure ionique</span>, associée à la formule d'un cristal associant des cations et des anions.</li>
+  </ul>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 2 — associer chaque structure à sa catégorie</div>
+  <p class="question">Classer les espèces suivantes selon leur type de structure : le néon <span class="nb">Ne</span>, l'or <span class="nb">Au</span>, le saccharose <span class="nb">C<sub>12</sub>H<sub>22</sub>O<sub>11</sub></span>, l'ADN, le sel de table <span class="nb">NaCl</span>, le sucre en morceaux.</p>
+  <div class="fig-row">
+    <figure class="fig-etroite"><span class="pill-ex phys">structure atomique</span><img class="photo" src="../assets/img/2nde-t1c4/neon-neon.jpg" alt="Enseigne au néon" loading="lazy"><figcaption>Le néon <span class="nb">Ne</span> (gaz noble).</figcaption></figure>
+    <figure class="fig-etroite"><img class="photo" src="../assets/img/2nde-t1c4/adn.jpg" alt="Double hélice d'ADN" loading="lazy"><figcaption>L'ADN, une macromolécule (structure moléculaire).</figcaption></figure>
+    <figure class="fig-etroite"><span class="pill-ex chim">structure ionique</span><img class="photo" src="../assets/img/2nde-t1c4/halite.jpg" alt="Cristal de sel" loading="lazy"><figcaption>Cristal de sel de table <span class="nb">NaCl</span>.</figcaption></figure>
+  </div>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <table class="tab" style="margin:.4rem 0;">
+      <thead><tr><th>Structure atomique</th><th>Structure moléculaire</th><th>Structure ionique</th></tr></thead>
+      <tbody><tr>
+        <td>Le néon <span class="nb">Ne</span>, comme tous les gaz nobles.<br>L'or <span class="nb">Au</span>, comme tous les métaux.</td>
+        <td>Le saccharose <span class="nb">C<sub>12</sub>H<sub>22</sub>O<sub>11</sub></span>.<br>L'ADN est une macromolécule.</td>
+        <td>Un sel est un composé ionique formé de cations et d'anions liés par des interactions électrostatiques et organisés en cristal électriquement neutre. C'est le cas du sel de table, le chlorure de sodium <span class="nb">NaCl</span>.</td>
+      </tr></tbody>
+    </table>
+  </details>
+</div>
+
+</div>
+</details>
+
+<!-- ============================ SECTION II ============================ -->
+<details class="partie" open>
+<summary><h2 id="ancre-2"><span class="num">02</span> Masse</h2></summary>
+<div class="partie-corps">
+
+<h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;margin:1.2rem 0 .6rem;color:var(--h-beta)">A — Rappel : masse atomique</h3>
+
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>La masse d'un atome est la somme des masses de ses constituants, c'est-à-dire de ses protons, de ses neutrons et de ses électrons. Elle est de l'ordre de <span class="nb">10<sup>−26</sup> kg</span>.</p>
+  <p>Cette masse peut être approximée à celle de son noyau.</p>
+</div>
+
+<figure>
+  <svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="s02-gP" cx="35%" cy="35%"><stop offset="0%" stop-color="#e88a7a"/><stop offset="100%" stop-color="#d6402b"/></radialGradient>
+    <radialGradient id="s02-gN" cx="35%" cy="35%"><stop offset="0%" stop-color="#9aa0ac"/><stop offset="100%" stop-color="#5a606c"/></radialGradient>
+  </defs>
+  <text x="230" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#141a26">Constitution d'un atome</text>
+  <!-- orbites electrons -->
+  <g fill="none" stroke="#4a3f9e" stroke-width="1.4">
+    <ellipse cx="180" cy="160" rx="120" ry="55"/>
+    <ellipse cx="180" cy="160" rx="120" ry="55" transform="rotate(60 180 160)"/>
+    <ellipse cx="180" cy="160" rx="120" ry="55" transform="rotate(-60 180 160)"/>
+  </g>
+  <!-- electrons -->
+  <g fill="#4a3f9e" stroke="#141a26" stroke-width="0.8">
+    <circle cx="300" cy="160" r="7"/><circle cx="118" cy="107" r="7"/><circle cx="118" cy="213" r="7"/>
+  </g>
+  <text x="312" y="150" font-size="12" font-weight="700" fill="#4a3f9e" font-family="IBM Plex Mono">e⁻</text>
+  <!-- noyau : amas de protons/neutrons -->
+  <g stroke="#141a26" stroke-width="0.8">
+    <circle cx="168" cy="150" r="13" fill="url(#s02-gP)"/><circle cx="192" cy="150" r="13" fill="url(#s02-gN)"/>
+    <circle cx="156" cy="170" r="13" fill="url(#s02-gN)"/><circle cx="180" cy="170" r="13" fill="url(#s02-gP)"/><circle cx="204" cy="170" r="13" fill="url(#s02-gN)"/>
+    <circle cx="168" cy="150" r="13" fill="url(#s02-gP)" opacity="0"/>
+  </g>
+  <!-- légende -->
+  <g font-size="13" font-family="Space Grotesk">
+    <circle cx="330" cy="235" r="9" fill="url(#s02-gP)" stroke="#141a26"/><text x="345" y="240" fill="#141a26">proton (+)</text>
+    <circle cx="330" cy="262" r="9" fill="url(#s02-gN)" stroke="#141a26"/><text x="345" y="267" fill="#141a26">neutron</text>
+    <circle cx="330" cy="289" r="7" fill="#4a3f9e" stroke="#141a26"/><text x="345" y="294" fill="#141a26">électron (−)</text>
+  </g>
+  <text x="60" y="285" font-size="12" fill="#6b6f7a" font-style="italic">noyau ≈ toute la masse</text>
+</svg>
+  <figcaption>La quasi-totalité de la masse d'un atome est concentrée dans son noyau (protons + neutrons) ; la masse des électrons est négligeable.</figcaption>
+</figure>
+
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">m = A × m<sub>n</sub></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>m</b> masse de l'atome · kg<br>
+    <b>A</b> nombre de masse (nombre de nucléons) · —<br>
+    <b>m<sub>n</sub></b> masse d'un nucléon · kg<br>
+    <span class="nb">m<sub>n</sub> = 1,67 × 10<sup>−27</sup> kg</span>
+  </div>
+</div>
+
+<div class="notation">
+  <div class="etq">✎ Remarque — unité de masse atomique</div>
+  <p class="aq">L'unité de masse atomique (<span class="nb">u</span>) est très utilisée en physique atomique et nucléaire : <span class="nb">1 u = 1,66053907 × 10<sup>−27</sup> kg</span>.</p>
+</div>
+
+<h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;margin:1.8rem 0 .6rem;color:var(--h-beta)">B — Masse des composés</h3>
+
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>La masse d'un composé chimique est la somme des masses atomiques des éléments chimiques qui le composent.</p>
+</div>
+
+<div class="fig-row">
+  <figure>
+    <span class="pill-ex chim">molécule d'eau</span>
+    <img class="photo" src="../assets/img/2nde-t1c4/eau-3d.jpg" alt="Modèle 3D de la molécule d'eau" loading="lazy">
+    <figcaption>La masse d'une molécule d'eau <span class="nb">H<sub>2</sub>O</span> est la somme des masses atomiques de deux atomes d'hydrogène et d'un atome d'oxygène.
+    <span class="eqc">m<sub>H₂O</sub> = 2 × m<sub>H</sub> + m<sub>O</sub></span></figcaption>
+  </figure>
+  <figure>
+    <span class="pill-ex chim">ion sulfate</span>
+    <img class="photo" src="../assets/img/2nde-t1c4/sulfate-3d.jpg" alt="Modèle 3D de l'ion sulfate" loading="lazy">
+    <figcaption>La masse d'un ion sulfate <span class="nb">SO<sub>4</sub><sup>2−</sup></span> est la somme des masses atomiques d'un atome de soufre et de quatre atomes d'oxygène. On néglige les deux électrons portant les charges.
+    <span class="eqc">m<sub>SO₄²⁻</sub> ≈ m<sub>S</sub> + 4 × m<sub>O</sub></span></figcaption>
+  </figure>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=DyimCdPYRhM" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 3 — masse de la dopamine</div>
+  <div class="duo-x">
+    <div>
+      <p>La dopamine est un neurotransmetteur de formule brute <span class="nb">C<sub>8</sub>H<sub>11</sub>NO<sub>2</sub></span>.</p>
+      <p class="question">Calculer la masse d'une molécule de dopamine.</p>
+    </div>
+    <img src="../assets/img/2nde-t1c4/dopamine.jpg" alt="Schéma de la dopamine" loading="lazy">
+  </div>
+  <p class="donnees">Données — masses atomiques : <span class="nb">m<sub>H</sub> = 1,67 × 10<sup>−27</sup> kg</span> · <span class="nb">m<sub>C</sub> = 1,99 × 10<sup>−26</sup> kg</span> · <span class="nb">m<sub>N</sub> = 2,33 × 10<sup>−26</sup> kg</span> · <span class="nb">m<sub>O</sub> = 2,66 × 10<sup>−26</sup> kg</span></p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Formule du cours</div>
+    <p class="formule-cours-rappel">m<sub>composé</sub> = somme des masses atomiques</p>
+    <p class="eq-ligne">m<sub>C₈H₁₁NO₂</sub> = 8 × m<sub>C</sub> + 11 × m<sub>H</sub> + m<sub>N</sub> + 2 × m<sub>O</sub></p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">m<sub>C₈H₁₁NO₂</sub> = 8 × 1,99 × 10<sup>−26</sup> + 11 × 1,67 × 10<sup>−27</sup> + 2,33 × 10<sup>−26</sup> + 2 × 2,66 × 10<sup>−26</sup></p>
+    <p>m<sub>C₈H₁₁NO₂</sub> = <span class="resultat">2,5407 × 10<sup>−25</sup> kg</span></p>
+  </details>
+</div>
+
+</div>
+</details>
+
+<!-- ============================ SECTION III ============================ -->
+<details class="partie" open>
+<summary><h2 id="ancre-3"><span class="num">03</span> Quantité de matière</h2></summary>
+<div class="partie-corps">
+
+<h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;margin:1.2rem 0 .6rem;color:var(--h-beta)">A — Nombre d'entités</h3>
+
+<p>La détermination du nombre d'entités microscopiques dans un échantillon macroscopique ne peut se faire en les comptant une par une, mais par un calcul basé sur la mesure de la masse de l'échantillon.</p>
+
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">N = <span class="frac"><span class="haut">m<sub>éch</sub></span><span class="bas">m<sub>ent</sub></span></span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>N</b> nombre d'entités · —<br>
+    <b>m<sub>éch</sub></b> masse de l'échantillon · kg<br>
+    <b>m<sub>ent</sub></b> masse d'une entité · kg
+  </div>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=vq9iucxxsig" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 4 — atomes dans un rouleau d'aluminium</div>
+  <p>Un rouleau de papier aluminium (<span class="nb">200 m × 45 cm × 11 µm</span>) a une masse de <span class="nb">2,67 kg</span>. L'aluminium est présent dans la nature uniquement sous la forme d'aluminium 27 (noyaux <span class="nb"><sup>27</sup><sub>13</sub>Al</span>).</p>
+  <p class="question">Calculer le nombre d'atomes d'aluminium constituant ce rouleau.</p>
+  <p class="donnees">Données : <span class="nb">m<sub>n</sub> = 1,67 × 10<sup>−27</sup> kg</span></p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Extraction des informations</div>
+    <p>La masse d'une entité (un atome d'aluminium 27) s'obtient à partir de son nombre de masse :</p>
+    <p class="eq-ligne">m<sub>ent</sub> = m<sub>Al</sub> = A × m<sub>n</sub></p>
+    <div class="etape">Manipulation d'expression algébrique</div>
+    <p>On injecte cette expression dans la formule du nombre d'entités :</p>
+    <p class="eq-ligne">N = <span class="frac"><span class="haut">m<sub>éch</sub></span><span class="bas">m<sub>ent</sub></span></span> = <span class="frac"><span class="haut">m<sub>éch</sub></span><span class="bas">A × m<sub>n</sub></span></span></p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">N = <span class="frac"><span class="haut">2,67</span><span class="bas">27 × 1,67 × 10<sup>−27</sup></span></span> ≈ <span class="resultat">5,92 × 10<sup>25</sup></span></p>
+    <div class="etape">Conclusion</div>
+    <p>Un rouleau de papier d'aluminium contient environ <span class="nb">5,92 × 10<sup>25</sup></span> atomes d'aluminium 27.</p>
+  </details>
+</div>
+
+<h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;margin:1.8rem 0 .6rem;color:var(--h-beta)">B — La mole</h3>
+
+<p>Pour pouvoir manipuler des éléments chimiques (quelques grammes), il faudrait en utiliser un très grand nombre étant donné leur taille (plusieurs milliards de milliards). Une unité de quantité de matière a été créée : la mole, dont le symbole est <span class="nb">mol</span>. Une mole de matière correspond à une quantité de matière qui peut être manipulée lors d'une expérience en chimie.</p>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Une mole de matière correspond à un nombre d'atomes, de molécules ou d'ions donné par le <span class="terme">nombre d'Avogadro</span> :</p>
+  <p class="eq-ligne">N<sub>A</sub> = 6,02 × 10<sup>23</sup> entités</p>
+  <p>Ce nombre correspond au nombre d'atomes de carbone contenus dans <span class="nb">12 g</span> de carbone 12.</p>
+</div>
+
+<figure>
+  <svg viewBox="0 0 620 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- une molécule d'eau réutilisable -->
+    <g id="s03-eau">
+      <circle cx="0" cy="0" r="4.6" fill="#d6402b" stroke="#141a26" stroke-width=".5"/>
+      <circle cx="4" cy="-3.4" r="2.8" fill="#f4f1ea" stroke="#141a26" stroke-width=".5"/>
+      <circle cx="4" cy="3.4" r="2.8" fill="#f4f1ea" stroke="#141a26" stroke-width=".5"/>
+    </g>
+    <!-- dégradé de saturation pour l'effet "infini" -->
+    <radialGradient id="s03-fade" cx="50%" cy="50%" r="50%">
+      <stop offset="55%" stop-color="#d6402b" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#d6402b" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="s03-clipMole"><circle cx="530" cy="130" r="66"/></clipPath>
+  </defs>
+
+  <text x="310" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#141a26">La mole : le « paquet » du chimiste</text>
+
+  <!-- PAIRE : 2 -->
+  <circle cx="70" cy="130" r="26" fill="none" stroke="#4a3f9e" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <use href="#s03-eau" transform="translate(63,126)"/><use href="#s03-eau" transform="translate(77,134)"/>
+  <text x="70" y="176" text-anchor="middle" font-size="13" font-weight="700" font-family="IBM Plex Mono" fill="#141a26">2</text>
+  <text x="70" y="192" text-anchor="middle" font-size="11" font-family="Space Grotesk" fill="#6b6f7a">une paire</text>
+
+  <!-- DIZAINE : 10 -->
+  <circle cx="180" cy="130" r="34" fill="none" stroke="#4a3f9e" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <g>
+    <use href="#s03-eau" transform="translate(165,112)"/><use href="#s03-eau" transform="translate(184,110)"/><use href="#s03-eau" transform="translate(197,122)"/>
+    <use href="#s03-eau" transform="translate(162,128)"/><use href="#s03-eau" transform="translate(180,130)"/><use href="#s03-eau" transform="translate(196,138)"/>
+    <use href="#s03-eau" transform="translate(168,146)"/><use href="#s03-eau" transform="translate(186,148)"/><use href="#s03-eau" transform="translate(158,140)"/><use href="#s03-eau" transform="translate(200,150)"/>
+  </g>
+  <text x="180" y="184" text-anchor="middle" font-size="13" font-weight="700" font-family="IBM Plex Mono" fill="#141a26">10</text>
+  <text x="180" y="200" text-anchor="middle" font-size="11" font-family="Space Grotesk" fill="#6b6f7a">une dizaine</text>
+
+  <!-- CENTAINE : 100 -->
+  <circle cx="330" cy="130" r="46" fill="none" stroke="#4a3f9e" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <g><use href="#s03-eau" transform="translate(323.0,141.9) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(323.7,119.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(306.4,122.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(356.6,138.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(355.6,134.1) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(340.9,133.1) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(297.6,144.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(343.5,141.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(302.9,100.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(307.7,116.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(338.5,126.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(343.6,111.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(338.5,138.8) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(317.0,161.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(342.9,155.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(314.3,109.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(320.4,125.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(346.9,134.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(318.9,104.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(318.0,156.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(309.0,134.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(339.2,95.8) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(331.1,158.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(293.0,122.1) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(327.2,106.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(343.6,126.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(299.7,145.1) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(346.2,150.8) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(361.7,136.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(332.8,97.8) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(345.9,112.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(319.6,99.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(306.3,115.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(350.8,95.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(297.8,133.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(361.1,140.5) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(306.0,96.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(339.3,108.8) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(305.4,149.5) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(356.9,131.8) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(336.7,139.9) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(362.7,140.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(343.7,142.5) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(301.1,151.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(353.4,141.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(294.2,116.5) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(345.7,94.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(325.4,153.4) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(306.2,157.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(345.0,123.9) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(338.6,145.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(332.9,155.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(312.6,117.1) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(355.9,128.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(309.5,150.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(361.8,118.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(298.7,124.9) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(325.8,119.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(358.5,107.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(355.2,102.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(310.3,143.8) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(355.4,147.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(339.6,132.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(334.1,143.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(325.1,135.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(345.6,128.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(349.4,142.4) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(366.9,134.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(318.4,117.9) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(329.7,151.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(320.8,138.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(353.2,95.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(302.8,133.9) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(341.0,134.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(318.7,145.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(337.6,113.9) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(368.6,133.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(314.9,125.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(323.7,126.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(291.0,121.0) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(351.8,102.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(328.3,152.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(347.5,158.5) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(295.4,120.8) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(320.9,144.6) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(345.0,91.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(351.6,99.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(344.3,96.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(334.2,156.5) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(325.8,133.4) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(350.8,131.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(328.1,161.2) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(355.8,120.8) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(366.7,112.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(353.2,121.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(333.5,146.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(335.9,145.1) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(303.0,101.3) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(344.9,104.7) scale(0.82)"/>
+<use href="#s03-eau" transform="translate(309.5,98.7) scale(0.82)"/></g>
+  <text x="330" y="196" text-anchor="middle" font-size="13" font-weight="700" font-family="IBM Plex Mono" fill="#141a26">100</text>
+  <text x="330" y="212" text-anchor="middle" font-size="11" font-family="Space Grotesk" fill="#6b6f7a">une centaine</text>
+
+  <!-- saut d'ordre de grandeur -->
+  <text x="430" y="136" text-anchor="middle" font-size="26" font-weight="700" fill="#4a3f9e" font-family="Space Grotesk">…</text>
+
+  <!-- MOLE : nuée qui déborde (effet infini) -->
+  <circle cx="530" cy="130" r="66" fill="none" stroke="#4a3f9e" stroke-width="2"/>
+  <g clip-path="url(#s03-clipMole)"><use href="#s03-eau" transform="translate(574.8,156.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(577.8,99.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(530.0,85.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(554.7,181.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(501.6,179.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(569.6,122.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(479.3,166.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(525.8,103.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(547.4,147.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(577.5,97.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(565.3,176.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(581.5,123.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(502.0,168.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(535.2,135.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(580.7,120.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(469.0,119.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(475.3,154.1) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(543.5,103.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(529.6,164.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(532.9,178.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(527.6,171.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(571.5,174.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(503.7,164.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(477.3,99.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(476.2,159.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(483.3,129.5) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(521.3,128.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(504.5,140.1) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(587.2,131.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(550.6,168.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(522.6,82.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(508.8,170.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(476.7,110.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(567.6,159.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(530.3,163.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(536.4,84.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(478.4,108.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(566.3,107.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(495.4,100.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(476.9,125.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(485.3,143.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(468.5,138.5) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(511.2,73.1) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(560.5,118.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(472.1,107.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(542.7,110.0) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(560.7,159.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(558.2,143.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(576.9,153.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(542.8,70.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(560.6,174.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(517.1,109.5) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(576.7,87.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(541.9,191.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(494.1,156.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(588.3,126.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(552.2,165.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(492.9,126.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(542.1,164.0) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(528.4,121.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(490.0,115.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(566.6,134.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(497.4,97.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(588.4,155.0) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(545.1,68.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(556.1,150.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(584.7,143.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(527.0,152.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(476.0,158.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(543.7,100.5) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(566.3,179.5) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(481.6,107.0) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(543.0,138.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(514.2,91.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(585.7,157.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(492.0,87.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(581.2,159.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(584.3,154.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(494.3,140.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(471.8,109.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(527.4,152.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(499.2,124.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(549.9,146.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(557.3,138.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(516.6,162.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(532.1,95.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(503.0,130.0) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(525.1,137.1) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(530.0,137.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(525.0,82.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(546.4,170.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(549.1,121.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(547.7,91.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(471.6,131.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(494.3,158.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(505.8,71.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(497.9,178.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(516.3,80.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(498.8,151.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(551.7,137.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(579.7,153.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(529.1,155.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(580.6,159.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(566.0,91.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(523.7,160.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(518.4,171.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(553.5,165.7) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(524.8,192.5) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(576.6,121.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(532.2,192.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(516.0,165.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(569.5,130.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(485.2,137.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(543.8,173.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(562.9,131.0) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(564.2,151.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(539.3,132.5) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(519.7,159.1) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(490.0,106.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(530.2,78.1) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(517.3,71.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(501.9,153.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(554.6,127.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(521.7,79.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(586.3,145.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(569.4,98.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(524.2,72.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(559.7,165.6) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(471.5,128.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(549.6,75.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(477.8,99.5) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(508.2,81.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(531.4,141.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(555.8,158.5) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(576.3,165.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(482.7,111.8) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(493.0,92.4) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(526.3,130.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(546.3,77.1) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(483.2,129.1) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(521.1,116.2) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(527.3,98.0) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(559.4,144.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(526.2,101.3) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(526.0,66.9) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(490.4,131.5) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(477.5,137.0) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(535.4,80.0) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(518.9,116.1) scale(0.62)"/>
+<use href="#s03-eau" transform="translate(549.4,155.8) scale(0.62)"/></g>
+  <!-- voile de saturation pour "l'infini" -->
+  <circle cx="530" cy="130" r="66" fill="url(#s03-fade)" opacity="0.18"/>
+  <!-- quelques molécules qui "sortent" du cadre -->
+  <use href="#s03-eau" transform="translate(468,96)"/><use href="#s03-eau" transform="translate(596,120)"/><use href="#s03-eau" transform="translate(560,190)"/><use href="#s03-eau" transform="translate(496,188)"/>
+  <text x="530" y="216" text-anchor="middle" font-size="14" font-weight="700" font-family="IBM Plex Mono" fill="#141a26">6,02 × 10²³</text>
+  <text x="530" y="232" text-anchor="middle" font-size="11" font-family="Space Grotesk" fill="#6b6f7a">une mole</text>
+
+  <text x="310" y="264" text-anchor="middle" font-size="12" fill="#6b6f7a" font-style="italic">comme la paire ou la dizaine, la mole compte les entités — mais par 6,02 × 10²³ à la fois</text>
+</svg>
+  <figcaption>La mole prolonge la série des « paquets » familiers (paire, dizaine, centaine…) : elle compte les entités, mais par <span class="nb">6,02 × 10<sup>23</sup></span> à la fois.</figcaption>
+</figure>
+
+<div class="histoire">
+  <div class="etq">Histoire des sciences</div>
+  <div class="duo-h">
+    <div>
+      <img src="../assets/img/2nde-t1c4/avogadro.jpg" alt="Portrait d'Amedeo Avogadro" loading="lazy">
+      <div class="credit">Portrait d'Amedeo Avogadro (1776–1856) — gravure du XIX<sup>e</sup> siècle, domaine public, Wikimedia Commons.</div>
+    </div>
+    <div>
+      <h4>Amedeo Avogadro (1776–1856), physicien italien</h4>
+      <p>C'est en l'honneur d'Avogadro que la constante reliant l'échelle microscopique à l'échelle macroscopique porte son nom. Il énonça en 1811 l'hypothèse selon laquelle des volumes égaux de gaz différents, dans les mêmes conditions de température et de pression, contiennent le même nombre de molécules.</p>
+      <a class="video-chip" href="https://www.youtube.com/watch?v=_kosdfe79OU" target="_blank" rel="noopener">🎬 Découvrir une chaîne YouTube ↗</a>
+    </div>
+  </div>
+</div>
+
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>Il existe une relation de proportionnalité entre la quantité de matière <span class="nb">n</span> et le nombre d'entités <span class="nb">N</span>.</p>
+</div>
+
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">n = <span class="frac"><span class="haut">N</span><span class="bas">N<sub>A</sub></span></span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>n</b> quantité de matière · mol<br>
+    <b>N</b> nombre d'entités · —<br>
+    <b>N<sub>A</sub></b> nombre d'Avogadro · <span class="nb">mol<sup>−1</sup></span><br>
+    <span class="nb">N<sub>A</sub> = 6,02 × 10<sup>23</sup> mol<sup>−1</sup></span>
+  </div>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=jGy-NKu0S9k" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 5 — quantité de matière d'un échantillon</div>
+  <p class="question">Quelle est la quantité de matière d'un échantillon contenant <span class="nb">N = 21 × 10<sup>23</sup></span> entités identiques ?</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Formule du cours</div>
+    <p class="eq-ligne">n = <span class="frac"><span class="haut">N</span><span class="bas">N<sub>A</sub></span></span></p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">n = <span class="frac"><span class="haut">21 × 10<sup>23</sup></span><span class="bas">6,02 × 10<sup>23</sup></span></span> ≈ <span class="resultat">3,5 mol</span></p>
+    <div class="etape">Conclusion</div>
+    <p>L'échantillon contient <span class="nb">3,5 mol</span> de matière.</p>
+  </details>
+</div>
+
+<h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;margin:1.8rem 0 .6rem;color:var(--h-beta)">C — La masse molaire</h3>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — masse molaire atomique</div>
+  <p>La <span class="terme">masse molaire atomique</span> <span class="nb">M</span> est la masse d'une mole d'atomes de l'élément chimique considéré. Elle s'exprime en <span class="nb">g/mol</span>.</p>
+</div>
+
+<p>Chaque atome de la classification périodique est caractérisé par deux nombres. Le nombre de masse (nombre <span class="nb">A</span>) correspond à la masse d'une mole d'atomes de l'élément considéré.</p>
+
+<figure>
+  <svg viewBox="0 0 420 260" xmlns="http://www.w3.org/2000/svg">
+  <text x="210" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#141a26">Lire une case du tableau périodique</text>
+  <!-- case -->
+  <rect x="150" y="70" width="120" height="120" rx="6" fill="#fff" stroke="#141a26" stroke-width="2"/>
+  <text x="165" y="98" font-size="15" font-family="IBM Plex Mono" fill="#141a26">12</text>
+  <text x="165" y="182" font-size="13" font-family="IBM Plex Mono" fill="#141a26">6</text>
+  <text x="210" y="145" text-anchor="middle" font-size="40" font-weight="700" font-family="Space Grotesk" fill="#141a26">C</text>
+  <text x="210" y="168" text-anchor="middle" font-size="11" font-family="Space Grotesk" fill="#141a26">carbone</text>
+  <text x="255" y="182" text-anchor="end" font-size="12" font-weight="700" font-family="IBM Plex Mono" fill="#4a3f9e">12,0</text>
+  <!-- annotations -->
+  <g font-size="12" font-family="Space Grotesk">
+    <line x1="120" y1="90" x2="162" y2="90" stroke="#6b6f7a"/><text x="115" y="94" text-anchor="end" fill="#141a26">nombre de masse A</text>
+    <line x1="120" y1="176" x2="162" y2="176" stroke="#6b6f7a"/><text x="115" y="180" text-anchor="end" fill="#141a26">numéro atomique Z</text>
+    <line x1="300" y1="130" x2="212" y2="130" stroke="#6b6f7a"/><text x="305" y="126" fill="#141a26">symbole</text>
+    <line x1="300" y1="178" x2="258" y2="178" stroke="#6b6f7a"/><text x="305" y="174" fill="#4a3f9e" font-weight="700">M (g/mol)</text>
+  </g>
+  <text x="210" y="228" text-anchor="middle" font-size="12" fill="#6b6f7a" font-style="italic">pour de nombreux éléments, M ≈ A</text>
+</svg>
+  <figcaption>La masse molaire atomique figure en bas de chaque case de la classification périodique. Pour de nombreux éléments, elle est proche du nombre de masse <span class="nb">A</span> de l'isotope majoritaire.</figcaption>
+</figure>
+
+<div class="encart exemple">
+  <div class="etq">🕯 Exemple détaillé — quelques masses molaires atomiques</div>
+  <p>Pour l'hydrogène <span class="nb"><sup>1</sup><sub>1</sub>H</span>, une mole d'atomes pèse <span class="nb">1 g</span> → <span class="nb">M(H) = 1 g/mol</span>.</p>
+  <p>Pour le carbone <span class="nb"><sup>12</sup><sub>6</sub>C</span>, une mole d'atomes pèse <span class="nb">12 g</span> → <span class="nb">M(C) = 12 g/mol</span>.</p>
+  <p>Pour l'oxygène <span class="nb"><sup>16</sup><sub>8</sub>O</span>, une mole d'atomes pèse <span class="nb">16 g</span> → <span class="nb">M(O) = 16 g/mol</span>.</p>
+</div>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — masse molaire ionique</div>
+  <p>Un ion est un atome qui a perdu ou gagné un ou plusieurs électrons. La masse d'un atome correspond à la masse de son noyau, car l'électron a une masse négligeable devant celle du nucléon. On peut donc dire que la <span class="terme">masse molaire d'un ion</span> est égale à celle de l'atome dont il est issu.</p>
+  <p class="eq-ligne">M(H<sup>+</sup>) = M(H) = 1 g/mol</p>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 6 — masses molaires ioniques</div>
+  <p class="question">Donner les valeurs des masses molaires atomiques des éléments chlore (<span class="nb">Cl</span>) et calcium (<span class="nb">Ca</span>) à l'aide de la classification périodique, et en déduire les masses molaires ioniques des espèces <span class="nb">Cl<sup>−</sup></span> et <span class="nb">Ca<sup>2+</sup></span>.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Lecture de la classification</div>
+    <p class="eq-ligne">M(Cl) = M(Cl<sup>−</sup>) = <span class="resultat">35,45 g·mol<sup>−1</sup></span></p>
+    <p class="eq-ligne">M(Ca) = M(Ca<sup>2+</sup>) = <span class="resultat">40,08 g·mol<sup>−1</sup></span></p>
+  </details>
+</div>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — masse molaire moléculaire</div>
+  <p>La <span class="terme">masse molaire moléculaire</span> est la masse d'une mole de molécules du corps pur considéré. Elle est égale à la somme des masses molaires atomiques des éléments qui composent le corps pur.</p>
+</div>
+
+<div class="encart exemple">
+  <div class="etq">🕯 Exemple détaillé — dioxyde de carbone</div>
+  <p>Le dioxyde de carbone <span class="nb">CO<sub>2</sub></span> est composé d'un atome de carbone et de deux atomes d'oxygène. Avec <span class="nb">M(C) = 12 g/mol</span> et <span class="nb">M(O) = 16 g/mol</span> :</p>
+  <p class="eq-ligne">M(CO<sub>2</sub>) = M(C) + 2 × M(O) = 12 + 2 × 16 = 44 g/mol</p>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 7 — masses molaires moléculaires</div>
+  <p class="question">Calculer les masses molaires moléculaires de l'eau et du méthane <span class="nb">CH<sub>4</sub></span>.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">M(H<sub>2</sub>O) = 2 × M(H) + M(O) = 2 × 1 + 16 = <span class="resultat">18 g/mol</span></p>
+    <p class="eq-ligne">M(CH<sub>4</sub>) = M(C) + 4 × M(H) = 12 + 4 × 1 = <span class="resultat">16 g/mol</span></p>
+  </details>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=SPmw2WrTaz4" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 8 — masse molaire de l'or</div>
+  <div class="duo-x">
+    <div>
+      <p>Un atome d'or a pour masse <span class="nb">3,27 × 10<sup>−22</sup> g</span>.</p>
+      <p class="question">Quelle est la masse d'une mole d'atomes d'or ? Comparer cette valeur avec celle de la classification périodique.</p>
+    </div>
+    <img src="../assets/img/2nde-t1c4/or-lingots.jpg" alt="Lingots d'or" loading="lazy">
+  </div>
+  <p class="donnees">Donnée : la masse molaire <span class="nb">M</span> est la masse d'une mole d'entités, d'où <span class="nb">M = m × N<sub>A</sub></span>.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Formule du cours</div>
+    <p class="eq-ligne">M(Au) = m<sub>Au</sub> × N<sub>A</sub></p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">M(Au) = 3,27 × 10<sup>−22</sup> × 6,02 × 10<sup>23</sup> ≈ <span class="resultat">197 g/mol</span></p>
+    <div class="etape">Conclusion</div>
+    <p>Cette valeur est cohérente avec celle de la classification périodique (<span class="nb">M′(Au) = 196,966569 g·mol<sup>−1</sup></span>).</p>
+  </details>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 9 — masse molaire de la chlorophylle</div>
+  <div class="duo-x">
+    <div>
+      <p class="question">Après avoir recherché les masses molaires atomiques nécessaires, calculer la masse molaire de la molécule de chlorophylle de formule brute <span class="nb">C<sub>55</sub>H<sub>72</sub>MgN<sub>4</sub>O<sub>5</sub></span>.</p>
+    </div>
+    <img src="../assets/img/2nde-t1c4/feuille.jpg" alt="Feuille verte (chlorophylle)" loading="lazy">
+  </div>
+  <p class="donnees">Données : <span class="nb">M(C) = 12,0</span> · <span class="nb">M(H) = 1,0</span> · <span class="nb">M(Mg) = 24,3</span> · <span class="nb">M(N) = 14,0</span> · <span class="nb">M(O) = 16,0</span> (en <span class="nb">g·mol<sup>−1</sup></span>)</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Formule du cours</div>
+    <p class="eq-ligne">M = 55 × M(C) + 72 × M(H) + M(Mg) + 4 × M(N) + 5 × M(O)</p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">M = 55 × 12,0 + 72 × 1,0 + 24,3 + 4 × 14,0 + 5 × 16,0 = <span class="resultat">892,3 g·mol<sup>−1</sup></span></p>
+  </details>
+</div>
+
+<h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;margin:1.8rem 0 .6rem;color:var(--h-beta)">D — Relation entre quantité de matière, masse et masse molaire</h3>
+
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>Une relation relie la masse d'une entité chimique à sa quantité de matière.</p>
+</div>
+
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">n = <span class="frac"><span class="haut">m</span><span class="bas">M</span></span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>n</b> quantité de matière · mol<br>
+    <b>m</b> masse · g<br>
+    <b>M</b> masse molaire · <span class="nb">g·mol<sup>−1</sup></span>
+  </div>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=Ht-jFq8eBp0" target="_blank" rel="noopener">▶ Manipuler une relation ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 10 — sulfate de cuivre</div>
+  <p>On a un échantillon de masse <span class="nb">m = 4,0 g</span> de sulfate de cuivre <span class="nb">CuSO<sub>4</sub></span>.</p>
+  <p class="question">Calculer la quantité de matière <span class="nb">n<sub>CuSO₄</sub></span> de l'échantillon.</p>
+  <p class="donnees">Données : <span class="nb">M(Cu) = 63,5</span> · <span class="nb">M(S) = 32,1</span> · <span class="nb">M(O) = 16,0</span> (en <span class="nb">g·mol<sup>−1</sup></span>)</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Masse molaire du sulfate de cuivre</div>
+    <p class="eq-ligne">M(CuSO<sub>4</sub>) = M(Cu) + M(S) + 4 × M(O) = 63,5 + 32,1 + 4 × 16,0 = <span class="resultat">159,6 g/mol</span></p>
+    <div class="etape">Formule du cours</div>
+    <p class="eq-ligne">n<sub>CuSO₄</sub> = <span class="frac"><span class="haut">m</span><span class="bas">M(CuSO<sub>4</sub>)</span></span></p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">n<sub>CuSO₄</sub> = <span class="frac"><span class="haut">4,0</span><span class="bas">159,6</span></span> ≈ <span class="resultat">0,025 mol = 25 mmol</span></p>
+  </details>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 11 — prélèvement d'éthanol</div>
+  <div class="duo-x">
+    <div>
+      <p>On prélève un volume <span class="nb">V = 25 mL</span> d'éthanol de formule <span class="nb">C<sub>2</sub>H<sub>6</sub>O</span> et de masse volumique <span class="nb">ρ = 0,789 g·mL<sup>−1</sup></span>.</p>
+      <p class="question">Donner la masse <span class="nb">m</span> et la quantité de matière <span class="nb">n</span> prélevées.</p>
+    </div>
+    <img src="../assets/img/2nde-t1c4/ethanol-3d.jpg" alt="Modèle 3D de l'éthanol" loading="lazy">
+  </div>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Extraction des informations</div>
+    <p>On calcule d'abord la masse à partir de la masse volumique :</p>
+    <p class="eq-ligne">m = ρ × V = 0,789 × 25 = <span class="resultat">19,725 g</span></p>
+    <div class="etape">Manipulation d'expression algébrique</div>
+    <p class="eq-ligne">n = <span class="frac"><span class="haut">m</span><span class="bas">M(C<sub>2</sub>H<sub>6</sub>O)</span></span> = <span class="frac"><span class="haut">ρ × V</span><span class="bas">2 × M(C) + 6 × M(H) + M(O)</span></span></p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">n = <span class="frac"><span class="haut">0,789 × 25</span><span class="bas">2 × 12 + 6 × 1 + 16</span></span> ≈ <span class="resultat">0,43 mol</span></p>
+  </details>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 12 — prélèvement de cyclohexane</div>
+  <div class="duo-x">
+    <div>
+      <p>On prélève un volume <span class="nb">V = 12,0 mL</span> de cyclohexane de formule <span class="nb">C<sub>6</sub>H<sub>12</sub></span> et de masse volumique <span class="nb">ρ = 0,7786 g·mL<sup>−1</sup></span>.</p>
+      <p class="question">Donner l'expression de la quantité de matière <span class="nb">n</span> en fonction de <span class="nb">ρ</span>, <span class="nb">V</span> et <span class="nb">M(C<sub>6</sub>H<sub>12</sub>)</span>, puis la calculer.</p>
+    </div>
+    <img src="../assets/img/2nde-t1c4/cyclohexane-3d.jpg" alt="Modèle 3D du cyclohexane" loading="lazy">
+  </div>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Manipulation d'expression algébrique</div>
+    <p class="eq-ligne">n = <span class="frac"><span class="haut">m</span><span class="bas">M(C<sub>6</sub>H<sub>12</sub>)</span></span> = <span class="frac"><span class="haut">ρ × V</span><span class="bas">6 × M(C) + 12 × M(H)</span></span></p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">n = <span class="frac"><span class="haut">0,7786 × 12,0</span><span class="bas">6 × 12 + 12 × 1</span></span> ≈ <span class="resultat">0,111 mol</span></p>
+  </details>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=sok3lW2uY-E" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+</div>
+</details>
+
+
+<!-- ================= CHECKLIST FINALE ================= -->
+<section class="checklist" id="pour-le-ds">
+  <h2><span class="num">✓</span> Pour le DS, je sais :</h2>
+  <ol id="liste-ds">
+    <li><input type="checkbox" id="ds1"><label for="ds1">Exploiter l'électroneutralité de la matière pour associer des espèces ioniques et citer des formules de composés ioniques.</label><span class="refs"><a href="#ancre-1">01</a> · ex. 1 · man. 14 p.65 · 22 p.68</span></li>
+    <li><input type="checkbox" id="ds2"><label for="ds2">Déterminer la masse d'une entité à partir de sa formule brute et de la masse des atomes qui la composent.</label><span class="refs"><a href="#ancre-2">02</a> · ex. 3 · man. 8 p.65</span></li>
+    <li><input type="checkbox" id="ds3"><label for="ds3">Déterminer le nombre d'entités d'une espèce dans une masse d'échantillon.</label><span class="refs"><a href="#ancre-3">03</a> · ex. 4 · man. 16 p.66</span></li>
+    <li><input type="checkbox" id="ds4"><label for="ds4">Définir la mole et le nombre d'Avogadro.</label><span class="refs"><a href="#ancre-3">03</a> · ex. 5</span></li>
+    <li><input type="checkbox" id="ds5"><label for="ds5">Déterminer la quantité de matière (en mol) d'une espèce dans une masse d'échantillon.</label><span class="refs"><a href="#ancre-3">03</a> · ex. 10 · 11 · 12 · man. 16 p.66 · 23 p.68</span></li>
+    <li><input type="checkbox" id="ds6"><label for="ds6">Calculer la masse molaire d'un composé.</label><span class="refs"><a href="#ancre-3">03</a> · ex. 7 · 9 · 10</span></li>
+  </ol>
+  <div class="videos" style="margin:1rem 0 0;">
+    <a class="video-chip" href="https://create.kahoot.it/share/bilan-quantite-de-matiere/523dac88-0ebc-48df-bffc-9c9d13c7a8b6" target="_blank" rel="noopener">🎯 Kahoot bilan du chapitre ↗</a>
+    <a class="video-chip" href="https://isaacetoile-my.sharepoint.com/:b:/g/personal/l_vanhoorde_enseignant_isaac-etoile_fr/EV8QU1xJ4h1IrVMk497TPdABe4km6I3ceisLC9pv2Q1Vlw?e=r4dRpr" target="_blank" rel="noopener">📄 DS 2024 | 2025 (corrigé) ↗</a>
+  </div>
+</section>
+
+<p class="signature">M. Van Hoorde<span>Lycée général Isaac de l'Étoile · Poitiers</span></p>
+
+</article>
+</div>
+
+<button id="haut" type="button" aria-label="Revenir en haut de page">↑ haut</button>
+
+<footer>
+  <div class="footer-inner">© 2025/2026 · M. Van Hoorde — Physique-Chimie · Seconde · Thème 1, Chapitre 4</div>
+</footer>
+
+<script>
+(function(){
+  var barre = document.querySelector('#lecture .fait');
+  var btn = document.getElementById('haut');
+  function maj(){
+    var h = document.documentElement;
+    var pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    barre.style.width = (pct || 0) + '%';
+    btn.classList.toggle('visible', h.scrollTop > 600);
+  }
+  document.addEventListener('scroll', maj, {passive:true});
+  btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  maj();
+
+  var liens = {};
+  document.querySelectorAll('#toc a').forEach(function(a){
+    liens[a.getAttribute('href').slice(1)] = a;
+  });
+  var cibles = Array.prototype.slice.call(document.querySelectorAll('h2[id], section[id]'));
+  function majToc(){
+    var repere = window.scrollY + window.innerHeight * 0.25;
+    var courant = null;
+    cibles.forEach(function(c){ if (c.offsetTop <= repere) courant = c; });
+    Object.keys(liens).forEach(function(k){ liens[k].classList.remove('actif'); });
+    if (courant && liens[courant.id]) liens[courant.id].classList.add('actif');
+  }
+  document.addEventListener('scroll', majToc, {passive:true});
+  majToc();
+
+  /* Sections repliables : un clic dans un sommaire ouvre la section visée */
+  document.querySelectorAll('#toc a, details.toc-mobile a').forEach(function(a){
+    a.addEventListener('click', function(){
+      var cible = document.querySelector(a.getAttribute('href'));
+      if (!cible) return;
+      var partie = cible.closest('details.partie');
+      if (partie) partie.open = true;
+    });
+  });
+
+  var CLE = 'cours-2nde-t1c4-checklist';
+  var boites = document.querySelectorAll('#liste-ds input[type="checkbox"]');
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE)) || {}; } catch(e) {}
+  boites.forEach(function(b){
+    if (etat[b.id]) b.checked = true;
+    b.addEventListener('change', function(){
+      etat[b.id] = b.checked;
+      try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch(e) {}
+    });
+  });
+})();
+</script>
+
+<script>
+/* Verrou de fin de chapitre — v2 (porte à code centrée)
+   Le code n'est jamais écrit ici : seule son EMPREINTE SHA-256 est stockée.
+   Re-verrouillage pour tests : ?verrou=1 */
+(function(){
+  var EMPREINTE = '35ec8e289666faea8c2e0d6289a3ecbe850b354fa47be629a45cc7c3e6a9460c' /* SHA-256 de AV0G4D */;
+  var CLE = 'deblocage-2nde-t1c4';
+
+  function deverrouiller(){
+    document.body.classList.remove('verrouille');
+    var porte = document.getElementById('porte');
+    if (porte) porte.remove();
+    window.scrollTo(0, 0);
+  }
+
+  try {
+    if (new URLSearchParams(location.search).has('verrou')) {
+      localStorage.removeItem(CLE);
+    }
+  } catch(e) {}
+
+  try {
+    if (localStorage.getItem(CLE) === '1') { deverrouiller(); return; }
+  } catch(e) {}
+
+  var forme = document.getElementById('forme-code');
+  var champ = document.getElementById('champ-code');
+  var erreur = document.getElementById('erreur-code');
+
+  function empreinteHex(texte){
+    var donnees = new TextEncoder().encode(texte);
+    return crypto.subtle.digest('SHA-256', donnees).then(function(tampon){
+      return Array.prototype.map.call(new Uint8Array(tampon), function(o){
+        return o.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  forme.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var essai = (champ.value || '').trim().toUpperCase();
+    if (essai.length !== 6) {
+      erreur.textContent = 'Le code fait 6 caractères (lettres et chiffres).';
+      return;
+    }
+    if (!(window.crypto && crypto.subtle)) {
+      erreur.textContent = 'Navigateur incompatible — ouvre la page depuis le site.';
+      return;
+    }
+    empreinteHex(essai).then(function(h){
+      if (h === EMPREINTE) {
+        try { localStorage.setItem(CLE, '1'); } catch(e) {}
+        deverrouiller();
+      } else {
+        erreur.textContent = 'Code incorrect. Vérifie le cahier de textes !';
+        champ.select();
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
