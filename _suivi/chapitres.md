@@ -45,19 +45,24 @@
 - Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t1-c5-solutions-aqueuses.html`
 - Fiche : aucune. Code de déblocage : **S0LUTE** (choisi par Claude, à transmettre via le cahier de textes — Loïc peut le changer à tout moment).
-- Blocs 🚧 : 15 (dont partie 02 « Concentration en masse » entièrement en images ; formule du facteur de dilution en image ; exercices 2-5 et 7 probablement en images).
+- 7 exercices rédigés en entier (énoncés + corrections), 3 encarts formule (concentration en masse, conservation de la masse de soluté, facteur de dilution), 12 liens vidéo décodés (QR) + Kahoot activé.
+- Blocs 🚧 restants : 10 — uniquement des schémas/illustrations à redessiner (dissolution microscopique, protocoles dissolution/dilution, échelle de teinte, courbes d'étalonnage) et 2 photos décoratives. Lien DS volontairement laissé en attente (voir ETAT-PROJET.md).
 
 ### T1-C6 — Le cortège électronique
 - Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t1-c6-cortege-electronique.html`
 - Fiche : aucune. Code de déblocage : **C0UCHE** (choisi par Claude, à transmettre via le cahier de textes).
-- Blocs 🚧 : 15 (dont sous-partie « C — La configuration électronique » entièrement en image ; ⚠ pas de diapositive « Pour le DS » dans la source ; exercices 1-3 introuvables dans le texte).
+- 7 exercices rédigés en entier (couches, sous-couches, configurations électroniques, classification, blocs s/p), 8 liens vidéo décodés (hyperliens texte du PPTX, pas de QR sur ce chapitre).
+- Blocs 🚧 restants : 10 — schémas (Bohr, couches, sous-couches, diagrammes d'états) et grands tableaux périodiques illustrés (rejoint l'idée différée « tableau périodique complet » de T1-C4, voir IDEES.md) + portrait de Mendeleïev (licence à vérifier).
+- ⚠ Toujours pas de diapositive « Pour le DS » ni de Kahoot dans la source — compétences et lien à fournir par Loïc.
 
 ### T1-C7 — Stabilité des entités chimiques
 - Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t1-c7-stabilite-entites-chimiques.html`
 - Fiche : aucune. Code de déblocage : **ST4BLE** (choisi par Claude, à transmettre via le cahier de textes).
-- Blocs 🚧 : 9 (dont partie 02 « Ions monoatomiques » entièrement en images ; ⚠ pas de diapositive « Pour le DS » ; aucun exercice dans le texte extrait).
+- 6 exercices rédigés en entier (configurations des gaz nobles, formation d'ions, liaisons covalentes, modèles de Lewis), table de données (charge de l'ion selon la colonne) transcrite en `table.tab`, 7 liens vidéo décodés (hyperliens texte).
+- Blocs 🚧 restants : 7 — uniquement des schémas (cortèges électroniques, diagrammes ioniques, molécule d'eau, modèles de Lewis complets — à soigner particulièrement, cœur graphique du chapitre) et un tableau périodique réduit.
+- ⚠ Toujours pas de diapositive « Pour le DS » ni de Kahoot dans la source.
 
 ---
 

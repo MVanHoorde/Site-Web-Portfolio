@@ -23,7 +23,10 @@ sa manière de faire.
 
 - Le PPTX et/ou le PDF du chapitre (le PDF fait foi pour le rendu final).
 - Le niveau, le thème, le numéro de chapitre → **slug** : `2nde-t1c2`, etc.
-- Le code de déblocage à 6 caractères. S'il ne le donne pas : **demander**.
+- Le code de déblocage à 6 caractères, si Loïc veut le fixer lui-même.
+  **En régime A, s'il ne le donne pas : ne PAS demander — l'inventer** (voir
+  §1ter, « Codes de déblocage »). En régime B, où l'on peut échanger, demander
+  reste possible si Loïc n'a rien précisé.
 
 ## 1bis. Deux régimes de production
 
@@ -60,6 +63,17 @@ attente.
 Concrètement, en régime A :
 - prendre TOUTES les micro-décisions seul (choix de slug par convention,
   placement des blocs 🚧, formulation des `.a-faire`, etc.) ;
+- **codes de déblocage : si Loïc n'en fournit pas, les inventer soi-même**,
+  un par chapitre, 6 caractères, sur le principe déjà en usage sur le site
+  (un mot clé du chapitre, une lettre remplacée par un chiffre visuellement
+  proche — ex. `AT0MES`, `AV0G4D`, `S0LUTE`, `C0UCHE`, `ST4BLE`). Calculer
+  l'empreinte SHA-256 et la poser directement dans le HTML — ne jamais
+  laisser `EMPREINTE_SHA256_A_REMPLACER` en placeholder. **Tester chaque
+  verrou via Playwright** (verrouillé au départ → mauvais code rejeté → bon
+  code en minuscules déverrouille → persiste au reload → `?verrou=1`
+  reverrouille) : c'est le seul test Playwright que le régime A ne s'interdit
+  pas (§ Budget), le verrou étant fonctionnel et pas seulement visuel. Lister
+  tous les codes en clair dans le récap final (Loïc les redonnera en classe) ;
 - **corriger automatiquement** les erreurs scientifiques évidentes, sans
   demander — juste les lister dans le récap final ;
 - ne PAS reformuler le cours (fidélité au texte) ; **sauf** défaut manifeste
@@ -77,13 +91,31 @@ phase riche en allers-retours, c'est le régime B.
 
 Pour ne pas consommer de tokens inutilement :
 
-- ❌ pas d'extraction/optimisation d'images (aucune photo copiée) ;
-- ❌ pas de décodage de QR (les vidéos deviennent des `.a-faire`) ;
-- ❌ pas de maquette PNG, pas de SVG produit ;
+- ❌ pas d'extraction/optimisation de **photos réelles** (aucune photo copiée
+  ni recadrée — elles restent en `.a-faire type="image"`) ;
+- ❌ pas de maquette PNG, pas de SVG produit pour les **schémas et
+  illustrations récapitulatives** (protocoles en images, coupes d'atome,
+  graphiques à redessiner — cf. tableau de détection) ;
+- ✅ **le décodage des QR/liens vidéo et Kahoot est fait** (voir « Décodage
+  des liens ») — ce n'est plus un `.a-faire`, sauf lien indécodable ou lien
+  de DS (toujours différé, voir tableau) ;
+- ✅ **les exercices et leurs corrections sont rédigés en entier**, y compris
+  quand une image accompagne l'énoncé dans la source (seule l'image reste
+  `.a-faire`) ;
+- ✅ **les encarts formule (`.formule-bloc`) sont posés** quand la source les
+  rend comme une image (équation composée par le logiciel de présentation) —
+  ce n'est pas un schéma, c'est du texte scientifique à retyper ;
+- ✅ une **courte recherche web est possible** si un contenu semble manquant
+  pour que le cours reste compréhensible (ex. une définition implicite) —
+  à utiliser avec parcimonie, et à signaler dans le récap ;
 - ❌ pas de fiche élève, pas de PDF, pas de pagination ;
-- ❌ pas de Playwright, pas de captures d'écran ;
-- ❌ pas de vérification exhaustive des corrigés à la main (seulement les
-  erreurs **évidentes**, voir plus bas) ;
+- ❌ pas de Playwright pour le contenu (images, sommaire, captures) ;
+  **exception : test du verrou** (voir ci-dessus, un test court par chapitre,
+  pas de captures) ;
+- ❌ pas de vérification exhaustive des corrigés à la main au-delà du calcul
+  donné par la source (recalculer l'application numérique pour la valider
+  reste bienvenu — voir §5.2 — mais pas de contre-expertise scientifique
+  approfondie, **reportée au régime B**) ;
 - ❌ pas d'archive delta zippée par chapitre (livraison groupée en fin de
   chaîne, §1ter-livraison).
 
@@ -117,12 +149,56 @@ numérique du corrigé** pour retrouver le bon exposant, et le signaler.
 | Élément dans la source | Action en régime A |
 |---|---|
 | Texte de cours, énoncé, corrigé | **Transcrit** directement (fidèle, §5) |
+| Exercice + correction, **même si une image l'accompagne** | **Transcrit intégralement** (énoncé + étapes de correction) ; seule l'image elle-même (photo, graphique support) devient `.a-faire` — le texte de l'exercice, lui, n'attend pas le régime B |
+| Formule donnée en image dans la source (équation rendue comme graphique par le logiciel de présentation) | **Reconstituée en `.formule-bloc`** (charte, §3) — ce n'est pas un schéma à dessiner, c'est du texte scientifique à retyper |
+| Définition, propriété ou tableau de données **essentiel à la compréhension**, piégé dans une image (ex. tableau grandeur/valeur, légende chiffrée) | **Extrait et retranscrit** en `.encart`/`table.tab` ; si un détail précis manque pour boucler l'explication, une **recherche web courte** est possible pour compléter (le signaler dans le récap) |
 | Photo réelle (halite, portrait, modèle 3D…) | Bloc `.a-faire type="image"` avec description ; **rien** dans le HTML |
-| Schéma pédagogique (cristal, atome, cycle…) | Bloc `.a-faire type="schéma"` : décrire ce qu'il faut produire |
-| QR code / lien vidéo | Bloc `.a-faire type="vidéo"` : « URL à décoder » (ou chip désactivé) |
-| Tableau complexe / classification | Bloc `.a-faire type="tableau"` : « à intégrer plus tard » |
+| Schéma pédagogique **illustratif ou récapitulatif** (protocole en images, cristal, coupes d'atome, graphique à redessiner) | Bloc `.a-faire type="schéma"` : décrire ce qu'il faut produire — ça reste un travail de maquette/SVG validé, donc régime B |
+| QR code / lien vidéo (Kahoot compris) | **Décoder et poser en vrai lien** `.video-chip` (voir « Décodage des liens », ci-dessous) — ce n'est plus un `.a-faire` |
+| Lien vers un **DS** | **Toujours en `.a-faire`**, quel que soit ce que contient la source : le DS change chaque année, seul Loïc décide lequel lier. Si un lien DS existe déjà dans le PPTX/PDF (ex. année précédente), le mentionner dans le `.a-faire` sans l'activer |
+| Tableau complexe / classification (grand tableau périodique illustré, etc.) | Bloc `.a-faire type="tableau"` : « à intégrer plus tard » |
 | Erreur scientifique **évidente** (exposant tronqué, formule ionique inversée type S₃Al₂→Al₂S₃, unité aberrante) | **Corrigée** + notée en une ligne dans le récap |
 | Corrigé au calcul non trivial | Transcrit tel quel ; vérification fine **reportée au régime B** |
+
+### Décodage des liens (QR + hyperliens texte)
+
+Deux mécanismes coexistent dans les PPTX de Loïc — vérifier les deux :
+
+```bash
+# 1) QR codes intégrés comme images
+apt-get install -y libzbar0 && pip install pyzbar --break-system-packages -q
+python3 -c "
+from pyzbar.pyzbar import decode
+from PIL import Image
+print(decode(Image.open('image_extraite.png')))
+"
+# extraire les images du PPTX au préalable (python-pptx : shape.image.blob
+# pour chaque shape.shape_type == PICTURE)
+
+# 2) hyperliens portés directement par le texte (fréquent quand la diapo
+# écrit « Apprendre en vidéo », « Pour réviser en vidéo »… en toutes lettres)
+python3 -c "
+from pptx import Presentation
+prs = Presentation('SOURCE.pptx')
+for i, s in enumerate(prs.slides, 1):
+    for sh in s.shapes:
+        if sh.has_text_frame:
+            for p in sh.text_frame.paragraphs:
+                for r in p.runs:
+                    if r.hyperlink and r.hyperlink.address:
+                        print(i, r.text, '->', r.hyperlink.address)
+"
+```
+
+Convertir le PPTX en PDF (`scripts/office/soffice.py`) puis en PNG
+(`pdftoppm -r 130`) donne un rendu fidèle des diapos pour repérer visuellement
+ce qui accompagne chaque lien et vérifier le sens de chaque exercice avant
+transcription — c'est la même vue que Loïc a en présentant son cours.
+
+Les liens décodés se posent en `.video-chip` réel (`href` direct, `target=
+"_blank" rel="noopener"`, `?si=` retiré) à l'endroit exact où le QR/texte
+apparaissait. Le Kahoot suit la même règle. Le DS, jamais (voir tableau
+ci-dessus).
 
 ### Le bloc `.a-faire` (gabarit)
 
@@ -138,7 +214,10 @@ Structure minimale (le CSS est dans `gabarit-chapitre.html`) :
 
 `type` ∈ { image, schéma, vidéo, tableau }. Le bloc se pose **exactement à
 l'emplacement du manque**, dans le fil du cours — pas de récapitulatif en fin
-de page (la navigation sur le site suffit à les repérer).
+de page (la navigation sur le site suffit à les repérer). Le type `vidéo` ne
+sert plus qu'au cas résiduel d'un lien indécodable (QR flou, image trop
+compressée) ou à un lien de DS laissé en attente — pas aux vidéos normales,
+désormais décodées.
 
 ### Ce qu'on fait quand même (non négociable même en ébauche)
 
@@ -416,18 +495,27 @@ Pièges connus (ne pas les reproduire) :
 
 > Voici le PPTX (+ PDF) du/des chapitre(s) [préciser]. **Régime A — ébauche.**
 > Applique le §1ter de `_modeles/CONSIGNES-production-chapitre.md` :
-> transcription texte-only sur `gabarit-chapitre.html`, tout élément à
-> retravailler (image, schéma, vidéo, tableau) remplacé par un bloc `.a-faire`
-> 🚧 à son emplacement, correction des seules erreurs évidentes. Pas de fiche,
-> pas d'images, pas de maquette, pas de Playwright, pas de captures. Slug(s) :
-> `SLUG`. Code(s) de déblocage : `XXXXXX` (ou « à laisser en placeholder »).
-> Lie chaque page depuis la page de niveau. En fin de chaîne : un seul delta
-> groupé + la liste des `.a-faire` par chapitre.
+> transcription texte-only sur `gabarit-chapitre.html`, exercices et
+> corrections rédigés en entier (même quand une image accompagne l'énoncé —
+> seule l'image reste `.a-faire`), encarts formule reconstitués quand la
+> source les rend en image, QR/liens vidéo et Kahoot décodés et posés en
+> vrais liens, lien de DS toujours en `.a-faire`. Tout élément restant
+> (photo réelle, schéma/illustration récapitulative, tableau complexe)
+> remplacé par un bloc `.a-faire` 🚧 à son emplacement, correction des
+> seules erreurs évidentes. Pas de fiche, pas de maquette, pas de captures.
+> Slug(s) : à construire par convention. Code(s) de déblocage :
+> **invente-les toi-même** (6 caractères, même principe que les codes déjà
+> en usage sur le site), pose l'empreinte SHA-256 directement dans le HTML,
+> teste chaque verrou via Playwright et liste les codes en clair dans le
+> récap. Lie chaque page depuis la page de niveau. En fin de chaîne : un
+> seul delta groupé + la liste des `.a-faire` par chapitre + les codes de
+> déblocage.
 
 ### 9b. Régime B — raffinage (une conversation par chapitre)
 
 > Voici le PPTX et le PDF du chapitre [Thème X, Chapitre Y — TITRE, niveau
-> NIVEAU]. Slug : `SLUG`. Code de déblocage : `XXXXXX`.
+> NIVEAU]. Slug : `SLUG`. Code de déblocage : `XXXXXX` (ou : « invente-le »,
+> selon le §1ter).
 > Applique `_modeles/CONSIGNES-production-chapitre.md` (**régime B**) :
 > extraction complète (images + QR, vérification visuelle des attributions),
 > maquettes PNG des composants nouveaux avant implémentation, page de cours sur

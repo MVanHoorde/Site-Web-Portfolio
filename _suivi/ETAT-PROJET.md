@@ -14,6 +14,15 @@ d'ébauche navigable, manques signalés par blocs 🚧. Loïc va déposer les PP
 tous les chapitres. Le raffinage et la **validation** viendront ensuite, en
 régime B, chapitre par chapitre.
 
+**Régime A élargi depuis le 15/07** (voir `_modeles/CONSIGNES-production-chapitre.md`) :
+exercices et corrections rédigés en entier même quand une image les accompagne,
+encarts formule reconstitués depuis la source, QR codes et hyperliens vidéo
+décodés et posés en vrais liens (Kahoot compris), courte recherche web possible
+si un point manque pour la compréhension. Restent en régime B : photos réelles,
+schémas/illustrations à redessiner en SVG, grands tableaux, et — toujours —
+le lien du DS (jamais posé automatiquement, quel que soit le contenu de la
+source, puisqu'il change chaque année).
+
 ## ⚠ Statut de validation — à lire
 
 - **Aucun cours n'est validé à ce jour.** Certaines fiches ont été *proposées*
@@ -34,7 +43,8 @@ régime B, chapitre par chapitre.
 ## ⚠ Alertes
 
 
-- ⚠ **C6 et C7 : pas de diapositive « Pour le DS »** dans les sources — listes de compétences à fournir.
+- ⚠ **C6 et C7 : pas de diapositive « Pour le DS »** dans les sources — listes de compétences à fournir (et pas de Kahoot non plus pour ces deux chapitres).
+- ⚠ **C5 : lien DS laissé en attente** — un lien existe dans la source (étiqueté « DS - 2024 », donc 2024/2025) mais n'a pas été activé, dans l'attente du choix de Loïc (DS de cette année ou de l'an dernier).
 
 ## 📊 Avancement (Seconde — Thème 1)
 
