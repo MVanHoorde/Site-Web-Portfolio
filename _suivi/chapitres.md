@@ -66,8 +66,46 @@
 
 ---
 
+## Seconde — Thème 2 : Mouvement et interactions
+
+> Dégrossissage régime A élargi du 15/07/2026 (3 chapitres, sources PPTX de correction).
+> Diapos vérifiées visuellement une à une (l'extraction texte ratait des exercices entiers).
+> Convention vecteurs en ébauche : flèche combinante Unicode au-dessus du symbole
+> (lisible mais à raffiner en régime B — voir ETAT-PROJET.md).
+
+### T2-C1 — Décrire le mouvement
+- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t2-c1-decrire-le-mouvement.html`
+- Fiche : aucune. Code de déblocage : **REP3RE** (choisi par Claude, à transmettre via le cahier de textes — modifiable à tout moment).
+- 3 sections (système & référentiel · trajectoire & vecteur déplacement · vitesse).
+- 5 exercices : Ex4 et Ex5 rédigés + **corrigés en entier** (calculs de vitesse re-vérifiés) ; Ex1/Ex2/Ex3 = énoncés rédigés, tracés graphiques laissés en 🚧. **Ex1 : la case de correction est vide dans la source** (signalé, à rédiger en régime B).
+- 4 propriétés/formules vectorielles reconstituées (vecteur déplacement, vitesse moyenne, vitesse instantanée, nature du mouvement).
+- Liens décodés : 8 vidéos (hyperliens de formes, aucun QR) + Kahoot activé.
+- Blocs 🚧 restants : ~13 — schémas (repère, types de trajectoire, vecteurs position/déplacement/vitesse, mouvement circulaire) et photos/chronophotographies à extraire ; fiche mémo P. Olivier (licence à vérifier). Lien DS volontairement laissé en attente.
+
+### T2-C2 — Modéliser une action sur un système
+- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t2-c2-modeliser-une-action.html`
+- Fiche : aucune. Code de déblocage : **F0RCES**.
+- 3 sections (actions & force · principe des actions réciproques · exemples de forces : gravitation, poids, réaction du support, tension). Chapitre le plus dense.
+- **11 exercices** rédigés en entier ; Ex1, Ex4, Ex6, Ex7, Ex8, Ex9, Ex11 corrigés (A.N. re-vérifiées) ; corrections « schéma » laissées en 🚧 mais réponses données en texte.
+- 2 formules-blocs reconstituées (gravitation universelle, poids P = m·g) + 2 relations d'action-réaction.
+- ⚠ Erreurs source corrigées / signalées : (1) **Ex6, unité corrigée** « kg » → **N** (valeur 1,98×10²⁰ exacte) ; (2) **Ex8, deux réserves** : inversion de g Paris/équateur vs Image 13 (physiquement g plus grand à Paris), et écart réel ≈ 0,8 % (et non « 8 % ») — transcrit fidèlement + aparté ; (3) **renumérotation** : le 2ᵉ « Exercice 10 » (plan incliné, diapo 13) devient **Ex11** (doublon de numéro dans la source).
+- Liens décodés : 8 vidéos (hyperliens de formes) + Kahoot activé. Portrait de Newton (1689) en 🚧 (encart histoire, licence à confirmer).
+- Blocs 🚧 restants : ~13 — schémas de forces (avion, pot de fleur, fusée, gravitation, poids, réaction, tension, plan incliné), diagrammes objets-interactions, 2 tableaux-images (astres, table de g), photos. Lien DS en attente.
+
+### T2-C3 — Le principe d'inertie
+- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t2-c3-principe-d-inertie.html`
+- Fiche : aucune. Code de déblocage : **IN3RTE**.
+- 4 sections (définitions : repos, inertie, résultante · principe d'inertie & réciproque · contraposée · chute libre).
+- 5 exercices rédigés + **corrigés** (relations vectorielles de résultante) ; corrections « schéma » en 🚧 mais raisonnement donné en texte.
+- ⚠ Coquille source corrigée : « le masse » → « la masse » (définition de l'inertie).
+- Liens décodés : 5 vidéos + 2 animations (ostralo, GeoGebra) + Kahoot activé. Mapping label↔lien du bloc chute libre (diapo 6) : meilleur effort (3 liens, labels approchés).
+- Blocs 🚧 restants : ~8 — schémas (addition de vecteurs, skieur, chat, bilans repos/mouvement, chronophotographies) et photos (chat, bobsleigh/camion, planètes). Lien DS en attente.
+
 ## Seconde — Thèmes suivants
-_(à créer au fur et à mesure du dégrossissage : T2, T3…)_
+_(à créer au fur et à mesure du dégrossissage : T3…)_
 
 ## Première / Terminale
 _(pages d'accueil existantes ; chapitres à venir)_

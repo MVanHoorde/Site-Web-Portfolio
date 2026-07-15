@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2nde — Modéliser une action sur un système · Physique-Chimie</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e;
+    --gris:#6b6f7a; --carte:#ffffff; --or:#f0cf6e; --or-fonce:#b28a1d;
+    --vert:#6fae7a; --vert-fonce:#4c8a58; --sepia:#8a6d3b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Spectral', Georgia, serif; color:var(--encre);
+    background-color:var(--papier);
+    background-image:linear-gradient(var(--grille) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+    background-size:32px 32px; line-height:1.7;
+  }
+  .spectre { height:6px; background:var(--encre); position:relative; }
+  .spectre i { position:absolute; top:0; bottom:0; width:4px; }
+  .spectre i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .spectre i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .spectre i:nth-child(3){ left:76%; background:var(--h-alpha); }
+  nav { background:var(--papier); border-bottom:1px solid var(--encre); }
+  .nav-inner { max-width:1200px; margin:0 auto; padding:.85rem 1.4rem;
+    display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+  .nav-logo { font-family:'Space Grotesk',sans-serif; font-weight:700; }
+  .nav-logo span { color:var(--h-alpha); }
+  .retour { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--encre); text-decoration:none; border-bottom:2px solid var(--h-beta); }
+  .retour:hover { color:var(--h-beta); }
+  #lecture { position:sticky; top:0; height:4px; z-index:50; }
+  #lecture .fait { height:100%; width:0%; background:var(--h-alpha); }
+
+  .page { max-width:1200px; margin:0 auto; padding:2rem 1.4rem 4rem;
+    display:grid; grid-template-columns:230px minmax(0,1fr); gap:2.2rem; align-items:start; }
+  aside.sommaire { position:sticky; top:1.4rem; font-family:'Space Grotesk',sans-serif; }
+  .sommaire .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--gris); margin-bottom:.7rem; }
+  .sommaire ol { list-style:none; }
+  .sommaire a { display:flex; gap:.6rem; align-items:baseline; padding:.42rem .65rem;
+    border-radius:8px; text-decoration:none; color:var(--encre); font-size:.92rem; line-height:1.3; }
+  .sommaire a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--h-beta); }
+  .sommaire a:hover { background:var(--carte); }
+  .sommaire a.actif { background:var(--carte); box-shadow:inset 3px 0 0 var(--h-alpha); font-weight:600; }
+  .sommaire .ds a .n { color:var(--h-gamma); }
+
+  article.lecture { background:var(--carte); border:1px solid var(--encre); border-radius:14px;
+    box-shadow:6px 6px 0 rgba(20,26,38,.08); padding:clamp(1.4rem,4vw,3rem); min-width:0; }
+  .fil-ariane { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); margin-bottom:.5rem; }
+  .fil-ariane .niveau { color:var(--h-alpha); }
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.7rem,4vw,2.4rem); line-height:1.12; margin-bottom:.4rem; }
+  .sous-titre { font-family:'IBM Plex Mono',monospace; font-size:.85rem; color:var(--gris); margin-bottom:2.4rem; }
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2.8rem 0 1rem;
+    display:flex; align-items:baseline; gap:.8rem; scroll-margin-top:2rem; }
+  h2 .num { font-family:'IBM Plex Mono',monospace; font-size:.9rem; color:var(--h-beta); }
+  p { margin-bottom:.9rem; max-width:75ch; text-align:justify; hyphens:auto; }
+  strong { font-weight:600; }
+  ul.cours { max-width:75ch; margin:0 0 .9rem 1.2rem; text-align:justify; }
+  ul.cours li { margin-bottom:.5rem; }
+  .nb { white-space:nowrap; }
+  sub, sup { font-size:.68em; }
+
+  /* ===== BIBLIOTHÈQUE DE COMPOSANTS (validée sur le chapitre T1-C2) ===== */
+
+  /* Encart générique : Définition (Hβ) / Propriété (Hγ) / Exemple (vert) */
+  .encart { border:1px solid var(--encre); border-radius:0 10px 10px 0;
+    background:var(--papier); padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.12em; text-transform:uppercase; margin-bottom:.35rem; }
+  .encart p:last-child { margin-bottom:0; }
+  .definition { border-left:4px solid var(--h-beta); }
+  .definition .etq { color:var(--h-beta); }
+  .terme { background:rgba(29,154,170,.16); border-radius:3px; padding:.02em .25em;
+    font-weight:600; color:#0f6b76; }
+  .propriete { border-left:4px solid var(--h-gamma); }
+  .propriete .etq { color:var(--h-gamma); }
+  .exemple { border-left:4px solid var(--vert); background:#fff; max-width:none; }
+  .exemple .etq { color:var(--vert-fonce); }
+  .exemple .duo-e { display:grid; grid-template-columns:220px 1fr; gap:1.2rem; align-items:center; }
+  .exemple img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+
+  /* Équation centrée hors paragraphe */
+  .eq-ligne { font-family:'Spectral',serif; font-style:italic; text-align:center;
+    font-size:1.15rem; margin:.7rem auto; max-width:none; white-space:nowrap; overflow-x:auto; }
+  .eq-ligne sub, .eq-ligne sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.58em; }
+
+  /* Pictogramme « à noter sur la fiche » (crayon, coin haut droit) */
+  .a-noter { position:absolute; top:-.7rem; right:.8rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; background:var(--carte); border:1.4px solid var(--encre); border-radius:50%;
+    width:1.7rem; height:1.7rem; display:flex; align-items:center; justify-content:center; }
+  figure { position:relative; }
+  figure .a-noter { top:-.4rem; right:-.2rem; }
+
+  /* Encart Formule (variante C validée) */
+  .formule-bloc { margin:1.4rem auto; max-width:60ch; border:1px solid var(--encre); border-radius:12px;
+    background:#fff; box-shadow:4px 4px 0 rgba(74,63,158,.18);
+    display:grid; grid-template-columns:auto minmax(0,1fr); position:relative; }
+  .formule-bloc .eq { background:var(--encre); color:var(--papier); font-family:'Spectral',serif;
+    font-style:italic; font-size:1.9rem; display:flex; align-items:center; padding:1rem 1.5rem;
+    white-space:nowrap; border-radius:11px 0 0 11px; }
+  .formule-bloc .eq sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.5em; }
+  .formule-bloc .grandeurs { padding:.9rem 1.3rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem; line-height:2.05; }
+  .formule-bloc .grandeurs b { color:var(--h-gamma); }
+  .formule-bloc .titre { font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--gris); display:block; margin-bottom:.15rem; }
+
+  /* Encart Notation */
+  .notation { border:1px dashed var(--encre); border-radius:10px; background:#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .notation .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .notation .chips { display:flex; gap:.9rem; flex-wrap:wrap; margin-bottom:.8rem; justify-content:center; }
+  .notation .chip { font-family:'IBM Plex Mono',monospace; font-size:.85rem; border:1px solid var(--encre);
+    border-radius:8px; padding:.35rem .8rem; background:var(--papier); }
+  .notation .chip b { color:var(--h-beta); }
+  .notation .aq { border-top:1px dashed var(--grille); padding-top:.7rem; margin-bottom:0; }
+  .notation .aq b { color:var(--h-beta); }
+
+  /* Encart Méthode (étapes en chiffres romains) */
+  .methode { border:1px solid var(--encre); border-left:4px solid var(--or); border-radius:0 10px 10px 0;
+    background:linear-gradient(0deg,rgba(240,207,110,.08),rgba(240,207,110,.08)),#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .methode .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--or-fonce); margin-bottom:.5rem; }
+  .methode ol { list-style:none; counter-reset:met; margin:0; }
+  .methode li { counter-increment:met; display:grid; grid-template-columns:2.2rem 1fr; gap:.5rem;
+    margin-bottom:.5rem; align-items:baseline; }
+  .methode li::before { content:counter(met,upper-roman) "."; font-family:'IBM Plex Mono',monospace;
+    font-weight:600; color:var(--or-fonce); text-align:right; }
+
+  /* Encart Histoire des sciences */
+  .histoire { border:1.5px solid var(--sepia); outline:1px solid var(--sepia); outline-offset:3px;
+    background:#f8f2e2; padding:1.2rem 1.4rem; margin:1.8rem 3px; }
+  .histoire .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--sepia); text-align:center; margin-bottom:.8rem; }
+  .histoire .etq::before, .histoire .etq::after { content:"❦"; margin:0 .6rem; }
+  .histoire .duo-h { display:grid; grid-template-columns:170px 1fr; gap:1.2rem; align-items:start; }
+  .histoire img { width:100%; border:1px solid var(--sepia); padding:3px; background:#fff; }
+  .histoire .credit { font-family:'IBM Plex Mono',monospace; font-size:.65rem; color:var(--sepia);
+    margin-top:.3rem; line-height:1.4; }
+  .histoire h4 { font-family:'Space Grotesk',sans-serif; font-size:1.02rem; margin-bottom:.4rem; }
+  .histoire p { font-size:.95rem; margin-bottom:.6rem; }
+  .histoire .citation { font-style:italic; text-align:center; font-size:1.05rem; margin:.7rem 0 .2rem; }
+  .histoire .source-cit { font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--sepia);
+    text-align:center; display:block; margin-bottom:.6rem; }
+
+  /* Encart Synthèse de TP (sobre) */
+  .synthese-tp { border:1px dashed var(--gris); border-radius:10px; background:#fff;
+    padding:1.1rem 1.4rem; margin:1.6rem 0; }
+  .synthese-tp .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .synthese-tp .contexte { font-size:.92rem; color:var(--gris); font-style:italic; margin-bottom:.8rem; }
+  .synthese-tp .sous-etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--gris); margin:.8rem 0 .2rem; display:flex; align-items:center; gap:.5rem; }
+  .synthese-tp .sous-etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .synthese-tp p:last-child { margin-bottom:0; }
+
+  /* ===== À FAIRE — emplacement réservé (régime « ébauche ») ===== */
+  /* Marque un manque VISIBLE sur le site : image à extraire, schéma à
+     produire, vidéo à décoder, etc. À retirer lors du passage en finition. */
+  .a-faire { position:relative; margin:1.2rem 0; padding:.9rem 1.1rem .9rem 2.6rem;
+    border:1px dashed var(--gris); border-radius:8px; color:var(--gris);
+    background:repeating-linear-gradient(135deg, #f4f2ec 0 12px, #eeece4 12px 24px);
+    font-size:.92rem; }
+  .a-faire::before { content:"🚧"; position:absolute; left:.8rem; top:.85rem; font-size:1.05rem;
+    filter:grayscale(.15); }
+  .a-faire .type { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.62rem;
+    letter-spacing:.14em; text-transform:uppercase; color:#fff; background:var(--gris);
+    padding:.12rem .5rem; border-radius:4px; margin-bottom:.35rem; }
+  .a-faire .quoi { display:block; color:var(--encre); }
+  .a-faire .detail { display:block; margin-top:.25rem; font-size:.82rem; font-style:italic; }
+  @media print { .a-faire { background:#f4f2ec; } }
+
+  /* Vidéos */
+  .videos { display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0 1.6rem; }
+  .video-chip { font-family:'IBM Plex Mono',monospace; font-size:.78rem;
+    display:inline-flex; align-items:center; gap:.45em; border:1px solid var(--encre);
+    border-radius:999px; padding:.34rem .85rem; text-decoration:none; color:var(--encre);
+    background:var(--papier); transition:background .15s,color .15s; }
+  .video-chip:hover { background:var(--h-beta); color:#fff; }
+
+  /* Figures */
+  figure { margin:1.6rem 0; }
+  figure svg, figure img { max-width:100%; height:auto; display:block; }
+  figure img.photo { border:1px solid var(--encre); border-radius:6px; }
+  figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
+    margin-top:.55rem; max-width:66ch; line-height:1.55; }
+  figcaption .eqc { display:block; font-family:'Spectral',serif; font-style:italic; font-size:.95rem;
+    color:var(--encre); margin:.35rem 0; text-align:center; }
+  figcaption .eqc sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.6em; }
+  .fig-row { display:flex; gap:1.6rem; flex-wrap:wrap; align-items:flex-start; }
+  .fig-row figure { flex:1 1 240px; max-width:400px; }
+  .fig-row figure img { width:100%; height:220px; object-fit:cover; }
+  .fig-etroite { max-width:300px; }
+  .pill-ex { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.66rem;
+    letter-spacing:.08em; text-transform:uppercase; color:#fff; border-radius:999px;
+    padding:.1rem .6rem; margin-bottom:.35rem; }
+  .pill-ex.phys { background:var(--h-beta); }
+  .pill-ex.chim { background:var(--h-alpha); }
+  .duo { display:grid; grid-template-columns:minmax(220px,300px) minmax(0,1fr); gap:2rem; align-items:start; }
+  .defile { overflow-x:auto; }
+
+  table.tab { border-collapse:collapse; font-size:.95rem; }
+  table.tab caption { caption-side:top; text-align:left; font-family:'Space Grotesk',sans-serif;
+    font-size:.85rem; font-weight:600; padding-bottom:.4rem; }
+  table.tab th, table.tab td { border:1px solid var(--encre); padding:.42rem .8rem; text-align:center; }
+  table.tab thead th, table.tab .entete { font-family:'Space Grotesk',sans-serif; font-size:.82rem; background:var(--papier); }
+
+  /* ===== Exercices (structure normalisée) ===== */
+  .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
+    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0;
+    background:#fdfdfb; }
+  .exercice .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    text-transform:uppercase; letter-spacing:.1em; color:var(--h-alpha); margin-bottom:.5rem; }
+  .exercice .duo-x { display:grid; grid-template-columns:1fr 200px; gap:1.1rem; align-items:start; }
+  .exercice .duo-x img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+  .exercice .question { font-style:italic; }
+  .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris);
+    margin-top:.5rem; border-top:1px dotted var(--grille); padding-top:.45rem; }
+  details.correction { margin-top:.8rem; border-top:1px dashed var(--gris); padding-top:.6rem; }
+  details.correction summary { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--h-gamma); cursor:pointer; }
+  details.correction summary:hover { text-decoration:underline; }
+  details.correction[open] summary { margin-bottom:.6rem; }
+  .etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--h-gamma); margin:.7rem 0 .2rem; display:flex;
+    align-items:center; gap:.5rem; }
+  .etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .resultat { border-bottom:2.5px solid var(--h-alpha); font-weight:600; padding-bottom:1px; white-space:nowrap; }
+  .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--gris);
+    text-align:center; margin-bottom:.1rem; }
+  .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem; margin:1rem 0 1rem 1rem; }
+  .eq-exo sub, .eq-exo sup { font-size:.6em; font-style:normal; font-family:'IBM Plex Mono',monospace; }
+  .coef-ok { color:var(--h-alpha); font-weight:700; font-style:normal; }
+  .frac { display:inline-block; vertical-align:middle; text-align:center; margin:0 .25em; }
+  .frac .haut { display:block; border-bottom:1.5px solid var(--encre); padding:0 .3em .1em; }
+  .frac .bas { display:block; padding:.1em .3em 0; }
+  .unites { font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); }
+  .exercice p, .encart.exemple p, .histoire p, .synthese-tp p { max-width:none; }
+  .aparte { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris);
+    border-left:2px solid var(--grille); padding-left:.7rem; margin:.6rem 0; }
+
+  /* Checklist */
+  .checklist { border:1px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 12px 12px 0; padding:1.2rem 1.4rem; margin:2.6rem 0 0; }
+  .checklist h2 { margin-top:0; }
+  .checklist ol { list-style:none; }
+  .checklist li { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem;
+    align-items:baseline; padding:.55rem 0; border-bottom:1px dashed var(--grille); }
+  .checklist li:last-child { border-bottom:none; }
+  .checklist input[type="checkbox"] { transform:translateY(2px) scale(1.15); accent-color:var(--h-gamma); cursor:pointer; }
+  .checklist label { cursor:pointer; }
+  .checklist .refs { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); white-space:nowrap; }
+  .checklist .refs a { color:var(--h-beta); text-decoration:none; }
+  .checklist .refs a:hover { text-decoration:underline; }
+
+  #haut { position:fixed; right:1.2rem; bottom:1.2rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.8rem; background:var(--carte); border:1px solid var(--encre); border-radius:999px;
+    padding:.5rem .85rem; cursor:pointer; box-shadow:3px 3px 0 rgba(20,26,38,.12);
+    opacity:0; pointer-events:none; transition:opacity .2s; }
+  #haut.visible { opacity:1; pointer-events:auto; }
+  #haut:hover { background:var(--h-beta); color:#fff; }
+
+  details.partie { border-top:3px solid var(--encre); margin-top:2.4rem; }
+  details.partie > summary { list-style:none; cursor:pointer; }
+  details.partie > summary::-webkit-details-marker { display:none; }
+  details.partie > summary h2 { margin:1.1rem 0 1rem; }
+  details.partie > summary h2::after { content:"▾"; margin-left:auto; font-family:'IBM Plex Mono',monospace;
+    font-size:1rem; color:var(--gris); transition:transform .15s; }
+  details.partie:not([open]) > summary h2::after { content:"▸"; }
+  details.partie > summary:hover h2::after { color:var(--h-beta); }
+  .signature { text-align:right; font-family:'Space Grotesk',sans-serif; font-weight:600;
+    margin:2.4rem 0 0; }
+  .signature span { display:block; font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    color:var(--gris); font-weight:400; }
+  details.toc-mobile { display:none; }
+  footer { border-top:1px solid var(--encre); margin-top:2rem; }
+  .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
+    font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); }
+
+  /* ===== Verrou de fin de chapitre — v2 : porte centrée plein écran ===== */
+  body.verrouille aside.sommaire,
+  body.verrouille details.toc-mobile,
+  body.verrouille article.lecture > *:not(#porte) { display:none; }
+  body.verrouille .page { grid-template-columns:minmax(0,1fr); max-width:720px; }
+  body.verrouille article.lecture { min-height:min(70vh, 620px); display:flex;
+    align-items:center; justify-content:center; }
+  #porte { display:none; }
+  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; width:100%; }
+  #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }
+  #porte h1 { margin-bottom:.6rem; }
+  #porte .explication { max-width:52ch; margin:0 auto 1.6rem; color:var(--gris); }
+  #porte form { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+  #porte input {
+    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.4em;
+    text-transform:uppercase; text-align:center; width:16ch;
+    padding:.55rem .2rem .55rem .6rem; border:1.5px solid var(--encre);
+    border-radius:10px; background:var(--papier); color:var(--encre);
+  }
+  #porte input:focus { outline:2px solid var(--h-beta); }
+  #porte button {
+    font-family:'IBM Plex Mono',monospace; font-size:.9rem; cursor:pointer;
+    border:1.5px solid var(--encre); border-radius:10px; padding:.55rem 1.1rem;
+    background:var(--encre); color:var(--papier);
+  }
+  #porte button:hover { background:var(--h-beta); border-color:var(--h-beta); }
+  #porte .erreur { color:var(--h-alpha); font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; min-height:1.4em; margin-top:.8rem; }
+
+  @media (max-width:960px) {
+    .page { grid-template-columns:1fr; gap:1.2rem; padding:1.2rem .9rem 3rem; }
+    aside.sommaire { display:none; }
+    details.toc-mobile { display:block; font-family:'Space Grotesk',sans-serif;
+      background:var(--carte); border:1px solid var(--encre); border-radius:12px;
+      padding:.7rem 1rem; margin-bottom:1.2rem; }
+    details.toc-mobile summary { font-family:'IBM Plex Mono',monospace; font-size:.8rem;
+      letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    details.toc-mobile ol { list-style:none; margin-top:.6rem; }
+    details.toc-mobile a { display:block; padding:.4rem .2rem; color:var(--encre);
+      text-decoration:none; border-bottom:1px dashed var(--grille); }
+    details.toc-mobile a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+      color:var(--h-beta); margin-right:.5rem; }
+    .duo, .exemple .duo-e, .histoire .duo-h, .exercice .duo-x { grid-template-columns:1fr; }
+    .formule-bloc { grid-template-columns:1fr; }
+    .formule-bloc .eq { justify-content:center; }
+    .checklist li { grid-template-columns:auto 1fr; }
+    .checklist .refs { grid-column:2; white-space:normal; }
+  }
+</style>
+</head>
+<body class="verrouille">
+
+<div class="spectre" aria-hidden="true"><i></i><i></i><i></i></div>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
+    <a class="retour" href="2nde-physique-chimie.html">← Retour aux cours de 2nde</a>
+  </div>
+</nav>
+<div id="lecture"><div class="fait"></div></div>
+
+<div class="page">
+
+<aside class="sommaire" aria-label="Sommaire du chapitre">
+  <div class="etiquette">Chapitre 2 — Sommaire</div>
+  <ol id="toc">
+    <li><a href="#ancre-1"><span class="n">01</span> Actions mécaniques et notion de force</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span> Principe des actions réciproques</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span> Exemples de forces</a></li>
+    <li class="ds"><a href="#pour-le-ds"><span class="n">✓</span> Pour le DS, je sais</a></li>
+  </ol>
+</aside>
+
+<article class="lecture">
+
+<div id="porte">
+  <div class="cadenas" aria-hidden="true">🔒</div>
+  <h1>Modéliser une action sur un système</h1>
+  <p class="explication">Ce chapitre sera débloqué <strong>en fin de séquence</strong>,
+  au rythme de la classe. Le code de déblocage est transmis via le cahier de textes —
+  il figure aussi en bas de ta fiche de cours.</p>
+  <form id="forme-code" autocomplete="off">
+    <input id="champ-code" type="text" maxlength="6" inputmode="text"
+           spellcheck="false" aria-label="Code de déblocage (6 caractères)"
+           placeholder="••••••">
+    <button type="submit">Déverrouiller</button>
+  </form>
+  <p class="erreur" id="erreur-code" role="alert"></p>
+</div>
+
+<details class="toc-mobile">
+  <summary>Sommaire du chapitre</summary>
+  <ol>
+    <li><a href="#ancre-1"><span class="n">01</span> Actions mécaniques et notion de force</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span> Principe des actions réciproques</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span> Exemples de forces</a></li>
+    <li class="ds"><a href="#pour-le-ds"><span class="n">✓</span> Pour le DS, je sais</a></li>
+  </ol>
+</details>
+
+<p class="fil-ariane">Physique-Chimie · <span class="niveau">2nde</span> · Thème 2 — Mouvements et interactions</p>
+<h1>Modéliser une action sur un système</h1>
+<p class="sous-titre">Thème 2 · Chapitre 2 — cours &amp; exercices corrigés</p>
+
+
+<!-- ================= SECTION 01 ================= -->
+<details class="partie" open>
+<summary><h2 id="ancre-1"><span class="num">01</span> Actions mécaniques et notion de force</h2></summary>
+<div class="partie-corps">
+
+<h3 style="font-family:'Space Grotesk',sans-serif;color:var(--h-beta);margin:1.2rem 0 .4rem;">A — Actions mécaniques</h3>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Une <span class="terme">action mécanique</span> est le nom général donné en physique à toute action exercée par un objet sur un autre.</p>
+</div>
+
+<p>Une action mécanique peut avoir plusieurs effets sur un objet :</p>
+<ul class="cours">
+  <li>elle peut le mettre en mouvement ;</li>
+  <li>elle peut modifier son mouvement (trajectoire et/ou vitesse) ;</li>
+  <li>elle peut le déformer (exemple d'une balle de tennis frappée par la raquette).</li>
+</ul>
+<p>Il existe de nombreuses façons d'agir sur un objet, et cette action peut se faire <strong>à distance</strong> ou <strong>par contact</strong>.</p>
+
+<div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Balle de tennis déformant les cordes de la raquette — action de contact (Image&nbsp;1)</span>
+  <span class="detail">source : diapo 2 ; photo à extraire en régime B</span>
+</div>
+<div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Aimant attirant/repoussant un objet métallique — action à distance (Image&nbsp;2)</span>
+  <span class="detail">source : diapo 2 ; photo à extraire en régime B</span>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 1 — Actions par contact et à distance</div>
+  <p class="question">Donner d'autres exemples d'actions mécaniques par contact et à distance.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p>Actions mécaniques <strong>par contact</strong> : frottements, tension, traction, etc.</p>
+    <p>Actions mécaniques <strong>à distance</strong> : attraction gravitationnelle, électricité, magnétisme, etc.</p>
+  </details>
+</div>
+
+<h3 style="font-family:'Space Grotesk',sans-serif;color:var(--h-beta);margin:1.6rem 0 .4rem;">B — Interaction</h3>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Deux systèmes sont en <span class="terme">interaction</span> s'ils exercent une action mécanique l'un sur l'autre et réciproquement ; le mouvement de chacun dépend de la présence de l'autre.</p>
+</div>
+
+<div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Jupiter et son satellite Io, en interaction gravitationnelle à distance (Image&nbsp;3)</span>
+  <span class="detail">source : diapo 3 ; photo à extraire en régime B</span>
+</div>
+
+<div class="notation">
+  <div class="etq">✎ Notation — diagramme objets-interactions</div>
+  <p>Chaque système en interaction est représenté, et une double flèche représente l'interaction : <strong>trait plein</strong> si elle est de contact, <strong>pointillé</strong> si elle est à distance. Il n'y a pas de limite au nombre d'objets et d'interactions représentés.</p>
+</div>
+
+<div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Diagramme objets-interactions Io ⇄ Jupiter (à distance) et exemple à plusieurs objets (Images&nbsp;4 et 5)</span>
+  <span class="detail">source : diapo 3 ; SVG à produire en régime B</span>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 2 — Diagramme objets-interactions</div>
+  <p class="question">Créer le diagramme objets-interactions décrivant la situation montrée sur l'image (un pied frappant un ballon).</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p>Trois systèmes : le ballon, le pied et la Terre. Le ballon et le pied sont en interaction <strong>de contact</strong> (trait plein) ; le ballon et la Terre, ainsi que le pied et la Terre, sont en interaction <strong>à distance</strong> (pointillés).</p>
+    <div class="a-faire">
+      <span class="type">schéma</span>
+      <span class="quoi">Tracé du diagramme objets-interactions ballon / pied / Terre</span>
+      <span class="detail">source : diapo 3 ; SVG à produire en régime B</span>
+    </div>
+  </details>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=V0Gg9Eyi7pQ" target="_blank" rel="noopener">▶ Rappels du collège ↗</a>
+</div>
+
+<h3 style="font-family:'Space Grotesk',sans-serif;color:var(--h-beta);margin:1.6rem 0 .4rem;">C — Représenter l'action mécanique par une force</h3>
+
+<p>Pour étudier l'effet d'une action mécanique sur un système, il faut pouvoir la modéliser : on utilise pour cela le concept de <strong>force</strong>. Une force est caractérisée par les éléments suivants :</p>
+<ul class="cours">
+  <li>son <strong>point d'application</strong> : l'endroit de l'objet où elle s'exerce. Si l'action est par contact, ce sera le point de contact ; si elle est à distance, on utilise généralement le centre de gravité de l'objet ;</li>
+  <li>sa <strong>direction</strong> (verticale, horizontale, …) : la droite selon laquelle elle s'exerce ;</li>
+  <li>son <strong>sens</strong>, car chaque direction possède 2 sens (haut ou bas, droite ou gauche, …).</li>
+</ul>
+
+<div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Exemples d'actions mécaniques modélisées par des forces (Image&nbsp;6)</span>
+  <span class="detail">source : diapo 4 ; à refaire en SVG en régime B</span>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 3 — Forces sur un avion en vol</div>
+  <p class="question">Modéliser les actions mécaniques qui s'appliquent sur un avion en vol.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p>Quatre forces s'appliquent sur l'avion : le <strong>poids</strong> (vertical, vers le bas), la <strong>portance</strong> (vers le haut), la <strong>poussée des réacteurs</strong> (vers l'avant) et la <strong>traînée</strong> — frottements de l'air — (vers l'arrière).</p>
+    <div class="a-faire">
+      <span class="type">schéma</span>
+      <span class="quoi">Avion avec ses quatre forces représentées par des flèches</span>
+      <span class="detail">source : diapo 4 ; SVG à produire en régime B</span>
+    </div>
+  </details>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=Yd_9E7CSEvw&t=3s" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+<p>La <strong>norme d'une force</strong> est exprimée en <strong>newton</strong> (<span class="nb">N</span>), en hommage à Isaac Newton, qui a établi les lois des mouvements en 1687. La force est notée par la lettre F surmontée d'une flèche, et suivie du couple « objet qui agit / objet sur lequel on agit ».</p>
+
+<div class="notation">
+  <div class="etq">✎ Notation — nom d'une force</div>
+  <div class="chips">
+    <span class="chip">F<sub>Terre / Pomme</sub>⃗</span>
+  </div>
+  <p class="aq">Se lit : force exercée par la Terre sur la Pomme.</p>
+</div>
+
+<p>On représente cette force par une flèche. Il est possible de représenter la longueur de cette flèche proportionnellement à la grandeur de la force, afin de faciliter les comparaisons de force par la suite.</p>
+
+<div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Pomme en chute libre : force F<sub>Terre/Pomme</sub>⃗ de norme 5 N, verticale, vers le bas, appliquée au centre de gravité (Image&nbsp;7)</span>
+  <span class="detail">source : diapo 5 ; SVG à produire en régime B</span>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 4 — Deux forces sur un pot de fleur</div>
+  <p>Le pot de fleur subit deux forces ; l'une, R⃗, est déjà représentée. L'autre, P⃗, vaut <span class="nb">10 N</span>, est verticale, orientée vers le bas ; son point d'application est le centre de gravité du système.</p>
+  <p class="question">1. Représenter la seconde force. 2. Retrouver la norme de la force déjà représentée. 3. En déduire une relation liant les deux forces.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p>La norme de R⃗ vaut elle aussi <span class="nb">10 N</span> ; son sens est opposé à celui de P⃗. On en déduit la relation :</p>
+    <p class="eq-ligne">P⃗ = −R⃗</p>
+    <div class="a-faire">
+      <span class="type">schéma</span>
+      <span class="quoi">Pot de fleur avec les deux forces P⃗ et R⃗ opposées</span>
+      <span class="detail">source : diapo 5 ; SVG à produire en régime B</span>
+    </div>
+  </details>
+</div>
+
+</div>
+</details>
+
+<!-- ================= SECTION 02 ================= -->
+<details class="partie" open>
+<summary><h2 id="ancre-2"><span class="num">02</span> Principe des actions réciproques</h2></summary>
+<div class="partie-corps">
+
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété — Troisième loi de Newton</div>
+  <p>Selon la <strong>troisième loi de Newton</strong> (ou principe des actions réciproques, ou encore principe d'action / réaction), la force exercée par un système B sur un système A est l'opposée de la force exercée par le système A sur le système B :</p>
+  <p class="eq-ligne">F<sub>A/B</sub>⃗ = −F<sub>B/A</sub>⃗</p>
+  <p>Ces deux forces ont donc la <strong>même direction</strong>, des <strong>sens opposés</strong> et la <strong>même norme</strong>.</p>
+</div>
+
+<div class="encart exemple">
+  <div class="etq">🕯 Exemple — ballon posé sur le sol</div>
+  <p>Pour un objet posé sur un support (ici un ballon posé sur le sol), les deux forces en présence sont généralement le poids de l'objet et la réaction du support (qui fait que l'objet ne s'enfonce pas et ne traverse pas le support). En vertu de la troisième loi de Newton, on peut écrire :</p>
+  <p class="eq-ligne">F<sub>sol / ballon</sub>⃗ = −F<sub>Terre / ballon</sub>⃗</p>
+</div>
+
+<div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Ballon posé sur le sol + diagramme objets-interactions Sol / ballon / Terre (Image&nbsp;8)</span>
+  <span class="detail">source : diapo 6 ; SVG à produire en régime B</span>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 5 — Moteur-fusée</div>
+  <p>La combustion du carburant d'un moteur-fusée provoque son éjection (action), ce qui induit en retour une poussée permettant de faire décoller la fusée (réaction).</p>
+  <p class="question">Représenter ces forces (il n'y a pas d'échelle à respecter).</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p>Les deux forces F<sub>fusée / air</sub>⃗ (gaz éjectés vers le bas) et F<sub>air / fusée</sub>⃗ (poussée vers le haut) sont opposées :</p>
+    <p class="eq-ligne">F<sub>air / fusée</sub>⃗ = −F<sub>fusée / air</sub>⃗</p>
+    <div class="a-faire">
+      <span class="type">schéma</span>
+      <span class="quoi">Fusée au décollage avec les deux forces opposées</span>
+      <span class="detail">source : diapo 6 ; SVG à produire en régime B</span>
+    </div>
+  </details>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=mqK1v7kldq4" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+</div>
+</details>
+
+<!-- ================= SECTION 03 ================= -->
+<details class="partie" open>
+<summary><h2 id="ancre-3"><span class="num">03</span> Exemples de forces</h2></summary>
+<div class="partie-corps">
+
+<h3 style="font-family:'Space Grotesk',sans-serif;color:var(--h-beta);margin:1.2rem 0 .4rem;">A — La force d'interaction gravitationnelle</h3>
+
+<p>Isaac Newton définit la gravitation de la façon suivante : « Deux objets quelconques exercent entre eux des forces d'interaction, forces attractives, à distance, appelées forces gravitationnelles. » Deux objets sont donc soumis à une interaction attractive réciproque due à leur masse : c'est l'<strong>interaction gravitationnelle</strong>.</p>
+
+<div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Portrait d'Isaac Newton âgé de 46 ans par Godfrey Kneller (1689) — encart histoire des sciences (Image&nbsp;9)</span>
+  <span class="detail">source : diapo 7 ; peinture de 1689 (domaine public probable, licence à confirmer) — à intégrer en encart .histoire en régime B</span>
+</div>
+
+<p>L'interaction gravitationnelle entre deux corps ponctuels A et B est modélisée par des forces d'attraction gravitationnelle F<sub>A/B</sub>⃗ et F<sub>B/A</sub>⃗ :</p>
+<ul class="cours">
+  <li><strong>appliquées</strong> au centre du corps attiré : B pour F<sub>A/B</sub>⃗ et A pour F<sub>B/A</sub>⃗ ;</li>
+  <li><strong>dirigées</strong> suivant la droite (AB) ;</li>
+  <li><strong>orientées</strong> vers le centre du corps attracteur : A pour F<sub>A/B</sub>⃗ et B pour F<sub>B/A</sub>⃗ ;</li>
+  <li>de <strong>normes</strong> F<sub>A/B</sub> et F<sub>B/A</sub> données par la loi de la gravitation universelle.</li>
+</ul>
+<p>Ces deux forces ont la même droite support (direction), des sens opposés et la même intensité (norme).</p>
+
+<div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Deux corps ponctuels A et B, masses m<sub>A</sub> et m<sub>B</sub>, distance d<sub>AB</sub>, avec F<sub>A/B</sub>⃗ et F<sub>B/A</sub>⃗ (Image&nbsp;10)</span>
+  <span class="detail">source : diapo 7 ; SVG à produire en régime B</span>
+</div>
+
+<p>Pour deux objets sphériques homogènes, on peut calculer la valeur (norme) de la force gravitationnelle :</p>
+
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">F<sub>A/B</sub> = F<sub>B/A</sub> = G × <span class="frac"><span class="haut">m<sub>A</sub> × m<sub>B</sub></span><span class="bas">d<sub>AB</sub><sup>2</sup></span></span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>F<sub>A/B</sub></b>, <b>F<sub>B/A</sub></b> normes des forces · N<br>
+    <b>G</b> constante de gravitation universelle · <span class="nb">6,67×10⁻¹¹ N·m²·kg⁻²</span><br>
+    <b>m<sub>A</sub></b>, <b>m<sub>B</sub></b> masses des corps · kg<br>
+    <b>d<sub>AB</sub></b> distance entre les centres de gravité · m
+  </div>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 6 — Force gravitationnelle Terre–Lune</div>
+  <p class="question">Calculer la norme de la force d'interaction gravitationnelle entre la Terre et la Lune, puis la représenter sur le schéma.</p>
+  <p class="donnees">Données : <span class="nb">m<sub>Terre</sub> = 5,98×10²⁴ kg</span> · <span class="nb">m<sub>Lune</sub> = 7,34×10²² kg</span> · <span class="nb">d<sub>Terre–Lune</sub> = 384 400 km</span></p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Formule du cours</div>
+    <p class="formule-cours-rappel">F<sub>A/B</sub> = F<sub>B/A</sub> = G × (m<sub>A</sub> × m<sub>B</sub>) / d<sub>AB</sub>²</p>
+    <p class="eq-ligne">F<sub>Terre/Lune</sub> = F<sub>Lune/Terre</sub> = G × (m<sub>Terre</sub> × m<sub>Lune</sub>) / d<sub>Terre–Lune</sub>²</p>
+    <div class="etape">Extraction des informations</div>
+    <p>d<sub>Terre–Lune</sub> = <span class="nb">3,844×10⁵ km</span> = <span class="nb">3,844×10⁸ m</span>.</p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">F = 6,67×10⁻¹¹ × (5,98×10²⁴ × 7,34×10²²) / (3,844×10⁸)²</p>
+    <p>F<sub>Terre/Lune</sub> = F<sub>Lune/Terre</sub> ≈ <span class="resultat">1,98×10²⁰ N</span></p>
+    <p class="aparte">⚠ Source (diapo 8) : le résultat était noté « ≈ 1,98×10²⁰ <b>kg</b> ». Une force s'exprime en <b>newton (N)</b> : unité corrigée (la valeur numérique, elle, est exacte).</p>
+  </details>
+</div>
+
+<div class="a-faire">
+  <span class="type">tableau</span>
+  <span class="quoi">Table de données astronomiques (rayon et masse des astres du Système solaire)</span>
+  <span class="detail">source : diapo 8 ; grand tableau-image à réintégrer en régime B (rejoint les tableaux différés du projet)</span>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=8xxktK00Qn0" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+<h3 style="font-family:'Space Grotesk',sans-serif;color:var(--h-beta);margin:1.6rem 0 .4rem;">B — Le poids</h3>
+
+<p>Que se passe-t-il si l'on applique la formule de la force d'attraction gravitationnelle au voisinage de la Terre ? Prenons le cas d'un objet de masse m à la surface de la Terre, de masse m<sub>T</sub> : la distance qui sépare les deux objets est alors le rayon de la Terre R<sub>T</sub>. La force s'écrit :</p>
+<p class="eq-ligne">F = G × (m × m<sub>T</sub>) / R<sub>T</sub><sup>2</sup></p>
+<p>On réorganise la formule pour isoler ce qui est constant à la surface de la Terre :</p>
+<p class="eq-ligne">F = (G × m<sub>T</sub> / R<sub>T</sub><sup>2</sup>) × m = g × m &nbsp;⟹&nbsp; P = m × g</p>
+<p>On appelle cette constante g l'<strong>accélération de pesanteur</strong>, et la force F devient la force P, appelée <strong>poids</strong>.</p>
+
+<div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Objet de masse m à la surface de la Terre, attiré vers le centre (Image&nbsp;11)</span>
+  <span class="detail">source : diapo 9 ; SVG à produire en régime B</span>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 7 — Valeur moyenne de g</div>
+  <p class="question">Faire l'application numérique de la partie constante de l'expression précédente pour retrouver la valeur moyenne de g.</p>
+  <p class="donnees">Données : <span class="nb">R<sub>T</sub> = 6 380 km</span> · <span class="nb">m<sub>T</sub> = 5,98×10²⁴ kg</span> · <span class="nb">G = 6,67×10⁻¹¹ N·m²·kg⁻²</span></p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Extraction des informations</div>
+    <p>R<sub>T</sub> = <span class="nb">6 380 km</span> = <span class="nb">6,380×10⁶ m</span>.</p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">g = G × m<sub>T</sub> / R<sub>T</sub>² = (6,67×10⁻¹¹ × 5,98×10²⁴) / (6,380×10⁶)²</p>
+    <p>g ≈ <span class="resultat">9,80 N·kg⁻¹</span></p>
+  </details>
+</div>
+
+<p>À la surface d'un astre, comme la Terre, un corps est soumis à une force de pesanteur. Son poids P⃗ est représenté par un vecteur :</p>
+<ul class="cours">
+  <li>appliqué au <strong>centre de gravité G</strong> du corps ;</li>
+  <li>dirigé à la <strong>verticale</strong>, suivant la droite reliant G et le centre de l'astre ;</li>
+  <li>orienté <strong>vers le bas</strong>, soit vers le centre de l'astre ;</li>
+  <li>de norme P ayant pour expression :</li>
+</ul>
+
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">P = m × g</div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>P</b> norme du poids · N<br>
+    <b>m</b> masse du corps · kg<br>
+    <b>g</b> accélération de pesanteur · <span class="nb">N·kg⁻¹ (ou m·s⁻²)</span>
+  </div>
+</div>
+
+<div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Poids de la pomme représenté par un vecteur (Image&nbsp;12)</span>
+  <span class="detail">source : diapo 10 ; SVG à produire en régime B</span>
+</div>
+
+<p>L'accélération de pesanteur g n'a pas la même valeur selon l'astre sur lequel le corps se trouve. La Terre n'étant pas parfaitement sphérique, g peut aussi varier selon la région : <span class="nb">g = 9,81 N·kg⁻¹</span> à Paris et <span class="nb">g = 9,73 N·kg⁻¹</span> au niveau de l'équateur.</p>
+
+<div class="a-faire">
+  <span class="type">tableau</span>
+  <span class="quoi">Table de l'accélération de pesanteur g pour différents astres (Image&nbsp;13)</span>
+  <span class="detail">source : diapo 10 · aquaportail.com (crédit/licence à vérifier) — à refaire ou réintégrer en régime B</span>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 8 — Poids à Paris et à l'équateur</div>
+  <p class="question">Calculer ton poids à Paris et au niveau de l'équateur. Quantifier l'écart entre les valeurs trouvées.</p>
+  <p class="donnees">Données : <span class="nb">m = 65,0 kg</span> · <span class="nb">g<sub>Paris</sub> = 9,81 N·kg⁻¹</span> · <span class="nb">g<sub>équateur</sub> = 9,73 N·kg⁻¹</span></p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Extraction des informations</div>
+    <p>La masse m = <span class="nb">65,0 kg</span> ne varie pas d'une position à l'autre.</p>
+    <div class="etape">Application numérique</div>
+    <p>À Paris : P<sub>Paris</sub> = m × g<sub>Paris</sub> = <span class="nb">65,0 × 9,73</span> ≈ <span class="resultat">632 N</span>.</p>
+    <p>À l'équateur : P<sub>équateur</sub> = m × g<sub>équateur</sub> = <span class="nb">65,0 × 9,81</span> ≈ <span class="resultat">638 N</span>.</p>
+    <div class="etape">Conclusion</div>
+    <p>Le poids dépend de la position sur Terre.</p>
+    <p class="aparte">⚠ Deux points à trancher (source diapo 10) : (1) la correction utilise g<sub>Paris</sub>=9,73 et g<sub>équateur</sub>=9,81, ce qui <b>inverse</b> les valeurs de l'énoncé/Image 13 (physiquement, g est plus grand à Paris ≈ 9,81 qu'à l'équateur ≈ 9,78) ; (2) l'écart réel entre 632 et 638 N est ≈ <b>0,8 %</b>, et non « plus de 8 % » comme indiqué dans la source. À revoir en régime B.</p>
+  </details>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 9 — Masse sur la Lune</div>
+  <p>Un objet subit une force attractive (poids lunaire) de <span class="nb">1500 N</span> à la surface de la Lune.</p>
+  <p class="question">Calculer sa masse. Serait-elle la même sur Terre ?</p>
+  <p class="donnees">Donnée : <span class="nb">g<sub>Lune</sub> = 1,625 N·kg⁻¹</span></p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Manipulation d'expression algébrique</div>
+    <p class="formule-cours-rappel">P<sub>lunaire</sub> = m × g<sub>lunaire</sub></p>
+    <p class="eq-ligne">m<sub>lunaire</sub> = P<sub>lunaire</sub> / g<sub>lunaire</sub></p>
+    <div class="etape">Application numérique</div>
+    <p class="eq-ligne">m = 1500 / 1,625 ≈ <span class="resultat">923,1 kg</span></p>
+    <div class="etape">Conclusion</div>
+    <p>La masse ne dépend pas du lieu : elle est identique sur Terre, m<sub>Terre</sub> = m<sub>lunaire</sub> ≈ <span class="nb">923,1 kg</span> (seul le poids change).</p>
+  </details>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=DcpIyXrpBZo" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=1WYer2tnvXA" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+
+<h3 style="font-family:'Space Grotesk',sans-serif;color:var(--h-beta);margin:1.6rem 0 .4rem;">C — Réaction du support</h3>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Lorsqu'un corps est en contact avec une surface, il exerce des actions de contact sur cette dernière ; suivant le principe des actions réciproques, elle exerce à son tour une action mécanique sur le solide, appelée <span class="terme">réaction du support</span> et notée R⃗.</p>
+</div>
+
+<p>En l'absence de frottements, cette réaction du support est :</p>
+<ul class="cours">
+  <li>dirigée <strong>perpendiculairement à la surface du support</strong> ;</li>
+  <li>orientée <strong>vers le haut</strong>.</li>
+</ul>
+
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>Si le corps est immobile sur une surface <strong>horizontale</strong>, alors la réaction du support compense son poids :</p>
+  <p class="eq-ligne">R⃗ = −P⃗</p>
+</div>
+
+<div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Réaction du support R<sub>N</sub>⃗ sur une surface horizontale et sur un plan incliné (Image&nbsp;14)</span>
+  <span class="detail">source : diapo 11 ; SVG à produire en régime B</span>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 10 — Compléter le schéma</div>
+  <p class="question">Compléter l'image 14 en ajoutant le poids du système.</p>
+  <div class="a-faire">
+    <span class="type">schéma</span>
+    <span class="quoi">Schéma de l'image 14 complété par le poids P⃗</span>
+    <span class="detail">source : diapo 11 ; SVG à produire en régime B</span>
+  </div>
+</div>
+
+<h3 style="font-family:'Space Grotesk',sans-serif;color:var(--h-beta);margin:1.6rem 0 .4rem;">D — Tension d'un fil</h3>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Lorsqu'un corps est attaché par un lien rigide (barre métallique, …) ou non (fil, câble, …), ce dernier exerce une action mécanique sur le corps, appelée <span class="terme">tension</span> et notée T⃗.</p>
+</div>
+
+<p>Cette tension est :</p>
+<ul class="cours">
+  <li>dirigée <strong>suivant l'axe du lien</strong> ;</li>
+  <li>orientée <strong>du solide vers le lien</strong>.</li>
+</ul>
+
+<div class="encart exemple">
+  <div class="etq">🕯 Exemple — solide suspendu au plafond</div>
+  <p>La tension du fil exercée sur un solide accroché au plafond compense ici son poids :</p>
+  <p class="eq-ligne">T⃗ = −P⃗</p>
+</div>
+
+<div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Solide suspendu : tension T⃗ vers le haut et poids P⃗ vers le bas (Image&nbsp;15)</span>
+  <span class="detail">source : diapo 12 ; SVG à produire en régime B</span>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=6Jn36iu_l2A" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=zxMjM2bWiyo" target="_blank" rel="noopener">▶ Réviser tout le cours en vidéo ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=Bnt1LhNREXg" target="_blank" rel="noopener">▶ Réviser tout le cours en vidéo ↗</a>
+</div>
+
+<div class="exercice">
+  <div class="etiquette">Exercice 11 — Solide sur un plan incliné</div>
+  <p>Un solide est attaché sur un plan incliné. Étant immobile, il n'y a pas de frottements.</p>
+  <p class="question">Indiquer les caractéristiques des forces s'appliquant sur le solide et les représenter, sans souci d'échelle, sur le schéma.</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p>Le solide subit trois forces : son poids P⃗, la réaction du support R⃗ et la tension du fil T⃗.</p>
+    <div class="etape">Le poids P⃗</div>
+    <p>Direction : verticale (perpendiculaire au sol) · Point d'application : centre de gravité du solide (G) · Sens : vers le bas (vers le centre de la Terre) · Norme : <span class="nb">P = m × g</span>.</p>
+    <div class="etape">La réaction du support R⃗</div>
+    <p>Direction : perpendiculaire au support · Point d'application : centre de la surface de contact entre le solide et le support (C) · Sens : vers le haut (vers le solide) · Norme : non donnée.</p>
+    <div class="etape">La tension du fil T⃗</div>
+    <p>Direction : colinéaire à l'axe du fil · Point d'application : point de contact entre le fil et le solide (A) · Sens : vers le haut du plan (vers le fil) · Norme : non donnée.</p>
+    <div class="a-faire">
+      <span class="type">schéma</span>
+      <span class="quoi">Plan incliné avec les trois forces P⃗, R⃗, T⃗ représentées</span>
+      <span class="detail">source : diapo 13 ; SVG à produire en régime B</span>
+    </div>
+    <p class="aparte">Note : cet exercice est numéroté « Exercice 10 » dans la source (diapo 13), en doublon avec l'exercice « Compléter le schéma » (diapo 11). Renuméroté ici en <b>Exercice 11</b> pour lever l'ambiguïté.</p>
+  </details>
+</div>
+
+</div>
+</details>
+
+
+
+<section class="checklist" id="pour-le-ds">
+  <h2><span class="num">✓</span> Pour le DS, je sais :</h2>
+  <ol id="liste-ds">
+    <li><input type="checkbox" id="ds1"><label for="ds1">Distinguer actions à distance et actions de contact.</label><span class="refs"><a href="#ancre-1">01</a> · man. 6 p.227</span></li>
+    <li><input type="checkbox" id="ds2"><label for="ds2">Modéliser une action par une force. Représenter une force par un vecteur ayant une norme, une direction, un sens.</label><span class="refs"><a href="#ancre-1">01</a> · man. 10 p.227 · 7 p.227</span></li>
+    <li><input type="checkbox" id="ds3"><label for="ds3">Exploiter le principe des actions réciproques.</label><span class="refs"><a href="#ancre-2">02</a> · man. 15 p.228 · 16 p.228</span></li>
+    <li><input type="checkbox" id="ds4"><label for="ds4">Utiliser l'expression vectorielle de la force d'interaction gravitationnelle.</label><span class="refs"><a href="#ancre-3">03</a> · man. 11 p.227 · 13 p.228</span></li>
+    <li><input type="checkbox" id="ds5"><label for="ds5">Connaître les caractéristiques des forces suivantes : force d'interaction gravitationnelle, poids, force exercée par un support et tension d'un fil.</label><span class="refs"><a href="#ancre-3">03</a> · man. 21 p.230</span></li>
+    <li><input type="checkbox" id="ds6"><label for="ds6">Représenter les forces citées précédemment.</label><span class="refs"><a href="#ancre-3">03</a> · man. 8 p.227 · 12 p.227</span></li>
+  </ol>
+  <div class="videos" style="margin:1rem 0 0;">
+    <a class="video-chip" href="https://create.kahoot.it/share/bilan-forces-et-mouvement/efffbdaf-7171-4b3e-8b55-a0a3b1d5f5ec" target="_blank" rel="noopener">🎯 Kahoot bilan du chapitre ↗</a>
+  </div>
+  <div class="a-faire" style="margin-top:1rem;">
+    <span class="type">vidéo</span>
+    <span class="quoi">Lien du DS (corrigé) — à choisir chaque année par Loïc</span>
+    <span class="detail">un lien « DS – 2023 | 2024 » figure dans la source ; volontairement laissé en attente (règle : le DS n'est jamais posé automatiquement)</span>
+  </div>
+</section>
+
+
+<p class="signature">M. Van Hoorde<span>Lycée général Isaac de l'Étoile · Poitiers</span></p>
+
+</article>
+</div>
+
+<button id="haut" type="button" aria-label="Revenir en haut de page">↑ haut</button>
+
+<footer>
+  <div class="footer-inner">© 2026 · M. Van Hoorde — Physique-Chimie · 2nde · Thème 2, Chapitre 2</div>
+</footer>
+
+<script>
+(function(){
+  var barre = document.querySelector('#lecture .fait');
+  var btn = document.getElementById('haut');
+  function maj(){
+    var h = document.documentElement;
+    var pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    barre.style.width = (pct || 0) + '%';
+    btn.classList.toggle('visible', h.scrollTop > 600);
+  }
+  document.addEventListener('scroll', maj, {passive:true});
+  btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  maj();
+
+  var liens = {};
+  document.querySelectorAll('#toc a').forEach(function(a){
+    liens[a.getAttribute('href').slice(1)] = a;
+  });
+  var cibles = Array.prototype.slice.call(document.querySelectorAll('h2[id], section[id]'));
+  function majToc(){
+    var repere = window.scrollY + window.innerHeight * 0.25;
+    var courant = null;
+    cibles.forEach(function(c){ if (c.offsetTop <= repere) courant = c; });
+    Object.keys(liens).forEach(function(k){ liens[k].classList.remove('actif'); });
+    if (courant && liens[courant.id]) liens[courant.id].classList.add('actif');
+  }
+  document.addEventListener('scroll', majToc, {passive:true});
+  majToc();
+
+  /* Sections repliables : un clic dans un sommaire ouvre la section visée */
+  document.querySelectorAll('#toc a, details.toc-mobile a').forEach(function(a){
+    a.addEventListener('click', function(){
+      var cible = document.querySelector(a.getAttribute('href'));
+      if (!cible) return;
+      var partie = cible.closest('details.partie');
+      if (partie) partie.open = true;
+    });
+  });
+
+  var CLE = 'cours-2nde-t2c2-checklist' /* ⚠ REMPLACER SLUG (ex: 2nde-t1c2) */;
+  var boites = document.querySelectorAll('#liste-ds input[type="checkbox"]');
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE)) || {}; } catch(e) {}
+  boites.forEach(function(b){
+    if (etat[b.id]) b.checked = true;
+    b.addEventListener('change', function(){
+      etat[b.id] = b.checked;
+      try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch(e) {}
+    });
+  });
+})();
+</script>
+
+<script>
+/* Verrou de fin de chapitre — v2 (porte à code centrée)
+   Le code n'est jamais écrit ici : seule son EMPREINTE SHA-256 est stockée.
+   Re-verrouillage pour tests : ?verrou=1 */
+(function(){
+  var EMPREINTE = 'e7123ee38a35da5305d0d5f710f5422d8af66b13d399ef062e5f0a730c9afc30' /* ⚠ empreinte du code fourni par Loïc : python3 -c "import hashlib;print(hashlib.sha256('CODE6C'.encode()).hexdigest())" */;
+  var CLE = 'deblocage-2nde-t2c2' /* ⚠ REMPLACER SLUG */;
+
+  function deverrouiller(){
+    document.body.classList.remove('verrouille');
+    var porte = document.getElementById('porte');
+    if (porte) porte.remove();
+    window.scrollTo(0, 0);
+  }
+
+  try {
+    if (new URLSearchParams(location.search).has('verrou')) {
+      localStorage.removeItem(CLE);
+    }
+  } catch(e) {}
+
+  try {
+    if (localStorage.getItem(CLE) === '1') { deverrouiller(); return; }
+  } catch(e) {}
+
+  var forme = document.getElementById('forme-code');
+  var champ = document.getElementById('champ-code');
+  var erreur = document.getElementById('erreur-code');
+
+  function empreinteHex(texte){
+    var donnees = new TextEncoder().encode(texte);
+    return crypto.subtle.digest('SHA-256', donnees).then(function(tampon){
+      return Array.prototype.map.call(new Uint8Array(tampon), function(o){
+        return o.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  forme.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var essai = (champ.value || '').trim().toUpperCase();
+    if (essai.length !== 6) {
+      erreur.textContent = 'Le code fait 6 caractères (lettres et chiffres).';
+      return;
+    }
+    if (!(window.crypto && crypto.subtle)) {
+      erreur.textContent = 'Navigateur incompatible — ouvre la page depuis le site.';
+      return;
+    }
+    empreinteHex(essai).then(function(h){
+      if (h === EMPREINTE) {
+        try { localStorage.setItem(CLE, '1'); } catch(e) {}
+        deverrouiller();
+      } else {
+        erreur.textContent = 'Code incorrect. Vérifie le cahier de textes !';
+        champ.select();
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
