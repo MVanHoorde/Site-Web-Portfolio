@@ -376,6 +376,15 @@ Règles d'or (leçons des chapitres 1 et 2) :
 7. Verrou v2 (porte centrée) : remplacer `EMPREINTE_SHA256_A_REMPLACER`
    (commande en commentaire) et les deux `SLUG`. `crypto.subtle` exige un
    contexte sécurisé : ne pas « simplifier ».
+7bis. Intro audio (optionnelle, validée le 16/07) : bandeau `.audio-compact`
+   dans `#porte`, entre `.explication` et le formulaire — visible **avant**
+   le déblocage puisque c'est précisément une écoute pré-cours. Fichier
+   NotebookLM déposé par Loïc dans `audio/SLUG-intro.…` (durée arrondie en
+   minutes dans `.sous`) ; mention de provenance obligatoire dans `.credit`
+   (« Générée avec NotebookLM à partir du cours, relue avant publication »).
+   Retirer tout le bloc si le chapitre n'a pas encore son fichier. Un même
+   emplacement pourra plus tard accueillir un lien `.video-chip` vers une
+   vidéo de rappel, sans refonte.
 8. Lier la page depuis la page du niveau (`pages/NIVEAU-physique-chimie.html`).
    **Règle anti-préfixe (bug rencontré au C4)** : la page de niveau est
    elle-même dans `pages/`. Un lien vers un chapitre voisin s'écrit donc

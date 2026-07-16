@@ -22,6 +22,33 @@ attendant, l'accueil affiche un cadre vide annoté.
 
 ---
 
+## ⏳ En attente de Loïc — rappels récurrents
+
+> Tâches côté Loïc, à ressortir régulièrement tant qu'elles ne sont pas cochées.
+> Claude : rappeler ces points quand on retravaille le site (surtout l'accueil).
+
+**Gravures de l'accueil** (domaine public, à déposer dans `gravures/` — détail et
+sources dans `gravures/A-LIRE.txt`). Tant qu'un fichier manque, l'accueil montre
+un cadre vide annoté à la place de la planche.
+
+- [ ] `01-prisme-newton.jpg` — Newton, prisme, 1704
+- [ ] `02-machine-nollet.jpg` — Nollet, machine électrostatique, 1743
+- [ ] `03-alambic-encyclopedie.jpg` — Encyclopédie, distillation, 1765
+- [ ] `04-pile-volta.jpg` — Volta, la pile, 1800
+- [ ] `05-camera-obscura.jpg` — Kircher, chambre noire, 1646
+- [ ] `06-barometre-torricelli.jpg` — Torricelli, baromètre, 1644
+- [ ] `07-champ-faraday.jpg` — Faraday, lignes de champ, 1852
+- [ ] `08-spectre-fraunhofer.jpg` — Fraunhofer, spectre solaire, 1814
+
+**Autres retouches d'accueil en attente**
+
+- [ ] Remplacer le courriel placeholder `prenom.nom@exemple.fr` par la vraie adresse
+- [ ] Mettre le vrai lien de l'espace classe ENT (actuellement `href="#"`)
+- [ ] (plus tard) Créer la page « collection de gravures » ; le lien
+      « Parcourir la collection » de l'accueil boucle pour l'instant sur `#gravures`
+
+---
+
 ## 🎯 Objectif de la période (vacances)
 
 **Dégrossir un maximum de chapitres** (régime A) : mettre TOUT en ligne à l'état
