@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2nde — Réfraction et réflexion de la lumière · Physique-Chimie</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e;
+    --gris:#6b6f7a; --carte:#ffffff; --or:#f0cf6e; --or-fonce:#b28a1d;
+    --vert:#6fae7a; --vert-fonce:#4c8a58; --sepia:#8a6d3b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Spectral', Georgia, serif; color:var(--encre);
+    background-color:var(--papier);
+    background-image:linear-gradient(var(--grille) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+    background-size:32px 32px; line-height:1.7;
+  }
+  .spectre { height:6px; background:var(--encre); position:relative; }
+  .spectre i { position:absolute; top:0; bottom:0; width:4px; }
+  .spectre i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .spectre i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .spectre i:nth-child(3){ left:76%; background:var(--h-alpha); }
+  nav { background:var(--papier); border-bottom:1px solid var(--encre); }
+  .nav-inner { max-width:1200px; margin:0 auto; padding:.85rem 1.4rem;
+    display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+  .nav-logo { font-family:'Space Grotesk',sans-serif; font-weight:700; }
+  .nav-logo span { color:var(--h-alpha); }
+  .retour { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--encre); text-decoration:none; border-bottom:2px solid var(--h-beta); }
+  .retour:hover { color:var(--h-beta); }
+  #lecture { position:sticky; top:0; height:4px; z-index:50; }
+  #lecture .fait { height:100%; width:0%; background:var(--h-alpha); }
+
+  .page { max-width:1200px; margin:0 auto; padding:2rem 1.4rem 4rem;
+    display:grid; grid-template-columns:230px minmax(0,1fr); gap:2.2rem; align-items:start; }
+  aside.sommaire { position:sticky; top:1.4rem; font-family:'Space Grotesk',sans-serif; }
+  .sommaire .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--gris); margin-bottom:.7rem; }
+  .sommaire ol { list-style:none; }
+  .sommaire a { display:flex; gap:.6rem; align-items:baseline; padding:.42rem .65rem;
+    border-radius:8px; text-decoration:none; color:var(--encre); font-size:.92rem; line-height:1.3; }
+  .sommaire a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--h-beta); }
+  .sommaire a:hover { background:var(--carte); }
+  .sommaire a.actif { background:var(--carte); box-shadow:inset 3px 0 0 var(--h-alpha); font-weight:600; }
+  .sommaire .ds a .n { color:var(--h-gamma); }
+
+  article.lecture { background:var(--carte); border:1px solid var(--encre); border-radius:14px;
+    box-shadow:6px 6px 0 rgba(20,26,38,.08); padding:clamp(1.4rem,4vw,3rem); min-width:0; }
+  .fil-ariane { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); margin-bottom:.5rem; }
+  .fil-ariane .niveau { color:var(--h-alpha); }
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.7rem,4vw,2.4rem); line-height:1.12; margin-bottom:.4rem; }
+  .sous-titre { font-family:'IBM Plex Mono',monospace; font-size:.85rem; color:var(--gris); margin-bottom:2.4rem; }
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2.8rem 0 1rem;
+    display:flex; align-items:baseline; gap:.8rem; scroll-margin-top:2rem; }
+  h2 .num { font-family:'IBM Plex Mono',monospace; font-size:.9rem; color:var(--h-beta); }
+  p { margin-bottom:.9rem; max-width:75ch; text-align:justify; hyphens:auto; }
+  strong { font-weight:600; }
+  ul.cours { max-width:75ch; margin:0 0 .9rem 1.2rem; text-align:justify; }
+  ul.cours li { margin-bottom:.5rem; }
+  .nb { white-space:nowrap; }
+  sub, sup { font-size:.68em; }
+
+  /* ===== BIBLIOTHÈQUE DE COMPOSANTS (validée sur le chapitre T1-C2) ===== */
+
+  /* Encart générique : Définition (Hβ) / Propriété (Hγ) / Exemple (vert) */
+  .encart { border:1px solid var(--encre); border-radius:0 10px 10px 0;
+    background:var(--papier); padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.12em; text-transform:uppercase; margin-bottom:.35rem; }
+  .encart p:last-child { margin-bottom:0; }
+  .definition { border-left:4px solid var(--h-beta); }
+  .definition .etq { color:var(--h-beta); }
+  .terme { background:rgba(29,154,170,.16); border-radius:3px; padding:.02em .25em;
+    font-weight:600; color:#0f6b76; }
+  .propriete { border-left:4px solid var(--h-gamma); }
+  .propriete .etq { color:var(--h-gamma); }
+  .exemple { border-left:4px solid var(--vert); background:#fff; max-width:none; }
+  .exemple .etq { color:var(--vert-fonce); }
+  .exemple .duo-e { display:grid; grid-template-columns:220px 1fr; gap:1.2rem; align-items:center; }
+  .exemple img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+
+  /* Équation centrée hors paragraphe */
+  .eq-ligne { font-family:'Spectral',serif; font-style:italic; text-align:center;
+    font-size:1.15rem; margin:.7rem auto; max-width:none; white-space:nowrap; overflow-x:auto; }
+  .eq-ligne sub, .eq-ligne sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.58em; }
+
+  /* Pictogramme « à noter sur la fiche » (crayon, coin haut droit) */
+  .a-noter { position:absolute; top:-.7rem; right:.8rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; background:var(--carte); border:1.4px solid var(--encre); border-radius:50%;
+    width:1.7rem; height:1.7rem; display:flex; align-items:center; justify-content:center; }
+  figure { position:relative; }
+  figure .a-noter { top:-.4rem; right:-.2rem; }
+
+  /* Encart Formule (variante C validée) */
+  .formule-bloc { margin:1.4rem auto; max-width:60ch; border:1px solid var(--encre); border-radius:12px;
+    background:#fff; box-shadow:4px 4px 0 rgba(74,63,158,.18);
+    display:grid; grid-template-columns:auto minmax(0,1fr); position:relative; }
+  .formule-bloc .eq { background:var(--encre); color:var(--papier); font-family:'Spectral',serif;
+    font-style:italic; font-size:1.9rem; display:flex; align-items:center; padding:1rem 1.5rem;
+    white-space:nowrap; border-radius:11px 0 0 11px; }
+  .formule-bloc .eq sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.5em; }
+  .formule-bloc .grandeurs { padding:.9rem 1.3rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem; line-height:2.05; }
+  .formule-bloc .grandeurs b { color:var(--h-gamma); }
+  .formule-bloc .titre { font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--gris); display:block; margin-bottom:.15rem; }
+
+  /* Encart Notation */
+  .notation { border:1px dashed var(--encre); border-radius:10px; background:#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .notation .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .notation .chips { display:flex; gap:.9rem; flex-wrap:wrap; margin-bottom:.8rem; justify-content:center; }
+  .notation .chip { font-family:'IBM Plex Mono',monospace; font-size:.85rem; border:1px solid var(--encre);
+    border-radius:8px; padding:.35rem .8rem; background:var(--papier); }
+  .notation .chip b { color:var(--h-beta); }
+  .notation .aq { border-top:1px dashed var(--grille); padding-top:.7rem; margin-bottom:0; }
+  .notation .aq b { color:var(--h-beta); }
+
+  /* Encart Méthode (étapes en chiffres romains) */
+  .methode { border:1px solid var(--encre); border-left:4px solid var(--or); border-radius:0 10px 10px 0;
+    background:linear-gradient(0deg,rgba(240,207,110,.08),rgba(240,207,110,.08)),#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .methode .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--or-fonce); margin-bottom:.5rem; }
+  .methode ol { list-style:none; counter-reset:met; margin:0; }
+  .methode li { counter-increment:met; display:grid; grid-template-columns:2.2rem 1fr; gap:.5rem;
+    margin-bottom:.5rem; align-items:baseline; }
+  .methode li::before { content:counter(met,upper-roman) "."; font-family:'IBM Plex Mono',monospace;
+    font-weight:600; color:var(--or-fonce); text-align:right; }
+
+  /* Encart Histoire des sciences */
+  .histoire { border:1.5px solid var(--sepia); outline:1px solid var(--sepia); outline-offset:3px;
+    background:#f8f2e2; padding:1.2rem 1.4rem; margin:1.8rem 3px; }
+  .histoire .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--sepia); text-align:center; margin-bottom:.8rem; }
+  .histoire .etq::before, .histoire .etq::after { content:"❦"; margin:0 .6rem; }
+  .histoire .duo-h { display:grid; grid-template-columns:170px 1fr; gap:1.2rem; align-items:start; }
+  .histoire img { width:100%; border:1px solid var(--sepia); padding:3px; background:#fff; }
+  .histoire .credit { font-family:'IBM Plex Mono',monospace; font-size:.65rem; color:var(--sepia);
+    margin-top:.3rem; line-height:1.4; }
+  .histoire h4 { font-family:'Space Grotesk',sans-serif; font-size:1.02rem; margin-bottom:.4rem; }
+  .histoire p { font-size:.95rem; margin-bottom:.6rem; }
+  .histoire .citation { font-style:italic; text-align:center; font-size:1.05rem; margin:.7rem 0 .2rem; }
+  .histoire .source-cit { font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--sepia);
+    text-align:center; display:block; margin-bottom:.6rem; }
+
+  /* Encart Synthèse de TP (sobre) */
+  .synthese-tp { border:1px dashed var(--gris); border-radius:10px; background:#fff;
+    padding:1.1rem 1.4rem; margin:1.6rem 0; }
+  .synthese-tp .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .synthese-tp .contexte { font-size:.92rem; color:var(--gris); font-style:italic; margin-bottom:.8rem; }
+  .synthese-tp .sous-etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--gris); margin:.8rem 0 .2rem; display:flex; align-items:center; gap:.5rem; }
+  .synthese-tp .sous-etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .synthese-tp p:last-child { margin-bottom:0; }
+
+  /* ===== À FAIRE — emplacement réservé (régime « ébauche ») ===== */
+  /* Marque un manque VISIBLE sur le site : image à extraire, schéma à
+     produire, vidéo à décoder, etc. À retirer lors du passage en finition. */
+  .a-faire { position:relative; margin:1.2rem 0; padding:.9rem 1.1rem .9rem 2.6rem;
+    border:1px dashed var(--gris); border-radius:8px; color:var(--gris);
+    background:repeating-linear-gradient(135deg, #f4f2ec 0 12px, #eeece4 12px 24px);
+    font-size:.92rem; }
+  .a-faire::before { content:"🚧"; position:absolute; left:.8rem; top:.85rem; font-size:1.05rem;
+    filter:grayscale(.15); }
+  .a-faire .type { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.62rem;
+    letter-spacing:.14em; text-transform:uppercase; color:#fff; background:var(--gris);
+    padding:.12rem .5rem; border-radius:4px; margin-bottom:.35rem; }
+  .a-faire .quoi { display:block; color:var(--encre); }
+  .a-faire .detail { display:block; margin-top:.25rem; font-size:.82rem; font-style:italic; }
+  @media print { .a-faire { background:#f4f2ec; } }
+
+  /* Vidéos */
+  .videos { display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0 1.6rem; }
+  .video-chip { font-family:'IBM Plex Mono',monospace; font-size:.78rem;
+    display:inline-flex; align-items:center; gap:.45em; border:1px solid var(--encre);
+    border-radius:999px; padding:.34rem .85rem; text-decoration:none; color:var(--encre);
+    background:var(--papier); transition:background .15s,color .15s; }
+  .video-chip:hover { background:var(--h-beta); color:#fff; }
+
+  /* Figures */
+  figure { margin:1.6rem 0; }
+  figure svg, figure img { max-width:100%; height:auto; display:block; }
+  figure img.photo { border:1px solid var(--encre); border-radius:6px; }
+  figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
+    margin-top:.55rem; max-width:66ch; line-height:1.55; }
+  figcaption .eqc { display:block; font-family:'Spectral',serif; font-style:italic; font-size:.95rem;
+    color:var(--encre); margin:.35rem 0; text-align:center; }
+  figcaption .eqc sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.6em; }
+  .fig-row { display:flex; gap:1.6rem; flex-wrap:wrap; align-items:flex-start; }
+  .fig-row figure { flex:1 1 240px; max-width:400px; }
+  .fig-row figure img { width:100%; height:220px; object-fit:cover; }
+  .fig-etroite { max-width:300px; }
+  .pill-ex { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.66rem;
+    letter-spacing:.08em; text-transform:uppercase; color:#fff; border-radius:999px;
+    padding:.1rem .6rem; margin-bottom:.35rem; }
+  .pill-ex.phys { background:var(--h-beta); }
+  .pill-ex.chim { background:var(--h-alpha); }
+  .duo { display:grid; grid-template-columns:minmax(220px,300px) minmax(0,1fr); gap:2rem; align-items:start; }
+  .defile { overflow-x:auto; }
+
+  table.tab { border-collapse:collapse; font-size:.95rem; }
+  table.tab caption { caption-side:top; text-align:left; font-family:'Space Grotesk',sans-serif;
+    font-size:.85rem; font-weight:600; padding-bottom:.4rem; }
+  table.tab th, table.tab td { border:1px solid var(--encre); padding:.42rem .8rem; text-align:center; }
+  table.tab thead th, table.tab .entete { font-family:'Space Grotesk',sans-serif; font-size:.82rem; background:var(--papier); }
+
+  /* ===== Exercices (structure normalisée) ===== */
+  .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
+    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0;
+    background:#fdfdfb; }
+  .exercice .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    text-transform:uppercase; letter-spacing:.1em; color:var(--h-alpha); margin-bottom:.5rem; }
+  .exercice .duo-x { display:grid; grid-template-columns:1fr 200px; gap:1.1rem; align-items:start; }
+  .exercice .duo-x img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+  .exercice .question { font-style:italic; }
+  .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris);
+    margin-top:.5rem; border-top:1px dotted var(--grille); padding-top:.45rem; }
+  details.correction { margin-top:.8rem; border-top:1px dashed var(--gris); padding-top:.6rem; }
+  details.correction summary { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--h-gamma); cursor:pointer; }
+  details.correction summary:hover { text-decoration:underline; }
+  details.correction[open] summary { margin-bottom:.6rem; }
+  .etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--h-gamma); margin:.7rem 0 .2rem; display:flex;
+    align-items:center; gap:.5rem; }
+  .etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .resultat { border-bottom:2.5px solid var(--h-alpha); font-weight:600; padding-bottom:1px; white-space:nowrap; }
+  .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--gris);
+    text-align:center; margin-bottom:.1rem; }
+  .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem; margin:1rem 0 1rem 1rem; }
+  .eq-exo sub, .eq-exo sup { font-size:.6em; font-style:normal; font-family:'IBM Plex Mono',monospace; }
+  .coef-ok { color:var(--h-alpha); font-weight:700; font-style:normal; }
+  .frac { display:inline-block; vertical-align:middle; text-align:center; margin:0 .25em; }
+  .frac .haut { display:block; border-bottom:1.5px solid var(--encre); padding:0 .3em .1em; }
+  .frac .bas { display:block; padding:.1em .3em 0; }
+  .unites { font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); }
+  .exercice p, .encart.exemple p, .histoire p, .synthese-tp p { max-width:none; }
+  .aparte { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris);
+    border-left:2px solid var(--grille); padding-left:.7rem; margin:.6rem 0; }
+
+  /* Checklist */
+  .checklist { border:1px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 12px 12px 0; padding:1.2rem 1.4rem; margin:2.6rem 0 0; }
+  .checklist h2 { margin-top:0; }
+  .checklist ol { list-style:none; }
+  .checklist li { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem;
+    align-items:baseline; padding:.55rem 0; border-bottom:1px dashed var(--grille); }
+  .checklist li:last-child { border-bottom:none; }
+  .checklist input[type="checkbox"] { transform:translateY(2px) scale(1.15); accent-color:var(--h-gamma); cursor:pointer; }
+  .checklist label { cursor:pointer; }
+  .checklist .refs { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); white-space:nowrap; }
+  .checklist .refs a { color:var(--h-beta); text-decoration:none; }
+  .checklist .refs a:hover { text-decoration:underline; }
+
+  #haut { position:fixed; right:1.2rem; bottom:1.2rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.8rem; background:var(--carte); border:1px solid var(--encre); border-radius:999px;
+    padding:.5rem .85rem; cursor:pointer; box-shadow:3px 3px 0 rgba(20,26,38,.12);
+    opacity:0; pointer-events:none; transition:opacity .2s; }
+  #haut.visible { opacity:1; pointer-events:auto; }
+  #haut:hover { background:var(--h-beta); color:#fff; }
+
+  details.partie { border-top:3px solid var(--encre); margin-top:2.4rem; }
+  details.partie > summary { list-style:none; cursor:pointer; }
+  details.partie > summary::-webkit-details-marker { display:none; }
+  details.partie > summary h2 { margin:1.1rem 0 1rem; }
+  details.partie > summary h2::after { content:"▾"; margin-left:auto; font-family:'IBM Plex Mono',monospace;
+    font-size:1rem; color:var(--gris); transition:transform .15s; }
+  details.partie:not([open]) > summary h2::after { content:"▸"; }
+  details.partie > summary:hover h2::after { color:var(--h-beta); }
+  .signature { text-align:right; font-family:'Space Grotesk',sans-serif; font-weight:600;
+    margin:2.4rem 0 0; }
+  .signature span { display:block; font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    color:var(--gris); font-weight:400; }
+  details.toc-mobile { display:none; }
+  footer { border-top:1px solid var(--encre); margin-top:2rem; }
+  .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
+    font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); }
+
+  /* ===== Verrou de fin de chapitre — v2 : porte centrée plein écran ===== */
+  body.verrouille aside.sommaire,
+  body.verrouille details.toc-mobile,
+  body.verrouille article.lecture > *:not(#porte) { display:none; }
+  body.verrouille .page { grid-template-columns:minmax(0,1fr); max-width:720px; }
+  body.verrouille article.lecture { min-height:min(70vh, 620px); display:flex;
+    align-items:center; justify-content:center; }
+  #porte { display:none; }
+  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; width:100%; }
+  #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }
+  #porte h1 { margin-bottom:.6rem; }
+  #porte .explication { max-width:52ch; margin:0 auto 1.6rem; color:var(--gris); }
+  #porte form { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+  #porte input {
+    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.4em;
+    text-transform:uppercase; text-align:center; width:16ch;
+    padding:.55rem .2rem .55rem .6rem; border:1.5px solid var(--encre);
+    border-radius:10px; background:var(--papier); color:var(--encre);
+  }
+  #porte input:focus { outline:2px solid var(--h-beta); }
+  #porte button {
+    font-family:'IBM Plex Mono',monospace; font-size:.9rem; cursor:pointer;
+    border:1.5px solid var(--encre); border-radius:10px; padding:.55rem 1.1rem;
+    background:var(--encre); color:var(--papier);
+  }
+  #porte button:hover { background:var(--h-beta); border-color:var(--h-beta); }
+  #porte .erreur { color:var(--h-alpha); font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; min-height:1.4em; margin-top:.8rem; }
+
+  @media (max-width:960px) {
+    .page { grid-template-columns:1fr; gap:1.2rem; padding:1.2rem .9rem 3rem; }
+    aside.sommaire { display:none; }
+    details.toc-mobile { display:block; font-family:'Space Grotesk',sans-serif;
+      background:var(--carte); border:1px solid var(--encre); border-radius:12px;
+      padding:.7rem 1rem; margin-bottom:1.2rem; }
+    details.toc-mobile summary { font-family:'IBM Plex Mono',monospace; font-size:.8rem;
+      letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    details.toc-mobile ol { list-style:none; margin-top:.6rem; }
+    details.toc-mobile a { display:block; padding:.4rem .2rem; color:var(--encre);
+      text-decoration:none; border-bottom:1px dashed var(--grille); }
+    details.toc-mobile a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+      color:var(--h-beta); margin-right:.5rem; }
+    .duo, .exemple .duo-e, .histoire .duo-h, .exercice .duo-x { grid-template-columns:1fr; }
+    .formule-bloc { grid-template-columns:1fr; }
+    .formule-bloc .eq { justify-content:center; }
+    .checklist li { grid-template-columns:auto 1fr; }
+    .checklist .refs { grid-column:2; white-space:normal; }
+  }
+
+  h3 { font-family:'Space Grotesk',sans-serif; font-size:1.12rem; color:var(--h-beta);
+       margin:1.8rem 0 .6rem; font-weight:600; }
+  h3 .l { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris); margin-right:.15rem; }
+</style>
+</head>
+<body class="verrouille">
+
+<div class="spectre" aria-hidden="true"><i></i><i></i><i></i></div>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
+    <a class="retour" href="2nde-physique-chimie.html">← Retour aux cours de 2nde</a>
+  </div>
+</nav>
+<div id="lecture"><div class="fait"></div></div>
+
+<div class="page">
+
+<aside class="sommaire" aria-label="Sommaire du chapitre">
+  <div class="etiquette">Chapitre 4 — Sommaire</div>
+  <ol id="toc">
+    <li><a href="#ancre-1"><span class="n">01</span> Propriétés de la lumière</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span> Dioptre et réflexion</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span> Phénomène de réfraction</a></li>
+    <li><a href="#ancre-4"><span class="n">04</span> La réfraction au quotidien</a></li>
+    <li class="ds"><a href="#pour-le-ds"><span class="n">✓</span> Pour le DS, je sais</a></li>
+  </ol>
+</aside>
+
+<article class="lecture">
+
+<div id="porte">
+  <div class="cadenas" aria-hidden="true">🔒</div>
+  <h1>Réfraction et réflexion de la lumière</h1>
+  <p class="explication">Ce chapitre sera débloqué <strong>en fin de séquence</strong>,
+  au rythme de la classe. Le code de déblocage est transmis via le cahier de textes —
+  il figure aussi en bas de ta fiche de cours.</p>
+  <form id="forme-code" autocomplete="off">
+    <input id="champ-code" type="text" maxlength="6" inputmode="text"
+           spellcheck="false" aria-label="Code de déblocage (6 caractères)"
+           placeholder="••••••">
+    <button type="submit">Déverrouiller</button>
+  </form>
+  <p class="erreur" id="erreur-code" role="alert"></p>
+</div>
+
+<details class="toc-mobile">
+  <summary>Sommaire du chapitre</summary>
+  <ol>
+    <li><a href="#ancre-1"><span class="n">01</span>Propriétés de la lumière</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span>Dioptre et réflexion</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span>Phénomène de réfraction</a></li>
+    <li><a href="#ancre-4"><span class="n">04</span>La réfraction au quotidien</a></li>
+    <li><a href="#pour-le-ds"><span class="n">✓</span>Pour le DS, je sais</a></li>
+  </ol>
+</details>
+
+<p class="fil-ariane">Physique-Chimie · <span class="niveau">2nde</span> · Thème 3 — Ondes et signaux</p>
+<h1>Réfraction et réflexion de la lumière</h1>
+<p class="sous-titre">Thème 3 · Chapitre 4 — cours &amp; exercices corrigés</p>
+
+<details class="partie" open>
+<summary><h2 id="ancre-1"><span class="num">01</span> Propriétés de la lumière</h2></summary>
+<div class="partie-corps">
+<div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Propagation et rayon lumineux</div>
+  <p>La lumière se propage de manière <strong>rectiligne</strong> dans le vide ou dans un milieu transparent homogène ; sa trajectoire est modélisée par le <span class='terme'>rayon lumineux</span>.</p>
+</div><div class="encart propriete"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>La lumière se propage à une vitesse finie appelée <span class='terme'>célérité</span>. Dans le vide (et, en très bonne approximation, dans l'air), cette vitesse vaut environ 300 000 km par seconde :</p><p class="eq-ligne">c = 3,00 × 10<sup>8</sup> m·s<sup>−1</sup></p>
+</div><p>La première mesure terrestre de la célérité de la lumière est due à l'<strong>expérience de Fizeau</strong> (1849).</p><div class="videos">
+  <a class="video-chip" href="https://www.lcf.institutoptique.fr/" target="_blank" rel="noopener">▶ Laboratoire Charles Fabry — mesure de c ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=mam0X6rU340" target="_blank" rel="noopener">▶ Fizeau, en français ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=h_UMabvPrws" target="_blank" rel="noopener">▶ Fizeau, in English ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=Qy2MuLQhcXM" target="_blank" rel="noopener">▶ Compléments en vidéo ↗</a>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 1 — Temps de trajet de la lumière du Soleil</div>
+  <p>La distance Terre–Soleil vaut d = 1,50 × 10<sup>8</sup> km. <span class='question'>Combien de temps met la lumière du Soleil pour nous parvenir ?</span></p>
+  <p class="donnees">Données : d = 1,50 × 10⁸ km · c = 3,00 × 10⁸ m·s⁻¹</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p class='donnees'><em>Correction rédigée par M. Van Hoorde / à valider — la version source de ce chapitre est la version élève, sans corrigé.</em></p><div class="etape">Conversion et relation</div><p class="eq-ligne">d = 1,50 × 10<sup>8</sup> km = 1,50 × 10<sup>11</sup> m</p><p class="eq-ligne">Δt = d ⁄ c</p><div class="etape">Application numérique</div><p class="eq-ligne">Δt = 1,50 × 10<sup>11</sup> ⁄ 3,00 × 10<sup>8</sup> = <span class='resultat'>500 s ≈ 8 min 20 s</span></p>
+  </details>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-2"><span class="num">02</span> Dioptre et réflexion</h2></summary>
+<div class="partie-corps">
+<div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Réflexion, dioptre et normale</div>
+  <p>La <span class='terme'>réflexion</span> de la lumière est le changement de direction qu'elle subit lorsqu'elle rencontre une surface de séparation entre deux milieux transparents — appelée <span class='terme'>dioptre</span> — (ou une surface opaque réfléchissante) : elle repart alors dans le milieu d'où elle provient.</p><p>Un dioptre peut être la surface de l'eau, une face d'un prisme, la surface d'une lentille, etc. La droite perpendiculaire au dioptre, contenue dans le plan du trajet du rayon, est appelée <span class='terme'>normale</span> (notée <span class='nb'>N</span>).</p>
+</div><div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Schéma de la réflexion d'un rayon sur un dioptre, avec la normale N (Image 2)</span>
+  <span class="detail">à redessiner en SVG à la charte — régime B.</span>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=df1LnIkkQ-k" target="_blank" rel="noopener">▶ Réviser en vidéo — réflexion ↗</a>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-3"><span class="num">03</span> Phénomène de réfraction</h2></summary>
+<div class="partie-corps">
+<h3><span class="l">A ·</span> Définition</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Réfraction</div>
+  <p>La <span class='terme'>réfraction</span> de la lumière est le changement de direction qu'elle subit à la <strong>traversée</strong> d'un dioptre. Ce phénomène perturbe notre perception des tailles et des distances (par exemple, un crayon plongé dans l'eau semble brisé).</p>
+</div><h3><span class="l">B ·</span> Indice de réfraction</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Indice de réfraction</div>
+  <p>L'<span class='terme'>indice de réfraction</span> <span class='nb'>n</span> d'un milieu transparent compare la célérité de la lumière dans le vide à sa vitesse <span class='nb'>v</span> dans ce milieu. C'est un nombre <strong>sans unité</strong>, toujours supérieur à 1. Plus le milieu est dense, plus son indice est élevé (il dépend aussi de la température du milieu).</p>
+</div><div class="formule-bloc"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">n = c ⁄ v</div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>n</b> indice de réfraction · sans unité<br><b>c</b> célérité dans le vide · <span class='nb'>3,00 × 10<sup>8</sup> m·s<sup>−1</sup></span><br><b>v</b> vitesse dans le milieu · m·s<sup>−1</sup>
+  </div>
+</div><div class="defile"><table class="tab"><caption>Quelques indices de réfraction (Image 6)</caption>
+  <thead><tr><th>Milieu</th><th>n</th><th>Milieu</th><th>n</th></tr></thead>
+  <tbody>
+  <tr><td>Vide</td><td>1,000000</td><td>Verre</td><td>1,50</td></tr>
+<tr><td>Air</td><td>1,00029</td><td>Plexiglas</td><td>1,51</td></tr>
+<tr><td>Glace</td><td>1,31</td><td>Verre crown</td><td>1,52</td></tr>
+<tr><td>Eau</td><td>1,33</td><td>Polystyrène</td><td>1,59</td></tr>
+<tr><td>Alcool</td><td>1,36</td><td>Sulfure de carbone</td><td>1,63</td></tr>
+<tr><td>Quartz</td><td>1,46</td><td>Cristal anglais</td><td>1,66</td></tr>
+<tr><td>Térébenthine</td><td>1,47</td><td>Zircon</td><td>1,92</td></tr>
+<tr><td></td><td></td><td>Diamant</td><td>2,42</td></tr>
+<tr><td></td><td></td><td>Phosphure de gallium</td><td>3,50</td></tr>
+</tbody>
+</table></div><div class="exercice">
+  <div class="etiquette">Exercice 2 — Indice de réfraction de l'eau</div>
+  <p>Dans l'eau, la lumière se propage à la vitesse v = 225 564 km·s<sup>−1</sup>. <span class='question'>Calculer l'indice de réfraction de l'eau.</span></p>
+  <p class="donnees">Données : c = 3,00 × 10⁸ m·s⁻¹</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p class='donnees'><em>Correction rédigée par M. Van Hoorde / à valider — la version source de ce chapitre est la version élève, sans corrigé.</em></p><div class="etape">Conversion et formule</div><p class="eq-ligne">v = 225 564 km·s<sup>−1</sup> = 2,25564 × 10<sup>8</sup> m·s<sup>−1</sup></p><p class="eq-ligne">n = c ⁄ v</p><div class="etape">Application numérique</div><p class="eq-ligne">n = 3,00 × 10<sup>8</sup> ⁄ 2,25564 × 10<sup>8</sup> ≈ <span class='resultat'>1,33</span></p>
+  </details>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 3 — Indice et température de l'eau</div>
+  <div class="duo-x">
+    <div><p>On mesure pour une eau un indice de réfraction n = 1,333. <span class='question'>À l'aide du graphe donnant l'indice de l'eau en fonction de la température, en déduire la température de cette eau.</span></p></div>
+    <div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Graphe n = f(température) de l'eau (Image 7)</span>
+  <span class="detail">courbe à redessiner en SVG — régime B.</span>
+</div>
+  </div>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p class='donnees'><em>Correction rédigée par M. Van Hoorde / à valider — la version source de ce chapitre est la version élève, sans corrigé.</em></p><div class="etape">Lecture graphique</div><p>Sur la courbe n = f(θ) de l'eau (Image 7), la valeur n = 1,333 correspond à une température d'environ <span class='resultat'>20 °C</span>.</p><p><em>Réserve : cette lecture dépend du graphe de la source (laissé en illustration à redessiner) ; la valeur exacte est à confirmer sur le graphe original.</em></p>
+  </details>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=lVzXM4m3Uak" target="_blank" rel="noopener">▶ Réviser en vidéo — indice de réfraction ↗</a>
+</div><h3><span class="l">C ·</span> Première loi de Snell-Descartes</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Rayons et plan d'incidence</div>
+  <p>Quand un <span class='terme'>rayon incident</span> arrive sur un dioptre, on observe un <span class='terme'>rayon réfracté</span> (qui traverse le dioptre en étant dévié) et un <span class='terme'>rayon réfléchi</span> (qui repart dans le milieu initial).</p>
+</div><div class="encart propriete"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p><span class='terme'>Première loi de Snell-Descartes</span> : le rayon incident, le rayon réfracté, le rayon réfléchi et la normale au point d'incidence sont tous dans un même plan, appelé <span class='terme'>plan d'incidence</span>.</p>
+</div><div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Les trois rayons (incident, réfléchi, réfracté), la normale et les angles i₁, i₂ au point d'incidence I (Image 8)</span>
+  <span class="detail">à redessiner en SVG — régime B.</span>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=4YjJXtB3MWM" target="_blank" rel="noopener">▶ S'exercer en vidéo ↗</a>
+</div><h3><span class="l">D ·</span> Deuxième loi de Snell-Descartes</h3><div class="encart propriete"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p><span class='terme'>Deuxième loi de Snell-Descartes</span> : les angles d'incidence <span class='nb'>i<sub>1</sub></span> et de réfraction <span class='nb'>i<sub>2</sub></span> (mesurés par rapport à la normale) sont reliés aux indices des deux milieux.</p>
+</div><div class="formule-bloc"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">n<sub>1</sub> × sin(i<sub>1</sub>) = n<sub>2</sub> × sin(i<sub>2</sub>)</div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>n<sub>1</sub>, n<sub>2</sub></b> indices des milieux · sans unité<br><b>i<sub>1</sub></b> angle d'incidence · °<br><b>i<sub>2</sub></b> angle de réfraction · °
+  </div>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 4 — Angle de réfraction eau → plexiglas</div>
+  <p>Un rayon passe de l'eau (n<sub>1</sub> = 1,33) au plexiglas (n<sub>2</sub> = 1,50) avec un angle d'incidence i<sub>1</sub> = 45°. <span class='question'>Calculer l'angle de réfraction i<sub>2</sub>.</span></p>
+  <p class="donnees">Données : n₁(eau) = 1,33 · n₂(plexiglas) = 1,50 · i₁ = 45°</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p class='donnees'><em>Correction rédigée par M. Van Hoorde / à valider — la version source de ce chapitre est la version élève, sans corrigé.</em></p><div class="etape">Isoler sin(i₂)</div><p class="eq-ligne">sin(i<sub>2</sub>) = n<sub>1</sub> × sin(i<sub>1</sub>) ⁄ n<sub>2</sub></p><div class="etape">Application numérique</div><p class="eq-ligne">sin(i<sub>2</sub>) = 1,33 × sin(45°) ⁄ 1,50 = 1,33 × 0,707 ⁄ 1,50 ≈ 0,627</p><p class="eq-ligne">i<sub>2</sub> ≈ <span class='resultat'>38,8°</span></p>
+  </details>
+</div><h3><span class="l">E ·</span> Cas limite : la réflexion totale</h3><div class="encart propriete"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>Quand la lumière passe d'un milieu vers un milieu <strong>moins</strong> réfringent (n<sub>2</sub> &lt; n<sub>1</sub>), le rayon réfracté s'écarte de la normale. Au-delà d'un <span class='terme'>angle limite</span> d'incidence, il n'y a plus de rayon réfracté : toute la lumière est réfléchie — c'est la <span class='terme'>réflexion totale</span>.</p>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 5 — Angle limite eau → air</div>
+  <p>Un rayon passe de l'eau (n<sub>1</sub> = 1,33) vers l'air (n<sub>2</sub> = 1,00). <span class='question'>Déterminer l'angle limite d'incidence au-delà duquel se produit la réflexion totale.</span></p>
+  <p class="donnees">Données : n₁(eau) = 1,33 · n₂(air) = 1,00</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <p class='donnees'><em>Correction rédigée par M. Van Hoorde / à valider — la version source de ce chapitre est la version élève, sans corrigé.</em></p><div class="etape">Condition limite (i₂ = 90°)</div><p class="eq-ligne">n<sub>1</sub> × sin(i<sub>lim</sub>) = n<sub>2</sub> × sin(90°)</p><p class="eq-ligne">sin(i<sub>lim</sub>) = n<sub>2</sub> ⁄ n<sub>1</sub> = 1,00 ⁄ 1,33 ≈ 0,752</p><div class="etape">Application numérique</div><p class="eq-ligne">i<sub>lim</sub> ≈ <span class='resultat'>48,8°</span></p><p>Au-delà de cet angle, le rayon est totalement réfléchi dans l'eau.</p>
+  </details>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=pn4Zbx9kD9E" target="_blank" rel="noopener">▶ Réviser en vidéo (1) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=zAIYfuz3GkY" target="_blank" rel="noopener">▶ (2) ↗</a>
+  <a class="video-chip" href="https://phet.colorado.edu/sims/html/bending-light/latest/bending-light_all.html?locale=fr" target="_blank" rel="noopener">▶ Animation PhET — Déviation de la lumière ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=7rs3z7BanlE" target="_blank" rel="noopener">▶ S'exercer de nouveau ↗</a>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-4"><span class="num">04</span> La réfraction au quotidien</h2></summary>
+<div class="partie-corps">
+<h3><span class="l">A ·</span> Effet de l’atmosphère</h3><p>Le soir, les rayons du Soleil traversent l'atmosphère avec un angle d'incidence très élevé : ils sont d'autant plus réfractés. Nous voyons donc encore le Soleil alors qu'il est déjà passé sous l'horizon, ce qui lui donne aussi une forme légèrement <strong>aplatie</strong>.</p><h3><span class="l">B ·</span> Mirages</h3><p>Lorsque le sol est très chaud, il chauffe l'air à son contact : l'écart de température modifie l'indice de réfraction de l'air, les rayons se courbent et l'on voit se refléter le bleu du ciel sur le sol (<strong>mirage chaud</strong>). À l'inverse, l'air refroidi près de la surface de la mer courbe les rayons dans l'autre sens (<strong>mirage froid</strong>).</p><div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Coucher de Soleil aplati, schémas des mirages chaud et froid (Images 10-13)</span>
+  <span class="detail">photos + schémas SVG — régime B.</span>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=jHyrsi9-fL8" target="_blank" rel="noopener">▶ Découvrir / comprendre en vidéo ↗</a>
+</div><h3><span class="l">C ·</span> Briller en société</h3><p>Deux expériences classiques illustrent la réfraction : celle du <strong>crayon cassé</strong> (un crayon plongé dans l'eau paraît brisé au niveau de la surface) et celle de la <strong>pièce de monnaie cachée</strong> qui réapparaît lorsqu'on verse de l'eau dans le récipient.</p><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=P0xGitvGSxc&t=192s" target="_blank" rel="noopener">▶ Réviser le cours en vidéo ↗</a>
+  <a class="video-chip" href="https://physiqueludique.fr/2009/05/voir-une-piece-cachee/" target="_blank" rel="noopener">▶ Voir une pièce cachée (physiqueludique.fr) ↗</a>
+  <a class="video-chip" href="https://ingeniumcanada.org/fr/scitech/educatif/mets-a-lessai/illusion-du-crayon-casse" target="_blank" rel="noopener">▶ L'illusion du crayon cassé (Ingenium Canada) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=npg_sXUCJWc" target="_blank" rel="noopener">▶ Expérience en vidéo (1) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=BQwAJr20Bck" target="_blank" rel="noopener">▶ Expérience en vidéo (2) ↗</a>
+</div>
+</div>
+</details>
+
+<section class="checklist" id="pour-le-ds">
+  <h2><span class="num">✓</span> Pour le DS, je sais :</h2>
+  <ol id="liste-ds">
+    <li><input type="checkbox" id="ds1"><label for="ds1">Citer la valeur de la vitesse de la lumière dans le vide ou dans l'air et la comparer à d'autres valeurs de vitesses couramment rencontrées.</label><span class="refs"><a href='#ancre-1'>01</a> · 18 p.279 / 20 p.281</span></li>
+    <li><input type="checkbox" id="ds2"><label for="ds2">Utiliser le vocabulaire : dioptre, milieu réfringent, réflexion, réfraction, normale, rayon incident/réfléchi/réfracté, angle d'incidence/de réflexion/de réfraction, plan d'incidence.</label><span class="refs"><a href='#ancre-2'>02</a> · <a href='#ancre-3'>03</a></span></li>
+    <li><input type="checkbox" id="ds3"><label for="ds3">Réaliser ou compléter une représentation schématique d'une réflexion / réfraction.</label><span class="refs"><a href='#ancre-3'>03</a> · 10 p.295 / 20 p.296</span></li>
+    <li><input type="checkbox" id="ds4"><label for="ds4">Définir l'indice de réfraction et l'exploiter en exercice.</label><span class="refs"><a href='#ancre-3'>03</a> · 14 p.296 / 20 p.296</span></li>
+    <li><input type="checkbox" id="ds5"><label for="ds5">Exploiter les lois de Snell-Descartes pour la réflexion et la réfraction.</label><span class="refs"><a href='#ancre-3'>03</a> · 12 p.295 / 24 p.298 / 20 p.296</span></li>
+    <li><input type="checkbox" id="ds6"><label for="ds6">Reconnaître quelques manifestations de la réfraction.</label><span class="refs"><a href='#ancre-4'>04</a></span></li>
+  </ol>
+  <div class="videos" style="margin:1rem 0 0;">
+    <a class="video-chip" href="https://create.kahoot.it/share/bilan-refraction-et-reflexion-de-la-lumiere/559a49b4-20ce-4ef8-9a7f-856c7a0def56" target="_blank" rel="noopener">🎯 Kahoot bilan du chapitre ↗</a>
+  <div class="a-faire">
+  <span class="type">vidéo</span>
+  <span class="quoi">Lien du DS (devoir surveillé) — à poser chaque année</span>
+  <span class="detail">un lien « DS » figure dans la source mais n'est jamais activé automatiquement : M. Van Hoorde choisit le DS de l'année via le cahier de textes.</span>
+</div>
+  </div>
+</section>
+
+<p class="signature">M. Van Hoorde<span>Lycée général Isaac de l'Étoile · Poitiers</span></p>
+
+</article>
+</div>
+
+<button id="haut" type="button" aria-label="Revenir en haut de page">↑ haut</button>
+
+<footer>
+  <div class="footer-inner">© 2025-2026 · M. Van Hoorde — Physique-Chimie · 2nde · Thème 3 — Ondes et signaux</div>
+</footer>
+
+<script>
+(function(){
+  var barre = document.querySelector('#lecture .fait');
+  var btn = document.getElementById('haut');
+  function maj(){
+    var h = document.documentElement;
+    var pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    barre.style.width = (pct || 0) + '%';
+    btn.classList.toggle('visible', h.scrollTop > 600);
+  }
+  document.addEventListener('scroll', maj, {passive:true});
+  btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  maj();
+
+  var liens = {};
+  document.querySelectorAll('#toc a').forEach(function(a){
+    liens[a.getAttribute('href').slice(1)] = a;
+  });
+  var cibles = Array.prototype.slice.call(document.querySelectorAll('h2[id], section[id]'));
+  function majToc(){
+    var repere = window.scrollY + window.innerHeight * 0.25;
+    var courant = null;
+    cibles.forEach(function(c){ if (c.offsetTop <= repere) courant = c; });
+    Object.keys(liens).forEach(function(k){ liens[k].classList.remove('actif'); });
+    if (courant && liens[courant.id]) liens[courant.id].classList.add('actif');
+  }
+  document.addEventListener('scroll', majToc, {passive:true});
+  majToc();
+
+  /* Sections repliables : un clic dans un sommaire ouvre la section visée */
+  document.querySelectorAll('#toc a, details.toc-mobile a').forEach(function(a){
+    a.addEventListener('click', function(){
+      var cible = document.querySelector(a.getAttribute('href'));
+      if (!cible) return;
+      var partie = cible.closest('details.partie');
+      if (partie) partie.open = true;
+    });
+  });
+
+  var CLE = 'cours-2nde-pc-t3-c4-refraction-reflexion-checklist';
+  var boites = document.querySelectorAll('#liste-ds input[type="checkbox"]');
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE)) || {}; } catch(e) {}
+  boites.forEach(function(b){
+    if (etat[b.id]) b.checked = true;
+    b.addEventListener('change', function(){
+      etat[b.id] = b.checked;
+      try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch(e) {}
+    });
+  });
+})();
+</script>
+
+<script>
+/* Verrou de fin de chapitre — v2 (porte à code centrée)
+   Le code n'est jamais écrit ici : seule son EMPREINTE SHA-256 est stockée.
+   Re-verrouillage pour tests : ?verrou=1 */
+(function(){
+  var EMPREINTE = '4b435e67235431a381024afd9095907778ec7259455ce43135123f3ee927d6dd' /* ⚠ empreinte du code fourni par Loïc : python3 -c "import hashlib;print(hashlib.sha256('CODE6C'.encode()).hexdigest())" */;
+  var CLE = 'deblocage-2nde-pc-t3-c4-refraction-reflexion';
+
+  function deverrouiller(){
+    document.body.classList.remove('verrouille');
+    var porte = document.getElementById('porte');
+    if (porte) porte.remove();
+    window.scrollTo(0, 0);
+  }
+
+  try {
+    if (new URLSearchParams(location.search).has('verrou')) {
+      localStorage.removeItem(CLE);
+    }
+  } catch(e) {}
+
+  try {
+    if (localStorage.getItem(CLE) === '1') { deverrouiller(); return; }
+  } catch(e) {}
+
+  var forme = document.getElementById('forme-code');
+  var champ = document.getElementById('champ-code');
+  var erreur = document.getElementById('erreur-code');
+
+  function empreinteHex(texte){
+    var donnees = new TextEncoder().encode(texte);
+    return crypto.subtle.digest('SHA-256', donnees).then(function(tampon){
+      return Array.prototype.map.call(new Uint8Array(tampon), function(o){
+        return o.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  forme.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var essai = (champ.value || '').trim().toUpperCase();
+    if (essai.length !== 6) {
+      erreur.textContent = 'Le code fait 6 caractères (lettres et chiffres).';
+      return;
+    }
+    if (!(window.crypto && crypto.subtle)) {
+      erreur.textContent = 'Navigateur incompatible — ouvre la page depuis le site.';
+      return;
+    }
+    empreinteHex(essai).then(function(h){
+      if (h === EMPREINTE) {
+        try { localStorage.setItem(CLE, '1'); } catch(e) {}
+        deverrouiller();
+      } else {
+        erreur.textContent = 'Code incorrect. Vérifie le cahier de textes !';
+        champ.select();
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

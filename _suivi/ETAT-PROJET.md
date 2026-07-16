@@ -1,6 +1,6 @@
 # État du projet — Site pédagogique Physique-Chimie
 
-> Dernière mise à jour : 15/07/2026 · tenu à jour par Loïc + Claude
+> Dernière mise à jour : 16/07/2026 · tenu à jour par Loïc + Claude
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 Vue d'ensemble. Détail par chapitre dans `chapitres.md` ; idées dans `IDEES.md`.
@@ -42,7 +42,36 @@ source, puisqu'il change chaque année).
 
 ## ⚠ Alertes
 
-
+- ✅ **Page de niveau `pages/2nde-physique-chimie.html` mise à jour et fournie** :
+  les 4 chapitres du Thème 3 y sont **liés** (liens anti-préfixe, mêmes cartes
+  `.chapitre` que les Thèmes 1-2, descriptions à puces conservées).
+- ⚠ **T3 — divergence de structure à trancher (décision de Loïc).** L'ancienne
+  page prévoyait 3 chapitres, avec **spectres en CH.2 et signaux en CH.3** ; les
+  PPTX déposés donnent **4 chapitres** dans l'ordre son / signaux / spectres /
+  réfraction (+ réfraction, absent de l'ancienne page). La page a été alignée sur
+  **l'ordre des PPTX/slugs** (obligatoire pour que carte et page portent le même
+  numéro). Deux ajustements faits, réversibles : (1) « Vision et image — spectres
+  lumineux » renommé **« Dispersion et spectres »** (titre réel de la page de
+  cours) ; (2) signaux et spectres permutés. Si Loïc préfère l'ordre pédagogique
+  son / spectres / signaux, il faut **renuméroter les fichiers** (t3-c2 ↔ t3-c3 :
+  noms, clés localStorage, titres internes) — à faire en régime B.
+- ⚠ **T3-C2 (signaux et capteurs) Ex2, loi des nœuds au point B : correction de
+  la source fausse → corrigée.** La source écrivait une relation incohérente au
+  nœud B ; rétablie en **I₃ + I₆ = I₅** (I₅ sortant), avec un aparté explicatif.
+  À revoir en régime B.
+- ⚠ **T3-C2 : pas de diapositive « Pour le DS » ni de Kahoot** dans la source →
+  liste de compétences à fournir (bloc 🚧), pas de chip Kahoot.
+- ⚠ **T3-C2 : hyperliens vidéo dupliqués dans la source** (mêmes URLs sur
+  plusieurs diapositives) → posés au mieux à leur emplacement le plus probable ;
+  à vérifier en régime B.
+- 🔴 **T3-C4 (réfraction et réflexion) : la source est une VERSION ÉLÈVE, sans
+  corrigés.** Les **5 corrections ont été rédigées par Claude** (calculs vérifiés)
+  et **portent la mention « à valider »** sur la page. À contrôler en priorité en
+  régime B. En particulier **Ex3** (température de l'eau depuis n=1,333) dépend
+  d'un **graphe n=f(θ) laissé en 🚧** : réponse ≈ 20 °C donnée sous réserve.
+- ⚠ **T3 (4 chapitres) : liens DS laissés en attente** — jamais posés
+  automatiquement (ils changent chaque année). Bloc 🚧 dédié dans chaque
+  checklist.
 - ⚠ **C6 et C7 : pas de diapositive « Pour le DS »** dans les sources — listes de compétences à fournir (et pas de Kahoot non plus pour ces deux chapitres).
 - ⚠ **C5 : lien DS laissé en attente** — un lien existe dans la source (étiqueté « DS - 2024 », donc 2024/2025) mais n'a pas été activé, dans l'attente du choix de Loïc (DS de cette année ou de l'an dernier).
 - ⚠ **T2 (3 chapitres) : liens DS laissés en attente** — comme pour C5, des liens « DS » figurent dans les sources mais ne sont jamais posés automatiquement.
@@ -80,9 +109,31 @@ Tout est en ligne à l'état d'ébauche (régime A élargi). Niveau de finition 
 
 > Codes de déblocage choisis par Claude, à transmettre via le cahier de textes (modifiables).
 
+## 📊 Avancement (Seconde — Thème 3 · Ondes et signaux)
+
+**Nouveau (16/07).** Les 4 chapitres sont **en ligne à l'état d'ébauche**
+(régime A élargi). ⚠ **Pas encore liés** depuis la page de niveau (absente —
+voir Alertes + snippet `cartes-theme3-a-coller.html`). Niveau de finition
+**validé** :
+
+| Chapitre | Cours validé | Fiche | Code |
+|---|---|---|---|
+| T3-C1 Émission et perception d'un son | ⬜ non | — | S0NORE |
+| T3-C2 Signaux et capteurs | ⬜ non | — | S1GNAL |
+| T3-C3 Dispersion et spectres | ⬜ non | — | PR1SME |
+| T3-C4 Réfraction et réflexion | ⬜ non | — | M1RAGE |
+
+> Codes de déblocage choisis par Claude, à transmettre via le cahier de textes (modifiables).
+> **Rappels de vigilance pour le régime B** : C2 (nœud B corrigé, pas de DS/Kahoot,
+> vidéos dupliquées) et surtout **C4 (corrections rédigées par Claude, à valider)**.
+
 ## 🔜 Prochaines actions
 
-- [ ] Déposer les PPTX de tous les chapitres pour dégrossissage (régime A).
+- [ ] **Trancher la structure du Thème 3** (ordre des PPTX conservé, ou
+      renumérotation vers son / spectres / signaux — voir Alertes).
+- [ ] **Valider les 5 corrections de T3-C4** rédigées par Claude (source sans corrigé).
+- [ ] Trancher le nœud B de **T3-C2 Ex2** et la loi des nœuds associée.
+- [ ] Déposer les PPTX des chapitres restants pour dégrossissage (régime A).
 - [ ] Vérifier que chaque ébauche est liée depuis `pages/2nde-physique-chimie.html`.
 - [ ] Cloner le repo dans VS Code + extension Claude Code (pour le raffinage).
 - [ ] Fournir le calendrier scolaire pour ordonner les priorités.

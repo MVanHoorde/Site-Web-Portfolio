@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2nde — Émission et perception d'un son · Physique-Chimie</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e;
+    --gris:#6b6f7a; --carte:#ffffff; --or:#f0cf6e; --or-fonce:#b28a1d;
+    --vert:#6fae7a; --vert-fonce:#4c8a58; --sepia:#8a6d3b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Spectral', Georgia, serif; color:var(--encre);
+    background-color:var(--papier);
+    background-image:linear-gradient(var(--grille) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+    background-size:32px 32px; line-height:1.7;
+  }
+  .spectre { height:6px; background:var(--encre); position:relative; }
+  .spectre i { position:absolute; top:0; bottom:0; width:4px; }
+  .spectre i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .spectre i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .spectre i:nth-child(3){ left:76%; background:var(--h-alpha); }
+  nav { background:var(--papier); border-bottom:1px solid var(--encre); }
+  .nav-inner { max-width:1200px; margin:0 auto; padding:.85rem 1.4rem;
+    display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+  .nav-logo { font-family:'Space Grotesk',sans-serif; font-weight:700; }
+  .nav-logo span { color:var(--h-alpha); }
+  .retour { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--encre); text-decoration:none; border-bottom:2px solid var(--h-beta); }
+  .retour:hover { color:var(--h-beta); }
+  #lecture { position:sticky; top:0; height:4px; z-index:50; }
+  #lecture .fait { height:100%; width:0%; background:var(--h-alpha); }
+
+  .page { max-width:1200px; margin:0 auto; padding:2rem 1.4rem 4rem;
+    display:grid; grid-template-columns:230px minmax(0,1fr); gap:2.2rem; align-items:start; }
+  aside.sommaire { position:sticky; top:1.4rem; font-family:'Space Grotesk',sans-serif; }
+  .sommaire .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--gris); margin-bottom:.7rem; }
+  .sommaire ol { list-style:none; }
+  .sommaire a { display:flex; gap:.6rem; align-items:baseline; padding:.42rem .65rem;
+    border-radius:8px; text-decoration:none; color:var(--encre); font-size:.92rem; line-height:1.3; }
+  .sommaire a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--h-beta); }
+  .sommaire a:hover { background:var(--carte); }
+  .sommaire a.actif { background:var(--carte); box-shadow:inset 3px 0 0 var(--h-alpha); font-weight:600; }
+  .sommaire .ds a .n { color:var(--h-gamma); }
+
+  article.lecture { background:var(--carte); border:1px solid var(--encre); border-radius:14px;
+    box-shadow:6px 6px 0 rgba(20,26,38,.08); padding:clamp(1.4rem,4vw,3rem); min-width:0; }
+  .fil-ariane { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); margin-bottom:.5rem; }
+  .fil-ariane .niveau { color:var(--h-alpha); }
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.7rem,4vw,2.4rem); line-height:1.12; margin-bottom:.4rem; }
+  .sous-titre { font-family:'IBM Plex Mono',monospace; font-size:.85rem; color:var(--gris); margin-bottom:2.4rem; }
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2.8rem 0 1rem;
+    display:flex; align-items:baseline; gap:.8rem; scroll-margin-top:2rem; }
+  h2 .num { font-family:'IBM Plex Mono',monospace; font-size:.9rem; color:var(--h-beta); }
+  p { margin-bottom:.9rem; max-width:75ch; text-align:justify; hyphens:auto; }
+  strong { font-weight:600; }
+  ul.cours { max-width:75ch; margin:0 0 .9rem 1.2rem; text-align:justify; }
+  ul.cours li { margin-bottom:.5rem; }
+  .nb { white-space:nowrap; }
+  sub, sup { font-size:.68em; }
+
+  /* ===== BIBLIOTHÈQUE DE COMPOSANTS (validée sur le chapitre T1-C2) ===== */
+
+  /* Encart générique : Définition (Hβ) / Propriété (Hγ) / Exemple (vert) */
+  .encart { border:1px solid var(--encre); border-radius:0 10px 10px 0;
+    background:var(--papier); padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.12em; text-transform:uppercase; margin-bottom:.35rem; }
+  .encart p:last-child { margin-bottom:0; }
+  .definition { border-left:4px solid var(--h-beta); }
+  .definition .etq { color:var(--h-beta); }
+  .terme { background:rgba(29,154,170,.16); border-radius:3px; padding:.02em .25em;
+    font-weight:600; color:#0f6b76; }
+  .propriete { border-left:4px solid var(--h-gamma); }
+  .propriete .etq { color:var(--h-gamma); }
+  .exemple { border-left:4px solid var(--vert); background:#fff; max-width:none; }
+  .exemple .etq { color:var(--vert-fonce); }
+  .exemple .duo-e { display:grid; grid-template-columns:220px 1fr; gap:1.2rem; align-items:center; }
+  .exemple img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+
+  /* Équation centrée hors paragraphe */
+  .eq-ligne { font-family:'Spectral',serif; font-style:italic; text-align:center;
+    font-size:1.15rem; margin:.7rem auto; max-width:none; white-space:nowrap; overflow-x:auto; }
+  .eq-ligne sub, .eq-ligne sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.58em; }
+
+  /* Pictogramme « à noter sur la fiche » (crayon, coin haut droit) */
+  .a-noter { position:absolute; top:-.7rem; right:.8rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; background:var(--carte); border:1.4px solid var(--encre); border-radius:50%;
+    width:1.7rem; height:1.7rem; display:flex; align-items:center; justify-content:center; }
+  figure { position:relative; }
+  figure .a-noter { top:-.4rem; right:-.2rem; }
+
+  /* Encart Formule (variante C validée) */
+  .formule-bloc { margin:1.4rem auto; max-width:60ch; border:1px solid var(--encre); border-radius:12px;
+    background:#fff; box-shadow:4px 4px 0 rgba(74,63,158,.18);
+    display:grid; grid-template-columns:auto minmax(0,1fr); position:relative; }
+  .formule-bloc .eq { background:var(--encre); color:var(--papier); font-family:'Spectral',serif;
+    font-style:italic; font-size:1.9rem; display:flex; align-items:center; padding:1rem 1.5rem;
+    white-space:nowrap; border-radius:11px 0 0 11px; }
+  .formule-bloc .eq sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.5em; }
+  .formule-bloc .grandeurs { padding:.9rem 1.3rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem; line-height:2.05; }
+  .formule-bloc .grandeurs b { color:var(--h-gamma); }
+  .formule-bloc .titre { font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--gris); display:block; margin-bottom:.15rem; }
+
+  /* Encart Notation */
+  .notation { border:1px dashed var(--encre); border-radius:10px; background:#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .notation .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .notation .chips { display:flex; gap:.9rem; flex-wrap:wrap; margin-bottom:.8rem; justify-content:center; }
+  .notation .chip { font-family:'IBM Plex Mono',monospace; font-size:.85rem; border:1px solid var(--encre);
+    border-radius:8px; padding:.35rem .8rem; background:var(--papier); }
+  .notation .chip b { color:var(--h-beta); }
+  .notation .aq { border-top:1px dashed var(--grille); padding-top:.7rem; margin-bottom:0; }
+  .notation .aq b { color:var(--h-beta); }
+
+  /* Encart Méthode (étapes en chiffres romains) */
+  .methode { border:1px solid var(--encre); border-left:4px solid var(--or); border-radius:0 10px 10px 0;
+    background:linear-gradient(0deg,rgba(240,207,110,.08),rgba(240,207,110,.08)),#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .methode .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--or-fonce); margin-bottom:.5rem; }
+  .methode ol { list-style:none; counter-reset:met; margin:0; }
+  .methode li { counter-increment:met; display:grid; grid-template-columns:2.2rem 1fr; gap:.5rem;
+    margin-bottom:.5rem; align-items:baseline; }
+  .methode li::before { content:counter(met,upper-roman) "."; font-family:'IBM Plex Mono',monospace;
+    font-weight:600; color:var(--or-fonce); text-align:right; }
+
+  /* Encart Histoire des sciences */
+  .histoire { border:1.5px solid var(--sepia); outline:1px solid var(--sepia); outline-offset:3px;
+    background:#f8f2e2; padding:1.2rem 1.4rem; margin:1.8rem 3px; }
+  .histoire .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--sepia); text-align:center; margin-bottom:.8rem; }
+  .histoire .etq::before, .histoire .etq::after { content:"❦"; margin:0 .6rem; }
+  .histoire .duo-h { display:grid; grid-template-columns:170px 1fr; gap:1.2rem; align-items:start; }
+  .histoire img { width:100%; border:1px solid var(--sepia); padding:3px; background:#fff; }
+  .histoire .credit { font-family:'IBM Plex Mono',monospace; font-size:.65rem; color:var(--sepia);
+    margin-top:.3rem; line-height:1.4; }
+  .histoire h4 { font-family:'Space Grotesk',sans-serif; font-size:1.02rem; margin-bottom:.4rem; }
+  .histoire p { font-size:.95rem; margin-bottom:.6rem; }
+  .histoire .citation { font-style:italic; text-align:center; font-size:1.05rem; margin:.7rem 0 .2rem; }
+  .histoire .source-cit { font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--sepia);
+    text-align:center; display:block; margin-bottom:.6rem; }
+
+  /* Encart Synthèse de TP (sobre) */
+  .synthese-tp { border:1px dashed var(--gris); border-radius:10px; background:#fff;
+    padding:1.1rem 1.4rem; margin:1.6rem 0; }
+  .synthese-tp .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .synthese-tp .contexte { font-size:.92rem; color:var(--gris); font-style:italic; margin-bottom:.8rem; }
+  .synthese-tp .sous-etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--gris); margin:.8rem 0 .2rem; display:flex; align-items:center; gap:.5rem; }
+  .synthese-tp .sous-etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .synthese-tp p:last-child { margin-bottom:0; }
+
+  /* ===== À FAIRE — emplacement réservé (régime « ébauche ») ===== */
+  /* Marque un manque VISIBLE sur le site : image à extraire, schéma à
+     produire, vidéo à décoder, etc. À retirer lors du passage en finition. */
+  .a-faire { position:relative; margin:1.2rem 0; padding:.9rem 1.1rem .9rem 2.6rem;
+    border:1px dashed var(--gris); border-radius:8px; color:var(--gris);
+    background:repeating-linear-gradient(135deg, #f4f2ec 0 12px, #eeece4 12px 24px);
+    font-size:.92rem; }
+  .a-faire::before { content:"🚧"; position:absolute; left:.8rem; top:.85rem; font-size:1.05rem;
+    filter:grayscale(.15); }
+  .a-faire .type { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.62rem;
+    letter-spacing:.14em; text-transform:uppercase; color:#fff; background:var(--gris);
+    padding:.12rem .5rem; border-radius:4px; margin-bottom:.35rem; }
+  .a-faire .quoi { display:block; color:var(--encre); }
+  .a-faire .detail { display:block; margin-top:.25rem; font-size:.82rem; font-style:italic; }
+  @media print { .a-faire { background:#f4f2ec; } }
+
+  /* Vidéos */
+  .videos { display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0 1.6rem; }
+  .video-chip { font-family:'IBM Plex Mono',monospace; font-size:.78rem;
+    display:inline-flex; align-items:center; gap:.45em; border:1px solid var(--encre);
+    border-radius:999px; padding:.34rem .85rem; text-decoration:none; color:var(--encre);
+    background:var(--papier); transition:background .15s,color .15s; }
+  .video-chip:hover { background:var(--h-beta); color:#fff; }
+
+  /* Figures */
+  figure { margin:1.6rem 0; }
+  figure svg, figure img { max-width:100%; height:auto; display:block; }
+  figure img.photo { border:1px solid var(--encre); border-radius:6px; }
+  figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
+    margin-top:.55rem; max-width:66ch; line-height:1.55; }
+  figcaption .eqc { display:block; font-family:'Spectral',serif; font-style:italic; font-size:.95rem;
+    color:var(--encre); margin:.35rem 0; text-align:center; }
+  figcaption .eqc sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.6em; }
+  .fig-row { display:flex; gap:1.6rem; flex-wrap:wrap; align-items:flex-start; }
+  .fig-row figure { flex:1 1 240px; max-width:400px; }
+  .fig-row figure img { width:100%; height:220px; object-fit:cover; }
+  .fig-etroite { max-width:300px; }
+  .pill-ex { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.66rem;
+    letter-spacing:.08em; text-transform:uppercase; color:#fff; border-radius:999px;
+    padding:.1rem .6rem; margin-bottom:.35rem; }
+  .pill-ex.phys { background:var(--h-beta); }
+  .pill-ex.chim { background:var(--h-alpha); }
+  .duo { display:grid; grid-template-columns:minmax(220px,300px) minmax(0,1fr); gap:2rem; align-items:start; }
+  .defile { overflow-x:auto; }
+
+  table.tab { border-collapse:collapse; font-size:.95rem; }
+  table.tab caption { caption-side:top; text-align:left; font-family:'Space Grotesk',sans-serif;
+    font-size:.85rem; font-weight:600; padding-bottom:.4rem; }
+  table.tab th, table.tab td { border:1px solid var(--encre); padding:.42rem .8rem; text-align:center; }
+  table.tab thead th, table.tab .entete { font-family:'Space Grotesk',sans-serif; font-size:.82rem; background:var(--papier); }
+
+  /* ===== Exercices (structure normalisée) ===== */
+  .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
+    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0;
+    background:#fdfdfb; }
+  .exercice .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    text-transform:uppercase; letter-spacing:.1em; color:var(--h-alpha); margin-bottom:.5rem; }
+  .exercice .duo-x { display:grid; grid-template-columns:1fr 200px; gap:1.1rem; align-items:start; }
+  .exercice .duo-x img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+  .exercice .question { font-style:italic; }
+  .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris);
+    margin-top:.5rem; border-top:1px dotted var(--grille); padding-top:.45rem; }
+  details.correction { margin-top:.8rem; border-top:1px dashed var(--gris); padding-top:.6rem; }
+  details.correction summary { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--h-gamma); cursor:pointer; }
+  details.correction summary:hover { text-decoration:underline; }
+  details.correction[open] summary { margin-bottom:.6rem; }
+  .etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--h-gamma); margin:.7rem 0 .2rem; display:flex;
+    align-items:center; gap:.5rem; }
+  .etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .resultat { border-bottom:2.5px solid var(--h-alpha); font-weight:600; padding-bottom:1px; white-space:nowrap; }
+  .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--gris);
+    text-align:center; margin-bottom:.1rem; }
+  .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem; margin:1rem 0 1rem 1rem; }
+  .eq-exo sub, .eq-exo sup { font-size:.6em; font-style:normal; font-family:'IBM Plex Mono',monospace; }
+  .coef-ok { color:var(--h-alpha); font-weight:700; font-style:normal; }
+  .frac { display:inline-block; vertical-align:middle; text-align:center; margin:0 .25em; }
+  .frac .haut { display:block; border-bottom:1.5px solid var(--encre); padding:0 .3em .1em; }
+  .frac .bas { display:block; padding:.1em .3em 0; }
+  .unites { font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); }
+  .exercice p, .encart.exemple p, .histoire p, .synthese-tp p { max-width:none; }
+  .aparte { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris);
+    border-left:2px solid var(--grille); padding-left:.7rem; margin:.6rem 0; }
+
+  /* Checklist */
+  .checklist { border:1px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 12px 12px 0; padding:1.2rem 1.4rem; margin:2.6rem 0 0; }
+  .checklist h2 { margin-top:0; }
+  .checklist ol { list-style:none; }
+  .checklist li { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem;
+    align-items:baseline; padding:.55rem 0; border-bottom:1px dashed var(--grille); }
+  .checklist li:last-child { border-bottom:none; }
+  .checklist input[type="checkbox"] { transform:translateY(2px) scale(1.15); accent-color:var(--h-gamma); cursor:pointer; }
+  .checklist label { cursor:pointer; }
+  .checklist .refs { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); white-space:nowrap; }
+  .checklist .refs a { color:var(--h-beta); text-decoration:none; }
+  .checklist .refs a:hover { text-decoration:underline; }
+
+  #haut { position:fixed; right:1.2rem; bottom:1.2rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.8rem; background:var(--carte); border:1px solid var(--encre); border-radius:999px;
+    padding:.5rem .85rem; cursor:pointer; box-shadow:3px 3px 0 rgba(20,26,38,.12);
+    opacity:0; pointer-events:none; transition:opacity .2s; }
+  #haut.visible { opacity:1; pointer-events:auto; }
+  #haut:hover { background:var(--h-beta); color:#fff; }
+
+  details.partie { border-top:3px solid var(--encre); margin-top:2.4rem; }
+  details.partie > summary { list-style:none; cursor:pointer; }
+  details.partie > summary::-webkit-details-marker { display:none; }
+  details.partie > summary h2 { margin:1.1rem 0 1rem; }
+  details.partie > summary h2::after { content:"▾"; margin-left:auto; font-family:'IBM Plex Mono',monospace;
+    font-size:1rem; color:var(--gris); transition:transform .15s; }
+  details.partie:not([open]) > summary h2::after { content:"▸"; }
+  details.partie > summary:hover h2::after { color:var(--h-beta); }
+  .signature { text-align:right; font-family:'Space Grotesk',sans-serif; font-weight:600;
+    margin:2.4rem 0 0; }
+  .signature span { display:block; font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    color:var(--gris); font-weight:400; }
+  details.toc-mobile { display:none; }
+  footer { border-top:1px solid var(--encre); margin-top:2rem; }
+  .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
+    font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); }
+
+  /* ===== Verrou de fin de chapitre — v2 : porte centrée plein écran ===== */
+  body.verrouille aside.sommaire,
+  body.verrouille details.toc-mobile,
+  body.verrouille article.lecture > *:not(#porte) { display:none; }
+  body.verrouille .page { grid-template-columns:minmax(0,1fr); max-width:720px; }
+  body.verrouille article.lecture { min-height:min(70vh, 620px); display:flex;
+    align-items:center; justify-content:center; }
+  #porte { display:none; }
+  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; width:100%; }
+  #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }
+  #porte h1 { margin-bottom:.6rem; }
+  #porte .explication { max-width:52ch; margin:0 auto 1.6rem; color:var(--gris); }
+  #porte form { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+  #porte input {
+    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.4em;
+    text-transform:uppercase; text-align:center; width:16ch;
+    padding:.55rem .2rem .55rem .6rem; border:1.5px solid var(--encre);
+    border-radius:10px; background:var(--papier); color:var(--encre);
+  }
+  #porte input:focus { outline:2px solid var(--h-beta); }
+  #porte button {
+    font-family:'IBM Plex Mono',monospace; font-size:.9rem; cursor:pointer;
+    border:1.5px solid var(--encre); border-radius:10px; padding:.55rem 1.1rem;
+    background:var(--encre); color:var(--papier);
+  }
+  #porte button:hover { background:var(--h-beta); border-color:var(--h-beta); }
+  #porte .erreur { color:var(--h-alpha); font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; min-height:1.4em; margin-top:.8rem; }
+
+  @media (max-width:960px) {
+    .page { grid-template-columns:1fr; gap:1.2rem; padding:1.2rem .9rem 3rem; }
+    aside.sommaire { display:none; }
+    details.toc-mobile { display:block; font-family:'Space Grotesk',sans-serif;
+      background:var(--carte); border:1px solid var(--encre); border-radius:12px;
+      padding:.7rem 1rem; margin-bottom:1.2rem; }
+    details.toc-mobile summary { font-family:'IBM Plex Mono',monospace; font-size:.8rem;
+      letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    details.toc-mobile ol { list-style:none; margin-top:.6rem; }
+    details.toc-mobile a { display:block; padding:.4rem .2rem; color:var(--encre);
+      text-decoration:none; border-bottom:1px dashed var(--grille); }
+    details.toc-mobile a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+      color:var(--h-beta); margin-right:.5rem; }
+    .duo, .exemple .duo-e, .histoire .duo-h, .exercice .duo-x { grid-template-columns:1fr; }
+    .formule-bloc { grid-template-columns:1fr; }
+    .formule-bloc .eq { justify-content:center; }
+    .checklist li { grid-template-columns:auto 1fr; }
+    .checklist .refs { grid-column:2; white-space:normal; }
+  }
+
+  h3 { font-family:'Space Grotesk',sans-serif; font-size:1.12rem; color:var(--h-beta);
+       margin:1.8rem 0 .6rem; font-weight:600; }
+  h3 .l { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris); margin-right:.15rem; }
+</style>
+</head>
+<body class="verrouille">
+
+<div class="spectre" aria-hidden="true"><i></i><i></i><i></i></div>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
+    <a class="retour" href="2nde-physique-chimie.html">← Retour aux cours de 2nde</a>
+  </div>
+</nav>
+<div id="lecture"><div class="fait"></div></div>
+
+<div class="page">
+
+<aside class="sommaire" aria-label="Sommaire du chapitre">
+  <div class="etiquette">Chapitre 1 — Sommaire</div>
+  <ol id="toc">
+    <li><a href="#ancre-1"><span class="n">01</span> Caractéristiques d'un signal périodique</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span> Les ondes</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span> Émission et propagation d'un signal sonore</a></li>
+    <li><a href="#ancre-4"><span class="n">04</span> Perception des sons</a></li>
+    <li class="ds"><a href="#pour-le-ds"><span class="n">✓</span> Pour le DS, je sais</a></li>
+  </ol>
+</aside>
+
+<article class="lecture">
+
+<div id="porte">
+  <div class="cadenas" aria-hidden="true">🔒</div>
+  <h1>Émission et perception d'un son</h1>
+  <p class="explication">Ce chapitre sera débloqué <strong>en fin de séquence</strong>,
+  au rythme de la classe. Le code de déblocage est transmis via le cahier de textes —
+  il figure aussi en bas de ta fiche de cours.</p>
+  <form id="forme-code" autocomplete="off">
+    <input id="champ-code" type="text" maxlength="6" inputmode="text"
+           spellcheck="false" aria-label="Code de déblocage (6 caractères)"
+           placeholder="••••••">
+    <button type="submit">Déverrouiller</button>
+  </form>
+  <p class="erreur" id="erreur-code" role="alert"></p>
+</div>
+
+<details class="toc-mobile">
+  <summary>Sommaire du chapitre</summary>
+  <ol>
+    <li><a href="#ancre-1"><span class="n">01</span>Caractéristiques d'un signal périodique</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span>Les ondes</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span>Émission et propagation d'un signal sonore</a></li>
+    <li><a href="#ancre-4"><span class="n">04</span>Perception des sons</a></li>
+    <li><a href="#pour-le-ds"><span class="n">✓</span>Pour le DS, je sais</a></li>
+  </ol>
+</details>
+
+<p class="fil-ariane">Physique-Chimie · <span class="niveau">2nde</span> · Thème 3 — Ondes et signaux</p>
+<h1>Émission et perception d'un son</h1>
+<p class="sous-titre">Thème 3 · Chapitre 1 — cours &amp; exercices corrigés</p>
+
+<details class="partie" open>
+<summary><h2 id="ancre-1"><span class="num">01</span> Caractéristiques d'un signal périodique</h2></summary>
+<div class="partie-corps">
+<p>Un <span class="terme">phénomène périodique</span> est un phénomène qui se reproduit identique à lui-même à intervalles de temps égaux.</p><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Phénomène périodique</div>
+  <p>Un <span class="terme">phénomène périodique</span> est un phénomène qui se reproduit identique à lui-même à intervalles de temps égaux.</p>
+</div><h3><span class="l">A ·</span> Période</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Période</div>
+  <p>La <span class="terme">période</span> <span class="nb">T</span> d'un signal périodique est la plus petite durée au bout de laquelle le signal se reproduit identique à lui-même. C'est la durée d'un <span class="terme">motif élémentaire</span>.</p>
+</div><div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Signal périodique avec repérage du motif élémentaire et de la période T</span>
+  <span class="detail">source : diapo « A – Période » (électrocardiogramme + graphe amplitude/temps) — à redessiner en SVG à la charte en régime B.</span>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 1 — Période d'un signal</div>
+  <div class="duo-x">
+    <div><p><span class="question">Quelle est la période de ce signal ?</span></p></div>
+    <div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Graphe amplitude/temps de l'exercice</span>
+  <span class="detail">à redessiner en SVG — régime B.</span>
+</div>
+  </div>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Extraction des informations</div><p>On mesure le temps de plusieurs motifs pour limiter l'erreur de mesure. Sur le graphe, 3 motifs s'étendent de <span class="nb">t<sub>i</sub> = 0,0003 s</span> à <span class="nb">t<sub>f</sub> = 0,0082 s</span>.</p><p class="eq-ligne">3T = t<sub>f</sub> − t<sub>i</sub> = 0,0082 − 0,0003 = 7,9 × 10<sup>−3</sup> s</p><div class="etape">Application numérique</div><p class="eq-ligne">T = 7,9 × 10<sup>−3</sup> ⁄ 3 ≈ <span class="resultat">2,6 × 10<sup>−3</sup> s = 2,6 ms</span></p>
+  </details>
+</div><h3><span class="l">B ·</span> Fréquence</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Fréquence</div>
+  <p>La <span class="terme">fréquence</span> <span class="nb">f</span> correspond au nombre de motifs élémentaires (périodes) par unité de temps, le plus souvent par seconde. Son unité est le <span class="terme">hertz</span> de symbole <span class="nb">Hz</span>.</p>
+</div><div class="formule-bloc"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">f = 1 ⁄ T</div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>f</b> fréquence · Hz<br><b>T</b> période · s
+  </div>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 2 — Fréquence d'un signal</div>
+  <p><span class="question">Calculer la fréquence du signal de l'exercice précédent.</span></p>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Formule du cours</div><p class="formule-cours-rappel">f = 1 ⁄ T</p><div class="etape">Application numérique</div><p class="eq-ligne">f = 1 ⁄ (2,62 × 10<sup>−3</sup>) ≈ <span class="resultat">382 Hz</span></p>
+  </details>
+</div><div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Effet de la fréquence sur l'allure du signal (Image 3)</span>
+  <span class="detail">illustration à redessiner — régime B.</span>
+</div><h3><span class="l">C ·</span> Extrema</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Extrema</div>
+  <p>Un signal périodique possède des <span class="terme">extrema</span> (ou extremums) : une valeur maximale et une valeur minimale. Pour une tension périodique <span class="nb">u(t)</span> on parle de tension maximale <span class="nb">U<sub>max</sub></span> et de tension minimale <span class="nb">U<sub>min</sub></span>.</p>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 3 — Période, fréquence et extrema</div>
+  <div class="duo-x">
+    <div><p><span class="question">Déterminer les valeurs de la période T, de la fréquence f et des tensions maximale U<sub>max</sub> et minimale U<sub>min</sub> du signal ci-contre.</span></p></div>
+    <div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Graphe tension/temps de l'exercice</span>
+  <span class="detail">à redessiner en SVG — régime B.</span>
+</div>
+  </div>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Période et fréquence</div><p>Le graphe donne 4 motifs sur <span class="nb">4T = 93 ms = 9,3 × 10<sup>−2</sup> s</span>.</p><p class="eq-ligne">T = 9,3 × 10<sup>−2</sup> ⁄ 4 ≈ 2,325 × 10<sup>−2</sup> s = 0,02325 s</p><p class="eq-ligne">f = 1 ⁄ 0,02325 ≈ <span class="resultat">43 Hz</span></p><div class="etape">Extrema</div><p class="eq-ligne"><span class="resultat">U<sub>max</sub> = 4 V</span>  ·  <span class="resultat">U<sub>min</sub> = 0 V</span></p>
+  </details>
+</div><div class="videos">
+  <a class="video-chip" href="https://youtu.be/baUAeWXAdX4" target="_blank" rel="noopener">▶ Réviser en vidéo — signal périodique ↗</a>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-2"><span class="num">02</span> Les ondes</h2></summary>
+<div class="partie-corps">
+<div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Onde</div>
+  <p>Une <span class="terme">onde</span> est la propagation d'une perturbation sans déplacement de matière.</p><p>Il existe plusieurs types d'ondes :</p><ul class="cours"><li>Les <strong>ondes mécaniques</strong> qui se propagent dans un milieu matériel, sans transport de matière mais avec transport d'énergie.</li><li>Les <strong>ondes électromagnétiques (OEM)</strong> qui peuvent se déplacer dans le vide. Elles transportent de l'énergie mais aussi de l'information.</li></ul>
+</div><div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Propagation d'une vague sans déplacement horizontal du bateau (Image 5)</span>
+  <span class="detail">à redessiner en SVG — régime B.</span>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 4 — Onde mécanique ou électromagnétique ?</div>
+  <div class="duo-x">
+    <div><p><span class="question">Indiquer, pour chaque cas, s'il s'agit d'une onde mécanique ou d'une onde électromagnétique (OEM).</span></p></div>
+    <div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Illustrations des cinq situations (Soleil, haut-parleur, antenne radio, vague, séisme)</span>
+  <span class="detail">photos à extraire/optimiser — régime B.</span>
+</div>
+  </div>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Classement</div><ul class="cours"><li>Lumière du Soleil → <strong>OEM</strong></li><li>Ondes radio → <strong>OEM</strong></li><li>Onde sonore → <strong>mécanique</strong></li><li>Vague → <strong>mécanique</strong></li><li>Ondes sismiques → <strong>mécanique</strong></li></ul>
+  </details>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-3"><span class="num">03</span> Émission et propagation d'un signal sonore</h2></summary>
+<div class="partie-corps">
+<h3><span class="l">A ·</span> Émission du signal sonore</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Émetteur</div>
+  <p>Un <span class="terme">émetteur</span> (ou source sonore) est un objet qui produit un signal sonore grâce à une de ses parties qui vibre. Une <span class="terme">vibration</span> est un mouvement de va-et-vient d'un objet.</p>
+</div><p><em>Remarque :</em> pour que le signal sonore émis soit plus audible, il doit être amplifié par une <strong>caisse de résonance</strong>.</p><div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Guitare (corps = caisse de résonance) et saxophone (anche qui vibre)</span>
+  <span class="detail">photos à extraire/optimiser — régime B.</span>
+</div><h3><span class="l">B ·</span> Propagation du signal sonore</h3><div class="encart propriete"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>Une onde sonore se propage dans un milieu matériel (solide, liquide ou gazeux) mais <strong>ne peut pas se propager dans le vide</strong>.</p>
+</div><div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Compressions et dilatations successives de la matière au passage d'un son (variations de pression, Image 8)</span>
+  <span class="detail">à redessiner en SVG — régime B.</span>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=Xy6fIDGPerc" target="_blank" rel="noopener">▶ Expérience en vidéo ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=rG7OxpgXcto" target="_blank" rel="noopener">▶ Focus sur la voix ↗</a>
+</div><h3><span class="l">C ·</span> Vitesse du signal sonore</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Célérité</div>
+  <p>La vitesse de propagation du signal sonore <span class="nb">c<sub>son</sub></span>, appelée <span class="terme">célérité</span>, dépend du milieu traversé : elle est plus élevée dans les liquides ou les métaux que dans l'air.</p><p>Il faut connaître la vitesse du son dans l'air : <span class="nb">c<sub>son</sub>(air) = 340 m·s<sup>−1</sup></span>.</p>
+</div><div class="formule-bloc"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">c<sub>son</sub> = d ⁄ Δt</div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>c<sub>son</sub></b> célérité · <span class="nb">m·s<sup>−1</sup></span><br><b>d</b> distance parcourue · m<br><b>Δt</b> durée du parcours · s
+  </div>
+</div><div class="defile"><table class="tab"><caption>Quelques vitesses du son selon le milieu (Image 9)</caption>
+  <thead><tr><th>Milieu</th><th>Vitesse du son</th></tr></thead>
+  <tbody>
+  <tr><td>Air</td><td><span class='nb'>340 m·s⁻¹</span></td></tr>
+<tr><td>Eau</td><td><span class='nb'>1450 m·s⁻¹</span></td></tr>
+<tr><td>Glace</td><td><span class='nb'>3200 m·s⁻¹</span></td></tr>
+<tr><td>Verre</td><td><span class='nb'>5300 m·s⁻¹</span></td></tr>
+<tr><td>Acier</td><td><span class='nb'>5750 m·s⁻¹</span></td></tr>
+</tbody>
+</table></div><div class="exercice">
+  <div class="etiquette">Exercice 5 — Distance de l'orage</div>
+  <p>Le son d'un éclair met 9 secondes à parvenir à nos oreilles. <span class="question">À quelle distance se trouve l'orage ?</span></p>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Manipulation d'expression algébrique</div><p class="formule-cours-rappel">c<sub>son</sub> = d ⁄ Δt</p><p class="eq-ligne">d = c<sub>son</sub> × Δt</p><div class="etape">Application numérique</div><p class="eq-ligne">d = 340 × 9 = <span class="resultat">3060 m = 3,06 km</span></p>
+  </details>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 6 — Le chant des baleines</div>
+  <p>Le chant d'une baleine bleue a pu être entendu à <span class="nb">1000 km</span> du cétacé (propagation dans l'eau). <span class="question">Combien de temps faut-il à ce chant pour parcourir cette distance ?</span></p>
+  <p class="donnees">Données : <span class='nb'>c<sub>son</sub>(eau) = 1450 m·s⁻¹</span></p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Manipulation d'expression algébrique</div><p class="formule-cours-rappel">c<sub>son</sub> = d ⁄ Δt</p><p class="eq-ligne">Δt = d ⁄ c<sub>son</sub></p><div class="etape">Application numérique</div><p class="eq-ligne">Δt = (1000 × 1000) ⁄ 1450 ≈ <span class="resultat">689,6 s</span></p>
+  </details>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-4"><span class="num">04</span> Perception des sons</h2></summary>
+<div class="partie-corps">
+<h3><span class="l">A ·</span> Fréquences audibles, ultrasons et infrasons</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Sons audibles, infrasons, ultrasons</div>
+  <p>L'oreille humaine est un récepteur sensible à des ondes sonores dont la fréquence est comprise entre environ <span class="nb">20 Hz</span> et <span class="nb">20 kHz</span>. Ce domaine, celui des <span class="terme">sons audibles</span>, est situé entre celui des <span class="terme">infrasons</span> (en dessous) et celui des <span class="terme">ultrasons</span> (au-dessus).</p>
+</div><p>Ces valeurs peuvent varier d'un individu à l'autre et le domaine des fréquences audibles se réduit avec l'âge, surtout dans les aigus.</p><div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Frise des domaines de fréquences (infrasons / audible 20 Hz–20 kHz / ultrasons) et altération de l'acuité avec l'âge (Images 10-12)</span>
+  <span class="detail">à redessiner en SVG — régime B.</span>
+</div><h3><span class="l">B ·</span> Hauteur et timbre d'un son</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Hauteur et timbre</div>
+  <p>Un son perçu est associé à des caractéristiques physiologiques :</p><ul class="cours"><li>la <span class="terme">hauteur</span>, qui correspond à sa fréquence, dite <strong>fréquence fondamentale</strong> ;</li><li>le <span class="terme">timbre</span>, qui correspond à la présence d'autres fréquences, dites <strong>fréquences harmoniques</strong> — on parle alors de <strong>son complexe</strong>.</li></ul>
+</div><p>Une même note, jouée par des instruments différents, aura la même hauteur mais un timbre différent, ce qui permet de reconnaître l'instrument. Le son émis par un diapason est un <strong>son pur</strong> (ou son simple) : il ne possède pas de fréquences harmoniques, il est <strong>sinusoïdal</strong>.</p><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=ImojPxKXeKg&list=PLFf1gA-ubk_TfNCTPVkv5aQW_cLx72Ndy&index=5" target="_blank" rel="noopener">▶ Réviser en vidéo — hauteur et timbre ↗</a>
+</div><h3><span class="l">C ·</span> Niveau d'intensité sonore</h3><p>Un son est deux fois plus intense si la source vibre avec une amplitude deux fois plus grande. Pourtant, il ne sera pas perçu deux fois plus fort par l'oreille : l'oreille ne réagit donc pas proportionnellement à l'<strong>intensité</strong> <span class="nb">I</span> de l'onde sonore.</p><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Niveau d'intensité sonore</div>
+  <p>Pour modéliser cette réalité, on définit le <span class="terme">niveau d'intensité sonore</span> <span class="nb">L</span>, exprimé en <span class="terme">décibel (dB)</span>, qui n'est pas proportionnel à l'amplitude. Le niveau <span class="nb">0 dB</span> est le niveau en dessous duquel une oreille moyenne ne détectera pas le son.</p>
+</div><p>La hauteur d'un son (grave ou aigu) dépend de la période ou de la fréquence du signal : cette notion ne doit <strong>surtout pas</strong> être confondue avec l'amplitude.</p><div class="encart propriete"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>L'onde sonore peut représenter un <strong>danger</strong> pour l'oreille si son niveau d'intensité sonore est trop élevé. On définit une échelle de niveau sonore : au-delà d'un certain niveau (seuil de danger vers <span class="nb">80 dB</span>, seuil de douleur vers <span class="nb">120 dB</span>), la vibration peut endommager l'oreille irrémédiablement. Dans un environnement bruyant, il est conseillé de porter des protections (casque anti-bruit, bouchons).</p>
+</div><div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Échelle des niveaux d'intensité sonore (du désert 0 dB au décollage de fusée 150 dB, avec seuils d'audibilité / danger / douleur) — Image 15</span>
+  <span class="detail">à redessiner en SVG — régime B ; photos sonomètre et protections auditives à extraire.</span>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=_wG5BP3ywvg" target="_blank" rel="noopener">▶ Réviser le cours complet en vidéos (1) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=ZVmvBI10gkM" target="_blank" rel="noopener">▶ (2) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=Q58ns2rLXx8" target="_blank" rel="noopener">▶ (3) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=UN4X9NHnGo8" target="_blank" rel="noopener">▶ Se tester ↗</a>
+</div>
+</div>
+</details>
+
+<section class="checklist" id="pour-le-ds">
+  <h2><span class="num">✓</span> Pour le DS, je sais :</h2>
+  <ol id="liste-ds">
+    <li><input type="checkbox" id="ds1"><label for="ds1">Décrire le principe de l'émission d'un signal sonore par la mise en vibration d'un objet et l'intérêt d'une caisse de résonance.</label><span class="refs"><a href="#ancre-3">03</a></span></li>
+    <li><input type="checkbox" id="ds2"><label for="ds2">Expliquer le rôle joué par le milieu matériel dans la propagation d'un signal sonore.</label><span class="refs"><a href="#ancre-3">03</a> · man. 21 p.265</span></li>
+    <li><input type="checkbox" id="ds3"><label for="ds3">Citer une valeur approchée de la vitesse du son dans l'air et la comparer à d'autres vitesses.</label><span class="refs"><a href="#ancre-3">03</a> · 10 p.262 / 17 p.263</span></li>
+    <li><input type="checkbox" id="ds4"><label for="ds4">Définir et déterminer la période et la fréquence d'un signal, notamment à partir de sa représentation temporelle.</label><span class="refs"><a href="#ancre-1">01</a> · 8 p.262 / 22 p.266</span></li>
+    <li><input type="checkbox" id="ds5"><label for="ds5">Citer les domaines de fréquences des sons audibles, des infrasons et des ultrasons.</label><span class="refs"><a href="#ancre-4">04</a> · 12 p.262 / 23 p.266</span></li>
+    <li><input type="checkbox" id="ds6"><label for="ds6">Relier qualitativement la fréquence à la hauteur d'un son audible.</label><span class="refs"><a href="#ancre-4">04</a></span></li>
+    <li><input type="checkbox" id="ds7"><label for="ds7">Relier qualitativement intensité sonore et niveau d'intensité sonore.</label><span class="refs"><a href="#ancre-4">04</a> · 22 p.266</span></li>
+    <li><input type="checkbox" id="ds8"><label for="ds8">Exploiter une échelle de niveau d'intensité sonore et citer les dangers de l'exposition sonore.</label><span class="refs"><a href="#ancre-4">04</a> · 14 p.263</span></li>
+  </ol>
+  <div class="videos" style="margin:1rem 0 0;">
+    <a class="video-chip" href="https://create.kahoot.it/share/bilan-emission-et-perception-d-un-son/247395f6-5278-4e96-8047-471069e977b9" target="_blank" rel="noopener">🎯 Kahoot bilan du chapitre ↗</a>
+  <div class="a-faire">
+  <span class="type">vidéo</span>
+  <span class="quoi">Lien du DS (devoir surveillé) — à poser chaque année</span>
+  <span class="detail">un lien « DS » figure dans la source mais n'est jamais activé automatiquement : M. Van Hoorde choisit le DS de l'année via le cahier de textes.</span>
+</div>
+  </div>
+</section>
+
+<p class="signature">M. Van Hoorde<span>Lycée général Isaac de l'Étoile · Poitiers</span></p>
+
+</article>
+</div>
+
+<button id="haut" type="button" aria-label="Revenir en haut de page">↑ haut</button>
+
+<footer>
+  <div class="footer-inner">© 2025-2026 · M. Van Hoorde — Physique-Chimie · 2nde · Thème 3 — Ondes et signaux</div>
+</footer>
+
+<script>
+(function(){
+  var barre = document.querySelector('#lecture .fait');
+  var btn = document.getElementById('haut');
+  function maj(){
+    var h = document.documentElement;
+    var pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    barre.style.width = (pct || 0) + '%';
+    btn.classList.toggle('visible', h.scrollTop > 600);
+  }
+  document.addEventListener('scroll', maj, {passive:true});
+  btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  maj();
+
+  var liens = {};
+  document.querySelectorAll('#toc a').forEach(function(a){
+    liens[a.getAttribute('href').slice(1)] = a;
+  });
+  var cibles = Array.prototype.slice.call(document.querySelectorAll('h2[id], section[id]'));
+  function majToc(){
+    var repere = window.scrollY + window.innerHeight * 0.25;
+    var courant = null;
+    cibles.forEach(function(c){ if (c.offsetTop <= repere) courant = c; });
+    Object.keys(liens).forEach(function(k){ liens[k].classList.remove('actif'); });
+    if (courant && liens[courant.id]) liens[courant.id].classList.add('actif');
+  }
+  document.addEventListener('scroll', majToc, {passive:true});
+  majToc();
+
+  /* Sections repliables : un clic dans un sommaire ouvre la section visée */
+  document.querySelectorAll('#toc a, details.toc-mobile a').forEach(function(a){
+    a.addEventListener('click', function(){
+      var cible = document.querySelector(a.getAttribute('href'));
+      if (!cible) return;
+      var partie = cible.closest('details.partie');
+      if (partie) partie.open = true;
+    });
+  });
+
+  var CLE = 'cours-2nde-pc-t3-c1-emission-perception-son-checklist';
+  var boites = document.querySelectorAll('#liste-ds input[type="checkbox"]');
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE)) || {}; } catch(e) {}
+  boites.forEach(function(b){
+    if (etat[b.id]) b.checked = true;
+    b.addEventListener('change', function(){
+      etat[b.id] = b.checked;
+      try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch(e) {}
+    });
+  });
+})();
+</script>
+
+<script>
+/* Verrou de fin de chapitre — v2 (porte à code centrée)
+   Le code n'est jamais écrit ici : seule son EMPREINTE SHA-256 est stockée.
+   Re-verrouillage pour tests : ?verrou=1 */
+(function(){
+  var EMPREINTE = 'd66be1e66357b4db8d560092b892091ff77f0b500a7e0154453225c886d757df' /* ⚠ empreinte du code fourni par Loïc : python3 -c "import hashlib;print(hashlib.sha256('CODE6C'.encode()).hexdigest())" */;
+  var CLE = 'deblocage-2nde-pc-t3-c1-emission-perception-son';
+
+  function deverrouiller(){
+    document.body.classList.remove('verrouille');
+    var porte = document.getElementById('porte');
+    if (porte) porte.remove();
+    window.scrollTo(0, 0);
+  }
+
+  try {
+    if (new URLSearchParams(location.search).has('verrou')) {
+      localStorage.removeItem(CLE);
+    }
+  } catch(e) {}
+
+  try {
+    if (localStorage.getItem(CLE) === '1') { deverrouiller(); return; }
+  } catch(e) {}
+
+  var forme = document.getElementById('forme-code');
+  var champ = document.getElementById('champ-code');
+  var erreur = document.getElementById('erreur-code');
+
+  function empreinteHex(texte){
+    var donnees = new TextEncoder().encode(texte);
+    return crypto.subtle.digest('SHA-256', donnees).then(function(tampon){
+      return Array.prototype.map.call(new Uint8Array(tampon), function(o){
+        return o.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  forme.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var essai = (champ.value || '').trim().toUpperCase();
+    if (essai.length !== 6) {
+      erreur.textContent = 'Le code fait 6 caractères (lettres et chiffres).';
+      return;
+    }
+    if (!(window.crypto && crypto.subtle)) {
+      erreur.textContent = 'Navigateur incompatible — ouvre la page depuis le site.';
+      return;
+    }
+    empreinteHex(essai).then(function(h){
+      if (h === EMPREINTE) {
+        try { localStorage.setItem(CLE, '1'); } catch(e) {}
+        deverrouiller();
+      } else {
+        erreur.textContent = 'Code incorrect. Vérifie le cahier de textes !';
+        champ.select();
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

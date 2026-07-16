@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2nde — Signaux et capteurs · Physique-Chimie</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e;
+    --gris:#6b6f7a; --carte:#ffffff; --or:#f0cf6e; --or-fonce:#b28a1d;
+    --vert:#6fae7a; --vert-fonce:#4c8a58; --sepia:#8a6d3b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Spectral', Georgia, serif; color:var(--encre);
+    background-color:var(--papier);
+    background-image:linear-gradient(var(--grille) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+    background-size:32px 32px; line-height:1.7;
+  }
+  .spectre { height:6px; background:var(--encre); position:relative; }
+  .spectre i { position:absolute; top:0; bottom:0; width:4px; }
+  .spectre i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .spectre i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .spectre i:nth-child(3){ left:76%; background:var(--h-alpha); }
+  nav { background:var(--papier); border-bottom:1px solid var(--encre); }
+  .nav-inner { max-width:1200px; margin:0 auto; padding:.85rem 1.4rem;
+    display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+  .nav-logo { font-family:'Space Grotesk',sans-serif; font-weight:700; }
+  .nav-logo span { color:var(--h-alpha); }
+  .retour { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--encre); text-decoration:none; border-bottom:2px solid var(--h-beta); }
+  .retour:hover { color:var(--h-beta); }
+  #lecture { position:sticky; top:0; height:4px; z-index:50; }
+  #lecture .fait { height:100%; width:0%; background:var(--h-alpha); }
+
+  .page { max-width:1200px; margin:0 auto; padding:2rem 1.4rem 4rem;
+    display:grid; grid-template-columns:230px minmax(0,1fr); gap:2.2rem; align-items:start; }
+  aside.sommaire { position:sticky; top:1.4rem; font-family:'Space Grotesk',sans-serif; }
+  .sommaire .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--gris); margin-bottom:.7rem; }
+  .sommaire ol { list-style:none; }
+  .sommaire a { display:flex; gap:.6rem; align-items:baseline; padding:.42rem .65rem;
+    border-radius:8px; text-decoration:none; color:var(--encre); font-size:.92rem; line-height:1.3; }
+  .sommaire a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--h-beta); }
+  .sommaire a:hover { background:var(--carte); }
+  .sommaire a.actif { background:var(--carte); box-shadow:inset 3px 0 0 var(--h-alpha); font-weight:600; }
+  .sommaire .ds a .n { color:var(--h-gamma); }
+
+  article.lecture { background:var(--carte); border:1px solid var(--encre); border-radius:14px;
+    box-shadow:6px 6px 0 rgba(20,26,38,.08); padding:clamp(1.4rem,4vw,3rem); min-width:0; }
+  .fil-ariane { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); margin-bottom:.5rem; }
+  .fil-ariane .niveau { color:var(--h-alpha); }
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.7rem,4vw,2.4rem); line-height:1.12; margin-bottom:.4rem; }
+  .sous-titre { font-family:'IBM Plex Mono',monospace; font-size:.85rem; color:var(--gris); margin-bottom:2.4rem; }
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2.8rem 0 1rem;
+    display:flex; align-items:baseline; gap:.8rem; scroll-margin-top:2rem; }
+  h2 .num { font-family:'IBM Plex Mono',monospace; font-size:.9rem; color:var(--h-beta); }
+  p { margin-bottom:.9rem; max-width:75ch; text-align:justify; hyphens:auto; }
+  strong { font-weight:600; }
+  ul.cours { max-width:75ch; margin:0 0 .9rem 1.2rem; text-align:justify; }
+  ul.cours li { margin-bottom:.5rem; }
+  .nb { white-space:nowrap; }
+  sub, sup { font-size:.68em; }
+
+  /* ===== BIBLIOTHÈQUE DE COMPOSANTS (validée sur le chapitre T1-C2) ===== */
+
+  /* Encart générique : Définition (Hβ) / Propriété (Hγ) / Exemple (vert) */
+  .encart { border:1px solid var(--encre); border-radius:0 10px 10px 0;
+    background:var(--papier); padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+    letter-spacing:.12em; text-transform:uppercase; margin-bottom:.35rem; }
+  .encart p:last-child { margin-bottom:0; }
+  .definition { border-left:4px solid var(--h-beta); }
+  .definition .etq { color:var(--h-beta); }
+  .terme { background:rgba(29,154,170,.16); border-radius:3px; padding:.02em .25em;
+    font-weight:600; color:#0f6b76; }
+  .propriete { border-left:4px solid var(--h-gamma); }
+  .propriete .etq { color:var(--h-gamma); }
+  .exemple { border-left:4px solid var(--vert); background:#fff; max-width:none; }
+  .exemple .etq { color:var(--vert-fonce); }
+  .exemple .duo-e { display:grid; grid-template-columns:220px 1fr; gap:1.2rem; align-items:center; }
+  .exemple img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+
+  /* Équation centrée hors paragraphe */
+  .eq-ligne { font-family:'Spectral',serif; font-style:italic; text-align:center;
+    font-size:1.15rem; margin:.7rem auto; max-width:none; white-space:nowrap; overflow-x:auto; }
+  .eq-ligne sub, .eq-ligne sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.58em; }
+
+  /* Pictogramme « à noter sur la fiche » (crayon, coin haut droit) */
+  .a-noter { position:absolute; top:-.7rem; right:.8rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; background:var(--carte); border:1.4px solid var(--encre); border-radius:50%;
+    width:1.7rem; height:1.7rem; display:flex; align-items:center; justify-content:center; }
+  figure { position:relative; }
+  figure .a-noter { top:-.4rem; right:-.2rem; }
+
+  /* Encart Formule (variante C validée) */
+  .formule-bloc { margin:1.4rem auto; max-width:60ch; border:1px solid var(--encre); border-radius:12px;
+    background:#fff; box-shadow:4px 4px 0 rgba(74,63,158,.18);
+    display:grid; grid-template-columns:auto minmax(0,1fr); position:relative; }
+  .formule-bloc .eq { background:var(--encre); color:var(--papier); font-family:'Spectral',serif;
+    font-style:italic; font-size:1.9rem; display:flex; align-items:center; padding:1rem 1.5rem;
+    white-space:nowrap; border-radius:11px 0 0 11px; }
+  .formule-bloc .eq sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.5em; }
+  .formule-bloc .grandeurs { padding:.9rem 1.3rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem; line-height:2.05; }
+  .formule-bloc .grandeurs b { color:var(--h-gamma); }
+  .formule-bloc .titre { font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--gris); display:block; margin-bottom:.15rem; }
+
+  /* Encart Notation */
+  .notation { border:1px dashed var(--encre); border-radius:10px; background:#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .notation .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .notation .chips { display:flex; gap:.9rem; flex-wrap:wrap; margin-bottom:.8rem; justify-content:center; }
+  .notation .chip { font-family:'IBM Plex Mono',monospace; font-size:.85rem; border:1px solid var(--encre);
+    border-radius:8px; padding:.35rem .8rem; background:var(--papier); }
+  .notation .chip b { color:var(--h-beta); }
+  .notation .aq { border-top:1px dashed var(--grille); padding-top:.7rem; margin-bottom:0; }
+  .notation .aq b { color:var(--h-beta); }
+
+  /* Encart Méthode (étapes en chiffres romains) */
+  .methode { border:1px solid var(--encre); border-left:4px solid var(--or); border-radius:0 10px 10px 0;
+    background:linear-gradient(0deg,rgba(240,207,110,.08),rgba(240,207,110,.08)),#fff;
+    padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; position:relative; }
+  .methode .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--or-fonce); margin-bottom:.5rem; }
+  .methode ol { list-style:none; counter-reset:met; margin:0; }
+  .methode li { counter-increment:met; display:grid; grid-template-columns:2.2rem 1fr; gap:.5rem;
+    margin-bottom:.5rem; align-items:baseline; }
+  .methode li::before { content:counter(met,upper-roman) "."; font-family:'IBM Plex Mono',monospace;
+    font-weight:600; color:var(--or-fonce); text-align:right; }
+
+  /* Encart Histoire des sciences */
+  .histoire { border:1.5px solid var(--sepia); outline:1px solid var(--sepia); outline-offset:3px;
+    background:#f8f2e2; padding:1.2rem 1.4rem; margin:1.8rem 3px; }
+  .histoire .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--sepia); text-align:center; margin-bottom:.8rem; }
+  .histoire .etq::before, .histoire .etq::after { content:"❦"; margin:0 .6rem; }
+  .histoire .duo-h { display:grid; grid-template-columns:170px 1fr; gap:1.2rem; align-items:start; }
+  .histoire img { width:100%; border:1px solid var(--sepia); padding:3px; background:#fff; }
+  .histoire .credit { font-family:'IBM Plex Mono',monospace; font-size:.65rem; color:var(--sepia);
+    margin-top:.3rem; line-height:1.4; }
+  .histoire h4 { font-family:'Space Grotesk',sans-serif; font-size:1.02rem; margin-bottom:.4rem; }
+  .histoire p { font-size:.95rem; margin-bottom:.6rem; }
+  .histoire .citation { font-style:italic; text-align:center; font-size:1.05rem; margin:.7rem 0 .2rem; }
+  .histoire .source-cit { font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--sepia);
+    text-align:center; display:block; margin-bottom:.6rem; }
+
+  /* Encart Synthèse de TP (sobre) */
+  .synthese-tp { border:1px dashed var(--gris); border-radius:10px; background:#fff;
+    padding:1.1rem 1.4rem; margin:1.6rem 0; }
+  .synthese-tp .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gris); margin-bottom:.6rem; }
+  .synthese-tp .contexte { font-size:.92rem; color:var(--gris); font-style:italic; margin-bottom:.8rem; }
+  .synthese-tp .sous-etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--gris); margin:.8rem 0 .2rem; display:flex; align-items:center; gap:.5rem; }
+  .synthese-tp .sous-etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .synthese-tp p:last-child { margin-bottom:0; }
+
+  /* ===== À FAIRE — emplacement réservé (régime « ébauche ») ===== */
+  /* Marque un manque VISIBLE sur le site : image à extraire, schéma à
+     produire, vidéo à décoder, etc. À retirer lors du passage en finition. */
+  .a-faire { position:relative; margin:1.2rem 0; padding:.9rem 1.1rem .9rem 2.6rem;
+    border:1px dashed var(--gris); border-radius:8px; color:var(--gris);
+    background:repeating-linear-gradient(135deg, #f4f2ec 0 12px, #eeece4 12px 24px);
+    font-size:.92rem; }
+  .a-faire::before { content:"🚧"; position:absolute; left:.8rem; top:.85rem; font-size:1.05rem;
+    filter:grayscale(.15); }
+  .a-faire .type { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.62rem;
+    letter-spacing:.14em; text-transform:uppercase; color:#fff; background:var(--gris);
+    padding:.12rem .5rem; border-radius:4px; margin-bottom:.35rem; }
+  .a-faire .quoi { display:block; color:var(--encre); }
+  .a-faire .detail { display:block; margin-top:.25rem; font-size:.82rem; font-style:italic; }
+  @media print { .a-faire { background:#f4f2ec; } }
+
+  /* Vidéos */
+  .videos { display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0 1.6rem; }
+  .video-chip { font-family:'IBM Plex Mono',monospace; font-size:.78rem;
+    display:inline-flex; align-items:center; gap:.45em; border:1px solid var(--encre);
+    border-radius:999px; padding:.34rem .85rem; text-decoration:none; color:var(--encre);
+    background:var(--papier); transition:background .15s,color .15s; }
+  .video-chip:hover { background:var(--h-beta); color:#fff; }
+
+  /* Figures */
+  figure { margin:1.6rem 0; }
+  figure svg, figure img { max-width:100%; height:auto; display:block; }
+  figure img.photo { border:1px solid var(--encre); border-radius:6px; }
+  figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
+    margin-top:.55rem; max-width:66ch; line-height:1.55; }
+  figcaption .eqc { display:block; font-family:'Spectral',serif; font-style:italic; font-size:.95rem;
+    color:var(--encre); margin:.35rem 0; text-align:center; }
+  figcaption .eqc sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.6em; }
+  .fig-row { display:flex; gap:1.6rem; flex-wrap:wrap; align-items:flex-start; }
+  .fig-row figure { flex:1 1 240px; max-width:400px; }
+  .fig-row figure img { width:100%; height:220px; object-fit:cover; }
+  .fig-etroite { max-width:300px; }
+  .pill-ex { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.66rem;
+    letter-spacing:.08em; text-transform:uppercase; color:#fff; border-radius:999px;
+    padding:.1rem .6rem; margin-bottom:.35rem; }
+  .pill-ex.phys { background:var(--h-beta); }
+  .pill-ex.chim { background:var(--h-alpha); }
+  .duo { display:grid; grid-template-columns:minmax(220px,300px) minmax(0,1fr); gap:2rem; align-items:start; }
+  .defile { overflow-x:auto; }
+
+  table.tab { border-collapse:collapse; font-size:.95rem; }
+  table.tab caption { caption-side:top; text-align:left; font-family:'Space Grotesk',sans-serif;
+    font-size:.85rem; font-weight:600; padding-bottom:.4rem; }
+  table.tab th, table.tab td { border:1px solid var(--encre); padding:.42rem .8rem; text-align:center; }
+  table.tab thead th, table.tab .entete { font-family:'Space Grotesk',sans-serif; font-size:.82rem; background:var(--papier); }
+
+  /* ===== Exercices (structure normalisée) ===== */
+  .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
+    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0;
+    background:#fdfdfb; }
+  .exercice .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    text-transform:uppercase; letter-spacing:.1em; color:var(--h-alpha); margin-bottom:.5rem; }
+  .exercice .duo-x { display:grid; grid-template-columns:1fr 200px; gap:1.1rem; align-items:start; }
+  .exercice .duo-x img { width:100%; border:1px solid var(--encre); border-radius:6px; }
+  .exercice .question { font-style:italic; }
+  .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris);
+    margin-top:.5rem; border-top:1px dotted var(--grille); padding-top:.45rem; }
+  details.correction { margin-top:.8rem; border-top:1px dashed var(--gris); padding-top:.6rem; }
+  details.correction summary { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
+    color:var(--h-gamma); cursor:pointer; }
+  details.correction summary:hover { text-decoration:underline; }
+  details.correction[open] summary { margin-bottom:.6rem; }
+  .etape { font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--h-gamma); margin:.7rem 0 .2rem; display:flex;
+    align-items:center; gap:.5rem; }
+  .etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
+  .resultat { border-bottom:2.5px solid var(--h-alpha); font-weight:600; padding-bottom:1px; white-space:nowrap; }
+  .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--gris);
+    text-align:center; margin-bottom:.1rem; }
+  .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem; margin:1rem 0 1rem 1rem; }
+  .eq-exo sub, .eq-exo sup { font-size:.6em; font-style:normal; font-family:'IBM Plex Mono',monospace; }
+  .coef-ok { color:var(--h-alpha); font-weight:700; font-style:normal; }
+  .frac { display:inline-block; vertical-align:middle; text-align:center; margin:0 .25em; }
+  .frac .haut { display:block; border-bottom:1.5px solid var(--encre); padding:0 .3em .1em; }
+  .frac .bas { display:block; padding:.1em .3em 0; }
+  .unites { font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); }
+  .exercice p, .encart.exemple p, .histoire p, .synthese-tp p { max-width:none; }
+  .aparte { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris);
+    border-left:2px solid var(--grille); padding-left:.7rem; margin:.6rem 0; }
+
+  /* Checklist */
+  .checklist { border:1px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 12px 12px 0; padding:1.2rem 1.4rem; margin:2.6rem 0 0; }
+  .checklist h2 { margin-top:0; }
+  .checklist ol { list-style:none; }
+  .checklist li { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem;
+    align-items:baseline; padding:.55rem 0; border-bottom:1px dashed var(--grille); }
+  .checklist li:last-child { border-bottom:none; }
+  .checklist input[type="checkbox"] { transform:translateY(2px) scale(1.15); accent-color:var(--h-gamma); cursor:pointer; }
+  .checklist label { cursor:pointer; }
+  .checklist .refs { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); white-space:nowrap; }
+  .checklist .refs a { color:var(--h-beta); text-decoration:none; }
+  .checklist .refs a:hover { text-decoration:underline; }
+
+  #haut { position:fixed; right:1.2rem; bottom:1.2rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.8rem; background:var(--carte); border:1px solid var(--encre); border-radius:999px;
+    padding:.5rem .85rem; cursor:pointer; box-shadow:3px 3px 0 rgba(20,26,38,.12);
+    opacity:0; pointer-events:none; transition:opacity .2s; }
+  #haut.visible { opacity:1; pointer-events:auto; }
+  #haut:hover { background:var(--h-beta); color:#fff; }
+
+  details.partie { border-top:3px solid var(--encre); margin-top:2.4rem; }
+  details.partie > summary { list-style:none; cursor:pointer; }
+  details.partie > summary::-webkit-details-marker { display:none; }
+  details.partie > summary h2 { margin:1.1rem 0 1rem; }
+  details.partie > summary h2::after { content:"▾"; margin-left:auto; font-family:'IBM Plex Mono',monospace;
+    font-size:1rem; color:var(--gris); transition:transform .15s; }
+  details.partie:not([open]) > summary h2::after { content:"▸"; }
+  details.partie > summary:hover h2::after { color:var(--h-beta); }
+  .signature { text-align:right; font-family:'Space Grotesk',sans-serif; font-weight:600;
+    margin:2.4rem 0 0; }
+  .signature span { display:block; font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+    color:var(--gris); font-weight:400; }
+  details.toc-mobile { display:none; }
+  footer { border-top:1px solid var(--encre); margin-top:2rem; }
+  .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
+    font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); }
+
+  /* ===== Verrou de fin de chapitre — v2 : porte centrée plein écran ===== */
+  body.verrouille aside.sommaire,
+  body.verrouille details.toc-mobile,
+  body.verrouille article.lecture > *:not(#porte) { display:none; }
+  body.verrouille .page { grid-template-columns:minmax(0,1fr); max-width:720px; }
+  body.verrouille article.lecture { min-height:min(70vh, 620px); display:flex;
+    align-items:center; justify-content:center; }
+  #porte { display:none; }
+  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; width:100%; }
+  #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }
+  #porte h1 { margin-bottom:.6rem; }
+  #porte .explication { max-width:52ch; margin:0 auto 1.6rem; color:var(--gris); }
+  #porte form { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+  #porte input {
+    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.4em;
+    text-transform:uppercase; text-align:center; width:16ch;
+    padding:.55rem .2rem .55rem .6rem; border:1.5px solid var(--encre);
+    border-radius:10px; background:var(--papier); color:var(--encre);
+  }
+  #porte input:focus { outline:2px solid var(--h-beta); }
+  #porte button {
+    font-family:'IBM Plex Mono',monospace; font-size:.9rem; cursor:pointer;
+    border:1.5px solid var(--encre); border-radius:10px; padding:.55rem 1.1rem;
+    background:var(--encre); color:var(--papier);
+  }
+  #porte button:hover { background:var(--h-beta); border-color:var(--h-beta); }
+  #porte .erreur { color:var(--h-alpha); font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem; min-height:1.4em; margin-top:.8rem; }
+
+  @media (max-width:960px) {
+    .page { grid-template-columns:1fr; gap:1.2rem; padding:1.2rem .9rem 3rem; }
+    aside.sommaire { display:none; }
+    details.toc-mobile { display:block; font-family:'Space Grotesk',sans-serif;
+      background:var(--carte); border:1px solid var(--encre); border-radius:12px;
+      padding:.7rem 1rem; margin-bottom:1.2rem; }
+    details.toc-mobile summary { font-family:'IBM Plex Mono',monospace; font-size:.8rem;
+      letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    details.toc-mobile ol { list-style:none; margin-top:.6rem; }
+    details.toc-mobile a { display:block; padding:.4rem .2rem; color:var(--encre);
+      text-decoration:none; border-bottom:1px dashed var(--grille); }
+    details.toc-mobile a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
+      color:var(--h-beta); margin-right:.5rem; }
+    .duo, .exemple .duo-e, .histoire .duo-h, .exercice .duo-x { grid-template-columns:1fr; }
+    .formule-bloc { grid-template-columns:1fr; }
+    .formule-bloc .eq { justify-content:center; }
+    .checklist li { grid-template-columns:auto 1fr; }
+    .checklist .refs { grid-column:2; white-space:normal; }
+  }
+
+  h3 { font-family:'Space Grotesk',sans-serif; font-size:1.12rem; color:var(--h-beta);
+       margin:1.8rem 0 .6rem; font-weight:600; }
+  h3 .l { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris); margin-right:.15rem; }
+</style>
+</head>
+<body class="verrouille">
+
+<div class="spectre" aria-hidden="true"><i></i><i></i><i></i></div>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
+    <a class="retour" href="2nde-physique-chimie.html">← Retour aux cours de 2nde</a>
+  </div>
+</nav>
+<div id="lecture"><div class="fait"></div></div>
+
+<div class="page">
+
+<aside class="sommaire" aria-label="Sommaire du chapitre">
+  <div class="etiquette">Chapitre 2 — Sommaire</div>
+  <ol id="toc">
+    <li><a href="#ancre-1"><span class="n">01</span> Rappels d'électricité</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span> Loi des nœuds</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span> Loi des mailles</a></li>
+    <li><a href="#ancre-4"><span class="n">04</span> Caractéristique tension-courant</a></li>
+    <li><a href="#ancre-5"><span class="n">05</span> Loi d'Ohm</a></li>
+    <li><a href="#ancre-6"><span class="n">06</span> Capteurs électriques</a></li>
+    <li class="ds"><a href="#pour-le-ds"><span class="n">✓</span> Pour le DS, je sais</a></li>
+  </ol>
+</aside>
+
+<article class="lecture">
+
+<div id="porte">
+  <div class="cadenas" aria-hidden="true">🔒</div>
+  <h1>Signaux et capteurs</h1>
+  <p class="explication">Ce chapitre sera débloqué <strong>en fin de séquence</strong>,
+  au rythme de la classe. Le code de déblocage est transmis via le cahier de textes —
+  il figure aussi en bas de ta fiche de cours.</p>
+  <form id="forme-code" autocomplete="off">
+    <input id="champ-code" type="text" maxlength="6" inputmode="text"
+           spellcheck="false" aria-label="Code de déblocage (6 caractères)"
+           placeholder="••••••">
+    <button type="submit">Déverrouiller</button>
+  </form>
+  <p class="erreur" id="erreur-code" role="alert"></p>
+</div>
+
+<details class="toc-mobile">
+  <summary>Sommaire du chapitre</summary>
+  <ol>
+    <li><a href="#ancre-1"><span class="n">01</span>Rappels d'électricité</a></li>
+    <li><a href="#ancre-2"><span class="n">02</span>Loi des nœuds</a></li>
+    <li><a href="#ancre-3"><span class="n">03</span>Loi des mailles</a></li>
+    <li><a href="#ancre-4"><span class="n">04</span>Caractéristique tension-courant</a></li>
+    <li><a href="#ancre-5"><span class="n">05</span>Loi d'Ohm</a></li>
+    <li><a href="#ancre-6"><span class="n">06</span>Capteurs électriques</a></li>
+    <li><a href="#pour-le-ds"><span class="n">✓</span>Pour le DS, je sais</a></li>
+  </ol>
+</details>
+
+<p class="fil-ariane">Physique-Chimie · <span class="niveau">2nde</span> · Thème 3 — Ondes et signaux</p>
+<h1>Signaux et capteurs</h1>
+<p class="sous-titre">Thème 3 · Chapitre 2 — cours &amp; exercices corrigés</p>
+
+<details class="partie" open>
+<summary><h2 id="ancre-1"><span class="num">01</span> Rappels d’électricité</h2></summary>
+<div class="partie-corps">
+<h3><span class="l">A ·</span> Les dipôles</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Dipôle</div>
+  <p>Un <span class='terme'>dipôle</span> est un composant électrique qui possède deux bornes. On distingue les dipôles <span class='terme'>générateurs</span>, qui fournissent de l'énergie électrique au circuit, et les dipôles <span class='terme'>récepteurs</span>, qui la consomment.</p>
+</div><div class="defile"><table class="tab"><caption>Classer quelques dipôles usuels</caption>
+  <thead><tr><th>Dipôle</th><th>Type</th></tr></thead>
+  <tbody>
+  <tr><td>Pile / générateur</td><td><span class='nb'>générateur</span></td></tr>
+<tr><td>Résistance (conducteur ohmique)</td><td>récepteur</td></tr>
+<tr><td>Lampe</td><td>récepteur</td></tr>
+<tr><td>DEL (diode électroluminescente)</td><td>récepteur</td></tr>
+<tr><td>Diode</td><td>récepteur</td></tr>
+</tbody>
+</table></div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=_BEr9CPHnAc" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+  <a class="video-chip" href="https://youtu.be/Xc-7yGeEaMQ" target="_blank" rel="noopener">▶ Rappel du vocabulaire en vidéo ↗</a>
+</div><h3><span class="l">B ·</span> Le circuit électrique</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Circuit électrique</div>
+  <p>Un <span class='terme'>circuit électrique</span> est un ensemble de dipôles reliés entre eux par des fils conducteurs. Pour qu'un courant circule, le circuit doit être <strong>fermé</strong> et comporter au moins un générateur.</p><p>On distingue deux montages : le <span class='terme'>montage en série</span> (les dipôles se suivent sur une seule boucle) et le <span class='terme'>montage en dérivation</span> (le circuit comporte plusieurs branches). Un <span class='terme'>nœud</span> est un point de connexion d'au moins trois fils ; entre deux nœuds se trouve une <span class='terme'>branche</span> (principale si elle contient le générateur, dérivée sinon).</p>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 1 — Lecture d'un circuit</div>
+  <div class="duo-x">
+    <div><p><span class='question'>Légender le schéma, indiquer dans quelles branches le courant circule, puis préciser la nature du montage.</span></p></div>
+    <div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Schéma du circuit à légender (générateur, interrupteur, diode, lampes)</span>
+  <span class="detail">à redessiner en SVG à la charte — régime B.</span>
+</div>
+  </div>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Circulation du courant</div><p>Le courant électrique <strong>ne circule ni dans la branche comportant l'interrupteur ouvert, ni dans celle comportant une diode branchée en sens bloquant</strong>.</p><div class="etape">Nature du montage</div><p>Une fois ces branches écartées, il ne reste qu'une seule boucle parcourue par le courant : il s'agit d'un <span class='resultat'>montage en série</span>.</p>
+  </details>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=a5lV9Qw9hOQ" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div><h3><span class="l">C ·</span> Les grandeurs électriques U et I</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Intensité et tension</div>
+  <p>L'<span class='terme'>intensité</span> du courant électrique, notée <span class='nb'>I</span>, se mesure en <span class='terme'>ampère (A)</span> à l'aide d'un ampèremètre branché en série.</p><p>La <span class='terme'>tension</span> électrique, notée <span class='nb'>U</span>, correspond à la différence de <span class='terme'>potentiel</span> électrique entre deux points ; elle se mesure en <span class='terme'>volt (V)</span> à l'aide d'un voltmètre branché en dérivation.</p>
+</div><div class="encart propriete"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p>La tension entre deux points A et B se déduit des potentiels de ces points, et s'inverse quand on inverse le sens :</p><p class="eq-ligne">U<sub>AB</sub> = V<sub>A</sub> − V<sub>B</sub></p><p class="eq-ligne">U<sub>AB</sub> = − U<sub>BA</sub></p>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=imCJI3UUvO8" target="_blank" rel="noopener">▶ Comprendre la tension en vidéo ↗</a>
+</div><h3><span class="l">D ·</span> Les instruments de mesure</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Multimètre</div>
+  <p>Un <span class='terme'>multimètre</span> est un appareil qui réunit plusieurs fonctions : <strong>ampèremètre</strong> (mesure de I), <strong>voltmètre</strong> (mesure de U) et <strong>ohmmètre</strong> (mesure d'une résistance). Pour visualiser l'évolution d'une tension au cours du temps, on utilise un <span class='terme'>oscilloscope</span> ou un système d'acquisition informatisé.</p>
+</div><div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Photos d'un multimètre, d'un oscilloscope et d'une interface d'acquisition (diapo « Instruments »)</span>
+  <span class="detail">photos à extraire / optimiser — régime B.</span>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=W0RJbi2gNyc" target="_blank" rel="noopener">▶ Utiliser un multimètre en vidéo ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=XZ55qeeU5ls&list=PLFf1gA-ubk_RLFKtv2ds-WpeWoQy-Wv6l&index=6" target="_blank" rel="noopener">▶ S'exercer en vidéo ↗</a>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-2"><span class="num">02</span> Loi des nœuds</h2></summary>
+<div class="partie-corps">
+<div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Nœud et loi des nœuds</div>
+  <p>Dans une branche unique, l'intensité du courant est la <strong>même en tout point</strong> (unicité de l'intensité). Un <span class='terme'>nœud</span> est un point où se rejoignent au moins trois fils.</p><p><span class='terme'>Loi des nœuds</span> (première loi de Kirchhoff) : la somme des intensités des courants qui <strong>arrivent</strong> à un nœud est égale à la somme des intensités des courants qui en <strong>repartent</strong>.</p>
+</div><p class="eq-ligne">Exemple : I<sub>1</sub> + I<sub>2</sub> = I<sub>3</sub> + I<sub>4</sub></p><div class="exercice">
+  <div class="etiquette">Exercice 2 — Appliquer la loi des nœuds</div>
+  <div class="duo-x">
+    <div><p><span class='question'>Écrire la relation entre les intensités pour le nœud A, puis pour le nœud B.</span></p></div>
+    <div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Schéma des deux nœuds A et B avec les flèches d'intensité I₁…I₆</span>
+  <span class="detail">à redessiner en SVG (respecter le sens sortant de I₅) — régime B.</span>
+</div>
+  </div>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Nœud A</div><p>Les courants d'intensités I<sub>1</sub> et I<sub>2</sub> arrivent ; ceux d'intensités I<sub>3</sub> et I<sub>4</sub> repartent.</p><p class="eq-ligne"><span class='resultat'>I<sub>1</sub> + I<sub>2</sub> = I<sub>3</sub> + I<sub>4</sub></span></p><div class="etape">Nœud B</div><p>D'après les sens des flèches sur le schéma, les courants d'intensités I<sub>3</sub> et I<sub>6</sub> arrivent au nœud B, tandis que celui d'intensité I<sub>5</sub> en repart.</p><p class="eq-ligne"><span class='resultat'>I<sub>3</sub> + I<sub>6</sub> = I<sub>5</sub></span></p><p><em>Remarque (correction d'une erreur de la source) :</em> le corrigé d'origine écrivait « I<sub>3</sub> + I<sub>5</sub> + I<sub>6</sub> = 0, tous entrants ». Or la flèche de I<sub>5</sub> est sortante : la relation cohérente avec le schéma est bien I<sub>3</sub> + I<sub>6</sub> = I<sub>5</sub>.</p>
+  </details>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=N-Johiwk-To&list=PLFf1gA-ubk_RLFKtv2ds-WpeWoQy-Wv6l&index=3" target="_blank" rel="noopener">▶ S'exercer en vidéo ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=8_TFftdCO6E" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-3"><span class="num">03</span> Loi des mailles</h2></summary>
+<div class="partie-corps">
+<div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Maille et loi des mailles</div>
+  <p>Une <span class='terme'>maille</span> est une portion de circuit formant une boucle fermée.</p><p><span class='terme'>Loi des mailles</span> (deuxième loi de Kirchhoff) : en parcourant une maille dans un sens choisi, la somme algébrique des tensions rencontrées est nulle (une tension est comptée positivement ou négativement selon que son sens est le même que celui du parcours ou l'opposé).</p>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 3 — Tension par la loi des mailles</div>
+  <div class="duo-x">
+    <div><p><span class='question'>Déterminer la tension U<sub>AB</sub> en appliquant la loi des mailles.</span></p></div>
+    <div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Schéma de la maille de l'exercice 3</span>
+  <span class="detail">à redessiner en SVG — régime B.</span>
+</div>
+  </div>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Loi des mailles</div><p class="eq-ligne">U<sub>PA</sub> − U<sub>PN</sub> + U<sub>CN</sub> + U<sub>BC</sub> + U<sub>AB</sub> = 0</p><div class="etape">Isoler U<sub>AB</sub></div><p class="eq-ligne">U<sub>AB</sub> = U<sub>PN</sub> − U<sub>PA</sub> − U<sub>CN</sub> − U<sub>BC</sub></p><div class="etape">Application numérique</div><p class="eq-ligne">U<sub>AB</sub> = 4,5 − 1,2 − 0,4 − 1,1 = <span class='resultat'>1,8 V</span></p>
+  </details>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 4 — Tension aux bornes d'un générateur</div>
+  <div class="duo-x">
+    <div><p><span class='question'>Déterminer la tension U<sub>P</sub> aux bornes du générateur.</span></p></div>
+    <div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Schéma de la maille de l'exercice 4</span>
+  <span class="detail">à redessiner en SVG — régime B.</span>
+</div>
+  </div>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Loi des mailles</div><p class="eq-ligne">U<sub>P</sub> − U<sub>D</sub> − U<sub>R1</sub> − U<sub>R2</sub> = 0</p><div class="etape">Isoler U<sub>P</sub> et application numérique</div><p class="eq-ligne">U<sub>P</sub> = U<sub>D</sub> + U<sub>R1</sub> + U<sub>R2</sub> = 4,00 + 1,25 + 0,75 = <span class='resultat'>6,00 V</span></p>
+  </details>
+</div><div class="videos">
+  <a class="video-chip" href="https://youtu.be/mxpImDpH5FY" target="_blank" rel="noopener">▶ S'exercer en vidéo ↗</a>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-4"><span class="num">04</span> Caractéristique tension-courant</h2></summary>
+<div class="partie-corps">
+<div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Caractéristique d'un dipôle</div>
+  <p>La <span class='terme'>caractéristique</span> tension-courant d'un dipôle est la courbe représentant la tension <span class='nb'>U</span> à ses bornes en fonction de l'intensité <span class='nb'>I</span> qui le traverse : U = f(I). Chaque point de la courbe est un <span class='terme'>point de fonctionnement</span> possible du dipôle.</p><p>La caractéristique d'un conducteur ohmique est une droite passant par l'origine. Celle d'une diode présente une <span class='terme'>tension de seuil</span> en dessous de laquelle elle ne laisse pas passer le courant.</p>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 5 — Lire une caractéristique</div>
+  <div class="duo-x">
+    <div><p><span class='question'>À partir de la caractéristique du résistor, donner deux autres points de fonctionnement (U ; I).</span></p></div>
+    <div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Caractéristique U = f(I) du résistor (graphe à lire)</span>
+  <span class="detail">graphe à redessiner en SVG — régime B.</span>
+</div>
+  </div>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Lecture graphique</div><p>La caractéristique étant une droite passant par l'origine, on relève par exemple :</p><p class="eq-ligne"><span class='resultat'>(U = 8 V ; I = 0,08 A)</span>  et  <span class='resultat'>(U = 2 V ; I = 0,02 A)</span></p>
+  </details>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=8_TFftdCO6E" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-5"><span class="num">05</span> Loi d’Ohm</h2></summary>
+<div class="partie-corps">
+<div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Résistance et loi d'Ohm</div>
+  <p>La <span class='terme'>résistance</span> électrique <span class='nb'>R</span> d'un conducteur ohmique caractérise son opposition au passage du courant. Elle s'exprime en <span class='terme'>ohm (Ω)</span>.</p>
+</div><div class="encart propriete"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété</div>
+  <p><span class='terme'>Loi d'Ohm</span> : pour un conducteur ohmique, la tension à ses bornes est proportionnelle à l'intensité qui le traverse.</p>
+</div><div class="formule-bloc"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq">U = R × I</div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>U</b> tension · V<br><b>R</b> résistance · <span class='nb'>Ω</span><br><b>I</b> intensité · A
+  </div>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 6 — Résistance par le coefficient directeur</div>
+  <div class="duo-x">
+    <div><p><span class='question'>Déterminer la valeur de la résistance R à partir de la caractéristique (droite passant par l'origine).</span></p></div>
+    <div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Caractéristique U = f(I) de l'exercice 6</span>
+  <span class="detail">graphe à redessiner en SVG — régime B.</span>
+</div>
+  </div>
+  
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Coefficient directeur de la droite</div><p>La résistance est le coefficient directeur de la caractéristique U = f(I) :</p><p class="eq-ligne">R = ΔU ⁄ ΔI = (9 − 3) ⁄ (0,060 − 0,020)</p><div class="etape">Application numérique</div><p class="eq-ligne">R = 6 ⁄ 0,040 = <span class='resultat'>150 Ω</span></p>
+  </details>
+</div><div class="exercice">
+  <div class="etiquette">Exercice 7 — Appliquer la loi d'Ohm</div>
+  <p>Un conducteur ohmique de résistance R<sub>1</sub> = 10 Ω est parcouru par un courant d'intensité I = 500 mA. <span class='question'>Calculer la tension U à ses bornes.</span></p>
+  <p class="donnees">Données : R<sub>1</sub> = 10 Ω · I = 500 mA</p>
+  <details class="correction">
+    <summary>Voir la correction</summary>
+    <div class="etape">Conversion de l'intensité</div><p class="eq-ligne">I = 500 mA = 0,5 A</p><div class="etape">Loi d'Ohm et application numérique</div><p class="eq-ligne">U = R<sub>1</sub> × I = 10 × 0,5 = <span class='resultat'>5 V</span></p>
+  </details>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=N-Johiwk-To&list=PLFf1gA-ubk_RLFKtv2ds-WpeWoQy-Wv6l&index=3" target="_blank" rel="noopener">▶ S'exercer en vidéo ↗</a>
+</div>
+</div>
+</details>
+
+<details class="partie" open>
+<summary><h2 id="ancre-6"><span class="num">06</span> Capteurs électriques</h2></summary>
+<div class="partie-corps">
+<h3><span class="l">A ·</span> Généralités sur les capteurs</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Capteur électrique</div>
+  <p>Un <span class='terme'>capteur</span> électrique est un dispositif qui convertit une <span class='terme'>grandeur d'entrée</span> (température, luminosité, pression…) en une <span class='terme'>grandeur de sortie</span> électrique (tension, intensité ou résistance), exploitable par un circuit.</p><p>La <span class='terme'>courbe d'étalonnage</span> d'un capteur relie la grandeur de sortie à la grandeur d'entrée : elle permet, à partir d'une mesure électrique, de remonter à la valeur de la grandeur physique mesurée.</p>
+</div><div class="a-faire">
+  <span class="type">schéma</span>
+  <span class="quoi">Schéma « grandeur d'entrée → capteur → grandeur de sortie » et exemple de courbe d'étalonnage</span>
+  <span class="detail">à redessiner en SVG — régime B.</span>
+</div><h3><span class="l">B ·</span> Microcontrôleurs et cartes programmables</h3><div class="encart definition"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Microcontrôleur</div>
+  <p>Un <span class='terme'>microcontrôleur</span> est un petit ordinateur programmable intégré sur une carte, capable de lire des capteurs et de commander des actionneurs. Au lycée, on utilise couramment les cartes <strong>micro:bit</strong> et <strong>Arduino</strong>.</p>
+</div><div class="a-faire">
+  <span class="type">image</span>
+  <span class="quoi">Photos des cartes micro:bit et Arduino</span>
+  <span class="detail">photos à extraire / optimiser — régime B.</span>
+</div><div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=cxQVkFKJwyk&list=PLFf1gA-ubk_RLFKtv2ds-WpeWoQy-Wv6l&index=2" target="_blank" rel="noopener">▶ Réviser le cours (1) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=Q9RFhmS5we8&list=PLFf1gA-ubk_RLFKtv2ds-WpeWoQy-Wv6l&index=5" target="_blank" rel="noopener">▶ (2) ↗</a>
+  <a class="video-chip" href="https://youtu.be/Gk9cfSaIkrc" target="_blank" rel="noopener">▶ (3) ↗</a>
+  <a class="video-chip" href="https://www.youtube.com/watch?v=MFoEKzL9m-Y" target="_blank" rel="noopener">▶ (4) ↗</a>
+</div>
+</div>
+</details>
+
+<section class="checklist" id="pour-le-ds">
+  <h2><span class="num">✓</span> Pour le DS, je sais :</h2>
+  <ol id="liste-ds">
+  </ol>
+  <div class="a-faire">
+  <span class="type">tableau</span>
+  <span class="quoi">Liste des compétences « Pour le DS » — à fournir</span>
+  <span class="detail">aucune diapositive « Pour le DS » dans le PPTX source (comme pour T1-C6/C7) : la liste des attendus sera transmise par M. Van Hoorde.</span>
+</div>
+  <ol style="display:none">  </ol>
+  <div class="videos" style="margin:1rem 0 0;">
+    
+  <div class="a-faire">
+  <span class="type">vidéo</span>
+  <span class="quoi">Lien du DS (devoir surveillé) — à poser chaque année</span>
+  <span class="detail">un lien « DS » figure dans la source mais n'est jamais activé automatiquement : M. Van Hoorde choisit le DS de l'année via le cahier de textes.</span>
+</div>
+  </div>
+</section>
+
+<p class="signature">M. Van Hoorde<span>Lycée général Isaac de l'Étoile · Poitiers</span></p>
+
+</article>
+</div>
+
+<button id="haut" type="button" aria-label="Revenir en haut de page">↑ haut</button>
+
+<footer>
+  <div class="footer-inner">© 2025-2026 · M. Van Hoorde — Physique-Chimie · 2nde · Thème 3 — Ondes et signaux</div>
+</footer>
+
+<script>
+(function(){
+  var barre = document.querySelector('#lecture .fait');
+  var btn = document.getElementById('haut');
+  function maj(){
+    var h = document.documentElement;
+    var pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    barre.style.width = (pct || 0) + '%';
+    btn.classList.toggle('visible', h.scrollTop > 600);
+  }
+  document.addEventListener('scroll', maj, {passive:true});
+  btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  maj();
+
+  var liens = {};
+  document.querySelectorAll('#toc a').forEach(function(a){
+    liens[a.getAttribute('href').slice(1)] = a;
+  });
+  var cibles = Array.prototype.slice.call(document.querySelectorAll('h2[id], section[id]'));
+  function majToc(){
+    var repere = window.scrollY + window.innerHeight * 0.25;
+    var courant = null;
+    cibles.forEach(function(c){ if (c.offsetTop <= repere) courant = c; });
+    Object.keys(liens).forEach(function(k){ liens[k].classList.remove('actif'); });
+    if (courant && liens[courant.id]) liens[courant.id].classList.add('actif');
+  }
+  document.addEventListener('scroll', majToc, {passive:true});
+  majToc();
+
+  /* Sections repliables : un clic dans un sommaire ouvre la section visée */
+  document.querySelectorAll('#toc a, details.toc-mobile a').forEach(function(a){
+    a.addEventListener('click', function(){
+      var cible = document.querySelector(a.getAttribute('href'));
+      if (!cible) return;
+      var partie = cible.closest('details.partie');
+      if (partie) partie.open = true;
+    });
+  });
+
+  var CLE = 'cours-2nde-pc-t3-c2-signaux-et-capteurs-checklist';
+  var boites = document.querySelectorAll('#liste-ds input[type="checkbox"]');
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE)) || {}; } catch(e) {}
+  boites.forEach(function(b){
+    if (etat[b.id]) b.checked = true;
+    b.addEventListener('change', function(){
+      etat[b.id] = b.checked;
+      try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch(e) {}
+    });
+  });
+})();
+</script>
+
+<script>
+/* Verrou de fin de chapitre — v2 (porte à code centrée)
+   Le code n'est jamais écrit ici : seule son EMPREINTE SHA-256 est stockée.
+   Re-verrouillage pour tests : ?verrou=1 */
+(function(){
+  var EMPREINTE = '3eec8753cb6558b5e3fd6b3cd87588214044885fee83d76160b231c1e3bb53c8' /* ⚠ empreinte du code fourni par Loïc : python3 -c "import hashlib;print(hashlib.sha256('CODE6C'.encode()).hexdigest())" */;
+  var CLE = 'deblocage-2nde-pc-t3-c2-signaux-et-capteurs';
+
+  function deverrouiller(){
+    document.body.classList.remove('verrouille');
+    var porte = document.getElementById('porte');
+    if (porte) porte.remove();
+    window.scrollTo(0, 0);
+  }
+
+  try {
+    if (new URLSearchParams(location.search).has('verrou')) {
+      localStorage.removeItem(CLE);
+    }
+  } catch(e) {}
+
+  try {
+    if (localStorage.getItem(CLE) === '1') { deverrouiller(); return; }
+  } catch(e) {}
+
+  var forme = document.getElementById('forme-code');
+  var champ = document.getElementById('champ-code');
+  var erreur = document.getElementById('erreur-code');
+
+  function empreinteHex(texte){
+    var donnees = new TextEncoder().encode(texte);
+    return crypto.subtle.digest('SHA-256', donnees).then(function(tampon){
+      return Array.prototype.map.call(new Uint8Array(tampon), function(o){
+        return o.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  forme.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var essai = (champ.value || '').trim().toUpperCase();
+    if (essai.length !== 6) {
+      erreur.textContent = 'Le code fait 6 caractères (lettres et chiffres).';
+      return;
+    }
+    if (!(window.crypto && crypto.subtle)) {
+      erreur.textContent = 'Navigateur incompatible — ouvre la page depuis le site.';
+      return;
+    }
+    empreinteHex(essai).then(function(h){
+      if (h === EMPREINTE) {
+        try { localStorage.setItem(CLE, '1'); } catch(e) {}
+        deverrouiller();
+      } else {
+        erreur.textContent = 'Code incorrect. Vérifie le cahier de textes !';
+        champ.select();
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

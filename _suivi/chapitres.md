@@ -1,6 +1,6 @@
 # Tableau de bord détaillé — par chapitre
 
-> Mise à jour : 15/07/2026 · Flags : ⬜ à faire · 🔄 en cours · ✅ fait · ⚠ attention
+> Mise à jour : 16/07/2026 · Flags : ⬜ à faire · 🔄 en cours · ✅ fait · ⚠ attention
 > Jalons (dans l'ordre — la fiche est TOUJOURS le dernier) :
 > 1 Ébauche en ligne · 2 Texte&exos validés · 3 Images retravaillées ·
 > 4 Ajouts&approfondissements · 5 Cours VALIDÉ (« utilisable l'an prochain ») ·
@@ -104,8 +104,70 @@
 - Liens décodés : 5 vidéos + 2 animations (ostralo, GeoGebra) + Kahoot activé. Mapping label↔lien du bloc chute libre (diapo 6) : meilleur effort (3 liens, labels approchés).
 - Blocs 🚧 restants : ~8 — schémas (addition de vecteurs, skieur, chat, bilans repos/mouvement, chronophotographies) et photos (chat, bobsleigh/camion, planètes). Lien DS en attente.
 
+---
+
+## Seconde — Thème 3 : Ondes et signaux
+
+> Dégrossissage régime A élargi du 16/07/2026 (4 chapitres, sources PPTX).
+> Diapos vérifiées visuellement une à une (PPTX → PDF → PNG 130 dpi) : plusieurs
+> exercices et un QCM étaient logés dans des images/tables non capturées par
+> l'extraction texte. Hyperliens portés par des **formes** (click-action) et non
+> par du texte → extraction récursive dans les groupes.
+> ✅ La page de niveau `pages/2nde-physique-chimie.html` a été **fournie puis mise
+> à jour** : les quatre chapitres y sont désormais **liés** (cartes `.chapitre`
+> alignées sur les Thèmes 1-2, liens anti-préfixe).
+> ⚠ **Divergence de structure à trancher** : l'ancienne page prévoyait 3 chapitres
+> (son / spectres / signaux) ; les PPTX en donnent 4, ordre son / signaux /
+> spectres / réfraction. La page suit l'ordre des slugs (pour que carte et cours
+> portent le même numéro). Pour revenir à l'ordre son / spectres / signaux, il
+> faudrait renuméroter t3-c2 ↔ t3-c3 (fichiers, clés localStorage, titres) — régime B.
+
+### T3-C1 — Émission et perception d'un son
+- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t3-c1-emission-perception-son.html`
+- Fiche : aucune. Code de déblocage : **S0NORE**.
+- 4 sections (caractéristiques d'un signal périodique · les ondes · émission & propagation d'un son · perception des sons).
+- **6 exercices** rédigés + **corrigés en entier** (période/fréquence/extrema, classification d'ondes, distance de l'orage, chant des baleines).
+- 2 encarts formule reconstitués (f = 1/T · c_son = d/Δt) ; 1 table de données (vitesses du son selon le milieu) transcrite.
+- Liens décodés : 8 vidéos (hyperliens de formes) + Kahoot activé.
+- Blocs 🚧 restants : ~11 — uniquement schémas à redessiner (motif/période, graphes des exercices, effet de la fréquence, vague, compressions-dilatations, frise des fréquences audibles, échelle des dB) et photos (guitare/saxophone, situations d'ondes, sonomètre). Lien DS en attente.
+
+### T3-C2 — Signaux et capteurs
+- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t3-c2-signaux-et-capteurs.html`
+- Fiche : aucune. Code de déblocage : **S1GNAL**.
+- 6 sections (rappels d'électricité · loi des nœuds · loi des mailles · caractéristique tension-courant · loi d'Ohm · capteurs électriques).
+- **7 exercices** rédigés + **corrigés en entier** ; 1 encart formule (U = R × I) ; 1 table (dipôles générateur/récepteur) transcrite.
+- ⚠ **Erreur source corrigée** : Ex2 nœud B — le corrigé d'origine écrivait « I₃ + I₅ + I₆ = 0, tous entrants », incohérent avec les flèches (I₅ **sortant**) ; rétabli en **I₃ + I₆ = I₅**, avec aparté sur la page.
+- ⚠ **Pas de diapositive « Pour le DS » ni de Kahoot** dans la source (comme T1-C6/C7) → bloc 🚧 « compétences à fournir » posé à la place de la checklist ; pas de Kahoot activé.
+- ⚠ **Hyperliens vidéo dupliqués/mal appariés** dans la source (`8_TFftdCO6E` et `N-Johiwk-To` réutilisés diapos 7/10/11 ; `_BEr9CPHnAc` diapos 3/12) → posés au mieux, sans répéter inutilement.
+- Liens décodés : ~11 vidéos utiles (hyperliens de formes ; sources d'images Google ignorées).
+- Blocs 🚧 restants : ~8 — schémas (circuit à légender, nœuds A/B avec sens de I₅, mailles, caractéristiques U=f(I), grandeur d'entrée→capteur→sortie, courbe d'étalonnage) et photos (multimètre, oscilloscope, interface, micro:bit, Arduino). Lien DS en attente.
+
+### T3-C3 — Dispersion de la lumière et spectres lumineux
+- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t3-c3-dispersion-spectres.html`
+- Fiche : aucune. Code de déblocage : **PR1SME**.
+- 2 sections (dispersion de la lumière · les spectres lumineux), sous-parties A–D.
+- **6 exercices** rédigés + **corrigés en entier** (mono/polychromatique, domaines de radiations, spectre EM, corps noir/QCM, feu d'artifice → lithium, acier du forgeron).
+- Le QCM du corps noir (Ex4) était **piégé dans une table d'image** : extrait et retranscrit (4 affirmations V/F + 3 questions). 1 table Li/Na (raies) transcrite.
+- 1 encart histoire des sciences (Newton, 1666, « expérience cruciale ») — portrait en 🚧 (licence à vérifier).
+- Liens décodés : ~11 vidéos + 3 animations (PhET déviation, PhET corps noir, LaboSims) + Kahoot activé.
+- Blocs 🚧 restants : ~8 — schémas (prisme à légender, frise du spectre électromagnétique, arc-en-ciel/goutte, spectres continus et de raies) et images (spectre du feu d'artifice, barre d'acier + spectres a/b/c/d, portrait de Newton). Lien DS en attente.
+
+### T3-C4 — Réfraction et réflexion de la lumière
+- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t3-c4-refraction-reflexion.html`
+- Fiche : aucune. Code de déblocage : **M1RAGE**.
+- 4 sections (propriétés de la lumière · dioptre & réflexion · phénomène de réfraction · la réfraction au quotidien), sous-parties A–E.
+- ⚠ **Source = version ÉLÈVE, sans corrigés.** Les **5 corrections** (temps Soleil→Terre ; indice de l'eau ; indice→température ; réfraction eau→plexiglas ; angle limite eau→air) ont été **rédigées par Claude, calculs vérifiés**, et sont signalées comme telles sur la page (mention « à valider »). **À valider en priorité en régime B.**
+  - Ex3 (indice → température) dépend d'un graphe laissé en 🚧 : valeur ≈ 20 °C donnée sous réserve.
+- 2 encarts formule reconstitués (n = c/v · n₁·sin i₁ = n₂·sin i₂) ; 1 table (indices de réfraction, 16 milieux) transcrite.
+- Liens décodés : ~11 vidéos + 1 animation PhET + 3 liens ressources (Institut d'Optique, physiqueludique, Ingenium) + Kahoot activé.
+- Blocs 🚧 restants : ~7 — schémas (réflexion + normale, trois rayons & plan d'incidence, graphe n = f(T), mirages chaud/froid) et images (Soleil aplati, crayon cassé, pièce cachée). Lien DS en attente.
+
 ## Seconde — Thèmes suivants
-_(à créer au fur et à mesure du dégrossissage : T3…)_
+_(à créer au fur et à mesure du dégrossissage : T4…)_
 
 ## Première / Terminale
 _(pages d'accueil existantes ; chapitres à venir)_
