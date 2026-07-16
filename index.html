@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>M. Van Hoorde — Physique-Chimie</title>
 <link rel="stylesheet" href="assets/css/fonts.css">
-<!-- Styles communs à toutes les pages : voir style.css -->
+<!-- Styles communs de la reliure : voir style.css -->
 <link rel="stylesheet" href="style.css">
 <style>
-  /* Réglages spécifiques à la page d'accueil (le reste vit dans style.css) */
+  /* ============================================================
+     PAGE D'ACCUEIL — « page de titre » du site (reliure
+     papier d'étude, variante B). Le reste vit dans style.css.
+     ============================================================ */
 
   html { scroll-behavior: smooth; }
   @media (prefers-reduced-motion: reduce) {
@@ -16,279 +19,208 @@
     * { animation: none !important; transition: none !important; }
   }
 
-  /* ============================================================
-     NAVIGATION — variante avec menu complet (page d'accueil)
-     ============================================================ */
-  .nav-inner { max-width: 1080px; }
-  .nav-logo { letter-spacing: 0.02em; }
+  /* NAVIGATION — variante avec menu complet */
+  .nav-inner { max-width: 1200px; }
   nav ul {
     display: flex;
-    gap: 1.5rem;
+    gap: 2rem;
     list-style: none;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.82rem;
+    font-size: 1rem;
   }
   nav a {
     color: var(--encre);
     text-decoration: none;
-    border-bottom: 2px solid transparent;
+    border-bottom: 1px solid transparent;
     padding-bottom: 2px;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, color 0.2s;
   }
-  nav a:hover, nav a:focus-visible { border-color: var(--h-beta); }
-  nav a:focus-visible { outline: 2px solid var(--h-beta); outline-offset: 3px; }
+  nav a:hover, nav a:focus-visible { color: var(--h-alpha); }
+  nav a.actif { border-color: var(--h-alpha); }
+  nav a:focus-visible { outline: 2px solid var(--h-alpha); outline-offset: 3px; }
 
-  /* ============================================================
-     HERO
-     ============================================================ */
-  header.hero {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 5rem 1.5rem 4rem;
-  }
-  .hero-label {
+  .surtitre {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--gris);
+    letter-spacing: 0.26em;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 1.2rem;
+    font-size: 0.78rem;
+    color: var(--h-alpha);
+  }
+
+  /* HÉROS — page de titre */
+  header.hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 0;
+    text-align: center;
+  }
+  .filet-court {
+    width: 56px; height: 1px;
+    background: var(--encre);
+    margin: 20px auto;
   }
   .hero h1 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: clamp(2.2rem, 5.5vw, 4rem);
-    line-height: 1.08;
-    max-width: 17ch;
-    margin-bottom: 1.5rem;
-  }
-  .hero h1 em {
-    font-style: normal;
-    color: var(--h-beta);
-  }
-  .hero p.intro {
-    font-size: 1.15rem;
-    max-width: 56ch;
-    color: var(--encre);
-  }
-  .hero p.intro strong { color: var(--h-alpha); font-weight: 600; }
-
-  /* ============================================================
-     SECTIONS
-     ============================================================ */
-  section {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 3.5rem 1.5rem;
-  }
-  .section-titre {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-  .section-titre h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.7rem;
-    font-weight: 700;
-  }
-  .section-titre .lambda {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--gris);
-  }
-
-  /* Cartes de cours : une par ligne, pleine largeur */
-  .grille-cartes {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-  .carte {
-    background: var(--papier);
-    border: 1px solid var(--encre);
-    padding: 1.5rem;
-    position: relative;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-  }
-  .carte:hover {
-    transform: translateY(-3px);
-    box-shadow: 4px 4px 0 var(--encre);
-  }
-  .carte .niveau {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding: 0.2rem 0.55rem;
-    border: 1px solid currentColor;
-    display: inline-block;
-    margin-bottom: 0.9rem;
-  }
-  /* Une couleur par niveau */
-  .carte.seconde .niveau   { color: var(--h-beta); }
-  .carte.premiere .niveau  { color: var(--h-gamma); }
-  .carte.terminale .niveau { color: var(--h-alpha); }
-  .carte h3 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.12rem;
-    margin-bottom: 0.5rem;
-  }
-  .carte p { font-size: 0.95rem; color: var(--gris); }
-  .carte a.lien {
-    display: inline-block;
-    margin-top: 1rem;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.82rem;
-    color: var(--encre);
-    text-decoration: none;
-    border-bottom: 2px solid var(--h-beta);
-  }
-  .carte a.lien:hover { color: var(--h-beta); }
-
-  /* ============================================================
-     APERÇU AU SURVOL : carte mentale du programme
-     Replié par défaut (max-height: 0), déplié au survol grâce
-     au sélecteur .carte:hover .apercu, avec une transition douce
-     ============================================================ */
-  .carte .apercu {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease;
-  }
-  .carte:hover .apercu,
-  .carte:focus-within .apercu {
-    max-height: 500px;
-  }
-
-  .apercu-titre {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--gris);
-    margin: 1.2rem 0 0.8rem;
-    border-top: 1px dashed var(--gris);
-    padding-top: 1rem;
-  }
-  .mindmap {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    list-style: none;
+    font-weight: 500;
+    font-size: clamp(2.3rem, 5.5vw, 3.3rem);
+    line-height: 1.14;
     margin: 0;
   }
-  .mindmap > li {
-    flex: 1 1 180px;
-    border-left: 3px solid var(--h-beta);
-    padding-left: 0.8rem;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.92rem;
-    color: var(--encre);
+  .hero h1 em { font-style: italic; }
+  .hero p.intro {
+    font-style: italic;
+    font-size: 1.2rem;
+    max-width: 560px;
+    margin: 24px auto 0;
+    color: var(--encre-douce);
   }
-  .mindmap ul {
-    list-style: none;
-    margin-top: 0.3rem;
-    font-family: 'Spectral', serif;
-    font-size: 0.88rem;
-    color: var(--gris);
-  }
-  .mindmap ul li::before {
-    content: "— ";
-    color: var(--h-beta);
-  }
+  .hero p.intro strong { color: var(--h-alpha); font-weight: 500; }
 
-  /* Sur mobile, pas de souris donc pas de survol :
-     l'aperçu est affiché en permanence (media query) */
-  @media (max-width: 700px) {
-    .carte .apercu { max-height: none; }
+  /* GRAVURE DU JOUR */
+  .gravure-du-jour {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 0;
+    text-align: center;
   }
-
-  /* ============================================================
-     PROJET FIL ROUGE
-     ============================================================ */
-  .fil-rouge {
-    border: 2px solid var(--h-alpha);
-    background: var(--papier);
-    padding: 2.5rem;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  .gravure-du-jour .date {
+    font-size: 0.9rem;
+    color: var(--sepia);
+    margin-top: 6px;
+    font-style: italic;
   }
-  @media (min-width: 760px) {
-    .fil-rouge { grid-template-columns: 2fr 1fr; align-items: center; }
+  .planche {
+    margin: 24px auto 0;
+    max-width: 640px;
+    border: 1px solid var(--filet-fonce);
+    padding: 14px;
+    background: var(--papier-clair);
   }
-  .fil-rouge h3 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.5rem;
-    margin-bottom: 0.8rem;
+  .planche img {
+    display: block;
+    width: 100%;
+    height: 330px;
+    object-fit: contain;
+    border: 1px solid #ddd2b8;
+    background: #fff;
+    filter: sepia(.25);   /* homogénéise les scans */
   }
-  .fil-rouge .badge {
+  /* Repli tant que la planche du jour n'est pas déposée dans gravures/ */
+  .planche .manque {
+    display: none;
+    height: 330px;
+    border: 1px dashed var(--pointille);
+    background: #fff;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .planche .manque span {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.75rem;
-    color: var(--h-alpha);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 0.6rem;
+    color: var(--sepia);
+    max-width: 40ch;
   }
-  .fil-rouge p { color: var(--encre); }
-  .compteur {
-    text-align: center;
-    border-left: 1px dashed var(--gris);
-    padding-left: 1.5rem;
-  }
-  @media (max-width: 759px) {
-    .compteur { border-left: none; border-top: 1px dashed var(--gris); padding: 1.5rem 0 0; }
-  }
-  .compteur .nombre {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--h-alpha);
-    line-height: 1;
-  }
-  .compteur .legende {
+  .legende-titre { font-size: 1.15rem; margin-top: 14px; }
+  .legende { font-size: 0.92rem; color: var(--sepia); font-style: italic; margin-top: 4px; }
+  .lien-carmin {
+    display: inline-block;
+    margin-top: 14px;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.78rem;
-    color: var(--gris);
-    margin-top: 0.4rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--h-alpha);
+    text-decoration: none;
+    border-bottom: 1px solid var(--h-alpha);
+    padding-bottom: 2px;
   }
 
-  /* ============================================================
-     À PROPOS / CONTACT
-     ============================================================ */
-  .a-propos {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
+  /* TABLE DES MATIÈRES — les 5 classes */
+  .toc {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4.2rem 1.5rem 0;
   }
-  @media (min-width: 760px) {
-    .a-propos { grid-template-columns: 1.4fr 1fr; }
-  }
-  .a-propos p { max-width: 60ch; margin-bottom: 1rem; }
-  .contact-bloc {
-    border: 1px solid var(--encre);
-    padding: 1.5rem;
+  .toc .titre {
+    text-align: center;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.88rem;
-    align-self: start;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    color: var(--h-alpha);
+    margin-bottom: 6px;
   }
-  .contact-bloc dt { color: var(--gris); margin-top: 0.8rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; }
-  .contact-bloc dt:first-child { margin-top: 0; }
-  .contact-bloc dd { margin: 0.15rem 0 0; }
-  .contact-bloc a { color: var(--h-beta); text-decoration: none; }
-  .contact-bloc a:hover { text-decoration: underline; }
+  .toc .double-filet {
+    height: 3px;
+    border-top: 1px solid var(--encre);
+    border-bottom: 1px solid var(--encre);
+    margin: 14px 0 28px;
+  }
+  .toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
+  .toc .ligne { display: flex; align-items: baseline; gap: 10px; font-size: 1.15rem; }
+  .toc .ligne a { color: var(--encre); text-decoration: none; }
+  .toc .ligne a:hover { color: var(--h-alpha); }
+  .toc .num { color: var(--h-alpha); min-width: 40px; }
+  .toc .points { flex: 1; border-bottom: 1px dotted var(--pointille); transform: translateY(-4px); }
+  .toc .niveau { color: var(--sepia); font-size: 0.92rem; letter-spacing: 0.08em; }
+  .toc .detail { font-size: 0.92rem; color: var(--sepia); font-style: italic; padding-left: 50px; margin-top: 2px; }
 
-  /* ============================================================
-     PIED DE PAGE — variante pleine largeur avec deux blocs
-     ============================================================ */
-  footer { margin-top: 2rem; }
-  .footer-inner {
-    max-width: 1080px;
+  /* MISSION SPECTRA (projet fil rouge) */
+  .spectra { max-width: 1200px; margin: 4rem auto 0; padding: 0 1.5rem; }
+  .spectra .cadre {
+    border: 1px solid var(--h-alpha);
+    padding: 36px 44px;
+    text-align: center;
+    background: var(--papier-clair);
+  }
+  .spectra h2 { font-size: 2rem; font-weight: 500; margin: 12px 0 0; }
+  .spectra p {
+    font-style: italic;
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin: 12px auto 0;
+    color: var(--encre-douce);
+  }
+  .spectra .compteur { margin-top: 18px; font-size: 0.95rem; color: var(--sepia); }
+  .spectra .compteur strong { color: var(--h-alpha); font-weight: 400; }
+
+  /* À PROPOS + CONTACT */
+  .a-propos {
+    max-width: 1200px;
+    margin: 4rem auto 0;
+    border-top: 1px solid var(--filet);
+    padding: 36px 1.5rem 40px;
     display: flex;
     justify-content: space-between;
+    gap: 40px;
     flex-wrap: wrap;
-    gap: 0.5rem;
+  }
+  .a-propos .bio {
+    max-width: 520px;
+    font-size: 1rem;
+    color: var(--encre-douce);
+    font-style: italic;
+  }
+  .a-propos .bio p { margin-bottom: 0.8rem; }
+  .a-propos dl { font-size: 0.95rem; display: grid; gap: 8px; margin: 0; align-content: start; }
+  .a-propos dt {
+    color: var(--h-alpha);
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+  }
+  .a-propos dd { margin: 0 0 4px; }
+  .a-propos dd a { color: var(--encre); text-decoration: none; border-bottom: 1px dotted var(--h-alpha); }
+  .a-propos dd a:hover { color: var(--h-alpha); }
+
+  footer .footer-inner {
+    max-width: 1200px;
+    text-align: center;
+  }
+
+  @media (max-width: 700px) {
+    header.hero { padding-top: 3rem; }
+    .toc .detail { padding-left: 0; }
   }
 </style>
 </head>
@@ -300,259 +232,150 @@
   <div class="nav-inner">
     <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
     <ul>
+      <li><a class="actif" href="index.html">Accueil</a></li>
       <li><a href="#cours">Cours</a></li>
+      <li><a href="#gravures">Gravures</a></li>
       <li><a href="#projets">Projets</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="#contact"><em>Contact</em></a></li>
     </ul>
   </div>
 </nav>
 
 <header class="hero">
-  <p class="hero-label">Cahier de bord — année 2026-2027</p>
-  <h1>La physique-chimie, du <em>cahier</em> au <em>laboratoire</em>.</h1>
+  <p class="surtitre">Cahier de bord — année 2026-2027</p>
+  <div class="filet-court" aria-hidden="true"></div>
+  <h1>La physique-chimie,<br>du <em>cahier</em> au <em>laboratoire</em>.</h1>
   <p class="intro">
-    Bienvenue ! Vous trouverez ici mes cours, travaux pratiques et projets
-    pédagogiques. Cette année, un <strong>jeu de rôle fil rouge</strong> accompagnera
-    nos chapitres : chaque notion débloquera une nouvelle étape de l'aventure.
+    Cours, travaux pratiques et projets pédagogiques. Cette année, un
+    <strong>jeu de rôle fil rouge</strong> accompagne nos chapitres : chaque notion
+    débloque une nouvelle étape de l'aventure.
   </p>
 </header>
 
-<section id="cours">
-  <div class="section-titre">
-    <h2>Cours</h2>
-    <span class="lambda">λ = 656 nm — mes classes</span>
-  </div>
-  <div class="grille-cartes">
+<section class="gravure-du-jour" id="gravures">
+  <p class="surtitre">Gravure du jour</p>
+  <p class="date" id="date-du-jour"></p>
+  <figure class="planche">
+    <img id="gravure-img" src="" alt="Gravure scientifique du jour">
+    <div class="manque" id="gravure-manque"><span></span></div>
+  </figure>
+  <p class="legende-titre" id="gravure-titre"></p>
+  <p class="legende" id="gravure-legende"></p>
+  <p><a class="lien-carmin" href="#gravures">Parcourir la collection de gravures</a></p>
+</section>
 
-    <article class="carte seconde">
-      <span class="niveau">2nde</span>
-      <h3>Physique-Chimie</h3>
-      <p>Cours, TP et exercices de l'année de seconde.</p>
-      <div class="apercu">
-        <p class="apercu-titre">Carte mentale du programme</p>
-        <ul class="mindmap">
-          <li>Constitution de la matière
-            <ul>
-              <li>Corps purs et mélanges</li>
-              <li>Solutions aqueuses</li>
-              <li>De l'atome à l'élément</li>
-            </ul>
-          </li>
-          <li>Mouvement et interactions
-            <ul>
-              <li>Décrire un mouvement</li>
-              <li>Modéliser une action</li>
-            </ul>
-          </li>
-          <li>Ondes et signaux
-            <ul>
-              <li>Émission et perception d'un son</li>
-              <li>Spectres lumineux</li>
-              <li>Signaux et capteurs</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <a class="lien" href="pages/2nde-physique-chimie.html">Consulter →</a>
-    </article>
+<section class="toc" id="cours">
+  <p class="titre">Table des matières — mes classes</p>
+  <div class="double-filet" aria-hidden="true"></div>
+  <ol>
+    <li>
+      <div class="ligne"><span class="num">I.</span><a href="pages/2nde-physique-chimie.html">Physique-Chimie</a><span class="points"></span><span class="niveau">2nde</span></div>
+      <div class="detail">Corps purs et mélanges · mouvement et interactions · ondes et signaux.</div>
+    </li>
+    <li>
+      <div class="ligne"><span class="num">II.</span><a href="pages/2nde-snt.html">SNT — Sciences numériques et technologie</a><span class="points"></span><span class="niveau">2nde</span></div>
+      <div class="detail">Réseaux et communication · données structurées · objets numériques.</div>
+    </li>
+    <li>
+      <div class="ligne"><span class="num">III.</span><a href="pages/1ere-enseignement-scientifique.html">Enseignement scientifique</a><span class="points"></span><span class="niveau">1re</span></div>
+      <div class="detail">Histoire de la matière · le Soleil, notre source d'énergie · son et musique.</div>
+    </li>
+    <li>
+      <div class="ligne"><span class="num">IV.</span><a href="pages/terminale-enseignement-scientifique.html">Enseignement scientifique</a><span class="points"></span><span class="niveau">Term</span></div>
+      <div class="detail">Science, climat et société · le futur des énergies · une histoire du vivant.</div>
+    </li>
+    <li>
+      <div class="ligne"><span class="num">V.</span><a href="pages/terminale-spe-physique-chimie.html">Spécialité Physique-Chimie</a><span class="points"></span><span class="niveau">Term · Spé</span></div>
+      <div class="detail">Acides et bases · mécanique newtonienne · ondes, lumière et photon.</div>
+    </li>
+  </ol>
+</section>
 
-    <article class="carte seconde">
-      <span class="niveau">2nde</span>
-      <h3>SNT</h3>
-      <p>Sciences numériques et technologie : comprendre le monde numérique qui nous entoure.</p>
-      <div class="apercu">
-        <p class="apercu-titre">Carte mentale du programme</p>
-        <ul class="mindmap">
-          <li>Réseaux et communication
-            <ul>
-              <li>Internet</li>
-              <li>Le Web</li>
-              <li>Les réseaux sociaux</li>
-            </ul>
-          </li>
-          <li>Données et information
-            <ul>
-              <li>Les données structurées</li>
-              <li>Localisation et cartographie</li>
-            </ul>
-          </li>
-          <li>Objets numériques
-            <ul>
-              <li>Informatique embarquée</li>
-              <li>La photographie numérique</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <a class="lien" href="pages/2nde-snt.html">Consulter →</a>
-    </article>
-
-    <article class="carte premiere">
-      <span class="niveau">1re</span>
-      <h3>Enseignement scientifique</h3>
-      <p>Une culture scientifique commune, de la matière au son.</p>
-      <div class="apercu">
-        <p class="apercu-titre">Carte mentale du programme</p>
-        <ul class="mindmap">
-          <li>Une longue histoire de la matière
-            <ul>
-              <li>Niveaux d'organisation</li>
-              <li>Les cristaux</li>
-              <li>Une structure complexe : la cellule</li>
-            </ul>
-          </li>
-          <li>Le Soleil, notre source d'énergie
-            <ul>
-              <li>Rayonnement solaire</li>
-              <li>Bilan radiatif terrestre</li>
-            </ul>
-          </li>
-          <li>Son et musique
-            <ul>
-              <li>Le son, phénomène vibratoire</li>
-              <li>La musique ou l'art de faire entendre les nombres</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <a class="lien" href="pages/1ere-enseignement-scientifique.html">Consulter →</a>
-    </article>
-
-    <article class="carte terminale">
-      <span class="niveau">Term</span>
-      <h3>Enseignement scientifique</h3>
-      <p>Climat, énergies, histoire du vivant : la science face aux grands enjeux.</p>
-      <div class="apercu">
-        <p class="apercu-titre">Carte mentale du programme</p>
-        <ul class="mindmap">
-          <li>Science, climat et société
-            <ul>
-              <li>L'atmosphère et la vie</li>
-              <li>Le réchauffement climatique</li>
-            </ul>
-          </li>
-          <li>Le futur des énergies
-            <ul>
-              <li>Deux siècles d'énergie électrique</li>
-              <li>Optimisation du transport</li>
-            </ul>
-          </li>
-          <li>Une histoire du vivant
-            <ul>
-              <li>Biodiversité et évolution</li>
-              <li>L'intelligence artificielle</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <a class="lien" href="pages/terminale-enseignement-scientifique.html">Consulter →</a>
-    </article>
-
-    <article class="carte terminale">
-      <span class="niveau">Term · Spé</span>
-      <h3>Spécialité Physique-Chimie</h3>
-      <p>Le programme approfondi pour les futurs scientifiques.</p>
-      <div class="apercu">
-        <p class="apercu-titre">Carte mentale du programme</p>
-        <ul class="mindmap">
-          <li>Constitution et transformations de la matière
-            <ul>
-              <li>Acides et bases</li>
-              <li>Cinétique chimique</li>
-            </ul>
-          </li>
-          <li>Mouvement et interactions
-            <ul>
-              <li>Mécanique newtonienne</li>
-              <li>Mouvement dans un champ</li>
-            </ul>
-          </li>
-          <li>Énergie, ondes et signaux
-            <ul>
-              <li>Conversions et transferts</li>
-              <li>Ondes, lumière et photon</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <a class="lien" href="pages/terminale-spe-physique-chimie.html">Consulter →</a>
-    </article>
-
+<section class="spectra" id="projets">
+  <div class="cadre">
+    <p class="surtitre">Projet secret — λ = 434 nm</p>
+    <h2>Mission Spectra</h2>
+    <p>
+      Un jeu de rôle scientifique sur l'année entière : votre classe incarne une
+      équipe de recherche. Chaque chapitre débloque des indices, des expériences
+      et des points de compétence.
+    </p>
+    <p class="compteur">En travaux · disponible à la rentrée 2026 —
+      <strong><span id="jours">—</span> jours avant la rentrée</strong></p>
   </div>
 </section>
 
-<section id="projets">
-  <div class="section-titre">
-    <h2>Projet Secret</h2>
-    <span class="lambda">λ = 434 nm — en construction</span>
+<section class="a-propos" id="contact">
+  <div class="bio">
+    <p>
+      Enseignant de Physique-Chimie, je conçois mes séquences autour de la
+      démarche d'investigation : observer, questionner, expérimenter. Ce site
+      rassemble mes ressources pour que les élèves (et leurs parents) puissent
+      retrouver cours, protocoles et projets à tout moment.
+    </p>
+    <p>Les documents sont librement réutilisables par mes collègues dans un cadre pédagogique.</p>
   </div>
-  <div class="fil-rouge">
-    <div>
-      <p class="badge">En travaux · disponible à la rentrée 2026</p>
-      <h3>Mission Spectra</h3>
-      <p>
-        Un jeu de rôle scientifique qui se déroule sur l'année entière : votre classe
-        incarne une équipe de recherche. Chaque chapitre du programme débloque des
-        indices, des expériences et des points de compétence. L'application web est
-        actuellement en cours de développement et sera disponible pour la rentrée 2026.
-      </p>
-    </div>
-    <div class="compteur">
-      <div class="nombre" id="jours">—</div>
-      <div class="legende">jours avant la rentrée</div>
-    </div>
-  </div>
-</section>
-
-<section id="contact">
-  <div class="section-titre">
-    <h2>À propos</h2>
-    <span class="lambda">contact &amp; informations</span>
-  </div>
-  <div class="a-propos">
-    <div>
-      <p>
-        Enseignant de Physique-Chimie, je conçois mes séquences autour de la
-        démarche d'investigation : observer, questionner, expérimenter. Ce site
-        rassemble mes ressources pour que les élèves (et leurs parents) puissent
-        retrouver cours, protocoles et projets à tout moment.
-      </p>
-      <p>
-        Les documents sont librement réutilisables par mes collègues dans un
-        cadre pédagogique.
-      </p>
-    </div>
-    <dl class="contact-bloc">
-      <dt>Courriel</dt>
-      <dd><a href="mailto:prenom.nom@exemple.fr">prenom.nom@exemple.fr</a></dd>
-      <dt>Établissement</dt>
-      <dd>Isaac de l'Étoile</dd>
-      <dt>ENT</dt>
-      <dd><a href="#">Espace classe sur l'ENT</a></dd>
-    </dl>
-  </div>
+  <dl>
+    <dt>Courriel</dt>
+    <dd><a href="mailto:prenom.nom@exemple.fr">prenom.nom@exemple.fr</a></dd>
+    <dt>Établissement</dt>
+    <dd>Isaac de l'Étoile</dd>
+    <dt>ENT</dt>
+    <dd><a href="#">Espace classe sur l'ENT</a></dd>
+  </dl>
 </section>
 
 <footer>
-  <div class="footer-inner">
-    <span>© 2026 · M. Van Hoorde — Physique-Chimie</span>
-    <span>fait main en HTML / CSS / JS</span>
-  </div>
+  <div class="footer-inner">© 2026 · M. Van Hoorde — Physique-Chimie, fait main en HTML / CSS / JS.</div>
 </footer>
 
 <div class="spectre" aria-hidden="true"></div>
 
 <script>
-  // ============================================================
-  // Premier pas en JavaScript : un compteur dynamique.
-  // On calcule le nombre de jours restant avant la rentrée
-  // et on l'affiche dans l'élément dont l'id est "jours".
-  // ============================================================
-  const rentree = new Date("2026-09-01");       // date cible
-  const aujourdhui = new Date();                 // date du jour
-  const msParJour = 1000 * 60 * 60 * 24;         // millisecondes dans un jour
-  const restant = Math.max(0, Math.ceil((rentree - aujourdhui) / msParJour));
-  document.getElementById("jours").textContent = restant;
+// ============================================================
+// GRAVURE DU JOUR — rotation quotidienne déterministe :
+// index = jour de l'année modulo taille de la collection.
+// Identique pour tous les visiteurs un jour donné, sans stockage.
+// Déposer les 8 scans (domaine public) dans gravures/ — voir
+// gravures/A-LIRE.txt pour les sources conseillées.
+// ============================================================
+var COLLECTION = [
+  { numero:"I",    titre:"Expérience du prisme",       legende:"Décomposition de la lumière blanche, d'après Newton, Opticks, 1704.",           fichier:"gravures/01-prisme-newton.jpg" },
+  { numero:"II",   titre:"Machine électrostatique",    legende:"Cabinet de physique de l'abbé Nollet, Leçons de physique expérimentale, 1743.", fichier:"gravures/02-machine-nollet.jpg" },
+  { numero:"III",  titre:"Alambic et distillation",    legende:"Planche de chimie, Encyclopédie de Diderot et d'Alembert, 1765.",               fichier:"gravures/03-alambic-encyclopedie.jpg" },
+  { numero:"IV",   titre:"La pile voltaïque",          legende:"Premier générateur électrochimique, d'après Volta, 1800.",                      fichier:"gravures/04-pile-volta.jpg" },
+  { numero:"V",    titre:"La chambre noire",           legende:"Principe de la camera obscura, Athanasius Kircher, 1646.",                      fichier:"gravures/05-camera-obscura.jpg" },
+  { numero:"VI",   titre:"Le baromètre de Torricelli", legende:"Expérience sur la pression atmosphérique, 1644.",                               fichier:"gravures/06-barometre-torricelli.jpg" },
+  { numero:"VII",  titre:"Lignes de champ magnétique", legende:"Limaille de fer autour d'un aimant, d'après Faraday, 1852.",                    fichier:"gravures/07-champ-faraday.jpg" },
+  { numero:"VIII", titre:"Le spectre solaire",         legende:"Raies d'absorption de la lumière du Soleil, Fraunhofer, 1814.",                 fichier:"gravures/08-spectre-fraunhofer.jpg" }
+];
+var maintenant = new Date();
+var jourDeLAnnee = Math.floor((maintenant - new Date(maintenant.getFullYear(), 0, 0)) / 864e5);
+var g = COLLECTION[jourDeLAnnee % COLLECTION.length];
+
+document.getElementById("date-du-jour").textContent =
+  maintenant.toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long", year:"numeric" })
+  + " — la planche change chaque matin";
+var img = document.getElementById("gravure-img");
+img.src = g.fichier;
+img.alt = g.titre;
+// Repli si le scan n'est pas encore déposé : cadre vide annoté (pas d'image cassée)
+img.addEventListener("error", function () {
+  img.style.display = "none";
+  var manque = document.getElementById("gravure-manque");
+  manque.style.display = "flex";
+  manque.querySelector("span").textContent = "planche à déposer : " + g.fichier;
+});
+document.getElementById("gravure-titre").innerHTML = "Planche " + g.numero + " — <em>" + g.titre + "</em>";
+document.getElementById("gravure-legende").textContent = g.legende;
+
+// ============================================================
+// COMPTE À REBOURS — jours restants avant la rentrée
+// ============================================================
+var rentree = new Date(2026, 8, 1);   // 1er septembre 2026 (mois indexés à 0)
+var msParJour = 1000 * 60 * 60 * 24;
+document.getElementById("jours").textContent =
+  Math.max(0, Math.ceil((rentree - maintenant) / msParJour));
 </script>
 
 </body>

@@ -1,39 +1,55 @@
 /* ============================================================
-   style.css — FEUILLE DE STYLE PARTAGÉE
+   style.css — FEUILLE DE STYLE PARTAGÉE (la « RELIURE »)
    ------------------------------------------------------------
-   Un seul fichier de styles pour toutes les pages du site.
-   Chaque page le charge avec :  <link rel="stylesheet" href="style.css">
-   Modifier une couleur ICI met à jour TOUT le site d'un coup.
+   Chargée UNIQUEMENT par la coque du site : accueil, pages de
+   niveau, anciennes pages racine. Les pages de CHAPITRE sont
+   autonomes (styles inline) et gardent leur identité « cahier
+   de labo spectral » : NE PAS charger ce fichier depuis elles.
+   ------------------------------------------------------------
+   Identité : « papier d'étude » (variante B validée) — ivoire
+   refroidi, quadrillage en écho très pâle, EB Garamond, accents
+   « encres vieillies ». Zéro arrondi, zéro ombre.
    ============================================================ */
 
-/* PALETTE — inspirée du cahier de laboratoire et des raies
-   d'émission de l'hydrogène (série de Balmer) */
+/* PALETTE DE LA RELIURE — encres vieillies sur papier d'étude.
+   NB : ces noms (--encre, --papier…) existent aussi dans les pages
+   de chapitre avec d'AUTRES valeurs ; pas de conflit car les
+   chapitres ne chargent pas ce fichier. */
 :root {
-  --encre: #141a26;          /* texte principal, bleu-noir d'encre */
-  --papier: #fdfcf8;         /* fond, blanc cassé de papier */
-  --grille: #e8e4d8;         /* lignes du papier millimétré */
-  --h-alpha: #d6402b;        /* raie Hα — 656 nm, rouge */
-  --h-beta: #1d9aaa;         /* raie Hβ — 486 nm, cyan */
-  --h-gamma: #4a3f9e;        /* raie Hγ — 434 nm, violet */
-  --gris: #6b6f7a;
+  --encre: #2b2118;          /* brun-noir d'encre ancienne */
+  --encre-douce: #5a4c3a;    /* texte secondaire, italiques */
+  --papier: #f3f1ea;         /* ivoire refroidi */
+  --papier-clair: #faf9f3;   /* fond des cartes/encadrés */
+  --grille: #e7e3d6;         /* quadrillage en écho très pâle */
+  --sepia: #8a7c62;          /* légendes, métadonnées */
+  --filet: #d8cfba;          /* filets horizontaux */
+  --filet-fonce: #cdc2a8;    /* cadres */
+  --pointille: #b7a988;      /* points de conduite */
+  /* Accents « encres vieillies » (échos assourdis des raies
+     Hα / Hβ / Hγ de l'intérieur) */
+  --h-alpha: #8f2d2b;        /* carmin (écho de Hα) */
+  --h-beta: #2f6b70;         /* bleu de Prusse fané (écho de Hβ) */
+  --h-gamma: #5f4b73;        /* prune (écho de Hγ) */
+  --gris: #8a7c62;           /* alias sépia (compatibilité) */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Spectral', Georgia, serif;
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  font-size: 1.06rem;
   color: var(--encre);
   background-color: var(--papier);
   background-image:
     linear-gradient(var(--grille) 1px, transparent 1px),
     linear-gradient(90deg, var(--grille) 1px, transparent 1px);
   background-size: 32px 32px;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
-/* ÉLÉMENT SIGNATURE : le spectre d'émission */
+/* ÉLÉMENT SIGNATURE : le fil spectral, version assourdie */
 .spectre {
-  height: 6px;
+  height: 3px;
   background: var(--encre);
   position: relative;
   overflow: hidden;
@@ -52,42 +68,49 @@ body {
       var(--h-alpha) 76%, var(--h-alpha) 77.8%,
       transparent 77.8%);
 }
+/* variante avec <i> (gabarit chapitre) : mêmes raies */
+.spectre i { position: absolute; top: 0; bottom: 0; width: 8px; }
+.spectre i:nth-child(1) { left: 18%; background: var(--h-gamma); }
+.spectre i:nth-child(2) { left: 31%; background: var(--h-beta); }
+.spectre i:nth-child(3) { left: 76%; background: var(--h-alpha); }
 
 /* NAVIGATION */
 nav {
   position: sticky;
   top: 0;
-  background: rgba(253, 252, 248, 0.92);
+  background: rgba(243, 241, 234, 0.94);
   backdrop-filter: blur(6px);
-  border-bottom: 1px solid var(--encre);
+  border-bottom: 1px solid var(--filet);
   z-index: 10;
 }
 .nav-inner {
   max-width: 880px;
   margin: 0 auto;
-  padding: 0.9rem 1.5rem;
+  padding: 0.95rem 1.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   gap: 1rem;
   flex-wrap: wrap;
 }
 .nav-logo {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 1.05rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 .nav-logo span { color: var(--h-alpha); }
 .retour {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--encre);
   text-decoration: none;
-  border-bottom: 2px solid var(--h-beta);
+  border-bottom: 1px solid var(--h-alpha);
   padding-bottom: 2px;
 }
-.retour:hover, .retour:focus-visible { color: var(--h-beta); }
-.retour:focus-visible { outline: 2px solid var(--h-beta); outline-offset: 3px; }
+.retour:hover, .retour:focus-visible { color: var(--h-alpha); }
+.retour:focus-visible { outline: 2px solid var(--h-alpha); outline-offset: 3px; }
 
 /* CONTENU PRINCIPAL */
 main {
@@ -98,31 +121,34 @@ main {
 
 .fil-ariane {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.78rem;
-  color: var(--gris);
+  font-size: 0.75rem;
+  color: var(--sepia);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   margin-bottom: 1rem;
 }
-.fil-ariane .niveau { color: var(--h-beta); }
+.fil-ariane .niveau { color: var(--h-alpha); }
 
 h1 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(2rem, 4.5vw, 2.9rem);
   line-height: 1.12;
   margin-bottom: 1rem;
 }
 .chapeau {
-  font-size: 1.1rem;
+  font-style: italic;
+  font-size: 1.12rem;
+  color: var(--encre-douce);
   max-width: 60ch;
   margin-bottom: 2rem;
 }
 
-/* ENCART D'INFORMATION (ex. : accès aux cours Quizéo) */
+/* ENCART D'INFORMATION */
 .note {
-  border: 1px solid var(--encre);
-  border-left: 4px solid var(--h-beta);
-  background: rgba(29, 154, 170, 0.06);
+  border: 1px solid var(--filet-fonce);
+  border-left: 3px solid var(--h-beta);
+  background: var(--papier-clair);
   padding: 1.1rem 1.4rem;
   margin-bottom: 3rem;
   max-width: 65ch;
@@ -130,7 +156,7 @@ h1 {
 .note .note-label {
   display: block;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--h-beta);
@@ -140,48 +166,50 @@ h1 {
 .note a {
   color: var(--encre);
   text-decoration: none;
-  border-bottom: 2px solid var(--h-beta);
+  border-bottom: 1px solid var(--h-beta);
 }
 .note a:hover, .note a:focus-visible { color: var(--h-beta); }
 
-/* Titre de thème, pour regrouper les chapitres */
+/* Titre de thème : double filet éditorial */
 h2.theme {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.35rem;
-  margin: 2.5rem 0 1rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 2px solid var(--h-beta);
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  font-weight: 500;
+  font-size: 1.5rem;
+  margin: 2.6rem 0 1.2rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 3px double var(--encre);
 }
 
-/* CARTE DE CHAPITRE */
+/* CARTE DE CHAPITRE — façon entrée de table des matières */
 .chapitre {
-  border: 1px solid var(--encre);
-  background: var(--papier);
+  border: 1px solid var(--filet-fonce);
+  background: var(--papier-clair);
   margin-bottom: 1.5rem;
 }
 .chapitre-entete {
   display: flex;
   align-items: baseline;
   gap: 1rem;
-  padding: 1.2rem 1.5rem;
-  border-bottom: 1px dashed var(--gris);
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px dotted var(--pointille);
 }
 .chapitre-num {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.8rem;
-  color: var(--h-beta);
+  font-size: 0.78rem;
+  color: var(--h-alpha);
   white-space: nowrap;
 }
 .chapitre h3 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.25rem;
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  font-weight: 600;
+  font-size: 1.28rem;
 }
-.chapitre-corps { padding: 1.2rem 1.5rem; }
+.chapitre-corps { padding: 1.1rem 1.5rem; }
 .chapitre-corps p { margin-bottom: 0.8rem; max-width: 65ch; }
 .chapitre-corps ul { margin: 0 0 0.8rem 1.2rem; }
 .chapitre-corps li { margin-bottom: 0.3rem; }
 
-/* Boutons de ressources (liens cours / TP / exos…) */
+/* Boutons de ressources */
 .docs {
   list-style: none;
   margin: 1rem 0 0 0 !important;
@@ -191,7 +219,7 @@ h2.theme {
 }
 .docs a {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--encre);
   text-decoration: none;
   border: 1px solid var(--encre);
@@ -205,12 +233,13 @@ h2.theme {
 }
 
 /* PIED DE PAGE */
-footer { border-top: 1px solid var(--encre); }
+footer { border-top: 1px solid var(--filet); }
 .footer-inner {
   max-width: 880px;
   margin: 0 auto;
   padding: 1.5rem;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.78rem;
-  color: var(--gris);
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--sepia);
 }

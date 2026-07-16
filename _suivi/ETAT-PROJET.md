@@ -7,6 +7,21 @@ Vue d'ensemble. Détail par chapitre dans `chapitres.md` ; idées dans `IDEES.md
 
 ---
 
+## 🎨 Identité graphique (décision du 16/07)
+
+**Reliure « papier d'étude »** (variante B validée sur maquettes) appliquée à la
+**coque du site uniquement** : accueil refondu (page de titre, gravure du jour en
+rotation quotidienne, table des matières des classes, Mission Spectra), pages de
+niveau via `style.css`, et fond/nav/pied des pages de chapitre via un bloc
+`reliure-papier-etude` injecté (aussi dans `gabarit-chapitre.html`).
+**L'intérieur des cours est intact** : encarts Hα/Hβ/Hγ, panneau de formule
+sombre, verrou, JS — rien n'a bougé (vérifié par Playwright).
+EB Garamond auto-hébergée (RGPD) dans `assets/fonts/`. Les 8 gravures du domaine
+public restent à déposer dans `gravures/` (voir `gravures/A-LIRE.txt`) ; en
+attendant, l'accueil affiche un cadre vide annoté.
+
+---
+
 ## 🎯 Objectif de la période (vacances)
 
 **Dégrossir un maximum de chapitres** (régime A) : mettre TOUT en ligne à l'état
