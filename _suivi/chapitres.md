@@ -169,5 +169,41 @@
 ## Seconde — Thèmes suivants
 _(à créer au fur et à mesure du dégrossissage : T4…)_
 
+---
+
+## Seconde — SNT (Sciences numériques et technologie)
+
+> **Gabarit différent des chapitres de physique-chimie** : ce ne sont pas des
+> chapitres à sections, mais des **hubs élève** (séquence → séance → étape →
+> champ), avec verrouillage progressif et mode enseignant. Conventions dans
+> `CLAUDE.md`. Les 7 thèmes du programme sont listés sur `pages/2nde-snt.html`.
+> Jalons de PC non transposables tels quels : ici on suit **contenu → interactivité
+> → ressources définitives → validé**.
+
+### SNT-T2 — Le Web
+- État : **maquette V0 fonctionnelle en ligne**, non validée.
+- Fichier : `pages/2nde-snt-t2-le-web.html` (autonome, CSS/JS inline).
+- Lié depuis `pages/2nde-snt.html` (carte « SNT 2 · Le Web »).
+- 4 séances (Web & fonctionnement · HTML/CSS · Recherche & IA · Sécurité & vie
+  privée) + 1 activité débranchée (frise). ≈ 6 h.
+- Interactivité **réelle** : QCM, texte à trous (URL), schéma client-serveur à
+  légender, verrouillage progressif, mode enseignant, téléchargement de fiche,
+  reset, pop-up de fin de séance, manip « piège à clic ».
+- Interactivité **simulée** (phase 1) : le texte libre passe *en attente* puis
+  *validé* après un délai — pas de correction réelle. Phase 2 : IA côté serveur.
+- ⚠ **Google Fonts retiré** (RGPD) : la maquette d'origine chargeait Space
+  Grotesk / IBM Plex Sans / IBM Plex Mono depuis `fonts.googleapis.com`. La page
+  utilise désormais `assets/css/fonts.css` ; **IBM Plex Sans a été ajouté** en
+  woff2 auto-hébergé (400, 400i, 500, 600, sous-ensemble latin).
+- 🚧 Restant : étoffer la **frise débranchée** (étiquettes datées + corrigé) ;
+  ajouter le **bonus geek « 404 & codes HTTP »** en séance 1 ; brancher les
+  **ressources définitives** (activités cahier `WEB·2b`, frise `WEB·D` — liens
+  actuellement inertes `href="#"`).
+
+### SNT — autres thèmes
+_(Internet, Réseaux sociaux, Données structurées, Localisation & cartographie,
+Informatique embarquée, Photographie numérique : cartes présentes sur
+`pages/2nde-snt.html`, hubs à décliner sur le gabarit du Web.)_
+
 ## Première / Terminale
 _(pages d'accueil existantes ; chapitres à venir)_

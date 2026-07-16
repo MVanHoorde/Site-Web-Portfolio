@@ -1,9 +1,11 @@
-# État du projet — Site pédagogique Physique-Chimie
+# État du projet — Site pédagogique Physique-Chimie & SNT
 
-> Dernière mise à jour : 16/07/2026 · tenu à jour par Loïc + Claude
+> Dernière mise à jour : 17/07/2026 · tenu à jour par Loïc + Claude
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 Vue d'ensemble. Détail par chapitre dans `chapitres.md` ; idées dans `IDEES.md`.
+Contexte, règles de collaboration et conventions des deux gabarits (chapitres PC
+et hubs SNT) : `CLAUDE.md` à la racine.
 
 ---
 
@@ -84,6 +86,16 @@ source, puisqu'il change chaque année).
 
 ## ⚠ Alertes
 
+- 🆕 **SNT — le hub « Le Web » est en ligne (17/07)** : `pages/2nde-snt-t2-le-web.html`,
+  lié depuis la carte SNT 2 de `pages/2nde-snt.html`. **Maquette V0, non validée.**
+  C'est un **second gabarit**, distinct des chapitres de PC (séquence → séance →
+  étape → champ ; pas de `localStorage` ; CSS inline) — voir `CLAUDE.md`.
+- 🔴 **RÈGLE — aucune police depuis un CDN.** La maquette du hub chargeait Space
+  Grotesk / IBM Plex Sans / IBM Plex Mono depuis `fonts.googleapis.com` : chaque
+  élève ouvrant la page aurait envoyé son IP à Google, à rebours de la règle du
+  site (polices auto-hébergées, `assets/css/fonts.css`). Corrigé : **IBM Plex Sans
+  ajouté** en woff2 local (400, 400i, 500, 600 — latin, OFL) et déclaré dans
+  `fonts.css`. À vérifier sur toute page importée de l'extérieur.
 - ✅ **Page de niveau `pages/2nde-physique-chimie.html` mise à jour et fournie** :
   les 4 chapitres du Thème 3 y sont **liés** (liens anti-préfixe, mêmes cartes
   `.chapitre` que les Thèmes 1-2, descriptions à puces conservées).
@@ -179,6 +191,25 @@ voir Alertes + snippet `cartes-theme3-a-coller.html`). Niveau de finition
 > **Rappels de vigilance pour le régime B** : C2 (nœud B corrigé, pas de DS/Kahoot,
 > vidéos dupliquées) et surtout **C4 (corrections rédigées par Claude, à valider)**.
 
+## 📊 Avancement (Seconde — SNT)
+
+**Nouveau (17/07).** Gabarit « hub élève », distinct des chapitres de PC.
+Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; un seul hub existe.
+
+| Thème | Hub en ligne | Validé | Ressources définitives |
+|---|---|---|---|
+| SNT 2 · Le Web | ✅ V0 (4 séances + frise) | ⬜ non | ⬜ activités cahier + frise à brancher |
+| SNT 1 · Internet | ⬜ | ⬜ non | — |
+| SNT 3 · Réseaux sociaux | ⬜ | ⬜ non | — |
+| SNT 4 · Données structurées | ⬜ | ⬜ non | — |
+| SNT 5 · Localisation & cartographie | ⬜ | ⬜ non | — |
+| SNT 6 · Informatique embarquée | ⬜ | ⬜ non | — |
+| SNT 7 · Photographie numérique | ⬜ | ⬜ non | — |
+
+> Phase 1 (rentrée) : HTML statique autonome, correction locale réelle, texte
+> libre **simulé**. Phase 2 (plus tard) : VPS + base de données + correction IA
+> + comptes élèves. Ne pas mélanger les deux — voir `CLAUDE.md`.
+
 ## 🔜 Prochaines actions
 
 - [ ] **Trancher la structure du Thème 3** (ordre des PPTX conservé, ou
@@ -189,3 +220,8 @@ voir Alertes + snippet `cartes-theme3-a-coller.html`). Niveau de finition
 - [ ] Vérifier que chaque ébauche est liée depuis `pages/2nde-physique-chimie.html`.
 - [ ] Cloner le repo dans VS Code + extension Claude Code (pour le raffinage).
 - [ ] Fournir le calendrier scolaire pour ordonner les priorités.
+- [ ] **SNT — finaliser la séquence Web à 100 %** : étoffer la frise débranchée
+      (étiquettes datées + corrigé), ajouter le bonus geek « 404 & codes HTTP »
+      en séance 1, brancher les ressources définitives (`WEB·2b`, `WEB·D`).
+- [ ] **SNT — décliner le gabarit du hub** sur les autres thèmes (Photo numérique,
+      Données structurées…).
