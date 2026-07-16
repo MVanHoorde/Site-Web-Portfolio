@@ -5,162 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2nde — La matière à l'échelle macroscopique · Physique-Chimie</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
+<link rel="stylesheet" href="../assets/css/chapitre-commun.css">
 <style>
   :root {
     --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
     --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e;
     --gris:#6b6f7a; --carte:#ffffff;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family:'Spectral', Georgia, serif; color:var(--encre);
-    background-color:var(--papier);
-    background-image:linear-gradient(var(--grille) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grille) 1px, transparent 1px);
-    background-size:32px 32px; line-height:1.7;
-  }
-  .spectre { height:6px; background:var(--encre); position:relative; }
-  .spectre i { position:absolute; top:0; bottom:0; width:4px; }
-  .spectre i:nth-child(1){ left:18%; background:var(--h-gamma); }
-  .spectre i:nth-child(2){ left:31%; background:var(--h-beta); }
-  .spectre i:nth-child(3){ left:76%; background:var(--h-alpha); }
-  nav { background:var(--papier); border-bottom:1px solid var(--encre); }
-  .nav-inner { max-width:1200px; margin:0 auto; padding:.85rem 1.4rem;
-    display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
-  .nav-logo { font-family:'Space Grotesk',sans-serif; font-weight:700; }
-  .nav-logo span { color:var(--h-alpha); }
-  .retour { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
-    color:var(--encre); text-decoration:none; border-bottom:2px solid var(--h-beta); }
-  .retour:hover { color:var(--h-beta); }
-  #lecture { position:sticky; top:0; height:4px; z-index:50; }
-  #lecture .fait { height:100%; width:0%; background:var(--h-alpha); }
-
-  .page { max-width:1200px; margin:0 auto; padding:2rem 1.4rem 4rem;
-    display:grid; grid-template-columns:230px minmax(0,1fr); gap:2.2rem; align-items:start; }
-  aside.sommaire { position:sticky; top:1.4rem; font-family:'Space Grotesk',sans-serif; }
-  .sommaire .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.7rem;
-    letter-spacing:.12em; text-transform:uppercase; color:var(--gris); margin-bottom:.7rem; }
-  .sommaire ol { list-style:none; }
-  .sommaire a { display:flex; gap:.6rem; align-items:baseline; padding:.42rem .65rem;
-    border-radius:8px; text-decoration:none; color:var(--encre); font-size:.92rem; line-height:1.3; }
-  .sommaire a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--h-beta); }
-  .sommaire a:hover { background:var(--carte); }
-  .sommaire a.actif { background:var(--carte); box-shadow:inset 3px 0 0 var(--h-alpha); font-weight:600; }
-  .sommaire .ds a .n { color:var(--h-gamma); }
-
-  article.lecture { background:var(--carte); border:1px solid var(--encre); border-radius:14px;
-    box-shadow:6px 6px 0 rgba(20,26,38,.08); padding:clamp(1.4rem,4vw,3rem); min-width:0; }
-  .fil-ariane { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); margin-bottom:.5rem; }
-  .fil-ariane .niveau { color:var(--h-alpha); }
-  h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.7rem,4vw,2.4rem); line-height:1.12; margin-bottom:.4rem; }
-  .sous-titre { font-family:'IBM Plex Mono',monospace; font-size:.85rem; color:var(--gris); margin-bottom:2.4rem; }
-  h2 { font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2.8rem 0 1rem;
-    display:flex; align-items:baseline; gap:.8rem; scroll-margin-top:2rem; }
-  h2 .num { font-family:'IBM Plex Mono',monospace; font-size:.9rem; color:var(--h-beta); }
   p { margin-bottom:.9rem; max-width:70ch; }
-  strong { font-weight:600; }
   ul.cours { max-width:70ch; margin:0 0 .9rem 1.2rem; }
-  ul.cours li { margin-bottom:.5rem; }
-
   .definition { border:1px solid var(--encre); border-left:4px solid var(--h-beta);
     background:var(--papier); border-radius:0 10px 10px 0; padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; }
   .definition p:last-child { margin-bottom:0; }
-  .videos { display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0 1.6rem; }
   .video-chip { font-family:'IBM Plex Mono',monospace; font-size:.78rem;
     display:inline-flex; align-items:center; gap:.4em; border:1px solid var(--encre);
     border-radius:999px; padding:.34rem .85rem; text-decoration:none; color:var(--encre);
     background:var(--papier); transition:background .15s,color .15s; }
-  .video-chip:hover { background:var(--h-beta); color:#fff; }
-
-  figure { margin:1.6rem 0; }
-  figure svg, figure img { max-width:100%; height:auto; display:block; }
-  figure img.photo { border:1px solid var(--encre); border-radius:6px; }
   figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
     margin-top:.55rem; max-width:62ch; }
-  .fig-row { display:flex; gap:1.6rem; flex-wrap:wrap; align-items:flex-start; }
   .fig-row figure { flex:1 1 240px; max-width:430px; }
-  .fig-etroite { max-width:300px; }
-  .duo { display:grid; grid-template-columns:minmax(220px,300px) minmax(0,1fr); gap:2rem; align-items:start; }
-  .defile { overflow-x:auto; }
-
-  table.tab { border-collapse:collapse; font-size:.95rem; }
-  table.tab caption { caption-side:top; text-align:left; font-family:'Space Grotesk',sans-serif;
-    font-size:.85rem; font-weight:600; padding-bottom:.4rem; }
-  table.tab th, table.tab td { border:1px solid var(--encre); padding:.42rem .8rem; text-align:center; }
-  table.tab thead th, table.tab .entete { font-family:'Space Grotesk',sans-serif; font-size:.82rem; background:var(--papier); }
   .pastille { display:inline-block; width:.85em; height:.85em; border-radius:50%;
     border:1px solid var(--encre); vertical-align:-.08em; margin-right:.35em; }
-
   .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
     border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0; max-width:78ch;
     background:#fdfdfb; }
-  .exercice .etiquette { font-family:'IBM Plex Mono',monospace; font-size:.75rem;
-    text-transform:uppercase; letter-spacing:.1em; color:var(--h-alpha); margin-bottom:.5rem; }
   .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.82rem; color:var(--gris); margin-top:.6rem; }
-  details.correction { margin-top:.8rem; border-top:1px dashed var(--gris); padding-top:.6rem; }
-  details.correction summary { font-family:'IBM Plex Mono',monospace; font-size:.82rem;
-    color:var(--h-gamma); cursor:pointer; }
-  details.correction summary:hover { text-decoration:underline; }
-  details.correction[open] summary { margin-bottom:.6rem; }
-  .frac { display:inline-block; vertical-align:middle; text-align:center; margin:0 .25em; }
-  .frac .haut { display:block; border-bottom:1.5px solid var(--encre); padding:0 .3em .1em; }
-  .frac .bas { display:block; padding:.1em .3em 0; }
   sub,sup { font-size:.72em; }
   .formule { font-family:'Spectral',serif; font-style:italic; text-align:center; margin:1.2rem auto; font-size:1.12rem; }
-  .unites { font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); }
-
-  .checklist { border:1px solid var(--encre); border-left:4px solid var(--h-gamma);
-    border-radius:0 12px 12px 0; padding:1.2rem 1.4rem; margin:2.6rem 0 0; }
-  .checklist h2 { margin-top:0; }
-  .checklist ol { list-style:none; }
-  .checklist li { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem;
-    align-items:baseline; padding:.55rem 0; border-bottom:1px dashed var(--grille); }
-  .checklist li:last-child { border-bottom:none; }
-  .checklist input[type="checkbox"] { transform:translateY(2px) scale(1.15); accent-color:var(--h-gamma); cursor:pointer; }
-  .checklist label { cursor:pointer; }
-  .checklist .refs { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris); white-space:nowrap; }
-  .checklist .refs a { color:var(--h-beta); text-decoration:none; }
-  .checklist .refs a:hover { text-decoration:underline; }
-
-  #haut { position:fixed; right:1.2rem; bottom:1.2rem; font-family:'IBM Plex Mono',monospace;
-    font-size:.8rem; background:var(--carte); border:1px solid var(--encre); border-radius:999px;
-    padding:.5rem .85rem; cursor:pointer; box-shadow:3px 3px 0 rgba(20,26,38,.12);
-    opacity:0; pointer-events:none; transition:opacity .2s; }
-  #haut.visible { opacity:1; pointer-events:auto; }
-  #haut:hover { background:var(--h-beta); color:#fff; }
-
-  details.toc-mobile { display:none; }
-  footer { border-top:1px solid var(--encre); margin-top:2rem; }
-  .footer-inner { max-width:1200px; margin:0 auto; padding:1.2rem 1.4rem;
-    font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris); }
-
   /* ===== Verrou de fin de chapitre (v1 : porte à code) ===== */
-  body.verrouille aside.sommaire,
-  body.verrouille details.toc-mobile,
-  body.verrouille article.lecture > *:not(#porte) { display:none; }
-  #porte { display:none; }
   body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; }
-  #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }
-  #porte h1 { margin-bottom:.6rem; }
-  #porte .explication { max-width:52ch; margin:0 auto 1.6rem; color:var(--gris); }
-  #porte form { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap;
-    align-items:stretch; max-width:52ch; margin:1.4rem auto 0; }
   #porte input {
     font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.45em;
     text-transform:uppercase; text-align:center; flex:1 1 12ch; min-width:0;
     padding:.55rem .2rem .55rem .65rem; border:1.5px solid var(--encre);
     border-radius:10px; background:var(--papier); color:var(--encre);
   }
-  #porte input:focus { outline:2px solid var(--h-beta); }
-  #porte button {
-    font-family:'IBM Plex Mono',monospace; font-size:.9rem; cursor:pointer;
-    border:1.5px solid var(--encre); border-radius:10px; padding:.55rem 1.1rem;
-    background:var(--encre); color:var(--papier); flex:0 0 auto;
-  }
-  #porte button:hover { background:var(--h-beta); border-color:var(--h-beta); }
-  #porte .erreur { color:var(--h-alpha); font-family:'IBM Plex Mono',monospace;
-    font-size:.85rem; min-height:1.4em; margin-top:.8rem; }
-
   @media (max-width:960px) {
     .page { grid-template-columns:1fr; gap:1.2rem; padding:1.2rem .9rem 3rem; }
     aside.sommaire { display:none; }
