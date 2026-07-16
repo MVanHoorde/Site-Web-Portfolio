@@ -2,16 +2,26 @@
    chapitre-commun.css — socle partagé des chapitres de cours.
 
    USAGE (pour un NOUVEAU chapitre) : dans le <head>, après fonts.css,
-   ajouter :  <link rel="stylesheet" href="../assets/css/chapitre-commun.css">
+   ajouter :  <link rel="stylesheet" href="../assets/css/chapitre-commun.css?v=2">
    puis ne garder dans le <style> embarqué de la page QUE le CSS
    réellement spécifique à ce chapitre (illustrations, schémas, blocs propres).
+
+   ⚠ CACHE — DÈS QUE CE FICHIER CHANGE LE RENDU (une retouche de ce commentaire
+   ne compte pas) : incrémenter le ?v=N du <link> dans TOUTES les pages
+   (14 chapitres + _modeles/gabarit-chapitre.html) :
+     git grep -l 'chapitre-commun.css' -- '*.html'
+   Sans cela, l'URL ne change pas : les navigateurs qui ont déjà ouvert un
+   chapitre continuent de servir l'ANCIENNE feuille depuis leur cache, et les
+   élèves ne voient pas la correction (ils ne feront pas de Ctrl+Shift+R).
+   Vécu : la barre de fraction, corrigée mais invisible jusqu'au passage en ?v=2.
 
    Le <style> de la page est chargé APRÈS cette feuille : une règle locale de
    même spécificité l'emporte donc, ce qui permet à un chapitre de surcharger
    ponctuellement le socle (voir t1-c3 pour sub/sup et .formule-cours-rappel).
 
-   Note : 2nde-pc-t1-c1 n'utilise pas ce socle — ce chapitre est antérieur à la
-   bibliothèque de composants et garde son CSS embarqué.
+   Note : les 14 chapitres utilisent désormais ce socle, y compris 2nde-pc-t1-c1,
+   qui y a été aligné (il gardait son CSS embarqué, étant antérieur à la
+   bibliothèque de composants).
    ============================================================ */
   :root {
     --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;

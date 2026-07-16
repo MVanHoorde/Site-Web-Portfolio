@@ -121,6 +121,16 @@ source, puisqu'il change chaque année).
 - ⚠ **T2-C2 Ex8 : deux points à trancher** — (1) la correction inverse g Paris (9,73) et g équateur (9,81) par rapport à l'énoncé et à l'Image 13 (physiquement, g est plus grand à Paris ≈ 9,81) ; (2) l'écart annoncé « 8 % » est en réalité ≈ **0,8 %**. Transcrit fidèlement, avec aparté ; à revoir en régime B.
 - ⚠ **T2-C2 : doublon de numéro d'exercice** — deux « Exercice 10 » dans la source (diapos 11 et 13) ; le second (plan incliné) a été renuméroté **Ex11**.
 - ⚠ **T2-C3 : coquille corrigée** — « le masse » → « la masse » (définition de l'inertie).
+- 🔴 **RÈGLE — `assets/css/chapitre-commun.css` est versionné : incrémenter le
+  `?v=N` dès qu'une modification change le rendu** (retoucher un commentaire du
+  fichier ne compte pas). Les pages le chargent via
+  `<link ... href="../assets/css/chapitre-commun.css?v=2">`. Si on modifie le CSS
+  sans toucher au `?v=N`, l'URL reste identique et **les navigateurs qui ont déjà
+  ouvert un chapitre servent l'ancienne feuille depuis leur cache** : la
+  correction est invisible pour les élèves, qui ne feront jamais de Ctrl+Shift+R.
+  Passer `?v=2` → `?v=3` partout : `git grep -l 'chapitre-commun.css' -- '*.html'`
+  (14 chapitres + `_modeles/gabarit-chapitre.html`). Cas vécu le 16/07 : barre de
+  fraction des blocs-formule corrigée, mais restée invisible jusqu'au versionnage.
 - 💡 **Décision (T2) — convention d'écriture des vecteurs** : en ébauche, la flèche est rendue par un caractère combinant Unicode placé au-dessus du symbole (lisible, mais imparfait sur les groupes multi-lettres). À raffiner en régime B (petit composant SVG ou notation dédiée).
 
 ## 📊 Avancement (Seconde — Thème 1)
