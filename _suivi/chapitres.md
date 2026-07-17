@@ -175,10 +175,38 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 
 > **Gabarit différent des chapitres de physique-chimie** : ce ne sont pas des
 > chapitres à sections, mais des **hubs élève** (séquence → séance → étape →
-> champ), avec verrouillage progressif et mode enseignant. Conventions dans
-> `CLAUDE.md`. Les 7 thèmes du programme sont listés sur `pages/2nde-snt.html`.
-> Jalons de PC non transposables tels quels : ici on suit **contenu → interactivité
-> → ressources définitives → validé**.
+> champ), avec verrouillage progressif et mode enseignant. Consignes dédiées :
+> `_modeles/CONSIGNES-hub-SNT.md`. Les 7 thèmes du programme sont listés sur
+> `pages/2nde-snt.html`.
+> Jalons de PC non transposables : ici on suit **V0 → contenu → interactivité →
+> ressources définitives → validé** (voir `CONSIGNES-hub-SNT.md` §11).
+
+### SNT-T1 — Internet
+- État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.
+- Fichier : `pages/2nde-snt-t1-internet.html` (autonome, CSS/JS inline, décliné
+  du hub du Web). Lié depuis `pages/2nde-snt.html` (carte « SNT 1 · Internet »).
+- **Enseigné avant le Web** (ordre de l'année) : le développement historique
+  complet (Pouzin/CYCLADES/datagramme, Minitel, biblio sourcée) vit ici, en S2 ;
+  le hub du Web a été raccourci en conséquence (rappel + renvoi).
+- 4 séances (Réseau physique & câbles sous-marins · Histoire & 🇫🇷 ·
+  Paquets/TCP-IP/routage · Adresses IP, DNS & diagnostic) + 1 activité
+  débranchée (« Routons, petits patapons » — routage humain). ≈ 6 h 30.
+- Sources : dossier de séquence de Loïc (version « ARPANET 2024 » = référence
+  historique). **Hors hub, volontairement** : `01 - Systèmes informatisés`
+  (introduction d'année) et le **TP Filius noté** (dispositif d'évaluation
+  séparé, workflow partagé). Contenu du cahier Nathan **non transposé**
+  (copyright) : notions recréées (topologies en SVG maison, énoncés réécrits).
+- Interactivité **réelle** : QCM, textes à trous (câbles, commandes réseau,
+  hexa), tables de routage à compléter, schémas à légender (topologies, TCP/IP,
+  hiérarchie DNS), frise interactive (association événement↔date), verrouillage
+  progressif, mode enseignant, fiche téléchargeable, reset, pop-up de fin.
+- Interactivité **simulée** (phase 1) : texte libre *en attente* → *validé*.
+- Easter egg : `ping()` dans la console (TTL=1973, année de CYCLADES).
+- 🚧 Restant : brancher les **ressources définitives** — frise imprimable
+  `NET·2b`, fiche routage humain `NET·D` (liens inertes `href="#"`), consigne
+  postes `NET·4c` ; **tester en salle** les liens Cood Nathan (`NET·3`) et la
+  vidéo DNS YouTube (`NET·4`) ; trancher la date « 1er modem » de la frise
+  papier (corrigé existant : 1950, à vérifier).
 
 ### SNT-T2 — Le Web
 - État : **maquette V0 fonctionnelle en ligne**, non validée.
@@ -195,13 +223,19 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   Grotesk / IBM Plex Sans / IBM Plex Mono depuis `fonts.googleapis.com`. La page
   utilise désormais `assets/css/fonts.css` ; **IBM Plex Sans a été ajouté** en
   woff2 auto-hébergé (400, 400i, 500, 600, sous-ensemble latin).
+- **17/07 — harmonisation avec le hub Internet (validée)** : la grande
+  france-box S1 (Pouzin + Minitel + SVG + biblio) est remplacée par un **rappel
+  court + renvoi** vers `2nde-snt-t1-internet.html#s2` ; la question bonus
+  CYCLADES a **migré** vers Internet S2, remplacée par « le Web dans le domaine
+  public (1993) » (proposition à valider) ; la frise débranchée est **recentrée
+  sur le Web seul** (1989-91 → 2022) et prolonge celle d'Internet.
 - 🚧 Restant : étoffer la **frise débranchée** (étiquettes datées + corrigé) ;
   ajouter le **bonus geek « 404 & codes HTTP »** en séance 1 ; brancher les
   **ressources définitives** (activités cahier `WEB·2b`, frise `WEB·D` — liens
   actuellement inertes `href="#"`).
 
 ### SNT — autres thèmes
-_(Internet, Réseaux sociaux, Données structurées, Localisation & cartographie,
+_(Réseaux sociaux, Données structurées, Localisation & cartographie,
 Informatique embarquée, Photographie numérique : cartes présentes sur
 `pages/2nde-snt.html`, hubs à décliner sur le gabarit du Web.)_
 

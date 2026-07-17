@@ -4,8 +4,9 @@
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 Vue d'ensemble. Détail par chapitre dans `chapitres.md` ; idées dans `IDEES.md`.
-Contexte, règles de collaboration et conventions des deux gabarits (chapitres PC
-et hubs SNT) : `CLAUDE.md` à la racine.
+Contexte et règles de collaboration : `CLAUDE.md` à la racine. Consignes de
+production, un fichier par gabarit : `_modeles/CONSIGNES-chapitre-PC.md` et
+`_modeles/CONSIGNES-hub-SNT.md`.
 
 ---
 
@@ -58,7 +59,7 @@ d'ébauche navigable, manques signalés par blocs 🚧. Loïc va déposer les PP
 tous les chapitres. Le raffinage et la **validation** viendront ensuite, en
 régime B, chapitre par chapitre.
 
-**Régime A élargi depuis le 15/07** (voir `_modeles/CONSIGNES-production-chapitre.md`) :
+**Régime A élargi depuis le 15/07** (voir `_modeles/CONSIGNES-chapitre-PC.md`) :
 exercices et corrections rédigés en entier même quand une image les accompagne,
 encarts formule reconstitués depuis la source, QR codes et hyperliens vidéo
 décodés et posés en vrais liens (Kahoot compris), courte recherche web possible
@@ -89,7 +90,8 @@ source, puisqu'il change chaque année).
 - 🆕 **SNT — le hub « Le Web » est en ligne (17/07)** : `pages/2nde-snt-t2-le-web.html`,
   lié depuis la carte SNT 2 de `pages/2nde-snt.html`. **Maquette V0, non validée.**
   C'est un **second gabarit**, distinct des chapitres de PC (séquence → séance →
-  étape → champ ; pas de `localStorage` ; CSS inline) — voir `CLAUDE.md`.
+  étape → champ ; pas de `localStorage` ; CSS inline) — voir
+  `_modeles/CONSIGNES-hub-SNT.md`.
 - 🔴 **RÈGLE — aucune police depuis un CDN.** La maquette du hub chargeait Space
   Grotesk / IBM Plex Sans / IBM Plex Mono depuis `fonts.googleapis.com` : chaque
   élève ouvrant la page aurait envoyé son IP à Google, à rebours de la règle du
@@ -208,7 +210,8 @@ Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; un seul hub existe.
 
 > Phase 1 (rentrée) : HTML statique autonome, correction locale réelle, texte
 > libre **simulé**. Phase 2 (plus tard) : VPS + base de données + correction IA
-> + comptes élèves. Ne pas mélanger les deux — voir `CLAUDE.md`.
+> + comptes élèves. Ne pas mélanger les deux — voir
+> `_modeles/CONSIGNES-hub-SNT.md` §7.
 
 ## 🔜 Prochaines actions
 

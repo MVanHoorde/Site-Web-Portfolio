@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNT · Internet — Hub élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  :root{
+    --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+    --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+    --link:#2445c7; --link-wash:#e7ebfb;
+    --activity:#c26a12; --activity-wash:#faeede;
+    --ok:#12805c; --ok-wash:#e0f2ea;
+    --err:#c33a2f; --err-wash:#fbe6e3;
+    --wait:#9a6a00; --wait-wash:#fbf1d8;
+    --france:#164a8a; --france-wash:#e6eef8;
+    --hist:#6b4a9a; --hist-wash:#efe9f7;
+    --bonus:#0f6d63; --bonus-wash:#e0f1ef;
+    --radius:14px; --shadow:0 1px 2px rgba(22,31,51,.05),0 8px 24px rgba(22,31,51,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+  code{font-family:"IBM Plex Mono",monospace}
+
+  /* HEADER */
+  header.masthead{background:radial-gradient(120% 140% at 90% -10%,rgba(36,69,199,.10),transparent 55%),var(--surface);border-bottom:1px solid var(--line);padding:34px 0 26px}
+  .eyebrow{font-family:"IBM Plex Mono";font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--link);font-weight:600;margin-bottom:10px}
+  h1.title{font-family:"Space Grotesk";font-weight:700;font-size:clamp(38px,7vw,60px);line-height:.98;margin:0 0 4px;letter-spacing:-.02em}
+  h1.title .tag{font-family:"IBM Plex Mono";font-weight:500;color:var(--ink-faint);font-size:.42em;vertical-align:middle}
+  .lede{color:var(--ink-soft);max-width:60ch;margin:14px 0 22px;font-size:16.5px}
+  .themes{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
+  .theme-chip{font-size:12.5px;padding:5px 11px;border-radius:100px;border:1px solid var(--line);color:var(--ink-faint);background:var(--surface-2);font-family:"IBM Plex Mono"}
+  .theme-chip.on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:500}
+  .meta-row{display:flex;flex-wrap:wrap;gap:22px;align-items:baseline}
+  .meta-row .m{font-size:14px;color:var(--ink-soft)} .meta-row .m b{color:var(--ink);font-weight:600}
+
+  /* NAV */
+  nav.seances{position:sticky;top:0;z-index:30;background:rgba(233,237,244,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.seances .wrap{display:flex;gap:6px;align-items:center;overflow-x:auto;padding:9px 20px}
+  nav.seances a{white-space:nowrap;text-decoration:none;color:var(--ink-soft);font-size:13.5px;font-weight:500;padding:7px 13px;border-radius:9px;border:1px solid transparent;transition:.15s;display:flex;align-items:center;gap:6px}
+  nav.seances a:hover{background:var(--surface);border-color:var(--line);color:var(--ink)}
+  nav.seances a .n{font-family:"IBM Plex Mono";color:var(--link)}
+  nav.seances a .lockico{font-size:11px;opacity:.6}
+  nav.seances a.retour{color:var(--ink-faint);border-right:1px solid var(--line);border-radius:9px 0 0 9px;margin-right:4px;padding-right:14px}
+  nav.seances a.retour:hover{border-color:var(--line);color:var(--ink)}
+  .spacer{flex:1}
+  .teacher-toggle{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:12.5px;color:var(--ink-soft);cursor:pointer;user-select:none}
+  .teacher-toggle input{display:none}
+  .switch{width:34px;height:19px;border-radius:100px;background:var(--line);position:relative;transition:.2s;flex:none}
+  .switch::after{content:"";position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .teacher-toggle input:checked + .switch{background:var(--france)}
+  .teacher-toggle input:checked + .switch::after{left:17px}
+
+  /* LEGEND */
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin:24px 0 4px;padding:13px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);font-size:13px;color:var(--ink-soft)}
+  .legend .dot{display:inline-flex;align-items:center;gap:7px}
+  .pip{width:13px;height:13px;border-radius:50%;flex:none;border:2px solid var(--ink-faint)}
+  .pip.doing{background:conic-gradient(var(--link) 50%,transparent 0);border-color:var(--link)}
+  .pip.wait{background:var(--wait-wash);border-color:var(--wait)} .pip.done{background:var(--ok);border-color:var(--ok)}
+
+  /* SÉANCE */
+  section.seance{padding:38px 0 8px;position:relative}
+  .seance-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:6px}
+  .seance-head h2{font-family:"Space Grotesk";font-weight:600;font-size:clamp(22px,3.4vw,28px);margin:0;letter-spacing:-.01em}
+  .seance-head h2 .s-num{color:var(--link);font-family:"IBM Plex Mono";font-size:.7em;margin-right:8px}
+  .seance-time{font-family:"IBM Plex Mono";font-size:13px;color:var(--ink-faint);white-space:nowrap}
+  .seance-goal{color:var(--ink-soft);font-size:14.5px;margin:0 0 8px;max-width:70ch}
+  .progress-line{height:5px;background:var(--line);border-radius:100px;overflow:hidden;margin:12px 0 4px}
+  .progress-line i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+
+  /* verrouillage */
+  .lock-banner{display:none;align-items:center;gap:12px;background:var(--surface);border:1px dashed var(--france);border-radius:var(--radius);padding:14px 16px;margin-top:14px;color:var(--france);font-size:14px}
+  .lock-banner .k{font-size:20px}
+  .lockable{transition:.3s}
+  .seance.locked .lock-banner{display:flex}
+  .seance.locked .lockable{filter:blur(3px);opacity:.45;pointer-events:none;user-select:none}
+  body.teacher .seance.locked .lockable{filter:none;opacity:1;pointer-events:auto;user-select:auto}
+  body.teacher .seance.locked .lock-banner{border-color:var(--ink-faint);color:var(--ink-soft)}
+  body.teacher .seance.locked .lock-banner .k::before{content:"🔓"}
+  .seance.locked .lock-banner .k::before{content:"🔒"}
+
+  /* étapes */
+  .steps{position:relative;margin-top:20px}
+  .step{position:relative;padding-left:40px;padding-bottom:14px}
+  .rail{position:absolute;left:13px;top:6px;bottom:-10px;width:2px;background:var(--line)}
+  .step:last-child .rail{display:none}
+  .step-pip{position:absolute;left:6px;top:4px;width:16px;height:16px;border-radius:50%;border:2px solid var(--ink-faint);background:var(--bg);z-index:2;transition:.2s}
+  .step.is-done .step-pip{background:var(--ok);border-color:var(--ok)}
+  .step.is-done .rail{background:linear-gradient(var(--ok),var(--line))}
+  .step.is-wait .step-pip{background:var(--wait-wash);border-color:var(--wait)}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card-top{padding:16px 18px 4px}
+  .step-kicker{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);letter-spacing:.03em;margin-bottom:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .badge{font-family:"IBM Plex Mono";font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:5px}
+  .badge.gate{background:var(--link-wash);color:var(--link)}
+  .step-title{font-family:"Space Grotesk";font-weight:600;font-size:19px;margin:0 0 8px;letter-spacing:-.01em}
+  .objective{display:flex;gap:9px;font-size:14px;color:var(--ink-soft);background:var(--link-wash);border-radius:10px;padding:9px 12px;margin:2px 0 4px}
+  .objective b{color:var(--link);font-weight:600}
+  .card-body{padding:6px 18px 18px}
+  .block-label{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+  .block-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* ressources */
+  .res{display:flex;flex-direction:column;gap:7px}
+  .res-item{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-decoration:none;color:inherit;transition:.15s}
+  a.res-item:hover{border-color:var(--link);background:var(--link-wash)}
+  .res-code{font-family:"IBM Plex Mono";font-size:11px;font-weight:600;flex:none;padding:3px 7px;border-radius:6px;background:var(--ink);color:#fff;margin-top:1px}
+  .res-item.activity .res-code{background:var(--activity)} .res-item.debranche .res-code{background:#5b3fa8}
+  .res-main{flex:1;min-width:0} .res-main .r-title{font-weight:500;font-size:14.5px} .res-main .r-type{font-size:12.5px;color:var(--ink-faint)}
+  .res-time{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);flex:none;margin-top:2px}
+  .res-item.activity{background:var(--activity-wash);border-color:#eed4b6} .res-item.activity:hover{border-color:var(--activity)}
+
+  /* à retenir + tableaux docs */
+  .retain{border-left:3px solid var(--ink);background:var(--surface-2);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px}
+  .retain code{background:#eceff7;padding:1px 5px;border-radius:4px;font-size:.9em;color:var(--link)}
+  .doc-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0}
+  .doc-table th,.doc-table td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+  .doc-table th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:12px;font-weight:600;color:var(--ink-soft)}
+  .doc-table code{color:var(--link)}
+
+  /* encadré histoire (révélé) */
+  .reveal{display:none;margin-top:12px;border-radius:12px;padding:13px 15px;font-size:14px;line-height:1.6;border:1px solid var(--hist);background:var(--hist-wash);color:#3e2c5c}
+  .reveal.show{display:block;animation:fade .4s ease}
+  .reveal .rl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--hist);font-weight:600;margin-bottom:5px;display:flex;gap:6px;align-items:center}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* encadré france (toujours visible) */
+  .france-box{position:relative;border:1px solid var(--france);background:var(--france-wash);border-radius:var(--radius);padding:16px 18px;margin-top:6px;overflow:hidden}
+  .france-box::before{content:"";position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#0a3d91 0 33.3%,#fff 33.3% 66.6%,#e1122f 66.6% 100%)}
+  .france-box .fl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--france);font-weight:600;margin:4px 0 8px;display:flex;gap:7px;align-items:center}
+  .france-box h4{font-family:"Space Grotesk";margin:0 0 6px;font-size:17px;color:var(--france)}
+  .france-box p{margin:0 0 9px;font-size:14px;color:#1f3a5c;line-height:1.6}
+  .france-box .warn-note{font-size:13px;background:#fff;border-radius:9px;padding:9px 12px;color:var(--ink-soft);border:1px solid #cdddf0}
+  .france-cols{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .france-cols .txt{flex:1;min-width:220px}
+  .minitel-fig{flex:none;width:170px;text-align:center}
+  .minitel-fig svg{width:170px;height:auto}
+  .minitel-fig figcaption{font-size:11.5px;color:var(--ink-faint);margin-top:4px;font-style:italic}
+  .biblio{margin-top:10px;background:#fff;border:1px solid #cdddf0;border-radius:10px;padding:10px 13px}
+  .biblio .bl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--france);font-weight:600;margin-bottom:6px;display:flex;gap:6px;align-items:center}
+  .biblio a{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--france);text-decoration:none;border-bottom:1px dotted var(--france);margin:2px 12px 2px 0}
+  .biblio a:hover{background:var(--france-wash)}
+  .biblio a::before{content:"↗";font-size:11px;opacity:.7}
+  .reveal .biblio{background:rgba(255,255,255,.6);border-color:var(--hist)}
+  .reveal .biblio .bl,.reveal .biblio a{color:var(--hist)} .reveal .biblio a{border-bottom-color:var(--hist)}
+
+  /* champs */
+  .field{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface-2)}
+  .field + .field{margin-top:10px}
+  .field-q{font-weight:500;font-size:15px;margin-bottom:11px}
+  .field-type{float:right;font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 6px;text-transform:uppercase}
+  .opts{display:flex;flex-direction:column;gap:7px}
+  .opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer;font-size:14.5px;transition:.12s;text-align:left}
+  .opt:hover{border-color:var(--link)} .opt .mark{width:18px;height:18px;border-radius:50%;border:2px solid var(--ink-faint);flex:none}
+  .opt.correct{background:var(--ok-wash);border-color:var(--ok);color:#0c5c42} .opt.correct .mark{background:var(--ok);border-color:var(--ok)}
+  .opt.wrong{background:var(--err-wash);border-color:var(--err);color:#8f2a22} .opt.wrong .mark{background:var(--err);border-color:var(--err)}
+  .opt:disabled{cursor:default}
+  .cloze{font-size:15px;line-height:2.2}
+  .cloze input{font-family:"IBM Plex Mono";font-size:14px;border:none;border-bottom:2px solid var(--link);background:var(--link-wash);border-radius:5px 5px 0 0;padding:3px 8px;width:120px;color:var(--ink)}
+  .cloze input.short{width:64px;text-align:center}
+  .cloze input:focus{outline:2px solid var(--link);outline-offset:1px}
+  .cloze input.ok{border-color:var(--ok);background:var(--ok-wash);color:#0c5c42} .cloze input.no{border-color:var(--err);background:var(--err-wash);color:#8f2a22}
+  .diagram{width:100%;height:auto;display:block;margin:2px 0 10px} .diagram text{font-family:"IBM Plex Sans"}
+  .label-selects{display:flex;flex-wrap:wrap;gap:10px}
+  .label-selects label{font-size:13px;color:var(--ink-soft);display:flex;flex-direction:column;gap:3px}
+  .label-selects select{font-family:"IBM Plex Sans";font-size:13.5px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+  .label-selects select.ok{border-color:var(--ok);background:var(--ok-wash)} .label-selects select.no{border-color:var(--err);background:var(--err-wash)}
+  .free textarea,.perso textarea{width:100%;min-height:88px;resize:vertical;font-family:"IBM Plex Sans";font-size:14.5px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);line-height:1.5}
+  .free textarea:focus,.perso textarea:focus{outline:2px solid var(--link);outline-offset:1px;border-color:var(--link)}
+  .free-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:9px;flex-wrap:wrap}
+  .free-meta{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--ink-faint)} .free-meta .warn{color:var(--err)}
+  .btn{font-family:"IBM Plex Sans";font-weight:600;font-size:14px;cursor:pointer;padding:9px 16px;border-radius:9px;border:1px solid var(--link);background:var(--link);color:#fff;transition:.15s}
+  .btn:hover{filter:brightness(1.08)} .btn.ghost{background:transparent;color:var(--link)} .btn:disabled{opacity:.5;cursor:default;filter:none}
+  .verdict{margin-top:10px;font-size:13.5px;padding:9px 12px;border-radius:9px;display:none}
+  .verdict.show{display:block}
+  .verdict.ok{background:var(--ok-wash);color:#0c5c42;border:1px solid var(--ok)}
+  .verdict.wait{background:var(--wait-wash);color:#7a5400;border:1px solid var(--wait)}
+  .verdict.no{background:var(--err-wash);color:#8f2a22;border:1px solid var(--err)}
+
+  /* perso */
+  .perso-box{border:1px solid #cdddf0;background:#fff;border-radius:12px;padding:14px}
+  .perso-box .pl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:8px;display:flex;gap:6px;align-items:center}
+  .perso-box .note-free{font-size:12.5px;color:var(--ink-faint);margin-top:7px}
+
+  /* bonus */
+  .bonus-wrap{margin-top:18px;border:1px solid var(--bonus);border-radius:var(--radius);overflow:hidden}
+  .bonus-head{background:var(--bonus-wash);padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer}
+  .bonus-head .bl{font-family:"Space Grotesk";font-weight:600;color:var(--bonus);font-size:16px;flex:1}
+  .bonus-head .chev{transition:.2s;color:var(--bonus)}
+  .bonus-wrap.open .chev{transform:rotate(90deg)}
+  .bonus-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .bonus-wrap.open .bonus-body{max-height:1600px;padding:14px 16px}
+  .bonus-body .field{background:#fff}
+  .bonus-tag{font-size:12px;color:var(--bonus);background:#fff;border:1px solid var(--bonus);border-radius:100px;padding:2px 9px;font-family:"IBM Plex Mono"}
+
+  footer.note{margin:42px 0 60px;padding:20px 22px;border:1px dashed var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink-soft);font-size:13.5px}
+  footer.note b{color:var(--ink)} footer.note code{background:var(--surface-2);padding:1px 5px;border-radius:4px;color:var(--link)}
+
+  /* barre d'actions séance */
+  .seance-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+  .seance-actions .sa-label{flex:1;min-width:160px;font-size:13px;color:var(--ink-soft);align-self:center}
+  .btn.sm{padding:8px 13px;font-size:13px}
+  .btn.dl{background:var(--ok);border-color:var(--ok)}
+  .btn.reset{background:transparent;color:var(--ink-soft);border-color:var(--line)}
+  .btn.reset:hover{border-color:var(--err);color:var(--err)}
+
+  /* modal */
+  .modal-back{position:fixed;inset:0;background:rgba(22,31,51,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal-back.show{display:flex}
+  .modal{background:var(--surface);border-radius:18px;max-width:440px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;animation:pop .25s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+  .modal .m-ico{font-size:40px;margin-bottom:6px}
+  .modal h3{font-family:"Space Grotesk";font-size:22px;margin:0 0 8px;color:var(--ink)}
+  .modal p{font-size:14.5px;color:var(--ink-soft);margin:0 0 18px;line-height:1.55}
+  .modal .m-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .modal .recap{text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13.5px;max-height:200px;overflow:auto}
+  .modal .recap .ri{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid var(--line)}
+  .modal .recap .ri:last-child{border-bottom:none}
+  .modal .recap .ri b{color:var(--ok)}
+
+  @media (max-width:560px){
+    .field-type{float:none;display:inline-block;margin-bottom:8px}
+    .seance-head{flex-direction:column;gap:2px}
+    .cloze input{width:92px}
+    .cloze input.short{width:58px}
+    nav.seances .teacher-toggle span.tlabel{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">SNT · Thème 1 · Seconde</div>
+    <h1 class="title">Internet <span class="tag">TCP/IP</span></h1>
+    <p class="lede">Sous les applis et les pages web, il y a un réseau planétaire de câbles, de routeurs et de règles communes — inventé il y a cinquante ans, en partie par des Français. Voici comment il fonctionne, du fond des océans jusqu'à ta box.</p>
+    <div class="themes">
+      <span class="theme-chip on">Internet</span><span class="theme-chip">Le Web</span>
+      <span class="theme-chip">Réseaux sociaux</span><span class="theme-chip">Données structurées</span>
+      <span class="theme-chip">Localisation &amp; cartographie</span><span class="theme-chip">Informatique embarquée</span>
+      <span class="theme-chip">Photographie numérique</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>4 séances</b> + 1 activité débranchée</span>
+      <span class="m">Durée <b>≈ 6 h 30</b></span>
+      <span class="m">Chaque séance se débloque quand la <b>précédente est validée</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-snt.html">← SNT</a>
+    <a href="#s1"><span class="n">S1</span>Le réseau physique</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>Histoire &amp; 🇫🇷 <span class="lockico">🔒</span></a>
+    <a href="#s3" data-navlock="3"><span class="n">S3</span>Paquets &amp; routage <span class="lockico">🔒</span></a>
+    <a href="#s4" data-navlock="4"><span class="n">S4</span>Adresses &amp; DNS <span class="lockico">🔒</span></a>
+    <a href="#deb"><span class="n">⏳</span>Routage humain</a>
+    <span class="spacer"></span>
+    <label class="teacher-toggle" title="Déverrouille toutes les séances (usage enseignant)">
+      <input type="checkbox" id="teacherMode">
+      <span class="switch"></span><span class="tlabel">Mode enseignant</span>
+    </label>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>C'est quoi, Internet ? Le réseau physique</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Distinguer Internet du Web, comprendre qu'Internet est un « réseau de réseaux » bien réel — des câbles au fond des océans jusqu'au débit de ta maison.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Internet ≠ Web</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> expliquer avec tes mots la différence entre Internet (le réseau) et le Web (un des services qui l'utilisent).</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Pour comprendre, fais d'abord</div>
+            <div class="res">
+              <a class="res-item" href="http://ressources.numeres.net/id-58" target="_blank" rel="noopener">
+                <span class="res-code">NET·1</span>
+                <span class="res-main"><span class="r-title">Vidéo interactive « Web et Internet »</span><span class="r-type">Vidéo + quiz intégré · Numéres</span></span>
+                <span class="res-time">~8 min</span>
+              </a>
+            </div>
+            <div class="block-label">À retenir</div>
+            <div class="retain"><b>Internet</b> = « <b>inter-networks</b> », l'interconnexion des réseaux de la planète : des machines (ordinateurs, smartphones, serveurs…) reliées par des câbles, des fibres et des ondes, qui parlent une langue commune (<code>TCP/IP</code>). Le <b>Web</b> n'est qu'<b>un des services</b> qui circulent dessus — comme les mails, les jeux en ligne ou le streaming. On l'explorera au thème suivant.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field" data-qcm data-answer="1">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Quand tu envoies un message sur un jeu en ligne, tu utilises…</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>le Web, mais pas Internet</button>
+                <button class="opt"><span class="mark"></span>Internet, mais pas forcément le Web</button>
+                <button class="opt"><span class="mark"></span>ni l'un ni l'autre : un jeu, ce n'est pas du réseau</button>
+              </div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Le réseau des réseaux : les topologies</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> reconnaître les grandes façons de relier des machines entre elles, et comprendre pourquoi Internet ressemble à un immense filet.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — trois topologies parmi d'autres</div>
+            <svg class="diagram" viewBox="0 0 640 190" role="img" aria-label="Trois topologies de réseau : bus, étoile, maillé">
+              <!-- BUS -->
+              <text x="105" y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#161f33">Bus</text>
+              <line x1="25" y1="120" x2="185" y2="120" stroke="#4a566e" stroke-width="3"/>
+              <g fill="#e7ebfb" stroke="#2445c7" stroke-width="1.6">
+                <rect x="32" y="70" width="30" height="22" rx="4"/><rect x="90" y="70" width="30" height="22" rx="4"/><rect x="148" y="70" width="30" height="22" rx="4"/>
+              </g>
+              <g stroke="#8b97ad" stroke-width="1.6"><line x1="47" y1="92" x2="47" y2="120"/><line x1="105" y1="92" x2="105" y2="120"/><line x1="163" y1="92" x2="163" y2="120"/></g>
+              <text x="105" y="150" text-anchor="middle" font-size="11.5" fill="#8b97ad">un seul fil partagé</text>
+              <!-- ÉTOILE -->
+              <text x="320" y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#161f33">Étoile</text>
+              <circle cx="320" cy="100" r="16" fill="#faeede" stroke="#c26a12" stroke-width="2"/>
+              <g stroke="#8b97ad" stroke-width="1.6">
+                <line x1="320" y1="84" x2="320" y2="52"/><line x1="306" y1="92" x2="262" y2="66"/><line x1="334" y1="92" x2="378" y2="66"/>
+                <line x1="306" y1="108" x2="262" y2="134"/><line x1="334" y1="108" x2="378" y2="134"/>
+              </g>
+              <g fill="#e7ebfb" stroke="#2445c7" stroke-width="1.6">
+                <rect x="305" y="34" width="30" height="20" rx="4"/><rect x="240" y="52" width="30" height="20" rx="4"/><rect x="370" y="52" width="30" height="20" rx="4"/>
+                <rect x="240" y="126" width="30" height="20" rx="4"/><rect x="370" y="126" width="30" height="20" rx="4"/>
+              </g>
+              <text x="320" y="165" text-anchor="middle" font-size="11.5" fill="#8b97ad">tout passe par le centre</text>
+              <!-- MAILLÉ -->
+              <text x="535" y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#161f33">Maillé</text>
+              <g stroke="#8b97ad" stroke-width="1.4">
+                <line x1="500" y1="55" x2="570" y2="55"/><line x1="500" y1="55" x2="490" y2="120"/><line x1="570" y1="55" x2="580" y2="120"/>
+                <line x1="490" y1="120" x2="580" y2="120"/><line x1="500" y1="55" x2="580" y2="120"/><line x1="570" y1="55" x2="490" y2="120"/>
+                <line x1="500" y1="55" x2="535" y2="150"/><line x1="570" y1="55" x2="535" y2="150"/><line x1="490" y1="120" x2="535" y2="150"/><line x1="580" y1="120" x2="535" y2="150"/>
+              </g>
+              <g fill="#e7ebfb" stroke="#2445c7" stroke-width="1.6">
+                <rect x="485" y="45" width="30" height="20" rx="4"/><rect x="555" y="45" width="30" height="20" rx="4"/>
+                <rect x="475" y="110" width="30" height="20" rx="4"/><rect x="565" y="110" width="30" height="20" rx="4"/>
+                <rect x="520" y="140" width="30" height="20" rx="4"/>
+              </g>
+              <text x="535" y="178" text-anchor="middle" font-size="11.5" fill="#8b97ad">plusieurs chemins possibles</text>
+            </svg>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Un <b>réseau</b>, c'est déjà deux machines reliées. On peut les organiser en <b>bus</b> (un fil partagé), en <b>étoile</b> (tout passe par un appareil central — comme ta box à la maison), en <b>maillé</b> (chaque machine a plusieurs voisins)… Internet, à l'échelle mondiale, est un gigantesque réseau <b>maillé</b> : si un chemin casse, les données en prennent un autre.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field">
+              <span class="field-type">Schéma à analyser</span>
+              <div class="field-q">Réponds à partir des trois schémas ci-dessus.</div>
+              <div class="label-selects" data-diagram>
+                <label>En étoile, si l'appareil central tombe en panne…
+                  <select data-correct="rien"><option value="">—</option><option value="rien">plus personne ne communique</option><option value="ok">les autres continuent normalement</option><option value="direct">les machines se parlent en direct</option></select></label>
+                <label>Le plus résistant aux pannes ?
+                  <select data-correct="maille"><option value="">—</option><option value="bus">le bus</option><option value="etoile">l'étoile</option><option value="maille">le maillé</option></select></label>
+                <label>À l'échelle mondiale, Internet ressemble à…
+                  <select data-correct="maille"><option value="">—</option><option value="bus">un très long bus</option><option value="etoile">une étoile géante avec un centre</option><option value="maille">un immense réseau maillé, sans centre</option></select></label>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Les câbles sous-marins : l'autoroute invisible</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> découvrir par où passent réellement tes données quand elles traversent un océan — et fragiliser l'image du « tout passe par les satellites ».</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Explore d'abord</div>
+            <div class="res">
+              <a class="res-item activity" href="https://www.submarinecablemap.com" target="_blank" rel="noopener">
+                <span class="res-code">NET·1b</span>
+                <span class="res-main"><span class="r-title">Carte mondiale des câbles sous-marins</span><span class="r-type">Activité branchée · TeleGeography — zoome sur Lannion, Le Porge et Marseille</span></span>
+                <span class="res-time">~15 min</span>
+              </a>
+            </div>
+            <div class="block-label">À retenir</div>
+            <div class="retain">L'essentiel du trafic entre continents (<b>plus de 95 %</b>) passe par des <b>câbles sous-marins en fibre optique</b>, pas par les satellites. Plus de <b>1,2 million de km</b> de câbles sont posés — environ <b>30 fois</b> le tour de la Terre. En France, ils atterrissent notamment à <b>Lannion</b>, au <b>Porge</b> et surtout à <b>Marseille</b>, l'une des grandes portes d'entrée d'Internet en Europe.</div>
+            <div class="block-label">Complète</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Un calcul d'ordre de grandeur : la circonférence de la Terre fait ≈ 40 000 km.</div>
+              <div class="cloze" data-cloze>
+                1 200 000 km de câbles ÷ 40 000 km = <input class="short" data-answer="30" placeholder="?" aria-label="nombre de tours de la Terre"> tours de la Terre. Le tout premier câble transatlantique en <b>fibre optique</b> (TAT-8) date de <input class="short" data-answer="1988" placeholder="année" aria-label="année du TAT-8">.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+            <div class="field free" data-free>
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">Cite <b>deux dangers</b> qui menacent les câbles sous-marins, et propose une conséquence possible pour les internautes d'une région touchée.</div>
+              <textarea placeholder="Écris ta réponse avec tes mots (le copier-coller est bloqué)…" aria-label="Réponse rédigée"></textarea>
+              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🦈 Le sais-tu ?</div>
+                Les vrais ennemis des câbles sont les <b>ancres de bateaux</b>, les <b>chaluts de pêche</b> et les <b>séismes sous-marins</b> — plusieurs dizaines de coupures par an ! Et oui, quelques <b>requins</b> ont bel et bien mordu des câbles : Google a renforcé certains des siens avec une gaine façon kevlar. Réparer un câble, c'est envoyer un navire spécialisé le remonter à la surface pour le ressouder.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.4 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Du réseau mondial à ta maison</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> observer comment le très haut débit est réparti sur le territoire — et pourquoi il ne l'est pas partout pareil.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Explore d'abord</div>
+            <div class="res">
+              <a class="res-item activity" href="https://maconnexioninternet.arcep.fr/" target="_blank" rel="noopener">
+                <span class="res-code">NET·1c</span>
+                <span class="res-main"><span class="r-title">Carte des débits « Ma connexion internet »</span><span class="r-type">Activité branchée · ARCEP — cherche ta ville, puis dézoome sur ton département</span></span>
+                <span class="res-time">~10 min</span>
+              </a>
+            </div>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Le dernier tronçon jusqu'à chez toi peut être en <b>fibre optique</b> (très haut débit), en <b>ADSL</b> (ligne téléphonique en cuivre, plus lent), ou passer par la <b>4G/5G</b> ou le satellite. Les zones très denses (villes) sont mieux servies que les zones rurales : déployer la fibre coûte cher au kilomètre pour peu d'habitants. L'<b>ARCEP</b> est l'autorité publique qui surveille tout ça.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field" data-qcm data-answer="2">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Pourquoi trouve-t-on souvent de meilleurs débits en ville qu'à la campagne ?</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>Les ondes Wi-Fi portent plus loin en ville</button>
+                <button class="opt"><span class="mark"></span>Les campagnes n'ont pas le droit à la fibre</button>
+                <button class="opt"><span class="mark"></span>Raccorder beaucoup d'habitants proches coûte moins cher par personne</button>
+              </div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERSO -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-style:dashed"></div>
+        <div class="perso-box">
+          <div class="pl">💬 Et toi ? · réponse personnelle, non notée</div>
+          <div class="perso">
+            <div class="field-q" style="font-weight:400">Chez toi, la connexion arrive comment : <b>fibre</b>, <b>ADSL</b>, <b>4G/5G</b> ? Et avant cette séance, aurais-tu parié que tes messages traversent les océans par câble ou par satellite ?</div>
+            <textarea placeholder="Réponds librement — ça servira à lancer la discussion en classe." aria-label="Réponse personnelle"></textarea>
+            <div style="margin-top:8px"><button class="btn ghost" data-share>Partager avec la classe</button></div>
+            <div class="note-free" data-share-note></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BONUS S1 -->
+    <div class="bonus-wrap" data-bonus>
+      <div class="bonus-head" data-bonus-toggle>
+        <span class="bonus-tag">bonus</span>
+        <span class="bl">Pour aller plus loin</span>
+        <span class="chev">▸</span>
+      </div>
+      <div class="bonus-body">
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé).</p>
+        <div class="field free" data-free>
+          <span class="field-type">Question ouverte</span>
+          <div class="field-q">Sur la carte des câbles, retrouve <b>2Africa</b>, le câble le plus long du monde (~45 000 km), qui arrive à Marseille. À ton avis, <b>pourquoi Marseille</b> est-elle devenue une porte d'entrée majeure d'Internet en Europe ? Pense géographie… et histoire.</div>
+          <textarea placeholder="Argumente avec tes propres mots…" aria-label="Réponse ouverte"></textarea>
+          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="verdict"></div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>L'histoire d'Internet — et la France dedans</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">D'ARPANET à TCP/IP : comprendre d'où vient Internet — et découvrir que deux inventions françaises, CYCLADES et le Minitel, sont au cœur de cette histoire.</p>
+    <div class="progress-line"><i data-progress></i></div>
+    <div class="lock-banner"><span class="k"></span><span>Cette séance se débloque quand la <b>séance 1 est entièrement validée</b>. Ton professeur peut l'ouvrir si besoin.</span></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 2.1 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">ARPANET : l'ancêtre américain</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> raconter la naissance du premier réseau de paquets, avec les bonnes dates et les bons acteurs.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — la naissance d'un réseau</div>
+            <p style="font-size:14.5px;margin:4px 0 10px"><b>ARPANET</b> est le premier réseau à transfert de <b>paquets</b> de données, rendu opérationnel en <b>1969</b> par la DARPA, une agence de recherche militaire américaine. En pleine guerre froide, l'idée est notamment de bâtir un réseau <b>sans centre</b> : si un nœud est détruit, les autres continuent de communiquer. Mais ce sont surtout les <b>universités</b> qui vont écrire son histoire.</p>
+            <table class="doc-table">
+              <tr><th>Date</th><th>Événement</th></tr>
+              <tr><td><code>29 oct. 1969</code></td><td>Premier message entre UCLA et Stanford : « <code>LO</code> » — les deux premières lettres de <code>LOGIN</code>… avant que la transmission ne plante 😅</td></tr>
+              <tr><td><code>21 nov. 1969</code></td><td>Premier lien <b>permanent</b> entre les deux ordinateurs, distants de 500 km</td></tr>
+              <tr><td><code>5 déc. 1969</code></td><td>Réseau à <b>4 nœuds</b> : UCLA, Stanford (SRI), UCSB, Utah</td></tr>
+              <tr><td><code>années 70-80</code></td><td>Expansion : laboratoires et universités rejoignent le réseau</td></tr>
+              <tr><td><code>1990</code></td><td>ARPANET s'efface, absorbé par Internet</td></tr>
+            </table>
+            <div class="block-label">À retenir</div>
+            <div class="retain"><b>ARPANET</b> (1969) est l'<b>ancêtre d'Internet</b> : un réseau <b>décentralisé</b> financé par une agence militaire américaine, développé et fait vivre par les universités. Son premier « langage » (le protocole <code>NCP</code>) sera remplacé plus tard par <code>TCP/IP</code>.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field" data-qcm data-answer="1">
+              <span class="field-type">QCM</span>
+              <div class="field-q">L'objectif initial qui a conduit au financement d'ARPANET était…</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>commercial : vendre des ordinateurs</button>
+                <button class="opt"><span class="mark"></span>militaire : un réseau capable de résister à la destruction d'un nœud</button>
+                <button class="opt"><span class="mark"></span>scolaire : relier les lycées américains</button>
+              </div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 FIERTÉ FRANÇAISE — LE grand développement -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip" style="border-color:var(--france)"></div>
+        <div class="france-box">
+          <div class="fl">🇫🇷 Un peu de fierté — la France invente une pièce maîtresse</div>
+          <h4>Louis Pouzin, CYCLADES et le datagramme</h4>
+          <p>Au début des années 1970, l'ingénieur français <b>Louis Pouzin</b> (né en 1931, polytechnicien) dirige à l'IRIA — l'ancêtre de l'<b>Inria</b> — le projet <b>CYCLADES</b>, un réseau expérimental reliant des universités et des centres de recherche français. Sa grande idée : le <b>datagramme</b>.</p>
+          <p>Jusque-là, on imaginait les réseaux comme le téléphone : on établit une ligne de bout en bout, puis on parle. Pouzin propose l'inverse : <b>découper chaque message en petits paquets indépendants</b>, chacun portant l'adresse de destination, chacun libre de prendre <b>son propre chemin</b> à travers le réseau. Si une route est coupée, le paquet en prend une autre ; à l'arrivée, on réassemble le tout. Le réseau devient simple, robuste et sans chef d'orchestre. CYCLADES en fait la démonstration dès <b>1973</b>.</p>
+
+          <svg class="diagram" viewBox="0 0 640 200" role="img" aria-label="Principe du datagramme : un message découpé en trois paquets qui prennent des chemins différents puis sont réassemblés" style="background:#fff;border-radius:10px;border:1px solid #cdddf0">
+            <!-- émetteur -->
+            <rect x="18" y="70" width="92" height="58" rx="9" fill="#e6eef8" stroke="#164a8a" stroke-width="1.8"/>
+            <text x="64" y="95" text-anchor="middle" font-size="12.5" font-weight="600" fill="#161f33">Message</text>
+            <text x="64" y="112" text-anchor="middle" font-size="11" fill="#4a566e">« SALUT »</text>
+            <!-- paquets -->
+            <g font-family="IBM Plex Mono" font-size="10.5">
+              <rect x="140" y="38" width="52" height="24" rx="5" fill="#e7ebfb" stroke="#2445c7" stroke-width="1.6"/><text x="166" y="54" text-anchor="middle" fill="#161f33">① SA</text>
+              <rect x="140" y="88" width="52" height="24" rx="5" fill="#e7ebfb" stroke="#2445c7" stroke-width="1.6"/><text x="166" y="104" text-anchor="middle" fill="#161f33">② LU</text>
+              <rect x="140" y="138" width="52" height="24" rx="5" fill="#e7ebfb" stroke="#2445c7" stroke-width="1.6"/><text x="166" y="154" text-anchor="middle" fill="#161f33">③ T</text>
+            </g>
+            <!-- routeurs -->
+            <g fill="#faeede" stroke="#c26a12" stroke-width="1.8">
+              <circle cx="300" cy="42" r="13"/><circle cx="330" cy="100" r="13"/><circle cx="300" cy="160" r="13"/><circle cx="400" cy="60" r="13"/><circle cx="410" cy="145" r="13"/>
+            </g>
+            <!-- chemins -->
+            <g fill="none" stroke-width="1.8">
+              <path d="M195 50 C 240 44, 260 42, 287 42" stroke="#2445c7"/>
+              <path d="M313 42 C 350 46, 370 52, 387 58" stroke="#2445c7"/>
+              <path d="M413 62 C 450 70, 480 82, 505 90" stroke="#2445c7"/>
+              <path d="M195 100 C 250 100, 290 100, 317 100" stroke="#12805c"/>
+              <path d="M343 100 C 370 112, 385 130, 398 138" stroke="#12805c"/>
+              <path d="M423 145 C 455 132, 480 114, 505 102" stroke="#12805c"/>
+              <path d="M195 150 C 240 155, 265 158, 287 160" stroke="#6b4a9a"/>
+              <path d="M313 158 C 345 140, 360 118, 340 108" stroke="#6b4a9a" stroke-dasharray="5 4"/>
+              <path d="M330 113 C 350 135, 380 143, 397 145" stroke="#6b4a9a"/>
+            </g>
+            <!-- destinataire -->
+            <rect x="512" y="70" width="106" height="58" rx="9" fill="#e0f2ea" stroke="#12805c" stroke-width="1.8"/>
+            <text x="565" y="93" text-anchor="middle" font-size="12" font-weight="600" fill="#161f33">Réassemblage</text>
+            <text x="565" y="111" text-anchor="middle" font-size="11" font-family="IBM Plex Mono" fill="#0c5c42">①+②+③ = SALUT</text>
+            <text x="320" y="192" text-anchor="middle" font-size="11.5" fill="#8b97ad">chaque paquet trouve son propre chemin — même si une route est coupée</text>
+          </svg>
+
+          <p><b>Et l'Amérique dans tout ça ?</b> Les Américains <b>Vint Cerf</b> et <b>Bob Kahn</b> publient en <b>1974</b> l'article fondateur de <b>TCP/IP</b> — en s'inspirant <b>directement</b> du datagramme de CYCLADES, ce que Cerf a toujours reconnu. Le 1<sup>er</sup> janvier <b>1983</b>, tout ARPANET bascule sur TCP/IP : Internet tel qu'on le connaît est né, et il tourne <em>encore aujourd'hui</em> sur l'idée de Pouzin. Pendant ce temps, faute de soutien, la France abandonne CYCLADES à la fin des années 1970 : les PTT lui préfèrent une autre technologie (Transpac), plus proche du modèle téléphonique…</p>
+
+          <div class="france-cols">
+            <div class="txt">
+              <h4>Le Minitel : la France en ligne dix ans avant tout le monde</h4>
+              <p>… mais ce choix va donner naissance à une autre fierté ! Expérimenté en <b>1980</b> puis distribué <b>gratuitement</b> par les PTT dans les foyers, le <b>Minitel</b> est un petit terminal à écran et clavier branché sur la prise téléphonique. On y consulte l'<b>annuaire électronique</b> (le fameux « 11 »), la météo, ses comptes en banque, les résultats du bac ; on réserve un billet de train, on discute sur des messageries — en tapant <b>3615</b> suivi du nom du service.</p>
+              <p>À son apogée, ce sont <b>plusieurs millions de terminaux</b> et plus de 25 000 services : la France est le seul pays au monde où le grand public vit « en ligne » dès les années 1980, plus de dix ans avant la généralisation du Web. Le réseau ferme le <b>30 juin 2012</b>, après plus de trente ans de service.</p>
+            </div>
+            <figure class="minitel-fig">
+              <svg viewBox="0 0 120 130" role="img" aria-label="Illustration d'un Minitel">
+                <rect x="14" y="10" width="92" height="82" rx="7" fill="#d8cbb0" stroke="#8a7b5c" stroke-width="2"/>
+                <rect x="22" y="18" width="76" height="56" rx="4" fill="#3a3327" stroke="#6b5f47" stroke-width="2"/>
+                <rect x="27" y="22" width="66" height="48" rx="2" fill="#0d1a0d"/>
+                <text x="32" y="34" font-family="IBM Plex Mono" font-size="7" fill="#57d957">3615</text>
+                <rect x="32" y="39" width="40" height="3" fill="#2f8f2f"/>
+                <rect x="32" y="45" width="52" height="3" fill="#2f8f2f"/>
+                <rect x="32" y="51" width="30" height="3" fill="#2f8f2f"/>
+                <text x="32" y="65" font-family="IBM Plex Mono" font-size="6" fill="#57d957">ENVOI_</text>
+                <rect x="30" y="92" width="60" height="6" rx="2" fill="#b7a985" stroke="#8a7b5c" stroke-width="1.5"/>
+                <rect x="24" y="98" width="72" height="26" rx="4" fill="#cabd9f" stroke="#8a7b5c" stroke-width="2"/>
+                <g fill="#8a7b5c">
+                  <rect x="29" y="103" width="8" height="5" rx="1"/><rect x="40" y="103" width="8" height="5" rx="1"/>
+                  <rect x="51" y="103" width="8" height="5" rx="1"/><rect x="62" y="103" width="8" height="5" rx="1"/><rect x="73" y="103" width="12" height="5" rx="1"/>
+                  <rect x="29" y="111" width="8" height="5" rx="1"/><rect x="40" y="111" width="8" height="5" rx="1"/>
+                  <rect x="51" y="111" width="8" height="5" rx="1"/><rect x="62" y="111" width="8" height="5" rx="1"/><rect x="73" y="111" width="12" height="5" rx="1"/>
+                </g>
+              </svg>
+              <figcaption>Le Minitel (illustration)</figcaption>
+            </figure>
+          </div>
+
+          <div class="warn-note">⚠️ <b>À ne pas confondre :</b> tout ceci, c'est l'histoire d'<b>Internet</b>, le réseau. Le <b>Web</b> — les pages et les liens — n'existe pas encore : il naîtra en <b>1989 au CERN</b>. Tu le découvriras au thème suivant.</div>
+
+          <div class="biblio">
+            <div class="bl">📚 Pour creuser — sources</div>
+            <a href="https://www.inria.fr/fr/louis-pouzin-et-internet" target="_blank" rel="noopener">Inria — Louis Pouzin &amp; Internet</a>
+            <a href="https://fr.wikipedia.org/wiki/Louis_Pouzin" target="_blank" rel="noopener">Wikipédia — Louis Pouzin</a>
+            <a href="https://fr.wikipedia.org/wiki/Cyclades_(r%C3%A9seau)" target="_blank" rel="noopener">Wikipédia — Réseau CYCLADES</a>
+            <a href="https://fr.wikipedia.org/wiki/Minitel" target="_blank" rel="noopener">Wikipédia — Minitel</a>
+            <a href="https://www.canal-u.tv/chaines/cemu/cours-de-culture-numerique-2014-2015/02a-histoire-de-l-internet-cn14-15" target="_blank" rel="noopener">Canal-U — Histoire de l'Internet (cours)</a>
+          </div>
+
+          <div class="field free" data-free style="margin-top:12px;background:#fff">
+            <span class="field-type">Réponse rédigée</span>
+            <div class="field-q">Explique avec tes mots ce qu'est le <b>datagramme</b>, et pourquoi on peut dire que TCP/IP « doit beaucoup » à Louis Pouzin.</div>
+            <textarea placeholder="Écris ta réponse avec tes mots (le copier-coller est bloqué)…" aria-label="Réponse rédigée"></textarea>
+            <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+            <div class="verdict"></div>
+            <div class="reveal" data-reveal>
+              <div class="rl">🏛️ Le sais-tu ? — une reconnaissance très tardive</div>
+              En <b>2013</b>, Louis Pouzin reçoit à Londres le tout premier <b>Queen Elizabeth Prize for Engineering</b> — aux côtés de Vint Cerf, Bob Kahn et Tim Berners-Lee — comme l'un des pères fondateurs d'Internet. Il aura fallu quarante ans pour que le monde reconnaisse officiellement la part française de l'invention.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">La frise : remets l'histoire dans l'ordre</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> associer chaque événement fondateur à sa date, pour fixer le fil de l'histoire.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Ressource</div>
+            <div class="res">
+              <a class="res-item debranche" href="#" onclick="return false">
+                <span class="res-code">NET·2b</span>
+                <span class="res-main"><span class="r-title">Frise chronologique complète à imprimer (12 événements, à illustrer)</span><span class="r-type">Activité débranchée · document à venir</span></span>
+                <span class="res-time">~30 min</span>
+              </a>
+            </div>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Six dates suffisent pour raconter l'essentiel : <b>1969</b> ARPANET · <b>1973</b> CYCLADES démontre le datagramme · <b>1978</b> la France crée la <b>CNIL</b> (protection des données — déjà !) · <b>1980</b> le Minitel · <b>1983</b> ARPANET bascule sur <b>TCP/IP</b> : Internet est né · <b>1989</b> le Web est inventé au CERN.</div>
+            <div class="block-label">Associe chaque événement à sa date</div>
+            <div class="field">
+              <span class="field-type">Association</span>
+              <div class="field-q">Choisis la bonne année pour chaque événement.</div>
+              <div class="label-selects" data-diagram>
+                <label>Mise en service d'ARPANET
+                  <select data-correct="1969"><option value="">—</option><option>1969</option><option>1973</option><option>1978</option><option>1980</option><option>1983</option><option>1989</option></select></label>
+                <label>Démonstration de CYCLADES (Pouzin)
+                  <select data-correct="1973"><option value="">—</option><option>1969</option><option>1973</option><option>1978</option><option>1980</option><option>1983</option><option>1989</option></select></label>
+                <label>Création de la CNIL
+                  <select data-correct="1978"><option value="">—</option><option>1969</option><option>1973</option><option>1978</option><option>1980</option><option>1983</option><option>1989</option></select></label>
+                <label>Lancement du Minitel
+                  <select data-correct="1980"><option value="">—</option><option>1969</option><option>1973</option><option>1978</option><option>1980</option><option>1983</option><option>1989</option></select></label>
+                <label>Internet bascule sur TCP/IP
+                  <select data-correct="1983"><option value="">—</option><option>1969</option><option>1973</option><option>1978</option><option>1980</option><option>1983</option><option>1989</option></select></label>
+                <label>Invention du Web au CERN
+                  <select data-correct="1989"><option value="">—</option><option>1969</option><option>1973</option><option>1978</option><option>1980</option><option>1983</option><option>1989</option></select></label>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERSO -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-style:dashed"></div>
+        <div class="perso-box">
+          <div class="pl">💬 Et toi ? · réponse personnelle, non notée</div>
+          <div class="perso">
+            <div class="field-q" style="font-weight:400">Mission enquête : demande à tes parents ou grands-parents s'ils ont connu le <b>Minitel</b>. Que faisaient-ils dessus ? Note ici ce qu'ils t'ont raconté.</div>
+            <textarea placeholder="Réponds librement — les meilleures anecdotes seront partagées en classe." aria-label="Réponse personnelle"></textarea>
+            <div style="margin-top:8px"><button class="btn ghost" data-share>Partager avec la classe</button></div>
+            <div class="note-free" data-share-note></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BONUS S2 -->
+    <div class="bonus-wrap" data-bonus>
+      <div class="bonus-head" data-bonus-toggle>
+        <span class="bonus-tag">bonus</span>
+        <span class="bl">Pour aller plus loin</span>
+        <span class="chev">▸</span>
+      </div>
+      <div class="bonus-body">
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé).</p>
+        <div class="field free" data-free>
+          <span class="field-type">Question ouverte</span>
+          <div class="field-q">La France avait, avec CYCLADES, une avance réelle — et elle a pourtant arrêté le projet. À ton avis, <b>pourquoi</b> une invention peut-elle échouer alors qu'elle est techniquement en avance ? Donne au moins deux raisons possibles.</div>
+          <textarea placeholder="Argumente avec tes propres mots…" aria-label="Réponse ouverte"></textarea>
+          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="verdict"></div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 3 ===================== -->
+  <section class="seance locked" id="s3" data-seance="3">
+    <div class="seance-head">
+      <h2><span class="s-num">S3</span>Paquets, TCP/IP et routage</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Entrer dans la mécanique : ce qu'est un protocole, qui fait quoi entre TCP et IP, et comment les routeurs trouvent le chemin — table de routage à l'appui.</p>
+    <div class="progress-line"><i data-progress></i></div>
+    <div class="lock-banner"><span class="k"></span><span>Cette séance se débloque quand la <b>séance 2 est entièrement validée</b>. Ton professeur peut l'ouvrir si besoin.</span></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 3.1 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">C'est quoi, un protocole ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> définir un protocole et comprendre pourquoi les machines en ont besoin pour se parler.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — le protocole, une affaire de politesse</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Quand tu croises un ami, il y a des règles implicites : on se salue, on demande « ça va ? », on répond. Quand on rencontre une personnalité importante, le « protocole » est différent — et très codifié. Deux ordinateurs, c'est pareil : pour échanger, ils doivent suivre <b>exactement les mêmes règles</b>, sinon c'est le dialogue de sourds.</p>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Un <b>protocole</b> est un <b>ensemble de règles</b> que deux machines suivent pour échanger des informations (comment se présenter, comment découper les données, comment confirmer la réception…). Sur Internet, le protocole commun à tout le monde s'appelle <code>TCP/IP</code> — c'est <em>la</em> langue universelle du réseau.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field" data-qcm data-answer="0">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Un protocole informatique, c'est…</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>un ensemble de règles communes pour échanger des données</button>
+                <button class="opt"><span class="mark"></span>un logiciel qu'on installe sur son ordinateur</button>
+                <button class="opt"><span class="mark"></span>un câble spécial très rapide</button>
+              </div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.2 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">TCP et IP : qui fait quoi ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> distinguer le rôle de TCP (découper, vérifier, réassembler) de celui d'IP (adresser, acheminer).</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Fais d'abord (si le lien est actif en salle)</div>
+            <div class="res">
+              <a class="res-item activity" href="https://nathan.academy.cood.fr/SNT2019/lien1.01/" target="_blank" rel="noopener">
+                <span class="res-code">NET·3</span>
+                <span class="res-main"><span class="r-title">Le Tetris TCP/IP — jeu de tri de paquets</span><span class="r-type">Activité branchée · Nathan × Cood</span></span>
+                <span class="res-time">~15 min</span>
+              </a>
+            </div>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Deux protocoles se partagent le travail. <b><code>TCP</code></b> (Transmission Control Protocol) <b>découpe</b> le message en paquets numérotés, <b>vérifie</b> que chacun arrive, redemande ceux qui se perdent et <b>réassemble</b> le tout dans l'ordre. <b><code>IP</code></b> (Internet Protocol) donne à chaque machine une <b>adresse</b> et s'occupe d'<b>acheminer</b> chaque paquet vers sa destination. TCP = le contrôle qualité · IP = l'adressage et la route.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field">
+              <span class="field-type">Schéma à légender</span>
+              <div class="field-q">Reprends le schéma du datagramme vu en séance 2 (le message « SALUT » découpé en trois paquets) et attribue chaque rôle au bon protocole.</div>
+              <div class="label-selects" data-diagram>
+                <label>Qui découpe le message en paquets numérotés ?
+                  <select data-correct="tcp"><option value="">—</option><option value="tcp">TCP</option><option value="ip">IP</option></select></label>
+                <label>Qui écrit l'adresse de destination sur chaque paquet ?
+                  <select data-correct="ip"><option value="">—</option><option value="tcp">TCP</option><option value="ip">IP</option></select></label>
+                <label>Un paquet s'est perdu en route : qui s'en aperçoit et le redemande ?
+                  <select data-correct="tcp"><option value="">—</option><option value="tcp">TCP</option><option value="ip">IP</option></select></label>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.3 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Le routage : l'aiguillage des paquets</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> compléter une table de routage : pour chaque destination, savoir à quel voisin passer le paquet.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — le réseau étudié</div>
+            <svg class="diagram" viewBox="0 0 560 180" role="img" aria-label="Réseau de quatre routeurs : A relié à B et C, B relié à A et C, C relié à A, B et D, D relié à C seulement">
+              <g stroke="#4a566e" stroke-width="2.2">
+                <line x1="130" y1="50" x2="330" y2="50"/>
+                <line x1="130" y1="50" x2="200" y2="135"/>
+                <line x1="330" y1="50" x2="200" y2="135"/>
+                <line x1="200" y1="135" x2="430" y2="135"/>
+              </g>
+              <g stroke-width="2.2">
+                <circle cx="130" cy="50" r="24" fill="#e7ebfb" stroke="#2445c7"/>
+                <circle cx="330" cy="50" r="24" fill="#e7ebfb" stroke="#2445c7"/>
+                <circle cx="200" cy="135" r="24" fill="#faeede" stroke="#c26a12"/>
+                <circle cx="430" cy="135" r="24" fill="#e7ebfb" stroke="#2445c7"/>
+              </g>
+              <g font-family="Space Grotesk" font-size="18" font-weight="600" fill="#161f33" text-anchor="middle">
+                <text x="130" y="56">A</text><text x="330" y="56">B</text><text x="200" y="141">C</text><text x="430" y="141">D</text>
+              </g>
+              <text x="200" y="172" text-anchor="middle" font-size="11.5" fill="#8b97ad">C est le carrefour : seul lien vers D</text>
+            </svg>
+            <p style="font-size:14.5px;margin:4px 0 10px">Chaque routeur possède une <b>table de routage</b> : « pour telle destination, envoyer au voisin untel ». Exemple, la table de <b>A</b> : pour B → B (direct) · pour C → C (direct) · pour D → <b>C</b> (A n'est pas relié à D, il confie le paquet à C… qui saura se débrouiller).</p>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Un <b>routeur</b> fait passer les paquets d'un réseau à l'autre. Sa <b>table de routage</b> est son aiguillage : il n'a <b>pas besoin de connaître tout le chemin</b>, seulement le <b>prochain voisin</b> à qui passer le paquet. De proche en proche, le paquet arrive — et si un câble casse, les tables se mettent à jour pour contourner la panne.</div>
+            <div class="block-label">Complète les tables de C et de D</div>
+            <div class="field">
+              <span class="field-type">Table à compléter</span>
+              <div class="field-q">Écris pour chaque destination la lettre du voisin à qui envoyer (regarde bien qui est relié à qui).</div>
+              <div class="cloze" data-cloze>
+                <table class="doc-table">
+                  <tr><th colspan="2">Table du routeur C</th><th colspan="2">Table du routeur D</th></tr>
+                  <tr><th>Pour</th><th>Envoyer à</th><th>Pour</th><th>Envoyer à</th></tr>
+                  <tr><td><b>A</b></td><td><input class="short" data-answer="A" placeholder="?" aria-label="C vers A"></td><td><b>A</b></td><td><input class="short" data-answer="C" placeholder="?" aria-label="D vers A"></td></tr>
+                  <tr><td><b>B</b></td><td><input class="short" data-answer="B" placeholder="?" aria-label="C vers B"></td><td><b>B</b></td><td><input class="short" data-answer="C" placeholder="?" aria-label="D vers B"></td></tr>
+                  <tr><td><b>D</b></td><td><input class="short" data-answer="D" placeholder="?" aria-label="C vers D"></td><td><b>C</b></td><td><input class="short" data-answer="C" placeholder="?" aria-label="D vers C"></td></tr>
+                </table>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- pointeur débranchée -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-color:#5b3fa8"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">EN CLASSE · SANS ORDINATEUR</div>
+            <h3 class="step-title">« Routons, routons, petits patapons »</h3>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Cette séance se prolonge par l'activité débranchée : chacun devient un routeur, avec sa table en main — voir la section <a href="#deb" style="color:var(--link)">Routage humain</a> en bas de page.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BONUS S3 -->
+    <div class="bonus-wrap" data-bonus>
+      <div class="bonus-head" data-bonus-toggle>
+        <span class="bonus-tag">bonus</span>
+        <span class="bl">Pour aller plus loin</span>
+        <span class="chev">▸</span>
+      </div>
+      <div class="bonus-body">
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé).</p>
+        <div class="field free" data-free>
+          <span class="field-type">Question ouverte</span>
+          <div class="field-q">Internet n'a <b>pas de centre</b> : aucun ordinateur « chef » ne dirige le réseau. À ton avis, qu'est-ce que ça change (en bien comme en moins bien) par rapport à un réseau qui aurait un centre unique ?</div>
+          <textarea placeholder="Argumente avec tes propres mots…" aria-label="Réponse ouverte"></textarea>
+          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="verdict"></div>
+        </div>
+        <p style="font-size:13.5px;color:var(--ink-soft)">😎 Défi geek : ouvre la console du navigateur (<code>F12</code>) sur cette page… il s'y cache une commande à essayer.</p>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 4 ===================== -->
+  <section class="seance locked" id="s4" data-seance="4">
+    <div class="seance-head">
+      <h2><span class="s-num">S4</span>Adresses IP, DNS et diagnostic</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Chaque machine a une adresse ; le DNS traduit les noms en adresses ; et trois commandes suffisent pour ausculter un réseau soi-même.</p>
+    <div class="progress-line"><i data-progress></i></div>
+    <div class="lock-banner"><span class="k"></span><span>Cette séance se débloque quand la <b>séance 3 est entièrement validée</b>. Ton professeur peut l'ouvrir si besoin.</span></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 4.1 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 4.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">L'adresse IP : la carte d'identité réseau</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir lire une adresse IPv4 et comprendre d'où viennent ses nombres (bits et octets).</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — de la machine au nombre</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Un ordinateur ne connaît que deux états électriques : courant / pas de courant, notés <code>1</code> et <code>0</code>. Un chiffre binaire s'appelle un <b>bit</b> ; un paquet de 8 bits, un <b>octet</b>, peut prendre <b>256 valeurs</b> (de 0 à 255). Une adresse <b>IPv4</b> est un nombre de <b>32 bits</b>, qu'on écrit en <b>4 octets séparés par des points</b> : par exemple <code>192.168.1.226</code>. Ça fait 2³² ≈ <b>4,3 milliards</b> d'adresses possibles… beaucoup, mais plus assez pour toute la planète !</p>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Une <b>adresse IP</b> identifie de façon <b>unique</b> chaque machine sur un réseau. En <b>IPv4</b>, elle s'écrit avec <b>4 nombres entre 0 et 255</b> séparés par des points (4 octets = 32 bits). Sans adresse IP, pas de communication possible.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field" data-qcm data-answer="1">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Laquelle de ces adresses IPv4 est valide ?</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span><code>192.300.12.1</code></button>
+                <button class="opt"><span class="mark"></span><code>192.168.1.226</code></button>
+                <button class="opt"><span class="mark"></span><code>192.168.1</code></button>
+              </div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.2 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 4.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">IP privée, IP publique, DHCP</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre pourquoi ta maison entière n'a qu'une seule adresse vue d'Internet, et qui distribue les adresses à l'intérieur.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — deux mondes d'adresses</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Vue d'Internet, ta maison n'a qu'<b>une seule adresse publique</b> : celle de ta <b>box</b>. À l'intérieur, la box crée un <b>réseau local</b> (LAN) et distribue elle-même des adresses <b>privées</b> (souvent de la forme <code>192.168.1.x</code>) à chaque appareil qui se connecte : c'est le protocole <b><code>DHCP</code></b>. C'est pour ça que deux maisons différentes peuvent utiliser les mêmes adresses privées sans conflit — elles ne se voient pas directement.</p>
+            <div class="block-label">À retenir</div>
+            <div class="retain">L'adresse <b>publique</b> (unique au monde) est celle de la <b>box/routeur</b>, la passerelle vers Internet. Les adresses <b>privées</b> ne valent qu'à l'intérieur du réseau local, et sont distribuées automatiquement par le serveur <b><code>DHCP</code></b> de la box. Un appareil qui se reconnecte peut recevoir une adresse différente : l'attribution est <b>dynamique</b>.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field" data-qcm data-answer="2">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Chez toi, qui attribue leur adresse IP privée à ton téléphone, ta console et l'ordinateur familial ?</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>L'ICANN, depuis les États-Unis</button>
+                <button class="opt"><span class="mark"></span>Chacun choisit son adresse au hasard</button>
+                <button class="opt"><span class="mark"></span>La box, grâce à son serveur DHCP</button>
+              </div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.3 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 4.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Le DNS : l'annuaire d'Internet</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> expliquer comment un nom comme <code>www.univ-poitiers.fr</code> devient une adresse IP — et qui gère cette hiérarchie.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Pour comprendre, fais d'abord</div>
+            <div class="res">
+              <a class="res-item" href="https://www.youtube.com/watch?v=qzWdzAvfBoo" target="_blank" rel="noopener">
+                <span class="res-code">NET·4</span>
+                <span class="res-main"><span class="r-title">Vidéo « Comprendre le DNS en 5 minutes »</span><span class="r-type">Vidéo · YouTube</span></span>
+                <span class="res-time">~5 min</span>
+              </a>
+              <a class="res-item activity" href="https://www.mon-ip.com/adresse-ip-site-internet.php" target="_blank" rel="noopener">
+                <span class="res-code">NET·4b</span>
+                <span class="res-main"><span class="r-title">Trouve l'adresse IP d'un site (essaie www.univ-poitiers.fr), puis tape cette IP dans ton navigateur</span><span class="r-type">Activité branchée · mon-ip.com</span></span>
+                <span class="res-time">~10 min</span>
+              </a>
+            </div>
+            <div class="block-label">Doc — une hiérarchie mondiale</div>
+            <svg class="diagram" viewBox="0 0 560 200" role="img" aria-label="Hiérarchie du DNS : racine, domaines de premier niveau, domaines, sous-domaines">
+              <g stroke="#8b97ad" stroke-width="1.6">
+                <line x1="280" y1="42" x2="150" y2="82"/><line x1="280" y1="42" x2="280" y2="82"/><line x1="280" y1="42" x2="410" y2="82"/>
+                <line x1="150" y1="106" x2="150" y2="140"/><line x1="150" y1="140" x2="150" y2="140"/>
+                <line x1="150" y1="106" x2="150" y2="138"/>
+              </g>
+              <rect x="252" y="16" width="56" height="26" rx="7" fill="#161f33"/>
+              <text x="280" y="34" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" fill="#fff">.</text>
+              <g font-family="IBM Plex Mono" font-size="12.5" text-anchor="middle">
+                <rect x="118" y="82" width="64" height="24" rx="6" fill="#e6eef8" stroke="#164a8a" stroke-width="1.6"/><text x="150" y="99" fill="#164a8a">.fr</text>
+                <rect x="248" y="82" width="64" height="24" rx="6" fill="#f4f6fb" stroke="#8b97ad" stroke-width="1.4"/><text x="280" y="99" fill="#4a566e">.com</text>
+                <rect x="378" y="82" width="64" height="24" rx="6" fill="#f4f6fb" stroke="#8b97ad" stroke-width="1.4"/><text x="410" y="99" fill="#4a566e">.org</text>
+                <rect x="86" y="138" width="128" height="24" rx="6" fill="#e7ebfb" stroke="#2445c7" stroke-width="1.6"/><text x="150" y="155" fill="#2445c7">univ-poitiers</text>
+              </g>
+              <text x="352" y="30" font-size="11.5" fill="#8b97ad">← la racine du DNS</text>
+              <text x="470" y="99" font-size="11.5" fill="#8b97ad">← 1er niveau (ICANN)</text>
+              <text x="232" y="155" font-size="11.5" fill="#8b97ad">← domaine (le .fr est géré par l'AFNIC)</text>
+              <text x="280" y="188" text-anchor="middle" font-size="12" font-family="IBM Plex Mono" fill="#4a566e">www.univ-poitiers.fr  →  DNS  →  194.167.xxx.xxx</text>
+            </svg>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Retenir des adresses IP est impossible pour un humain : le <b><code>DNS</code></b> (Domain Name System, créé en 1983) <b>traduit les noms de domaine en adresses IP</b> — comme ton appli Contacts traduit « Maman » en numéro de téléphone. Les noms sont organisés en <b>hiérarchie</b> : la racine, puis les extensions (<code>.fr</code>, <code>.com</code>…) gérées par l'<b>ICANN</b> ; le <code>.fr</code> est confié à l'<b>AFNIC</b>, une association française.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field">
+              <span class="field-type">Schéma à légender</span>
+              <div class="field-q">Réponds à partir du schéma de la hiérarchie DNS.</div>
+              <div class="label-selects" data-diagram>
+                <label>Le rôle principal du DNS ?
+                  <select data-correct="traduire"><option value="">—</option><option value="traduire">traduire un nom de domaine en adresse IP</option><option value="stocker">stocker les pages web</option><option value="proteger">bloquer les virus</option></select></label>
+                <label>Qui coordonne les extensions (.fr, .com…) au niveau mondial ?
+                  <select data-correct="icann"><option value="">—</option><option value="icann">l'ICANN</option><option value="google">Google</option><option value="onu">l'ONU</option></select></label>
+                <label>Le domaine .fr est géré par…
+                  <select data-correct="afnic"><option value="">—</option><option value="afnic">l'AFNIC</option><option value="cnil">la CNIL</option><option value="arcep">l'ARCEP</option></select></label>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.4 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 4.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Diagnostic réseau : trois commandes magiques</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> ausculter un réseau soi-même depuis l'invite de commandes : configuration, test de connexion, itinéraire des paquets.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Manipule d'abord</div>
+            <div class="res">
+              <a class="res-item activity" href="#" onclick="return false">
+                <span class="res-code">NET·4c</span>
+                <span class="res-main"><span class="r-title">Sur ton poste : ouvre l'Invite de commandes (tape « cmd » dans la recherche Windows) et essaie <code>ipconfig</code>, <code>ping www.qwant.com</code>, <code>tracert www.google.com</code></span><span class="r-type">Activité branchée · sur les postes de la salle</span></span>
+                <span class="res-time">~20 min</span>
+              </a>
+            </div>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Trois commandes pour tout voir : <code>ipconfig</code> affiche la <b>configuration</b> de ta machine (son IP, sa passerelle, son serveur DNS) · <code>ping</code> <b>teste</b> si une machine répond, et en combien de millisecondes · <code>tracert</code> (traceroute) liste <b>tous les routeurs traversés</b> par tes paquets jusqu'à la destination.</div>
+            <div class="block-label">Complète</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Écris la bonne commande pour chaque mission (en minuscules).</div>
+              <div class="cloze" data-cloze>
+                Connaître l'adresse IP de mon poste : <input data-answer="ipconfig" placeholder="commande" aria-label="commande de configuration"><br>
+                Tester si <code>www.qwant.com</code> répond : <input data-answer="ping" placeholder="commande" class="short" aria-label="commande de test"><br>
+                Suivre le chemin de mes paquets, routeur par routeur : <input data-answer="tracert" placeholder="commande" aria-label="commande d'itinéraire">
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+            <div class="field free" data-free>
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">Compare tes deux <code>tracert</code> (Google et Qwant) : que remarques-tu sur le <b>nombre d'étapes</b> et les <b>chemins</b> ? Qu'est-ce que ça t'apprend sur Internet ?</div>
+              <textarea placeholder="Écris ta réponse avec tes mots (le copier-coller est bloqué)…" aria-label="Réponse rédigée"></textarea>
+              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🌍 Le sais-tu ?</div>
+                Un simple <code>tracert</code> révèle souvent 10 à 15 routeurs traversés, parfois dans plusieurs pays… en moins de 100 millisecondes. Chaque ligne est un « saut » vers un routeur, avec son adresse IP : tu regardes littéralement ton paquet voyager de table de routage en table de routage — exactement le jeu du routage humain, mais à la vitesse de la lumière dans la fibre.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERSO -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-style:dashed"></div>
+        <div class="perso-box">
+          <div class="pl">💬 Et toi ? · réponse personnelle, non notée</div>
+          <div class="perso">
+            <div class="field-q" style="font-weight:400">De tête : combien d'appareils sont connectés à ta box en ce moment, à ton avis ? Liste-les (téléphones, TV, console, montre, aspirateur ?…). Chacun a sa propre adresse IP privée !</div>
+            <textarea placeholder="Réponds librement — ça servira à lancer la discussion en classe." aria-label="Réponse personnelle"></textarea>
+            <div style="margin-top:8px"><button class="btn ghost" data-share>Partager avec la classe</button></div>
+            <div class="note-free" data-share-note></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BONUS S4 -->
+    <div class="bonus-wrap" data-bonus>
+      <div class="bonus-head" data-bonus-toggle>
+        <span class="bonus-tag">bonus</span>
+        <span class="bl">Pour aller plus loin</span>
+        <span class="chev">▸</span>
+      </div>
+      <div class="bonus-body">
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé).</p>
+        <div class="field">
+          <span class="field-type">Défi geek</span>
+          <div class="field-q">IPv6 &amp; hexadécimal — les adresses du futur. IPv4 manque d'adresses ; <b>IPv6</b> en propose 2¹²⁸ ≈ 3,4 × 10³⁸ (de quoi adresser chaque grain de sable de la planète…). On les écrit en <b>hexadécimal</b> : 16 symboles, de <code>0</code> à <code>9</code> puis de <code>A</code> à <code>F</code>.</div>
+          <div class="cloze" data-cloze>
+            En hexadécimal, <code>F</code> vaut <input class="short" data-answer="15" placeholder="?" aria-label="F en décimal"> en décimal, et <code>10</code> vaut <input class="short" data-answer="16" placeholder="?" aria-label="10 hexa en décimal">.
+          </div>
+          <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+          <div class="verdict"></div>
+        </div>
+        <div class="field free" data-free>
+          <span class="field-type">Manip maison</span>
+          <div class="field-q">À la maison, <b>avec l'accord d'un adulte</b> : tape l'adresse de ta box (souvent <code>192.168.1.1</code>) dans ton navigateur. Tu tombes sur son interface d'administration. Sans rien modifier, observe : combien d'appareils connectés ? Le DHCP est-il activé ? Raconte ce que tu as découvert.</div>
+          <textarea placeholder="Raconte ta découverte…" aria-label="Réponse ouverte"></textarea>
+          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="verdict"></div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- DÉBRANCHÉ -->
+  <section class="seance" id="deb" data-seance="deb">
+    <div class="seance-head">
+      <h2><span class="s-num">⏳</span>Activité débranchée — le routage humain</h2>
+      <span class="seance-time">≈ 45 min</span>
+    </div>
+    <p class="seance-goal">« Routons, routons, petits patapons » : sans écran, chacun devient un routeur et fait circuler des messages grâce à sa table de routage — puis on coupe un câble, et on observe.</p>
+    <div class="steps">
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">EN GROUPE · SANS ORDINATEUR</div>
+            <h3 class="step-title">Jouer le réseau en vrai</h3>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Un marquage au sol (ou de la ficelle) dessine le réseau ; chaque élève-routeur reçoit sa <b>table de routage</b> et fait suivre les messages au bon voisin. Puis le réseau grandit (8 routeurs), et enfin… on <b>coupe une liaison</b> : à vous de reconstruire des tables qui contournent la panne.</p>
+            <div class="res">
+              <a class="res-item debranche" href="#" onclick="return false">
+                <span class="res-code">NET·D</span>
+                <span class="res-main"><span class="r-title">Plan du réseau au sol + tables de routage à imprimer</span><span class="r-type">Activité débranchée · document à venir</span></span>
+                <span class="res-time">~45 min</span>
+              </a>
+            </div>
+            <div class="retain" style="margin-top:14px">Ce que le jeu fait sentir : aucun routeur ne connaît tout le réseau — chacun ne connaît que <b>ses voisins</b>, et ça suffit. Quand une liaison casse, on met à jour les tables et les messages passent par ailleurs : c'est la <b>résilience</b> d'Internet, héritée en droite ligne du <b>datagramme</b> de Louis Pouzin.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="note">
+    <b>Maquette V0.</b> Les champs sont interactifs pour montrer la mécanique : QCM, trous, tables et schémas corrigés <b>en direct</b> par le navigateur ; réponses rédigées <b>envoyées en correction</b> (copier-coller bloqué) qui déclenchent un point de contexte ; réflexions perso <b>non notées</b> ; verrouillage des séances tant que la précédente n'est pas validée, avec un <b>mode enseignant</b> pour ouvrir en cas de blocage. Dans la vraie version, l'envoi passera par ton serveur : correction automatique du texte libre par IA, statut <code>en attente</code> quand ton professeur doit trancher, déblocage de l'entraide une fois <code>validé</code>, et données de progression exportables.
+  </footer>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* petit easter egg pour les curieux qui ouvrent la console */
+  console.log("%c📡 Bien reçu !","font-size:16px;font-weight:bold;color:#2445c7");
+  console.log("%cTu as ouvert la console — le réflexe d'un vrai administrateur réseau.\nEssaie de taper  ping('lycee.fr')  juste ici, et appuie sur Entrée…\n— M. Vanhoorde","font-size:12px;color:#12805c");
+  window.ping = function(host){
+    host = host || 'localhost';
+    var t = Math.floor(Math.random()*40)+8;
+    return "Réponse de "+host+" : octets=32 temps="+t+" ms TTL=1973 — (simulation 😉 le vrai ping se tape dans l'Invite de commandes. TTL=1973 ? L'année de CYCLADES, évidemment.)";
+  };
+
+  function verdict(field,cls,msg){var v=field.querySelector('.verdict');if(!v)return;v.className='verdict show '+cls;v.textContent=msg;}
+  function stepOf(el){return el.closest('[data-step]');}
+  function markDone(el){var s=stepOf(el);if(s){s.classList.remove('is-wait');s.classList.add('is-done');}refresh();}
+  function showReveal(field){var r=field.querySelector('[data-reveal]');if(r)r.classList.add('show');}
+
+  /* ---------- déblocage progressif ---------- */
+  function seanceComplete(sec){
+    var gates=sec.querySelectorAll('[data-gate]');
+    if(!gates.length) return true;
+    return Array.from(gates).every(function(g){return g.classList.contains('is-done');});
+  }
+  var seanceWasComplete={};
+  function refresh(){
+    document.querySelectorAll('.seance').forEach(function(sec){
+      var gates=sec.querySelectorAll('[data-gate]');
+      var done=Array.from(gates).filter(function(g){return g.classList.contains('is-done');}).length;
+      var bar=sec.querySelector('[data-progress]');
+      if(bar) bar.style.width = gates.length ? (100*done/gates.length)+'%' : '0%';
+      var id=sec.getAttribute('data-seance');
+      var complete = gates.length>0 && done===gates.length;
+      if(complete && seanceWasComplete[id]===false){ onSeanceComplete(sec); }
+      if(seanceWasComplete[id]===undefined) seanceWasComplete[id]=complete; else seanceWasComplete[id]=complete;
+    });
+    var s1=document.querySelector('[data-seance="1"]');
+    var s2=document.querySelector('[data-seance="2"]');
+    var s3=document.querySelector('[data-seance="3"]');
+    var s4=document.querySelector('[data-seance="4"]');
+    if(s2) s2.classList.toggle('locked', !seanceComplete(s1));
+    if(s3) s3.classList.toggle('locked', !(seanceComplete(s1)&&seanceComplete(s2)));
+    if(s4) s4.classList.toggle('locked', !(seanceComplete(s1)&&seanceComplete(s2)&&seanceComplete(s3)));
+    document.querySelectorAll('[data-navlock]').forEach(function(a){
+      var n=a.getAttribute('data-navlock');
+      var sec=document.querySelector('[data-seance="'+n+'"]');
+      var ico=a.querySelector('.lockico');
+      if(ico) ico.style.display = (sec && sec.classList.contains('locked') && !document.body.classList.contains('teacher')) ? '' : 'none';
+    });
+  }
+
+  /* mode enseignant */
+  document.getElementById('teacherMode').addEventListener('change',function(){
+    document.body.classList.toggle('teacher',this.checked);
+    refresh();
+  });
+
+  /* ---------- QCM ---------- */
+  document.querySelectorAll('[data-qcm]').forEach(function(group){
+    var answer=parseInt(group.dataset.answer,10);
+    var opts=Array.from(group.querySelectorAll('.opt'));
+    opts.forEach(function(opt,i){
+      opt.addEventListener('click',function(){
+        var field=group.closest('.field');
+        opts.forEach(function(o){o.disabled=true;});
+        if(i===answer){opt.classList.add('correct');verdict(field,'ok','✅ Correct — étape validée. Tu peux aider un camarade sur cette question.');showReveal(field);markDone(group);}
+        else{opt.classList.add('wrong');opts[answer].classList.add('correct');verdict(field,'no','À revoir : la bonne réponse est en vert. Reprends la ressource plus haut.');}
+      });
+    });
+  });
+
+  /* ---------- trous ---------- */
+  document.querySelectorAll('[data-check-cloze]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var field=btn.closest('.field');var inputs=Array.from(field.querySelectorAll('[data-answer]'));var all=true;
+      inputs.forEach(function(inp){var ok=inp.value.trim().toLowerCase()===inp.dataset.answer.toLowerCase();inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);if(!ok)all=false;});
+      if(all){verdict(field,'ok','✅ Tout est juste — étape validée.');markDone(btn);}
+      else{verdict(field,'no','Presque : vérifie les cases en rouge, puis re-vérifie.');}
+    });
+  });
+
+  /* ---------- schéma / association ---------- */
+  document.querySelectorAll('[data-check-diagram]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var field=btn.closest('.field');var sels=Array.from(field.querySelectorAll('select'));var all=true;
+      sels.forEach(function(s){var ok=s.value===s.dataset.correct;s.classList.toggle('ok',ok);s.classList.toggle('no',!ok);if(!ok)all=false;});
+      if(all){verdict(field,'ok','✅ Tout est juste — étape validée.');markDone(btn);}
+      else{verdict(field,'no','Pas tout à fait : les menus en rouge sont à revoir.');}
+    });
+  });
+
+  /* ---------- texte libre ---------- */
+  document.querySelectorAll('[data-free]').forEach(function(field){
+    var ta=field.querySelector('textarea');var meta=field.querySelector('[data-meta]');var send=field.querySelector('[data-send-free]');var blocked=false;
+    ['paste','drop'].forEach(function(ev){ta.addEventListener(ev,function(e){e.preventDefault();blocked=true;meta.innerHTML='<span class="warn">⨯ Copier-coller bloqué — écris toi-même</span>';setTimeout(update,1500);});});
+    function update(){var n=ta.value.trim().length;if(!blocked||document.activeElement===ta){meta.innerHTML=n+' caractère'+(n>1?'s':'')+' · saisie au clavier';}send.disabled=n<15;}
+    ta.addEventListener('input',function(){blocked=false;update();});
+    send.addEventListener('click',function(){
+      send.disabled=true;ta.readOnly=true;
+      var s=stepOf(field);if(s)s.classList.add('is-wait');
+      verdict(field,'wait','⏳ Réponse envoyée. Correction automatique en cours — ton professeur validera si besoin.');
+      setTimeout(function(){
+        verdict(field,'ok','✅ Réponse validée. Tu peux maintenant consulter et aider les camarades bloqués.');
+        showReveal(field);markDone(send);
+      }, reduce?400:2400);
+    });
+  });
+
+  /* ---------- perso (partage, non noté) ---------- */
+  document.querySelectorAll('[data-share]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var box=btn.closest('.perso');var ta=box.querySelector('textarea');var note=box.querySelector('[data-share-note]');
+      if(ta.value.trim().length<2){note.textContent='Écris un mot avant de partager 🙂';return;}
+      ta.readOnly=true;btn.disabled=true;note.textContent='✅ Merci — ta réponse nourrit la discussion de classe.';
+    });
+  });
+
+  /* ---------- bonus dépliables ---------- */
+  document.querySelectorAll('[data-bonus-toggle]').forEach(function(h){
+    h.addEventListener('click',function(){h.closest('[data-bonus]').classList.toggle('open');});
+  });
+
+  /* ---------- modal réutilisable ---------- */
+  var mb=document.createElement('div'); mb.className='modal-back';
+  mb.innerHTML='<div class="modal" role="dialog" aria-modal="true"><div class="m-ico"></div><h3></h3><div class="m-body"></div><div class="m-actions"></div></div>';
+  document.body.appendChild(mb);
+  function closeModal(){mb.classList.remove('show');}
+  mb.addEventListener('click',function(e){if(e.target===mb)closeModal();});
+  function openModal(ico,title,bodyHTML,actions){
+    mb.querySelector('.m-ico').textContent=ico;
+    mb.querySelector('.modal h3').textContent=title;
+    mb.querySelector('.m-body').innerHTML=bodyHTML;
+    var a=mb.querySelector('.m-actions'); a.innerHTML='';
+    actions.forEach(function(act){
+      var b=document.createElement('button'); b.className='btn '+(act.cls||''); b.textContent=act.label;
+      b.addEventListener('click',function(){ if(act.fn)act.fn(); if(act.close!==false)closeModal(); });
+      a.appendChild(b);
+    });
+    mb.classList.add('show');
+  }
+
+  /* ---------- récap téléchargeable d'une séance ---------- */
+  function seanceTitle(sec){var h=sec.querySelector('.seance-head h2');return h?h.textContent.replace(/\s+/g,' ').trim():'Séance';}
+  function collectRecap(sec){
+    var rows=[];
+    sec.querySelectorAll('[data-step]').forEach(function(step){
+      var t=step.querySelector('.step-title'); if(!t) return;
+      var done=step.classList.contains('is-done');
+      var wait=step.classList.contains('is-wait');
+      var ret=step.querySelector('.retain');
+      var ans=[];
+      step.querySelectorAll('textarea').forEach(function(ta){if(ta.value.trim())ans.push(ta.value.trim());});
+      step.querySelectorAll('.cloze input,.label-selects select').forEach(function(f){if(f.value&&f.value.trim())ans.push(f.value.trim());});
+      rows.push({title:t.textContent.trim(),status:done?'✅ validé':(wait?'⏳ en attente':'à faire'),retain:ret?ret.innerHTML.trim():'',answer:ans.join(' · ')});
+    });
+    return rows;
+  }
+  function downloadFiche(sec){
+    var title=seanceTitle(sec); var rows=collectRecap(sec);
+    var when=new Date().toLocaleDateString('fr-FR');
+    var body=rows.map(function(r){
+      return '<div class="e"><div class="h"><span>'+r.title+'</span><span class="s">'+r.status+'</span></div>'+(r.retain?'<div class="r"><span class="lbl">À retenir</span>'+r.retain+'</div>':'')+(r.answer?'<div class="a"><span class="lbl">Ma réponse</span>'+r.answer.replace(/</g,'&lt;')+'</div>':'')+'</div>';
+    }).join('');
+    var html='<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>Ma fiche — '+title+'</title>'+
+      '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:30px auto;padding:0 18px;color:#161f33;line-height:1.55}'+
+      'h1{font-size:22px}.meta{color:#667;font-size:13px;margin-bottom:20px}'+
+      '.e{border:1px solid #d3dae7;border-radius:10px;padding:12px 14px;margin-bottom:10px}'+
+      '.h{display:flex;justify-content:space-between;font-weight:600;gap:12px}.s{color:#12805c;font-weight:500;white-space:nowrap}'+
+      '.lbl{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8b97ad;margin-bottom:3px}'+
+      '.r{margin-top:8px;padding:9px 11px;background:#f4f6fb;border-left:3px solid #161f33;border-radius:0 8px 8px 0;font-size:13.5px}'+
+      '.r code{background:#e6e9f2;padding:1px 4px;border-radius:3px;font-family:ui-monospace,monospace;font-size:.9em}'+
+      '.a{margin-top:8px;padding:9px 11px;background:#e7ebfb;border-radius:8px;white-space:pre-wrap;font-size:14px}'+
+      '.tip{margin-top:24px;font-size:12px;color:#8b97ad}</style></head><body>'+
+      '<h1>Ma fiche SNT — '+title+'</h1><div class="meta">Internet · exportée le '+when+' · à déposer sur ton OneDrive</div>'+
+      body+'<div class="tip">Les exercices restent accessibles sur le hub de la classe.</div></body></html>';
+    var blob=new Blob([html],{type:'text/html'});
+    var url=URL.createObjectURL(blob); var a=document.createElement('a');
+    var slug=title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
+    a.href=url; a.download='ma-fiche-'+(slug||'snt')+'.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
+
+  /* ---------- recommencer une séance ---------- */
+  function resetSeance(sec){
+    sec.querySelectorAll('[data-step]').forEach(function(s){s.classList.remove('is-done','is-wait');
+      var p=s.querySelector('.step-pip'); if(p){p.style.background='';p.style.borderColor='';}});
+    sec.querySelectorAll('.opt').forEach(function(o){o.disabled=false;o.classList.remove('correct','wrong');});
+    sec.querySelectorAll('textarea').forEach(function(t){t.value='';t.readOnly=false;});
+    sec.querySelectorAll('.cloze input').forEach(function(i){i.value='';i.classList.remove('ok','no');});
+    sec.querySelectorAll('.label-selects select').forEach(function(s){s.value='';s.classList.remove('ok','no');});
+    sec.querySelectorAll('.verdict').forEach(function(v){v.className='verdict';v.textContent='';});
+    sec.querySelectorAll('[data-reveal]').forEach(function(r){r.classList.remove('show');});
+    sec.querySelectorAll('[data-send-free]').forEach(function(b){b.disabled=true;});
+    sec.querySelectorAll('[data-share]').forEach(function(b){b.disabled=false;});
+    sec.querySelectorAll('[data-share-note]').forEach(function(n){n.textContent='';});
+    var id=sec.getAttribute('data-seance'); seanceWasComplete[id]=false;
+    refresh();
+  }
+
+  /* barre d'actions (télécharger / recommencer) à la fin de chaque séance à valider */
+  document.querySelectorAll('.seance').forEach(function(sec){
+    if(!sec.querySelector('[data-gate]')) return;
+    var host=sec.querySelector('.lockable'); if(!host) return;
+    var bar=document.createElement('div'); bar.className='seance-actions';
+    bar.innerHTML='<span class="sa-label">💾 Pense à déposer ta fiche sur ton OneDrive à la fin de la séance.</span>';
+    var dl=document.createElement('button'); dl.className='btn dl sm'; dl.textContent='📥 Télécharger ma fiche';
+    dl.addEventListener('click',function(){downloadFiche(sec);});
+    var rs=document.createElement('button'); rs.className='btn reset sm'; rs.textContent='🔁 Recommencer';
+    rs.addEventListener('click',function(){
+      openModal('🔁','Recommencer cette séance ?',
+        '<p>Tu vas repartir d\'une fiche vierge pour cette séance. Tes réponses actuelles seront effacées de l\'écran.<br><b>Télécharge d\'abord ta fiche</b> si tu veux garder tes réponses et tes corrections.</p>',
+        [{label:'📥 Télécharger d\'abord',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
+         {label:'Recommencer',cls:'reset',fn:function(){resetSeance(sec);}}]);
+    });
+    bar.appendChild(dl); bar.appendChild(rs); host.appendChild(bar);
+  });
+
+  /* pop-up de fin de séance */
+  function onSeanceComplete(sec){
+    var title=seanceTitle(sec);
+    var rows=collectRecap(sec).filter(function(r){return r.status.indexOf('validé')>-1;});
+    var recap='<div class="recap">'+rows.map(function(r){return '<div class="ri"><span>'+r.title+'</span><b>✓</b></div>';}).join('')+'</div>';
+    openModal('🎉','Séance terminée — bravo !',
+      recap+'<p style="margin-top:2px">Tu as validé toute la séance. Télécharge ta fiche pour la garder, puis dépose-la sur ton OneDrive.</p>',
+      [{label:'📥 Télécharger ma fiche',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
+       {label:'Continuer',cls:'ghost'}]);
+  }
+
+  refresh();
+})();
+</script>
+</body>
+</html>

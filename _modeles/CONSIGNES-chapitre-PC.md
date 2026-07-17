@@ -1,10 +1,44 @@
-# CONSIGNES — Production d'un chapitre (page de cours + fiche élève)
+# CONSIGNES — Chapitre de PHYSIQUE-CHIMIE (page de cours + fiche élève)
+
+## Portée & contexte (à lire avant tout)
+
+Ce document couvre **un seul des deux gabarits du site** : les **chapitres de
+physique-chimie** (thème → chapitre → sections, code de déblocage,
+`localStorage`, fiche élève imprimable).
+
+⚠ **Il ne s'applique PAS aux hubs SNT** (séquence → séance → étape → champ,
+verrouillage progressif, `localStorage` interdit, pas de fiche imprimable) :
+leurs consignes sont dans `_modeles/CONSIGNES-hub-SNT.md`. Ne jamais transposer
+les régimes A/B, la bibliothèque de composants (§3), le verrou (§5.7), la fiche
+élève (§6) ni les jalons (§10) vers un hub SNT — ce sont deux systèmes
+différents, l'un rodé, l'autre en phase 1.
+
+| | **Ce document (PC)** | **Hub SNT** |
+|---|---|---|
+| Structure | thème → chapitre → sections | séquence → séance → étape → champ |
+| Style | gabarit + `style.css` du site | CSS inline dans la page |
+| Déblocage | code 6 caractères + SHA-256 | verrouillage progressif + mode enseignant |
+| Persistance | `localStorage` | **interdit** — téléchargement de fiche |
+| Trace élève | fiche imprimable A4 (§6) | « Télécharger ma fiche » (récap HTML) |
+
+Communs aux deux : RGPD (polices auto-hébergées, jamais de CDN), HTML/CSS/JS
+vanilla sans build, responsive (cible iPad), livraison en archive delta, mise à
+jour de `_suivi/`.
+
+## Le travail
 
 Tu produis un chapitre du site pédagogique de Loïc Van Hoorde (professeur de
 physique-chimie, lycée Isaac de l'Étoile) à partir de ses sources PPTX/PDF.
 **Tout se fait en français.** La charte et la bibliothèque de composants sont
 validées et NON négociables : ta mission est un travail de fidélité et de
 rigueur, pas de créativité de mise en page.
+
+Sur le **fond pédagogique** (choix des notions, formulations, progression), la
+vision de Loïc est souveraine : ton rôle est l'échafaudage — chercher,
+structurer, coder, proposer une V1 dans son ton. Tout contenu de cours que tu
+proposes est signalé comme **proposition à valider**. La **validation** est un
+acte explicite de Loïc (« je peux l'utiliser l'an prochain »), jamais présumée ;
+la mise en ligne n'est pas un jalon.
 
 ## 0. Fichiers de référence (dans le dépôt)
 
@@ -503,7 +537,7 @@ Pièges connus (ne pas les reproduire) :
 ### 9a. Régime A — ébauche (chaîne de peuplement)
 
 > Voici le PPTX (+ PDF) du/des chapitre(s) [préciser]. **Régime A — ébauche.**
-> Applique le §1ter de `_modeles/CONSIGNES-production-chapitre.md` :
+> Applique le §1ter de `_modeles/CONSIGNES-chapitre-PC.md` :
 > transcription texte-only sur `gabarit-chapitre.html`, exercices et
 > corrections rédigés en entier (même quand une image accompagne l'énoncé —
 > seule l'image reste `.a-faire`), encarts formule reconstitués quand la
@@ -525,7 +559,7 @@ Pièges connus (ne pas les reproduire) :
 > Voici le PPTX et le PDF du chapitre [Thème X, Chapitre Y — TITRE, niveau
 > NIVEAU]. Slug : `SLUG`. Code de déblocage : `XXXXXX` (ou : « invente-le »,
 > selon le §1ter).
-> Applique `_modeles/CONSIGNES-production-chapitre.md` (**régime B**) :
+> Applique `_modeles/CONSIGNES-chapitre-PC.md` (**régime B**) :
 > extraction complète (images + QR, vérification visuelle des attributions),
 > maquettes PNG des composants nouveaux avant implémentation, page de cours sur
 > `gabarit-chapitre.html`, fiche élève sur `gabarit-fiche.html`, vérification
