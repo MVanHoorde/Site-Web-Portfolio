@@ -11,10 +11,11 @@ sections, code de déblocage, fiche élève imprimable) : leurs consignes sont d
 `_modeles/CONSIGNES-chapitre-PC.md`. Ne jamais transposer ici les régimes A/B, la
 bibliothèque de composants PC (`.encart`, `.formule-bloc`…), le verrou à code, ni
 les jalons 1→7 : ce sont deux systèmes différents. Le système PC est **rodé** (14
-chapitres ébauchés) ; le système SNT est en **phase 1**, avec **un seul hub V0**
-produit (`pages/2nde-snt-t2-le-web.html`). D'où une règle de prudence propre au
-SNT : **on ne fige rien à partir d'un seul exemple** — voir « Ce qui n'est pas
-encore arrêté », en fin de document.
+chapitres ébauchés) ; le système SNT est en **phase 1**, avec **trois hubs V0**
+produits : le Web (`t2`, la référence d'origine), Internet (`t1`) et
+l'**Introduction — Les systèmes informatisés** (`t0`, statut particulier :
+voir §8). Les conventions se confirment d'un hub à l'autre, mais **rien n'est
+validé** — voir « Ce qui n'est pas encore arrêté », en fin de document.
 
 | | **Ce document (SNT)** | **Chapitre PC** |
 |---|---|---|
@@ -50,14 +51,17 @@ explicite de Loïc, jamais présumée ; la mise en ligne n'est pas un jalon.
 
 | Fichier | Rôle |
 |---|---|
-| `pages/2nde-snt-t2-le-web.html` | **Seul hub existant (V0)** — référence de fait pour la structure, les champs et le JS. Page autonome, CSS/JS inline |
-| `pages/2nde-snt.html` | Page de niveau SNT : les 7 cartes de thèmes, d'où part chaque hub |
+| `pages/2nde-snt-t2-le-web.html` | **Hub de référence (V0 d'origine)** — source de fait pour la structure, les champs et le JS. Page autonome, CSS/JS inline |
+| `pages/2nde-snt-t1-internet.html` | Hub Internet (V0) — première déclinaison, enseigné avant le Web |
+| `pages/2nde-snt-t0-systemes-informatises.html` | **Introduction (V0)** — cours « Les systèmes informatisés » **entrelacé** avec le tutoriel du dispositif ; référentiel vivant du fonctionnement du cours (voir §8) |
+| `pages/2nde-snt.html` | Page de niveau SNT : carte « Pour commencer » + les 7 cartes de thèmes, d'où part chaque hub |
 | `assets/css/fonts.css` | Polices auto-hébergées (voir §5) — **seule** source de polices autorisée |
 | `_suivi/chapitres.md` | Section « Seconde — SNT » : état réel de chaque hub |
 
 Il n'existe **pas** de `gabarit-hub-snt.html` : on décline en partant du hub du
-Web. Si un 3ᵉ hub confirme les conventions, extraire un vrai gabarit deviendra
-pertinent (voir « Ce qui n'est pas encore arrêté »).
+Web. Trois hubs existent désormais et confirment les conventions — extraire un
+vrai gabarit est donc devenu pertinent, mais c'est une **décision de Loïc**,
+pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
 
 ## 3. Grammaire du hub (à respecter partout)
 
@@ -175,7 +179,40 @@ un futur projet de jeu pédagogique.
 d'abstraction serveur, pas de faux appels réseau. Le hub doit rester une page
 qu'on ouvre en double-cliquant.
 
-## 8. Produire un nouveau hub — marche à suivre
+## 8. La séquence d'introduction — référentiel vivant du fonctionnement du cours
+
+`pages/2nde-snt-t0-systemes-informatises.html` a un **statut particulier** :
+c'est à la fois un **vrai cours** (« Les systèmes informatisés ») et le
+**tutoriel du dispositif**, les deux **entrelacés** — chaque étape du cours est
+l'occasion d'apprendre un geste du hub (valider un QCM, envoyer une réponse
+rédigée, télécharger sa fiche et la déposer sur OneDrive, comprendre le
+verrouillage et l'entraide…). Choix arrêté : pas de séance « mode d'emploi »
+sèche, le contenu sert de terrain d'entraînement.
+
+### 🔴 RÈGLE — l'introduction est le référentiel des mécanismes du cours
+
+Quand Loïc décide de **faire vivre une nouvelle idée de fonctionnement**
+(exemple : la correction entre camarades qui accroît la note d'investissement,
+un nouveau type de champ, un changement du rituel de fin de séance…) :
+
+1. **Elle est présentée explicitement dans la séquence d'introduction** —
+   c'est LE lieu où un mécanisme s'explique en entier (nouvelle étape ou
+   enrichissement d'une étape existante).
+2. **Les autres séquences n'en portent que des rappels discrets** : une ligne
+   dans le pied de page, un encart léger, un renvoi vers l'intro — **jamais**
+   une ré-explication complète. Le rappel type, présent dans le pied de page
+   des hubs : *« Un doute sur le fonctionnement du cours (fiches, verrouillage,
+   entraide) ? Revois l'introduction. »*
+3. **On y revient sans cesse** : à chaque nouveau mécanisme ou modification
+   d'un mécanisme existant, l'introduction est **mise à jour en premier**, puis
+   on vérifie la cohérence des rappels dans les autres hubs, et on le note dans
+   la section SNT de `_suivi/chapitres.md` (liste « mécanismes présentés »).
+
+Corollaire pour Claude : à **chaque** chantier SNT qui introduit ou modifie un
+mécanisme du dispositif, vérifier si l'introduction doit être mise à jour — et
+le proposer si Loïc ne l'a pas demandé.
+
+## 9. Produire un nouveau hub — marche à suivre
 
 1. **Partir du hub du Web** (`pages/2nde-snt-t2-le-web.html`) : copier la
    structure, les variables CSS et le JS des champs. Slug :
@@ -188,7 +225,7 @@ qu'on ouvre en double-cliquant.
    `href="2nde-snt-tN-….html"` — **jamais** `href="pages/…"`, sinon
    `pages/pages/…` → 404. Aligner sur la forme du lien du Web (le vérifier par un
    `grep`).
-5. **Valider** (§9) puis livrer (§10).
+5. **Valider** (§10) puis livrer (§11).
 6. Mettre à jour la section « Seconde — SNT » de `_suivi/chapitres.md`.
 
 **Où intervenir avec quel outil** : un composant visuel complexe ou une
@@ -196,7 +233,7 @@ exploration graphique → proposer **Claude Design** (canvas), puis réintégrer
 SVG **après avoir purgé toute ressource CDN** (§5). Push/commit → Loïc ou Claude
 Code.
 
-## 9. Validation avant livraison
+## 10. Validation avant livraison
 
 ```text
 □ node --check sur le JS extrait de la page
@@ -216,7 +253,7 @@ Code.
 □ Contrôle visuel des captures AVANT livraison
 ```
 
-## 10. Livraison
+## 11. Livraison
 
 1. **Archive delta** reproduisant l'arborescence, contenant UNIQUEMENT les
    fichiers créés/modifiés (le hub + `pages/2nde-snt.html` + `fonts.css` si une
@@ -227,7 +264,7 @@ Code.
    de ressources encore inertes (`href="#"`), licences des images à confirmer,
    points d'histoire dont la biblio reste à sourcer.
 
-## 11. Jalons d'un hub (`_suivi/chapitres.md`)
+## 12. Jalons d'un hub (`_suivi/chapitres.md`)
 
 Les jalons 1→7 des chapitres de PC **ne sont pas transposables**. Un hub suit :
 
@@ -239,15 +276,16 @@ Les jalons 1→7 des chapitres de PC **ne sont pas transposables**. Un hub suit 
 
 Notation des flags : `⬜` à faire · `🔄` en cours · `✅` fait · `⚠` bloqué/attention.
 
-## 12. Ce qui n'est pas encore arrêté (honnêteté de phase 1)
+## 13. Ce qui n'est pas encore arrêté (honnêteté de phase 1)
 
-Un seul hub existe. Tant qu'un 2ᵉ thème n'est pas décliné, restent **ouverts** —
-à proposer à Loïc plutôt qu'à trancher seul :
+Trois hubs existent (Web, Internet, Introduction) et les conventions se
+confirment (codes `WEB·x` / `NET·x` / `SYS·x`, ≈ 4 séances + 1 débranchée,
+mêmes champs et même JS). Restent **ouverts** — à proposer à Loïc plutôt qu'à
+trancher seul :
 
-- la **granularité du code d'activité** (`WEB·2b`) sur un thème sans acronyme
-  aussi court ;
-- l'existence d'un vrai **`gabarit-hub-snt.html`** extrait du hub du Web (ne le
-  fabriquer qu'une fois les conventions confirmées par un 2ᵉ hub) ;
+- l'extraction d'un vrai **`gabarit-hub-snt.html`** : la condition (conventions
+  confirmées par plusieurs hubs) est désormais remplie, mais l'extraction reste
+  une décision de Loïc ;
 - le **volume horaire** type d'une séquence (le Web fait ≈ 6 h sur 4 séances +
   1 débranchée) ;
 - l'existence d'un **équivalent du régime A** (dégrossissage rapide multi-thèmes)

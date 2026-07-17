@@ -47,11 +47,18 @@ Le dépôt héberge **deux gabarits distincts**, chacun avec ses consignes :
 | Style | `assets/css/chapitre-commun.css?v=N` | CSS inline dans la page |
 | Déblocage | code de déblocage (`AT0MES`…) | verrouillage progressif + mode enseignant |
 | Persistance | `localStorage` | **interdit** — téléchargement de fiche |
-| Maturité | rodé (14 chapitres ébauchés) | phase 1, **un seul hub V0** |
+| Maturité | rodé (14 chapitres ébauchés) | phase 1, **3 hubs V0** (Web, Internet, Intro) |
 
 **Avant de produire ou de modifier une page, ouvre la consigne correspondante.**
 Elles sont autonomes : chacune rappelle son périmètre et ce qui ne se transpose
 pas à l'autre famille.
+
+🔴 **SNT — règle du référentiel vivant** : la séquence d'introduction
+(`pages/2nde-snt-t0-systemes-informatises.html`) est à la fois le cours
+« Systèmes informatisés » et le tutoriel du dispositif. **Toute nouvelle idée
+de fonctionnement du cours se présente explicitement là en premier** ; les
+autres séquences n'en portent que des rappels discrets. Détail :
+`CONSIGNES-hub-SNT.md` §8.
 
 ## Règles techniques communes (valent pour les deux)
 

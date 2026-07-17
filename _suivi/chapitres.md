@@ -179,7 +179,33 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 > `_modeles/CONSIGNES-hub-SNT.md`. Les 7 thèmes du programme sont listés sur
 > `pages/2nde-snt.html`.
 > Jalons de PC non transposables : ici on suit **V0 → contenu → interactivité →
-> ressources définitives → validé** (voir `CONSIGNES-hub-SNT.md` §11).
+> ressources définitives → validé** (voir `CONSIGNES-hub-SNT.md` §12).
+
+### SNT-T0 — Introduction · Les systèmes informatisés 🧭
+- État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.
+- Fichier : `pages/2nde-snt-t0-systemes-informatises.html`. Lié depuis la carte
+  « Pour commencer » (nouvelle, en tête de `pages/2nde-snt.html`).
+- **Statut particulier — référentiel vivant** (`CONSIGNES-hub-SNT.md` §8) :
+  cours « Les systèmes informatisés » (doc 01 de Loïc, sorti de la séquence
+  Internet) **entrelacé** avec le tutoriel du dispositif. Toute nouvelle idée de
+  fonctionnement du cours se présente ici en premier ; les autres hubs portent
+  un **rappel discret** en pied de page (posé le 17/07 sur Web et Internet).
+- 2 séances (Machines & mode d'emploi · Caractéristiques & entraide) + 1
+  débranchée (« Autopsie d'une tour »). ≈ 3 h. Codes `SYS·x`.
+- **Mécanismes du cours présentés** (liste à tenir à jour à chaque nouveauté) :
+  - [x] étapes / pastilles / verrouillage progressif (S1-1.1)
+  - [x] les 4 types d'exercices : QCM, association/schéma, réponse rédigée
+        (copier-coller bloqué, en attente → validé), réflexion perso non notée
+  - [x] rituel de fin de séance : fiche à télécharger + dépôt OneDrive (S1)
+  - [x] entraide « validé → tu peux aider » + **note d'investissement** via la
+        correction entre camarades (S2-2.4, annoncée pour la version complète —
+        **formulation à valider par Loïc**)
+  - [x] mode enseignant (S2-2.4)
+  - [ ] _(prochain mécanisme : à présenter ici d'abord)_
+- Hors périmètre volontaire : le détail matériel pointu du doc 01 (PCIe, SATA,
+  S/PDIF, UEFI…) — grandes familles seulement, niveau seconde.
+- 🚧 Restant : fiche d'observation `SYS·D` et diaporama `SYS·1` (liens inertes) ;
+  valider la formulation « note d'investissement ».
 
 ### SNT-T1 — Internet
 - État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.

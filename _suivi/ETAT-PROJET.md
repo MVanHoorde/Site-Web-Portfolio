@@ -87,6 +87,16 @@ source, puisqu'il change chaque année).
 
 ## ⚠ Alertes
 
+- 🆕 **SNT — règle du référentiel vivant (17/07).** La séquence d'introduction
+  (`pages/2nde-snt-t0-systemes-informatises.html`) = cours « Systèmes
+  informatisés » **entrelacé** avec le tutoriel du dispositif. **Toute nouvelle
+  idée de fonctionnement du cours s'y présente explicitement en premier** ; les
+  autres séquences n'en portent que des rappels discrets (pied de page). Voir
+  `CONSIGNES-hub-SNT.md` §8 — et y revenir sans cesse.
+- ✅ **Vestige RGPD corrigé (17/07)** : la page orpheline `2nde-snt.html` à la
+  **racine** (doublon obsolète, chargeait encore Google Fonts, liens `#`) est
+  remplacée par une redirection propre vers `pages/2nde-snt.html`. Option plus
+  radicale possible : `git rm` (décision Loïc).
 - 🆕 **SNT — le hub « Le Web » est en ligne (17/07)** : `pages/2nde-snt-t2-le-web.html`,
   lié depuis la carte SNT 2 de `pages/2nde-snt.html`. **Maquette V0, non validée.**
   C'est un **second gabarit**, distinct des chapitres de PC (séquence → séance →
@@ -200,6 +210,7 @@ Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; un seul hub existe.
 
 | Thème | Hub en ligne | Validé | Ressources définitives |
 |---|---|---|---|
+| SNT 0 · Introduction 🧭 | ✅ V0 (2 séances + débranchée) | ⬜ non | ⬜ `SYS·1`, `SYS·D` à brancher |
 | SNT 2 · Le Web | ✅ V0 (4 séances + frise) | ⬜ non | ⬜ activités cahier + frise à brancher |
 | SNT 1 · Internet | ⬜ | ⬜ non | — |
 | SNT 3 · Réseaux sociaux | ⬜ | ⬜ non | — |

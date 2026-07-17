@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNT · Introduction — Les systèmes informatisés · Hub élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  :root{
+    --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+    --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+    --link:#2445c7; --link-wash:#e7ebfb;
+    --activity:#c26a12; --activity-wash:#faeede;
+    --ok:#12805c; --ok-wash:#e0f2ea;
+    --err:#c33a2f; --err-wash:#fbe6e3;
+    --wait:#9a6a00; --wait-wash:#fbf1d8;
+    --france:#164a8a; --france-wash:#e6eef8;
+    --hist:#6b4a9a; --hist-wash:#efe9f7;
+    --bonus:#0f6d63; --bonus-wash:#e0f1ef;
+    --radius:14px; --shadow:0 1px 2px rgba(22,31,51,.05),0 8px 24px rgba(22,31,51,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+  code{font-family:"IBM Plex Mono",monospace}
+
+  /* HEADER */
+  header.masthead{background:radial-gradient(120% 140% at 90% -10%,rgba(36,69,199,.10),transparent 55%),var(--surface);border-bottom:1px solid var(--line);padding:34px 0 26px}
+  .eyebrow{font-family:"IBM Plex Mono";font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--link);font-weight:600;margin-bottom:10px}
+  h1.title{font-family:"Space Grotesk";font-weight:700;font-size:clamp(38px,7vw,60px);line-height:.98;margin:0 0 4px;letter-spacing:-.02em}
+  h1.title .tag{font-family:"IBM Plex Mono";font-weight:500;color:var(--ink-faint);font-size:.42em;vertical-align:middle}
+  .lede{color:var(--ink-soft);max-width:60ch;margin:14px 0 22px;font-size:16.5px}
+  .themes{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
+  .theme-chip{font-size:12.5px;padding:5px 11px;border-radius:100px;border:1px solid var(--line);color:var(--ink-faint);background:var(--surface-2);font-family:"IBM Plex Mono"}
+  .theme-chip.on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:500}
+  .meta-row{display:flex;flex-wrap:wrap;gap:22px;align-items:baseline}
+  .meta-row .m{font-size:14px;color:var(--ink-soft)} .meta-row .m b{color:var(--ink);font-weight:600}
+
+  /* NAV */
+  nav.seances{position:sticky;top:0;z-index:30;background:rgba(233,237,244,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.seances .wrap{display:flex;gap:6px;align-items:center;overflow-x:auto;padding:9px 20px}
+  nav.seances a{white-space:nowrap;text-decoration:none;color:var(--ink-soft);font-size:13.5px;font-weight:500;padding:7px 13px;border-radius:9px;border:1px solid transparent;transition:.15s;display:flex;align-items:center;gap:6px}
+  nav.seances a:hover{background:var(--surface);border-color:var(--line);color:var(--ink)}
+  nav.seances a .n{font-family:"IBM Plex Mono";color:var(--link)}
+  nav.seances a .lockico{font-size:11px;opacity:.6}
+  nav.seances a.retour{color:var(--ink-faint);border-right:1px solid var(--line);border-radius:9px 0 0 9px;margin-right:4px;padding-right:14px}
+  nav.seances a.retour:hover{border-color:var(--line);color:var(--ink)}
+  .spacer{flex:1}
+  .teacher-toggle{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:12.5px;color:var(--ink-soft);cursor:pointer;user-select:none}
+  .teacher-toggle input{display:none}
+  .switch{width:34px;height:19px;border-radius:100px;background:var(--line);position:relative;transition:.2s;flex:none}
+  .switch::after{content:"";position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .teacher-toggle input:checked + .switch{background:var(--france)}
+  .teacher-toggle input:checked + .switch::after{left:17px}
+
+  /* LEGEND */
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin:24px 0 4px;padding:13px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);font-size:13px;color:var(--ink-soft)}
+  .legend .dot{display:inline-flex;align-items:center;gap:7px}
+  .pip{width:13px;height:13px;border-radius:50%;flex:none;border:2px solid var(--ink-faint)}
+  .pip.doing{background:conic-gradient(var(--link) 50%,transparent 0);border-color:var(--link)}
+  .pip.wait{background:var(--wait-wash);border-color:var(--wait)} .pip.done{background:var(--ok);border-color:var(--ok)}
+
+  /* SÉANCE */
+  section.seance{padding:38px 0 8px;position:relative}
+  .seance-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:6px}
+  .seance-head h2{font-family:"Space Grotesk";font-weight:600;font-size:clamp(22px,3.4vw,28px);margin:0;letter-spacing:-.01em}
+  .seance-head h2 .s-num{color:var(--link);font-family:"IBM Plex Mono";font-size:.7em;margin-right:8px}
+  .seance-time{font-family:"IBM Plex Mono";font-size:13px;color:var(--ink-faint);white-space:nowrap}
+  .seance-goal{color:var(--ink-soft);font-size:14.5px;margin:0 0 8px;max-width:70ch}
+  .progress-line{height:5px;background:var(--line);border-radius:100px;overflow:hidden;margin:12px 0 4px}
+  .progress-line i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+
+  /* verrouillage */
+  .lock-banner{display:none;align-items:center;gap:12px;background:var(--surface);border:1px dashed var(--france);border-radius:var(--radius);padding:14px 16px;margin-top:14px;color:var(--france);font-size:14px}
+  .lock-banner .k{font-size:20px}
+  .lockable{transition:.3s}
+  .seance.locked .lock-banner{display:flex}
+  .seance.locked .lockable{filter:blur(3px);opacity:.45;pointer-events:none;user-select:none}
+  body.teacher .seance.locked .lockable{filter:none;opacity:1;pointer-events:auto;user-select:auto}
+  body.teacher .seance.locked .lock-banner{border-color:var(--ink-faint);color:var(--ink-soft)}
+  body.teacher .seance.locked .lock-banner .k::before{content:"🔓"}
+  .seance.locked .lock-banner .k::before{content:"🔒"}
+
+  /* étapes */
+  .steps{position:relative;margin-top:20px}
+  .step{position:relative;padding-left:40px;padding-bottom:14px}
+  .rail{position:absolute;left:13px;top:6px;bottom:-10px;width:2px;background:var(--line)}
+  .step:last-child .rail{display:none}
+  .step-pip{position:absolute;left:6px;top:4px;width:16px;height:16px;border-radius:50%;border:2px solid var(--ink-faint);background:var(--bg);z-index:2;transition:.2s}
+  .step.is-done .step-pip{background:var(--ok);border-color:var(--ok)}
+  .step.is-done .rail{background:linear-gradient(var(--ok),var(--line))}
+  .step.is-wait .step-pip{background:var(--wait-wash);border-color:var(--wait)}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card-top{padding:16px 18px 4px}
+  .step-kicker{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);letter-spacing:.03em;margin-bottom:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .badge{font-family:"IBM Plex Mono";font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:5px}
+  .badge.gate{background:var(--link-wash);color:var(--link)}
+  .step-title{font-family:"Space Grotesk";font-weight:600;font-size:19px;margin:0 0 8px;letter-spacing:-.01em}
+  .objective{display:flex;gap:9px;font-size:14px;color:var(--ink-soft);background:var(--link-wash);border-radius:10px;padding:9px 12px;margin:2px 0 4px}
+  .objective b{color:var(--link);font-weight:600}
+  .card-body{padding:6px 18px 18px}
+  .block-label{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+  .block-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* ressources */
+  .res{display:flex;flex-direction:column;gap:7px}
+  .res-item{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-decoration:none;color:inherit;transition:.15s}
+  a.res-item:hover{border-color:var(--link);background:var(--link-wash)}
+  .res-code{font-family:"IBM Plex Mono";font-size:11px;font-weight:600;flex:none;padding:3px 7px;border-radius:6px;background:var(--ink);color:#fff;margin-top:1px}
+  .res-item.activity .res-code{background:var(--activity)} .res-item.debranche .res-code{background:#5b3fa8}
+  .res-main{flex:1;min-width:0} .res-main .r-title{font-weight:500;font-size:14.5px} .res-main .r-type{font-size:12.5px;color:var(--ink-faint)}
+  .res-time{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);flex:none;margin-top:2px}
+  .res-item.activity{background:var(--activity-wash);border-color:#eed4b6} .res-item.activity:hover{border-color:var(--activity)}
+
+  /* à retenir + tableaux docs */
+  .retain{border-left:3px solid var(--ink);background:var(--surface-2);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px}
+  .retain code{background:#eceff7;padding:1px 5px;border-radius:4px;font-size:.9em;color:var(--link)}
+  .doc-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0}
+  .doc-table th,.doc-table td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+  .doc-table th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:12px;font-weight:600;color:var(--ink-soft)}
+  .doc-table code{color:var(--link)}
+
+  /* encadré histoire (révélé) */
+  .reveal{display:none;margin-top:12px;border-radius:12px;padding:13px 15px;font-size:14px;line-height:1.6;border:1px solid var(--hist);background:var(--hist-wash);color:#3e2c5c}
+  .reveal.show{display:block;animation:fade .4s ease}
+  .reveal .rl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--hist);font-weight:600;margin-bottom:5px;display:flex;gap:6px;align-items:center}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* encadré france (toujours visible) */
+  .france-box{position:relative;border:1px solid var(--france);background:var(--france-wash);border-radius:var(--radius);padding:16px 18px;margin-top:6px;overflow:hidden}
+  .france-box::before{content:"";position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#0a3d91 0 33.3%,#fff 33.3% 66.6%,#e1122f 66.6% 100%)}
+  .france-box .fl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--france);font-weight:600;margin:4px 0 8px;display:flex;gap:7px;align-items:center}
+  .france-box h4{font-family:"Space Grotesk";margin:0 0 6px;font-size:17px;color:var(--france)}
+  .france-box p{margin:0 0 9px;font-size:14px;color:#1f3a5c;line-height:1.6}
+  .france-box .warn-note{font-size:13px;background:#fff;border-radius:9px;padding:9px 12px;color:var(--ink-soft);border:1px solid #cdddf0}
+  .france-cols{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .france-cols .txt{flex:1;min-width:220px}
+  .minitel-fig{flex:none;width:170px;text-align:center}
+  .minitel-fig svg{width:170px;height:auto}
+  .minitel-fig figcaption{font-size:11.5px;color:var(--ink-faint);margin-top:4px;font-style:italic}
+  .biblio{margin-top:10px;background:#fff;border:1px solid #cdddf0;border-radius:10px;padding:10px 13px}
+  .biblio .bl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--france);font-weight:600;margin-bottom:6px;display:flex;gap:6px;align-items:center}
+  .biblio a{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--france);text-decoration:none;border-bottom:1px dotted var(--france);margin:2px 12px 2px 0}
+  .biblio a:hover{background:var(--france-wash)}
+  .biblio a::before{content:"↗";font-size:11px;opacity:.7}
+  .reveal .biblio{background:rgba(255,255,255,.6);border-color:var(--hist)}
+  .reveal .biblio .bl,.reveal .biblio a{color:var(--hist)} .reveal .biblio a{border-bottom-color:var(--hist)}
+
+  /* champs */
+  .field{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface-2)}
+  .field + .field{margin-top:10px}
+  .field-q{font-weight:500;font-size:15px;margin-bottom:11px}
+  .field-type{float:right;font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 6px;text-transform:uppercase}
+  .opts{display:flex;flex-direction:column;gap:7px}
+  .opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer;font-size:14.5px;transition:.12s;text-align:left}
+  .opt:hover{border-color:var(--link)} .opt .mark{width:18px;height:18px;border-radius:50%;border:2px solid var(--ink-faint);flex:none}
+  .opt.correct{background:var(--ok-wash);border-color:var(--ok);color:#0c5c42} .opt.correct .mark{background:var(--ok);border-color:var(--ok)}
+  .opt.wrong{background:var(--err-wash);border-color:var(--err);color:#8f2a22} .opt.wrong .mark{background:var(--err);border-color:var(--err)}
+  .opt:disabled{cursor:default}
+  .cloze{font-size:15px;line-height:2.2}
+  .cloze input{font-family:"IBM Plex Mono";font-size:14px;border:none;border-bottom:2px solid var(--link);background:var(--link-wash);border-radius:5px 5px 0 0;padding:3px 8px;width:120px;color:var(--ink)}
+  .cloze input.short{width:64px;text-align:center}
+  .cloze input:focus{outline:2px solid var(--link);outline-offset:1px}
+  .cloze input.ok{border-color:var(--ok);background:var(--ok-wash);color:#0c5c42} .cloze input.no{border-color:var(--err);background:var(--err-wash);color:#8f2a22}
+  .diagram{width:100%;height:auto;display:block;margin:2px 0 10px} .diagram text{font-family:"IBM Plex Sans"}
+  .label-selects{display:flex;flex-wrap:wrap;gap:10px}
+  .label-selects label{font-size:13px;color:var(--ink-soft);display:flex;flex-direction:column;gap:3px}
+  .label-selects select{font-family:"IBM Plex Sans";font-size:13.5px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+  .label-selects select.ok{border-color:var(--ok);background:var(--ok-wash)} .label-selects select.no{border-color:var(--err);background:var(--err-wash)}
+  .free textarea,.perso textarea{width:100%;min-height:88px;resize:vertical;font-family:"IBM Plex Sans";font-size:14.5px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);line-height:1.5}
+  .free textarea:focus,.perso textarea:focus{outline:2px solid var(--link);outline-offset:1px;border-color:var(--link)}
+  .free-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:9px;flex-wrap:wrap}
+  .free-meta{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--ink-faint)} .free-meta .warn{color:var(--err)}
+  .btn{font-family:"IBM Plex Sans";font-weight:600;font-size:14px;cursor:pointer;padding:9px 16px;border-radius:9px;border:1px solid var(--link);background:var(--link);color:#fff;transition:.15s}
+  .btn:hover{filter:brightness(1.08)} .btn.ghost{background:transparent;color:var(--link)} .btn:disabled{opacity:.5;cursor:default;filter:none}
+  .verdict{margin-top:10px;font-size:13.5px;padding:9px 12px;border-radius:9px;display:none}
+  .verdict.show{display:block}
+  .verdict.ok{background:var(--ok-wash);color:#0c5c42;border:1px solid var(--ok)}
+  .verdict.wait{background:var(--wait-wash);color:#7a5400;border:1px solid var(--wait)}
+  .verdict.no{background:var(--err-wash);color:#8f2a22;border:1px solid var(--err)}
+
+  /* perso */
+  .perso-box{border:1px solid #cdddf0;background:#fff;border-radius:12px;padding:14px}
+  .perso-box .pl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:8px;display:flex;gap:6px;align-items:center}
+  .perso-box .note-free{font-size:12.5px;color:var(--ink-faint);margin-top:7px}
+
+  /* bonus */
+  .bonus-wrap{margin-top:18px;border:1px solid var(--bonus);border-radius:var(--radius);overflow:hidden}
+  .bonus-head{background:var(--bonus-wash);padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer}
+  .bonus-head .bl{font-family:"Space Grotesk";font-weight:600;color:var(--bonus);font-size:16px;flex:1}
+  .bonus-head .chev{transition:.2s;color:var(--bonus)}
+  .bonus-wrap.open .chev{transform:rotate(90deg)}
+  .bonus-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .bonus-wrap.open .bonus-body{max-height:1600px;padding:14px 16px}
+  .bonus-body .field{background:#fff}
+  .bonus-tag{font-size:12px;color:var(--bonus);background:#fff;border:1px solid var(--bonus);border-radius:100px;padding:2px 9px;font-family:"IBM Plex Mono"}
+
+  footer.note{margin:42px 0 60px;padding:20px 22px;border:1px dashed var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink-soft);font-size:13.5px}
+  footer.note b{color:var(--ink)} footer.note code{background:var(--surface-2);padding:1px 5px;border-radius:4px;color:var(--link)}
+
+  /* barre d'actions séance */
+  .seance-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+  .seance-actions .sa-label{flex:1;min-width:160px;font-size:13px;color:var(--ink-soft);align-self:center}
+  .btn.sm{padding:8px 13px;font-size:13px}
+  .btn.dl{background:var(--ok);border-color:var(--ok)}
+  .btn.reset{background:transparent;color:var(--ink-soft);border-color:var(--line)}
+  .btn.reset:hover{border-color:var(--err);color:var(--err)}
+
+  /* modal */
+  .modal-back{position:fixed;inset:0;background:rgba(22,31,51,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal-back.show{display:flex}
+  .modal{background:var(--surface);border-radius:18px;max-width:440px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;animation:pop .25s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+  .modal .m-ico{font-size:40px;margin-bottom:6px}
+  .modal h3{font-family:"Space Grotesk";font-size:22px;margin:0 0 8px;color:var(--ink)}
+  .modal p{font-size:14.5px;color:var(--ink-soft);margin:0 0 18px;line-height:1.55}
+  .modal .m-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .modal .recap{text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13.5px;max-height:200px;overflow:auto}
+  .modal .recap .ri{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid var(--line)}
+  .modal .recap .ri:last-child{border-bottom:none}
+  .modal .recap .ri b{color:var(--ok)}
+
+  @media (max-width:560px){
+    .field-type{float:none;display:inline-block;margin-bottom:8px}
+    .seance-head{flex-direction:column;gap:2px}
+    .cloze input{width:92px}
+    .cloze input.short{width:58px}
+    nav.seances .teacher-toggle span.tlabel{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">SNT · Introduction · Seconde</div>
+    <h1 class="title">Les systèmes informatisés <span class="tag">INTRO</span></h1>
+    <p class="lede">Avant de plonger dans Internet : un tour des machines qui t'entourent — ordinateurs, smartphones, montres connectées — et, en même temps, le mode d'emploi de ce cours. Tu vas l'apprendre en t'en servant.</p>
+    <div class="themes">
+      <span class="theme-chip on">Introduction</span>
+      <span class="theme-chip">Internet</span><span class="theme-chip">Le Web</span>
+      <span class="theme-chip">Réseaux sociaux</span><span class="theme-chip">Données structurées</span>
+      <span class="theme-chip">Localisation &amp; cartographie</span><span class="theme-chip">Informatique embarquée</span>
+      <span class="theme-chip">Photographie numérique</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>2 séances</b> + 1 activité débranchée</span>
+      <span class="m">Durée <b>≈ 3 h</b></span>
+      <span class="m">Chaque séance se débloque quand la <b>précédente est validée</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-snt.html">← SNT</a>
+    <a href="#s1"><span class="n">S1</span>Machines &amp; mode d'emploi</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>Caractéristiques &amp; entraide <span class="lockico">🔒</span></a>
+    <a href="#deb"><span class="n">⏳</span>Autopsie d'une tour</a>
+    <span class="spacer"></span>
+    <label class="teacher-toggle" title="Déverrouille toutes les séances (usage enseignant)">
+      <input type="checkbox" id="teacherMode">
+      <span class="switch"></span><span class="tlabel">Mode enseignant</span>
+    </label>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>Des machines partout — et un cours qui s'apprend en le faisant</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Découvrir ce qu'est un système informatisé et ce qu'il a dans le ventre — et, au passage, apprendre chaque geste de ce cours : valider une étape, envoyer une réponse, télécharger sa fiche.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 — TUTORIEL : la mécanique du hub -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Bienvenue — comment marche ce cours ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre la page que tu as sous les yeux : les étapes, les pastilles, et ce qui débloque la suite.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — la règle du jeu</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">En SNT, chaque thème est un <b>hub</b> comme celui-ci : une suite de <b>séances</b>, découpées en <b>étapes</b>. Chaque étape suit le même trajet : un objectif 🎯, parfois une ressource à consulter, un encadré <b>« à retenir »</b> (ta trace de cours, déjà rédigée), puis un <b>exercice</b>. Les étapes marquées <span class="badge gate">à valider</span> comptent : quand elles sont toutes vertes, la <b>séance suivante se débloque</b> — regarde le cadenas 🔒 dans le menu en haut.</p>
+            <table class="doc-table">
+              <tr><th>Pastille</th><th>Ce que ça veut dire</th></tr>
+              <tr><td>⚪ vide</td><td>Étape à faire</td></tr>
+              <tr><td>🟡 jaune</td><td>Réponse envoyée, <b>en attente</b> de correction</td></tr>
+              <tr><td>🟢 verte</td><td><b>Validé</b> — et tu deviens une ressource pour tes camarades</td></tr>
+            </table>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Ce cours se suit <b>ici, à ton rythme</b> : tu lis, tu manipules, tu réponds. Les exercices se corrigent <b>immédiatement</b> ou partent <b>en correction</b>. Valider toutes les étapes d'une séance <b>débloque la suivante</b>. Et en fin de séance, un rituel : <b>télécharger ta fiche</b> et la <b>déposer sur ton OneDrive</b> (on le fera ensemble tout en bas).</div>
+            <div class="block-label">À toi — ton tout premier exercice</div>
+            <div class="field" data-qcm data-answer="1">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Comment débloquer la séance 2 de ce hub ?</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>En attendant la semaine prochaine</button>
+                <button class="opt"><span class="mark"></span>En validant toutes les étapes « à valider » de la séance 1</button>
+                <button class="opt"><span class="mark"></span>En demandant le mot de passe à un camarade</button>
+              </div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🎓 Tu viens d'apprendre un geste du cours</div>
+                C'était ton premier <b>QCM</b> : la page corrige <b>en direct</b>, en vert ou en rouge — et si tu te trompes, la bonne réponse s'affiche pour que tu comprennes. Ta pastille, à gauche, vient de passer au vert.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 — CONTENU : les systèmes informatisés -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Les systèmes informatisés sont partout</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> reconnaître un système informatisé, et distinguer les machines des services qu'elles rendent.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Ressource</div>
+            <div class="res">
+              <a class="res-item" href="#" onclick="return false">
+                <span class="res-code">SYS·1</span>
+                <span class="res-main"><span class="r-title">Diaporama « Les systèmes informatisés »</span><span class="r-type">Présentation · projetée en classe</span></span>
+                <span class="res-time">~15 min</span>
+              </a>
+            </div>
+            <div class="block-label">Doc — machines et services</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Un <b>système informatisé</b>, c'est une machine qui traite de l'information : ordinateur de bureau ou portable, tablette, smartphone, montre connectée… Quand il est relié à un réseau, on parle de <b>terminal</b>. Il faut bien distinguer ces <b>machines</b> (et le réseau Internet qui les relie — toute la séquence suivante !) des <b>services</b> qu'elles nous rendent : communiquer, se cultiver, se divertir, se simplifier la vie, faire des économies, s'organiser…</p>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Un <b>système informatisé</b> = une machine qui traite de l'information (PC, portable, tablette, smartphone, montre…). Interconnectés, ces systèmes forment <b>Internet</b>. Ne pas confondre la <b>machine</b>, le <b>réseau</b> et les <b>services</b> (mails, jeux, vidéos…) qui circulent dessus. Et même sans connexion, un ordinateur reste utile : bureautique, retouche photo, jeux…</div>
+            <div class="block-label">À toi — deuxième type d'exercice : les menus déroulants</div>
+            <div class="field">
+              <span class="field-type">Association</span>
+              <div class="field-q">Associe chaque usage à la bonne famille de services.</div>
+              <div class="label-selects" data-diagram>
+                <label>Réviser un contrôle sur une encyclopédie en ligne
+                  <select data-correct="cultiver"><option value="">—</option><option value="communiquer">Communiquer</option><option value="cultiver">Se cultiver</option><option value="divertir">Se divertir</option></select></label>
+                <label>Appeler la famille en visio
+                  <select data-correct="communiquer"><option value="">—</option><option value="communiquer">Communiquer</option><option value="cultiver">Se cultiver</option><option value="divertir">Se divertir</option></select></label>
+                <label>Enchaîner trois parties d'un jeu en ligne
+                  <select data-correct="divertir"><option value="">—</option><option value="communiquer">Communiquer</option><option value="cultiver">Se cultiver</option><option value="divertir">Se divertir</option></select></label>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 — CONTENU : les composants -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Dans le ventre de la machine</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> nommer les composants essentiels d'un ordinateur et leur rôle — les mêmes, en plus petit, dans ton téléphone.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — l'intérieur d'une unité centrale</div>
+            <svg class="diagram" viewBox="0 0 620 260" role="img" aria-label="Vue schématique de l'intérieur d'une tour : alimentation, carte mère avec processeur et mémoire vive, stockage">
+              <rect x="20" y="14" width="360" height="232" rx="12" fill="#f4f6fb" stroke="#4a566e" stroke-width="2.5"/>
+              <text x="200" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="#4a566e">Unité centrale (vue ouverte)</text>
+              <!-- alimentation -->
+              <rect x="38" y="52" width="110" height="58" rx="8" fill="#faeede" stroke="#c26a12" stroke-width="2"/>
+              <text x="93" y="78" text-anchor="middle" font-size="12" font-weight="600" fill="#161f33">❶</text>
+              <text x="93" y="96" text-anchor="middle" font-size="10.5" fill="#4a566e">230 V → basses tensions</text>
+              <!-- carte mère -->
+              <rect x="168" y="52" width="192" height="186" rx="8" fill="#e0f2ea" stroke="#12805c" stroke-width="2"/>
+              <text x="264" y="72" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0c5c42">Carte mère</text>
+              <rect x="186" y="86" width="70" height="54" rx="6" fill="#e7ebfb" stroke="#2445c7" stroke-width="2"/>
+              <text x="221" y="110" text-anchor="middle" font-size="12" font-weight="600" fill="#161f33">❷</text>
+              <text x="221" y="128" text-anchor="middle" font-size="10" fill="#4a566e">le calculateur</text>
+              <rect x="272" y="86" width="70" height="54" rx="6" fill="#e7ebfb" stroke="#2445c7" stroke-width="2"/>
+              <text x="307" y="110" text-anchor="middle" font-size="12" font-weight="600" fill="#161f33">❸</text>
+              <text x="307" y="128" text-anchor="middle" font-size="10" fill="#4a566e">mémoire de travail</text>
+              <rect x="186" y="156" width="156" height="30" rx="6" fill="#efe9f7" stroke="#6b4a9a" stroke-width="1.6"/>
+              <text x="264" y="176" text-anchor="middle" font-size="10.5" fill="#3e2c5c">connecteurs (cartes, ports…)</text>
+              <!-- stockage -->
+              <rect x="38" y="150" width="110" height="58" rx="8" fill="#fbf1d8" stroke="#9a6a00" stroke-width="2"/>
+              <text x="93" y="176" text-anchor="middle" font-size="12" font-weight="600" fill="#161f33">❹</text>
+              <text x="93" y="194" text-anchor="middle" font-size="10.5" fill="#4a566e">mémoire longue durée</text>
+              <!-- légende droite -->
+              <g font-size="12" fill="#4a566e">
+                <text x="404" y="70">❶ = ?</text><text x="404" y="110">❷ = ?</text>
+                <text x="404" y="150">❸ = ?</text><text x="404" y="190">❹ = ?</text>
+              </g>
+              <text x="404" y="228" font-size="11" fill="#8b97ad">→ réponds avec les menus ci-dessous</text>
+            </svg>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Tous les systèmes informatisés partagent les mêmes organes, plus ou moins miniaturisés : le <b>bloc d'alimentation</b> (transforme le 230 V du secteur), la <b>carte mère</b> (le circuit qui relie tout), le <b>processeur</b> — <b><code>CPU</code></b> — le « cerveau » qui calcule, la <b>mémoire vive</b> — <b><code>RAM</code></b> — sa mémoire de travail, et le <b>stockage</b> (<code>disque dur</code> ou <code>SSD</code>) qui garde tes fichiers même éteint.</div>
+            <div class="block-label">À toi — le schéma à légender</div>
+            <div class="field">
+              <span class="field-type">Schéma à légender</span>
+              <div class="field-q">Place chaque composant au bon numéro du schéma.</div>
+              <div class="label-selects" data-diagram>
+                <label>❶ transforme le courant du secteur
+                  <select data-correct="alim"><option value="">—</option><option value="alim">Bloc d'alimentation</option><option value="cpu">Processeur (CPU)</option><option value="ram">Mémoire vive (RAM)</option><option value="stock">Stockage (disque/SSD)</option></select></label>
+                <label>❷ le « cerveau » qui calcule
+                  <select data-correct="cpu"><option value="">—</option><option value="alim">Bloc d'alimentation</option><option value="cpu">Processeur (CPU)</option><option value="ram">Mémoire vive (RAM)</option><option value="stock">Stockage (disque/SSD)</option></select></label>
+                <label>❸ la mémoire de travail
+                  <select data-correct="ram"><option value="">—</option><option value="alim">Bloc d'alimentation</option><option value="cpu">Processeur (CPU)</option><option value="ram">Mémoire vive (RAM)</option><option value="stock">Stockage (disque/SSD)</option></select></label>
+                <label>❹ garde les fichiers même éteint
+                  <select data-correct="stock"><option value="">—</option><option value="alim">Bloc d'alimentation</option><option value="cpu">Processeur (CPU)</option><option value="ram">Mémoire vive (RAM)</option><option value="stock">Stockage (disque/SSD)</option></select></label>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.4 — TUTORIEL + CONTENU : la réponse rédigée -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">La réponse rédigée — écrite par toi, vraiment</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> découvrir le troisième type d'exercice : la réponse rédigée, envoyée pour correction — et l'utiliser pour distinguer RAM et stockage.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — comment ça marche</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Certaines questions demandent une vraie réponse écrite. Ici, le <b>copier-coller est bloqué</b> — c'est voulu : ce qui compte, c'est <em>tes</em> mots. Quand tu envoies, ta pastille passe en 🟡 <b>en attente</b>, puis en 🟢 <b>validé</b> après correction. Essaie :</p>
+            <div class="field free" data-free>
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">Avec tes mots : quelle est la différence entre la <b>mémoire vive (RAM)</b> et le <b>stockage</b> (disque dur ou SSD) ? Un indice : que se passe-t-il quand on éteint la machine ?</div>
+              <textarea placeholder="Écris ta réponse avec tes mots (le copier-coller est bloqué)…" aria-label="Réponse rédigée"></textarea>
+              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🎓 Ce que deviendra ce bouton</div>
+                Pour l'instant, la validation est automatique. Dans la <b>version complète</b> du cours, ta réponse sera vraiment corrigée, ton professeur tranchera les cas limites — et une fois ta réponse <b>validée</b>, tu pourras <b>consulter, corriger et conseiller</b> les camarades bloqués sur la même question. Cette entraide comptera dans ta <b>note d'investissement</b>. Bien répondre, c'est aussi gagner le droit d'aider.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RITUEL DE FIN DE SÉANCE (non noté, tutoriel) -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-color:var(--ok)"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">🎓 LE RITUEL DE FIN DE SÉANCE — À FAIRE À CHAQUE FOIS</div>
+            <h3 class="step-title">Télécharger ta fiche, la déposer sur OneDrive</h3>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Cette page ne garde <b>rien en mémoire</b> : si tu fermes l'onglet, tes réponses disparaissent. Ta trace de travail, c'est <b>ta fiche</b> — un fichier qui rassemble les « à retenir » et tes réponses. Le rituel, à la fin de <b>chaque</b> séance de l'année :</p>
+            <table class="doc-table">
+              <tr><th>#</th><th>Geste</th></tr>
+              <tr><td><code>1</code></td><td>Clique sur <b>📥 Télécharger ma fiche</b> (le bouton vert en bas de la séance — ou dans la fenêtre « Séance terminée »)</td></tr>
+              <tr><td><code>2</code></td><td>Le fichier arrive dans ton dossier <b>Téléchargements</b></td></tr>
+              <tr><td><code>3</code></td><td><b>Dépose-le dans ton dossier SNT sur OneDrive</b> (celui partagé avec ton professeur) — c'est ce dépôt qui prouve ton travail</td></tr>
+            </table>
+            <div class="retain" style="margin-top:12px">Pas de fiche déposée = pas de trace de ta séance. Ce rituel <b>compte dans ton investissement</b> : prends l'habitude dès aujourd'hui. Quand tu auras validé toute la séance 1, la fenêtre 🎉 te le rappellera — c'est le moment de le faire pour de vrai.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERSO -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-style:dashed"></div>
+        <div class="perso-box">
+          <div class="pl">💬 Et toi ? · réponse personnelle, non notée — dernier type d'exercice : ici, jamais de bon ou de mauvais</div>
+          <div class="perso">
+            <div class="field-q" style="font-weight:400">Liste tous les <b>systèmes informatisés</b> que tu as utilisés depuis ce matin (pense large : réveil, borne du bus, caisse de la boulangerie…). Lequel te surprendrait le plus si on t'avait dit, il y a cinq ans, que tu l'utiliserais chaque jour ?</div>
+            <textarea placeholder="Réponds librement — ça servira à lancer la discussion en classe." aria-label="Réponse personnelle"></textarea>
+            <div style="margin-top:8px"><button class="btn ghost" data-share>Partager avec la classe</button></div>
+            <div class="note-free" data-share-note></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BONUS S1 -->
+    <div class="bonus-wrap" data-bonus>
+      <div class="bonus-head" data-bonus-toggle>
+        <span class="bonus-tag">bonus</span>
+        <span class="bl">Pour aller plus loin</span>
+        <span class="chev">▸</span>
+      </div>
+      <div class="bonus-body">
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé). Les bonus existent dans toutes les séquences de l'année.</p>
+        <div class="field free" data-free>
+          <span class="field-type">Question ouverte</span>
+          <div class="field-q">Cite un système informatisé qui n'a <b>ni écran ni clavier</b>, et explique comment on sait quand même qu'il « traite de l'information ».</div>
+          <textarea placeholder="Argumente avec tes propres mots…" aria-label="Réponse ouverte"></textarea>
+          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="verdict"></div>
+        </div>
+        <p style="font-size:13.5px;color:var(--ink-soft)">😎 Défi geek : dans toutes les séquences se cachent des <b>easter eggs</b>. Le premier de l'année : ouvre la console du navigateur (<code>F12</code>)…</p>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>Choisir sa machine — et finir le tour du cours</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Savoir lire les caractéristiques d'un système (écran, puissance, stockage, OS), brancher les bons câbles — et découvrir les derniers mécanismes du cours : l'entraide et le mode enseignant.</p>
+    <div class="progress-line"><i data-progress></i></div>
+    <div class="lock-banner"><span class="k"></span><span>Cette séance se débloque quand la <b>séance 1 est entièrement validée</b>. Ton professeur peut l'ouvrir si besoin.</span></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 2.1 — CONTENU : périphériques et connectiques -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Périphériques et connectiques : brancher juste</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> reconnaître les ports à l'arrière d'un ordinateur et savoir quel périphérique s'y branche.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — l'arrière d'une unité centrale</div>
+            <svg class="diagram" viewBox="0 0 620 210" role="img" aria-label="Panneau arrière d'une tour avec quatre ports numérotés : USB, HDMI, RJ45 et jack audio">
+              <rect x="60" y="14" width="290" height="182" rx="10" fill="#f4f6fb" stroke="#4a566e" stroke-width="2.5"/>
+              <text x="205" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="#4a566e">Panneau arrière</text>
+              <!-- USB (rectangles) -->
+              <g fill="#e7ebfb" stroke="#2445c7" stroke-width="1.8">
+                <rect x="86" y="58" width="34" height="14" rx="2"/><rect x="126" y="58" width="34" height="14" rx="2"/>
+              </g>
+              <text x="123" y="88" text-anchor="middle" font-size="12" font-weight="600" fill="#161f33">❶</text>
+              <!-- HDMI (trapèze) -->
+              <path d="M212 58 h56 l-7 14 h-42 z" fill="#faeede" stroke="#c26a12" stroke-width="1.8"/>
+              <text x="240" y="88" text-anchor="middle" font-size="12" font-weight="600" fill="#161f33">❷</text>
+              <!-- RJ45 -->
+              <rect x="96" y="118" width="34" height="26" rx="3" fill="#e0f2ea" stroke="#12805c" stroke-width="1.8"/>
+              <rect x="105" y="112" width="16" height="8" fill="#e0f2ea" stroke="#12805c" stroke-width="1.8"/>
+              <text x="113" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#161f33">❸</text>
+              <!-- Jack (cercles) -->
+              <g stroke-width="1.8">
+                <circle cx="222" cy="130" r="9" fill="#e0f2ea" stroke="#12805c"/>
+                <circle cx="248" cy="130" r="9" fill="#fbe6e3" stroke="#c33a2f"/>
+                <circle cx="274" cy="130" r="9" fill="#e7ebfb" stroke="#2445c7"/>
+              </g>
+              <text x="248" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#161f33">❹</text>
+              <!-- légende -->
+              <g font-size="12" fill="#4a566e">
+                <text x="382" y="66">❶ = ?</text><text x="382" y="102">❷ = ?</text>
+                <text x="382" y="138">❸ = ?</text><text x="382" y="174">❹ = ?</text>
+              </g>
+            </svg>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Les <b>périphériques externes</b> se branchent sur des <b>ports</b> normalisés : <b><code>USB</code></b> (clavier, souris, clé, imprimante — l'« universel »), <b><code>HDMI</code></b> (écran, image <em>et</em> son), <b><code>RJ45</code></b> (câble réseau Ethernet vers la box), prises <b><code>jack</code></b> (casque, micro, enceintes). Sur les appareils récents, l'<b><code>USB-C</code></b> tend à tout remplacer.</div>
+            <div class="block-label">À toi</div>
+            <div class="field">
+              <span class="field-type">Schéma à légender</span>
+              <div class="field-q">Quel port pour quel usage ?</div>
+              <div class="label-selects" data-diagram>
+                <label>❶ brancher une clé ou une souris
+                  <select data-correct="usb"><option value="">—</option><option value="usb">Ports USB</option><option value="hdmi">Port HDMI</option><option value="rj45">Port RJ45</option><option value="jack">Prises jack</option></select></label>
+                <label>❷ relier l'écran (image + son)
+                  <select data-correct="hdmi"><option value="">—</option><option value="usb">Ports USB</option><option value="hdmi">Port HDMI</option><option value="rj45">Port RJ45</option><option value="jack">Prises jack</option></select></label>
+                <label>❸ le câble réseau vers la box
+                  <select data-correct="rj45"><option value="">—</option><option value="usb">Ports USB</option><option value="hdmi">Port HDMI</option><option value="rj45">Port RJ45</option><option value="jack">Prises jack</option></select></label>
+                <label>❹ casque et micro
+                  <select data-correct="jack"><option value="">—</option><option value="usb">Ports USB</option><option value="hdmi">Port HDMI</option><option value="rj45">Port RJ45</option><option value="jack">Prises jack</option></select></label>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 — CONTENU : caractéristiques -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Lire une fiche technique sans se faire avoir</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre les caractéristiques qui comptent : écran, puissance de calcul, mémoire vive, stockage.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — les chiffres d'une fiche produit</div>
+            <table class="doc-table">
+              <tr><th>Caractéristique</th><th>Ce que ça mesure</th></tr>
+              <tr><td><b>Écran</b></td><td>La diagonale, en <b>pouces</b> (1 pouce = <code>2,54 cm</code> : un écran 15″ ≈ 38 cm) — et sa <b>définition</b> (nombre de pixels)</td></tr>
+              <tr><td><b>Processeur (CPU)</b></td><td>Sa vitesse de calcul, en <b>GHz</b>, et son nombre de <b>cœurs</b> (plusieurs calculateurs côte à côte)</td></tr>
+              <tr><td><b>Mémoire vive (RAM)</b></td><td>L'espace de travail : trop d'applis ouvertes → la RAM sature → tout ralentit</td></tr>
+              <tr><td><b>Stockage</b></td><td>La capacité (en Go/To) et la techno : <b>SSD</b> (rapide) ou disque dur (moins cher)</td></tr>
+            </table>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Quatre chiffres suffisent à jauger une machine : la <b>taille d'écran</b> (en pouces), la fréquence du <b><code>CPU</code></b> (en GHz) et ses <b>cœurs</b>, la quantité de <b><code>RAM</code></b>, et le <b>stockage</b> (un <code>SSD</code> est bien plus rapide qu'un disque dur, à taille égale il coûte plus cher). C'est valable pour un PC… comme pour un smartphone.</div>
+            <div class="block-label">À toi</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète avec le bon mot ou la bonne unité.</div>
+              <div class="cloze" data-cloze>
+                La vitesse de calcul du processeur se mesure en <input class="short" data-answer="GHz" placeholder="unité" aria-label="unité du processeur">. Quand la mémoire vive sature, le système ralentit : on dit qu'il « <input class="short" data-answer="rame" placeholder="verbe" aria-label="verbe familier"> ». Pour le stockage, un <input class="short" data-answer="SSD" placeholder="sigle" aria-label="stockage rapide"> est bien plus rapide qu'un disque dur classique.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 — CONTENU : OS -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Le système d'exploitation : le chef d'orchestre</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir ce qu'est un OS et en citer plusieurs.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">À retenir</div>
+            <div class="retain">Le <b>système d'exploitation</b> (<b><code>OS</code></b>, <em>Operating System</em>) est le logiciel principal de la machine : il fait tourner les autres applications et te donne une interface pour commander le matériel. <b>Windows</b>, <b>macOS</b> et <b>Linux</b> côté ordinateurs ; <b>Android</b> et <b>iOS</b> côté smartphones et tablettes. Sans OS, la machine ne « parle » à personne.</div>
+            <div class="block-label">À toi</div>
+            <div class="field" data-qcm data-answer="1">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Parmi ces trois logiciels, lequel est un système d'exploitation ?</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>Word</button>
+                <button class="opt"><span class="mark"></span>Android</button>
+                <button class="opt"><span class="mark"></span>Fortnite</button>
+              </div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.4 — TUTORIEL : entraide, mode enseignant -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip" style="border-color:var(--france)"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Les derniers rouages du cours : entraide et mode enseignant</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre ce qui se passe quand tu valides… et quand tu bloques.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — les deux rouages qu'il te reste à connaître</div>
+            <p style="font-size:14.5px;margin:4px 0 10px"><b>L'entraide.</b> Regarde la légende en haut de page : 🟢 <em>« Validé — tu peux aider un camarade »</em>. Ce n'est pas décoratif : dans ce cours, avoir validé une question fait de toi une <b>ressource</b> pour les autres. Dans la version complète, tu pourras consulter les réponses des camarades bloqués, les <b>corriger et les conseiller</b> — et la qualité de ton aide comptera dans ta <b>note d'investissement</b>.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px"><b>Le mode enseignant.</b> L'interrupteur en haut à droite est la télécommande de ton professeur : il déverrouille toutes les séances, pour coordonner la classe ou débloquer un élève coincé. Si une séance reste fermée alors que tu devrais y accéder, <b>ce n'est pas à toi de bidouiller</b> : signale-le.</p>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Valider, ce n'est pas seulement avancer : c'est <b>gagner le droit d'aider</b> — et bien aider comptera dans ta <b>note d'investissement</b>. Bloqué sur un verrou ? Le <b>mode enseignant</b> existe pour ça : demande à ton professeur.</div>
+            <div class="block-label">À toi — le dernier exercice du tutoriel</div>
+            <div class="field" data-qcm data-answer="2">
+              <span class="field-type">QCM</span>
+              <div class="field-q">La séance 3 d'un hub reste verrouillée alors que le professeur a demandé de commencer. Que fais-tu ?</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>J'attends que ça se débloque tout seul</button>
+                <button class="opt"><span class="mark"></span>Je demande ses réponses à un camarade pour valider plus vite</button>
+                <button class="opt"><span class="mark"></span>Je le signale au professeur, qui peut ouvrir avec le mode enseignant</button>
+              </div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🎓 Tutoriel terminé</div>
+                Tu connais maintenant tous les rouages : les étapes et leurs pastilles, les quatre types d'exercices, le rituel de la fiche sur OneDrive, l'entraide, le mode enseignant. Chaque nouveau mécanisme du cours sera <b>toujours présenté ici</b>, dans cette séquence d'introduction — reviens-y en cas de doute dans l'année.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERSO -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-style:dashed"></div>
+        <div class="perso-box">
+          <div class="pl">💬 Et toi ? · réponse personnelle, non notée</div>
+          <div class="perso">
+            <div class="field-q" style="font-weight:400">Décris <b>le</b> système informatisé que tu utilises le plus (téléphone ? console ? PC ?) : essaie de citer son <b>OS</b>, sa <b>taille d'écran</b> et son <b>stockage</b>. Tu sais maintenant lire sa fiche technique !</div>
+            <textarea placeholder="Réponds librement — ça servira à lancer la discussion en classe." aria-label="Réponse personnelle"></textarea>
+            <div style="margin-top:8px"><button class="btn ghost" data-share>Partager avec la classe</button></div>
+            <div class="note-free" data-share-note></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BONUS S2 -->
+    <div class="bonus-wrap" data-bonus>
+      <div class="bonus-head" data-bonus-toggle>
+        <span class="bonus-tag">bonus</span>
+        <span class="bl">Pour aller plus loin</span>
+        <span class="chev">▸</span>
+      </div>
+      <div class="bonus-body">
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé).</p>
+        <div class="field free" data-free>
+          <span class="field-type">Manip maison</span>
+          <div class="field-q">Sur ton téléphone, ouvre <b>Paramètres → À propos du téléphone</b> (ou « À propos de cet appareil »). Retrouve sa <b>RAM</b>, son <b>stockage</b> et sa <b>version d'OS</b> — puis réponds : en quoi un smartphone est-il un ordinateur ?</div>
+          <textarea placeholder="Note ce que tu as trouvé et argumente…" aria-label="Réponse ouverte"></textarea>
+          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="verdict"></div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- DÉBRANCHÉ -->
+  <section class="seance" id="deb" data-seance="deb">
+    <div class="seance-head">
+      <h2><span class="s-num">⏳</span>Activité débranchée — autopsie d'une tour</h2>
+      <span class="seance-time">≈ 30 min</span>
+    </div>
+    <p class="seance-goal">Devant un vrai ordinateur de la salle : identifier les connectiques, suivre les câbles, nommer les périphériques — sans rien débrancher sans autorisation !</p>
+    <div class="steps">
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">EN BINÔME · DEVANT UN VRAI POSTE</div>
+            <h3 class="step-title">Observer la machine en vrai</h3>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Le schéma, c'est bien ; le métal, c'est mieux. Par binôme, devant une unité centrale de la salle : repérer les ports de la façade et de l'arrière, identifier chaque câble branché et le périphérique au bout, remplir la fiche d'observation.</p>
+            <div class="res">
+              <a class="res-item debranche" href="#" onclick="return false">
+                <span class="res-code">SYS·D</span>
+                <span class="res-main"><span class="r-title">Fiche d'observation à imprimer (façade / arrière / périphériques)</span><span class="r-type">Activité débranchée · document à venir</span></span>
+                <span class="res-time">~30 min</span>
+              </a>
+            </div>
+            <div class="retain" style="margin-top:14px">Tout ce que tu as légendé sur les schémas existe pour de vrai à cinquante centimètres de toi. Savoir <b>reconnaître les ports</b> et <b>suivre un câble</b>, c'est le premier réflexe pour dépanner une machine — le tien pour toute l'année.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="note">
+    <b>Maquette V0.</b> Les champs sont interactifs pour montrer la mécanique : QCM, trous et schémas corrigés <b>en direct</b> par le navigateur ; réponses rédigées <b>envoyées en correction</b> (copier-coller bloqué) ; réflexions perso <b>non notées</b> ; verrouillage des séances, <b>mode enseignant</b>, fiche téléchargeable. Dans la vraie version, l'envoi passera par ton serveur : correction automatique du texte libre par IA, statut <code>en attente</code> quand ton professeur doit trancher, déblocage de l'entraide une fois <code>validé</code>, et données de progression exportables. 🧭 Cette séquence d'introduction est <b>le référentiel du fonctionnement du cours</b> : chaque nouveau mécanisme de l'année y sera présenté — reviens-y en cas de doute.
+  </footer>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* petit easter egg pour les curieux qui ouvrent la console */
+  console.log("%c🖥️ BIOS SNT v1.0","font-size:16px;font-weight:bold;color:#2445c7");
+  console.log("%cTu as ouvert la console dès la première séquence — excellent réflexe.\nTape  demarrer()  juste ici, et appuie sur Entrée…\n— M. Vanhoorde","font-size:12px;color:#12805c");
+  window.demarrer = function(){
+    return "POST… OK · CPU détecté · RAM détectée · élève détecté 🚀 Système SNT initialisé. Bonne année ! (Et garde ce réflexe de la console : il resservira.)";
+  };
+
+  function verdict(field,cls,msg){var v=field.querySelector('.verdict');if(!v)return;v.className='verdict show '+cls;v.textContent=msg;}
+  function stepOf(el){return el.closest('[data-step]');}
+  function markDone(el){var s=stepOf(el);if(s){s.classList.remove('is-wait');s.classList.add('is-done');}refresh();}
+  function showReveal(field){var r=field.querySelector('[data-reveal]');if(r)r.classList.add('show');}
+
+  /* ---------- déblocage progressif ---------- */
+  function seanceComplete(sec){
+    var gates=sec.querySelectorAll('[data-gate]');
+    if(!gates.length) return true;
+    return Array.from(gates).every(function(g){return g.classList.contains('is-done');});
+  }
+  var seanceWasComplete={};
+  function refresh(){
+    document.querySelectorAll('.seance').forEach(function(sec){
+      var gates=sec.querySelectorAll('[data-gate]');
+      var done=Array.from(gates).filter(function(g){return g.classList.contains('is-done');}).length;
+      var bar=sec.querySelector('[data-progress]');
+      if(bar) bar.style.width = gates.length ? (100*done/gates.length)+'%' : '0%';
+      var id=sec.getAttribute('data-seance');
+      var complete = gates.length>0 && done===gates.length;
+      if(complete && seanceWasComplete[id]===false){ onSeanceComplete(sec); }
+      if(seanceWasComplete[id]===undefined) seanceWasComplete[id]=complete; else seanceWasComplete[id]=complete;
+    });
+    var s1=document.querySelector('[data-seance="1"]');
+    var s2=document.querySelector('[data-seance="2"]');
+    var s3=document.querySelector('[data-seance="3"]');
+    var s4=document.querySelector('[data-seance="4"]');
+    if(s2) s2.classList.toggle('locked', !seanceComplete(s1));
+    if(s3) s3.classList.toggle('locked', !(seanceComplete(s1)&&seanceComplete(s2)));
+    if(s4) s4.classList.toggle('locked', !(seanceComplete(s1)&&seanceComplete(s2)&&seanceComplete(s3)));
+    document.querySelectorAll('[data-navlock]').forEach(function(a){
+      var n=a.getAttribute('data-navlock');
+      var sec=document.querySelector('[data-seance="'+n+'"]');
+      var ico=a.querySelector('.lockico');
+      if(ico) ico.style.display = (sec && sec.classList.contains('locked') && !document.body.classList.contains('teacher')) ? '' : 'none';
+    });
+  }
+
+  /* mode enseignant */
+  document.getElementById('teacherMode').addEventListener('change',function(){
+    document.body.classList.toggle('teacher',this.checked);
+    refresh();
+  });
+
+  /* ---------- QCM ---------- */
+  document.querySelectorAll('[data-qcm]').forEach(function(group){
+    var answer=parseInt(group.dataset.answer,10);
+    var opts=Array.from(group.querySelectorAll('.opt'));
+    opts.forEach(function(opt,i){
+      opt.addEventListener('click',function(){
+        var field=group.closest('.field');
+        opts.forEach(function(o){o.disabled=true;});
+        if(i===answer){opt.classList.add('correct');verdict(field,'ok','✅ Correct — étape validée. Tu peux aider un camarade sur cette question.');showReveal(field);markDone(group);}
+        else{opt.classList.add('wrong');opts[answer].classList.add('correct');verdict(field,'no','À revoir : la bonne réponse est en vert. Reprends la ressource plus haut.');}
+      });
+    });
+  });
+
+  /* ---------- trous ---------- */
+  document.querySelectorAll('[data-check-cloze]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var field=btn.closest('.field');var inputs=Array.from(field.querySelectorAll('[data-answer]'));var all=true;
+      inputs.forEach(function(inp){var ok=inp.value.trim().toLowerCase()===inp.dataset.answer.toLowerCase();inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);if(!ok)all=false;});
+      if(all){verdict(field,'ok','✅ Tout est juste — étape validée.');markDone(btn);}
+      else{verdict(field,'no','Presque : vérifie les cases en rouge, puis re-vérifie.');}
+    });
+  });
+
+  /* ---------- schéma / association ---------- */
+  document.querySelectorAll('[data-check-diagram]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var field=btn.closest('.field');var sels=Array.from(field.querySelectorAll('select'));var all=true;
+      sels.forEach(function(s){var ok=s.value===s.dataset.correct;s.classList.toggle('ok',ok);s.classList.toggle('no',!ok);if(!ok)all=false;});
+      if(all){verdict(field,'ok','✅ Tout est juste — étape validée.');markDone(btn);}
+      else{verdict(field,'no','Pas tout à fait : les menus en rouge sont à revoir.');}
+    });
+  });
+
+  /* ---------- texte libre ---------- */
+  document.querySelectorAll('[data-free]').forEach(function(field){
+    var ta=field.querySelector('textarea');var meta=field.querySelector('[data-meta]');var send=field.querySelector('[data-send-free]');var blocked=false;
+    ['paste','drop'].forEach(function(ev){ta.addEventListener(ev,function(e){e.preventDefault();blocked=true;meta.innerHTML='<span class="warn">⨯ Copier-coller bloqué — écris toi-même</span>';setTimeout(update,1500);});});
+    function update(){var n=ta.value.trim().length;if(!blocked||document.activeElement===ta){meta.innerHTML=n+' caractère'+(n>1?'s':'')+' · saisie au clavier';}send.disabled=n<15;}
+    ta.addEventListener('input',function(){blocked=false;update();});
+    send.addEventListener('click',function(){
+      send.disabled=true;ta.readOnly=true;
+      var s=stepOf(field);if(s)s.classList.add('is-wait');
+      verdict(field,'wait','⏳ Réponse envoyée. Correction automatique en cours — ton professeur validera si besoin.');
+      setTimeout(function(){
+        verdict(field,'ok','✅ Réponse validée. Tu peux maintenant consulter et aider les camarades bloqués.');
+        showReveal(field);markDone(send);
+      }, reduce?400:2400);
+    });
+  });
+
+  /* ---------- perso (partage, non noté) ---------- */
+  document.querySelectorAll('[data-share]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var box=btn.closest('.perso');var ta=box.querySelector('textarea');var note=box.querySelector('[data-share-note]');
+      if(ta.value.trim().length<2){note.textContent='Écris un mot avant de partager 🙂';return;}
+      ta.readOnly=true;btn.disabled=true;note.textContent='✅ Merci — ta réponse nourrit la discussion de classe.';
+    });
+  });
+
+  /* ---------- bonus dépliables ---------- */
+  document.querySelectorAll('[data-bonus-toggle]').forEach(function(h){
+    h.addEventListener('click',function(){h.closest('[data-bonus]').classList.toggle('open');});
+  });
+
+  /* ---------- modal réutilisable ---------- */
+  var mb=document.createElement('div'); mb.className='modal-back';
+  mb.innerHTML='<div class="modal" role="dialog" aria-modal="true"><div class="m-ico"></div><h3></h3><div class="m-body"></div><div class="m-actions"></div></div>';
+  document.body.appendChild(mb);
+  function closeModal(){mb.classList.remove('show');}
+  mb.addEventListener('click',function(e){if(e.target===mb)closeModal();});
+  function openModal(ico,title,bodyHTML,actions){
+    mb.querySelector('.m-ico').textContent=ico;
+    mb.querySelector('.modal h3').textContent=title;
+    mb.querySelector('.m-body').innerHTML=bodyHTML;
+    var a=mb.querySelector('.m-actions'); a.innerHTML='';
+    actions.forEach(function(act){
+      var b=document.createElement('button'); b.className='btn '+(act.cls||''); b.textContent=act.label;
+      b.addEventListener('click',function(){ if(act.fn)act.fn(); if(act.close!==false)closeModal(); });
+      a.appendChild(b);
+    });
+    mb.classList.add('show');
+  }
+
+  /* ---------- récap téléchargeable d'une séance ---------- */
+  function seanceTitle(sec){var h=sec.querySelector('.seance-head h2');return h?h.textContent.replace(/\s+/g,' ').trim():'Séance';}
+  function collectRecap(sec){
+    var rows=[];
+    sec.querySelectorAll('[data-step]').forEach(function(step){
+      var t=step.querySelector('.step-title'); if(!t) return;
+      var done=step.classList.contains('is-done');
+      var wait=step.classList.contains('is-wait');
+      var ret=step.querySelector('.retain');
+      var ans=[];
+      step.querySelectorAll('textarea').forEach(function(ta){if(ta.value.trim())ans.push(ta.value.trim());});
+      step.querySelectorAll('.cloze input,.label-selects select').forEach(function(f){if(f.value&&f.value.trim())ans.push(f.value.trim());});
+      rows.push({title:t.textContent.trim(),status:done?'✅ validé':(wait?'⏳ en attente':'à faire'),retain:ret?ret.innerHTML.trim():'',answer:ans.join(' · ')});
+    });
+    return rows;
+  }
+  function downloadFiche(sec){
+    var title=seanceTitle(sec); var rows=collectRecap(sec);
+    var when=new Date().toLocaleDateString('fr-FR');
+    var body=rows.map(function(r){
+      return '<div class="e"><div class="h"><span>'+r.title+'</span><span class="s">'+r.status+'</span></div>'+(r.retain?'<div class="r"><span class="lbl">À retenir</span>'+r.retain+'</div>':'')+(r.answer?'<div class="a"><span class="lbl">Ma réponse</span>'+r.answer.replace(/</g,'&lt;')+'</div>':'')+'</div>';
+    }).join('');
+    var html='<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>Ma fiche — '+title+'</title>'+
+      '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:30px auto;padding:0 18px;color:#161f33;line-height:1.55}'+
+      'h1{font-size:22px}.meta{color:#667;font-size:13px;margin-bottom:20px}'+
+      '.e{border:1px solid #d3dae7;border-radius:10px;padding:12px 14px;margin-bottom:10px}'+
+      '.h{display:flex;justify-content:space-between;font-weight:600;gap:12px}.s{color:#12805c;font-weight:500;white-space:nowrap}'+
+      '.lbl{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8b97ad;margin-bottom:3px}'+
+      '.r{margin-top:8px;padding:9px 11px;background:#f4f6fb;border-left:3px solid #161f33;border-radius:0 8px 8px 0;font-size:13.5px}'+
+      '.r code{background:#e6e9f2;padding:1px 4px;border-radius:3px;font-family:ui-monospace,monospace;font-size:.9em}'+
+      '.a{margin-top:8px;padding:9px 11px;background:#e7ebfb;border-radius:8px;white-space:pre-wrap;font-size:14px}'+
+      '.tip{margin-top:24px;font-size:12px;color:#8b97ad}</style></head><body>'+
+      '<h1>Ma fiche SNT — '+title+'</h1><div class="meta">Introduction · exportée le '+when+' · à déposer sur ton OneDrive</div>'+
+      body+'<div class="tip">Les exercices restent accessibles sur le hub de la classe.</div></body></html>';
+    var blob=new Blob([html],{type:'text/html'});
+    var url=URL.createObjectURL(blob); var a=document.createElement('a');
+    var slug=title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
+    a.href=url; a.download='ma-fiche-'+(slug||'snt')+'.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
+
+  /* ---------- recommencer une séance ---------- */
+  function resetSeance(sec){
+    sec.querySelectorAll('[data-step]').forEach(function(s){s.classList.remove('is-done','is-wait');
+      var p=s.querySelector('.step-pip'); if(p){p.style.background='';p.style.borderColor='';}});
+    sec.querySelectorAll('.opt').forEach(function(o){o.disabled=false;o.classList.remove('correct','wrong');});
+    sec.querySelectorAll('textarea').forEach(function(t){t.value='';t.readOnly=false;});
+    sec.querySelectorAll('.cloze input').forEach(function(i){i.value='';i.classList.remove('ok','no');});
+    sec.querySelectorAll('.label-selects select').forEach(function(s){s.value='';s.classList.remove('ok','no');});
+    sec.querySelectorAll('.verdict').forEach(function(v){v.className='verdict';v.textContent='';});
+    sec.querySelectorAll('[data-reveal]').forEach(function(r){r.classList.remove('show');});
+    sec.querySelectorAll('[data-send-free]').forEach(function(b){b.disabled=true;});
+    sec.querySelectorAll('[data-share]').forEach(function(b){b.disabled=false;});
+    sec.querySelectorAll('[data-share-note]').forEach(function(n){n.textContent='';});
+    var id=sec.getAttribute('data-seance'); seanceWasComplete[id]=false;
+    refresh();
+  }
+
+  /* barre d'actions (télécharger / recommencer) à la fin de chaque séance à valider */
+  document.querySelectorAll('.seance').forEach(function(sec){
+    if(!sec.querySelector('[data-gate]')) return;
+    var host=sec.querySelector('.lockable'); if(!host) return;
+    var bar=document.createElement('div'); bar.className='seance-actions';
+    bar.innerHTML='<span class="sa-label">💾 Pense à déposer ta fiche sur ton OneDrive à la fin de la séance.</span>';
+    var dl=document.createElement('button'); dl.className='btn dl sm'; dl.textContent='📥 Télécharger ma fiche';
+    dl.addEventListener('click',function(){downloadFiche(sec);});
+    var rs=document.createElement('button'); rs.className='btn reset sm'; rs.textContent='🔁 Recommencer';
+    rs.addEventListener('click',function(){
+      openModal('🔁','Recommencer cette séance ?',
+        '<p>Tu vas repartir d\'une fiche vierge pour cette séance. Tes réponses actuelles seront effacées de l\'écran.<br><b>Télécharge d\'abord ta fiche</b> si tu veux garder tes réponses et tes corrections.</p>',
+        [{label:'📥 Télécharger d\'abord',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
+         {label:'Recommencer',cls:'reset',fn:function(){resetSeance(sec);}}]);
+    });
+    bar.appendChild(dl); bar.appendChild(rs); host.appendChild(bar);
+  });
+
+  /* pop-up de fin de séance */
+  function onSeanceComplete(sec){
+    var title=seanceTitle(sec);
+    var rows=collectRecap(sec).filter(function(r){return r.status.indexOf('validé')>-1;});
+    var recap='<div class="recap">'+rows.map(function(r){return '<div class="ri"><span>'+r.title+'</span><b>✓</b></div>';}).join('')+'</div>';
+    openModal('🎉','Séance terminée — bravo !',
+      recap+'<p style="margin-top:2px">Tu as validé toute la séance. Télécharge ta fiche pour la garder, puis dépose-la sur ton OneDrive.</p>',
+      [{label:'📥 Télécharger ma fiche',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
+       {label:'Continuer',cls:'ghost'}]);
+  }
+
+  refresh();
+})();
+</script>
+</body>
+</html>
