@@ -47,7 +47,7 @@ Le dépôt héberge **deux gabarits distincts**, chacun avec ses consignes :
 | Style | `assets/css/chapitre-commun.css?v=N` | CSS inline dans la page |
 | Déblocage | code de déblocage (`AT0MES`…) | verrouillage progressif + mode enseignant |
 | Persistance | `localStorage` | **interdit** — téléchargement de fiche |
-| Maturité | rodé (14 chapitres ébauchés) | phase 1, **3 hubs V0** (Web, Internet, Intro) |
+| Maturité | rodé (14 chapitres ébauchés) | phase 1, **8 hubs amorcés** (t0-t7 ; Web/Internet/Intro en V0, les autres partiels) |
 
 **Avant de produire ou de modifier une page, ouvre la consigne correspondante.**
 Elles sont autonomes : chacune rappelle son périmètre et ce qui ne se transpose

@@ -165,6 +165,16 @@ source, puisqu'il change chaque année).
   (section SNT-T7). Deux erreurs de la source corrigées au passage dans le
   contenu à venir (canal alpha ≠ « saturation » ; formats d'images datés).
 
+- 🆕 **SNT — chantier des 4 thèmes lancé (18/07)** : hubs **Réseaux sociaux**
+  (`t3`, `SOC·x`), **Données structurées** (`t4`, `DAT·x`, court 2 séances),
+  **Localisation & cartographie** (`t5`, `LOC·x`) et **Informatique embarquée**
+  (`t6`, `EMB·x`) créés en **V0 partielle** (S1 rédigées, suite en squelettes
+  🚧), liés depuis `pages/2nde-snt.html`. Arbitrages de périmètre et nouvelles
+  règles de production (intégrer plutôt que renvoyer, notes de chantier dans la
+  page, plateformes fictives) consignés dans `CONSIGNES-hub-SNT.md` §14. Détail
+  par hub : `chapitres.md`. **Décisions 📌/⚖️/📅 en attente** signalées par des
+  encarts `<aside class="chantier decision">` dans chaque page (voir §14.2).
+
 ## 📊 Avancement (Seconde — Thème 1)
 
 Tout est en ligne à l'état d'ébauche. Niveau de finition **validé** :
@@ -213,18 +223,20 @@ voir Alertes + snippet `cartes-theme3-a-coller.html`). Niveau de finition
 
 ## 📊 Avancement (Seconde — SNT)
 
-**Nouveau (17/07).** Gabarit « hub élève », distinct des chapitres de PC.
-Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; un seul hub existe.
+**Nouveau (17-18/07).** Gabarit « hub élève », distinct des chapitres de PC.
+Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; **8 hubs existent** (t0 à
+t7), tous liés depuis la page de niveau. Détail par hub et restes à faire :
+section « Seconde — SNT » de `chapitres.md`.
 
 | Thème | Hub en ligne | Validé | Ressources définitives |
 |---|---|---|---|
 | SNT 0 · Introduction 🧭 | ✅ V0 (2 séances + débranchée) | ⬜ non | ⬜ `SYS·1`, `SYS·D` à brancher |
+| SNT 1 · Internet | ✅ V0 (4 séances + débranchée) | ⬜ non | ⬜ `NET·2b`, `NET·D`, liens `NET·3/4` à tester |
 | SNT 2 · Le Web | ✅ V0 (4 séances + frise) | ⬜ non | ⬜ activités cahier + frise à brancher |
-| SNT 1 · Internet | ⬜ | ⬜ non | — |
-| SNT 3 · Réseaux sociaux | ⬜ | ⬜ non | — |
-| SNT 4 · Données structurées | ⬜ | ⬜ non | — |
-| SNT 5 · Localisation & cartographie | ⬜ | ⬜ non | — |
-| SNT 6 · Informatique embarquée | ⬜ | ⬜ non | — |
+| SNT 3 · Réseaux sociaux | 🔄 V0 partiel (S1 OK, S2 aux ⅔, S4 enquête codée ; S3 + fin S4 🚧) | ⬜ non | ⬜ `SOC·P`, `SOC·D`, biblio Skyblog-BnF |
+| SNT 4 · Données structurées | 🔄 V0 partiel (S1 Titanic OK ; S2 🚧) — hub court 2 séances | ⬜ non | ⬜ `DAT·1`, `DAT·1b`, `DAT·D`, biblio Légifrance |
+| SNT 5 · Localisation & cartographie | 🔄 V0 partiel (S1-S2 OK ; S3-S4 🚧) | ⬜ non | ⬜ `LOC·1`, `LOC·2b`, `LOC·D`, biblios |
+| SNT 6 · Informatique embarquée | 🔄 V0 partiel (S1 OK ; S2-S4 🚧) — 4 séances provisoire | ⬜ non | ⬜ `EMB·D`, biblios Moreno/IoT |
 | SNT 7 · Photographie numérique | ✅ V0 (S1 complète + S2-S5 🚧 + débranchée cadrée) | ⬜ non | ⬜ `PHO·1`, `PHO·D` à brancher |
 
 > Phase 1 (rentrée) : HTML statique autonome, correction locale réelle, texte
@@ -247,5 +259,11 @@ Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; un seul hub existe.
       en séance 1, brancher les ressources définitives (`WEB·2b`, `WEB·D`).
 - [ ] **SNT T7 Photo — rédiger S2 à S5** (séance par séance, arbitrage fait) +
       la frise débranchée `PHO·D` ; choisir la vidéo-débat deepfake (`PHO·1`).
-- [ ] **SNT — décliner le gabarit du hub** sur les autres thèmes (Données
-      structurées…).
+- [ ] **SNT — finir les 4 hubs du 18/07** (T3-T6) : rédiger les séances en
+      squelette, brancher les ressources définitives, lever les décisions 📌/⚖️/📅
+      posées en encarts `chantier` dans chaque page. Détail : `chapitres.md`.
+- [ ] **SNT — étape « Ranger pour retrouver » à ajouter dans t0** (données
+      structurées en transversal, référentiel vivant — voir `CONSIGNES-hub-SNT.md`
+      §14.4).
+- [ ] **SNT — trancher l'extraction d'un `gabarit-hub-snt.html`** : conventions
+      désormais confirmées par 8 hubs (décision de Loïc — `CONSIGNES-hub-SNT.md` §13).

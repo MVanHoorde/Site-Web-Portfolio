@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNT · Les données structurées — Hub élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  :root{
+    --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+    --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+    --link:#2445c7; --link-wash:#e7ebfb;
+    --activity:#c26a12; --activity-wash:#faeede;
+    --ok:#12805c; --ok-wash:#e0f2ea;
+    --err:#c33a2f; --err-wash:#fbe6e3;
+    --wait:#9a6a00; --wait-wash:#fbf1d8;
+    --france:#164a8a; --france-wash:#e6eef8;
+    --hist:#6b4a9a; --hist-wash:#efe9f7;
+    --bonus:#0f6d63; --bonus-wash:#e0f1ef;
+    --radius:14px; --shadow:0 1px 2px rgba(22,31,51,.05),0 8px 24px rgba(22,31,51,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+  code{font-family:"IBM Plex Mono",monospace}
+
+  /* HEADER */
+  header.masthead{background:radial-gradient(120% 140% at 90% -10%,rgba(36,69,199,.10),transparent 55%),var(--surface);border-bottom:1px solid var(--line);padding:34px 0 26px}
+  .eyebrow{font-family:"IBM Plex Mono";font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--link);font-weight:600;margin-bottom:10px}
+  h1.title{font-family:"Space Grotesk";font-weight:700;font-size:clamp(38px,7vw,60px);line-height:.98;margin:0 0 4px;letter-spacing:-.02em}
+  h1.title .tag{font-family:"IBM Plex Mono";font-weight:500;color:var(--ink-faint);font-size:.42em;vertical-align:middle}
+  .lede{color:var(--ink-soft);max-width:60ch;margin:14px 0 22px;font-size:16.5px}
+  .themes{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
+  .theme-chip{font-size:12.5px;padding:5px 11px;border-radius:100px;border:1px solid var(--line);color:var(--ink-faint);background:var(--surface-2);font-family:"IBM Plex Mono"}
+  .theme-chip.on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:500}
+  .meta-row{display:flex;flex-wrap:wrap;gap:22px;align-items:baseline}
+  .meta-row .m{font-size:14px;color:var(--ink-soft)} .meta-row .m b{color:var(--ink);font-weight:600}
+
+  /* NAV */
+  nav.seances{position:sticky;top:0;z-index:30;background:rgba(233,237,244,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.seances .wrap{display:flex;gap:6px;align-items:center;overflow-x:auto;padding:9px 20px}
+  nav.seances a{white-space:nowrap;text-decoration:none;color:var(--ink-soft);font-size:13.5px;font-weight:500;padding:7px 13px;border-radius:9px;border:1px solid transparent;transition:.15s;display:flex;align-items:center;gap:6px}
+  nav.seances a:hover{background:var(--surface);border-color:var(--line);color:var(--ink)}
+  nav.seances a .n{font-family:"IBM Plex Mono";color:var(--link)}
+  nav.seances a .lockico{font-size:11px;opacity:.6}
+  nav.seances a.retour{color:var(--ink-faint);border-right:1px solid var(--line);border-radius:9px 0 0 9px;margin-right:4px;padding-right:14px}
+  nav.seances a.retour:hover{border-color:var(--line);color:var(--ink)}
+  .spacer{flex:1}
+  .teacher-toggle{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:12.5px;color:var(--ink-soft);cursor:pointer;user-select:none}
+  .teacher-toggle input{display:none}
+  .switch{width:34px;height:19px;border-radius:100px;background:var(--line);position:relative;transition:.2s;flex:none}
+  .switch::after{content:"";position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .teacher-toggle input:checked + .switch{background:var(--france)}
+  .teacher-toggle input:checked + .switch::after{left:17px}
+
+  /* LEGEND */
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin:24px 0 4px;padding:13px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);font-size:13px;color:var(--ink-soft)}
+  .legend .dot{display:inline-flex;align-items:center;gap:7px}
+  .pip{width:13px;height:13px;border-radius:50%;flex:none;border:2px solid var(--ink-faint)}
+  .pip.doing{background:conic-gradient(var(--link) 50%,transparent 0);border-color:var(--link)}
+  .pip.wait{background:var(--wait-wash);border-color:var(--wait)} .pip.done{background:var(--ok);border-color:var(--ok)}
+
+  /* SÉANCE */
+  section.seance{padding:38px 0 8px;position:relative}
+  .seance-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:6px}
+  .seance-head h2{font-family:"Space Grotesk";font-weight:600;font-size:clamp(22px,3.4vw,28px);margin:0;letter-spacing:-.01em}
+  .seance-head h2 .s-num{color:var(--link);font-family:"IBM Plex Mono";font-size:.7em;margin-right:8px}
+  .seance-time{font-family:"IBM Plex Mono";font-size:13px;color:var(--ink-faint);white-space:nowrap}
+  .seance-goal{color:var(--ink-soft);font-size:14.5px;margin:0 0 8px;max-width:70ch}
+  .progress-line{height:5px;background:var(--line);border-radius:100px;overflow:hidden;margin:12px 0 4px}
+  .progress-line i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+
+  /* verrouillage */
+  .lock-banner{display:none;align-items:center;gap:12px;background:var(--surface);border:1px dashed var(--france);border-radius:var(--radius);padding:14px 16px;margin-top:14px;color:var(--france);font-size:14px}
+  .lock-banner .k{font-size:20px}
+  .lockable{transition:.3s}
+  .seance.locked .lock-banner{display:flex}
+  .seance.locked .lockable{filter:blur(3px);opacity:.45;pointer-events:none;user-select:none}
+  body.teacher .seance.locked .lockable{filter:none;opacity:1;pointer-events:auto;user-select:auto}
+  body.teacher .seance.locked .lock-banner{border-color:var(--ink-faint);color:var(--ink-soft)}
+  body.teacher .seance.locked .lock-banner .k::before{content:"🔓"}
+  .seance.locked .lock-banner .k::before{content:"🔒"}
+
+  /* étapes */
+  .steps{position:relative;margin-top:20px}
+  .step{position:relative;padding-left:40px;padding-bottom:14px}
+  .rail{position:absolute;left:13px;top:6px;bottom:-10px;width:2px;background:var(--line)}
+  .step:last-child .rail{display:none}
+  .step-pip{position:absolute;left:6px;top:4px;width:16px;height:16px;border-radius:50%;border:2px solid var(--ink-faint);background:var(--bg);z-index:2;transition:.2s}
+  .step.is-done .step-pip{background:var(--ok);border-color:var(--ok)}
+  .step.is-done .rail{background:linear-gradient(var(--ok),var(--line))}
+  .step.is-wait .step-pip{background:var(--wait-wash);border-color:var(--wait)}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card-top{padding:16px 18px 4px}
+  .step-kicker{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);letter-spacing:.03em;margin-bottom:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .badge{font-family:"IBM Plex Mono";font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:5px}
+  .badge.gate{background:var(--link-wash);color:var(--link)}
+  .step-title{font-family:"Space Grotesk";font-weight:600;font-size:19px;margin:0 0 8px;letter-spacing:-.01em}
+  .objective{display:flex;gap:9px;font-size:14px;color:var(--ink-soft);background:var(--link-wash);border-radius:10px;padding:9px 12px;margin:2px 0 4px}
+  .objective b{color:var(--link);font-weight:600}
+  .card-body{padding:6px 18px 18px}
+  .block-label{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+  .block-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* ressources */
+  .res{display:flex;flex-direction:column;gap:7px}
+  .res-item{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-decoration:none;color:inherit;transition:.15s}
+  a.res-item:hover{border-color:var(--link);background:var(--link-wash)}
+  .res-code{font-family:"IBM Plex Mono";font-size:11px;font-weight:600;flex:none;padding:3px 7px;border-radius:6px;background:var(--ink);color:#fff;margin-top:1px}
+  .res-item.activity .res-code{background:var(--activity)} .res-item.debranche .res-code{background:#5b3fa8}
+  .res-main{flex:1;min-width:0} .res-main .r-title{font-weight:500;font-size:14.5px} .res-main .r-type{font-size:12.5px;color:var(--ink-faint)}
+  .res-time{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);flex:none;margin-top:2px}
+  .res-item.activity{background:var(--activity-wash);border-color:#eed4b6} .res-item.activity:hover{border-color:var(--activity)}
+
+  /* à retenir + tableaux docs */
+  .retain{border-left:3px solid var(--ink);background:var(--surface-2);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px}
+  .retain code{background:#eceff7;padding:1px 5px;border-radius:4px;font-size:.9em;color:var(--link)}
+  .doc-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0}
+  .doc-table th,.doc-table td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+  .doc-table th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:12px;font-weight:600;color:var(--ink-soft)}
+  .doc-table code{color:var(--link)}
+
+  /* encadré histoire (révélé) */
+  .reveal{display:none;margin-top:12px;border-radius:12px;padding:13px 15px;font-size:14px;line-height:1.6;border:1px solid var(--hist);background:var(--hist-wash);color:#3e2c5c}
+  .reveal.show{display:block;animation:fade .4s ease}
+  .reveal .rl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--hist);font-weight:600;margin-bottom:5px;display:flex;gap:6px;align-items:center}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* encadré france (toujours visible) */
+  .france-box{position:relative;border:1px solid var(--france);background:var(--france-wash);border-radius:var(--radius);padding:16px 18px;margin-top:6px;overflow:hidden}
+  .france-box::before{content:"";position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#0a3d91 0 33.3%,#fff 33.3% 66.6%,#e1122f 66.6% 100%)}
+  .france-box .fl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--france);font-weight:600;margin:4px 0 8px;display:flex;gap:7px;align-items:center}
+  .france-box h4{font-family:"Space Grotesk";margin:0 0 6px;font-size:17px;color:var(--france)}
+  .france-box p{margin:0 0 9px;font-size:14px;color:#1f3a5c;line-height:1.6}
+  .france-box .warn-note{font-size:13px;background:#fff;border-radius:9px;padding:9px 12px;color:var(--ink-soft);border:1px solid #cdddf0}
+  .france-cols{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .france-cols .txt{flex:1;min-width:220px}
+  .minitel-fig{flex:none;width:150px;text-align:center}
+  .minitel-fig svg{width:150px;height:auto}
+  .minitel-fig figcaption{font-size:11.5px;color:var(--ink-faint);margin-top:4px;font-style:italic}
+  .biblio{margin-top:10px;background:#fff;border:1px solid #cdddf0;border-radius:10px;padding:10px 13px}
+  .biblio .bl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--france);font-weight:600;margin-bottom:6px;display:flex;gap:6px;align-items:center}
+  .biblio a{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--france);text-decoration:none;border-bottom:1px dotted var(--france);margin:2px 12px 2px 0}
+  .biblio a:hover{background:var(--france-wash)}
+  .biblio a::before{content:"↗";font-size:11px;opacity:.7}
+  .reveal .biblio{background:rgba(255,255,255,.6);border-color:var(--hist)}
+  .reveal .biblio .bl,.reveal .biblio a{color:var(--hist)} .reveal .biblio a{border-bottom-color:var(--hist)}
+
+  /* champs */
+  .field{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface-2)}
+  .field + .field{margin-top:10px}
+  .field-q{font-weight:500;font-size:15px;margin-bottom:11px}
+  .field-type{float:right;font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 6px;text-transform:uppercase}
+  .opts{display:flex;flex-direction:column;gap:7px}
+  .opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer;font-size:14.5px;transition:.12s;text-align:left}
+  .opt:hover{border-color:var(--link)} .opt .mark{width:18px;height:18px;border-radius:50%;border:2px solid var(--ink-faint);flex:none}
+  .opt.correct{background:var(--ok-wash);border-color:var(--ok);color:#0c5c42} .opt.correct .mark{background:var(--ok);border-color:var(--ok)}
+  .opt.wrong{background:var(--err-wash);border-color:var(--err);color:#8f2a22} .opt.wrong .mark{background:var(--err);border-color:var(--err)}
+  .opt:disabled{cursor:default}
+  .cloze{font-size:15px;line-height:2.2}
+  .cloze input{font-family:"IBM Plex Mono";font-size:14px;border:none;border-bottom:2px solid var(--link);background:var(--link-wash);border-radius:5px 5px 0 0;padding:3px 8px;width:120px;color:var(--ink)}
+  .cloze input:focus{outline:2px solid var(--link);outline-offset:1px}
+  .cloze input.ok{border-color:var(--ok);background:var(--ok-wash);color:#0c5c42} .cloze input.no{border-color:var(--err);background:var(--err-wash);color:#8f2a22}
+  .diagram{width:100%;height:auto;display:block;margin:2px 0 10px} .diagram text{font-family:"IBM Plex Sans"}
+  .label-selects{display:flex;flex-wrap:wrap;gap:10px}
+  .label-selects label{font-size:13px;color:var(--ink-soft);display:flex;flex-direction:column;gap:3px}
+  .label-selects select{font-family:"IBM Plex Sans";font-size:13.5px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+  .label-selects select.ok{border-color:var(--ok);background:var(--ok-wash)} .label-selects select.no{border-color:var(--err);background:var(--err-wash)}
+  .free textarea,.perso textarea{width:100%;min-height:88px;resize:vertical;font-family:"IBM Plex Sans";font-size:14.5px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);line-height:1.5}
+  .free textarea:focus,.perso textarea:focus{outline:2px solid var(--link);outline-offset:1px;border-color:var(--link)}
+  .free-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:9px;flex-wrap:wrap}
+  .free-meta{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--ink-faint)} .free-meta .warn{color:var(--err)}
+  .btn{font-family:"IBM Plex Sans";font-weight:600;font-size:14px;cursor:pointer;padding:9px 16px;border-radius:9px;border:1px solid var(--link);background:var(--link);color:#fff;transition:.15s}
+  .btn:hover{filter:brightness(1.08)} .btn.ghost{background:transparent;color:var(--link)} .btn:disabled{opacity:.5;cursor:default;filter:none}
+  .verdict{margin-top:10px;font-size:13.5px;padding:9px 12px;border-radius:9px;display:none}
+  .verdict.show{display:block}
+  .verdict.ok{background:var(--ok-wash);color:#0c5c42;border:1px solid var(--ok)}
+  .verdict.wait{background:var(--wait-wash);color:#7a5400;border:1px solid var(--wait)}
+  .verdict.no{background:var(--err-wash);color:#8f2a22;border:1px solid var(--err)}
+
+  /* perso */
+  .perso-box{border:1px solid #cdddf0;background:#fff;border-radius:12px;padding:14px}
+  .perso-box .pl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:8px;display:flex;gap:6px;align-items:center}
+  .perso-box .note-free{font-size:12.5px;color:var(--ink-faint);margin-top:7px}
+
+  /* bonus */
+  .bonus-wrap{margin-top:18px;border:1px solid var(--bonus);border-radius:var(--radius);overflow:hidden}
+  .bonus-head{background:var(--bonus-wash);padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer}
+  .bonus-head .bl{font-family:"Space Grotesk";font-weight:600;color:var(--bonus);font-size:16px;flex:1}
+  .bonus-head .chev{transition:.2s;color:var(--bonus)}
+  .bonus-wrap.open .chev{transform:rotate(90deg)}
+  .bonus-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .bonus-wrap.open .bonus-body{max-height:1400px;padding:14px 16px}
+  .bonus-body .field{background:#fff}
+  .bonus-tag{font-size:12px;color:var(--bonus);background:#fff;border:1px solid var(--bonus);border-radius:100px;padding:2px 9px;font-family:"IBM Plex Mono"}
+
+  footer.note{margin:42px 0 60px;padding:20px 22px;border:1px dashed var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink-soft);font-size:13.5px}
+  footer.note b{color:var(--ink)} footer.note code{background:var(--surface-2);padding:1px 5px;border-radius:4px;color:var(--link)}
+
+  /* barre d'actions séance */
+  .seance-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+  .seance-actions .sa-label{flex:1;min-width:160px;font-size:13px;color:var(--ink-soft);align-self:center}
+  .btn.sm{padding:8px 13px;font-size:13px}
+  .btn.dl{background:var(--ok);border-color:var(--ok)}
+  .btn.reset{background:transparent;color:var(--ink-soft);border-color:var(--line)}
+  .btn.reset:hover{border-color:var(--err);color:var(--err)}
+
+  /* modal */
+  .modal-back{position:fixed;inset:0;background:rgba(22,31,51,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal-back.show{display:flex}
+  .modal{background:var(--surface);border-radius:18px;max-width:440px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;animation:pop .25s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+  .modal .m-ico{font-size:40px;margin-bottom:6px}
+  .modal h3{font-family:"Space Grotesk";font-size:22px;margin:0 0 8px;color:var(--ink)}
+  .modal p{font-size:14.5px;color:var(--ink-soft);margin:0 0 18px;line-height:1.55}
+  .modal .m-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .modal .recap{text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13.5px;max-height:200px;overflow:auto}
+  .modal .recap .ri{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid var(--line)}
+  .modal .recap .ri:last-child{border-bottom:none}
+  .modal .recap .ri b{color:var(--ok)}
+
+  /* manip piège à clic (sécurité) */
+  .trap-zone{border:2px dashed var(--err);border-radius:12px;padding:18px;text-align:center;background:var(--err-wash)}
+  .trap-btn{font-family:"Space Grotesk";font-weight:700;font-size:18px;cursor:pointer;padding:14px 26px;border-radius:10px;border:none;background:var(--err);color:#fff;animation:wiggle 1.6s ease-in-out infinite}
+  @keyframes wiggle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+  .trap-reveal{display:none;margin-top:14px;font-size:14px;color:var(--ink);background:#fff;border-radius:10px;padding:12px 14px;border:1px solid var(--line);text-align:left}
+  .trap-reveal.show{display:block}
+  body.pwned{animation:hue 1.2s linear 3}
+  @keyframes hue{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
+
+  @media (prefers-reduced-motion:reduce){.trap-btn{animation:none}body.pwned{animation:none}}
+
+  @media (max-width:560px){
+    .field-type{float:none;display:inline-block;margin-bottom:8px}
+    .seance-head{flex-direction:column;gap:2px}
+    .cloze input{width:92px}
+    nav.seances .teacher-toggle span.tlabel{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto;animation:none!important}}
+
+  /* ===== NOTES DE CHANTIER (à supprimer à la validation — retirer chaque bloc <!-- CHANTIER --> ... <!-- /CHANTIER -->) ===== */
+  :root{--work:#8a6400;--work-line:#b8860b;--work-ink:#5a4500;--work-b:#3f3000;--work-w1:#fdf6dd;--work-w2:#faeec2;
+        --dec:#c33a2f;--dec-ink:#6e1f18;--dec-b:#4a1410;--dec-w1:#fdeceb;--dec-w2:#fadbd8}
+  .chantier{position:relative;margin:14px 0;border:2px dashed var(--work-line);border-radius:12px;background:repeating-linear-gradient(-45deg,var(--work-w1),var(--work-w1) 12px,var(--work-w2) 12px,var(--work-w2) 24px);padding:12px 15px;font-size:13.5px;color:var(--work-ink);line-height:1.55}
+  .chantier .cl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--work);display:flex;gap:7px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+  .chantier b{color:var(--work-b)}
+  .chantier ul{margin:4px 0 0;padding-left:18px}
+  .chantier li{margin:2px 0}
+  .chantier a{color:var(--work);font-weight:600}
+  .chantier.decision{border-color:var(--dec);background:repeating-linear-gradient(-45deg,var(--dec-w1),var(--dec-w1) 12px,var(--dec-w2) 12px,var(--dec-w2) 24px);color:var(--dec-ink)}
+  .chantier.decision .cl{color:var(--dec)}
+  .chantier.decision b{color:var(--dec-b)}
+  body.eleve .chantier{display:none} /* filet : une classe 'eleve' sur <body> masque toutes les notes d'un coup */
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">SNT · Thème 4 · Seconde</div>
+    <h1 class="title">Les données structurées <span class="tag">.csv</span></h1>
+    <p class="lede">Derrière chaque appli, chaque carte, chaque réseau social : des tables de données, rangées pour être triées, filtrées, croisées. Cette séquence courte t'apprend à les lire — sur un fichier vieux de plus d'un siècle qui a encore des choses à dire.</p>
+    <div class="themes">
+      <span class="theme-chip">Internet</span><span class="theme-chip">Le Web</span>
+      <span class="theme-chip">Réseaux sociaux</span><span class="theme-chip on">Données structurées</span>
+      <span class="theme-chip">Localisation &amp; cartographie</span><span class="theme-chip">Informatique embarquée</span>
+      <span class="theme-chip">Photographie numérique</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>2 séances</b> + 1 activité débranchée</span>
+      <span class="m">Durée <b>≈ 3 h 30</b></span>
+      <span class="m">Format court : le thème vit <b>aussi dans les autres séquences</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-snt.html">← SNT</a>
+    <a href="#s1"><span class="n">S1</span>L'enquête Titanic</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>Métadonnées &amp; cloud <span class="lockico">🔒</span></a>
+    <a href="#deb"><span class="n">⏳</span>Tri humain</a>
+    <span class="spacer"></span>
+    <label class="teacher-toggle" title="Déverrouille toutes les séances (usage enseignant)">
+      <input type="checkbox" id="teacherMode">
+      <span class="switch"></span><span class="tlabel">Mode enseignant</span>
+    </label>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- CHANTIER : état global + stratégie transversale -->
+  <aside class="chantier">
+    <div class="cl">🚧 État du hub — maquette V0, non validée · stratégie transversale</div>
+    <b>Hub volontairement COURT</b> (décision Loïc 18/07) : 2 séances mobilisables ponctuellement (« une séance de temps en temps »). Le thème vit <b>aussi en transversal</b> : ① nouvelle étape « Ranger pour retrouver » à ajouter dans l'<b>Introduction t0</b> (référentiel vivant — c'est là qu'elle se présente, à faire dans un chantier t0 dédié) ; ② l'activité <b>EXIF photos</b> sera branchée dans le hub <b>Photographie numérique</b> (S2/S5) ; ③ la trame NMEA du hub <b>Localisation</b> (S3) fait déjà le pont vers le CSV ; ④ rappels d'une ligne dans Internet (trame TCP/IP) et Web (index des moteurs) — à glisser lors de leurs prochains chantiers. Ici : la donnée en table (S1) et la donnée sur les fichiers + le cloud (S2). <b>S1 complète, S2 en squelette.</b>
+  </aside>
+  <!-- /CHANTIER -->
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>Objets, descripteurs, valeurs : l'enquête Titanic</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Un vrai fichier de 1 309 passagers du Titanic : apprendre à lire une table de données, ouvrir le capot d'un CSV, puis trier et filtrer pour répondre à une vraie question d'histoire.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 — accroche + vocabulaire -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Une table, des objets, des descripteurs</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> acquérir le vocabulaire des données structurées : collection, objet, descripteur, valeur.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — un extrait du fichier des passagers</div>
+            <table class="doc-table">
+              <tr><th>classe</th><th>survie</th><th>nom</th><th>sexe</th><th>age</th><th>tarif</th></tr>
+              <tr><td>1</td><td>1</td><td>Anderson, Mr. Harry</td><td>1</td><td>48</td><td>26,55</td></tr>
+              <tr><td>3</td><td>0</td><td>Andersson, Miss. Ebba</td><td>0</td><td>6</td><td>31,27</td></tr>
+              <tr><td>2</td><td>1</td><td>Ball, Mrs. Ada E.</td><td>0</td><td>36</td><td>13,00</td></tr>
+            </table>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Une <b>donnée structurée</b> est rangée dans une <b>table</b> (une collection). Chaque <b>ligne</b> est un <b>objet</b> (ici : un passager), chaque <b>colonne</b> est un <b>descripteur</b> (classe, nom, âge…), et chaque case contient une <b>valeur</b>. C'est cette organisation qui permet à une machine de trier, filtrer et croiser des milliers de lignes en un instant — l'inverse d'un texte libre, que la machine ne sait pas exploiter directement.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Dans ce fichier, « Andersson, Miss. Ebba » est…</div>
+              <div class="opts" data-qcm data-answer="2">
+                <button class="opt"><span class="mark"></span>un descripteur de la table.</button>
+                <button class="opt"><span class="mark"></span>une collection de données.</button>
+                <button class="opt"><span class="mark"></span>la valeur du descripteur « nom » pour un objet (un passager).</button>
+              </div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">⏳ Le sais-tu ?</div>
+                Ce fichier est un <b>vrai jeu de données historique</b> : les passagers du <b>Titanic</b>, naufragé en 1912. Plus d'un siècle après, il sert encore… à apprendre l'analyse de données dans le monde entier — parce que ses colonnes racontent une histoire que les chiffres seuls vont te révéler d'ici la fin de la séance.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 — le CSV à l'œil nu -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Ouvrir le capot : le format CSV</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> découvrir qu'une table n'est qu'un fichier texte avec un séparateur — et savoir le lire sans tableur.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Manipule</div>
+            <div class="res">
+              <a class="res-item activity" href="#" onclick="return false">
+                <span class="res-code">DAT·1</span>
+                <span class="res-main"><span class="r-title">Télécharge le fichier des passagers (OneDrive), ouvre-le avec Excel PUIS avec le Bloc-notes</span><span class="r-type">Activité guidée · fichier .xlsx et .csv</span></span>
+                <span class="res-time">~15 min</span>
+              </a>
+            </div>
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🔍 Ressource à brancher · ✏️ fichier à toiletter</div>
+              <ul>
+                <li><code>DAT·1</code> inerte : poser le lien OneDrive du fichier Titanic (chemin de l'année en cours).</li>
+                <li>Le xlsx source contient une <b>colonne fantôme vide</b> (« Unnamed ») et les formules d'exemple du doc d'origine supposaient 37 lignes alors qu'il y en a <b>1 309</b> → nettoyer le fichier et harmoniser la fiche d'activité avant mise en ligne.</li>
+                <li>La légende des valeurs (sexe : 1 = homme, 0 = femme ; survie : 1 = survivant) doit figurer sur la fiche — sinon question piège involontaire. 🧠</li>
+              </ul>
+            </aside>
+            <!-- /CHANTIER -->
+            <div class="block-label">À retenir</div>
+            <div class="retain">Le format <b>CSV</b> (<i>Comma-Separated Values</i>) est le plus simple des formats de données : un <b>fichier texte</b>, une ligne par objet, des valeurs séparées par un caractère <b>séparateur</b> (virgule, ou <b>point-virgule</b> en France). La première ligne liste les descripteurs. Aucun logiciel imposé : le Bloc-notes suffit à le lire — et c'est exactement ainsi que les machines s'échangent des tables. Tu l'as déjà croisé : la <b>trame NMEA</b> des satellites (séquence Localisation) suit le même principe.</div>
+            <div class="block-label">Complète</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète : dans le fichier ouvert au Bloc-notes, les valeurs sont séparées par un <b>…</b> (en France) ; la première ligne du fichier contient les <b>…</b> ; chaque autre ligne correspond à un <b>…</b>.</div>
+              <div class="cloze" data-cloze>
+                séparées par un <input data-answer="point-virgule" placeholder="…" style="width:140px" aria-label="séparateur"> · la 1ʳᵉ ligne contient les <input data-answer="descripteurs" placeholder="…" style="width:140px" aria-label="contenu de la première ligne"> · chaque autre ligne est un <input data-answer="objet" placeholder="…" aria-label="nature d'une ligne">
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze data-msg-ok="✅ Tu sais lire un CSV à l'œil nu — compétence de data-détective validée." data-msg-no="Presque : réouvre le fichier au Bloc-notes et observe la première ligne (mots au singulier/pluriel comme dans le cours, avec le trait d'union).">Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 — trier, filtrer, répondre -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Trier et filtrer pour faire parler les données</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> utiliser tri, filtre et fonctions simples du tableur pour répondre à une vraie question : « les femmes et les enfants d'abord » — vraiment ?</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Manipule</div>
+            <div class="res">
+              <a class="res-item activity" href="#" onclick="return false">
+                <span class="res-code">DAT·1b</span>
+                <span class="res-main"><span class="r-title">Fiche d'enquête : moyennes, tri par tarif, filtres par classe et par sexe</span><span class="r-type">Activité tableur · en binôme</span></span>
+                <span class="res-time">~35 min</span>
+              </a>
+            </div>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Le tableur est la machine à interroger les tables : <b>trier</b> (ordonner selon un descripteur), <b>filtrer</b> (ne garder que les objets qui répondent à un critère), <b>calculer</b> (<code>=MOYENNE(…)</code>, <code>=MAX(…)</code>, <code>=NB.SI(…)</code>). Croiser deux descripteurs — survie et sexe, survie et classe — fait apparaître ce qu'aucune ligne seule ne montre : les données structurées révèlent des <b>tendances</b>, pas des anecdotes.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Tu veux savoir si les passagers de 3ᵉ classe ont moins survécu que ceux de 1ʳᵉ. Quelle démarche est la bonne ?</div>
+              <div class="opts" data-qcm data-answer="0">
+                <button class="opt"><span class="mark"></span>Filtrer par classe, puis comparer la proportion de « survie = 1 » dans chaque groupe.</button>
+                <button class="opt"><span class="mark"></span>Trier les noms par ordre alphabétique et lire les premières lignes.</button>
+                <button class="opt"><span class="mark"></span>Calculer la moyenne du descripteur « tarif » de tout le fichier.</button>
+              </div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">⏳ Le sais-tu ?</div>
+                Ce que montre le fichier : la survie dépend fortement du <b>sexe</b>… et de la <b>classe</b> du billet. Les données structurées servent aussi à ça : vérifier, chiffres en main, ce que racontent les récits — et parfois les corriger.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FIERTÉ FRANÇAISE S1 -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-color:var(--france)"></div>
+        <div class="france-box">
+          <div class="fl">🇫🇷 Un peu de fierté</div>
+          <h4>1978 : la France invente le gendarme des données</h4>
+          <p>Dès <b>1978</b> — bien avant Internet grand public — la France vote la loi <b>« Informatique et Libertés »</b> et crée la <b>CNIL</b>, l'une des toutes premières autorités au monde chargées de protéger les citoyens face aux fichiers informatiques. Son article 1ᵉʳ tient en une phrase : <i>l'informatique doit être au service de chaque citoyen… elle ne doit porter atteinte ni à l'identité humaine, ni aux droits de l'homme, ni à la vie privée</i>. Quarante ans plus tard, cette philosophie a inspiré le <b>RGPD</b> européen, aujourd'hui imité sur tous les continents.</p>
+          <div class="warn-note">📍 Pourquoi 1978 ? Un projet d'État, révélé par la presse en 1974, voulait interconnecter les fichiers administratifs des Français via un identifiant unique (projet SAFARI). Le scandale a accouché de la loi. Les données structurées sont puissantes — c'est bien pour ça qu'on les encadre.</div>
+          <div class="biblio">
+            <div class="bl">📚 Sources</div>
+            <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL — commission nationale de l'informatique et des libertés</a>
+            <a href="#" onclick="return false">Loi Informatique et Libertés (1978) — Légifrance (lien à poser)</a>
+          </div>
+        </div>
+      </div>
+      <!-- CHANTIER -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-style:dashed;border-color:var(--work-line)"></div>
+        <aside class="chantier" style="margin:0">
+          <div class="cl">🔍 Biblio · 📅 vérification</div>
+          Poser le lien Légifrance de la loi de 1978, et vérifier la citation de l'article 1ᵉʳ au mot près (elle est ici paraphrasée en italique — soit la mettre exacte et sourcée, soit la garder clairement paraphrasée). L'affaire SAFARI : sourcer (article du Monde de 1974 via un lien d'archive légitime, ou page CNIL « histoire »).
+        </aside>
+      </div>
+      <!-- /CHANTIER -->
+
+      <!-- PERSO S1 -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-style:dashed"></div>
+        <div class="perso-box">
+          <div class="pl">💬 Et toi ? · réponse personnelle, non notée</div>
+          <div class="perso">
+            <div class="field-q" style="font-weight:400">Toi aussi tu es une ligne dans des tables : lesquelles, à ton avis ? (Établissement, transports, jeux, boutiques en ligne…) Cite deux « fichiers » où tu es sûr·e de figurer, et un descripteur que chacun connaît de toi.</div>
+            <textarea placeholder="Réponds librement — ça servira à lancer la discussion en classe." aria-label="Réponse personnelle"></textarea>
+            <div style="margin-top:8px"><button class="btn ghost" data-share>Partager avec la classe</button></div>
+            <div class="note-free" data-share-note></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BONUS S1 -->
+    <div class="bonus-wrap" data-bonus>
+      <div class="bonus-head" data-bonus-toggle>
+        <span class="bonus-tag">bonus</span>
+        <span class="bl">Pour aller plus loin — avant-goût de NSI</span>
+        <span class="chev">▸</span>
+      </div>
+      <div class="bonus-body">
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Facultatif, hors fiche, jamais évalué — juste pour te donner une idée de ce qu'on fait en spécialité <b>NSI</b> en 1ʳᵉ.</p>
+        <p style="font-size:14px;color:var(--ink-soft)">🗄️ <b>Quand la table devient base de données.</b> Ton fichier Titanic, une vraie base de données sait l'interroger en une ligne : <code>SELECT nom FROM passagers WHERE classe = 3 AND survie = 1</code> — « donne-moi les noms des passagers de 3ᵉ classe qui ont survécu ». Ce langage s'appelle <b>SQL</b>, et c'est un chapitre entier de NSI. Ce que tu as fait à la souris avec les filtres, on l'écrit — et ça marche sur des millions de lignes.</p>
+        <div class="field free" data-free>
+          <span class="field-type">Question ouverte</span>
+          <div class="field-q">Essaie d'écrire « en langage SQL imaginaire » la question : « l'âge moyen des femmes de 1ʳᵉ classe ». Puis dis en une phrase pourquoi une machine préfère cette écriture à un clic de souris.</div>
+          <textarea placeholder="Invente ta requête, puis argumente…" aria-label="Réponse ouverte"></textarea>
+          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="verdict"></div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>Métadonnées, cloud et vie privée</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Les données SUR les données : ce que tes fichiers racontent sans que tu l'aies écrit — et où ils vivent vraiment quand ils sont « dans le cloud ».</p>
+    <div class="progress-line"><i data-progress></i></div>
+    <div class="lock-banner"><span class="k"></span><span>Séance verrouillée — termine et valide toute la <b>Séance 1</b> pour la débloquer. Si la classe a avancé sans toi, préviens ton professeur : il peut l'ouvrir.</span></div>
+    <div class="lockable">
+    <div class="steps">
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">🚧 EN PRODUCTION</div>
+            <h3 class="step-title">Contenu en cours d'écriture</h3>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14px;color:var(--ink-soft)">Au programme : les <b>métadonnées</b> des fichiers (auteur, dates, logiciel — jusqu'à l'enquête « qui a copié sur qui ? » entre deux devoirs identiques), le « cloud » démystifié (les data centers de quelqu'un d'autre), ce que OneDrive sait de tes fichiers, et tes droits (RGPD, CNIL — la suite de la france-box de S1).</p>
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🚧 Plan de la séance (arbitré, à rédiger)</div>
+              <ul>
+                <li><b>2.1</b> Métadonnées d'un fichier : clic droit → Propriétés → Détails, sur le fichier que l'élève vient de manipuler en S1. Rappel discret : « ton classeur OneDrive aussi est une collection structurée — revois l'introduction » (l'étape complète « Ranger pour retrouver » vit dans t0, pas ici 🔁).</li>
+                <li><b>2.2</b> <b>L'enquête du devoir copié</b> (reprise du corpus, excellente) : deux fichiers .ods identiques, les métadonnées désignent le copieur (dates de création/modification). Énoncé réécrit, fichiers à régénérer proprement (noms d'élèves fictifs).</li>
+                <li><b>2.3</b> Le cloud : où vivent physiquement les données (data centers, ton OneDrive), qui y accède, sobriété. 📅 Chiffres à sourcer au moment de la rédaction.</li>
+                <li><b>2.4</b> Droits et réflexes : RGPD, droit d'accès/effacement, la CNIL côté pratique. 🔁 Ne pas redire « tes traces en ligne » (hub du Web S4) ni la position (Localisation S4) — angle <b>fichiers et comptes</b>.</li>
+                <li>⚖️ L'accroche « fraude au bac 2011 » du corpus (métadonnées d'une photo qui trahissent une fuite de sujet) : bonne histoire mais liens morts/datés → à raconter en « le sais-tu » avec biblio propre, ou à remplacer par un cas plus récent.</li>
+              </ul>
+            </aside>
+            <!-- /CHANTIER -->
+            <!-- CHANTIER : DÉCISION EN ATTENTE — NE PAS PERDRE -->
+            <aside class="chantier decision">
+              <div class="cl">📌 DÉCISION EN ATTENTE (Loïc) — à trancher AVANT de rédiger cette séance</div>
+              <b>Les 4 photos personnelles du corpus EXIF</b> (chamonix, dublin, toulouse, cauterets) contiennent tes <b>vraies coordonnées GPS</b> : OK pour un usage public sur le site, ou on regénère un jeu de photos équivalent avec des EXIF forgées (RGPD-propre) ? Par ailleurs <b>coccinelle.jpg est créditée « Daniel Villafruela »</b> (photographe Wikimedia) → ⚖️ vérifier la licence et l'attribution avant toute réutilisation. <b>Note : la lecture EXIF de photos part dans le hub Photographie numérique</b> — cette décision conditionne donc AUSSI le chantier Photo S5. Tu as demandé qu'on te le rappelle au moment de bosser ici : c'est maintenant. 🔔
+            </aside>
+            <!-- /CHANTIER -->
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== DÉBRANCHÉE ===================== -->
+  <section class="seance" id="deb" data-seance="deb">
+    <div class="seance-head">
+      <h2><span class="s-num">⏳</span>Activité débranchée — le tri humain</h2>
+      <span class="seance-time">≈ 25 min</span>
+    </div>
+    <p class="seance-goal">Sans écran : la classe devient la table de données, et on la trie en suivant un algorithme à la lettre — avant-goût direct de la spécialité NSI.</p>
+    <div class="steps">
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">CLASSE ENTIÈRE · SANS ORDINATEUR</div>
+            <h3 class="step-title">Trier la classe par algorithme</h3>
+          </div>
+          <div class="card-body">
+            <div class="res">
+              <a class="res-item debranche" href="#" onclick="return false">
+                <span class="res-code">DAT·D</span>
+                <span class="res-main"><span class="r-title">Protocole du tri par sélection + cartes-valeurs à distribuer</span><span class="r-type">Activité débranchée · à imprimer</span></span>
+                <span class="res-time">~25 min</span>
+              </a>
+            </div>
+            <div class="retain" style="margin-top:14px">Le protocole du <b>tri par sélection</b>, joué en vrai : chaque élève reçoit une carte-valeur (un nombre), la rangée est la table. On applique l'algorithme <b>sans réfléchir ni tricher</b> : chercher le plus petit parmi les non-triés, l'échanger avec la première place non triée, recommencer. La classe compte les comparaisons — et découvre pourquoi trier 1 309 passagers à la main serait un enfer, alors que le tableur le fait en un clic. C'est un algorithme au programme de <b>NSI</b> : tu viens d'en exécuter un avec tes jambes.</div>
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🚧 Fiche à produire · 🧠 dosage</div>
+              <code>DAT·D</code> à produire : cartes-valeurs (prévoir des nombres avec doublons pour la question bonus « ordre stable ? »), protocole pas-à-pas, corrigé. 🧠 Rester sur le tri par sélection SEUL — ne pas ajouter le tri à bulles « pour comparer », c'est la séance qui déborde à coup sûr. La comparaison des tris = passerelle NSI en une phrase, pas une activité.
+            </aside>
+            <!-- /CHANTIER -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="note">
+    <b>Maquette V0 — proposition à valider.</b> Les champs sont interactifs pour montrer la mécanique : QCM, trous et schémas corrigés <b>en direct</b> par le navigateur ; réponses rédigées <b>envoyées en correction</b> (copier-coller bloqué) ; réflexions perso <b>non notées</b> ; verrouillage des séances tant que la précédente n'est pas validée, avec un <b>mode enseignant</b> pour ouvrir en cas de blocage. Les encadrés hachurés jaunes/rouges sont des <b>notes de chantier</b> pour M. Van Hoorde : elles disparaîtront de la version élève. 🧭 Un doute sur le fonctionnement du cours (fiches, verrouillage, entraide) ? Revois <a href="2nde-snt-t0-systemes-informatises.html" style="color:var(--link)">l'introduction</a>.
+  </footer>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var HUB_NAME = 'Les données structurées';
+
+  /* petit easter egg pour les curieux qui ouvrent la console */
+  console.log("%c📊 Objet : toi · Descripteur : curiosité · Valeur : maximale","font-size:16px;font-weight:bold;color:#2445c7");
+  console.log("%cOuvrir la console, c'est ouvrir le fichier au Bloc-notes : regarder les données derrière l'écran. Exactement le réflexe de cette séquence.\nTape  document.title = 'SELECT * FROM curieux'  et regarde l'onglet…\n— M. Vanhoorde","font-size:12px;color:#12805c");
+
+  function verdict(field,cls,msg){var v=field.querySelector('.verdict');if(!v)return;v.className='verdict show '+cls;v.textContent=msg;}
+  function stepOf(el){return el.closest('[data-step]');}
+  function markDone(el){var s=stepOf(el);if(s){s.classList.remove('is-wait');s.classList.add('is-done');}refresh();}
+  function showReveal(field){var r=field.querySelector('[data-reveal]');if(r)r.classList.add('show');}
+
+  /* ---------- déblocage progressif ---------- */
+  function seanceComplete(sec){
+    var gates=sec.querySelectorAll('[data-gate]');
+    if(!gates.length) return true;
+    return Array.from(gates).every(function(g){return g.classList.contains('is-done');});
+  }
+  var seanceWasComplete={};
+  function refresh(){
+    document.querySelectorAll('.seance').forEach(function(sec){
+      var gates=sec.querySelectorAll('[data-gate]');
+      var done=Array.from(gates).filter(function(g){return g.classList.contains('is-done');}).length;
+      var bar=sec.querySelector('[data-progress]');
+      if(bar) bar.style.width = gates.length ? (100*done/gates.length)+'%' : '0%';
+      var id=sec.getAttribute('data-seance');
+      var complete = gates.length>0 && done===gates.length;
+      if(complete && seanceWasComplete[id]===false){ onSeanceComplete(sec); }
+      if(seanceWasComplete[id]===undefined) seanceWasComplete[id]=complete; else seanceWasComplete[id]=complete;
+    });
+    /* verrouillage en chaîne, généralisé à N séances numérotées (identique au comportement du hub du Web) */
+    var prevOk = true;
+    var maxSeance = 0;
+    document.querySelectorAll('[data-seance]').forEach(function(s){var v=parseInt(s.getAttribute('data-seance'),10);if(!isNaN(v)&&v>maxSeance)maxSeance=v;});
+    for(var n=1;n<=maxSeance;n++){
+      var sec=document.querySelector('[data-seance="'+n+'"]');
+      if(!sec) continue;
+      if(n>1) sec.classList.toggle('locked', !prevOk);
+      prevOk = prevOk && seanceComplete(sec);
+    }
+    document.querySelectorAll('[data-navlock]').forEach(function(a){
+      var n=a.getAttribute('data-navlock');
+      var sec=document.querySelector('[data-seance="'+n+'"]');
+      var ico=a.querySelector('.lockico');
+      if(ico) ico.style.display = (sec && sec.classList.contains('locked') && !document.body.classList.contains('teacher')) ? '' : 'none';
+    });
+  }
+
+  /* mode enseignant */
+  document.getElementById('teacherMode').addEventListener('change',function(){
+    document.body.classList.toggle('teacher',this.checked);
+    refresh();
+  });
+
+  /* ---------- QCM ---------- */
+  document.querySelectorAll('[data-qcm]').forEach(function(group){
+    var answer=parseInt(group.dataset.answer,10);
+    var opts=Array.from(group.querySelectorAll('.opt'));
+    opts.forEach(function(opt,i){
+      opt.addEventListener('click',function(){
+        var field=group.closest('.field');
+        opts.forEach(function(o){o.disabled=true;});
+        if(i===answer){opt.classList.add('correct');verdict(field,'ok','✅ Correct — étape validée. Tu peux aider un camarade sur cette question.');showReveal(field);markDone(group);}
+        else{opt.classList.add('wrong');opts[answer].classList.add('correct');verdict(field,'no','À revoir : la bonne réponse est en vert. Reprends la ressource plus haut.');}
+      });
+    });
+  });
+
+  /* ---------- trous ---------- */
+  document.querySelectorAll('[data-check-cloze]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var field=btn.closest('.field');var inputs=Array.from(field.querySelectorAll('[data-answer]'));var all=true;
+      inputs.forEach(function(inp){var ok=inp.value.trim().toLowerCase()===inp.dataset.answer.toLowerCase();inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);if(!ok)all=false;});
+      if(all){verdict(field,'ok',btn.dataset.msgOk||'✅ Correct — étape validée.');markDone(btn);}
+      else{verdict(field,'no',btn.dataset.msgNo||'Presque : vérifie les champs en rouge.');}
+    });
+  });
+
+  /* ---------- schéma ---------- */
+  document.querySelectorAll('[data-check-diagram]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var field=btn.closest('.field');var sels=Array.from(field.querySelectorAll('select'));var all=true;
+      sels.forEach(function(s){var ok=s.value===s.dataset.correct;s.classList.toggle('ok',ok);s.classList.toggle('no',!ok);if(!ok)all=false;});
+      if(all){verdict(field,'ok',btn.dataset.msgOk||'✅ Schéma juste — étape validée.');markDone(btn);}
+      else{verdict(field,'no',btn.dataset.msgNo||'Pas tout à fait : réessaie.');}
+    });
+  });
+
+  /* ---------- texte libre ---------- */
+  document.querySelectorAll('[data-free]').forEach(function(field){
+    var ta=field.querySelector('textarea');var meta=field.querySelector('[data-meta]');var send=field.querySelector('[data-send-free]');var blocked=false;
+    ['paste','drop'].forEach(function(ev){ta.addEventListener(ev,function(e){e.preventDefault();blocked=true;meta.innerHTML='<span class="warn">⨯ Copier-coller bloqué — écris toi-même</span>';setTimeout(update,1500);});});
+    function update(){var n=ta.value.trim().length;if(!blocked||document.activeElement===ta){meta.innerHTML=n+' caractère'+(n>1?'s':'')+' · saisie au clavier';}send.disabled=n<15;}
+    ta.addEventListener('input',function(){blocked=false;update();});
+    send.addEventListener('click',function(){
+      send.disabled=true;ta.readOnly=true;
+      var s=stepOf(field);if(s)s.classList.add('is-wait');
+      verdict(field,'wait','⏳ Réponse envoyée. Correction automatique en cours — ton professeur validera si besoin.');
+      setTimeout(function(){
+        verdict(field,'ok','✅ Réponse validée. Tu peux maintenant consulter et aider les camarades bloqués.');
+        showReveal(field);markDone(send);
+      }, reduce?400:2400);
+    });
+  });
+
+  /* ---------- perso (partage, non noté) ---------- */
+  document.querySelectorAll('[data-share]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var box=btn.closest('.perso');var ta=box.querySelector('textarea');var note=box.querySelector('[data-share-note]');
+      if(ta.value.trim().length<2){note.textContent='Écris un mot avant de partager 🙂';return;}
+      ta.readOnly=true;btn.disabled=true;note.textContent='✅ Merci — ta réponse nourrit la discussion de classe.';
+    });
+  });
+
+  /* ---------- bonus dépliables ---------- */
+  document.querySelectorAll('[data-bonus-toggle]').forEach(function(h){
+    h.addEventListener('click',function(){h.closest('[data-bonus]').classList.toggle('open');});
+  });
+
+  /* ---------- manip piège à clic (100% local, rien n'est collecté) ---------- */
+  document.querySelectorAll('[data-trap]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.body.classList.add('pwned');
+      setTimeout(function(){document.body.classList.remove('pwned');},reduce?0:3600);
+      var rev=btn.parentElement.querySelector('[data-trap-reveal]');
+      if(rev) rev.classList.add('show');
+      btn.disabled=true; btn.style.opacity=.5; btn.style.animation='none';
+      markDone(btn); // la prise de conscience vaut validation
+    });
+  });
+
+  /* ---------- modal réutilisable ---------- */
+  var mb=document.createElement('div'); mb.className='modal-back';
+  mb.innerHTML='<div class="modal" role="dialog" aria-modal="true"><div class="m-ico"></div><h3></h3><div class="m-body"></div><div class="m-actions"></div></div>';
+  document.body.appendChild(mb);
+  function closeModal(){mb.classList.remove('show');}
+  mb.addEventListener('click',function(e){if(e.target===mb)closeModal();});
+  function openModal(ico,title,bodyHTML,actions){
+    mb.querySelector('.m-ico').textContent=ico;
+    mb.querySelector('.modal h3').textContent=title;
+    mb.querySelector('.m-body').innerHTML=bodyHTML;
+    var a=mb.querySelector('.m-actions'); a.innerHTML='';
+    actions.forEach(function(act){
+      var b=document.createElement('button'); b.className='btn '+(act.cls||''); b.textContent=act.label;
+      b.addEventListener('click',function(){ if(act.fn)act.fn(); if(act.close!==false)closeModal(); });
+      a.appendChild(b);
+    });
+    mb.classList.add('show');
+  }
+
+  /* ---------- récap téléchargeable d'une séance ---------- */
+  function seanceTitle(sec){var h=sec.querySelector('.seance-head h2');return h?h.textContent.replace(/\s+/g,' ').trim():'Séance';}
+  function collectRecap(sec){
+    var rows=[];
+    sec.querySelectorAll('[data-step]').forEach(function(step){
+      var t=step.querySelector('.step-title'); if(!t) return;
+      var done=step.classList.contains('is-done');
+      var wait=step.classList.contains('is-wait');
+      var ret=step.querySelector('.retain');
+      var ans=[];
+      step.querySelectorAll('textarea').forEach(function(ta){if(ta.value.trim())ans.push(ta.value.trim());});
+      step.querySelectorAll('.cloze input,.label-selects select').forEach(function(f){if(f.value&&f.value.trim())ans.push(f.value.trim());});
+      rows.push({title:t.textContent.trim(),status:done?'✅ validé':(wait?'⏳ en attente':'à faire'),retain:ret?ret.innerHTML.trim():'',answer:ans.join(' · ')});
+    });
+    return rows;
+  }
+  function downloadFiche(sec){
+    var title=seanceTitle(sec); var rows=collectRecap(sec);
+    var when=new Date().toLocaleDateString('fr-FR');
+    var body=rows.map(function(r){
+      return '<div class="e"><div class="h"><span>'+r.title+'</span><span class="s">'+r.status+'</span></div>'+(r.retain?'<div class="r"><span class="lbl">À retenir</span>'+r.retain+'</div>':'')+(r.answer?'<div class="a"><span class="lbl">Ma réponse</span>'+r.answer.replace(/</g,'&lt;')+'</div>':'')+'</div>';
+    }).join('');
+    var html='<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>Ma fiche — '+title+'</title>'+
+      '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:30px auto;padding:0 18px;color:#161f33;line-height:1.55}'+
+      'h1{font-size:22px}.meta{color:#667;font-size:13px;margin-bottom:20px}'+
+      '.e{border:1px solid #d3dae7;border-radius:10px;padding:12px 14px;margin-bottom:10px}'+
+      '.h{display:flex;justify-content:space-between;font-weight:600;gap:12px}.s{color:#12805c;font-weight:500;white-space:nowrap}'+
+      '.lbl{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8b97ad;margin-bottom:3px}'+
+      '.r{margin-top:8px;padding:9px 11px;background:#f4f6fb;border-left:3px solid #161f33;border-radius:0 8px 8px 0;font-size:13.5px}'+
+      '.r code{background:#e6e9f2;padding:1px 4px;border-radius:3px;font-family:ui-monospace,monospace;font-size:.9em}'+
+      '.a{margin-top:8px;padding:9px 11px;background:#e7ebfb;border-radius:8px;white-space:pre-wrap;font-size:14px}'+
+      '.tip{margin-top:24px;font-size:12px;color:#8b97ad}</style></head><body>'+
+      '<h1>Ma fiche SNT — '+title+'</h1><div class="meta">'+HUB_NAME+' · exporté le '+when+' · à déposer sur ton OneDrive</div>'+
+      body+'<div class="tip">Les exercices restent accessibles sur le hub de la classe.</div></body></html>';
+    var blob=new Blob([html],{type:'text/html'});
+    var url=URL.createObjectURL(blob); var a=document.createElement('a');
+    var slug=title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
+    a.href=url; a.download='ma-fiche-'+(slug||'snt')+'.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
+
+  /* ---------- recommencer une séance ---------- */
+  function resetSeance(sec){
+    sec.querySelectorAll('[data-step]').forEach(function(s){s.classList.remove('is-done','is-wait');
+      var p=s.querySelector('.step-pip'); if(p){p.style.background='';p.style.borderColor='';}});
+    sec.querySelectorAll('.opt').forEach(function(o){o.disabled=false;o.classList.remove('correct','wrong');});
+    sec.querySelectorAll('textarea').forEach(function(t){t.value='';t.readOnly=false;});
+    sec.querySelectorAll('.cloze input').forEach(function(i){i.value='';i.classList.remove('ok','no');});
+    sec.querySelectorAll('.label-selects select').forEach(function(s){s.value='';s.classList.remove('ok','no');});
+    sec.querySelectorAll('.verdict').forEach(function(v){v.className='verdict';v.textContent='';});
+    sec.querySelectorAll('[data-reveal]').forEach(function(r){r.classList.remove('show');});
+    sec.querySelectorAll('[data-send-free]').forEach(function(b){b.disabled=true;});
+    sec.querySelectorAll('[data-share]').forEach(function(b){b.disabled=false;});
+    sec.querySelectorAll('[data-share-note]').forEach(function(n){n.textContent='';});
+    sec.querySelectorAll('[data-trap]').forEach(function(b){b.disabled=false;b.style.opacity='';b.style.animation='';});
+    sec.querySelectorAll('[data-trap-reveal]').forEach(function(r){r.classList.remove('show');});
+    var id=sec.getAttribute('data-seance'); seanceWasComplete[id]=false;
+    refresh();
+  }
+
+  /* barre d'actions (télécharger / recommencer) à la fin de chaque séance à valider */
+  document.querySelectorAll('.seance').forEach(function(sec){
+    if(!sec.querySelector('[data-gate]')) return;
+    var host=sec.querySelector('.lockable'); if(!host) return;
+    var bar=document.createElement('div'); bar.className='seance-actions';
+    bar.innerHTML='<span class="sa-label">💾 Pense à déposer ta fiche sur ton OneDrive à la fin de la séance.</span>';
+    var dl=document.createElement('button'); dl.className='btn dl sm'; dl.textContent='📥 Télécharger ma fiche';
+    dl.addEventListener('click',function(){downloadFiche(sec);});
+    var rs=document.createElement('button'); rs.className='btn reset sm'; rs.textContent='🔁 Recommencer';
+    rs.addEventListener('click',function(){
+      openModal('🔁','Recommencer cette séance ?',
+        '<p>Tu vas repartir d\'une fiche vierge pour cette séance. Tes réponses actuelles seront effacées de l\'écran.<br><b>Télécharge d\'abord ta fiche</b> si tu veux garder tes réponses et tes corrections.</p>',
+        [{label:'📥 Télécharger d\'abord',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
+         {label:'Recommencer',cls:'reset',fn:function(){resetSeance(sec);}}]);
+    });
+    bar.appendChild(dl); bar.appendChild(rs); host.appendChild(bar);
+  });
+
+  /* pop-up de fin de séance */
+  function onSeanceComplete(sec){
+    var title=seanceTitle(sec);
+    var rows=collectRecap(sec).filter(function(r){return r.status.indexOf('validé')>-1;});
+    var recap='<div class="recap">'+rows.map(function(r){return '<div class="ri"><span>'+r.title+'</span><b>✓</b></div>';}).join('')+'</div>';
+    openModal('🎉','Séance terminée — bravo !',
+      recap+'<p style="margin-top:2px">Tu as validé toute la séance. Télécharge ta fiche pour la garder, puis dépose-la sur ton OneDrive.</p>',
+      [{label:'📥 Télécharger ma fiche',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
+       {label:'Continuer',cls:'ghost'}]);
+  }
+
+  refresh();
+})();
+</script>
+</body>
+</html>

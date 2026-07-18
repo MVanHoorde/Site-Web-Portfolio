@@ -11,11 +11,15 @@ sections, code de déblocage, fiche élève imprimable) : leurs consignes sont d
 `_modeles/CONSIGNES-chapitre-PC.md`. Ne jamais transposer ici les régimes A/B, la
 bibliothèque de composants PC (`.encart`, `.formule-bloc`…), le verrou à code, ni
 les jalons 1→7 : ce sont deux systèmes différents. Le système PC est **rodé** (14
-chapitres ébauchés) ; le système SNT est en **phase 1**, avec **trois hubs V0**
-produits : le Web (`t2`, la référence d'origine), Internet (`t1`) et
+chapitres ébauchés) ; le système SNT est en **phase 1**, avec **8 hubs** amorcés
+(t0 à t7) : le Web (`t2`, la référence d'origine), Internet (`t1`) et
 l'**Introduction — Les systèmes informatisés** (`t0`, statut particulier :
-voir §8). Les conventions se confirment d'un hub à l'autre, mais **rien n'est
-validé** — voir « Ce qui n'est pas encore arrêté », en fin de document.
+voir §8) sont en V0 complète ; Photographie (`t7`) et les quatre thèmes du
+chantier du 18/07 — Réseaux sociaux (`t3`), Données structurées (`t4`),
+Localisation (`t5`), Informatique embarquée (`t6`) — sont en **V0 partielle**
+(S1 rédigée, suite en squelettes). Les conventions se confirment d'un hub à
+l'autre, mais **rien n'est validé** — voir « Ce qui n'est pas encore arrêté »,
+en fin de document.
 
 | | **Ce document (SNT)** | **Chapitre PC** |
 |---|---|---|
@@ -54,6 +58,11 @@ explicite de Loïc, jamais présumée ; la mise en ligne n'est pas un jalon.
 | `pages/2nde-snt-t2-le-web.html` | **Hub de référence (V0 d'origine)** — source de fait pour la structure, les champs et le JS. Page autonome, CSS/JS inline |
 | `pages/2nde-snt-t1-internet.html` | Hub Internet (V0) — première déclinaison, enseigné avant le Web |
 | `pages/2nde-snt-t0-systemes-informatises.html` | **Introduction (V0)** — cours « Les systèmes informatisés » **entrelacé** avec le tutoriel du dispositif ; référentiel vivant du fonctionnement du cours (voir §8) |
+| `pages/2nde-snt-t7-photographie-numerique.html` | Hub Photographie (V0 partielle) — `PHO·x` |
+| `pages/2nde-snt-t3-reseaux-sociaux.html` | Hub Réseaux sociaux (V0 partielle) — `SOC·x`, chantier 18/07 (§14) |
+| `pages/2nde-snt-t4-donnees-structurees.html` | Hub Données structurées (V0 partielle) — `DAT·x`, court 2 séances (§14) |
+| `pages/2nde-snt-t5-localisation-cartographie.html` | Hub Localisation & cartographie (V0 partielle) — `LOC·x` (§14) |
+| `pages/2nde-snt-t6-informatique-embarquee.html` | Hub Informatique embarquée (V0 partielle) — `EMB·x` (§14) |
 | `pages/2nde-snt.html` | Page de niveau SNT : carte « Pour commencer » + les 7 cartes de thèmes, d'où part chaque hub |
 | `assets/css/fonts.css` | Polices auto-hébergées (voir §5) — **seule** source de polices autorisée |
 | `_suivi/chapitres.md` | Section « Seconde — SNT » : état réel de chaque hub |
@@ -109,30 +118,6 @@ pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
 - **Easter eggs** discrets bienvenus (message console, etc.).
 - **Activité débranchée** : au moins une par séquence quand le thème s'y prête
   (le Web a sa frise) — tout ne se fait pas devant un écran.
-
-### Statut des étapes : l'essentiel évaluable et le « plus »
-
-Un hub **n'oppose pas** un bloc socle massif à un bloc d'approfondissement : il
-**entrelace** deux statuts, chaque élément clairement marqué.
-
-- **Essentiel / évaluable** — les étapes `data-gate` (« à valider »). Elles
-  portent les notions de base à verrouiller (ex. protocole TCP/IP, distinction
-  moteur de recherche / navigateur) ; leur validation **débloque la suite**.
-  C'est le cœur, jamais optionnel.
-- **Le « plus »** — les blocs `data-bonus` (« pour aller plus loin »),
-  dépliables. **Facultatifs** mais valorisés, **jamais un substitut** à
-  l'essentiel. On peut les semer au fil de la séquence, pas seulement à la fin.
-
-**Passerelle vers la spé NSI** (quand le thème s'y prête) : elle relève du
-« plus » — **facultative et NON évaluée**. Un simple **repérage de notions**
-(tableau structuré → base de données, algorithme de tri, capteur piloté par du
-code), **pas un cours**. Elle peut vivre en **bonus dépliable** et **ne pas
-figurer sur la fiche élève téléchargeable** (le récap n'embarque que les
-`[data-step]`, pas les `[data-bonus]` — c'est déjà le cas).
-
-🔴 Ces deux principes sont des **mécanismes du cours** : au sens du §8, ils se
-présentent **d'abord dans la séquence d'introduction (t0)** ; les autres hubs
-n'en portent que des rappels discrets.
 
 ## 4. Design (identité visuelle à conserver)
 
@@ -243,20 +228,14 @@ le proposer si Loïc ne l'a pas demandé.
    `2nde-snt-tN-nom-du-theme.html`.
 2. **Proposer le découpage en séances AVANT de coder** (≈ 1h30 chacune,
    objectifs, volume horaire total) — c'est du fond pédagogique, Loïc arbitre.
-3. **Données structurées — vérifier la transversalité** : avant de coder un
-   nouveau hub **ou d'en retoucher un**, se demander si une **activité
-   ponctuelle** sur les données structurées y a sa place — en particulier autour
-   de la prise en main **M365/OneDrive dans l'introduction (t0)**, où les élèves
-   stockent et partagent leurs fiches. Ne pas réserver la notion au seul hub du
-   thème 4.
-4. Coder séance par séance, en respectant le trajet d'étape (§3).
-5. **Lier le hub depuis `pages/2nde-snt.html`** sur la carte du thème. ⚠ La page
+3. Coder séance par séance, en respectant le trajet d'étape (§3).
+4. **Lier le hub depuis `pages/2nde-snt.html`** sur la carte du thème. ⚠ La page
    de niveau est elle-même dans `pages/` : le lien s'écrit
    `href="2nde-snt-tN-….html"` — **jamais** `href="pages/…"`, sinon
    `pages/pages/…` → 404. Aligner sur la forme du lien du Web (le vérifier par un
    `grep`).
-6. **Valider** (§10) puis livrer (§11).
-7. Mettre à jour la section « Seconde — SNT » de `_suivi/chapitres.md`.
+5. **Valider** (§10) puis livrer (§11).
+6. Mettre à jour la section « Seconde — SNT » de `_suivi/chapitres.md`.
 
 **Où intervenir avec quel outil** : un composant visuel complexe ou une
 exploration graphique → proposer **Claude Design** (canvas), puis réintégrer le
@@ -308,16 +287,87 @@ Notation des flags : `⬜` à faire · `🔄` en cours · `✅` fait · `⚠` bl
 
 ## 13. Ce qui n'est pas encore arrêté (honnêteté de phase 1)
 
-Trois hubs existent (Web, Internet, Introduction) et les conventions se
-confirment (codes `WEB·x` / `NET·x` / `SYS·x`, ≈ 4 séances + 1 débranchée,
-mêmes champs et même JS). Restent **ouverts** — à proposer à Loïc plutôt qu'à
-trancher seul :
+Huit hubs sont amorcés (Web, Internet, Introduction en V0 complète ;
+Photographie et les quatre thèmes du 18/07 en V0 partielle) et les conventions
+se confirment (codes `WEB·x` / `NET·x` / `SYS·x` / `PHO·x` / `SOC·x` / `DAT·x` /
+`LOC·x` / `EMB·x`, ≈ 4 séances + 1 débranchée — 2 séances pour un hub court comme
+Données structurées, mêmes champs et même JS). Restent **ouverts** — à proposer
+à Loïc plutôt qu'à trancher seul :
 
 - l'extraction d'un vrai **`gabarit-hub-snt.html`** : la condition (conventions
-  confirmées par plusieurs hubs) est désormais remplie, mais l'extraction reste
-  une décision de Loïc ;
+  confirmées par plusieurs hubs) est **largement** remplie, mais l'extraction
+  reste une décision de Loïc ;
 - le **volume horaire** type d'une séquence (le Web fait ≈ 6 h sur 4 séances +
   1 débranchée) ;
 - l'existence d'un **équivalent du régime A** (dégrossissage rapide multi-thèmes)
   pour peupler les 7 hubs — non tranché : les hubs se rédigent, ils ne se
   transcrivent pas depuis un PPTX.
+
+## 14. Règles ajoutées le 18/07/2026 (arbitrages Loïc — chantier des 4 thèmes)
+
+### 14.1 Intégrer au maximum, ne pas renvoyer
+
+**Le contenu élève vit dans la page où l'élève se trouve.** Renvoyer vers une
+autre page du site pour comprendre une notion perd les élèves (arbitrage
+explicite de Loïc : « dès qu'on peut intégrer, on le fait »). Concrètement :
+
+- une notion nécessaire à une étape est **traitée dans l'étape**, même si elle
+  touche un autre thème (ex. : le principe du CSV est expliqué dans la séance
+  NMEA du hub Localisation, pas délégué au hub Données structurées) ;
+- chaque donnée n'a qu'**un seul traitement complet** dans tout le site ; les
+  autres hubs peuvent y faire un **rappel discret d'une ligne** (« revois
+  l'introduction ») — navigation autorisée, délégation de contenu interdite ;
+- les simulateurs/manipulations se codent **dans le hub** quand c'est
+  raisonnable (ex. : simulateur d'IHM du hub Informatique embarquée) plutôt
+  que d'envoyer vers un outil externe en première approche ;
+- corollaire : cartographier les **redondances** entre hubs (notes 🔁) pour
+  décider où vit le traitement complet.
+
+### 14.2 Notes de chantier dans les pages
+
+Loïc pilote depuis le **site rendu**, pas depuis les fichiers. Tant qu'un hub
+n'est pas VALIDÉ, les remarques de production s'écrivent **dans la page**,
+sous forme d'encarts visibles :
+
+- `<aside class="chantier">` (jaune hachuré) pour les notes courantes,
+  `<aside class="chantier decision">` (rouge hachuré) pour les **décisions en
+  attente de Loïc** — à placer à l'endroit exact où la décision s'appliquera,
+  pour qu'il la retrouve « au moment où il bosse dessus » ;
+- chaque note est encadrée par `<!-- CHANTIER -->` … `<!-- /CHANTIER -->`
+  pour être supprimée d'un geste à la validation ;
+- catégories (emoji en tête de note) : 🚧 à écrire/coder · ⚖️ copyright ou
+  licence à régler · 📌 décision Loïc attendue · 🔍 ressource à trouver/tester ·
+  📅 fait d'actualité à re-vérifier (dater les vérifications) · ✏️ notion à
+  creuser (y c. mini-cours de fond côté prof) · 🔁 redondance inter-hubs ·
+  🧠 charge mentale / rythme élèves ;
+- le CSS des notes vit dans le bloc commun (`.chantier`, variables `--work-*`
+  et `--dec-*`) ; `body.eleve` masque toutes les notes d'un coup (filet pour
+  une phase de test avec élèves avant validation complète) ;
+- à la **validation** d'un hub : suppression de tous les blocs CHANTIER = une
+  étape de la checklist.
+
+### 14.3 Codes d'activité des nouveaux hubs
+
+`LOC·x` (Localisation) · `EMB·x` (Informatique embarquée) · `DAT·x` (Données
+structurées) · `SOC·x` (Réseaux sociaux) — mêmes conventions que `WEB·x` /
+`NET·x` / `SYS·x` / `PHO·x` (`·D` = débranchée, `·P` = projet).
+
+### 14.4 Décisions de périmètre actées le 18/07/2026
+
+- **Localisation** : tout sur **cartes.gouv.fr** (Géoportail ferme sept. 2026) ;
+  éthique **intégrée en S4** (pas de séance dédiée — réévaluable) ; le
+  microcontrôleur/capteur GPS est **cédé au hub Informatique embarquée** avec
+  lien clair entre les deux.
+- **Informatique embarquée** : format **4 séances** provisoire (repli 3
+  possible, arbitrage ultérieur) ; simulateur d'IHM **intégré** ; activité
+  **micro:bit réelle** (≈ 10 cartes au labo, 1 pour 2) à mettre en chantier ;
+  IA embarquée / voitures autonomes : en chantier, non prioritaire.
+- **Données structurées** : traitement **transversal d'abord** (étape « Ranger
+  pour retrouver » à ajouter dans t0 ; EXIF branché au hub Photo ; NMEA→CSV
+  dans Localisation ; rappels d'une ligne dans Internet/Web) + **hub court
+  2 séances** mobilisable ponctuellement.
+- **Réseaux sociaux** : le cadre légal 2026 est une **partie à part entière**
+  (élèves de 13-15 ans : se positionner), précédée d'une **enquête « as-tu le
+  droit ? »** volontairement piégeante ; le **projet « Invente ton réseau
+  social »** remplace l'exposé ; règle générale : **plateformes fictives pour
+  les exemples, vraies plateformes pour les faits sourcés uniquement**.

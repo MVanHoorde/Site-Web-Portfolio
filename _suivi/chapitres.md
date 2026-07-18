@@ -201,11 +201,6 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
         correction entre camarades (S2-2.4, annoncée pour la version complète —
         **formulation à valider par Loïc**)
   - [x] mode enseignant (S2-2.4)
-  - [x] statut des étapes : essentiel/évaluable (`data-gate`) vs « plus »
-        facultatif (`data-bonus`) nommé à l'élève, + **clin d'œil passerelle
-        NSI** non évalué, en bonus S1 (18/07)
-  - [x] données structurées : cadrage dans le rituel OneDrive — ranger ses
-        fiches (dossier SNT, un fichier/séance) = première donnée structurée (S1)
   - [ ] _(prochain mécanisme : à présenter ici d'abord)_
 - Hors périmètre volontaire : le détail matériel pointu du doc 01 (PCIe, SATA,
   S/PDIF, UEFI…) — grandes familles seulement, niveau seconde.
@@ -301,10 +296,113 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   choisir) ; tester en salle `PHO·1b` (vidéo YouTube œil/appareil) ; licences
   `image.jpg` / `portrait.jpg` à confirmer côté Loïc pour la suite.
 
-### SNT — autres thèmes
-_(Réseaux sociaux, Données structurées, Localisation & cartographie,
-Informatique embarquée : cartes présentes sur `pages/2nde-snt.html`, hubs à
-décliner sur le gabarit du Web.)_
+### SNT-T3 — Les réseaux sociaux
+- État : **S1 complète, S2 aux deux tiers, S4 : enquête légale codée** (18/07),
+  S3 + fin de S4 en squelettes, section Projet cadrée, débranchée cadrée.
+  **Non validé.** Fichier : `pages/2nde-snt-t3-reseaux-sociaux.html`. Codes `SOC·x`.
+- Jalons : `🔄 Maquette V0` (fonctionnelle, notes de chantier incluses) ·
+  `⬜ Contenu complet` · `⬜ Interactivité complète` · `⬜ Ressources définitives` ·
+  `⬜ VALIDÉ`.
+- **Arbitrages Loïc (18/07)** : cadre légal 2026 = partie à part entière,
+  précédée de l'enquête « as-tu le droit ? » (3 QCM piégeants codés : majorité
+  numérique 15 ans · DSA pub ciblée mineurs · Australie <16) ; **le projet
+  « Invente ton réseau social » remplace l'exposé** (consigne complète en
+  section Projet ; barème/durée/calendrier 📌 à trancher) ; fil rouge
+  « pourquoi est-ce si dur de poser son téléphone ? » (posé S1, résolu S3) ;
+  **plateformes fictives** pour les exemples (Instakilo, Plik Plok, Facedelivre,
+  Ziouizioui, ChuchoteApp), vraies plateformes pour les faits sourcés.
+- Corpus : « Graphes et réseaux sociaux » (AD) — création maison, recréée en
+  interactif (graphe Amikal 6 sommets SVG + cloze, distances/centre + QCM).
+  France-box **Skyblog 2002-2023 archivé BnF** (chiffre 30 M à vérifier 📅).
+- 🚧 Restant : S2.3 (graphe orienté + Facedelivre 9 sommets + matrice
+  d'adjacence en bonus NSI) ; S3 économie de l'attention (plan posé — manip
+  « faux flux Plik Plok » à coordonner avec le piège à clic du Web 🔁) ; S4.2
+  identité numérique/cyberviolence/3018 ; fiche projet `SOC·P` + grille +
+  garde-fou IA ; débranchée `SOC·D` (cartes-personnages) ; **vérif juridique
+  📅 obligatoire** (décrets majorité numérique, DSA, Australie) ; panorama
+  chiffré 2026 à sourcer (ARCOM/Baromètre). Liens inertes : `SOC·P`, `SOC·D`,
+  biblio Skyblog-BnF.
+
+### SNT-T4 — Les données structurées
+- État : **S1 (enquête Titanic) complète**, S2 en squelette, débranchée cadrée
+  (18/07). **Non validé.** Fichier : `pages/2nde-snt-t4-donnees-structurees.html`.
+  Codes `DAT·x`. **Hub volontairement court (2 séances)** mobilisable
+  ponctuellement — arbitrage Loïc.
+- **Stratégie transversale actée** : ① étape « Ranger pour retrouver » à
+  ajouter dans **t0** (référentiel vivant — chantier t0 dédié) ; ② EXIF photos
+  → hub **Photo** (S2/S5) ; ③ NMEA→CSV traité dans **Localisation S3** ;
+  ④ rappels d'une ligne dans Internet (trame) et Web (index) lors de leurs
+  prochains chantiers.
+- S1 : vocabulaire table/objet/descripteur/valeur sur le **vrai fichier
+  Titanic (1 309 passagers)**, CSV au Bloc-notes (cloze), tri/filtres/croisés
+  (QCM + reveal survie sexe/classe), france-box **CNIL 1978 / SAFARI** (biblio
+  Légifrance à poser), bonus SQL (passerelle NSI).
+- ⚠ **Note décision rouge 📌 dans S2** (demande explicite de Loïc — le
+  rappeler au moment où il bossera dessus) : photos perso avec GPS réel →
+  publier ou regénérer ? + licence `coccinelle.jpg` (Daniel Villafruela,
+  Wikimedia) ⚖️. Conditionne AUSSI le chantier Photo S5.
+- 🚧 Restant : S2 (métadonnées fichiers, devoir copié .ods à régénérer,
+  cloud/data centers, droits RGPD — accroche « bac 2011 » à re-sourcer ou
+  remplacer) ; toilettage du fichier Titanic (colonne fantôme, formules D2:D38
+  vs 1 309 lignes, légende sexe/survie) ; débranchée `DAT·D` (tri par
+  sélection — PAS de tri à bulles en plus 🧠). Liens inertes : `DAT·1`,
+  `DAT·1b`, `DAT·D`, biblio Légifrance/SAFARI.
+
+### SNT-T5 — Localisation, cartographie et mobilité
+- État : **S1 et S2 complètes et interactives**, S3-S4 en squelettes détaillés,
+  débranchée cadrée (18/07). **Non validé.** Fichier :
+  `pages/2nde-snt-t5-localisation-cartographie.html`. Codes `LOC·x`. Fil
+  rouge : « comment ton téléphone sait-il où tu es — et qui d'autre le sait ? »
+- **Arbitrages Loïc (18/07)** : tout sur **cartes.gouv.fr** (Géoportail ferme
+  sept. 2026 📅) ; **éthique intégrée en S4** (pas de séance dédiée,
+  réévaluable) ; **capteur GPS cédé au hub Informatique embarquée** (lien
+  clair posé des deux côtés) ; corrections d'actualité appliquées (BeiDou
+  ajouté, « Map Ouest »=MapQuest, « une trentaine » de satellites, Galileo HAS
+  2023 à re-vérifier 📅).
+- S1 : accroche + hypothèse écrite (reveal **KAL 007** — biblio à sourcer 🔍),
+  lat/long + conversion DMS (cloze calculé), **cartes.gouv.fr** en activité
+  réelle `LOC·2` (fiche `LOC·2b` à produire), raster/vectoriel (QCM),
+  france-box **Cassini → IGN → cartes.gouv.fr/Panoramax** (lien Gallica à
+  poser).
+- S2 : chasse au trésor Nantes/Dijon/Paris en SVG + cloze, sphères/4ᵉ
+  satellite (GeoGebra `LOC·3` + vidéo Galileo `LOC·3b` — vrais liens du corpus,
+  à re-tester en salle 🔍), tableau GNSS 4 constellations + QCM, france-box
+  **Galileo-CNES/Argos 1978** (biblios EUSPA/Argos à poser), bonus **brouillage
+  GPS** (à re-sourcer à la rentrée 📅, coordonné avec S4 🔁).
+- 🚧 Restant : S3 NMEA (appli GPS à choisir/tester 🔍, trame GGA en trous,
+  passerelle CSV traitée ICI) ; S4 Dijkstra pas-à-pas SVG (gros morceau) +
+  éthique intégrée + passerelle NSI (code Python du corpus) — attention
+  redondance Web S4 « traces » 🔁 ; débranchée `LOC·D` (carte SVG + compas,
+  variante cour en réserve). Liens inertes : `LOC·1`, `LOC·2b`, `LOC·D`,
+  biblios KAL 007/Cassini/Argos/Galileo.
+
+### SNT-T6 — Informatique embarquée et objets connectés
+- État : **S1 complète et interactive**, S2-S4 en squelettes détaillés,
+  débranchée cadrée (18/07). **Non validé.** Fichier :
+  `pages/2nde-snt-t6-informatique-embarquee.html`. Codes `EMB·x`.
+- **Arbitrages Loïc (18/07)** : format **4 séances provisoire** (S4 « Objets
+  connectés & société » optionnelle, repli 3 possible — 📌 arbitrage
+  ultérieur) ; **simulateur d'IHM intégré au hub** (S2, bloc JS spécifique à
+  documenter) ; **activité micro:bit réelle à mettre en chantier** (≈ 10
+  cartes au labo → 1 pour 2, S3.4) ; **IA embarquée / voitures autonomes en
+  chantier non prioritaire** (bonus S1, peut grandir en S4) ; récupère le
+  **capteur GPS** du corpus Géolocalisation (bonus S3).
+- **Corrections d'actualité appliquées** : « 50 milliards d'objets en 2020 » →
+  ~21 Mds fin 2025 / 39 Mds 2030 (IoT Analytics, biblio à poser, rafraîchir
+  chaque rentrée 📅) ; AEB « envisagé » → **obligatoire UE** (GSR2, tous
+  véhicules neufs 07/2024, biblio à poser) ; VAE 250 W/25 km/h ✔ toujours
+  exact.
+- S1 : chiffres IoT corrigés + 3 objets du quotidien (rédigé, reveal Apollo),
+  boucle capteur→traitement→actionneur+IHM (schéma SVG à légender, 4 menus),
+  étude de cas AEB (QCM + reveal temps réel), france-box **Roland Moreno
+  1974 / STM32** (biblio INPI/Arts et Métiers à poser), perso « la machine qui
+  prend le contrôle », bonus IA embarquée.
+- 🚧 Restant : S2 IHM (frise interactive + **simulateur lampe/store « A50 »**) ;
+  S3 VAE (schéma, si/alors, MakeCode à tester en salle 🔍, micro:bit 1 pour 2
+  📌, bonus GPS) ; S4 société (redondances cartographiées 🔁 : position→LOC,
+  traces→Web, RGPD→DAT — angle objets physiques) ; débranchée `EMB·D` (robot
+  humain, 3 rôles, programme bugué). Liens inertes : `EMB·D`, biblios
+  Moreno/IoT Analytics/GSR2/Engelbart.
 
 ## Première / Terminale
 _(pages d'accueil existantes ; chapitres à venir)_
