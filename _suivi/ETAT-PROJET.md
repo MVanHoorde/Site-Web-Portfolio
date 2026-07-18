@@ -206,9 +206,8 @@ Tout est en ligne à l'état d'ébauche (régime A élargi). Niveau de finition 
 ## 📊 Avancement (Seconde — Thème 3 · Ondes et signaux)
 
 **Nouveau (16/07).** Les 4 chapitres sont **en ligne à l'état d'ébauche**
-(régime A élargi). ⚠ **Pas encore liés** depuis la page de niveau (absente —
-voir Alertes + snippet `cartes-theme3-a-coller.html`). Niveau de finition
-**validé** :
+(régime A élargi) et **liés** depuis `pages/2nde-physique-chimie.html` (fait —
+voir Alerte plus haut). Niveau de finition **validé** :
 
 | Chapitre | Cours validé | Fiche | Code |
 |---|---|---|---|
