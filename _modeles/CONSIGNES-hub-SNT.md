@@ -151,6 +151,12 @@ pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
   respecté.
 - Ressources externes chargées **par lien** (vidéos, CodeBetter…). Illustrations
   maison en **SVG** quand c'est possible.
+- 🗂 **Un hub SNT est autonome : AUCUN fichier d'asset externe.** Tout (SVG, CSS,
+  JS) vit **inline** dans `pages/2nde-snt-tN-….html` — c'est ce qui distingue le
+  gabarit SNT du gabarit PC (qui, lui, range ses images dans `assets/img/pc/…`).
+  Ne pas créer de dossier `assets/img/snt/` : il n'y a rien à y mettre. Seule
+  ressource partagée : `assets/css/fonts.css`. Arborescence des parties du
+  projet : `CLAUDE.md` « Arborescence — une place par partie ».
 - Un lien de ressource pas encore arbitré reste **inerte** (`href="#"`) et doit
   être **listé dans le récap** — sinon il se perd (cas des activités `WEB·2b` et
   de la frise `WEB·D`, toujours inertes à ce jour).

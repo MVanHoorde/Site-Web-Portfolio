@@ -53,6 +53,32 @@ la mise en ligne n'est pas un jalon.
 En cas de doute sur un composant : ouvrir l'exemple de référence et copier
 sa manière de faire.
 
+### Arborescence & conventions de nommage (rangement du 18/07)
+
+Le dépôt sépare **chaque partie du projet par son nom**. Un chapitre de PC ne
+dépose JAMAIS de fichier à la racine ni dans les dossiers d'une autre partie.
+
+```
+pages/2nde-pc-tX-cY-<nom-court>.html   ← la page de cours (PC)
+assets/img/pc/2nde-pc-tX-cY/…          ← les images du chapitre (créer le dossier)
+assets/pdf/…                           ← PDF de cours éventuels (PC)
+audio/2nde-pc-tX-cY-intro.m4a          ← intro audio NotebookLM (optionnelle)
+fiches/fiche-2nde-tXcY.html            ← la fiche élève imprimable
+```
+
+**Trois identifiants dérivés l'un de l'autre** (exemple T1-C2) :
+
+| Usage | Forme | Exemple |
+|---|---|---|
+| Nom de page **et** dossier d'images | `2nde-pc-tX-cY` | `2nde-pc-t1-c2` |
+| Slug interne (clés `localStorage`, verrou) | `2nde-tXcY` | `2nde-t1c2` |
+| Fiche élève | `fiche-2nde-tXcY.html` | `fiche-2nde-t1c2.html` |
+
+> ⚠ Ne PAS confondre avec le **cahier de vacances** (`cahier/…`, assets dans
+> `assets/img/cahier/` et `assets/pdf/cahier/`) ni avec les **hubs SNT**
+> (`pages/2nde-snt-tN-…`, **aucun** asset externe : tout est en SVG/CSS inline).
+> Ce sont des parties distinctes — voir `CLAUDE.md` « Où est quoi ».
+
 ## 1. Entrées attendues de Loïc
 
 - Le PPTX et/ou le PDF du chapitre (le PDF fait foi pour le rendu final).
@@ -366,8 +392,9 @@ Règles d'or (leçons des chapitres 1 et 2) :
 - Figure vectorielle absente de `pdfimages` → découpe dans `pdftoppm -r 200`
   par coordonnées, rognage des marges.
 - Schémas/graphiques/cliparts/tableaux-images → REFAITS (SVG charte ou
-  `table.tab`). Photos réelles → conservées (≤900 px, JPEG q82,
-  `assets/img/SLUG/`, noms parlants).
+  `table.tab`). Photos réelles → conservées (≤900 px, JPEG q82, noms parlants),
+  déposées dans **`assets/img/pc/<slug-de-page>/`** (ex.
+  `assets/img/pc/2nde-pc-t1-c2/`) — voir l'arborescence en §0.
 - Images libres complémentaires : Wikimedia Commons ; crédit en fin de légende
   (auteur, source, licence) ; vérifier la licence exacte avant publication.
 - QR codes → pastilles `.video-chip` (libellé court + ↗, `_blank`,

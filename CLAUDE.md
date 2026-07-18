@@ -111,3 +111,19 @@ détailler dans `CONSIGNES-hub-SNT.md`.
 | `_suivi/ETAT-PROJET.md` | Vue d'ensemble : avancement, **priorités**, alertes |
 | `_suivi/chapitres.md` | Tableau de bord **par chapitre / par hub**, avec les jalons |
 | `_suivi/IDEES.md` | Réservoir d'idées à trier |
+
+## Arborescence — une place par partie (rangement du 18/07)
+
+Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (elle a
+été purgée de ses doublons). Où va quoi :
+
+| Partie | Pages | Assets externes |
+|---|---|---|
+| **Physique-chimie** | `pages/2nde-pc-tX-cY-…html` | `assets/img/pc/2nde-pc-tX-cY/` · `assets/pdf/` · `audio/2nde-pc-tX-cY-intro.m4a` · fiches dans `fiches/` |
+| **SNT** | `pages/2nde-snt-tN-…html` | **aucun** — SVG/CSS **inline** dans la page (autonome) |
+| **Cahier de vacances** | `cahier/…html` | `assets/img/cahier/` · `assets/pdf/cahier/` |
+| **Coque / accueil / niveaux** | `index.html` (racine) · `pages/2nde-physique-chimie.html`, `pages/…-scientifique.html`, `pages/terminale-…` | `assets/fonts/`, `assets/css/`, `gravures/` |
+
+Détail des conventions de nommage (3 formes de slug par chapitre PC) :
+`_modeles/CONSIGNES-chapitre-PC.md` §0. Un nouveau contenu se range **toujours**
+dans le dossier de sa partie, jamais ailleurs.
