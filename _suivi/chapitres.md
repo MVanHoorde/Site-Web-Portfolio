@@ -201,6 +201,11 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
         correction entre camarades (S2-2.4, annoncée pour la version complète —
         **formulation à valider par Loïc**)
   - [x] mode enseignant (S2-2.4)
+  - [x] statut des étapes : essentiel/évaluable (`data-gate`) vs « plus »
+        facultatif (`data-bonus`) nommé à l'élève, + **clin d'œil passerelle
+        NSI** non évalué, en bonus S1 (18/07)
+  - [x] données structurées : cadrage dans le rituel OneDrive — ranger ses
+        fiches (dossier SNT, un fichier/séance) = première donnée structurée (S1)
   - [ ] _(prochain mécanisme : à présenter ici d'abord)_
 - Hors périmètre volontaire : le détail matériel pointu du doc 01 (PCIe, SATA,
   S/PDIF, UEFI…) — grandes familles seulement, niveau seconde.

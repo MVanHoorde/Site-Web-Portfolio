@@ -110,6 +110,30 @@ pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
 - **Activité débranchée** : au moins une par séquence quand le thème s'y prête
   (le Web a sa frise) — tout ne se fait pas devant un écran.
 
+### Statut des étapes : l'essentiel évaluable et le « plus »
+
+Un hub **n'oppose pas** un bloc socle massif à un bloc d'approfondissement : il
+**entrelace** deux statuts, chaque élément clairement marqué.
+
+- **Essentiel / évaluable** — les étapes `data-gate` (« à valider »). Elles
+  portent les notions de base à verrouiller (ex. protocole TCP/IP, distinction
+  moteur de recherche / navigateur) ; leur validation **débloque la suite**.
+  C'est le cœur, jamais optionnel.
+- **Le « plus »** — les blocs `data-bonus` (« pour aller plus loin »),
+  dépliables. **Facultatifs** mais valorisés, **jamais un substitut** à
+  l'essentiel. On peut les semer au fil de la séquence, pas seulement à la fin.
+
+**Passerelle vers la spé NSI** (quand le thème s'y prête) : elle relève du
+« plus » — **facultative et NON évaluée**. Un simple **repérage de notions**
+(tableau structuré → base de données, algorithme de tri, capteur piloté par du
+code), **pas un cours**. Elle peut vivre en **bonus dépliable** et **ne pas
+figurer sur la fiche élève téléchargeable** (le récap n'embarque que les
+`[data-step]`, pas les `[data-bonus]` — c'est déjà le cas).
+
+🔴 Ces deux principes sont des **mécanismes du cours** : au sens du §8, ils se
+présentent **d'abord dans la séquence d'introduction (t0)** ; les autres hubs
+n'en portent que des rappels discrets.
+
 ## 4. Design (identité visuelle à conserver)
 
 - **Polices** : `Space Grotesk` (titres), `IBM Plex Sans` (corps),
@@ -219,14 +243,20 @@ le proposer si Loïc ne l'a pas demandé.
    `2nde-snt-tN-nom-du-theme.html`.
 2. **Proposer le découpage en séances AVANT de coder** (≈ 1h30 chacune,
    objectifs, volume horaire total) — c'est du fond pédagogique, Loïc arbitre.
-3. Coder séance par séance, en respectant le trajet d'étape (§3).
-4. **Lier le hub depuis `pages/2nde-snt.html`** sur la carte du thème. ⚠ La page
+3. **Données structurées — vérifier la transversalité** : avant de coder un
+   nouveau hub **ou d'en retoucher un**, se demander si une **activité
+   ponctuelle** sur les données structurées y a sa place — en particulier autour
+   de la prise en main **M365/OneDrive dans l'introduction (t0)**, où les élèves
+   stockent et partagent leurs fiches. Ne pas réserver la notion au seul hub du
+   thème 4.
+4. Coder séance par séance, en respectant le trajet d'étape (§3).
+5. **Lier le hub depuis `pages/2nde-snt.html`** sur la carte du thème. ⚠ La page
    de niveau est elle-même dans `pages/` : le lien s'écrit
    `href="2nde-snt-tN-….html"` — **jamais** `href="pages/…"`, sinon
    `pages/pages/…` → 404. Aligner sur la forme du lien du Web (le vérifier par un
    `grep`).
-5. **Valider** (§10) puis livrer (§11).
-6. Mettre à jour la section « Seconde — SNT » de `_suivi/chapitres.md`.
+6. **Valider** (§10) puis livrer (§11).
+7. Mettre à jour la section « Seconde — SNT » de `_suivi/chapitres.md`.
 
 **Où intervenir avec quel outil** : un composant visuel complexe ou une
 exploration graphique → proposer **Claude Design** (canvas), puis réintégrer le

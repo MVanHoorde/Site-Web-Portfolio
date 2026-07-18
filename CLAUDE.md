@@ -60,6 +60,29 @@ de fonctionnement du cours se présente explicitement là en premier** ; les
 autres séquences n'en portent que des rappels discrets. Détail :
 `CONSIGNES-hub-SNT.md` §8.
 
+🔴 **SNT — entrelacer l'essentiel et le « plus »** : un hub n'oppose pas un bloc
+socle massif à un bloc d'approfondissement ; il **entrelace** notions
+**essentielles/évaluables** et activités **« pour aller plus loin »**, chaque
+élément étant clairement **marqué par son statut**. L'essentiel est toujours
+**identifié et verrouillé** (ex. protocole TCP/IP, distinction moteur de
+recherche / navigateur) ; le « plus » reste explicitement **facultatif, jamais
+un substitut** à l'essentiel. La **passerelle vers la spé NSI** relève de ce
+« plus » : **facultative et NON évaluée**, un simple **repérage de notions**
+(tableau structuré → base de données, algorithme de tri, capteur piloté par du
+code), pas un cours — elle peut vivre en **bonus dépliable** et ne pas figurer
+sur la fiche élève téléchargeable.
+
+🔴 **SNT — données structurées, notion transversale** : ne pas la cantonner à un
+hub isolé du thème 4. **Avant de coder un nouveau hub ou d'en retoucher un**,
+vérifier si une **activité ponctuelle** sur les données structurées y a sa
+place — en particulier autour de la **prise en main M365/OneDrive dans
+l'introduction (t0)**, où les élèves stockent et partagent leurs cours.
+
+Ces deux principes sont de **nouveaux fonctionnements du cours** : conformément à
+la règle du référentiel vivant ci-dessus, ils se présentent **d'abord dans le
+hub d'introduction (t0)**, où un **tuto reste à rédiger** pour chacun. À
+détailler dans `CONSIGNES-hub-SNT.md`.
+
 ## Règles techniques communes (valent pour les deux)
 
 - **RGPD dès la conception** : aucune collecte cachée, aucune donnée sensible,
