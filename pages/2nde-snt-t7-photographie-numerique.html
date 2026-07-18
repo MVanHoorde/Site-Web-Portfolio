@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNT · La photographie numérique — Hub élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+
+  :root{
+    --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+    --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+    --link:#2445c7; --link-wash:#e7ebfb;
+    --activity:#c26a12; --activity-wash:#faeede;
+    --ok:#12805c; --ok-wash:#e0f2ea;
+    --err:#c33a2f; --err-wash:#fbe6e3;
+    --wait:#9a6a00; --wait-wash:#fbf1d8;
+    --france:#164a8a; --france-wash:#e6eef8;
+    --hist:#6b4a9a; --hist-wash:#efe9f7;
+    --bonus:#0f6d63; --bonus-wash:#e0f1ef;
+    --radius:14px; --shadow:0 1px 2px rgba(22,31,51,.05),0 8px 24px rgba(22,31,51,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+  code{font-family:"IBM Plex Mono",monospace}
+
+  /* HEADER */
+  header.masthead{background:radial-gradient(120% 140% at 90% -10%,rgba(36,69,199,.10),transparent 55%),var(--surface);border-bottom:1px solid var(--line);padding:34px 0 26px}
+  .eyebrow{font-family:"IBM Plex Mono";font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--link);font-weight:600;margin-bottom:10px}
+  h1.title{font-family:"Space Grotesk";font-weight:700;font-size:clamp(38px,7vw,60px);line-height:.98;margin:0 0 4px;letter-spacing:-.02em}
+  h1.title .tag{font-family:"IBM Plex Mono";font-weight:500;color:var(--ink-faint);font-size:.42em;vertical-align:middle}
+  .lede{color:var(--ink-soft);max-width:60ch;margin:14px 0 22px;font-size:16.5px}
+  .themes{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
+  .theme-chip{font-size:12.5px;padding:5px 11px;border-radius:100px;border:1px solid var(--line);color:var(--ink-faint);background:var(--surface-2);font-family:"IBM Plex Mono"}
+  .theme-chip.on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:500}
+  .meta-row{display:flex;flex-wrap:wrap;gap:22px;align-items:baseline}
+  .meta-row .m{font-size:14px;color:var(--ink-soft)} .meta-row .m b{color:var(--ink);font-weight:600}
+
+  /* NAV */
+  nav.seances{position:sticky;top:0;z-index:30;background:rgba(233,237,244,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.seances .wrap{display:flex;gap:6px;align-items:center;overflow-x:auto;padding:9px 20px}
+  nav.seances a{white-space:nowrap;text-decoration:none;color:var(--ink-soft);font-size:13.5px;font-weight:500;padding:7px 13px;border-radius:9px;border:1px solid transparent;transition:.15s;display:flex;align-items:center;gap:6px}
+  nav.seances a:hover{background:var(--surface);border-color:var(--line);color:var(--ink)}
+  nav.seances a .n{font-family:"IBM Plex Mono";color:var(--link)}
+  nav.seances a .lockico{font-size:11px;opacity:.6}
+  nav.seances a.retour{color:var(--ink-faint);border-right:1px solid var(--line);border-radius:9px 0 0 9px;margin-right:4px;padding-right:14px}
+  nav.seances a.retour:hover{border-color:var(--line);color:var(--ink)}
+  .spacer{flex:1}
+  .teacher-toggle{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:12.5px;color:var(--ink-soft);cursor:pointer;user-select:none}
+  .teacher-toggle input{display:none}
+  .switch{width:34px;height:19px;border-radius:100px;background:var(--line);position:relative;transition:.2s;flex:none}
+  .switch::after{content:"";position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .teacher-toggle input:checked + .switch{background:var(--france)}
+  .teacher-toggle input:checked + .switch::after{left:17px}
+
+  /* LEGEND */
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin:24px 0 4px;padding:13px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);font-size:13px;color:var(--ink-soft)}
+  .legend .dot{display:inline-flex;align-items:center;gap:7px}
+  .pip{width:13px;height:13px;border-radius:50%;flex:none;border:2px solid var(--ink-faint)}
+  .pip.doing{background:conic-gradient(var(--link) 50%,transparent 0);border-color:var(--link)}
+  .pip.wait{background:var(--wait-wash);border-color:var(--wait)} .pip.done{background:var(--ok);border-color:var(--ok)}
+
+  /* SÉANCE */
+  section.seance{padding:38px 0 8px;position:relative}
+  .seance-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:6px}
+  .seance-head h2{font-family:"Space Grotesk";font-weight:600;font-size:clamp(22px,3.4vw,28px);margin:0;letter-spacing:-.01em}
+  .seance-head h2 .s-num{color:var(--link);font-family:"IBM Plex Mono";font-size:.7em;margin-right:8px}
+  .seance-time{font-family:"IBM Plex Mono";font-size:13px;color:var(--ink-faint);white-space:nowrap}
+  .seance-goal{color:var(--ink-soft);font-size:14.5px;margin:0 0 8px;max-width:70ch}
+  .progress-line{height:5px;background:var(--line);border-radius:100px;overflow:hidden;margin:12px 0 4px}
+  .progress-line i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+
+  /* verrouillage */
+  .lock-banner{display:none;align-items:center;gap:12px;background:var(--surface);border:1px dashed var(--france);border-radius:var(--radius);padding:14px 16px;margin-top:14px;color:var(--france);font-size:14px}
+  .lock-banner .k{font-size:20px}
+  .lockable{transition:.3s}
+  .seance.locked .lock-banner{display:flex}
+  .seance.locked .lockable{filter:blur(3px);opacity:.45;pointer-events:none;user-select:none}
+  body.teacher .seance.locked .lockable{filter:none;opacity:1;pointer-events:auto;user-select:auto}
+  body.teacher .seance.locked .lock-banner{border-color:var(--ink-faint);color:var(--ink-soft)}
+  body.teacher .seance.locked .lock-banner .k::before{content:"🔓"}
+  .seance.locked .lock-banner .k::before{content:"🔒"}
+
+  /* étapes */
+  .steps{position:relative;margin-top:20px}
+  .step{position:relative;padding-left:40px;padding-bottom:14px}
+  .rail{position:absolute;left:13px;top:6px;bottom:-10px;width:2px;background:var(--line)}
+  .step:last-child .rail{display:none}
+  .step-pip{position:absolute;left:6px;top:4px;width:16px;height:16px;border-radius:50%;border:2px solid var(--ink-faint);background:var(--bg);z-index:2;transition:.2s}
+  .step.is-done .step-pip{background:var(--ok);border-color:var(--ok)}
+  .step.is-done .rail{background:linear-gradient(var(--ok),var(--line))}
+  .step.is-wait .step-pip{background:var(--wait-wash);border-color:var(--wait)}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card-top{padding:16px 18px 4px}
+  .step-kicker{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);letter-spacing:.03em;margin-bottom:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .badge{font-family:"IBM Plex Mono";font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:5px}
+  .badge.gate{background:var(--link-wash);color:var(--link)}
+  .step-title{font-family:"Space Grotesk";font-weight:600;font-size:19px;margin:0 0 8px;letter-spacing:-.01em}
+  .objective{display:flex;gap:9px;font-size:14px;color:var(--ink-soft);background:var(--link-wash);border-radius:10px;padding:9px 12px;margin:2px 0 4px}
+  .objective b{color:var(--link);font-weight:600}
+  .card-body{padding:6px 18px 18px}
+  .block-label{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+  .block-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* ressources */
+  .res{display:flex;flex-direction:column;gap:7px}
+  .res-item{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-decoration:none;color:inherit;transition:.15s}
+  a.res-item:hover{border-color:var(--link);background:var(--link-wash)}
+  .res-code{font-family:"IBM Plex Mono";font-size:11px;font-weight:600;flex:none;padding:3px 7px;border-radius:6px;background:var(--ink);color:#fff;margin-top:1px}
+  .res-item.activity .res-code{background:var(--activity)} .res-item.debranche .res-code{background:#5b3fa8}
+  .res-main{flex:1;min-width:0} .res-main .r-title{font-weight:500;font-size:14.5px} .res-main .r-type{font-size:12.5px;color:var(--ink-faint)}
+  .res-time{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);flex:none;margin-top:2px}
+  .res-item.activity{background:var(--activity-wash);border-color:#eed4b6} .res-item.activity:hover{border-color:var(--activity)}
+
+  /* à retenir + tableaux docs */
+  .retain{border-left:3px solid var(--ink);background:var(--surface-2);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px}
+  .retain code{background:#eceff7;padding:1px 5px;border-radius:4px;font-size:.9em;color:var(--link)}
+  .doc-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0}
+  .doc-table th,.doc-table td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+  .doc-table th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:12px;font-weight:600;color:var(--ink-soft)}
+  .doc-table code{color:var(--link)}
+
+  /* encadré histoire (révélé) */
+  .reveal{display:none;margin-top:12px;border-radius:12px;padding:13px 15px;font-size:14px;line-height:1.6;border:1px solid var(--hist);background:var(--hist-wash);color:#3e2c5c}
+  .reveal.show{display:block;animation:fade .4s ease}
+  .reveal .rl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--hist);font-weight:600;margin-bottom:5px;display:flex;gap:6px;align-items:center}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* encadré france (toujours visible) */
+  .france-box{position:relative;border:1px solid var(--france);background:var(--france-wash);border-radius:var(--radius);padding:16px 18px;margin-top:6px;overflow:hidden}
+  .france-box::before{content:"";position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#0a3d91 0 33.3%,#fff 33.3% 66.6%,#e1122f 66.6% 100%)}
+  .france-box .fl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--france);font-weight:600;margin:4px 0 8px;display:flex;gap:7px;align-items:center}
+  .france-box h4{font-family:"Space Grotesk";margin:0 0 6px;font-size:17px;color:var(--france)}
+  .france-box p{margin:0 0 9px;font-size:14px;color:#1f3a5c;line-height:1.6}
+  .france-box .warn-note{font-size:13px;background:#fff;border-radius:9px;padding:9px 12px;color:var(--ink-soft);border:1px solid #cdddf0}
+  .france-cols{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .france-cols .txt{flex:1;min-width:220px}
+  .minitel-fig{flex:none;width:150px;text-align:center}
+  .minitel-fig svg{width:150px;height:auto}
+  .minitel-fig figcaption{font-size:11.5px;color:var(--ink-faint);margin-top:4px;font-style:italic}
+  .biblio{margin-top:10px;background:#fff;border:1px solid #cdddf0;border-radius:10px;padding:10px 13px}
+  .biblio .bl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--france);font-weight:600;margin-bottom:6px;display:flex;gap:6px;align-items:center}
+  .biblio a{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--france);text-decoration:none;border-bottom:1px dotted var(--france);margin:2px 12px 2px 0}
+  .biblio a:hover{background:var(--france-wash)}
+  .biblio a::before{content:"↗";font-size:11px;opacity:.7}
+  .reveal .biblio{background:rgba(255,255,255,.6);border-color:var(--hist)}
+  .reveal .biblio .bl,.reveal .biblio a{color:var(--hist)} .reveal .biblio a{border-bottom-color:var(--hist)}
+
+  /* champs */
+  .field{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface-2)}
+  .field + .field{margin-top:10px}
+  .field-q{font-weight:500;font-size:15px;margin-bottom:11px}
+  .field-type{float:right;font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 6px;text-transform:uppercase}
+  .opts{display:flex;flex-direction:column;gap:7px}
+  .opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer;font-size:14.5px;transition:.12s;text-align:left}
+  .opt:hover{border-color:var(--link)} .opt .mark{width:18px;height:18px;border-radius:50%;border:2px solid var(--ink-faint);flex:none}
+  .opt.correct{background:var(--ok-wash);border-color:var(--ok);color:#0c5c42} .opt.correct .mark{background:var(--ok);border-color:var(--ok)}
+  .opt.wrong{background:var(--err-wash);border-color:var(--err);color:#8f2a22} .opt.wrong .mark{background:var(--err);border-color:var(--err)}
+  .opt:disabled{cursor:default}
+  .cloze{font-size:15px;line-height:2.2}
+  .cloze input{font-family:"IBM Plex Mono";font-size:14px;border:none;border-bottom:2px solid var(--link);background:var(--link-wash);border-radius:5px 5px 0 0;padding:3px 8px;width:120px;color:var(--ink)}
+  .cloze input:focus{outline:2px solid var(--link);outline-offset:1px}
+  .cloze input.ok{border-color:var(--ok);background:var(--ok-wash);color:#0c5c42} .cloze input.no{border-color:var(--err);background:var(--err-wash);color:#8f2a22}
+  .diagram{width:100%;height:auto;display:block;margin:2px 0 10px} .diagram text{font-family:"IBM Plex Sans"}
+  .label-selects{display:flex;flex-wrap:wrap;gap:10px}
+  .label-selects label{font-size:13px;color:var(--ink-soft);display:flex;flex-direction:column;gap:3px}
+  .label-selects select{font-family:"IBM Plex Sans";font-size:13.5px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+  .label-selects select.ok{border-color:var(--ok);background:var(--ok-wash)} .label-selects select.no{border-color:var(--err);background:var(--err-wash)}
+  .free textarea,.perso textarea{width:100%;min-height:88px;resize:vertical;font-family:"IBM Plex Sans";font-size:14.5px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);line-height:1.5}
+  .free textarea:focus,.perso textarea:focus{outline:2px solid var(--link);outline-offset:1px;border-color:var(--link)}
+  .free-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:9px;flex-wrap:wrap}
+  .free-meta{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--ink-faint)} .free-meta .warn{color:var(--err)}
+  .btn{font-family:"IBM Plex Sans";font-weight:600;font-size:14px;cursor:pointer;padding:9px 16px;border-radius:9px;border:1px solid var(--link);background:var(--link);color:#fff;transition:.15s}
+  .btn:hover{filter:brightness(1.08)} .btn.ghost{background:transparent;color:var(--link)} .btn:disabled{opacity:.5;cursor:default;filter:none}
+  .verdict{margin-top:10px;font-size:13.5px;padding:9px 12px;border-radius:9px;display:none}
+  .verdict.show{display:block}
+  .verdict.ok{background:var(--ok-wash);color:#0c5c42;border:1px solid var(--ok)}
+  .verdict.wait{background:var(--wait-wash);color:#7a5400;border:1px solid var(--wait)}
+  .verdict.no{background:var(--err-wash);color:#8f2a22;border:1px solid var(--err)}
+
+  /* perso */
+  .perso-box{border:1px solid #cdddf0;background:#fff;border-radius:12px;padding:14px}
+  .perso-box .pl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:8px;display:flex;gap:6px;align-items:center}
+  .perso-box .note-free{font-size:12.5px;color:var(--ink-faint);margin-top:7px}
+
+  /* bonus */
+  .bonus-wrap{margin-top:18px;border:1px solid var(--bonus);border-radius:var(--radius);overflow:hidden}
+  .bonus-head{background:var(--bonus-wash);padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer}
+  .bonus-head .bl{font-family:"Space Grotesk";font-weight:600;color:var(--bonus);font-size:16px;flex:1}
+  .bonus-head .chev{transition:.2s;color:var(--bonus)}
+  .bonus-wrap.open .chev{transform:rotate(90deg)}
+  .bonus-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .bonus-wrap.open .bonus-body{max-height:1400px;padding:14px 16px}
+  .bonus-body .field{background:#fff}
+  .bonus-tag{font-size:12px;color:var(--bonus);background:#fff;border:1px solid var(--bonus);border-radius:100px;padding:2px 9px;font-family:"IBM Plex Mono"}
+
+  footer.note{margin:42px 0 60px;padding:20px 22px;border:1px dashed var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink-soft);font-size:13.5px}
+  footer.note b{color:var(--ink)} footer.note code{background:var(--surface-2);padding:1px 5px;border-radius:4px;color:var(--link)}
+
+  /* barre d'actions séance */
+  .seance-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+  .seance-actions .sa-label{flex:1;min-width:160px;font-size:13px;color:var(--ink-soft);align-self:center}
+  .btn.sm{padding:8px 13px;font-size:13px}
+  .btn.dl{background:var(--ok);border-color:var(--ok)}
+  .btn.reset{background:transparent;color:var(--ink-soft);border-color:var(--line)}
+  .btn.reset:hover{border-color:var(--err);color:var(--err)}
+
+  /* modal */
+  .modal-back{position:fixed;inset:0;background:rgba(22,31,51,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal-back.show{display:flex}
+  .modal{background:var(--surface);border-radius:18px;max-width:440px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;animation:pop .25s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+  .modal .m-ico{font-size:40px;margin-bottom:6px}
+  .modal h3{font-family:"Space Grotesk";font-size:22px;margin:0 0 8px;color:var(--ink)}
+  .modal p{font-size:14.5px;color:var(--ink-soft);margin:0 0 18px;line-height:1.55}
+  .modal .m-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .modal .recap{text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13.5px;max-height:200px;overflow:auto}
+  .modal .recap .ri{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid var(--line)}
+  .modal .recap .ri:last-child{border-bottom:none}
+  .modal .recap .ri b{color:var(--ok)}
+
+  /* manip piège à clic (sécurité) */
+  .trap-zone{border:2px dashed var(--err);border-radius:12px;padding:18px;text-align:center;background:var(--err-wash)}
+  .trap-btn{font-family:"Space Grotesk";font-weight:700;font-size:18px;cursor:pointer;padding:14px 26px;border-radius:10px;border:none;background:var(--err);color:#fff;animation:wiggle 1.6s ease-in-out infinite}
+  @keyframes wiggle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+  .trap-reveal{display:none;margin-top:14px;font-size:14px;color:var(--ink);background:#fff;border-radius:10px;padding:12px 14px;border:1px solid var(--line);text-align:left}
+  .trap-reveal.show{display:block}
+  body.pwned{animation:hue 1.2s linear 3}
+  @keyframes hue{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
+
+  @media (prefers-reduced-motion:reduce){.trap-btn{animation:none}body.pwned{animation:none}}
+
+  @media (max-width:560px){
+    .field-type{float:none;display:inline-block;margin-bottom:8px}
+    .seance-head{flex-direction:column;gap:2px}
+    .cloze input{width:92px}
+    nav.seances .teacher-toggle span.tlabel{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">SNT · Thème 7 · Seconde</div>
+    <h1 class="title">La&nbsp;photographie numérique <span class="tag">ƒ/1.8</span></h1>
+    <p class="lede">Du déclic au pixel : comment ton smartphone fabrique une image, comment un programme peut la transformer — et pourquoi il ne faut plus jamais croire une photo sur parole.</p>
+    <div class="themes">
+      <span class="theme-chip">Internet</span><span class="theme-chip">Le Web</span>
+      <span class="theme-chip">Réseaux sociaux</span><span class="theme-chip">Données structurées</span>
+      <span class="theme-chip">Localisation &amp; cartographie</span><span class="theme-chip">Informatique embarquée</span>
+      <span class="theme-chip on">Photographie numérique</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>5 séances</b> + 1 activité débranchée</span>
+      <span class="m">Durée <b>≈ 8 h</b></span>
+      <span class="m">Chaque séance se débloque quand la <b>précédente est validée</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-snt.html">← SNT</a>
+    <a href="#s1"><span class="n">S1</span>De l'œil au capteur</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>Pixels &amp; couleurs <span class="lockico">🔒</span></a>
+    <a href="#s3" data-navlock="3"><span class="n">S3</span>Python <span class="lockico">🔒</span></a>
+    <a href="#s4" data-navlock="4"><span class="n">S4</span>Effets spéciaux <span class="lockico">🔒</span></a>
+    <a href="#s5" data-navlock="5"><span class="n">S5</span>Image &amp; vérité <span class="lockico">🔒</span></a>
+    <a href="#deb"><span class="n">⏳</span>Frise</a>
+    <span class="spacer"></span>
+    <label class="teacher-toggle" title="Déverrouille toutes les séances (usage enseignant)">
+      <input type="checkbox" id="teacherMode">
+      <span class="switch"></span><span class="tlabel">Mode enseignant</span>
+    </label>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>De l'œil au capteur</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Comprendre comment une image se forme dans l'œil, comparer l'œil et l'appareil photo, découvrir les trois réglages de l'exposition et le capteur qui transforme la lumière en nombres — là où la photographie est née : en France.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 — accroche -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Peut-on croire une photo ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> poser la question qui guide toute la séquence : une image numérique peut être fabriquée, transformée, truquée. Avant de juger une photo, il faut comprendre comment elle naît.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Pour comprendre, fais d'abord</div>
+            <div class="res">
+              <a class="res-item" href="#" onclick="return false">
+                <span class="res-code">PHO·1</span>
+                <span class="res-main"><span class="r-title">Vidéo-débat : les deepfakes</span><span class="r-type">Vidéo · projetée en classe</span></span>
+                <span class="res-time">~5 min</span>
+              </a>
+            </div>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Une photographie numérique n'est pas « la réalité » : c'est un <b>fichier de nombres</b>, fabriqué par un appareil, que n'importe quel programme peut modifier. Dans cette séquence, on va ouvrir la boîte : comment l'image se forme (S1), comment elle est codée (S2), comment on la transforme (S3-S4)… et on répondra à la question « peut-on croire une photo ? » en <b>séance 5</b>.</div>
+            <div class="block-label">Avec tes mots</div>
+            <div class="field free" data-free>
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">D'après la vidéo, qu'est-ce qu'un <b>deepfake</b> ? Explique avec tes propres mots (une ou deux phrases).</div>
+              <textarea placeholder="Écris ta définition ici — copier-coller bloqué, c'est ta version qui compte." aria-label="Définition de deepfake"></textarea>
+              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">⏳ Le sais-tu ?</div>
+                Le mot <b>deepfake</b> apparaît fin 2017 : c'est un mot-valise entre <i>deep learning</i> (l'apprentissage profond, une technique d'intelligence artificielle) et <i>fake</i> (faux). Depuis, les images générées par IA sont devenues si réalistes qu'un nouveau réflexe s'impose : se demander <b>d'où vient</b> une image avant de la croire.
+                <div class="biblio">
+                  <div class="bl">📚 Pour creuser</div>
+                  <a href="https://youtu.be/I02UNq7jHTE" target="_blank" rel="noopener">Le Vortex — vidéo bonus sur les deepfakes (à la maison)</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 — l'œil -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">À l'origine, la vision humaine</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> décrire le trajet de la lumière dans l'œil et expliquer l'accommodation : la mise au point permanente que ton œil fait sans te demander ton avis.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — le trajet de la lumière dans l'œil</div>
+            <table class="doc-table">
+              <tr><th>Élément</th><th>Rôle</th></tr>
+              <tr><td><b>Pupille</b> / <b>iris</b></td><td>La pupille laisse entrer la lumière ; l'iris fait varier son diamètre pour doser la quantité reçue</td></tr>
+              <tr><td><b>Cornée</b> + <b>cristallin</b></td><td>Font converger les rayons pour former une image nette</td></tr>
+              <tr><td><b>Rétine</b></td><td>Surface sensible où se forme l'image, tapissée de cellules photosensibles</td></tr>
+              <tr><td><b>Nerf optique</b> → <b>cerveau</b></td><td>Transmettent l'information ; le cerveau reconstruit une image unique et à l'endroit</td></tr>
+            </table>
+            <div class="block-label">À retenir</div>
+            <div class="retain">Pour voir net de près comme de loin, l'œil réalise une mise au point permanente : c'est l'<b>accommodation</b>. Quand un objet se rapproche, le <b>cristallin se bombe</b> : sa courbure augmente, il fait converger davantage les rayons, et l'image reste focalisée <b>sur la rétine</b>. L'œil « accommode » en continu — c'est sa grande différence avec l'appareil photo, qui <b>fige</b> un instant.</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Un objet lointain se rapproche de ton œil. Que se passe-t-il pour continuer à le voir net ?</div>
+              <div class="opts" data-qcm data-answer="2">
+                <button class="opt"><span class="mark"></span>La rétine avance vers le cristallin.</button>
+                <button class="opt"><span class="mark"></span>Le cristallin s'aplatit et fait moins converger la lumière.</button>
+                <button class="opt"><span class="mark"></span>Le cristallin se bombe et fait davantage converger la lumière vers la rétine.</button>
+              </div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">⏳ Le sais-tu ?</div>
+                Chaque œil reçoit une image <b>renversée</b> sur la rétine — c'est le cerveau qui remet le monde à l'endroit et fusionne les deux images en une seule. Voir, c'est déjà <b>reconstruire</b>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 — œil ↔ appareil -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">L'appareil photo, un œil artificiel</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> associer chaque composant de l'appareil photo numérique à l'élément de l'œil qui joue le même rôle.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Pour comprendre, fais d'abord</div>
+            <div class="res">
+              <a class="res-item" href="https://youtu.be/XaqGz6-H9R8" target="_blank" rel="noopener">
+                <span class="res-code">PHO·1b</span>
+                <span class="res-main"><span class="r-title">Vidéo : fonctionnement comparé de l'œil et de l'appareil photo</span><span class="r-type">Vidéo · YouTube</span></span>
+                <span class="res-time">~4 min</span>
+              </a>
+            </div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field">
+              <span class="field-type">Schéma à légender</span>
+              <div class="field-q">Voici l'appareil photo en coupe. Pour chaque composant numéroté, choisis l'élément de l'<b>œil</b> qui joue le même rôle.</div>
+              <svg class="diagram" viewBox="0 0 560 190" role="img" aria-label="Coupe d'un appareil photo numérique : objectif, diaphragme, capteur, processeur">
+                <!-- boîtier -->
+                <rect x="150" y="30" width="330" height="130" rx="12" style="fill:var(--surface-2);stroke:var(--ink)" stroke-width="2"/>
+                <!-- objectif -->
+                <rect x="96" y="58" width="58" height="74" rx="8" style="fill:var(--link-wash);stroke:var(--link)" stroke-width="2"/>
+                <ellipse cx="125" cy="95" rx="13" ry="30" style="fill:var(--surface);stroke:var(--link)" stroke-width="2"/>
+                <!-- rayons -->
+                <line x1="20" y1="70" x2="112" y2="90" style="stroke:var(--activity)" stroke-width="2"/>
+                <line x1="20" y1="120" x2="112" y2="100" style="stroke:var(--activity)" stroke-width="2"/>
+                <line x1="138" y1="93" x2="252" y2="98" style="stroke:var(--activity)" stroke-width="2"/>
+                <line x1="138" y1="97" x2="252" y2="92" style="stroke:var(--activity)" stroke-width="2"/>
+                <!-- diaphragme -->
+                <line x1="196" y1="42" x2="196" y2="80" style="stroke:var(--ink)" stroke-width="6"/>
+                <line x1="196" y1="110" x2="196" y2="148" style="stroke:var(--ink)" stroke-width="6"/>
+                <!-- capteur -->
+                <rect x="252" y="55" width="16" height="80" rx="3" style="fill:var(--ok-wash);stroke:var(--ok)" stroke-width="2"/>
+                <!-- processeur -->
+                <rect x="330" y="70" width="52" height="52" rx="6" style="fill:var(--hist-wash);stroke:var(--hist)" stroke-width="2"/>
+                <line x1="330" y1="83" x2="318" y2="83" style="stroke:var(--hist)" stroke-width="2"/>
+                <line x1="330" y1="96" x2="318" y2="96" style="stroke:var(--hist)" stroke-width="2"/>
+                <line x1="330" y1="109" x2="318" y2="109" style="stroke:var(--hist)" stroke-width="2"/>
+                <line x1="382" y1="83" x2="394" y2="83" style="stroke:var(--hist)" stroke-width="2"/>
+                <line x1="382" y1="96" x2="394" y2="96" style="stroke:var(--hist)" stroke-width="2"/>
+                <line x1="382" y1="109" x2="394" y2="109" style="stroke:var(--hist)" stroke-width="2"/>
+                <line x1="268" y1="95" x2="330" y2="95" style="stroke:var(--ink-faint)" stroke-width="2" stroke-dasharray="4 3"/>
+                <!-- numéros -->
+                <circle cx="125" cy="28" r="12" style="fill:var(--link)"/><text x="125" y="33" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+                <line x1="125" y1="40" x2="125" y2="56" style="stroke:var(--link)" stroke-width="1.6"/>
+                <circle cx="196" cy="174" r="12" style="fill:var(--ink)"/><text x="196" y="179" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">2</text>
+                <line x1="196" y1="150" x2="196" y2="162" style="stroke:var(--ink)" stroke-width="1.6"/>
+                <circle cx="260" cy="28" r="12" style="fill:var(--ok)"/><text x="260" y="33" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">3</text>
+                <line x1="260" y1="40" x2="260" y2="53" style="stroke:var(--ok)" stroke-width="1.6"/>
+                <circle cx="356" cy="174" r="12" style="fill:var(--hist)"/><text x="356" y="179" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">4</text>
+                <line x1="356" y1="150" x2="356" y2="162" style="stroke:var(--hist)" stroke-width="1.6"/>
+                <!-- légendes fixes -->
+                <text x="125" y="14" text-anchor="middle" font-size="12" style="fill:var(--ink-soft)">Objectif</text>
+                <text x="240" y="188" text-anchor="end" font-size="12" style="fill:var(--ink-soft)">Diaphragme</text>
+                <text x="288" y="14" text-anchor="middle" font-size="12" style="fill:var(--ink-soft)">Capteur CCD</text>
+                <text x="420" y="188" text-anchor="middle" font-size="12" style="fill:var(--ink-soft)">Processeur</text>
+              </svg>
+              <div class="label-selects" data-diagram>
+                <label>① L'objectif joue le rôle…
+                  <select data-correct="cristallin"><option value="">—</option><option value="iris">de l'iris</option><option value="cristallin">du cristallin et de la cornée</option><option value="retine">de la rétine</option><option value="cerveau">du cerveau</option></select></label>
+                <label>② Le diaphragme joue le rôle…
+                  <select data-correct="iris"><option value="">—</option><option value="iris">de l'iris</option><option value="cristallin">du cristallin et de la cornée</option><option value="retine">de la rétine</option><option value="cerveau">du cerveau</option></select></label>
+                <label>③ Le capteur joue le rôle…
+                  <select data-correct="retine"><option value="">—</option><option value="iris">de l'iris</option><option value="cristallin">du cristallin et de la cornée</option><option value="retine">de la rétine</option><option value="cerveau">du cerveau</option></select></label>
+                <label>④ Le processeur joue le rôle…
+                  <select data-correct="cerveau"><option value="">—</option><option value="iris">de l'iris</option><option value="cristallin">du cristallin et de la cornée</option><option value="retine">de la rétine</option><option value="cerveau">du cerveau</option></select></label>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram data-msg-ok="✅ Associations justes — l'appareil photo copie l'œil, pièce par pièce." data-msg-no="Pas tout à fait : repense au rôle de chaque élément (qui dose la lumière ? qui la reçoit ?).">Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+            <div class="block-label">À retenir</div>
+            <div class="retain">L'appareil photo numérique (APN) reprend le plan de l'œil : l'<b>objectif</b> fait converger la lumière (cristallin + cornée), le <b>diaphragme</b> la dose (iris), le <b>capteur</b> la reçoit (rétine) et le <b>processeur</b> fabrique l'image finale (cerveau). Grande différence : l'œil accommode en permanence, l'appareil <b>capture et fige</b> un instant.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.4 — exposition -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">L'exposition : trois réglages, une lumière</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> citer les trois paramètres qui déterminent l'exposition d'une photo, et ce que chacun contrôle.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — les trois réglages de l'exposition</div>
+            <table class="doc-table">
+              <tr><th>Réglage</th><th>Ce qu'il contrôle</th><th>Effet secondaire</th></tr>
+              <tr><td><b>Ouverture</b> (du diaphragme)</td><td>La quantité de lumière qui entre à chaque instant</td><td>Joue sur la profondeur de champ (zone nette)</td></tr>
+              <tr><td><b>Vitesse d'obturation</b></td><td>La durée pendant laquelle la lumière est captée</td><td>Trop lente → « flou de bougé »</td></tr>
+              <tr><td><b>Sensibilité ISO</b></td><td>La sensibilité du capteur à la lumière</td><td>Trop élevée → « bruit » (grain parasite)</td></tr>
+            </table>
+            <div class="block-label">À retenir</div>
+            <div class="retain">L'<b>exposition</b> d'une photo (trop sombre, correcte, trop claire) dépend de <b>trois paramètres</b> : l'<b>ouverture</b> (combien de lumière entre), la <b>vitesse d'obturation</b> (pendant combien de temps) et la <b>sensibilité ISO</b> (à quel point le capteur y réagit). Modifier l'un oblige à ajuster les autres — ton smartphone le fait automatiquement à chaque photo.</div>
+            <div class="block-label">Complète</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Les trois paramètres de l'exposition sont : l'<b>…</b> du diaphragme, la vitesse d'<b>…</b>, et la sensibilité <b>…</b> du capteur.</div>
+              <div class="cloze" data-cloze>
+                l'<input data-answer="ouverture" placeholder="…" aria-label="premier paramètre"> du diaphragme · la vitesse d'<input data-answer="obturation" placeholder="…" aria-label="deuxième paramètre"> · la sensibilité <input data-answer="ISO" placeholder="…" style="width:70px" aria-label="troisième paramètre">
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze data-msg-ok="✅ Les trois réglages sont là — étape validée." data-msg-no="Presque : relis le tableau au-dessus (un mot par trou, sans article).">Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.5 — le capteur -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.5 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Le capteur : de la lumière aux nombres</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> ordonner les couches du capteur photographique et comprendre le rôle des photosites et de la matrice de Bayer.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">À retenir</div>
+            <div class="retain">Le capteur remplace la pellicule d'autrefois. Il est composé de <b>photosites</b> : des cellules qui transforment la lumière en <b>signaux électriques</b>, lisibles par l'ordinateur. Devant eux : des <b>microlentilles</b> et un <b>filtre infrarouge</b> font converger et trient la lumière, puis la <b>matrice de Bayer</b> (une grille de filtres rouges, verts et bleus) sensibilise chaque photosite à une couleur primaire. Deux caractéristiques comptent : la <b>définition</b> du capteur (son nombre de photosites) et sa <b>taille</b> (des photosites plus grands captent mieux la lumière).</div>
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field">
+              <span class="field-type">Schéma à légender</span>
+              <div class="field-q">Le capteur en vue éclatée : replace les cinq éléments, du haut (ce qui arrive) vers le bas (ce qui sort).</div>
+              <svg class="diagram" viewBox="0 0 560 250" role="img" aria-label="Vue éclatée du capteur : lumière, microlentilles et filtre infrarouge, matrice de Bayer, photosites, signal électrique">
+                <!-- ① lumière -->
+                <line x1="255" y1="14" x2="255" y2="52" style="stroke:var(--activity)" stroke-width="4" marker-end="url(#fl1)"/>
+                <line x1="285" y1="14" x2="285" y2="52" style="stroke:var(--activity)" stroke-width="4" marker-end="url(#fl1)"/>
+                <defs><marker id="fl1" markerWidth="8" markerHeight="8" refX="4" refY="6" orient="0"><path d="M0,0 L4,7 L8,0" style="fill:var(--activity)"/></marker></defs>
+                <!-- ② microlentilles + filtre IR -->
+                <g>
+                  <ellipse cx="220" cy="66" rx="17" ry="8" style="fill:var(--link-wash);stroke:var(--link)" stroke-width="1.6"/>
+                  <ellipse cx="258" cy="66" rx="17" ry="8" style="fill:var(--link-wash);stroke:var(--link)" stroke-width="1.6"/>
+                  <ellipse cx="296" cy="66" rx="17" ry="8" style="fill:var(--link-wash);stroke:var(--link)" stroke-width="1.6"/>
+                  <ellipse cx="334" cy="66" rx="17" ry="8" style="fill:var(--link-wash);stroke:var(--link)" stroke-width="1.6"/>
+                  <rect x="198" y="78" width="158" height="8" rx="3" style="fill:var(--err-wash);stroke:var(--err)" stroke-width="1.4"/>
+                </g>
+                <!-- ③ matrice de Bayer -->
+                <g stroke-width="1.2">
+                  <rect x="198" y="104" width="38" height="26" style="fill:#3a9e52;stroke:var(--ink)"/>
+                  <rect x="238" y="104" width="38" height="26" style="fill:#c0392b;stroke:var(--ink)"/>
+                  <rect x="278" y="104" width="38" height="26" style="fill:#3a9e52;stroke:var(--ink)"/>
+                  <rect x="318" y="104" width="38" height="26" style="fill:#c0392b;stroke:var(--ink)"/>
+                  <rect x="198" y="132" width="38" height="26" style="fill:#2e5fb0;stroke:var(--ink)"/>
+                  <rect x="238" y="132" width="38" height="26" style="fill:#3a9e52;stroke:var(--ink)"/>
+                  <rect x="278" y="132" width="38" height="26" style="fill:#2e5fb0;stroke:var(--ink)"/>
+                  <rect x="318" y="132" width="38" height="26" style="fill:#3a9e52;stroke:var(--ink)"/>
+                </g>
+                <!-- ④ photosites -->
+                <g stroke-width="1.4">
+                  <rect x="198" y="176" width="36" height="26" rx="3" style="fill:var(--surface-2);stroke:var(--ink)"/>
+                  <rect x="238" y="176" width="36" height="26" rx="3" style="fill:var(--surface-2);stroke:var(--ink)"/>
+                  <rect x="278" y="176" width="36" height="26" rx="3" style="fill:var(--surface-2);stroke:var(--ink)"/>
+                  <rect x="318" y="176" width="36" height="26" rx="3" style="fill:var(--surface-2);stroke:var(--ink)"/>
+                </g>
+                <!-- ⑤ signal -->
+                <path d="M 255 214 h14 v10 h14 v-10 h14 v10 h14" fill="none" style="stroke:var(--ok)" stroke-width="2.6"/>
+                <line x1="330" y1="219" x2="360" y2="219" style="stroke:var(--ok)" stroke-width="2.6" marker-end="url(#fl2)"/>
+                <defs><marker id="fl2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" style="fill:var(--ok)"/></marker></defs>
+                <!-- numéros -->
+                <circle cx="150" cy="32" r="12" style="fill:var(--activity)"/><text x="150" y="37" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+                <circle cx="150" cy="72" r="12" style="fill:var(--link)"/><text x="150" y="77" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">2</text>
+                <circle cx="150" cy="130" r="12" style="fill:var(--ink)"/><text x="150" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">3</text>
+                <circle cx="150" cy="189" r="12" style="fill:var(--ink-faint)"/><text x="150" y="194" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">4</text>
+                <circle cx="150" cy="222" r="12" style="fill:var(--ok)"/><text x="150" y="227" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">5</text>
+              </svg>
+              <div class="label-selects" data-diagram>
+                <label>① Ce qui arrive sur le capteur
+                  <select data-correct="lumiere"><option value="">—</option><option value="lumiere">La lumière</option><option value="micro">Microlentilles + filtre IR</option><option value="bayer">Matrice de Bayer</option><option value="photosites">Photosites</option><option value="signal">Signal électrique</option></select></label>
+                <label>② Première couche traversée
+                  <select data-correct="micro"><option value="">—</option><option value="lumiere">La lumière</option><option value="micro">Microlentilles + filtre IR</option><option value="bayer">Matrice de Bayer</option><option value="photosites">Photosites</option><option value="signal">Signal électrique</option></select></label>
+                <label>③ La grille de filtres colorés
+                  <select data-correct="bayer"><option value="">—</option><option value="lumiere">La lumière</option><option value="micro">Microlentilles + filtre IR</option><option value="bayer">Matrice de Bayer</option><option value="photosites">Photosites</option><option value="signal">Signal électrique</option></select></label>
+                <label>④ Les cellules sensibles
+                  <select data-correct="photosites"><option value="">—</option><option value="lumiere">La lumière</option><option value="micro">Microlentilles + filtre IR</option><option value="bayer">Matrice de Bayer</option><option value="photosites">Photosites</option><option value="signal">Signal électrique</option></select></label>
+                <label>⑤ Ce qui sort, vers le processeur
+                  <select data-correct="signal"><option value="">—</option><option value="lumiere">La lumière</option><option value="micro">Microlentilles + filtre IR</option><option value="bayer">Matrice de Bayer</option><option value="photosites">Photosites</option><option value="signal">Signal électrique</option></select></label>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram data-msg-ok="✅ Capteur reconstitué — la lumière devient des nombres, l'image numérique peut naître." data-msg-no="Pas tout à fait : suis le trajet de la lumière, de son arrivée jusqu'au signal qui sort.">Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FIERTÉ FRANÇAISE -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-color:var(--france)"></div>
+        <div class="france-box">
+          <div class="fl">🇫🇷 Un peu de fierté</div>
+          <h4>La photographie est née en France</h4>
+          <p>La plus ancienne photographie du monde encore conservée, le <b>Point de vue du Gras</b>, a été prise vers <b>1827</b> par <b>Nicéphore Niépce</b>, depuis la fenêtre de sa maison près de Chalon-sur-Saône — un temps de pose de plusieurs jours ! Son associé <b>Louis Daguerre</b> perfectionne le procédé, et le 19 août <b>1839</b>, le savant <b>François Arago</b> annonce que l'État français a acheté l'invention pour <b>« en doter libéralement le monde entier »</b> : la France offre la photographie à l'humanité, gratuitement et sans brevet.</p>
+          <div class="warn-note">📍 Ce geste te rappelle quelque chose ? En <b>1993</b>, le CERN a fait pareil avec le <b>Web</b> (revois la séquence Le&nbsp;Web). Offrir une invention au monde, c'est souvent ce qui la fait exploser. Et l'histoire française de la photo ne s'arrête pas là : rendez-vous en <b>séance 2</b> pour la couleur.</div>
+          <div class="biblio">
+            <div class="bl">📚 Sources</div>
+            <a href="https://www.archivesniepce.com/la-premiere-photographie" target="_blank" rel="noopener">Musée Nicéphore Niépce — la première photographie</a>
+            <a href="https://gallica.bnf.fr/ark:/12148/bpt6k1231630" target="_blank" rel="noopener">Rapport d'Arago sur le daguerréotype (1839) — Gallica / BnF</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERSO -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-style:dashed"></div>
+        <div class="perso-box">
+          <div class="pl">💬 Et toi ? · réponse personnelle, non notée</div>
+          <div class="perso">
+            <div class="field-q" style="font-weight:400">Combien de photos as-tu prises <b>cette semaine</b>, à ton avis ? Et que deviennent-elles : partagées, stockées, oubliées ? Niépce a posé <b>plusieurs jours</b> pour une seule image — qu'est-ce que ça t'inspire ?</div>
+            <textarea placeholder="Réponds librement — ça servira à lancer la discussion en classe." aria-label="Réponse personnelle"></textarea>
+            <div style="margin-top:8px"><button class="btn ghost" data-share>Partager avec la classe</button></div>
+            <div class="note-free" data-share-note></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BONUS S1 -->
+    <div class="bonus-wrap" data-bonus>
+      <div class="bonus-head" data-bonus-toggle>
+        <span class="bonus-tag">bonus</span>
+        <span class="bl">Pour aller plus loin — coin des curieux</span>
+        <span class="chev">▸</span>
+      </div>
+      <div class="bonus-body">
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé).</p>
+        <p style="font-size:14px;color:var(--ink-soft)">🕳️ <b>Manip maison — fabrique une chambre noire.</b> Une boîte à chaussures, un petit trou d'aiguille sur une face, du papier calque sur la face opposée : dans une pièce sombre, vise une fenêtre… et l'image du dehors apparaît, <b>renversée</b>, sur le calque. C'est le principe de la <i>camera obscura</i>, connu bien avant Niépce — et c'est exactement ce qui se passe dans ton œil et ton appareil photo.</p>
+        <div class="field free" data-free>
+          <span class="field-type">Question ouverte</span>
+          <div class="field-q">On dit que l'appareil photo <b>fige</b> la réalité, alors que l'œil, lui, <b>reconstruit</b> en permanence (accommodation, image remise à l'endroit par le cerveau…). À ton avis, est-ce qu'une photo est plus « objective » que ce que voit un témoin ? Argumente dans les deux sens.</div>
+          <textarea placeholder="Argumente avec tes propres mots…" aria-label="Réponse ouverte"></textarea>
+          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="verdict"></div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>Pixels et couleurs</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Pixel, définition, résolution : les caractéristiques d'une image — puis le codage des couleurs en RVB, jusqu'à l'hexadécimal.</p>
+    <div class="progress-line"><i data-progress></i></div>
+    <div class="lock-banner"><span class="k"></span><span>Séance verrouillée — termine et valide toute la <b>Séance 1</b> pour la débloquer. Si la classe a avancé sans toi, préviens ton professeur : il peut l'ouvrir.</span></div>
+    <div class="lockable">
+    <div class="steps">
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">🚧 EN PRODUCTION</div>
+            <h3 class="step-title">Contenu en cours d'écriture</h3>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14px;color:var(--ink-soft)">Au programme : le pixel et la définition d'une image, la résolution (ppp), le mélangeur RVB interactif, le code hexadécimal — et la couleur photographiée pour la première fois, une histoire française (Lippmann, autochromes Lumière).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 3 ===================== -->
+  <section class="seance locked" id="s3" data-seance="3">
+    <div class="seance-head">
+      <h2><span class="s-num">S3</span>Mes premiers filtres en Python</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Analyser puis modifier une image pixel par pixel avec Python : supprimer une couleur, créer un négatif, des nuances de gris, un filtre sépia.</p>
+    <div class="progress-line"><i data-progress></i></div>
+    <div class="lock-banner"><span class="k"></span><span>Séance verrouillée — termine et valide toute la <b>Séance 2</b> pour la débloquer. Si la classe a avancé sans toi, préviens ton professeur : il peut l'ouvrir.</span></div>
+    <div class="lockable">
+    <div class="steps">
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">🚧 EN PRODUCTION</div>
+            <h3 class="step-title">Contenu en cours d'écriture</h3>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14px;color:var(--ink-soft)">Au programme : l'analyse ligne à ligne du script PIL, puis tes propres filtres — sans rouge, négatif, nuances de gris, sépia — guidés par le hub, codés dans EduPython.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 4 ===================== -->
+  <section class="seance locked" id="s4" data-seance="4">
+    <div class="seance-head">
+      <h2><span class="s-num">S4</span>Effets spéciaux : du fond vert à l'IA</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Comprendre l'incrustation sur fond vert, fusionner deux images en Python, découvrir le détourage par intelligence artificielle — et choisir le bon format d'image.</p>
+    <div class="progress-line"><i data-progress></i></div>
+    <div class="lock-banner"><span class="k"></span><span>Séance verrouillée — termine et valide toute la <b>Séance 3</b> pour la débloquer. Si la classe a avancé sans toi, préviens ton professeur : il peut l'ouvrir.</span></div>
+    <div class="lockable">
+    <div class="steps">
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">🚧 EN PRODUCTION</div>
+            <h3 class="step-title">Contenu en cours d'écriture</h3>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14px;color:var(--ink-soft)">Au programme : pourquoi le fond est vert, l'analyse d'un pixel (et le vrai rôle du canal alpha), le remplacement des pixels, la fusion de deux images, le détourage par IA — avec les précautions qui vont avec — et les formats d'images d'aujourd'hui.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 5 ===================== -->
+  <section class="seance locked" id="s5" data-seance="5">
+    <div class="seance-head">
+      <h2><span class="s-num">S5</span>Une photo dit-elle la vérité ?</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Trucages, métadonnées EXIF, deepfakes : les réflexes pour évaluer une image — et la réponse à la question posée en séance 1.</p>
+    <div class="progress-line"><i data-progress></i></div>
+    <div class="lock-banner"><span class="k"></span><span>Séance verrouillée — termine et valide toute la <b>Séance 4</b> pour la débloquer. Si la classe a avancé sans toi, préviens ton professeur : il peut l'ouvrir.</span></div>
+    <div class="lockable">
+    <div class="steps">
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">🚧 EN PRODUCTION</div>
+            <h3 class="step-title">Contenu en cours d'écriture</h3>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14px;color:var(--ink-soft)">Au programme : les catégories de trucage et comment les débusquer, les métadonnées EXIF et ce qu'elles révèlent (dont ta position), l'IA générative — et la boucle refermée : peut-on croire une photo ?</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== DÉBRANCHÉE ===================== -->
+  <section class="seance" id="deb" data-seance="deb">
+    <div class="seance-head">
+      <h2><span class="s-num">⏳</span>Activité débranchée — la frise de la photographie</h2>
+      <span class="seance-time">≈ 30 min</span>
+    </div>
+    <p class="seance-goal">Sans écran : deux siècles d'images à remettre dans l'ordre, de la plaque d'étain de Niépce aux images générées par IA.</p>
+    <div class="steps">
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">EN BINÔME · SANS ORDINATEUR</div>
+            <h3 class="step-title">Construire la frise de la photographie</h3>
+          </div>
+          <div class="card-body">
+            <div class="res">
+              <a class="res-item debranche" href="#" onclick="return false">
+                <span class="res-code">PHO·D</span>
+                <span class="res-main"><span class="r-title">Étiquettes à découper &amp; frise à compléter</span><span class="r-type">Activité débranchée · à imprimer</span></span>
+                <span class="res-time">~30 min</span>
+              </a>
+            </div>
+            <div class="retain" style="margin-top:14px">Les repères à placer : <b>vers 1827</b> première photographie conservée (Niépce) · <b>1839</b> la France offre le daguerréotype au monde (Daguerre, Arago) · <b>1907</b> l'autochrome des frères Lumière, la couleur pour tous · <b>1969</b> invention du capteur CCD · <b>1975</b> premier appareil photo numérique (Kodak) · <b>1990</b> Photoshop 1.0 · <b>2007</b> le smartphone met un appareil photo dans chaque poche · <b>2017</b> premiers deepfakes · <b>2022</b> les images générées par IA se banalisent. Placez-les, puis justifiez deux dates de votre choix.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="note">
+    <b>Maquette V0 — proposition à valider.</b> Les champs sont interactifs pour montrer la mécanique : QCM, trous et schémas corrigés <b>en direct</b> par le navigateur ; réponses rédigées <b>envoyées en correction</b> (copier-coller bloqué) qui déclenchent un point de contexte ; réflexions perso <b>non notées</b> ; verrouillage des séances tant que la précédente n'est pas validée, avec un <b>mode enseignant</b> pour ouvrir en cas de blocage. Dans la vraie version, l'envoi passera par ton serveur : correction automatique du texte libre par IA, statut <code>en attente</code> quand tu dois trancher, déblocage de l'entraide une fois <code>validé</code>, et données de progression exportables. 🧭 Un doute sur le fonctionnement du cours (fiches, verrouillage, entraide) ? Revois <a href="2nde-snt-t0-systemes-informatises.html" style="color:var(--link)">l'introduction</a>.
+  </footer>
+</div>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* petit easter egg pour les curieux qui ouvrent la console */
+  console.log("%c🎉 Bien joué !","font-size:16px;font-weight:bold;color:#2445c7");
+  console.log("%cTu regardes sous le capot — exactement l'esprit de cette séquence : ne jamais croire une image sans savoir comment elle est fabriquée. 📸\nTape  document.title = 'SNT power'  et regarde l'onglet du navigateur…\n— M. Vanhoorde","font-size:12px;color:#12805c");
+
+  function verdict(field,cls,msg){var v=field.querySelector('.verdict');if(!v)return;v.className='verdict show '+cls;v.textContent=msg;}
+  function stepOf(el){return el.closest('[data-step]');}
+  function markDone(el){var s=stepOf(el);if(s){s.classList.remove('is-wait');s.classList.add('is-done');}refresh();}
+  function showReveal(field){var r=field.querySelector('[data-reveal]');if(r)r.classList.add('show');}
+
+  /* ---------- déblocage progressif ---------- */
+  function seanceComplete(sec){
+    var gates=sec.querySelectorAll('[data-gate]');
+    if(!gates.length) return true;
+    return Array.from(gates).every(function(g){return g.classList.contains('is-done');});
+  }
+  var seanceWasComplete={};
+  function refresh(){
+    document.querySelectorAll('.seance').forEach(function(sec){
+      var gates=sec.querySelectorAll('[data-gate]');
+      var done=Array.from(gates).filter(function(g){return g.classList.contains('is-done');}).length;
+      var bar=sec.querySelector('[data-progress]');
+      if(bar) bar.style.width = gates.length ? (100*done/gates.length)+'%' : '0%';
+      var id=sec.getAttribute('data-seance');
+      var complete = gates.length>0 && done===gates.length;
+      if(complete && seanceWasComplete[id]===false){ onSeanceComplete(sec); }
+      if(seanceWasComplete[id]===undefined) seanceWasComplete[id]=complete; else seanceWasComplete[id]=complete;
+    });
+    /* verrouillage en chaîne, généralisé à N séances numérotées (identique au comportement du hub du Web) */
+    var prevOk = true;
+    for(var n=1;n<=5;n++){
+      var sec=document.querySelector('[data-seance="'+n+'"]');
+      if(!sec) continue;
+      if(n>1) sec.classList.toggle('locked', !prevOk);
+      prevOk = prevOk && seanceComplete(sec);
+    }
+    document.querySelectorAll('[data-navlock]').forEach(function(a){
+      var n=a.getAttribute('data-navlock');
+      var sec=document.querySelector('[data-seance="'+n+'"]');
+      var ico=a.querySelector('.lockico');
+      if(ico) ico.style.display = (sec && sec.classList.contains('locked') && !document.body.classList.contains('teacher')) ? '' : 'none';
+    });
+  }
+
+  /* mode enseignant */
+  document.getElementById('teacherMode').addEventListener('change',function(){
+    document.body.classList.toggle('teacher',this.checked);
+    refresh();
+  });
+
+  /* ---------- QCM ---------- */
+  document.querySelectorAll('[data-qcm]').forEach(function(group){
+    var answer=parseInt(group.dataset.answer,10);
+    var opts=Array.from(group.querySelectorAll('.opt'));
+    opts.forEach(function(opt,i){
+      opt.addEventListener('click',function(){
+        var field=group.closest('.field');
+        opts.forEach(function(o){o.disabled=true;});
+        if(i===answer){opt.classList.add('correct');verdict(field,'ok','✅ Correct — étape validée. Tu peux aider un camarade sur cette question.');showReveal(field);markDone(group);}
+        else{opt.classList.add('wrong');opts[answer].classList.add('correct');verdict(field,'no','À revoir : la bonne réponse est en vert. Reprends la ressource plus haut.');}
+      });
+    });
+  });
+
+  /* ---------- trous ---------- */
+  document.querySelectorAll('[data-check-cloze]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var field=btn.closest('.field');var inputs=Array.from(field.querySelectorAll('[data-answer]'));var all=true;
+      inputs.forEach(function(inp){var ok=inp.value.trim().toLowerCase()===inp.dataset.answer.toLowerCase();inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);if(!ok)all=false;});
+      if(all){verdict(field,'ok',btn.dataset.msgOk||'✅ Correct — étape validée.');markDone(btn);}
+      else{verdict(field,'no',btn.dataset.msgNo||'Presque : vérifie les champs en rouge.');}
+    });
+  });
+
+  /* ---------- schéma ---------- */
+  document.querySelectorAll('[data-check-diagram]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var field=btn.closest('.field');var sels=Array.from(field.querySelectorAll('select'));var all=true;
+      sels.forEach(function(s){var ok=s.value===s.dataset.correct;s.classList.toggle('ok',ok);s.classList.toggle('no',!ok);if(!ok)all=false;});
+      if(all){verdict(field,'ok',btn.dataset.msgOk||'✅ Schéma juste — étape validée.');markDone(btn);}
+      else{verdict(field,'no',btn.dataset.msgNo||'Pas tout à fait : réessaie.');}
+    });
+  });
+
+  /* ---------- texte libre ---------- */
+  document.querySelectorAll('[data-free]').forEach(function(field){
+    var ta=field.querySelector('textarea');var meta=field.querySelector('[data-meta]');var send=field.querySelector('[data-send-free]');var blocked=false;
+    ['paste','drop'].forEach(function(ev){ta.addEventListener(ev,function(e){e.preventDefault();blocked=true;meta.innerHTML='<span class="warn">⨯ Copier-coller bloqué — écris toi-même</span>';setTimeout(update,1500);});});
+    function update(){var n=ta.value.trim().length;if(!blocked||document.activeElement===ta){meta.innerHTML=n+' caractère'+(n>1?'s':'')+' · saisie au clavier';}send.disabled=n<15;}
+    ta.addEventListener('input',function(){blocked=false;update();});
+    send.addEventListener('click',function(){
+      send.disabled=true;ta.readOnly=true;
+      var s=stepOf(field);if(s)s.classList.add('is-wait');
+      verdict(field,'wait','⏳ Réponse envoyée. Correction automatique en cours — ton professeur validera si besoin.');
+      setTimeout(function(){
+        verdict(field,'ok','✅ Réponse validée. Tu peux maintenant consulter et aider les camarades bloqués.');
+        showReveal(field);markDone(send);
+      }, reduce?400:2400);
+    });
+  });
+
+  /* ---------- perso (partage, non noté) ---------- */
+  document.querySelectorAll('[data-share]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var box=btn.closest('.perso');var ta=box.querySelector('textarea');var note=box.querySelector('[data-share-note]');
+      if(ta.value.trim().length<2){note.textContent='Écris un mot avant de partager 🙂';return;}
+      ta.readOnly=true;btn.disabled=true;note.textContent='✅ Merci — ta réponse nourrit la discussion de classe.';
+    });
+  });
+
+  /* ---------- bonus dépliables ---------- */
+  document.querySelectorAll('[data-bonus-toggle]').forEach(function(h){
+    h.addEventListener('click',function(){h.closest('[data-bonus]').classList.toggle('open');});
+  });
+
+  /* ---------- manip piège à clic (100% local, rien n'est collecté) ---------- */
+  document.querySelectorAll('[data-trap]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.body.classList.add('pwned');
+      setTimeout(function(){document.body.classList.remove('pwned');},reduce?0:3600);
+      var rev=btn.parentElement.querySelector('[data-trap-reveal]');
+      if(rev) rev.classList.add('show');
+      btn.disabled=true; btn.style.opacity=.5; btn.style.animation='none';
+      markDone(btn); // la prise de conscience vaut validation
+    });
+  });
+
+  /* ---------- modal réutilisable ---------- */
+  var mb=document.createElement('div'); mb.className='modal-back';
+  mb.innerHTML='<div class="modal" role="dialog" aria-modal="true"><div class="m-ico"></div><h3></h3><div class="m-body"></div><div class="m-actions"></div></div>';
+  document.body.appendChild(mb);
+  function closeModal(){mb.classList.remove('show');}
+  mb.addEventListener('click',function(e){if(e.target===mb)closeModal();});
+  function openModal(ico,title,bodyHTML,actions){
+    mb.querySelector('.m-ico').textContent=ico;
+    mb.querySelector('.modal h3').textContent=title;
+    mb.querySelector('.m-body').innerHTML=bodyHTML;
+    var a=mb.querySelector('.m-actions'); a.innerHTML='';
+    actions.forEach(function(act){
+      var b=document.createElement('button'); b.className='btn '+(act.cls||''); b.textContent=act.label;
+      b.addEventListener('click',function(){ if(act.fn)act.fn(); if(act.close!==false)closeModal(); });
+      a.appendChild(b);
+    });
+    mb.classList.add('show');
+  }
+
+  /* ---------- récap téléchargeable d'une séance ---------- */
+  function seanceTitle(sec){var h=sec.querySelector('.seance-head h2');return h?h.textContent.replace(/\s+/g,' ').trim():'Séance';}
+  function collectRecap(sec){
+    var rows=[];
+    sec.querySelectorAll('[data-step]').forEach(function(step){
+      var t=step.querySelector('.step-title'); if(!t) return;
+      var done=step.classList.contains('is-done');
+      var wait=step.classList.contains('is-wait');
+      var ret=step.querySelector('.retain');
+      var ans=[];
+      step.querySelectorAll('textarea').forEach(function(ta){if(ta.value.trim())ans.push(ta.value.trim());});
+      step.querySelectorAll('.cloze input,.label-selects select').forEach(function(f){if(f.value&&f.value.trim())ans.push(f.value.trim());});
+      rows.push({title:t.textContent.trim(),status:done?'✅ validé':(wait?'⏳ en attente':'à faire'),retain:ret?ret.innerHTML.trim():'',answer:ans.join(' · ')});
+    });
+    return rows;
+  }
+  function downloadFiche(sec){
+    var title=seanceTitle(sec); var rows=collectRecap(sec);
+    var when=new Date().toLocaleDateString('fr-FR');
+    var body=rows.map(function(r){
+      return '<div class="e"><div class="h"><span>'+r.title+'</span><span class="s">'+r.status+'</span></div>'+(r.retain?'<div class="r"><span class="lbl">À retenir</span>'+r.retain+'</div>':'')+(r.answer?'<div class="a"><span class="lbl">Ma réponse</span>'+r.answer.replace(/</g,'&lt;')+'</div>':'')+'</div>';
+    }).join('');
+    var html='<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>Ma fiche — '+title+'</title>'+
+      '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:30px auto;padding:0 18px;color:#161f33;line-height:1.55}'+
+      'h1{font-size:22px}.meta{color:#667;font-size:13px;margin-bottom:20px}'+
+      '.e{border:1px solid #d3dae7;border-radius:10px;padding:12px 14px;margin-bottom:10px}'+
+      '.h{display:flex;justify-content:space-between;font-weight:600;gap:12px}.s{color:#12805c;font-weight:500;white-space:nowrap}'+
+      '.lbl{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8b97ad;margin-bottom:3px}'+
+      '.r{margin-top:8px;padding:9px 11px;background:#f4f6fb;border-left:3px solid #161f33;border-radius:0 8px 8px 0;font-size:13.5px}'+
+      '.r code{background:#e6e9f2;padding:1px 4px;border-radius:3px;font-family:ui-monospace,monospace;font-size:.9em}'+
+      '.a{margin-top:8px;padding:9px 11px;background:#e7ebfb;border-radius:8px;white-space:pre-wrap;font-size:14px}'+
+      '.tip{margin-top:24px;font-size:12px;color:#8b97ad}</style></head><body>'+
+      '<h1>Ma fiche SNT — '+title+'</h1><div class="meta">La photographie numérique · exporté le '+when+' · à déposer sur ton OneDrive</div>'+
+      body+'<div class="tip">Les exercices restent accessibles sur le hub de la classe.</div></body></html>';
+    var blob=new Blob([html],{type:'text/html'});
+    var url=URL.createObjectURL(blob); var a=document.createElement('a');
+    var slug=title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
+    a.href=url; a.download='ma-fiche-'+(slug||'snt')+'.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
+
+  /* ---------- recommencer une séance ---------- */
+  function resetSeance(sec){
+    sec.querySelectorAll('[data-step]').forEach(function(s){s.classList.remove('is-done','is-wait');
+      var p=s.querySelector('.step-pip'); if(p){p.style.background='';p.style.borderColor='';}});
+    sec.querySelectorAll('.opt').forEach(function(o){o.disabled=false;o.classList.remove('correct','wrong');});
+    sec.querySelectorAll('textarea').forEach(function(t){t.value='';t.readOnly=false;});
+    sec.querySelectorAll('.cloze input').forEach(function(i){i.value='';i.classList.remove('ok','no');});
+    sec.querySelectorAll('.label-selects select').forEach(function(s){s.value='';s.classList.remove('ok','no');});
+    sec.querySelectorAll('.verdict').forEach(function(v){v.className='verdict';v.textContent='';});
+    sec.querySelectorAll('[data-reveal]').forEach(function(r){r.classList.remove('show');});
+    sec.querySelectorAll('[data-send-free]').forEach(function(b){b.disabled=true;});
+    sec.querySelectorAll('[data-share]').forEach(function(b){b.disabled=false;});
+    sec.querySelectorAll('[data-share-note]').forEach(function(n){n.textContent='';});
+    sec.querySelectorAll('[data-trap]').forEach(function(b){b.disabled=false;b.style.opacity='';b.style.animation='';});
+    sec.querySelectorAll('[data-trap-reveal]').forEach(function(r){r.classList.remove('show');});
+    var id=sec.getAttribute('data-seance'); seanceWasComplete[id]=false;
+    refresh();
+  }
+
+  /* barre d'actions (télécharger / recommencer) à la fin de chaque séance à valider */
+  document.querySelectorAll('.seance').forEach(function(sec){
+    if(!sec.querySelector('[data-gate]')) return;
+    var host=sec.querySelector('.lockable'); if(!host) return;
+    var bar=document.createElement('div'); bar.className='seance-actions';
+    bar.innerHTML='<span class="sa-label">💾 Pense à déposer ta fiche sur ton OneDrive à la fin de la séance.</span>';
+    var dl=document.createElement('button'); dl.className='btn dl sm'; dl.textContent='📥 Télécharger ma fiche';
+    dl.addEventListener('click',function(){downloadFiche(sec);});
+    var rs=document.createElement('button'); rs.className='btn reset sm'; rs.textContent='🔁 Recommencer';
+    rs.addEventListener('click',function(){
+      openModal('🔁','Recommencer cette séance ?',
+        '<p>Tu vas repartir d\'une fiche vierge pour cette séance. Tes réponses actuelles seront effacées de l\'écran.<br><b>Télécharge d\'abord ta fiche</b> si tu veux garder tes réponses et tes corrections.</p>',
+        [{label:'📥 Télécharger d\'abord',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
+         {label:'Recommencer',cls:'reset',fn:function(){resetSeance(sec);}}]);
+    });
+    bar.appendChild(dl); bar.appendChild(rs); host.appendChild(bar);
+  });
+
+  /* pop-up de fin de séance */
+  function onSeanceComplete(sec){
+    var title=seanceTitle(sec);
+    var rows=collectRecap(sec).filter(function(r){return r.status.indexOf('validé')>-1;});
+    var recap='<div class="recap">'+rows.map(function(r){return '<div class="ri"><span>'+r.title+'</span><b>✓</b></div>';}).join('')+'</div>';
+    openModal('🎉','Séance terminée — bravo !',
+      recap+'<p style="margin-top:2px">Tu as validé toute la séance. Télécharge ta fiche pour la garder, puis dépose-la sur ton OneDrive.</p>',
+      [{label:'📥 Télécharger ma fiche',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
+       {label:'Continuer',cls:'ghost'}]);
+  }
+
+  refresh();
+})();
+</script>
+</body>
+</html>

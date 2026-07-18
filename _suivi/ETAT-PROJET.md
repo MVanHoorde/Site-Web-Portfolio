@@ -1,6 +1,6 @@
 # État du projet — Site pédagogique Physique-Chimie & SNT
 
-> Dernière mise à jour : 17/07/2026 · tenu à jour par Loïc + Claude
+> Dernière mise à jour : 18/07/2026 · tenu à jour par Loïc + Claude
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 Vue d'ensemble. Détail par chapitre dans `chapitres.md` ; idées dans `IDEES.md`.
@@ -157,6 +157,14 @@ source, puisqu'il change chaque année).
   fraction des blocs-formule corrigée, mais restée invisible jusqu'au versionnage.
 - 💡 **Décision (T2) — convention d'écriture des vecteurs** : en ébauche, la flèche est rendue par un caractère combinant Unicode placé au-dessus du symbole (lisible, mais imparfait sur les groupes multi-lettres). À raffiner en régime B (petit composant SVG ou notation dédiée).
 
+- 🆕 **SNT — hub « Photographie numérique » S1 en ligne (18/07)** :
+  `pages/2nde-snt-t7-photographie-numerique.html`, lié depuis la carte SNT 7.
+  **Maquette V0, non validée** — S1 complète et testée (Playwright), S2-S5 en
+  squelettes 🚧 verrouillés. Découpage 5 séances + frise débranchée arbitré par
+  Loïc le 18/07. Détail, arbitrages et restes à faire : `_suivi/chapitres.md`
+  (section SNT-T7). Deux erreurs de la source corrigées au passage dans le
+  contenu à venir (canal alpha ≠ « saturation » ; formats d'images datés).
+
 ## 📊 Avancement (Seconde — Thème 1)
 
 Tout est en ligne à l'état d'ébauche. Niveau de finition **validé** :
@@ -217,7 +225,7 @@ Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; un seul hub existe.
 | SNT 4 · Données structurées | ⬜ | ⬜ non | — |
 | SNT 5 · Localisation & cartographie | ⬜ | ⬜ non | — |
 | SNT 6 · Informatique embarquée | ⬜ | ⬜ non | — |
-| SNT 7 · Photographie numérique | ⬜ | ⬜ non | — |
+| SNT 7 · Photographie numérique | ✅ V0 (S1 complète + S2-S5 🚧 + débranchée cadrée) | ⬜ non | ⬜ `PHO·1`, `PHO·D` à brancher |
 
 > Phase 1 (rentrée) : HTML statique autonome, correction locale réelle, texte
 > libre **simulé**. Phase 2 (plus tard) : VPS + base de données + correction IA
@@ -237,5 +245,7 @@ Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; un seul hub existe.
 - [ ] **SNT — finaliser la séquence Web à 100 %** : étoffer la frise débranchée
       (étiquettes datées + corrigé), ajouter le bonus geek « 404 & codes HTTP »
       en séance 1, brancher les ressources définitives (`WEB·2b`, `WEB·D`).
-- [ ] **SNT — décliner le gabarit du hub** sur les autres thèmes (Photo numérique,
-      Données structurées…).
+- [ ] **SNT T7 Photo — rédiger S2 à S5** (séance par séance, arbitrage fait) +
+      la frise débranchée `PHO·D` ; choisir la vidéo-débat deepfake (`PHO·1`).
+- [ ] **SNT — décliner le gabarit du hub** sur les autres thèmes (Données
+      structurées…).

@@ -260,10 +260,46 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   **ressources définitives** (activités cahier `WEB·2b`, frise `WEB·D` — liens
   actuellement inertes `href="#"`).
 
+### SNT-T7 — La photographie numérique
+- État : **S1 en maquette V0 fonctionnelle** (18/07), S2-S5 en squelettes
+  verrouillés (cartes 🚧 « en production »), débranchée cadrée. **Non validé.**
+- Fichier : `pages/2nde-snt-t7-photographie-numerique.html` (autonome, CSS/JS
+  inline, décliné du hub du Web). Lié depuis `pages/2nde-snt.html`
+  (carte « SNT 7 · La photographie numérique »).
+- **Découpage arbitré par Loïc (18/07)** : 5 séances (De l'œil au capteur ·
+  Pixels & couleurs · Mes premiers filtres en Python · Effets spéciaux, du fond
+  vert à l'IA · Une photo dit-elle la vérité ?) + 1 débranchée (**frise de la
+  photographie**, option B). ≈ 8 h. Codes `PHO·x`. Fil rouge : la question
+  « peut-on croire une photo ? » posée en S1, résolue en S5.
+- Sources : dossier de séquence de Loïc (docs 01, 02, 02 bis, 03 + scripts
+  Python PIL + liens vidéo). Cahier/manuel Nathan **non transposés**
+  (copyright) : notions recréées, exercices réécrits, schémas SVG maison.
+  Autres arbitrages actés : Star Destroyer → vaisseau SVG maison ; remove.bg
+  conservé avec garde-fou RGPD (jamais de photo d'élève) ; formats d'images mis
+  à jour (WebP/HEIC) ; canal alpha rétabli (la source disait « saturation ») ;
+  refresh deepfake/IA générative ; mélangeur RVB + lecteur EXIF local en bonus.
+- Interactivité S1 **réelle** : réponse rédigée deepfake (reveal « le sais-tu »
+  + biblio Vortex), QCM accommodation, schéma appareil photo à légender (œil ↔
+  appareil, 4 menus), texte à trous exposition (ouverture/obturation/ISO),
+  schéma capteur en vue éclatée (5 couches, Bayer en SVG), france-box Niépce /
+  Daguerre / Arago (« doter libéralement le monde entier ») avec biblio musée
+  Niépce + Gallica, perso usages photo, bonus chambre noire + question ouverte.
+- Interactivité **simulée** (phase 1) : texte libre *en attente* → *validé*.
+- **Adaptations JS vs hub du Web (documentées, comportement identique)** :
+  verrouillage généralisé en boucle (5 séances au lieu de 4 câblées) ; messages
+  de verdict des trous/schémas portés par `data-msg-ok` / `data-msg-no`
+  (plusieurs champs du même type par séance) ; en-tête de fiche ; easter egg
+  console re-thématisé photo. Cartes 🚧 des S2-S5 = portes `data-gate` jamais
+  validables → seule S2 s'ouvre après S1, la chaîne reste close.
+- 🚧 Restant : rédiger S2 à S5 + la frise `PHO·D` (étiquettes + corrigé) ;
+  brancher `PHO·1` (vidéo-débat deepfake — remplaçant 2026 du lien BFMTV 2019 à
+  choisir) ; tester en salle `PHO·1b` (vidéo YouTube œil/appareil) ; licences
+  `image.jpg` / `portrait.jpg` à confirmer côté Loïc pour la suite.
+
 ### SNT — autres thèmes
 _(Réseaux sociaux, Données structurées, Localisation & cartographie,
-Informatique embarquée, Photographie numérique : cartes présentes sur
-`pages/2nde-snt.html`, hubs à décliner sur le gabarit du Web.)_
+Informatique embarquée : cartes présentes sur `pages/2nde-snt.html`, hubs à
+décliner sur le gabarit du Web.)_
 
 ## Première / Terminale
 _(pages d'accueil existantes ; chapitres à venir)_
