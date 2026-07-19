@@ -282,6 +282,7 @@ pré-correction IA locale. Détail des règles : `_modeles/CONSIGNES-sequence-ES
 | `serveur-frise/` | 🚧 squelette Node natif : endpoints figés, garde-fou anti-note codé, auth enseignant à poser |
 | `ia-correction/` | 🚧 prompt-cadre V1 + grille critères publiée + script Ollama (modèle à choisir : Qwen 3 candidat) avec garde-fous entrée/sortie |
 | Cours 1 (histoire) / Cours 2 (IA) | 🚧 s'écrivent après S3/S5 |
+| `pages/term-es-t2-c1-…` + `t2-c2-…` | ✅ ébauches complètes sur gabarit chapitre (texte fidèle aux PDF, images c1 posées, .a-faire sur QR/verrou/fiches) |
 | Pack débat IA | grille .docx livrée hors dépôt ; plans de travail + cartes contraintes 🚧 |
 
 **Rappels réglementaires actés** : AI Act annexe III applicable 02/08/2026 —

@@ -406,3 +406,21 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 
 ## Première / Terminale
 _(pages d'accueil existantes ; chapitres à venir)_
+
+## Enseignement scientifique — Terminale (nouvelle partie, 19/07)
+
+| Page | État | Prochains jalons |
+|---|---|---|
+| term-es-s01-frise | ✅ V1 locale | brancher serveur · champ image · vote titres |
+| term-es-t2-c1-deux-siecles-energie-electrique | **ébauche complète** (texte fidèle, 14 images posées, 6 encarts, 3 exercices dont 2 corrigés) | décoder les QR → liens vidéo (7 chips en #) · correction ex.2 (groupe électrogène) · verrou (code à fournir) · fiche PDF |
+| term-es-t2-c2-production-stockage-electricite | **ébauche complète** (texte fidèle, 3 sections, 4 exercices, corrections proposées) | extraire images du pptx 230 Mo (régime B) · liens vidéo · trancher où vit « transport/effet Joule » (2.2 ou 2.3) · DS à créer |
+| 2.3 / cours IA / débat | 🚧 annoncés sur la page de niveau | cours 1 s'écrit après S3 (frise réelle de la classe) |
+
+**Remarques d'audit à trancher par Loïc :**
+- Titre page de niveau 2.2 (« Les atouts de l'électricité ») ≠ titre du cours
+  (« Production et stockage ») — harmoniser ?
+- Le diaporama 2.2 ouvre sur les **cycles de Milankovitch** (image 1) : recyclage
+  probable du Thème 1 climat — candidate au retrait dans la version web (retirée
+  de l'ébauche, à confirmer).
+- Corrections des exercices « pile à hydrogène » et « Energy Vault » **rédigées
+  par Claude** (chiffres vérifiés) : à relire pour le ton avant classe.
