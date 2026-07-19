@@ -266,3 +266,26 @@ section « Seconde — SNT » de `chapitres.md`.
       §14.4).
 - [ ] **SNT — trancher l'extraction d'un `gabarit-hub-snt.html`** : conventions
       désormais confirmées par 8 hubs (décision de Loïc — `CONSIGNES-hub-SNT.md` §13).
+
+---
+
+## 🚧 Nouvelle partie (19/07) — Séquence ES Terminale « frise & IA »
+
+**Décision de Loïc : chantier ouvert d'un coup, architecture complète visée**
+(pas de version dégradée) — frise participative + serveur de classe +
+pré-correction IA locale. Détail des règles : `_modeles/CONSIGNES-sequence-ES.md`.
+
+| Pièce | État |
+|---|---|
+| `pages/term-es-s01-frise.html` | ✅ fonctionnel en local (tirage 2→1, dépôt 2 sources + bannies, jetons, `?prof=1`, export CSV) |
+| Page de niveau Term ES | ✅ lien séquence 1 activé (+ liste des chantiers) |
+| `serveur-frise/` | 🚧 squelette Node natif : endpoints figés, garde-fou anti-note codé, auth enseignant à poser |
+| `ia-correction/` | 🚧 prompt-cadre V1 + grille critères publiée + script Ollama (modèle à choisir : Qwen 3 candidat) avec garde-fous entrée/sortie |
+| Cours 1 (histoire) / Cours 2 (IA) | 🚧 s'écrivent après S3/S5 |
+| Pack débat IA | grille .docx livrée hors dépôt ; plans de travail + cartes contraintes 🚧 |
+
+**Rappels réglementaires actés** : AI Act annexe III applicable 02/08/2026 —
+la pré-correction reste « tâche préparatoire » (art. 6(3)) : aucune note machine,
+souveraineté de Loïc sur toute notation. RGPD : codes pseudonymes seuls sur
+serveur, table code↔nom sur le PC de Loïc, purge fin d'année, DPD à prévenir
+avant mise en service du serveur.

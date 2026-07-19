@@ -107,6 +107,7 @@ détailler dans `CONSIGNES-hub-SNT.md`.
 |---|---|
 | `_modeles/CONSIGNES-chapitre-PC.md` | Produire un chapitre de physique-chimie (+ fiche élève) |
 | `_modeles/CONSIGNES-hub-SNT.md` | Produire un hub SNT |
+| `_modeles/CONSIGNES-sequence-ES.md` | 🚧 Séquences ens. scientifique Term (frise, IA — 3ᵉ famille) |
 | `_modeles/gabarit-chapitre.html` · `gabarit-fiche.html` | Gabarits **PC uniquement** (le SNT n'a pas de gabarit : on décline le hub du Web) |
 | `_suivi/ETAT-PROJET.md` | Vue d'ensemble : avancement, **priorités**, alertes |
 | `_suivi/chapitres.md` | Tableau de bord **par chapitre / par hub**, avec les jalons |
