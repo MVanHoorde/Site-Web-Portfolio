@@ -20,7 +20,7 @@ aux cours et au futur RPG.
 
 | | |
 |---|---|
-| Nom du projet | `snt-vanhoorde` (créé le 20/07/2026) |
+| Nom du projet | `pedagogie-vanhoorde` (créé le 20/07/2026) |
 | Reference ID | `ztyvuiaohxekuyjeoaxz` |
 | Project URL (base) | `https://ztyvuiaohxekuyjeoaxz.supabase.co` |
 | Endpoint REST | `https://ztyvuiaohxekuyjeoaxz.supabase.co/rest/v1/` |
@@ -34,13 +34,23 @@ bibliothèque `supabase-js` et le client `progression.js`. Le `/rest/v1/` n'est 
 Ni le mot de passe de base, ni la clé `service_role` ne figurent dans ce dépôt.
 La **clé anonyme** n'est pas un secret : elle apparaîtra en clair dans les pages.
 
+### Emplacements locaux (PC de Loïc, hors dépôt)
+
+| | |
+|---|---|
+| Dépôt Git | `C:\Users\Utilisateur\Desktop\Clone Git\Site-Web-Portfolio` |
+| Sauvegardes | `C:\Sauvegardes-SNT\` |
+| Journaux | `C:\Sauvegardes-SNT\journal.log` · `reveil.log` |
+| Configuration des scripts (contient le mot de passe) | `%USERPROFILE%\.supabase-vanhoorde\config.bat` |
+| Chaîne de connexion | Session pooler, `aws-0-eu-west-3.pooler.supabase.com:5432` |
+
 ## 2. Architecture retenue
 
 ```
 Site statique (GitHub Pages, HTML/CSS/JS vanilla)
         │  HTTPS
         ▼
-Supabase  ──  PostgreSQL managé, région Francfort
+Supabase  ──  PostgreSQL managé, région West EU (Paris)
         │     + authentification (jeton de session)
         │     + API générée automatiquement
         │     + RLS (règles d'accès par ligne)
@@ -151,7 +161,8 @@ hebdomadaire** et **réveil quotidien**.
 3. ⏳ Schéma SQL — `001` à `005` écrits, validés syntaxiquement (analyseur
    PostgreSQL), rangés dans `bdd/schema/`. **Exécution à confirmer** : `004` doit
    renvoyer 7 lignes, `rls_active = true`, `nb_regles = 0`
-4. ⬜ CLI Supabase : scripts `.bat` de sauvegarde et de réveil, puis `supabase init` / `db pull` et bascule vers `supabase/migrations/`
+4. ✅ CLI Supabase, scripts `.bat`, tâches planifiées, historique de
+   migrations — fait le 20/07/2026 (détail au §9)
 5. ⬜ Poser les règles RLS
 6. ⬜ Écrire `assets/js/progression.js` (client partagé)
 7. ⬜ Brancher le pilote sur un hub SNT réel
@@ -208,3 +219,103 @@ hebdomadaire** et **réveil quotidien**.
   RLS** des tables qu'elle lit
 - **Dénormalisation assumée** : recopier une colonne déjà déductible par
   jointure, pour simplifier les règles RLS et les requêtes
+
+### Ajouts du jalon 4 (outillage, 20/07/2026)
+
+- **Gestionnaire de paquets** : un magasin d'applications en ligne de commande.
+  *Scoop* sous Windows, l'équivalent d'`apt` sous Linux ou de *Homebrew* sur Mac
+- **Bucket** (Scoop) : un catalogue de recettes d'installation. Celui de
+  Supabase est officiel et s'ajoute à la main
+- **Session pooler** : un intermédiaire qui reçoit les connexions à la place du
+  serveur. Sur Supabase, c'est la seule voie joignable en IPv4 — la connexion
+  directe est en IPv6, que toutes les box ne gèrent pas
+- **Variable d'environnement** : une valeur nommée que le système transmet aux
+  programmes qu'il lance. `PGPASSWORD` est lue d'elle-même par `pg_dump` et
+  `psql` : c'est ce qui permet de tenir le mot de passe hors de l'adresse de
+  connexion, et donc à l'abri des caractères spéciaux
+- **Code de sortie** : le nombre qu'un programme renvoie en terminant. `0` veut
+  dire « tout va bien », toute autre valeur signale un problème. C'est ce que
+  teste `if errorlevel` dans un `.bat`
+- **`timestamptz`** : un instant stocké en UTC, indépendamment du fuseau. Règle
+  associée : la base stocke en UTC, l'affichage convertit en heure locale.
+  Motif : les changements d'heure rendraient l'ordre chronologique ambigu — or
+  le journal `evenements` est fait pour être rejoué dans l'ordre
+- **Historique de migrations** : une table cachée **dans la base**, qui liste
+  les migrations déjà appliquées. Le renversement qui compte : ce n'est plus
+  l'auteur qui se souvient de ce qu'il a exécuté, c'est la base qui tient le
+  registre
+- **Shadow database** (base fantôme) : une base jetable que la CLI monte le
+  temps de comparer deux structures, puis efface. C'est elle qui impose Docker
+- **`migration repair`** : déclarer une migration comme appliquée sans
+  l'exécuter. Sert exactement à amorcer un historique sur une base préexistante
+- **Tâche planifiée Windows** : `Register-ScheduledTask` en PowerShell plutôt
+  que l'interface graphique — moins d'erreurs de saisie sur les chemins
+  contenant des espaces, et l'option de rattrapage accessible d'une ligne
+
+---
+
+## 9. Jalon 4 — outillage local (fait le 20/07/2026)
+
+### Ce qui tourne désormais tout seul
+
+| Tâche planifiée Windows | Quand | Ce qu'elle fait |
+|---|---|---|
+| `Supabase - sauvegarde hebdomadaire` | mercredi 18 h | `pg_dump` du schéma `public` vers `C:\Sauvegardes-SNT` + une ligne dans la table `sauvegardes` |
+| `Supabase - reveil quotidien` | tous les jours 12 h 30 | une requête sur `classes`, pour que le compteur d'inactivité reparte de zéro |
+
+Les deux sont créées avec `-StartWhenAvailable` : une tâche manquée parce que le
+PC était éteint se rattrape au démarrage suivant.
+
+⚠ **Le rattrapage sauve la sauvegarde, pas le réveil.** Un réveil en retard ne
+réveille rien. Si le PC reste éteint plus de sept jours d'affilée — vacances —
+le projet est mis en pause. Données intactes, relance d'un clic au tableau de
+bord, mais le site ne répond plus entre-temps. La doublure GitHub Actions a été
+**écartée en connaissance de cause** : le PC hébergera de toute façon le worker
+de correction IA, dont les requêtes réveilleront la base d'elles-mêmes.
+
+### Outils installés
+
+Scoop · CLI Supabase 2.109.1 · outils PostgreSQL 18.4 (`pg_dump`, `psql`) ·
+Docker Desktop.
+
+Docker ne sert qu'aux commandes de comparaison de schéma (`db pull`, `db diff`,
+`db dump`). Les deux tâches planifiées appellent `pg_dump` et `psql`
+directement : elles fonctionnent Docker éteint. C'est délibéré — une tâche de
+3 h du matin qui dépend d'un service graphique lancé est fragile par
+construction.
+
+### Historique de migrations — comment il a été amorcé
+
+`supabase db pull` a échoué de façon inexpliquée : après avoir monté sa base
+fantôme et comparé, il a répondu `No schema changes found` alors que les sept
+tables existent. Cause non élucidée.
+
+Contournement retenu, qui n'utilise aucune comparaison :
+
+```
+supabase db dump --linked -f supabase/migrations/20260720153000_etat-initial.sql
+supabase migration repair --status applied 20260720153000
+```
+
+La première commande fait décrire la base par elle-même. La seconde inscrit
+cette version dans l'historique distant **en la déclarant déjà appliquée** :
+rien n'est exécuté, une ligne est écrite dans un registre.
+
+`supabase migration list` affiche désormais la version dans les deux colonnes.
+
+### Conséquence : l'intégration GitHub est enfin active
+
+Au prochain push, Supabase lira `supabase/migrations/`, y trouvera la version
+`20260720153000`, la reconnaîtra comme appliquée, et ne fera rien. C'est le
+résultat voulu : sans le `repair`, l'intégration aurait tenté de recréer sept
+tables existantes.
+
+Nouveau cycle de travail à partir de maintenant : écrire un fichier de
+migration → pousser sur GitHub → Supabase applique.
+
+### Point ouvert reporté au jalon 5
+
+Le dump ne couvre pas le schéma `auth`, propriété de Supabase, où vivent les
+sessions anonymes. Une restauration dans un projet neuf retrouverait les fiches
+élèves mais plus le lien vers la session qui les a créées. À traiter en même
+temps que les règles RLS.

@@ -9,7 +9,7 @@ Ils ne contiennent **aucun secret** et peuvent être poussés sans risque.
 |---|---|
 | `sauvegarde-hebdo.bat` | Écrit un fichier `.sql` complet du schéma `public` sur le disque, puis inscrit une ligne dans la table `sauvegardes` |
 | `config-exemple.bat` | Modèle de configuration. **Ne jamais remplir ce fichier-ci** : le recopier hors du dépôt |
-| `reveil-quotidien.bat` | *(jalon 4c — à venir)* |
+| `reveil-quotidien.bat` | Pose une requête triviale à la base, une fois par jour, pour empêcher la mise en pause du plan gratuit |
 
 ## Le fichier de configuration
 
@@ -59,3 +59,10 @@ au jalon 5.
 | `0` | Tout s'est bien passé |
 | `1` | Échec — pas de fichier de sauvegarde produit |
 | `2` | Fichier produit, mais trace en base non inscrite |
+
+## Journaux
+
+| Fichier | Contenu |
+|---|---|
+| `C:\Sauvegardes-SNT\journal.log` | une ligne par sauvegarde hebdomadaire |
+| `C:\Sauvegardes-SNT\reveil.log` | une ligne par réveil quotidien |

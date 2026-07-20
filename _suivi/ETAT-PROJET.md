@@ -50,6 +50,17 @@ un cadre vide annoté à la place de la planche.
 - [ ] (plus tard) Créer la page « collection de gravures » ; le lien
       « Parcourir la collection » de l'accueil boucle pour l'instant sur `#gravures`
 
+**Base de données — vigilance permanente** (pas une case à cocher, un réflexe)
+
+- Le PC de Loïc porte les deux tâches planifiées et, bientôt, le worker de
+  correction IA. **Sept jours consécutifs sans allumer le PC = projet Supabase
+  mis en pause.** Rien n'est perdu, la relance se fait d'un clic au tableau de
+  bord — mais le site ne répond plus tant qu'elle n'a pas eu lieu.
+- Vérifier de temps en temps `C:\Sauvegardes-SNT\journal.log` : une ligne `OK`
+  par semaine. Une ligne `ECHEC` ou une absence de ligne = sauvegarde muette.
+- Faire le ménage dans `C:\Sauvegardes-SNT` quand la base contiendra des
+  copies d'élèves (règle de purge à ajouter au script à ce moment-là).
+
 ---
 
 ## 🎯 Objectif de la période (vacances)
@@ -284,10 +295,11 @@ et notions apprises : `_suivi/BDD-cadrage.md`.
 
 | Pièce | État |
 |---|---|
-| Projet Supabase `snt-vanhoorde`, région **West EU (Paris)**, plan gratuit | ✅ créé le 20/07 · ref `ztyvuiaohxekuyjeoaxz` |
+| Projet Supabase `pedagogie-vanhoorde`, région **West EU (Paris)**, plan gratuit | ✅ créé le 20/07 · ref `ztyvuiaohxekuyjeoaxz` |
 | Sécurité à la création : Data API + expose new tables + **automatic RLS** | ✅ les trois activées |
-| Intégration GitHub | ✅ activée — **sans effet** tant que `supabase/` n'existe pas (jalon 4) |
-| `bdd/schema/001` à `005` — sept tables, contraintes, déclencheurs, vue | ✅ écrits et validés syntaxiquement · exécution à confirmer |
+| Intégration GitHub | ✅ **active** depuis le 20/07 — `supabase/migrations/` existe et l'historique est amorcé |
+| `bdd/schema/001` à `005` — sept tables, contraintes, déclencheurs, vue | ✅ écrits et **exécutés** |
+| Jalon 4 — CLI, sauvegardes, réveil, historique de migrations | ✅ fait le 20/07 · détail au §9 du cadrage |
 | Règles RLS | ⬜ jalon 5 — **tables actuellement FERMÉES à tous, c'est voulu** |
 | `assets/js/progression.js` (client partagé) | ⬜ jalon 6 |
 | Pilote sur un hub SNT | ⬜ jalon 7 — hub à choisir |
@@ -300,6 +312,18 @@ tiret en base). Les chapitres de PC restent **hors périmètre** pour l'instant.
 
 ⚠ **Ne jamais committer un fichier de sauvegarde** (`*.sql` de dump, `*.dump`) :
 il contiendrait des données d'élèves. Entrées ajoutées au `.gitignore` le 20/07.
+
+**Ce qui tourne désormais tout seul** (scripts dans `bdd/outils/`, notice sur
+place) : sauvegarde le mercredi 18 h vers `C:\Sauvegardes-SNT`, réveil quotidien
+à 12 h 30. Les deux ont le rattrapage activé.
+
+⚠ **Dépendance au PC de Loïc — à rappeler régulièrement.** Les deux tâches
+planifiées et le futur worker de correction IA tournent sur son poste. Le
+rattrapage sauve la sauvegarde, pas le réveil : si le PC reste éteint plus de
+sept jours d'affilée (vacances), le projet Supabase est mis en pause. Données
+intactes, relance d'un clic au tableau de bord, mais le site ne répond plus
+entre-temps. Doublure GitHub Actions **écartée en connaissance de cause** le
+20/07.
 
 ---
 
