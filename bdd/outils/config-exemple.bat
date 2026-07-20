@@ -26,7 +26,7 @@ set "SUPA_URL=postgresql://postgres.ztyvuiaohxekuyjeoaxz@aws-0-eu-west-3.pooler.
 rem --- Mot de passe de la base --------------------------------
 rem  Celui choisi a la creation du projet Supabase.
 rem  A recopier depuis le gestionnaire de mots de passe.
-set "PGPASSWORD=Azerty$79sntsupa"
+set "PGPASSWORD=A_REMPLIR_DANS_LA_COPIE"
 
 
 rem --- Dossier ou atterrissent les sauvegardes -----------------
