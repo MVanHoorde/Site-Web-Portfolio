@@ -112,6 +112,8 @@ détailler dans `CONSIGNES-hub-SNT.md`.
 | `_suivi/ETAT-PROJET.md` | Vue d'ensemble : avancement, **priorités**, alertes |
 | `_suivi/chapitres.md` | Tableau de bord **par chapitre / par hub**, avec les jalons |
 | `_suivi/IDEES.md` | Réservoir d'idées à trier |
+| `_suivi/BDD-cadrage.md` | 🆕 Volet base de données : architecture, décisions, modèle de données, jalons |
+| `bdd/README.md` | 🆕 Discipline des fichiers de schéma SQL + avertissement `supabase/migrations/` |
 
 ## Arborescence — une place par partie (rangement du 18/07)
 
@@ -124,6 +126,7 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 | **SNT** | `pages/2nde-snt-tN-…html` | **aucun** — SVG/CSS **inline** dans la page (autonome) |
 | **Cahier de vacances** | `cahier/…html` | `assets/img/cahier/` · `assets/pdf/cahier/` |
 | **Coque / accueil / niveaux** | `index.html` (racine) · `pages/2nde-physique-chimie.html`, `pages/…-scientifique.html`, `pages/terminale-…` | `assets/fonts/`, `assets/css/`, `gravures/` |
+| **Base de données** 🆕 | *(pas de page)* | `bdd/schema/NNN-….sql` (schéma, numéroté, rejouable) · `bdd/README.md` · plus tard `supabase/` (produit par la CLI, **jamais à la main**) · client partagé `assets/js/progression.js` |
 
 Détail des conventions de nommage (3 formes de slug par chapitre PC) :
 `_modeles/CONSIGNES-chapitre-PC.md` §0. Un nouveau contenu se range **toujours**

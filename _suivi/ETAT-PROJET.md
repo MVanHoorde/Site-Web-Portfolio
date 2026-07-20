@@ -1,6 +1,6 @@
 # État du projet — Site pédagogique Physique-Chimie & SNT
 
-> Dernière mise à jour : 18/07/2026 · tenu à jour par Loïc + Claude
+> Dernière mise à jour : 20/07/2026 · tenu à jour par Loïc + Claude
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 Vue d'ensemble. Détail par chapitre dans `chapitres.md` ; idées dans `IDEES.md`.
@@ -84,6 +84,9 @@ source, puisqu'il change chaque année).
 3. Démarrer le raffinage + la validation, en commençant par les chapitres les
    plus utilisés en début d'année.
 4. Intégrer le **calendrier scolaire** (fourni plus tard) pour ordonner les priorités.
+5. 🆕 **Volet base de données** — jalons 4 à 7 (voir `_suivi/BDD-cadrage.md`).
+   Ne bloque pas la rentrée : le site reste fonctionnel sans, mais c'est le
+   socle du RPG et du suivi réel de progression.
 
 ## ⚠ Alertes
 
@@ -266,6 +269,37 @@ section « Seconde — SNT » de `chapitres.md`.
       §14.4).
 - [ ] **SNT — trancher l'extraction d'un `gabarit-hub-snt.html`** : conventions
       désormais confirmées par 8 hubs (décision de Loïc — `CONSIGNES-hub-SNT.md` §13).
+- [ ] 🆕 **BDD — jalon 4** : CLI Supabase sur Windows, `.bat` de sauvegarde et de
+      réveil + tâches planifiées, puis `supabase init` / `db pull`.
+- [ ] 🆕 **BDD — choisir le hub pilote** (un hub SNT, une étape, un champ de
+      texte libre) pour le branchement de bout en bout.
+
+---
+
+## 🗄 Nouvelle partie (20/07) — Volet base de données
+
+**Décision : la phase 2 des hubs SNT est ouverte.** La progression des élèves
+quitte le `localStorage` pour une vraie base. Cadrage complet, modèle de données
+et notions apprises : `_suivi/BDD-cadrage.md`.
+
+| Pièce | État |
+|---|---|
+| Projet Supabase `snt-vanhoorde`, région **West EU (Paris)**, plan gratuit | ✅ créé le 20/07 · ref `ztyvuiaohxekuyjeoaxz` |
+| Sécurité à la création : Data API + expose new tables + **automatic RLS** | ✅ les trois activées |
+| Intégration GitHub | ✅ activée — **sans effet** tant que `supabase/` n'existe pas (jalon 4) |
+| `bdd/schema/001` à `005` — sept tables, contraintes, déclencheurs, vue | ✅ écrits et validés syntaxiquement · exécution à confirmer |
+| Règles RLS | ⬜ jalon 5 — **tables actuellement FERMÉES à tous, c'est voulu** |
+| `assets/js/progression.js` (client partagé) | ⬜ jalon 6 |
+| Pilote sur un hub SNT | ⬜ jalon 7 — hub à choisir |
+
+**Conséquences déjà actées ailleurs** : `CONSIGNES-hub-SNT.md` §5 (progression en
+base, jeton seul en local ; `progression.js` autorisé comme second asset
+partagé), §7 (phase 2 ouverte, coder contre le contrat de données, ordre de
+branchement SNT → PC), §13 (encadré de mise à jour), §14.3 (codes d'activité au
+tiret en base). Les chapitres de PC restent **hors périmètre** pour l'instant.
+
+⚠ **Ne jamais committer un fichier de sauvegarde** (`*.sql` de dump, `*.dump`) :
+il contiendrait des données d'élèves. Entrées ajoutées au `.gitignore` le 20/07.
 
 ---
 

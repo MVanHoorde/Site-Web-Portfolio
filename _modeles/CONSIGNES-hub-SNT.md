@@ -26,7 +26,7 @@ en fin de document.
 | Structure | séquence → séance → étape → champ | thème → chapitre → sections |
 | Style | CSS inline dans la page (autonome) | gabarit + `style.css` du site |
 | Déblocage | verrouillage progressif + mode enseignant | code 6 caractères + SHA-256 |
-| Persistance | **interdite** (voir §5) | `localStorage` |
+| Persistance | **base de données** Supabase (voir §5, §7) | `localStorage` — hors périmètre |
 | Trace élève | « Télécharger ma fiche » (récap HTML) | fiche imprimable A4 |
 | Correction | en direct (QCM/trous/schéma), simulée (texte libre) | corrigés dépliables rédigés |
 
@@ -140,10 +140,19 @@ pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
   IP à Google. Corrigé — IBM Plex Sans ajouté en woff2 local (400, 400i, 500,
   600 ; sous-ensemble latin, OFL) et déclaré dans `assets/css/fonts.css`.
   **À revérifier sur toute page importée de l'extérieur** (Claude Design compris).
-- 🔴 **`localStorage` / `sessionStorage` INTERDITS en phase 1.** Ça casse
-  l'aperçu et ce n'est pas la vraie solution. La persistance passe par le
-  **téléchargement de fichier** ; en phase 2, par la base de données côté serveur.
-  (Les chapitres de PC, eux, utilisent `localStorage` — gabarit distinct.)
+- 🔴 **Aucune donnée de progression en `localStorage` / `sessionStorage`.**
+  La progression, les réponses et les scores vivent **dans la base** (Supabase).
+  Le seul contenu autorisé dans le `localStorage` est le **jeton de session
+  Supabase** — c'est sa raison d'être : reconnaître l'élève d'une fois sur
+  l'autre sans mot de passe.
+  Interdit : recopier « pour aller plus vite » une réponse, un score, un état
+  d'étape ou un déverrouillage en local. Si un cache d'affichage éphémère est
+  nécessaire (éviter un rechargement pendant une même séance), il vit **en
+  mémoire JS**, jamais persisté.
+  (Les chapitres de PC utilisent encore `localStorage` pour leur checklist et
+  leur verrou SHA-256 — gabarit distinct, **hors périmètre du branchement** :
+  décision Loïc du 20/07/2026, la migration viendra après le pilote SNT, le RPG
+  concernant aussi les élèves de physique-chimie.)
 - **RGPD dès la conception** : aucune collecte cachée, aucune donnée sensible,
   données minimales.
 - Pas de framework, pas de build : HTML/CSS/JS vanilla, lisible et modifiable.
@@ -154,9 +163,14 @@ pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
 - 🗂 **Un hub SNT est autonome : AUCUN fichier d'asset externe.** Tout (SVG, CSS,
   JS) vit **inline** dans `pages/2nde-snt-tN-….html` — c'est ce qui distingue le
   gabarit SNT du gabarit PC (qui, lui, range ses images dans `assets/img/pc/…`).
-  Ne pas créer de dossier `assets/img/snt/` : il n'y a rien à y mettre. Seule
-  ressource partagée : `assets/css/fonts.css`. Arborescence des parties du
-  projet : `CLAUDE.md` « Arborescence — une place par partie ».
+  Ne pas créer de dossier `assets/img/snt/` : il n'y a rien à y mettre.
+  **Deux ressources partagées, et deux seulement** : `assets/css/fonts.css` et
+  `assets/js/progression.js` (le client de base de données — dérogation
+  explicite validée par Loïc le 20/07/2026 : dupliquer ce client dans huit hubs
+  serait ingérable et rendrait toute correction impossible à propager).
+  Toute autre mise en commun se propose, elle ne se décide pas.
+  Arborescence des parties du projet : `CLAUDE.md` « Arborescence — une place
+  par partie ».
 - Un lien de ressource pas encore arbitré reste **inerte** (`href="#"`) et doit
   être **listé dans le récap** — sinon il se perd (cas des activités `WEB·2b` et
   de la frise `WEB·D`, toujours inertes à ce jour).
@@ -173,26 +187,39 @@ une trace de référence, pas un champ à compléter. Choix arrêté.
 
 Chaque ouverture historique s'accompagne de **liens biblio**.
 
-## 7. Les deux phases (ne jamais les mélanger)
+## 7. Les deux phases — phase 1 acquise, phase 2 EN COURS
 
-**Phase 1 — MAINTENANT : le contenu, prêt pour la rentrée.**
+**Phase 1 — ACQUISE : le contenu, prêt pour la rentrée.**
 Finaliser les séquences en **HTML statique autonome**. La correction locale (QCM,
 trous, schémas) fonctionne pour de vrai ; le texte libre est **simulé** (passe
 *en attente* puis *validé* après un délai, sans correction réelle). Présentable
 en classe sans aucun serveur.
 
-**Phase 2 — PLUS TARD : le vrai système.**
-VPS Linux en Europe (RGPD) hébergeant l'application + une **base de données** ;
-correction du texte libre par IA (**Ollama en local sur RTX 5080** en test, ou
-**API Claude** — modèle Haiku, quelques euros/an) ; **comptes élèves**, sauvegarde
-côté serveur, tableau de bord enseignant, alertes de décrochage **basées sur la
-progression réelle** — pas sur la surveillance du temps ni la comparaison entre
-élèves (piège RGPD/éthique). Cette base « progression exportable » servira aussi
-un futur projet de jeu pédagogique.
+**Phase 2 — EN COURS depuis le 20/07/2026 : le vrai système.**
+Base de données **Supabase** (PostgreSQL managé, région Francfort, plan gratuit)
+pour l'apprentissage et le pilote ; cible souveraine **Clever Cloud**, à proposer
+à l'établissement en septembre. Identification par **pseudonyme + code de classe**
+via les connexions anonymes de Supabase : **aucun email, aucun nom, aucun mot de
+passe en base**. Correction du texte libre par un **worker** hors ligne (PC de
+Loïc) qui lit les copies en attente, fait corriger par l'IA (API Mistral ou
+modèle local sur RTX 5080) et réécrit le statut : aucun port ouvert, aucun VPS
+nécessaire — le VPS reste une option pour héberger le worker, pas une
+obligation. Ensuite : tableau de bord enseignant, alertes de décrochage **basées
+sur la progression réelle** — pas sur la surveillance du temps ni la comparaison
+entre élèves (piège RGPD/éthique). Cette base sert aussi de socle au RPG « fil
+rouge ».
 
-**En phase 1, ne pas coder « en prévision » de la phase 2** : pas de couche
-d'abstraction serveur, pas de faux appels réseau. Le hub doit rester une page
-qu'on ouvre en double-cliquant.
+**Coder désormais contre le contrat de données.** La règle « ne pas coder en
+prévision de la phase 2 » est **caduque**. Tout nouveau champ de texte libre
+s'écrit d'emblée contre l'API de progression (`assets/js/progression.js`),
+jamais avec une simulation locale. La simulation *en attente → validé* est
+**retirée** de chaque hub au moment de son branchement ; les hubs non encore
+branchés la conservent jusqu'à leur tour, mais **aucune nouvelle simulation
+n'est écrite**.
+
+**Ordre de branchement arrêté (20/07/2026)** : pilote sur **un hub SNT**, une
+étape, un champ de texte libre, cycle complet de bout en bout — puis les autres
+hubs — puis seulement les chapitres de physique-chimie.
 
 ## 8. La séquence d'introduction — référentiel vivant du fonctionnement du cours
 
@@ -309,6 +336,13 @@ Données structurées, mêmes champs et même JS). Restent **ouverts** — à pr
   pour peupler les 7 hubs — non tranché : les hubs se rédigent, ils ne se
   transcrivent pas depuis un PPTX.
 
+⚠ **Mise à jour du 20/07/2026** : ce paragraphe date de la phase 1. La phase 2
+est ouverte (voir §7) et le volet base de données est cadré — voir
+`_suivi/BDD-cadrage.md`. Reste ouvert dans ce paragraphe : le gabarit de hub, le
+volume horaire, le régime A. Sont désormais **tranchés** : la persistance
+(Supabase), l'identification (pseudonyme + code de classe) et l'ordre de
+branchement (SNT d'abord, PC ensuite).
+
 ## 14. Règles ajoutées le 18/07/2026 (arbitrages Loïc — chantier des 4 thèmes)
 
 ### 14.1 Intégrer au maximum, ne pas renvoyer
@@ -357,6 +391,12 @@ sous forme d'encarts visibles :
 `LOC·x` (Localisation) · `EMB·x` (Informatique embarquée) · `DAT·x` (Données
 structurées) · `SOC·x` (Réseaux sociaux) — mêmes conventions que `WEB·x` /
 `NET·x` / `SYS·x` / `PHO·x` (`·D` = débranchée, `·P` = projet).
+
+**Forme en base de données (20/07/2026)** : le point médian est remplacé par un
+**tiret** dès qu'un code sort de la page — `WEB·2b` s'écrit `WEB-2b` dans la
+colonne `code_activite`, dans une URL et dans un nom de fichier (le `·` est
+fragile partout ailleurs que dans du texte). L'**affichage** dans le hub reste
+libre : le point médian y est conservé.
 
 ### 14.4 Décisions de périmètre actées le 18/07/2026
 
