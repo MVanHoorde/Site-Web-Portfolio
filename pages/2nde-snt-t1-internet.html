@@ -77,8 +77,12 @@
   .lock-banner .k{font-size:20px}
   .lockable{transition:.3s}
   .seance.locked .lock-banner{display:flex}
-  .seance.locked .lockable{filter:blur(3px);opacity:.45;pointer-events:none;user-select:none}
-  body.teacher .seance.locked .lockable{filter:none;opacity:1;pointer-events:auto;user-select:auto}
+  .seance.locked .lockable{display:none}
+  .seance.locked .progress-line{display:none}
+  .seance.locked{padding-bottom:0}
+  .lock-banner{margin-top:10px}
+  .lock-banner .compte{margin-left:auto;font-family:"IBM Plex Mono";font-size:12.5px;color:var(--ink-faint);white-space:nowrap}
+  body.teacher .seance.locked .lockable{display:block}
   body.teacher .seance.locked .lock-banner{border-color:var(--ink-faint);color:var(--ink-soft)}
   body.teacher .seance.locked .lock-banner .k::before{content:"🔓"}
   .seance.locked .lock-banner .k::before{content:"🔒"}
@@ -397,6 +401,8 @@
 #prog a.it.cur .pip2{border-color:var(--activity);border-style:dashed}
 #prog a.it.locked{color:var(--ink-faint)}
 #prog .txt{font-size:12.5px;line-height:1.35}
+#prog .grp .sn{color:var(--link);margin-right:6px}
+#prog .txt .ix{font-family:"IBM Plex Mono",monospace;color:var(--ink-faint);margin-right:5px}
 #prog .date{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-faint)}
 #prog .date.late{color:var(--err)}
 #prog .reduire{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;width:22px;height:22px;
@@ -538,7 +544,8 @@ body.teacher .ens-actif{display:flex}
   body{background:#fff;font-size:11pt}
   #prog,#prog4,#glo-ouvrir,.qcm-back,.zoom-back,.glo-back,nav.seances,.ens-zone,
   .seance-actions,.chantier,.step-suivant,.plustard .bulle{display:none !important}
-  .seance.locked .lockable{filter:none;opacity:1}
+  .seance.locked .lockable{display:block}
+  .seance.locked .progress-line{display:block}
   .step.masque{display:block}
   .card,.retain,.france-box,.bonus-wrap,.glosmot,figure.ill{break-inside:avoid;box-shadow:none}
   .retain{border:1.5pt solid #000}
@@ -789,8 +796,8 @@ body.teacher .ens-actif{display:flex}
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
-            <h3 class="step-title">Le podcast — « 1969 : on a parlé sur les réseaux »</h3>
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Aux origines d'Internet</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> écouter 13 minutes d'histoire, prendre des notes utiles, et répondre ensuite sans réécouter.</span></div>
           </div>
           <div class="card-body">
@@ -887,7 +894,7 @@ body.teacher .ens-actif{display:flex}
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">ARPANET : l'ancêtre américain</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> raconter la naissance du premier réseau de paquets, avec les bonnes dates et les bons acteurs.</span></div>
           </div>
@@ -1040,7 +1047,7 @@ body.teacher .ens-actif{display:flex}
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 1.6 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">D'un réseau militaire à un réseau mondial</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> suivre le fil de 1969 à aujourd'hui, et comprendre pourquoi personne ne peut se dire « l'inventeur d'Internet ».</span></div>
           </div>
@@ -1121,7 +1128,7 @@ body.teacher .ens-actif{display:flex}
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.4 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 1.7 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">La frise de l'histoire d'Internet</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> associer chaque événement fondateur à sa date, pour fixer le fil de l'histoire.</span></div>
           </div>
@@ -1248,7 +1255,7 @@ body.teacher .ens-actif{display:flex}
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Le réseau des réseaux : les topologies</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> reconnaître les grandes façons de relier des machines entre elles, et comprendre pourquoi Internet ressemble à un immense filet.</span></div>
           </div>
@@ -1314,7 +1321,7 @@ body.teacher .ens-actif{display:flex}
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 1.5 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Les câbles sous-marins : l'autoroute invisible</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> découvrir par où passent réellement tes données quand elles traversent un océan — et fragiliser l'image du « tout passe par les satellites ».</span></div>
           </div>
@@ -1361,7 +1368,7 @@ body.teacher .ens-actif{display:flex}
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 1.6 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Du réseau mondial à ta maison</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> observer comment le très haut débit est réparti sur le territoire — et pourquoi il ne l'est pas partout pareil.</span></div>
           </div>
@@ -2710,6 +2717,17 @@ function toutRevel(on){
   $$('.step-suivant').forEach(function(b){ b.style.display=on?'none':'flex'; });
 }
 
+/* ---------- 1bis. Compteur d'étapes des séances repliées ---------- */
+function compteurSeances(){
+  $$('.seance').forEach(function(sec){
+    var ban=$('.lock-banner',sec); if(!ban || $('.compte',ban)) return;
+    var n=$$('.step',sec).length;
+    var e=document.createElement('span'); e.className='compte';
+    e.textContent=n+' étape'+(n>1?'s':'');
+    ban.appendChild(e);
+  });
+}
+
 /* ---------- 2. Barre de progression latérale ---------- */
 var BARRE=null;
 function construireBarre(){
@@ -2717,18 +2735,34 @@ function construireBarre(){
   box.id='prog'; box.setAttribute('aria-label','Ma progression');
   var h='<div class="ph"><span class="t">Ma progression</span><span class="pct">0 %</span>'+
         '<button class="reduire" type="button" title="Réduire">⇤</button></div>';
+  function esc(x){ return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function propre(n){ return n?n.textContent.replace(/\s+/g,' ').trim():''; }
   $$('.seance').forEach(function(sec){
-    var titre=$('.seance-head h2',sec);
-    var lib=titre?titre.textContent.replace(/\s+/g,' ').trim():'Séance';
-    h+='<div class="grp">'+lib+'</div>';
+    /* libellé de séance : le .s-num est isolé du titre (sinon « S1C'est quoi… ») */
+    var titre=$('.seance-head h2',sec), num='', reste='Séance';
+    if(titre){
+      var sn=$('.s-num',titre);
+      num = sn?propre(sn):'';
+      var c=titre.cloneNode(true), sn2=$('.s-num',c);
+      if(sn2) sn2.remove();
+      reste = propre(c) || 'Séance';
+    }
+    h+='<div class="grp">'+(num?'<span class="sn">'+esc(num)+'</span>':'')+esc(reste)+'</div>';
     $$('.step',sec).forEach(function(p,i){
       if(!p.id) p.id='et-'+sec.id+'-'+i;
-      var t=$('.step-title',p);
-      var lab=t?t.textContent.trim():'Étape';
+      /* index repris du kicker (« ÉTAPE 1.3 » → « 1.3 ») */
+      var k=propre($('.step-kicker',p)||$('.ix',p)), mi=k.match(/(\d+\.\d+)/), ix=mi?mi[1]:'';
+      /* nom : .step-title, à défaut le bandeau .fl / .pl du bloc */
+      var lab=propre($('.step-title',p));
+      if(!lab){
+        var b=propre($('.fl',p)||$('.pl',p));
+        lab = b ? b.split('·')[0].split('—')[0].trim() : 'Étape';
+      }
       var d=p.dataset.echeance||'';
       h+='<a class="it" href="#'+p.id+'" data-cible="'+p.id+'">'+
-         '<span class="pip2"></span><span class="txt">'+lab+
-         (d?'<span class="date">'+d+'</span>':'')+'</span></a>';
+         '<span class="pip2"></span><span class="txt">'+
+         (ix?'<span class="ix">'+esc(ix)+'</span>':'')+esc(lab)+
+         (d?'<span class="date">'+esc(d)+'</span>':'')+'</span></a>';
     });
   });
   box.innerHTML=h;
@@ -2768,8 +2802,14 @@ function majBarre(){
   var jauge=$('#prog4 .bar i'); if(jauge) jauge.style.width=pc+'%';
   var now=$('#prog4 .now');
   if(now){
-    var t=courant?$('.step-title',courant):null;
-    now.textContent=t?('en cours : '+t.textContent.trim()):'';
+    var lien=courant?BARRE.querySelector('[data-cible="'+courant.id+'"] .txt'):null;
+    if(!lien){ now.textContent=''; }
+    else{
+      var c=lien.cloneNode(true), ixe=c.querySelector('.ix'), dte=c.querySelector('.date');
+      var ix=ixe?ixe.textContent.trim():''; if(ixe) ixe.remove(); if(dte) dte.remove();
+      var nom=c.textContent.replace(/\s+/g,' ').trim();
+      now.textContent='en cours : '+(ix?ix+' — ':'')+nom;
+    }
   }
 }
 
@@ -3065,6 +3105,7 @@ function demarrer(){
     }
   });
   initReveal();
+  compteurSeances();
   construireBarre();
   initEnseignant();
   initQcm();
