@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SNT · Internet — Séquence élève</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- client de base de données partagé (dérogation §5 des consignes SNT).
+     Absent ou non configuré : la séquence fonctionne, sans enregistrement.
+     Sans "defer" à dessein : le script de la page, en fin de body, doit le
+     trouver déjà chargé. Fichier local et léger, aucun coût réseau. -->
+<script src="../assets/js/progression.js"></script>
 <style>
   :root{
     --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
@@ -222,6 +227,81 @@
   .modal .recap .ri:last-child{border-bottom:none}
   .modal .recap .ri b{color:var(--ok)}
 
+  /* ============================================================
+     COMPOSANTS TRANSVERSES (spec §7) — réutilisables dans toutes
+     les séquences. À extraire dans le futur gabarit.
+     ============================================================ */
+
+  /* §1 — picto « à voir plus tard » : une notion croisée trop tôt.
+     Bouton, pas <abbr> : il doit répondre au clavier et au doigt. */
+  .plustard{display:inline-flex;align-items:center;gap:3px;vertical-align:baseline;font:inherit;font-size:.82em;
+    background:var(--link-wash);color:var(--link);border:1px solid #c3cdf2;border-radius:100px;padding:1px 8px 1px 6px;
+    margin-left:3px;cursor:help;position:relative;font-family:"IBM Plex Mono"}
+  .plustard:hover,.plustard:focus{background:var(--link);color:#fff;outline:none;border-color:var(--link)}
+  .plustard .bulle{display:none;position:absolute;bottom:calc(100% + 9px);left:50%;transform:translateX(-50%);
+    width:max-content;max-width:270px;background:var(--ink);color:#fff;font-family:"IBM Plex Sans";font-size:12.5px;
+    line-height:1.5;text-align:left;padding:9px 12px;border-radius:10px;z-index:40;box-shadow:0 6px 20px rgba(22,31,51,.25);cursor:auto}
+  .plustard .bulle::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:6px solid transparent;border-top-color:var(--ink)}
+  .plustard .bulle b{color:#9db4ff}
+  .plustard:hover .bulle,.plustard:focus .bulle,.plustard.ouvert .bulle{display:block}
+  @media (max-width:560px){.plustard .bulle{left:0;transform:none;max-width:76vw}.plustard .bulle::after{left:22px}}
+
+  /* §7.6 — mode focus : le reste de la page s'efface pendant qu'on
+     rédige. Sans ça, « redonne la définition » se recopie deux
+     lignes plus haut et n'apprend rien. */
+  body.focus-on > *:not(.focus-scene):not(.modal-back){filter:blur(7px);opacity:.35;pointer-events:none;user-select:none;transition:.25s}
+  .focus-scene{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:rgba(22,31,51,.35);backdrop-filter:blur(3px)}
+  .focus-carte{background:var(--surface);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:640px;width:100%;padding:22px 24px;animation:pop .25s ease}
+  .focus-carte .fk{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--link);font-weight:700;margin-bottom:8px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+  .focus-carte .fq{font-size:15.5px;font-weight:500;margin-bottom:12px;line-height:1.5}
+  .focus-carte textarea{width:100%;min-height:120px;resize:vertical;font-family:"IBM Plex Sans";font-size:15px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--ink);line-height:1.55}
+  .focus-carte textarea:focus{outline:2px solid var(--link);outline-offset:1px;border-color:var(--link)}
+  .focus-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .focus-jauge{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--ink-faint)}
+  .focus-jauge.trop{color:var(--err)}
+  .focus-sortie{font-size:12.5px;color:var(--wait);background:var(--wait-wash);border:1px solid var(--wait);border-radius:9px;padding:8px 11px;margin-top:10px;display:none}
+  .focus-sortie.show{display:block}
+
+  /* §7.5 — glossaire évolutif : l'élève écrit ses définitions au
+     fil de la séquence, elles se rassemblent à l'étape 5. */
+  .glosmot{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:13px 15px;margin-top:10px}
+  .glosmot .gk{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .glosmot .gterme{font-family:"Space Grotesk";font-size:17px;font-weight:600;color:var(--ink)}
+  .glosmot .gregime{font-size:10.5px;padding:2px 7px;border-radius:100px;font-family:"IBM Plex Mono";text-transform:uppercase;letter-spacing:.04em}
+  .glosmot .gregime.restitution{background:var(--link-wash);color:var(--link)}
+  .glosmot .gregime.recherche{background:var(--activity-wash);color:var(--activity)}
+  .glosmot .gconsigne{font-size:13.5px;color:var(--ink-soft);margin:2px 0 10px}
+  .gtexte{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:14.5px;display:none;white-space:pre-wrap}
+  .rempli .gtexte{display:block}
+  .rempli .gaction{display:none}
+
+  .glossaire-final{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:4px 0;margin-top:6px}
+  .glossaire-final .gligne{display:flex;gap:14px;padding:11px 16px;border-bottom:1px solid var(--line);font-size:14px;align-items:baseline}
+  .glossaire-final .gligne:last-child{border-bottom:none}
+  .glossaire-final .gmot{font-family:"Space Grotesk";font-weight:600;flex:none;width:130px;color:var(--ink)}
+  .glossaire-final .gdef{flex:1;min-width:0;color:var(--ink-soft);white-space:pre-wrap}
+  .glossaire-final .gligne.vide{opacity:.45}
+  .glossaire-final .gligne.vide .gdef{font-style:italic}
+
+  /* §7.1 — poste d'écoute : le média, les notes, le dictionnaire */
+  .poste{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+  .poste-media{background:#0e1526;padding:14px 16px}
+  .poste-media iframe{width:100%;border:0;display:block;border-radius:8px}
+  .poste-media .consigne{color:#c9d4ee;font-size:12.5px;margin:0 0 9px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .poste-corps{display:flex;gap:0;flex-wrap:wrap}
+  .poste-notes{flex:1;min-width:260px;padding:14px 16px}
+  .poste-notes textarea{width:100%;min-height:120px;resize:vertical;font-family:"IBM Plex Sans";font-size:14px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--ink);line-height:1.5}
+  .poste-notes textarea:focus{outline:2px solid var(--link);outline-offset:1px;border-color:var(--link)}
+  .poste-dico{flex:none;width:250px;border-left:1px solid var(--line);background:var(--surface-2);padding:14px 16px}
+  .poste-dico dl{margin:0;font-size:13px}
+  .poste-dico dt{font-weight:600;color:var(--ink);margin-top:8px}
+  .poste-dico dt:first-child{margin-top:0}
+  .poste-dico dd{margin:1px 0 0;color:var(--ink-soft);line-height:1.45}
+  .poste .pl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:7px;display:flex;gap:7px;align-items:center}
+  @media (max-width:720px){.poste-dico{width:100%;border-left:none;border-top:1px solid var(--line)}}
+
   /* NOTES DE CHANTIER (CONSIGNES-séquence-SNT §14.2) — supprimées à la validation */
   :root{--work:#8a6400;--work-line:#b8860b;--work-ink:#5a4500;--work-b:#3f3000;--work-w1:#fdf6dd;--work-w2:#faeec2;
         --dec:#c33a2f;--dec-ink:#6e1f18;--dec-b:#4a1410;--dec-w1:#fdeceb;--dec-w2:#fadbd8}
@@ -251,7 +331,7 @@
 <header class="masthead">
   <div class="wrap">
     <div class="eyebrow">SNT · Thème 1 · Seconde</div>
-    <h1 class="title">Internet <span class="tag">TCP/IP</span></h1>
+    <h1 class="title">Internet <span class="tag">modèle TCP/IP</span></h1>
     <p class="lede">Sous les applis et les pages web, il y a un réseau planétaire de câbles, de routeurs et de règles communes — inventé il y a cinquante ans, en partie par des Français. Voici comment il fonctionne, du fond des océans jusqu'à ta box.</p>
     <div class="themes">
       <span class="theme-chip on">Internet</span><span class="theme-chip">Le Web</span>
@@ -260,8 +340,8 @@
       <span class="theme-chip">Photographie numérique</span>
     </div>
     <div class="meta-row">
-      <span class="m"><b>4 séances</b> + 1 activité débranchée</span>
-      <span class="m">Durée <b>≈ 6 h 30</b></span>
+      <span class="m"><b>4 séances</b> + 1 séance bilan &amp; débranchée</span>
+      <span class="m">Durée <b>≈ 7 h</b></span>
       <span class="m">Chaque séance se débloque quand la <b>précédente est validée</b></span>
     </div>
   </div>
@@ -272,9 +352,9 @@
     <a class="retour" href="2nde-snt.html">← SNT</a>
     <a href="#s1"><span class="n">S1</span>Le réseau physique</a>
     <a href="#s2" data-navlock="2"><span class="n">S2</span>Histoire &amp; 🇫🇷 <span class="lockico">🔒</span></a>
-    <a href="#s3" data-navlock="3"><span class="n">S3</span>Paquets &amp; routage <span class="lockico">🔒</span></a>
+    <a href="#s3" data-navlock="3"><span class="n">S3</span>Protocoles &amp; routage <span class="lockico">🔒</span></a>
     <a href="#s4" data-navlock="4"><span class="n">S4</span>Adresses &amp; DNS <span class="lockico">🔒</span></a>
-    <a href="#deb"><span class="n">⏳</span>Routage humain</a>
+    <a href="#deb"><span class="n">⏳</span>Bilan &amp; débranchée</a>
     <span class="spacer"></span>
     <label class="teacher-toggle" title="Déverrouille toutes les séances (usage enseignant)">
       <input type="checkbox" id="teacherMode">
@@ -294,12 +374,14 @@
   <!-- CHANTIER : état global + feuille de route -->
   <aside class="chantier">
     <div class="cl">🚧 État de la séquence — V0 non close · refonte pilotée par la spec V2</div>
-    <b>Cette séquence n'est pas terminée</b> : elle est en cours de refonte d'après <b><code>_modeles/spec-snt-t1-internet.md</code></b> (spec V2 du 21/07/2026). Les notes hachurées jaunes ci-dessous marquent <b>le travail à poursuivre</b>, à l'endroit exact où il se fera ; les rouges attendent une décision.
+    <b>Refonte faite le 21/07/2026</b> d'après <b><code>_modeles/spec-snt-t1-internet.md</code></b> (spec V2) — <b>à relire et valider</b>. Le fond du fichier équipe <code>02</code> est conservé, la forme est repensée.
     <ul>
-      <li><b>Cible = 5 étapes</b> (spec §2) : 1 Qu'est-ce qu'Internet · 2 Histoire · 3 Protocoles · 4 Routage · 5 Évaluez-vous. Correspondance avec l'existant : S1 → ét. 1, S2 → ét. 2, S3 → ét. 3+4, débranchée → ét. 5. La <b>S4 (adresses IP / DNS) sort du périmètre</b> : séquences séparées, plus tard (décision du 21/07 — voir la note en tête de S4).</li>
-      <li><b>Socle technique à écrire d'abord</b> (spec §7) : picto « à voir plus tard », mode focus (flou), poste d'écoute + prise de notes, glossaire évolutif, suivi de sortie de page.</li>
-      <li><b>Version définitive visée</b> : réponses et progression <b>en base Supabase</b> via <code>assets/js/progression.js</code> (à écrire — <code>_suivi/BDD-cadrage.md</code> §7, actions 5-6-7), pré-correction par <b>l'IA qui tourne sur le PC de Loïc</b> (<code>ia-correction/precorrection.mjs</code>). Aucun <code>localStorage</code> de progression, jamais de note automatique.</li>
-      <li>Rappel du fond : contenu du fichier équipe <code>02 — Historique d'internet et routage</code> conservé, forme repensée ; biblio systématique sur chaque point d'histoire (spec §11).</li>
+      <li><b>Fait — les 4 composants transverses (spec §7)</b>, codés ici et réutilisables dans les autres séquences : <b>picto « à voir plus tard »</b> · <b>mode focus</b> (la page se floute pendant la rédaction) · <b>poste d'écoute</b> (média + notes + dictionnaire) · <b>glossaire évolutif</b> (6 mots, rassemblés à la fin) · <b>suivi de sortie de page</b> (message doux, jamais de sanction).</li>
+      <li><b>Fait — le contenu</b> : double définition d'Internet (diagnostic puis restitution) et <b>Inter + Net</b> · podcast France Culture ép. 1 + questionnaire · synthèse historique 1958→1990 avec <b>UUCP/Usenet</b>, <b>Tomlinson et le @</b>, le fil <b>contre-culture</b> et l'absence d'inventeur unique · <b>modèles OSI (7) et TCP/IP (4)</b> + <b>encapsulation</b> · réseau à <b>8 routeurs</b> · glossaire complété.</li>
+      <li><b>Fait — les corrections du §9</b> : « <b>modèle</b> TCP/IP » partout · Apple <b>1976</b> · NSFNET n'a jamais été un nom d'Internet · <b>~6 milliards</b> de connectés (question sur les données périssables) · NCP déplacé de l'histoire vers les protocoles · « patapons » supprimé.</li>
+      <li><b>Branché sur la base</b> : les réponses rédigées partent via <code>assets/js/progression.js</code>, corrigées par l'IA locale. ⚠️ Tant que la <b>clé anon</b> n'est pas renseignée, tout fonctionne <b>sans enregistrement</b> — l'élève doit télécharger sa fiche.</li>
+      <li>📌 <b>Décision à prendre</b> : l'étape se valide dès l'<b>envoi</b> de la réponse (le travail est rendu), pas à la correction — sinon la séance suivante resterait verrouillée jusqu'au passage du worker. À confirmer.</li>
+      <li>Restent en chantier : les <b>images Commons</b> (notes ci-dessous), le <b>SVG des 4 nœuds de 1969</b>, celui du <b>bilan OSI/TCP-IP</b>, et le glisser-déposer des 7 couches.</li>
     </ul>
   </aside>
   <aside class="chantier">
@@ -319,24 +401,92 @@
 
     <!-- CHANTIER -->
     <aside class="chantier">
-      <div class="cl">🚧 Étape 1 à refondre (spec §3) · ✏️ notion</div>
-      À insérer <b>avant</b> tout le reste de la séance : <b>définition d'Internet tentative n°1</b> (diagnostic, non corrigée, 2 phrases max, <b>mode focus</b> + suivi de sortie de page) → paragraphe de référence du fichier <code>02</code> avec la décomposition <b>Inter + Net</b> (tombe en éval) → <b>tentative n°2</b> corrigée par l'IA et rapprochée de la n°1 → entrée « Internet » du <b>glossaire évolutif</b>. Puis le paragraphe entier « Introduction à l'histoire d'Internet » (le réseau des réseaux). Premières poses du <b>picto « à voir plus tard »</b> : <b>adresse IP</b> et <b>le Web</b>.
-      <ul>
-        <li>🔍 Images à trouver sur Wikimedia Commons, licence citée sous chaque image : <b>datacenter</b>, <b>carte des usages / Internet map</b>, et [proposition] <b>carte des câbles sous-marins</b>.</li>
-        <li>Le contenu physique déjà en place (câbles, débits, box) n'est pas dans la spec mais tient la route — <b>à conserver</b>, à replacer après les définitions.</li>
-      </ul>
+      <div class="cl">🔍 Images à trouver — étape 1 (spec §3.2)</div>
+      Trois images restent à choisir sur <b>Wikimedia Commons</b>, licence citée sous chacune : un <b>datacenter</b> (allées de serveurs — « où est Internet, physiquement ? »), une <b>carte des connexions mondiales</b>, et [proposition] la <b>carte des câbles sous-marins</b>. Je te les proposerai avec leur licence, tu valides avant intégration.
     </aside>
     <!-- /CHANTIER -->
 
     <div class="lockable">
     <div class="steps">
 
-      <!-- 1.1 -->
+      <!-- 1.0 — DIAGNOSTIC : la définition d'entrée -->
       <div class="step" data-step data-gate>
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
             <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Avant tout : c'est quoi, Internet ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> poser TA définition, avant le cours. Personne ne va la noter : elle sert à mesurer le chemin parcouru d'ici la fin de l'étape.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 12px">On utilise Internet tous les jours sans jamais avoir eu à le définir. C'est l'exercice du jour — et il est plus difficile qu'il n'en a l'air. <b>Aucune recherche</b> : ce qui compte ici, c'est ce que tu as déjà en tête.</p>
+
+            <div class="field" data-focus
+                 data-focus-titre="Ta définition — 1ʳᵉ tentative"
+                 data-focus-question="Donne TA définition d'Internet, sans faire aucune recherche. Deux phrases maximum."
+                 data-focus-max="180" data-focus-min="30"
+                 data-focus-code="NET-1a" data-focus-strict="1">
+              <span class="field-type">Réponse rédigée · mode focus</span>
+              <div class="field-q">Donne <b>ta</b> définition d'Internet, sans aucune recherche — <b>2 phrases maximum</b>.</div>
+              <p style="font-size:13px;color:var(--ink-soft);margin:0 0 11px">En cliquant, le reste de la page se floute : tu écris sans rien pouvoir recopier. Il n'y a <b>pas de bonne réponse attendue</b> à ce stade.</p>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Écrire ma définition</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.0b — LE COURS : définition de référence + Inter/Net -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Inter + Net : le réseau des réseaux</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir d'où vient le mot « Internet », et pouvoir redonner la définition de référence avec tes propres mots.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — d'où vient le mot</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le mot <b>Internet</b> est un mot-valise anglais, et sa fabrication dit exactement ce qu'est la chose :</p>
+            <table class="doc-table">
+              <tr><th>Morceau</th><th>Vient de</th><th>Veut dire</th></tr>
+              <tr><td><code>Inter</code></td><td><i>interconnected</i></td><td>interconnecté — et <b>non</b> « international », erreur fréquente</td></tr>
+              <tr><td><code>Net</code></td><td><i>network</i></td><td>réseau</td></tr>
+            </table>
+            <p style="font-size:14.5px;margin:10px 0"><b>« Internet » = « inter-networks »</b> : l'interconnexion de tous les réseaux de la planète. En reliant entre eux les réseaux des militaires, des universités, des gouvernements, des entreprises, des fournisseurs d'accès, on obtient un réseau géant qui couvre une grande partie du globe. D'où son surnom : le <b>réseau des réseaux</b>.</p>
+
+            <div class="block-label">Doc — un réseau bien matériel</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Internet est un gigantesque réseau mondial d'ordinateurs reliés par des lignes de transmission de tous types : <b>câbles en fibre optique</b> (l'immense majorité du trafic), satellites, lignes téléphoniques, ondes radio. C'est l'ensemble de ces machines <b>et de leurs liaisons</b> qui s'appelle Internet. Chaque machine qui s'y raccorde y possède une adresse unique, du type <code>194.167.250.2</code> : une <b>adresse IP</b><button type="button" class="plustard" data-plustard><span aria-hidden="true">🔭</span>à voir plus tard<span class="bulle">Pas de panique : <b>l'adresse IP</b> revient plus loin dans cette séquence (étape « Protocoles »), puis fait l'objet d'une <b>séquence à elle seule</b>. Ici, retiens juste que chaque machine en a une.</span></button>. Le service le plus connu qui circule dessus s'appelle le <b>World Wide Web</b><button type="button" class="plustard" data-plustard><span aria-hidden="true">🔭</span>à voir plus tard<span class="bulle">Le <b>Web</b> aura sa <b>propre séquence</b> — c'est le thème 2 de l'année. Pour l'instant, retiens seulement qu'il n'est <b>qu'un service parmi d'autres</b> sur Internet.</span></button>.</p>
+
+            <div class="block-label">À retenir</div>
+            <div class="retain"><b>Internet</b> = <i>inter-networks</i>, l'<b>interconnexion des réseaux</b> de la planète : des machines reliées par des câbles, des fibres et des ondes, qui suivent des règles communes. On l'appelle le <b>réseau des réseaux</b>. Le <b>Web</b>, les mails, le streaming, les jeux en ligne sont des <b>services</b> qui circulent dessus — Internet est la route, pas ce qui roule dessus.</div>
+
+            <div class="block-label">Maintenant, redonne ta définition</div>
+            <div class="field" data-focus
+                 data-focus-titre="Ta définition — 2ᵉ tentative"
+                 data-focus-question="Après lecture : qu'est-ce qu'Internet ? Avec tes mots, sans recopier le paragraphe."
+                 data-focus-max="200" data-focus-min="40"
+                 data-focus-code="NET-1b" data-focus-strict="1"
+                 data-focus-compare="NET-1a"
+                 data-glossaire="Internet">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
+              <div class="field-q">Le paragraphe est au-dessus — mais tu ne pourras pas le relire pendant que tu écris. <b>Redonne la définition d'Internet</b>, avec tes mots.</div>
+              <p style="font-size:13px;color:var(--ink-soft);margin:0 0 11px">Cette fois, ta réponse est <b>corrigée</b> : tu verras ce que tu avais écrit au départ juste à côté. Cette définition devient l'entrée « Internet » de <b>ton glossaire</b>.</p>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Écrire ma définition</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.1 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Internet ≠ Web</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> expliquer avec tes mots la différence entre Internet (le réseau) et le Web (un des services qui l'utilisent).</span></div>
           </div>
@@ -350,7 +500,7 @@
               </a>
             </div>
             <div class="block-label">À retenir</div>
-            <div class="retain"><b>Internet</b> = « <b>inter-networks</b> », l'interconnexion des réseaux de la planète : des machines (ordinateurs, smartphones, serveurs…) reliées par des câbles, des fibres et des ondes, qui parlent une langue commune (<code>TCP/IP</code>). Le <b>Web</b> n'est qu'<b>un des services</b> qui circulent dessus — comme les mails, les jeux en ligne ou le streaming. On l'explorera au thème suivant.</div>
+            <div class="retain"><b>Internet</b> = « <b>inter-networks</b> », l'interconnexion des réseaux de la planète : des machines (ordinateurs, smartphones, serveurs…) reliées par des câbles, des fibres et des ondes, qui suivent des règles communes (le <b>modèle TCP/IP</b>, à la séance 3). Le <b>Web</b> n'est qu'<b>un des services</b> qui circulent dessus — comme les mails, les jeux en ligne ou le streaming. On l'explorera au thème suivant.</div>
             <div class="block-label">Vérifie ta compréhension</div>
             <div class="field" data-qcm data-answer="1">
               <span class="field-type">QCM</span>
@@ -371,7 +521,7 @@
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Le réseau des réseaux : les topologies</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> reconnaître les grandes façons de relier des machines entre elles, et comprendre pourquoi Internet ressemble à un immense filet.</span></div>
           </div>
@@ -438,7 +588,7 @@
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 1.5 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Les câbles sous-marins : l'autoroute invisible</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> découvrir par où passent réellement tes données quand elles traversent un océan — et fragiliser l'image du « tout passe par les satellites ».</span></div>
           </div>
@@ -483,7 +633,7 @@
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 1.6 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Du réseau mondial à ta maison</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> observer comment le très haut débit est réparti sur le territoire — et pourquoi il ne l'est pas partout pareil.</span></div>
           </div>
@@ -562,25 +712,93 @@
 
     <!-- CHANTIER -->
     <aside class="chantier">
-      <div class="cl">🚧 Étape 2 à enrichir (spec §4) · 📅 chiffres à re-vérifier</div>
-      Support principal à intégrer : <b>podcast France Culture, ép. 1/8 « 1969 : on a parlé sur les réseaux »</b> (13 min) dans le <b>poste d'écoute</b> (lecteur + prise de notes + dictionnaire), suivi du <b>QCM en 13 questions</b> de la spec §4.2, qui débloque le grand cours de synthèse. L'encadré 🇫🇷 CYCLADES existant est conservé et complété (<b>Minitel</b> avec image, ép. 2/8 en « pour aller plus loin »), plus les encarts <b>UUCP / Usenet</b>, <b>Ray Tomlinson et le @</b>, l'anecdote <b>« LO »</b>, et le fil <b>contre-culture</b> (Community Memory 1973, PCC 1972, Homebrew 1975 → Apple <b>1976</b>, pas 1974).
-      <ul>
-        <li>⚠️ Corrections obligatoires (spec §9) : Internet <b>n'a pas failli s'appeler NSFNET</b> · <b>~6 milliards</b> de connectés début 2026 (le podcast dit 3, daté 2022 — à transformer en question sur les données périssables) · NCP sort de l'historique et part à l'étape 3.</li>
-        <li>Question réflexive « utopie → cauchemar totalitaire » : jamais notée, réponses agrégées pour la <b>vue prof</b> (spec §7.4) qui lance le débat en classe.</li>
-        <li>🔍 Images : carte logique ARPANET 1977, IMP, Louis Pouzin, Minitel 1, backbone NSFNET, + SVG maison des 4 nœuds de 1969 sur fond de carte USA.</li>
-      </ul>
+      <div class="cl">🔍 Images à trouver — étape 2 (spec §4.6)</div>
+      Sur <b>Wikimedia Commons</b>, licence citée sous chacune : carte logique <b>ARPANET 1977</b> · un <b>IMP</b> (la « première box ») · <b>Louis Pouzin</b> · <b>Minitel 1</b> · backbone <b>NSFNET</b>. Et un <b>SVG maison</b> à dessiner : les 4 nœuds de 1969 sur un fond de carte des États-Unis.
     </aside>
     <!-- /CHANTIER -->
 
     <div class="lockable">
     <div class="steps">
 
-      <!-- 2.1 -->
+      <!-- 2.0 — POSTE D'ÉCOUTE -->
       <div class="step" data-step data-gate>
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
             <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Écoute — « 1969 : on a parlé sur les réseaux »</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> écouter 13 minutes d'histoire, prendre des notes utiles, et répondre ensuite sans réécouter.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Poste d'écoute</div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎧 <span>Épisode 1/8 de la série <i>Une histoire de l'Internet</i> — Julien Le Bot, France Culture, 2022 · 13 min. Casque recommandé ; tu peux mettre en pause quand tu veux.</span></p>
+                <iframe src="https://embed.radiofrance.fr/franceculture/diffusion/3a8a2251-e64b-4a8d-a992-9ca98804956b" height="144" frameborder="0" allowfullscreen title="Podcast France Culture — 1969 : on a parlé sur les réseaux"></iframe>
+              </div>
+              <div class="poste-corps">
+                <div class="poste-notes">
+                  <div class="pl">📝 Mes notes d'écoute</div>
+                  <textarea data-notes="NET-2ecoute" placeholder="Note les dates, les noms, les lieux… Tes notes te serviront pour le questionnaire juste en dessous — et elles restent visibles pendant que tu y réponds." aria-label="Notes d'écoute"></textarea>
+                  <div class="free-meta" data-notes-etat style="margin-top:6px">Tes notes restent affichées pendant le questionnaire.</div>
+                </div>
+                <div class="poste-dico">
+                  <div class="pl">📖 Dictionnaire</div>
+                  <dl>
+                    <dt>Asynchrone</dt><dd>Qui ne se fait pas en même temps : j'écris maintenant, tu lis plus tard (comme un mail).</dd>
+                    <dt>Télégraphe</dt><dd>Ancêtre du réseau : des messages codés envoyés par fil électrique, dès le XIX<sup>e</sup> siècle.</dd>
+                    <dt>Protocole</dt><dd>Ensemble de règles communes pour se comprendre. On le travaille en détail à la séance 3.</dd>
+                    <dt>Nœud</dt><dd>Point de raccordement du réseau : une machine reliée aux autres.</dd>
+                    <dt>Guerre froide</dt><dd>Période de tension entre les États-Unis et l'URSS (1947-1991), sans affrontement direct.</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+            <div class="block-label">Ce que tu dois avoir retenu</div>
+            <div class="field" data-qcm data-answer="1">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Dans quel <b>contexte historique</b> naît le projet qui donnera Internet ?</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>La Seconde Guerre mondiale</button>
+                <button class="opt"><span class="mark"></span>La guerre froide</button>
+                <button class="opt"><span class="mark"></span>La chute du mur de Berlin</button>
+              </div>
+              <div class="verdict"></div>
+            </div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète la carte d'identité du réseau, d'après l'écoute.</div>
+              <div class="cloze" data-cloze>
+                L'ancêtre d'Internet s'appelle <input data-answer="arpanet" placeholder="nom" aria-label="nom de l'ancêtre d'Internet">, né aux <input data-answer="états-unis" placeholder="pays" aria-label="pays"> en <input class="short" data-answer="1969" placeholder="année" aria-label="année">. Il est financé au départ par <input data-answer="l'armée" placeholder="qui ?" aria-label="financeur"> américaine, et sert à relier des ordinateurs de plusieurs <input data-answer="universités" placeholder="quoi ?" aria-label="type d'établissement">.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+            <div class="field" data-focus
+                 data-focus-titre="Avant Internet"
+                 data-focus-question="Existait-il déjà, avant Internet, des moyens de communiquer à très longue distance ? Lesquels ? Et qu'est-ce qui rend Internet différent ?"
+                 data-focus-max="400" data-focus-min="40" data-focus-code="NET-2c">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
+              <div class="field-q">Existait-il d'autres moyens de communiquer <b>à très longue distance</b> avant Internet ? Lesquels ? Et qu'est-ce qui rend Internet <b>différent</b> d'eux ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">📡 Pour compléter ta réponse</div>
+                Le <b>télégraphe</b> (années 1830-40) transmet déjà des messages à travers un continent, puis le <b>téléphone</b>, la <b>radio</b>, la <b>télévision</b> — sans oublier le courrier postal. La grande différence d'Internet : l'information y est <b>numérique</b> (des 0 et des 1, donc du texte, du son, de l'image et de la vidéo dans le <em>même</em> tuyau), et elle voyage <b>découpée en paquets</b> qui trouvent chacun leur chemin. C'est cette idée-là, la <b>commutation de paquets</b>, qui change tout — on la démonte à la séance 3.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.1 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">ARPANET : l'ancêtre américain</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> raconter la naissance du premier réseau de paquets, avec les bonnes dates et les bons acteurs.</span></div>
           </div>
@@ -711,12 +929,82 @@
         </div>
       </div>
 
-      <!-- 2.3 -->
+      <!-- 2.3 — SUITE DE L'HISTOIRE : d'ARPANET à Internet -->
       <div class="step" data-step data-gate>
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
             <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">D'un réseau militaire à un réseau mondial</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> suivre le fil de 1969 à aujourd'hui, et comprendre pourquoi personne ne peut se dire « l'inventeur d'Internet ».</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — les étapes qui comptent</div>
+            <table class="doc-table">
+              <tr><th>Date</th><th>Ce qui se passe</th></tr>
+              <tr><td><code>1958</code></td><td>Création de l'<b>ARPA</b>, l'agence de recherche du ministère de la Défense américain, en réaction au lancement de Spoutnik par l'URSS</td></tr>
+              <tr><td><code>1969</code></td><td>ARPANET fonctionne : <b>4 nœuds</b> universitaires</td></tr>
+              <tr><td><code>1971</code></td><td><b>Ray Tomlinson</b> envoie le premier <b>courrier électronique</b> entre deux machines et choisit le signe <b>@</b> pour séparer l'utilisateur de sa machine. La même année apparaît <b>FTP</b>, pour s'échanger des fichiers</td></tr>
+              <tr><td><code>1976-79</code></td><td><b>UUCP</b> (copie de fichiers entre machines Unix par ligne téléphonique) puis <b>Usenet</b> (1979-80) : les premiers <b>groupes de discussion</b></td></tr>
+              <tr><td><code>1<sup>er</sup> janv. 1983</code></td><td>Le « <b>flag day</b> » : tout ARPANET bascule d'un coup sur <b>TCP/IP</b>. La même année, la partie militaire se sépare et devient <b>MILNET</b></td></tr>
+              <tr><td><code>1986</code></td><td><b>NSFNET</b>, réseau de la <b>National Science Foundation</b> (l'agence fédérale américaine qui finance la recherche), prend le relais d'ARPANET comme <b>épine dorsale civile</b> du réseau</td></tr>
+              <tr><td><code>1990</code></td><td>ARPANET est débranché : Internet lui a définitivement succédé</td></tr>
+              <tr><td><code>années 1990</code></td><td>Ouverture au <b>commerce</b>, arrivée du <b>Web</b> chez le grand public</td></tr>
+            </table>
+
+            <div class="reveal show" style="border-color:var(--ink-faint);background:var(--surface-2);color:var(--ink-soft)">
+              <div class="rl" style="color:var(--ink-soft)">🧑‍🤝‍🧑 Le point le plus important de cette histoire</div>
+              Pour l'ordinateur, on cite Turing ou Lovelace ; pour les entreprises du numérique, Jobs ou Musk. Pour Internet, <b>personne</b>. Ni une personne, ni une entreprise, ni même un pays : c'est une <b>œuvre collective</b>, construite pendant trente ans par des militaires, des universitaires, des bricoleurs et des contestataires qui n'étaient pas d'accord entre eux. Cette absence de patron est un <b>trait de caractère</b> du réseau — et il se voit encore aujourd'hui dans sa façon de fonctionner.
+            </div>
+
+            <div class="block-label">Doc — l'autre berceau : la contre-culture californienne</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Internet n'est pas né que dans des laboratoires militaires. En Californie, dans les mêmes années, des groupes très différents veulent <b>mettre l'ordinateur entre les mains de tout le monde</b> — contre les grandes entreprises qui le gardent pour elles :</p>
+            <ul style="font-size:14.5px;margin:0 0 10px;padding-left:20px;line-height:1.65">
+              <li><b>1972 — People's Computer Company</b> : leur mot d'ordre, « le pouvoir de l'ordinateur au peuple ».</li>
+              <li><b>1973 — Community Memory</b>, à Berkeley : un terminal partagé installé dans un magasin de disques, où chacun laisse des messages. La première <b>communauté numérique</b> grand public.</li>
+              <li><b>1975 — Homebrew Computer Club</b> : un club de bidouilleurs de la Silicon Valley. Deux de ses membres, <b>Steve Wozniak</b> et <b>Steve Jobs</b>, fondent <b>Apple en avril 1976</b>.</li>
+            </ul>
+            <p style="font-size:14.5px;margin:0 0 4px">C'est de ce milieu que vient l'idée, encore vivace, de « faire de la politique par la communauté » — et la formule de Steve Jobs sur l'ordinateur, <b>« une bicyclette pour l'esprit »</b> : un outil qui ne remplace pas l'humain mais démultiplie ce qu'il sait faire.</p>
+
+            <div class="block-label">À retenir</div>
+            <div class="retain">Trois dates suffisent pour cette étape : <b>1971</b> le courriel et le <b>@</b> · <b>1<sup>er</sup> janvier 1983</b> la bascule sur <b>TCP/IP</b> et la séparation de MILNET · <b>1986</b> NSFNET devient l'épine dorsale civile. Retiens surtout qu'Internet est une <b>œuvre collective sans inventeur unique</b>, née à la fois de la recherche militaire et de la contre-culture californienne.</div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field" data-qcm data-answer="2">
+              <span class="field-type">QCM</span>
+              <div class="field-q">En quelle année les militaires se séparent-ils du réseau scientifique (naissance de MILNET) ?</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>1969</button>
+                <button class="opt"><span class="mark"></span>1976</button>
+                <button class="opt"><span class="mark"></span>1983</button>
+              </div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-qcm data-answer="0">
+              <span class="field-type">QCM · esprit critique</span>
+              <div class="field-q">Le podcast que tu viens d'écouter a été enregistré en <b>2022</b> et parle d'environ <b>3 milliards</b> d'êtres humains connectés. Début 2026, on en compte environ <b>6 milliards</b> — soit près de <b>3 humains sur 4</b>. Qu'est-ce que ça doit t'apprendre ?</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>Qu'un chiffre sur le numérique se périme vite : il faut toujours regarder sa date et sa source</button>
+                <button class="opt"><span class="mark"></span>Que le podcast s'est trompé et n'est pas fiable</button>
+                <button class="opt"><span class="mark"></span>Que tout le monde sur Terre est connecté aujourd'hui</button>
+              </div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🌍 Et les autres ?</div>
+                Environ <b>2 milliards de personnes restent hors ligne</b>, et pas au hasard : la couverture est très inégale selon les régions (Afrique centrale, Asie du Sud). Le réseau « mondial » ne l'est donc pas encore tout à fait. <span style="display:block;margin-top:6px;font-size:12.5px;opacity:.85">Source du chiffre : <i>Digital Report 2026</i>, We Are Social / Meltwater — à re-vérifier chaque année.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.4 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">La frise : remets l'histoire dans l'ordre</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> associer chaque événement fondateur à sa date, pour fixer le fil de l'histoire.</span></div>
           </div>
@@ -770,6 +1058,21 @@
         </div>
       </div>
 
+      <!-- DÉBAT — question réflexive, non notée (spec §4.5) -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip" style="border-style:dashed"></div>
+        <div class="perso-box">
+          <div class="pl">🗣️ On en débattra ensemble · aucune bonne réponse</div>
+          <div class="perso">
+            <p style="font-size:14.5px;margin:0 0 10px;padding:10px 13px;background:var(--surface-2);border-left:3px solid var(--hist);border-radius:0 9px 9px 0;font-style:italic">« De l'utopie des débuts au cauchemar totalitaire. »<span style="display:block;font-style:normal;font-size:12.5px;color:var(--ink-faint);margin-top:5px">— formule employée dans la série <i>Une histoire de l'Internet</i>, France Culture, 2022</span></p>
+            <div class="field-q" style="font-weight:400">Ceux qui ont fait Internet rêvaient d'un outil de liberté et de partage. Cette formule te semble-t-elle <b>coller à la réalité</b> de ce que tu vis en ligne ? Pourquoi es-tu d'accord, ou pas d'accord ? <b>Ce qui compte ici, c'est ton argument</b> — pas ta conclusion.</div>
+            <textarea placeholder="Prends position et explique pourquoi. Tes arguments serviront à lancer le débat en classe." aria-label="Réponse réflexive"></textarea>
+            <div style="margin-top:8px"><button class="btn ghost" data-share>Partager avec la classe</button></div>
+            <div class="note-free" data-share-note></div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- BONUS S2 -->
@@ -796,7 +1099,7 @@
   <!-- ===================== SÉANCE 3 ===================== -->
   <section class="seance locked" id="s3" data-seance="3">
     <div class="seance-head">
-      <h2><span class="s-num">S3</span>Paquets, TCP/IP et routage</h2>
+      <h2><span class="s-num">S3</span>Protocoles, modèle TCP/IP et routage</h2>
       <span class="seance-time">≈ 1 h 30</span>
     </div>
     <p class="seance-goal">Entrer dans la mécanique : ce qu'est un protocole, qui fait quoi entre TCP et IP, et comment les routeurs trouvent le chemin — table de routage à l'appui.</p>
@@ -805,13 +1108,8 @@
 
     <!-- CHANTIER -->
     <aside class="chantier">
-      <div class="cl">🚧 Étapes 3 et 4 à séparer (spec §5-6) · ⚠️ terminologie</div>
-      Cette séance porte à elle seule les <b>étapes 3 (protocoles)</b> et <b>4 (routage)</b> de la cible. À faire : définition de « protocole » <b>avant</b> la vidéo <b>Cookie connecté</b> (poste de visionnage + notes), rapatriement de <b>FTP et NCP</b> sortis de l'historique, <b>modèle OSI</b> (7 couches, à réordonner, pas à apprendre par cœur), <b>modèle TCP/IP</b> (4 couches — Application · Transport · Internet · Accès réseau : <em>celui-là s'apprend et se reconstruit</em>), <b>TCP vs UDP</b> (accusé de réception), <b>encapsulation</b> : message → segment → datagramme → trame → bits, avec exemple concret « Salut ! » et SVG maison (recréer l'image bilan de la vidéo à 6:09 — droits).
-      <ul>
-        <li>⚠️ <b>Ne plus jamais écrire « le protocole TCP/IP »</b> mais <b>« le modèle TCP/IP »</b>, qui contient les protocoles TCP et IP (spec §5.4). À corriger dans cette page <em>et</em> dans tout le site (titre de la page, <code>&lt;h1&gt;</code>, à-retenir des étapes 1.1, 2.1 et 3.1), puis dans les évals.</li>
-        <li>Routage : garder l'exercice de table de routage (donner d'abord <b>un exemple de table</b> dans le cours), <b>supprimer</b> « Routons routons petits patapons » (trop enfantin pour des 2des), et changer de forme d'évaluation ici (texte à trous ou schéma à légender plutôt qu'un 3ᵉ QCM).</li>
-        <li>Moments <b>glossaire évolutif</b> en régime « recherche autorisée » : routeur, switch, modem, ADSL.</li>
-      </ul>
+      <div class="cl">🚧 Reste à produire — étape 3 (spec §5.3)</div>
+      Un <b>SVG maison</b> reste à dessiner : l'image bilan de la vidéo Cookie connecté (à <code>6:09</code>) — les deux modèles côte à côte avec la correspondance des couches. À recréer, pas à capturer (droits). L'exercice de remise en ordre des 7 couches OSI en glisser-déposer est lui aussi à coder — pour l'instant, la version « menus déroulants » ci-dessous fait le travail.
     </aside>
     <!-- /CHANTIER -->
 
@@ -831,7 +1129,7 @@
             <div class="block-label">Doc — le protocole, une affaire de politesse</div>
             <p style="font-size:14.5px;margin:4px 0 10px">Quand tu croises un ami, il y a des règles implicites : on se salue, on demande « ça va ? », on répond. Quand on rencontre une personnalité importante, le « protocole » est différent — et très codifié. Deux ordinateurs, c'est pareil : pour échanger, ils doivent suivre <b>exactement les mêmes règles</b>, sinon c'est le dialogue de sourds.</p>
             <div class="block-label">À retenir</div>
-            <div class="retain">Un <b>protocole</b> est un <b>ensemble de règles</b> que deux machines suivent pour échanger des informations (comment se présenter, comment découper les données, comment confirmer la réception…). Sur Internet, le protocole commun à tout le monde s'appelle <code>TCP/IP</code> — c'est <em>la</em> langue universelle du réseau.</div>
+            <div class="retain">Un <b>protocole</b> est un <b>ensemble de règles</b> que deux machines suivent pour échanger des informations (comment se présenter, comment découper les données, comment confirmer la réception…). Sur Internet, ces règles sont rassemblées dans le <b>modèle TCP/IP</b>, qui <b>contient</b> de nombreux protocoles — dont les deux qui lui donnent son nom, <code>TCP</code> et <code>IP</code>. ⚠️ On dit donc « le <b>modèle</b> TCP/IP », jamais « le protocole TCP/IP ».</div>
             <div class="block-label">Vérifie ta compréhension</div>
             <div class="field" data-qcm data-answer="0">
               <span class="field-type">QCM</span>
@@ -847,12 +1145,162 @@
         </div>
       </div>
 
-      <!-- 3.2 -->
+      <!-- 3.2 — LES DEUX MODÈLES EN COUCHES -->
       <div class="step" data-step data-gate>
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
             <div class="step-kicker">ÉTAPE 3.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Les modèles en couches : OSI et TCP/IP</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir que le travail du réseau se répartit en <b>couches</b>, et pouvoir reconstruire les <b>4 couches du modèle TCP/IP</b>.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Poste de visionnage</div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>Cookie connecté — <i>Le modèle OSI et le modèle TCP/IP</i>. Mets en pause dès que tu veux noter quelque chose.</span></p>
+                <iframe height="315" src="https://www.youtube-nocookie.com/embed/26jazyc7VNk" title="Cookie connecté — modèle OSI et modèle TCP/IP" allowfullscreen></iframe>
+              </div>
+              <div class="poste-corps">
+                <div class="poste-notes">
+                  <div class="pl">📝 Mes notes de visionnage</div>
+                  <textarea data-notes="NET-3video" placeholder="Note le nom des couches, leur rôle, les exemples donnés…" aria-label="Notes de visionnage"></textarea>
+                </div>
+                <div class="poste-dico">
+                  <div class="pl">📖 Dictionnaire</div>
+                  <dl>
+                    <dt>Couche</dt><dd>Étage du travail réseau. Chaque étage rend un service à celui du dessus et ignore le reste.</dd>
+                    <dt>Modèle</dt><dd>Une façon de <b>découper</b> et de décrire le travail — pas un logiciel installé quelque part.</dd>
+                    <dt>Encapsuler</dt><dd>Emballer une donnée en lui ajoutant une étiquette, comme un colis dans un autre colis.</dd>
+                    <dt>Accusé de réception</dt><dd>Message qui confirme « j'ai bien reçu ». Le cœur de la différence TCP / UDP.</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+            <div class="block-label">Doc — pourquoi des couches ?</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Pour que des appareils construits par des marques différentes, dans des pays différents, à trente ans d'écart, arrivent à se parler, il a fallu <b>répartir le travail en étages</b>. Chaque étage a un métier et un seul, et ne s'occupe pas de ce que font les autres : celui qui découpe le message ignore s'il voyagera par fibre ou par Wi-Fi.</p>
+
+            <p style="font-size:14.5px;margin:10px 0 4px">Il existe <b>deux</b> découpages, et on ne les confond pas :</p>
+            <table class="doc-table">
+              <tr><th>Modèle <b>OSI</b></th><th>Modèle <b>TCP/IP</b></th></tr>
+              <tr><td><b>7 couches</b> — le modèle théorique de référence, très détaillé (<i>Open Systems Interconnection</i>)</td><td><b>4 couches</b> — la simplification, celle qu'utilise réellement Internet</td></tr>
+              <tr><td>À savoir <b>remettre dans l'ordre</b> avec l'aide des descriptions. <b>Pas à apprendre par cœur.</b></td><td><b>À connaître</b> : c'est celui-là que tu devras savoir reconstruire.</td></tr>
+            </table>
+
+            <div class="block-label">Doc — les 4 couches du modèle TCP/IP</div>
+            <table class="doc-table">
+              <tr><th>Couche</th><th>Son métier</th><th>Exemple</th></tr>
+              <tr><td><b>4. Application</b></td><td>Parler la langue du service utilisé</td><td>le Web, le mail, un jeu</td></tr>
+              <tr><td><b>3. Transport</b></td><td>Découper, numéroter, vérifier</td><td><code>TCP</code>, <code>UDP</code></td></tr>
+              <tr><td><b>2. Internet</b></td><td>Adresser et trouver la route</td><td><code>IP</code>, les routeurs</td></tr>
+              <tr><td><b>1. Accès réseau</b></td><td>Envoyer physiquement les signaux</td><td>fibre, Wi-Fi, câble Ethernet</td></tr>
+            </table>
+
+            <div class="reveal show" style="border-color:var(--err);background:var(--err-wash);color:#8f2a22">
+              <div class="rl" style="color:var(--err)">⚠️ Le mot juste — attention à celui-ci</div>
+              On dit <b>le modèle TCP/IP</b>, et non « le protocole TCP/IP ». Ce n'est pas un détail de vocabulaire : le modèle est le <b>découpage en 4 couches</b>, et il <b>contient</b> plusieurs protocoles, dont deux qui lui donnent son nom — <b>TCP</b> (couche Transport) et <b>IP</b> (couche Internet). Dire « le protocole TCP/IP » revient à confondre le plan de l'immeuble avec deux de ses locataires.
+            </div>
+
+            <div class="block-label">Doc — l'encapsulation, ou les poupées russes</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Tu envoies « <b>Salut !</b> » dans une messagerie. À chaque étage descendu, ta donnée reçoit une <b>étiquette supplémentaire</b> — c'est l'<b>encapsulation</b> :</p>
+            <table class="doc-table">
+              <tr><th>Étage</th><th>Ce qu'on ajoute</th><th>Le paquet s'appelle alors</th></tr>
+              <tr><td>Application</td><td>ton texte, tel quel</td><td>un <b>message</b></td></tr>
+              <tr><td>Transport</td><td>le numéro de morceau, le port</td><td>un <b>segment</b></td></tr>
+              <tr><td>Internet</td><td>l'adresse IP de départ et d'arrivée</td><td>un <b>datagramme</b></td></tr>
+              <tr><td>Accès réseau</td><td>l'adresse de la carte réseau</td><td>une <b>trame</b></td></tr>
+              <tr><td>Le câble</td><td>—</td><td>des <b>bits</b> (0 et 1)</td></tr>
+            </table>
+            <p style="font-size:14.5px;margin:10px 0 4px">Chez ton correspondant, tout se fait <b>à l'envers</b> : on retire les étiquettes une par une en remontant les étages — on <b>décapsule</b> — et il ne reste que « Salut ! ».</p>
+
+            <div class="block-label">À retenir</div>
+            <div class="retain">Le <b>modèle OSI</b> découpe le travail réseau en <b>7 couches</b> (théorique, à savoir remettre dans l'ordre). Le <b>modèle TCP/IP</b>, celui d'Internet, le simplifie en <b>4 couches à connaître</b> : <b>Application · Transport · Internet · Accès réseau</b>. En descendant, chaque couche emballe la donnée — c'est l'<b>encapsulation</b> : <b>message → segment → datagramme → trame → bits</b> ; en remontant, on décapsule. ⚠️ On dit <b>le modèle</b> TCP/IP, qui <b>contient</b> les protocoles TCP et IP.</div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="field">
+              <span class="field-type">Schéma à reconstruire</span>
+              <div class="field-q">Remets les <b>4 couches du modèle TCP/IP</b> dans l'ordre, de la plus haute (au contact de l'application) à la plus basse (au contact du câble).</div>
+              <div class="label-selects" data-diagram>
+                <label>Couche 4 — la plus haute
+                  <select data-correct="app"><option value="">—</option><option value="app">Application</option><option value="trans">Transport</option><option value="net">Internet</option><option value="acces">Accès réseau</option></select></label>
+                <label>Couche 3
+                  <select data-correct="trans"><option value="">—</option><option value="app">Application</option><option value="trans">Transport</option><option value="net">Internet</option><option value="acces">Accès réseau</option></select></label>
+                <label>Couche 2
+                  <select data-correct="net"><option value="">—</option><option value="app">Application</option><option value="trans">Transport</option><option value="net">Internet</option><option value="acces">Accès réseau</option></select></label>
+                <label>Couche 1 — la plus basse
+                  <select data-correct="acces"><option value="">—</option><option value="app">Application</option><option value="trans">Transport</option><option value="net">Internet</option><option value="acces">Accès réseau</option></select></label>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Le vocabulaire de l'encapsulation, dans l'ordre de la descente.</div>
+              <div class="cloze" data-cloze>
+                message → <input data-answer="segment" placeholder="?" aria-label="après le message"> → <input data-answer="datagramme" placeholder="?" aria-label="après le segment"> → <input data-answer="trame" placeholder="?" aria-label="après le datagramme"> → bits.
+                Le modèle OSI compte <input class="short" data-answer="7" placeholder="?" aria-label="nombre de couches OSI"> couches, le modèle TCP/IP en compte <input class="short" data-answer="4" placeholder="?" aria-label="nombre de couches TCP/IP">.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-qcm data-answer="1">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Différence entre <b>TCP</b> et <b>UDP</b> ?</div>
+              <div class="opts">
+                <button class="opt"><span class="mark"></span>TCP transporte du texte, UDP transporte des images</button>
+                <button class="opt"><span class="mark"></span>TCP vérifie que tout est bien arrivé (accusé de réception), UDP envoie sans vérifier — plus rapide, mais des morceaux peuvent manquer</button>
+                <button class="opt"><span class="mark"></span>TCP est français, UDP est américain</button>
+              </div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🎮 Où les croises-tu ?</div>
+                Une page web ou un fichier téléchargé passent par <b>TCP</b> : il ne manquerait pas une lettre. Un appel vidéo ou un jeu en ligne préfèrent souvent <b>UDP</b> : mieux vaut une image légèrement dégradée <em>tout de suite</em> qu'une image parfaite avec deux secondes de retard.
+              </div>
+            </div>
+
+            <div class="bonus-wrap" data-bonus style="margin-top:16px">
+              <div class="bonus-head" data-bonus-toggle>
+                <span class="bonus-tag">bonus</span>
+                <span class="bl">Les autres protocoles que tu croiseras (non exigible)</span>
+                <span class="chev">▸</span>
+              </div>
+              <div class="bonus-body">
+                <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Chaque couche héberge des dizaines de protocoles. Quelques noms que tu verras passer — <b>rien à apprendre ici</b> :</p>
+                <table class="doc-table">
+                  <tr><td><code>HTTP</code></td><td>afficher une page web<button type="button" class="plustard" data-plustard><span aria-hidden="true">🔭</span>à voir plus tard<span class="bulle">Traité dans la <b>séquence sur le Web</b>.</span></button></td></tr>
+                  <tr><td><code>DNS</code></td><td>traduire un nom de site en adresse IP<button type="button" class="plustard" data-plustard><span aria-hidden="true">🔭</span>à voir plus tard<span class="bulle">Le <b>DNS</b> aura son propre traitement complet — séquence dédiée à venir.</span></button></td></tr>
+                  <tr><td><code>SMTP</code></td><td>envoyer un courriel</td></tr>
+                  <tr><td><code>FTP</code></td><td>transférer des fichiers — un des tout premiers, dès <b>1971</b></td></tr>
+                  <tr><td><code>DHCP</code></td><td>distribuer automatiquement les adresses IP d'un réseau local</td></tr>
+                  <tr><td><code>SSH</code></td><td>piloter une machine à distance, de façon chiffrée</td></tr>
+                </table>
+                <p style="font-size:14px;color:var(--ink-soft);margin-bottom:0"><b>Et avant TCP/IP ?</b> ARPANET utilisait <code>NCP</code> (<i>Network Control Protocol</i>), remplacé le 1<sup>er</sup> janvier 1983. C'est la bascule dont parlait la séance 2.</p>
+              </div>
+            </div>
+
+            <div class="glosmot" data-glossaire="protocole" data-regime="restitution"
+                 data-focus data-focus-titre="Glossaire — protocole"
+                 data-focus-question="Un protocole, c'est quoi ? Avec tes mots, sans recherche."
+                 data-focus-max="200" data-focus-min="25" data-focus-code="NET-G-protocole" data-focus-strict="1">
+              <div class="gk"><span class="gterme">protocole</span><span class="gregime restitution">sans recherche</span><span>· mot n° 2 de ton glossaire</span></div>
+              <div class="gconsigne">Tu viens de le rencontrer deux fois. Écris <b>ta</b> définition, avec tes mots — la page se floute pendant que tu écris.</div>
+              <div class="gaction"><button class="btn ghost" data-focus-ouvrir>✍️ Définir « protocole »</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.3 -->
+      <div class="step" data-step data-gate>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.3 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">TCP et IP : qui fait quoi ?</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> distinguer le rôle de TCP (découper, vérifier, réassembler) de celui d'IP (adresser, acheminer).</span></div>
           </div>
@@ -891,7 +1339,7 @@
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 3.3 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 3.4 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Le routage : l'aiguillage des paquets</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> compléter une table de routage : pour chaque destination, savoir à quel voisin passer le paquet.</span></div>
           </div>
@@ -934,6 +1382,53 @@
               <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
             </div>
+
+            <div class="block-label">Quatre mots pour ton glossaire</div>
+            <p style="font-size:14px;color:var(--ink-soft);margin:0 0 4px">Ces quatre-là sont des <b>équipements</b> : pour eux, la <b>recherche en ligne est autorisée</b> — mais la définition doit être <b>reformulée avec tes mots</b> (le copier-coller reste bloqué).</p>
+
+            <div class="glosmot" data-glossaire="routeur" data-regime="recherche"
+                 data-focus data-focus-titre="Glossaire — routeur"
+                 data-focus-question="Un routeur, à quoi ça sert ? Recherche autorisée, mais reformule avec tes mots."
+                 data-focus-max="200" data-focus-min="25" data-focus-code="NET-G-routeur">
+              <div class="gk"><span class="gterme">routeur</span><span class="gregime recherche">recherche autorisée</span></div>
+              <div class="gconsigne">Tu viens de le voir à l'œuvre juste au-dessus.</div>
+              <div class="gaction"><button class="btn ghost" data-focus-ouvrir>✍️ Définir « routeur »</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="glosmot" data-glossaire="switch" data-regime="recherche"
+                 data-focus data-focus-titre="Glossaire — switch (commutateur)"
+                 data-focus-question="Un switch, aussi appelé commutateur : à quoi sert-il, et en quoi diffère-t-il d'un routeur ?"
+                 data-focus-max="200" data-focus-min="25" data-focus-code="NET-G-switch">
+              <div class="gk"><span class="gterme">switch</span><span class="gregime recherche">recherche autorisée</span></div>
+              <div class="gconsigne">Indice : il travaille <b>à l'intérieur</b> d'un réseau, là où le routeur fait passer d'un réseau à un autre.</div>
+              <div class="gaction"><button class="btn ghost" data-focus-ouvrir>✍️ Définir « switch »</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="glosmot" data-glossaire="modem" data-regime="recherche"
+                 data-focus data-focus-titre="Glossaire — modem"
+                 data-focus-question="Un modem : à quoi sert-il ? (Le mot est la contraction de deux autres — cherche lesquels.)"
+                 data-focus-max="200" data-focus-min="25" data-focus-code="NET-G-modem">
+              <div class="gk"><span class="gterme">modem</span><span class="gregime recherche">recherche autorisée</span></div>
+              <div class="gconsigne">Il y en a un dans la box de ta maison.</div>
+              <div class="gaction"><button class="btn ghost" data-focus-ouvrir>✍️ Définir « modem »</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="glosmot" data-glossaire="ADSL" data-regime="recherche"
+                 data-focus data-focus-titre="Glossaire — ADSL"
+                 data-focus-question="L'ADSL : sur quoi cette technologie fait-elle passer Internet, et pourquoi dit-on qu'elle est « asymétrique » ?"
+                 data-focus-max="220" data-focus-min="25" data-focus-code="NET-G-adsl">
+              <div class="gk"><span class="gterme">ADSL</span><span class="gregime recherche">recherche autorisée</span></div>
+              <div class="gconsigne">Tu l'as croisée à la séance 1, en parlant du raccordement de ta maison.</div>
+              <div class="gaction"><button class="btn ghost" data-focus-ouvrir>✍️ Définir « ADSL »</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -944,7 +1439,7 @@
         <div class="card">
           <div class="card-top">
             <div class="step-kicker">EN CLASSE · SANS ORDINATEUR</div>
-            <h3 class="step-title">« Routons, routons, petits patapons »</h3>
+            <h3 class="step-title">Le réseau, sans écran</h3>
           </div>
           <div class="card-body">
             <p style="font-size:14.5px;margin:4px 0 10px">Cette séance se prolonge par l'activité débranchée : chacun devient un routeur, avec sa table en main — voir la section <a href="#deb" style="color:var(--link)">Routage humain</a> en bas de page.</p>
@@ -1219,17 +1714,10 @@
   <!-- DÉBRANCHÉ -->
   <section class="seance" id="deb" data-seance="deb">
     <div class="seance-head">
-      <h2><span class="s-num">⏳</span>Activité débranchée — le routage humain</h2>
+      <h2><span class="s-num">⏳</span>Bilan — routage humain, grand réseau et glossaire</h2>
       <span class="seance-time">≈ 45 min</span>
     </div>
-    <p class="seance-goal">« Routons, routons, petits patapons » : sans écran, chacun devient un routeur et fait circuler des messages grâce à sa table de routage — puis on coupe un câble, et on observe.</p>
-
-    <!-- CHANTIER -->
-    <aside class="chantier">
-      <div class="cl">🚧 Devient l'étape 5 « Évaluez-vous » (spec §2 et §7.5)</div>
-      À faire ici : ⚠️ <b>retirer « Routons, routons, petits patapons »</b> du titre et de l'objectif (décision de la dictée : trop enfantin pour des 2des) ; reprendre l'<b>activité réseau à 8 routeurs</b> (ex-« activité 3 » du fichier <code>02</code>, A→H, tables à compléter) ; ajouter les <b>associations mots-clés</b> et l'auto-évaluation ; et surtout afficher le <b>glossaire évolutif complété</b> — toutes les définitions écrites par l'élève au fil de la séquence, rassemblées ici, les termes non traités restant grisés.
-    </aside>
-    <!-- /CHANTIER -->
+    <p class="seance-goal">Sans écran, chacun devient un routeur et fait circuler des messages grâce à sa table de routage — puis on coupe un câble, et on observe. Puis on fait le point : le réseau à 8 routeurs, et ton glossaire complet.</p>
 
     <div class="steps">
       <div class="step" data-step>
@@ -1249,6 +1737,83 @@
               </a>
             </div>
             <div class="retain" style="margin-top:14px">Ce que le jeu fait sentir : aucun routeur ne connaît tout le réseau — chacun ne connaît que <b>ses voisins</b>, et ça suffit. Quand une liaison casse, on met à jour les tables et les messages passent par ailleurs : c'est la <b>résilience</b> d'Internet, héritée en droite ligne du <b>datagramme</b> de Louis Pouzin.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5.2 — LE RÉSEAU À 8 ROUTEURS (fichier 02, activité 3) -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">SUR PAPIER, PUIS ICI</div>
+            <h3 class="step-title">Le grand réseau : huit routeurs</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> tenir une table de routage sur un réseau assez grand pour qu'on ne puisse plus deviner de tête.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — le réseau</div>
+            <svg class="diagram" viewBox="0 0 620 260" role="img" aria-label="Réseau de huit routeurs A à H">
+              <g stroke="#4a566e" stroke-width="2.2">
+                <line x1="120" y1="45" x2="300" y2="45"/>
+                <line x1="300" y1="45" x2="500" y2="45"/>
+                <line x1="120" y1="45" x2="300" y2="130"/>
+                <line x1="300" y1="45" x2="300" y2="130"/>
+                <line x1="120" y1="130" x2="300" y2="130"/>
+                <line x1="120" y1="130" x2="120" y2="215"/>
+                <line x1="300" y1="130" x2="300" y2="215"/>
+                <line x1="120" y1="215" x2="300" y2="215"/>
+                <line x1="300" y1="215" x2="500" y2="150"/>
+                <line x1="500" y1="45" x2="500" y2="150"/>
+              </g>
+              <g fill="#e7ebfb" stroke="#2445c7" stroke-width="2">
+                <circle cx="120" cy="45" r="19"/><circle cx="300" cy="45" r="19"/><circle cx="500" cy="45" r="19"/>
+                <circle cx="120" cy="130" r="19"/><circle cx="300" cy="130" r="19"/><circle cx="500" cy="150" r="19"/>
+                <circle cx="120" cy="215" r="19"/><circle cx="300" cy="215" r="19"/>
+              </g>
+              <g font-family="IBM Plex Mono" font-size="15" font-weight="600" text-anchor="middle" fill="#161f33">
+                <text x="120" y="51">A</text><text x="300" y="51">B</text><text x="500" y="51">F</text>
+                <text x="120" y="136">D</text><text x="300" y="136">C</text><text x="500" y="156">G</text>
+                <text x="120" y="221">H</text><text x="300" y="221">E</text>
+              </g>
+            </svg>
+            <p style="font-size:13.5px;color:var(--ink-soft);margin:0 0 6px">Voisins directs : <b>A</b>–B, A–C · <b>B</b>–C, B–F · <b>C</b>–D, C–E · <b>D</b>–H · <b>E</b>–H, E–G · <b>F</b>–G.</p>
+
+            <div class="block-label">Complète la table du routeur A</div>
+            <div class="field">
+              <span class="field-type">Table de routage</span>
+              <div class="field-q">Pour chaque destination, indique <b>le voisin à qui A doit remettre le paquet</b> (une seule lettre). Souviens-toi : A n'a pas besoin de connaître tout le trajet, seulement la <b>première direction</b>.</div>
+              <div class="cloze" data-cloze>
+                Pour <b>B</b> → <input class="short" data-answer="b" placeholder="?" aria-label="A vers B"> ·
+                pour <b>C</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers C"> ·
+                pour <b>D</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers D"> ·
+                pour <b>E</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers E"> ·
+                pour <b>F</b> → <input class="short" data-answer="b" placeholder="?" aria-label="A vers F"> ·
+                pour <b>H</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers H">
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🧭 Et pour G ?</div>
+                Vers <b>G</b>, deux routes coexistent : par <b>B</b> (B→F→G) ou par <b>C</b> (C→E→G) — trois sauts dans les deux cas. Les deux « marchent » : un vrai routeur trancherait selon l'encombrement ou le coût de la liaison. C'est exactement le métier des protocoles de routage. Voilà pourquoi cette destination n'était pas dans le tableau : elle n'a pas <em>une</em> bonne réponse.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5.3 — LE GLOSSAIRE COMPLÉTÉ -->
+      <div class="step" data-step>
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">TON TRAVAIL DE TOUTE LA SÉQUENCE</div>
+            <h3 class="step-title">Ton glossaire, complété</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> relire d'un seul coup d'œil les définitions que tu as écrites toi-même depuis le début de la séquence.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 12px">Ce glossaire n'a pas été écrit par ton professeur : <b>c'est le tien</b>. Chaque définition a été rédigée par toi, au moment où tu rencontrais la notion. Les lignes encore grises sont les mots que tu n'as pas encore définis — remonte dans la séquence pour les compléter.</p>
+            <div class="glossaire-final" data-glossaire-final></div>
+            <p style="font-size:13px;color:var(--ink-faint);margin:12px 0 0">💾 Ce glossaire part avec toi dans ta fiche téléchargeable.</p>
           </div>
         </div>
       </div>
@@ -1366,6 +1931,165 @@
         showReveal(field);markDone(send);
       }, reduce?400:2400);
     });
+  });
+
+  /* ============================================================
+     COMPOSANTS TRANSVERSES (spec §7)
+     ============================================================ */
+
+  /* --- petit pont vers la base. Absente ? tout continue de
+         fonctionner, sans enregistrement. (progression.js §2) --- */
+  var BASE = (typeof Progression!=='undefined' && Progression.disponible()) ? Progression : null;
+
+  /* ---------- §1 picto « à voir plus tard » ----------
+     Au clic pour le tactile (le survol n'existe pas sur iPad), et
+     focusable au clavier. */
+  document.querySelectorAll('[data-plustard]').forEach(function(b){
+    b.setAttribute('aria-label','Notion abordée plus tard — voir le détail');
+    b.addEventListener('click',function(e){
+      e.preventDefault();
+      document.querySelectorAll('.plustard.ouvert').forEach(function(o){if(o!==b)o.classList.remove('ouvert');});
+      b.classList.toggle('ouvert');
+    });
+  });
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('.plustard')) document.querySelectorAll('.plustard.ouvert').forEach(function(o){o.classList.remove('ouvert');});
+  });
+
+  /* ---------- §7.2 suivi de sortie de page ----------
+     On compte les sorties pendant une rédaction en mode strict.
+     Aucune sanction, aucun blocage : un message, et le compteur
+     part en base pour le professeur. Jamais de comparaison entre
+     élèves — c'est le piège RGPD/éthique du tableau de bord. */
+  var sortiesStrict = 0, focusStrictActif = null;
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden && focusStrictActif){
+      sortiesStrict++;
+      var z=focusStrictActif.querySelector('[data-sortie]');
+      if(z){z.classList.add('show');z.innerHTML='👀 Tu viens de quitter la page. Ce n\'est pas grave et ce n\'est pas noté — mais ici, l\'exercice n\'a d\'intérêt que si la réponse vient <b>de toi</b>. Reprends avec tes mots.';}
+      if(BASE) BASE.journal('sortie_page',{code_activite:focusStrictActif.dataset.focusCode||'?',n:sortiesStrict});
+    }
+  });
+
+  /* ---------- §7.6 mode focus (flou de page) ---------- */
+  var scene=null;
+  function ouvrirFocus(champ){
+    var titre = champ.dataset.focusTitre||'À toi d\'écrire';
+    var question = champ.dataset.focusQuestion||'';
+    var max = parseInt(champ.dataset.focusMax||'200',10);
+    var min = parseInt(champ.dataset.focusMin||'25',10);
+    var strict = champ.dataset.focusStrict==='1';
+    var compare = champ.dataset.focusCompare ? memoireReponses[champ.dataset.focusCompare] : null;
+
+    scene=document.createElement('div'); scene.className='focus-scene';
+    scene.innerHTML =
+      '<div class="focus-carte">'+
+        '<div class="fk">✍️ '+titre+(strict?' <span style="color:var(--ink-faint)">· sans recherche</span>':'')+'</div>'+
+        '<div class="fq">'+question+'</div>'+
+        (compare?'<div style="font-size:13px;color:var(--ink-soft);background:var(--surface-2);border-left:3px solid var(--ink-faint);border-radius:0 9px 9px 0;padding:9px 12px;margin-bottom:10px"><b>Ta 1ʳᵉ tentative :</b> '+echapper(compare)+'</div>':'')+
+        '<textarea aria-label="'+titre+'"></textarea>'+
+        '<div class="focus-sortie" data-sortie></div>'+
+        '<div class="focus-foot">'+
+          '<span class="focus-jauge" data-jauge>0 / '+max+' caractères</span>'+
+          '<span><button class="btn ghost" data-annuler>Annuler</button> <button class="btn" data-valider disabled>Valider</button></span>'+
+        '</div>'+
+      '</div>';
+    document.body.appendChild(scene);
+    document.body.classList.add('focus-on');
+    if(strict){ focusStrictActif=champ; champ.dataset.focusCode=champ.dataset.focusCode||''; }
+
+    var ta=scene.querySelector('textarea'), jauge=scene.querySelector('[data-jauge]'), ok=scene.querySelector('[data-valider]');
+    scene.querySelector('[data-sortie]').setAttribute('data-sortie','');
+    champ._zoneSortie=scene.querySelector('[data-sortie]');
+    focusStrictActif = strict ? scene : null;
+    ta.focus();
+    ['paste','drop'].forEach(function(ev){ta.addEventListener(ev,function(e){
+      e.preventDefault();
+      jauge.innerHTML='<span style="color:var(--err)">⨯ Copier-coller bloqué — écris-le toi-même</span>';
+      setTimeout(compter,1600);
+    });});
+    function compter(){
+      var n=ta.value.trim().length;
+      jauge.textContent=n+' / '+max+' caractères';
+      jauge.classList.toggle('trop',n>max);
+      ok.disabled = n<min || n>max;
+      if(n<min) jauge.textContent=n+' / '+max+' caractères · encore '+(min-n)+' pour valider';
+    }
+    ta.addEventListener('input',compter); compter();
+    scene.querySelector('[data-annuler]').addEventListener('click',fermerFocus);
+    ok.addEventListener('click',function(){ validerFocus(champ, ta.value.trim()); });
+  }
+  function fermerFocus(){
+    if(scene){scene.remove();scene=null;}
+    document.body.classList.remove('focus-on');
+    focusStrictActif=null;
+  }
+  function echapper(t){return String(t).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];});}
+
+  var memoireReponses = {};   /* en mémoire JS uniquement — jamais en localStorage */
+
+  function validerFocus(champ, texte){
+    var code = champ.dataset.focusCode || '';
+    memoireReponses[code] = texte;
+    fermerFocus();
+
+    var echo = champ.querySelector('[data-focus-echo]');
+    if(echo){ echo.textContent = texte; echo.style.display='block'; }
+    var action = champ.querySelector('.gaction'); if(action) action.style.display='none';
+    champ.classList.add('rempli');
+
+    var mot = champ.dataset.glossaire || (champ.closest('[data-glossaire]')||{dataset:{}}).dataset.glossaire;
+    if(mot) glossaire[mot] = texte;
+
+    /* Envoi en base : la copie part en correction. L'étape est
+       validée dès l'ENVOI — le travail est rendu ; la correction,
+       elle, arrive plus tard et s'affiche quand elle est là.
+       (Sans cela, une séance resterait bloquée jusqu'au passage du
+        worker : proposition à valider par Loïc.) */
+    if(BASE && code){
+      verdict(champ,'wait','⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
+      var s=stepOf(champ); if(s)s.classList.add('is-wait');
+      BASE.envoyerReponse(code, texte).then(function(){
+        verdict(champ,'ok','✅ Réponse enregistrée. Tu peux passer à la suite — et aider un camarade bloqué.');
+        showReveal(champ); markDone(champ);
+      }).catch(function(e){
+        verdict(champ,'ok','✅ Réponse gardée pour cette séance. (Enregistrement indisponible : pense à télécharger ta fiche.)');
+        showReveal(champ); markDone(champ);
+      });
+    } else {
+      verdict(champ,'ok','✅ Réponse gardée pour cette séance. Pense à <b>télécharger ta fiche</b> en fin de séance.');
+      showReveal(champ); markDone(champ);
+    }
+  }
+  document.querySelectorAll('[data-focus-ouvrir]').forEach(function(b){
+    b.addEventListener('click',function(){ ouvrirFocus(b.closest('[data-focus]')); });
+  });
+
+  /* ---------- §7.5 glossaire évolutif ---------- */
+  var glossaire = {};
+  var MOTS_GLOSSAIRE = ['Internet','protocole','routeur','switch','modem','ADSL'];
+  function rendreGlossaire(){
+    var hote=document.querySelector('[data-glossaire-final]'); if(!hote) return;
+    hote.innerHTML = MOTS_GLOSSAIRE.map(function(m){
+      var d=glossaire[m];
+      return '<div class="gligne'+(d?'':' vide')+'"><span class="gmot">'+m+'</span><span class="gdef">'+
+             (d?echapper(d):'à compléter — remonte dans la séquence')+'</span></div>';
+    }).join('');
+  }
+  rendreGlossaire();
+  var _valider=validerFocus;
+  validerFocus=function(champ,texte){ _valider(champ,texte); rendreGlossaire(); };
+
+  /* ---------- §7.1 notes du poste d'écoute ---------- */
+  document.querySelectorAll('[data-notes]').forEach(function(ta){
+    var cle=ta.getAttribute('data-notes'); var t=null;
+    ta.addEventListener('input',function(){
+      clearTimeout(t);
+      t=setTimeout(function(){
+        if(BASE) BASE.ecrire('cours','notes-'+cle,{texte:ta.value});
+      },1200);   /* on n'écrit pas à chaque frappe */
+    });
+    if(BASE) BASE.lire('cours','notes-'+cle).then(function(v){ if(v && v.texte && !ta.value) ta.value=v.texte; });
   });
 
   /* ---------- perso (partage, non noté) ---------- */

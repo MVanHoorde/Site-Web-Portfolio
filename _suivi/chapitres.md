@@ -209,6 +209,17 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 
 ### SNT-T1 — Internet
 - État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.
+- 🔄 **21/07 — refonte FAITE, en attente de relecture de Loïc.** Les cinq
+  étapes de la spec sont en place et testées (Playwright : aucune erreur JS,
+  verrouillage intact, parcours glossaire complet de bout en bout).
+  Composants §7 codés et réutilisables : picto « à voir plus tard », mode focus,
+  poste d'écoute (média + notes + dictionnaire), glossaire évolutif (6 mots),
+  suivi de sortie de page. Réponses rédigées branchées sur `progression.js`
+  (repli sans enregistrement tant que `CLE_ANON` est vide).
+  📌 Décision en attente : **l'étape se valide à l'envoi**, pas à la correction
+  — sinon la séance suivante reste verrouillée jusqu'au passage du worker.
+  Restent en chantier : images Commons, SVG des 4 nœuds de 1969, SVG bilan
+  OSI/TCP-IP, glisser-déposer des 7 couches.
 - 🔄 **21/07 — refonte engagée d'après la spec V2** de Loïc, rangée en
   `_modeles/spec-snt-t1-internet.md` (architecture cible en **5 étapes**,
   composants transverses §7, corrections factuelles §9). Les notes de chantier
