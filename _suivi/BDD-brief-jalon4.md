@@ -48,7 +48,7 @@
   À joindre seulement en cas de problème d'exécution.
 - L'archive complète du site : inutile ici, le jalon 4 ne touche à aucune page.
   Elle redeviendra utile au jalon 6 (client `progression.js`) et au jalon 7
-  (branchement d'un hub).
+  (branchement d'une séquence).
 
 ---
 
@@ -82,7 +82,7 @@
 
 ## Questions encore ouvertes
 
-- Quel hub SNT sert de pilote (une étape, un champ de texte libre) ?
+- Quelle séquence SNT sert de pilote (une étape, un champ de texte libre) ?
 - Le dossier de destination des sauvegardes sur le PC de Loïc, et la copie
   externe (disque, clé, cloud ?).
 - Rythme du worker de correction (à la demande ? toutes les N minutes ?).

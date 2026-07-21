@@ -174,21 +174,21 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 ## Seconde — SNT (Sciences numériques et technologie)
 
 > **Gabarit différent des chapitres de physique-chimie** : ce ne sont pas des
-> chapitres à sections, mais des **hubs élève** (séquence → séance → étape →
+> chapitres à sections, mais des **séquences élève** (séquence → séance → étape →
 > champ), avec verrouillage progressif et mode enseignant. Consignes dédiées :
-> `_modeles/CONSIGNES-hub-SNT.md`. Les 7 thèmes du programme sont listés sur
+> `_modeles/CONSIGNES-sequence-SNT.md`. Les 7 thèmes du programme sont listés sur
 > `pages/2nde-snt.html`.
 > Jalons de PC non transposables : ici on suit **V0 → contenu → interactivité →
-> ressources définitives → validé** (voir `CONSIGNES-hub-SNT.md` §12).
+> ressources définitives → validé** (voir `CONSIGNES-sequence-SNT.md` §12).
 
 ### SNT-T0 — Introduction · Les systèmes informatisés 🧭
 - État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.
 - Fichier : `pages/2nde-snt-t0-systemes-informatises.html`. Lié depuis la carte
   « Pour commencer » (nouvelle, en tête de `pages/2nde-snt.html`).
-- **Statut particulier — référentiel vivant** (`CONSIGNES-hub-SNT.md` §8) :
+- **Statut particulier — référentiel vivant** (`CONSIGNES-sequence-SNT.md` §8) :
   cours « Les systèmes informatisés » (doc 01 de Loïc, sorti de la séquence
   Internet) **entrelacé** avec le tutoriel du dispositif. Toute nouvelle idée de
-  fonctionnement du cours se présente ici en premier ; les autres hubs portent
+  fonctionnement du cours se présente ici en premier ; les autres séquences portent
   un **rappel discret** en pied de page (posé le 17/07 sur Web et Internet).
 - 2 séances (Machines & mode d'emploi · Caractéristiques & entraide) + 1
   débranchée (« Autopsie d'une tour »). ≈ 3 h. Codes `SYS·x`.
@@ -209,16 +209,33 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 
 ### SNT-T1 — Internet
 - État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.
+- 🔄 **21/07 — refonte engagée d'après la spec V2** de Loïc, rangée en
+  `_modeles/spec-snt-t1-internet.md` (architecture cible en **5 étapes**,
+  composants transverses §7, corrections factuelles §9). Les notes de chantier
+  posées dans la page marquent, à leur emplacement, le travail à poursuivre.
+- ✅ **Décisions de Loïc du 21/07** : (1) on dit **« séquence »**, plus jamais
+  « hub » — renommage fait sur les 8 pages SNT, la page de niveau, les consignes
+  (`CONSIGNES-sequence-SNT.md`, fichier renommé), `CLAUDE.md` et le suivi ;
+  **critère directeur : la prise en main par les collègues**, à appliquer par
+  défaut dans tous les arbitrages de forme. (2) **Adresse IP et DNS partent en
+  séquences séparées**, travaillées plus tard : la S4 actuelle sort du périmètre
+  de la refonte, **rien n'est supprimé** en attendant, et les pictos « à voir
+  plus tard » y renverront.
+- 🔗 Dépendance : les composants §7 (notes, glossaire évolutif, pré-correction
+  IA, vue prof, suivi de sortie de page) écrivent **en base** — ils attendent
+  `assets/js/progression.js` et les règles RLS (`_suivi/BDD-cadrage.md` §7,
+  actions 5-6-7). Pré-correction assurée par l'IA locale du PC de Loïc
+  (`ia-correction/`). Aucune simulation locale nouvelle, aucun `localStorage`.
 - Fichier : `pages/2nde-snt-t1-internet.html` (autonome, CSS/JS inline, décliné
-  du hub du Web). Lié depuis `pages/2nde-snt.html` (carte « SNT 1 · Internet »).
+  de la séquence du Web). Lié depuis `pages/2nde-snt.html` (carte « SNT 1 · Internet »).
 - **Enseigné avant le Web** (ordre de l'année) : le développement historique
   complet (Pouzin/CYCLADES/datagramme, Minitel, biblio sourcée) vit ici, en S2 ;
-  le hub du Web a été raccourci en conséquence (rappel + renvoi).
+  la séquence du Web a été raccourci en conséquence (rappel + renvoi).
 - 4 séances (Réseau physique & câbles sous-marins · Histoire & 🇫🇷 ·
   Paquets/TCP-IP/routage · Adresses IP, DNS & diagnostic) + 1 activité
   débranchée (« Routons, petits patapons » — routage humain). ≈ 6 h 30.
 - Sources : dossier de séquence de Loïc (version « ARPANET 2024 » = référence
-  historique). **Hors hub, volontairement** : `01 - Systèmes informatisés`
+  historique). **Hors séquence, volontairement** : `01 - Systèmes informatisés`
   (introduction d'année) et le **TP Filius noté** (dispositif d'évaluation
   séparé, workflow partagé). Contenu du cahier Nathan **non transposé**
   (copyright) : notions recréées (topologies en SVG maison, énoncés réécrits).
@@ -249,7 +266,7 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   Grotesk / IBM Plex Sans / IBM Plex Mono depuis `fonts.googleapis.com`. La page
   utilise désormais `assets/css/fonts.css` ; **IBM Plex Sans a été ajouté** en
   woff2 auto-hébergé (400, 400i, 500, 600, sous-ensemble latin).
-- **17/07 — harmonisation avec le hub Internet (validée)** : la grande
+- **17/07 — harmonisation avec la séquence Internet (validée)** : la grande
   france-box S1 (Pouzin + Minitel + SVG + biblio) est remplacée par un **rappel
   court + renvoi** vers `2nde-snt-t1-internet.html#s2` ; la question bonus
   CYCLADES a **migré** vers Internet S2, remplacée par « le Web dans le domaine
@@ -264,7 +281,7 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 - État : **S1 en maquette V0 fonctionnelle** (18/07), S2-S5 en squelettes
   verrouillés (cartes 🚧 « en production »), débranchée cadrée. **Non validé.**
 - Fichier : `pages/2nde-snt-t7-photographie-numerique.html` (autonome, CSS/JS
-  inline, décliné du hub du Web). Lié depuis `pages/2nde-snt.html`
+  inline, décliné de la séquence du Web). Lié depuis `pages/2nde-snt.html`
   (carte « SNT 7 · La photographie numérique »).
 - **Découpage arbitré par Loïc (18/07)** : 5 séances (De l'œil au capteur ·
   Pixels & couleurs · Mes premiers filtres en Python · Effets spéciaux, du fond
@@ -285,7 +302,7 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   Daguerre / Arago (« doter libéralement le monde entier ») avec biblio musée
   Niépce + Gallica, perso usages photo, bonus chambre noire + question ouverte.
 - Interactivité **simulée** (phase 1) : texte libre *en attente* → *validé*.
-- **Adaptations JS vs hub du Web (documentées, comportement identique)** :
+- **Adaptations JS vs séquence du Web (documentées, comportement identique)** :
   verrouillage généralisé en boucle (5 séances au lieu de 4 câblées) ; messages
   de verdict des trous/schémas portés par `data-msg-ok` / `data-msg-no`
   (plusieurs champs du même type par séance) ; en-tête de fiche ; easter egg
@@ -326,11 +343,11 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 ### SNT-T4 — Les données structurées
 - État : **S1 (enquête Titanic) complète**, S2 en squelette, débranchée cadrée
   (18/07). **Non validé.** Fichier : `pages/2nde-snt-t4-donnees-structurees.html`.
-  Codes `DAT·x`. **Hub volontairement court (2 séances)** mobilisable
+  Codes `DAT·x`. **Séquence volontairement court (2 séances)** mobilisable
   ponctuellement — arbitrage Loïc.
 - **Stratégie transversale actée** : ① étape « Ranger pour retrouver » à
   ajouter dans **t0** (référentiel vivant — chantier t0 dédié) ; ② EXIF photos
-  → hub **Photo** (S2/S5) ; ③ NMEA→CSV traité dans **Localisation S3** ;
+  → séquence **Photo** (S2/S5) ; ③ NMEA→CSV traité dans **Localisation S3** ;
   ④ rappels d'une ligne dans Internet (trame) et Web (index) lors de leurs
   prochains chantiers.
 - S1 : vocabulaire table/objet/descripteur/valeur sur le **vrai fichier
@@ -355,7 +372,7 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   rouge : « comment ton téléphone sait-il où tu es — et qui d'autre le sait ? »
 - **Arbitrages Loïc (18/07)** : tout sur **cartes.gouv.fr** (Géoportail ferme
   sept. 2026 📅) ; **éthique intégrée en S4** (pas de séance dédiée,
-  réévaluable) ; **capteur GPS cédé au hub Informatique embarquée** (lien
+  réévaluable) ; **capteur GPS cédé à la séquence Informatique embarquée** (lien
   clair posé des deux côtés) ; corrections d'actualité appliquées (BeiDou
   ajouté, « Map Ouest »=MapQuest, « une trentaine » de satellites, Galileo HAS
   2023 à re-vérifier 📅).
@@ -382,7 +399,7 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   `pages/2nde-snt-t6-informatique-embarquee.html`. Codes `EMB·x`.
 - **Arbitrages Loïc (18/07)** : format **4 séances provisoire** (S4 « Objets
   connectés & société » optionnelle, repli 3 possible — 📌 arbitrage
-  ultérieur) ; **simulateur d'IHM intégré au hub** (S2, bloc JS spécifique à
+  ultérieur) ; **simulateur d'IHM intégré à la séquence** (S2, bloc JS spécifique à
   documenter) ; **activité micro:bit réelle à mettre en chantier** (≈ 10
   cartes au labo → 1 pour 2, S3.4) ; **IA embarquée / voitures autonomes en
   chantier non prioritaire** (bonus S1, peut grandir en S4) ; récupère le

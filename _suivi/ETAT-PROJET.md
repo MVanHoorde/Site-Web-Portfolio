@@ -6,7 +6,7 @@
 Vue d'ensemble. Détail par chapitre dans `chapitres.md` ; idées dans `IDEES.md`.
 Contexte et règles de collaboration : `CLAUDE.md` à la racine. Consignes de
 production, un fichier par gabarit : `_modeles/CONSIGNES-chapitre-PC.md` et
-`_modeles/CONSIGNES-hub-SNT.md`.
+`_modeles/CONSIGNES-sequence-SNT.md`.
 
 ---
 
@@ -106,17 +106,17 @@ source, puisqu'il change chaque année).
   informatisés » **entrelacé** avec le tutoriel du dispositif. **Toute nouvelle
   idée de fonctionnement du cours s'y présente explicitement en premier** ; les
   autres séquences n'en portent que des rappels discrets (pied de page). Voir
-  `CONSIGNES-hub-SNT.md` §8 — et y revenir sans cesse.
+  `CONSIGNES-sequence-SNT.md` §8 — et y revenir sans cesse.
 - ✅ **Vestige RGPD corrigé (17/07)** : la page orpheline `2nde-snt.html` à la
   **racine** (doublon obsolète, chargeait encore Google Fonts, liens `#`) est
   remplacée par une redirection propre vers `pages/2nde-snt.html`. Option plus
   radicale possible : `git rm` (décision Loïc).
-- 🆕 **SNT — le hub « Le Web » est en ligne (17/07)** : `pages/2nde-snt-t2-le-web.html`,
+- 🆕 **SNT — la séquence « Le Web » est en ligne (17/07)** : `pages/2nde-snt-t2-le-web.html`,
   lié depuis la carte SNT 2 de `pages/2nde-snt.html`. **Maquette V0, non validée.**
   C'est un **second gabarit**, distinct des chapitres de PC (séquence → séance →
   étape → champ ; pas de `localStorage` ; CSS inline) — voir
-  `_modeles/CONSIGNES-hub-SNT.md`.
-- 🔴 **RÈGLE — aucune police depuis un CDN.** La maquette du hub chargeait Space
+  `_modeles/CONSIGNES-sequence-SNT.md`.
+- 🔴 **RÈGLE — aucune police depuis un CDN.** La maquette de la séquence chargeait Space
   Grotesk / IBM Plex Sans / IBM Plex Mono depuis `fonts.googleapis.com` : chaque
   élève ouvrant la page aurait envoyé son IP à Google, à rebours de la règle du
   site (polices auto-hébergées, `assets/css/fonts.css`). Corrigé : **IBM Plex Sans
@@ -171,7 +171,7 @@ source, puisqu'il change chaque année).
   fraction des blocs-formule corrigée, mais restée invisible jusqu'au versionnage.
 - 💡 **Décision (T2) — convention d'écriture des vecteurs** : en ébauche, la flèche est rendue par un caractère combinant Unicode placé au-dessus du symbole (lisible, mais imparfait sur les groupes multi-lettres). À raffiner en régime B (petit composant SVG ou notation dédiée).
 
-- 🆕 **SNT — hub « Photographie numérique » S1 en ligne (18/07)** :
+- 🆕 **SNT — séquence « Photographie numérique » S1 en ligne (18/07)** :
   `pages/2nde-snt-t7-photographie-numerique.html`, lié depuis la carte SNT 7.
   **Maquette V0, non validée** — S1 complète et testée (Playwright), S2-S5 en
   squelettes 🚧 verrouillés. Découpage 5 séances + frise débranchée arbitré par
@@ -179,14 +179,14 @@ source, puisqu'il change chaque année).
   (section SNT-T7). Deux erreurs de la source corrigées au passage dans le
   contenu à venir (canal alpha ≠ « saturation » ; formats d'images datés).
 
-- 🆕 **SNT — chantier des 4 thèmes lancé (18/07)** : hubs **Réseaux sociaux**
+- 🆕 **SNT — chantier des 4 thèmes lancé (18/07)** : séquences **Réseaux sociaux**
   (`t3`, `SOC·x`), **Données structurées** (`t4`, `DAT·x`, court 2 séances),
   **Localisation & cartographie** (`t5`, `LOC·x`) et **Informatique embarquée**
   (`t6`, `EMB·x`) créés en **V0 partielle** (S1 rédigées, suite en squelettes
   🚧), liés depuis `pages/2nde-snt.html`. Arbitrages de périmètre et nouvelles
   règles de production (intégrer plutôt que renvoyer, notes de chantier dans la
-  page, plateformes fictives) consignés dans `CONSIGNES-hub-SNT.md` §14. Détail
-  par hub : `chapitres.md`. **Décisions 📌/⚖️/📅 en attente** signalées par des
+  page, plateformes fictives) consignés dans `CONSIGNES-sequence-SNT.md` §14. Détail
+  par séquence : `chapitres.md`. **Décisions 📌/⚖️/📅 en attente** signalées par des
   encarts `<aside class="chantier decision">` dans chaque page (voir §14.2).
 
 ## 📊 Avancement (Seconde — Thème 1)
@@ -236,18 +236,18 @@ voir Alerte plus haut). Niveau de finition **validé** :
 
 ## 📊 Avancement (Seconde — SNT)
 
-**Nouveau (17-18/07).** Gabarit « hub élève », distinct des chapitres de PC.
-Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; **8 hubs existent** (t0 à
-t7), tous liés depuis la page de niveau. Détail par hub et restes à faire :
+**Nouveau (17-18/07).** Gabarit « séquence élève », distinct des chapitres de PC.
+Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; **8 séquences existent** (t0 à
+t7), tous liés depuis la page de niveau. Détail par séquence et restes à faire :
 section « Seconde — SNT » de `chapitres.md`.
 
-| Thème | Hub en ligne | Validé | Ressources définitives |
+| Thème | Séquence en ligne | Validé | Ressources définitives |
 |---|---|---|---|
 | SNT 0 · Introduction 🧭 | ✅ V0 (2 séances + débranchée) | ⬜ non | ⬜ `SYS·1`, `SYS·D` à brancher |
 | SNT 1 · Internet | ✅ V0 (4 séances + débranchée) | ⬜ non | ⬜ `NET·2b`, `NET·D`, liens `NET·3/4` à tester |
 | SNT 2 · Le Web | ✅ V0 (4 séances + frise) | ⬜ non | ⬜ activités cahier + frise à brancher |
 | SNT 3 · Réseaux sociaux | 🔄 V0 partiel (S1 OK, S2 aux ⅔, S4 enquête codée ; S3 + fin S4 🚧) | ⬜ non | ⬜ `SOC·P`, `SOC·D`, biblio Skyblog-BnF |
-| SNT 4 · Données structurées | 🔄 V0 partiel (S1 Titanic OK ; S2 🚧) — hub court 2 séances | ⬜ non | ⬜ `DAT·1`, `DAT·1b`, `DAT·D`, biblio Légifrance |
+| SNT 4 · Données structurées | 🔄 V0 partiel (S1 Titanic OK ; S2 🚧) — séquence courte 2 séances | ⬜ non | ⬜ `DAT·1`, `DAT·1b`, `DAT·D`, biblio Légifrance |
 | SNT 5 · Localisation & cartographie | 🔄 V0 partiel (S1-S2 OK ; S3-S4 🚧) | ⬜ non | ⬜ `LOC·1`, `LOC·2b`, `LOC·D`, biblios |
 | SNT 6 · Informatique embarquée | 🔄 V0 partiel (S1 OK ; S2-S4 🚧) — 4 séances provisoire | ⬜ non | ⬜ `EMB·D`, biblios Moreno/IoT |
 | SNT 7 · Photographie numérique | ✅ V0 (S1 complète + S2-S5 🚧 + débranchée cadrée) | ⬜ non | ⬜ `PHO·1`, `PHO·D` à brancher |
@@ -255,7 +255,7 @@ section « Seconde — SNT » de `chapitres.md`.
 > Phase 1 (rentrée) : HTML statique autonome, correction locale réelle, texte
 > libre **simulé**. Phase 2 (plus tard) : VPS + base de données + correction IA
 > + comptes élèves. Ne pas mélanger les deux — voir
-> `_modeles/CONSIGNES-hub-SNT.md` §7.
+> `_modeles/CONSIGNES-sequence-SNT.md` §7.
 
 ## 🔜 Prochaines actions
 
@@ -272,24 +272,24 @@ section « Seconde — SNT » de `chapitres.md`.
       en séance 1, brancher les ressources définitives (`WEB·2b`, `WEB·D`).
 - [ ] **SNT T7 Photo — rédiger S2 à S5** (séance par séance, arbitrage fait) +
       la frise débranchée `PHO·D` ; choisir la vidéo-débat deepfake (`PHO·1`).
-- [ ] **SNT — finir les 4 hubs du 18/07** (T3-T6) : rédiger les séances en
+- [ ] **SNT — finir les 4 séquences du 18/07** (T3-T6) : rédiger les séances en
       squelette, brancher les ressources définitives, lever les décisions 📌/⚖️/📅
       posées en encarts `chantier` dans chaque page. Détail : `chapitres.md`.
 - [ ] **SNT — étape « Ranger pour retrouver » à ajouter dans t0** (données
-      structurées en transversal, référentiel vivant — voir `CONSIGNES-hub-SNT.md`
+      structurées en transversal, référentiel vivant — voir `CONSIGNES-sequence-SNT.md`
       §14.4).
-- [ ] **SNT — trancher l'extraction d'un `gabarit-hub-snt.html`** : conventions
-      désormais confirmées par 8 hubs (décision de Loïc — `CONSIGNES-hub-SNT.md` §13).
+- [ ] **SNT — trancher l'extraction d'un `gabarit-sequence-snt.html`** : conventions
+      désormais confirmées par 8 séquences (décision de Loïc — `CONSIGNES-sequence-SNT.md` §13).
 - [ ] 🆕 **BDD — jalon 4** : CLI Supabase sur Windows, `.bat` de sauvegarde et de
       réveil + tâches planifiées, puis `supabase init` / `db pull`.
-- [ ] 🆕 **BDD — choisir le hub pilote** (un hub SNT, une étape, un champ de
+- [ ] 🆕 **BDD — choisir la séquence pilote** (une séquence SNT, une étape, un champ de
       texte libre) pour le branchement de bout en bout.
 
 ---
 
 ## 🗄 Nouvelle partie (20/07) — Volet base de données
 
-**Décision : la phase 2 des hubs SNT est ouverte.** La progression des élèves
+**Décision : la phase 2 des séquences SNT est ouverte.** La progression des élèves
 quitte le `localStorage` pour une vraie base. Cadrage complet, modèle de données
 et notions apprises : `_suivi/BDD-cadrage.md`.
 
@@ -302,9 +302,9 @@ et notions apprises : `_suivi/BDD-cadrage.md`.
 | Jalon 4 — CLI, sauvegardes, réveil, historique de migrations | ✅ fait le 20/07 · détail au §9 du cadrage |
 | Règles RLS | ⬜ jalon 5 — **tables actuellement FERMÉES à tous, c'est voulu** |
 | `assets/js/progression.js` (client partagé) | ⬜ jalon 6 |
-| Pilote sur un hub SNT | ⬜ jalon 7 — hub à choisir |
+| Pilote sur une séquence SNT | ⬜ jalon 7 — séquence à choisir |
 
-**Conséquences déjà actées ailleurs** : `CONSIGNES-hub-SNT.md` §5 (progression en
+**Conséquences déjà actées ailleurs** : `CONSIGNES-sequence-SNT.md` §5 (progression en
 base, jeton seul en local ; `progression.js` autorisé comme second asset
 partagé), §7 (phase 2 ouverte, coder contre le contrat de données, ordre de
 branchement SNT → PC), §13 (encadré de mise à jour), §14.3 (codes d'activité au

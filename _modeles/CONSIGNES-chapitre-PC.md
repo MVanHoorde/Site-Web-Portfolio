@@ -6,14 +6,14 @@ Ce document couvre **un seul des deux gabarits du site** : les **chapitres de
 physique-chimie** (thème → chapitre → sections, code de déblocage,
 `localStorage`, fiche élève imprimable).
 
-⚠ **Il ne s'applique PAS aux hubs SNT** (séquence → séance → étape → champ,
+⚠ **Il ne s'applique PAS aux séquences SNT** (séquence → séance → étape → champ,
 verrouillage progressif, `localStorage` interdit, pas de fiche imprimable) :
-leurs consignes sont dans `_modeles/CONSIGNES-hub-SNT.md`. Ne jamais transposer
+leurs consignes sont dans `_modeles/CONSIGNES-sequence-SNT.md`. Ne jamais transposer
 les régimes A/B, la bibliothèque de composants (§3), le verrou (§5.7), la fiche
-élève (§6) ni les jalons (§10) vers un hub SNT — ce sont deux systèmes
+élève (§6) ni les jalons (§10) vers une séquence SNT — ce sont deux systèmes
 différents, l'un rodé, l'autre en phase 1.
 
-| | **Ce document (PC)** | **Hub SNT** |
+| | **Ce document (PC)** | **Séquence SNT** |
 |---|---|---|
 | Structure | thème → chapitre → sections | séquence → séance → étape → champ |
 | Style | gabarit + `style.css` du site | CSS inline dans la page |
@@ -75,7 +75,7 @@ fiches/fiche-2nde-tXcY.html            ← la fiche élève imprimable
 | Fiche élève | `fiche-2nde-tXcY.html` | `fiche-2nde-t1c2.html` |
 
 > ⚠ Ne PAS confondre avec le **cahier de vacances** (`cahier/…`, assets dans
-> `assets/img/cahier/` et `assets/pdf/cahier/`) ni avec les **hubs SNT**
+> `assets/img/cahier/` et `assets/pdf/cahier/`) ni avec les **séquences SNT**
 > (`pages/2nde-snt-tN-…`, **aucun** asset externe : tout est en SVG/CSS inline).
 > Ce sont des parties distinctes — voir `CLAUDE.md` « Où est quoi ».
 

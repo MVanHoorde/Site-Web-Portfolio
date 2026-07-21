@@ -1,8 +1,8 @@
-# CONSIGNES — Hub SNT (séquence d'un thème du programme)
+# CONSIGNES — Séquence SNT (un thème du programme)
 
 ## Portée & contexte (à lire avant tout)
 
-Ce document couvre **un seul des deux gabarits du site** : les **hubs SNT**
+Ce document couvre **un seul des deux gabarits du site** : les **séquences SNT**
 (Sciences numériques et technologie, seconde) — séquence → séance → étape →
 champ, verrouillage progressif, mode enseignant, page autonome à CSS/JS inline.
 
@@ -11,13 +11,13 @@ sections, code de déblocage, fiche élève imprimable) : leurs consignes sont d
 `_modeles/CONSIGNES-chapitre-PC.md`. Ne jamais transposer ici les régimes A/B, la
 bibliothèque de composants PC (`.encart`, `.formule-bloc`…), le verrou à code, ni
 les jalons 1→7 : ce sont deux systèmes différents. Le système PC est **rodé** (14
-chapitres ébauchés) ; le système SNT est en **phase 1**, avec **8 hubs** amorcés
+chapitres ébauchés) ; le système SNT est en **phase 1**, avec **8 séquences** amorcées
 (t0 à t7) : le Web (`t2`, la référence d'origine), Internet (`t1`) et
 l'**Introduction — Les systèmes informatisés** (`t0`, statut particulier :
 voir §8) sont en V0 complète ; Photographie (`t7`) et les quatre thèmes du
 chantier du 18/07 — Réseaux sociaux (`t3`), Données structurées (`t4`),
 Localisation (`t5`), Informatique embarquée (`t6`) — sont en **V0 partielle**
-(S1 rédigée, suite en squelettes). Les conventions se confirment d'un hub à
+(S1 rédigée, suite en squelettes). Les conventions se confirment d'une séquence à
 l'autre, mais **rien n'est validé** — voir « Ce qui n'est pas encore arrêté »,
 en fin de document.
 
@@ -36,14 +36,14 @@ jour de `_suivi/`.
 
 ## 1. Le projet en une phrase
 
-Un **hub numérique pour les élèves de seconde en SNT** : chaque séquence du
+Une **séquence numérique pour les élèves de seconde en SNT** : chaque séquence du
 programme est une suite de **séances fléchées**. L'élève suit des activités
 (vidéos, manips, exercices), puis **complète une fiche** dont une partie se
-**corrige automatiquement**. À terme, ce hub devient la colonne vertébrale de
+**corrige automatiquement**. À terme, cette séquence devient la colonne vertébrale de
 l'enseignement SNT de Loïc.
 
 Les 7 thèmes du programme sont listés sur `pages/2nde-snt.html` (cartes
-`.chapitre`). Un hub = un thème.
+`.chapitre`). Une séquence = un thème.
 
 Sur le **fond pédagogique** (choix des notions, formulations, progression,
 accroches), la vision de Loïc est souveraine : ton rôle est l'échafaudage —
@@ -55,24 +55,24 @@ explicite de Loïc, jamais présumée ; la mise en ligne n'est pas un jalon.
 
 | Fichier | Rôle |
 |---|---|
-| `pages/2nde-snt-t2-le-web.html` | **Hub de référence (V0 d'origine)** — source de fait pour la structure, les champs et le JS. Page autonome, CSS/JS inline |
-| `pages/2nde-snt-t1-internet.html` | Hub Internet (V0) — première déclinaison, enseigné avant le Web |
+| `pages/2nde-snt-t2-le-web.html` | **Séquence de référence (V0 d'origine)** — source de fait pour la structure, les champs et le JS. Page autonome, CSS/JS inline |
+| `pages/2nde-snt-t1-internet.html` | Séquence Internet (V0) — première déclinaison, enseignée avant le Web |
 | `pages/2nde-snt-t0-systemes-informatises.html` | **Introduction (V0)** — cours « Les systèmes informatisés » **entrelacé** avec le tutoriel du dispositif ; référentiel vivant du fonctionnement du cours (voir §8) |
-| `pages/2nde-snt-t7-photographie-numerique.html` | Hub Photographie (V0 partielle) — `PHO·x` |
-| `pages/2nde-snt-t3-reseaux-sociaux.html` | Hub Réseaux sociaux (V0 partielle) — `SOC·x`, chantier 18/07 (§14) |
-| `pages/2nde-snt-t4-donnees-structurees.html` | Hub Données structurées (V0 partielle) — `DAT·x`, court 2 séances (§14) |
-| `pages/2nde-snt-t5-localisation-cartographie.html` | Hub Localisation & cartographie (V0 partielle) — `LOC·x` (§14) |
-| `pages/2nde-snt-t6-informatique-embarquee.html` | Hub Informatique embarquée (V0 partielle) — `EMB·x` (§14) |
-| `pages/2nde-snt.html` | Page de niveau SNT : carte « Pour commencer » + les 7 cartes de thèmes, d'où part chaque hub |
+| `pages/2nde-snt-t7-photographie-numerique.html` | Séquence Photographie (V0 partielle) — `PHO·x` |
+| `pages/2nde-snt-t3-reseaux-sociaux.html` | Séquence Réseaux sociaux (V0 partielle) — `SOC·x`, chantier 18/07 (§14) |
+| `pages/2nde-snt-t4-donnees-structurees.html` | Séquence Données structurées (V0 partielle) — `DAT·x`, court 2 séances (§14) |
+| `pages/2nde-snt-t5-localisation-cartographie.html` | Séquence Localisation & cartographie (V0 partielle) — `LOC·x` (§14) |
+| `pages/2nde-snt-t6-informatique-embarquee.html` | Séquence Informatique embarquée (V0 partielle) — `EMB·x` (§14) |
+| `pages/2nde-snt.html` | Page de niveau SNT : carte « Pour commencer » + les 7 cartes de thèmes, d'où part chaque séquence |
 | `assets/css/fonts.css` | Polices auto-hébergées (voir §5) — **seule** source de polices autorisée |
-| `_suivi/chapitres.md` | Section « Seconde — SNT » : état réel de chaque hub |
+| `_suivi/chapitres.md` | Section « Seconde — SNT » : état réel de chaque séquence |
 
-Il n'existe **pas** de `gabarit-hub-snt.html` : on décline en partant du hub du
-Web. Trois hubs existent désormais et confirment les conventions — extraire un
+Il n'existe **pas** de `gabarit-sequence-snt.html` : on décline en partant de la séquence du
+Web. Trois séquences existent désormais et confirment les conventions — extraire un
 vrai gabarit est donc devenu pertinent, mais c'est une **décision de Loïc**,
 pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
 
-## 3. Grammaire du hub (à respecter partout)
+## 3. Grammaire de la séquence (à respecter partout)
 
 **Hiérarchie :** `séquence` → `séance` (≈ 1h30) → `étape` (une notion) →
 `champ` (exercice).
@@ -135,7 +135,7 @@ pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
 ## 5. Règles techniques (les pièges déjà rencontrés)
 
 - 🔴 **Aucune police, aucun script, aucune ressource depuis un CDN.** La maquette
-  d'origine du hub du Web chargeait Space Grotesk / IBM Plex Sans / IBM Plex Mono
+  d'origine de la séquence du Web chargeait Space Grotesk / IBM Plex Sans / IBM Plex Mono
   depuis `fonts.googleapis.com` : chaque élève ouvrant la page aurait envoyé son
   IP à Google. Corrigé — IBM Plex Sans ajouté en woff2 local (400, 400i, 500,
   600 ; sous-ensemble latin, OFL) et déclaré dans `assets/css/fonts.css`.
@@ -160,13 +160,13 @@ pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
   respecté.
 - Ressources externes chargées **par lien** (vidéos, CodeBetter…). Illustrations
   maison en **SVG** quand c'est possible.
-- 🗂 **Un hub SNT est autonome : AUCUN fichier d'asset externe.** Tout (SVG, CSS,
+- 🗂 **Une séquence SNT est autonome : AUCUN fichier d'asset externe.** Tout (SVG, CSS,
   JS) vit **inline** dans `pages/2nde-snt-tN-….html` — c'est ce qui distingue le
   gabarit SNT du gabarit PC (qui, lui, range ses images dans `assets/img/pc/…`).
   Ne pas créer de dossier `assets/img/snt/` : il n'y a rien à y mettre.
   **Deux ressources partagées, et deux seulement** : `assets/css/fonts.css` et
   `assets/js/progression.js` (le client de base de données — dérogation
-  explicite validée par Loïc le 20/07/2026 : dupliquer ce client dans huit hubs
+  explicite validée par Loïc le 20/07/2026 : dupliquer ce client dans huit séquences
   serait ingérable et rendrait toute correction impossible à propager).
   Toute autre mise en commun se propose, elle ne se décide pas.
   Arborescence des parties du projet : `CLAUDE.md` « Arborescence — une place
@@ -213,20 +213,20 @@ rouge ».
 prévision de la phase 2 » est **caduque**. Tout nouveau champ de texte libre
 s'écrit d'emblée contre l'API de progression (`assets/js/progression.js`),
 jamais avec une simulation locale. La simulation *en attente → validé* est
-**retirée** de chaque hub au moment de son branchement ; les hubs non encore
+**retirée** de chaque séquence au moment de son branchement ; les séquences non encore
 branchés la conservent jusqu'à leur tour, mais **aucune nouvelle simulation
 n'est écrite**.
 
-**Ordre de branchement arrêté (20/07/2026)** : pilote sur **un hub SNT**, une
+**Ordre de branchement arrêté (20/07/2026)** : pilote sur **une séquence SNT**, une
 étape, un champ de texte libre, cycle complet de bout en bout — puis les autres
-hubs — puis seulement les chapitres de physique-chimie.
+séquences — puis seulement les chapitres de physique-chimie.
 
 ## 8. La séquence d'introduction — référentiel vivant du fonctionnement du cours
 
 `pages/2nde-snt-t0-systemes-informatises.html` a un **statut particulier** :
 c'est à la fois un **vrai cours** (« Les systèmes informatisés ») et le
 **tutoriel du dispositif**, les deux **entrelacés** — chaque étape du cours est
-l'occasion d'apprendre un geste du hub (valider un QCM, envoyer une réponse
+l'occasion d'apprendre un geste de la séquence (valider un QCM, envoyer une réponse
 rédigée, télécharger sa fiche et la déposer sur OneDrive, comprendre le
 verrouillage et l'entraide…). Choix arrêté : pas de séance « mode d'emploi »
 sèche, le contenu sert de terrain d'entraînement.
@@ -243,26 +243,26 @@ un nouveau type de champ, un changement du rituel de fin de séance…) :
 2. **Les autres séquences n'en portent que des rappels discrets** : une ligne
    dans le pied de page, un encart léger, un renvoi vers l'intro — **jamais**
    une ré-explication complète. Le rappel type, présent dans le pied de page
-   des hubs : *« Un doute sur le fonctionnement du cours (fiches, verrouillage,
+   des séquences : *« Un doute sur le fonctionnement du cours (fiches, verrouillage,
    entraide) ? Revois l'introduction. »*
 3. **On y revient sans cesse** : à chaque nouveau mécanisme ou modification
    d'un mécanisme existant, l'introduction est **mise à jour en premier**, puis
-   on vérifie la cohérence des rappels dans les autres hubs, et on le note dans
+   on vérifie la cohérence des rappels dans les autres séquences, et on le note dans
    la section SNT de `_suivi/chapitres.md` (liste « mécanismes présentés »).
 
 Corollaire pour Claude : à **chaque** chantier SNT qui introduit ou modifie un
 mécanisme du dispositif, vérifier si l'introduction doit être mise à jour — et
 le proposer si Loïc ne l'a pas demandé.
 
-## 9. Produire un nouveau hub — marche à suivre
+## 9. Produire une nouvelle séquence — marche à suivre
 
-1. **Partir du hub du Web** (`pages/2nde-snt-t2-le-web.html`) : copier la
+1. **Partir de la séquence du Web** (`pages/2nde-snt-t2-le-web.html`) : copier la
    structure, les variables CSS et le JS des champs. Slug :
    `2nde-snt-tN-nom-du-theme.html`.
 2. **Proposer le découpage en séances AVANT de coder** (≈ 1h30 chacune,
    objectifs, volume horaire total) — c'est du fond pédagogique, Loïc arbitre.
 3. Coder séance par séance, en respectant le trajet d'étape (§3).
-4. **Lier le hub depuis `pages/2nde-snt.html`** sur la carte du thème. ⚠ La page
+4. **Lier la séquence depuis `pages/2nde-snt.html`** sur la carte du thème. ⚠ La page
    de niveau est elle-même dans `pages/` : le lien s'écrit
    `href="2nde-snt-tN-….html"` — **jamais** `href="pages/…"`, sinon
    `pages/pages/…` → 404. Aligner sur la forme du lien du Web (le vérifier par un
@@ -298,7 +298,7 @@ Code.
 ## 11. Livraison
 
 1. **Archive delta** reproduisant l'arborescence, contenant UNIQUEMENT les
-   fichiers créés/modifiés (le hub + `pages/2nde-snt.html` + `fonts.css` si une
+   fichiers créés/modifiés (la séquence + `pages/2nde-snt.html` + `fonts.css` si une
    police a été ajoutée). **JAMAIS le site complet.**
 2. Le fichier HTML **aussi présenté individuellement** dans le panneau.
 3. Les captures d'écran (bureau + iPad + mobile).
@@ -306,9 +306,9 @@ Code.
    de ressources encore inertes (`href="#"`), licences des images à confirmer,
    points d'histoire dont la biblio reste à sourcer.
 
-## 12. Jalons d'un hub (`_suivi/chapitres.md`)
+## 12. Jalons d'une séquence (`_suivi/chapitres.md`)
 
-Les jalons 1→7 des chapitres de PC **ne sont pas transposables**. Un hub suit :
+Les jalons 1→7 des chapitres de PC **ne sont pas transposables**. Une séquence suit :
 
 1. `⬜ Maquette V0 en ligne` — structure et séances navigables
 2. `⬜ Contenu complet` — toutes les séances rédigées, à retenir pré-remplis
@@ -320,25 +320,25 @@ Notation des flags : `⬜` à faire · `🔄` en cours · `✅` fait · `⚠` bl
 
 ## 13. Ce qui n'est pas encore arrêté (honnêteté de phase 1)
 
-Huit hubs sont amorcés (Web, Internet, Introduction en V0 complète ;
+Huit séquences sont amorcés (Web, Internet, Introduction en V0 complète ;
 Photographie et les quatre thèmes du 18/07 en V0 partielle) et les conventions
 se confirment (codes `WEB·x` / `NET·x` / `SYS·x` / `PHO·x` / `SOC·x` / `DAT·x` /
-`LOC·x` / `EMB·x`, ≈ 4 séances + 1 débranchée — 2 séances pour un hub court comme
+`LOC·x` / `EMB·x`, ≈ 4 séances + 1 débranchée — 2 séances pour une séquence courte comme
 Données structurées, mêmes champs et même JS). Restent **ouverts** — à proposer
 à Loïc plutôt qu'à trancher seul :
 
-- l'extraction d'un vrai **`gabarit-hub-snt.html`** : la condition (conventions
-  confirmées par plusieurs hubs) est **largement** remplie, mais l'extraction
+- l'extraction d'un vrai **`gabarit-sequence-snt.html`** : la condition (conventions
+  confirmées par plusieurs séquences) est **largement** remplie, mais l'extraction
   reste une décision de Loïc ;
 - le **volume horaire** type d'une séquence (le Web fait ≈ 6 h sur 4 séances +
   1 débranchée) ;
 - l'existence d'un **équivalent du régime A** (dégrossissage rapide multi-thèmes)
-  pour peupler les 7 hubs — non tranché : les hubs se rédigent, ils ne se
+  pour peupler les 7 séquences — non tranché : les séquences se rédigent, ils ne se
   transcrivent pas depuis un PPTX.
 
 ⚠ **Mise à jour du 20/07/2026** : ce paragraphe date de la phase 1. La phase 2
 est ouverte (voir §7) et le volet base de données est cadré — voir
-`_suivi/BDD-cadrage.md`. Reste ouvert dans ce paragraphe : le gabarit de hub, le
+`_suivi/BDD-cadrage.md`. Reste ouvert dans ce paragraphe : le gabarit de séquence, le
 volume horaire, le régime A. Sont désormais **tranchés** : la persistance
 (Supabase), l'identification (pseudonyme + code de classe) et l'ordre de
 branchement (SNT d'abord, PC ensuite).
@@ -353,19 +353,19 @@ explicite de Loïc : « dès qu'on peut intégrer, on le fait »). Concrètement
 
 - une notion nécessaire à une étape est **traitée dans l'étape**, même si elle
   touche un autre thème (ex. : le principe du CSV est expliqué dans la séance
-  NMEA du hub Localisation, pas délégué au hub Données structurées) ;
+  NMEA de la séquence Localisation, pas délégué à la séquence Données structurées) ;
 - chaque donnée n'a qu'**un seul traitement complet** dans tout le site ; les
-  autres hubs peuvent y faire un **rappel discret d'une ligne** (« revois
+  autres séquences peuvent y faire un **rappel discret d'une ligne** (« revois
   l'introduction ») — navigation autorisée, délégation de contenu interdite ;
-- les simulateurs/manipulations se codent **dans le hub** quand c'est
-  raisonnable (ex. : simulateur d'IHM du hub Informatique embarquée) plutôt
+- les simulateurs/manipulations se codent **dans la séquence** quand c'est
+  raisonnable (ex. : simulateur d'IHM de la séquence Informatique embarquée) plutôt
   que d'envoyer vers un outil externe en première approche ;
-- corollaire : cartographier les **redondances** entre hubs (notes 🔁) pour
+- corollaire : cartographier les **redondances** entre séquences (notes 🔁) pour
   décider où vit le traitement complet.
 
 ### 14.2 Notes de chantier dans les pages
 
-Loïc pilote depuis le **site rendu**, pas depuis les fichiers. Tant qu'un hub
+Loïc pilote depuis le **site rendu**, pas depuis les fichiers. Tant qu'une séquence
 n'est pas VALIDÉ, les remarques de production s'écrivent **dans la page**,
 sous forme d'encarts visibles :
 
@@ -378,15 +378,15 @@ sous forme d'encarts visibles :
 - catégories (emoji en tête de note) : 🚧 à écrire/coder · ⚖️ copyright ou
   licence à régler · 📌 décision Loïc attendue · 🔍 ressource à trouver/tester ·
   📅 fait d'actualité à re-vérifier (dater les vérifications) · ✏️ notion à
-  creuser (y c. mini-cours de fond côté prof) · 🔁 redondance inter-hubs ·
+  creuser (y c. mini-cours de fond côté prof) · 🔁 redondance inter-séquences ·
   🧠 charge mentale / rythme élèves ;
 - le CSS des notes vit dans le bloc commun (`.chantier`, variables `--work-*`
   et `--dec-*`) ; `body.eleve` masque toutes les notes d'un coup (filet pour
   une phase de test avec élèves avant validation complète) ;
-- à la **validation** d'un hub : suppression de tous les blocs CHANTIER = une
+- à la **validation** d'une séquence : suppression de tous les blocs CHANTIER = une
   étape de la checklist.
 
-### 14.3 Codes d'activité des nouveaux hubs
+### 14.3 Codes d'activité des nouveaux séquences
 
 `LOC·x` (Localisation) · `EMB·x` (Informatique embarquée) · `DAT·x` (Données
 structurées) · `SOC·x` (Réseaux sociaux) — mêmes conventions que `WEB·x` /
@@ -395,22 +395,22 @@ structurées) · `SOC·x` (Réseaux sociaux) — mêmes conventions que `WEB·x`
 **Forme en base de données (20/07/2026)** : le point médian est remplacé par un
 **tiret** dès qu'un code sort de la page — `WEB·2b` s'écrit `WEB-2b` dans la
 colonne `code_activite`, dans une URL et dans un nom de fichier (le `·` est
-fragile partout ailleurs que dans du texte). L'**affichage** dans le hub reste
+fragile partout ailleurs que dans du texte). L'**affichage** dans la séquence reste
 libre : le point médian y est conservé.
 
 ### 14.4 Décisions de périmètre actées le 18/07/2026
 
 - **Localisation** : tout sur **cartes.gouv.fr** (Géoportail ferme sept. 2026) ;
   éthique **intégrée en S4** (pas de séance dédiée — réévaluable) ; le
-  microcontrôleur/capteur GPS est **cédé au hub Informatique embarquée** avec
+  microcontrôleur/capteur GPS est **cédé à la séquence Informatique embarquée** avec
   lien clair entre les deux.
 - **Informatique embarquée** : format **4 séances** provisoire (repli 3
   possible, arbitrage ultérieur) ; simulateur d'IHM **intégré** ; activité
   **micro:bit réelle** (≈ 10 cartes au labo, 1 pour 2) à mettre en chantier ;
   IA embarquée / voitures autonomes : en chantier, non prioritaire.
 - **Données structurées** : traitement **transversal d'abord** (étape « Ranger
-  pour retrouver » à ajouter dans t0 ; EXIF branché au hub Photo ; NMEA→CSV
-  dans Localisation ; rappels d'une ligne dans Internet/Web) + **hub court
+  pour retrouver » à ajouter dans t0 ; EXIF branché à la séquence Photo ; NMEA→CSV
+  dans Localisation ; rappels d'une ligne dans Internet/Web) + **séquence courte
   2 séances** mobilisable ponctuellement.
 - **Réseaux sociaux** : le cadre légal 2026 est une **partie à part entière**
   (élèves de 13-15 ans : se positionner), précédée d'une **enquête « as-tu le

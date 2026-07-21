@@ -39,15 +39,15 @@ un jalon : tout est / sera en ligne.
 
 Le dépôt héberge **deux gabarits distincts**, chacun avec ses consignes :
 
-| | **Chapitres physique-chimie** | **Hubs SNT** |
+| | **Chapitres physique-chimie** | **Séquences SNT** |
 |---|---|---|
-| 📘 **Consignes** | **`_modeles/CONSIGNES-chapitre-PC.md`** | **`_modeles/CONSIGNES-hub-SNT.md`** |
+| 📘 **Consignes** | **`_modeles/CONSIGNES-chapitre-PC.md`** | **`_modeles/CONSIGNES-sequence-SNT.md`** |
 | Exemple | `pages/2nde-pc-t1-c3-constitution-atome.html` | `pages/2nde-snt-t2-le-web.html` |
 | Structure | thème → chapitre → sections | séquence → séance → étape → champ |
 | Style | `assets/css/chapitre-commun.css?v=N` | CSS inline dans la page |
 | Déblocage | code de déblocage (`AT0MES`…) | verrouillage progressif + mode enseignant |
 | Persistance | `localStorage` | **interdit** — téléchargement de fiche |
-| Maturité | rodé (14 chapitres ébauchés) | phase 1, **8 hubs amorcés** (t0-t7 ; Web/Internet/Intro en V0, les autres partiels) |
+| Maturité | rodé (14 chapitres ébauchés) | phase 1, **8 séquences amorcées** (t0-t7 ; Web/Internet/Intro en V0, les autres partielles) |
 
 **Avant de produire ou de modifier une page, ouvre la consigne correspondante.**
 Elles sont autonomes : chacune rappelle son périmètre et ce qui ne se transpose
@@ -58,13 +58,13 @@ pas à l'autre famille.
 « Systèmes informatisés » et le tutoriel du dispositif. **Toute nouvelle idée
 de fonctionnement du cours se présente explicitement là en premier** ; les
 autres séquences n'en portent que des rappels discrets. Détail :
-`CONSIGNES-hub-SNT.md` §8.
+`CONSIGNES-sequence-SNT.md` §8.
 
-🔴 **SNT — entrelacer l'essentiel et le « plus »** : un hub n'oppose pas un bloc
-socle massif à un bloc d'approfondissement ; il **entrelace** notions
+🔴 **SNT — entrelacer l'essentiel et le « plus »** : une séquence n'oppose pas un bloc
+socle massif à un bloc d'approfondissement ; elle **entrelace** notions
 **essentielles/évaluables** et activités **« pour aller plus loin »**, chaque
 élément étant clairement **marqué par son statut**. L'essentiel est toujours
-**identifié et verrouillé** (ex. protocole TCP/IP, distinction moteur de
+**identifié et verrouillé** (ex. modèle TCP/IP, distinction moteur de
 recherche / navigateur) ; le « plus » reste explicitement **facultatif, jamais
 un substitut** à l'essentiel. La **passerelle vers la spé NSI** relève de ce
 « plus » : **facultative et NON évaluée**, un simple **repérage de notions**
@@ -72,16 +72,16 @@ un substitut** à l'essentiel. La **passerelle vers la spé NSI** relève de ce
 code), pas un cours — elle peut vivre en **bonus dépliable** et ne pas figurer
 sur la fiche élève téléchargeable.
 
-🔴 **SNT — données structurées, notion transversale** : ne pas la cantonner à un
-hub isolé du thème 4. **Avant de coder un nouveau hub ou d'en retoucher un**,
+🔴 **SNT — données structurées, notion transversale** : ne pas la cantonner à une
+séquence isolée du thème 4. **Avant de coder une nouvelle séquence ou d'en retoucher une**,
 vérifier si une **activité ponctuelle** sur les données structurées y a sa
 place — en particulier autour de la **prise en main M365/OneDrive dans
 l'introduction (t0)**, où les élèves stockent et partagent leurs cours.
 
 Ces deux principes sont de **nouveaux fonctionnements du cours** : conformément à
-la règle du référentiel vivant ci-dessus, ils se présentent **d'abord dans le
-hub d'introduction (t0)**, où un **tuto reste à rédiger** pour chacun. À
-détailler dans `CONSIGNES-hub-SNT.md`.
+la règle du référentiel vivant ci-dessus, ils se présentent **d'abord dans la
+séquence d'introduction (t0)**, où un **tuto reste à rédiger** pour chacun. À
+détailler dans `CONSIGNES-sequence-SNT.md`.
 
 ## Règles techniques communes (valent pour les deux)
 
@@ -106,11 +106,11 @@ détailler dans `CONSIGNES-hub-SNT.md`.
 | Fichier | Rôle |
 |---|---|
 | `_modeles/CONSIGNES-chapitre-PC.md` | Produire un chapitre de physique-chimie (+ fiche élève) |
-| `_modeles/CONSIGNES-hub-SNT.md` | Produire un hub SNT |
+| `_modeles/CONSIGNES-sequence-SNT.md` | Produire une séquence SNT |
 | `_modeles/CONSIGNES-sequence-ES.md` | 🚧 Séquences ens. scientifique Term (frise, IA — 3ᵉ famille) |
-| `_modeles/gabarit-chapitre.html` · `gabarit-fiche.html` | Gabarits **PC uniquement** (le SNT n'a pas de gabarit : on décline le hub du Web) |
+| `_modeles/gabarit-chapitre.html` · `gabarit-fiche.html` | Gabarits **PC uniquement** (le SNT n'a pas de gabarit : on décline la séquence du Web) |
 | `_suivi/ETAT-PROJET.md` | Vue d'ensemble : avancement, **priorités**, alertes |
-| `_suivi/chapitres.md` | Tableau de bord **par chapitre / par hub**, avec les jalons |
+| `_suivi/chapitres.md` | Tableau de bord **par chapitre / par séquence**, avec les jalons |
 | `_suivi/IDEES.md` | Réservoir d'idées à trier |
 | `_suivi/BDD-cadrage.md` | 🆕 Volet base de données : architecture, décisions, modèle de données, jalons |
 | `bdd/README.md` | 🆕 Discipline des fichiers de schéma SQL + avertissement `supabase/migrations/` |

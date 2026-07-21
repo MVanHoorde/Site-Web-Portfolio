@@ -1,11 +1,11 @@
 # Consignes — séquences « Enseignement scientifique Terminale » 🚧
 
-Troisième famille de pages (après chapitres PC et hubs SNT) : les **séquences
+Troisième famille de pages (après chapitres PC et séquences SNT) : les **séquences
 participatives de l'ens. scientifique de Terminale**. Première pièce :
 `pages/term-es-s01-frise.html` (la grande frise).
 
 ## Ce qui la distingue
-- CSS **inline autonome** (comme les hubs SNT), mais **identité papier d'étude**
+- CSS **inline autonome** (comme les séquences SNT), mais **identité papier d'étude**
   du site : variables du chapitre-commun reprises, polices de `fonts.css`,
   coque reliure (spectre fin, nav mono, pied Garamond).
 - Persistance **locale** + **couche API** (`const API = {...}`) au contrat figé :

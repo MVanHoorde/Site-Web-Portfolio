@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SNT · Internet — Hub élève</title>
+<title>SNT · Internet — Séquence élève</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
 <style>
   :root{
@@ -222,6 +222,20 @@
   .modal .recap .ri:last-child{border-bottom:none}
   .modal .recap .ri b{color:var(--ok)}
 
+  /* NOTES DE CHANTIER (CONSIGNES-séquence-SNT §14.2) — supprimées à la validation */
+  :root{--work:#8a6400;--work-line:#b8860b;--work-ink:#5a4500;--work-b:#3f3000;--work-w1:#fdf6dd;--work-w2:#faeec2;
+        --dec:#c33a2f;--dec-ink:#6e1f18;--dec-b:#4a1410;--dec-w1:#fdeceb;--dec-w2:#fadbd8}
+  .chantier{position:relative;margin:14px 0;border:2px dashed var(--work-line);border-radius:12px;background:repeating-linear-gradient(-45deg,var(--work-w1),var(--work-w1) 12px,var(--work-w2) 12px,var(--work-w2) 24px);padding:12px 15px;font-size:13.5px;color:var(--work-ink);line-height:1.55}
+  .chantier .cl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--work);display:flex;gap:7px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+  .chantier b{color:var(--work-b)}
+  .chantier ul{margin:4px 0 0;padding-left:18px}
+  .chantier li{margin:2px 0}
+  .chantier a{color:var(--work);font-weight:600}
+  .chantier.decision{border-color:var(--dec);background:repeating-linear-gradient(-45deg,var(--dec-w1),var(--dec-w1) 12px,var(--dec-w2) 12px,var(--dec-w2) 24px);color:var(--dec-ink)}
+  .chantier.decision .cl{color:var(--dec)}
+  .chantier.decision b{color:var(--dec-b)}
+  body.eleve .chantier{display:none} /* filet : une classe 'eleve' sur <body> masque toutes les notes d'un coup */
+
   @media (max-width:560px){
     .field-type{float:none;display:inline-block;margin-bottom:8px}
     .seance-head{flex-direction:column;gap:2px}
@@ -277,6 +291,23 @@
     <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
   </div>
 
+  <!-- CHANTIER : état global + feuille de route -->
+  <aside class="chantier">
+    <div class="cl">🚧 État de la séquence — V0 non close · refonte pilotée par la spec V2</div>
+    <b>Cette séquence n'est pas terminée</b> : elle est en cours de refonte d'après <b><code>_modeles/spec-snt-t1-internet.md</code></b> (spec V2 du 21/07/2026). Les notes hachurées jaunes ci-dessous marquent <b>le travail à poursuivre</b>, à l'endroit exact où il se fera ; les rouges attendent une décision.
+    <ul>
+      <li><b>Cible = 5 étapes</b> (spec §2) : 1 Qu'est-ce qu'Internet · 2 Histoire · 3 Protocoles · 4 Routage · 5 Évaluez-vous. Correspondance avec l'existant : S1 → ét. 1, S2 → ét. 2, S3 → ét. 3+4, débranchée → ét. 5. La <b>S4 (adresses IP / DNS) sort du périmètre</b> : séquences séparées, plus tard (décision du 21/07 — voir la note en tête de S4).</li>
+      <li><b>Socle technique à écrire d'abord</b> (spec §7) : picto « à voir plus tard », mode focus (flou), poste d'écoute + prise de notes, glossaire évolutif, suivi de sortie de page.</li>
+      <li><b>Version définitive visée</b> : réponses et progression <b>en base Supabase</b> via <code>assets/js/progression.js</code> (à écrire — <code>_suivi/BDD-cadrage.md</code> §7, actions 5-6-7), pré-correction par <b>l'IA qui tourne sur le PC de Loïc</b> (<code>ia-correction/precorrection.mjs</code>). Aucun <code>localStorage</code> de progression, jamais de note automatique.</li>
+      <li>Rappel du fond : contenu du fichier équipe <code>02 — Historique d'internet et routage</code> conservé, forme repensée ; biblio systématique sur chaque point d'histoire (spec §11).</li>
+    </ul>
+  </aside>
+  <aside class="chantier">
+    <div class="cl">✅ Décision 21/07 — on dit « séquence », plus jamais « hub »</div>
+    Renommage effectué <b>partout</b> : les 8 pages SNT + la page de niveau, les titres d'onglet, les consignes (<code>_modeles/CONSIGNES-sequence-SNT.md</code>), le suivi et <code>CLAUDE.md</code>. Raison retenue : <b>faciliter la prise en main par les collègues</b> — critère à appliquer par défaut dans tous les arbitrages de forme à venir.
+  </aside>
+  <!-- /CHANTIER -->
+
   <!-- ===================== SÉANCE 1 ===================== -->
   <section class="seance" id="s1" data-seance="1">
     <div class="seance-head">
@@ -285,6 +316,17 @@
     </div>
     <p class="seance-goal">Distinguer Internet du Web, comprendre qu'Internet est un « réseau de réseaux » bien réel — des câbles au fond des océans jusqu'au débit de ta maison.</p>
     <div class="progress-line"><i data-progress></i></div>
+
+    <!-- CHANTIER -->
+    <aside class="chantier">
+      <div class="cl">🚧 Étape 1 à refondre (spec §3) · ✏️ notion</div>
+      À insérer <b>avant</b> tout le reste de la séance : <b>définition d'Internet tentative n°1</b> (diagnostic, non corrigée, 2 phrases max, <b>mode focus</b> + suivi de sortie de page) → paragraphe de référence du fichier <code>02</code> avec la décomposition <b>Inter + Net</b> (tombe en éval) → <b>tentative n°2</b> corrigée par l'IA et rapprochée de la n°1 → entrée « Internet » du <b>glossaire évolutif</b>. Puis le paragraphe entier « Introduction à l'histoire d'Internet » (le réseau des réseaux). Premières poses du <b>picto « à voir plus tard »</b> : <b>adresse IP</b> et <b>le Web</b>.
+      <ul>
+        <li>🔍 Images à trouver sur Wikimedia Commons, licence citée sous chaque image : <b>datacenter</b>, <b>carte des usages / Internet map</b>, et [proposition] <b>carte des câbles sous-marins</b>.</li>
+        <li>Le contenu physique déjà en place (câbles, débits, box) n'est pas dans la spec mais tient la route — <b>à conserver</b>, à replacer après les définitions.</li>
+      </ul>
+    </aside>
+    <!-- /CHANTIER -->
 
     <div class="lockable">
     <div class="steps">
@@ -518,6 +560,18 @@
     <div class="progress-line"><i data-progress></i></div>
     <div class="lock-banner"><span class="k"></span><span>Cette séance se débloque quand la <b>séance 1 est entièrement validée</b>. Ton professeur peut l'ouvrir si besoin.</span></div>
 
+    <!-- CHANTIER -->
+    <aside class="chantier">
+      <div class="cl">🚧 Étape 2 à enrichir (spec §4) · 📅 chiffres à re-vérifier</div>
+      Support principal à intégrer : <b>podcast France Culture, ép. 1/8 « 1969 : on a parlé sur les réseaux »</b> (13 min) dans le <b>poste d'écoute</b> (lecteur + prise de notes + dictionnaire), suivi du <b>QCM en 13 questions</b> de la spec §4.2, qui débloque le grand cours de synthèse. L'encadré 🇫🇷 CYCLADES existant est conservé et complété (<b>Minitel</b> avec image, ép. 2/8 en « pour aller plus loin »), plus les encarts <b>UUCP / Usenet</b>, <b>Ray Tomlinson et le @</b>, l'anecdote <b>« LO »</b>, et le fil <b>contre-culture</b> (Community Memory 1973, PCC 1972, Homebrew 1975 → Apple <b>1976</b>, pas 1974).
+      <ul>
+        <li>⚠️ Corrections obligatoires (spec §9) : Internet <b>n'a pas failli s'appeler NSFNET</b> · <b>~6 milliards</b> de connectés début 2026 (le podcast dit 3, daté 2022 — à transformer en question sur les données périssables) · NCP sort de l'historique et part à l'étape 3.</li>
+        <li>Question réflexive « utopie → cauchemar totalitaire » : jamais notée, réponses agrégées pour la <b>vue prof</b> (spec §7.4) qui lance le débat en classe.</li>
+        <li>🔍 Images : carte logique ARPANET 1977, IMP, Louis Pouzin, Minitel 1, backbone NSFNET, + SVG maison des 4 nœuds de 1969 sur fond de carte USA.</li>
+      </ul>
+    </aside>
+    <!-- /CHANTIER -->
+
     <div class="lockable">
     <div class="steps">
 
@@ -749,6 +803,18 @@
     <div class="progress-line"><i data-progress></i></div>
     <div class="lock-banner"><span class="k"></span><span>Cette séance se débloque quand la <b>séance 2 est entièrement validée</b>. Ton professeur peut l'ouvrir si besoin.</span></div>
 
+    <!-- CHANTIER -->
+    <aside class="chantier">
+      <div class="cl">🚧 Étapes 3 et 4 à séparer (spec §5-6) · ⚠️ terminologie</div>
+      Cette séance porte à elle seule les <b>étapes 3 (protocoles)</b> et <b>4 (routage)</b> de la cible. À faire : définition de « protocole » <b>avant</b> la vidéo <b>Cookie connecté</b> (poste de visionnage + notes), rapatriement de <b>FTP et NCP</b> sortis de l'historique, <b>modèle OSI</b> (7 couches, à réordonner, pas à apprendre par cœur), <b>modèle TCP/IP</b> (4 couches — Application · Transport · Internet · Accès réseau : <em>celui-là s'apprend et se reconstruit</em>), <b>TCP vs UDP</b> (accusé de réception), <b>encapsulation</b> : message → segment → datagramme → trame → bits, avec exemple concret « Salut ! » et SVG maison (recréer l'image bilan de la vidéo à 6:09 — droits).
+      <ul>
+        <li>⚠️ <b>Ne plus jamais écrire « le protocole TCP/IP »</b> mais <b>« le modèle TCP/IP »</b>, qui contient les protocoles TCP et IP (spec §5.4). À corriger dans cette page <em>et</em> dans tout le site (titre de la page, <code>&lt;h1&gt;</code>, à-retenir des étapes 1.1, 2.1 et 3.1), puis dans les évals.</li>
+        <li>Routage : garder l'exercice de table de routage (donner d'abord <b>un exemple de table</b> dans le cours), <b>supprimer</b> « Routons routons petits patapons » (trop enfantin pour des 2des), et changer de forme d'évaluation ici (texte à trous ou schéma à légender plutôt qu'un 3ᵉ QCM).</li>
+        <li>Moments <b>glossaire évolutif</b> en régime « recherche autorisée » : routeur, switch, modem, ADSL.</li>
+      </ul>
+    </aside>
+    <!-- /CHANTIER -->
+
     <div class="lockable">
     <div class="steps">
 
@@ -919,6 +985,18 @@
     <p class="seance-goal">Chaque machine a une adresse ; le DNS traduit les noms en adresses ; et trois commandes suffisent pour ausculter un réseau soi-même.</p>
     <div class="progress-line"><i data-progress></i></div>
     <div class="lock-banner"><span class="k"></span><span>Cette séance se débloque quand la <b>séance 3 est entièrement validée</b>. Ton professeur peut l'ouvrir si besoin.</span></div>
+
+    <!-- CHANTIER -->
+    <aside class="chantier">
+      <div class="cl">✅ Décision 21/07 — 🚧 IP et DNS partent en séquences séparées, travail différé</div>
+      <b>Décision actée :</b> les parties <b>adresse IP</b> et <b>DNS</b> <b>ne resteront pas ici</b> — elles feront l'objet de <b>séquences séparées</b>, travaillées <b>plus tard</b>. Cette séquence-ci n'est donc <b>pas close</b> : la refonte des étapes 1 à 5 (spec V2) se fait <b>sans toucher</b> à cette séance.
+      <ul>
+        <li><b>En attendant : rien n'est supprimé.</b> Le contenu actuel (adressage, hiérarchie DNS, ping / traceroute / nslookup) reste en place et reste enseignable tel quel.</li>
+        <li>Les <b>pictos « à voir plus tard »</b> posés à l'étape 1 (adresse IP) et à l'étape 3 (adresse IP, DNS, HTTP) pointeront vers ces <b>séquences à venir</b> — sans date, conformément à la spec §1.</li>
+        <li>Au moment de la sortie : appliquer CONSIGNES §14.1 — un <b>seul</b> traitement complet par notion dans tout le site, les autres pages n'en gardent qu'un <b>rappel d'une ligne</b>. Vérifier alors la séquence du Web, qui a besoin du DNS.</li>
+      </ul>
+    </aside>
+    <!-- /CHANTIER -->
 
     <div class="lockable">
     <div class="steps">
@@ -1145,6 +1223,14 @@
       <span class="seance-time">≈ 45 min</span>
     </div>
     <p class="seance-goal">« Routons, routons, petits patapons » : sans écran, chacun devient un routeur et fait circuler des messages grâce à sa table de routage — puis on coupe un câble, et on observe.</p>
+
+    <!-- CHANTIER -->
+    <aside class="chantier">
+      <div class="cl">🚧 Devient l'étape 5 « Évaluez-vous » (spec §2 et §7.5)</div>
+      À faire ici : ⚠️ <b>retirer « Routons, routons, petits patapons »</b> du titre et de l'objectif (décision de la dictée : trop enfantin pour des 2des) ; reprendre l'<b>activité réseau à 8 routeurs</b> (ex-« activité 3 » du fichier <code>02</code>, A→H, tables à compléter) ; ajouter les <b>associations mots-clés</b> et l'auto-évaluation ; et surtout afficher le <b>glossaire évolutif complété</b> — toutes les définitions écrites par l'élève au fil de la séquence, rassemblées ici, les termes non traités restant grisés.
+    </aside>
+    <!-- /CHANTIER -->
+
     <div class="steps">
       <div class="step" data-step>
         <div class="rail"></div><div class="step-pip"></div>
@@ -1348,7 +1434,7 @@
       '.a{margin-top:8px;padding:9px 11px;background:#e7ebfb;border-radius:8px;white-space:pre-wrap;font-size:14px}'+
       '.tip{margin-top:24px;font-size:12px;color:#8b97ad}</style></head><body>'+
       '<h1>Ma fiche SNT — '+title+'</h1><div class="meta">Internet · exportée le '+when+' · à déposer sur ton OneDrive</div>'+
-      body+'<div class="tip">Les exercices restent accessibles sur le hub de la classe.</div></body></html>';
+      body+'<div class="tip">Les exercices restent accessibles sur la séquence de la classe.</div></body></html>';
     var blob=new Blob([html],{type:'text/html'});
     var url=URL.createObjectURL(blob); var a=document.createElement('a');
     var slug=title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
