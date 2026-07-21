@@ -230,6 +230,21 @@
     nav.seances .teacher-toggle span.tlabel{display:none}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto;animation:none!important}}
+
+  /* NOTES DE CHANTIER (CONSIGNES-séquence-SNT §14.2) — supprimées à la validation */
+  :root{--work:#8a6400;--work-line:#b8860b;--work-ink:#5a4500;--work-b:#3f3000;--work-w1:#fdf6dd;--work-w2:#faeec2;
+        --dec:#c33a2f;--dec-ink:#6e1f18;--dec-b:#4a1410;--dec-w1:#fdeceb;--dec-w2:#fadbd8}
+  .chantier{position:relative;margin:14px 0;border:2px dashed var(--work-line);border-radius:12px;background:repeating-linear-gradient(-45deg,var(--work-w1),var(--work-w1) 12px,var(--work-w2) 12px,var(--work-w2) 24px);padding:12px 15px;font-size:13.5px;color:var(--work-ink);line-height:1.55}
+  .chantier .cl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--work);display:flex;gap:7px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+  .chantier b{color:var(--work-b)}
+  .chantier ul{margin:4px 0 0;padding-left:18px}
+  .chantier li{margin:2px 0}
+  .chantier a{color:var(--work);font-weight:600}
+  .chantier.decision{border-color:var(--dec);background:repeating-linear-gradient(-45deg,var(--dec-w1),var(--dec-w1) 12px,var(--dec-w2) 12px,var(--dec-w2) 24px);color:var(--dec-ink)}
+  .chantier.decision .cl{color:var(--dec)}
+  .chantier.decision b{color:var(--dec-b)}
+  body.eleve .chantier{display:none} /* filet : une classe 'eleve' sur <body> masque toutes les notes d'un coup */
+
 </style>
 </head>
 <body>
@@ -285,6 +300,15 @@
     <p class="seance-goal">Découvrir ce qu'est un système informatisé et ce qu'il a dans le ventre — et, au passage, apprendre chaque geste de ce cours : valider une étape, envoyer une réponse, télécharger sa fiche.</p>
     <div class="progress-line"><i data-progress></i></div>
 
+    <!-- CHANTIER -->
+    <aside class="chantier">
+      <div class="cl">🚧 21/07/2026 — mécanismes présentés ici, pas encore codés ici</div>
+      Conformément à la <b>règle du référentiel vivant</b>, les six mécanismes décidés le 21/07 sont désormais <b>expliqués</b> dans cette séquence d'introduction : <b>échelle d'évaluabilité</b> (★★ · ★ · ○ · ✦ · —) · <b>barre de progression</b> à gauche et son repli · <b>révélation séquentielle</b> des étapes · <b>QCM en plein écran</b> avec récapitulatif · <b>glossaire permanent</b> · <b>mode enseignant à code</b> et minuterie de 30 min.
+      <br><br>⚠️ <b>Le texte est à jour, le code ne l'est pas encore</b> : ces mécanismes sont codés dans <code>2nde-snt-t1-internet.html</code> (séquence Internet, V3) et doivent être <b>portés ici</b>, puis dans les six autres séquences. Tant que ce n'est pas fait, un élève lira dans l'introduction la description d'une barre de progression qu'il ne verra pas sur cette page — <b>à traiter avant la rentrée</b>.
+      <br><br>📌 À décider aussi : la <b>note d'investissement</b> évoquée plus bas suppose la correction entre camarades, qui n'est pas encore branchée.
+    </aside>
+    <!-- /CHANTIER -->
+
     <div class="lockable">
     <div class="steps">
 
@@ -306,8 +330,25 @@
               <tr><td>🟡 jaune</td><td>Réponse envoyée, <b>en attente</b> de correction</td></tr>
               <tr><td>🟢 verte</td><td><b>Validé</b> — et tu deviens une ressource pour tes camarades</td></tr>
             </table>
+            <div class="block-label">Doc — les étapes arrivent une par une</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Tu ne vois <b>qu'une étape à la fois</b> : quand tu as fini, le bouton <b>« Étape suivante ↓ »</b> fait apparaître la suivante. C'est voulu — une page entière d'un coup, ça décourage. À gauche, la <b>barre de progression</b> te montre toutes les étapes de la séquence, celles que tu as faites, celle où tu en es, et celles qui t'attendent : tu peux cliquer dessus pour t'y rendre. Si elle te gêne, replie-la avec le bouton <b>⇤</b> — elle devient un simple bandeau en haut de page, et le bouton <b>⇥</b> la fait revenir.</p>
+
+            <div class="block-label">Doc — ce qui est évaluable, et ce qui ne l'est pas</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Tout ce que tu lis n'a pas le même statut. Chaque bloc porte, en petit et sur sa droite, une <b>marque</b> qui te dit ce qu'on attend de toi. Ce n'est pas un piège : c'est fait pour que tu saches où mettre ton énergie quand tu révises.</p>
+            <table class="doc-table">
+              <tr><th>Marque</th><th>Ce que ça veut dire</th><th>Où tu la trouves</th></tr>
+              <tr><td><code>★★</code></td><td><b>À savoir</b> — ça tombe en évaluation</td><td>les « à retenir », ton glossaire</td></tr>
+              <tr><td><code>★</code></td><td><b>À savoir faire</b> — ça tombe sous forme d'exercice</td><td>les exercices, dont ceux du bilan</td></tr>
+              <tr><td><code>○</code></td><td><b>Support</b> — ça contient de l'évaluable, mais c'est toujours repris ensuite dans un « à retenir »</td><td>documents, vidéos, podcasts</td></tr>
+              <tr><td><code>✦</code></td><td><b>Bonus</b> — ça peut donner une <b>question bonus</b></td><td>🇫🇷 fierté française, « le sais-tu ? »</td></tr>
+              <tr><td><code>—</code></td><td><b>Jamais évalué</b> — c'est pour le plaisir et pour aller plus loin</td><td>« pour aller plus loin », activités d'introduction</td></tr>
+            </table>
+
+            <div class="block-label">Doc — les QCM s'ouvrent en plein écran</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Quand tu cliques sur <b>« Commencer »</b>, le QCM prend toute la page et le reste du cours devient flou : impossible d'aller relire la réponse juste au-dessus, et c'est tant mieux — c'est là que tu vois vraiment ce que tu as retenu. Les questions <b>s'enchaînent</b> une par une. À la fin, tu obtiens le <b>récapitulatif de toutes les bonnes réponses</b>, avec parfois un complément « hors programme, mais bon à savoir ». Ce récapitulatif se retrouve aussi <b>sur ta fiche</b>.</p>
+
             <div class="block-label">À retenir</div>
-            <div class="retain">Ce cours se suit <b>ici, à ton rythme</b> : tu lis, tu manipules, tu réponds. Les exercices se corrigent <b>immédiatement</b> ou partent <b>en correction</b>. Valider toutes les étapes d'une séance <b>débloque la suivante</b>. Et en fin de séance, un rituel : <b>télécharger ta fiche</b> et la <b>déposer sur ton OneDrive</b> (on le fera ensemble tout en bas).</div>
+            <div class="retain">Ce cours se suit <b>ici, à ton rythme</b> : tu lis, tu manipules, tu réponds. Les étapes apparaissent <b>une par une</b>, et la <b>barre de gauche</b> te dit toujours où tu en es. Chaque bloc porte une <b>marque</b> (★★ à savoir · ★ à savoir faire · ○ support · ✦ bonus · — non évalué). Une étape est validée <b>dès que tu as répondu</b>, juste ou faux : ce qui compte, c'est que tu aies cherché. Valider toutes les étapes d'une séance <b>débloque la suivante</b>. Et en fin de séance, un rituel : <b>télécharger ta fiche</b> et la <b>déposer sur ton OneDrive</b>.</div>
             <div class="block-label">À toi — ton tout premier exercice</div>
             <div class="field" data-qcm data-answer="1">
               <span class="field-type">QCM</span>
@@ -666,9 +707,10 @@
           <div class="card-body">
             <div class="block-label">Doc — les deux rouages qu'il te reste à connaître</div>
             <p style="font-size:14.5px;margin:4px 0 10px"><b>L'entraide.</b> Regarde la légende en haut de page : 🟢 <em>« Validé — tu peux aider un camarade »</em>. Ce n'est pas décoratif : dans ce cours, avoir validé une question fait de toi une <b>ressource</b> pour les autres. Dans la version complète, tu pourras consulter les réponses des camarades bloqués, les <b>corriger et les conseiller</b> — et la qualité de ton aide comptera dans ta <b>note d'investissement</b>.</p>
-            <p style="font-size:14.5px;margin:4px 0 10px"><b>Le mode enseignant.</b> L'interrupteur en haut à droite est la télécommande de ton professeur : il déverrouille toutes les séances, pour coordonner la classe ou débloquer un élève coincé. Si une séance reste fermée alors que tu devrais y accéder, <b>ce n'est pas à toi de bidouiller</b> : signale-le.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px"><b>Le mode enseignant.</b> En haut de page, la petite mention <code>🔒 mode enseignant</code> est la télécommande de ton professeur : elle déverrouille toutes les séances, pour coordonner la classe ou débloquer un élève coincé. Elle demande un <b>code</b> que lui seul connaît, et elle <b>se coupe toute seule au bout de 30 minutes</b>. Si une séance reste fermée alors que tu devrais y accéder, <b>ce n'est pas à toi de bidouiller</b> : signale-le.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px"><b>Ton glossaire.</b> Le bouton <b>📖 Glossaire</b>, en bas à droite, est ouvert <b>en permanence</b>, dans toutes les séquences de l'année. Tu y retrouves tous les mots déjà définis — et surtout <b>tes propres définitions</b>, celles que tu as rédigées avec tes mots. Quand un mot revient plus tard dans l'année (« routeur », « protocole », « serveur »…), tu n'as pas à le rechercher ailleurs : il est là. Tu peux y faire une recherche, même en tapant approximativement.</p>
             <div class="block-label">À retenir</div>
-            <div class="retain">Valider, ce n'est pas seulement avancer : c'est <b>gagner le droit d'aider</b> — et bien aider comptera dans ta <b>note d'investissement</b>. Bloqué sur un verrou ? Le <b>mode enseignant</b> existe pour ça : demande à ton professeur.</div>
+            <div class="retain">Valider, ce n'est pas seulement avancer : c'est <b>gagner le droit d'aider</b> — et bien aider comptera dans ta <b>note d'investissement</b>. Bloqué sur un verrou ? Le <b>mode enseignant</b> existe pour ça : demande à ton professeur. Et ton <b>glossaire</b> te suit toute l'année : il est toujours à portée, en bas à droite.</div>
             <div class="block-label">À toi — le dernier exercice du tutoriel</div>
             <div class="field" data-qcm data-answer="2">
               <span class="field-type">QCM</span>
@@ -681,7 +723,7 @@
               <div class="verdict"></div>
               <div class="reveal" data-reveal>
                 <div class="rl">🎓 Tutoriel terminé</div>
-                Tu connais maintenant tous les rouages : les étapes et leurs pastilles, les quatre types d'exercices, le rituel de la fiche sur OneDrive, l'entraide, le mode enseignant. Chaque nouveau mécanisme du cours sera <b>toujours présenté ici</b>, dans cette séquence d'introduction — reviens-y en cas de doute dans l'année.
+                Tu connais maintenant tous les rouages : les étapes qui apparaissent une par une et leurs pastilles, la <b>barre de progression</b> à gauche, les <b>marques d'évaluabilité</b> (★★ · ★ · ○ · ✦ · —), les quatre types d'exercices, les <b>QCM en plein écran</b>, ton <b>glossaire</b> permanent, le rituel de la fiche sur OneDrive, l'entraide, le mode enseignant. Chaque nouveau mécanisme du cours sera <b>toujours présenté ici</b>, dans cette séquence d'introduction — reviens-y en cas de doute dans l'année.
               </div>
             </div>
           </div>

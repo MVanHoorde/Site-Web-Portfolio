@@ -160,10 +160,16 @@ pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
   respecté.
 - Ressources externes chargées **par lien** (vidéos, CodeBetter…). Illustrations
   maison en **SVG** quand c'est possible.
-- 🗂 **Une séquence SNT est autonome : AUCUN fichier d'asset externe.** Tout (SVG, CSS,
-  JS) vit **inline** dans `pages/2nde-snt-tN-….html` — c'est ce qui distingue le
-  gabarit SNT du gabarit PC (qui, lui, range ses images dans `assets/img/pc/…`).
-  Ne pas créer de dossier `assets/img/snt/` : il n'y a rien à y mettre.
+- 🗂 **Une séquence SNT est autonome pour son code.** Tout le **CSS**, tout le **JS**
+  et **tous les SVG** vivent **inline** dans `pages/2nde-snt-tN-….html`.
+  ⚠️ **Modifié le 21/07/2026** : la règle « aucun fichier d'asset externe » s'est
+  révélée intenable dès qu'une séquence utilise des **photographies** (une image
+  matricielle en base64 fait passer la page à plusieurs mégaoctets, inutilisable
+  sur l'iPad d'un élève). Les **images matricielles sont donc autorisées** dans
+  `assets/img/snt/<slug-de-la-séquence>/`, à condition d'être **optimisées**
+  (largeur ≤ 1400 px, JPEG progressif pour les photos, ~200 ko cible) et de porter
+  **légende + source + licence** sous chaque image. Les illustrations qu'on peut
+  dessiner restent en **SVG inline** — c'est toujours le premier réflexe.
   **Deux ressources partagées, et deux seulement** : `assets/css/fonts.css` et
   `assets/js/progression.js` (le client de base de données — dérogation
   explicite validée par Loïc le 20/07/2026 : dupliquer ce client dans huit séquences
@@ -417,3 +423,96 @@ libre : le point médian y est conservé.
   droit ? »** volontairement piégeante ; le **projet « Invente ton réseau
   social »** remplace l'exposé ; règle générale : **plateformes fictives pour
   les exemples, vraies plateformes pour les faits sourcés uniquement**.
+
+---
+
+## 15. Mécanismes transverses arrêtés le 21/07/2026
+
+Codés et éprouvés dans `pages/2nde-snt-t1-internet.html` (V3), **présentés dans t0**,
+**à porter dans les six autres séquences**. Détail complet : `_modeles/spec-snt-t1-internet.md` §13.
+
+### 15.1 Échelle d'évaluabilité (marquage `.niv` sur chaque bloc)
+
+| Marque | Niveau | Blocs |
+|---|---|---|
+| `★★` | à savoir | à retenir · glossaire (définition **validée**) |
+| `★` | à savoir faire | exercices, dont les exercices bilan |
+| `○` | support | documents · vidéos · podcasts |
+| `✦` | bonus | 🇫🇷 fierté française · le sais-tu |
+| `—` | non évalué | pour aller plus loin · activité d'introduction |
+
+⚠️ *bonus* ≠ *facultatif* : le bonus peut rapporter des points, le « pour aller plus
+loin » jamais. **Formes visuelles distinctes** (seul le « plus loin » est hachuré).
+
+### 15.2 Grammaire visuelle
+
+La **couleur code le rôle** (lire / se repérer / faire / retenir / culture), la
+**forme code le statut**. Bandeaux **allégés** partout **sauf « à retenir »**, seul
+bloc conservé en plein (variable `--retain`). Drapeau tricolore réduit à un
+**liseré** à côté du mot.
+
+### 15.3 Barre de progression (`#prog` / `#prog4`)
+
+Sommaire des **étapes groupées par séance**, à gauche, cliquable, états fait /
+en attente / en cours / à venir. Repli en **bandeau horizontal**, réouverture par
+**languette**. Repli d'office sous 1180 px et en **mode focus**.
+🔴 **Aucun `localStorage`** — l'état vit en mémoire et en base. Ne jamais recopier
+la barre du cahier de vacances, qui lit `localStorage`.
+Attribut `data-echeance` prévu par étape, **laissé vide** par décision.
+
+### 15.4 Révélation séquentielle
+
+Une seule étape visible à la fois ; bouton « Étape suivante ↓ ». Le mode enseignant
+ouvre tout d'un coup.
+
+### 15.5 QCM — composant, plus jamais un champ inline
+
+Bouton → **plein écran** + **flou** du reste de la page · questions **enchaînées
+horizontalement**, jamais empilées · **3 à 4 minimum** · **récapitulatif des bonnes
+réponses** en sortie, sur la page **et** sur la fiche, avec compléments
+« hors programme, mais bon à savoir ». Données en JSON inline
+(`<script type="application/json" class="qcm-data">`).
+
+### 15.6 Trous tolérants
+
+Normalisation (minuscules, accents, ponctuation, articles) · **variantes** par trou
+(`data-variantes`, séparateur `|`) · **Levenshtein** (1 faute ≤ 7 caractères, 2 au-delà)
+→ état **jaune « presque »** : l'étape est **validée**, l'orthographe corrigée et
+signalée, **jamais sanctionnée** · **indices à deux niveaux** (`data-indice1`, `data-indice2`).
+
+### 15.7 Validation d'une étape : **à l'envoi**
+
+Validée dès que l'élève a **produit quelque chose**, juste ou faux.
+⚠️ Schéma de données : deux informations distinctes, **fait** et **juste**, la
+seconde réservée à la vue enseignant.
+
+### 15.8 Mode enseignant
+
+Hors du sommaire, **discret en tête de page**, **non collant** · **code** vérifié par
+empreinte **SHA-256** dans la page · **coupé à 30 minutes**, minuterie visible.
+🔴 **Limite à assumer** : page publique + inspecteur = contournable. **Ralentisseur,
+pas serrure.** Jamais de contenu sensible derrière. La vraie serrure viendra du rôle
+vérifié côté Supabase.
+
+### 15.9 Glossaire permanent
+
+Accessible en permanence (bouton en bas à droite), **cherchable**, conçu pour
+**traverser les séquences**. Dictionnaire **embarqué** (JSON inline
+`#dico-source`) — **jamais d'API externe** : appeler le Wiktionnaire depuis le
+navigateur enverrait l'**IP de chaque élève** à Wikimedia.
+⚠️ Sans clé anon, les définitions de l'élève **ne le suivent pas** d'une page à l'autre.
+
+### 15.10 Impression et PDF
+
+Une **feuille de style `@media print`** par séquence. Le PDF se fait par
+« Imprimer → Enregistrer en PDF » du navigateur. **Aucune bibliothèque, aucun CDN.**
+
+### 15.11 QR codes
+
+Générés **une fois pour toutes** en SVG et collés inline. Aucune bibliothèque au
+chargement, aucun appel externe, lisible sur la fiche imprimée.
+
+### 15.12 Vocabulaire — figé
+
+Une **séquence** contient des **séances**, qui contiennent des **étapes**, qui
+contiennent des **champs**. Côté élève, on dit **thème**. N'y revenir sous aucun prétexte.

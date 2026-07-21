@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Planche d'arbitrage — SNT Internet (21/07/2026)</title>
+<style>
+  :root{
+    --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+    --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+    --link:#2445c7; --link-wash:#e7ebfb;
+    --activity:#c26a12; --activity-wash:#faeede;
+    --ok:#12805c; --ok-wash:#e0f2ea;
+    --err:#c33a2f; --err-wash:#fbe6e3;
+    --wait:#9a6a00; --wait-wash:#fbf1d8;
+    --france:#164a8a; --france-wash:#e6eef8;
+    --hist:#6b4a9a; --hist-wash:#efe9f7;
+    --bonus:#0f6d63; --bonus-wash:#e0f1ef;
+    --radius:14px; --shadow:0 1px 2px rgba(22,31,51,.05),0 8px 24px rgba(22,31,51,.06);
+    /* proposition : teinte dédiée aux « à retenir » */
+    --retain:#1d3557; --retain-wash:#eef2f9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;font-size:15px;line-height:1.62}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+  h1,h2,h3{font-family:"Space Grotesk","Segoe UI",system-ui,sans-serif;letter-spacing:-.01em}
+  .wrap{max-width:1080px;margin:0 auto;padding:26px 20px 70px}
+
+  header.top{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+             padding:18px 22px;box-shadow:var(--shadow);margin-bottom:26px}
+  header.top h1{margin:0 0 6px;font-size:24px}
+  header.top p{margin:0;color:var(--ink-soft);font-size:14px}
+  .note{font-size:13px;color:var(--ink-faint);margin-top:8px}
+
+  section.bloc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+               padding:20px 22px 26px;box-shadow:var(--shadow);margin-bottom:26px}
+  section.bloc > h2{margin:0 0 4px;font-size:19px}
+  section.bloc > .sub{margin:0 0 18px;color:var(--ink-soft);font-size:14px}
+
+  .variante{border:1px solid var(--line);border-radius:12px;padding:14px 16px 18px;margin-bottom:16px;background:var(--surface)}
+  .variante > .vtitre{font-family:"Space Grotesk","Segoe UI",system-ui,sans-serif;font-size:15px;font-weight:600;margin-bottom:2px}
+  .variante > .vpour{font-size:13px;color:var(--ink-soft);margin-bottom:12px}
+  .tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;text-transform:uppercase;
+       letter-spacing:.04em;padding:2px 7px;border-radius:999px;border:1px solid var(--line);
+       background:var(--surface-2);color:var(--ink-soft);vertical-align:2px;margin-left:6px}
+
+  /* ---------- contexte réaliste d'une étape ---------- */
+  .ctx{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .block-label{font-family:"IBM Plex Mono",monospace;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;
+               color:var(--ink-faint);margin:12px 0 5px}
+  .block-label:first-child{margin-top:0}
+  .doc-p{font-size:14.5px;margin:4px 0 10px}
+  .res-item{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+            border-radius:10px;padding:9px 12px;margin:4px 0}
+  .res-item.activity{background:var(--activity-wash);border-color:#eed4b6}
+  .res-item .r-title{font-weight:500;font-size:14.5px} .res-item .r-type{font-size:12.5px;color:var(--ink-faint)}
+
+  /* A0 — l'existant */
+  .retain-0{border-left:3px solid var(--ink);background:var(--surface-2);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px}
+  /* A1 — bloc plein encre */
+  .retain-1{background:var(--retain);color:#eef2f9;padding:14px 16px;border-radius:12px;font-size:14.5px;
+            box-shadow:0 6px 18px rgba(29,53,87,.22)}
+  .retain-1 b{color:#fff}
+  .retain-1 .rl{display:block;font-family:"IBM Plex Mono",monospace;font-size:11px;text-transform:uppercase;
+                letter-spacing:.08em;color:#9fb3d1;margin-bottom:6px}
+  /* A2 — carte à bandeau titré */
+  .retain-2{border:1.5px solid var(--retain);border-radius:12px;overflow:hidden;background:var(--surface)}
+  .retain-2 .rh{background:var(--retain);color:#fff;font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+                text-transform:uppercase;letter-spacing:.08em;padding:6px 14px;display:flex;align-items:center;gap:7px}
+  .retain-2 .rb{padding:12px 14px;font-size:14.5px}
+  /* A3 — filet épais + fond teinté + ancre */
+  .retain-3{position:relative;border-left:6px solid var(--retain);background:var(--retain-wash);
+            padding:13px 16px 13px 18px;border-radius:0 12px 12px 0;font-size:14.5px}
+  .retain-3 .anchor{position:absolute;left:-15px;top:12px;width:24px;height:24px;border-radius:50%;
+                    background:var(--retain);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .retain-3 .rl{font-family:"IBM Plex Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+                color:var(--retain);display:block;margin-bottom:5px;font-weight:600}
+
+  /* ---------- barres de progression ---------- */
+  .demo-page{display:flex;gap:18px;align-items:flex-start;background:var(--bg);border:1px dashed var(--line);
+             border-radius:12px;padding:16px}
+  .faux-contenu{flex:1;min-width:0}
+  .faux-contenu .fl{height:9px;background:var(--line);border-radius:5px;margin:0 0 9px}
+  .faux-contenu .fl.s{width:62%} .faux-contenu .fl.m{width:88%}
+  .faux-contenu .fbloc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+  .faux-contenu h4{margin:0 0 8px;font-size:14px}
+
+  /* B1 rail compact */
+  .b1{width:56px;flex:none;background:var(--surface);border:1px solid var(--line);border-radius:12px;
+      padding:9px 7px;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .b1 .t{font-family:"IBM Plex Mono",monospace;font-size:9px;text-transform:uppercase;color:var(--ink-faint)}
+  .b1 .pct{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600}
+  .b1 .seg{display:flex;flex-direction:column;gap:5px;width:26px}
+  .b1 .cell{position:relative;overflow:hidden;height:26px;border-radius:6px;border:1px solid var(--line);
+            display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono",monospace;
+            font-size:11px;color:var(--ink-faint)}
+  .b1 .cell.done{border-color:var(--ok);color:var(--ok)}
+  .b1 .cell.prog{border:1.6px dashed var(--activity);color:var(--activity)}
+  .b1 .cell .fill{position:absolute;left:0;right:0;bottom:0}
+  .b1 .cell .fill.g{background:rgba(18,128,92,.28);height:100%}
+  .b1 .cell .fill.h{background:repeating-linear-gradient(45deg,var(--activity) 0 2px,transparent 2px 6px);height:55%}
+  .b1 .cell .lab{position:relative;z-index:1}
+
+  /* B2 sommaire */
+  .b2{width:236px;flex:none;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 12px 14px}
+  .b2 .b2h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .b2 .b2h .t{font-family:"IBM Plex Mono",monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint)}
+  .b2 .b2h .pct{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600}
+  .b2 .grp{font-family:"IBM Plex Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;
+           color:var(--ink-faint);margin:10px 0 5px;padding-top:8px;border-top:1px solid var(--line)}
+  .b2 .grp:first-of-type{border-top:0;padding-top:0;margin-top:0}
+  .b2 .it{display:flex;gap:9px;align-items:flex-start;padding:5px 6px;border-radius:8px;position:relative}
+  .b2 .it .pip{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--line);flex:none;margin-top:2px;
+               display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;background:var(--surface)}
+  .b2 .it.done .pip{background:var(--ok);border-color:var(--ok)}
+  .b2 .it.prog .pip{border-color:var(--activity);border-style:dashed}
+  .b2 .it.revoir .pip{background:var(--err);border-color:var(--err)}
+  .b2 .it .txt{font-size:13px;line-height:1.35;min-width:0}
+  .b2 .it .date{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint);margin-top:1px}
+  .b2 .it.prog{background:var(--activity-wash)}
+  .b2 .it.prog .txt{font-weight:500}
+  .b2 .it.late .date{color:var(--err)}
+  .b2 .it.locked .txt{color:var(--ink-faint)}
+  .b2 .bar{height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden;margin-top:12px}
+  .b2 .bar i{display:block;height:100%;width:46%;background:var(--ok)}
+
+  /* B3 hybride */
+  .b3{flex:none;position:relative;width:56px}
+  .b3 .panneau{position:absolute;left:0;top:0;width:56px;background:var(--surface);border:1px solid var(--line);
+               border-radius:12px;padding:9px 7px;display:flex;flex-direction:column;align-items:center;gap:6px;
+               transition:width .22s ease}
+  .b3:hover .panneau{width:236px;align-items:stretch;padding:12px;box-shadow:var(--shadow);z-index:5}
+  .b3 .compact{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .b3:hover .compact{display:none}
+  .b3 .deploye{display:none}
+  .b3:hover .deploye{display:block}
+  .b3 .hint{font-size:12px;color:var(--ink-faint);text-align:center;margin-top:6px}
+
+  .verdict{background:var(--surface-2);border-left:3px solid var(--link);padding:10px 14px;border-radius:0 10px 10px 0;
+           font-size:13.5px;margin-top:10px;color:var(--ink-soft)}
+  .verdict b{color:var(--ink)}
+  .cols{display:flex;gap:16px;flex-wrap:wrap}
+  .cols > *{flex:1;min-width:280px}
+  figure{margin:0}
+  figcaption{font-size:12.5px;color:var(--ink-faint);margin-top:8px}
+  @media(max-width:760px){ .demo-page{flex-direction:column} .b2,.b3,.b3 .panneau{width:100%;position:static} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>Planche d'arbitrage — séquence SNT « Internet »</h1>
+  <p>Trois choses à trancher avant de passer la main à Claude Code : la <b>hiérarchie des « à retenir »</b>, la <b>barre de progression de gauche</b>, et le <b>SVG « Internet et ses usages »</b>.</p>
+  <p class="note">Palette et variables reprises telles quelles de la page réelle. Les polices Space&nbsp;Grotesk / IBM&nbsp;Plex ne sont pas embarquées dans ce fichier de travail (elles sont auto-hébergées côté site) : le rendu de caractères sera un peu différent en vrai, les proportions et les couleurs, non.</p>
+</header>
+
+<!-- ============ BLOC A ============ -->
+<section class="bloc">
+  <h2>A · Les « à retenir » — sortir du tout-bleu</h2>
+  <p class="sub">Même contenu réel à chaque fois, dans son contexte (un paragraphe « Doc » + une ressource au-dessus), pour juger du contraste et pas de l'échantillon isolé.</p>
+
+  <div class="variante">
+    <div class="vtitre">A0 · L'existant <span class="tag">aujourd'hui</span></div>
+    <div class="vpour">Filet gris-encre sur fond <code>--surface-2</code> : exactement le même fond que les blocs « Doc ». Rien ne le distingue.</div>
+    <div class="ctx">
+      <div class="block-label">Ressource</div>
+      <div class="res-item activity"><div><div class="r-title">Carte des câbles sous-marins</div><div class="r-type">NET·1c · exploration · 8 min</div></div></div>
+      <div class="block-label">Doc — un réseau bien matériel</div>
+      <p class="doc-p">Internet est un gigantesque réseau mondial d'ordinateurs reliés par des lignes de transmission de tous types : câbles en fibre optique, satellites, lignes téléphoniques, ondes radio.</p>
+      <div class="block-label">À retenir</div>
+      <div class="retain-0"><b>Internet</b> = <i>inter-networks</i>, l'<b>interconnexion des réseaux</b> de la planète. On l'appelle le <b>réseau des réseaux</b>. Le Web, les mails, le streaming sont des <b>services</b> qui circulent dessus — Internet est la route, pas ce qui roule dessus.</div>
+    </div>
+  </div>
+
+  <div class="variante">
+    <div class="vtitre">A1 · Bloc plein « ardoise »</div>
+    <div class="vpour">Inversion complète du contraste : c'est le seul bloc sombre de la page, impossible à rater, et il photographie bien (les élèves prennent la page en photo). Le plus fort — peut-être trop si une étape en contient deux.</div>
+    <div class="ctx">
+      <div class="block-label">Doc — un réseau bien matériel</div>
+      <p class="doc-p">Internet est un gigantesque réseau mondial d'ordinateurs reliés par des lignes de transmission de tous types : câbles en fibre optique, satellites, lignes téléphoniques, ondes radio.</p>
+      <div class="retain-1"><span class="rl">★ À retenir</span><b>Internet</b> = <i>inter-networks</i>, l'<b>interconnexion des réseaux</b> de la planète. On l'appelle le <b>réseau des réseaux</b>. Le Web, les mails, le streaming sont des <b>services</b> qui circulent dessus — Internet est la route, pas ce qui roule dessus.</div>
+    </div>
+  </div>
+
+  <div class="variante">
+    <div class="vtitre">A2 · Carte à bandeau titré</div>
+    <div class="vpour">Le bandeau absorbe le label « À retenir » : plus besoin du <code>.block-label</code> gris au-dessus, on gagne une ligne. Lisible, sobre, s'imprime bien en noir et blanc. Le moins risqué.</div>
+    <div class="ctx">
+      <div class="block-label">Doc — un réseau bien matériel</div>
+      <p class="doc-p">Internet est un gigantesque réseau mondial d'ordinateurs reliés par des lignes de transmission de tous types : câbles en fibre optique, satellites, lignes téléphoniques, ondes radio.</p>
+      <div class="retain-2">
+        <div class="rh">★ À retenir</div>
+        <div class="rb"><b>Internet</b> = <i>inter-networks</i>, l'<b>interconnexion des réseaux</b> de la planète. On l'appelle le <b>réseau des réseaux</b>. Le Web, les mails, le streaming sont des <b>services</b> qui circulent dessus — Internet est la route, pas ce qui roule dessus.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="variante">
+    <div class="vtitre">A3 · Filet épais teinté + pastille d'ancrage</div>
+    <div class="vpour">Garde l'esprit actuel (un filet à gauche) mais le muscle : filet 6&nbsp;px, fond teinté distinct des « Doc », et une pastille qui déborde — c'est elle qui accroche l'œil au défilement. Le plus proche de ce qui existe, donc le moins de travail de reprise sur les 8 séquences.</div>
+    <div class="ctx">
+      <div class="block-label">Doc — un réseau bien matériel</div>
+      <p class="doc-p">Internet est un gigantesque réseau mondial d'ordinateurs reliés par des lignes de transmission de tous types : câbles en fibre optique, satellites, lignes téléphoniques, ondes radio.</p>
+      <div style="padding-left:15px">
+        <div class="retain-3"><span class="anchor">★</span><span class="rl">À retenir</span><b>Internet</b> = <i>inter-networks</i>, l'<b>interconnexion des réseaux</b> de la planète. On l'appelle le <b>réseau des réseaux</b>. Le Web, les mails, le streaming sont des <b>services</b> qui circulent dessus — Internet est la route, pas ce qui roule dessus.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict"><b>Ce que je dirais si tu me demandais :</b> A2 ou A3. A1 est le plus spectaculaire mais devient lourd quand une séance enchaîne cinq « à retenir ». A3 demande le moins de reprise sur les autres séquences. Dans les trois cas j'ajouterais la variable <code>--retain</code> au bloc <code>:root</code> — aucune couleur en dur.</div>
+</section>
+
+<!-- ============ BLOC B ============ -->
+<section class="bloc">
+  <h2>B · La barre de progression, à gauche</h2>
+  <p class="sub">États montrés : <b>fait</b> · <b>en cours</b> (remplissage partiel) · <b>à venir</b> · <b>à revoir</b>, plus la <b>date cible</b> que tu renseignes. Aucun <code>localStorage</code> : l'état vient de la mémoire JS et de <code>progression.js</code>.</p>
+
+  <div class="variante">
+    <div class="vtitre">B1 · Rail compact <span class="tag">≈ le cahier de vacances</span></div>
+    <div class="vpour">Transposition directe de ton <code>#prog-bar</code> : encombrement minimal, une cellule par séance, remplissage partiel à l'intérieur. Mais aucun titre d'étape visible, et nulle part où loger une date.</div>
+    <div class="demo-page">
+      <div class="b1">
+        <div class="t">Progression</div>
+        <div class="pct">46 %</div>
+        <div class="seg">
+          <div class="cell done"><span class="fill g"></span><span class="lab">S1</span></div>
+          <div class="cell prog"><span class="fill h"></span><span class="lab">S2</span></div>
+          <div class="cell"><span class="lab">S3</span></div>
+          <div class="cell"><span class="lab">S4</span></div>
+          <div class="cell"><span class="lab">B</span></div>
+        </div>
+      </div>
+      <div class="faux-contenu">
+        <div class="fbloc"><h4>S2 · L'histoire d'Internet — et la France dedans</h4>
+          <div class="fl m"></div><div class="fl"></div><div class="fl s"></div></div>
+        <div class="fbloc"><div class="fl"></div><div class="fl m"></div><div class="fl s"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="variante">
+    <div class="vtitre">B2 · Sommaire d'étapes <span class="tag">recommandé</span></div>
+    <div class="vpour">Toutes les étapes nommées, groupées par séance, avec leur date cible. C'est aussi un <b>sommaire cliquable</b> : l'élève voit où il en est <i>et</i> ce qui l'attend. Une date dépassée passe en rouge. Coût : 236&nbsp;px de large.</div>
+    <div class="demo-page">
+      <div class="b2">
+        <div class="b2h"><span class="t">Ma progression</span><span class="pct">46 %</span></div>
+
+        <div class="grp">S1 · Le réseau physique</div>
+        <div class="it done"><span class="pip">✓</span><span class="txt">Avant tout : c'est quoi, Internet ?<span class="date">rendu le 12/09</span></span></div>
+        <div class="it done"><span class="pip">✓</span><span class="txt">Inter + Net : le réseau des réseaux<span class="date">rendu le 12/09</span></span></div>
+        <div class="it done"><span class="pip">✓</span><span class="txt">Internet ≠ Web<span class="date">rendu le 19/09</span></span></div>
+
+        <div class="grp">S2 · L'histoire d'Internet</div>
+        <div class="it prog"><span class="pip"></span><span class="txt">Écoute — « 1969 : on a parlé sur les réseaux »<span class="date">à finir pour le 26/09</span></span></div>
+        <div class="it revoir late"><span class="pip">!</span><span class="txt">ARPANET : l'ancêtre américain<span class="date">était pour le 26/09</span></span></div>
+        <div class="it locked"><span class="pip"></span><span class="txt">D'un réseau militaire à un réseau mondial<span class="date">pour le 03/10</span></span></div>
+        <div class="it locked"><span class="pip"></span><span class="txt">La frise : remets l'histoire dans l'ordre<span class="date">pour le 03/10</span></span></div>
+
+        <div class="grp">S3 · Protocoles et routage</div>
+        <div class="it locked"><span class="pip"></span><span class="txt">C'est quoi, un protocole ?<span class="date">pour le 10/10</span></span></div>
+
+        <div class="bar"><i></i></div>
+      </div>
+      <div class="faux-contenu">
+        <div class="fbloc"><h4>S2 · L'histoire d'Internet — et la France dedans</h4>
+          <div class="fl m"></div><div class="fl"></div><div class="fl s"></div></div>
+        <div class="fbloc"><div class="fl"></div><div class="fl m"></div><div class="fl s"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="variante">
+    <div class="vtitre">B3 · Hybride — rail qui se déplie <span class="tag">survole-moi</span></div>
+    <div class="vpour">Rail compact par défaut, sommaire complet au survol ou au clic (avec une épingle pour le garder ouvert). Rend la largeur au contenu sur iPad. Un peu plus de JS, et le survol ne veut rien dire au doigt : sur tablette il faut le bouton d'épingle, pas le survol.</div>
+    <div class="demo-page">
+      <div class="b3">
+        <div class="panneau">
+          <div class="compact">
+            <div class="t" style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;color:var(--ink-faint)">Prog.</div>
+            <div class="pct" style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600">46 %</div>
+            <div class="seg" style="display:flex;flex-direction:column;gap:5px;width:26px">
+              <div class="cell done" style="position:relative;overflow:hidden;height:26px;border-radius:6px;border:1px solid var(--ok);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ok)"><span class="fill g" style="position:absolute;left:0;right:0;bottom:0;height:100%;background:rgba(18,128,92,.28)"></span><span class="lab" style="position:relative;z-index:1">S1</span></div>
+              <div class="cell prog" style="position:relative;overflow:hidden;height:26px;border-radius:6px;border:1.6px dashed var(--activity);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--activity)"><span class="fill h" style="position:absolute;left:0;right:0;bottom:0;height:55%;background:repeating-linear-gradient(45deg,var(--activity) 0 2px,transparent 2px 6px)"></span><span class="lab" style="position:relative;z-index:1">S2</span></div>
+              <div class="cell" style="height:26px;border-radius:6px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-faint)">S3</div>
+              <div class="cell" style="height:26px;border-radius:6px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-faint)">S4</div>
+              <div class="cell" style="height:26px;border-radius:6px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-faint)">B</div>
+            </div>
+          </div>
+          <div class="deploye">
+            <div class="b2h" style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+              <span class="t" style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint)">Ma progression</span>
+              <span class="pct" style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600">46 %</span>
+            </div>
+            <div class="b2" style="width:auto;border:0;padding:0">
+              <div class="grp">S1 · Le réseau physique</div>
+              <div class="it done"><span class="pip">✓</span><span class="txt">Avant tout : c'est quoi, Internet ?<span class="date">rendu le 12/09</span></span></div>
+              <div class="it done"><span class="pip">✓</span><span class="txt">Inter + Net<span class="date">rendu le 12/09</span></span></div>
+              <div class="grp">S2 · L'histoire d'Internet</div>
+              <div class="it prog"><span class="pip"></span><span class="txt">Écoute — « 1969 »<span class="date">à finir pour le 26/09</span></span></div>
+              <div class="it locked"><span class="pip"></span><span class="txt">ARPANET : l'ancêtre américain<span class="date">pour le 26/09</span></span></div>
+            </div>
+            <div class="hint">📌 épingler le sommaire</div>
+          </div>
+        </div>
+      </div>
+      <div class="faux-contenu" style="margin-left:66px">
+        <div class="fbloc"><h4>S2 · L'histoire d'Internet — et la France dedans</h4>
+          <div class="fl m"></div><div class="fl"></div><div class="fl s"></div></div>
+        <div class="fbloc"><div class="fl"></div><div class="fl m"></div><div class="fl s"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict"><b>Trois questions qui viennent avec, quelle que soit la variante :</b><br>
+  1. La barre suit-elle les <b>étapes</b> (fin ≈ 20 lignes) ou les <b>séances</b> (5 cases) ? B2 suppose les étapes.<br>
+  2. Les <b>dates</b> : les mêmes pour tout le monde, écrites en dur dans la page ? ou par groupe (tu as 3 groupes) ? La deuxième solution veut dire qu'elles vivent en base, pas dans le HTML — c'est un choix qui engage.<br>
+  3. En <b>mode focus</b> (page floutée pendant la rédaction) : la barre se floute avec le reste, ou reste nette ? Je proposerais qu'elle se floute — sinon elle donne une porte de sortie visuelle pendant l'exercice de restitution.</div>
+</section>
+
+<!-- ============ BLOC C ============ -->
+<section class="bloc">
+  <h2>C · SVG maison — « Internet et ses usages »</h2>
+  <p class="sub">Proposition à valider. L'idée pédagogique portée par le dessin : <b>Internet au centre, c'est la route</b> ; les <b>services</b> sont ce qui roule dessus ; les <b>appareils</b> se raccordent tout autour. C'est exactement le « à retenir » de l'étape 1, en image.</p>
+
+  <figure>
+  <svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Schéma : Internet au centre, les services qui circulent dessus, les appareils raccordés autour."
+       style="width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px">
+    <defs>
+      <radialGradient id="coeur" cx="50%" cy="45%" r="60%">
+        <stop offset="0%" stop-color="#2c3f63"/><stop offset="100%" stop-color="#161f33"/>
+      </radialGradient>
+      <style>
+        .lbl{font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;font-size:13px;fill:#4a566e}
+        .lbl-s{font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;font-size:11.5px;fill:#8b97ad}
+        .srv{font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;font-size:13px;fill:#7a4409;font-weight:600}
+        .coeur-t{font-family:"Space Grotesk","Segoe UI",system-ui,sans-serif;font-size:26px;fill:#fff;font-weight:700;letter-spacing:.02em}
+        .coeur-s{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;fill:#9fb3d1;letter-spacing:.09em}
+        .titre{font-family:"Space Grotesk","Segoe UI",system-ui,sans-serif;font-size:15px;fill:#161f33;font-weight:600}
+      </style>
+    </defs>
+
+    <!-- liaisons appareils -> coeur -->
+    <g stroke="#c3cddd" stroke-width="1.6" fill="none" stroke-dasharray="4 5">
+      <path d="M120 130 L 380 260"/><path d="M120 470 L 380 340"/>
+      <path d="M780 130 L 520 260"/><path d="M780 470 L 520 340"/>
+      <path d="M450 545 L 450 420"/>
+    </g>
+
+    <!-- coeur : Internet -->
+    <ellipse cx="450" cy="300" rx="128" ry="86" fill="url(#coeur)"/>
+    <g stroke="#5d76a8" stroke-width="1" opacity=".55" fill="none">
+      <path d="M355 275 L400 250 L455 268 L505 244 L548 272"/>
+      <path d="M352 322 L398 344 L452 326 L508 350 L549 324"/>
+      <path d="M400 250 L398 344"/><path d="M455 268 L452 326"/><path d="M505 244 L508 350"/>
+    </g>
+    <g fill="#8fa6d0">
+      <circle cx="400" cy="250" r="3.4"/><circle cx="455" cy="268" r="3.4"/><circle cx="505" cy="244" r="3.4"/>
+      <circle cx="398" cy="344" r="3.4"/><circle cx="452" cy="326" r="3.4"/><circle cx="508" cy="350" r="3.4"/>
+    </g>
+    <text class="coeur-t" x="450" y="303" text-anchor="middle">INTERNET</text>
+    <text class="coeur-s" x="450" y="322" text-anchor="middle">LE RÉSEAU DES RÉSEAUX</text>
+
+    <!-- services en orbite (ambre) -->
+    <g>
+      <g transform="translate(450,168)">
+        <rect x="-58" y="-17" width="116" height="34" rx="17" fill="#faeede" stroke="#e0b075"/>
+        <text class="srv" x="0" y="5" text-anchor="middle">Le Web</text>
+      </g>
+      <g transform="translate(636,214)">
+        <rect x="-52" y="-17" width="104" height="34" rx="17" fill="#faeede" stroke="#e0b075"/>
+        <text class="srv" x="0" y="5" text-anchor="middle">Les mails</text>
+      </g>
+      <g transform="translate(668,352)">
+        <rect x="-58" y="-17" width="116" height="34" rx="17" fill="#faeede" stroke="#e0b075"/>
+        <text class="srv" x="0" y="5" text-anchor="middle">Streaming</text>
+      </g>
+      <g transform="translate(560,448)">
+        <rect x="-66" y="-17" width="132" height="34" rx="17" fill="#faeede" stroke="#e0b075"/>
+        <text class="srv" x="0" y="5" text-anchor="middle">Jeux en ligne</text>
+      </g>
+      <g transform="translate(340,448)">
+        <rect x="-76" y="-17" width="152" height="34" rx="17" fill="#faeede" stroke="#e0b075"/>
+        <text class="srv" x="0" y="5" text-anchor="middle">Réseaux sociaux</text>
+      </g>
+      <g transform="translate(232,352)">
+        <rect x="-64" y="-17" width="128" height="34" rx="17" fill="#faeede" stroke="#e0b075"/>
+        <text class="srv" x="0" y="5" text-anchor="middle">Messagerie</text>
+      </g>
+      <g transform="translate(264,214)">
+        <rect x="-62" y="-17" width="124" height="34" rx="17" fill="#faeede" stroke="#e0b075"/>
+        <text class="srv" x="0" y="5" text-anchor="middle">Cloud, fichiers</text>
+      </g>
+    </g>
+
+    <!-- appareils -->
+    <g>
+      <!-- ordinateur -->
+      <g transform="translate(120,130)">
+        <rect x="-44" y="-30" width="88" height="54" rx="5" fill="#f4f6fb" stroke="#4a566e" stroke-width="1.8"/>
+        <rect x="-37" y="-24" width="74" height="42" rx="2" fill="#dde4f0"/>
+        <path d="M-16 24 L-20 34 L20 34 L16 24 Z" fill="#f4f6fb" stroke="#4a566e" stroke-width="1.8"/>
+        <text class="lbl" x="0" y="52" text-anchor="middle">Ordinateur</text>
+      </g>
+      <!-- smartphone -->
+      <g transform="translate(780,130)">
+        <rect x="-19" y="-34" width="38" height="66" rx="6" fill="#f4f6fb" stroke="#4a566e" stroke-width="1.8"/>
+        <rect x="-14" y="-28" width="28" height="48" rx="2" fill="#dde4f0"/>
+        <circle cx="0" cy="25" r="2.6" fill="#4a566e"/>
+        <text class="lbl" x="0" y="52" text-anchor="middle">Smartphone</text>
+      </g>
+      <!-- console -->
+      <g transform="translate(120,470)">
+        <rect x="-42" y="-18" width="84" height="36" rx="16" fill="#f4f6fb" stroke="#4a566e" stroke-width="1.8"/>
+        <circle cx="-22" cy="0" r="7" fill="#dde4f0" stroke="#4a566e" stroke-width="1.4"/>
+        <circle cx="20" cy="-5" r="3.4" fill="#4a566e"/><circle cx="28" cy="4" r="3.4" fill="#4a566e"/>
+        <text class="lbl" x="0" y="38" text-anchor="middle">Console de jeu</text>
+      </g>
+      <!-- objet connecté -->
+      <g transform="translate(780,470)">
+        <rect x="-26" y="-24" width="52" height="48" rx="9" fill="#f4f6fb" stroke="#4a566e" stroke-width="1.8"/>
+        <circle cx="0" cy="-2" r="10" fill="none" stroke="#4a566e" stroke-width="1.6"/>
+        <path d="M-6 -2 a6 6 0 0 1 12 0" fill="none" stroke="#c26a12" stroke-width="2"/>
+        <circle cx="0" cy="-2" r="2" fill="#c26a12"/>
+        <text class="lbl" x="0" y="42" text-anchor="middle">Objet connecté</text>
+      </g>
+      <!-- tablette -->
+      <g transform="translate(450,545)">
+        <rect x="-30" y="-22" width="60" height="44" rx="5" fill="#f4f6fb" stroke="#4a566e" stroke-width="1.8"/>
+        <rect x="-24" y="-16" width="48" height="32" rx="2" fill="#dde4f0"/>
+        <text class="lbl" x="0" y="38" text-anchor="middle">Tablette</text>
+      </g>
+    </g>
+
+    <!-- légende -->
+    <g transform="translate(40,30)">
+      <text class="titre" x="0" y="0">Internet, la route — les services, ce qui roule dessus</text>
+      <g transform="translate(0,22)">
+        <rect x="0" y="-9" width="14" height="14" rx="4" fill="#161f33"/>
+        <text class="lbl-s" x="20" y="2">le réseau lui-même : machines, câbles, ondes</text>
+        <rect x="330" y="-9" width="14" height="14" rx="7" fill="#faeede" stroke="#e0b075"/>
+        <text class="lbl-s" x="350" y="2">les services qui l'utilisent</text>
+        <rect x="560" y="-9" width="14" height="14" rx="3" fill="#f4f6fb" stroke="#4a566e"/>
+        <text class="lbl-s" x="580" y="2">les appareils qui s'y raccordent</text>
+      </g>
+    </g>
+  </svg>
+  <figcaption>SVG maison — aucun droit à régler, cohérent avec la charte du site, modifiable au texte. À valider ou à corriger : liste des services, choix des appareils, formulation de la légende.</figcaption>
+  </figure>
+
+  <div class="verdict"><b>Ce qu'il fait, et ce qu'il ne fait pas.</b> Il porte la distinction Internet / services / appareils, qui est le cœur évaluable de l'étape 1. Il ne montre <b>pas</b> les serveurs (ta demande « image de serveur » est déjà couverte par la photo du CERN) ni la matérialité mondiale (couverte par la carte Opte et, plus loin, les câbles sous-marins). Si tu veux, je peux ajouter une variante <b>animée au survol</b> : cliquer sur un service allume le chemin qui le relie au cœur — bon pour la vidéoprojection, mais ça devient un composant, pas une image.</div>
+</section>
+
+</div>
+</body>
+</html>

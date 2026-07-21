@@ -264,4 +264,119 @@ Composant réutilisable pour tout exercice de rédaction : quand une définition
 
 ---
 
+---
+
+## 13. V3 — arbitrages de la session du 21/07/2026 (soir)
+
+> Cette section **prime sur les §1 à §12** en cas de contradiction. Elle a été
+> appliquée dans `pages/2nde-snt-t1-internet.html`. Reste à valider par Loïc.
+
+### 13.1 Architecture — la §2 est caduque
+
+| Séance | Titre | Contenu |
+|---|---|---|
+| S1 | **C'est quoi Internet ?** | définition diagnostic · Inter+Net · podcast · ARPANET · 🇫🇷 CYCLADES · réseau mondial · frise · débat |
+| S2 | **Le réseau physique** | topologies · câbles sous-marins · du réseau mondial à ta maison |
+| S3 | Protocoles & routage | inchangée |
+| S4 | Adresses IP & DNS | **gelée**, sortira en séquences séparées |
+| Bilan | routage humain · 8 routeurs · glossaire | inchangée |
+
+- **« Internet ≠ Web »** quitte cette séquence : traitement complet en **séquence Web**, rappel d'une ligne ici + picto.
+- **Minitel** : **mentionné seulement** (frise + encart 🇫🇷), **pas d'image, pas de développement** — il part en séquence Web, juste après l'encart cocorico de là-bas. Annule la décision du §4.4.
+- **Vocabulaire figé** : une *séquence* contient des *séances* ; côté élève on dit *thème*. Aucune reprise sur les 8 pages.
+
+### 13.2 Échelle d'évaluabilité (nouvelle, transversale)
+
+| Marque | Niveau | Blocs |
+|---|---|---|
+| ★★ | à savoir | à retenir · glossaire (définition **validée**, pas la tentative de diagnostic) |
+| ★ | à savoir faire | exercices, dont les exercices bilan |
+| ○ | support | documents · vidéos · podcasts |
+| ✦ | bonus | 🇫🇷 fierté française · le sais-tu |
+| — | non évalué | pour aller plus loin · activité d'introduction |
+
+Marquage **discret** sur chaque bloc, expliqué **une fois pour toutes en t0**.
+⚠️ *bonus* ≠ *facultatif* : le bonus peut rapporter des points, le « pour aller plus loin » jamais. Formes distinctes.
+
+### 13.3 Grammaire visuelle
+
+Couleur = **rôle** (lire / se repérer / faire / retenir / culture) · forme = **statut**.
+Bandeaux **allégés** partout **sauf « à retenir »**, seul bloc conservé en plein (ardoise `--retain`).
+Drapeau tricolore devenu un **liseré** à côté du mot, pour que « Fierté française » redevienne lisible.
+
+### 13.4 Barre de progression (valide pour toutes les séquences)
+
+Sommaire d'**étapes groupées par séance**, à gauche, cliquable. États : fait · en attente · en cours · à venir.
+Repli en **bandeau horizontal** (R4), réouverture par **languette** (R1). Repli d'office sous 1180 px et en **mode focus**.
+**Aucun `localStorage`.** Champ `data-echeance` prévu pour les **dates cibles**, **volontairement laissé vide** (arbitrage : on ne s'invente pas un calendrier qu'on ne tiendra pas).
+**Étapes révélées une à une** à l'intérieur d'une séance.
+
+### 13.5 QCM — composant transverse
+
+Bouton → ouverture **plein écran**, reste de la page **flouté** · questions **enchaînées horizontalement**, jamais empilées · **3 à 4 questions minimum** · **récapitulatif des bonnes réponses** en sortie, sur la page **et** sur la fiche, avec compléments « hors programme, mais bon à savoir » · le QCM du podcast est **remonté juste sous l'écoute**.
+Chaque étape doit afficher **ce qui reste à faire pour la valider** (risque identifié : l'élève ne sait plus comment valider).
+
+### 13.6 Correction des trous — trois états
+
+Normalisation (minuscules, accents, ponctuation, articles) · **variantes acceptées** par trou (`data-variantes`, séparateur `|`) · **distance de Levenshtein** (1 faute ≤ 7 caractères, 2 au-delà) → état **jaune « presque »** : l'étape est **validée**, l'orthographe est corrigée et signalée, **jamais sanctionnée** · **indices à deux niveaux** par trou (`data-indice1`, `data-indice2`).
+Plus tard, l'IA remplacera les listes de variantes.
+
+### 13.7 Validation d'une étape — **à l'envoi** (décision arrêtée)
+
+Une étape est validée dès que l'élève a **produit quelque chose** sur chaque champ requis, **juste ou faux**.
+⚠️ Conséquence sur le schéma de données : il faut **deux informations distinctes**, *fait* et *juste*, la seconde n'étant visible que côté enseignant.
+
+### 13.8 Mode enseignant
+
+Sorti du sommaire déroulant · mention **discrète en tête de page**, **ne suit pas le défilement** · ouverture par **code** (empreinte **SHA-256** dans la page, code changeable) · **coupé au bout de 30 minutes**, minuterie visible, coupé aussi par un rechargement.
+⚠️ **Limite assumée** : page publique + inspecteur = contournable. C'est un **ralentisseur**, pas une serrure. La vraie serrure viendra du **rôle vérifié côté Supabase**. Ne jamais mettre de contenu sensible derrière ce verrou.
+
+### 13.9 Glossaire = dictionnaire permanent
+
+Il quitte le poste d'écoute (qui ne garde qu'un **encadré vocabulaire**) et devient **accessible en permanence**, **cherchable**, prévu pour **traverser les séquences** (Web, réseaux sociaux…).
+⚠️ Tant que la **clé anon** n'est pas renseignée, les définitions de l'élève **ne le suivent pas** d'une page à l'autre.
+Pas d'API de dictionnaire externe : appeler le Wiktionnaire depuis le navigateur enverrait l'**IP de chaque élève** à Wikimedia, et un dictionnaire généraliste est mauvais sur le vocabulaire réseau. Dictionnaire **embarqué**, alimenté séquence par séquence.
+
+### 13.10 Images
+
+Taille modérée, **agrandissables au clic**, légende à côté, **source et licence sous chaque image**.
+Le **croquis manuscrit de décembre 1969** remplace le SVG des 4 nœuds qui était en chantier.
+Carte **Opte** : CC BY 2.5 — **OK sur le site**, à revérifier avant tout **usage commercial** (Tableo).
+Licences ⚖️ à confirmer sur Commons : croquis 1969, ARPANET années 1970, démo 1977, carte logique 1977, CYCLADES, Louis Pouzin, NSFNET.
+🔴 **Conflit de règle à arbitrer** : `CONSIGNES-sequence-SNT.md` §5 interdit tout asset externe aux séquences SNT. Des **photographies** ne peuvent pas être inlinées (page à plusieurs mégaoctets). Un dossier `assets/img/snt/2nde-snt-t1-internet/` a donc été créé. **La règle doit être modifiée** : « SVG inline obligatoire ; images matricielles autorisées dans `assets/img/snt/<slug>/`, optimisées ».
+
+### 13.11 Fiche élève et PDF
+
+Dedans : objectifs · **tous les à retenir** · définitions de glossaire validées · réponses aux exercices **avec la correction et les compléments** · frise · schémas · sources · **notes prises pendant l'écoute** · **les deux tentatives de définition d'Internet côte à côte** · réflexions perso.
+Réduits : documents (titre + 2 lignes, et **supprimés s'ils n'apportent rien de plus que le « à retenir »**) · vidéos et podcasts (titre, durée, lien, **QR code**, **pas de lecteur**).
+Dehors : « pour aller plus loin » · notes de chantier.
+**PDF : feuille de style d'impression + « Enregistrer en PDF » du navigateur** (décision arrêtée). Aucune bibliothèque, aucun CDN.
+
+### 13.12 Corrections de fond appliquées
+
+- « transfert de paquets » **retiré de l'historique** : le mot arrive avec le **datagramme** (CYCLADES), puis avec l'**encapsulation** (TCP/IP). Chaîne à tenir dans cet ordre.
+- Le paragraphe qui suit le datagramme doit s'intituler **« Qu'est-ce qu'un datagramme ? »**, et le terme doit être **employé plusieurs fois**.
+- La question finale de l'ancienne 2.2 (lien datagramme ↔ TCP/IP) **saute** : TCP/IP n'est pas encore vu. Le lien se fera **depuis l'étape protocoles**, en rappelant CYCLADES.
+- **NCP** : picto « à voir plus tard » ici, explication réelle dans la partie TCP/IP.
+- **Inria** : infobulle. Vérifié — l'INRIA devient **Inria** le 7 juillet 2011, l'institut ayant volontairement abandonné le sigle ; les textes officiels le nomment toujours « Institut national de recherche en informatique et en automatique ».
+- Colonne des dates du tableau ARPANET rendue **insécable**.
+- **Frise verticale unique**, du plus ancien en haut au plus récent en bas, **une entrée par année**, dates clés en **bleu** et le reste en **gris**, avec légende.
+
+### 13.13 Erreurs relevées dans le fichier équipe `02`
+
+- « **Le 21 novembre 1969** » est la date du **lien permanent** UCLA–SRI. Le **premier message** (« LO ») est du **29 octobre 1969** — absent du fichier, alors que c'est l'anecdote la plus efficace.
+- « **TCP/IP inventé en 1977** » : imprécis. TCP est décrit par Cerf et Kahn en 1974, la bascule générale est le 1ᵉʳ janvier 1983. **1977 est l'année de la démonstration à trois réseaux** — d'où l'image intégrée : le fond des collègues est conservé, et la date reprend son vrai sens.
+- « protocole TCP/IP » → **modèle TCP/IP** partout.
+
+### 13.14 Reste ouvert
+
+- Encart **PTT** à écrire (les élèves ne savent pas ce que c'est).
+- **Titre** et **légende des ronds orange** du schéma du datagramme.
+- **QR codes** des ressources (SVG statiques, générés une fois, aucun appel externe).
+- **Glisser-déposer** des 7 couches OSI · **SVG bilan** OSI/TCP-IP (recréation, pas de capture).
+- Extrait **Steve Jobs** sous-titré, sinon un encart écrit.
+- Reprise du fichier **`2nde-snt-t2-le-web.html`** : accueillir « Internet ≠ Web » et le Minitel.
+- Portage dans **t0** (référentiel vivant) : échelle d'évaluabilité, barre de progression, révélation séquentielle, mécanique du QCM, glossaire permanent, mode enseignant.
+- **Test Playwright** de la page V3 (checklist §10 des consignes) : non exécuté.
+
 *Fin de la spec V2 — mise à jour au fil des validations (§10). Reporter la posture pédagogique (casque/stylet/autonomie) dans la spec de la séquence d'introduction (t0).*
