@@ -209,6 +209,36 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 
 ### SNT-T1 — Internet
 - État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.
+- 🔄 **21/07 (session JS) — un seul moteur par mécanisme.** La refonte V3 avait
+  empilé un bloc « MOTEURS V2 » sur le bloc historique sans finir la migration :
+  les deux se neutralisaient. Corrigé et testé (63 assertions jsdom, `node --check`
+  sur les 3 blocs de script) :
+  - **trous tolérants enfin branchés** — le bouton « Vérifier » est un *frère* du
+    `.cloze`, il était cherché à l'intérieur ; l'ancien correcteur strict est
+    supprimé. Variantes et **indices à deux niveaux** renseignés sur les 29 trous
+    (V1 **à valider**). Tolérance **durcie** : 0 faute sur un nombre ou une réponse
+    de ≤ 4 caractères, sinon « 1968 » passait pour « 1969 » et n'importe quelle
+    lettre passait dans une table de routage ;
+  - **QCM plein écran réparé** — il héritait de `body.focus-on`, dont la règle de
+    flou visait aussi son propre panneau : illisible, incliquable, sans sortie.
+    Classe dédiée `body.qcm-on` + bouton **✕ abandonner** (rien n'est validé) ;
+  - les moteurs V2 émettent `etape-validee`, désormais **écouté** : le déblocage
+    de la séance suivante suit réellement ;
+  - **plus aucune simulation locale** : les 7 champs rédigés (et pas 4) passent en
+    `data-focus` + `BASE.envoyerReponse`, codes `NET-R1..R7` ;
+  - **plus aucun QCM inline** : le doublon « contexte historique » supprimé, les 7
+    autres convertis en composant plein écran (`NET-Q1..Q7`, Q1 et Q2 fusionnés —
+    même étape). ⚠️ Ils ne font **qu'une question**, sous le minimum de 3-4 de la
+    §15.5 : questions supplémentaires **à écrire** ;
+  - `resetSeance` remet enfin tout à zéro ; `verdict()` rend le HTML de ses
+    messages ; l'interrupteur mort `.teacher-toggle` est purgé (le mode enseignant
+    reste la zone `.ens-zone`) ; picto Minitel dédoublonné.
+  - **Défaut de structure corrigé** : le champ de rédaction `NET-2c` n'était jamais
+    fermé — le bloc vocabulaire et le QCM `NET-1c` étaient avalés par le champ, et
+    l'étape ARPANET tombait dans la même `.step`.
+  - **Règle tactile inscrite** en `CONSIGNES-sequence-SNT.md` §16 (iPad et
+    téléphone) ; l'infobulle « Inria », portée par un seul `title`, devient une
+    bulle cliquable.
 - 🔄 **21/07 — refonte FAITE, en attente de relecture de Loïc.** Les cinq
   étapes de la spec sont en place et testées (Playwright : aucune erreur JS,
   verrouillage intact, parcours glossaire complet de bout en bout).

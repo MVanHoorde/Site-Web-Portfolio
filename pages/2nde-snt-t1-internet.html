@@ -52,12 +52,8 @@
   nav.seances a.retour{color:var(--ink-faint);border-right:1px solid var(--line);border-radius:9px 0 0 9px;margin-right:4px;padding-right:14px}
   nav.seances a.retour:hover{border-color:var(--line);color:var(--ink)}
   .spacer{flex:1}
-  .teacher-toggle{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:12.5px;color:var(--ink-soft);cursor:pointer;user-select:none}
-  .teacher-toggle input{display:none}
-  .switch{width:34px;height:19px;border-radius:100px;background:var(--line);position:relative;transition:.2s;flex:none}
-  .switch::after{content:"";position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
-  .teacher-toggle input:checked + .switch{background:var(--france)}
-  .teacher-toggle input:checked + .switch::after{left:17px}
+  /* .teacher-toggle supprimé le 21/07/2026 : le mode enseignant réel est la
+     zone .ens-zone en tête de page (code + minuterie, CONSIGNES §15.8). */
 
   /* LEGEND */
   .legend{display:flex;flex-wrap:wrap;gap:16px;margin:24px 0 4px;padding:13px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);font-size:13px;color:var(--ink-soft)}
@@ -245,6 +241,13 @@
     border:6px solid transparent;border-top-color:var(--ink)}
   .plustard .bulle b{color:#9db4ff}
   .plustard:hover .bulle,.plustard:focus .bulle,.plustard.ouvert .bulle{display:block}
+  /* variante « définition » : même bulle tactile, sans le picto ni la pastille */
+  .plustard.def{background:none;border:0;border-bottom:1px dotted var(--france);border-radius:0;
+    color:inherit;font-family:inherit;font-size:inherit;padding:0 1px;margin:0}
+  .plustard.def:hover,.plustard.def:focus{background:var(--france);color:#fff}
+  /* cible tactile : le composant est un bouton en ligne, on élargit sa zone
+     de contact sans casser le rythme du texte (LOT C — iPad et téléphone) */
+  .plustard::before{content:"";position:absolute;inset:-11px -6px;}
   @media (max-width:560px){.plustard .bulle{left:0;transform:none;max-width:76vw}.plustard .bulle::after{left:22px}}
 
   /* §7.6 — mode focus : le reste de la page s'efface pendant qu'on
@@ -321,7 +324,6 @@
     .seance-head{flex-direction:column;gap:2px}
     .cloze input{width:92px}
     .cloze input.short{width:58px}
-    nav.seances .teacher-toggle span.tlabel{display:none}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto;animation:none!important}}
 </style>
@@ -432,6 +434,16 @@ body.focus-on #prog, body.focus-on #prog4{display:none !important}
 .qcm-panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
      width:min(680px,100%);max-height:92vh;overflow:auto;padding:20px 22px}
 .qcm-panel .qtop{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+/* Le QCM plein écran n'utilise PAS body.focus-on : sa règle de flou visait
+   aussi .qcm-back. qcm-on se contente d'écarter les éléments flottants. */
+body.qcm-on #prog, body.qcm-on #prog4, body.qcm-on #glo-ouvrir{display:none !important}
+.qcm-panel .qtop .qclose{margin-left:10px;min-height:44px;min-width:44px;padding:0 12px;
+     display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);
+     border:1px solid var(--line);border-radius:10px;color:var(--ink-soft);
+     font-family:inherit;font-size:13px;cursor:pointer}
+.qcm-panel .qtop .qclose:hover{border-color:var(--err);color:var(--err)}
+.qcm-panel .qtop .qclose:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+@media (max-width:560px){.qcm-panel .qtop .qclose span{display:none}}
 .qcm-panel .qtop .qn{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em}
 .qcm-panel .qtop .qdots{display:flex;gap:5px;margin-left:auto}
 .qcm-panel .qtop .qdots i{width:8px;height:8px;border-radius:50%;background:var(--line);display:block}
@@ -519,7 +531,6 @@ body.focus-on #glo-ouvrir{display:none}
      border-radius:10px;padding:6px 12px;font-size:13px;color:#5c4200}
 body.teacher .ens-actif{display:flex}
 .ens-actif .chrono{font-family:"IBM Plex Mono",monospace;font-weight:600}
-.teacher-toggle{display:none !important}
 
 /* ---------- 13. Impression : la fiche sort en PDF par le navigateur ---------- */
 @media print{
@@ -580,10 +591,9 @@ body.teacher .ens-actif{display:flex}
     <a href="#s4" data-navlock="4"><span class="n">S4</span>Adresses &amp; DNS <span class="lockico">🔒</span></a>
     <a href="#deb"><span class="n">⏳</span>Bilan &amp; débranchée</a>
     <span class="spacer"></span>
-    <label class="teacher-toggle" title="Déverrouille toutes les séances (usage enseignant)">
-      <input type="checkbox" id="teacherMode">
-      <span class="switch"></span><span class="tlabel">Mode enseignant</span>
-    </label>
+    <!-- simple pont d'état pour le mode enseignant : l'interrupteur visible a
+         été retiré, la commande est la zone .ens-zone en tête de page. -->
+    <input type="checkbox" id="teacherMode" hidden>
   </div>
 </nav>
 <div class="wrap">
@@ -814,21 +824,13 @@ body.teacher .ens-actif{display:flex}
             </div>
 
             <div class="block-label">Ce que tu dois avoir retenu</div>
-            <div class="field" data-qcm data-answer="1">
-              <span class="field-type">QCM</span>
-              <div class="field-q">Dans quel <b>contexte historique</b> naît le projet qui donnera Internet ?</div>
-              <div class="opts">
-                <button class="opt"><span class="mark"></span>La Seconde Guerre mondiale</button>
-                <button class="opt"><span class="mark"></span>La guerre froide</button>
-                <button class="opt"><span class="mark"></span>La chute du mur de Berlin</button>
-              </div>
-              <div class="verdict"></div>
-            </div>
+            <!-- QCM « contexte historique » retiré le 21/07/2026 : doublon exact de la
+                 question 2 du QCM plein écran NET-1c, juste en dessous. -->
             <div class="field">
               <span class="field-type">Texte à trous</span>
               <div class="field-q">Complète la carte d'identité du réseau, d'après l'écoute.</div>
               <div class="cloze" data-cloze>
-                L'ancêtre d'Internet s'appelle <input data-answer="arpanet" placeholder="nom" aria-label="nom de l'ancêtre d'Internet">, né aux <input data-answer="états-unis" placeholder="pays" aria-label="pays"> en <input class="short" data-answer="1969" placeholder="année" aria-label="année">. Il est financé au départ par <input data-answer="l'armée" placeholder="qui ?" aria-label="financeur"> américaine, et sert à relier des ordinateurs de plusieurs <input data-answer="universités" placeholder="quoi ?" aria-label="type d'établissement">.
+                L'ancêtre d'Internet s'appelle <input data-answer="arpanet" placeholder="nom" aria-label="nom de l'ancêtre d'Internet" data-variantes="arpa-net|le réseau arpanet" data-indice1="Son nom colle le sigle de l’agence qui l’a financé (ARPA) au mot anglais pour réseau." data-indice2="Sept lettres : ARPA + NET.">, né aux <input data-answer="états-unis" placeholder="pays" aria-label="pays" data-variantes="usa|etats unis|amérique|états-unis d’amérique|u.s.a." data-indice1="Les quatre premiers nœuds sont UCLA, Stanford, Santa Barbara et l’Utah : cherche-les sur une carte." data-indice2="Deux mots reliés par un trait d’union — on accepte aussi USA."> en <input class="short" data-answer="1969" placeholder="année" aria-label="année" data-indice1="La même année, deux hommes marchent sur la Lune." data-indice2="196_ : c’est la toute dernière année des années 60.">. Il est financé au départ par <input data-answer="l'armée" placeholder="qui ?" aria-label="financeur" data-variantes="armée|l’armée américaine|la défense|le ministère de la défense|arpa|darpa|militaires" data-indice1="Ce n’est ni une entreprise ni une université : le financeur dépend du ministère de la Défense américain." data-indice2="Un mot de cinq lettres avec un accent : l’ar___."> américaine, et sert à relier des ordinateurs de plusieurs <input data-answer="universités" placeholder="quoi ?" aria-label="type d'établissement" data-variantes="université|des universités|facultés|universités américaines" data-indice1="Regarde le croquis de décembre 1969 : UCLA, Stanford, Santa Barbara, Utah — tous du même type." data-indice2="Le mot est au pluriel et commence par « univ ».">.
               </div>
               <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
@@ -846,6 +848,7 @@ body.teacher .ens-actif{display:flex}
                 <div class="rl">📡 Pour compléter ta réponse</div>
                 Le <b>télégraphe</b> (années 1830-40) transmet déjà des messages à travers un continent, puis le <b>téléphone</b>, la <b>radio</b>, la <b>télévision</b> — sans oublier le courrier postal. La grande différence d'Internet : l'information y est <b>numérique</b> (des 0 et des 1, donc du texte, du son, de l'image et de la vidéo dans le <em>même</em> tuyau), et elle voyage <b>découpée en paquets</b> qui trouvent chacun leur chemin. C'est cette idée-là, la <b>commutation de paquets</b>, qui change tout — on la démonte à la séance 3.
               </div>
+            </div>
             <div class="block-label">Vocabulaire de l'écoute</div>
             <div class="glosmot" style="border-left-color:var(--link);background:var(--link-wash)">
               <div class="gl-head" style="color:var(--link)"><span>🗣️</span>Trois mots qui reviennent</div>
@@ -954,7 +957,7 @@ body.teacher .ens-actif{display:flex}
               <figcaption>Le réseau <b>CYCLADES</b>&nbsp;: Rocquencourt, Paris, Rennes, Grenoble, Toulouse. Des liaisons à 4,8 et 48 kilobits par seconde — de quoi transmettre à peu près une phrase par seconde.<span class="src">Carte du réseau CYCLADES — Wikimedia Commons ⚖️ licence à confirmer</span></figcaption>
             </figure>
 
-          <p>Au début des années 1970, l'ingénieur français <b>Louis Pouzin</b> (né en 1931, polytechnicien) dirige à l'IRIA — l'ancêtre de l'<b title="Institut national de recherche en informatique et en automatique. Depuis 2011, l'institut s'écrit « Inria » et non plus « INRIA » : il a volontairement abandonné le sigle." style="border-bottom:1px dotted var(--france);cursor:help">Inria</b> — le projet <b>CYCLADES</b>, un réseau expérimental reliant des universités et des centres de recherche français. Sa grande idée : le <b>datagramme</b>.</p>
+          <p>Au début des années 1970, l'ingénieur français <b>Louis Pouzin</b> (né en 1931, polytechnicien) dirige à l'IRIA — l'ancêtre de l'<button type="button" class="plustard def" data-plustard aria-label="Inria : voir la définition">Inria<span class="bulle">Institut national de recherche en informatique et en automatique. Depuis 2011, l'institut s'écrit « <b>Inria</b> » et non plus « INRIA » : il a volontairement abandonné le sigle.</span></button> — le projet <b>CYCLADES</b>, un réseau expérimental reliant des universités et des centres de recherche français. Sa grande idée : le <b>datagramme</b>.</p>
           <p>Jusque-là, on imaginait les réseaux comme le téléphone : on établit une ligne de bout en bout, puis on parle. Pouzin propose l'inverse : <b>découper chaque message en petits paquets indépendants</b>, chacun portant l'adresse de destination, chacun libre de prendre <b>son propre chemin</b> à travers le réseau. Si une route est coupée, le paquet en prend une autre ; à l'arrivée, on réassemble le tout. Le réseau devient simple, robuste et sans chef d'orchestre. CYCLADES en fait la démonstration dès <b>1973</b>.</p>
 
           <div class="block-label">Schéma — qu'est-ce qu'un datagramme&nbsp;?</div>
@@ -1016,13 +1019,16 @@ body.teacher .ens-actif{display:flex}
             <a href="https://www.canal-u.tv/chaines/cemu/cours-de-culture-numerique-2014-2015/02a-histoire-de-l-internet-cn14-15" target="_blank" rel="noopener">Canal-U — Histoire de l'Internet (cours)</a>
           </div>
 
-          <div class="field free" data-free style="margin-top:12px;background:#fff">
-            <span class="field-type">Réponse rédigée</span>
+          <div class="field free" data-focus style="margin-top:12px;background:#fff"
+               data-focus-titre="Le datagramme de Louis Pouzin"
+               data-focus-question="Explique avec tes mots ce qu'est le <b>datagramme</b>, et pourquoi on peut dire que TCP/IP « doit beaucoup » à Louis Pouzin."
+               data-focus-max="400" data-focus-min="40" data-focus-code="NET-R1">
+            <span class="field-type">Réponse rédigée · mode focus · envoyée pour correction</span>
             <div class="field-q">Explique avec tes mots ce qu'est le <b>datagramme</b>, et pourquoi on peut dire que TCP/IP « doit beaucoup » à Louis Pouzin.</div>
-            <textarea placeholder="Écris ta réponse avec tes mots (le copier-coller est bloqué)…" aria-label="Réponse rédigée"></textarea>
-            <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+            <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+            <div class="gtexte" data-focus-echo></div>
             <div class="verdict"></div>
-            <div class="reveal" data-reveal>
+            <div class="reveal" data-reveal="">
               <div class="rl">🏛️ Le sais-tu ? — une reconnaissance très tardive</div>
               En <b>2013</b>, Louis Pouzin reçoit à Londres le tout premier <b>Queen Elizabeth Prize for Engineering</b> — aux côtés de Vint Cerf, Bob Kahn et Tim Berners-Lee — comme l'un des pères fondateurs d'Internet. Il aura fallu quarante ans pour que le monde reconnaisse officiellement la part française de l'invention.
             </div>
@@ -1081,30 +1087,31 @@ body.teacher .ens-actif{display:flex}
             <div class="retain">Trois dates suffisent pour cette étape : <b>1971</b> le courriel et le <b>@</b> · <b>1<sup>er</sup> janvier 1983</b> la bascule sur <b>TCP/IP</b> et la séparation de MILNET · <b>1986</b> NSFNET devient l'épine dorsale civile. Retiens surtout qu'Internet est une <b>œuvre collective sans inventeur unique</b>, née à la fois de la recherche militaire et de la contre-culture californienne.</div>
 
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field" data-qcm data-answer="2">
-              <span class="field-type">QCM</span>
-              <div class="field-q">En quelle année les militaires se séparent-ils du réseau scientifique (naissance de MILNET) ?</div>
-              <div class="opts">
-                <button class="opt"><span class="mark"></span>1969</button>
-                <button class="opt"><span class="mark"></span>1976</button>
-                <button class="opt"><span class="mark"></span>1983</button>
-              </div>
-              <div class="verdict"></div>
-            </div>
-
-            <div class="field" data-qcm data-answer="0">
-              <span class="field-type">QCM · esprit critique</span>
-              <div class="field-q">Le podcast que tu viens d'écouter a été enregistré en <b>2022</b> et parle d'environ <b>3 milliards</b> d'êtres humains connectés. Début 2026, on en compte environ <b>6 milliards</b> — soit près de <b>3 humains sur 4</b>. Qu'est-ce que ça doit t'apprendre ?</div>
-              <div class="opts">
-                <button class="opt"><span class="mark"></span>Qu'un chiffre sur le numérique se périme vite : il faut toujours regarder sa date et sa source</button>
-                <button class="opt"><span class="mark"></span>Que le podcast s'est trompé et n'est pas fiable</button>
-                <button class="opt"><span class="mark"></span>Que tout le monde sur Terre est connecté aujourd'hui</button>
-              </div>
-              <div class="verdict"></div>
-              <div class="reveal" data-reveal>
-                <div class="rl">🌍 Et les autres ?</div>
-                Environ <b>2 milliards de personnes restent hors ligne</b>, et pas au hasard : la couverture est très inégale selon les régions (Afrique centrale, Asie du Sud). Le réseau « mondial » ne l'est donc pas encore tout à fait. <span style="display:block;margin-top:6px;font-size:12.5px;opacity:.85">Source du chiffre : <i>Digital Report 2026</i>, We Are Social / Meltwater — à re-vérifier chaque année.</span>
-              </div>
+            <div class="qcmbox" data-code="NET-Q1">
+              <script type="application/json" class="qcm-data">
+              [
+               {
+                "q": "En quelle année les militaires se séparent-ils du réseau scientifique (naissance de MILNET) ?",
+                "o": [
+                 "1969",
+                 "1976",
+                 "1983"
+                ],
+                "r": 2,
+                "c": ""
+               },
+               {
+                "q": "Le podcast que tu viens d'écouter a été enregistré en <b>2022</b> et parle d'environ <b>3 milliards</b> d'êtres humains connectés. Début 2026, on en compte environ <b>6 milliards</b> — soit près de <b>3 humains sur 4</b>. Qu'est-ce que ça doit t'apprendre ?",
+                "o": [
+                 "Qu'un chiffre sur le numérique se périme vite : il faut toujours regarder sa date et sa source",
+                 "Que le podcast s'est trompé et n'est pas fiable",
+                 "Que tout le monde sur Terre est connecté aujourd'hui"
+                ],
+                "r": 0,
+                "c": "<b>🌍 Et les autres ?</b> Environ <b>2 milliards de personnes restent hors ligne</b>, et pas au hasard : la couverture est très inégale selon les régions (Afrique centrale, Asie du Sud). Le réseau « mondial » ne l'est donc pas encore tout à fait. <span style=\"display:block;margin-top:6px;font-size:12.5px;opacity:.85\">Source du chiffre : <i>Digital Report 2026</i>, We Are Social / Meltwater — à re-vérifier chaque année.</span>"
+               }
+              ]
+              </script>
             </div>
           </div>
         </div>
@@ -1140,7 +1147,7 @@ body.teacher .ens-actif{display:flex}
               <div class="ev"><span class="an">1977</span> <span class="tx">Première démonstration reliant <b>trois réseaux différents</b> : l'<i>inter</i>-net existe pour de vrai.</span></div>
               <div class="ev"><span class="an">1978</span> <span class="tx">La France crée la <b>CNIL</b> pour protéger les données personnelles — bien avant le Web.</span></div>
               <div class="ev"><span class="an">1979</span> <span class="tx"><b>Usenet</b> : les premiers groupes de discussion, ancêtres des forums, de Reddit et de Discord.</span></div>
-              <div class="ev"><span class="an">1980</span> <span class="tx">Lancement du <b>Minitel</b> en France<button type="button" class="plustard" data-plustard><span aria-hidden="true">🔭</span>à voir plus tard<span class="bulle">Le <b>Minitel</b> est développé pour de bon dans la <b>séquence sur le Web</b>&nbsp;: c'est là qu'on comparera un réseau <b>centralisé</b> et un réseau <b>décentralisé</b>.</span></button>.</span></div>
+              <div class="ev"><span class="an">1980</span> <span class="tx">Lancement du <b>Minitel</b> en France.</span></div>
               <div class="ev cle"><span class="an">1983</span> <span class="tx">Le 1<sup>er</sup> janvier, ARPANET bascule sur le <b>modèle TCP/IP</b> : c'est la naissance d'Internet. La même année, le réseau militaire s'en sépare (MILNET).</span></div>
               <div class="ev"><span class="an">1986</span> <span class="tx"><b>NSFNET</b> prend la relève d'ARPANET comme colonne vertébrale civile.</span></div>
               <div class="ev cle"><span class="an">1989</span> <span class="tx">Au <b>CERN</b>, Tim Berners-Lee invente le <b>Web</b> — un service parmi d'autres sur Internet.</span></div>
@@ -1211,11 +1218,14 @@ body.teacher .ens-actif{display:flex}
       </div>
       <div class="bonus-body">
         <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé).</p>
-        <div class="field free" data-free>
-          <span class="field-type">Question ouverte</span>
+        <div class="field free" data-focus
+             data-focus-titre="Une invention en avance peut-elle échouer ?"
+             data-focus-question="La France avait, avec CYCLADES, une avance réelle — et elle a pourtant arrêté le projet. À ton avis, <b>pourquoi</b> une invention peut-elle échouer alors qu'elle est techniquement en avance ? Donne au moins deux raisons possibles."
+             data-focus-max="400" data-focus-min="40" data-focus-code="NET-R2">
+          <span class="field-type">Question ouverte · mode focus · envoyée pour correction</span>
           <div class="field-q">La France avait, avec CYCLADES, une avance réelle — et elle a pourtant arrêté le projet. À ton avis, <b>pourquoi</b> une invention peut-elle échouer alors qu'elle est techniquement en avance ? Donne au moins deux raisons possibles.</div>
-          <textarea placeholder="Argumente avec tes propres mots…" aria-label="Réponse ouverte"></textarea>
-          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+          <div class="gtexte" data-focus-echo></div>
           <div class="verdict"></div>
         </div>
       </div>
@@ -1324,18 +1334,21 @@ body.teacher .ens-actif{display:flex}
               <span class="field-type">Texte à trous</span>
               <div class="field-q">Un calcul d'ordre de grandeur : la circonférence de la Terre fait ≈ 40 000 km.</div>
               <div class="cloze" data-cloze>
-                1 200 000 km de câbles ÷ 40 000 km = <input class="short" data-answer="30" placeholder="?" aria-label="nombre de tours de la Terre"> tours de la Terre. Le tout premier câble transatlantique en <b>fibre optique</b> (TAT-8) date de <input class="short" data-answer="1988" placeholder="année" aria-label="année du TAT-8">.
+                1 200 000 km de câbles ÷ 40 000 km = <input class="short" data-answer="30" placeholder="?" aria-label="nombre de tours de la Terre" data-indice1="Simplifie la division par 10 000 : cela revient à calculer 120 ÷ 4." data-indice2="Le « À retenir » juste au-dessus donne déjà le résultat."> tours de la Terre. Le tout premier câble transatlantique en <b>fibre optique</b> (TAT-8) date de <input class="short" data-answer="1988" placeholder="année" aria-label="année du TAT-8" data-indice1="TAT-8 est posé à la toute fin des années 1980." data-indice2="Juste un an avant l’invention du Web au CERN, que la frise date de 1989.">.
               </div>
               <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
             </div>
-            <div class="field free" data-free>
-              <span class="field-type">Réponse rédigée</span>
+            <div class="field free" data-focus
+                 data-focus-titre="Ce qui menace les câbles sous-marins"
+                 data-focus-question="Cite <b>deux dangers</b> qui menacent les câbles sous-marins, et propose une conséquence possible pour les internautes d'une région touchée."
+                 data-focus-max="400" data-focus-min="40" data-focus-code="NET-R3">
+              <span class="field-type">Réponse rédigée · mode focus · envoyée pour correction</span>
               <div class="field-q">Cite <b>deux dangers</b> qui menacent les câbles sous-marins, et propose une conséquence possible pour les internautes d'une région touchée.</div>
-              <textarea placeholder="Écris ta réponse avec tes mots (le copier-coller est bloqué)…" aria-label="Réponse rédigée"></textarea>
-              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
-              <div class="reveal" data-reveal>
+              <div class="reveal" data-reveal="">
                 <div class="rl">🦈 Le sais-tu ?</div>
                 Les vrais ennemis des câbles sont les <b>ancres de bateaux</b>, les <b>chaluts de pêche</b> et les <b>séismes sous-marins</b> — plusieurs dizaines de coupures par an ! Et oui, quelques <b>requins</b> ont bel et bien mordu des câbles : Google a renforcé certains des siens avec une gaine façon kevlar. Réparer un câble, c'est envoyer un navire spécialisé le remonter à la surface pour le ressouder.
               </div>
@@ -1364,15 +1377,21 @@ body.teacher .ens-actif{display:flex}
             <div class="block-label">À retenir</div>
             <div class="retain">Le dernier tronçon jusqu'à chez toi peut être en <b>fibre optique</b> (très haut débit), en <b>ADSL</b> (ligne téléphonique en cuivre, plus lent), ou passer par la <b>4G/5G</b> ou le satellite. Les zones très denses (villes) sont mieux servies que les zones rurales : déployer la fibre coûte cher au kilomètre pour peu d'habitants. L'<b>ARCEP</b> est l'autorité publique qui surveille tout ça.</div>
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field" data-qcm data-answer="2">
-              <span class="field-type">QCM</span>
-              <div class="field-q">Pourquoi trouve-t-on souvent de meilleurs débits en ville qu'à la campagne ?</div>
-              <div class="opts">
-                <button class="opt"><span class="mark"></span>Les ondes Wi-Fi portent plus loin en ville</button>
-                <button class="opt"><span class="mark"></span>Les campagnes n'ont pas le droit à la fibre</button>
-                <button class="opt"><span class="mark"></span>Raccorder beaucoup d'habitants proches coûte moins cher par personne</button>
-              </div>
-              <div class="verdict"></div>
+            <div class="qcmbox" data-code="NET-Q3">
+              <script type="application/json" class="qcm-data">
+              [
+               {
+                "q": "Pourquoi trouve-t-on souvent de meilleurs débits en ville qu'à la campagne ?",
+                "o": [
+                 "Les ondes Wi-Fi portent plus loin en ville",
+                 "Les campagnes n'ont pas le droit à la fibre",
+                 "Raccorder beaucoup d'habitants proches coûte moins cher par personne"
+                ],
+                "r": 2,
+                "c": ""
+               }
+              ]
+              </script>
             </div>
           </div>
         </div>
@@ -1402,11 +1421,14 @@ body.teacher .ens-actif{display:flex}
       </div>
       <div class="bonus-body">
         <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé).</p>
-        <div class="field free" data-free>
-          <span class="field-type">Question ouverte</span>
+        <div class="field free" data-focus
+             data-focus-titre="Pourquoi Marseille ?"
+             data-focus-question="Sur la carte des câbles, retrouve <b>2Africa</b>, le câble le plus long du monde (~45 000 km), qui arrive à Marseille. À ton avis, <b>pourquoi Marseille</b> est-elle devenue une porte d'entrée majeure d'Internet en Europe ? Pense géographie… et histoire."
+             data-focus-max="400" data-focus-min="40" data-focus-code="NET-R4">
+          <span class="field-type">Question ouverte · mode focus · envoyée pour correction</span>
           <div class="field-q">Sur la carte des câbles, retrouve <b>2Africa</b>, le câble le plus long du monde (~45 000 km), qui arrive à Marseille. À ton avis, <b>pourquoi Marseille</b> est-elle devenue une porte d'entrée majeure d'Internet en Europe ? Pense géographie… et histoire.</div>
-          <textarea placeholder="Argumente avec tes propres mots…" aria-label="Réponse ouverte"></textarea>
-          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+          <div class="gtexte" data-focus-echo></div>
           <div class="verdict"></div>
         </div>
       </div>
@@ -1447,15 +1469,21 @@ body.teacher .ens-actif{display:flex}
             <div class="block-label">À retenir</div>
             <div class="retain">Un <b>protocole</b> est un <b>ensemble de règles</b> que deux machines suivent pour échanger des informations (comment se présenter, comment découper les données, comment confirmer la réception…). Sur Internet, ces règles sont rassemblées dans le <b>modèle TCP/IP</b>, qui <b>contient</b> de nombreux protocoles — dont les deux qui lui donnent son nom, <code>TCP</code> et <code>IP</code>. ⚠️ On dit donc « le <b>modèle</b> TCP/IP », jamais « le protocole TCP/IP ».</div>
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field" data-qcm data-answer="0">
-              <span class="field-type">QCM</span>
-              <div class="field-q">Un protocole informatique, c'est…</div>
-              <div class="opts">
-                <button class="opt"><span class="mark"></span>un ensemble de règles communes pour échanger des données</button>
-                <button class="opt"><span class="mark"></span>un logiciel qu'on installe sur son ordinateur</button>
-                <button class="opt"><span class="mark"></span>un câble spécial très rapide</button>
-              </div>
-              <div class="verdict"></div>
+            <div class="qcmbox" data-code="NET-Q4">
+              <script type="application/json" class="qcm-data">
+              [
+               {
+                "q": "Un protocole informatique, c'est…",
+                "o": [
+                 "un ensemble de règles communes pour échanger des données",
+                 "un logiciel qu'on installe sur son ordinateur",
+                 "un câble spécial très rapide"
+                ],
+                "r": 0,
+                "c": ""
+               }
+              ]
+              </script>
             </div>
           </div>
         </div>
@@ -1604,26 +1632,28 @@ body.teacher .ens-actif{display:flex}
               <span class="field-type">Texte à trous</span>
               <div class="field-q">Le vocabulaire de l'encapsulation, dans l'ordre de la descente.</div>
               <div class="cloze" data-cloze>
-                message → <input data-answer="segment" placeholder="?" aria-label="après le message"> → <input data-answer="datagramme" placeholder="?" aria-label="après le segment"> → <input data-answer="trame" placeholder="?" aria-label="après le datagramme"> → bits.
-                Le modèle OSI compte <input class="short" data-answer="7" placeholder="?" aria-label="nombre de couches OSI"> couches, le modèle TCP/IP en compte <input class="short" data-answer="4" placeholder="?" aria-label="nombre de couches TCP/IP">.
+                message → <input data-answer="segment" placeholder="?" aria-label="après le message" data-variantes="segments" data-indice1="C’est la couche Transport (TCP) qui donne son nom à ce morceau." data-indice2="Sept lettres, cela commence par « seg » — la chaîne complète est dans le « À retenir »."> → <input data-answer="datagramme" placeholder="?" aria-label="après le segment" data-variantes="datagrammes|paquet ip|paquet" data-indice1="C’est l’invention de Louis Pouzin, rencontrée à la séance 1." data-indice2="Onze lettres : « data » + « gramme »."> → <input data-answer="trame" placeholder="?" aria-label="après le datagramme" data-variantes="trames" data-indice1="C’est le dernier emballage avant les bits, au contact du câble." data-indice2="Cinq lettres, cela commence par « tr »."> → bits.
+                Le modèle OSI compte <input class="short" data-answer="7" placeholder="?" aria-label="nombre de couches OSI" data-indice1="C’est le modèle théorique, celui que tu viens de remettre dans l’ordre par glisser-déposer." data-indice2="Autant que de jours dans une semaine."> couches, le modèle TCP/IP en compte <input class="short" data-answer="4" placeholder="?" aria-label="nombre de couches TCP/IP" data-indice1="Application · Transport · Internet · Accès réseau : compte-les." data-indice2="Un de moins que les doigts d’une main.">.
               </div>
               <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
             </div>
 
-            <div class="field" data-qcm data-answer="1">
-              <span class="field-type">QCM</span>
-              <div class="field-q">Différence entre <b>TCP</b> et <b>UDP</b> ?</div>
-              <div class="opts">
-                <button class="opt"><span class="mark"></span>TCP transporte du texte, UDP transporte des images</button>
-                <button class="opt"><span class="mark"></span>TCP vérifie que tout est bien arrivé (accusé de réception), UDP envoie sans vérifier — plus rapide, mais des morceaux peuvent manquer</button>
-                <button class="opt"><span class="mark"></span>TCP est français, UDP est américain</button>
-              </div>
-              <div class="verdict"></div>
-              <div class="reveal" data-reveal>
-                <div class="rl">🎮 Où les croises-tu ?</div>
-                Une page web ou un fichier téléchargé passent par <b>TCP</b> : il ne manquerait pas une lettre. Un appel vidéo ou un jeu en ligne préfèrent souvent <b>UDP</b> : mieux vaut une image légèrement dégradée <em>tout de suite</em> qu'une image parfaite avec deux secondes de retard.
-              </div>
+            <div class="qcmbox" data-code="NET-Q5">
+              <script type="application/json" class="qcm-data">
+              [
+               {
+                "q": "Différence entre <b>TCP</b> et <b>UDP</b> ?",
+                "o": [
+                 "TCP transporte du texte, UDP transporte des images",
+                 "TCP vérifie que tout est bien arrivé (accusé de réception), UDP envoie sans vérifier — plus rapide, mais des morceaux peuvent manquer",
+                 "TCP est français, UDP est américain"
+                ],
+                "r": 1,
+                "c": "<b>🎮 Où les croises-tu ?</b> Une page web ou un fichier téléchargé passent par <b>TCP</b> : il ne manquerait pas une lettre. Un appel vidéo ou un jeu en ligne préfèrent souvent <b>UDP</b> : mieux vaut une image légèrement dégradée <em>tout de suite</em> qu'une image parfaite avec deux secondes de retard."
+               }
+              ]
+              </script>
             </div>
 
             <div class="bonus-wrap" data-bonus style="margin-top:16px">
@@ -1739,9 +1769,9 @@ body.teacher .ens-actif{display:flex}
                 <table class="doc-table">
                   <tr><th colspan="2">Table du routeur C</th><th colspan="2">Table du routeur D</th></tr>
                   <tr><th>Pour</th><th>Envoyer à</th><th>Pour</th><th>Envoyer à</th></tr>
-                  <tr><td><b>A</b></td><td><input class="short" data-answer="A" placeholder="?" aria-label="C vers A"></td><td><b>A</b></td><td><input class="short" data-answer="C" placeholder="?" aria-label="D vers A"></td></tr>
-                  <tr><td><b>B</b></td><td><input class="short" data-answer="B" placeholder="?" aria-label="C vers B"></td><td><b>B</b></td><td><input class="short" data-answer="C" placeholder="?" aria-label="D vers B"></td></tr>
-                  <tr><td><b>D</b></td><td><input class="short" data-answer="D" placeholder="?" aria-label="C vers D"></td><td><b>C</b></td><td><input class="short" data-answer="C" placeholder="?" aria-label="D vers C"></td></tr>
+                  <tr><td><b>A</b></td><td><input class="short" data-answer="A" placeholder="?" aria-label="C vers A" data-indice1="Regarde le schéma : C touche-t-il A directement ?" data-indice2="Oui — quand le voisin est la destination, on écrit la destination elle-même."></td><td><b>A</b></td><td><input class="short" data-answer="C" placeholder="?" aria-label="D vers A" data-indice1="Compte les lignes qui partent de D sur le schéma : il n’y en a qu’une." data-indice2="D ne touche que C : toutes ses réponses sont donc identiques."></td></tr>
+                  <tr><td><b>B</b></td><td><input class="short" data-answer="B" placeholder="?" aria-label="C vers B" data-indice1="C est le carrefour : il touche A, B et D." data-indice2="B est un voisin direct de C : livraison en direct."></td><td><b>B</b></td><td><input class="short" data-answer="C" placeholder="?" aria-label="D vers B" data-indice1="D n’a qu’un seul voisin, quelle que soit la destination." data-indice2="D ne touche que C : toutes ses réponses sont donc identiques."></td></tr>
+                  <tr><td><b>D</b></td><td><input class="short" data-answer="D" placeholder="?" aria-label="C vers D" data-indice1="C est le seul routeur relié à D." data-indice2="D est un voisin direct de C : livraison en direct."></td><td><b>C</b></td><td><input class="short" data-answer="C" placeholder="?" aria-label="D vers C" data-indice1="Ici, le voisin est aussi la destination." data-indice2="D ne touche que C : toutes ses réponses sont donc identiques."></td></tr>
                 </table>
               </div>
               <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
@@ -1823,11 +1853,14 @@ body.teacher .ens-actif{display:flex}
       </div>
       <div class="bonus-body">
         <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé).</p>
-        <div class="field free" data-free>
-          <span class="field-type">Question ouverte</span>
+        <div class="field free" data-focus
+             data-focus-titre="Un réseau sans centre"
+             data-focus-question="Internet n'a <b>pas de centre</b> : aucun ordinateur « chef » ne dirige le réseau. À ton avis, qu'est-ce que ça change (en bien comme en moins bien) par rapport à un réseau qui aurait un centre unique ?"
+             data-focus-max="400" data-focus-min="40" data-focus-code="NET-R5">
+          <span class="field-type">Question ouverte · mode focus · envoyée pour correction</span>
           <div class="field-q">Internet n'a <b>pas de centre</b> : aucun ordinateur « chef » ne dirige le réseau. À ton avis, qu'est-ce que ça change (en bien comme en moins bien) par rapport à un réseau qui aurait un centre unique ?</div>
-          <textarea placeholder="Argumente avec tes propres mots…" aria-label="Réponse ouverte"></textarea>
-          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+          <div class="gtexte" data-focus-echo></div>
           <div class="verdict"></div>
         </div>
         <p style="font-size:13.5px;color:var(--ink-soft)">😎 Défi geek : ouvre la console du navigateur (<code>F12</code>) sur cette page… il s'y cache une commande à essayer.</p>
@@ -1873,15 +1906,21 @@ body.teacher .ens-actif{display:flex}
             <div class="block-label">À retenir</div>
             <div class="retain">Une <b>adresse IP</b> identifie de façon <b>unique</b> chaque machine sur un réseau. En <b>IPv4</b>, elle s'écrit avec <b>4 nombres entre 0 et 255</b> séparés par des points (4 octets = 32 bits). Sans adresse IP, pas de communication possible.</div>
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field" data-qcm data-answer="1">
-              <span class="field-type">QCM</span>
-              <div class="field-q">Laquelle de ces adresses IPv4 est valide ?</div>
-              <div class="opts">
-                <button class="opt"><span class="mark"></span><code>192.300.12.1</code></button>
-                <button class="opt"><span class="mark"></span><code>192.168.1.226</code></button>
-                <button class="opt"><span class="mark"></span><code>192.168.1</code></button>
-              </div>
-              <div class="verdict"></div>
+            <div class="qcmbox" data-code="NET-Q6">
+              <script type="application/json" class="qcm-data">
+              [
+               {
+                "q": "Laquelle de ces adresses IPv4 est valide ?",
+                "o": [
+                 "<code>192.300.12.1</code>",
+                 "<code>192.168.1.226</code>",
+                 "<code>192.168.1</code>"
+                ],
+                "r": 1,
+                "c": ""
+               }
+              ]
+              </script>
             </div>
           </div>
         </div>
@@ -1902,15 +1941,21 @@ body.teacher .ens-actif{display:flex}
             <div class="block-label">À retenir</div>
             <div class="retain">L'adresse <b>publique</b> (unique au monde) est celle de la <b>box/routeur</b>, la passerelle vers Internet. Les adresses <b>privées</b> ne valent qu'à l'intérieur du réseau local, et sont distribuées automatiquement par le serveur <b><code>DHCP</code></b> de la box. Un appareil qui se reconnecte peut recevoir une adresse différente : l'attribution est <b>dynamique</b>.</div>
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field" data-qcm data-answer="2">
-              <span class="field-type">QCM</span>
-              <div class="field-q">Chez toi, qui attribue leur adresse IP privée à ton téléphone, ta console et l'ordinateur familial ?</div>
-              <div class="opts">
-                <button class="opt"><span class="mark"></span>L'ICANN, depuis les États-Unis</button>
-                <button class="opt"><span class="mark"></span>Chacun choisit son adresse au hasard</button>
-                <button class="opt"><span class="mark"></span>La box, grâce à son serveur DHCP</button>
-              </div>
-              <div class="verdict"></div>
+            <div class="qcmbox" data-code="NET-Q7">
+              <script type="application/json" class="qcm-data">
+              [
+               {
+                "q": "Chez toi, qui attribue leur adresse IP privée à ton téléphone, ta console et l'ordinateur familial ?",
+                "o": [
+                 "L'ICANN, depuis les États-Unis",
+                 "Chacun choisit son adresse au hasard",
+                 "La box, grâce à son serveur DHCP"
+                ],
+                "r": 2,
+                "c": ""
+               }
+              ]
+              </script>
             </div>
           </div>
         </div>
@@ -2005,20 +2050,23 @@ body.teacher .ens-actif{display:flex}
               <span class="field-type">Texte à trous</span>
               <div class="field-q">Écris la bonne commande pour chaque mission (en minuscules).</div>
               <div class="cloze" data-cloze>
-                Connaître l'adresse IP de mon poste : <input data-answer="ipconfig" placeholder="commande" aria-label="commande de configuration"><br>
-                Tester si <code>www.qwant.com</code> répond : <input data-answer="ping" placeholder="commande" class="short" aria-label="commande de test"><br>
-                Suivre le chemin de mes paquets, routeur par routeur : <input data-answer="tracert" placeholder="commande" aria-label="commande d'itinéraire">
+                Connaître l'adresse IP de mon poste : <input data-answer="ipconfig" placeholder="commande" aria-label="commande de configuration" data-variantes="ipconfig /all|ifconfig" data-indice1="Le nom colle les deux lettres de « IP » au début du mot « configuration »." data-indice2="ip + config, en un seul mot, sans espace."><br>
+                Tester si <code>www.qwant.com</code> répond : <input data-answer="ping" placeholder="commande" class="short" aria-label="commande de test" data-variantes="ping www.qwant.com|ping qwant.com" data-indice1="C’est le bruit du sonar d’un sous-marin : on envoie, on écoute l’écho revenir." data-indice2="Quatre lettres — c’est aussi la commande cachée dans la console de cette page."><br>
+                Suivre le chemin de mes paquets, routeur par routeur : <input data-answer="tracert" placeholder="commande" aria-label="commande d'itinéraire" data-variantes="traceroute|tracert www.qwant.com" data-indice1="Le mot anglais « trace » (suivre à la trace) suivi du début de « route »." data-indice2="Sous Windows elle s’écrit en sept lettres, sans « ou » : trace + rt.">
               </div>
               <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
             </div>
-            <div class="field free" data-free>
-              <span class="field-type">Réponse rédigée</span>
+            <div class="field free" data-focus
+                 data-focus-titre="Lire deux tracert"
+                 data-focus-question="Compare tes deux <code>tracert</code> (Google et Qwant) : que remarques-tu sur le <b>nombre d'étapes</b> et les <b>chemins</b> ? Qu'est-ce que ça t'apprend sur Internet ?"
+                 data-focus-max="400" data-focus-min="40" data-focus-code="NET-R6">
+              <span class="field-type">Réponse rédigée · mode focus · envoyée pour correction</span>
               <div class="field-q">Compare tes deux <code>tracert</code> (Google et Qwant) : que remarques-tu sur le <b>nombre d'étapes</b> et les <b>chemins</b> ? Qu'est-ce que ça t'apprend sur Internet ?</div>
-              <textarea placeholder="Écris ta réponse avec tes mots (le copier-coller est bloqué)…" aria-label="Réponse rédigée"></textarea>
-              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
-              <div class="reveal" data-reveal>
+              <div class="reveal" data-reveal="">
                 <div class="rl">🌍 Le sais-tu ?</div>
                 Un simple <code>tracert</code> révèle souvent 10 à 15 routeurs traversés, parfois dans plusieurs pays… en moins de 100 millisecondes. Chaque ligne est un « saut » vers un routeur, avec son adresse IP : tu regardes littéralement ton paquet voyager de table de routage en table de routage — exactement le jeu du routage humain, mais à la vitesse de la lumière dans la fibre.
               </div>
@@ -2056,16 +2104,19 @@ body.teacher .ens-actif{display:flex}
           <span class="field-type">Défi geek</span>
           <div class="field-q">IPv6 &amp; hexadécimal — les adresses du futur. IPv4 manque d'adresses ; <b>IPv6</b> en propose 2¹²⁸ ≈ 3,4 × 10³⁸ (de quoi adresser chaque grain de sable de la planète…). On les écrit en <b>hexadécimal</b> : 16 symboles, de <code>0</code> à <code>9</code> puis de <code>A</code> à <code>F</code>.</div>
           <div class="cloze" data-cloze>
-            En hexadécimal, <code>F</code> vaut <input class="short" data-answer="15" placeholder="?" aria-label="F en décimal"> en décimal, et <code>10</code> vaut <input class="short" data-answer="16" placeholder="?" aria-label="10 hexa en décimal">.
+            En hexadécimal, <code>F</code> vaut <input class="short" data-answer="15" placeholder="?" aria-label="F en décimal" data-indice1="0 à 9 font déjà dix symboles, puis A vaut 10, B vaut 11, C vaut 12…" data-indice2="F est le seizième symbole, donc la seizième valeur en partant de zéro."> en décimal, et <code>10</code> vaut <input class="short" data-answer="16" placeholder="?" aria-label="10 hexa en décimal" data-indice1="En décimal on repart à 10 après avoir épuisé les dix symboles. En hexadécimal, on en a seize." data-indice2="« 10 » signifie « un paquet complet » : autant que de symboles disponibles.">.
           </div>
           <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
           <div class="verdict"></div>
         </div>
-        <div class="field free" data-free>
-          <span class="field-type">Manip maison</span>
+        <div class="field free" data-focus
+             data-focus-titre="Ma box vue de l’intérieur"
+             data-focus-question="À la maison, <b>avec l'accord d'un adulte</b> : tape l'adresse de ta box (souvent <code>192.168.1.1</code>) dans ton navigateur. Tu tombes sur son interface d'administration. Sans rien modifier, observe : combien d'appareils connectés ? Le DHCP est-il activé ? Raconte ce que tu as découvert."
+             data-focus-max="500" data-focus-min="40" data-focus-code="NET-R7">
+          <span class="field-type">Manip maison · mode focus · envoyée pour correction</span>
           <div class="field-q">À la maison, <b>avec l'accord d'un adulte</b> : tape l'adresse de ta box (souvent <code>192.168.1.1</code>) dans ton navigateur. Tu tombes sur son interface d'administration. Sans rien modifier, observe : combien d'appareils connectés ? Le DHCP est-il activé ? Raconte ce que tu as découvert.</div>
-          <textarea placeholder="Raconte ta découverte…" aria-label="Réponse ouverte"></textarea>
-          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+          <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+          <div class="gtexte" data-focus-echo></div>
           <div class="verdict"></div>
         </div>
       </div>
@@ -2142,12 +2193,12 @@ body.teacher .ens-actif{display:flex}
               <span class="field-type">Table de routage</span>
               <div class="field-q">Pour chaque destination, indique <b>le voisin à qui A doit remettre le paquet</b> (une seule lettre). Souviens-toi : A n'a pas besoin de connaître tout le trajet, seulement la <b>première direction</b>.</div>
               <div class="cloze" data-cloze>
-                Pour <b>B</b> → <input class="short" data-answer="b" placeholder="?" aria-label="A vers B"> ·
-                pour <b>C</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers C"> ·
-                pour <b>D</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers D"> ·
-                pour <b>E</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers E"> ·
-                pour <b>F</b> → <input class="short" data-answer="b" placeholder="?" aria-label="A vers F"> ·
-                pour <b>H</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers H">
+                Pour <b>B</b> → <input class="short" data-answer="b" placeholder="?" aria-label="A vers B" data-indice1="B est-il dans la liste des voisins directs de A ?" data-indice2="Oui : A–B est une liaison directe, le paquet part droit sur B."> ·
+                pour <b>C</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers C" data-indice1="C est-il dans la liste des voisins directs de A ?" data-indice2="Oui : A–C est une liaison directe, le paquet part droit sur C."> ·
+                pour <b>D</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers D" data-indice1="A ne touche pas D. Des deux voisins de A, lequel mène à D ?" data-indice2="C–D est une liaison directe : passe par C."> ·
+                pour <b>E</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers E" data-indice1="Cherche qui est relié à E dans la liste des voisins." data-indice2="C–E est une liaison directe : passe par C."> ·
+                pour <b>F</b> → <input class="short" data-answer="b" placeholder="?" aria-label="A vers F" data-indice1="F est relié à B et à G. Lequel des deux A touche-t-il ?" data-indice2="A–B–F : passe par B."> ·
+                pour <b>H</b> → <input class="short" data-answer="c" placeholder="?" aria-label="A vers H" data-indice1="Deux chemins mènent à H, par D ou par E — mais ils commencent tous les deux pareil." data-indice2="A–C–D–H ou A–C–E–H : dans les deux cas, passe par C.">
               </div>
               <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
@@ -2215,7 +2266,10 @@ body.teacher .ens-actif{display:flex}
     return "Réponse de "+host+" : octets=32 temps="+t+" ms TTL=1973 — (simulation 😉 le vrai ping se tape dans l'Invite de commandes. TTL=1973 ? L'année de CYCLADES, évidemment.)";
   };
 
-  function verdict(field,cls,msg){var v=field.querySelector('.verdict');if(!v)return;v.className='verdict show '+cls;v.textContent=msg;}
+  /* innerHTML : les messages sont écrits ici, dans le script — aucun texte
+     d'élève ne transite par ce chemin (la réponse rédigée passe par
+     [data-focus-echo], en textContent). */
+  function verdict(field,cls,msg){var v=field.querySelector('.verdict');if(!v)return;v.className='verdict show '+cls;v.innerHTML=msg;}
   function stepOf(el){return el.closest('[data-step]');}
   function markDone(el){var s=stepOf(el);if(s){s.classList.remove('is-wait');s.classList.add('is-done');}refresh();}
   function showReveal(field){var r=field.querySelector('[data-reveal]');if(r)r.classList.add('show');}
@@ -2253,35 +2307,26 @@ body.teacher .ens-actif{display:flex}
     });
   }
 
+  /* Les moteurs V2 (trous, QCM plein écran) valident l'étape eux-mêmes et
+     annoncent 'etape-validee'. Sans cette écoute, la classe is-done était
+     bien posée mais le déblocage de la séance suivante ne suivait pas. */
+  document.addEventListener('etape-validee',function(){ refresh(); });
+
   /* mode enseignant */
   document.getElementById('teacherMode').addEventListener('change',function(){
     document.body.classList.toggle('teacher',this.checked);
     refresh();
   });
 
-  /* ---------- QCM ---------- */
-  document.querySelectorAll('[data-qcm]').forEach(function(group){
-    var answer=parseInt(group.dataset.answer,10);
-    var opts=Array.from(group.querySelectorAll('.opt'));
-    opts.forEach(function(opt,i){
-      opt.addEventListener('click',function(){
-        var field=group.closest('.field');
-        opts.forEach(function(o){o.disabled=true;});
-        if(i===answer){opt.classList.add('correct');verdict(field,'ok','✅ Correct — étape validée. Tu peux aider un camarade sur cette question.');showReveal(field);markDone(group);}
-        else{opt.classList.add('wrong');opts[answer].classList.add('correct');verdict(field,'no','À revoir : la bonne réponse est en vert. Reprends la ressource plus haut.');}
-      });
-    });
-  });
+  /* ---------- QCM ----------
+     Retiré le 21/07/2026 : plus aucun QCM inline dans la page. Le QCM est un
+     composant plein écran (bloc MOTEURS V2, initQcm) — CONSIGNES §15.5. */
 
-  /* ---------- trous ---------- */
-  document.querySelectorAll('[data-check-cloze]').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var field=btn.closest('.field');var inputs=Array.from(field.querySelectorAll('[data-answer]'));var all=true;
-      inputs.forEach(function(inp){var ok=inp.value.trim().toLowerCase()===inp.dataset.answer.toLowerCase();inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);if(!ok)all=false;});
-      if(all){verdict(field,'ok','✅ Tout est juste — étape validée.');markDone(btn);}
-      else{verdict(field,'no','Presque : vérifie les cases en rouge, puis re-vérifie.');}
-    });
-  });
+  /* ---------- trous ----------
+     Retiré le 21/07/2026 : la correction des trous appartient au moteur
+     tolérant (bloc MOTEURS V2, initCloze). L'ancien correcteur strict
+     comparait en toLowerCase() et ne validait que le sans-faute, contraire
+     à la validation à l'envoi (CONSIGNES §15.7). Un seul moteur par mécanisme. */
 
   /* ---------- schéma / association ---------- */
   document.querySelectorAll('[data-check-diagram]').forEach(function(btn){
@@ -2293,22 +2338,10 @@ body.teacher .ens-actif{display:flex}
     });
   });
 
-  /* ---------- texte libre ---------- */
-  document.querySelectorAll('[data-free]').forEach(function(field){
-    var ta=field.querySelector('textarea');var meta=field.querySelector('[data-meta]');var send=field.querySelector('[data-send-free]');var blocked=false;
-    ['paste','drop'].forEach(function(ev){ta.addEventListener(ev,function(e){e.preventDefault();blocked=true;meta.innerHTML='<span class="warn">⨯ Copier-coller bloqué — écris toi-même</span>';setTimeout(update,1500);});});
-    function update(){var n=ta.value.trim().length;if(!blocked||document.activeElement===ta){meta.innerHTML=n+' caractère'+(n>1?'s':'')+' · saisie au clavier';}send.disabled=n<15;}
-    ta.addEventListener('input',function(){blocked=false;update();});
-    send.addEventListener('click',function(){
-      send.disabled=true;ta.readOnly=true;
-      var s=stepOf(field);if(s)s.classList.add('is-wait');
-      verdict(field,'wait','⏳ Réponse envoyée. Correction automatique en cours — ton professeur validera si besoin.');
-      setTimeout(function(){
-        verdict(field,'ok','✅ Réponse validée. Tu peux maintenant consulter et aider les camarades bloqués.');
-        showReveal(field);markDone(send);
-      }, reduce?400:2400);
-    });
-  });
+  /* ---------- texte libre ----------
+     Retiré le 21/07/2026 : la simulation locale (setTimeout, aucun envoi) est
+     contraire à CONSIGNES §7. Les sept champs rédigés sont passés en data-focus
+     et partent en base par BASE.envoyerReponse ; sans base, repli local propre. */
 
   /* ============================================================
      COMPOSANTS TRANSVERSES (spec §7)
@@ -2322,7 +2355,7 @@ body.teacher .ens-actif{display:flex}
      Au clic pour le tactile (le survol n'existe pas sur iPad), et
      focusable au clavier. */
   document.querySelectorAll('[data-plustard]').forEach(function(b){
-    b.setAttribute('aria-label','Notion abordée plus tard — voir le détail');
+    if(!b.hasAttribute('aria-label')) b.setAttribute('aria-label','Notion abordée plus tard — voir le détail');
     b.addEventListener('click',function(e){
       e.preventDefault();
       document.querySelectorAll('.plustard.ouvert').forEach(function(o){if(o!==b)o.classList.remove('ouvert');});
@@ -2549,7 +2582,22 @@ body.teacher .ens-actif{display:flex}
       var p=s.querySelector('.step-pip'); if(p){p.style.background='';p.style.borderColor='';}});
     sec.querySelectorAll('.opt').forEach(function(o){o.disabled=false;o.classList.remove('correct','wrong');});
     sec.querySelectorAll('textarea').forEach(function(t){t.value='';t.readOnly=false;});
-    sec.querySelectorAll('.cloze input').forEach(function(i){i.value='';i.classList.remove('ok','no');});
+    sec.querySelectorAll('.cloze input').forEach(function(i){i.value='';i.classList.remove('ok','no','juste','presque','revoir');});
+    sec.querySelectorAll('.cloze-msg').forEach(function(m){m.innerHTML='';});
+    sec.querySelectorAll('.indice').forEach(function(b){b.disabled=false;b.dataset.niveau='0';});
+    sec.querySelectorAll('.indice-txt').forEach(function(z){z.style.display='none';z.textContent='';});
+    sec.querySelectorAll('.qcm-recap').forEach(function(r){r.innerHTML='';r.style.display='none';});
+    sec.querySelectorAll('.qcm-lanceur button').forEach(function(b){b.textContent='Commencer';});
+    sec.querySelectorAll('[data-focus]').forEach(function(f){
+      f.classList.remove('rempli');
+      var e=f.querySelector('[data-focus-echo]'); if(e){e.textContent='';e.style.display='';}
+      var a=f.querySelector('.gaction'); if(a)a.style.display='';
+      var z=f.querySelector('[data-sortie]'); if(z){z.classList.remove('show');z.innerHTML='';}
+    });
+    sec.querySelectorAll('.osi-drag li').forEach(function(li){li.classList.remove('bon','mauvais','survol','en-cours');});
+    sec.querySelectorAll('[data-osi-verdict]').forEach(function(v){v.textContent='';v.style.color='';});
+    /* scores gardés en dataset pour la vue enseignant : ils repartent aussi */
+    sec.querySelectorAll('[data-step]').forEach(function(s){delete s.dataset.qcmScore;delete s.dataset.clozeScore;});
     sec.querySelectorAll('.label-selects select').forEach(function(s){s.value='';s.classList.remove('ok','no');});
     sec.querySelectorAll('.verdict').forEach(function(v){v.className='verdict';v.textContent='';});
     sec.querySelectorAll('[data-reveal]').forEach(function(r){r.classList.remove('show');});
@@ -2625,7 +2673,13 @@ function distance(a,b){                                    // Levenshtein
   }
   return prev[n];
 }
-function seuil(mot){ return mot.length<=7?1:2; }
+function seuil(mot){
+  /* Aucune tolérance là où une faute d'une lettre change la réponse :
+     dates, nombres, et lettres de table de routage. */
+  if(/^[0-9]+$/.test(mot)) return 0;
+  if(mot.length<=4) return 0;
+  return mot.length<=7?1:2;
+}
 
 /* ---------- 1. Révélation séquentielle des étapes ---------- */
 function initReveal(){
@@ -2779,7 +2833,7 @@ function initQcm(){
     try{ data=JSON.parse($('script.qcm-data',box).textContent); }catch(e){ return; }
     var lanceur=document.createElement('div');
     lanceur.className='qcm-lanceur';
-    lanceur.innerHTML='<span class="ql">✍️ QCM · '+data.length+' questions</span>'+
+    lanceur.innerHTML='<span class="ql">✍️ QCM · '+data.length+(data.length>1?' questions':' question')+'</span>'+
                       '<span style="font-size:13.5px;color:#8a4c0c">Obligatoire pour valider l\'étape.</span>'+
                       '<button type="button">Commencer</button>';
     box.appendChild(lanceur);
@@ -2792,7 +2846,10 @@ function initQcm(){
 }
 function jouerQcm(data,box,recap,lanceur){
   var i=0, resultats=[];
-  document.body.classList.add('focus-on');
+  /* PAS focus-on ici : sa règle de flou visait aussi .qcm-back, qui devenait
+     illisible et incliquable. Le panneau a déjà son propre voile
+     (backdrop-filter). qcm-on ne sert qu'à masquer les éléments flottants. */
+  document.body.classList.add('qcm-on');
   fondQcm.classList.add('on');
   var pan=$('.qcm-panel',fondQcm);
   function dessiner(){
@@ -2802,7 +2859,11 @@ function jouerQcm(data,box,recap,lanceur){
       return '<i class="'+c+(k===i?' cur':'')+'"></i>';
     }).join('');
     pan.innerHTML='<div class="qtop"><span class="qn">Question '+(i+1)+' / '+data.length+
-      '</span><span class="qdots">'+dots+'</span></div><h4>'+q.q+'</h4><div class="qzone"></div>';
+      '</span><span class="qdots">'+dots+'</span>'+
+      '<button type="button" class="qclose" aria-label="Abandonner le QCM : rien ne sera validé">'+
+      '✕ <span>abandonner</span></button>'+
+      '</div><h4>'+q.q+'</h4><div class="qzone"></div>';
+    $('.qclose',pan).addEventListener('click',abandonner);
     var zone=$('.qzone',pan);
     q.o.forEach(function(txt,k){
       var b=document.createElement('button');
@@ -2832,9 +2893,16 @@ function jouerQcm(data,box,recap,lanceur){
       else terminer();
     });
   }
+  function abandonner(){
+    /* sortie sans validation : rien n'est enregistré, l'étape reste à faire */
+    fondQcm.classList.remove('on');
+    document.body.classList.remove('qcm-on');
+    pan.innerHTML='';
+  }
+  fondQcm._abandonner = abandonner;
   function terminer(){
     fondQcm.classList.remove('on');
-    document.body.classList.remove('focus-on');
+    document.body.classList.remove('qcm-on');
     var n=resultats.filter(function(r){return r.bon;}).length;
     var h='<div class="rh">Récapitulatif — '+n+' / '+data.length+' bonnes réponses</div>';
     data.forEach(function(q,k){
@@ -2857,7 +2925,10 @@ function jouerQcm(data,box,recap,lanceur){
 /* ---------- 5. Trous tolérants (3 états + indices) ---------- */
 function initCloze(){
   $$('.cloze').forEach(function(bloc){
-    var btn=$('[data-check-cloze]',bloc);
+    /* le bouton Vérifier est un FRÈRE du bloc .cloze (il vit dans le .field),
+       pas un descendant : le chercher dans le bloc renvoyait toujours null. */
+    var conteneur = bloc.closest('.field') || bloc.parentElement;
+    var btn = conteneur ? conteneur.querySelector('[data-check-cloze]') : null;
     if(btn){ var neuf=btn.cloneNode(true); btn.parentNode.replaceChild(neuf,btn); btn=neuf; }
     var msg=document.createElement('div'); msg.className='cloze-msg'; bloc.appendChild(msg);
 
@@ -2907,7 +2978,11 @@ function initCloze(){
       $('.cloze-msg',bloc).innerHTML=h;
       /* validation à l'envoi : avoir répondu suffit */
       var etape=bloc.closest('.step');
-      if(etape){ etape.classList.add('is-done'); etape.dataset.clozeScore=ok+'/'+n; }
+      if(etape){
+        etape.classList.add('is-done');
+        etape.dataset.clozeScore=ok+'/'+n;
+        etape.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
+      }
       majBarre();
     });
   });
@@ -2971,7 +3046,11 @@ function initZoom(){
     });
   });
   document.addEventListener('keydown',function(e){
-    if(e.key==='Escape'){ fond.classList.remove('on'); if(fondQcm) fondQcm.classList.remove('on'); }
+    if(e.key==='Escape'){
+      fond.classList.remove('on');
+      if(fondQcm && fondQcm._abandonner) fondQcm._abandonner();
+      else if(fondQcm) fondQcm.classList.remove('on');
+    }
   });
 }
 

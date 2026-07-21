@@ -516,3 +516,33 @@ chargement, aucun appel externe, lisible sur la fiche imprimée.
 
 Une **séquence** contient des **séances**, qui contiennent des **étapes**, qui
 contiennent des **champs**. Côté élève, on dit **thème**. N'y revenir sous aucun prétexte.
+
+## 16. Cible matérielle : iPad et téléphone
+
+🔴 **Contrainte acquise — ne pas la reposer en question.**
+
+Les élèves travaillent sur **iPad et sur téléphone**. Toute interaction doit donc
+fonctionner **au tactile** :
+
+- **jamais de `:hover` comme seul déclencheur** — un survol n'existe pas sur une
+  dalle tactile. Le `:hover` reste autorisé comme *confort* pour la souris, à
+  condition que la même chose s'obtienne au **clic** (et au **clavier**, via
+  `:focus`). Modèle en place : le picto « à voir plus tard » (`.plustard`), ouvert
+  au clic, refermé par un clic ailleurs ;
+- **jamais l'attribut `title` comme unique porteur d'information** — il ne
+  s'affiche pas au tactile. Une définition, une précision, une source passent par
+  une **bulle cliquable** ou par du texte visible. `title` reste acceptable en
+  doublure d'un libellé déjà présent, et sur un `<iframe>` (où il est le nom
+  accessible du cadre) ;
+- **cibles tactiles ≥ 44 px** (recommandation Apple) : boutons, croix de
+  fermeture, cases d'un QCM, boutons d'indice. Pour un élément **en ligne** dans
+  un texte, élargir la zone de contact avec un pseudo-élément
+  (`::before{position:absolute;inset:-11px -6px}`) plutôt que grossir le texte ;
+- **aucun contenu ne doit exiger un survol pour être lu**, y compris les légendes,
+  les sources d'images et les compléments « hors programme, mais bon à savoir » ;
+- tout panneau plein écran (QCM, mode focus, zoom d'image) doit offrir une
+  **porte de sortie visible et tactile** — pas seulement la touche `Échap`.
+
+Vérification avant livraison : parcourir la page en **simulation tactile** (mode
+appareil du navigateur, souris désactivée) ; tout ce qui ne s'atteint pas au doigt
+est un défaut, pas un détail.
