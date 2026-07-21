@@ -487,7 +487,17 @@ body.qcm-on #prog, body.qcm-on #prog4, body.qcm-on #glo-ouvrir{display:none !imp
      border-radius:9px;padding:8px 12px;margin-top:7px}
 
 /* ---------- 9. Images : légende + agrandissement ---------- */
-figure.ill{margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px}
+figure.ill{position:relative;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px}
+/* Paires d'illustrations : côte à côte, même hauteur, une colonne au téléphone */
+.duo-ill{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;align-items:stretch}
+.duo-ill figure.ill{margin:0;display:flex;flex-direction:column}
+.duo-ill figure.ill img{height:180px;max-height:none}
+.duo-ill figure.ill figcaption{flex:1}
+@media(max-width:720px){.duo-ill{grid-template-columns:1fr}.duo-ill figure.ill img{height:auto;max-height:240px}}
+/* le clic agrandit : l'indiquer, sans reposer sur le survol seul */
+figure.ill .loupe{position:absolute;top:16px;right:16px;background:rgba(22,31,51,.72);color:#fff;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.04em;padding:3px 7px;
+  border-radius:6px;pointer-events:none}
 figure.ill img{display:block;width:100%;max-height:300px;object-fit:contain;border-radius:8px;cursor:zoom-in;background:#fff}
 figure.ill figcaption{font-size:13px;color:var(--ink-soft);margin-top:8px;line-height:1.5}
 figure.ill .src{display:block;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-faint);margin-top:4px}
@@ -708,16 +718,20 @@ body.teacher .ens-actif{display:flex}
             <p style="font-size:14.5px;margin:4px 0 10px">Internet est un gigantesque réseau mondial d'ordinateurs reliés par des lignes de transmission de tous types : <b>câbles en fibre optique</b> (l'immense majorité du trafic), satellites, lignes téléphoniques, ondes radio. C'est l'ensemble de ces machines <b>et de leurs liaisons</b> qui s'appelle Internet. Chaque machine qui s'y raccorde y possède une adresse unique, du type <code>194.167.250.2</code> : une <b>adresse IP</b><button type="button" class="plustard" data-plustard><span aria-hidden="true">🔭</span>à voir plus tard<span class="bulle">Pas de panique : <b>l'adresse IP</b> revient plus loin dans cette séquence (étape « Protocoles »), puis fait l'objet d'une <b>séquence à elle seule</b>. Ici, retiens juste que chaque machine en a une.</span></button>. Le service le plus connu qui circule dessus s'appelle le <b>World Wide Web</b><button type="button" class="plustard" data-plustard><span aria-hidden="true">🔭</span>à voir plus tard<span class="bulle">Le <b>Web</b> aura sa <b>propre séquence</b> — c'est le thème 2 de l'année. Pour l'instant, retiens seulement qu'il n'est <b>qu'un service parmi d'autres</b> sur Internet.</span></button>.</p>
 
             <div class="block-label">Illustrations</div>
-            <figure class="ill">
+            <div class="duo-ill">
+<figure class="ill"><span class="loupe">⤢ agrandir</span>
               <img src="../assets/img/snt/2nde-snt-t1-internet/CERN_Server_03.jpg" alt="Allées de serveurs dans le centre de calcul du CERN" loading="lazy">
               <figcaption>Internet, physiquement&nbsp;: des allées de serveurs. Ici, le centre de calcul du CERN.<span class="src">Photo CERN — Wikimedia Commons, CC BY-SA 3.0</span></figcaption>
             </figure>
 
-            <figure class="ill">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
               <img src="../assets/img/snt/2nde-snt-t1-internet/Internet_map_1024_-_transparent__inverted.jpg" alt="Carte partielle d'Internet, projet Opte" loading="lazy">
               <figcaption>Une carte <b>partielle</b> d'Internet&nbsp;: chaque trait relie deux adresses IP. Personne n'a jamais réussi à le cartographier en entier.<span class="src">The Opte Project (Barrett Lyon) — Wikimedia Commons, CC BY 2.5</span></figcaption>
             </figure>
-<div class="block-label">Schéma — Internet et ses usages</div>
+            </div>
+<div class="block-label">À retenir</div>
+            <div class="retain"><b>Internet</b> = <i>inter-networks</i>, l'<b>interconnexion des réseaux</b> de la planète : des machines reliées par des câbles, des fibres et des ondes, qui suivent des règles communes. On l'appelle le <b>réseau des réseaux</b>. Le <b>Web</b>, les mails, le streaming, les jeux en ligne sont des <b>services</b> qui circulent dessus — Internet est la route, pas ce qui roule dessus.</div>
+            <div class="block-label">Schéma — Internet et ses usages</div>
             <svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg" role="img" style="width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px"
      aria-label="Internet représenté comme un contenant : à l'intérieur, les services (le Web, les mails, le streaming, le cloud, les réseaux sociaux, les jeux en ligne, la messagerie) ; tout autour, les appareils qui s'y raccordent.">
   <defs><style>
@@ -768,8 +782,6 @@ body.teacher .ens-actif{display:flex}
   </g>
 </svg>
 
-            <div class="block-label">À retenir</div>
-            <div class="retain"><b>Internet</b> = <i>inter-networks</i>, l'<b>interconnexion des réseaux</b> de la planète : des machines reliées par des câbles, des fibres et des ondes, qui suivent des règles communes. On l'appelle le <b>réseau des réseaux</b>. Le <b>Web</b>, les mails, le streaming, les jeux en ligne sont des <b>services</b> qui circulent dessus — Internet est la route, pas ce qui roule dessus.</div>
 
             <div class="block-label">Maintenant, redonne ta définition</div>
             <div class="field" data-focus
@@ -900,18 +912,23 @@ body.teacher .ens-actif{display:flex}
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> raconter la naissance du premier réseau de paquets, avec les bonnes dates et les bons acteurs.</span></div>
           </div>
           <div class="card-body">
+            
+<div class="block-label">Doc — la naissance d'un réseau</div>
+            <p style="font-size:14.5px;margin:4px 0 10px"><b>ARPANET</b> est le premier grand réseau d'ordinateurs à <b>découper les messages en petits morceaux</b>, envoyés chacun de leur côté puis rassemblés à l'arrivée<button type="button" class="plustard" data-plustard><span aria-hidden="true">🔭</span>à voir plus tard<span class="bulle">Ces petits morceaux ont un nom, et une histoire française&nbsp;: on les rencontre dans l'encadré suivant, puis on les étudie pour de bon dans la séance <b>Protocoles</b>.</span></button>. Il est rendu opérationnel en <b>1969</b> par la DARPA, une agence de recherche militaire américaine. En pleine guerre froide, l'idée est notamment de bâtir un réseau <b>sans centre</b> : si un nœud est détruit, les autres continuent de communiquer. Mais ce sont surtout les <b>universités</b> qui vont écrire son histoire.</p>
+
             <div class="block-label">Illustrations</div>
-            <figure class="ill">
+            <div class="duo-ill">
+<figure class="ill"><span class="loupe">⤢ agrandir</span>
               <img src="../assets/img/snt/2nde-snt-t1-internet/A_sketch_of_the_ARPANET_in_December_1969.jpg" alt="Croquis manuscrit du réseau ARPA à 4 nœuds, décembre 1969" loading="lazy">
               <figcaption>Tout Internet commence là&nbsp;: <b>quatre machines</b> reliées, dessinées à la main. UCLA, Stanford (SRI), UC&nbsp;Santa&nbsp;Barbara et l'université de l'Utah.<span class="src">Croquis du réseau ARPA, décembre 1969 — Wikimedia Commons ⚖️ licence à confirmer</span></figcaption>
             </figure>
 
-            <figure class="ill">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
               <img src="../assets/img/snt/2nde-snt-t1-internet/Arpanet_in_the_1970s.jpg" alt="Carte du réseau ARPANET sur le territoire des États-Unis, années 1970" loading="lazy">
               <figcaption>Le même réseau quelques années plus tard, posé sur la carte&nbsp;: d'une côte à l'autre — et déjà des liaisons vers Hawaï, la Norvège et Londres.<span class="src">Carte ARPANET, années 1970 — Wikimedia Commons ⚖️ licence à confirmer</span></figcaption>
             </figure>
-<div class="block-label">Doc — la naissance d'un réseau</div>
-            <p style="font-size:14.5px;margin:4px 0 10px"><b>ARPANET</b> est le premier grand réseau d'ordinateurs à <b>découper les messages en petits morceaux</b>, envoyés chacun de leur côté puis rassemblés à l'arrivée<button type="button" class="plustard" data-plustard><span aria-hidden="true">🔭</span>à voir plus tard<span class="bulle">Ces petits morceaux ont un nom, et une histoire française&nbsp;: on les rencontre dans l'encadré suivant, puis on les étudie pour de bon dans la séance <b>Protocoles</b>.</span></button>. Il est rendu opérationnel en <b>1969</b> par la DARPA, une agence de recherche militaire américaine. En pleine guerre froide, l'idée est notamment de bâtir un réseau <b>sans centre</b> : si un nœud est détruit, les autres continuent de communiquer. Mais ce sont surtout les <b>universités</b> qui vont écrire son histoire.</p>
+            </div>
+
             <table class="doc-table">
               <tr><th>Date</th><th>Événement</th></tr>
               <tr><td><code>29 oct. 1969</code></td><td>Premier message entre UCLA et Stanford : « <code>LO</code> » — les deux premières lettres de <code>LOGIN</code>… avant que la transmission ne plante 😅</td></tr>
@@ -946,7 +963,6 @@ body.teacher .ens-actif{display:flex}
               </script>
             </div>
             </div>
-          </div>
         </div>
       </div>
 
@@ -954,18 +970,22 @@ body.teacher .ens-actif{display:flex}
         <div class="rail"></div><div class="step-pip" style="border-color:var(--france)"></div>
         <div class="france-box">
           <div class="fl"><span class="drap"></span><span class="ix">1.5</span>Fierté française — la France invente une pièce maîtresse<span class="niv">✦ <b>bonus</b></span></div>
-          <h4 class="step-title">Louis Pouzin, CYCLADES et le datagramme</h4>
-            <figure class="ill">
+          <h4>Louis Pouzin, CYCLADES et le datagramme</h4>
+            
+
+          <p>Au début des années 1970, l'ingénieur français <b>Louis Pouzin</b> (né en 1931, polytechnicien) dirige à l'IRIA — l'ancêtre de l'<button type="button" class="plustard def" data-plustard aria-label="Inria : voir la définition">Inria<span class="bulle">Institut national de recherche en informatique et en automatique. Depuis 2011, l'institut s'écrit « <b>Inria</b> » et non plus « INRIA » : il a volontairement abandonné le sigle.</span></button> — le projet <b>CYCLADES</b>, un réseau expérimental reliant des universités et des centres de recherche français. Sa grande idée : le <b>datagramme</b>.</p>
+
+          <div class="duo-ill">
+<figure class="ill"><span class="loupe">⤢ agrandir</span>
               <img src="../assets/img/snt/2nde-snt-t1-internet/M__Louis_POUZIN_2013.jpg" alt="Portrait de Louis Pouzin" loading="lazy">
               <figcaption><b>Louis Pouzin</b>, l'ingénieur français qui invente le <b>datagramme</b> au début des années 1970. Vint Cerf reprendra son idée dans le modèle TCP/IP.<span class="src">Photo Jérémie Bernard, 2013 — Wikimedia Commons ⚖️ licence à confirmer</span></figcaption>
             </figure>
 
-            <figure class="ill">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
               <img src="../assets/img/snt/2nde-snt-t1-internet/CYCLADES-en.jpg" alt="Carte du réseau CYCLADES en France" loading="lazy">
               <figcaption>Le réseau <b>CYCLADES</b>&nbsp;: Rocquencourt, Paris, Rennes, Grenoble, Toulouse. Des liaisons à 4,8 et 48 kilobits par seconde — de quoi transmettre à peu près une phrase par seconde.<span class="src">Carte du réseau CYCLADES — Wikimedia Commons ⚖️ licence à confirmer</span></figcaption>
             </figure>
-
-          <p>Au début des années 1970, l'ingénieur français <b>Louis Pouzin</b> (né en 1931, polytechnicien) dirige à l'IRIA — l'ancêtre de l'<button type="button" class="plustard def" data-plustard aria-label="Inria : voir la définition">Inria<span class="bulle">Institut national de recherche en informatique et en automatique. Depuis 2011, l'institut s'écrit « <b>Inria</b> » et non plus « INRIA » : il a volontairement abandonné le sigle.</span></button> — le projet <b>CYCLADES</b>, un réseau expérimental reliant des universités et des centres de recherche français. Sa grande idée : le <b>datagramme</b>.</p>
+            </div>
           <p>Jusque-là, on imaginait les réseaux comme le téléphone : on établit une ligne de bout en bout, puis on parle. Pouzin propose l'inverse : <b>découper chaque message en petits paquets indépendants</b>, chacun portant l'adresse de destination, chacun libre de prendre <b>son propre chemin</b> à travers le réseau. Si une route est coupée, le paquet en prend une autre ; à l'arrivée, on réassemble le tout. Le réseau devient simple, robuste et sans chef d'orchestre. CYCLADES en fait la démonstration dès <b>1973</b>.</p>
 
           <div class="block-label">Schéma — qu'est-ce qu'un datagramme&nbsp;?</div>
@@ -1053,16 +1073,7 @@ body.teacher .ens-actif{display:flex}
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> suivre le fil de 1969 à aujourd'hui, et comprendre pourquoi personne ne peut se dire « l'inventeur d'Internet ».</span></div>
           </div>
           <div class="card-body">
-            <div class="block-label">Illustrations</div>
-            <figure class="ill">
-              <img src="../assets/img/snt/2nde-snt-t1-internet/First_Internet_Demonstration__1977.jpg" alt="Schéma de la démonstration inter-réseaux de 1977" loading="lazy">
-              <figcaption>22 novembre 1977&nbsp;: pour la première fois, <b>trois réseaux différents</b> — une camionnette à radio-paquets, ARPANET et une liaison par satellite — se parlent comme s'ils n'en formaient qu'un. C'est exactement ça, l'<i>inter</i>-net.<span class="src">First Internet Demonstration, 1977 — Wikimedia Commons ⚖️ licence à confirmer</span></figcaption>
-            </figure>
-
-            <figure class="ill">
-              <img src="../assets/img/snt/2nde-snt-t1-internet/NSFNET-backbone-T3.jpg" alt="Carte du réseau NSFNET en 1992" loading="lazy">
-              <figcaption>1992&nbsp;: <b>NSFNET</b>, le réseau de la <b>National Science Foundation</b> (l'agence fédérale américaine qui finance la recherche), est devenue l'épine dorsale civile d'Internet. ARPANET, lui, a été débranché en 1990.<span class="src">NSFNET T3, 1992 — Wikimedia Commons ⚖️ licence à confirmer</span></figcaption>
-            </figure>
+            
 
             <div class="block-label">Doc — les étapes qui comptent</div>
             <table class="doc-table">
@@ -1076,6 +1087,20 @@ body.teacher .ens-actif{display:flex}
               <tr><td><code>1990</code></td><td>ARPANET est débranché : Internet lui a définitivement succédé</td></tr>
               <tr><td><code>années 1990</code></td><td>Ouverture au <b>commerce</b>, arrivée du <b>Web</b> chez le grand public</td></tr>
             </table>
+
+            <div class="block-label">Illustrations</div>
+            <div class="duo-ill">
+<figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/snt/2nde-snt-t1-internet/First_Internet_Demonstration__1977.jpg" alt="Schéma de la démonstration inter-réseaux de 1977" loading="lazy">
+              <figcaption>22 novembre 1977&nbsp;: pour la première fois, <b>trois réseaux différents</b> — une camionnette à radio-paquets, ARPANET et une liaison par satellite — se parlent comme s'ils n'en formaient qu'un. C'est exactement ça, l'<i>inter</i>-net.<span class="src">First Internet Demonstration, 1977 — Wikimedia Commons ⚖️ licence à confirmer</span></figcaption>
+            </figure>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/snt/2nde-snt-t1-internet/NSFNET-backbone-T3.jpg" alt="Carte du réseau NSFNET en 1992" loading="lazy">
+              <figcaption>1992&nbsp;: <b>NSFNET</b>, le réseau de la <b>National Science Foundation</b> (l'agence fédérale américaine qui finance la recherche), est devenue l'épine dorsale civile d'Internet. ARPANET, lui, a été débranché en 1990.<span class="src">NSFNET T3, 1992 — Wikimedia Commons ⚖️ licence à confirmer</span></figcaption>
+            </figure>
+            </div>
+
 
             <div class="reveal show" style="border-color:var(--ink-faint);background:var(--surface-2);color:var(--ink-soft)">
               <div class="rl" style="color:var(--ink-soft)">🧑‍🤝‍🧑 Le point le plus important de cette histoire</div>
@@ -2723,8 +2748,8 @@ function initReveal(){
     var bt=document.createElement('div');
     bt.className='step-suivant';
     bt.innerHTML='<button type="button">Étape suivante ↓</button>';
-    var hote=$('.steps',sec)||sec;
-    hote.appendChild(bt);
+    var dernier=pas[pas.length-1];
+    dernier.parentNode.insertBefore(bt, dernier.nextSibling);
     bt.querySelector('button').addEventListener('click',function(){
       var cache=$$('.step.masque',sec);
       if(!cache.length) return;
