@@ -209,6 +209,58 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 
 ### SNT-T1 — Internet
 - État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.
+- 🔄 **21/07 (session contenu 2/2) — lots A à E traités.** Livrés en delta, un
+  ZIP par lot. Ce qui a changé dans la page :
+  - **Structure réparée** (défaut de fond, invisible jusqu'ici) : un `</div>`
+    surnuméraire dans S1 refermait le `.wrap` avant la fin ; **S2, S3, S4 et la
+    séance bilan s'affichaient hors conteneur, sur toute la largeur de l'écran**
+    (1440 px contre 920). Corrigé, les cinq séances sont dans le `.wrap`. Même
+    cause pour le bouton « Étape suivante », qui remontait au milieu de S1 : le
+    `.steps` ne contenait que les 4 premières étapes.
+  - **Séances verrouillées repliées** : le flou laissait 3657 px de contenu
+    illisible dans le défilement (52 % de la page). Le contenu est retiré du
+    flux, la séance se réduit à son en-tête + bandeau cadenas + compteur
+    d'étapes. Page passée de 6970 à 4301 px. Mode enseignant et impression
+    réaffichent tout.
+  - **Numérotation (lot A)** : S1 = 1.1…1.9, S2 = 2.1…2.4, S3 = 3.1…3.5,
+    S4 = 4.1…4.5, bilan = D.1…D.3. Les 26 étapes ont un index **et** un nom ;
+    5 titres manquants écrits. `construireBarre` séparait mal le `.s-num`
+    (« S1C'est quoi Internet ? ») : corrigé, index repris du kicker, repli sur
+    `.fl`/`.pl`. ⚠️ **Codes d'activité NON renommés** (lot A5) : gelé sur
+    demande de Loïc tant que la couche Supabase n'est pas traitée. Deux familles
+    de clés cohabitent (`NET·xx` et `NET-xx`) — à harmoniser plus tard.
+  - **Frise devenue exercice (lot B)** : 12 événements sans dates à remettre
+    dans l'ordre par glisser-déposer ; la correction se déplie ensuite avec la
+    frise ordonnée et sa légende à deux niveaux. Le bloc « À retenir » de cette
+    étape a été **absorbé** par la légende. Le moteur de tri est **générique**
+    (`[data-tri]`, ordre porté par `data-rang`) : OSI migré dessus, plus de
+    constante `ORDRE` en dur. Auto-défilement pendant le glisser (sinon
+    impossible de remonter un item sur iPad). 1978 (CNIL) et 1980 (Minitel)
+    promus en dates clés : le bloc « À retenir » en annonçait six, la frise n'en
+    marquait que quatre.
+  - **Glossaire (lot C)** : règle instaurée — tout bloc `data-vocab`, ou tout
+    `.glosmot` dont l'en-tête dit « vocabulaire / glossaire / dictionnaire »,
+    alimente le dictionnaire automatiquement. Dico porté de 14 à **36 entrées**.
+    Encart « Trois mots qui reviennent » renommé **Vocabulaire** et déplacé sous
+    le poste d'écoute. Encart PTT devenu une **infobulle tap-compatible**.
+    Le glossaire affichait toutes ses entrées en pointillé grisé tant que
+    l'élève n'avait pas écrit sa propre définition : trois états distingués.
+  - **Images (lot D)** : 4 paires côte à côte à hauteur égale (373 × 180 px),
+    texte avant les images dans les 4 cas, pastille « ⤢ agrandir » visible sans
+    survol. Schéma « Internet et ses usages » passé après « À retenir ».
+    Poids du dossier : **2080 ko → 800 ko**, tout à ≤ 900 px. Orpheline
+    `Arpanet_logical_map__march_1977.png` supprimée.
+  - **Évaluation (lot E)** : QCM de l'étape histoire porté de 5 à **14
+    questions** (banque §4.2). Échelle d'évaluabilité posée **par moteur** sur
+    les 60 blocs de la page (aucun bloc sans marque), surchargeable par
+    `data-niv`. Fiche téléchargée enrichie des 5 manques du §13.11 : deux
+    tentatives de définition côte à côte, notes d'écoute, récapitulatif des
+    bonnes réponses de QCM, glossaire personnel, sources des documents.
+  - **Vérifications** : `node --check` sur les 3 blocs JS (les 9 autres sont du
+    JSON, validé par parseur), Playwright en 1280 et 390 px, glisser réel au
+    pointeur, téléchargement de fiche effectif, aucune erreur JS.
+  - ⚠️ **Restent ouverts** : licences des 6 crédits « à confirmer » (lot D7,
+    à faire par Loïc en ligne), codes d'activité (A5), lot F2 ci-dessous.
 - 🔄 **21/07 (session JS) — un seul moteur par mécanisme.** La refonte V3 avait
   empilé un bloc « MOTEURS V2 » sur le bloc historique sans finir la migration :
   les deux se neutralisaient. Corrigé et testé (63 assertions jsdom, `node --check`
@@ -242,6 +294,10 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 - 🔄 **21/07 — refonte FAITE, en attente de relecture de Loïc.** Les cinq
   étapes de la spec sont en place et testées (Playwright : aucune erreur JS,
   verrouillage intact, parcours glossaire complet de bout en bout).
+  📌 *Note du 21/07 (session 2/2) : cette phrase avait été signalée comme
+  fausse. Re-mesure faite ce jour en 1280 et 390 px, avec écoute de `pageerror`
+  sur l'ensemble des campagnes de test : **aucune erreur JS**. L'affirmation est
+  exacte à cette date — elle ne l'était peut-être pas quand elle a été écrite.*
   Composants §7 codés et réutilisables : picto « à voir plus tard », mode focus,
   poste d'écoute (média + notes + dictionnaire), glossaire évolutif (6 mots),
   suivi de sortie de page. Réponses rédigées branchées sur `progression.js`
@@ -267,6 +323,14 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   `assets/js/progression.js` et les règles RLS (`_suivi/BDD-cadrage.md` §7,
   actions 5-6-7). Pré-correction assurée par l'IA locale du PC de Loïc
   (`ia-correction/`). Aucune simulation locale nouvelle, aucun `localStorage`.
+  📌 *Note du 21/07 (session 2/2) : affirmation signalée comme fausse, vérifiée
+  ligne à ligne. La simulation par `setTimeout` a bien été retirée le 21/07 (un
+  commentaire le dit dans la page) ; les réponses rédigées passent par
+  `BASE.envoyerReponse`, les notes par `BASE.ecrire`/`BASE.lire`. Ce qui est
+  calculé localement — QCM, trous, tri, tables — est de la **correction
+  automatique assumée**, pas une simulation d'envoi. Aucun `localStorage`
+  trouvé. À trancher par Loïc : si « simulation locale » visait le repli sans
+  base quand `CLE_ANON` est vide, alors il en reste un, et c'est voulu.*
 - Fichier : `pages/2nde-snt-t1-internet.html` (autonome, CSS/JS inline, décliné
   de la séquence du Web). Lié depuis `pages/2nde-snt.html` (carte « SNT 1 · Internet »).
 - **Enseigné avant le Web** (ordre de l'année) : le développement historique

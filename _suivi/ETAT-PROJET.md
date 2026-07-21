@@ -98,8 +98,28 @@ source, puisqu'il change chaque année).
 5. 🆕 **Volet base de données** — jalons 4 à 7 (voir `_suivi/BDD-cadrage.md`).
    Ne bloque pas la rentrée : le site reste fonctionnel sans, mais c'est le
    socle du RPG et du suivi réel de progression.
+6. 🆕 **SNT-T1 Internet — relire la séquence après les lots A→E du 21/07.**
+   Six chantiers d'affilée y ont touché : numérotation des étapes, frise devenue
+   exercice, glossaire automatique, images ré-agencées et ré-optimisées, QCM
+   élargi, fiche téléchargée enrichie. C'est la séquence la plus avancée du
+   site : elle sert de référence aux sept autres, donc **la valider avant de
+   décliner**.
 
 ## ⚠ Alertes
+
+- 🆕 **SNT-T1 — défaut de structure corrigé le 21/07, à surveiller ailleurs.**
+  Un `</div>` surnuméraire refermait le conteneur `.wrap` au milieu de la page :
+  quatre séances sur cinq s'affichaient **sur toute la largeur de l'écran**, hors
+  colonne, et le bouton « Étape suivante » remontait au milieu du parcours. Rien
+  ne le signalait — ni erreur JS, ni page cassée. **Les sept autres séquences SNT
+  sont déclinées du même fichier : vérifier l'équilibre des `<div>` sur chacune**
+  (comptage `<div` / `</div>` par section).
+
+- 🆕 **SNT-T1 — deux décisions gelées par Loïc (21/07).** (1) Les **codes
+  d'activité** ne sont pas renommés tant que la couche Supabase n'est pas
+  traitée ; deux familles de clés cohabitent (`NET·xx` et `NET-xx`), à
+  harmoniser plus tard. (2) Les **licences de six crédits images** restent « à
+  confirmer » : vérification à faire en ligne par Loïc lui-même.
 
 - 🆕 **SNT — règle du référentiel vivant (17/07).** La séquence d'introduction
   (`pages/2nde-snt-t0-systemes-informatises.html`) = cours « Systèmes

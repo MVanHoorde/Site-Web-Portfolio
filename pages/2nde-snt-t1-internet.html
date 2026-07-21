@@ -349,6 +349,9 @@
 .niv{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
      display:inline-flex;align-items:center;gap:4px;color:var(--ink-faint);margin-left:auto;white-space:nowrap;flex:none}
 .niv b{font-size:11px;letter-spacing:0;font-weight:600}
+.niv.niv-coin{display:block;text-align:right;color:var(--ink-faint);margin-top:8px;opacity:.75}
+.niv.niv-coin b{font-weight:500}
+@media print{.niv-coin{display:none}}
 
 /* ---------- 2. Bandeaux allégés (sauf « à retenir ») ---------- */
 .france-box .fl{background:var(--france-wash);color:var(--france);border-bottom:1px solid #cfdcee;
@@ -644,6 +647,9 @@ body.teacher .ens-actif{display:flex}
       <li><b>✅ Mode enseignant</b> — sorti du sommaire, discret en tête de page, <b>ne suit pas le défilement</b>, ouvert par <b>code</b> (empreinte SHA-256) et coupé au bout de <b>30 minutes</b>.</li>
       <li><b>✅ Glossaire permanent</b> — accessible à tout moment, cherchable, prévu pour <b>traverser les séquences</b>. ⚠️ Tant que la clé anon n'est pas renseignée, les définitions de l'élève <b>ne le suivent pas</b> d'une page à l'autre.</li>
       <li><b>✅ Images intégrées</b> avec légende, source et licence, <b>agrandissables au clic</b>. Le <b>croquis manuscrit de décembre 1969</b> remplace le SVG des 4 nœuds qui était en chantier. <b>Frise verticale</b> refaite (dates clés en bleu, le reste en gris, légende).</li>
+      <li><li><b>✅ Session contenu du 21/07 (2/2)</b>&nbsp;: numérotation des étapes reprise (S1&nbsp;1.1→1.9, S2&nbsp;2.1→2.4, S3&nbsp;3.1→3.5, S4&nbsp;4.1→4.5, bilan&nbsp;D.1→D.3, chacune avec un nom) ; <b>la frise est devenue un exercice de glisser-déposer</b> (12 événements sans dates, correction dépliée avec la légende à deux niveaux — l'ancien bloc « à retenir » de cette étape y a été absorbé) ; <b>vocabulaire versé automatiquement au glossaire</b> (36 entrées) ; encart PTT devenu une infobulle ; illustrations par paires, allégées de 2080 à 800&nbsp;ko ; QCM de l'histoire porté à 14 questions ; <b>échelle d'évaluabilité posée sur les 60 blocs</b> ; fiche téléchargée enrichie (définitions avant/après, notes, bonnes réponses, glossaire, sources).</li>
+      <li><b>✅ Structure réparée</b>&nbsp;: un <code>&lt;/div&gt;</code> en trop refermait le conteneur au milieu de la page — les séances 2 à 4 et le bilan s'affichaient <b>sur toute la largeur de l'écran</b>, et le bouton « étape suivante » remontait au milieu de la séance 1. Les séances verrouillées sont maintenant <b>repliées</b> et non plus floutées.</li>
+      <li><b>⚠️ Restent ouverts</b>&nbsp;: licences des six crédits « à confirmer » ; codes d'activité non renommés (gelé avec la couche base de données) ; deux familles de clés (<code>NET·xx</code> et <code>NET-xx</code>) à harmoniser.</li>
       <li><b>✅ Corrections de fond</b> — « transfert de paquets » retiré de l'historique (le mot arrive avec le datagramme, puis avec l'encapsulation) · picto sur <code>NCP</code> · « modèle TCP/IP » · infobulle sur <b>Inria</b> · Minitel <b>mentionné seulement</b>, développé en séquence Web · colonne des dates insécable.</li>
       <li><b>✅ Impression</b> — feuille de style dédiée&nbsp;: la fiche sort en PDF par « Imprimer → Enregistrer en PDF » du navigateur, sans aucune bibliothèque externe.</li>
       <li><b>✅ Fait ce soir (21/07, 2ᵉ passe)</b>&nbsp;: Minitel réduit à une mention de deux lignes (image et développement retirés, partent en séquence Web) · encart <b>PTT</b> écrit · titre et légende des ronds orange du <b>schéma datagramme</b> · <b>QR codes</b> du podcast et de la vidéo Cookie connecté (SVG statiques, générés une fois, aucune dépendance) · <b>glisser-déposer réel</b> des 7 couches OSI (pointeur tactile inclus) · <b>SVG bilan OSI/TCP-IP</b> recréé · empreinte SHA-256 du mode enseignant renseignée pour de vrai (code : <code>ROUTAGE</code>, à changer si besoin).</li>
@@ -889,22 +895,145 @@ body.teacher .ens-actif{display:flex}
             <div class="qcmbox" data-code="NET-1c">
               <script type="application/json" class="qcm-data">
               [
-               {"q":"Dans quel pays naît l'ancêtre d'Internet ?",
-                "o":["Aux États-Unis","En France","Au Royaume-Uni"],"r":0,
-                "c":"La France a pourtant son propre réseau à la même époque — on le rencontre juste après."},
-               {"q":"Dans quel contexte historique ?",
-                "o":["La Seconde Guerre mondiale","La guerre froide","La chute du mur de Berlin"],"r":1,
-                "c":"Hors programme, mais bon à savoir : la guerre froide oppose les États-Unis et l'URSS de 1947 à 1991."},
-               {"q":"Qui finance le projet au départ ?",
-                "o":["Une entreprise privée","Une agence du ministère de la Défense américain","Une université"],"r":1,
-                "c":"L'agence s'appelle ARPA, puis DARPA. Le D, c'est « Defense »."},
-               {"q":"À quoi sert le réseau au tout début ?",
-                "o":["À vendre des objets","À relier des ordinateurs de plusieurs universités","À regarder des vidéos"],"r":1,
-                "c":"Et très vite, à s'échanger des blagues entre chercheurs — les premiers usages détournés datent des tout premiers jours."},
-               {"q":"Existait-il d'autres moyens de communiquer à distance avant Internet ?",
-                "o":["Non, c'est le premier","Oui : le télégraphe, le téléphone, la radio, la télévision","Oui, mais uniquement le courrier postal"],"r":1,
-                "c":"Ce qui change avec Internet, ce n'est pas la distance : c'est que l'information devient numérique."}
-              ]
+ {
+  "q": "Dans quel pays naît l'ancêtre d'Internet ?",
+  "o": [
+   "Aux États-Unis",
+   "En France",
+   "Au Royaume-Uni"
+  ],
+  "r": 0,
+  "c": "La France a pourtant son propre réseau à la même époque — on le rencontre juste après."
+ },
+ {
+  "q": "Comment s'appelle l'ancêtre d'Internet ?",
+  "o": [
+   "ARPANET",
+   "NSFNET",
+   "CYCLADES"
+  ],
+  "r": 0,
+  "c": "CYCLADES est le réseau français de la même époque ; NSFNET prendra la relève d'ARPANET en 1986."
+ },
+ {
+  "q": "Dans quel contexte historique ?",
+  "o": [
+   "La Seconde Guerre mondiale",
+   "La guerre froide",
+   "La chute du mur de Berlin"
+  ],
+  "r": 1,
+  "c": "Hors programme, mais bon à savoir : la guerre froide oppose les États-Unis et l'URSS de 1947 à 1991."
+ },
+ {
+  "q": "Qui finance le projet au départ ?",
+  "o": [
+   "Une entreprise privée",
+   "Une agence du ministère de la Défense américain",
+   "Une université"
+  ],
+  "r": 1,
+  "c": "L'agence s'appelle ARPA, puis DARPA. Le D, c'est « Defense »."
+ },
+ {
+  "q": "À quoi sert le réseau au tout début ?",
+  "o": [
+   "À vendre des objets",
+   "À relier des ordinateurs de plusieurs universités",
+   "À regarder des vidéos"
+  ],
+  "r": 1,
+  "c": "Et très vite, à s'échanger des blagues entre chercheurs — les premiers usages détournés datent des tout premiers jours."
+ },
+ {
+  "q": "En quelle année le réseau devient-il réellement opérationnel ?",
+  "o": [
+   "1958",
+   "1969",
+   "1983"
+  ],
+  "r": 1,
+  "c": "1958, c'est la création de l'ARPA ; 1983, la bascule sur TCP/IP."
+ },
+ {
+  "q": "Quelles universités sont reliées par les quatre premiers nœuds ?",
+  "o": [
+   "Harvard, Yale, Princeton, Columbia",
+   "UCLA, Stanford, UC Santa Barbara, Utah",
+   "MIT, Berkeley, Caltech, Chicago"
+  ],
+  "r": 1,
+  "c": "Ces quatre nœuds sont ceux du croquis de décembre 1969."
+ },
+ {
+  "q": "Le tout premier message envoyé est resté célèbre. Lequel est-ce ?",
+  "o": [
+   "« HELLO »",
+   "« LO »",
+   "« TEST »"
+  ],
+  "r": 1,
+  "c": "Les opérateurs tapaient « LOGIN » : le système a planté après les deux premières lettres."
+ },
+ {
+  "q": "L'idée de départ était-elle de connecter toute la planète ?",
+  "o": [
+   "Oui, dès l'origine",
+   "Non : relier quelques centres de recherche"
+  ],
+  "r": 1,
+  "c": "L'échelle mondiale viendra bien plus tard, presque par accident."
+ },
+ {
+  "q": "Quel usage apparaît dès 1971 et existe toujours ?",
+  "o": [
+   "Le courriel",
+   "Le Web",
+   "Le streaming"
+  ],
+  "r": 0,
+  "c": "Ray Tomlinson envoie le premier courriel et choisit le signe @. Le Web, lui, naît en 1989."
+ },
+ {
+  "q": "Existait-il d'autres moyens de communiquer à distance avant Internet ?",
+  "o": [
+   "Non, c'est le premier",
+   "Oui : le télégraphe, le téléphone, la radio, la télévision",
+   "Oui, mais uniquement le courrier postal"
+  ],
+  "r": 1,
+  "c": "Ce qui change avec Internet, ce n'est pas la distance : c'est que l'information devient numérique."
+ },
+ {
+  "q": "En quelle année le réseau militaire se sépare-t-il du réseau scientifique ?",
+  "o": [
+   "1969",
+   "1978",
+   "1983"
+  ],
+  "r": 2,
+  "c": "La même année que la bascule sur TCP/IP : MILNET prend son indépendance."
+ },
+ {
+  "q": "Le podcast (2022) parle d'environ 3 milliards de personnes connectées. Et aujourd'hui ?",
+  "o": [
+   "Environ 3 milliards, c'est stable",
+   "Environ 6 milliards, soit près de trois humains sur quatre",
+   "La planète entière est connectée"
+  ],
+  "r": 1,
+  "c": "Environ 6 milliards début 2026, et près de 2 milliards de personnes restent hors ligne (Digital Report 2026). Une donnée chiffrée se périme : toujours vérifier sa date."
+ },
+ {
+  "q": "Internet est-il déployé de façon égale partout sur Terre ?",
+  "o": [
+   "Oui, la couverture est mondiale et uniforme",
+   "Non : des régions entières restent très peu connectées"
+  ],
+  "r": 1,
+  "c": "Les fractures sont surtout géographiques et économiques — Asie du Sud, Afrique centrale."
+ }
+]
               </script>
             </div>
           </div>
@@ -2770,12 +2899,101 @@ body.teacher .ens-actif{display:flex}
     });
     return rows;
   }
+  /* ---------- E3 : ce que la fiche doit emporter en plus des étapes ---------- */
+  function echapper(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  /* les deux tentatives de définition, côte à côte */
+  function collectDefinitions(sec){
+    var out=[];
+    sec.querySelectorAll('[data-focus-titre]').forEach(function(f){
+      var titre=f.getAttribute('data-focus-titre')||'';
+      if(!/tentative/i.test(titre)) return;
+      var e=f.querySelector('[data-focus-echo]');
+      out.push({titre:titre, texte:e?e.textContent.trim():''});
+    });
+    return out;
+  }
+  /* notes prises pendant l'écoute ou le visionnage */
+  function collectNotes(sec){
+    var out=[];
+    sec.querySelectorAll('textarea[data-notes]').forEach(function(ta){
+      if(!ta.value.trim()) return;
+      var etape=ta.closest('[data-step]');
+      var t=etape?etape.querySelector('.step-title'):null;
+      out.push({titre:t?t.textContent.trim():'Notes', texte:ta.value.trim()});
+    });
+    return out;
+  }
+  /* récapitulatif des bonnes réponses de QCM, tel qu'affiché sur la page */
+  function collectQcm(sec){
+    var out=[];
+    sec.querySelectorAll('.qcm-recap').forEach(function(r){
+      if(!r.innerHTML.trim()) return;
+      var etape=r.closest('[data-step]');
+      var t=etape?etape.querySelector('.step-title'):null;
+      out.push({titre:t?t.textContent.trim():'QCM', html:r.innerHTML.trim()});
+    });
+    return out;
+  }
+  /* le glossaire personnel : les définitions écrites par l'élève */
+  function collectGlossaire(){
+    return (window.MON_GLOSSAIRE || []).slice();
+  }
+  /* les sources et crédits des documents de la séance */
+  function collectSources(sec){
+    var vus={}, out=[];
+    sec.querySelectorAll('figcaption .src').forEach(function(x){
+      var t=x.textContent.replace(/\s+/g,' ').trim();
+      if(t && !vus[t]){ vus[t]=1; out.push(t); }
+    });
+    sec.querySelectorAll('.res-item[href]').forEach(function(a){
+      var h=a.getAttribute('href');
+      if(!h || h==='#') return;
+      var titre=a.querySelector('.r-title');
+      var t=(titre?titre.textContent.trim():h)+' — '+h;
+      if(!vus[t]){ vus[t]=1; out.push(t); }
+    });
+    return out;
+  }
+
   function downloadFiche(sec){
     var title=seanceTitle(sec); var rows=collectRecap(sec);
     var when=new Date().toLocaleDateString('fr-FR');
     var body=rows.map(function(r){
       return '<div class="e"><div class="h"><span>'+r.title+'</span><span class="s">'+r.status+'</span></div>'+(r.retain?'<div class="r"><span class="lbl">À retenir</span>'+r.retain+'</div>':'')+(r.answer?'<div class="a"><span class="lbl">Ma réponse</span>'+r.answer.replace(/</g,'&lt;')+'</div>':'')+'</div>';
     }).join('');
+    var defs=collectDefinitions(sec), notes=collectNotes(sec), qcms=collectQcm(sec),
+        glo=collectGlossaire(), src=collectSources(sec);
+    var sup='';
+    if(defs.length){
+      sup+='<h2>Ma définition d\'Internet, avant et après</h2><div class="duo">'+
+        defs.map(function(d){
+          return '<div class="col"><span class="lbl">'+echapper(d.titre)+'</span>'+
+                 (d.texte?echapper(d.texte):'<i>non rédigée</i>')+'</div>';
+        }).join('')+'</div>';
+    }
+    if(notes.length){
+      sup+='<h2>Mes notes</h2>'+notes.map(function(n2){
+        return '<div class="e"><div class="h"><span>'+echapper(n2.titre)+'</span></div>'+
+               '<div class="a">'+echapper(n2.texte)+'</div></div>';
+      }).join('');
+    }
+    if(qcms.length){
+      sup+='<h2>Les bonnes réponses des QCM</h2>'+qcms.map(function(q){
+        return '<div class="e"><div class="h"><span>'+echapper(q.titre)+'</span></div>'+
+               '<div class="q">'+q.html+'</div></div>';
+      }).join('');
+    }
+    if(glo.length){
+      sup+='<h2>Mon glossaire</h2>'+glo.map(function(g){
+        return '<div class="e"><div class="h"><span>'+echapper(g.mot)+'</span></div>'+
+               '<div class="a">'+echapper(g.texte)+'</div></div>';
+      }).join('');
+    }
+    if(src.length){
+      sup+='<h2>Sources des documents</h2><ul class="src">'+
+        src.map(function(x){ return '<li>'+echapper(x)+'</li>'; }).join('')+'</ul>';
+    }
     var html='<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>Ma fiche — '+title+'</title>'+
       '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:30px auto;padding:0 18px;color:#161f33;line-height:1.55}'+
       'h1{font-size:22px}.meta{color:#667;font-size:13px;margin-bottom:20px}'+
@@ -2785,9 +3003,16 @@ body.teacher .ens-actif{display:flex}
       '.r{margin-top:8px;padding:9px 11px;background:#f4f6fb;border-left:3px solid #161f33;border-radius:0 8px 8px 0;font-size:13.5px}'+
       '.r code{background:#e6e9f2;padding:1px 4px;border-radius:3px;font-family:ui-monospace,monospace;font-size:.9em}'+
       '.a{margin-top:8px;padding:9px 11px;background:#e7ebfb;border-radius:8px;white-space:pre-wrap;font-size:14px}'+
-      '.tip{margin-top:24px;font-size:12px;color:#8b97ad}</style></head><body>'+
+      '.tip{margin-top:24px;font-size:12px;color:#8b97ad}'+
+      'h2{font-size:15px;margin:26px 0 10px;padding-bottom:5px;border-bottom:2px solid #161f33}'+
+      '.duo{display:flex;gap:12px;flex-wrap:wrap}.duo .col{flex:1 1 260px;border:1px solid #d3dae7;'+
+      'border-radius:10px;padding:11px 13px;font-size:14px;background:#fbfcfe}'+
+      '.q{margin-top:8px;font-size:13.5px}.q .rh{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8b97ad}'+
+      '.q .rl{padding:5px 0;border-bottom:1px solid #eef1f7}.q .rl:last-child{border-bottom:0}'+
+      'ul.src{font-size:12.5px;color:#4a566e;padding-left:18px}ul.src li{margin-bottom:4px}'+
+      '</style></head><body>'+
       '<h1>Ma fiche SNT — '+title+'</h1><div class="meta">Internet · exportée le '+when+' · à déposer sur ton OneDrive</div>'+
-      body+'<div class="tip">Les exercices restent accessibles sur la séquence de la classe.</div></body></html>';
+      body+sup+'<div class="tip">Les exercices restent accessibles sur la séquence de la classe.</div></body></html>';
     var blob=new Blob([html],{type:'text/html'});
     var url=URL.createObjectURL(blob); var a=document.createElement('a');
     var slug=title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
@@ -2937,6 +3162,62 @@ function compteurSeances(){
     var e=document.createElement('span'); e.className='compte';
     e.textContent=n+' étape'+(n>1?'s':'');
     ban.appendChild(e);
+  });
+}
+
+/* ---------- 1ter. Échelle d'évaluabilité (spec §13.2) ----------
+   ★★ à savoir · ★ à savoir faire · ○ support · ✦ bonus · — non évalué.
+   Le niveau se déduit de la nature du bloc ; data-niv permet de forcer. */
+var NIVEAUX={
+  savoir:      {m:'★★', l:'à savoir'},
+  faire:       {m:'★',  l:'à savoir faire'},
+  support:     {m:'○',  l:'support'},
+  bonus:       {m:'✦',  l:'bonus'},
+  nonevalue:   {m:'—',  l:'non évalué'}
+};
+function etiquetteNiveau(cle){
+  var n=NIVEAUX[cle]; if(!n) return null;
+  var e=document.createElement('span');
+  e.className='niv niv-auto'; e.dataset.niveau=cle;
+  e.innerHTML=n.m+' <b>'+n.l+'</b>';
+  return e;
+}
+function niveauDeBloc(el){
+  if(el.dataset.niv) return el.dataset.niv;
+  if(el.classList.contains('retain')) return 'savoir';
+  if(el.classList.contains('glosmot')) return 'savoir';
+  if(el.classList.contains('france-box')) return 'bonus';
+  if(el.classList.contains('bonus-wrap')) return 'bonus';
+  if(el.classList.contains('perso-box')) return 'nonevalue';
+  if(el.classList.contains('poste')) return 'support';
+  if(el.classList.contains('qcmbox')) return 'faire';
+  if(el.classList.contains('field')) return 'faire';
+  if(el.classList.contains('doc-table')) return 'support';
+  return null;
+}
+function initEvaluabilite(){
+  /* 1. les intitulés de bloc portent déjà la grammaire de la séquence */
+  $$('.block-label').forEach(function(lab){
+    if($('.niv',lab)) return;
+    var t=lab.textContent.toLowerCase(), cle=null;
+    if(/^doc|illustration|vidéo|video|podcast|schéma|schema|ressource/.test(t)) cle='support';
+    else if(/à retenir|a retenir/.test(t)) cle='savoir';
+    else if(/vocabulaire|glossaire|dictionnaire/.test(t)) cle='savoir';
+    else if(/pour aller plus loin/.test(t)) cle='nonevalue';
+    else if(/exercice|vérifie|verifie|associe|fais glisser|remets|complète|complete|entraîne|entraine|teste/.test(t)) cle='faire';
+    if(cle){ var e=etiquetteNiveau(cle); if(e){ e.style.marginLeft='8px'; lab.appendChild(e); } }
+  });
+  /* 2. les blocs sans intitulé reçoivent une pastille dans leur coin */
+  $$('.retain,.glosmot,.france-box,.bonus-wrap,.perso-box,.poste,.qcmbox,.field').forEach(function(el){
+    if($('.niv',el)) return;
+    if(el.previousElementSibling && el.previousElementSibling.classList &&
+       el.previousElementSibling.classList.contains('block-label') &&
+       $('.niv',el.previousElementSibling)) return;
+    var cle=niveauDeBloc(el); if(!cle) return;
+    var e=etiquetteNiveau(cle); if(!e) return;
+    e.classList.add('niv-coin');
+    el.style.position=el.style.position||'relative';
+    el.appendChild(e);
   });
 }
 
@@ -3302,11 +3583,22 @@ function initGlossaire(){
   b.addEventListener('click',function(){ rendre(''); $('.rech',fond).value=''; fond.classList.add('on'); });
   fond.addEventListener('click',function(e){ if(e.target===fond) fond.classList.remove('on'); });
   $('.rech',fond).addEventListener('input',function(e){ rendre(e.target.value); });
+  /* le glossaire personnel doit être lisible par la fiche téléchargée,
+     qui vit dans un autre bloc de script : on le publie sur window. */
+  function publierGlossaire(){
+    try{
+      window.MON_GLOSSAIRE = DICO.filter(function(e){ return e.eleve && String(e.eleve).trim(); })
+        .map(function(e){ return {mot:e.mot, texte:String(e.eleve).trim()}; });
+    }catch(err){}
+  }
+  publierGlossaire();
+
   /* les définitions validées de l'élève alimentent le dico en direct */
   document.addEventListener('glossaire-valide',function(e){
     var d=e.detail||{};
     var ex=DICO.filter(function(x){ return normaliser(x.mot)===normaliser(d.mot); })[0];
     if(ex) ex.eleve=d.texte; else DICO.push({mot:d.mot,eleve:d.texte,origine:'Internet'});
+    publierGlossaire();
   });
 }
 
@@ -3347,6 +3639,7 @@ function demarrer(){
   });
   initReveal();
   compteurSeances();
+  initEvaluabilite();
   construireBarre();
   initEnseignant();
   initQcm();
