@@ -379,4 +379,106 @@ Dehors : « pour aller plus loin » · notes de chantier.
 - Portage dans **t0** (référentiel vivant) : échelle d'évaluabilité, barre de progression, révélation séquentielle, mécanique du QCM, glossaire permanent, mode enseignant.
 - **Test Playwright** de la page V3 (checklist §10 des consignes) : non exécuté.
 
+---
+
+## 14. V4 — audit de la séance 1 par Loïc (21/07/2026, soir)
+
+> Cette section **prime sur les §1 à §13**. Elle a été appliquée à
+> `pages/2nde-snt-t1-internet.html`. Les arbitrages ouverts du §14.6 ont été
+> validés par Loïc avant implémentation.
+
+### 14.1 Étape par étape
+
+| Étape | Décision |
+|---|---|
+| 1.1 | **Validée** sous réserve d'un avertissement avant envoi : la définition part telle quelle et n'est plus modifiable, **sans conséquence, pas de note**. Deux boutons : *Continuer à écrire* / *Envoyer ma définition*. |
+| 1.2 | **Validée** sous réserve d'un picto « à voir plus tard » sur la mention des **câbles** (renvoi séance 2). |
+| 1.3 | Bloc **« Vocabulaire » supprimé** (doublon du dictionnaire du poste d'écoute). QCM **dégraissé de 14 à 4 questions** : tout ce que reposent le texte à trous, 1.4 et 1.6 est retiré. |
+| 1.5 | Encadré « à ne pas confondre Internet/Web » **supprimé** (le sujet ouvre la séquence Web). Les deux liens **Wikipédia supprimés**. Le lien datagramme ↔ TCP/IP est **annoncé, pas expliqué** : il se fera depuis l'étape Protocoles. Nouveau bloc révélé après réponse : chemins différents, arrivée dans le désordre, **et pourquoi l'information arrive quand même**. |
+| 1.6 | QCM **étoffé à 7 questions** avant validation : les trois dates à retenir, le 1ᵉʳ janvier 1983, NSFNET, la **contre-culture californienne** (Californie + Homebrew Computer Club), le chiffre périmé, et **l'œuvre collective sans inventeur unique en dernière position**. |
+| 1.7 | Ressource **« frise imprimable NET·2b » supprimée** : elle n'existe pas et n'existera pas. Glisser-déposer : **essais illimités**, la correction ne tombe plus au premier clic ; **deux niveaux d'indices** (4 dates repères, puis 8) ; bouton *Voir la correction* séparé. |
+| 1.8 | L'enquête **Minitel part en séquence Web**. À sa place : **enquête famille sur l'arrivée d'Internet** (années 1970 → 2000) — année d'arrivée, premiers usages, ce qui a le plus changé, les peurs du début, les regrets. Plusieurs questions au choix. Travail à la maison **non mentionné sur la page** (dit à l'oral). |
+| 1.9 | **Validée** sans changement. |
+| Bilan | Le bloc « associe chaque événement à sa date » **quitte 1.7** et devient l'**étape D.3 « Les dates, de mémoire »** : reprise à distance, plusieurs semaines après. |
+
+### 14.2 Règle typographique — l'italique (nouvelle, transversale)
+
+Sources : *Lexique des règles typographiques en usage à l'Imprimerie nationale* ·
+Clés de la rédaction (Portail linguistique du Canada) · Vitrine linguistique de
+l'OQLF (typographie sur le Web).
+
+- **Italique** : mots et expressions étrangers **non entrés dans les dictionnaires
+  français** (*World Wide Web*, *network*, *interconnected*, *inter-networks*,
+  *flag day*, *backbone*) ; titres d'œuvres et de séries (*Une histoire de
+  l'Internet*) ; toute expression **au moment où on la nomme** — l'autonyme
+  (le *réseau des réseaux*, un *datagramme*).
+- **Romain** : les mots passés dans l'usage français — Internet, Web, mail,
+  streaming, routeur, protocole, courriel.
+- **Jamais italique + guillemets** ensemble. Dans un texte déjà en italique,
+  l'élément revient en romain.
+- **Balisage** : `<i lang="en">World Wide Web</i>` — l'attribut `lang` fait
+  prononcer correctement le mot par les synthèses vocales.
+
+### 14.3 Picto « à voir plus tard » — allègement
+
+Le libellé complet (🔭 « à voir plus tard ») n'apparaît **qu'au premier usage de
+la page** ; les suivants sont réduits au **télescope seul** (`.plustard.court`),
+l'infobulle restant identique. Neuf pictos sur dix sont concernés.
+
+### 14.4 Bonus « pour aller plus loin » — dans le fil
+
+Les quatre blocs « pour aller plus loin » deviennent des **étapes du fil**
+(1.10, 2.5, 3.6, 4.6) : révélés comme les autres, présents dans la barre de
+progression, mais **sans `data-gate`** — ils n'entrent donc pas dans les 100 %.
+La **pastille de niveau** remonte dans l'en-tête du bloc : collée en bas, elle
+était invisible replié et orpheline déplié.
+
+### 14.5 Fiche de séance — refonte
+
+- **PDF par impression** : la fiche s'ouvre dans un **onglet** avec un bouton
+  « Imprimer / Enregistrer en PDF » et une feuille de style `@media print` +
+  `@page`. Aucune bibliothèque, aucun CDN (conforme §13.11). Repli en
+  téléchargement de fichier si l'onglet est bloqué par le navigateur.
+- **Plus aucun statut** « validé / en attente / à faire » : c'est un document de
+  travail, pas un bulletin.
+- **L'essentiel du cours, pas seulement les réponses** : objectifs de chaque
+  étape · **tous les « à retenir »** · les **tableaux de repères** et la **frise
+  corrigée** · le **vocabulaire** · les **deux définitions d'Internet côte à
+  côte** · les réponses de l'élève · les notes d'écoute · les récapitulatifs de
+  QCM avec leurs compléments · le glossaire personnel · les sources.
+- **Dehors** : les « pour aller plus loin », les illustrations, les documents longs.
+
+### 14.6 Sources — règle appliquée
+
+Wikipédia **bannie** de la séquence. Sources ajoutées aux étapes 1.2, 1.3, 1.4
+et 1.6 : Interstices (Inria), Inria, Internet Society, Computer History Museum,
+The Opte Project, France Culture. La biblio de chaque étape est reprise
+automatiquement dans la fiche.
+
+### 14.7 Arbitrages du 21/07 au soir (2ᵉ passe)
+
+- **Premier message d'ARPANET — récit complété (validé)** : les opérateurs tapent
+  <i lang="en">LOGIN</i> le 29 octobre 1969 ; seules les deux premières lettres,
+  « LO », passent avant le plantage, et il faut **environ une heure** pour que le
+  mot entier arrive. Cette version réconcilie le récit des collègues et celui
+  d'Interstices (Inria), désormais cité en source. Appliqué au tableau de 1.4, au
+  QCM de 1.4 et à la frise.
+- **Marquage du bonus — une seule mention (validé)** : sur un bloc « pour aller
+  plus loin », seul l'en-tête porte **« hors 100 % »**. Aucune pastille
+  d'évaluabilité n'est posée, ni sur le bloc, ni sur les intitulés, ni sur les
+  champs qu'il contient : c'était redondant.
+
+### 14.8 Reste ouvert
+
+- ⚠ **Licences des six images** portant encore « ⚖️ à confirmer » (croquis 1969,
+  ARPANET années 1970, démonstration 1977, CYCLADES, Louis Pouzin, NSFNET).
+  **Wikimedia Commons n'est pas accessible en lecture depuis l'outil** : la ligne
+  exacte ne peut pas être récupérée automatiquement. Elle doit être **copiée
+  depuis chaque page de fichier** et collée dans la légende (`<span class="src">`).
+  Rien n'a été inventé à la place — la mention « ⚖️ licence à confirmer » reste
+  visible tant que ce n'est pas fait.
+- **Enquête Minitel** à accueillir dans `2nde-snt-t2-le-web.html`.
+
+---
+
 *Fin de la spec V2 — mise à jour au fil des validations (§10). Reporter la posture pédagogique (casque/stylet/autonomie) dans la spec de la séquence d'introduction (t0).*

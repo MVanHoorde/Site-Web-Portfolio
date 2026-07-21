@@ -356,6 +356,33 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   vidéo DNS YouTube (`NET·4`) ; trancher la date « 1er modem » de la frise
   papier (corrigé existant : 1950, à vérifier).
 
+#### 21/07/2026 (soir) — audit de la séance 1 par Loïc, appliqué
+
+- **Séance 1 : audit complet reçu et implémenté** (spec `§14`). Retraits
+  (bloc Vocabulaire de 1.3, encadré Internet/Web de 1.5, sources Wikipédia,
+  ressource fantôme `NET·2b`), dégraissage du QCM de 1.3 (14 → 4 questions),
+  QCM de 1.6 étoffé (2 → 7 questions), enquête Minitel remplacée par une
+  enquête famille, bloc d'association des dates déplacé au bilan (étape D.3).
+- **Trois mécaniques nouvelles** : avertissement avant envoi en 1.1 · indices
+  des trous verrouillés jusqu'au premier « Vérifier » puis affichés uniquement
+  en face des réponses fausses · frise à essais illimités avec deux niveaux
+  d'indices et correction à la demande.
+- **Bonus dans le fil** : les quatre « pour aller plus loin » sont des étapes
+  (1.10, 2.5, 3.6, 4.6), visibles dans la barre, hors des 100 %.
+- **Fiche refondue** : ouverture en onglet + impression PDF, sans statuts, avec
+  l'essentiel du cours (à retenir, repères, frise, vocabulaire, sources).
+- **Règle typographique de l'italique** posée pour toute la séquence (spec §14.2).
+- ✅ **Playwright exécuté** : 37 contrôles passés, **aucune erreur JS**. Les
+  seuls échecs réseau sont les iframes France Culture et YouTube, bloquées par
+  le bac à sable — à revérifier en ligne.
+- **2ᵉ passe (même soir)** : récit du premier message d'ARPANET complété et
+  validé (« LO », plantage, mot entier une heure plus tard — Interstices en
+  source) ; marquage du bonus réduit au seul « hors 100 % » de l'en-tête.
+- ⚠ **Seul restant sur S1** : écrire la **licence exacte** des six images encore
+  en « ⚖️ à confirmer ». Wikimedia Commons n'est **pas lisible depuis l'outil**
+  (domaine en cache seul) : la ligne doit être copiée à la main depuis chaque
+  page de fichier.
+
 ### SNT-T2 — Le Web
 - État : **maquette V0 fonctionnelle en ligne**, non validée.
 - Fichier : `pages/2nde-snt-t2-le-web.html` (autonome, CSS/JS inline).
