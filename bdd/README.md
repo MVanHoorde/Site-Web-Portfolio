@@ -72,12 +72,13 @@ reste bon pour **consulter** (des `select`), pas pour modifier.
 ## Ce que le dump ne contient pas
 
 `pg_dump --schema=public` sauvegarde les sept tables et leurs données. Il ne
-touche pas au schéma `auth`, propriété de Supabase, où vivent les sessions
-anonymes des élèves.
+touche pas au schéma `auth`, propriété de Supabase, où vivent les **comptes
+élèves** (identifiant + mot de passe haché).
 
 Conséquence : une restauration dans un projet neuf retrouverait les fiches
-élèves, mais plus le lien entre une fiche et la session du navigateur qui l'a
-créée. Point ouvert, à traiter au **jalon 5** en même temps que les règles RLS.
+élèves, mais plus les comptes qui les authentifient — les élèves devraient
+recréer un compte, ou être réinscrits. À garder en tête pour toute migration
+de projet.
 
 ## Exploitation courante
 

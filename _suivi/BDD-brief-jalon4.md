@@ -67,7 +67,9 @@
 ## Décisions déjà prises — à ne pas rouvrir
 
 - Supabase gratuit région Paris ; cible souveraine Clever Cloud en septembre.
-- Identification par pseudonyme + code de classe (connexions anonymes).
+- Identification par **compte identifiant + mot de passe** choisis par l'élève
+  (virage du 22/07/2026, portabilité maison↔lycée ; l'identifiant fabrique une
+  adresse interne `identifiant@snt.local`, jamais envoyée).
   Aucun email, aucun nom, aucun mot de passe en base.
 - Code de classe générique par classe, fermé via `actif = false` après la
   deuxième séance, rouvert à la demande (option B).

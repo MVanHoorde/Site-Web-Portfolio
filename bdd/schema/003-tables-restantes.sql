@@ -16,7 +16,7 @@
 create table if not exists public.eleves (
   id uuid primary key default gen_random_uuid(),
 
-  -- Lien vers la session anonyme créée par Supabase Auth.
+  -- Lien vers le compte élève (identifiant + mot de passe) créé par Supabase Auth.
   -- auth.users est une table SYSTÈME gérée par Supabase : on ne
   -- l'écrit jamais soi-même, on s'y raccroche.
   -- on delete cascade : si la session est supprimée, la fiche part avec.

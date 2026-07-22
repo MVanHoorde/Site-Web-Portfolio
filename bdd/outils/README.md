@@ -47,10 +47,10 @@ un mot de passe contenant `@`, `:` ou `/` casserait l'adresse.
 leurs déclencheurs et leurs données.
 
 Il ne sauvegarde **pas** le schéma `auth`, propriété de Supabase, où vivent
-les sessions anonymes des élèves. Conséquence à connaître : une restauration
-dans un projet neuf retrouverait les fiches élèves, mais plus le lien entre
-une fiche et la session du navigateur qui l'a créée. Point ouvert, à traiter
-au jalon 5.
+les **comptes élèves** (identifiant + mot de passe haché). Conséquence à
+connaître : une restauration dans un projet neuf retrouverait les fiches
+élèves, mais plus les comptes qui les authentifient — les élèves devraient
+recréer un compte, ou être réinscrits.
 
 ## Codes de sortie
 

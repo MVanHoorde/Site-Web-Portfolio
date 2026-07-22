@@ -3,6 +3,14 @@
 > Conversation de cadrage du 20/07/2026, rangée dans `_suivi/` le même jour.
 > Sert à la fois de **brief pour la suite** et de **matière pour la présentation
 > de rentrée**.
+>
+> **⚠ Mise à jour du 22/07/2026 — virage anonyme → comptes.** L'identification par
+> *connexions anonymes* (envisagée les 20-21/07) a été **abandonnée** au profit de
+> **comptes par identifiant + mot de passe** choisis par l'élève, pour garantir la
+> **portabilité maison↔lycée**. Mots de passe hachés (on *réinitialise*, on ne lit
+> jamais). Le socle base de données est **exécuté et le pilote prouvé de bout en
+> bout** (voir §7). Les mentions « anonyme » ci-dessous ont été corrigées ; si une
+> subsiste, c'est la version « comptes » qui fait foi.
 
 ---
 
@@ -70,9 +78,9 @@ vérité. Aucun port ouvert, aucun VPS nécessaire, IA interchangeable.
 |---|---|
 | Hébergement | **Supabase**, plan gratuit, région **West EU (Paris)** — meilleur que Francfort initialement prévu : sol français, latence moindre, argument plus simple devant la direction |
 | Cible souveraine | **Clever Cloud** (100 % français, PostgreSQL managé, sauvegarde nuit) — à proposer à l'établissement en septembre |
-| Identification | Pseudonyme + code de classe, via **connexions anonymes** Supabase. Aucun email, aucun nom, aucun mot de passe en base |
-| Session | Jeton en `localStorage` → reconnaissance automatique d'une fois sur l'autre |
-| Postes partagés | Bouton « ce n'est pas moi », pseudo affiché en permanence, case « c'est mon ordinateur » |
+| Identification | **Compte par identifiant + mot de passe** choisis par l'élève (virage du 22/07/2026, pour la portabilité maison↔lycée). L'identifiant — minuscules, chiffres, tirets — fabrique une adresse interne `identifiant@snt.local`, jamais envoyée. Mot de passe **haché** par Supabase. Aucun nom réel, aucune adresse réelle en base |
+| Session | Jeton en `localStorage` (reconnaissance auto sur le même appareil) **et** reconnexion par identifiant + mot de passe depuis n'importe quel appareil (portabilité maison↔lycée) |
+| Postes partagés | Modale d'accueil à **chaque arrivée** (« content de te revoir » / « ce n'est pas toi ? »), **badge « connecté comme… » permanent**, et **déconnexion qui recharge la page** (efface de l'écran le travail de l'élève précédent) |
 | Personnalisation | Avatars + fonds dès le départ (récompenses cosmétiques = monnaie du RPG). Sources libres de droits ou maison |
 | Pilote | **Une séquence SNT**, une étape, avec un champ de texte libre — cycle complet de bout en bout |
 | Modération | Annoncée explicitement dans la séquence t0, passages réguliers, messages pédagogiques aux élèves. Limite de caractères sur les champs libres |
@@ -163,23 +171,28 @@ hebdomadaire** et **réveil quotidien**.
    renvoyer 7 lignes, `rls_active = true`, `nb_regles = 0`
 4. ✅ CLI Supabase, scripts `.bat`, tâches planifiées, historique de
    migrations — fait le 20/07/2026 (détail au §9)
-5. 🔄 Poser les règles RLS — **écrites** dans `bdd/schema/006-rls-et-fonctions.sql`
-   (21/07/2026), **à exécuter** dans le SQL Editor puis à vérifier avec la
-   requête finale du fichier. Deux préalables au tableau de bord :
-   **activer « Anonymous sign-ins »** (Authentication → Providers) et relever la
-   **clé anon**. Principe retenu : chaque élève ne voit que ses lignes ;
+5. ✅ Poser les règles RLS — exécutées le **22/07/2026** (`006-rls-et-fonctions.sql`)
+   puis réconciliées dans l'historique de migrations (local = remote). Préalables
+   faits : **provider Email activé, Confirm email désactivé** (les adresses
+   `@snt.local` sont synthétiques, jamais envoyées), **connexions anonymes
+   désactivées** ; **clé anon** relevée. Principe retenu : chaque élève ne voit que ses lignes ;
    `classes` et `sauvegardes` restent **totalement fermées** (sinon la liste des
    codes de classe serait publique) ; on y accède par deux fonctions
    `security definer` — `rejoindre_classe()` et `ma_session()`. L'élève ne peut
    **pas** écrire `statut`, `correction_ia` ni `commentaire_prof` : c'est le
    worker, en `service_role`, qui les remplit.
-6. 🔄 Écrire `assets/js/progression.js` (client partagé) — **écrit** le
-   21/07/2026 : HTTP nu via `fetch` (pas de `supabase-js`, qui n'existe qu'en
-   CDN — RGPD), session anonyme, jeton en `localStorage` **et rien d'autre**,
-   repli silencieux si la base est absente (une séquence reste utilisable sans
-   enregistrement). ⬜ **Reste à faire : renseigner `CLE_ANON`** en tête de
-   fichier — tant qu'elle est vide, le client dort.
-7. ⬜ Brancher le pilote sur une séquence SNT réelle
+6. ✅ `assets/js/progression.js` (client partagé) — réécrit le **22/07/2026** :
+   HTTP nu via `fetch` (pas de `supabase-js`, qui n'existe qu'en CDN — RGPD) ;
+   **comptes par identifiant + mot de passe** (`creerCompte` / `seConnecter`,
+   adresse interne `identifiant@snt.local`) ; jeton en `localStorage` **et rien
+   d'autre** ; repli silencieux si la base est absente (une séquence reste
+   utilisable sans enregistrement). Injecte aussi la **modale d'accueil**
+   (créer / se connecter / continuer en invité), le **bandeau invité** et le
+   **badge « connecté comme… »**. `CLE_ANON` renseignée.
+7. ✅ Pilote branché et **prouvé de bout en bout** le 22/07/2026 : compte
+   `leproftest` (classe démo `SNT26A`) → réponse `NET-1a` arrivée dans
+   `reponses_libres` (`statut = en_attente`). Câblé sur **t1 Internet** et **t0** ;
+   reste à généraliser aux 6 autres séquences.
 
 ## 8. Notions acquises pendant ce cadrage
 
@@ -210,6 +223,10 @@ hebdomadaire** et **réveil quotidien**.
   source ; ce n'est pas elle qui protège les données, ce sont les règles RLS
 - **Clé `service_role`** : clé secrète qui contourne toutes les règles RLS —
   jamais dans le dépôt, jamais dans une page, uniquement dans le worker
+- **« Clé anon » ≠ « connexions anonymes »** (à ne jamais confondre) : la *clé
+  anon* est la carte d'accès API publique, toujours utilisée ; les *connexions
+  anonymes* étaient une méthode de login, **abandonnée le 22/07/2026** au profit
+  des comptes identifiant + mot de passe (portabilité maison↔lycée)
 - **Activer RLS avant d'écrire du code** : une table fermée par défaut, chaque
   ouverture devient un choix conscient et écrit
 - **`GRANT` vs RLS** : le `GRANT` autorise ou refuse une **table** entière ;
@@ -330,6 +347,7 @@ migration → pousser sur GitHub → Supabase applique.
 ### Point ouvert reporté au jalon 5
 
 Le dump ne couvre pas le schéma `auth`, propriété de Supabase, où vivent les
-sessions anonymes. Une restauration dans un projet neuf retrouverait les fiches
-élèves mais plus le lien vers la session qui les a créées. À traiter en même
-temps que les règles RLS.
+**comptes élèves** (identifiant + mot de passe haché). Une restauration dans un
+projet neuf retrouverait les fiches élèves mais plus les comptes qui les
+authentifient : les élèves devraient recréer un compte, ou être réinscrits. À
+garder en tête pour toute migration vers un autre projet (ex. Clever Cloud).

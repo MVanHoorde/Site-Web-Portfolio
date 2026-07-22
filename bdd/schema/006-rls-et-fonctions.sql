@@ -11,18 +11,24 @@
 --  Rejouable : chaque objet est supprimé puis recréé.
 --
 --  ⚠ PRÉALABLE DANS LE TABLEAU DE BORD : Authentication → Providers
---     → activer « Anonymous sign-ins ». Sans cela, aucun élève ne
---     peut obtenir de session, et rien de ce qui suit ne sert.
+--     → activer le provider « Email », désactiver « Confirm email »
+--     (les adresses identifiant@snt.local sont synthétiques, jamais
+--     envoyées). Sans un compte, aucun élève n'obtient de session,
+--     et rien de ce qui suit ne sert.
+--     [Historique : jusqu'au 22/07/2026 on utilisait les « connexions
+--      anonymes » ; abandonnées au profit des comptes identifiant +
+--      mot de passe, pour la portabilité maison↔lycée.]
 -- ============================================================
 
 
 -- ============================================================
 --  1. Le principe, en une phrase
 --
---  Supabase donne à chaque visiteur une session anonyme ; son
---  identifiant est lisible en SQL avec  auth.uid().  Toutes les
---  règles ci-dessous disent la même chose sous des formes
---  différentes : « tu ne vois et tu n'écris que TES lignes ».
+--  Chaque élève ouvre une session en créant un compte ou en se
+--  connectant (identifiant + mot de passe) ; son identifiant est
+--  lisible en SQL avec  auth.uid().  Toutes les règles ci-dessous
+--  disent la même chose sous des formes différentes : « tu ne vois
+--  et tu n'écris que TES lignes ».
 --
 --  Deux tables restent totalement fermées :
 --   · classes      — sinon n'importe qui listerait tous les codes
@@ -259,7 +265,7 @@ declare
 begin
   if v_auth is null then
     raise exception 'AUCUNE_SESSION'
-      using hint = 'Aucune session anonyme : appeler signInAnonymously avant.';
+      using hint = 'Aucune session : créer un compte ou se connecter avant.';
   end if;
 
   -- Déjà inscrit ? On met à jour la date de dernière visite et on sort.
@@ -296,7 +302,7 @@ end;
 $$;
 
 comment on function public.rejoindre_classe is
-  'Inscrit la session anonyme dans une classe. Seule fonction autorisée à lire la table classes.';
+  'Inscrit la session courante (compte élève) dans une classe. Seule fonction autorisée à lire la table classes.';
 
 
 -- ============================================================
@@ -334,8 +340,8 @@ $$;
 --   · RLS   : « quelles LIGNES de cet objet ? »
 --  Une fonction n'a pas de lignes : seul le GRANT la concerne.
 --
---  anon          = visiteur sans session (avant signInAnonymously)
---  authenticated = session anonyme obtenue, élève ou non inscrit
+--  anon          = visiteur sans compte / non connecté (mode invité)
+--  authenticated = session ouverte (compte élève), inscrit ou non
 --
 --  rejoindre_classe est ouverte aux deux : la session vient d'être
 --  créée, et la fonction vérifie elle-même  auth.uid().
