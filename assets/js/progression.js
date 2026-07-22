@@ -450,7 +450,13 @@
    '.acc-err{font-size:13px;color:#a3271f;background:#fbeceb;border:1px solid #f0c9c6;border-radius:8px;padding:8px 10px;margin:0 0 12px}'+
    '.acc-bandeau{position:fixed;left:0;right:0;bottom:0;z-index:9998;background:#fdf1dd;border-top:1px solid #f0d9a8;color:#8a5a0c;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:13px;display:flex;align-items:center;gap:8px;padding:9px 14px}'+
    '.acc-bandeau button{margin-left:auto;background:none;border:0;color:#8a5a0c;font-weight:700;text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13px}'+
-   '@media (prefers-reduced-motion:reduce){.acc-fond{backdrop-filter:none}}';
+   '@media (prefers-reduced-motion:reduce){.acc-fond{backdrop-filter:none}}'+
+   '.acc-badge{position:fixed;top:10px;right:12px;z-index:9997;font-family:"IBM Plex Sans",system-ui,sans-serif}'+
+   '.acc-badge-btn{display:inline-flex;align-items:center;gap:6px;background:var(--surface,#fff);border:1px solid var(--line,#d3dae7);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink,#161f33);cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,.08)}'+
+   '.acc-badge-nom{font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'+
+   '.acc-menu{position:absolute;right:0;margin-top:6px;background:var(--surface,#fff);border:1px solid var(--line,#d3dae7);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);overflow:hidden;min-width:180px}'+
+   '.acc-menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:11px 14px;font-size:13px;color:var(--ink,#161f33);cursor:pointer;font-family:inherit}'+
+   '.acc-menu button:hover{background:var(--bg,#e9edf4)}';
 
   var ICONE_BOUCLIER =
    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z"/><path d="M9 12l2 2 4-4"/></svg>';
@@ -505,6 +511,46 @@
     global.document.body.appendChild(b);
   }
 
+  /* Badge permanent « connecté comme … », coin haut droit, avec un
+   * menu Se déconnecter. La déconnexion recharge la page : sur un
+   * poste partagé, cela efface de l'écran le travail de l'élève
+   * précédent avant que le suivant n'arrive. */
+  function afficherBadgeConnecte(profil) {
+    var ancien = global.document.querySelector('.acc-badge');
+    if (ancien) ancien.parentNode.removeChild(ancien);
+
+    var badge = global.document.createElement('div');
+    badge.className = 'acc-badge';
+    badge.innerHTML =
+      '<button type="button" class="acc-badge-btn" aria-haspopup="true" aria-expanded="false">'
+      +   '<span aria-hidden="true">👤</span>'
+      +   '<span class="acc-badge-nom">' + esc(profil.pseudo) + '</span>'
+      +   '<span aria-hidden="true">▾</span>'
+      + '</button>'
+      + '<div class="acc-menu" hidden>'
+      +   '<button type="button" data-changer>Changer de compte</button>'
+      +   '<button type="button" data-deco>Se déconnecter</button>'
+      + '</div>';
+
+    var btn  = badge.querySelector('.acc-badge-btn');
+    var menu = badge.querySelector('.acc-menu');
+    btn.addEventListener('click', function () {
+      var ouvert = !menu.hidden;
+      menu.hidden = ouvert;
+      btn.setAttribute('aria-expanded', String(!ouvert));
+    });
+    // Un clic ailleurs referme le menu.
+    global.document.addEventListener('click', function (ev) {
+      if (!badge.contains(ev.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    });
+
+    function deconnexion() { quitter().then(function () { global.location.reload(); }); }
+    badge.querySelector('[data-changer]').addEventListener('click', deconnexion);
+    badge.querySelector('[data-deco]').addEventListener('click', deconnexion);
+
+    global.document.body.appendChild(badge);
+  }
+
   /* Compte reconnu : on ne redemande pas le mot de passe, on
    * confirme juste que c'est bien lui (postes partagés). */
   function afficherRetour(profil) {
@@ -522,7 +568,10 @@
       +   '<div class="acc-pied">Ce n\'est pas toi&nbsp;? '
       +     '<button class="acc-lien" data-changer>Changer de compte</button></div>'
       + '</div>';
-    fond.querySelector('[data-continuer]').addEventListener('click', retirerFond);
+    fond.querySelector('[data-continuer]').addEventListener('click', function () {
+      retirerFond();
+      afficherBadgeConnecte(profil);
+    });
     fond.querySelector('[data-changer]').addEventListener('click', function () {
       quitter().then(function () { afficherPortes('connecter'); });
     });
