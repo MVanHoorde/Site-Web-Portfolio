@@ -41,7 +41,7 @@
    *    reste en sommeil et les séquences fonctionnent sans base.
    * ---------------------------------------------------------- */
   var URL_PROJET = 'https://ztyvuiaohxekuyjeoaxz.supabase.co';
-  var CLE_ANON   = '';
+  var CLE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0eXZ1aWFvaHhla3V5amVvYXh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDQzNTIsImV4cCI6MjEwMDEyMDM1Mn0.iBBZiAIec0hSxzAU8FKNe6AO-HeysuxBKXduURBP7Hc';
 
   var CLE_STOCKAGE = 'snt.session';   // seul usage du localStorage
   var SAISON       = '2026-2027';     // doit suivre la table evenements
