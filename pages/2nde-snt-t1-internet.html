@@ -185,6 +185,14 @@
   .verdict.ok{background:var(--ok-wash);color:#0c5c42;border:1px solid var(--ok)}
   .verdict.wait{background:var(--wait-wash);color:#7a5400;border:1px solid var(--wait)}
   .verdict.no{background:var(--err-wash);color:#8f2a22;border:1px solid var(--err)}
+  .verdict.amb{background:#fdecdf;color:#8a4b16;border:1px solid #e0975a}
+  .verdict.diag{background:var(--link-wash);color:#22357f;border:1px solid #b9c4ef}
+  .verdict .vd-pastille{display:inline-block;font-weight:700;font-size:12px;letter-spacing:.02em;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.6);margin-bottom:7px}
+  .verdict .vd-msg{margin:0}
+  .verdict .vd-msg + .vd-msg{margin-top:7px}
+  .verdict .vd-ia{margin:9px 0 0;font-size:12px;opacity:.8;line-height:1.5}
+  .verdict .vd-plus{margin-top:10px;padding:9px 11px;background:rgba(255,255,255,.5);border:1px dashed currentColor;border-radius:8px;font-size:13px;line-height:1.5}
+
 
   /* perso */
   .perso-box{border:1px solid #cdddf0;background:#fff;border-radius:12px;padding:14px}
@@ -3433,6 +3441,83 @@ body.teacher .ens-actif{display:flex}
   document.querySelectorAll('[data-focus-ouvrir]').forEach(function(b){
     b.addEventListener('click',function(){ ouvrirFocus(b.closest('[data-focus]')); });
   });
+
+  /* ---------- Ré-hydratation au chargement (retour de l'élève) ----------
+     À l'ouverture de la page, on rappelle les réponses déjà envoyées et,
+     si le professeur a VALIDÉ (statut 'corrige'), on affiche son retour dans
+     le .verdict du champ. Réutilise verdict()/écho/memoireReponses/glossaire :
+     même rendu qu'à l'envoi, aucune logique dupliquée.
+     • Balaye les [data-focus-code] présents dans la page → une nouvelle
+       question libre posée avec le même patron s'affiche seule, sans toucher ce code.
+     • Ne fait rien pour un invité : mesReponses renvoie [] (pas de compte),
+       donc aucun retour ne s'affiche (décision : réservé aux élèves connectés).
+     • Sécurité : le texte de l'élève reste en textContent (écho) ; seul le
+       retour IA/prof, échappé, passe en innerHTML. */
+  function classeVerdict(v){
+    if(v === 'accepté')     return 'ok';
+    if(v === 'à compléter') return 'amb';
+    return 'diag';                 /* sans objet / diagnostic */
+  }
+  function rendreRetour(r){
+    var a  = (r.correction_ia && r.correction_ia.analyse) || {};
+    var v  = a.verdict || 'sans objet';
+    var fe = a.feedback_eleve || {};
+    var past = v==='accepté' ? '✓ Accepté' : v==='à compléter' ? '✎ À compléter' : '💭 Bien reçu';
+    var html = '<span class="vd-pastille">'+past+'</span>';
+    /* Politique : le mot du professeur PRIME. S'il a écrit un commentaire,
+       l'élève ne lit que ça (pas de texte IA, pas de ligne de transparence).
+       Sinon : le message IA qu'il a validé + la ligne de transparence.
+       (Pour montrer les deux à la fois, il suffira d'assouplir ce bloc.) */
+    if(r.commentaire_prof && r.commentaire_prof.trim()){
+      html += '<p class="vd-msg">'+ echapper(r.commentaire_prof) +'</p>';
+    } else {
+      html += '<p class="vd-msg">'+ echapper(fe.message || '') +'</p>';
+      html += '<p class="vd-ia">✎ Ce retour a d\u2019abord été préparé par une intelligence artificielle '+
+              'qui tourne seulement sur l\u2019ordinateur de ton professeur \u2014 c\u2019est ça, «\u00a0locale\u00a0» : '+
+              'ta réponse ne part pas sur Internet, elle reste dans la classe. '+
+              'Ton professeur l\u2019a ensuite relu et validé.</p>';
+    }
+    if(fe.pour_aller_plus_loin && fe.pour_aller_plus_loin.trim()){
+      html += '<div class="vd-plus"><b>🔭 Pour aller plus loin</b><br>'+ echapper(fe.pour_aller_plus_loin) +'</div>';
+    }
+    return html;
+  }
+  function rehydraterReponses(){
+    if(!BASE || !BASE.mesReponses) return;
+    var codes = [];
+    document.querySelectorAll('[data-focus-code]').forEach(function(f){
+      var c = f.dataset.focusCode; if(c && codes.indexOf(c) < 0) codes.push(c);
+    });
+    if(!codes.length) return;
+    BASE.mesReponses(codes).then(function(lignes){
+      (lignes || []).forEach(function(r){
+        var sel = (window.CSS && CSS.escape) ? CSS.escape(r.code_activite) : r.code_activite;
+        var champ = document.querySelector('[data-focus-code="' + sel + '"]');
+        if(!champ) return;
+        /* restaurer la réponse envoyée + les états, comme validerFocus */
+        var texte = r.texte || '';
+        memoireReponses[r.code_activite] = texte;
+        var echo = champ.querySelector('[data-focus-echo]');
+        if(echo){ echo.textContent = texte; echo.style.display = 'block'; }
+        var action = champ.querySelector('.gaction'); if(action) action.style.display = 'none';
+        champ.classList.add('rempli');
+        var mot = champ.dataset.glossaire || (champ.closest('[data-glossaire]') || {dataset:{}}).dataset.glossaire;
+        if(mot) glossaire[mot] = texte;
+        /* le retour, seulement s'il est validé */
+        if(r.statut === 'corrige'){
+          var verd = (r.correction_ia && r.correction_ia.analyse && r.correction_ia.analyse.verdict) || 'sans objet';
+          verdict(champ, classeVerdict(verd), rendreRetour(r));
+          markDone(champ);
+        } else {
+          verdict(champ, 'wait', '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
+        }
+      });
+    }).catch(function(){ /* pas de base / invité : on n'affiche rien */ });
+  }
+  if(document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', rehydraterReponses);
+  else
+    rehydraterReponses();
 
   /* ---------- §7.5 glossaire évolutif ---------- */
   var glossaire = {};
