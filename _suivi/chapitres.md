@@ -201,6 +201,10 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
         correction entre camarades (S2-2.4, annoncée pour la version complète —
         **formulation à valider par Loïc**)
   - [x] mode enseignant (S2-2.4)
+  - [x] **dépôt de copie d'écran** (22/07, S1-1.4) — image affichée, validée à
+        l'envoi ; texte présenté, **code à porter** (né en séance 2 de la séquence Internet)
+  - [x] **« à retenir » masqué** révélé après l'activité (22/07, S1-1.1) — texte
+        présenté, **code à porter**
   - [ ] _(prochain mécanisme : à présenter ici d'abord)_
 - Hors périmètre volontaire : le détail matériel pointu du doc 01 (PCIe, SATA,
   S/PDIF, UEFI…) — grandes familles seulement, niveau seconde.
@@ -209,6 +213,51 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 
 ### SNT-T1 — Internet
 - État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.
+- 🔄 **22/07 — refonte complète de la séance 2 « Le réseau physique »** (audit
+  vocal de Loïc), traitée en 4 axes + finitions. En attente de relecture Loïc.
+  - **Axe A — 2.1 Topologies** : 3 schémas **légendés**, **bus redessiné « en
+    série »** (machines posées sur le fil, pour que « couper le fil coupe tout »).
+    **Exercice d'analyse guidé AVANT le « à retenir »** (relier aux réseaux réels,
+    coupures bus/étoile, avantage maillé). Encart histoire **sourcé** : le maillage
+    n'a pas été choisi contre la guerre nucléaire (Baran) ; bus local abandonné ;
+    biblio Britannica / RAND / Internet Society.
+  - **Axe B — 2.2 Câbles** : **les 8 questions du fichier équipe** extraites —
+    tableau Lannion (correction tolérante), **2 dépôts d'image**, Amitié / 2Africa
+    (libre + reveals), **QCM 5 options** fibre, **phrase à trous menu déroulant
+    (date) + TAT-8 libre**, **mini-calculatrice maison** (sans CDN, logique testée
+    8/8), pose + dangers, **« à retenir » repoussé et masqué** (bouton).
+  - **Axe C — 2.3 Débits** : perso **remontée en ouverture** (ancienne étape 2.4
+    supprimée) ; **doc exhaustif** fibre/ADSL/4G/5G/satellite + **encart sourcé**
+    « fermeture du cuivre / fin de l'ADSL d'ici fin 2030 » (ARCEP) ; carte ARCEP
+    **requalifiée en document** ; les **4 questions** du fichier en libre ; tableau
+    avantages/inconvénients en exercice ; définitions à reformuler (glossaire) ;
+    **comparaison 2020↔2026 sur la carte** (sélecteur de date) + **départements
+    affirmés** (Hauts-de-France, Île-de-France, Rhône, Loire vs Dordogne, Landes —
+    validés par Loïc sur captures). « Politique locale » = 3ᵉ occurrence (Cyclades,
+    Minitel, débits).
+  - **Axe D — nouvelle 2.4 « Les données et leur trafic »** : **2 figures
+    redessinées en SVG maison** (explosion du trafic Banque mondiale 1992→2022 ;
+    décomposition ARCEP fin 2024) ; texte à trous + **QCM 3 questions** (la vidéo
+    domine, pourquoi ça explose, 2019→aujourd'hui) ; réflexion **écologie** ;
+    biblio Banque mondiale + ARCEP.
+  - **Deux mécanismes NEUFS** : **dépôt de copie d'écran** (`data-depot`, image en
+    mémoire JS — jamais en `localStorage` —, validation à l'envoi) et **« à retenir »
+    masqué** révélé après l'activité (`data-reveal-bilan`). **Présentés en texte
+    dans t0** (1.1 et 1.4) et recensés dans son chantier ; **code à porter** dans t0
+    puis les 6 autres séquences.
+  - **Correcteur de trous étendu aux menus déroulants** (`select[data-answer]`,
+    ajout additif au moteur cloze). **Biblio transversale créée** :
+    `_modeles/biblio-sources-SNT.md`.
+  - **Numérotation séance 2** : 2.1 topo · 2.2 câbles · 2.3 débits · 2.4 trafic ·
+    2.5 pour aller plus loin (bonus).
+  - **Vérifs** : `node --check` OK, balises équilibrées (240/240 sur la séance),
+    **0 CDN**, `localStorage` inchangé, calculatrice testée, SVG rendus et
+    contrôlés visuellement. ⚠️ **Playwright 3 tailles NON exécuté** — chromium non
+    installable dans l'environnement, **à passer sur la machine de Loïc**.
+  - 📌 **Décisions Loïc restantes** (posées dans la page) : représentation du bus +
+    exemple Ethernet coaxial (2.1) ; interprétation du QCM fibre (2.2) ;
+    calculatrice inline vs NumWorks (2.2) ; confirmer numérotation trafic 2.4 (2.4).
+    📅 Rafraîchir les chiffres de trafic (baromètre ARCEP 2026 ; source post-2022).
 - 🔄 **21/07 (session contenu 2/2) — lots A à E traités.** Livrés en delta, un
   ZIP par lot. Ce qui a changé dans la page :
   - **Structure réparée** (défaut de fond, invisible jusqu'ici) : un `</div>`

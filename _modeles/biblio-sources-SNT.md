@@ -91,6 +91,16 @@ Reprend et complète la spec `spec-snt-t1-internet.md` §11.
   rapport « État d'internet en France ». 🔍 retrouver le PDF/rapport exact et son année.
 - Statista — volume mondial de données (zettaoctets) 2010→2025 (graphe du fichier
   équipe) : source secondaire, **à réactualiser** avec un chiffre plus récent si trouvé.
+- ⭐ **Banque mondiale — Rapport développement 2021, « Flux transfrontaliers »**
+  (croissance du trafic Internet mondial sur ~30 ans, données TeleGeography) :
+  https://wdr2021.worldbank.org/fr/stories/flux-transfrontaliers
+  → série longue et parlante : 1992 ≈ 100 Go/**jour** · 2002 ≈ 156 Go/s ·
+  2012 ≈ 16 800 Go/s · 2022 ≈ 153 000 Go/s (« ×1000 en 20 ans »). **Candidat
+  n°1 pour la figure "évolution des données échangées depuis les débuts"** — à
+  redessiner en SVG maison (échelle log) plutôt qu'à capturer. 🔍 chercher une
+  actualisation post-2022 (Cisco VNI arrêté en 2019).
+- ITU (2023) : ~5 100 Eo/an fixe + ~1 074 Eo/an mobile (via Sofrecom, 03/2025) —
+  pour un point récent.
 
 ---
 
