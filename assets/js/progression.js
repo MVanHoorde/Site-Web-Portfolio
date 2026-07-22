@@ -14,9 +14,11 @@
  *  Contrat de données : _suivi/BDD-cadrage.md §4
  *  Règles d'accès    : bdd/schema/006-rls-et-fonctions.sql
  *
- *  RGPD — ce qui part sur le réseau : un pseudonyme, un code de
- *  classe, des réponses de cours. Aucun nom, aucun email, aucun mot
- *  de passe, aucune adresse. La session est anonyme.
+ *  RGPD — ce qui part sur le réseau : un identifiant pseudonyme, un
+ *  mot de passe (haché par Supabase, jamais lisible), un code de
+ *  classe, des réponses de cours. Aucun nom réel, aucune adresse
+ *  réelle : l'« email » est une étiquette interne identifiant@snt.local,
+ *  jamais envoyée. La table identifiant→nom vit sur le PC du prof.
  *
  *  localStorage — un seul contenu autorisé, et c'est ici : le jeton
  *  de session. C'est sa raison d'être (reconnaître l'élève d'une
@@ -168,7 +170,8 @@
    *
    *  Trois cas, dans l'ordre : jeton encore valide → on garde ;
    *  jeton expiré mais rafraîchissable → on le renouvelle ; rien
-   *  d'exploitable → nouvelle session anonyme.
+   *  d'exploitable → pas de session (mode invité) tant que l'élève
+   *  ne s'est pas connecté ou n'a pas créé de compte.
    * ---------------------------------------------------------- */
   var sessionEnCours = null;   // évite deux ouvertures simultanées
 
@@ -179,17 +182,22 @@
     if (!jeton) jeton = lireJetonStocke();
     if (jetonValide()) return Promise.resolve(jeton);
 
-    var demarche = jeton && jeton.refresh_token
-      ? auth('token?grant_type=refresh_token', { refresh_token: jeton.refresh_token })
-          .catch(function () { return auth('signup', {}); })   // jeton périmé côté serveur
-      : auth('signup', {});                                    // connexion anonyme
+    // Jeton expiré mais rafraîchissable : on le renouvelle sans
+    // redemander le mot de passe à l'élève.
+    if (jeton && jeton.refresh_token) {
+      sessionEnCours = auth('token?grant_type=refresh_token', { refresh_token: jeton.refresh_token })
+        .then(memoriser)
+        .then(function (j) { sessionEnCours = null; return j; })
+        .catch(function (e) { sessionEnCours = null; jeton = null; ecrireJetonStocke(null); throw e; });
+      return sessionEnCours;
+    }
 
-    sessionEnCours = demarche
-      .then(memoriser)
-      .then(function (j) { sessionEnCours = null; return j; })
-      .catch(function (e) { sessionEnCours = null; jeton = null; ecrireJetonStocke(null); throw e; });
-
-    return sessionEnCours;
+    // Aucun jeton exploitable. On NE crée PLUS de session anonyme :
+    // une session s'obtient désormais en créant un compte ou en se
+    // connectant (creerCompte / seConnecter). Sans cela on reste en
+    // mode invité, et rien ne s'enregistre — le cours passe avant le
+    // dispositif. C'est aussi ce qui fait taire l'ancienne erreur 422.
+    return Promise.reject(new Error('PAS_DE_SESSION'));
   }
 
   /* ----------------------------------------------------------
@@ -216,25 +224,73 @@
       .catch(function () { return null; });   // hors ligne : la séquence continue
   }
 
-  /* Inscription : pseudo + code de classe, rien d'autre.
-   * Erreurs possibles, telles que les lève la fonction SQL :
-   *   CODE_CLASSE_INCONNU · PSEUDO_DEJA_PRIS · AUCUNE_SESSION */
-  function rejoindre(pseudo, codeClasse) {
-    exigeConfiguration();
-    return assurerSession()
-      .then(function () {
-        return rpc('rejoindre_classe', {
-          p_code  : String(codeClasse || '').trim().toUpperCase(),
-          p_pseudo: String(pseudo || '').trim()
-        });
-      })
-      .then(function () { profil = null; return session(); });
+  /* Normalise et vérifie l'identifiant choisi par l'élève.
+   * Règle retenue (décision Loïc, 22/07) : minuscules, chiffres et
+   * tirets, de 3 à 32 caractères. Il sert de pseudo affiché au
+   * professeur ET à fabriquer l'adresse interne identifiant@snt.local
+   * — d'où l'interdiction des espaces et des accents. */
+  function normaliserIdentifiant(brut) {
+    var id = String(brut || '').trim().toLowerCase();
+    if (!/^[a-z0-9-]{3,32}$/.test(id)) {
+      var e = new Error('IDENTIFIANT_INVALIDE'); e.code = 'IDENTIFIANT_INVALIDE'; throw e;
+    }
+    return id;
   }
 
-  /* Quitter : on oublie le jeton. Les données restent en base — un
-   * élève qui se reconnecte avec le même pseudo dans la même classe
-   * repart d'une session vierge ; c'est une limite connue du choix
-   * « pas de mot de passe », à traiter au moment du pilote. */
+  function emailSynthetique(id) { return id + '@snt.local'; }
+
+  /* Créer un compte : identifiant + mot de passe + code de classe.
+   * Deux temps : (1) Supabase crée le compte et ouvre la session ;
+   * (2) rejoindre_classe() crée la fiche élève, avec l'identifiant
+   * comme pseudo. Le mot de passe est haché par Supabase, jamais
+   * lisible. Erreurs possibles :
+   *   IDENTIFIANT_INVALIDE · MOT_DE_PASSE_TROP_COURT ·
+   *   IDENTIFIANT_DEJA_PRIS · CODE_CLASSE_INCONNU · PSEUDO_DEJA_PRIS */
+  function creerCompte(identifiant, motDePasse, codeClasse) {
+    return Promise.resolve().then(function () {
+      exigeConfiguration();
+      var id  = normaliserIdentifiant(identifiant);
+      var mdp = String(motDePasse || '');
+      if (mdp.length < 6) { var em = new Error('MOT_DE_PASSE_TROP_COURT'); em.code = 'MOT_DE_PASSE_TROP_COURT'; throw em; }
+      return auth('signup', { email: emailSynthetique(id), password: mdp })
+        .catch(function (e) {
+          // GoTrue renvoie 422/400 quand l'adresse existe déjà.
+          if (e.statut === 422 || e.statut === 400) { var d = new Error('IDENTIFIANT_DEJA_PRIS'); d.code = 'IDENTIFIANT_DEJA_PRIS'; throw d; }
+          throw e;
+        })
+        .then(memoriser)
+        .then(function () {
+          return rpc('rejoindre_classe', {
+            p_code  : String(codeClasse || '').trim().toUpperCase(),
+            p_pseudo: id
+          });
+        })
+        .then(function () { profil = null; return session(); });
+    });
+  }
+
+  /* Se connecter : identifiant + mot de passe. Pour les visites
+   * suivantes, depuis n'importe quel appareil (la maison comprise).
+   * Erreurs possibles : IDENTIFIANT_INVALIDE · IDENTIFIANTS_INCORRECTS */
+  function seConnecter(identifiant, motDePasse) {
+    return Promise.resolve().then(function () {
+      exigeConfiguration();
+      var id = normaliserIdentifiant(identifiant);
+      return auth('token?grant_type=password', {
+          email: emailSynthetique(id), password: String(motDePasse || '')
+        })
+        .catch(function (e) {
+          if (e.statut === 400) { var d = new Error('IDENTIFIANTS_INCORRECTS'); d.code = 'IDENTIFIANTS_INCORRECTS'; throw d; }
+          throw e;
+        })
+        .then(memoriser)
+        .then(function () { profil = null; return session(); });
+    });
+  }
+
+  /* Quitter : on oublie le jeton local. Le compte reste en base ;
+   * l'élève se reconnecte avec son identifiant + mot de passe, depuis
+   * n'importe quel appareil, et retrouve toute sa progression. */
   function quitter() {
     jeton = null; profil = null;
     ecrireJetonStocke(null);
@@ -359,7 +415,8 @@
   global.Progression = {
     disponible    : disponible,
     session       : session,
-    rejoindre     : rejoindre,
+    creerCompte   : creerCompte,
+    seConnecter   : seConnecter,
     quitter       : quitter,
     lire          : lire,
     ecrire        : ecrire,
