@@ -499,6 +499,27 @@ body.qcm-on #prog, body.qcm-on #prog4, body.qcm-on #glo-ouvrir{display:none !imp
 .cloze input.juste{border-color:var(--ok);background:var(--ok-wash)}
 .cloze input.presque{border-color:var(--wait);background:var(--wait-wash)}
 .cloze input.revoir{border-color:var(--err);background:var(--err-wash)}
+.cloze select.short{padding:3px 6px;border:1.5px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+.cloze select.juste{border-color:var(--ok);background:var(--ok-wash)}
+.cloze select.revoir{border-color:var(--err);background:var(--err-wash)}
+.doc-note{font-size:13px;color:var(--ink-soft);margin:4px 0 12px;line-height:1.5}
+/* Dépôt de copie d'écran — nouveau mécanisme (22/07/2026) ; l'image reste en mémoire JS, jamais en localStorage */
+.depot-zone{display:flex;flex-direction:column;gap:10px}
+.depot-btn{align-self:flex-start;cursor:pointer}
+.depot-apercu:empty{display:none}
+.depot-apercu img{max-width:100%;max-height:340px;border-radius:12px;border:1px solid var(--line);display:block}
+/* Mini-calculatrice maison (aucun CDN, tactile) */
+.calc{margin-top:14px;max-width:290px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+.calc-head{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+.calc-ecran{width:100%;box-sizing:border-box;text-align:right;font-family:"IBM Plex Mono";font-size:22px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);margin-bottom:10px}
+.calc-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.calc-b{min-height:46px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:18px;font-weight:600;color:var(--ink);cursor:pointer;font-family:inherit}
+.calc-b:active{transform:translateY(1px)}
+.calc-b:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.calc-op{color:var(--link)}
+.calc-fn{color:var(--ink-soft)}
+.calc-eq{grid-row:span 2;background:var(--link);color:#fff;border-color:var(--link)}
+.calc-zero{grid-column:span 2}
 .cloze-msg{font-size:13.5px;margin-top:8px}
 .cloze-msg .m-presque{color:#7a5400} .cloze-msg .m-ok{color:var(--ok)} .cloze-msg .m-ko{color:var(--err)}
 .indice{background:none;border:1px dashed var(--link);color:var(--link);border-radius:999px;
@@ -1528,49 +1549,241 @@ body.teacher .ens-actif{display:flex}
         </div>
       </div>
 
-      <!-- 1.3 -->      <div class="step" data-step data-gate>
+      <!-- ÉTAPE 2.2 — CÂBLES SOUS-MARINS (refonte axe B, 22/07/2026 :
+           toutes les questions du fichier équipe · tableau Lannion à correction
+           tolérante · 2 dépôts d'image · QCM 5 options · date en menu déroulant +
+           TAT-8 libre · mini-calculatrice · pose + dangers · à retenir repoussé
+           APRÈS l'activité) -->
+      <div class="step" data-step data-gate>
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
             <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Les câbles sous-marins : l'autoroute invisible</h3>
-            <div class="objective"><span>🎯</span><span><b>Objectif —</b> découvrir par où passent réellement tes données quand elles traversent un océan — et fragiliser l'image du « tout passe par les satellites ».</span></div>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> découvrir par où passent réellement tes données quand elles traversent un océan, et casser l'image du « tout passe par les satellites ».</span></div>
           </div>
           <div class="card-body">
-            <div class="block-label">Explore d'abord</div>
+
+            <div class="block-label">La carte à explorer<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
             <div class="res">
               <a class="res-item activity" href="https://www.submarinecablemap.com" target="_blank" rel="noopener">
                 <span class="res-code">NET·1b</span>
-                <span class="res-main"><span class="r-title">Carte mondiale des câbles sous-marins</span><span class="r-type">Activité branchée · TeleGeography — zoome sur Lannion, Le Porge et Marseille</span></span>
-                <span class="res-time">~15 min</span>
+                <span class="res-main"><span class="r-title">Carte mondiale des câbles sous-marins</span><span class="r-type">Document interactif · TeleGeography — c'est LA carte qui te sert à répondre à tout ce qui suit</span></span>
+                <span class="res-time">~20 min</span>
               </a>
             </div>
-            <div class="block-label">À retenir</div>
-            <div class="retain">L'essentiel du trafic entre continents (<b>plus de 95 %</b>) passe par des <b>câbles sous-marins en fibre optique</b>, pas par les satellites. Plus de <b>1,2 million de km</b> de câbles sont posés — environ <b>30 fois</b> le tour de la Terre. En France, ils atterrissent notamment à <b>Lannion</b>, au <b>Porge</b> et surtout à <b>Marseille</b>, l'une des grandes portes d'entrée d'Internet en Europe.</div>
-            <div class="block-label">Complète</div>
+            <p class="doc-note">En cliquant sur un point ou un câble, ses informations s'affichent : nom, année de mise en service, longueur, propriétaires. Tu vas t'en servir tout au long de l'étape.</p>
+
+            <!-- Q1 — tableau Lannion, correction tolérante -->
+            <div class="block-label">1 · Les câbles qui arrivent à Lannion<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
             <div class="field">
-              <span class="field-type">Texte à trous</span>
-              <div class="field-q">Un calcul d'ordre de grandeur : la circonférence de la Terre fait ≈ 40 000 km.</div>
+              <span class="field-type">Tableau à compléter · fautes d'orthographe tolérées</span>
+              <div class="field-q">Zoome sur <b>Lannion</b>, en Bretagne (survole les points pour afficher les noms). Complète les deux lignes avec les infos de la carte.</div>
               <div class="cloze" data-cloze>
-                1 200 000 km de câbles ÷ 40 000 km = <input class="short" data-answer="30" placeholder="?" aria-label="nombre de tours de la Terre" data-indice1="Simplifie la division par 10 000 : cela revient à calculer 120 ÷ 4." data-indice2="Le « À retenir » juste au-dessus donne déjà le résultat."> tours de la Terre. Le tout premier câble transatlantique en <b>fibre optique</b> (TAT-8) date de <input class="short" data-answer="1988" placeholder="année" aria-label="année du TAT-8" data-indice1="TAT-8 est posé à la toute fin des années 1980." data-indice2="Juste un an avant l’invention du Web au CERN, que la frise date de 1989.">.
+                <table class="doc-table">
+                  <tr><th>Nom du câble</th><th>Année</th><th>Provenance</th><th>Longueur</th><th>Propriétaire(s)</th></tr>
+                  <tr>
+                    <td><b>Apollo</b></td>
+                    <td><input class="short" data-answer="2003" placeholder="?" aria-label="Apollo — année" data-indice1="Clique sur le câble Apollo : l'année de mise en service s'affiche." data-indice2="Début des années 2000."></td>
+                    <td><input class="short" data-answer="États-Unis" data-variantes="Etats-Unis|USA|Amérique|USA" placeholder="?" aria-label="Apollo — provenance" data-indice1="Apollo traverse l'Atlantique nord." data-indice2="Il vient du continent américain."></td>
+                    <td><input class="short" data-answer="13000" data-variantes="13 000|13000 km|13 000 km|13000km" placeholder="? km" aria-label="Apollo — longueur" data-indice1="Un câble transatlantique : plusieurs milliers de km." data-indice2="Autour de 13 000 km."></td>
+                    <td><input class="short" data-answer="Vodafone" placeholder="?" aria-label="Apollo — propriétaire" data-indice1="Un grand opérateur télécom britannique." data-indice2="Son nom commence par « Voda »."></td>
+                  </tr>
+                  <tr>
+                    <td><b>HUGO</b></td>
+                    <td><input class="short" data-answer="2007" placeholder="?" aria-label="HUGO — année" data-indice1="Clique sur le câble HUGO." data-indice2="Fin des années 2000."></td>
+                    <td><input class="short" data-answer="Royaume-Uni" data-variantes="Angleterre|UK|Grande-Bretagne|Royaume Uni" placeholder="?" aria-label="HUGO — provenance" data-indice1="Un câble court, vers le nord." data-indice2="Il vient de nos voisins d'outre-Manche."></td>
+                    <td><input class="short" data-answer="425" data-variantes="425 km|425km" placeholder="? km" aria-label="HUGO — longueur" data-indice1="Bien plus court qu'un transatlantique." data-indice2="Quelques centaines de km : 425."></td>
+                    <td><input class="short" data-answer="Sure et Vodafone" data-variantes="Vodafone et Sure|Sure, Vodafone|Sure et Vodafone|Sure and Vodafone" placeholder="?" aria-label="HUGO — propriétaires" data-indice1="Ils sont deux — dont un que tu as déjà écrit au-dessus." data-indice2="« Sure » et « Vodafone »."></td>
+                  </tr>
+                </table>
               </div>
-              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
             </div>
+
+            <!-- Q2 — dépôt copie d'écran France -->
+            <div class="block-label">2 · La France métropolitaine, vue des câbles</div>
+            <div class="field" data-depot data-depot-code="NET-D2">
+              <span class="field-type">Dépôt de copie d'écran · reste affichée</span>
+              <div class="field-q">Zoome pour faire apparaître tous les points de <b>départ/arrivée</b> des câbles en <b>France métropolitaine</b>, puis dépose ici ta <b>copie d'écran</b> (une image de la carte — pas de photo perso).</div>
+              <div class="depot-zone">
+                <label class="btn ghost depot-btn">📷 Choisir ma copie d'écran<input type="file" accept="image/*" hidden aria-label="Déposer une copie d'écran de la carte des câbles en France"></label>
+                <div class="depot-apercu" data-depot-apercu></div>
+              </div>
+              <div class="verdict"></div>
+            </div>
+
+            <!-- Q3 — Amitié (Le Porge), réponse libre -->
+            <div class="block-label">3 · Le câble <i>Amitié</i>, au Porge</div>
             <div class="field free" data-focus
-                 data-focus-titre="Ce qui menace les câbles sous-marins"
-                 data-focus-question="Cite <b>deux dangers</b> qui menacent les câbles sous-marins, et propose une conséquence possible pour les internautes d'une région touchée."
-                 data-focus-max="400" data-focus-min="40" data-focus-code="NET-R3">
-              <span class="field-type">Réponse rédigée · mode focus · envoyée pour correction</span>
-              <div class="field-q">Cite <b>deux dangers</b> qui menacent les câbles sous-marins, et propose une conséquence possible pour les internautes d'une région touchée.</div>
+                 data-focus-titre="Le câble Amitié (Le Porge)"
+                 data-focus-question="Trouve le câble <b>Amitié</b> qui arrive à <b>Le Porge</b>, près de Bordeaux. Donne ses <b>propriétaires</b>, sa <b>longueur</b> et sa <b>date de mise en service</b>."
+                 data-focus-max="400" data-focus-min="25" data-focus-code="NET-R-amitie">
+              <span class="field-type">Réponse rédigée · envoyée pour correction</span>
+              <div class="field-q">Trouve le câble <b>Amitié</b> qui arrive à <b>Le Porge</b>, près de Bordeaux. Donne ses <b>propriétaires</b>, sa <b>longueur</b> et sa <b>date de mise en service</b>.</div>
               <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
               <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
-              <div class="reveal" data-reveal="">
-                <div class="rl">🦈 Le sais-tu ?</div>
-                Les vrais ennemis des câbles sont les <b>ancres de bateaux</b>, les <b>chaluts de pêche</b> et les <b>séismes sous-marins</b> — plusieurs dizaines de coupures par an ! Et oui, quelques <b>requins</b> ont bel et bien mordu des câbles : Google a renforcé certains des siens avec une gaine façon kevlar. Réparer un câble, c'est envoyer un navire spécialisé le remonter à la surface pour le ressouder.
+              <div class="reveal" data-reveal>
+                <div class="rl">🔌 Ce qu'il fallait trouver</div>
+                <i lang="fr">Amitié</i> relie les États-Unis à la France (Le Porge). Propriétaires : <b>Aqua Comms, Meta, Microsoft, Orange, Vodafone</b> — on y retrouve deux géants du numérique, qui financent désormais leurs propres câbles. Mis en service en <b>juillet 2023</b>, il mesure <b>6 792 km</b>.
               </div>
             </div>
+
+            <!-- Q4 — 2Africa (Marseille), réponse libre + dépôt -->
+            <div class="block-label">4 · Le plus long du monde : <i>2Africa</i>, à Marseille</div>
+            <div class="field free" data-focus
+                 data-focus-titre="2Africa (Marseille)"
+                 data-focus-question="À <b>Marseille</b> arrive <b>2Africa</b>, l'un des plus longs câbles du monde. Donne sa <b>longueur</b>, décris son <b>parcours</b> et son <b>nombre de points de desserte</b>."
+                 data-focus-max="450" data-focus-min="25" data-focus-code="NET-R-2africa">
+              <span class="field-type">Réponse rédigée · envoyée pour correction</span>
+              <div class="field-q">À <b>Marseille</b> arrive <b>2Africa</b>, l'un des plus longs câbles du monde. Donne sa <b>longueur</b>, décris son <b>parcours</b> et son <b>nombre de points de desserte</b>.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🌍 Ce qu'il fallait trouver</div>
+                <i lang="fr">2Africa</i> mesure environ <b>45 000 km</b> : il fait quasiment <b>le tour complet de l'Afrique</b>, avec des accès en Arabie saoudite, au Pakistan, en Inde… puis remonte par la mer Rouge vers la Méditerranée et se termine en Italie, en France et en Espagne. Il dessert <b>50 points</b> répartis dans <b>34 pays</b>.
+              </div>
+            </div>
+            <div class="field" data-depot data-depot-code="NET-D4">
+              <span class="field-type">Dépôt de copie d'écran · reste affichée</span>
+              <div class="field-q">Fais une <b>copie d'écran</b> zoomée du parcours de <b>2Africa</b> autour de l'Afrique et dépose-la ici pour illustrer ta réponse.</div>
+              <div class="depot-zone">
+                <label class="btn ghost depot-btn">📷 Choisir ma copie d'écran<input type="file" accept="image/*" hidden aria-label="Déposer une copie d'écran du parcours de 2Africa"></label>
+                <div class="depot-apercu" data-depot-apercu></div>
+              </div>
+              <div class="verdict"></div>
+            </div>
+
+            <!-- Q5 — fibre optique (QCM 5 options) + date (menu déroulant) + TAT-8 (libre) -->
+            <div class="block-label">5 · La fibre optique, et le tout premier câble<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="field">
+              <span class="field-type">QCM</span>
+              <div class="field-q">Cherche une illustration d'un câble sous-marin en fibre optique (coupe transversale). Puis réponds :</div>
+              <div class="qcmbox" data-code="NET-Q2b">
+                <script type="application/json" class="qcm-data">
+                [
+                 {
+                  "q": "À l'intérieur d'un câble sous-marin en fibre optique, l'information voyage…",
+                  "o": [
+                   "sous forme de courant électrique, dans des fils de cuivre",
+                   "sous forme d'ondes radio, comme le Wi-Fi",
+                   "sous forme de lumière, dans des fibres de verre fines comme un cheveu",
+                   "sous forme de signaux relayés par satellite",
+                   "sous forme d'impulsions magnétiques"
+                  ],
+                  "r": 2,
+                  "c": "La fibre transporte des impulsions lumineuses dans du verre ultra-pur : c'est ce qui permet des débits énormes sur des milliers de km."
+                 }
+                ]
+                </script>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-type">Phrase à compléter · menu déroulant + réponse libre</span>
+              <div class="field-q">Complète avec l'année, puis le nom du câble.</div>
+              <div class="cloze" data-cloze>
+                Le tout premier câble transatlantique en fibre optique a été posé en
+                <select class="short" data-answer="1988" aria-label="année du premier câble transatlantique en fibre">
+                  <option value="">— année —</option><option value="1956">1956</option><option value="1976">1976</option><option value="1988">1988</option><option value="2001">2001</option><option value="2012">2012</option>
+                </select>
+                ; il s'appelait le
+                <input class="short" data-answer="TAT-8" data-variantes="TAT8|TAT 8|tat-8|tat8" placeholder="nom" aria-label="nom du premier câble transatlantique en fibre" data-indice1="Trois lettres, un tiret, un chiffre." data-indice2="TAT pour « TransATlantic », suivi du numéro 8.">.
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <!-- Q6 — calcul d'ordre de grandeur + mini-calculatrice -->
+            <div class="block-label">6 · Combien de fois le tour de la Terre ?<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Calcul · texte à trous</span>
+              <div class="field-q">On a posé plus de <b>1,2 million de km</b> de câbles. La circonférence de la Terre à l'équateur fait ≈ <b>40 000 km</b>. Combien de tours de la Terre cela représente-t-il&nbsp;? <b>Écris le calcul</b>, puis le résultat.</div>
+              <div class="cloze" data-cloze>
+                1 200 000 ÷ 40 000 = <input class="short" data-answer="30" placeholder="?" aria-label="nombre de tours de la Terre" data-indice1="Simplifie : divise en haut et en bas par 10 000, cela revient à 120 ÷ 4." data-indice2="120 ÷ 4 = 30."> tours de la Terre.
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+              <div class="calc" data-calc aria-label="Calculatrice">
+                <div class="calc-head">🧮 Ta calculatrice</div>
+                <input class="calc-ecran" data-calc-ecran type="text" inputmode="none" readonly value="0" aria-label="Écran de la calculatrice">
+                <div class="calc-pad">
+                  <button type="button" class="calc-b calc-fn" data-calc-key="C">C</button>
+                  <button type="button" class="calc-b calc-fn" data-calc-key="back">⌫</button>
+                  <button type="button" class="calc-b calc-op" data-calc-key="/">÷</button>
+                  <button type="button" class="calc-b calc-op" data-calc-key="*">×</button>
+                  <button type="button" class="calc-b" data-calc-key="7">7</button>
+                  <button type="button" class="calc-b" data-calc-key="8">8</button>
+                  <button type="button" class="calc-b" data-calc-key="9">9</button>
+                  <button type="button" class="calc-b calc-op" data-calc-key="-">−</button>
+                  <button type="button" class="calc-b" data-calc-key="4">4</button>
+                  <button type="button" class="calc-b" data-calc-key="5">5</button>
+                  <button type="button" class="calc-b" data-calc-key="6">6</button>
+                  <button type="button" class="calc-b calc-op" data-calc-key="+">+</button>
+                  <button type="button" class="calc-b" data-calc-key="1">1</button>
+                  <button type="button" class="calc-b" data-calc-key="2">2</button>
+                  <button type="button" class="calc-b" data-calc-key="3">3</button>
+                  <button type="button" class="calc-b calc-eq" data-calc-key="=">=</button>
+                  <button type="button" class="calc-b calc-zero" data-calc-key="0">0</button>
+                  <button type="button" class="calc-b" data-calc-key=".">,</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Q7 — comment les câbles sont posés (libre) -->
+            <div class="block-label">7 · Comment pose-t-on un câble au fond de l'océan ?</div>
+            <div class="field free" data-focus
+                 data-focus-titre="La pose des câbles sous-marins"
+                 data-focus-question="Recherche comment les câbles sous-marins sont <b>mis en place</b>. Explique en une ou deux phrases, avec tes mots."
+                 data-focus-max="400" data-focus-min="25" data-focus-code="NET-R-pose">
+              <span class="field-type">Réponse rédigée · envoyée pour correction</span>
+              <div class="field-q">Recherche comment les câbles sous-marins sont <b>mis en place</b>. Explique en une ou deux phrases, avec tes mots.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🚢 Ce qu'il fallait trouver</div>
+                Des <b>navires câbliers</b> déroulent le câble et le déposent au fond de l'océan. Près des côtes, en eau peu profonde, une <b>« charrue »</b> tirée par le navire creuse une tranchée pour <b>enfouir</b> le câble et le protéger des ancres et des chaluts.
+              </div>
+            </div>
+
+            <!-- Q8 — ce qui menace les câbles (libre) + reveal -->
+            <div class="block-label">8 · Ce qui peut endommager un câble</div>
+            <div class="field free" data-focus
+                 data-focus-titre="Ce qui menace les câbles sous-marins"
+                 data-focus-question="Cite <b>deux causes</b> qui peuvent endommager un câble sous-marin, et propose une <b>conséquence possible</b> pour les internautes d'une région touchée."
+                 data-focus-max="400" data-focus-min="30" data-focus-code="NET-R-dangers">
+              <span class="field-type">Réponse rédigée · envoyée pour correction</span>
+              <div class="field-q">Cite <b>deux causes</b> qui peuvent endommager un câble sous-marin, et propose une <b>conséquence possible</b> pour les internautes d'une région touchée.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🦈 Le sais-tu ?</div>
+                Les vrais ennemis des câbles sont les <b>ancres de bateaux</b>, les <b>chaluts de pêche</b> et les <b>séismes sous-marins</b> — plusieurs dizaines de coupures par an&nbsp;! En temps de guerre, ils sont aussi des cibles. Et oui, quelques <b>requins</b> ont bel et bien mordu des câbles : certains ont été renforcés d'une gaine façon kevlar. Réparer, c'est envoyer un navire remonter le câble à la surface pour le ressouder — pendant ce temps, une région peut voir son accès à Internet ralenti ou coupé.
+              </div>
+            </div>
+
+            <!-- BILAN — le « à retenir » n'apparaît qu'à la demande, après l'activité -->
+            <div class="block-label">Le bilan de l'activité</div>
+            <p class="doc-note">Tu as fait le tour&nbsp;? Affiche le bilan à retenir.</p>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+            <div class="bilan-wrap" data-bilan-wrap hidden>
+              <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+              <div class="retain">L'essentiel du trafic entre continents (<b>plus de 95 %</b>) passe par des <b>câbles sous-marins en fibre optique</b>, pas par les satellites. La lumière y voyage dans des fibres de verre fines comme un cheveu. On en a posé <b>plus de 1,2 million de km</b> — environ <b>30 fois</b> le tour de la Terre — depuis le premier câble transatlantique en fibre, le <b>TAT-8</b> (1988). Ces câbles sont déroulés par des <b>navires câbliers</b> et parfois enfouis pour les protéger. En France, ils atterrissent notamment à <b>Lannion</b>, au <b>Porge</b> et surtout à <b>Marseille</b>, l'une des grandes portes d'entrée d'Internet en Europe. Fragiles (ancres, chaluts, séismes, sabotage), ils sont sans cesse surveillés et réparés : couper un câble, c'est ralentir toute une région.</div>
+            </div>
+
+            <!-- CHANTIER -->
+            <aside class="chantier decision">
+              <div class="cl">📌 Décisions Loïc — 3 points sur cette étape</div>
+              <b>1. Deux mécanismes nouveaux</b> introduits ici : le <b>dépôt de copie d'écran</b> (l'image reste affichée, validation à l'envoi ; correction IA <i>plus tard</i> via le worker) et le <b>« à retenir » masqué</b> jusqu'à un clic. À <b>présenter dans t0</b> (référentiel vivant) si tu les gardes. Piste possible : révéler le à retenir <b>automatiquement</b> quand toutes les questions sont validées, plutôt que par bouton — à décider.<br>
+              <b>2. Question 5 (fibre)</b> : j'ai transformé « trouve une illustration » en <b>QCM 5 options</b> sur ce qu'est la fibre (plus évaluable qu'une image à chercher). Si tu voulais plutôt un QCM d'identification d'image, dis-le.<br>
+              <b>3. Calculatrice</b> : intégrée <b>en clair, sans CDN</b> (une mini-calculatrice maison, tactile). Un vrai <b>NumWorks</b> n'est dispo qu'en <i>iframe</i> depuis numworks.com → envoie l'IP de chaque élève, donc écarté pour raison RGPD. Celle-ci fait le job pour un ordre de grandeur ; à valider.
+            </aside>
+            <!-- /CHANTIER -->
+
           </div>
         </div>
       </div>
@@ -3246,6 +3459,9 @@ body.teacher .ens-actif{display:flex}
     sec.querySelectorAll('.opt').forEach(function(o){o.disabled=false;o.classList.remove('correct','wrong');});
     sec.querySelectorAll('textarea').forEach(function(t){t.value='';t.readOnly=false;});
     sec.querySelectorAll('.cloze input').forEach(function(i){i.value='';i.classList.remove('ok','no','juste','presque','revoir');});
+    sec.querySelectorAll('.cloze select').forEach(function(s){s.selectedIndex=0;s.classList.remove('juste','presque','revoir');});
+    sec.querySelectorAll('[data-depot-apercu]').forEach(function(a){a.innerHTML='';});
+    sec.querySelectorAll('[data-bilan-wrap]').forEach(function(b){b.hidden=true;});
     sec.querySelectorAll('.cloze-msg').forEach(function(m){m.innerHTML='';});
     sec.querySelectorAll('.indice').forEach(function(b){b.disabled=false;b.dataset.niveau='0';});
     sec.querySelectorAll('.indice-txt').forEach(function(z){z.style.display='none';z.textContent='';});
@@ -3739,6 +3955,14 @@ function initCloze(){
           if(!faux && inp._indiceZone) inp._indiceZone.style.display='none';
         }
       });
+      /* trous en menu déroulant : correction exacte, sans Levenshtein (ajout 22/07) */
+      $$('select[data-answer]',bloc).forEach(function(sel){
+        n++;
+        sel.classList.remove('juste','presque','revoir');
+        if(!sel.value){ sel.classList.add('revoir'); return; }
+        if(normaliser(sel.value)===normaliser(sel.dataset.answer)){ sel.classList.add('juste'); ok++; }
+        else sel.classList.add('revoir');
+      });
       var h='';
       if(ok===n) h+='<span class="m-ok">Tout est juste'+(presque?' — attention à l\'orthographe, je l\'ai corrigée pour toi.':'.')+'</span>';
       else{
@@ -3884,6 +4108,67 @@ function initZoom(){
 }
 
 /* ---------- 8. Démarrage ---------- */
+/* ---------- Dépôt de copie d'écran (nouveau mécanisme, 22/07/2026) ----------
+   L'image lue reste en mémoire JS (data URL dans le DOM), JAMAIS en localStorage.
+   Validation à l'envoi. Correction/relecture IA = plus tard (worker phase 2). */
+function initDepot(){
+  $$('[data-depot]').forEach(function(zone){
+    var input=$('input[type=file]',zone), apercu=$('[data-depot-apercu]',zone);
+    if(!input||!apercu) return;
+    input.addEventListener('change',function(){
+      var f=input.files&&input.files[0]; if(!f) return;
+      if(!/^image\//.test(f.type)){ verdict(zone,'no','Choisis un fichier image (une copie d\'écran).'); return; }
+      var r=new FileReader();
+      r.onload=function(){
+        apercu.innerHTML='';
+        var img=document.createElement('img'); img.src=r.result; img.alt='Ta copie d\'écran déposée';
+        apercu.appendChild(img);
+        verdict(zone,'ok','✅ Copie d\'écran déposée — étape validée. (La relecture par l\'IA viendra plus tard.)');
+        markDone(zone);
+      };
+      r.readAsDataURL(f);
+    });
+  });
+}
+
+/* ---------- Mini-calculatrice maison (aucun CDN, aucune eval) ---------- */
+function initCalc(){
+  $$('[data-calc]').forEach(function(calc){
+    var ecran=$('[data-calc-ecran]',calc);
+    if(!ecran) return;
+    var acc=null, op=null, saisie='0', neuf=true;
+    function aff(){ ecran.value=saisie; }
+    function nombre(){ return parseFloat(saisie.replace(',','.'))||0; }
+    function applique(a,b,o){ if(o==='+')return a+b; if(o==='-')return a-b; if(o==='*')return a*b; if(o==='/')return b===0?NaN:a/b; return b; }
+    function fmt(n){ if(!isFinite(n))return 'erreur'; var s=(Math.round(n*1e6)/1e6).toString(); return s.replace('.',','); }
+    $$('[data-calc-key]',calc).forEach(function(b){
+      b.addEventListener('click',function(){
+        var k=b.dataset.calcKey;
+        if(/^[0-9]$/.test(k)){ saisie=(neuf||saisie==='0')?k:saisie+k; neuf=false; }
+        else if(k==='.'){ if(neuf){saisie='0,';neuf=false;} else if(saisie.indexOf(',')<0) saisie+=','; }
+        else if(k==='C'){ acc=null;op=null;saisie='0';neuf=true; }
+        else if(k==='back'){ saisie=saisie.length>1?saisie.slice(0,-1):'0'; }
+        else if(k==='='){ if(op!==null){ saisie=fmt(applique(acc,nombre(),op)); op=null; acc=null; neuf=true; } }
+        else { if(op!==null && !neuf){ acc=applique(acc,nombre(),op); saisie=fmt(acc); } else { acc=nombre(); } op=k; neuf=true; }
+        aff();
+      });
+    });
+    aff();
+  });
+}
+
+/* ---------- Révélation du « à retenir » après l'activité (nouveau, 22/07/2026) ---------- */
+function initBilan(){
+  $$('[data-reveal-bilan]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var card=btn.closest('.card-body')||document;
+      var wrap=$('[data-bilan-wrap]',card);
+      if(wrap) wrap.hidden=false;
+      btn.disabled=true; btn.textContent='🎯 Bilan affiché';
+    });
+  });
+}
+
 function demarrer(){
   /* le bandeau « À retenir » est ajouté en CSS : on enveloppe le contenu */
   $$('.retain').forEach(function(r){
@@ -3902,6 +4187,9 @@ function demarrer(){
   initCloze();
   initGlossaire();
   initZoom();
+  initDepot();
+  initCalc();
+  initBilan();
   var obs=new MutationObserver(majBarre);
   $$('.steps').forEach(function(s){ obs.observe(s,{attributes:true,subtree:true,attributeFilter:['class']}); });
   console.log('%cSNT · Internet — tu as ouvert l\'inspecteur. Bravo, c\'est exactement comme ça qu\'on apprend.','color:#2445c7');
