@@ -1,72 +1,70 @@
 # Worker de pré-correction SNT
 
-Petit programme **local** (sur le PC de Loïc) qui prépare la correction des
-**questions libres** de la SNT. Il **ne note jamais** : il rédige un travail
-préparatoire que Loïc valide.
+Programme **local** (PC de Loïc) qui prépare la correction des **questions
+libres** de la SNT. Il **ne note jamais** : il rédige un travail préparatoire
+que Loïc valide.
 
-> À ne pas confondre avec le worker de la **frise Terminale ES** (dossier
-> `ia-correction/` + `serveur-frise/`) : même cadre, code séparé.
+> À ne pas confondre avec le worker de la **frise Terminale ES** (`ia-correction/`
+> + `serveur-frise/`) : même cadre, code séparé.
+
+## Architecture (étape 4)
+On laisse au **modèle** ce qu'il fait bien (juger chaque critère, écrire un
+message chaleureux) et on met en **code** tout ce qui est déterministe. Deux
+appels au modèle :
+1. **Passe 1** — le modèle juge chaque critère (constat + justification).
+2. **[code]** — le worker calcule le **verdict** et l'**aide aux camarades** à
+   partir des constats et des niveaux, applique les **garde-fous**.
+3. **Passe 2** — le modèle rédige le **message élève** en SACHANT le verdict.
+
+Ainsi le verdict ne dépend plus de l'humeur du modèle : « accepté / à compléter /
+sans objet » est calculé, jamais oscillant.
+
+## Fichiers
+- `moteur.mjs` — cœur PARTAGÉ (worker + banc). Verdict, aide et garde-fous y sont.
+- `prompt-cadre.md` — prompt de la **passe 1** (juger les critères).
+- `prompt-message.md` — prompt de la **passe 2** (message élève).
+- `criteres-snt.json` — grille par `code_activite`, à deux étages (`socle` /
+  `plus_loin`). **Le fond appartient à Loïc.**
+- `precorrection-snt.mjs` — le worker (lit la base, écrit `correction_ia`).
+- `banc-essai.mjs` + `copies-test.json` — calibration locale, sans base.
+- `evaluation.mjs` + `copies-eval.json` — suite d'évaluation : compare le
+  résultat ATTENDU (annoté) au produit et sort un rapport de conformité (ne
+  montre que les divergences). `node evaluation.mjs [--code NET-1b] [--repeat 3]`.
+- `_test-verdict.mjs` — test des fonctions déterministes (aucun modèle requis).
 
 ## Cadre (acté, non négociable)
-- **Jamais de note.** L'IA observe des critères + justifie ; Loïc reste
-  souverain sur la notation (AI Act art. 6(3) : tâche préparatoire).
-- **100 % local.** Le modèle (Mistral Nemo via Ollama) tourne sur le PC ;
-  la réponse de l'élève ne sort jamais de la machine → pas de transfert à un
-  tiers, RGPD simple.
-- **Pseudonymisation structurelle.** La base ne contient aucun nom ; le worker
-  ne voit qu'un `eleve_id` et un pseudo choisi.
-- **La clé `service_role` vit dans `.env`, jamais ailleurs.** Elle contourne
-  les règles RLS : jamais dans une page, jamais sur GitHub (`.env` est gitignoré).
+- **Jamais de note.** L'IA observe des critères + justifie ; Loïc reste souverain
+  (AI Act art. 6(3) : tâche préparatoire). Garde-fou mécanique : toute sortie qui
+  contient une note/pourcentage est rejetée.
+- **100 % local** (Mistral Nemo via Ollama) : la réponse de l'élève ne quitte
+  jamais la machine.
+- **Pseudonymisation** : aucun nom en base ; le worker ne voit qu'un `eleve_id`.
+- **La clé `service_role` vit dans `.env`, jamais ailleurs** (gitignorée).
+- **Anti-injection** : la réponse élève est passée comme DONNÉE (rôle user) ;
+  détection mécanique des tentatives d'injection ; le verdict est calculé en
+  code, donc une injection ne peut pas forcer « accepté ».
 
-## Comment le statut évolue
-`en_attente` (réponse rendue) → le worker écrit `correction_ia` **sans changer
-le statut** → Loïc relit, tranche, passe à `corrige` (ou `signale`). Le statut
-`en_attente` veut dire « attend la correction du **prof** » ; la présence de
-`correction_ia` suffit à ce que le worker ne repasse pas sur la copie.
+## Réglages (dans `.env` ou en tête de `moteur.mjs`)
+- `IA_MODELE` (défaut `mistral-nemo`) — changer de modèle = une ligne.
+- `OLLAMA_URL` (défaut `http://localhost:11434`).
+- `SEUIL_AIDE` dans `moteur.mjs` (défaut 2/3) — la « nette majorité » pour
+  suggérer l'aide aux camarades. À monter/descendre selon ton envie d'entraide.
 
 ## Mise en route
-1. **Node 18+** installé (`node --version`).
-2. Copier `.env.exemple` en `.env`, renseigner `SUPABASE_URL` et
-   `SUPABASE_SERVICE_ROLE` (Supabase → Settings → API).
-3. **Ollama** installé et lancé, modèle tiré : `ollama pull mistral-nemo`.
-4. Lancer, depuis ce dossier : `node precorrection-snt.mjs`.
+1. Node 18+, Ollama lancé, `ollama pull mistral-nemo`.
+2. `.env` renseigné (voir `.env.exemple`).
+3. `node precorrection-snt.mjs`  (ou `node banc-essai.mjs` pour tester sans base).
 
-## Réglages (facultatifs, dans `.env`)
-- `IA_MODELE` — le modèle Ollama à utiliser (défaut `mistral-nemo`). **Changer
-  de cerveau = changer cette seule ligne.** Chaque pré-correction garde en
-  mémoire le modèle qui l'a produite (champ `modele` de `correction_ia`).
-- `OLLAMA_URL` — l'hôte Ollama (défaut `http://localhost:11434`).
-- La **température** est fixée bas dans le code (0.2) pour des corrections
-  constantes ; on l'ajustera si besoin.
-
-## Ce que le worker met dans `correction_ia`
-```json
-{
-  "modele": "mistral-nemo",
-  "genere_le": "2026-…",
-  "mention": "Préparation de correction générée par IA locale — la notation appartient à l'enseignant.",
-  "analyse": {
-    "criteres": [ { "id": "…", "constat": "observé|partiellement|non observé", "justification": "…" } ],
-    "point_fort": "…",
-    "point_a_travailler": "…",
-    "a_verifier_par_le_prof": "…"
-  }
-}
-```
-Tant que `criteres-snt.json` n'existe pas (étape 3), `criteres` reste `[]` et
-l'analyse est générale — c'est normal.
+## Le verdict, en clair
+`accepté` si TOUS les critères `socle` sont « observé » (les `plus_loin` ne
+bloquent jamais). Sinon `à compléter` (invitation à compléter et renvoyer —
+la base remet `correction_ia` à NULL à la réécriture, le worker re-corrige).
+`sans objet` pour un diagnostic.
 
 ## Feuille de route
-- [x] **Étape 1 — plomberie** : lire une réponse `en_attente`, écrire une
-      pré-correction factice.
-- [x] **Étape 2 — modèle local** : Ollama + Mistral Nemo, prompt-cadre,
-      température basse, réponse élève traitée comme donnée (rôle système vs
-      user). *(ce script)*
-- [x] **Étape 3 — consignes** : `criteres-snt.json`, une grille par
-      `code_activite`. V1 pour les 3 questions rédigées de la séquence Internet
-      (NET-1a diagnostic non noté · NET-1b · NET-2c). Consommé automatiquement
-      par le worker. Réglage orthographe présent mais volontairement léger.
-- [ ] **Étape 4 — garde-fous durs** : rejet mécanique de toute sortie
-      ressemblant à une note, format JSON vérifié, anti-injection renforcé.
-- [ ] **Étape 5 — relecture** : comment Loïc voit et valide (relevé, puis
-      tableau de bord).
+- [x] Étape 1 — plomberie.
+- [x] Étape 2 — modèle local + prompt-cadre.
+- [x] Étape 3 — grille par activité (deux étages socle / plus_loin).
+- [x] Étape 4 — deux temps, verdict + aide calculés en code, garde-fous durs.
+- [ ] Étape 5 — relecture / validation par Loïc (relevé, puis tableau de bord
+      iPad ; suppose le rôle enseignant Supabase).
