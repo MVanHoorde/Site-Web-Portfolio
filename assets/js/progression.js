@@ -410,7 +410,220 @@
   }
 
   /* ----------------------------------------------------------
-   *  10. Surface publique
+   *  10. Accueil — la modale « créer / se connecter / invité »
+   *
+   *  Injectée ici, pas dans chaque page : même raison que tout le
+   *  reste du fichier, une seule copie à maintenir. Toute page SNT
+   *  qui charge progression.js reçoit la modale.
+   *
+   *  Règles (décisions Loïc) : elle s'affiche à CHAQUE arrivée
+   *  (protège les postes partagés) ; « continuer sans compte » n'est
+   *  jamais mémorisé (elle revient à la page suivante) ; un compte
+   *  reconnu voit « content de te revoir » plutôt que le formulaire.
+   *  Ne s'affiche pas si la base n'est pas configurée : on ne bloque
+   *  jamais une page derrière un dispositif absent.
+   *
+   *  RGPD : la modale ne stocke rien de plus que le jeton déjà géré
+   *  plus haut. Le choix « invité » vit en mémoire de page, pas sur
+   *  le disque.
+   * ---------------------------------------------------------- */
+
+  var CSS_ACCUEIL =
+   '.acc-fond{position:fixed;inset:0;z-index:9999;background:rgba(22,31,51,.45);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;font-family:"IBM Plex Sans",system-ui,sans-serif}'+
+   '.acc-carte{background:var(--surface,#fff);border:1px solid var(--line,#d3dae7);border-radius:16px;max-width:420px;width:100%;padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);color:var(--ink,#161f33);max-height:92vh;overflow:auto}'+
+   '.acc-tete{display:flex;align-items:center;gap:10px;margin-bottom:6px}'+
+   '.acc-pastille{width:34px;height:34px;border-radius:50%;background:var(--link-wash,#e7ebfb);color:var(--link,#2445c7);display:inline-flex;align-items:center;justify-content:center;flex:none}'+
+   '.acc-titre{font-size:18px;font-weight:600}'+
+   '.acc-intro{font-size:14px;color:var(--ink-soft,#4a566e);line-height:1.55;margin:0 0 16px}'+
+   '.acc-onglets{display:flex;gap:6px;background:var(--bg,#e9edf4);padding:4px;border-radius:10px;margin-bottom:16px}'+
+   '.acc-onglet{flex:1;text-align:center;font-size:13px;padding:8px;border-radius:7px;color:var(--ink-soft,#4a566e);background:none;border:0;cursor:pointer;font-family:inherit}'+
+   '.acc-onglet.actif{background:var(--link-wash,#e7ebfb);color:var(--link,#2445c7);font-weight:600}'+
+   '.acc-label{display:block;font-size:13px;margin:0 0 4px}'+
+   '.acc-carte input{width:100%;box-sizing:border-box;min-height:44px;border:1px solid var(--line,#d3dae7);border-radius:10px;padding:0 12px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink,#161f33)}'+
+   '.acc-carte input:focus{outline:2px solid var(--link,#2445c7);outline-offset:1px;border-color:var(--link,#2445c7)}'+
+   '.acc-aide{font-size:12px;color:var(--ink-faint,#8b97ad);margin:4px 0 12px}'+
+   '.acc-primaire{width:100%;min-height:46px;background:var(--link,#2445c7);color:#fff;border:0;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:4px}'+
+   '.acc-primaire:disabled{opacity:.6;cursor:default}'+
+   '.acc-rassure{font-size:12px;color:var(--ink-faint,#8b97ad);line-height:1.5;margin:14px 0 0;display:flex;gap:6px}'+
+   '.acc-pied{text-align:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line,#d3dae7);font-size:13px;color:var(--ink-soft,#4a566e)}'+
+   '.acc-lien{background:none;border:0;color:var(--link,#2445c7);cursor:pointer;font-family:inherit;font-size:13px;padding:0;text-decoration:underline}'+
+   '.acc-err{font-size:13px;color:#a3271f;background:#fbeceb;border:1px solid #f0c9c6;border-radius:8px;padding:8px 10px;margin:0 0 12px}'+
+   '.acc-bandeau{position:fixed;left:0;right:0;bottom:0;z-index:9998;background:#fdf1dd;border-top:1px solid #f0d9a8;color:#8a5a0c;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:13px;display:flex;align-items:center;gap:8px;padding:9px 14px}'+
+   '.acc-bandeau button{margin-left:auto;background:none;border:0;color:#8a5a0c;font-weight:700;text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13px}'+
+   '@media (prefers-reduced-motion:reduce){.acc-fond{backdrop-filter:none}}';
+
+  var ICONE_BOUCLIER =
+   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z"/><path d="M9 12l2 2 4-4"/></svg>';
+
+  var MSG_ERREUR = {
+    IDENTIFIANT_INVALIDE   : 'Identifiant : seulement des minuscules, des chiffres et des tirets (3 à 32 caractères).',
+    MOT_DE_PASSE_TROP_COURT: 'Mot de passe : 6 caractères minimum.',
+    IDENTIFIANT_DEJA_PRIS  : 'Cet identifiant est déjà pris. Choisis-en un autre.',
+    IDENTIFIANTS_INCORRECTS: 'Identifiant ou mot de passe incorrect.',
+    CODE_CLASSE_INCONNU    : 'Code de classe inconnu, ou inscriptions fermées.',
+    PSEUDO_DEJA_PRIS       : 'Cet identifiant est déjà utilisé dans cette classe.'
+  };
+  function messageErreur(e) {
+    return (e && MSG_ERREUR[e.code]) || 'Quelque chose n\'a pas fonctionné. Réessaie dans un instant.';
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  var accueilMonte = false;
+  var styleInjecte = false;
+
+  function injecterStyleAccueil() {
+    if (styleInjecte) return;
+    var s = global.document.createElement('style');
+    s.textContent = CSS_ACCUEIL;
+    global.document.head.appendChild(s);
+    styleInjecte = true;
+  }
+
+  function retirerFond() {
+    var f = global.document.querySelector('.acc-fond');
+    if (f) f.parentNode.removeChild(f);
+  }
+
+  /* Bandeau permanent du mode invité : « ton travail n'est pas
+   * enregistré ». Un clic rouvre la modale sur l'onglet connexion. */
+  function afficherBandeauInvite() {
+    if (global.document.querySelector('.acc-bandeau')) return;
+    var b = global.document.createElement('div');
+    b.className = 'acc-bandeau';
+    b.innerHTML = '<span aria-hidden="true">⚠️</span>'
+      + '<span>Mode invité — ton travail n\'est pas enregistré.</span>'
+      + '<button type="button">Se connecter</button>';
+    b.querySelector('button').addEventListener('click', function () {
+      b.parentNode.removeChild(b);
+      afficherPortes('connecter');
+    });
+    global.document.body.appendChild(b);
+  }
+
+  /* Compte reconnu : on ne redemande pas le mot de passe, on
+   * confirme juste que c'est bien lui (postes partagés). */
+  function afficherRetour(profil) {
+    injecterStyleAccueil();
+    retirerFond();
+    var fond = global.document.createElement('div');
+    fond.className = 'acc-fond';
+    fond.innerHTML =
+      '<div class="acc-carte" role="dialog" aria-modal="true" aria-label="Reprendre ta session">'
+      +   '<div class="acc-tete"><span class="acc-pastille">' + ICONE_BOUCLIER + '</span>'
+      +     '<span class="acc-titre">Content de te revoir</span></div>'
+      +   '<p class="acc-intro">Tu es connecté comme <b>' + esc(profil.pseudo) + '</b>'
+      +     (profil.classe ? ' — ' + esc(profil.classe) : '') + '. On continue&nbsp;?</p>'
+      +   '<button class="acc-primaire" data-continuer>Continuer</button>'
+      +   '<div class="acc-pied">Ce n\'est pas toi&nbsp;? '
+      +     '<button class="acc-lien" data-changer>Changer de compte</button></div>'
+      + '</div>';
+    fond.querySelector('[data-continuer]').addEventListener('click', retirerFond);
+    fond.querySelector('[data-changer]').addEventListener('click', function () {
+      quitter().then(function () { afficherPortes('connecter'); });
+    });
+    global.document.body.appendChild(fond);
+    fond.querySelector('[data-continuer]').focus();
+  }
+
+  /* Première visite (ou déconnexion) : les trois portes.
+   * onglet = 'creer' | 'connecter'. */
+  function afficherPortes(onglet) {
+    injecterStyleAccueil();
+    retirerFond();
+    var estCreer = onglet !== 'connecter';
+
+    var champs = estCreer
+      ? '<label class="acc-label" for="acc-id">Identifiant</label>'
+        + '<input id="acc-id" type="text" autocomplete="username" placeholder="dede-33">'
+        + '<p class="acc-aide">Minuscules, chiffres et tirets. C\'est le nom que ton professeur verra.</p>'
+        + '<label class="acc-label" for="acc-mdp">Mot de passe</label>'
+        + '<input id="acc-mdp" type="password" autocomplete="new-password" placeholder="6 caractères minimum">'
+        + '<div style="height:12px"></div>'
+        + '<label class="acc-label" for="acc-code">Code de la classe</label>'
+        + '<input id="acc-code" type="text" autocomplete="off" placeholder="donné par ton professeur">'
+      : '<label class="acc-label" for="acc-id">Identifiant</label>'
+        + '<input id="acc-id" type="text" autocomplete="username" placeholder="dede-33">'
+        + '<div style="height:12px"></div>'
+        + '<label class="acc-label" for="acc-mdp">Mot de passe</label>'
+        + '<input id="acc-mdp" type="password" autocomplete="current-password" placeholder="ton mot de passe">';
+
+    var fond = global.document.createElement('div');
+    fond.className = 'acc-fond';
+    fond.innerHTML =
+      '<div class="acc-carte" role="dialog" aria-modal="true" aria-label="Se connecter à la SNT">'
+      +   '<div class="acc-tete"><span class="acc-pastille">' + ICONE_BOUCLIER + '</span>'
+      +     '<span class="acc-titre">Avant de commencer</span></div>'
+      +   '<p class="acc-intro">Connecte-toi pour retrouver ton travail d\'une fois sur l\'autre, au lycée comme à la maison. Aucun nom, aucune adresse mail&nbsp;: juste un identifiant que tu choisis.</p>'
+      +   '<div class="acc-onglets">'
+      +     '<button type="button" class="acc-onglet' + (estCreer ? ' actif' : '') + '" data-onglet="creer">Créer mon compte</button>'
+      +     '<button type="button" class="acc-onglet' + (estCreer ? '' : ' actif') + '" data-onglet="connecter">Me connecter</button>'
+      +   '</div>'
+      +   '<div class="acc-err" role="alert" hidden></div>'
+      +   '<form data-form>' + champs
+      +     '<button type="submit" class="acc-primaire">' + (estCreer ? 'Créer mon compte' : 'Me connecter') + '</button>'
+      +   '</form>'
+      +   (estCreer ? '<p class="acc-rassure"><span aria-hidden="true">🔒</span><span>Ton mot de passe est chiffré&nbsp;: personne ne peut le lire, pas même ton professeur — il peut seulement le réinitialiser si tu l\'oublies.</span></p>' : '')
+      +   '<div class="acc-pied">Juste regarder&nbsp;? '
+      +     '<button class="acc-lien" data-invite>Continuer sans compte →</button></div>'
+      + '</div>';
+
+    fond.querySelectorAll('[data-onglet]').forEach(function (b) {
+      b.addEventListener('click', function () { afficherPortes(b.getAttribute('data-onglet')); });
+    });
+    fond.querySelector('[data-invite]').addEventListener('click', function () {
+      retirerFond();
+      afficherBandeauInvite();
+    });
+
+    var form   = fond.querySelector('[data-form]');
+    var erreur = fond.querySelector('.acc-err');
+    var bouton = fond.querySelector('.acc-primaire');
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      erreur.hidden = true;
+      var id  = (fond.querySelector('#acc-id')  || {}).value || '';
+      var mdp = (fond.querySelector('#acc-mdp') || {}).value || '';
+      var code = (fond.querySelector('#acc-code') || {}).value || '';
+      bouton.disabled = true; bouton.textContent = 'Un instant…';
+      var promesse = estCreer ? creerCompte(id, mdp, code) : seConnecter(id, mdp);
+      promesse.then(function () {
+        // Session ouverte : on recharge pour repartir proprement (les
+        // notes et la progression se rechargent avec la session).
+        global.location.reload();
+      }).catch(function (e) {
+        erreur.textContent = messageErreur(e);
+        erreur.hidden = false;
+        bouton.disabled = false;
+        bouton.textContent = estCreer ? 'Créer mon compte' : 'Me connecter';
+      });
+    });
+
+    global.document.body.appendChild(fond);
+    var premier = fond.querySelector('input');
+    if (premier) premier.focus();
+  }
+
+  /* Point d'entrée : appelé automatiquement au chargement de la page,
+   * ou à la main. Un garde-fou window.SNT_SANS_ACCUEIL = true permet
+   * à une page de s'en passer (démos, tests). */
+  function monterAccueil() {
+    if (accueilMonte) return;
+    if (!disponible()) return;               // base non configurée
+    if (global.SNT_SANS_ACCUEIL) return;     // échappatoire
+    accueilMonte = true;
+    session().then(function (profil) {
+      if (profil) afficherRetour(profil);
+      else        afficherPortes('creer');
+    });
+  }
+
+  /* ----------------------------------------------------------
+   *  11. Surface publique
    * ---------------------------------------------------------- */
   global.Progression = {
     disponible    : disponible,
@@ -418,6 +631,7 @@
     creerCompte   : creerCompte,
     seConnecter   : seConnecter,
     quitter       : quitter,
+    monterAccueil : monterAccueil,
     lire          : lire,
     ecrire        : ecrire,
     journal       : journal,
@@ -428,6 +642,16 @@
 
   if (!disponible() && global.console) {
     console.info('[progression] Base non configurée : les séquences fonctionnent sans enregistrement. Renseigner CLE_ANON dans assets/js/progression.js.');
+  }
+
+  /* Démarrage : dès que la page est prête, on présente la modale
+   * d'accueil (si la base est configurée). */
+  if (global.document) {
+    if (global.document.readyState === 'loading') {
+      global.document.addEventListener('DOMContentLoaded', monterAccueil);
+    } else {
+      monterAccueil();
+    }
   }
 
 })(window);
