@@ -24,6 +24,116 @@
  *  Dépendance : assets/js/progression.js (chargé avant, dans <head>).
  * ============================================================ */
 
+/* ============================================================
+   ÉTAT DES ÉTAPES — lot 1A (24/07/2026)
+   ------------------------------------------------------------
+   Ce module ENREGISTRE seulement. Il ne révèle rien, ne restaure
+   rien, ne change rien à l'écran : c'est le lot 1B.
+
+   Pourquoi il existe : avant lui, seules les questions libres
+   (reponses_libres) et les notes du poste étaient sauvegardées.
+   Le QCM, les trous et le glisser-déposer posaient « is-done »
+   dans le DOM et rien d'autre — donc tout était perdu au premier
+   rafraîchissement, et la séance suivante se reverrouillait.
+
+   Où c'est écrit : table progression, domaine 'cours', clé = la
+   valeur de <body data-sequence>. Deux informations distinctes
+   par étape, « fait » et « juste » (décision du 21/07/2026) ;
+   « juste » vaut null quand le bloc ne mesure pas de justesse —
+   on n'invente pas une justesse qu'on n'a pas mesurée.
+
+   PAS de data-sequence sur la page ? Le module reste inerte.
+   C'est le filet qui protège les sept autres séquences.
+
+   ⚠ Progression.ecrire fusionne au PREMIER NIVEAU seulement : on
+   lui renvoie donc la carte complète des étapes à chaque fois.
+   ============================================================ */
+(function(global){
+  var SEQ   = document.body ? (document.body.dataset.sequence || null) : null;
+  var ETAT  = { v:1, etapes:{} };
+  var minuteur = null;
+
+  function base(){
+    return (typeof Progression !== 'undefined' && Progression.disponible()) ? Progression : null;
+  }
+
+  /* Clé d'une étape. Priorité à une clé écrite à la main
+     (data-cle), sinon l'id posé par construireBarre, sinon un
+     repli positionnel. ⚠ PROVISOIRE : tant que la clé dépend du
+     rang, insérer une étape au milieu d'une séance décale l'état
+     des élèves. Clés stables à poser au lot 4 (numérotation). */
+  function cle(step){
+    if(!step) return null;
+    if(step.dataset && step.dataset.cle) return step.dataset.cle;
+    if(step.id) return step.id;
+    var sec = step.closest('.seance');
+    if(!sec) return null;
+    var n = sec.getAttribute('data-seance') || '?';
+    var i = Array.prototype.indexOf.call(sec.querySelectorAll('.step'), step);
+    return 'et-s' + n + '-' + i;
+  }
+
+  /* Les moteurs posent déjà leur score en dataset avant d'annoncer
+     l'étape validée. On le relit ici plutôt que de dupliquer leur
+     logique de correction. */
+  function justeDe(step){
+    var d = step.dataset || {};
+    var s = d.qcmScore || d.clozeScore || d.triScore;
+    if(!s) return null;
+    var m = /^(\d+)\s*\/\s*(\d+)$/.exec(s);
+    return m ? (m[1] === m[2]) : null;
+  }
+
+  function sauver(){
+    var B = base();
+    if(!B || !SEQ) return;
+    clearTimeout(minuteur);
+    minuteur = setTimeout(function(){
+      B.ecrire('cours', SEQ, { etapes: ETAT.etapes })
+       .catch(function(){ /* invité, hors ligne : on n'insiste pas */ });
+    }, 1500);           /* on n'écrit pas à chaque validation */
+  }
+
+  function noter(step, juste){
+    if(!SEQ || !step) return;
+    var k = cle(step); if(!k) return;
+    if(juste === undefined) juste = justeDe(step);
+    var val   = { fait:true, juste:(juste === true ? true : (juste === false ? false : null)) };
+    var avant = ETAT.etapes[k];
+    if(avant && avant.fait === val.fait && avant.juste === val.juste) return;  /* rien de neuf */
+    ETAT.etapes[k] = val;
+    sauver();
+  }
+
+  /* Chargement : on FUSIONNE, l'état local ayant priorité — sinon
+     une réponse validée pendant que la requête voyage serait
+     écrasée par la version d'avant. */
+  var chargement = (function(){
+    var B = base();
+    if(!B || !SEQ) return Promise.resolve(ETAT);
+    return B.lire('cours', SEQ).then(function(v){
+      if(v && v.etapes && typeof v.etapes === 'object')
+        ETAT.etapes = Object.assign({}, v.etapes, ETAT.etapes);
+      return ETAT;
+    }).catch(function(){ return ETAT; });
+  })();
+
+  /* Un seul point d'enregistrement : tous les moteurs annoncent
+     'etape-validee' sur l'étape, l'événement remonte jusqu'ici. */
+  document.addEventListener('etape-validee', function(e){
+    var s = (e.target && e.target.closest) ? e.target.closest('.step') : null;
+    if(s) noter(s);
+  });
+
+  global.EtatSNT = {
+    actif  : function(){ return !!SEQ; },
+    cle    : cle,
+    noter  : noter,
+    etapes : function(){ return ETAT.etapes; },
+    charge : chargement          /* promesse — servira au lot 1B */
+  };
+})(window);
+
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
 
@@ -41,7 +151,12 @@
      [data-focus-echo], en textContent). */
   function verdict(field,cls,msg){var v=field.querySelector('.verdict');if(!v)return;v.className='verdict show '+cls;v.innerHTML=msg;}
   function stepOf(el){return el.closest('[data-step]');}
-  function markDone(el){var s=stepOf(el);if(s){s.classList.remove('is-wait');s.classList.add('is-done');}refresh();}
+  /* markDone annonce 'etape-validee' comme les moteurs V2 (QCM, trous, tri) :
+     un seul canal, un seul point d'enregistrement (module EtatSNT en tête de
+     fichier). L'écouteur ligne ~83 rappelle refresh() — sans effet de bord,
+     refresh() est idempotent (seanceWasComplete garde onSeanceComplete). */
+  function markDone(el){var s=stepOf(el);if(s){s.classList.remove('is-wait');s.classList.add('is-done');
+    s.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));}refresh();}
   function showReveal(field){field.querySelectorAll('[data-reveal]').forEach(function(r){r.classList.add('show');});}
 
   /* ---------- déblocage progressif ---------- */
@@ -1478,6 +1593,7 @@ document.querySelectorAll('[data-tri-check]').forEach(function(btn){
     /* validation à l'envoi (§13.7) : avoir proposé un ordre suffit */
     var etape=champ.closest('.step');
     if(etape){ etape.classList.add('is-done');
+               etape.dataset.triScore=bon+'/'+n;
                etape.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true})); }
   });
 });
