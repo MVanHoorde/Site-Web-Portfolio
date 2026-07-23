@@ -1246,6 +1246,15 @@ function numeroter(){
     $$('.step',sec).forEach(function(p,i){
       var code=num+'.'+(i+1);
       p.dataset.num=code;
+      /* Deux familles d'étapes, et il fallait les traiter toutes les
+         deux. 18 étapes sur 26 portent leur numéro dans un
+         .step-kicker ; les 8 autres — encart France, « et toi ? »,
+         « pour aller plus loin » — le portent dans un .ix niché dans
+         leur bandeau. Ne réécrire que les premières laissait deux
+         sources de vérité, et c'est ce qui a fait apparaître un
+         bandeau « 3.6 » sous un sommaire annonçant « 3.5 ». */
+      var ix=$('.fl .ix, .pl .ix, .bonus-head .ix',p)||$('.ix',p);
+      if(ix) ix.textContent=code;
       var k=$('.step-kicker',p); if(!k || $('.k-seance',k)) return;
       /* on ne retire QUE le texte de tête : le badge « à valider » et
          tout ce que la page a mis là doivent survivre. */
