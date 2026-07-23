@@ -50,7 +50,7 @@
    ============================================================ */
 (function(global){
   var SEQ   = document.body ? (document.body.dataset.sequence || null) : null;
-  var ETAT  = { v:1, etapes:{} };
+  var ETAT  = { v:1, etapes:{}, champs:{}, vu_le:null };
   var minuteur = null;
 
   function base(){
@@ -76,9 +76,12 @@
   /* Les moteurs posent déjà leur score en dataset avant d'annoncer
      l'étape validée. On le relit ici plutôt que de dupliquer leur
      logique de correction. */
-  function justeDe(step){
+  function scoreDe(step){
     var d = step.dataset || {};
-    var s = d.qcmScore || d.clozeScore || d.triScore;
+    return d.qcmScore || d.clozeScore || d.triScore || null;
+  }
+  function justeDe(step){
+    var s = scoreDe(step);
     if(!s) return null;
     var m = /^(\d+)\s*\/\s*(\d+)$/.exec(s);
     return m ? (m[1] === m[2]) : null;
@@ -89,20 +92,48 @@
     if(!B || !SEQ) return;
     clearTimeout(minuteur);
     minuteur = setTimeout(function(){
-      B.ecrire('cours', SEQ, { etapes: ETAT.etapes })
+      ETAT.vu_le = new Date().toISOString();
+      B.ecrire('cours', SEQ, { etapes: ETAT.etapes, champs: ETAT.champs, vu_le: ETAT.vu_le })
        .catch(function(){ /* invité, hors ligne : on n'insiste pas */ });
     }, 1500);           /* on n'écrit pas à chaque validation */
   }
 
-  function noter(step, juste){
+  function noter(step, juste, score){
     if(!SEQ || !step) return;
     var k = cle(step); if(!k) return;
     if(juste === undefined) juste = justeDe(step);
-    var val   = { fait:true, juste:(juste === true ? true : (juste === false ? false : null)) };
+    if(score === undefined) score = scoreDe(step);
+    var val   = { fait:true,
+                  juste:(juste === true ? true : (juste === false ? false : null)),
+                  score:(score || null) };
     var avant = ETAT.etapes[k];
-    if(avant && avant.fait === val.fait && avant.juste === val.juste) return;  /* rien de neuf */
+    if(avant && avant.fait === val.fait && avant.juste === val.juste
+             && avant.score === val.score) return;              /* rien de neuf */
     ETAT.etapes[k] = val;
     sauver();
+  }
+
+  /* Le CONTENU saisi, séparé de l'état — aujourd'hui les textes à
+     trous. Clé = clé de l'étape + '/cloze-N'. */
+  function noterChamps(k, valeurs){
+    if(!SEQ || !k || !valeurs) return;
+    var avant = ETAT.champs[k];
+    if(avant && avant.join('\u0000') === valeurs.join('\u0000')) return;
+    ETAT.champs[k] = valeurs.slice();
+    sauver();
+  }
+
+  /* « Recommencer la séance » doit aussi effacer en base, sinon le
+     rechargement suivant ressusciterait tout le travail effacé. */
+  function oublier(step){
+    if(!SEQ || !step) return;
+    var k = cle(step); if(!k) return;
+    var change = false;
+    if(k in ETAT.etapes){ delete ETAT.etapes[k]; change = true; }
+    Object.keys(ETAT.champs).forEach(function(c){
+      if(c === k || c.indexOf(k + '/') === 0){ delete ETAT.champs[c]; change = true; }
+    });
+    if(change) sauver();
   }
 
   /* Chargement : on FUSIONNE, l'état local ayant priorité — sinon
@@ -114,23 +145,38 @@
     return B.lire('cours', SEQ).then(function(v){
       if(v && v.etapes && typeof v.etapes === 'object')
         ETAT.etapes = Object.assign({}, v.etapes, ETAT.etapes);
+      if(v && v.champs && typeof v.champs === 'object')
+        ETAT.champs = Object.assign({}, v.champs, ETAT.champs);
+      if(v && v.vu_le && !ETAT.vu_le) ETAT.vu_le = v.vu_le;
       return ETAT;
     }).catch(function(){ return ETAT; });
   })();
 
-  /* Un seul point d'enregistrement : tous les moteurs annoncent
-     'etape-validee' sur l'étape, l'événement remonte jusqu'ici. */
+  /* Les moteurs annoncent 'etape-validee' sur l'étape : l'événement
+     remonte jusqu'ici. Un seul point d'enregistrement. */
   document.addEventListener('etape-validee', function(e){
     var s = (e.target && e.target.closest) ? e.target.closest('.step') : null;
     if(s) noter(s);
   });
 
   global.EtatSNT = {
-    actif  : function(){ return !!SEQ; },
-    cle    : cle,
-    noter  : noter,
-    etapes : function(){ return ETAT.etapes; },
-    charge : chargement          /* promesse — servira au lot 1B */
+    actif      : function(){ return !!SEQ; },
+    cle        : cle,
+    noter      : noter,
+    noterChamps: noterChamps,
+    oublier    : oublier,
+    etapes     : function(){ return ETAT.etapes; },
+    champs     : function(){ return ETAT.champs; },
+    vuLe       : function(){ return ETAT.vu_le; },
+    /* Vrai si le dernier passage remonte à plus de N heures. Sert au
+       hub : sous le seuil on replace en silence, au-dessus on
+       présentera la carte de reprise (seuil retenu : 2 h). */
+    absentDepuis: function(heures){
+      if(!ETAT.vu_le) return false;
+      var d = Date.parse(ETAT.vu_le);
+      return isFinite(d) && (Date.now() - d) > (heures || 2) * 3600000;
+    },
+    charge : chargement          /* promesse */
   };
 })(window);
 
@@ -788,6 +834,8 @@
     sec.querySelectorAll('.indice-txt').forEach(function(z){z.style.display='none';z.textContent='';});
     sec.querySelectorAll('.qcm-recap').forEach(function(r){r.innerHTML='';r.style.display='none';});
     sec.querySelectorAll('.qcm-lanceur button').forEach(function(b){b.textContent='Commencer';});
+    sec.querySelectorAll('.qcm-fait').forEach(function(c){c.remove();});
+    sec.querySelectorAll('.qcm-consigne').forEach(function(c){c.style.display='';});
     sec.querySelectorAll('[data-focus]').forEach(function(f){
       f.classList.remove('rempli');
       var e=f.querySelector('[data-focus-echo]'); if(e){e.textContent='';e.style.display='';}
@@ -805,6 +853,13 @@
     sec.querySelectorAll('[data-share]').forEach(function(b){b.disabled=false;});
     sec.querySelectorAll('[data-share-note]').forEach(function(n){n.textContent='';});
     var id=sec.getAttribute('data-seance'); seanceWasComplete[id]=false;
+    /* Recommencer, c'est aussi effacer en base : sans cette purge, le
+       rechargement suivant ressusciterait tout le travail effacé
+       (l'état, et le contenu des textes à trous). */
+    sec.querySelectorAll('[data-step]').forEach(function(s){
+      delete s.dataset.triScore; delete s.dataset.dejaVu;
+      if(window.EtatSNT) EtatSNT.oublier(s);
+    });
     refresh();
   }
 
@@ -1134,7 +1189,7 @@ function initQcm(){
     var lanceur=document.createElement('div');
     lanceur.className='qcm-lanceur';
     lanceur.innerHTML='<span class="ql">✍️ QCM · '+data.length+(data.length>1?' questions':' question')+'</span>'+
-                      '<span style="font-size:13.5px;color:#8a4c0c">Obligatoire pour valider l\'étape.</span>'+
+                      '<span class="qcm-consigne" style="font-size:13.5px;color:#8a4c0c">Obligatoire pour valider l\'étape.</span>'+
                       '<button type="button">Commencer</button>';
     box.appendChild(lanceur);
     var recap=document.createElement('div'); recap.className='qcm-recap'; recap.style.display='none';
@@ -1222,6 +1277,27 @@ function jouerQcm(data,box,recap,lanceur){
   dessiner();
 }
 
+/* --- Trous : lire, réécrire, et la clé sous laquelle on les range.
+       Le bloc n'a pas de code propre : sa clé est celle de l'étape,
+       suffixée par son rang parmi les blocs à trous de cette étape.
+       Même réserve que pour les étapes : clé positionnelle. --- */
+function clozeChamps(bloc){
+  return Array.prototype.slice.call(bloc.querySelectorAll('input[data-answer],select[data-answer]'));
+}
+function clozeLire(bloc){
+  return clozeChamps(bloc).map(function(e){ return e.value; });
+}
+function clozeEcrire(bloc,valeurs){
+  clozeChamps(bloc).forEach(function(e,i){ if(i<valeurs.length) e.value=valeurs[i]; });
+}
+function clozeCle(bloc){
+  if(!window.EtatSNT || !EtatSNT.actif()) return null;
+  var step=bloc.closest('.step'); if(!step) return null;
+  var k=EtatSNT.cle(step); if(!k) return null;
+  var freres=step.querySelectorAll('.cloze');
+  return k+'/cloze-'+Array.prototype.indexOf.call(freres,bloc);
+}
+
 /* ---------- 5. Trous tolérants (3 états + indices) ---------- */
 function initCloze(){
   $$('.cloze').forEach(function(bloc){
@@ -1255,6 +1331,12 @@ function initCloze(){
 
     if(!btn) return;
     btn.addEventListener('click',function(){
+      /* Instantané AVANT correction : le moteur réécrit la valeur des
+         réponses « presque » avec la bonne orthographe. Capturer après
+         ferait perdre à l'élève, au retour, le message qui lui signale
+         sa faute — signalée, jamais sanctionnée (décision du 21/07). */
+      var kChamp=clozeCle(bloc);
+      if(kChamp && window.EtatSNT) EtatSNT.noterChamps(kChamp, clozeLire(bloc));
       var n=0,ok=0,presque=0,fautes=[];
       $$('input[data-answer]',bloc).forEach(function(inp){
         n++;
@@ -1493,6 +1575,88 @@ function initBilan(){
   });
 }
 
+/* ---------- Reprise (lot 1B) ----------
+   Remet la page dans l'état où l'élève l'a laissée. Ne s'exécute
+   qu'APRÈS résolution de EtatSNT.charge : avant lui, l'état n'est pas
+   encore revenu de la base, et initReveal a déjà tout masqué.
+
+   Principe : on ne reconstitue jamais un rendu à la main. On remet la
+   saisie en place et on laisse les moteurs existants la corriger
+   eux-mêmes — un seul code de correction, donc aucune divergence
+   possible entre ce que l'élève a vu et ce qu'il retrouve.
+
+   Le QCM fait exception, par choix : ses réponses ne sont pas
+   restaurées, il peut être refait. On en montre la coche et le score. */
+function cocheQcm(box,score){
+  var lanceur=box.querySelector('.qcm-lanceur'); if(!lanceur) return;
+  var bouton=lanceur.querySelector('button');
+  if(bouton) bouton.textContent='Refaire le QCM';
+  var consigne=lanceur.querySelector('.qcm-consigne');
+  if(consigne) consigne.style.display='none';
+  if(lanceur.querySelector('.qcm-fait')) return;
+  var fait=document.createElement('span');
+  fait.className='qcm-fait';
+  fait.style.cssText='font-size:13.5px;color:var(--ok);font-weight:500';
+  fait.textContent='✓ Déjà fait'+(score?' — '+score:'');
+  if(bouton) lanceur.insertBefore(fait,bouton); else lanceur.appendChild(fait);
+}
+
+function restaurer(){
+  if(!window.EtatSNT || !EtatSNT.actif() || !EtatSNT.charge) return;
+  EtatSNT.charge.then(function(){
+    var etapes=EtatSNT.etapes(), champs=EtatSNT.champs(), courant=null, quelqueChose=false;
+
+    /* 1. les étapes faites : marquées, révélées, plus la suivante.
+          dataset.dejaVu était lu par toutRevel() et n'était jamais
+          écrit : il l'est enfin ici. */
+    $$('.seance').forEach(function(sec){
+      var pas=$$('.step',sec), dernier=-1;
+      pas.forEach(function(p,i){
+        var k=EtatSNT.cle(p);
+        if(k && etapes[k] && etapes[k].fait){ p.classList.add('is-done'); dernier=i; quelqueChose=true; }
+      });
+      if(dernier<0) return;
+      var jusqua=Math.min(dernier+1,pas.length-1);
+      for(var i=0;i<=jusqua;i++){ pas[i].classList.remove('masque'); pas[i].dataset.dejaVu='1'; }
+      var suivant=sec.querySelector('.step-suivant');
+      if(suivant && !sec.querySelectorAll('.step.masque').length) suivant.style.display='none';
+    });
+
+    /* 2. les textes à trous : on remet la saisie, le moteur recorrige */
+    $$('.cloze').forEach(function(bloc){
+      var k=clozeCle(bloc); if(!k || !champs[k]) return;
+      clozeEcrire(bloc,champs[k]);
+      var conteneur=bloc.closest('.field')||bloc.parentElement;
+      var bouton=conteneur?conteneur.querySelector('[data-check-cloze]'):null;
+      if(bouton){ bouton.click(); quelqueChose=true; }
+    });
+
+    /* 3. les QCM déjà passés */
+    $$('.qcmbox').forEach(function(box){
+      var step=box.closest('.step'); if(!step) return;
+      var k=EtatSNT.cle(step); if(!k || !etapes[k] || !etapes[k].fait) return;
+      cocheQcm(box,etapes[k].score);
+    });
+
+    if(!quelqueChose) return;
+
+    /* 4. déverrouillage des séances et sommaire à jour. L'écouteur
+          d'IIFE 1 rappelle refresh() ; la cible sans .closest est
+          ignorée par l'enregistreur, aucune écriture parasite. */
+    document.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
+    majBarre();
+
+    /* 5. replacement silencieux sur la première étape non faite.
+          Une ancre explicite dans l'URL reste prioritaire : elle vient
+          d'une intention, pas d'un retour. */
+    if(location.hash) return;
+    $$('.step').forEach(function(p){
+      if(!courant && !p.classList.contains('is-done') && !p.classList.contains('masque')) courant=p;
+    });
+    if(courant) courant.scrollIntoView({behavior:'auto',block:'start'});
+  });
+}
+
 function demarrer(){
   /* le bandeau « À retenir » est ajouté en CSS : on enveloppe le contenu */
   $$('.retain').forEach(function(r){
@@ -1516,6 +1680,7 @@ function demarrer(){
   initBilan();
   var obs=new MutationObserver(majBarre);
   $$('.steps').forEach(function(s){ obs.observe(s,{attributes:true,subtree:true,attributeFilter:['class']}); });
+  restaurer();
   console.log('%cSNT · Internet — tu as ouvert l\'inspecteur. Bravo, c\'est exactement comme ça qu\'on apprend.','color:#2445c7');
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',demarrer);
