@@ -47,8 +47,11 @@ sans objet » est calculé, jamais oscillant.
 ## Réglages (dans `.env` ou en tête de `moteur.mjs`)
 - `IA_MODELE` (défaut `mistral-nemo`) — changer de modèle = une ligne.
 - `OLLAMA_URL` (défaut `http://localhost:11434`).
-- `SEUIL_AIDE` dans `moteur.mjs` (défaut 2/3) — la « nette majorité » pour
-  suggérer l'aide aux camarades. À monter/descendre selon ton envie d'entraide.
+- `AIDE_PLUS_LOIN_MINI` dans `moteur.mjs` (défaut 1) — nombre de critères
+  « pour aller plus loin » à observer **en plus d'un socle complet** pour être
+  proposé comme aidant. 0 = le socle complet suffit · 2 = plus exigeant.
+  (Remplace `SEUIL_AIDE`, qui rendait le rôle d'aidant inatteignable —
+  voir le commentaire de `calculerAide`.)
 
 ## Mise en route
 1. Node 18+, Ollama lancé, `ollama pull mistral-nemo`.

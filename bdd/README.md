@@ -26,18 +26,13 @@ Le dépôt est **relié à Supabase par l'intégration GitHub** (activé le
 `supabase/migrations/`. Tout fichier `.sql` déposé **là** est appliqué
 automatiquement à la base à chaque push.
 
-Ce dossier `supabase/` **n'existe pas encore** et ne doit pas être créé à la
-main : il est produit par la CLI Supabase (`supabase init`, `supabase db pull`)
-au **jalon 4**. Créer des migrations à la main avant que l'historique de
-migrations soit initialisé provoquerait des conflits (Supabase tenterait de
-rejouer des tables déjà créées).
+Ce dossier est **produit par la CLI Supabase**, jamais écrit à la main.
 
-### ✅ Jalon 4 franchi le 20/07/2026 — ce qui a changé
-
-L'historique de migrations est amorcé. `supabase/migrations/` contient une
+L'historique de migrations est amorcé : `supabase/migrations/` contient une
 migration d'état initial, `20260720153000_etat-initial.sql`, déclarée **déjà
-appliquée** dans la base. L'intégration GitHub est donc active et sans danger :
-au push, elle reconnaît cette version et ne fait rien.
+appliquée** dans la base, puis `20260722121414_rls-et-fonctions.sql`.
+L'intégration GitHub est donc active et sans danger : au push, elle reconnaît
+ces versions et ne rejoue rien.
 
 Note de méthode : `supabase db pull` a échoué de façon inexpliquée
 (`No schema changes found` alors que les sept tables existent). L'amorçage a été

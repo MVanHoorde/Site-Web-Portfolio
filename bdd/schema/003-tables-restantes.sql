@@ -168,7 +168,8 @@ create table if not exists public.reponses_libres (
   statut text not null default 'en_attente'
     check (statut in ('en_attente', 'en_cours', 'corrige', 'signale')),
 
-  -- Ce que le worker a produit : note, points forts, pistes.
+  -- Ce que le worker a produit : constats par critère, verdict, message.
+  -- JAMAIS de note : la notation appartient à l'enseignant (AI Act 6(3)).
   -- jsonb pour pouvoir enrichir sans migration.
   correction_ia jsonb,
 

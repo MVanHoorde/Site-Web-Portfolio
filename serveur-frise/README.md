@@ -1,36 +1,52 @@
-# 🚧 Serveur de la frise — CHANTIER OUVERT
+# ⛔ Abandonné le 23/07/2026 — la frise passe sur Supabase
 
-Backend de la séquence « La grande frise » (Term ES). **Rien ici n'est en
-production.** Le site GitHub Pages est statique : ce serveur s'héberge à part
-(PC de Loïc / VPS), et `pages/term-es-s01-frise.html` s'y raccorde en
-renseignant `URL_SERVEUR` en tête de son script.
+**Ce serveur ne sera pas développé.** Décision de Loïc : la frise ES est
+traitée « de la même manière que les cours de SNT », c'est-à-dire dans la
+**même base Supabase**.
 
-## Décisions déjà actées (ne pas défaire sans en reparler)
-- **Pseudonymisation à la source** : le serveur ne connaît QUE des codes
-  (`E-07`). La table code↔nom vit sur le PC de Loïc, jamais ici.
-- **Aucun champ note, nulle part.** La pré-correction IA produit des critères
-  + justifications (voir `/ia-correction/`). Conformité AI Act art. 6(3)
-  (tâche préparatoire) : le système ne doit jamais évaluer à la place de
+## Pourquoi
+
+Ce dossier demandait encore, avant de pouvoir recevoir une seule copie :
+un hébergement (le README envisageait d'**exposer le PC personnel sur
+Internet**), une authentification enseignante, HTTPS, une purge de fin
+d'année, des sauvegardes, une journalisation, un registre de traitement.
+
+Supabase fournit les six, et le socle SNT les a déjà éprouvés. Maintenir
+deux backends pour la même finalité — stocker des copies pseudonymisées,
+les faire pré-corriger localement, ne jamais produire de note — c'était
+deux fois le travail, deux fois le dossier RGPD, et une surface de risque
+en plus juste avant la rentrée.
+
+## Où est passé quoi
+
+| Ce qui était ici | Où c'est maintenant |
+|---|---|
+| Le modèle de données (contributions, tirages) | `bdd/schema/007-frise-es.sql` |
+| Les règles d'accès | mêmes policies RLS que la SNT, dans le même fichier |
+| L'auth élève | comptes Supabase, code pseudonyme `E-07` |
+| L'auth enseignant | clé `service_role`, depuis le PC de Loïc |
+| La pré-correction | `ia-snt/` — même moteur, autre grille |
+| L'export CSV | requête `select` depuis le PC |
+
+## Ce qui reste vrai et ne doit pas se perdre
+
+- **Pseudonymisation à la source** : la base ne connaît que des codes.
+  La table code↔nom vit sur le PC de Loïc.
+- **Aucun champ note, nulle part.** AI Act art. 6(3) : la pré-correction
+  est une tâche préparatoire, le système n'évalue jamais à la place de
   l'enseignant.
-- Données minimales, purge en fin d'année scolaire, registre de traitement à
-  tenir (DPD établissement à prévenir avant mise en service réelle).
+- Données minimales, purge en fin d'année scolaire, registre de
+  traitement à tenir, **DPD de l'établissement à prévenir avant la mise
+  en service réelle**.
+- Test de charge à prévoir quand même : 35 élèves simultanés sur le
+  tirage. Supabase encaisse, mais la page doit gérer les collisions.
 
-## Endpoints prévus (contrat d'interface avec la page)
-| Méthode | Route | Rôle | Auth |
-|---|---|---|---|
-| GET  | /api/contributions | liste des dépôts | classe |
-| POST | /api/contributions | déposer une fiche / un titre | classe |
-| GET  | /api/tirages | attributions de sujets | classe |
-| POST | /api/tirages | tirage / choix d'un sujet | classe |
-| PUT  | /api/contributions | remplacement (titres retenus, bonus) | **enseignant** |
-| GET  | /api/export.csv | relevé complet | **enseignant** |
-| POST | /api/precorrection/:id | 🚧 déclenche la pré-correction IA (voir /ia-correction/) | **enseignant** |
+## Le dossier lui-même
 
-## 🚧 Reste à faire
-- [ ] Choisir l'hébergement (PC perso exposé ? VPS ? — voir Hermès/VPS au socle)
-- [ ] Authentification enseignant (jeton simple suffira ; jamais de mdp élève)
-- [ ] HTTPS obligatoire ; chiffrement du volume de données au repos
-- [ ] Journalisation minimale (qui/quoi/quand par code, pas d'IP conservée)
-- [ ] Purge automatisée fin d'année + sauvegarde chiffrée
-- [ ] Registre de traitement + information familles (modèle à rédiger)
-- [ ] Tests de charge : 35 élèves simultanés sur le tirage
+`server.js` est conservé pour mémoire (il documente le contrat
+d'interface qui a servi à écrire `007-frise-es.sql`). Une fois la frise
+branchée et testée, il peut partir :
+
+```bash
+git rm -r serveur-frise/
+```

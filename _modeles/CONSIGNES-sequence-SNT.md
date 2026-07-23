@@ -67,10 +67,11 @@ explicite de Loïc, jamais présumée ; la mise en ligne n'est pas un jalon.
 | `assets/css/fonts.css` | Polices auto-hébergées (voir §5) — **seule** source de polices autorisée |
 | `_suivi/chapitres.md` | Section « Seconde — SNT » : état réel de chaque séquence |
 
-Il n'existe **pas** de `gabarit-sequence-snt.html` : on décline en partant de la séquence du
-Web. Trois séquences existent désormais et confirment les conventions — extraire un
-vrai gabarit est donc devenu pertinent, mais c'est une **décision de Loïc**,
-pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
+Il n'existe pas de fichier `gabarit-sequence-snt.html`, et il n'en faut plus :
+**le gabarit, ce sont les deux ressources partagées** `assets/css/sequence-snt.css`
+et `assets/js/sequence-snt.js` (extraites de `t1` le 23/07/2026). Une nouvelle
+séquence les charge et n'écrit que son contenu. Pour la structure HTML, on part
+de `pages/2nde-snt-t1-internet.html`, seule séquence déjà portée.
 
 ## 3. Grammaire de la séquence (à respecter partout)
 
@@ -170,11 +171,29 @@ pas un réflexe (voir « Ce qui n'est pas encore arrêté »).
   (largeur ≤ 1400 px, JPEG progressif pour les photos, ~200 ko cible) et de porter
   **légende + source + licence** sous chaque image. Les illustrations qu'on peut
   dessiner restent en **SVG inline** — c'est toujours le premier réflexe.
-  **Deux ressources partagées, et deux seulement** : `assets/css/fonts.css` et
-  `assets/js/progression.js` (le client de base de données — dérogation
-  explicite validée par Loïc le 20/07/2026 : dupliquer ce client dans huit séquences
-  serait ingérable et rendrait toute correction impossible à propager).
-  Toute autre mise en commun se propose, elle ne se décide pas.
+  **Quatre ressources partagées, et quatre seulement** (décision de Loïc du
+  23/07/2026 — l'audit a montré que sept séquences partageaient 98 % du même
+  CSS et du même JS : une correction devait être répétée huit fois, ou oubliée
+  sept) :
+
+  | Fichier | Rôle |
+  |---|---|
+  | `assets/css/fonts.css` | polices auto-hébergées |
+  | `assets/js/progression.js` | client de base de données |
+  | `assets/css/sequence-snt.css` | 🆕 grammaire visuelle (`:root`, blocs, glisser-déposer) — **versionné `?v=N`** |
+  | `assets/js/sequence-snt.js` | 🆕 moteur : progression, QCM, trous, glossaire, mode enseignant, impression, réhydratation |
+
+  Reste **inline dans la page** : le CSS propre à la séquence (encarts de
+  contenu), les SVG, les données JSON des QCM et du glossaire, et tout
+  composant qui n'existe que là. Toute autre mise en commun se propose, elle
+  ne se décide pas.
+
+  ⚠ **État au 23/07/2026 : seule `t1-internet` est portée sur le moteur
+  partagé.** Les sept autres tournent encore sur leur copie inline, plus
+  ancienne. Les migrer demande d'adapter leur HTML au marquage attendu
+  (`data-step`, `data-gate`, `.field[data-focus-code]`, `script.qcm-data`,
+  `#dico-source`…) : **une séquence à la fois, testée avant de passer à la
+  suivante**. Ne jamais brancher une page sans l'avoir ouverte.
   Arborescence des parties du projet : `CLAUDE.md` « Arborescence — une place
   par partie ».
 - Un lien de ressource pas encore arbitré reste **inerte** (`href="#"`) et doit
@@ -200,20 +219,32 @@ Finaliser les séquences en **HTML statique autonome**. La correction locale (QC
 trous, schémas) fonctionne pour de vrai ; le texte libre est **simulé** (passe
 *en attente* puis *validé* après un délai, sans correction réelle). Présentable
 en classe sans aucun serveur.
+⚠ `t1-internet` est **branchée sur la base** : la simulation y a été retirée. Les
+sept autres séquences la conservent jusqu'à leur tour, mais **aucune nouvelle
+simulation ne s'écrit**.
 
 **Phase 2 — EN COURS depuis le 20/07/2026 : le vrai système.**
-Base de données **Supabase** (PostgreSQL managé, région Francfort, plan gratuit)
-pour l'apprentissage et le pilote ; cible souveraine **Clever Cloud**, à proposer
-à l'établissement en septembre. Identification par **pseudonyme + code de classe**
-via les connexions anonymes de Supabase : **aucun email, aucun nom, aucun mot de
-passe en base**. Correction du texte libre par un **worker** hors ligne (PC de
-Loïc) qui lit les copies en attente, fait corriger par l'IA (API Mistral ou
-modèle local sur RTX 5080) et réécrit le statut : aucun port ouvert, aucun VPS
-nécessaire — le VPS reste une option pour héberger le worker, pas une
-obligation. Ensuite : tableau de bord enseignant, alertes de décrochage **basées
-sur la progression réelle** — pas sur la surveillance du temps ni la comparaison
-entre élèves (piège RGPD/éthique). Cette base sert aussi de socle au RPG « fil
-rouge ».
+Base de données **Supabase** (PostgreSQL managé, **région West EU — Paris**, plan
+gratuit) pour l'apprentissage et le pilote ; cible souveraine **Clever Cloud**, à
+proposer à l'établissement en septembre.
+
+**Identification : identifiant + mot de passe choisis par l'élève.** L'adresse
+`identifiant@snt.local` est une étiquette interne, jamais envoyée ; le mot de
+passe est **haché par Supabase et jamais lisible** (on ne le consulte pas, on le
+réinitialise depuis le PC de Loïc) ; aucun nom réel n'entre en base — la table
+identifiant→nom vit sur le PC de Loïc, hors base. Les connexions anonymes sont
+**désactivées** : elles ne permettaient pas la portabilité maison↔lycée.
+
+**Correction du texte libre : worker 100 % local** (PC de Loïc, Ollama /
+Mistral Nemo). Il lit les copies `en_attente`, écrit `correction_ia`, et **ne
+touche jamais au statut**. Le passage `en_attente → corrige` est un geste
+explicite de Loïc — c'est l'**étape 5, encore à écrire** : tant qu'elle n'existe
+pas, la copie est corrigée mais l'élève ne voit rien. Aucun port ouvert, aucun
+VPS nécessaire.
+
+Ensuite : tableau de bord enseignant, alertes de décrochage **basées sur la
+progression réelle** — pas sur la surveillance du temps ni la comparaison entre
+élèves (piège RGPD/éthique). Cette base sert aussi de socle au RPG « fil rouge ».
 
 **Coder désormais contre le contrat de données.** La règle « ne pas coder en
 prévision de la phase 2 » est **caduque**. Tout nouveau champ de texte libre
@@ -324,30 +355,24 @@ Les jalons 1→7 des chapitres de PC **ne sont pas transposables**. Une séquenc
 
 Notation des flags : `⬜` à faire · `🔄` en cours · `✅` fait · `⚠` bloqué/attention.
 
-## 13. Ce qui n'est pas encore arrêté (honnêteté de phase 1)
+## 13. Ce qui n'est pas encore arrêté
 
-Huit séquences sont amorcés (Web, Internet, Introduction en V0 complète ;
+Huit séquences sont amorcées (Web, Internet, Introduction en V0 complète ;
 Photographie et les quatre thèmes du 18/07 en V0 partielle) et les conventions
 se confirment (codes `WEB·x` / `NET·x` / `SYS·x` / `PHO·x` / `SOC·x` / `DAT·x` /
 `LOC·x` / `EMB·x`, ≈ 4 séances + 1 débranchée — 2 séances pour une séquence courte comme
 Données structurées, mêmes champs et même JS). Restent **ouverts** — à proposer
 à Loïc plutôt qu'à trancher seul :
 
-- l'extraction d'un vrai **`gabarit-sequence-snt.html`** : la condition (conventions
-  confirmées par plusieurs séquences) est **largement** remplie, mais l'extraction
-  reste une décision de Loïc ;
 - le **volume horaire** type d'une séquence (le Web fait ≈ 6 h sur 4 séances +
   1 débranchée) ;
 - l'existence d'un **équivalent du régime A** (dégrossissage rapide multi-thèmes)
-  pour peupler les 7 séquences — non tranché : les séquences se rédigent, ils ne se
-  transcrivent pas depuis un PPTX.
+  pour peupler les séquences restantes — non tranché : une séquence se rédige,
+  elle ne se transcrit pas depuis un PPTX.
 
-⚠ **Mise à jour du 20/07/2026** : ce paragraphe date de la phase 1. La phase 2
-est ouverte (voir §7) et le volet base de données est cadré — voir
-`_suivi/BDD-cadrage.md`. Reste ouvert dans ce paragraphe : le gabarit de séquence, le
-volume horaire, le régime A. Sont désormais **tranchés** : la persistance
-(Supabase), l'identification (pseudonyme + code de classe) et l'ordre de
-branchement (SNT d'abord, PC ensuite).
+**Tranché** : la persistance (Supabase), l'identification (identifiant + mot de
+passe), l'ordre de branchement (SNT d'abord, PC ensuite).
+Historique daté de ces décisions : `_suivi/DECISIONS.md`.
 
 ## 14. Règles ajoutées le 18/07/2026 (arbitrages Loïc — chantier des 4 thèmes)
 

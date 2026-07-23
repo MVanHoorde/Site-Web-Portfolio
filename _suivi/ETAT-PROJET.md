@@ -1,38 +1,82 @@
-# État du projet — Site pédagogique Physique-Chimie & SNT
+# État du projet
 
-> Dernière mise à jour : 20/07/2026 · tenu à jour par Loïc + Claude
+> **Réécrit** à chaque session, jamais empilé. Ce fichier décrit **l'état
+> courant** — jamais comment on y est arrivé.
+> Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
+> `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
+>
+> Dernière réécriture : **23/07/2026**
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
-Vue d'ensemble. Détail par chapitre dans `chapitres.md` ; idées dans `IDEES.md`.
-Contexte et règles de collaboration : `CLAUDE.md` à la racine. Consignes de
-production, un fichier par gabarit : `_modeles/CONSIGNES-chapitre-PC.md` et
-`_modeles/CONSIGNES-sequence-SNT.md`.
+---
+
+## Où on en est
+
+| Partie | État |
+|---|---|
+| **PC seconde** | 14 chapitres en ligne. T1-C1→C4 dégrossis à fond ; les 10 autres portent **206 blocs `.a-faire`**. Aucun cours validé. |
+| **SNT** | 8 séquences (t0→t7). `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. |
+| **Base de données** | ✅ **en service.** Supabase, région **West EU (Paris)**. 7 tables, 10 policies RLS, 4 fonctions, sauvegarde hebdo + réveil quotidien. Pilote prouvé de bout en bout sur `t1`. |
+| **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
+| **Cahier de vacances** | 14 pages, 2 blocs 🚧. La partie la plus finie du dépôt. |
+| **ES Terminale** | frise fonctionnelle en local ; `serveur-frise/` et `ia-correction/` en chantier. |
+
+**Validation** : aucun contenu n'est validé à ce jour. La mise en ligne n'est pas
+un jalon — ce qui se suit, c'est le niveau de finition **validé par Loïc**, acte
+explicite, jamais présumé.
 
 ---
 
-## 🎨 Identité graphique (décision du 16/07)
+## Ce qui bloque
 
-**Reliure « papier d'étude »** (variante B validée sur maquettes) appliquée à la
-**coque du site uniquement** : accueil refondu (page de titre, gravure du jour en
-rotation quotidienne, table des matières des classes, Mission Spectra), pages de
-niveau via `style.css`, et fond/nav/pied des pages de chapitre via un bloc
-`reliure-papier-etude` injecté (aussi dans `gabarit-chapitre.html`).
-**L'intérieur des cours est intact** : encarts Hα/Hβ/Hγ, panneau de formule
-sombre, verrou, JS — rien n'a bougé (vérifié par Playwright).
-EB Garamond auto-hébergée (RGPD) dans `assets/fonts/`. Les 8 gravures du domaine
-public restent à déposer dans `gravures/` (voir `gravures/A-LIRE.txt`) ; en
-attendant, l'accueil affiche un cadre vide annoté.
+### ① Chemin critique — l'étape 5 n'existe pas
 
----
+**Rien dans le dépôt ne peut faire passer une copie de `en_attente` à `corrige`.**
+Ni le worker (par conception), ni `progression.js`, ni aucun script ; il n'existe
+pas de rôle enseignant en base. Conséquence : l'élève envoie, le worker corrige,
+et **l'élève ne voit jamais rien** — l'affichage est conditionné à
+`statut === 'corrige'`.
+
+Version minimale suffisante pour la rentrée : un script en ligne de commande sur
+le PC de Loïc (lister · afficher `tri.a_verifier` · valider d'une touche). Le
+tableau de bord iPad peut attendre. **C'est le dernier maillon.**
+
+### ② Portage des sept séquences sur le moteur partagé
+
+Le gabarit est extrait (23/07) et `t1` tourne dessus. Les sept autres ont encore
+leur copie inline, plus ancienne : leur HTML n'est pas marqué comme le moteur
+l'attend (`data-step`, `data-gate`, `.field[data-focus-code]`, `script.qcm-data`,
+`#dico-source`). **Une séquence à la fois, ouverte et testée.** Priorité : `t0` et
+`t2`, les deux qui serviront en septembre.
+
+### ③ La frise ES à brancher
+
+Décision prise le 23/07 : elle passe sur Supabase. Le modèle est écrit
+(`bdd/schema/007-frise-es.sql`) mais **à valider par Loïc** avant exécution. Il
+reste à écrire les fonctions correspondantes dans `progression.js` et à remplacer
+l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
+`localStorage`.
+
+## Prochaines actions
+
+- [ ] **Écrire l'étape 5 minimale** (`ia-snt/valider.mjs`) — le dernier maillon
+- [ ] Porter `t0` puis `t2` sur le moteur partagé, en testant chacune
+- [ ] Relire et exécuter `bdd/schema/007-frise-es.sql`, puis brancher la page de frise
+- [ ] `moteur.mjs` en `temperature: 0` + `seed` fixe — préalable à tout re-benchmark
+- [ ] Rework de la grille R1/C2 à froid (restructurer, pas reformuler)
+- [ ] Réparer `pages/term-spe-physique-chimie.html → docs/tp-1-1.pdf`
+- [ ] Ré-encoder `audio/2nde-pc-t3-c4-intro.m4a` (31 Mo → ~2 Mo, mono 64 kbit/s)
+- [ ] Nettoyer les couleurs en dur hors `:root` (t2 : 52 · les six autres ≈ 46)
+- [ ] Nettoyage avant rentrée : compte `leproftest` + lignes de test
+- [ ] 🔴 Révoquer la clé `service_role` — **dernière action avant la mise en service**
 
 ## ⏳ En attente de Loïc — rappels récurrents
 
-> Tâches côté Loïc, à ressortir régulièrement tant qu'elles ne sont pas cochées.
-> Claude : rappeler ces points quand on retravaille le site (surtout l'accueil).
+> À ressortir tant que ce n'est pas coché.
 
-**Gravures de l'accueil** (domaine public, à déposer dans `gravures/` — détail et
-sources dans `gravures/A-LIRE.txt`). Tant qu'un fichier manque, l'accueil montre
-un cadre vide annoté à la place de la planche.
+**Gravures de l'accueil** (domaine public, à déposer dans `gravures/` — sources
+dans `gravures/A-LIRE.txt`). Tant qu'un fichier manque, l'accueil montre un cadre
+vide annoté à la place de la planche.
 
 - [ ] `01-prisme-newton.jpg` — Newton, prisme, 1704
 - [ ] `02-machine-nollet.jpg` — Nollet, machine électrostatique, 1743
@@ -43,328 +87,27 @@ un cadre vide annoté à la place de la planche.
 - [ ] `07-champ-faraday.jpg` — Faraday, lignes de champ, 1852
 - [ ] `08-spectre-fraunhofer.jpg` — Fraunhofer, spectre solaire, 1814
 
-**Autres retouches d'accueil en attente**
+**Accueil**
 
-- [ ] Remplacer le courriel placeholder `prenom.nom@exemple.fr` par la vraie adresse
+- [ ] Remplacer `prenom.nom@exemple.fr` par la vraie adresse
 - [ ] Mettre le vrai lien de l'espace classe ENT (actuellement `href="#"`)
-- [ ] (plus tard) Créer la page « collection de gravures » ; le lien
-      « Parcourir la collection » de l'accueil boucle pour l'instant sur `#gravures`
+- [ ] (plus tard) Page « collection de gravures »
 
-**Base de données — vigilance permanente** (pas une case à cocher, un réflexe)
+**Base de données — réflexes permanents** (pas des cases à cocher)
 
-- Le PC de Loïc porte les deux tâches planifiées et, bientôt, le worker de
-  correction IA. **Sept jours consécutifs sans allumer le PC = projet Supabase
-  mis en pause.** Rien n'est perdu, la relance se fait d'un clic au tableau de
-  bord — mais le site ne répond plus tant qu'elle n'a pas eu lieu.
+- **Sept jours consécutifs sans allumer le PC = projet Supabase mis en pause.**
+  Rien n'est perdu, la relance se fait d'un clic au tableau de bord ; mais le
+  site ne répond plus entre-temps. Le rattrapage sauve la sauvegarde, pas le
+  réveil.
 - Vérifier de temps en temps `C:\Sauvegardes-SNT\journal.log` : une ligne `OK`
   par semaine. Une ligne `ECHEC` ou une absence de ligne = sauvegarde muette.
-- Faire le ménage dans `C:\Sauvegardes-SNT` quand la base contiendra des
-  copies d'élèves (règle de purge à ajouter au script à ce moment-là).
+- 🔴 **Le jour de création des comptes** : collecter les identifiants choisis par
+  les élèves et tenir la table identifiant→nom **sur le PC uniquement**, hors
+  base. Sans elle, un identifiant oublié devient introuvable, y compris pour Loïc.
+- Faire le ménage dans `C:\Sauvegardes-SNT` quand la base contiendra des copies
+  d'élèves (règle de purge à ajouter au script à ce moment-là).
 
----
+**Licences et contenus**
 
-## 🎯 Objectif de la période (vacances)
-
-**Dégrossir un maximum de chapitres** (régime A) : mettre TOUT en ligne à l'état
-d'ébauche navigable, manques signalés par blocs 🚧. Loïc va déposer les PPTX de
-tous les chapitres. Le raffinage et la **validation** viendront ensuite, en
-régime B, chapitre par chapitre.
-
-**Régime A élargi depuis le 15/07** (voir `_modeles/CONSIGNES-chapitre-PC.md`) :
-exercices et corrections rédigés en entier même quand une image les accompagne,
-encarts formule reconstitués depuis la source, QR codes et hyperliens vidéo
-décodés et posés en vrais liens (Kahoot compris), courte recherche web possible
-si un point manque pour la compréhension. Restent en régime B : photos réelles,
-schémas/illustrations à redessiner en SVG, grands tableaux, et — toujours —
-le lien du DS (jamais posé automatiquement, quel que soit le contenu de la
-source, puisqu'il change chaque année).
-
-## ⚠ Statut de validation — à lire
-
-- **Aucun cours n'est validé à ce jour.** Certaines fiches ont été *proposées*
-  (C2, C3, C4) mais **aucune n'est validée**.
-- La **mise en ligne n'est pas un jalon** : tout est / sera en ligne. Ce qui se
-  suit, c'est le **niveau de finition validé** (jalons 2 → 7 de `chapitres.md`).
-- La validation est un **acte explicite de Loïc** (« oui, ce cours me convient,
-  je peux l'utiliser l'an prochain »), jamais présumée par Claude.
-
-## 🚦 Priorités
-
-1. **Finir le dégrossissage** de tous les chapitres disponibles (régime A).
-2. Mettre en place le travail en **Claude Code / VS Code** pour le raffinage.
-3. Démarrer le raffinage + la validation, en commençant par les chapitres les
-   plus utilisés en début d'année.
-4. Intégrer le **calendrier scolaire** (fourni plus tard) pour ordonner les priorités.
-5. 🆕 **Volet base de données** — jalons 4 à 7 (voir `_suivi/BDD-cadrage.md`).
-   Ne bloque pas la rentrée : le site reste fonctionnel sans, mais c'est le
-   socle du RPG et du suivi réel de progression.
-6. 🆕 **SNT-T1 Internet — relire la séquence après les lots A→E du 21/07.**
-   Six chantiers d'affilée y ont touché : numérotation des étapes, frise devenue
-   exercice, glossaire automatique, images ré-agencées et ré-optimisées, QCM
-   élargi, fiche téléchargée enrichie. C'est la séquence la plus avancée du
-   site : elle sert de référence aux sept autres, donc **la valider avant de
-   décliner**.
-
-## ⚠ Alertes
-
-- 🆕 **SNT-T1 — défaut de structure corrigé le 21/07, à surveiller ailleurs.**
-  Un `</div>` surnuméraire refermait le conteneur `.wrap` au milieu de la page :
-  quatre séances sur cinq s'affichaient **sur toute la largeur de l'écran**, hors
-  colonne, et le bouton « Étape suivante » remontait au milieu du parcours. Rien
-  ne le signalait — ni erreur JS, ni page cassée. **Les sept autres séquences SNT
-  sont déclinées du même fichier : vérifier l'équilibre des `<div>` sur chacune**
-  (comptage `<div` / `</div>` par section).
-
-- 🆕 **SNT-T1 — deux décisions gelées par Loïc (21/07).** (1) Les **codes
-  d'activité** ne sont pas renommés tant que la couche Supabase n'est pas
-  traitée ; deux familles de clés cohabitent (`NET·xx` et `NET-xx`), à
-  harmoniser plus tard. (2) Les **licences de six crédits images** restent « à
-  confirmer » : vérification à faire en ligne par Loïc lui-même.
-
-- 🆕 **SNT — règle du référentiel vivant (17/07).** La séquence d'introduction
-  (`pages/2nde-snt-t0-systemes-informatises.html`) = cours « Systèmes
-  informatisés » **entrelacé** avec le tutoriel du dispositif. **Toute nouvelle
-  idée de fonctionnement du cours s'y présente explicitement en premier** ; les
-  autres séquences n'en portent que des rappels discrets (pied de page). Voir
-  `CONSIGNES-sequence-SNT.md` §8 — et y revenir sans cesse.
-- ✅ **Vestige RGPD corrigé (17/07)** : la page orpheline `2nde-snt.html` à la
-  **racine** (doublon obsolète, chargeait encore Google Fonts, liens `#`) est
-  remplacée par une redirection propre vers `pages/2nde-snt.html`. Option plus
-  radicale possible : `git rm` (décision Loïc).
-- 🆕 **SNT — la séquence « Le Web » est en ligne (17/07)** : `pages/2nde-snt-t2-le-web.html`,
-  lié depuis la carte SNT 2 de `pages/2nde-snt.html`. **Maquette V0, non validée.**
-  C'est un **second gabarit**, distinct des chapitres de PC (séquence → séance →
-  étape → champ ; pas de `localStorage` ; CSS inline) — voir
-  `_modeles/CONSIGNES-sequence-SNT.md`.
-- 🔴 **RÈGLE — aucune police depuis un CDN.** La maquette de la séquence chargeait Space
-  Grotesk / IBM Plex Sans / IBM Plex Mono depuis `fonts.googleapis.com` : chaque
-  élève ouvrant la page aurait envoyé son IP à Google, à rebours de la règle du
-  site (polices auto-hébergées, `assets/css/fonts.css`). Corrigé : **IBM Plex Sans
-  ajouté** en woff2 local (400, 400i, 500, 600 — latin, OFL) et déclaré dans
-  `fonts.css`. À vérifier sur toute page importée de l'extérieur.
-- ✅ **Page de niveau `pages/2nde-physique-chimie.html` mise à jour et fournie** :
-  les 4 chapitres du Thème 3 y sont **liés** (liens anti-préfixe, mêmes cartes
-  `.chapitre` que les Thèmes 1-2, descriptions à puces conservées).
-- ⚠ **T3 — divergence de structure à trancher (décision de Loïc).** L'ancienne
-  page prévoyait 3 chapitres, avec **spectres en CH.2 et signaux en CH.3** ; les
-  PPTX déposés donnent **4 chapitres** dans l'ordre son / signaux / spectres /
-  réfraction (+ réfraction, absent de l'ancienne page). La page a été alignée sur
-  **l'ordre des PPTX/slugs** (obligatoire pour que carte et page portent le même
-  numéro). Deux ajustements faits, réversibles : (1) « Vision et image — spectres
-  lumineux » renommé **« Dispersion et spectres »** (titre réel de la page de
-  cours) ; (2) signaux et spectres permutés. Si Loïc préfère l'ordre pédagogique
-  son / spectres / signaux, il faut **renuméroter les fichiers** (t3-c2 ↔ t3-c3 :
-  noms, clés localStorage, titres internes) — à faire en régime B.
-- ⚠ **T3-C2 (signaux et capteurs) Ex2, loi des nœuds au point B : correction de
-  la source fausse → corrigée.** La source écrivait une relation incohérente au
-  nœud B ; rétablie en **I₃ + I₆ = I₅** (I₅ sortant), avec un aparté explicatif.
-  À revoir en régime B.
-- ⚠ **T3-C2 : pas de diapositive « Pour le DS » ni de Kahoot** dans la source →
-  liste de compétences à fournir (bloc 🚧), pas de chip Kahoot.
-- ⚠ **T3-C2 : hyperliens vidéo dupliqués dans la source** (mêmes URLs sur
-  plusieurs diapositives) → posés au mieux à leur emplacement le plus probable ;
-  à vérifier en régime B.
-- 🔴 **T3-C4 (réfraction et réflexion) : la source est une VERSION ÉLÈVE, sans
-  corrigés.** Les **5 corrections ont été rédigées par Claude** (calculs vérifiés)
-  et **portent la mention « à valider »** sur la page. À contrôler en priorité en
-  régime B. En particulier **Ex3** (température de l'eau depuis n=1,333) dépend
-  d'un **graphe n=f(θ) laissé en 🚧** : réponse ≈ 20 °C donnée sous réserve.
-- ⚠ **T3 (4 chapitres) : liens DS laissés en attente** — jamais posés
-  automatiquement (ils changent chaque année). Bloc 🚧 dédié dans chaque
-  checklist.
-- ⚠ **C6 et C7 : pas de diapositive « Pour le DS »** dans les sources — listes de compétences à fournir (et pas de Kahoot non plus pour ces deux chapitres).
-- ⚠ **C5 : lien DS laissé en attente** — un lien existe dans la source (étiqueté « DS - 2024 », donc 2024/2025) mais n'a pas été activé, dans l'attente du choix de Loïc (DS de cette année ou de l'an dernier).
-- ⚠ **T2 (3 chapitres) : liens DS laissés en attente** — comme pour C5, des liens « DS » figurent dans les sources mais ne sont jamais posés automatiquement.
-- ⚠ **T2-C2 Ex6 : unité corrigée** — la source notait le résultat « ≈ 1,98×10²⁰ kg » ; corrigé en **newton (N)** (la valeur numérique est exacte).
-- ⚠ **T2-C2 Ex8 : deux points à trancher** — (1) la correction inverse g Paris (9,73) et g équateur (9,81) par rapport à l'énoncé et à l'Image 13 (physiquement, g est plus grand à Paris ≈ 9,81) ; (2) l'écart annoncé « 8 % » est en réalité ≈ **0,8 %**. Transcrit fidèlement, avec aparté ; à revoir en régime B.
-- ⚠ **T2-C2 : doublon de numéro d'exercice** — deux « Exercice 10 » dans la source (diapos 11 et 13) ; le second (plan incliné) a été renuméroté **Ex11**.
-- ⚠ **T2-C3 : coquille corrigée** — « le masse » → « la masse » (définition de l'inertie).
-- 🔴 **RÈGLE — `assets/css/chapitre-commun.css` est versionné : incrémenter le
-  `?v=N` dès qu'une modification change le rendu** (retoucher un commentaire du
-  fichier ne compte pas). Les pages le chargent via
-  `<link ... href="../assets/css/chapitre-commun.css?v=2">`. Si on modifie le CSS
-  sans toucher au `?v=N`, l'URL reste identique et **les navigateurs qui ont déjà
-  ouvert un chapitre servent l'ancienne feuille depuis leur cache** : la
-  correction est invisible pour les élèves, qui ne feront jamais de Ctrl+Shift+R.
-  Passer `?v=2` → `?v=3` partout : `git grep -l 'chapitre-commun.css' -- '*.html'`
-  (14 chapitres + `_modeles/gabarit-chapitre.html`). Cas vécu le 16/07 : barre de
-  fraction des blocs-formule corrigée, mais restée invisible jusqu'au versionnage.
-- 💡 **Décision (T2) — convention d'écriture des vecteurs** : en ébauche, la flèche est rendue par un caractère combinant Unicode placé au-dessus du symbole (lisible, mais imparfait sur les groupes multi-lettres). À raffiner en régime B (petit composant SVG ou notation dédiée).
-
-- 🆕 **SNT — séquence « Photographie numérique » S1 en ligne (18/07)** :
-  `pages/2nde-snt-t7-photographie-numerique.html`, lié depuis la carte SNT 7.
-  **Maquette V0, non validée** — S1 complète et testée (Playwright), S2-S5 en
-  squelettes 🚧 verrouillés. Découpage 5 séances + frise débranchée arbitré par
-  Loïc le 18/07. Détail, arbitrages et restes à faire : `_suivi/chapitres.md`
-  (section SNT-T7). Deux erreurs de la source corrigées au passage dans le
-  contenu à venir (canal alpha ≠ « saturation » ; formats d'images datés).
-
-- 🆕 **SNT — chantier des 4 thèmes lancé (18/07)** : séquences **Réseaux sociaux**
-  (`t3`, `SOC·x`), **Données structurées** (`t4`, `DAT·x`, court 2 séances),
-  **Localisation & cartographie** (`t5`, `LOC·x`) et **Informatique embarquée**
-  (`t6`, `EMB·x`) créés en **V0 partielle** (S1 rédigées, suite en squelettes
-  🚧), liés depuis `pages/2nde-snt.html`. Arbitrages de périmètre et nouvelles
-  règles de production (intégrer plutôt que renvoyer, notes de chantier dans la
-  page, plateformes fictives) consignés dans `CONSIGNES-sequence-SNT.md` §14. Détail
-  par séquence : `chapitres.md`. **Décisions 📌/⚖️/📅 en attente** signalées par des
-  encarts `<aside class="chantier decision">` dans chaque page (voir §14.2).
-
-## 📊 Avancement (Seconde — Thème 1)
-
-Tout est en ligne à l'état d'ébauche. Niveau de finition **validé** :
-
-| Chapitre | Cours validé | Fiche |
-|---|---|---|
-| T1-C1 Matière macroscopique | ⬜ non | — |
-| T1-C2 Transformations phys./chim. | ⬜ non | proposée, non validée |
-| T1-C3 Constitution de l'atome | ⬜ non | proposée, non validée |
-| T1-C4 Dénombrer les entités | ⬜ non | proposée, non validée |
-| T1-C5 Solutions aqueuses | ⬜ non | — |
-| T1-C6 Cortège électronique | ⬜ non | — |
-| T1-C7 Stabilité des entités chimiques | ⬜ non | — |
-
-> Les autres thèmes/chapitres s'ajouteront au fil du dégrossissage.
-
-## 📊 Avancement (Seconde — Thème 2)
-
-Tout est en ligne à l'état d'ébauche (régime A élargi). Niveau de finition **validé** :
-
-| Chapitre | Cours validé | Fiche | Code |
-|---|---|---|---|
-| T2-C1 Décrire le mouvement | ⬜ non | — | REP3RE |
-| T2-C2 Modéliser une action sur un système | ⬜ non | — | F0RCES |
-| T2-C3 Le principe d'inertie | ⬜ non | — | IN3RTE |
-
-> Codes de déblocage choisis par Claude, à transmettre via le cahier de textes (modifiables).
-
-## 📊 Avancement (Seconde — Thème 3 · Ondes et signaux)
-
-**Nouveau (16/07).** Les 4 chapitres sont **en ligne à l'état d'ébauche**
-(régime A élargi) et **liés** depuis `pages/2nde-physique-chimie.html` (fait —
-voir Alerte plus haut). Niveau de finition **validé** :
-
-| Chapitre | Cours validé | Fiche | Code |
-|---|---|---|---|
-| T3-C1 Émission et perception d'un son | ⬜ non | — | S0NORE |
-| T3-C2 Signaux et capteurs | ⬜ non | — | S1GNAL |
-| T3-C3 Dispersion et spectres | ⬜ non | — | PR1SME |
-| T3-C4 Réfraction et réflexion | ⬜ non | — | M1RAGE |
-
-> Codes de déblocage choisis par Claude, à transmettre via le cahier de textes (modifiables).
-> **Rappels de vigilance pour le régime B** : C2 (nœud B corrigé, pas de DS/Kahoot,
-> vidéos dupliquées) et surtout **C4 (corrections rédigées par Claude, à valider)**.
-
-## 📊 Avancement (Seconde — SNT)
-
-**Nouveau (17-18/07).** Gabarit « séquence élève », distinct des chapitres de PC.
-Les 7 thèmes sont listés sur `pages/2nde-snt.html` ; **8 séquences existent** (t0 à
-t7), tous liés depuis la page de niveau. Détail par séquence et restes à faire :
-section « Seconde — SNT » de `chapitres.md`.
-
-| Thème | Séquence en ligne | Validé | Ressources définitives |
-|---|---|---|---|
-| SNT 0 · Introduction 🧭 | ✅ V0 (2 séances + débranchée) | ⬜ non | ⬜ `SYS·1`, `SYS·D` à brancher |
-| SNT 1 · Internet | ✅ V0 (4 séances + débranchée) | ⬜ non | ⬜ `NET·2b`, `NET·D`, liens `NET·3/4` à tester |
-| SNT 2 · Le Web | ✅ V0 (4 séances + frise) | ⬜ non | ⬜ activités cahier + frise à brancher |
-| SNT 3 · Réseaux sociaux | 🔄 V0 partiel (S1 OK, S2 aux ⅔, S4 enquête codée ; S3 + fin S4 🚧) | ⬜ non | ⬜ `SOC·P`, `SOC·D`, biblio Skyblog-BnF |
-| SNT 4 · Données structurées | 🔄 V0 partiel (S1 Titanic OK ; S2 🚧) — séquence courte 2 séances | ⬜ non | ⬜ `DAT·1`, `DAT·1b`, `DAT·D`, biblio Légifrance |
-| SNT 5 · Localisation & cartographie | 🔄 V0 partiel (S1-S2 OK ; S3-S4 🚧) | ⬜ non | ⬜ `LOC·1`, `LOC·2b`, `LOC·D`, biblios |
-| SNT 6 · Informatique embarquée | 🔄 V0 partiel (S1 OK ; S2-S4 🚧) — 4 séances provisoire | ⬜ non | ⬜ `EMB·D`, biblios Moreno/IoT |
-| SNT 7 · Photographie numérique | ✅ V0 (S1 complète + S2-S5 🚧 + débranchée cadrée) | ⬜ non | ⬜ `PHO·1`, `PHO·D` à brancher |
-
-> Phase 1 (rentrée) : HTML statique autonome, correction locale réelle, texte
-> libre **simulé**. Phase 2 (plus tard) : VPS + base de données + correction IA
-> + comptes élèves. Ne pas mélanger les deux — voir
-> `_modeles/CONSIGNES-sequence-SNT.md` §7.
-
-## 🔜 Prochaines actions
-
-- [ ] **Trancher la structure du Thème 3** (ordre des PPTX conservé, ou
-      renumérotation vers son / spectres / signaux — voir Alertes).
-- [ ] **Valider les 5 corrections de T3-C4** rédigées par Claude (source sans corrigé).
-- [ ] Trancher le nœud B de **T3-C2 Ex2** et la loi des nœuds associée.
-- [ ] Déposer les PPTX des chapitres restants pour dégrossissage (régime A).
-- [ ] Vérifier que chaque ébauche est liée depuis `pages/2nde-physique-chimie.html`.
-- [ ] Cloner le repo dans VS Code + extension Claude Code (pour le raffinage).
-- [ ] Fournir le calendrier scolaire pour ordonner les priorités.
-- [ ] **SNT — finaliser la séquence Web à 100 %** : étoffer la frise débranchée
-      (étiquettes datées + corrigé), ajouter le bonus geek « 404 & codes HTTP »
-      en séance 1, brancher les ressources définitives (`WEB·2b`, `WEB·D`).
-- [ ] **SNT T7 Photo — rédiger S2 à S5** (séance par séance, arbitrage fait) +
-      la frise débranchée `PHO·D` ; choisir la vidéo-débat deepfake (`PHO·1`).
-- [ ] **SNT — finir les 4 séquences du 18/07** (T3-T6) : rédiger les séances en
-      squelette, brancher les ressources définitives, lever les décisions 📌/⚖️/📅
-      posées en encarts `chantier` dans chaque page. Détail : `chapitres.md`.
-- [ ] **SNT — étape « Ranger pour retrouver » à ajouter dans t0** (données
-      structurées en transversal, référentiel vivant — voir `CONSIGNES-sequence-SNT.md`
-      §14.4).
-- [ ] **SNT — trancher l'extraction d'un `gabarit-sequence-snt.html`** : conventions
-      désormais confirmées par 8 séquences (décision de Loïc — `CONSIGNES-sequence-SNT.md` §13).
-- [ ] 🆕 **BDD — jalon 4** : CLI Supabase sur Windows, `.bat` de sauvegarde et de
-      réveil + tâches planifiées, puis `supabase init` / `db pull`.
-- [ ] 🆕 **BDD — choisir la séquence pilote** (une séquence SNT, une étape, un champ de
-      texte libre) pour le branchement de bout en bout.
-
----
-
-## 🗄 Nouvelle partie (20/07) — Volet base de données
-
-**Décision : la phase 2 des séquences SNT est ouverte.** La progression des élèves
-quitte le `localStorage` pour une vraie base. Cadrage complet, modèle de données
-et notions apprises : `_suivi/BDD-cadrage.md`.
-
-| Pièce | État |
-|---|---|
-| Projet Supabase `pedagogie-vanhoorde`, région **West EU (Paris)**, plan gratuit | ✅ créé le 20/07 · ref `ztyvuiaohxekuyjeoaxz` |
-| Sécurité à la création : Data API + expose new tables + **automatic RLS** | ✅ les trois activées |
-| Intégration GitHub | ✅ **active** depuis le 20/07 — `supabase/migrations/` existe et l'historique est amorcé |
-| `bdd/schema/001` à `005` — sept tables, contraintes, déclencheurs, vue | ✅ écrits et **exécutés** |
-| Jalon 4 — CLI, sauvegardes, réveil, historique de migrations | ✅ fait le 20/07 · détail au §9 du cadrage |
-| Règles RLS | ⬜ jalon 5 — **tables actuellement FERMÉES à tous, c'est voulu** |
-| `assets/js/progression.js` (client partagé) | ⬜ jalon 6 |
-| Pilote sur une séquence SNT | ⬜ jalon 7 — séquence à choisir |
-
-**Conséquences déjà actées ailleurs** : `CONSIGNES-sequence-SNT.md` §5 (progression en
-base, jeton seul en local ; `progression.js` autorisé comme second asset
-partagé), §7 (phase 2 ouverte, coder contre le contrat de données, ordre de
-branchement SNT → PC), §13 (encadré de mise à jour), §14.3 (codes d'activité au
-tiret en base). Les chapitres de PC restent **hors périmètre** pour l'instant.
-
-⚠ **Ne jamais committer un fichier de sauvegarde** (`*.sql` de dump, `*.dump`) :
-il contiendrait des données d'élèves. Entrées ajoutées au `.gitignore` le 20/07.
-
-**Ce qui tourne désormais tout seul** (scripts dans `bdd/outils/`, notice sur
-place) : sauvegarde le mercredi 18 h vers `C:\Sauvegardes-SNT`, réveil quotidien
-à 12 h 30. Les deux ont le rattrapage activé.
-
-⚠ **Dépendance au PC de Loïc — à rappeler régulièrement.** Les deux tâches
-planifiées et le futur worker de correction IA tournent sur son poste. Le
-rattrapage sauve la sauvegarde, pas le réveil : si le PC reste éteint plus de
-sept jours d'affilée (vacances), le projet Supabase est mis en pause. Données
-intactes, relance d'un clic au tableau de bord, mais le site ne répond plus
-entre-temps. Doublure GitHub Actions **écartée en connaissance de cause** le
-20/07.
-
----
-
-## 🚧 Nouvelle partie (19/07) — Séquence ES Terminale « frise & IA »
-
-**Décision de Loïc : chantier ouvert d'un coup, architecture complète visée**
-(pas de version dégradée) — frise participative + serveur de classe +
-pré-correction IA locale. Détail des règles : `_modeles/CONSIGNES-sequence-ES.md`.
-
-| Pièce | État |
-|---|---|
-| `pages/term-es-s01-frise.html` | ✅ fonctionnel en local (tirage 2→1, dépôt 2 sources + bannies, jetons, `?prof=1`, export CSV) |
-| Page de niveau Term ES | ✅ lien séquence 1 activé (+ liste des chantiers) |
-| `serveur-frise/` | 🚧 squelette Node natif : endpoints figés, garde-fou anti-note codé, auth enseignant à poser |
-| `ia-correction/` | 🚧 prompt-cadre V1 + grille critères publiée + script Ollama (modèle à choisir : Qwen 3 candidat) avec garde-fous entrée/sortie |
-| Cours 1 (histoire) / Cours 2 (IA) | 🚧 s'écrivent après S3/S5 |
-| `pages/term-es-t2-c1-…` + `t2-c2-…` | ✅ ébauches complètes sur gabarit chapitre (texte fidèle aux PDF, images c1 posées, .a-faire sur QR/verrou/fiches) |
-| Pack débat IA | grille .docx livrée hors dépôt ; plans de travail + cartes contraintes 🚧 |
-
-**Rappels réglementaires actés** : AI Act annexe III applicable 02/08/2026 —
-la pré-correction reste « tâche préparatoire » (art. 6(3)) : aucune note machine,
-souveraineté de Loïc sur toute notation. RGPD : codes pseudonymes seuls sur
-serveur, table code↔nom sur le PC de Loïc, purge fin d'année, DPD à prévenir
-avant mise en service du serveur.
+- [ ] `t1` — six crédits images restent « à confirmer » (vérification en ligne par Loïc)
+- [ ] Vérifier le contrat Tableo avant de republier des cours sur le site

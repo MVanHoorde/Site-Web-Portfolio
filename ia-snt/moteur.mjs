@@ -10,7 +10,11 @@
      PASSE 2 — il redige le message eleve EN SACHANT le verdict.
    ============================================================ */
 
-export const SEUIL_AIDE = 2 / 3;
+/* Aide aux camarades — combien de critères « pour aller plus loin » il faut
+   observer EN PLUS d'un socle complet pour être proposé comme aidant.
+   Monter à 2 pour être plus exigeant, descendre à 0 pour que le socle
+   complet suffise. */
+export const AIDE_PLUS_LOIN_MINI = 1;
 const CONSTATS_OK = ["observé", "partiellement", "non observé"];
 
 export function estDiagnostic(grille) {
@@ -42,16 +46,42 @@ export function calculerVerdict(grille, constats) {
   };
 }
 
+/* Aide aux camarades — RÉÉCRIT le 23/07/2026.
+
+   L'ancienne version faisait le ratio des « observé » sur le TOTAL des
+   critères, socle et plus_loin confondus, avec un seuil de 2/3. Elle rendait
+   le rôle d'aidant MATHÉMATIQUEMENT inatteignable dès qu'une grille comptait
+   beaucoup de « pour aller plus loin » : sur NET-1b (1 socle, 4 plus_loin),
+   un élève au socle parfait plafonnait à 0,20 ; sur NET-2c, à 0,50. Le
+   `plus_loin` bloquait donc quelque chose, à rebours du principe posé
+   (« le socle décide, le plus_loin n'est que de l'ambition »).
+
+   Règle désormais explicite, et indépendante du nombre de bonus écrits
+   dans la grille :
+       socle COMPLET  +  au moins AIDE_PLUS_LOIN_MINI critère « plus_loin »
+   Une grille sans plus_loin n'exige que le socle complet.
+   Aider reste exigeant — mais c'est atteignable, et ça se lit. */
 export function calculerAide(grille, constats) {
   if (estDiagnostic(grille))
     return { suggestion: "sans objet", pourquoi: "Activité diagnostic — pas de rôle d'aide." };
-  const parId = Object.fromEntries((constats || []).map(c => [c.id, c.constat]));
-  const total = (grille.criteres || []).length || 1;
-  const observes = (grille.criteres || []).filter(c => parId[c.id] === "observé").length;
-  return {
-    suggestion: observes / total >= SEUIL_AIDE ? "à valider" : "pas encore",
-    pourquoi: observes + " critère(s) « observé » sur " + total + "."
-  };
+
+  const parId    = Object.fromEntries((constats || []).map(c => [c.id, c.constat]));
+  const criteres = grille.criteres || [];
+  const socle    = criteres.filter(c => c.niveau === "socle");
+  const plusLoin = criteres.filter(c => c.niveau === "plus_loin");
+
+  const socleManquant = socle.filter(c => parId[c.id] !== "observé");
+  const plObserves    = plusLoin.filter(c => parId[c.id] === "observé").length;
+  const exige         = Math.min(AIDE_PLUS_LOIN_MINI, plusLoin.length);
+
+  if (socleManquant.length)
+    return { suggestion: "pas encore",
+             pourquoi: "Socle incomplet : " + socleManquant.map(c => c.id).join(", ") + "." };
+  if (plObserves < exige)
+    return { suggestion: "pas encore",
+             pourquoi: "Socle complet, mais " + plObserves + " critère(s) « pour aller plus loin » sur les " + exige + " attendu(s)." };
+  return { suggestion: "à valider",
+           pourquoi: "Socle complet" + (plusLoin.length ? " + " + plObserves + " critère(s) « pour aller plus loin »." : ".") };
 }
 
 /* Tri de relecture — décide si TU dois regarder la copie à la main.

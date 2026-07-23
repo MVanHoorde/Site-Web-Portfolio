@@ -29,6 +29,13 @@ Contenu partagé avec des collègues : **on refait la forme, jamais le fond**
 **Commence toujours par proposer un plan court avant de modifier des fichiers,
 et travaillons point par point.**
 
+🔴 **RÈGLE — la doc décrit l'état courant, jamais l'historique.** Quand une
+décision change, on **réécrit** le passage concerné ; on n'empile pas un
+« ⚠ Mise à jour du … » au-dessus du texte devenu faux. La décision part datée
+dans `_suivi/DECISIONS.md`, le récit dans `_suivi/JOURNAL.md`. Motif : l'audit du
+23/07/2026 a trouvé six contradictions dans les fichiers de référence, dont cinq
+dans un seul paragraphe — de quoi produire une session entière de travail faux.
+
 La **validation** est un acte explicite de ma part (« oui, ce cours me convient,
 je peux l'utiliser l'an prochain »), jamais présumée. La mise en ligne n'est pas
 un jalon : tout est / sera en ligne.
@@ -46,7 +53,7 @@ Le dépôt héberge **deux gabarits distincts**, chacun avec ses consignes :
 | Structure | thème → chapitre → sections | séquence → séance → étape → champ |
 | Style | `assets/css/chapitre-commun.css?v=N` | CSS inline dans la page |
 | Déblocage | code de déblocage (`AT0MES`…) | verrouillage progressif + mode enseignant |
-| Persistance | `localStorage` | **interdit** — téléchargement de fiche |
+| Persistance | `localStorage` | **base Supabase** ; en local, le jeton de session et rien d'autre |
 | Maturité | rodé (14 chapitres ébauchés) | phase 1, **8 séquences amorcées** (t0-t7 ; Web/Internet/Intro en V0, les autres partielles) |
 
 **Avant de produire ou de modifier une page, ouvre la consigne correspondante.**
@@ -109,9 +116,13 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
 | `_modeles/CONSIGNES-sequence-SNT.md` | Produire une séquence SNT |
 | `_modeles/CONSIGNES-sequence-ES.md` | 🚧 Séquences ens. scientifique Term (frise, IA — 3ᵉ famille) |
 | `_modeles/gabarit-chapitre.html` · `gabarit-fiche.html` | Gabarits **PC uniquement** (le SNT n'a pas de gabarit : on décline la séquence du Web) |
-| `_suivi/ETAT-PROJET.md` | Vue d'ensemble : avancement, **priorités**, alertes |
+| `MANIFESTE.md` | 🆕 **Index d'entrée** : quelle tâche → quel fichier → quel coût de lecture. À lire en premier |
+| `_suivi/ETAT-PROJET.md` | Où on en est · ce qui bloque · prochaine action. **Réécrit** à chaque session, jamais empilé |
+| `_suivi/DECISIONS.md` | 🆕 Registre des décisions, datées, avec leur statut (en vigueur / remplacée / en attente) |
+| `_suivi/JOURNAL.md` | 🆕 Historique en ajout seul. Pas relu par défaut |
 | `_suivi/chapitres.md` | Tableau de bord **par chapitre / par séquence**, avec les jalons |
 | `_suivi/IDEES.md` | Réservoir d'idées à trier |
+| `verifier.mjs` | 🆕 `node verifier.mjs` rejoue la checklist · `--bilan` sort un digest compact du dépôt |
 | `_suivi/BDD-cadrage.md` | 🆕 Volet base de données : architecture, décisions, modèle de données, jalons |
 | `bdd/README.md` | 🆕 Discipline des fichiers de schéma SQL + avertissement `supabase/migrations/` |
 
@@ -123,7 +134,7 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 | Partie | Pages | Assets externes |
 |---|---|---|
 | **Physique-chimie** | `pages/2nde-pc-tX-cY-…html` | `assets/img/pc/2nde-pc-tX-cY/` · `assets/pdf/` · `audio/2nde-pc-tX-cY-intro.m4a` · fiches dans `fiches/` |
-| **SNT** | `pages/2nde-snt-tN-…html` | **aucun** — SVG/CSS **inline** dans la page (autonome) |
+| **SNT** | `pages/2nde-snt-tN-…html` | `assets/css/sequence-snt.css?v=N` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/snt/<slug>/` pour les photos · SVG et CSS de contenu **inline** |
 | **Cahier de vacances** | `cahier/…html` | `assets/img/cahier/` · `assets/pdf/cahier/` |
 | **Coque / accueil / niveaux** | `index.html` (racine) · `pages/2nde-physique-chimie.html`, `pages/…-scientifique.html`, `pages/terminale-…` | `assets/fonts/`, `assets/css/`, `gravures/` |
 | **Base de données** 🆕 | *(pas de page)* | `bdd/schema/NNN-….sql` (schéma, numéroté, rejouable) · `bdd/README.md` · plus tard `supabase/` (produit par la CLI, **jamais à la main**) · client partagé `assets/js/progression.js` |
