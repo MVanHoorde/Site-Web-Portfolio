@@ -727,3 +727,154 @@ body.teacher .ens-actif{display:flex}
 .a-venir .tv{margin-left:.35em;font-size:.9em;opacity:.8}
 .a-venir .sr{position:absolute;width:1px;height:1px;overflow:hidden;
   clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+
+/* ============================================================
+   IDENTITÉ DE SÉANCE (lot 4, 24/07/2026)
+   ------------------------------------------------------------
+   Réponse à « il faut décoder le 1.4 pour savoir qu'on est en
+   séance 1 ». Chaque séance porte une teinte, posée UNIQUEMENT sur
+   le squelette — liseré de carte, pastille, pip, numéro. Jamais sur
+   un bloc de contenu : la palette y porte déjà un sens (activité,
+   validé, en attente, faux, histoire, France, bonus) et une
+   cinquième signification sur les mêmes surfaces serait illisible.
+   La couleur ne porte jamais l'information seule : la pastille « S1 »
+   reste lisible en noir et blanc, à l'impression et au vidéoprojecteur.
+   ============================================================ */
+:root{--s4:#9a4a1e; --s4-wash:#f7ece4}
+.seance{--sc:var(--ink-faint); --sc-wash:var(--surface-2)}
+.seance[data-seance="1"]{--sc:var(--france); --sc-wash:var(--france-wash)}
+.seance[data-seance="2"]{--sc:var(--bonus);  --sc-wash:var(--bonus-wash)}
+.seance[data-seance="3"]{--sc:var(--hist);   --sc-wash:var(--hist-wash)}
+.seance[data-seance="4"]{--sc:var(--s4);     --sc-wash:var(--s4-wash)}
+
+.seance .card{border-left:3px solid var(--sc);border-radius:0 var(--radius) var(--radius) 0}
+.seance .step-ligne{border-left:3px solid var(--sc);border-radius:0 10px 10px 0}
+.seance .step:not(.is-done):not(.is-wait) .step-pip{border-color:var(--sc)}
+.seance-head h2 .s-num{color:var(--sc)}
+
+/* le kicker : « S1 · étape 1.4 » — plus rien à décoder */
+.k-seance{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500;flex:none;
+     padding:2px 7px;border-radius:5px;background:var(--sc-wash);color:var(--sc)}
+.k-num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-faint)}
+
+/* la barre reprend la teinte de la séance où l'on se trouve */
+#prog4[data-sc="1"]{--sc:var(--france);--sc-wash:var(--france-wash)}
+#prog4[data-sc="2"]{--sc:var(--bonus); --sc-wash:var(--bonus-wash)}
+#prog4[data-sc="3"]{--sc:var(--hist);  --sc-wash:var(--hist-wash)}
+#prog4[data-sc="4"]{--sc:var(--s4);    --sc-wash:var(--s4-wash)}
+#prog4 .p4-s{background:var(--sc-wash);color:var(--sc)}
+#prog4 .p4-seg:nth-child(1){--sc:var(--france)}
+#prog4 .p4-seg:nth-child(2){--sc:var(--bonus)}
+#prog4 .p4-seg:nth-child(3){--sc:var(--hist)}
+#prog4 .p4-seg:nth-child(4){--sc:var(--s4)}
+#prog4 .p4-seg.ici i{outline-color:var(--sc)}
+#prog4 .p4-seg.ici s{color:var(--sc)}
+/* le remplissage reste vert : il dit « validé », pas « séance N » */
+
+@media print{.k-seance{border:1px solid #000}}
+
+/* ============================================================
+   SOMMAIRE EN FEUILLE MOBILE (lot 5, 24/07/2026)
+   ------------------------------------------------------------
+   Sous 1180 px, le sommaire latéral était replié d'office et
+   remplacé par un bandeau d'une ligne dont le bouton de réouverture
+   faisait 24 px — deux fois sous la cible tactile de 44 px, et hors
+   d'atteinte du pouce. Il devient une feuille qui monte par le bas.
+   Le contenu ne change pas : même construction, même états, seule
+   la mise en scène diffère selon la largeur.
+   ============================================================ */
+.prog-poignee{display:none;width:38px;height:4px;padding:0;border:0;border-radius:2px;
+     background:var(--line);margin:0 auto 10px;cursor:pointer}
+#prog .grp-bloc{border-top:1px solid var(--line)}
+#prog .grp-bloc:first-of-type{border-top:0}
+#prog button.grp{display:flex;align-items:center;gap:6px;width:100%;background:none;border:0;
+     text-align:left;cursor:pointer;padding:9px 5px 5px;font-family:"IBM Plex Mono",monospace;
+     font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin:0}
+#prog .grp-etat{margin-left:auto;font-size:10px;color:var(--ink-faint)}
+#prog .grp-chev{font-size:9px;transition:transform .2s}
+#prog .grp-bloc.plie .grp-chev{transform:rotate(-90deg)}
+#prog .grp-bloc.plie .grp-corps{display:none}
+
+@media (max-width:1180px){
+  /* la feuille : elle glisse, elle ne disparaît pas — l'élève voit
+     d'où elle vient et où elle repart. */
+  #prog{display:block !important;position:fixed;left:0;right:0;bottom:0;top:auto;
+        width:auto;max-height:72vh;overflow:auto;margin:0;z-index:60;
+        border-radius:16px 16px 0 0;border-bottom:0;padding:10px 14px 18px;
+        transform:translateY(101%);transition:transform .25s ease}
+  body:not(.prog-reduit) #prog{transform:none}
+  .prog-poignee{display:block}
+  #prog .ph .reduire{display:none}          /* la poignée et le ☰ suffisent */
+  #prog a.it{min-height:44px;align-items:center;padding:6px 7px}
+  #prog button.grp{min-height:44px;font-size:11px}
+  #prog .txt{font-size:13.5px}
+  #prog .pip2{width:18px;height:18px;font-size:11px}
+}
+@media (prefers-reduced-motion:reduce){#prog{transition:none}}
+@media print{#prog,.prog-poignee{display:none !important}}
+
+/* ============================================================
+   HUB DE THÈME — carte-réseau (lot 6, 24/07/2026)
+   ------------------------------------------------------------
+   Grammaire partagée par les huit séquences : nœuds, anneaux,
+   marqueur « tu es ici ». Seul l'habillage — le fond de réseau —
+   changera d'un thème à l'autre.
+   ============================================================ */
+.hub{margin:22px 0 6px}
+.hub-svg{display:block;width:100%;height:auto;overflow:visible}
+.hub-colonne{display:none}
+@media (max-width:720px){ .hub-large{display:none} .hub-colonne{display:block} }
+
+.hub .sc1{--sc:var(--france)} .hub .sc2{--sc:var(--bonus)}
+.hub .sc3{--sc:var(--hist)}   .hub .sc4{--sc:var(--s4)}
+.hub-n{--sc:var(--ink-faint)}
+
+.hub-fond circle{fill:#c8d0de;opacity:.75}
+.hub-fond path{fill:none;stroke:#c8d0de;stroke-width:1;opacity:.7}
+.hub-cable{fill:none;stroke:var(--line);stroke-width:3;stroke-linecap:round;stroke-dasharray:7 6}
+.hub-piste{fill:none;stroke:var(--line);stroke-width:6}
+.hub-arc{fill:none;stroke:var(--sc);stroke-width:6;stroke-linecap:round;transition:stroke-dasharray .5s}
+.hub-disque{fill:var(--bg)}
+.hub-num{font-family:"IBM Plex Mono",monospace;font-size:16px;font-weight:500;fill:var(--sc)}
+.hub-nom{font-family:"IBM Plex Sans",sans-serif;font-size:12.5px;fill:var(--ink)}
+.hub-etat{font-family:"IBM Plex Mono",monospace;font-size:10.5px;fill:var(--ink-soft)}
+.hub-n a{cursor:pointer}
+.hub-n a:hover .hub-piste{stroke:var(--sc);opacity:.45}
+.hub-n a:focus-visible .hub-disque{stroke:var(--link);stroke-width:2}
+.hub-n.fini .hub-etat{fill:var(--ok)}
+.hub-n.verrou{pointer-events:none}
+.hub-n.verrou .hub-num,.hub-n.verrou .hub-nom{fill:var(--ink-faint)}
+.hub-n.verrou .hub-disque{fill:var(--surface-2)}
+.hub-n.ici .hub-disque{stroke:var(--sc);stroke-width:1.5}
+.hub-ici-txt{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:1px;fill:var(--activity)}
+.hub-ici{transition:opacity .3s}
+
+/* le câble parcouru est plein, les suivants restent en pointillés */
+.hub-n.fini + .hub-n .hub-piste{stroke:var(--line)}
+.hub-svg .hub-cable.parcouru{stroke-dasharray:none;stroke:var(--sc)}
+
+/* Carte de reprise — seulement après une vraie coupure (2 h) */
+.hub-reprise{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+     box-shadow:var(--shadow);padding:15px 17px;margin-bottom:18px}
+.hub-reprise[hidden]{display:none}
+.hr-haut{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;
+     text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px}
+.hr-corps{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.hr-txt{flex:1;min-width:200px}
+.hr-ou{font-size:13px;color:var(--ink-soft)}
+.hr-ligne{display:flex;align-items:center;gap:8px;margin:3px 0 4px}
+.hr-s{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500;padding:2px 7px;
+     border-radius:5px;background:var(--sc-wash,var(--surface-2));color:var(--sc,var(--ink-soft))}
+.hr-s.sc1{--sc:var(--france);--sc-wash:var(--france-wash)}
+.hr-s.sc2{--sc:var(--bonus);--sc-wash:var(--bonus-wash)}
+.hr-s.sc3{--sc:var(--hist);--sc-wash:var(--hist-wash)}
+.hr-s.sc4{--sc:var(--s4);--sc-wash:var(--s4-wash)}
+.hr-ix{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-faint)}
+.hr-nom{font-size:17px;font-weight:500;color:var(--ink)}
+.hr-go{background:var(--ok);color:#fff;border:0;border-radius:10px;padding:11px 20px;
+     font-size:15px;font-family:inherit;cursor:pointer;min-height:44px}
+.hr-go:hover{filter:brightness(1.07)}
+.hr-bas{border-top:1px solid var(--line);margin-top:12px;padding-top:10px;
+     font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-soft)}
+
+@media print{.hub{display:none}}

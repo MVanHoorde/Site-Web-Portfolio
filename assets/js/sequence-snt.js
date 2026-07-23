@@ -1045,6 +1045,222 @@ function initEvaluabilite(){
 
 /* ---------- 2. Barre de progression latérale ---------- */
 var BARRE=null;
+
+/* ============================================================
+   HUB DE THÈME — carte-réseau (lot 6, 24/07/2026)
+   ------------------------------------------------------------
+   Premier écran de la séquence : quatre nœuds reliés par des câbles,
+   chacun ceint d'un anneau de progression. L'habillage dit le thème
+   (un réseau) ; la grammaire — nœuds, anneaux, marqueur « tu es ici »
+   — est la même pour les huit séquences, seul l'habillage changera.
+
+   Deux dispositions dans le même composant : une carte large, et une
+   colonne pour le téléphone. Une seule s'affiche, selon la largeur.
+   C'est le prix du placement libre des nœuds, assumé.
+
+   ANNEAU DE RÉVISION : non dessiné (décision de Loïc). Le rayon 43
+   lui est réservé — R_REVISION ci-dessous — pour qu'il puisse être
+   ajouté un jour sans redessiner la carte.
+   ============================================================ */
+var R_ANNEAU=34, R_REVISION=43;                    /* réservé, non dessiné */
+var PLACES={
+  2:[[190,150],[490,150]],
+  3:[[130,190],[340,105],[560,190]],
+  4:[[140,180],[305,105],[455,205],[600,110]],
+  5:[[110,185],[250,100],[390,195],[520,105],[625,200]],
+  6:[[100,180],[215,100],[330,190],[445,105],[555,190],[640,110]]
+};
+/* Le conteneur du CONTENU, pas le premier .wrap venu : la page en
+   compte trois (celui du bandeau de titre, celui de la nav, celui des
+   séances). Viser le premier plaçait la barre collante À L'INTÉRIEUR
+   du bandeau de titre — elle disparaissait donc avec lui au défilement,
+   ce qui vidait de son sens une barre censée ne jamais quitter l'écran. */
+function wrapContenu(){
+  var l=$$('.wrap').filter(function(x){ return x.querySelector('.seance'); });
+  return l[0] || $('.wrap');
+}
+function hubEsc(x){ return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                     .replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function hubSeances(){
+  return $$('.seance').map(function(sec){
+    var t=$('.seance-head h2',sec), num='', nom='';
+    if(t){
+      var sn=$('.s-num',t); num=sn?propreTxt(sn):'';
+      var c=t.cloneNode(true), sn2=c.querySelector('.s-num'); if(sn2) sn2.remove();
+      nom=propreTxt(c);
+    }
+    return { sec:sec, id:sec.id, num:num, nom:nom, n:(sec.getAttribute('data-seance')||'') };
+  });
+}
+function hubNoeud(s,i,x,y,vertical){
+  var c=2*Math.PI*R_ANNEAU;
+  var g='<g class="hub-n sc'+s.n+'" data-noeud="'+hubEsc(s.id)+'">'+
+        '<a href="#'+hubEsc(s.id)+'">'+
+        '<circle class="hub-piste" cx="'+x+'" cy="'+y+'" r="'+R_ANNEAU+'"/>'+
+        '<circle class="hub-arc" cx="'+x+'" cy="'+y+'" r="'+R_ANNEAU+'" '+
+          'transform="rotate(-90 '+x+' '+y+')" stroke-dasharray="0 '+c.toFixed(1)+'"/>'+
+        '<circle class="hub-disque" cx="'+x+'" cy="'+y+'" r="31"/>'+
+        '<text class="hub-num" x="'+x+'" y="'+y+'" text-anchor="middle" dominant-baseline="central">'+
+          hubEsc(s.num)+'</text>';
+  if(vertical){
+    g+='<text class="hub-nom" x="'+(x+52)+'" y="'+(y-4)+'">'+hubEsc(s.nom)+'</text>'+
+       '<text class="hub-etat" x="'+(x+52)+'" y="'+(y+14)+'"></text>';
+  } else {
+    g+='<text class="hub-nom" x="'+x+'" y="'+(y+R_ANNEAU+24)+'" text-anchor="middle">'+hubEsc(s.nom)+'</text>'+
+       '<text class="hub-etat" x="'+x+'" y="'+(y+R_ANNEAU+40)+'" text-anchor="middle"></text>';
+  }
+  g+='<title></title></a></g>';
+  return g;
+}
+function hubCarte(liste){
+  var pos=PLACES[liste.length];
+  if(!pos){ pos=liste.map(function(_,i){
+    return [80+i*(520/Math.max(1,liste.length-1)), i%2?110:190]; }); }
+  var h='<svg class="hub-svg hub-large" viewBox="0 0 680 300" role="img" aria-hidden="true">';
+  h+='<g class="hub-fond">'+
+     '<circle cx="70" cy="60" r="2.5"/><circle cx="215" cy="262" r="2.5"/>'+
+     '<circle cx="392" cy="52" r="2.5"/><circle cx="530" cy="268" r="2.5"/>'+
+     '<circle cx="645" cy="212" r="2.5"/><circle cx="38" cy="228" r="2.5"/>'+
+     '<path d="M70 60 L'+pos[0][0]+' '+pos[0][1]+' L215 262"/>'+
+     '<path d="M38 228 L'+pos[0][0]+' '+pos[0][1]+'"/>'+
+     '<path d="M392 52 L'+pos[Math.min(2,pos.length-1)][0]+' '+pos[Math.min(2,pos.length-1)][1]+' L530 268"/>'+
+     '</g>';
+  for(var i=1;i<pos.length;i++){
+    var a=pos[i-1], b=pos[i], mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2-26;
+    h+='<path class="hub-cable" data-cable="'+i+'" d="M'+a[0]+' '+a[1]+' Q'+mx+' '+my+' '+b[0]+' '+b[1]+'"/>';
+  }
+  h+='<g class="hub-ici hub-ici-large"><text class="hub-ici-txt" text-anchor="middle">TU ES ICI</text></g>';
+  liste.forEach(function(s,i){ h+=hubNoeud(s,i,pos[i][0],pos[i][1],false); });
+  h+='</svg>';
+
+  var H=50+liste.length*104;
+  h+='<svg class="hub-svg hub-colonne" viewBox="0 0 320 '+H+'" role="img" aria-hidden="true">';
+  for(var j=1;j<liste.length;j++){
+    h+='<path class="hub-cable" data-cable="'+j+'" d="M60 '+(50+(j-1)*104+R_ANNEAU)+' L60 '+(50+j*104-R_ANNEAU)+'"/>';
+  }
+  h+='<g class="hub-ici hub-ici-colonne"><text class="hub-ici-txt">TU ES ICI</text></g>';
+  liste.forEach(function(s,i){ h+=hubNoeud(s,i,60,50+i*104,true); });
+  h+='</svg>';
+  return h;
+}
+function initHub(){
+  var anc=wrapContenu(); if(!anc) return;
+  var liste=hubSeances(); if(liste.length<2) return;
+  var hub=document.createElement('section');
+  hub.className='hub'; hub.id='hub';
+  hub.innerHTML='<div class="hub-reprise" hidden></div>'+hubCarte(liste);
+  anc.insertBefore(hub,anc.firstChild);
+  majHub();
+}
+/* Carte de reprise : seulement après une vraie coupure. Sous le
+   seuil, l'élève est simplement remis à sa place, en silence — un
+   rafraîchissement de page n'est pas un retour. */
+function hubReprise(){
+  var z=$('.hub-reprise'); if(!z||!window.EtatSNT||!EtatSNT.actif()) return;
+  if(!EtatSNT.absentDepuis(2)) return;
+  var courant=null;
+  $$('.step').some(function(p){
+    if(p.classList.contains('is-done')) return false;
+    var sec=p.closest('.seance');
+    if(sec&&sec.classList.contains('locked')&&!document.body.classList.contains('teacher')) return false;
+    courant=p; return true;
+  });
+  if(!courant) return;
+  var sec=courant.closest('.seance'), info=infosEtape(courant);
+  var t=$('.seance-head h2',sec), num='';
+  if(t){ var sn=$('.s-num',t); num=sn?propreTxt(sn):''; }
+  var faits=$$('.step').filter(function(p){ return p.classList.contains('is-done'); }).length;
+  if(!faits) return;
+  z.innerHTML='<div class="hr-haut">Bon retour</div>'+
+    '<div class="hr-corps"><div class="hr-txt">'+
+      '<div class="hr-ou">Tu en étais à</div>'+
+      '<div class="hr-ligne"><span class="hr-s sc'+(sec.getAttribute('data-seance')||'')+'">'+
+        hubEsc(num)+'</span><span class="hr-ix">étape '+hubEsc(info.ix)+'</span></div>'+
+      '<div class="hr-nom">'+hubEsc(info.nom)+'</div></div>'+
+      '<button class="hr-go" type="button">Reprendre →</button></div>'+
+    '<div class="hr-bas">'+faits+' étapes sur '+$$('.step').length+'</div>';
+  z.hidden=false;
+  z.querySelector('.hr-go').addEventListener('click',function(){
+    courant.scrollIntoView({behavior:'smooth',block:'start'});
+    z.hidden=true;
+  });
+}
+function majHub(){
+  var hub=$('#hub'); if(!hub) return;
+  var secCourante=null;
+  $$('.step').some(function(p){
+    if(p.classList.contains('is-done')) return false;
+    var s=p.closest('.seance');
+    if(s&&s.classList.contains('locked')&&!document.body.classList.contains('teacher')) return false;
+    secCourante=s; return true;
+  });
+  var c=2*Math.PI*R_ANNEAU;
+  $$('.hub-n',hub).forEach(function(g){
+    var sec=document.getElementById(g.dataset.noeud); if(!sec) return;
+    var dedans=$$('.step',sec);
+    var f=dedans.filter(function(p){ return p.classList.contains('is-done'); }).length;
+    var part=dedans.length?f/dedans.length:0;
+    var arc=$('.hub-arc',g);
+    if(arc) arc.setAttribute('stroke-dasharray',(c*part).toFixed(1)+' '+(c*(1-part)+1).toFixed(1));
+    var verrou=sec.classList.contains('locked')&&!document.body.classList.contains('teacher');
+    g.classList.toggle('verrou',verrou);
+    g.classList.toggle('fini',part===1);
+    g.classList.toggle('ici',sec===secCourante);
+    var lien=g.querySelector('a');
+    if(lien){
+      if(verrou) lien.removeAttribute('href'); else lien.setAttribute('href','#'+sec.id);
+    }
+    var etat=$('.hub-etat',g);
+    if(etat) etat.textContent = verrou ? 'verrouillée'
+                              : part===1 ? 'terminée'
+                              : f+' sur '+dedans.length;
+    var titre=g.querySelector('title');
+    if(titre) titre.textContent=($('.hub-nom',g)||{textContent:''}).textContent+
+              ' — '+(etat?etat.textContent:'');
+  });
+  /* le marqueur se pose au-dessus du nœud courant */
+  ['large','colonne'].forEach(function(v){
+    var m=$('.hub-ici-'+v,hub), svg=$('.hub-'+v,hub);
+    if(!m||!svg) return;
+    var g=secCourante?svg.querySelector('[data-noeud="'+secCourante.id+'"]'):null;
+    if(!g){ m.setAttribute('opacity','0'); return; }
+    var cx=parseFloat($('.hub-piste',g).getAttribute('cx'));
+    var cy=parseFloat($('.hub-piste',g).getAttribute('cy'));
+    var t=$('.hub-ici-txt',m);
+    m.setAttribute('opacity','1');
+    if(v==='large'){ t.setAttribute('x',cx); t.setAttribute('y',cy-R_REVISION-8); }
+    else{ t.setAttribute('x',cx+52); t.setAttribute('y',cy-22); }
+  });
+}
+
+/* ---------- Numérotation calculée (lot 4) ----------
+   L'index n'est plus tapé à la main dans le HTML : il se calcule à
+   partir du rang de l'étape dans sa séance. Motif : la numérotation
+   écrite à la main avait déjà dérivé (1.1 1.2 1.3 1.4 puis 1.6), et
+   le sommaire, la barre et les lignes repliées la lisaient telle
+   quelle — une faute de frappe devenait une faute d'orientation.
+   Le kicker devient « S1 · étape 1.4 » : le numéro ne se décode plus. */
+function numeroter(){
+  $$('.seance').forEach(function(sec){
+    var num=sec.getAttribute('data-seance')||'';
+    $$('.step',sec).forEach(function(p,i){
+      var code=num+'.'+(i+1);
+      p.dataset.num=code;
+      var k=$('.step-kicker',p); if(!k || $('.k-seance',k)) return;
+      /* on ne retire QUE le texte de tête : le badge « à valider » et
+         tout ce que la page a mis là doivent survivre. */
+      var n=k.firstChild;
+      while(n && n.nodeType===3){ var suiv=n.nextSibling; k.removeChild(n); n=suiv; }
+      var txt=document.createElement('span');
+      txt.className='k-num'; txt.textContent='étape '+code;
+      k.insertBefore(txt,k.firstChild);
+      var past=document.createElement('span');
+      past.className='k-seance'; past.textContent='S'+num;
+      k.insertBefore(past,k.firstChild);
+    });
+  });
+}
+
 /* Index et nom d'une étape, lus une seule fois pour tout le monde :
    le sommaire, la barre et les lignes repliées doivent dire la même
    chose. (L'index vient encore du .step-kicker écrit à la main ; le
@@ -1052,6 +1268,7 @@ var BARRE=null;
 function propreTxt(n){ return n?n.textContent.replace(/\s+/g,' ').trim():''; }
 function infosEtape(p){
   var k=propreTxt($('.step-kicker',p)||$('.ix',p)), mi=k.match(/([0-9D]+\.[0-9]+)/);
+  if(p.dataset && p.dataset.num) mi=[p.dataset.num,p.dataset.num];
   var nom=propreTxt($('.step-title',p));
   if(!nom){
     var b=propreTxt($('.fl',p)||$('.pl',p)||$('.bl',p));
@@ -1125,7 +1342,10 @@ function construireBarre(){
       if(sn2) sn2.remove();
       reste = propre(c) || 'Séance';
     }
-    h+='<div class="grp">'+(num?'<span class="sn">'+esc(num)+'</span>':'')+esc(reste)+'</div>';
+    h+='<div class="grp-bloc" data-grp="'+esc(sec.id)+'">'+
+       '<button class="grp" type="button">'+(num?'<span class="sn">'+esc(num)+'</span>':'')+
+       esc(reste)+'<span class="grp-etat"></span><span class="grp-chev">\u25be</span></button>'+
+       '<div class="grp-corps">';
     $$('.step',sec).forEach(function(p,i){
       if(!p.id) p.id='et-'+sec.id+'-'+i;
       var info=infosEtape(p), ix=info.ix, lab=info.nom;
@@ -1135,11 +1355,28 @@ function construireBarre(){
          (ix?'<span class="ix">'+esc(ix)+'</span>':'')+esc(lab)+
          (d?'<span class="date">'+esc(d)+'</span>':'')+'</span></a>';
     });
+    h+='</div></div>';
   });
   box.innerHTML=h;
   document.body.appendChild(box);
   box.querySelector('.reduire').addEventListener('click',function(){
     document.body.classList.add('prog-reduit');
+  });
+  /* poignée : sur mobile la feuille se ferme en tirant vers le bas ;
+     c'est le même geste que fermer, donc le même bouton. */
+  var poignee=document.createElement('button');
+  poignee.type='button'; poignee.className='prog-poignee';
+  poignee.setAttribute('aria-label','Fermer le sommaire');
+  poignee.addEventListener('click',function(){ document.body.classList.add('prog-reduit'); });
+  box.insertBefore(poignee,box.firstChild);
+  /* une séance se plie : avec 26 étapes, une liste plate déborde de
+     l'écran d'un téléphone et redit exactement le problème qu'on
+     cherche à résoudre. */
+  $$('.grp',box).forEach(function(t){
+    t.addEventListener('click',function(){
+      t.parentNode.dataset.manuel='1';
+      t.parentNode.classList.toggle('plie');
+    });
   });
 
   /* --- Barre « tu es ici » (lot 2). Construite ici, à partir du DOM :
@@ -1166,7 +1403,7 @@ function construireBarre(){
   });
   h4+='</div>';
   b4.innerHTML=h4;
-  var anc=$('.wrap');
+  var anc=wrapContenu();
   if(anc&&anc.parentNode) anc.parentNode.insertBefore(b4,anc);
   b4.querySelector('.p4-menu').addEventListener('click',function(){
     document.body.classList.toggle('prog-reduit');
@@ -1226,6 +1463,8 @@ function majBarre(){
         nom=c2.textContent.replace(/\s+/g,' ').trim();
       }
       elS.textContent=num; elS.style.display='';
+      var b4=document.getElementById('prog4');
+      if(b4) b4.dataset.sc=secCourante.getAttribute('data-seance')||'';
       elSeance.textContent=nom;
       /* l'index et le nom de l'étape sont repris du sommaire déjà construit */
       var lien=BARRE.querySelector('[data-cible="'+courant.id+'"] .txt');
@@ -1247,6 +1486,18 @@ function majBarre(){
   }
 
   if(typeof majLignes==='function') majLignes();
+  if(typeof majHub==='function') majHub();
+
+  $$('#prog .grp-bloc').forEach(function(bloc){
+    var sec=document.getElementById(bloc.dataset.grp); if(!sec) return;
+    var dedans=$$('.step',sec);
+    var f=dedans.filter(function(x){ return x.classList.contains('is-done'); }).length;
+    var e=$('.grp-etat',bloc);
+    if(e) e.textContent=f+'/'+dedans.length;
+    /* pliage automatique : seule la séance où l'on travaille reste
+       ouverte, sauf si l'élève en a décidé autrement d'un clic. */
+    if(!bloc.dataset.manuel) bloc.classList.toggle('plie',sec!==secCourante);
+  });
 
   $$('#prog4 .p4-seg').forEach(function(seg){
     var sec=document.getElementById(seg.dataset.seg); if(!sec) return;
@@ -1783,6 +2034,11 @@ function restaurer(){
           ignorée par l'enregistreur, aucune écriture parasite. */
     document.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
     majBarre();
+    /* le hub APRÈS refresh() : avant, les séances que la reprise vient
+       de déverrouiller sont encore marquées locked, et la carte de
+       reprise ne trouve aucune étape où revenir. */
+    if(typeof majHub==='function') majHub();
+    if(typeof hubReprise==='function') hubReprise();
 
     /* 5. replacement silencieux sur la première étape non faite.
           Une ancre explicite dans l'URL reste prioritaire : elle vient
@@ -1804,11 +2060,13 @@ function demarrer(){
       r.appendChild(d);
     }
   });
+  numeroter();
   initReveal();
   compteurSeances();
   initEvaluabilite();
   construireBarre();
   initLignes();
+  initHub();
   initEnseignant();
   initQcm();
   initCloze();
