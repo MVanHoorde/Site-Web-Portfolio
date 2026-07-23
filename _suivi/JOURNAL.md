@@ -713,3 +713,22 @@ toucher.** C'est la seule règle de maintenance.
 - Le dossier de destination des sauvegardes sur le PC de Loïc, et la copie
   externe (disque, clé, cloud ?).
 - Rythme du worker de correction (à la demande ? toutes les N minutes ?).
+
+### 23/07 (matin) — livraison, incident et réparation
+
+Archive appliquée : moteur SNT extrait (`sequence-snt.css` + `.js`, t1 de 383 → 262 ko),
+50 renommages, 200 liens inertes en mentions « en travaux », `calculerAide` réécrit,
+frise ES cadrée sur Supabase (`bdd/schema/007-frise-es.sql`, à valider).
+
+**Incident.** Le commentaire CSS de `.a-venir` contenait un exemple de balise
+(`<a href="#">`) ; le script de conversion l'a pris pour un vrai lien et a avalé
+1 200 à 5 500 caractères dans chacune des 8 séquences. Réparé le jour même :
+contenu restitué, `</a>` rendu, CSS reposé dans la bonne feuille, commentaire
+purgé de toute balise. **Leçon : ne jamais faire tourner un traitement de texte
+sur un fichier qu'il vient lui-même de modifier.**
+
+`verifier.mjs` n'a pas vu l'incident — il lui manque le contrôle `<a>`/`</a>`
+et la détection de CSS égaré dans un `<svg>`. À ajouter.
+
+Note d'outillage : `sh` n'existe pas dans PowerShell et WSL intercepte `bash`.
+Le bon appel est `& "C:\Program Files\Git\bin\bash.exe" script.sh`.
