@@ -937,6 +937,21 @@ function seuil(mot){
   return mot.length<=7?1:2;
 }
 
+/* Le bouton « Étape suivante » se place sous la DERNIÈRE ÉTAPE
+   RÉVÉLÉE, pas en bas de la séance. Tant que les étapes à venir
+   étaient en display:none, les deux revenaient au même ; depuis
+   qu'elles s'affichent en lignes fantômes, le bouton se retrouvait
+   sous une pile de lignes grises, très loin du travail en cours. */
+function placerBoutonSuivant(sec){
+  var bt=sec.querySelector('.step-suivant'); if(!bt) return;
+  var cache=sec.querySelectorAll('.step.masque');
+  if(!cache.length){ bt.style.display='none'; return; }
+  bt.style.display='flex';
+  var premier=cache[0];
+  if(premier.parentNode===bt.parentNode && premier.previousElementSibling!==bt)
+    bt.parentNode.insertBefore(bt,premier);
+}
+
 /* ---------- 1. Révélation séquentielle des étapes ---------- */
 function initReveal(){
   $$('.seance').forEach(function(sec){
@@ -954,10 +969,11 @@ function initReveal(){
       replierFaites(sec);          /* on passe à la suite : le fait se replie */
       cache[0].classList.remove('masque');
       cache[0].scrollIntoView({behavior:'smooth',block:'start'});
-      if(cache.length===1) bt.style.display='none';
+      placerBoutonSuivant(sec);
       majBarre();
     });
     sec.dataset.reveal='1';
+    placerBoutonSuivant(sec);
   });
 }
 /* le mode enseignant ouvre tout d'un coup */
@@ -965,7 +981,7 @@ function toutRevel(on){
   $$('.step').forEach(function(p){ p.classList.toggle('masque',!on && p.dataset.dejaVu!=='1'); });
   if(on) $$('.step').forEach(function(p){ p.classList.remove('masque','replie'); });
   if(typeof majLignes==='function') majLignes();
-  $$('.step-suivant').forEach(function(b){ b.style.display=on?'none':'flex'; });
+  $$('.seance').forEach(placerBoutonSuivant);
 }
 
 /* ---------- 1bis. Compteur d'étapes des séances repliées ---------- */
@@ -1297,8 +1313,15 @@ function initLignes(){
                 '<span class="sl-etat"></span><span class="sl-chev">▾</span>';
     $('.sl-ix',b).textContent=info.ix;
     $('.sl-titre',b).textContent=info.nom;
-    var carte=$('.card',p);
-    if(carte) p.insertBefore(b,carte); else p.appendChild(b);
+    /* avant le contenu, quel qu'il soit : toutes les étapes n'ont pas
+       de .card (encart France, « et toi ? », « pour aller plus loin »). */
+    var apres=null;
+    for(var i=0;i<p.children.length;i++){
+      var e=p.children[i];
+      if(e.classList.contains('rail')||e.classList.contains('step-pip')) continue;
+      apres=e; break;
+    }
+    if(apres) p.insertBefore(b,apres); else p.appendChild(b);
     b.addEventListener('click',function(){
       /* une étape à venir ne s'ouvre pas d'ici : le bouton « Étape
          suivante » reste le seul geste pour avancer. */
@@ -2014,8 +2037,7 @@ function restaurer(){
       if(dernier<0) return;
       var jusqua=Math.min(dernier+1,pas.length-1);
       for(var i=0;i<=jusqua;i++){ pas[i].classList.remove('masque'); pas[i].dataset.dejaVu='1'; }
-      var suivant=sec.querySelector('.step-suivant');
-      if(suivant && !sec.querySelectorAll('.step.masque').length) suivant.style.display='none';
+      placerBoutonSuivant(sec);
     });
 
     /* 2. les textes à trous : on remet la saisie, le moteur recorrige */
@@ -2087,6 +2109,7 @@ function demarrer(){
   var obs=new MutationObserver(majBarre);
   $$('.steps').forEach(function(s){ obs.observe(s,{attributes:true,subtree:true,attributeFilter:['class']}); });
   restaurer();
+  document.body.classList.add('js-ok');   /* la nav ne se masque qu'ici */
   console.log('%cSNT · Internet — tu as ouvert l\'inspecteur. Bravo, c\'est exactement comme ça qu\'on apprend.','color:#2445c7');
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',demarrer);

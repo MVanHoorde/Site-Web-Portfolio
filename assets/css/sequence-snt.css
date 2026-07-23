@@ -416,7 +416,17 @@
    · faite    → ligne repliée, cliquable pour rouvrir
    Le repli est PUREMENT VISUEL : la carte reste dans le DOM avec les
    réponses de l'élève. On n'efface jamais ce qui a été produit. */
-.step.masque .card,.step.replie .card{display:none}
+/* ⚠ Ne JAMAIS viser .card ici : 8 étapes sur 26 n'en ont pas — encart
+   France, « et toi ? », « pour aller plus loin » posent leur bloc
+   directement dans l'étape. Viser .card laissait leur contenu visible,
+   y compris pour les étapes À VENIR : le « pour aller plus loin » de
+   chaque séance était déverrouillé d'avance. On masque donc tout
+   l'intérieur de l'étape, sauf son ossature.
+   Sous @media screen : à l'impression, rien n'est masqué. */
+@media screen{
+  .step.masque > :not(.rail):not(.step-pip):not(.step-ligne),
+  .step.replie > :not(.rail):not(.step-pip):not(.step-ligne){display:none}
+}
 .step-ligne{display:none;width:100%;text-align:left;align-items:center;gap:10px;min-height:44px;
      background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 13px;
      font-family:inherit;font-size:13.5px;color:var(--ink-soft);cursor:pointer;transition:.15s}
@@ -471,7 +481,11 @@
    Elle garde l'identifiant #prog4 : les règles de masquage en mode
    focus et pendant un QCM continuent de s'appliquer telles quelles. */
 body.prog-reduit #prog{display:none}
-nav.seances{display:none}          /* conservée dans le DOM : elle porte #teacherMode */
+/* La nav n'est masquée QUE si le script a pris la main et a construit
+   la barre qui la remplace. Masquer en CSS ce qu'un JS est censé
+   remplacer, c'est laisser l'élève sans navigation le jour où le
+   script casse. */
+body.js-ok nav.seances{display:none}
 
 #prog4{display:block;position:sticky;top:0;z-index:39;background:rgba(255,255,255,.92);
        backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:0 0 12px 12px;
@@ -675,7 +689,6 @@ body.teacher .ens-actif{display:flex}
   .seance.locked .lockable{display:block}
   .seance.locked .progress-line{display:block}
   .step.masque{display:block}
-  .step.masque .card,.step.replie .card{display:block}
   .step-ligne{display:none !important}
   .card,.retain,.france-box,.bonus-wrap,.glosmot,figure.ill{break-inside:avoid;box-shadow:none}
   .retain{border:1.5pt solid #000}
