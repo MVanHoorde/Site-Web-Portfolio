@@ -1083,15 +1083,34 @@ function construireBarre(){
     document.body.classList.add('prog-reduit');
   });
 
+  /* --- Barre « tu es ici » (lot 2). Construite ici, à partir du DOM :
+         aucune modification du HTML des séquences, donc rien à refaire
+         page par page au moment du portage. --- */
   var b4=document.createElement('div');
   b4.id='prog4';
-  b4.innerHTML='<span class="t">Progression</span><span class="bar"><i></i></span>'+
-               '<span class="now"></span><span class="pct">0 %</span>'+
-               '<button class="rouvrir" type="button" title="Rouvrir le sommaire">⇥</button>';
+  var retour=$('nav.seances a.retour');
+  var h4='<div class="p4-haut">'+
+         '<a class="p4-retour" href="'+esc(retour?retour.getAttribute('href'):'2nde-snt.html')+'" '+
+           'title="Revenir aux thèmes" aria-label="Revenir aux thèmes">←</a>'+
+         '<span class="p4-fil">'+
+           '<span class="p4-s"></span><span class="p4-seance"></span>'+
+           '<span class="p4-sep">›</span><span class="p4-ix"></span>'+
+           '<span class="p4-etape"></span></span>'+
+         '<span class="p4-compte"></span>'+
+         '<button class="p4-menu rouvrir" type="button" title="Sommaire" aria-label="Ouvrir ou fermer le sommaire">☰</button>'+
+         '</div><div class="p4-jauge">';
+  $$('.seance').forEach(function(sec){
+    var t=$('.seance-head h2',sec), n='';
+    if(t){ var sn=$('.s-num',t); n=sn?propre(sn):''; }
+    h4+='<a class="p4-seg" href="#'+esc(sec.id)+'" data-seg="'+esc(sec.id)+'">'+
+        '<i><b></b></i><s>'+esc(n)+'</s></a>';
+  });
+  h4+='</div>';
+  b4.innerHTML=h4;
   var anc=$('.wrap');
   if(anc&&anc.parentNode) anc.parentNode.insertBefore(b4,anc);
-  b4.querySelector('.rouvrir').addEventListener('click',function(){
-    document.body.classList.remove('prog-reduit');
+  b4.querySelector('.p4-menu').addEventListener('click',function(){
+    document.body.classList.toggle('prog-reduit');
   });
   BARRE=box;
   if(window.matchMedia('(max-width:1180px)').matches) document.body.classList.add('prog-reduit');
@@ -1110,19 +1129,75 @@ function majBarre(){
     else { if(!courant){ lien.classList.add('cur'); courant=p; } lien.querySelector('.pip2').textContent=''; }
   });
   var pc=pas.length?Math.round(faits*100/pas.length):0;
-  $$('#prog .pct,#prog4 .pct').forEach(function(e){ e.textContent=pc+' %'; });
-  var jauge=$('#prog4 .bar i'); if(jauge) jauge.style.width=pc+'%';
-  var now=$('#prog4 .now');
-  if(now){
-    var lien=courant?BARRE.querySelector('[data-cible="'+courant.id+'"] .txt'):null;
-    if(!lien){ now.textContent=''; }
-    else{
-      var c=lien.cloneNode(true), ixe=c.querySelector('.ix'), dte=c.querySelector('.date');
-      var ix=ixe?ixe.textContent.trim():''; if(ixe) ixe.remove(); if(dte) dte.remove();
-      var nom=c.textContent.replace(/\s+/g,' ').trim();
-      now.textContent='en cours : '+(ix?ix+' — ':'')+nom;
+
+  /* Le fil d'Ariane ne suit PAS le même pointeur que le sommaire.
+     Le sommaire surligne l'étape ouverte ; le fil doit dire « ce qui
+     te reste à faire », donc il compte aussi une étape pas encore
+     révélée — après avoir validé 1.1, on est en route vers 1.2, même
+     si le bouton « Étape suivante » n'a pas encore été cliqué.
+     En revanche il ne pointe JAMAIS dans une séance verrouillée :
+     l'ancien bandeau le faisait, et annonçait une séance à laquelle
+     l'élève n'avait pas accès. */
+  var prof=document.body.classList.contains('teacher');
+  courant=null;
+  pas.some(function(p){
+    if(p.classList.contains('is-done')) return false;
+    var sec=p.closest('.seance');
+    if(sec && sec.classList.contains('locked') && !prof) return false;
+    courant=p; return true;
+  });
+  $$('#prog .pct').forEach(function(e){ e.textContent=pc+' %'; });
+  document.body.classList.toggle('a-commence', faits>0);
+
+  /* --- Barre « tu es ici » : le fil d'Ariane dit la séance ET l'étape,
+         la jauge segmentée dit où on en est dans l'ensemble. --- */
+  var compte=$('#prog4 .p4-compte');
+  if(compte) compte.textContent=faits+' / '+pas.length;
+
+  var secCourante=courant?courant.closest('.seance'):null;
+  var elS=$('#prog4 .p4-s'), elSeance=$('#prog4 .p4-seance'),
+      elIx=$('#prog4 .p4-ix'), elEtape=$('#prog4 .p4-etape'), elSep=$('#prog4 .p4-sep');
+  if(elS){
+    if(secCourante){
+      var titre=$('.seance-head h2',secCourante), num='', nom='';
+      if(titre){
+        var sn=$('.s-num',titre); num=sn?sn.textContent.replace(/\s+/g,' ').trim():'';
+        var c2=titre.cloneNode(true), sn2=c2.querySelector('.s-num');
+        if(sn2) sn2.remove();
+        nom=c2.textContent.replace(/\s+/g,' ').trim();
+      }
+      elS.textContent=num; elS.style.display='';
+      elSeance.textContent=nom;
+      /* l'index et le nom de l'étape sont repris du sommaire déjà construit */
+      var lien=BARRE.querySelector('[data-cible="'+courant.id+'"] .txt');
+      var ix='', libelle='';
+      if(lien){
+        var c3=lien.cloneNode(true), ixe=c3.querySelector('.ix'), dte=c3.querySelector('.date');
+        ix=ixe?ixe.textContent.trim():''; if(ixe) ixe.remove(); if(dte) dte.remove();
+        libelle=c3.textContent.replace(/\s+/g,' ').trim();
+      }
+      elIx.textContent=ix;
+      elEtape.textContent=libelle;
+      if(elSep) elSep.style.display=libelle?'':'none';
+    } else {
+      /* tout est fait : le fil ne montre plus d'étape en cours */
+      elS.style.display='none'; elSeance.textContent='Séquence terminée';
+      elIx.textContent=''; elEtape.textContent='';
+      if(elSep) elSep.style.display='none';
     }
   }
+
+  $$('#prog4 .p4-seg').forEach(function(seg){
+    var sec=document.getElementById(seg.dataset.seg); if(!sec) return;
+    var dedans=$$('.step',sec);
+    var f=dedans.filter(function(p){ return p.classList.contains('is-done'); }).length;
+    var jauge=seg.querySelector('b');
+    if(jauge) jauge.style.width=(dedans.length?Math.round(100*f/dedans.length):0)+'%';
+    var verrou=sec.classList.contains('locked') && !document.body.classList.contains('teacher');
+    seg.classList.toggle('verrou',verrou);
+    seg.classList.toggle('ici',sec===secCourante);
+    seg.setAttribute('aria-disabled',verrou?'true':'false');
+  });
 }
 
 /* ---------- 3. Mode enseignant : code + minuterie 30 min ---------- */

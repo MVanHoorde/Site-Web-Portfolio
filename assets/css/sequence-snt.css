@@ -442,18 +442,58 @@
 #prog .date.late{color:var(--err)}
 #prog .reduire{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;width:22px;height:22px;
      font-size:11px;color:var(--ink-soft);cursor:pointer;line-height:1;flex:none}
-/* état replié : bandeau haut (R4) + languette (R1) */
+/* ---------- Barre « tu es ici » (lot 2, 24/07/2026) ----------
+   Elle remplace à la fois l'ancienne nav.seances (qui ne disait pas
+   dans quelle séance on était) et l'ancien bandeau #prog4 (qui ne
+   disait pas dans quelle séance était l'étape en cours). Une seule
+   barre collante, donc une seule hauteur mangée sur l'écran.
+   Elle garde l'identifiant #prog4 : les règles de masquage en mode
+   focus et pendant un QCM continuent de s'appliquer telles quelles. */
 body.prog-reduit #prog{display:none}
-#prog4{display:none;position:sticky;top:0;z-index:39;background:var(--surface);border:1px solid var(--line);
-       border-radius:10px;padding:7px 12px;align-items:center;gap:12px;margin:0 0 14px}
-body.prog-reduit #prog4{display:flex}
-#prog4 .t{font-family:"IBM Plex Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint)}
-#prog4 .bar{flex:1;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden}
-#prog4 .bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
-#prog4 .now{font-size:12.5px;color:var(--ink-soft);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#prog4 .pct{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600}
-#prog4 .rouvrir{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;width:24px;height:24px;
-     font-size:12px;color:var(--ink-soft);cursor:pointer;line-height:1;flex:none}
+nav.seances{display:none}          /* conservée dans le DOM : elle porte #teacherMode */
+
+#prog4{display:block;position:sticky;top:0;z-index:39;background:rgba(255,255,255,.92);
+       backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:0 0 12px 12px;
+       border-top:0;padding:8px 14px 9px;margin:0 0 14px}
+#prog4 .p4-haut{display:flex;align-items:center;gap:9px;min-width:0}
+#prog4 .p4-retour{flex:none;text-decoration:none;color:var(--ink-faint);font-size:15px;line-height:1;
+     padding:6px 8px;border-radius:8px;border:1px solid transparent}
+#prog4 .p4-retour:hover{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+#prog4 .p4-fil{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+#prog4 .p4-s{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;flex:none;
+     padding:3px 8px;border-radius:6px;background:var(--france-wash);color:var(--france)}
+#prog4 .p4-seance{font-size:14px;font-weight:500;color:var(--ink);white-space:nowrap}
+#prog4 .p4-sep{color:var(--ink-faint);flex:none}
+#prog4 .p4-ix{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--link);flex:none}
+#prog4 .p4-etape{font-size:14px;color:var(--ink-soft);min-width:0;overflow:hidden;
+     text-overflow:ellipsis;white-space:nowrap}
+#prog4 .p4-compte{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-soft);flex:none}
+#prog4 .p4-menu{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
+     min-width:34px;height:34px;font-size:15px;color:var(--ink-soft);cursor:pointer;line-height:1;flex:none}
+#prog4 .p4-menu:hover{border-color:var(--link);color:var(--link)}
+
+/* la jauge segmentée EST la navigation : un segment par séance */
+#prog4 .p4-jauge{display:flex;gap:6px;margin-top:7px}
+#prog4 .p4-seg{flex:1;text-decoration:none;color:inherit;display:block;min-width:0}
+#prog4 .p4-seg i{display:block;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+#prog4 .p4-seg i b{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+#prog4 .p4-seg s{display:block;text-decoration:none;font-family:"IBM Plex Mono",monospace;
+     font-size:10.5px;color:var(--ink-faint);margin-top:5px;overflow:hidden;
+     text-overflow:ellipsis;white-space:nowrap}
+#prog4 .p4-seg.ici i{outline:1.5px solid var(--france);outline-offset:2px}
+#prog4 .p4-seg.ici s{color:var(--ink);font-weight:500}
+#prog4 .p4-seg.verrou{pointer-events:none}
+#prog4 .p4-seg.verrou s{opacity:.55}
+#prog4 .p4-seg:hover s{color:var(--link)}
+
+/* la légende se replie d'elle-même dès la première étape validée */
+body.a-commence .legend{display:none}
+
+@media (max-width:560px){
+  #prog4{padding:7px 11px 8px}
+  #prog4 .p4-seance,#prog4 .p4-sep{display:none}   /* le fil se réduit à S1 · 1.4 · titre */
+  #prog4 .p4-seg s{font-size:10px}
+}
 /* le contenu se décale quand la barre est déployée */
 body:not(.prog-reduit) .wrap{margin-left:max(0px,calc((100% - 1100px)/2 + var(--prog-w) - 40px))}
 @media (max-width:1180px){
