@@ -858,6 +858,7 @@
        (l'état, et le contenu des textes à trous). */
     sec.querySelectorAll('[data-step]').forEach(function(s){
       delete s.dataset.triScore; delete s.dataset.dejaVu;
+      s.classList.remove('replie');
       if(window.EtatSNT) EtatSNT.oublier(s);
     });
     refresh();
@@ -950,6 +951,7 @@ function initReveal(){
     bt.querySelector('button').addEventListener('click',function(){
       var cache=$$('.step.masque',sec);
       if(!cache.length) return;
+      replierFaites(sec);          /* on passe à la suite : le fait se replie */
       cache[0].classList.remove('masque');
       cache[0].scrollIntoView({behavior:'smooth',block:'start'});
       if(cache.length===1) bt.style.display='none';
@@ -961,7 +963,8 @@ function initReveal(){
 /* le mode enseignant ouvre tout d'un coup */
 function toutRevel(on){
   $$('.step').forEach(function(p){ p.classList.toggle('masque',!on && p.dataset.dejaVu!=='1'); });
-  if(on) $$('.step').forEach(function(p){ p.classList.remove('masque'); });
+  if(on) $$('.step').forEach(function(p){ p.classList.remove('masque','replie'); });
+  if(typeof majLignes==='function') majLignes();
   $$('.step-suivant').forEach(function(b){ b.style.display=on?'none':'flex'; });
 }
 
@@ -1042,6 +1045,69 @@ function initEvaluabilite(){
 
 /* ---------- 2. Barre de progression latérale ---------- */
 var BARRE=null;
+/* Index et nom d'une étape, lus une seule fois pour tout le monde :
+   le sommaire, la barre et les lignes repliées doivent dire la même
+   chose. (L'index vient encore du .step-kicker écrit à la main ; le
+   lot 4 le calculera.) */
+function propreTxt(n){ return n?n.textContent.replace(/\s+/g,' ').trim():''; }
+function infosEtape(p){
+  var k=propreTxt($('.step-kicker',p)||$('.ix',p)), mi=k.match(/([0-9D]+\.[0-9]+)/);
+  var nom=propreTxt($('.step-title',p));
+  if(!nom){
+    var b=propreTxt($('.fl',p)||$('.pl',p)||$('.bl',p));
+    nom = b ? b.split('·')[0].split('—')[0].trim() : 'Étape';
+  }
+  return { ix: mi?mi[1]:'', nom: nom };
+}
+
+/* ---------- Lignes d'étape : repliée (faite) et fantôme (à venir) ---------- */
+function initLignes(){
+  $$('.step').forEach(function(p){
+    if($('.step-ligne',p)) return;
+    var info=infosEtape(p);
+    var b=document.createElement('button');
+    b.type='button'; b.className='step-ligne';
+    b.innerHTML='<span class="sl-ix"></span><span class="sl-titre"></span>'+
+                '<span class="sl-etat"></span><span class="sl-chev">▾</span>';
+    $('.sl-ix',b).textContent=info.ix;
+    $('.sl-titre',b).textContent=info.nom;
+    var carte=$('.card',p);
+    if(carte) p.insertBefore(b,carte); else p.appendChild(b);
+    b.addEventListener('click',function(){
+      /* une étape à venir ne s'ouvre pas d'ici : le bouton « Étape
+         suivante » reste le seul geste pour avancer. */
+      if(p.classList.contains('masque')) return;
+      p.classList.remove('replie');
+      majLignes();
+      p.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
+  majLignes();
+}
+function majLignes(){
+  $$('.step').forEach(function(p){
+    var e=$('.sl-etat',p); if(!e) return;
+    if(p.classList.contains('masque'))       e.textContent='à venir';
+    else if(p.classList.contains('is-wait')) e.textContent='en attente de correction';
+    else if(p.classList.contains('is-done')) e.textContent='validée';
+    else e.textContent='';
+    var b=$('.step-ligne',p);
+    if(b) b.setAttribute('aria-label',
+      p.classList.contains('masque') ? 'Étape à venir : '+infosEtape(p).nom
+                                     : 'Rouvrir l\u2019étape '+infosEtape(p).nom);
+  });
+}
+/* Replie les étapes faites. JAMAIS au moment de la validation :
+   l'élève vient de recevoir sa correction — message des trous,
+   verdict, « à retenir » révélé — et doit pouvoir la lire. On replie
+   quand il passe à la suite, et à son retour sur la page. */
+function replierFaites(sec){
+  $$('.step',sec||document).forEach(function(p){
+    if(p.classList.contains('is-done') && !p.classList.contains('masque')) p.classList.add('replie');
+  });
+  majLignes();
+}
+
 function construireBarre(){
   var box=document.createElement('nav');
   box.id='prog'; box.setAttribute('aria-label','Ma progression');
@@ -1062,14 +1128,7 @@ function construireBarre(){
     h+='<div class="grp">'+(num?'<span class="sn">'+esc(num)+'</span>':'')+esc(reste)+'</div>';
     $$('.step',sec).forEach(function(p,i){
       if(!p.id) p.id='et-'+sec.id+'-'+i;
-      /* index repris du kicker (« ÉTAPE 1.3 » → « 1.3 ») */
-      var k=propre($('.step-kicker',p)||$('.ix',p)), mi=k.match(/([0-9D]+\.[0-9]+)/), ix=mi?mi[1]:'';
-      /* nom : .step-title, à défaut le bandeau .fl / .pl du bloc */
-      var lab=propre($('.step-title',p));
-      if(!lab){
-        var b=propre($('.fl',p)||$('.pl',p)||$('.bl',p));
-        lab = b ? b.split('·')[0].split('—')[0].trim() : 'Étape';
-      }
+      var info=infosEtape(p), ix=info.ix, lab=info.nom;
       var d=p.dataset.echeance||'';
       h+='<a class="it" href="#'+p.id+'" data-cible="'+p.id+'">'+
          '<span class="pip2"></span><span class="txt">'+
@@ -1186,6 +1245,8 @@ function majBarre(){
       if(elSep) elSep.style.display='none';
     }
   }
+
+  if(typeof majLignes==='function') majLignes();
 
   $$('#prog4 .p4-seg').forEach(function(seg){
     var sec=document.getElementById(seg.dataset.seg); if(!sec) return;
@@ -1713,6 +1774,8 @@ function restaurer(){
       cocheQcm(box,etapes[k].score);
     });
 
+    replierFaites();          /* retour sur la page : le couloir se raccourcit */
+
     if(!quelqueChose) return;
 
     /* 4. déverrouillage des séances et sommaire à jour. L'écouteur
@@ -1745,6 +1808,7 @@ function demarrer(){
   compteurSeances();
   initEvaluabilite();
   construireBarre();
+  initLignes();
   initEnseignant();
   initQcm();
   initCloze();

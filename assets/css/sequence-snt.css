@@ -408,8 +408,29 @@
 .glosmot .ventree:last-child{margin-bottom:0}
 .glosmot .ventree .vmot{color:var(--ink)}
 
-/* ---------- 5. Révélation séquentielle des étapes ---------- */
-.step.masque{display:none}
+/* ---------- 5. Révélation séquentielle et repli des étapes ----------
+   Une étape n'est plus soit visible soit absente : elle a trois états.
+   · à venir  → ligne fantôme en pointillés (on sait qu'elle existe et
+                combien il en reste, sans en voir le contenu)
+   · en cours → la carte, en entier
+   · faite    → ligne repliée, cliquable pour rouvrir
+   Le repli est PUREMENT VISUEL : la carte reste dans le DOM avec les
+   réponses de l'élève. On n'efface jamais ce qui a été produit. */
+.step.masque .card,.step.replie .card{display:none}
+.step-ligne{display:none;width:100%;text-align:left;align-items:center;gap:10px;min-height:44px;
+     background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 13px;
+     font-family:inherit;font-size:13.5px;color:var(--ink-soft);cursor:pointer;transition:.15s}
+.step.masque .step-ligne,.step.replie .step-ligne{display:flex}
+.step-ligne:hover{border-color:var(--link);color:var(--ink)}
+.step.masque .step-ligne{background:transparent;border-style:dashed;color:var(--ink-faint);cursor:default}
+.step.masque .step-ligne:hover{border-color:var(--line);color:var(--ink-faint)}
+.sl-ix{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint);flex:none}
+.sl-titre{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sl-etat{font-size:12px;flex:none;color:var(--ok)}
+.step.is-wait .sl-etat{color:var(--wait)}
+.step.masque .sl-etat{color:var(--ink-faint)}
+.sl-chev{flex:none;color:var(--ink-faint);font-size:11px}
+.step.masque .sl-chev{display:none}
 .step-suivant{display:flex;justify-content:center;margin:6px 0 18px}
 .step-suivant button{background:var(--surface);border:1px solid var(--line);border-radius:999px;
      padding:7px 18px;font-size:13.5px;color:var(--ink-soft);cursor:pointer;font-family:inherit;box-shadow:var(--shadow)}
@@ -654,6 +675,8 @@ body.teacher .ens-actif{display:flex}
   .seance.locked .lockable{display:block}
   .seance.locked .progress-line{display:block}
   .step.masque{display:block}
+  .step.masque .card,.step.replie .card{display:block}
+  .step-ligne{display:none !important}
   .card,.retain,.france-box,.bonus-wrap,.glosmot,figure.ill{break-inside:avoid;box-shadow:none}
   .retain{border:1.5pt solid #000}
   .retain::before{background:#000;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
