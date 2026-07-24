@@ -320,6 +320,28 @@
       .catch(function () { return {}; });
   }
 
+  /* Tout un domaine d'un coup.
+   *
+   *  POURQUOI : le hub SNT affiche l'avancement des huit thèmes. Huit
+   *  appels à lire() = huit allers-retours réseau avant que la page ne
+   *  s'affiche, sur le wifi d'un lycée. Ici la RLS filtre déjà sur
+   *  l'élève connecté : demander le domaine entier ne révèle rien de
+   *  plus qu'une clé, et coûte UNE requête au lieu de huit.
+   *
+   *  Renvoie { cle: valeur }. Une clé absente est simplement absente :
+   *  l'appelant lit toujours avec une valeur par défaut (règle d'or du
+   *  JSONB, §7 ci-dessus). */
+  function lireTout(domaine) {
+    return api('progression?select=cle,valeur'
+             + '&domaine=eq.' + encodeURIComponent(domaine))
+      .then(function (lignes) {
+        var o = {};
+        (lignes || []).forEach(function (l) { o[l.cle] = l.valeur || {}; });
+        return o;
+      })
+      .catch(function () { return {}; });
+  }
+
   function ecrire(domaine, cle, valeur) {
     return session().then(function (moi) {
       if (!moi) throw new Error('PAS_INSCRIT : rejoindre une classe avant d\'enregistrer.');
@@ -449,7 +471,7 @@
    '.acc-lien{background:none;border:0;color:var(--link,#2445c7);cursor:pointer;font-family:inherit;font-size:13px;padding:0;text-decoration:underline}'+
    '.acc-err{font-size:13px;color:#a3271f;background:#fbeceb;border:1px solid #f0c9c6;border-radius:8px;padding:8px 10px;margin:0 0 12px}'+
    '.acc-bandeau{position:fixed;left:0;right:0;bottom:0;z-index:9998;background:#fdf1dd;border-top:1px solid #f0d9a8;color:#8a5a0c;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:13px;display:flex;align-items:center;gap:8px;padding:9px 14px}'+
-   '.acc-bandeau button{margin-left:auto;background:none;border:0;color:#8a5a0c;font-weight:700;text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13px}'+
+   '.acc-bandeau button,.acc-bandeau a{margin-left:auto;background:none;border:0;color:#8a5a0c;font-weight:700;text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13px;display:inline-flex;align-items:center;min-height:44px;padding:0 4px}'+
    '@media (prefers-reduced-motion:reduce){.acc-fond{backdrop-filter:none}}'+
    '.acc-badge{position:fixed;top:10px;right:12px;z-index:9997;font-family:"IBM Plex Sans",system-ui,sans-serif}'+
    '.acc-badge-btn{display:inline-flex;align-items:center;gap:6px;background:var(--surface,#fff);border:1px solid var(--line,#d3dae7);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink,#161f33);cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,.08)}'+
@@ -672,6 +694,66 @@
   }
 
   /* ----------------------------------------------------------
+   *  10 bis. UN SEUL point d'entrée : le hub SNT
+   *
+   *  Décision de Loïc (24/07/2026) : on se connecte au hub des thèmes,
+   *  et nulle part ailleurs.
+   *
+   *  POURQUOI. La modale s'affichait sur toute page chargeant ce
+   *  fichier. Un élève arrivant directement sur une séquence par un
+   *  favori se voyait demander de créer un compte au milieu du cours,
+   *  sans savoir où il était. Un point d'entrée unique donne une
+   *  géographie : on entre par le hub, on voit sa progression, on
+   *  choisit. Une séquence est une salle, pas une porte d'entrée.
+   *
+   *  MISE EN ŒUVRE. La page d'accueil se déclare : <body
+   *  data-accueil="hub">. Elle est la seule à monter la modale. Sur
+   *  toute autre page, deux cas :
+   *    · session ouverte  → le badge « connecté comme … », rien de plus
+   *    · pas de session   → un bandeau discret qui renvoie au hub
+   *  Jamais de modale bloquante ailleurs : elle interromprait un élève
+   *  déjà au travail sans rien lui apprendre d'utile.
+   *
+   *  monterAccueil() reste appelable à la main : la surface publique
+   *  ne change pas, seul le déclenchement AUTOMATIQUE est restreint.
+   * ---------------------------------------------------------- */
+  function estPageAccueil() {
+    var b = global.document && global.document.body;
+    return !!(b && b.getAttribute('data-accueil') === 'hub');
+  }
+
+  /* Chemin du hub. Les séquences vivent dans le même dossier que lui,
+   * d'où le défaut ; une page d'un autre dossier surcharge avec
+   * <body data-accueil-url="…">. */
+  function urlAccueil() {
+    var b = global.document && global.document.body;
+    return (b && b.getAttribute('data-accueil-url')) || '2nde-snt.html';
+  }
+
+  /* Bandeau de renvoi — pages autres que le hub, élève non connecté. */
+  function afficherRenvoi() {
+    if (global.document.querySelector('.acc-bandeau')) return;
+    injecterStyleAccueil();
+    var b = global.document.createElement('div');
+    b.className = 'acc-bandeau';
+    b.innerHTML = '<span aria-hidden="true">⚠️</span>'
+      + '<span>Tu n\'es pas connecté — ton travail ne sera pas enregistré.</span>'
+      + '<a href="' + esc(urlAccueil()) + '">Se connecter →</a>';
+    global.document.body.appendChild(b);
+  }
+
+  /* Ce qui se joue au chargement, selon la page. */
+  function demarrer() {
+    if (!disponible()) return;
+    if (global.SNT_SANS_ACCUEIL) return;
+    if (estPageAccueil()) { monterAccueil(); return; }
+    session().then(function (profil) {
+      if (profil) afficherBadgeConnecte(profil);
+      else        afficherRenvoi();
+    });
+  }
+
+  /* ----------------------------------------------------------
    *  11. Surface publique
    * ---------------------------------------------------------- */
   global.Progression = {
@@ -682,6 +764,7 @@
     quitter       : quitter,
     monterAccueil : monterAccueil,
     lire          : lire,
+    lireTout      : lireTout,
     ecrire        : ecrire,
     journal       : journal,
     envoyerReponse: envoyerReponse,
@@ -693,13 +776,14 @@
     console.info('[progression] Base non configurée : les séquences fonctionnent sans enregistrement. Renseigner CLE_ANON dans assets/js/progression.js.');
   }
 
-  /* Démarrage : dès que la page est prête, on présente la modale
-   * d'accueil (si la base est configurée). */
+  /* Démarrage : dès que la page est prête. La modale d'accueil ne
+   * s'affiche QUE sur le hub (voir §10 bis) ; ailleurs on se contente
+   * du badge ou du bandeau de renvoi. */
   if (global.document) {
     if (global.document.readyState === 'loading') {
-      global.document.addEventListener('DOMContentLoaded', monterAccueil);
+      global.document.addEventListener('DOMContentLoaded', demarrer);
     } else {
-      monterAccueil();
+      demarrer();
     }
   }
 

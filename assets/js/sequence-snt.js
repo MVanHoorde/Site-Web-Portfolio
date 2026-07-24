@@ -1063,29 +1063,29 @@ function initEvaluabilite(){
 var BARRE=null;
 
 /* ============================================================
-   HUB DE THÈME — carte-réseau (lot 6, 24/07/2026)
+   HUB DE THÈME — carte-réseau (lot 6, refondu lot 9 du 24/07/2026)
    ------------------------------------------------------------
-   Premier écran de la séquence : quatre nœuds reliés par des câbles,
-   chacun ceint d'un anneau de progression. L'habillage dit le thème
-   (un réseau) ; la grammaire — nœuds, anneaux, marqueur « tu es ici »
-   — est la même pour les huit séquences, seul l'habillage changera.
+   Premier écran de la séquence : les séances en nœuds reliés par des
+   câbles, chacun ceint d'un anneau de progression.
 
-   Deux dispositions dans le même composant : une carte large, et une
-   colonne pour le téléphone. Une seule s'affiche, selon la largeur.
-   C'est le prix du placement libre des nœuds, assumé.
+   Le DESSIN a été sorti d'ici : il vit dans assets/js/carte-reseau.js,
+   partagé avec le hub SNT (la page des huit thèmes). Motif : le hub
+   SNT veut la même grammaire graphique mais n'a pas de DOM de séquence
+   à lire — s'il faut un DOM de séquence pour dessiner, on ne peut pas
+   réutiliser. La frontière est donc : le moteur dessine à partir de
+   données, ce fichier-ci traduit le DOM en données.
 
-   ANNEAU DE RÉVISION : non dessiné (décision de Loïc). Le rayon 43
-   lui est réservé — R_REVISION ci-dessous — pour qu'il puisse être
-   ajouté un jour sans redessiner la carte.
+   Ce qui reste ici :
+     hubSeances()  le DOM → une liste de nœuds
+     hubCarte()    l'appel au moteur
+     initHub()     l'insertion dans la page
+     hubReprise()  la carte de reprise (propre à une séquence)
+     majHub()      le DOM → des états d'avancement
+
+   ANNEAU DE RÉVISION : toujours non dessiné (décision de Loïc). Le
+   rayon lui est réservé dans carte-reseau.js (R_REVISION), pour qu'il
+   puisse être ajouté un jour sans redessiner la carte.
    ============================================================ */
-var R_ANNEAU=34, R_REVISION=43;                    /* réservé, non dessiné */
-var PLACES={
-  2:[[190,150],[490,150]],
-  3:[[130,190],[340,105],[560,190]],
-  4:[[140,180],[305,105],[455,205],[600,110]],
-  5:[[110,185],[250,100],[390,195],[520,105],[625,200]],
-  6:[[100,180],[215,100],[330,190],[445,105],[555,190],[640,110]]
-};
 /* Le conteneur du CONTENU, pas le premier .wrap venu : la page en
    compte trois (celui du bandeau de titre, celui de la nav, celui des
    séances). Viser le premier plaçait la barre collante À L'INTÉRIEUR
@@ -1108,56 +1108,14 @@ function hubSeances(){
     return { sec:sec, id:sec.id, num:num, nom:nom, n:(sec.getAttribute('data-seance')||'') };
   });
 }
-function hubNoeud(s,i,x,y,vertical){
-  var c=2*Math.PI*R_ANNEAU;
-  var g='<g class="hub-n sc'+s.n+'" data-noeud="'+hubEsc(s.id)+'">'+
-        '<a href="#'+hubEsc(s.id)+'">'+
-        '<circle class="hub-piste" cx="'+x+'" cy="'+y+'" r="'+R_ANNEAU+'"/>'+
-        '<circle class="hub-arc" cx="'+x+'" cy="'+y+'" r="'+R_ANNEAU+'" '+
-          'transform="rotate(-90 '+x+' '+y+')" stroke-dasharray="0 '+c.toFixed(1)+'"/>'+
-        '<circle class="hub-disque" cx="'+x+'" cy="'+y+'" r="31"/>'+
-        '<text class="hub-num" x="'+x+'" y="'+y+'" text-anchor="middle" dominant-baseline="central">'+
-          hubEsc(s.num)+'</text>';
-  if(vertical){
-    g+='<text class="hub-nom" x="'+(x+52)+'" y="'+(y-4)+'">'+hubEsc(s.nom)+'</text>'+
-       '<text class="hub-etat" x="'+(x+52)+'" y="'+(y+14)+'"></text>';
-  } else {
-    g+='<text class="hub-nom" x="'+x+'" y="'+(y+R_ANNEAU+24)+'" text-anchor="middle">'+hubEsc(s.nom)+'</text>'+
-       '<text class="hub-etat" x="'+x+'" y="'+(y+R_ANNEAU+40)+'" text-anchor="middle"></text>';
-  }
-  g+='<title></title></a></g>';
-  return g;
-}
+/* Adaptateur : une séance du DOM devient un nœud pour le moteur.
+   La classe sc1…sc4 porte la teinte de séance (lot 4) ; le moteur ne
+   la connaît pas, il se contente de la recopier. */
 function hubCarte(liste){
-  var pos=PLACES[liste.length];
-  if(!pos){ pos=liste.map(function(_,i){
-    return [80+i*(520/Math.max(1,liste.length-1)), i%2?110:190]; }); }
-  var h='<svg class="hub-svg hub-large" viewBox="0 0 680 300" role="img" aria-hidden="true">';
-  h+='<g class="hub-fond">'+
-     '<circle cx="70" cy="60" r="2.5"/><circle cx="215" cy="262" r="2.5"/>'+
-     '<circle cx="392" cy="52" r="2.5"/><circle cx="530" cy="268" r="2.5"/>'+
-     '<circle cx="645" cy="212" r="2.5"/><circle cx="38" cy="228" r="2.5"/>'+
-     '<path d="M70 60 L'+pos[0][0]+' '+pos[0][1]+' L215 262"/>'+
-     '<path d="M38 228 L'+pos[0][0]+' '+pos[0][1]+'"/>'+
-     '<path d="M392 52 L'+pos[Math.min(2,pos.length-1)][0]+' '+pos[Math.min(2,pos.length-1)][1]+' L530 268"/>'+
-     '</g>';
-  for(var i=1;i<pos.length;i++){
-    var a=pos[i-1], b=pos[i], mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2-26;
-    h+='<path class="hub-cable" data-cable="'+i+'" d="M'+a[0]+' '+a[1]+' Q'+mx+' '+my+' '+b[0]+' '+b[1]+'"/>';
-  }
-  h+='<g class="hub-ici hub-ici-large"><text class="hub-ici-txt" text-anchor="middle">TU ES ICI</text></g>';
-  liste.forEach(function(s,i){ h+=hubNoeud(s,i,pos[i][0],pos[i][1],false); });
-  h+='</svg>';
-
-  var H=50+liste.length*104;
-  h+='<svg class="hub-svg hub-colonne" viewBox="0 0 320 '+H+'" role="img" aria-hidden="true">';
-  for(var j=1;j<liste.length;j++){
-    h+='<path class="hub-cable" data-cable="'+j+'" d="M60 '+(50+(j-1)*104+R_ANNEAU)+' L60 '+(50+j*104-R_ANNEAU)+'"/>';
-  }
-  h+='<g class="hub-ici hub-ici-colonne"><text class="hub-ici-txt">TU ES ICI</text></g>';
-  liste.forEach(function(s,i){ h+=hubNoeud(s,i,60,50+i*104,true); });
-  h+='</svg>';
-  return h;
+  if(!window.CarteReseau) return '';
+  return CarteReseau.dessiner(liste.map(function(s){
+    return { id:s.id, num:s.num, nom:s.nom, classe:'sc'+s.n };
+  }));
 }
 function initHub(){
   var anc=wrapContenu(); if(!anc) return;
@@ -1166,6 +1124,18 @@ function initHub(){
   hub.className='hub'; hub.id='hub';
   hub.innerHTML='<div class="hub-reprise" hidden></div>'+hubCarte(liste);
   anc.insertBefore(hub,anc.firstChild);
+  /* Le retour au sommaire du thème n'est proposé QUE si le hub existe :
+     on ne promet pas une destination qu'on n'a pas construite. */
+  var nav=$('#prog4 .p4-nav');
+  if(nav && !$('.p4-sommaire',nav)){
+    var a=document.createElement('a');
+    a.className='p4-sommaire';
+    a.href='#hub';
+    a.title='Revenir au sommaire du thème';
+    a.setAttribute('aria-label','Revenir au sommaire du thème');
+    a.innerHTML='<span aria-hidden="true">\u2302</span><span class="p4-lab">Sommaire</span>';
+    nav.appendChild(a);
+  }
   majHub();
 }
 /* Carte de reprise : seulement après une vraie coupure. Sous le
@@ -1202,51 +1172,34 @@ function hubReprise(){
   });
 }
 function majHub(){
-  var hub=$('#hub'); if(!hub) return;
+  var hub=$('#hub'); if(!hub||!window.CarteReseau) return;
+  var prof=document.body.classList.contains('teacher');
   var secCourante=null;
   $$('.step').some(function(p){
     if(p.classList.contains('is-done')) return false;
     var s=p.closest('.seance');
-    if(s&&s.classList.contains('locked')&&!document.body.classList.contains('teacher')) return false;
+    if(s&&s.classList.contains('locked')&&!prof) return false;
     secCourante=s; return true;
   });
-  var c=2*Math.PI*R_ANNEAU;
+  /* Le DOM dit tout : combien d'étapes, combien de faites, verrouillé
+     ou non. On le traduit en états, et le moteur dessine. */
+  var etats={};
   $$('.hub-n',hub).forEach(function(g){
-    var sec=document.getElementById(g.dataset.noeud); if(!sec) return;
+    var id=g.dataset.noeud, sec=document.getElementById(id); if(!sec) return;
     var dedans=$$('.step',sec);
     var f=dedans.filter(function(p){ return p.classList.contains('is-done'); }).length;
-    var part=dedans.length?f/dedans.length:0;
-    var arc=$('.hub-arc',g);
-    if(arc) arc.setAttribute('stroke-dasharray',(c*part).toFixed(1)+' '+(c*(1-part)+1).toFixed(1));
-    var verrou=sec.classList.contains('locked')&&!document.body.classList.contains('teacher');
-    g.classList.toggle('verrou',verrou);
-    g.classList.toggle('fini',part===1);
-    g.classList.toggle('ici',sec===secCourante);
-    var lien=g.querySelector('a');
-    if(lien){
-      if(verrou) lien.removeAttribute('href'); else lien.setAttribute('href','#'+sec.id);
-    }
-    var etat=$('.hub-etat',g);
-    if(etat) etat.textContent = verrou ? 'verrouillée'
-                              : part===1 ? 'terminée'
-                              : f+' sur '+dedans.length;
-    var titre=g.querySelector('title');
-    if(titre) titre.textContent=($('.hub-nom',g)||{textContent:''}).textContent+
-              ' — '+(etat?etat.textContent:'');
+    var verrou=sec.classList.contains('locked')&&!prof;
+    etats[id]={
+      part  : dedans.length?f/dedans.length:0,
+      verrou: verrou,
+      ici   : sec===secCourante,
+      href  : '#'+sec.id,
+      etat  : verrou ? 'verrouillée'
+            : (dedans.length&&f===dedans.length) ? 'terminée'
+            : f+' sur '+dedans.length
+    };
   });
-  /* le marqueur se pose au-dessus du nœud courant */
-  ['large','colonne'].forEach(function(v){
-    var m=$('.hub-ici-'+v,hub), svg=$('.hub-'+v,hub);
-    if(!m||!svg) return;
-    var g=secCourante?svg.querySelector('[data-noeud="'+secCourante.id+'"]'):null;
-    if(!g){ m.setAttribute('opacity','0'); return; }
-    var cx=parseFloat($('.hub-piste',g).getAttribute('cx'));
-    var cy=parseFloat($('.hub-piste',g).getAttribute('cy'));
-    var t=$('.hub-ici-txt',m);
-    m.setAttribute('opacity','1');
-    if(v==='large'){ t.setAttribute('x',cx); t.setAttribute('y',cy-R_REVISION-8); }
-    else{ t.setAttribute('x',cx+52); t.setAttribute('y',cy-22); }
-  });
+  CarteReseau.majNoeuds(hub,etats);
 }
 
 /* ---------- Numérotation calculée (lot 4) ----------
@@ -1417,9 +1370,19 @@ function construireBarre(){
   var b4=document.createElement('div');
   b4.id='prog4';
   var retour=$('nav.seances a.retour');
+  /* Deux retours, pas un.
+     Une flèche seule ne dit pas OÙ elle ramène, et il manquait le
+     retour vers le sommaire du thème : depuis le bas d'une séquence
+     de 26 étapes, l'élève n'avait aucun moyen de remonter à la carte
+     autrement qu'en faisant défiler. Le second lien est ajouté par
+     initHub(), seulement si un hub existe réellement sur la page —
+     un bouton qui pointe vers une ancre absente est pire que rien. */
   var h4='<div class="p4-haut">'+
+         '<span class="p4-nav">'+
          '<a class="p4-retour" href="'+esc(retour?retour.getAttribute('href'):'2nde-snt.html')+'" '+
-           'title="Revenir aux thèmes" aria-label="Revenir aux thèmes">←</a>'+
+           'title="Revenir à tous les thèmes SNT" aria-label="Revenir à tous les thèmes SNT">'+
+           '<span aria-hidden="true">←</span><span class="p4-lab">Thèmes</span></a>'+
+         '</span>'+
          '<span class="p4-fil">'+
            '<span class="p4-s"></span><span class="p4-seance"></span>'+
            '<span class="p4-sep">›</span><span class="p4-ix"></span>'+
@@ -1455,6 +1418,18 @@ function majBarre(){
     else if(p.classList.contains('is-wait')){ lien.classList.add('wait'); lien.querySelector('.pip2').textContent='…'; }
     else if(p.classList.contains('masque')){ lien.classList.add('locked'); lien.querySelector('.pip2').textContent=''; }
     else { if(!courant){ lien.classList.add('cur'); courant=p; } lien.querySelector('.pip2').textContent=''; }
+    /* Une étape pas encore révélée n'est PAS cliquable, et doit le
+       montrer. Avant : le href pointait vers une étape masquée — le
+       clic partait, il ne se passait rien, et le survol allumait
+       quand même un cadre gris. Une promesse de clic sans clic est
+       pire qu'un verrou visible. On retire donc le href (ce qui la
+       sort aussi de la tabulation) et on l'annonce aux lecteurs
+       d'écran ; le CSS pose le cadenas. */
+    if(lien.classList.contains('locked')){
+      lien.removeAttribute('href'); lien.setAttribute('aria-disabled','true');
+    } else {
+      lien.setAttribute('href','#'+p.id); lien.removeAttribute('aria-disabled');
+    }
   });
   var pc=pas.length?Math.round(faits*100/pas.length):0;
 
@@ -1524,8 +1499,15 @@ function majBarre(){
     var sec=document.getElementById(bloc.dataset.grp); if(!sec) return;
     var dedans=$$('.step',sec);
     var f=dedans.filter(function(x){ return x.classList.contains('is-done'); }).length;
+    /* Au niveau de la séance aussi : S2 et S3 avaient l'air de simples
+       titres inertes. Elles sont pliables (c'est utile), mais rien ne
+       disait qu'elles étaient verrouillées. */
+    var verrouS=sec.classList.contains('locked')&&!document.body.classList.contains('teacher');
+    bloc.classList.toggle('verrou',verrouS);
     var e=$('.grp-etat',bloc);
-    if(e) e.textContent=f+'/'+dedans.length;
+    if(e) e.textContent=verrouS?'\uD83D\uDD12':(f+'/'+dedans.length);
+    var bt=$('.grp',bloc);
+    if(bt) bt.title=verrouS?'Séance pas encore ouverte':'';
     /* pliage automatique : seule la séance où l'on travaille reste
        ouverte, sauf si l'élève en a décidé autrement d'un clic. */
     if(!bloc.dataset.manuel) bloc.classList.toggle('plie',sec!==secCourante);

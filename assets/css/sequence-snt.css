@@ -458,14 +458,22 @@
      color:var(--ink-faint);margin:9px 0 4px;padding-top:7px;border-top:1px solid var(--line)}
 #prog .grp:first-of-type{border-top:0;padding-top:0;margin-top:0}
 #prog a.it{display:flex;gap:8px;align-items:flex-start;padding:4px 5px;border-radius:8px;text-decoration:none;color:inherit}
-#prog a.it:hover{background:var(--surface-2)}
+#prog a.it:not(.locked):hover{background:var(--surface-2)}
 #prog .pip2{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--line);flex:none;margin-top:2px;
      background:var(--surface);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center}
 #prog a.it.done .pip2{background:var(--ok);border-color:var(--ok)}
 #prog a.it.wait .pip2{background:var(--wait);border-color:var(--wait)}
 #prog a.it.cur{background:var(--activity-wash)}
 #prog a.it.cur .pip2{border-color:var(--activity);border-style:dashed}
-#prog a.it.locked{color:var(--ink-faint)}
+/* Verrouillé = visiblement verrouillé. Le href est déjà retiré côté
+   JS (majBarre) ; pointer-events ferme la porte au doigt sur iPad, où
+   il n'y a pas de survol pour prévenir. */
+#prog a.it.locked{color:var(--ink-faint);pointer-events:none;cursor:default}
+#prog a.it.locked .pip2{border-style:dashed;background:var(--surface-2)}
+#prog a.it.locked .txt::after{content:" \1F512";font-size:9.5px;opacity:.75}
+#prog .grp-bloc.verrou .grp{color:var(--ink-faint)}
+#prog .grp-bloc.verrou .grp .sn{color:var(--ink-faint)}
+#prog .grp-bloc.verrou .grp-etat{opacity:.8}
 #prog .txt{font-size:12.5px;line-height:1.35}
 #prog .grp .sn{color:var(--link);margin-right:6px}
 #prog .txt .ix{font-family:"IBM Plex Mono",monospace;color:var(--ink-faint);margin-right:5px}
@@ -494,6 +502,16 @@ body.js-ok nav.seances{display:none}
 #prog4 .p4-retour{flex:none;text-decoration:none;color:var(--ink-faint);font-size:15px;line-height:1;
      padding:6px 8px;border-radius:8px;border:1px solid transparent}
 #prog4 .p4-retour:hover{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+/* Groupe de retour : « ← Thèmes » et « ⌂ Sommaire ». Les libellés
+   disparaissent sous 720 px, les icônes restent — cibles ≥ 44 px. */
+#prog4 .p4-nav{display:flex;gap:4px;flex:none;align-items:center}
+#prog4 .p4-sommaire{display:inline-flex;align-items:center;gap:6px;text-decoration:none;
+     color:var(--ink-soft);font-size:13px;min-height:44px;padding:6px 8px;border-radius:8px;
+     border:1px solid transparent}
+#prog4 .p4-sommaire:hover{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+#prog4 .p4-sommaire:focus-visible,#prog4 .p4-retour:focus-visible{outline:2px solid var(--link);outline-offset:1px}
+#prog4 .p4-lab{font-size:13px}
+@media (max-width:720px){ #prog4 .p4-lab{display:none} }
 #prog4 .p4-fil{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
 #prog4 .p4-s{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;flex:none;
      padding:3px 8px;border-radius:6px;background:var(--france-wash);color:var(--france)}
@@ -856,6 +874,14 @@ body.teacher .ens-actif{display:flex}
 .hub-n a:focus-visible .hub-disque{stroke:var(--link);stroke-width:2}
 .hub-n.fini .hub-etat{fill:var(--ok)}
 .hub-n.verrou{pointer-events:none}
+/* « À venir » ≠ « verrouillé » : le premier dit « pas encore écrit »,
+   le second « pas encore ton tour ». Deux silences différents, deux
+   dessins différents — sinon l'élève croit à un blocage. */
+.hub-n.avenir{pointer-events:none}
+.hub-n.avenir .hub-piste{stroke-dasharray:5 6;opacity:.65}
+.hub-n.avenir .hub-disque{fill:none}
+.hub-n.avenir .hub-num,.hub-n.avenir .hub-nom{fill:var(--ink-faint)}
+.hub-n.avenir .hub-etat{fill:var(--ink-faint);font-style:italic}
 .hub-n.verrou .hub-num,.hub-n.verrou .hub-nom{fill:var(--ink-faint)}
 .hub-n.verrou .hub-disque{fill:var(--surface-2)}
 .hub-n.ici .hub-disque{stroke:var(--sc);stroke-width:1.5}
