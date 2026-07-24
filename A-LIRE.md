@@ -1,154 +1,119 @@
-# Livraison 1 — lots A + B + E (24/07/2026)
+# Correctif 1.1 — badge de compte + sommaire en grand (24/07/2026)
 
-Extraire à la **racine du dépôt**. Six fichiers, dont un nouveau.
+Extraire à la **racine du dépôt**. **Remplace** la livraison 1 : ne pas
+extraire l'ancienne archive après celle-ci.
 
 ```
-assets/js/carte-reseau.js          NOUVEAU
-assets/js/progression.js           modifié
-assets/js/sequence-snt.js          modifié
-assets/css/sequence-snt.css        modifié
-pages/2nde-snt.html                modifié (2 lignes)
-pages/2nde-snt-t1-internet.html    modifié (versions + 1 script)
+assets/js/carte-reseau.js                    NOUVEAU
+assets/js/progression.js                     modifié  <- le correctif
+assets/js/sequence-snt.js                    modifié
+assets/css/sequence-snt.css                  modifié
+pages/2nde-snt.html                          modifié
+pages/2nde-snt-t1-internet.html              modifié
+pages/2nde-snt-t0-systemes-informatises.html modifié (version seulement)
 ```
 
-## Vérification après extraction
-
+Puis :
 ```powershell
 node verifier.mjs
 ```
-→ doit sortir **exactement 2 problèmes** : `docs/tp-1-1.pdf` et `id="ri"`.
-Tout écart = quelque chose est cassé, on s'arrête.
+→ **exactement 2 problèmes** : `docs/tp-1-1.pdf` et `id="ri"`.
 
 ---
 
-## Lot A — un seul point d'entrée
+## 1. Le badge de compte — ma faute, corrigée
 
-**`progression.js`**
+**Ce qui s'est passé.** `afficherBadgeConnecte()` n'injecte pas son
+propre CSS. Historiquement ce n'était pas un problème : on n'y arrivait
+qu'APRÈS la modale d'accueil, qui l'avait déjà injecté. Depuis que le
+badge peut s'afficher seul sur les pages autres que le hub, il arrivait
+sans style : pas de `position:fixed`, donc rien en haut à droite, et un
+bloc nu empilé en bas de page — le « truc pas cliquable » que tu as vu.
 
-1. **`lireTout(domaine)`** — nouvelle fonction publique. Renvoie
-   `{ cle: valeur }` pour tout un domaine en **une seule requête**.
-   C'est ce qui permettra au hub SNT d'afficher les huit thèmes sans
-   huit allers-retours réseau. La RLS filtre déjà sur l'élève : demander
-   le domaine entier ne révèle rien de plus qu'une clé.
+**Le correctif** est posé à la source : `injecterStyleAccueil()` est
+maintenant appelé au début de `afficherBadgeConnecte()` **et** de
+`afficherBandeauInvite()`. Les cinq fonctions d'affichage l'appellent
+désormais, vérifié une par une. Ça ne peut plus se reproduire en
+ajoutant un point d'entrée.
 
-2. **La modale de connexion ne s'affiche plus que sur le hub.** Elle se
-   déclenche sur la page qui porte `<body data-accueil="hub">`, et
-   nulle part ailleurs. Sur les autres pages :
-   - session ouverte → le badge « connecté comme … », rien de plus ;
-   - pas de session → un bandeau discret en bas, avec un lien vers le hub.
+**Conséquence : `progression.js` est maintenant versionné (`?v=10`).**
+Il ne l'avait jamais été. Sans ça, ton navigateur t'aurait resservi le
+fichier cassé depuis son cache. Les trois pages qui le chargent sont
+mises à jour, d'où la présence de t0 dans l'archive — **elle ne contient
+que le changement de version.**
 
-   `monterAccueil()` reste appelable à la main : la surface publique ne
-   change pas, seul le déclenchement automatique est restreint.
-   `window.SNT_SANS_ACCUEIL = true` fonctionne toujours.
-
-**`pages/2nde-snt.html`** reçoit le strict minimum pour que la connexion
-marche dès aujourd'hui : la balise `<script>` et `data-accueil="hub"`.
-**L'habillage de la page, c'est le lot C** — elle est encore en « papier
-d'étude », la modale y aura donc l'air un peu étrangère. C'est normal et
-transitoire.
-
-**Sans ces deux lignes, plus personne ne pourrait se connecter nulle
-part.** Ne pas extraire cette livraison à moitié.
+Tout est monté en `?v=10` : CSS, `sequence-snt.js`, `carte-reseau.js`,
+`progression.js`.
 
 ---
 
-## Lot B — le moteur de carte-réseau devient partageable
+## 2. Le sommaire s'ouvre en grand
 
-**`assets/js/carte-reseau.js`** (nouveau) porte désormais le dessin :
+Le bouton `⌂ Sommaire` n'envoie plus vers le haut de page : il ouvre la
+carte **en modale, fond flouté**, jusqu'à 920 px de large.
 
-```js
-CarteReseau.dessiner(noeuds, options)   // -> SVG (deux dispositions)
-CarteReseau.majNoeuds(racine, etats)    // -> met a jour anneaux et etats
-```
+- **Un clic sur une séance ferme la modale et t'y emmène.** Ouvrir un
+  plan pour devoir ensuite le ranger à la main est une étape de trop.
+- Ferment aussi : le bouton ×, la touche Échap, un clic sur le fond.
+- Le focus revient sur le bouton qui a ouvert la modale.
+- Une séance verrouillée n'est pas cliquable et ne ferme rien.
+- `prefers-reduced-motion` : le flou est remplacé par un fond plus dense
+  (sinon le contraste s'effondre pour ceux qui l'ont désactivé).
+- Sans JavaScript, le `href="#hub"` est conservé : le lien saute à
+  l'ancre. On ne casse pas la navigation de secours.
 
-Le dessin ne lit plus le DOM d'une séquence. Il reçoit des données et
-dessine. Deux adaptateurs le nourrissent : `sequence-snt.js` traduit le
-DOM d'une séquence, et le futur `hub-snt.js` traduira des lignes
-Supabase. C'est ce qui rend le hub SNT possible sans dupliquer la carte.
-
-**Ce qui change pour toi, visuellement : rien.** Un test de
-non-régression compare le SVG produit par l'ancien code et par le
-nouveau, pour 2 à 6 nœuds : **identique caractère par caractère**.
-
-Nouveautés du moteur, pas encore utilisées :
-- **7 et 8 nœuds** — une seule ligne devenait illisible (huit disques de
-  68 px dans 680 px se touchent). Passage à **deux rangées en serpentin**
-  dans une boîte de 400 px. La disposition téléphone reste une colonne.
-- **État « à venir »** (`.hub-n.avenir`) — cercle en pointillés, disque
-  vide, texte en italique grisé. Pour les thèmes dont le contenu n'est
-  pas écrit. Distinct de « verrouillé » : *verrouillé* = ça existe, pas
-  encore ton tour ; *à venir* = ce n'est pas encore écrit. Les confondre
-  ferait croire à un blocage là où il n'y a qu'un chantier.
-
-**Ordre de chargement** : `carte-reseau.js` **avant** `sequence-snt.js`.
-C'est déjà fait dans t1 ; à reproduire lors du portage des autres
-séquences. Si le moteur manque, le hub ne se dessine pas — la page reste
-utilisable, elle ne plante pas.
+**La carte de la modale est dessinée à neuf**, elle ne déplace pas celle
+du haut de page — sinon la page se viderait derrière, et tu perdrais ton
+repère en fermant. Les deux cartes lisent le même calcul d'avancement
+(`etatsSeances()`), donc elles ne peuvent pas diverger.
 
 ---
 
-## Lot E — la navigation
+## 3. Un garde-fou ajouté au passage
 
-**Deux boutons de retour** dans la barre collante, au lieu d'une flèche
-muette :
-- `← Thèmes` — vers `2nde-snt.html` ;
-- `⌂ Sommaire` — vers `#hub`, le haut de la séquence.
-
-Le second n'est ajouté **que si un hub existe réellement** sur la page :
-on ne propose pas une destination qu'on n'a pas construite. Sous 720 px
-les libellés disparaissent, les icônes restent, cibles ≥ 44 px, noms
-accessibles conservés.
-
-**Le bug du survol, corrigé.** Ce que tu voyais sur 1.6 / 1.7 : la règle
-`#prog a.it:hover` s'appliquait à **tous** les liens du sommaire, y
-compris verrouillés — d'où le cadre gris. Et `.it.locked` ne faisait que
-griser le texte : le `href` restait, donc le clic partait vraiment vers
-une étape masquée, et il ne se passait rien. Une promesse de clic sans
-clic est pire qu'un verrou visible.
-
-Désormais : le `href` est retiré (ce qui la sort aussi de la tabulation),
-`aria-disabled` est posé, le survol ne s'allume plus, la pastille passe
-en pointillés et un cadenas apparaît.
-
-**Les séances verrouillées le disent aussi.** S2, S3 n'avaient aucun
-état : elles ressemblaient à des titres inertes. Elles restent pliables
-(c'est utile), mais affichent maintenant un cadenas au lieu de `0/5`, en
-gris, avec une infobulle « Séance pas encore ouverte ».
+`initHub()` est devenu idempotent : un second appel ne crée plus une
+deuxième `<section id="hub">`. Un id dupliqué est exactement ce que
+`verifier.mjs` traque — autant ne pas en fabriquer.
 
 ---
 
-## Ce que je te demande de vérifier à l'œil
+## Ce que j'ai vérifié, et comment
 
-Sur `pages/2nde-snt-t1-internet.html`, en ligne :
+Trois bancs d'essai, tous verts :
 
-1. La carte-réseau du haut est **exactement comme avant**.
-2. Deux boutons en haut à gauche de la barre collante ; `⌂ Sommaire`
-   remonte bien à la carte.
-3. Sur une étape non révélée du sommaire : **plus de cadre gris au
-   survol**, un cadenas, et le clic ne fait plus semblant.
-4. Une séance verrouillée affiche un cadenas dans le sommaire.
-5. Déconnecté, sur t1 : **pas de modale**, juste le bandeau du bas qui
-   renvoie au hub. Le clic dessus arrive sur `2nde-snt.html`, où la
-   modale s'affiche.
-6. Sur téléphone (390 px) : les libellés des boutons disparaissent,
-   les icônes restent cliquables.
+1. **Non-régression du dessin** — l'ancien et le nouveau SVG comparés
+   caractère par caractère, de 2 à 6 nœuds : identiques.
+2. **États sur DOM réel** (19 vérifications) — anneaux, verrous,
+   « à venir », marqueur, retour du href au déverrouillage.
+3. **La vraie page t1 pilotée dans un DOM** (27 vérifications) — hub
+   construit, boutons présents, étapes verrouillées sans href ni
+   `aria-disabled` manquant, modale : ouverture, fermeture par nœud /
+   × / Échap / fond, cartes synchronisées, aucun id dupliqué, aucune
+   erreur JS.
 
-Le point 5 est le plus important : c'est ton objectif n°1 de la journée.
+Le banc n°3 a d'ailleurs commencé par échouer — c'était mon test qui
+déclenchait un `DOMContentLoaded` de trop, pas le code. D'où le
+garde-fou du point 3.
+
+**Ce que je n'ai PAS pu tester ici : le badge lui-même**, qui demande
+une vraie session Supabase. Le correctif est vérifié par lecture, pas
+par exécution. C'est le point à confirmer en premier.
 
 ---
 
-## Ce qui n'est PAS dans cette livraison
+## À vérifier en ligne
 
-- **Lot C** — le hub SNT lui-même : les huit encarts, les mini-cartes
-  dépliables (option 2 retenue), le basculement en `sequence-snt.css`
-  (option A retenue).
-- **Lot D** — la reprise en modale bloquante, aux deux échelles.
-- Le **déblocage par classe** : rangé au chantier « appli de validation »,
-  avec la validation des corrections IA. Tout est ouvert d'ici là.
+1. **Connecté sur t1 : le badge « 👤 ton-identifiant ▾ » est en haut à
+   droite**, le menu s'ouvre, « Se déconnecter » fonctionne. ← priorité
+2. Plus rien d'anormal en bas de page.
+3. `⌂ Sommaire` ouvre la carte en grand, fond flouté ; un clic sur une
+   séance ferme et emmène ; ×, Échap et le fond ferment aussi.
+4. Déconnecté sur t1 : le bandeau du bas renvoie vers le hub.
+5. Sur téléphone : la modale passe en colonne, cibles ≥ 44 px.
 
-## Rappel RGPD
+---
 
-Rien de nouveau ne part sur le réseau. `lireTout` demande un domaine au
-lieu d'une clé, sur des lignes que la RLS restreint déjà à l'élève
-connecté. `carte-reseau.js` ne connaît ni élève, ni identifiant, ni
-réseau : il reçoit des nombres entre 0 et 1 et dessine des arcs.
+## Ta dernière phrase a été coupée
+
+Ton message s'arrête sur « Il ». Il manque probablement une demande —
+dis-moi laquelle avant que j'attaque les lots C et D.

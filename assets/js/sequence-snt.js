@@ -1118,6 +1118,10 @@ function hubCarte(liste){
   }));
 }
 function initHub(){
+  /* Idempotent : deux appels créeraient deux id="hub", donc un id
+     dupliqué — le genre de défaut que verifier.mjs signale et qu'on
+     ne veut pas fabriquer soi-même. Ne coûte rien, ferme la porte. */
+  if(document.getElementById('hub')) return;
   var anc=wrapContenu(); if(!anc) return;
   var liste=hubSeances(); if(liste.length<2) return;
   var hub=document.createElement('section');
@@ -1134,10 +1138,63 @@ function initHub(){
     a.title='Revenir au sommaire du thème';
     a.setAttribute('aria-label','Revenir au sommaire du thème');
     a.innerHTML='<span aria-hidden="true">\u2302</span><span class="p4-lab">Sommaire</span>';
+    /* Le href reste : sans JS, le lien saute à l'ancre du hub. Avec JS,
+       on ouvre la carte en grand plutôt que de faire défiler jusqu'en
+       haut — on ne quitte pas sa place pour consulter le plan. */
+    a.addEventListener('click',function(ev){ ev.preventDefault(); ouvrirSommaire(); });
     nav.appendChild(a);
   }
   majHub();
 }
+/* ---------- Sommaire en grand (modale) ----------
+   La carte du haut de page sert d'accueil ; celle-ci sert de plan
+   consultable à tout moment, depuis n'importe quelle étape. Elle est
+   DESSINÉE À NEUF plutôt que déplacée : le moteur travaille à partir
+   de données, en refaire une ne coûte rien, et déplacer la carte
+   d'origine dans une modale la ferait disparaître de la page en
+   dessous — l'élève perdrait son repère en fermant.
+
+   Elle se ferme d'elle-même dès qu'on choisit une séance : ouvrir un
+   plan pour devoir ensuite le ranger à la main est une étape de trop.
+   Échap et le clic sur le fond ferment aussi. Le focus revient sur le
+   bouton qui l'a ouverte. */
+var SOMMAIRE_OUVREUR=null;
+function fermerSommaire(){
+  var m=$('.hub-modale'); if(!m) return;
+  m.remove();
+  document.body.classList.remove('modale-ouverte');
+  if(SOMMAIRE_OUVREUR){ SOMMAIRE_OUVREUR.focus(); SOMMAIRE_OUVREUR=null; }
+}
+function ouvrirSommaire(){
+  if($('.hub-modale')) { fermerSommaire(); return; }
+  if(!window.CarteReseau) return;
+  var liste=hubSeances(); if(!liste.length) return;
+  SOMMAIRE_OUVREUR=document.activeElement;
+
+  var m=document.createElement('div');
+  m.className='hub-modale';
+  m.innerHTML='<div class="hm-carte" role="dialog" aria-modal="true" aria-label="Sommaire du thème">'+
+      '<div class="hm-tete"><span class="hm-titre">Sommaire du thème</span>'+
+      '<button class="hm-fermer" type="button" aria-label="Fermer le sommaire">\u00d7</button></div>'+
+      '<div class="hub hub-hote">'+hubCarte(liste)+'</div>'+
+      '<div class="hm-pied">Choisis une séance pour t\u2019y rendre.</div>'+
+    '</div>';
+  document.body.appendChild(m);
+  document.body.classList.add('modale-ouverte');
+  CarteReseau.majNoeuds($('.hub-hote',m),etatsSeances());
+
+  /* un clic sur un nœud : on ferme, PUIS on laisse le lien agir */
+  $$('.hub-n a',m).forEach(function(a){
+    a.addEventListener('click',function(){ if(a.getAttribute('href')) fermerSommaire(); });
+  });
+  $('.hm-fermer',m).addEventListener('click',fermerSommaire);
+  m.addEventListener('click',function(ev){ if(ev.target===m) fermerSommaire(); });
+  document.addEventListener('keydown',function esc(ev){
+    if(ev.key==='Escape'){ fermerSommaire(); document.removeEventListener('keydown',esc); }
+  });
+  $('.hm-fermer',m).focus();
+}
+
 /* Carte de reprise : seulement après une vraie coupure. Sous le
    seuil, l'élève est simplement remis à sa place, en silence — un
    rafraîchissement de page n'est pas un retour. */
@@ -1171,8 +1228,11 @@ function hubReprise(){
     z.hidden=true;
   });
 }
-function majHub(){
-  var hub=$('#hub'); if(!hub||!window.CarteReseau) return;
+/* Les états d'avancement, calculés UNE fois depuis le DOM.
+   Séparé de l'affichage parce qu'il y a désormais deux cartes à
+   nourrir : celle du haut de page, et celle de la modale « Sommaire ».
+   Les recalculer deux fois donnerait deux vérités possibles. */
+function etatsSeances(){
   var prof=document.body.classList.contains('teacher');
   var secCourante=null;
   $$('.step').some(function(p){
@@ -1181,15 +1241,12 @@ function majHub(){
     if(s&&s.classList.contains('locked')&&!prof) return false;
     secCourante=s; return true;
   });
-  /* Le DOM dit tout : combien d'étapes, combien de faites, verrouillé
-     ou non. On le traduit en états, et le moteur dessine. */
   var etats={};
-  $$('.hub-n',hub).forEach(function(g){
-    var id=g.dataset.noeud, sec=document.getElementById(id); if(!sec) return;
+  $$('.seance').forEach(function(sec){
     var dedans=$$('.step',sec);
     var f=dedans.filter(function(p){ return p.classList.contains('is-done'); }).length;
     var verrou=sec.classList.contains('locked')&&!prof;
-    etats[id]={
+    etats[sec.id]={
       part  : dedans.length?f/dedans.length:0,
       verrou: verrou,
       ici   : sec===secCourante,
@@ -1199,7 +1256,14 @@ function majHub(){
             : f+' sur '+dedans.length
     };
   });
-  CarteReseau.majNoeuds(hub,etats);
+  return etats;
+}
+function majHub(){
+  if(!window.CarteReseau) return;
+  var etats=etatsSeances();
+  [$('#hub'),$('.hub-modale .hub-hote')].forEach(function(racine){
+    if(racine) CarteReseau.majNoeuds(racine,etats);
+  });
 }
 
 /* ---------- Numérotation calculée (lot 4) ----------

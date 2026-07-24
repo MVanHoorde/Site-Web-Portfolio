@@ -521,6 +521,7 @@
    * enregistré ». Un clic rouvre la modale sur l'onglet connexion. */
   function afficherBandeauInvite() {
     if (global.document.querySelector('.acc-bandeau')) return;
+    injecterStyleAccueil();          /* même raison que le badge */
     var b = global.document.createElement('div');
     b.className = 'acc-bandeau';
     b.innerHTML = '<span aria-hidden="true">⚠️</span>'
@@ -538,6 +539,13 @@
    * poste partagé, cela efface de l'écran le travail de l'élève
    * précédent avant que le suivant n'arrive. */
   function afficherBadgeConnecte(profil) {
+    /* Le style est injecté ICI et pas seulement chez l'appelant : cette
+       fonction n'était historiquement atteinte qu'APRÈS la modale, qui
+       l'avait déjà injecté. Depuis que le badge peut s'afficher seul
+       (pages autres que le hub, §10 bis), l'oublier le laissait sans
+       position:fixed — donc invisible en haut à droite, et empilé nu en
+       bas de page. Corrigé à la source. */
+    injecterStyleAccueil();
     var ancien = global.document.querySelector('.acc-badge');
     if (ancien) ancien.parentNode.removeChild(ancien);
 
