@@ -87,13 +87,59 @@
     return m ? (m[1] === m[2]) : null;
   }
 
+  /* ----------------------------------------------------------
+     RÉSUMÉ POUR LE HUB SNT
+     Le hub des huit thèmes doit dessiner un anneau de progression par
+     thème. Or la base ne stocke que les étapes FAITES : ni le nombre
+     total d'étapes, ni le nom des séances. Sans totaux, pas de ratio.
+
+     Deux façons de lui donner ces chiffres :
+       · un manifeste écrit à la main dans le hub — qui dériverait du
+         contenu réel dès la première séance ajoutée ;
+       · la page elle-même les écrit en même temps que son état.
+
+     C'est la seconde, ici. Le résumé est produit par la séquence, à
+     partir de son propre DOM : il ne PEUT pas être en retard sur elle.
+     Le hub lit huit résumés en une requête et n'a rien à savoir du
+     contenu des pages.
+
+     RGPD : que du contenu de cours (noms de séances, compteurs).
+     Aucune donnée personnelle n'entre ici.
+     ---------------------------------------------------------- */
+  function texteSeance(sec){
+    var h = sec.querySelector('.seance-head h2');
+    if(!h) return { num:'', nom:'' };
+    var sn = h.querySelector('.s-num');
+    var num = sn ? sn.textContent.replace(/\s+/g,' ').trim() : '';
+    var c = h.cloneNode(true), sn2 = c.querySelector('.s-num');
+    if(sn2) sn2.remove();
+    return { num:num, nom:c.textContent.replace(/\s+/g,' ').trim() };
+  }
+  function resume(){
+    var out = { seances:[], f:0, t:0 };
+    Array.prototype.forEach.call(document.querySelectorAll('.seance'), function(sec){
+      var pas = sec.querySelectorAll('.step'), f = 0;
+      Array.prototype.forEach.call(pas, function(p){
+        var k = cle(p);
+        /* on compte depuis l'ÉTAT, pas depuis les classes du DOM :
+           l'état est la source de vérité, le DOM peut être en retard */
+        if(k && ETAT.etapes[k] && ETAT.etapes[k].fait) f++;
+      });
+      var t = texteSeance(sec);
+      out.seances.push({ id:sec.id, num:t.num, nom:t.nom, f:f, t:pas.length });
+      out.f += f; out.t += pas.length;
+    });
+    return out;
+  }
+
   function sauver(){
     var B = base();
     if(!B || !SEQ) return;
     clearTimeout(minuteur);
     minuteur = setTimeout(function(){
       ETAT.vu_le = new Date().toISOString();
-      B.ecrire('cours', SEQ, { etapes: ETAT.etapes, champs: ETAT.champs, vu_le: ETAT.vu_le })
+      B.ecrire('cours', SEQ, { etapes: ETAT.etapes, champs: ETAT.champs,
+                               vu_le: ETAT.vu_le, resume: resume() })
        .catch(function(){ /* invité, hors ligne : on n'insiste pas */ });
     }, 1500);           /* on n'écrit pas à chaque validation */
   }
@@ -1126,7 +1172,9 @@ function initHub(){
   var liste=hubSeances(); if(liste.length<2) return;
   var hub=document.createElement('section');
   hub.className='hub'; hub.id='hub';
-  hub.innerHTML='<div class="hub-reprise" hidden></div>'+hubCarte(liste);
+  /* la carte de reprise n'est plus un encart dans la page : c'est une
+     modale bloquante (hubReprise). Plus de conteneur à réserver ici. */
+  hub.innerHTML=hubCarte(liste);
   anc.insertBefore(hub,anc.firstChild);
   /* Le retour au sommaire du thème n'est proposé QUE si le hub existe :
      on ne promet pas une destination qu'on n'a pas construite. */
@@ -1199,35 +1247,60 @@ function ouvrirSommaire(){
    seuil, l'élève est simplement remis à sa place, en silence — un
    rafraîchissement de page n'est pas un retour. */
 function hubReprise(){
-  var z=$('.hub-reprise'); if(!z||!window.EtatSNT||!EtatSNT.actif()) return;
+  if(!window.EtatSNT||!EtatSNT.actif()) return;
   if(!EtatSNT.absentDepuis(2)) return;
+  if($('.hub-modale')) return;                 /* une modale à la fois */
+  var prof=document.body.classList.contains('teacher');
   var courant=null;
   $$('.step').some(function(p){
     if(p.classList.contains('is-done')) return false;
     var sec=p.closest('.seance');
-    if(sec&&sec.classList.contains('locked')&&!document.body.classList.contains('teacher')) return false;
+    if(sec&&sec.classList.contains('locked')&&!prof) return false;
     courant=p; return true;
   });
   if(!courant) return;
+  var faits=$$('.step').filter(function(p){ return p.classList.contains('is-done'); }).length;
+  if(!faits) return;                           /* rien à reprendre */
+
   var sec=courant.closest('.seance'), info=infosEtape(courant);
   var t=$('.seance-head h2',sec), num='';
   if(t){ var sn=$('.s-num',t); num=sn?propreTxt(sn):''; }
-  var faits=$$('.step').filter(function(p){ return p.classList.contains('is-done'); }).length;
-  if(!faits) return;
-  z.innerHTML='<div class="hr-haut">Bon retour</div>'+
-    '<div class="hr-corps"><div class="hr-txt">'+
+  var retour=$('nav.seances a.retour');
+  var versHub=retour?retour.getAttribute('href'):'2nde-snt.html';
+
+  var m=document.createElement('div');
+  m.className='hub-modale hm-reprise';
+  m.innerHTML='<div class="hm-carte" role="dialog" aria-modal="true" aria-labelledby="hm-t">'+
+      '<div class="hr-haut" id="hm-t">Bon retour</div>'+
       '<div class="hr-ou">Tu en étais à</div>'+
       '<div class="hr-ligne"><span class="hr-s sc'+(sec.getAttribute('data-seance')||'')+'">'+
         hubEsc(num)+'</span><span class="hr-ix">étape '+hubEsc(info.ix)+'</span></div>'+
-      '<div class="hr-nom">'+hubEsc(info.nom)+'</div></div>'+
-      '<button class="hr-go" type="button">Reprendre →</button></div>'+
-    '<div class="hr-bas">'+faits+' étapes sur '+$$('.step').length+'</div>';
-  z.hidden=false;
-  z.querySelector('.hr-go').addEventListener('click',function(){
-    courant.scrollIntoView({behavior:'smooth',block:'start'});
-    z.hidden=true;
+      '<div class="hr-nom">'+hubEsc(info.nom)+'</div>'+
+      '<div class="hr-bas">'+faits+' étape'+(faits>1?'s':'')+' sur '+$$('.step').length+' déjà faites</div>'+
+      '<div class="hr-actions">'+
+        '<button class="hr-go" type="button">Continuer &rarr;</button>'+
+        '<a class="hr-sortie" href="'+hubEsc(versHub)+'">Revenir au sommaire principal</a>'+
+      '</div>'+
+    '</div>';
+  document.body.appendChild(m);
+  document.body.classList.add('modale-ouverte');
+
+  function fermer(){
+    m.remove();
+    document.body.classList.remove('modale-ouverte');
+  }
+  /* Bloquante VOLONTAIREMENT : pas de fermeture au clic sur le fond ni
+     à l'Échap. Décision de Loïc — l'élève doit voir où il en est et
+     choisir. Deux issues seulement, toutes deux explicites. Le point
+     de sortie existe toujours (« Revenir au sommaire principal ») :
+     bloquant ne veut pas dire piégé. */
+  $('.hr-go',m).addEventListener('click',function(){
+    fermer();
+    courant.scrollIntoView({behavior:'smooth',block:'center'});
   });
+  $('.hr-go',m).focus();
 }
+
 /* Les états d'avancement, calculés UNE fois depuis le DOM.
    Séparé de l'affichage parce qu'il y a désormais deux cartes à
    nourrir : celle du haut de page, et celle de la modale « Sommaire ».
@@ -2124,7 +2197,14 @@ function restaurer(){
     $$('.step').forEach(function(p){
       if(!courant && !p.classList.contains('is-done') && !p.classList.contains('masque')) courant=p;
     });
-    if(courant) courant.scrollIntoView({behavior:'auto',block:'start'});
+    /* CENTRÉ, pas collé en haut. Deux raisons : la barre « tu es ici »
+       est collante et mangeait le début de l'étape ; et surtout, une
+       reprise n'est pas une avancée — on revient pour se resituer, et
+       voir ce qui précède aide à se rappeler où on en était. Les
+       défilements d'AVANCEMENT (bouton « Étape suivante », dépliage)
+       restent en block:'start' : là on veut le maximum de contenu
+       sous les yeux. */
+    if(courant) courant.scrollIntoView({behavior:'auto',block:'center'});
   });
 }
 

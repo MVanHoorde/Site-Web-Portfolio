@@ -1,16 +1,19 @@
-# Correctif 1.2 — « Changer de compte » (24/07/2026)
+# Livraison 2 — lots C + D, et le centrage de reprise (24/07/2026)
 
-Extraire à la **racine du dépôt**. Petite archive : **un seul fichier de
-code** a changé.
+Extraire à la **racine du dépôt**. Deux fichiers nouveaux.
 
 ```
-assets/js/progression.js                     modifié  <- le correctif
-pages/2nde-snt.html                          version seulement (?v=11)
-pages/2nde-snt-t1-internet.html              version seulement (?v=11)
-pages/2nde-snt-t0-systemes-informatises.html version seulement (?v=11)
+assets/js/hub-snt.js                         NOUVEAU
+assets/css/hub-snt.css                       NOUVEAU
+pages/2nde-snt.html                          RÉÉCRIT
+assets/js/sequence-snt.js                    modifié
+assets/css/sequence-snt.css                  modifié
+assets/js/carte-reseau.js                    inchangé (fourni pour cohérence)
+assets/js/progression.js                     inchangé (fourni pour cohérence)
+pages/2nde-snt-t1-internet.html              version seulement (?v=12)
+pages/2nde-snt-t0-systemes-informatises.html version seulement (?v=12)
 ```
 
-Puis :
 ```powershell
 node verifier.mjs
 ```
@@ -18,110 +21,161 @@ node verifier.mjs
 
 ---
 
-## Le bug
+## 0. Le détail demandé : la reprise centre l'étape
 
-Dans le menu du badge, **« Changer de compte » et « Se déconnecter »
-étaient câblés sur la même fonction** :
+`block:'start'` → `block:'center'` aux **deux** moments de reprise :
+au retour sur une page (reconnexion, rechargement) et sur le bouton
+« Continuer » de la carte de reprise.
 
-```js
-badge.querySelector('[data-changer]').addEventListener('click', deconnexion);
-badge.querySelector('[data-deco]')   .addEventListener('click', deconnexion);
-```
+Deux raisons : la barre « tu es ici » est collante et mangeait le haut
+de l'étape ; et surtout une reprise n'est pas une avancée — on revient
+pour se resituer, voir ce qui précède aide.
 
-Les deux faisaient donc `quitter()` puis un rechargement. Tant que la
-modale se montait partout, le rechargement la faisait réapparaître et
-l'illusion tenait. Depuis que la connexion est réservée au hub, le
-rechargement ne propose plus rien : « changer de compte » déconnectait,
-point. Le bug existait avant, mon changement l'a seulement rendu visible.
-
-## Le correctif
-
-Deux gestes, deux fonctions :
-
-- **Se déconnecter** → `quitter()` puis rechargement. Inchangé. Sur un
-  poste partagé, le rechargement efface de l'écran le travail de l'élève
-  précédent avant que le suivant n'arrive.
-- **Changer de compte** → `quitter()` puis le formulaire **sur place**,
-  déjà ouvert sur l'onglet « Me connecter ». L'élève **reste dans son
-  thème** : après connexion, la même page se recharge sous le nouveau
-  compte. Il ne repasse pas par le hub.
-
-C'est exactement ce que faisait déjà le hub dans `afficherRetour()` ;
-le badge est maintenant aligné dessus.
-
-### Pourquoi on ferme la session AVANT d'afficher le formulaire
-
-Si l'élève s'éloigne sans terminer, le compte précédent est déjà fermé.
-C'est un poste de salle informatique, pas un portable personnel. S'il
-renonce, le bandeau « mode invité » lui permet de rouvrir le formulaire
-sans naviguer.
-
-### Une exception assumée à « la connexion se fait au hub »
-
-La règle protège d'une modale **subie** au milieu d'un cours. Ici l'élève
-la demande explicitement en cliquant. C'est la seule exception, et elle
-est documentée dans le code (§10 bis).
-
-## Un second défaut trouvé au passage
-
-`quitter()` ne retirait pas le badge du DOM. Ça ne se voyait pas tant
-qu'un rechargement suivait toujours. Avec « Changer de compte », qui
-reste sur la page, **l'ancien identifiant serait resté affiché derrière
-le formulaire** — un badge qui affirme « connecté comme dede-33 » alors
-que la session est fermée. Le badge est maintenant retiré dans
-`quitter()` : valable pour tous les appelants, présents et futurs.
-
-## Versions
-
-Tout monte en **`?v=11`** — `progression.js`, le CSS et le JS de
-séquence, sur les trois pages concernées. Un seul numéro pour tout le
-site : plus simple à raisonner qu'un fichier en retard sur un autre.
+Les défilements d'**avancement** (« Étape suivante », dépliage d'une
+étape) restent en `block:'start'` : là on veut le maximum de contenu
+sous les yeux. Si tu veux les centrer aussi, c'est deux lignes.
 
 ---
 
-## Ce que j'ai vérifié
+## 1. Le socle de données du hub — le vrai problème à résoudre
 
-Quatre bancs d'essai, tous verts. Le quatrième est nouveau : il simule
-une session Supabase (fetch remplacé par un double) et pilote le menu.
-**C'est ce que je n'avais pas pu tester la dernière fois** — le badge est
-désormais couvert pour de bon.
+Le hub doit dessiner un anneau par thème. Or la base ne stocke que les
+étapes **faites** : ni le nombre total d'étapes, ni le nom des séances.
+Sans totaux, pas de ratio.
 
-```
-— page de séquence, élève connecté —
-  AUCUNE modale (règle « connexion au hub »)
-  le badge est affiché · style injecté (position:fixed) · bon identifiant
-  le menu s'ouvre · aria-expanded suit
-— « Changer de compte » —
-  le formulaire s'ouvre SUR PLACE
-  on est resté sur la page du thème
-  onglet « Me connecter » actif · champ en mode connexion
-  le badge de l'ANCIEN compte a disparu · jeton effacé
-  « sans compte » → bandeau récupérable
-— « Se déconnecter » —
-  jeton effacé · badge retiré · pas d'ouverture du formulaire
-```
+Deux façons de lui donner ces chiffres :
 
-Plus les trois bancs précédents rejoués : non-régression du dessin,
-états sur DOM réel, vraie page t1 pilotée (27 vérifications).
+- un **manifeste écrit à la main** dans le hub — qui dériverait du
+  contenu réel dès la première séance ajoutée ;
+- la **séquence les écrit elle-même**, en même temps que son état.
 
----
+C'est la seconde. `EtatSNT` produit désormais un `resume` à partir de
+son propre DOM : `{ seances:[{id,num,nom,f,t}], f, t }`. Il **ne peut
+pas** être en retard sur la page qui le fabrique. Le hub lit les huit
+résumés **en une requête** (`lireTout('cours')`, livré au lot A) et n'a
+rien à savoir du contenu des pages.
 
-## À vérifier en ligne
+**Conséquence concrète : tu ajoutes une séance à un thème, le hub se
+met à jour tout seul.** Rien à maintenir en double.
 
-1. Sur t1, badge → **« Changer de compte » ouvre le formulaire sans
-   quitter le thème** ; après connexion, tu es toujours sur t1.
-2. Le badge de l'ancien compte disparaît dès l'ouverture du formulaire.
-3. « Se déconnecter » se comporte comme avant.
-4. Si tu renonces (« Continuer sans compte »), le bandeau du bas te
-   permet de rouvrir le formulaire sur place.
+RGPD : le résumé ne contient que du contenu de cours (noms de séances,
+compteurs). Aucune donnée personnelle.
 
 ---
 
-## Prochaine étape
+## 2. Le hub — `pages/2nde-snt.html`
 
-Les lots **C** (le hub SNT : huit encarts, mini-cartes dépliables,
-bascule en `sequence-snt.css`) et **D** (la reprise en modale bloquante,
-aux deux échelles). La modale du sommaire livrée au correctif 1.1 servira
-de base au lot D — le mécanisme est déjà en place et testé.
+Réécrite. Bascule en **option A** : elle charge `sequence-snt.css` puis
+`hub-snt.css`. Elle parle donc la même langue visuelle que les huit
+pages où l'élève passera l'année, pas celle du portfolio.
 
-Et ta phrase coupée du message précédent, si elle contenait autre chose.
+Elle n'utilise **pas** la classe `.wrap` : `sequence-snt.css` lui
+applique une marge gauche calculée pour la barre latérale, qui n'existe
+pas ici. C'est `.hub-wrap`.
+
+### Un encart par thème, mini-carte repliée (option 2)
+
+L'encart **fermé** porte déjà l'essentiel : un anneau et un compteur
+(`7 / 20 étapes`, `terminé`, `pas commencé`, `en construction`). Pas
+besoin de déplier pour savoir où on en est. **Le thème en cours se
+déplie tout seul** — c'est celui qu'on vient consulter neuf fois sur dix.
+
+Trois états de mini-carte, et il est important de ne pas les confondre :
+
+| Cas | Rendu |
+|---|---|
+| Thème déjà ouvert | les **vraies** séances, avec leurs noms et `2 sur 6` |
+| Thème jamais ouvert | N nœuds attendus, sans nom, anneaux vides, **cliquables** |
+| Thème en chantier | nœuds **fantômes** en pointillés, non cliquables |
+
+*Chantier* ≠ *verrouillé*. Le premier dit « ce n'est pas encore écrit »,
+le second « ce n'est pas encore ton tour ». Les confondre ferait croire
+à un blocage là où il n'y a qu'un chantier.
+
+### Ce qui est déclaré dans le HTML, et pourquoi si peu
+
+```html
+data-cle="snt-t1"        clé de progression en base
+data-lien="…​.html"       la page de la séquence
+data-seances="4"         nombre ATTENDU — sert seulement à dessiner une
+                         carte plausible AVANT la première ouverture.
+                         Dès que l'élève a ouvert le thème, la base prend
+                         le relais : ce nombre ne peut pas faire mentir
+                         la page.
+data-etat="chantier"     contenu pas encore écrit → nœuds fantômes.
+                         ⚠ À RETIRER quand une séquence est terminée.
+data-verrou="oui"        thème fermé. NON POSÉ aujourd'hui : tout ouvert.
+```
+
+J'ai mis `data-etat="chantier"` sur **t3, t4, t5, t6** — ceux qui
+portaient 🚧 dans l'ancienne page. Corrige si je me suis trompé.
+
+### Verrouillage
+
+Le mécanisme est en place (`data-verrou`), **rien n'est verrouillé
+aujourd'hui**. Le déblocage par classe rejoindra l'appli de validation
+des corrections, comme convenu.
+
+---
+
+## 3. Lot D — les reprises bloquantes
+
+**Deux échelles**, même grammaire : fond flouté, deux issues explicites,
+ni Échap ni clic sur le fond ne ferment. Bloquant ne veut pas dire
+piégé : la seconde issue est toujours une sortie.
+
+- **Dans un thème** (au-delà de 2 h d'absence) — « Tu en étais à S2 ·
+  étape 2.3 ». Boutons : **Continuer →** (centre l'étape) et **Revenir
+  au sommaire principal**. L'ancien encart dans la page est supprimé.
+- **Sur le hub** (même seuil de 2 h) — « Tu en étais au thème Internet,
+  S2 Adresses IP ». Boutons : **Continuer →** (mène directement à
+  l'ancre de la séance) et **Rester sur le sommaire** (qui déplie et
+  centre l'encart du thème).
+
+---
+
+## 4. Ce que j'ai vérifié
+
+Cinq bancs d'essai, tous verts. Le cinquième est nouveau (33
+vérifications sur le hub, avec une base simulée) :
+
+```
+structure       8 encarts · point d'accueil déclaré · option A · pas de .wrap
+                versions alignées
+repli           replié par défaut · thème en cours déplié seul · aria-expanded
+progression     terminé / 7 sur 20 / pas commencé / en construction
+mini-cartes     vraies séances nommées · bonnes ancres · non ouvert cliquable
+                chantier fantôme et non cliquable · chantier ≠ verrou
+reprise hub     bon thème · bonne séance · bonne ancre · fond bloqué
+                « Rester ici » libère · visite fraîche → pas de modale
+```
+
+Plus les quatre précédents rejoués : non-régression du dessin (identique
+à l'octet), états sur DOM réel, menu de compte, et la vraie page t1
+pilotée (27 vérifications).
+
+---
+
+## 5. À vérifier à l'œil
+
+1. **Le hub** : allure générale — c'est le premier vrai test de
+   l'option A. Si ça te déplaît, on rhabille sans toucher la logique.
+2. Ouvre t1, fais deux ou trois étapes, reviens au hub : l'anneau de
+   t1 doit avoir bougé et la mini-carte doit porter les vrais noms de
+   séances.
+3. Déplie / replie quelques thèmes. Sur iPad et sur téléphone.
+4. Reprise : difficile à provoquer (il faut 2 h d'absence). Tu la verras
+   demain matin.
+5. Les thèmes marqués « en construction » : dis-moi si ma liste est la
+   bonne.
+
+---
+
+## Reste ouvert
+
+- **Portage des 7 autres séquences** sur le moteur partagé — tant qu'il
+  n'est pas fait, seul t1 alimente vraiment le hub (t0 charge
+  `progression.js` mais pas `sequence-snt.js`, donc pas de `resume`).
+  **C'est la prochaine étape logique.**
+- `ia-snt/valider.mjs`.
+- Le déblocage par classe.
