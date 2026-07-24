@@ -1,16 +1,13 @@
-# Correctif 1.1 — badge de compte + sommaire en grand (24/07/2026)
+# Correctif 1.2 — « Changer de compte » (24/07/2026)
 
-Extraire à la **racine du dépôt**. **Remplace** la livraison 1 : ne pas
-extraire l'ancienne archive après celle-ci.
+Extraire à la **racine du dépôt**. Petite archive : **un seul fichier de
+code** a changé.
 
 ```
-assets/js/carte-reseau.js                    NOUVEAU
 assets/js/progression.js                     modifié  <- le correctif
-assets/js/sequence-snt.js                    modifié
-assets/css/sequence-snt.css                  modifié
-pages/2nde-snt.html                          modifié
-pages/2nde-snt-t1-internet.html              modifié
-pages/2nde-snt-t0-systemes-informatises.html modifié (version seulement)
+pages/2nde-snt.html                          version seulement (?v=11)
+pages/2nde-snt-t1-internet.html              version seulement (?v=11)
+pages/2nde-snt-t0-systemes-informatises.html version seulement (?v=11)
 ```
 
 Puis :
@@ -21,99 +18,110 @@ node verifier.mjs
 
 ---
 
-## 1. Le badge de compte — ma faute, corrigée
+## Le bug
 
-**Ce qui s'est passé.** `afficherBadgeConnecte()` n'injecte pas son
-propre CSS. Historiquement ce n'était pas un problème : on n'y arrivait
-qu'APRÈS la modale d'accueil, qui l'avait déjà injecté. Depuis que le
-badge peut s'afficher seul sur les pages autres que le hub, il arrivait
-sans style : pas de `position:fixed`, donc rien en haut à droite, et un
-bloc nu empilé en bas de page — le « truc pas cliquable » que tu as vu.
+Dans le menu du badge, **« Changer de compte » et « Se déconnecter »
+étaient câblés sur la même fonction** :
 
-**Le correctif** est posé à la source : `injecterStyleAccueil()` est
-maintenant appelé au début de `afficherBadgeConnecte()` **et** de
-`afficherBandeauInvite()`. Les cinq fonctions d'affichage l'appellent
-désormais, vérifié une par une. Ça ne peut plus se reproduire en
-ajoutant un point d'entrée.
+```js
+badge.querySelector('[data-changer]').addEventListener('click', deconnexion);
+badge.querySelector('[data-deco]')   .addEventListener('click', deconnexion);
+```
 
-**Conséquence : `progression.js` est maintenant versionné (`?v=10`).**
-Il ne l'avait jamais été. Sans ça, ton navigateur t'aurait resservi le
-fichier cassé depuis son cache. Les trois pages qui le chargent sont
-mises à jour, d'où la présence de t0 dans l'archive — **elle ne contient
-que le changement de version.**
+Les deux faisaient donc `quitter()` puis un rechargement. Tant que la
+modale se montait partout, le rechargement la faisait réapparaître et
+l'illusion tenait. Depuis que la connexion est réservée au hub, le
+rechargement ne propose plus rien : « changer de compte » déconnectait,
+point. Le bug existait avant, mon changement l'a seulement rendu visible.
 
-Tout est monté en `?v=10` : CSS, `sequence-snt.js`, `carte-reseau.js`,
-`progression.js`.
+## Le correctif
+
+Deux gestes, deux fonctions :
+
+- **Se déconnecter** → `quitter()` puis rechargement. Inchangé. Sur un
+  poste partagé, le rechargement efface de l'écran le travail de l'élève
+  précédent avant que le suivant n'arrive.
+- **Changer de compte** → `quitter()` puis le formulaire **sur place**,
+  déjà ouvert sur l'onglet « Me connecter ». L'élève **reste dans son
+  thème** : après connexion, la même page se recharge sous le nouveau
+  compte. Il ne repasse pas par le hub.
+
+C'est exactement ce que faisait déjà le hub dans `afficherRetour()` ;
+le badge est maintenant aligné dessus.
+
+### Pourquoi on ferme la session AVANT d'afficher le formulaire
+
+Si l'élève s'éloigne sans terminer, le compte précédent est déjà fermé.
+C'est un poste de salle informatique, pas un portable personnel. S'il
+renonce, le bandeau « mode invité » lui permet de rouvrir le formulaire
+sans naviguer.
+
+### Une exception assumée à « la connexion se fait au hub »
+
+La règle protège d'une modale **subie** au milieu d'un cours. Ici l'élève
+la demande explicitement en cliquant. C'est la seule exception, et elle
+est documentée dans le code (§10 bis).
+
+## Un second défaut trouvé au passage
+
+`quitter()` ne retirait pas le badge du DOM. Ça ne se voyait pas tant
+qu'un rechargement suivait toujours. Avec « Changer de compte », qui
+reste sur la page, **l'ancien identifiant serait resté affiché derrière
+le formulaire** — un badge qui affirme « connecté comme dede-33 » alors
+que la session est fermée. Le badge est maintenant retiré dans
+`quitter()` : valable pour tous les appelants, présents et futurs.
+
+## Versions
+
+Tout monte en **`?v=11`** — `progression.js`, le CSS et le JS de
+séquence, sur les trois pages concernées. Un seul numéro pour tout le
+site : plus simple à raisonner qu'un fichier en retard sur un autre.
 
 ---
 
-## 2. Le sommaire s'ouvre en grand
+## Ce que j'ai vérifié
 
-Le bouton `⌂ Sommaire` n'envoie plus vers le haut de page : il ouvre la
-carte **en modale, fond flouté**, jusqu'à 920 px de large.
+Quatre bancs d'essai, tous verts. Le quatrième est nouveau : il simule
+une session Supabase (fetch remplacé par un double) et pilote le menu.
+**C'est ce que je n'avais pas pu tester la dernière fois** — le badge est
+désormais couvert pour de bon.
 
-- **Un clic sur une séance ferme la modale et t'y emmène.** Ouvrir un
-  plan pour devoir ensuite le ranger à la main est une étape de trop.
-- Ferment aussi : le bouton ×, la touche Échap, un clic sur le fond.
-- Le focus revient sur le bouton qui a ouvert la modale.
-- Une séance verrouillée n'est pas cliquable et ne ferme rien.
-- `prefers-reduced-motion` : le flou est remplacé par un fond plus dense
-  (sinon le contraste s'effondre pour ceux qui l'ont désactivé).
-- Sans JavaScript, le `href="#hub"` est conservé : le lien saute à
-  l'ancre. On ne casse pas la navigation de secours.
+```
+— page de séquence, élève connecté —
+  AUCUNE modale (règle « connexion au hub »)
+  le badge est affiché · style injecté (position:fixed) · bon identifiant
+  le menu s'ouvre · aria-expanded suit
+— « Changer de compte » —
+  le formulaire s'ouvre SUR PLACE
+  on est resté sur la page du thème
+  onglet « Me connecter » actif · champ en mode connexion
+  le badge de l'ANCIEN compte a disparu · jeton effacé
+  « sans compte » → bandeau récupérable
+— « Se déconnecter » —
+  jeton effacé · badge retiré · pas d'ouverture du formulaire
+```
 
-**La carte de la modale est dessinée à neuf**, elle ne déplace pas celle
-du haut de page — sinon la page se viderait derrière, et tu perdrais ton
-repère en fermant. Les deux cartes lisent le même calcul d'avancement
-(`etatsSeances()`), donc elles ne peuvent pas diverger.
-
----
-
-## 3. Un garde-fou ajouté au passage
-
-`initHub()` est devenu idempotent : un second appel ne crée plus une
-deuxième `<section id="hub">`. Un id dupliqué est exactement ce que
-`verifier.mjs` traque — autant ne pas en fabriquer.
-
----
-
-## Ce que j'ai vérifié, et comment
-
-Trois bancs d'essai, tous verts :
-
-1. **Non-régression du dessin** — l'ancien et le nouveau SVG comparés
-   caractère par caractère, de 2 à 6 nœuds : identiques.
-2. **États sur DOM réel** (19 vérifications) — anneaux, verrous,
-   « à venir », marqueur, retour du href au déverrouillage.
-3. **La vraie page t1 pilotée dans un DOM** (27 vérifications) — hub
-   construit, boutons présents, étapes verrouillées sans href ni
-   `aria-disabled` manquant, modale : ouverture, fermeture par nœud /
-   × / Échap / fond, cartes synchronisées, aucun id dupliqué, aucune
-   erreur JS.
-
-Le banc n°3 a d'ailleurs commencé par échouer — c'était mon test qui
-déclenchait un `DOMContentLoaded` de trop, pas le code. D'où le
-garde-fou du point 3.
-
-**Ce que je n'ai PAS pu tester ici : le badge lui-même**, qui demande
-une vraie session Supabase. Le correctif est vérifié par lecture, pas
-par exécution. C'est le point à confirmer en premier.
+Plus les trois bancs précédents rejoués : non-régression du dessin,
+états sur DOM réel, vraie page t1 pilotée (27 vérifications).
 
 ---
 
 ## À vérifier en ligne
 
-1. **Connecté sur t1 : le badge « 👤 ton-identifiant ▾ » est en haut à
-   droite**, le menu s'ouvre, « Se déconnecter » fonctionne. ← priorité
-2. Plus rien d'anormal en bas de page.
-3. `⌂ Sommaire` ouvre la carte en grand, fond flouté ; un clic sur une
-   séance ferme et emmène ; ×, Échap et le fond ferment aussi.
-4. Déconnecté sur t1 : le bandeau du bas renvoie vers le hub.
-5. Sur téléphone : la modale passe en colonne, cibles ≥ 44 px.
+1. Sur t1, badge → **« Changer de compte » ouvre le formulaire sans
+   quitter le thème** ; après connexion, tu es toujours sur t1.
+2. Le badge de l'ancien compte disparaît dès l'ouverture du formulaire.
+3. « Se déconnecter » se comporte comme avant.
+4. Si tu renonces (« Continuer sans compte »), le bandeau du bas te
+   permet de rouvrir le formulaire sur place.
 
 ---
 
-## Ta dernière phrase a été coupée
+## Prochaine étape
 
-Ton message s'arrête sur « Il ». Il manque probablement une demande —
-dis-moi laquelle avant que j'attaque les lots C et D.
+Les lots **C** (le hub SNT : huit encarts, mini-cartes dépliables,
+bascule en `sequence-snt.css`) et **D** (la reprise en modale bloquante,
+aux deux échelles). La modale du sommaire livrée au correctif 1.1 servira
+de base au lot D — le mécanisme est déjà en place et testé.
+
+Et ta phrase coupée du message précédent, si elle contenait autre chose.

@@ -294,6 +294,14 @@
   function quitter() {
     jeton = null; profil = null;
     ecrireJetonStocke(null);
+    /* Le badge affirme « connecté comme … » : le laisser après avoir
+       fermé la session le ferait mentir. Tant que quitter() était
+       toujours suivi d'un rechargement, ça ne se voyait pas ; depuis
+       « Changer de compte », qui reste sur la page, ça se verrait —
+       l'ancien identifiant s'afficherait derrière le formulaire.
+       Retiré ici, donc valable pour tous les appelants. */
+    var badge = global.document && global.document.querySelector('.acc-badge');
+    if (badge && badge.parentNode) badge.parentNode.removeChild(badge);
     return Promise.resolve();
   }
 
@@ -574,8 +582,29 @@
       if (!badge.contains(ev.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
     });
 
+    /* Deux entrées, deux gestes différents — elles pointaient sur la
+       même fonction, si bien que « Changer de compte » déconnectait
+       sans jamais proposer de compte.
+
+       · Se déconnecter  → on quitte et on recharge. Sur un poste
+         partagé, le rechargement efface de l'écran le travail de
+         l'élève précédent avant que le suivant n'arrive.
+
+       · Changer de compte → on quitte, PUIS on ouvre le formulaire
+         SUR PLACE, sur l'onglet « Me connecter ». L'élève reste dans
+         son thème : après connexion, afficherPortes() recharge la
+         même page, désormais sous le nouveau compte.
+
+       On quitte AVANT d'afficher le formulaire, et pas après : si
+       l'élève s'éloigne sans finir, le compte précédent est déjà
+       fermé. C'est un poste de salle informatique, pas un portable.
+
+       Ceci est la seule exception assumée à « la connexion se fait au
+       hub » (§10 bis). La règle protège d'une modale SUBIE au milieu
+       d'un cours ; ici l'élève la demande explicitement. */
     function deconnexion() { quitter().then(function () { global.location.reload(); }); }
-    badge.querySelector('[data-changer]').addEventListener('click', deconnexion);
+    function changerDeCompte() { quitter().then(function () { afficherPortes('connecter'); }); }
+    badge.querySelector('[data-changer]').addEventListener('click', changerDeCompte);
     badge.querySelector('[data-deco]').addEventListener('click', deconnexion);
 
     global.document.body.appendChild(badge);
