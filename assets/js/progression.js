@@ -96,7 +96,10 @@
       // expires_at est en secondes côté serveur ; on le passe en
       // millisecondes et on retire 60 s de marge, pour ne jamais
       // envoyer un jeton qui expire pendant le voyage.
-      expires_at   : (reponseAuth.expires_at * 1000) - 60000
+      expires_at   : (reponseAuth.expires_at * 1000) - 60000,
+      /* on repart de maintenant : une connexion ou un renouvellement
+         de jeton EST un passage */
+      vu           : Date.now()
     };
     ecrireJetonStocke(jeton);
     return jeton;
@@ -104,6 +107,39 @@
 
   function jetonValide() {
     return jeton && jeton.access_token && Date.now() < jeton.expires_at;
+  }
+
+  /* ----------------------------------------------------------
+   *  Dernier passage — pour ne pas dire « content de te revoir »
+   *  à quelqu'un qui n'est allé nulle part.
+   *
+   *  La modale de retour se montrait à CHAQUE arrivée sur le hub.
+   *  L'intention était bonne (postes partagés), l'effet non : en
+   *  passant du hub à un thème et retour, l'élève la voyait trois
+   *  fois en deux minutes. Un message de retrouvailles adressé à
+   *  quelqu'un qui n'est pas parti ne protège personne, il agace.
+   *
+   *  On la réserve donc à une VRAIE absence, avec le même seuil de
+   *  2 h que les cartes de reprise — un seul seuil dans tout le
+   *  dispositif, plus facile à expliquer et à régler.
+   *
+   *  Stockage : un champ de plus dans l'enregistrement de session
+   *  DÉJÀ présent (clé 'snt.session'). Aucune nouvelle clé, aucune
+   *  donnée de travail — la règle « le localStorage ne contient que
+   *  le jeton de session » tient toujours.
+   * ---------------------------------------------------------- */
+  var SEUIL_RETOUR = 2 * 3600000;
+
+  function absenceLongue() {
+    var v = jeton && jeton.vu;
+    if (!v) return true;                 /* jamais noté : on considère un retour */
+    return (Date.now() - v) > SEUIL_RETOUR;
+  }
+
+  function noterPassage() {
+    if (!jeton) return;
+    jeton.vu = Date.now();
+    ecrireJetonStocke(jeton);
   }
 
   /* ----------------------------------------------------------
@@ -725,8 +761,11 @@
     if (global.SNT_SANS_ACCUEIL) return;     // échappatoire
     accueilMonte = true;
     session().then(function (profil) {
-      if (profil) afficherRetour(profil);
-      else        afficherPortes('creer');
+      if (!profil) { afficherPortes('creer'); return; }
+      /* déjà connecté : on ne l'accueille que s'il revient vraiment */
+      if (absenceLongue()) afficherRetour(profil);
+      else                 afficherBadgeConnecte(profil);
+      noterPassage();
     });
   }
 
@@ -785,7 +824,7 @@
     if (global.SNT_SANS_ACCUEIL) return;
     if (estPageAccueil()) { monterAccueil(); return; }
     session().then(function (profil) {
-      if (profil) afficherBadgeConnecte(profil);
+      if (profil) { afficherBadgeConnecte(profil); noterPassage(); }
       else        afficherRenvoi();
     });
   }

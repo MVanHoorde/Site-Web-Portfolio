@@ -69,14 +69,26 @@
    * ---------------------------------------------------------- */
   function noeudsDe(t) {
     var r = RESUMES[t.cle];
+    /* 1. l'élève a ouvert le thème : la base fait foi */
     if (r && r.seances && r.seances.length) {
       return r.seances.map(function (s, i) {
         return { id: t.cle + '::' + s.id, num: s.num || ('S' + (i + 1)),
                  nom: s.nom || '', classe: 'th' + (t.rang % 8), ancre: s.id };
       });
     }
-    var n = t.chantier ? Math.max(t.attendu, 2) : Math.max(t.attendu, 2);
-    var out = [];
+    /* 2. pas encore ouvert : le sommaire généré depuis les pages
+       (generer-seances.mjs). C'est le cas de sept thèmes sur huit en
+       début d'année — sans lui, la carte serait muette au moment où
+       l'élève en a le plus besoin. */
+    var gen = (global.SEANCES_SNT || {})[t.cle];
+    if (gen && gen.length) {
+      return gen.map(function (s, i) {
+        return { id: t.cle + '::' + s.id, num: s.num || ('S' + (i + 1)),
+                 nom: s.nom || '', classe: 'th' + (t.rang % 8), ancre: s.id };
+      });
+    }
+    /* 3. ni l'un ni l'autre : des nœuds anonymes, en dernier recours */
+    var n = Math.max(t.attendu, 2), out = [];
     for (var i = 0; i < n; i++) {
       out.push({ id: t.cle + '::s' + (i + 1), num: t.chantier ? '?' : ('S' + (i + 1)),
                  nom: '', classe: 'th' + (t.rang % 8), ancre: null });
@@ -132,7 +144,8 @@
         + '</svg>'
         + '<span class="tc-compte">' + (
             t.chantier ? 'en construction'
-          : !r         ? 'pas commencé'
+          : !r         ? (function(){ var g=(global.SEANCES_SNT||{})[t.cle];
+                            return g && g.length ? g.length + ' séances' : 'pas commencé'; })()
           : (r.t && r.f === r.t) ? 'terminé'
           : r.f + ' / ' + r.t + ' étapes'
           ) + '</span>';

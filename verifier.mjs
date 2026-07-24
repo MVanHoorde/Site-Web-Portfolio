@@ -183,6 +183,41 @@ function bilan() {
   return l.join("\n");
 }
 
+/* ---------- Le sommaire généré est-il à jour ? ----------
+   assets/js/seances-snt.js est produit par generer-seances.mjs à partir
+   des huit pages de séquence. Renommer une séance sans relancer le
+   script laisserait le hub afficher un ancien titre. On ne l'oublie pas
+   silencieusement : on compare, et on le signale.
+   Non bloquant — un titre en retard n'empêche personne de travailler. */
+try {
+  const { extraire } = await import("./generer-seances.mjs");
+  const genere = readFileSync("assets/js/seances-snt.js", "utf8");
+  const actuel = JSON.parse(genere.slice(genere.indexOf("{"), genere.lastIndexOf("}") + 1));
+  const ecarts = [];
+  for (const [cle, fichier] of [
+    ["snt-t0", "2nde-snt-t0-systemes-informatises.html"],
+    ["snt-t1", "2nde-snt-t1-internet.html"],
+    ["snt-t2", "2nde-snt-t2-le-web.html"],
+    ["snt-t3", "2nde-snt-t3-reseaux-sociaux.html"],
+    ["snt-t4", "2nde-snt-t4-donnees-structurees.html"],
+    ["snt-t5", "2nde-snt-t5-localisation-cartographie.html"],
+    ["snt-t6", "2nde-snt-t6-informatique-embarquee.html"],
+    ["snt-t7", "2nde-snt-t7-photographie-numerique.html"]
+  ]) {
+    const chemin = "pages/" + fichier;
+    if (!existsSync(chemin)) continue;
+    const frais = JSON.stringify(extraire(readFileSync(chemin, "utf8")));
+    if (frais !== JSON.stringify(actuel[cle] || [])) ecarts.push(cle);
+  }
+  if (ecarts.length) {
+    notes.push(`assets/js/seances-snt.js en retard sur ${ecarts.join(", ")} — relancer : node generer-seances.mjs`);
+  } else {
+    notes.push("assets/js/seances-snt.js — à jour");
+  }
+} catch (e) {
+  notes.push("assets/js/seances-snt.js absent ou illisible — lancer : node generer-seances.mjs");
+}
+
 /* ---------- Sortie ---------- */
 if (BILAN) { console.log(bilan()); process.exit(0); }
 
