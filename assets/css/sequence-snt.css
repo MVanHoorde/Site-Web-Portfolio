@@ -171,9 +171,10 @@
   .opt.correct{background:var(--ok-wash);border-color:var(--ok);color:#0c5c42} .opt.correct .mark{background:var(--ok);border-color:var(--ok)}
   .opt.wrong{background:var(--err-wash);border-color:var(--err);color:#8f2a22} .opt.wrong .mark{background:var(--err);border-color:var(--err)}
   .opt:disabled{cursor:default}
-  .cloze{font-size:15px;line-height:2.2}
-  .cloze input{font-family:"IBM Plex Mono";font-size:14px;border:none;border-bottom:2px solid var(--link);background:var(--link-wash);border-radius:5px 5px 0 0;padding:3px 8px;width:120px;color:var(--ink)}
-  .cloze input.short{width:64px;text-align:center}
+  .cloze{font-size:15.5px;line-height:1.85}
+  .cloze input{font-family:"IBM Plex Sans";font-size:15px;border:1px solid var(--line);border-bottom:2px solid var(--link);background:var(--link-wash);border-radius:6px;padding:1px 7px 2px;width:auto;min-width:44px;max-width:100%;color:var(--ink);vertical-align:baseline}
+  .cloze input::placeholder{color:var(--ink-faint);font-size:13.5px}
+  .cloze input.short{text-align:center}
   .cloze input:focus{outline:2px solid var(--link);outline-offset:1px}
   .cloze input.ok{border-color:var(--ok);background:var(--ok-wash);color:#0c5c42} .cloze input.no{border-color:var(--err);background:var(--err-wash);color:#8f2a22}
   .diagram{width:100%;height:auto;display:block;margin:2px 0 10px} .diagram text{font-family:"IBM Plex Sans"}
@@ -351,8 +352,7 @@
   @media (max-width:560px){
     .field-type{float:none;display:inline-block;margin-bottom:8px}
     .seance-head{flex-direction:column;gap:2px}
-    .cloze input{width:92px}
-    .cloze input.short{width:58px}
+    .cloze input{max-width:100%}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto;animation:none!important}}
 
@@ -603,10 +603,10 @@ body.qcm-on #prog, body.qcm-on #prog4, body.qcm-on #glo-ouvrir{display:none !imp
 .qcm-recap .rl .comp{display:block;font-size:13px;color:var(--ink-soft);margin-top:3px}
 
 /* ---------- 8. Trous tolérants : trois états ---------- */
-.cloze input.juste{border-color:var(--ok);background:var(--ok-wash)}
+.cloze input.juste{border-color:var(--ok);background:var(--ok-wash);color:#0c5c42}
 .cloze input.presque{border-color:var(--wait);background:var(--wait-wash)}
 .cloze input.revoir{border-color:var(--err);background:var(--err-wash)}
-.cloze select.short{padding:3px 6px;border:1.5px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+.cloze select.short{padding:1px 6px 2px;border:1px solid var(--line);border-bottom:2px solid var(--link);border-radius:6px;font:inherit;font-size:15px;background:var(--link-wash);color:var(--ink);min-height:28px}
 .cloze select.juste{border-color:var(--ok);background:var(--ok-wash)}
 .cloze select.revoir{border-color:var(--err);background:var(--err-wash)}
 .doc-note{font-size:13px;color:var(--ink-soft);margin:4px 0 12px;line-height:1.5}
@@ -627,6 +627,21 @@ body.qcm-on #prog, body.qcm-on #prog4, body.qcm-on #glo-ouvrir{display:none !imp
 .calc-fn{color:var(--ink-soft)}
 .calc-eq{grid-row:span 2;background:var(--link);color:#fff;border-color:var(--link)}
 .calc-zero{grid-column:span 2}
+/* ————— Texte à trous, variante « étiquette compacte » (25/07/2026) —————
+   Les indices ne s'ouvrent plus dans le flux du paragraphe : ils se rangent
+   dans un pied de bloc, reliés au trou par un numéro. Le texte ne bouge
+   plus jamais, même quand tous les indices sont ouverts. */
+.cloze .num-trou{font-size:10.5px;font-weight:700;color:var(--link);margin-left:1px;
+  vertical-align:super;line-height:0}
+.cloze .indices-pied{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.cloze .indices-pied:empty{display:none;margin:0;padding:0;border:0}
+.cloze .ind-item{display:flex;gap:9px;font-size:13.5px;color:var(--ink-soft);
+  margin-bottom:7px;line-height:1.5}
+.cloze .ind-item:last-child{margin-bottom:0}
+.cloze .ind-item .ind-num{flex:none;font-weight:700;color:var(--wait);
+  font-family:"IBM Plex Mono";font-size:12.5px;padding-top:1px}
+.cloze .indice{font-size:12px;padding:1px 8px;margin-left:3px;vertical-align:baseline}
+
 .cloze-msg{font-size:13.5px;margin-top:8px}
 .cloze-msg .m-presque{color:#7a5400} .cloze-msg .m-ok{color:var(--ok)} .cloze-msg .m-ko{color:var(--err)}
 .indice{background:none;border:1px dashed var(--link);color:var(--link);border-radius:999px;

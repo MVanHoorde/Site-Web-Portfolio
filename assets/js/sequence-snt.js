@@ -878,6 +878,11 @@
     sec.querySelectorAll('.cloze-msg').forEach(function(m){m.innerHTML='';});
     sec.querySelectorAll('.indice').forEach(function(b){b.disabled=false;b.dataset.niveau='0';});
     sec.querySelectorAll('.indice-txt').forEach(function(z){z.style.display='none';z.textContent='';});
+    /* variante « étiquette compacte » : vider le pied d'indices et remasquer les
+       numéros de trou, sinon un « recommencer » les laisserait affichés */
+    sec.querySelectorAll('.indices-pied').forEach(function(pd){pd.innerHTML='';});
+    sec.querySelectorAll('.cloze .num-trou').forEach(function(nb){nb.hidden=true;});
+    sec.querySelectorAll('.cloze .indice').forEach(function(b){b.hidden=true;});
     sec.querySelectorAll('.qcm-recap').forEach(function(r){r.innerHTML='';r.style.display='none';});
     sec.querySelectorAll('.qcm-lanceur button').forEach(function(b){b.textContent='Commencer';});
     sec.querySelectorAll('.qcm-fait').forEach(function(c){c.remove();});
@@ -1846,26 +1851,56 @@ function initCloze(){
     if(btn){ var neuf=btn.cloneNode(true); btn.parentNode.replaceChild(neuf,btn); btn=neuf; }
     var msg=document.createElement('div'); msg.className='cloze-msg'; bloc.appendChild(msg);
 
-    $$('input[data-answer]',bloc).forEach(function(inp){
+    /* Variante « étiquette compacte » (25/07/2026) : le texte des indices ne
+       s'insère plus dans le flux du paragraphe — il se range ici, en pied de
+       bloc, relié au trou par un numéro. Le paragraphe ne bouge plus. */
+    var pied=document.createElement('div'); pied.className='indices-pied';
+    bloc.insertBefore(pied,msg);
+
+    $$('input[data-answer]',bloc).forEach(function(inp,rang){
+      /* La largeur suit la réponse attendue au lieu d'être imposée en pixels :
+         le rythme typographique du paragraphe est préservé. Marge de 2 pour ne
+         pas livrer la longueur exacte, bornes pour rester lisible. */
+      if(!inp.getAttribute('size')){
+        var L=(inp.dataset.answer||'').length;
+        var court=inp.classList.contains('short');
+        inp.setAttribute('size', String(court
+          ? Math.min(8, Math.max(3, L+1))
+          : Math.min(18, Math.max(5, L+2))));
+      }
       if(!inp.dataset.indice1) return;
+
+      var num=document.createElement('sup');
+      num.className='num-trou'; num.textContent=String(rang+1); num.hidden=true;
+      inp.insertAdjacentElement('afterend',num);
+
       var b=document.createElement('button');
       b.type='button'; b.className='indice'; b.textContent='indice';
       b.dataset.niveau='0';
       /* Audit Loïc : aucun indice tant que l'élève n'a pas tenté sa chance, puis
          seulement en face des trous faux. Le bouton est créé mais masqué. */
       b.hidden = true;
-      var zone=document.createElement('span'); zone.className='indice-txt'; zone.style.display='none';
-      inp._indiceBtn = b; inp._indiceZone = zone;
-      inp.insertAdjacentElement('afterend',b);
-      b.insertAdjacentElement('afterend',zone);
+      inp._indiceBtn = b; inp._indiceNum = num; inp._indiceRang = rang+1;
+      num.insertAdjacentElement('afterend',b);
+
       b.addEventListener('click',function(){
         var n=parseInt(b.dataset.niveau,10)+1;
         var t=inp.dataset['indice'+n];
         if(!t){ b.disabled=true; return; }
-        b.dataset.niveau=n; zone.style.display='block'; zone.textContent=t;
+        b.dataset.niveau=n;
+        var item=pied.querySelector('[data-trou="'+rang+'"]');
+        if(!item){
+          item=document.createElement('div');
+          item.className='ind-item'; item.dataset.trou=String(rang);
+          item.innerHTML='<span class="ind-num"></span><span class="ind-txt"></span>';
+          item.querySelector('.ind-num').textContent=String(rang+1);
+          pied.appendChild(item);
+        }
+        item.querySelector('.ind-txt').textContent=t;
         if(!inp.dataset['indice'+(n+1)]) b.disabled=true;
       });
     });
+    bloc._piedIndices = pied;
 
     if(!btn) return;
     btn.addEventListener('click',function(){
@@ -1896,7 +1931,13 @@ function initCloze(){
         if(inp._indiceBtn){
           var faux = inp.classList.contains('revoir');
           inp._indiceBtn.hidden = !faux;
-          if(!faux && inp._indiceZone) inp._indiceZone.style.display='none';
+          /* le numéro n'apparaît qu'avec l'indice : tant que tout va bien, le
+             paragraphe reste propre */
+          if(inp._indiceNum) inp._indiceNum.hidden = !faux;
+          if(!faux && bloc._piedIndices){
+            var vieux=bloc._piedIndices.querySelector('[data-trou="'+(inp._indiceRang-1)+'"]');
+            if(vieux) vieux.remove();
+          }
         }
       });
       /* trous en menu déroulant : correction exacte, sans Levenshtein (ajout 22/07) */
@@ -1911,7 +1952,7 @@ function initCloze(){
       if(ok===n) h+='<span class="m-ok">Tout est juste'+(presque?' — attention à l\'orthographe, je l\'ai corrigée pour toi.':'.')+'</span>';
       else{
         if(presque) h+='<span class="m-presque">'+presque+' réponse(s) acceptée(s) malgré une faute d\'orthographe : '+fautes.join(', ')+'.</span><br>';
-        h+='<span class="m-ko">'+(n-ok)+' réponse(s) à revoir. Un <b>indice</b> vient d\'apparaître à côté de chacune d\'elles.</span>';
+        h+='<span class="m-ko">'+(n-ok)+' réponse(s) à revoir. Un bouton <b>indice</b> vient d\'apparaître sur chacune d\'elles : le texte s\'affiche juste en dessous de l\'exercice.</span>';
       }
       $('.cloze-msg',bloc).innerHTML=h;
       /* validation à l'envoi : avoir répondu suffit */
