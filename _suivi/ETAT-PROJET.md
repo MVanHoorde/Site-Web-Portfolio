@@ -78,14 +78,13 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 - [ ] Porter `t0` sur le moteur partagé, puis les cinq séquences restantes
 - [x] ~~`t2` lot 1 — séance 1 refondue~~ — fait le 25/07
 - [x] ~~`t2` lot 3 — séance 2 HTML/CSS~~ · ~~lot 4 — cookies en séance 4~~ — faits le 25/07
-- [ ] **`t2` lot 2** — séance 3, moteurs de recherche (document 03 :
-      les cinq tâches, le SEO, le tableau géographique refait)
-- [ ] **`t2` lot 5** — frise débranchée, 20 repères datés
+- [x] ~~`t2` lot 2 — séance 3~~ · ~~lot 5 — frise débranchée~~ — faits le 25/07
+- [ ] **`t2` : imprimer les étiquettes de la frise** (`WEB·D`, 20 étiquettes)
 - [ ] Vérifier en salle : CodeBetter accessible depuis le réseau du lycée,
       et quels navigateurs sont installés (l'étape cookies en demande deux).
       Non bloquant depuis le 25/07 : l'étape CodeBetter n'est plus une porte
 - [ ] Écrire la grille de critères IA des cinq réponses corrigées de `t2` :
-      `WEB-R1b` · `WEB-R2` · `WEB-R5` · `WEB-R4a` · `WEB-R7` — après le lot 2
+      `WEB-R1b` · `WEB-R2a` · `WEB-R3b` · `WEB-R4a` · `WEB-R4b`
 - [ ] **`t2` 1.3 : vidéo HTTP** — adresse nocookie, titre, chaîne, durée,
       puis questions de QCM après visionnage (par Loïc)
 - [ ] Relire et exécuter `bdd/schema/007-frise-es.sql`, puis brancher la page de frise

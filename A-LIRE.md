@@ -1,4 +1,4 @@
-# Séquence Web — lots 0, 1, 3, 4 + arbitrages appliqués (25/07/2026)
+# Séquence Web — les cinq lots, terminés (25/07/2026)
 
 Extraire à la **racine du dépôt**. Cette archive **remplace** la précédente
 (la première livraison du lot 0 laissait du CSS orphelin — voir §5).
@@ -248,4 +248,97 @@ et ≈ 120 relectures au budget d'une sur trois.
 
 Restent à produire : **lot 2** (séance 3, moteurs de recherche) et **lot 5**
 (la frise débranchée).
+
+---
+
+## 12. Lot 2 — la séance 3, moteurs de recherche
+
+**Le moteur travaille en deux temps.** Tes cinq tâches du document 03, dans
+leurs deux phases : avant ta recherche, des robots **explorent**, les pages
+sont **indexées**, chacune reçoit une note de **notoriété** ; au moment où tu
+tapes, le moteur **recherche** dans l'index puis **trie**. L'exercice à menus
+reprend exactement ton découpage, avec une sixième question qui vérifie que
+l'élève a compris la séparation des deux temps.
+
+Ajouté : le **SEO** — et sa conséquence, dite franchement : *le premier
+résultat est le mieux classé, pas le plus vrai*. Et la distinction entre un
+résultat **classé** et un résultat **acheté** (la mention « Annonce »), qui
+n'était nulle part et qui est le premier réflexe utile devant une page de
+résultats.
+
+**La grille de fiabilité.** L'étape 3 de ton document 01 — la longue liste
+auteur / date / structure / contenu — devient **quatre questions** : qui
+écrit, quand, pourquoi, comment. Plus deux choses qui n'y étaient pas : le
+réflexe **géographique** (une règle américaine n'est pas une règle française —
+beaucoup d'erreurs d'exposé viennent de là, pas d'un site menteur), et la
+**relecture de l'URL**, qui referme la boucle avec l'étape 1.4 :
+`education.gouv.fr` et `education-gouv.info` ne se ressemblent que pour qui
+ne regarde pas.
+
+## 13. Lot 5 — la frise débranchée
+
+Tes **vingt étiquettes**, distribuées **sans leurs dates** : les chercher fait
+partie du travail. Les deux intrus de ta liste — les premiers pas sur la Lune,
+le premier ordinateur portable — sont gardés et **assumés comme repères** :
+ils servent à sentir l'époque.
+
+Et j'ai gardé « le premier ordinateur portable » **exprès sans réponse
+unique**. Selon la définition retenue — transportable, à batterie, écran
+rabattable — on trouve 1975, 1981 ou 1982. La consigne le dit à l'élève : ne
+cherche pas la bonne réponse, cherche pourquoi les sources ne sont pas
+d'accord. C'est la séance 3 qui revient par la petite porte, sans écran.
+
+Le « à retenir » tient en une idée : **Internet a vingt ans de plus que le
+Web**. 1969 d'un côté — quatre ordinateurs qui se parlent, et deux hommes sur
+la Lune la même année. 1989-1991 de l'autre.
+
+Durée portée de 30 à 45 min.
+
+### Les dates, pour toi
+
+```
+Internet     modem ~1958 (conventionnel) · ARPANET 1969 · TCP 1974
+             CNIL 1978 · bascule TCP/IP 1983 · Napster 1999
+             Facebook 2004 · iPhone 2007 · Instagram 2010
+Web          hypertexte (Nelson) 1965 · proposition au CERN 1989
+             domaine public + Mosaic 1993 · bannière pub + Yahoo! 1994
+             JavaScript et PHP 1995 · CSS 1996 · Google 1998
+Repères      la Lune 1969 · ordinateur portable 1975 / 1981 / 1982 (le piège)
+```
+
+Deux dates sont **conventionnelles** et non des faits tranchés : celle du
+modem et celle de l'ordinateur portable. Je les ai laissées telles quelles —
+mais mieux vaut le savoir avant de corriger.
+
+## 14. Nomenclature des codes
+
+Les codes de champ étaient devenus disparates au fil des lots. Ils sont
+maintenant réguliers : `WEB-Q<séance><lettre>` pour les QCM,
+`WEB-R<séance><lettre>` pour les réponses rédigées. **22 codes, tous uniques,
+tous cohérents avec leur séance.** Les codes `WEB-Q2` et `WEB-R4`, retirés en
+cours de route, ne sont pas recyclés.
+
+## 15. Où en est la séquence
+
+| | Étapes | dont bloquantes | QCM | Rédigées corrigées |
+|---|---|---|---|---|
+| S1 Le Web | 6 | 4 | 4 | 2 |
+| S2 HTML & CSS | 6 | 3 | 2 | 1 |
+| S3 Recherche & IA | 5 | 4 | 3 | 1 |
+| S4 Sécurité | 6 | 5 | 3 | 2 |
+| Frise | 1 | — | — | — |
+
+Cinq créneaux, ≈ 7 h 30 plus 45 min sans écran.
+
+### Ce qui reste, et qui ne dépend que de toi
+
+1. La **vidéo de 1.3** : adresse `youtube-nocookie`, titre, chaîne, durée —
+   puis les questions de QCM, après visionnage.
+2. La **consigne exacte de `WEB·1a`** (repérer son navigateur et son moteur).
+3. Les **étiquettes imprimables** de la frise (`WEB·D`).
+4. **En salle** : CodeBetter passe-t-il le filtre ? quels navigateurs sur les
+   postes ? et les tests Playwright aux trois largeurs.
+5. La **licence de l'image du Minitel** sur Commons.
+6. La **grille de critères IA** des cinq réponses corrigées : `WEB-R1b`,
+   `WEB-R2a`, `WEB-R3b`, `WEB-R4a`, `WEB-R4b`.
 
