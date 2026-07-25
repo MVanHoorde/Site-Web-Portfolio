@@ -5,261 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SNT · Le Web — Séquence élève</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<style>
-  :root{
-    --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
-    --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
-    --link:#2445c7; --link-wash:#e7ebfb;
-    --activity:#c26a12; --activity-wash:#faeede;
-    --ok:#12805c; --ok-wash:#e0f2ea;
-    --err:#c33a2f; --err-wash:#fbe6e3;
-    --wait:#9a6a00; --wait-wash:#fbf1d8;
-    --france:#164a8a; --france-wash:#e6eef8;
-    --hist:#6b4a9a; --hist-wash:#efe9f7;
-    --bonus:#0f6d63; --bonus-wash:#e0f1ef;
-    --radius:14px; --shadow:0 1px 2px rgba(22,31,51,.05),0 8px 24px rgba(22,31,51,.06);
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
-  code{font-family:"IBM Plex Mono",monospace}
-
-  /* HEADER */
-  header.masthead{background:radial-gradient(120% 140% at 90% -10%,rgba(36,69,199,.10),transparent 55%),var(--surface);border-bottom:1px solid var(--line);padding:34px 0 26px}
-  .eyebrow{font-family:"IBM Plex Mono";font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--link);font-weight:600;margin-bottom:10px}
-  h1.title{font-family:"Space Grotesk";font-weight:700;font-size:clamp(38px,7vw,60px);line-height:.98;margin:0 0 4px;letter-spacing:-.02em}
-  h1.title .tag{font-family:"IBM Plex Mono";font-weight:500;color:var(--ink-faint);font-size:.42em;vertical-align:middle}
-  .lede{color:var(--ink-soft);max-width:60ch;margin:14px 0 22px;font-size:16.5px}
-  .themes{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
-  .theme-chip{font-size:12.5px;padding:5px 11px;border-radius:100px;border:1px solid var(--line);color:var(--ink-faint);background:var(--surface-2);font-family:"IBM Plex Mono"}
-  .theme-chip.on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:500}
-  .meta-row{display:flex;flex-wrap:wrap;gap:22px;align-items:baseline}
-  .meta-row .m{font-size:14px;color:var(--ink-soft)} .meta-row .m b{color:var(--ink);font-weight:600}
-
-  /* NAV */
-  nav.seances{position:sticky;top:0;z-index:30;background:rgba(233,237,244,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  nav.seances .wrap{display:flex;gap:6px;align-items:center;overflow-x:auto;padding:9px 20px}
-  nav.seances a{white-space:nowrap;text-decoration:none;color:var(--ink-soft);font-size:13.5px;font-weight:500;padding:7px 13px;border-radius:9px;border:1px solid transparent;transition:.15s;display:flex;align-items:center;gap:6px}
-  nav.seances a:hover{background:var(--surface);border-color:var(--line);color:var(--ink)}
-  nav.seances a .n{font-family:"IBM Plex Mono";color:var(--link)}
-  nav.seances a .lockico{font-size:11px;opacity:.6}
-  nav.seances a.retour{color:var(--ink-faint);border-right:1px solid var(--line);border-radius:9px 0 0 9px;margin-right:4px;padding-right:14px}
-  nav.seances a.retour:hover{border-color:var(--line);color:var(--ink)}
-  .spacer{flex:1}
-  .teacher-toggle{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:12.5px;color:var(--ink-soft);cursor:pointer;user-select:none}
-  .teacher-toggle input{display:none}
-  .switch{width:34px;height:19px;border-radius:100px;background:var(--line);position:relative;transition:.2s;flex:none}
-  .switch::after{content:"";position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
-  .teacher-toggle input:checked + .switch{background:var(--france)}
-  .teacher-toggle input:checked + .switch::after{left:17px}
-
-  /* LEGEND */
-  .legend{display:flex;flex-wrap:wrap;gap:16px;margin:24px 0 4px;padding:13px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);font-size:13px;color:var(--ink-soft)}
-  .legend .dot{display:inline-flex;align-items:center;gap:7px}
-  .pip{width:13px;height:13px;border-radius:50%;flex:none;border:2px solid var(--ink-faint)}
-  .pip.doing{background:conic-gradient(var(--link) 50%,transparent 0);border-color:var(--link)}
-  .pip.wait{background:var(--wait-wash);border-color:var(--wait)} .pip.done{background:var(--ok);border-color:var(--ok)}
-
-  /* SÉANCE */
-  section.seance{padding:38px 0 8px;position:relative}
-  .seance-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:6px}
-  .seance-head h2{font-family:"Space Grotesk";font-weight:600;font-size:clamp(22px,3.4vw,28px);margin:0;letter-spacing:-.01em}
-  .seance-head h2 .s-num{color:var(--link);font-family:"IBM Plex Mono";font-size:.7em;margin-right:8px}
-  .seance-time{font-family:"IBM Plex Mono";font-size:13px;color:var(--ink-faint);white-space:nowrap}
-  .seance-goal{color:var(--ink-soft);font-size:14.5px;margin:0 0 8px;max-width:70ch}
-  .progress-line{height:5px;background:var(--line);border-radius:100px;overflow:hidden;margin:12px 0 4px}
-  .progress-line i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
-
-  /* verrouillage */
-  .lock-banner{display:none;align-items:center;gap:12px;background:var(--surface);border:1px dashed var(--france);border-radius:var(--radius);padding:14px 16px;margin-top:14px;color:var(--france);font-size:14px}
-  .lock-banner .k{font-size:20px}
-  .lockable{transition:.3s}
-  .seance.locked .lock-banner{display:flex}
-  .seance.locked .lockable{filter:blur(3px);opacity:.45;pointer-events:none;user-select:none}
-  body.teacher .seance.locked .lockable{filter:none;opacity:1;pointer-events:auto;user-select:auto}
-  body.teacher .seance.locked .lock-banner{border-color:var(--ink-faint);color:var(--ink-soft)}
-  body.teacher .seance.locked .lock-banner .k::before{content:"🔓"}
-  .seance.locked .lock-banner .k::before{content:"🔒"}
-
-  /* étapes */
-  .steps{position:relative;margin-top:20px}
-  .step{position:relative;padding-left:40px;padding-bottom:14px}
-  .rail{position:absolute;left:13px;top:6px;bottom:-10px;width:2px;background:var(--line)}
-  .step:last-child .rail{display:none}
-  .step-pip{position:absolute;left:6px;top:4px;width:16px;height:16px;border-radius:50%;border:2px solid var(--ink-faint);background:var(--bg);z-index:2;transition:.2s}
-  .step.is-done .step-pip{background:var(--ok);border-color:var(--ok)}
-  .step.is-done .rail{background:linear-gradient(var(--ok),var(--line))}
-  .step.is-wait .step-pip{background:var(--wait-wash);border-color:var(--wait)}
-
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-  .card-top{padding:16px 18px 4px}
-  .step-kicker{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);letter-spacing:.03em;margin-bottom:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .badge{font-family:"IBM Plex Mono";font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:5px}
-  .badge.gate{background:var(--link-wash);color:var(--link)}
-  .step-title{font-family:"Space Grotesk";font-weight:600;font-size:19px;margin:0 0 8px;letter-spacing:-.01em}
-  .objective{display:flex;gap:9px;font-size:14px;color:var(--ink-soft);background:var(--link-wash);border-radius:10px;padding:9px 12px;margin:2px 0 4px}
-  .objective b{color:var(--link);font-weight:600}
-  .card-body{padding:6px 18px 18px}
-  .block-label{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
-  .block-label::after{content:"";flex:1;height:1px;background:var(--line)}
-
-  /* ressources */
-  .res{display:flex;flex-direction:column;gap:7px}
-  .res-item{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-decoration:none;color:inherit;transition:.15s}
-  a.res-item:hover{border-color:var(--link);background:var(--link-wash)}
-  .res-code{font-family:"IBM Plex Mono";font-size:11px;font-weight:600;flex:none;padding:3px 7px;border-radius:6px;background:var(--ink);color:#fff;margin-top:1px}
-  .res-item.activity .res-code{background:var(--activity)} .res-item.debranche .res-code{background:#5b3fa8}
-  .res-main{flex:1;min-width:0} .res-main .r-title{font-weight:500;font-size:14.5px} .res-main .r-type{font-size:12.5px;color:var(--ink-faint)}
-  .res-time{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);flex:none;margin-top:2px}
-  .res-item.activity{background:var(--activity-wash);border-color:#eed4b6} .res-item.activity:hover{border-color:var(--activity)}
-
-  /* à retenir + tableaux docs */
-  .retain{border-left:3px solid var(--ink);background:var(--surface-2);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px}
-  .retain code{background:#eceff7;padding:1px 5px;border-radius:4px;font-size:.9em;color:var(--link)}
-  .doc-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0}
-  .doc-table th,.doc-table td{border:1px solid var(--line);padding:6px 10px;text-align:left}
-  .doc-table th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:12px;font-weight:600;color:var(--ink-soft)}
-  .doc-table code{color:var(--link)}
-
-  /* encadré histoire (révélé) */
-  .reveal{display:none;margin-top:12px;border-radius:12px;padding:13px 15px;font-size:14px;line-height:1.6;border:1px solid var(--hist);background:var(--hist-wash);color:#3e2c5c}
-  .reveal.show{display:block;animation:fade .4s ease}
-  .reveal .rl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--hist);font-weight:600;margin-bottom:5px;display:flex;gap:6px;align-items:center}
-  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-
-  /* encadré france (toujours visible) */
-  .france-box{position:relative;border:1px solid var(--france);background:var(--france-wash);border-radius:var(--radius);padding:16px 18px;margin-top:6px;overflow:hidden}
-  .france-box::before{content:"";position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#0a3d91 0 33.3%,#fff 33.3% 66.6%,#e1122f 66.6% 100%)}
-  .france-box .fl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--france);font-weight:600;margin:4px 0 8px;display:flex;gap:7px;align-items:center}
-  .france-box h4{font-family:"Space Grotesk";margin:0 0 6px;font-size:17px;color:var(--france)}
-  .france-box p{margin:0 0 9px;font-size:14px;color:#1f3a5c;line-height:1.6}
-  .france-box .warn-note{font-size:13px;background:#fff;border-radius:9px;padding:9px 12px;color:var(--ink-soft);border:1px solid #cdddf0}
-  .france-cols{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
-  .france-cols .txt{flex:1;min-width:220px}
-  .minitel-fig{flex:none;width:150px;text-align:center}
-  .minitel-fig svg{width:150px;height:auto}
-  .minitel-fig figcaption{font-size:11.5px;color:var(--ink-faint);margin-top:4px;font-style:italic}
-  .biblio{margin-top:10px;background:#fff;border:1px solid #cdddf0;border-radius:10px;padding:10px 13px}
-  .biblio .bl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--france);font-weight:600;margin-bottom:6px;display:flex;gap:6px;align-items:center}
-  .biblio a{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--france);text-decoration:none;border-bottom:1px dotted var(--france);margin:2px 12px 2px 0}
-  .biblio a:hover{background:var(--france-wash)}
-  .biblio a::before{content:"↗";font-size:11px;opacity:.7}
-  .reveal .biblio{background:rgba(255,255,255,.6);border-color:var(--hist)}
-  .reveal .biblio .bl,.reveal .biblio a{color:var(--hist)} .reveal .biblio a{border-bottom-color:var(--hist)}
-
-  /* champs */
-  .field{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface-2)}
-  .field + .field{margin-top:10px}
-  .field-q{font-weight:500;font-size:15px;margin-bottom:11px}
-  .field-type{float:right;font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 6px;text-transform:uppercase}
-  .opts{display:flex;flex-direction:column;gap:7px}
-  .opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer;font-size:14.5px;transition:.12s;text-align:left}
-  .opt:hover{border-color:var(--link)} .opt .mark{width:18px;height:18px;border-radius:50%;border:2px solid var(--ink-faint);flex:none}
-  .opt.correct{background:var(--ok-wash);border-color:var(--ok);color:#0c5c42} .opt.correct .mark{background:var(--ok);border-color:var(--ok)}
-  .opt.wrong{background:var(--err-wash);border-color:var(--err);color:#8f2a22} .opt.wrong .mark{background:var(--err);border-color:var(--err)}
-  .opt:disabled{cursor:default}
-  .cloze{font-size:15px;line-height:2.2}
-  .cloze input{font-family:"IBM Plex Mono";font-size:14px;border:none;border-bottom:2px solid var(--link);background:var(--link-wash);border-radius:5px 5px 0 0;padding:3px 8px;width:120px;color:var(--ink)}
-  .cloze input:focus{outline:2px solid var(--link);outline-offset:1px}
-  .cloze input.ok{border-color:var(--ok);background:var(--ok-wash);color:#0c5c42} .cloze input.no{border-color:var(--err);background:var(--err-wash);color:#8f2a22}
-  .diagram{width:100%;height:auto;display:block;margin:2px 0 10px} .diagram text{font-family:"IBM Plex Sans"}
-  .label-selects{display:flex;flex-wrap:wrap;gap:10px}
-  .label-selects label{font-size:13px;color:var(--ink-soft);display:flex;flex-direction:column;gap:3px}
-  .label-selects select{font-family:"IBM Plex Sans";font-size:13.5px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
-  .label-selects select.ok{border-color:var(--ok);background:var(--ok-wash)} .label-selects select.no{border-color:var(--err);background:var(--err-wash)}
-  .free textarea,.perso textarea{width:100%;min-height:88px;resize:vertical;font-family:"IBM Plex Sans";font-size:14.5px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);line-height:1.5}
-  .free textarea:focus,.perso textarea:focus{outline:2px solid var(--link);outline-offset:1px;border-color:var(--link)}
-  .free-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:9px;flex-wrap:wrap}
-  .free-meta{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--ink-faint)} .free-meta .warn{color:var(--err)}
-  .btn{font-family:"IBM Plex Sans";font-weight:600;font-size:14px;cursor:pointer;padding:9px 16px;border-radius:9px;border:1px solid var(--link);background:var(--link);color:#fff;transition:.15s}
-  .btn:hover{filter:brightness(1.08)} .btn.ghost{background:transparent;color:var(--link)} .btn:disabled{opacity:.5;cursor:default;filter:none}
-  .verdict{margin-top:10px;font-size:13.5px;padding:9px 12px;border-radius:9px;display:none}
-  .verdict.show{display:block}
-  .verdict.ok{background:var(--ok-wash);color:#0c5c42;border:1px solid var(--ok)}
-  .verdict.wait{background:var(--wait-wash);color:#7a5400;border:1px solid var(--wait)}
-  .verdict.no{background:var(--err-wash);color:#8f2a22;border:1px solid var(--err)}
-
-  /* perso */
-  .perso-box{border:1px solid #cdddf0;background:#fff;border-radius:12px;padding:14px}
-  .perso-box .pl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:8px;display:flex;gap:6px;align-items:center}
-  .perso-box .note-free{font-size:12.5px;color:var(--ink-faint);margin-top:7px}
-
-  /* bonus */
-  .bonus-wrap{margin-top:18px;border:1px solid var(--bonus);border-radius:var(--radius);overflow:hidden}
-  .bonus-head{background:var(--bonus-wash);padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer}
-  .bonus-head .bl{font-family:"Space Grotesk";font-weight:600;color:var(--bonus);font-size:16px;flex:1}
-  .bonus-head .chev{transition:.2s;color:var(--bonus)}
-  .bonus-wrap.open .chev{transform:rotate(90deg)}
-  .bonus-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease}
-  .bonus-wrap.open .bonus-body{max-height:1400px;padding:14px 16px}
-  .bonus-body .field{background:#fff}
-  .bonus-tag{font-size:12px;color:var(--bonus);background:#fff;border:1px solid var(--bonus);border-radius:100px;padding:2px 9px;font-family:"IBM Plex Mono"}
-
-  footer.note{margin:42px 0 60px;padding:20px 22px;border:1px dashed var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink-soft);font-size:13.5px}
-  footer.note b{color:var(--ink)} footer.note code{background:var(--surface-2);padding:1px 5px;border-radius:4px;color:var(--link)}
-
-  /* barre d'actions séance */
-  .seance-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
-  .seance-actions .sa-label{flex:1;min-width:160px;font-size:13px;color:var(--ink-soft);align-self:center}
-  .btn.sm{padding:8px 13px;font-size:13px}
-  .btn.dl{background:var(--ok);border-color:var(--ok)}
-  .btn.reset{background:transparent;color:var(--ink-soft);border-color:var(--line)}
-  .btn.reset:hover{border-color:var(--err);color:var(--err)}
-
-  /* modal */
-  .modal-back{position:fixed;inset:0;background:rgba(22,31,51,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
-  .modal-back.show{display:flex}
-  .modal{background:var(--surface);border-radius:18px;max-width:440px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;animation:pop .25s ease}
-  @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
-  .modal .m-ico{font-size:40px;margin-bottom:6px}
-  .modal h3{font-family:"Space Grotesk";font-size:22px;margin:0 0 8px;color:var(--ink)}
-  .modal p{font-size:14.5px;color:var(--ink-soft);margin:0 0 18px;line-height:1.55}
-  .modal .m-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-  .modal .recap{text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13.5px;max-height:200px;overflow:auto}
-  .modal .recap .ri{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid var(--line)}
-  .modal .recap .ri:last-child{border-bottom:none}
-  .modal .recap .ri b{color:var(--ok)}
-
-  /* manip piège à clic (sécurité) */
-  .trap-zone{border:2px dashed var(--err);border-radius:12px;padding:18px;text-align:center;background:var(--err-wash)}
-  .trap-btn{font-family:"Space Grotesk";font-weight:700;font-size:18px;cursor:pointer;padding:14px 26px;border-radius:10px;border:none;background:var(--err);color:#fff;animation:wiggle 1.6s ease-in-out infinite}
-  @keyframes wiggle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
-  .trap-reveal{display:none;margin-top:14px;font-size:14px;color:var(--ink);background:#fff;border-radius:10px;padding:12px 14px;border:1px solid var(--line);text-align:left}
-  .trap-reveal.show{display:block}
-  body.pwned{animation:hue 1.2s linear 3}
-  @keyframes hue{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
-
-  @media (prefers-reduced-motion:reduce){.trap-btn{animation:none}body.pwned{animation:none}}
-
-  @media (max-width:560px){
-    .field-type{float:none;display:inline-block;margin-bottom:8px}
-    .seance-head{flex-direction:column;gap:2px}
-    .cloze input{width:92px}
-    nav.seances .teacher-toggle span.tlabel{display:none}
-  }
-  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto;animation:none!important}}
-
-  /* NOTES DE CHANTIER (CONSIGNES-séquence-SNT §14.2) — supprimées à la validation */
-  :root{--work:#8a6400;--work-line:#b8860b;--work-ink:#5a4500;--work-b:#3f3000;--work-w1:#fdf6dd;--work-w2:#faeec2;
-        --dec:#c33a2f;--dec-ink:#6e1f18;--dec-b:#4a1410;--dec-w1:#fdeceb;--dec-w2:#fadbd8}
-  .chantier{position:relative;margin:14px 0;border:2px dashed var(--work-line);border-radius:12px;background:repeating-linear-gradient(-45deg,var(--work-w1),var(--work-w1) 12px,var(--work-w2) 12px,var(--work-w2) 24px);padding:12px 15px;font-size:13.5px;color:var(--work-ink);line-height:1.55}
-  .chantier .cl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--work);display:flex;gap:7px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
-  .chantier b{color:var(--work-b)}
-  .chantier ul{margin:4px 0 0;padding-left:18px}
-  .chantier li{margin:2px 0}
-  .chantier a{color:var(--work);font-weight:600}
-  .chantier.decision{border-color:var(--dec);background:repeating-linear-gradient(-45deg,var(--dec-w1),var(--dec-w1) 12px,var(--dec-w2) 12px,var(--dec-w2) 24px);color:var(--dec-ink)}
-  .chantier.decision .cl{color:var(--dec)}
-  .chantier.decision b{color:var(--dec-b)}
-  body.eleve .chantier{display:none} /* filet : une classe 'eleve' sur <body> masque toutes les notes d'un coup */
+<!-- client de base de données partagé (dérogation §5 des consignes SNT).
+     Absent ou non configuré : la séquence fonctionne, sans enregistrement.
+     Sans "defer" à dessein : le moteur, en fin de body, doit le trouver
+     déjà chargé. Fichier local et léger, aucun coût réseau. -->
+<script src="../assets/js/progression.js?v=13"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=19">
+</head><body data-sequence="snt-t2"> masque toutes les notes d'un coup */
 
 
   /* figure illustrée dans l'encart 🇫🇷 (ajout 21/07) */
-  .ill-fr{margin:12px 0;background:#fff;border:1px solid #cdddf0;border-radius:12px;padding:10px}
-  .ill-fr img{display:block;width:100%;max-height:280px;object-fit:contain;border-radius:8px;cursor:zoom-in}
-  .ill-fr figcaption{font-size:13px;color:#1f3a5c;margin-top:8px;line-height:1.5}
-  .ill-fr .src{display:block;font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-faint);margin-top:4px}
+  .ill{margin:12px 0;background:#fff;border:1px solid #cdddf0;border-radius:12px;padding:10px}
+  .ill img{display:block;width:100%;max-height:280px;object-fit:contain;border-radius:8px;cursor:zoom-in}
+  .ill figcaption{font-size:13px;color:#1f3a5c;margin-top:8px;line-height:1.5}
+  .ill .src{display:block;font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-faint);margin-top:4px}
   .zoom-back{position:fixed;inset:0;z-index:140;background:rgba(22,31,51,.86);display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
   .zoom-back.on{display:flex}
   .zoom-back img{max-width:100%;max-height:88vh;border-radius:8px;background:#fff}
@@ -301,6 +60,12 @@
       <span class="m">Durée <b>≈ 6 h</b></span>
       <span class="m">Chaque séance se débloque quand la <b>précédente est validée</b></span>
     </div>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — toutes les séances sont ouvertes.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
   </div>
 </header>
 
@@ -313,10 +78,9 @@
     <a href="#s4" data-navlock="4"><span class="n">S4</span>Sécurité &amp; vie privée <span class="lockico">🔒</span></a>
     <a href="#deb"><span class="n">⏳</span>Frise</a>
     <span class="spacer"></span>
-    <label class="teacher-toggle" title="Déverrouille toutes les séances (usage enseignant)">
-      <input type="checkbox" id="teacherMode">
-      <span class="switch"></span><span class="tlabel">Mode enseignant</span>
-    </label>
+    <!-- simple pont d'état pour le mode enseignant : l'interrupteur visible a
+         été retiré, la commande est la zone .ens-zone en tête de page. -->
+    <input type="checkbox" id="teacherMode" hidden>
   </div>
 </nav>
 
@@ -339,9 +103,11 @@
 
     <!-- CHANTIER -->
     <aside class="chantier">
-      <div class="cl">✅ 21/07/2026 — le Minitel et « Internet ≠ Web » vivent désormais ici</div>
-      Décisions actées avec Loïc&nbsp;: le <b>Minitel</b> quitte la séquence Internet et est <b>développé ici</b>, dans l'encart 🇫🇷 (image, comparaison <b>centralisé / décentralisé</b>, sources) — la séquence Internet n'en garde qu'une <b>mention de deux lignes</b> avec picto. De même, la distinction <b>Internet ≠ Web</b> est traitée <b>en entier ici</b> (étape 1.1) ; la séquence Internet n'en garde qu'un rappel d'une ligne. Conforme à CONSIGNES §14.1 : un seul traitement complet par notion.
-      <br><br>📌 <b>Reste à faire</b> — ⚖️ confirmer la licence de l'image du Minitel sur Commons · porter ici les mécanismes V3 codés dans la séquence Internet (barre de progression, échelle d'évaluabilité, QCM plein écran, glossaire permanent, mode enseignant à code) · l'épisode <b>5/8</b> du podcast France Culture (« L'Europe crée le web ») est <b>réservé pour cette séquence</b>.
+      <div class="cl">🚧 25/07/2026 — séquence portée sur le moteur partagé, contenu en cours de refonte</div>
+      <b>Ce qui est acté.</b> Le <b>Minitel</b> est développé ici, dans l'encart 🇫🇷 (image, comparaison <b>centralisé / décentralisé</b>, sources) — la séquence Internet n'en garde qu'une mention de deux lignes. La distinction <b>Internet ≠ Web</b> est traitée en entier ici ; la séquence Internet n'en garde qu'un rappel d'une ligne. Conforme à CONSIGNES §14.1 : un seul traitement complet par notion.
+      <br><br><b>Fait le 25/07 (lot 0).</b> La page tourne sur le <b>moteur partagé</b> : QCM plein écran, mode focus pour les réponses rédigées, barre « tu es ici », pliage automatique, numérotation calculée, mode enseignant à code, carte de reprise. Plus une seule ligne de CSS ni de JS propre à cette page.
+      <br><br>🚧 <b>Refonte de la séance 1 en cours (lot 1).</b> Nouvelle structure décidée avec Loïc : <b>1.1</b> grande introduction — histoire du Web et dissémination de tout le vocabulaire du thème avec pictos 🔭 · <b>1.2</b> navigateur ≠ moteur de recherche, question ouverte posée avant puis reposée pour validation · <b>1.3</b> la requête HTTP, poste de visionnage puis schéma à compléter · <b>1.4</b> l'URL, enrichie du port, des paramètres et de l'ancre.
+      <br><br>📌 <b>Reste à faire</b> — ⚖️ confirmer la licence de l'image du Minitel sur Commons · ⚖️ <b>ne pas republier les scans du cahier Nathan</b> (p24, p27, p32, p33) : les activités sont à réécrire avec nos propres énoncés · 📅 rafraîchir les parts de marché (navigateurs juin 2017, moteurs août 2019) · 🔍 identifier la vidéo HTTP pour la bibliographie · ✏️ écrire la grille de critères IA des codes <code>WEB-R1</code> à <code>WEB-R9</code> · 🎧 l'épisode <b>5/8</b> du podcast France Culture (« L'Europe crée le web ») est réservé pour cette séquence · 🎨 18 couleurs encore codées en dur dans les SVG, à passer en variables lors de la refonte des schémas.
     </aside>
     <!-- /CHANTIER -->
 
@@ -369,24 +135,21 @@
             <div class="block-label">À retenir</div>
             <div class="retain">Le <b>Web</b> (la « toile ») permet de consulter des <b>pages</b> reliées par des <b>liens hypertexte</b>. <b>Internet</b> est le réseau mondial qui les transporte (et transporte aussi les mails, les jeux, les appels…). Le Web <em>circule sur</em> Internet, mais ce n'est pas la même chose.</div>
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field">
-              <span class="field-type">QCM</span>
-              <div class="field-q">Quelle affirmation est correcte ?</div>
-              <div class="opts" data-qcm data-answer="1">
-                <button class="opt"><span class="mark"></span>Le Web et Internet, c'est exactement la même chose.</button>
-                <button class="opt"><span class="mark"></span>Le Web est un ensemble de pages reliées par des liens, transporté par Internet.</button>
-                <button class="opt"><span class="mark"></span>Internet est un site web très visité.</button>
-              </div>
-              <div class="verdict"></div>
-              <div class="reveal" data-reveal>
-                <div class="rl">⏳ Le sais-tu ?</div>
-                Le tout premier site web est toujours en ligne, à son adresse d'origine au CERN : <code>info.cern.ch</code>. Il ne contenait que du texte et des liens — ni image, ni couleur.
-                <div class="biblio">
-                  <div class="bl">📚 Voir par toi-même</div>
-                  <a href="http://info.cern.ch/hypertext/WWW/TheProject.html" target="_blank" rel="noopener">Le premier site web (CERN, 1991)</a>
-                  <a href="https://home.cern/fr/science/computing/birth-web" target="_blank" rel="noopener">CERN — la naissance du Web</a>
-                </div>
-              </div>
+            <div class="qcmbox" data-code="WEB-Q1">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Quelle affirmation est correcte ?",
+  "o": [
+   "Le Web et Internet, c'est exactement la même chose.",
+   "Le Web est un ensemble de pages reliées par des liens, transporté par Internet.",
+   "Internet est un site web très visité."
+  ],
+  "r": 1,
+  "c": "<b>⏳ Le sais-tu ?</b> Le tout premier site web est toujours en ligne, à son adresse d'origine au CERN : <code>info.cern.ch</code>. Il ne contenait que du texte et des liens — ni image, ni couleur.<br>📚 <a href=\"http://info.cern.ch/hypertext/WWW/TheProject.html\" target=\"_blank\" rel=\"noopener\">Le premier site web (CERN, 1991)</a> · <a href=\"https://home.cern/fr/science/computing/birth-web\" target=\"_blank\" rel=\"noopener\">CERN — la naissance du Web</a>"
+ }
+]
+              </script>
             </div>
           </div>
         </div>
@@ -493,7 +256,7 @@
           <p>Souviens-toi de la séquence <b>Internet</b> : le Français <b>Louis Pouzin</b> avait inventé le <b>datagramme</b> avec le réseau <b>CYCLADES</b> (1973), l'idée reprise par le <b>modèle TCP/IP</b> qui fait <em>encore</em> tourner Internet aujourd'hui. Mais la France a fait un autre choix, et il a donné naissance à quelque chose d'unique au monde.</p>
           <p>Expérimenté en <b>1980</b> puis distribué <b>gratuitement</b> par les <b>PTT</b> — l'administration d'État qui gérait alors le courrier et le téléphone — le <b>Minitel</b> est un petit terminal à écran et clavier, branché sur la prise téléphonique. On y consulte l'<b>annuaire électronique</b> (le fameux « 11 »), la météo, ses comptes en banque, les résultats du bac ; on réserve un billet de train, on discute sur des messageries — en tapant <b>3615</b> suivi du nom du service. À son apogée : <b>plusieurs millions de terminaux</b> et plus de 25 000 services. Le réseau ferme le <b>30 juin 2012</b>, après plus de trente ans.</p>
 
-          <figure class="ill-fr">
+          <figure class="ill">
             <img src="../assets/img/snt/2nde-snt-t2-le-web/t2-annuaire-electronique-saint-malo-1980.jpg" alt="Terminal Minitel affichant le plan de Saint-Malo, à côté d'un téléphone à touches" loading="lazy">
             <figcaption>Un Minitel affichant le plan de Saint-Malo, au début des années 1980. À gauche, le téléphone : c'est par cette prise que tout transitait.<span class="src">Annuaire électronique, Saint-Malo — Wikimedia Commons ⚖️ licence à confirmer</span></figcaption>
           </figure>
@@ -551,13 +314,16 @@
       </div>
       <div class="bonus-body">
         <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Tu as fini avant les autres ? Voici de quoi creuser (facultatif, mais valorisé).</p>
-        <div class="field free" data-free>
-          <span class="field-type">Question ouverte</span>
-          <div class="field-q">Le 30 avril <b>1993</b>, le CERN a placé le Web dans le <b>domaine public</b> : gratuit, sans brevet, utilisable par tous. À ton avis, qu'est-ce que ce choix a changé pour la suite ? Imagine ce qui se serait passé si le Web avait été payant ou breveté.</div>
-          <textarea placeholder="Argumente avec tes propres mots…" aria-label="Réponse ouverte"></textarea>
-          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
-          <div class="verdict"></div>
-        </div>
+        <div class="field" data-focus
+                 data-focus-titre="Décomposer une URL"
+                 data-focus-question="Le 30 avril 1993, le CERN a placé le Web dans le domaine public : gratuit, sans brevet, utilisable par tous. À ton avis, qu'est-ce que ce choix a changé pour la suite ? Imagine ce qui se serait passé si le Web avait été payant ou breveté."
+                 data-focus-max="400" data-focus-min="40" data-focus-code="WEB-R1">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
+              <div class="field-q">Le 30 avril <b>1993</b>, le CERN a placé le Web dans le <b>domaine public</b> : gratuit, sans brevet, utilisable par tous. À ton avis, qu'est-ce que ce choix a changé pour la suite ? Imagine ce qui se serait passé si le Web avait été payant ou breveté.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
       </div>
     </div>
     </div><!-- /lockable -->
@@ -635,11 +401,14 @@
           </div>
           <div class="card-body">
             <div class="block-label">Réponds avec tes mots</div>
-            <div class="field free" data-free>
-              <span class="field-type">Définition · texte libre · corrigé par IA</span>
+            <div class="field" data-focus
+                 data-focus-titre="Le rôle des balises, avec tes mots"
+                 data-focus-question="Après CodeBetter : à quoi servent les balises &amp;lt;ul&amp;gt; et &amp;lt;li&amp;gt; ? Explique avec tes propres mots."
+                 data-focus-max="400" data-focus-min="40" data-focus-code="WEB-R2">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
               <div class="field-q">Après CodeBetter : à quoi servent les balises <code>&lt;ul&gt;</code> et <code>&lt;li&gt;</code> ? Explique <b>avec tes propres mots</b>.</div>
-              <textarea placeholder="Le copier-coller est désactivé : tu dois formuler toi-même." aria-label="Ta réponse"></textarea>
-              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
               <div class="reveal" data-reveal>
                 <div class="rl">📚 Pour aller plus loin</div>
@@ -700,17 +469,20 @@
             <span class="res-time">~10 min</span>
           </a>
         </div>
-        <div class="field free" data-free>
-          <span class="field-type">…et maintenant, explique</span>
-          <div class="field-q">Ton faux titre n'apparaît que sur <b>ton</b> écran : personne d'autre ne le voit. <b>Pourquoi ?</b> Qu'est-ce qui est stocké sur le serveur, et qu'est-ce qui n'est que sur ton ordinateur ?</div>
-          <textarea placeholder="Ta réponse…" aria-label="Réponse défi"></textarea>
-          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
-          <div class="verdict"></div>
+        <div class="field" data-focus
+                 data-focus-titre="Inspecter une vraie page"
+                 data-focus-question="Ton faux titre n'apparaît que sur ton écran : personne d'autre ne le voit. Pourquoi ? Qu'est-ce qui est stocké sur le serveur, et qu'est-ce qui n'est que sur ton ordinateur ?"
+                 data-focus-max="400" data-focus-min="40" data-focus-code="WEB-R3">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
+              <div class="field-q">Ton faux titre n'apparaît que sur <b>ton</b> écran : personne d'autre ne le voit. <b>Pourquoi ?</b> Qu'est-ce qui est stocké sur le serveur, et qu'est-ce qui n'est que sur ton ordinateur ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
           <div class="reveal" data-reveal>
             <div class="rl">💡 La morale</div>
             Une capture d'écran d'un site ne prouve rien : n'importe qui peut trafiquer l'affichage en dix secondes. C'est pour ça qu'on vérifie toujours une info à sa <b>source</b>, pas sur une image qui circule.
           </div>
-        </div>
+            </div>
       </div>
     </div>
     </div><!-- /lockable -->
@@ -742,11 +514,14 @@
             <div class="block-label">À retenir</div>
             <div class="retain">Un <b>moteur de recherche</b> (Google, Bing, Qwant…) parcourt lui-même le Web et range les pages. Un <b>métamoteur</b> ne cherche pas lui-même : il interroge plusieurs moteurs et regroupe leurs résultats.</div>
             <div class="block-label">Réponds avec tes mots</div>
-            <div class="field free" data-free>
-              <span class="field-type">Définition · texte libre · corrigé par IA</span>
+            <div class="field" data-focus
+                 data-focus-titre="Moteur ou métamoteur ?"
+                 data-focus-question="Donne ta définition d'un moteur de recherche, puis explique en une phrase ce qui le différencie d'un métamoteur."
+                 data-focus-max="400" data-focus-min="40" data-focus-code="WEB-R4">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
               <div class="field-q">Donne <b>ta définition</b> d'un moteur de recherche, puis explique en une phrase ce qui le différencie d'un métamoteur.</div>
-              <textarea placeholder="Formule toi-même…" aria-label="Ta réponse"></textarea>
-              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
               <div class="reveal" data-reveal>
                 <div class="rl">🇫🇷 Le sais-tu ?</div>
@@ -775,15 +550,21 @@
             <div class="block-label">À retenir</div>
             <div class="retain"><b>Avant</b> ta recherche : des <b>robots</b> explorent le Web en suivant les liens et <b>indexent</b> les pages par mots-clés. <b>Pendant</b> ta recherche : un algorithme (comme <code>PageRank</code>) trie ces pages par notoriété. Le <b>SEO</b> (<em>référencement</em>) désigne les techniques pour apparaître plus haut.</div>
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field">
-              <span class="field-type">QCM</span>
-              <div class="field-q">L'indexation des pages par les robots a lieu…</div>
-              <div class="opts" data-qcm data-answer="0">
-                <button class="opt"><span class="mark"></span>…en amont, avant même que tu fasses ta recherche.</button>
-                <button class="opt"><span class="mark"></span>…seulement au moment où tu tapes ta recherche.</button>
-                <button class="opt"><span class="mark"></span>…une fois par an, en janvier.</button>
-              </div>
-              <div class="verdict"></div>
+            <div class="qcmbox" data-code="WEB-Q2">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "L'indexation des pages par les robots a lieu…",
+  "o": [
+   "…en amont, avant même que tu fasses ta recherche.",
+   "…seulement au moment où tu tapes ta recherche.",
+   "…une fois par an, en janvier."
+  ],
+  "r": 0,
+  "c": ""
+ }
+]
+              </script>
             </div>
           </div>
         </div>
@@ -810,15 +591,21 @@
             <div class="block-label">À retenir</div>
             <div class="retain">Plus tu ajoutes de <b>mots-clés précis</b>, plus tu réduis le bruit. Les <b>guillemets</b> <code>"…"</code> forcent l'expression exacte. Tu peux aussi filtrer par <b>langue</b>, <b>pays</b> ou <b>date</b>. Chercher, ça se pilote.</div>
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field">
-              <span class="field-type">QCM</span>
-              <div class="field-q">À quoi servent les guillemets <code>"…"</code> autour de plusieurs mots ?</div>
-              <div class="opts" data-qcm data-answer="1">
-                <button class="opt"><span class="mark"></span>À chercher n'importe lequel de ces mots, séparément.</button>
-                <button class="opt"><span class="mark"></span>À exiger l'expression exacte, dans cet ordre.</button>
-                <button class="opt"><span class="mark"></span>À traduire automatiquement la recherche.</button>
-              </div>
-              <div class="verdict"></div>
+            <div class="qcmbox" data-code="WEB-Q3">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "À quoi servent les guillemets \"…\" autour de plusieurs mots ?",
+  "o": [
+   "À chercher n'importe lequel de ces mots, séparément.",
+   "À exiger l'expression exacte, dans cet ordre.",
+   "À traduire automatiquement la recherche."
+  ],
+  "r": 1,
+  "c": ""
+ }
+]
+              </script>
             </div>
           </div>
         </div>
@@ -840,11 +627,14 @@
               <tr><td>Est-il identifié ? Compétent ? Joignable ?</td><td>Date de mise à jour ? Site suivi ?</td><td>Sources citées ? Publicité intrusive ?</td></tr>
             </table>
             <div class="block-label">Réponds avec tes mots</div>
-            <div class="field free" data-free>
-              <span class="field-type">Texte libre · corrigé par IA</span>
+            <div class="field" data-focus
+                 data-focus-titre="Évaluer la fiabilité d'un site"
+                 data-focus-question="Cite deux indices qui te feraient douter de la fiabilité d'un site, et explique pourquoi."
+                 data-focus-max="400" data-focus-min="40" data-focus-code="WEB-R5">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
               <div class="field-q">Cite <b>deux indices</b> qui te feraient douter de la fiabilité d'un site, et explique pourquoi.</div>
-              <textarea placeholder="Ta réponse…" aria-label="Ta réponse"></textarea>
-              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
             </div>
           </div>
@@ -864,15 +654,21 @@
             <div class="block-label">À retenir</div>
             <div class="retain">De plus en plus, les moteurs affichent un <b>résumé rédigé par une IA</b> en haut des résultats, ou tu poses ta question directement à un <b>assistant</b>. Pratique — mais l'IA peut se tromper avec aplomb (on parle d'<b>hallucination</b>) et ne cite pas toujours ses sources. Elle <em>ne remplace pas</em> la vérification.</div>
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field">
-              <span class="field-type">QCM</span>
-              <div class="field-q">Une IA te donne une réponse claire et bien écrite. Que fais-tu ?</div>
-              <div class="opts" data-qcm data-answer="2">
-                <button class="opt"><span class="mark"></span>Je la recopie : si c'est bien écrit, c'est que c'est vrai.</button>
-                <button class="opt"><span class="mark"></span>Je la rejette : une IA se trompe toujours.</button>
-                <button class="opt"><span class="mark"></span>Je vérifie l'info sur au moins une source fiable avant de m'y fier.</button>
-              </div>
-              <div class="verdict"></div>
+            <div class="qcmbox" data-code="WEB-Q4">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Une IA te donne une réponse claire et bien écrite. Que fais-tu ?",
+  "o": [
+   "Je la recopie : si c'est bien écrit, c'est que c'est vrai.",
+   "Je la rejette : une IA se trompe toujours.",
+   "Je vérifie l'info sur au moins une source fiable avant de m'y fier."
+  ],
+  "r": 2,
+  "c": ""
+ }
+]
+              </script>
             </div>
           </div>
         </div>
@@ -897,13 +693,16 @@
     <div class="bonus-wrap" data-bonus>
       <div class="bonus-head" data-bonus-toggle><span class="bonus-tag">bonus</span><span class="bl">Pour aller plus loin</span><span class="chev">▸</span></div>
       <div class="bonus-body">
-        <div class="field free" data-free>
-          <span class="field-type">Enquête</span>
-          <div class="field-q">Pose une même question à un moteur classique <b>et</b> à un assistant IA. Compare : lequel cite ses sources ? Lequel te laisse juger par toi-même ? Raconte ce que tu observes.</div>
-          <textarea placeholder="Décris ta petite expérience…" aria-label="Réponse enquête"></textarea>
-          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
-          <div class="verdict"></div>
-        </div>
+        <div class="field" data-focus
+                 data-focus-titre="Quand l'IA répond à ta place"
+                 data-focus-question="Pose une même question à un moteur classique et à un assistant IA. Compare : lequel cite ses sources ? Lequel te laisse juger par toi-même ? Raconte ce que tu observes."
+                 data-focus-max="400" data-focus-min="40" data-focus-code="WEB-R6">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
+              <div class="field-q">Pose une même question à un moteur classique <b>et</b> à un assistant IA. Compare : lequel cite ses sources ? Lequel te laisse juger par toi-même ? Raconte ce que tu observes.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
       </div>
     </div>
     </div><!-- /lockable -->
@@ -942,15 +741,21 @@
             <div class="block-label">À retenir</div>
             <div class="retain">Ton navigateur <b>sauvegarde</b> beaucoup de choses en local pour te faciliter la vie : le <b>cache</b> (accélère l'affichage), l'<b>historique</b>, et les <b>cookies</b> (petits fichiers qui te reconnaissent). Pratique — mais certains cookies servent surtout à <b>suivre</b> ce que tu fais pour te cibler avec de la publicité.</div>
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field">
-              <span class="field-type">QCM</span>
-              <div class="field-q">Un site se souvient que tu es connecté même après avoir fermé l'onglet. Grâce à quoi ?</div>
-              <div class="opts" data-qcm data-answer="2">
-                <button class="opt"><span class="mark"></span>Au cache.</button>
-                <button class="opt"><span class="mark"></span>À l'historique.</button>
-                <button class="opt"><span class="mark"></span>À un cookie.</button>
-              </div>
-              <div class="verdict"></div>
+            <div class="qcmbox" data-code="WEB-Q5">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Un site se souvient que tu es connecté même après avoir fermé l'onglet. Grâce à quoi ?",
+  "o": [
+   "Au cache.",
+   "À l'historique.",
+   "À un cookie."
+  ],
+  "r": 2,
+  "c": ""
+ }
+]
+              </script>
             </div>
           </div>
         </div>
@@ -969,11 +774,14 @@
             <div class="block-label">À retenir</div>
             <div class="retain">Chaque appareil connecté a une <b>adresse IP</b> : un numéro, un peu comme une plaque d'immatriculation sur le réseau. Elle permet de te répondre… mais aussi de connaître ta <b>région</b>, ton <b>fournisseur d'accès</b>, et de relier tes visites. C'est une porte d'entrée (<b>passerelle</b>) entre ton réseau et le reste d'Internet.</div>
             <div class="block-label">Réponds avec tes mots</div>
-            <div class="field free" data-free>
-              <span class="field-type">Texte libre · corrigé par IA</span>
+            <div class="field" data-focus
+                 data-focus-titre="Ton adresse IP et tes traces en ligne"
+                 data-focus-question="Avec tes mots : pourquoi un site a-t-il besoin de ton adresse IP pour fonctionner, et en quoi ça peut aussi poser un problème de vie privée ?"
+                 data-focus-max="400" data-focus-min="40" data-focus-code="WEB-R7">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
               <div class="field-q">Avec tes mots : pourquoi un site a-t-il <b>besoin</b> de ton adresse IP pour fonctionner, et en quoi ça peut aussi poser un problème de vie privée ?</div>
-              <textarea placeholder="Formule toi-même…" aria-label="Ta réponse"></textarea>
-              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
               <div class="reveal" data-reveal>
                 <div class="rl">🔎 Curieux ?</div>
@@ -1009,15 +817,21 @@
             <div class="block-label">À retenir</div>
             <div class="retain">Le <b>clickbait</b> joue sur tes émotions : urgence, curiosité, peur, appât du gain. Reconnaître ces ressorts, c'est déjà se protéger. Un lien peut afficher un texte rassurant tout en menant ailleurs : vérifie toujours <b>où</b> il pointe avant de cliquer.</div>
             <div class="block-label">Vérifie ta compréhension</div>
-            <div class="field">
-              <span class="field-type">QCM</span>
-              <div class="field-q">Quel signal doit le plus te rendre méfiant ?</div>
-              <div class="opts" data-qcm data-answer="1">
-                <button class="opt"><span class="mark"></span>Un article avec des photos.</button>
-                <button class="opt"><span class="mark"></span>Une offre « gratuite », « urgente », « trop belle pour être vraie ».</button>
-                <button class="opt"><span class="mark"></span>Un site en <code>https</code> avec un cadenas.</button>
-              </div>
-              <div class="verdict"></div>
+            <div class="qcmbox" data-code="WEB-Q6">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Quel signal doit le plus te rendre méfiant ?",
+  "o": [
+   "Un article avec des photos.",
+   "Une offre « gratuite », « urgente », « trop belle pour être vraie ».",
+   "Un site en <code>https</code> avec un cadenas."
+  ],
+  "r": 1,
+  "c": ""
+ }
+]
+              </script>
             </div>
           </div>
         </div>
@@ -1036,11 +850,14 @@
             <div class="block-label">À retenir</div>
             <div class="retain">Vérifier le <b>cadenas HTTPS</b> avant de saisir des infos · utiliser des <b>mots de passe</b> différents et longs · faire des <b>sauvegardes</b> de ce qui compte (une donnée perdue sans copie est perdue pour de bon) · la <b>navigation privée</b> n'enregistre rien en local, mais ne te rend pas invisible pour autant.</div>
             <div class="block-label">Réponds avec tes mots</div>
-            <div class="field free" data-free>
-              <span class="field-type">Texte libre · corrigé par IA</span>
+            <div class="field" data-focus
+                 data-focus-titre="Les bons réflexes"
+                 data-focus-question="Donne un réflexe de sécurité que tu comptes vraiment appliquer, et explique pourquoi il te paraît utile."
+                 data-focus-max="400" data-focus-min="40" data-focus-code="WEB-R8">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
               <div class="field-q">Donne <b>un réflexe</b> de sécurité que tu comptes vraiment appliquer, et explique pourquoi il te paraît utile.</div>
-              <textarea placeholder="Ta réponse, avec tes mots…" aria-label="Ta réponse"></textarea>
-              <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
             </div>
           </div>
@@ -1067,13 +884,16 @@
       <div class="bonus-head" data-bonus-toggle><span class="bonus-tag">bonus</span><span class="bl">Pour aller plus loin — coin des geeks</span><span class="chev">▸</span></div>
       <div class="bonus-body">
         <p style="font-size:14px;color:var(--ink-soft);margin-top:0">🕵️ <b>Espionne… toi-même.</b> Sur n'importe quel site, ouvre l'inspecteur → onglet <b>Application</b> (ou Stockage) → <b>Cookies</b>. Regarde combien de cookies un seul site dépose sur ta machine. Surprenant, non ?</p>
-        <div class="field free" data-free>
-          <span class="field-type">Enquête</span>
-          <div class="field-q">Choisis un grand site et compte ses cookies. À ton avis, à quoi peuvent bien servir <b>autant</b> de petits fichiers ? Qui, selon toi, a intérêt à les lire ?</div>
-          <textarea placeholder="Ce que tu observes et ce que tu en déduis…" aria-label="Réponse enquête"></textarea>
-          <div class="free-foot"><span class="free-meta" data-meta>0 caractère · saisie au clavier</span><button class="btn" data-send-free disabled>Envoyer pour correction</button></div>
-          <div class="verdict"></div>
-        </div>
+        <div class="field" data-focus
+                 data-focus-titre="Les bons réflexes"
+                 data-focus-question="Choisis un grand site et compte ses cookies. À ton avis, à quoi peuvent bien servir autant de petits fichiers ? Qui, selon toi, a intérêt à les lire ?"
+                 data-focus-max="400" data-focus-min="40" data-focus-code="WEB-R9">
+              <span class="field-type">Réponse rédigée · mode focus · corrigée</span>
+              <div class="field-q">Choisis un grand site et compte ses cookies. À ton avis, à quoi peuvent bien servir <b>autant</b> de petits fichiers ? Qui, selon toi, a intérêt à les lire ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
       </div>
     </div>
     </div><!-- /lockable -->
@@ -1110,268 +930,10 @@
   </section>
 
   <footer class="note">
-    <b>Maquette V0.</b> Les champs sont interactifs pour montrer la mécanique : QCM, trous et schémas corrigés <b>en direct</b> par le navigateur ; définitions libres <b>envoyées en correction</b> (copier-coller bloqué) qui déclenchent un point de contexte ; réflexions perso <b>non notées</b> ; verrouillage des séances tant que la précédente n'est pas validée, avec un <b>mode enseignant</b> pour ouvrir en cas de blocage. Dans la vraie version, l'envoi passera par ton serveur : correction automatique du texte libre par IA, statut <code>en attente</code> quand tu dois trancher, déblocage de l'entraide une fois <code>validé</code>, et données de progression exportables. 🧭 Un doute sur le fonctionnement du cours (fiches, verrouillage, entraide) ? Revois <a href="2nde-snt-t0-systemes-informatises.html" style="color:var(--link)">l'introduction</a>.
+    <b>Maquette V1 — portée sur le moteur partagé, 25/07/2026.</b> Les champs sont interactifs pour montrer la mécanique : QCM plein écran, trous et schémas corrigés <b>en direct</b> par le navigateur ; réponses rédigées <b>envoyées en correction</b> en mode focus (copier-coller bloqué) qui déclenchent un point de contexte ; réflexions perso <b>non notées</b> ; verrouillage des séances tant que la précédente n'est pas validée, avec un <b>mode enseignant</b> pour ouvrir en cas de blocage. Dans la vraie version, l'envoi passera par ton serveur : correction automatique du texte libre par IA, statut <code>en attente</code> quand ton professeur doit trancher, déblocage de l'entraide une fois <code>validé</code>, et données de progression exportables. 🧭 Un doute sur le fonctionnement du cours (fiches, verrouillage, entraide) ? Revois <a href="2nde-snt-t0-systemes-informatises.html" style="color:var(--link)">l'introduction</a>.
   </footer>
 </div>
 
-<script>
-(function(){
-  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-
-  /* petit easter egg pour les curieux qui ouvrent la console */
-  console.log("%c🎉 Bien joué !","font-size:16px;font-weight:bold;color:#2445c7");
-  console.log("%cTu as ouvert la console — c'est exactement le réflexe d'un futur informaticien.\nTape  document.title = 'SNT power'  et regarde l'onglet du navigateur…\n— M. Vanhoorde","font-size:12px;color:#12805c");
-
-  function verdict(field,cls,msg){var v=field.querySelector('.verdict');if(!v)return;v.className='verdict show '+cls;v.textContent=msg;}
-  function stepOf(el){return el.closest('[data-step]');}
-  function markDone(el){var s=stepOf(el);if(s){s.classList.remove('is-wait');s.classList.add('is-done');}refresh();}
-  function showReveal(field){var r=field.querySelector('[data-reveal]');if(r)r.classList.add('show');}
-
-  /* ---------- déblocage progressif ---------- */
-  function seanceComplete(sec){
-    var gates=sec.querySelectorAll('[data-gate]');
-    if(!gates.length) return true;
-    return Array.from(gates).every(function(g){return g.classList.contains('is-done');});
-  }
-  var seanceWasComplete={};
-  function refresh(){
-    document.querySelectorAll('.seance').forEach(function(sec){
-      var gates=sec.querySelectorAll('[data-gate]');
-      var done=Array.from(gates).filter(function(g){return g.classList.contains('is-done');}).length;
-      var bar=sec.querySelector('[data-progress]');
-      if(bar) bar.style.width = gates.length ? (100*done/gates.length)+'%' : '0%';
-      var id=sec.getAttribute('data-seance');
-      var complete = gates.length>0 && done===gates.length;
-      if(complete && seanceWasComplete[id]===false){ onSeanceComplete(sec); }
-      if(seanceWasComplete[id]===undefined) seanceWasComplete[id]=complete; else seanceWasComplete[id]=complete;
-    });
-    var s1=document.querySelector('[data-seance="1"]');
-    var s2=document.querySelector('[data-seance="2"]');
-    var s3=document.querySelector('[data-seance="3"]');
-    var s4=document.querySelector('[data-seance="4"]');
-    if(s2) s2.classList.toggle('locked', !seanceComplete(s1));
-    if(s3) s3.classList.toggle('locked', !(seanceComplete(s1)&&seanceComplete(s2)));
-    if(s4) s4.classList.toggle('locked', !(seanceComplete(s1)&&seanceComplete(s2)&&seanceComplete(s3)));
-    document.querySelectorAll('[data-navlock]').forEach(function(a){
-      var n=a.getAttribute('data-navlock');
-      var sec=document.querySelector('[data-seance="'+n+'"]');
-      var ico=a.querySelector('.lockico');
-      if(ico) ico.style.display = (sec && sec.classList.contains('locked') && !document.body.classList.contains('teacher')) ? '' : 'none';
-    });
-  }
-
-  /* mode enseignant */
-  document.getElementById('teacherMode').addEventListener('change',function(){
-    document.body.classList.toggle('teacher',this.checked);
-    refresh();
-  });
-
-  /* ---------- QCM ---------- */
-  document.querySelectorAll('[data-qcm]').forEach(function(group){
-    var answer=parseInt(group.dataset.answer,10);
-    var opts=Array.from(group.querySelectorAll('.opt'));
-    opts.forEach(function(opt,i){
-      opt.addEventListener('click',function(){
-        var field=group.closest('.field');
-        opts.forEach(function(o){o.disabled=true;});
-        if(i===answer){opt.classList.add('correct');verdict(field,'ok','✅ Correct — étape validée. Tu peux aider un camarade sur cette question.');showReveal(field);markDone(group);}
-        else{opt.classList.add('wrong');opts[answer].classList.add('correct');verdict(field,'no','À revoir : la bonne réponse est en vert. Reprends la ressource plus haut.');}
-      });
-    });
-  });
-
-  /* ---------- trous ---------- */
-  document.querySelectorAll('[data-check-cloze]').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var field=btn.closest('.field');var inputs=Array.from(field.querySelectorAll('[data-answer]'));var all=true;
-      inputs.forEach(function(inp){var ok=inp.value.trim().toLowerCase()===inp.dataset.answer.toLowerCase();inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);if(!ok)all=false;});
-      if(all){verdict(field,'ok','✅ URL correctement décomposée — étape validée.');markDone(btn);}
-      else{verdict(field,'no','Presque : vérifie les champs en rouge (extension française, et un fichier .html).');}
-    });
-  });
-
-  /* ---------- schéma ---------- */
-  document.querySelectorAll('[data-check-diagram]').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var field=btn.closest('.field');var sels=Array.from(field.querySelectorAll('select'));var all=true;
-      sels.forEach(function(s){var ok=s.value===s.dataset.correct;s.classList.toggle('ok',ok);s.classList.toggle('no',!ok);if(!ok)all=false;});
-      if(all){verdict(field,'ok','✅ Schéma juste — le client demande, le serveur répond, en HTTP.');markDone(btn);}
-      else{verdict(field,'no','Pas tout à fait : c\'est toujours le navigateur qui demande en premier.');}
-    });
-  });
-
-  /* ---------- texte libre ---------- */
-  document.querySelectorAll('[data-free]').forEach(function(field){
-    var ta=field.querySelector('textarea');var meta=field.querySelector('[data-meta]');var send=field.querySelector('[data-send-free]');var blocked=false;
-    ['paste','drop'].forEach(function(ev){ta.addEventListener(ev,function(e){e.preventDefault();blocked=true;meta.innerHTML='<span class="warn">⨯ Copier-coller bloqué — écris toi-même</span>';setTimeout(update,1500);});});
-    function update(){var n=ta.value.trim().length;if(!blocked||document.activeElement===ta){meta.innerHTML=n+' caractère'+(n>1?'s':'')+' · saisie au clavier';}send.disabled=n<15;}
-    ta.addEventListener('input',function(){blocked=false;update();});
-    send.addEventListener('click',function(){
-      send.disabled=true;ta.readOnly=true;
-      var s=stepOf(field);if(s)s.classList.add('is-wait');
-      verdict(field,'wait','⏳ Réponse envoyée. Correction automatique en cours — ton professeur validera si besoin.');
-      setTimeout(function(){
-        verdict(field,'ok','✅ Réponse validée. Tu peux maintenant consulter et aider les camarades bloqués.');
-        showReveal(field);markDone(send);
-      }, reduce?400:2400);
-    });
-  });
-
-  /* ---------- perso (partage, non noté) ---------- */
-  document.querySelectorAll('[data-share]').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var box=btn.closest('.perso');var ta=box.querySelector('textarea');var note=box.querySelector('[data-share-note]');
-      if(ta.value.trim().length<2){note.textContent='Écris un mot avant de partager 🙂';return;}
-      ta.readOnly=true;btn.disabled=true;note.textContent='✅ Merci — ta réponse nourrit la discussion de classe.';
-    });
-  });
-
-  /* ---------- bonus dépliables ---------- */
-  document.querySelectorAll('[data-bonus-toggle]').forEach(function(h){
-    h.addEventListener('click',function(){h.closest('[data-bonus]').classList.toggle('open');});
-  });
-
-  /* ---------- manip piège à clic (100% local, rien n'est collecté) ---------- */
-  document.querySelectorAll('[data-trap]').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      document.body.classList.add('pwned');
-      setTimeout(function(){document.body.classList.remove('pwned');},reduce?0:3600);
-      var rev=btn.parentElement.querySelector('[data-trap-reveal]');
-      if(rev) rev.classList.add('show');
-      btn.disabled=true; btn.style.opacity=.5; btn.style.animation='none';
-      markDone(btn); // la prise de conscience vaut validation
-    });
-  });
-
-  /* ---------- modal réutilisable ---------- */
-  var mb=document.createElement('div'); mb.className='modal-back';
-  mb.innerHTML='<div class="modal" role="dialog" aria-modal="true"><div class="m-ico"></div><h3></h3><div class="m-body"></div><div class="m-actions"></div></div>';
-  document.body.appendChild(mb);
-  function closeModal(){mb.classList.remove('show');}
-  mb.addEventListener('click',function(e){if(e.target===mb)closeModal();});
-  function openModal(ico,title,bodyHTML,actions){
-    mb.querySelector('.m-ico').textContent=ico;
-    mb.querySelector('.modal h3').textContent=title;
-    mb.querySelector('.m-body').innerHTML=bodyHTML;
-    var a=mb.querySelector('.m-actions'); a.innerHTML='';
-    actions.forEach(function(act){
-      var b=document.createElement('button'); b.className='btn '+(act.cls||''); b.textContent=act.label;
-      b.addEventListener('click',function(){ if(act.fn)act.fn(); if(act.close!==false)closeModal(); });
-      a.appendChild(b);
-    });
-    mb.classList.add('show');
-  }
-
-  /* ---------- récap téléchargeable d'une séance ---------- */
-  function seanceTitle(sec){var h=sec.querySelector('.seance-head h2');return h?h.textContent.replace(/\s+/g,' ').trim():'Séance';}
-  function collectRecap(sec){
-    var rows=[];
-    sec.querySelectorAll('[data-step]').forEach(function(step){
-      var t=step.querySelector('.step-title'); if(!t) return;
-      var done=step.classList.contains('is-done');
-      var wait=step.classList.contains('is-wait');
-      var ret=step.querySelector('.retain');
-      var ans=[];
-      step.querySelectorAll('textarea').forEach(function(ta){if(ta.value.trim())ans.push(ta.value.trim());});
-      step.querySelectorAll('.cloze input,.label-selects select').forEach(function(f){if(f.value&&f.value.trim())ans.push(f.value.trim());});
-      rows.push({title:t.textContent.trim(),status:done?'✅ validé':(wait?'⏳ en attente':'à faire'),retain:ret?ret.innerHTML.trim():'',answer:ans.join(' · ')});
-    });
-    return rows;
-  }
-  function downloadFiche(sec){
-    var title=seanceTitle(sec); var rows=collectRecap(sec);
-    var when=new Date().toLocaleDateString('fr-FR');
-    var body=rows.map(function(r){
-      return '<div class="e"><div class="h"><span>'+r.title+'</span><span class="s">'+r.status+'</span></div>'+(r.retain?'<div class="r"><span class="lbl">À retenir</span>'+r.retain+'</div>':'')+(r.answer?'<div class="a"><span class="lbl">Ma réponse</span>'+r.answer.replace(/</g,'&lt;')+'</div>':'')+'</div>';
-    }).join('');
-    var html='<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>Ma fiche — '+title+'</title>'+
-      '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:30px auto;padding:0 18px;color:#161f33;line-height:1.55}'+
-      'h1{font-size:22px}.meta{color:#667;font-size:13px;margin-bottom:20px}'+
-      '.e{border:1px solid #d3dae7;border-radius:10px;padding:12px 14px;margin-bottom:10px}'+
-      '.h{display:flex;justify-content:space-between;font-weight:600;gap:12px}.s{color:#12805c;font-weight:500;white-space:nowrap}'+
-      '.lbl{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8b97ad;margin-bottom:3px}'+
-      '.r{margin-top:8px;padding:9px 11px;background:#f4f6fb;border-left:3px solid #161f33;border-radius:0 8px 8px 0;font-size:13.5px}'+
-      '.r code{background:#e6e9f2;padding:1px 4px;border-radius:3px;font-family:ui-monospace,monospace;font-size:.9em}'+
-      '.a{margin-top:8px;padding:9px 11px;background:#e7ebfb;border-radius:8px;white-space:pre-wrap;font-size:14px}'+
-      '.tip{margin-top:24px;font-size:12px;color:#8b97ad}</style></head><body>'+
-      '<h1>Ma fiche SNT — '+title+'</h1><div class="meta">Le Web · exporté le '+when+' · à déposer sur ton OneDrive</div>'+
-      body+'<div class="tip">Les exercices restent accessibles sur la séquence de la classe.</div></body></html>';
-    var blob=new Blob([html],{type:'text/html'});
-    var url=URL.createObjectURL(blob); var a=document.createElement('a');
-    var slug=title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
-    a.href=url; a.download='ma-fiche-'+(slug||'snt')+'.html';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-  }
-
-  /* ---------- recommencer une séance ---------- */
-  function resetSeance(sec){
-    sec.querySelectorAll('[data-step]').forEach(function(s){s.classList.remove('is-done','is-wait');
-      var p=s.querySelector('.step-pip'); if(p){p.style.background='';p.style.borderColor='';}});
-    sec.querySelectorAll('.opt').forEach(function(o){o.disabled=false;o.classList.remove('correct','wrong');});
-    sec.querySelectorAll('textarea').forEach(function(t){t.value='';t.readOnly=false;});
-    sec.querySelectorAll('.cloze input').forEach(function(i){i.value='';i.classList.remove('ok','no');});
-    sec.querySelectorAll('.label-selects select').forEach(function(s){s.value='';s.classList.remove('ok','no');});
-    sec.querySelectorAll('.verdict').forEach(function(v){v.className='verdict';v.textContent='';});
-    sec.querySelectorAll('[data-reveal]').forEach(function(r){r.classList.remove('show');});
-    sec.querySelectorAll('[data-send-free]').forEach(function(b){b.disabled=true;});
-    sec.querySelectorAll('[data-share]').forEach(function(b){b.disabled=false;});
-    sec.querySelectorAll('[data-share-note]').forEach(function(n){n.textContent='';});
-    sec.querySelectorAll('[data-trap]').forEach(function(b){b.disabled=false;b.style.opacity='';b.style.animation='';});
-    sec.querySelectorAll('[data-trap-reveal]').forEach(function(r){r.classList.remove('show');});
-    var id=sec.getAttribute('data-seance'); seanceWasComplete[id]=false;
-    refresh();
-  }
-
-  /* barre d'actions (télécharger / recommencer) à la fin de chaque séance à valider */
-  document.querySelectorAll('.seance').forEach(function(sec){
-    if(!sec.querySelector('[data-gate]')) return;
-    var host=sec.querySelector('.lockable'); if(!host) return;
-    var bar=document.createElement('div'); bar.className='seance-actions';
-    bar.innerHTML='<span class="sa-label">💾 Pense à déposer ta fiche sur ton OneDrive à la fin de la séance.</span>';
-    var dl=document.createElement('button'); dl.className='btn dl sm'; dl.textContent='📥 Télécharger ma fiche';
-    dl.addEventListener('click',function(){downloadFiche(sec);});
-    var rs=document.createElement('button'); rs.className='btn reset sm'; rs.textContent='🔁 Recommencer';
-    rs.addEventListener('click',function(){
-      openModal('🔁','Recommencer cette séance ?',
-        '<p>Tu vas repartir d\'une fiche vierge pour cette séance. Tes réponses actuelles seront effacées de l\'écran.<br><b>Télécharge d\'abord ta fiche</b> si tu veux garder tes réponses et tes corrections.</p>',
-        [{label:'📥 Télécharger d\'abord',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
-         {label:'Recommencer',cls:'reset',fn:function(){resetSeance(sec);}}]);
-    });
-    bar.appendChild(dl); bar.appendChild(rs); host.appendChild(bar);
-  });
-
-  /* pop-up de fin de séance */
-  function onSeanceComplete(sec){
-    var title=seanceTitle(sec);
-    var rows=collectRecap(sec).filter(function(r){return r.status.indexOf('validé')>-1;});
-    var recap='<div class="recap">'+rows.map(function(r){return '<div class="ri"><span>'+r.title+'</span><b>✓</b></div>';}).join('')+'</div>';
-    openModal('🎉','Séance terminée — bravo !',
-      recap+'<p style="margin-top:2px">Tu as validé toute la séance. Télécharge ta fiche pour la garder, puis dépose-la sur ton OneDrive.</p>',
-      [{label:'📥 Télécharger ma fiche',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
-       {label:'Continuer',cls:'ghost'}]);
-  }
-
-  refresh();
-})();
-</script>
-<script>
-/* agrandissement des images au clic (ajout 21/07) */
-(function(){
-  var fond=document.createElement('div');
-  fond.className='zoom-back';
-  fond.innerHTML='<img alt=""><div class="zc"></div>';
-  document.body.appendChild(fond);
-  fond.addEventListener('click',function(){ fond.classList.remove('on'); });
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape') fond.classList.remove('on'); });
-  document.querySelectorAll('.ill-fr img').forEach(function(img){
-    img.addEventListener('click',function(){
-      fond.querySelector('img').src=img.src;
-      var c=img.closest('figure').querySelector('figcaption');
-      fond.querySelector('.zc').textContent=c?c.textContent.trim():'';
-      fond.classList.add('on');
-    });
-  });
-})();
-</script>
+<script src="../assets/js/sequence-snt.js?v=19"></script>
 </body>
 </html>

@@ -15,7 +15,7 @@
 | Partie | État |
 |---|---|
 | **PC seconde** | 14 chapitres en ligne. T1-C1→C4 dégrossis à fond ; les 10 autres portent **206 blocs `.a-faire`**. Aucun cours validé. |
-| **SNT** | 8 séquences (t0→t7). `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. |
+| **SNT** | 8 séquences (t0→t7). `t1` et `t2` sur le moteur partagé ; `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. |
 | **SNT — `t1` Internet** | Séances 1, 2, 3 et étapes 4.1, 4.2, 4.3 refondues. **Restent : 4.4, 4.6, et la fin de thème** (Filius + passerelle NSI facultative). Deux blocs de 4.3 attendent le moteur (relevé et rappel). Seule séquence sur le moteur partagé. |
 | **Base de données** | ✅ **en service.** Supabase, région **West EU (Paris)**. 7 tables, 10 policies RLS, 4 fonctions, sauvegarde hebdo + réveil quotidien. Pilote prouvé de bout en bout sur `t1`. |
 | **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
@@ -74,13 +74,18 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 - [ ] Visionner les deux vidéos (M Bidouille en 2.5, Cookie connecté en 4.3) et
       écrire les questions de QCM
 - [ ] **Écrire l'étape 5 minimale** (`ia-snt/valider.mjs`) — le dernier maillon
-- [ ] Porter `t0` puis `t2` sur le moteur partagé, en testant chacune
+- [x] ~~Porter `t2` sur le moteur partagé~~ — fait le 25/07 (lot 0)
+- [ ] Porter `t0` sur le moteur partagé, puis les cinq séquences restantes
+- [ ] **`t2` lots 1 à 5** — intégrer les documents OneDrive du thème Web
+      (S1 refondue, moteurs, HTML/CSS, sécurité, frise)
 - [ ] Relire et exécuter `bdd/schema/007-frise-es.sql`, puis brancher la page de frise
 - [ ] `moteur.mjs` en `temperature: 0` + `seed` fixe — préalable à tout re-benchmark
 - [ ] Rework de la grille R1/C2 à froid (restructurer, pas reformuler)
 - [ ] Réparer `pages/term-spe-physique-chimie.html → docs/tp-1-1.pdf`
 - [ ] Ré-encoder `audio/2nde-pc-t3-c4-intro.m4a` (31 Mo → ~2 Mo, mono 64 kbit/s)
-- [ ] Nettoyer les couleurs en dur hors `:root` (t2 : 52 · les six autres ≈ 46)
+- [ ] Nettoyer les couleurs en dur hors `:root` (les six restantes ≈ 46).
+      `t2` : les 52 du `<style>` sont parties avec le portage, **18 subsistent dans ses SVG**
+      (invisibles du vérificateur, qui ne lit que les balises `<style>`)
 - [ ] Nettoyage avant rentrée : compte `leproftest` + lignes de test
 - [ ] 🔴 Révoquer la clé `service_role` — **dernière action avant la mise en service**
 

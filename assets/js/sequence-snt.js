@@ -594,6 +594,22 @@
     h.addEventListener('click',function(){h.closest('[data-bonus]').classList.toggle('open');});
   });
 
+  /* ---------- manip « piège à clic » (séquence Web, étape clickbait) ----------
+     100 % local : le bouton ne fait que colorer la page trois secondes. Rien
+     n'est installé, rien n'est envoyé, rien n'est collecté — c'est le propos
+     même de l'expérience. La prise de conscience vaut validation de l'étape.
+     Aucun effet sur les séquences qui n'ont pas ces attributs. */
+  document.querySelectorAll('[data-trap]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.body.classList.add('pwned');
+      setTimeout(function(){document.body.classList.remove('pwned');},reduce?0:3600);
+      var rev=btn.parentElement.querySelector('[data-trap-reveal]');
+      if(rev) rev.classList.add('show');
+      btn.disabled=true; btn.style.opacity=.5; btn.style.animation='none';
+      markDone(btn);
+    });
+  });
+
   /* ---------- modal réutilisable ---------- */
   var mb=document.createElement('div'); mb.className='modal-back';
   mb.innerHTML='<div class="modal" role="dialog" aria-modal="true"><div class="m-ico"></div><h3></h3><div class="m-body"></div><div class="m-actions"></div></div>';
@@ -903,6 +919,8 @@
     sec.querySelectorAll('[data-send-free]').forEach(function(b){b.disabled=true;});
     sec.querySelectorAll('[data-share]').forEach(function(b){b.disabled=false;});
     sec.querySelectorAll('[data-share-note]').forEach(function(n){n.textContent='';});
+    sec.querySelectorAll('[data-trap]').forEach(function(b){b.disabled=false;b.style.opacity='';b.style.animation='';});
+    sec.querySelectorAll('[data-trap-reveal]').forEach(function(r){r.classList.remove('show');});
     var id=sec.getAttribute('data-seance'); seanceWasComplete[id]=false;
     /* Recommencer, c'est aussi effacer en base : sans cette purge, le
        rechargement suivant ressusciterait tout le travail effacé
@@ -2296,7 +2314,9 @@ function demarrer(){
   $$('.steps').forEach(function(s){ obs.observe(s,{attributes:true,subtree:true,attributeFilter:['class']}); });
   restaurer();
   document.body.classList.add('js-ok');   /* la nav ne se masque qu'ici */
-  console.log('%cSNT · Internet — tu as ouvert l\'inspecteur. Bravo, c\'est exactement comme ça qu\'on apprend.','color:#2445c7');
+  /* le nom du thème vient de la page : ce moteur sert les huit séquences */
+  console.log('%c'+(document.title.split('—')[0].trim()||'SNT')+
+    ' — tu as ouvert l\'inspecteur. Bravo, c\'est exactement comme ça qu\'on apprend.','color:#2445c7');
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',demarrer);
 else demarrer();
