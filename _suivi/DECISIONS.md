@@ -97,3 +97,8 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 18/07/2026 | Réseaux sociaux : **plateformes fictives** pour les exemples, vraies plateformes pour les faits sourcés uniquement | ✅ |
 | 18/07/2026 | Localisation : tout sur **cartes.gouv.fr** (Géoportail ferme en sept. 2026) | ✅ |
 | 23/07/2026 | La doc de référence décrit **l'état courant** ; l'historique va dans `JOURNAL.md`, les décisions ici. Plus de « ⚠ Mise à jour du… » empilé | ✅ |
+| 25/07/2026 | **Les contenus du site ne seront pas vendus.** Les images sont donc évaluées pour un usage **pédagogique non commercial** uniquement. Chantier licences **clos** : ne pas le réouvrir sauf demande explicite de Loïc | ✅ clos |
+| 25/07/2026 | Numérotation t1 de référence : S1 `1.1→1.10` · S2 `2.1→2.5` · S3 `3.1→3.5` · S4 `4.1→4.6`, *pour aller plus loin* compris. Calculée par `numeroter()` sur les blocs `.step` | ✅ |
+| 25/07/2026 | **Décision du 21/07 annulée** : l'adresse IP et le DNS **restent** dans la séquence Internet. Un thème distinct sera consacré au binaire, et la séance 4 l'a en **prérequis** | ✅ |
+| 25/07/2026 | Le « à retenir » s'affiche **automatiquement** à la fin de l'activité, plus par bouton — partout, blocs de définitions compris | ✅ |
+| 25/07/2026 | Pas d'animation infoforall en 3.3 : Filius en fin de thème suffit comme temps fort. L'animation reste en réserve si l'étape doit être étoffée | ✅ |

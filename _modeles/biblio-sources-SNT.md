@@ -11,7 +11,7 @@
 > périmée, on la barre sans la supprimer (trace de la péremption = matière
 > pédagogique « une donnée numérique se périme »).
 >
-> *Dernière mise à jour : 22/07/2026.*
+> *Dernière mise à jour : 25/07/2026.*
 
 ---
 
@@ -49,11 +49,19 @@ Reprend et complète la spec `spec-snt-t1-internet.md` §11.
 - We Are Social / Meltwater, *Digital Report* — dernier connu : 2026.
   (~6,04 Md connectés début 2026, 73 % de l'humanité.)
 
-**Images (Wikimedia Commons — licences ⚖️ à confirmer sur chaque page)**
-- Croquis ARPANET déc. 1969 · ARPANET années 1970 · démo 1977 · carte logique 1977
-- CYCLADES · Louis Pouzin · backbone NSFNET
-- The Opte Project (carte Internet) — CC BY 2.5, OK site, **revérifier avant usage
-  commercial** (Tableo).
+**Images (Wikimedia Commons — licences closes le 25/07/2026)**
+
+Usage retenu : **pédagogique, non commercial**. Toutes utilisables sur le site ;
+aucune revente prévue (décision du 25/07/2026, cf. `DECISIONS.md`).
+
+| Image | Licence | Réserve |
+|---|---|---|
+| Croquis ARPANET déc. 1969 | domaine public (Public Domain Mark 1.0) | affirmation d'un contributeur, pas une licence opposable |
+| ARPANET années 1970 | CC BY-SA 4.0 | *share alike* : une version **modifiée** doit rester libre |
+| Backbone NSFNET T3, 1992 | CC BY-SA 3.0 (source Merit Network) | licence apposée par un tiers lors d'un transfert depuis en.wikipedia |
+| Carte Opte | CC BY 2.5 | auteur = **Matt Britt** d'après les données Opte, *pas* Barrett Lyon. Le `.svg` de la même variante est en CC BY-SA 4.0 |
+| Datacenter CERN | CC BY-SA 3.0 | — |
+| CYCLADES · Louis Pouzin · démo 1977 | non relevée | attribution auteur + source portée ; Commons n'héberge que du contenu librement licencié. Pouzin : personne vivante identifiable, droit à l'image non couvert par la licence du photographe |
 
 ---
 
@@ -114,9 +122,11 @@ Reprend et complète la spec `spec-snt-t1-internet.md` §11.
 
 ## 4. À faire / à retrouver (file d'attente sources)
 
-- 🔍 Rapport ARCEP source exacte de l'image « trafic FAI fin 2024 » + année.
+- ✅ Image « trafic FAI fin 2024 » : Arcep, *L'état de l'internet en France*,
+  édition 2025 (données fin 2024). Licence Ouverte 2.0 (Etalab) — réutilisation
+  libre, mention de la source et de la date obligatoire.
 - 🔍 Source primaire coupures de câbles (pas Wikipédia).
 - 📅 Baromètre : basculer les chiffres sur l'édition 2026.
-- ⚖️ Licences Commons des 6 images t1 encore « à confirmer ».
-- 🔍 Chiffre mondial de trafic plus récent que Statista 2022 (VNI Cisco arrêté ;
-  chercher un substitut fiable — ITU, Sandvine Global Internet Phenomena…).
+- ✅ Substitut post-2022 trouvé : Our World in Data, *Adoption of communication
+  technologies* (grapher `ict-adoption`), CC BY 4.0, série 1960→**2024**, d'après
+  UIT via Banque mondiale. Remplace Statista 2022 / Cisco VNI.
