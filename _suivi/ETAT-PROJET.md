@@ -76,8 +76,11 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 - [ ] **Écrire l'étape 5 minimale** (`ia-snt/valider.mjs`) — le dernier maillon
 - [x] ~~Porter `t2` sur le moteur partagé~~ — fait le 25/07 (lot 0)
 - [ ] Porter `t0` sur le moteur partagé, puis les cinq séquences restantes
-- [ ] **`t2` lots 1 à 5** — intégrer les documents OneDrive du thème Web
-      (S1 refondue, moteurs, HTML/CSS, sécurité, frise)
+- [x] ~~`t2` lot 1 — séance 1 refondue~~ — fait le 25/07
+- [ ] **`t2` lots 2 à 5** — moteurs de recherche (S3) · HTML/CSS (S2) ·
+      sécurité et cookies (S4) · frise débranchée (20 repères)
+- [ ] **`t2` 1.3 : vidéo HTTP** — adresse nocookie, titre, chaîne, durée,
+      puis questions de QCM après visionnage (par Loïc)
 - [ ] Relire et exécuter `bdd/schema/007-frise-es.sql`, puis brancher la page de frise
 - [ ] `moteur.mjs` en `temperature: 0` + `seed` fixe — préalable à tout re-benchmark
 - [ ] Rework de la grille R1/C2 à froid (restructurer, pas reformuler)
