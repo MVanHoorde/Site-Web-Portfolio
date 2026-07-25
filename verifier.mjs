@@ -111,6 +111,36 @@ for (const f of pagesSNT) {
   if (n > 0) info(`couleurs en dur hors :root — ${basename(f)} : ${n}`);
 }
 
+/* ---------- 6 bis. Indices qui livrent la réponse ----------
+   Un indice de niveau 1 qui contient la réponse attendue supprime le travail :
+   toujours à corriger. Au niveau 2, c'est le filet de sécurité après échec —
+   légitime sur un exercice de restitution, à proscrire sur un exercice de
+   lecture de document, où l'information est déjà à l'écran (ceux-là portent
+   data-aide="localisation" et n'affichent plus d'indice du tout).
+   Volontairement en `info` et non en `ko` : c'est un arbitrage pédagogique,
+   pas un défaut technique. */
+const sansAccent = (t) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  .toLowerCase().replace(/[^a-z0-9]+/g, "");
+for (const f of pagesSNT) {
+  const s = lire(f);
+  let n1 = 0, n2 = 0;
+  for (const bloc of s.matchAll(/<div class="cloze"[^>]*>([\s\S]*?)<\/div>\s*<div/g)) {
+    if (/data-aide="localisation"/.test(bloc[0])) continue; // plus d'indice affiché
+    for (const inp of bloc[1].matchAll(/<input[^>]*>/g)) {
+      const rep = /data-answer="([^"]*)"/.exec(inp[0])?.[1];
+      if (!rep) continue;
+      const cle = sansAccent(rep);
+      if (cle.length < 2) continue;
+      for (const [k, cpt] of [["1", 1], ["2", 2]]) {
+        const ind = new RegExp(`data-indice${k}="([^"]*)"`).exec(inp[0])?.[1];
+        if (ind && sansAccent(ind).includes(cle)) cpt === 1 ? n1++ : n2++;
+      }
+    }
+  }
+  if (n1) ko("indice de niveau 1 livrant la réponse", `${basename(f)} — ${n1} cas`);
+  if (n2) info(`indices de niveau 2 proches de la réponse — ${basename(f)} : ${n2} (filet de secours : vérifier qu'aucun n'est sur un exercice de lecture)`);
+}
+
 /* ---------- 7. Liens internes cassés + liens inertes ---------- */
 let inertes = 0;
 for (const f of html) {

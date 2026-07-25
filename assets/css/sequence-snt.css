@@ -646,14 +646,17 @@ body.qcm-on #prog, body.qcm-on #prog4, body.qcm-on #glo-ouvrir{display:none !imp
 .depot-apercu:empty{display:none}
 .depot-apercu img{max-width:100%;max-height:340px;border-radius:12px;border:1px solid var(--line);display:block}
 /* Mini-calculatrice maison (aucun CDN, tactile) */
-.calc{margin-top:14px;max-width:290px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+/* calculatrice : rangée à droite et resserrée (25/07/2026) — elle accompagne
+   le calcul, elle ne l'annonce pas */
+.calc{margin:14px 0 0 auto;max-width:250px;border:1px solid var(--line);border-radius:14px;padding:11px;background:var(--surface)}
 .calc-head{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
-.calc-ecran{width:100%;box-sizing:border-box;text-align:right;font-family:"IBM Plex Mono";font-size:22px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);margin-bottom:10px}
+.calc-ecran{width:100%;box-sizing:border-box;text-align:right;font-family:"IBM Plex Mono";font-size:20px;padding:7px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin-bottom:9px}
 .calc-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.calc-b{min-height:46px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:18px;font-weight:600;color:var(--ink);cursor:pointer;font-family:inherit}
+.calc-b{min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:18px;font-weight:600;color:var(--ink);cursor:pointer;font-family:inherit}
 .calc-b:active{transform:translateY(1px)}
 .calc-b:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .calc-op{color:var(--link)}
+@media (max-width:560px){.calc{margin-left:auto;margin-right:auto;max-width:100%}}
 .calc-fn{color:var(--ink-soft)}
 .calc-eq{grid-row:span 2;background:var(--link);color:#fff;border-color:var(--link)}
 .calc-zero{grid-column:span 2}
@@ -671,6 +674,27 @@ body.qcm-on #prog, body.qcm-on #prog4, body.qcm-on #glo-ouvrir{display:none !imp
 .cloze .ind-item .ind-num{flex:none;font-weight:700;color:var(--wait);
   font-family:"IBM Plex Mono";font-size:12.5px;padding-top:1px}
 .cloze .indice{font-size:12px;padding:1px 8px;margin-left:3px;vertical-align:baseline}
+/* rappel « où chercher » : une consigne, pas un indice — donc visible d'emblée */
+.cloze .cloze-ou{background:var(--activity-wash);border-left:3px solid var(--activity);
+  border-radius:0 8px 8px 0;padding:9px 13px;margin:0 0 14px;font-size:13.5px;
+  line-height:1.55;color:var(--ink-soft)}
+.cloze .cloze-ou b{color:var(--activity);font-family:"IBM Plex Mono";font-size:11.5px;
+  text-transform:uppercase;letter-spacing:.06em}
+
+/* ————— Justification des paragraphes de cours (25/07/2026) —————
+   Uniquement les paragraphes pleine largeur, et avec césure : sans `hyphens`,
+   le justifié creuse des « rivières » blanches qui gênent la lecture, surtout
+   chez les élèves dys. Exclus : colonnes étroites, légendes, consignes,
+   encadrés, et tout le rendu sous 700 px où le justifié n'a plus de sens. */
+.step > .card > p, .step > .card > ul, .step > .card > ol,
+.france-box > p, .retain > p{
+  text-align:justify; hyphens:auto; -webkit-hyphens:auto; text-wrap:pretty}
+.field-q, figcaption, .src, .gconsigne, .chantier, .cloze-ou,
+.block-label, .note-free, .mini{text-align:left; hyphens:manual}
+@media (max-width:700px){
+  .step > .card > p, .step > .card > ul, .step > .card > ol,
+  .france-box > p, .retain > p{text-align:left; hyphens:manual}
+}
 
 .cloze-msg{font-size:13.5px;margin-top:8px}
 .cloze-msg .m-presque{color:#7a5400} .cloze-msg .m-ok{color:var(--ok)} .cloze-msg .m-ko{color:var(--err)}

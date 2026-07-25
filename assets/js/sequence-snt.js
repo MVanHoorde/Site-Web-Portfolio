@@ -1857,6 +1857,21 @@ function initCloze(){
     var pied=document.createElement('div'); pied.className='indices-pied';
     bloc.insertBefore(pied,msg);
 
+    /* Aide « où chercher » (25/07/2026). Sur un exercice de lecture de document
+       — carte, schéma —, l'information est déjà à l'écran : la seule aide
+       légitime dit OÙ la trouver, jamais ce qu'elle est. Elle est donc visible
+       d'emblée, comme une consigne, et aucun indice de contenu n'est installé.
+       Retirer data-aide="localisation" du bloc restaure les indices : les
+       attributs data-indice1/2 restent en place, rien n'est perdu. */
+    var aideLoc = bloc.dataset.aide === 'localisation';
+    if(aideLoc && bloc.dataset.ou){
+      var ou=document.createElement('div'); ou.className='cloze-ou';
+      var lab=document.createElement('b'); lab.textContent='Où chercher';
+      ou.appendChild(lab);
+      ou.appendChild(document.createTextNode(' — '+bloc.dataset.ou));
+      bloc.insertBefore(ou, bloc.firstChild);
+    }
+
     $$('input[data-answer]',bloc).forEach(function(inp,rang){
       /* La largeur suit la réponse attendue au lieu d'être imposée en pixels :
          le rythme typographique du paragraphe est préservé. Marge de 2 pour ne
@@ -1868,7 +1883,7 @@ function initCloze(){
           ? Math.min(8, Math.max(3, L+1))
           : Math.min(18, Math.max(5, L+2))));
       }
-      if(!inp.dataset.indice1) return;
+      if(aideLoc || !inp.dataset.indice1) return;
 
       var num=document.createElement('sup');
       num.className='num-trou'; num.textContent=String(rang+1); num.hidden=true;
@@ -1952,7 +1967,11 @@ function initCloze(){
       if(ok===n) h+='<span class="m-ok">Tout est juste'+(presque?' — attention à l\'orthographe, je l\'ai corrigée pour toi.':'.')+'</span>';
       else{
         if(presque) h+='<span class="m-presque">'+presque+' réponse(s) acceptée(s) malgré une faute d\'orthographe : '+fautes.join(', ')+'.</span><br>';
-        h+='<span class="m-ko">'+(n-ok)+' réponse(s) à revoir. Un bouton <b>indice</b> vient d\'apparaître sur chacune d\'elles : le texte s\'affiche juste en dessous de l\'exercice.</span>';
+        h+='<span class="m-ko">'+(n-ok)+' réponse(s) à revoir.'
+             + (aideLoc
+                ? ' Tout est dans le document : relis le rappel « Où chercher » en haut de l\'exercice.'
+                : ' Un bouton <b>indice</b> vient d\'apparaître sur chacune d\'elles : le texte s\'affiche juste en dessous de l\'exercice.')
+             + '</span>';
       }
       $('.cloze-msg',bloc).innerHTML=h;
       /* validation à l'envoi : avoir répondu suffit */
