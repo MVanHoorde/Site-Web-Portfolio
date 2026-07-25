@@ -299,8 +299,11 @@
 
   /* §7.5 — glossaire évolutif : l'élève écrit ses définitions au
      fil de la séquence, elles se rassemblent à l'étape 5. */
-  .glosmot{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:13px 15px;margin-top:10px}
-  .glosmot .gk{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  /* .glosmot : définition unique plus bas, § grammaire V2 (D1 du 25/07/2026).
+     L'ancienne règle posait bordure + rayon + fond que la V2 contredisait ensuite :
+     la cascade gardait les deux, d'où les coins carrés à gauche. */
+  .glosmot{margin-top:12px}
+  /* .glosmot .gk : voir § grammaire V2 — la casse forcée en mono écrasait le terme */
   .glosmot .gterme{font-family:"Space Grotesk";font-size:17px;font-weight:600;color:var(--ink)}
   .glosmot .gregime{font-size:10.5px;padding:2px 7px;border-radius:100px;font-family:"IBM Plex Mono";text-transform:uppercase;letter-spacing:.04em}
   .glosmot .gregime.restitution{background:var(--link-wash);color:var(--link)}
@@ -364,7 +367,7 @@
    ============================================================ */
 :root{
   --retain:#1d3557; --retain-wash:#eef2f9;
-  --glo:#7a3e8f; --glo-wash:#f4e9f7;
+  --glo:#7a3e8f; --glo-wash:#f4e9f7; --glo-line:#e0cbe8;
   --prog-w:228px;
 }
 
@@ -398,7 +401,34 @@
 .retain .niv{color:var(--ink-faint)}
 
 /* ---------- 4. Moment glossaire ---------- */
-.glosmot{border-left:3px solid var(--glo);background:var(--glo-wash);border-radius:0 12px 12px 0;padding:11px 14px}
+/* ————— Bloc définition « fiche de dictionnaire » — D1, 25/07/2026 —————
+   Une gouttière teintée porte l'icône de glossaire, le corps reste sur fond
+   blanc pour que la définition écrite par l'élève ressorte. La gouttière est
+   faite de deux pseudo-éléments : aucun HTML ni aucun JS à modifier, les dix
+   blocs de la page en héritent, comme tous ceux à venir. */
+.glosmot{position:relative;display:grid;grid-template-columns:46px 1fr;column-gap:16px;
+  border:1px solid var(--glo-line);border-left:3px solid var(--glo);
+  background:var(--surface);border-radius:4px 12px 12px 4px;
+  padding:13px 16px 14px 0;overflow:hidden}
+.glosmot > *{grid-column:2;min-width:0}
+.glosmot::before{content:"";grid-column:1;grid-row:1/-1;
+  margin:-13px 0 -14px 0;background:var(--glo-wash)}
+.glosmot::after{content:"";position:absolute;left:14px;top:14px;width:19px;height:19px;
+  background-color:var(--glo);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v13a1.5 1.5 0 0 0-1.5-1.5H5.5A1.5 1.5 0 0 1 4 16z'/%3E%3Cpath d='M20 5.5A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v13a1.5 1.5 0 0 1 1.5-1.5h5A1.5 1.5 0 0 0 20 16z'/%3E%3C/svg%3E") no-repeat center/19px 19px;
+          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v13a1.5 1.5 0 0 0-1.5-1.5H5.5A1.5 1.5 0 0 1 4 16z'/%3E%3Cpath d='M20 5.5A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v13a1.5 1.5 0 0 1 1.5-1.5h5A1.5 1.5 0 0 0 20 16z'/%3E%3C/svg%3E") no-repeat center/19px 19px}
+/* le badge de régime part à droite du terme, sur la même ligne */
+.glosmot .gk{font-family:"IBM Plex Sans";font-size:15px;letter-spacing:0;text-transform:none;
+  color:inherit;font-weight:400;margin:0 0 4px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+.glosmot .gterme{font-family:"Space Grotesk";font-size:18px;font-weight:600;color:var(--ink)}
+.glosmot .gregime{margin-left:auto;flex:none;padding:2px 8px}
+.glosmot .gconsigne{margin:0 0 11px}
+.glosmot .gaction{margin:0}
+@media (max-width:560px){
+  .glosmot{grid-template-columns:36px 1fr;column-gap:12px}
+  .glosmot::after{left:9px}
+  .glosmot .gregime{margin-left:0}
+}
 .glosmot .gl-head{font-family:"IBM Plex Mono",monospace;font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;
      color:var(--glo);display:flex;align-items:center;gap:7px;margin-bottom:6px}
 .glosmot .gl-head .vgo{margin-left:auto;font-size:10.5px;text-transform:none;letter-spacing:0;
