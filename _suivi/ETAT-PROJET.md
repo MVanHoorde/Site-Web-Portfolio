@@ -82,7 +82,10 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
       les cinq tâches, le SEO, le tableau géographique refait)
 - [ ] **`t2` lot 5** — frise débranchée, 20 repères datés
 - [ ] Vérifier en salle : CodeBetter accessible depuis le réseau du lycée,
-      et quels navigateurs sont installés (l'étape cookies en demande deux)
+      et quels navigateurs sont installés (l'étape cookies en demande deux).
+      Non bloquant depuis le 25/07 : l'étape CodeBetter n'est plus une porte
+- [ ] Écrire la grille de critères IA des cinq réponses corrigées de `t2` :
+      `WEB-R1b` · `WEB-R2` · `WEB-R5` · `WEB-R4a` · `WEB-R7` — après le lot 2
 - [ ] **`t2` 1.3 : vidéo HTTP** — adresse nocookie, titre, chaîne, durée,
       puis questions de QCM après visionnage (par Loïc)
 - [ ] Relire et exécuter `bdd/schema/007-frise-es.sql`, puis brancher la page de frise

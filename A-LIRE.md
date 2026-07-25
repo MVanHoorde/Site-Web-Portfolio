@@ -1,4 +1,4 @@
-# Séquence Web — lots 0, 1, 3 et 4 (25/07/2026)
+# Séquence Web — lots 0, 1, 3, 4 + arbitrages appliqués (25/07/2026)
 
 Extraire à la **racine du dépôt**. Cette archive **remplace** la précédente
 (la première livraison du lot 0 laissait du CSS orphelin — voir §5).
@@ -200,3 +200,52 @@ par mots-clés, tri), le SEO, et le tableau géographique refait en 2026.
 
 Et une décision qui ne peut être que la tienne : **la séquence est passée de
 6 h à 7 h 30**. Il faut arbitrer ce qui se retire ou devient facultatif.
+
+---
+
+## 11. Arbitrages appliqués le 25/07 au soir
+
+Tu as validé les cinq créneaux et tu m'as laissé appliquer le reste. Voici
+exactement ce que j'ai fait — pour que tu puisses revenir sur chaque point.
+
+**Cinq créneaux assumés.** Rien n'est raccourci. L'en-tête l'annonce.
+
+**`2.2` CodeBetter n'est plus bloquante.** C'est la correction la plus utile
+de la soirée : cette étape dépend d'un service extérieur au site. Si le filtre
+du réseau le coupe un lundi matin, un élève se retrouvait verrouillé pour la
+séance entière. Elle reste au programme, elle n'est plus une porte.
+
+**`2.5` passe en consolidation hors 100 %.** Visible, faisable, pas exigible.
+
+**L'ancienne étape 3.1 est supprimée** — et c'est la réparation d'une erreur
+que j'ai commise au lot 1 : en écrivant `1.2`, j'ai repris la définition du
+moteur et du métamoteur qui existait déjà en tête de séance 3. Deux
+traitements complets de la même notion, ce que les consignes interdisent
+explicitement. J'ai gardé celui de la séance 1, plus riche (il porte l'index
+et la souveraineté). La séance 3 s'ouvre maintenant sur le classement des
+pages, avec un renvoi vers la séance 1. Le code `WEB-R4` est retiré et **ne
+sera pas recyclé** : un code de champ qui a existé ne doit jamais désigner
+autre chose plus tard.
+
+**« Un réflexe que tu comptes appliquer » devient une réponse partagée**, non
+corrigée. On ne corrige pas un engagement.
+
+**Et une rectification que je te dois.** Je t'ai annoncé 12 réponses rédigées
+et 864 copies. C'était faux : quatre d'entre elles sont dans des blocs bonus,
+donc facultatives. Le vrai point de départ était **7 corrigées obligatoires**,
+soit ≈ 504 copies pour trois groupes. Après ces arbitrages, il en reste
+**5** — `WEB-R1b`, `WEB-R2`, `WEB-R5`, `WEB-R4a`, `WEB-R7` — soit ≈ 360 copies
+et ≈ 120 relectures au budget d'une sur trois.
+
+### Charge finale, par séance
+
+| | Étapes | dont bloquantes | Rédigées corrigées |
+|---|---|---|---|
+| S1 | 6 | 4 | 2 |
+| S2 | 6 | 3 | 1 |
+| S3 | 5 | 4 | 1 |
+| S4 | 6 | 5 | 2 |
+
+Restent à produire : **lot 2** (séance 3, moteurs de recherche) et **lot 5**
+(la frise débranchée).
+
