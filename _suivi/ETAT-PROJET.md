@@ -77,8 +77,12 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 - [x] ~~Porter `t2` sur le moteur partagé~~ — fait le 25/07 (lot 0)
 - [ ] Porter `t0` sur le moteur partagé, puis les cinq séquences restantes
 - [x] ~~`t2` lot 1 — séance 1 refondue~~ — fait le 25/07
-- [ ] **`t2` lots 2 à 5** — moteurs de recherche (S3) · HTML/CSS (S2) ·
-      sécurité et cookies (S4) · frise débranchée (20 repères)
+- [x] ~~`t2` lot 3 — séance 2 HTML/CSS~~ · ~~lot 4 — cookies en séance 4~~ — faits le 25/07
+- [ ] **`t2` lot 2** — séance 3, moteurs de recherche (document 03 :
+      les cinq tâches, le SEO, le tableau géographique refait)
+- [ ] **`t2` lot 5** — frise débranchée, 20 repères datés
+- [ ] Vérifier en salle : CodeBetter accessible depuis le réseau du lycée,
+      et quels navigateurs sont installés (l'étape cookies en demande deux)
 - [ ] **`t2` 1.3 : vidéo HTTP** — adresse nocookie, titre, chaîne, durée,
       puis questions de QCM après visionnage (par Loïc)
 - [ ] Relire et exécuter `bdd/schema/007-frise-es.sql`, puis brancher la page de frise

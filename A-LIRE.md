@@ -1,4 +1,4 @@
-# Lots 0 et 1 — séquence Web : moteur partagé, puis séance 1 refondue (25/07/2026)
+# Séquence Web — lots 0, 1, 3 et 4 (25/07/2026)
 
 Extraire à la **racine du dépôt**. Cette archive **remplace** la précédente
 (la première livraison du lot 0 laissait du CSS orphelin — voir §5).
@@ -132,9 +132,71 @@ garde-fou              texte visible propre
 structure              415 balises ouvrantes / 415 fermantes
 ```
 
-## 7. Ensuite
+## 7. Lot 3 — la séance 2, HTML & CSS
 
-**Lot 2 — la séance 3, moteurs de recherche**, nourrie du document 03 : les
-cinq tâches à replacer (exploration, indexation, classement de notoriété,
-recherche par mots-clés, tri), le SEO, et le tableau géographique refait avec
-des chiffres de 2026.
+**2.1 · Une page, deux langages.** Les deux versants — ce que le développeur
+écrit, ce que l'utilisateur voit — les balises courantes, le CSS et son
+intérêt (une ligne change tout un site), et les **standards du W3C** qui
+expliquent qu'une page s'affiche partout pareil.
+
+**2.2 · Écrire ta première page.** L'atelier CodeBetter, avec **tes deux
+codes d'origine** (le lycée, les secondes, Merriweather 32 px) et tes quatre
+manipulations : recopier, ajouter « La Classe de Première », retirer un
+`<li>` puis un `<ul>` pour voir ce qui casse, refaire les couleurs. Trois
+captures attendues. La question sur `<ul>` et `<li>` se répond **pendant**
+la manip, pas après.
+
+**2.3 · Le rôle des balises, avec tes mots.** Conservée, complétée.
+
+**2.4 · Inspecter — et truquer — une vraie page.** Tes cinq manipulations sur
+Rimbaud, dans l'ordre. Avec, en tête, l'avertissement qui compte : tu modifies
+**ta copie**, pas Wikipédia. Et à l'arrivée, le vrai enseignement : tu viens
+de fabriquer une fausse page crédible en trente secondes, donc **une capture
+d'écran ne prouve rien**. Ça prépare la séance 3.
+
+**2.5 · Chacun son métier.** Tes huit tâches de l'exercice 18 p33, à trier
+entre HTML et CSS — avec le cas « mettre en gras », qui fait débat et qu'on
+traite au lieu de l'éviter.
+
+## 8. Lot 4 — les cookies, en séance 4
+
+Une étape ajoutée après « ce que ton navigateur garde de toi ».
+
+L'élève **cherche lui-même** le chemin vers la suppression des cookies, sur
+**deux** navigateurs. Aucun pas-à-pas n'est donné : le savoir-faire visé,
+c'est justement de trouver un réglage qu'on n'a jamais cherché. Deux repères
+seulement, et un avertissement sur les postes partagés.
+
+Puis la comparaison, qui est le cœur de l'affaire : certains navigateurs
+trient **par site**, d'autres **par période**. Ni l'un ni l'autre n'est le
+bon — ils répondent à deux besoins différents.
+
+Autour : la distinction **cookie de session / cookie tiers**, le **RGPD** et
+pourquoi refuser doit être aussi simple qu'accepter, et un tableau de ce que
+la navigation privée cache — et surtout de ce qu'elle **ne** cache **pas**.
+
+**Anti-doublon** : ton document sur la sécurité contenait aussi la définition
+du navigateur et ses parts de marché. Elles sont traitées **une seule fois**,
+en 1.2. La séance 4 n'en reprend rien.
+
+## 9. Un faux positif corrigé au passage
+
+`verifier.mjs` a signalé **six liens cassés** dans mes exemples de code : il
+lisait `href="…"` et `src="chat.jpg"` comme de vraies adresses. Les
+guillemets des exemples s'écrivent maintenant en `&quot;` — l'élève voit
+exactement le même code, le contrôle ne s'y trompe plus. J'ai vérifié en
+décodant les blocs : le code affiché est correct au caractère près.
+
+Nouvelle classe `pre.code-bloc` dans le CSS partagé : défilement horizontal
+plutôt que césure, pour qu'un code reste juste à recopier sur iPad.
+
+## 10. Ensuite
+
+**Lot 2 — la séance 3, moteurs de recherche**, avec le document 03 : les cinq
+tâches à replacer (exploration, indexation, classement de notoriété, recherche
+par mots-clés, tri), le SEO, et le tableau géographique refait en 2026.
+
+**Lot 5 — la frise débranchée** et ses 20 repères datés.
+
+Et une décision qui ne peut être que la tienne : **la séquence est passée de
+6 h à 7 h 30**. Il faut arbitrer ce qui se retire ou devient facultatif.
