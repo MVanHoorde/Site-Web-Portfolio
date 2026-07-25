@@ -519,6 +519,18 @@ empreinte **SHA-256** dans la page · **coupé à 30 minutes**, minuterie visibl
 pas serrure.** Jamais de contenu sensible derrière. La vraie serrure viendra du rôle
 vérifié côté Supabase.
 
+**Ce qu'il ouvre exactement** — `body.teacher` affiche les séances verrouillées
+(`.lockable`) et `toutRevel(true)` retire `masque` et `replie` de **toutes** les
+étapes : c'est l'outil de **relecture visuelle** d'une séquence entière. Il
+**révèle sans valider** — aucune écriture en base, donc aucune donnée de test
+injectée dans le compte pilote.
+
+⚠️ **La vérification du code exige un contexte sécurisé** (`crypto.subtle`) : elle
+fonctionne sur la page déployée en HTTPS et sur `localhost`, mais **échoue sur un
+fichier ouvert en `file://`** — la page affiche alors « Le code ne peut être
+vérifié que sur une page servie en https ». Pour relire une séquence en local,
+passer par un serveur `localhost`, pas par un double-clic sur le fichier.
+
 ### 15.9 Glossaire permanent
 
 Accessible en permanence (bouton en bas à droite), **cherchable**, conçu pour

@@ -45,6 +45,40 @@ Reprend et complète la spec `spec-snt-t1-internet.md` §11.
 **Protocoles & couches**
 - Cookie connecté, *Modèle OSI / TCP-IP* (YouTube) : https://www.youtube.com/watch?v=26jazyc7VNk
 
+**DNS — adresses et noms de domaine (séance t1-S4, étape 4.3)**
+
+*Vérifié le 25/07/2026.*
+
+- **AFNIC** — le registre du `.fr` : https://www.afnic.fr/
+  (aussi utilisé comme *site à relever* dans l'activité : l'élève cherche l'adresse
+  IP de l'organisme même qui gère le `.fr`.)
+- **ICANN** — coordination mondiale des extensions : https://www.icann.org/ (anglais)
+- **RFC 1034** — *Domain names, concepts and facilities*, P. Mockapetris,
+  novembre 1987 : https://www.rfc-editor.org/info/rfc1034/ (anglais)
+  → **la spécification toujours en vigueur** ; elle rend obsolètes les RFC 882, 883 et 973.
+- **ACM** — notice sur Paul Mockapetris :
+  https://awards.acm.org/award_winners/mockapetris_3342151 (anglais)
+  → source pour l'attribution : DNS **conçu en 1983** (RFC 882 et 883, auteur
+  unique), **révisé en 1987** (RFC 1034 et 1035). C'est la source du « 1983 » de
+  l'étape 4.3.
+- Cookie connecté, *Comprendre le DNS en 5 minutes* — même auteur que la vidéo des
+  couches : https://www.youtube.com/watch?v=qzWdzAvfBoo
+  Découpage annoncé par l'auteur : rôle du DNS à 0 min 46 · résolution à 2 min ·
+  architecture à 3 min 04. ⚠️ **Vidéo de 2018** : les principes du DNS n'ont pas
+  bougé, mais rien sur le chiffrement des requêtes (DoH / DoT).
+  **Aussi disponible sur le PeerTube du ministère** :
+  https://tube-numerique-educatif.apps.education.fr/w/vbsKeBhyB9sgsFD25kWpYz
+  et https://tube-sciences-technologies.apps.education.fr/w/hFAwa9jVrKEC6NcW7K4uNx
+  → 📌 piste d'hébergement sans publicité, **décision en attente** : vérifier
+  d'abord si l'instance diffuse en pair-à-pair, ce qui exposerait l'IP de l'élève
+  à d'autres spectateurs — exactement le motif qui avait fait écarter l'iframe NumWorks.
+- 🔍 **À sourcer proprement (piste d'histoire non ouverte)** : avant le DNS, la
+  résolution des noms passait par un unique fichier `HOSTS.TXT` recopié sur chaque
+  machine, maintenu au NIC du Stanford Research Institute par l'équipe d'**Elizabeth
+  Feinler**. Beau point d'histoire — et une femme de l'histoire de l'informatique,
+  ce qui manque dans la séquence. Trouver une **source primaire** (Computer History
+  Museum, Internet Society, RFC 608) : Wikipédia ne fait pas source ici.
+
 **Chiffres de connexion mondiale (à re-vérifier chaque année)**
 - We Are Social / Meltwater, *Digital Report* — dernier connu : 2026.
   (~6,04 Md connectés début 2026, 73 % de l'humanité.)

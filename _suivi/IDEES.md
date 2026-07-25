@@ -1,6 +1,6 @@
 # Idées & améliorations à trier
 
-> Mise à jour : 15/07/2026
+> Mise à jour : 25/07/2026
 > Réservoir vivant : Loïc y jette ses idées « au fil de l'eau », on les trie
 > ensuite (garder / différer / abandonner) et on les bascule en jalon 4
 > (« ajouts & approfondissements ») du chapitre concerné.
@@ -10,7 +10,24 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
 ---
 
 ## Transverses (tout le site)
-- 💡 _(vide — à remplir)_
+
+**Dispositifs pédagogiques réutilisables** (nés d'une séquence, valables ailleurs)
+
+- 👍 **Faire échouer la mémorisation pour justifier l'outil.** L'élève relève des
+  données, la page se floute, il doit les restituer de mémoire — et n'y arrive pas.
+  L'échec est le ressort, pas un accident : l'outil (ici le DNS) répond alors à un
+  besoin que l'élève a *ressenti*. Éprouvé en `t1` étape 4.3. Transposable partout
+  où un outil sert à décharger la mémoire humaine (tableau périodique, formulaire,
+  table de conversion, index…).
+- 💡 **Transformer une contrainte technique en contenu.** Quand un exercice ne
+  marche pas « proprement » pour une raison réelle, l'expliquer à l'élève au lieu
+  de la masquer. Exemple : deux élèves relèvent deux adresses IP différentes pour
+  un même site et ont tous les deux raison — c'est devenu un paragraphe et une
+  question de QCM. Cherche systématiquement cette conversion avant de simplifier
+  un exercice.
+- 💡 **Nommer dans l'activité l'organisme dont on parle dans le cours.** En 4.3,
+  l'un des trois sites à relever est celui de l'AFNIC, citée trois paragraphes plus
+  loin. Boucle gratuite, effet mémoire réel.
 
 ## Par chapitre
 ### T1-C4

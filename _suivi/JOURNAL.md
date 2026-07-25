@@ -732,3 +732,56 @@ et la détection de CSS égaré dans un `<svg>`. À ajouter.
 
 Note d'outillage : `sh` n'existe pas dans PowerShell et WSL intercepte `bash`.
 Le bon appel est `& "C:\Program Files\Git\bin\bash.exe" script.sh`.
+---
+
+## 25/07/2026 (soir) — séance 4 d'Internet, étape 4.3
+
+Session consacrée à la **séance 4** de `t1`. Les vingt décisions de la session du
+25/07 en journée sont déjà consignées dans `DECISIONS.md` ; ce qui suit couvre la
+session du soir.
+
+**Livré** — étape **4.3 refondue en sept temps** (relevé de trois adresses IP →
+rappel de mémoire sur fond flouté → doc → poste de visionnage → QCM de 4 questions
+→ « à retenir » → biblio de 4 sources). Étape **4.2** corrigée (« à retenir »
+descendu après le QCM, correction vide remplie). **Deux notes de chantier périmées
+réécrites**. Un seul fichier touché, aucun bump de version.
+
+**Deux blocs volontairement inertes** dans 4.3, signalés par une note de chantier :
+le relevé et le rappel attendent le moteur (lot 2). En l'état, le rappel s'affiche
+en clair avec le relevé juste au-dessus — l'exercice n'a de sens qu'avec le flou.
+Ce qui était soumis à validation, c'est la formulation.
+
+**Découvertes techniques de la session**
+
+- Le moteur ne connaît que `input[data-answer]` : un champ sans réponse attendue est
+  **ignoré de bout en bout** — ni vérifié, ni élargi, ni enregistré. D'où le besoin
+  d'un type de champ « relevé », validé sur le format.
+- En revanche, la **persistance du contenu des trous existe déjà** (`ETAT.champs`,
+  clé `étape + '/cloze-N'`, sauvegardée en base et réinjectée au chargement). Le
+  rappel peut donc se comparer au relevé du même élève, y compris après un
+  rechargement ou un passage maison↔lycée. Pas besoin d'inventer une mémoire.
+- 🔴 **Les clés de persistance des étapes sont positionnelles.** `cle(step)` retombe
+  sur `'et-s' + n° de séance + '-' + rang` faute de `id` ou de `data-cle` — et
+  **aucune** des 27 étapes n'en porte. Insérer une étape ailleurs qu'en fin de
+  séance réaffecterait silencieusement le travail déjà enregistré des élèves.
+  Arbitrage en attente dans `DECISIONS.md`. Fenêtre idéale : **maintenant**, avant
+  la création des vraies classes.
+- Le « à retenir » ne s'affiche pas « automatiquement » par un mécanisme JS : il est
+  simplement **placé en dernier dans le DOM**. Rien à coder pour respecter la règle,
+  seulement à ordonner.
+- Le **mode enseignant fait déjà** ce qu'on croyait manquer : il ouvre les séances
+  verrouillées et révèle toutes les étapes, sans rien valider ni écrire en base.
+  Mais la vérification du code exige un contexte sécurisé (`crypto.subtle`) : elle
+  **échoue en `file://`**. Documenté dans `CONSIGNES-sequence-SNT.md` §15.8.
+- `NET·4c` n'apparaissait qu'**une seule fois**, pas trois. La gêne venait de sa
+  mise en forme : une consigne de manipulation balisée comme un lien externe, et
+  affublée d'un `.a-venir` alors que rien n'était en travaux.
+
+**Sources DNS relevées et vérifiées** — RFC 1034 (spécification en vigueur, 1987),
+notice ACM de Paul Mockapetris (conception en 1983, RFC 882/883), AFNIC, ICANN.
+Détail et réserves dans `_modeles/biblio-sources-SNT.md`.
+
+**Piste ouverte, non traitée** — la vidéo DNS existe sur le PeerTube du ministère.
+Motif de Loïc pour y regarder de plus près : ce sont les **publicités** qui le
+gênent, et `nocookie` ne les enlève pas. Réserve à lever d'abord : le pair-à-pair
+exposerait l'IP de l'élève à d'autres spectateurs.
