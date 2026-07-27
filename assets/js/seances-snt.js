@@ -36,16 +36,21 @@ window.SEANCES_SNT = {
     {
       "id": "s2",
       "num": "S2",
-      "nom": "Le réseau physique"
+      "nom": "Internet et moi"
     },
     {
       "id": "s3",
       "num": "S3",
-      "nom": "Protocoles, modèle TCP/IP et routage"
+      "nom": "Le réseau physique"
     },
     {
       "id": "s4",
       "num": "S4",
+      "nom": "Protocoles, modèle TCP/IP et routage"
+    },
+    {
+      "id": "s5",
+      "num": "S5",
       "nom": "Adresses IP, DNS et diagnostic"
     }
   ],

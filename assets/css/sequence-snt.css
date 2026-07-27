@@ -122,7 +122,7 @@
   a.res-item:hover{border-color:var(--link);background:var(--link-wash)}
   .res-code{font-family:"IBM Plex Mono";font-size:11px;font-weight:600;flex:none;padding:3px 7px;border-radius:6px;background:var(--ink);color:#fff;margin-top:1px}
   .res-item.activity .res-code{background:var(--activity)} .res-item.debranche .res-code{background:#5b3fa8}
-  .res-main{flex:1;min-width:0} .res-main .r-title{font-weight:500;font-size:14.5px} .res-main .r-type{font-size:12.5px;color:var(--ink-faint)}
+  .res-main{flex:1;min-width:0} .res-main .r-title{display:block;font-weight:500;font-size:14.5px} .res-main .r-type{display:block;margin-top:2px;font-size:12.5px;color:var(--ink-faint)}
   .res-time{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-faint);flex:none;margin-top:2px}
   .res-item.activity{background:var(--activity-wash);border-color:#eed4b6} .res-item.activity:hover{border-color:var(--activity)}
 
@@ -154,7 +154,8 @@
   .minitel-fig figcaption{font-size:11.5px;color:var(--ink-faint);margin-top:4px;font-style:italic}
   .biblio{margin-top:10px;background:#fff;border:1px solid #cdddf0;border-radius:10px;padding:10px 13px}
   .biblio .bl{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--france);font-weight:600;margin-bottom:6px;display:flex;gap:6px;align-items:center}
-  .biblio a{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--france);text-decoration:none;border-bottom:1px dotted var(--france);margin:2px 12px 2px 0}
+  .biblio a{display:inline;font-size:13px;line-height:1.65;color:var(--france);text-decoration:none;border-bottom:1px dotted var(--france);margin:2px 12px 2px 0}
+  .biblio a + a{display:block;margin-top:6px}
   .biblio a:hover{background:var(--france-wash)}
   .biblio a::before{content:"↗";font-size:11px;opacity:.7}
   .reveal .biblio{background:rgba(255,255,255,.6);border-color:var(--hist)}
@@ -178,9 +179,48 @@
   .cloze input:focus{outline:2px solid var(--link);outline-offset:1px}
   .cloze input.ok{border-color:var(--ok);background:var(--ok-wash);color:#0c5c42} .cloze input.no{border-color:var(--err);background:var(--err-wash);color:#8f2a22}
   .diagram{width:100%;height:auto;display:block;margin:2px 0 10px} .diagram text{font-family:"IBM Plex Sans"}
-  .label-selects{display:flex;flex-wrap:wrap;gap:10px}
-  .label-selects label{font-size:13px;color:var(--ink-soft);display:flex;flex-direction:column;gap:3px}
-  .label-selects select{font-family:"IBM Plex Sans";font-size:13.5px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+  /* Grilles d'association — refonte du 26/07/2026.
+     C'était un flex-wrap : quatre à neuf paires « énoncé + menu déroulant »
+     de largeurs toutes différentes s'enroulaient en pavé irrégulier, et les
+     sous-titres numérotés (1· 2· 3·) se retrouvaient coincés dans le flux au
+     lieu de séparer les groupes. Trois exercices de la séquence en
+     héritaient. Une grille remet l'énoncé à gauche, le choix à droite, et
+     rend les sous-titres pleine largeur. */
+  .label-selects{display:grid;grid-template-columns:1fr;gap:9px}
+  .label-selects .dq-sub{grid-column:1/-1}
+  .label-selects label{font-size:13px;color:var(--ink-soft);display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,300px);align-items:center;gap:10px;
+    padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
+  .label-selects select{font-family:"IBM Plex Sans";font-size:13.5px;padding:6px 8px;border-radius:8px;
+    border:1px solid var(--line);background:var(--surface-2);color:var(--ink);width:100%;max-width:100%}
+  @media(max-width:760px){
+    .label-selects label{grid-template-columns:1fr;gap:5px}
+  }
+  /* Porte d'intuition : la suite de l'étape n'existe pas encore. */
+  .porte-close{display:none !important}
+  .porte-mot{margin-top:9px;font-size:13px;color:var(--ink-faint);font-style:italic}
+  /* Justification du texte courant (relecture du 26/07/2026).
+     Portée volontairement limitée aux paragraphes de contenu : justifier
+     un badge, une légende de deux mots ou une cellule de tableau produit
+     des blancs absurdes. `hyphens:auto` va avec — sans césure, la
+     justification creuse des rivières de blanc dans la colonne, et c'est
+     précisément le réglage typographique le plus gênant pour un lecteur
+     dyslexique. La page porte lang="fr", la césure connaît donc les
+     règles françaises. */
+  .card-body > p, .france-box > p, .bonus-body > p, .retain .rb, .perso .field-q,
+  .seance-goal, .step .field-q, .doc-note{
+    text-align:justify;
+    -webkit-hyphens:auto;hyphens:auto;
+  }
+  .card-body > p code, .retain .rb code{-webkit-hyphens:none;hyphens:none}
+  figcaption, .block-label, .field-type, .res-main, .niv, .doc-table td, .doc-table th{
+    text-align:left;-webkit-hyphens:none;hyphens:none;
+  }
+  @media(max-width:520px){
+    /* colonne trop étroite : la justification y fait plus de mal que de bien */
+    .card-body > p, .france-box > p, .bonus-body > p, .retain .rb, .perso .field-q,
+    .seance-goal, .step .field-q, .doc-note{text-align:left}
+  }
   .label-selects select.ok{border-color:var(--ok);background:var(--ok-wash)} .label-selects select.no{border-color:var(--err);background:var(--err-wash)}
   .free textarea,.perso textarea{width:100%;min-height:88px;resize:vertical;font-family:"IBM Plex Sans";font-size:14.5px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);line-height:1.5}
   .free textarea:focus,.perso textarea:focus{outline:2px solid var(--link);outline-offset:1px;border-color:var(--link)}

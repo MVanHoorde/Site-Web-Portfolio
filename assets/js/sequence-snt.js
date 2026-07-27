@@ -269,13 +269,21 @@
       if(complete && seanceWasComplete[id]===false){ onSeanceComplete(sec); }
       if(seanceWasComplete[id]===undefined) seanceWasComplete[id]=complete; else seanceWasComplete[id]=complete;
     });
-    var s1=document.querySelector('[data-seance="1"]');
-    var s2=document.querySelector('[data-seance="2"]');
-    var s3=document.querySelector('[data-seance="3"]');
-    var s4=document.querySelector('[data-seance="4"]');
-    if(s2) s2.classList.toggle('locked', !seanceComplete(s1));
-    if(s3) s3.classList.toggle('locked', !(seanceComplete(s1)&&seanceComplete(s2)));
-    if(s4) s4.classList.toggle('locked', !(seanceComplete(s1)&&seanceComplete(s2)&&seanceComplete(s3)));
+    /* Cascade de déverrouillage — généralisée le 26/07/2026.
+       Elle était écrite à la main pour QUATRE séances (s1…s4). Le jour où
+       la séquence Internet est passée à cinq, la cinquième serait restée
+       verrouillée à vie sans que rien ne le signale : aucune erreur, juste
+       une séance inaccessible. On boucle désormais sur ce que la page
+       contient réellement, dans l'ordre de data-seance. */
+    var suite=Array.prototype.slice.call(document.querySelectorAll('.seance'))
+      .sort(function(a,b){
+        return (+a.getAttribute('data-seance')||0)-(+b.getAttribute('data-seance')||0);
+      });
+    var precedentesOk=true;
+    suite.forEach(function(sec,rang){
+      if(rang>0) sec.classList.toggle('locked', !precedentesOk);
+      precedentesOk = precedentesOk && seanceComplete(sec);
+    });
     document.querySelectorAll('[data-navlock]').forEach(function(a){
       var n=a.getAttribute('data-navlock');
       var sec=document.querySelector('[data-seance="'+n+'"]');
@@ -890,7 +898,8 @@
     sec.querySelectorAll('.cloze input').forEach(function(i){i.value='';i.classList.remove('ok','no','juste','presque','revoir');});
     sec.querySelectorAll('.cloze select').forEach(function(s){s.selectedIndex=0;s.classList.remove('juste','presque','revoir');});
     sec.querySelectorAll('[data-depot-apercu]').forEach(function(a){a.innerHTML='';});
-    sec.querySelectorAll('[data-bilan-wrap]').forEach(function(b){b.hidden=true;});
+    sec.querySelectorAll('[data-bilan-wrap]').forEach(function(b){b.hidden=true;delete b.dataset.ouvert;});
+    sec.querySelectorAll('[data-reveal-bilan]').forEach(function(b){b.style.display='';b.disabled=true;});
     sec.querySelectorAll('.cloze-msg').forEach(function(m){m.innerHTML='';});
     sec.querySelectorAll('.indice').forEach(function(b){b.disabled=false;b.dataset.niveau='0';});
     sec.querySelectorAll('.indice-txt').forEach(function(z){z.style.display='none';z.textContent='';});
@@ -1404,12 +1413,23 @@ function numeroter(){
    chose. (L'index vient encore du .step-kicker écrit à la main ; le
    lot 4 le calculera.) */
 function propreTxt(n){ return n?n.textContent.replace(/\s+/g,' ').trim():''; }
+/* Comme propreTxt, mais sans l'index : les bandeaux .fl / .pl / .bonus-head
+   ouvrent par un <span class="ix"> que numeroter() remplit. Le lire avec le
+   reste affichait le numéro deux fois de suite dans le sommaire et dans les
+   lignes repliées — « 1.5 · 1.5Fierté française ». On copie le nœud pour
+   ne rien retirer de ce que l'élève voit à l'écran. */
+function propreTxtSansIx(n){
+  if(!n) return '';
+  var c=n.cloneNode(true), ix=c.querySelector('.ix');
+  if(ix) ix.remove();
+  return c.textContent.replace(/\s+/g,' ').trim();
+}
 function infosEtape(p){
   var k=propreTxt($('.step-kicker',p)||$('.ix',p)), mi=k.match(/([0-9D]+\.[0-9]+)/);
   if(p.dataset && p.dataset.num) mi=[p.dataset.num,p.dataset.num];
   var nom=propreTxt($('.step-title',p));
   if(!nom){
-    var b=propreTxt($('.fl',p)||$('.pl',p)||$('.bl',p));
+    var b=propreTxtSansIx($('.fl',p)||$('.pl',p)||$('.bl',p));
     nom = b ? b.split('·')[0].split('—')[0].trim() : 'Étape';
   }
   return { ix: mi?mi[1]:'', nom: nom };
@@ -2179,15 +2199,128 @@ function initCalc(){
   });
 }
 
+
+/* ============================================================
+   RÉVÉLATION CONDITIONNELLE (lot 3 — 26/07/2026)
+   ------------------------------------------------------------
+   Deux demandes de la relecture de Loïc, qui sont la même idée prise
+   par les deux bouts :
+
+     « le bilan ne doit s'afficher que s'il y a des réponses à toutes
+      les questions précédentes, dans la totalité de l'étape »
+     « quand il y a une question d'intuition avant tout, le reste de
+      l'étape ne devrait pas être visible »
+
+   Autrement dit : le corrigé ne se lit pas avant d'avoir cherché, et
+   le cours ne se lit pas avant d'avoir dit ce qu'on croyait savoir.
+   Le bouton « Afficher le à retenir » reste dans la page, mais il ne
+   sert plus qu'à dire ce qui manque : la révélation, elle, se fait
+   toute seule dès la dernière réponse.
+
+   Ce moteur ne CORRIGE rien et ne valide rien — il regarde seulement
+   si les champs sont remplis. Un élève qui répond faux voit son
+   « à retenir » comme les autres : c'est justement là qu'il en a le
+   plus besoin.
+   ============================================================ */
+function bqRempli(el,step){
+  if(el.matches('[data-focus]'))
+    return el.classList.contains('rempli') ||
+           !!(el.querySelector('[data-focus-echo]') || {textContent:''}).textContent.trim();
+  if(el.matches('.qcmbox')){
+    /* Trois traces possibles, et il faut les trois : « ✓ déjà fait » n'est
+       posé qu'à la restauration d'une session précédente, le score n'est
+       en dataset que si le moteur l'y a mis, et le récapitulatif est ce
+       qui apparaît immédiatement après un QCM passé dans la séance en
+       cours. N'en lire qu'une laissait le bilan fermé juste après un QCM
+       tout juste terminé. */
+    if(el.querySelector('.qcm-fait')) return true;
+    if(step && step.dataset && step.dataset.qcmScore) return true;
+    var rec=el.querySelector('.qcm-recap');
+    return !!(rec && rec.textContent.trim());
+  }
+  if(el.matches('[data-tri]'))
+    return !!(step && step.dataset && step.dataset.triScore);
+  if(el.matches('.label-selects,.cloze')){
+    var ch=el.querySelectorAll('select,input');
+    if(!ch.length) return true;
+    return Array.prototype.every.call(ch,function(x){ return x.value && x.value.trim(); });
+  }
+  if(el.matches('textarea')) return !!el.value.trim();
+  return true;
+}
+/* Combien de blocs de réponse restent vides dans cette étape. On ne
+   regarde ni le bloc bilan lui-même (il contiendrait sa propre
+   réponse) ni les « pour aller plus loin » (hors 100 %). */
+function bqReste(step,saufDans){
+  var sel='[data-focus],.qcmbox,.label-selects,.cloze,[data-tri],.perso textarea';
+  var n=0;
+  $$(sel,step).forEach(function(el){
+    if(saufDans && saufDans.contains(el)) return;
+    if(el.closest('.bonus-wrap')) return;
+    if(el.closest('[data-bilan-wrap]')) return;
+    /* un .field qui enveloppe un .label-selects ne compte qu'une fois */
+    if(el.matches('[data-focus]') && el.querySelector('.label-selects,.cloze')) return;
+    if(!bqRempli(el,step)) n++;
+  });
+  return n;
+}
+function bqMaj(){
+  /* 1. le « à retenir » / bilan de fin d'étape */
+  $$('[data-bilan-wrap]').forEach(function(wrap){
+    var step=wrap.closest('[data-step]'); if(!step) return;
+    var btn=$('[data-reveal-bilan]',step);
+    if(wrap.dataset.ouvert==='1'){ wrap.hidden=false; if(btn) btn.style.display='none'; return; }
+    var reste=bqReste(step,wrap);
+    if(reste===0){
+      wrap.hidden=false;
+      wrap.dataset.ouvert='1';
+      if(btn) btn.style.display='none';
+    }else{
+      wrap.hidden=true;
+      if(btn){
+        btn.style.display='';
+        btn.disabled=true;
+        btn.textContent=(reste===1)
+          ? '\uD83D\uDD12 Encore une r\u00e9ponse et le \u00ab \u00e0 retenir \u00bb s\u2019affiche'
+          : '\uD83D\uDD12 Le \u00ab \u00e0 retenir \u00bb s\u2019affichera : '+reste+' r\u00e9ponses \u00e0 compl\u00e9ter';
+      }
+    }
+  });
+  /* 2. les portes d'intuition : tant que la question d'ouverture est
+        vide, la suite de l'étape n'est pas là. */
+  $$('[data-porte]').forEach(function(porte){
+    var ta=$('textarea',porte);
+    var ouvert=!!(ta && ta.value.trim());
+    var n=porte.nextElementSibling;
+    while(n){ n.classList.toggle('porte-close',!ouvert); n=n.nextElementSibling; }
+    var mot=$('.porte-mot',porte);
+    if(!mot){
+      mot=document.createElement('div');
+      mot.className='porte-mot';
+      porte.appendChild(mot);
+    }
+    mot.textContent=ouvert ? '' :
+      '\u2193 \u00c9cris ton intuition : la suite de l\u2019\u00e9tape s\u2019ouvrira juste apr\u00e8s.';
+    mot.hidden=ouvert;
+  });
+}
+
 /* ---------- Révélation du « à retenir » après l'activité (nouveau, 22/07/2026) ---------- */
 function initBilan(){
   $$('[data-reveal-bilan]').forEach(function(btn){
     btn.addEventListener('click',function(){
+      /* Le bouton est désormais désactivé tant que l'étape n'est pas
+         répondue : ce clic ne survient donc qu'en mode enseignant, où il
+         faut pouvoir montrer le corrigé au tableau sans tout remplir. */
       var card=btn.closest('.card-body')||document;
       var wrap=$('[data-bilan-wrap]',card);
-      if(wrap) wrap.hidden=false;
-      btn.disabled=true; btn.textContent='🎯 Bilan affiché';
+      if(wrap){ wrap.hidden=false; wrap.dataset.ouvert='1'; }
+      btn.style.display='none';
     });
+  });
+  bqMaj();
+  ['input','change','etape-validee'].forEach(function(ev){
+    document.addEventListener(ev,bqMaj);
   });
 }
 
@@ -2310,7 +2443,7 @@ function demarrer(){
   initDepot();
   initCalc();
   initBilan();
-  var obs=new MutationObserver(majBarre);
+  var obs=new MutationObserver(function(){ majBarre(); bqMaj(); });
   $$('.steps').forEach(function(s){ obs.observe(s,{attributes:true,subtree:true,attributeFilter:['class']}); });
   restaurer();
   document.body.classList.add('js-ok');   /* la nav ne se masque qu'ici */
