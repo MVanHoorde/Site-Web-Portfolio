@@ -61,11 +61,22 @@ if (!repLire.ok)
   throw new Error("Lecture refusée (" + repLire.status + "). Clé service_role correcte ?");
 const enAttente = await repLire.json();
 
-if (enAttente.length === 0) {
+/* Ne PAS appeler process.exit() ici.
+   Constaté le 31/07/2026 dans worker.log : appelé juste après un
+   fetch, il coupe le processus pendant que le socket HTTP se referme
+   encore, et Windows lève « Assertion failed: !(handle->flags &
+   UV_HANDLE_CLOSING), src\win\async.c ». Comme c'est le chemin
+   emprunté chaque fois qu'il n'y a rien à faire — donc la plupart
+   des passes de la tâche planifiée — le journal se remplissait
+   d'erreurs alors que tout allait bien.
+   La boucle ci-dessous n'itère sur rien quand la liste est vide :
+   laisser Node se terminer seul suffit. */
+const rienAFaire = enAttente.length === 0;
+if (rienAFaire) {
   console.log("Rien à pré-corriger : aucune réponse en attente sans correction.");
-  process.exit(0);
+} else {
+  console.log("À traiter :", enAttente.length, "réponse(s).\n");
 }
-console.log("À traiter :", enAttente.length, "réponse(s).\n");
 
 let ok = 0;
 for (const r of enAttente) {
@@ -90,5 +101,7 @@ for (const r of enAttente) {
   ok++;
 }
 
-console.log("\nTerminé :", ok, "pré-correction(s) écrite(s).");
-console.log("Table Editor → reponses_libres : correction_ia rempli · statut reste 'en_attente'.");
+if (!rienAFaire) {
+  console.log("\nTerminé :", ok, "pré-correction(s) écrite(s).");
+  console.log("Table Editor → reponses_libres : correction_ia rempli · statut reste 'en_attente'.");
+}

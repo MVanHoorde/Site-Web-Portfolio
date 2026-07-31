@@ -36,8 +36,12 @@
       powershell -ExecutionPolicy Bypass -File .\planifier-worker.ps1 -Retirer
       powershell -ExecutionPolicy Bypass -File .\planifier-worker.ps1 -Etat
 
-  Aucun droit administrateur : la tâche est posée pour l'utilisateur
-  courant seulement.
+  ATTENTION — Register-ScheduledTask EXIGE une élévation sur la
+  plupart des configurations Windows (« Accès refusé » constaté le
+  31/07/2026). Deux chemins, donc :
+      · PowerShell lancé en administrateur → tâche planifiée
+      · sans privilèges → -Boucle, qui installe un script en boucle
+        lancé à l'ouverture de session par le dossier Démarrage
 ================================================================
 #>
 
@@ -45,6 +49,7 @@ param(
   [int]    $Minutes = 15,
   [switch] $Retirer,
   [switch] $Etat,
+  [switch] $Boucle,
   [string] $NomTache = "SNT - precorrection IA"
 )
 
@@ -57,10 +62,42 @@ function Bien($t) { Write-Host "  OK   $t" -ForegroundColor Green }
 function Mal ($t) { Write-Host "  !!   $t" -ForegroundColor Red }
 function Mou ($t) { Write-Host "  ..   $t" -ForegroundColor DarkGray }
 
+$demarrage = [Environment]::GetFolderPath('Startup')
+$raccourci = Join-Path $demarrage "snt-worker.cmd"
+
+# ---------------------------------------------------------------
+#  Mode boucle — aucun privilège requis
+#
+#  On dépose un .cmd dans le dossier Démarrage de l'utilisateur :
+#  Windows l'exécute à l'ouverture de session, sans rien demander à
+#  personne. C'est moins robuste qu'une tâche planifiée (fermer la
+#  fenêtre arrête tout) mais cela ne dépend que de l'utilisateur.
+# ---------------------------------------------------------------
+if ($Boucle) {
+  $script = Join-Path $dossier "boucle-worker.ps1"
+  if (-not (Test-Path $script)) { Mal "boucle-worker.ps1 introuvable."; exit 1 }
+
+  $contenu = "@echo off`r`n" +
+    "start `"`" /min powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$script`" -Minutes $Minutes`r`n"
+  Set-Content -LiteralPath $raccourci -Value $contenu -Encoding ASCII
+
+  Info ""
+  Bien "Boucle installee au demarrage de ta session."
+  Info "  Fichier   : $raccourci"
+  Info "  Journal   : $journal"
+  Info "  Retirer   : .\planifier-worker.ps1 -Retirer"
+  Info ""
+  Mou "Elle demarrera a ta prochaine ouverture de session."
+  Mou "Pour la lancer tout de suite, dans une fenetre a part :"
+  Mou "  powershell -ExecutionPolicy Bypass -File .\boucle-worker.ps1"
+  exit 0
+}
+
 # ---------------------------------------------------------------
 #  Retrait
 # ---------------------------------------------------------------
 if ($Retirer) {
+  if (Test-Path $raccourci) { Remove-Item $raccourci -Force; Bien "Lancement au demarrage supprime." }
   if (Get-ScheduledTask -TaskName $NomTache -ErrorAction SilentlyContinue) {
     Unregister-ScheduledTask -TaskName $NomTache -Confirm:$false
     Bien "Tache supprimee. Le worker ne tournera plus tout seul."
@@ -74,8 +111,17 @@ if ($Retirer) {
 #  Etat
 # ---------------------------------------------------------------
 if ($Etat) {
+  if (Test-Path $raccourci) { Bien "Boucle installee au demarrage : $raccourci" }
   $t = Get-ScheduledTask -TaskName $NomTache -ErrorAction SilentlyContinue
-  if (-not $t) { Mou "Tache non installee."; exit 0 }
+  if (-not $t) {
+    Mou "Tache planifiee non installee."
+    if (Test-Path $journal) {
+      Info ""
+      Info "Dernieres lignes du journal :"
+      Get-Content $journal -Tail 12 -Encoding UTF8 | ForEach-Object { Mou $_ }
+    }
+    exit 0
+  }
   $info = Get-ScheduledTaskInfo -TaskName $NomTache
   Info "Tache      : $($t.State)"
   Info "Derniere   : $($info.LastRunTime)  (code $($info.LastTaskResult))"
@@ -83,7 +129,7 @@ if ($Etat) {
   if (Test-Path $journal) {
     Info ""
     Info "Dernieres lignes du journal :"
-    Get-Content $journal -Tail 12 | ForEach-Object { Mou $_ }
+    Get-Content $journal -Tail 12 -Encoding UTF8 | ForEach-Object { Mou $_ }
   }
   exit 0
 }
@@ -126,14 +172,18 @@ try {
 #  ne retrouve rien quand quelque chose cloche.
 # ---------------------------------------------------------------
 $commande = @"
+try {
+  [Console]::OutputEncoding = [Text.Encoding]::UTF8
+  `$OutputEncoding = [Text.Encoding]::UTF8
+} catch {}
 Set-Location -LiteralPath '$dossier'
 `$debut = Get-Date -Format 'yyyy-MM-dd HH:mm'
 `$sortie = & node precorrection-snt.mjs 2>&1 | Out-String
-Add-Content -LiteralPath '$journal' -Value ("[" + `$debut + "] " + `$sortie.Trim())
+Add-Content -LiteralPath '$journal' -Value ("[" + `$debut + "] " + `$sortie.Trim()) -Encoding UTF8
 # on ne garde que les 400 dernieres lignes
-if ((Get-Content -LiteralPath '$journal' | Measure-Object -Line).Lines -gt 400) {
-  `$fin = Get-Content -LiteralPath '$journal' -Tail 300
-  Set-Content -LiteralPath '$journal' -Value `$fin
+if ((Get-Content -LiteralPath '$journal' -Encoding UTF8 | Measure-Object -Line).Lines -gt 400) {
+  `$fin = Get-Content -LiteralPath '$journal' -Tail 300 -Encoding UTF8
+  Set-Content -LiteralPath '$journal' -Value `$fin -Encoding UTF8
 }
 "@
 
@@ -161,8 +211,33 @@ if (Get-ScheduledTask -TaskName $NomTache -ErrorAction SilentlyContinue) {
   Unregister-ScheduledTask -TaskName $NomTache -Confirm:$false
 }
 
-Register-ScheduledTask -TaskName $NomTache -Action $action -Trigger $t1 `
-  -Settings $reglages -Description "Pre-correction IA des reponses libres SNT (modele local)" | Out-Null
+# Register-ScheduledTask echoue avec « Acces refuse » sans elevation.
+# On l'annonce AVANT plutot que de laisser une trace d'erreur.
+$identite = [Security.Principal.WindowsIdentity]::GetCurrent()
+$estAdmin = (New-Object Security.Principal.WindowsPrincipal($identite)).IsInRole(
+              [Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $estAdmin) {
+  Info ""
+  Mal "Cette fenetre n'est pas administrateur — la tache va etre refusee."
+  Info ""
+  Info "  Deux solutions :"
+  Info "   1. Rouvre PowerShell en administrateur et relance cette commande."
+  Info "   2. Passe par la boucle, qui ne demande aucun privilege :"
+  Info "        .\planifier-worker.ps1 -Boucle"
+  Info ""
+  exit 1
+}
+
+try {
+  Register-ScheduledTask -TaskName $NomTache -Action $action -Trigger $t1 `
+    -Settings $reglages -Description "Pre-correction IA des reponses libres SNT (modele local)" | Out-Null
+} catch {
+  Info ""
+  Mal ("Installation refusee : " + $_.Exception.Message)
+  Info "  Replie-toi sur la boucle, qui ne demande aucun privilege :"
+  Info "    .\planifier-worker.ps1 -Boucle"
+  exit 1
+}
 
 Info ""
 Bien "Tache installee : toutes les $Minutes minutes, session ouverte."
