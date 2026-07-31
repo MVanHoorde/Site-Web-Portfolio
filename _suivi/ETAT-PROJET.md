@@ -30,17 +30,35 @@ explicite, jamais présumé.
 
 ## Ce qui bloque
 
-### ① Chemin critique — l'étape 5 n'existe pas
+### ① Chemin critique — la boucle ne se referme toujours pas
 
-**Rien dans le dépôt ne peut faire passer une copie de `en_attente` à `corrige`.**
-Ni le worker (par conception), ni `progression.js`, ni aucun script ; il n'existe
-pas de rôle enseignant en base. Conséquence : l'élève envoie, le worker corrige,
-et **l'élève ne voit jamais rien** — l'affichage est conditionné à
+**Rien dans le dépôt ne peut encore faire passer une copie de `en_attente` à
+`corrige`.** Conséquence inchangée : l'élève envoie, le worker corrige, et
+**l'élève ne voit jamais rien** — l'affichage est conditionné à
 `statut === 'corrige'`.
 
-Version minimale suffisante pour la rentrée : un script en ligne de commande sur
-le PC de Loïc (lister · afficher `tri.a_verifier` · valider d'une touche). Le
-tableau de bord iPad peut attendre. **C'est le dernier maillon.**
+Ce qui a changé, en revanche, c'est que les fondations sont posées :
+
+- `008` (27/07) — le rôle enseignant existe en base : table `enseignants`,
+  fonction `est_enseignant()`, et **lecture** des copies, des élèves et des
+  classes par un vrai compte soumis à la RLS. Aucune écriture.
+- `009` (31/07) — le suivi de classe : `seances_faites`, `absences`, `jalons`,
+  plus la lecture de `progression` que le `008` avait laissée de côté. Migration
+  jouée et éprouvée sur un PostgreSQL 16 (rejeu, test d'intrusion élève et
+  anonyme). Aucune écriture sur les copies non plus.
+
+Il reste donc **deux maillons**, dans cet ordre :
+
+1. **Lot 2 du rôle enseignant** — les fonctions `valider_copie()` /
+   `signaler_copie()`, seules autorisées à toucher `statut`. C'est ce qui rend
+   la correction visible à l'élève, et c'est le vrai dernier maillon.
+2. **La page enseignant** — rituel d'ouverture (absents) et de clôture (ce qui
+   a été fait, note dictée), grille de suivi, file de correction. Servie par
+   GitHub Pages, sans aucun secret : `anon` + compte enseignant + RLS.
+
+Un repli reste valable si la page prend du retard sur la rentrée : un script en
+ligne de commande sur le PC de Loïc (lister · afficher `tri.a_verifier` ·
+valider d'une touche) suffit à refermer la boucle, une fois le lot 2 posé.
 
 ### ② Portage des sept séquences sur le moteur partagé
 
