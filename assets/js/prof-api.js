@@ -141,6 +141,39 @@
     });
   }
 
+  /* Écriture (POST). « fusion » demande à PostgREST de remplacer une
+     ligne existante au lieu d'échouer sur la clé primaire — c'est ce
+     qui permet de re-clôturer une séance déjà enregistrée pour
+     corriger une note, sans se demander si elle existe déjà. */
+  function ecrire(chemin, corps, fusion) {
+    return assure().then(function () {
+      var h = entetes(true);
+      h.Prefer = fusion ? 'resolution=merge-duplicates,return=minimal'
+                        : 'return=minimal';
+      return fetch(URL_PROJET + '/rest/v1/' + chemin, {
+        method: 'POST', headers: h, body: JSON.stringify(corps)
+      });
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(t || ('HTTP ' + r.status)); });
+      return true;
+    });
+  }
+
+  /* Suppression. Le chemin DOIT porter un filtre : PostgREST refuse
+     un delete sans clause, mais on ne compte pas là-dessus — une
+     erreur de code ne doit pas pouvoir vider une table. */
+  function supprimer(chemin) {
+    if (chemin.indexOf('?') < 0) return Promise.reject(new Error('suppression sans filtre refusée'));
+    return assure().then(function () {
+      return fetch(URL_PROJET + '/rest/v1/' + chemin, {
+        method: 'DELETE', headers: entetes(true)
+      });
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(t || ('HTTP ' + r.status)); });
+      return true;
+    });
+  }
+
   /* Appel d'une fonction SQL (valider_copie, est_enseignant…). */
   function appeler(fonction, params) {
     return assure().then(function () {
@@ -260,6 +293,8 @@
     connecte     : function () { return !!moi; },
     moi          : function () { return moi; },
     lire         : lire,
+    ecrire       : ecrire,
+    supprimer    : supprimer,
     appeler      : appeler,
     chargerNoms  : chargerNoms,
     nomDe        : nomDe,

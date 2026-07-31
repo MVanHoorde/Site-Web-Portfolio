@@ -65,10 +65,16 @@ lots :
       ancienneté), critères, message proposé, valider / renvoyer / annuler.
       Parcours éprouvé hors navigateur avec un DOM simulé (`jsdom`) : ordre de
       tri, échappement du texte élève, appels de fonction et paramètres.
-- [ ] **C — rituel** : ouverture (absents) et clôture (séance faite, note dictée).
-- [ ] **D — grille de suivi** : séance dépliable, deux compteurs de retard.
-- [ ] **E — cahier de textes** : génération et reproposition entre groupes.
-- [ ] **F** : fiche élève, rapports.
+- [x] **C — rituel** : ouverture (absents, deux taps) et clôture (séances faites,
+      note dictée au micro du clavier, travail donné, à reprendre).
+- [x] **D — grille de suivi** : une colonne par séance avec le détail chiffré,
+      cinq états calculés (terminée / en cours / pas encore / en retard / absent),
+      deux compteurs distincts par élève — retard du jour et dette antérieure.
+      Dépliage étape par étape en attente des `data-cle` (voir DECISIONS).
+- [x] **E — cahier de textes** : bloc prêt à coller, repris automatiquement
+      d'un autre groupe ayant déjà fait la même séance.
+- [x] **F — fiche élève** : avancement et toutes ses réponses, accessible d'un
+      clic sur son nom dans la grille. Rapports agrégés : pas encore.
 
 Repli si la page prend du retard sur la rentrée : un script en ligne de commande
 sur le PC de Loïc (lister · afficher `tri.a_verifier` · appeler `valider_copie`)
