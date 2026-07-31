@@ -248,6 +248,38 @@ try {
   notes.push("assets/js/seances-snt.js absent ou illisible — lancer : node generer-seances.mjs");
 }
 
+/* ---------- Cohérence de la configuration Supabase ----------
+   prof-api.js duplique volontairement l'URL du projet et la clé anon
+   de progression.js (voir l'entête de prof-api.js : le second
+   s'auto-démarre et injecte une interface élève, on ne peut pas le
+   charger dans le tableau de bord). Une duplication finit toujours
+   par diverger ; ce contrôle est la contrepartie de ce choix.
+   BLOQUANT : si les deux ne correspondent plus, le tableau de bord
+   interroge un projet qui n'est pas celui des élèves — et il ne le
+   dirait pas, il afficherait simplement zéro copie. */
+try {
+  const extraireConf = (src) => ({
+    url: (src.match(/URL_PROJET\s*=\s*'([^']+)'/) || [])[1] || null,
+    cle: (src.match(/CLE_ANON\s*=\s*'([^']+)'/) || [])[1] || null
+  });
+  const a = extraireConf(lire("assets/js/progression.js"));
+  const b = extraireConf(lire("assets/js/prof-api.js"));
+  if (!a.url || !a.cle || !b.url || !b.cle) {
+    ko("configuration Supabase illisible",
+       "URL_PROJET ou CLE_ANON introuvable dans progression.js ou prof-api.js");
+  } else if (a.url !== b.url) {
+    ko("configuration Supabase divergente",
+       `URL_PROJET diffère entre progression.js et prof-api.js`);
+  } else if (a.cle !== b.cle) {
+    ko("configuration Supabase divergente",
+       `CLE_ANON diffère entre progression.js et prof-api.js`);
+  } else {
+    notes.push("configuration Supabase — identique dans progression.js et prof-api.js");
+  }
+} catch (e) {
+  notes.push("assets/js/prof-api.js absent — contrôle de configuration non effectué");
+}
+
 /* ---------- Sortie ---------- */
 if (BILAN) { console.log(bilan()); process.exit(0); }
 

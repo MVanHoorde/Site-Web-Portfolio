@@ -53,14 +53,20 @@ Les trois migrations ont été jouées et éprouvées sur un PostgreSQL 16 : rej
 test d'intrusion élève et anonyme, et vérification que valider une copie ne
 réveille pas le déclencheur d'archivage.
 
-**Il ne reste plus de verrou en base.** Ce qui manque est une interface :
+**Il ne reste plus de verrou en base**, et le compte enseignant existe
+(`l.vanhoorde@…`, inscrit le 27/07). Ce qui manque est l'interface, découpée en
+lots :
 
-1. **La page enseignant** — rituel d'ouverture (absents) et de clôture (ce qui
-   a été fait, note dictée), grille de suivi, file de correction. Servie par
-   GitHub Pages, sans aucun secret : `anon` + compte enseignant + RLS.
-2. **Le compte enseignant lui-même** — une ligne à insérer à la main dans
-   `enseignants`. Tant qu'elle n'existe pas, `est_enseignant()` est faux pour
-   tout le monde et les fonctions refusent tout le monde.
+- [x] **A — socle** : `prof/index.html` + `assets/js/prof-api.js`. Connexion,
+      contrôle du rôle, coquille à quatre onglets, chargement de la table des
+      noms en mémoire vive. `verifier.mjs` surveille la cohérence de
+      configuration entre `prof-api.js` et `progression.js`.
+- [ ] **B — file de correction** : la pile triée par `tri.a_verifier`, valider /
+      signaler / rouvrir. Seul lot testable dès maintenant, avec `leproftest`.
+- [ ] **C — rituel** : ouverture (absents) et clôture (séance faite, note dictée).
+- [ ] **D — grille de suivi** : séance dépliable, deux compteurs de retard.
+- [ ] **E — cahier de textes** : génération et reproposition entre groupes.
+- [ ] **F** : fiche élève, rapports.
 
 Repli si la page prend du retard sur la rentrée : un script en ligne de commande
 sur le PC de Loïc (lister · afficher `tri.a_verifier` · appeler `valider_copie`)

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tableau de bord — SNT</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/index.html — tableau de bord enseignant (lot A : le socle)
+     ------------------------------------------------------------
+     CE QUE CE LOT FAIT : se connecter, vérifier que le compte est
+     bien un compte professeur, charger la table des noms, et offrir
+     une coquille où les lots suivants viendront se poser.
+     CE QU'IL NE FAIT PAS ENCORE : corriger (lot B), ouvrir et
+     clôturer une séance (lot C), afficher la grille (lot D).
+
+     PAGE PUBLIQUE. Elle est servie par GitHub Pages : n'importe qui
+     peut la charger. Ce n'est pas un défaut, c'est le modèle — elle
+     ne contient aucun secret, et sans compte professeur elle
+     n'affiche rien. La serrure est côté base (RLS + est_enseignant),
+     jamais côté page. Ne JAMAIS écrire ici une information qu'un
+     visiteur ne devrait pas lire.
+
+     noindex : inutile qu'elle traîne dans les moteurs de recherche.
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+  --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+  --link:#2445c7; --link-wash:#e7ebfb;
+  --ok:#12805c; --ok-wash:#e0f2ea;
+  --err:#c33a2f; --err-wash:#fbe6e3;
+  --wait:#9a6a00; --wait-wash:#fbf1d8;
+  --r:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+     font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:15.5px;line-height:1.55}
+h1,h2,h3{font-family:'Space Grotesk','IBM Plex Sans',sans-serif;font-weight:600;margin:0}
+code,.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+button{font:inherit;cursor:pointer;border-radius:var(--r);border:1px solid var(--line);
+       background:var(--surface);color:var(--ink);padding:9px 14px}
+button:hover{border-color:var(--ink-faint)}
+button.primaire{background:var(--link);border-color:var(--link);color:#fff}
+button.primaire:hover{filter:brightness(1.08)}
+button[disabled]{opacity:.45;cursor:not-allowed}
+input[type=email],input[type=password]{font:inherit;width:100%;padding:10px 12px;
+       border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--ink)}
+input:focus{outline:2px solid var(--link);outline-offset:1px}
+label{display:block;font-size:13.5px;color:var(--ink-soft);margin:0 0 5px}
+.carte{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+.muet{color:var(--ink-soft);font-size:14px}
+.tresmuet{color:var(--ink-faint);font-size:13px}
+
+/* --- connexion --- */
+#ecran-connexion{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px}
+#ecran-connexion .carte{width:100%;max-width:380px}
+#ecran-connexion h1{font-size:21px;margin-bottom:4px}
+.champ{margin:14px 0}
+.alerte{margin-top:14px;padding:10px 12px;border-radius:var(--r);font-size:14px;display:none}
+.alerte.show{display:block}
+.alerte.err{background:var(--err-wash);color:#8f2a22;border:1px solid var(--err)}
+
+/* --- coquille --- */
+#ecran-appli{display:none;min-height:100dvh;flex-direction:column}
+header.barre{background:var(--surface);border-bottom:1px solid var(--line);
+    padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    position:sticky;top:0;z-index:5}
+header.barre .titre{font-family:'Space Grotesk',sans-serif;font-weight:600}
+header.barre .qui{font-size:13.5px;color:var(--ink-soft);margin-left:auto}
+header.barre button{margin-left:8px}
+nav.onglets{display:flex;gap:6px;padding:10px 16px 0;flex-wrap:wrap}
+nav.onglets button{border-radius:var(--r) var(--r) 0 0;border-bottom-color:transparent;
+    background:var(--surface-2);color:var(--ink-soft)}
+nav.onglets button.actif{background:var(--surface);color:var(--ink);font-weight:600}
+main{flex:1;padding:0 16px 28px}
+.panneau{display:none;background:var(--surface);border:1px solid var(--line);
+    border-radius:0 14px 14px 14px;padding:20px}
+.panneau.actif{display:block}
+.vide{text-align:center;padding:34px 16px;color:var(--ink-soft)}
+.vide .g{font-size:15px;color:var(--ink);font-weight:600;margin-bottom:6px}
+.rangee{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.pastille{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:600}
+.pastille.ok{background:var(--ok-wash);color:#0c5c42}
+.pastille.att{background:var(--wait-wash);color:#7a5400}
+.encadre{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);
+    padding:12px 14px;font-size:14px;color:var(--ink-soft);margin-top:14px}
+@media (max-width:520px){ main{padding:0 10px 24px} .panneau{border-radius:14px;margin-top:8px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+</style>
+</head>
+<body>
+
+<!-- ============ écran 1 : connexion ============ -->
+<section id="ecran-connexion">
+  <div class="carte">
+    <h1>Tableau de bord SNT</h1>
+    <p class="muet">Réservé au professeur.</p>
+
+    <div class="champ">
+      <label for="mail">Adresse de connexion</label>
+      <input id="mail" type="email" autocomplete="username" autocapitalize="off" spellcheck="false">
+    </div>
+    <div class="champ">
+      <label for="mdp">Mot de passe</label>
+      <input id="mdp" type="password" autocomplete="current-password">
+    </div>
+
+    <button id="btn-connexion" class="primaire" style="width:100%">Se connecter</button>
+    <div id="err-connexion" class="alerte err"></div>
+
+    <p class="tresmuet" style="margin-top:16px">
+      La session se ferme d'elle-même au bout de 12&nbsp;heures. Rien de ce que tu vois
+      ici n'est enregistré sur l'appareil.
+    </p>
+  </div>
+</section>
+
+<!-- ============ écran 2 : l'application ============ -->
+<div id="ecran-appli">
+  <header class="barre">
+    <span class="titre">Tableau de bord SNT</span>
+    <span class="qui"><span id="qui-nom"></span></span>
+    <button id="lien-quitter" style="padding:5px 11px;font-size:13.5px">Quitter</button>
+  </header>
+
+  <nav class="onglets" role="tablist">
+    <button data-onglet="correction" disabled>À corriger</button>
+    <button data-onglet="seance"     disabled>Séance</button>
+    <button data-onglet="suivi"      disabled>Suivi</button>
+    <button data-onglet="reglages" class="actif">Réglages</button>
+  </nav>
+
+  <main>
+    <section class="panneau" id="p-correction">
+      <div class="vide"><div class="g">Bientôt</div>La file de correction arrive au lot suivant.</div>
+    </section>
+
+    <section class="panneau" id="p-seance">
+      <div class="vide"><div class="g">Bientôt</div>L'ouverture et la clôture de séance arrivent ensuite.</div>
+    </section>
+
+    <section class="panneau" id="p-suivi">
+      <div class="vide"><div class="g">Bientôt</div>La grille de suivi arrive après.</div>
+    </section>
+
+    <section class="panneau actif" id="p-reglages">
+      <h2 style="font-size:17px">La table des noms</h2>
+      <p class="muet" style="margin:6px 0 0">
+        La base ne connaît que des identifiants. Charge ton fichier pour voir les vrais
+        noms&nbsp;: il est lu <b>sur cet appareil uniquement</b>, jamais envoyé, jamais
+        enregistré. À recharger à chaque session — c'est ce qui permet de projeter au
+        tableau sans exposer personne.
+      </p>
+
+      <div class="rangee">
+        <input type="file" id="fichier-noms" accept=".csv,.txt" style="max-width:100%">
+        <span id="etat-noms" class="pastille att">aucun nom chargé</span>
+        <button id="btn-oublier" style="display:none">Oublier</button>
+      </div>
+
+      <div class="encadre">
+        <b>Format attendu</b> — une ligne par élève, l'identifiant puis le nom&nbsp;:<br>
+        <code class="mono">k3-loup-42;Martin Léa</code><br>
+        <code class="mono">v8-cedre-07;Boccara Yanis</code><br>
+        Le point-virgule ou la virgule fonctionnent. Une ligne d'en-tête est ignorée.
+      </div>
+
+      <div class="encadre">
+        <b>Où ranger ce fichier</b> — dans ton espace professionnel (OneDrive de
+        l'établissement), pas sur un service grand public. C'est le seul endroit du
+        dispositif où figurent des noms d'élèves&nbsp;: la base, elle, n'en contient
+        aucun.
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../assets/js/prof-api.js"></script>
+<script>
+(function(){
+  'use strict';
+  var $ = function(s){ return document.querySelector(s); };
+
+  /* ---------- bascule entre les deux écrans ---------- */
+  function montrerAppli(){
+    $('#ecran-connexion').style.display = 'none';
+    $('#ecran-appli').style.display = 'flex';
+    var m = ProfAPI.moi();
+    $('#qui-nom').textContent = (m && m.libelle) || '';
+  }
+  function montrerConnexion(message){
+    $('#ecran-appli').style.display = 'none';
+    $('#ecran-connexion').style.display = 'flex';
+    var z = $('#err-connexion');
+    if(message){ z.textContent = message; z.classList.add('show'); }
+    else { z.classList.remove('show'); }
+    $('#mdp').value = '';
+  }
+
+  /* ---------- messages d'erreur, en français ----------
+     On distingue le refus de rôle du mauvais mot de passe : dire
+     « identifiants incorrects » à quelqu'un dont le mot de passe est
+     bon mais qui n'est pas inscrit dans  enseignants  enverrait
+     chercher le problème au mauvais endroit. */
+  function messageErreur(e){
+    var t = (e && e.message) || '';
+    if(t === 'PAS_ENSEIGNANT')
+      return "Ce compte n'est pas un compte professeur.";
+    if(t === 'SESSION_EXPIREE' || t === 'AUCUNE_SESSION')
+      return "Session expirée. Reconnecte-toi.";
+    if(/invalid|credential|grant/i.test(t))
+      return "Adresse ou mot de passe incorrect.";
+    if(/failed to fetch|networkerror/i.test(t))
+      return "Pas de connexion au serveur. Vérifie le réseau.";
+    return "Connexion impossible : " + t;
+  }
+
+  /* ---------- connexion ---------- */
+  function tenter(){
+    var b = $('#btn-connexion');
+    b.disabled = true; b.textContent = 'Connexion…';
+    ProfAPI.connexion($('#mail').value, $('#mdp').value)
+      .then(function(){ montrerAppli(); })
+      .catch(function(e){ montrerConnexion(messageErreur(e)); })
+      .then(function(){ b.disabled = false; b.textContent = 'Se connecter'; });
+  }
+  $('#btn-connexion').addEventListener('click', tenter);
+  ['#mail','#mdp'].forEach(function(s){
+    $(s).addEventListener('keydown', function(ev){ if(ev.key === 'Enter') tenter(); });
+  });
+
+  $('#lien-quitter').addEventListener('click', function(){
+    ProfAPI.deconnexion();
+    majEtatNoms();
+    montrerConnexion(null);
+  });
+
+  /* ---------- onglets ---------- */
+  document.querySelectorAll('nav.onglets button').forEach(function(b){
+    b.addEventListener('click', function(){
+      if(b.disabled) return;
+      document.querySelectorAll('nav.onglets button').forEach(function(x){ x.classList.remove('actif'); });
+      document.querySelectorAll('.panneau').forEach(function(p){ p.classList.remove('actif'); });
+      b.classList.add('actif');
+      $('#p-' + b.dataset.onglet).classList.add('actif');
+    });
+  });
+
+  /* ---------- table des noms ---------- */
+  function majEtatNoms(){
+    var n = ProfAPI.nomsCharges();
+    var e = $('#etat-noms');
+    e.textContent = n ? (n + (n > 1 ? ' noms chargés' : ' nom chargé')) : 'aucun nom chargé';
+    e.className = 'pastille ' + (n ? 'ok' : 'att');
+    $('#btn-oublier').style.display = n ? '' : 'none';
+  }
+
+  $('#fichier-noms').addEventListener('change', function(ev){
+    var f = ev.target.files && ev.target.files[0];
+    if(!f) return;
+    var lecteur = new FileReader();
+    lecteur.onload = function(){
+      var n = ProfAPI.chargerNoms(lecteur.result);
+      majEtatNoms();
+      if(!n) alert("Aucun nom lu. Vérifie le format : un identifiant, un séparateur, un nom.");
+    };
+    /* Excel français enregistre en Windows-1252 ; on tente l'UTF-8 et
+       on se rabat sinon, sinon les accents partent en charabia. */
+    lecteur.readAsText(f, 'utf-8');
+  });
+
+  $('#btn-oublier').addEventListener('click', function(){
+    ProfAPI.oublierNoms();
+    $('#fichier-noms').value = '';
+    majEtatNoms();
+  });
+
+  /* ---------- démarrage ---------- */
+  majEtatNoms();
+  ProfAPI.reprendre()
+    .then(function(){ montrerAppli(); })
+    .catch(function(){ montrerConnexion(null); });
+})();
+</script>
+</body>
+</html>
