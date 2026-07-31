@@ -215,23 +215,31 @@
    * ---------------------------------------------------------- */
   var noms = {};
 
+  /* Renvoie { n, ignorees, apercu } plutôt qu'un simple compte.
+     Motif (31/07, découvert au premier essai) : un compte seul ment
+     par omission. Un fichier de cours à deux colonnes se charge
+     sans broncher et annonce « 2 noms chargés » — et l'écran
+     afficherait ensuite des noms FAUX en face des identifiants, ce
+     qui est pire que pas de nom. L'aperçu permet de voir en une
+     seconde qu'on s'est trompé de fichier. */
   function chargerNoms(texte) {
-    var table = {}, n = 0;
+    var table = {}, n = 0, ignorees = 0, apercu = [];
     String(texte || '').split(/\r?\n/).forEach(function (ligne) {
       if (!ligne.trim()) return;
       var sep = ligne.indexOf(';') >= 0 ? ';' : ',';
       var m = ligne.split(sep);
-      if (m.length < 2) return;
+      if (m.length < 2) { ignorees++; return; }
       var id  = m[0].trim();
       var nom = m.slice(1).join(sep).trim();
-      if (!id || !nom) return;
+      if (!id || !nom) { ignorees++; return; }
       /* en-tête éventuel : on ne l'inscrit pas */
       if (/^(identifiant|pseudo|login|id)$/i.test(id)) return;
       table[id.toLowerCase()] = nom;
       n++;
+      if (apercu.length < 3) apercu.push([id, nom]);
     });
     noms = table;
-    return n;
+    return { n: n, ignorees: ignorees, apercu: apercu };
   }
 
   /* Renvoie le vrai nom si la table est chargée, le pseudonyme

@@ -61,8 +61,10 @@ lots :
       contrôle du rôle, coquille à quatre onglets, chargement de la table des
       noms en mémoire vive. `verifier.mjs` surveille la cohérence de
       configuration entre `prof-api.js` et `progression.js`.
-- [ ] **B — file de correction** : la pile triée par `tri.a_verifier`, valider /
-      signaler / rouvrir. Seul lot testable dès maintenant, avec `leproftest`.
+- [x] **B — file de correction** : pile triée (signalées d'abord, puis
+      ancienneté), critères, message proposé, valider / renvoyer / annuler.
+      Parcours éprouvé hors navigateur avec un DOM simulé (`jsdom`) : ordre de
+      tri, échappement du texte élève, appels de fonction et paramètres.
 - [ ] **C — rituel** : ouverture (absents) et clôture (séance faite, note dictée).
 - [ ] **D — grille de suivi** : séance dépliable, deux compteurs de retard.
 - [ ] **E — cahier de textes** : génération et reproposition entre groupes.

@@ -70,11 +70,12 @@ header.barre{background:var(--surface);border-bottom:1px solid var(--line);
 header.barre .titre{font-family:'Space Grotesk',sans-serif;font-weight:600}
 header.barre .qui{font-size:13.5px;color:var(--ink-soft);margin-left:auto}
 header.barre button{margin-left:8px}
-nav.onglets{display:flex;gap:6px;padding:10px 16px 0;flex-wrap:wrap}
+nav.onglets{display:flex;gap:6px;padding:10px 16px 0;flex-wrap:wrap;
+    width:100%;max-width:1120px;margin:0 auto}
 nav.onglets button{border-radius:var(--r) var(--r) 0 0;border-bottom-color:transparent;
     background:var(--surface-2);color:var(--ink-soft)}
 nav.onglets button.actif{background:var(--surface);color:var(--ink);font-weight:600}
-main{flex:1;padding:0 16px 28px}
+main{flex:1;padding:0 16px 28px;width:100%;max-width:1120px;margin:0 auto}
 .panneau{display:none;background:var(--surface);border:1px solid var(--line);
     border-radius:0 14px 14px 14px;padding:20px}
 .panneau.actif{display:block}
@@ -88,6 +89,38 @@ main{flex:1;padding:0 16px 28px}
     padding:12px 14px;font-size:14px;color:var(--ink-soft);margin-top:14px}
 @media (max-width:520px){ main{padding:0 10px 24px} .panneau{border-radius:14px;margin-top:8px} }
 @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+
+/* --- file de correction --- */
+textarea{font:inherit;width:100%;padding:10px 12px;border:1px solid var(--line);
+    border-radius:var(--r);background:var(--surface);color:var(--ink);resize:vertical}
+textarea:focus{outline:2px solid var(--link);outline-offset:1px}
+.sous{font-size:13px;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--ink-faint);margin:20px 0 7px;font-weight:600}
+.entete-copie{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding-bottom:12px;border-bottom:1px solid var(--line)}
+.qui-copie{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px}
+.entete-copie .pastille{margin-left:auto}
+.pastille.acc{background:var(--ok-wash);color:#0c5c42}
+.pastille.comp{background:#fdecdf;color:#8a4b16}
+.pastille.neutre{background:var(--link-wash);color:#22357f}
+.copie-texte{margin:0;padding:13px 15px;background:var(--surface-2);
+    border-left:3px solid var(--link);border-radius:0 var(--r) var(--r) 0;white-space:pre-wrap}
+.crit{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.crit:last-child{border-bottom:0}
+.crit .marque{flex:0 0 22px;font-weight:700}
+.crit.obs .marque{color:var(--ok)}
+.crit.part .marque{color:var(--wait)}
+.crit.non .marque{color:var(--ink-faint)}
+.crit .quoi{flex:1}
+.crit .niv{flex:0 0 auto;font-size:11.5px;color:var(--ink-faint);text-transform:uppercase}
+.propose{padding:12px 14px;background:var(--ok-wash);border:1px solid var(--ok);
+    border-radius:var(--r);white-space:pre-wrap}
+.propose.plusloin{background:var(--link-wash);border-color:#b9c4ef;margin-top:9px}
+.bandeau{padding:11px 14px;border-radius:var(--r);margin-bottom:16px;font-size:14.5px;
+    background:var(--wait-wash);border:1px solid var(--wait);color:#7a5400}
+.annuler{position:sticky;bottom:0;margin-top:16px;padding:11px 14px;background:var(--ink);
+    color:#fff;border-radius:var(--r);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.annuler button{background:transparent;color:#fff;border-color:#5a6580}
 </style>
 </head>
 <body>
@@ -126,15 +159,64 @@ main{flex:1;padding:0 16px 28px}
   </header>
 
   <nav class="onglets" role="tablist">
-    <button data-onglet="correction" disabled>À corriger</button>
+    <button data-onglet="correction" class="actif">À corriger</button>
     <button data-onglet="seance"     disabled>Séance</button>
     <button data-onglet="suivi"      disabled>Suivi</button>
-    <button data-onglet="reglages" class="actif">Réglages</button>
+    <button data-onglet="reglages">Réglages</button>
   </nav>
 
   <main>
-    <section class="panneau" id="p-correction">
-      <div class="vide"><div class="g">Bientôt</div>La file de correction arrive au lot suivant.</div>
+    <section class="panneau actif" id="p-correction">
+      <div class="rangee" style="margin-top:0">
+        <button id="btn-recharger">Recharger la file</button>
+        <span id="etat-file" class="muet"></span>
+        <span id="jauge-file" class="pastille att" style="display:none"></span>
+      </div>
+
+      <div id="file-vide" class="vide" style="display:none">
+        <div class="g">Rien à corriger</div>
+        Aucune copie pré-corrigée en attente. Si tes élèves ont répondu,
+        lance le worker&nbsp;: <code class="mono">node precorrection-snt.mjs</code>
+      </div>
+
+      <article id="copie" style="display:none">
+        <div id="alerte-tri" class="bandeau" style="display:none"></div>
+
+        <div class="entete-copie">
+          <div>
+            <span class="qui-copie" id="c-qui"></span>
+            <span class="tresmuet" id="c-meta"></span>
+          </div>
+          <span class="pastille" id="c-verdict"></span>
+        </div>
+
+        <h3 class="sous">Ce qu'a écrit l'élève</h3>
+        <blockquote class="copie-texte" id="c-texte"></blockquote>
+
+        <h3 class="sous">Ce que l'IA a observé</h3>
+        <div id="c-criteres"></div>
+        <p class="tresmuet" id="c-notes"></p>
+
+        <h3 class="sous">Message proposé à l'élève</h3>
+        <div class="propose" id="c-message"></div>
+        <div class="propose plusloin" id="c-plusloin" style="display:none"></div>
+
+        <h3 class="sous">Ta décision</h3>
+        <label for="c-mot">Ton message (facultatif pour valider, obligatoire pour renvoyer)</label>
+        <textarea id="c-mot" rows="3" placeholder="Si tu écris ici, l'élève ne lira que ton mot."></textarea>
+
+        <div class="rangee">
+          <button id="btn-valider" class="primaire">Valider</button>
+          <button id="btn-signaler">Renvoyer à refaire</button>
+          <button id="btn-passer">Passer</button>
+        </div>
+        <div id="err-action" class="alerte err"></div>
+      </article>
+
+      <div id="annuler-zone" class="annuler" style="display:none">
+        <span id="annuler-txt"></span>
+        <button id="btn-annuler">Annuler</button>
+      </div>
     </section>
 
     <section class="panneau" id="p-seance">
@@ -145,7 +227,7 @@ main{flex:1;padding:0 16px 28px}
       <div class="vide"><div class="g">Bientôt</div>La grille de suivi arrive après.</div>
     </section>
 
-    <section class="panneau actif" id="p-reglages">
+    <section class="panneau" id="p-reglages">
       <h2 style="font-size:17px">La table des noms</h2>
       <p class="muet" style="margin:6px 0 0">
         La base ne connaît que des identifiants. Charge ton fichier pour voir les vrais
@@ -159,6 +241,8 @@ main{flex:1;padding:0 16px 28px}
         <span id="etat-noms" class="pastille att">aucun nom chargé</span>
         <button id="btn-oublier" style="display:none">Oublier</button>
       </div>
+
+      <div id="apercu-noms" class="encadre" style="display:none"></div>
 
       <div class="encadre">
         <b>Format attendu</b> — une ligne par élève, l'identifiant puis le nom&nbsp;:<br>
@@ -189,6 +273,7 @@ main{flex:1;padding:0 16px 28px}
     $('#ecran-appli').style.display = 'flex';
     var m = ProfAPI.moi();
     $('#qui-nom').textContent = (m && m.libelle) || '';
+    chargerFile();
   }
   function montrerConnexion(message){
     $('#ecran-appli').style.display = 'none';
@@ -262,19 +347,231 @@ main{flex:1;padding:0 16px 28px}
     if(!f) return;
     var lecteur = new FileReader();
     lecteur.onload = function(){
-      var n = ProfAPI.chargerNoms(lecteur.result);
+      var r = ProfAPI.chargerNoms(lecteur.result);
       majEtatNoms();
-      if(!n) alert("Aucun nom lu. Vérifie le format : un identifiant, un séparateur, un nom.");
+      montrerApercu(r, f.name);
+      afficher();   /* la copie à l'écran passe du pseudonyme au vrai nom */
+      if(!r.n) alert("Aucun nom lu. Vérifie le format : un identifiant, un séparateur, un nom.");
     };
     /* Excel français enregistre en Windows-1252 ; on tente l'UTF-8 et
        on se rabat sinon, sinon les accents partent en charabia. */
     lecteur.readAsText(f, 'utf-8');
   });
 
+  /* Aperçu : montrer CE QUI A ÉTÉ LU, pas seulement combien.
+     Un compte seul ne dit pas qu'on s'est trompé de fichier ; trois
+     lignes en clair le disent immédiatement. */
+  function echapper(t){
+    return String(t).replace(/[&<>"]/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    });
+  }
+  function montrerApercu(r, nomFichier){
+    var z = $('#apercu-noms');
+    if(!r || !r.n){ z.style.display = 'none'; return; }
+    var h = '<b>Vérifie que c\'est bien ta liste</b> — lu dans <code class="mono">'
+          + echapper(nomFichier) + '</code>\u00a0:<br>';
+    r.apercu.forEach(function(p){
+      h += '<code class="mono">' + echapper(p[0]) + '</code> \u2192 '
+         + echapper(p[1]) + '<br>';
+    });
+    if(r.n > r.apercu.length) h += '<span class="tresmuet">…et ' + (r.n - r.apercu.length) + ' de plus.</span><br>';
+    if(r.ignorees) h += '<span class="tresmuet">' + r.ignorees + ' ligne(s) sans séparateur, ignorée(s).</span>';
+    z.innerHTML = h;
+    z.style.display = '';
+  }
+
   $('#btn-oublier').addEventListener('click', function(){
     ProfAPI.oublierNoms();
     $('#fichier-noms').value = '';
+    $('#apercu-noms').style.display = 'none';
     majEtatNoms();
+    afficher();   /* retour immédiat au mode projection */
+  });
+
+  /* ============================================================
+     LA FILE DE CORRECTION (lot B)
+     ------------------------------------------------------------
+     Le worker écrit  correction_ia  et laisse  statut = 'en_attente'.
+     La file, c'est donc exactement : les copies en attente DÉJÀ
+     pré-corrigées. Celles que le worker n'a pas encore vues ne s'y
+     affichent pas — inutile de corriger sans son travail préparatoire,
+     et leur présence donnerait une fausse impression de retard.
+
+     ORDRE — les copies signalées par  tri.a_verifier  passent devant,
+     le reste par ancienneté. Le tri se fait ici et non en SQL : le
+     drapeau vit dans le JSONB, et sur trois groupes le volume ne
+     justifie pas une vue dédiée.
+     ============================================================ */
+  var file = [], rang = 0, derniere = null;
+
+  function analyseDe(c){
+    return (c && c.correction_ia && c.correction_ia.analyse) || {};
+  }
+
+  function chargerFile(){
+    $('#etat-file').textContent = 'Chargement…';
+    var chemin = 'reponses_libres'
+      + '?select=id,code_activite,texte,statut,version,envoye_le,correction_ia,eleves(pseudo)'
+      + '&statut=eq.en_attente&correction_ia=not.is.null'
+      + '&order=envoye_le.asc';
+    return ProfAPI.lire(chemin).then(function(l){
+      file = (l || []).sort(function(a, b){
+        var pa = analyseDe(a).tri && analyseDe(a).tri.a_verifier ? 0 : 1;
+        var pb = analyseDe(b).tri && analyseDe(b).tri.a_verifier ? 0 : 1;
+        if(pa !== pb) return pa - pb;
+        return String(a.envoye_le).localeCompare(String(b.envoye_le));
+      });
+      rang = 0;
+      $('#etat-file').textContent = '';
+      afficher();
+    }).catch(function(e){
+      $('#etat-file').textContent = 'Lecture impossible : ' + (e.message || e);
+    });
+  }
+
+  function afficher(){
+    var c = file[rang];
+    $('#err-action').classList.remove('show');
+    if(!c){
+      $('#copie').style.display = 'none';
+      $('#file-vide').style.display = '';
+      $('#jauge-file').style.display = 'none';
+      return;
+    }
+    $('#file-vide').style.display = 'none';
+    $('#copie').style.display = '';
+    var j = $('#jauge-file');
+    j.style.display = '';
+    j.textContent = (rang + 1) + ' / ' + file.length;
+
+    var a = analyseDe(c);
+    var pseudo = (c.eleves && c.eleves.pseudo) || '—';
+
+    /* nomDe() rend le vrai nom si la table est chargée, le pseudonyme
+       sinon : c'est ce repli qui fait le mode projection. */
+    $('#c-qui').textContent = ProfAPI.nomDe(pseudo);
+    $('#c-meta').textContent = ' · ' + c.code_activite
+      + (c.version > 1 ? ' · réécriture n°' + c.version : '')
+      + ' · ' + new Date(c.envoye_le).toLocaleDateString('fr-FR',
+          { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+
+    var v = a.verdict || 'sans objet';
+    var pv = $('#c-verdict');
+    pv.textContent = v;
+    pv.className = 'pastille ' + (v === 'accepté' ? 'acc' : v === 'à compléter' ? 'comp' : 'neutre');
+
+    /* Le texte de l'élève passe par textContent, jamais par innerHTML :
+       une réponse peut contenir n'importe quoi, y compris du balisage. */
+    $('#c-texte').textContent = c.texte || '';
+
+    /* Bandeau de tri : ce que le worker a jugé douteux. C'est le seul
+       endroit où il te dit « regarde celle-là de plus près ». */
+    var b = $('#alerte-tri');
+    if(a.tri && a.tri.a_verifier){
+      b.textContent = '⚠ À vérifier — ' + (a.tri.raisons || []).join(' ; ');
+      b.style.display = '';
+    } else b.style.display = 'none';
+
+    /* Critères */
+    var z = $('#c-criteres');
+    z.innerHTML = '';
+    (a.criteres || []).forEach(function(cr){
+      var cls = cr.constat === 'observé' ? 'obs'
+              : cr.constat === 'partiellement' ? 'part' : 'non';
+      var marque = cr.constat === 'observé' ? '✓'
+                 : cr.constat === 'partiellement' ? '~' : '·';
+      var d = document.createElement('div');
+      d.className = 'crit ' + cls;
+      var m = document.createElement('span'); m.className = 'marque'; m.textContent = marque;
+      var q = document.createElement('span'); q.className = 'quoi';
+      q.textContent = cr.id + ' — ' + (cr.justification || cr.constat);
+      var n = document.createElement('span'); n.className = 'niv';
+      n.textContent = cr.niveau === 'socle' ? 'socle' : (cr.niveau || '');
+      d.appendChild(m); d.appendChild(q); d.appendChild(n);
+      z.appendChild(d);
+    });
+    if(!(a.criteres || []).length){
+      z.innerHTML = '<p class="tresmuet">Aucun critère renvoyé (activité diagnostic, ou analyse illisible).</p>';
+    }
+
+    var notes = [];
+    if(a.a_verifier_par_le_prof) notes.push(a.a_verifier_par_le_prof);
+    if(a.note_orthographe) notes.push('Orthographe : ' + a.note_orthographe);
+    if(a.aide_camarades && a.aide_camarades.suggestion
+       && a.aide_camarades.suggestion !== 'sans objet')
+      notes.push('Aide aux camarades : ' + a.aide_camarades.suggestion);
+    $('#c-notes').textContent = notes.join(' · ');
+
+    var fe = a.feedback_eleve || {};
+    $('#c-message').textContent = fe.message || '(aucun message)';
+    var pl = $('#c-plusloin');
+    if(fe.pour_aller_plus_loin && fe.pour_aller_plus_loin.trim()){
+      pl.textContent = '🔭 ' + fe.pour_aller_plus_loin;
+      pl.style.display = '';
+    } else pl.style.display = 'none';
+
+    $('#c-mot').value = '';
+  }
+
+  /* ---------- actions ---------- */
+  function erreurAction(e){
+    var z = $('#err-action');
+    z.textContent = (e && e.message) || 'Action impossible.';
+    z.classList.add('show');
+  }
+
+  function retirerCourante(){
+    file.splice(rang, 1);
+    if(rang >= file.length) rang = Math.max(0, file.length - 1);
+    afficher();
+  }
+
+  function agir(fonction, libelle){
+    var c = file[rang];
+    if(!c) return;
+    var mot = $('#c-mot').value;
+    var boutons = ['#btn-valider','#btn-signaler','#btn-passer'];
+    boutons.forEach(function(s){ $(s).disabled = true; });
+    ProfAPI.appeler(fonction, { p_copie: c.id, p_commentaire: mot || null })
+      .then(function(){
+        derniere = { id: c.id, quoi: libelle, code: c.code_activite };
+        $('#annuler-txt').textContent = c.code_activite + ' — ' + libelle + '.';
+        $('#annuler-zone').style.display = 'flex';
+        retirerCourante();
+      })
+      .catch(erreurAction)
+      .then(function(){ boutons.forEach(function(s){ $(s).disabled = false; }); });
+  }
+
+  $('#btn-valider').addEventListener('click', function(){ agir('valider_copie', 'validée'); });
+  $('#btn-signaler').addEventListener('click', function(){ agir('signaler_copie', 'renvoyée à refaire'); });
+
+  $('#btn-passer').addEventListener('click', function(){
+    if(rang < file.length - 1){ rang++; afficher(); }
+    else { rang = 0; afficher(); }
+  });
+
+  /* Annuler : rouvrir_copie remet la copie dans la file, en gardant le
+     travail du worker. C'est le filet du clic malheureux — il n'est
+     proposé que pour la DERNIÈRE action, pas comme un historique. */
+  $('#btn-annuler').addEventListener('click', function(){
+    if(!derniere) return;
+    var b = $('#btn-annuler'); b.disabled = true;
+    ProfAPI.appeler('rouvrir_copie', { p_copie: derniere.id })
+      .then(function(){
+        derniere = null;
+        $('#annuler-zone').style.display = 'none';
+        return chargerFile();
+      })
+      .catch(erreurAction)
+      .then(function(){ b.disabled = false; });
+  });
+
+  $('#btn-recharger').addEventListener('click', function(){
+    $('#annuler-zone').style.display = 'none';
+    derniere = null;
+    chargerFile();
   });
 
   /* ---------- démarrage ---------- */
