@@ -500,6 +500,25 @@
     if(v === 'à compléter') return 'amb';
     return 'diag';                 /* sans objet / diagnostic */
   }
+  /* Copie RENVOYÉE (statut 'signale', posé par signaler_copie côté
+     base) : le professeur demande une réécriture. Rendu distinct du
+     retour ordinaire, pour deux raisons :
+      · pas de ligne de transparence sur l'IA — renvoyer une copie
+        est une décision du professeur, l'IA ne renvoie rien ;
+      · l'invitation à réécrire doit être explicite, sinon l'élève
+        lit un reproche sans savoir qu'il a la main.
+     Le mot du professeur prime, comme dans rendreRetour ; à défaut,
+     le message de l'IA qu'il a validé (la base refuse un renvoi qui
+     ne dirait ni l'un ni l'autre — voir 010-corriger-les-copies). */
+  function rendreRenvoi(r){
+    var fe  = (r.correction_ia && r.correction_ia.analyse
+               && r.correction_ia.analyse.feedback_eleve) || {};
+    var mot = (r.commentaire_prof && r.commentaire_prof.trim())
+                ? r.commentaire_prof : (fe.message || '');
+    return '<span class="vd-pastille">\u270e À reprendre</span>' +
+           '<p class="vd-msg">' + echapper(mot) + '</p>' +
+           '<p class="vd-msg">Reprends ta réponse\u00a0: ton nouvel envoi remplacera le précédent.</p>';
+  }
   function rendreRetour(r){
     var a  = (r.correction_ia && r.correction_ia.analyse) || {};
     var v  = a.verdict || 'sans objet';
@@ -550,6 +569,17 @@
           var verd = (r.correction_ia && r.correction_ia.analyse && r.correction_ia.analyse.verdict) || 'sans objet';
           verdict(champ, classeVerdict(verd), rendreRetour(r));
           markDone(champ);
+        } else if(r.statut === 'signale'){
+          /* À refaire. On REMET le bouton d'envoi : sans lui, l'élève
+             lirait « reprends ta réponse » sans aucun moyen de le
+             faire — le champ est masqué dès qu'il est rempli.
+             On garde la classe 'rempli' et l'écho : il doit pouvoir
+             relire ce qu'il avait écrit, et le corrigé révélé reste
+             accessible (décision du 26/07 : répondre faux donne accès
+             au corrigé, c'est là qu'il sert le plus).
+             Pas de markDone : l'étape n'est pas acquise. */
+          if(action) action.style.display = '';
+          verdict(champ, 'no', rendreRenvoi(r));
         } else {
           verdict(champ, 'wait', '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
         }

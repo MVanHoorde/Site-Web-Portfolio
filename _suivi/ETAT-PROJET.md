@@ -30,35 +30,41 @@ explicite, jamais présumé.
 
 ## Ce qui bloque
 
-### ① Chemin critique — la boucle ne se referme toujours pas
+### ① Chemin critique — la boucle est refermée (reste l'interface)
 
-**Rien dans le dépôt ne peut encore faire passer une copie de `en_attente` à
-`corrige`.** Conséquence inchangée : l'élève envoie, le worker corrige, et
-**l'élève ne voit jamais rien** — l'affichage est conditionné à
-`statut === 'corrige'`.
+Depuis le `010` (31/07), une copie peut aller jusqu'à l'élève. Trois fonctions
+le permettent, et elles seules : `valider_copie`, `signaler_copie`,
+`rouvrir_copie`. Le worker, lui, n'a toujours aucun moyen de poser un statut —
+c'est ce qui matérialise la décision humaine exigée par le cadre AI Act
+(article 6(3), tâche préparatoire).
 
-Ce qui a changé, en revanche, c'est que les fondations sont posées :
+Ce qui est en place :
 
-- `008` (27/07) — le rôle enseignant existe en base : table `enseignants`,
-  fonction `est_enseignant()`, et **lecture** des copies, des élèves et des
-  classes par un vrai compte soumis à la RLS. Aucune écriture.
-- `009` (31/07) — le suivi de classe : `seances_faites`, `absences`, `jalons`,
-  plus la lecture de `progression` que le `008` avait laissée de côté. Migration
-  jouée et éprouvée sur un PostgreSQL 16 (rejeu, test d'intrusion élève et
-  anonyme). Aucune écriture sur les copies non plus.
+- `008` (27/07) — rôle enseignant : table `enseignants`, `est_enseignant()`,
+  **lecture** des copies, des élèves et des classes.
+- `009` (31/07) — suivi de classe : `seances_faites`, `absences`, `jalons`,
+  plus la lecture de `progression`.
+- `010` (31/07) — **écriture** : les trois fonctions de correction, plus le
+  traitement du statut `signale` côté séquence (verdict rouge, bouton d'envoi
+  rendu à l'élève pour qu'il puisse réécrire). Assets passés en `?v=22` sur
+  `t1` **et** `t2`, qui traînait encore en `?v=19`.
 
-Il reste donc **deux maillons**, dans cet ordre :
+Les trois migrations ont été jouées et éprouvées sur un PostgreSQL 16 : rejeu,
+test d'intrusion élève et anonyme, et vérification que valider une copie ne
+réveille pas le déclencheur d'archivage.
 
-1. **Lot 2 du rôle enseignant** — les fonctions `valider_copie()` /
-   `signaler_copie()`, seules autorisées à toucher `statut`. C'est ce qui rend
-   la correction visible à l'élève, et c'est le vrai dernier maillon.
-2. **La page enseignant** — rituel d'ouverture (absents) et de clôture (ce qui
+**Il ne reste plus de verrou en base.** Ce qui manque est une interface :
+
+1. **La page enseignant** — rituel d'ouverture (absents) et de clôture (ce qui
    a été fait, note dictée), grille de suivi, file de correction. Servie par
    GitHub Pages, sans aucun secret : `anon` + compte enseignant + RLS.
+2. **Le compte enseignant lui-même** — une ligne à insérer à la main dans
+   `enseignants`. Tant qu'elle n'existe pas, `est_enseignant()` est faux pour
+   tout le monde et les fonctions refusent tout le monde.
 
-Un repli reste valable si la page prend du retard sur la rentrée : un script en
-ligne de commande sur le PC de Loïc (lister · afficher `tri.a_verifier` ·
-valider d'une touche) suffit à refermer la boucle, une fois le lot 2 posé.
+Repli si la page prend du retard sur la rentrée : un script en ligne de commande
+sur le PC de Loïc (lister · afficher `tri.a_verifier` · appeler `valider_copie`)
+suffit désormais à faire tourner le dispositif.
 
 ### ② Portage des sept séquences sur le moteur partagé
 
