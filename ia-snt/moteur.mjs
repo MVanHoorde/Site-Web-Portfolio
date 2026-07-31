@@ -128,6 +128,26 @@ export function validerAnalyse(a, grille) {
   return { criteres, a_verifier_par_le_prof: av, note_orthographe: ortho, _flags: flags };
 }
 
+/* Fenêtre de contexte imposée par le code, et non héritée du réglage
+   de l'application Ollama.
+   Constaté le 31/07/2026 : l'interface d'Ollama était réglée sur 4k,
+   et le worker en héritait sans le savoir. Le total actuel (cadre
+   ~640 tokens + grille d'un code ~450 + copie ~115 + la réponse)
+   passait tout juste — mais la grille ne couvre encore que trois
+   codes sur quarante. En l'étendant, on aurait débordé, et le
+   symptôme n'aurait pas été une erreur : une dégradation silencieuse
+   des jugements, impossible à relier à sa cause.
+   La qualité de la pré-correction ne doit pas dépendre d'un curseur
+   dans une fenêtre de réglages. 8192 laisse de la marge sans peser
+   sur les 16 Go de VRAM. */
+const FENETRE_CONTEXTE = 8192;
+
+/* Graine fixe : deux passes sur la même copie doivent rendre le même
+   jugement. Sans elle, un même élève pouvait basculer d'« accepté » à
+   « à compléter » d'un lancement à l'autre — et un banc d'essai ne
+   mesurait plus rien de stable. */
+const GRAINE = 42;
+
 export async function appelOllama({ modele, ollamaUrl, messages, numPredict = 700 }) {
   const url = ollamaUrl.replace(/\/+$/, "") + "/api/chat";
   const rep = await fetch(url, {
@@ -135,7 +155,13 @@ export async function appelOllama({ modele, ollamaUrl, messages, numPredict = 70
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: modele, stream: false, format: "json",
-      options: { temperature: 0.2, num_predict: numPredict }, messages
+      options: {
+        temperature: 0.2,
+        num_predict: numPredict,
+        num_ctx: FENETRE_CONTEXTE,
+        seed: GRAINE
+      },
+      messages
     })
   });
   if (!rep.ok) throw new Error("Ollama a refusé (" + rep.status + "). Service lancé ? modèle tiré ?");
