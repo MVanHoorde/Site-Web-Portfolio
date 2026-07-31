@@ -215,6 +215,8 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         <span id="jauge-file" class="pastille att" style="display:none"></span>
       </div>
 
+      <div id="etat-worker" class="bandeau" style="display:none"></div>
+
       <div id="file-vide" class="vide" style="display:none">
         <div class="g">Rien à corriger</div>
         Aucune copie pré-corrigée en attente. Si tes élèves ont répondu,
@@ -271,6 +273,8 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         <select id="s-theme"></select>
         <span id="s-curseur" class="pastille neutre"></span>
       </div>
+
+      <div id="s-suggestion" class="bandeau" style="display:none"></div>
 
       <h3 class="sous">1 · Ouverture — qui n'est pas là ?</h3>
       <p class="muet" style="margin:0 0 8px">
@@ -387,6 +391,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     var m = ProfAPI.moi();
     $('#qui-nom').textContent = (m && m.libelle) || '';
     chargerFile();
+    etatWorker();
     demarrerSuivi();
   }
   function montrerConnexion(message){
@@ -737,7 +742,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
   $('#btn-recharger').addEventListener('click', function(){
     $('#annuler-zone').style.display = 'none';
     derniere = null;
-    chargerFile();
+    chargerFile(); etatWorker();
   });
 
   /* ============================================================
@@ -1084,7 +1089,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     }).then(function(){
       $('#s-etat').textContent = 'Séance enregistrée.';
       return chargerContexte();
-    }).then(function(){ rendreSeance(); })
+    }).then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); })
       .catch(function(e){ $('#s-etat').textContent = 'Échec : ' + (e.message || e); })
       .then(function(){ b.disabled = false; });
   });
@@ -1257,7 +1262,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       $('#s-classe').value = ctx.classe; $('#g-classe').value = ctx.classe;
       $('#s-theme').value  = ctx.theme;  $('#g-theme').value  = ctx.theme;
       $('#s-seance').value = '';
-      chargerContexte().then(function(){ rendreSeance(); rendreGrille(); });
+      chargerContexte().then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); });
     };
   }
   ['#s-classe','#s-theme'].forEach(function(s){ $(s).addEventListener('change', surChangement('s')); });
@@ -1271,8 +1276,143 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
   function demarrerSuivi(){
     return chargerClasses()
       .then(chargerContexte)
-      .then(function(){ rendreSeance(); rendreGrille(); })
+      .then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); })
       .catch(function(e){ $('#g-etat').textContent = 'Lecture impossible : ' + (e.message || e); });
+  }
+
+  /* ============================================================
+     L'ÉTAT DU WORKER
+     ------------------------------------------------------------
+     Le tableau de bord ne peut PAS lancer le worker : c'est une page
+     web servie par GitHub Pages, elle n'a aucun moyen d'exécuter un
+     programme sur le PC de Loïc — et c'est tant mieux, une page
+     publique qui le pourrait serait une faille.
+
+     Ce qu'elle peut faire, et qui est le vrai besoin : dire si le
+     worker a tourné. Sans ça, une file vide est ambiguë — soit les
+     élèves n'ont rien envoyé, soit le worker dort depuis trois jours,
+     et ces deux situations demandent des gestes opposés.
+
+     Deux chiffres suffisent :
+      · combien de copies attendent que le worker les voie
+      · quand remonte sa dernière passe
+     ============================================================ */
+  var SEUIL_WORKER_H = 24;   /* au-delà, on considère qu'il dort */
+
+  function etatWorker(){
+    return Promise.all([
+      ProfAPI.lire('reponses_libres?select=id&statut=eq.en_attente&correction_ia=is.null'),
+      ProfAPI.lire('reponses_libres?select=correction_ia&correction_ia=not.is.null'
+                   + '&order=envoye_le.desc&limit=100')
+    ]).then(function(r){
+      var enAttente = (r[0] || []).length;
+      var dernier = null;
+      (r[1] || []).forEach(function(c){
+        var g = c.correction_ia && c.correction_ia.genere_le;
+        if(g && (!dernier || g > dernier)) dernier = g;
+      });
+
+      var b = $('#etat-worker');
+      if(!enAttente){
+        /* rien n'attend : inutile d'encombrer l'écran */
+        b.style.display = 'none';
+        return;
+      }
+      var heures = dernier ? (Date.now() - new Date(dernier).getTime()) / 3600000 : null;
+      var quand = dernier
+        ? new Date(dernier).toLocaleString('fr-FR',
+            { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
+        : 'jamais';
+      b.textContent = enAttente + ' copie(s) attendent la pré-correction — '
+        + 'dernière passe du worker : ' + quand + '.'
+        + ((heures === null || heures > SEUIL_WORKER_H)
+            ? ' Il n\u2019a pas tourné récemment : vérifie qu\u2019Ollama est lancé, '
+              + 'ou lance « node precorrection-snt.mjs » dans ia-snt.'
+            : ' Elles apparaîtront ici à sa prochaine passe.');
+      b.style.display = '';
+    }).catch(function(){ $('#etat-worker').style.display = 'none'; });
+  }
+
+  /* ============================================================
+     RAFRAÎCHISSEMENT AUTOMATIQUE
+     ------------------------------------------------------------
+     Pendant une séance, les copies arrivent au fil de l'eau. Recharger
+     à la main casse le rythme du cours.
+     Deux précautions : on ne rafraîchit que si l'onglet est VISIBLE
+     (inutile de solliciter la base quand l'iPad est en veille), et on
+     ne touche à rien si une décision est en cours d'écriture — sinon
+     la copie qu'on est en train de lire disparaîtrait sous les doigts.
+     ============================================================ */
+  var PERIODE_AUTO = 180000;   /* 3 minutes */
+  var autoActif = true;
+
+  function enTrainDeDecider(){
+    /* un texte commencé, ou une copie affichée : on ne bouscule pas */
+    return ($('#c-mot').value || '').trim().length > 0;
+  }
+
+  setInterval(function(){
+    if(!autoActif || !ProfAPI.connecte()) return;
+    if(document.hidden) return;
+    if(!$('#p-correction').classList.contains('actif')) { etatWorker(); return; }
+    if(enTrainDeDecider()) return;
+    var avant = file.length;
+    chargerFile().then(function(){
+      etatWorker();
+      if(file.length > avant){
+        $('#etat-file').textContent = (file.length - avant) + ' nouvelle(s) copie(s).';
+        setTimeout(function(){ $('#etat-file').textContent = ''; }, 6000);
+      }
+    });
+  }, PERIODE_AUTO);
+
+  /* ============================================================
+     SUGGESTION D'AVANCEMENT DU CURSEUR
+     ------------------------------------------------------------
+     Le curseur ne s'avance jamais seul : une classe peut avoir pris
+     de l'avance sans que la séance ait été faite en cours, et un
+     curseur qui bouge tout seul repeindrait la grille en rouge sans
+     que Loïc comprenne pourquoi.
+     En revanche, quand la moitié du groupe a entamé la séance
+     suivante, la proposer d'un tap fait gagner le geste.
+     ============================================================ */
+  var PART_POUR_SUGGERER = 0.5;
+
+  function majSuggestion(){
+    var b = $('#s-suggestion');
+    var l = seancesDu(ctx.theme), cur = rangCurseur();
+    var suivante = l[cur + 1];
+    if(!suivante || !Eleves.length){ b.style.display = 'none'; return; }
+
+    var entames = Eleves.filter(function(e){
+      return chiffresSeance(e.id, suivante.id).f > 0;
+    }).length;
+
+    if(entames / Eleves.length < PART_POUR_SUGGERER){ b.style.display = 'none'; return; }
+
+    b.innerHTML = '';
+    var t = document.createElement('span');
+    t.textContent = entames + ' élève(s) sur ' + Eleves.length + ' ont entamé '
+      + (suivante.num || '') + ' ' + suivante.nom + '. Marquer cette séance comme faite ? ';
+    var bt = document.createElement('button');
+    bt.textContent = 'Oui, on l\u2019a faite';
+    bt.style.marginLeft = '8px';
+    bt.addEventListener('click', function(){
+      bt.disabled = true;
+      ProfAPI.ecrire('seances_faites', {
+        classe_id: ctx.classe, sequence: ctx.theme,
+        seance: suivante.id, origine: 'suggeree'
+      }, true).then(function(){
+        return chargerContexte();
+      }).then(function(){
+        rendreSeance(); rendreGrille();
+      }).catch(function(e){
+        $('#s-etat').textContent = 'Échec : ' + (e.message || e);
+        bt.disabled = false;
+      });
+    });
+    b.appendChild(t); b.appendChild(bt);
+    b.style.display = '';
   }
 
   /* ---------- démarrage ---------- */
