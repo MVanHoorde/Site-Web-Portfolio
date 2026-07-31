@@ -75,6 +75,28 @@ function attribut(bloc, nom) {
 
 export function extraire(html) {
   const out = {};
+
+  /* On repère d'abord où commence chaque séance, pour pouvoir dire
+     à quelle séance appartient chaque question. Sans cette
+     information, un code comme « NET-R-correze » ne dit rien de
+     l'endroit du cours où il se trouve — et il faut rouvrir la page
+     pour s'y retrouver. */
+  const seances = [];
+  const reSeance = /<section(?:[^>"]|"[^"]*")*>/g;
+  let ms;
+  while ((ms = reSeance.exec(html)) !== null) {
+    if (!/class="[^"]*\bseance\b/.test(ms[0])) continue;
+    seances.push({
+      pos: ms.index,
+      id : attribut(ms[0], 'id'),
+      num: attribut(ms[0], 'data-seance')
+    });
+  }
+  const seanceDe = (pos) => {
+    let trouvee = null;
+    for (const s of seances) { if (s.pos < pos) trouvee = s; else break; }
+    return trouvee;
+  };
   /* On repart du conteneur .field pour ramasser les attributs qui
      entourent data-focus-code, où qu'ils soient placés.
 
@@ -94,11 +116,14 @@ export function extraire(html) {
     if (!/\bdata-focus\b/.test(bloc)) continue;
     const code = attribut(bloc, 'data-focus-code');
     if (!code) continue;
+    const s = seanceDe(m.index);
     out[code] = {
       titre   : texteBrut(attribut(bloc, 'data-focus-titre')),
       question: texteBrut(attribut(bloc, 'data-focus-question')),
       min     : attribut(bloc, 'data-focus-min') || null,
-      max     : attribut(bloc, 'data-focus-max') || null
+      max     : attribut(bloc, 'data-focus-max') || null,
+      seance  : s ? (s.id || null) : null,
+      seance_num: s ? (s.num || null) : null
     };
   }
   return out;
