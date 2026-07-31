@@ -185,8 +185,8 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     <div id="err-connexion" class="alerte err"></div>
 
     <p class="tresmuet" style="margin-top:16px">
-      La session se ferme d'elle-même au bout de 12&nbsp;heures. Rien de ce que tu vois
-      ici n'est enregistré sur l'appareil.
+      La session se ferme d'elle-même au bout de 12&nbsp;heures. Aucune copie d'élève
+      n'est enregistrée sur l'appareil.
     </p>
   </div>
 </section>
@@ -343,8 +343,8 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       <p class="muet" style="margin:6px 0 0">
         La base ne connaît que des identifiants. Charge ton fichier pour voir les vrais
         noms&nbsp;: il est lu <b>sur cet appareil uniquement</b>, jamais envoyé, jamais
-        enregistré. À recharger à chaque session — c'est ce qui permet de projeter au
-        tableau sans exposer personne.
+        enregistré. Il reste chargé le temps de ta session — 12&nbsp;heures, ou jusqu'à ce que tu
+        cliques sur Quitter — puis s'efface avec elle.
       </p>
 
       <div class="rangee">
@@ -450,6 +450,15 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
   /* ---------- table des noms ---------- */
   function majEtatNoms(){
     var n = ProfAPI.nomsCharges();
+    /* table restaurée depuis la session : on le dit, sinon Loïc
+       rechargerait le fichier pour rien */
+    var z = $('#apercu-noms');
+    if(n && z && z.style.display === 'none'){
+      z.textContent = n + ' nom(s) repris de ta session'
+        + (ProfAPI.nomsSource && ProfAPI.nomsSource() ? ' (' + ProfAPI.nomsSource() + ')' : '')
+        + '. Ils s\u2019effaceront avec elle.';
+      z.style.display = '';
+    }
     var e = $('#etat-noms');
     e.textContent = n ? (n + (n > 1 ? ' noms chargés' : ' nom chargé')) : 'aucun nom chargé';
     e.className = 'pastille ' + (n ? 'ok' : 'att');
@@ -461,7 +470,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     if(!f) return;
     var lecteur = new FileReader();
     lecteur.onload = function(){
-      var r = ProfAPI.chargerNoms(lecteur.result);
+      var r = ProfAPI.chargerNoms(lecteur.result, f.name);
       majEtatNoms();
       montrerApercu(r, f.name);
       afficher();   /* la copie à l'écran passe du pseudonyme au vrai nom */

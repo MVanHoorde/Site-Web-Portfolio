@@ -51,16 +51,36 @@
 
   var jeton = null;   /* { access_token, refresh_token, expires_at, ouverte } */
   var moi   = null;   /* { libelle } — rempli après vérification du rôle */
+  var noms  = {};     /* identifiant → nom, voir §5 */
+  var nomsFichier = '';
 
   /* ----------------------------------------------------------
    *  2. Le jeton : lecture, écriture, péremption
    * ---------------------------------------------------------- */
+  /* Le stockage porte le jeton ET la table des noms, dans un seul
+     objet et sous une seule péremption.
+
+     DÉCISION DU 31/07 — pourquoi les noms y ont leur place, alors que
+     la base entière est pseudonyme :
+      · en mémoire vive seule, la table disparaissait au moindre
+        rafraîchissement et dès qu'iOS déchargeait l'onglet, donc
+        plusieurs fois par journée de cours. Inutilisable.
+      · à l'inverse, la garder à l'année ferait dormir un fichier
+        nominatif dix mois dans un appareil mobile, y compris session
+        fermée. Exclu.
+      · la garder le temps de la session est proportionné : tant que
+        la session est ouverte, qui prend l'iPad déverrouillé voit
+        DÉJÀ toutes les copies. Le risque dominant est là, et il
+        tombe au même instant que les noms.
+     Conséquence à ne pas défaire : les noms doivent partir avec le
+     jeton, jamais lui survivre. Un seul objet, un seul effacement. */
   function lireStocke() {
     try {
       var brut = global.localStorage.getItem(CLE_STOCKAGE);
       if (!brut) return null;
       var v = JSON.parse(brut);
-      /* Péremption locale : au-delà, on efface sans discuter. */
+      /* Péremption locale : au-delà, on efface sans discuter —
+         jeton et noms ensemble. */
       if (!v.ouverte || (Date.now() - v.ouverte) > PEREMPTION) {
         global.localStorage.removeItem(CLE_STOCKAGE);
         return null;
@@ -71,9 +91,17 @@
 
   function ecrireStocke(v) {
     try {
-      if (v) global.localStorage.setItem(CLE_STOCKAGE, JSON.stringify(v));
-      else   global.localStorage.removeItem(CLE_STOCKAGE);
-    } catch (e) { /* navigation privée : on reste en mémoire vive */ }
+      if (!v) { global.localStorage.removeItem(CLE_STOCKAGE); return; }
+      var copie = {
+        access_token : v.access_token,
+        refresh_token: v.refresh_token,
+        expires_at   : v.expires_at,
+        ouverte      : v.ouverte,
+        noms         : noms,
+        nomsFichier  : nomsFichier
+      };
+      global.localStorage.setItem(CLE_STOCKAGE, JSON.stringify(copie));
+    } catch (e) { /* navigation privée ou quota : on reste en mémoire vive */ }
   }
 
   function poser(reponse, ouverte) {
@@ -220,7 +248,7 @@
   }
 
   function deconnexion() {
-    jeton = null; moi = null; noms = {};
+    jeton = null; moi = null; noms = {}; nomsFichier = '';
     ecrireStocke(null);
   }
 
@@ -228,8 +256,11 @@
      jeton non périmé, on revérifie le rôle. Toute erreur ramène à
      l'écran de connexion — on ne devine jamais un droit. */
   function reprendre() {
-    jeton = lireStocke();
-    if (!jeton) return Promise.reject(new Error('AUCUNE_SESSION'));
+    var v = lireStocke();
+    if (!v) return Promise.reject(new Error('AUCUNE_SESSION'));
+    noms = v.noms || {};
+    nomsFichier = v.nomsFichier || '';
+    jeton = v;
     return verifierRole();
   }
 
@@ -246,8 +277,6 @@
    *  Le point-virgule ou la virgule font l'affaire (Excel français
    *  produit le premier).
    * ---------------------------------------------------------- */
-  var noms = {};
-
   /* Renvoie { n, ignorees, apercu } plutôt qu'un simple compte.
      Motif (31/07, découvert au premier essai) : un compte seul ment
      par omission. Un fichier de cours à deux colonnes se charge
@@ -255,7 +284,8 @@
      afficherait ensuite des noms FAUX en face des identifiants, ce
      qui est pire que pas de nom. L'aperçu permet de voir en une
      seconde qu'on s'est trompé de fichier. */
-  function chargerNoms(texte) {
+  function chargerNoms(texte, fichier) {
+    nomsFichier = fichier || '';
     var table = {}, n = 0, ignorees = 0, apercu = [];
     String(texte || '').split(/\r?\n/).forEach(function (ligne) {
       if (!ligne.trim()) return;
@@ -272,6 +302,7 @@
       if (apercu.length < 3) apercu.push([id, nom]);
     });
     noms = table;
+    ecrireStocke(jeton);   /* suit la session, et meurt avec elle */
     return { n: n, ignorees: ignorees, apercu: apercu };
   }
 
@@ -283,7 +314,8 @@
   }
 
   function nomsCharges() { return Object.keys(noms).length; }
-  function oublierNoms()  { noms = {}; }
+  function nomsSource()   { return nomsFichier; }
+  function oublierNoms()  { noms = {}; nomsFichier = ''; ecrireStocke(jeton); }
 
   /* ---------------------------------------------------------- */
   global.ProfAPI = {
@@ -299,6 +331,7 @@
     chargerNoms  : chargerNoms,
     nomDe        : nomDe,
     nomsCharges  : nomsCharges,
+    nomsSource   : nomsSource,
     oublierNoms  : oublierNoms,
     PEREMPTION   : PEREMPTION
   };
