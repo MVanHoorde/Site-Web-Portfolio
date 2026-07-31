@@ -186,12 +186,61 @@ function envelopper(modele, analyse) {
   };
 }
 
-export async function precorrigerUne({ code, texte, criteres, cadreAnalyse, cadreMessage, modele, ollamaUrl }) {
+/* Assemble la grille effectivement envoyée au modèle.
+
+   DEUX AJOUTS DU 31/07/2026, décidés avec Loïc :
+
+   1. LE SOCLE COMMUN — quatre critères de complétude (la réponse
+      veut-elle dire quelque chose, répond-elle à CETTE question,
+      est-elle plausible, est-elle assez précise). Ils rendent
+      jugeables les questions ouvertes ou personnelles, pour
+      lesquelles aucun critère de contenu n'a de sens.
+      Il ne s'applique QUE si la grille porte "socle_commun": true —
+      jamais d'office : sur une question qui a déjà ses propres
+      critères, l'empiler ferait sept critères à tenir de front,
+      et un modèle de 12 milliards de paramètres se disperse.
+
+   2. LA RÉFÉRENCE — ce que le professeur sait et que le modèle ne
+      peut pas savoir : le débit d'une commune, le tracé d'un câble,
+      le contenu d'une vidéo. Sans elle, ces questions ne pouvaient
+      recevoir aucune grille sans produire des jugements confiants
+      et arbitraires. Elle est présentée comme un ÉLÉMENT DE
+      CORRECTION, pas comme un modèle de rédaction : l'élève n'a pas
+      à retrouver ces mots, seulement à ne pas les contredire.
+
+   Rappel appris à nos dépens : les petits modèles traitent tout
+   élément mentionné dans un critère comme requis, même qualifié de
+   facultatif. Les formulations restent donc positives et courtes,
+   et la hiérarchie passe par le champ "niveau", jamais par une
+   clause d'exclusion dans le texte. */
+function assemblerGrille(criteres, code) {
   const grille = criteres && criteres[code] ? criteres[code] : null;
+  if (!grille) return null;
+
+  const socle = criteres && criteres._socle_commun;
+  if (!grille.socle_commun || !socle || !Array.isArray(socle.criteres)) return grille;
+
+  /* Les critères propres à la question passent EN PREMIER : ils
+     portent l'exigence réelle, le socle n'est qu'un filet. */
+  return Object.assign({}, grille, {
+    criteres: [].concat(grille.criteres || [], socle.criteres)
+  });
+}
+
+export async function precorrigerUne({ code, texte, criteres, cadreAnalyse, cadreMessage, modele, ollamaUrl }) {
+  const grille = assemblerGrille(criteres, code);
   const injection = detecterInjection(texte);
+
+  const reference = grille && typeof grille.reference === "string"
+    ? grille.reference.trim() : "";
 
   const sys1 = grille
     ? cadreAnalyse + "\n\n## Grille (code " + code + ")\n" + JSON.stringify(grille, null, 1)
+      + (reference
+          ? "\n\n## Éléments de correction (connus du professeur)\n" + reference
+            + "\nL'élève n'a pas à retrouver ces mots. Sers-t'en pour juger si ce"
+            + " qu'il écrit est exact, pas pour exiger qu'il dise la même chose."
+          : "")
     : cadreAnalyse + "\n\n## Pas de grille pour ce code : renvoie \"criteres\": [].";
   const user1 =
     "Code : " + code + "\n" +
