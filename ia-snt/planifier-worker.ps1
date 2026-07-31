@@ -1,6 +1,6 @@
-<#
+﻿<#
 ================================================================
-  planifier-worker.ps1 — faire tourner la pré-correction toute seule
+  planifier-worker.ps1  -  faire tourner la pré-correction toute seule
   ----------------------------------------------------------------
   POURQUOI CE SCRIPT
   precorrection-snt.mjs fait UNE passe puis s'arrête : il ramasse les
@@ -12,7 +12,7 @@
   les N minutes, tant que la session est ouverte.
 
   POURQUOI UNE TÂCHE PLANIFIÉE ET PAS UN SERVICE
-  Un service tourne même sans session ouverte — mais Ollama, lui, a
+  Un service tourne même sans session ouverte  -  mais Ollama, lui, a
   besoin de la session pour accéder au GPU dans une installation
   classique. Un service se contenterait donc d'échouer en silence
   toutes les quinze minutes. La tâche planifiée, elle, s'exécute
@@ -25,7 +25,7 @@
   C'est un choix assumé : le modèle est local et souverain, il vit
   sur cette machine et nulle part ailleurs.
 
-  RGPD — inchangé. Le worker lit des copies pseudonymes, écrit une
+  RGPD  -  inchangé. Le worker lit des copies pseudonymes, écrit une
   analyse, ne pose aucun statut. Aucune copie n'atteint l'élève sans
   que Loïc l'ait validée depuis le tableau de bord.
 
@@ -36,8 +36,8 @@
       powershell -ExecutionPolicy Bypass -File .\planifier-worker.ps1 -Retirer
       powershell -ExecutionPolicy Bypass -File .\planifier-worker.ps1 -Etat
 
-  ATTENTION — Register-ScheduledTask EXIGE une élévation sur la
-  plupart des configurations Windows (« Accès refusé » constaté le
+  ATTENTION  -  Register-ScheduledTask EXIGE une élévation sur la
+  plupart des configurations Windows (" Accès refusé " constaté le
   31/07/2026). Deux chemins, donc :
       · PowerShell lancé en administrateur → tâche planifiée
       · sans privilèges → -Boucle, qui installe un script en boucle
@@ -66,7 +66,7 @@ $demarrage = [Environment]::GetFolderPath('Startup')
 $raccourci = Join-Path $demarrage "snt-worker.cmd"
 
 # ---------------------------------------------------------------
-#  Mode boucle — aucun privilège requis
+#  Mode boucle  -  aucun privilège requis
 #
 #  On dépose un .cmd dans le dossier Démarrage de l'utilisateur :
 #  Windows l'exécute à l'ouverture de session, sans rien demander à
@@ -211,14 +211,14 @@ if (Get-ScheduledTask -TaskName $NomTache -ErrorAction SilentlyContinue) {
   Unregister-ScheduledTask -TaskName $NomTache -Confirm:$false
 }
 
-# Register-ScheduledTask echoue avec « Acces refuse » sans elevation.
+# Register-ScheduledTask echoue avec " Acces refuse " sans elevation.
 # On l'annonce AVANT plutot que de laisser une trace d'erreur.
 $identite = [Security.Principal.WindowsIdentity]::GetCurrent()
 $estAdmin = (New-Object Security.Principal.WindowsPrincipal($identite)).IsInRole(
               [Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $estAdmin) {
   Info ""
-  Mal "Cette fenetre n'est pas administrateur — la tache va etre refusee."
+  Mal "Cette fenetre n'est pas administrateur  -  la tache va etre refusee."
   Info ""
   Info "  Deux solutions :"
   Info "   1. Rouvre PowerShell en administrateur et relance cette commande."

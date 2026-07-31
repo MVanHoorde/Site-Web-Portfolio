@@ -277,6 +277,38 @@ try {
   notes.push("assets/js/questions-snt.js absent ou illisible — lancer : node generer-questions.mjs");
 }
 
+/* ---------- Les scripts PowerShell sont-ils lisibles par Windows ? ----------
+   Windows PowerShell 5.1 — celui livré avec Windows, celui que Loïc
+   lance — décode un .ps1 SANS BOM comme de l'ANSI, pas comme de
+   l'UTF-8. Les tirets cadratins deviennent alors « â€" », et ce
+   guillemet typographique est traité par l'analyseur comme un VRAI
+   guillemet : les chaînes se déséquilibrent et le script refuse de
+   démarrer, avec un message qui désigne une ligne sans rapport
+   (incident du 31/07/2026 : erreur annoncée ligne 246, cause réelle
+   ligne 226).
+   Deux garde-fous, parce qu'un seul finit toujours par sauter :
+   le BOM, et l'absence de caractères typographiques. BLOQUANT. */
+try {
+  const psFichiers = readdirSync("ia-snt")
+    .filter((n) => n.endsWith(".ps1"))
+    .map((n) => "ia-snt/" + n);
+  for (const f of psFichiers) {
+    const octets = readFileSync(f);
+    if (!(octets[0] === 0xef && octets[1] === 0xbb && octets[2] === 0xbf)) {
+      ko("script PowerShell sans BOM", `${f} — Windows PowerShell 5.1 le lira en ANSI`);
+    }
+    const texte = octets.toString("utf8");
+    const piegeux = [...new Set(texte.match(/[\u2013\u2014\u2018\u2019\u201c\u201d]/g) || [])];
+    if (piegeux.length) {
+      ko("caractère typographique dans un .ps1",
+         `${f} — ${piegeux.join(" ")} : remplacer par de l'ASCII`);
+    }
+  }
+  if (psFichiers.length) notes.push(`${psFichiers.length} script(s) PowerShell — BOM et caractères vérifiés`);
+} catch (e) {
+  notes.push("scripts PowerShell non vérifiés : " + e.message);
+}
+
 /* ---------- Cohérence de la configuration Supabase ----------
    prof-api.js duplique volontairement l'URL du projet et la clé anon
    de progression.js (voir l'entête de prof-api.js : le second
