@@ -248,6 +248,35 @@ try {
   notes.push("assets/js/seances-snt.js absent ou illisible — lancer : node generer-seances.mjs");
 }
 
+/* ---------- Le répertoire des questions est-il à jour ? ----------
+   assets/js/questions-snt.js est produit par generer-questions.mjs. Il
+   sert au tableau de bord à rappeler l'énoncé en face d'une copie.
+   Reformuler une question sans relancer le script ferait corriger sur
+   un énoncé périmé — plus sournois qu'un titre de séance en retard,
+   mais toujours non bloquant : la file fonctionne sans lui. */
+try {
+  const { extraire } = await import("./generer-questions.mjs");
+  const genere = readFileSync("assets/js/questions-snt.js", "utf8");
+  const actuel = JSON.parse(genere.slice(genere.indexOf("{"), genere.lastIndexOf("}") + 1));
+  let frais = 0, ecarts = 0;
+  for (const f of pagesSNT) {
+    const trouve = extraire(readFileSync(f, "utf8"));
+    for (const [code, q] of Object.entries(trouve)) {
+      frais++;
+      const a = actuel[code];
+      if (!a || a.question !== q.question || a.titre !== q.titre) ecarts++;
+    }
+  }
+  const enTrop = Object.keys(actuel).length - frais;
+  if (ecarts || enTrop > 0) {
+    notes.push(`assets/js/questions-snt.js en retard (${ecarts} écart(s)${enTrop > 0 ? ", " + enTrop + " question(s) disparue(s)" : ""}) — relancer : node generer-questions.mjs`);
+  } else {
+    notes.push(`assets/js/questions-snt.js — à jour (${frais} questions)`);
+  }
+} catch (e) {
+  notes.push("assets/js/questions-snt.js absent ou illisible — lancer : node generer-questions.mjs");
+}
+
 /* ---------- Cohérence de la configuration Supabase ----------
    prof-api.js duplique volontairement l'URL du projet et la clé anon
    de progression.js (voir l'entête de prof-api.js : le second

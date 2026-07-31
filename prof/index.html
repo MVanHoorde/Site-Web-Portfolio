@@ -103,6 +103,10 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
 .pastille.acc{background:var(--ok-wash);color:#0c5c42}
 .pastille.comp{background:#fdecdf;color:#8a4b16}
 .pastille.neutre{background:var(--link-wash);color:#22357f}
+.enonce{padding:11px 14px;background:var(--link-wash);border:1px solid #b9c4ef;
+    border-radius:var(--r);font-size:14.5px}
+.enonce .t{display:block;font-weight:600;margin-bottom:3px}
+.phrase{font-size:13px;padding:5px 11px;border-radius:999px;background:var(--surface-2)}
 .copie-texte{margin:0;padding:13px 15px;background:var(--surface-2);
     border-left:3px solid var(--link);border-radius:0 var(--r) var(--r) 0;white-space:pre-wrap}
 .crit{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px}
@@ -169,6 +173,7 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
     <section class="panneau actif" id="p-correction">
       <div class="rangee" style="margin-top:0">
         <button id="btn-recharger">Recharger la file</button>
+        <button id="btn-lot" style="display:none"></button>
         <span id="etat-file" class="muet"></span>
         <span id="jauge-file" class="pastille att" style="display:none"></span>
       </div>
@@ -190,6 +195,9 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
           <span class="pastille" id="c-verdict"></span>
         </div>
 
+        <h3 class="sous">La question posée</h3>
+        <div class="enonce" id="c-question"></div>
+
         <h3 class="sous">Ce qu'a écrit l'élève</h3>
         <blockquote class="copie-texte" id="c-texte"></blockquote>
 
@@ -204,6 +212,7 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
         <h3 class="sous">Ta décision</h3>
         <label for="c-mot">Ton message (facultatif pour valider, obligatoire pour renvoyer)</label>
         <textarea id="c-mot" rows="3" placeholder="Si tu écris ici, l'élève ne lira que ton mot."></textarea>
+        <div class="rangee" id="phrases" style="gap:7px;margin:9px 0 0"></div>
 
         <div class="rangee">
           <button id="btn-valider" class="primaire">Valider</button>
@@ -261,6 +270,7 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
   </main>
 </div>
 
+<script src="../assets/js/questions-snt.js"></script>
 <script src="../assets/js/prof-api.js"></script>
 <script>
 (function(){
@@ -403,6 +413,19 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
      drapeau vit dans le JSONB, et sur trois groupes le volume ne
      justifie pas une vue dédiée.
      ============================================================ */
+  /* PHRASES TOUTES FAITES — proposition V1, à réécrire dans TON ton.
+     Une ligne = un bouton. Cliquer insère le texte dans la zone de
+     saisie (il reste modifiable), il n'envoie rien tout seul : c'est
+     toujours Valider ou Renvoyer qui décide.
+     Les trois premières servent surtout à renvoyer, la dernière à
+     valider en ajoutant un mot personnel. */
+  var PHRASES = [
+    "Trop court : développe, on veut voir ton raisonnement.",
+    "Reprends ta réponse : il manque l'essentiel de la question.",
+    "Tu réponds à côté — relis la question posée.",
+    "C'est juste, et bien formulé. Continue comme ça."
+  ];
+
   var file = [], rang = 0, derniere = null;
 
   function analyseDe(c){
@@ -437,6 +460,7 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
       $('#copie').style.display = 'none';
       $('#file-vide').style.display = '';
       $('#jauge-file').style.display = 'none';
+      majBoutonLot();
       return;
     }
     $('#file-vide').style.display = 'none';
@@ -444,6 +468,7 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
     var j = $('#jauge-file');
     j.style.display = '';
     j.textContent = (rang + 1) + ' / ' + file.length;
+    majBoutonLot();
 
     var a = analyseDe(c);
     var pseudo = (c.eleves && c.eleves.pseudo) || '—';
@@ -460,6 +485,32 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
     var pv = $('#c-verdict');
     pv.textContent = v;
     pv.className = 'pastille ' + (v === 'accepté' ? 'acc' : v === 'à compléter' ? 'comp' : 'neutre');
+
+    /* La question posée, depuis le répertoire généré à partir des pages.
+       Corriger sans relire l'énoncé, c'est corriger de mémoire : au bout
+       de la troisième copie on ne sait plus si « c'est court » est un
+       défaut ou la consigne (NET-1a demande deux phrases maximum). */
+    var rep = (window.QUESTIONS_SNT || {})[c.code_activite];
+    var zq = $('#c-question');
+    zq.innerHTML = '';
+    if(rep){
+      var t = document.createElement('span'); t.className = 't';
+      t.textContent = rep.titre || c.code_activite;
+      var q = document.createElement('span');
+      q.textContent = rep.question || '';
+      zq.appendChild(t); zq.appendChild(q);
+      if(rep.min || rep.max){
+        var l = document.createElement('span');
+        l.className = 'tresmuet';
+        l.textContent = ' (' + (rep.min ? 'min ' + rep.min : '')
+                      + (rep.min && rep.max ? ' · ' : '')
+                      + (rep.max ? 'max ' + rep.max : '') + ' caractères)';
+        zq.appendChild(l);
+      }
+    } else {
+      zq.textContent = 'Énoncé introuvable pour ' + c.code_activite
+        + ' — relancer : node generer-questions.mjs';
+    }
 
     /* Le texte de l'élève passe par textContent, jamais par innerHTML :
        une réponse peut contenir n'importe quoi, y compris du balisage. */
@@ -573,6 +624,121 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
     derniere = null;
     chargerFile();
   });
+
+  /* ============================================================
+     VALIDATION EN LOT
+     ------------------------------------------------------------
+     Corriger trente copies une par une n'est pas tenable. Mais
+     automatiser la validation côté worker ne l'est pas non plus :
+     le tri repère les copies douteuses, il n'attrape PAS un
+     « accepté » confiant mais faux — l'élève recevrait alors un
+     message que personne n'a lu.
+
+     Le compromis retenu (31/07) : un bouton que TU cliques. Tu ne
+     corriges plus une par une, et la décision reste humaine — le
+     cadre AI Act ne bouge pas.
+
+     SONDAGE : une copie sur cinq est retenue au hasard et reste
+     dans la file. Sans lui, tu ne verrais plus jamais ce que l'IA
+     valide en ton nom, et une grille qui dérive passerait inaperçue
+     pendant des semaines. C'est le seul garde-fou contre ça.
+     ============================================================ */
+  var PART_SONDAGE = 5;   /* 1 copie sur 5 */
+
+  function sansAlerte(){
+    return file.filter(function(c){
+      var a = analyseDe(c);
+      return !(a.tri && a.tri.a_verifier);
+    });
+  }
+
+  function majBoutonLot(){
+    var b = $('#btn-lot');
+    var n = sansAlerte().length;
+    if(n < 2){ b.style.display = 'none'; return; }
+    var garde = Math.round(n / PART_SONDAGE);
+    b.style.display = '';
+    b.textContent = 'Valider ' + (n - garde) + ' copies sans alerte';
+    b.title = garde
+      ? garde + ' copie(s) tirée(s) au hasard resteront dans la file, pour que tu gardes un œil sur ce que l\u2019IA valide.'
+      : 'Toutes les copies sans alerte seront validées.';
+  }
+
+  /* Tirage sans remise — Fisher-Yates sur une copie du tableau, pour
+     ne pas biaiser vers le début de file (donc vers les plus
+     anciennes, donc toujours les mêmes élèves). */
+  function tirer(tab, combien){
+    var t = tab.slice();
+    for(var i = t.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var x = t[i]; t[i] = t[j]; t[j] = x;
+    }
+    return t.slice(0, combien);
+  }
+
+  $('#btn-lot').addEventListener('click', function(){
+    var candidates = sansAlerte();
+    if(candidates.length < 2) return;
+    var garde   = Math.round(candidates.length / PART_SONDAGE);
+    var gardees = tirer(candidates, garde);
+    var idsGardes = {};
+    gardees.forEach(function(c){ idsGardes[c.id] = true; });
+    var aValider = candidates.filter(function(c){ return !idsGardes[c.id]; });
+
+    var texte = 'Valider ' + aValider.length + ' copie(s) ?\n\n'
+      + 'Chaque élève recevra le message préparé par l\u2019IA, tel que tu le vois dans la file.\n'
+      + (garde ? garde + ' copie(s) tirée(s) au hasard resteront à corriger à la main, pour contrôle.\n' : '')
+      + '\nLes copies signalées ne sont jamais concernées.';
+    if(!window.confirm(texte)) return;
+
+    var b = $('#btn-lot');
+    b.disabled = true;
+    var faits = 0, rates = [];
+
+    /* En série, pas en parallèle : trente requêtes simultanées se
+       feraient limiter, et l'ordre des messages d'erreur deviendrait
+       illisible. Trente appels d'affilée prennent quelques secondes. */
+    var suite = Promise.resolve();
+    aValider.forEach(function(c){
+      suite = suite.then(function(){
+        b.textContent = 'Validation… ' + (faits + rates.length + 1) + ' / ' + aValider.length;
+        return ProfAPI.appeler('valider_copie', { p_copie: c.id, p_commentaire: null })
+          .then(function(){ faits++; })
+          .catch(function(e){ rates.push(c.code_activite + ' : ' + (e.message || e)); });
+      });
+    });
+
+    suite.then(function(){
+      derniere = null;
+      $('#annuler-zone').style.display = 'none';
+      if(rates.length){
+        var z = $('#err-action');
+        z.textContent = faits + ' validée(s), ' + rates.length + ' en échec — ' + rates.slice(0, 3).join(' ; ');
+        z.classList.add('show');
+      }
+      b.disabled = false;
+      return chargerFile();
+    });
+  });
+
+  /* ---------- phrases toutes faites ---------- */
+  (function monterPhrases(){
+    var z = $('#phrases');
+    PHRASES.forEach(function(p){
+      var b = document.createElement('button');
+      b.className = 'phrase';
+      b.type = 'button';
+      b.textContent = p;
+      b.addEventListener('click', function(){
+        var t = $('#c-mot');
+        /* on ajoute plutôt qu'on remplace : deux phrases peuvent se
+           combiner, et on n'efface jamais ce qui est déjà écrit */
+        t.value = t.value.trim() ? (t.value.trim() + ' ' + p) : p;
+        t.focus();
+      });
+      z.appendChild(b);
+    });
+  })();
 
   /* ---------- démarrage ---------- */
   majEtatNoms();
