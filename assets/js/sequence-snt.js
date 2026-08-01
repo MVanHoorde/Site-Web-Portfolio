@@ -475,6 +475,8 @@
       BASE.envoyerReponse(code, texte).then(function(){
         verdict(champ,'ok','✅ Réponse enregistrée. Tu peux passer à la suite — et aider un camarade bloqué.');
         showReveal(champ); markDone(champ);
+        /* rendu, mais pas encore relu : pastille creuse (voir CSS) */
+        var se=stepOf(champ); if(se) se.classList.add('attente-corr');
       }).catch(function(e){
         verdict(champ,'ok','✅ Réponse gardée pour cette séance. (Enregistrement indisponible : pense à télécharger ta fiche.)');
         showReveal(champ); markDone(champ);
@@ -573,6 +575,7 @@
           var verd = (r.correction_ia && r.correction_ia.analyse && r.correction_ia.analyse.verdict) || 'sans objet';
           verdict(champ, classeVerdict(verd), rendreRetour(r));
           markDone(champ);
+          var sc=stepOf(champ); if(sc) sc.classList.remove('attente-corr');
         } else if(r.statut === 'signale'){
           /* À refaire. La classe 'a-refaire' rouvre le bouton d'envoi :
              sans elle, la règle CSS '.rempli .gaction{display:none}'
@@ -596,6 +599,7 @@
              perdre une progression déjà acquise. */
           verdict(champ, 'wait', '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
           markDone(champ);
+          var sw=stepOf(champ); if(sw) sw.classList.add('attente-corr');
         }
       });
     }).catch(function(){ /* pas de base / invité : on n'affiche rien */ });
@@ -640,6 +644,97 @@
       ta.readOnly=true;btn.disabled=true;note.textContent='✅ Merci — ta réponse nourrit la discussion de classe.';
     });
   });
+
+  /* ---------- replier une étape en cliquant sur son titre ----------
+     La classe .replie existait dans le CSS mais rien ne l'activait :
+     on pouvait ouvrir une étape, jamais la refermer (signalé en test
+     réel le 01/08/2026). On ne replie JAMAIS l'étape courante non
+     terminée : refermer ce sur quoi on travaille n'a pas de sens et
+     donnerait l'impression d'un bug. */
+  document.querySelectorAll('.step .step-title').forEach(function(t){
+    t.setAttribute('role','button');
+    t.setAttribute('tabindex','0');
+    var basculer=function(){
+      var st=t.closest('.step');
+      if(!st) return;
+      if(!st.classList.contains('replie') && !st.classList.contains('is-done')
+         && !st.classList.contains('is-wait')) return;
+      st.classList.toggle('replie');
+      st.dataset.replieManuel='1';
+      t.setAttribute('aria-expanded', st.classList.contains('replie') ? 'false' : 'true');
+    };
+    t.addEventListener('click',basculer);
+    t.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); basculer(); }
+    });
+  });
+
+  /* ---------- Aller aux corrections ----------
+     Placée ICI, dans le même IIFE que la pastille : définie plus bas
+     au niveau global, elle était invisible depuis ce module — les
+     portées ne communiquent pas et la remontée de déclaration ne
+     traverse pas un IIFE. La pastille ne se créait donc jamais
+     (ReferenceError silencieux, diagnostiqué au test le 01/08/2026).
+   Parcourt les champs qui portent un retour du professeur, dans
+   l'ordre de la page. Sert à la carte de reprise ET au bouton
+   permanent : une seule façon de naviguer vers un retour, donc un
+   seul comportement à comprendre. */
+  var _corrIndex=0;
+  function champsCorriges(){
+  /* querySelectorAll direct, pas le raccourci $$ : celui-ci est
+     assigné à une var plus bas dans le fichier, donc encore
+     indéfini quand la pastille se construit. Diagnostiqué au test
+     le 01/08/2026 — la pastille n'apparaissait jamais. */
+  return Array.prototype.slice.call(
+    document.querySelectorAll('[data-focus-code]')).filter(function(c){
+    var v=c.querySelector('.verdict');
+    return v && v.classList.contains('show')
+             && !v.classList.contains('wait');
+  });
+}
+  function allerCorrection(i){
+  var l=champsCorriges();
+  if(!l.length) return;
+  _corrIndex = (typeof i==='number') ? i : (_corrIndex % l.length);
+  var cible=l[_corrIndex];
+  _corrIndex=(_corrIndex+1)%l.length;
+  var st=cible.closest('.step');
+  if(st) st.classList.remove('replie');
+  cible.scrollIntoView({behavior:'smooth',block:'center'});
+  cible.classList.add('surligne');
+  setTimeout(function(){ cible.classList.remove('surligne'); },2200);
+}
+  /* ---------- pastille de corrections, permanente ----------
+     Demandée le 01/08/2026 : pouvoir sauter à ses retours à tout
+     moment, sans les chercher dans une page de 26 étapes. Elle
+     n'apparaît que s'il y a quelque chose à voir, se recompte à
+     chaque validation, et alerte en rouge s'il reste une copie à
+     reprendre — c'est le cas où l'élève DOIT agir. */
+  var pastille=null;
+  function majPastilleCorr(){
+    var l=champsCorriges();
+    var aRefaire=l.filter(function(c){
+      return c.classList.contains('a-refaire'); }).length;
+    if(!l.length){ if(pastille) pastille.hidden=true; return; }
+    if(!pastille){
+      pastille=document.createElement('button');
+      pastille.type='button';
+      pastille.id='corr-pastille';
+      pastille.addEventListener('click',function(){ allerCorrection(); });
+      document.body.appendChild(pastille);
+    }
+    pastille.hidden=false;
+    pastille.classList.toggle('urgent', aRefaire>0);
+    pastille.innerHTML='<span aria-hidden="true">'+(aRefaire?'✏️':'💬')+'</span> '+
+      (aRefaire ? aRefaire+' à reprendre' : l.length+' retour'+(l.length>1?'s':''));
+    pastille.setAttribute('aria-label',
+      aRefaire ? aRefaire+' réponse(s) à reprendre' : l.length+' retour(s) du professeur');
+  }
+  /* seul point d'entrée depuis l'extérieur du module : la carte de
+     reprise, définie plus bas au niveau global, en a besoin. */
+  window.SNTallerCorrection = allerCorrection;
+  document.addEventListener('etape-validee',function(){ setTimeout(majPastilleCorr,60); });
+  setTimeout(majPastilleCorr,1200);   /* après la ré-hydratation */
 
   /* ---------- bonus dépliables ---------- */
   document.querySelectorAll('[data-bonus-toggle]').forEach(function(h){
@@ -1353,6 +1448,7 @@ function hubReprise(){
         hubEsc(num)+'</span><span class="hr-ix">étape '+hubEsc(info.ix)+'</span></div>'+
       '<div class="hr-nom">'+hubEsc(info.nom)+'</div>'+
       '<div class="hr-bas">'+faits+' étape'+(faits>1?'s':'')+' sur '+$$('.step').length+' déjà faites</div>'+
+      '<div class="hr-corr" hidden></div>'+
       '<div class="hr-actions">'+
         '<button class="hr-go" type="button">Continuer &rarr;</button>'+
         '<a class="hr-sortie" href="'+hubEsc(versHub)+'">Revenir au sommaire principal</a>'+
@@ -1375,7 +1471,38 @@ function hubReprise(){
     courant.scrollIntoView({behavior:'smooth',block:'center'});
   });
   $('.hr-go',m).focus();
+
+  /* Récapitulatif des corrections reçues pendant l'absence.
+     Demandé le 01/08/2026 : l'élève revient et ne sait pas que son
+     professeur a répondu — le retour est enterré au milieu de la
+     page. On l'annonce ici, et le bouton emmène directement dessus.
+     Chargement APRÈS l'affichage de la carte : la modale ne doit
+     jamais attendre le réseau pour apparaître. */
+  if(window.BASE && BASE.mesReponses){
+    var codes=[]; $$('[data-focus-code]').forEach(function(c){
+      if(c.dataset.focusCode) codes.push(c.dataset.focusCode); });
+    if(codes.length){
+      BASE.mesReponses(codes).then(function(lignes){
+        var vus=(lignes||[]).filter(function(r){
+          return r.statut==='corrige' || r.statut==='signale'; });
+        if(!vus.length) return;
+        var z=$('.hr-corr',m); if(!z) return;
+        var aRefaire=vus.filter(function(r){ return r.statut==='signale'; }).length;
+        z.hidden=false;
+        z.innerHTML='<b>'+vus.length+' réponse'+(vus.length>1?'s':'')+' corrigée'+
+          (vus.length>1?'s':'')+'</b>'+
+          (aRefaire? ' — dont '+aRefaire+' à reprendre' : '')+
+          ' <button type="button" class="hr-voir">Voir</button>';
+        $('.hr-voir',z).addEventListener('click',function(){
+          fermer();
+          if(window.SNTallerCorrection) window.SNTallerCorrection(0);
+        });
+      }).catch(function(){});
+    }
+  }
 }
+
+
 
 /* Les états d'avancement, calculés UNE fois depuis le DOM.
    Séparé de l'affichage parce qu'il y a désormais deux cartes à
@@ -1847,10 +1974,30 @@ function jouerQcm(data,box,recap,lanceur){
     var zone=$('.qzone',pan);
     q.o.forEach(function(txt,k){
       var b=document.createElement('button');
-      b.type='button'; b.className='qopt'; b.textContent=txt;
+      b.type='button'; b.className='qopt';
+      /* Le libellé d'une option peut porter du balisage — <code> pour
+         une adresse IP, <sup> pour « 1er ». La question (q.q) passait
+         déjà par innerHTML ; l'option, elle, était en textContent et
+         affichait « <code>192.168.1.226</code> » en toutes lettres.
+         Incohérence corrigée le 01/08/2026 (signalée en test réel).
+         On n'ouvre pas innerHTML en grand pour autant : seules
+         quelques balises de mise en forme sont rendues, le reste
+         reste du texte. La source est le fichier de cours, donc de
+         confiance — mais une réponse d'élève ne doit JAMAIS passer
+         par ce chemin (voir rendreRetour, qui échappe tout). */
+      b.innerHTML = baliserSobre(txt);
       b.addEventListener('click',function(){ repondre(k); });
       zone.appendChild(b);
     });
+  }
+  /* Échappe tout, puis restaure une courte liste de balises de mise en
+     forme. Ordre important : on échappe D'ABORD, sinon un attribut
+     malicieux passerait. */
+  function baliserSobre(t){
+    var e = String(t)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return e.replace(/&lt;(\/?)(code|b|i|sup|sub|em|strong|abbr)&gt;/g, '<$1$2>');
   }
   function repondre(k){
     var q=data[i], bon=(k===q.r);
@@ -2567,11 +2714,27 @@ document.querySelectorAll('[data-tri-check]').forEach(function(btn){
     }
     if(suite && (bon===n || !liste.dataset.triIndices)) suite.hidden=false;
     if(bon===n){ if(bIndice) bIndice.hidden=true; if(bCorr) bCorr.hidden=true; }
-    /* validation à l'envoi (§13.7) : avoir proposé un ordre suffit */
+    /* Validation de l'étape (§13.7 : « avoir proposé suffit »), MAIS
+       pas dès le premier clic sur Vérifier.
+       Constaté en test réel le 01/08/2026 : la frise se marquait faite
+       au premier essai, même avec un seul élément bien placé — et le
+       pop-up « Séance terminée » s'ouvrait pendant que l'élève
+       replaçait encore ses dates.
+       Sur un tri, vérifier n'est pas rendre : on valide quand l'ordre
+       est juste, ou au 3e essai (l'élève a alors vraiment cherché, et
+       on ne bloque personne sur une frise difficile). */
     var etape=champ.closest('.step');
-    if(etape){ etape.classList.add('is-done');
-               etape.dataset.triScore=bon+'/'+n;
-               etape.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true})); }
+    if(etape){
+      var essais = (parseInt(etape.dataset.triEssais,10) || 0) + 1;
+      etape.dataset.triEssais = essais;
+      etape.dataset.triScore = bon+'/'+n;
+      if(bon===n || essais>=3){
+        etape.classList.add('is-done');
+        etape.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
+      } else if(v){
+        v.textContent += ' (essai '+essais+' sur 3)';
+      }
+    }
   });
 });
 /* indices progressifs : quelques dates au 1er niveau, davantage au 2e */
