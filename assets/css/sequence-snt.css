@@ -1175,3 +1175,33 @@ body.teacher #corr-pastille{display:none}
   border-radius:10px;border:1px solid var(--link);background:var(--link);
   color:#fff;font:inherit;font-weight:600;cursor:pointer}
 .qmulti-ok:disabled{opacity:.45;cursor:not-allowed}
+
+
+/* ============================================================
+   Défilement vers une étape : ne pas passer sous la barre
+   ------------------------------------------------------------
+   #prog4 est collante en haut (position:sticky). Un
+   scrollIntoView() amenait donc le titre de l'étape DERRIÈRE elle :
+   on arrivait sur une étape dont on ne voyait pas le nom.
+   scroll-margin-top réserve la hauteur de la barre + une marge de
+   confort. Le navigateur s'en sert pour tout défilement ancré, y
+   compris les liens #s1 du sommaire — un seul réglage couvre tout.
+   Signalé en test réel le 01/08/2026.
+   ============================================================ */
+:root{ --barre-h:92px }
+@media (max-width:720px){ :root{ --barre-h:104px } }
+.step, .seance, [id]{ scroll-margin-top:calc(var(--barre-h) + 12px) }
+
+/* ------------------------------------------------------------
+   Badge de session (injecté par progression.js en top:10 right:12)
+   contre le bouton ☰ de la barre : les deux se superposaient.
+   On décale le badge sous la barre plutôt que de toucher à
+   progression.js — le badge n'appartient pas à ce moteur, et une
+   séquence sans barre garde le placement d'origine.
+   ------------------------------------------------------------ */
+body.js-ok .acc-badge{ top:calc(var(--barre-h) + 8px); right:12px }
+@media (max-width:720px){
+  body.js-ok .acc-badge{ top:auto; bottom:70px; right:12px }
+}
+/* et la pastille de retours ne doit pas non plus lui rentrer dedans */
+@media (max-width:720px){ #corr-pastille{ bottom:12px; right:12px } }

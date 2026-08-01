@@ -700,7 +700,7 @@
   _corrIndex=(_corrIndex+1)%l.length;
   var st=cible.closest('.step');
   if(st) st.classList.remove('replie');
-  cible.scrollIntoView({behavior:'smooth',block:'center'});
+  cible.scrollIntoView({behavior:'smooth',block:'start'});
   cible.classList.add('surligne');
   setTimeout(function(){ cible.classList.remove('surligne'); },2200);
 }
@@ -1468,7 +1468,7 @@ function hubReprise(){
      bloquant ne veut pas dire piégé. */
   $('.hr-go',m).addEventListener('click',function(){
     fermer();
-    courant.scrollIntoView({behavior:'smooth',block:'center'});
+    courant.scrollIntoView({behavior:'smooth',block:'start'});
   });
   $('.hr-go',m).focus();
 
@@ -1751,6 +1751,26 @@ function construireBarre(){
   b4.innerHTML=h4;
   var anc=wrapContenu();
   if(anc&&anc.parentNode) anc.parentNode.insertBefore(b4,anc);
+
+  /* Hauteur réelle de la barre, mesurée APRÈS son insertion.
+     Le CSS garde une valeur de repli, mais elle ne peut être
+     qu'approximative : la barre change de hauteur selon la largeur
+     d'écran, le nombre de séances et la longueur des libellés — et
+     c'est elle qui décide si le titre d'une étape est visible ou
+     caché à l'arrivée. On remesure au redimensionnement et à la
+     rotation d'une tablette.
+     Placer ce bloc AVANT l'insertion ne poserait rien : b4 n'a pas
+     encore de hauteur (diagnostiqué au test le 01/08/2026). */
+  (function hauteurBarre(){
+    var poser=function(){
+      var h=Math.round(b4.getBoundingClientRect().height);
+      if(h>0) document.documentElement.style.setProperty('--barre-h', h+'px');
+    };
+    poser();
+    if(window.ResizeObserver){ new ResizeObserver(poser).observe(b4); }
+    else { window.addEventListener('resize',poser); }
+    window.addEventListener('orientationchange',function(){ setTimeout(poser,220); });
+  })();
   b4.querySelector('.p4-menu').addEventListener('click',function(){
     document.body.classList.toggle('prog-reduit');
   });
@@ -1934,6 +1954,8 @@ function initQcm(){
   fondQcm.className='qcm-back';
   fondQcm.innerHTML='<div class="qcm-panel" role="dialog" aria-modal="true"></div>';
   document.body.appendChild(fondQcm);
+
+
 
   $$('.qcmbox').forEach(function(box){
     var data;
@@ -2648,14 +2670,15 @@ function restaurer(){
     $$('.step').forEach(function(p){
       if(!courant && !p.classList.contains('is-done') && !p.classList.contains('masque')) courant=p;
     });
-    /* CENTRÉ, pas collé en haut. Deux raisons : la barre « tu es ici »
-       est collante et mangeait le début de l'étape ; et surtout, une
-       reprise n'est pas une avancée — on revient pour se resituer, et
-       voir ce qui précède aide à se rappeler où on en était. Les
-       défilements d'AVANCEMENT (bouton « Étape suivante », dépliage)
-       restent en block:'start' : là on veut le maximum de contenu
-       sous les yeux. */
-    if(courant) courant.scrollIntoView({behavior:'auto',block:'center'});
+    /* Collé en haut, comme tous les autres défilements.
+       Le centrage venait d'un contournement : la barre « tu es ici »
+       est collante et mangeait le début de l'étape. Ce n'est plus le
+       cas depuis scroll-margin-top (CSS, 01/08/2026), qui réserve sa
+       hauteur — le titre est donc visible sans centrer.
+       Et on veut voir le titre en arrivant : centrer plaçait le nom
+       de l'étape hors champ vers le haut, ce qui était précisément
+       le défaut signalé. */
+    if(courant) courant.scrollIntoView({behavior:'auto',block:'start'});
   });
 }
 
