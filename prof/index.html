@@ -107,6 +107,15 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
     border-radius:var(--r);font-size:14.5px}
 .enonce .t{display:block;font-weight:600;margin-bottom:3px}
 .phrase{font-size:13px;padding:5px 11px;border-radius:999px;background:var(--surface-2)}
+.modele{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border:1px solid var(--line);
+    border-radius:var(--r);background:var(--surface-2);margin-bottom:5px;font-size:13.5px}
+.modele .txt{flex:1;text-align:left;background:none;border:0;font:inherit;color:var(--ink);
+    cursor:pointer;padding:0}
+.modele .txt:hover{color:var(--link)}
+.modele .cpt{font-size:11.5px;color:var(--ink-faint);white-space:nowrap}
+.modele .sup{background:none;border:0;color:var(--ink-faint);cursor:pointer;padding:0 2px;font-size:15px}
+.modele .sup:hover{color:var(--err)}
+.biblio-titre{font-size:12px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;margin:0 0 5px}
 .copie-texte{margin:0;padding:13px 15px;background:var(--surface-2);
     border-left:3px solid var(--link);border-radius:0 var(--r) var(--r) 0;white-space:pre-wrap}
 .crit{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px}
@@ -211,6 +220,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       <div class="rangee" style="margin-top:0">
         <button id="btn-recharger">Recharger la file</button>
         <button id="btn-lot" style="display:none"></button>
+        <button id="btn-sans-ia" style="display:none"></button>
         <span id="etat-file" class="muet"></span>
         <span id="jauge-file" class="pastille att" style="display:none"></span>
       </div>
@@ -252,6 +262,11 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         <label for="c-mot">Ton message (facultatif pour valider, obligatoire pour renvoyer)</label>
         <textarea id="c-mot" rows="3" placeholder="Si tu écris ici, l'élève ne lira que ton mot."></textarea>
         <div class="rangee" id="phrases" style="gap:7px;margin:9px 0 0"></div>
+
+        <div id="biblio" style="margin-top:12px"></div>
+        <div class="rangee" style="margin-top:6px">
+          <button id="btn-memoriser" style="font-size:13px">+ Mémoriser ce message pour cette question</button>
+        </div>
 
         <div class="rangee">
           <button id="btn-valider" class="primaire">Valider</button>
@@ -392,6 +407,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     $('#qui-nom').textContent = (m && m.libelle) || '';
     chargerFile();
     etatWorker();
+    compterSansIA();
     demarrerSuivi();
   }
   function montrerConnexion(message){
@@ -556,7 +572,8 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     $('#etat-file').textContent = 'Chargement…';
     var chemin = 'reponses_libres'
       + '?select=id,code_activite,texte,statut,version,envoye_le,correction_ia,eleves(pseudo)'
-      + '&statut=eq.en_attente&correction_ia=not.is.null'
+      + '&statut=eq.en_attente'
+      + (sansIA ? '&correction_ia=is.null' : '&correction_ia=not.is.null')
       + '&order=envoye_le.asc';
     return ProfAPI.lire(chemin).then(function(l){
       file = (l || []).sort(function(a, b){
@@ -683,6 +700,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     } else pl.style.display = 'none';
 
     $('#c-mot').value = '';
+    chargerModeles(c.code_activite);
   }
 
   /* ---------- actions ---------- */
@@ -1414,6 +1432,132 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     b.appendChild(t); b.appendChild(bt);
     b.style.display = '';
   }
+
+  /* ============================================================
+     CORRIGER SANS ATTENDRE L'IA
+     ------------------------------------------------------------
+     Le tableau de bord ne peut PAS lancer Ollama : il tourne sur le
+     PC de Loïc, injoignable depuis l'iPad. « Court-circuiter le
+     worker » veut donc dire : faire entrer dans la file les copies
+     qu'il n'a pas encore vues, pour les corriger à la main.
+     Utile en séance, quand une copie vient d'arriver et qu'on veut
+     répondre tout de suite plutôt que d'attendre le quart d'heure.
+     Ces copies s'affichent sans critères ni message proposé — il n'y
+     a rien à afficher, et c'est normal.
+     ============================================================ */
+  var sansIA = false;
+
+  function compterSansIA(){
+    return ProfAPI.lire('reponses_libres?select=id&statut=eq.en_attente&correction_ia=is.null')
+      .then(function(l){
+        var n = (l || []).length;
+        var b = $('#btn-sans-ia');
+        if(!n && !sansIA){ b.style.display = 'none'; return; }
+        b.style.display = '';
+        b.textContent = sansIA
+          ? 'Revenir aux copies pré-corrigées'
+          : 'Corriger sans l\u2019IA (' + n + ')';
+      }).catch(function(){});
+  }
+
+  $('#btn-sans-ia').addEventListener('click', function(){
+    sansIA = !sansIA;
+    chargerFile().then(compterSansIA);
+  });
+
+  /* ============================================================
+     LA BIBLIOTHÈQUE DE RÉPONSES TYPES
+     ------------------------------------------------------------
+     Même remarque revient copie après copie : personne ne cite
+     Louis Pouzin sur CYCLADES. On écrit la phrase une fois, on la
+     garde, on la réutilise.
+     Rangée PAR QUESTION : un modèle écrit pour une question de
+     raisonnement n'a aucun sens sur un glossaire, et une liste
+     globale deviendrait un fourre-tout qu'on ne relit plus.
+     Mémoriser est TOUJOURS un geste explicite : rien ne s'enregistre
+     tout seul, sinon la bibliothèque se remplit de brouillons.
+     ============================================================ */
+  var modeles = [];
+
+  function chargerModeles(code){
+    if(!code){ modeles = []; rendreBiblio(); return Promise.resolve(); }
+    return ProfAPI.lire('modeles_correction?select=id,texte,usages'
+      + '&code_activite=eq.' + encodeURIComponent(code)
+      + '&order=usages.desc,cree_le.desc')
+      .then(function(l){ modeles = l || []; rendreBiblio(); })
+      .catch(function(){ modeles = []; rendreBiblio(); });
+  }
+
+  function rendreBiblio(){
+    var z = $('#biblio');
+    z.innerHTML = '';
+    if(!modeles.length) return;
+    var t = document.createElement('p');
+    t.className = 'biblio-titre';
+    t.textContent = 'Mes réponses gardées pour cette question';
+    z.appendChild(t);
+
+    modeles.forEach(function(m){
+      var d = document.createElement('div');
+      d.className = 'modele';
+
+      var b = document.createElement('button');
+      b.className = 'txt'; b.type = 'button';
+      b.textContent = m.texte;
+      b.title = 'Insérer dans mon message';
+      b.addEventListener('click', function(){
+        var t = $('#c-mot');
+        t.value = t.value.trim() ? (t.value.trim() + ' ' + m.texte) : m.texte;
+        t.focus();
+        /* compteur d'usage : sert à faire remonter les modèles utiles
+           en tête. L'échec est sans conséquence, on ne le signale pas. */
+        ProfAPI.appeler('modele_utilise', { p_modele: m.id }).catch(function(){});
+      });
+
+      var c = document.createElement('span');
+      c.className = 'cpt';
+      c.textContent = m.usages ? ('×' + m.usages) : '';
+
+      var s = document.createElement('button');
+      s.className = 'sup'; s.type = 'button';
+      s.setAttribute('aria-label', 'Retirer ce modèle');
+      s.textContent = '×';
+      s.addEventListener('click', function(){
+        if(!window.confirm('Retirer ce modèle de ta bibliothèque ?')) return;
+        ProfAPI.supprimer('modeles_correction?id=eq.' + encodeURIComponent(m.id))
+          .then(function(){ return chargerModeles(courant() && courant().code_activite); })
+          .catch(function(e){ erreurAction(e); });
+      });
+
+      d.appendChild(b); d.appendChild(c); d.appendChild(s);
+      z.appendChild(d);
+    });
+  }
+
+  function courant(){ return file[rang]; }
+
+  $('#btn-memoriser').addEventListener('click', function(){
+    var c = courant();
+    var t = ($('#c-mot').value || '').trim();
+    if(!c) return;
+    if(t.length < 3){
+      erreurAction(new Error('Écris d\u2019abord le message à mémoriser.'));
+      return;
+    }
+    var b = $('#btn-memoriser'); b.disabled = true;
+    var moi = ProfAPI.monId();
+    if(!moi){ erreurAction(new Error('Session illisible, reconnecte-toi.')); b.disabled = false; return; }
+    /* auth_id doit être posé explicitement : PostgREST ne le déduit
+       pas, et la policy « auth.uid() = auth_id » refuserait la ligne. */
+    ProfAPI.ecrire('modeles_correction', {
+      auth_id: moi,
+      code_activite: c.code_activite,
+      texte: t
+    }, false)
+      .then(function(){ return chargerModeles(c.code_activite); })
+      .catch(erreurAction)
+      .then(function(){ b.disabled = false; });
+  });
 
   /* ---------- démarrage ---------- */
   majEtatNoms();

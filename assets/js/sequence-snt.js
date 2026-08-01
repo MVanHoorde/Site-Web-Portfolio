@@ -466,6 +466,10 @@
        (Sans cela, une séance resterait bloquée jusqu'au passage du
         worker : proposition à valider par Loïc.) */
     if(BASE && code){
+      /* On quitte l'état « à refaire » dès le nouvel envoi : sans cela
+         le bouton resterait visible et l'élève pourrait renvoyer en
+         boucle la même copie. */
+      champ.classList.remove('a-refaire');
       verdict(champ,'wait','⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
       var s=stepOf(champ); if(s)s.classList.add('is-wait');
       BASE.envoyerReponse(code, texte).then(function(){
@@ -570,18 +574,28 @@
           verdict(champ, classeVerdict(verd), rendreRetour(r));
           markDone(champ);
         } else if(r.statut === 'signale'){
-          /* À refaire. On REMET le bouton d'envoi : sans lui, l'élève
-             lirait « reprends ta réponse » sans aucun moyen de le
-             faire — le champ est masqué dès qu'il est rempli.
-             On garde la classe 'rempli' et l'écho : il doit pouvoir
-             relire ce qu'il avait écrit, et le corrigé révélé reste
-             accessible (décision du 26/07 : répondre faux donne accès
-             au corrigé, c'est là qu'il sert le plus).
+          /* À refaire. La classe 'a-refaire' rouvre le bouton d'envoi :
+             sans elle, la règle CSS '.rempli .gaction{display:none}'
+             l'emporte sur tout style inline, et l'élève lit « reprends
+             ta réponse » sans pouvoir le faire (bug constaté en test
+             réel le 01/08/2026 — la boucle était rompue).
+             On garde l'écho : il doit relire ce qu'il avait écrit.
              Pas de markDone : l'étape n'est pas acquise. */
+          champ.classList.add('a-refaire');
           if(action) action.style.display = '';
           verdict(champ, 'no', rendreRenvoi(r));
         } else {
+          /* Copie envoyée, pas encore corrigée. markDone EST
+             indispensable ici : à l'envoi, validerFocus() marque
+             l'étape faite sans attendre le worker. Si le rechargement
+             ne le refaisait pas, rouvrir la page ferait RECULER la
+             progression et verrouillerait la séance jusqu'au passage
+             du worker — panne constatée le 01/08/2026 après un
+             redémarrage du PC, étape 1.5 restée bloquée.
+             Règle générale : un rechargement ne doit jamais faire
+             perdre une progression déjà acquise. */
           verdict(champ, 'wait', '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
+          markDone(champ);
         }
       });
     }).catch(function(){ /* pas de base / invité : on n'affiche rien */ });

@@ -237,6 +237,20 @@
      lui aussi. C'est est_enseignant() qui tranche, côté base, et c'est
      la même fonction que les policies interrogent — donc pas moyen que
      l'écran affiche autre chose que ce que la base autorise. */
+  /* Lit le sujet du jeton (l'identifiant du compte connecté) sans
+     dépendre d'une bibliothèque : le JWT est trois parties séparées
+     par des points, la seconde est du base64url. Nécessaire pour
+     écrire une ligne qui porte auth_id — PostgREST ne le remplit pas
+     tout seul, et une policy « auth.uid() = auth_id » refuserait. */
+  function monId() {
+    if (!jeton || !jeton.access_token) return null;
+    try {
+      var p = jeton.access_token.split('.')[1]
+                .replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(global.atob(p)).sub || null;
+    } catch (e) { return null; }
+  }
+
   function verifierRole() {
     return appeler('est_enseignant').then(function (oui) {
       if (oui !== true) { deconnexion(); throw new Error('PAS_ENSEIGNANT'); }
@@ -324,6 +338,7 @@
     deconnexion  : deconnexion,
     connecte     : function () { return !!moi; },
     moi          : function () { return moi; },
+    monId        : monId,
     lire         : lire,
     ecrire       : ecrire,
     supprimer    : supprimer,

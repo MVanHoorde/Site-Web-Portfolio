@@ -352,6 +352,17 @@
   .gtexte{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:14.5px;display:none;white-space:pre-wrap}
   .rempli .gtexte{display:block}
   .rempli .gaction{display:none}
+  /* Copie RENVOYÉE par le professeur (statut 'signale') : l'élève doit
+     pouvoir réécrire. La classe 'rempli' masque le bouton d'envoi —
+     'a-refaire' annule ce masquage.
+     Découvert le 01/08/2026 en test réel : le JS remettait bien
+     style="display:''" sur .gaction, mais la règle CSS ci-dessus, plus
+     spécifique, l'emportait. L'élève lisait « reprends ta réponse »
+     sans aucun moyen de le faire — la boucle de correction était
+     rompue. Un correctif JS seul ne suffit pas ici : il FAUT la règle
+     CSS, sinon le bug revient au premier rechargement. */
+  .a-refaire .gaction{display:flex}
+  .a-refaire .gtexte{opacity:.6}
 
   .glossaire-final{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:4px 0;margin-top:6px}
   .glossaire-final .gligne{display:flex;gap:14px;padding:11px 16px;border-bottom:1px solid var(--line);font-size:14px;align-items:baseline}
