@@ -1972,9 +1972,22 @@ function jouerQcm(data,box,recap,lanceur){
       '</div><h4>'+q.q+'</h4><div class="qzone"></div>';
     $('.qclose',pan).addEventListener('click',abandonner);
     var zone=$('.qzone',pan);
+    /* CHOIX MULTIPLE (01/08/2026) : si q.r est un TABLEAU d'indices,
+       on bascule en mode « coche tout ce qui convient ». Un entier
+       reste un choix unique — tous les QCM déjà écrits fonctionnent
+       sans être touchés.
+       Le mode multiple ne valide pas au clic : il faut cocher puis
+       confirmer, sinon le premier clic fermerait la question. */
+    var multi = Array.isArray(q.r);
+    if(multi){
+      var c=document.createElement('p');
+      c.className='qmulti-consigne';
+      c.textContent='Coche tout ce qui convient ('+q.r.length+' réponses), puis valide.';
+      zone.appendChild(c);
+    }
     q.o.forEach(function(txt,k){
       var b=document.createElement('button');
-      b.type='button'; b.className='qopt';
+      b.type='button'; b.className='qopt'+(multi?' qmulti':'');
       /* Le libellé d'une option peut porter du balisage — <code> pour
          une adresse IP, <sup> pour « 1er ». La question (q.q) passait
          déjà par innerHTML ; l'option, elle, était en textContent et
@@ -1986,9 +1999,30 @@ function jouerQcm(data,box,recap,lanceur){
          confiance — mais une réponse d'élève ne doit JAMAIS passer
          par ce chemin (voir rendreRetour, qui échappe tout). */
       b.innerHTML = baliserSobre(txt);
-      b.addEventListener('click',function(){ repondre(k); });
+      if(multi){
+        b.setAttribute('aria-pressed','false');
+        b.addEventListener('click',function(){
+          var on=b.classList.toggle('coche');
+          b.setAttribute('aria-pressed', on?'true':'false');
+          var valider=zone.parentNode.querySelector('.qmulti-ok');
+          if(valider) valider.disabled = !zone.querySelector('.qopt.coche');
+        });
+      } else {
+        b.addEventListener('click',function(){ repondre(k); });
+      }
       zone.appendChild(b);
     });
+    if(multi){
+      var v=document.createElement('button');
+      v.type='button'; v.className='qmulti-ok'; v.disabled=true;
+      v.textContent='Valider ma réponse';
+      v.addEventListener('click',function(){
+        var choisis=[];
+        $$('.qopt',pan).forEach(function(b,n){ if(b.classList.contains('coche')) choisis.push(n); });
+        repondre(choisis);
+      });
+      pan.appendChild(v);
+    }
   }
   /* Échappe tout, puis restaure une courte liste de balises de mise en
      forme. Ordre important : on échappe D'ABORD, sinon un attribut
@@ -2000,16 +2034,31 @@ function jouerQcm(data,box,recap,lanceur){
     return e.replace(/&lt;(\/?)(code|b|i|sup|sub|em|strong|abbr)&gt;/g, '<$1$2>');
   }
   function repondre(k){
-    var q=data[i], bon=(k===q.r);
+    var q=data[i], multi=Array.isArray(q.r);
+    /* En multiple, k est un tableau d'indices. Juste = exactement le
+       bon ensemble : ni oubli, ni case en trop. Cocher tout ne doit
+       pas donner le point. */
+    var attendus = multi ? q.r.slice().sort(function(a,b){return a-b;}) : null;
+    var bon = multi
+      ? (k.length===attendus.length && k.slice().sort(function(a,b){return a-b;})
+           .every(function(v,n){ return v===attendus[n]; }))
+      : (k===q.r);
     resultats[i]={bon:bon,choix:k};
+    var estBonne = function(n){ return multi ? q.r.indexOf(n)>=0 : n===q.r; };
+    var aChoisi  = function(n){ return multi ? k.indexOf(n)>=0 : n===k; };
     $$('.qopt',pan).forEach(function(b,n){
       b.disabled=true;
-      if(n===q.r) b.classList.add('bon');
-      else if(n===k) b.classList.add('mauvais');
+      b.classList.remove('coche');
+      if(estBonne(n)) b.classList.add('bon');
+      else if(aChoisi(n)) b.classList.add('mauvais');
     });
+    var ok=pan.querySelector('.qmulti-ok'); if(ok) ok.remove();
+    var libelle = multi
+      ? q.r.map(function(n){ return q.o[n]; }).join(' + ')
+      : q.o[q.r];
     var f=document.createElement('div');
     f.className='qfeed';
-    f.innerHTML=(bon?'<b>Bonne réponse.</b> ':'<b>La bonne réponse était : '+q.o[q.r]+'.</b> ')+(q.c||'');
+    f.innerHTML=(bon?'<b>Bonne réponse.</b> ':'<b>Il fallait : '+libelle+'.</b> ')+(q.c||'');
     pan.appendChild(f);
     var act=document.createElement('div');
     act.className='qact';

@@ -277,6 +277,53 @@ try {
   notes.push("assets/js/questions-snt.js absent ou illisible — lancer : node generer-questions.mjs");
 }
 
+/* ---------- Biais de longueur dans les QCM ----------
+   Défaut classique et sournois : la bonne réponse est plus longue que
+   les autres, parce qu'on y met la nuance et la justification. L'élève
+   la repère alors sans lire — le QCM ne mesure plus rien.
+   Constaté le 01/08/2026 sur 9 questions rédigées sur 11, y compris
+   après une première relecture. Non bloquant (c'est un jugement de
+   rédaction, pas une erreur technique) mais signalé à chaque passage.
+   Les options très courtes (dates, nombres, mots isolés) sont
+   exclues : « 213 » face à « 4 », l'écart ne dit rien. */
+try {
+  const suspects = [];
+  for (const f of pagesSNT) {
+    const html = lire(f);
+    const re = /<script[^>]*class="qcm-data"[^>]*>([\s\S]*?)<\/script>/g;
+    let m;
+    while ((m = re.exec(html)) !== null) {
+      let data;
+      try { data = JSON.parse(m[1]); } catch { 
+        ko("QCM illisible", `${f} — un bloc qcm-data n'est pas du JSON valide`);
+        continue;
+      }
+      for (const q of data) {
+        const opts = q.o || [];
+        if (opts.length < 3) continue;
+        const L = opts.map((o) => String(o).replace(/<[^>]+>/g, "").length);
+        if (Math.max(...L) < 25) continue;      /* options courtes : sans objet */
+        const bons = Array.isArray(q.r) ? q.r : [q.r];
+        const mx = Math.max(...L), mn = Math.min(...L);
+        const seuleLaPlusLongue = L.filter((x) => x === mx).length === 1 && bons.includes(L.indexOf(mx));
+        const seuleLaPlusCourte = L.filter((x) => x === mn).length === 1 && bons.includes(L.indexOf(mn));
+        if (seuleLaPlusLongue || seuleLaPlusCourte) {
+          suspects.push(`${f.split("/").pop()} — « ${q.q.replace(/<[^>]+>/g, "").slice(0, 52)}… » : la bonne réponse est ${seuleLaPlusLongue ? "la plus longue" : "la plus courte"}`);
+        }
+      }
+    }
+  }
+  if (suspects.length) {
+    notes.push(`biais de longueur dans ${suspects.length} question(s) de QCM :`);
+    suspects.slice(0, 6).forEach((s) => notes.push("   " + s));
+    if (suspects.length > 6) notes.push(`   …et ${suspects.length - 6} autre(s)`);
+  } else {
+    notes.push("QCM — aucune bonne réponse trahie par sa longueur");
+  }
+} catch (e) {
+  notes.push("contrôle des QCM non effectué : " + e.message);
+}
+
 /* ---------- Les scripts PowerShell sont-ils lisibles par Windows ? ----------
    Windows PowerShell 5.1 — celui livré avec Windows, celui que Loïc
    lance — décode un .ps1 SANS BOM comme de l'ANSI, pas comme de
