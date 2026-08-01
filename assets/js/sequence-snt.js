@@ -397,6 +397,35 @@
     scene.querySelector('[data-sortie]').setAttribute('data-sortie','');
     champ._zoneSortie=scene.querySelector('[data-sortie]');
     focusStrictActif = strict ? scene : null;
+
+    /* REPRISE D'UNE RÉPONSE (01/08/2026) — on repart de ce qui a été
+       écrit, on ne repart pas de zéro.
+       Motif : quand le professeur renvoie une copie, il manque
+       souvent une phrase. Faire tout retaper est décourageant, et
+       l'élève réécrit alors moins bien que la première fois.
+       Le texte précédent est donc pré-rempli et surligné : il se
+       voit, se modifie, et un bouton l'efface d'un geste pour ceux
+       qui préfèrent recommencer.
+       On NE pré-remplit PAS une première rédaction : sur l'étape 1.1
+       (« ta définition, sans recherche »), il n'y a rien à reprendre. */
+    var precedent = memoireReponses[champ.dataset.focusCode||''] || '';
+    var reprise = precedent && champ.classList.contains('a-refaire');
+    if(reprise){
+      ta.value = precedent;
+      ta.classList.add('repris');
+      var rap=document.createElement('div');
+      rap.className='focus-reprise';
+      rap.innerHTML='<span>Ta réponse précédente est déjà là : complète-la ou modifie-la.</span>'+
+        '<button type="button" class="btn ghost" data-vider>Repartir de zéro</button>';
+      ta.parentNode.insertBefore(rap, ta);
+      rap.querySelector('[data-vider]').addEventListener('click',function(){
+        ta.value=''; ta.classList.remove('repris'); ta.focus();
+        ta.dispatchEvent(new Event('input'));
+      });
+      /* curseur à la FIN, pas au début : on vient presque toujours
+         ajouter quelque chose. */
+      ta.setSelectionRange(ta.value.length, ta.value.length);
+    }
     ta.focus();
     ['paste','drop'].forEach(function(ev){ta.addEventListener(ev,function(e){
       e.preventDefault();
@@ -681,19 +710,30 @@
    seul comportement à comprendre. */
   var _corrIndex=0;
   function champsCorriges(){
-  /* querySelectorAll direct, pas le raccourci $$ : celui-ci est
-     assigné à une var plus bas dans le fichier, donc encore
-     indéfini quand la pastille se construit. Diagnostiqué au test
-     le 01/08/2026 — la pastille n'apparaissait jamais. */
-  return Array.prototype.slice.call(
-    document.querySelectorAll('[data-focus-code]')).filter(function(c){
-    var v=c.querySelector('.verdict');
-    return v && v.classList.contains('show')
-             && !v.classList.contains('wait');
-  });
-}
+    /* querySelectorAll direct, pas le raccourci $$ : celui-ci est
+       assigné à une var plus bas dans le fichier, donc encore
+       indéfini quand la pastille se construit. Diagnostiqué au test
+       le 01/08/2026 — la pastille n'apparaissait jamais. */
+    return Array.prototype.slice.call(
+      document.querySelectorAll('[data-focus-code]')).filter(function(c){
+      var v=c.querySelector('.verdict');
+      return v && v.classList.contains('show')
+               && !v.classList.contains('wait');
+    });
+  }
+  /* Ce sur quoi la pastille NAVIGUE — pas la même chose que ce
+     qu'elle compte. Dès qu'une copie est à reprendre, le parcours ne
+     porte QUE sur celles-là : sinon la pastille annonçait « 2 à
+     reprendre » puis emmenait sur une étape validée au 3ᵉ clic
+     (signalé en test réel le 01/08/2026). Ce qui est à reprendre
+     demande une action ; un retour déjà validé, non. */
+  function champsANaviguer(){
+    var tous=champsCorriges();
+    var refaire=tous.filter(function(c){ return c.classList.contains('a-refaire'); });
+    return refaire.length ? refaire : tous;
+  }
   function allerCorrection(i){
-  var l=champsCorriges();
+    var l=champsANaviguer();
   if(!l.length) return;
   _corrIndex = (typeof i==='number') ? i : (_corrIndex % l.length);
   var cible=l[_corrIndex];
@@ -720,7 +760,14 @@
       pastille=document.createElement('button');
       pastille.type='button';
       pastille.id='corr-pastille';
-      pastille.addEventListener('click',function(){ allerCorrection(); });
+      pastille.addEventListener('click',function(){
+        var l=champsANaviguer();
+        /* une seule entrée : y aller directement, un menu d'un seul
+           élément serait une politesse inutile. */
+        if(l.length<2){ allerCorrection(0); return; }
+        majListeCorr();
+        liste.hidden=!liste.hidden;
+      });
       document.body.appendChild(pastille);
     }
     pastille.hidden=false;
@@ -729,7 +776,49 @@
       (aRefaire ? aRefaire+' à reprendre' : l.length+' retour'+(l.length>1?'s':''));
     pastille.setAttribute('aria-label',
       aRefaire ? aRefaire+' réponse(s) à reprendre' : l.length+' retour(s) du professeur');
+    majListeCorr();
   }
+  /* Liste dépliable : savoir OÙ aller, pas seulement y aller.
+     Sur une séquence de cinq séances, « 2 à reprendre » ne dit pas
+     s'il faut remonter en séance 1 ou descendre en séance 4 — et
+     cliquer à l'aveugle pour le découvrir est désagréable.
+     Demandé le 01/08/2026. */
+  var liste=null;
+  function majListeCorr(){
+    var l=champsANaviguer();
+    if(!liste){
+      liste=document.createElement('div');
+      liste.id='corr-liste'; liste.hidden=true;
+      document.body.appendChild(liste);
+      document.addEventListener('click',function(e){
+        if(liste.hidden) return;
+        if(!liste.contains(e.target) && e.target!==pastille) liste.hidden=true;
+      });
+      document.addEventListener('keydown',function(e){
+        if(e.key==='Escape') liste.hidden=true;
+      });
+    }
+    liste.innerHTML='';
+    l.forEach(function(c,n){
+      var st=c.closest('.step'), sec=c.closest('.seance');
+      var num=sec?(sec.querySelector('.s-num')||{}).textContent:'';
+      var ix=st?(st.querySelector('.step-kicker')||{}).textContent:'';
+      var nom=st?(st.querySelector('.step-title')||{}).textContent:'';
+      var refaire=c.classList.contains('a-refaire');
+      var b=document.createElement('button');
+      b.type='button'; b.className='cl-item'+(refaire?' cl-refaire':'');
+      var e1=document.createElement('span'); e1.className='cl-ou';
+      e1.textContent=((num||'').trim()+' · '+(ix||'').replace(/\s+/g,' ').trim()).replace(/^ ·\s*/,'');
+      var e2=document.createElement('span'); e2.className='cl-nom';
+      e2.textContent=(nom||'').trim();
+      var e3=document.createElement('span'); e3.className='cl-etat';
+      e3.textContent=refaire?'à reprendre':'corrigé';
+      b.appendChild(e1); b.appendChild(e2); b.appendChild(e3);
+      b.addEventListener('click',function(){ liste.hidden=true; allerCorrection(n); });
+      liste.appendChild(b);
+    });
+  }
+
   /* seul point d'entrée depuis l'extérieur du module : la carte de
      reprise, définie plus bas au niveau global, en a besoin. */
   window.SNTallerCorrection = allerCorrection;

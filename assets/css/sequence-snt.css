@@ -1205,3 +1205,36 @@ body.js-ok .acc-badge{ top:calc(var(--barre-h) + 8px); right:12px }
 }
 /* et la pastille de retours ne doit pas non plus lui rentrer dedans */
 @media (max-width:720px){ #corr-pastille{ bottom:12px; right:12px } }
+
+
+/* ---------- Reprise d'une réponse renvoyée (01/08/2026) ----------
+   Le texte précédent est pré-rempli. Il doit se distinguer d'une
+   saisie neuve — sinon l'élève ne sait pas si c'est lui qui l'a
+   écrit ou une suggestion. Teinte douce, pas d'alerte : ce n'est pas
+   une erreur, c'est son travail. */
+.focus-reprise{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  font-size:13px;color:var(--ink-soft);background:var(--wait-wash);
+  border:1px solid var(--wait);border-radius:9px;padding:8px 11px;margin-bottom:9px}
+.focus-reprise button{flex:none;font-size:12.5px;padding:5px 10px}
+.focus-carte textarea.repris{background:#fffdf6;border-color:var(--wait)}
+
+
+/* ---------- Liste des retours (01/08/2026) ----------
+   S'ouvre au-dessus de la pastille. Chaque ligne dit OÙ : séance,
+   numéro d'étape, titre — et si c'est à reprendre. */
+#corr-liste{position:fixed;right:16px;bottom:70px;z-index:61;width:min(320px,calc(100vw - 32px));
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 6px 22px rgba(22,31,51,.18);overflow:hidden;max-height:60vh;overflow-y:auto}
+#corr-liste[hidden]{display:none}
+.cl-item{display:block;width:100%;text-align:left;background:none;border:0;
+  border-bottom:1px solid var(--line);padding:10px 13px;cursor:pointer;font:inherit;min-height:44px}
+.cl-item:last-child{border-bottom:0}
+.cl-item:hover{background:var(--surface-2)}
+.cl-ou{display:block;font-size:11.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.03em}
+.cl-nom{display:block;font-size:14px;color:var(--ink);margin:1px 0 2px}
+.cl-etat{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:999px;
+  background:var(--ok-wash);color:var(--ok)}
+.cl-refaire .cl-etat{background:var(--err-wash);color:var(--err)}
+body.teacher #corr-liste{display:none}
+@media print{#corr-liste{display:none}}
+@media (max-width:720px){#corr-liste{bottom:64px;right:12px}}
