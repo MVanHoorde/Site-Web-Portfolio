@@ -1777,19 +1777,36 @@ function majLignes(){
     /* Trois états et non deux : « rendu, pas encore relu » doit se
        lire ICI aussi, pas seulement sur la pastille de l'étape.
        Sans cela, la colonne de gauche affiche « validée » alors que
-       le professeur n'a rien lu — signalé en test réel le 01/08. */
-    e.classList.remove('att');
-    if(p.classList.contains('masque'))       e.textContent='à venir';
-    else if(p.classList.contains('is-wait')) e.textContent='en attente de correction';
-    else if(p.classList.contains('attente-corr')){
-      e.textContent='rendu · en attente'; e.classList.add('att');
-    }
-    else if(p.classList.contains('is-done')) e.textContent='validée';
-    else e.textContent='';
+       le professeur n'a rien lu.
+
+       ⚠ BOUCLE INFINIE ÉVITÉE ICI (01/08/2026, page bloquée au
+       chargement). Un MutationObserver surveille TOUT changement de
+       classe dans .steps et rappelle majBarre() → majLignes(). Un
+       classList.remove/add inconditionnel se redéclenchait donc
+       lui-même sans fin, et l'onglet se figeait.
+       Règle : dans cette fonction, ne JAMAIS écrire une classe ou un
+       texte sans avoir vérifié qu'il change réellement. Toute
+       écriture inconditionnelle relance l'observateur. */
+    var att = p.classList.contains('attente-corr')
+              && !p.classList.contains('masque')
+              && !p.classList.contains('is-wait');
+    if(e.classList.contains('att') !== att) e.classList.toggle('att', att);
+
+    var txt;
+    if(p.classList.contains('masque'))       txt='à venir';
+    else if(p.classList.contains('is-wait')) txt='en attente de correction';
+    else if(att)                             txt='rendu · en attente';
+    else if(p.classList.contains('is-done')) txt='validée';
+    else txt='';
+    if(e.textContent!==txt) e.textContent=txt;
+
     var b=$('.step-ligne',p);
-    if(b) b.setAttribute('aria-label',
-      p.classList.contains('masque') ? 'Étape à venir : '+infosEtape(p).nom
-                                     : 'Rouvrir l\u2019étape '+infosEtape(p).nom);
+    if(b){
+      var lab = p.classList.contains('masque')
+        ? 'Étape à venir : '+infosEtape(p).nom
+        : 'Rouvrir l\u2019étape '+infosEtape(p).nom;
+      if(b.getAttribute('aria-label')!==lab) b.setAttribute('aria-label',lab);
+    }
   });
 }
 /* Replie les étapes faites. JAMAIS au moment de la validation :

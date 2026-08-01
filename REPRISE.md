@@ -171,6 +171,13 @@ Chacun a coûté du temps le 01/08. Ils sont documentés en détail dans
   tirets cadratins deviennent des guillemets et cassent le script, avec un
   message désignant une ligne sans rapport. `verifier.mjs` le contrôle
   désormais.
+- 🔴 **Un `MutationObserver` surveille les classes des étapes.** Il rappelle
+  `majBarre()` → `majLignes()` à chaque changement. Une écriture de classe
+  inconditionnelle dans ce chemin **fige la page au chargement** — c'est
+  arrivé le 01/08, l'onglet tournait en boucle. Toujours vérifier qu'une
+  valeur change avant de l'écrire. Le test `t-mutation` (vraie page +
+  observateur réel) l'attrape ; les tests unitaires, non — ils n'ont pas
+  d'observateur.
 - **Toutes les étapes n'ont pas le même gabarit** : les encadrés spéciaux
   (`.france-box`) portent leur titre dans `.fl`, pas `.step-title`.
 
