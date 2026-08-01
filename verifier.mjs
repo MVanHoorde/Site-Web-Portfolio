@@ -277,6 +277,43 @@ try {
   notes.push("assets/js/questions-snt.js absent ou illisible — lancer : node generer-questions.mjs");
 }
 
+/* ---------- Versions d'assets synchronisées ----------
+   Le paramètre ?v=N force le rechargement après modification. Si une
+   page reste en arrière, elle sert une version périmée depuis le cache
+   du navigateur — et le défaut est invisible en local, où le cache est
+   souvent vide. Constaté le 01/08/2026 : pages/2nde-snt.html était
+   resté en ?v=19 alors que les séquences étaient en ?v=28.
+   BLOQUANT : une page qui charge un CSS d'une autre époque est un bug
+   d'affichage garanti chez l'élève. */
+try {
+  const versions = new Map();
+  for (const f of readdirSync("pages").filter((n) => n.endsWith(".html"))) {
+    const html = readFileSync("pages/" + f, "utf8");
+    for (const m of html.matchAll(/(sequence-snt\.(?:css|js))\?v=(\d+)/g)) {
+      if (!versions.has(m[1])) versions.set(m[1], new Map());
+      const par = versions.get(m[1]);
+      if (!par.has(m[2])) par.set(m[2], []);
+      par.get(m[2]).push(f);
+    }
+  }
+  let ecart = false;
+  for (const [asset, par] of versions) {
+    if (par.size > 1) {
+      ecart = true;
+      const detail = [...par.entries()]
+        .map(([v, fs]) => `v=${v} (${fs.join(", ")})`).join(" · ");
+      ko("versions d'assets désynchronisées", `${asset} — ${detail}`);
+    }
+  }
+  if (!ecart && versions.size) {
+    const resume = [...versions.entries()]
+      .map(([a, p]) => `${a}?v=${[...p.keys()][0]}`).join(" · ");
+    notes.push("versions d'assets — alignées : " + resume);
+  }
+} catch (e) {
+  notes.push("contrôle des versions non effectué : " + e.message);
+}
+
 /* ---------- Biais de longueur dans les QCM ----------
    Défaut classique et sournois : la bonne réponse est plus longue que
    les autres, parce qu'on y met la nuance et la justification. L'élève

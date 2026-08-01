@@ -680,7 +680,23 @@
      réel le 01/08/2026). On ne replie JAMAIS l'étape courante non
      terminée : refermer ce sur quoi on travaille n'a pas de sens et
      donnerait l'impression d'un bug. */
-  document.querySelectorAll('.step .step-title').forEach(function(t){
+  /* Toutes les étapes n'ont pas de .step-title : les encadrés
+     spéciaux (.france-box « Fierté française », bonus) portent leur
+     titre dans .fl ou h4. Ne viser que .step-title laissait ces
+     étapes impossibles à replier — signalé sur l'étape 1.5 le
+     01/08/2026. On prend le premier titre disponible, quel que soit
+     le gabarit de la carte. */
+  document.querySelectorAll('.step').forEach(function(st){
+    var t = st.querySelector('.step-title')
+         || st.querySelector('.france-box > .fl')
+         || st.querySelector('.bonus-head')
+         || st.querySelector('.france-box > h4');
+    if(!t || t.dataset.replieCable) return;
+    t.dataset.replieCable='1';
+    t.classList.add('titre-repliable');
+    monterRepli(t);
+  });
+  function monterRepli(t){
     t.setAttribute('role','button');
     t.setAttribute('tabindex','0');
     var basculer=function(){
@@ -696,7 +712,7 @@
     t.addEventListener('keydown',function(e){
       if(e.key==='Enter'||e.key===' '){ e.preventDefault(); basculer(); }
     });
-  });
+  }
 
   /* ---------- Aller aux corrections ----------
      Placée ICI, dans le même IIFE que la pastille : définie plus bas
@@ -740,7 +756,16 @@
   _corrIndex=(_corrIndex+1)%l.length;
   var st=cible.closest('.step');
   if(st) st.classList.remove('replie');
-  cible.scrollIntoView({behavior:'smooth',block:'start'});
+  /* même temporisation que defilerVers (défini plus bas, hors de ce
+     module) : on vient de déplier l'étape, la page n'a pas encore été
+     recalculée. Sans cette attente, on arrive trop bas. */
+  if(window.requestAnimationFrame){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        cible.scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    });
+  } else cible.scrollIntoView({behavior:'smooth',block:'start'});
   cible.classList.add('surligne');
   setTimeout(function(){ cible.classList.remove('surligne'); },2200);
 }
@@ -1243,6 +1268,26 @@ function seuil(mot){
   return mot.length<=7?1:2;
 }
 
+/* ---------- Défiler vers un élément, après recalcul de la page ----------
+   Piège rencontré le 01/08/2026 : scrollIntoView() appelé JUSTE après
+   avoir démasqué une étape visait sa position d'AVANT — l'étape était
+   encore à hauteur nulle, et replierFaites() venait en plus de
+   raccourcir la page au-dessus. Résultat : on arrivait trop bas, le
+   haut du cadre passait sous la barre.
+   Deux frames d'attente : la première laisse le navigateur appliquer
+   les changements de classe, la seconde le laisse recalculer la mise
+   en page. Le décalage sous la barre, lui, vient de scroll-margin-top
+   (CSS) — on ne le recalcule pas ici, sinon il y aurait deux vérités. */
+function defilerVers(el, doux){
+  if(!el) return;
+  var aller=function(){
+    el.scrollIntoView({behavior: doux===false ? 'auto' : 'smooth', block:'start'});
+  };
+  if(window.requestAnimationFrame){
+    requestAnimationFrame(function(){ requestAnimationFrame(aller); });
+  } else setTimeout(aller,60);
+}
+
 /* Le bouton « Étape suivante » se place sous la DERNIÈRE ÉTAPE
    RÉVÉLÉE, pas en bas de la séance. Tant que les étapes à venir
    étaient en display:none, les deux revenaient au même ; depuis
@@ -1274,7 +1319,7 @@ function initReveal(){
       if(!cache.length) return;
       replierFaites(sec);          /* on passe à la suite : le fait se replie */
       cache[0].classList.remove('masque');
-      cache[0].scrollIntoView({behavior:'smooth',block:'start'});
+      defilerVers(cache[0]);
       placerBoutonSuivant(sec);
       majBarre();
     });
@@ -1557,7 +1602,7 @@ function hubReprise(){
      bloquant ne veut pas dire piégé. */
   $('.hr-go',m).addEventListener('click',function(){
     fermer();
-    courant.scrollIntoView({behavior:'smooth',block:'start'});
+    defilerVers(courant);
   });
   $('.hr-go',m).focus();
 
@@ -1721,7 +1766,7 @@ function initLignes(){
       if(p.classList.contains('masque')) return;
       p.classList.remove('replie');
       majLignes();
-      p.scrollIntoView({behavior:'smooth',block:'start'});
+      defilerVers(p);
     });
   });
   majLignes();
@@ -1729,8 +1774,16 @@ function initLignes(){
 function majLignes(){
   $$('.step').forEach(function(p){
     var e=$('.sl-etat',p); if(!e) return;
+    /* Trois états et non deux : « rendu, pas encore relu » doit se
+       lire ICI aussi, pas seulement sur la pastille de l'étape.
+       Sans cela, la colonne de gauche affiche « validée » alors que
+       le professeur n'a rien lu — signalé en test réel le 01/08. */
+    e.classList.remove('att');
     if(p.classList.contains('masque'))       e.textContent='à venir';
     else if(p.classList.contains('is-wait')) e.textContent='en attente de correction';
+    else if(p.classList.contains('attente-corr')){
+      e.textContent='rendu · en attente'; e.classList.add('att');
+    }
     else if(p.classList.contains('is-done')) e.textContent='validée';
     else e.textContent='';
     var b=$('.step-ligne',p);
@@ -2767,7 +2820,7 @@ function restaurer(){
        Et on veut voir le titre en arrivant : centrer plaçait le nom
        de l'étape hors champ vers le haut, ce qui était précisément
        le défaut signalé. */
-    if(courant) courant.scrollIntoView({behavior:'auto',block:'start'});
+    defilerVers(courant, false);
   });
 }
 
@@ -2926,7 +2979,7 @@ document.querySelectorAll('[data-tri-correction]').forEach(function(btn){
     var suite=champ.querySelector('.tri-suite'); if(suite) suite.hidden=false;
     btn.hidden=true;
     var bI=champ.querySelector('[data-tri-indice]'); if(bI) bI.hidden=true;
-    if(suite) suite.scrollIntoView({behavior:'smooth',block:'start'});
+    if(suite) defilerVers(suite);
   });
 });
 })();

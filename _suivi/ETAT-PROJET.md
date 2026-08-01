@@ -10,6 +10,11 @@
 
 ---
 
+
+> 🔗 **Pour reprendre une session interrompue, lire `REPRISE.md` à la racine.**
+> Il contient l'état au 01/08/2026, les bugs connus non corrigés, les décisions
+> en attente et les pièges rencontrés.
+
 ## Où on en est
 
 | Partie | État |

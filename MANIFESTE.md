@@ -1,5 +1,11 @@
 # Manifeste — par où entrer dans ce projet
 
+> ## ⚡ Reprise d'une session en cours
+>
+> Si tu reprends le travail après une interruption, **ouvre `REPRISE.md`
+> avant tout le reste** : il dit où on en est, ce qui reste ouvert, les bugs
+> connus non corrigés, et les pièges à ne pas réintroduire. (~2 500 tokens)
+
 > **À lire en premier, avant `CLAUDE.md`.** Ce fichier ne contient aucune règle :
 > il dit seulement **quel fichier ouvrir pour quelle tâche**, et ce que ça coûte.
 >
@@ -12,6 +18,7 @@
 
 | Je veux… | J'ouvre | ~tokens |
 |---|---|---|
+| **reprendre après une interruption** | `REPRISE.md` | 2 500 |
 | **savoir où on en est** | `_suivi/ETAT-PROJET.md` | 1 500 |
 | savoir *pourquoi* c'est comme ça | `_suivi/DECISIONS.md` | 3 000 |
 | retrouver ce qui s'est passé | `_suivi/JOURNAL.md` | *ne pas lire par défaut* |

@@ -116,11 +116,14 @@
   /* Titre d'étape repliable. La classe .replie existait déjà (voir
      plus bas) mais rien ne l'activait : on pouvait déplier une étape,
      jamais la refermer. Signalé en test réel le 01/08/2026. */
-  .step .step-title{cursor:pointer;position:relative;padding-right:22px}
-  .step .step-title::after{content:'\25BE';position:absolute;right:0;top:1px;
+  .step .titre-repliable{cursor:pointer;position:relative;padding-right:22px}
+  .step .titre-repliable::after{content:'\25BE';position:absolute;right:0;top:1px;
     font-size:12px;color:var(--ink-faint);transition:transform .18s}
-  .step.replie .step-title::after{transform:rotate(-90deg)}
-  .step .step-title:hover::after{color:var(--ink)}
+  .step.replie .titre-repliable::after{transform:rotate(-90deg)}
+  .step .titre-repliable:hover::after{color:var(--ink)}
+  /* les encadrés spéciaux (.france-box, bonus) n'ont pas de .step-title :
+     leur bandeau .fl fait office de titre et doit rester lisible */
+  .step .france-box > .fl.titre-repliable{padding-right:26px}
 
   .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
   .card-top{padding:16px 18px 4px}
@@ -525,6 +528,10 @@
 @media screen{
   .step.masque > :not(.rail):not(.step-pip):not(.step-ligne),
   .step.replie > :not(.rail):not(.step-pip):not(.step-ligne){display:none}
+  /* l'encadré spécial reste visible, seul son CONTENU se replie :
+     sinon on masquerait aussi le titre sur lequel on vient de cliquer */
+  .step.replie > .france-box{display:block}
+  .step.replie > .france-box > :not(.fl){display:none}
 }
 .step-ligne{display:none;width:100%;text-align:left;align-items:center;gap:10px;min-height:44px;
      background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 13px;
@@ -537,6 +544,11 @@
 .sl-titre{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sl-etat{font-size:12px;flex:none;color:var(--ok)}
 .step.is-wait .sl-etat{color:var(--wait)}
+/* rendu mais pas encore relu : même code visuel que la pastille de
+   l'étape — pointillés et vert atténué, jamais le vert plein. */
+.sl-etat.att{color:var(--ok);opacity:.8}
+.sl-etat.att::before{content:'';display:inline-block;width:9px;height:9px;
+  border:1.5px dashed var(--ok);border-radius:50%;margin-right:5px;vertical-align:0}
 .step.masque .sl-etat{color:var(--ink-faint)}
 .sl-chev{flex:none;color:var(--ink-faint);font-size:11px}
 .step.masque .sl-chev{display:none}
