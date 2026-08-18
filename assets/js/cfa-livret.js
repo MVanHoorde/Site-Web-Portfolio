@@ -174,6 +174,54 @@
 
 
   /* ----------------------------------------------------------
+     4. Le compteur de l'index
+     ----------------------------------------------------------
+     « 7 outils sur 17 travaillés ». Il compte les clés cfa-oNN posées
+     par le marqueur de chaque fiche.
+
+     Ce compteur produit plus d'effet chez ce public qu'une note, et il
+     ne coûte rien à la souveraineté du professeur sur l'évaluation :
+     il dit ce qui a été parcouru, jamais ce qui a été réussi. Un élève
+     ne peut pas y échouer.
+
+     Le décompte se refait à chaque affichage de la page, y compris au
+     retour par le bouton « précédent » du navigateur — d'où l'écoute
+     de pageshow, que le seul DOMContentLoaded manquerait.
+     ---------------------------------------------------------- */
+  var TOTAL_OUTILS = 17;
+
+  function majCompteur() {
+    var zone = document.getElementById('compteur');
+    if (!zone) { return; }
+
+    var faits = 0;
+    for (var n = 0; n < TOTAL_OUTILS; n++) {
+      var num = (n < 10 ? '0' : '') + n;
+      if (lire('cfa-o' + num) === '1') { faits++; }
+    }
+
+    var nombre = zone.querySelector('.compteur-nombre');
+    var texte = zone.querySelector('.compteur-texte');
+    if (nombre) { nombre.textContent = faits; }
+    if (texte) {
+      texte.textContent = faits <= 1
+        ? 'outil sur ' + TOTAL_OUTILS + ' travaillé'
+        : 'outils sur ' + TOTAL_OUTILS + ' travaillés';
+    }
+
+    var jauge = zone.querySelector('.jauge-fait');
+    if (jauge) { jauge.style.width = (faits / TOTAL_OUTILS * 100) + '%'; }
+
+    // Marque les entrées déjà travaillées dans la liste des outils.
+    var entrees = document.querySelectorAll('.outil[data-outil]');
+    Array.prototype.forEach.call(entrees, function (entree) {
+      var fait = lire('cfa-o' + entree.dataset.outil) === '1';
+      entree.classList.toggle('fait', fait);
+    });
+  }
+
+
+  /* ----------------------------------------------------------
      Mise en route
      ---------------------------------------------------------- */
   function demarrer() {
@@ -207,6 +255,7 @@
     });
 
     poserMarqueur();
+    majCompteur();
   }
 
   if (document.readyState === 'loading') {
@@ -214,4 +263,9 @@
   } else {
     demarrer();
   }
+
+  // Retour à l'index par le bouton « précédent » : la page peut être
+  // restituée depuis le cache sans rejouer DOMContentLoaded. Sans cela,
+  // l'élève qui vient de cocher une fiche retrouverait l'ancien compte.
+  window.addEventListener('pageshow', majCompteur);
 })();

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livret de remise à niveau — Espace CFA</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=4">
+<style>
+  /* ============================================================
+     Propre à l'index : l'en-tête au logo, le compteur, et la liste
+     des dix-sept outils groupés par bloc.
+     ============================================================ */
+
+  .entete-livret {
+    display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .entete-livret .logo-etab { height: 4.5rem; }
+  .entete-livret .titres { flex: 1 1 20rem; min-width: 0; }
+
+  /* Le compteur. Il dit ce qui a été PARCOURU, jamais ce qui a été
+     réussi — un élève ne peut pas y échouer. C'est ce qui le rend
+     utilisable avec ce public, là où une note découragerait. */
+  .compteur-bloc {
+    border: 1px solid var(--filet-fonce); background: var(--papier);
+    padding: 1.1rem 1.3rem; margin: 1.5rem 0 2rem; max-width: 44ch;
+  }
+  .compteur-chiffre {
+    display: flex; align-items: baseline; gap: .5rem;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .compteur-nombre {
+    font-family: 'EB Garamond', Garamond, Georgia, serif;
+    font-size: 2.4rem; line-height: 1; color: var(--h-alpha);
+  }
+  .compteur-texte { font-size: .82rem; color: var(--encre-douce); }
+  /* Jauge : un simple filet plein, sans arrondi ni dégradé. */
+  .jauge { height: 6px; background: var(--grille); margin-top: .8rem; }
+  .jauge-fait { height: 100%; width: 0%; background: var(--h-alpha); transition: width .25s; }
+  .compteur-bloc .note-compteur {
+    font-family: 'IBM Plex Mono', monospace; font-size: .68rem;
+    color: var(--sepia); margin: .7rem 0 0; max-width: none;
+  }
+
+  /* Les blocs de la progression */
+  h2.bloc { margin-top: 2.6rem; }
+  h2.bloc .etiquette-bloc {
+    display: block; font-family: 'IBM Plex Mono', monospace; font-size: .68rem;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--sepia);
+    font-weight: 400; margin-bottom: .2rem;
+  }
+
+  /* Une entrée d'outil */
+  .outil {
+    display: grid; grid-template-columns: 3.2rem 1fr auto; gap: 1rem;
+    align-items: baseline; padding: .75rem .9rem;
+    border-bottom: 1px dashed var(--filet);
+  }
+  .outil:last-child { border-bottom: none; }
+  .outil:hover { background: var(--papier); }
+  .outil .num {
+    font-family: 'IBM Plex Mono', monospace; font-size: .78rem;
+    color: var(--sepia); letter-spacing: .08em;
+  }
+  .outil .titre a {
+    color: var(--encre); text-decoration: none;
+    border-bottom: 1px solid var(--h-alpha); padding-bottom: 1px;
+  }
+  .outil .titre a:hover { color: var(--h-alpha); }
+  .outil .titre a:focus-visible { outline: 2px solid var(--h-alpha); outline-offset: 3px; }
+  .outil .poids { font-size: .72rem; }
+  .outil .poids .carres i { width: .6rem; height: .6rem; }
+
+  /* Une fiche déjà travaillée. Marquée par un signe ET par la couleur :
+     jamais par la couleur seule. */
+  .outil.fait .num::before {
+    content: "✓ "; color: var(--h-alpha); font-weight: 600;
+  }
+  .outil.fait .titre a { color: var(--sepia); }
+
+  @media (max-width: 700px) {
+    .outil { grid-template-columns: 3rem 1fr; }
+    .outil .poids { grid-column: 2; margin-top: .2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cote" aria-hidden="true"><span class="cote-ligne"><i></i><i></i><i></i></span></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Livret CFA <span>·</span> Remise à niveau</div>
+    <a class="retour" href="../index.html">← Retour à l'accueil</a>
+  </div>
+</nav>
+
+<div class="page">
+<article class="lecture">
+
+  <div class="entete-livret">
+    <!-- Version couleur AVEC baseline, réservée à cette page.
+         Le logo ne se retouche jamais, et n'est pas une source de
+         palette : les couleurs du livret restent celles de style.css. -->
+    <img class="logo-etab" src="../assets/img/cfa/logo-isaac-baseline.png"
+         alt="Lycée Isaac de l'Étoile — faire briller les talents">
+    <div class="titres">
+      <p class="fil-ariane">Espace CFA · <span class="niveau">BTS MMCM &amp; bac pro MVTR</span></p>
+      <h1>Dix-sept outils pour reprendre pied</h1>
+    </div>
+  </div>
+
+  <p>Ce livret rassemble les gestes mathématiques qui reviennent le plus souvent
+  dans les deux diplômes. Chaque fiche tient en un recto-verso, s'attaque sans
+  préparation, et commence par un palier où personne ne peut échouer.</p>
+
+  <p>Chacune se travaille en trois temps : <strong>guidé</strong>, où le calcul est déjà
+  commencé, <strong>en autonomie</strong>, puis <strong>en situation</strong>. Chacun avance
+  jusqu'où il tient, fiche par fiche. Il n'y a rien à annoncer à personne.</p>
+
+
+  <!-- Le compteur. Aucun compte, aucun envoi : une clé par outil dans le
+       navigateur de l'élève, et rien d'autre. -->
+  <div class="compteur-bloc" id="compteur">
+    <p class="compteur-chiffre">
+      <span class="compteur-nombre">0</span>
+      <span class="compteur-texte">outil sur 17 travaillé</span>
+    </p>
+    <div class="jauge" aria-hidden="true"><div class="jauge-fait"></div></div>
+    <p class="note-compteur">Ce compte reste sur cet appareil. Rien n'est envoyé,
+    ni à ton professeur, ni à personne d'autre.</p>
+  </div>
+
+  <div class="encart definition">
+    <div class="etq">Ce que veulent dire les carrés</div>
+    <p>Les carrés noirs devant chaque fiche disent à quelle fréquence l'outil est
+    tombé sur les <strong>dix dernières sessions de l'épreuve E4 du BTS</strong>.
+    Trois carrés : présent à chaque fois. Un seul : rare.</p>
+    <p>Une fiche à un seul carré n'est pas une fiche inutile. C'est souvent celle
+    qui en débloque deux autres — chacune le dit quand c'est le cas.</p>
+  </div>
+
+
+  <h2 class="bloc"><span class="etiquette-bloc">Fiche d'ouverture</span>Avant tout le reste</h2>
+
+  <div class="outil" data-outil="00">
+    <span class="num">00</span>
+    <span class="titre"><a href="outil-00-rediger-un-calcul.html">Rédiger un calcul qui rapporte des points</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span></span>
+  </div>
+
+
+  <h2 class="bloc"><span class="etiquette-bloc">Bloc A</span>Nombres, unités, grandeurs</h2>
+
+  <div class="outil" data-outil="01">
+    <span class="num">01</span>
+    <span class="titre"><a href="outil-01-conversions-unites.html">Conversions d'unités et puissances de dix</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span></span>
+  </div>
+  <div class="outil" data-outil="02">
+    <span class="num">02</span>
+    <span class="titre"><a href="outil-02-unites-de-pression.html">Les unités de pression</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span></span>
+  </div>
+  <div class="outil" data-outil="03">
+    <span class="num">03</span>
+    <span class="titre"><a href="outil-03-vitesses-rotation.html">Vitesses et fréquences de rotation</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span></span>
+  </div>
+  <div class="outil" data-outil="04">
+    <span class="num">04</span>
+    <span class="titre"><a href="outil-04-pourcentages.html">Pourcentages</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span></span>
+  </div>
+  <div class="outil" data-outil="05">
+    <span class="num">05</span>
+    <span class="titre"><a href="outil-05-proportionnalite-echelles.html">Proportionnalité, produit en croix et échelles</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span></span>
+  </div>
+  <div class="outil" data-outil="06">
+    <span class="num">06</span>
+    <span class="titre"><a href="outil-06-ordres-de-grandeur.html">Ordres de grandeur, arrondis, « montrer que ≈ »</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span></span>
+  </div>
+
+
+  <h2 class="bloc"><span class="etiquette-bloc">Bloc B</span>Calcul littéral</h2>
+
+  <div class="outil" data-outil="07">
+    <span class="num">07</span>
+    <span class="titre"><a href="outil-07-isoler-une-inconnue.html">Isoler une inconnue dans une formule</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span></span>
+  </div>
+  <div class="outil" data-outil="08">
+    <span class="num">08</span>
+    <span class="titre"><a href="outil-08-enchainer-des-formules.html">Enchaîner plusieurs formules</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span></span>
+  </div>
+
+
+  <h2 class="bloc"><span class="etiquette-bloc">Bloc C</span>Géométrie</h2>
+
+  <div class="outil" data-outil="09">
+    <span class="num">09</span>
+    <span class="titre"><a href="outil-09-aires-et-volumes.html">Aires et volumes utiles</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span></span>
+  </div>
+  <div class="outil" data-outil="10">
+    <span class="num">10</span>
+    <span class="titre"><a href="outil-10-pythagore.html">Pythagore et distances</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i></i><i></i></span></span>
+  </div>
+  <div class="outil" data-outil="11">
+    <span class="num">11</span>
+    <span class="titre"><a href="outil-11-trigonometrie.html">Trigonométrie dans le triangle rectangle</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i></i></span></span>
+  </div>
+  <div class="outil" data-outil="12">
+    <span class="num">12</span>
+    <span class="titre"><a href="outil-12-pentes-et-angles.html">Angles, pentes et inclinaisons</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i></i></span></span>
+  </div>
+  <div class="outil" data-outil="13">
+    <span class="num">13</span>
+    <span class="titre"><a href="outil-13-arcs-et-radians.html">Arc de cercle, tours et radians</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i></i></span></span>
+  </div>
+
+
+  <h2 class="bloc"><span class="etiquette-bloc">Bloc D</span>Vecteurs</h2>
+
+  <div class="outil" data-outil="14">
+    <span class="num">14</span>
+    <span class="titre"><a href="outil-14-lire-un-vecteur.html">Lire un vecteur</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i></i></span></span>
+  </div>
+  <div class="outil" data-outil="15">
+    <span class="num">15</span>
+    <span class="titre"><a href="outil-15-additionner-des-vecteurs.html">Additionner des vecteurs</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i></i><i></i></span></span>
+  </div>
+  <div class="outil" data-outil="16">
+    <span class="num">16</span>
+    <span class="titre"><a href="outil-16-projeter-une-force.html">Projeter une force sur deux axes</a></span>
+    <span class="poids"><span class="carres" aria-hidden="true"><i class="plein"></i><i></i><i></i></span></span>
+  </div>
+
+
+  <div class="encart exemple" style="margin-top:2.6rem;">
+    <div class="etq">Un mot sur les copies</div>
+    <p>Un calcul posé proprement et faux rapporte une part importante des points.
+    Une bonne réponse jetée sans détail en perd une part équivalente.
+    La seule copie qui ne rapporte rien est la copie vide.</p>
+    <p>C'est tout l'objet de la fiche d'ouverture, et c'est vrai pour les seize autres.</p>
+  </div>
+
+</article>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    Livret transversal de remise à niveau · M. Van Hoorde — CFA, lycée Isaac de l'Étoile
+  </div>
+</footer>
+
+<script src="../assets/js/cfa-livret.js?v=2" defer></script>
+
+</body>
+</html>
