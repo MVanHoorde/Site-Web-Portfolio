@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche-outil NN — TITRE · Livret CFA</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+/* ============================================================
+   GABARIT — FICHE A4 RECTO-VERSO D'UNE FICHE-OUTIL CFA  (v1)
+
+   Se copie dans  fiches/cfa/fiche-outil-NN.html  puis se remplit.
+   Depuis cette destination, le chemin des polices devient
+   ../../assets/css/fonts.css  — à corriger à la copie, comme les
+   chemins d'images. Ici il est écrit pour _modeles/.
+
+   Dérive de _modeles/gabarit-fiche.html, dont il conserve les règles
+   @page et le principe « une .feuille = une page A4 exacte ».
+
+   ⚠ EXACTEMENT DEUX PAGES. Une fiche qui déborde sur une troisième
+   page est un bug, pas un dépassement acceptable. Si ça ne tient pas,
+   on coupe dans les énoncés — jamais on n'ajoute une feuille.
+
+   ⚠ CETTE FICHE EST LE FORMAT DE RÉFÉRENCE. Elle doit être utilisable
+   imprimée, sans exception : aucun contenu derrière un lien ou un QR
+   code. Le public MVTR n'a pas le droit au téléphone en séance.
+   Réciproquement, si la page écran affiche quelque chose que cette
+   fiche n'a pas, c'est une erreur.
+
+   ⚠ AUCUN CORRIGÉ. Les corrigés vivent dans _corriges-cfa/, hors dépôt.
+
+   Feuille de style autonome, comme le gabarit de fiche PC : une fiche
+   A4 se dimensionne en millimètres et ne partage rien d'utile avec
+   cfa-commun.css, qui raisonne en rem pour l'écran. Les COULEURS, en
+   revanche, sont les mêmes — celles de style.css, recopiées ci-dessous
+   à l'identique.
+   ============================================================ */
+
+:root {
+  --encre: #2b2118;
+  --encre-douce: #5a4c3a;
+  --papier: #f3f1ea;
+  --grille: #e7e3d6;
+  --sepia: #8a7c62;
+  --filet: #d8cfba;
+  --filet-fonce: #cdc2a8;
+  --pointille: #b7a988;
+  --h-alpha: #8f2d2b;
+  --h-beta: #2f6b70;
+  --h-gamma: #5f4b73;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: #9aa0ab; }
+body {
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  color: var(--encre); font-size: 10.5pt; line-height: 1.45;
+}
+
+.feuille {
+  width: 210mm; min-height: 297mm; margin: 8mm auto; padding: 10mm 13mm 14mm;
+  background: var(--papier); position: relative;
+  border: 1px solid var(--filet-fonce);
+  display: flex; flex-direction: column;
+}
+
+@page { size: A4; margin: 0; }
+
+@media print {
+  html, body { background: #fff; }
+  .feuille {
+    margin: 0; border: none; height: 296mm; min-height: 0; overflow: hidden;
+    page-break-after: always; background: #fff;
+  }
+  .feuille:last-child { page-break-after: auto; }
+  /* Fond blanc pur : le papier crème est réservé à l'écran.
+     Économie d'encre — ces fiches se photocopient par centaines. */
+  .encart, .formule-s, .palier, .figure-a-produire, table.t th { background: #fff; }
+}
+
+/* ---- Bande signature : la ligne de cote (voir cfa-commun.css §2) ---- */
+.cote { position: relative; height: 1.6mm; margin: 2mm 0 3mm; }
+.cote::before, .cote::after {
+  content: ""; position: absolute; top: -1.8mm; bottom: -1.8mm;
+  width: .4mm; background: var(--encre);
+}
+.cote::before { left: 0; }
+.cote::after  { right: 0; }
+.cote-ligne {
+  position: absolute; inset: 0; background: var(--encre);
+  clip-path: polygon(0 50%, 3mm 0, calc(100% - 3mm) 0, 100% 50%, calc(100% - 3mm) 100%, 3mm 100%);
+}
+.cote-ligne i { position: absolute; top: 0; bottom: 0; width: 1mm; }
+.cote-ligne i:nth-child(1) { left: 18%; background: var(--h-gamma); }
+.cote-ligne i:nth-child(2) { left: 31%; background: var(--h-beta); }
+.cote-ligne i:nth-child(3) { left: 76%; background: var(--h-alpha); }
+
+/* ---- En-tête : UNE ligne, pas deux ---- */
+.entete {
+  display: flex; align-items: baseline; gap: 4mm; margin-bottom: 2.5mm;
+}
+.entete .titre { flex: 1; min-width: 0; }
+h1 { font-size: 14pt; font-weight: 500; line-height: 1.15; }
+h1 .num {
+  font-family: 'IBM Plex Mono', monospace; font-size: 9pt;
+  color: var(--h-alpha); display: block; letter-spacing: .1em;
+  text-transform: uppercase; margin-bottom: .5mm;
+}
+.logo-etab { height: 9mm; width: auto; align-self: center; }
+
+/* ---- Badge de poids : carrés, jamais couleur (photocopie N&B) ---- */
+.poids {
+  display: flex; align-items: center; gap: 2mm;
+  font-family: 'IBM Plex Mono', monospace; font-size: 7.6pt;
+  margin-bottom: 3mm; padding-bottom: 1.5mm;
+  border-bottom: 1px dotted var(--pointille);
+}
+.poids .carres { display: inline-flex; gap: .7mm; }
+.poids .carres i {
+  width: 2.4mm; height: 2.4mm; display: block;
+  border: .35mm solid var(--encre); background: transparent;
+}
+.poids .carres i.plein { background: var(--encre); }
+.poids b { letter-spacing: .1em; text-transform: uppercase; }
+.poids .compte { color: var(--sepia); }
+.poids-contrepoids {
+  border-left: .5mm solid var(--h-gamma); padding-left: 2.5mm;
+  margin: -1.5mm 0 3mm; font-size: 9pt; color: var(--encre-douce);
+}
+.poids-contrepoids .etq {
+  font-family: 'IBM Plex Mono', monospace; font-size: 6.8pt;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--h-gamma); display: block;
+}
+
+/* ---- Titres de bloc ---- */
+h2 {
+  font-size: 11pt; font-weight: 500; margin: 3.5mm 0 1.5mm;
+  padding-bottom: 1mm; border-bottom: .6mm solid var(--encre);
+  display: flex; align-items: baseline; gap: 2.5mm;
+}
+h2:first-of-type { margin-top: 0; }
+
+p { margin-bottom: 1.4mm; }
+sub, sup { font-size: .68em; }
+.unites { font-family: 'IBM Plex Mono', monospace; font-size: 7.6pt; color: var(--sepia); font-style: normal; }
+.mini { font-family: 'IBM Plex Mono', monospace; font-size: 7.3pt; color: var(--sepia); }
+
+/* ---- Encart générique ---- */
+.encart {
+  border: .3mm solid var(--filet-fonce); background: #fff;
+  padding: 2mm 3mm; margin: 2mm 0;
+}
+.encart .etq {
+  font-family: 'IBM Plex Mono', monospace; font-size: 7.3pt;
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1mm;
+}
+.encart p:last-child { margin-bottom: 0; }
+.exemple { border-left: .8mm solid var(--sepia); }
+.exemple .etq { color: var(--sepia); }
+
+/* ---- Cadre formule : la règle, quatre lignes MAXIMUM ---- */
+.formule-s {
+  border: .3mm solid var(--encre); display: grid; grid-template-columns: 1fr 1.15fr;
+  margin: 2mm 0 2.5mm; background: #fff;
+}
+.formule-s .eq {
+  font-style: italic; font-size: 13pt;
+  display: flex; align-items: center; justify-content: center;
+  padding: 3mm; border-right: .3mm solid var(--filet);
+}
+.formule-s .eq sub, .formule-s .eq sup {
+  font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: .55em;
+}
+.formule-s .grandeurs {
+  padding: 2mm 3mm; font-family: 'IBM Plex Mono', monospace;
+  font-size: 7.8pt; line-height: 1.85;
+}
+.formule-s .grandeurs b { color: var(--h-gamma); }
+.formule-s .grandeurs .etq {
+  font-size: 7pt; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--sepia); display: block; margin-bottom: .8mm;
+}
+
+/* ---- Exemple résolu : les cinq règles de rédaction ---- */
+.etape {
+  font-family: 'IBM Plex Mono', monospace; font-size: 6.8pt; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--h-gamma); margin: 1.8mm 0 .5mm;
+  display: flex; align-items: center; gap: 1.5mm;
+}
+.etape::after { content: ""; flex: 1; border-top: .2mm dotted var(--pointille); }
+.eq-exo { font-style: italic; font-size: 11pt; margin: .8mm 0 .8mm 3mm; }
+.eq-exo sub, .eq-exo sup {
+  font-size: .6em; font-style: normal; font-family: 'IBM Plex Mono', monospace;
+}
+.resultat { border: .35mm solid var(--h-alpha); font-weight: 600; padding: .2mm 1.2mm; white-space: nowrap; }
+.frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 .25em; }
+.frac .haut { display: block; border-bottom: .3mm solid currentColor; padding: 0 .3em .1em; }
+.frac .bas  { display: block; padding: .1em .3em 0; }
+
+/* ---- Les trois paliers ---- */
+.palier {
+  border: .3mm solid var(--filet-fonce); border-left: .8mm solid var(--filet-fonce);
+  background: #fff; padding: 2.2mm 3mm; margin: 2.5mm 0;
+}
+.palier-tete {
+  display: flex; align-items: baseline; gap: 2.5mm;
+  font-family: 'IBM Plex Mono', monospace; font-size: 7.3pt;
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 1.8mm; padding-bottom: 1mm;
+  border-bottom: .2mm dotted var(--pointille);
+}
+.palier-tete .n { font-weight: 600; }
+.palier-tete .mode { color: var(--encre-douce); letter-spacing: .05em; }
+.palier-tete .duree { margin-left: auto; color: var(--sepia); }
+.palier-tete .marque {
+  border: .35mm solid var(--h-alpha); color: var(--h-alpha);
+  padding: .2mm 1.2mm; font-weight: 600; letter-spacing: .14em;
+}
+.palier p:last-child { margin-bottom: 0; }
+.palier-1 { border-left-color: var(--h-beta); }
+.palier-1 .palier-tete .n { color: var(--h-beta); }
+.palier-2 { border-left-color: var(--h-gamma); }
+.palier-2 .palier-tete .n { color: var(--h-gamma); }
+.palier-3 { border-left-color: var(--h-alpha); }
+.palier-3 .palier-tete .n { color: var(--h-alpha); }
+
+/* ---- Zones à compléter à la main ---- */
+.trou {
+  display: inline-block; border-bottom: .35mm dotted var(--encre);
+  min-width: 22mm; height: 1.05em; vertical-align: -1px;
+}
+.trou.court { min-width: 13mm; }
+.trou.long  { min-width: 44mm; }
+.ligne { display: block; border-bottom: .35mm dotted var(--encre); height: 6.4mm; }
+.calc {
+  border: .3mm dashed var(--sepia); margin-top: 1mm;
+  background: repeating-linear-gradient(to bottom, transparent, transparent 6.8mm,
+              var(--grille) 6.8mm, var(--grille) 7mm);
+}
+
+/* ---- Emplacement de figure de V2 ---- */
+.figure-a-produire {
+  border: .4mm dashed var(--pointille); padding: 2mm 2.5mm; margin: 2mm 0;
+  font-size: 9pt; font-style: italic; color: var(--encre-douce); background: #fff;
+}
+.figure-a-produire .etq {
+  display: block; font-style: normal;
+  font-family: 'IBM Plex Mono', monospace; font-size: 6.8pt;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--sepia); margin-bottom: .6mm;
+}
+
+table.t { border-collapse: collapse; width: 100%; font-size: 9pt; }
+table.t th, table.t td { border: .3mm solid var(--filet-fonce); padding: 1.2mm 2mm; text-align: center; }
+table.t th { font-family: 'IBM Plex Mono', monospace; font-size: 7.8pt; background: var(--papier); }
+td.vide { height: 10mm; }
+
+.corps { flex: 1; }
+.pied {
+  position: absolute; bottom: 6mm; left: 13mm; right: 13mm;
+  display: flex; justify-content: space-between;
+  font-family: 'IBM Plex Mono', monospace; font-size: 6.8pt; color: var(--sepia);
+  border-top: .2mm solid var(--filet); padding-top: 1.5mm;
+}
+</style>
+</head>
+<body>
+
+<!-- ================= PAGE 1/2 — RECTO =================
+     Trois blocs, dans cet ordre, sans exception :
+       en-tête · à quoi ça sert · la règle · un exemple résolu.
+     C'est le seul endroit de la fiche où l'on montre un calcul
+     complet. La méthode se montre, elle ne s'énonce pas. -->
+<div class="feuille">
+  <div class="cote" aria-hidden="true"><span class="cote-ligne"><i></i><i></i><i></i></span></div>
+
+  <div class="entete">
+    <div class="titre">
+      <h1><span class="num">Outil NN</span>TITRE DE L'OUTIL</h1>
+    </div>
+    <!-- Version COULEUR SANS BASELINE, en petit. Le logo ne se retouche
+         jamais : ni recoloré, ni redessiné, ni détouré.
+         Chemin à corriger en ../../assets/ à la copie dans fiches/cfa/. -->
+    <img class="logo-etab" src="../assets/img/cfa/logo-isaac.png"
+         alt="Lycée Isaac de l'Étoile">
+  </div>
+
+  <!-- Badge : mettre la classe  plein  sur autant de <i> que de crans.
+       ⬛⬛⬛ Incontournable 8–10 · ⬛⬛ Fréquent 4–7 · ⬛ Ponctuel 1–3.
+       Le mot « examen » n'apparaît PAS ici : il est réservé au palier 3. -->
+  <p class="poids">
+    <span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span>
+    <b>Incontournable</b><span class="compte">10 sur 10</span>
+  </p>
+
+  <!-- OBLIGATOIRE SOUS 4/10 — à supprimer entièrement au-dessus. -->
+  <div class="poids-contrepoids">
+    <span class="etq">Pourquoi elle compte quand même</span>
+    PHRASE OBLIGATOIRE reprise de la spécification. <b>Débloque</b> les outils NN et NN.
+  </div>
+
+  <div class="corps">
+
+    <h2>À quoi ça sert</h2>
+    <p>UNE PHRASE, situation concrète de déclenchement. Pas un paragraphe.</p>
+
+    <h2>La règle</h2>
+    <div class="formule-s">
+      <div class="eq">F = p × S</div>
+      <div class="grandeurs">
+        <span class="etq">Grandeurs &amp; unités</span>
+        <b>F</b> effort, en newtons (N)<br>
+        <b>p</b> pression, en pascals (Pa)<br>
+        <b>S</b> section, en mètres carrés (m²)
+      </div>
+    </div>
+
+    <h2>Un exemple entièrement résolu</h2>
+    <div class="encart exemple">
+      <div class="etq">Exemple</div>
+      <p>CONTEXTE EN UNE PHRASE.</p>
+
+      <p class="etape">1 · Les données</p>
+      <p>p = 180 <span class="unites">bar</span> · S = 19,6 <span class="unites">cm²</span></p>
+
+      <p class="etape">2 · La relation</p>
+      <p class="eq-exo">F = p × S</p>
+
+      <p class="etape">3 · Le calcul, avec les unités</p>
+      <p class="eq-exo">F = 18 000 000 <span class="unites">Pa</span> × 0,001 96 <span class="unites">m²</span></p>
+
+      <p class="etape">4 · Le résultat</p>
+      <p class="eq-exo">F = <span class="resultat">35 280 N</span></p>
+
+      <p class="etape">5 · La conclusion</p>
+      <p>PHRASE CHIFFRÉE, jamais « c'est bon » tout seul.</p>
+    </div>
+
+  </div>
+
+  <div class="pied">
+    <span>Livret CFA · Outil NN — TITRE</span>
+    <span>recto · M. Van Hoorde</span>
+  </div>
+</div>
+
+
+<!-- ================= PAGE 2/2 — VERSO =================
+     Trois paliers. Gradient triple : difficulté, contexte,
+     appartenance. Durée cible d'un passage complet : 30 min.
+     Palier 1 : deux trous, pas plus — personne ne peut échouer.
+     Palier 2 : énoncé nu, les deux métiers s'y reconnaissent.
+     Palier 3 : marqué BTS, visible ; les MVTR peuvent s'y frotter. -->
+<div class="feuille">
+  <div class="cote" aria-hidden="true"><span class="cote-ligne"><i></i><i></i><i></i></span></div>
+
+  <div class="corps">
+    <h2>À toi de jouer<span class="mini" style="margin-left:auto;font-weight:400;">Outil NN</span></h2>
+
+    <section class="palier palier-1">
+      <p class="palier-tete">
+        <span class="n">Palier 1</span><span class="mode">guidé</span><span class="duree">5 min</span>
+      </p>
+      <p>ÉNONCÉ DU QUOTIDIEN, une phrase. Chiffres ronds, contexte universel.</p>
+      <p class="eq-exo">F = <span class="trou court"></span> × 0,002 = <span class="trou court"></span> N</p>
+      <p class="mini">Conclure : <span class="trou long"></span></p>
+    </section>
+
+    <section class="palier palier-2">
+      <p class="palier-tete">
+        <span class="n">Palier 2</span><span class="mode">en autonomie</span><span class="duree">10 min</span>
+      </p>
+      <p>ÉNONCÉ NU, atelier ou véhicule générique, chiffres réels.</p>
+      <p>Calculer …. Conclure par une phrase chiffrée.</p>
+      <div class="calc" style="height:26mm;"></div>
+    </section>
+
+    <section class="palier palier-3">
+      <p class="palier-tete">
+        <span class="n">Palier 3</span><span class="mode">en situation</span>
+        <span class="marque">BTS</span><span class="duree">15 min</span>
+      </p>
+      <p>ÉNONCÉ À DEUX OU TROIS ÉTAPES, contexte engin ou documentation.</p>
+      <p>Calculer …. Comparer …. Conclure par une phrase chiffrée.</p>
+      <div class="calc" style="height:34mm;"></div>
+    </section>
+
+    <!-- Emplacement de figure — à supprimer si la fiche n'en appelle aucune.
+         Toute figure posée ici doit AUSSI être inscrite dans
+         _suivi/CFA-figures-a-produire.md. -->
+    <p class="figure-a-produire">
+      <span class="etq">Figure à produire</span>
+      DESCRIPTION EN UNE LIGNE de ce qu'il faudrait dessiner.
+    </p>
+  </div>
+
+  <div class="pied">
+    <span>Livret CFA · Outil NN — TITRE</span>
+    <span>verso · lycée Isaac de l'Étoile</span>
+  </div>
+</div>
+
+</body>
+</html>

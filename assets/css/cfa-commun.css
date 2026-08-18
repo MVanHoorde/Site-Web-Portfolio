@@ -1,0 +1,584 @@
+/* ============================================================
+   cfa-commun.css — socle partagé de la TROISIÈME famille de pages :
+   l'espace CFA (livret transversal de dix-sept fiches-outils).
+
+   USAGE — dans le <head> d'une page écran, après fonts.css :
+     <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=1">
+   Le <style> embarqué de la page ne garde QUE ce qui lui est propre.
+
+   ⚠ CACHE — DÈS QUE CE FICHIER CHANGE LE RENDU (retoucher ce commentaire
+   ne compte pas) : incrémenter le ?v=N dans TOUTES les pages qui le
+   chargent :
+     git grep -l 'cfa-commun.css' -- '*.html'
+   Sans cela l'URL ne change pas, et les navigateurs continuent de servir
+   l'ANCIENNE feuille depuis leur cache.
+
+   ------------------------------------------------------------
+   CE QUI DISTINGUE CETTE FEUILLE DE chapitre-commun.css
+   ------------------------------------------------------------
+   Elle en reprend les NOMS DE CLASSES et la structure — .encart,
+   .formule-bloc, .exercice, .methode, .etape, .frac, .unites,
+   .resultat, .eq-exo, .aparte, .checklist — mais pas son rendu.
+
+   Trois écarts, tous voulus :
+
+   1. La palette est celle de style.css (« papier d'étude », encres
+      vieillies), pas celle des chapitres de physique-chimie. Les deux
+      familles emploient les mêmes NOMS de variables avec des VALEURS
+      différentes ; aucune page ne charge les deux feuilles, donc pas
+      de conflit.
+   2. Zéro coin arrondi, zéro ombre, zéro dégradé. Un livret qui vit
+      d'abord sur papier photocopié n'a rien à faire d'un ombrage.
+   3. details.correction est ABSENT, et ne doit pas être réintroduit :
+      les corrigés du livret CFA ne sont jamais en ligne.
+
+   La bande signature de la famille est .cote — une ligne de cote de
+   dessin technique. Elle remplace .spectre, qui n'apparaît pas ici.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. PALETTE — miroir exact de style.css
+   Seul bloc du fichier où figurent des valeurs hexadécimales.
+   Toute couleur ajoutée ailleurs est un bug : elle se prend ici.
+   ------------------------------------------------------------ */
+:root {
+  --encre: #2b2118;          /* brun-noir d'encre ancienne */
+  --encre-douce: #5a4c3a;    /* texte secondaire, italiques */
+  --papier: #f3f1ea;         /* ivoire refroidi */
+  --papier-clair: #faf9f3;   /* fond des cartes et encadrés */
+  --grille: #e7e3d6;         /* quadrillage en écho très pâle */
+  --sepia: #8a7c62;          /* légendes, métadonnées */
+  --filet: #d8cfba;          /* filets horizontaux */
+  --filet-fonce: #cdc2a8;    /* cadres */
+  --pointille: #b7a988;      /* points de conduite, trous à compléter */
+  --h-alpha: #8f2d2b;        /* carmin */
+  --h-beta: #2f6b70;         /* bleu de Prusse fané */
+  --h-gamma: #5f4b73;        /* prune */
+  --gris: #8a7c62;           /* alias sépia, compatibilité */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  font-size: 1.06rem;
+  color: var(--encre);
+  background-color: var(--papier);
+  background-image:
+    linear-gradient(var(--grille) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+  background-size: 32px 32px;
+  line-height: 1.6;
+}
+
+
+/* ------------------------------------------------------------
+   2. .cote — BANDE SIGNATURE DE LA FAMILLE CFA
+   ------------------------------------------------------------
+   Même silhouette que .spectre : une bande d'encre de 6 px portant
+   trois repères d'accent à 18 %, 31 % et 76 %.
+
+   Ce qui la fait lire comme une ligne de cote de dessin technique :
+   · les deux extrémités s'effilent en pointe de flèche, obtenue en
+     RÉSERVE — deux triangles de papier retirés de la bande, pas un
+     décor ajouté ;
+   · un trait d'attache vertical à chaque extrémité, qui dépasse en
+     haut et en bas comme sur un plan coté.
+
+   HTML attendu :
+     <div class="cote" aria-hidden="true">
+       <span class="cote-ligne"><i></i><i></i><i></i></span>
+     </div>
+
+   Le conteneur .cote porte les attaches et laisse la place au
+   dépassement ; .cote-ligne porte la bande et son découpage. Cette
+   séparation est nécessaire : clip-path rogne aussi les enfants, les
+   attaches ne pourraient donc pas dépasser si tout tenait sur un
+   seul élément.
+   ------------------------------------------------------------ */
+.cote {
+  position: relative;
+  height: 6px;
+  margin: 7px 0;              /* laisse respirer les attaches */
+}
+/* les deux traits d'attache verticaux */
+.cote::before,
+.cote::after {
+  content: "";
+  position: absolute;
+  top: -7px;
+  bottom: -7px;
+  width: 1.5px;
+  background: var(--encre);
+}
+.cote::before { left: 0; }
+.cote::after  { right: 0; }
+
+.cote-ligne {
+  position: absolute;
+  inset: 0;
+  background: var(--encre);
+  /* pointes de flèche en réserve, 10 px de part et d'autre */
+  clip-path: polygon(
+    0 50%,
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 50%,
+    calc(100% - 10px) 100%,
+    10px 100%
+  );
+}
+.cote-ligne i { position: absolute; top: 0; bottom: 0; width: 4px; }
+.cote-ligne i:nth-child(1) { left: 18%; background: var(--h-gamma); }
+.cote-ligne i:nth-child(2) { left: 31%; background: var(--h-beta); }
+.cote-ligne i:nth-child(3) { left: 76%; background: var(--h-alpha); }
+
+
+/* ------------------------------------------------------------
+   3. COQUE — navigation, page, pied
+   ------------------------------------------------------------ */
+nav { background: var(--papier); border-bottom: 1px solid var(--filet); }
+.nav-inner {
+  max-width: 1000px; margin: 0 auto; padding: .85rem 1.4rem;
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 1rem; flex-wrap: wrap;
+}
+.nav-logo {
+  font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: .8rem;
+  letter-spacing: .18em; text-transform: uppercase;
+}
+.nav-logo span { color: var(--h-alpha); }
+.retour {
+  font-family: 'IBM Plex Mono', monospace; font-size: .8rem;
+  color: var(--encre); text-decoration: none;
+  border-bottom: 1px solid var(--h-alpha); padding-bottom: 2px;
+}
+.retour:hover, .retour:focus-visible { color: var(--h-alpha); }
+.retour:focus-visible { outline: 2px solid var(--h-alpha); outline-offset: 3px; }
+
+.page { max-width: 1000px; margin: 0 auto; padding: 2rem 1.4rem 4rem; }
+
+article.lecture {
+  background: var(--papier-clair);
+  border: 1px solid var(--filet-fonce);
+  padding: clamp(1.4rem, 4vw, 2.6rem);
+  min-width: 0;
+}
+
+.fil-ariane {
+  font-family: 'IBM Plex Mono', monospace; font-size: .75rem;
+  color: var(--sepia); text-transform: uppercase; letter-spacing: .12em;
+  margin-bottom: .8rem;
+}
+.fil-ariane .niveau { color: var(--h-alpha); }
+
+footer { border-top: 1px solid var(--filet); margin-top: 2rem; }
+.footer-inner {
+  max-width: 1000px; margin: 0 auto; padding: 1.5rem 1.4rem;
+  font-family: 'EB Garamond', Garamond, Georgia, serif; font-style: italic;
+  font-size: .92rem; color: var(--sepia);
+}
+
+
+/* ------------------------------------------------------------
+   4. TYPOGRAPHIE
+   ------------------------------------------------------------ */
+h1 {
+  font-family: 'EB Garamond', Garamond, Georgia, serif; font-weight: 500;
+  font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.14; margin-bottom: .5rem;
+}
+.sous-titre {
+  font-family: 'IBM Plex Mono', monospace; font-size: .82rem;
+  color: var(--sepia); margin-bottom: 1.8rem;
+}
+h2 {
+  font-family: 'EB Garamond', Garamond, Georgia, serif; font-weight: 500;
+  font-size: 1.5rem; margin: 2.4rem 0 1rem; padding-bottom: .4rem;
+  border-bottom: 3px double var(--encre); scroll-margin-top: 2rem;
+}
+h3 {
+  font-family: 'EB Garamond', Garamond, Georgia, serif; font-weight: 600;
+  font-size: 1.15rem; margin: 1.4rem 0 .6rem;
+}
+p { margin-bottom: .9rem; max-width: 70ch; }
+strong { font-weight: 600; }
+ul.cours { max-width: 70ch; margin: 0 0 .9rem 1.2rem; }
+ul.cours li { margin-bottom: .45rem; }
+.nb { white-space: nowrap; }
+sub, sup { font-size: .68em; }
+
+
+/* ------------------------------------------------------------
+   5. LOGO DE L'ÉTABLISSEMENT
+   ------------------------------------------------------------
+   Le logo ne se retouche jamais : ni recoloré, ni redessiné, ni
+   détouré. Ce n'est pas non plus une source de palette — les
+   couleurs du site restent celles du bloc :root ci-dessus.
+
+   Le vectoriel n'est pas encore disponible. Le remplacement du PNG
+   par un SVG se fera en changeant le seul attribut src des pages,
+   sans toucher à ce CSS : la règle ne fixe que la hauteur.
+   ------------------------------------------------------------ */
+.logo-etab { height: 2.6rem; width: auto; display: block; }
+.logo-etab.petit { height: 1.5rem; }
+
+
+/* ------------------------------------------------------------
+   6. COMPOSANTS REPRIS DE chapitre-commun.css, APLATIS
+   ------------------------------------------------------------ */
+
+/* Encart générique. Variantes : .definition (Hβ), .propriete (Hγ),
+   .exemple (sépia). */
+.encart {
+  border: 1px solid var(--filet-fonce);
+  background: var(--papier-clair);
+  padding: 1rem 1.3rem; margin: 1.2rem 0; max-width: 70ch; position: relative;
+}
+.encart .etq {
+  font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
+  letter-spacing: .12em; text-transform: uppercase; margin-bottom: .4rem;
+}
+.encart p:last-child { margin-bottom: 0; }
+.definition { border-left: 3px solid var(--h-beta); }
+.definition .etq { color: var(--h-beta); }
+.propriete { border-left: 3px solid var(--h-gamma); }
+.propriete .etq { color: var(--h-gamma); }
+.exemple { border-left: 3px solid var(--sepia); max-width: none; }
+.exemple .etq { color: var(--sepia); }
+
+/* Encart Formule : la relation à gauche, grandeurs et unités à droite. */
+.formule-bloc {
+  margin: 1.4rem 0; max-width: 62ch;
+  border: 1px solid var(--encre); background: var(--papier-clair);
+  display: grid; grid-template-columns: auto minmax(0, 1fr);
+}
+.formule-bloc .eq {
+  background: var(--encre); color: var(--papier);
+  font-family: 'EB Garamond', Garamond, Georgia, serif; font-style: italic;
+  font-size: 1.7rem; display: flex; align-items: center;
+  padding: .9rem 1.4rem; white-space: nowrap;
+}
+.formule-bloc .eq sub, .formule-bloc .eq sup {
+  font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: .5em;
+}
+.formule-bloc .grandeurs {
+  padding: .85rem 1.2rem;
+  font-family: 'IBM Plex Mono', monospace; font-size: .78rem; line-height: 2;
+}
+.formule-bloc .grandeurs b { color: var(--h-gamma); }
+.formule-bloc .titre {
+  font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--sepia); display: block; margin-bottom: .15rem;
+}
+
+/* Encart Méthode — c'est lui qui porte les cinq règles de rédaction. */
+.methode {
+  border: 1px solid var(--filet-fonce); border-left: 3px solid var(--h-gamma);
+  background: var(--papier-clair);
+  padding: 1rem 1.3rem; margin: 1.2rem 0; max-width: 70ch;
+}
+.methode .etq {
+  font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--h-gamma); margin-bottom: .5rem;
+}
+.methode ol { list-style: none; counter-reset: met; margin: 0; }
+.methode li {
+  counter-increment: met; display: grid; grid-template-columns: 2rem 1fr;
+  gap: .5rem; margin-bottom: .5rem; align-items: baseline;
+}
+.methode li::before {
+  content: counter(met) ".";
+  font-family: 'IBM Plex Mono', monospace; font-weight: 600;
+  color: var(--h-gamma); text-align: right;
+}
+
+/* Exercice */
+.exercice {
+  border: 1px solid var(--filet-fonce); border-left: 3px solid var(--h-alpha);
+  background: var(--papier-clair);
+  padding: 1.1rem 1.4rem; margin: 1.6rem 0;
+}
+.exercice .etiquette {
+  font-family: 'IBM Plex Mono', monospace; font-size: .74rem;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--h-alpha); margin-bottom: .5rem;
+}
+.exercice .question { font-style: italic; }
+.exercice .donnees {
+  font-family: 'IBM Plex Mono', monospace; font-size: .8rem; color: var(--sepia);
+  margin-top: .5rem; border-top: 1px dotted var(--pointille); padding-top: .45rem;
+}
+.exercice p { max-width: none; }
+
+/* Étape d'un calcul rédigé — le filet de conduite qui suit le libellé. */
+.etape {
+  font-family: 'IBM Plex Mono', monospace; font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--h-gamma); margin: .7rem 0 .2rem;
+  display: flex; align-items: center; gap: .5rem;
+}
+.etape::after { content: ""; flex: 1; border-top: 1px dotted var(--pointille); }
+
+/* Résultat encadré — règle 4 des cinq règles de rédaction. */
+.resultat {
+  border: 1.5px solid var(--h-alpha); font-weight: 600;
+  padding: .05em .4em; white-space: nowrap;
+}
+
+/* Équation hors paragraphe, dans un exemple résolu */
+.eq-exo {
+  font-family: 'EB Garamond', Garamond, Georgia, serif; font-style: italic;
+  font-size: 1.15rem; margin: .8rem 0 .8rem 1rem;
+}
+.eq-exo sub, .eq-exo sup {
+  font-size: .6em; font-style: normal; font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Fraction. currentColor : la barre suit la couleur du texte — encre sur
+   fond clair, papier sur le fond sombre de .formule-bloc .eq */
+.frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 .25em; }
+.frac .haut { display: block; border-bottom: 1.5px solid currentColor; padding: 0 .3em .1em; }
+.frac .bas  { display: block; padding: .1em .3em 0; }
+
+/* Unité accolée à une valeur */
+.unites {
+  font-style: normal; font-family: 'IBM Plex Mono', monospace;
+  font-size: .74rem; color: var(--sepia);
+}
+
+/* Aparté — remarque de second plan */
+.aparte {
+  font-family: 'IBM Plex Mono', monospace; font-size: .74rem; color: var(--sepia);
+  border-left: 2px solid var(--filet); padding-left: .7rem; margin: .6rem 0;
+}
+
+/* Checklist */
+.checklist {
+  border: 1px solid var(--filet-fonce); border-left: 3px solid var(--h-gamma);
+  background: var(--papier-clair); padding: 1.2rem 1.4rem; margin: 2.4rem 0 0;
+}
+.checklist h2 { margin-top: 0; }
+.checklist ol { list-style: none; }
+.checklist li {
+  display: grid; grid-template-columns: auto 1fr; gap: .7rem;
+  align-items: baseline; padding: .55rem 0; border-bottom: 1px dashed var(--filet);
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist input[type="checkbox"] {
+  transform: translateY(2px) scale(1.15); accent-color: var(--h-gamma); cursor: pointer;
+}
+.checklist label { cursor: pointer; }
+
+/* Tableau */
+table.tab { border-collapse: collapse; font-size: .95rem; }
+table.tab caption {
+  caption-side: top; text-align: left; font-family: 'IBM Plex Mono', monospace;
+  font-size: .74rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--sepia); padding-bottom: .4rem;
+}
+table.tab th, table.tab td {
+  border: 1px solid var(--filet-fonce); padding: .42rem .8rem; text-align: center;
+}
+table.tab thead th {
+  font-family: 'IBM Plex Mono', monospace; font-size: .78rem; background: var(--papier);
+}
+
+
+/* ============================================================
+   7. COMPOSANTS PROPRES À LA FAMILLE CFA
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   .poids — le badge de fréquence
+   ------------------------------------------------------------
+   Trois crans : ⬛⬛⬛ Incontournable (8–10), ⬛⬛ Fréquent (4–7),
+   ⬛ Ponctuel (1–3).
+
+   En CARRÉS, jamais en couleur : le badge doit rester lisible sur une
+   photocopie noir et blanc. Le cran se lit au REMPLISSAGE des carrés,
+   pas à leur teinte — un carré vide reste un carré cerné.
+
+   Les carrés sont des éléments CSS, pas des caractères ⬛ : un emoji
+   se rend différemment selon la machine, et parfois en couleur.
+
+   HTML :
+     <p class="poids">
+       <span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i></i></span>
+       <b>Fréquent</b><span class="compte">6 sur 10</span>
+     </p>
+
+   Le mot « examen » n'apparaît PAS ici : le badge reste neutre dans la
+   moitié haute de la fiche. Ce que compte le décompte est expliqué une
+   seule fois, sur la page d'index du livret.
+
+   Sous 4/10, .poids-contrepoids est OBLIGATOIRE juste après : il porte
+   la ligne « Pourquoi elle compte quand même » et les outils que
+   celui-ci débloque. Sans lui, un « 1 sur 10 » ferait sauter la fiche.
+   ------------------------------------------------------------ */
+.poids {
+  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+  font-family: 'IBM Plex Mono', monospace; font-size: .78rem;
+  margin: 0; max-width: none;
+}
+.poids .carres { display: inline-flex; gap: 3px; }
+.poids .carres i {
+  width: .72rem; height: .72rem; display: block;
+  border: 1.4px solid var(--encre); background: transparent;
+}
+.poids .carres i.plein { background: var(--encre); }
+.poids b { letter-spacing: .1em; text-transform: uppercase; font-weight: 600; }
+.poids .compte { color: var(--sepia); }
+
+.poids-contrepoids {
+  border-left: 2px solid var(--h-gamma); padding-left: .8rem;
+  margin: .6rem 0 1.2rem; max-width: 70ch;
+  font-size: .95rem; color: var(--encre-douce);
+}
+.poids-contrepoids .etq {
+  display: block; font-family: 'IBM Plex Mono', monospace; font-size: .7rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--h-gamma); margin-bottom: .25rem;
+}
+
+
+/* ------------------------------------------------------------
+   .palier — les trois paliers du verso
+   ------------------------------------------------------------
+   Le gradient est triple : difficulté, contexte, appartenance.
+
+     .palier-1  guidé          quotidien, chiffres ronds, calcul amorcé
+     .palier-2  en autonomie   atelier ou véhicule, énoncé nu
+     .palier-3  en situation   engin, enchaînement, marqué BTS
+
+   Durée cible d'un passage complet : 30 min — 5 / 10 / 15.
+
+   La marque BTS du palier 3 est portée par un texte (.marque), pas par
+   une couleur : elle doit survivre à la photocopie.
+
+   HTML :
+     <section class="palier palier-1">
+       <p class="palier-tete"><span class="n">Palier 1</span>
+          <span class="mode">guidé</span><span class="duree">5 min</span></p>
+       …
+     </section>
+   ------------------------------------------------------------ */
+.palier {
+  border: 1px solid var(--filet-fonce); border-left: 3px solid var(--filet-fonce);
+  background: var(--papier-clair);
+  padding: 1rem 1.3rem; margin: 1.4rem 0;
+}
+.palier-tete {
+  display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap;
+  font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: .7rem; max-width: none;
+  border-bottom: 1px dotted var(--pointille); padding-bottom: .45rem;
+}
+.palier-tete .n { font-weight: 600; }
+.palier-tete .mode { color: var(--encre-douce); letter-spacing: .06em; }
+.palier-tete .duree { margin-left: auto; color: var(--sepia); }
+.palier p { max-width: none; }
+.palier p:last-child { margin-bottom: 0; }
+
+.palier-1 { border-left-color: var(--h-beta); }
+.palier-1 .palier-tete .n { color: var(--h-beta); }
+.palier-2 { border-left-color: var(--h-gamma); }
+.palier-2 .palier-tete .n { color: var(--h-gamma); }
+.palier-3 { border-left-color: var(--h-alpha); }
+.palier-3 .palier-tete .n { color: var(--h-alpha); }
+
+/* La marque BTS : cernée, jamais un simple aplat de couleur. */
+.palier-tete .marque {
+  border: 1.4px solid var(--h-alpha); color: var(--h-alpha);
+  padding: .05rem .45rem; font-weight: 600; letter-spacing: .14em;
+}
+
+
+/* ------------------------------------------------------------
+   .trou — emplacement à compléter à la main (palier 1)
+   ------------------------------------------------------------
+   Un filet pointillé, jamais une case vide : l'élève doit voir tout de
+   suite qu'on attend une écriture, et où elle s'arrête.
+
+   Deux trous par palier 1, pas plus. C'est le palier où personne ne
+   peut échouer ; en ajouter un troisième lui retire sa seule fonction.
+   ------------------------------------------------------------ */
+.trou {
+  display: inline-block; border-bottom: 1.4px dotted var(--encre);
+  min-width: 6rem; height: 1.1em; vertical-align: -1px;
+}
+.trou.court { min-width: 3.5rem; }
+.trou.long  { min-width: 11rem; }
+
+/* Ligne d'écriture pleine largeur, pour une réponse rédigée */
+.ligne { display: block; border-bottom: 1.4px dotted var(--encre); height: 1.9rem; }
+
+
+/* ------------------------------------------------------------
+   .figure-a-produire — emplacement réservé d'une figure de V2
+   ------------------------------------------------------------
+   Le lot 1 est entièrement textuel. Quand une fiche appelle une
+   figure, on pose ce cadre à sa place avec une description d'une
+   ligne, et on ajoute l'entrée correspondante dans
+   _suivi/CFA-figures-a-produire.md.
+
+   Visible À L'ÉCRAN COMME À L'IMPRESSION, volontairement : tant que la
+   figure n'existe pas, le manque doit se voir sur la photocopie posée
+   sur la table. Un emplacement invisible se serait oublié.
+
+   HTML :
+     <p class="figure-a-produire"><span class="etq">Figure à produire</span>
+        Quadrillage 8×6 portant trois vecteurs, le premier déjà coté.</p>
+   ------------------------------------------------------------ */
+.figure-a-produire {
+  border: 1.5px dashed var(--pointille);
+  padding: .9rem 1.1rem; margin: 1.2rem 0; max-width: 70ch;
+  font-size: .95rem; font-style: italic; color: var(--encre-douce);
+}
+.figure-a-produire .etq {
+  display: block; font-style: normal;
+  font-family: 'IBM Plex Mono', monospace; font-size: .68rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--sepia); margin-bottom: .3rem;
+}
+
+
+/* ============================================================
+   8. RESPONSIVE — cible iPad
+   ============================================================ */
+@media (max-width: 780px) {
+  .page { padding: 1.2rem .9rem 3rem; }
+  .formule-bloc { grid-template-columns: 1fr; }
+  .formule-bloc .eq { justify-content: center; font-size: 1.45rem; }
+  .palier-tete .duree { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+
+/* ============================================================
+   9. IMPRESSION de la page écran
+   ------------------------------------------------------------
+   La fiche A4 est le format de référence ; ces règles ne servent qu'au
+   cas où quelqu'un imprime la page écran. Fond blanc, quadrillage
+   retiré, aplats supprimés : économie d'encre.
+
+   .formule-bloc .eq perd son fond sombre et prend un cadre : sans
+   cela, chaque formule imprimée serait un rectangle d'encre pleine.
+   ============================================================ */
+@media print {
+  body { background: #fff; background-image: none; font-size: 11pt; }
+  nav, footer, .retour { display: none; }
+  article.lecture { border: none; background: #fff; padding: 0; }
+  .encart, .methode, .exercice, .palier, .checklist, .formule-bloc,
+  table.tab thead th { background: #fff; }
+  .formule-bloc .eq {
+    background: #fff; color: var(--encre); border-right: 1px solid var(--encre);
+  }
+  .palier, .exercice, .encart, .methode, .figure-a-produire {
+    break-inside: avoid;
+  }
+}
