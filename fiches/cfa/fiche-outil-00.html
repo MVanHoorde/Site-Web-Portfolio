@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche-outil 0 — Rédiger un calcul qui rapporte des points · Livret CFA</title>
+<link rel="stylesheet" href="../../assets/css/fonts.css">
+<style>
+/* ============================================================
+   FICHE A4 — Outil 0 · Rédiger un calcul qui rapporte des points
+   Dérivée de _modeles/gabarit-fiche-outil-CFA.html.
+   EXACTEMENT DEUX PAGES. Déborder est un bug.
+   Aucun corrigé ici : il vit dans _corriges-cfa/, hors dépôt.
+   ============================================================ */
+
+:root {
+  --encre: #2b2118;
+  --encre-douce: #5a4c3a;
+  --papier: #f3f1ea;
+  --grille: #e7e3d6;
+  --sepia: #8a7c62;
+  --filet: #d8cfba;
+  --filet-fonce: #cdc2a8;
+  --pointille: #b7a988;
+  --h-alpha: #8f2d2b;
+  --h-beta: #2f6b70;
+  --h-gamma: #5f4b73;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: #9aa0ab; }
+body {
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  color: var(--encre); font-size: 10.5pt; line-height: 1.42;
+}
+
+.feuille {
+  width: 210mm; min-height: 297mm; margin: 8mm auto; padding: 10mm 13mm 14mm;
+  background: var(--papier); position: relative;
+  border: 1px solid var(--filet-fonce);
+  display: flex; flex-direction: column;
+}
+
+@page { size: A4; margin: 0; }
+
+@media print {
+  html, body { background: #fff; }
+  .feuille {
+    margin: 0; border: none; height: 296mm; min-height: 0; overflow: hidden;
+    page-break-after: always; background: #fff;
+  }
+  .feuille:last-child { page-break-after: auto; }
+  .encart, .palier, .copie, .methode-f, table.t th { background: #fff; }
+}
+
+/* Bande signature : la ligne de cote */
+.cote { position: relative; height: 1.6mm; margin: 2mm 0 3mm; }
+.cote::before, .cote::after {
+  content: ""; position: absolute; top: -1.8mm; bottom: -1.8mm;
+  width: .4mm; background: var(--encre);
+}
+.cote::before { left: 0; }
+.cote::after  { right: 0; }
+.cote-ligne {
+  position: absolute; inset: 0; background: var(--encre);
+  clip-path: polygon(0 50%, 3mm 0, calc(100% - 3mm) 0, 100% 50%, calc(100% - 3mm) 100%, 3mm 100%);
+}
+.cote-ligne i { position: absolute; top: 0; bottom: 0; width: 1mm; }
+.cote-ligne i:nth-child(1) { left: 18%; background: var(--h-gamma); }
+.cote-ligne i:nth-child(2) { left: 31%; background: var(--h-beta); }
+.cote-ligne i:nth-child(3) { left: 76%; background: var(--h-alpha); }
+
+.entete { display: flex; align-items: baseline; gap: 4mm; margin-bottom: 2.5mm; }
+.entete .titre { flex: 1; min-width: 0; }
+h1 { font-size: 14pt; font-weight: 500; line-height: 1.15; }
+h1 .num {
+  font-family: 'IBM Plex Mono', monospace; font-size: 9pt;
+  color: var(--h-alpha); display: block; letter-spacing: .1em;
+  text-transform: uppercase; margin-bottom: .5mm;
+}
+.logo-etab { height: 9mm; width: auto; align-self: center; }
+
+.poids {
+  display: flex; align-items: center; gap: 2mm;
+  font-family: 'IBM Plex Mono', monospace; font-size: 7.6pt;
+  margin-bottom: 3mm; padding-bottom: 1.5mm;
+  border-bottom: 1px dotted var(--pointille);
+}
+.poids .carres { display: inline-flex; gap: .7mm; }
+.poids .carres i {
+  width: 2.4mm; height: 2.4mm; display: block;
+  border: .35mm solid var(--encre); background: transparent;
+}
+.poids .carres i.plein { background: var(--encre); }
+.poids b { letter-spacing: .1em; text-transform: uppercase; }
+.poids .compte { color: var(--sepia); }
+
+h2 {
+  font-size: 11pt; font-weight: 500; margin: 3.5mm 0 1.5mm;
+  padding-bottom: 1mm; border-bottom: .6mm solid var(--encre);
+  display: flex; align-items: baseline; gap: 2.5mm;
+}
+h2:first-of-type { margin-top: 0; }
+
+p { margin-bottom: 1.2mm; }
+.unites { font-family: 'IBM Plex Mono', monospace; font-size: 7.6pt; color: var(--sepia); font-style: normal; }
+.mini { font-family: 'IBM Plex Mono', monospace; font-size: 7.3pt; color: var(--sepia); }
+
+.encart {
+  border: .3mm solid var(--filet-fonce); background: #fff;
+  padding: 2mm 3mm; margin: 1.8mm 0;
+}
+.encart .etq {
+  font-family: 'IBM Plex Mono', monospace; font-size: 7.3pt;
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1mm;
+}
+.encart p:last-child { margin-bottom: 0; }
+.exemple { border-left: .8mm solid var(--sepia); }
+.exemple .etq { color: var(--sepia); }
+.definition { border-left: .8mm solid var(--h-beta); }
+.definition .etq { color: var(--h-beta); }
+
+/* La règle de cet outil n'est pas une formule mais une liste de cinq
+   étapes — forme particulière, seule fiche du livret construite ainsi. */
+.methode-f {
+  border: .3mm solid var(--filet-fonce); border-left: .8mm solid var(--h-gamma);
+  background: #fff; padding: 2mm 3mm; margin: 1.8mm 0;
+}
+.methode-f .etq {
+  font-family: 'IBM Plex Mono', monospace; font-size: 7.3pt;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--h-gamma); margin-bottom: 1.2mm;
+}
+.methode-f ol { list-style: none; counter-reset: met; margin: 0; }
+.methode-f li {
+  counter-increment: met; display: grid; grid-template-columns: 5mm 1fr;
+  gap: 1.5mm; margin-bottom: 1mm; align-items: baseline;
+}
+.methode-f li::before {
+  content: counter(met) "."; font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600; color: var(--h-gamma); text-align: right;
+}
+
+.etape {
+  font-family: 'IBM Plex Mono', monospace; font-size: 6.8pt; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--h-gamma); margin: 1.6mm 0 .4mm;
+  display: flex; align-items: center; gap: 1.5mm;
+}
+.etape::after { content: ""; flex: 1; border-top: .2mm dotted var(--pointille); }
+.eq-exo { font-style: italic; font-size: 11pt; margin: .6mm 0 .6mm 3mm; }
+.resultat { border: .35mm solid var(--h-alpha); font-weight: 600; padding: .2mm 1.2mm; white-space: nowrap; }
+.frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 .25em; }
+.frac .haut { display: block; border-bottom: .3mm solid currentColor; padding: 0 .3em .1em; }
+.frac .bas  { display: block; padding: .1em .3em 0; }
+
+.palier {
+  border: .3mm solid var(--filet-fonce); border-left: .8mm solid var(--filet-fonce);
+  background: #fff; padding: 2mm 3mm; margin: 2.2mm 0;
+}
+.palier-tete {
+  display: flex; align-items: baseline; gap: 2.5mm;
+  font-family: 'IBM Plex Mono', monospace; font-size: 7.3pt;
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 1.5mm; padding-bottom: 1mm;
+  border-bottom: .2mm dotted var(--pointille);
+}
+.palier-tete .n { font-weight: 600; }
+.palier-tete .mode { color: var(--encre-douce); letter-spacing: .05em; }
+.palier-tete .duree { margin-left: auto; color: var(--sepia); }
+.palier-tete .marque {
+  border: .35mm solid var(--h-alpha); color: var(--h-alpha);
+  padding: .2mm 1.2mm; font-weight: 600; letter-spacing: .14em;
+}
+.palier p:last-child { margin-bottom: 0; }
+.palier-1 { border-left-color: var(--h-beta); }
+.palier-1 .palier-tete .n { color: var(--h-beta); }
+.palier-2 { border-left-color: var(--h-gamma); }
+.palier-2 .palier-tete .n { color: var(--h-gamma); }
+.palier-3 { border-left-color: var(--h-alpha); }
+.palier-3 .palier-tete .n { color: var(--h-alpha); }
+
+/* Copie d'élève reproduite. Le libellé « copie » est écrit en toutes
+   lettres : l'information n'est jamais portée par le seul style. */
+.copie {
+  border: .3mm solid var(--filet-fonce); background: #fff;
+  padding: 1.6mm 2.5mm; margin: 1.5mm 0;
+}
+.copie .etq {
+  font-family: 'IBM Plex Mono', monospace; font-size: 6.8pt;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--sepia); display: block; margin-bottom: .8mm;
+}
+.copie .trace {
+  font-family: 'IBM Plex Mono', monospace; font-size: 8.6pt;
+  line-height: 1.7; margin: 0;
+}
+
+/* Cases à cocher au stylo : dessinées en CSS, jamais un <input> —
+   un contrôle de formulaire s'imprime de façon imprévisible. */
+.cases { list-style: none; margin: 1.2mm 0 0; }
+.cases li {
+  display: grid; grid-template-columns: 4mm 1fr; gap: 2mm;
+  align-items: baseline; margin-bottom: 1.2mm;
+}
+.cases li::before {
+  content: ""; display: block; width: 3.4mm; height: 3.4mm;
+  border: .35mm solid var(--encre); align-self: center;
+}
+
+.trou {
+  display: inline-block; border-bottom: .35mm dotted var(--encre);
+  min-width: 22mm; height: 1.05em; vertical-align: -1px;
+}
+.trou.long { min-width: 60mm; }
+.ligne { display: block; border-bottom: .35mm dotted var(--encre); height: 6mm; }
+
+.corps { flex: 1; }
+.pied {
+  position: absolute; bottom: 6mm; left: 13mm; right: 13mm;
+  display: flex; justify-content: space-between;
+  font-family: 'IBM Plex Mono', monospace; font-size: 6.8pt; color: var(--sepia);
+  border-top: .2mm solid var(--filet); padding-top: 1.5mm;
+}
+</style>
+</head>
+<body>
+
+<!-- ================= PAGE 1/2 — RECTO ================= -->
+<div class="feuille">
+  <div class="cote" aria-hidden="true"><span class="cote-ligne"><i></i><i></i><i></i></span></div>
+
+  <div class="entete">
+    <div class="titre">
+      <h1><span class="num">Outil 0</span>Rédiger un calcul qui rapporte des points</h1>
+    </div>
+    <img class="logo-etab" src="../../assets/img/cfa/logo-isaac.png"
+         alt="Lycée Isaac de l'Étoile">
+  </div>
+
+  <p class="poids">
+    <span class="carres" aria-hidden="true"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span>
+    <b>Incontournable</b><span class="compte">10 sur 10</span>
+  </p>
+
+  <div class="corps">
+
+    <h2>À quoi ça sert</h2>
+    <p>À chaque question qui demande un calcul, quel que soit le sujet.</p>
+
+    <div class="encart definition">
+      <div class="etq">Ce qu'il faut savoir</div>
+      <p>Un calcul posé proprement et faux rapporte une part importante des points.
+      Une bonne réponse jetée sans détail en perd une part équivalente.
+      La seule copie qui ne rapporte rien est la copie vide.</p>
+    </div>
+
+    <h2>La règle</h2>
+    <div class="methode-f">
+      <div class="etq">Les cinq étapes, dans cet ordre</div>
+      <ol>
+        <li>Relever et recopier les données avec leur unité, avant tout calcul.</li>
+        <li>Écrire la relation en lettres, avant de remplacer.</li>
+        <li>Remplacer avec les unités, y compris les unités intermédiaires.</li>
+        <li>Encadrer le résultat avec son unité.</li>
+        <li>Conclure par une phrase chiffrée.</li>
+      </ol>
+    </div>
+    <p class="mini">Une conclusion, c'est « la pression atteint 85 bar ». Ce n'est jamais « c'est bon » ni « ce n'est pas conforme » tout seul.</p>
+
+    <h2>Un exemple entièrement résolu</h2>
+    <div class="encart exemple">
+      <div class="etq">Exemple — consommation moyenne sur un trajet</div>
+      <p>Un véhicule a parcouru 620 km. Le plein a demandé 46 L.</p>
+
+      <p class="etape">1 · Les données</p>
+      <p>V = 46 <span class="unites">L</span> · d = 620 <span class="unites">km</span></p>
+
+      <p class="etape">2 · La relation</p>
+      <p class="eq-exo">C = <span class="frac"><span class="haut">V</span><span class="bas">d</span></span> × 100</p>
+
+      <p class="etape">3 · Le calcul, avec les unités</p>
+      <p class="eq-exo">C = <span class="frac"><span class="haut">46 L</span><span class="bas">620 km</span></span> × 100 = 7,42 <span class="unites">L/100 km</span></p>
+
+      <p class="etape">4 · Le résultat</p>
+      <p class="eq-exo">C = <span class="resultat">7,4 L/100 km</span></p>
+
+      <p class="etape">5 · La conclusion</p>
+      <p>Le véhicule consomme 7,4 litres aux 100 kilomètres.</p>
+    </div>
+
+  </div>
+
+  <div class="pied">
+    <span>Livret CFA · Outil 0 — Rédiger un calcul qui rapporte des points</span>
+    <span>recto · M. Van Hoorde</span>
+  </div>
+</div>
+
+
+<!-- ================= PAGE 2/2 — VERSO ================= -->
+<div class="feuille">
+  <div class="cote" aria-hidden="true"><span class="cote-ligne"><i></i><i></i><i></i></span></div>
+
+  <div class="corps">
+    <h2>À toi de jouer<span class="mini" style="margin-left:auto;font-weight:400;">Outil 0</span></h2>
+    <p class="mini">Sur cette fiche, on ne demande pas de calculer. On demande de rédiger.</p>
+
+    <section class="palier palier-1">
+      <p class="palier-tete">
+        <span class="n">Palier 1</span><span class="mode">guidé</span><span class="duree">5 min</span>
+      </p>
+      <p>Un élève devait calculer la consommation d'un véhicule. Le plein a demandé 62 L pour 780 km.</p>
+
+      <div class="copie">
+        <span class="etq">Copie de l'élève</span>
+        <p class="trace">62 / 780 = 7,9</p>
+      </div>
+
+      <p>Le résultat est juste. Cocher les trois règles qui manquent.</p>
+      <ul class="cases">
+        <li>Les données ne sont pas recopiées avec leur unité.</li>
+        <li>La relation n'est pas écrite en lettres.</li>
+        <li>Le résultat n'a pas son unité, et il n'y a pas de phrase de conclusion.</li>
+      </ul>
+
+      <p style="margin-top:1.5mm;">Réécrire cette copie en respectant les cinq étapes.</p>
+      <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+    </section>
+
+    <section class="palier palier-2">
+      <p class="palier-tete">
+        <span class="n">Palier 2</span><span class="mode">en autonomie</span><span class="duree">10 min</span>
+      </p>
+      <p>Une intervention d'atelier a demandé 3 h 30 de main-d'œuvre à 68 €/h, plus 145 € de pièces.</p>
+
+      <div class="copie">
+        <span class="etq">Copie A</span>
+        <p class="trace">t = 3 h 30 · taux = 68 €/h · pièces = 145 €<br>
+        Total = t × taux + pièces<br>
+        Total = 3,30 h × 68 €/h + 145 € = 224,40 € + 145 € = 369,40 €<br>
+        La facture s'élève à 369,40 €.</p>
+      </div>
+
+      <div class="copie">
+        <span class="etq">Copie B</span>
+        <p class="trace">383 €</p>
+      </div>
+
+      <p><b>a.</b> Repérer l'erreur de la copie A. <span class="trou long"></span></p>
+      <p><b>b.</b> Indiquer quelle copie rapporte le plus de points, et pourquoi.</p>
+      <span class="ligne"></span><span class="ligne"></span>
+      <p style="margin-top:1.2mm;"><b>c.</b> Rédiger la copie C : juste <i>et</i> rédigée selon les cinq étapes.</p>
+      <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      <span class="ligne"></span><span class="ligne"></span>
+    </section>
+
+    <section class="palier palier-3">
+      <p class="palier-tete">
+        <span class="n">Palier 3</span><span class="mode">en situation</span>
+        <span class="marque">BTS</span><span class="duree">15 min</span>
+      </p>
+      <p>Une chargeuse a un godet de 1,8 m³. Son temps de cycle est de 42 s.
+      Le coefficient de remplissage vaut 0,9. L'engin travaille effectivement 50 min par heure.</p>
+      <p>Rédiger intégralement le calcul de la production horaire, en respectant les cinq étapes.
+      C'est la rédaction qui est notée ici, autant que le résultat.</p>
+      <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+      <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+    </section>
+  </div>
+
+  <div class="pied">
+    <span>Livret CFA · Outil 0 — Rédiger un calcul qui rapporte des points</span>
+    <span>verso · lycée Isaac de l'Étoile</span>
+  </div>
+</div>
+
+</body>
+</html>
