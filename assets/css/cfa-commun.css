@@ -3,7 +3,7 @@
    l'espace CFA (livret transversal de dix-sept fiches-outils).
 
    USAGE — dans le <head> d'une page écran, après fonts.css :
-     <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=3">
+     <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=4">
    Le <style> embarqué de la page ne garde QUE ce qui lui est propre.
 
    ⚠ CACHE — DÈS QUE CE FICHIER CHANGE LE RENDU (retoucher ce commentaire
@@ -525,31 +525,49 @@ table.tab thead th {
 .contexte { color: var(--encre-douce); max-width: none; }
 
 /* ------------------------------------------------------------
-   .question — la consigne, détachée
+   .question — la consigne, détachée et NOMMÉE
    ------------------------------------------------------------
-   Le repère alphabétique est cerné, pas coloré en aplat : il doit
-   tenir sur une photocopie. Sa couleur suit celle du palier, ce qui
-   rattache la question à son niveau sans un mot de plus.
+   Le mot « Question » est écrit en toutes lettres. Un repère seul —
+   une lettre dans un carré, un point d'interrogation — suppose que
+   l'élève a compris la convention. Ce public ne la devine pas : il
+   lui faut qu'on lui dise que c'est là qu'on lui demande quelque
+   chose.
+
+   La couleur vient du palier par currentColor, portée par le filet
+   et l'étiquette. Le texte de la consigne, lui, reste en encre
+   pleine : c'est du contenu, pas de la signalétique.
+
+   Pas de grille ici, et c'est délibéré. La version précédente
+   plaçait le repère et la consigne en deux colonnes ; tout enfant
+   supplémentaire — une seconde phrase de précision — retombait dans
+   la colonne étroite du repère et s'y écrasait. Un simple bloc avec
+   filet accepte autant de paragraphes qu'il en faut.
 
    HTML :
-     <div class="question"><span class="q-num">a</span>
-       <p>Calculer la section du piston, en m².</p></div>
+     <div class="question">
+       <span class="q-etq">Question a</span>
+       <p>Calculer la section du piston, en m².</p>
+       <p>Précision facultative, en second paragraphe.</p>
+     </div>
    ------------------------------------------------------------ */
 .question {
-  display: grid; grid-template-columns: 1.7rem 1fr; gap: .7rem;
-  align-items: baseline; margin: 1.1rem 0 .5rem;
+  border-left: 3px solid currentColor;
+  padding-left: .9rem;
+  margin: 1.3rem 0 .6rem;
+  color: var(--encre);
 }
-.question .q-num {
-  font-family: 'IBM Plex Mono', monospace; font-size: .76rem;
-  font-weight: 600; text-align: center; padding: .12rem 0;
-  border: 1.4px solid currentColor; color: var(--encre);
+.question .q-etq {
+  display: block; font-family: 'IBM Plex Mono', monospace; font-size: .7rem;
+  font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+  margin-bottom: .3rem;
 }
-.question p { margin: 0; max-width: none; font-weight: 600; }
-.question p + p { font-weight: 400; margin-top: .25rem; }
+.question p { margin: 0; max-width: none; font-weight: 600; color: var(--encre); }
+.question p + p { font-weight: 400; margin-top: .35rem; color: var(--encre-douce); }
 
-.palier-1 .question .q-num { color: var(--h-beta); }
-.palier-2 .question .q-num { color: var(--h-gamma); }
-.palier-3 .question .q-num { color: var(--h-alpha); }
+.palier-1 .question { color: var(--h-beta); }
+.palier-2 .question { color: var(--h-gamma); }
+.palier-3 .question { color: var(--h-alpha); }
+.encart .question { color: var(--sepia); }
 
 
 /* ------------------------------------------------------------
