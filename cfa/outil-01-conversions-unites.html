@@ -7,14 +7,18 @@
 <link rel="stylesheet" href="../assets/css/fonts.css">
 <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=4">
 <style>
-  /* Propre à cette fiche : l'escalier des préfixes. Les trois lignes
-     (longueurs, surfaces, volumes) partagent les mêmes colonnes, ce qui
-     fait voir d'un coup que le facteur est le même élevé au carré puis
-     au cube. C'est tout le contenu de la fiche en un tableau. */
-  .escalier { width: 100%; max-width: 62ch; }
-  .escalier td, .escalier th { font-family: 'IBM Plex Mono', monospace; font-size: .82rem; }
+  /* Propre à cette fiche : le tableau qui fait voir D'OÙ VIENNENT les
+     exposants. La colonne « le facteur, répété » est le cœur de la
+     fiche — sans elle, 10³ / 10⁶ / 10⁹ sont trois nombres à apprendre
+     par cœur au lieu d'une seule idée appliquée trois fois. */
+  .escalier { width: 100%; max-width: 68ch; }
+  .escalier td, .escalier th { font-family: 'IBM Plex Mono', monospace; font-size: .8rem; }
   .escalier .grandeur { text-align: left; font-family: inherit; font-size: .95rem; }
   .escalier .fact { color: var(--h-alpha); font-weight: 600; }
+  .escalier .dir { color: var(--h-gamma); font-weight: 600; }
+  /* Le tableau du palier 1 : deux colonnes, une case sur deux à remplir. */
+  .a-completer { max-width: 56ch; }
+  .a-completer td { font-family: 'IBM Plex Mono', monospace; }
 </style>
 </head>
 <body>
@@ -48,6 +52,9 @@
 
   <h2>À quoi ça sert</h2>
   <p>Dès que deux données d'un même calcul ne sont pas dans la même unité.</p>
+  <p>C'est le tout premier geste d'un exercice : avant même de chercher une formule,
+  on vérifie que les données sont cohérentes entre elles. Une conversion ratée au
+  départ fait tomber tout ce qui suit, et l'erreur ne se voit qu'à la fin.</p>
 
 
   <h2>La règle</h2>
@@ -55,24 +62,55 @@
   <div class="formule-bloc">
     <div class="eq">1 m = 10³ mm</div>
     <div class="grandeurs">
-      <span class="titre">Le facteur change avec la dimension</span>
-      <b>longueur</b> → le facteur tel quel<br>
-      <b>surface</b> → le facteur au carré<br>
-      <b>volume</b> → le facteur au cube
+      <span class="titre">L'exposant, c'est le nombre de directions</span>
+      <b>longueur</b> → une direction → le facteur une fois<br>
+      <b>surface</b> → deux directions → le facteur deux fois<br>
+      <b>volume</b> → trois directions → le facteur trois fois
     </div>
   </div>
 
+  <div class="encart propriete">
+    <div class="etq">D'où viennent 10³, 10⁶ et 10⁹</div>
+    <p>Une longueur se mesure dans <strong>une</strong> direction, une surface dans
+    <strong>deux</strong>, un volume dans <strong>trois</strong>. Le facteur de conversion
+    s'applique donc autant de fois qu'il y a de directions.</p>
+    <p>Ce ne sont pas trois nombres à retenir, mais un seul, appliqué une fois,
+    puis deux, puis trois.</p>
+  </div>
+
   <table class="tab escalier">
-    <caption>De l'unité au millième : le même passage, trois fois</caption>
+    <caption>Du mètre au millimètre : la même idée, répétée</caption>
     <thead>
-      <tr><th class="grandeur">Grandeur</th><th>Unité</th><th>Facteur</th><th>Sous-unité</th></tr>
+      <tr>
+        <th class="grandeur">Grandeur</th>
+        <th>Directions</th>
+        <th>Le facteur, répété</th>
+        <th>Ce que ça donne</th>
+      </tr>
     </thead>
     <tbody>
-      <tr><td class="grandeur">Longueur</td><td>1 m</td><td class="fact">× 10³</td><td>1 000 mm</td></tr>
-      <tr><td class="grandeur">Surface</td><td>1 m²</td><td class="fact">× 10⁶</td><td>1 000 000 mm²</td></tr>
-      <tr><td class="grandeur">Volume</td><td>1 m³</td><td class="fact">× 10⁹</td><td>1 000 000 000 mm³</td></tr>
+      <tr>
+        <td class="grandeur">Longueur — m</td>
+        <td class="dir">1</td>
+        <td>10³</td>
+        <td class="fact">× 10³ = 1 000</td>
+      </tr>
+      <tr>
+        <td class="grandeur">Surface — m²</td>
+        <td class="dir">2</td>
+        <td>10³ × 10³</td>
+        <td class="fact">× 10⁶ = 1 000 000</td>
+      </tr>
+      <tr>
+        <td class="grandeur">Volume — m³</td>
+        <td class="dir">3</td>
+        <td>10³ × 10³ × 10³</td>
+        <td class="fact">× 10⁹ = 1 000 000 000</td>
+      </tr>
     </tbody>
   </table>
+
+  <p class="aparte">Même mécanique entre le mètre et le centimètre, où le facteur vaut 10² : cela donne 10⁴ pour une surface et 10⁶ pour un volume. Seul le facteur de départ change, jamais la règle.</p>
 
   <div class="encart propriete">
     <div class="etq">Les trois égalités à savoir par cœur</div>
@@ -85,8 +123,14 @@
   <h2>Un exemple entièrement résolu</h2>
 
   <div class="encart exemple">
-    <div class="etq">Exemple — un volume de 2,5 L en cm³ puis en mm³</div>
-    <p>Un bidon contient 2,5 L de liquide de refroidissement.</p>
+    <div class="etq">Exemple</div>
+
+    <p class="contexte">Un bidon contient 2,5 L de liquide de refroidissement.</p>
+
+    <div class="question">
+      <span class="q-etq">Question</span>
+      <p>Exprimer ce volume en cm³, puis en mm³.</p>
+    </div>
 
     <p class="etape">1 · Les données</p>
     <p>V = 2,5 <span class="unites">L</span></p>
@@ -96,7 +140,7 @@
 
     <p class="etape">3 · Le calcul, avec les unités</p>
     <p class="eq-exo">V = 2,5 <span class="unites">dm³</span> × 1 000 = 2 500 <span class="unites">cm³</span></p>
-    <p class="eq-exo">1 cm = 10 mm &nbsp;donc&nbsp; 1 cm³ = 1 000 mm³</p>
+    <p class="eq-exo">1 cm = 10 mm &nbsp;donc&nbsp; 1 cm³ = 10³ mm³</p>
     <p class="eq-exo">V = 2 500 <span class="unites">cm³</span> × 1 000 = 2 500 000 <span class="unites">mm³</span></p>
 
     <p class="etape">4 · Le résultat</p>
@@ -113,15 +157,22 @@
     <p class="palier-tete">
       <span class="n">Palier 1</span><span class="mode">guidé</span><span class="duree">5 min</span>
     </p>
-    <p>Compléter le tableau. Une case sur deux est déjà remplie.</p>
 
-    <table class="tab" style="max-width:52ch;">
+    <p class="contexte">Quatre conversions de la vie courante. Une case sur deux est
+    déjà remplie : il n'y a qu'un nombre à trouver par ligne.</p>
+
+    <div class="question">
+      <span class="q-etq">Question a</span>
+      <p>Compléter les quatre cases vides du tableau.</p>
+    </div>
+
+    <table class="tab a-completer">
       <thead><tr><th>Valeur de départ</th><th>Valeur convertie</th></tr></thead>
       <tbody>
-        <tr><td>1,5 L</td><td><span class="trou"></span> mL</td></tr>
-        <tr><td><span class="trou"></span> g</td><td>0,75 kg</td></tr>
-        <tr><td>3,2 m</td><td><span class="trou"></span> mm</td></tr>
-        <tr><td><span class="trou"></span> min</td><td>1,5 h</td></tr>
+        <tr><td>1,5 L</td><td><input class="trou court" type="text" data-cle="o01-p1-t1" aria-label="1,5 L en millilitres"> mL</td></tr>
+        <tr><td><input class="trou court" type="text" data-cle="o01-p1-t2" aria-label="valeur en grammes"> g</td><td>0,75 kg</td></tr>
+        <tr><td>3,2 m</td><td><input class="trou court" type="text" data-cle="o01-p1-t3" aria-label="3,2 m en millimètres"> mm</td></tr>
+        <tr><td><input class="trou court" type="text" data-cle="o01-p1-t4" aria-label="valeur en minutes"> min</td><td>1,5 h</td></tr>
       </tbody>
     </table>
   </section>
@@ -130,12 +181,45 @@
     <p class="palier-tete">
       <span class="n">Palier 2</span><span class="mode">en autonomie</span><span class="duree">10 min</span>
     </p>
-    <p><strong>a.</strong> Un moteur a une cylindrée de 1 998 cm³. L'exprimer en litres, puis en mm³.</p>
-    <p><strong>b.</strong> Un circuit de refroidissement contient 18,5 L. L'exprimer en cm³.</p>
-    <p><strong>c.</strong> Un couple de serrage vaut 4,2 daN·m. L'exprimer en N·m.</p>
-    <p><strong>d.</strong> Une section vaut 78,5 mm². L'exprimer en cm².</p>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+
+    <p class="contexte">Quatre relevés d'atelier, à remettre dans l'unité demandée.</p>
+
+    <div class="question">
+      <span class="q-etq">Question a</span>
+      <p>Un moteur a une cylindrée de 1 998 cm³. L'exprimer en litres, puis en mm³.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o01-p2-a" rows="3" aria-label="Cylindrée en litres puis en mm³"
+        placeholder="1 998 cm³ = …"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question b</span>
+      <p>Un circuit de refroidissement contient 18,5 L. L'exprimer en cm³.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o01-p2-b" rows="2" aria-label="Volume du circuit en cm³"
+        placeholder="18,5 L = …"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question c</span>
+      <p>Un couple de serrage vaut 4,2 daN·m. L'exprimer en N·m.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o01-p2-c" rows="2" aria-label="Couple en N·m"
+        placeholder="4,2 daN·m = …"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question d</span>
+      <p>Une section vaut 78,5 mm². L'exprimer en cm².</p>
+      <p>Attention : c'est une surface, donc deux directions.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o01-p2-d" rows="2" aria-label="Section en cm²"
+        placeholder="78,5 mm² = …"></textarea>
+    </div>
   </section>
 
   <section class="palier palier-3">
@@ -143,13 +227,38 @@
       <span class="n">Palier 3</span><span class="mode">en situation</span>
       <span class="marque">BTS</span><span class="duree">15 min</span>
     </p>
-    <p>Un godet est annoncé à 1 800 L.</p>
-    <p><strong>a.</strong> Convertir cette capacité en m³, puis en dm³.</p>
-    <p><strong>b.</strong> Le matériau foisonne de 25 % : une fois chargé, il occupe 25 % de volume
-    en plus qu'en place. Calculer le volume en place que représente un godet plein.</p>
-    <p><strong>c.</strong> Conclure par une phrase chiffrée.</p>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+
+    <p class="contexte">Un godet est annoncé à 1 800 L. Le matériau qu'il charge
+    foisonne de 25 % : une fois dans le godet, il occupe 25 % de volume en plus
+    qu'il n'en occupait en place dans le sol.</p>
+
+    <div class="question">
+      <span class="q-etq">Question a</span>
+      <p>Convertir la capacité du godet en m³, puis en dm³.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o01-p3-a" rows="3" aria-label="Capacité en m³ puis en dm³"
+        placeholder="1 800 L = …"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question b</span>
+      <p>Calculer le volume en place que représente un godet plein.</p>
+      <p>Le volume foisonné est celui du godet. Le volume en place est celui qu'on cherche.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o01-p3-b" rows="5" aria-label="Volume en place"
+        placeholder="1 · Les données…"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question c</span>
+      <p>Conclure par une phrase chiffrée.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o01-p3-c" rows="2" aria-label="Phrase de conclusion"
+        placeholder="Un godet plein représente…"></textarea>
+    </div>
   </section>
 
 
@@ -160,7 +269,8 @@
         <label for="fait">J'ai travaillé cette fiche.</label>
       </li>
     </ol>
-    <p class="aparte">Cette case reste sur cet appareil. Rien n'est envoyé, rien n'est enregistré ailleurs.</p>
+    <p class="aparte">Tout ce que tu écris sur cette page reste sur cet appareil.
+    Rien n'est envoyé, ni à ton professeur, ni à personne d'autre.</p>
   </div>
 
 </article>
@@ -172,23 +282,7 @@
   </div>
 </footer>
 
-<script>
-/* Marqueur de complétion. Une clé par outil, valeur "1", rien d'autre.
-   Le try/catch couvre le mode privé, où localStorage lève une exception :
-   la case redevient alors une simple case à cocher sans mémoire. */
-(function () {
-  var case_ = document.getElementById('fait');
-  if (!case_) return;
-  var cle = 'cfa-o' + case_.dataset.outil;
-  try { case_.checked = localStorage.getItem(cle) === '1'; } catch (e) {}
-  case_.addEventListener('change', function () {
-    try {
-      if (case_.checked) { localStorage.setItem(cle, '1'); }
-      else { localStorage.removeItem(cle); }
-    } catch (e) {}
-  });
-})();
-</script>
+<script src="../assets/js/cfa-livret.js?v=1" defer></script>
 
 </body>
 </html>

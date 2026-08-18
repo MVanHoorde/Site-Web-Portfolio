@@ -7,26 +7,26 @@
 <link rel="stylesheet" href="../assets/css/fonts.css">
 <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=4">
 <style>
-  /* Propre à cette fiche : la liste « plausible ou pas », deux cases par
-     ligne. Les cases sont dessinées en CSS et non en <input>, comme sur
-     la fiche A4 : la page écran et le papier doivent proposer le même
-     geste, cocher au même endroit. */
-  .plausible { list-style: none; max-width: 60ch; margin: .8rem 0 0; }
+  /* Propre à cette fiche : la liste « plausible ou aberrant », une case
+     par colonne. Les cases sont de vraies cases à cocher — sur écran on
+     coche, et ce qui est coché est conservé. La fiche A4 les rend en
+     carrés dessinés, pour le stylo. */
+  .plausible { list-style: none; max-width: 62ch; margin: .6rem 0 0; }
   .plausible li {
-    display: grid; grid-template-columns: 1fr auto auto; gap: 1.2rem;
-    align-items: baseline; padding: .45rem 0;
+    display: grid; grid-template-columns: 1fr 5.5rem 5.5rem; gap: .8rem;
+    align-items: center; padding: .5rem 0;
     border-bottom: 1px dashed var(--filet);
   }
   .plausible li:last-child { border-bottom: none; }
   .plausible .entete-cases {
     border-bottom: 1px solid var(--filet-fonce);
-    font-family: 'IBM Plex Mono', monospace; font-size: .68rem;
+    font-family: 'IBM Plex Mono', monospace; font-size: .66rem;
     letter-spacing: .12em; text-transform: uppercase; color: var(--sepia);
+    text-align: center;
   }
-  .plausible .boite {
-    display: inline-block; width: 1.1rem; height: 1.1rem;
-    border: 1.4px solid var(--encre); vertical-align: -2px;
-  }
+  .plausible .entete-cases span:first-child { text-align: left; }
+  .plausible label { display: block; text-align: center; cursor: pointer; }
+  .plausible input { transform: scale(1.2); accent-color: var(--h-beta); cursor: pointer; }
 </style>
 </head>
 <body>
@@ -60,6 +60,8 @@
 
   <h2>À quoi ça sert</h2>
   <p>Avant un calcul pour savoir ce qu'on attend, et après pour savoir si le résultat tient debout.</p>
+  <p>C'est le seul outil qui rattrape les erreurs des autres : une conversion ratée
+  donne un résultat mille fois trop grand, et rien ne le signale — sauf le bon sens.</p>
 
 
   <h2>La règle</h2>
@@ -87,9 +89,15 @@
   <h2>Un exemple entièrement résolu</h2>
 
   <div class="encart exemple">
-    <div class="etq">Exemple — montrer qu'un réservoir contient environ 84 L</div>
-    <p>Un réservoir a la forme d'un pavé de 0,58 m sur 0,45 m sur 0,32 m.
-    Montrer qu'il contient environ 84 L.</p>
+    <div class="etq">Exemple</div>
+
+    <p class="contexte">Un réservoir a la forme d'un pavé de 0,58 m sur 0,45 m sur 0,32 m.
+    Sa documentation annonce une contenance de 84 L.</p>
+
+    <div class="question">
+      <span class="q-etq">Question</span>
+      <p>Montrer que le réservoir contient bien environ 84 L, et chiffrer l'écart obtenu.</p>
+    </div>
 
     <p class="etape">1 · Les données</p>
     <p>L = 0,58 <span class="unites">m</span> · l = 0,45 <span class="unites">m</span> · h = 0,32 <span class="unites">m</span> · V<sub>annoncé</sub> = 84 <span class="unites">L</span></p>
@@ -117,30 +125,74 @@
     <p class="palier-tete">
       <span class="n">Palier 1</span><span class="mode">guidé</span><span class="duree">5 min</span>
     </p>
-    <p>Cocher, pour chaque valeur, si elle est plausible ou aberrante.
-    Puis corriger les deux valeurs aberrantes.</p>
+
+    <p class="contexte">Quatre valeurs annoncées. Deux sont plausibles, deux sont aberrantes.</p>
+
+    <div class="question">
+      <span class="q-etq">Question a</span>
+      <p>Cocher, pour chaque valeur, si elle est plausible ou aberrante.</p>
+    </div>
 
     <ul class="plausible">
       <li class="entete-cases"><span>Valeur annoncée</span><span>plausible</span><span>aberrante</span></li>
-      <li><span>Une voiture pèse 1,3 t.</span><span class="boite"></span><span class="boite"></span></li>
-      <li><span>Un pneu de poids lourd pèse 30 kg.</span><span class="boite"></span><span class="boite"></span></li>
-      <li><span>Un réservoir de voiture contient 60 L.</span><span class="boite"></span><span class="boite"></span></li>
-      <li><span>Une clé dynamométrique d'atelier est réglée à 1 200 N·m.</span><span class="boite"></span><span class="boite"></span></li>
+      <li>
+        <span>Une voiture pèse 1,3 t.</span>
+        <label><input type="checkbox" data-cle="o06-p1-v1p" aria-label="Une voiture pèse 1,3 t : plausible"></label>
+        <label><input type="checkbox" data-cle="o06-p1-v1a" aria-label="Une voiture pèse 1,3 t : aberrante"></label>
+      </li>
+      <li>
+        <span>Un pneu de poids lourd pèse 30 kg.</span>
+        <label><input type="checkbox" data-cle="o06-p1-v2p" aria-label="Un pneu de poids lourd pèse 30 kg : plausible"></label>
+        <label><input type="checkbox" data-cle="o06-p1-v2a" aria-label="Un pneu de poids lourd pèse 30 kg : aberrante"></label>
+      </li>
+      <li>
+        <span>Un réservoir de voiture contient 60 L.</span>
+        <label><input type="checkbox" data-cle="o06-p1-v3p" aria-label="Un réservoir de voiture contient 60 L : plausible"></label>
+        <label><input type="checkbox" data-cle="o06-p1-v3a" aria-label="Un réservoir de voiture contient 60 L : aberrante"></label>
+      </li>
+      <li>
+        <span>Une clé dynamométrique d'atelier est réglée à 1 200 N·m.</span>
+        <label><input type="checkbox" data-cle="o06-p1-v4p" aria-label="Clé dynamométrique réglée à 1 200 N·m : plausible"></label>
+        <label><input type="checkbox" data-cle="o06-p1-v4a" aria-label="Clé dynamométrique réglée à 1 200 N·m : aberrante"></label>
+      </li>
     </ul>
 
-    <p style="margin-top:.9rem;">Corriger les deux valeurs aberrantes.</p>
-    <span class="ligne"></span><span class="ligne"></span>
+    <div class="question">
+      <span class="q-etq">Question b</span>
+      <p>Proposer une valeur correcte pour les deux valeurs aberrantes.</p>
+      <p>Un ordre de grandeur suffit : on ne demande pas le chiffre exact.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o06-p1-b" rows="3" aria-label="Correction des deux valeurs aberrantes"
+        placeholder="La valeur … devrait plutôt être…"></textarea>
+    </div>
   </section>
 
   <section class="palier palier-2">
     <p class="palier-tete">
       <span class="n">Palier 2</span><span class="mode">en autonomie</span><span class="duree">10 min</span>
     </p>
-    <p>Un calcul donne 3,44 passages de godet pour vider un tas.</p>
-    <p><strong>a.</strong> Indiquer s'il faut retenir 3 ou 4.</p>
-    <p><strong>b.</strong> Justifier en une phrase.</p>
-    <p class="aparte">Les deux réponses peuvent se défendre. C'est l'argument qui est noté, pas le nombre.</p>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+
+    <p class="contexte">Un calcul donne 3,44 passages de godet pour vider un tas.</p>
+
+    <div class="question">
+      <span class="q-etq">Question a</span>
+      <p>Indiquer s'il faut retenir 3 ou 4 passages.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o06-p2-a" rows="2" aria-label="Faut-il retenir 3 ou 4"
+        placeholder="Je retiens…"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question b</span>
+      <p>Justifier ce choix en une phrase.</p>
+      <p>Les deux réponses peuvent se défendre. C'est l'argument qui compte, pas le nombre.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o06-p2-b" rows="3" aria-label="Justification du choix d'arrondi"
+        placeholder="Parce que…"></textarea>
+    </div>
   </section>
 
   <section class="palier palier-3">
@@ -148,13 +200,37 @@
       <span class="n">Palier 3</span><span class="mode">en situation</span>
       <span class="marque">BTS</span><span class="duree">15 min</span>
     </p>
-    <p>Une charge de 1 050 kg est élinguée. Les accessoires de levage pèsent 41 kg.
-    L'intensité de la pesanteur vaut 9,81 N/kg.</p>
-    <p><strong>a.</strong> Montrer que l'effort au point d'attache vaut environ 10 700 N.</p>
-    <p><strong>b.</strong> Préciser l'écart obtenu, en pourcentage.</p>
-    <p><strong>c.</strong> Dire si cet écart est acceptable, et pourquoi.</p>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+
+    <p class="contexte">Une charge de 1 050 kg est élinguée. Les accessoires de levage
+    pèsent 41 kg. L'intensité de la pesanteur vaut 9,81 N/kg.</p>
+
+    <div class="question">
+      <span class="q-etq">Question a</span>
+      <p>Montrer que l'effort au point d'attache vaut environ 10 700 N.</p>
+      <p>La valeur d'arrivée est donnée : c'est le chemin qui est demandé.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o06-p3-a" rows="6" aria-label="Montrer que l'effort vaut environ 10 700 N"
+        placeholder="1 · Les données…"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question b</span>
+      <p>Calculer l'écart entre la valeur trouvée et la valeur annoncée, en pourcentage.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o06-p3-b" rows="3" aria-label="Écart en pourcentage"
+        placeholder="écart = …"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question c</span>
+      <p>Dire si cet écart est acceptable, et pourquoi.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o06-p3-c" rows="3" aria-label="L'écart est-il acceptable"
+        placeholder="Cet écart est…"></textarea>
+    </div>
   </section>
 
 
@@ -165,7 +241,8 @@
         <label for="fait">J'ai travaillé cette fiche.</label>
       </li>
     </ol>
-    <p class="aparte">Cette case reste sur cet appareil. Rien n'est envoyé, rien n'est enregistré ailleurs.</p>
+    <p class="aparte">Tout ce que tu écris sur cette page reste sur cet appareil.
+    Rien n'est envoyé, ni à ton professeur, ni à personne d'autre.</p>
   </div>
 
 </article>
@@ -177,23 +254,7 @@
   </div>
 </footer>
 
-<script>
-/* Marqueur de complétion. Une clé par outil, valeur "1", rien d'autre.
-   Le try/catch couvre le mode privé, où localStorage lève une exception :
-   la case redevient alors une simple case à cocher sans mémoire. */
-(function () {
-  var case_ = document.getElementById('fait');
-  if (!case_) return;
-  var cle = 'cfa-o' + case_.dataset.outil;
-  try { case_.checked = localStorage.getItem(cle) === '1'; } catch (e) {}
-  case_.addEventListener('change', function () {
-    try {
-      if (case_.checked) { localStorage.setItem(cle, '1'); }
-      else { localStorage.removeItem(cle); }
-    } catch (e) {}
-  });
-})();
-</script>
+<script src="../assets/js/cfa-livret.js?v=1" defer></script>
 
 </body>
 </html>
