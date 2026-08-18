@@ -14,6 +14,7 @@ une figure qui n'a plus de place où aller.
 | Outil | Emplacement | Ce qui est attendu | Statut |
 |:-:|---|---|---|
 | 2 | recto, juste après la règle | Coupe simple d'un vérin : alésage `D` coté, section `S` en trame, pression `p` par une flèche dans la chambre, effort `F` par une flèche sur la tige. | à arbitrer |
+| 5 | verso, palier 3 | Schéma coté d'un bras de levage à l'échelle 1:25, les deux axes repérés, la distance entre eux à relever à la règle. | à arbitrer |
 
 ---
 
@@ -24,7 +25,6 @@ que l'arbitrage se fasse d'un seul coup d'œil, pas fiche par fiche.
 
 | Outil | Ce qui appellera vraisemblablement une figure |
 |:-:|---|
-| 5 | plan coté à l'échelle, pour relever une cote et revenir au réel |
 | 9 | section annulaire : alésage et tige superposés, couronne en trame |
 | 12 | rampe avec sa dénivelée et sa base, angle et pente en % côte à côte |
 | 14 | quadrillage portant trois vecteurs, le premier déjà coté |
