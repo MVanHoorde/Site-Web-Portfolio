@@ -15,6 +15,10 @@ une figure qui n'a plus de place où aller.
 |:-:|---|---|---|
 | 2 | recto, juste après la règle | Coupe simple d'un vérin : alésage `D` coté, section `S` en trame, pression `p` par une flèche dans la chambre, effort `F` par une flèche sur la tige. | à arbitrer |
 | 5 | verso, palier 3 | Schéma coté d'un bras de levage à l'échelle 1:25, les deux axes repérés, la distance entre eux à relever à la règle. | à arbitrer |
+| 9 | recto, après la règle | Section annulaire vue de face : cercle extérieur coté D, cercle intérieur coté d, la couronne entre les deux en trame. | à arbitrer |
+| 11 | recto, après le repérage des côtés | Triangle rectangle générique : angle droit marqué, angle α repéré, les trois côtés étiquetés hypoténuse, opposé et adjacent. | à arbitrer |
+| 12 | recto, après l'approximation | Triangle de pente : base horizontale de 100 cotée, dénivelée verticale cotée, angle α au sommet, et la mention « pente = dénivelée / base ». | à arbitrer |
+| 13 | recto, après la table des tours | Secteur de cercle : centre, rayon R coté, angle α marqué au centre, arc L en trait fort sur la circonférence. | à arbitrer |
 
 ---
 
@@ -25,8 +29,6 @@ que l'arbitrage se fasse d'un seul coup d'œil, pas fiche par fiche.
 
 | Outil | Ce qui appellera vraisemblablement une figure |
 |:-:|---|
-| 9 | section annulaire : alésage et tige superposés, couronne en trame |
-| 12 | rampe avec sa dénivelée et sa base, angle et pente en % côte à côte |
 | 14 | quadrillage portant trois vecteurs, le premier déjà coté |
 | 15 | quadrillage, deux déplacements bout à bout |
 | 16 | quadrillage, une flèche inclinée et ses deux projections |
