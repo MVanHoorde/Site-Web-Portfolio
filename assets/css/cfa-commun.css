@@ -3,7 +3,7 @@
    l'espace CFA (livret transversal de dix-sept fiches-outils).
 
    USAGE — dans le <head> d'une page écran, après fonts.css :
-     <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=1">
+     <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=3">
    Le <style> embarqué de la page ne garde QUE ce qui lui est propre.
 
    ⚠ CACHE — DÈS QUE CE FICHIER CHANGE LE RENDU (retoucher ce commentaire
@@ -341,10 +341,23 @@ sub, sup { font-size: .68em; }
 .frac .haut { display: block; border-bottom: 1.5px solid currentColor; padding: 0 .3em .1em; }
 .frac .bas  { display: block; padding: .1em .3em 0; }
 
-/* Unité accolée à une valeur */
+/* ------------------------------------------------------------
+   .unites — l'unité accolée à une valeur
+   ------------------------------------------------------------
+   Elle reste dans la police du texte qui la porte. La version
+   précédente passait en monospace, à 0,74 rem absolu contre les
+   1,15 rem d'une .eq-exo : trois ruptures simultanées — famille,
+   corps, couleur — au milieu d'une formule. Illisible et laid.
+
+   Une seule distinction suffit, et elle est proportionnée : romain
+   au milieu de l'italique, corps en em pour suivre son contexte,
+   encre adoucie. Dans .formule-bloc .grandeurs, qui est en
+   monospace, l'unité hérite du monospace — et c'est cohérent.
+   ------------------------------------------------------------ */
 .unites {
-  font-style: normal; font-family: 'IBM Plex Mono', monospace;
-  font-size: .74rem; color: var(--sepia);
+  font-style: normal;
+  font-size: .88em;
+  color: var(--encre-douce);
 }
 
 /* Aparté — remarque de second plan */
@@ -495,24 +508,120 @@ table.tab thead th {
 }
 
 
-/* ------------------------------------------------------------
-   .trou — emplacement à compléter à la main (palier 1)
+/* ============================================================
+   ÉNONCÉ, QUESTION, RÉPONSE — trois choses distinctes
    ------------------------------------------------------------
-   Un filet pointillé, jamais une case vide : l'élève doit voir tout de
-   suite qu'on attend une écriture, et où elle s'arrête.
+   Un exercice se lisait auparavant comme un pavé : le décor, la
+   consigne et l'espace de travail dans des paragraphes identiques.
+   La consigne s'y perdait, et le titre de l'encart ne la remplaçait
+   pas — un titre n'est pas lu comme une question.
 
-   Deux trous par palier 1, pas plus. C'est le palier où personne ne
-   peut échouer ; en ajouter un troisième lui retire sa seule fonction.
+   Désormais, dans cet ordre et toujours visuellement séparés :
+     .contexte   le décor, une phrase, discret
+     .question   la consigne, détachée et repérée par une lettre
+     .reponse    l'endroit où l'on écrit
+   ============================================================ */
+
+.contexte { color: var(--encre-douce); max-width: none; }
+
+/* ------------------------------------------------------------
+   .question — la consigne, détachée
+   ------------------------------------------------------------
+   Le repère alphabétique est cerné, pas coloré en aplat : il doit
+   tenir sur une photocopie. Sa couleur suit celle du palier, ce qui
+   rattache la question à son niveau sans un mot de plus.
+
+   HTML :
+     <div class="question"><span class="q-num">a</span>
+       <p>Calculer la section du piston, en m².</p></div>
    ------------------------------------------------------------ */
-.trou {
-  display: inline-block; border-bottom: 1.4px dotted var(--encre);
-  min-width: 6rem; height: 1.1em; vertical-align: -1px;
+.question {
+  display: grid; grid-template-columns: 1.7rem 1fr; gap: .7rem;
+  align-items: baseline; margin: 1.1rem 0 .5rem;
 }
-.trou.court { min-width: 3.5rem; }
-.trou.long  { min-width: 11rem; }
+.question .q-num {
+  font-family: 'IBM Plex Mono', monospace; font-size: .76rem;
+  font-weight: 600; text-align: center; padding: .12rem 0;
+  border: 1.4px solid currentColor; color: var(--encre);
+}
+.question p { margin: 0; max-width: none; font-weight: 600; }
+.question p + p { font-weight: 400; margin-top: .25rem; }
 
-/* Ligne d'écriture pleine largeur, pour une réponse rédigée */
-.ligne { display: block; border-bottom: 1.4px dotted var(--encre); height: 1.9rem; }
+.palier-1 .question .q-num { color: var(--h-beta); }
+.palier-2 .question .q-num { color: var(--h-gamma); }
+.palier-3 .question .q-num { color: var(--h-alpha); }
+
+
+/* ------------------------------------------------------------
+   .reponse — l'endroit où l'élève écrit
+   ------------------------------------------------------------
+   Sur papier, une zone de réponse est un filet pointillé. Sur écran,
+   un filet pointillé ne veut rien dire : on n'écrit pas dessus. Il
+   fallait un champ.
+
+   Ce n'est pas une entorse à la règle « rien qui n'existe que sur
+   écran » : le contenu est le même des deux côtés, seul le geste
+   change avec le support. La fiche A4 garde ses filets.
+
+   La barre de symboles et la conservation sont posées par
+   assets/js/cfa-livret.js. Le <textarea> est écrit dans le HTML :
+   sans JavaScript l'élève perd la barre et la mémoire, jamais la
+   possibilité d'écrire.
+   ------------------------------------------------------------ */
+.reponse { margin: .5rem 0 1.3rem; }
+
+.barre-symboles {
+  display: flex; flex-wrap: wrap; gap: 2px;
+  border: 1px solid var(--filet-fonce); border-bottom: none;
+  background: var(--papier); padding: .25rem;
+}
+.barre-symboles button {
+  font-family: 'EB Garamond', Garamond, Georgia, serif; font-size: 1.05rem;
+  min-width: 2.1rem; height: 1.9rem; cursor: pointer;
+  border: 1px solid transparent; background: transparent; color: var(--encre);
+}
+.barre-symboles button:hover { background: var(--encre); color: var(--papier); }
+.barre-symboles button:focus-visible { outline: 2px solid var(--h-beta); outline-offset: -2px; }
+
+.reponse textarea {
+  display: block; width: 100%;
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  font-size: 1.04rem; line-height: 2; color: var(--encre);
+  border: 1px solid var(--filet-fonce); background: #fff;
+  padding: .6rem .9rem; resize: vertical;
+}
+.reponse textarea:focus { outline: 2px solid var(--h-beta); outline-offset: -2px; }
+.reponse textarea::placeholder { color: var(--sepia); font-style: italic; }
+
+/* Le témoin d'enregistrement. Il occupe sa hauteur en permanence :
+   sans cela, son apparition ferait sauter la page à chaque frappe. */
+.temoin-enregistre {
+  display: block; font-family: 'IBM Plex Mono', monospace; font-size: .66rem;
+  color: var(--sepia); margin-top: .25rem; height: 1.1em;
+  opacity: 0; transition: opacity .2s;
+}
+.temoin-enregistre.visible { opacity: 1; }
+
+
+/* ------------------------------------------------------------
+   input.trou — le calcul amorcé du palier 1
+   ------------------------------------------------------------
+   Deux trous par palier 1, pas plus. C'est le palier où personne ne
+   peut échouer ; un troisième trou lui retire sa seule fonction.
+
+   Droit et non italique même à l'intérieur d'une .eq-exo : ce que
+   l'élève saisit est un nombre, et un nombre se lit mieux droit.
+   ------------------------------------------------------------ */
+input.trou {
+  font-family: inherit; font-size: inherit; font-style: normal;
+  font-weight: 600; color: var(--h-alpha); text-align: center;
+  width: 5.5rem; padding: 0 .2rem;
+  border: none; border-bottom: 1.4px solid var(--h-alpha);
+  background: transparent;
+}
+input.trou:focus { outline: 2px solid var(--h-beta); outline-offset: 2px; background: #fff; }
+input.trou.court { width: 3.6rem; }
+input.trou.long  { width: 14rem; }
 
 
 /* ------------------------------------------------------------
@@ -581,4 +690,11 @@ table.tab thead th {
   .palier, .exercice, .encart, .methode, .figure-a-produire {
     break-inside: avoid;
   }
+  /* La barre de symboles et le témoin sont des gestes d'écran : ils
+     n'ont rien à faire sur du papier. Le champ, lui, reste — imprimé
+     vide il fait une zone de réponse, imprimé rempli il porte le
+     travail de l'élève. */
+  .barre-symboles, .temoin-enregistre { display: none; }
+  .reponse textarea { border: 1px solid var(--encre); min-height: 4rem; }
+  input.trou { border-bottom: 1px solid var(--encre); }
 }

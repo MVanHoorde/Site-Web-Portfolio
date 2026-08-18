@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Outil 0 — Rédiger un calcul qui rapporte des points · Livret CFA</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=1">
+<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=3">
 <style>
   /* Propre à cette fiche : la copie d'élève reproduite, qu'on lit comme
-     une copie et pas comme un encart de cours. Écriture manuscrite
-     suggérée par le monospace et le fond réservé ; le libellé « copie »
-     est écrit en toutes lettres, jamais porté par le seul style. */
+     une copie et pas comme un encart de cours. Le libellé « copie » est
+     écrit en toutes lettres — l'information n'est jamais portée par le
+     seul style. */
   .copie {
     border: 1px solid var(--filet-fonce); background: #fff;
     padding: .9rem 1.2rem; margin: .8rem 0; max-width: 60ch;
@@ -21,15 +21,16 @@
     color: var(--sepia); margin-bottom: .4rem; display: block;
   }
   .copie .trace {
-    font-family: 'IBM Plex Mono', monospace; font-size: 1.05rem;
-    line-height: 1.9; color: var(--encre);
+    font-family: 'IBM Plex Mono', monospace; font-size: 1.02rem;
+    line-height: 1.9; color: var(--encre); margin: 0; max-width: none;
   }
-  .cases { list-style: none; margin: .6rem 0 0; }
+  .cases { list-style: none; margin: .5rem 0 0; max-width: 62ch; }
   .cases li {
-    display: grid; grid-template-columns: auto 1fr; gap: .6rem;
-    align-items: baseline; padding: .3rem 0;
+    display: grid; grid-template-columns: auto 1fr; gap: .7rem;
+    align-items: baseline; padding: .35rem 0;
   }
-  .cases input { transform: translateY(2px) scale(1.15); accent-color: var(--h-gamma); }
+  .cases input { transform: translateY(2px) scale(1.15); accent-color: var(--h-beta); cursor: pointer; }
+  .cases label { cursor: pointer; }
 </style>
 </head>
 <body>
@@ -95,8 +96,14 @@
   <h2>Un exemple entièrement résolu</h2>
 
   <div class="encart exemple">
-    <div class="etq">Exemple — consommation moyenne sur un trajet</div>
-    <p>Un véhicule a parcouru 620 km. Le plein a demandé 46 L.</p>
+    <div class="etq">Exemple</div>
+
+    <p class="contexte">Un véhicule a parcouru 620 km. Le plein a demandé 46 L.</p>
+
+    <div class="question">
+      <span class="q-num">?</span>
+      <p>Calculer la consommation moyenne du véhicule, en litres aux 100 km.</p>
+    </div>
 
     <p class="etape">1 · Les données</p>
     <p>V = 46 <span class="unites">L</span> · d = 620 <span class="unites">km</span></p>
@@ -126,24 +133,35 @@
     <p class="palier-tete">
       <span class="n">Palier 1</span><span class="mode">guidé</span><span class="duree">5 min</span>
     </p>
-    <p>Un élève devait calculer la consommation d'un véhicule. Le plein a demandé 62 L pour 780 km.
-    Voici sa copie, recopiée telle quelle.</p>
+
+    <p class="contexte">Un élève devait calculer la consommation d'un véhicule.
+    Le plein a demandé 62 L pour 780 km. Voici sa copie, recopiée telle quelle.
+    Son résultat est juste.</p>
 
     <div class="copie">
       <span class="etq">Copie de l'élève</span>
       <p class="trace">62 / 780 = 7,9</p>
     </div>
 
-    <p>Le résultat est juste. Cocher les trois règles qui manquent.</p>
+    <div class="question">
+      <span class="q-num">a</span>
+      <p>Cocher les trois règles qui manquent à cette copie.</p>
+    </div>
     <ul class="cases">
-      <li><input type="checkbox" id="p1a"><label for="p1a">Les données ne sont pas recopiées avec leur unité.</label></li>
-      <li><input type="checkbox" id="p1b"><label for="p1b">La relation n'est pas écrite en lettres.</label></li>
-      <li><input type="checkbox" id="p1c"><label for="p1c">Le résultat n'a pas son unité, et il n'y a pas de phrase de conclusion.</label></li>
+      <li><input type="checkbox" id="p1a" data-cle="o00-p1a"><label for="p1a">Les données ne sont pas recopiées avec leur unité.</label></li>
+      <li><input type="checkbox" id="p1b" data-cle="o00-p1b"><label for="p1b">La relation n'est pas écrite en lettres.</label></li>
+      <li><input type="checkbox" id="p1c" data-cle="o00-p1c"><label for="p1c">Le résultat n'a pas son unité, et il n'y a pas de phrase de conclusion.</label></li>
     </ul>
 
-    <p style="margin-top:.9rem;">Réécrire cette copie en respectant les cinq étapes.</p>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
-    <span class="ligne"></span><span class="ligne"></span>
+    <div class="question">
+      <span class="q-num">b</span>
+      <p>Réécrire cette copie en respectant les cinq étapes.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o00-p1-reecriture" rows="6"
+        aria-label="Réécriture de la copie selon les cinq étapes"
+        placeholder="1 · Les données…"></textarea>
+    </div>
   </section>
 
   <!-- PALIER 2 — deux copies à comparer. C'est le cœur du message :
@@ -153,8 +171,10 @@
     <p class="palier-tete">
       <span class="n">Palier 2</span><span class="mode">en autonomie</span><span class="duree">10 min</span>
     </p>
-    <p>Une intervention d'atelier a demandé 3 h 30 de main-d'œuvre à 68 €/h, plus 145 € de pièces.
-    Deux élèves ont traité la question.</p>
+
+    <p class="contexte">Une intervention d'atelier a demandé 3 h 30 de main-d'œuvre
+    à 68 €/h, plus 145 € de pièces. Deux élèves ont traité la question.
+    Une seule des deux copies donne le bon total.</p>
 
     <div class="copie">
       <span class="etq">Copie A</span>
@@ -170,13 +190,35 @@
       <p class="trace">383 €</p>
     </div>
 
-    <p>Une seule des deux donne le bon total. Répondre aux trois questions.</p>
-    <p><strong>a.</strong> Repérer l'erreur de la copie A. <span class="trou long"></span></p>
-    <p><strong>b.</strong> Indiquer quelle copie rapporte le plus de points, et pourquoi.</p>
-    <span class="ligne"></span><span class="ligne"></span>
-    <p style="margin-top:.6rem;"><strong>c.</strong> Rédiger la copie C : juste <em>et</em> rédigée selon les cinq étapes.</p>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+    <div class="question">
+      <span class="q-num">a</span>
+      <p>Repérer l'erreur de la copie A.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o00-p2-erreur" rows="2"
+        aria-label="Erreur de la copie A"
+        placeholder="L'erreur porte sur…"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-num">b</span>
+      <p>Indiquer quelle copie rapporte le plus de points, et expliquer pourquoi.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o00-p2-comparaison" rows="3"
+        aria-label="Quelle copie rapporte le plus, et pourquoi"
+        placeholder="La copie … rapporte plus, parce que…"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-num">c</span>
+      <p>Rédiger la copie C : juste <em>et</em> rédigée selon les cinq étapes.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o00-p2-copieC" rows="7"
+        aria-label="Copie C, juste et rédigée"
+        placeholder="1 · Les données…"></textarea>
+    </div>
   </section>
 
   <!-- PALIER 3 — BTS. Enchaînement de trois étapes, contexte engin.
@@ -187,13 +229,21 @@
       <span class="n">Palier 3</span><span class="mode">en situation</span>
       <span class="marque">BTS</span><span class="duree">15 min</span>
     </p>
-    <p>Une chargeuse a un godet de 1,8 m³. Son temps de cycle est de 42 s.
-    Le coefficient de remplissage vaut 0,9. L'engin travaille effectivement 50 min par heure.</p>
-    <p>Rédiger intégralement le calcul de la production horaire, en respectant les cinq étapes.
-    C'est la rédaction qui est notée ici, autant que le résultat.</p>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
-    <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
-    <span class="ligne"></span><span class="ligne"></span>
+
+    <p class="contexte">Une chargeuse a un godet de 1,8 m³. Son temps de cycle est
+    de 42 s. Le coefficient de remplissage vaut 0,9. L'engin travaille effectivement
+    50 min par heure.</p>
+
+    <div class="question">
+      <span class="q-num">?</span>
+      <p>Rédiger intégralement le calcul de la production horaire, en respectant les cinq étapes.</p>
+      <p>À l'examen, c'est la rédaction qui est notée ici, autant que le résultat.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o00-p3-production" rows="9"
+        aria-label="Calcul rédigé de la production horaire"
+        placeholder="1 · Les données…"></textarea>
+    </div>
   </section>
 
 
@@ -204,7 +254,8 @@
         <label for="fait">J'ai travaillé cette fiche.</label>
       </li>
     </ol>
-    <p class="aparte">Cette case reste sur cet appareil. Rien n'est envoyé, rien n'est enregistré ailleurs.</p>
+    <p class="aparte">Tout ce que tu écris sur cette page reste sur cet appareil.
+    Rien n'est envoyé, ni à ton professeur, ni à personne d'autre.</p>
   </div>
 
 </article>
@@ -216,23 +267,7 @@
   </div>
 </footer>
 
-<script>
-/* Marqueur de complétion. Une clé par outil, valeur "1", rien d'autre.
-   Le try/catch couvre le mode privé, où localStorage lève une exception :
-   la case redevient alors une simple case à cocher sans mémoire. */
-(function () {
-  var case_ = document.getElementById('fait');
-  if (!case_) return;
-  var cle = 'cfa-o' + case_.dataset.outil;
-  try { case_.checked = localStorage.getItem(cle) === '1'; } catch (e) {}
-  case_.addEventListener('change', function () {
-    try {
-      if (case_.checked) { localStorage.setItem(cle, '1'); }
-      else { localStorage.removeItem(cle); }
-    } catch (e) {}
-  });
-})();
-</script>
+<script src="../assets/js/cfa-livret.js?v=1" defer></script>
 
 </body>
 </html>
