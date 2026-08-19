@@ -12,6 +12,42 @@
 
 ---
 
+## 19/08/2026 (suite) — Première inscription réelle : deux pièges d'authentification
+
+La première tentative de création de compte sur le livret a échoué, et le
+message affiché était faux. Deux défauts, tous deux dans `progression.js`,
+tous deux invisibles jusqu'à ce qu'un humain s'assoie devant le formulaire.
+
+**1. Le message mentait.** `creerCompte()` traduisait tout 400/422 de GoTrue en
+« cet identifiant est déjà pris ». Le serveur, lui, répondait
+`weak_password` : le projet Supabase exige une minuscule, une majuscule et un
+chiffre. L'élève changeait donc d'identifiant à chaque essai — `cfatest`,
+`cfatest01`, `cfatest02`, `cfatest02-` — sans jamais toucher à son mot de passe,
+la seule chose qui n'allait pas. Diagnostic fait en interrogeant directement
+l'API d'authentification, avec un identifiant qui existait déjà pour ne rien
+créer.
+
+Le client lit maintenant `error_code`, distingue quatre motifs (mot de passe
+faible, identifiant pris, identifiant refusé, trop de tentatives), et **annonce
+la règle sous le champ** au lieu de la faire découvrir par l'échec.
+
+**2. L'impasse du compte à moitié créé.** Créer un compte se fait en deux temps —
+le compte d'authentification, puis l'inscription en classe. Si le second échoue
+seul (code de classe faux, réseau coupé), il reste un compte que `ma_session()`
+ne voit pas : l'élève est traité comme non connecté, et « Créer mon compte » lui
+répond éternellement que son identifiant est pris. Aucune sortie.
+« Créer mon compte » tente désormais une connexion de secours avec le mot de
+passe saisi : si elle passe, c'est bien son compte, et l'inscription en classe
+reprend là où elle s'était arrêtée.
+
+**Portée.** Les deux correctifs valent aussi pour les séquences SNT, qui
+partagent ce fichier. `progression.js` passe en `?v=14` sur les vingt-trois
+pages qui le chargent — les quatre pages SNT en étaient restées à `?v=13`, les
+dix-neuf pages CFA à `?v=3` : deux numérotations pour un même fichier, alignées
+à cette occasion.
+
+---
+
 ## 19/08/2026 (suite) — Le livret CFA rejoint le dispositif de comptes
 
 Demande : « est-ce qu'on peut mettre en place ce que l'on a fait pour les

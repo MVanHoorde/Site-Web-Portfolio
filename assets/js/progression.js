@@ -192,11 +192,24 @@
       if (texte) { try { donnees = JSON.parse(texte); } catch (e) { donnees = texte; } }
       if (r.ok) return donnees;
 
-      // PostgREST range le  hint  de nos exceptions SQL dans .hint,
-      // et le message ('CODE_CLASSE_INCONNU'…) dans .message.
-      var e = new Error((donnees && (donnees.hint || donnees.message || donnees.error_description)) || ('HTTP ' + r.status));
-      e.code   = (donnees && donnees.message) || String(r.status);
-      e.statut = r.status;
+      // Deux services, deux formes d'erreur, et il faut lire les deux :
+      //  · PostgREST range le  hint  de nos exceptions SQL dans .hint,
+      //    et le message ('CODE_CLASSE_INCONNU'…) dans .message ;
+      //  · GoTrue (l'authentification) range le motif réel dans
+      //    .error_code — 'weak_password', 'user_already_exists',
+      //    'over_request_rate_limit'… — et le texte dans .msg.
+      //
+      // Ne lire que .message revenait à confondre TOUTES les erreurs
+      // d'inscription : un mot de passe refusé par la politique du
+      // projet s'affichait « cet identifiant est déjà pris », et
+      // l'élève changeait d'identifiant à l'infini sans jamais toucher
+      // à la seule chose qui n'allait pas.
+      var e = new Error((donnees && (donnees.hint || donnees.message
+                                  || donnees.msg || donnees.error_description))
+                        || ('HTTP ' + r.status));
+      e.code    = (donnees && donnees.message) || String(r.status);
+      e.motif   = (donnees && (donnees.error_code || donnees.error)) || '';
+      e.statut  = r.status;
       throw e;
     });
   }
@@ -265,6 +278,29 @@
    * tirets, de 3 à 32 caractères. Il sert de pseudo affiché au
    * professeur ET à fabriquer l'adresse interne identifiant@snt.local
    * — d'où l'interdiction des espaces et des accents. */
+  /* ----------------------------------------------------------
+   *  Le mot de passe, tel que le projet Supabase l'exige
+   *  ----------------------------------------------------------
+   *  La politique est réglée dans le tableau de bord (Authentication
+   *  → Password settings), pas ici : ce code ne fait que la refléter
+   *  pour éviter un aller-retour réseau et, surtout, pour l'annoncer
+   *  AVANT que l'élève tape. Une règle qu'on ne découvre qu'après
+   *  coup, sur un message d'erreur, se vit comme une brimade.
+   *
+   *  Si la politique change côté Supabase, ces deux constantes
+   *  changent avec elle — sinon le client refusera des mots de passe
+   *  que le serveur accepte.
+   * ---------------------------------------------------------- */
+  var REGLE_MDP = 'Au moins 6 caractères, dont une majuscule et un chiffre.';
+
+  function motDePasseInsuffisant(mdp) {
+    if (mdp.length < 6)        return 'MOT_DE_PASSE_TROP_COURT';
+    if (!/[a-z]/.test(mdp))    return 'MOT_DE_PASSE_FAIBLE';
+    if (!/[A-Z]/.test(mdp))    return 'MOT_DE_PASSE_FAIBLE';
+    if (!/[0-9]/.test(mdp))    return 'MOT_DE_PASSE_FAIBLE';
+    return null;
+  }
+
   function normaliserIdentifiant(brut) {
     var id = String(brut || '').trim().toLowerCase();
     if (!/^[a-z0-9-]{3,32}$/.test(id)) {
@@ -287,21 +323,72 @@
       exigeConfiguration();
       var id  = normaliserIdentifiant(identifiant);
       var mdp = String(motDePasse || '');
-      if (mdp.length < 6) { var em = new Error('MOT_DE_PASSE_TROP_COURT'); em.code = 'MOT_DE_PASSE_TROP_COURT'; throw em; }
+      var faible = motDePasseInsuffisant(mdp);
+      if (faible) { var em = new Error(faible); em.code = faible; throw em; }
       return auth('signup', { email: emailSynthetique(id), password: mdp })
+        .then(memoriser)
         .catch(function (e) {
-          // GoTrue renvoie 422/400 quand l'adresse existe déjà.
-          if (e.statut === 422 || e.statut === 400) { var d = new Error('IDENTIFIANT_DEJA_PRIS'); d.code = 'IDENTIFIANT_DEJA_PRIS'; throw d; }
+          /* Un 422 de GoTrue ne veut pas dire « identifiant pris » :
+             il faut lire le motif. Les confondre a coûté une séance
+             de tâtonnement — l'élève changeait d'identifiant alors
+             que c'était son mot de passe qui était refusé. */
+          var d;
+          if (e.motif === 'weak_password') {
+            d = new Error('MOT_DE_PASSE_FAIBLE'); d.code = 'MOT_DE_PASSE_FAIBLE'; throw d;
+          }
+          if (e.motif === 'email_address_invalid') {
+            d = new Error('IDENTIFIANT_REFUSE'); d.code = 'IDENTIFIANT_REFUSE'; throw d;
+          }
+          if (e.statut === 429 || /rate_limit/.test(e.motif)) {
+            d = new Error('TROP_DE_TENTATIVES'); d.code = 'TROP_DE_TENTATIVES'; throw d;
+          }
+
+          /* ------------------------------------------------------
+             L'identifiant existe déjà. Ce n'est pas forcément la
+             faute de l'élève : créer un compte se fait en DEUX temps
+             — le compte d'abord, l'inscription en classe ensuite —
+             et si le second échoue (code de classe faux, réseau
+             coupé), il reste un compte d'authentification que rien
+             ne rattache à une classe. `ma_session()` ne renvoie
+             alors rien, l'élève est traité comme non connecté, et
+             « Créer mon compte » lui répond éternellement que son
+             identifiant est pris : une impasse.
+
+             On tente donc la connexion avec le mot de passe qu'il
+             vient de taper. Si elle passe, c'est bien son compte :
+             on le reprend là où il en était. Sinon seulement,
+             l'identifiant appartient à quelqu'un d'autre.
+             ------------------------------------------------------ */
+          if (e.motif === 'user_already_exists' || e.motif === 'email_exists') {
+            return auth('token?grant_type=password',
+                        { email: emailSynthetique(id), password: mdp })
+              .then(memoriser)
+              .catch(function () {
+                var pris = new Error('IDENTIFIANT_DEJA_PRIS');
+                pris.code = 'IDENTIFIANT_DEJA_PRIS'; throw pris;
+              });
+          }
+
+          /* Motif inconnu : on garde le texte du serveur plutôt que
+             d'inventer une cause. Mieux vaut un message brut qu'un
+             message faux. */
           throw e;
         })
-        .then(memoriser)
         .then(function () {
+          /* Déjà inscrit en classe ? rejoindre_classe() est idempotente
+             (elle met à jour la date de visite et sort), mais l'appeler
+             avec un code vide échouerait — on ne le fait donc que si
+             l'élève n'a pas encore de fiche. */
+          profil = null;
+          return session();
+        })
+        .then(function (dejaInscrit) {
+          if (dejaInscrit) return dejaInscrit;
           return rpc('rejoindre_classe', {
             p_code  : String(codeClasse || '').trim().toUpperCase(),
             p_pseudo: id
-          });
-        })
-        .then(function () { profil = null; return session(); });
+          }).then(function () { profil = null; return session(); });
+        });
     });
   }
 
@@ -316,7 +403,13 @@
           email: emailSynthetique(id), password: String(motDePasse || '')
         })
         .catch(function (e) {
-          if (e.statut === 400) { var d = new Error('IDENTIFIANTS_INCORRECTS'); d.code = 'IDENTIFIANTS_INCORRECTS'; throw d; }
+          var d;
+          if (e.statut === 429 || /rate_limit/.test(e.motif)) {
+            d = new Error('TROP_DE_TENTATIVES'); d.code = 'TROP_DE_TENTATIVES'; throw d;
+          }
+          if (e.statut === 400 || e.motif === 'invalid_credentials') {
+            d = new Error('IDENTIFIANTS_INCORRECTS'); d.code = 'IDENTIFIANTS_INCORRECTS'; throw d;
+          }
           throw e;
         })
         .then(memoriser)
@@ -529,9 +622,12 @@
 
   var MSG_ERREUR = {
     IDENTIFIANT_INVALIDE   : 'Identifiant : seulement des minuscules, des chiffres et des tirets (3 à 32 caractères).',
-    MOT_DE_PASSE_TROP_COURT: 'Mot de passe : 6 caractères minimum.',
-    IDENTIFIANT_DEJA_PRIS  : 'Cet identifiant est déjà pris. Choisis-en un autre.',
+    IDENTIFIANT_REFUSE     : 'Cet identifiant n\'est pas accepté. Essaie sans tiret au début ni à la fin.',
+    MOT_DE_PASSE_TROP_COURT: 'Mot de passe : 6 caractères minimum, dont une majuscule et un chiffre.',
+    MOT_DE_PASSE_FAIBLE    : 'Mot de passe : il faut au moins une majuscule et un chiffre. Exemple : Atelier7.',
+    IDENTIFIANT_DEJA_PRIS  : 'Cet identifiant est déjà pris. Choisis-en un autre — ou passe par « Me connecter » si c\'est le tien.',
     IDENTIFIANTS_INCORRECTS: 'Identifiant ou mot de passe incorrect.',
+    TROP_DE_TENTATIVES     : 'Trop d\'essais en peu de temps. Attends une minute et recommence.',
     CODE_CLASSE_INCONNU    : 'Code de classe inconnu, ou inscriptions fermées.',
     PSEUDO_DEJA_PRIS       : 'Cet identifiant est déjà utilisé dans cette classe.'
   };
@@ -686,7 +782,8 @@
         + '<input id="acc-id" type="text" autocomplete="username" placeholder="dede-33">'
         + '<p class="acc-aide">Minuscules, chiffres et tirets. C\'est le nom que ton professeur verra.</p>'
         + '<label class="acc-label" for="acc-mdp">Mot de passe</label>'
-        + '<input id="acc-mdp" type="password" autocomplete="new-password" placeholder="6 caractères minimum">'
+        + '<input id="acc-mdp" type="password" autocomplete="new-password" placeholder="Atelier7">'
+        + '<p class="acc-aide">' + REGLE_MDP + '</p>'
         + '<div style="height:12px"></div>'
         + '<label class="acc-label" for="acc-code">Code de la classe</label>'
         + '<input id="acc-code" type="text" autocomplete="off" placeholder="donné par ton professeur">'
