@@ -5,18 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Outil 2 — Les unités de pression · Livret CFA</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=4">
+<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=5">
 <style>
-  /* Propre à cette fiche : les égalités de conversion, empilées dans le
-     bloc sombre de .formule-bloc. Elles remplacent la formule unique
-     des autres fiches — l'outil 2 n'a pas une relation, il en a quatre. */
-  .formule-bloc .eq.egalites {
-    flex-direction: column; align-items: flex-start; gap: .35rem;
-    font-size: 1.25rem; line-height: 1.3;
+  /* Propre à cette fiche : le tableau de conversions aligné du palier 1.
+     La version précédente posait les trous DANS une ligne de calcul
+     (« 2,4 × ___ kPa = ___ kPa ») : le premier trou demandait un
+     facteur mais portait une unité, ce qui n'a pas de sens, et rien
+     n'était aligné. Ici, membre de gauche à droite, signe égal en
+     colonne, trou et unité à droite. Ça se lit d'un coup d'œil. */
+  .conversions { width: 100%; max-width: 46ch; border-collapse: collapse; }
+  .conversions td {
+    font-family: 'IBM Plex Mono', monospace; font-size: .95rem;
+    padding: .3rem .5rem; border: none;
   }
-  .formule-bloc .eq.egalites .cle {
-    border-top: 1px solid var(--papier); padding-top: .4rem; margin-top: .15rem;
-  }
+  .conversions td.gauche { text-align: right; white-space: nowrap; }
+  .conversions td.egal { text-align: center; color: var(--sepia); width: 2rem; }
+  .conversions td.droite { text-align: left; white-space: nowrap; }
+  .conversions input.trou { width: 7rem; text-align: right; }
 </style>
 </head>
 <body>
@@ -64,19 +69,94 @@
       <span class="cle">1 MPa = 1 N/mm²</span>
     </div>
     <div class="grandeurs">
-      <span class="titre">Deux façons de calculer un effort</span>
-      <b>F = p × S</b><br>
-      p en <b>Pa</b>, S en <b>m²</b> → F en N<br>
-      p en <b>N/mm²</b>, S en <b>mm²</b> → F en N
+      <span class="titre">Trois écritures d'une même pression</span>
+      <b>bar</b> → ce que lit le manomètre<br>
+      <b>MPa</b> → ce qu'écrit la documentation<br>
+      <b>Pa</b> → ce qu'attend la formule en m²
     </div>
   </div>
 
-  <p class="aparte">La deuxième ligne évite presque toujours les zéros : une documentation donne les alésages en millimètres, jamais en mètres.</p>
+  <!-- La relation effort–pression a désormais son propre bloc, à la
+       taille des autres formules du livret. Elle était auparavant
+       reléguée dans la colonne de droite, en petit : c'est pourtant
+       elle qu'on applique, pas les égalités de conversion. -->
+  <div class="formule-bloc">
+    <div class="eq">F = p × S</div>
+    <div class="grandeurs">
+      <span class="titre">Deux jeux d'unités, tous deux justes</span>
+      p en <b>Pa</b>, S en <b>m²</b> → F en <b>N</b><br>
+      p en <b>N/mm²</b>, S en <b>mm²</b> → F en <b>N</b>
+    </div>
+  </div>
 
-  <p class="figure-a-produire">
-    <span class="etq">Figure à produire</span>
-    Coupe simple d'un vérin : alésage D coté, section S en trame, pression p par une flèche dans la chambre, effort F par une flèche sur la tige.
-  </p>
+  <p class="aparte">La deuxième ligne évite presque toujours les zéros : une
+  documentation donne les alésages en millimètres, jamais en mètres. Passer par
+  les N/mm², c'est la même formule sans les dix puissances de dix.</p>
+
+  <figure class="figure">
+    <svg viewBox="0 0 700 290" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Coupe schématique d'un vérin hydraulique simple effet</title>
+      <desc>Le corps du vérin est représenté en coupe. À gauche, la chambre
+      sous pression, en trame, où s'exerce la pression p. Au centre, le piston,
+      dont le diamètre D est le diamètre d'alésage coté à gauche. À droite, la
+      tige, sur laquelle s'exerce l'effort F dirigé vers la droite.</desc>
+
+      <defs>
+        <marker id="fl-force" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#8f2d2b"/>
+        </marker>
+        <marker id="fl-cote" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f6b70"/>
+        </marker>
+        <marker id="fl-encre" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#5a4c3a"/>
+        </marker>
+      </defs>
+
+      <!-- axe de révolution -->
+      <line x1="55" y1="140" x2="672" y2="140" class="fig-axe"/>
+
+      <!-- corps du vérin -->
+      <rect x="70" y="50" width="330" height="180" class="fig-piece"/>
+      <!-- chambre sous pression -->
+      <rect x="72" y="52" width="178" height="176" class="fig-trame"/>
+      <!-- piston -->
+      <rect x="250" y="52" width="26" height="176" class="fig-piece"/>
+      <!-- tige -->
+      <rect x="276" y="126" width="264" height="28" class="fig-piece"/>
+
+      <!-- pression dans la chambre -->
+      <line x1="105" y1="92" x2="235" y2="92" stroke="#5a4c3a" stroke-width="1.6"
+            marker-end="url(#fl-encre)"/>
+      <line x1="105" y1="188" x2="235" y2="188" stroke="#5a4c3a" stroke-width="1.6"
+            marker-end="url(#fl-encre)"/>
+      <text x="150" y="82" class="fig-txt">pression p</text>
+
+      <!-- effort sur la tige -->
+      <line x1="545" y1="140" x2="668" y2="140" class="fig-force"
+            marker-end="url(#fl-force)"/>
+      <text x="600" y="126" class="fig-txt force" text-anchor="middle">effort F</text>
+
+      <!-- cote du diamètre d'alésage, à gauche pour ne rien croiser -->
+      <line x1="70" y1="52" x2="30" y2="52" class="fig-cote"/>
+      <line x1="70" y1="228" x2="30" y2="228" class="fig-cote"/>
+      <line x1="38" y1="52" x2="38" y2="228" class="fig-cote"
+            marker-start="url(#fl-cote)" marker-end="url(#fl-cote)"/>
+      <text x="16" y="146" class="fig-txt cote">D</text>
+
+      <!-- renvoi vers la section -->
+      <line x1="263" y1="52" x2="263" y2="26" class="fig-cote" stroke-dasharray="4 3"/>
+      <text x="263" y="20" class="fig-txt cote" text-anchor="middle">section S = π D² / 4</text>
+    </svg>
+    <figcaption>Coupe d'un vérin. La pression <b>p</b> règne dans toute la chambre
+    (partie tramée) et pousse sur la face du piston, dont l'aire est la section
+    <b>S</b>. C'est le produit des deux qui donne l'effort <b>F</b> disponible sur
+    la tige. Le diamètre <b>D</b> coté est le diamètre d'alésage : c'est lui, et
+    non le rayon, que porte la documentation.</figcaption>
+  </figure>
 
 
   <h2>Un exemple entièrement résolu</h2>
@@ -95,42 +175,65 @@
     <p>p = 180 <span class="unites">bar</span> · D = 40 <span class="unites">mm</span></p>
 
     <p class="etape">2 · Les relations</p>
-    <p class="eq-exo">S = <span class="frac"><span class="haut">π × D²</span><span class="bas">4</span></span> &nbsp;·&nbsp; F = p × S</p>
+    <p class="eq-exo">S = <span class="frac"><span class="haut">π × D²</span><span class="bas">4</span></span> &nbsp;·&nbsp; F = p × S
+      &nbsp;·&nbsp; 1 bar = 0,1 MPa = 0,1 N/mm²</p>
 
-    <p class="etape">3 · Le calcul, avec les unités</p>
-    <p class="eq-exo">p = 180 <span class="unites">bar</span> = 18 <span class="unites">MPa</span> = 18 <span class="unites">N/mm²</span></p>
-    <p class="eq-exo">S = <span class="frac"><span class="haut">π × (40 mm)²</span><span class="bas">4</span></span> = 1 257 <span class="unites">mm²</span></p>
-    <p class="eq-exo">F = 18 <span class="unites">N/mm²</span> × 1 257 <span class="unites">mm²</span> = 22 626 <span class="unites">N</span></p>
+    <p class="etape">3 · L'application numérique</p>
+    <p class="eq-exo">p = 180 × 0,1 = 18 &nbsp;→&nbsp; p = <span class="resultat">18 N/mm²</span></p>
+    <p class="eq-exo">S = <span class="frac"><span class="haut">π × 40²</span><span class="bas">4</span></span> = 1 257
+      &nbsp;→&nbsp; S = <span class="resultat">1 257 mm²</span></p>
+    <p class="eq-exo">F = 18 × 1 257 = 22 626 &nbsp;→&nbsp; F = <span class="resultat">22,6 kN</span></p>
 
-    <p class="etape">4 · Le résultat</p>
-    <p class="eq-exo">F = <span class="resultat">22,6 kN</span></p>
-
-    <p class="etape">5 · La conclusion</p>
+    <p class="etape">4 · La conclusion</p>
     <p>Le vérin développe 22,6 kilonewtons, soit environ 2,3 tonnes.</p>
+
+    <p class="aparte">Le même calcul en pascals et en m² donne le même résultat, au
+    prix de sept zéros à ne pas perdre. Les deux sont justes ; celui-ci est plus sûr.</p>
   </div>
 
 
   <h2>À toi de jouer</h2>
 
-  <!-- PALIER 1 — le calcul est déjà amorcé, deux trous. Contexte
-       quotidien : la station-service, que tout le monde connaît. -->
+  <!-- PALIER 1 — cinq conversions alignées, une seule inconnue par
+       ligne. Contexte quotidien : la station-service, que tout le monde
+       connaît, et où l'écart bar / kPa se rencontre pour de vrai. -->
   <section class="palier palier-1">
     <p class="palier-tete">
       <span class="n">Palier 1</span><span class="mode">guidé</span><span class="duree">5 min</span>
     </p>
 
-    <p class="contexte">Le manomètre de la station affiche 2,4 bar.
-    La notice du véhicule indique 240 kPa.</p>
+    <p class="contexte">Le manomètre de la station affiche <strong>2,4 bar</strong>.
+    La notice du véhicule, elle, prescrit <strong>240 kPa</strong>.</p>
 
     <div class="question">
       <span class="q-etq">Question a</span>
-      <p>Compléter la conversion des 2,4 bar en kilopascals.</p>
+      <p>Compléter les cinq conversions.</p>
     </div>
-    <p class="eq-exo">2,4 <span class="unites">bar</span> = 2,4 ×
-      <input class="trou court" type="text" data-cle="o02-p1-t1" aria-label="facteur de conversion des bar en kilopascals">
-      <span class="unites">kPa</span> =
-      <input class="trou court" type="text" data-cle="o02-p1-t2" aria-label="résultat en kilopascals">
-      <span class="unites">kPa</span></p>
+
+    <table class="conversions">
+      <tbody>
+        <tr>
+          <td class="gauche">2,4 bar</td><td class="egal">=</td>
+          <td class="droite"><input class="trou" type="text" data-cle="o02-p1-c1" aria-label="2,4 bar en kilopascals"> kPa</td>
+        </tr>
+        <tr>
+          <td class="gauche">2,4 bar</td><td class="egal">=</td>
+          <td class="droite"><input class="trou" type="text" data-cle="o02-p1-c2" aria-label="2,4 bar en pascals"> Pa</td>
+        </tr>
+        <tr>
+          <td class="gauche">2,4 bar</td><td class="egal">=</td>
+          <td class="droite"><input class="trou" type="text" data-cle="o02-p1-c3" aria-label="2,4 bar en mégapascals"> MPa</td>
+        </tr>
+        <tr>
+          <td class="gauche">180 bar</td><td class="egal">=</td>
+          <td class="droite"><input class="trou" type="text" data-cle="o02-p1-c4" aria-label="180 bar en newtons par millimètre carré"> N/mm²</td>
+        </tr>
+        <tr>
+          <td class="gauche">21 MPa</td><td class="egal">=</td>
+          <td class="droite"><input class="trou" type="text" data-cle="o02-p1-c5" aria-label="21 mégapascals en bar"> bar</td>
+        </tr>
+      </tbody>
+    </table>
 
     <div class="question">
       <span class="q-etq">Question b</span>
@@ -143,7 +246,8 @@
   </section>
 
   <!-- PALIER 2 — énoncé nu, atelier. Le cric est un objet des deux
-       métiers : il ne cloisonne ni vers le poids lourd, ni vers l'engin. -->
+       métiers, et le passage newtons → tonnes est le geste qui rend le
+       résultat parlant. -->
   <section class="palier palier-2">
     <p class="palier-tete">
       <span class="n">Palier 2</span><span class="mode">en autonomie</span><span class="duree">10 min</span>
@@ -154,81 +258,109 @@
 
     <div class="question">
       <span class="q-etq">Question a</span>
-      <p>Calculer la section du piston, en m².</p>
+      <p>Calculer la section du piston, en mm² puis en m².</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o02-p2-a" rows="3" aria-label="Section du piston en m²"
-        placeholder="S = …"></textarea>
+      <textarea data-cle="o02-p2-a" rows="4" aria-label="Section du piston"
+        placeholder="Les données…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question b</span>
-      <p>Convertir la pression en pascals.</p>
+      <p>Calculer l'effort développé par le cric.</p>
+      <p>Les deux jeux d'unités sont acceptés. Choisis celui où tu comptes le moins de zéros.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o02-p2-b" rows="2" aria-label="Pression en pascals"
-        placeholder="p = …"></textarea>
+      <textarea data-cle="o02-p2-b" rows="5" aria-label="Effort développé par le cric"
+        placeholder="…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question c</span>
-      <p>Calculer l'effort développé par le cric.</p>
-    </div>
-    <div class="reponse">
-      <textarea data-cle="o02-p2-c" rows="3" aria-label="Effort développé"
-        placeholder="F = …"></textarea>
-    </div>
-
-    <div class="question">
-      <span class="q-etq">Question d</span>
       <p>Conclure en tonnes, par une phrase chiffrée.</p>
       <p>Pour passer des newtons aux kilogrammes, diviser par 9,81.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o02-p2-d" rows="2" aria-label="Conclusion en tonnes"
-        placeholder="Le cric peut lever…"></textarea>
+      <textarea data-cle="o02-p2-c" rows="3" aria-label="Conclusion en tonnes"
+        placeholder="…"></textarea>
     </div>
   </section>
 
-  <!-- PALIER 3 — BTS. Deux étapes enchaînées : isoler la pression, puis
-       la comparer à une limite constructeur. Le jugement de conformité
-       est le cœur des deux diplômes. -->
+  <!-- PALIER 3 — forme d'un sujet d'examen. Quatre des sept lignes du
+       tableau ne servent pas, dont le diamètre de tige : côté fond,
+       c'est l'alésage seul qui travaille. Rien n'est signalé.
+
+       Valeurs plausibles et simulées. Aucun énoncé, aucune valeur,
+       aucune référence machine ne provient d'un sujet d'examen. -->
   <section class="palier palier-3">
     <p class="palier-tete">
       <span class="n">Palier 3</span><span class="mode">en situation</span>
       <span class="marque">BTS</span><span class="duree">15 min</span>
     </p>
 
-    <p class="contexte">Deux vérins lèvent la flèche d'un engin. Chacun a une surface
-    de poussée de 86,6 cm². L'effort total à fournir est de 148 000 N.
-    Le constructeur annonce une pression maximale de 350 bar.</p>
+    <div class="enonce">
+      <span class="situation">Mise en situation — levage de la flèche d'une chargeuse</span>
+      <p>La flèche d'une chargeuse est levée par deux vérins identiques, alimentés
+      par le même circuit. Le conducteur signale que l'engin peine à lever une
+      charge que le constructeur annonce pourtant admissible. Un manomètre a été
+      branché sur le circuit pendant un levage.</p>
+
+      <table class="constructeur">
+        <caption>Extrait du dossier technique et relevés — valeurs simulées</caption>
+        <thead>
+          <tr><th>Repère</th><th>Désignation</th><th>Valeur</th><th>Unité</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="repere">1</td><td class="designation">Vérins de levage — nombre</td><td>2</td><td>—</td></tr>
+          <tr><td class="repere">2</td><td class="designation">Vérin — diamètre d'alésage</td><td>80</td><td>mm</td></tr>
+          <tr><td class="repere">3</td><td class="designation">Vérin — diamètre de tige</td><td>45</td><td>mm</td></tr>
+          <tr><td class="repere">4</td><td class="designation">Vérin — course</td><td>900</td><td>mm</td></tr>
+          <tr><td class="repere">5</td><td class="designation">Débit de la pompe</td><td>95</td><td>L/min</td></tr>
+          <tr><td class="repere">6</td><td class="designation">Pression de tarage du limiteur</td><td>350</td><td>bar</td></tr>
+          <tr><td class="repere">7</td><td class="designation">Pression relevée au manomètre pendant le levage</td><td>210</td><td>bar</td></tr>
+        </tbody>
+      </table>
+
+      <p>Le constructeur annonce, pour ce circuit, un effort de levage de
+      <strong>205 kN</strong>, avec une tolérance de <strong>± 5 %</strong>.</p>
+    </div>
 
     <div class="question">
       <span class="q-etq">Question a</span>
-      <p>Calculer la surface de poussée totale, en m².</p>
-      <p>Les deux vérins poussent ensemble.</p>
+      <p>Déterminer la section sur laquelle la pression agit pour sortir un vérin, en mm².</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o02-p3-a" rows="3" aria-label="Surface de poussée totale"
-        placeholder="S = …"></textarea>
+      <textarea data-cle="o02-p3-a" rows="5" aria-label="Section de poussée d'un vérin"
+        placeholder="Les données…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question b</span>
-      <p>Déterminer la pression dans le circuit, en bar.</p>
+      <p>Déterminer l'effort total développé par le circuit de levage sous la pression relevée.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o02-p3-b" rows="4" aria-label="Pression dans le circuit"
-        placeholder="p = …"></textarea>
+      <textarea data-cle="o02-p3-b" rows="6" aria-label="Effort total développé"
+        placeholder="…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question c</span>
-      <p>Comparer cette pression à la pression maximale annoncée, puis conclure par une phrase chiffrée.</p>
+      <p>Situer ce résultat par rapport à la valeur annoncée par le constructeur, puis conclure.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o02-p3-c" rows="3" aria-label="Comparaison et conclusion"
-        placeholder="La pression nécessaire est de…"></textarea>
+      <textarea data-cle="o02-p3-c" rows="4" aria-label="Comparaison à la valeur constructeur"
+        placeholder="…"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question d</span>
+      <p>Le chef d'atelier envisage de retarer le limiteur pour obtenir 250 kN.
+      Déterminer la pression que cela demanderait, puis indiquer si le circuit
+      le permet.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o02-p3-d" rows="7" aria-label="Pression nécessaire pour 250 kilonewtons"
+        placeholder="…"></textarea>
     </div>
   </section>
 
@@ -243,6 +375,18 @@
     <p class="aparte">Tout ce que tu écris sur cette page reste sur cet appareil.
     Rien n'est envoyé, ni à ton professeur, ni à personne d'autre.</p>
   </div>
+
+  <nav class="pager" aria-label="Navigation entre les outils">
+    <a class="prec" href="outil-01-conversions-unites.html">
+      <span class="sens">Outil précédent</span>
+      <span class="quoi">1 · Conversions d'unités et puissances de dix</span>
+    </a>
+    <a class="index" href="index.html">Les dix-sept outils</a>
+    <a class="suiv" href="outil-03-vitesses-rotation.html">
+      <span class="sens">Outil suivant</span>
+      <span class="quoi">3 · Vitesses et fréquences de rotation</span>
+    </a>
+  </nav>
 
 </article>
 </div>

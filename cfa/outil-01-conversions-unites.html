@@ -5,20 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Outil 1 — Conversions d'unités et puissances de dix · Livret CFA</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=4">
+<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=5">
 <style>
   /* Propre à cette fiche : le tableau qui fait voir D'OÙ VIENNENT les
      exposants. La colonne « le facteur, répété » est le cœur de la
      fiche — sans elle, 10³ / 10⁶ / 10⁹ sont trois nombres à apprendre
      par cœur au lieu d'une seule idée appliquée trois fois. */
-  .escalier { width: 100%; max-width: 68ch; }
+  .escalier { width: 100%; }
   .escalier td, .escalier th { font-family: 'IBM Plex Mono', monospace; font-size: .8rem; }
   .escalier .grandeur { text-align: left; font-family: inherit; font-size: .95rem; }
   .escalier .fact { color: var(--h-alpha); font-weight: 600; }
   .escalier .dir { color: var(--h-gamma); font-weight: 600; }
-  /* Le tableau du palier 1 : deux colonnes, une case sur deux à remplir. */
-  .a-completer { max-width: 56ch; }
-  .a-completer td { font-family: 'IBM Plex Mono', monospace; }
+
+  /* Le tableau des préfixes. Il est trié du plus grand au plus petit :
+     c'est un escalier, il doit se lire comme un escalier. La colonne
+     « où on le rencontre » est ce qui le sauve de l'abstraction — un
+     préfixe sans exemple métier ne se retient pas. */
+  .prefixes { width: 100%; }
+  .prefixes td, .prefixes th { font-family: 'IBM Plex Mono', monospace; font-size: .82rem; }
+  .prefixes td.ou { text-align: left; font-family: 'EB Garamond', Garamond, Georgia, serif; font-size: .95rem; }
+  .prefixes td.sym { font-weight: 600; font-size: 1rem; }
+  .prefixes .pivot td { background: var(--papier); }
+  .prefixes .cle { color: var(--h-alpha); font-weight: 600; }
+
+  /* Le tableau de gammes du palier 1 : une conversion par ligne, une
+     case sur deux déjà remplie. Quinze lignes indépendantes — rater
+     une ligne n'empêche pas de faire les quatorze autres. */
+  .gammes { width: 100%; }
+  .gammes td { font-family: 'IBM Plex Mono', monospace; font-size: .88rem; }
+  .gammes td.fam {
+    text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: .68rem;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--sepia);
+    background: var(--papier);
+  }
+  .gammes td.depart, .gammes td.arrivee { text-align: right; white-space: nowrap; }
+  .gammes td.fleche { color: var(--sepia); width: 2rem; }
+  .gammes input.trou { width: 5rem; }
 </style>
 </head>
 <body>
@@ -59,8 +81,16 @@
 
   <h2>La règle</h2>
 
+  <!-- Les trois égalités sont données ENSEMBLE. Annoncer « longueur,
+       surface, volume » puis ne montrer que la longueur laissait à
+       l'élève le soin de fabriquer lui-même les deux autres lignes —
+       c'est précisément ce qu'il ne sait pas faire. -->
   <div class="formule-bloc">
-    <div class="eq">1 m = 10³ mm</div>
+    <div class="eq egalites">
+      <span>1 m = 10³ mm</span>
+      <span>1 m² = 10⁶ mm²</span>
+      <span>1 m³ = 10⁹ mm³</span>
+    </div>
     <div class="grandeurs">
       <span class="titre">L'exposant, c'est le nombre de directions</span>
       <b>longueur</b> → une direction → le facteur une fois<br>
@@ -79,45 +109,78 @@
   </div>
 
   <table class="tab escalier">
-    <caption>Du mètre au millimètre : la même idée, répétée</caption>
+    <caption>La même idée, répétée — du mètre au millimètre, puis au centimètre</caption>
     <thead>
       <tr>
         <th class="grandeur">Grandeur</th>
         <th>Directions</th>
-        <th>Le facteur, répété</th>
-        <th>Ce que ça donne</th>
+        <th>m → mm &nbsp;(facteur 10³)</th>
+        <th>m → cm &nbsp;(facteur 10²)</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td class="grandeur">Longueur — m</td>
+        <td class="grandeur">Longueur</td>
         <td class="dir">1</td>
-        <td>10³</td>
         <td class="fact">× 10³ = 1 000</td>
+        <td class="fact">× 10² = 100</td>
       </tr>
       <tr>
-        <td class="grandeur">Surface — m²</td>
+        <td class="grandeur">Surface</td>
         <td class="dir">2</td>
-        <td>10³ × 10³</td>
         <td class="fact">× 10⁶ = 1 000 000</td>
+        <td class="fact">× 10⁴ = 10 000</td>
       </tr>
       <tr>
-        <td class="grandeur">Volume — m³</td>
+        <td class="grandeur">Volume</td>
         <td class="dir">3</td>
-        <td>10³ × 10³ × 10³</td>
-        <td class="fact">× 10⁹ = 1 000 000 000</td>
+        <td class="fact">× 10⁹</td>
+        <td class="fact">× 10⁶ = 1 000 000</td>
       </tr>
     </tbody>
   </table>
 
-  <p class="aparte">Même mécanique entre le mètre et le centimètre, où le facteur vaut 10² : cela donne 10⁴ pour une surface et 10⁶ pour un volume. Seul le facteur de départ change, jamais la règle.</p>
+  <p class="aparte">Seul le facteur de départ change d'une colonne à l'autre.
+  La règle, elle, ne change jamais : on l'applique autant de fois qu'il y a de directions.</p>
+
+
+  <h3>Les préfixes qu'on rencontre vraiment</h3>
+
+  <table class="tab prefixes">
+    <caption>Du plus grand au plus petit — les neuf préfixes du métier</caption>
+    <thead>
+      <tr><th>Préfixe</th><th>Symbole</th><th>Facteur</th><th class="ou">Où on le rencontre</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>giga</td><td class="sym">G</td><td>10⁹</td><td class="ou">GPa — module d'élasticité d'un acier</td></tr>
+      <tr><td>méga</td><td class="sym cle">M</td><td>10⁶</td><td class="ou">MPa — pression hydraulique, limite élastique</td></tr>
+      <tr><td>kilo</td><td class="sym cle">k</td><td>10³</td><td class="ou">kW, kN, kPa, kg — partout</td></tr>
+      <tr><td>hecto</td><td class="sym">h</td><td>10²</td><td class="ou">hPa — pression atmosphérique, gonflage</td></tr>
+      <tr><td>déca</td><td class="sym cle">da</td><td>10¹</td><td class="ou">daN, daN·m — couples de serrage, efforts</td></tr>
+      <tr class="pivot"><td>—</td><td class="sym">—</td><td>1</td><td class="ou">m, N, W, Pa, g, L : l'unité seule</td></tr>
+      <tr><td>déci</td><td class="sym">d</td><td>10⁻¹</td><td class="ou">dm³ — et 1 dm³ = 1 L exactement</td></tr>
+      <tr><td>centi</td><td class="sym cle">c</td><td>10⁻²</td><td class="ou">cm³ — cylindrées ; cm² — sections</td></tr>
+      <tr><td>milli</td><td class="sym cle">m</td><td>10⁻³</td><td class="ou">mm, mL, mbar — cotes de plan</td></tr>
+      <tr><td>micro</td><td class="sym">µ</td><td>10⁻⁶</td><td class="ou">µm — jeux, états de surface</td></tr>
+    </tbody>
+  </table>
+
+  <div class="encart definition">
+    <div class="etq">Les deux pièges des préfixes</div>
+    <p><strong>Le premier :</strong> <b>da</b> vaut 10, pas 10². Un couple de
+    35 daN·m vaut 350 N·m — c'est un facteur 10, et beaucoup d'élèves y mettent 100.</p>
+    <p><strong>Le second :</strong> sur une <em>surface</em> ou un <em>volume</em>,
+    le préfixe compte double ou triple. 1 cm² ne vaut pas 10⁻² m², il vaut
+    10⁻⁴ m². C'est l'erreur qui donne des résultats cent ou mille fois trop grands.</p>
+  </div>
 
   <div class="encart propriete">
     <div class="etq">Les trois égalités à savoir par cœur</div>
     <p>1 L = 1 dm³ &nbsp;·&nbsp; 1 L = 1 000 cm³ &nbsp;·&nbsp; 1 m³ = 1 000 L</p>
   </div>
 
-  <p class="aparte">Un litre n'est pas une unité à part : c'est un décimètre cube. Toute la difficulté des volumes tient dans cette phrase.</p>
+  <p class="aparte">Un litre n'est pas une unité à part : c'est un décimètre cube.
+  Toute la difficulté des volumes tient dans cette phrase.</p>
 
 
   <h2>Un exemple entièrement résolu</h2>
@@ -137,127 +200,233 @@
 
     <p class="etape">2 · Les relations</p>
     <p class="eq-exo">1 L = 1 dm³ &nbsp;·&nbsp; 1 dm = 10 cm &nbsp;donc&nbsp; 1 dm³ = 10³ cm³</p>
-
-    <p class="etape">3 · Le calcul, avec les unités</p>
-    <p class="eq-exo">V = 2,5 <span class="unites">dm³</span> × 1 000 = 2 500 <span class="unites">cm³</span></p>
     <p class="eq-exo">1 cm = 10 mm &nbsp;donc&nbsp; 1 cm³ = 10³ mm³</p>
-    <p class="eq-exo">V = 2 500 <span class="unites">cm³</span> × 1 000 = 2 500 000 <span class="unites">mm³</span></p>
 
-    <p class="etape">4 · Le résultat</p>
-    <p class="eq-exo">V = <span class="resultat">2 500 cm³</span> &nbsp;soit&nbsp; <span class="resultat">2,5 × 10⁶ mm³</span></p>
+    <p class="etape">3 · L'application numérique</p>
+    <p class="eq-exo">V = 2,5 × 1 000 = 2 500 &nbsp;→&nbsp; V = <span class="resultat">2 500 cm³</span></p>
+    <p class="eq-exo">V = 2 500 × 1 000 = 2 500 000 &nbsp;→&nbsp; V = <span class="resultat">2,5 × 10⁶ mm³</span></p>
 
-    <p class="etape">5 · La conclusion</p>
+    <p class="etape">4 · La conclusion</p>
     <p>Le bidon contient 2 500 centimètres cubes, soit 2,5 millions de millimètres cubes.</p>
   </div>
 
 
   <h2>À toi de jouer</h2>
 
-  <section class="palier palier-1">
+  <!-- PALIER 1 — TABLEAU DE GAMMES. Quinze conversions indépendantes,
+       une case sur deux déjà remplie. Le nombre de lignes est ici le
+       bénéfice : la conversion est un geste, un geste s'automatise par
+       la répétition, pas par la compréhension d'un seul cas.
+       Section en .pleine-largeur : le tableau a besoin de la page. -->
+  <section class="palier palier-1 pleine-largeur">
     <p class="palier-tete">
       <span class="n">Palier 1</span><span class="mode">guidé</span><span class="duree">5 min</span>
     </p>
 
-    <p class="contexte">Quatre conversions de la vie courante. Une case sur deux est
-    déjà remplie : il n'y a qu'un nombre à trouver par ligne.</p>
+    <p class="contexte">Quinze conversions, toutes indépendantes. Une case sur deux
+    est déjà remplie : il n'y a qu'un nombre à trouver par ligne. Si une ligne
+    résiste, passe à la suivante et reviens-y.</p>
 
     <div class="question">
       <span class="q-etq">Question a</span>
-      <p>Compléter les quatre cases vides du tableau.</p>
+      <p>Compléter les cases vides.</p>
     </div>
 
-    <table class="tab a-completer">
-      <thead><tr><th>Valeur de départ</th><th>Valeur convertie</th></tr></thead>
+    <table class="tab gammes">
+      <thead>
+        <tr><th>Famille</th><th>Valeur de départ</th><th></th><th>Valeur convertie</th></tr>
+      </thead>
       <tbody>
-        <tr><td>1,5 L</td><td><input class="trou court" type="text" data-cle="o01-p1-t1" aria-label="1,5 L en millilitres"> mL</td></tr>
-        <tr><td><input class="trou court" type="text" data-cle="o01-p1-t2" aria-label="valeur en grammes"> g</td><td>0,75 kg</td></tr>
-        <tr><td>3,2 m</td><td><input class="trou court" type="text" data-cle="o01-p1-t3" aria-label="3,2 m en millimètres"> mm</td></tr>
-        <tr><td><input class="trou court" type="text" data-cle="o01-p1-t4" aria-label="valeur en minutes"> min</td><td>1,5 h</td></tr>
+        <tr><td class="fam" rowspan="3">Longueurs</td>
+            <td class="depart">3,2 m</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g01" aria-label="3,2 m en millimètres"> mm</td></tr>
+        <tr><td class="depart"><input class="trou" type="text" data-cle="o01-g02" aria-label="valeur en centimètres"> cm</td><td class="fleche">→</td>
+            <td class="arrivee">0,85 m</td></tr>
+        <tr><td class="depart">45 mm</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g03" aria-label="45 mm en mètres"> m</td></tr>
+
+        <tr><td class="fam" rowspan="2">Surfaces</td>
+            <td class="depart">2,5 m²</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g04" aria-label="2,5 mètres carrés en centimètres carrés"> cm²</td></tr>
+        <tr><td class="depart">78,5 mm²</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g05" aria-label="78,5 millimètres carrés en centimètres carrés"> cm²</td></tr>
+
+        <tr><td class="fam" rowspan="3">Volumes</td>
+            <td class="depart">1,5 L</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g06" aria-label="1,5 litre en millilitres"> mL</td></tr>
+        <tr><td class="depart">2 400 cm³</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g07" aria-label="2400 centimètres cubes en litres"> L</td></tr>
+        <tr><td class="depart">0,35 m³</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g08" aria-label="0,35 mètre cube en litres"> L</td></tr>
+
+        <tr><td class="fam" rowspan="2">Masses</td>
+            <td class="depart"><input class="trou" type="text" data-cle="o01-g09" aria-label="valeur en grammes"> g</td><td class="fleche">→</td>
+            <td class="arrivee">0,75 kg</td></tr>
+        <tr><td class="depart">2,4 t</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g10" aria-label="2,4 tonnes en kilogrammes"> kg</td></tr>
+
+        <tr><td class="fam" rowspan="2">Efforts et couples</td>
+            <td class="depart">850 daN</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g11" aria-label="850 décanewtons en newtons"> N</td></tr>
+        <tr><td class="depart">4,2 daN·m</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g12" aria-label="4,2 décanewtons mètre en newtons mètre"> N·m</td></tr>
+
+        <tr><td class="fam" rowspan="2">Pressions</td>
+            <td class="depart">3,5 MPa</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g13" aria-label="3,5 mégapascals en pascals"> Pa</td></tr>
+        <tr><td class="depart">250 hPa</td><td class="fleche">→</td>
+            <td class="arrivee"><input class="trou" type="text" data-cle="o01-g14" aria-label="250 hectopascals en pascals"> Pa</td></tr>
+
+        <tr><td class="fam">Temps</td>
+            <td class="depart"><input class="trou" type="text" data-cle="o01-g15" aria-label="valeur en minutes"> min</td><td class="fleche">→</td>
+            <td class="arrivee">1,5 h</td></tr>
       </tbody>
     </table>
+
+    <div class="question">
+      <span class="q-etq">Question b</span>
+      <p>Parmi ces quinze lignes, indiquer les deux où le facteur n'est pas
+      une simple puissance de dix.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o01-p1-b" rows="2"
+        aria-label="Les deux lignes dont le facteur n'est pas une puissance de dix"
+        placeholder="Les lignes…"></textarea>
+    </div>
   </section>
 
+  <!-- PALIER 2 — énoncé nu, relevés d'atelier. Les quatre premières sont
+       des conversions directes ; la cinquième est une surface, donc le
+       piège du préfixe qui compte double. -->
   <section class="palier palier-2">
     <p class="palier-tete">
       <span class="n">Palier 2</span><span class="mode">en autonomie</span><span class="duree">10 min</span>
     </p>
 
-    <p class="contexte">Quatre relevés d'atelier, à remettre dans l'unité demandée.</p>
+    <p class="contexte">Cinq relevés d'atelier, à remettre dans l'unité demandée.</p>
 
     <div class="question">
       <span class="q-etq">Question a</span>
       <p>Un moteur a une cylindrée de 1 998 cm³. L'exprimer en litres, puis en mm³.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o01-p2-a" rows="3" aria-label="Cylindrée en litres puis en mm³"
-        placeholder="1 998 cm³ = …"></textarea>
+      <textarea data-cle="o01-p2-a" rows="3" aria-label="Cylindrée en litres puis en millimètres cubes"
+        placeholder="…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question b</span>
-      <p>Un circuit de refroidissement contient 18,5 L. L'exprimer en cm³.</p>
+      <p>Un circuit de refroidissement contient 18,5 L. L'exprimer en cm³, puis en m³.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o01-p2-b" rows="2" aria-label="Volume du circuit en cm³"
-        placeholder="18,5 L = …"></textarea>
+      <textarea data-cle="o01-p2-b" rows="3" aria-label="Volume du circuit en centimètres cubes puis en mètres cubes"
+        placeholder="…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question c</span>
-      <p>Un couple de serrage vaut 4,2 daN·m. L'exprimer en N·m.</p>
+      <p>Un couple de serrage est prescrit à 12,5 daN·m. L'exprimer en N·m.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o01-p2-c" rows="2" aria-label="Couple en N·m"
-        placeholder="4,2 daN·m = …"></textarea>
+      <textarea data-cle="o01-p2-c" rows="2" aria-label="Couple de serrage en newtons mètre"
+        placeholder="…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question d</span>
-      <p>Une section vaut 78,5 mm². L'exprimer en cm².</p>
+      <p>Une pression de service vaut 21 MPa. L'exprimer en Pa, puis en N/mm².</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o01-p2-d" rows="3" aria-label="Pression en pascals puis en newtons par millimètre carré"
+        placeholder="…"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question e</span>
+      <p>Une section vaut 78,5 mm². L'exprimer en cm², puis en m².</p>
       <p>Attention : c'est une surface, donc deux directions.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o01-p2-d" rows="2" aria-label="Section en cm²"
-        placeholder="78,5 mm² = …"></textarea>
+      <textarea data-cle="o01-p2-e" rows="3" aria-label="Section en centimètres carrés puis en mètres carrés"
+        placeholder="…"></textarea>
     </div>
   </section>
 
+  <!-- PALIER 3 — forme d'un sujet d'examen. La formule est FOURNIE :
+       le seul obstacle réel est la conversion des cotes de plan, en
+       millimètres, vers l'unité que la formule attend. Deux lignes du
+       tableau ne servent à rien et ne sont signalées nulle part.
+
+       Valeurs plausibles et simulées. Rien n'est repris d'un sujet
+       d'examen ni relevé sur une machine réelle. -->
   <section class="palier palier-3">
     <p class="palier-tete">
       <span class="n">Palier 3</span><span class="mode">en situation</span>
       <span class="marque">BTS</span><span class="duree">15 min</span>
     </p>
 
-    <p class="contexte">Un godet est annoncé à 1 800 L. Le matériau qu'il charge
-    foisonne de 25 % : une fois dans le godet, il occupe 25 % de volume en plus
-    qu'il n'en occupait en place dans le sol.</p>
+    <div class="enonce">
+      <span class="situation">Mise en situation — chargement d'un tombereau</span>
+      <p>Un tombereau de chantier transporte du grave non traité. Le conducteur
+      remplit la benne à ras bord et le pont arrière rend l'âme au bout de trois
+      semaines. On cherche à savoir si la benne pleine respecte la charge utile
+      autorisée par le constructeur.</p>
+
+      <table class="constructeur">
+        <caption>Extrait du dossier technique — valeurs simulées</caption>
+        <thead>
+          <tr><th>Repère</th><th>Désignation</th><th>Valeur</th><th>Unité</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="repere">1</td><td class="designation">Benne — longueur intérieure</td><td>2 900</td><td>mm</td></tr>
+          <tr><td class="repere">2</td><td class="designation">Benne — largeur intérieure</td><td>1 800</td><td>mm</td></tr>
+          <tr><td class="repere">3</td><td class="designation">Benne — hauteur intérieure</td><td>700</td><td>mm</td></tr>
+          <tr><td class="repere">4</td><td class="designation">Largeur hors tout du véhicule</td><td>2 260</td><td>mm</td></tr>
+          <tr><td class="repere">5</td><td class="designation">Masse à vide</td><td>3 200</td><td>kg</td></tr>
+          <tr><td class="repere">6</td><td class="designation">Charge utile autorisée</td><td>4,5</td><td>t</td></tr>
+          <tr><td class="repere">7</td><td class="designation">Masse volumique du grave</td><td>1 850</td><td>kg/m³</td></tr>
+        </tbody>
+      </table>
+
+      <p>La masse d'un matériau se calcule par la relation
+      <strong>m = ρ × V</strong>, où ρ est la masse volumique et V le volume occupé.</p>
+    </div>
 
     <div class="question">
       <span class="q-etq">Question a</span>
-      <p>Convertir la capacité du godet en m³, puis en dm³.</p>
+      <p>Déterminer le volume intérieur de la benne, en m³.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o01-p3-a" rows="3" aria-label="Capacité en m³ puis en dm³"
-        placeholder="1 800 L = …"></textarea>
+      <textarea data-cle="o01-p3-a" rows="6" aria-label="Volume intérieur de la benne en mètres cubes"
+        placeholder="Les données…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question b</span>
-      <p>Calculer le volume en place que représente un godet plein.</p>
-      <p>Le volume foisonné est celui du godet. Le volume en place est celui qu'on cherche.</p>
+      <p>En déduire la masse de grave transportée lorsque la benne est remplie à ras bord.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o01-p3-b" rows="5" aria-label="Volume en place"
-        placeholder="1 · Les données…"></textarea>
+      <textarea data-cle="o01-p3-b" rows="6" aria-label="Masse de grave transportée"
+        placeholder="…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question c</span>
-      <p>Conclure par une phrase chiffrée.</p>
+      <p>Comparer cette masse à la charge utile autorisée, puis conclure.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o01-p3-c" rows="2" aria-label="Phrase de conclusion"
-        placeholder="Un godet plein représente…"></textarea>
+      <textarea data-cle="o01-p3-c" rows="3" aria-label="Comparaison à la charge utile autorisée"
+        placeholder="…"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question d</span>
+      <p>Déterminer la hauteur de remplissage à ne pas dépasser, en millimètres,
+      pour rester dans la charge utile autorisée.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o01-p3-d" rows="7" aria-label="Hauteur de remplissage à ne pas dépasser"
+        placeholder="…"></textarea>
     </div>
   </section>
 
@@ -272,6 +441,18 @@
     <p class="aparte">Tout ce que tu écris sur cette page reste sur cet appareil.
     Rien n'est envoyé, ni à ton professeur, ni à personne d'autre.</p>
   </div>
+
+  <nav class="pager" aria-label="Navigation entre les outils">
+    <a class="prec" href="outil-00-rediger-un-calcul.html">
+      <span class="sens">Outil précédent</span>
+      <span class="quoi">0 · Rédiger un calcul qui rapporte des points</span>
+    </a>
+    <a class="index" href="index.html">Les dix-sept outils</a>
+    <a class="suiv" href="outil-02-unites-de-pression.html">
+      <span class="sens">Outil suivant</span>
+      <span class="quoi">2 · Les unités de pression</span>
+    </a>
+  </nav>
 
 </article>
 </div>

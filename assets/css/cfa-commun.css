@@ -56,6 +56,24 @@
   --h-beta: #2f6b70;         /* bleu de Prusse fané */
   --h-gamma: #5f4b73;        /* prune */
   --gris: #8a7c62;           /* alias sépia, compatibilité */
+
+  /* ----------------------------------------------------------
+     --mesure — LA LARGEUR DE LA COLONNE DE LECTURE
+     ----------------------------------------------------------
+     Une seule valeur commande la largeur de TOUT le contenu d'une
+     fiche. Avant, chaque composant portait son propre max-width
+     (70ch pour un paragraphe, 62ch pour une formule, 68ch pour un
+     tableau) : le contenu se tassait à gauche d'un article large de
+     1 000 px, avec un vide de 300 px à droite qui ne servait à rien.
+
+     Désormais tous les enfants directs de article.lecture prennent
+     cette largeur et se centrent. La page redevient une page : une
+     colonne, deux marges égales.
+
+     Pour déborder volontairement — un tableau à six colonnes, une
+     figure large — poser la classe .pleine-largeur sur l'élément.
+     ---------------------------------------------------------- */
+  --mesure: 68ch;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -166,6 +184,16 @@ article.lecture {
   min-width: 0;
 }
 
+/* La colonne de lecture, centrée. Voir --mesure au § 1.
+   Cette règle prime sur les max-width des composants (spécificité
+   0-1-1 contre 0-1-0) : elle les unifie au lieu de les additionner. */
+article.lecture > * {
+  max-width: var(--mesure);
+  margin-inline: auto;
+}
+/* Débordement volontaire, à demander explicitement. */
+article.lecture > .pleine-largeur { max-width: none; }
+
 .fil-ariane {
   font-family: 'IBM Plex Mono', monospace; font-size: .75rem;
   color: var(--sepia); text-transform: uppercase; letter-spacing: .12em;
@@ -266,6 +294,17 @@ sub, sup { font-size: .68em; }
   padding: .85rem 1.2rem;
   font-family: 'IBM Plex Mono', monospace; font-size: .78rem; line-height: 2;
 }
+/* Variante .egalites — plusieurs égalités empilées au lieu d'une
+   formule unique. Les outils 1 et 2 n'ont pas une relation, ils en ont
+   trois ou quatre. .cle détache la plus importante par un filet. */
+.formule-bloc .eq.egalites {
+  flex-direction: column; align-items: flex-start; gap: .35rem;
+  font-size: 1.25rem; line-height: 1.3;
+}
+.formule-bloc .eq.egalites .cle {
+  border-top: 1px solid var(--papier); padding-top: .4rem; margin-top: .15rem;
+}
+
 .formule-bloc .grandeurs b { color: var(--h-gamma); }
 .formule-bloc .titre {
   font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
@@ -624,8 +663,15 @@ table.tab thead th {
 /* ------------------------------------------------------------
    input.trou — le calcul amorcé du palier 1
    ------------------------------------------------------------
-   Deux trous par palier 1, pas plus. C'est le palier où personne ne
-   peut échouer ; un troisième trou lui retire sa seule fonction.
+   Deux trous par palier 1 dans un CALCUL AMORCÉ, pas plus : c'est le
+   palier où personne ne peut échouer, et un troisième trou dans une
+   même ligne de calcul lui retire sa seule fonction.
+
+   Une exception, et une seule : le TABLEAU DE GAMMES — une même
+   opération élémentaire répétée sur dix à quinze lignes indépendantes
+   (conversions, lectures d'unité). Là, chaque ligne est un exercice
+   entier, l'échec d'une ligne ne bloque pas les autres, et le nombre
+   fait le bénéfice. Un tel tableau se pose en .pleine-largeur.
 
    Droit et non italique même à l'intérieur d'une .eq-exo : ce que
    l'élève saisit est un nombre, et un nombre se lit mieux droit.
@@ -671,6 +717,168 @@ input.trou.long  { width: 14rem; }
 }
 
 
+/* ------------------------------------------------------------
+   .pager — PASSER À L'OUTIL SUIVANT SANS REPASSER PAR L'INDEX
+   ------------------------------------------------------------
+   Trois liens en pied de fiche : outil précédent, index, outil
+   suivant. Le suivant est le plus gros des trois — c'est le geste
+   attendu neuf fois sur dix, et un élève qui vient de finir une
+   fiche ne doit pas avoir à chercher où continuer.
+
+   Le libellé porte le TITRE de l'outil suivant, pas seulement son
+   numéro : « Outil 2 → » ne dit pas ce qu'on va trouver.
+
+   Aux extrémités du livret, le lien manquant est remplacé par un
+   <span class="vide"> de même gabarit : sans lui, le lien restant
+   sauterait d'un côté à l'autre selon la fiche.
+
+   HTML :
+     <nav class="pager" aria-label="Navigation entre les outils">
+       <a class="prec" href="outil-00-….html">
+         <span class="sens">Outil précédent</span>
+         <span class="quoi">0 · Rédiger un calcul…</span></a>
+       <a class="index" href="index.html">Les dix-sept outils</a>
+       <a class="suiv" href="outil-02-….html">
+         <span class="sens">Outil suivant</span>
+         <span class="quoi">2 · Les unités de pression</span></a>
+     </nav>
+   ------------------------------------------------------------ */
+.pager {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem; align-items: stretch;
+  margin: 2.4rem 0 0; padding-top: 1.4rem;
+  border-top: 1px solid var(--filet);
+}
+.pager a, .pager .vide {
+  display: block; padding: .7rem .9rem;
+  border: 1px solid var(--filet-fonce); background: var(--papier);
+  text-decoration: none; color: var(--encre);
+}
+.pager .vide { border-color: transparent; background: transparent; }
+.pager .sens {
+  display: block; font-family: 'IBM Plex Mono', monospace; font-size: .68rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--sepia);
+  margin-bottom: .2rem;
+}
+.pager .quoi { display: block; font-size: .98rem; line-height: 1.3; }
+.pager .prec { text-align: left; }
+.pager .suiv { text-align: right; border-left: 3px solid var(--h-alpha); }
+.pager .prec { border-right: 3px solid var(--filet-fonce); }
+.pager .index {
+  display: flex; align-items: center; text-align: center;
+  font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--sepia);
+}
+.pager a:hover { background: var(--papier-clair); color: var(--h-alpha); }
+.pager a:focus-visible { outline: 2px solid var(--h-alpha); outline-offset: 2px; }
+.pager .suiv .quoi::after { content: " →"; color: var(--h-alpha); }
+.pager .prec .quoi::before { content: "← "; color: var(--sepia); }
+
+
+/* ------------------------------------------------------------
+   figure.figure — UNE FIGURE RÉELLE, EN SVG INLINE
+   ------------------------------------------------------------
+   Remplace .figure-a-produire au fur et à mesure. Le SVG est écrit
+   dans la page, pas chargé : il s'imprime avec elle, ne dépend
+   d'aucun fichier, et suit les variables de couleur.
+
+   Deux exigences non négociables :
+   · role="img" et un <title> à l'intérieur du SVG, sinon la figure
+     n'existe pas pour un lecteur d'écran ;
+   · aucune information portée par la seule couleur — les repères
+     sont écrits, les traits se distinguent par leur épaisseur ou
+     leur pointillé.
+   ------------------------------------------------------------ */
+figure.figure { margin: 1.4rem 0; }
+figure.figure svg {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--filet-fonce); background: #fff;
+  padding: .6rem;
+}
+figure.figure figcaption {
+  font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
+  color: var(--sepia); margin-top: .4rem; line-height: 1.5;
+}
+/* Conventions de tracé, communes à toutes les figures du livret. */
+.fig-piece  { fill: var(--papier); stroke: var(--encre); stroke-width: 1.6; }
+.fig-trame  { fill: var(--grille); stroke: var(--encre); stroke-width: 1.2; }
+.fig-axe    { stroke: var(--encre-douce); stroke-width: .8; stroke-dasharray: 8 3 2 3; }
+.fig-cote   { stroke: var(--h-beta); stroke-width: 1.1; fill: none; }
+.fig-force  { stroke: var(--h-alpha); stroke-width: 2.2; fill: none; }
+/* 15 px dans le repère du SVG, pas à l'écran : une figure de 700 unités
+   affichée dans une colonne de 580 px est réduite d'un sixième. Un texte
+   posé à 12 px y arriverait à 10 px, illisible sur une photocopie. */
+.fig-txt    { font-family: 'IBM Plex Mono', monospace; font-size: 15px; fill: var(--encre); }
+.fig-txt.cote { fill: var(--h-beta); }
+.fig-txt.force { fill: var(--h-alpha); font-weight: 600; }
+
+
+/* ------------------------------------------------------------
+   table.constructeur — DOCUMENTATION CONSTRUCTEUR SIMULÉE
+   ------------------------------------------------------------
+   Le palier 3 imite la forme d'un sujet d'examen : on y relève des
+   valeurs dans un tableau, et toutes les lignes ne servent pas.
+   Ce tableau doit donc se lire comme un extrait de documentation,
+   pas comme un tableau de cours.
+
+   La mention « valeurs simulées » est OBLIGATOIRE dans le
+   <caption>. Aucun relevé d'un engin réel, aucune valeur reprise
+   d'un sujet d'examen : ces tableaux sont plausibles, ils ne
+   documentent rien.
+   ------------------------------------------------------------ */
+table.constructeur {
+  width: 100%; border-collapse: collapse;
+  font-family: 'IBM Plex Mono', monospace; font-size: .82rem;
+  margin: 1rem 0;
+}
+table.constructeur caption {
+  caption-side: top; text-align: left;
+  font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--sepia); padding-bottom: .35rem;
+  border-bottom: 2px solid var(--encre); margin-bottom: .35rem;
+}
+table.constructeur th, table.constructeur td {
+  border: 1px solid var(--filet-fonce); padding: .34rem .7rem;
+}
+table.constructeur thead th { background: var(--papier); text-align: center; }
+table.constructeur td.designation { text-align: left; font-family: 'EB Garamond', Garamond, Georgia, serif; font-size: .95rem; }
+table.constructeur td { text-align: center; }
+table.constructeur .repere { color: var(--sepia); }
+
+
+/* ------------------------------------------------------------
+   .enonce — LE BLOC D'ÉNONCÉ D'UN PALIER 3
+   ------------------------------------------------------------
+   Un palier 3 n'est plus une phrase de contexte suivie de trois
+   questions guidées : c'est un énoncé de sujet. Il porte un titre
+   de situation, un paragraphe de mise en situation, et des données
+   dont certaines ne servent pas.
+
+   Le tri des données fait partie du travail — c'est même l'un des
+   gestes les mieux payés à l'examen. On ne signale donc JAMAIS,
+   ni ici ni dans une note, quelles données sont utiles.
+   ------------------------------------------------------------ */
+.enonce {
+  border: 1px solid var(--encre); background: var(--papier-clair);
+  padding: 1rem 1.3rem; margin: 1rem 0 1.4rem;
+}
+.enonce .situation {
+  font-family: 'IBM Plex Mono', monospace; font-size: .7rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--h-alpha);
+  display: block; margin-bottom: .5rem;
+  border-bottom: 1px dotted var(--pointille); padding-bottom: .35rem;
+}
+.enonce p { max-width: none; }
+.enonce p:last-child { margin-bottom: 0; }
+.enonce ul.releves {
+  list-style: none; margin: .6rem 0 0;
+  font-family: 'IBM Plex Mono', monospace; font-size: .84rem; line-height: 1.9;
+}
+.enonce ul.releves li { display: grid; grid-template-columns: 1.2rem 1fr; }
+.enonce ul.releves li::before { content: "·"; color: var(--h-alpha); font-weight: 600; }
+
+
 /* ============================================================
    8. RESPONSIVE — cible iPad
    ============================================================ */
@@ -679,6 +887,15 @@ input.trou.long  { width: 14rem; }
   .formule-bloc { grid-template-columns: 1fr; }
   .formule-bloc .eq { justify-content: center; font-size: 1.45rem; }
   .palier-tete .duree { margin-left: 0; }
+  /* Sous cette largeur la colonne de lecture occupe déjà tout ;
+     --mesure ne doit pas créer une marge parasite. */
+  article.lecture > * { max-width: none; }
+  /* Le pager passe en pile, le suivant en premier : c'est le geste
+     attendu, il ne doit pas être sous deux autres liens. */
+  .pager { grid-template-columns: 1fr; }
+  .pager .suiv { order: -1; text-align: left; }
+  .pager .prec { border-right: none; border-left: 3px solid var(--filet-fonce); }
+  .pager .index { justify-content: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -712,7 +929,10 @@ input.trou.long  { width: 14rem; }
      n'ont rien à faire sur du papier. Le champ, lui, reste — imprimé
      vide il fait une zone de réponse, imprimé rempli il porte le
      travail de l'élève. */
-  .barre-symboles, .temoin-enregistre { display: none; }
+  .barre-symboles, .temoin-enregistre, .pager { display: none; }
+  figure.figure svg { border: 1px solid var(--encre); }
+  table.constructeur { break-inside: avoid; }
+  .enonce { break-inside: avoid; }
   .reponse textarea { border: 1px solid var(--encre); min-height: 4rem; }
   input.trou { border-bottom: 1px solid var(--encre); }
 }

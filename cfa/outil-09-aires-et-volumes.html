@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Outil 9 — Aires et volumes utiles · Livret CFA</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=4">
+<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=5">
 <style>
   /* Propre à cette fiche : le tableau des quatre formes. La couronne y
      est mise en avant — elle est plus fréquente en hydraulique que le
@@ -105,10 +105,53 @@
 
   <p class="aparte">Les formules du disque et du cylindre s'écrivent aussi avec le rayon. Le diamètre est préféré ici parce que c'est lui qui figure sur les documentations : on relève un alésage, jamais un rayon.</p>
 
-  <p class="figure-a-produire">
-    <span class="etq">Figure à produire</span>
-    Section annulaire vue de face : cercle extérieur coté D, cercle intérieur coté d, la couronne entre les deux en trame.
-  </p>
+  <figure class="figure">
+    <svg viewBox="0 0 700 320" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Section annulaire : couronne comprise entre deux cercles concentriques</title>
+      <desc>Deux cercles de même centre. Le grand cercle a pour diamètre D,
+      le petit d. La surface comprise entre les deux, tramée, est la couronne.
+      Le disque central, en blanc, correspond à la tige et ne travaille pas.</desc>
+      <defs>
+        <marker id="fl9-cote" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f6b70"/>
+        </marker>
+        <mask id="m9">
+          <rect x="0" y="0" width="700" height="320" fill="black"/>
+          <circle cx="250" cy="160" r="118" fill="white"/>
+          <circle cx="250" cy="160" r="66" fill="black"/>
+        </mask>
+      </defs>
+
+      <!-- la couronne, obtenue par masque : un anneau, pas deux disques -->
+      <rect x="120" y="30" width="270" height="270" fill="#e7e3d6" mask="url(#m9)"/>
+      <circle cx="250" cy="160" r="118" fill="none" stroke="#2b2118" stroke-width="1.8"/>
+      <circle cx="250" cy="160" r="66" fill="none" stroke="#2b2118" stroke-width="1.8"/>
+
+      <!-- axes -->
+      <line x1="110" y1="160" x2="390" y2="160" class="fig-axe"/>
+      <line x1="250" y1="20" x2="250" y2="300" class="fig-axe"/>
+
+      <!-- cotes des deux diamètres -->
+      <line x1="132" y1="160" x2="368" y2="160" class="fig-cote"
+            marker-start="url(#fl9-cote)" marker-end="url(#fl9-cote)"/>
+      <text x="250" y="150" class="fig-txt cote" text-anchor="middle">D</text>
+      <line x1="184" y1="205" x2="316" y2="205" class="fig-cote"
+            marker-start="url(#fl9-cote)" marker-end="url(#fl9-cote)"/>
+      <text x="250" y="228" class="fig-txt cote" text-anchor="middle">d</text>
+
+      <!-- légende écrite : jamais la couleur seule -->
+      <rect x="440" y="90" width="26" height="26" fill="#e7e3d6" stroke="#2b2118" stroke-width="1.4"/>
+      <text x="478" y="109" class="fig-txt">la couronne — c'est elle qui travaille</text>
+      <rect x="440" y="140" width="26" height="26" fill="#ffffff" stroke="#2b2118" stroke-width="1.4"/>
+      <text x="478" y="159" class="fig-txt">le trou du milieu — la tige</text>
+      <text x="440" y="215" class="fig-txt">S = π (D² − d²) / 4</text>
+      <text x="440" y="245" class="fig-txt">avec d = 0, on retrouve le disque plein</text>
+    </svg>
+    <figcaption>La couronne est la différence de deux disques, pas la différence
+    de deux diamètres : c'est <b>D² − d²</b> qui figure dans la formule, jamais
+    <b>(D − d)²</b>. Les deux ne donnent pas du tout le même nombre.</figcaption>
+  </figure>
 
 
   <h2>Un exemple entièrement résolu</h2>
@@ -129,15 +172,13 @@
     <p class="etape">2 · La relation</p>
     <p class="eq-exo">S = <span class="frac"><span class="haut">π × (D² − d²)</span><span class="bas">4</span></span></p>
 
-    <p class="etape">3 · Le calcul, avec les unités</p>
-    <p class="eq-exo">D² − d² = 80² − 45² = 6 400 − 2 025 = 4 375 <span class="unites">mm²</span></p>
-    <p class="eq-exo">S = <span class="frac"><span class="haut">π × 4 375 mm²</span><span class="bas">4</span></span> = 3 436 <span class="unites">mm²</span></p>
-    <p class="eq-exo">3 436 <span class="unites">mm²</span> ÷ 100 = 34,4 <span class="unites">cm²</span></p>
+    <p class="etape">3 · L'application numérique</p>
+    <p class="eq-exo">D² − d² = 80² − 45² = 6 400 − 2 025 = 4 375</p>
+    <p class="eq-exo">S = <span class="frac"><span class="haut">π × 4 375</span><span class="bas">4</span></span> = 3 436
+      &nbsp;→&nbsp; S = <span class="resultat">3 436 mm²</span></p>
+    <p class="eq-exo">3 436 ÷ 100 = 34,4 &nbsp;→&nbsp; S = <span class="resultat">34,4 cm²</span></p>
 
-    <p class="etape">4 · Le résultat</p>
-    <p class="eq-exo">S = <span class="resultat">3 436 mm²</span> &nbsp;soit&nbsp; <span class="resultat">34,4 cm²</span></p>
-
-    <p class="etape">5 · La conclusion</p>
+    <p class="etape">4 · La conclusion</p>
     <p>La chambre annulaire de ce vérin a une section de 3 436 millimètres carrés,
     soit 34,4 centimètres carrés.</p>
   </div>
@@ -216,44 +257,77 @@
     </div>
   </section>
 
+  <!-- PALIER 3 — forme d'un sujet d'examen : mise en situation,
+       extrait de documentation, questions NON GUIDÉES. La ligne « nombre de pistons » est indispensable et facile à
+       manquer ; la course ne sert pas. Le résultat tombe dans la
+       tolérance, à moins d'un pour cent : la conclusion attendue est
+       « conforme », et elle doit être chiffrée pour valoir.
+
+       Valeurs plausibles et simulées. Aucun énoncé, aucune valeur,
+       aucune référence machine ne provient d'un sujet d'examen : les
+       sujets réels restent réservés aux examens blancs. -->
   <section class="palier palier-3">
     <p class="palier-tete">
       <span class="n">Palier 3</span><span class="mode">en situation</span>
       <span class="marque">BTS</span><span class="duree">15 min</span>
     </p>
 
-    <p class="contexte">Un piston de frein a un alésage de 70 mm et une tige de 40 mm.
-    La pression du circuit vaut 20 bar. La documentation annonce un effort de
-    4 000 N, avec une tolérance de ± 10 %.</p>
+    <div class="enonce">
+      <span class="situation">Mise en situation — contrôle du serrage d'un frein à disque</span>
+      <p>Un frein à disque d'engin est piloté hydrauliquement par deux pistons annulaires identiques, alimentés par le même circuit. Après remplacement des garnitures, l'atelier vérifie que l'effort de serrage retrouve bien la valeur du dossier technique.</p>
+      <p>Le constructeur admet un écart de ± 10 % sur cette valeur.</p>
+
+      <table class="constructeur">
+        <caption>Extrait du dossier technique — valeurs simulées</caption>
+        <thead>
+          <tr><th>Repère</th><th>Désignation</th><th>Valeur</th><th>Unité</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="repere">1</td><td class="designation">Piston de frein — diamètre extérieur</td><td>70</td><td>mm</td></tr>
+          <tr><td class="repere">2</td><td class="designation">Piston de frein — diamètre intérieur</td><td>40</td><td>mm</td></tr>
+          <tr><td class="repere">3</td><td class="designation">Nombre de pistons alimentés</td><td>2</td><td>—</td></tr>
+          <tr><td class="repere">4</td><td class="designation">Course du piston</td><td>4</td><td>mm</td></tr>
+          <tr><td class="repere">5</td><td class="designation">Pression du circuit de freinage</td><td>20</td><td>bar</td></tr>
+          <tr><td class="repere">6</td><td class="designation">Effort de serrage annoncé au dossier technique</td><td>10 400</td><td>N</td></tr>
+          <tr><td class="repere">7</td><td class="designation">Tolérance admise</td><td>± 10</td><td>%</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <div class="question">
       <span class="q-etq">Question a</span>
-      <p>Calculer la section annulaire du piston, en mm².</p>
+      <p>Déterminer la section annulaire d'un piston, en mm².</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o09-p3-a" rows="4" aria-label="Section annulaire du piston de frein"
-        placeholder="1 · Les données…"></textarea>
+      <textarea data-cle="o09-p3-a" rows="6" aria-label="Déterminer la section annulaire d'un piston, en mm²."
+        placeholder="…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question b</span>
-      <p>Calculer l'effort développé sous 20 bar.</p>
-      <p>1 MPa = 1 N/mm² : convertir la pression avant de multiplier.</p>
+      <p>Déterminer l'effort de serrage total développé par le circuit.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o09-p3-b" rows="4" aria-label="Effort développé"
-        placeholder="F = …"></textarea>
+      <textarea data-cle="o09-p3-b" rows="6" aria-label="Déterminer l'effort de serrage total développé par le circuit."
+        placeholder="…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question c</span>
-      <p>Situer le résultat par rapport à l'intervalle de tolérance, puis conclure
-      par une phrase chiffrée.</p>
-      <p>Calculer d'abord les bornes de l'intervalle : 4 000 N ± 10 %.</p>
+      <p>Déterminer les deux bornes de l'intervalle de tolérance.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o09-p3-c" rows="4" aria-label="Conformité et conclusion"
-        placeholder="L'intervalle va de … à …"></textarea>
+      <textarea data-cle="o09-p3-c" rows="4" aria-label="Déterminer les deux bornes de l'intervalle de tolérance."
+        placeholder="…"></textarea>
+    </div>
+
+    <div class="question">
+      <span class="q-etq">Question d</span>
+      <p>Situer le résultat par rapport à cet intervalle, puis conclure.</p>
+    </div>
+    <div class="reponse">
+      <textarea data-cle="o09-p3-d" rows="4" aria-label="Situer le résultat par rapport à cet intervalle, puis conclure."
+        placeholder="…"></textarea>
     </div>
   </section>
 
@@ -268,6 +342,19 @@
     <p class="aparte">Tout ce que tu écris sur cette page reste sur cet appareil.
     Rien n'est envoyé, ni à ton professeur, ni à personne d'autre.</p>
   </div>
+
+
+  <nav class="pager" aria-label="Navigation entre les outils">
+    <a class="prec" href="outil-08-enchainer-des-formules.html">
+      <span class="sens">Outil précédent</span>
+      <span class="quoi">8 · Enchaîner plusieurs formules</span>
+    </a>
+    <a class="index" href="index.html">Les dix-sept outils</a>
+    <a class="suiv" href="outil-10-pythagore.html">
+      <span class="sens">Outil suivant</span>
+      <span class="quoi">10 · Pythagore et distances</span>
+    </a>
+  </nav>
 
 </article>
 </div>
