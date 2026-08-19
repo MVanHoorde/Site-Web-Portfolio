@@ -699,7 +699,7 @@
     var fond = global.document.createElement('div');
     fond.className = 'acc-fond';
     fond.innerHTML =
-      '<div class="acc-carte" role="dialog" aria-modal="true" aria-label="Se connecter à la SNT">'
+      '<div class="acc-carte" role="dialog" aria-modal="true" aria-label="Se connecter">'
       +   '<div class="acc-tete"><span class="acc-pastille">' + ICONE_BOUCLIER + '</span>'
       +     '<span class="acc-titre">Avant de commencer</span></div>'
       +   '<p class="acc-intro">Connecte-toi pour retrouver ton travail d\'une fois sur l\'autre, au lycée comme à la maison. Aucun nom, aucune adresse mail&nbsp;: juste un identifiant que tu choisis.</p>'
@@ -806,16 +806,25 @@
     return (b && b.getAttribute('data-accueil-url')) || '2nde-snt.html';
   }
 
-  /* Bandeau de renvoi — pages autres que le hub, élève non connecté. */
+  /* Bandeau de renvoi — pages autres que le hub, élève non connecté.
+   *
+   * Le texte se surcharge par <body data-renvoi-texte="…">. Il le faut :
+   * sur les séquences SNT, rien n'est conservé sans compte, et le
+   * bandeau doit le dire ; sur le livret CFA, le travail reste dans le
+   * navigateur, et annoncer qu'il est perdu serait faux — un élève qui
+   * lit une alerte inexacte cesse de croire les suivantes. */
   function afficherRenvoi() {
     if (global.document.querySelector('.acc-bandeau')) return;
     injecterStyleAccueil();
-    var b = global.document.createElement('div');
-    b.className = 'acc-bandeau';
-    b.innerHTML = '<span aria-hidden="true">⚠️</span>'
-      + '<span>Tu n\'es pas connecté — ton travail ne sera pas enregistré.</span>'
+    var b = global.document.body;
+    var texte = (b && b.getAttribute('data-renvoi-texte'))
+      || 'Tu n\'es pas connecté — ton travail ne sera pas enregistré.';
+    var bandeau = global.document.createElement('div');
+    bandeau.className = 'acc-bandeau';
+    bandeau.innerHTML = '<span aria-hidden="true">⚠️</span>'
+      + '<span>' + esc(texte) + '</span>'
       + '<a href="' + esc(urlAccueil()) + '">Se connecter →</a>';
-    global.document.body.appendChild(b);
+    global.document.body.appendChild(bandeau);
   }
 
   /* Ce qui se joue au chargement, selon la page. */

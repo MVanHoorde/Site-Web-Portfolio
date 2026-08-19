@@ -161,6 +161,42 @@ une photocopie.
 
 **Retiré, et à ne pas réintroduire** : `details.correction`. Les corrigés ne sont pas en ligne.
 
+## 7 bis. Où va le travail de l'élève
+
+Le livret est branché sur le dispositif de comptes du site (le même que la SNT).
+Deux régimes, et **un seul à la fois** :
+
+| | Connecté | Sans compte |
+|---|---|---|
+| Où va le travail | base Supabase, région Paris | `localStorage` de l'appareil |
+| Ce que l'élève retrouve | tout, sur n'importe quel appareil | tout, sur cet appareil seulement |
+| Ce que voit le professeur | quelles fiches sont travaillées | rien |
+
+**Trois règles de production qui en découlent :**
+
+1. **Un champ mémorisé porte `data-cle`**, et cette clé commence par le numéro
+   de l'outil : `o07-p2-e`. C'est ce préfixe qui range la réponse dans la bonne
+   fiche — une clé qui ne le respecte pas est perdue à la première connexion.
+   La clé ne se calcule JAMAIS depuis la position du champ dans la page :
+   insérer une question plus tard décalerait tout.
+2. **La mention de bas de fiche porte `data-mention-donnees`.** Le HTML écrit la
+   version « sans compte », qui est vraie tant que rien n'est connecté et qui
+   reste lisible si le JavaScript ne tourne pas ; le script la remplace quand un
+   compte est ouvert. Une page qui promet « rien n'est envoyé » alors qu'un
+   compte est ouvert est un mensonge, pas un raccourci.
+3. **Les deux scripts se chargent dans cet ordre**, `progression.js` d'abord :
+
+```html
+<script src="../assets/js/progression.js?v=3" defer></script>
+<script src="../assets/js/cfa-livret.js?v=3" defer></script>
+```
+
+L'index porte `<body data-accueil="hub" data-accueil-url="index.html">` — c'est
+le seul point d'entrée, la modale de connexion ne s'affiche que là. Les fiches
+portent `data-accueil-url` et un `data-renvoi-texte` propre au livret : le texte
+par défaut annonce que le travail sera perdu, ce qui est vrai en SNT et faux
+ici.
+
 ## 8. Impression
 
 Le gabarit A4 dérive de `_modeles/gabarit-fiche.html` et en conserve les règles `@page`.

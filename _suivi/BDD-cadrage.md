@@ -95,6 +95,7 @@ vérité. Aucun port ouvert, aucun VPS nécessaire, IA interchangeable.
 | Client de base de données | Fichier **partagé** `assets/js/progression.js` — dérogation explicite à la règle « une séquence SNT est autonome » (§5 des consignes SNT) |
 | Ordre de branchement | **SNT d'abord** (pilote), puis les autres séquences, **puis** les chapitres de physique-chimie |
 | Chapitres de PC | **Hors périmètre** pour l'instant. Leur `localStorage` (checklist + verrou SHA-256) reste en place. Migration prévue après le pilote, le RPG concernant aussi les élèves de PC |
+| Livret CFA | **Branché le 19/08/2026.** Aucune table créée, aucune migration : la progression du livret s'écrit dans `progression`, domaine `cours`, clés `cfa-o00` … `cfa-o16`, **une ligne par fiche** dont la valeur est `{ v, champs, fait }`. Les rédactions ne passent PAS par `reponses_libres` : sur ce livret elles sont des brouillons personnels, pas des copies à corriger. Deux codes de classe ouverts — `CFA26A` (BTS MMCM) et `MVT26A` (bac pro MVTR), fichier `bdd/schema/012-classes-cfa.sql` |
 | Sécurité du projet | Les trois cases activées à la création : *Data API*, *expose new tables*, **et *Enable automatic RLS*** — toute table naît fermée |
 | Intégration GitHub | **Activée à la création.** Sans effet tant que `supabase/` n'existe pas. Sera exploitée au jalon 4, après `supabase init` / `db pull` |
 | Emplacement du schéma | `bdd/schema/*.sql`, numérotés, exécutés à la main. **Pas** `supabase/migrations/` avant le jalon 4 (risque de conflit d'historique) |
@@ -189,6 +190,15 @@ hebdomadaire** et **réveil quotidien**.
    utilisable sans enregistrement). Injecte aussi la **modale d'accueil**
    (créer / se connecter / continuer en invité), le **bandeau invité** et le
    **badge « connecté comme… »**. `CLE_ANON` renseignée.
+7bis. ✅ **Livret CFA branché le 19/08/2026.** `cfa-livret.js` réécrit autour
+   d'un *dépôt* à deux régimes : connecté → base ; sans compte → localStorage,
+   entier, comme avant. Le travail fait sans compte est **repris** à la première
+   connexion (la base gagne toujours en cas de conflit, et les clés locales
+   reprises sont effacées). Dix-neuf assertions passées en Chromium sans
+   interface, chemin d'erreur compris. **Reste à faire à la main : exécuter
+   `bdd/schema/012-classes-cfa.sql` dans le SQL Editor** — sans lui, aucun
+   apprenti ne peut créer de compte, le code de classe n'existant pas.
+
 7. ✅ Pilote branché et **prouvé de bout en bout** le 22/07/2026 : compte
    `leproftest` (classe démo `SNT26A`) → réponse `NET-1a` arrivée dans
    `reponses_libres` (`statut = en_attente`). Câblé sur **t1 Internet** et **t0** ;

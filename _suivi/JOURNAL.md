@@ -12,6 +12,59 @@
 
 ---
 
+## 19/08/2026 (suite) — Le livret CFA rejoint le dispositif de comptes
+
+Demande : « est-ce qu'on peut mettre en place ce que l'on a fait pour les
+comptes SNT ? j'aimerais que leurs données soient sauvegardées ».
+
+**Ce qui n'a pas eu à être fait.** Le socle de juillet était bien dimensionné :
+la table `progression` accepte des clés libres dans un domaine `cours` déjà
+ouvert, et `progression.js` savait déjà se poser sur n'importe quelle page
+(`data-accueil="hub"` d'un côté, badge ou bandeau de l'autre). **Aucune table
+créée, aucune colonne ajoutée, aucune migration.** Le seul SQL est l'ouverture
+de deux codes de classe.
+
+**Ce qui a été fait.** `cfa-livret.js` réécrit autour d'un *dépôt* : une couche
+unique qui sait où va le travail, et deux implémentations derrière —
+`localStorage` sans compte, base une fois connecté. Le reste du fichier (barre
+de symboles, champs, marqueur, compteur) ignore complètement lequel des deux
+tourne, ce qui évite d'avoir deux versions de la même logique à maintenir.
+
+Une ligne de `progression` par fiche, valant `{ v, champs, fait }` — pas une
+ligne par champ. Motif : `Progression.ecrire()` fait une fusion superficielle,
+et une fiche à quinze champs coûterait quinze allers-retours au chargement sur
+le wifi d'un atelier.
+
+**Le point qui a demandé le plus de soin** n'est pas le branchement mais la
+**reprise du travail fait sans compte**. Un apprenti travaille trois fiches en
+invité, se crée un compte, et trouve son espace vide : le compte lui aurait
+alors fait perdre exactement ce qu'il devait lui garantir. Au premier chargement
+connecté, toutes les clés `cfa-` du navigateur sont regroupées par fiche et
+remontées — **mais la base gagne toujours** : on ne pousse qu'un champ qu'elle
+n'a pas, jamais par-dessus une réponse reprise en ligne. Les clés locales
+reprises sont ensuite effacées.
+
+**Le piège, et il était réel.** Les dix-sept fiches promettaient « rien n'est
+envoyé, ni à ton professeur, ni à personne d'autre ». Brancher sans y toucher
+aurait fait du livret une collecte silencieuse assortie d'une promesse écrite du
+contraire. La mention est maintenant portée par `data-mention-donnees` et
+réécrite selon le régime réel ; le bandeau de `progression.js`, qui annonce un
+travail perdu (vrai en SNT, faux ici), se surcharge par `data-renvoi-texte`.
+
+**Vérification.** Dix-neuf assertions en Chromium sans interface, en deux
+passes : le régime sans compte sur les vraies pages (écriture, rechargement,
+compteur, modale du hub), puis le régime connecté sur un faux client — reprise
+du travail local, non-écrasement de la base, survie des autres réponses d'une
+même fiche à chaque écriture, une seule requête pour huit frappes, et le chemin
+d'erreur quand la base ne répond pas. Mise en page des dix-huit pages recontrôlée
+au passage : rien n'a bougé.
+
+**Reste à faire à la main** : exécuter `bdd/schema/012-classes-cfa.sql` dans le
+SQL Editor de Supabase. Tant que ce n'est pas fait, les codes `CFA26A` et
+`MVT26A` n'existent pas et aucun apprenti ne peut créer de compte.
+
+---
+
 ## 19/08/2026 (suite) — Livret CFA : audit de contenu des dix-sept outils
 
 Audit dicté outil par outil, du 0 au 16. Relevé mis au propre dans

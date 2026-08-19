@@ -19,6 +19,15 @@ Elle ne contient **aucune donnée d'élève** et ne doit jamais en contenir.
 Tableau de bord Supabase → **SQL Editor** → *New query* → coller le contenu
 du fichier → **Run**. Vérifier le message vert en bas.
 
+## Ce que contient `schema/`
+
+| Fichier | Objet |
+|---|---|
+| `001` → `005` | Les sept tables, leurs contraintes, l'historique des versions |
+| `006` | Les règles RLS et les deux fonctions `security definer` |
+| `007` → `011` | Frise ES, rôle enseignant, suivi de classe, correction des copies |
+| `012` | Les deux codes de classe du **livret CFA**. Aucune table, aucune colonne : le livret écrit dans `progression`, domaine `cours`, clés `cfa-o00` … `cfa-o16` |
+
 ## ⚠ Ne pas confondre avec `supabase/migrations/`
 
 Le dépôt est **relié à Supabase par l'intégration GitHub** (activé le
