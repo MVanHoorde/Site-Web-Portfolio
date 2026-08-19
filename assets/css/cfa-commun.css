@@ -3,7 +3,7 @@
    l'espace CFA (livret transversal de dix-sept fiches-outils).
 
    USAGE — dans le <head> d'une page écran, après fonts.css :
-     <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=4">
+     <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=6">
    Le <style> embarqué de la page ne garde QUE ce qui lui est propre.
 
    ⚠ CACHE — DÈS QUE CE FICHIER CHANGE LE RENDU (retoucher ce commentaire
@@ -61,19 +61,22 @@
      --mesure — LA LARGEUR DE LA COLONNE DE LECTURE
      ----------------------------------------------------------
      Une seule valeur commande la largeur de TOUT le contenu d'une
-     fiche. Avant, chaque composant portait son propre max-width
-     (70ch pour un paragraphe, 62ch pour une formule, 68ch pour un
-     tableau) : le contenu se tassait à gauche d'un article large de
-     1 000 px, avec un vide de 300 px à droite qui ne servait à rien.
+     fiche : les enfants directs de article.lecture la prennent, et
+     la colonne se centre dans la page.
 
-     Désormais tous les enfants directs de article.lecture prennent
-     cette largeur et se centrent. La page redevient une page : une
-     colonne, deux marges égales.
+     ⚠ CETTE VALEUR EST EN rem, ET C'EST ESSENTIEL. Une mesure en ch
+     se recalcule dans la police de CHAQUE bloc : un titre à 2,4 rem,
+     un paragraphe à 1,06 rem et un aparté en monospace à 0,74 rem
+     n'obtenaient pas la même largeur, donc pas la même marge une fois
+     centrés. Le bord gauche descendait en escalier — h1 à 190 px, h2
+     à 213, paragraphe à 330, aparté à 365 — et la page n'avait plus
+     aucune ligne de fuite. En rem, tous les blocs sont larges de la
+     même chose et s'alignent sur une seule verticale.
 
      Pour déborder volontairement — un tableau à six colonnes, une
      figure large — poser la classe .pleine-largeur sur l'élément.
      ---------------------------------------------------------- */
-  --mesure: 68ch;
+  --mesure: 36rem;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -184,15 +187,28 @@ article.lecture {
   min-width: 0;
 }
 
-/* La colonne de lecture, centrée. Voir --mesure au § 1.
+/* La colonne de lecture. Voir --mesure au § 1.
    Cette règle prime sur les max-width des composants (spécificité
-   0-1-1 contre 0-1-0) : elle les unifie au lieu de les additionner. */
+   0-1-1 contre 0-1-0) : elle les unifie au lieu de les additionner.
+
+   La marge gauche est CALCULÉE, elle n'est pas « auto ». La nuance
+   n'est visible que sur les blocs plus étroits que la colonne — un
+   tableau, qui prend la largeur de son contenu et pas davantage.
+   Avec deux marges auto, ce tableau se centrait DANS la colonne :
+   il flottait, décalé de tout ce qui l'entourait. Avec la marge
+   gauche posée à l'endroit exact où la colonne commence, il s'aligne
+   sur le texte, et c'est la marge droite qui absorbe le reste.
+
+   ⚠ AUCUN composant ne doit redéclarer le raccourci « margin » avec un
+   sélecteur qui pèse autant que celui-ci (0-1-1) ou davantage : le
+   raccourci remet les marges latérales à zéro et le bloc sort seul de
+   la colonne. Utiliser margin-block, qui ne touche qu'au vertical. */
 article.lecture > * {
   max-width: var(--mesure);
-  margin-inline: auto;
+  margin-inline: max(0px, (100% - var(--mesure)) / 2) auto;
 }
 /* Débordement volontaire, à demander explicitement. */
-article.lecture > .pleine-largeur { max-width: none; }
+article.lecture > .pleine-largeur { max-width: none; margin-inline: 0; }
 
 .fil-ariane {
   font-family: 'IBM Plex Mono', monospace; font-size: .75rem;
@@ -229,9 +245,16 @@ h3 {
   font-family: 'EB Garamond', Garamond, Georgia, serif; font-weight: 600;
   font-size: 1.15rem; margin: 1.4rem 0 .6rem;
 }
-p { margin-bottom: .9rem; max-width: 70ch; }
+/* Aucun max-width sur les composants : la largeur est commandée une
+   seule fois, par --mesure au § 1. Un max-width local ne pourrait
+   plus qu'être PLUS ÉTROIT que la colonne — un paragraphe bridé à
+   70ch dans un encart large de 36 rem s'arrêterait avant le bord de
+   l'encart, sans raison lisible. */
+p { margin-bottom: .9rem; }
 strong { font-weight: 600; }
-ul.cours { max-width: 70ch; margin: 0 0 .9rem 1.2rem; }
+/* Le retrait des puces est un padding, pas une marge gauche : une marge
+   gauche écraserait celle qui place la liste dans la colonne (§ 3). */
+ul.cours { margin-block: 0 .9rem; padding-left: 1.2rem; }
 ul.cours li { margin-bottom: .45rem; }
 .nb { white-space: nowrap; }
 sub, sup { font-size: .68em; }
@@ -261,7 +284,7 @@ sub, sup { font-size: .68em; }
 .encart {
   border: 1px solid var(--filet-fonce);
   background: var(--papier-clair);
-  padding: 1rem 1.3rem; margin: 1.2rem 0; max-width: 70ch; position: relative;
+  padding: 1rem 1.3rem; margin: 1.2rem 0; position: relative;
 }
 .encart .etq {
   font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
@@ -272,12 +295,12 @@ sub, sup { font-size: .68em; }
 .definition .etq { color: var(--h-beta); }
 .propriete { border-left: 3px solid var(--h-gamma); }
 .propriete .etq { color: var(--h-gamma); }
-.exemple { border-left: 3px solid var(--sepia); max-width: none; }
+.exemple { border-left: 3px solid var(--sepia); }
 .exemple .etq { color: var(--sepia); }
 
 /* Encart Formule : la relation à gauche, grandeurs et unités à droite. */
 .formule-bloc {
-  margin: 1.4rem 0; max-width: 62ch;
+  margin: 1.4rem 0;
   border: 1px solid var(--encre); background: var(--papier-clair);
   display: grid; grid-template-columns: auto minmax(0, 1fr);
 }
@@ -315,20 +338,30 @@ sub, sup { font-size: .68em; }
 .methode {
   border: 1px solid var(--filet-fonce); border-left: 3px solid var(--h-gamma);
   background: var(--papier-clair);
-  padding: 1rem 1.3rem; margin: 1.2rem 0; max-width: 70ch;
+  padding: 1rem 1.3rem; margin: 1.2rem 0;
 }
 .methode .etq {
   font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
   letter-spacing: .12em; text-transform: uppercase;
   color: var(--h-gamma); margin-bottom: .5rem;
 }
+/* Le numéro est POSÉ dans la marge, il n'est pas une colonne de grille.
+   La version en grid découpait chaque <li> : en display:grid, tout
+   enfant devient une cellule — un <strong> au milieu d'une phrase
+   passait donc à la ligne suivante, seul dans la colonne du numéro.
+   « Relever les données utiles, avec leur unité » sortait en trois
+   morceaux, et une phrase entièrement en gras, un mot par ligne.
+   Un retrait plus une puce en position absolue laissent la phrase
+   entière dans un seul flux de texte, quelles que soient les balises
+   qu'elle porte. */
 .methode ol { list-style: none; counter-reset: met; margin: 0; }
 .methode li {
-  counter-increment: met; display: grid; grid-template-columns: 2rem 1fr;
-  gap: .5rem; margin-bottom: .5rem; align-items: baseline;
+  counter-increment: met; position: relative;
+  padding-left: 2.5rem; margin-bottom: .5rem;
 }
 .methode li::before {
   content: counter(met) ".";
+  position: absolute; left: 0; top: 0; width: 2rem;
   font-family: 'IBM Plex Mono', monospace; font-weight: 600;
   color: var(--h-gamma); text-align: right;
 }
@@ -349,7 +382,6 @@ sub, sup { font-size: .68em; }
   font-family: 'IBM Plex Mono', monospace; font-size: .8rem; color: var(--sepia);
   margin-top: .5rem; border-top: 1px dotted var(--pointille); padding-top: .45rem;
 }
-.exercice p { max-width: none; }
 
 /* Étape d'un calcul rédigé — le filet de conduite qui suit le libellé. */
 .etape {
@@ -422,15 +454,33 @@ sub, sup { font-size: .68em; }
 }
 .checklist label { cursor: pointer; }
 
-/* Tableau */
+/* ------------------------------------------------------------
+   table.tab — LE TABLEAU DE COURS
+   ------------------------------------------------------------
+   Le contenu est aligné À GAUCHE par défaut, y compris les en-têtes.
+   Centrer par défaut revenait à centrer de la prose : la colonne
+   « ce qui est écrit sur la copie » du barème de l'outil 0, la
+   colonne « où on le rencontre » des préfixes. Un texte centré sur
+   plusieurs lignes n'a plus de bord d'attaque, et se lit deux fois
+   plus lentement — exactement le public qu'on ne peut pas se
+   permettre de ralentir.
+
+   Le centrage se DEMANDE, avec .valeurs sur le <table> : la première
+   colonne nomme et reste à gauche, toutes les autres portent des
+   chiffres et se centrent. C'est le motif de presque tous les
+   tableaux du livret ; les exceptions se règlent dans le <style> de
+   la page, qui prime.
+   ------------------------------------------------------------ */
 table.tab { border-collapse: collapse; font-size: .95rem; }
+table.tab.valeurs th:not(:first-child),
+table.tab.valeurs td:not(:first-child) { text-align: center; }
 table.tab caption {
   caption-side: top; text-align: left; font-family: 'IBM Plex Mono', monospace;
   font-size: .74rem; letter-spacing: .1em; text-transform: uppercase;
   color: var(--sepia); padding-bottom: .4rem;
 }
 table.tab th, table.tab td {
-  border: 1px solid var(--filet-fonce); padding: .42rem .8rem; text-align: center;
+  border: 1px solid var(--filet-fonce); padding: .42rem .8rem; text-align: left;
 }
 table.tab thead th {
   font-family: 'IBM Plex Mono', monospace; font-size: .78rem; background: var(--papier);
@@ -471,7 +521,7 @@ table.tab thead th {
 .poids {
   display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
   font-family: 'IBM Plex Mono', monospace; font-size: .78rem;
-  margin: 0; max-width: none;
+  margin: 0;
 }
 .poids .carres { display: inline-flex; gap: 3px; }
 .poids .carres i {
@@ -484,7 +534,7 @@ table.tab thead th {
 
 .poids-contrepoids {
   border-left: 2px solid var(--h-gamma); padding-left: .8rem;
-  margin: .6rem 0 1.2rem; max-width: 70ch;
+  margin: .6rem 0 1.2rem;
   font-size: .95rem; color: var(--encre-douce);
 }
 .poids-contrepoids .etq {
@@ -524,13 +574,12 @@ table.tab thead th {
   display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap;
   font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
   letter-spacing: .1em; text-transform: uppercase;
-  margin-bottom: .7rem; max-width: none;
+  margin-bottom: .7rem;
   border-bottom: 1px dotted var(--pointille); padding-bottom: .45rem;
 }
 .palier-tete .n { font-weight: 600; }
 .palier-tete .mode { color: var(--encre-douce); letter-spacing: .06em; }
 .palier-tete .duree { margin-left: auto; color: var(--sepia); }
-.palier p { max-width: none; }
 .palier p:last-child { margin-bottom: 0; }
 
 .palier-1 { border-left-color: var(--h-beta); }
@@ -561,7 +610,7 @@ table.tab thead th {
      .reponse    l'endroit où l'on écrit
    ============================================================ */
 
-.contexte { color: var(--encre-douce); max-width: none; }
+.contexte { color: var(--encre-douce); }
 
 /* ------------------------------------------------------------
    .question — la consigne, détachée et NOMMÉE
@@ -600,7 +649,7 @@ table.tab thead th {
   font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
   margin-bottom: .3rem;
 }
-.question p { margin: 0; max-width: none; font-weight: 600; color: var(--encre); }
+.question p { margin: 0; font-weight: 600; color: var(--encre); }
 .question p + p { font-weight: 400; margin-top: .35rem; color: var(--encre-douce); }
 
 .palier-1 .question { color: var(--h-beta); }
@@ -659,6 +708,27 @@ table.tab thead th {
 }
 .temoin-enregistre.visible { opacity: 1; }
 
+/* ------------------------------------------------------------
+   Le même témoin, mais posé après une CASE À COMPLÉTER
+   ------------------------------------------------------------
+   Le script en pose un après chaque champ mémorisé, input.trou
+   compris. Or il est en display:block : dans « [case] mm », il
+   s'intercalait entre la case et son unité et renvoyait « mm » à la
+   ligne suivante. Tout le tableau de gammes de l'Outil 1 se lisait
+   ainsi, sur deux lignes par cellule, la case au-dessus de son unité.
+
+   Il quitte donc le flux visuel dès qu'il suit une case, sans quitter
+   la page : aria-live continue de l'annoncer aux lecteurs d'écran.
+   Une case de cinq caractères se voit se remplir toute seule ; c'est
+   sous un textarea, où l'on écrit longtemps, que le témoin écrit est
+   utile — et là, il reste.
+   ------------------------------------------------------------ */
+input.trou + .temoin-enregistre {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
 
 /* ------------------------------------------------------------
    input.trou — le calcul amorcé du palier 1
@@ -706,7 +776,7 @@ input.trou.long  { width: 14rem; }
    ------------------------------------------------------------ */
 .figure-a-produire {
   border: 1.5px dashed var(--pointille);
-  padding: .9rem 1.1rem; margin: 1.2rem 0; max-width: 70ch;
+  padding: .9rem 1.1rem; margin: 1.2rem 0;
   font-size: .95rem; font-style: italic; color: var(--encre-douce);
 }
 .figure-a-produire .etq {
@@ -790,7 +860,12 @@ input.trou.long  { width: 14rem; }
      sont écrits, les traits se distinguent par leur épaisseur ou
      leur pointillé.
    ------------------------------------------------------------ */
-figure.figure { margin: 1.4rem 0; }
+/* margin-BLOCK, jamais le raccourci margin : « margin: 1.4rem 0 »
+   remettrait les marges gauche et droite à zéro, et comme ce sélecteur
+   pèse aussi lourd que la règle de colonne du § 3 (0-1-1 contre 0-1-1,
+   déclaré plus bas donc vainqueur), la figure repartait se coller au
+   bord gauche de l'article, seule à déborder de la colonne. */
+figure.figure { margin-block: 1.4rem; }
 figure.figure svg {
   display: block; width: 100%; height: auto;
   border: 1px solid var(--filet-fonce); background: #fff;
@@ -842,8 +917,20 @@ table.constructeur th, table.constructeur td {
   border: 1px solid var(--filet-fonce); padding: .34rem .7rem;
 }
 table.constructeur thead th { background: var(--papier); text-align: center; }
-table.constructeur td.designation { text-align: left; font-family: 'EB Garamond', Garamond, Georgia, serif; font-size: .95rem; }
+/* La désignation est la seule colonne de mots : elle s'aligne à gauche,
+   EN-TÊTE COMPRIS. Un en-tête centré au-dessus d'une colonne alignée à
+   gauche décroche le tableau de son bord d'attaque. Les quatre colonnes
+   sont les mêmes dans les dix-sept tableaux : repère, désignation,
+   valeur, unité. */
+table.constructeur td.designation,
+table.constructeur thead th:nth-child(2) { text-align: left; }
+table.constructeur td.designation { font-family: 'EB Garamond', Garamond, Georgia, serif; font-size: .95rem; }
 table.constructeur td { text-align: center; }
+/* .mots — une valeur relevée qui est une phrase et non un nombre : une
+   direction, un sens (« 40° au-dessus de l'horizontale, vers la
+   droite »). Centrée, elle se répartissait sur deux lignes sans bord
+   d'attaque, au milieu d'une colonne de chiffres. */
+table.constructeur td.mots { text-align: left; }
 table.constructeur .repere { color: var(--sepia); }
 
 
@@ -869,14 +956,19 @@ table.constructeur .repere { color: var(--sepia); }
   display: block; margin-bottom: .5rem;
   border-bottom: 1px dotted var(--pointille); padding-bottom: .35rem;
 }
-.enonce p { max-width: none; }
 .enonce p:last-child { margin-bottom: 0; }
 .enonce ul.releves {
   list-style: none; margin: .6rem 0 0;
   font-family: 'IBM Plex Mono', monospace; font-size: .84rem; line-height: 1.9;
 }
-.enonce ul.releves li { display: grid; grid-template-columns: 1.2rem 1fr; }
-.enonce ul.releves li::before { content: "·"; color: var(--h-alpha); font-weight: 600; }
+/* Puce posée dans la marge, pas en colonne de grille — même raison
+   que pour .methode li : une grille couperait la ligne à chaque balise
+   qu'elle contient. */
+.enonce ul.releves li { position: relative; padding-left: 1.2rem; }
+.enonce ul.releves li::before {
+  content: "·"; position: absolute; left: 0;
+  color: var(--h-alpha); font-weight: 600;
+}
 
 
 /* ============================================================
@@ -885,11 +977,17 @@ table.constructeur .repere { color: var(--sepia); }
 @media (max-width: 780px) {
   .page { padding: 1.2rem .9rem 3rem; }
   .formule-bloc { grid-template-columns: 1fr; }
-  .formule-bloc .eq { justify-content: center; font-size: 1.45rem; }
+  /* La formule passe au-dessus de ses grandeurs et occupe toute la
+     largeur : elle reste alignée à gauche comme les deux lignes qui la
+     suivent. Centrée, elle était le seul élément de la page à ne pas
+     partir du même bord que le reste. */
+  .formule-bloc .eq { justify-content: flex-start; font-size: 1.45rem; }
   .palier-tete .duree { margin-left: 0; }
   /* Sous cette largeur la colonne de lecture occupe déjà tout ;
-     --mesure ne doit pas créer une marge parasite. */
-  article.lecture > * { max-width: none; }
+     --mesure ne doit pas créer une marge parasite. La marge gauche
+     calculée du § 3 se remet à zéro avec elle, sinon le contenu
+     resterait décalé vers la droite. */
+  article.lecture > * { max-width: none; margin-inline: 0; }
   /* Le pager passe en pile, le suivant en premier : c'est le geste
      attendu, il ne doit pas être sous deux autres liens. */
   .pager { grid-template-columns: 1fr; }
@@ -917,6 +1015,10 @@ table.constructeur .repere { color: var(--sepia); }
   body { background: #fff; background-image: none; font-size: 11pt; }
   nav, footer, .retour { display: none; }
   article.lecture { border: none; background: #fff; padding: 0; }
+  /* Sur le papier, la colonne de lecture n'a plus de raison d'être :
+     la largeur du texte est déjà donnée par les marges de la feuille.
+     La garder reviendrait à imprimer deux marges par côté. */
+  article.lecture > * { max-width: none; margin-inline: 0; }
   .encart, .methode, .exercice, .palier, .checklist, .formule-bloc,
   table.tab thead th { background: #fff; }
   .formule-bloc .eq {

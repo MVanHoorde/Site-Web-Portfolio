@@ -78,7 +78,52 @@ Tout calcul montré dans le livret, sans exception, suit ces cinq étapes :
 
 Ce sont des règles de bonne pratique universelles, qui se justifient d'elles-mêmes. Elles ne s'appuient sur aucun document interne et ne doivent jamais être présentées comme telles.
 
-## 6. Composants CSS
+## 6. Mise en page — une colonne, un bord d'attaque
+
+**Tout le contenu d'une page écran tient dans une seule colonne**, large de
+`--mesure` (36 rem), centrée dans la page. Tous les blocs — titre, paragraphe,
+encart, tableau, figure, palier — commencent sur **la même verticale**. C'est la
+seule chose qui donne une ligne de fuite à l'œil.
+
+- `--mesure` est **en rem, jamais en ch**. Une largeur en `ch` se recalcule dans
+  la police de chaque bloc : un titre, un paragraphe et un aparté en monospace
+  n'obtiennent pas la même largeur, donc pas la même marge une fois centrés, et
+  le bord gauche descend en escalier.
+- **Aucun composant ne pose de `max-width`.** La largeur est commandée une seule
+  fois, au `:root`.
+- **Aucun composant ne pose le raccourci `margin`** avec un sélecteur qui pèse
+  autant que `article.lecture > *` (0-1-1) : le raccourci remet les marges
+  latérales à zéro et le bloc sort seul de la colonne. Écrire `margin-block`.
+- Pour déborder volontairement : `.pleine-largeur` sur l'élément. À n'employer
+  que si le contenu le réclame vraiment — un tableau à quatre colonnes courtes
+  n'en a pas besoin, et étalé sur toute la page il cesse de se lire en ligne.
+
+### Quand centrer
+
+Le centrage se **demande**, il n'est jamais le défaut. Il est réservé à :
+
+- les **valeurs numériques** en colonne de tableau — `.valeurs` sur le `<table>`
+  centre toutes les colonnes sauf la première, qui nomme ;
+- les **schémas en cases** — le produit en croix de l'Outil 5, un relevé qui
+  n'est fait que de nombres (Outil 14) : là, la première colonne se centre aussi ;
+- les **blocs-repères courts** qu'on doit retrouver de mémoire (SOH · CAH · TOA
+  de l'Outil 11) ;
+- les **cases à cocher** et les fractions.
+
+Tout le reste s'aligne à gauche, **en-têtes de colonnes compris** : un en-tête
+centré au-dessus d'une colonne alignée à gauche décroche le tableau. Une valeur
+relevée qui est une phrase — une direction, un sens — porte `.mots` et s'aligne
+à gauche comme le texte qu'elle est.
+
+### Figures SVG
+
+Le texte d'une figure **ne dépasse jamais du `viewBox`** : le SVG le rogne en
+plein mot, sans prévenir. Une légende de plusieurs lignes se place **sous le
+dessin**, pas à sa droite — descendre ne coûte que de la hauteur, alors qu'un
+`viewBox` élargi rapetisse le dessin **et** le texte, jusqu'à l'illisible sur
+une photocopie.
+
+## 7. Composants CSS
 
 `cfa-commun.css` dérive de `chapitre-commun.css`. Réutiliser les classes existantes plutôt que d'en créer.
 
@@ -90,11 +135,13 @@ Ce sont des règles de bonne pratique universelles, qui se justifient d'elles-m�
 - `.palier` avec les variantes `.palier-1`, `.palier-2`, `.palier-3` — la troisième porte la marque BTS.
 - `.trou` — l'emplacement à compléter du palier 1, un filet à remplir à la main.
 - `.figure-a-produire` — cadre en pointillé, description d'une ligne, visible à l'écran comme à l'impression tant que la figure n'existe pas.
+- `.valeurs` — sur un `<table class="tab">`, centre toutes les colonnes sauf la première. Voir §6.
+- `.mots` — sur une cellule de `table.constructeur` dont la valeur relevée est une phrase et non un nombre.
 - `.cote` — la bande signature de la famille CFA. Remplace `.spectre`. Même silhouette : bande d'encre de 6 px avec les trois repères aux positions 18 %, 31 % et 76 %, dans les trois accents de la charte. Ce qui change : les deux extrémités portent une pointe de flèche en réserve et un trait d'attache vertical, ce qui la fait lire comme une ligne de cote de dessin technique.
 
 **Retiré, et à ne pas réintroduire** : `details.correction`. Les corrigés ne sont pas en ligne.
 
-## 7. Impression
+## 8. Impression
 
 Le gabarit A4 dérive de `_modeles/gabarit-fiche.html` et en conserve les règles `@page`.
 
@@ -103,7 +150,7 @@ Le gabarit A4 dérive de `_modeles/gabarit-fiche.html` et en conserve les règle
 - Le badge, les paliers et les zones à compléter doivent rester lisibles en noir et blanc.
 - Aucune information ne doit exister uniquement à l'écran. Si la page écran affiche quelque chose que la fiche A4 n'a pas, c'est une erreur.
 
-## 8. Rédaction des énoncés
+## 9. Rédaction des énoncés
 
 - Phrases courtes, une consigne par phrase.
 - Verbe d'action à l'infinitif en tête : *calculer*, *relever*, *comparer*, *conclure*.

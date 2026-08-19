@@ -5,23 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Outil 11 — Trigonométrie dans le triangle rectangle · Livret CFA</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=5">
+<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=6">
 <style>
   /* Propre à cette fiche : le moyen mnémotechnique, en trois blocs
      alignés. Il est écrit en gros parce que c'est la seule chose que
      l'élève doit pouvoir retrouver de mémoire en salle d'examen. */
-  .mnemo { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.2rem 0; }
+  /* Trois colonnes égales, pas un flex qui se replie : en flex, la
+     troisième carte passait seule à la ligne et s'étirait sur toute la
+     largeur — SOH et CAH côte à côte, TOA en bandeau en dessous, alors
+     que les trois disent exactement la même chose et se valent.
+     C'est l'un des rares blocs du livret où le texte est centré, et
+     c'est voulu : trois mots-repères de six lettres, à retrouver de
+     mémoire en salle d'examen. */
+  .mnemo {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1rem; margin: 1.2rem 0;
+  }
   .mnemo div {
     border: 1px solid var(--filet-fonce); background: #fff;
-    padding: .8rem 1.1rem; flex: 1 1 12rem; text-align: center;
+    padding: .8rem 1.1rem; text-align: center;
   }
+  @media (max-width: 780px) { .mnemo { grid-template-columns: 1fr; } }
   .mnemo .mot {
     display: block; font-family: 'IBM Plex Mono', monospace;
     font-size: 1.25rem; font-weight: 600; letter-spacing: .1em;
     color: var(--h-alpha); margin-bottom: .3rem;
   }
   .mnemo .sens { display: block; font-size: .88rem; color: var(--encre-douce); }
-  .trois-cotes { max-width: 62ch; }
   .trois-cotes td { font-size: .92rem; }
   .trois-cotes .cote-nom { font-family: 'IBM Plex Mono', monospace; font-size: .84rem; }
 </style>
@@ -103,7 +113,12 @@
   <p class="aparte">L'hypoténuse ne change jamais. Ce sont l'opposé et l'adjacent qui échangent leur rôle quand on change d'angle de référence.</p>
 
   <figure class="figure">
-    <svg viewBox="0 0 700 300" role="img" xmlns="http://www.w3.org/2000/svg">
+    <!-- Le rappel SOH / CAH / TOA est SOUS le triangle, pas à sa droite.
+         À droite, les cinq lignes réclamaient 320 unités à partir de la
+         500ᵉ : elles sortaient du viewBox, et le SVG les rognait en plein
+         mot — « SOH — sin α = opposé / ». Les descendre ne coûte que de
+         la hauteur, qui, elle, ne rogne rien. -->
+    <svg viewBox="0 0 700 430" role="img" xmlns="http://www.w3.org/2000/svg">
       <title>Nommer les trois côtés d'un triangle rectangle selon l'angle choisi</title>
       <desc>Un triangle rectangle avec l'angle droit en bas à droite et l'angle
       alpha en bas à gauche. Le côté oblique est l'hypoténuse, le côté vertical
@@ -120,12 +135,12 @@
       <text x="392" y="170" class="fig-txt">opposé à α</text>
       <text x="150" y="150" class="fig-txt">hypoténuse</text>
 
-      <line x1="470" y1="60" x2="470" y2="270" stroke="#d8cfba" stroke-width="1.4"/>
-      <text x="500" y="96" class="fig-txt">SOH — sin α = opposé / hypoténuse</text>
-      <text x="500" y="146" class="fig-txt">CAH — cos α = adjacent / hypoténuse</text>
-      <text x="500" y="196" class="fig-txt">TOA — tan α = opposé / adjacent</text>
-      <text x="500" y="250" class="fig-txt">l'hypoténuse ne change jamais ;</text>
-      <text x="500" y="272" class="fig-txt">opposé et adjacent échangent</text>
+      <line x1="40" y1="296" x2="660" y2="296" stroke="#d8cfba" stroke-width="1.4"/>
+      <text x="40" y="330" class="fig-txt">SOH — sin α = opposé / hypoténuse</text>
+      <text x="40" y="356" class="fig-txt">CAH — cos α = adjacent / hypoténuse</text>
+      <text x="40" y="382" class="fig-txt">TOA — tan α = opposé / adjacent</text>
+      <text x="400" y="330" class="fig-txt">l'hypoténuse ne change jamais ;</text>
+      <text x="400" y="356" class="fig-txt">opposé et adjacent échangent</text>
     </svg>
     <figcaption>L'hypoténuse se repère sans réfléchir : c'est le côté en face de
     l'angle droit, et c'est toujours le plus long. Les deux autres changent de

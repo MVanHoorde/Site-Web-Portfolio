@@ -25,13 +25,19 @@ des énoncés qui bougent encore.
 |---|---|
 | **1** | Le « à quoi ça sert » est trop court. L'étoffer, et surtout **faire le lien explicite entre l'exposant et la dimension** : pourquoi 10³ pour une longueur, 10⁶ pour une surface, 10⁹ pour un volume. Le tableau montre le résultat sans dire d'où il vient. |
 
-## Propagation en attente
+## Liens vers les fiches A4
 
-Les pages écran des outils **1, 2, 3, 4, 5 et 6** sont encore à l'ancienne
-structure : elles ont perdu leurs zones de réponse, `.ligne` et `span.trou`
-n'étant plus dans la feuille de style. À reprendre sur le modèle de l'Outil 0
-— `.contexte`, `.question` nommée, `.reponse` — dès que le principe est validé.
+Les dix-sept pages écran annoncent « Fiche A4 recto-verso : version à
+imprimer ». **Quinze de ces liens ne mènent nulle part** — seules les fiches 00
+et 02 existent. `verifier.mjs` les signale comme liens cassés. Ils se
+résorberont d'eux-mêmes à la passe « impression et PDF » ci-dessus ; d'ici là,
+un élève qui clique tombe sur une page d'erreur.
+
+## Règle de structure, acquise
 
 **Une question par zone de travail, sans exception.** Un palier qui présente
 un énoncé puis un espace de réponse sans consigne explicite est incomplet,
 même quand la consigne semble évidente.
+
+Les dix-sept pages écran sont à cette structure — `.contexte`, `.question`
+nommée, `.reponse` — et plus aucune ne porte l'ancien `.ligne` / `span.trou`.

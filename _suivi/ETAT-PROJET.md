@@ -5,7 +5,7 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **25/07/2026**
+> Dernière réécriture : **19/08/2026**
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 ---
@@ -24,6 +24,7 @@
 | **SNT — `t1` Internet** | Séances 1, 2, 3 et étapes 4.1, 4.2, 4.3 refondues. **Restent : 4.4, 4.6, et la fin de thème** (Filius + passerelle NSI facultative). Deux blocs de 4.3 attendent le moteur (relevé et rappel). Seule séquence sur le moteur partagé. |
 | **Base de données** | ✅ **en service.** Supabase, région **West EU (Paris)**. 7 tables, 10 policies RLS, 4 fonctions, sauvegarde hebdo + réveil quotidien. Pilote prouvé de bout en bout sur `t1`. |
 | **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
+| **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 : une seule colonne (`--mesure: 36rem`), un seul bord d'attaque, centrage réservé aux valeurs et aux blocs-repères. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé. |
 | **Cahier de vacances** | 14 pages, 2 blocs 🚧. La partie la plus finie du dépôt. |
 | **ES Terminale** | frise fonctionnelle en local ; `serveur-frise/` et `ia-correction/` en chantier. |
 

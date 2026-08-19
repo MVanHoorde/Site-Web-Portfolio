@@ -12,6 +12,51 @@
 
 ---
 
+## 19/08/2026 — Livret CFA : passe de mise en page sur les 18 pages écran
+
+Motif : « tu as tout centré » et « de nombreux problèmes de localisation du
+texte ». Vérification faite dans un Chromium sans interface (le `chrome-headless-shell`
+déjà présent avec Playwright), captures à l'appui — c'est ce qui a permis de voir
+que le problème n'était pas un excès de goût pour le centrage mais **trois bugs**.
+
+**Ce qui n'allait pas, par ordre de gravité :**
+
+1. `--mesure: 68ch`. L'unité `ch` dépend de la police de l'élément : chaque bloc
+   obtenait sa propre largeur, et comme tous étaient centrés, le bord gauche
+   descendait en escalier sur cinq positions différentes. Un livret sans ligne de
+   fuite.
+2. `.methode li { display: grid }`. En grid, chaque enfant devient une cellule :
+   les `<strong>` au milieu des phrases partaient seuls à la ligne. **La règle de
+   l'Outil 6 s'affichait à un mot par ligne** — c'est l'exemple qu'avait donné
+   Loïc, et le pire défaut de la série.
+3. Le témoin « enregistré sur cet appareil », posé par `cfa-livret.js` après
+   chaque champ, est en `display: block` : après une case `input.trou`, il
+   renvoyait l'unité à la ligne suivante. Les quinze lignes du tableau de gammes
+   de l'Outil 1 se lisaient sur deux lignes chacune, la case au-dessus de « mm ».
+
+**Trois autres défauts trouvés en cherchant :** les tableaux centraient leur
+contenu par défaut (six pages portaient déjà des rustines `text-align: left`) ;
+`figure.figure` redéclarait le raccourci `margin`, ce qui remettait ses marges
+latérales à zéro et faisait sortir toutes les figures de la colonne ; et **quatre
+figures avaient du texte hors `viewBox`**, rogné en plein mot par le SVG —
+« SOH — sin α = opposé / ».
+
+**Méthode qui a servi et resservira** : plutôt que de relire dix-huit pages à
+l'œil, trois audits automatiques dans le navigateur — bords gauches de tous les
+enfants directs comparés à la médiane, débordements horizontaux, et `getBBox()`
+de chaque `<text>` SVG comparé au `viewBox`. Les trois passent à blanc en fin de
+session. Le script vit dans le scratchpad, il est trivial à réécrire.
+
+Décisions dans `DECISIONS.md` (six entrées au 19/08), règles de production dans
+`CONSIGNES-fiche-outil-CFA.md` §6.
+
+**Non traité, volontairement** : les fiches A4 (`fiches/cfa/`), qui seront
+refaites après validation des versions en ligne — donc aussi leur logo cassé
+(`logo-isaac.png`, le fichier s'appelle `logo-isaac-baseline.png`) et leur
+désaccord avec l'écran (« les cinq étapes » contre « les quatre étapes »).
+
+---
+
 ## 23/07/2026 — Audit complet du dépôt
 
 Audit exhaustif (SNT en priorité, puis l'ensemble du site). Constats principaux :
