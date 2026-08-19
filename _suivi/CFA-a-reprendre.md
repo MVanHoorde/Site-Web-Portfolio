@@ -21,9 +21,8 @@ des énoncés qui bougent encore.
 
 ## Contenu
 
-| Outil | Point |
-|---|---|
-| **1** | Le « à quoi ça sert » est trop court. L'étoffer, et surtout **faire le lien explicite entre l'exposant et la dimension** : pourquoi 10³ pour une longueur, 10⁶ pour une surface, 10⁹ pour un volume. Le tableau montre le résultat sans dire d'où il vient. |
+Rien en attente : les points relevés à l'audit du 19/08/2026 ont été traités.
+Ce qui reste à ce sujet est la **validation de Loïc**, outil par outil.
 
 ## Liens vers les fiches A4
 

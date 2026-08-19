@@ -12,6 +12,62 @@
 
 ---
 
+## 19/08/2026 (suite) — Livret CFA : audit de contenu des dix-sept outils
+
+Audit dicté outil par outil, du 0 au 16. Relevé mis au propre dans
+`CFA-audit-a-traiter.md` avant toute modification — treize points transversaux
+et le détail fiche par fiche — puis traité en une passe.
+
+**Trois arbitrages ont été demandés avant de commencer**, et ils commandent tout
+le reste : l'accroche s'adresse à l'atelier avec un encart BTS séparé ;
+l'écart relatif se note `ε` ; on commence par le socle CSS, puis l'Outil 0.
+
+**Ce qui a changé sur le fond**
+
+- L'Outil 0 perd son tableau de barème (« aucun intérêt »), cite la question
+  posée avant de montrer la copie de l'élève, et son palier 3 ne demande plus de
+  « relever les données utiles » — cette consigne n'existe pas dans un sujet.
+- L'Outil 1 explique enfin *pourquoi* les unités comptent : une formule s'apprend
+  avec ses unités, et l'erreur d'unité est la seule qui ne se voit pas dans une
+  copie. Le tableau des conversions porte l'exposant `n` dans son en-tête et
+  l'égalité en toutes lettres sous chaque facteur.
+- L'Outil 2 traite les **deux sections d'un vérin** — sortie de tige, disque
+  entier ; rentrée de tige, couronne — dans la règle, dans la figure, dans
+  l'exemple et dans les trois paliers. C'est la première source d'erreur du
+  chapitre et elle n'était nulle part.
+- L'Outil 8 disait faux : « une erreur fait tomber tout ce qui suit ». Sur une
+  copie, on ne perd les points qu'une fois ; ce qui compte ensuite, c'est la
+  cohérence. Réécrit, avec l'ouverture « tout écrire d'un seul coup » en fin de
+  fiche et un palier 3 sans aucune étape intermédiaire.
+- Les vecteurs (14, 15, 16) : la notion de **composante** est enfin expliquée là
+  où elle apparaît pour la première fois, schéma à l'appui ; les trois fiches
+  gagnent des figures là où la formule seule était illisible.
+
+**Ce qui a changé sur la forme**
+
+Socle CSS d'abord (`?v=7`) : `.vec`, `.rac`, `.grec`, indices en Garamond
+romain, `.eq-exo` sans retrait. Puis les figures : angle posé sur un côté du
+triangle (11, 12, 14, 16), angle droit au mauvais sommet (10), axes sans pointe
+de flèche (14, 16), libellés hors `viewBox` (14). Deux figures ne correspondaient
+pas à leur énoncé : le vérin du palier 2 de l'Outil 14 était tracé à 18° pour un
+énoncé qui annonce 40°, et les vecteurs du palier 1 ne montaient pas du nombre de
+carreaux annoncé — les normes ne tombaient pas rondes sur un palier où personne
+ne doit pouvoir échouer.
+
+**Deux figures produites** là où le texte renvoyait à un dessin absent : le bras
+de levage coté de l'Outil 5 (l'énoncé disait « reproduit ci-dessus » sans rien
+au-dessus) et le schéma des composantes de l'Outil 14.
+
+**Vérification** : les dix-huit pages repassées au harnais de mesure (bord
+d'attaque, débordement horizontal, texte SVG hors `viewBox`, tableaux trop
+larges) — aucun défaut. Les deux fiches A4 existantes tiennent toujours en
+exactement deux pages à l'impression.
+
+**Reste** : la validation de Loïc, outil par outil ; la passe impression sur les
+dix-sept fiches A4 ; les quinze fiches A4 encore à produire.
+
+---
+
 ## 19/08/2026 — Livret CFA : passe de mise en page sur les 18 pages écran
 
 Motif : « tu as tout centré » et « de nombreux problèmes de localisation du

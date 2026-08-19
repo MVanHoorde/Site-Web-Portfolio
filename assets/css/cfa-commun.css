@@ -3,7 +3,7 @@
    l'espace CFA (livret transversal de dix-sept fiches-outils).
 
    USAGE — dans le <head> d'une page écran, après fonts.css :
-     <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=6">
+     <link rel="stylesheet" href="../assets/css/cfa-commun.css?v=7">
    Le <style> embarqué de la page ne garde QUE ce qui lui est propre.
 
    ⚠ CACHE — DÈS QUE CE FICHIER CHANGE LE RENDU (retoucher ce commentaire
@@ -310,9 +310,26 @@ sub, sup { font-size: .68em; }
   font-size: 1.7rem; display: flex; align-items: center;
   padding: .9rem 1.4rem; white-space: nowrap;
 }
-.formule-bloc .eq sub, .formule-bloc .eq sup {
-  font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: .5em;
+/* Indices et exposants — même famille que la formule, en romain.
+   La version précédente les passait en IBM Plex Mono à 0,5 em : dans
+   « Fx² », l'indice tombait trop bas, trop petit et dans une autre
+   fonte que le F qui le porte, ce qui se lisait comme un défaut de
+   composition. En Garamond romain à 0,64 em, l'indice s'assied sur la
+   même ligne de base optique que le corps de la lettre. */
+.formule-bloc .eq sub, .formule-bloc .eq sup,
+.eq-exo sub, .eq-exo sup {
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  font-style: normal; font-size: .64em;
 }
+.formule-bloc .eq sub, .eq-exo sub { vertical-align: -.22em; }
+.formule-bloc .eq sup, .eq-exo sup { vertical-align: .42em; }
+
+/* ⚠ .eq est un conteneur FLEX : tout <span> qu'on y pose devient un
+   item, et les espaces qui l'entourent DISPARAISSENT — « tan α »
+   sort « tanα ». Dès qu'une formule contient un span (.vec, .rac,
+   .grec…), envelopper toute la ligne dans <span class="l"> : un seul
+   item flex, et le texte redevient du texte. */
+.formule-bloc .eq > .l { display: block; }
 .formule-bloc .grandeurs {
   padding: .85rem 1.2rem;
   font-family: 'IBM Plex Mono', monospace; font-size: .78rem; line-height: 2;
@@ -397,13 +414,17 @@ sub, sup { font-size: .68em; }
   padding: .05em .4em; white-space: nowrap;
 }
 
-/* Équation hors paragraphe, dans un exemple résolu */
+/* Équation hors paragraphe, dans un exemple résolu.
+
+   AUCUN retrait à gauche. La version précédente posait 1 rem de marge
+   gauche : dans un exemple résolu, la ligne des données (un <p>
+   ordinaire) partait du bord de la colonne et la ligne de la relation
+   partait 1 rem plus loin. Les deux se lisent pourtant comme les deux
+   étapes d'un même calcul, et l'œil voyait un décrochement là où il
+   n'y a aucune hiérarchie. Un seul bord d'attaque — §6 des consignes. */
 .eq-exo {
   font-family: 'EB Garamond', Garamond, Georgia, serif; font-style: italic;
-  font-size: 1.15rem; margin: .8rem 0 .8rem 1rem;
-}
-.eq-exo sub, .eq-exo sup {
-  font-size: .6em; font-style: normal; font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.15rem; margin-block: .8rem; margin-inline: 0;
 }
 
 /* Fraction. currentColor : la barre suit la couleur du texte — encre sur
@@ -411,6 +432,67 @@ sub, sup { font-size: .68em; }
 .frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 .25em; }
 .frac .haut { display: block; border-bottom: 1.5px solid currentColor; padding: 0 .3em .1em; }
 .frac .bas  { display: block; padding: .1em .3em 0; }
+/* .frac.grande — une fraction qu'on veut voir de loin, dans une règle
+   dont la formule est l'objet même de la fiche. */
+.frac.grande { font-size: 1.15em; margin: 0 .35em; }
+
+/* ------------------------------------------------------------
+   .rac — racine carrée dont le trait couvre tout le radicande
+   ------------------------------------------------------------
+     <span class="rac">√<span class="sous">a² + b²</span></span>
+
+   « √(a² + b²) » écrit à plat oblige le lecteur à repérer une
+   parenthèse fermante pour savoir où la racine s'arrête ; sur une
+   photocopie, c'est exactement l'endroit où l'on se trompe. Le trait
+   le dit sans rien à chercher, et il rend les parenthèses inutiles.
+   ------------------------------------------------------------ */
+.rac { display: inline-block; white-space: nowrap; }
+.rac > .sous {
+  display: inline-block;
+  border-top: 1.2px solid currentColor;
+  padding: .06em .22em 0 .1em; margin-left: -.1em;
+}
+
+/* ------------------------------------------------------------
+   .vec — la flèche du vecteur, tracée et non composée
+   ------------------------------------------------------------
+     <span class="vec">F</span><sub>1</sub>
+
+   Le caractère combinant U+20D7 se place au petit bonheur selon la
+   fonte et disparaît de certaines impressions. Ici la hampe et la
+   pointe sont deux boîtes en em : elles suivent le corps du texte,
+   se voient en noir et blanc, et tiennent à la photocopie.
+
+   L'indice se pose APRÈS le span : la flèche coiffe la lettre, pas
+   son numéro — F⃗₁ et non (F₁)⃗.
+   ------------------------------------------------------------ */
+.vec {
+  position: relative; display: inline-block;
+  padding-top: .2em; padding-inline: .12em .18em;
+}
+.vec::before {
+  content: ""; position: absolute; left: .02em; right: .16em; top: .03em;
+  height: .055em; background: currentColor;
+}
+.vec::after {
+  content: ""; position: absolute; right: .02em; top: -.06em;
+  border-left: .24em solid currentColor;
+  border-top: .095em solid transparent; border-bottom: .095em solid transparent;
+}
+
+/* ------------------------------------------------------------
+   .grec — une lettre grecque qui ne se lit pas comme une latine
+   ------------------------------------------------------------
+   En Garamond italique, l'alpha grec et le « a » latin ont le même
+   dessin à un jambage près : « tan α » et « tan a » sont deux images
+   presque identiques, et l'élève lit celle qu'il connaît. Le romain
+   suffit à les séparer, sans changer de famille de caractères.
+
+   S'emploie partout où une lettre grecque tombe dans un contexte en
+   italique — .eq, .eq-exo, .formule-bloc. En texte courant, qui est
+   déjà romain, la classe est inutile.
+   ------------------------------------------------------------ */
+.grec { font-style: normal; }
 
 /* ------------------------------------------------------------
    .unites — l'unité accolée à une valeur

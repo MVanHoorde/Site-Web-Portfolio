@@ -26,7 +26,7 @@ Trois blocs, dans cet ordre, sans exception.
 
 **La règle.** Encadré, quatre lignes maximum. La formule, les grandeurs, les unités. Rien d'autre.
 
-**Un exemple entièrement résolu**, rédigé selon les cinq règles de l'Outil 0 — voir §5. C'est le seul endroit du recto où l'on montre un calcul complet. La méthode se montre, elle ne s'énonce pas.
+**Un exemple entièrement résolu**, rédigé selon les quatre règles de l'Outil 0 — voir §5. C'est le seul endroit du recto où l'on montre un calcul complet. La méthode se montre, elle ne s'énonce pas.
 
 ## 3. Structure d'une fiche — verso
 
@@ -39,6 +39,11 @@ Trois paliers. Le gradient est **triple** : difficulté, contexte, appartenance.
 | **Palier 3 — en situation** | engin, documentation, enchaînement | réels | marqué **BTS** |
 
 **Palier 1.** Le calcul est déjà amorcé. Deux trous à combler, pas plus. Personne ne peut échouer. C'est le palier qui réamorce la confiance, il n'a aucune autre fonction.
+
+**Ce qui est amorcé, c'est la structure, pas l'opération.** Une amorce qui écrit
+« V = 90 ÷ ___ » ne demande plus que d'appuyer sur une touche : elle a fait le
+travail. Sur une série de questions semblables, **la première porte l'amorce
+complète et sert de modèle** ; les suivantes n'ont qu'un trou de résultat.
 
 **Palier 2.** Même outil, énoncé nu. C'est ici que se joue la mutualisation entre les deux publics — les deux métiers doivent s'y reconnaître également.
 
@@ -66,15 +71,20 @@ Pas de liste de sessions. Le décompte porte sur les dix dernières sessions de 
 
 **Le compteur reste neutre dans la moitié haute de la fiche.** Le mot « examen » n'apparaît qu'au palier 3, qui est le seul élément marqué BTS.
 
-## 5. Les cinq règles de rédaction — format de tous les exemples résolus
+## 5. Les quatre règles de rédaction — format de tous les exemples résolus
 
-Tout calcul montré dans le livret, sans exception, suit ces cinq étapes :
+Tout calcul montré dans le livret, sans exception, suit ces quatre étapes :
 
-1. **Relever et recopier les données avec leur unité**, avant tout calcul.
+1. **Relever les données utiles, avec leur unité**, avant tout calcul.
 2. **Écrire la relation en lettres** avant de remplacer.
-3. **Remplacer avec les unités**, y compris les unités intermédiaires.
-4. **Encadrer le résultat avec son unité.**
-5. **Conclure par une phrase chiffrée** — jamais « c'est bon » ou « ce n'est pas conforme » tout seul.
+3. **Faire l'application numérique**, et **encadrer le résultat avec son unité**.
+4. **Conclure par une phrase chiffrée** — jamais « c'est bon » ou « ce n'est pas conforme » tout seul.
+
+L'application numérique se fait **en nombres** : on ne recopie pas les unités
+à l'intérieur de la ligne de calcul, elles réapparaissent sur le résultat
+encadré. C'est ce qui se fait partout, c'est plus rapide à écrire, et c'est ce
+que le correcteur cherche — un résultat qui porte son unité, pas une unité
+répétée trois fois sur la même ligne.
 
 Ce sont des règles de bonne pratique universelles, qui se justifient d'elles-mêmes. Elles ne s'appuient sur aucun document interne et ne doivent jamais être présentées comme telles.
 
@@ -137,6 +147,16 @@ une photocopie.
 - `.figure-a-produire` — cadre en pointillé, description d'une ligne, visible à l'écran comme à l'impression tant que la figure n'existe pas.
 - `.valeurs` — sur un `<table class="tab">`, centre toutes les colonnes sauf la première. Voir §6.
 - `.mots` — sur une cellule de `table.constructeur` dont la valeur relevée est une phrase et non un nombre.
+- `.vec` — la flèche d'un vecteur, tracée en `em` (hampe + pointe), jamais le
+  caractère combinant U+20D7 : il se place au petit bonheur selon la fonte et
+  disparaît de certaines impressions.
+- `.rac` + `.sous` — une racine carrée dont le trait couvre tout le radicande.
+  Elle rend les parenthèses inutiles, et surtout elle dit **où la racine
+  s'arrête** : c'est là qu'on se trompe sur une photocopie.
+- `.grec` — une lettre grecque posée dans un contexte en italique. Voir §10.
+- `.l` — l'enveloppe d'une ligne de formule dans `.formule-bloc .eq`. Voir §10.
+- `.frac.grande` — une fraction qu'on veut voir de loin, quand la formule est
+  l'objet même de la fiche.
 - `.cote` — la bande signature de la famille CFA. Remplace `.spectre`. Même silhouette : bande d'encre de 6 px avec les trois repères aux positions 18 %, 31 % et 76 %, dans les trois accents de la charte. Ce qui change : les deux extrémités portent une pointe de flèche en réserve et un trait d'attache vertical, ce qui la fait lire comme une ligne de cote de dessin technique.
 
 **Retiré, et à ne pas réintroduire** : `details.correction`. Les corrigés ne sont pas en ligne.
@@ -152,6 +172,30 @@ Le gabarit A4 dérive de `_modeles/gabarit-fiche.html` et en conserve les règle
 
 ## 9. Rédaction des énoncés
 
+### Une question = une question telle qu'un sujet la poserait
+
+C'est la règle qui commande toutes les autres de cette section.
+
+- **Ne jamais confondre la question du sujet et les étapes de la résolution.**
+  « Déterminer la section, puis la force, puis comparer » est un découpage de
+  correction, pas un énoncé : un sujet demande la force. Les sous-questions
+  a/b/c ne se justifient que si elles correspondent à de **vraies questions
+  successives**, dont chacune réutilise le résultat de la précédente.
+- **Bannir les consignes qui n'existent pas dans un sujet.** « Relever, parmi
+  les données ci-dessus, celles qui sont nécessaires au calcul » n'apparaît
+  jamais dans une épreuve — et elle donne la moitié de la réponse. Le tri des
+  données fait partie du travail, il ne se demande pas.
+- **Quand on montre la copie d'un élève fictif, citer d'abord la question qui
+  lui a été posée**, dans un bloc `.enonce` portant `<span class="situation">La
+  question posée</span>`. Sans elle, on ne sait pas ce qu'on juge.
+- **Ne pas décrire ce que la figure montre déjà.** « Le premier vecteur va de
+  3 carreaux vers la droite et 4 vers le haut » remplace le schéma par du texte,
+  et rend la lecture graphique inutile.
+- **Ne pas annoncer le nombre de réponses attendues** — « les deux valeurs
+  aberrantes » dit qu'il y en a deux.
+
+### Le reste
+
 - Phrases courtes, une consigne par phrase.
 - Verbe d'action à l'infinitif en tête : *calculer*, *relever*, *comparer*, *conclure*.
 - Jamais « il suffit de », « on sait que », « rappelons que ».
@@ -160,3 +204,37 @@ Le gabarit A4 dérive de `_modeles/gabarit-fiche.html` et en conserve les règle
 - Jamais le contexte d'un autre métier technique — pas d'usinage, pas de bureau d'études.
 - Valeurs numériques **plausibles**, pas nécessairement exactes. C'est une mise en situation.
 - Aucun énoncé d'examen reproduit, cité, ou transposé à l'identique.
+
+---
+
+## 10. Notations — un seul mot, un seul symbole
+
+Le livret se lit dans le désordre : une notation qui change d'une fiche à
+l'autre est lue comme une notion différente.
+
+| Ce dont on parle | Ce qu'on écrit | Jamais |
+|---|---|---|
+| Une action mécanique | **force** | « effort » |
+| Un vecteur | **`<span class="vec">F</span>`** — la flèche est tracée, pas composée | `F` nu, ou le caractère combinant U+20D7 |
+| La norme d'un vecteur | **‖F⃗‖** | `F` seul quand le vecteur est dans la même phrase |
+| Un écart relatif | **ε** | `e`, `E` |
+| L'angle d'une pente, d'une pièce | **α** | — |
+| L'angle d'une **rotation** | **θ** | `α` — dès qu'il y a mouvement, c'est θ |
+| Une racine carrée | **`<span class="rac">√<span class="sous">…</span></span>`** | `√( … )` : la parenthèse ne dit pas où la racine s'arrête |
+| Une lettre grecque dans une formule en italique | **`<span class="grec">`** | la lettre nue : en Garamond italique, α et « a » ont le même dessin |
+
+**Deux pièges de mise en œuvre, tous deux constatés :**
+
+- `.formule-bloc .eq` est un conteneur **flex** : tout `<span>` qu'on y pose
+  devient un item, et **les espaces qui l'entourent disparaissent**. Dès qu'une
+  formule contient un span, envelopper toute la ligne dans `<span class="l">`.
+- Une `.etq` passe en **capitales** par le CSS : une lettre grecque minuscule
+  y devient sa majuscule, et « sin α ≈ tan α » s'y affiche « SIN A ≈ TAN A ».
+  Reformuler le libellé en toutes lettres.
+
+### La règle de rédaction compte quatre étapes, pas cinq
+
+Le §5 en donne le détail. Cette précision figure ici parce que la fiche A4, le
+corrigé et les deux gabarits ont annoncé cinq étapes pendant que la page écran
+en annonçait quatre : **quand cette règle bouge, elle bouge dans les six
+fichiers à la fois.**

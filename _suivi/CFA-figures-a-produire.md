@@ -1,45 +1,54 @@
-# Figures à produire — livret CFA, V2
+# Figures du livret CFA — état
 
-*Le lot 1 est entièrement textuel. Chaque fois qu'une fiche appelle une figure,
-le composant `.figure-a-produire` est posé à sa place et l'entrée correspondante
-est inscrite ici. Ce fichier sera relu et arbitré avant la V2 : toutes les
-figures listées ne seront pas forcément produites.*
+*Les dix emplacements réservés en V1 par le composant `.figure-a-produire` sont
+tous pourvus : **plus aucune page écran ne porte de cadre en attente**. Ce
+fichier décrit donc l'état courant des figures, et ce qui reste à leur sujet.*
 
-**Discipline.** Une entrée par emplacement, jamais par idée. Si le cadre
-pointillé disparaît d'une fiche, l'entrée disparaît d'ici — sinon on produirait
-une figure qui n'a plus de place où aller.
+**Discipline conservée.** Une entrée par emplacement, jamais par idée. Si un
+cadre pointillé réapparaît dans une fiche, l'entrée se réinscrit ici — sinon on
+produirait une figure qui n'a plus de place où aller.
 
 ---
 
-| Outil | Emplacement | Ce qui est attendu | Statut |
-|:-:|---|---|---|
-| 2 | recto, juste après la règle | Coupe simple d'un vérin : alésage `D` coté, section `S` en trame, pression `p` par une flèche dans la chambre, effort `F` par une flèche sur la tige. | à arbitrer |
-| 5 | verso, palier 3 | Schéma coté d'un bras de levage à l'échelle 1:25, les deux axes repérés, la distance entre eux à relever à la règle. | à arbitrer |
-| 9 | recto, après la règle | Section annulaire vue de face : cercle extérieur coté D, cercle intérieur coté d, la couronne entre les deux en trame. | à arbitrer |
-| 11 | recto, après le repérage des côtés | Triangle rectangle générique : angle droit marqué, angle α repéré, les trois côtés étiquetés hypoténuse, opposé et adjacent. | à arbitrer |
-| 12 | recto, après l'approximation | Triangle de pente : base horizontale de 100 cotée, dénivelée verticale cotée, angle α au sommet, et la mention « pente = dénivelée / base ». | à arbitrer |
-| 13 | recto, après la table des tours | Secteur de cercle : centre, rayon R coté, angle α marqué au centre, arc L en trait fort sur la circonférence. | à arbitrer |
-| 14 | verso, palier 1 | Quadrillage portant les trois vecteurs décrits, le premier déjà coté avec ses composantes et sa norme. | à arbitrer |
-| 14 | verso, palier 2 | Schéma simple : une pièce, le poids en flèche verticale vers le bas cotée 850 N, l'effort du vérin en flèche inclinée à 40° cotée 1 200 N. | à arbitrer |
-| 15 | verso, palier 1 | Quadrillage avec les deux déplacements tracés bout à bout depuis l'origine, et la résultante en pointillé du départ à l'arrivée. | à arbitrer |
-| 16 | recto, après l'avertissement sur l'angle | Quadrillage avec une flèche inclinée partant de l'origine, ses deux projections en pointillé sur les axes, et l'angle α marqué depuis l'horizontale. | à arbitrer |
+## Ce qui existe, et ce qui a été corrigé le 19/08/2026
 
-**Dix emplacements pour dix-sept fiches.** Sept fiches n'en appellent aucun :
-les outils 0, 3, 4, 6, 7, 8 et 10. C'est cohérent — ce sont celles dont l'objet
-est une opération, pas une forme.
+| Outil | Emplacement | État |
+|:-:|---|---|
+| 2 | recto | Coupe du vérin **reprise** : les deux chambres, le diamètre de tige coté, les sections S et S′ nommées. Une **seconde figure** montre les deux sections vues de face. |
+| 5 | verso, palier 3 | **Produite.** Bras de levage à l'échelle 1:25, axes A et B, distance cotée au-dessus du bras, force perpendiculaire avec l'angle droit marqué. L'énoncé disait « reproduit ci-dessus » sans rien au-dessus. |
+| 9 | recto | Couronne : inchangée, elle fonctionnait. |
+| 10 | recto | **Corrigée** : l'angle droit était marqué sur un angle aigu, et le libellé de l'hypoténuse posé sur le trait. |
+| 11 | recto | **Corrigée** : arc de l'angle α aligné sur l'hypoténuse, étiquette dans l'ouverture, rappel SOH · CAH · TOA remis en colonne (le tiret se lisait comme un signe moins). |
+| 11 | exemple | **Produite.** Schéma de la rampe avec les données portées dessus — c'est l'objet de la nouvelle étape 2 de l'exemple. |
+| 12 | recto | **Corrigée** : à 6,8°, aucune étiquette ne tient dans le secteur ; arc élargi et ligne de renvoi, comme sur un plan. |
+| 13 | recto | Secteur de cercle : inchangé, α remplacé par θ. |
+| 14 | recto | **Produite.** Les deux composantes d'une force inclinée, projections en pointillé, angle depuis l'horizontale, formules sous le dessin. |
+| 14 | verso, palier 1 | **Reprise en entier.** Le quadrillage est un `<pattern>`, les axes portent leur pointe et leur nom, les vecteurs s'appellent F₁ F₂ F₃, et **les tracés correspondent enfin aux normes annoncées** (5, 10, 13). |
+| 14 | verso, palier 2 | **Reprise en entier.** Le vérin était tracé à 18° pour un énoncé qui annonce 40° ; l'angle se posait sur la pièce ; l'axe du vérin n'était pas distingué de l'horizontale de référence. |
+| 14 | verso, palier 3 | **Produite.** Les quatre actions tracées à l'échelle (un carreau = 1 000 N) depuis un même point, pour se comparer d'un coup d'œil. |
+| 15 | recto | **Produite.** Les deux forces telles que l'énoncé les donne, puis la même addition faite bout à bout. |
+| 15 | verso, palier 1 | **Reprise.** Vecteurs nommés, axes nommés, départ hors origine, résultante en pointillé. |
+| 16 | recto | **Corrigée** : axes fléchés, angle dégagé, flèche sur le vecteur. |
 
-Le bloc D en concentre quatre à lui seul, ce qui est attendu : un vecteur est
-une notion graphique avant d'être un couple de nombres. Si l'arbitrage devait
-n'en retenir que quelques-unes, ce sont celles-là qui manqueraient le plus.
+## Ce qui reste
 
-## Contraintes communes à toutes les figures
+- **Les figures des fiches A4.** Seule la fiche 02 en porte une (les deux
+  sections vues de face). Les autres fiches A4 n'existent pas encore ; quand
+  elles seront produites, chaque figure de la page écran devra y être reportée —
+  §8 des consignes : aucune information ne doit exister uniquement à l'écran.
+- **Le contrôle sur photocopie.** Toutes les figures sont lisibles en noir et
+  blanc à l'écran ; aucune n'a été vérifiée sur une vraie photocopie. À faire à
+  la passe impression.
 
-- **SVG**, pas d'image bitmap : elles doivent rester nettes en photocopie et
-  légères à charger.
+## Contraintes communes, inchangées
+
+- **SVG**, jamais d'image bitmap.
 - **Lisibles en noir et blanc.** Une figure qui ne se distingue qu'à la couleur
   est inutilisable : le livret vit sur des photocopies.
 - **Cotées en toutes lettres.** Une grandeur portée par la seule position dans
   le dessin n'est pas lue par ce public.
 - **Aucune figure n'est indispensable à la résolution.** L'énoncé doit rester
-  suffisant sans elle — c'est ce qui permet d'en arbitrer certaines à la baisse
-  sans réécrire la fiche.
+  suffisant sans elle.
+- **Le texte ne dépasse jamais du `viewBox`** : le SVG le rogne en plein mot.
+  Un harnais de mesure vérifie ce point sur les dix-huit pages — voir
+  `JOURNAL.md`, 19/08/2026.

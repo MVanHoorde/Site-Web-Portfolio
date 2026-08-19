@@ -215,6 +215,12 @@ sub, sup { font-size: .68em; }
   font-family: 'IBM Plex Mono', monospace; font-size: 6.8pt; color: var(--sepia);
   border-top: .2mm solid var(--filet); padding-top: 1.5mm;
 }
+
+/* Figure en SVG dans une fiche A4 : elle occupe la colonne, sa légende
+   passe dessous — jamais à droite, où le viewBox la rognerait. */
+.figure-f { margin: 1.6mm 0 2mm; }
+.figure-f svg { width: 100%; height: auto; display: block; border: .25mm solid var(--filet); background: #fff; }
+.figure-f figcaption { margin-top: 1mm; }
 </style>
 </head>
 <body>
@@ -249,40 +255,75 @@ sub, sup { font-size: .68em; }
         <span class="cle">1 MPa = 1 N/mm²</span>
       </div>
       <div class="grandeurs">
-        <span class="etq">Deux façons de calculer un effort</span>
+        <span class="etq">Deux façons de calculer une force</span>
         <b>F = p × S</b><br>
         p en <b>Pa</b>, S en <b>m²</b> → F en N<br>
-        p en <b>N/mm²</b>, S en <b>mm²</b> → F en N
+        p en <b>N/mm²</b>, S en <b>mm²</b> → F en N<br>
+        <b>S = π D² / 4</b> — sortie de tige<br>
+        <b>S′ = π (D² − d²) / 4</b> — rentrée de tige
       </div>
     </div>
     <p class="mini">La deuxième ligne évite presque toujours les zéros : une documentation donne les alésages en millimètres, jamais en mètres.</p>
 
-    <p class="figure-a-produire">
-      <span class="etq">Figure à produire</span>
-      Coupe simple d'un vérin : alésage D coté, section S en trame, pression p par une flèche dans la chambre, effort F par une flèche sur la tige.
-    </p>
+    <figure class="figure-f">
+      <svg viewBox="0 0 700 250" role="img" xmlns="http://www.w3.org/2000/svg">
+        <title>Les deux sections d'un vérin, vues de face</title>
+        <desc>À gauche, la section de sortie : un disque plein de diamètre D.
+        À droite, la section de rentrée : le même disque percé au centre par la
+        tige de diamètre d ; seule la couronne travaille.</desc>
+        <defs>
+          <marker id="f2cote" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f6b70"/>
+          </marker>
+        </defs>
+        <circle cx="180" cy="110" r="82" fill="#e7e3d6" stroke="#2b2118" stroke-width="1.6"/>
+        <line x1="98" y1="110" x2="262" y2="110" stroke="#2f6b70" stroke-width="1.1"
+              marker-start="url(#f2cote)" marker-end="url(#f2cote)"/>
+        <text x="180" y="102" fill="#2f6b70" font-family="monospace" font-size="15" text-anchor="middle">D</text>
+        <text x="180" y="230" font-family="monospace" font-size="15" text-anchor="middle">S — sortie de tige</text>
+
+        <circle cx="500" cy="110" r="82" fill="#e7e3d6" stroke="#2b2118" stroke-width="1.6"/>
+        <circle cx="500" cy="110" r="36" fill="#ffffff" stroke="#2b2118" stroke-width="1.6"/>
+        <line x1="464" y1="110" x2="536" y2="110" stroke="#2f6b70" stroke-width="1.1"
+              marker-start="url(#f2cote)" marker-end="url(#f2cote)"/>
+        <text x="500" y="102" fill="#2f6b70" font-family="monospace" font-size="15" text-anchor="middle">d</text>
+        <line x1="418" y1="172" x2="582" y2="172" stroke="#2f6b70" stroke-width="1.1"
+              marker-start="url(#f2cote)" marker-end="url(#f2cote)"/>
+        <text x="500" y="192" fill="#2f6b70" font-family="monospace" font-size="15" text-anchor="middle">D</text>
+        <text x="500" y="230" font-family="monospace" font-size="15" text-anchor="middle">S′ — rentrée de tige</text>
+      </svg>
+      <figcaption class="mini">La tige occupe le centre : à la rentrée, la
+      pression ne pousse que sur la couronne. S′ est toujours plus petite que S,
+      donc la force de rentrée est toujours plus faible.</figcaption>
+    </figure>
 
     <h2>Un exemple entièrement résolu</h2>
     <div class="encart exemple">
-      <div class="etq">Exemple — effort développé par un vérin</div>
-      <p>Un vérin a un alésage de 40 mm. Le manomètre du circuit indique 180 bar.</p>
+      <div class="etq">Exemple — la force d'un vérin, dans les deux sens</div>
+      <p>Un vérin a un alésage de 40 mm et une tige de 22 mm. Le manomètre du
+      circuit indique 180 bar.</p>
 
       <p class="etape">1 · Les données</p>
-      <p>p = 180 <span class="unites">bar</span> · D = 40 <span class="unites">mm</span></p>
+      <p>p = 180 <span class="unites">bar</span> · D = 40 <span class="unites">mm</span>
+         · d = 22 <span class="unites">mm</span></p>
 
       <p class="etape">2 · Les relations</p>
-      <p class="eq-exo">S = <span class="frac"><span class="haut">π × D²</span><span class="bas">4</span></span> &nbsp;·&nbsp; F = p × S</p>
+      <p class="eq-exo">S = <span class="frac"><span class="haut">π × D²</span><span class="bas">4</span></span>
+        &nbsp;·&nbsp; S′ = <span class="frac"><span class="haut">π × (D² − d²)</span><span class="bas">4</span></span>
+        &nbsp;·&nbsp; F = p × S</p>
 
-      <p class="etape">3 · Le calcul, avec les unités</p>
-      <p class="eq-exo">p = 180 <span class="unites">bar</span> = 18 <span class="unites">MPa</span> = 18 <span class="unites">N/mm²</span></p>
-      <p class="eq-exo">S = <span class="frac"><span class="haut">π × (40 mm)²</span><span class="bas">4</span></span> = 1 257 <span class="unites">mm²</span></p>
-      <p class="eq-exo">F = 18 <span class="unites">N/mm²</span> × 1 257 <span class="unites">mm²</span> = 22 626 <span class="unites">N</span></p>
+      <p class="etape">3 · L'application numérique</p>
+      <p class="eq-exo">p = 180 × 0,1 = 18 &nbsp;→&nbsp; p = <span class="resultat">18 N/mm²</span></p>
+      <p class="eq-exo">S = <span class="frac"><span class="haut">π × 40²</span><span class="bas">4</span></span> = 1 257
+        &nbsp;→&nbsp; F = 18 × 1 257 = <span class="resultat">22,6 kN</span> à la sortie</p>
+      <p class="eq-exo">S′ = <span class="frac"><span class="haut">π × (40² − 22²)</span><span class="bas">4</span></span> = 877
+        &nbsp;→&nbsp; F′ = 18 × 877 = <span class="resultat">15,8 kN</span> à la rentrée</p>
 
-      <p class="etape">4 · Le résultat</p>
-      <p class="eq-exo">F = <span class="resultat">22,6 kN</span></p>
-
-      <p class="etape">5 · La conclusion</p>
-      <p>Le vérin développe 22,6 kilonewtons, soit environ 2,3 tonnes.</p>
+      <p class="etape">4 · La conclusion</p>
+      <p>Sous 180 bar, ce vérin développe 22,6 kilonewtons quand la tige sort et
+      15,8 kilonewtons quand elle rentre — un tiers de moins, parce que la tige
+      occupe le centre de la section.</p>
     </div>
 
   </div>
@@ -318,7 +359,7 @@ sub, sup { font-size: .68em; }
       <p>Un cric hydraulique d'atelier a un piston de 50 mm de diamètre. Son manomètre indique 180 bar.</p>
       <p><b>a.</b> Calculer la section du piston, en m².</p>
       <p><b>b.</b> Convertir la pression en pascals.</p>
-      <p><b>c.</b> Calculer l'effort développé, puis conclure en tonnes.</p>
+      <p><b>c.</b> Calculer la force développé, puis conclure en tonnes.</p>
       <div class="calc" style="height:38mm;"></div>
     </section>
 
@@ -328,7 +369,7 @@ sub, sup { font-size: .68em; }
         <span class="marque">BTS</span><span class="duree">15 min</span>
       </p>
       <p>Deux vérins lèvent la flèche d'un engin. Chacun a une surface de poussée de 86,6 cm².
-      L'effort total à fournir est de 148 000 N.</p>
+      La force totale à fournir est de 148 000 N.</p>
       <p><b>a.</b> Déterminer la pression dans le circuit, en bar.</p>
       <p><b>b.</b> La comparer à la pression maximale annoncée par le constructeur, 350 bar.</p>
       <p><b>c.</b> Conclure par une phrase chiffrée.</p>

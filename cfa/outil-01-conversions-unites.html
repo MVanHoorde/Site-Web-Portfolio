@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Outil 1 — Conversions d'unités et puissances de dix · Livret CFA</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=6">
+<link rel="stylesheet" href="../assets/css/cfa-commun.css?v=7">
 <style>
   /* Propre à cette fiche : le tableau qui fait voir D'OÙ VIENNENT les
      exposants. La colonne « le facteur, répété » est le cœur de la
@@ -21,6 +21,19 @@
      longueur, et centrées elles ne formeraient plus de colonne. */
   .escalier .dir, .escalier th:nth-child(2) { text-align: center; }
   .escalier .dir { color: var(--h-gamma); font-weight: 600; }
+  /* L'en-tête porte l'exposant lui-même — « facteur 10³ⁿ » — parce que
+     « m → mm » ne dit pas ce qu'il faut faire, et que c'est le n qui
+     est l'objet de la fiche. Sous le facteur, l'égalité écrite en
+     toutes lettres : c'est elle qu'on relit en cherchant sa conversion,
+     pas la puissance de dix. */
+  .escalier th .exp {
+    font-weight: 400; color: var(--sepia); font-size: .92em;
+    letter-spacing: 0; text-transform: none;
+  }
+  .escalier .fact .egal {
+    display: block; color: var(--encre-douce); font-weight: 400;
+    font-size: .94em; white-space: nowrap;
+  }
 
   /* Le tableau des préfixes. Il est trié du plus grand au plus petit :
      c'est un escalier, il doit se lire comme un escalier. La colonne
@@ -84,9 +97,23 @@
 
   <h2>À quoi ça sert</h2>
   <p>Dès que deux données d'un même calcul ne sont pas dans la même unité.</p>
-  <p>C'est le tout premier geste d'un exercice : avant même de chercher une formule,
-  on vérifie que les données sont cohérentes entre elles. Une conversion ratée au
-  départ fait tomber tout ce qui suit, et l'erreur ne se voit qu'à la fin.</p>
+
+  <p>Une formule ne s'apprend jamais toute seule : elle s'apprend
+  <strong>avec les unités de chaque grandeur</strong>. C'est là qu'est toute
+  l'information utile. Dès qu'il y a une incohérence d'unités — entre deux valeurs
+  qu'on compare, entre les données et la formule, ou avec l'unité imposée par la
+  question — <strong>on sait d'avance que le résultat sera faux</strong>.</p>
+
+  <p>Et c'est là que ça se joue : <strong>l'erreur d'unité ne se voit pas</strong>.
+  Un ordre de grandeur aberrant, ça se repère — une pression de 4 000 bar, un temps
+  de cycle de trois heures. Une conversion ratée, non : le nombre a l'air normal,
+  le calcul est propre, et rien n'alerte. C'est l'erreur la plus discrète et la
+  plus coûteuse de toute la copie.</p>
+
+  <p>Quand une relation est <em>fournie</em> avec ses unités — dans un formulaire,
+  sur une notice, dans un document technique — on peut aussi s'en servir dans
+  l'autre sens : les unités indiquées disent dans quelle unité chaque donnée doit
+  entrer. Encore faut-il savoir convertir : c'est l'objet de cette fiche.</p>
 
 
   <h2>La règle</h2>
@@ -123,35 +150,36 @@
     <thead>
       <tr>
         <th class="grandeur">Grandeur</th>
-        <th>Directions</th>
-        <th>m → mm &nbsp;(facteur 10³)</th>
-        <th>m → cm &nbsp;(facteur 10²)</th>
+        <th>n</th>
+        <th>Du mètre au millimètre<br><span class="exp">facteur 10<sup>3n</sup></span></th>
+        <th>Du mètre au centimètre<br><span class="exp">facteur 10<sup>2n</sup></span></th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td class="grandeur">Longueur</td>
         <td class="dir">1</td>
-        <td class="fact">× 10³ = 1 000</td>
-        <td class="fact">× 10² = 100</td>
+        <td class="fact">× 10³<br><span class="egal">1 m = 1 000 mm</span></td>
+        <td class="fact">× 10²<br><span class="egal">1 m = 100 cm</span></td>
       </tr>
       <tr>
         <td class="grandeur">Surface</td>
         <td class="dir">2</td>
-        <td class="fact">× 10⁶ = 1 000 000</td>
-        <td class="fact">× 10⁴ = 10 000</td>
+        <td class="fact">× 10⁶<br><span class="egal">1 m² = 10⁶ mm²</span></td>
+        <td class="fact">× 10⁴<br><span class="egal">1 m² = 10 000 cm²</span></td>
       </tr>
       <tr>
         <td class="grandeur">Volume</td>
         <td class="dir">3</td>
-        <td class="fact">× 10⁹</td>
-        <td class="fact">× 10⁶ = 1 000 000</td>
+        <td class="fact">× 10⁹<br><span class="egal">1 m³ = 10⁹ mm³</span></td>
+        <td class="fact">× 10⁶<br><span class="egal">1 m³ = 10⁶ cm³</span></td>
       </tr>
     </tbody>
   </table>
 
-  <p class="aparte">Seul le facteur de départ change d'une colonne à l'autre.
-  La règle, elle, ne change jamais : on l'applique autant de fois qu'il y a de directions.</p>
+  <p class="aparte"><b>n</b> est le nombre de directions : 1 pour une longueur,
+  2 pour une surface, 3 pour un volume. Seul le facteur de départ change d'une
+  colonne à l'autre — 10³ ou 10² — et il s'applique n fois.</p>
 
 
   <h3>Les préfixes qu'on rencontre vraiment</h3>
@@ -166,7 +194,7 @@
       <tr><td>méga</td><td class="sym cle">M</td><td>10⁶</td><td class="ou">MPa — pression hydraulique, limite élastique</td></tr>
       <tr><td>kilo</td><td class="sym cle">k</td><td>10³</td><td class="ou">kW, kN, kPa, kg — partout</td></tr>
       <tr><td>hecto</td><td class="sym">h</td><td>10²</td><td class="ou">hPa — pression atmosphérique, gonflage</td></tr>
-      <tr><td>déca</td><td class="sym cle">da</td><td>10¹</td><td class="ou">daN, daN·m — couples de serrage, efforts</td></tr>
+      <tr><td>déca</td><td class="sym cle">da</td><td>10¹</td><td class="ou">daN, daN·m — couples de serrage, forces</td></tr>
       <tr class="pivot"><td>—</td><td class="sym">—</td><td>1</td><td class="ou">m, N, W, Pa, g, L : l'unité seule</td></tr>
       <tr><td>déci</td><td class="sym">d</td><td>10⁻¹</td><td class="ou">dm³ — et 1 dm³ = 1 L exactement</td></tr>
       <tr><td>centi</td><td class="sym cle">c</td><td>10⁻²</td><td class="ou">cm³ — cylindrées ; cm² — sections</td></tr>
@@ -241,7 +269,7 @@
     résiste, passe à la suivante et reviens-y.</p>
 
     <div class="question">
-      <span class="q-etq">Question a</span>
+      <span class="q-etq">Question</span>
       <p>Compléter les cases vides.</p>
     </div>
 
@@ -278,7 +306,7 @@
         <tr><td class="depart">2,4 t</td><td class="fleche">→</td>
             <td class="arrivee"><input class="trou" type="text" data-cle="o01-g10" aria-label="2,4 tonnes en kilogrammes"> kg</td></tr>
 
-        <tr><td class="fam" rowspan="2">Efforts et couples</td>
+        <tr><td class="fam" rowspan="2">Forces et couples</td>
             <td class="depart">850 daN</td><td class="fleche">→</td>
             <td class="arrivee"><input class="trou" type="text" data-cle="o01-g11" aria-label="850 décanewtons en newtons"> N</td></tr>
         <tr><td class="depart">4,2 daN·m</td><td class="fleche">→</td>
@@ -296,16 +324,6 @@
       </tbody>
     </table>
 
-    <div class="question">
-      <span class="q-etq">Question b</span>
-      <p>Parmi ces quinze lignes, indiquer les deux où le facteur n'est pas
-      une simple puissance de dix.</p>
-    </div>
-    <div class="reponse">
-      <textarea data-cle="o01-p1-b" rows="2"
-        aria-label="Les deux lignes dont le facteur n'est pas une puissance de dix"
-        placeholder="Les lignes…"></textarea>
-    </div>
   </section>
 
   <!-- PALIER 2 — énoncé nu, relevés d'atelier. Les quatre premières sont
@@ -347,10 +365,10 @@
 
     <div class="question">
       <span class="q-etq">Question d</span>
-      <p>Une pression de service vaut 21 MPa. L'exprimer en Pa, puis en N/mm².</p>
+      <p>Une pression de service vaut 21 MPa. L'exprimer en Pa, puis en kPa.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o01-p2-d" rows="3" aria-label="Pression en pascals puis en newtons par millimètre carré"
+      <textarea data-cle="o01-p2-d" rows="3" aria-label="Pression en pascals puis en kilopascals"
         placeholder="…"></textarea>
     </div>
 
@@ -402,29 +420,23 @@
       </table>
 
       <p>La masse d'un matériau se calcule par la relation
-      <strong>m = ρ × V</strong>, où ρ est la masse volumique et V le volume occupé.</p>
+      <strong>m = <span class="grec">ρ</span> × V</strong>, avec m en kilogrammes,
+      <span class="grec">ρ</span> la masse volumique en kg/m³ et V le volume occupé
+      en m³.</p>
     </div>
 
     <div class="question">
       <span class="q-etq">Question a</span>
-      <p>Déterminer le volume intérieur de la benne, en m³.</p>
+      <p>Déterminer la masse de grave transportée lorsque la benne est remplie
+      à ras bord.</p>
     </div>
     <div class="reponse">
-      <textarea data-cle="o01-p3-a" rows="6" aria-label="Volume intérieur de la benne en mètres cubes"
+      <textarea data-cle="o01-p3-b" rows="8" aria-label="Masse de grave transportée"
         placeholder="Les données…"></textarea>
     </div>
 
     <div class="question">
       <span class="q-etq">Question b</span>
-      <p>En déduire la masse de grave transportée lorsque la benne est remplie à ras bord.</p>
-    </div>
-    <div class="reponse">
-      <textarea data-cle="o01-p3-b" rows="6" aria-label="Masse de grave transportée"
-        placeholder="…"></textarea>
-    </div>
-
-    <div class="question">
-      <span class="q-etq">Question c</span>
       <p>Comparer cette masse à la charge utile autorisée, puis conclure.</p>
     </div>
     <div class="reponse">
@@ -433,7 +445,7 @@
     </div>
 
     <div class="question">
-      <span class="q-etq">Question d</span>
+      <span class="q-etq">Question c</span>
       <p>Déterminer la hauteur de remplissage à ne pas dépasser, en millimètres,
       pour rester dans la charge utile autorisée.</p>
     </div>
