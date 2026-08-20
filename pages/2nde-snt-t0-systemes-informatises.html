@@ -80,7 +80,21 @@
   body.teacher .seance.locked .lockable{filter:none;opacity:1;pointer-events:auto;user-select:auto}
   body.teacher .seance.locked .lock-banner{border-color:var(--ink-faint);color:var(--ink-soft)}
   body.teacher .seance.locked .lock-banner .k::before{content:"🔓"}
+  /* Séance fermée par le PLAFOND d'avance (20/08/2026), et non par le
+     mérite : même bandeau, autre teinte et autre texte. La nuance a sa
+     raison d'être — l'élève qui a fini la séance précédente et voit
+     « finis la séance précédente » croit à un bug. Teinte d'attente
+     (--wait), pas de refus : ce n'est pas une faute de sa part. */
+  .seance.plafonne .lock-banner{border-color:var(--wait);color:var(--wait);background:var(--wait-wash)}
   .seance.locked .lock-banner .k::before{content:"🔒"}
+  /* 🔴 L'ORDRE PORTE LA RÈGLE. Une séance fermée par le plafond est
+     presque toujours AUSSI fermée par le mérite : elle cumule .locked et
+     .plafonne, à spécificité égale. Le sablier doit donc être écrit APRÈS
+     le cadenas, sinon il ne s'affiche jamais — c'était le cas jusqu'au
+     20/08/2026. Le 🔓 du mode enseignant, lui, garde une spécificité
+     supérieure et reste le dernier mot dans les deux cas. */
+  .seance.plafonne .lock-banner .k::before{content:"⏳"}
+  body.teacher .seance.plafonne .lock-banner{border-color:var(--ink-faint);color:var(--ink-soft);background:var(--surface)}
 
   /* étapes */
   .steps{position:relative;margin-top:20px}
@@ -265,9 +279,9 @@
 </style>
 <script src="../assets/js/progression.js?v=14"></script>
 <script src="../assets/js/seances-snt.js?v=13"></script>
-<script src="../assets/js/verrou-snt.js?v=1"></script>
+<script src="../assets/js/verrou-snt.js?v=2"></script>
 </head>
-<body>
+<body data-sequence="snt-t0">
 
 <header class="masthead">
   <div class="wrap">

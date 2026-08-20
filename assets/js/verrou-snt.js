@@ -179,9 +179,49 @@
     b = doc.createElement('div');
     b.className = 'lock-banner';
     b.setAttribute('data-plafond-cree', '');
-    b.innerHTML = '<span class="k"></span><span></span>';
+    b.innerHTML = '<span class="k"></span><span class="mot"></span>';
     cible.parentNode.insertBefore(b, cible);
     return b;
+  }
+
+  /* 🔴 Le span DU MESSAGE, et lui seul.
+   *
+   *  Le bandeau porte jusqu'à trois enfants :
+   *    <span class="k">      le cadenas, posé par le CSS
+   *    <span>                le message
+   *    <span class="compte"> « 5 étapes », ajouté APRÈS coup par
+   *                          compteurSeances() (sequence-snt.js)
+   *
+   *  Viser `span:last-child` attrapait donc le compteur dès qu'il
+   *  était là : le message du plafond partait dans un élément
+   *  `white-space:nowrap` en chasse fixe, qui débordait du cadre,
+   *  et le vrai message se retrouvait comprimé sur une colonne de
+   *  trois mots. Au passage, `data-mot-origine` mémorisait
+   *  « 5 étapes » et le recollait à la place du message de mérite
+   *  quand le plafond se levait. Un seul sélecteur, deux dégâts.
+   *
+   *  On désigne donc le message par élimination — ni le cadenas, ni
+   *  le compteur — et on le marque `.mot` pour que la fois d'après
+   *  soit directe. Enfants directs seulement : le message contient
+   *  du <b>, un jour peut-être un <span>. */
+  function motDe(b) {
+    var m = b.querySelector(':scope > span.mot');
+    if (m) return m;
+    var enfants = b.children;
+    for (var i = 0; i < enfants.length; i++) {
+      var e = enfants[i];
+      if (e.tagName !== 'SPAN') continue;
+      if (e.classList.contains('k') || e.classList.contains('compte')) continue;
+      e.classList.add('mot');
+      return e;
+    }
+    /* Aucun : bandeau réduit au cadenas. On insère le message AVANT
+     * le compteur, qui doit rester le dernier — son `margin-left:auto`
+     * est ce qui le colle à droite. */
+    m = doc.createElement('span');
+    m.className = 'mot';
+    b.insertBefore(m, b.querySelector(':scope > span.compte'));
+    return m;
   }
 
   function marquerLaPage() {
@@ -192,7 +232,8 @@
       sec.classList.toggle('plafonne', fermee);
       var b = bandeauDe(sec);
       if (!b) return;
-      var texte = b.querySelector('span:last-child') || b;
+      var texte = motDe(b);
+      if (!texte) return;
       if (fermee) {
         if (b.getAttribute('data-mot-origine') === null) {
           b.setAttribute('data-mot-origine', texte.innerHTML);

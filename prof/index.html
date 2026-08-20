@@ -134,6 +134,7 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
          background:var(--surface);min-width:52px;text-align:center}
 .pl-case b{display:block;font-size:12px}
 .pl-case .pl-nom{display:block;color:var(--ink-soft);font-size:11px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-case .pl-date{display:block;font-size:10.5px;font-variant-numeric:tabular-nums;opacity:.8;margin-top:2px}
 .pl-case.faite{background:var(--ok-wash);border-color:#0c5c42;color:#0c5c42}
 .pl-case.ouverte{background:var(--link-wash);border-color:#22357f;color:#22357f}
 .pl-case.fermee{background:var(--surface-2);border-color:var(--line);color:var(--ink-faint)}
@@ -154,6 +155,12 @@ select{font:inherit;padding:8px 11px;border:1px solid var(--line);border-radius:
     font-size:14px;color:var(--ink);cursor:pointer}
 .grille-absents label.coche{background:var(--wait-wash);border-color:var(--wait)}
 .grille-absents input{margin:0}
+/* La date de cloture, poussee a droite du nom : elle se lit en colonne
+   d'un bout a l'autre de la grille, ce qu'un texte au fil du nom ne
+   permettrait pas. Chiffres tabulaires pour que les jours s'alignent. */
+.grille-absents label .date-cloture{margin-left:auto;padding-left:8px;font-size:12px;
+    font-variant-numeric:tabular-nums;color:var(--ink-soft);white-space:nowrap}
+.grille-absents label.coche .date-cloture{color:inherit;opacity:.75}
 .cahier{white-space:pre-wrap;font-family:'IBM Plex Mono',monospace;font-size:13px;
     background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);
     padding:13px 15px;min-height:60px}
@@ -426,7 +433,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
 </div>
 
 <script src="../assets/js/seances-snt.js"></script>
-<script src="../assets/js/verrou-snt.js?v=1"></script>
+<script src="../assets/js/verrou-snt.js?v=2"></script>
 <script src="../assets/js/questions-snt.js"></script>
 <script src="../assets/js/prof-api.js"></script>
 <script>
@@ -967,7 +974,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       ProfAPI.lire('progression?select=eleve_id,valeur&domaine=eq.cours&cle=eq.' + th),
       /* SANS filtre de thème : le plafond franchit les fins de thème,
          il lui faut donc tout ce que la classe a clôturé, partout. */
-      ProfAPI.lire('seances_faites?select=sequence,seance&classe_id=eq.' + cl)
+      ProfAPI.lire('seances_faites?select=sequence,seance,faite_le&classe_id=eq.' + cl)
     ]).then(function(r){
       Eleves = r[0] || []; Faites = r[1] || []; Absences = r[2] || []; Progs = r[3] || [];
       FaitesToutes = r[4] || [];
@@ -1042,6 +1049,16 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     return d.getFullYear() + '-' + m + '-' + j;
   }
 
+  /* 'AAAA-MM-JJ' -> '12/09'. On decoupe la chaine, on ne passe PAS par
+     `new Date(iso)` : une date seule est parsee en UTC puis reaffichee
+     en heure locale, ce qui recule d'un jour tout l'hiver a l'ouest de
+     Greenwich et se verrait des la premiere seance de septembre. */
+  function dateCourte(iso){
+    if(!iso) return '';
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+    return m ? m[3] + '/' + m[2] : '';
+  }
+
   function plafondLeve(cl){
     return !!(cl && cl.ouvert_jusqu_au && cl.ouvert_jusqu_au >= aujourdhui());
   }
@@ -1060,7 +1077,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     var faites = {}, dernier = -1;
     FaitesToutes.forEach(function(f){
       var r = window.VerrouSNT.rangDe(f.sequence, f.seance);
-      faites[f.sequence + '/' + f.seance] = true;
+      faites[f.sequence + '/' + f.seance] = f.faite_le || '?';
       if(r > dernier) dernier = r;
     });
     var plafond = leve ? Infinity : dernier + avance;
@@ -1100,13 +1117,16 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         frise.appendChild(coupe);
       }
       themePrecedent = x.sequence;
-      var cls = faites[x.sequence + '/' + x.seance] ? 'faite'
+      var quand = faites[x.sequence + '/' + x.seance];
+      var cls = quand ? 'faite'
               : (x.rang <= plafond ? 'ouverte' : 'fermee');
       var el = document.createElement('span');
       el.className = 'pl-case ' + cls;
-      el.title = nommer(x) + ' — ' + (cls === 'faite' ? 'faite' : cls === 'ouverte' ? 'ouverte' : 'fermée');
+      el.title = nommer(x) + ' — ' + (cls === 'faite' ? ('faite le ' + (quand || '?'))
+                                    : cls === 'ouverte' ? 'ouverte' : 'fermée');
       el.innerHTML = '<b>' + echapper(x.sequence.replace('snt-t', 'T') + ' ' + (x.num || '')) + '</b>'
-                   + '<span class="pl-nom">' + echapper(x.nom || '') + '</span>';
+                   + '<span class="pl-nom">' + echapper(x.nom || '') + '</span>'
+                   + (cls === 'faite' ? '<span class="pl-date">' + echapper(dateCourte(quand)) + '</span>' : '');
       frise.appendChild(el);
     });
 
@@ -1180,7 +1200,8 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     /* séances faites */
     var zf = $('#s-faites'); zf.innerHTML = '';
     l.forEach(function(s){
-      var deja = Faites.some(function(f){ return f.seance === s.id; });
+      var quand = faiteLe(s.id);
+      var deja = !!Faites.find(function(f){ return f.seance === s.id; });
       var lab = document.createElement('label');
       var cb  = document.createElement('input');
       cb.type = 'checkbox'; cb.checked = deja; cb.dataset.seance = s.id;
@@ -1189,6 +1210,15 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       var sp = document.createElement('span');
       sp.textContent = (s.num || '') + ' ' + s.nom;
       lab.appendChild(cb); lab.appendChild(sp);
+      /* La date reste affichee telle qu'elle est EN BASE, meme si la case
+         vient d'etre decochee : tant que « Enregistrer » n'est pas clique,
+         rien n'a bouge cote serveur, et faire disparaitre la date ferait
+         croire le contraire. */
+      var d = document.createElement('span');
+      d.className = 'date-cloture';
+      d.textContent = quand ? dateCourte(quand) : '—';
+      if(quand) d.title = 'Cloturee le ' + quand;
+      lab.appendChild(d);
       zf.appendChild(lab);
     });
 
