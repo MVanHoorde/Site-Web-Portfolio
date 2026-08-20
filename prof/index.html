@@ -388,6 +388,23 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         <table class="grille" id="g-table"></table>
       </div>
       <p class="tresmuet" id="g-note"></p>
+
+      <!-- Les réponses PERSONNELLES de la classe, question par question.
+           Elles ne sont ni notées ni corrigées : elles servent à ouvrir
+           la discussion. Les lire une par une dans trente fiches
+           d'élèves serait impraticable — d'où cette vue transversale.
+           Elles n'apparaissent nulle part ailleurs dans ce tableau de
+           bord : la file de correction filtre statut='en_attente' et ne
+           les voit pas, c'est voulu. -->
+      <details id="g-perso-bloc" style="margin-top:22px">
+        <summary style="cursor:pointer;font-size:15px;font-weight:600">💬 Réponses personnelles de la classe</summary>
+        <div class="rangee">
+          <select id="g-perso-q"></select>
+          <button id="g-perso-lire">Afficher</button>
+          <span id="g-perso-etat" class="muet"></span>
+        </div>
+        <div id="g-perso-liste"></div>
+      </details>
     </section>
 
     <section class="panneau" id="p-eleve">
@@ -1415,7 +1432,96 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
           : (l[cur].num + ' ' + l[cur].nom)) + '. Une séance manquée redevient un retard après '
           + JOURS_RATTRAPAGE + ' jours.')
       : 'Aucun élève dans cette classe.';
+
+    remplirQuestionsPerso();
   }
+
+  /* ============================================================
+     Les réponses personnelles de la classe, question par question
+     ------------------------------------------------------------
+     Ces réponses ne sont ni notées ni corrigées (statut 'partage',
+     bdd/schema/014). Elles servent à préparer une discussion : on les
+     lit ensemble, pour une question, pas dispersées dans trente
+     fiches d'élèves.
+
+     Le répertoire des questions est déjà chargé (questions-snt.js) et
+     porte `notee: false` sur celles-ci — on ne devine pas leur nature
+     d'après le préfixe de leur code.
+
+     ⚠ On borne la lecture aux élèves de la classe affichée. La RLS
+     rendrait toutes celles du professeur, ce qui mélangerait deux
+     groupes à l'écran sans prévenir.
+     ============================================================ */
+  function questionsPersoDuTheme(){
+    var rep = window.QUESTIONS_SNT || {};
+    return Object.keys(rep)
+      .filter(function(code){
+        return rep[code].notee === false && rep[code].sequence === ctx.theme;
+      })
+      .sort(function(a, b){
+        var sa = rep[a].seance || '', sb = rep[b].seance || '';
+        return sa === sb ? a.localeCompare(b) : sa.localeCompare(sb);
+      })
+      .map(function(code){ return { code: code, q: rep[code] }; });
+  }
+
+  function remplirQuestionsPerso(){
+    var liste = questionsPersoDuTheme();
+    var bloc = $('#g-perso-bloc');
+    bloc.style.display = liste.length ? '' : 'none';
+    if(!liste.length) return;
+    var garde = $('#g-perso-q').value;
+    remplirSelect($('#g-perso-q'), liste.map(function(x){
+      return { v: x.code, t: (x.q.seance ? x.q.seance.toUpperCase() + ' · ' : '') + (x.q.titre || x.code) };
+    }), garde);
+  }
+
+  function lireReponsesPerso(){
+    var code = $('#g-perso-q').value;
+    var zone = $('#g-perso-liste');
+    zone.innerHTML = '';
+    if(!code || !Eleves.length){ $('#g-perso-etat').textContent = 'Aucun élève dans cette classe.'; return; }
+    $('#g-perso-etat').textContent = 'Chargement…';
+
+    var ids = Eleves.map(function(e){ return e.id; }).join(',');
+    ProfAPI.lire('reponses_libres?select=eleve_id,texte,envoye_le'
+      + '&statut=eq.partage'
+      + '&code_activite=eq.' + encodeURIComponent(code)
+      + '&eleve_id=in.(' + ids + ')'
+      + '&order=envoye_le.asc')
+      .then(function(l){
+        var rep = (window.QUESTIONS_SNT || {})[code] || {};
+        var enonce = document.createElement('p');
+        enonce.className = 'muet';
+        enonce.textContent = rep.question || '';
+        zone.appendChild(enonce);
+
+        $('#g-perso-etat').textContent = (l || []).length + ' réponse(s) sur '
+          + Eleves.length + ' élève(s) — non notées.';
+        if(!l || !l.length) return;
+
+        var parEleve = {};
+        Eleves.forEach(function(e){ parEleve[e.id] = e.pseudo; });
+        l.forEach(function(r){
+          var bloc = document.createElement('div');
+          bloc.style.cssText = 'border-top:1px solid var(--line);padding:11px 0';
+          var qui = document.createElement('b');
+          qui.textContent = ProfAPI.nomDe(parEleve[r.eleve_id] || '?');
+          var txt = document.createElement('blockquote');
+          txt.className = 'copie-texte';
+          txt.style.marginTop = '6px';
+          txt.textContent = r.texte;       /* textContent : jamais innerHTML sur du texte d'élève */
+          bloc.appendChild(qui); bloc.appendChild(txt);
+          zone.appendChild(bloc);
+        });
+      })
+      .catch(function(err){
+        $('#g-perso-etat').textContent = 'Lecture impossible : ' + (err.message || err);
+      });
+  }
+
+  $('#g-perso-lire').addEventListener('click', lireReponsesPerso);
+  $('#g-perso-q').addEventListener('change', lireReponsesPerso);
 
   /* ============================================================
      LOT F — la fiche d'un élève
@@ -1451,7 +1557,12 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
           h.innerHTML = '';
           var t1 = document.createElement('b'); t1.textContent = rep.titre || c.code_activite;
           var t2 = document.createElement('span'); t2.className = 'tresmuet';
-          t2.textContent = ' · ' + c.statut + (c.version > 1 ? ' · v' + c.version : '');
+          /* Une réponse personnelle n'a pas de cycle de correction :
+             afficher « partage » à côté de « en_attente » et « corrige »
+             laisserait croire à un quatrième état de copie. */
+          t2.textContent = (c.statut === 'partage')
+            ? ' · réponse personnelle, non notée'
+            : ' · ' + c.statut + (c.version > 1 ? ' · v' + c.version : '');
           h.appendChild(t1); h.appendChild(t2);
           var q = document.createElement('blockquote'); q.className = 'copie-texte';
           q.style.marginTop = '7px'; q.textContent = c.texte;

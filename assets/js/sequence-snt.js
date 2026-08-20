@@ -681,14 +681,139 @@
     if(BASE) BASE.lire('cours','notes-'+cle).then(function(v){ if(v && v.texte && !ta.value) ta.value=v.texte; });
   });
 
-  /* ---------- perso (partage, non noté) ---------- */
+  /* ============================================================
+     PERSO — la réponse personnelle, partagée et non notée
+     ------------------------------------------------------------
+     Jusqu'au 20/08/2026 ce bouton mentait : il passait le textarea
+     en lecture seule, affichait « ✅ Merci — ta réponse nourrit la
+     discussion de classe », et n'écrivait RIEN. Ni en base, ni dans
+     l'état. Un élève qui rechargeait la page avait perdu son
+     enquête auprès de ses grands-parents — un devoir fait à la
+     maison, effacé sans un mot.
+
+     Désormais, un bloc `.perso` qui porte `data-perso-code` part en
+     base par `Progression.partager()` : même table que les copies,
+     statut 'partage'. Le professeur les lit dans la fiche de
+     l'élève et en tire une sélection pour la discussion de classe ;
+     elles n'entrent ni dans sa file de correction, ni sous l'IA
+     (bdd/schema/014-reponses-personnelles.sql).
+
+     ⚠ Le bouton reste le déclencheur, à dessein (décision de Loïc
+     du 20/08) : c'est l'acte volontaire qui filtre — on n'enregistre
+     pas au fil de la frappe tout ce qu'un élève essaie d'écrire.
+
+     Un bloc `.perso` SANS `data-perso-code` garde l'ancien
+     comportement local : c'est le cas des sept séquences qui ne
+     sont pas encore passées sur ce mécanisme.
+     ============================================================ */
+
+  /* Une étape « purement perso » n'a aucun autre bloc de réponse :
+     c'est elle, et elle seule, que le partage peut marquer faite.
+     Le perso fondu dans une étape qui porte aussi un QCM ou des
+     trous (t1 étape 2.3) ne doit RIEN valider : ses propres moteurs
+     s'en chargent, et valider ici la déclarerait finie trop tôt.
+     On ne compte pas ce qui vit dans un « pour aller plus loin » :
+     le bonus est hors 100 %. */
+  function etapePurementPerso(step){
+    if(!step) return false;
+    var autres = step.querySelectorAll('[data-focus],.qcmbox,.cloze,[data-tri],.label-selects');
+    for(var i=0;i<autres.length;i++){
+      if(!autres[i].closest('.bonus-wrap')) return false;
+    }
+    return true;
+  }
+
+  /* Toutes les zones perso de l'étape sont-elles remplies ? Une
+     étape peut en porter deux (rare, mais rien ne l'interdit). */
+  function persoTouteRemplie(step){
+    var zones = step.querySelectorAll('.perso textarea');
+    for(var i=0;i<zones.length;i++){
+      if(zones[i].closest('.bonus-wrap')) continue;
+      if(!zones[i].value.trim()) return false;
+    }
+    return true;
+  }
+
+  function persoValide(box){
+    var step = stepOf(box);
+    if(!step || box.closest('.bonus-wrap')) return;
+    if(!etapePurementPerso(step) || !persoTouteRemplie(step)) return;
+    markDone(box);
+  }
+
   document.querySelectorAll('[data-share]').forEach(function(btn){
     btn.addEventListener('click',function(){
-      var box=btn.closest('.perso');var ta=box.querySelector('textarea');var note=box.querySelector('[data-share-note]');
-      if(ta.value.trim().length<2){note.textContent='Écris un mot avant de partager 🙂';return;}
-      ta.readOnly=true;btn.disabled=true;note.textContent='✅ Merci — ta réponse nourrit la discussion de classe.';
+      var box=btn.closest('.perso');
+      var ta=box.querySelector('textarea');
+      var note=box.querySelector('[data-share-note]');
+      var texte=ta.value.trim();
+      if(texte.length<2){note.textContent='Écris un mot avant de partager 🙂';return;}
+
+      var code = box.dataset.persoCode;
+
+      /* Sans base, ou sans code : l'ancien comportement, mais dit
+         honnêtement. On ne laisse pas croire que c'est enregistré. */
+      if(!BASE || !code){
+        ta.readOnly=true; btn.disabled=true;
+        note.textContent='✅ Gardé pour cette séance — pense à télécharger ta fiche en fin d\'heure.';
+        persoValide(box);
+        return;
+      }
+
+      btn.disabled=true;
+      note.textContent='⏳ Envoi…';
+      BASE.partager(code, texte).then(function(){
+        ta.readOnly=true;
+        note.textContent='✅ Merci — ta réponse nourrit la discussion de classe.';
+        persoValide(box);
+      }).catch(function(e){
+        /* Deux échecs très différents, et les confondre serait une
+           faute d'accueil. L'invité SANS COMPTE n'a rien raté : le
+           bandeau de la page le lui dit déjà, on ne l'alarme pas une
+           seconde fois. La panne, elle, mérite d'être dite — et on
+           rend la main plutôt que de verrouiller un texte qui n'est
+           allé nulle part. */
+        var invite = /PAS_INSCRIT/.test(String(e && e.message || e));
+        if(invite){
+          ta.readOnly=true;
+          note.textContent='✅ Gardé pour cette séance — pense à télécharger ta fiche en fin d\'heure.';
+        }else{
+          btn.disabled=false;
+          note.textContent='⚠️ Enregistrement indisponible. Ton texte est toujours là : réessaie, ou télécharge ta fiche en fin d\'heure.';
+        }
+        persoValide(box);
+      });
     });
   });
+
+  /* Retour de l'élève : on lui rend ce qu'il avait partagé.
+     Même canal que les copies (`mesReponses` ne filtre pas le
+     statut), même règle qu'elles : un rechargement ne doit jamais
+     faire reculer une progression déjà acquise. */
+  function rehydraterPerso(){
+    if(!BASE || !BASE.mesReponses) return;
+    var boites = {}, codes = [];
+    document.querySelectorAll('.perso[data-perso-code]').forEach(function(b){
+      var c=b.dataset.persoCode;
+      if(!c) return;
+      boites[c]=b;
+      if(codes.indexOf(c)<0) codes.push(c);
+    });
+    if(!codes.length) return;
+    BASE.mesReponses(codes).then(function(lignes){
+      (lignes||[]).forEach(function(r){
+        var box=boites[r.code_activite]; if(!box) return;
+        var ta=box.querySelector('textarea');
+        var note=box.querySelector('[data-share-note]');
+        var btn=box.querySelector('[data-share]');
+        if(ta){ ta.value=r.texte||''; ta.readOnly=true; }
+        if(btn) btn.disabled=true;
+        if(note) note.textContent='✅ Partagé — ta réponse nourrit la discussion de classe.';
+        persoValide(box);
+      });
+    }).catch(function(){ /* invité, hors ligne : rien à rendre */ });
+  }
+  rehydraterPerso();
 
   /* ---------- replier une étape en cliquant sur son titre ----------
      La classe .replie existait dans le CSS mais rien ne l'activait :

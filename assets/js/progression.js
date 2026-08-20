@@ -591,6 +591,45 @@
     });
   }
 
+  /* ----------------------------------------------------------
+   *  9 bis. partager() — la réponse personnelle, non notée
+   *
+   *  Même table que les copies, même limite, même unicité : pour
+   *  l'élève comme pour le professeur, c'est un texte écrit, rangé
+   *  au même endroit que le reste. Ce qui change est le STATUT.
+   *
+   *  'partage' n'entre pas dans le cycle de correction :
+   *   · la file du tableau de bord filtre `statut = en_attente` ;
+   *   · l'index partiel que lit le worker IA ne vise que ce même
+   *     statut — la réponse n'est donc jamais soumise au modèle ;
+   *   · la fiche élève, elle, lit tous les statuts : le professeur
+   *     la voit, et c'est tout le but (il en fera une sélection
+   *     pour lancer la discussion en classe).
+   *
+   *  ⚠ Exige `bdd/schema/014-reponses-personnelles.sql`. Sans lui,
+   *  la contrainte de statut et les policies refusent 'partage' :
+   *  l'appel échoue proprement (la page garde le texte à l'écran et
+   *  le dit), rien n'est écrit de travers.
+   * ---------------------------------------------------------- */
+  function partager(codeActivite, texte) {
+    return session().then(function (moi) {
+      if (!moi) throw new Error('PAS_INSCRIT : rejoindre une classe avant de partager une réponse.');
+      var propre = String(texte || '').trim();
+      if (!propre)               throw new Error('REPONSE_VIDE');
+      if (propre.length > 2000)  throw new Error('REPONSE_TROP_LONGUE : 2000 caractères maximum.');
+
+      return api('reponses_libres?on_conflict=eleve_id,code_activite', {
+        method: 'POST',
+        prefer: 'resolution=merge-duplicates,return=representation',
+        body  : [{ eleve_id: moi.eleveId, code_activite: codeActivite,
+                   texte: propre, statut: 'partage' }]
+      }).then(function (lignes) {
+        journal('reponse_partagee', { code_activite: codeActivite });
+        return lignes && lignes[0];
+      });
+    });
+  }
+
   /* Mes copies, avec leur statut et la correction si elle est là.
    * codes : tableau de codes d'activité, ou rien pour tout prendre. */
   function mesReponses(codes) {
@@ -994,6 +1033,7 @@
     ecrire        : ecrire,
     journal       : journal,
     envoyerReponse: envoyerReponse,
+    partager      : partager,
     mesReponses   : mesReponses,
     versions      : versions
   };

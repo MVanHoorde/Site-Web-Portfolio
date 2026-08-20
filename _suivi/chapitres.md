@@ -205,6 +205,11 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
         l'envoi ; texte présenté, **code à porter** (né en séance 2 de la séquence Internet)
   - [x] **« à retenir » masqué** révélé après l'activité (22/07, S1-1.1) — texte
         présenté, **code à porter**
+  - [x] **réponse personnelle partagée** (20/08, S1, bloc perso) — ce que devient
+        le texte quand on clique « Partager avec la classe » : il part chez le
+        professeur, qui en choisira pour lancer la discussion ; jamais noté, jamais
+        corrigé. Texte présenté, **code à porter** (né en séance 2 de la séquence
+        Internet, où le bouton n'enregistrait rien du tout)
   - [ ] _(prochain mécanisme : à présenter ici d'abord)_
 - Hors périmètre volontaire : le détail matériel pointu du doc 01 (PCIe, SATA,
   S/PDIF, UEFI…) — grandes familles seulement, niveau seconde.
@@ -212,7 +217,34 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   valider la formulation « note d'investissement ».
 
 ### SNT-T1 — Internet
-- État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.
+- État : **maquette V0 fonctionnelle en ligne** (17/07), non validée. **En cours de
+  validation depuis le 20/08.**
+- 🔎 **20/08/2026 — audit complet, puis trois lots de corrections.** Ce qui a changé :
+  - **Séance 2 récupérée.** Elle n'avait **aucune porte** : elle s'auto-validait,
+    ouvrait la séance 3 en même temps qu'elle, restait à 0 % à vie et remontait
+    « en retard » dans la grille du professeur — pour un élève qui avait tout fait.
+    Et le bouton « Partager avec la classe » **n'enregistrait rien** : l'enquête
+    auprès des grands-parents disparaissait au rechargement. Deux portes désormais,
+    et le texte part en base au **statut `partage`** (`bdd/schema/014`), lisible dans
+    la fiche de l'élève **et** dans une vue transversale question par question,
+    ajoutée à l'onglet Suivi pour préparer la discussion de classe.
+  - **Numérotation réalignée sur la séance** : S3 = 3.1→3.5, S4 = 4.1→4.5,
+    S5 = 5.1→5.6. Les pastilles étaient restées sur l'ancienne série, décalée d'une
+    séance depuis l'insertion de « Internet et moi » ; tout le reste de la page
+    (renvois, notes, `ETAT-PROJET`) utilisait déjà la bonne.
+  - **QCM repris sur la forme** : 51 leurres étoffés à la longueur de la bonne
+    réponse → **plus aucun biais de longueur** (il y en avait 20, dont 14 🔴) ;
+    19 permutations → position de la bonne réponse à 25 · 22 · 26 · 24 · 2 (elle
+    sortait 41 fois sur 99 en 2ᵉ position) ; `NET-Q7` porté de 1 à 4 questions.
+  - **Divers** : durée 6 h 15 → 6 h (la somme des séances) ; le sommaire fixe
+    couvrait le début du fil d'Ariane à toute largeur ≥ 1180 px ; 7 couleurs en dur
+    rapatriées dans `:root` ; 2 indices de niveau 2 qui livraient la réponse.
+  - ⏳ **À relire avant validation** : les 51 leurres et les 3 questions de `NET-Q7`
+    sont du **contenu proposé**, pas un acquis.
+  - **Restent** : étape 5.4 (activité TERMINAL en `.a-venir`), 5.6, le moteur du
+    relevé et du rappel (5.3), la fin de thème (Filius + passerelle NSI), le
+    `data-cle` sur les 26 étapes, et le **prérequis binaire** de la séance 5 — qui
+    n'a aucune séquence pour le porter.
 - 🔄 **22/07 — refonte complète de la séance 2 « Le réseau physique »** (audit
   vocal de Loïc), traitée en 4 axes + finitions. En attente de relecture Loïc.
   - **Axe A — 2.1 Topologies** : 3 schémas **légendés**, **bus redessiné « en
@@ -385,9 +417,12 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 - **Enseigné avant le Web** (ordre de l'année) : le développement historique
   complet (Pouzin/CYCLADES/datagramme, Minitel, biblio sourcée) vit ici, en S2 ;
   la séquence du Web a été raccourci en conséquence (rappel + renvoi).
-- 4 séances (Réseau physique & câbles sous-marins · Histoire & 🇫🇷 ·
-  Paquets/TCP-IP/routage · Adresses IP, DNS & diagnostic) + 1 activité
-  débranchée (« Routons, petits patapons » — routage humain). ≈ 6 h 30.
+- **5 séances** (C'est quoi Internet ? · Internet et moi · Le réseau physique ·
+  Protocoles, modèle TCP/IP et routage · Adresses IP, DNS et diagnostic). **≈ 6 h.**
+  **Aucune activité débranchée** : « Routons, petits patapons » est **abandonnée**
+  (décision de Loïc du 20/08/2026, dans le sens de la spec §9 — « trop enfantin
+  pour des 2des »). `seances-snt.js` n'en a jamais porté trace ; c'est cette ligne
+  qui l'annonçait encore.
 - Sources : dossier de séquence de Loïc (version « ARPANET 2024 » = référence
   historique). **Hors séquence, volontairement** : `01 - Systèmes informatisés`
   (introduction d'année) et le **TP Filius noté** (dispositif d'évaluation

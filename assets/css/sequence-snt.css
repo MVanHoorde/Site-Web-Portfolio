@@ -674,8 +674,20 @@ body.a-commence .legend{display:none}
 }
 /* le contenu se décale quand la barre est déployée */
 body:not(.prog-reduit) .wrap{margin-left:max(0px,calc((100% - 1100px)/2 + var(--prog-w) - 40px))}
+/* …et le fil d'Ariane avec lui.
+   Il ne l'était pas : #prog4 est un FRÈRE de .wrap, pas un enfant, il
+   partait donc du bord gauche de l'écran pendant que le contenu, lui,
+   se décalait. Le sommaire (fixe, x 12→240) lui passait dessus au
+   chargement et mangeait le début du fil : « …'est quoi Internet ? ».
+   Mesuré à 1280, 1366 et 1440 px le 20/08/2026 ; rien sous 1180, où le
+   sommaire redevient une feuille en bas d'écran.
+   Le défaut ne durait que le temps du premier écran — une fois la page
+   défilée, #prog4 se colle à top:0 et le sommaire commence à 96 px.
+   C'était donc la toute première image que voyait l'élève. */
+body:not(.prog-reduit) #prog4{margin-left:max(0px,calc((100% - 1100px)/2 + var(--prog-w) - 40px))}
 @media (max-width:1180px){
   body:not(.prog-reduit) .wrap{margin-left:0}
+  body:not(.prog-reduit) #prog4{margin-left:0}
   #prog{position:static;width:auto;max-height:none;margin:0 0 16px}
 }
 /* mode focus : la barre disparaît, pas d'échappatoire visuelle */

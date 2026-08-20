@@ -279,6 +279,36 @@ window.QUESTIONS_SNT = {
     "seance": "s5",
     "seance_num": "5"
   },
+  "NET-P1": {
+    "sequence": "snt-t1",
+    "titre": "Enquête : Internet est arrivé chez toi",
+    "question": "Mission enquête auprès des parents ou grands-parents : en quelle année Internet est-il entré chez eux, qu'en faisaient-ils au début, qu'est-ce qui a le plus changé, est-ce que ça leur a fait peur, que regrettent-ils du monde d'avant ?",
+    "min": null,
+    "max": null,
+    "notee": false,
+    "seance": "s2",
+    "seance_num": "2"
+  },
+  "NET-P2": {
+    "sequence": "snt-t1",
+    "titre": "Débat : Internet a-t-il tenu ses promesses ?",
+    "question": "« De l'utopie des débuts au cauchemar totalitaire. » Cette formule colle-t-elle à ce que tu vis en ligne ? Pourquoi es-tu d'accord, ou pas ? C'est l'argument qui compte, pas la conclusion.",
+    "min": null,
+    "max": null,
+    "notee": false,
+    "seance": "s2",
+    "seance_num": "2"
+  },
+  "NET-P3": {
+    "sequence": "snt-t1",
+    "titre": "Ton intuition : par où Internet arrive chez toi",
+    "question": "Avant qu'on en parle : chez toi, par quel moyen penses-tu qu'Internet arrive ? Par quel type de réseau (un câble ? les ondes ? autre chose) ? Écris ton intuition, sans chercher.",
+    "min": null,
+    "max": null,
+    "notee": false,
+    "seance": "s3",
+    "seance_num": "3"
+  },
   "WEB-R1a": {
     "sequence": "snt-t2",
     "titre": "Avant de commencer",

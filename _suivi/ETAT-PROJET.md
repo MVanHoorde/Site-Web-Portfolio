@@ -20,9 +20,9 @@
 | Partie | État |
 |---|---|
 | **PC seconde** | 14 chapitres en ligne. T1-C1→C4 dégrossis à fond ; les 10 autres portent **206 blocs `.a-faire`**. Aucun cours validé. |
-| **SNT** | 8 séquences (t0→t7). `t1` et `t2` sur le moteur partagé ; `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. |
+| **SNT** | 8 séquences (t0→t7). `t1` et `t2` sur le moteur partagé ; `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. **`t1` est en cours de validation** — voir sa ligne. |
 | **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade) et **vérifié au rendu** dans un navigateur sans interface : bandeau, pictogramme et teinte mesurés sur les deux familles de pages, en mode élève et en mode enseignant. Le tableau de bord affiche les **dates de clôture** (cases de clôture et frise, format `12/09`). ✅ **`bdd/schema/013-verrou-progression.sql` a été exécuté le 20/08/2026** par Loïc : `mon_plafond()` répond en base, et un appel anonyme se heurte bien à `42501 permission denied` — la fonction est réservée aux comptes connectés, comme prévu. Le plafond est donc **actif de bout en bout**. Deux textes vus par les élèves attendent la validation de Loïc. |
-| **SNT — `t1` Internet** | Séances 1, 2, 3 et étapes 5.1, 5.2, 5.3 refondues. **Restent : 5.4, 5.6, et la fin de thème** (Filius + passerelle NSI facultative). Deux blocs de 5.3 attendent le moteur (relevé et rappel). Les **QCM des deux vidéos sont posés** (20/08) : `NET-Q-cables`, 15 questions en bonus à l'étape 3.5, et 14 questions ajoutées à `NET-Q8` en 5.3. Seule séquence sur le moteur partagé. |
+| **SNT — `t1` Internet** | 🔎 **Audit complet le 20/08**, puis trois lots de corrections. **Réparé** : la séance 2 ne laissait aucune trace (aucune porte, réponses jamais enregistrées) — elle a désormais **deux portes** et son texte part en base au statut `partage` ; numérotation des étapes réalignée sur la séance (S3 = 3.x, S4 = 4.x, S5 = 5.x) ; durée annoncée 6 h 15 → **6 h** ; sommaire qui couvrait le fil d'Ariane au chargement ≥ 1180 px ; **QCM : plus aucun biais de longueur** (il y en avait 20, dont 14 🔴), position de la bonne réponse répartie (25 · 22 · 26 · 24 · 2), `NET-Q7` porté de 1 à 4 questions ; 7 couleurs en dur rapatriées dans `:root`, 2 indices qui livraient la réponse réécrits. **Restent** : étape **5.4** (activité TERMINAL encore en `.a-venir`), **5.6**, le **moteur du relevé et du rappel** (5.3), la **fin de thème** (Filius + passerelle NSI facultative), le `data-cle` sur les 26 étapes, et le **prérequis binaire** de la séance 5 — qui n'a aucune séquence pour le porter. ⏳ À relire avant validation : les 51 leurres de QCM réécrits et les 3 questions ajoutées à `NET-Q7`. |
 | **Base de données** | ✅ **en service.** Supabase, région **West EU (Paris)**. 7 tables, 10 policies RLS, 4 fonctions, sauvegarde hebdo + réveil quotidien. Pilote prouvé de bout en bout sur `t1`. |
 | **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
 | **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 (une seule colonne, un seul bord d'attaque), puis **audit de contenu des dix-sept outils le même jour** : accroche recentrée sur l'atelier, « effort » → « force » partout, `ε` pour l'écart et `θ` pour les angles de rotation, paliers 1 dégonflés de leur guidage, sous-questions concaténées, vecteurs fléchés et racines couvrantes. Deux figures produites (bras de levage de l'Outil 5, composantes de l'Outil 14), une dizaine corrigées. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé : **l'Outil 0 est le premier attendu en relecture**. Depuis le 19/08 le livret est **branché sur le dispositif de comptes** : connecté, le travail va en base et suit l'apprenti d'un appareil à l'autre ; sans compte, tout reste sur l'appareil comme avant, et la page le dit. Les deux codes de classe (`CFA26A`, `MVT26A`) sont ouverts : `bdd/schema/012-classes-cfa.sql` a été exécuté le 20/08. |
@@ -123,28 +123,52 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
       (validé sur le format, pas la valeur) · rappel en boîte de dialogue sur fond
       flouté, comparé au relevé du même élève · prise en charge d'un `data-cle` sur
       un bloc `.cloze` · incrémenter le `?v=` **du CSS et du JS**, dans **les deux
-      pages** (au 20/08 : `sequence-snt.css?v=31`, `sequence-snt.js?v=31`,
-      `verrou-snt.js?v=2`)
-- [ ] **`t1` lot 3 — étape 4.4** : donner les consignes, étoffer les questions,
-      descendre le « à retenir », refaire `NET·4c` (le sortir de `.res`, retirer `.a-venir`)
-- [ ] **`t1` lot 4 — étape 4.6** : QCM IPv6 à la place des champs, et beaucoup plus de sources
+      pages** (au 20/08, après l'audit : `sequence-snt.css?v=32`,
+      `sequence-snt.js?v=32`, `progression.js?v=15`, `verrou-snt.js?v=2`)
+- [ ] **`t1` lot 3 — étape 5.4** (diagnostic réseau) : donner les consignes, étoffer
+      les questions, descendre le « à retenir », sortir l'activité TERMINAL de `.res`
+      et retirer son `.a-venir` — **seul bloc `.a-venir` restant de la séquence**
+- [ ] **`t1` lot 4 — étape 5.6** : QCM IPv6 à la place des champs, et beaucoup plus de sources
 - [ ] **`t1` lot 5 — fin de thème** : Filius en validation intégratrice + passerelle
       NSI facultative (ports, masque de sous-réseau)
-- [ ] Depuis un poste de la salle : `nslookup` sur les trois sites du relevé de 4.3
+- [ ] Depuis un poste de la salle : `nslookup` sur les trois sites du relevé de 5.3
       (pas de CDN, pas trois adresses dans le même /16) — remplaçants notés dans `DECISIONS.md`
 - [x] ~~Visionner les deux vidéos et écrire les questions de QCM~~ — fait le
       20/08 **à partir des transcriptions** fournies par Loïc, chaque question
       ancrée sur un passage cité. ⏳ reste à éprouver en classe : `NET-Q8` compte
-      maintenant **18 questions d'affilée**, à scinder si c'est trop
-- [ ] **Chantier QCM — reprendre les biais de forme sur tout le projet.** Seuil du
-      détecteur affiné le 20/08 (il mesure l'ampleur au lieu de la constater) :
-      **43 questions signalées, dont 34 marquées 🔴**, liste triée par
-      `node verifier.mjs --qcm`. Attaquer par le haut — les quatre premières
-      dépassent 45 caractères d'écart. Trois règles à appliquer : longueur
-      comparable, distracteurs de même granularité, position de la bonne réponse
-      répartie. ⚠️ **`t2` est de loin la plus touchée** : **20 des 34 cas marqués
-      pour 42 questions**, contre **14 sur 97** dans `t1` — près d'une question sur
-      deux, contre une sur sept
+      **18 questions d'affilée**. Décision de Loïc du 20/08 : **on ne scinde pas
+      pour l'instant**, on juge au premier passage devant des élèves réels
+- [ ] **Chantier QCM — les biais de forme sur les sept autres séquences.**
+      `t1` est **fait** (20/08) : plus aucun biais de longueur, position de la bonne
+      réponse répartie, tous les blocs à 3 questions ou plus. Reste **23 questions
+      signalées, dont 20 marquées 🔴**, liste triée par `node verifier.mjs --qcm`.
+      ⚠️ **`t2` porte à elle seule les 20 cas marqués**, pour 42 questions — près
+      d'une sur deux. Méthode arrêtée par Loïc : **étoffer les leurres** jusqu'à la
+      longueur de la bonne réponse, jamais raccourcir celle-ci ; granularité
+      identique entre options ; position répartie par permutation, en épargnant les
+      listes dont l'ordre porte du sens
+- [ ] **`bdd/schema/014-reponses-personnelles.sql` à exécuter** (SQL Editor, comme
+      le `013`). Tant qu'il ne l'est pas, le bouton « Partager avec la classe »
+      échoue proprement — la page le dit, rien ne part de travers, mais **rien
+      n'arrive non plus dans le tableau de bord**
+- [ ] **`t1` — `data-cle` sur les 26 étapes** : les clés sont encore positionnelles.
+      🔴 **À faire avant la création des vraies classes** — après, insérer une étape
+      réaffecte le travail déjà enregistré des élèves (décision du 25/07, toujours ⏳)
+- [ ] **Le prérequis « binaire » de la séance 5 de `t1` n'existe pas.** L'étape 5.1
+      demande à l'élève de reconstituer 8 bits → 256 → 255 → 32 bits → 4,3 milliards
+      « en s'appuyant sur le thème binaire vu ailleurs ». Aucune séquence SNT ne le
+      porte : à écrire, à rattacher à `t0`, ou à rendre autonome dans `t1`
+- [ ] **Porter le mécanisme « réponse personnelle partagée » dans `t0` puis les six
+      autres séquences.** Le texte est présenté dans `t0` (S1, bloc perso) comme
+      l'exige le référentiel vivant ; le **code** attend que `t0` passe sur le
+      moteur partagé
+- [ ] **RGPD — les quatre `<iframe>` de `t1` se chargent à l'ouverture de la page**,
+      sans un clic. Journal réseau mesuré le 20/08 : `embed.radiofrance.fr` (116
+      requêtes), `youtube-nocookie` (109), `jnn-pa.googleapis.com` (21),
+      `fonts.gstatic.com` (13), `www.google.com` (10), `csp.withgoogle.com` (4).
+      Une **façade « clic pour charger »** (vignette + bouton qui injecte l'iframe)
+      supprime les six hôtes tant que l'élève n'a rien demandé, et ne dépend pas de
+      l'arbitrage PeerTube en cours
 - [ ] **Écrire l'étape 5 minimale** (`ia-snt/valider.mjs`) — le dernier maillon
 - [x] ~~Porter `t2` sur le moteur partagé~~ — fait le 25/07 (lot 0)
 - [ ] Porter `t0` sur le moteur partagé, puis les cinq séquences restantes

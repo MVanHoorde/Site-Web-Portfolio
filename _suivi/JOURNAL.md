@@ -1164,3 +1164,60 @@ Détail et réserves dans `_modeles/biblio-sources-SNT.md`.
 Motif de Loïc pour y regarder de plus près : ce sont les **publicités** qui le
 gênent, et `nocookie` ne les enlève pas. Réserve à lever d'abord : le pair-à-pair
 exposerait l'IP de l'élève à d'autres spectateurs.
+
+---
+
+## 20/08/2026 — audit de `t1` en vue de sa validation, puis trois lots
+
+Loïc demande un audit du thème 1 « pour dire ce qu'il reste à mettre en place ou
+à vérifier ». L'audit a été mené **sur la page rendue** autant que sur le fichier :
+serveur local, Chromium sans interface, journal réseau, et la cascade de
+déverrouillage rejouée pour de vrai plutôt que lue dans le code.
+
+**Ce que seule l'exécution a montré.** Trois choses ne se voyaient pas à la
+lecture :
+
+- **La séance 2 ne fermait rien.** `seanceComplete()` rend `true` quand une
+  séance n'a aucune porte — et la séance 2 n'en avait aucune. Valider la séance 1
+  ouvrait donc la 2 **et** la 3 d'un coup, pendant que le bandeau de la 3
+  promettait « se débloque quand la séance 2 est entièrement validée ». Mesuré en
+  rejouant la cascade, pas déduit.
+- **« Partager avec la classe » n'écrivait rien.** Le bouton passait le textarea
+  en lecture seule et disait « ✅ Merci — ta réponse nourrit la discussion de
+  classe ». Ni base, ni état, ni fiche. L'enquête auprès des grands-parents —
+  un devoir fait à la maison, avec quelqu'un de sa famille — disparaissait au
+  premier rechargement. C'est le seul défaut de l'audit qui **perdait du travail
+  d'élève** ; tout le reste était réparable sans conséquence.
+- **Les quatre `<iframe>` se chargent à l'ouverture de la page**, sans qu'on
+  clique sur rien. Journal réseau : `embed.radiofrance.fr` 116 requêtes,
+  `youtube-nocookie` 109, `jnn-pa.googleapis.com` 21, `fonts.gstatic.com` 13,
+  `www.google.com` 10, `csp.withgoogle.com` 4. La police Google que la règle
+  RGPD du projet bannit depuis le premier jour revient donc **par l'intérieur du
+  lecteur vidéo**. Non traité ce jour : porté en action, avec une piste
+  (façade « clic pour charger ») qui ne dépend pas de l'arbitrage PeerTube.
+
+**Un défaut d'outillage, trouvé par accident.** `node generer-questions.mjs`
+n'a rien fait, sans rien dire. Le garde d'exécution comparait `import.meta.url`
+à un gabarit `file://` + `process.argv[1]` : sous Windows, `file://C:\...` face
+à `file:///C:/...`. Les **deux** générateurs étaient dans ce cas, donc muets
+depuis leur écriture sur la machine où on les lance. `verifier.mjs` ne pouvait
+pas le voir : il importe `extraire()` et compare, il ne lance pas le script.
+
+**Ce qui a été décidé en séance** (détail dans `DECISIONS.md`) : les deux étapes
+de la séance 2 deviennent des portes ; les réponses personnelles vont en base au
+statut `partage`, dans la même table que les copies ; les biais de longueur des
+QCM se corrigent en **étoffant les leurres** ; `NET-Q7` passe à 4 questions et
+`NET-Q8` garde ses 18, à éprouver en classe.
+
+**Ce qui a été écarté, et pourquoi.** Deux blocs perso ne partent **pas** en base :
+l'enquête maison de la séance 2 et « les appareils de ta box » en 5.5. Ils
+demandent l'inventaire des appareils connectés d'un logement — une donnée qui
+concerne tout le foyer, pas seulement l'élève. La page portait déjà cette
+décision pour le premier, depuis le 26/07 ; elle est étendue au second et écrite
+en commentaire dans les deux, avec la consigne de ne pas leur ajouter de code
+« par cohérence ».
+
+**Reste ouvert, et pèse sur la validation** : le `data-cle` des 26 étapes (clés
+encore positionnelles — à poser avant les vraies classes), le prérequis
+« binaire » de la séance 5 qui n'a aucune séquence pour le porter, l'étape 5.4,
+la fin de thème, et le moteur du relevé et du rappel.

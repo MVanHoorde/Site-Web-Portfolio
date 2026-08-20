@@ -28,6 +28,13 @@ du fichier → **Run**. Vérifier le message vert en bas.
 | `007` → `011` | Frise ES, rôle enseignant, suivi de classe, correction des copies |
 | `012` | Les deux codes de classe du **livret CFA**. Aucune table, aucune colonne : le livret écrit dans `progression`, domaine `cours`, clés `cfa-o00` … `cfa-o16` |
 | `013` | Le **plafond d'avance** des élèves SNT : deux colonnes sur `classes` (`avance_max`, `ouvert_jusqu_au`) et la fonction `mon_plafond()`. 🔴 **Aucune policy n'est ajoutée sur `seances_faites`** : la table porte le cahier de textes (notes, travail donné), elle reste fermée aux élèves — la fonction ne rend que des couples (séquence, séance) |
+| `014` | Le statut **`partage`** sur `reponses_libres` : les **réponses personnelles**, lues par le professeur, jamais corrigées ni notées. Aucune table, aucune colonne — une valeur de statut de plus, les deux policies d'écriture de l'élève, et le déclencheur d'archivage qui cesse de tout ramener à `en_attente`. 🔴 Sans ce dernier point, une réponse personnelle rectifiée basculerait **toute seule** dans la file de correction |
+
+⚠ **Écart connu au 20/08/2026** : `012`, `013` et `014` n'ont **pas** de contrepartie
+dans `supabase/migrations/`, qui s'arrête au `011`. Ils ont été exécutés à la main
+dans l'éditeur SQL. L'historique de migrations est donc en retard de trois
+fichiers sur la base réelle — sans danger tant qu'on ne reconstruit pas un projet
+depuis zéro, mais à régulariser avant d'en avoir besoin.
 
 ## ⚠ Ne pas confondre avec `supabase/migrations/`
 
