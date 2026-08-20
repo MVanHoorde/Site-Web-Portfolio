@@ -2121,8 +2121,15 @@ function initQcm(){
     try{ data=JSON.parse($('script.qcm-data',box).textContent); }catch(e){ return; }
     var lanceur=document.createElement('div');
     lanceur.className='qcm-lanceur';
+    /* La consigne dit la vérité selon l'étape qui porte le QCM : un bloc
+       posé dans un bonus (pas de data-gate) n'entre ni dans la validation
+       ni dans les 100 %, et l'annoncer « obligatoire » était faux — c'était
+       déjà le cas de WEB-Q2b dans la séquence du Web. */
+    var etapeDuQcm=box.closest('[data-step]');
+    var obligatoire=!!(etapeDuQcm && etapeDuQcm.hasAttribute('data-gate'));
     lanceur.innerHTML='<span class="ql">✍️ QCM · '+data.length+(data.length>1?' questions':' question')+'</span>'+
-                      '<span class="qcm-consigne" style="font-size:13.5px;color:#8a4c0c">Obligatoire pour valider l\'étape.</span>'+
+                      '<span class="qcm-consigne" style="font-size:13.5px;color:'+(obligatoire?'#8a4c0c':'var(--ink-soft)')+'">'+
+                      (obligatoire?"Obligatoire pour valider l'étape.":"Facultatif : ne compte pas dans ta progression.")+'</span>'+
                       '<button type="button">Commencer</button>';
     box.appendChild(lanceur);
     var recap=document.createElement('div'); recap.className='qcm-recap'; recap.style.display='none';

@@ -5,7 +5,7 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **19/08/2026**
+> Dernière réécriture : **20/08/2026**
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 ---
@@ -21,7 +21,7 @@
 |---|---|
 | **PC seconde** | 14 chapitres en ligne. T1-C1→C4 dégrossis à fond ; les 10 autres portent **206 blocs `.a-faire`**. Aucun cours validé. |
 | **SNT** | 8 séquences (t0→t7). `t1` et `t2` sur le moteur partagé ; `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. |
-| **SNT — `t1` Internet** | Séances 1, 2, 3 et étapes 4.1, 4.2, 4.3 refondues. **Restent : 4.4, 4.6, et la fin de thème** (Filius + passerelle NSI facultative). Deux blocs de 4.3 attendent le moteur (relevé et rappel). Seule séquence sur le moteur partagé. |
+| **SNT — `t1` Internet** | Séances 1, 2, 3 et étapes 5.1, 5.2, 5.3 refondues. **Restent : 5.4, 5.6, et la fin de thème** (Filius + passerelle NSI facultative). Deux blocs de 5.3 attendent le moteur (relevé et rappel). Les **QCM des deux vidéos sont posés** (20/08) : `NET-Q-cables`, 15 questions en bonus à l'étape 3.5, et 14 questions ajoutées à `NET-Q8` en 5.3. Seule séquence sur le moteur partagé. |
 | **Base de données** | ✅ **en service.** Supabase, région **West EU (Paris)**. 7 tables, 10 policies RLS, 4 fonctions, sauvegarde hebdo + réveil quotidien. Pilote prouvé de bout en bout sur `t1`. |
 | **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
 | **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 (une seule colonne, un seul bord d'attaque), puis **audit de contenu des dix-sept outils le même jour** : accroche recentrée sur l'atelier, « effort » → « force » partout, `ε` pour l'écart et `θ` pour les angles de rotation, paliers 1 dégonflés de leur guidage, sous-questions concaténées, vecteurs fléchés et racines couvrantes. Deux figures produites (bras de levage de l'Outil 5, composantes de l'Outil 14), une dizaine corrigées. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé : **l'Outil 0 est le premier attendu en relecture**. Depuis le 19/08 le livret est **branché sur le dispositif de comptes** : connecté, le travail va en base et suit l'apprenti d'un appareil à l'autre ; sans compte, tout reste sur l'appareil comme avant, et la page le dit. ⚠ **`bdd/schema/012-classes-cfa.sql` reste à exécuter** — sans lui les codes de classe n'existent pas, et personne ne peut créer de compte. |
@@ -107,7 +107,8 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 - [ ] **`t1` lot 2 — moteur du relevé et du rappel** : type de champ « relevé »
       (validé sur le format, pas la valeur) · rappel en boîte de dialogue sur fond
       flouté, comparé au relevé du même élève · prise en charge d'un `data-cle` sur
-      un bloc `.cloze` · `?v=19` sur **le CSS et le JS**, dans **les deux pages**
+      un bloc `.cloze` · incrémenter le `?v=` **du CSS et du JS**, dans **les deux
+      pages** (au 20/08 : `sequence-snt.css?v=29`, `sequence-snt.js?v=30`)
 - [ ] **`t1` lot 3 — étape 4.4** : donner les consignes, étoffer les questions,
       descendre le « à retenir », refaire `NET·4c` (le sortir de `.res`, retirer `.a-venir`)
 - [ ] **`t1` lot 4 — étape 4.6** : QCM IPv6 à la place des champs, et beaucoup plus de sources
@@ -115,8 +116,16 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
       NSI facultative (ports, masque de sous-réseau)
 - [ ] Depuis un poste de la salle : `nslookup` sur les trois sites du relevé de 4.3
       (pas de CDN, pas trois adresses dans le même /16) — remplaçants notés dans `DECISIONS.md`
-- [ ] Visionner les deux vidéos (M Bidouille en 2.5, Cookie connecté en 4.3) et
-      écrire les questions de QCM
+- [x] ~~Visionner les deux vidéos et écrire les questions de QCM~~ — fait le
+      20/08 **à partir des transcriptions** fournies par Loïc, chaque question
+      ancrée sur un passage cité. ⏳ reste à éprouver en classe : `NET-Q8` compte
+      maintenant **18 questions d'affilée**, à scinder si c'est trop
+- [ ] **Chantier QCM — reprendre les biais de forme sur tout le projet.**
+      `verifier.mjs` signale **60 questions**, mais son critère est binaire :
+      **13 le sont pour 1 à 3 caractères d'écart** (invisible) quand la queue monte
+      à **74**. Commencer par **affiner le seuil du détecteur**, sinon le bruit
+      masque les vrais cas. Trois règles à appliquer : longueur comparable,
+      distracteurs de même granularité, position de la bonne réponse répartie
 - [ ] **Écrire l'étape 5 minimale** (`ia-snt/valider.mjs`) — le dernier maillon
 - [x] ~~Porter `t2` sur le moteur partagé~~ — fait le 25/07 (lot 0)
 - [ ] Porter `t0` sur le moteur partagé, puis les cinq séquences restantes

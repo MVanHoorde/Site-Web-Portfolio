@@ -12,6 +12,57 @@
 
 ---
 
+## 20/08/2026 — Les QCM des deux vidéos, et ce qu'ils ont fait remonter
+
+Loïc a fourni les **transcriptions intégrales** des vidéos de M Bidouille (câbles
+sous-marins) et de Cookie connecté (DNS). La décision du 25/07 — « les questions
+sur une vidéo, c'est Loïc qui les écrit, l'IA ne visionne pas » — tombe : le
+modèle ne voit pas, mais il lit, et chaque question peut alors être **ancrée sur
+un passage cité**. 15 propositions par vidéo, 10 retenues par Loïc.
+
+**Ce qui est en ligne.** `NET-Q-cables`, 15 questions dans le bonus de l'étape
+3.5 — hors 100 %, donc facultatif. Et 14 questions ajoutées à `NET-Q8` (étape
+5.3), qui en compte maintenant 18 : les 4 premières sur la page, les suivantes
+sur la vidéo. La question sur la *délégation* a été retirée par Loïc.
+
+**Trois choses ont été trouvées en chemin, et aucune n'était le sujet.**
+
+**1. Je me suis trompé de numéro d'étape, et Loïc a eu raison de le relever.**
+J'avais annoncé la vidéo des câbles « en 2.5 » en lisant le `<span class="ix">`
+du HTML. Or `numeroter()` **recalcule** tous les index au chargement, depuis le
+rang de l'étape dans sa séance : à l'écran, c'est **3.5**. Les numéros écrits en
+dur sont des vestiges morts, laissés tels quels. La leçon vaut au-delà du cas :
+**sur cette page, la source ment, seul le rendu dit vrai.** Vérification faite en
+Chromium headless, DOM à l'appui.
+
+En revanche, les **renvois en toutes lettres** ne sont recalculés par personne.
+Neuf étaient faux, dont quatre visibles des élèves : deux bulles « à voir plus
+tard » renvoyaient à « l'étape 3.3 » au lieu de 4.3, et deux textes parlaient de
+la « séance 2 » pour une notion vue en séance 1 (le datagramme, la bascule de
+1983). Corrigés, DOM re-rendu **identique au caractère près**.
+
+**2. Le lanceur de QCM mentait sur un bonus.** Sa consigne était en dur :
+« Obligatoire pour valider l'étape ». Posée sur un QCM de bonus — sans
+`data-gate`, donc hors validation et hors 100 % — elle était fausse. Elle dépend
+maintenant du gating de l'étape. Le défaut existait déjà : `WEB-Q2b`, dans la
+séquence du Web, l'affichait à tort depuis son portage. `sequence-snt.js` passe
+en `?v=30` sur les deux pages qui le chargent.
+
+**3. Le biais de longueur, mesuré.** Loïc a relevé que dans mes premières
+propositions, la bonne réponse était « juste plus longue ou plus précise ».
+Exact, et mesurable : reprise complète des 30 questions, écart moyen entre la
+bonne réponse et ses distracteurs ramené de plusieurs caractères à **−0,9** et
+**0,0**. Le contrôle de `verifier.mjs` (posé le 01/08) reste plus strict que
+cette moyenne : il signale dès que la bonne réponse est **strictement** la plus
+longue ou la plus courte, sans regarder l'ampleur. Sur les **60 questions** qu'il
+signale aujourd'hui dans tout le projet, **13 le sont pour un écart de 1 à 3
+caractères** — invisible pour un élève — pendant que la queue de distribution
+monte jusqu'à **74 caractères**. C'est le point de départ du chantier suivant :
+affiner le seuil du détecteur avant de reprendre les QCM, sinon le bruit masque
+les vrais cas.
+
+---
+
 ## 19/08/2026 (suite) — Première inscription réelle : deux pièges d'authentification
 
 La première tentative de création de compte sur le livret a échoué, et le
