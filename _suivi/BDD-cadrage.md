@@ -95,7 +95,7 @@ vérité. Aucun port ouvert, aucun VPS nécessaire, IA interchangeable.
 | Client de base de données | Fichier **partagé** `assets/js/progression.js` — dérogation explicite à la règle « une séquence SNT est autonome » (§5 des consignes SNT) |
 | Ordre de branchement | **SNT d'abord** (pilote), puis les autres séquences, **puis** les chapitres de physique-chimie |
 | Chapitres de PC | **Hors périmètre** pour l'instant. Leur `localStorage` (checklist + verrou SHA-256) reste en place. Migration prévue après le pilote, le RPG concernant aussi les élèves de PC |
-| Plafond d'avance SNT | **Écrit le 20/08/2026**, fichier `bdd/schema/013-verrou-progression.sql`. Deux colonnes sur `classes` et une fonction `security definer` — pas de table, pas de policy nouvelle. Le curseur n'est pas stocké : il se déduit de `seances_faites`, comme le prévoit la décision du 31/07 |
+| Plafond d'avance SNT | **Écrit et exécuté le 20/08/2026**, fichier `bdd/schema/013-verrou-progression.sql`. Deux colonnes sur `classes` et une fonction `security definer` — pas de table, pas de policy nouvelle. Le curseur n'est pas stocké : il se déduit de `seances_faites`, comme le prévoit la décision du 31/07 |
 | Livret CFA | **Branché le 19/08/2026.** Aucune table créée, aucune migration : la progression du livret s'écrit dans `progression`, domaine `cours`, clés `cfa-o00` … `cfa-o16`, **une ligne par fiche** dont la valeur est `{ v, champs, fait }`. Les rédactions ne passent PAS par `reponses_libres` : sur ce livret elles sont des brouillons personnels, pas des copies à corriger. Deux codes de classe ouverts — `CFA26A` (BTS MMCM) et `MVT26A` (bac pro MVTR), fichier `bdd/schema/012-classes-cfa.sql` |
 | Sécurité du projet | Les trois cases activées à la création : *Data API*, *expose new tables*, **et *Enable automatic RLS*** — toute table naît fermée |
 | Intégration GitHub | **Activée à la création.** Sans effet tant que `supabase/` n'existe pas. Sera exploitée au jalon 4, après `supabase init` / `db pull` |
@@ -200,11 +200,12 @@ hebdomadaire** et **réveil quotidien**.
    **exécuté le 20/08/2026** : les deux codes de classe existent, les apprentis
    peuvent créer leur compte.
 
-   ⚠ **`bdd/schema/013-verrou-progression.sql` reste à exécuter** — le plafond
-   d'avance SNT : deux colonnes sur `classes` (`avance_max`, `ouvert_jusqu_au`)
-   et la fonction `mon_plafond()`. Tant qu'il n'est pas passé, la fonction
-   n'existe pas et **rien n'est fermé** : le repli est volontaire, mais le
-   verrou ne rend aucun service. 🔴 **Aucune policy n'est ajoutée sur
+   `bdd/schema/013-verrou-progression.sql` a été **exécuté le 20/08/2026** — le
+   plafond d'avance SNT : deux colonnes sur `classes` (`avance_max`,
+   `ouvert_jusqu_au`) et la fonction `mon_plafond()`, qui répond en base. Un
+   appel anonyme reçoit `42501 permission denied` et non `PGRST202` : la
+   fonction existe et n'est ouverte qu'aux comptes connectés, ce qui est
+   exactement le réglage voulu. 🔴 **Aucune policy n'est ajoutée sur
    `seances_faites`** : la table porte le cahier de textes (notes, travail
    donné), elle reste fermée aux élèves. Le fichier n'a **pas** été copié dans
    `supabase/migrations/` — ce dossier s'applique tout seul au push, et le

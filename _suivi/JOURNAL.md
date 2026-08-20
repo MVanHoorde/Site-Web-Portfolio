@@ -12,6 +12,26 @@
 
 ---
 
+## 20/08/2026 (suite) — Le `013` est passé en base
+
+Loïc a exécuté `bdd/schema/013-verrou-progression.sql` au SQL Editor. Vérifié
+depuis le dépôt sans identifiants : un appel anonyme à `rpc/mon_plafond` répond
+`42501 permission denied`, là où une fonction absente répondrait `PGRST202`. La
+fonction existe donc, et n'est ouverte qu'aux comptes connectés — le `revoke`
+du fichier a bien pris.
+
+Le plafond d'avance est **actif de bout en bout** : réglages sur `classes`,
+fonction en base, `verrou-snt.js` sur les pages, dates de clôture au tableau de
+bord. Ce qui reste tient au fond, pas à la technique : les deux textes vus par
+les élèves attendent toujours un arbitrage.
+
+Le fichier n'a pas été copié dans `supabase/migrations/`, qui s'arrête au `011`.
+Le chemin est donc tranché pour ce fichier — SQL Editor — mais le dossier de
+migrations décrit désormais une base qui n'existe plus : question portée en
+attente d'arbitrage.
+
+---
+
 ## 20/08/2026 (suite) — Trois bugs, trouvés en tirant sur le même fil
 
 Session partie d'une capture d'écran : le tableau de bord refusait d'enregistrer
