@@ -29,6 +29,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { pathToFileURL } from 'url';
 
 const DOSSIER = 'pages';
 const SORTIE  = 'assets/js/seances-snt.js';
@@ -118,4 +119,11 @@ window.SEANCES_SNT = `;
   console.log(`\n✅ ${SORTIE} — ${THEMES.length} thèmes, ${total} séances.`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) principal();
+/* Le garde d'exécution : « ce fichier est-il lancé directement, ou
+   importé par verifier.mjs ? ». La comparaison naïve
+   `file://${process.argv[1]}` est FAUSSE sous Windows — argv[1] y vaut
+   C:\...\generer-x.mjs quand import.meta.url vaut file:///C:/.../generer-x.mjs.
+   Le script se terminait donc sans rien faire et sans rien dire, sur la
+   machine même où on le lance (constaté le 20/08/2026). pathToFileURL
+   produit exactement la forme attendue, sur les deux systèmes. */
+if (import.meta.url === pathToFileURL(process.argv[1]).href) principal();

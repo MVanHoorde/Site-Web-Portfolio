@@ -31,6 +31,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { pathToFileURL } from 'url';
 
 const DOSSIER = 'pages';
 const SORTIE  = 'assets/js/questions-snt.js';
@@ -126,6 +127,31 @@ export function extraire(html) {
       seance_num: s ? (s.num || null) : null
     };
   }
+
+  /* Les réponses PERSONNELLES (20/08/2026). Même besoin que les
+     copies — le tableau de bord affiche un texte d'élève et doit
+     dire à quelle question il répond — mais un destin différent :
+     elles ne sont ni corrigées ni notées (statut 'partage' en base,
+     bdd/schema/014). Le champ `notee` le dit explicitement, pour
+     qu'aucune lecture ultérieure n'ait à le deviner d'après le
+     préfixe du code. */
+  const rePerso = /<div(?:[^>"]|"[^"]*")*>/g;
+  let mp;
+  while ((mp = rePerso.exec(html)) !== null) {
+    const bloc = mp[0];
+    const code = attribut(bloc, 'data-perso-code');
+    if (!code) continue;
+    const s = seanceDe(mp.index);
+    out[code] = {
+      titre   : texteBrut(attribut(bloc, 'data-perso-titre')),
+      question: texteBrut(attribut(bloc, 'data-perso-question')),
+      min     : null,
+      max     : null,
+      notee   : false,
+      seance  : s ? (s.id || null) : null,
+      seance_num: s ? (s.num || null) : null
+    };
+  }
   return out;
 }
 
@@ -169,4 +195,11 @@ window.QUESTIONS_SNT = `;
   console.log(`\n✅ ${SORTIE} — ${total} question(s) libre(s).`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) principal();
+/* Le garde d'exécution : « ce fichier est-il lancé directement, ou
+   importé par verifier.mjs ? ». La comparaison naïve
+   `file://${process.argv[1]}` est FAUSSE sous Windows — argv[1] y vaut
+   C:\...\generer-x.mjs quand import.meta.url vaut file:///C:/.../generer-x.mjs.
+   Le script se terminait donc sans rien faire et sans rien dire, sur la
+   machine même où on le lance (constaté le 20/08/2026). pathToFileURL
+   produit exactement la forme attendue, sur les deux systèmes. */
+if (import.meta.url === pathToFileURL(process.argv[1]).href) principal();
