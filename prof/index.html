@@ -129,6 +129,15 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
 .propose{padding:12px 14px;background:var(--ok-wash);border:1px solid var(--ok);
     border-radius:var(--r);white-space:pre-wrap}
 .propose.plusloin{background:var(--link-wash);border-color:#b9c4ef;margin-top:9px}
+.pl-frise{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.pl-case{border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:12.5px;line-height:1.25;
+         background:var(--surface);min-width:52px;text-align:center}
+.pl-case b{display:block;font-size:12px}
+.pl-case .pl-nom{display:block;color:var(--ink-soft);font-size:11px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-case.faite{background:var(--ok-wash);border-color:#0c5c42;color:#0c5c42}
+.pl-case.ouverte{background:var(--link-wash);border-color:#22357f;color:#22357f}
+.pl-case.fermee{background:var(--surface-2);border-color:var(--line);color:var(--ink-faint)}
+.pl-coupe{width:100%;height:0;margin:2px 0}
 .bandeau{padding:11px 14px;border-radius:var(--r);margin-bottom:16px;font-size:14.5px;
     background:var(--wait-wash);border:1px solid var(--wait);color:#7a5400}
 .annuler{position:sticky;bottom:0;margin-top:16px;padding:11px 14px;background:var(--ink);
@@ -291,6 +300,31 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
 
       <div id="s-suggestion" class="bandeau" style="display:none"></div>
 
+      <!-- Ce que la classe peut ouvrir — le plafond d'avance (20/08/2026).
+           Le curseur ne se saisit pas : il se déduit de seances_faites,
+           donc de la clôture déjà faite juste en dessous. Ici, on ne règle
+           que la hauteur du plafond et la soupape. -->
+      <div id="s-plafond" class="encadre" style="display:none">
+        <div class="rangee" style="margin:0">
+          <b>Ce que la classe peut ouvrir</b>
+          <span id="pl-pastille" class="pastille neutre"></span>
+        </div>
+        <p id="pl-phrase" class="muet" style="margin:8px 0 0"></p>
+        <div id="pl-frise" class="pl-frise"></div>
+        <div class="rangee" style="margin:12px 0 0">
+          <label for="pl-avance" style="margin:0">Avance autorisée</label>
+          <select id="pl-avance"></select>
+          <label for="pl-jusqu" style="margin:0 0 0 10px">Lever le plafond jusqu'au</label>
+          <input type="date" id="pl-jusqu">
+          <button id="pl-refermer" type="button">Refermer maintenant</button>
+        </div>
+        <p class="muet" style="margin:8px 0 0;font-size:12.5px">
+          C'est un <b>panneau, pas un mur</b>&nbsp;: le site est public, une adresse tapée
+          à la main mène au thème. Le plafond dit ce que la classe est censée faire&nbsp;;
+          il n'empêche pas d'aller voir plus loin.
+        </p>
+      </div>
+
       <h3 class="sous">1 · Ouverture — qui n'est pas là ?</h3>
       <p class="muet" style="margin:0 0 8px">
         Coche les absents pour la séance sélectionnée ci-dessous. C'est une note de
@@ -392,6 +426,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
 </div>
 
 <script src="../assets/js/seances-snt.js"></script>
+<script src="../assets/js/verrou-snt.js?v=1"></script>
 <script src="../assets/js/questions-snt.js"></script>
 <script src="../assets/js/prof-api.js"></script>
 <script>
@@ -883,6 +918,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
      ============================================================ */
   var CLASSES = [], ctx = { classe: null, theme: 'snt-t1' };
   var Eleves = [], Faites = [], Absences = [], Progs = [];
+  var FaitesToutes = [];   /* toutes séquences : le plafond les franchit */
 
   /* Délai au bout duquel une séance manquée pour absence cesse d'être
      « à rattraper » et redevient un retard ordinaire. Décision du
@@ -903,7 +939,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
   }
 
   function chargerClasses(){
-    return ProfAPI.lire('classes?select=id,code,libelle,actif&order=code.asc')
+    return ProfAPI.lire('classes?select=id,code,libelle,actif,avance_max,ouvert_jusqu_au&order=code.asc')
       .then(function(l){
         CLASSES = (l || []).filter(function(c){ return c.actif !== false; });
         if(!CLASSES.length) return;
@@ -928,9 +964,13 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       ProfAPI.lire('eleves?select=id,pseudo&classe_id=eq.' + cl + '&order=pseudo.asc'),
       ProfAPI.lire('seances_faites?select=*&classe_id=eq.' + cl + '&sequence=eq.' + th),
       ProfAPI.lire('absences?select=*&sequence=eq.' + th),
-      ProfAPI.lire('progression?select=eleve_id,valeur&domaine=eq.cours&cle=eq.' + th)
+      ProfAPI.lire('progression?select=eleve_id,valeur&domaine=eq.cours&cle=eq.' + th),
+      /* SANS filtre de thème : le plafond franchit les fins de thème,
+         il lui faut donc tout ce que la classe a clôturé, partout. */
+      ProfAPI.lire('seances_faites?select=sequence,seance&classe_id=eq.' + cl)
     ]).then(function(r){
       Eleves = r[0] || []; Faites = r[1] || []; Absences = r[2] || []; Progs = r[3] || [];
+      FaitesToutes = r[4] || [];
       /* les absences sont lues pour tout le monde : on ne garde que
          les élèves de la classe affichée */
       var dedans = {}; Eleves.forEach(function(e){ dedans[e.id] = true; });
@@ -982,9 +1022,132 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
   }
 
   /* ============================================================
+     Le plafond d'avance — ce que la classe peut ouvrir
+     ------------------------------------------------------------
+     L'ordre des séances vient de VerrouSNT.rangs(), PAS d'une copie
+     locale : deux calculs séparés finiraient par ne plus dire la même
+     chose, et c'est l'élève qui verrait la différence.
+     ============================================================ */
+  function classeCourante(){
+    return CLASSES.find(function(c){ return c.id === ctx.classe; }) || null;
+  }
+
+  /* La date du jour, à la main. `toISOString()` rend l'heure UTC :
+     entre minuit et 2 h en été, la France est déjà au lendemain, et la
+     soupape se refermerait un jour trop tôt. */
+  function aujourdhui(){
+    var d = new Date();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var j = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + m + '-' + j;
+  }
+
+  function plafondLeve(cl){
+    return !!(cl && cl.ouvert_jusqu_au && cl.ouvert_jusqu_au >= aujourdhui());
+  }
+
+  function rendrePlafond(){
+    var boite = $('#s-plafond');
+    var cl = classeCourante();
+    if(!boite || !cl || !window.VerrouSNT){ if(boite) boite.style.display = 'none'; return; }
+    boite.style.display = '';
+
+    var liste = window.VerrouSNT.rangs();
+    var avance = typeof cl.avance_max === 'number' ? cl.avance_max : 2;
+    var leve = plafondLeve(cl);
+
+    /* le curseur : rang de la dernière séance faite, tous thèmes confondus */
+    var faites = {}, dernier = -1;
+    FaitesToutes.forEach(function(f){
+      var r = window.VerrouSNT.rangDe(f.sequence, f.seance);
+      faites[f.sequence + '/' + f.seance] = true;
+      if(r > dernier) dernier = r;
+    });
+    var plafond = leve ? Infinity : dernier + avance;
+
+    /* la pastille */
+    var past = $('#pl-pastille');
+    past.className = 'pastille ' + (leve ? 'att' : (avance >= 40 ? 'att' : 'neutre'));
+    past.textContent = leve ? 'plafond levé jusqu’au ' + cl.ouvert_jusqu_au
+                    : avance >= 40 ? 'tout ouvert'
+                    : avance + ' séance' + (avance > 1 ? 's' : '') + ' d’avance';
+
+    /* la phrase */
+    function nommer(x){
+      if(!x) return '?';
+      return x.sequence.replace('snt-t', 'Thème ') + ' · ' + (x.num || '') + ' ' + (x.nom || '');
+    }
+    var derniereFaite = dernier >= 0 ? liste[dernier] : null;
+    var derniereOuverte = null;
+    liste.forEach(function(x){ if(x.rang <= plafond) derniereOuverte = x; });
+    $('#pl-phrase').textContent =
+      (derniereFaite ? 'Dernière séance faite : ' + nommer(derniereFaite) + '. '
+                     : 'Aucune séance clôturée pour l’instant. ')
+      + (leve ? 'Le plafond est levé : tout est ouvert jusqu’au ' + cl.ouvert_jusqu_au + '.'
+              : 'Les élèves peuvent aller jusqu’à ' + nommer(derniereOuverte) + '.');
+
+    /* la frise — elle déborde sur le thème suivant quand le plafond le
+       franchit, sinon on ne verrait pas ce qu'on vient d'ouvrir */
+    var fin = Math.min(liste.length - 1, (leve ? liste.length - 1 : plafond + 2));
+    var deb = Math.max(0, Math.min(dernier, fin) - 4);
+    var frise = $('#pl-frise');
+    frise.innerHTML = '';
+    var themePrecedent = null;
+    liste.slice(deb, fin + 1).forEach(function(x){
+      if(themePrecedent !== null && x.sequence !== themePrecedent){
+        var coupe = document.createElement('span');
+        coupe.className = 'pl-coupe';
+        frise.appendChild(coupe);
+      }
+      themePrecedent = x.sequence;
+      var cls = faites[x.sequence + '/' + x.seance] ? 'faite'
+              : (x.rang <= plafond ? 'ouverte' : 'fermee');
+      var el = document.createElement('span');
+      el.className = 'pl-case ' + cls;
+      el.title = nommer(x) + ' — ' + (cls === 'faite' ? 'faite' : cls === 'ouverte' ? 'ouverte' : 'fermée');
+      el.innerHTML = '<b>' + echapper(x.sequence.replace('snt-t', 'T') + ' ' + (x.num || '')) + '</b>'
+                   + '<span class="pl-nom">' + echapper(x.nom || '') + '</span>';
+      frise.appendChild(el);
+    });
+
+    /* les deux réglages */
+    var sel = $('#pl-avance');
+    if(!sel.options.length){
+      [0, 1, 2, 3, 4].forEach(function(n){
+        var o = document.createElement('option');
+        o.value = String(n);
+        o.textContent = n === 0 ? 'aucune' : n + ' séance' + (n > 1 ? 's' : '');
+        sel.appendChild(o);
+      });
+      var tout = document.createElement('option');
+      tout.value = '40'; tout.textContent = 'tout ouvert';
+      sel.appendChild(tout);
+    }
+    sel.value = String(avance >= 40 ? 40 : avance);
+    $('#pl-jusqu').value = cl.ouvert_jusqu_au || '';
+    $('#pl-refermer').disabled = !cl.ouvert_jusqu_au;
+  }
+
+  /* Enregistrer un réglage. Le PATCH est TOUJOURS filtré sur l'id :
+     sans filtre, PostgREST l'appliquerait à toutes les classes —
+     ProfAPI.modifier le refuse, mais autant ne pas s'en remettre à
+     cette seule garde. */
+  function reglerPlafond(champs){
+    var cl = classeCourante();
+    if(!cl) return;
+    ProfAPI.modifier('classes?id=eq.' + encodeURIComponent(cl.id), champs)
+      .then(function(){
+        Object.keys(champs).forEach(function(k){ cl[k] = champs[k]; });
+        rendrePlafond();
+      })
+      .catch(function(e){ alert('Réglage non enregistré : ' + e.message); });
+  }
+
+  /* ============================================================
      LOT C — le rituel d'ouverture et de clôture
      ============================================================ */
   function rendreSeance(){
+    rendrePlafond();
     var l = seancesDu(ctx.theme), cur = rangCurseur();
     $('#s-curseur').textContent = cur < 0 ? 'aucune séance faite'
       : 'on en est à ' + (l[cur] ? (l[cur].num + ' ' + l[cur].nom) : '?');
@@ -1286,6 +1449,18 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
   ['#s-classe','#s-theme'].forEach(function(s){ $(s).addEventListener('change', surChangement('s')); });
   ['#g-classe','#g-theme'].forEach(function(s){ $(s).addEventListener('change', surChangement('g')); });
   $('#s-seance').addEventListener('change', rendreSeance);
+
+  /* Les deux réglages du plafond. Chacun n'écrit qu'un champ : régler
+     l'avance ne doit pas refermer une soupape ouverte, et inversement. */
+  $('#pl-avance').addEventListener('change', function(){
+    reglerPlafond({ avance_max: parseInt(this.value, 10) });
+  });
+  $('#pl-jusqu').addEventListener('change', function(){
+    reglerPlafond({ ouvert_jusqu_au: this.value || null });
+  });
+  $('#pl-refermer').addEventListener('click', function(){
+    reglerPlafond({ ouvert_jusqu_au: null });
+  });
   $('#g-rafraichir').addEventListener('click', function(){
     $('#g-etat').textContent = 'Chargement…';
     chargerContexte().then(function(){ rendreGrille(); $('#g-etat').textContent = ''; });

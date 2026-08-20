@@ -273,6 +273,49 @@
       .catch(function () { return null; });   // hors ligne : la séquence continue
   }
 
+  /* Jusqu'où la classe a le droit d'aller.
+   *
+   * Le curseur ne se saisit pas : il se déduit de `seances_faites`,
+   * donc de la clôture déjà faite pour le cahier de textes. On ne
+   * reçoit ici QUE des couples (séquence, séance) et deux réglages —
+   * la fonction `mon_plafond()` du fichier 013 ne rend rien d'autre,
+   * et surtout aucune note de séance.
+   *
+   * Le résultat est mis en cache pour la durée de la page : le
+   * plafond d'une classe ne bouge pas trois fois dans une heure, et
+   * le relire à chaque cascade de déverrouillage ferait un appel
+   * réseau par clic. Conséquence assumée : si le professeur lève le
+   * plafond en cours de séance, l'élève doit recharger la page.
+   *
+   * En cas d'erreur — hors ligne, base muette, fonction pas encore
+   * appliquée — on renvoie `{ classe:false }`, c'est-à-dire « pas de
+   * plafond ». Même doctrine que le reste du dispositif : le cours
+   * passe avant le dispositif, et un élève qui a oublié son mot de
+   * passe ne doit pas rester devant une page morte. */
+  var plafondEnCache = null;
+
+  function plafond() {
+    if (plafondEnCache) return plafondEnCache;
+    if (!disponible()) {
+      plafondEnCache = Promise.resolve({ classe: false });
+      return plafondEnCache;
+    }
+    plafondEnCache = assurerSession()
+      .then(function () { return rpc('mon_plafond'); })
+      .then(function (reponse) {
+        if (!reponse || typeof reponse !== 'object' || !reponse.classe) return { classe: false };
+        return {
+          classe        : true,
+          avanceMax     : typeof reponse.avance_max === 'number' ? reponse.avance_max : 2,
+          plafondLeve   : !!reponse.plafond_leve,
+          ouvertJusquAu : reponse.ouvert_jusqu_au || null,
+          faites        : Array.isArray(reponse.faites) ? reponse.faites : []
+        };
+      })
+      .catch(function () { return { classe: false }; });
+    return plafondEnCache;
+  }
+
   /* Normalise et vérifie l'identifiant choisi par l'élève.
    * Règle retenue (décision Loïc, 22/07) : minuscules, chiffres et
    * tirets, de 3 à 32 caractères. Il sert de pseudo affiché au
@@ -941,6 +984,7 @@
   global.Progression = {
     disponible    : disponible,
     session       : session,
+    plafond       : plafond,
     creerCompte   : creerCompte,
     seConnecter   : seConnecter,
     quitter       : quitter,

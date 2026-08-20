@@ -281,7 +281,19 @@
       });
     var precedentesOk=true;
     suite.forEach(function(sec,rang){
-      if(rang>0) sec.classList.toggle('locked', !precedentesOk);
+      /* Deux verrous, et ils s'additionnent (20/08/2026).
+         · le MÉRITE, d'origine : la séance N+1 s'ouvre quand la N est finie ;
+         · le PLAFOND : la classe ne dépasse pas la dernière séance faite de
+           plus de avance_max séances (verrou-snt.js).
+         C'est '.locked' qui commande le sommaire, la barre « tu es ici » et
+         les gardes de saisie : elle doit donc porter les deux. La classe
+         '.plafonne', posée par verrou-snt.js, ne sert qu'à choisir le texte
+         du bandeau — dire « finis la séance précédente » à un élève qui l'a
+         finie serait un mensonge.
+         Sans verrou-snt.js chargé (t3…t7, pages non raccordées à la base),
+         'plafonne' vaut false et rien ne change. */
+      var plafonne = !!(window.VerrouSNT && sec.id && !window.VerrouSNT.ouverte(sec.id));
+      if(rang>0 || plafonne) sec.classList.toggle('locked', !precedentesOk || plafonne);
       precedentesOk = precedentesOk && seanceComplete(sec);
     });
     document.querySelectorAll('[data-navlock]').forEach(function(a){
@@ -296,6 +308,10 @@
      annoncent 'etape-validee'. Sans cette écoute, la classe is-done était
      bien posée mais le déblocage de la séance suivante ne suivait pas. */
   document.addEventListener('etape-validee',function(){ refresh(); });
+  /* Le plafond arrive de la base APRÈS le premier rendu : sans cette
+     écoute, la cascade ne se rejouerait jamais et la page resterait
+     ouverte alors que la classe n'y a pas droit. */
+  document.addEventListener('plafond-connu',function(){ refresh(); });
 
   /* mode enseignant */
   document.getElementById('teacherMode').addEventListener('change',function(){

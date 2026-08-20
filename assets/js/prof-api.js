@@ -202,6 +202,24 @@
     });
   }
 
+  /* Modification en place (PATCH).
+     MÊME GARDE QUE `supprimer`, et pour la même raison : PostgREST
+     applique un PATCH sans filtre à TOUTES les lignes de la table.
+     Un « avance_max = 0 » sans `?id=eq.…` fermerait le cours à toutes
+     les classes d'un coup, sans un mot d'avertissement. */
+  function modifier(chemin, corps) {
+    if (chemin.indexOf('?') < 0) return Promise.reject(new Error('modification sans filtre refusée'));
+    return assure().then(function () {
+      return fetch(URL_PROJET + '/rest/v1/' + chemin, {
+        method: 'PATCH', headers: entetes(true),
+        body: JSON.stringify(corps || {})
+      });
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(t || ('HTTP ' + r.status)); });
+      return true;
+    });
+  }
+
   /* Appel d'une fonction SQL (valider_copie, est_enseignant…). */
   function appeler(fonction, params) {
     return assure().then(function () {
@@ -342,6 +360,7 @@
     lire         : lire,
     ecrire       : ecrire,
     supprimer    : supprimer,
+    modifier     : modifier,
     appeler      : appeler,
     chargerNoms  : chargerNoms,
     nomDe        : nomDe,

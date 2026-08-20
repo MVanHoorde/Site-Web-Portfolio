@@ -27,6 +27,7 @@ du fichier → **Run**. Vérifier le message vert en bas.
 | `006` | Les règles RLS et les deux fonctions `security definer` |
 | `007` → `011` | Frise ES, rôle enseignant, suivi de classe, correction des copies |
 | `012` | Les deux codes de classe du **livret CFA**. Aucune table, aucune colonne : le livret écrit dans `progression`, domaine `cours`, clés `cfa-o00` … `cfa-o16` |
+| `013` | Le **plafond d'avance** des élèves SNT : deux colonnes sur `classes` (`avance_max`, `ouvert_jusqu_au`) et la fonction `mon_plafond()`. 🔴 **Aucune policy n'est ajoutée sur `seances_faites`** : la table porte le cahier de textes (notes, travail donné), elle reste fermée aux élèves — la fonction ne rend que des couples (séquence, séance) |
 
 ## ⚠ Ne pas confondre avec `supabase/migrations/`
 

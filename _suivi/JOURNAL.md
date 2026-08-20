@@ -12,6 +12,60 @@
 
 ---
 
+## 20/08/2026 (suite) — Le plafond d'avance
+
+Le verrou entre séances existait depuis l'origine : la séance N+1 s'ouvre quand
+la N est finie. C'est du **mérite**, sans plafond — un élève rapide traversait la
+séquence en une soirée. On pose un **plafond par-dessus** : une classe ouvre au
+plus `avance_max` séances (2 par défaut) au-delà de la dernière séance
+réellement faite, **toutes séquences confondues**. Les deux s'additionnent.
+
+**Le travail venait d'ailleurs.** Une session distante avait écrit et éprouvé
+l'ensemble, sans droit de pousser ; la consigne reçue décrivait deux voies —
+appliquer le patch, ou rejouer le diff. **Ni le patch ni les diffs n'étaient sur
+la machine** (rien dans `~/Downloads`, rien à la racine), et les deux fichiers
+neufs n'étaient pas non plus dans le document. Tout a donc été **réécrit** à
+partir de la spécification, sur la branche `claude/pc-access-2jfbye`.
+
+**Un piège de cache évité de peu.** La consigne demandait de passer
+`sequence-snt.js` de `?v=29` à `?v=30`. Or `v=30` avait déjà été posé le matin
+même, pour la correction du lanceur de QCM, et **poussé**. Garder ce numéro
+aurait laissé les navigateurs qui ont déjà chargé la page servir un moteur sans
+plafond, indéfiniment et sans un signe. Le moteur passe donc en **`?v=31`**, la
+feuille en `?v=30` (elle change aussi : le bandeau du plafond a sa teinte).
+
+**Le curseur ne se saisit pas.** Il se déduit de `seances_faites`, donc de la
+clôture déjà faite pour le cahier de textes — prolongement direct de la décision
+du 31/07. Aucune saisie nouvelle, et rien à reprendre le jour où Loïc recule une
+séance.
+
+**Ce qui a demandé le plus d'attention, c'est de ne pas mentir.**
+`seances_faites` porte les notes et le travail donné : une policy de lecture
+l'aurait ouverte aux élèves. D'où `mon_plafond()`, `security definer`,
+`search_path` vide, qui ne rend que des couples (séquence, séance). Et côté
+page, une séance fermée par le plafond ne peut pas afficher « finis la séance
+précédente » à un élève qui l'a finie : `.locked` porte les deux verrous, mais
+`.plafonne` choisit le texte.
+
+**Vérifications.** 21 assertions sur le module sans DOM — ordre global des huit
+thèmes, classe neuve, `avance_max` à 0, soupape, franchissement de fin de thème,
+séance absente du référentiel, doublons dans les séances faites. Puis un harnais
+DOM dans Chromium, qui montre la chaîne complète : s2 fermée par le mérite garde
+son bandeau d'origine, s3 et s4 fermées par le plafond reçoivent le nouveau. Les
+quatre pages réelles se rendent sans rien perdre (numérotation intacte, 13 et 12
+lanceurs de QCM, 8 cartes au hub). `node verifier.mjs` : 19 problèmes, les mêmes
+qu'avant, aucun ajouté.
+
+**Deux choses restent, et elles ne sont pas de mon ressort.** Le `013` n'est pas
+appliqué — tant qu'il ne l'est pas, `mon_plafond()` n'existe pas et **rien n'est
+fermé**, ce qui est le repli voulu mais pas le service rendu. Et il n'a **pas**
+été copié dans `supabase/migrations/` : ce dossier s'applique tout seul au push,
+y déposer le fichier aurait exécuté du SQL en base sans décision explicite.
+Loïc choisit son chemin — et les deux textes vus par les élèves attendent sa
+validation.
+
+---
+
 ## 20/08/2026 — Les QCM des deux vidéos, et ce qu'ils ont fait remonter
 
 Loïc a fourni les **transcriptions intégrales** des vidéos de M Bidouille (câbles

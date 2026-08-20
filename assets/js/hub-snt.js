@@ -20,11 +20,18 @@
  *  nombre de séances ATTENDU (pour dessiner une carte plausible avant
  *  que l'élève n'ait ouvert le thème).
  *
- *  VERROUILLAGE
+ *  VERROUILLAGE — deux sources, une seule apparence
  *  Pédagogique, pas sécuritaire — le site est public, une URL tapée à
- *  la main mène au thème. C'est assumé (décision de Loïc). Aujourd'hui
- *  tout est ouvert : data-verrou n'est posé nulle part. La mécanique
- *  de déblocage par classe rejoindra l'appli de validation.
+ *  la main mène au thème. C'est assumé (décision de Loïc).
+ *   · MANUEL : data-verrou="oui" dans le HTML ferme un thème à la
+ *     main. N'est posé nulle part aujourd'hui.
+ *   · PLAFOND (20/08/2026) : la classe ne dépasse pas la dernière
+ *     séance faite de plus de avance_max séances. Calculé par
+ *     verrou-snt.js, qui le tient de la base.
+ *  Le plafond se juge SÉANCE par séance, pas thème par thème : un
+ *  thème entamé garde ses premières séances ouvertes et ne ferme que
+ *  la suite. Une carte entièrement fermée porte une note qui dit
+ *  pourquoi — une carte grisée sans motif se lit comme une panne.
  *
  *  RGPD : ce fichier ne lit que la progression de l'élève connecté
  *  (la RLS s'en charge côté base) et n'écrit rien.
@@ -51,7 +58,7 @@
         lien    : el.dataset.lien || '',
         attendu : parseInt(el.dataset.seances || '0', 10) || 0,
         chantier: el.dataset.etat === 'chantier',
-        verrou  : el.dataset.verrou === 'oui',
+        verrouManuel: el.dataset.verrou === 'oui',
         rang    : i
       };
     });
@@ -96,20 +103,39 @@
     return out;
   }
 
+  /* Le plafond, séance par séance. Sans verrou-snt.js chargé — ou tant
+     qu'il n'a pas de réponse — tout est ouvert : le repli va toujours
+     dans le sens de l'ouverture. */
+  function seanceOuverte(t, noeud) {
+    if (!global.VerrouSNT || !noeud.ancre) return true;
+    return global.VerrouSNT.ouverteSeance(t.cle, noeud.ancre);
+  }
+
+  /* Un thème n'est « fermé » que si AUCUNE de ses séances n'est
+     ouverte. Fermer la carte entière parce que la dernière séance
+     dépasse le plafond priverait l'élève de ce qu'il a le droit de
+     faire. */
+  function themePlafonne(t, noeuds) {
+    if (t.chantier) return false;
+    return noeuds.length > 0 && noeuds.every(function (n) { return !seanceOuverte(t, n); });
+  }
+
   function etatsDe(t, noeuds) {
     var r = RESUMES[t.cle], etats = {};
     noeuds.forEach(function (n, i) {
       var s = (r && r.seances && r.seances[i]) || null;
       var part = (s && s.t) ? s.f / s.t : 0;
+      var ferme = t.verrouManuel || !seanceOuverte(t, n);
       etats[n.id] = {
         part  : part,
-        verrou: t.verrou,
+        verrou: ferme,
         avenir: t.chantier,
         etat  : t.chantier ? 'à venir'
+              : ferme       ? 'pas encore ouverte'
               : !s          ? 'pas commencée'
               : (s.t && s.f === s.t) ? 'terminée'
               : s.f + ' sur ' + s.t,
-        href  : (t.chantier || t.verrou) ? null
+        href  : (t.chantier || ferme) ? null
               : (t.lien + (n.ancre ? '#' + n.ancre : ''))
       };
     });
@@ -131,6 +157,23 @@
    *  un anneau et un compteur — pour qu'on n'ait pas à déplier pour
    *  savoir où on en est.
    * ---------------------------------------------------------- */
+  /* ⏳ Texte à valider par Loïc : c'est du fond pédagogique, pas un
+     acquis (inscrit en attente d'arbitrage dans DECISIONS.md). */
+  var MOT_PLAFOND = 'Pas encore ouvert : la classe n’y est pas encore. '
+                  + 'Ce thème s’ouvrira au fil des séances.';
+
+  function noterPlafond(t, afficher) {
+    var note = $('.tc-plafond', t.el);
+    if (!afficher) { if (note) note.parentNode.removeChild(note); return; }
+    if (note) return;
+    note = document.createElement('p');
+    note.className = 'tc-plafond';
+    note.textContent = MOT_PLAFOND;
+    var jauge = $('.tc-jauge', t.el);
+    var hote = jauge && jauge.parentNode ? jauge.parentNode : t.el;
+    hote.appendChild(note);
+  }
+
   function rendre(t) {
     var part = partDe(t), r = RESUMES[t.cle];
     var jauge = $('.tc-jauge', t.el);
@@ -150,8 +193,11 @@
           : r.f + ' / ' + r.t + ' étapes'
           ) + '</span>';
     }
+    var noeudsPourEtat = noeudsDe(t);
+    var ferme = t.verrouManuel || themePlafonne(t, noeudsPourEtat);
     t.el.classList.toggle('est-chantier', !!t.chantier);
-    t.el.classList.toggle('est-verrou',  !!t.verrou);
+    t.el.classList.toggle('est-verrou',  !!ferme);
+    noterPlafond(t, ferme && !t.verrouManuel);
     t.el.classList.toggle('est-fini',    !!(r && r.t && r.f === r.t));
     t.el.classList.toggle('est-commence', part > 0);
 
@@ -178,7 +224,7 @@
     var cible = null, quand = 0;
     themes.forEach(function (t) {
       var r = RESUMES[t.cle];
-      if (!r || t.chantier || t.verrou) return;
+      if (!r || t.chantier || t.verrouManuel) return;
       if (!r.t || !r.f || r.f >= r.t) return;
       var d = Date.parse(r.vu_le || 0);
       if (isFinite(d) && d > quand) { quand = d; cible = t; }
@@ -235,6 +281,11 @@
       });
       rendre(t);                       /* rendu immédiat, sans attendre le réseau */
     });
+
+    /* Le plafond arrive de la base après ce premier rendu : sans cette
+       écoute, les cartes resteraient ouvertes jusqu'au rechargement
+       suivant. Même signal que dans les pages de séquence. */
+    document.addEventListener('plafond-connu', function () { themes.forEach(rendre); });
 
     if (!global.Progression || !global.Progression.disponible()) return;
 
