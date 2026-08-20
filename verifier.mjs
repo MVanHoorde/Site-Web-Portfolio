@@ -4,6 +4,7 @@
 
      node verifier.mjs            contrôles complets
      node verifier.mjs --bilan    digest compact du dépôt (à coller en chat)
+     node verifier.mjs --qcm      liste complète des biais de longueur des QCM
      node verifier.mjs --silence  ne sort que les problèmes (pour un hook git)
 
    Aucune dépendance : Node 18+ et rien d'autre.
@@ -17,6 +18,7 @@ import { execSync } from "node:child_process";
 const RACINE = process.cwd();
 const ARGS = process.argv.slice(2);
 const BILAN = ARGS.includes("--bilan");
+const QCM_DETAIL = ARGS.includes("--qcm");   /* liste complète des biais de longueur */
 const SILENCE = ARGS.includes("--silence");
 
 const IGNORE = new Set([".git", "node_modules", "assets/fonts", "audio", "_suivi/archives"]);
@@ -319,19 +321,33 @@ try {
    les autres, parce qu'on y met la nuance et la justification. L'élève
    la repère alors sans lire — le QCM ne mesure plus rien.
    Constaté le 01/08/2026 sur 9 questions rédigées sur 11, y compris
-   après une première relecture. Non bloquant (c'est un jugement de
-   rédaction, pas une erreur technique) mais signalé à chaque passage.
-   Les options très courtes (dates, nombres, mots isolés) sont
-   exclues : « 213 » face à « 4 », l'écart ne dit rien. */
+   après une première relecture.
+
+   Seuil affiné le 20/08/2026. La première version signalait toute bonne
+   réponse strictement la plus longue ou la plus courte, sans regarder de
+   combien : sur 60 signalements, 13 tenaient à 1 à 3 caractères — invisibles
+   pour un élève — pendant que la queue montait à 74. Le bruit masquait les
+   vrais cas. On mesure maintenant l'ampleur, de deux façons à la fois :
+     · l'écart en caractères avec l'option la plus proche (moins d'un mot
+       ne se voit pas) ;
+     · ce même écart rapporté à la longueur moyenne des options — 10
+       caractères sur des options de 20 sautent aux yeux, sur des options
+       de 90 non.
+   Le filtre « options courtes » de la première version devient inutile :
+   « 213 » face à « 4 » ne franchit ni l'un ni l'autre de ces seuils. Le
+   signalement reste non bloquant — c'est un jugement de rédaction. */
+const QCM_ECART_MIN = 6,  QCM_PART_MIN = 0.15;   /* en deçà : non significatif */
+const QCM_ECART_NET = 12, QCM_PART_NET = 0.30;   /* au-delà : à reprendre en priorité */
 try {
   const suspects = [];
+  let ecartes = 0;
   for (const f of pagesSNT) {
     const html = lire(f);
     const re = /<script[^>]*class="qcm-data"[^>]*>([\s\S]*?)<\/script>/g;
     let m;
     while ((m = re.exec(html)) !== null) {
       let data;
-      try { data = JSON.parse(m[1]); } catch { 
+      try { data = JSON.parse(m[1]); } catch {
         ko("QCM illisible", `${f} — un bloc qcm-data n'est pas du JSON valide`);
         continue;
       }
@@ -339,23 +355,36 @@ try {
         const opts = q.o || [];
         if (opts.length < 3) continue;
         const L = opts.map((o) => String(o).replace(/<[^>]+>/g, "").length);
-        if (Math.max(...L) < 25) continue;      /* options courtes : sans objet */
         const bons = Array.isArray(q.r) ? q.r : [q.r];
         const mx = Math.max(...L), mn = Math.min(...L);
-        const seuleLaPlusLongue = L.filter((x) => x === mx).length === 1 && bons.includes(L.indexOf(mx));
-        const seuleLaPlusCourte = L.filter((x) => x === mn).length === 1 && bons.includes(L.indexOf(mn));
-        if (seuleLaPlusLongue || seuleLaPlusCourte) {
-          suspects.push(`${f.split("/").pop()} — « ${q.q.replace(/<[^>]+>/g, "").slice(0, 52)}… » : la bonne réponse est ${seuleLaPlusLongue ? "la plus longue" : "la plus courte"}`);
-        }
+        const plusLongue = L.filter((x) => x === mx).length === 1 && bons.includes(L.indexOf(mx));
+        const plusCourte = L.filter((x) => x === mn).length === 1 && bons.includes(L.indexOf(mn));
+        if (!plusLongue && !plusCourte) continue;
+        /* écart avec l'option la plus proche, et sa part de la longueur moyenne */
+        const tri = [...L].sort((a, b) => (plusLongue ? b - a : a - b));
+        const ecart = Math.abs(tri[0] - tri[1]);
+        const moyenne = L.reduce((a, b) => a + b, 0) / L.length;
+        const part = moyenne ? ecart / moyenne : 0;
+        if (ecart < QCM_ECART_MIN || part < QCM_PART_MIN) { ecartes++; continue; }
+        suspects.push({
+          ecart, part,
+          net: ecart >= QCM_ECART_NET && part >= QCM_PART_NET,
+          texte: `${f.split("/").pop()} — « ${q.q.replace(/<[^>]+>/g, "").slice(0, 46)}… » : la bonne réponse est `
+               + `${plusLongue ? "la plus longue" : "la plus courte"} de ${ecart} car. (${Math.round(part * 100)} %)`,
+        });
       }
     }
   }
+  suspects.sort((a, b) => b.ecart - a.ecart);
+  const nets = suspects.filter((s) => s.net).length;
   if (suspects.length) {
-    notes.push(`biais de longueur dans ${suspects.length} question(s) de QCM :`);
-    suspects.slice(0, 6).forEach((s) => notes.push("   " + s));
-    if (suspects.length > 6) notes.push(`   …et ${suspects.length - 6} autre(s)`);
+    notes.push(`biais de longueur dans ${suspects.length} question(s) de QCM — dont ${nets} marquée(s) `
+             + `· ${ecartes} écart(s) sous le seuil non retenu(s)${QCM_DETAIL ? "" : " · liste complète : --qcm"} :`);
+    const combien = QCM_DETAIL ? suspects.length : 8;
+    suspects.slice(0, combien).forEach((s) => notes.push(`   ${s.net ? "🔴" : "· "} ${s.texte}`));
+    if (suspects.length > combien) notes.push(`   …et ${suspects.length - combien} autre(s), moins marquée(s)`);
   } else {
-    notes.push("QCM — aucune bonne réponse trahie par sa longueur");
+    notes.push(`QCM — aucune bonne réponse trahie par sa longueur (${ecartes} écart(s) sous le seuil)`);
   }
 } catch (e) {
   notes.push("contrôle des QCM non effectué : " + e.message);

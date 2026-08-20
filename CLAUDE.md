@@ -122,7 +122,7 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
 | `_suivi/JOURNAL.md` | 🆕 Historique en ajout seul. Pas relu par défaut |
 | `_suivi/chapitres.md` | Tableau de bord **par chapitre / par séquence**, avec les jalons |
 | `_suivi/IDEES.md` | Réservoir d'idées à trier |
-| `verifier.mjs` | 🆕 `node verifier.mjs` rejoue la checklist · `--bilan` sort un digest compact du dépôt |
+| `verifier.mjs` | 🆕 `node verifier.mjs` rejoue la checklist · `--bilan` sort un digest compact du dépôt · `--qcm` liste les biais de longueur des QCM |
 | `_suivi/BDD-cadrage.md` | 🆕 Volet base de données : architecture, décisions, modèle de données, jalons |
 | `bdd/README.md` | 🆕 Discipline des fichiers de schéma SQL + avertissement `supabase/migrations/` |
 

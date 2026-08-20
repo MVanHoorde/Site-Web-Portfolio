@@ -120,12 +120,15 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
       20/08 **à partir des transcriptions** fournies par Loïc, chaque question
       ancrée sur un passage cité. ⏳ reste à éprouver en classe : `NET-Q8` compte
       maintenant **18 questions d'affilée**, à scinder si c'est trop
-- [ ] **Chantier QCM — reprendre les biais de forme sur tout le projet.**
-      `verifier.mjs` signale **60 questions**, mais son critère est binaire :
-      **13 le sont pour 1 à 3 caractères d'écart** (invisible) quand la queue monte
-      à **74**. Commencer par **affiner le seuil du détecteur**, sinon le bruit
-      masque les vrais cas. Trois règles à appliquer : longueur comparable,
-      distracteurs de même granularité, position de la bonne réponse répartie
+- [ ] **Chantier QCM — reprendre les biais de forme sur tout le projet.** Seuil du
+      détecteur affiné le 20/08 (il mesure l'ampleur au lieu de la constater) :
+      **43 questions signalées, dont 34 marquées 🔴**, liste triée par
+      `node verifier.mjs --qcm`. Attaquer par le haut — les quatre premières
+      dépassent 45 caractères d'écart. Trois règles à appliquer : longueur
+      comparable, distracteurs de même granularité, position de la bonne réponse
+      répartie. ⚠️ **`t2` est de loin la plus touchée** : **20 des 34 cas marqués
+      pour 42 questions**, contre **14 sur 97** dans `t1` — près d'une question sur
+      deux, contre une sur sept
 - [ ] **Écrire l'étape 5 minimale** (`ia-snt/valider.mjs`) — le dernier maillon
 - [x] ~~Porter `t2` sur le moteur partagé~~ — fait le 25/07 (lot 0)
 - [ ] Porter `t0` sur le moteur partagé, puis les cinq séquences restantes

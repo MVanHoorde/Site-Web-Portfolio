@@ -57,9 +57,20 @@ cette moyenne : il signale dès que la bonne réponse est **strictement** la plu
 longue ou la plus courte, sans regarder l'ampleur. Sur les **60 questions** qu'il
 signale aujourd'hui dans tout le projet, **13 le sont pour un écart de 1 à 3
 caractères** — invisible pour un élève — pendant que la queue de distribution
-monte jusqu'à **74 caractères**. C'est le point de départ du chantier suivant :
-affiner le seuil du détecteur avant de reprendre les QCM, sinon le bruit masque
-les vrais cas.
+monte jusqu'à **74 caractères**. Le bruit masquait les vrais cas.
+
+**Seuil affiné dans la foulée.** Le détecteur ne constate plus, il mesure : écart
+d'au moins **6 caractères** avec l'option la plus proche **et** d'au moins **15 %**
+de la longueur moyenne des options — un même écart de 10 caractères saute aux yeux
+sur des options de 20 et disparaît sur des options de 90. Au-delà de **12
+caractères et 30 %**, la question est **marquée 🔴**. La liste est triée par
+ampleur décroissante et l'écart figure dans le message, ce qui permet d'attaquer
+par le haut. Le filtre « options courtes » de la première version disparaît : il
+ne servait qu'à compenser l'absence de mesure. On passe de 60 signalements à
+**43, dont 34 marqués**, 33 écarts étant écartés comme non significatifs. Aucune
+des 29 questions posées aujourd'hui n'est retenue par le nouveau critère — les 8
+qu'elles ajoutaient à l'ancien tenaient toutes à 3 caractères ou moins.
+`node verifier.mjs --qcm` sort la liste complète pour le chantier à venir.
 
 ---
 
