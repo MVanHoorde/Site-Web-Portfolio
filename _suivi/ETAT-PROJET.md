@@ -21,7 +21,7 @@
 |---|---|
 | **PC seconde** | 14 chapitres en ligne. T1-C1→C4 dégrossis à fond ; les 10 autres portent **206 blocs `.a-faire`**. Aucun cours validé. |
 | **SNT** | 8 séquences (t0→t7). `t1` et `t2` sur le moteur partagé ; `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. |
-| **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade). ⚠ **`bdd/schema/013-verrou-progression.sql` reste à exécuter** — tant qu'il ne l'est pas, `mon_plafond()` n'existe pas et **rien n'est fermé** : le repli est volontaire, mais le verrou ne fonctionne pas. Deux textes vus par les élèves attendent la validation de Loïc. |
+| **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade) et **vérifié au rendu** dans un navigateur sans interface : bandeau, pictogramme et teinte mesurés sur les deux familles de pages, en mode élève et en mode enseignant. Le tableau de bord affiche les **dates de clôture** (cases de clôture et frise, format `12/09`). ⚠ **`bdd/schema/013-verrou-progression.sql` reste à exécuter** — tant qu'il ne l'est pas, `mon_plafond()` n'existe pas et **rien n'est fermé** : le repli est volontaire, mais le verrou ne fonctionne pas. Deux textes vus par les élèves attendent la validation de Loïc. |
 | **SNT — `t1` Internet** | Séances 1, 2, 3 et étapes 5.1, 5.2, 5.3 refondues. **Restent : 5.4, 5.6, et la fin de thème** (Filius + passerelle NSI facultative). Deux blocs de 5.3 attendent le moteur (relevé et rappel). Les **QCM des deux vidéos sont posés** (20/08) : `NET-Q-cables`, 15 questions en bonus à l'étape 3.5, et 14 questions ajoutées à `NET-Q8` en 5.3. Seule séquence sur le moteur partagé. |
 | **Base de données** | ✅ **en service.** Supabase, région **West EU (Paris)**. 7 tables, 10 policies RLS, 4 fonctions, sauvegarde hebdo + réveil quotidien. Pilote prouvé de bout en bout sur `t1`. |
 | **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
@@ -73,7 +73,8 @@ lots :
       Parcours éprouvé hors navigateur avec un DOM simulé (`jsdom`) : ordre de
       tri, échappement du texte élève, appels de fonction et paramètres.
 - [x] **C — rituel** : ouverture (absents, deux taps) et clôture (séances faites,
-      note dictée au micro du clavier, travail donné, à reprendre).
+      note dictée au micro du clavier, travail donné, à reprendre). Chaque séance
+      affiche sa **date de clôture**, `—` tant qu'elle n'est pas fermée.
 - [x] **D — grille de suivi** : une colonne par séance avec le détail chiffré,
       cinq états calculés (terminée / en cours / pas encore / en retard / absent),
       deux compteurs distincts par élève — retard du jour et dette antérieure.
@@ -95,6 +96,19 @@ l'attend (`data-step`, `data-gate`, `.field[data-focus-code]`, `script.qcm-data`
 `#dico-source`). **Une séquence à la fois, ouverte et testée.** Priorité : `t0` et
 `t2`, les deux qui serviront en septembre.
 
+🔴 **Le coût se paie déjà en double écriture.** `t1`, `t2` et le hub lisent
+`assets/css/sequence-snt.css` ; `t0` et `t3`→`t7` portent une **copie inline** de
+cette feuille. Toute règle de verrouillage doit donc être posée **aux deux
+endroits** — le bloc `.plafonne` (teinte d'attente et sablier) manquait dans les
+six copies et n'y a été ajouté que le 20/08. Prochaine règle oubliée, prochain
+écart silencieux : c'est l'argument le plus concret pour finir ce portage.
+
+Second point de vigilance, apparenté : une page branchée sur le plafond a besoin
+de **deux** choses, le script `verrou-snt.js` **et** `data-sequence` sur son
+`<body>`. `t0` avait le premier sans le second, et le plafond n'y fermait rien
+sans qu'aucune erreur ne le signale. `t3`→`t7` n'ont ni l'un ni l'autre, ce qui
+est cohérent avec leur état partiel — le jour où on les branche, les deux.
+
 ### ③ La frise ES à brancher
 
 Décision prise le 23/07 : elle passe sur Supabase. Le modèle est écrit
@@ -109,7 +123,8 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
       (validé sur le format, pas la valeur) · rappel en boîte de dialogue sur fond
       flouté, comparé au relevé du même élève · prise en charge d'un `data-cle` sur
       un bloc `.cloze` · incrémenter le `?v=` **du CSS et du JS**, dans **les deux
-      pages** (au 20/08 : `sequence-snt.css?v=29`, `sequence-snt.js?v=30`)
+      pages** (au 20/08 : `sequence-snt.css?v=31`, `sequence-snt.js?v=31`,
+      `verrou-snt.js?v=2`)
 - [ ] **`t1` lot 3 — étape 4.4** : donner les consignes, étoffer les questions,
       descendre le « à retenir », refaire `NET·4c` (le sortir de `.res`, retirer `.a-venir`)
 - [ ] **`t1` lot 4 — étape 4.6** : QCM IPv6 à la place des champs, et beaucoup plus de sources

@@ -12,6 +12,59 @@
 
 ---
 
+## 20/08/2026 (suite) — Trois bugs, trouvés en tirant sur le même fil
+
+Session partie d'une capture d'écran : le tableau de bord refusait d'enregistrer
+une séance, `PGRST102 « All object keys must match »`. Chaque correctif a fait
+apparaître le suivant.
+
+**① Le lot d'objets mal formé.** Les lignes de `seances_faites` étaient
+construites à géométrie variable : `faite_le` seulement pour les séances déjà en
+base, les trois textes du cahier de textes seulement pour la séance du jour.
+PostgREST exige des clés identiques sur tout le lot. Cocher S1 (ancienne) et S2
+(du jour) ensemble — le cas normal d'une fin d'heure — et rien ne partait.
+Sept clés pour toutes les lignes désormais. **Audit demandé par Loïc** : une
+seule écriture du dépôt envoie plusieurs objets d'un coup, les huit autres
+passent un objet unique. Le reste du dispositif ne peut pas rencontrer ce cas.
+
+**② Le message du bandeau écrit dans le compteur.** Signalé par une seconde
+capture, côté élève cette fois : le mot du plafond s'affichait en chasse fixe,
+débordant du cadre, pendant que le vrai message se tassait sur trois mots de
+large. `verrou-snt.js` visait `span:last-child` pour remplacer le texte — mais
+`compteurSeances()` ajoute *après coup* un `<span class="compte">5 étapes</span>`
+qui devient le dernier enfant. Second dégât, invisible à l'écran : au dégel du
+plafond, « 5 étapes » revenait à la place du message de mérite.
+
+**③ Le sablier qui ne s'affichait jamais, puis t0 qui ne se verrouillait pas.**
+En vérifiant le rendu, le pictogramme restait `🔒` là où le CSS prévoit `⏳`.
+Une séance plafonnée cumule presque toujours `.locked` et `.plafonne` : à
+spécificité égale, la dernière règle écrite gagne, et le sablier était écrit
+avant. En corrigeant, découverte que **six pages portent une copie inline du CSS
+de séquence** — `t0`, `t3` à `t7` — et qu'aucune n'avait le bloc `.plafonne` :
+ni teinte d'attente, ni sablier. Puis, en mesurant `t0` dans le navigateur :
+`data-sequence` **absent de son `<body>`**. La page chargeait `verrou-snt.js`
+depuis son branchement pour n'en rien faire — le plafond n'y fermait rien, sans
+le moindre message d'erreur, puisque tous les replis vont dans le sens de
+l'ouverture.
+
+**Ce que la méthode a changé.** Les trois derniers points ne se voyaient pas dans
+le code : le Chromium sans interface a servi à *mesurer* le rendu — police
+calculée du message, `content` du `::before`, teinte du bandeau, débordement —
+sur `t1` (feuille partagée) et sur `t0` (CSS inline), en mode élève et en mode
+enseignant. Le `data-sequence` manquant est sorti d'une sonde écrite pour
+comprendre un « aucune séance plafonnée » inattendu.
+
+**Livré** — `prof/index.html` (enregistrement réparé, **dates de clôture**
+ajoutées sur les cases de clôture et sur la frise du plafond, format `12/09`,
+date découpée à la main et jamais via `new Date(iso)` qui parse en UTC),
+`verrou-snt.js?v=2`, `sequence-snt.css?v=31`, le bloc `.plafonne` dans les six
+pages à CSS inline, `data-sequence="snt-t0"`.
+
+**Non vérifié en vrai** : l'affichage des dates dans le tableau de bord, qui
+demande une session Supabase que le navigateur sans interface n'a pas.
+
+---
+
 ## 20/08/2026 (suite) — Le plafond d'avance
 
 Le verrou entre séances existait depuis l'origine : la séance N+1 s'ouvre quand
