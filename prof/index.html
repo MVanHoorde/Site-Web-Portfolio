@@ -1245,18 +1245,26 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     var idSeance = $('#s-seance').value;
     var cochees = [].slice.call($('#s-faites').querySelectorAll('input:checked'))
                     .map(function(c){ return c.dataset.seance; });
+    /* Toutes les lignes portent les MÊMES sept clés, sans exception :
+       PostgREST refuse un envoi en lot dont les objets diffèrent d'une
+       clé (PGRST102, « All object keys must match »). Cocher une séance
+       déjà en base — donc porteuse de faite_le — en même temps que la
+       séance du jour, encore absente, suffisait à tout faire échouer.
+       Les champs vides partent donc à null, et faite_le à la date du
+       jour plutôt qu'au défaut SQL : la valeur doit exister ici. */
     var lignes = cochees.map(function(id){
       var deja = Faites.find(function(f){ return f.seance === id; });
-      var l = { classe_id: ctx.classe, sequence: ctx.theme, seance: id, origine: 'saisie' };
-      if(deja) l.faite_le = deja.faite_le;
-      if(id === idSeance){
-        l.note = $('#s-note').value.trim() || null;
-        l.travail_donne = $('#s-travail').value.trim() || null;
-        l.non_termine = $('#s-reste').value.trim() || null;
-      } else if(deja){
-        l.note = deja.note; l.travail_donne = deja.travail_donne; l.non_termine = deja.non_termine;
-      }
-      return l;
+      var duJour = (id === idSeance);
+      return {
+        classe_id:     ctx.classe,
+        sequence:      ctx.theme,
+        seance:        id,
+        origine:       'saisie',
+        faite_le:      (deja && deja.faite_le) || aujourdhui(),
+        note:          duJour ? ($('#s-note').value.trim()    || null) : ((deja && deja.note)          || null),
+        travail_donne: duJour ? ($('#s-travail').value.trim() || null) : ((deja && deja.travail_donne) || null),
+        non_termine:   duJour ? ($('#s-reste').value.trim()   || null) : ((deja && deja.non_termine)   || null)
+      };
     });
     var aSupprimer = Faites.filter(function(f){ return cochees.indexOf(f.seance) < 0; });
 
