@@ -1,7 +1,8 @@
 /* ============================================================
  *  generer-questions.mjs — le répertoire des questions libres
  *  ------------------------------------------------------------
- *  Lit les huit pages de séquence, en extrait chaque champ libre
+ *  Lit les pages de séquence (huit thèmes + les modules), en
+ *  extrait chaque champ libre
  *  (data-focus-code) avec son titre et son énoncé, et écrit
  *  assets/js/questions-snt.js.
  *
@@ -44,7 +45,12 @@ const THEMES = [
   ['snt-t4', '2nde-snt-t4-donnees-structurees.html'],
   ['snt-t5', '2nde-snt-t5-localisation-cartographie.html'],
   ['snt-t6', '2nde-snt-t6-informatique-embarquee.html'],
-  ['snt-t7', '2nde-snt-t7-photographie-numerique.html']
+  ['snt-t7', '2nde-snt-t7-photographie-numerique.html'],
+  /* Module transversal : aucune question libre aujourd'hui, mais la liste
+     doit le connaître d'avance — sinon la première question ajoutée au
+     module manquerait au tableau de bord sans que rien ne le signale.
+     Même remarque que dans generer-seances.mjs et verifier.mjs. */
+  ['snt-m1', '2nde-snt-m1-representer-information.html']
 ];
 
 /* Même liste courte d'entités que generer-seances.mjs : mieux vaut

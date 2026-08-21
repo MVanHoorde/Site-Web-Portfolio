@@ -215,5 +215,17 @@ window.SEANCES_SNT = {
       "num": "⏳",
       "nom": "Activité débranchée — la frise de la photographie"
     }
+  ],
+  "snt-m1": [
+    {
+      "id": "s1",
+      "num": "S1",
+      "nom": "Compter comme une machine"
+    },
+    {
+      "id": "s2",
+      "num": "S2",
+      "nom": "Mesurer l'information"
+    }
   ]
 };

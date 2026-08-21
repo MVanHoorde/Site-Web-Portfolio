@@ -12,6 +12,77 @@
 
 ---
 
+## 21/08/2026 — Le module transversal « Représenter l'information »
+
+Écriture d'une neuvième page de séquence SNT, `snt-m1`, à partir du brief du
+même jour. Le binaire, l'octet et les ordres de grandeur y deviennent un
+**module** et non un thème : le préfixe `m` le dit, et c'est ce préfixe qui a
+fait tout l'intérêt technique de la session.
+
+**Ce qu'un nom hors série révèle.** Le dépôt énumère les huit thèmes dans
+**quatre** listes en dur. Le brief en avait repéré trois ; la quatrième —
+`generer-questions.mjs`, le répertoire des questions libres du tableau de bord —
+n'apparaissait nulle part. Le module n'a aucune question libre aujourd'hui, donc
+rien ne cassait : la première ajoutée aurait simplement manqué au tableau de
+bord, sans erreur. Les quatre listes ont été élargies. La plus dangereuse était
+le filtre `pagesSNT` de `verifier.mjs` : une page qui lui échappe échappe aussi
+au contrôle `localStorage`, donc au garde-fou RGPD. Testé en y glissant un
+`localStorage` volontaire, vérifié détecté, puis retiré.
+
+**Trois bugs que seule l'exécution pouvait montrer.** Les deux composants SVG
+(tableau des poids, potence) se dessinaient pendant que leur étape était encore
+masquée — largeur nulle — et choisissaient donc la mise en page mobile *pour de
+bon*, y compris sur un écran de 1280 px. Corrigé par un `ResizeObserver`, qui se
+déclenche aussi à l'ouverture de l'étape. La première correction laissait encore
+la potence en colonne à 820 px : le garde-fou protégeait la comparaison mais pas
+le dessin, les deux suivent maintenant la même règle. Troisième : les encarts
+intermédiaires utilisaient `.retain`, qui porte son propre bandeau « À RETENIR »
+— l'élève le voyait deux fois par étape. Une classe locale `.point-cle` les
+remplace.
+
+**La tolérance de saisie, mesurée plutôt que supposée.** Le cadrage demandait
+d'accepter le groupement par 4 (`1010 1100`). En rejouant le comparateur du
+moteur sur toutes les chaînes binaires jusqu'à 12 bits, le compte est tombé :
+ajouter la variante espacée ferait passer **289 saisies fausses pour justes** sur
+six items seulement — `1111111` accepté pour `11111110`. La cause est dans
+`seuil()` : le test `/^[0-9]+$/` ne reconnaît pas un nombre écrit avec des
+espaces, et l'attente bascule sur une tolérance Levenshtein de 2. Sur l'atelier
+des grandeurs, la variante « 16 000 » aurait fait accepter **160000** — une
+erreur d'un facteur dix validée comme juste. Le module s'en tient donc à une
+consigne « sans espace », zéro faux accepté.
+
+Le même test a montré que **`t1` porte déjà cinq variantes dans ce cas**, dont
+« 40 000 », qui accepte aujourd'hui `40 001`. Correctif d'une ligne, mais il
+touche le moteur partagé et imposerait de repasser toutes les versions d'assets :
+Loïc a tranché le jour même pour **signaler sans toucher**, le chantier est
+ouvert dans `DECISIONS.md`.
+
+**La potence.** Le brief fournissait deux photographies de la correction
+manuscrite de Loïc (90 et 434) comme modèle à reproduire. Le SVG en reprend le
+geste dans l'ordre : l'escalier des divisions, le diviseur à droite du trait, les
+restes encadrés, les flèches de remontée, le résultat en `nombre₁₀ = bits₂`.
+Trois écarts assumés et signalés — les restes sont en `--activity` et non en
+rouge, parce que `--err` marque le faux partout ailleurs dans le dispositif ; la
+potence s'arrête au dernier quotient non nul, là où la correction manuscrite
+poussait une division de plus avec un reste entre parenthèses (arbitré par Loïc) ;
+et un champ « essaie avec ton nombre » a été ajouté, validé lui aussi.
+
+**Le parcours élève a été joué en entier** dans un navigateur sans interface, pas
+seulement relu : 18 trous sur 18 justes, QCM 3/3 et 4/4, cinq étapes validées sur
+cinq, séance 2 déverrouillée, fiche téléchargée portant les douze réponses
+d'atelier. Aucune erreur JS en 390, 820, 1280 px ni en `prefers-reduced-motion`.
+`verifier.mjs` reste à 19 problèmes — les mêmes qu'avant, tous hors SNT.
+
+Deux défauts partagés relevés au passage, hors périmètre : le titre des fiches
+colle le numéro au titre (« S1Compter comme une machine »), et le §3 des
+consignes SNT décrit encore un trajet d'étape où le « à retenir » précède le
+champ, alors que les décisions des 25 et 26/07 l'ont descendu après, en
+révélation automatique.
+
+Rien n'est validé : tout le contenu pédagogique du module est une proposition.
+
+---
+
 ## 20/08/2026 (suite) — Le `013` est passé en base
 
 Loïc a exécuté `bdd/schema/013-verrou-progression.sql` au SQL Editor. Vérifié

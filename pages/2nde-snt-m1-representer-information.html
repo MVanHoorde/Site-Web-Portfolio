@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNT · Représenter l'information — Séquence élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- client de base de données partagé (dérogation §5 des consignes SNT).
+     Absent ou non configuré : la séquence fonctionne, sans enregistrement.
+     Sans "defer" à dessein : le script de la page, en fin de body, doit le
+     trouver déjà chargé. Fichier local et léger, aucun coût réseau. -->
+<script src="../assets/js/progression.js?v=15"></script>
+<script src="../assets/js/seances-snt.js?v=13"></script>
+<script src="../assets/js/verrou-snt.js?v=2"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=32">
+
+<!-- ============================================================
+     CSS propre au module (CONSIGNES §5 : ce qui n'existe que
+     dans cette page reste inline). Aucune couleur en dur : tout
+     passe par les variables de sequence-snt.css, que verifier.mjs
+     contrôle.
+     ============================================================ -->
+<style>
+  /* Encart intermédiaire — PAS un « à retenir ». La classe .retain du
+     moteur porte son propre bandeau « À RETENIR » et la mention ★★ :
+     l'employer au milieu d'une étape faisait apparaître le bandeau deux
+     fois, avant et dans le bilan. Celui-ci ne dit rien du statut. */
+  .point-cle{border-left:3px solid var(--link);background:var(--surface);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px;margin:10px 0}
+  .point-cle.alerte{border-left-color:var(--activity);background:var(--activity-wash)}
+  .point-cle code{background:var(--surface-2);padding:1px 5px;border-radius:4px;font-size:.9em;color:var(--link)}
+
+  /* ---------- tableau des poids (étape 1.2) ---------- */
+  .poids-outil{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px}
+  .poids-aide{font-size:13px;color:var(--ink-soft);margin:0 0 10px}
+  .poids-aide kbd{font-family:"IBM Plex Mono";font-size:11.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+  .poids-svg svg{width:100%;height:auto;display:block;overflow:visible}
+  .poids-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+  /* la case d'un bit : cible tactile large, focus clavier visible */
+  .bit-case{cursor:pointer}
+  .bit-case rect.bx{fill:var(--surface);stroke:var(--line);stroke-width:1.5;transition:fill .15s,stroke .15s}
+  .bit-case:hover rect.bx{stroke:var(--link)}
+  .bit-case:focus{outline:none}
+  .bit-case:focus rect.bx{stroke:var(--link);stroke-width:3}
+  .bit-case[aria-pressed="true"] rect.bx{fill:var(--link-wash);stroke:var(--link);stroke-width:2}
+  .bit-chiffre{font-family:"IBM Plex Mono";font-size:26px;font-weight:600;fill:var(--ink-faint);text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+  .bit-case[aria-pressed="true"] .bit-chiffre{fill:var(--link)}
+  .bit-poids{font-family:"IBM Plex Mono";font-size:14px;fill:var(--ink-faint);text-anchor:middle;pointer-events:none}
+  .bit-case[aria-pressed="true"] .bit-poids{fill:var(--link);font-weight:600}
+  .poids-somme{font-family:"IBM Plex Mono";font-size:15px;fill:var(--ink-soft);text-anchor:middle}
+  .poids-total{font-family:"Space Grotesk";font-size:30px;font-weight:700;fill:var(--ok);text-anchor:middle}
+  .poids-legende{font-family:"IBM Plex Mono";font-size:12px;fill:var(--ink-faint);letter-spacing:.08em}
+
+  /* ---------- potence : divisions successives (étape 1.3) ---------- */
+  .potence-outil{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px}
+  .potence-barre{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+  .potence-compte{font-family:"IBM Plex Mono";font-size:12.5px;color:var(--ink-faint)}
+  .potence-svg{overflow-x:auto}
+  .potence-svg svg{width:100%;height:auto;display:block}
+  .potence-essai{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:11px;padding-top:11px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-soft)}
+  .potence-essai input{font-family:"IBM Plex Mono";font-size:15px;width:6.5em;border:1px solid var(--line);border-bottom:2px solid var(--link);background:var(--link-wash);border-radius:6px;padding:3px 8px;color:var(--ink)}
+  .potence-essai input:focus{outline:2px solid var(--link);outline-offset:1px}
+  /* le geste manuscrit : bleu pour la division, accent pour les restes
+     et les flèches de remontée, vert pour le résultat final */
+  .pot-nombre{font-family:"IBM Plex Mono";font-size:19px;font-weight:600;fill:var(--link);text-anchor:end}
+  .pot-diviseur{font-family:"IBM Plex Mono";font-size:19px;font-weight:600;fill:var(--link);text-anchor:start}
+  .pot-produit{font-family:"IBM Plex Mono";font-size:17px;fill:var(--link);text-anchor:end;opacity:.85}
+  .pot-trait{stroke:var(--link);stroke-width:1.6;stroke-linecap:round}
+  .pot-reste-cadre{fill:none;stroke:var(--activity);stroke-width:2;rx:5}
+  .pot-reste{font-family:"IBM Plex Mono";font-size:18px;font-weight:700;fill:var(--activity);text-anchor:middle;dominant-baseline:middle}
+  .pot-fleche{stroke:var(--activity);stroke-width:1.8;fill:none;stroke-linecap:round}
+  .pot-resultat{font-family:"IBM Plex Mono";font-size:21px;font-weight:700;fill:var(--ok);text-anchor:start}
+  .pot-base{font-size:13px;font-weight:600}
+  .pot-note{font-family:"IBM Plex Sans";font-size:13px;fill:var(--ink-faint);text-anchor:start}
+  /* Intertitre à l'intérieur d'un atelier : sépare les familles d'items
+     sans créer un nouveau bloc de réponse (le moteur compte les .cloze,
+     pas les titres). */
+  .atelier-part{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--link);font-weight:600;margin:16px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+  .cloze .atelier-part:first-child{margin-top:2px}
+
+  /* Un tableau à grands nombres ne se replie pas : « 1&nbsp;073&nbsp;741&nbsp;824 »
+     cassé sur trois lignes est illisible. On le fait défiler dans son
+     propre conteneur — la page, elle, ne défile jamais latéralement. */
+  .table-scroll{overflow-x:auto;margin:4px 0;-webkit-overflow-scrolling:touch}
+  .table-scroll .doc-table{margin:0}
+  .table-scroll .doc-table td,.table-scroll .doc-table th{white-space:nowrap}
+
+  /* ---------- nuancier RVB (étape 2.3, support non évalué) ---------- */
+  .rvb-outil{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px}
+  .rvb-svg svg{width:100%;height:auto;display:block}
+  .rvb-curseurs{display:grid;gap:9px;margin-top:12px}
+  .rvb-l{display:grid;grid-template-columns:64px 1fr 52px;align-items:center;gap:10px;font-size:13.5px}
+  .rvb-nom{font-family:"IBM Plex Mono";font-size:12.5px;color:var(--ink-soft)}
+  .rvb-l input[type="range"]{width:100%;height:26px;accent-color:var(--link);cursor:pointer}
+  .rvb-l input[type="range"]:focus{outline:2px solid var(--link);outline-offset:2px;border-radius:4px}
+  .rvb-l[data-canal="r"] input[type="range"]{accent-color:var(--err)}
+  .rvb-l[data-canal="v"] input[type="range"]{accent-color:var(--ok)}
+  .rvb-l[data-canal="b"] input[type="range"]{accent-color:var(--link)}
+  .rvb-val{font-family:"IBM Plex Mono";font-size:14px;text-align:right;color:var(--ink)}
+  .rvb-actions{display:flex;flex-wrap:wrap;gap:8px;margin:11px 0}
+  .rvb-etiquette{font-family:"IBM Plex Mono";font-size:15px;fill:var(--ink-soft);text-anchor:middle}
+  .rvb-cadre{fill:none;stroke:var(--line);stroke-width:1.5}
+
+  /* révélation pas à pas : chaque groupe apparaît quand il reçoit .on */
+  .pot-etape{opacity:0;transition:opacity .45s ease}
+  .pot-etape.on{opacity:1}
+  @media (prefers-reduced-motion:reduce){
+    .pot-etape{transition:none}
+    .bit-case rect.bx{transition:none}
+  }
+</style>
+
+</head><body data-sequence="snt-m1">
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">SNT · Module transversal · Seconde</div>
+    <!-- Le tag passe sur sa propre ligne : plus long que celui des autres
+         séquences, il se coupait en deux au milieu du titre dès 1280 px. -->
+    <h1 class="title">Représenter l'information <span class="tag" style="display:block;margin-top:8px">binaire · octet · ordres de grandeur</span></h1>
+    <p class="lede">Une machine ne connaît que deux états&nbsp;: le courant passe, ou il ne passe pas. Tout le reste — les nombres, les textes, les images, les adresses des machines sur Internet — se construit là-dessus. Voici comment on compte avec deux chiffres, et comment on mesure ce que ça pèse.</p>
+    <div class="themes">
+      <span class="theme-chip on">Outils transversaux</span><span class="theme-chip">Internet</span>
+      <span class="theme-chip">Le Web</span><span class="theme-chip">Réseaux sociaux</span>
+      <span class="theme-chip">Données structurées</span><span class="theme-chip">Localisation &amp; cartographie</span>
+      <span class="theme-chip">Informatique embarquée</span><span class="theme-chip">Photographie numérique</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>2 séances</b></span>
+      <span class="m">Durée <b>≈ 2 h</b></span>
+      <span class="m">Chaque séance se débloque quand la <b>précédente est validée</b></span>
+    </div>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — toutes les séances sont ouvertes.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-snt.html">← SNT</a>
+    <a href="#s1"><span class="n">S1</span>Compter comme une machine</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>Mesurer l'information <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <!-- simple pont d'état pour le mode enseignant : l'interrupteur visible a
+         été retiré, la commande est la zone .ens-zone en tête de page. -->
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- CHANTIER : état du module -->
+  <aside class="chantier">
+    <div class="cl">🚧 Module écrit le 21/08/2026 — contenu à valider</div>
+    <b>Ce module n'est pas un thème du programme SNT</b>&nbsp;: c'est un outil transversal, mobilisé par plusieurs thèmes (l'adresse IP en <b>Internet</b>, le poids des fichiers en <b>photographie numérique</b>). Sa place dans l'année relève de la progression annuelle, pas du site&nbsp;: <b>aucune dépendance n'est codée entre les pages</b>.
+    <ul>
+      <li><b>Les neuf étapes sont écrites</b>, avec leurs quatre QCM et leurs deux ateliers. <b>Tout le contenu pédagogique est une proposition à valider</b>&nbsp;: formulations, choix des nombres, leurres de QCM.</li>
+      <li><b>La durée «&nbsp;≈ 2 h&nbsp;» est provisoire</b> — le module n'a jamais tourné devant une classe, et le temps dépendra de ce qui est donné à faire à la maison. À reprendre après le premier passage.</li>
+      <li><b>Les ateliers sont à liste fixe</b>, identique pour tous les élèves&nbsp;: c'est un choix, pour qu'ils puissent s'entraider et comparer leurs résultats. Aucun tirage, aucun score chiffré, aucune note.</li>
+      <li><b>Les réponses s'écrivent sans espace</b> (<code>10101100</code>, pas <code>1010 1100</code>). Accepter le groupement ferait passer des réponses fausses pour justes&nbsp;: voir le chantier ouvert sur <code>seuil()</code> dans <code>_suivi/DECISIONS.md</code>.</li>
+    </ul>
+  </aside>
+  <!-- /CHANTIER -->
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>Compter comme une machine</h2>
+      <span class="seance-time">≈ 1 h</span>
+    </div>
+    <p class="seance-goal">Comprendre pourquoi une machine ne compte qu'avec deux chiffres, savoir lire et écrire un nombre en binaire, et découvrir l'octet — l'unité de base de tout ce qui est numérique.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 — pourquoi deux chiffres -->
+      <div class="step" data-step data-gate data-cle="rep-s1-deux-chiffres">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Pourquoi seulement deux chiffres&nbsp;?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre que le binaire n'est pas un caprice d'informaticien, mais une conséquence physique.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Doc — deux états, et deux seulement<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Au cœur d'un processeur, il y a des <b>transistors</b> — des centaines de milliards sur une puce moderne. Un transistor n'est rien d'autre qu'un <b>interrupteur commandé</b>&nbsp;: le courant passe, ou il ne passe pas. Rien entre les deux.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">C'est de là que vient tout le reste. Une machine qui devrait distinguer <b>dix</b> niveaux de tension différents se tromperait sans arrêt&nbsp;: la moindre variation de température, la moindre longueur de fil, et 6 volts deviennent 5. Avec <b>deux</b> états bien séparés — «&nbsp;presque rien&nbsp;» et «&nbsp;franchement quelque chose&nbsp;» — l'erreur devient très improbable. Le binaire n'est pas un choix esthétique&nbsp;: c'est ce que la physique rend fiable.</p>
+
+            <div class="point-cle">Un <b>bit</b> est la contraction de l'anglais <i lang="en">binary digit</i>&nbsp;: «&nbsp;chiffre binaire&nbsp;». C'est la plus petite information qu'une machine sache manipuler, et elle ne vaut jamais que <b>0</b> ou <b>1</b>.</div>
+
+            <div class="block-label">Et nous, pourquoi comptons-nous par dix&nbsp;?</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Parce que nous avons <b>dix doigts</b>. C'est tout. La base 10 nous paraît naturelle parce qu'on l'apprend à cinq ans, mais elle n'a rien d'obligatoire — et nous en utilisons d'autres sans y penser&nbsp;: nos heures se comptent par <b>60</b> minutes, nos minutes par <b>60</b> secondes, héritage direct des mathématiciens de <b>Babylone</b>, il y a près de quatre mille ans.</p>
+            <p style="font-size:14.5px;margin:4px 0 12px">Une base, c'est simplement le nombre de chiffres dont on dispose avant de devoir «&nbsp;passer à la colonne suivante&nbsp;». En base 10, on a dix chiffres (0 à 9) et après 9 vient 10. En base 2, on n'en a que deux&nbsp;: après <code>1</code> vient <code>10</code>. Même mécanique, moins de chiffres.</p>
+
+            <div class="block-label">Vérifie ta compréhension<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">QCM · REP·Q1</span>
+              <div class="field-q">Trois questions sur ce que tu viens de lire.</div>
+              <div class="qcmbox" data-code="REP-Q1">
+                <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Pourquoi une machine ne compte-t-elle qu'avec deux chiffres ?",
+  "o": [
+   "Parce que les mathématiques interdisent d'utiliser une autre base",
+   "Parce que cela économise de la mémoire pendant les calculs longs",
+   "Parce que ses composants ne distinguent que deux états électriques",
+   "Parce que les premiers ordinateurs ont été construits en Amérique"
+  ],
+  "r": 2,
+  "c": "Un transistor est un interrupteur : le courant passe ou il ne passe pas. Distinguer dix niveaux de tension serait possible, mais bien trop fragile — la moindre variation fausserait la lecture."
+ },
+ {
+  "q": "Le mot « bit » est la contraction de…",
+  "o": [
+   "<i lang=\"en\">binary digit</i>, c'est-à-dire « chiffre binaire »",
+   "<i lang=\"en\">basic token</i>, l'unité de base d'un calcul",
+   "<i lang=\"en\">binary tool</i>, l'outil des premières machines",
+   "<i lang=\"en\">byte item</i>, la huitième partie d'un octet"
+  ],
+  "r": 0,
+  "c": "<i lang=\"en\">Binary digit</i> — le terme est de John Tukey, en 1946. Un bit ne vaut jamais que 0 ou 1."
+ },
+ {
+  "q": "Nous comptons en base 10. Pour quelle raison ?",
+  "o": [
+   "Parce que dix est le seul nombre qui permette de tout compter",
+   "Parce que nous avons dix doigts : c'est un héritage, pas une loi",
+   "Parce que les Romains ont imposé cette base à toute l'Europe",
+   "Parce que la base 10 évite les erreurs que font les autres bases"
+  ],
+  "r": 1,
+  "c": "Rien n'oblige à compter par dix, et nous ne le faisons pas toujours : nos heures et nos minutes se comptent par 60, héritées de Babylone."
+ }
+]
+</script>
+              </div>
+            </div>
+
+            <div class="bilan-wrap" data-bilan-wrap hidden>
+              <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+              <div class="retain">Une machine ne connaît que <b>deux états</b> — le courant passe ou non — parce que c'est le seul codage que ses composants lisent sans se tromper. Elle compte donc en <b>base 2</b>, dite <b>binaire</b>, avec deux chiffres seulement&nbsp;: <b>0</b> et <b>1</b>. Chacun d'eux est un <b>bit</b> (<i lang="en">binary digit</i>), la plus petite information manipulable. Notre base 10 n'est pas plus «&nbsp;naturelle&nbsp;»&nbsp;: elle vient de nos dix doigts, et nous comptons déjà nos heures par 60.</div>
+            </div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 — lire un nombre binaire -->
+      <div class="step" data-step data-gate data-cle="rep-s1-lire-binaire">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Lire un nombre binaire</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> convertir un nombre binaire en décimal à l'aide du tableau des poids.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Doc — chaque position a un poids<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">En base 10, tu sais déjà lire les poids sans y penser&nbsp;: dans <code>354</code>, le 3 vaut trois <b>centaines</b>, le 5 cinq <b>dizaines</b>, le 4 quatre <b>unités</b>. Chaque colonne vaut dix fois la précédente.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">En base 2, c'est exactement la même mécanique, mais chaque colonne vaut <b>deux fois</b> la précédente. En partant de la droite&nbsp;: 1, 2, 4, 8, 16, 32, 64, 128. Sous chaque <code>1</code>, on prend le poids de la colonne&nbsp;; sous chaque <code>0</code>, on ne prend rien. Puis on additionne. C'est tout.</p>
+
+            <div class="block-label">Le tableau des poids — clique sur les bits<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="poids-outil" data-poids="10011011">
+              <p class="poids-aide">Chaque case est un bit&nbsp;: clique dessus (ou <kbd>Tab</kbd> puis <kbd>Entrée</kbd>) pour la faire passer de 0 à 1. Le total se met à jour tout seul.</p>
+              <div class="poids-svg"></div>
+              <div class="poids-actions">
+                <button class="btn ghost sm" type="button" data-poids-set="10011011">Remettre 10011011</button>
+                <button class="btn ghost sm" type="button" data-poids-set="00000000">Tout à zéro</button>
+                <button class="btn ghost sm" type="button" data-poids-set="11111111">Tout à un</button>
+              </div>
+            </div>
+            <p style="font-size:14.5px;margin:10px 0 4px">L'exemple affiché au départ, <code>10011011</code>, vaut <b>155</b>&nbsp;: 128&nbsp;+&nbsp;16&nbsp;+&nbsp;8&nbsp;+&nbsp;2&nbsp;+&nbsp;1. Retiens-le&nbsp;: tu le reverras dans le thème <b>Internet</b>, où les quatre nombres d'une adresse IP se lisent exactement comme ça.</p>
+
+            <div class="block-label">Échauffement — trois lectures<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Convertis en décimal. Tu peux t'aider du tableau ci-dessus.</div>
+              <div class="cloze" data-cloze>
+                <div style="margin-bottom:9px"><b>1.</b> <code>101</code> vaut
+                <input class="short" data-answer="5" placeholder="?" aria-label="valeur décimale de 101 en binaire" data-indice1="Trois colonnes seulement : les poids 4, 2 et 1. Regarde sous quels 1 tu dois prendre le poids." data-indice2="Tu prends 4 (le bit de gauche) et 1 (le bit de droite) ; la colonne du milieu est à zéro."> en décimal.</div>
+                <div style="margin-bottom:9px"><b>2.</b> <code>1100</code> vaut
+                <input class="short" data-answer="12" placeholder="?" aria-label="valeur décimale de 1100 en binaire" data-indice1="Quatre colonnes : 8, 4, 2, 1. Les deux 1 sont à gauche, donc ce sont les deux plus gros poids." data-indice2="Tu additionnes 8 et 4 ; les deux colonnes de droite sont à zéro."> en décimal.</div>
+                <div><b>3.</b> <code>10000001</code> vaut
+                <input class="short" data-answer="129" placeholder="?" aria-label="valeur décimale de 10000001 en binaire" data-indice1="Huit colonnes, et seulement deux 1 : le tout premier à gauche et le tout dernier à droite. Six zéros au milieu, qui n'apportent rien." data-indice2="Tu additionnes le plus grand poids, 128, et le plus petit, 1."> en décimal.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="bilan-wrap" data-bilan-wrap hidden>
+              <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+              <div class="retain">Pour <b>lire</b> un nombre binaire, on écrit au-dessus de lui les <b>poids</b> des colonnes, en partant de la droite et en doublant à chaque fois&nbsp;: <b>1, 2, 4, 8, 16, 32, 64, 128</b>. On additionne les poids situés au-dessus d'un <b>1</b>, on ignore ceux au-dessus d'un <b>0</b>. Ainsi <code>10011011</code> = 128&nbsp;+&nbsp;16&nbsp;+&nbsp;8&nbsp;+&nbsp;2&nbsp;+&nbsp;1 = <b>155</b>. Le bit le plus à gauche est le plus «&nbsp;lourd&nbsp;», celui le plus à droite le plus léger.</div>
+            </div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 — écrire un nombre en binaire -->
+      <div class="step" data-step data-gate data-cle="rep-s1-ecrire-binaire">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Écrire un nombre en binaire</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> convertir un nombre décimal en binaire, par deux méthodes présentées côte à côte.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 12px">Tu sais lire un nombre binaire. Reste le trajet inverse&nbsp;: partir de <b>155</b> et retrouver <code>10011011</code>. Il y a deux façons de faire. Elles donnent <b>exactement le même résultat</b> — ce sont deux chemins vers le même endroit. Regarde les deux, garde celle qui te parle.</p>
+
+            <div class="block-label">Méthode A — la soustraction descendante<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">On reprend les poids <b>128, 64, 32, 16, 8, 4, 2, 1</b> et on les passe en revue de gauche à droite. À chaque poids, une seule question&nbsp;: <i>est-ce qu'il tient dans ce qui me reste&nbsp;?</i> Si oui, on écrit <b>1</b> et on le soustrait&nbsp;; si non, on écrit <b>0</b> et on passe au suivant.</p>
+            <div class="demo-a">
+              <div class="demo-a-titre">77 en binaire, poids par poids</div>
+              <table class="doc-table">
+                <thead><tr><th>Poids</th><th>Tient dans ce qui reste&nbsp;?</th><th>Bit</th><th>Reste</th></tr></thead>
+                <tbody>
+                  <tr><td><b>128</b></td><td>128 &gt; 77 — non</td><td><code>0</code></td><td>77</td></tr>
+                  <tr><td><b>64</b></td><td>oui&nbsp;: 77 − 64</td><td><code>1</code></td><td>13</td></tr>
+                  <tr><td><b>32</b></td><td>32 &gt; 13 — non</td><td><code>0</code></td><td>13</td></tr>
+                  <tr><td><b>16</b></td><td>16 &gt; 13 — non</td><td><code>0</code></td><td>13</td></tr>
+                  <tr><td><b>8</b></td><td>oui&nbsp;: 13 − 8</td><td><code>1</code></td><td>5</td></tr>
+                  <tr><td><b>4</b></td><td>oui&nbsp;: 5 − 4</td><td><code>1</code></td><td>1</td></tr>
+                  <tr><td><b>2</b></td><td>2 &gt; 1 — non</td><td><code>0</code></td><td>1</td></tr>
+                  <tr><td><b>1</b></td><td>oui&nbsp;: 1 − 1</td><td><code>1</code></td><td>0</td></tr>
+                </tbody>
+              </table>
+              <p style="font-size:14.5px;margin:8px 0 4px">On lit la colonne des bits de haut en bas&nbsp;: <code>01001101</code>. Le zéro de tête ne sert à rien, on l'enlève&nbsp;: <b>77 = <code>1001101</code></b>.</p>
+            </div>
+            <p class="doc-note">Avantage&nbsp;: rapide, faisable de tête, et elle réutilise les poids que tu connais déjà. Inconvénient&nbsp;: il faut garder le reste en tête à chaque ligne.</p>
+
+            <div class="block-label">Méthode B — les divisions successives, « en potence »<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">On divise le nombre par <b>2</b>, encore et encore, jusqu'à tomber sur un quotient nul. À chaque division, on garde le <b>reste</b> — forcément 0 ou 1. Puis on <b>remonte</b> les restes, du dernier au premier&nbsp;: c'est l'écriture binaire.</p>
+            <div class="potence-outil" data-potence="90">
+              <div class="potence-barre">
+                <button class="btn ghost sm" type="button" data-pot-suivant>▸ Étape suivante</button>
+                <button class="btn ghost sm" type="button" data-pot-tout>Tout afficher</button>
+                <button class="btn ghost sm" type="button" data-pot-reset>↺ Recommencer</button>
+                <span class="potence-compte" aria-live="polite"></span>
+              </div>
+              <div class="potence-svg"></div>
+              <div class="potence-essai">
+                <label for="pot-n">Essaie avec ton nombre&nbsp;:</label>
+                <input id="pot-n" type="number" min="1" max="4095" step="1" value="90" inputmode="numeric">
+                <button class="btn ghost sm" type="button" data-pot-go>Tracer la potence</button>
+              </div>
+            </div>
+            <p class="doc-note">Avantage&nbsp;: aucune retenue à garder en tête, on ne fait que diviser par 2. Inconvénient&nbsp;: il faut penser à lire les restes <b>de bas en haut</b> — c'est l'erreur classique.</p>
+
+            <div class="block-label">À toi — le même nombre, par les deux chemins<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Convertis <b>77</b> en binaire, une fois par méthode. Si les deux réponses diffèrent, c'est qu'il y a une erreur quelque part — c'est ton propre contrôle.</div>
+              <div class="cloze" data-cloze>
+                <div style="margin-bottom:9px"><b>A.</b> Par la <b>soustraction descendante</b>, 77 s'écrit
+                <input data-answer="1001101" data-variantes="01001101" placeholder="?" aria-label="77 en binaire par la méthode de la soustraction" data-indice1="Reprends le tableau ci-dessus, mais fais-le toi-même : le plus grand poids qui tient dans 77, puis le reste, et ainsi de suite jusqu'à zéro." data-indice2="Les poids qui tiennent sont 64, puis 8, puis 4, puis 1. Il te reste à placer les 0 aux bonnes colonnes."> en binaire.</div>
+                <div><b>B.</b> Par les <b>divisions successives</b>, 77 s'écrit
+                <input data-answer="1001101" data-variantes="01001101" placeholder="?" aria-label="77 en binaire par la méthode des divisions successives" data-indice1="Divise 77 par 2, puis le quotient par 2, jusqu'à obtenir 0. Note chaque reste au passage, puis relis-les de bas en haut." data-indice2="Les divisions donnent 38, 19, 9, 4, 2, 1, 0 — et les restes, dans l'ordre où ils sortent, sont 1, 0, 1, 1, 0, 0, 1."> en binaire.</div>
+                <p class="doc-note" style="margin:10px 0 0">Écris les bits <b>à la suite, sans espace</b>. Un zéro devant le nombre est accepté.</p>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="bilan-wrap" data-bilan-wrap hidden>
+              <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+              <div class="retain">Pour <b>écrire</b> un nombre en binaire, deux méthodes équivalentes. <b>A — la soustraction descendante&nbsp;:</b> on parcourt les poids de 128 à 1, on écrit <b>1</b> et on soustrait chaque fois que le poids tient dans ce qui reste, <b>0</b> sinon. <b>B — les divisions successives&nbsp;:</b> on divise par 2 jusqu'au quotient nul, et on <b>remonte les restes du dernier au premier</b>. Les deux donnent le même résultat&nbsp;: <b>77 = <code>1001101</code></b>. Aucune des deux n'est imposée — c'est un outil, pas un rituel.</div>
+            </div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.4 — l'octet et le piège du 255 -->
+      <div class="step" data-step data-gate data-cle="rep-s1-octet-255">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">L'octet, et le piège du 255</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> 8 bits → 256 combinaisons → des valeurs de 0 à 255.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Doc — pourquoi huit&nbsp;?<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Un bit tout seul ne dit pas grand-chose&nbsp;: il ne distingue que deux possibilités. On travaille donc par <b>paquets de 8 bits</b>, et ce paquet porte un nom&nbsp;: l'<b>octet</b>. C'est l'unité de base de tout ce qui est numérique — la taille d'un fichier, la mémoire d'un téléphone, un nombre d'une adresse IP&nbsp;: tout se compte en octets.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Pourquoi huit&nbsp;? Parce que 8 bits suffisent à coder tous les caractères d'un texte — lettres, chiffres, ponctuation — et que c'est un compte commode pour la machine. Le mot anglais est <b><i lang="en">byte</i></b>&nbsp;: tu le croiseras partout, sur les fiches techniques comme dans les jeux.</p>
+
+            <div class="block-label">Combien de possibilités dans un octet&nbsp;?</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Chaque bit ajouté <b>double</b> le nombre de combinaisons. Un bit&nbsp;: 2 possibilités. Deux bits&nbsp;: 4. Trois bits&nbsp;: 8. Et ainsi de suite&nbsp;:</p>
+            <table class="doc-table">
+              <thead><tr><th>Nombre de bits</th><th>Calcul</th><th>Combinaisons</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>2</td><td><b>2</b></td></tr>
+                <tr><td>2</td><td>2 × 2</td><td><b>4</b></td></tr>
+                <tr><td>3</td><td>2 × 2 × 2</td><td><b>8</b></td></tr>
+                <tr><td>4</td><td>2⁴</td><td><b>16</b></td></tr>
+                <tr><td>7</td><td>2⁷</td><td><b>128</b></td></tr>
+                <tr><td><b>8 — un octet</b></td><td><b>2⁸</b></td><td><b>256</b></td></tr>
+              </tbody>
+            </table>
+
+            <div class="point-cle alerte"><b>Le piège, et il tombe tout le temps&nbsp;:</b> un octet a bien <b>256</b> combinaisons, mais sa plus grande valeur est <b>255</b>. Il n'y a pas d'erreur&nbsp;: c'est qu'on <b>compte à partir de zéro</b>. Les 256 valeurs vont de <b>0</b> à <b>255</b>, exactement comme une classe de 30 élèves numérotés de 0 à 29. Le tout premier <code>00000000</code> vaut 0, le tout dernier <code>11111111</code> vaut 255.</div>
+
+            <div class="block-label">Vérifie ta compréhension<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">QCM · REP·Q2</span>
+              <div class="field-q">Quatre questions — la deuxième est celle qui trie.</div>
+              <div class="qcmbox" data-code="REP-Q2">
+                <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Combien de valeurs différentes peut-on écrire sur 8 bits ?",
+  "o": [
+   "128",
+   "255",
+   "512",
+   "256"
+  ],
+  "r": 3,
+  "c": "Chaque bit double le nombre de possibilités : 2⁸ = 256 combinaisons différentes."
+ },
+ {
+  "q": "Quelle est la plus grande valeur qu'un octet puisse contenir ?",
+  "o": [
+   "256, puisque c'est le nombre de combinaisons possibles",
+   "255, parce que la première valeur écrite est 0, pas 1",
+   "128, qui est le poids du bit le plus à gauche de l'octet",
+   "254, car une valeur est réservée pour indiquer le signe"
+  ],
+  "r": 1,
+  "c": "256 combinaisons, mais la première est 0 : elles vont donc de 0 à 255. C'est l'erreur la plus fréquente — on compte à partir de zéro."
+ },
+ {
+  "q": "En anglais, un octet se dit…",
+  "o": [
+   "<code>bit</code>",
+   "<code>octal</code>",
+   "<code>digit</code>",
+   "<code>byte</code>"
+  ],
+  "r": 3,
+  "c": "<i lang=\"en\">Byte</i>. Attention à ne pas le confondre avec <i lang=\"en\">bit</i> : un byte vaut huit bits. C'est pour ça qu'un débit « 100 Mb/s » et un fichier « 100 Mo » ne parlent pas de la même chose."
+ },
+ {
+  "q": "Dans une adresse comme <code>192.168.1.226</code>, pourquoi aucun des quatre nombres ne dépasse 255 ?",
+  "o": [
+   "Parce que c'est une convention choisie par les fabricants de box",
+   "Parce que chacun tient dans un octet, donc va de 0 à 255",
+   "Parce qu'au-delà les points de séparation deviendraient ambigus",
+   "Parce que les valeurs plus grandes sont réservées à IPv6"
+  ],
+  "r": 1,
+  "c": "Chacun des quatre nombres tient sur un octet : 8 bits, 256 valeurs, de 0 à 255. C'est exactement ce que tu retrouveras dans le thème <b>Internet</b>."
+ }
+]
+</script>
+              </div>
+            </div>
+
+            <div class="bilan-wrap" data-bilan-wrap hidden>
+              <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+              <div class="retain">Un <b>octet</b> est un paquet de <b>8 bits</b> (<i lang="en">byte</i> en anglais). Comme chaque bit double le nombre de possibilités, un octet offre <b>2⁸ = 256 combinaisons</b>. Mais on compte <b>à partir de zéro</b>&nbsp;: ses valeurs vont donc de <b>0 à 255</b>, et sa plus grande valeur est <b>255</b>, pas 256. <code>00000000</code> vaut 0, <code>11111111</code> vaut 255. C'est l'unité dans laquelle se mesure tout le numérique&nbsp;: fichiers, mémoire, et les quatre nombres d'une adresse IP.</div>
+            </div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.5 — atelier 1 -->
+      <div class="step" data-step data-gate data-cle="rep-s1-atelier-conversions">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.5 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Atelier 1 — les conversions</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> s'entraîner jusqu'à ce que la conversion devienne automatique, dans les deux sens.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Treize conversions, dans les deux sens. <b>La liste est la même pour tout le monde</b>&nbsp;: vous pouvez chercher à plusieurs, comparer vos résultats et vous expliquer les erreurs. C'est fait pour.</p>
+            <p class="doc-note">Écris les nombres <b>sans espace</b>&nbsp;: <code>10101100</code>, pas <code>1010 1100</code>. Un zéro devant une écriture binaire est accepté. Deux indices sont disponibles sous chaque réponse fausse&nbsp;: le premier remet sur la piste, le second dépanne vraiment.</p>
+
+            <div class="field">
+              <span class="field-type">Atelier · REP·A1</span>
+              <div class="field-q">Prends ton temps, vérifie chaque ligne, puis clique sur <b>Vérifier</b>.</div>
+              <div class="cloze" data-cloze>
+
+                <div class="atelier-part">A · Binaire → décimal</div>
+                <div style="margin-bottom:9px"><b>1.</b> <code>1011</code> vaut
+                <input class="short" data-answer="11" placeholder="?" aria-label="valeur décimale de 1011" data-indice1="Quatre colonnes, de droite à gauche : 1, 2, 4, 8. Additionne les poids placés sous un 1." data-indice2="Le zéro est en troisième position depuis la droite : tu additionnes 8, 2 et 1."> en décimal.</div>
+                <div style="margin-bottom:9px"><b>2.</b> <code>10011</code> vaut
+                <input class="short" data-answer="19" placeholder="?" aria-label="valeur décimale de 10011" data-indice1="Cinq colonnes : 16, 8, 4, 2, 1. Trois bits seulement sont à 1." data-indice2="Tu prends 16, puis 2, puis 1."> en décimal.</div>
+                <div style="margin-bottom:9px"><b>3.</b> <code>1110101</code> vaut
+                <input class="short" data-answer="117" placeholder="?" aria-label="valeur décimale de 1110101" data-indice1="Sept colonnes : 64, 32, 16, 8, 4, 2, 1. Repère les cinq bits à 1." data-indice2="Tu additionnes 64, 32, 16, 4 et 1."> en décimal.</div>
+                <div style="margin-bottom:9px"><b>4.</b> <code>10101100</code> vaut
+                <input class="short" data-answer="172" placeholder="?" aria-label="valeur décimale de 10101100" data-indice1="Huit colonnes, de 128 à 1. Quatre bits sont à 1." data-indice2="Tu additionnes 128, 32, 8 et 4."> en décimal.</div>
+                <div style="margin-bottom:9px"><b>5.</b> <code>11111111</code> vaut
+                <input class="short" data-answer="255" placeholder="?" aria-label="valeur décimale de 11111111" data-indice1="Tous les bits sont à 1 : tu additionnes tous les poids, de 128 à 1." data-indice2="C'est la plus grande valeur qu'un octet puisse contenir — tu l'as vue à l'étape 1.4."> en décimal.</div>
+
+                <div class="atelier-part">B · Décimal → binaire</div>
+                <div style="margin-bottom:9px"><b>6.</b> <b>90</b> s'écrit
+                <input data-answer="1011010" data-variantes="01011010" placeholder="?" aria-label="90 en binaire" data-indice1="Le plus grand poids qui tienne dans 90 est 64. Soustrais-le, puis recommence avec ce qui reste." data-indice2="Les poids retenus sont 64, 16, 8 et 2 : un 1 dans ces colonnes, un 0 dans les autres, en commençant à 64."> en binaire.</div>
+                <div style="margin-bottom:9px"><b>7.</b> <b>168</b> s'écrit
+                <input data-answer="10101000" placeholder="?" aria-label="168 en binaire" data-indice1="Commence par 128, le plus grand poids qui tienne dans 168." data-indice2="Les poids retenus sont 128, 32 et 8. Les trois dernières colonnes sont à zéro."> en binaire.</div>
+                <div style="margin-bottom:9px"><b>8.</b> <b>226</b> s'écrit
+                <input data-answer="11100010" placeholder="?" aria-label="226 en binaire" data-indice1="128 tient dans 226, et il reste 98. Recommence avec 98." data-indice2="Les poids retenus sont 128, 64, 32 et 2."> en binaire.</div>
+                <div style="margin-bottom:9px"><b>9.</b> <b>254</b> s'écrit
+                <input data-answer="11111110" placeholder="?" aria-label="254 en binaire" data-indice1="254, c'est deux de moins que le nombre de combinaisons d'un octet. Pars de l'écriture de 255." data-indice2="Tous les bits sont à 1, sauf celui de poids 1 tout à droite."> en binaire.</div>
+                <div style="margin-bottom:9px"><b>10.</b> <b>434</b> s'écrit
+                <input data-answer="110110010" placeholder="?" aria-label="434 en binaire" data-indice1="434 dépasse 255 : huit colonnes ne suffisent plus. Le poids qui vient après 128 est 256." data-indice2="Les poids retenus sont 256, 128, 32, 16 et 2 — neuf colonnes en tout."> en binaire.</div>
+
+                <div class="atelier-part">C · Raisonnement</div>
+                <div style="margin-bottom:9px"><b>11.</b> Combien de bits faut-il <b>au minimum</b> pour écrire 200 en binaire&nbsp;?
+                <input class="short" data-answer="8" placeholder="?" aria-label="nombre minimal de bits pour écrire 200" data-indice1="Cherche la plus petite puissance de 2 qui dépasse 200." data-indice2="Avec sept bits on ne va que jusqu'à 127 : c'est trop peu. Il en faut un de plus."> bits.</div>
+                <div style="margin-bottom:9px"><b>12.</b> Parmi <code>100000000</code>, <code>11111111</code>, <code>101</code> et <code>1111111111</code>, <b>deux</b> ne tiennent pas dans un octet. La plus <b>courte</b> des deux est
+                <input data-answer="100000000" placeholder="?" aria-label="la plus courte des écritures qui ne tiennent pas dans un octet" data-indice1="Un octet, c'est huit colonnes, pas une de plus. Compte les chiffres de chaque écriture." data-indice2="Celle-ci a neuf chiffres. C'est d'ailleurs 256 — la première valeur qui ne tient plus."> .</div>
+                <div><b>13.</b> …et la plus <b>longue</b> est
+                <input data-answer="1111111111" placeholder="?" aria-label="la plus longue des écritures qui ne tiennent pas dans un octet" data-indice1="Il en reste une, plus longue encore que la précédente." data-indice2="Celle-ci a dix chiffres, tous à 1."> .</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="bilan-wrap" data-bilan-wrap hidden>
+              <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+              <div class="retain">Les deux trajets se font avec les mêmes poids <b>128, 64, 32, 16, 8, 4, 2, 1</b>. <b>Binaire → décimal</b>&nbsp;: on additionne les poids sous les 1. <b>Décimal → binaire</b>&nbsp;: on prend le plus grand poids qui tient, on soustrait, on recommence — ou on divise par 2 en remontant les restes. Un nombre qui dépasse <b>255</b> ne tient plus dans un octet et réclame une neuvième colonne&nbsp;: c'est le cas de <b>434</b>, le seul de la liste. Les quatre autres — 90, 168, 226, 254 — tiennent tous sur huit bits, comme les nombres d'une adresse IP.</div>
+            </div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>Mesurer l'information</h2>
+      <span class="seance-time">≈ 1 h</span>
+    </div>
+    <p class="seance-goal">Passer de l'octet au téraoctet, comprendre pourquoi un disque de 500 Go n'en affiche que 465, et entrevoir comment on code une couleur.</p>
+    <div class="progress-line"><i data-progress></i></div>
+    <div class="lock-banner"><span class="k"></span><span>Cette séance se débloque quand la <b>séance 1 est entièrement validée</b>. Ton professeur peut l'ouvrir si besoin.</span></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 2.1 — de l'octet au téraoctet -->
+      <div class="step" data-step data-gate data-cle="rep-s2-prefixes">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">De l'octet au téraoctet</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> connaître les préfixes ko, Mo, Go, To et savoir passer de l'un à l'autre.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Doc — on ne compte pas les octets un par un<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Une photo pèse quelques millions d'octets, un film quelques milliards. Écrire ces nombres en entier serait illisible&nbsp;: on utilise donc des <b>préfixes</b>, exactement comme pour les mètres et les grammes. <b>k</b> pour mille, <b>M</b> pour un million, <b>G</b> pour un milliard, <b>T</b> pour mille milliards.</p>
+
+            <div class="table-scroll">
+            <table class="doc-table">
+              <thead><tr><th>Unité</th><th>Nom</th><th>Puissance de 10</th><th>En octets</th></tr></thead>
+              <tbody>
+                <tr><td><b>o</b></td><td>octet</td><td>10⁰</td><td>1</td></tr>
+                <tr><td><b>ko</b></td><td>kilooctet</td><td>10³</td><td>1 000</td></tr>
+                <tr><td><b>Mo</b></td><td>mégaoctet</td><td>10⁶</td><td>1&nbsp;000&nbsp;000</td></tr>
+                <tr><td><b>Go</b></td><td>gigaoctet</td><td>10⁹</td><td>1&nbsp;000&nbsp;000&nbsp;000</td></tr>
+                <tr><td><b>To</b></td><td>téraoctet</td><td>10¹²</td><td>1&nbsp;000&nbsp;000&nbsp;000&nbsp;000</td></tr>
+              </tbody>
+            </table>
+            </div>
+            <p class="doc-note">D'une ligne à la suivante, on multiplie par <b>1000</b>. Donc 1 To = 1000 Go = 1&nbsp;000&nbsp;000 Mo. C'est la seule chose à savoir faire.</p>
+
+            <div class="block-label">Des ordres de grandeur pour s'y retrouver</div>
+            <table class="doc-table">
+              <thead><tr><th>Objet</th><th>Ordre de grandeur</th></tr></thead>
+              <tbody>
+                <tr><td>Un caractère de texte</td><td><b>1 octet</b> environ</td></tr>
+                <tr><td>Un SMS de 160 caractères</td><td>quelques <b>centaines d'octets</b></td></tr>
+                <tr><td>Une chanson en MP3</td><td>quelques <b>Mo</b></td></tr>
+                <tr><td>Une photo prise au téléphone</td><td>quelques <b>Mo</b></td></tr>
+                <tr><td>Un film en haute définition</td><td>quelques <b>Go</b></td></tr>
+                <tr><td>Le disque d'un ordinateur récent</td><td>1 ou 2 <b>To</b></td></tr>
+              </tbody>
+            </table>
+            <p class="doc-note">Ce sont des <b>ordres de grandeur</b>, pas des valeurs exactes&nbsp;: une photo peut peser 2 Mo ou 8 Mo selon l'appareil et le réglage. Ce qu'il faut retenir, c'est l'<b>étage</b> — pas le chiffre.</p>
+
+            <div class="block-label">À toi — trouve la bonne unité<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète avec l'unité qui convient&nbsp;: <code>octets</code>, <code>Mo</code>, <code>Go</code> ou <code>To</code>.</div>
+              <div class="cloze" data-cloze>
+                <div style="margin-bottom:9px"><b>1.</b> Un SMS de 160 caractères pèse environ 160
+                <input class="short" data-answer="octets" data-variantes="octet|o" placeholder="?" aria-label="unité pour un SMS de 160 caractères" data-indice1="Un caractère de texte tient dans l'unité de base du numérique, celle que tu as vue en séance 1." data-indice2="C'est le paquet de 8 bits : l'octet."> .</div>
+                <div style="margin-bottom:9px"><b>2.</b> Une photo prise avec ton téléphone&nbsp;: quelques
+                <input class="short" data-answer="Mo" data-variantes="mégaoctets|megaoctets|mégaoctet|Mo|MO" placeholder="?" aria-label="unité pour une photo de téléphone" data-indice1="Quelques millions d'octets. Cherche le préfixe qui veut dire « million »." data-indice2="Le préfixe est M, comme mégaoctet."> .</div>
+                <div style="margin-bottom:9px"><b>3.</b> Un film en haute définition&nbsp;: quelques
+                <input class="short" data-answer="Go" data-variantes="gigaoctets|gigaoctet|Go|GO" placeholder="?" aria-label="unité pour un film en haute définition" data-indice1="Mille fois plus lourd qu'une photo : on monte donc d'un étage dans le tableau." data-indice2="Le préfixe est G, comme gigaoctet."> .</div>
+                <div><b>4.</b> Le disque dur d'un ordinateur récent&nbsp;: 1 ou 2
+                <input class="short" data-answer="To" data-variantes="téraoctets|teraoctets|téraoctet|To|TO" placeholder="?" aria-label="unité pour un disque dur d'ordinateur" data-indice1="C'est le dernier étage du tableau, celui qui vaut mille milliards d'octets." data-indice2="Le préfixe est T, comme téraoctet."> .</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="bilan-wrap" data-bilan-wrap hidden>
+              <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+              <div class="retain">On mesure l'information en <b>octets</b>. Au-delà, on utilise des préfixes qui <b>multiplient par 1000</b> à chaque étage&nbsp;: <b>1 ko</b> = 1000 o, <b>1 Mo</b> = 1000 ko, <b>1 Go</b> = 1000 Mo, <b>1 To</b> = 1000 Go. Les ordres de grandeur à avoir en tête&nbsp;: un caractère ≈ 1 octet, une photo ≈ quelques <b>Mo</b>, un film ≈ quelques <b>Go</b>, un disque dur ≈ 1 à 2 <b>To</b>. Attention à ne pas confondre l'octet (<b>o</b>, un fichier) et le bit (<b>b</b>, un débit)&nbsp;: un octet vaut huit bits.</div>
+            </div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 — 1000 contre 1024 -->
+      <div class="step" data-step data-gate data-cle="rep-s2-1000-1024">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Pourquoi ton disque de 500 Go n'en fait que 465</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre le décalage entre 1000 et 1024, et d'où vient l'écart affiché par ton ordinateur.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 12px">Tu achètes un disque dur de <b>500 Go</b>. Tu le branches. L'ordinateur affiche <b>465 Go</b>. Trente-cinq gigaoctets se sont volatilisés entre le magasin et ton bureau. Personne ne t'a volé&nbsp;: les deux comptent juste dans des unités différentes.</p>
+
+            <div class="block-label">Doc — 1000 d'un côté, 1024 de l'autre<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Une machine compte par puissances de <b>2</b>. Or 2¹⁰ ne fait pas 1000, il fait <b>1024</b>. C'est tout près, et c'est ce «&nbsp;tout près&nbsp;» qui pose problème&nbsp;: les informaticiens ont longtemps appelé «&nbsp;kilo&nbsp;» ce paquet de 1024 octets, parce que 2,4&nbsp;% d'écart ne se voyait pas.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Sauf que l'écart <b>se cumule</b> à chaque étage. À la quatrième multiplication, il atteint 10&nbsp;%&nbsp;:</p>
+
+            <div class="table-scroll">
+            <table class="doc-table">
+              <thead><tr><th>Étage</th><th>Le fabricant compte…</th><th>La machine compte…</th><th>Écart</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td><b>1 ko</b> = 1000 o</td><td><b>1 kio</b> = 2¹⁰ = 1&nbsp;024 o</td><td>2,4 %</td></tr>
+                <tr><td>2</td><td><b>1 Mo</b> = 10⁶ o</td><td><b>1 Mio</b> = 2²⁰ = 1&nbsp;048&nbsp;576 o</td><td>4,9 %</td></tr>
+                <tr><td>3</td><td><b>1 Go</b> = 10⁹ o</td><td><b>1 Gio</b> = 2³⁰ = 1&nbsp;073&nbsp;741&nbsp;824 o</td><td>7,4 %</td></tr>
+                <tr><td>4</td><td><b>1 To</b> = 10¹² o</td><td><b>1 Tio</b> = 2⁴⁰ ≈ 1,1 × 10¹² o</td><td>10,0 %</td></tr>
+              </tbody>
+            </table>
+            </div>
+            <p class="doc-note"><b>kio, Mio, Gio, Tio</b> — «&nbsp;kibioctet&nbsp;», «&nbsp;mébioctet&nbsp;», «&nbsp;gibioctet&nbsp;», «&nbsp;tébioctet&nbsp;» — sont les vrais noms des multiples binaires, normalisés en 1998. Tu n'as pas à les mémoriser&nbsp;: il faut juste savoir qu'ils existent, et pourquoi.</p>
+
+            <div class="point-cle alerte"><b>Le calcul du disque&nbsp;:</b> le fabricant vend 500 <b>Go</b>, soit 500 milliards d'octets — c'est honnête. Le système d'exploitation, lui, divise par 1&nbsp;073&nbsp;741&nbsp;824 pour afficher des <b>Gio</b>, et trouve <b>465,7</b>. Il écrit pourtant «&nbsp;Go&nbsp;» à l'écran. Rien n'a disparu&nbsp;: c'est la <b>même quantité d'octets</b>, comptée deux fois avec deux règles différentes — et affichée avec la mauvaise étiquette.</div>
+
+            <div class="block-label">Vérifie ta compréhension<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">QCM · REP·Q3</span>
+              <div class="field-q">Trois questions.</div>
+              <div class="qcmbox" data-code="REP-Q3">
+                <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Combien vaut 2¹⁰ ?",
+  "o": [
+   "1024",
+   "1000",
+   "1042",
+   "1200"
+  ],
+  "r": 0,
+  "c": "2¹⁰ = 1024. C'est de ce petit écart avec 1000 que vient toute la confusion des tailles de fichiers."
+ },
+ {
+  "q": "Ton disque de 500 Go n'en affiche que 465. Que s'est-il passé ?",
+  "o": [
+   "Le fabricant a menti sur la capacité réelle du disque vendu",
+   "Le système réserve 35 Go pour ses propres fichiers cachés",
+   "Les deux comptent la même chose, avec deux unités différentes",
+   "Une partie du disque est défectueuse et se trouve désactivée"
+  ],
+  "r": 2,
+  "c": "Le fabricant compte en puissances de 10, le système en puissances de 2. Même nombre d'octets, deux façons de le nommer — et le système affiche « Go » là où il calcule des Gio."
+ },
+ {
+  "q": "Que désigne exactement 1 Gio ?",
+  "o": [
+   "Un milliard d'octets tout rond, comme le gigaoctet du commerce",
+   "Un gigaoctet arrondi à la valeur commerciale la plus proche du disque",
+   "Un gigaoctet de mémoire vive, par opposition à celui du disque dur",
+   "2³⁰ octets, soit 1&nbsp;073&nbsp;741&nbsp;824 — le « giga » des machines"
+  ],
+  "r": 3,
+  "c": "Gio, le gibioctet : 2³⁰ octets. Ces noms (kio, Mio, Gio, Tio) ont été normalisés justement pour lever l'ambiguïté — l'usage courant, lui, continue d'écrire « Go » dans les deux cas."
+ }
+]
+</script>
+              </div>
+            </div>
+
+            <div class="bilan-wrap" data-bilan-wrap hidden>
+              <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+              <div class="retain">Une machine compte par puissances de 2, et <b>2¹⁰ = 1024</b>, pas 1000. D'où deux séries d'unités&nbsp;: celle du commerce, par <b>1000</b> (ko, Mo, Go, To), et celle des machines, par <b>1024</b> (<b>kio, Mio, Gio, Tio</b>). L'écart de 2,4 % au premier étage se cumule jusqu'à <b>10 % au téraoctet</b>. C'est pour cela qu'un disque vendu 500 Go s'affiche à 465&nbsp;: c'est la <b>même quantité d'octets</b>, comptée avec l'autre règle. Personne n'a triché.</div>
+            </div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 — ouverture couleurs (support, non évalué : pas de data-gate) -->
+      <div class="step" data-step data-cle="rep-s2-couleurs">
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge">ouverture</span></div>
+            <h3 class="step-title">Ouverture — et les couleurs&nbsp;?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> juste semer une idée&nbsp;: un pixel, ce sont trois nombres. On y reviendra en détail avec la photographie numérique.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p class="doc-note" style="margin-top:0">⏱️ <b>Quelques minutes, pas plus.</b> Cette étape n'est pas à valider et ne compte pas dans ta progression&nbsp;: elle est là pour semer une idée que tu retrouveras en fin d'année.</p>
+
+            <div class="block-label">Doc — un pixel, trois nombres<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Tu sais maintenant qu'un octet contient une valeur de <b>0 à 255</b>. Voici à quoi ça sert, une fois sur trois millions de fois&nbsp;: une image numérique est une grille de <b>pixels</b>, et chaque pixel se code par <b>trois nombres</b> — la dose de <b>rouge</b>, la dose de <b>vert</b>, la dose de <b>bleu</b>. Chacune tient sur <b>un octet</b>, donc va de 0 à 255.</p>
+            <p style="font-size:14.5px;margin:4px 0 12px">Trois octets par pixel. Et comme chaque canal offre 256 nuances, le nombre de couleurs possibles est <b>256 × 256 × 256 = 16&nbsp;777&nbsp;216</b> — près de <b>16,7 millions</b>. C'est de là que vient la mention «&nbsp;16 millions de couleurs&nbsp;» sur les fiches techniques des écrans.</p>
+
+            <div class="block-label">Le nuancier — bouge les trois curseurs<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="rvb-outil">
+              <div class="rvb-svg"></div>
+              <div class="rvb-curseurs">
+                <label class="rvb-l" data-canal="r"><span class="rvb-nom">Rouge</span>
+                  <input type="range" min="0" max="255" value="90" step="1" aria-label="dose de rouge, de 0 à 255">
+                  <output class="rvb-val">90</output></label>
+                <label class="rvb-l" data-canal="v"><span class="rvb-nom">Vert</span>
+                  <input type="range" min="0" max="255" value="160" step="1" aria-label="dose de vert, de 0 à 255">
+                  <output class="rvb-val">160</output></label>
+                <label class="rvb-l" data-canal="b"><span class="rvb-nom">Bleu</span>
+                  <input type="range" min="0" max="255" value="220" step="1" aria-label="dose de bleu, de 0 à 255">
+                  <output class="rvb-val">220</output></label>
+              </div>
+              <div class="rvb-actions">
+                <button class="btn ghost sm" type="button" data-rvb="255,0,0">Rouge pur</button>
+                <button class="btn ghost sm" type="button" data-rvb="0,0,0">Tout à 0</button>
+                <button class="btn ghost sm" type="button" data-rvb="255,255,255">Tout à 255</button>
+                <button class="btn ghost sm" type="button" data-rvb="255,255,0">255 · 255 · 0</button>
+              </div>
+              <p class="doc-note" style="margin-bottom:0">Essaie&nbsp;: les trois à <b>0</b>, puis les trois à <b>255</b>. Puis rouge et vert à fond, bleu à zéro — la couleur obtenue surprend souvent.</p>
+            </div>
+
+            <div class="point-cle">Un pixel se code donc sur <b>3 octets</b>. Une photo de 12 millions de pixels pèserait, sans compression, 12 000 000 × 3 = <b>36 millions d'octets</b>, soit 36 Mo. C'est bien plus que ce que pèsent tes photos&nbsp;: c'est que les images sont <b>compressées</b>. <b>On y reviendra en détail avec la photographie numérique.</b></div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.4 — atelier 2 -->
+      <div class="step" data-step data-gate data-cle="rep-s2-atelier-grandeurs">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Atelier 2 — les grandeurs</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> manipuler les multiples et retrouver de tête les nombres clés de l'octet.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Huit questions sur les multiples et l'octet, puis une dernière qui vaut pour toute la séance. <b>Même liste pour tout le monde</b>&nbsp;: comparez vos réponses.</p>
+            <p class="doc-note">Écris les nombres <b>sans espace</b>&nbsp;: <code>16000</code>, pas <code>16 000</code>.</p>
+
+            <div class="field">
+              <span class="field-type">Atelier · REP·A2</span>
+              <div class="field-q">Réponds de tête quand tu peux, et vérifie ensuite.</div>
+              <div class="cloze" data-cloze>
+
+                <div class="atelier-part">A · Les multiples</div>
+                <div style="margin-bottom:9px"><b>1.</b> 1 Mo =
+                <input class="short" data-answer="1000" placeholder="?" aria-label="nombre de kilooctets dans un mégaoctet" data-indice1="D'un étage du tableau au suivant, on multiplie toujours par la même chose." data-indice2="C'est mille, écrit en chiffres."> ko.</div>
+                <div style="margin-bottom:9px"><b>2.</b> 1 Go =
+                <input class="short" data-answer="1000" placeholder="?" aria-label="nombre de mégaoctets dans un gigaoctet" data-indice1="Exactement le même facteur qu'à la question précédente." data-indice2="C'est mille, écrit en chiffres."> Mo.</div>
+                <div style="margin-bottom:9px"><b>3.</b> 1 To =
+                <input class="short" data-answer="1000" placeholder="?" aria-label="nombre de gigaoctets dans un téraoctet" data-indice1="Toujours le même facteur : c'est ce qui rend le tableau facile." data-indice2="C'est mille, écrit en chiffres."> Go.</div>
+                <div style="margin-bottom:9px"><b>4.</b> 2¹⁰ vaut
+                <input class="short" data-answer="1024" placeholder="?" aria-label="valeur de 2 puissance 10" data-indice1="C'est 2 multiplié par lui-même dix fois. Tu peux partir de 2⁸ = 256 et doubler deux fois." data-indice2="C'est la puissance de deux qui se trouve juste au-dessus de mille — et c'est tout le sujet de l'étape 2.2."> .</div>
+                <div style="margin-bottom:9px"><b>5.</b> Combien de photos de 4 Mo tiennent dans une carte mémoire de 64 Go&nbsp;?
+                <input class="short" data-answer="16000" placeholder="?" aria-label="nombre de photos de 4 mégaoctets dans 64 gigaoctets" data-indice1="Commence par convertir les 64 Go en Mo, pour que les deux nombres soient dans la même unité. Ensuite, une seule division." data-indice2="64 Go font 64 000 Mo. Divise par 4."> photos.</div>
+
+                <div class="atelier-part">B · L'octet</div>
+                <div style="margin-bottom:9px"><b>6.</b> Un octet, c'est
+                <input class="short" data-answer="8" placeholder="?" aria-label="nombre de bits dans un octet" data-indice1="Le mot le dit presque : on le retrouve dans octogone et dans octobre." data-indice2="Huit."> bits.</div>
+                <div style="margin-bottom:9px"><b>7.</b> Combien de valeurs différentes peut contenir un octet&nbsp;?
+                <input class="short" data-answer="256" placeholder="?" aria-label="nombre de valeurs différentes dans un octet" data-indice1="Chaque bit double le nombre de possibilités, et il y en a huit." data-indice2="C'est 2 élevé à la puissance 8."> valeurs.</div>
+                <div><b>8.</b> Quelle est la plus grande valeur qu'il puisse contenir&nbsp;?
+                <input class="short" data-answer="255" placeholder="?" aria-label="plus grande valeur d'un octet" data-indice1="Ce n'est pas la même réponse qu'à la question précédente. Le compte commence à zéro, pas à un." data-indice2="C'est une unité de moins que le nombre de combinaisons."> .</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Dernière question — celle qui compte<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">QCM · REP·A2</span>
+              <div class="field-q">Une seule question, mais c'est celle qui trie tout le module.</div>
+              <div class="qcmbox" data-code="REP-A2">
+                <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Un octet compte 256 valeurs, mais sa plus grande valeur est 255. Pourquoi ?",
+  "o": [
+   "Parce qu'on compte à partir de 0 : les valeurs vont de 0 à 255",
+   "Parce qu'une des 256 valeurs sert de marque de fin de nombre",
+   "Parce que la valeur 256 est réservée aux calculs du processeur",
+   "Parce que 255 est le plus grand nombre premier avant 256"
+  ],
+  "r": 0,
+  "c": "Il y a bien 256 valeurs, mais la première est 0 : elles vont donc de 0 à 255. Rien n'est perdu, rien n'est réservé — c'est juste que zéro compte comme une valeur. C'est exactement pour ça qu'un nombre d'adresse IP ne dépasse jamais 255."
+ }
+]
+</script>
+              </div>
+            </div>
+
+            <div class="bilan-wrap" data-bilan-wrap hidden>
+              <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+              <div class="retain">Les multiples se suivent par <b>1000</b>&nbsp;: 1 Mo = 1000 ko, 1 Go = 1000 Mo, 1 To = 1000 Go. Les machines, elles, comptent par <b>1024</b> (2¹⁰) — d'où l'écart affiché par ton ordinateur. Les quatre nombres à connaître par cœur pour l'octet&nbsp;: <b>8</b> bits, <b>256</b> valeurs, de <b>0</b> à <b>255</b>. Et le seul piège qui compte&nbsp;: 256 valeurs <i>et</i> 255 comme maximum, parce que zéro est une valeur comme les autres.</div>
+            </div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Module transversal — squelette du 21/08/2026.</b> Ce module n'est pas un thème du programme&nbsp;: il outille les autres. Les champs seront interactifs comme partout ailleurs&nbsp;: QCM et trous corrigés <b>en direct</b> par le navigateur, verrouillage des séances tant que la précédente n'est pas validée, <b>mode enseignant</b> pour ouvrir en cas de blocage. 🧭 Un doute sur le fonctionnement du cours (fiches, verrouillage, entraide) ? Revois <a href="2nde-snt-t0-systemes-informatises.html" style="color:var(--link)">l'introduction</a>.
+  </footer>
+</div>
+
+<script src="../assets/js/sequence-snt.js?v=32"></script>
+
+<!-- ============================================================
+     JS propre au module. Deux composants, aucun n'existe ailleurs :
+     le tableau des poids (1.2) et la potence des divisions (1.3).
+     Le moteur partagé n'est pas touché — ces deux outils sont des
+     illustrations, ils n'enregistrent rien et ne valident rien.
+     ============================================================ -->
+<script>
+(function(){
+  'use strict';
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function el(nom, attrs, texte){
+    var n = document.createElementNS(SVGNS, nom);
+    for (var k in attrs) if (attrs[k] !== null && attrs[k] !== undefined) n.setAttribute(k, attrs[k]);
+    if (texte !== undefined) n.textContent = texte;
+    return n;
+  }
+  function sobre(){
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  /* =========================================================
+     1) TABLEAU DES POIDS — étape 1.2
+     Huit cases cliquables. Sur écran étroit, l'octet se replie
+     en deux rangées de quatre : à huit colonnes, une case
+     tombait sous les 44 px de cible tactile sur un téléphone.
+     ========================================================= */
+  var POIDS = [128, 64, 32, 16, 8, 4, 2, 1];
+
+  function tableauPoids(hote){
+    var svgHote = hote.querySelector('.poids-svg');
+    var bits = String(hote.dataset.poids || '00000000').split('').map(Number);
+    while (bits.length < 8) bits.unshift(0);
+    bits = bits.slice(-8);
+    var colonnes = 0;
+
+    function dessiner(){
+      var large = hote.clientWidth >= 560;
+      var col = large ? 8 : 4;
+      if (col === colonnes && svgHote.firstChild) { rafraichir(); return; }
+      colonnes = col;
+      var cw = 74, gap = 9, rangees = 8 / col;
+      var largeur = col * cw + (col - 1) * gap;
+      var hRangee = 128;                                  /* poids + case */
+      var hCalcul = 86;                                   /* somme + total */
+      var W = largeur + 24, H = rangees * hRangee + hCalcul + 16;
+
+      var svg = el('svg', {
+        viewBox: '0 0 ' + W + ' ' + H,
+        preserveAspectRatio: 'xMidYMin meet',
+        role: 'group',
+        'aria-label': "Tableau des poids d'un octet : huit bits cliquables, du poids 128 au poids 1"
+      });
+
+      bits.forEach(function(v, i){
+        var r = Math.floor(i / col), c = i % col;
+        var x = 12 + c * (cw + gap), y = 12 + r * hRangee;
+        svg.appendChild(el('text', { class: 'bit-poids', x: x + cw / 2, y: y + 16 }, POIDS[i]));
+        var g = el('g', {
+          class: 'bit-case', tabindex: '0', role: 'button',
+          'aria-pressed': v ? 'true' : 'false',
+          'aria-label': 'bit de poids ' + POIDS[i]
+        });
+        g.appendChild(el('rect', { class: 'bx', x: x, y: y + 26, width: cw, height: 74, rx: 11 }));
+        g.appendChild(el('text', { class: 'bit-chiffre', x: x + cw / 2, y: y + 65 }, v));
+        g.dataset.i = i;
+        svg.appendChild(g);
+      });
+
+      var yb = 12 + rangees * hRangee;
+      svg.appendChild(el('text', { class: 'poids-legende', x: 12, y: yb + 10 }, 'ON ADDITIONNE LES POIDS DES BITS À 1'));
+      svg.appendChild(el('text', { class: 'poids-somme', x: W / 2, y: yb + 38 }, ''));
+      svg.appendChild(el('text', { class: 'poids-total', x: W / 2, y: yb + 74 }, ''));
+
+      svgHote.textContent = '';
+      svgHote.appendChild(svg);
+      rafraichir();
+    }
+
+    function basculer(i){
+      bits[i] = bits[i] ? 0 : 1;
+      rafraichir();
+    }
+
+    function rafraichir(){
+      var svg = svgHote.querySelector('svg'); if (!svg) return;
+      svg.querySelectorAll('.bit-case').forEach(function(g){
+        var i = +g.dataset.i;
+        g.setAttribute('aria-pressed', bits[i] ? 'true' : 'false');
+        g.querySelector('.bit-chiffre').textContent = bits[i];
+      });
+      var pris = POIDS.filter(function(p, i){ return bits[i]; });
+      var total = pris.reduce(function(a, b){ return a + b; }, 0);
+      svg.querySelector('.poids-somme').textContent = pris.length ? pris.join('  +  ') : 'aucun bit à 1';
+      svg.querySelector('.poids-total').textContent =
+        bits.join('') + '  =  ' + total;
+    }
+
+    svgHote.addEventListener('click', function(e){
+      var g = e.target.closest ? e.target.closest('.bit-case') : null;
+      if (g) basculer(+g.dataset.i);
+    });
+    svgHote.addEventListener('keydown', function(e){
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var g = e.target.closest ? e.target.closest('.bit-case') : null;
+      if (!g) return;
+      e.preventDefault();
+      basculer(+g.dataset.i);
+    });
+    hote.querySelectorAll('[data-poids-set]').forEach(function(b){
+      b.addEventListener('click', function(){
+        bits = b.dataset.poidsSet.split('').map(Number);
+        rafraichir();
+      });
+    });
+
+    dessiner();
+    /* ResizeObserver et non 'resize' : au chargement, l'étape n'est pas
+       encore révélée — largeur nulle — et le composant se dessinait en
+       version mobile pour ne plus jamais se corriger. L'observateur, lui,
+       se déclenche aussi quand l'étape s'ouvre. */
+    if (window.ResizeObserver) new ResizeObserver(dessiner).observe(hote);
+    else window.addEventListener('resize', dessiner);
+  }
+
+  /* =========================================================
+     2) LA POTENCE — étape 1.3
+     Reproduit le geste manuscrit : escalier de divisions par 2,
+     restes encadrés, flèches de remontée, résultat en bas.
+     Rien n'est codé en dur pour un nombre donné : divisions()
+     produit la liste, dessiner() la met en page.
+     ========================================================= */
+  function divisions(n){
+    var suite = [], x = n;
+    if (x < 1) return suite;
+    while (x > 0) { suite.push({ n: x, q: Math.floor(x / 2), r: x % 2 }); x = Math.floor(x / 2); }
+    return suite;
+  }
+
+  function potence(hote){
+    var svgHote = hote.querySelector('.potence-svg');
+    var compte  = hote.querySelector('.potence-compte');
+    var bSuiv   = hote.querySelector('[data-pot-suivant]');
+    var bTout   = hote.querySelector('[data-pot-tout]');
+    var bReset  = hote.querySelector('[data-pot-reset]');
+    var bGo     = hote.querySelector('[data-pot-go]');
+    var champ   = hote.querySelector('input[type="number"]');
+    var nombre  = parseInt(hote.dataset.potence, 10) || 90;
+    var suite = [], vues = 0, totalEtapes = 0, colonne = false;
+
+    function dessiner(){
+      suite = divisions(nombre);
+      /* largeur nulle = étape encore masquée : on dessine l'escalier, mise
+         en page par défaut, et l'observateur corrigera si l'écran est
+         réellement étroit. Comparer sur la même règle des deux côtés, sinon
+         le premier passage à 0 fige une décision que rien ne rejoue. */
+      colonne = hote.clientWidth > 0 && hote.clientWidth < 560;
+      var dx = colonne ? 0 : 92, dy = colonne ? 92 : 56;
+      var x0 = colonne ? 150 : 96, y0 = 40;
+      var k = suite.length;
+      var W = x0 + (k - 1) * dx + 190;
+      var H = y0 + (k - 1) * dy + 150;
+
+      var svg = el('svg', {
+        viewBox: '0 0 ' + W + ' ' + H,
+        preserveAspectRatio: 'xMinYMin meet',
+        role: 'img',
+        'aria-label': nombre + ' converti en binaire par divisions successives par 2 : '
+          + 'les restes lus du dernier au premier donnent ' + nombre.toString(2)
+      });
+
+      suite.forEach(function(d, i){
+        var bx = x0 + i * dx, by = y0 + i * dy;
+        var g = el('g', { class: 'pot-etape', 'data-pas': i });
+
+        g.appendChild(el('text', { class: 'pot-nombre', x: bx, y: by }, d.n));
+        g.appendChild(el('line', { class: 'pot-trait', x1: bx + 8, y1: by - 21, x2: bx + 8, y2: by + 34 }));
+        g.appendChild(el('text', { class: 'pot-diviseur', x: bx + 19, y: by }, '2'));
+        g.appendChild(el('line', { class: 'pot-trait', x1: bx + 8, y1: by + 9, x2: bx + 74, y2: by + 9 }));
+        /* le produit soustrait, puis le trait, puis le reste encadré */
+        g.appendChild(el('text', { class: 'pot-produit', x: bx, y: by + 24 }, '−' + (d.n - d.r)));
+        g.appendChild(el('line', { class: 'pot-trait', x1: bx - 52, y1: by + 31, x2: bx + 3, y2: by + 31 }));
+        var cx = bx - 22, cy = by + 50;
+        g.appendChild(el('rect', { class: 'pot-reste-cadre', x: cx - 17, y: cy - 15, width: 34, height: 30, rx: 5 }));
+        g.appendChild(el('text', { class: 'pot-reste', x: cx, y: cy + 1 }, d.r));
+        g.dataset.rx = cx; g.dataset.ry = cy;
+        svg.appendChild(g);
+      });
+
+      /* les flèches de remontée : du dernier reste vers le premier */
+      var gf = el('g', { class: 'pot-etape', 'data-pas': k });
+      for (var i = k - 1; i > 0; i--) {
+        var a = svg.querySelector('[data-pas="' + i + '"]');
+        var b = svg.querySelector('[data-pas="' + (i - 1) + '"]');
+        var ax = +a.dataset.rx, ay = +a.dataset.ry - 16;
+        var bxx = +b.dataset.rx, byy = +b.dataset.ry + 16;
+        var mx = colonne ? Math.min(ax, bxx) - 34 : (ax + bxx) / 2 - 26;
+        var my = (ay + byy) / 2;
+        gf.appendChild(el('path', { class: 'pot-fleche', d: 'M ' + ax + ' ' + ay + ' Q ' + mx + ' ' + my + ' ' + bxx + ' ' + byy }));
+        /* pointe de flèche, deux petits traits vers le cadre visé */
+        gf.appendChild(el('path', { class: 'pot-fleche', d: 'M ' + (bxx - 6) + ' ' + (byy + 8) + ' L ' + bxx + ' ' + byy + ' L ' + (bxx + 7) + ' ' + (byy + 7) }));
+      }
+      gf.appendChild(el('text', { class: 'pot-note', x: 12, y: y0 + (k - 1) * dy + 96 },
+        'On remonte les restes du dernier au premier ↑'));
+      svg.appendChild(gf);
+
+      /* le résultat, en bas */
+      var gr = el('g', { class: 'pot-etape', 'data-pas': k + 1 });
+      var bits = suite.map(function(d){ return d.r; }).reverse().join('');
+      /* notation de la correction manuscrite : 90 indice 10 = 1011010 indice 2 */
+      var t = el('text', { class: 'pot-resultat', x: 12, y: y0 + (k - 1) * dy + 130 });
+      t.appendChild(el('tspan', {}, String(nombre)));
+      t.appendChild(el('tspan', { class: 'pot-base', dy: '7' }, '10'));
+      t.appendChild(el('tspan', { dy: '-7' }, '  =  ' + bits));
+      t.appendChild(el('tspan', { class: 'pot-base', dy: '7' }, '2'));
+      gr.appendChild(t);
+      svg.appendChild(gr);
+
+      totalEtapes = k + 2;
+      svgHote.textContent = '';
+      svgHote.appendChild(svg);
+      /* Sans animation, tout s'affiche d'un coup — même ordre logique,
+         mais aucune révélation progressive (brief §7). */
+      vues = sobre() ? totalEtapes : 0;
+      appliquer();
+    }
+
+    function appliquer(){
+      var svg = svgHote.querySelector('svg'); if (!svg) return;
+      svg.querySelectorAll('.pot-etape').forEach(function(g){
+        g.classList.toggle('on', +g.dataset.pas < vues);
+      });
+      var fini = vues >= totalEtapes;
+      bSuiv.disabled = fini;
+      compte.textContent = fini
+        ? 'terminé — ' + suite.length + ' divisions'
+        : 'étape ' + vues + ' / ' + totalEtapes;
+    }
+
+    bSuiv.addEventListener('click', function(){ if (vues < totalEtapes) { vues++; appliquer(); } });
+    bTout.addEventListener('click', function(){ vues = totalEtapes; appliquer(); });
+    bReset.addEventListener('click', function(){ vues = 0; appliquer(); });
+    bGo.addEventListener('click', function(){
+      var v = parseInt(champ.value, 10);
+      if (!(v >= 1 && v <= 4095)) { champ.focus(); return; }
+      nombre = v; dessiner();
+    });
+    champ.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); bGo.click(); } });
+
+    dessiner();
+    /* Même piège que le tableau des poids : tant que l'étape est masquée,
+       clientWidth vaut 0 et l'escalier se repliait en colonne pour de bon.
+       On ne redessine qu'au franchissement du seuil, pas à chaque pixel :
+       redessiner remettrait l'animation à zéro sous les doigts de l'élève. */
+    var dernier = colonne;
+    function surveiller(){
+      var c = hote.clientWidth > 0 && hote.clientWidth < 560;
+      if (c !== dernier) { dernier = c; dessiner(); }
+    }
+    if (window.ResizeObserver) new ResizeObserver(surveiller).observe(hote);
+    else window.addEventListener('resize', surveiller);
+  }
+
+  /* =========================================================
+     3) NUANCIER RVB — étape 2.3 (ouverture, non évaluée)
+     Trois curseurs, un aplat. On ne parle ni d'hexadécimal ni
+     de profondeur de couleur : tout cela appartient à la
+     séquence « La photographie numérique » (décision D6).
+     ========================================================= */
+  function nuancier(hote){
+    var svgHote = hote.querySelector('.rvb-svg');
+    var curseurs = {};
+    hote.querySelectorAll('.rvb-l').forEach(function(l){
+      curseurs[l.dataset.canal] = { input: l.querySelector('input'), sortie: l.querySelector('.rvb-val') };
+    });
+
+    var svg = el('svg', {
+      viewBox: '0 0 600 260', preserveAspectRatio: 'xMidYMid meet',
+      role: 'img', 'aria-label': 'Aplat de couleur obtenu en mélangeant les trois doses de rouge, vert et bleu'
+    });
+    /* l'aplat principal, puis les trois canaux séparés en dessous */
+    var aplat = el('rect', { x: 20, y: 16, width: 560, height: 132, rx: 12 });
+    svg.appendChild(aplat);
+    svg.appendChild(el('rect', { class: 'rvb-cadre', x: 20, y: 16, width: 560, height: 132, rx: 12 }));
+    var bandes = {};
+    ['r', 'v', 'b'].forEach(function(c, i){
+      var x = 20 + i * 190;
+      bandes[c] = el('rect', { x: x, y: 168, width: 180, height: 44, rx: 9 });
+      svg.appendChild(bandes[c]);
+      svg.appendChild(el('rect', { class: 'rvb-cadre', x: x, y: 168, width: 180, height: 44, rx: 9 }));
+      svg.appendChild(el('text', { class: 'rvb-etiquette', x: x + 90, y: 236 }, ''));
+    });
+    svgHote.appendChild(svg);
+    var etiquettes = svg.querySelectorAll('.rvb-etiquette');
+
+    function maj(){
+      var r = +curseurs.r.input.value, v = +curseurs.v.input.value, b = +curseurs.b.input.value;
+      curseurs.r.sortie.textContent = r;
+      curseurs.v.sortie.textContent = v;
+      curseurs.b.sortie.textContent = b;
+      aplat.setAttribute('fill', 'rgb(' + r + ',' + v + ',' + b + ')');
+      bandes.r.setAttribute('fill', 'rgb(' + r + ',0,0)');
+      bandes.v.setAttribute('fill', 'rgb(0,' + v + ',0)');
+      bandes.b.setAttribute('fill', 'rgb(0,0,' + b + ')');
+      etiquettes[0].textContent = 'rouge ' + r;
+      etiquettes[1].textContent = 'vert ' + v;
+      etiquettes[2].textContent = 'bleu ' + b;
+      svg.setAttribute('aria-label',
+        'Aplat de couleur : rouge ' + r + ', vert ' + v + ', bleu ' + b + ', chaque dose allant de 0 à 255');
+    }
+    ['r', 'v', 'b'].forEach(function(c){
+      curseurs[c].input.addEventListener('input', maj);
+    });
+    hote.querySelectorAll('[data-rvb]').forEach(function(bt){
+      bt.addEventListener('click', function(){
+        var t = bt.dataset.rvb.split(',');
+        curseurs.r.input.value = t[0]; curseurs.v.input.value = t[1]; curseurs.b.input.value = t[2];
+        maj();
+      });
+    });
+    maj();
+  }
+
+  function demarrer(){
+    document.querySelectorAll('.poids-outil').forEach(tableauPoids);
+    document.querySelectorAll('.potence-outil').forEach(potence);
+    document.querySelectorAll('.rvb-outil').forEach(nuancier);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
+  else demarrer();
+})();
+</script>
+
+</body>
+</html>

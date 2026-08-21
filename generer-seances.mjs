@@ -43,7 +43,10 @@ const THEMES = [
   ['snt-t4', '2nde-snt-t4-donnees-structurees.html'],
   ['snt-t5', '2nde-snt-t5-localisation-cartographie.html'],
   ['snt-t6', '2nde-snt-t6-informatique-embarquee.html'],
-  ['snt-t7', '2nde-snt-t7-photographie-numerique.html']
+  ['snt-t7', '2nde-snt-t7-photographie-numerique.html'],
+  /* Module transversal : pas un thème du programme, même grammaire.
+     À garder aligné avec le tableau jumeau de verifier.mjs. */
+  ['snt-m1', '2nde-snt-m1-representer-information.html']
 ];
 
 /* Les entités HTML qu'on croise réellement dans ces titres. On ne

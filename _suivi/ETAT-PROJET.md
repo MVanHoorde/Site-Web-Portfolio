@@ -5,7 +5,7 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **20/08/2026**
+> Dernière réécriture : **21/08/2026**
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 ---
@@ -20,9 +20,10 @@
 | Partie | État |
 |---|---|
 | **PC seconde** | 14 chapitres en ligne. T1-C1→C4 dégrossis à fond ; les 10 autres portent **206 blocs `.a-faire`**. Aucun cours validé. |
-| **SNT** | 8 séquences (t0→t7). `t1` et `t2` sur le moteur partagé ; `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. **`t1` est en cours de validation** — voir sa ligne. |
+| **SNT** | 8 séquences de thème (t0→t7) **+ 1 module transversal** (`m1` « Représenter l'information », écrit le 21/08). `t1` et `t2` sur le moteur partagé ; `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. **`t1` est en cours de validation** — voir sa ligne. |
 | **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade) et **vérifié au rendu** dans un navigateur sans interface : bandeau, pictogramme et teinte mesurés sur les deux familles de pages, en mode élève et en mode enseignant. Le tableau de bord affiche les **dates de clôture** (cases de clôture et frise, format `12/09`). ✅ **`bdd/schema/013-verrou-progression.sql` a été exécuté le 20/08/2026** par Loïc : `mon_plafond()` répond en base, et un appel anonyme se heurte bien à `42501 permission denied` — la fonction est réservée aux comptes connectés, comme prévu. Le plafond est donc **actif de bout en bout**. Deux textes vus par les élèves attendent la validation de Loïc. |
 | **SNT — `t1` Internet** | 🔎 **Audit complet le 20/08**, puis trois lots de corrections. **Réparé** : la séance 2 ne laissait aucune trace (aucune porte, réponses jamais enregistrées) — elle a désormais **deux portes** et son texte part en base au statut `partage` ; numérotation des étapes réalignée sur la séance (S3 = 3.x, S4 = 4.x, S5 = 5.x) ; durée annoncée 6 h 15 → **6 h** ; sommaire qui couvrait le fil d'Ariane au chargement ≥ 1180 px ; **QCM : plus aucun biais de longueur** (il y en avait 20, dont 14 🔴), position de la bonne réponse répartie (25 · 22 · 26 · 24 · 2), `NET-Q7` porté de 1 à 4 questions ; 7 couleurs en dur rapatriées dans `:root`, 2 indices qui livraient la réponse réécrits. **Restent** : étape **5.4** (activité TERMINAL encore en `.a-venir`), **5.6**, le **moteur du relevé et du rappel** (5.3), la **fin de thème** (Filius + passerelle NSI facultative), le `data-cle` sur les 26 étapes, et le **prérequis binaire** de la séance 5 — qui n'a aucune séquence pour le porter. ⏳ À relire avant validation : les 51 leurres de QCM réécrits et les 3 questions ajoutées à `NET-Q7`. |
+| **SNT — module `m1` Représenter l'information** | 🆕 Écrit le 21/08, **d'emblée sur le moteur partagé** — troisième page dans ce cas après `t1` et `t2`. 2 séances, 9 étapes, 4 QCM, 2 ateliers à liste fixe. Trois composants SVG maison : tableau des poids cliquable, **potence des divisions** (reproduction du geste manuscrit de Loïc, paramétrable de 1 à 4095, pas à pas, repli vertical sur téléphone) et nuancier RVB. **Parcours élève joué de bout en bout dans un navigateur** : 18/18 trous justes, QCM 3/3 et 4/4, 5/5 étapes validées, **séance 2 débloquée**, fiche portant les 12 réponses d'atelier, aucune erreur JS aux trois largeurs ni en `prefers-reduced-motion`. `verifier.mjs` inchangé à 19. **Rien n'est validé : tout le contenu pédagogique est une proposition.** |
 | **Base de données** | ✅ **en service.** Supabase, région **West EU (Paris)**. 7 tables, 10 policies RLS, 4 fonctions, sauvegarde hebdo + réveil quotidien. Pilote prouvé de bout en bout sur `t1`. |
 | **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
 | **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 (une seule colonne, un seul bord d'attaque), puis **audit de contenu des dix-sept outils le même jour** : accroche recentrée sur l'atelier, « effort » → « force » partout, `ε` pour l'écart et `θ` pour les angles de rotation, paliers 1 dégonflés de leur guidage, sous-questions concaténées, vecteurs fléchés et racines couvrantes. Deux figures produites (bras de levage de l'Outil 5, composantes de l'Outil 14), une dizaine corrigées. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé : **l'Outil 0 est le premier attendu en relecture**. Depuis le 19/08 le livret est **branché sur le dispositif de comptes** : connecté, le travail va en base et suit l'apprenti d'un appareil à l'autre ; sans compte, tout reste sur l'appareil comme avant, et la page le dit. Les deux codes de classe (`CFA26A`, `MVT26A`) sont ouverts : `bdd/schema/012-classes-cfa.sql` a été exécuté le 20/08. |
@@ -109,6 +110,15 @@ de **deux** choses, le script `verrou-snt.js` **et** `data-sequence` sur son
 sans qu'aucune erreur ne le signale. `t3`→`t7` n'ont ni l'un ni l'autre, ce qui
 est cohérent avec leur état partiel — le jour où on les branche, les deux.
 
+**Un module nommé `m1` passe à travers les listes en dur.** Le dépôt énumère les
+huit thèmes à **quatre** endroits : le filtre `pagesSNT` de `verifier.mjs`, son
+tableau de fraîcheur, celui de `generer-seances.mjs` et celui de
+`generer-questions.mjs`. Les quatre ont été élargis le 21/08. Le premier est le
+plus dangereux : une page qui échappe à `pagesSNT` échappe aussi au contrôle
+`localStorage`, donc au garde-fou RGPD, **sans qu'aucune erreur ne le signale**.
+Le filtre a été testé en y introduisant volontairement un `localStorage`, vérifié
+détecté, puis retiré. Toute future page hors `t0`→`t7` demandera la même revue.
+
 ### ③ La frise ES à brancher
 
 Décision prise le 23/07 : elle passe sur Supabase. Le modèle est écrit
@@ -119,6 +129,13 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 
 ## Prochaines actions
 
+- [ ] **`m1` — relecture du contenu par Loïc** : les 11 QCM et leurs leurres, les 21 items
+      d'atelier, les formulations des 9 étapes. Rien n'est validé. Puis arbitrer la durée
+      réelle après le premier passage en classe, et le sort des deux PNG de référence
+      (`_modeles/reference-m1/`), devenus inutiles depuis que la potence est en SVG
+- [ ] **Correctif `seuil()` du moteur** (chantier ouvert le 21/08) : `/^[0-9 ]+$/` au lieu de
+      `/^[0-9]+$/`, pour qu'un nombre écrit avec des espaces reste strict. `t1` accepte
+      aujourd'hui `40 001` pour `40 000`. Impose `?v=33` sur les neuf pages **et** le hub
 - [ ] **`t1` lot 2 — moteur du relevé et du rappel** : type de champ « relevé »
       (validé sur le format, pas la valeur) · rappel en boîte de dialogue sur fond
       flouté, comparé au relevé du même élève · prise en charge d'un `data-cle` sur

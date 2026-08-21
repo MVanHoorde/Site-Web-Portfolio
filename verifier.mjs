@@ -37,7 +37,11 @@ function parcourir(d, acc = []) {
 const FICHIERS = parcourir(RACINE);
 const lire = (f) => readFileSync(join(RACINE, f), "utf8");
 const html = FICHIERS.filter((f) => f.endsWith(".html"));
-const pagesSNT = html.filter((f) => /pages\/2nde-snt-t\d/.test(f));
+/* Les séquences SNT : les huit thèmes (t0…t7) et les modules transversaux
+   (m1…), qui ne sont pas des thèmes du programme mais suivent la même
+   grammaire. Le filtre les couvre tous — un module qui y échapperait
+   passerait aussi à travers le contrôle localStorage, §2 plus bas. */
+const pagesSNT = html.filter((f) => /pages\/2nde-snt-(t\d|m\d)/.test(f));
 const scripts = FICHIERS.filter((f) => /\.(mjs|js)$/.test(f) && !f.startsWith("assets/fonts"));
 
 function ko(regle, detail) { problemes.push({ regle, detail }); }
@@ -234,7 +238,8 @@ try {
     ["snt-t4", "2nde-snt-t4-donnees-structurees.html"],
     ["snt-t5", "2nde-snt-t5-localisation-cartographie.html"],
     ["snt-t6", "2nde-snt-t6-informatique-embarquee.html"],
-    ["snt-t7", "2nde-snt-t7-photographie-numerique.html"]
+    ["snt-t7", "2nde-snt-t7-photographie-numerique.html"],
+    ["snt-m1", "2nde-snt-m1-representer-information.html"]
   ]) {
     const chemin = "pages/" + fichier;
     if (!existsSync(chemin)) continue;

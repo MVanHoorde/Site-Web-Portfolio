@@ -34,6 +34,37 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## Module transversal `snt-m1` « Représenter l'information » — 21/08/2026
+
+| Date | Décision | Statut |
+|---|---|---|
+| 21/08/2026 | **Le binaire devient une séquence autonome**, pas une annexe de `t1`. Filius, lui, devient une séance du thème 1 — hors du périmètre de ce module | ✅ |
+| 21/08/2026 | Titre **« Représenter l'information »** et non « Le binaire » : on pourra y raccorder d'autres ateliers (texte, son, image) sans refonte ni renommage | ✅ |
+| 21/08/2026 | **Préfixe `m` et non `t`** (`snt-m1`) : ce n'est pas un thème du programme SNT. Conséquence technique réelle — le dépôt énumère les huit thèmes dans **quatre** listes en dur, toutes élargies (voir plus bas) | ✅ |
+| 21/08/2026 | **Aucun verrouillage inter-séquences.** C'est la progression annuelle de Loïc qui garantit que le binaire précède l'étape 5.1 de `t1`, pas le site. Aucune dépendance codée entre les pages | ✅ |
+| 21/08/2026 | Le socle traite les conversions **dans les deux sens** — « historiquement dans l'équipe ». Décimal→binaire **et** binaire→décimal en séance 1, avec **deux méthodes** présentées côte à côte (soustraction descendante · divisions successives en potence), aucune imposée | ✅ |
+| 21/08/2026 | **Deux séances**, chacune se terminant par son atelier. 9 étapes au total | ✅ |
+| 21/08/2026 | **Le RVB reste traité en entier dans `t7`.** Ici, simple ouverture de quelques minutes (« 256 niveaux par canal »), marquée `○ support` et **sans `data-gate`**. La répétition est **voulue** : la règle « un seul traitement complet par notion » (`CONSIGNES-sequence-SNT.md` §14.1) **ne doit pas être invoquée contre ce choix** — c'est consigné ici pour ça | ✅ |
+| 21/08/2026 | Le **masque de sous-réseau** n'entre pas dans ce module : il ira en bonus repliable dans la future séance Filius de `t1`. **Ne pas l'étiqueter « pont NSI »** — vérification faite sur les annexes du BO, il est absent du programme de SNT, de NSI première **et** de NSI terminale. C'est une note de compréhension | ✅ |
+| 21/08/2026 | **Pas d'estimation horaire figée.** « ≈ 2 h » est indicatif et signalé comme provisoire dans la note de chantier de la page : le module n'a jamais tourné devant une classe, et le temps dépendra du travail donné à la maison | ✅ |
+| 21/08/2026 | **Ateliers à liste fixe, identique pour tous les élèves** : aucun tirage, aucune graine, aucun score chiffré, aucune note. Motif : permettre l'entraide et rendre les résultats comparables. L'évaluation se fait sur un autre support, hors du site. La version « entraînement illimité » est reportée dans `IDEES.md` | ✅ |
+| 21/08/2026 | Code d'activité **`REP·x`** à l'affichage, **`REP-x`** en base (§14.3 : le point médian est fragile hors du texte). `REP·Q1` à `REP·Q3`, `REP·A1`, `REP·A2` | ✅ |
+| 21/08/2026 | **`data-cle` explicites sur les 9 étapes** du module (`rep-s1-deux-chiffres`…). Le moteur les lit déjà en priorité sur le repli positionnel (`sequence-snt.js`, fonction `cle()`) : **aucune modification du moteur, aucun effet sur les autres pages**, et aucune donnée élève n'existait encore sur cette page. Ne préjuge pas de la migration des 27 étapes de `t1`, qui reste le chantier ouvert du 25/07 | ✅ |
+| 21/08/2026 | Une **famille « Outils transversaux »** au hub, après « Pour commencer », plutôt que de ranger le module dans « Données et information » : le mélanger aux sept thèmes brouillerait la lecture de la progression. Chip correspondante en tête du masthead de la page | ✅ |
+| 21/08/2026 | **Étape 2.3 sans `data-gate`.** Une étape à valider sans champ à remplir ne se valide jamais et bloquerait la fin de séance. L'ouverture RVB étant « support, non évaluée », elle n'est pas une porte : 8 étapes verrouillantes sur 9 | ✅ |
+| 21/08/2026 | **Réponses binaires à saisir sans espace.** Le groupement par 4 demandé au cadrage n'est **pas** accepté : mesure faite en rejouant le comparateur du moteur sur toutes les chaînes binaires jusqu'à 12 bits — ajouter la variante espacée ferait passer **289 saisies fausses pour justes** sur 6 items (`1111111` accepté pour `11111110`), et « 16 000 » ferait accepter **160000**. Consigne explicite dans les deux ateliers à la place. Cause et correctif : voir le chantier `seuil()` ci-dessous | ✅ |
+| 21/08/2026 | **L'atelier 1 compte 13 items, pas 12.** L'item « laquelle ne tient pas dans un octet ? » a **deux** réponses justes (`100000000` et `1111111111`) : il est dédoublé en « la plus courte » / « la plus longue », ce qui lève l'ambiguïté sans tolérance dangereuse | ✅ |
+
+### Chantiers ouverts découverts en écrivant ce module
+
+| Date posée | Sujet | Enjeu |
+|---|---|---|
+| 21/08/2026 | ⏳ **`seuil()` rend tolérante toute réponse contenant un espace** (`assets/js/sequence-snt.js`) | Le test `/^[0-9]+$/` ne reconnaît pas « 40 000 » comme un nombre : l'attente bascule alors sur une tolérance Levenshtein de 1 ou 2. **`t1` porte déjà 5 variantes dans ce cas**, dont « 40 000 », qui accepte aujourd'hui `40 001` comme juste. Correctif d'une ligne — `/^[0-9 ]+$/` — mais il touche le **moteur partagé** : il impose de passer `?v=32` à `?v=33` sur le CSS et le JS des neuf pages **et** du hub, plus un test de non-régression sur tous les trous du dépôt. **Décision de Loïc du 21/08 : signaler, ne rien toucher dans cette livraison.** |
+| 21/08/2026 | ⏳ **Le titre de la fiche élève colle le numéro au titre** — « S1Compter comme une machine », « S1C'est quoi Internet ? » | Le moteur concatène le texte de `.s-num` et celui du `<h2>` sans séparateur (`seanceTitle`). Défaut partagé par toutes les séquences, visible sur chaque fiche téléchargée. Correctif dans le moteur, donc même contrainte de versionnage que ci-dessus. |
+| 21/08/2026 | ⏳ **`CONSIGNES-sequence-SNT.md` §3 décrit un trajet d'étape périmé** | Il place le « à retenir » **avant** le champ à compléter. Les décisions du 25/07 et du 26/07 l'ont descendu **après** l'activité, en révélation automatique — c'est ce que fait le moteur et ce que font `t1`, `t2` et `m1`. La consigne dit encore l'inverse. |
+
+---
+
 ## Séance 2 de `t1`, réponses personnelles et QCM — 20/08/2026
 
 | Date | Décision | Statut |

@@ -177,7 +177,9 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 > chapitres à sections, mais des **séquences élève** (séquence → séance → étape →
 > champ), avec verrouillage progressif et mode enseignant. Consignes dédiées :
 > `_modeles/CONSIGNES-sequence-SNT.md`. Les 7 thèmes du programme sont listés sur
-> `pages/2nde-snt.html`.
+> `pages/2nde-snt.html`, avec les **modules transversaux** (préfixe `m`) dans une
+> famille à part : ce ne sont pas des thèmes du programme, mais des outils que
+> plusieurs thèmes mobilisent.
 > Jalons de PC non transposables : ici on suit **V0 → contenu → interactivité →
 > ressources définitives → validé** (voir `CONSIGNES-sequence-SNT.md` §12).
 
@@ -636,6 +638,66 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   traces→Web, RGPD→DAT — angle objets physiques) ; débranchée `EMB·D` (robot
   humain, 3 rôles, programme bugué). Liens inertes : `EMB·D`, biblios
   Moreno/IoT Analytics/GSR2/Engelbart.
+
+### SNT-M1 — Module transversal · Représenter l'information 🧮
+- État : **contenu complet, interactivité complète** (21/08/2026). **Non validé.**
+  Écrit d'emblée sur le moteur partagé — troisième page dans ce cas, après `t1` et `t2`.
+- Fichier : `pages/2nde-snt-m1-representer-information.html`. Clé `snt-m1`,
+  codes `REP·x`. Lié depuis `pages/2nde-snt.html`, famille **« Outils
+  transversaux »** créée pour l'occasion, placée après « Pour commencer ».
+- Jalons : `✅ Maquette V0` · `✅ Contenu complet` · `✅ Interactivité complète` ·
+  `✅ Ressources définitives` (aucune ressource externe — tout est produit maison) ·
+  `⬜ VALIDÉ`.
+- **Ce n'est pas un thème du programme.** Le préfixe `m` (et non `t`) le dit :
+  c'est un outil que d'autres thèmes mobilisent — l'adresse IP en `t1` (étape
+  5.1), le poids des images en `t7`. **Aucun verrouillage inter-séquences n'est
+  codé** : c'est la progression annuelle de Loïc qui garantit que le binaire
+  précède l'étape 5.1, pas le site (décision D3 du 21/08).
+- **Découpage (D5)** : 2 séances, 9 étapes, chacune finissant par son atelier.
+  - **S1 · Compter comme une machine** — 1.1 pourquoi deux chiffres (`REP·Q1`) ·
+    1.2 lire un nombre binaire (tableau des poids interactif) · 1.3 écrire un
+    nombre binaire (**deux méthodes**, D4 : soustraction descendante *et*
+    divisions successives en potence) · 1.4 l'octet et le piège du 255
+    (`REP·Q2`) · 1.5 **atelier `REP·A1`**, 13 items.
+  - **S2 · Mesurer l'information** — 2.1 de l'octet au téraoctet · 2.2 le
+    décalage 1000/1024 (`REP·Q3`) · 2.3 **ouverture RVB**, `○ support`, sans
+    `data-gate` · 2.4 **atelier `REP·A2`**, 8 trous + 1 QCM.
+- **Trois composants produits pour ce module**, tous en SVG inline, tous pilotés
+  par les variables CSS de `sequence-snt.css` (zéro couleur en dur) :
+  - le **tableau des poids** (1.2) : 8 bits cliquables, total en direct, repli en
+    2 rangées de 4 sous 560 px pour tenir la cible tactile de 44 px ;
+  - la **potence** (1.3) : reproduction du geste manuscrit de Loïc — escalier de
+    divisions, restes encadrés, flèches de remontée, résultat en `nombre₁₀ =
+    bits₂`. **Paramétrable** (tout nombre de 1 à 4095, l'élève peut saisir le
+    sien), révélation pas à pas, repli vertical sur téléphone, `prefers-reduced-
+    motion` respecté (tout s'affiche d'un coup, même ordre logique) ;
+  - le **nuancier RVB** (2.3) : trois curseurs 0-255, aplat + trois canaux.
+- **Ateliers à liste fixe (décision du 21/08)** : mêmes items pour tous, pour
+  permettre l'entraide et la comparaison. **Aucun tirage aléatoire, aucun score
+  chiffré, aucune note** — l'évaluation se fait hors du site. La version
+  « entraînement illimité » est reportée dans `IDEES.md`.
+- **Nombres des ateliers choisis pour préparer `t1`** : `172`, `168`, `226`,
+  `254` sont les octets de `192.168.1.226` et `172.16.254.1`, qui apparaissent
+  dans l'étape 5.1 et dans le cours « Adresses IP ». `90` et `434` viennent du TD
+  de Loïc, dont il possède les corrections manuscrites.
+- **Corrections appliquées aux documents source** (brief §8) : la « base 5 des
+  Incas » — fausse, les quipus sont décimaux — est remplacée par la **base 60
+  babylonienne** (nos heures et nos minutes) ; la colonne trompeuse
+  « correspondance binaire » du tableau des multiples devient **« La machine
+  compte… »** avec les préfixes normalisés **kio / Mio / Gio / Tio** (CEI
+  80000-13, 1998) et le rappel qu'ils ne sont pas à mémoriser.
+- **Répétition du RVB assumée (D6)** : `t7` garde le traitement complet de la
+  couleur ; ici ce n'est qu'une ouverture de quelques minutes, marquée
+  `○ support` et sans porte. La règle « un seul traitement complet par notion »
+  (`CONSIGNES-sequence-SNT.md` §14.1) **ne s'y oppose pas** — c'est écrit ici
+  pour qu'elle ne soit pas invoquée contre ce choix plus tard.
+- ⚠ **Saisie sans espace** : les réponses binaires s'écrivent d'un bloc
+  (`10101100`). Accepter le groupement par 4 ferait passer des réponses fausses
+  pour justes — mesuré, voir le chantier `seuil()` dans `DECISIONS.md`.
+- ⏳ **Tout le contenu pédagogique est une proposition à valider** : formulations,
+  choix des nombres, les 11 QCM et leurs leurres, les 21 items d'atelier.
+- ⏳ **Durée « ≈ 2 h » provisoire** (D8) : le module n'a jamais tourné devant une
+  classe. À reprendre après le premier passage.
 
 ## Première / Terminale
 _(pages d'accueil existantes ; chapitres à venir)_
