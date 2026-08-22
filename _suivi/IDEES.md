@@ -42,6 +42,36 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
 ### T1-C4
 - 💡 Réintégrer le tableau périodique complet (actuellement bloc 🚧 différé).
 
+## Publicités sur les postes de visionnage
+
+- 💡 **Supprimer les publicités des deux postes de visionnage du thème 1**
+  (étapes 5.2, les couches, et 6.3, le DNS). `youtube-nocookie` supprime le
+  cookie publicitaire, **pas les publicités** — c'est le motif de Loïc.
+  Piste : **Digiview**, de La Digitale — lecteur épuré, sans publicité ni
+  suggestions, qui fournit un **lien iframe**. Ce serait donc un remplacement
+  direct des `<iframe src="https://www.youtube-nocookie.com/embed/…">`, sans
+  toucher à la structure du `.poste`.
+
+  Trois vérifications préalables, **à faire par Loïc** :
+  1. **RGPD** — ouvrir F12 → Réseau sur un Digiview et regarder si des requêtes
+     partent encore vers `googlevideo.com`. Si oui, on a gagné les publicités
+     mais pas l'IP des élèves.
+  2. **Dépendance externe** — `ladigitale.dev` deviendrait un point de panne
+     unique pour les deux postes de visionnage.
+  3. **Compatibilité** — certaines vidéos sont protégées par leurs auteurs et
+     l'outil échoue. À tester sur les deux vidéos Cookie connecté
+     (`26jazyc7VNk` et `qzWdzAvfBoo`).
+
+  Piste PeerTube du ministère (`tube-numerique-educatif.apps.education.fr`) :
+  suppose de réhéberger la vidéo, donc l'accord de l'auteur. Écartée pour la
+  rentrée. Voir aussi la ligne « Hébergement des vidéos SNT » en attente
+  d'arbitrage dans `DECISIONS.md` — PeerTube peut diffuser en pair-à-pair, ce
+  qui exposerait l'IP de l'élève à d'autres spectateurs.
+
+  🔴 **Repris à froid après la rentrée** : Loïc veut d'abord que le cours tourne.
+
+---
+
 ## Fonctionnalités du site
 
 - 💡 **Entraînement illimité aux conversions binaires** (posé le 21/08/2026, en
