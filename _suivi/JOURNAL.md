@@ -12,6 +12,57 @@
 
 ---
 
+## 22/08/2026 — Audit des séances 3 et 4 de `t1` : trois diagnostics, dont deux faux au départ
+
+Deuxième brief de la journée, sur l'ancienne séance 2 (« Internet et moi ») et
+l'ancienne séance 3 (« Le réseau physique »). Il avait été écrit **avant** la
+découpe du matin, donc toute sa numérotation avait glissé d'un cran — les
+`data-cle` posés la veille ont servi exactement à ça : se repérer sans jamais
+compter les étapes.
+
+**Le diagnostic qu'on croyait tenir, et qui était faux.** Loïc signalait trois
+blocs de menus déroulants « totalement illisibles », et le brief supposait la
+même cause que le tableau de Lannion : largeur intrinsèque des champs, pas de
+conteneur défilant. Mesure au navigateur : rien à voir. `.label-selects label`
+était en `display:grid` — et en grille, **chaque enfant direct devient une
+cellule**. Un énoncé écrit « Si le `<b>`fil partagé`</b>` est coupé en son
+milieu… » se retrouvait éclaté en trois cases. Les questions **sans balise** dans
+leur énoncé, elles, s'affichaient parfaitement : d'où un défaut illisible à la
+relecture du code et évident à l'écran. C'est exactement le partage 1 sain /
+2-3-4 cassés que Loïc décrivait, et personne ne l'aurait deviné sans capture.
+
+**Le bug qu'on n'a pas reproduit.** Le brief demandait de trouver pourquoi le
+bilan de fin d'activité refusait de s'ouvrir. Parcours joué pour de vrai dans
+Chrome sur trois étapes — rédactions dans la scène de focus, textes à trous,
+menus, QCM cliqué question par question : **le bilan s'ouvre à chaque fois, au
+bon moment**, et le compteur descend d'une unité par bloc rempli. Le seul chemin
+reproductible vers le symptôme est le tableau de Lannion rogné : sous 520 px, la
+carte escamotait deux à quatre champs de saisie, le texte à trous ne pouvait
+donc jamais être complet, et le bilan restait fermé sans que rien ne l'explique.
+Corrigé — 8 champs sur 8 atteignables à 390 px. Si le blocage se reproduit sur
+un écran large, il faudra le prendre en session connectée : tout ce qui
+distingue encore le cas de Loïc du mien passe par Supabase.
+
+**Le piège du jour.** En ajoutant une animation à l'ouverture de la porte
+d'intuition, l'onglet s'est mis à mourir au chargement. Cause : un
+`MutationObserver` surveille `class` dans `.steps` et rappelle `bqMaj()`. Or
+`classList.remove()` **réécrit l'attribut même quand le jeton est absent** —
+mutation, rappel, mutation, jusqu'à tuer le moteur de rendu. `classList.toggle(t,
+false)` court-circuite dans ce cas : c'est pour ça que le code d'origine, qui
+n'utilisait que `toggle`, convergeait depuis toujours. Deux lignes en apparence
+équivalentes, et l'une des deux fait exploser la page.
+
+**Le reste.** L'enquête box dit maintenant qu'elle est facultative, qu'elle
+réclame un mot de passe que seul un adulte détient, et qu'un refus des parents
+est une réponse acceptable — trois phrases, dans le texte vu par l'élève. Le
+maillé remonte dans la liste des topologies et Internet en sort : ce n'est pas
+une quatrième forme, c'est un assemblage des trois. Le débriefing sur l'ordre de
+grandeur ne se lit plus avant d'avoir cherché. Quatre notes de chantier réglées
+ont quitté la page pour le suivi. Et deux images de fibre optique sont entrées
+dans le dépôt, sous CC BY-SA 2.5 et CC BY 3.0, avec auteur, nom de fichier,
+licence et lien dans chaque légende — la photo est passée de 3 Mo à 56 Ko au
+passage, ce qui n'est pas un détail sur le réseau d'un lycée.
+
 ## 21/08/2026 — Le module transversal « Représenter l'information »
 
 Écriture d'une neuvième page de séquence SNT, `snt-m1`, à partir du brief du

@@ -29,6 +29,15 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
   l'un des trois sites à relever est celui de l'AFNIC, citée trois paragraphes plus
   loin. Boucle gratuite, effet mémoire réel.
 
+## Fraîcheur des documents datés
+
+- 💡 **`t1` étape 4.4 — doc 2 de l'Arcep, millésime « fin 2024 »** (reporté ici le
+  22/08/2026, en retirant le bandeau de chantier de la page). Le document porte
+  son année dans son titre et dans sa note, et les questions du QCM sont
+  formulées en **ordres de grandeur** : elles ne se périment pas si le classement
+  des plateformes bouge. À rafraîchir seulement le jour où tu voudras une
+  édition plus récente de l'Arcep — ce n'est pas une dette, c'est un rendez-vous.
+
 ## Par chapitre
 ### T1-C4
 - 💡 Réintégrer le tableau périodique complet (actuellement bloc 🚧 différé).
