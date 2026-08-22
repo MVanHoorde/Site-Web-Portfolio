@@ -279,6 +279,29 @@ try {
   notes.push("assets/js/seances-snt.js absent ou illisible — lancer : node generer-seances.mjs");
 }
 
+/* ---------- Le sommaire généré est-il servi dans la MÊME version partout ? ----------
+   `seances-snt.js` porte l'ordre des séances : c'est lui qui donne son rang à
+   chacune, donc le plafond d'avance. Deux pages qui n'en servent pas la même
+   version ne calculent pas le même plafond — le professeur ouvre un thème que
+   l'élève voit fermé, et rien ne le signale.
+   Vécu le 22/08/2026 : le fichier régénéré (t1 passé à 6 séances) est resté à
+   `?v=13` sur les pages élèves, pendant que `prof/index.html` le chargeait sans
+   `?v=` du tout et recevait donc la version fraîche. Bloquant. */
+{
+  const refs = [];
+  for (const f of html) {
+    for (const m of lire(f).matchAll(/seances-snt\.js(\?v=(\d+))?/g)) refs.push({ f, v: m[2] || null });
+  }
+  const sansVersion = refs.filter((r) => !r.v).map((r) => r.f);
+  const versions = [...new Set(refs.filter((r) => r.v).map((r) => r.v))];
+  if (sansVersion.length)
+    ko("seances-snt.js sans ?v=", `${[...new Set(sansVersion)].join(", ")} — le cache y servira une version différente des autres pages`);
+  if (versions.length > 1)
+    ko("seances-snt.js en versions divergentes", `?v=${versions.join(" · ?v=")} — le plafond d'avance ne se calcule pas pareil d'une page à l'autre`);
+  if (refs.length && !sansVersion.length && versions.length === 1)
+    info(`seances-snt.js?v=${versions[0]} — même version sur les ${refs.length} pages qui le chargent`);
+}
+
 /* ---------- Le répertoire des questions est-il à jour ? ----------
    assets/js/questions-snt.js est produit par generer-questions.mjs. Il
    sert au tableau de bord à rappeler l'énoncé en face d'une copie.

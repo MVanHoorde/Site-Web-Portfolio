@@ -1366,3 +1366,30 @@ avant, donc elle n'a jamais été touchée. `defilerVers` est exposée sur `wind
 
 Ce que ça dit sur la méthode : trois passes de relecture du code n'avaient pas
 vu ce bug, une seule ouverture de la page dans un vrai navigateur l'a sorti.
+
+**22/08/2026, fin de journée — le plafond d'avance désaccordé entre le prof et
+l'élève.** Loïc signale des thèmes fermés côté élève alors que son tableau de
+bord affiche « tout ouvert ». Deux choses en cause, dont une de la session.
+
+**De la session** : `seances-snt.js` a été régénéré au lot J (t1 passe à
+6 séances, donc tous les rangs à partir de `snt-t2` glissent d'un cran) **sans
+que son `?v=13` bouge**. Les navigateurs servaient donc l'ancien référentiel
+depuis leur cache. Pire : `prof/index.html` le chargeait **sans `?v=` du tout**
+et recevait, lui, la version fraîche. Le professeur et l'élève ne calculaient
+pas sur le même ordre de séances. Passé à `?v=14` partout, `prof/index.html`
+compris, et `verifier.mjs` refuse désormais — **en bloquant** — une référence
+sans `?v=` ou deux versions divergentes : le rang d'une séance commande le
+plafond, une version en retard ouvre ou ferme les mauvaises portes en silence.
+La règle 🔴 du versionnement de `CLAUDE.md` ne visait que
+`chapitre-commun.css` ; elle vaut pour tout fichier **généré**.
+
+**Ce que la lecture du code apprend sur le symptôme.** Un thème n'est fermé au
+hub que si **toutes** ses séances dépassent le plafond, et le plafond vaut
+« rang de la dernière séance faite + avance autorisée ». Simulation faite sur le
+référentiel réel : si le plafond était simplement bas, `snt-t1` resterait ouvert
+(ses rangs 5 à 10, plafond 7 avec T1 S1 faite). Or la capture montre `m1`
+— rangs 0 et 1 — comme **seul** thème sans bandeau. Cette signature-là ne
+s'obtient qu'avec un plafond au rang 1, donc `dernierFait = -1` : **aucune
+séance faite n'est reconnue côté élève**, et `plafondLeve` y est faux. Reste à
+savoir pourquoi — la purge des lignes de test du matin, ou une session qui n'est
+pas sur la classe SNTTEA. Non tranché : ça se lit en base, pas dans le dépôt.
