@@ -44,6 +44,13 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
   remplacement de l'atelier commun — et sans score chiffré ni note, l'évaluation
   se faisant hors du site. La potence SVG de l'étape 1.3 est **déjà
   paramétrable** (tout nombre de 1 à 4095) : la moitié du travail est faite.
+- 💡 **Afficher sa classe à l'élève, sur le hub** (posé le 22/08/2026). Un
+  après-midi perdu à chercher pourquoi les thèmes restaient fermés alors que le
+  tableau de bord affichait « tout ouvert » : le compte de test n'était pas dans
+  la classe qu'on réglait. Rien ne le disait nulle part — ni le hub, ni la page
+  de séquence. Une mention discrète (« Classe SNTTEA ») près du badge de compte
+  suffirait. Vaut aussi pour un élève qui se tromperait de code à l'inscription :
+  aujourd'hui il travaillerait des semaines dans la mauvaise classe sans le voir.
 - 💡 _(ex. moteur de recherche, index des notions, mode révision…)_
 
 ## Outils & production

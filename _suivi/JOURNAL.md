@@ -1393,3 +1393,17 @@ s'obtient qu'avec un plafond au rang 1, donc `dernierFait = -1` : **aucune
 séance faite n'est reconnue côté élève**, et `plafondLeve` y est faux. Reste à
 savoir pourquoi — la purge des lignes de test du matin, ou une session qui n'est
 pas sur la classe SNTTEA. Non tranché : ça se lit en base, pas dans le dépôt.
+
+**Tranché le soir même** : le compte utilisé sur le hub n'était pas rattaché à
+la classe réglée dans le tableau de bord. Cette autre classe avait le défaut
+`avance_max = 2` et aucune ligne dans `seances_faites` — d'où le plafond au
+rang 1, et `m1` seul ouvert. Aucun défaut de code : le plafond faisait
+exactement ce qu'on lui demandait. Le correctif de cache reste nécessaire pour
+sa propre raison.
+
+Deux choses à en retenir. La signature de la panne se lisait dans la capture
+avant même d'ouvrir la base : **quel** thème reste ouvert dit à quel rang est le
+plafond, et « m1 seul » ne pouvait vouloir dire qu'une chose. Et surtout : rien,
+nulle part, ne dit à l'élève dans quelle classe il est. Un élève qui se
+tromperait de code à l'inscription travaillerait des semaines dans la mauvaise
+classe sans jamais le voir. Versé dans `IDEES.md`.
