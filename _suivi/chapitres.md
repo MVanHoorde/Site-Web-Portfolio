@@ -245,13 +245,14 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
     1.4 deux fois (8 questions → 6), 1.6 une fois (matière déménagée en Q10).
   - **Divers** : les sources de 1.2 réordonnées (l'anglais en dernier) ; l'épisode
     long de France Culture passe après le QCM de 1.3, c'est un approfondissement.
-  - ⏳ **À relire avant validation** : la **question 4 de 1.4 réécrite** (commit
-    isolé, revertable) et les **trois dates manquantes de la frise** (Usenet,
-    NSFNET, « trois réseaux reliés ») — le brief croyait qu'il n'en manquait
-    qu'une.
-  - ⚠ **À faire hors dépôt** : purger les lignes de test dans Supabase. Les clés
-    d'étapes ont changé de forme et `s2` désigne désormais « D'ARPANET à
-    Internet » : les anciennes lignes ne veulent plus rien dire.
+  - ✅ **Question 4 de 1.4 relue et validée** par Loïc le 22/08.
+  - ⏳ **Trois `<li>` de la frise restent sans date** (Usenet, NSFNET, « trois
+    réseaux reliés ») — le brief croyait qu'il n'en manquait qu'une. Aucune
+    valeur n'a été proposée : le trou se voit depuis que la validation révèle
+    toutes les dates. **À trancher.**
+  - ✅ **Lignes de test purgées dans Supabase** le 22/08 par Loïc, après la pose
+    des clés et la découpe : les clés d'étapes avaient changé de forme et `s2`
+    désigne désormais « D'ARPANET à Internet ».
 - 🔎 **20/08/2026 — audit complet, puis trois lots de corrections.** Ce qui a changé :
   - **Séance 2 récupérée.** Elle n'avait **aucune porte** : elle s'auto-validait,
     ouvrait la séance 3 en même temps qu'elle, restait à 0 % à vie et remontait

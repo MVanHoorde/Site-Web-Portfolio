@@ -45,7 +45,7 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 22/08/2026 | **L'étiquette de champ perd son `float:right`** et prend sa propre ligne. Les libellés à rallonge se réduisent à leur tête, le détail passant dans une bulle tactile | ✅ |
 | 22/08/2026 | **La frise se valide au 6ᵉ essai**, plus au 3ᵉ, et « voir la correction » la valide aussi — elle ne le faisait pas. À la validation, toutes les dates sortent en bout de ligne | ✅ |
 | 22/08/2026 | **Un corrigé ne doit jamais donner la réponse d'une question ultérieure.** Trois cas trouvés dans `t1` (deux en 1.4, un en 1.6) : c'était le **corrigé**, pas l'énoncé, qui fuitait. Défaut de conception à surveiller ailleurs dans le projet | ✅ |
-| 22/08/2026 | ⏳ **La question 4 de l'étape 1.4 réécrite** (« Un réseau sans centre a aussi un prix. Lequel ? »). Elle recouvrait la question 8 ; elle porte désormais la contrepartie et ouvre un pont vers le routage. **Contenu : proposition, pas un acquis.** Commit isolé, `git revert` suffit | ⏳ |
+| 22/08/2026 | **La question 4 de l'étape 1.4 réécrite** (« Un réseau sans centre a aussi un prix. Lequel ? »). Elle recouvrait la question 8 ; elle porte désormais la contrepartie et ouvre un pont vers le routage. **Relue et validée par Loïc le 22/08** | ✅ |
 | 22/08/2026 | ⏳ **Trois `<li>` de la frise restent sans date** (Usenet, NSFNET, « trois réseaux reliés »). La CNIL a reçu 1978 comme demandé, mais le brief croyait qu'il n'en manquait qu'une. Depuis que la validation révèle toutes les dates, ces trois trous se voient. À arbitrer | ⏳ |
 
 ## Module transversal `snt-m1` « Représenter l'information » — 21/08/2026
