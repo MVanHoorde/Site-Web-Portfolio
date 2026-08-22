@@ -90,15 +90,6 @@ window.QUESTIONS_SNT = {
     "seance": "s4",
     "seance_num": "4"
   },
-  "NET-R-ville": {
-    "sequence": "snt-t1",
-    "titre": "Le débit chez toi",
-    "question": "Cherche ta ville sur la carte. Quel est le débit moyen disponible, et par quelle technologie (fibre, ADSL…) ?",
-    "min": "12",
-    "max": "300",
-    "seance": "s4",
-    "seance_num": "4"
-  },
   "NET-R-zones": {
     "sequence": "snt-t1",
     "titre": "Meilleurs et moins bons débits",
@@ -168,15 +159,6 @@ window.QUESTIONS_SNT = {
     "question": "Ce trafic qui explose a un coût énergétique et écologique (data centers, réseaux, appareils). À ton avis, ce trafic peut-il croître indéfiniment ? Que pourrait-on faire, à notre échelle, pour le limiter ?",
     "min": "20",
     "max": "450",
-    "seance": "s4",
-    "seance_num": "4"
-  },
-  "NET-R4b": {
-    "sequence": "snt-t1",
-    "titre": "Ce que la vidéo m'a appris",
-    "question": "Relève trois choses que la vidéo t'a apprises et que le cours ne disait pas. Pour chacune, une phrase suffit. Si un passage t'a surpris ou paru difficile à croire, dis-le aussi : on en discutera en classe.",
-    "min": "20",
-    "max": "600",
     "seance": "s4",
     "seance_num": "4"
   },

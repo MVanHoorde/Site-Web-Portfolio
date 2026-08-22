@@ -2647,6 +2647,31 @@ function initCloze(){
              + '</span>';
       }
       $('.cloze-msg',bloc).innerHTML=h;
+
+      /* ---- Débriefing d'ordre de grandeur, révélé sous condition ----
+         Ajouté le 22/08/2026 (audit de l'étape des câbles sous-marins).
+         Le texte qui explique « tu as peut-être trouvé entre tant et
+         tant, c'est ce qu'on appelle un ordre de grandeur » était
+         affiché d'emblée sous la question : il donnait la réponse avant
+         qu'elle soit cherchée. Il ne s'ouvre plus qu'après ce clic, et
+         seulement si le résultat est à peu près juste.
+         Mécanisme volontairement générique et déclaratif — aucun code
+         propre à une question : un trou porte data-ordre (la valeur de
+         référence) et, au besoin, data-ordre-tol (la tolérance en %,
+         25 par défaut) ; le .reveal du champ suit. On réutilise
+         .reveal/.show, le mécanisme de révélation déjà en place. */
+      var trouOrdre=$('[data-ordre]',bloc);
+      if(trouOrdre){
+        var champOrdre=bloc.closest('.field')||bloc.parentElement;
+        var revOrdre=champOrdre?$('[data-reveal]',champOrdre):null;
+        if(revOrdre){
+          var lu=parseFloat(String(trouOrdre.value).replace(',','.').replace(/[^0-9.\-]/g,''));
+          var cible=parseFloat(trouOrdre.dataset.ordre);
+          var marge=Math.abs(cible)*(parseFloat(trouOrdre.dataset.ordreTol||'25')/100);
+          revOrdre.classList.toggle('show', isFinite(lu)&&isFinite(cible)&&Math.abs(lu-cible)<=marge);
+        }
+      }
+
       /* validation à l'envoi : avoir répondu suffit */
       var etape=bloc.closest('.step');
       if(etape){
@@ -2926,8 +2951,35 @@ function bqMaj(){
   $$('[data-porte]').forEach(function(porte){
     var ta=$('textarea',porte);
     var ouvert=!!(ta && ta.value.trim());
+    /* La suite de l'étape apparaissait d'un coup, à la première lettre
+       écrite (audit du 22/08/2026 : « c'est peut-être un peu rapide »).
+       On ne pose l'animation qu'au VRAI basculement fermé → ouvert :
+       sans ce garde, bqMaj() est rappelée à chaque frappe et la page
+       se remettrait à clignoter à chaque caractère. */
+    var etait = porte.dataset.porteOuverte==='1';
+    var bascule = ouvert && !etait;
+    porte.dataset.porteOuverte = ouvert ? '1' : '0';
+    /* 🔴 PIÈGE, trouvé au navigateur le 22/08/2026 (onglet tué en boucle).
+       Un MutationObserver surveille TOUT changement de `class` dans .steps
+       et rappelle bqMaj() (voir demarrer(), plus bas). Or classList.remove()
+       réécrit l'attribut MÊME si le jeton était absent : chaque passage
+       produisait une mutation, qui rappelait bqMaj, qui remutait… jusqu'à
+       faire planter le moteur de rendu. classList.toggle(t,false), lui,
+       court-circuite quand le jeton n'est pas là — c'est pourquoi la ligne
+       d'origine, elle, convergeait. Règle : dans bqMaj, ne jamais écrire une
+       classe sans avoir vérifié qu'elle change vraiment. */
     var n=porte.nextElementSibling;
-    while(n){ n.classList.toggle('porte-close',!ouvert); n=n.nextElementSibling; }
+    while(n){
+      n.classList.toggle('porte-close',!ouvert);
+      if(bascule){
+        n.classList.remove('porte-ouvre');
+        void n.offsetWidth;              /* relance l'animation */
+        n.classList.add('porte-ouvre');
+      } else if(!ouvert && n.classList.contains('porte-ouvre')){
+        n.classList.remove('porte-ouvre');
+      }
+      n=n.nextElementSibling;
+    }
     var mot=$('.porte-mot',porte);
     if(!mot){
       mot=document.createElement('div');

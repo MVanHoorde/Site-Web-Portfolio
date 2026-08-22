@@ -227,16 +227,31 @@
      rend les sous-titres pleine largeur. */
   .label-selects{display:grid;grid-template-columns:1fr;gap:9px}
   .label-selects .dq-sub{grid-column:1/-1}
-  .label-selects label{font-size:13px;color:var(--ink-soft);display:grid;
-    grid-template-columns:minmax(0,1fr) minmax(0,300px);align-items:center;gap:10px;
-    padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
+  /* Le <label> était lui aussi une grille à deux colonnes — et c'est ce qui
+     rendait les questions illisibles (audit du 22/08/2026, mesuré au
+     navigateur). En grille, CHAQUE enfant direct devient une cellule : un
+     énoncé écrit « Si le <b>fil partagé</b> est coupé… » se retrouvait
+     éclaté en trois cases, « Si le » d'un côté, « fil partagé » de l'autre,
+     la fin à la ligne suivante. Seules les questions sans balise dans leur
+     énoncé s'affichaient correctement, ce qui rendait le défaut difficile
+     à lire dans le code.
+     display:block rend à l'énoncé son flux de texte normal — le <b> y
+     redevient de l'emphase, pas une colonne — et le menu, posé dessous,
+     prend toute la largeur : la réponse choisie n'est plus tronquée
+     (l'option la plus longue réclamait 414 px pour 300 px disponibles). */
+  .label-selects label{font-size:13px;color:var(--ink-soft);display:block;line-height:1.5;
+    padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
   .label-selects select{font-family:"IBM Plex Sans";font-size:13.5px;padding:6px 8px;border-radius:8px;
-    border:1px solid var(--line);background:var(--surface-2);color:var(--ink);width:100%;max-width:100%}
-  @media(max-width:760px){
-    .label-selects label{grid-template-columns:1fr;gap:5px}
-  }
+    border:1px solid var(--line);background:var(--surface-2);color:var(--ink);
+    display:block;width:100%;max-width:100%;margin-top:7px}
   /* Porte d'intuition : la suite de l'étape n'existe pas encore. */
   .porte-close{display:none !important}
+  /* …et quand elle s'ouvre, elle ne surgit plus d'un coup (audit du
+     22/08/2026). L'animation est posée une seule fois, au passage de
+     fermé à ouvert ; le réglage global « animations réduites »
+     (ligne ~473) la neutralise sans qu'on ait à la répéter. */
+  .porte-ouvre{animation:porte-apparait .4s ease both}
+  @keyframes porte-apparait{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
   .porte-mot{margin-top:9px;font-size:13px;color:var(--ink-faint);font-style:italic}
   /* Justification du texte courant (relecture du 26/07/2026).
      Portée volontairement limitée aux paragraphes de contenu : justifier
@@ -318,7 +333,10 @@
   .modal h3{font-family:"Space Grotesk";font-size:22px;margin:0 0 8px;color:var(--ink)}
   .modal p{font-size:14.5px;color:var(--ink-soft);margin:0 0 18px;line-height:1.55}
   .modal .m-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-  .modal .recap{text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13.5px;max-height:200px;overflow:auto}
+  /* 200 px = trois lignes : le récapitulatif de fin de séance s'arrêtait au
+     milieu d'une phrase et rien ne disait qu'il défilait (audit du
+     22/08/2026). 60 vh le laisse tenir dans la fenêtre sans la déborder. */
+  .modal .recap{text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13.5px;max-height:60vh;overflow:auto}
   .modal .recap .ri{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid var(--line)}
   .modal .recap .ri:last-child{border-bottom:none}
   .modal .recap .ri b{color:var(--ok)}
@@ -922,6 +940,20 @@ body.teacher .ens-actif{display:flex}
 .doc-table.compare td{vertical-align:top;hyphens:auto}
 @media (max-width:560px){.doc-table.compare{font-size:12.5px}
   .doc-table.compare th,.doc-table.compare td{padding:5px 7px}}
+
+/* Tableau plus large que son cadre (audit du 22/08/2026) — le tableau de
+   Lannion, cinq colonnes dont quatre de saisie, réclamait 477 px là où son
+   cadre en offrait 240 : la carte a overflow:hidden, les deux dernières
+   colonnes disparaissaient purement et simplement, et l'élève ne pouvait
+   pas remplir des champs qu'il ne voyait pas. Le variante .compare avait
+   reçu son traitement responsive le 25/07 ; celle-ci ne l'avait jamais eu.
+   Deux gestes qui se complètent : les champs cessent d'imposer leur
+   largeur intrinsèque (l'attribut size posé par le moteur de trous), et ce
+   qui dépasse malgré tout défile au lieu d'être rogné. */
+.doc-table input.short{width:100%;min-width:0;box-sizing:border-box}
+.doc-table th:first-child{white-space:nowrap}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:4px 0}
+.table-scroll>.doc-table{margin:0}
 
 /* ---------- Glisser-déposer générique (pointer events, tactile inclus) ----------
    Utilisé par les 7 couches OSI (.osi-drag) et par la frise chronologique (.tri-drag).
