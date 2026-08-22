@@ -447,7 +447,7 @@
     var titre = champ.dataset.focusTitre||'À toi d\'écrire';
     var question = champ.dataset.focusQuestion||'';
     var max = parseInt(champ.dataset.focusMax||'200',10);
-    var min = parseInt(champ.dataset.focusMin||'25',10);
+    var min = parseInt(champ.dataset.focusMin||'20',10);
     var strict = champ.dataset.focusStrict==='1';
     var compare = champ.dataset.focusCompare ? memoireReponses[champ.dataset.focusCompare] : null;
 
@@ -2633,10 +2633,12 @@ function initCloze(){
       if(ok===n) h+='<span class="m-ok">Tout est juste'+(presque?' — attention à l\'orthographe, je l\'ai corrigée pour toi.':'.')+'</span>';
       else{
         if(presque) h+='<span class="m-presque">'+presque+' réponse(s) acceptée(s) malgré une faute d\'orthographe : '+fautes.join(', ')+'.</span><br>';
+        /* La phrase « un bouton indice vient d'apparaître » a sauté
+           le 22/08/2026 : l'élève voit le bouton, la lui décrire alourdit
+           le message sans rien lui apprendre. Le rappel « Où chercher »
+           reste, lui : il dit où lire, pas ce qui est déjà à l'écran. */
         h+='<span class="m-ko">'+(n-ok)+' réponse(s) à revoir.'
-             + (aideLoc
-                ? ' Tout est dans le document : relis le rappel « Où chercher » en haut de l\'exercice.'
-                : ' Un bouton <b>indice</b> vient d\'apparaître sur chacune d\'elles : le texte s\'affiche juste en dessous de l\'exercice.')
+             + (aideLoc ? ' Tout est dans le document : relis le rappel « Où chercher » en haut de l\'exercice.' : '')
              + '</span>';
       }
       $('.cloze-msg',bloc).innerHTML=h;
@@ -3119,6 +3121,13 @@ document.querySelectorAll('[data-tri]').forEach(function(liste){
     });
   });
 });
+/* E3 (22/08/2026) — à la validation, toutes les dates sortent en bout de
+   ligne. Le markup les porte déjà (.an-ind, révélées au compte-gouttes par
+   les indices) : une frise validée sans ses dates ne se relit pas. */
+function revelerDates(liste){
+  if(!liste) return;
+  liste.querySelectorAll('.an-ind').forEach(function(e){ e.hidden=false; });
+}
 document.querySelectorAll('[data-tri-check]').forEach(function(btn){
   btn.addEventListener('click', function(){
     var champ=btn.closest('.field'), liste=champ.querySelector('[data-tri]');
@@ -3159,18 +3168,21 @@ document.querySelectorAll('[data-tri-check]').forEach(function(btn){
        pop-up « Séance terminée » s'ouvrait pendant que l'élève
        replaçait encore ses dates.
        Sur un tri, vérifier n'est pas rendre : on valide quand l'ordre
-       est juste, ou au 3e essai (l'élève a alors vraiment cherché, et
-       on ne bloque personne sur une frise difficile). */
+       est juste, ou au 6e essai (l'élève a alors vraiment cherché, et
+       on ne bloque personne sur une frise difficile).
+       Passé de 3 à 6 le 22/08/2026 : trois essais, c'était trop court —
+       la frise se validait avant que l'élève ait eu le temps de chercher. */
     var etape=champ.closest('.step');
     if(etape){
       var essais = (parseInt(etape.dataset.triEssais,10) || 0) + 1;
       etape.dataset.triEssais = essais;
       etape.dataset.triScore = bon+'/'+n;
-      if(bon===n || essais>=3){
+      if(bon===n || essais>=6){
         etape.classList.add('is-done');
         etape.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
+        revelerDates(liste);
       } else if(v){
-        v.textContent += ' (essai '+essais+' sur 3)';
+        v.textContent += ' (essai '+essais+' sur 6)';
       }
     }
   });
@@ -3192,7 +3204,7 @@ document.querySelectorAll('[data-tri-indice]').forEach(function(btn){
              v.style.color='var(--ink-soft)'; }
     } else {
       btn.hidden=true;
-      if(v){ v.textContent='Huit dates sur douze sont là. Les quatre restantes se déduisent de ce qui les entoure.';
+      if(v){ v.textContent='Neuf dates sur douze sont là. Les trois restantes se déduisent de ce qui les entoure.';
              v.style.color='var(--ink-soft)'; }
     }
   });
@@ -3203,6 +3215,23 @@ document.querySelectorAll('[data-tri-correction]').forEach(function(btn){
     var suite=champ.querySelector('.tri-suite'); if(suite) suite.hidden=false;
     btn.hidden=true;
     var bI=champ.querySelector('[data-tri-indice]'); if(bI) bI.hidden=true;
+    /* E2 (22/08/2026) : demander la correction valide l'étape. Vérifié :
+       ça ne le faisait pas — le bouton révélait la suite et s'arrêtait là,
+       laissant l'étape « à faire » pour un élève qui avait pourtant fini. */
+    var liste=champ.querySelector('[data-tri]');
+    revelerDates(liste);
+    var etape=btn.closest('.step');
+    if(etape){
+      if(!etape.dataset.triScore){
+        /* scoreDe() renverrait null sans ça : on pose le dernier état connu */
+        var items=liste?Array.prototype.slice.call(liste.querySelectorAll('li')):[];
+        var attendu=items.map(function(li){ return parseInt(li.dataset.rang,10); }).sort(function(a,b){return a-b;});
+        var bon=0; items.forEach(function(li,i){ if(parseInt(li.dataset.rang,10)===attendu[i]) bon++; });
+        etape.dataset.triScore=bon+'/'+(items.length||0);
+      }
+      etape.classList.add('is-done');
+      etape.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
+    }
     if(suite) defilerVers(suite);
   });
 });
