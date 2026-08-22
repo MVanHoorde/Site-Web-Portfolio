@@ -46,7 +46,7 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 22/08/2026 | **La frise se valide au 6ᵉ essai**, plus au 3ᵉ, et « voir la correction » la valide aussi — elle ne le faisait pas. À la validation, toutes les dates sortent en bout de ligne | ✅ |
 | 22/08/2026 | **Un corrigé ne doit jamais donner la réponse d'une question ultérieure.** Trois cas trouvés dans `t1` (deux en 1.4, un en 1.6) : c'était le **corrigé**, pas l'énoncé, qui fuitait. Défaut de conception à surveiller ailleurs dans le projet | ✅ |
 | 22/08/2026 | **La question 4 de l'étape 1.4 réécrite** (« Un réseau sans centre a aussi un prix. Lequel ? »). Elle recouvrait la question 8 ; elle porte désormais la contrepartie et ouvre un pont vers le routage. **Relue et validée par Loïc le 22/08** | ✅ |
-| 22/08/2026 | ⏳ **Trois `<li>` de la frise restent sans date** (Usenet, NSFNET, « trois réseaux reliés »). La CNIL a reçu 1978 comme demandé, mais le brief croyait qu'il n'en manquait qu'une. Depuis que la validation révèle toutes les dates, ces trois trous se voient. À arbitrer | ⏳ |
+| 22/08/2026 | **Les douze `<li>` de la frise ont désormais leur date.** Le brief croyait qu'il n'en manquait qu'une (la CNIL) ; il en manquait quatre. Loïc a validé les trois autres : **1977** (trois réseaux reliés — la démonstration SATNET/PRNET/ARPANET du 22 novembre), **1979** (Usenet), **1986** (NSFNET). Elles sont en `data-niveau="3"` : le compte-gouttes s'arrête au niveau 2, donc elles n'apparaissent qu'à la validation et le verdict « neuf dates sur douze, les trois restantes se déduisent » reste exact | ✅ |
 
 ## Module transversal `snt-m1` « Représenter l'information » — 21/08/2026
 

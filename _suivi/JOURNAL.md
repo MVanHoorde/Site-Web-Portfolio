@@ -1346,3 +1346,23 @@ aucune n'est masquée. `verifier.mjs` sort les mêmes 19 problèmes qu'au dépar
 manquantes de la frise, le test au doigt sur un vrai iPad, et le nettoyage des
 lignes de test dans Supabase — les clés d'étapes ont changé de forme et les
 identifiants de séance ont changé de sens.
+
+**22/08/2026, plus tard — la frise complétée, et un bug plus vieux que l'audit.**
+Loïc valide la question 4 réécrite et les trois dates qui manquaient encore :
+1977 (les trois réseaux reliés), 1979 (Usenet), 1986 (NSFNET). Elles sont posées
+en `data-niveau="3"` plutôt qu'en 2 : le bouton d'indices s'arrête au niveau 2,
+donc le compte-gouttes reste à 4 puis 9 dates, le verdict « neuf sur douze, les
+trois restantes se déduisent » redevient littéralement vrai, et les trois
+dernières ne sortent qu'à la validation.
+
+En vérifiant ce comportement au navigateur, la console a lâché
+`defilerVers is not defined` à chaque clic sur « voir la correction ». La
+fonction est définie dans l'IIFE qui va de la ligne 1436 à la 3087 ; le
+handler de la frise vit dans celle qui commence à la 3089. **Le défaut est
+antérieur à l'audit** — il existait déjà dans la version du 21/08, où cet appel
+était la dernière instruction du handler : rien ne se voyait, sinon l'absence de
+défilement vers la correction. Depuis le lot E2, la validation de l'étape passe
+avant, donc elle n'a jamais été touchée. `defilerVers` est exposée sur `window`.
+
+Ce que ça dit sur la méthode : trois passes de relecture du code n'avaient pas
+vu ce bug, une seule ouverture de la page dans un vrai navigateur l'a sorti.

@@ -1487,6 +1487,11 @@ function defilerVers(el, doux){
     requestAnimationFrame(function(){ requestAnimationFrame(aller); });
   } else setTimeout(aller,60);
 }
+/* Exposée : le bouton « voir la correction » de la frise vit dans une AUTRE
+   IIFE de ce fichier et l'appelait sans la voir — « defilerVers is not
+   defined » à chaque clic, et aucun défilement vers la correction. Trouvé au
+   navigateur le 22/08/2026, en vérifiant le lot E2 ; le défaut est antérieur. */
+window.defilerVers = defilerVers;
 
 /* Le bouton « Étape suivante » se place sous la DERNIÈRE ÉTAPE
    RÉVÉLÉE, pas en bas de la séance. Tant que les étapes à venir

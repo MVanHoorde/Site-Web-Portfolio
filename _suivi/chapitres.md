@@ -246,10 +246,18 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   - **Divers** : les sources de 1.2 réordonnées (l'anglais en dernier) ; l'épisode
     long de France Culture passe après le QCM de 1.3, c'est un approfondissement.
   - ✅ **Question 4 de 1.4 relue et validée** par Loïc le 22/08.
-  - ⏳ **Trois `<li>` de la frise restent sans date** (Usenet, NSFNET, « trois
-    réseaux reliés ») — le brief croyait qu'il n'en manquait qu'une. Aucune
-    valeur n'a été proposée : le trou se voit depuis que la validation révèle
-    toutes les dates. **À trancher.**
+  - ✅ **La frise est complète — douze dates sur douze.** Le brief croyait qu'il
+    n'en manquait qu'une (la CNIL, 1978) ; il en manquait quatre. Validées le
+    22/08 : **1977** (trois réseaux reliés), **1979** (Usenet), **1986**
+    (NSFNET). En `data-niveau="3"`, donc hors du compte-gouttes — les indices
+    s'arrêtent au niveau 2 et le verdict « neuf sur douze » reste exact ; les
+    trois dernières ne sortent qu'à la validation. Vérifié au navigateur :
+    0 → 4 → 9 → 12, et l'ordre chronologique suit les douze rangs.
+  - 🐛 **`defilerVers is not defined`** — le bouton « voir la correction » de la
+    frise appelait cette fonction depuis une **autre IIFE** du fichier : erreur
+    à chaque clic, et aucun défilement vers la correction. Défaut antérieur à
+    l'audit, trouvé en vérifiant le lot E2 au navigateur. La fonction est
+    exposée sur `window`.
   - ✅ **Lignes de test purgées dans Supabase** le 22/08 par Loïc, après la pose
     des clés et la découpe : les clés d'étapes avaient changé de forme et `s2`
     désigne désormais « D'ARPANET à Internet ».
