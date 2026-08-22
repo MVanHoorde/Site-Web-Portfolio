@@ -373,7 +373,15 @@
     /* au-dessus par défaut ; en dessous si ça déborderait par le haut */
     var enBas = (rb.top - rz.height - MARGE) < BORD;
     bulle.classList.toggle('bas', enBas);
-    bulle.style.top = Math.round(enBas ? rb.bottom + MARGE : rb.top - rz.height - MARGE) + 'px';
+    var y = enBas ? rb.bottom + MARGE : rb.top - rz.height - MARGE;
+    /* bulle plus haute que la place disponible des deux côtés : on la borne
+       dans la fenêtre plutôt que de la laisser sortir par le bas. Le bandeau
+       « ton travail n'est pas enregistré » (progression.js, fixé en bas) ne
+       doit jamais passer derrière une bulle : on lui garde sa hauteur. */
+    var bandeau = document.querySelector('.acc-bandeau');
+    var basUtile = window.innerHeight - BORD - (bandeau ? bandeau.getBoundingClientRect().height : 0);
+    y = Math.min(Math.max(y, BORD), Math.max(BORD, basUtile - rz.height));
+    bulle.style.top = Math.round(y) + 'px';
     /* centrée sur le bouton, puis bornée dans la fenêtre */
     var xmax = Math.max(BORD, window.innerWidth - rz.width - BORD);
     var x = Math.min(Math.max(rb.left + rb.width/2 - rz.width/2, BORD), xmax);

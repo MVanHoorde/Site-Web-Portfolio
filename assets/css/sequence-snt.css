@@ -200,7 +200,11 @@
   .field{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface-2)}
   .field + .field{margin-top:10px}
   .field-q{font-weight:500;font-size:15px;margin-bottom:11px}
-  .field-type{float:right;font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 6px;text-transform:uppercase}
+  /* Plus de float:right (audit du 22/08/2026) : la consigne de .field-q
+     s'enroulait autour du badge, qui mangeait ~250 px des deux premières
+     lignes. L'étiquette prend sa propre ligne, à toutes les largeurs —
+     c'est ce que faisait déjà la règle mobile, devenue inutile. */
+  .field-type{display:inline-block;margin-bottom:8px;font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 6px;text-transform:uppercase}
   .opts{display:flex;flex-direction:column;gap:7px}
   .opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer;font-size:14.5px;transition:.12s;text-align:left}
   .opt:hover{border-color:var(--link)} .opt .mark{width:18px;height:18px;border-radius:50%;border:2px solid var(--ink-faint);flex:none}
@@ -338,7 +342,8 @@
      à la main par placerBulle() dans sequence-snt.js. */
   .plustard .bulle{display:none;position:fixed;
     width:max-content;max-width:270px;background:var(--ink);color:#fff;font-family:"IBM Plex Sans";font-size:12.5px;
-    line-height:1.5;text-align:left;padding:9px 12px;border-radius:10px;z-index:1000;box-shadow:0 6px 20px rgba(22,31,51,.25);cursor:auto}
+    line-height:1.5;text-align:left;padding:9px 12px;border-radius:10px;z-index:1000;box-shadow:0 6px 20px rgba(22,31,51,.25);cursor:auto;
+    text-transform:none;letter-spacing:normal;font-weight:400}
   .plustard .bulle::after{content:"";position:absolute;top:100%;left:var(--fleche-x,50%);transform:translateX(-50%);
     border:6px solid transparent;border-top-color:var(--ink)}
   /* bulle basculée sous le bouton (pas la place au-dessus) : flèche retournée */
@@ -358,6 +363,9 @@
   .plustard.def{background:none;border:0;border-bottom:1px dotted var(--france);border-radius:0;
     color:inherit;font-family:inherit;font-size:inherit;padding:0 1px;margin:0}
   .plustard.def:hover,.plustard.def:focus{background:var(--france);color:#fff}
+  /* dans l'étiquette de champ, le badge entier est le déclencheur : pas de
+     seconde bordure, le pointillé du bas suffit à annoncer la bulle */
+  .field-type .plustard.def{letter-spacing:inherit;text-transform:inherit;vertical-align:baseline}
   /* cible tactile : le composant est un bouton en ligne, on élargit sa zone
      de contact sans casser le rythme du texte (LOT C — iPad et téléphone) */
   .plustard::before{content:"";position:absolute;inset:-11px -6px;}
@@ -447,7 +455,6 @@
   body.eleve .chantier{display:none} /* filet : une classe 'eleve' sur <body> masque toutes les notes d'un coup */
 
   @media (max-width:560px){
-    .field-type{float:none;display:inline-block;margin-bottom:8px}
     .seance-head{flex-direction:column;gap:2px}
     .cloze input{max-width:100%}
   }
