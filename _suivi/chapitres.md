@@ -680,11 +680,15 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   Moreno/IoT Analytics/GSR2/Engelbart.
 
 ### SNT-M1 — Module transversal · Représenter l'information 🧮
-- État : **contenu complet, interactivité complète** (21/08/2026). **Non validé.**
-  Écrit d'emblée sur le moteur partagé — troisième page dans ce cas, après `t1` et `t2`.
-- Fichier : `pages/2nde-snt-m1-representer-information.html`. Clé `snt-m1`,
-  codes `REP·x`. Lié depuis `pages/2nde-snt.html`, famille **« Outils
-  transversaux »** créée pour l'occasion, placée après « Pour commencer ».
+- État : **contenu complet, interactivité complète**, **audité et remanié le
+  22/08/2026** (11 lots). **Non validé.** Écrit d'emblée sur le moteur partagé —
+  troisième page dans ce cas, après `t1` et `t2`.
+- Fichier : `pages/2nde-snt-m1-representer-information.html`. Clé `snt-m1`.
+  Codes d'activité `REP-x` **en attribut `data-code` seulement** : ils ne
+  s'affichent plus (décision du 22/08). Lié depuis `pages/2nde-snt.html`, famille
+  **« Outils transversaux »** créée pour l'occasion, placée après « Pour commencer ».
+- Images : `assets/img/snt/2nde-snt-m1-representer-information/` — trois photos
+  Wikimedia auto-hébergées, en `<picture>` webp + repli, dimensions déclarées.
 - Jalons : `✅ Maquette V0` · `✅ Contenu complet` · `✅ Interactivité complète` ·
   `✅ Ressources définitives` (aucune ressource externe — tout est produit maison) ·
   `⬜ VALIDÉ`.
@@ -694,32 +698,62 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   codé** : c'est la progression annuelle de Loïc qui garantit que le binaire
   précède l'étape 5.1, pas le site (décision D3 du 21/08).
 - **Découpage (D5)** : 2 séances, 9 étapes, chacune finissant par son atelier.
-  - **S1 · Compter comme une machine** — 1.1 pourquoi deux chiffres (`REP·Q1`) ·
-    1.2 lire un nombre binaire (tableau des poids interactif) · 1.3 écrire un
-    nombre binaire (**deux méthodes**, D4 : soustraction descendante *et*
-    divisions successives en potence) · 1.4 l'octet et le piège du 255
-    (`REP·Q2`) · 1.5 **atelier `REP·A1`**, 13 items.
-  - **S2 · Mesurer l'information** — 2.1 de l'octet au téraoctet · 2.2 le
-    décalage 1000/1024 (`REP·Q3`) · 2.3 **ouverture RVB**, `○ support`, sans
-    `data-gate` · 2.4 **atelier `REP·A2`**, 8 trous + 1 QCM.
-- **Trois composants produits pour ce module**, tous en SVG inline, tous pilotés
+  - **S1 · Compter comme une machine** — 1.1 pourquoi deux chiffres (photo des
+    transistors, **notation de la base en indice**, exercice de décomposition
+    positionnelle en base 10 et base 60, QCM de 5 questions, **loi de Moore en
+    bonus non évalué**) · 1.2 lire un nombre binaire (**pont puissances de 10 /
+    puissances de 2**, exercice sur 2⁰→2⁷, tableau des poids interactif portant
+    ses puissances, exemple travaillé, correction détaillée après réussite) ·
+    1.3 écrire un nombre binaire (**deux méthodes**, D4, chacune avec son
+    **outil pas à pas**, toutes deux sur 77 ; trois conversions au choix de la
+    méthode, jusqu'à 2010) · 1.4 l'octet et le piège du 255 (**les 30
+    combinaisons de 1 à 4 bits écrites en clair**, adresse IP présentée avant
+    d'être interrogée) · 1.5 **entraînement**, 13 items + un **classement sans
+    conversion** en glisser-déposer, **sans « à retenir »**.
+  - **S2 · Mesurer l'information** — 2.1 de l'octet au téraoctet (transition
+    depuis S1, **pont vers la physique-chimie**, QCM de 10 questions à la place
+    du texte à trous) · 2.2 le décalage 1000/1024 (**photo du Seagate
+    ST33232A**, téraoctet binaire **calculé par les élèves**) · 2.3 **ouverture
+    RVB**, `○ support`, sans `data-gate`, le nuancier affichant les **trois
+    octets en binaire, en direct** · 2.4 **bilan du module**, QCM unique de
+    12 questions (volume ⏳ à valider).
+- **Quatre composants produits pour ce module**, tous en SVG inline, tous pilotés
   par les variables CSS de `sequence-snt.css` (zéro couleur en dur) :
-  - le **tableau des poids** (1.2) : 8 bits cliquables, total en direct, repli en
-    2 rangées de 4 sous 560 px pour tenir la cible tactile de 44 px ;
+  - le **tableau des poids** (1.2) : 8 bits cliquables, total en direct, **ligne
+    des puissances de 2 au-dessus de chaque poids**, repli en 2 rangées de 4 sous
+    560 px pour tenir la cible tactile de 44 px ;
+  - la **méthode A pas à pas** (1.3, ajoutée le 22/08) : le tableau des poids se
+    remplit colonne après colonne, et un **journal en HTML** dit à voix haute la
+    soustraction (« 77 ≥ 64 ? oui → j'écris 1, il reste 13 »). Journal en HTML et
+    non en SVG : texte sélectionnable, et surtout assez grand pour être projeté.
+    Paramétrable de 1 à 4095, même repli que le tableau des poids ;
   - la **potence** (1.3) : reproduction du geste manuscrit de Loïc — escalier de
-    divisions, restes encadrés, flèches de remontée, résultat en `nombre₁₀ =
-    bits₂`. **Paramétrable** (tout nombre de 1 à 4095, l'élève peut saisir le
-    sien), révélation pas à pas, repli vertical sur téléphone, `prefers-reduced-
-    motion` respecté (tout s'affiche d'un coup, même ordre logique) ;
-  - le **nuancier RVB** (2.3) : trois curseurs 0-255, aplat + trois canaux.
-- **Ateliers à liste fixe (décision du 21/08)** : mêmes items pour tous, pour
+    divisions, restes encadrés, **une seule grande flèche de remontée** (les
+    petites flèches par paliers se perdaient entre les cadres, et celle de la
+    dernière étape ne se voyait pas), résultat en `nombre₁₀ = bits₂` à 30 px et
+    note de lecture à 17 px, pour être lisibles projetés. **Paramétrable** (tout
+    nombre de 1 à 4095), révélation pas à pas, repli vertical sur téléphone,
+    `prefers-reduced-motion` respecté (tout s'affiche d'un coup, même ordre
+    logique). Démarre sur **77**, comme la méthode A ;
+  - le **nuancier RVB** (2.3) : trois curseurs 0-255, aplat + trois canaux, et
+    depuis le 22/08 **l'écriture binaire de chaque dose** sous sa bande, plus les
+    **trois octets à la suite** sous l'aplat — le tout mis à jour en direct.
+- **Listes d'exercices fixes (décision du 21/08)** : mêmes items pour tous, pour
   permettre l'entraide et la comparaison. **Aucun tirage aléatoire, aucun score
   chiffré, aucune note** — l'évaluation se fait hors du site. La version
   « entraînement illimité » est reportée dans `IDEES.md`.
-- **Nombres des ateliers choisis pour préparer `t1`** : `172`, `168`, `226`,
+- **Nombres des exercices choisis pour préparer `t1`** : `172`, `168`, `226`,
   `254` sont les octets de `192.168.1.226` et `172.16.254.1`, qui apparaissent
   dans l'étape 5.1 et dans le cours « Adresses IP ». `90` et `434` viennent du TD
-  de Loïc, dont il possède les corrections manuscrites.
+  de Loïc, dont il possède les corrections manuscrites. Ajoutés le 22/08 en 1.3 :
+  `45`, `203` et `2010` — cette dernière est l'année de naissance de la classe,
+  et elle sert à faire **découvrir** que les divisions successives sont plus
+  rapides sur un grand nombre. Ce constat n'est pas écrit dans la page : les
+  élèves doivent le faire eux-mêmes.
+- 🔴 **Périmètre de conversion asymétrique (22/08)** : binaire → décimal ne
+  dépasse **jamais 8 bits** dans un exercice ou une évaluation ; décimal →
+  binaire peut monter jusqu'à ~3000. **Contrainte de conception, jamais affichée
+  aux élèves** — aucune phrase méta sur le périmètre dans la page.
 - **Corrections appliquées aux documents source** (brief §8) : la « base 5 des
   Incas » — fausse, les quipus sont décimaux — est remplacée par la **base 60
   babylonienne** (nos heures et nos minutes) ; la colonne trompeuse
@@ -735,7 +769,15 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   (`10101100`). Accepter le groupement par 4 ferait passer des réponses fausses
   pour justes — mesuré, voir le chantier `seuil()` dans `DECISIONS.md`.
 - ⏳ **Tout le contenu pédagogique est une proposition à valider** : formulations,
-  choix des nombres, les 11 QCM et leurs leurres, les 21 items d'atelier.
+  choix des nombres, les **34 questions de QCM** et leurs leurres, les items
+  d'exercice.
+- ⏳ **Trois points attendent un arbitrage explicite** (signalés dans la note de
+  chantier de la page) : le **placement de la photo des transistors**, posée dans
+  le document de 1.1 là où le texte les nomme, alors que l'audit proposait de la
+  mettre après la question 3 du QCM ; la **formulation de l'ordre de grandeur**
+  « 28 milliards de transistors de 4 cm = 1,12 million de km, près de trois fois
+  la distance Terre-Lune » (calcul revérifié, c'est la formulation qui est en
+  jeu) ; le **volume du bilan de 2.4**, écrit à douze questions.
 - ⏳ **Durée « ≈ 2 h » provisoire** (D8) : le module n'a jamais tourné devant une
   classe. À reprendre après le premier passage.
 

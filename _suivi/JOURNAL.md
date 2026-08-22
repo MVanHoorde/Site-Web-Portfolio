@@ -12,6 +12,72 @@
 
 ---
 
+## 22/08/2026 — Audit du module `m1` : onze lots, et deux bugs qui touchaient tout le site
+
+Troisième brief de la journée, sur le module « Représenter l'information ». Onze
+lots, du bug d'affichage à la refonte du socle mathématique.
+
+**Les deux bugs signalés étaient le même bug.** L'audit décrivait « des balises
+HTML visibles en clair » dans une question de l'étape 1.1, et, séparément, « un
+souci de typographie » dans la question 3 du QCM de 2.2. Les deux venaient de
+`baliserSobre()`, la fonction du moteur qui rouvre une petite liste de balises
+dans les options de QCM après les avoir échappées. Sa regex n'acceptait que des
+balises **sans attribut** : `<i lang="en">binary digit</i>` restait échappé et
+l'élève lisait le code source. Et comme la fonction échappe d'abord tout, les
+entités typographiques du fichier de cours y passaient aussi :
+`1&nbsp;073&nbsp;741&nbsp;824` s'affichait en toutes lettres. Un seul correctif
+règle les deux, et il profite aux neuf séquences.
+
+**Le « à retenir » s'ouvrait trop tôt, et c'était un choix.** Le commentaire du
+moteur le disait franchement : depuis le 22/07, « la révélation se fait toute
+seule dès la dernière réponse ». Sauf que remplir n'est pas se corriger — le
+bilan donne les réponses à un élève qui n'a pas encore cliqué sur Vérifier. La
+règle change pour toutes les séquences. Détail qui compte : la trace du clic est
+posée sur le **bloc** et non sur l'étape, sinon une étape à deux exercices se
+serait validée à moitié.
+
+**Un cadre invisible depuis le 21/08.** Le bloc `.demo-a` de l'étape 1.3 — la
+démonstration de la méthode A — n'était styé **nulle part** : ni dans le CSS
+partagé, ni dans le CSS de la page. Il s'affichait donc sans cadre ni titre,
+noyé dans le texte. Renommé `.exemple` et stylé, il sert maintenant aux exemples
+travaillés de 1.2 et 1.3.
+
+**Une collision de nom de classe.** Le calcul déroulé utilisait
+`<span class="res">` pour le résultat. Or `.res{display:flex;flex-direction:column}`
+existe déjà dans le CSS partagé : « 77 » et son indice « 10 » se retrouvaient
+l'un **sous** l'autre. Invisible à la relecture du code, évident à la capture.
+Renommé `.res-calc`.
+
+**Deux pièges d'outillage, notés pour la prochaine fois.** `String.replace()`
+interprète `$` dans le texte de remplacement : un `$('…')` de mon patch est
+arrivé dans le moteur en `$('…')`, et le bloc s'est appliqué deux fois. Depuis,
+tous les patchs passent une **fonction** de remplacement. Et corriger une
+coquille avec `io.open(…, 'w')` en Python a réécrit les 1394 lignes du fichier
+HTML **en CRLF**, alors que tout le dépôt est en LF — rattrapé avant le commit.
+
+**Ce que le module gagne.** Le socle mathématique, qui manquait : ce qu'est une
+puissance, les rangs en base 10 et en base 2 en regard, et la notation de la base
+en indice, posée une fois et employée partout ensuite. Un exercice d'entrée sur
+la décomposition positionnelle, avant tout binaire, sur deux bases que les élèves
+connaissent déjà — la base 10 et la base 60 du temps. Les trente combinaisons de
+1 à 4 bits **écrites en clair**, avec le seul bit ajouté coloré : le doublement
+se voit. Un quatrième composant SVG, la **méthode A pas à pas**, pendant exact de
+la potence, avec le journal des soustractions en grand. L'adresse IP expliquée
+**avant** d'être interrogée. La loi de Moore en bonus, derrière une question de
+recherche dont la réponse déclenche la figure. Le téraoctet binaire calculé par
+les élèves plutôt que donné. Et un disque dur photographié de 1998 dont les
+3 227 Mo constructeur font exactement 3,005 Gio — le décalage Go/Gio sur un
+objet réel, à la décimale près.
+
+**Ce qui reste à trancher** : le placement de la photo des transistors (posée
+dans le document, là où le texte les nomme), la formulation de l'ordre de
+grandeur « 1,12 million de kilomètres », et le volume du bilan de 2.4, écrit à
+douze questions. Le « Monsieur Jean-Luc » que l'audit soupçonnait d'être une
+référence orpheline **n'existe nulle part dans le dépôt** : rien à réparer de ce
+côté.
+
+---
+
 ## 22/08/2026 — Audit des séances 3 et 4 de `t1` : trois diagnostics, dont deux faux au départ
 
 Deuxième brief de la journée, sur l'ancienne séance 2 (« Internet et moi ») et
