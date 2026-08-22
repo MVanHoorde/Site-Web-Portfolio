@@ -1375,9 +1375,10 @@
     sec.querySelectorAll('[data-tri-verdict]').forEach(function(v){v.textContent='';v.style.color='';});
     /* scores gardés en dataset pour la vue enseignant : ils repartent aussi */
     sec.querySelectorAll('[data-step]').forEach(function(s){delete s.dataset.qcmScore;delete s.dataset.clozeScore;});
+    sec.querySelectorAll('.cloze').forEach(function(c){delete c.dataset.verifie;});
     sec.querySelectorAll('.label-selects select').forEach(function(s){s.value='';s.classList.remove('ok','no');});
     sec.querySelectorAll('.verdict').forEach(function(v){v.className='verdict';v.textContent='';});
-    sec.querySelectorAll('[data-reveal]').forEach(function(r){r.classList.remove('show');});
+    sec.querySelectorAll('[data-reveal],[data-reveal-juste]').forEach(function(r){r.classList.remove('show');});
     sec.querySelectorAll('[data-send-free]').forEach(function(b){b.disabled=true;});
     sec.querySelectorAll('[data-share]').forEach(function(b){b.disabled=false;});
     sec.querySelectorAll('[data-share-note]').forEach(function(n){n.textContent='';});
@@ -2424,7 +2425,20 @@ function jouerQcm(data,box,recap,lanceur){
     var e = String(t)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;')
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    return e.replace(/&lt;(\/?)(code|b|i|sup|sub|em|strong|abbr)&gt;/g, '<$1$2>');
+    /* On rouvre les balises de mise en forme. Elles peuvent porter un
+       attribut lang — « <i lang="en">binary digit</i> » — que la version
+       d'origine ne reconnaissait pas : la balise restait échappée et
+       l'élève lisait le code source dans l'option. Aucun autre attribut
+       n'est restauré : ni style, ni class, ni surtout on*. */
+    e = e.replace(
+      /&lt;(\/?)(code|b|i|sup|sub|em|strong|abbr)((?:\s+lang=&quot;[A-Za-z-]{2,8}&quot;)?)\s*&gt;/g,
+      function(_, fin, tag, attr){ return '<'+fin+tag+attr.replace(/&quot;/g,'"')+'>'; });
+    /* Puis les entités typographiques du fichier de cours, que
+       l'échappement ci-dessus a neutralisées : « 1&nbsp;073&nbsp;741 »
+       s'affichait en toutes lettres dans l'option (audit du 22/08/2026).
+       Une entité ne peut pas ouvrir de balise : la restaurer est sans
+       risque, « &amp;#60; » redonne un chevron TEXTE, pas un élément. */
+    return e.replace(/&amp;(nbsp|amp|lt|gt|times|deg|hellip|laquo|raquo|#\d{2,5}|#x[0-9A-Fa-f]{2,5});/g, '&$1;');
   }
   function repondre(k){
     var q=data[i], multi=Array.isArray(q.r);
@@ -2447,8 +2461,8 @@ function jouerQcm(data,box,recap,lanceur){
     });
     var ok=pan.querySelector('.qmulti-ok'); if(ok) ok.remove();
     var libelle = multi
-      ? q.r.map(function(n){ return q.o[n]; }).join(' + ')
-      : q.o[q.r];
+      ? q.r.map(function(n){ return baliserSobre(q.o[n]); }).join(' + ')
+      : baliserSobre(q.o[q.r]);
     var f=document.createElement('div');
     f.className='qfeed';
     f.innerHTML=(bon?'<b>Bonne réponse.</b> ':'<b>Il fallait : '+libelle+'.</b> ')+(q.c||'');
@@ -2648,6 +2662,16 @@ function initCloze(){
       }
       $('.cloze-msg',bloc).innerHTML=h;
 
+      /* ---- Correction détaillée, révélée seulement si tout est juste ----
+         Demandée pour l'étape 1.2 du module M1 (audit du 22/08/2026, §3.5) :
+         montrer le calcul complet en entier, mais APRÈS la réussite — sinon
+         c'est le corrigé posé à côté de l'exercice. Se referme si l'élève
+         modifie et revérifie faux : le corrigé suit l'état réel. */
+      var champCorr=bloc.closest('.field')||bloc.parentElement;
+      if(champCorr) $$('[data-reveal-juste]',champCorr).forEach(function(r){
+        r.classList.toggle('show', n>0 && ok===n);
+      });
+
       /* ---- Débriefing d'ordre de grandeur, révélé sous condition ----
          Ajouté le 22/08/2026 (audit de l'étape des câbles sous-marins).
          Le texte qui explique « tu as peut-être trouvé entre tant et
@@ -2673,6 +2697,12 @@ function initCloze(){
       }
 
       /* validation à l'envoi : avoir répondu suffit */
+      /* Trace locale du clic sur « Vérifier ». Elle est portée par le BLOC
+         et non par l'étape : une étape peut contenir deux exercices, et un
+         seul « Vérifier » cliqué ne doit pas passer l'autre pour corrigé.
+         Elle sert au « à retenir », qui ne s'ouvre plus avant la correction
+         (audit du 22/08/2026, §4.7). */
+      bloc.dataset.verifie='1';
       var etape=bloc.closest('.step');
       if(etape){
         etape.classList.add('is-done');
@@ -2875,7 +2905,14 @@ function initCalc(){
    le cours ne se lit pas avant d'avoir dit ce qu'on croyait savoir.
    Le bouton « Afficher le à retenir » reste dans la page, mais il ne
    sert plus qu'à dire ce qui manque : la révélation, elle, se fait
-   toute seule dès la dernière réponse.
+   toute seule dès que l'étape est faite.
+
+   Ce qu'est « faite » a changé le 22/08/2026 (audit du module m1) : pour
+   un exercice à trous muni d'un bouton « Vérifier », remplir ne suffit
+   plus, il faut avoir cliqué. Motif : le bilan donne les réponses, et il
+   s'ouvrait dès la dernière case saisie — donc avant que l'élève ait vu
+   sa correction. Les blocs sans bouton (listes déroulantes corrigées au
+   choix) gardent l'ancien comportement.
 
    Ce moteur ne CORRIGE rien et ne valide rien — il regarde seulement
    si les champs sont remplis. Un élève qui répond faux voit son
@@ -2903,7 +2940,18 @@ function bqRempli(el,step){
   if(el.matches('.label-selects,.cloze')){
     var ch=el.querySelectorAll('select,input');
     if(!ch.length) return true;
-    return Array.prototype.every.call(ch,function(x){ return x.value && x.value.trim(); });
+    var pleins=Array.prototype.every.call(ch,function(x){ return x.value && x.value.trim(); });
+    if(!pleins) return false;
+    /* Rempli ne suffit pas quand le bloc a un bouton « Vérifier » : le
+       « à retenir » donne les réponses, et il s'affichait dès la dernière
+       case saisie — donc avant que l'élève ait vu sa correction. Il attend
+       maintenant le clic (audit du 22/08/2026, §4.7). Un bloc sans bouton
+       — les listes déroulantes qui se corrigent au choix — garde l'ancien
+       comportement. */
+    var champ=el.closest('.field')||el.parentElement;
+    var bouton=champ?champ.querySelector('[data-check-cloze]'):null;
+    if(bouton) return el.dataset.verifie==='1';
+    return true;
   }
   if(el.matches('textarea')) return !!el.value.trim();
   return true;
