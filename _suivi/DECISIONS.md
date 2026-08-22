@@ -24,7 +24,6 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 16/07/2026 | ⏳ Ordre du Thème 3 (PC) | Ordre des PPTX conservé, ou renumérotation son / spectres / signaux. |
 | 21/07/2026 | ⏳ Harmonisation des codes d'activité `NET·xx` / `NET-xx` | Gelée le temps de traiter la couche Supabase. |
 | — | ⏳ Sort de `2nde-snt.html` à la racine | Redirection conservée, ou `git rm`. |
-| 25/07/2026 | ⏳ **Poser un `data-cle` explicite sur les 27 étapes de `t1`** | Les clés de persistance sont aujourd'hui **positionnelles** (`et-s4-2`). Insérer une étape ailleurs qu'en fin de séance réaffecte le travail déjà enregistré des élèves. À faire **avant** la création des vraies classes : aujourd'hui seul `leproftest` serait orphelin. |
 | 20/08/2026 | ⏳ **Les deux textes du plafond, vus par les élèves** | Le bandeau d'une séance fermée (`verrou-snt.js`, `MOT_PLAFOND`) et la note d'une carte fermée au hub (`hub-snt.js`, `.tc-plafond`). C'est du **fond pédagogique** : proposition à valider, pas un acquis. |
 | 20/08/2026 | ⏳ **Sort de `supabase/migrations/`** | Le dossier s'arrête au `011`. `012`, `013` et `014` ont été joués à la main sans y être copiés ; `007` (frise ES) n'y est pas non plus et n'a jamais été exécuté — il attend la validation de Loïc. Soit on le réaligne (et il redevient la référence rejouable), soit on l'abandonne au profit de `bdd/schema/` seul. En l'état il décrit une base qui n'existe plus. |
 | 20/08/2026 | ⏳ **Les trois questions ajoutées à `NET-Q7`** (`t1` 5.2 — IP privée/publique, DHCP) | Le bloc n'en portait qu'une, sous le minimum de 3-4 de la §15.5. Trois écrites à partir de ce que dit l'étape : adresses privées réutilisables d'un logement à l'autre, adresse publique unique du foyer, attribution dynamique. **Contenu : proposition, pas un acquis.** |
@@ -33,6 +32,21 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 25/07/2026 | ⏳ Hébergement des vidéos SNT | La vidéo DNS et celle des couches existent sur le **PeerTube du ministère** (`apps.education.fr`). `youtube-nocookie` supprime le cookie publicitaire mais **pas les publicités**, ce qui est le motif de Loïc. Réserve à lever avant de basculer : PeerTube peut diffuser en **pair-à-pair**, ce qui exposerait l'IP de l'élève à d'autres spectateurs. |
 
 ---
+
+## Audit de `t1` — séance 1, relue étape par étape — 22/08/2026
+
+| Date | Décision | Statut |
+|---|---|---|
+| 22/08/2026 | **La séance 1 de `t1` est coupée en deux.** Sept étapes pour une heure, c'était trop, d'autant que les élèves qui terminent partent sur France IOI. S1 garde la définition et les origines (1.1→1.3) ; la nouvelle S2 « D'ARPANET à Internet » prend ARPANET, Pouzin, le réseau mondial et la frise. Le thème passe de 5 à **6 séances** | ✅ |
+| 22/08/2026 | **Les `data-cle` se posent avant tout renumérotage**, jamais après : une fois les clés sémantiques en place, déplacer une étape n'a plus d'effet sur la progression enregistrée. Dans l'autre ordre on casse deux fois. Remplace la décision en attente du 25/07 | ✅ |
+| 22/08/2026 | **Convention de clé `t1-<slug>`, sans numéro de séance.** Divergence assumée avec `m1` (`rep-s1-…`) : `t1` est la page qu'on renumérote, une clé contenant « s1 » y deviendrait mensongère au premier déplacement. Les clés de `m1` ne sont **pas** renommées — les renommer orphelinerait ses données de test pour rien | ✅ |
+| 22/08/2026 | **Seuil minimum de rédaction : 20 caractères partout.** « Les élèves doivent avoir la possibilité d'envoyer peu de choses. » Les `data-focus-max`, eux, ne bougent pas : leur dispersion protège le budget de jetons du worker de pré-correction | ✅ |
+| 22/08/2026 | **Les infobulles passent en `position:fixed`, placées en JS.** Le diagnostic de départ — « elles débordent du bord de la page » — était faux : ce sont les `overflow:hidden` de `.card`, `.retain`, `.france-box`, `.poste` et `.glosmot` qui coupaient. Ils portent l'arrondi de ces blocs et restent | ✅ |
+| 22/08/2026 | **L'étiquette de champ perd son `float:right`** et prend sa propre ligne. Les libellés à rallonge se réduisent à leur tête, le détail passant dans une bulle tactile | ✅ |
+| 22/08/2026 | **La frise se valide au 6ᵉ essai**, plus au 3ᵉ, et « voir la correction » la valide aussi — elle ne le faisait pas. À la validation, toutes les dates sortent en bout de ligne | ✅ |
+| 22/08/2026 | **Un corrigé ne doit jamais donner la réponse d'une question ultérieure.** Trois cas trouvés dans `t1` (deux en 1.4, un en 1.6) : c'était le **corrigé**, pas l'énoncé, qui fuitait. Défaut de conception à surveiller ailleurs dans le projet | ✅ |
+| 22/08/2026 | ⏳ **La question 4 de l'étape 1.4 réécrite** (« Un réseau sans centre a aussi un prix. Lequel ? »). Elle recouvrait la question 8 ; elle porte désormais la contrepartie et ouvre un pont vers le routage. **Contenu : proposition, pas un acquis.** Commit isolé, `git revert` suffit | ⏳ |
+| 22/08/2026 | ⏳ **Trois `<li>` de la frise restent sans date** (Usenet, NSFNET, « trois réseaux reliés »). La CNIL a reçu 1978 comme demandé, mais le brief croyait qu'il n'en manquait qu'une. Depuis que la validation révèle toutes les dates, ces trois trous se voient. À arbitrer | ⏳ |
 
 ## Module transversal `snt-m1` « Représenter l'information » — 21/08/2026
 

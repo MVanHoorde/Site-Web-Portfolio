@@ -220,7 +220,38 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 
 ### SNT-T1 — Internet
 - État : **maquette V0 fonctionnelle en ligne** (17/07), non validée. **En cours de
-  validation depuis le 20/08.**
+  validation depuis le 20/08.** **6 séances** depuis le 22/08.
+- 🔎 **22/08/2026 — audit de la séance 1, étape par étape. Dix lots.**
+  - **La séance 1 est coupée en deux.** Sept étapes pour une heure, c'était trop.
+    S1 garde 1.1→1.3 (définition, Inter+Net, origines) ; la nouvelle **S2
+    « D'ARPANET à Internet »** prend 2.1→2.4, bonus Pouzin et frise compris.
+    Internet et moi → S3, réseau physique → S4, protocoles → S5, adressage → S6.
+  - **Les 26 étapes portent un `data-cle`** (`t1-arpanet`, `t1-frise`…), posé
+    **avant** la découpe : c'est ce qui rend le renumérotage sans effet sur la
+    progression des élèves. Même passe sur `t0` (12) et `t2` (24) ; 71 clés au
+    total, et `verifier.mjs` refuse désormais une clé dupliquée.
+  - **Infobulles réparées** — elles n'étaient pas coupées par le bord de la
+    fenêtre mais par les `overflow:hidden` de `.card`, `.retain`, `.france-box`,
+    `.poste` et `.glosmot`. Passées en `position:fixed`, placées en JS. 49 bulles
+    vérifiées à 1280, 820 et 390 px : aucune n'est masquée.
+  - **Étiquettes de champ** : plus de `float:right`, la consigne ne s'enroule plus
+    autour du badge ; les libellés à rallonge se réduisent à leur tête, le détail
+    dans une bulle tactile (30 étiquettes sur `t1` et `t2`).
+  - **Seuil de rédaction à 20 caractères** partout (30 champs), défaut JS compris.
+  - **Frise** : validation au 6ᵉ essai et non plus au 3ᵉ ; « voir la correction »
+    valide enfin l'étape (elle ne le faisait pas) ; toutes les dates sortent en
+    bout de ligne à la validation ; la CNIL reçoit 1978.
+  - **Trois corrigés qui donnaient la réponse d'une question ultérieure** :
+    1.4 deux fois (8 questions → 6), 1.6 une fois (matière déménagée en Q10).
+  - **Divers** : les sources de 1.2 réordonnées (l'anglais en dernier) ; l'épisode
+    long de France Culture passe après le QCM de 1.3, c'est un approfondissement.
+  - ⏳ **À relire avant validation** : la **question 4 de 1.4 réécrite** (commit
+    isolé, revertable) et les **trois dates manquantes de la frise** (Usenet,
+    NSFNET, « trois réseaux reliés ») — le brief croyait qu'il n'en manquait
+    qu'une.
+  - ⚠ **À faire hors dépôt** : purger les lignes de test dans Supabase. Les clés
+    d'étapes ont changé de forme et `s2` désigne désormais « D'ARPANET à
+    Internet » : les anciennes lignes ne veulent plus rien dire.
 - 🔎 **20/08/2026 — audit complet, puis trois lots de corrections.** Ce qui a changé :
   - **Séance 2 récupérée.** Elle n'avait **aucune porte** : elle s'auto-validait,
     ouvrait la séance 3 en même temps qu'elle, restait à 0 % à vie et remontait

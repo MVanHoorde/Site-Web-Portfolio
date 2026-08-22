@@ -1292,3 +1292,57 @@ en commentaire dans les deux, avec la consigne de ne pas leur ajouter de code
 encore positionnelles — à poser avant les vraies classes), le prérequis
 « binaire » de la séance 5 qui n'a aucune séquence pour le porter, l'étape 5.4,
 la fin de thème, et le moteur du relevé et du rappel.
+
+---
+
+## 22/08/2026 — audit de `t1`, séance 1 : dix lots, et deux diagnostics retournés
+
+Relecture de la séance 1 par Loïc, étape par étape, avant passage avec les
+élèves. Dix lots, tous tranchés d'avance : rien à arbitrer en cours de route
+sauf une question de QCM, balisée comme proposition.
+
+**Deux fois, le code disait autre chose que ce qu'on croyait.** Les infobulles
+« à voir plus tard » n'étaient pas coupées par le bord de la fenêtre mais par
+les `overflow:hidden` de `.card`, `.retain`, `.france-box`, `.poste` et
+`.glosmot` — les décaler n'aurait rien réglé. Et le bouton « voir la
+correction » de la frise ne validait pas l'étape : la demande de Loïc ajoutait
+un comportement manquant, elle n'en réparait pas un cassé.
+
+**La redondance des QCM n'était pas où on la cherchait.** Trois fois sur
+quatre, c'est le **corrigé** d'une question qui donnait la réponse d'une
+question ultérieure — en 1.4 deux fois, en 1.6 une fois. Un énoncé redondant se
+repère à la lecture ; un corrigé qui fuit, non. C'est un défaut de conception à
+chercher ailleurs dans le projet.
+
+**Ce que le brief n'avait pas vu, trouvé au contact du code.** La barre de
+navigation du haut de `t1` listait les cinq séances **en dur**, avec un
+`data-navlock` chacune : la découpe l'aurait laissée à cinq entrées. Quatre
+`<li>` de la frise sur douze n'ont pas de date, pas un seul comme annoncé — et
+depuis que la validation les révèle toutes, les trois trous restants se voient.
+Le markup d'étiquette proposé au lot B2 donnait un `<button>` **vide**, sans
+surface de clic ni cible tactile : le libellé est passé dedans. Et sa bulle
+héritait du `text-transform:uppercase` de `.field-type`, donc sortait EN
+CAPITALES ESPACÉES.
+
+**Un bandeau qui aurait disparu derrière une bulle.** En bornant l'infobulle
+dans la fenêtre, elle pouvait se poser sur le bandeau « ton travail n'est pas
+enregistré » (`progression.js`, `z-index:9998`). Le placeur lui réserve sa
+hauteur : un avertissement qui prévient l'élève que rien n'est sauvegardé ne
+passe pas derrière une bulle d'aide.
+
+**Ordre imposé, et il compte.** Les `data-cle` (lot H) avant la découpe (lot I).
+Une fois les clés sémantiques posées, renuméroter n'a plus aucun effet sur la
+progression enregistrée ; dans l'autre ordre, on casse deux fois. La découpe est
+committée seule pour qu'un `git revert` reste simple.
+
+**Vérifications.** `jsdom` n'est pas installé, donc `_test-revelation.mjs` ne
+tourne pas : le même contrat a été rejoué dans Chrome sur la vraie page — quatre
+bilans masqués, quatre boutons neutralisés, la porte d'intuition qui ferme
+26 blocs puis les rouvre à la réponse. Les 49 infobulles de `t1` et `t2` ont été
+ouvertes une à une à 1280, 820 et 390 px et mesurées par `elementFromPoint` :
+aucune n'est masquée. `verifier.mjs` sort les mêmes 19 problèmes qu'au départ.
+
+**Reste ouvert** : la relecture de la question 4 réécrite, les trois dates
+manquantes de la frise, le test au doigt sur un vrai iPad, et le nettoyage des
+lignes de test dans Supabase — les clés d'étapes ont changé de forme et les
+identifiants de séance ont changé de sens.
