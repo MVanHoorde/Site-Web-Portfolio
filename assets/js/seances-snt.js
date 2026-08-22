@@ -36,21 +36,26 @@ window.SEANCES_SNT = {
     {
       "id": "s2",
       "num": "S2",
-      "nom": "Internet et moi"
+      "nom": "D'ARPANET à Internet"
     },
     {
       "id": "s3",
       "num": "S3",
-      "nom": "Le réseau physique"
+      "nom": "Internet et moi"
     },
     {
       "id": "s4",
       "num": "S4",
-      "nom": "Protocoles, modèle TCP/IP et routage"
+      "nom": "Le réseau physique"
     },
     {
       "id": "s5",
       "num": "S5",
+      "nom": "Protocoles, modèle TCP/IP et routage"
+    },
+    {
+      "id": "s6",
+      "num": "S6",
       "nom": "Adresses IP, DNS et diagnostic"
     }
   ],
