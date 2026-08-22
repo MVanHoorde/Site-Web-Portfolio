@@ -183,6 +183,30 @@ for (const f of html) {
   if (dup.length) ko("id dupliqué", `${f} — ${[...new Set(dup)].join(", ")}`);
 }
 
+/* ---------- 11. data-cle des étapes SNT : uniques dans tout le dépôt ----------
+   La clé identifie l'étape dans la table progression. Deux étapes qui
+   partagent une clé, c'est la progression de l'une écrasée par l'autre, en
+   silence. Posé au lot H du 22/08/2026, en préalable au renumérotage : c'est
+   la clé qui rend le déplacement d'une étape sans effet sur l'élève. */
+{
+  const vues = new Map();
+  for (const f of pagesSNT) {
+    for (const m of lire(f).matchAll(/<div class="step"[^>]*\bdata-cle="([^"]+)"/g)) {
+      const c = m[1];
+      if (vues.has(c)) ko("data-cle dupliquée", `${c} — ${vues.get(c)} et ${f}`);
+      else vues.set(c, f);
+    }
+  }
+  const sansCle = pagesSNT.filter((f) => {
+    const s = lire(f);
+    const tot = [...s.matchAll(/<div class="step"[^>]*>/g)].length;
+    const avec = [...s.matchAll(/<div class="step"[^>]*\bdata-cle="/g)].length;
+    return tot && tot !== avec;
+  });
+  if (sansCle.length) info("étapes sans data-cle (clé positionnelle, fragile) — " + sansCle.join(", "));
+  info(`data-cle d'étape — ${vues.size} clé(s), toutes uniques`);
+}
+
 /* ---------- Bilan compact ---------- */
 function bilan() {
   const poids = (f) => statSync(join(RACINE, f)).size;
