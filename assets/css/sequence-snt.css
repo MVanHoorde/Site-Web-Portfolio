@@ -108,6 +108,19 @@
   body.teacher .seance.locked .lock-banner{border-color:var(--ink-faint);color:var(--ink-soft)}
   body.teacher .seance.locked .lock-banner .k::before{content:"🔓"}
 
+  /* Prérequis d'une séance — même dessin que le bandeau de verrouillage,
+     mais TOUJOURS visible. Les deux ne disent pas la même chose : le
+     cadenas dit « c'est fermé », le prérequis dit « ceci suppose un autre
+     thème déjà vu ». Reprendre .lock-banner tel quel ne marchait pas — il
+     est en display:none hors .seance.locked, donc le prérequis aurait
+     disparu au moment précis où l'élève entre dans la séance. */
+  .prereq-banner{display:flex;align-items:center;gap:12px;background:var(--surface);
+    border:1px dashed var(--france);border-radius:var(--radius);padding:14px 16px;
+    margin-top:10px;color:var(--france);font-size:14px}
+  .prereq-banner .k{font-size:20px}
+  .prereq-banner .k::before{content:"🧮"}
+  .prereq-banner a{color:inherit;font-weight:600}
+
   /* étapes */
   .steps{position:relative;margin-top:20px}
   .step{position:relative;padding-left:40px;padding-bottom:14px}
@@ -168,6 +181,24 @@
   .doc-table th,.doc-table td{border:1px solid var(--line);padding:6px 10px;text-align:left}
   .doc-table th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:12px;font-weight:600;color:var(--ink-soft)}
   .doc-table code{color:var(--link)}
+
+  /* Manipulation à faire sur le poste — ce n'est PAS une ressource.
+     Le bloc était écrit en .res-item.activity, le style réservé aux liens
+     à ouvrir : rien n'y est cliquable, et l'orange des ressources laissait
+     croire qu'il manquait un lien. Teinte d'encre, façon terminal, et une
+     liste numérotée puisque l'ordre des commandes compte. */
+  .manip{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--ink);
+    border-radius:var(--radius);padding:13px 16px;margin:6px 0 4px}
+  .manip .manip-head{display:flex;align-items:center;gap:9px;font-family:"IBM Plex Mono";
+    font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);font-weight:600}
+  .manip .manip-time{margin-left:auto;font-size:12px;color:var(--ink-faint);
+    text-transform:none;letter-spacing:0}
+  .manip ol{margin:11px 0 0;padding-left:21px;font-size:14.5px;line-height:1.6}
+  .manip li{margin-bottom:8px}
+  .manip li:last-child{margin-bottom:0}
+  .manip li .pourquoi{display:block;color:var(--ink-soft);font-size:13.5px}
+  .manip code{background:var(--surface);border:1px solid var(--line);border-radius:5px;
+    padding:1px 6px;font-size:13.5px;color:var(--ink)}
 
   /* encadré histoire (révélé) */
   .reveal{display:none;margin-top:12px;border-radius:12px;padding:13px 15px;font-size:14px;line-height:1.6;border:1px solid var(--hist);background:var(--hist-wash);color:#3e2c5c}
@@ -405,6 +436,34 @@
   .focus-jauge.trop{color:var(--err)}
   .focus-sortie{font-size:12.5px;color:var(--wait);background:var(--wait-wash);border:1px solid var(--wait);border-radius:9px;padding:8px 11px;margin-top:10px;display:none}
   .focus-sortie.show{display:block}
+  /* Qui a demandé moins d'animation n'a pas demandé moins de contraste : on
+     retire le flou, et on redonne au fond la densité qu'il perdait avec lui.
+     Même traitement que la modale du sommaire. */
+  @media (prefers-reduced-motion:reduce){
+    body.focus-on > *:not(.focus-scene):not(.modal-back){filter:none;opacity:.25}
+    .focus-scene{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(22,31,51,.72)}
+  }
+
+  /* Relevé d'adresses et rappel de mémoire (22/08/2026) — voir le §12 du
+     moteur. Le relevé se fige une fois validé ; le rappel s'ouvre en fenêtre
+     et n'existe pas dans le flux avant. */
+  .releve-fige{background:var(--surface-2);color:var(--ink-faint);border-color:var(--line)}
+  .rappel-porte{margin:8px 0 4px}
+  .rappel-porte .btn{min-height:44px}
+  .rappel-porte .doc-note{margin:7px 0 0}
+  .rappel-carte{max-width:600px}
+  .rappel-carte .rappel-zone .field{border:0;background:none;padding:0;margin:0}
+  .rappel-carte .rappel-zone .field-type{display:none}
+  .rappel-carte .rappel-zone .field-q{font-size:14px;color:var(--ink-soft);margin-bottom:10px}
+  .rappel-carte .rappel-zone input{min-height:44px}
+  .rappel-msg{font-size:13.5px;line-height:1.55;border-radius:10px;padding:10px 12px;margin-top:12px;display:none}
+  .rappel-msg.ok{display:block;background:var(--ok-wash);border:1px solid var(--ok);color:var(--ok)}
+  .rappel-msg.ko{display:block;background:var(--wait-wash);border:1px solid var(--wait);color:var(--wait)}
+  @media (max-width:430px){
+    .rappel-carte{padding:18px 16px}
+    .rappel-carte .focus-foot{flex-direction:column;align-items:stretch;gap:9px}
+    .rappel-carte .focus-foot .btn{width:100%}
+  }
 
   /* §7.5 — glossaire évolutif : l'élève écrit ses définitions au
      fil de la séquence, elles se rassemblent à l'étape 5. */

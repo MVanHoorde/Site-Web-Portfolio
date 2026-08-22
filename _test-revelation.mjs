@@ -36,7 +36,7 @@ function verifie(nom, reel, attendu) {
 /* --- 1. À l'ouverture, chaque étape à bilan doit avoir du travail --- */
 console.log('\nÉtapes portant un bilan, page vierge :');
 const wraps = $$('[data-bilan-wrap]');
-verifie('nombre d\'étapes à bilan', wraps.length, 4);
+verifie('nombre d\'étapes à bilan', wraps.length, 5);   // l'étape 6.4 a rejoint le lot le 22/08/2026
 wraps.forEach((w) => {
   const step = w.closest('[data-step]');
   const titre = ($('.step-title', step) || {}).textContent || '?';
@@ -48,9 +48,9 @@ wraps.forEach((w) => {
 /* --- 2. bqMaj masque les bilans et neutralise les boutons --- */
 bqMaj();
 console.log('\nAprès un passage du moteur :');
-verifie('bilans masqués', $$('[data-bilan-wrap]').filter((w) => w.hidden).length, 4);
+verifie('bilans masqués', $$('[data-bilan-wrap]').filter((w) => w.hidden).length, wraps.length);
 verifie('boutons désactivés',
-  $$('[data-reveal-bilan]').filter((b) => b.disabled).length, 4);
+  $$('[data-reveal-bilan]').filter((b) => b.disabled).length, wraps.length);
 
 /* --- 3. La porte d'intuition ferme bien la suite de l'étape --- */
 const porte = $('[data-porte]');
@@ -84,7 +84,7 @@ verifie('reste à répondre', bqReste(cible, wraps[1]), 0);
 verifie('bilan révélé', wraps[1].hidden ? 1 : 0, 0);
 
 /* --- 6. Les trois autres bilans, eux, restent fermés --- */
-verifie('bilans encore fermés', $$('[data-bilan-wrap]').filter((w) => w.hidden).length, 3);
+verifie('bilans encore fermés', $$('[data-bilan-wrap]').filter((w) => w.hidden).length, wraps.length - 1);
 
 console.log(echecs === 0 ? '\n✅ moteur conforme\n' : `\n❌ ${echecs} échec(s)\n`);
 process.exit(echecs === 0 ? 0 : 1);

@@ -1441,11 +1441,22 @@ var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySele
 
 /* ---------- 0. Utilitaires ---------- */
 function normaliser(t){
-  return (t||'').toString().toLowerCase()
+  var base = (t||'').toString().toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g,'')     // accents
     .replace(/[’']/g,' ').replace(/[^a-z0-9]+/g,' ')      // ponctuation, tirets
+    .replace(/\s+/g,' ').trim();
+  /* Les mots vides ne partent que s'il reste quelque chose après. « D » (le
+     routeur de la table de routage, en 5.4) et « une » (la trilatération de
+     t5) SONT des réponses attendues, et cette liste les vidait : le
+     vérificateur lisait alors une case non remplie, et le .filter(Boolean)
+     supprimait au passage la réponse attendue elle-même. L'élève qui avait
+     juste était marqué faux, systématiquement. Corrigé le 22/08/2026.
+     La tolérance, elle, ne bouge pas : seuil() rend 0 pour tout mot de
+     quatre lettres ou moins, donc « A » ne passera jamais pour « D ». */
+  var sans = base
     .replace(/\b(le|la|les|l|un|une|des|du|de|d|the)\b/g,' ')
     .replace(/\s+/g,' ').trim();
+  return sans || base;
 }
 function distance(a,b){                                    // Levenshtein
   if(a===b) return 0;
@@ -1588,7 +1599,13 @@ function initEvaluabilite(){
     if($('.niv',lab)) return;
     if(lab.closest('.bonus-wrap')) return;
     var t=lab.textContent.toLowerCase(), cle=null;
-    if(/^doc|illustration|vidéo|video|podcast|schéma|schema|ressource/.test(t)) cle='support';
+    /* « Poste de visionnage » et « Poste d'écoute » ne matchaient rien ici :
+       le bloc retombait en branche 2 et récoltait une pastille qui pendait
+       dans son coin bas-droit, alors qu'il a un intitulé juste au-dessus.
+       Ancré en tête, comme ^doc : les cinq intitulés du dépôt commencent
+       par « Poste », et rien d'autre ne doit basculer en support par
+       simple présence du mot. Corrigé le 22/08/2026. */
+    if(/^doc|^poste|illustration|vidéo|video|podcast|schéma|schema|ressource/.test(t)) cle='support';
     else if(/à retenir|a retenir/.test(t)) cle='savoir';
     else if(/vocabulaire|glossaire|dictionnaire/.test(t)) cle='savoir';
     else if(/exercice|vérifie|verifie|associe|fais glisser|remets|complète|complete|entraîne|entraine|teste/.test(t)) cle='faire';
@@ -2510,7 +2527,12 @@ function jouerQcm(data,box,recap,lanceur){
        suffixée par son rang parmi les blocs à trous de cette étape.
        Même réserve que pour les étapes : clé positionnelle. --- */
 function clozeChamps(bloc){
-  return Array.prototype.slice.call(bloc.querySelectorAll('input[data-answer],select[data-answer]'));
+  /* Les champs de relevé et de rappel n'ont pas de réponse attendue — c'est
+     tout leur objet : on y recopie ce qu'un outil affiche, puis on tente de
+     s'en souvenir. Ils étaient donc invisibles pour la persistance, et le
+     relevé d'un élève disparaissait au rechargement. Ajoutés le 22/08/2026. */
+  return Array.prototype.slice.call(bloc.querySelectorAll(
+    'input[data-answer],select[data-answer],input[data-releve-champ],input[data-rappel-champ]'));
 }
 function clozeLire(bloc){
   return clozeChamps(bloc).map(function(e){ return e.value; });
@@ -2522,6 +2544,10 @@ function clozeCle(bloc){
   if(!window.EtatSNT || !EtatSNT.actif()) return null;
   var step=bloc.closest('.step'); if(!step) return null;
   var k=EtatSNT.cle(step); if(!k) return null;
+  /* Un bloc qui porte son propre data-cle garde une clé stable, indépendante
+     de sa position : le relevé de l'étape DNS est lu par le rappel de mémoire,
+     et une clé positionnelle aurait changé au premier bloc ajouté avant lui. */
+  if(bloc.dataset.cle) return k+'/'+bloc.dataset.cle;
   var freres=step.querySelectorAll('.cloze');
   return k+'/cloze-'+Array.prototype.indexOf.call(freres,bloc);
 }
@@ -3109,6 +3135,9 @@ function restaurer(){
     $$('.cloze').forEach(function(bloc){
       var k=clozeCle(bloc); if(!k || !champs[k]) return;
       clozeEcrire(bloc,champs[k]);
+      /* un relevé d'adresses n'a pas de bouton « Vérifier » : ce sont ses
+         valeurs qui disent qu'il était validé, on remet donc l'état figé. */
+      if(bloc._figerReleve){ bloc._figerReleve(); quelqueChose=true; }
       var conteneur=bloc.closest('.field')||bloc.parentElement;
       var bouton=conteneur?conteneur.querySelector('[data-check-cloze]'):null;
       if(bouton){ bouton.click(); quelqueChose=true; }
@@ -3155,6 +3184,187 @@ function restaurer(){
   });
 }
 
+/* ---------- 12. Relevé d'adresses, puis rappel de mémoire (22/08/2026) ----------
+   Le dispositif de l'étape DNS n'avait aucun sens en l'état : le bloc « de
+   mémoire » était en clair, juste sous le relevé qu'il demandait de
+   restituer. Il suffisait de lever les yeux.
+
+   Ce que fait ce moteur :
+   1. le relevé gagne un bouton de validation. Il n'a PAS de bonne réponse —
+      deux élèves peuvent légitimement relever deux adresses différentes pour
+      le même site, le paragraphe qui suit l'explique. On ne valide donc que
+      le FORMAT : quatre nombres de 0 à 255 séparés par des points ;
+   2. une fois validé, le relevé passe en gris et en lecture seule, et part
+      dans ETAT.champs sous sa clé stable « …/releve-dns » ;
+   3. le bloc de rappel n'est jamais dans le flux : il s'ouvre en fenêtre sur
+      fond flouté, qui masque le relevé. On réutilise .focus-scene, déjà en
+      place pour les réponses rédigées — c'est un assemblage, pas un moteur
+      neuf. Le bloc est DÉPLACÉ dans la scène puis remis à sa place, pour que
+      la saisie et sa persistance restent celles du même nœud ;
+   4. la comparaison se fait champ à champ contre le relevé du même élève.
+
+   L'élève qui n'a pas fait le relevé n'a rien à comparer : on accepte, on
+   valide à l'envoi, et on le lui dit sans le sanctionner. */
+function ipv4Ok(v){
+  var p=(v||'').trim().split('.');
+  if(p.length!==4) return false;
+  for(var i=0;i<4;i++){
+    if(!/^[0-9]{1,3}$/.test(p[i])) return false;
+    var n=parseInt(p[i],10);
+    if(n<0||n>255) return false;
+  }
+  return true;
+}
+
+function initReleve(){
+  $$('[data-releve]').forEach(function(bloc){
+    var champs=$$('[data-releve-champ]',bloc);
+    if(!champs.length) return;
+    var carte=bloc.closest('.field')||bloc.parentElement;
+    var btn=carte?carte.querySelector('[data-valider-releve]'):null;
+    var verdict=carte?carte.querySelector('[data-releve-verdict]'):null;
+    if(!btn) return;
+
+    var nom=bloc.dataset.cle||'';
+    var blocRappel=nom?document.querySelector('[data-rappel="'+nom+'"]'):null;
+    var carteRappel=blocRappel?(blocRappel.closest('.field')||blocRappel):null;
+    /* les deux clés se calculent MAINTENANT : le bloc de rappel va quitter
+       son étape le temps de la fenêtre, et clozeCle() ne saurait plus la
+       retrouver. */
+    var cleReleve=clozeCle(bloc);
+    var cleRappel=blocRappel?clozeCle(blocRappel):null;
+    var fige=false;
+
+    /* --- le rappel quitte le flux, une porte prend sa place --- */
+    var repere=null, porte=null, boutonPorte=null;
+    if(carteRappel){
+      carteRappel.hidden=true;
+      repere=document.createComment(' rappel de mémoire : ouvert en fenêtre par le moteur ');
+      carteRappel.parentNode.insertBefore(repere,carteRappel);
+      porte=document.createElement('div');
+      porte.className='rappel-porte';
+      /* La porte reste ouvrable même sans relevé validé : un élève peut
+         revenir sur la page depuis un autre poste, ou en invité, sans que
+         son relevé ait été restauré. Il ne trouve alors rien à comparer —
+         c'est prévu, et la fenêtre le lui dit sans le sanctionner. */
+      porte.innerHTML='<button type="button" class="btn" data-ouvrir-rappel>🧠 Faire le rappel de mémoire</button>'+
+        '<p class="doc-note" data-porte-note>Il masque la page pendant que tu réponds. Valide d\'abord ton relevé ci-dessus&nbsp;: c\'est à lui que tes souvenirs seront comparés.</p>';
+      carteRappel.parentNode.insertBefore(porte,carteRappel);
+      boutonPorte=porte.querySelector('[data-ouvrir-rappel]');
+      boutonPorte.addEventListener('click',function(){ ouvrirRappel(); });
+    }
+
+    /* --- figer le relevé --- */
+    function figer(annonce){
+      fige=true;
+      champs.forEach(function(c){ c.readOnly=true; c.classList.add('releve-fige'); });
+      btn.disabled=true; btn.textContent='✅ Relevé validé';
+      if(boutonPorte){
+        var note=porte.querySelector('[data-porte-note]');
+        if(note) note.textContent='Ton relevé est masqué pendant que tu réponds : c\'est le but.';
+      }
+      if(verdict && annonce){
+        verdict.innerHTML='<span class="m-ok">Relevé enregistré. Il est maintenant en lecture seule — tu vas devoir t\'en souvenir.</span>';
+      }
+    }
+    /* le relevé se rétablit au rechargement de la page, comme les autres
+       textes à trous : rehydraterReponses() remet les valeurs, cette
+       fonction remet l'état. */
+    bloc._figerReleve=function(){
+      if(fige) return;
+      if(champs.every(function(c){ return ipv4Ok(c.value); })) figer(false);
+    };
+
+    /* --- validation : le format, et rien d'autre --- */
+    btn.addEventListener('click',function(){
+      var vides=0, malformes=0;
+      champs.forEach(function(c){
+        c.classList.remove('revoir');
+        var v=(c.value||'').trim();
+        if(!v){ vides++; c.classList.add('revoir'); return; }
+        if(!ipv4Ok(v)){ malformes++; c.classList.add('revoir'); }
+      });
+      if(vides||malformes){
+        if(verdict){
+          var h='<span class="m-ko">';
+          if(vides) h+=vides+' adresse(s) manquante(s). ';
+          if(malformes) h+=malformes+' saisie(s) ne ressemble(nt) pas à une adresse IPv4 : quatre nombres de 0 à 255, séparés par des points.';
+          verdict.innerHTML=h+'</span>';
+        }
+        return;
+      }
+      if(cleReleve && window.EtatSNT) EtatSNT.noterChamps(cleReleve, clozeLire(bloc));
+      figer(true);
+      if(carteRappel) ouvrirRappel();
+    });
+
+    /* --- la fenêtre de rappel --- */
+    var scene=null;
+    function fermerRappel(){
+      if(!scene) return;
+      carteRappel.hidden=true;
+      if(repere && repere.parentNode) repere.parentNode.insertBefore(carteRappel,repere.nextSibling);
+      scene.remove(); scene=null;
+      document.body.classList.remove('focus-on');
+    }
+    function ouvrirRappel(){
+      if(scene||!carteRappel) return;
+      scene=document.createElement('div');
+      scene.className='focus-scene';
+      scene.innerHTML=
+        '<div class="focus-carte rappel-carte">'+
+          '<div class="fk">🧠 De mémoire <span style="color:var(--ink-faint)">· le relevé est masqué</span></div>'+
+          '<div class="fq">Redonne les adresses que tu viens de relever. Écris ce dont tu te souviens, même incomplet : c\'est l\'oubli qu\'on observe ici, pas la performance.</div>'+
+          '<div class="rappel-zone"></div>'+
+          '<div class="rappel-msg" data-rappel-msg></div>'+
+          '<div class="focus-foot">'+
+            '<span class="focus-jauge">Rien n\'est noté.</span>'+
+            '<span><button class="btn ghost" data-rappel-fermer>Plus tard</button> '+
+            '<button class="btn" data-rappel-comparer>Comparer à mon relevé</button></span>'+
+          '</div>'+
+        '</div>';
+      document.body.appendChild(scene);
+      document.body.classList.add('focus-on');
+      carteRappel.hidden=false;
+      scene.querySelector('.rappel-zone').appendChild(carteRappel);
+
+      scene.querySelector('[data-rappel-fermer]').addEventListener('click',fermerRappel);
+      scene.querySelector('[data-rappel-comparer]').addEventListener('click',comparer);
+      var premier=carteRappel.querySelector('input');
+      if(premier) premier.focus();
+    }
+
+    /* --- comparaison champ à champ, contre le relevé du même élève --- */
+    function comparer(){
+      var msg=scene.querySelector('[data-rappel-msg]');
+      var rappels=$$('[data-rappel-champ]',carteRappel);
+      if(cleRappel && window.EtatSNT) EtatSNT.noterChamps(cleRappel, clozeLire(blocRappel));
+
+      if(!fige){
+        /* cas tranché d'avance : sans relevé, il n'y a rien à comparer. On
+           accepte quand même — l'élève n'a pas à rester bloqué. */
+        msg.className='rappel-msg ko';
+        msg.innerHTML='Tu n\'avais pas relevé les adresses&nbsp;: refais le <b>temps 1</b> pour que l\'exercice ait du sens. Ta réponse est gardée quand même.';
+        return;
+      }
+      var justes=0;
+      rappels.forEach(function(r){
+        r.classList.remove('juste','revoir');
+        var n=r.dataset.rappelChamp;
+        var source=bloc.querySelector('[data-releve-champ="'+n+'"]');
+        var attendu=source?(source.value||'').trim():'';
+        var donne=(r.value||'').trim();
+        if(attendu && donne===attendu){ r.classList.add('juste'); justes++; }
+        else r.classList.add('revoir');
+      });
+      msg.className='rappel-msg '+(justes===rappels.length?'ok':'ko');
+      msg.innerHTML= justes===rappels.length
+        ? '<b>'+justes+' sur '+rappels.length+'</b> — tu les as retrouvées à l\'identique. Regarde maintenant combien de temps cela t\'a demandé, pour deux adresses seulement.'
+        : '<b>'+justes+' sur '+rappels.length+'</b> retrouvée(s) à l\'identique. C\'est le résultat attendu&nbsp;: une adresse IP n\'est pas faite pour être retenue par un humain. La suite de l\'étape explique qui s\'en charge à ta place.';
+    }
+  });
+}
+
 function demarrer(){
   /* le bandeau « À retenir » est ajouté en CSS : on enveloppe le contenu */
   $$('.retain').forEach(function(r){
@@ -3174,6 +3384,7 @@ function demarrer(){
   initEnseignant();
   initQcm();
   initCloze();
+  initReleve();          /* après initCloze : la porte du rappel se pose sur un bloc déjà outillé */
   initGlossaire();
   initZoom();
   initDepot();
