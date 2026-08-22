@@ -330,11 +330,19 @@
     background:var(--link-wash);color:var(--link);border:1px solid #c3cdf2;border-radius:100px;padding:1px 8px 1px 6px;
     margin-left:3px;cursor:help;position:relative;font-family:"IBM Plex Mono"}
   .plustard:hover,.plustard:focus{background:var(--link);color:#fff;outline:none;border-color:var(--link)}
-  .plustard .bulle{display:none;position:absolute;bottom:calc(100% + 9px);left:50%;transform:translateX(-50%);
+  /* position:fixed, placée en JS (audit du 22/08/2026). En absolute la
+     bulle était rognée par les overflow:hidden de .card, .retain,
+     .france-box, .poste et .glosmot — ce sont eux qui coupaient, pas le
+     bord de la fenêtre, et ils portent l'arrondi de ces blocs : on ne
+     peut pas les retirer. Sortie du flux, la bulle est donc positionnée
+     à la main par placerBulle() dans sequence-snt.js. */
+  .plustard .bulle{display:none;position:fixed;
     width:max-content;max-width:270px;background:var(--ink);color:#fff;font-family:"IBM Plex Sans";font-size:12.5px;
-    line-height:1.5;text-align:left;padding:9px 12px;border-radius:10px;z-index:40;box-shadow:0 6px 20px rgba(22,31,51,.25);cursor:auto}
-  .plustard .bulle::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    line-height:1.5;text-align:left;padding:9px 12px;border-radius:10px;z-index:1000;box-shadow:0 6px 20px rgba(22,31,51,.25);cursor:auto}
+  .plustard .bulle::after{content:"";position:absolute;top:100%;left:var(--fleche-x,50%);transform:translateX(-50%);
     border:6px solid transparent;border-top-color:var(--ink)}
+  /* bulle basculée sous le bouton (pas la place au-dessus) : flèche retournée */
+  .plustard .bulle.bas::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:var(--ink)}
   .plustard .bulle b{color:#9db4ff}
   /* Allègement (audit Loïc) : libellé complet au 1er usage de la page, télescope seul ensuite. */
   .plustard.court .pl-txt{display:none}
@@ -353,7 +361,7 @@
   /* cible tactile : le composant est un bouton en ligne, on élargit sa zone
      de contact sans casser le rythme du texte (LOT C — iPad et téléphone) */
   .plustard::before{content:"";position:absolute;inset:-11px -6px;}
-  @media (max-width:560px){.plustard .bulle{left:0;transform:none;max-width:76vw}.plustard .bulle::after{left:22px}}
+  @media (max-width:560px){.plustard .bulle{max-width:76vw}}
 
   /* §7.6 — mode focus : le reste de la page s'efface pendant qu'on
      rédige. Sans ça, « redonne la définition » se recopie deux

@@ -354,17 +354,68 @@
 
   /* ---------- §1 picto « à voir plus tard » ----------
      Au clic pour le tactile (le survol n'existe pas sur iPad), et
-     focusable au clavier. */
+     focusable au clavier.
+
+     La bulle est en position:fixed depuis l'audit du 22/08/2026 : en
+     absolute, elle était coupée par les overflow:hidden de .card,
+     .retain, .france-box, .poste et .glosmot — jamais par le bord de
+     la fenêtre. Ces overflow portent l'arrondi des blocs et restent.
+     Hors du flux, la bulle n'a plus de position propre : c'est ce
+     placeur qui l'écrit, à chaque ouverture puis à chaque scroll. */
+  var bulleActive = null;
+  var MARGE = 9, BORD = 8;
+
+  function placerBulle(b){
+    var bulle = b.querySelector('.bulle');
+    if(!bulle) return;
+    var rb = b.getBoundingClientRect();
+    var rz = bulle.getBoundingClientRect();
+    /* au-dessus par défaut ; en dessous si ça déborderait par le haut */
+    var enBas = (rb.top - rz.height - MARGE) < BORD;
+    bulle.classList.toggle('bas', enBas);
+    bulle.style.top = Math.round(enBas ? rb.bottom + MARGE : rb.top - rz.height - MARGE) + 'px';
+    /* centrée sur le bouton, puis bornée dans la fenêtre */
+    var xmax = Math.max(BORD, window.innerWidth - rz.width - BORD);
+    var x = Math.min(Math.max(rb.left + rb.width/2 - rz.width/2, BORD), xmax);
+    bulle.style.left = Math.round(x) + 'px';
+    /* après bornage, la flèche doit rester sous le bouton, pas au milieu */
+    var fx = Math.min(Math.max(rb.left + rb.width/2 - x, 14), Math.max(14, rz.width - 14));
+    bulle.style.setProperty('--fleche-x', Math.round(fx) + 'px');
+  }
+  function suivreBulle(){ if(bulleActive) placerBulle(bulleActive); }
+  function ouvrirBulle(b){
+    if(bulleActive === b){ placerBulle(b); return; }
+    bulleActive = b;
+    placerBulle(b);
+    window.addEventListener('scroll', suivreBulle, true);
+    window.addEventListener('resize', suivreBulle);
+  }
+  function fermerBulle(b){
+    if(b && b !== bulleActive) return;
+    bulleActive = null;
+    window.removeEventListener('scroll', suivreBulle, true);
+    window.removeEventListener('resize', suivreBulle);
+  }
+
   document.querySelectorAll('[data-plustard]').forEach(function(b){
     if(!b.hasAttribute('aria-label')) b.setAttribute('aria-label','Notion abordée plus tard — voir le détail');
+    /* les trois portes d'entrée du CSS : :hover, :focus, .ouvert */
+    b.addEventListener('mouseenter',function(){ ouvrirBulle(b); });
+    b.addEventListener('focus',function(){ ouvrirBulle(b); });
+    b.addEventListener('mouseleave',function(){ if(!b.classList.contains('ouvert')) fermerBulle(b); });
+    b.addEventListener('blur',function(){ if(!b.classList.contains('ouvert')) fermerBulle(b); });
     b.addEventListener('click',function(e){
       e.preventDefault();
       document.querySelectorAll('.plustard.ouvert').forEach(function(o){if(o!==b)o.classList.remove('ouvert');});
       b.classList.toggle('ouvert');
+      if(b.classList.contains('ouvert')) ouvrirBulle(b); else fermerBulle(b);
     });
   });
   document.addEventListener('click',function(e){
-    if(!e.target.closest('.plustard')) document.querySelectorAll('.plustard.ouvert').forEach(function(o){o.classList.remove('ouvert');});
+    if(!e.target.closest('.plustard')){
+      document.querySelectorAll('.plustard.ouvert').forEach(function(o){o.classList.remove('ouvert');});
+      fermerBulle(null);
+    }
   });
 
   /* ---------- §7.2 suivi de sortie de page ----------
