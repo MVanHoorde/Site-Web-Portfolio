@@ -38,27 +38,66 @@
   /* ----------------------------------------------------------
    *  Placements
    *
-   *  2 à 6 nœuds : disposition d'origine, une ligne serpentée dans
-   *  une boîte 680 × 300. Inchangée — la page Internet doit rendre
-   *  exactement pareil qu'avant l'extraction.
+   *  2 à 5 nœuds : disposition d'origine, une ligne serpentée dans
+   *  une boîte 680 × 300.
    *
-   *  7 et 8 nœuds : une seule ligne devient illisible (8 disques de
-   *  68 px de diamètre dans 680 px, ils se touchent, et les libellés
-   *  se chevauchent). On passe donc à DEUX RANGÉES en serpentin, dans
-   *  une boîte plus haute. Le regard suit l'ordre : on part en haut à
-   *  gauche, on va à droite, on descend, on repart vers la gauche.
+   *  6 nœuds et plus : DEUX RANGÉES en serpentin, dans une boîte plus
+   *  haute. Le regard suit l'ordre : on part en haut à gauche, on va à
+   *  droite, on descend, on repart vers la gauche.
+   *
+   *  Pourquoi 6 et plus 7 (audit du 23/08/2026) : sur une seule ligne,
+   *  six disques laissent 85 px entre deux centres voisins, alors que
+   *  le libellé d'une séance en fait couramment 170. Le nom de la
+   *  sixième séance de t1 recouvrait donc le disque de la cinquième et
+   *  sortait de la boîte de 46 px. Le défaut était mécanique : il
+   *  revenait dès qu'un libellé dépassait une vingtaine de caractères.
+   *  Écarter les nœuds n'aurait fait que déplacer le seuil ; les deux
+   *  rangées le suppriment, avec 230 px entre voisins et aucune
+   *  rencontre possible entre un libellé et un disque de l'autre rang.
+   *
+   *  Les dispositions 2 à 5 restent au pixel près celles d'avant
+   *  l'extraction du composant.
    * ---------------------------------------------------------- */
   var PLACES = {
     2: [[190,150],[490,150]],
     3: [[130,190],[340,105],[560,190]],
     4: [[140,180],[305,105],[455,205],[600,110]],
     5: [[110,185],[250,100],[390,195],[520,105],[625,200]],
-    6: [[100,180],[215,100],[330,190],[445,105],[555,190],[640,110]],
+    6: [[105,95],[335,95],[565,95],[565,290],[335,290],[105,290]],
     7: [[105,95],[260,95],[415,95],[570,95],[490,290],[300,290],[110,290]],
     8: [[105,95],[260,95],[415,95],[570,95],[570,290],[415,290],[260,290],[105,290]]
   };
-  /* Hauteur de la boîte large, par nombre de nœuds. */
-  function hauteurLarge(n) { return (n >= 7) ? 400 : 300; }
+  /* Hauteur de la boîte large, par nombre de nœuds. Les 20 px de plus
+     qu'à l'origine logent la deuxième ligne d'un libellé long — voir
+     lignesNom() : sans eux, le nom d'un nœud du rang bas passait sous
+     le bord de la boîte. */
+  function hauteurLarge(n) { return (n >= 6) ? 420 : 320; }
+
+  /* ----------------------------------------------------------
+   *  Couper un libellé long en deux lignes
+   *
+   *  Une séance s'appelle « Activité débranchée — la frise du Web » ou
+   *  « Adresses IP, DNS et diagnostic » : sur une seule ligne, ces
+   *  noms font 170 à 210 px et vont recouvrir le disque ou le nom du
+   *  nœud voisin. Écarter les nœuds ne réglait rien — le nom suivant
+   *  serait plus long. On coupe donc le libellé en deux lignes aussi
+   *  équilibrées que possible, sur l'espace le plus proche du milieu.
+   *  Deux lignes suffisent : au-delà, c'est le nom de la séance qu'il
+   *  faut raccourcir, pas la carte qu'il faut agrandir.
+   * ---------------------------------------------------------- */
+  var NOM_COURT = 26;                       /* caractères sur une ligne */
+  function lignesNom(txt) {
+    txt = String(txt == null ? '' : txt).trim();
+    if (txt.length <= NOM_COURT) return [txt];
+    var milieu = txt.length / 2, coupe = -1, ecart = Infinity;
+    for (var i = 0; i < txt.length; i++) {
+      if (txt.charAt(i) !== ' ') continue;
+      var d = Math.abs(i - milieu);
+      if (d < ecart) { ecart = d; coupe = i; }
+    }
+    if (coupe < 0) return [txt];            /* un seul mot, très long */
+    return [txt.slice(0, coupe), txt.slice(coupe + 1)];
+  }
 
   function esc(x) {
     return String(x == null ? '' : x)
@@ -106,7 +145,8 @@
    * ---------------------------------------------------------- */
   function noeud(n, x, y, vertical) {
     var c = 2 * Math.PI * R_ANNEAU;
-    var g = '<g class="hub-n ' + esc(n.classe || '') + '" data-noeud="' + esc(n.id) + '">'
+    var g = '<g class="hub-n ' + esc(n.classe || '') + '" data-noeud="' + esc(n.id) + '"'
+      + ' data-nom="' + esc(n.nom) + '">'
       + '<a>'
       + '<circle class="hub-piste" cx="'+x+'" cy="'+y+'" r="'+R_ANNEAU+'"/>'
       + '<circle class="hub-arc" cx="'+x+'" cy="'+y+'" r="'+R_ANNEAU+'" '
@@ -114,13 +154,25 @@
       + '<circle class="hub-disque" cx="'+x+'" cy="'+y+'" r="31"/>'
       + '<text class="hub-num" x="'+x+'" y="'+y+'" text-anchor="middle" '
       +   'dominant-baseline="central">' + esc(n.num) + '</text>';
+    /* Le nom complet reste lisible d'un seul tenant sur le <g> : une
+       fois découpé en <tspan>, textContent recolle les morceaux sans
+       l'espace de la coupure, et l'infobulle disait « la frisedu Web ». */
+    var ls = lignesNom(n.nom), saut = 15;
+    function pave(px, ancre, yPremiere) {
+      return '<text class="hub-nom" x="'+px+'" y="'+yPremiere+'"'+ancre+'>'
+        + ls.map(function (l, i) {
+            return '<tspan x="'+px+'" dy="'+(i ? saut : 0)+'">' + esc(l) + '</tspan>';
+          }).join('')
+        + '</text>';
+    }
     if (vertical) {
-      g += '<text class="hub-nom" x="'+(x+52)+'" y="'+(y-4)+'">' + esc(n.nom) + '</text>'
-         + '<text class="hub-etat" x="'+(x+52)+'" y="'+(y+14)+'"></text>';
+      var yv = y - 4 - (ls.length - 1) * 8;
+      g += pave(x+52, '', yv)
+         + '<text class="hub-etat" x="'+(x+52)+'" y="'+(yv+(ls.length-1)*saut+18)+'"></text>';
     } else {
-      g += '<text class="hub-nom" x="'+x+'" y="'+(y+R_ANNEAU+24)+'" text-anchor="middle">'
-         +   esc(n.nom) + '</text>'
-         + '<text class="hub-etat" x="'+x+'" y="'+(y+R_ANNEAU+40)+'" text-anchor="middle"></text>';
+      var yh = y + R_ANNEAU + 24;
+      g += pave(x, ' text-anchor="middle"', yh)
+         + '<text class="hub-etat" x="'+x+'" y="'+(yh+(ls.length-1)*saut+16)+'" text-anchor="middle"></text>';
     }
     return g + '<title></title></a></g>';
   }
@@ -147,7 +199,12 @@
     }
     var H = hauteurLarge(n);
 
-    var h = '<svg class="hub-svg hub-large" viewBox="0 0 680 '+H+'" role="img" aria-hidden="true">';
+    /* La boîte déborde de 30 px de chaque côté du cadre historique de
+       680 px, sans déplacer un seul nœud : le libellé d'un nœud posé
+       tout au bord (x = 625 sur cinq nœuds) n'a que 55 px devant lui et
+       sortait du cadre, rattrapé de justesse par overflow:visible. Une
+       marge symétrique coûte 4 % de réduction et supprime le cas. */
+    var h = '<svg class="hub-svg hub-large" viewBox="-30 0 740 '+H+'" role="img" aria-hidden="true">';
     if (options.decor !== false) h += fond(pos, H);
     for (var i = 1; i < pos.length; i++) {
       var a = pos[i-1], b = pos[i];
@@ -222,7 +279,7 @@
       var titre = g.querySelector('title');
       if (titre) {
         var nom = g.querySelector('.hub-nom');
-        titre.textContent = (nom ? nom.textContent : '')
+        titre.textContent = (g.getAttribute('data-nom') || (nom ? nom.textContent : ''))
           + (e.etat ? ' — ' + e.etat : '');
       }
 

@@ -811,6 +811,20 @@
     markDone(box);
   }
 
+  /* Le partage a eu lieu — enregistré, gardé localement, ou tenté et
+     tombé sur une panne : dans les trois cas l'élève a FAIT le geste.
+     C'est ce marqueur, et non le contenu du textarea, qui ouvre une
+     porte d'intuition (voir bqMaj). On n'enferme pas un élève derrière
+     une porte à cause d'un réseau indisponible. */
+  function marquerPartage(box){
+    if(!box || box.dataset.partage==='1') return;
+    box.dataset.partage='1';
+    /* bqMaj() vit dans un AUTRE module de ce fichier : on ne l'appelle
+       pas, on lui fait signe. initBilan écoute cet événement au même
+       titre que 'input' et 'etape-validee'. */
+    document.dispatchEvent(new CustomEvent('partage-fait'));
+  }
+
   document.querySelectorAll('[data-share]').forEach(function(btn){
     btn.addEventListener('click',function(){
       var box=btn.closest('.perso');
@@ -826,7 +840,7 @@
       if(!BASE || !code){
         ta.readOnly=true; btn.disabled=true;
         note.textContent='✅ Gardé pour cette séance — pense à télécharger ta fiche en fin d\'heure.';
-        persoValide(box);
+        persoValide(box); marquerPartage(box);
         return;
       }
 
@@ -835,7 +849,7 @@
       BASE.partager(code, texte).then(function(){
         ta.readOnly=true;
         note.textContent='✅ Merci — ta réponse nourrit la discussion de classe.';
-        persoValide(box);
+        persoValide(box); marquerPartage(box);
       }).catch(function(e){
         /* Deux échecs très différents, et les confondre serait une
            faute d'accueil. L'invité SANS COMPTE n'a rien raté : le
@@ -851,7 +865,7 @@
           btn.disabled=false;
           note.textContent='⚠️ Enregistrement indisponible. Ton texte est toujours là : réessaie, ou télécharge ta fiche en fin d\'heure.';
         }
-        persoValide(box);
+        persoValide(box); marquerPartage(box);
       });
     });
   });
@@ -879,7 +893,7 @@
         if(ta){ ta.value=r.texte||''; ta.readOnly=true; }
         if(btn) btn.disabled=true;
         if(note) note.textContent='✅ Partagé — ta réponse nourrit la discussion de classe.';
-        persoValide(box);
+        persoValide(box); marquerPartage(box);
       });
     }).catch(function(){ /* invité, hors ligne : rien à rendre */ });
   }
@@ -2311,7 +2325,13 @@ function infosEtape(p){
   if(p.dataset && p.dataset.num) mi=[p.dataset.num,p.dataset.num];
   var nom=propreTxt($('.step-title',p));
   if(!nom){
-    var b=propreTxtSansIx($('.fl',p)||$('.pl',p)||$('.bl',p));
+    /* Un « pour aller plus loin » s'appelle par son propre en-tête, et
+       par rien d'autre. Chercher .fl/.pl/.bl dans toute l'étape
+       descendait dans les bandeaux NICHÉS à l'intérieur du bonus : la
+       perso-box de l'étape 3.3 de t1 faisait annoncer « À faire chez
+       toi » — un dispositif qui n'a jamais existé (audit du 23/08/2026).
+       Le .bonus-head passe donc en premier, avant tout bandeau interne. */
+    var b=propreTxtSansIx($('.bonus-head .bl',p)||$('.fl',p)||$('.pl',p)||$('.bl',p));
     nom = b ? b.split('·')[0].split('—')[0].trim() : 'Étape';
   }
   return { ix: mi?mi[1]:'', nom: nom };
@@ -2339,8 +2359,23 @@ function initLignes(){
     if(apres) p.insertBefore(b,apres); else p.appendChild(b);
     b.addEventListener('click',function(){
       /* une étape à venir ne s'ouvre pas d'ici : le bouton « Étape
-         suivante » reste le seul geste pour avancer. */
-      if(p.classList.contains('masque')) return;
+         suivante » reste le seul geste pour avancer.
+
+         Mais un clic qui ne fait RIEN se lit comme une panne (audit du
+         23/08/2026 : « il faut cliquer plusieurs fois »). On garde donc
+         la condition d'ouverture intacte, et on conduit l'élève là où
+         le geste existe : le bouton « Étape suivante » de sa séance. */
+      if(p.classList.contains('masque')){
+        var sec=p.closest('.seance'), bt=sec&&$('.step-suivant',sec);
+        if(bt && bt.style.display!=='none'){
+          defilerVers(bt);
+          if(!bt.classList.contains('appel')){
+            bt.classList.add('appel');
+            setTimeout(function(){ bt.classList.toggle('appel',false); },1600);
+          }
+        }
+        return;
+      }
       p.classList.remove('replie');
       majLignes();
       defilerVers(p);
@@ -3451,7 +3486,16 @@ function bqMaj(){
         vide, la suite de l'étape n'est pas là. */
   $$('[data-porte]').forEach(function(porte){
     var ta=$('textarea',porte);
-    var ouvert=!!(ta && ta.value.trim());
+    /* Ce qui ouvre la porte, c'est l'ACTE, pas la frappe (audit du
+       23/08/2026 : en 4.3 le document apparaissait avant le clic sur
+       « Partager avec la classe »). Une porte qui porte un bouton de
+       partage attend donc ce bouton ; une porte qui n'en a pas — il
+       n'y en a pas aujourd'hui, mais rien ne l'interdit — garde
+       l'ancienne règle, sinon elle ne s'ouvrirait jamais. */
+    var boite=$('.perso',porte), bouton=$('[data-share]',porte);
+    var ouvert = bouton
+      ? !!(boite && boite.dataset.partage==='1')
+      : !!(ta && ta.value.trim());
     /* La suite de l'étape apparaissait d'un coup, à la première lettre
        écrite (audit du 22/08/2026 : « c'est peut-être un peu rapide »).
        On ne pose l'animation qu'au VRAI basculement fermé → ouvert :
@@ -3487,8 +3531,11 @@ function bqMaj(){
       mot.className='porte-mot';
       porte.appendChild(mot);
     }
-    mot.textContent=ouvert ? '' :
-      '\u2193 \u00c9cris ton intuition : la suite de l\u2019\u00e9tape s\u2019ouvrira juste apr\u00e8s.';
+    var attendu = bouton
+      ? '\u2193 \u00c9cris ton intuition, puis partage-la : la suite de l\u2019\u00e9tape s\u2019ouvrira juste apr\u00e8s.'
+      : '\u2193 \u00c9cris ton intuition : la suite de l\u2019\u00e9tape s\u2019ouvrira juste apr\u00e8s.';
+    var dit = ouvert ? '' : attendu;
+    if(mot.textContent!==dit) mot.textContent=dit;
     mot.hidden=ouvert;
   });
 }
@@ -3507,7 +3554,7 @@ function initBilan(){
     });
   });
   bqMaj();
-  ['input','change','etape-validee'].forEach(function(ev){
+  ['input','change','etape-validee','partage-fait'].forEach(function(ev){
     document.addEventListener(ev,bqMaj);
   });
 }
