@@ -34,7 +34,10 @@ comptes de test.
 
 **Contenu :** 8 séquences de thème (`t0`→`t7`) + le module transversal `m1`
 « Représenter l'information ». `t0`, `t1`, `t2` en V0 complète et portées par
-le moteur partagé ; `t3`→`t7` en V0 partielle. **Aucun contenu n'est validé.**
+le moteur partagé ; `t3`→`t7` en V0 partielle. Seul **`t1` est validé sur le
+fond** (23/08) — tout le reste est une proposition. `t0` a été **refondue le
+23/08** : fork inline supprimé, portage sur le moteur, **trois séances** au lieu
+de deux, contenu des documents source porté en entier. Non validée.
 
 **Comptes de test à supprimer avant la rentrée :** `leproftest`, `test02`,
 plus ceux créés le 01/08. Classes de test : `SNTTSA`, `SNTTSB`.

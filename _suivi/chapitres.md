@@ -184,39 +184,63 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 > ressources définitives → validé** (voir `CONSIGNES-sequence-SNT.md` §12).
 
 ### SNT-T0 — Introduction · Les systèmes informatisés 🧭
-- État : **maquette V0 fonctionnelle en ligne** (17/07), non validée.
+- État : **refondue le 23/08/2026** — jalons 1 à 3 atteints, jalon 4 partiel,
+  **non validée**. Tout le contenu est une proposition.
 - Fichier : `pages/2nde-snt-t0-systemes-informatises.html`. Lié depuis la carte
-  « Pour commencer » (nouvelle, en tête de `pages/2nde-snt.html`).
+  « Pour commencer » (en tête de `pages/2nde-snt.html`, `data-seances="4"`).
 - **Statut particulier — référentiel vivant** (`CONSIGNES-sequence-SNT.md` §8) :
-  cours « Les systèmes informatisés » (doc 01 de Loïc, sorti de la séquence
-  Internet) **entrelacé** avec le tutoriel du dispositif. Toute nouvelle idée de
-  fonctionnement du cours se présente ici en premier ; les autres séquences portent
-  un **rappel discret** en pied de page (posé le 17/07 sur Web et Internet).
-- 2 séances (Machines & mode d'emploi · Caractéristiques & entraide) + 1
-  débranchée (« Autopsie d'une tour »). ≈ 3 h. Codes `SYS·x`.
-- **Mécanismes du cours présentés** (liste à tenir à jour à chaque nouveauté) :
-  - [x] étapes / pastilles / verrouillage progressif (S1-1.1)
-  - [x] les 4 types d'exercices : QCM, association/schéma, réponse rédigée
-        (copier-coller bloqué, en attente → validé), réflexion perso non notée
-  - [x] rituel de fin de séance : fiche à télécharger + dépôt OneDrive (S1)
-  - [x] entraide « validé → tu peux aider » + **note d'investissement** via la
-        correction entre camarades (S2-2.4, annoncée pour la version complète —
-        **formulation à valider par Loïc**)
-  - [x] mode enseignant (S2-2.4)
-  - [x] **dépôt de copie d'écran** (22/07, S1-1.4) — image affichée, validée à
-        l'envoi ; texte présenté, **code à porter** (né en séance 2 de la séquence Internet)
-  - [x] **« à retenir » masqué** révélé après l'activité (22/07, S1-1.1) — texte
-        présenté, **code à porter**
-  - [x] **réponse personnelle partagée** (20/08, S1, bloc perso) — ce que devient
-        le texte quand on clique « Partager avec la classe » : il part chez le
-        professeur, qui en choisira pour lancer la discussion ; jamais noté, jamais
-        corrigé. Texte présenté, **code à porter** (né en séance 2 de la séquence
-        Internet, où le bouton n'enregistrait rien du tout)
+  cours « Les systèmes informatisés » **entrelacé** avec le tutoriel du
+  dispositif. Toute nouvelle idée de fonctionnement du cours se présente ici en
+  premier ; les autres séquences portent un **rappel discret** en pied de page.
+- **3 séances + 1 débranchée · 23 étapes · 16 portes.** ≈ 4 h 30. Codes `SYS·x`.
+  - **S1 — Des machines partout** (7 étapes) : le mode d'emploi complet (1.1),
+    les systèmes informatisés (1.2), machines / réseau / services (1.3), ce qu'on
+    fait sans connexion + première réponse rédigée (1.4), le rituel de la fiche
+    (1.5), « et toi ? » (1.6), pour aller plus loin + clin d'œil NSI.
+  - **S2 — Dans le ventre de la machine** (7 étapes) : terminal et unité centrale
+    (2.1), l'alimentation (2.2), carte mère / CPU / RAM (2.3), cartes d'extension
+    et dépôt de copie d'écran (2.4), le stockage et le glossaire (2.5), autopsie
+    d'une vraie machine (2.6), bonus ROM/BIOS/UEFI et IDE→SATA.
+  - **S3 — Brancher juste, choisir sa machine** (8 étapes) : connectiques et
+    planche SVG (3.1), l'USB (3.2), autopsie d'une façade arrière (3.3), relevé
+    photo des ports (3.4), six critères de choix (3.5), entraide et mode
+    enseignant (3.6), « et toi ? » (3.7), bonus définition ≠ résolution.
+  - **Débranchée** — « autopsie d'une tour », maintenue **en chantier** (T0-3),
+    sans `data-gate`.
+- **Mécanismes du cours présentés — et désormais tous PRATIQUÉS** (liste à tenir
+  à jour à chaque nouveauté) :
+  - [x] géographie séquence / séance / étape, entrée par le hub (1.1)
+  - [x] trajet d'une étape, pastilles ⚪ 🟡 🟢 (1.1)
+  - [x] révélation séquentielle et barre de progression repliable (1.1)
+  - [x] échelle d'évaluabilité ★★ · ★ · ○ · ✦ · — (1.1, injectée par le moteur)
+  - [x] déblocage par le mérite **et** plafond de deux séances d'avance (1.1)
+  - [x] les cinq types d'exercice et **qui corrige quoi** (1.1, tableau)
+  - [x] copier-coller bloqué et mode focus (1.1, pratiqué en 1.4)
+  - [x] **QCM plein écran** (1.1 → `SYS-Q1`, 8 questions)
+  - [x] **réponse rédigée** envoyée en correction (1.4 → `SYS-R1`)
+  - [x] **réponse personnelle** partagée, jamais notée (1.6 → `SYS-P1`)
+  - [x] **rituel de la fiche** de fin de séance (1.5) — le dépôt OneDrive
+        s'enseigne **hors ligne** (T0-4), la page n'enseigne que la génération
+  - [x] **dépôt de copie d'écran** (2.4 → `SYS-D1`, 3.4 → `SYS-D2`)
+  - [x] **« à retenir » masqué** (2.3 et 3.3) — s'ouvre **tout seul** une fois
+        l'exercice fait ; le bouton n'est qu'un compteur verrouillé
+  - [x] **glossaire permanent** et entrée écrite par l'élève (2.5 → `SYS-G-ssd`)
+  - [x] **tri glisser-déposer** (2.5, chronologie des supports de stockage)
+  - [x] **entraide** — « validé → tu peux aider » (3.4 puis 3.6)
+  - [x] **mode enseignant à code**, coupé à 30 min (3.6)
   - [ ] _(prochain mécanisme : à présenter ici d'abord)_
-- Hors périmètre volontaire : le détail matériel pointu du doc 01 (PCIe, SATA,
-  S/PDIF, UEFI…) — grandes familles seulement, niveau seconde.
-- 🚧 Restant : fiche d'observation `SYS·D` et diaporama `SYS·1` (liens inertes) ;
-  valider la formulation « note d'investissement ».
+- **Images** : 43 des 47 fichiers du dossier sont placés. Non utilisés à dessein :
+  `t0-resolution-ecran.jpg` (confond définition et résolution — refait en SVG),
+  `t0-boitier-tour.jpg`, `t0-ssd-et-hdd.jpg` et `t0-imprimante.jpg` (vignettes
+  redondantes). Crédit + licence portés sur les **deux images Wikimedia** ; les
+  photos de Loïc sont créditées « la machine du professeur » (T0-7).
+- **SVG maison** : planche des 14 connecteurs à la même échelle (remplace le
+  tableau anglophone écarté, T0-9), comparaison des slots PCIe x1/x4/x16,
+  pouces et diagonale, définition contre résolution.
+- 🚧 Restant : **cinq images** (borne de bus, caisse automatique, lave-linge —
+  l'accroche de la séance 1 —, montre connectée, baie de serveurs) ; fiche
+  d'observation `SYS·D` et diaporama `SYS·1` (liens inertes) ; arbitrage sur la
+  recherche en ligne de l'étape 2.4 ; sort de l'activité débranchée.
 
 ### SNT-T1 — Internet
 - État : **validé sur le fond le 23/08/2026** — jalon 5 atteint, jalon 7 (CLOS)

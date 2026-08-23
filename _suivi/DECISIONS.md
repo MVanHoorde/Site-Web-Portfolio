@@ -37,6 +37,53 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## Refonte de `t0` « Les systèmes informatisés » — 23/08/2026
+
+Séquence d'introduction refondue de bout en bout : elle enseigne les mécanismes
+du cours, et c'était la seule à ne pas les avoir. **Rien n'est validé** — tout le
+contenu pédagogique ci-dessous est une proposition.
+
+### Arbitrages dictés par Loïc avant la refonte
+
+| # | Décision | Statut |
+|---|---|---|
+| T0-1 | **Préfixe de code : `SYS-*`**, dans la logique de `NET-*` / `WEB-*` / `REP-*` | ✅ |
+| T0-2 | **Trois séances**, plus l'activité débranchée | ✅ |
+| T0-3 | L'activité débranchée « autopsie d'une tour » **reste en chantier** : pas de poste disponible. Sans `data-gate`, elle ne bloque rien | ✅ |
+| T0-4 | **Le dépôt sur le classeur OneDrive s'enseigne hors du cours en ligne.** `t0` le suppose acquis ; ce qu'elle enseigne, c'est la **génération** de la fiche | ✅ |
+| T0-5 | **Supprimer « cette page ne garde rien en mémoire »** : fausse dès le portage, et mauvais motif donné au rituel de la fiche | ✅ |
+| T0-6 | **Les élèves relèvent les ports en photo** sur les postes de la salle, via le dépôt de copie d'écran | ✅ |
+| T0-7 | **Les quatre photos de Loïc sont publiables** et présentées comme **sa propre machine** — ressort pédagogique assumé | ✅ |
+| T0-8 | **Captures macOS / ChromeOS conservées** : usage pédagogique non commercial. *Note versée au dossier : le critère juridique n'est pas la commercialité mais le caractère **public** du site — à revoir si le site s'ouvre à d'autres établissements* | ✅ |
+| T0-9 | Le tableau anglophone « Computer Ports Identification » est **écarté** (aucune licence identifiable) et **remplacé par un jeu de connecteurs en SVG** | ✅ |
+
+### Décisions prises pendant la refonte
+
+| Sujet | Décision | Statut |
+|---|---|---|
+| **Le fork est supprimé, pas réparé** | 272 lignes de `<style>` et 229 de `<script>` retirées ; `sequence-snt.css/js` branchés. Les 44 couleurs en dur hors `:root` disparaissent du vérificateur | ✅ |
+| **Simulation de correction** | Le `setTimeout` de 2,4 s qui jouait la pré-correction est **mort**. Les rédigés partent en base par `data-focus-code` | ✅ |
+| **Mode enseignant** | L'interrupteur nu (cliquable sans code) devient la `.ens-zone` à **code SHA-256** et **minuterie de 30 min**, comme sur `t1` | ✅ |
+| **Trois marqueurs de la checklist du brief conservés** | `data-check-cloze`, `data-check-diagram` et `data-share` **ne sont pas des vestiges du fork** : ce sont des composants vivants du moteur, employés 8, 3 et 10 fois dans `t1`. Seuls `data-qcm` et `data-free` ont disparu | ✅ |
+| **`data-cle`** | Les 12 clés existantes sont **conservées à l'identique** sur les étapes correspondantes. `t0-systeme-exploitation` est **retirée et non recyclée** : l'OS devient le sixième critère de l'étape 3.5, il n'a plus d'étape à lui | ⏳ à confirmer |
+| **Codes de champ** | `SYS-Q1` à `SYS-Q6` (QCM) · `SYS-R1`, `SYS-R2`, `SYS-R-ports` (rédigés) · `SYS-G-ssd` (glossaire) · `SYS-D1`, `SYS-D2` (dépôts) · `SYS-P1`, `SYS-P2` (perso, non notés) | ⏳ à valider |
+| **Les deux rédigés des « pour aller plus loin »** | Pas de `data-focus-code` : la réponse reste locale, aucune copie n'entre dans la file de correction, aucune grille à écrire. Même repli que l'enquête box de `t1` 4.3 | ⏳ à confirmer |
+| **Quatre grilles de pré-correction** | `SYS-R1`, `SYS-R2`, `SYS-R-ports`, `SYS-G-ssd`, à deux étages, marquées `_statut`, **sans clause d'exclusion**. Le niveau d'exigence attend Loïc | ⏳ à valider |
+| **Le tri glisser-déposer entre dans `t0`** | Le brief prévoyait « doc + QCM + glossaire » en 2.5 ; le QCM y est remplacé par un **tri chronologique des supports de stockage**. Motif : c'est le seul endroit naturel de la séquence pour que l'élève manipule ce composant, et `t0` doit lui avoir fait pratiquer **tous** les dispositifs de l'année | ⏳ à valider |
+| **Recherche en ligne en 2.4** | Question **laissée ouverte** : elle suppose un poste par élève. Le repli est écrit dans la page — les quatre cartes y sont en photo, l'élève en nomme une — et signalé par un `<aside class="chantier decision">` | 📌 en attente |
+| **Le « à retenir » masqué** | Le moteur l'ouvre **tout seul** dès que l'exercice est fait ; le bouton ne sert que de compteur verrouillé. Les textes de 1.1 et 2.3 ont été réécrits en conséquence — ils décrivaient un bouton à cliquer, qui n'existe plus depuis la décision du 25/07 | ✅ |
+| **`carte-reseau.js` non chargé** | `t0` n'affiche pas la carte de séances en tête de page, comme `t2` et `m1`. Seule `t1` la charge. À décider si on la généralise | 📌 en attente |
+| **`?v=` du moteur** | `sequence-snt.css/js` **restent en `?v=39`** : ces fichiers ne sont pas modifiés, incrémenter forcerait un rechargement inutile chez tous les élèves. `seances-snt.js` passe en revanche de `?v=14` à **`?v=15`** sur les 6 pages : il est régénéré (`t0` passe de 3 à 4 séances) | ✅ |
+
+### Ce qui reste ouvert
+
+| Sujet | Enjeu |
+|---|---|
+| ⏳ **Tout le contenu pédagogique des trois séances** | Proposition V1 dans le ton de Loïc, à relire. En particulier les 31 questions de QCM et les deux réponses rédigées corrigées |
+| ⏳ **Cinq images manquantes** | Trois systèmes « qui n'en ont pas l'air » (borne de bus, caisse automatique, lave-linge) — c'est l'accroche de la séance 1 —, une montre connectée, une baie de serveurs. Cadres réservés dans la page |
+| ⏳ **Trois images utiles mais non bloquantes** | Une carte mère ≥ 900 px, un SSD M.2 seul, un touchpad en gros plan |
+| ⏳ **Sort de l'activité débranchée** | L'exercice de légende n'a plus besoin d'un poste physique : l'étape 3.3 le fait en ligne sur deux photos réelles. La débranchée garde-t-elle une raison d'être, ou fusionne-t-elle avec 3.3 ? |
+
 ## Clôture de `t1` « Internet » — 23/08/2026
 
 Audit dicté par Loïc, page ouverte, les 26 étapes descendues une à une. **Le thème

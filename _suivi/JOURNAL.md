@@ -1524,3 +1524,62 @@ plafond, et « m1 seul » ne pouvait vouloir dire qu'une chose. Et surtout : rie
 nulle part, ne dit à l'élève dans quelle classe il est. Un élève qui se
 tromperait de code à l'inscription travaillerait des semaines dans la mauvaise
 classe sans jamais le voir. Versé dans `IDEES.md`.
+
+
+---
+
+## 23/08/2026 — refonte de `t0`, la séquence qui enseigne le cours
+
+La séquence d'introduction avait un défaut que rien ne signalait : elle
+**décrivait aux élèves des mécanismes qu'elle n'avait pas**. Barre de
+progression, marques d'évaluabilité, QCM plein écran, glossaire, mode enseignant
+à code : tout cela était écrit dans son texte, et absent de son code. Elle
+tournait sur un **fork figé du moteur** — 272 lignes de `<style>` et 229 de
+`<script>` recopiées avant l'extraction du moteur partagé, soit 46 % du fichier
+— et ne portait que **43 %** du contenu de ses trois documents source.
+
+Deux points durs, mesurés au navigateur avant de commencer. Le **mode
+enseignant** n'était pas protégé : un clic sur la case, sans code, sans
+minuterie, ouvrait tout — et l'étape qui expliquait où trouver la case était
+lue par les élèves. La **réponse rédigée** était une simulation : un
+`setTimeout` de 2,4 s jouait la pré-correction, rien ne partait. Et
+`Progression.disponible()` répondait `true` pendant qu'aucun appel réseau n'était
+émis : un élève pouvait finir toute l'introduction et rester affiché à 0 % dans
+le hub.
+
+Le travail s'est fait en trois lots, avec relecture entre chaque, parce qu'une
+passe unique aurait produit un diff que personne ne peut relire.
+
+**Lot 1 — le portage.** Le fork est supprimé, pas réparé : c'est la bonne
+nouvelle de l'audit, 91 des 94 classes de `t0` étaient déjà reconnues par
+`sequence-snt.css`, le moteur ayant été extrait de la même souche. Restaient
+`a-noter`, `switch` et `tlabel`, relogées ou disparues avec l'interrupteur nu.
+Les 44 couleurs en dur hors `:root` s'évaporent d'un coup.
+
+**Lot 2 — les trois séances.** Le document d'origine tient en une séance d'1 h 30 ;
+avec 100 % du contenu **plus** une étape 1.1 qui présente et fait tester chaque
+mécanisme, deux séances ne suffisaient plus. Principe directeur retenu : **un
+mécanisme est expliqué, puis mis en action à l'étape suivante**. À la fin de
+`t0`, un élève a utilisé de ses mains les douze dispositifs qu'il rencontrera
+dans l'année. Quatre SVG ont été dessinés, dont la **planche des quatorze
+connecteurs à la même échelle** qui remplace le tableau anglophone sans licence.
+
+**Lot 3 — l'intégration.** Sommaire régénéré (`t0` passe de 3 à 4 séances, d'où
+`seances-snt.js?v=15` sur les six pages), 47 questions au répertoire, quatre
+grilles de pré-correction, hub à jour.
+
+Deux choses à en retenir. La première : **le banc d'essai a trouvé une erreur
+que la relecture n'aurait pas vue.** J'avais écrit, en 1.1 puis en 2.3, qu'un
+bouton « Afficher le à retenir » révèle le bilan. Faux depuis la décision du
+25/07 : le moteur l'ouvre **tout seul** dès que l'exercice est fait, et le bouton
+n'est plus qu'un compteur verrouillé. Le texte reproduisait exactement le défaut
+qu'on venait de corriger — décrire un mécanisme que le code n'a pas. Il a fallu
+ouvrir la page dans un vrai navigateur et cliquer pour s'en apercevoir.
+
+La seconde : **la checklist du brief se trompait sur trois marqueurs.** Elle
+demandait qu'il ne reste aucun `data-check-cloze`, `data-check-diagram` ni
+`data-share`, les rangeant parmi les vestiges du fork. Ce sont des composants
+vivants du moteur, employés 8, 3 et 10 fois dans `t1`. Les supprimer aurait
+retiré à `t0` le texte à trous, les associations et le partage des réponses
+personnelles. Seuls `data-qcm` et `data-free` étaient réellement des vestiges,
+et ils ont disparu. Une checklist se vérifie contre le code, elle aussi.

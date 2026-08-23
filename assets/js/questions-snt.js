@@ -9,6 +9,62 @@
  *  en face de la copie de l'élève.
  * ============================================================ */
 window.QUESTIONS_SNT = {
+  "SYS-R1": {
+    "sequence": "snt-t0",
+    "titre": "Ce qu'on peut faire sans connexion",
+    "question": "Ta connexion est coupée pour toute la journée. Cite trois choses que ton ordinateur (ou ton téléphone) sait encore faire, et trois choses qui deviennent impossibles. Puis explique, en une phrase, ce qui sépare les deux listes.",
+    "min": "40",
+    "max": "500",
+    "seance": "s1",
+    "seance_num": "1"
+  },
+  "SYS-G-ssd": {
+    "sequence": "snt-t0",
+    "titre": "Glossaire — SSD",
+    "question": "Un SSD : qu'est-ce qui le distingue d'un disque dur, et pourquoi est-il plus rapide ?",
+    "min": "20",
+    "max": "220",
+    "seance": "s2",
+    "seance_num": "2"
+  },
+  "SYS-R-ports": {
+    "sequence": "snt-t0",
+    "titre": "Les ports de mon poste",
+    "question": "Nomme au moins quatre connecteurs que tu as identifiés sur la façade arrière de ton poste. Pour chacun, dis à quoi tu l'as reconnu (forme, couleur, nombre de broches) et ce qu'on y branche. Repères-tu un connecteur en voie de disparition ?",
+    "min": "40",
+    "max": "500",
+    "seance": "s3",
+    "seance_num": "3"
+  },
+  "SYS-R2": {
+    "sequence": "snt-t0",
+    "titre": "Quelle machine pour quel usage",
+    "question": "Ta cousine entre en seconde. Elle a besoin d'une machine pour ses cours (traitement de texte, recherches, visio), elle voudrait pouvoir l'emporter au lycée, et son budget est serré. Quels critères mets-tu en avant, lesquels sacrifies-tu, et pourquoi ? Réponds en citant au moins trois des six critères.",
+    "min": "60",
+    "max": "600",
+    "seance": "s3",
+    "seance_num": "3"
+  },
+  "SYS-P1": {
+    "sequence": "snt-t0",
+    "titre": "Les systèmes informatisés croisés depuis ce matin",
+    "question": "Liste tous les systèmes informatisés que tu as utilisés ou croisés depuis ce matin — pense large : réveil, borne du bus, caisse de la boulangerie, portail du lycée. Lequel te surprendrait le plus si on t'avait dit, il y a cinq ans, que tu l'utiliserais chaque jour ?",
+    "min": null,
+    "max": null,
+    "notee": false,
+    "seance": "s1",
+    "seance_num": "1"
+  },
+  "SYS-P2": {
+    "sequence": "snt-t0",
+    "titre": "La machine que j'utilise le plus",
+    "question": "Décris le système informatisé que tu utilises le plus (téléphone, console, PC, tablette…) : son système d'exploitation, sa taille d'écran, son stockage, sa mémoire vive si tu la trouves. Qu'est-ce qui te plaît le plus dedans, et qu'est-ce que tu changerais ?",
+    "min": null,
+    "max": null,
+    "notee": false,
+    "seance": "s3",
+    "seance_num": "3"
+  },
   "NET-1a": {
     "sequence": "snt-t1",
     "titre": "Ta définition — 1ʳᵉ tentative",

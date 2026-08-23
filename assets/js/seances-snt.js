@@ -19,7 +19,12 @@ window.SEANCES_SNT = {
     {
       "id": "s2",
       "num": "S2",
-      "nom": "Choisir sa machine — et finir le tour du cours"
+      "nom": "Dans le ventre de la machine"
+    },
+    {
+      "id": "s3",
+      "num": "S3",
+      "nom": "Brancher juste, et choisir sa machine"
     },
     {
       "id": "deb",
