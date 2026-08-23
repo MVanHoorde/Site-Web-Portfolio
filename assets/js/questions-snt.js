@@ -234,15 +234,6 @@ window.QUESTIONS_SNT = {
     "seance": "s5",
     "seance_num": "5"
   },
-  "NET-R5": {
-    "sequence": "snt-t1",
-    "titre": "Un réseau sans centre",
-    "question": "Internet n'a pas de centre : aucun ordinateur « chef » ne dirige le réseau. À ton avis, qu'est-ce que ça change (en bien comme en moins bien) par rapport à un réseau qui aurait un centre unique ?",
-    "min": "20",
-    "max": "400",
-    "seance": "s5",
-    "seance_num": "5"
-  },
   "NET-R6": {
     "sequence": "snt-t1",
     "titre": "Lire deux tracert",
