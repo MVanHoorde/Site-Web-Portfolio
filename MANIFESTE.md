@@ -28,7 +28,8 @@
 | toucher au **moteur** d'une séquence SNT | `assets/js/sequence-snt.js` (+ `_modeles/spec-snt-t1-internet.md` §13-15) | 21 000 |
 | toucher à la **grammaire visuelle** SNT | `assets/css/sequence-snt.css` | 14 000 |
 | toucher à la **base de données** | `_suivi/BDD-cadrage.md` + `bdd/schema/006-rls-et-fonctions.sql` | 8 000 |
-| toucher au **client** de progression | `assets/js/progression.js` | 9 500 |
+| toucher au **client** de progression | `assets/js/progression.js` — 🔴 **partagé SNT + livret CFA** : `?v=` à incrémenter dans **24 fichiers** | 9 500 |
+| **produire un outil du livret CFA** | `_modeles/gabarit-outil-CFA.html` + un `cfa/outil-NN-….html` existant | 6 000 |
 | toucher à la **pré-correction IA** | `ia-snt/README.md` + `ia-snt/moteur.mjs` | 4 000 |
 | vérifier que rien n'est cassé | `node verifier.mjs` | 0 |
 | donner un état du dépôt à un assistant | `node verifier.mjs --bilan` | ~800 |

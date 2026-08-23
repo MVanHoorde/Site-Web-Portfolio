@@ -1,6 +1,6 @@
 # Idées & améliorations à trier
 
-> Mise à jour : 21/08/2026
+> Mise à jour : 23/08/2026
 > Réservoir vivant : Loïc y jette ses idées « au fil de l'eau », on les trie
 > ensuite (garder / différer / abandonner) et on les bascule en jalon 4
 > (« ajouts & approfondissements ») du chapitre concerné.
@@ -91,6 +91,17 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
   suffirait. Vaut aussi pour un élève qui se tromperait de code à l'inscription :
   aujourd'hui il travaillerait des semaines dans la mauvaise classe sans le voir.
 - 💡 _(ex. moteur de recherche, index des notions, mode révision…)_
+
+- 💡 **QR codes Kahoot sur les fiches de révision** (différé le 23/08/2026).
+  Faire figurer sur la fiche téléchargeable un QR vers le Kahoot de la séance.
+  **Pas maintenant : l'intérêt n'est pas établi** — la fiche n'est jamais
+  imprimée, elle est déposée dans le OneDrive qui sert de classeur numérique,
+  et un QR à l'écran ne se scanne pas depuis l'appareil qui l'affiche. À
+  reprendre si un usage papier apparaît.
+- 💡 **Renommer les Kahoots existants** pour les mettre en correspondance avec
+  le nouveau découpage du cours (posé le 23/08/2026). Tâche de Loïc, **hors
+  dépôt** : rien à coder ici, mais la correspondance sera nécessaire le jour
+  où une fiche ou une séquence renverra vers un Kahoot nommément.
 
 ## Outils & production
 - 💡 Pont Claude Code / VS Code pour le raffinage (en cours de mise en place).

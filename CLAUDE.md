@@ -122,7 +122,7 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
 | `_suivi/JOURNAL.md` | 🆕 Historique en ajout seul. Pas relu par défaut |
 | `_suivi/chapitres.md` | Tableau de bord **par chapitre / par séquence**, avec les jalons |
 | `_suivi/IDEES.md` | Réservoir d'idées à trier |
-| `verifier.mjs` | 🆕 `node verifier.mjs` rejoue la checklist · `--bilan` sort un digest compact du dépôt · `--qcm` liste les biais de longueur des QCM |
+| `verifier.mjs` | 🆕 `node verifier.mjs` rejoue la checklist · `--bilan` sort un digest compact du dépôt · `--qcm` liste les biais de longueur des QCM. **Repère : exactement 18 problèmes** — les 18 liens `cfa/outil-*` vers des fiches à imprimer pas encore écrites. Tout autre écart est une régression |
 | `_suivi/BDD-cadrage.md` | 🆕 Volet base de données : architecture, décisions, modèle de données, jalons |
 | `bdd/README.md` | 🆕 Discipline des fichiers de schéma SQL + avertissement `supabase/migrations/` |
 
@@ -136,8 +136,25 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 | **Physique-chimie** | `pages/2nde-pc-tX-cY-…html` | `assets/img/pc/2nde-pc-tX-cY/` · `assets/pdf/` · `audio/2nde-pc-tX-cY-intro.m4a` · fiches dans `fiches/` |
 | **SNT** | `pages/2nde-snt-tN-…html` | `assets/css/sequence-snt.css?v=N` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/snt/<slug>/` pour les photos · SVG et CSS de contenu **inline** |
 | **Cahier de vacances** | `cahier/…html` | `assets/img/cahier/` · `assets/pdf/cahier/` |
+| **Livret CFA** 🆕 | `cfa/index.html` · `cfa/outil-NN-…html` (17 outils) | `_modeles/gabarit-outil-CFA.html` · fiches à imprimer dans `fiches/cfa/` (**2 écrites sur 17** — les liens manquants forment le repère de 18 problèmes de `verifier.mjs`) · corrigés dans `_corriges-cfa/` · **client partagé** `assets/js/progression.js` |
 | **Coque / accueil / niveaux** | `index.html` (racine) · `pages/2nde-physique-chimie.html`, `pages/…-scientifique.html`, `pages/terminale-…` | `assets/fonts/`, `assets/css/`, `gravures/` |
 | **Base de données** 🆕 | *(pas de page)* | `bdd/schema/NNN-….sql` (schéma, numéroté, rejouable) · `bdd/README.md` · plus tard `supabase/` (produit par la CLI, **jamais à la main**) · client partagé `assets/js/progression.js` |
+
+🔴 **Trois assets sont PARTAGÉS entre plusieurs parties.** Les toucher déborde du
+périmètre où l'on croit travailler, et impose d'incrémenter le `?v=N` **partout
+où ils sont chargés** — sinon les navigateurs des élèves servent l'ancienne
+version depuis leur cache :
+
+| Asset | Chargé par | À incrémenter dans |
+|---|---|---|
+| `assets/js/progression.js` | SNT (4 pages + hub) **et livret CFA (18 pages)** + `_modeles/gabarit-outil-CFA.html` | **24 fichiers** |
+| `assets/js/sequence-snt.js` · `assets/css/sequence-snt.css` | `m1`, `t1`, `t2` et le hub `2nde-snt.html` | **4 fichiers** (contrôlé par `verifier.mjs`, bloquant) |
+| `assets/css/chapitre-commun.css` | les 14 chapitres PC | toutes les pages PC |
+
+Autrement dit : **une modification du client de progression faite pour le SNT
+touche le livret CFA**, et réciproquement. Ce n'est pas un défaut de rangement,
+c'est un choix — une seule copie du client Supabase à maintenir — mais il doit
+être annoncé dans toute livraison qui y touche.
 
 Détail des conventions de nommage (3 formes de slug par chapitre PC) :
 `_modeles/CONSIGNES-chapitre-PC.md` §0. Un nouveau contenu se range **toujours**

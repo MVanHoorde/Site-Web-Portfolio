@@ -5,14 +5,15 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **22/08/2026** (dernière passe : audit du module `m1`)
+> Dernière réécriture : **23/08/2026** (dernière passe : audit du module `m1`
+> et résorption de la dette de suivi)
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 ---
 
 
 > 🔗 **Pour reprendre une session interrompue, lire `REPRISE.md` à la racine.**
-> Il contient l'état au 01/08/2026, les bugs connus non corrigés, les décisions
+> Il contient l'état courant, les bugs connus non corrigés, les décisions
 > en attente et les pièges rencontrés.
 
 ## Où on en est
@@ -23,8 +24,8 @@
 | **SNT** | 8 séquences de thème (t0→t7) **+ 1 module transversal** (`m1` « Représenter l'information », écrit le 21/08, **audité et remanié le 22/08**). `t1` et `t2` sur le moteur partagé ; `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. **`t1` est en cours de validation** — voir sa ligne. |
 | **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade) et **vérifié au rendu** dans un navigateur sans interface : bandeau, pictogramme et teinte mesurés sur les deux familles de pages, en mode élève et en mode enseignant. Le tableau de bord affiche les **dates de clôture** (cases de clôture et frise, format `12/09`). ✅ **`bdd/schema/013-verrou-progression.sql` a été exécuté le 20/08/2026** par Loïc : `mon_plafond()` répond en base, et un appel anonyme se heurte bien à `42501 permission denied` — la fonction est réservée aux comptes connectés, comme prévu. Le plafond est donc **actif de bout en bout**. Deux textes vus par les élèves attendent la validation de Loïc. |
 | **SNT — `t1` Internet** | 🔎 **Audit du 20/08** (trois lots), puis **audit de la séance 1 le 22/08** (dix lots). La séquence compte désormais **6 séances** : la séance 1 portait sept étapes pour une heure, elle est coupée après « Aux origines d'Internet » et la nouvelle **S2 « D'ARPANET à Internet »** reprend ARPANET, Pouzin, le réseau mondial et la frise ; les quatre suivantes se décalent. **Les 26 étapes portent enfin un `data-cle` sémantique** (`t1-arpanet`…), posé AVANT la découpe pour que la progression des élèves ne bouge pas — `verifier.mjs` refuse maintenant une clé dupliquée. Aussi : infobulles en `position:fixed` (elles étaient rognées par les `overflow:hidden`, pas par le bord de la fenêtre), étiquettes de champ sur leur propre ligne avec le détail en bulle, seuil de rédaction à 20 caractères partout, frise validée au 6ᵉ essai et « voir la correction » qui valide enfin, trois corrigés qui donnaient la réponse d'une question ultérieure. **Restent** : étape **6.4** (activité TERMINAL en `.a-venir`), **6.6**, le moteur du relevé et du rappel (6.3), la fin de thème (Filius + passerelle NSI facultative), et le prérequis binaire — désormais porté par le module `m1`. ✅ La question 4 de l'étape 1.4 et les **quatre dates manquantes de la frise** sont relues et **validées** (22/08) — elle est complète, douze sur douze ; les lignes de test Supabase ont été purgées le même jour. ⏳ Reste à relire avant validation : les 51 leurres de QCM et les 3 questions de `NET-Q7` (20/08). **Audit des séances 3 et 4 le 22/08** (lots K à O) : l'enquête box dit enfin qu'elle est facultative et pourquoi ; les menus déroulants ne coupent plus leur énoncé en trois (`display:grid` sur un `<label>`) ; le tableau de Lannion défile au lieu d'escamoter quatre champs sous 520 px ; le maillé remonte et Internet sort de la liste des topologies ; la guirlande remplace le câble coaxial ; l'étape des câbles gagne un passage sourcé sur la fibre optique **avec deux images Wikimedia attribuées**, un développement sur *pourquoi* Meta et Microsoft possèdent des câbles, et des chiffres 2Africa remis à jour (fin 2025) ; le débriefing d'ordre de grandeur ne s'affiche plus qu'après un clic sur Vérifier et à ±25 % ; la question 1 de 4.3 ne part plus en correction et l'en-tête dit ce qui part chez le professeur ; le bonus de la séance 4 utilise enfin le composant `.poste` ; quatre notes de chantier réglées ont quitté la page. **Rien de tout ce qui est du contenu n'est validé** — tous les textes neufs sont marqués « PROPOSITION À VALIDER » dans le HTML. ⏳ Un **plan d'allègement de l'étape 4.2** est proposé plus bas, non appliqué. |
-| **SNT — module `m1` Représenter l'information** | 🔎 **Audit du 22/08 traité en entier** (11 lots). 2 séances, 9 étapes, **5 QCM**, 7 exercices, **4 composants SVG maison** et un **bilan de 12 questions** en clôture. Le module pose désormais le **socle mathématique** : ce qu'est une base, ce qu'est une puissance, les rangs en base 10 et en base 2 côte à côte, et la **notation de la base en indice** (`1011₂`), employée ensuite dans toutes les étapes. Nouveautés de fond : exercice d'entrée sur la décomposition positionnelle (base 10 et base 60), **les 30 combinaisons de 1 à 4 bits effectivement écrites** (le doublement se voit au lieu d'être annoncé), l'adresse IP présentée avant d'être interrogée, la loi de Moore en **bonus non évalué** derrière une question de recherche, le lien explicite vers les préfixes de **physique-chimie**, et le téraoctet binaire **calculé par les élèves** (2⁴⁰, écart de 9,95 %). Nouveau composant : **la méthode A pas à pas** (le tableau des poids se remplit colonne par colonne, avec le journal des soustractions), pendant exact de la potence — les deux méthodes démarrent sur **77**. Trois photos Wikimedia auto-hébergées et attribuées (transistors, loi de Moore, disque Seagate ST33232A, dont les 3 227 Mo constructeur illustrent le décalage Go/Gio à la décimale près). **Deux bugs d'affichage corrigés dans le moteur partagé** — voir la ligne suivante. Tout vérifié au navigateur : parcours joué, aucune erreur JS, repli à 390 px conforme. `verifier.mjs` inchangé à 19. **Trois points attendent l'arbitrage de Loïc** : placement de la photo des transistors, formulation de l'ordre de grandeur « 1,12 million de km », volume du bilan de 2.4. **Rien n'est validé : tout le contenu pédagogique est une proposition.** |
-| **SNT — moteur partagé (`sequence-snt.js` v36)** | 🔧 Trois corrections le 22/08, toutes **visibles par les élèves de toutes les séquences**. ① `baliserSobre()` rouvrait `<i>` mais pas `<i lang="en">` : l'option de QCM affichait son code source en clair — `lang` est désormais le seul attribut restauré, `class`, `style` et `on*` restent neutralisés. ② La même fonction échappait les entités typographiques : « 1&nbsp;073&nbsp;741&nbsp;824 » se lisait en toutes lettres dans une option — elles sont restaurées, et le libellé de la bonne réponse passe enfin par le même chemin que l'option. ③ **Le « à retenir » attend maintenant le clic sur Vérifier** : il s'ouvrait dès la dernière case saisie, donc avant que l'élève ait vu sa correction. La trace est portée par le **bloc** et non par l'étape, pour qu'une étape à deux exercices ne s'auto-valide pas à moitié. Ajout au passage : `[data-reveal-juste]`, qui révèle une correction détaillée **uniquement quand tout est juste**, et la referme si l'élève fausse une réponse. |
+| **SNT — module `m1` Représenter l'information** | 🔎 **Audits des 22 et 23/08 traités en entier.** 2 séances, 9 étapes, **6 QCM** (dont un bonus adossé à une vidéo), 9 exercices, **4 composants SVG maison** et un bilan de 12 questions. Le module pose le socle mathématique : ce qu'est une base, ce qu'est une puissance, la notation en indice (`1011₂`). **Apports du 23/08** : la décomposition positionnelle fait saisir *les chiffres* et pas seulement les poids, avec un exemple posé avant ; la base 60 se décompose en six temps ; le tableau des combinaisons **se complète** de 5 bits au cas général n ; l'atelier 1.5 est **découpé en trois groupes** A/B/C, chacun avec sa correction détaillée ; le classement passe à **11 écritures** et ses deux règles deviennent un indice ; l'écart de 2.2 se calcule sur la **formule générale** ; le bonus 1.1 devient **vidéo Veritasium + QCM de 5 questions**, et `REP-R1` un résumé. Les trois outils manipulables **annoncent enfin leur limite** (1 à 4095) et disent pourquoi ils refusent un nombre ; la flèche de la potence est **rectiligne**. Tout vérifié au navigateur : les 9 blocs passent « tout est juste » sur les réponses attendues, **0 erreur JS**, repli à 390 px sans débordement de page. **Rien n'est validé : tout le contenu pédagogique est une proposition.** |
+| **SNT — moteur partagé (`sequence-snt.js` v38)** | 🔧 **Deux attributs ajoutés le 23/08**, tous deux sans effet par défaut : `data-essais-avant-correction="N"` (+ `data-correction-bouton`) règle **par exercice** quand la correction détaillée se révèle — tout juste, ou au N-ième essai, de plein droit ou sur un bouton ; `data-valide-sur-interaction` valide une étape **sans exercice** à la première manipulation réelle (le nuancier de `m1` 2.3 restait « à faire » à vie). Non-régression mesurée sur `t1` et `t2` : 0 erreur, aucun attribut neuf, comportement inchangé. **La fiche de révision est refaite** (voir `CONSIGNES-sequence-SNT.md` §17) et `resume()` est exposé sur `EtatSNT` — **un seul comptage de progression** dans tout le dispositif. |
 | **Base de données** | ✅ **en service.** Supabase, région **West EU (Paris)**. 7 tables, 10 policies RLS, 4 fonctions, sauvegarde hebdo + réveil quotidien. Pilote prouvé de bout en bout sur `t1`. |
 | **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
 | **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 (une seule colonne, un seul bord d'attaque), puis **audit de contenu des dix-sept outils le même jour** : accroche recentrée sur l'atelier, « effort » → « force » partout, `ε` pour l'écart et `θ` pour les angles de rotation, paliers 1 dégonflés de leur guidage, sous-questions concaténées, vecteurs fléchés et racines couvrantes. Deux figures produites (bras de levage de l'Outil 5, composantes de l'Outil 14), une dizaine corrigées. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé : **l'Outil 0 est le premier attendu en relecture**. Depuis le 19/08 le livret est **branché sur le dispositif de comptes** : connecté, le travail va en base et suit l'apprenti d'un appareil à l'autre ; sans compte, tout reste sur l'appareil comme avant, et la page le dit. Les deux codes de classe (`CFA26A`, `MVT26A`) sont ouverts : `bdd/schema/012-classes-cfa.sql` a été exécuté le 20/08. |
@@ -185,19 +186,20 @@ Lannion et le calcul d'ordre de grandeur.
 - [ ] **Correctif `seuil()` du moteur** (chantier ouvert le 21/08) : `/^[0-9 ]+$/` au lieu de
       `/^[0-9]+$/`, pour qu'un nombre écrit avec des espaces reste strict. `t1` accepte
       aujourd'hui `40 001` pour `40 000`. Impose `?v=33` sur les neuf pages **et** le hub
-- [ ] **`t1` lot 2 — moteur du relevé et du rappel** : type de champ « relevé »
-      (validé sur le format, pas la valeur) · rappel en boîte de dialogue sur fond
-      flouté, comparé au relevé du même élève · prise en charge d'un `data-cle` sur
-      un bloc `.cloze` · incrémenter le `?v=` **du CSS et du JS**, dans **les deux
-      pages** (au 20/08, après l'audit : `sequence-snt.css?v=32`,
-      `sequence-snt.js?v=32`, `progression.js?v=15`, `verrou-snt.js?v=2`)
-- [ ] **`t1` lot 3 — étape 5.4** (diagnostic réseau) : donner les consignes, étoffer
-      les questions, descendre le « à retenir », sortir l'activité TERMINAL de `.res`
-      et retirer son `.a-venir` — **seul bloc `.a-venir` restant de la séquence**
-- [ ] **`t1` lot 4 — étape 5.6** : QCM IPv6 à la place des champs, et beaucoup plus de sources
+- [x] ~~**`t1` lot 2 — moteur du relevé et du rappel**~~ — ✅ **fait et testé le
+      22/08.** Le champ « relevé » se valide sur le format et non sur la valeur, le
+      rappel s'ouvre en boîte de dialogue comparée au relevé du même élève, et un
+      `.cloze` accepte son propre `data-cle`. Assets à `?v=37`
+- [x] ~~**`t1` lot 3 — étape 6.4** (diagnostic réseau)~~ — ✅ **fait.** L'étape porte
+      ses consignes, ses questions (`tracert` Google et Tokyo) et son « à retenir ».
+      **Plus aucun bloc `.a-venir` dans `t1`**
+- [ ] **`t1` lot 4 — le bonus adressage** (`t1-bonus-adressage`, fin de séance 6) :
+      IPv6 et hexadécimal y sont encore en champs à trous — QCM à la place, et
+      beaucoup plus de sources. Bonus non `data-gate` : hors des 100 %
 - [ ] **`t1` lot 5 — fin de thème** : Filius en validation intégratrice + passerelle
       NSI facultative (ports, masque de sous-réseau)
-- [ ] Depuis un poste de la salle : `nslookup` sur les trois sites du relevé de 5.3
+- [ ] Depuis un poste de la salle : `ping` / `tracert` — si l'ICMP sortant est bloqué,
+      l'étape **6.4** tombe entière — puis `nslookup` sur les trois sites du relevé de **6.3**
       (pas de CDN, pas trois adresses dans le même /16) — remplaçants notés dans `DECISIONS.md`
 - [x] ~~Visionner les deux vidéos et écrire les questions de QCM~~ — fait le
       20/08 **à partir des transcriptions** fournies par Loïc, chaque question
@@ -220,10 +222,11 @@ Lannion et le calcul d'ordre de grandeur.
 - [x] ~~**`t1` — `data-cle` sur les 26 étapes**~~ — ✅ **fait le 22/08/2026**, avant
       la découpe de la séance 1 et avant toute création de classe réelle. 71 clés
       uniques sur les trois séquences portées ; `verifier.mjs` refuse un doublon
-- [ ] **Le prérequis « binaire » de la séance 5 de `t1` n'existe pas.** L'étape 5.1
-      demande à l'élève de reconstituer 8 bits → 256 → 255 → 32 bits → 4,3 milliards
-      « en s'appuyant sur le thème binaire vu ailleurs ». Aucune séquence SNT ne le
-      porte : à écrire, à rattacher à `t0`, ou à rendre autonome dans `t1`
+- [x] ~~**Le prérequis « binaire » de `t1` n'existe pas**~~ — ✅ **réglé** : c'est le
+      module **`m1` « Représenter l'information »**, écrit le 21/08. Le bandeau de
+      prérequis en tête de la **séance 6** y renvoie. ⏳ Reste ouvert : `m1` n'est
+      référencé depuis **aucune** séquence du hub, alors que `t7` mobilise le poids
+      des fichiers — décision de progression à prendre
 - [ ] **Porter le mécanisme « réponse personnelle partagée » dans `t0` puis les six
       autres séquences.** Le texte est présenté dans `t0` (S1, bloc perso) comme
       l'exige le référentiel vivant ; le **code** attend que `t0` passe sur le
