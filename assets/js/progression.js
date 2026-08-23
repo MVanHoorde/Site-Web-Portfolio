@@ -631,22 +631,64 @@
   }
 
   /* Mes copies, avec leur statut et la correction si elle est là.
-   * codes : tableau de codes d'activité, ou rien pour tout prendre. */
+   * codes : tableau de codes d'activité, ou rien pour tout prendre.
+   *
+   * On ne demande PLUS correction_ia en entier (23/08/2026). L'élève n'en
+   * affiche que trois champs — le verdict, le message, le « pour aller plus
+   * loin » ; tout le reste (tri.raisons, a_verifier_par_le_prof,
+   * note_orthographe, garde_fous, les constats critère par critère) est
+   * destiné au professeur et n'a rien à faire dans le navigateur d'un élève.
+   * Il y arrivait pourtant, et la fiche de révision — qui imprime la
+   * correction — l'aurait rendu lisible dans le code source de la page.
+   *
+   * PostgREST sélectionne des sous-champs jsonb avec alias ; on les
+   * ré-emboîte ci-dessous dans la forme que le moteur attend déjà, pour que
+   * rendreRetour() et rendreRenvoi() n'aient pas à bouger.
+   *
+   * ⚠ Hygiène, pas verrou : la policy autorise l'élève à lire SA ligne, donc
+   * une requête forgée à la main récupérerait encore la colonne entière. Le
+   * verrou est côté base — bdd/schema/015-correction-eleve.sql. */
+  var CHAMPS_CORRECTION =
+      'verdict_ia:correction_ia->analyse->>verdict'
+    + ',message_ia:correction_ia->analyse->feedback_eleve->>message'
+    + ',plus_loin_ia:correction_ia->analyse->feedback_eleve->>pour_aller_plus_loin';
+
+  function reemboiter(ligne) {
+    if (!ligne) return ligne;
+    var a = {};
+    if (ligne.verdict_ia)   a.verdict = ligne.verdict_ia;
+    if (ligne.message_ia || ligne.plus_loin_ia) {
+      a.feedback_eleve = {
+        message            : ligne.message_ia   || '',
+        pour_aller_plus_loin: ligne.plus_loin_ia || ''
+      };
+    }
+    /* rien reçu = pas encore corrigé : on laisse correction_ia absent,
+       comme avant, pour que les tests « if (r.correction_ia && … ) » tiennent */
+    if (a.verdict || a.feedback_eleve) ligne.correction_ia = { analyse: a };
+    delete ligne.verdict_ia; delete ligne.message_ia; delete ligne.plus_loin_ia;
+    return ligne;
+  }
+
   function mesReponses(codes) {
-    var chemin = 'reponses_libres?select=code_activite,texte,statut,version,correction_ia,commentaire_prof,envoye_le,corrige_le';
+    var chemin = 'reponses_libres?select=code_activite,texte,statut,version,'
+               + CHAMPS_CORRECTION + ',commentaire_prof,envoye_le,corrige_le';
     if (codes && codes.length) {
       chemin += '&code_activite=in.(' + codes.map(encodeURIComponent).join(',') + ')';
     }
-    return api(chemin).catch(function () { return []; });
+    return api(chemin)
+      .then(function (lignes) { return (lignes || []).map(reemboiter); })
+      .catch(function () { return []; });
   }
 
   /* Mes brouillons précédents pour une activité — support du futur
    * bouton « voir mes versions » (prévu, pas encore posé dans les
    * séquences : décision du 20/07). */
   function versions(codeActivite) {
-    return api('reponses_versions?select=version,texte,statut,correction_ia,archive_le'
+    return api('reponses_versions?select=version,texte,statut,' + CHAMPS_CORRECTION + ',archive_le'
              + '&code_activite=eq.' + encodeURIComponent(codeActivite)
              + '&order=version.asc')
+      .then(function (lignes) { return (lignes || []).map(reemboiter); })
       .catch(function () { return []; });
   }
 

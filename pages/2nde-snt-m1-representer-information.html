@@ -9,10 +9,10 @@
      Absent ou non configuré : la séquence fonctionne, sans enregistrement.
      Sans "defer" à dessein : le script de la page, en fin de body, doit le
      trouver déjà chargé. Fichier local et léger, aucun coût réseau. -->
-<script src="../assets/js/progression.js?v=15"></script>
+<script src="../assets/js/progression.js?v=16"></script>
 <script src="../assets/js/seances-snt.js?v=14"></script>
 <script src="../assets/js/verrou-snt.js?v=2"></script>
-<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=37">
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=38">
 
 <!-- ============================================================
      CSS propre au module (CONSIGNES §5 : ce qui n'existe que
@@ -109,6 +109,11 @@
   .souscr-essai{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:11px;padding-top:11px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-soft)}
   .souscr-essai input{font-family:"IBM Plex Mono";font-size:15px;width:6.5em;border:1px solid var(--line);border-bottom:2px solid var(--link);background:var(--link-wash);border-radius:6px;padding:3px 8px;color:var(--ink)}
   .souscr-essai input:focus{outline:2px solid var(--link);outline-offset:1px}
+  /* La borne était écrite dans min/max et nulle part à l'écran : l'outil
+     refusait 5000 par un focus() muet, et l'élève croyait à un bug
+     (audit du 23/08/2026). Elle s'annonce, et le dépassement se dit. */
+  .essai-borne{font-family:"IBM Plex Mono";font-size:12.5px;color:var(--ink-faint)}
+  .essai-erreur{font-size:13px;color:var(--activity);font-weight:600;flex-basis:100%}
 
   /* ---------- potence : divisions successives (étape 1.3) ---------- */
   .potence-outil{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px}
@@ -128,12 +133,13 @@
   .pot-reste-cadre{fill:none;stroke:var(--activity);stroke-width:2;rx:5}
   .pot-reste{font-family:"IBM Plex Mono";font-size:18px;font-weight:700;fill:var(--activity);text-anchor:middle;dominant-baseline:middle}
   .pot-fleche{stroke:var(--activity);stroke-width:1.8;fill:none;stroke-linecap:round}
-  .pot-resultat{font-family:"IBM Plex Mono";font-size:30px;font-weight:700;fill:var(--ok);text-anchor:start}
+  .pot-resultat{font-family:"IBM Plex Mono";font-size:36px;font-weight:700;fill:var(--ok);text-anchor:start}
   .pot-base{font-size:.62em;font-weight:600}
   /* La note de lecture et le résultat sont ce que la classe regarde en
-     dernier : ils étaient à 13 et 21 px, illisibles projetés (audit du
-     22/08/2026, §4.2). La flèche de remontée est unique et large. */
-  .pot-note{font-family:"IBM Plex Sans";font-size:17px;font-weight:600;fill:var(--ink-soft);text-anchor:start}
+     dernier, et c'est ce qu'elle recopie : 20 et 36 px, lisibles au fond
+     de la salle (audit du 23/08/2026). La flèche de remontée est unique,
+     large, et RECTILIGNE — sa courbe repassait sur le dernier étage. */
+  .pot-note{font-family:"IBM Plex Sans";font-size:20px;font-weight:600;fill:var(--ink-soft);text-anchor:start}
   .pot-fleche-g{stroke-width:2.8}
   /* Intertitre à l'intérieur d'un atelier : sépare les familles d'items
      sans créer un nouveau bloc de réponse (le moteur compte les .cloze,
@@ -245,12 +251,12 @@
 
   <!-- CHANTIER : état du module -->
   <aside class="chantier">
-    <div class="cl">🚧 Module remanié le 22/08/2026 — contenu à valider</div>
+    <div class="cl">🚧 Module remanié le 23/08/2026 — contenu à valider</div>
     <b>Ce module n'est pas un thème du programme SNT</b>&nbsp;: c'est un outil transversal, mobilisé par plusieurs thèmes (l'adresse IP en <b>Internet</b>, le poids des fichiers en <b>photographie numérique</b>). Sa place dans l'année relève de la progression annuelle, pas du site&nbsp;: <b>aucune dépendance n'est codée entre les pages</b>.
     <ul>
       <li><b>Les neuf étapes sont écrites</b>, avec leurs <b>cinq QCM</b>, leurs sept exercices, trois outils manipulables et un <b>bilan de fin de module</b>. <b>Tout le contenu pédagogique est une proposition à valider</b>&nbsp;: formulations, choix des nombres, leurres de QCM.</li>
       <li><b>Trois points attendent un arbitrage&nbsp;:</b> le <b>placement de la photo des transistors</b> (posée ici dans le document de l'étape 1.1, là où le texte les nomme)&nbsp;; la <b>formulation de l'ordre de grandeur</b> «&nbsp;une file de 1,12 million de kilomètres&nbsp;»&nbsp;; le <b>volume du bilan de l'étape 2.4</b>, écrit à douze questions.</li>
-      <li><b>La durée «&nbsp;≈ 2 h&nbsp;» est provisoire</b> — le module n'a jamais tourné devant une classe, et le temps dépendra de ce qui est donné à faire à la maison. À reprendre après le premier passage.</li>
+      <li><b>Ce module se fait intégralement en classe</b>, rien à la maison&nbsp;: les élèves sortent une feuille et posent le tableau des poids à la main, et il faut être là pendant qu'ils le font. <b>La durée «&nbsp;≈ 2 h&nbsp;» est provisoire</b> — le module n'a jamais tourné devant une classe&nbsp;; elle sera remplacée par le découpage réel après minutage.</li>
       <li><b>Les listes d'exercices sont fixes</b>, identiques pour tous les élèves&nbsp;: c'est un choix, pour qu'ils puissent s'entraider et comparer leurs résultats. Aucun tirage, aucun score chiffré, aucune note.</li>
       <li><b>Les réponses s'écrivent sans espace</b> (<code>10101100</code>, pas <code>1010 1100</code>). Accepter le groupement ferait passer des réponses fausses pour justes&nbsp;: voir le chantier ouvert sur <code>seuil()</code> dans <code>_suivi/DECISIONS.md</code>.</li>
     </ul>
@@ -302,6 +308,15 @@
             <p style="font-size:14.5px;margin:4px 0 10px">Parce que nous avons <b>dix doigts</b>. C'est tout. La base 10 nous paraît naturelle parce qu'on l'apprend à cinq ans, mais elle n'a rien d'obligatoire — et nous en utilisons d'autres sans y penser&nbsp;: nos heures se comptent par <b>60</b> minutes, nos minutes par <b>60</b> secondes, héritage direct des mathématiciens de <b>Babylone</b>, il y a près de quatre mille ans.</p>
             <p style="font-size:14.5px;margin:4px 0 12px">Une base, c'est simplement le nombre de chiffres dont on dispose avant de devoir «&nbsp;passer à la colonne suivante&nbsp;». En base 10, on a dix chiffres (0 à 9) et après 9 vient 10. En base 2, on n'en a que deux&nbsp;: après <code>1</code> vient <code>10</code>. Même mécanique, moins de chiffres.</p>
 
+            <div class="exemple">
+              <div class="exemple-titre">Décomposer <span class="nb">3506</span>, en base 10</div>
+              <div class="calcul">
+                <span class="nb">3506</span> = <b>3</b>×1000 + <b>5</b>×100 + <b>0</b>×10 + <b>6</b>×1<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 3000 + 500 + 0 + 6
+              </div>
+              <p style="font-size:13.5px;color:var(--ink-soft);margin:6px 0 0">Deux choses à lire dans cette ligne, et ce sont les deux qui comptent&nbsp;: <b>le chiffre</b> dit combien de fois, <b>le rang</b> dit combien vaut chaque fois. Un chiffre ne veut rien dire tout seul — le <b>5</b> de 3506 ne vaut pas cinq, il vaut cinq cents. Et le <b>0</b> n'est pas rien&nbsp;: il tient la place, sans lui 3506 deviendrait 356.</p>
+            </div>
+
             <div class="block-label">Comment écrire dans quelle base on compte</div>
             <p style="font-size:14.5px;margin:4px 0 10px">Dès qu'on manipule plusieurs bases, un nombre écrit tout seul devient ambigu. Regarde <code>1011</code>&nbsp;: en base 2 il vaut <b>onze</b>, en base 10 il vaut <b>mille onze</b>. Même dessin, deux nombres qui n'ont rien à voir.</p>
             <p style="font-size:14.5px;margin:4px 0 10px">Pour lever le doute, on écrit la <b>base en petit, en bas à droite</b> du nombre&nbsp;:</p>
@@ -324,9 +339,13 @@
               <div class="cloze" data-cloze>
 
                 <div class="atelier-part">A · La base 10, celle de tous les jours</div>
-                <div style="margin-bottom:9px"><b>1.</b> <span class="nb">4073</span> se décompose ainsi&nbsp;: 4 ×
-                <input class="short" data-answer="1000" placeholder="?" aria-label="valeur du rang du chiffre 4 dans 4073" data-indice1="Le 4 est en quatrième position depuis la droite. Combien vaut ce rang-là&nbsp;? Pense à «&nbsp;quatre mille&nbsp;»." data-indice2="C'est mille, écrit en chiffres."> + 0 ×
-                <input class="short" data-answer="100" placeholder="?" aria-label="valeur du rang du chiffre 0 dans 4073" data-indice1="Le rang juste à droite du précédent vaut dix fois moins." data-indice2="C'est cent."> + 7 ×
+                <div style="margin-bottom:9px"><b>1.</b> Décompose <span class="nb">4073</span> comme dans l'exemple ci-dessus — <b>le chiffre</b>, puis <b>ce que vaut son rang</b>&nbsp;:<br>
+                <span class="nb">4073</span> &nbsp;=&nbsp;
+                <input class="short" data-answer="4" placeholder="?" aria-label="premier chiffre de 4073" data-indice1="Le chiffre le plus à gauche, celui qui se lit en premier." data-indice2="Quatre."> ×
+                <input class="short" data-answer="1000" placeholder="?" aria-label="valeur du rang du chiffre 4 dans 4073" data-indice1="Ce chiffre est en quatrième position depuis la droite. Combien vaut ce rang-là&nbsp;? Pense à «&nbsp;quatre mille&nbsp;»." data-indice2="C'est mille, écrit en chiffres."> +
+                <input class="short" data-answer="0" placeholder="?" aria-label="deuxième chiffre de 4073" data-indice1="Le deuxième chiffre en partant de la gauche. Oui, il compte quand même." data-indice2="Zéro — et il tient sa place, comme dans l'exemple."> ×
+                <input class="short" data-answer="100" placeholder="?" aria-label="valeur du rang du deuxième chiffre de 4073" data-indice1="Le rang juste à droite du précédent vaut dix fois moins." data-indice2="C'est cent."> +
+                <input class="short" data-answer="7" placeholder="?" aria-label="troisième chiffre de 4073" data-indice1="L'avant-dernier chiffre." data-indice2="Sept."> ×
                 <input class="short" data-answer="10" placeholder="?" aria-label="valeur du rang du chiffre 7 dans 4073" data-indice1="Encore dix fois moins. C'est le rang des dizaines." data-indice2="C'est dix."> + 3 × 1.</div>
                 <div style="margin-bottom:9px"><b>2.</b> Ces rangs — 1, 10, 100, 1000 — sont les <b>puissances de dix</b>. Le rang suivant, encore à gauche, vaudrait
                 <input class="short" data-answer="10000" placeholder="?" aria-label="valeur du rang situé à gauche des milliers" data-indice1="On multiplie encore par dix." data-indice2="Dix mille : un 1 suivi de quatre zéros."> .</div>
@@ -334,9 +353,17 @@
                 <div class="atelier-part">B · La base 60, celle du temps</div>
                 <div style="margin-bottom:9px"><b>3.</b> Une minute vaut 60 secondes, donc une heure vaut
                 <input class="short" data-answer="3600" placeholder="?" aria-label="nombre de secondes dans une heure" data-indice1="Une heure, c'est 60 minutes, et chaque minute vaut 60 secondes. Une seule multiplication." data-indice2="60 × 60."> secondes.</div>
-                <div><b>4.</b> <span class="nb">2 15 30<sub>60</sub></span>, c'est-à-dire 2 h 15 min 30 s, fait donc 2 × 3600 + 15 ×
-                <input class="short" data-answer="60" placeholder="?" aria-label="valeur du rang des minutes en secondes" data-indice1="Le rang du milieu, celui des minutes. Combien de secondes dans une minute&nbsp;?" data-indice2="Soixante."> + 30 × 1 =
-                <input class="short" data-answer="8130" placeholder="?" aria-label="durée totale en secondes" data-indice1="Fais les trois produits, puis additionne&nbsp;: 7200, puis 900, puis 30." data-indice2="7200 + 900 + 30."> secondes.</div>
+                <div style="margin-bottom:9px"><b>4.</b> <span class="nb">2 15 30<sub>60</sub></span>, c'est-à-dire 2 h 15 min 30 s. Décompose-la comme tu viens de le faire en base 10 — <b>trois rangs</b>, et cette fois ils valent 3600, 60 et 1&nbsp;:<br>
+                2 ×
+                <input class="short" data-answer="3600" placeholder="?" aria-label="valeur du rang des heures en secondes" data-indice1="Le rang de gauche, celui des heures. Tu viens de le calculer à la question 3." data-indice2="Trois mille six cents."> + 15 ×
+                <input class="short" data-answer="60" placeholder="?" aria-label="valeur du rang des minutes en secondes" data-indice1="Le rang du milieu, celui des minutes. Combien de secondes dans une minute&nbsp;?" data-indice2="Soixante."> + 30 × 1</div>
+                <div style="margin-bottom:9px"><b>5.</b> Fais maintenant les trois produits, séparément&nbsp;:<br>
+                2 × 3600 =
+                <input class="short" data-answer="7200" placeholder="?" aria-label="produit des heures en secondes" data-indice1="Deux fois trois mille six cents." data-indice2="Sept mille deux cents."> &nbsp;·&nbsp; 15 × 60 =
+                <input class="short" data-answer="900" placeholder="?" aria-label="produit des minutes en secondes" data-indice1="Quinze fois soixante." data-indice2="Neuf cents."> &nbsp;·&nbsp; 30 × 1 =
+                <input class="short" data-answer="30" placeholder="?" aria-label="produit des secondes" data-indice1="Multiplier par 1 ne change rien." data-indice2="Trente."></div>
+                <div><b>6.</b> Additionne les trois&nbsp;: 2 h 15 min 30 s font
+                <input class="short" data-answer="8130" placeholder="?" aria-label="durée totale en secondes" data-indice1="Ajoute tes trois résultats de la question 5." data-indice2="7200 + 900 + 30."> secondes en tout.</div>
               </div>
               <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
@@ -376,24 +403,25 @@
  {
   "q": "Quel composant électronique permet à une machine de ne manipuler que deux états ?",
   "o": [
-   "Le <b>transistor</b>, un interrupteur commandé : passant ou bloqué",
-   "L'écran, qui n'affiche que des points allumés ou éteints",
-   "La batterie, qui fournit deux tensions différentes au choix",
-   "Le ventilateur, qui refroidit la puce pour éviter les erreurs"
+   "La résistance, qui ne laisse passer que deux intensités",
+   "Le transistor, un interrupteur commandé : passant ou bloqué",
+   "La carte graphique, qui traduit les images en 0 et en 1",
+   "L'écran, dont chaque point est soit allumé, soit éteint",
+   "La batterie, qui délivre deux tensions différentes au choix"
   ],
-  "r": 0,
-  "c": "Un transistor est un interrupteur commandé : le courant passe, ou il ne passe pas. Il y en a des dizaines de milliards sur une puce moderne — et c'est de cet objet-là que vient le binaire."
+  "r": 1,
+  "c": "Le transistor, et lui seul : c'est un <b>interrupteur commandé</b> — le courant passe, ou il ne passe pas. Les autres réponses décrivent de vrais composants, mais aucun ne fabrique les deux états. Une <b>résistance</b> laisse passer un courant qui varie de façon continue, elle ne choisit rien. Une <b>carte graphique</b> manipule effectivement des 0 et des 1 — mais elle le fait <i>parce qu'</i>elle est bâtie en transistors : c'est la conséquence, pas la cause. Un <b>écran</b> affiche le résultat, il ne le calcule pas. Et une <b>batterie</b> fournit une tension, pas une information."
  },
  {
   "q": "Nous comptons en base 10. Pour quelle raison ?",
   "o": [
+   "Parce que c'est plus simple pour faire des mathématiques",
    "Parce que dix est le seul nombre qui permette de tout compter",
    "Parce que nous avons dix doigts : c'est un héritage, pas une loi",
-   "Parce que les Romains ont imposé cette base à toute l'Europe",
-   "Parce que la base 10 évite les erreurs que font les autres bases"
+   "Parce que les Romains ont imposé cette base à toute l'Europe"
   ],
-  "r": 1,
-  "c": "Rien n'oblige à compter par dix, et nous ne le faisons pas toujours : nos heures et nos minutes se comptent par 60, héritées de Babylone."
+  "r": 2,
+  "c": "Dix doigts, et rien d'autre. La base 10 est un héritage, pas une nécessité.<br><br>Attention au premier leurre, il est tentant : les mathématiques que nous pratiquons s'<b>écrivent</b> en base 10, donc elles nous y paraissent plus simples. Mais on fait des mathématiques dans n'importe quelle base — en base 2, en base 60, en base 16 — et ce sont exactement <b>les mêmes mathématiques</b>. Changer de base ne change pas les nombres, seulement la façon de les écrire. Sept est sept, qu'on l'écrive <span class=\"nb\">7<sub>10</sub></span> ou <span class=\"nb\">111<sub>2</sub></span>."
  },
  {
   "q": "Heures, minutes, secondes : dans quelle base comptons-nous le temps ?",
@@ -407,25 +435,102 @@
   "c": "Base 60 : soixante secondes font une minute, soixante minutes font une heure. Nous utilisons donc déjà une autre base que 10 sans y penser — et depuis près de quatre mille ans."
  }
 ]
-</script>
+                </script>
               </div>
             </div>
 
             <div class="bonus-wrap" data-bonus>
               <div class="bonus-head" data-bonus-toggle>
                 <span class="bonus-tag">bonus</span>
-                <span class="bl">Pour aller plus loin — la loi de Moore</span>
+                <span class="bl">Pour aller plus loin — une vidéo, et la loi de Moore</span>
                 <span class="chev">▸</span>
               </div>
               <div class="bonus-body">
                 <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Facultatif, <b>non évalué</b>, et ça ne compte pas dans ta progression. C'est pour ceux que ça démange.</p>
+
+                <div class="block-label">Poste de visionnage — comment fonctionne un transistor</div>
+                <div class="poste">
+                  <div class="poste-media">
+                    <p class="consigne">🎬 <span>Une vidéo de <b>Veritasium</b>, avec le professeur <b>Andrea Morello</b> (université de Nouvelle-Galles du Sud). Elle descend jusqu'à l'échelle des atomes.</span></p>
+                    <p class="consigne">🇬🇧 <span><b>Elle est en anglais, sans doublage.</b> Active les sous-titres (icône ⚙ du lecteur), et n'hésite pas à les mettre en français&nbsp;: la traduction automatique est imparfaite, mais elle suffit largement ici.</span></p>
+                    <iframe src="https://www.youtube-nocookie.com/embed/rtI5wRyHpTg" height="315" frameborder="0" allowfullscreen title="Veritasium — comment fonctionne un transistor, avec le Pr Andrea Morello"></iframe>
+                  </div>
+                </div>
+                <p class="doc-note" style="margin-top:9px">⏱️ <b>Où chercher&nbsp;:</b> les cinq réponses du QCM ci-dessous sont dispersées <b>entre la 3ᵉ et la 8ᵉ minute</b>. Le début pose le décor, tu peux le regarder sans prendre de notes. Mets en pause dès qu'un chiffre est cité.</p>
+
+                <div class="field">
+                  <span class="field-type">QCM · bonus, non évalué</span>
+                  <div class="field-q">Cinq questions sur la vidéo. <b>Rien ici n'est au programme</b> — c'est de la curiosité pure.</div>
+                  <div class="qcmbox" data-code="REP-Q5">
+                    <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Quelle taille de transistor la vidéo cite-t-elle ?",
+  "o": [
+   "22 nanomètres",
+   "52 nanomètres",
+   "22 micromètres",
+   "2 nanomètres"
+  ],
+  "r": 0,
+  "c": "La vidéo parle d'un « <i lang=\"en\">22 nanometer node</i> » — 22 nanomètres. Attention au piège du <b>52</b> : juste après, la vidéo explique qu'il y a environ <b>cinquante atomes de silicium</b> entre la source et le drain. Deux nombres voisins, deux choses différentes : l'un est une <b>longueur</b>, l'autre un <b>compte d'atomes</b>. C'est d'ailleurs ça, le vertige de la vidéo : à cette échelle, un composant se mesure en atomes."
+ },
+ {
+  "q": "Qu'est-ce qui empêche de réduire indéfiniment la taille d'un transistor ?",
+  "o": [
+   "La chaleur, qui finirait par faire fondre le silicium",
+   "Le coût de fabrication, qui devient vite prohibitif",
+   "L'effet tunnel : l'électron traverse une barrière trop mince",
+   "La vitesse de la lumière, qui borne la propagation du signal"
+  ],
+  "r": 2,
+  "c": "L'<b>effet tunnel</b>. En dessous d'une certaine épaisseur, l'électron a une probabilité non nulle de se retrouver de l'autre côté de la barrière alors qu'il n'a pas l'énergie pour la franchir — et l'interrupteur ne ferme plus vraiment. Les trois autres réponses désignent de vraies difficultés (la chaleur et le coût, en particulier, sont bien réels) mais ce sont des obstacles d'ingénieur : on peut les repousser. L'effet tunnel, lui, est une limite <b>physique</b>."
+ },
+ {
+  "q": "Comment s'appelle la loi qui prédit, empiriquement, l'évolution du nombre de transistors par puce ?",
+  "o": [
+   "La loi de Shannon, sur la quantité d'information transmise",
+   "La loi de Moore, sur le nombre de transistors par puce",
+   "La loi de Kirchhoff, sur les courants dans un circuit",
+   "La loi de Turing, sur ce qu'une machine sait calculer"
+  ],
+  "r": 1,
+  "c": "La <b>loi de Moore</b>, énoncée par Gordon Moore en 1965. Le mot « loi » est trompeur : ce n'est pas une loi de la nature comme la loi d'Ohm, c'est une <b>observation</b> — un constat qui s'est vérifié pendant un demi-siècle, et qui est devenu une feuille de route que l'industrie s'est efforcée de tenir. Les trois autres lois existent bel et bien, mais elles portent sur autre chose."
+ },
+ {
+  "q": "Combien de transistors la vidéo annonce-t-elle dans une puce de son époque ?",
+  "o": [
+   "environ mille",
+   "environ un million",
+   "environ mille milliards",
+   "environ un milliard"
+  ],
+  "r": 3,
+  "c": "La vidéo dit « <i lang=\"en\">about a billion</i> » — environ un milliard, pour un processeur à quatre cœurs.<br><br><b>Et c'est là que l'exercice devient intéressant.</b> Cette vidéo date de <b>2013</b>. Aujourd'hui, la puce Apple M4 compte 28 milliards de transistors, et le processeur graphique Nvidia Blackwell en aligne 208 milliards : <b>deux cents fois plus</b> en une dizaine d'années. Le chiffre de la vidéo n'est pas faux — il est <b>daté</b>. Savoir repérer qu'une source est dépassée, et de combien, c'est exactement ce que la loi de Moore t'apprend à faire. Vérifie toujours l'année d'une donnée avant de t'en servir."
+ },
+ {
+  "q": "Quel type de loi mathématique décrit cette évolution ?",
+  "o": [
+   "Une loi de proportionnalité au temps écoulé",
+   "Une loi linéaire : on ajoute le même nombre chaque année",
+   "Une loi exponentielle : on multiplie, on n'ajoute pas",
+   "Une loi aléatoire, qui dépend des découvertes"
+  ],
+  "r": 2,
+  "c": "Une loi <b>exponentielle</b> : le nombre <b>double</b> à intervalle régulier, il ne s'accroît pas d'une quantité fixe. C'est aussi ce qui explique la forme du graphique plus bas : son axe vertical est <b>logarithmique</b> — chaque graduation vaut dix fois la précédente. Sur une échelle ordinaire, la courbe serait illisible ; sur une échelle logarithmique, une croissance exponentielle devient une <b>ligne droite</b>. Le même doublement, mais qu'on peut enfin regarder."
+ }
+]
+                    </script>
+                  </div>
+                </div>
+
                 <div class="field" data-focus
-                     data-focus-titre="La loi de Moore"
-                     data-focus-question="Cherche ce qu'est la loi de Moore et explique-la avec tes mots."
+                     data-focus-titre="Ce que la vidéo m'a appris"
+                     data-focus-question="Résume en trois ou quatre phrases ce que la vidéo t'a appris : ce qu'est un transistor, ce qui limite sa miniaturisation, et ce que dit la loi de Moore."
                      data-focus-max="400" data-focus-min="20" data-focus-code="REP-R1">
                   <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris, pour que tu ne recopies rien. Ta réponse est relue ensuite.</span></button></span>
-                  <div class="field-q">Tu viens de voir que le nombre de transistors d'une puce se compte en milliards. Ça n'a pas toujours été le cas. <b>Cherche ce qu'est la «&nbsp;loi de Moore&nbsp;» et explique-la avec tes mots.</b></div>
-                  <p style="font-size:13px;color:var(--ink-soft);margin:0 0 11px">Cherche vraiment&nbsp;: c'est l'intérêt de l'exercice. Une fois ta réponse envoyée, un graphique apparaîtra pour la confronter à la réalité.</p>
+                  <div class="field-q"><b>Résume la vidéo en trois ou quatre phrases, avec tes mots&nbsp;:</b> ce qu'est un transistor, ce qui empêche de le réduire indéfiniment, et ce que dit la loi de Moore.</div>
+                  <p style="font-size:13px;color:var(--ink-soft);margin:0 0 11px">Avec <b>tes</b> mots&nbsp;: recopier une phrase de la vidéo ou d'un site ne vaut rien ici, et se voit tout de suite. Si un point t'a échappé, dis-le — c'est une information utile, pas une faute. Une fois ta réponse envoyée, un graphique apparaîtra.</p>
                   <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
                   <div class="gtexte" data-focus-echo></div>
                   <div class="verdict"></div>
@@ -487,7 +592,7 @@
             <p class="doc-note">Même mécanique des deux côtés. Ce qui change, c'est le nombre qu'on élève à la puissance&nbsp;: <b>dix</b> quand on a dix chiffres, <b>deux</b> quand on n'en a que deux.</p>
 
             <div class="block-label">À toi — les huit premières puissances de 2<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
-            <div class="field">
+            <div class="field" data-essais-avant-correction="3">
               <span class="field-type">Exercice</span>
               <div class="field-q">Calcule-les dans l'ordre. Le plus simple&nbsp;: partir de <span class="nb">2<sup>0</sup></span> = 1 et <b>doubler</b> à chaque fois.</div>
               <div class="cloze" data-cloze>
@@ -504,9 +609,11 @@
               </div>
               <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
+              <div class="reveal" data-reveal-juste>
+                <div class="rl">✅ Les huit poids, une bonne fois</div>
+                <b>1, 2, 4, 8, 16, 32, 64, 128.</b> Ces huit nombres ne sont pas une liste à apprendre par hasard&nbsp;: ce sont les <b>puissances de 2</b>, donc les <b>poids des huit rangs</b> d'un nombre binaire. Tout ce qui suit dans ce module s'appuie dessus.
+              </div>
             </div>
-
-            <div class="point-cle"><b>1, 2, 4, 8, 16, 32, 64, 128.</b> Ces huit nombres ne sont pas une liste à apprendre par hasard&nbsp;: ce sont les <b>puissances de 2</b>, donc les <b>poids des huit rangs</b> d'un nombre binaire. Tout ce qui suit dans ce module s'appuie dessus.</div>
 
             <div class="block-label">Le tableau des poids d'un octet (8 bits) — clique sur les bits<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
             <div class="poids-outil" data-poids="10011011">
@@ -534,7 +641,7 @@
             </div>
 
             <div class="block-label">Échauffement — trois lectures<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
-            <div class="field">
+            <div class="field" data-essais-avant-correction="2" data-correction-bouton>
               <span class="field-type">Exercice</span>
               <div class="field-q">Convertis en décimal, <b>sur ta feuille</b>, avec les puissances de 2. Utilise ensuite le tableau ci-dessus uniquement pour <b>vérifier</b>.</div>
               <p class="doc-note" style="margin:0 0 10px">Si tu as besoin du tableau pour <i>trouver</i> la réponse, tu n'es pas encore prêt pour l'évaluation. Il sert à contrôler, pas à résoudre.</p>
@@ -612,9 +719,12 @@
               <div class="souscr-svg"></div>
               <ol class="souscr-journal" aria-live="polite"></ol>
               <div class="souscr-essai">
-                <label for="sous-n">Essaie avec ton nombre&nbsp;:</label>
-                <input id="sous-n" type="number" min="1" max="4095" step="1" value="77" inputmode="numeric">
-                <button class="btn ghost sm" type="button" data-sous-go>Remplir le tableau</button>
+                <button class="btn ghost sm" type="button" data-sous-go>Essayer avec ce nombre</button>
+                <input id="sous-n" type="number" min="1" max="4095" step="1" value="77" inputmode="numeric"
+                       aria-label="nombre à convertir, entre 1 et 4095"
+                       aria-describedby="sous-n-borne">
+                <span class="essai-borne" id="sous-n-borne">de 1 à 4095</span>
+                <span class="essai-erreur" role="status" aria-live="polite" hidden></span>
               </div>
             </div>
             <p class="doc-note">L'outil commence directement au <b>plus grand poids utile</b> — pour 77, c'est 64 et non 128&nbsp;: commencer plus haut n'écrirait que des zéros inutiles devant le nombre.<br><br>Avantage de la méthode&nbsp;: rapide, faisable de tête, et elle réutilise les poids que tu connais déjà. Inconvénient&nbsp;: il faut garder le reste en tête à chaque ligne.</p>
@@ -652,9 +762,12 @@
               </div>
               <div class="potence-svg"></div>
               <div class="potence-essai">
-                <label for="pot-n">Essaie avec ton nombre&nbsp;:</label>
-                <input id="pot-n" type="number" min="1" max="4095" step="1" value="77" inputmode="numeric">
-                <button class="btn ghost sm" type="button" data-pot-go>Tracer la potence</button>
+                <button class="btn ghost sm" type="button" data-pot-go>Essayer avec ce nombre</button>
+                <input id="pot-n" type="number" min="1" max="4095" step="1" value="77" inputmode="numeric"
+                       aria-label="nombre à convertir, entre 1 et 4095"
+                       aria-describedby="pot-n-borne">
+                <span class="essai-borne" id="pot-n-borne">de 1 à 4095</span>
+                <span class="essai-erreur" role="status" aria-live="polite" hidden></span>
               </div>
             </div>
             <p class="doc-note">Avantage&nbsp;: aucune retenue à garder en tête, on ne fait que diviser par 2. Inconvénient&nbsp;: il faut penser à lire les restes <b>de bas en haut</b> — c'est l'erreur classique.</p>
@@ -772,21 +885,66 @@
 
             <div class="point-cle">Regarde une colonne, puis la suivante&nbsp;: <b>c'est la même liste, écrite deux fois</b> — une première fois précédée d'un <span class="nb">0</span>, une seconde fois précédée d'un <span class="nb">1</span>. Voilà pourquoi <b>chaque bit ajouté double</b> le nombre de combinaisons&nbsp;: 2, puis 4, puis 8, puis 16… C'est exactement ce que dit <span class="nb">2<sup>n</sup></span>.</div>
 
-            <p style="font-size:14.5px;margin:10px 0 10px">On ne va pas écrire les 256 combinaisons d'un octet — mais le mécanisme est le même, on continue simplement à doubler&nbsp;:</p>
-            <div class="table-scroll">
-            <table class="doc-table">
-              <thead><tr><th>Nombre de bits</th><th>Calcul</th><th>Combinaisons</th><th>Valeurs possibles</th></tr></thead>
-              <tbody>
-                <tr><td>1</td><td>2<sup>1</sup></td><td><b>2</b></td><td>de 0 à <b>1</b></td></tr>
-                <tr><td>2</td><td>2<sup>2</sup> = 2 × 2</td><td><b>4</b></td><td>de 0 à <b>3</b></td></tr>
-                <tr><td>3</td><td>2<sup>3</sup> = 2 × 2 × 2</td><td><b>8</b></td><td>de 0 à <b>7</b></td></tr>
-                <tr><td>4</td><td>2<sup>4</sup></td><td><b>16</b></td><td>de 0 à <b>15</b></td></tr>
-                <tr><td>7</td><td>2<sup>7</sup></td><td><b>128</b></td><td>de 0 à <b>127</b></td></tr>
-                <tr><td><b>8 — un octet</b></td><td><b>2<sup>8</sup></b></td><td><b>256</b></td><td>de 0 à <b>255</b></td></tr>
-              </tbody>
-            </table>
+            <div class="block-label">À toi — continue le tableau<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field" data-essais-avant-correction="3" data-correction-bouton>
+              <span class="field-type">Exercice</span>
+              <div class="field-q">On ne va pas écrire les 256 combinaisons d'un octet à la main. Mais le mécanisme, lui, ne change pas&nbsp;: <b>on continue à doubler</b>. Les quatre premières lignes sont faites, elles te donnent le rythme — <b>complète les suivantes</b>.</div>
+              <p class="doc-note" style="margin:0 0 10px">Les <b>deux dernières colonnes</b> ne disent pas la même chose, et c'est tout l'enjeu&nbsp;: à gauche <b>combien</b> de valeurs, à droite <b>lesquelles</b>. Sur 4 bits&nbsp;: 16 combinaisons, qui vont de 0 à 15.</p>
+              <div class="cloze" data-cloze data-cle="combinaisons">
+                <div class="table-scroll">
+                <table class="doc-table">
+                  <thead><tr><th>Nombre de bits</th><th>Calcul</th><th>Combinaisons</th><th>Valeurs possibles</th></tr></thead>
+                  <tbody>
+                    <tr><td>1</td><td>2<sup>1</sup></td><td><b>2</b></td><td>de 0 à <b>1</b></td></tr>
+                    <tr><td>2</td><td>2<sup>2</sup> = 2 × 2</td><td><b>4</b></td><td>de 0 à <b>3</b></td></tr>
+                    <tr><td>3</td><td>2<sup>3</sup> = 2 × 2 × 2</td><td><b>8</b></td><td>de 0 à <b>7</b></td></tr>
+                    <tr><td>4</td><td>2<sup>4</sup></td><td><b>16</b></td><td>de 0 à <b>15</b></td></tr>
+                    <tr><td>5</td><td>2<sup>5</sup></td>
+                      <td><input class="short" data-answer="32" placeholder="?" aria-label="combinaisons sur 5 bits" data-indice1="La ligne du dessus en compte 16. Un bit de plus, donc deux fois plus." data-indice2="Trente-deux."></td>
+                      <td>de 0 à <input class="short" data-answer="31" placeholder="?" aria-label="plus grande valeur sur 5 bits" data-indice1="Autant de valeurs qu'annoncé à gauche, mais on commence à compter à zéro." data-indice2="Un de moins que le nombre de combinaisons."></td></tr>
+                    <tr><td>6</td><td>2<sup>6</sup></td>
+                      <td><input class="short" data-answer="64" placeholder="?" aria-label="combinaisons sur 6 bits" data-indice1="Encore un doublement." data-indice2="Soixante-quatre."></td>
+                      <td>de 0 à <input class="short" data-answer="63" placeholder="?" aria-label="plus grande valeur sur 6 bits" data-indice1="Toujours un de moins que le nombre de combinaisons." data-indice2="Soixante-trois."></td></tr>
+                    <tr><td>7</td><td>2<sup>7</sup></td>
+                      <td><input class="short" data-answer="128" placeholder="?" aria-label="combinaisons sur 7 bits" data-indice1="Encore un doublement. Tu connais déjà ce nombre&nbsp;: c'est le plus gros poids d'un octet." data-indice2="Cent vingt-huit."></td>
+                      <td>de 0 à <input class="short" data-answer="127" placeholder="?" aria-label="plus grande valeur sur 7 bits" data-indice1="Un de moins." data-indice2="Cent vingt-sept."></td></tr>
+                    <tr><td><b>8 — un octet</b></td><td><b>2<sup>8</sup></b></td>
+                      <td><input class="short" data-answer="256" placeholder="?" aria-label="combinaisons sur 8 bits" data-indice1="Un dernier doublement à partir de 128." data-indice2="Deux cent cinquante-six."></td>
+                      <td>de 0 à <input class="short" data-answer="255" placeholder="?" aria-label="plus grande valeur sur 8 bits" data-indice1="Un de moins que le nombre de combinaisons. C'est LE nombre de toute cette étape." data-indice2="Deux cent cinquante-cinq."></td></tr>
+                    <tr><td><b>n</b> — le cas général</td><td><b>2<sup>n</sup></b></td>
+                      <td><select data-answer="2ⁿ" aria-label="combinaisons sur n bits">
+                            <option value="">choisis…</option>
+                            <option>2 × n</option>
+                            <option>2ⁿ</option>
+                            <option>n²</option>
+                            <option>n × 2 + 1</option>
+                          </select></td>
+                      <td>de 0 à <select data-answer="2ⁿ − 1" aria-label="plus grande valeur sur n bits">
+                            <option value="">choisis…</option>
+                            <option>2ⁿ</option>
+                            <option>2ⁿ − 1</option>
+                            <option>2ⁿ ÷ 2</option>
+                            <option>n − 1</option>
+                          </select></td></tr>
+                  </tbody>
+                </table>
+                </div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal-juste>
+                <div class="rl">✅ Le tableau complet, et la règle qu'il cache</div>
+                <div class="calcul">
+                  5 bits → <b>32</b> combinaisons, de 0 à <b>31</b><br>
+                  6 bits → <b>64</b> combinaisons, de 0 à <b>63</b><br>
+                  7 bits → <b>128</b> combinaisons, de 0 à <b>127</b><br>
+                  8 bits → <b>256</b> combinaisons, de 0 à <b>255</b><br>
+                  <b>n</b> bits → <b>2<sup>n</sup></b> combinaisons, de 0 à <b>2<sup>n</sup> − 1</b>
+                </div>
+                Une seule règle, deux façons de la dire. <b>Le nombre de combinaisons double à chaque bit ajouté</b> — parce que le nouveau bit permet de réécrire toute la liste précédente une seconde fois. Et <b>la plus grande valeur vaut toujours une de moins</b>, parce qu'on commence à compter à zéro.<br><br>
+                Le «&nbsp;−&nbsp;1&nbsp;» du cas général n'est pas un détail de notation&nbsp;: c'est exactement l'écart entre <b>256</b> et <b>255</b>, celui qui fait trébucher tout le monde deux paragraphes plus bas.
+              </div>
             </div>
-            <p class="doc-note">Lis bien les <b>deux dernières colonnes</b> de ce tableau&nbsp;: elles ne disent pas la même chose. À gauche, <b>combien</b> de valeurs&nbsp;; à droite, <b>lesquelles</b>. Sur 4 bits&nbsp;: 16 combinaisons, qui vont de 0 à 15. Compte-les dans la liste ci-dessus si tu veux t'en convaincre.</p>
 
             <div class="point-cle alerte"><b>Le piège, et il tombe tout le temps&nbsp;:</b> un octet a bien <b>256</b> combinaisons, mais sa plus grande valeur est <b>255</b>. Il n'y a pas d'erreur&nbsp;: c'est qu'on <b>compte à partir de zéro</b>. Les 256 valeurs vont de <b>0</b> à <b>255</b>, exactement comme une classe de 30 élèves numérotés de 0 à 29&nbsp;: 30 élèves, et pourtant le dernier porte le numéro 29. Le tout premier octet <span class="nb">00000000<sub>2</sub></span> vaut 0, le tout dernier <span class="nb">11111111<sub>2</sub></span> vaut 255.<br><br><b>Deux questions, deux réponses différentes&nbsp;:</b> «&nbsp;combien de valeurs&nbsp;?&nbsp;» → <b>256</b>, c'est <span class="nb">2<sup>8</sup></span>. «&nbsp;quelle est la plus grande&nbsp;?&nbsp;» → <b>255</b>, c'est <span class="nb">2<sup>8</sup></span> − 1. Ne confonds jamais les deux.</div>
 
@@ -872,15 +1030,15 @@
           <div class="card-body">
 
             <p style="font-size:14.5px;margin:4px 0 10px">Treize conversions dans les deux sens, puis un classement. <b>La liste est la même pour tout le monde</b>&nbsp;: vous pouvez chercher à plusieurs, comparer vos résultats et vous expliquer les erreurs. C'est fait pour.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">L'entraînement est en <b>trois groupes</b>, chacun avec son bouton <b>Vérifier</b> et sa <b>correction détaillée</b>&nbsp;: tu corriges A avant d'attaquer B, sans attendre d'avoir fait les treize. L'étape n'est validée que lorsque les trois groupes et le classement sont faits.</p>
             <p style="font-size:14.5px;margin:4px 0 10px">Rien de nouveau n'est introduit ici&nbsp;: c'est de l'entraînement pur, sur ce que tu as vu aux étapes 1.2 et 1.3. Il n'y a donc pas de «&nbsp;à retenir&nbsp;» à la fin — le tien est déjà écrit plus haut.</p>
             <p class="doc-note">Écris les nombres <b>sans espace</b>&nbsp;: <code>10101100</code>, pas <code>1010 1100</code>. Un zéro devant une écriture binaire est accepté. Deux indices sont disponibles sous chaque réponse fausse&nbsp;: le premier remet sur la piste, le second dépanne vraiment.</p>
 
-            <div class="field">
-              <span class="field-type">Exercice</span>
-              <div class="field-q">Prends ton temps, vérifie chaque ligne, puis clique sur <b>Vérifier</b>.</div>
-              <div class="cloze" data-cloze>
+            <div class="field" data-essais-avant-correction="3">
+              <span class="field-type">Exercice · groupe A</span>
+              <div class="field-q"><b>A · Binaire → décimal.</b> Prends ton temps, vérifie chaque ligne, puis clique sur <b>Vérifier</b>. Ce groupe se corrige tout seul&nbsp;: tu n'attends pas d'avoir fini les treize.</div>
+              <div class="cloze" data-cloze data-cle="atelier-a">
 
-                <div class="atelier-part">A · Binaire → décimal</div>
                 <div style="margin-bottom:9px"><b>1.</b> <span class="nb">1011<sub>2</sub></span> vaut
                 <input class="short" data-answer="11" placeholder="?" aria-label="valeur décimale de 1011" data-indice1="Quatre colonnes, de droite à gauche : 1, 2, 4, 8. Additionne les poids placés sous un 1." data-indice2="Le zéro est en troisième position depuis la droite : tu additionnes 8, 2 et 1."> en décimal.</div>
                 <div style="margin-bottom:9px"><b>2.</b> <span class="nb">10011<sub>2</sub></span> vaut
@@ -892,7 +1050,27 @@
                 <div style="margin-bottom:9px"><b>5.</b> <span class="nb">11111111<sub>2</sub></span> vaut
                 <input class="short" data-answer="255" placeholder="?" aria-label="valeur décimale de 11111111" data-indice1="Tous les bits sont à 1 : tu additionnes tous les poids, de 128 à 1." data-indice2="C'est la plus grande valeur qu'un octet puisse contenir — tu l'as vue à l'étape 1.4."> en décimal.</div>
 
-                <div class="atelier-part">B · Décimal → binaire</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier le groupe A</button></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal-juste>
+                <div class="rl">✅ Le groupe A, calcul par calcul</div>
+                <div class="calcul">
+                  <span class="nb">1011<sub>2</sub></span> = 8 + 2 + 1 = <span class="res-calc">11<sub>10</sub></span><br>
+                  <span class="nb">10011<sub>2</sub></span> = 16 + 2 + 1 = <span class="res-calc">19<sub>10</sub></span><br>
+                  <span class="nb">1110101<sub>2</sub></span> = 64 + 32 + 16 + 4 + 1 = <span class="res-calc">117<sub>10</sub></span><br>
+                  <span class="nb">10101100<sub>2</sub></span> = 128 + 32 + 8 + 4 = <span class="res-calc">172<sub>10</sub></span><br>
+                  <span class="nb">11111111<sub>2</sub></span> = 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = <span class="res-calc">255<sub>10</sub></span>
+                </div>
+                Le geste est toujours le même&nbsp;: on écrit les poids au-dessus des chiffres, on additionne ceux qui sont sous un <b>1</b>, on saute les autres. C'est cette présentation qui est attendue le jour de l'évaluation, pas seulement le résultat.
+              </div>
+            </div>
+
+            <div class="field" data-essais-avant-correction="3">
+              <span class="field-type">Exercice · groupe B</span>
+              <div class="field-q"><b>B · Décimal → binaire.</b> Le trajet inverse. Méthode au choix — la soustraction descendante ou les divisions successives.</div>
+              <div class="cloze" data-cloze data-cle="atelier-b">
+
                 <div style="margin-bottom:9px"><b>6.</b> <span class="nb">90<sub>10</sub></span> s'écrit
                 <input data-answer="1011010" data-variantes="01011010" placeholder="?" aria-label="90 en binaire" data-indice1="Le plus grand poids qui tienne dans 90 est 64. Soustrais-le, puis recommence avec ce qui reste." data-indice2="Les poids retenus sont 64, 16, 8 et 2 : un 1 dans ces colonnes, un 0 dans les autres, en commençant à 64."> en binaire.</div>
                 <div style="margin-bottom:9px"><b>7.</b> <span class="nb">168<sub>10</sub></span> s'écrit
@@ -904,7 +1082,27 @@
                 <div style="margin-bottom:9px"><b>10.</b> <span class="nb">434<sub>10</sub></span> s'écrit
                 <input data-answer="110110010" placeholder="?" aria-label="434 en binaire" data-indice1="434 dépasse 255 : huit colonnes ne suffisent plus. Le poids qui vient après 128 est 256." data-indice2="Les poids retenus sont 256, 128, 32, 16 et 2 — neuf colonnes en tout."> en binaire.</div>
 
-                <div class="atelier-part">C · Raisonnement</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier le groupe B</button></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal-juste>
+                <div class="rl">✅ Le groupe B, poids par poids</div>
+                <div class="calcul">
+                  <span class="nb">90<sub>10</sub></span> = 64 + 16 + 8 + 2 = <span class="res-calc">1011010<sub>2</sub></span><br>
+                  <span class="nb">168<sub>10</sub></span> = 128 + 32 + 8 = <span class="res-calc">10101000<sub>2</sub></span><br>
+                  <span class="nb">226<sub>10</sub></span> = 128 + 64 + 32 + 2 = <span class="res-calc">11100010<sub>2</sub></span><br>
+                  <span class="nb">254<sub>10</sub></span> = 128 + 64 + 32 + 16 + 8 + 4 + 2 = <span class="res-calc">11111110<sub>2</sub></span><br>
+                  <span class="nb">434<sub>10</sub></span> = 256 + 128 + 32 + 16 + 2 = <span class="res-calc">110110010<sub>2</sub></span>
+                </div>
+                Deux contrôles qui ne trompent pas&nbsp;: <b>le reste doit tomber à 0</b> à la fin de la méthode A, et <b>le nombre de colonnes</b> doit correspondre au plus grand poids retenu — 434 en réclame neuf, parce qu'il dépasse 255.
+              </div>
+            </div>
+
+            <div class="field" data-essais-avant-correction="3">
+              <span class="field-type">Exercice · groupe C</span>
+              <div class="field-q"><b>C · Raisonnement.</b> Ici on ne convertit pas&nbsp;: on raisonne sur le nombre de colonnes.</div>
+              <div class="cloze" data-cloze data-cle="atelier-c">
+
                 <div style="margin-bottom:9px"><b>11.</b> Combien de bits faut-il <b>au minimum</b> pour écrire 200 en binaire&nbsp;?
                 <input class="short" data-answer="8" placeholder="?" aria-label="nombre minimal de bits pour écrire 200" data-indice1="Cherche la plus petite puissance de 2 qui dépasse 200." data-indice2="Avec sept bits on ne va que jusqu'à 127 : c'est trop peu. Il en faut un de plus."> bits.</div>
                 <div style="margin-bottom:9px"><b>12.</b> Et pour écrire 1000 en binaire, combien de bits faut-il <b>au minimum</b>&nbsp;?
@@ -912,24 +1110,39 @@
                 <div><b>13.</b> <b>Sans convertir</b>, uniquement en regardant l'écriture&nbsp;: parmi <span class="nb">1011<sub>2</sub></span>, <span class="nb">110<sub>2</sub></span> et <span class="nb">10001<sub>2</sub></span>, la plus <b>grande</b> est
                 <input data-answer="10001" placeholder="?" aria-label="la plus grande des trois écritures binaires" data-indice1="Nul besoin de calculer&nbsp;: compte les chiffres. Plus il y en a, plus le premier poids est lourd." data-indice2="Celle qui a cinq chiffres commence au poids 16&nbsp;; les autres n'atteignent que 8 au mieux."> .</div>
               </div>
-              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier le groupe C</button></div>
               <div class="verdict"></div>
+              <div class="reveal" data-reveal-juste>
+                <div class="rl">✅ Le groupe C, le raisonnement en entier</div>
+                <div class="calcul">
+                  <b>11.</b> Avec 7 bits on va de 0 à 127&nbsp;: 200 n'y tient pas. Avec 8 bits, de 0 à 255&nbsp;: il y tient. → <span class="res-calc">8 bits</span><br>
+                  <b>12.</b> Avec 9 bits on va de 0 à 511&nbsp;: 1000 n'y tient pas. Avec 10 bits, de 0 à 1023&nbsp;: il y tient tout juste. → <span class="res-calc">10 bits</span><br>
+                  <b>13.</b> <span class="nb">10001<sub>2</sub></span> a cinq chiffres, les deux autres en ont quatre et trois. → <span class="res-calc">10001<sub>2</sub></span>
+                </div>
+                Les questions 11 et 12 posent la même question que 13, à l'envers&nbsp;: <b>combien de colonnes faut-il ?</b> On cherche la première puissance de 2 qui <b>dépasse</b> le nombre — et l'exposant de cette puissance donne le compte de bits.
+              </div>
             </div>
 
             <div class="block-label">Pour finir — ranger sans calculer<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
             <div class="field">
               <span class="field-type">Glisser-déposer · du plus petit au plus grand</span>
               <div class="field-q">Range ces six écritures binaires de la <b>plus petite</b> à la <b>plus grande</b>. La règle du jeu&nbsp;: <b>interdit de convertir</b>. Tu dois y arriver en regardant seulement l'écriture.</div>
-              <ul class="tri-drag" data-tri data-tri-libelle="écritures" role="listbox" aria-label="Écritures binaires à ranger de la plus petite à la plus grande">
-                <li data-rang="4"><span class="oh">⠿</span><code>10001</code></li>
-                <li data-rang="1"><span class="oh">⠿</span><code>110</code></li>
-                <li data-rang="6"><span class="oh">⠿</span><code>1000000</code></li>
-                <li data-rang="3"><span class="oh">⠿</span><code>1101</code></li>
-                <li data-rang="5"><span class="oh">⠿</span><code>11000</code></li>
-                <li data-rang="2"><span class="oh">⠿</span><code>1011</code></li>
+              <ul class="tri-drag" data-tri data-tri-indices="1" data-tri-libelle="écritures" role="listbox" aria-label="Écritures binaires à ranger de la plus petite à la plus grande">
+                <li data-rang="6"><span class="oh">⠿</span><code>10001</code></li>
+                <li data-rang="2"><span class="oh">⠿</span><code>110</code></li>
+                <li data-rang="9"><span class="oh">⠿</span><code>1000000</code></li>
+                <li data-rang="5"><span class="oh">⠿</span><code>1101</code></li>
+                <li data-rang="8"><span class="oh">⠿</span><code>11000</code></li>
+                <li data-rang="4"><span class="oh">⠿</span><code>1011</code></li>
+                <li data-rang="1"><span class="oh">⠿</span><code>101</code></li>
+                <li data-rang="3"><span class="oh">⠿</span><code>1001</code></li>
+                <li data-rang="7"><span class="oh">⠿</span><code>10110</code></li>
+                <li data-rang="10"><span class="oh">⠿</span><code>1100101</code></li>
+                <li data-rang="11"><span class="oh">⠿</span><code>11111111</code></li>
               </ul>
               <div class="tri-barre">
                 <button class="btn ghost" data-tri-check>Vérifier l'ordre</button>
+                <button class="btn ghost sm" type="button" data-regles-indice>💡 Les deux règles</button>
               </div>
               <div class="verdict" data-tri-verdict></div>
               <div class="tri-suite" hidden>
@@ -945,6 +1158,258 @@
 
     </div>
     </div><!-- /lockable -->
+    <!-- =====================================================================
+         PARTIE FIXE DE LA FICHE DE RÉVISION — séance 1
+         Recopiée telle quelle par le générateur (sequence-snt.js, ficheHTML).
+         Un <template> n'est pas rendu dans la page : ce bloc est invisible
+         pour l'élève tant qu'il n'ouvre pas sa fiche.
+         Principe éditorial : LE SCHÉMA PORTE L'EXPLICATION, le texte
+         l'accompagne — une à deux phrases par section, pleine largeur.
+         Les couleurs sont des classes (f-*), définies dans ficheCSS() : aucune
+         couleur en dur ici, la palette reste à un seul endroit.
+         ===================================================================== -->
+    <template data-fiche-fixe>
+      <h2><span class="n">1</span>Compter dans une base</h2>
+      <p class="fx-note">Une base, c'est le <b>nombre de chiffres différents</b> dont on dispose. Dix en base 10, deux pour une machine — ses composants ne distinguent que deux états électriques. Le principe ne change jamais&nbsp;: <b>chaque rang vaut une puissance de la base</b>.</p>
+
+      <figure class="fx-fig">
+        <svg viewBox="0 0 640 218" role="img" aria-label="Le nombre 77 écrit en base 10, en base 2 et en base 60">
+          <rect x="0" y="0" width="640" height="26" rx="7" class="f-bandeau"/>
+          <text x="12" y="18" class="f-bandeau-t">UN SEUL NOMBRE — SOIXANTE-DIX-SEPT — TROIS ÉCRITURES</text>
+
+          <text x="0" y="50" class="f-lab f-bleu">BASE 10 · DIX CHIFFRES</text>
+          <g class="f-mono" text-anchor="middle">
+            <g class="f-faint" font-size="11">
+              <text x="35" y="68">10²</text><text x="105" y="68">10¹</text><text x="175" y="68">10⁰</text>
+            </g>
+            <g class="f-soft" font-size="12">
+              <text x="35" y="84">100</text><text x="105" y="84">10</text><text x="175" y="84">1</text>
+            </g>
+            <rect x="8" y="92" width="54" height="36" rx="6" class="f-case"/>
+            <rect x="78" y="92" width="54" height="36" rx="6" class="f-case f-pris-bleu"/>
+            <rect x="148" y="92" width="54" height="36" rx="6" class="f-case f-pris-bleu"/>
+            <g class="f-chiffre">
+              <text x="35" y="118">0</text><text x="105" y="118">7</text><text x="175" y="118">7</text>
+            </g>
+          </g>
+          <text x="8" y="148" class="f-mono f-soft" font-size="12.5">7 × 10 + 7 × 1 = 77</text>
+          <text x="8" y="166" class="f-mono f-res" font-size="13.5">77₁₀</text>
+
+          <line x1="225" y1="40" x2="225" y2="180" class="f-pointille"/>
+
+          <text x="245" y="50" class="f-lab f-vert">BASE 2 · DEUX CHIFFRES</text>
+          <g class="f-mono" text-anchor="middle">
+            <g class="f-faint" font-size="10.5">
+              <text x="272" y="68">2⁶</text><text x="326" y="68">2⁵</text><text x="380" y="68">2⁴</text>
+              <text x="434" y="68">2³</text><text x="488" y="68">2²</text><text x="542" y="68">2¹</text><text x="596" y="68">2⁰</text>
+            </g>
+            <g class="f-soft" font-size="12">
+              <text x="272" y="84">64</text><text x="326" y="84">32</text><text x="380" y="84">16</text>
+              <text x="434" y="84">8</text><text x="488" y="84">4</text><text x="542" y="84">2</text><text x="596" y="84">1</text>
+            </g>
+            <rect x="248" y="92" width="48" height="36" rx="6" class="f-case f-pris-vert"/>
+            <rect x="302" y="92" width="48" height="36" rx="6" class="f-case"/>
+            <rect x="356" y="92" width="48" height="36" rx="6" class="f-case"/>
+            <rect x="410" y="92" width="48" height="36" rx="6" class="f-case f-pris-vert"/>
+            <rect x="464" y="92" width="48" height="36" rx="6" class="f-case f-pris-vert"/>
+            <rect x="518" y="92" width="48" height="36" rx="6" class="f-case"/>
+            <rect x="572" y="92" width="48" height="36" rx="6" class="f-case f-pris-vert"/>
+            <g class="f-chiffre">
+              <text x="272" y="118">1</text><text x="326" y="118">0</text><text x="380" y="118">0</text>
+              <text x="434" y="118">1</text><text x="488" y="118">1</text><text x="542" y="118">0</text><text x="596" y="118">1</text>
+            </g>
+          </g>
+          <text x="248" y="148" class="f-mono f-soft" font-size="12.5">64 + 8 + 4 + 1 = 77</text>
+          <text x="248" y="166" class="f-mono f-res" font-size="13.5">1001101₂</text>
+
+          <rect x="0" y="182" width="640" height="34" rx="8" class="f-wash-violet"/>
+          <text x="12" y="197" class="f-lab f-violet">BASE 60 · CELLE DU TEMPS</text>
+          <text x="12" y="211" class="f-mono f-soft" font-size="12.5">77 secondes = 1 × 60 + 17 × 1 = 1 min 17 s</text>
+        </svg>
+        <figcaption><b>Le petit chiffre en bas à droite dit dans quelle base on lit.</b> Sans lui, 1001101 pourrait se lire «&nbsp;un million mille cent un&nbsp;». Et tu comptes déjà en base 60 sans y penser, chaque fois que tu lis l'heure.</figcaption>
+      </figure>
+
+      <h2><span class="n">2</span>Le tableau des poids</h2>
+      <p class="fx-note">On l'écrit <b>de droite à gauche</b>, en partant de 1 et en doublant à chaque case. Huit cases suffisent pour toute l'année.</p>
+      <figure class="fx-fig">
+        <svg viewBox="0 0 640 118" role="img" aria-label="Tableau des poids d'un octet, de 128 à 1">
+          <g class="f-mono" text-anchor="middle">
+            <g class="f-faint" font-size="11.5">
+              <text x="45" y="14">2⁷</text><text x="125" y="14">2⁶</text><text x="205" y="14">2⁵</text><text x="285" y="14">2⁴</text>
+              <text x="365" y="14">2³</text><text x="445" y="14">2²</text><text x="525" y="14">2¹</text><text x="605" y="14">2⁰</text>
+            </g>
+            <rect x="8" y="22" width="74" height="34" rx="6" class="f-case"/>
+            <rect x="88" y="22" width="74" height="34" rx="6" class="f-case"/>
+            <rect x="168" y="22" width="74" height="34" rx="6" class="f-case"/>
+            <rect x="248" y="22" width="74" height="34" rx="6" class="f-case"/>
+            <rect x="328" y="22" width="74" height="34" rx="6" class="f-case"/>
+            <rect x="408" y="22" width="74" height="34" rx="6" class="f-case"/>
+            <rect x="488" y="22" width="74" height="34" rx="6" class="f-case"/>
+            <rect x="568" y="22" width="74" height="34" rx="6" class="f-case"/>
+            <g class="f-chiffre" font-size="17">
+              <text x="45" y="45">128</text><text x="125" y="45">64</text><text x="205" y="45">32</text><text x="285" y="45">16</text>
+              <text x="365" y="45">8</text><text x="445" y="45">4</text><text x="525" y="45">2</text><text x="605" y="45">1</text>
+            </g>
+          </g>
+          <defs><marker id="fa" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+            <path d="M0 0 L9 4.5 L0 9 z" class="f-fleche-p"/></marker></defs>
+          <path d="M600 76 L40 76" class="f-fleche" marker-end="url(#fa)"/>
+          <rect x="176" y="66" width="288" height="20" rx="4" class="f-blanc"/>
+          <text x="320" y="80" class="f-mono f-orange" font-size="11.5" text-anchor="middle">on double à chaque pas vers la gauche</text>
+          <text x="8" y="104" class="f-soft" font-size="13">Toutes les cases à 1&nbsp;: 128+64+32+16+8+4+2+1 = 255, la plus grande valeur d'un octet.</text>
+        </svg>
+      </figure>
+
+      <h2><span class="n">3</span>Écrire un nombre en binaire — deux chemins</h2>
+      <p class="fx-note">Même résultat, geste différent. <b>Essaie les deux au moins une fois</b>, puis garde celle qui te va&nbsp;: c'est celle-là que tu utiliseras en évaluation. Ici, les deux partent de 77.</p>
+
+      <div class="fx-duo">
+        <figure class="fx-fig">
+          <span class="fx-tag fx-tag-a">Méthode A · le tableau</span>
+          <p class="fx-mnote">Je descends le tableau, du plus grand poids au plus petit. À chaque case&nbsp;: <b>est-ce que ça rentre&nbsp;?</b> Si oui, j'écris 1 et je soustrais. Sinon, 0.</p>
+          <svg viewBox="0 0 300 250" role="img" aria-label="Méthode du tableau des poids appliquée à 77">
+            <g class="f-mono" font-size="12">
+              <g transform="translate(0,6)">
+                <rect x="0" y="0" width="300" height="24" rx="5" class="f-wash-gris"/>
+                <text x="8" y="16" class="f-faint">128 &gt; 77</text>
+                <text x="150" y="16" class="f-rouge">trop grand</text>
+                <text x="292" y="16" class="f-res" font-size="12" text-anchor="end">0</text>
+              </g>
+              <g transform="translate(0,36)">
+                <rect x="0" y="0" width="300" height="24" rx="5" class="f-wash-bleu"/>
+                <text x="8" y="16" class="f-bleu">64 ≤ 77</text>
+                <text x="130" y="16" class="f-bleu">77 − 64 = 13</text>
+                <text x="292" y="16" class="f-res" font-size="12" text-anchor="end">1</text>
+              </g>
+              <g transform="translate(0,66)">
+                <rect x="0" y="0" width="300" height="24" rx="5" class="f-wash-gris"/>
+                <text x="8" y="16" class="f-faint">32 &gt; 13</text>
+                <text x="292" y="16" class="f-res" font-size="12" text-anchor="end">0</text>
+              </g>
+              <g transform="translate(0,96)">
+                <rect x="0" y="0" width="300" height="24" rx="5" class="f-wash-gris"/>
+                <text x="8" y="16" class="f-faint">16 &gt; 13</text>
+                <text x="292" y="16" class="f-res" font-size="12" text-anchor="end">0</text>
+              </g>
+              <g transform="translate(0,126)">
+                <rect x="0" y="0" width="300" height="24" rx="5" class="f-wash-bleu"/>
+                <text x="8" y="16" class="f-bleu">8 ≤ 13</text>
+                <text x="130" y="16" class="f-bleu">13 − 8 = 5</text>
+                <text x="292" y="16" class="f-res" font-size="12" text-anchor="end">1</text>
+              </g>
+              <g transform="translate(0,156)">
+                <rect x="0" y="0" width="300" height="24" rx="5" class="f-wash-bleu"/>
+                <text x="8" y="16" class="f-bleu">4 ≤ 5 → reste 1</text>
+                <text x="292" y="16" class="f-res" font-size="12" text-anchor="end">1</text>
+              </g>
+              <g transform="translate(0,186)">
+                <rect x="0" y="0" width="300" height="24" rx="5" class="f-wash-gris"/>
+                <text x="8" y="16" class="f-faint">2 &gt; 1</text>
+                <text x="104" y="16" class="f-bleu">puis 1 ≤ 1, reste 0</text>
+                <text x="292" y="16" class="f-res" font-size="12" text-anchor="end">0 1</text>
+              </g>
+            </g>
+            <text x="0" y="234" class="f-mono f-bleu" font-size="15" font-weight="700">77 = 1001101₂</text>
+            <text x="0" y="248" class="f-soft" font-size="11.5">Le reste doit tomber à 0 à la fin&nbsp;: c'est ta vérification.</text>
+          </svg>
+        </figure>
+
+        <figure class="fx-fig">
+          <span class="fx-tag fx-tag-b">Méthode B · les divisions</span>
+          <p class="fx-mnote">Je divise par 2 jusqu'à tomber sur 0, en notant chaque <b>reste</b> (0 ou 1). Puis je remonte la colonne des restes de bas en haut.</p>
+          <svg viewBox="0 0 300 250" role="img" aria-label="Divisions successives par 2 appliquées à 77">
+            <g class="f-mono" font-size="13">
+              <text x="8" y="18" class="f-faint" font-size="11">calcul</text>
+              <text x="150" y="18" class="f-faint" font-size="11">reste</text>
+              <g class="f-soft">
+                <text x="8" y="44">77 ÷ 2 = 38</text><text x="8" y="70">38 ÷ 2 = 19</text><text x="8" y="96">19 ÷ 2 = 9</text>
+                <text x="8" y="122">9 ÷ 2 = 4</text><text x="8" y="148">4 ÷ 2 = 2</text><text x="8" y="174">2 ÷ 2 = 1</text><text x="8" y="200">1 ÷ 2 = 0</text>
+              </g>
+              <g class="f-violet" font-size="16" font-weight="700" text-anchor="middle">
+                <text x="163" y="44">1</text><text x="163" y="70">0</text><text x="163" y="96">1</text>
+                <text x="163" y="122">1</text><text x="163" y="148">0</text><text x="163" y="174">0</text><text x="163" y="200">1</text>
+              </g>
+            </g>
+            <defs><marker id="up" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+              <path d="M0 0 L10 5 L0 10 z" class="f-fleche-v-p"/></marker></defs>
+            <path d="M200 200 L200 40" class="f-fleche-v" marker-end="url(#up)"/>
+            <text x="214" y="112" class="f-mono f-violet" font-size="12">je remonte</text>
+            <text x="0" y="234" class="f-mono f-violet" font-size="15" font-weight="700">77 = 1001101₂</text>
+            <text x="0" y="248" class="f-soft" font-size="11.5">Le dernier reste obtenu s'écrit en premier.</text>
+          </svg>
+        </figure>
+      </div>
+
+      <h2><span class="n">4</span>Combien de valeurs&nbsp;? Le doublement</h2>
+      <p class="fx-note">Chaque bit ajouté <b>double</b> le nombre de combinaisons&nbsp;: peu de cases suffisent pour de très grands nombres.</p>
+      <figure class="fx-fig">
+        <svg viewBox="0 0 640 132" role="img" aria-label="Nombre de combinaisons selon le nombre de bits">
+          <g class="f-mono" text-anchor="middle">
+            <rect x="4" y="18" width="86" height="46" rx="8" class="f-case-orange"/>
+            <rect x="102" y="18" width="86" height="46" rx="8" class="f-case-orange"/>
+            <rect x="200" y="18" width="86" height="46" rx="8" class="f-case-orange"/>
+            <rect x="298" y="18" width="86" height="46" rx="8" class="f-case-orange"/>
+            <rect x="396" y="18" width="86" height="46" rx="8" class="f-case f-tirets"/>
+            <rect x="494" y="18" width="142" height="46" rx="8" class="f-bandeau"/>
+            <g class="f-faint" font-size="11.5">
+              <text x="47" y="12">1 bit</text><text x="145" y="12">2 bits</text><text x="243" y="12">3 bits</text>
+              <text x="341" y="12">4 bits</text><text x="439" y="12">…</text><text x="565" y="12">8 bits = 1 octet</text>
+            </g>
+            <g class="f-chiffre" font-size="19">
+              <text x="47" y="48">2</text><text x="145" y="48">4</text><text x="243" y="48">8</text><text x="341" y="48">16</text>
+            </g>
+            <text x="439" y="48" class="f-faint" font-size="17">…</text>
+            <text x="565" y="48" class="f-inverse" font-size="19" font-weight="700">256</text>
+            <g class="f-orange" font-size="11">
+              <text x="47" y="80">2¹</text><text x="145" y="80">2²</text><text x="243" y="80">2³</text><text x="341" y="80">2⁴</text>
+            </g>
+            <text x="565" y="80" class="f-soft" font-size="11">2⁸</text>
+          </g>
+          <text x="4" y="104" class="f-res" font-size="13.5">
+            <tspan font-weight="600">n bits → 2ⁿ combinaisons.</tspan>
+            <tspan class="f-soft"> Un octet en compte 256,</tspan>
+            <tspan class="f-soft" x="4" dy="17">numérotées de 0 à 255 — d'où le 255 des adresses IP.</tspan>
+          </text>
+        </svg>
+        <figcaption><b>256 valeurs, mais 255 au maximum.</b> Les deux nombres cohabitent parce qu'on commence à compter à zéro. C'est la confusion la plus fréquente de la séance.</figcaption>
+      </figure>
+
+      <h2><span class="n">5</span>Pour t'entraîner</h2>
+      <p class="fx-note">Méthode au choix. Les réponses sont écrites à l'envers sous l'exercice&nbsp;: retourne la feuille, ou ton écran, pour te corriger.</p>
+      <div class="fx-train">
+        <ol>
+          <li>1101₂ =<span></span></li>
+          <li>10110₂ =<span></span></li>
+          <li>11111111₂ =<span></span></li>
+          <li>25₁₀ =<span></span></li>
+          <li>100₁₀ =<span></span></li>
+          <li>200₁₀ =<span></span></li>
+          <li>Combien de bits pour écrire 500&nbsp;?<span></span></li>
+          <li>Sans convertir&nbsp;: 1011₂ ou 110₂&nbsp;?<span></span></li>
+        </ol>
+        <div class="fx-rep">
+          <div class="fx-rl">Réponses — retourne la feuille</div>
+          <div class="fx-rv">1. 13 · 2. 22 · 3. 255 · 4. 11001 · 5. 1100100 · 6. 11001000 · 7. 9 bits · 8. 1011₂ (4 chiffres contre 3)</div>
+        </div>
+      </div>
+
+      <h2><span class="n">6</span>Pour aller plus loin</h2>
+      <div class="fx-loin">
+        <p>Rien n'est au programme, rien n'est évalué. Si le sujet t'a plu, voici des mots-clés à chercher — chacun ouvre une piste.</p>
+        <div class="fx-kw">
+          <span>loi de Moore</span><span>transistor MOSFET</span><span>gravure en nanomètres</span>
+          <span>effet tunnel</span><span>code ASCII</span><span>hexadécimal</span>
+          <span>base 60 Babyloniens</span><span>qubit</span>
+        </div>
+        <div class="fx-vid">
+          <div class="fx-k">La vidéo vue en classe</div>
+          Comment fonctionne un transistor&nbsp;? — Veritasium, avec le Pr Andrea Morello (UNSW).
+          Elle est en anglais&nbsp;: pense aux sous-titres.<br>
+          youtube.com/watch?v=rtI5wRyHpTg<br>
+          <span class="fx-alerte">Attention aux chiffres cités&nbsp;: la vidéo date de 2013, et tout a beaucoup changé depuis. Vérifie-les — c'est justement l'intérêt.</span>
+        </div>
+      </div>
+    </template>
   </section>
 
   <!-- ===================== SÉANCE 2 ===================== -->
@@ -1041,26 +1506,9 @@
  },
  {
   "q": "Ces préfixes k, M, G, T, où les as-tu déjà rencontrés ?",
-  "o": [
-   "Nulle part : ils sont propres à l'informatique",
-   "En physique-chimie : kilomètre, mégawatt, gigajoule",
-   "En anglais uniquement, sur les fiches techniques",
-   "En mathématiques, pour les nombres premiers"
-  ],
+  "o": ["Nulle part : ils sont propres à l'informatique", "En physique-chimie : kilomètre, mégawatt, gigajoule", "En anglais uniquement, sur les fiches techniques", "En mathématiques, pour les nombres premiers"],
   "r": 1,
   "c": "Ce sont les mêmes préfixes, avec le même sens, dans toutes les sciences. Seule l'unité de base change : le mètre, le watt, le joule… ou l'octet."
- },
- {
-  "q": "Un caractère de texte, combien pèse-t-il, à peu près ?",
-  "o": ["1 octet", "1 ko", "8 octets", "1 Mo"],
-  "r": 0,
-  "c": "Environ 1 octet, soit 8 bits — c'est d'ailleurs pour ça que l'octet fait huit bits : de quoi coder un caractère."
- },
- {
-  "q": "Un SMS de 160 caractères pèse de l'ordre de…",
-  "o": ["quelques Mo", "quelques centaines d'octets", "quelques Go", "quelques centaines de Mo"],
-  "r": 1,
-  "c": "160 caractères ≈ 160 octets, donc quelques centaines d'octets. Un texte, c'est minuscule à côté d'une image."
  },
  {
   "q": "Une photo prise au téléphone pèse de l'ordre de…",
@@ -1069,24 +1517,31 @@
   "c": "Quelques Mo, soit quelques millions d'octets. Le chiffre exact dépend de l'appareil et du réglage : c'est l'étage qui compte, pas la valeur."
  },
  {
-  "q": "Et un film en haute définition ?",
+  "q": "Un caractère de texte, combien pèse-t-il, à peu près ?",
+  "o": ["1 octet", "1 ko", "8 octets", "1 Mo"],
+  "r": 0,
+  "c": "Environ 1 octet, soit 8 bits — c'est d'ailleurs pour ça que l'octet fait huit bits : de quoi coder un caractère."
+ },
+ {
+  "q": "Un film en haute définition pèse de l'ordre de…",
   "o": ["quelques Go", "quelques Mo", "quelques ko", "quelques To"],
   "r": 0,
   "c": "Quelques Go : environ mille fois une photo. Un film, c'est des milliers d'images qui défilent — plus le son."
  },
  {
+  "q": "Un SMS de 160 caractères pèse de l'ordre de…",
+  "o": ["quelques Mo", "quelques centaines d'octets", "quelques Go", "quelques centaines de Mo"],
+  "r": 1,
+  "c": "160 caractères ≈ 160 octets, donc quelques centaines d'octets. Un texte, c'est minuscule à côté d'une image."
+ },
+ {
   "q": "« 100 Mb/s » sur une offre internet, « 100 Mo » pour un fichier : est-ce la même chose ?",
-  "o": [
-   "Oui, o et b sont deux façons d'écrire la même unité",
-   "Non : b désigne le bit, o l'octet — un octet vaut huit bits",
-   "Oui, mais l'un se dit en anglais et l'autre en français",
-   "Non : le premier est un poids, le second une durée"
-  ],
+  "o": ["Oui, o et b sont deux façons d'écrire la même unité", "Non : b désigne le bit, o l'octet — un octet vaut huit bits", "Oui, mais l'un se dit en anglais et l'autre en français", "Non : le premier est un poids, le second une durée"],
   "r": 1,
   "c": "Le petit b, c'est le bit ; le o, c'est l'octet, qui en vaut huit. Un débit de 100 Mb/s télécharge donc environ 12,5 Mo par seconde. C'est la confusion la plus répandue du numérique."
  }
 ]
-</script>
+                </script>
               </div>
             </div>
 
@@ -1138,10 +1593,11 @@
               <div class="cloze" data-cloze>
                 <div style="margin-bottom:9px"><b>1.</b> Combien font <span class="nb">2<sup>40</sup></span> octets&nbsp;?
                 <input data-answer="1099511627776" data-variantes="1 099 511 627 776" placeholder="?" aria-label="valeur de 2 puissance 40" data-indice1="Tu connais déjà 2³⁰ = 1 073 741 824 (c'est la ligne du dessus). Or 2⁴⁰ = 2³⁰ × 2¹⁰, donc il ne reste qu'une multiplication par 1024." data-indice2="1 073 741 824 × 1024 = 1 099 511 627 776. Écris-le sans espace."> octets.</div>
-                <div style="margin-bottom:9px"><b>2.</b> Quel <b>écart</b>, en pourcentage, avec les 10<sup>12</sup> octets du fabricant&nbsp;? Applique la formule&nbsp;:
-                <div class="calcul" style="text-align:center">écart = (2<sup>40</sup> − 10<sup>12</sup>) ÷ 10<sup>12</sup> × 100</div>
+                <div style="margin-bottom:9px"><b>2.</b> Quel <b>écart</b>, en pourcentage, entre ce que compte la machine et ce qu'annonce le fabricant&nbsp;? Voici la formule — <b>la vraie, celle qui sert partout</b>&nbsp;:
+                <div class="calcul" style="text-align:center">écart = |v<sub>1</sub> − v<sub>2</sub>| ÷ v<sub>2</sub> &nbsp;&nbsp;·&nbsp;&nbsp; × 100 pour l'exprimer en pourcentage</div>
+                <p class="doc-note" style="margin:0 0 9px"><b>v<sub>2</sub> est la valeur de référence</b>&nbsp;: celle à laquelle on compare, celle qui vaut 100 %. Les deux barres verticales veulent dire «&nbsp;sans le signe&nbsp;»&nbsp;: un écart ne se compte pas en négatif. À toi de décider, ici, <b>qui est v<sub>1</sub> et qui est v<sub>2</sub></b> — c'est la seule vraie difficulté de la question.</p>
                 Réponse&nbsp;:
-                <input class="short" data-answer="9,95" data-variantes="9.95|9,951|9.951|9,9|9.9" placeholder="?" aria-label="écart en pourcentage entre le tébioctet et le téraoctet" data-indice1="Fais d'abord la soustraction du haut : 1 099 511 627 776 − 1 000 000 000 000. Puis divise ce résultat par mille milliards, et multiplie par 100." data-indice2="La différence vaut 99 511 627 776, soit un peu moins de 10 % de mille milliards. Arrondis au centième."> % (arrondis au centième).</div>
+                <input class="short" data-answer="9,95" data-variantes="9.95|9,951|9.951|9,9|9.9" placeholder="?" aria-label="écart en pourcentage entre le tébioctet et le téraoctet" data-indice1="La valeur de référence, c'est celle qui est annoncée sur la boîte&nbsp;: les 10¹² octets du fabricant. C'est donc elle, v₂, qui va au dénominateur. v₁ est ce que compte réellement la machine, 2⁴⁰." data-indice2="Calcul posé&nbsp;: (1 099 511 627 776 − 1 000 000 000 000) ÷ 1 000 000 000 000 × 100. La différence vaut 99 511 627 776. Arrondis au centième."> % (arrondis au centième).</div>
                 <div><b>3.</b> C'est donc pour ça qu'un disque vendu <b>1 To</b> s'affiche à environ
                 <input class="short" data-answer="931" data-variantes="931,3|931.3|930" placeholder="?" aria-label="capacité affichée d'un disque de 1 To, en gigaoctets" data-indice1="Le disque contient bien 10¹² octets. Mais l'ordinateur les compte par paquets de 2³⁰ : divise 10¹² par 1 073 741 824." data-indice2="1 000 000 000 000 ÷ 1 073 741 824 ≈ 931,3. Arrondis à l'entier."> Go sur ton ordinateur.</div>
                 <p class="doc-note" style="margin:10px 0 0">Écris les nombres <b>sans espace</b>, et les décimales avec une <b>virgule</b>.</p>
@@ -1151,10 +1607,15 @@
               <div class="reveal" data-reveal-juste>
                 <div class="rl">✅ La dernière ligne, complétée</div>
                 <div class="calcul">
-                  1 Tio = 2<sup>40</sup> = <span class="res-calc">1 099 511 627 776</span> octets<br>
-                  écart = (1 099 511 627 776 − 1 000 000 000 000) ÷ 1 000 000 000 000 × 100 = <span class="res-calc">9,95 %</span>
+                  1 Tio = 2<sup>40</sup> = <span class="res-calc">1 099 511 627 776</span> octets<br><br>
+                  v<sub>1</sub> = 1 099 511 627 776 &nbsp;(la machine) &nbsp;·&nbsp; v<sub>2</sub> = 1 000 000 000 000 &nbsp;(le fabricant, la référence)<br>
+                  |v<sub>1</sub> − v<sub>2</sub>| = 99 511 627 776<br>
+                  99 511 627 776 ÷ 1 000 000 000 000 = 0,0995…<br>
+                  × 100 = <span class="res-calc">9,95 %</span>
                 </div>
-                Près de <b>10 %</b> d'écart&nbsp;: c'est le plus gros des quatre étages, et c'est celui qui touche les disques durs d'aujourd'hui. Voilà pourquoi «&nbsp;1 To&nbsp;» devient «&nbsp;931 Go&nbsp;» à l'écran.
+                <b>Ce que ça veut dire, en français&nbsp;:</b> pour chaque tranche de 100 octets annoncés par le fabricant, la machine en compte un peu moins de 91 dans <i>ses</i> unités à elle. Personne ne t'a volé d'octets — les deux comptent la même chose, mais pas dans la même unité.<br><br>
+                Près de <b>10 %</b> d'écart&nbsp;: c'est le plus gros des quatre étages, et c'est celui qui touche les disques durs d'aujourd'hui. Voilà pourquoi «&nbsp;1 To&nbsp;» devient «&nbsp;931 Go&nbsp;» à l'écran.<br><br>
+                <b>Garde la formule</b>&nbsp;: |v<sub>1</sub> − v<sub>2</sub>| ÷ v<sub>2</sub> × 100. Elle ne sert pas qu'ici — c'est celle qu'on emploie en physique-chimie pour comparer une mesure à sa valeur de référence, et c'est le même geste.
               </div>
             </div>
 
@@ -1229,7 +1690,7 @@
       </div>
 
       <!-- 2.3 — ouverture couleurs (support, non évalué : pas de data-gate) -->
-      <div class="step" data-step data-cle="rep-s2-couleurs">
+      <div class="step" data-step data-valide-sur-interaction data-cle="rep-s2-couleurs">
         <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
         <div class="card">
           <div class="card-top">
@@ -1239,7 +1700,7 @@
           </div>
           <div class="card-body">
 
-            <p class="doc-note" style="margin-top:0">⏱️ <b>Quelques minutes, pas plus.</b> Cette étape n'est pas à valider et ne compte pas dans ta progression&nbsp;: elle est là pour semer une idée que tu retrouveras en fin d'année.</p>
+            <p class="doc-note" style="margin-top:0">⏱️ <b>Quelques minutes, pas plus.</b> Rien ici n'est à savoir pour l'évaluation&nbsp;: cette étape sème une idée que tu retrouveras en fin d'année. <b>Il n'y a rien à rendre</b> — elle se marque faite dès que tu bouges un curseur.</p>
 
             <div class="block-label">Doc — un pixel, trois nombres<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
             <p style="font-size:14.5px;margin:4px 0 10px">Tu sais maintenant qu'un octet contient une valeur de <b>0 à 255</b>. Voici à quoi ça sert, une fois sur trois millions de fois&nbsp;: une image numérique est une grille de <b>pixels</b>, et chaque pixel se code par <b>trois nombres</b> — la dose de <b>rouge</b>, la dose de <b>vert</b>, la dose de <b>bleu</b>. Chacune tient sur <b>un octet</b>, donc va de 0 à 255.</p>
@@ -1299,28 +1760,18 @@
 [
  {
   "q": "Qu'est-ce qu'une « base », en numération ?",
-  "o": [
-   "La plus grande valeur qu'on puisse écrire sur un rang",
-   "Le nombre de chiffres dont on dispose pour écrire",
-   "Le premier chiffre d'un nombre, celui de gauche",
-   "Le nombre de rangs qu'on s'autorise à utiliser"
-  ],
+  "o": ["La plus grande valeur qu'on puisse écrire sur un rang", "Le nombre de chiffres dont on dispose pour écrire", "Le premier chiffre d'un nombre, celui de gauche", "Le nombre de rangs qu'on s'autorise à utiliser"],
   "r": 1,
   "c": "Dix chiffres en base 10, deux en base 2, soixante en base 60. Et une fois la base fixée, chaque rang vaut une puissance de cette base."
  },
  {
   "q": "Que veut dire le petit 2 dans l'écriture <code>1011<sub>2</sub></code> ?",
-  "o": [
-   "Que ce nombre est écrit en base 2",
-   "Que ce nombre vaut le double de 1011",
-   "Qu'il faut lire ce nombre deux rangs à la fois",
-   "Que ce nombre occupe deux octets en mémoire"
-  ],
+  "o": ["Que ce nombre est écrit en base 2", "Que ce nombre vaut le double de 1011", "Qu'il faut lire ce nombre deux rangs à la fois", "Que ce nombre occupe deux octets en mémoire"],
   "r": 0,
   "c": "L'indice donne la base. <code>1011</code> en base 2 vaut 11 ; le même dessin en base 10 vaut mille onze. Sans indice, on suppose la base 10."
  },
  {
-  "q": "Combien vaut <code>1101</code> en binaire ?",
+  "q": "Convertis cette valeur en décimal : <code>1101<sub>2</sub></code>",
   "o": ["11", "14", "13", "26"],
   "r": 2,
   "c": "8 + 4 + 0 + 1 = 13. Les rangs valent 8, 4, 2, 1 en partant de la gauche : on additionne ceux qui sont sous un 1."
@@ -1345,62 +1796,42 @@
  },
  {
   "q": "Un octet, c'est…",
-  "o": [
-   "8 bits, soit 256 valeurs, de 0 à 255",
-   "8 bits, soit 255 valeurs, de 1 à 255",
-   "16 bits, soit 65 536 valeurs différentes",
-   "10 bits, soit 1024 valeurs, de 0 à 1023"
-  ],
+  "o": ["8 bits, soit 256 valeurs, de 0 à 255", "8 bits, soit 255 valeurs, de 1 à 255", "16 bits, soit 65 536 valeurs différentes", "10 bits, soit 1024 valeurs, de 0 à 1023"],
   "r": 0,
   "c": "8 bits, 2⁸ = 256 combinaisons, et comme on compte à partir de zéro, les valeurs vont de 0 à 255. Ce sont les quatre nombres à savoir par cœur."
  },
  {
   "q": "Pourquoi aucun nombre d'une adresse IP ne dépasse-t-il 255 ?",
-  "o": [
-   "Parce que les fabricants de box en ont décidé ainsi",
-   "Parce qu'au-delà, l'adresse ne serait plus unique",
-   "Parce que chacun tient dans un octet, donc va de 0 à 255",
-   "Parce que 255 est le plus grand nombre premier avant 256"
-  ],
+  "o": ["Parce que les fabricants de box en ont décidé ainsi", "Parce qu'au-delà, l'adresse ne serait plus unique", "Parce que chacun tient dans un octet, donc va de 0 à 255", "Parce que 255 est le plus grand nombre premier avant 256"],
   "r": 2,
   "c": "Chacun des quatre nombres tient sur huit bits. <code>192.168.1.300</code> n'existe pas : 300 ne rentre pas dans un octet. Le thème Internet y revient en détail."
  },
  {
-  "q": "1 Go, c'est combien de Mo ?",
-  "o": ["1024 Mo", "100 Mo", "1000 Mo", "8 Mo"],
-  "r": 2,
-  "c": "1000 Mo : d'un étage à l'autre, on multiplie par mille, comme pour les mètres et les watts. Le 1024, c'est l'autre série d'unités — les Gio."
+  "q": "1 Go, c'est combien de ko ?",
+  "o": ["1000 ko", "1 000 000 ko", "1024 ko", "1 000 000 000 ko"],
+  "r": 1,
+  "c": "Du ko au Mo on multiplie par mille, du Mo au Go encore par mille : du ko au Go, cela fait bien un million. 1 Go = 1 000 000 ko. Le 1024 appartient à l'autre série, celle des puissances de 2 — c'est tout l'objet de l'étape 2.2."
  },
  {
   "q": "Combien vaut 2¹⁰, et pourquoi est-ce important ?",
-  "o": [
-   "1000 : c'est ce qui rend les deux séries d'unités identiques",
-   "1024 : tout près de 1000, et c'est ce « tout près » qui crée l'écart",
-   "1042 : un nombre choisi par les fabricants de disques durs",
-   "1200 : l'écart de 20 % avec mille explique les tailles affichées"
-  ],
+  "o": ["1000 : c'est ce qui rend les deux séries d'unités identiques", "1024 : tout près de 1000, et c'est ce « tout près » qui crée l'écart", "1042 : un nombre choisi par les fabricants de disques durs", "1200 : l'écart de 20 % avec mille explique les tailles affichées"],
   "r": 1,
   "c": "2¹⁰ = 1024. L'écart avec 1000 n'est que de 2,4 % au premier étage, mais il se cumule : près de 10 % au téraoctet. D'où le disque « 1 To » affiché 931 Go."
  },
  {
-  "q": "Une photo prise au téléphone pèse de l'ordre de…",
-  "o": ["quelques ko", "quelques Mo", "quelques Go", "quelques octets"],
-  "r": 1,
-  "c": "Quelques millions d'octets, donc quelques Mo. Un texte se compte en octets, un film en Go, un disque dur en To : ce sont les étages à avoir en tête."
+  "q": "Un dossier de 300 photos de vacances pèse de l'ordre de…",
+  "o": ["1 Go", "1 Mo", "1 To", "1 ko"],
+  "r": 0,
+  "c": "Une photo pèse quelques Mo. Trois cents photos, cela fait donc quelques centaines de Mo — autrement dit on arrive tout près du Go, puisqu'on passe du Mo au Go en multipliant par mille. Ce qu'on cherche n'est pas le chiffre exact, c'est l'étage."
  },
  {
-  "q": "Une offre annonce « 500 Mb/s », un fichier pèse « 500 Mo ». Même unité ?",
-  "o": [
-   "Oui : Mb et Mo sont deux abréviations du mégaoctet",
-   "Non : le b est le bit, le o l'octet — qui vaut huit bits",
-   "Oui, mais l'une se mesure par seconde et l'autre non",
-   "Non : le premier concerne le Wi-Fi, le second le disque"
-  ],
-  "r": 1,
-  "c": "Petit b = bit, o = octet, et un octet vaut huit bits. 500 Mb/s font donc environ 62,5 Mo par seconde. C'est la confusion la plus répandue de tout le numérique."
+  "q": "Tu télécharges un fichier de 500 Mo avec une connexion à 100 Mb/s. Il faut environ…",
+  "o": ["environ 5 secondes", "environ 5 minutes", "environ 40 secondes", "environ 40 minutes"],
+  "r": 2,
+  "c": "500 Mo font 500 × 8 = 4000 Mb. À 100 Mb par seconde, il faut donc une quarantaine de secondes. Si tu as répondu 5 secondes, tu as divisé sans convertir : c'est exactement le piège. Les débits s'annoncent en <b>bits</b> par seconde, les fichiers se pèsent en <b>octets</b> — et il y a un facteur huit entre les deux."
  }
 ]
-</script>
+                </script>
               </div>
             </div>
 
@@ -1423,7 +1854,7 @@
   </footer>
 </div>
 
-<script src="../assets/js/sequence-snt.js?v=37"></script>
+<script src="../assets/js/sequence-snt.js?v=38"></script>
 
 <!-- ============================================================
      JS propre au module. Deux composants, aucun n'existe ailleurs :
@@ -1564,6 +1995,43 @@
      Rien n'est codé en dur pour un nombre : etapesA() produit la
      liste, dessiner() la met en page.
      ========================================================= */
+  /* La borne des deux outils manipulables. Elle vivait dans min/max et
+     dans un focus() muet : 3000 passait, 5000 était refusé sans un mot,
+     et l'élève concluait au bug (audit du 23/08/2026). Elle n'est PAS
+     relevée — seulement dite. Un seul endroit la définit. */
+  var N_MIN = 1, N_MAX = 4095;
+  function borneOk(hote, champ){
+    var zone = hote.querySelector('.essai-erreur');
+    var v = parseInt(champ.value, 10);
+    var bon = v >= N_MIN && v <= N_MAX;
+    if (zone){
+      zone.hidden = bon;
+      if (!bon) zone.textContent = (champ.value.trim() === '' || isNaN(v))
+        ? 'Écris un nombre entier, entre ' + N_MIN + ' et ' + N_MAX + '.'
+        : '« ' + champ.value.trim() +' » est hors de ce que l\'outil sait tracer : '
+          + 'choisis un nombre entre ' + N_MIN + ' et ' + N_MAX + '.';
+    }
+    if (!bon) champ.focus();
+    return bon;
+  }
+
+  /* Les deux règles du classement étaient RÉVÉLÉES sous le tri dès le premier
+     clic sur « Vérifier », juste ou faux. Elles deviennent un indice qu'on
+     demande — et la révélation automatique n'a plus lieu qu'après un ordre
+     entièrement juste (c'est data-tri-indices="1" sur la liste qui la retient).
+     Bouton local : le mécanisme d'indices du moteur est celui de la frise, il
+     dévoile des dates et n'a rien à faire ici. */
+  function reglesIndice(){
+    document.querySelectorAll('[data-regles-indice]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var champ = btn.closest('.field');
+        var suite = champ ? champ.querySelector('.tri-suite') : null;
+        if (suite) suite.hidden = false;
+        btn.hidden = true;
+      });
+    });
+  }
+
   function poidsJusqua(n){
     var p = [], v = 1;
     while (v <= n) { p.push(v); v *= 2; }
@@ -1666,9 +2134,8 @@
     bTout.addEventListener('click', function(){ vues = pas.length + 1; appliquer(); });
     bReset.addEventListener('click', function(){ vues = 0; appliquer(); });
     bGo.addEventListener('click', function(){
-      var v = parseInt(champ.value, 10);
-      if (!(v >= 1 && v <= 4095)) { champ.focus(); return; }
-      nombre = v; dessiner();
+      if (!borneOk(hote, champ)) return;
+      nombre = parseInt(champ.value, 10); dessiner();
     });
     champ.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); bGo.click(); } });
 
@@ -1723,7 +2190,7 @@
       var x0 = colonne ? 150 : 96, y0 = 40;
       var k = suite.length;
       var W = x0 + (k - 1) * dx + 200;
-      var H = y0 + (k - 1) * dy + 185;
+      var H = y0 + (k - 1) * dy + 205;
 
       var svg = el('svg', {
         viewBox: '0 0 ' + W + ' ' + H,
@@ -1762,14 +2229,18 @@
         var bxx = +pre.dataset.rx, byy = +pre.dataset.ry - 21;
         /* la courbe passe à gauche de tout l'escalier : elle ne recouvre
            aucun chiffre, et se lit d'un seul coup d'œil de bas en haut */
-        var mx = Math.min(ax, bxx) - (colonne ? 62 : 74);
-        var my = (ay + byy) / 2;
+        /* Rectiligne : on part sous le dernier reste, on file à gauche de
+           tout l'escalier, puis on monte tout droit. La courbe précédente
+           repassait sur le dernier étage (audit du 23/08/2026). L'écart
+           est calé pour rester à gauche du trait de soustraction le plus
+           avancé sans sortir du viewBox — mx ne descend jamais sous 0. */
+        var mx = Math.max(6, Math.min(ax, bxx) - (colonne ? 62 : 40));
         gf.appendChild(el('path', { class: 'pot-fleche pot-fleche-g',
-          d: 'M ' + ax + ' ' + ay + ' Q ' + mx + ' ' + my + ' ' + bxx + ' ' + byy }));
+          d: 'M ' + ax + ' ' + ay + ' L ' + mx + ' ' + ay + ' L ' + mx + ' ' + byy }));
         gf.appendChild(el('path', { class: 'pot-fleche pot-fleche-g',
-          d: 'M ' + (bxx - 10) + ' ' + (byy + 13) + ' L ' + bxx + ' ' + byy + ' L ' + (bxx + 11) + ' ' + (byy + 12) }));
+          d: 'M ' + (mx - 10) + ' ' + (byy + 13) + ' L ' + mx + ' ' + byy + ' L ' + (mx + 11) + ' ' + (byy + 12) }));
       }
-      gf.appendChild(el('text', { class: 'pot-note', x: 12, y: y0 + (k - 1) * dy + 100 },
+      gf.appendChild(el('text', { class: 'pot-note', x: 12, y: y0 + (k - 1) * dy + 108 },
         '↑ On remonte les restes du dernier au premier'));
       svg.appendChild(gf);
 
@@ -1777,11 +2248,11 @@
       var gr = el('g', { class: 'pot-etape', 'data-pas': k + 1 });
       var bits = suite.map(function(d){ return d.r; }).reverse().join('');
       /* notation de la correction manuscrite : 90 indice 10 = 1011010 indice 2 */
-      var t = el('text', { class: 'pot-resultat', x: 12, y: y0 + (k - 1) * dy + 152 });
+      var t = el('text', { class: 'pot-resultat', x: 12, y: y0 + (k - 1) * dy + 166 });
       t.appendChild(el('tspan', {}, String(nombre)));
-      t.appendChild(el('tspan', { class: 'pot-base', dy: '9' }, '10'));
-      t.appendChild(el('tspan', { dy: '-9' }, '  =  ' + bits));
-      t.appendChild(el('tspan', { class: 'pot-base', dy: '9' }, '2'));
+      t.appendChild(el('tspan', { class: 'pot-base', dy: '11' }, '10'));
+      t.appendChild(el('tspan', { dy: '-11' }, '  =  ' + bits));
+      t.appendChild(el('tspan', { class: 'pot-base', dy: '11' }, '2'));
       gr.appendChild(t);
       svg.appendChild(gr);
 
@@ -1810,9 +2281,8 @@
     bTout.addEventListener('click', function(){ vues = totalEtapes; appliquer(); });
     bReset.addEventListener('click', function(){ vues = 0; appliquer(); });
     bGo.addEventListener('click', function(){
-      var v = parseInt(champ.value, 10);
-      if (!(v >= 1 && v <= 4095)) { champ.focus(); return; }
-      nombre = v; dessiner();
+      if (!borneOk(hote, champ)) return;
+      nombre = parseInt(champ.value, 10); dessiner();
     });
     champ.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); bGo.click(); } });
 
@@ -1907,6 +2377,7 @@
     document.querySelectorAll('.poids-outil').forEach(tableauPoids);
     document.querySelectorAll('.souscr-outil').forEach(soustraction);
     document.querySelectorAll('.potence-outil').forEach(potence);
+    reglesIndice();
     document.querySelectorAll('.rvb-outil').forEach(nuancier);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);

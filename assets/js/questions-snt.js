@@ -246,7 +246,7 @@ window.QUESTIONS_SNT = {
   "NET-R6": {
     "sequence": "snt-t1",
     "titre": "Lire deux tracert",
-    "question": "Compare tes deux tracert (Google et Qwant) : que remarques-tu sur le nombre d'étapes et les chemins ? Qu'est-ce que ça t'apprend sur Internet ?",
+    "question": "Compare tes deux tracert (Google et Tokyo) : que remarques-tu sur le nombre d'étapes et les chemins ? Qu'est-ce que ça t'apprend sur Internet ?",
     "min": "20",
     "max": "400",
     "seance": "s6",
@@ -380,5 +380,14 @@ window.QUESTIONS_SNT = {
     "max": "400",
     "seance": "s4",
     "seance_num": "4"
+  },
+  "REP-R1": {
+    "sequence": "snt-m1",
+    "titre": "Ce que la vidéo m'a appris",
+    "question": "Résume en trois ou quatre phrases ce que la vidéo t'a appris : ce qu'est un transistor, ce qui limite sa miniaturisation, et ce que dit la loi de Moore.",
+    "min": "20",
+    "max": "400",
+    "seance": "s1",
+    "seance_num": "1"
   }
 };

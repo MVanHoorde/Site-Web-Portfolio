@@ -208,6 +208,11 @@
   global.EtatSNT = {
     actif      : function(){ return !!SEQ; },
     cle        : cle,
+    /* Exposé le 23/08/2026 pour la fiche de révision. UN SEUL comptage de
+       progression dans tout le dispositif : celui-ci. La page l'écrit en base,
+       le tableau de bord le relit, la fiche l'affiche. Ne jamais en écrire un
+       second à côté — ils divergeraient, et c'est l'élève qui verrait l'écart. */
+    resume     : resume,
     noter      : noter,
     noterChamps: noterChamps,
     oublier    : oublier,
@@ -653,6 +658,11 @@
     }
     return html;
   }
+  /* Les copies rapatriées au chargement : la fiche de révision en a besoin
+     (envoyées, corrigées, manquantes). Sans ce cache, elle referait la requête
+     — donc un second état, en retard d'une correction sur celui de la page. */
+  var mesCopies = [];
+
   function rehydraterReponses(){
     if(!BASE || !BASE.mesReponses) return;
     var codes = [];
@@ -661,6 +671,7 @@
     });
     if(!codes.length) return;
     BASE.mesReponses(codes).then(function(lignes){
+      mesCopies = lignes || [];
       (lignes || []).forEach(function(r){
         var sel = (window.CSS && CSS.escape) ? CSS.escape(r.code_activite) : r.code_activite;
         var champ = document.querySelector('[data-focus-code="' + sel + '"]');
@@ -1136,6 +1147,10 @@
       var ti=etape?etape.querySelector('.step-title'):null;
       var c=t.cloneNode(true);
       c.querySelectorAll('.plustard').forEach(function(b){ b.remove(); });
+      /* depuis le 23/08/2026 un doc-table peut porter de VRAIS champs (le
+         tableau des combinaisons de m1 1.4). On y fige la saisie de l'élève :
+         une fiche de révision ne contient pas de formulaire. */
+      ficheFiger(c);
       out.push({titre:ti?ti.textContent.trim():'Repères', html:c.outerHTML});
     });
     sec.querySelectorAll('.frise').forEach(function(fr){
@@ -1178,6 +1193,10 @@
     });
     return out;
   }
+  /* Plus appelées par la fiche depuis le 23/08/2026 (décision : les bonnes
+     réponses des QCM en feraient un corrigé, les sources n'y ont pas leur
+     place). Conservées : le tableau de bord et une éventuelle fiche
+     « corrigé professeur » les réclameront. */
   function collectQcm(sec){
     var out=[];
     sec.querySelectorAll('.qcm-recap').forEach(function(r){
@@ -1209,119 +1228,454 @@
     return out;
   }
 
+  /* =========================================================================
+     LA FICHE DE RÉVISION — refonte du 23/08/2026
+
+     Ce qu'elle était : un tirage textuel de la page, en-tête « Séquence
+     Internet » en dur sur les huit séquences, titres portant des identifiants
+     internes (« S1 »), les bonnes réponses des QCM et les sources des
+     documents — et rien des méthodes, qui sont pourtant ce qui sert à réviser.
+
+     Ce qu'elle est : trois parties.
+       · UN EN-TÊTE qui lit le thème et la séance DANS LA PAGE ;
+       · UN BANDEAU DE COMPLÉTION à trois compteurs, parce que « fait » n'a pas
+         le même sens pour une étape, une question envoyée et une correction
+         reçue. Il appelle EtatSNT.resume() — le calcul que la page écrit en
+         base et que le tableau de bord relit. Aucun second comptage ;
+       · UNE PARTIE FIXE, propre à la séance, déclarée dans la page par un
+         <template data-fiche-fixe> : les schémas de méthode, l'entraînement à
+         réponses retournées, les mots-clés. Absente ⇒ la fiche se rabat sur
+         les « à retenir », et reste utilisable ;
+       · UNE PARTIE ADAPTATIVE : le travail de l'élève — ses réponses rédigées
+         avec la correction et les conseils, ses recherches personnelles, ses
+         notes, et les tableaux qu'il a complétés.
+
+     Ce qui n'y entre plus, décision explicite : les bonnes réponses des QCM
+     (elles transforment la fiche en corrigé) et les sources des documents
+     (sans intérêt sur une fiche de révision).
+
+     ⚠ Le bandeau est INFORMATIF, pas probant : la fiche est fabriquée dans le
+     navigateur de l'élève. La source de vérité reste la grille du tableau de
+     bord. C'est écrit sur la fiche elle-même.
+
+     Contexte d'usage, qui commande tout le reste : la fiche n'est pas
+     imprimée, elle est déposée dans le OneDrive qui sert de classeur
+     numérique. Il n'y a donc AUCUNE contrainte de place : six pages ne posent
+     pas de problème, chaque section a son cadre, le document s'allonge selon
+     ce que l'élève a produit.
+     ========================================================================= */
+
+  function ficheTheme(){
+    var h = document.querySelector('h1.title');
+    if(h){
+      var c = h.cloneNode(true);
+      c.querySelectorAll('.tag').forEach(function(x){ x.remove(); });
+      var t = c.textContent.replace(/\s+/g,' ').trim();
+      if(t) return t;
+    }
+    /* repli : « SNT · Représenter l'information — Séquence élève » */
+    return (document.title.split('—')[0] || 'SNT').replace(/^\s*SNT\s*·\s*/,'').trim();
+  }
+
+  function ficheSeance(sec){
+    var h = sec.querySelector('.seance-head h2');
+    if(!h) return { num:'', nom:'' };
+    var sn = h.querySelector('.s-num');
+    /* « S1 » est un identifiant interne : l'élève lit « Séance 1 » */
+    var num = sn ? sn.textContent.replace(/\D+/g,'') : '';
+    var c = h.cloneNode(true), s2 = c.querySelector('.s-num');
+    if(s2) s2.remove();
+    return { num:num, nom:c.textContent.replace(/\s+/g,' ').trim() };
+  }
+
+  /* Les trois compteurs. Le premier vient de EtatSNT.resume(), les deux autres
+     des copies rapatriées au chargement. On ne compte JAMAIS les bonus : ils
+     sont hors des 100 %, les inclure ferait mentir le bandeau. */
+  function ficheCompletion(sec){
+    var r = (window.EtatSNT && EtatSNT.resume) ? EtatSNT.resume() : null;
+    var l = null;
+    if(r && r.seances) r.seances.forEach(function(x){ if(x.id === sec.id) l = x; });
+
+    var codes = [], titres = {};
+    sec.querySelectorAll('[data-focus-code]').forEach(function(f){
+      var c = f.dataset.focusCode;
+      if(!c || f.closest('.bonus-wrap')) return;
+      if(codes.indexOf(c) < 0) codes.push(c);
+      var st = f.closest('[data-step]');
+      var t  = st ? st.querySelector('.step-title') : null;
+      titres[c] = t ? t.textContent.trim() : c;
+    });
+
+    var parCode = {};
+    mesCopies.forEach(function(x){ parCode[x.code_activite] = x; });
+
+    var envoyees = 0, corrigees = 0, manquent = [], attente = [];
+    codes.forEach(function(c){
+      var x = parCode[c];
+      var ecrit = !!(x && x.texte && x.texte.trim());
+      if(ecrit) envoyees++; else manquent.push(titres[c]);
+      if(x && x.statut === 'corrige') corrigees++;
+      else if(ecrit) attente.push(titres[c]);
+    });
+
+    return {
+      etapesF : l ? l.f : 0,
+      etapesT : l ? l.t : 0,
+      envoyees: envoyees,
+      questions: codes.length,
+      corrigees: corrigees,
+      manquent: manquent,
+      attente : attente
+    };
+  }
+
+  /* Un tableau ou un schéma que l'élève a complété : on fige ses saisies en
+     texte. Sans ça, la fiche embarquerait des champs de formulaire vides. */
+  function ficheFiger(noeud){
+    Array.prototype.slice.call(noeud.querySelectorAll('input')).forEach(function(i){
+      var sp = document.createElement('span');
+      sp.className = 'saisi';
+      sp.textContent = (i.value || '').trim() || '…';
+      if(i.parentNode) i.parentNode.replaceChild(sp, i);
+    });
+    Array.prototype.slice.call(noeud.querySelectorAll('select')).forEach(function(s2){
+      var sp = document.createElement('span');
+      sp.className = 'saisi';
+      sp.textContent = (s2.value || '').trim() || '…';
+      if(s2.parentNode) s2.parentNode.replaceChild(sp, s2);
+    });
+    Array.prototype.slice.call(noeud.querySelectorAll('button,.plustard,.niv,.bulle,.indice,.num-trou,.cloze-msg,.indices-pied,.verdict'))
+      .forEach(function(x){ if(x.parentNode) x.parentNode.removeChild(x); });
+    return noeud;
+  }
+
+  /* Les réponses rédigées, AVEC leur correction et leurs conseils. C'est le
+     cœur de la partie adaptative : l'élève relit ce qu'il a écrit et ce qu'on
+     lui a répondu, au même endroit. */
+  function ficheRedigees(sec){
+    var parCode = {};
+    mesCopies.forEach(function(x){ parCode[x.code_activite] = x; });
+    var out = [];
+    sec.querySelectorAll('[data-focus-code]').forEach(function(f){
+      var code = f.dataset.focusCode;
+      var x    = parCode[code] || {};
+      var echo = f.querySelector('[data-focus-echo]');
+      var texte = (echo && echo.textContent.trim()) || (x.texte || '').trim();
+      if(!texte) return;                       /* rien écrit, rien à imprimer */
+      var q  = f.querySelector('.field-q');
+      var st = f.closest('[data-step]');
+      var t  = st ? st.querySelector('.step-title') : null;
+      var a  = (x.correction_ia && x.correction_ia.analyse) || {};
+      var fe = a.feedback_eleve || {};
+      var mot = (x.commentaire_prof && x.commentaire_prof.trim()) ? x.commentaire_prof.trim() : '';
+      out.push({
+        etape   : t ? t.textContent.trim() : '',
+        question: q ? q.textContent.replace(/\s+/g,' ').trim() : '',
+        texte   : texte,
+        statut  : x.statut || '',
+        verdict : a.verdict || '',
+        retour  : mot || (fe.message || ''),
+        parProf : !!mot,
+        plusLoin: fe.pour_aller_plus_loin || '',
+        bonus   : !!f.closest('.bonus-wrap')
+      });
+    });
+    return out;
+  }
+
+  /* Recherches personnelles, enquêtes familiales, « et toi ? » : ce que
+     l'élève est allé chercher hors de la page. Il y tient, ça reste. */
+  function fichePerso(sec){
+    var out = [];
+    sec.querySelectorAll('.perso').forEach(function(p){
+      var ta = p.querySelector('textarea');
+      if(!ta || !ta.value.trim()) return;
+      var st = p.closest('[data-step]');
+      var t  = st ? st.querySelector('.step-title') : null;
+      var q  = p.querySelector('.field-q');
+      out.push({
+        etape   : t ? t.textContent.trim() : '',
+        question: q ? q.textContent.replace(/\s+/g,' ').trim() : '',
+        texte   : ta.value.trim()
+      });
+    });
+    return out;
+  }
+
+  function ficheCSS(){
+    return [
+      ':root{--ink:#161f33;--ink-soft:#4a566e;--ink-faint:#8b97ad;--line:#d3dae7;',
+      '--surface-2:#f4f6fb;--link:#2445c7;--link-wash:#e7ebfb;--ok:#12805c;--ok-wash:#e0f2ea;',
+      '--activity:#c26a12;--activity-wash:#faeede;--hist:#6b4a9a;--hist-wash:#efe9f7}',
+      '*{box-sizing:border-box}',
+      'body{margin:0;background:#e9edf4;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.55}',
+      '.page{max-width:830px;margin:22px auto;background:#fff;padding:26px 30px 34px;border-radius:6px;box-shadow:0 8px 28px rgba(22,31,51,.10)}',
+      /* en-tête */
+      '.head{border-bottom:3px solid var(--ink);padding-bottom:14px;margin-bottom:6px}',
+      '.eyebrow{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--link);font-weight:600}',
+      'h1{font-size:32px;line-height:1.05;margin:6px 0 2px;letter-spacing:-.02em}',
+      '.seance{font-size:19px;color:var(--ink-soft);font-weight:500;margin:0}',
+      '.seance b{color:var(--ink);font-weight:600}',
+      '.who{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:12px;font-size:12.5px;color:var(--ink-faint)}',
+      '.ident{flex:1;border:1px dashed var(--line);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink-soft)}',
+      /* bandeau de complétion */
+      '.bilan{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0 6px}',
+      '.bc{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--surface-2)}',
+      '.bc .k{font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint)}',
+      '.bc .v{font-size:21px;font-weight:700;margin-top:2px}',
+      '.bc.plein .v{color:var(--ok)}.bc.creux .v{color:var(--activity)}',
+      '.reste{font-size:13px;color:var(--ink-soft);border-left:3px solid var(--activity);background:var(--activity-wash);',
+      'border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:6px}',
+      '.avert{font-size:12px;color:var(--ink-faint);margin:0 0 18px}',
+      /* sections */
+      'h2{font-size:15px;margin:26px 0 10px;display:flex;align-items:center;gap:9px;letter-spacing:.01em}',
+      'h2 .n{font-family:ui-monospace,monospace;font-size:11px;font-weight:600;color:#fff;background:var(--ink);border-radius:5px;padding:2px 7px;letter-spacing:.06em}',
+      'h2::after{content:"";flex:1;height:1px;background:var(--line)}',
+      '.e{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;page-break-inside:avoid}',
+      '.hh{font-weight:600;font-size:14.5px}',
+      '.ob{font-size:13px;color:var(--ink-soft);margin-top:3px}',
+      '.lbl{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:3px}',
+      '.r{margin-top:8px;padding:9px 11px;background:var(--surface-2);border-left:3px solid var(--ink);border-radius:0 8px 8px 0;font-size:13.5px}',
+      '.q-en{font-size:13.5px;color:var(--ink-soft);margin-top:4px}',
+      '.a{margin-top:8px;padding:10px 12px;background:var(--link-wash);border-radius:8px;white-space:pre-wrap;font-size:14px}',
+      '.corr{margin-top:9px;padding:10px 12px;border-radius:8px;background:var(--ok-wash);border-left:3px solid var(--ok);font-size:13.5px}',
+      '.corr .lbl{color:var(--ok)}',
+      '.corr.attente{background:var(--surface-2);border-left-color:var(--ink-faint)}',
+      '.corr.attente .lbl{color:var(--ink-faint)}',
+      '.plus{margin-top:8px;padding:9px 11px;border-radius:8px;background:var(--activity-wash);border-left:3px solid var(--activity);font-size:13.5px}',
+      '.plus .lbl{color:var(--activity)}',
+      '.tagb{display:inline-block;font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;',
+      'background:var(--hist-wash);color:var(--hist);border-radius:4px;padding:2px 7px;margin-left:6px}',
+      '.saisi{font-family:ui-monospace,monospace;font-weight:600;color:var(--link);background:var(--link-wash);border-radius:4px;padding:1px 6px}',
+      /* tableaux et figures recopiés */
+      'table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}',
+      'th,td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}',
+      'th{background:var(--surface-2);font-size:12px}',
+      '.table-scroll{overflow-x:auto}',
+      'svg{display:block;width:100%;height:auto;max-width:100%}',
+      'figure{margin:0}img{max-width:100%;height:auto}',
+      /* barre d'action, jamais imprimée */
+      '.barre{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 6px}',
+      '.barre button{font:inherit;font-size:14px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;border-radius:9px;padding:8px 15px}',
+      '.barre .g{background:#fff;color:var(--ink)}',
+      '.aide{font-size:12.5px;color:var(--ink-faint);margin-bottom:8px}',
+      /* --- la partie fixe : schémas SVG, entraînement, mots-clés ---
+         Les <template data-fiche-fixe> des séances n'écrivent aucune couleur
+         en dur : elles sont toutes ici. Une seule palette à tenir, et les
+         schémas restent lisibles si elle change. */
+      '.fx-note{font-size:13.5px;color:var(--ink-soft);margin:0 0 10px}',
+      '.fx-note b{color:var(--ink)}',
+      '.fx-fig{border:1px solid var(--line);border-radius:10px;padding:12px 14px 10px;background:#fff;page-break-inside:avoid;margin:0 0 10px}',
+      '.fx-fig figcaption{font-size:12.5px;color:var(--ink-soft);margin-top:8px;line-height:1.45}',
+      '.fx-fig figcaption b{color:var(--ink)}',
+      '.fx-duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}',
+      '@media (max-width:620px){.fx-duo{grid-template-columns:1fr}}',
+      '.fx-tag{display:inline-block;font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.1em;',
+      'text-transform:uppercase;font-weight:600;border-radius:4px;padding:2px 7px;margin-bottom:4px}',
+      '.fx-tag-a{background:var(--link-wash);color:var(--link)}',
+      '.fx-tag-b{background:var(--hist-wash);color:var(--hist)}',
+      '.fx-mnote{font-size:12.5px;color:var(--ink-soft);margin:2px 0 8px;line-height:1.45}',
+      '.fx-train{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}',
+      '.fx-train ol{margin:6px 0 0;padding-left:20px;columns:2;column-gap:26px;font-size:14px}',
+      '.fx-train li{margin-bottom:5px;break-inside:avoid}',
+      '.fx-train li span{display:inline-block;min-width:74px;border-bottom:1px dotted var(--ink-faint);margin-left:5px}',
+      '@media (max-width:520px){.fx-train ol{columns:1}}',
+      '.fx-rep{margin-top:12px;border-top:1px dashed var(--line);padding-top:9px}',
+      '.fx-rl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-family:ui-monospace,monospace}',
+      '.fx-rv{transform:rotate(180deg);font-size:12px;color:var(--ink-soft);font-family:ui-monospace,monospace;line-height:1.7;margin-top:4px}',
+      '.fx-loin{border:1px solid var(--line);border-left:3px solid var(--activity);border-radius:0 10px 10px 0;padding:12px 14px}',
+      '.fx-loin p{margin:0 0 9px;font-size:13.5px;color:var(--ink-soft)}',
+      '.fx-kw{display:flex;flex-wrap:wrap;gap:6px}',
+      '.fx-kw span{font-family:ui-monospace,monospace;font-size:12px;background:var(--activity-wash);color:var(--activity);border-radius:100px;padding:3px 11px}',
+      '.fx-vid{margin-top:11px;font-size:13px;color:var(--ink-soft);border-top:1px dashed var(--line);padding-top:9px}',
+      '.fx-k{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--activity);font-weight:600}',
+      '.fx-alerte{color:var(--activity)}',
+      /* les classes des SVG */
+      '.f-mono{font-family:ui-monospace,monospace}',
+      '.f-bandeau{fill:var(--ink)}',
+      '.f-bandeau-t{font-family:ui-monospace,monospace;font-size:12.5px;fill:#fff;letter-spacing:1.2px}',
+      '.f-lab{font-family:ui-monospace,monospace;font-size:11px;font-weight:600;letter-spacing:1.4px}',
+      '.f-bleu{fill:var(--link)}.f-vert{fill:var(--ok)}.f-violet{fill:var(--hist)}',
+      '.f-orange{fill:var(--activity)}.f-rouge{fill:#c33a2f}',
+      '.f-soft{fill:var(--ink-soft)}.f-faint{fill:var(--ink-faint)}',
+      '.f-res{fill:var(--ink);font-weight:600}.f-inverse{fill:#fff}',
+      '.f-chiffre{font-size:21px;font-weight:700;fill:var(--ink)}',
+      '.f-case{fill:var(--surface-2);stroke:var(--line)}',
+      '.f-pris-bleu{fill:var(--link-wash);stroke:var(--link)}',
+      '.f-pris-vert{fill:var(--ok-wash);stroke:var(--ok)}',
+      '.f-case-orange{fill:var(--activity-wash);stroke:var(--activity)}',
+      '.f-tirets{stroke-dasharray:3 3}',
+      '.f-wash-gris{fill:var(--surface-2)}.f-wash-bleu{fill:var(--link-wash)}.f-wash-violet{fill:var(--hist-wash)}',
+      '.f-blanc{fill:#fff}',
+      '.f-pointille{stroke:var(--line);stroke-dasharray:3 4}',
+      '.f-fleche{stroke:var(--activity);stroke-width:1.6;fill:none}.f-fleche-p{fill:var(--activity)}',
+      '.f-fleche-v{stroke:var(--hist);stroke-width:2.4;fill:none}.f-fleche-v-p{fill:var(--hist)}',
+      '@page{size:A4;margin:12mm 11mm}',
+      '@media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:0;border-radius:0}',
+      '.barre,.aide{display:none}h2{page-break-after:avoid}.e{page-break-inside:avoid}}'
+    ].join('');
+  }
+
   function ficheHTML(sec){
-    var title=seanceTitle(sec);
-    var when=new Date().toLocaleDateString('fr-FR');
-    var rows=collectEtapes(sec), rep=collectReperes(sec), voc=collectVocabulaire(sec),
-        defs=collectDefinitions(sec), notes=collectNotes(sec), qcms=collectQcm(sec),
-        glo=collectGlossaire(), src=collectSources(sec);
+    var theme = ficheTheme();
+    var seance = ficheSeance(sec);
+    var when  = new Date().toLocaleDateString('fr-FR');
+    var comp  = ficheCompletion(sec);
 
-    var h='';
+    var n = 0;
+    function titre(t){ n++; return '<h2><span class="n">' + n + '</span>' + echapper(t) + '</h2>'; }
 
-    /* 1. l'essentiel du cours */
-    var essentiel=rows.filter(function(r){return r.retenirs.length;});
+    var h = '';
+
+    /* ---- 2. bandeau de complétion ---- */
+    function carte(k, fait, total){
+      var cl = (total > 0 && fait === total) ? ' plein' : (fait < total ? ' creux' : '');
+      return '<div class="bc' + cl + '"><div class="k">' + k + '</div>' +
+             '<div class="v">' + fait + ' sur ' + total + '</div></div>';
+    }
+    h += '<div class="bilan">' +
+         carte('Étapes parcourues', comp.etapesF, comp.etapesT) +
+         carte('Questions envoyées', comp.envoyees, comp.questions) +
+         carte('Corrections reçues', comp.corrigees, comp.questions) +
+         '</div>';
+
+    var reste = [];
+    if(comp.manquent.length)
+      reste.push('il reste à envoyer&nbsp;: <b>' + comp.manquent.map(echapper).join('</b>, <b>') + '</b>');
+    if(comp.attente.length)
+      reste.push('en attente de correction&nbsp;: <b>' + comp.attente.map(echapper).join('</b>, <b>') + '</b>');
+    if(comp.etapesT && comp.etapesF < comp.etapesT)
+      reste.push('<b>' + (comp.etapesT - comp.etapesF) + '</b> étape(s) pas encore validée(s)');
+    h += reste.length
+       ? '<div class="reste">' + reste.join('.<br>') + '.</div>'
+       : '<div class="reste" style="border-left-color:#12805c;background:#e0f2ea">Tout est fait pour cette séance.</div>';
+    h += '<p class="avert">Ce bandeau est indicatif&nbsp;: il est calculé sur ton appareil, à partir de ce que ta page a enregistré. ' +
+         'Ce qui fait foi, c’est le tableau de suivi de ton professeur.</p>';
+
+    /* ---- 3. partie fixe, déclarée par la page ---- */
+    var fixe = sec.querySelector('template[data-fiche-fixe]');
+    if(fixe && fixe.innerHTML.trim()){
+      h += fixe.innerHTML;
+      /* la partie fixe porte ses propres numéros de section : les suivantes
+         reprennent après, sinon la fiche recommence à 1 au milieu */
+      n = (fixe.innerHTML.match(/<h2[\s>]/g) || []).length;
+    }
+
+    /* ---- 3 bis. à défaut, les « à retenir » portent le cours ---- */
+    var rows = collectEtapes(sec);
+    var essentiel = rows.filter(function(r){ return r.retenirs.length; });
     if(essentiel.length){
-      h+='<h2>L\'essentiel du cours</h2>';
+      h += titre(fixe ? 'L’essentiel, en mots' : 'L’essentiel du cours');
       essentiel.forEach(function(r){
-        h+='<div class="e"><div class="hh">'+echapper(r.title)+'</div>'+
-           (r.objectif?'<div class="ob">'+echapper(r.objectif)+'</div>':'')+
-           r.retenirs.map(function(x){return '<div class="r"><span class="lbl">À retenir</span>'+x+'</div>';}).join('')+
-           '</div>';
+        h += '<div class="e"><div class="hh">' + echapper(r.title) + '</div>' +
+             (r.objectif ? '<div class="ob">' + echapper(r.objectif) + '</div>' : '') +
+             r.retenirs.map(function(x){ return '<div class="r"><span class="lbl">À retenir</span>' + x + '</div>'; }).join('') +
+             '</div>';
       });
     }
-    /* 2. repères et frise */
+
+    /* ---- 4. les tableaux, avec ce que l'élève y a écrit ---- */
+    var rep = collectReperes(sec);
     if(rep.length){
-      h+='<h2>Les repères à connaître</h2>';
-      rep.forEach(function(r){ h+='<div class="e"><div class="hh">'+echapper(r.titre)+'</div>'+r.html+'</div>'; });
-    }
-    /* 3. vocabulaire */
-    if(voc.length){
-      h+='<h2>Le vocabulaire de la séance</h2><dl class="voc">'+
-        voc.map(function(v){return '<dt>'+echapper(v.mot)+'</dt><dd>'+v.def+'</dd>';}).join('')+'</dl>';
-    }
-    /* 4. les deux définitions */
-    if(defs.length){
-      h+='<h2>Ma définition d\'Internet, avant et après</h2><div class="duo">'+
-        defs.map(function(x){
-          return '<div class="col"><span class="lbl">'+echapper(x.titre)+'</span>'+
-                 (x.texte?echapper(x.texte):'<i>non rédigée</i>')+'</div>';
-        }).join('')+'</div>';
-    }
-    /* 5. mes réponses */
-    var avec=rows.filter(function(r){return r.answer;});
-    if(avec.length){
-      h+='<h2>Mes réponses</h2>';
-      avec.forEach(function(r){
-        h+='<div class="e"><div class="hh">'+echapper(r.title)+'</div>'+
-           '<div class="a">'+echapper(r.answer)+'</div></div>';
+      h += titre('Les repères, et ce que tu y as complété');
+      rep.forEach(function(r){
+        h += '<div class="e"><div class="hh">' + echapper(r.titre) + '</div>' + r.html + '</div>';
       });
     }
-    /* 6. notes, QCM, glossaire, sources */
+
+    /* ---- 5. le vocabulaire ---- */
+    var voc = collectVocabulaire(sec);
+    if(voc.length){
+      h += titre('Le vocabulaire de la séance');
+      h += '<dl class="voc">' + voc.map(function(v){
+        return '<dt>' + echapper(v.mot) + '</dt><dd>' + v.def + '</dd>';
+      }).join('') + '</dl>';
+    }
+
+    /* ---- 6. mon travail rédigé, avec la correction ---- */
+    var red = ficheRedigees(sec);
+    if(red.length){
+      h += titre('Mes réponses rédigées, et ce qu’on m’a répondu');
+      red.forEach(function(r){
+        h += '<div class="e"><div class="hh">' + echapper(r.etape) +
+             (r.bonus ? '<span class="tagb">bonus</span>' : '') + '</div>' +
+             (r.question ? '<div class="q-en">' + echapper(r.question) + '</div>' : '') +
+             '<div class="a"><span class="lbl">Ma réponse</span>' + echapper(r.texte) + '</div>';
+        if(r.statut === 'corrige' && r.retour){
+          h += '<div class="corr"><span class="lbl">' +
+               (r.parProf ? 'Le mot du professeur' : 'La correction') +
+               (r.verdict ? ' · ' + echapper(r.verdict) : '') + '</span>' +
+               echapper(r.retour) + '</div>';
+          if(r.plusLoin && r.plusLoin.trim())
+            h += '<div class="plus"><span class="lbl">Pour aller plus loin</span>' + echapper(r.plusLoin) + '</div>';
+        } else if(r.statut === 'signale'){
+          h += '<div class="corr attente"><span class="lbl">À reprendre</span>' +
+               echapper(r.retour || 'Ton professeur t’a demandé de reprendre cette réponse.') + '</div>';
+        } else {
+          h += '<div class="corr attente"><span class="lbl">Correction</span>' +
+               'Pas encore reçue.</div>';
+        }
+        h += '</div>';
+      });
+    }
+
+    /* ---- 7. mes recherches personnelles ---- */
+    var perso = fichePerso(sec);
+    if(perso.length){
+      h += titre('Mes recherches et mes réponses personnelles');
+      perso.forEach(function(p){
+        h += '<div class="e"><div class="hh">' + echapper(p.etape) + '</div>' +
+             (p.question ? '<div class="q-en">' + echapper(p.question) + '</div>' : '') +
+             '<div class="a">' + echapper(p.texte) + '</div></div>';
+      });
+    }
+
+    /* ---- 8. mes notes de visionnage ---- */
+    var notes = collectNotes(sec);
     if(notes.length){
-      h+='<h2>Mes notes</h2>'+notes.map(function(n2){
-        return '<div class="e"><div class="hh">'+echapper(n2.titre)+'</div><div class="a">'+echapper(n2.texte)+'</div></div>';
-      }).join('');
+      h += titre('Mes notes');
+      notes.forEach(function(x){
+        h += '<div class="e"><div class="hh">' + echapper(x.titre) + '</div>' +
+             '<div class="a">' + echapper(x.texte) + '</div></div>';
+      });
     }
-    if(qcms.length){
-      h+='<h2>Les bonnes réponses des QCM</h2>'+qcms.map(function(q){
-        return '<div class="e"><div class="hh">'+echapper(q.titre)+'</div><div class="q">'+q.html+'</div></div>';
-      }).join('');
-    }
+
+    /* ---- 9. mon glossaire ---- */
+    var glo = collectGlossaire();
     if(glo.length){
-      h+='<h2>Mon glossaire</h2>'+glo.map(function(g){
-        return '<div class="e"><div class="hh">'+echapper(g.mot)+'</div><div class="a">'+echapper(g.texte)+'</div></div>';
-      }).join('');
-    }
-    if(src.length){
-      h+='<h2>Sources des documents</h2><ul class="src">'+
-        src.map(function(x){ return '<li>'+echapper(x)+'</li>'; }).join('')+'</ul>';
+      h += titre('Mon glossaire');
+      glo.forEach(function(g){
+        h += '<div class="e"><div class="hh">' + echapper(g.mot) + '</div>' +
+             '<div class="a">' + echapper(g.texte) + '</div></div>';
+      });
     }
 
-    var css=
-      'body{font-family:system-ui,sans-serif;max-width:760px;margin:26px auto;padding:0 18px;color:#161f33;line-height:1.55}'+
-      'h1{font-size:22px;margin-bottom:2px}.meta{color:#667;font-size:13px;margin-bottom:8px}'+
-      '.ident{font-size:13px;color:#4a566e;border:1px dashed #b9c3d4;border-radius:9px;padding:8px 11px;margin-bottom:18px}'+
-      '.barre{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px}'+
-      '.barre button{font:inherit;font-size:14px;cursor:pointer;border:1.5px solid #161f33;background:#161f33;color:#fff;border-radius:9px;padding:8px 15px}'+
-      '.barre .g{background:#fff;color:#161f33}'+
-      '.aide{font-size:12.5px;color:#8b97ad;margin-bottom:20px}'+
-      'h2{font-size:15px;margin:26px 0 10px;padding-bottom:5px;border-bottom:2px solid #161f33}'+
-      '.e{border:1px solid #d3dae7;border-radius:10px;padding:12px 14px;margin-bottom:10px;page-break-inside:avoid}'+
-      '.hh{font-weight:600}.ob{font-size:13px;color:#4a566e;margin-top:3px}'+
-      '.lbl{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8b97ad;margin-bottom:3px}'+
-      '.r{margin-top:8px;padding:9px 11px;background:#f4f6fb;border-left:3px solid #161f33;border-radius:0 8px 8px 0;font-size:13.5px}'+
-      '.r code{background:#e6e9f2;padding:1px 4px;border-radius:3px;font-family:ui-monospace,monospace;font-size:.9em}'+
-      '.a{margin-top:8px;padding:9px 11px;background:#e7ebfb;border-radius:8px;white-space:pre-wrap;font-size:14px}'+
-      'table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}'+
-      'th,td{border:1px solid #d3dae7;padding:5px 8px;text-align:left;vertical-align:top}'+
-      'th{background:#f4f6fb;font-size:12px}'+
-      '.frise{margin-top:8px}.frise .ev{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid #eef1f7;font-size:13.5px}'+
-      '.frise .ev:last-child{border-bottom:0}'+
-      '.frise .an{font-family:ui-monospace,monospace;font-weight:600;min-width:52px;color:#4a566e}'+
-      '.frise .ev.cle .an{color:#1b3391}.frise .ev.cle{background:#f4f6fb}'+
-      '.frise-leg{display:none}'+
-      'dl.voc dt{font-weight:600;font-size:13.5px;margin-top:7px}dl.voc dd{margin:0;font-size:13.5px;color:#4a566e}'+
-      '.duo{display:flex;gap:12px;flex-wrap:wrap}.duo .col{flex:1 1 260px;border:1px solid #d3dae7;'+
-      'border-radius:10px;padding:11px 13px;font-size:14px;background:#fbfcfe}'+
-      '.q{margin-top:8px;font-size:13.5px}.q .rh{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8b97ad}'+
-      '.q .rl{padding:5px 0;border-bottom:1px solid #eef1f7}.q .rl:last-child{border-bottom:0}'+
-      '.q .comp{display:block;font-size:12.5px;color:#4a566e;margin-top:2px}'+
-      'ul.src{font-size:12.5px;color:#4a566e;padding-left:18px}ul.src li{margin-bottom:4px}'+
-      '@page{size:A4;margin:14mm 12mm}'+
-      '@media print{.barre,.aide{display:none}body{margin:0;max-width:none;font-size:11.5pt}'+
-      'h2{page-break-after:avoid}.e{page-break-inside:avoid}}';
+    /* Les bonnes réponses des QCM et les sources des documents ne sont PAS
+       reprises : décision du 23/08/2026. Les premières feraient de la fiche un
+       corrigé, les secondes n'ont rien à y faire. */
 
-    return '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">'+
-      '<title>Ma fiche — '+echapper(title)+'</title><style>'+css+'</style></head><body>'+
-      '<h1>Ma fiche SNT — '+echapper(title)+'</h1>'+
-      '<div class="meta">Séquence Internet · éditée le '+when+'</div>'+
-      '<div class="ident">Nom : ............................................. &nbsp; '+
-      'Prénom : ............................................. &nbsp; Classe : ....................</div>'+
-      '<div class="barre"><button onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>'+
-      '<button class="g" onclick="window.close()">Fermer</button></div>'+
-      '<p class="aide">Pour obtenir un PDF : clique sur le bouton, puis choisis « Enregistrer au format PDF » '+
-      'comme imprimante. Dépose ensuite le fichier sur ton OneDrive.</p>'+
-      h+'</body></html>';
+    return '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>Fiche — ' + echapper(theme) + (seance.num ? ' — Séance ' + seance.num : '') + '</title>' +
+      '<style>' + ficheCSS() + '</style></head><body><div class="page">' +
+      '<header class="head">' +
+        '<div class="eyebrow">SNT · Seconde · Fiche de révision</div>' +
+        '<h1>' + echapper(theme) + '</h1>' +
+        '<p class="seance">' + (seance.num ? 'Séance ' + echapper(seance.num) + ' — ' : '') +
+          '<b>' + echapper(seance.nom) + '</b></p>' +
+        '<div class="who">' +
+          '<div class="ident">Nom&nbsp;: ............................ ' +
+          'Prénom&nbsp;: ............................ Classe&nbsp;: ..............</div>' +
+          '<div>M.&nbsp;Van&nbsp;Hoorde &nbsp;·&nbsp; ' + when + '</div>' +
+        '</div>' +
+      '</header>' +
+      '<div class="barre">' +
+        '<button onclick="window.print()">🖨️ Enregistrer en PDF</button>' +
+        '<button class="g" onclick="window.close()">Fermer</button></div>' +
+      '<p class="aide">Pour obtenir un PDF&nbsp;: clique sur le bouton, puis choisis ' +
+      '«&nbsp;Enregistrer au format PDF&nbsp;» comme imprimante. ' +
+      'Dépose ensuite le fichier dans ton dossier OneDrive de SNT.</p>' +
+      h + '</div></body></html>';
   }
 
   function downloadFiche(sec){
@@ -2552,6 +2906,32 @@ function clozeCle(bloc){
   return k+'/cloze-'+Array.prototype.indexOf.call(freres,bloc);
 }
 
+/* ---------- 4 bis. Étape validée à la première manipulation ----------
+   Une étape d'ouverture — un nuancier de couleurs, un curseur, une
+   démonstration — n'a ni exercice ni QCM. Elle restait donc « à faire » à
+   vie, et la barre annonçait « 3 sur 4 » à un élève qui avait pourtant tout
+   fait (audit du 23/08/2026, module M1 étape 2.3).
+   Elle se valide à la PREMIÈRE interaction réelle : un contrôle qu'on
+   manipule, jamais le simple affichage de l'étape.
+   Attribut explicite plutôt que détection implicite : c'est un choix
+   pédagogique, il doit se lire dans la page. */
+function initValideSurInteraction(){
+  $$('[data-valide-sur-interaction]').forEach(function(el){
+    var step=el.matches('[data-step]') ? el : (el.closest('[data-step]')||el);
+    var fait=false;
+    function valider(e){
+      if(fait) return;
+      var cible=e.target && e.target.closest
+        ? e.target.closest('button,input,select,textarea,[role="slider"],[data-manip]') : null;
+      if(!cible) return;                 /* un clic sur le fond de la carte ne compte pas */
+      fait=true;
+      if(!step.classList.contains('is-done')) step.classList.add('is-done');
+      step.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
+    }
+    ['input','change','click'].forEach(function(ev){ el.addEventListener(ev,valider); });
+  });
+}
+
 /* ---------- 5. Trous tolérants (3 états + indices) ---------- */
 function initCloze(){
   $$('.cloze').forEach(function(bloc){
@@ -2693,10 +3073,57 @@ function initCloze(){
          montrer le calcul complet en entier, mais APRÈS la réussite — sinon
          c'est le corrigé posé à côté de l'exercice. Se referme si l'élève
          modifie et revérifie faux : le corrigé suit l'état réel. */
+      /* Seuil de révélation, réglable PAR EXERCICE (23/08/2026, audit M1).
+         Par défaut rien ne change : la correction détaillée ne s'ouvre que si
+         tout est juste, et se referme si l'élève fausse ensuite. Deux attributs
+         posés sur le .field ouvrent les deux autres comportements demandés :
+           · data-essais-avant-correction="3" — au 3ᵉ clic sur « Vérifier »,
+             l'élève a le droit de voir, même faux : il a vraiment cherché ;
+           · data-correction-bouton — au seuil, la correction ne s'ouvre pas
+             d'elle-même, un bouton apparaît. Celui qui veut encore chercher
+             n'a pas le corrigé sous les yeux.
+         Sans ces attributs, aucune séquence existante ne bouge d'un pixel. */
       var champCorr=bloc.closest('.field')||bloc.parentElement;
-      if(champCorr) $$('[data-reveal-juste]',champCorr).forEach(function(r){
-        r.classList.toggle('show', n>0 && ok===n);
-      });
+      if(champCorr){
+        var tout=n>0 && ok===n;
+        /* PAS « seuil » : ce nom est déjà celui de la fonction de tolérance
+           orthographique (ligne ~1475). Un var du même nom la masquerait dans
+           toute cette fonction — hoisting — et distance()<=seuil(a) planterait. */
+        var seuilEssais=parseInt(champCorr.dataset.essaisAvantCorrection,10)||0;
+        /* la reprise reclique « Vérifier » pour recorriger : ce n'est pas un
+           essai de l'élève, elle ne consomme pas le seuil (voir restaurer()) */
+        if(seuilEssais && !bloc.dataset.sansCompter)
+          bloc.dataset.essaisFaits=String((parseInt(bloc.dataset.essaisFaits,10)||0)+1);
+        var atteint=seuilEssais>0 && (parseInt(bloc.dataset.essaisFaits,10)||0)>=seuilEssais;
+        var parBouton=champCorr.hasAttribute('data-correction-bouton');
+        var montrer=tout || bloc.dataset.correctionForcee==='1' || (atteint && !parBouton);
+        $$('[data-reveal-juste]',champCorr).forEach(function(r){
+          /* on n'écrit la classe QUE si elle change : un MutationObserver
+             surveille tout le sous-arbre des .steps, et une écriture
+             inconditionnelle le réveille pour rien */
+          if(r.classList.contains('show')!==montrer) r.classList.toggle('show',montrer);
+        });
+        if(seuilEssais && parBouton){
+          var bc=champCorr.querySelector('[data-voir-correction]');
+          if(!bc){
+            bc=document.createElement('button');
+            bc.type='button'; bc.className='btn ghost sm';
+            bc.setAttribute('data-voir-correction','');
+            bc.textContent='Afficher la correction';
+            bc.hidden=true;
+            var cible=champCorr.querySelector('[data-reveal-juste]');
+            if(cible) cible.parentNode.insertBefore(bc,cible); else champCorr.appendChild(bc);
+            bc.addEventListener('click',function(){
+              bloc.dataset.correctionForcee='1';
+              $$('[data-reveal-juste]',champCorr).forEach(function(r){
+                if(!r.classList.contains('show')) r.classList.add('show');
+              });
+              bc.hidden=true;
+            });
+          }
+          bc.hidden=!(atteint && !montrer);
+        }
+      }
 
       /* ---- Débriefing d'ordre de grandeur, révélé sous condition ----
          Ajouté le 22/08/2026 (audit de l'étape des câbles sous-marins).
@@ -3140,7 +3567,14 @@ function restaurer(){
       if(bloc._figerReleve){ bloc._figerReleve(); quelqueChose=true; }
       var conteneur=bloc.closest('.field')||bloc.parentElement;
       var bouton=conteneur?conteneur.querySelector('[data-check-cloze]'):null;
-      if(bouton){ bouton.click(); quelqueChose=true; }
+      if(bouton){
+        /* recliquer sert à recorriger l'état restauré : ce n'est pas un essai
+           de l'élève, et cela ne doit pas lui ouvrir la correction (23/08) */
+        bloc.dataset.sansCompter='1';
+        bouton.click();
+        delete bloc.dataset.sansCompter;
+        quelqueChose=true;
+      }
     });
 
     /* 3. les QCM déjà passés */
@@ -3384,6 +3818,7 @@ function demarrer(){
   initEnseignant();
   initQcm();
   initCloze();
+  initValideSurInteraction();
   initReleve();          /* après initCloze : la porte du rappel se pose sur un bloc déjà outillé */
   initGlossaire();
   initZoom();

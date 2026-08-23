@@ -1,0 +1,138 @@
+-- ============================================================
+--  015-correction-eleve.sql — ce qu'un élève peut lire de sa correction
+--  ------------------------------------------------------------
+--  🔴 PROPOSITION — NE PAS EXÉCUTER SANS AVOIR TRANCHÉ LE §3.
+--     Ce fichier est écrit, documenté, et volontairement laissé
+--     inexécuté : il touche à la boucle de correction, et le choix
+--     entre les trois voies du §3 appartient à Loïc.
+--
+--  ------------------------------------------------------------
+--  1. LE PROBLÈME
+--
+--  La colonne `reponses_libres.correction_ia` est un jsonb qui
+--  contient DEUX choses de nature très différentes :
+--
+--    · ce qui est destiné à l'élève
+--        analyse.verdict                      « accepté », « à compléter »
+--        analyse.feedback_eleve.message       le retour rédigé
+--        analyse.feedback_eleve.pour_aller_plus_loin
+--
+--    · ce qui est destiné au professeur, et à lui seul
+--        analyse.criteres[]                   le constat critère par critère
+--        analyse.a_verifier_par_le_prof       la note de doute du modèle
+--        analyse.note_orthographe
+--        analyse.tri.raisons                  « socle indécis : M1, M2 »,
+--                                             « injection détectée »…
+--        analyse.garde_fous, _flags, modele, genere_le
+--
+--  Jusqu'au 23/08/2026, `progression.js` demandait la colonne
+--  ENTIÈRE pour le navigateur de l'élève. Tout ce second bloc
+--  arrivait donc sur son appareil sans jamais s'afficher — et le
+--  générateur de fiches de révision, qui imprime la correction,
+--  l'aurait rendu lisible dans le code source de sa propre fiche.
+--
+--  ------------------------------------------------------------
+--  2. CE QUI EST DÉJÀ FAIT, ET CE QUE ÇA VAUT
+--
+--  `progression.js` ne demande plus que les trois sous-champs utiles
+--  (sélection jsonb PostgREST, puis ré-emboîtage côté client).
+--
+--  ⚠ C'est de l'HYGIÈNE, pas un verrou. La policy RLS autorise
+--  l'élève à lire SA ligne — colonnes comprises. Un élève curieux qui
+--  ouvre l'inspecteur, récupère la clé anon et son jeton, et forge
+--  `?select=correction_ia` récupère encore tout. Le verrou réel ne
+--  peut être que côté base, et c'est l'objet de ce fichier.
+--
+--  ------------------------------------------------------------
+--  3. 🔴 TROIS VOIES, À TRANCHER
+--
+--  Le nœud : dans Supabase, l'élève ET le professeur sont le même
+--  rôle SQL, `authenticated`. Un simple REVOKE de la colonne les
+--  frapperait tous les deux, et casserait le tableau de bord.
+--
+--  ─ VOIE A — deux colonnes (la plus propre, la plus coûteuse)
+--    Scinder `correction_ia` en deux : `correction_eleve` (les trois
+--    champs) et `correction_interne` (le reste). REVOKE de la seconde
+--    pour `authenticated`, lecture réservée au professeur par une
+--    fonction `security definer` qui vérifie `est_enseignant()`.
+--    Coût : le worker (`ia-snt/precorrection-snt.mjs`) et le tableau
+--    de bord (`prof/index.html`, `prof-api.js`) écrivent et lisent
+--    tous deux la colonne. Migration des lignes existantes.
+--    ≈ une demi-journée, et la boucle de correction est en jeu.
+--
+--  ─ VOIE B — une fonction pour l'élève (intermédiaire)
+--    Garder une seule colonne, mais REVOKE `SELECT (correction_ia)`
+--    à `authenticated`, et exposer :
+--      · `ma_correction(code text)` — security definer, filtrée sur
+--        l'élève appelant, ne renvoie que les trois champs ;
+--      · `correction_complete(id uuid)` — security definer, réservée
+--        aux enseignants (`est_enseignant()`).
+--    Coût : `progression.js` passe de PostgREST à un RPC, et le
+--    tableau de bord aussi. Plus léger que A, mais la fiche élève et
+--    la file de correction sont à retoucher.
+--
+--  ─ VOIE C — on s'arrête à l'hygiène (le moins cher)
+--    On garde ce qui est fait côté client, et on assume que l'élève
+--    PEUT lire les notes internes SUR SA PROPRE COPIE s'il s'en donne
+--    la peine. Argument : ce ne sont pas les données d'un autre élève
+--    — le risque est pédagogique (lire « socle indécis » ou une note
+--    de doute du modèle sur son propre travail), pas un défaut de
+--    cloisonnement. Le RGPD n'est pas en cause : c'est sa donnée.
+--    Coût : zéro. Risque : un élève tombe sur « a_verifier_par_le_prof »
+--    et le prend pour un jugement.
+--
+--  ------------------------------------------------------------
+--  4. CE QUE CE FICHIER EXÉCUTE AUJOURD'HUI
+--
+--  Rien. Les instructions de la VOIE B sont écrites ci-dessous, en
+--  commentaire, pour être relues et discutées — pas exécutées.
+--  Décommenter revient à choisir B, et impose de retoucher
+--  `progression.js` et `prof/index.html` DANS LA MÊME SESSION.
+-- ============================================================
+
+-- -- VOIE B — brouillon, non exécuté.
+--
+-- revoke select (correction_ia) on public.reponses_libres from authenticated;
+--
+-- create or replace function public.ma_correction(p_code text)
+-- returns table (verdict text, message text, pour_aller_plus_loin text)
+-- language sql
+-- security definer
+-- set search_path = public
+-- as $$
+--   select r.correction_ia -> 'analyse' ->> 'verdict',
+--          r.correction_ia -> 'analyse' -> 'feedback_eleve' ->> 'message',
+--          r.correction_ia -> 'analyse' -> 'feedback_eleve' ->> 'pour_aller_plus_loin'
+--     from public.reponses_libres r
+--     join public.eleves e on e.id = r.eleve_id
+--    where e.auth_id = auth.uid()
+--      and r.code_activite = p_code
+--      and r.statut = 'corrige';
+-- $$;
+--
+-- revoke all on function public.ma_correction(text) from public, anon;
+-- grant execute on function public.ma_correction(text) to authenticated;
+--
+-- create or replace function public.correction_complete(p_reponse uuid)
+-- returns jsonb
+-- language sql
+-- security definer
+-- set search_path = public
+-- as $$
+--   select case when public.est_enseignant()
+--               then (select correction_ia from public.reponses_libres where id = p_reponse)
+--          end;
+-- $$;
+--
+-- revoke all on function public.correction_complete(uuid) from public, anon;
+-- grant execute on function public.correction_complete(uuid) to authenticated;
+
+-- ------------------------------------------------------------
+-- VÉRIFICATION, une fois une voie choisie et exécutée :
+--   · connecté en ÉLÈVE, `select correction_ia from reponses_libres`
+--     doit être refusé (42501) ;
+--   · le retour continue de s'afficher dans la séquence ;
+--   · la file de correction du tableau de bord fonctionne toujours ;
+--   · le worker écrit toujours (il passe par la clé service_role,
+--     qui n'est concernée par aucun REVOKE de ce fichier).
+-- ------------------------------------------------------------
