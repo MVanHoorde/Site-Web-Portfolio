@@ -680,8 +680,11 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   Moreno/IoT Analytics/GSR2/Engelbart.
 
 ### SNT-M1 — Module transversal · Représenter l'information 🧮
-- État : **contenu complet, interactivité complète**, **audité et remanié le
-  22/08/2026** (11 lots). **Non validé.** Écrit d'emblée sur le moteur partagé —
+- État : **contenu complet, interactivité complète**, **audité et remanié les
+  22 et 23/08/2026**. **Non validé** — le bloc de chantier et les badges « à
+  valider » ont été retirés de la page le 23/08 à la demande de Loïc, mais c'est
+  un geste d'affichage : le jalon `VALIDÉ` ci-dessous reste ouvert, et la
+  relecture de fond reste à faire. Écrit d'emblée sur le moteur partagé —
   troisième page dans ce cas, après `t1` et `t2`.
 - Fichier : `pages/2nde-snt-m1-representer-information.html`. Clé `snt-m1`.
   Codes d'activité `REP-x` **en attribut `data-code` seulement** : ils ne
