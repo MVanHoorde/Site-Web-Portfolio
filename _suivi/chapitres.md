@@ -219,8 +219,46 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   valider la formulation « note d'investissement ».
 
 ### SNT-T1 — Internet
-- État : **maquette V0 fonctionnelle en ligne** (17/07), non validée. **En cours de
-  validation depuis le 20/08.** **6 séances** depuis le 22/08.
+- État : **validé sur le fond le 23/08/2026** — jalon 5 atteint, jalon 7 (CLOS)
+  encore ouvert. **6 séances · 25 étapes.** Il sera clos après la vérification
+  des fiches par Loïc et l'essai de `ping`/`tracert` depuis un poste de la
+  salle. **Aucun contenu ne manque** : la passerelle NSI facultative, dernier
+  trou, est abandonnée pour le moment (`IDEES.md`).
+- ✅ **23/08/2026 — audit de clôture, les 26 étapes descendues une à une.**
+  - **Les six séances sont validées.** 4.2 « c'est propre », 4.5 « très propre,
+    j'aime beaucoup », 6.4 « vraiment très bien ». Les **51 leurres de QCM**, les
+    3 questions de `NET-Q7`, les 2 indices de niveau 2 et les textes proposés de
+    4.2 et 4.3 sont **validés** : plus aucune relecture de contenu en attente.
+  - **L'étape 5.5 est supprimée** (`t1-bonus-protocoles`, « pas très
+    intéressant »), avec la grille `NET-R5` et les deux grilles orphelines
+    `NET-R-ville` et `NET-R4b`. Aucune renumérotation : les `data-cle` sont
+    sémantiques. Le dénominateur des 100 % ne bouge pas (un bonus n'a pas de
+    `data-gate`). 26 → **25 étapes**, 42 → **41 questions libres**.
+  - **Trois bugs corrigés, tous vérifiés au navigateur.** ① Le sommaire
+    annonçait l'étape 3.3 « À faire chez toi » — il lisait le bandeau d'une
+    perso-box *nichée dans le bonus* ; le `.bonus-head` passe en premier (4.5
+    était touchée aussi). ② En 4.3, le document s'ouvrait à la première lettre
+    écrite au lieu du clic sur « Partager » : une porte s'ouvre désormais sur
+    l'**acte**. ③ Le nom de la séance 6 recouvrait le disque de la séance 5 sur
+    la carte de progression — défaut mécanique dès 20 caractères de libellé.
+  - **La carte de progression est refaite** : deux rangées dès **6** nœuds (au
+    lieu de 7), libellés longs coupés en deux lignes, boîte élargie de 30 px de
+    chaque côté. Mesuré : plus un seul chevauchement sur les 9 cartes du hub ni
+    sur celle de `t1`. Les dispositions à 2, 3, 4 et 5 nœuds sont inchangées.
+  - **Un clic sur une étape « à venir » conduit au bouton « Étape suivante »**
+    au lieu de ne rien faire. La condition d'ouverture, elle, ne bouge pas.
+  - **Ajouté en 6.4** : deux dépôts de copie d'écran (`NET-D6` les `ping`,
+    `NET-D7` les `tracert`), pour garder trace d'une manipulation qui n'en
+    laisse aucune. ⏳ Ils ne remontent **pas encore** dans la fiche de révision.
+  - **Les échafaudages ont quitté la page élève** : neuf notes de chantier, le
+    bloc « État de la séquence — non close » et le pied de page « Maquette V3 ».
+    Rien n'a été perdu — tout est daté dans `DECISIONS.md`, y compris les
+    quatre points de vigilance qui servent encore (les 45 s de publicité
+    NordVPN à annoncer, le cache DNS absent de la vidéo `NET-Q8`).
+  - **Écarté, ne pas rouvrir** : l'allègement de la séance 4, la réduction du
+    volume (7 podcasts, 4 vidéos), la façade « clic pour charger » des iframes,
+    la scission de `NET-Q8`. **Filius sort du thème** et devient un module
+    transversal sans calendrier (`IDEES.md`).
 - 🔎 **22/08/2026 — audit de la séance 1, étape par étape. Dix lots.**
   - **La séance 1 est coupée en deux.** Sept étapes pour une heure, c'était trop.
     S1 garde 1.1→1.3 (définition, Inter+Net, origines) ; la nouvelle **S2

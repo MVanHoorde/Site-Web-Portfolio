@@ -38,6 +38,34 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
   des plateformes bouge. À rafraîchir seulement le jour où tu voudras une
   édition plus récente de l'Arcep — ce n'est pas une dette, c'est un rendez-vous.
 
+## Modules transversaux SNT à créer
+
+- 💡 **Filius — un module transversal, plus tard** (posé le 23/08/2026, à la
+  clôture de `t1`). *Statut : idée cadrée, pas de calendrier.*
+  Filius ne sera **pas** une activité du thème 1. Il devient un **module
+  transversal à part**, sur le modèle de `m1` « Représenter l'information » —
+  hors des huit thèmes, mobilisable ou non selon l'année.
+  Forme envisagée : plusieurs activités Filius, orientées « pour aller plus
+  loin ». Possiblement un module entièrement de ce type. **Forme non arrêtée.**
+  Motif du retrait de `t1` : (1) Filius dépasse le programme de SNT, tout en
+  restant intéressant — réseau domestique, passerelles, routage manipulable ;
+  (2) intégré au thème, il entrerait dans le décompte des **100 %**, et les
+  élèves voudraient l'atteindre même les années où l'activité n'est pas menée.
+
+## Passerelles vers la spé NSI
+
+- 💡 **`t1` — la passerelle NSI d'adressage** (ports, masque de sous-réseau).
+  *Posée le 23/08/2026, **abandonnée pour le moment** le même jour.*
+  Elle devait clore le thème avec Filius, puis rejoindre le bonus 6.6 quand
+  Filius est parti. Vérification faite : elle n'avait jamais été écrite — la
+  déplacer revenait à s'engager à la rédiger. Loïc a préféré ne pas la faire
+  maintenant, plutôt que de la garder en dette ouverte sur un thème par
+  ailleurs terminé.
+  Cadre si elle revient (règle `CLAUDE.md`) : **facultative, NON évaluée, hors
+  100 %** — un simple **repérage de notions**, pas un cours. Sa place naturelle
+  reste le bonus d'adressage 6.6, qui traite déjà IPv6 et l'hexadécimal. Elle
+  ne doit pas figurer sur la fiche élève téléchargeable.
+
 ## Par chapitre
 ### T1-C4
 - 💡 Réintégrer le tableau périodique complet (actuellement bloc 🚧 différé).
@@ -69,6 +97,10 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
   qui exposerait l'IP de l'élève à d'autres spectateurs.
 
   🔴 **Repris à froid après la rentrée** : Loïc veut d'abord que le cours tourne.
+  Confirmé le 23/08/2026 à la clôture de `t1` : **cette piste ne conditionne pas
+  la validation du thème** — « ça fonctionne comme ça, c'est très bien ». Les
+  quatre `<iframe>` gardent leur chargement actuel, et la façade « clic pour
+  charger » n'est pas demandée.
 
 ---
 
@@ -105,3 +137,9 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
 
 ## Outils & production
 - 💡 Pont Claude Code / VS Code pour le raffinage (en cours de mise en place).
+- 💡 **Automatiser la production des « pour aller plus loin »** (posé le
+  23/08/2026). Idée ouverte, **sans forme arrêtée** : ni le déclencheur, ni le
+  gabarit, ni la part d'écriture automatique ne sont décidés. Motif de son
+  apparition : le bonus 5.5 de `t1` a été supprimé parce qu'il n'était « pas
+  très intéressant » — un bonus écrit pour remplir une case ne vaut pas mieux
+  que pas de bonus du tout.

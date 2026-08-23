@@ -5,8 +5,8 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **23/08/2026** (dernière passe : audit du module `m1`
-> et résorption de la dette de suivi)
+> Dernière réécriture : **23/08/2026** (dernière passe : clôture du thème `t1`
+> « Internet » — corrections, suppression de 5.5, retrait des échafaudages)
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 ---
@@ -21,19 +21,21 @@
 | Partie | État |
 |---|---|
 | **PC seconde** | 14 chapitres en ligne. T1-C1→C4 dégrossis à fond ; les 10 autres portent **206 blocs `.a-faire`**. Aucun cours validé. |
-| **SNT** | 8 séquences de thème (t0→t7) **+ 1 module transversal** (`m1` « Représenter l'information », écrit le 21/08, **audité et remanié le 22/08**). `t1` et `t2` sur le moteur partagé ; `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). Aucune validée. **`t1` est en cours de validation** — voir sa ligne. |
+| **SNT** | 8 séquences de thème (t0→t7) **+ 1 module transversal** (`m1` « Représenter l'information », écrit le 21/08, **audité et remanié le 22/08**). `t1` et `t2` sur le moteur partagé ; `t0`, `t1`, `t2` en V0 complète ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). **`t1` est le premier thème validé sur le fond** (23/08) — il sera *clos* après la vérification des fiches ; les huit autres ne sont pas validés. Voir sa ligne. |
 | **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade) et **vérifié au rendu** dans un navigateur sans interface : bandeau, pictogramme et teinte mesurés sur les deux familles de pages, en mode élève et en mode enseignant. Le tableau de bord affiche les **dates de clôture** (cases de clôture et frise, format `12/09`). ✅ **`bdd/schema/013-verrou-progression.sql` a été exécuté le 20/08/2026** par Loïc : `mon_plafond()` répond en base, et un appel anonyme se heurte bien à `42501 permission denied` — la fonction est réservée aux comptes connectés, comme prévu. Le plafond est donc **actif de bout en bout**. Deux textes vus par les élèves attendent la validation de Loïc. |
-| **SNT — `t1` Internet** | 🔎 **Audit du 20/08** (trois lots), puis **audit de la séance 1 le 22/08** (dix lots). La séquence compte désormais **6 séances** : la séance 1 portait sept étapes pour une heure, elle est coupée après « Aux origines d'Internet » et la nouvelle **S2 « D'ARPANET à Internet »** reprend ARPANET, Pouzin, le réseau mondial et la frise ; les quatre suivantes se décalent. **Les 26 étapes portent enfin un `data-cle` sémantique** (`t1-arpanet`…), posé AVANT la découpe pour que la progression des élèves ne bouge pas — `verifier.mjs` refuse maintenant une clé dupliquée. Aussi : infobulles en `position:fixed` (elles étaient rognées par les `overflow:hidden`, pas par le bord de la fenêtre), étiquettes de champ sur leur propre ligne avec le détail en bulle, seuil de rédaction à 20 caractères partout, frise validée au 6ᵉ essai et « voir la correction » qui valide enfin, trois corrigés qui donnaient la réponse d'une question ultérieure. **Restent** : étape **6.4** (activité TERMINAL en `.a-venir`), **6.6**, le moteur du relevé et du rappel (6.3), la fin de thème (Filius + passerelle NSI facultative), et le prérequis binaire — désormais porté par le module `m1`. ✅ La question 4 de l'étape 1.4 et les **quatre dates manquantes de la frise** sont relues et **validées** (22/08) — elle est complète, douze sur douze ; les lignes de test Supabase ont été purgées le même jour. ⏳ Reste à relire avant validation : les 51 leurres de QCM et les 3 questions de `NET-Q7` (20/08). **Audit des séances 3 et 4 le 22/08** (lots K à O) : l'enquête box dit enfin qu'elle est facultative et pourquoi ; les menus déroulants ne coupent plus leur énoncé en trois (`display:grid` sur un `<label>`) ; le tableau de Lannion défile au lieu d'escamoter quatre champs sous 520 px ; le maillé remonte et Internet sort de la liste des topologies ; la guirlande remplace le câble coaxial ; l'étape des câbles gagne un passage sourcé sur la fibre optique **avec deux images Wikimedia attribuées**, un développement sur *pourquoi* Meta et Microsoft possèdent des câbles, et des chiffres 2Africa remis à jour (fin 2025) ; le débriefing d'ordre de grandeur ne s'affiche plus qu'après un clic sur Vérifier et à ±25 % ; la question 1 de 4.3 ne part plus en correction et l'en-tête dit ce qui part chez le professeur ; le bonus de la séance 4 utilise enfin le composant `.poste` ; quatre notes de chantier réglées ont quitté la page. **Rien de tout ce qui est du contenu n'est validé** — tous les textes neufs sont marqués « PROPOSITION À VALIDER » dans le HTML. ⏳ Un **plan d'allègement de l'étape 4.2** est proposé plus bas, non appliqué. |
+| **SNT — `t1` Internet** | ✅ **Validé sur le fond le 23/08/2026**, audit dicté page ouverte, les 26 étapes descendues une à une. **6 séances · 25 étapes** (5.5 supprimée) · 112 questions de QCM toutes relues · 27 réponses rédigées · 27 grilles de pré-correction, aucune orpheline · aucun bloc `.a-venir`. Les échafaudages ont quitté la page élève : neuf notes de chantier retirées, contenu consigné dans `DECISIONS.md`. Corrigés le même jour : le titre fantôme des « pour aller plus loin » (3.3 s'annonçait « À faire chez toi »), la porte d'intuition de 4.3 qui s'ouvrait à la frappe au lieu du partage, le clic muet sur une étape à venir, et la superposition de la carte de progression (deux rangées dès 6 nœuds, libellés sur deux lignes). Ajouté : un **dépôt de deux copies d'écran en 6.4** (`NET-D6`, `NET-D7`) pour garder trace des `ping` et `tracert`. ⏳ **Ce qui manque pour clore** : (1) le passage de vérification de Loïc **sur les fiches** ; (2) `ping`/`tracert` et `nslookup` **depuis un poste de la salle** — si l'ICMP sortant est filtré, l'étape 6.4 est à repenser ; (3) les **copies d'écran déposées ne remontent pas encore dans la fiche** (`CONSIGNES-sequence-SNT.md` §17.2). **Plus aucun contenu pédagogique ne manque** : la passerelle NSI, dernier trou, est abandonnée pour le moment et rangée dans `IDEES.md`. |
 | **SNT — module `m1` Représenter l'information** | 🔎 **Audits des 22 et 23/08 traités en entier.** 2 séances, 9 étapes, **6 QCM** (dont un bonus adossé à une vidéo), 9 exercices, **4 composants SVG maison** et un bilan de 12 questions. Le module pose le socle mathématique : ce qu'est une base, ce qu'est une puissance, la notation en indice (`1011₂`). **Apports du 23/08** : la décomposition positionnelle fait saisir *les chiffres* et pas seulement les poids, avec un exemple posé avant ; la base 60 se décompose en six temps ; le tableau des combinaisons **se complète** de 5 bits au cas général n ; l'atelier 1.5 est **découpé en trois groupes** A/B/C, chacun avec sa correction détaillée ; le classement passe à **11 écritures** et ses deux règles deviennent un indice ; l'écart de 2.2 se calcule sur la **formule générale** ; le bonus 1.1 devient **vidéo Veritasium + QCM de 5 questions**, et `REP-R1` un résumé. Les trois outils manipulables **annoncent enfin leur limite** (1 à 4095) et disent pourquoi ils refusent un nombre ; la flèche de la potence est **rectiligne**. Tout vérifié au navigateur : les 9 blocs passent « tout est juste » sur les réponses attendues, **0 erreur JS**, repli à 390 px sans débordement de page. **Le bloc de chantier et les badges « à valider » ont été retirés le 23/08** à la demande de Loïc — geste d'affichage, pas validation : **rien n'est validé, tout le contenu pédagogique reste une proposition.** |
-| **SNT — moteur partagé (`sequence-snt.js` v38)** | 🔧 **Deux attributs ajoutés le 23/08**, tous deux sans effet par défaut : `data-essais-avant-correction="N"` (+ `data-correction-bouton`) règle **par exercice** quand la correction détaillée se révèle — tout juste, ou au N-ième essai, de plein droit ou sur un bouton ; `data-valide-sur-interaction` valide une étape **sans exercice** à la première manipulation réelle (le nuancier de `m1` 2.3 restait « à faire » à vie). Non-régression mesurée sur `t1` et `t2` : 0 erreur, aucun attribut neuf, comportement inchangé. **La fiche de révision est refaite** (voir `CONSIGNES-sequence-SNT.md` §17) et `resume()` est exposé sur `EtatSNT` — **un seul comptage de progression** dans tout le dispositif. |
+| **SNT — moteur partagé (`sequence-snt.js` v39)** | 🔧 **Deux attributs ajoutés le 23/08**, tous deux sans effet par défaut : `data-essais-avant-correction="N"` (+ `data-correction-bouton`) règle **par exercice** quand la correction détaillée se révèle — tout juste, ou au N-ième essai, de plein droit ou sur un bouton ; `data-valide-sur-interaction` valide une étape **sans exercice** à la première manipulation réelle (le nuancier de `m1` 2.3 restait « à faire » à vie). Non-régression mesurée sur `t1` et `t2` : 0 erreur, aucun attribut neuf, comportement inchangé. **La fiche de révision est refaite** (voir `CONSIGNES-sequence-SNT.md` §17) et `resume()` est exposé sur `EtatSNT` — **un seul comptage de progression** dans tout le dispositif. |
 | **Base de données** | ✅ **en service.** Supabase, région **West EU (Paris)**. 7 tables, 10 policies RLS, 4 fonctions, sauvegarde hebdo + réveil quotidien. Pilote prouvé de bout en bout sur `t1`. |
 | **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
 | **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 (une seule colonne, un seul bord d'attaque), puis **audit de contenu des dix-sept outils le même jour** : accroche recentrée sur l'atelier, « effort » → « force » partout, `ε` pour l'écart et `θ` pour les angles de rotation, paliers 1 dégonflés de leur guidage, sous-questions concaténées, vecteurs fléchés et racines couvrantes. Deux figures produites (bras de levage de l'Outil 5, composantes de l'Outil 14), une dizaine corrigées. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé : **l'Outil 0 est le premier attendu en relecture**. Depuis le 19/08 le livret est **branché sur le dispositif de comptes** : connecté, le travail va en base et suit l'apprenti d'un appareil à l'autre ; sans compte, tout reste sur l'appareil comme avant, et la page le dit. Les deux codes de classe (`CFA26A`, `MVT26A`) sont ouverts : `bdd/schema/012-classes-cfa.sql` a été exécuté le 20/08. |
 | **Cahier de vacances** | 14 pages, 2 blocs 🚧. La partie la plus finie du dépôt. |
 | **ES Terminale** | frise fonctionnelle en local ; `serveur-frise/` et `ia-correction/` en chantier. |
 
-**Validation** : aucun contenu n'est validé à ce jour. La mise en ligne n'est pas
-un jalon — ce qui se suit, c'est le niveau de finition **validé par Loïc**, acte
+**Validation** : un seul contenu est validé à ce jour — **`t1` « Internet », sur
+le fond, le 23/08/2026**, et il n'est pas encore *clos* (il attend la vérification
+des fiches). Tout le reste est une proposition. La mise en ligne n'est pas un
+jalon — ce qui se suit, c'est le niveau de finition **validé par Loïc**, acte
 explicite, jamais présumé.
 
 ---
@@ -129,46 +131,15 @@ reste à écrire les fonctions correspondantes dans `progression.js` et à rempl
 l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 `localStorage`.
 
-## 📋 Plan d'allègement de l'étape 4.2 « Les câbles sous-marins » — proposition, rien n'est appliqué
+## 📋 L'étape 4.2 « Les câbles sous-marins » n'est pas allégée — tranché
 
-> Posé le 22/08/2026 à la demande de Loïc : « pas très sexy, avec son nombre de
-> questions et ses cadres gris en boucle ». **Aucune de ces pistes n'a été
-> exécutée** — le contenu pédagogique lui appartient. Il choisit, ou il écarte.
-
-**Ce que l'étape contient aujourd'hui** : 8 blocs numérotés, 3 textes à trous,
-1 QCM de 10 questions, 4 dépôts d'image, 4 réponses rédigées envoyées en
-correction. Le bilan ne s'ouvre qu'après **8 blocs de réponse** remplis.
-
-**Piste A — fusionner les deux atterrages français.** Les blocs 3 (*Amitié*, au
-Porge) et 4 (*2Africa*, à Marseille) posent la même question à deux câbles.
-Une seule réponse rédigée, en deux volets, ferait le même travail : −1 bloc
-compté, −1 rédaction à corriger.
-
-**Piste B — basculer la pose et les dangers en bonus.** Les blocs 7 (comment on
-pose un câble) et 8 (ce qui l'endommage) sont les deux plus « culture générale »
-de l'étape, et les deux dont le corrigé se lit comme un article. Déplacés dans
-le « pour aller plus loin » de la séance, ils sortent des 100 % : −2 blocs
-comptés, et le bonus y gagne en substance. Le « à retenir » les mentionne déjà,
-donc rien ne se perd pour qui n'ouvre pas le bonus.
-
-**Piste C — un seul dépôt d'image au lieu de quatre.** Les deux dépôts du bloc 5
-(un câble d'époque, une fibre d'aujourd'hui) faisaient sens quand rien
-n'illustrait la fibre ; depuis le 22/08 l'étape porte deux images de fibre en
-propre. Garder le dépôt « câble d'époque » (recherche réelle) et supprimer
-l'autre. Le dépôt du bloc 2 (carte de France) et celui du bloc 4 (parcours de
-2Africa) sont, eux, la trace du travail sur la carte : ils restent.
-
-**Piste D — casser la répétition visuelle.** Ce qui fatigue n'est pas seulement
-le nombre : c'est huit `.field` gris identiques à la file. Deux gestes
-possibles, indépendants du contenu — (1) sortir du cadre gris ce qui n'est pas
-une question (documents, tableaux, images), comme le QCM vient de l'être ;
-(2) marquer les blocs par leur **nature** plutôt que par leur numéro (lecture de
-carte · calcul · rédaction), pour que l'œil voie une progression au lieu d'une
-liste.
-
-**Effet cumulé de A + B + C** : de 8 à 5 blocs comptés, de 4 à 3 rédactions à
-corriger, de 4 à 3 dépôts. L'étape garde ses deux temps forts — le tableau de
-Lannion et le calcul d'ordre de grandeur.
+> Le plan d'allègement posé le 22/08 (pistes A, B, C, D) est **écarté** par Loïc
+> le 23/08/2026, à la clôture du thème. L'étape garde ses 8 blocs, ses 4 dépôts
+> et ses 4 rédactions. Motif : l'inégalité de volume entre séances est un outil
+> de gestion de classe, pas un défaut — voir `DECISIONS.md`, « Clôture de `t1` ».
+> **Ne pas rouvrir ces pistes.** Le seul coût à surveiller est celui de la
+> correction pour l'enseignant (14 réponses rédigées par élève sur la séance 4),
+> qui se mesurera au premier passage via le tableau de bord.
 
 ---
 
@@ -193,11 +164,16 @@ Lannion et le calcul d'ordre de grandeur.
 - [x] ~~**`t1` lot 3 — étape 6.4** (diagnostic réseau)~~ — ✅ **fait.** L'étape porte
       ses consignes, ses questions (`tracert` Google et Tokyo) et son « à retenir ».
       **Plus aucun bloc `.a-venir` dans `t1`**
-- [ ] **`t1` lot 4 — le bonus adressage** (`t1-bonus-adressage`, fin de séance 6) :
-      IPv6 et hexadécimal y sont encore en champs à trous — QCM à la place, et
-      beaucoup plus de sources. Bonus non `data-gate` : hors des 100 %
-- [ ] **`t1` lot 5 — fin de thème** : Filius en validation intégratrice + passerelle
-      NSI facultative (ports, masque de sous-réseau)
+- [x] ~~**`t1` lot 4 — le bonus adressage**~~ — ✅ **fait.** `t1-bonus-adressage`
+      (6.6) traite IPv6 et l'hexadécimal, hors des 100 %.
+- [x] ~~**`t1` — la passerelle NSI facultative**~~ — **abandonnée pour le moment**
+      (23/08). Elle n'avait jamais été écrite ; la déplacer dans le bonus 6.6
+      revenait à s'engager à la rédiger. Partie dans `IDEES.md`. `t1` n'a donc
+      **plus aucun contenu manquant**.
+- [ ] **`t1` — les copies d'écran déposées doivent remonter dans la fiche.**
+      `collectEtapes()` ignore les `[data-depot-apercu]` ; l'étape 6.4 en produit
+      deux, l'étape 4.2 quatre. Spécifié dans `CONSIGNES-sequence-SNT.md` §17.2,
+      **pas codé**.
 - [ ] Depuis un poste de la salle : `ping` / `tracert` — si l'ICMP sortant est bloqué,
       l'étape **6.4** tombe entière — puis `nslookup` sur les trois sites du relevé de **6.3**
       (pas de CDN, pas trois adresses dans le même /16) — remplaçants notés dans `DECISIONS.md`

@@ -664,6 +664,18 @@ elles commandent toute la conception :
    | les recherches personnelles, enquêtes familiales (`.perso`) | ❌ « Sources des documents » — sans intérêt sur une fiche de révision |
    | les notes de visionnage, le glossaire | |
    | les tableaux complétés, **saisies figées** (`ficheFiger()`) | |
+   | ⏳ **les copies d'écran déposées** (`[data-depot]`) — *à écrire* | |
+
+   ⏳ **Entrée à ajouter : les dépôts d'image.** Décidé le 23/08/2026 à la
+   clôture de `t1`, **pas encore codé**. `collectEtapes()` ramasse les échos de
+   réponse, les `.perso textarea`, les trous et les menus — mais pas les
+   `[data-depot-apercu]`. Or l'étape 6.4 de `t1` demande désormais deux copies
+   d'écran du terminal (`NET-D6`, `NET-D7`), et c'est **leur seule raison
+   d'être** : une fenêtre de commandes se referme et il n'en reste rien. Même
+   besoin pour les quatre dépôts de l'étape 4.2. L'image vit en **data URL dans
+   le DOM** ; elle se recopie donc telle quelle dans la fiche, sans réseau ni
+   base. Attention au poids du PDF : une copie d'écran non redimensionnée pèse
+   plusieurs mégaoctets.
 
 ### 17.3 Le piège technique à ne pas rouvrir
 
