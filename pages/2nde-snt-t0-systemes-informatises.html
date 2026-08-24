@@ -12,7 +12,46 @@
 <script src="../assets/js/progression.js?v=16"></script>
 <script src="../assets/js/seances-snt.js?v=15"></script>
 <script src="../assets/js/verrou-snt.js?v=2"></script>
-<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=39">
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=40">
+
+<style>
+  /* Démonstration des pastilles pour l'étape 1.1 (24/08/2026). Elles sont
+     DESSINÉES avec les vraies couleurs du moteur, et non figurées par des
+     emojis : un rond emoji ne ressemble pas à ce que l'élève a sous les
+     yeux, et c'est précisément la confusion qu'on veut lever. Local à
+     cette page — le moteur partagé n'a pas à porter une démonstration. */
+  .pip-demo{display:inline-block;width:16px;height:16px;border-radius:50%;vertical-align:-3px;
+    margin-right:6px;border:2px solid var(--france);background:var(--bg)}
+  .pip-demo.wait{background:var(--wait-wash);border-color:var(--wait)}
+  .pip-demo.attente{background:var(--bg);border-color:var(--ok);border-style:dashed}
+  .pip-demo.done{background:var(--ok);border-color:var(--ok)}
+  .pip2-demo{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;
+    border-radius:50%;vertical-align:-3px;margin-right:6px;font-size:10px;color:#fff;
+    border:1.5px solid var(--line);background:var(--surface)}
+  .pip2-demo.done{background:var(--ok);border-color:var(--ok)}
+  .pip2-demo.attente{background:var(--bg);color:var(--ok);border-color:var(--ok);border-style:dashed}
+  .pip2-demo.wait{background:var(--wait);border-color:var(--wait)}
+  .pip2-demo.cur{border-color:var(--activity);border-style:dashed;background:var(--activity-wash)}
+  .pip2-demo.locked{border-style:dashed;background:var(--surface-2)}
+
+  /* Surcouche d'annotation sur une photo (24/08/2026) : un cadre pointillé
+     autour de la languette PCIe, pour que la différence de longueur saute
+     aux yeux. Purement DÉCORATIVE — l'information est dans la légende, sinon
+     elle serait perdue pour un lecteur d'écran et sur la fiche imprimée. */
+  /* .duo-ill met la figure en flex : sans align-self, le conteneur s'étire sur
+     toute la colonne et l'annotation se décale de la moitié du blanc restant. */
+  .zone-annotee .annot-wrap{position:relative;display:inline-block;max-width:100%;line-height:0;align-self:center}
+  /* le cadre se cale sur l'IMAGE, pas sur la carte qui l'entoure : sans ce
+     conteneur ajusté, une image en object-fit décale l'annotation dans le vide */
+  .duo-ill figure.ill.zone-annotee img,
+  .zone-annotee .annot-wrap img{display:block;height:auto;width:auto;max-width:100%;max-height:230px}
+  .zone-annotee .annot{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .zone-annotee .annot-txt{position:absolute;transform:translateX(-50%);white-space:nowrap;
+    font-size:11px;font-family:"IBM Plex Mono",monospace;line-height:1.4;
+    color:var(--activity);background:rgba(255,255,255,.92);padding:1px 5px;border-radius:4px;pointer-events:none}
+  @media(max-width:720px){.zone-annotee .annot-txt{font-size:10px}}
+  @media print{.zone-annotee .annot,.zone-annotee .annot-txt{display:none}}
+</style>
 
 </head><body data-sequence="snt-t0">
 
@@ -61,7 +100,8 @@
     <span class="dot"><span class="pip"></span>À faire</span>
     <span class="dot"><span class="pip doing"></span>En cours</span>
     <span class="dot"><span class="pip wait"></span>En attente de correction</span>
-    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+    <span class="dot"><span class="pip rendu"></span>Rendu, pas encore relu</span>
+    <span class="dot"><span class="pip done"></span>Validé</span>
   </div>
 
   <!-- ===================== SÉANCE 1 ===================== -->
@@ -96,24 +136,37 @@
               <tr><th>Bloc</th><th>À quoi il sert</th></tr>
               <tr><td>🎯 <b>Objectif</b></td><td>Ce que tu dois savoir faire à la fin de l'étape</td></tr>
               <tr><td><b>Ressource</b></td><td>Une vidéo, un document, un podcast — de quoi chercher</td></tr>
-              <tr><td><b>« À retenir »</b></td><td>Ta trace de cours, <b>déjà rédigée</b> : rien à recopier</td></tr>
+              <tr><td><b>« À retenir »</b></td><td>Ta trace de cours, déjà rédigée : rien à recopier</td></tr>
               <tr><td><b>Exercice</b></td><td>À toi de jouer — c'est lui qui valide l'étape</td></tr>
             </table>
-            <p style="font-size:14.5px;margin:10px 0">Sur les étapes très fournies, le « à retenir » est <b>caché</b> au départ. À sa place, une ligne grise t'annonce <b>combien de réponses il te reste à donner</b> — et le bilan <b>s'ouvre tout seul</b> dès que l'exercice est fait. C'est voulu : si le bilan est sous tes yeux, tu ne cherches plus, tu recopies. Tu en verras deux, un en séance 2 et un en séance 3.</p>
 
-            <div class="block-label">Doc — les pastilles, à gauche de chaque étape</div>
+            <!-- A7 : captures du site à insérer ici, voir brief §A7 -->
+
+            <p style="font-size:14.5px;margin:10px 0">Sur les étapes très fournies, le « à retenir » est caché au départ. À sa place, une ligne grise t'annonce combien de réponses il te reste à donner, et le bilan s'ouvre tout seul dès que l'exercice est fait. Tu en verras deux, un en séance 2 et un en séance 3.</p>
+
+            <div class="block-label">Doc — les pastilles, et où on les trouve</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Deux endroits te disent où tu en es : la pastille à gauche de chaque étape, et la barre de progression sur le côté. Elles ne se dessinent pas tout à fait pareil.</p>
             <table class="doc-table">
-              <tr><th>Pastille</th><th>Ce que ça veut dire</th></tr>
-              <tr><td>⚪ vide</td><td>Étape à faire</td></tr>
-              <tr><td>🟡 jaune</td><td>Réponse envoyée, <b>en attente</b> de correction</td></tr>
-              <tr><td>🟢 verte</td><td><b>Validé</b> — et tu deviens une ressource pour tes camarades</td></tr>
+              <tr><th>Dans le fil du cours</th><th>Ce que ça veut dire</th></tr>
+              <tr><td><span class="pip-demo"></span> vide, cerclée de la couleur de la séance</td><td>Étape à faire. Bleu en séance 1, vert en séance 2, violet en séance 3</td></tr>
+              <tr><td><span class="pip-demo wait"></span> jaune pleine</td><td>Réponse envoyée, en attente de correction</td></tr>
+              <tr><td><span class="pip-demo attente"></span> verte, creuse, en pointillés</td><td>Ton travail est rendu — personne ne l'a encore relu</td></tr>
+              <tr><td><span class="pip-demo done"></span> verte pleine</td><td>Validé par ton professeur</td></tr>
+            </table>
+            <table class="doc-table" style="margin-top:10px">
+              <tr><th>Dans la barre de progression</th><th>Ce que ça veut dire</th></tr>
+              <tr><td><span class="pip2-demo done">✓</span> verte avec une coche</td><td>Validé</td></tr>
+              <tr><td><span class="pip2-demo attente">✓</span> verte creuse, en pointillés</td><td>Rendu, pas encore relu</td></tr>
+              <tr><td><span class="pip2-demo wait">…</span> jaune avec trois points</td><td>Envoyé, en attente</td></tr>
+              <tr><td><span class="pip2-demo cur"></span> cerclée d'orange en pointillés</td><td>L'étape où tu es en ce moment</td></tr>
+              <tr><td><span class="pip2-demo locked"></span> grise en pointillés, suivie de 🔒</td><td>Pas encore ouverte</td></tr>
             </table>
 
             <div class="block-label">Doc — les étapes arrivent une par une</div>
-            <p style="font-size:14.5px;margin:4px 0 10px">Tu ne vois <b>qu'une étape à la fois</b> : quand tu as fini, le bouton <b>« Étape suivante ↓ »</b> fait apparaître la suivante. C'est voulu — une page entière d'un coup, ça décourage. À gauche, la <b>barre de progression</b> te montre toutes les étapes de la séquence : celles que tu as faites, celle où tu en es, celles qui t'attendent. Tu peux cliquer dessus pour t'y rendre. Si elle te gêne, replie-la avec le bouton <b>⇤</b> — elle devient un bandeau en haut de page, et le bouton <b>⇥</b> la fait revenir.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Tu ne vois qu'une étape à la fois : quand tu as fini, le bouton <b>« Étape suivante ↓ »</b> fait apparaître la suivante. À gauche, la <b>barre de progression</b> te montre toutes les étapes de la séquence : celles que tu as faites, celle où tu en es, celles qui t'attendent. Tu peux cliquer dessus pour t'y rendre. Si elle te gêne, replie-la avec le bouton ⇤ — elle devient un bandeau en haut de page, et le bouton ⇥ la fait revenir.</p>
 
             <div class="block-label">Doc — ce qui est évaluable, et ce qui ne l'est pas</div>
-            <p style="font-size:14.5px;margin:4px 0 10px">Tout ce que tu lis n'a pas le même statut. Chaque bloc porte, en petit et sur sa droite, une <b>marque</b> qui te dit ce qu'on attend de toi. Ce n'est pas un piège : c'est fait pour que tu saches où mettre ton énergie quand tu révises. Regarde autour de toi sur cette page — elles y sont déjà toutes.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Tout ce que tu lis n'a pas le même statut. Chaque bloc porte, en petit et sur sa droite, une <b>marque</b> qui te dit ce qu'on attend de toi. Regarde autour de toi sur cette page — elles y sont déjà toutes.</p>
             <table class="doc-table">
               <tr><th>Marque</th><th>Ce que ça veut dire</th><th>Où tu la trouves</th></tr>
               <tr><td><code>★★</code></td><td><b>À savoir</b> — ça tombe en évaluation</td><td>les « à retenir », ton glossaire</td></tr>
@@ -131,22 +184,21 @@
               <tr><td><b>QCM</b></td><td>le navigateur, <b>en direct</b></td><td>Vert ou rouge immédiatement, puis la bonne réponse et son explication</td></tr>
               <tr><td><b>Texte à trous</b></td><td>le navigateur, <b>en direct</b></td><td>Les cases passent en vert, en orange (« presque ») ou en rouge</td></tr>
               <tr><td><b>Association, tri</b></td><td>le navigateur, <b>en direct</b></td><td>Pareil : chaque ligne juste ou fausse, et tu peux recommencer</td></tr>
-              <tr><td><b>Réponse rédigée</b></td><td><b>envoyée</b>, pré-corrigée, puis <b>validée par le professeur</b></td><td>🟡 en attente, puis 🟢 avec un retour écrit rien que pour toi</td></tr>
-              <tr><td><b>Réponse personnelle</b></td><td><b>jamais corrigée</b></td><td>Aucune bonne réponse : elle sert à lancer la discussion en classe</td></tr>
+              <tr><td><b>Réponse rédigée</b></td><td>envoyée, pré-corrigée, puis validée par le professeur</td><td>Pastille jaune en attente, puis verte, avec un retour écrit rien que pour toi</td></tr>
+              <tr><td><b>Réponse personnelle</b></td><td>jamais corrigée</td><td>Aucune bonne réponse : elle sert à lancer la discussion en classe</td></tr>
             </table>
-            <p style="font-size:14.5px;margin:10px 0">Sur les <b>réponses rédigées</b>, le <b>copier-coller est bloqué</b> et la page se floute pendant que tu écris. Ce n'est pas de la méfiance : c'est que la seule chose qui t'apprend quelque chose, ici, c'est de reformuler avec <em>tes</em> mots. Un paragraphe recopié ne te laisse rien.</p>
+            <p style="font-size:14.5px;margin:10px 0">Sur les réponses rédigées, le copier-coller est bloqué et la page se floute pendant que tu écris.</p>
 
             <div class="block-label">Doc — comment on débloque la suite</div>
             <p style="font-size:14.5px;margin:4px 0 10px"><b>Le mérite.</b> Les étapes marquées <span class="badge gate" style="vertical-align:middle">à valider</span> sont celles qui comptent. Quand elles sont <b>toutes vertes</b> dans une séance, la <b>séance suivante s'ouvre</b> — regarde le cadenas 🔒 dans le menu du haut.</p>
             <p style="font-size:14.5px;margin:4px 0 10px"><b>Le rythme de la classe.</b> Il y a une seconde règle, et elle est là pour qu'on avance ensemble : tu ne peux pas ouvrir plus de <b>deux séances d'avance</b> sur ce que la classe a réellement fait. Concrètement, le jour de la rentrée, rien n'étant encore terminé, tu as les <b>séances 1 et 2 ouvertes</b> et la <b>séance 3 fermée</b>. Elle s'ouvrira quand la classe aura terminé la première. Si une séance affiche ⏳ au lieu de 🔒, c'est celle-là : tu n'as rien raté, tu es simplement en avance.</p>
 
-            <div class="block-label">Doc — trois outils que tu croiseras toute l'année</div>
-            <p style="font-size:14.5px;margin:4px 0 10px"><b>📖 Ton glossaire</b> — le bouton en bas à droite, ouvert en permanence, dans toutes les séquences. Tu y retrouves les mots déjà définis et <b>tes propres définitions</b>. Tu en écriras une en séance 2.</p>
-            <p style="font-size:14.5px;margin:4px 0 10px"><b>🤝 L'entraide</b> — valider une question fait de toi une <b>ressource</b> pour les camarades bloqués dessus. On y revient en séance 3.</p>
-            <p style="font-size:14.5px;margin:4px 0 10px"><b>🔒 Le mode enseignant</b> — la télécommande de ton professeur, en haut de page. Elle ouvre tout, demande un code, et se coupe seule au bout de 30 minutes. On y revient aussi en séance 3.</p>
+            <div class="block-label">Doc — deux outils que tu croiseras toute l'année</div>
+            <p style="font-size:14.5px;margin:4px 0 10px"><b>📖 Ton glossaire</b> — le bouton en bas à droite, ouvert en permanence, dans toutes les séquences. Tu y retrouves les mots déjà définis et tes propres définitions. Tu en écriras une en séance 2.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px"><b>🔒 Le mode enseignant</b> — la télécommande de ton professeur, en haut de page. Elle ouvre tout, demande un code, et se coupe seule au bout de 30 minutes. On y revient en séance 3.</p>
 
             <div class="block-label">À retenir</div>
-            <div class="retain">Ce cours se suit <b>ici, à ton rythme</b> : les étapes apparaissent <b>une par une</b> et la <b>barre de gauche</b> te dit toujours où tu en es. Chaque bloc porte une <b>marque</b> (★★ à savoir · ★ à savoir faire · ○ support · ✦ bonus · — non évalué). QCM, trous, associations sont corrigés <b>en direct</b> par le navigateur ; les <b>réponses rédigées</b> partent chez ton professeur (🟡 puis 🟢) ; les <b>réponses personnelles</b> ne sont jamais corrigées. Une étape est validée <b>dès que tu as répondu</b>, juste ou faux. Toutes les étapes <span class="badge gate" style="vertical-align:middle">à valider</span> au vert <b>ouvrent la séance suivante</b>, dans la limite de <b>deux séances d'avance</b> sur la classe. Et en fin de séance, un rituel : <b>télécharger ta fiche</b>.</div>
+            <div class="retain">Ce cours se suit ici, à ton rythme : les étapes apparaissent une par une et la barre de gauche te dit toujours où tu en es. Chaque bloc porte une <b>marque</b> (★★ à savoir · ★ à savoir faire · ○ support · ✦ bonus · — non évalué). QCM, trous et associations sont corrigés <b>en direct</b> par le navigateur ; les <b>réponses rédigées</b> partent chez ton professeur (pastille jaune, puis verte) ; les <b>réponses personnelles</b> ne sont jamais corrigées. Une étape est validée dès que tu as répondu, juste ou faux. Toutes les étapes <span class="badge gate" style="vertical-align:middle">à valider</span> au vert ouvrent la séance suivante, dans la limite de <b>deux séances d'avance</b> sur la classe. Et en fin de séance, un rituel : ouvrir <b>ta fiche</b> et la déposer dans ton dossier SNT partagé sur OneDrive.</div>
 
             <div class="block-label">Vérifie que le mode d'emploi est passé</div>
             <div class="qcmbox" data-code="SYS-Q1">
@@ -164,7 +216,7 @@
   "c": "C'est le <b>mérite</b> qui ouvre la suite : toutes les étapes <b>à valider</b> au vert. Le cadenas du menu n'est pas un bouton, c'est un voyant."
  },
  {
-  "q": "Que signifie la pastille 🟡 à gauche d'une étape ?",
+  "q": "Que signifie la pastille jaune pleine à gauche d'une étape ?",
   "o": [
    "Ta réponse est partie et attend la relecture du professeur",
    "Tu as fait une erreur et tu dois recommencer l'exercice",
@@ -172,7 +224,7 @@
    "La séance sera bientôt verrouillée par ton professeur"
   ],
   "r": 0,
-  "c": "🟡 veut dire <b>envoyé, en attente</b>. Tu as fait ton travail — la suite ne dépend plus de toi."
+  "c": "Jaune veut dire <b>envoyé, en attente</b>. Tu as fait ton travail — la suite ne dépend plus de toi."
  },
  {
   "q": "Une réponse rédigée : qui la corrige, et comment ?",
@@ -221,24 +273,46 @@
  {
   "q": "Tu as fini une séance. Quel est le rituel, à chaque fois ?",
   "o": [
-   "Télécharger ma fiche et la déposer dans mon dossier SNT",
+   "Télécharger ma fiche et la déposer dans mon dossier SNT partagé sur OneDrive",
    "Recopier mes réponses sur une feuille et la rendre au professeur",
    "Fermer l'onglet : tout est enregistré, il n'y a plus rien à faire",
    "Envoyer un message au professeur pour dire que j'ai terminé"
   ],
   "r": 0,
-  "c": "La page enregistre bien ton travail — mais la <b>fiche</b> est ta trace à toi, relisible hors ligne, et c'est elle que tu déposes."
+  "c": "La page enregistre ton travail, mais la fiche est ta trace à toi. C'est elle que tu déposes dans le dossier SNT partagé avec ton professeur, sur OneDrive."
  },
  {
-  "q": "Le copier-coller est bloqué dans les réponses rédigées. Pourquoi ?",
+  "q": "Une étape porte la marque <code>○</code>. Qu'est-ce que ça veut dire ?",
   "o": [
-   "Pour empêcher les élèves de s'échanger leurs réponses par message",
-   "Parce que ce qui compte, ce sont tes mots — pas ceux d'un site",
-   "Parce que le site ne sait pas enregistrer un texte collé",
-   "Pour que la correction automatique fonctionne correctement"
+   "C'est un support : il contient de l'évaluable, toujours repris ensuite dans un « à retenir »",
+   "C'est un bonus : il peut rapporter une question supplémentaire en évaluation",
+   "C'est facultatif : on peut le sauter sans rien perdre",
+   "C'est un savoir-faire : il tombera sous forme d'exercice"
+  ],
+  "r": 0,
+  "c": "○ = support. Documents, vidéos, images : on y cherche, et l'essentiel est repris dans le « à retenir » qui suit."
+ },
+ {
+  "q": "Où retrouves-tu, en cours d'année, une définition que tu as écrite toi-même ?",
+  "o": [
+   "Dans le glossaire, le bouton 📖 en bas à droite, dans toutes les séquences",
+   "Dans la fiche de la séance où tu l'as écrite, et nulle part ailleurs",
+   "Nulle part : les définitions personnelles ne sont pas conservées",
+   "Dans le menu du haut, à côté des numéros de séance"
+  ],
+  "r": 0,
+  "c": "Le glossaire te suit toute l'année, d'une séquence à l'autre, avec les mots du cours et les tiens."
+ },
+ {
+  "q": "Tu ouvres la page depuis un favori posé directement sur une séquence. Qu'est-ce que tu perds ?",
+  "o": [
+   "Rien du tout : l'adresse est la même, le cours est le même",
+   "Le hub, qui est le seul à savoir où tu en es dans les huit thèmes",
+   "Ta progression, qui est effacée dès qu'on n'entre pas par le hub",
+   "Le mode enseignant, qui ne fonctionne qu'en venant du hub"
   ],
   "r": 1,
-  "c": "Reformuler, c'est ce qui fait apprendre. Recopier un paragraphe ne laisse rien — ni au correcteur, ni à toi."
+  "c": "Ta progression n'est pas perdue — elle est en base. Mais c'est le hub qui te dit où tu en es sur l'année : entre toujours par lui."
  }
 ]
               </script>
@@ -257,54 +331,57 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> reconnaître un système informatisé, y compris là où on ne l'attend pas.</span></div>
           </div>
           <div class="card-body">
-            <div class="block-label">Ressource</div>
-            <div class="res">
-              <span class="a-venir res-item">
-                <span class="res-code">SYS·1</span>
-                <span class="res-main"><span class="r-title">Diaporama « Les systèmes informatisés »</span><span class="r-type">Présentation · projetée en classe</span></span>
-                <span class="res-time">~15 min</span>
-              <span class="tv" aria-hidden="true">🚧</span><span class="sr"> — en travaux</span></span>
-            </div>
-
             <div class="block-label">Doc — ceux auxquels tu penses</div>
-            <p style="font-size:14.5px;margin:4px 0 10px">Un <b>système informatisé</b>, c'est une machine qui <b>traite de l'information</b> : elle reçoit des données, les calcule, et produit un résultat. Les trois premiers qui viennent à l'esprit sont ceux qu'on a sous la main.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Un <b>système informatisé</b>, c'est une machine qui <b>traite de l'information</b> : elle reçoit des données, les calcule, et produit un résultat. Les premiers qui viennent à l'esprit sont ceux qu'on a sous la main. Sous chaque image, la même lecture en trois temps : ce qui entre, ce qui est calculé, ce qui sort.</p>
             <div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0">
-              <figure class="ill" style="flex:1 1 200px;max-width:250px;margin:0">
+              <figure class="ill" style="flex:1 1 170px;max-width:220px;margin:0">
                 <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-ordinateur-bureau.jpg" alt="Ordinateur de bureau : unité centrale, écran, clavier et souris" loading="lazy">
-                <figcaption>L'ordinateur de bureau.</figcaption>
+                <figcaption><b>L'ordinateur de bureau.</b> <em>Entrée</em> : le clavier, la souris, le réseau. <em>Calcul</em> : tout ce qu'on lui demande — c'est la machine la plus générale de toutes. <em>Action</em> : l'écran, le son, l'imprimante.</figcaption>
               </figure>
-              <figure class="ill" style="flex:1 1 200px;max-width:250px;margin:0">
+              <figure class="ill" style="flex:1 1 170px;max-width:220px;margin:0">
                 <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-ordinateur-portable.jpg" alt="Ordinateur portable ouvert" loading="lazy">
-                <figcaption>L'ordinateur portable.</figcaption>
+                <figcaption><b>L'ordinateur portable.</b> Les mêmes entrées, les mêmes calculs, les mêmes sorties — mais tout est rassemblé dans un seul objet, et alimenté par une batterie.</figcaption>
               </figure>
-              <figure class="ill" style="flex:1 1 200px;max-width:250px;margin:0">
+              <figure class="ill" style="flex:1 1 170px;max-width:220px;margin:0">
+                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-tablette.jpg" alt="Tablette tactile posée sur son support, écran allumé" loading="lazy">
+                <figcaption><b>La tablette.</b> <em>Entrée</em> : le doigt sur la vitre, le micro, la caméra. <em>Calcul</em> : le même travail qu'un portable, sans clavier ni souris. <em>Action</em> : l'écran, le son, le réseau sans fil.</figcaption>
+              </figure>
+              <figure class="ill" style="flex:1 1 170px;max-width:220px;margin:0">
                 <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-smartphone.jpg" alt="Smartphone vu de dos et de face" loading="lazy">
-                <figcaption>Le smartphone — un ordinateur de poche.</figcaption>
+                <figcaption><b>Le smartphone.</b> <em>Entrée</em> : le doigt sur la vitre, le micro, l'appareil photo, une douzaine de capteurs. <em>Calcul</em> : autant qu'un ordinateur d'il y a dix ans. <em>Action</em> : l'écran, le haut-parleur, la vibration, le réseau.</figcaption>
               </figure>
             </div>
 
             <div class="block-label">Doc — ceux auxquels tu ne penses pas</div>
-            <p style="font-size:14.5px;margin:4px 0 10px">C'est là que ça devient intéressant. Une <b>borne de bus</b> qui calcule l'heure du prochain passage, une <b>caisse automatique</b> qui pèse tes articles et rend la monnaie, un <b>lave-linge</b> qui adapte son cycle à la charge du tambour : aucun de ces objets ne ressemble à un ordinateur, et tous en contiennent un. Sans écran d'ordinateur, sans clavier — mais avec un processeur, de la mémoire, des capteurs, un programme.</p>
-            <p style="font-size:14.5px;margin:4px 0 10px">Le critère n'est donc <b>pas la forme</b> de l'objet. C'est : est-ce qu'il <b>reçoit</b> de l'information, la <b>traite</b>, et <b>agit</b> en conséquence ? Si oui, c'est un système informatisé. Toute une séquence de l'année leur sera consacrée : l'<b>informatique embarquée</b>.</p>
-            <!-- CHANTIER -->
-            <aside class="chantier">
-              <div class="cl">🔍 23/08/2026 — trois images à faire</div>
-              L'accroche de la séance repose sur des systèmes « qui n'en ont pas l'air » : <b>borne de bus</b>, <b>caisse automatique</b>, <b>lave-linge</b>. Aucun des documents source ne les couvre, et rien de tel n'est encore dans le dossier d'images. Le cadre ci-dessous tient la place ; la mise en page ne bougera plus quand les photos arriveront.
-              <br><br>Deux autres vignettes manquent au même endroit : <b>montre connectée</b> et <b>baie de serveurs</b>.
-            </aside>
-            <!-- /CHANTIER -->
+            <p style="font-size:14.5px;margin:4px 0 10px">C'est là que ça devient intéressant. Un <b>valideur</b> de bus qui lit une carte et décide en une seconde si le voyage est payé, une <b>caisse automatique</b> qui pèse les articles et rend la monnaie, un <b>lave-linge</b> qui adapte son cycle à la charge du tambour : aucun de ces objets ne ressemble à un ordinateur, et tous en contiennent un. Sans écran d'ordinateur, sans clavier — mais avec un processeur, de la mémoire, des capteurs et un programme.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le critère n'est donc pas la forme de l'objet. C'est : est-ce qu'il reçoit de l'information, la traite, et agit en conséquence ? Si oui, c'est un système informatisé. Toute une séquence de l'année leur sera consacrée : l'<b>informatique embarquée</b>.</p>
             <div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0">
-              <div style="flex:1 1 200px;max-width:250px;height:170px;border:2px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:var(--ink-faint);padding:10px">🚧 Borne de bus<br>image à venir</div>
-              <div style="flex:1 1 200px;max-width:250px;height:170px;border:2px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:var(--ink-faint);padding:10px">🚧 Caisse automatique<br>image à venir</div>
-              <div style="flex:1 1 200px;max-width:250px;height:170px;border:2px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:var(--ink-faint);padding:10px">🚧 Lave-linge<br>image à venir</div>
+              <figure class="ill" style="flex:1 1 200px;max-width:250px;margin:0">
+                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-valideur-navigo.jpg" alt="Valideur de titre de transport Île-de-France Mobilités dans un bus, avec sa zone de lecture sans contact" loading="lazy">
+                <figcaption><b>Le valideur de transport.</b> <em>Entrée</em> : le numéro de ta carte, lu sans contact. <em>Calcul</em> : l'abonnement est-il valide aujourd'hui, sur cette ligne ? <em>Action</em> : le voyant passe au vert et le passage est enregistré.<span class="src">Lyon-St-Clair, 2023 — Wikimedia Commons, CC BY-SA 4.0</span></figcaption>
+              </figure>
+              <figure class="ill" style="flex:1 1 200px;max-width:250px;margin:0">
+                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-caisse-automatique.jpg" alt="Un homme utilise une caisse en libre-service dans un supermarché, écran tactile et lecteur de code-barres" loading="lazy">
+                <figcaption><b>La caisse automatique.</b> <em>Entrée</em> : le code-barres de chaque article, et le poids posé sur le plateau. <em>Calcul</em> : le prix, le total, et la vérification que le poids correspond bien à l'article scanné. <em>Action</em> : elle affiche le total, encaisse et imprime le ticket.<span class="src">Eurofruit, 2008 — Wikimedia Commons, CC BY 2.0</span></figcaption>
+              </figure>
+              <figure class="ill" style="flex:1 1 200px;max-width:250px;margin:0">
+                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-lave-linge.jpg" alt="Lave-linge à hublot, avec son bandeau de commandes et son afficheur numérique" loading="lazy">
+                <figcaption><b>Le lave-linge.</b> <em>Entrée</em> : le programme choisi, le poids du linge, la température de l'eau. <em>Calcul</em> : la durée du cycle, la vitesse d'essorage, la quantité d'eau nécessaire. <em>Action</em> : il commande le moteur, la vanne et la résistance — et affiche le temps restant.<span class="src">LGEPR, 2010 — Wikimedia Commons, CC BY 2.0</span></figcaption>
+              </figure>
             </div>
             <div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0">
-              <div style="flex:1 1 200px;max-width:250px;height:150px;border:2px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:var(--ink-faint);padding:10px">🚧 Montre connectée<br>image à venir</div>
-              <div style="flex:1 1 200px;max-width:250px;height:150px;border:2px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:var(--ink-faint);padding:10px">🚧 Baie de serveurs<br>image à venir</div>
+              <figure class="ill" style="flex:1 1 200px;max-width:250px;margin:0">
+                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-montre-connectee.jpg" alt="Trois montres connectées Apple Watch de générations différentes, posées côte à côte" loading="lazy">
+                <figcaption><b>La montre connectée.</b> <em>Entrée</em> : les mouvements du poignet, le rythme cardiaque, l'heure. <em>Calcul</em> : le nombre de pas, les calories, la détection d'une chute. <em>Action</em> : elle affiche, vibre, et envoie tout au téléphone.<span class="src">Blake Patterson, 2021 — Wikimedia Commons, CC BY 2.0</span></figcaption>
+              </figure>
+              <figure class="ill" style="flex:1 1 200px;max-width:250px;margin:0">
+                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-baie-serveurs.jpg" alt="Salle de calcul du CERN : rangées de baies de serveurs alignées" loading="lazy">
+                <figcaption><b>La baie de serveurs.</b> <em>Entrée</em> : des milliers de demandes envoyées par des machines du monde entier. <em>Calcul</em> : chercher la donnée demandée, la préparer. <em>Action</em> : renvoyer la réponse à chacun, en quelques millisecondes. Ici, le centre de calcul du CERN.<span class="src">Hugovanmeijeren, 2010 — Wikimedia Commons, CC BY-SA 3.0</span></figcaption>
+              </figure>
             </div>
 
             <div class="block-label">À retenir</div>
-            <div class="retain">Un <b>système informatisé</b> est une machine qui <b>traite de l'information</b> : elle reçoit des données, les calcule, et agit. Ordinateur de bureau, ordinateur portable, tablette, smartphone, montre connectée — mais aussi borne de bus, caisse automatique, lave-linge : <b>la forme de l'objet ne dit rien</b>. Tous partagent les mêmes organes, plus ou moins miniaturisés.</div>
+            <div class="retain">Un <b>système informatisé</b> est une machine qui <b>traite de l'information</b> : elle reçoit des données, les calcule, et agit. Ordinateur de bureau, ordinateur portable, tablette, smartphone, montre connectée — mais aussi valideur de bus, caisse automatique, lave-linge : la forme de l'objet ne dit rien. Tous partagent les mêmes organes, plus ou moins miniaturisés.</div>
 
             <div class="block-label">Vérifie ta compréhension</div>
             <div class="qcmbox" data-code="SYS-Q2">
@@ -325,7 +402,7 @@
   "q": "Parmi ces quatre objets, lequel n'est <b>pas</b> un système informatisé ?",
   "o": [
    "Une caisse automatique de supermarché qui pèse les articles",
-   "Une borne de bus qui affiche l'heure du prochain passage",
+   "Un valideur de bus qui vérifie un titre de transport sans contact",
    "Un thermomètre à mercure accroché derrière une fenêtre",
    "Une montre connectée qui compte le nombre de pas de la journée"
   ],
@@ -342,17 +419,6 @@
   ],
   "r": 1,
   "c": "Processeur, mémoire vive, stockage, système d'exploitation, connectique : tout y est. C'est le sujet de la séance 2."
- },
- {
-  "q": "Quel mot désigne un système informatisé <b>relié à un réseau</b> ?",
-  "o": [
-   "Un serveur, puisqu'il est raccordé au reste des machines du monde",
-   "Un périphérique, comme le sont le clavier, la souris ou l'imprimante",
-   "Un terminal, parce qu'il se trouve à l'extrémité du réseau",
-   "Un routeur, du nom de l'appareil qui achemine les informations"
-  ],
-  "r": 2,
-  "c": "<b>Terminal</b> : la machine qui se trouve au <b>bout</b> du réseau, là où l'utilisateur est. Le mot revient tout au long de l'année."
  }
 ]
               </script>
@@ -371,6 +437,8 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> distinguer trois choses qu'on confond tout le temps : les <b>machines</b>, le <b>réseau</b> qui les relie, et les <b>services</b> qui circulent dessus.</span></div>
           </div>
           <div class="card-body">
+            <p style="font-size:14px;color:var(--ink-soft);margin:4px 0 12px;padding:10px 13px;background:var(--surface-2);border-left:3px solid var(--link);border-radius:0 9px 9px 0">🧭 <b>Beaucoup de mots nouveaux, et c'est normal.</b> Cette étape est un survol. Internet, le Web, les routeurs, les câbles sous-marins, les serveurs : chacun de ces mots a une séquence entière qui l'attend dans l'année. Ici, on veut juste que tu voies <b>la différence entre le réseau et ce qui circule dessus</b>. Tu n'as rien à apprendre par cœur d'autre que ça.</p>
+
             <div class="block-label">Doc — trois étages qu'on mélange</div>
             <p style="font-size:14.5px;margin:4px 0 10px">Quand tu regardes une vidéo, trois choses différentes travaillent en même temps, et on leur donne souvent le même nom — « Internet ». Il faut les séparer une fois pour toutes, parce que les deux séquences suivantes de l'année portent précisément là-dessus.</p>
 
@@ -473,7 +541,7 @@
               <div class="verdict"></div>
               <div class="reveal" data-reveal>
                 <div class="rl">🎓 Tu viens d'utiliser le troisième type d'exercice</div>
-                Ta réponse est <b>partie</b> : elle attend la relecture de ton professeur, et ta pastille est passée en 🟡. Une fois <b>validée</b>, elle passera en 🟢 — et tu pourras alors <b>consulter, corriger et conseiller</b> les camarades bloqués sur la même question. Cette entraide comptera dans ta <b>note d'investissement</b> : bien répondre, c'est aussi gagner le droit d'aider.
+                Ta réponse est <b>partie</b> : elle attend la relecture de ton professeur, et ta pastille est passée au jaune. Une fois <b>validée</b>, elle passera au vert, avec un retour écrit rien que pour toi.
               </div>
             </div>
           </div>
@@ -490,15 +558,20 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir produire, à la fin de chaque séance, la trace écrite de ton travail.</span></div>
           </div>
           <div class="card-body">
-            <p style="font-size:14.5px;margin:4px 0 10px">Cette page <b>enregistre ton travail</b> : si tu la rouvres demain, tes réponses seront là, et ton professeur les voit de son côté. Alors pourquoi une fiche ?</p>
-            <p style="font-size:14.5px;margin:4px 0 10px">Parce qu'une fiche, c'est autre chose qu'un enregistrement. C'est un <b>document à toi</b>, que tu peux relire sans connexion, annoter, imprimer avant un contrôle, garder après le lycée. Le site rassemble pour toi les « à retenir » de la séance, tes réponses rédigées <b>avec la correction du professeur</b>, tes tableaux complétés, tes définitions de glossaire — et te le rend en un seul fichier.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">La page enregistre ton travail, et ton professeur le voit de son côté. La <b>fiche</b>, elle, est un document à toi : relisible sans connexion, annotable, imprimable avant un contrôle. Le site y rassemble les « à retenir » de la séance, les images à reconnaître, tes réponses rédigées avec la correction du professeur, tes tableaux complétés et tes définitions de glossaire — en un seul fichier.</p>
+
+            <figure class="ill" style="margin:12px 0">
+              <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-capture-barre-fiche.png" alt="Barre de fin de séance : un bouton vert « Ouvrir ma fiche (PDF) », un bouton « Recommencer », et le message expliquant d'enregistrer la fiche puis de la déposer sur OneDrive" loading="lazy">
+              <figcaption><b>La barre que tu trouveras en bas de chaque séance.</b> Le bouton vert ouvre ta fiche. Le bouton <b>Recommencer</b> repart d'une séance vierge — utile pour te réinterroger avant un contrôle, mais ouvre et enregistre ta fiche <b>avant</b>, sinon tes réponses partent avec.</figcaption>
+            </figure>
+
             <table class="doc-table">
               <tr><th>#</th><th>Geste</th></tr>
-              <tr><td><code>1</code></td><td>Clique sur <b>📥 Télécharger ma fiche</b>, le bouton vert en bas de la séance — ou dans la fenêtre « Séance terminée »</td></tr>
-              <tr><td><code>2</code></td><td>La fiche s'ouvre dans un onglet. <b>Enregistre-la en PDF</b> (Imprimer → Enregistrer au format PDF)</td></tr>
-              <tr><td><code>3</code></td><td><b>Range-la dans ton classeur numérique</b> — un dossier SNT, un fichier par séance, nommé clairement</td></tr>
+              <tr><td><code>1</code></td><td>Clique sur <b>📄 Ouvrir ma fiche (PDF)</b>, le bouton vert en bas de la séance — ou dans la fenêtre « Séance terminée »</td></tr>
+              <tr><td><code>2</code></td><td>La fiche s'ouvre dans un onglet. Enregistre-la en PDF (Imprimer → Enregistrer au format PDF)</td></tr>
+              <tr><td><code>3</code></td><td>Dépose-la dans ton <b>dossier SNT partagé sur OneDrive</b> — un fichier par séance, nommé clairement</td></tr>
             </table>
-            <div class="retain" style="margin-top:12px">À la fin de <b>chaque</b> séance de l'année : <b>télécharger ta fiche</b> et la <b>ranger dans ton classeur numérique</b>. Un dossier SNT, <b>un fichier par séance</b>, un nom clair. Bien organiser ses fichiers, ce n'est pas de la coquetterie : c'est déjà manipuler une <b>donnée structurée</b> — tout un thème de l'année y sera consacré. Quand tu auras validé toute la séance, la fenêtre 🎉 te le rappellera.</div>
+            <div class="retain" style="margin-top:12px">À la fin de chaque séance de l'année : ouvrir <b>ta fiche</b>, l'enregistrer en PDF, et la déposer dans ton <b>dossier SNT partagé sur OneDrive</b>. Un fichier par séance, un nom clair : c'est déjà manipuler une <b>donnée structurée</b>, et tout un thème de l'année y sera consacré. Quand tu auras validé toute la séance, la fenêtre 🎉 te le rappellera.</div>
           </div>
         </div>
       </div>
@@ -552,7 +625,8 @@
               <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
             </div>
-            <p style="font-size:13.5px;color:var(--ink-soft)">😎 Défi geek : dans toutes les séquences se cachent des <b>easter eggs</b>. Le premier de l'année : ouvre la console du navigateur (<code>F12</code>)…</p>
+            <p style="font-size:13.5px;color:var(--ink-soft)">😎 <b>Défi geek.</b> Dans chaque séquence se cachent des messages pour ceux qui vont regarder sous le capot. Le premier de l'année : ouvre la <b>console du navigateur</b> avec la touche <code>F12</code> (ou clic droit → <b>Inspecter</b>), va dans l'onglet <em>Console</em>, et lis ce qui s'y trouve.</p>
+            <p style="font-size:13.5px;color:var(--ink-soft);margin-top:6px">💡 <b>Sur PC uniquement.</b> Cette console et l'inspecteur d'éléments existent sur les ordinateurs, pas sur iPad : Safari n'en a pas. Si tu es sur tablette, garde le défi pour la salle informatique.</p>
           </div>
         </div>
       </div>
@@ -584,11 +658,8 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir ce qu'on appelle un <b>terminal</b>, et où s'arrête l'<b>unité centrale</b>.</span></div>
           </div>
           <div class="card-body">
-            <div class="biblio" data-podcast="pc-t0-machine">
-              <div class="bl">🎧 Pour écouter — d'où vient l'ordinateur ?</div>
-              <a href="https://www.radiofrance.fr/franceculture/podcasts/ils-ont-change-le-monde/1942-1946-l-eniac-le-premier-ordinateur-electronique-8504767" target="_blank" rel="noopener">🎧 1942-1946 : l'ENIAC, le premier ordinateur électronique · <i>La révolution numérique — France Culture, 2026 · 1 h</i> — l'ENIAC, 30 tonnes, 1945</a>
-              <a href="https://www.radiofrance.fr/franceculture/podcasts/ils-ont-change-le-monde/1842-1843-la-naissance-du-langage-informatique-9451530" target="_blank" rel="noopener">🎧 1842-1843 : la naissance du langage informatique · <i>La révolution numérique — France Culture, 2026 · 1 h</i> — le tout premier programme, écrit par Ada Lovelace en 1842</a>
-            </div>
+            <div class="block-label">Doc — deux moitiés, le matériel et le logiciel</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Un système informatique se sépare en deux. Le <b>matériel</b> (<em>hardware</em> en anglais) : tout ce qu'on peut toucher — les composants, les câbles, les cartes. Le <b>logiciel</b> (<em>software</em>) : les programmes et le système d'exploitation, qui n'existent que sous forme d'instructions. Cette séance et la suivante ne parlent que de matériel. Le logiciel revient en séance 3, avec le système d'exploitation.</p>
 
             <div class="block-label">Doc — le mot juste</div>
             <p style="font-size:14.5px;margin:4px 0 10px">Un <b>terminal informatique</b> est un système informatisé placé à l'<b>extrémité du réseau</b> : c'est la machine par laquelle un humain entre dans le réseau, ou en sort. Le mot vient de là — <em>terminus</em>, le bout de la ligne. Ordinateur de bureau, portable, tablette, smartphone, console : tous sont des terminaux dès qu'ils sont connectés.</p>
@@ -663,12 +734,44 @@
         </div>
       </div>
 
-      <!-- 2.2 — L'alimentation -->
+      <!-- 2.2 — DÉCOUVERTE : poste de visionnage, sans QCM (décision 24/08/2026).
+           PAS de data-gate : un textarea[data-notes] est bien enregistré et
+           remonte dans la fiche, mais il ne valide aucune étape — la séance
+           deviendrait impossible à terminer. -->
+      <div class="step" data-step data-cle="t0-video-fonctionnement-ordinateur">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2</div>
+            <h3 class="step-title">Une vidéo pour ouvrir le capot</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> avoir une première vue d'ensemble des composants, avant de les reprendre un par un.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Poste de visionnage — de quoi est fait un ordinateur</div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>Une vidéo de <b>Codeur Pro</b> — dix minutes. Casque recommandé&nbsp;; mets en pause autant que tu veux pour prendre des notes.</span></p>
+                <iframe data-src="https://www.youtube-nocookie.com/embed/85XUJXHbjBo" height="315" frameborder="0" allowfullscreen title="Codeur Pro — comment fonctionne un ordinateur"></iframe>
+              </div>
+              <div class="poste-corps">
+                <div class="poste-notes">
+                  <div class="pl">📝 Mes notes de visionnage</div>
+                  <textarea data-notes="SYS-2bvideo" placeholder="Note les noms des composants que la vidéo cite, et pour chacun, en trois mots, ce qu'il fait. Si un mot t'échappe, note-le quand même : on le reprend dans les étapes qui suivent." aria-label="Notes de visionnage sur le fonctionnement d'un ordinateur"></textarea>
+                  <div class="free-meta" data-notes-etat style="margin-top:6px">Tes notes restent affichées pendant toute la séance, et tu les retrouveras à ta prochaine visite.</div>
+                </div>
+              </div>
+            </div>
+            <p style="font-size:14.5px;margin:12px 0 0">Tu n'as rien à retenir par cœur de cette vidéo. Les étapes qui suivent reprennent chaque composant, un par un, dans le même ordre.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 — L'alimentation -->
       <div class="step" data-step data-gate data-cle="t0-alimentation">
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">L'alimentation — du secteur aux composants</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre pourquoi une machine ne se branche pas directement sur le 230 V, et ce que fait le bloc d'alimentation.</span></div>
           </div>
@@ -708,25 +811,20 @@
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 2.4 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">La carte mère, le processeur, la mémoire vive</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> nommer les trois organes centraux d'une machine et dire, pour chacun, à quoi il sert.</span></div>
           </div>
           <div class="card-body">
             <div class="block-label">Doc — la carte mère : le plan de la ville</div>
-            <p style="font-size:14.5px;margin:4px 0 10px">La <b>carte mère</b> est le grand circuit imprimé sur lequel tout se branche. Elle ne calcule pas : elle <b>relie</b>. Processeur, mémoire vive, cartes d'extension, disques, ports de la façade arrière — tout passe par elle. C'est aussi elle qui porte la <b>ROM</b>, une petite mémoire qui n'oublie jamais : elle contient le programme de démarrage, qu'on appelle le <b><code>BIOS</code></b> ou, sur les machines modernes, l'<b><code>UEFI</code></b>. C'est lui qui réveille la machine, vérifie que le matériel répond, puis va chercher le système d'exploitation sur le disque.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">La <b>carte mère</b> est le grand circuit imprimé sur lequel tout se branche. Elle ne calcule pas : elle <b>relie</b>. Processeur, mémoire vive, cartes d'extension, disques, ports de la façade arrière — tout passe par elle.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Ces liaisons ont un nom : le <b>bus</b>. C'est le faisceau de pistes par lequel les données circulent d'un composant à l'autre — du processeur vers la mémoire, de la mémoire vers la carte graphique. Si la carte mère est le plan de la ville, le bus, ce sont ses avenues.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px"><b>La ROM et le BIOS.</b> La carte mère porte aussi une petite mémoire qui n'oublie jamais, même débranchée : la <b>ROM</b>. Elle contient le <b><code>BIOS</code></b>, le programme de démarrage. C'est lui qui réveille la machine quand tu appuies sur le bouton, vérifie que le matériel répond, puis va chercher le système d'exploitation sur le disque. Sur les machines récentes, il s'appelle <b><code>UEFI</code></b> et fait la même chose en mieux.</p>
 
             <figure class="ill" style="max-width:662px;margin-left:auto;margin-right:auto"><span class="loupe">⤢ agrandir</span>
               <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-mere.jpg" alt="Carte mère vue de dessus : emplacement du processeur, quatre barrettes de mémoire vive bleues, connecteurs d'extension blancs, connecteur d'alimentation" loading="lazy">
               <figcaption>Une carte mère vue de dessus. On distingue le <b>socle du processeur</b> (le carré au centre-droite), les quatre emplacements de <b>mémoire vive</b> (les barrettes bleues), les <b>connecteurs d'extension</b> blancs à gauche, et les ports de la façade arrière en haut à droite.</figcaption>
             </figure>
-            <!-- CHANTIER -->
-            <aside class="chantier">
-              <div class="cl">🔍 23/08/2026 — une carte mère en haute définition</div>
-              L'image ci-dessus fait <b>640 × 480</b>. C'est assez pour illustrer, <b>pas</b> pour un exercice de légende en pleine largeur : les repères seraient illisibles. L'exercice de légende de cette séance est donc porté par la <b>photo de l'intérieur de la machine</b> (étape 2.6, 1100 px). Si tu veux en plus une légende sur la carte mère seule, il faut une image d'au moins <b>900 px de large</b>.
-            </aside>
-            <!-- /CHANTIER -->
-
             <div class="block-label">Doc — le processeur : celui qui calcule</div>
             <p style="font-size:14.5px;margin:4px 0 10px">Le <b>processeur</b> — <b><code>CPU</code></b>, pour <i lang="en">Central Processing Unit</i>, « unité centrale de traitement » — est la puce qui exécute les instructions. Absolument tout ce que fait la machine finit par passer par lui, quelques milliards de fois par seconde. On le juge sur deux chiffres :</p>
             <table class="doc-table">
@@ -778,22 +876,30 @@
             <!-- « À RETENIR » MASQUÉ — mécanisme présenté en 1.1, mis en action ici.
                  Le bouton reste inactif tant que l'exercice n'est pas fait. -->
             <div class="block-label">Le bilan de l'étape</div>
-            <p style="font-size:14.5px;margin:2px 0 8px">Voici le premier <b>« à retenir » masqué</b> de l'année, celui qu'on t'annonçait à l'étape 1.1. Tant que l'exercice ci-dessus n'est pas terminé, la ligne grise en dessous te dit ce qu'il reste à répondre ; le bilan <b>s'ouvre tout seul</b> ensuite. Si tu pouvais le lire avant, tu y recopierais tes réponses au lieu de chercher.</p>
+            <p style="font-size:14.5px;margin:2px 0 8px">Voici le premier <b>« à retenir » masqué</b> de l'année, celui qu'on t'annonçait à l'étape 1.1. Tant que l'exercice ci-dessus n'est pas terminé, la ligne grise en dessous te dit ce qu'il reste à répondre ; le bilan s'ouvre tout seul ensuite.</p>
             <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
             <div class="bilan-wrap" data-bilan-wrap hidden>
               <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
-              <div class="retain">La <b>carte mère</b> relie tout sans rien calculer ; elle porte la <b>ROM</b>, qui contient le programme de démarrage — le <b><code>BIOS</code></b>, ou l'<b><code>UEFI</code></b> sur les machines récentes. Le <b>processeur</b> (<b><code>CPU</code></b>, <i lang="en">Central Processing Unit</i>) exécute les instructions&nbsp;: on le juge à sa <b>fréquence</b> en <b><code>GHz</code></b> et à son nombre de <b>cœurs</b>. La <b>mémoire vive</b> (<b><code>RAM</code></b>, <i lang="en">Random Access Memory</i>) est le plan de travail&nbsp;: très rapide, elle <b>s'efface à l'extinction</b>, et quand elle sature, « <b>ça rame</b> ».</div>
+              <div class="retain">
+                <ul style="margin:0;padding-left:18px">
+                  <li>Un système informatique a deux moitiés&nbsp;: le <b>matériel</b> (ce qu'on touche) et le <b>logiciel</b> (les programmes).</li>
+                  <li>La <b>carte mère</b> relie tout sans rien calculer. Les données y circulent par le <b>bus</b>.</li>
+                  <li>Elle porte la <b>ROM</b>, qui contient le <b><code>BIOS</code></b> — le programme de démarrage (<code>UEFI</code> sur les machines récentes).</li>
+                  <li>Le <b>processeur</b> (<code>CPU</code>) exécute les instructions. Deux chiffres le décrivent&nbsp;: sa <b>fréquence</b> en <code>GHz</code> et son <b>nombre de cœurs</b>.</li>
+                  <li>La <b>mémoire vive</b> (<code>RAM</code>) est le plan de travail&nbsp;: très rapide, elle s'efface à l'extinction. Quand elle sature, «&nbsp;ça rame&nbsp;».</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 2.4 — Les cartes d'extension + dépôt de copie d'écran -->
+      <!-- 2.5 — Les cartes d'extension + dépôt de copie d'écran -->
       <div class="step" data-step data-gate data-cle="t0-cartes-extension">
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.4 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 2.5 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Les cartes d'extension</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir ce qu'on ajoute à une carte mère, et par quel connecteur — puis déposer une copie d'écran, un nouveau geste du cours.</span></div>
           </div>
@@ -835,42 +941,50 @@
             </table>
 
             <div class="duo-ill">
-              <figure class="ill"><span class="loupe">⤢ agrandir</span>
-                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-graphique.jpg" alt="Carte graphique équipée de deux gros ventilateurs rouges et noirs" loading="lazy">
-                <figcaption>Une <b>carte graphique</b>&nbsp;: deux ventilateurs, un radiateur massif. C'est la carte qui consomme et chauffe le plus.</figcaption>
+              <figure class="ill zone-annotee"><span class="loupe">⤢ agrandir</span>
+                <span class="annot-wrap">
+                  <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-graphique.jpg" alt="Carte graphique équipée de deux gros ventilateurs rouges et noirs" loading="lazy">
+                  <svg class="annot" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <rect x="38" y="69" width="42" height="15" fill="none" stroke="var(--activity)" stroke-width="0.9" stroke-dasharray="2 1.5" vector-effect="non-scaling-stroke"/>
+                  </svg>
+                  <span class="annot-txt" style="left:59%;top:88%">languette PCIe x16</span>
+                </span>
+                <figcaption>Une <b>carte graphique</b>&nbsp;: deux ventilateurs, un radiateur massif. C'est la carte qui consomme et chauffe le plus. Connecteur <code>PCIe x16</code> — le plus long.</figcaption>
               </figure>
-              <figure class="ill"><span class="loupe">⤢ agrandir</span>
-                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-son.jpg" alt="Carte son avec sa rangée de prises jack colorées" loading="lazy">
-                <figcaption>Une <b>carte son</b> et sa rangée de prises jack colorées — le code couleur est expliqué en séance 3.</figcaption>
+              <figure class="ill zone-annotee"><span class="loupe">⤢ agrandir</span>
+                <span class="annot-wrap">
+                  <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-controleur-usb.jpg" alt="Carte contrôleur USB portant quatre ports USB bleus" loading="lazy">
+                  <svg class="annot" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <rect x="84" y="34" width="15" height="17" fill="none" stroke="var(--activity)" stroke-width="0.9" stroke-dasharray="2 1.5" vector-effect="non-scaling-stroke"/>
+                  </svg>
+                  <span class="annot-txt" style="left:74%;top:23%">languette PCIe x1</span>
+                </span>
+                <figcaption>Un <b>contrôleur USB</b>&nbsp;: quatre ports de plus. Connecteur <code>PCIe x1</code> — compare la longueur de sa languette dorée avec celle de la carte graphique.</figcaption>
               </figure>
             </div>
             <div class="duo-ill">
               <figure class="ill"><span class="loupe">⤢ agrandir</span>
                 <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-reseau.jpg" alt="Carte réseau munie de deux prises RJ45 et d'un large radiateur noir" loading="lazy">
-                <figcaption>Une <b>carte réseau</b> à deux prises <code>RJ45</code>.</figcaption>
+                <figcaption>Une <b>carte réseau</b> à deux prises <code>RJ45</code>. Connecteur <code>PCIe x1</code> ou <code>x4</code> selon le débit.</figcaption>
               </figure>
               <figure class="ill"><span class="loupe">⤢ agrandir</span>
                 <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-wifi.jpg" alt="Carte Wi-Fi munie de deux antennes noires orientables" loading="lazy">
-                <figcaption>Une <b>carte Wi-Fi</b>&nbsp;: ses deux <b>antennes</b> la trahissent au premier coup d'œil.</figcaption>
+                <figcaption>Une <b>carte Wi-Fi</b>&nbsp;: ses deux <b>antennes</b> la trahissent au premier coup d'œil. Connecteur <code>PCIe x1</code>.</figcaption>
               </figure>
             </div>
             <div class="duo-ill">
               <figure class="ill"><span class="loupe">⤢ agrandir</span>
-                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-controleur-usb.jpg" alt="Carte contrôleur USB portant quatre ports USB bleus" loading="lazy">
-                <figcaption>Un <b>contrôleur USB</b>&nbsp;: quatre ports de plus, sur un connecteur PCIe x1.</figcaption>
-              </figure>
-              <figure class="ill"><span class="loupe">⤢ agrandir</span>
                 <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-slots-pcie.jpg" alt="Rangée de connecteurs PCIe jaunes de longueurs différentes sur une carte mère" loading="lazy">
                 <figcaption>Les connecteurs vus sur une vraie carte mère&nbsp;: on lit les <b>différences de longueur</b> d'un coup d'œil.</figcaption>
               </figure>
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-graphique-basse.jpg" alt="Carte graphique à profil bas, vue de son équerre : sorties VGA bleue, HDMI et DVI blanche" loading="lazy">
+                <figcaption>Une petite carte graphique, vue par son <b>équerre</b> — la partie qui affleure à l'arrière du boîtier. Ses trois sorties (<b>VGA</b> bleue, <b>HDMI</b>, <b>DVI</b> blanche) seront nommées en séance 3. Connecteur <code>PCIe x16</code>, malgré sa petite taille&nbsp;: c'est la longueur du connecteur qui compte, pas celle de la carte.</figcaption>
+              </figure>
             </div>
-            <figure class="ill" style="max-width:300px;margin-left:auto;margin-right:auto"><span class="loupe">⤢ agrandir</span>
-              <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-graphique-basse.jpg" alt="Carte graphique à profil bas, vue de son équerre : sorties VGA bleue, HDMI et DVI blanche" loading="lazy">
-              <figcaption>Une petite carte graphique, vue par son <b>équerre</b> — la partie qui affleure à l'arrière du boîtier. Ses trois sorties (<b>VGA</b> bleue, <b>HDMI</b>, <b>DVI</b> blanche) seront nommées en séance 3.</figcaption>
-            </figure>
 
             <div class="block-label">Doc — pourquoi on en met de moins en moins</div>
-            <p style="font-size:14.5px;margin:4px 0 10px">Il y a vingt ans, une machine complète demandait trois ou quatre cartes. Aujourd'hui, le son, le réseau et souvent le graphisme sont <b>intégrés directement à la carte mère</b> ou <b>au processeur</b>. C'est la <b>miniaturisation</b> : ce qui tenait sur une carte entière tient maintenant dans une puce de quelques millimètres. On n'ajoute plus une carte que pour dépasser ce que la machine sait déjà faire — typiquement une carte graphique pour le jeu.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Il y a vingt ans, une machine complète demandait trois ou quatre cartes. Aujourd'hui, le son, le réseau et souvent le graphisme sont <b>intégrés directement à la carte mère</b> ou <b>au processeur</b> — on parle alors de <b>puce graphique intégrée</b>. C'est la <b>miniaturisation</b> : ce qui tenait sur une carte entière tient maintenant dans une puce de quelques millimètres. On n'ajoute plus une carte que pour dépasser ce que la machine sait déjà faire — typiquement une carte graphique pour le jeu.</p>
 
             <div class="block-label">À retenir</div>
             <div class="retain">Une <b>carte d'extension</b> s'enfiche dans un connecteur <b><code>PCIe</code></b> de la carte mère pour lui ajouter une fonction. Les principales&nbsp;: la <b>carte graphique</b> (<b><code>GPU</code></b> + <b>mémoire vidéo</b>), la <b>carte son</b>, la <b>carte réseau</b> (<code>RJ45</code>), la <b>carte Wi-Fi</b> (à ses antennes) et le <b>contrôleur USB</b>. Le connecteur existe en <b>x1</b>, <b>x4</b> et <b>x16</b>&nbsp;: plus la carte a besoin de débit, plus il est long. Avec la <b>miniaturisation</b>, son, réseau et graphisme sont désormais le plus souvent <b>intégrés à la carte mère</b>.</div>
@@ -880,26 +994,19 @@
             <p style="font-size:14.5px;margin:4px 0 10px">Parfois, la preuve de ton travail est une <b>image</b>. La page te propose alors un bouton <b>📷 Choisir ma copie d'écran</b> : ton image s'affiche aussitôt en dessous, elle <b>reste visible</b>, et elle se retrouve sur ta fiche de fin de séance. Deux règles, toujours les mêmes : on dépose une <b>copie d'écran de ce qu'on te demande d'observer</b>, <b>jamais une photo personnelle</b>.</p>
             <div class="field" data-depot data-depot-code="SYS-D1">
               <span class="field-type">Dépôt de copie d'écran · reste affichée</span>
-              <div class="field-q">Cherche en ligne l'image d'une <b>carte d'extension</b> — graphique, son, réseau ou Wi-Fi, à ton choix. Dépose la copie d'écran ici, puis dis dans la case en dessous <b>laquelle</b> tu as trouvée et <b>à quoi tu l'as reconnue</b>.</div>
+              <div class="field-q">Cherche en ligne l'image d'une <b>carte son</b> — c'est la seule des cinq cartes que cette page ne te montre pas. Dépose la copie d'écran ici, puis dis dans la case en dessous à quoi tu l'as reconnue, et dans quel connecteur PCIe elle s'enfiche à ton avis.</div>
               <div class="depot-zone">
                 <label class="btn ghost depot-btn">📷 Choisir ma copie d'écran<input type="file" accept="image/*" hidden aria-label="Déposer une copie d'écran d'une carte d'extension"></label>
                 <div class="depot-apercu" data-depot-apercu></div>
               </div>
               <div class="verdict"></div>
             </div>
-            <!-- CHANTIER decision -->
-            <aside class="chantier decision">
-              <div class="cl">📌 23/08/2026 — décision attendue : recherche en ligne, ou repli ?</div>
-              Cette étape suppose que <b>chaque élève dispose d'un poste connecté</b> pour chercher une image. Si ce n'est pas le cas dans ta salle, le repli est prêt juste en dessous : les quatre cartes sont déjà en photo dans cette étape, l'élève n'a plus qu'à en <b>nommer</b> une et dire à quoi il l'a reconnue — le dépôt devient alors facultatif.
-              <br><br>Dis-moi laquelle des deux versions tu gardes, et je retire l'autre.
-            </aside>
-            <!-- /CHANTIER -->
             <div class="field" data-focus
-                 data-focus-titre="La carte d'extension que j'ai trouvée"
-                 data-focus-question="Quelle carte d'extension as-tu déposée (ou choisie parmi les photos de l'étape) ? À quoi l'as-tu reconnue ? Et dans quel connecteur PCIe s'enfiche-t-elle, à ton avis ?"
+                 data-focus-titre="La carte son que j'ai trouvée"
+                 data-focus-question="À quoi as-tu reconnu la carte son ? Dans quel connecteur (x1, x4 ou x16) s'enfiche-t-elle, à ton avis ?"
                  data-focus-max="300" data-focus-min="20">
               <span class="field-type">Réponse courte</span>
-              <div class="field-q">Quelle carte as-tu choisie ? À quoi l'as-tu reconnue ? Dans quel connecteur (x1, x4 ou x16) s'enfiche-t-elle, à ton avis ?</div>
+              <div class="field-q">À quoi as-tu reconnu la carte son ? Dans quel connecteur (x1, x4 ou x16) s'enfiche-t-elle, à ton avis ?</div>
               <div class="gaction"><button class="btn ghost" data-focus-ouvrir>✍️ Répondre</button></div>
               <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
@@ -908,12 +1015,12 @@
         </div>
       </div>
 
-      <!-- 2.5 — Le stockage + tri chronologique + glossaire -->
+      <!-- 2.6 — Le stockage + tri chronologique + glossaire -->
       <div class="step" data-step data-gate data-cle="t0-stockage">
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.5 <span class="badge gate">à valider</span></div>
+            <div class="step-kicker">ÉTAPE 2.6 <span class="badge gate">à valider</span></div>
             <h3 class="step-title">Le stockage : optique, magnétique, flash</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> distinguer les trois grandes façons de garder des données, et situer chacune dans le temps.</span></div>
           </div>
@@ -951,10 +1058,6 @@
               </figure>
             </div>
             <!-- CHANTIER -->
-            <aside class="chantier">
-              <div class="cl">🔍 23/08/2026 — image manquante : un SSD M.2 seul</div>
-              Le format actuel — la barrette <b>M.2</b>, longue comme un doigt, vissée à plat sur la carte mère — n'est visible sur aucune image du dossier. On l'aperçoit seulement de loin sur la photo de l'étape 2.6 (l'emplacement sérigraphié <code>M.2 PCIe 4.0</code>). Un gros plan serait utile ici.
-            </aside>
             <!-- /CHANTIER -->
 
             <div class="block-label">Exercice — remets les supports dans l'ordre</div>
@@ -991,7 +1094,7 @@
             </div>
 
             <div class="block-label">À retenir</div>
-            <div class="retain">Le <b>stockage</b> garde les données <b>machine éteinte</b>, contrairement à la mémoire vive. Trois techniques&nbsp;: <b>optique</b> — un <b>laser</b> lit un disque de <b>polycarbonate</b> (<b>CD</b> 700 Mo, <b>DVD</b> 4,7 Go, <b>BluRay</b> 25 Go) ; <b>magnétique</b> — la <b>disquette</b> puis le <b>disque dur</b> (<b><code>HDD</code></b>), des plateaux tournants et un bras de lecture, lent et fragile mais peu cher ; <b>mémoire flash</b> — le <b><code>SSD</code></b>, aucune pièce mobile, bien plus rapide, plus cher au gigaoctet. Même technologie que la clé USB et le téléphone.</div>
+            <div class="retain">Le <b>stockage</b> garde les données <b>machine éteinte</b>, contrairement à la mémoire vive. Trois techniques&nbsp;: <b>optique</b> — un <b>laser</b> lit un disque de <b>polycarbonate</b> (<b>CD</b> 700 Mo, <b>DVD</b> 4,7 Go, <b>BluRay</b> 25 Go) ; <b>magnétique</b> — la <b>disquette</b> puis le <b>disque dur</b> (<b><code>HDD</code></b>), des plateaux tournants et un bras de lecture, lent et fragile mais peu cher ; <b>mémoire flash</b> — le <b><code>SSD</code></b>, aucune pièce mobile, bien plus rapide, plus cher au gigaoctet. Même technologie que la clé USB et le téléphone. Le SSD moderne n'est souvent plus un boîtier&nbsp;: c'est une barrette <b>M.2</b>, longue comme un doigt, vissée à plat sur la carte mère.</div>
 
             <!-- GLOSSAIRE — mécanisme présenté en 1.1, mis en action ici. -->
             <div class="block-label">Ton glossaire — première entrée de l'année</div>
@@ -1010,50 +1113,179 @@
         </div>
       </div>
 
-      <!-- 2.6 — Autopsie d'une vraie machine -->
-      <div class="step" data-step data-gate data-cle="t0-autopsie-machine-recente">
+      <!-- 2.7 — BILAN : le grand QCM de reconnaissance (décision 24/08/2026).
+           Remplace l'étape « Autopsie d'une vraie machine » : la photo y sert
+           désormais de question, et c'est ce QCM qui ferme la séance. -->
+      <div class="step" data-step data-gate data-cle="t0-bilan-machine">
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.6 <span class="badge gate">à valider</span></div>
-            <h3 class="step-title">Autopsie d'une vraie machine</h3>
-            <div class="objective"><span>🎯</span><span><b>Objectif —</b> retrouver, sur une photo d'une machine réelle, tout ce que tu viens d'apprendre à nommer.</span></div>
+            <div class="step-kicker">ÉTAPE 2.7 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Bilan de la séance — reconnaître ce qu'on a ouvert</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> reconnaître les organes d'une machine sur photo, et dire ce que chacun fait.</span></div>
           </div>
           <div class="card-body">
-            <p style="font-size:14.5px;margin:4px 0 10px">Assez de schémas. Voici l'intérieur d'une machine qui existe pour de vrai : <b>celle de ton professeur</b>, paroi vitrée ouverte. Tout ce que tu as nommé depuis le début de la séance est là-dedans. Agrandis l'image (clique dessus) et cherche avant de répondre.</p>
-
-            <figure class="ill"><span class="loupe">⤢ agrandir</span>
-              <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-photo-machine-recente-interieur.jpg" alt="Intérieur d'une unité centrale blanche éclairée : carte mère, deux barrettes de mémoire vive, bloc de refroidissement liquide avec afficheur sur le processeur, carte graphique PNY GeForce RTX 5080, emplacement M.2 sérigraphié, sept ventilateurs" loading="lazy">
-              <figcaption>L'intérieur d'une unité centrale récente. Repère&nbsp;: la <b>carte mère</b> au fond, deux <b>barrettes de mémoire vive</b> à la verticale, le bloc rond posé sur le <b>processeur</b> (c'est un refroidissement à eau, avec son afficheur de température), la grande <b>carte graphique</b> horizontale en dessous, l'emplacement <code>M.2 PCIe 4.0</code> sérigraphié sur la carte mère, et les <b>ventilateurs</b> tout autour.<span class="src">Photo M. Vanhoorde — la machine du professeur</span></figcaption>
-            </figure>
-
-            <div class="block-label">Exercice — que vois-tu sur cette photo ?</div>
-            <div class="field">
-              <span class="field-type">Schéma à légender</span>
-              <div class="field-q">Chaque description désigne un élément visible sur la photo. Nomme-le.</div>
-              <div class="label-selects" data-diagram>
-                <label>Le grand circuit imprimé du fond, sur lequel tout est branché
-                  <select data-correct="cm"><option value="">—</option><option value="cm">La carte mère</option><option value="ram">Les barrettes de mémoire vive</option><option value="gpu">La carte graphique</option><option value="cpu">Le refroidissement du processeur</option><option value="m2">L'emplacement M.2</option><option value="vent">Les ventilateurs</option></select></label>
-                <label>Les deux longues plaquettes verticales, côte à côte, près du centre
-                  <select data-correct="ram"><option value="">—</option><option value="cm">La carte mère</option><option value="ram">Les barrettes de mémoire vive</option><option value="gpu">La carte graphique</option><option value="cpu">Le refroidissement du processeur</option><option value="m2">L'emplacement M.2</option><option value="vent">Les ventilateurs</option></select></label>
-                <label>La grande carte horizontale du bas, marquée « GeForce RTX 5080 »
-                  <select data-correct="gpu"><option value="">—</option><option value="cm">La carte mère</option><option value="ram">Les barrettes de mémoire vive</option><option value="gpu">La carte graphique</option><option value="cpu">Le refroidissement du processeur</option><option value="m2">L'emplacement M.2</option><option value="vent">Les ventilateurs</option></select></label>
-                <label>Le bloc rond à afficheur, relié par deux gros tuyaux blancs
-                  <select data-correct="cpu"><option value="">—</option><option value="cm">La carte mère</option><option value="ram">Les barrettes de mémoire vive</option><option value="gpu">La carte graphique</option><option value="cpu">Le refroidissement du processeur</option><option value="m2">L'emplacement M.2</option><option value="vent">Les ventilateurs</option></select></label>
-                <label>La fente sérigraphiée « M.2 PCIe 4.0 » sur la carte mère
-                  <select data-correct="m2"><option value="">—</option><option value="cm">La carte mère</option><option value="ram">Les barrettes de mémoire vive</option><option value="gpu">La carte graphique</option><option value="cpu">Le refroidissement du processeur</option><option value="m2">L'emplacement M.2</option><option value="vent">Les ventilateurs</option></select></label>
-                <label>Les sept hélices éclairées, sur trois côtés du boîtier
-                  <select data-correct="vent"><option value="">—</option><option value="cm">La carte mère</option><option value="ram">Les barrettes de mémoire vive</option><option value="gpu">La carte graphique</option><option value="cpu">Le refroidissement du processeur</option><option value="m2">L'emplacement M.2</option><option value="vent">Les ventilateurs</option></select></label>
-              </div>
-              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
-              <div class="verdict"></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Quinze questions sur toute la séance. Plusieurs te montrent une photo&nbsp;: c'est de la reconnaissance, comme devant une machine ouverte. Tu peux remonter dans les étapes précédentes autant que tu veux.</p>
+            <div class="qcmbox" data-code="SYS-Q7">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Quelle est la différence entre le matériel et le logiciel ?",
+  "o": [
+   "Le matériel se touche ; le logiciel n'existe que sous forme d'instructions",
+   "Le matériel coûte cher ; le logiciel est toujours gratuit",
+   "Le matériel est ancien ; le logiciel est ce qui l'a remplacé",
+   "Le matériel est à l'intérieur ; le logiciel est branché autour"
+  ],
+  "r": 0,
+  "c": "Matériel (<i>hardware</i>) : composants, cartes, câbles. Logiciel (<i>software</i>) : les programmes et le système d'exploitation."
+ },
+ {
+  "q": "Ce composant : que fait-il ?<img src=\"../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-alimentation-ouverte.jpg\" alt=\"Bloc d'alimentation ouvert, ventilateur et faisceau de câbles colorés\">",
+  "o": [
+   "Il transforme le 230 V du secteur en 12 V et 5 V continus",
+   "Il stocke les données quand la machine est éteinte",
+   "Il relie tous les composants entre eux",
+   "Il calcule les images affichées à l'écran"
+  ],
+  "r": 0,
+  "c": "C'est le bloc d'alimentation (PSU). Il chauffe en convertissant, d'où son ventilateur."
+ },
+ {
+  "q": "Sous quelle tension travaille un processeur, à peu près ?",
+  "o": ["230 volts, comme la prise murale", "1 volt environ", "12 volts, comme un disque dur", "5 volts, comme un port USB"],
+  "r": 1,
+  "c": "Environ 1 V. C'est tout l'écart que le bloc d'alimentation doit franchir depuis les 230 V du secteur."
+ },
+ {
+  "q": "Cette carte, on la reconnaît à quoi — et où s'enfiche-t-elle ?<img src=\"../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-wifi.jpg\" alt=\"Carte d'extension avec deux antennes vissées\">",
+  "o": [
+   "À ses deux antennes : c'est une carte Wi-Fi, sur un connecteur PCIe x1",
+   "À ses deux antennes : c'est une carte réseau filaire, sur un connecteur RJ45",
+   "À sa taille : c'est une carte graphique, sur un connecteur PCIe x16",
+   "À ses puces noires : c'est une barrette de mémoire vive"
+  ],
+  "r": 0,
+  "c": "Les antennes ne trompent pas. Le Wi-Fi demande peu de débit : un connecteur x1 suffit."
+ },
+ {
+  "q": "Ce composant est le grand circuit imprimé sur lequel tout se branche. Comment s'appelle-t-il ?<img src=\"../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-mere.jpg\" alt=\"Carte mère vue de dessus, socle du processeur, emplacements de mémoire, connecteurs d'extension\">",
+  "o": ["La carte mère", "La carte graphique", "Le bloc d'alimentation", "Le contrôleur USB"],
+  "r": 0,
+  "c": "La carte mère ne calcule pas : elle relie. Les données y circulent par le bus."
+ },
+ {
+  "q": "Que contient la ROM d'une carte mère ?",
+  "o": [
+   "Le BIOS, le programme de démarrage — il survit à l'extinction",
+   "Les documents de l'utilisateur, sauvegardés automatiquement",
+   "Les applications ouvertes en ce moment",
+   "Rien : elle est vide tant qu'on n'y écrit pas"
+  ],
+  "r": 0,
+  "c": "ROM = mémoire morte, elle n'oublie jamais. Le BIOS réveille la machine et va chercher le système d'exploitation."
+ },
+ {
+  "q": "Deux chiffres décrivent un processeur. Lesquels ?",
+  "o": [
+   "Sa fréquence en GHz et son nombre de cœurs",
+   "Sa capacité en Go et sa vitesse de rotation",
+   "Sa tension en volts et sa consommation en watts",
+   "Sa définition en pixels et sa diagonale en pouces"
+  ],
+  "r": 0,
+  "c": "3 GHz = trois milliards d'opérations élémentaires par seconde. 8 cœurs = huit calculateurs indépendants."
+ },
+ {
+  "q": "Ces deux plaquettes se dressent à côté du processeur. Qu'est-ce que c'est ?<img src=\"../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-barrette-ram.jpg\" alt=\"Barrette de mémoire vive, puces noires et contacts dorés\">",
+  "o": [
+   "Des barrettes de mémoire vive : tout ce qui est ouvert y est posé",
+   "Des disques SSD : ils gardent les données machine éteinte",
+   "Des cartes d'extension : elles ajoutent une fonction",
+   "Des radiateurs : ils évacuent la chaleur du processeur"
+  ],
+  "r": 0,
+  "c": "La RAM est le plan de travail. Elle est très rapide, et elle s'efface complètement à l'extinction."
+ },
+ {
+  "q": "Ton ordinateur « rame » quand tu ouvres trop d'onglets. Que se passe-t-il ?",
+  "o": [
+   "La mémoire vive sature, et la machine pose une partie du travail sur le disque, bien plus lent",
+   "Le processeur chauffe et se met à ralentir volontairement",
+   "Le disque dur se remplit et refuse d'enregistrer de nouveaux fichiers",
+   "La carte graphique n'arrive plus à afficher toutes les fenêtres"
+  ],
+  "r": 0,
+  "c": "La table de travail déborde ; il faut poser des choses par terre, et aller les rechercher prend du temps."
+ },
+ {
+  "q": "Cette carte est la plus longue de toutes. Quel connecteur lui faut-il ?<img src=\"../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-graphique.jpg\" alt=\"Carte graphique à deux ventilateurs et radiateur massif\">",
+  "o": ["Un PCIe x16", "Un PCIe x1", "Un connecteur SATA", "Un port USB"],
+  "r": 0,
+  "c": "Carte graphique = le plus gros besoin de débit = le connecteur le plus long, x16."
+ },
+ {
+  "q": "Une carte PCIe x1 peut-elle s'enficher dans un connecteur x16 ?",
+  "o": [
+   "Oui : une carte courte entre dans un connecteur long, l'inverse est impossible",
+   "Non : chaque carte n'entre que dans un connecteur de sa longueur exacte",
+   "Oui, mais uniquement si on retire le détrompeur",
+   "Non : x1 et x16 sont deux normes différentes"
+  ],
+  "r": 0,
+  "c": "Le détrompeur empêche de mettre la carte à l'envers, pas d'utiliser un connecteur plus long que nécessaire."
+ },
+ {
+  "q": "Ce disque est ouvert — ce qui l'a condamné. Quelle technique de stockage utilise-t-il ?<img src=\"../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-disque-dur-ouvert.jpg\" alt=\"Disque dur ouvert : plateau miroir et bras de lecture\">",
+  "o": [
+   "Magnétique : un bras survole des plateaux qui tournent",
+   "Optique : un laser lit des creux et des plats",
+   "Mémoire flash : aucune pièce mobile",
+   "Électrique : les données sont maintenues par le courant"
+  ],
+  "r": 0,
+  "c": "5 400 ou 7 200 tours par minute, un bras à quelques nanomètres du plateau. Mécanique, donc lent et fragile — mais peu cher."
+ },
+ {
+  "q": "Et celui-ci, à capacité comparable ?<img src=\"../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-ssd-2p5.jpg\" alt=\"SSD au format 2,5 pouces, boîtier plat et connecteur SATA\">",
+  "o": [
+   "Un SSD : mémoire flash, aucune pièce mobile, bien plus rapide",
+   "Un disque dur : des plateaux tournent à l'intérieur",
+   "Un lecteur optique : il faut y glisser un disque",
+   "Une barrette de mémoire vive : elle s'efface à l'extinction"
+  ],
+  "r": 0,
+  "c": "Même connecteur SATA qu'un disque dur, on peut remplacer l'un par l'autre — mais rien ne bouge à l'intérieur."
+ },
+ {
+  "q": "Range ces trois techniques de la plus ancienne à la plus récente.",
+  "o": [
+   "Magnétique, puis optique, puis mémoire flash",
+   "Optique, puis magnétique, puis mémoire flash",
+   "Mémoire flash, puis magnétique, puis optique",
+   "Magnétique, puis mémoire flash, puis optique"
+  ],
+  "r": 0,
+  "c": "La disquette (1971), puis le CD (1985), puis le SSD grand public (2007). À chaque étape : plus de capacité, plus de vitesse, moins de pièces qui bougent."
+ },
+ {
+  "q": "Sur cette photo d'une machine réelle, quel est le plus gros élément enfiché horizontalement, sous les barrettes verticales ?<img src=\"../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-photo-machine-recente-interieur.jpg\" alt=\"Intérieur d'une unité centrale récente : carte mère, mémoire vive, refroidissement du processeur, carte graphique, ventilateurs\">",
+  "o": [
+   "La carte graphique",
+   "Le bloc d'alimentation",
+   "Le lecteur optique",
+   "La barrette M.2"
+  ],
+  "r": 0,
+  "c": "Dans une vraie machine, rien n'est rangé comme sur un schéma — mais ce sont les mêmes organes. La carte graphique est presque toujours la plus grosse carte enfichée."
+ }
+]
+              </script>
             </div>
-
-            <div class="block-label">À retenir</div>
-            <div class="retain">Dans une machine réelle, les organes ne sont pas rangés comme sur un schéma — mais ce sont bien les <b>mêmes</b>. La <b>carte mère</b> occupe le fond, les <b>barrettes de mémoire</b> sont debout à côté du processeur, le <b>processeur</b> est caché sous son système de refroidissement, la <b>carte graphique</b> est la plus grosse carte enfichée, et le <b>SSD</b> moderne n'est plus un boîtier mais une barrette <b>M.2</b> vissée à plat sur la carte mère. Le reste, ce sont des <b>ventilateurs</b> — parce que tout cela chauffe.</div>
           </div>
         </div>
       </div>
+
 
       <!-- BONUS S2 -->
       <div class="step" data-step data-cle="t0-plus-loin-rom-bios">
@@ -1068,7 +1300,14 @@
           <div class="bonus-body">
             <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Facultatif, jamais évalué — pour ceux que le sujet démange.</p>
 
-            <p style="font-size:14.5px;margin:10px 0 6px"><b>ROM, BIOS, UEFI : les trois secondes avant que rien ne s'affiche.</b> Quand tu appuies sur le bouton, le processeur ne sait rien faire : il n'a aucun programme en mémoire vive, puisqu'elle vient de s'effacer. Il va donc chercher, toujours à la même adresse, un programme gravé dans la <b>ROM</b> (<i lang="en">Read Only Memory</i>) de la carte mère. Ce programme s'appelle le <b>BIOS</b> (<i lang="en">Basic Input Output System</i>). Il exécute d'abord un <b>POST</b> (<i lang="en">Power-On Self-Test</i>) — il compte la mémoire, vérifie que le clavier et les disques répondent —, puis il cherche un système d'exploitation à démarrer. Depuis une quinzaine d'années, il est remplacé par l'<b>UEFI</b>, qui fait la même chose en mieux : interface graphique, disques de plus de 2 To, démarrage sécurisé.</p>
+            <p style="font-size:14.5px;margin:10px 0 6px"><b>🎧 Deux heures d'écoute, si le sujet te tient.</b> Ces deux épisodes racontent d'où viennent les machines de cette séance. Ils durent une heure chacun&nbsp;: c'est pour un trajet, un soir, pas pour l'heure de cours.</p>
+            <div class="biblio" data-podcast="pc-t0-machine">
+              <div class="bl">🎧 Pour écouter — d'où vient l'ordinateur ?</div>
+              <a href="https://www.radiofrance.fr/franceculture/podcasts/ils-ont-change-le-monde/1942-1946-l-eniac-le-premier-ordinateur-electronique-8504767" target="_blank" rel="noopener">🎧 1942-1946 : l'ENIAC, le premier ordinateur électronique · <i>La révolution numérique — France Culture, 2026 · 1 h</i> — l'ENIAC, 30 tonnes, 1945</a>
+              <a href="https://www.radiofrance.fr/franceculture/podcasts/ils-ont-change-le-monde/1842-1843-la-naissance-du-langage-informatique-9451530" target="_blank" rel="noopener">🎧 1842-1843 : la naissance du langage informatique · <i>La révolution numérique — France Culture, 2026 · 1 h</i> — le tout premier programme, écrit par Ada Lovelace en 1842</a>
+            </div>
+
+            <p style="font-size:14.5px;margin:14px 0 6px"><b>ROM, BIOS, UEFI : les trois secondes avant que rien ne s'affiche.</b> Quand tu appuies sur le bouton, le processeur ne sait rien faire : il n'a aucun programme en mémoire vive, puisqu'elle vient de s'effacer. Il va donc chercher, toujours à la même adresse, un programme gravé dans la <b>ROM</b> (<i lang="en">Read Only Memory</i>) de la carte mère. Ce programme s'appelle le <b>BIOS</b> (<i lang="en">Basic Input Output System</i>). Il exécute d'abord un <b>POST</b> (<i lang="en">Power-On Self-Test</i>) — il compte la mémoire, vérifie que le clavier et les disques répondent —, puis il cherche un système d'exploitation à démarrer. Depuis une quinzaine d'années, il est remplacé par l'<b>UEFI</b>, qui fait la même chose en mieux : interface graphique, disques de plus de 2 To, démarrage sécurisé.</p>
             <p style="font-size:14.5px;margin:6px 0 6px">Sur presque toutes les machines, une touche pressée au tout début de l'allumage (souvent <code>Suppr</code>, <code>F2</code> ou <code>F12</code>) ouvre cet écran. C'est là qu'on choisit sur quel disque démarrer. <b>N'y touche pas sur un poste du lycée</b> — mais sache que ça existe.</p>
 
             <p style="font-size:14.5px;margin:14px 0 6px"><b>De l'IDE au SATA : la nappe qui a disparu.</b> Avant 2003, les disques se reliaient à la carte mère par une norme appelée <b>IDE</b> (aussi nommée <b>PATA</b>, pour <i lang="en">Parallel ATA</i>) : une grosse <b>nappe</b> plate de 40 fils, large comme trois doigts, qui étouffait la circulation de l'air dans le boîtier. Elle a été remplacée par le <b>SATA</b> (<i lang="en">Serial ATA</i>) : un câble fin de sept fils, plus rapide malgré ses fils en moins — parce qu'il envoie les bits <b>en série</b>, un derrière l'autre, très vite, au lieu de les envoyer <b>en parallèle</b> sur quarante fils qu'il faut synchroniser.</p>
@@ -1101,6 +1340,14 @@
                 Avec quarante fils, les bits partent <b>ensemble</b> et doivent arriver <b>ensemble</b> : plus on accélère, plus le moindre écart de longueur entre deux fils décale un bit, et tout se brouille. Avec un seul canal, il n'y a rien à synchroniser — on peut donc monter beaucoup plus haut en fréquence. C'est le même raisonnement qui a fait gagner l'USB contre les vieux ports parallèles, et qui explique le mot <i lang="en">Serial</i> dans <b>S</b>ATA comme dans <b>U</b>niversal <b>S</b>erial <b>B</b>us.
               </div>
             </div>
+
+            <p style="font-size:14.5px;margin:14px 0 6px"><b>Et si tu veux tout voir en vrai, à la loupe.</b> Une vidéo qui démonte les composants un par un et descend jusqu'au niveau des puces&nbsp;: carte mère, carte graphique, disque dur, SSD, barrettes de mémoire. Elle dure <b>49&nbsp;minutes</b> — ce n'est pas un extrait à caser entre deux exercices, c'est une soirée. Rien à en retenir pour le cours.</p>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span><b>Anatomie détaillée des principaux composants d'un PC</b> · Data LabCenter · 49 min — hors programme, pour le plaisir.</span></p>
+                <iframe data-src="https://www.youtube-nocookie.com/embed/geBcfKn3B1g" height="315" frameborder="0" allowfullscreen title="Anatomie détaillée des composants d'un PC"></iframe>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1115,7 +1362,7 @@
       <h2><span class="s-num">S3</span>Brancher juste, et choisir sa machine</h2>
       <span class="seance-time">≈ 1 h 30</span>
     </div>
-    <p class="seance-goal">Reconnaître les ports d'une machine et savoir ce qui s'y branche, lire l'histoire du matériel sur une façade arrière, puis choisir un appareil sur six critères. Et découvrir les deux derniers rouages du cours : l'entraide et le mode enseignant.</p>
+    <p class="seance-goal">Reconnaître les ports d'une machine et savoir ce qui s'y branche, lire l'histoire du matériel sur une façade arrière, puis choisir un appareil sur six critères. Et découvrir les deux derniers rouages du cours : le mode enseignant et le glossaire.</p>
     <div class="progress-line"><i data-progress></i></div>
     <div class="lock-banner"><span class="k"></span><span>Cette séance se débloque quand la <b>séance 2 est entièrement validée</b>. Ton professeur peut l'ouvrir si besoin.</span></div>
 
@@ -1213,14 +1460,14 @@
               <!-- ligne 1 : VGA, DVI, HDMI, DisplayPort -->
               <g>
                 <path d="M53 52 h114 l-6 30 h-102 z" fill="#e7ebfb" stroke="#2445c7" stroke-width="2"/>
-                <g fill="#2445c7"><circle cx="72" cy="61" r="2.6"/><circle cx="94" cy="61" r="2.6"/><circle cx="116" cy="61" r="2.6"/><circle cx="138" cy="61" r="2.6"/><circle cx="160" cy="61" r="2.6"/><circle cx="79" cy="70" r="2.6"/><circle cx="99" cy="70" r="2.6"/><circle cx="119" cy="70" r="2.6"/><circle cx="139" cy="70" r="2.6"/><circle cx="159" cy="70" r="2.6"/><circle cx="86" cy="79" r="2.6"/><circle cx="104" cy="79" r="2.6"/><circle cx="122" cy="79" r="2.6"/><circle cx="140" cy="79" r="2.6"/><circle cx="158" cy="79" r="2.6"/></g>
+                <g fill="#2445c7"><circle cx="72" cy="61" r="2.6"/><circle cx="91" cy="61" r="2.6"/><circle cx="110" cy="61" r="2.6"/><circle cx="129" cy="61" r="2.6"/><circle cx="148" cy="61" r="2.6"/><circle cx="74" cy="70" r="2.6"/><circle cx="92" cy="70" r="2.6"/><circle cx="110" cy="70" r="2.6"/><circle cx="128" cy="70" r="2.6"/><circle cx="146" cy="70" r="2.6"/><circle cx="76" cy="79" r="2.6"/><circle cx="93" cy="79" r="2.6"/><circle cx="110" cy="79" r="2.6"/><circle cx="127" cy="79" r="2.6"/><circle cx="144" cy="79" r="2.6"/></g>
                 <circle cx="40" cy="67" r="7" fill="none" stroke="#2445c7" stroke-width="2"/><circle cx="180" cy="67" r="7" fill="none" stroke="#2445c7" stroke-width="2"/>
                 <text x="110" y="108" text-anchor="middle" font-size="12.5" font-weight="600" fill="#161f33">VGA</text>
                 <text x="110" y="124" text-anchor="middle" font-size="10.5" fill="#8b97ad">image analogique · 15 broches</text>
               </g>
               <g>
                 <rect x="272" y="50" width="118" height="34" rx="4" fill="#f4f6fb" stroke="#4a566e" stroke-width="2"/>
-                <g fill="#4a566e"><circle cx="288" cy="59" r="2.4"/><circle cx="301" cy="59" r="2.4"/><circle cx="314" cy="59" r="2.4"/><circle cx="327" cy="59" r="2.4"/><circle cx="340" cy="59" r="2.4"/><circle cx="353" cy="59" r="2.4"/><circle cx="366" cy="59" r="2.4"/><circle cx="288" cy="67" r="2.4"/><circle cx="301" cy="67" r="2.4"/><circle cx="314" cy="67" r="2.4"/><circle cx="327" cy="67" r="2.4"/><circle cx="340" cy="67" r="2.4"/><circle cx="353" cy="67" r="2.4"/><circle cx="366" cy="67" r="2.4"/><circle cx="288" cy="75" r="2.4"/><circle cx="301" cy="75" r="2.4"/><circle cx="314" cy="75" r="2.4"/><circle cx="327" cy="75" r="2.4"/><circle cx="340" cy="75" r="2.4"/><circle cx="353" cy="75" r="2.4"/><circle cx="366" cy="75" r="2.4"/></g>
+                <g fill="#4a566e"><circle cx="286" cy="59" r="2.4"/><circle cx="299" cy="59" r="2.4"/><circle cx="312" cy="59" r="2.4"/><circle cx="325" cy="59" r="2.4"/><circle cx="338" cy="59" r="2.4"/><circle cx="351" cy="59" r="2.4"/><circle cx="364" cy="59" r="2.4"/><circle cx="286" cy="67" r="2.4"/><circle cx="299" cy="67" r="2.4"/><circle cx="312" cy="67" r="2.4"/><circle cx="325" cy="67" r="2.4"/><circle cx="338" cy="67" r="2.4"/><circle cx="351" cy="67" r="2.4"/><circle cx="364" cy="67" r="2.4"/><circle cx="286" cy="75" r="2.4"/><circle cx="299" cy="75" r="2.4"/><circle cx="312" cy="75" r="2.4"/><circle cx="325" cy="75" r="2.4"/><circle cx="338" cy="75" r="2.4"/><circle cx="351" cy="75" r="2.4"/><circle cx="364" cy="75" r="2.4"/></g>
                 <rect x="376" y="58" width="8" height="18" rx="1.5" fill="#4a566e"/>
                 <circle cx="260" cy="67" r="7" fill="none" stroke="#4a566e" stroke-width="2"/><circle cx="402" cy="67" r="7" fill="none" stroke="#4a566e" stroke-width="2"/>
                 <text x="331" y="108" text-anchor="middle" font-size="12.5" font-weight="600" fill="#161f33">DVI</text>
@@ -1469,16 +1716,16 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> lire une façade arrière réelle — et découvrir, en comparant deux machines, que le matériel a une histoire.</span></div>
           </div>
           <div class="card-body">
-            <p style="font-size:14.5px;margin:4px 0 10px">Voici l'arrière de deux machines qui existent pour de vrai&nbsp;: une <b>vieille tour</b> d'une part, la <b>machine de ton professeur</b> d'autre part. Elles ont une quinzaine d'années d'écart. Agrandis-les (clique dessus) et compare-les avant de répondre.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Voici l'arrière de deux machines qui existent pour de vrai&nbsp;: une <b>vieille tour</b> d'une part, la <b>machine de ton professeur</b> d'autre part. Elles ont une quinzaine d'années d'écart. Agrandis-les (clique dessus) et compare-les&nbsp;: c'est en les regardant l'une après l'autre qu'on voit le matériel vieillir.</p>
 
             <div class="duo-ill">
               <figure class="ill"><span class="loupe">⤢ agrandir</span>
                 <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-photo-tour-ancienne-arriere.jpg" alt="Face arrière d'une tour ancienne : interrupteur et prise secteur en haut, deux prises PS/2 violette et verte, ports DVI et VGA, six ports USB dont deux bleus, prise RJ45, trois jacks audio colorés, une carte graphique à sortie DVI et deux antennes Wi-Fi en bas" loading="lazy">
-                <figcaption><b>La vieille tour.</b> De haut en bas&nbsp;: l'interrupteur et la prise secteur, les deux prises PS/2 (violette et verte), DVI et VGA, les ports USB, la prise RJ45, les trois jacks colorés — puis, en dessous, une carte graphique et une carte Wi-Fi à deux antennes.<span class="src">Photo M. Vanhoorde — numéro de série flouté</span></figcaption>
+                <figcaption><b>La vieille tour.</b> Une machine d'il y a une quinzaine d'années. Agrandis-la avant de répondre.<span class="src">Photo M. Vanhoorde</span></figcaption>
               </figure>
               <figure class="ill"><span class="loupe">⤢ agrandir</span>
                 <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-photo-machine-recente-arriere.jpg" alt="Face arrière d'une machine récente, câblée : deux ports HDMI, un DisplayPort, des ports USB, une prise PS/2, une prise RJ45, trois jacks colorés, et en dessous les sorties de la carte graphique" loading="lazy">
-                <figcaption><b>La machine récente</b>, câblée. On y voit deux <b>HDMI</b>, un <b>DisplayPort</b>, des ports USB, une prise <b>PS/2</b> qui a survécu, la prise <b>RJ45</b>, les trois jacks — et en dessous les sorties de la <b>carte graphique</b>.<span class="src">Photo M. Vanhoorde — la machine du professeur</span></figcaption>
+                <figcaption><b>La machine récente</b>, câblée et en fonctionnement.<span class="src">Photo M. Vanhoorde — la machine du professeur</span></figcaption>
               </figure>
             </div>
 
@@ -1488,46 +1735,22 @@
               <div class="field-q">Sur la photo de gauche, chaque description désigne un élément. Nomme-le.</div>
               <div class="label-selects" data-diagram>
                 <label>Tout en haut : la prise à trois broches où arrive le câble d'alimentation
-                  <select data-correct="c14"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option></select></label>
+                  <select data-correct="c14"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option><option value="deee">Le symbole DEEE (déchet électronique)</option></select></label>
                 <label>Deux prises rondes accolées, l'une violette et l'autre verte
-                  <select data-correct="ps2"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option></select></label>
+                  <select data-correct="ps2"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option><option value="deee">Le symbole DEEE (déchet électronique)</option></select></label>
                 <label>Un connecteur bleu à 15 broches, tenu par deux vis
-                  <select data-correct="vga"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option></select></label>
+                  <select data-correct="vga"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option><option value="deee">Le symbole DEEE (déchet électronique)</option></select></label>
                 <label>Deux rectangles dont la languette intérieure est bleue
-                  <select data-correct="usb3"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option></select></label>
+                  <select data-correct="usb3"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option><option value="deee">Le symbole DEEE (déchet électronique)</option></select></label>
                 <label>Une prise carrée à languette, avec deux petits voyants
-                  <select data-correct="rj45"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option></select></label>
+                  <select data-correct="rj45"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option><option value="deee">Le symbole DEEE (déchet électronique)</option></select></label>
                 <label>Trois prises rondes alignées : une rose, une verte, une bleue
-                  <select data-correct="jacks"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option></select></label>
+                  <select data-correct="jacks"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option><option value="deee">Le symbole DEEE (déchet électronique)</option></select></label>
                 <label>Tout en bas : deux embouts dorés vissés sur une carte d'extension
-                  <select data-correct="antennes"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option></select></label>
-              </div>
-              <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
-              <div class="verdict"></div>
-            </div>
-
-            <div class="block-label">Exercice 2 — qu'est-ce qui a disparu, qu'est-ce qui est apparu ?</div>
-            <p style="font-size:14.5px;margin:4px 0 10px">C'est l'exercice qui compte le plus de la séance. Compare les deux photos, connecteur par connecteur, et range chacun dans la bonne colonne du temps.</p>
-            <div class="field">
-              <span class="field-type">Association</span>
-              <div class="field-q">Pour chaque connecteur, dis ce que la comparaison des deux machines montre.</div>
-              <div class="label-selects" data-diagram>
-                <label><b>VGA</b> — présent sur l'ancienne, absent de la récente
-                  <select data-correct="part"><option value="">—</option><option value="part">Il disparaît</option><option value="arrive">Il vient d'arriver</option><option value="reste">Il est là sur les deux</option></select></label>
-                <label><b>DisplayPort</b> — absent de l'ancienne, présent sur la récente
-                  <select data-correct="arrive"><option value="">—</option><option value="part">Il disparaît</option><option value="arrive">Il vient d'arriver</option><option value="reste">Il est là sur les deux</option></select></label>
-                <label><b>PS/2</b> — deux prises sur l'ancienne, une seule sur la récente
-                  <select data-correct="part"><option value="">—</option><option value="part">Il disparaît</option><option value="arrive">Il vient d'arriver</option><option value="reste">Il est là sur les deux</option></select></label>
-                <label><b>RJ45</b> — une prise sur chacune des deux machines
-                  <select data-correct="reste"><option value="">—</option><option value="part">Il disparaît</option><option value="arrive">Il vient d'arriver</option><option value="reste">Il est là sur les deux</option></select></label>
-                <label><b>HDMI</b> — absent de l'ancienne, deux prises sur la récente
-                  <select data-correct="arrive"><option value="">—</option><option value="part">Il disparaît</option><option value="arrive">Il vient d'arriver</option><option value="reste">Il est là sur les deux</option></select></label>
-                <label><b>Jacks audio colorés</b> — trois prises sur chacune des deux
-                  <select data-correct="reste"><option value="">—</option><option value="part">Il disparaît</option><option value="arrive">Il vient d'arriver</option><option value="reste">Il est là sur les deux</option></select></label>
-                <label><b>DVI</b> — présent sur l'ancienne, absent de la récente
-                  <select data-correct="part"><option value="">—</option><option value="part">Il disparaît</option><option value="arrive">Il vient d'arriver</option><option value="reste">Il est là sur les deux</option></select></label>
-                <label><b>USB</b> — plusieurs prises sur chacune des deux machines
-                  <select data-correct="reste"><option value="">—</option><option value="part">Il disparaît</option><option value="arrive">Il vient d'arriver</option><option value="reste">Il est là sur les deux</option></select></label>
+                  <select data-correct="antennes"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option><option value="deee">Le symbole DEEE (déchet électronique)</option></select></label>
+                <!-- comblement provisoire 24/08 — voir brief §M6 -->
+                <label>Au milieu de la façade : une étiquette jaune, avec une poubelle barrée
+                  <select data-correct="deee"><option value="">—</option><option value="c14">La prise secteur C14</option><option value="ps2">Les deux prises PS/2</option><option value="vga">La sortie VGA</option><option value="usb3">Les ports USB 3.0 bleus</option><option value="rj45">La prise RJ45</option><option value="jacks">Les trois jacks audio</option><option value="antennes">Les antennes Wi-Fi</option><option value="deee">Le symbole DEEE (déchet électronique)</option></select></label>
               </div>
               <div style="margin-top:12px"><button class="btn ghost" data-check-diagram>Vérifier</button></div>
               <div class="verdict"></div>
@@ -1537,13 +1760,13 @@
             <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
             <div class="bilan-wrap" data-bilan-wrap hidden>
               <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
-              <div class="retain">Une façade arrière se <b>lit</b>, et elle raconte l'âge de la machine. En quinze ans&nbsp;: le <b>VGA</b>, le <b>DVI</b> et le <b>PS/2</b> ont presque disparu ; le <b><code>HDMI</code></b> et le <b><code>DisplayPort</code></b> se sont imposés ; le <b><code>RJ45</code></b>, les <b>jacks audio</b> et l'<b>USB</b> sont restés. Un connecteur ne meurt pas d'un coup&nbsp;: il survit des années sur quelques machines, le temps que le parc se renouvelle. C'est pour cela qu'on trouve encore une prise PS/2 sur une machine de 2025.</div>
+              <div class="retain">Une façade arrière se <b>lit</b>, et elle raconte l'âge de la machine. Compare les deux photos, connecteur par connecteur&nbsp;: En quinze ans&nbsp;: le <b>VGA</b>, le <b>DVI</b> et le <b>PS/2</b> ont presque disparu ; le <b><code>HDMI</code></b> et le <b><code>DisplayPort</code></b> se sont imposés ; le <b><code>RJ45</code></b>, les <b>jacks audio</b> et l'<b>USB</b> sont restés. Un connecteur ne meurt pas d'un coup&nbsp;: il survit des années sur quelques machines, le temps que le parc se renouvelle. C'est pour cela qu'on trouve encore une prise PS/2 sur une machine de 2025. Une machine porte aussi le symbole <b>DEEE</b> — la poubelle barrée&nbsp;: un appareil électronique ne se jette pas avec les ordures ménagères, il se dépose en déchetterie ou chez le vendeur.</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 3.4 — Relevé photo des ports du poste + entraide -->
+      <!-- 3.4 — Relevé photo des ports du poste -->
       <div class="step" data-step data-gate data-cle="t0-releve-ports-poste">
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
@@ -1581,10 +1804,6 @@
               <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
               <div class="gtexte" data-focus-echo></div>
               <div class="verdict"></div>
-              <div class="reveal" data-reveal>
-                <div class="rl">🤝 Et maintenant, tu deviens une ressource</div>
-                Ta réponse est partie. Une fois qu'elle sera <b>validée</b> par ton professeur, ta pastille passera au 🟢 — et ce vert veut dire quelque chose de précis dans ce cours : tu pourras <b>consulter les réponses des camarades bloqués</b> sur cette même question, les <b>corriger</b> et les <b>conseiller</b>. C'est l'<b>entraide</b>, et on t'en explique la règle complète deux étapes plus loin.
-              </div>
             </div>
           </div>
         </div>
@@ -1662,13 +1881,7 @@
               <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-logos-os.png" alt="Logos des systèmes d'exploitation Windows, macOS, Linux, iOS et Android" loading="lazy">
               <figcaption>Cinq des six systèmes. Il en manque un&nbsp;: <b>ChromeOS</b>, celui des Chromebook.</figcaption>
             </figure>
-            <!-- CHANTIER -->
-            <aside class="chantier">
-              <div class="cl">🔍 23/08/2026 — deux images qui manquent ici</div>
-              Un gros plan de <b>touchpad</b> illustrerait le paragraphe sur l'écran et le pointage. Et le montage de logos ci-dessus ne contient pas <b>ChromeOS</b> — soit on trouve une image à jour, soit on le dessine en SVG avec les six systèmes.
-            </aside>
-            <!-- /CHANTIER -->
-
+            
             <div class="block-label">À retenir</div>
             <div class="retain">Six critères pour choisir une machine&nbsp;: <b>1. fixe ou mobile</b> — la <b>mobilité</b> se paie en prix, en performance et en réparabilité ; <b>2. l'écran</b> — sa diagonale en <b>pouces</b> (1 pouce = <b>2,54 cm</b>), sa <b>définition</b> (nombre de pixels) à ne pas confondre avec sa <b>résolution</b> (densité, en <b><code>dpi</code></b>), et son caractère <b>tactile</b> ou non ; <b>3. la puissance</b> — <b>fréquence</b> en <code>GHz</code> et nombre de <b>cœurs</b> ; <b>4. la mémoire vive</b> ; <b>5. le stockage</b> — la capacité, mais surtout <b><code>SSD</code></b> plutôt que disque dur ; <b>6. le système d'exploitation</b> — <b>Windows</b>, <b>macOS</b>, <b>Linux</b>, <b>Android</b>, <b>iOS</b>, <b>ChromeOS</b>, qui décide des applications installables.</div>
 
@@ -1691,21 +1904,17 @@
         </div>
       </div>
 
-      <!-- 3.6 — Entraide et mode enseignant -->
-      <div class="step" data-step data-gate data-cle="t0-entraide-mode-enseignant">
+      <!-- 3.6 — Mode enseignant et glossaire (la data-cle garde son nom d'origine :
+           une clé ne change jamais, c'est ce qui rattache la progression déjà en base) -->
+      <div class="step" data-step data-cle="t0-entraide-mode-enseignant">
         <div class="rail"></div><div class="step-pip" style="border-color:var(--france)"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 3.6 <span class="badge gate">à valider</span></div>
-            <h3 class="step-title">Les derniers rouages : entraide et mode enseignant</h3>
-            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre ce qui se passe quand tu valides… et quand tu bloques.</span></div>
+            <div class="step-kicker">ÉTAPE 3.6</div>
+            <h3 class="step-title">Le mode enseignant, et ton glossaire</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir à quoi sert la télécommande du professeur, et où retrouver tes définitions.</span></div>
           </div>
           <div class="card-body">
-            <div class="block-label">Doc — l'entraide, et pourquoi le vert veut dire quelque chose</div>
-            <p style="font-size:14.5px;margin:4px 0 10px">Regarde la légende, tout en haut de la page&nbsp;: 🟢 <em>« Validé — tu peux aider un camarade »</em>. Ce n'est pas une formule décorative. Dans ce cours, avoir validé une question fait de toi une <b>ressource</b> sur cette question précise : tu peux alors <b>consulter</b> la réponse d'un camarade bloqué dessus, la <b>corriger</b> et lui <b>écrire un conseil</b>.</p>
-            <p style="font-size:14.5px;margin:4px 0 10px">Deux raisons à cela. La première est égoïste et parfaitement assumée&nbsp;: <b>expliquer, c'est la meilleure façon d'apprendre</b>. Tu ne sais vraiment quelque chose que le jour où tu arrives à le faire comprendre à quelqu'un d'autre. La seconde est collective&nbsp;: une classe où trente élèves attendent le même professeur avance moins vite qu'une classe où quinze élèves en aident quinze autres.</p>
-            <p style="font-size:14.5px;margin:4px 0 10px">La <b>qualité de ton aide</b> comptera dans ta <b>note d'investissement</b>. Un « c'est faux » ne vaut rien ; « regarde le paragraphe sur la mémoire vive, tu as confondu avec le stockage » vaut beaucoup.</p>
-
             <div class="block-label">Doc — le mode enseignant</div>
             <p style="font-size:14.5px;margin:4px 0 10px">En haut de cette page, la petite mention <code>🔒 mode enseignant</code> est la télécommande de ton professeur. Elle ouvre <b>toutes les séances d'un coup</b> — pour montrer quelque chose au tableau, coordonner la classe, ou débloquer un élève coincé par un verrou. Elle demande un <b>code</b> que lui seul connaît, et elle <b>se coupe seule au bout de 30 minutes</b>, avec un compte à rebours visible.</p>
             <p style="font-size:14.5px;margin:4px 0 10px">Un mot d'honnêteté&nbsp;: ce site est <b>public</b>, et son code s'exécute dans ton navigateur. Quelqu'un de déterminé peut donc contourner un verrou. Ce n'est pas un coffre-fort, c'est un <b>panneau de signalisation</b>. Il n'y a rien de secret derrière : le contenu est le même pour tout le monde, seule l'ouverture change. Si une séance reste fermée alors que tu devrais y accéder, <b>ce n'est pas à toi de bidouiller</b> : signale-le, ça prend dix secondes.</p>
@@ -1714,7 +1923,7 @@
             <p style="font-size:14.5px;margin:4px 0 10px">Le bouton <b>📖 Glossaire</b>, en bas à droite, reste ouvert <b>en permanence</b>, dans toutes les séquences de l'année. Tu y retrouves les mots déjà définis — et surtout <b>tes propres définitions</b>, comme celle de « SSD » que tu as écrite en séance 2. Quand « routeur », « protocole » ou « serveur » reviendront dans un mois, ils y seront. Tu peux y chercher un mot même en tapant approximativement.</p>
 
             <div class="block-label">À retenir</div>
-            <div class="retain">Valider, ce n'est pas seulement avancer&nbsp;: c'est <b>gagner le droit d'aider</b>. Sur une question que tu as validée, tu peux consulter, corriger et conseiller un camarade bloqué — et la <b>qualité de ton aide</b> compte dans ta <b>note d'investissement</b>. Le <b>mode enseignant</b> ouvre toutes les séances&nbsp;: il demande un <b>code</b> et se coupe au bout de <b>30 minutes</b>. C'est un <b>panneau, pas une serrure</b> — bloqué, on le signale, on ne bidouille pas. Et le <b>glossaire</b>, en bas à droite, te suit toute l'année.</div>
+            <div class="retain">Le <b>mode enseignant</b> ouvre toutes les séances d'un coup&nbsp;: il demande un <b>code</b> et se coupe au bout de <b>30 minutes</b>. C'est un panneau, pas une serrure — si une séance reste fermée alors qu'elle devrait être ouverte, on le signale, on ne bidouille pas. Et le <b>glossaire</b>, en bas à droite, te suit toute l'année, avec les mots du cours et les tiens.</div>
 
             <div class="block-label">Vérifie ta compréhension</div>
             <div class="qcmbox" data-code="SYS-Q6">
@@ -1732,17 +1941,6 @@
   "c": "Le mode enseignant existe exactement pour ça. Signaler prend dix secondes ; contourner fait perdre du temps à tout le monde et fausse ta progression."
  },
  {
-  "q": "Que te permet exactement une question passée au 🟢 ?",
-  "o": [
-   "De sauter les questions suivantes, qui portent sur la même notion",
-   "De consulter, corriger et conseiller un camarade bloqué sur celle-ci",
-   "De gagner des points de bonus directement ajoutés à ta moyenne",
-   "De voir les réponses de tous les élèves de la classe à cette question"
-  ],
-  "r": 1,
-  "c": "C'est l'<b>entraide</b>, et elle est ciblée&nbsp;: sur <b>cette</b> question, celle que tu viens de valider — pas sur le reste du cours."
- },
- {
   "q": "Pourquoi le mode enseignant se coupe-t-il au bout de 30 minutes ?",
   "o": [
    "Parce que le code expire et doit être regénéré par l'établissement",
@@ -1752,17 +1950,6 @@
   ],
   "r": 1,
   "c": "Un professeur qui ouvre un poste pour dépanner un élève oublie de refermer. La minuterie referme à sa place."
- },
- {
-  "q": "Quelle aide vaut le plus, dans ce cours ?",
-  "o": [
-   "« C'est faux, recommence », qui va droit au but sans perdre de temps",
-   "Donner sa propre réponse à recopier, pour que le camarade avance",
-   "« Relis le passage sur la RAM : tu l'as confondue avec le stockage »",
-   "Dire au professeur que le camarade n'a pas compris la question"
-  ],
-  "r": 2,
-  "c": "Une aide utile <b>montre où chercher</b> et <b>nomme l'erreur</b>. Elle n'humilie pas, et elle ne fait pas le travail à la place de l'autre."
  }
 ]
               </script>
@@ -1776,12 +1963,19 @@
         <div class="rail"></div><div class="step-pip" style="border-style:dashed"></div>
         <div class="perso-box">
           <div class="pl"><span class="ix"></span>💬 Et toi ? · réponse personnelle, non notée</div>
-          <h3 class="step-title">Et toi, quelle machine ?</h3>
+          <h3 class="step-title">Ta machine, présentée à la classe</h3>
           <div class="perso" data-perso-code="SYS-P2"
-               data-perso-titre="La machine que j'utilise le plus"
-               data-perso-question="Décris le système informatisé que tu utilises le plus (téléphone, console, PC, tablette…) : son système d'exploitation, sa taille d'écran, son stockage, sa mémoire vive si tu la trouves. Qu'est-ce qui te plaît le plus dedans, et qu'est-ce que tu changerais ?">
-            <div class="field-q" style="font-weight:400">Décris <b>le</b> système informatisé que tu utilises le plus — téléphone, console, PC, tablette. Essaie de citer son <b>système d'exploitation</b>, sa <b>taille d'écran</b>, son <b>stockage</b>, et sa <b>mémoire vive</b> si tu la trouves (sur un téléphone&nbsp;: <em>Paramètres → À propos</em>). Qu'est-ce qui te plaît le plus dedans, et qu'est-ce que tu changerais ? Tu sais maintenant lire sa fiche technique.</div>
-            <textarea placeholder="Réponds librement — ça servira à lancer la discussion en classe." aria-label="Réponse personnelle"></textarea>
+               data-perso-titre="La machine que je présente à la classe"
+               data-perso-question="À faire à la maison : choisis un appareil de ton entourage et relève toutes ses caractéristiques — taille et définition de l'écran, processeur (nom, fréquence, nombre de cœurs), mémoire vive, stockage et sa technologie, système d'exploitation et version. Tu le présenteras à la classe : ce qu'il vaut, ce qui te plaît, ce que tu changerais.">
+            <div class="field-q" style="font-weight:400"><b>À faire à la maison, pour la prochaine fois.</b> Choisis un appareil autour de toi&nbsp;: ton téléphone, l'ordinateur de la famille, une console, la tablette d'un parent — demande l'autorisation avant de fouiller dans les réglages. Trouve et note <b>toutes ses caractéristiques</b>&nbsp;:
+              <br>· la <b>taille de l'écran</b>, en pouces, et sa <b>définition</b> en pixels si tu la trouves&nbsp;;
+              <br>· le <b>processeur</b>&nbsp;: son nom, sa fréquence, son nombre de cœurs&nbsp;;
+              <br>· la <b>mémoire vive</b>, en Go&nbsp;;
+              <br>· le <b>stockage</b>&nbsp;: combien, et de quelle technologie (SSD ou disque dur)&nbsp;;
+              <br>· le <b>système d'exploitation</b>, et sa version.
+              <br>💡 <em>Où chercher</em>&nbsp;: sur un téléphone, <em>Paramètres → À propos</em>. Sur Windows, <em>Paramètres → Système → Informations système</em>. Sur un Mac, <em>menu Pomme → À propos de ce Mac</em>.
+              <br>Tu <b>présenteras ton appareil à la classe</b>&nbsp;: ce qu'il vaut, ce qui t'y plaît, ce que tu changerais. Tu sais maintenant lire une fiche technique — on comparera.</div>
+            <textarea placeholder="Note ici ce que tu as trouvé — ça servira de support à ta présentation." aria-label="Réponse personnelle"></textarea>
             <div style="margin-top:8px"><button class="btn ghost" data-share>Partager avec la classe</button></div>
             <div class="note-free" data-share-note></div>
           </div>
@@ -1864,39 +2058,51 @@
     <p class="seance-goal">Devant un vrai ordinateur de la salle : identifier les connectiques, suivre les câbles, nommer les périphériques — sans rien débrancher sans autorisation !</p>
     <div class="steps">
       <div class="step" data-step data-cle="t0-debranche-autopsie-tour">
-        <div class="rail"></div><div class="step-pip"></div>
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">EN BINÔME · DEVANT UN VRAI POSTE</div>
-            <h3 class="step-title">Observer la machine en vrai</h3>
+            <div class="step-kicker">🏆 DÉFI DE CLASSE · DEVANT UNE MACHINE DÉMONTÉE</div>
+            <h3 class="step-title">Combien d'éléments sais-tu nommer ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> reconnaître, sur du vrai matériel posé sur la table, le plus d'éléments possible.</span></div>
           </div>
           <div class="card-body">
-            <p style="font-size:14.5px;margin:4px 0 10px">Le schéma, c'est bien ; le métal, c'est mieux. Par binôme, devant une unité centrale de la salle&nbsp;: repérer les ports de la façade avant et de la façade arrière, identifier chaque câble branché et le périphérique au bout, remplir la fiche d'observation.</p>
-            <div class="duo-ill">
-              <figure class="ill"><span class="loupe">⤢ agrandir</span>
-                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-tour-dell.jpg" alt="Face avant d'une unité centrale compacte Dell : lecteur DVD, deux ports USB, prise casque, bouton d'allumage" loading="lazy">
-                <figcaption>La <b>face avant</b> à observer&nbsp;: lecteur optique, ports USB, prise casque, bouton d'allumage.</figcaption>
-              </figure>
-              <figure class="ill"><span class="loupe">⤢ agrandir</span>
-                <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-tour-dell-arriere-schema.jpg" alt="Schéma annoté d'une face arrière avec des étiquettes vides à compléter et des pictogrammes de connecteurs" loading="lazy">
-                <figcaption>La <b>face arrière</b>, avec ses étiquettes à compléter&nbsp;: c'est le support papier de l'activité.</figcaption>
-              </figure>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le schéma, c'est bien&nbsp;; le métal, c'est mieux. Ton professeur pose devant vous les éléments d'une machine démontée. Photographie-les, puis identifie-les un par un&nbsp;: le but est d'en nommer <b>le plus possible</b>. Une récompense est à la clé.</p>
+            <p style="font-size:13.5px;color:var(--ink-soft);margin:4px 0 10px">⚠️ On photographie du matériel, pas des gens. Cadre la table, rien d'autre.</p>
+
+            <!-- comblement provisoire 24/08 — voir brief §P5 -->
+            <div class="block-label">La règle du jeu</div>
+            <table class="doc-table">
+              <tr><th>#</th><th>Ce que tu fais</th></tr>
+              <tr><td><code>1</code></td><td>Photographie la table où les éléments sont posés — d'assez près pour qu'on les distingue</td></tr>
+              <tr><td><code>2</code></td><td>Dépose ta photo ci-dessous</td></tr>
+              <tr><td><code>3</code></td><td>Nomme les éléments dans la case qui suit, <b>un par ligne</b>, en les numérotant</td></tr>
+              <tr><td><code>4</code></td><td>Pour chacun, ajoute en trois mots <b>ce qu'il fait</b></td></tr>
+            </table>
+            <p style="font-size:14.5px;margin:10px 0"><b>Le barème.</b> 1 point par élément correctement nommé, 1 point de plus si tu dis ce qu'il fait. Le binôme qui totalise le plus de points l'emporte. Ton professeur annonce la récompense en début d'activité.</p>
+            <p style="font-size:13.5px;color:var(--ink-soft);margin:4px 0 10px">💡 Tu as le droit de remonter dans les étapes des séances 2 et 3. Personne ne retient tout du premier coup — savoir <b>où</b> chercher fait partie du jeu.</p>
+
+            <div class="field" data-depot data-depot-code="SYS-D3">
+              <span class="field-type">Dépôt de photo · reste affichée</span>
+              <div class="field-q">Ta photo de la <b>table</b>, avec les éléments démontés.</div>
+              <div class="depot-zone">
+                <label class="btn ghost depot-btn">📷 Choisir ma photo<input type="file" accept="image/*" hidden aria-label="Déposer une photo de la table où les éléments démontés sont posés"></label>
+                <div class="depot-apercu" data-depot-apercu></div>
+              </div>
+              <div class="verdict"></div>
             </div>
-            <div class="res">
-              <span class="a-venir res-item debranche">
-                <span class="res-code">SYS·D</span>
-                <span class="res-main"><span class="r-title">Fiche d'observation à imprimer (façade / arrière / périphériques)</span><span class="r-type">Activité débranchée · document à venir</span></span>
-                <span class="res-time">~30 min</span>
-              <span class="tv" aria-hidden="true">🚧</span><span class="sr"> — en travaux</span></span>
+
+            <div class="field" data-focus
+                 data-focus-titre="Les éléments que j'ai nommés"
+                 data-focus-question="Numérote les éléments sur ta photo et nomme-les, un par ligne. Pour chacun, ajoute en trois mots ce qu'il fait."
+                 data-focus-max="800" data-focus-min="40" data-focus-code="SYS-R-defi">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse est envoyée à ton professeur pour correction.</span></button></span>
+              <div class="field-q">Numérote les éléments sur ta photo et nomme-les ici, <b>un par ligne</b>. Pour chacun, ajoute en trois mots ce qu'il fait.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
             </div>
-            <!-- CHANTIER -->
-            <aside class="chantier">
-              <div class="cl">🚧 23/08/2026 — activité maintenue en chantier</div>
-              Décision du 23/08 (<b>T0-3</b>)&nbsp;: cette activité reste en chantier tant qu'aucun poste n'est disponible pour la faire réellement. Elle n'a donc <b>pas de <code>data-gate</code></b> — elle n'entre pas dans la validation de la séquence, et rien n'est bloqué par son absence. La fiche d'observation à imprimer reste à écrire.
-              <br><br>À noter&nbsp;: l'exercice de légende n'a plus besoin d'un PC physique pour exister — l'étape 3.3 le fait déjà en ligne sur deux photos réelles. La question ouverte est donc&nbsp;: cette activité garde-t-elle sa raison d'être devant la machine (suivre les câbles, ouvrir le boîtier), ou fusionne-t-elle avec 3.3 ?
-            </aside>
-            <!-- /CHANTIER -->
-            <div class="retain" style="margin-top:14px">Tout ce que tu as légendé sur les photos existe pour de vrai à cinquante centimètres de toi. Savoir <b>reconnaître les ports</b> et <b>suivre un câble</b>, c'est le premier réflexe pour dépanner une machine — le tien pour toute l'année.</div>
+
+            <div class="retain" style="margin-top:14px">Tout ce que tu as légendé sur les photos existe pour de vrai à cinquante centimètres de toi. Savoir <b>reconnaître un composant</b> et <b>dire ce qu'il fait</b>, c'est le premier réflexe pour comprendre — puis dépanner — une machine.</div>
           </div>
         </div>
       </div>
@@ -1966,6 +2172,11 @@
   "def": "Random Access Memory : le plan de travail du processeur. Très rapide, elle s'efface à l'extinction. Quand elle sature, « ça rame »."
  },
  {
+  "mot": "Bus",
+  "origine": "Séquence Introduction",
+  "def": "Le faisceau de pistes de la carte mère par lequel les données circulent entre les composants."
+ },
+ {
   "mot": "Carte d'extension",
   "origine": "Séquence Introduction",
   "def": "Une carte enfichée dans un connecteur PCIe pour ajouter une fonction : graphique, son, réseau, Wi-Fi, ports USB."
@@ -2009,6 +2220,11 @@
   "mot": "HDMI",
   "origine": "Séquence Introduction",
   "def": "Le connecteur vidéo qui transporte l'image ET le son dans le même câble. Petit, en trapèze, sans vis."
+ },
+ {
+  "mot": "DEEE",
+  "origine": "Séquence Introduction",
+  "def": "Déchet d'équipement électrique et électronique. Le symbole de la poubelle barrée : l'appareil ne se jette pas avec les ordures ménagères."
  },
  {
   "mot": "RJ45",
@@ -2056,6 +2272,6 @@
   };
 })();
 </script>
-<script src="../assets/js/sequence-snt.js?v=39"></script>
+<script src="../assets/js/sequence-snt.js?v=40"></script>
 </body>
 </html>
