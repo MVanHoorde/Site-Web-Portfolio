@@ -68,6 +68,8 @@
   .pip{width:13px;height:13px;border-radius:50%;flex:none;border:2px solid var(--ink-faint)}
   .pip.doing{background:conic-gradient(var(--link) 50%,transparent 0);border-color:var(--link)}
   .pip.wait{background:var(--wait-wash);border-color:var(--wait)} .pip.done{background:var(--ok);border-color:var(--ok)}
+  /* rendu, pas encore relu — le troisième état manquait à la légende (24/08/2026) */
+  .pip.rendu{background:var(--bg);border-color:var(--ok);border-style:dashed}
 
   /* SÉANCE */
   section.seance{padding:38px 0 8px;position:relative}
@@ -504,6 +506,18 @@
   .poste{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
   .poste-media{background:#0e1526;padding:14px 16px}
   .poste-media iframe{width:100%;border:0;display:block;border-radius:8px}
+  /* affiche qui tient la place de la vidéo tant qu'on n'a pas cliqué : rien
+     n'est demandé à YouTube avant (voir initVideos, 24/08/2026) */
+  .video-affiche{width:100%;border:1.5px dashed rgba(201,212,238,.45);border-radius:8px;
+       background:linear-gradient(160deg,#16203a,#0e1526);color:#c9d4ee;cursor:pointer;
+       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+       font:inherit;padding:18px;text-align:center;transition:.15s}
+  .video-affiche:hover{border-color:var(--link);background:linear-gradient(160deg,#1b2749,#101a30)}
+  .video-affiche:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+  .video-affiche .va-play{font-size:30px;line-height:1;color:#fff}
+  .video-affiche .va-txt{font-size:15px;font-weight:600;color:#fff}
+  .video-affiche .va-note{font-size:12px;color:#9fb0d6;max-width:44ch;line-height:1.45}
+  @media print{.video-affiche{display:none}}
   .poste-media .consigne{color:#c9d4ee;font-size:12.5px;margin:0 0 9px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .poste-corps{display:flex;gap:0;flex-wrap:wrap}
   .poste-notes{flex:1;min-width:260px;padding:14px 16px}
@@ -691,6 +705,10 @@
      background:var(--surface);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center}
 #prog a.it.done .pip2{background:var(--ok);border-color:var(--ok)}
 #prog a.it.wait .pip2{background:var(--wait);border-color:var(--wait)}
+/* Rendu, pas encore relu (24/08/2026) — même dessin que dans le fil :
+   coche verte sur fond creux, bordure verte pointillée. Le vert plein
+   reste réservé à ce que le professeur a lu. */
+#prog .pip2.en-attente{background:var(--bg);color:var(--ok);border-color:var(--ok);border-style:dashed}
 #prog a.it.cur{background:var(--activity-wash)}
 #prog a.it.cur .pip2{border-color:var(--activity);border-style:dashed}
 /* Verrouillé = visiblement verrouillé. Le href est déjà retiré côté
@@ -824,6 +842,13 @@ body.qcm-on #prog, body.qcm-on #prog4, body.qcm-on #glo-ouvrir{display:none !imp
 .qcm-panel .qtop .qdots i.ok{background:var(--ok)} .qcm-panel .qtop .qdots i.ko{background:var(--err)}
 .qcm-panel .qtop .qdots i.cur{outline:2px solid var(--activity);outline-offset:1px}
 .qcm-panel h4{margin:0 0 12px;font-size:17px;font-family:"Space Grotesk",system-ui,sans-serif}
+/* Une question peut montrer une photo à reconnaître (24/08/2026). L'énoncé
+   passe par innerHTML, une <img> y est donc rendue — mais sans cadre, une
+   photo de 1100 px sort du panneau. Le plafond de hauteur s'abaisse sur
+   écran bas, où c'est la place verticale qui manque, pas la largeur. */
+.qcm-panel h4 img{display:block;max-width:100%;max-height:190px;width:auto;margin:10px auto 0;
+     border-radius:8px;background:#fff;object-fit:contain}
+@media (max-height:700px){.qcm-panel h4 img{max-height:130px}}
 .qcm-panel .qopt{display:block;width:100%;text-align:left;background:var(--surface-2);border:1px solid var(--line);
      border-radius:10px;padding:11px 14px;margin-bottom:8px;font-size:14.5px;cursor:pointer;font-family:inherit;color:inherit}
 .qcm-panel .qopt:hover{border-color:var(--link)}

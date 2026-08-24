@@ -307,7 +307,35 @@
       var ico=a.querySelector('.lockico');
       if(ico) ico.style.display = (sec && sec.classList.contains('locked') && !document.body.classList.contains('teacher')) ? '' : 'none';
     });
+    majBarreFiche();
   }
+
+  /* ---------- barre de fiche : quand la montrer (24/08/2026, T0-5) ----------
+     Elle était injectée sans condition : présente dès l'ouverture de la
+     page, elle ne SEMBLAIT arriver en fin de séance que parce que les
+     étapes suivantes sont masquées et qu'elle se retrouvait collée sous
+     la dernière étape visible. Un élève pouvait donc télécharger une
+     fiche quasi vide depuis l'étape 1.2.
+
+     La règle retenue : la barre se révèle quand la dernière étape À
+     VALIDER de la séance est DÉVOILÉE — pas quand la séance est validée.
+     Conditionner à la validation priverait de trace l'élève qui n'a pas
+     fini à la sonnerie, alors que le dépôt de la fiche sur OneDrive est
+     précisément le rituel de fin d'heure. Dévoilée suffit : à ce
+     moment-là l'élève a parcouru tout le travail noté de la séance, et
+     les blocs bonus qui suivent n'ont pas à retarder sa fiche. */
+  function majBarreFiche(){
+    document.querySelectorAll('.seance').forEach(function(sec){
+      var bar=sec.querySelector('.seance-actions'); if(!bar) return;
+      var gates=sec.querySelectorAll('[data-gate]');
+      var derniere=gates[gates.length-1];
+      var cache=!!(derniere && derniere.classList.contains('masque'));
+      if(bar.hidden!==cache) bar.hidden=cache;   /* n'écrire que si ça change */
+    });
+  }
+  /* La révélation d'une étape se joue dans un autre bloc du fichier : elle
+     ne peut pas appeler majBarreFiche() directement, d'où l'événement. */
+  document.addEventListener('etape-revelee', majBarreFiche);
 
   /* Les moteurs V2 (trous, QCM plein écran) valident l'étape eux-mêmes et
      annoncent 'etape-validee'. Sans cette écoute, la classe is-done était
@@ -1173,6 +1201,30 @@
     return out;
   }
 
+  /* Les figures des étapes à valider (24/08/2026). L'évaluation de ces
+     séquences demande de RECONNAÎTRE des objets ; une fiche uniquement
+     textuelle n'y prépare pas. On ne prend que les étapes notées : les
+     blocs « pour aller plus loin » restent hors de la fiche, comme
+     partout ailleurs. Les surcouches d'annotation SVG sont décoratives
+     (l'information est dans la légende) : elles ne suivent pas.
+     Les src sont absolutisés — la fiche s'ouvre dans un about:blank, où
+     un chemin relatif ne pointe sur rien. */
+  function collectFigures(sec){
+    var out=[];
+    sec.querySelectorAll('[data-step][data-gate] figure.ill').forEach(function(f){
+      if(f.closest('.bonus-wrap')) return;   /* les blocs « plus loin » n'ont pas de data-gate */
+      var img=f.querySelector('img'); if(!img) return;
+      var c=f.cloneNode(true);
+      c.querySelectorAll('.loupe,svg.annot,.annot-txt').forEach(function(x){ x.remove(); });
+      c.querySelectorAll('img').forEach(function(i){
+        try{ i.setAttribute('src', new URL(i.getAttribute('src'), location.href).href); }catch(e){}
+        i.removeAttribute('loading');
+      });
+      out.push(c.outerHTML);
+    });
+    return out;
+  }
+
   /* le vocabulaire rencontré dans la séance (dictionnaire du poste d'écoute) */
   function collectVocabulaire(sec){
     var out=[];
@@ -1468,6 +1520,15 @@
       '.table-scroll{overflow-x:auto}',
       'svg{display:block;width:100%;height:auto;max-width:100%}',
       'figure{margin:0}img{max-width:100%;height:auto}',
+      /* les figures de la séance : deux par ligne à l'impression */
+      '.figs{display:flex;flex-wrap:wrap;gap:12px}',
+      '.figs figure.ill{flex:1 1 45%;max-width:48%;border:1px solid var(--line);border-radius:10px;',
+      'padding:10px;background:#fff;page-break-inside:avoid;margin:0}',
+      '.figs figure.ill img{display:block;width:100%;max-height:52mm;object-fit:contain}',
+      '.figs figcaption{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.45}',
+      '.figs figcaption b{color:var(--ink)}',
+      '.figs .src{display:block;font-family:ui-monospace,monospace;font-size:10px;color:var(--ink-faint);margin-top:3px}',
+      '@media (max-width:620px){.figs figure.ill{max-width:100%;flex-basis:100%}}',
       /* barre d'action, jamais imprimée */
       '.barre{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 6px}',
       '.barre button{font:inherit;font-size:14px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;border-radius:9px;padding:8px 15px}',
@@ -1586,6 +1647,13 @@
              r.retenirs.map(function(x){ return '<div class="r"><span class="lbl">À retenir</span>' + x + '</div>'; }).join('') +
              '</div>';
       });
+    }
+
+    /* ---- 3 ter. les images de la séance, à reconnaître ---- */
+    var figs = collectFigures(sec);
+    if(figs.length){
+      h += titre('Les images de la séance');
+      h += '<div class="figs">' + figs.join('') + '</div>';
     }
 
     /* ---- 4. les tableaux, avec ce que l'élève y a écrit ---- */
@@ -1779,7 +1847,9 @@
         [{label:'📄 Ouvrir ma fiche d\'abord',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
          {label:'Recommencer',cls:'reset',fn:function(){resetSeance(sec);}}]);
     });
-    bar.appendChild(dl); bar.appendChild(rs); host.appendChild(bar);
+    bar.appendChild(dl); bar.appendChild(rs);
+    bar.hidden=true;              /* révélée par majBarreFiche() — voir T0-5 */
+    host.appendChild(bar);
   });
 
   /* pop-up de fin de séance */
@@ -1888,6 +1958,42 @@ function placerBoutonSuivant(sec){
     bt.parentNode.insertBefore(bt,premier);
 }
 
+/* ---------- 0 bis. Vidéos : rien ne part avant le clic (24/08/2026) ----------
+   Mesuré au navigateur : une <iframe> YouTube, même en mode nocookie et même
+   dans une étape encore masquée, contacte fonts.gstatic.com, google.com et
+   googleapis.com DÈS l'ouverture de la page. Autrement dit, l'adresse IP de
+   chaque élève partait chez Google à la seconde où il arrivait sur le cours,
+   sans qu'aucune vidéo n'ait été lancée — exactement ce que la règle des
+   polices auto-hébergées interdit ailleurs sur le site.
+   On garde donc l'iframe en attente dans un data-src, derrière une affiche
+   locale. Un clic, et seulement un clic, charge la vidéo. */
+function initVideos(){
+  /* Le src est déclaré en data-src dans les pages : sans cela le navigateur
+     lance la requête avant même que ce code ne s'exécute, et la fuite a lieu
+     quand même. */
+  $$('iframe[data-src]').forEach(function(f){
+    var src=f.getAttribute('data-src'); if(!src) return;
+    var h=f.getAttribute('height')||'315';
+    var son=/radiofrance/.test(src);
+    var quoi=son?'l\'écoute':'la vidéo', chez=son?'Radio France':'YouTube';
+    var aff=document.createElement('button');
+    aff.type='button'; aff.className='video-affiche'+(son?' son':'');
+    aff.style.height=(parseInt(h,10)||315)+'px';
+    aff.setAttribute('aria-label','Lancer '+quoi+' — elle se charge chez '+chez+' au moment du clic');
+    aff.innerHTML='<span class="va-play" aria-hidden="true">'+(son?'🎧':'▶')+'</span>'+
+      '<span class="va-txt">'+(son?'Lancer l\'écoute':'Lire la vidéo')+'</span>'+
+      '<span class="va-note">Hébergée par '+chez+'&nbsp;: rien n\'est chargé chez eux tant que tu n\'as pas cliqué.</span>';
+    aff.addEventListener('click',function(){
+      var i=document.createElement('iframe');
+      i.src=src; i.height=h; i.frameBorder='0'; i.allowFullscreen=true;
+      i.title=f.getAttribute('title')||'Vidéo';
+      i.setAttribute('allow','accelerometer; clipboard-write; encrypted-media; picture-in-picture; fullscreen');
+      aff.parentNode.replaceChild(i,aff);
+    });
+    f.parentNode.replaceChild(aff,f);
+  });
+}
+
 /* ---------- 1. Révélation séquentielle des étapes ---------- */
 function initReveal(){
   $$('.seance').forEach(function(sec){
@@ -1907,10 +2013,17 @@ function initReveal(){
       defilerVers(cache[0]);
       placerBoutonSuivant(sec);
       majBarre();
+      /* La barre de fiche vit dans un autre bloc du fichier, qui ne voit
+         pas cette fonction : on l'avertit par un événement. */
+      document.dispatchEvent(new CustomEvent('etape-revelee'));
     });
     sec.dataset.reveal='1';
     placerBoutonSuivant(sec);
   });
+  /* Le masquage initial se pose ICI, donc APRÈS le premier refresh() du bloc
+     précédent : sans cet avertissement, la barre de fiche resterait visible
+     au chargement, calculée sur un fil où rien n'était encore masqué. */
+  document.dispatchEvent(new CustomEvent('etape-revelee'));
 }
 /* le mode enseignant ouvre tout d'un coup */
 function toutRevel(on){
@@ -1918,6 +2031,7 @@ function toutRevel(on){
   if(on) $$('.step').forEach(function(p){ p.classList.remove('masque','replie'); });
   if(typeof majLignes==='function') majLignes();
   $$('.seance').forEach(placerBoutonSuivant);
+  document.dispatchEvent(new CustomEvent('etape-revelee'));
 }
 
 /* ---------- 1bis. Compteur d'étapes des séances repliées ---------- */
@@ -2556,10 +2670,23 @@ function majBarre(){
     var lien=BARRE.querySelector('[data-cible="'+p.id+'"]');
     if(!lien) return;
     lien.classList.remove('done','wait','cur','locked');
-    if(p.classList.contains('is-done')){ lien.classList.add('done'); lien.querySelector('.pip2').textContent='✓'; faits++; }
-    else if(p.classList.contains('is-wait')){ lien.classList.add('wait'); lien.querySelector('.pip2').textContent='…'; }
-    else if(p.classList.contains('masque')){ lien.classList.add('locked'); lien.querySelector('.pip2').textContent=''; }
-    else { if(!courant){ lien.classList.add('cur'); courant=p; } lien.querySelector('.pip2').textContent=''; }
+    var pip=lien.querySelector('.pip2');
+    pip.classList.remove('en-attente');
+    /* L'ORDRE DES TESTS COMPTE (24/08/2026). 'is-done' passait avant
+       'attente-corr' : une étape rendue mais pas encore relue
+       s'affichait ici verte pleine avec une coche, alors qu'elle est
+       creuse et pointillée dans le fil. Des deux repères, le plus
+       visible était celui qui mentait. On teste donc le cas
+       particulier en premier, et le pip prend le même dessin que dans
+       le fil : coche verte sur fond creux pointillé.
+       'faits++' est conservé — le travail EST rendu, il compte dans la
+       progression ; c'est la relecture qui manque, pas le travail. */
+    if(p.classList.contains('is-done') && p.classList.contains('attente-corr')){
+      pip.classList.add('en-attente'); pip.textContent='✓'; faits++; }
+    else if(p.classList.contains('is-done')){ lien.classList.add('done'); pip.textContent='✓'; faits++; }
+    else if(p.classList.contains('is-wait')){ lien.classList.add('wait'); pip.textContent='…'; }
+    else if(p.classList.contains('masque')){ lien.classList.add('locked'); pip.textContent=''; }
+    else { if(!courant){ lien.classList.add('cur'); courant=p; } pip.textContent=''; }
     /* Une étape pas encore révélée n'est PAS cliquable, et doit le
        montrer. Avant : le href pointait vers une étape masquée — le
        clic partait, il ne se passait rien, et le survol allumait
@@ -3856,6 +3983,7 @@ function demarrer(){
     }
   });
   numeroter();
+  initVideos();          /* avant tout le reste : aucune requête ne doit partir */
   initReveal();
   compteurSeances();
   initEvaluabilite();
