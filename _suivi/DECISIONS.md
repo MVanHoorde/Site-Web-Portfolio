@@ -119,6 +119,34 @@ sur la page livrée le 23/08. La numérotation reprend à **T0-10** : `T0-4` à
 | 📌 **Licence des images issues du PDF du collègue** | 37 images de `t0` viennent du document « 01 — Les systèmes informatisés (AD) — élèves » et ne portent ni source ni licence, sur un site public. Décision à prendre : accord de l'auteur, ou remplacement par des équivalents CC |
 | 📌 **Cadrage de la caisse automatique** | Des clients de supermarché sont visibles sur la photo (Wikimedia, CC BY 2.0). Recadrage possible si la projection en classe gêne |
 
+## `t0` — troisième passe, 25/08/2026
+
+Retours de Loïc après ouverture de la page, captures à l'appui.
+
+| # | Décision | Statut |
+|---|---|---|
+| T0-19 | **L'activité débranchée devient la séance 4.** Elle entre dans la cascade de déverrouillage (elle s'ouvre quand la séance 3 est validée), porte sa propre barre de fiche et ses deux étapes à valider. Elle ferme la séquence, donc elle ne verrouille rien après elle — elle peut dépendre du matériel sans bloquer personne | ✅ |
+| T0-20 | **Dix fiches d'élément** en 4.2 : pour chacune une photo, un nom, et ce que l'élément fait en trois mots. **Trois fiches remplies suffisent à valider** ; les sept autres rapportent des points. Le nom et la description partent en base au fil de la frappe et reviennent à la visite suivante ; **la photo, elle, reste dans la page** tant que la remontée vers le tableau de bord n'est pas écrite | ✅ |
+| T0-21 | **Un exercice d'étiquettes à poser sur la photo** de la vieille tour, en 3.3 : dix emplacements marqués, dix noms à placer. Il vient **en plus** de l'exercice à menus, qui reste — reconnaître un nom dans une liste et trouver l'objet sur une image ne sont pas le même travail. Le geste est en **deux temps** (toucher l'étiquette, toucher l'endroit) et non un glisser natif, qui ne fonctionne pas au doigt sur iPad | ✅ |
+| T0-22 | **La carte du thème est chargée sur `t0`.** La question était ouverte depuis le 23/08 ; elle est tranchée par un défaut : sans `carte-reseau.js`, le lien « ⌂ Sommaire » de la barre du haut **ne faisait rien du tout** | ✅ |
+| T0-23 | **Trois captures de l'interface entrent dans l'étape 1.1** (lot A7, levé) : le plan du thème, le fil d'une séance avec ses cinq états, la barre de progression. Elles sont **produites depuis la page rendue**, états simulés — donc refaisables à l'identique quand l'interface changera | ✅ |
+
+### Trois défauts trouvés en cherchant autre chose
+
+| Sujet | Ce qui n'allait pas | Statut |
+|---|---|---|
+| **Les dépôts de photo ne validaient rien** | `initDepot` appelait `verdict()` et `markDone()`, définis dans un autre bloc du fichier : chaque dépôt levait « verdict is not defined ». L'aperçu de la photo s'affichait, mais l'élève n'avait **aucune confirmation** et l'étape **n'était jamais validée**. Les trois dépôts de `t0` étaient touchés depuis leur écriture | ✅ corrigé |
+| **Le « pour aller plus loin » de la séance 2 était coupé** | Le CSS ouvrait le bloc jusqu'à 1600 px ; à 768 px de large — un iPad en portrait — il en fait 1747, et la vidéo de fin disparaissait. La hauteur est désormais mesurée, puis libérée après l'animation | ✅ corrigé |
+| **Un bloc déplié hors de l'écran** | Sur un bloc situé en bas de page, tout se dépliait sous le bord de la fenêtre : rien ne bougeait à l'écran et le clic paraissait sans effet. Le bloc est maintenant ramené dans la vue | ✅ corrigé |
+
+### Ce qui reste ouvert
+
+| Sujet | Enjeu |
+|---|---|
+| 📌 **Les photos vers le tableau de bord** | Demandé le 25/08, **non fait — chantier séparé par décision de Loïc**. Aujourd'hui une photo déposée ne quitte jamais le navigateur : il faut une migration (bucket de stockage, table, RLS), l'envoi côté élève et l'affichage côté professeur. Ce sont des **photos prises en classe** : une durée de conservation doit être décidée avant d'écrire la moindre ligne |
+| ⏳ **Coordonnées des dix zones de 3.3** | Repérées à l'œil sur la photo puis contrôlées en dessinant les cadres sur l'image source — les dix tombent juste. À revoir si la photo est reprise |
+| ⏳ **Le barème du défi** | Toujours la version minimale du 24/08. Les dix fiches lui donnent maintenant une assiette naturelle : 1 point par fiche nommée, 1 de plus si ce qu'elle fait est juste |
+
 ## Clôture de `t1` « Internet » — 23/08/2026
 
 Audit dicté par Loïc, page ouverte, les 26 étapes descendues une à une. **Le thème

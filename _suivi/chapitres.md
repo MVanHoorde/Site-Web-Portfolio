@@ -184,7 +184,7 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 > ressources définitives → validé** (voir `CONSIGNES-sequence-SNT.md` §12).
 
 ### SNT-T0 — Introduction · Les systèmes informatisés 🧭
-- État : **refondue le 23/08/2026, auditée le 24/08** — jalons 1 à 3 atteints,
+- État : **refondue le 23/08/2026, reprise les 24 et 25/08** — jalons 1 à 3 atteints,
   jalon 4 partiel, **non validée**. Tout le contenu est une proposition.
 - Fichier : `pages/2nde-snt-t0-systemes-informatises.html`. Lié depuis la carte
   « Pour commencer » (en tête de `pages/2nde-snt.html`, `data-seances="4"`).
@@ -192,7 +192,7 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   cours « Les systèmes informatisés » **entrelacé** avec le tutoriel du
   dispositif. Toute nouvelle idée de fonctionnement du cours se présente ici en
   premier ; les autres séquences portent un **rappel discret** en pied de page.
-- **3 séances + 1 défi de classe · 24 étapes · 16 portes.** ≈ 4 h 30. Codes `SYS·x`.
+- **4 séances · 26 étapes · 18 portes.** ≈ 5 h 15. Codes `SYS·x`.
   - **S1 — Des machines partout** (7 étapes) : le mode d'emploi complet (1.1),
     les systèmes informatisés (1.2), machines / réseau / services (1.3), ce qu'on
     fait sans connexion + première réponse rédigée (1.4), le rituel de la fiche
@@ -208,9 +208,11 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
     photo des ports (3.4), six critères de choix (3.5), mode enseignant et
     glossaire (3.6, **sans porte**), ta machine présentée à la classe (3.7),
     bonus définition ≠ résolution.
-  - **Défi de classe** — « combien d'éléments sais-tu nommer ? », devant une
-    machine démontée : photo déposée, éléments numérotés et nommés. Sans
-    `data-gate` : il dépend de la disponibilité du matériel.
+  - **S4 — Le défi de la machine démontée** (2 étapes, ≈ 45 min) : la règle du jeu
+    et la photo d'ensemble (4.1), puis **dix fiches d'élément** — photo, nom, ce
+    qu'il fait en trois mots (4.2, trois fiches suffisent à valider). Depuis le
+    25/08 c'est une **séance à part entière** : elle entre dans la cascade et porte
+    sa propre fiche. Elle ferme la séquence, donc elle ne bloque rien en aval.
 - **Mécanismes du cours présentés — et désormais tous PRATIQUÉS** (liste à tenir
   à jour à chaque nouveauté) :
   - [x] géographie séquence / séance / étape, entrée par le hub (1.1)
@@ -232,6 +234,9 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
         l'exercice fait ; le bouton n'est qu'un compteur verrouillé
   - [x] **glossaire permanent** et entrée écrite par l'élève (2.6 → `SYS-G-ssd`)
   - [x] **tri glisser-déposer** (2.6, chronologie des supports de stockage)
+  - [x] **étiquettes à poser sur une photo** (3.3 — toucher l'étiquette, toucher
+        l'endroit ; pas de glisser natif, inutilisable au doigt sur iPad)
+  - [x] **fiches d'élément** photo + nom + description (4.2)
   - [x] **mode enseignant à code**, coupé à 30 min (3.6)
   - [ ] **entraide** — reportée après la rentrée (T0-12), retirée des pages
         élèves ; à réintroduire ici en premier le jour où elle se déploie
@@ -251,9 +256,9 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   comparaison des slots PCIe x1/x4/x16, pouces et diagonale, définition contre
   résolution. Plus deux **surcouches d'annotation** sur les languettes PCIe des
   cartes graphique et contrôleur USB (décoratives, `aria-hidden`).
-- 🚧 Restant : **captures de l'interface** pour l'étape 1.1 (lot suspendu, à
-  prendre depuis un compte élève) ; **licence des 37 images du PDF** ; barème
-  définitif du défi débranché ; validation de tout le contenu pédagogique.
+- 🚧 Restant : **remontée des photos vers le tableau de bord** (chantier séparé,
+  avec une durée de conservation à décider) ; **licence des 37 images du PDF** ;
+  barème définitif du défi ; validation de tout le contenu pédagogique.
 
 ### SNT-T1 — Internet
 - État : **validé sur le fond le 23/08/2026** — jalon 5 atteint, jalon 7 (CLOS)

@@ -1644,3 +1644,56 @@ annonçait « exactement 2 anomalies connues » pour `verifier.mjs` : le repère
 **18**, les dix-huit liens `cfa/outil-*` vers des fiches non écrites, comme
 `CLAUDE.md` le dit. Un repère faux transforme une non-régression en fausse alerte.
 
+---
+
+## 25/08/2026 — `t0` : ce qu'on trouve quand on va vérifier
+
+Sept demandes de Loïc, captures à l'appui. Trois d'entre elles ont mis au jour
+des défauts qui n'étaient pas dans la liste.
+
+**Un dépôt de photo ne validait rien, et personne ne pouvait le voir.** En
+préparant les dix fiches de la séance 4, il fallait s'appuyer sur le mécanisme
+de dépôt existant. Premier réflexe : le tester pour de bon, en envoyant un
+fichier depuis le navigateur. L'aperçu de la photo s'affiche bien — et la console
+dit `verdict is not defined`. `initDepot` appelle deux fonctions définies dans un
+autre bloc du fichier, invisibles depuis le sien : l'élève ne recevait aucune
+confirmation, et surtout **l'étape n'était jamais validée**. Les trois dépôts de
+`t0` étaient dans cet état depuis leur écriture. C'est le cloisonnement des blocs
+du moteur, déjà rencontré le 24/08 pour la barre de fiche — sauf qu'ici l'erreur
+était visible dans la console depuis des semaines, et que personne n'y regardait.
+
+**La vidéo coupée n'était pas coupée partout.** Loïc signalait qu'elle
+n'apparaissait pas en entier. Mesure faite à cinq largeurs d'écran : à 1600, 1366,
+1100 et 900 px le bloc tient dans le plafond CSS de 1600 px ; à **768 px**, la
+largeur d'un iPad en portrait, il en fait 1747 et le bas disparaît. Le défaut ne
+se voyait que sur la machine de l'élève, pas sur celle où l'on écrit la page.
+
+**Le lien « Sommaire » de `t0` ne faisait rien.** Trouvé en cherchant à
+reproduire la carte des séances d'une des captures : `carte-reseau.js` n'était pas
+chargé sur cette page, donc `hubCarte()` renvoyait une chaîne vide et la modale ne
+s'ouvrait pas. Un lien visible, cliquable, sans effet — depuis la refonte du 23/08.
+La question « faut-il généraliser la carte à `t0` ? », ouverte depuis deux jours,
+s'est réglée toute seule : il ne s'agissait pas d'un choix mais d'un manque.
+
+Deux composants ont été écrits pour les demandes elles-mêmes. Les **dix fiches
+d'élément** redimensionnent la photo dans le navigateur avant de l'afficher : une
+photo de téléphone pèse 3 à 5 Mo, dix d'un coup feraient plier l'onglet — et sans
+cette réduction, la remontée vers le tableau de bord serait de toute façon
+impraticable. Les **étiquettes à poser** sur la façade arrière n'utilisent pas le
+glisser-déposer HTML5, qui ne fonctionne pas au doigt sur iPad : on touche
+l'étiquette, puis l'endroit. Le même geste marche à la souris, au doigt et au
+clavier. Les dix zones ont été placées à l'œil, puis contrôlées en dessinant les
+cadres directement sur l'image source — plus sûr que de juger sur une capture
+d'écran réduite.
+
+Enfin, les captures d'interface attendues depuis le 24/08 n'ont pas eu besoin
+d'être fournies : la page rendue les produit, états simulés compris. Elles se
+referont à l'identique le jour où l'interface changera, ce qu'un fichier envoyé
+par messagerie ne permet pas.
+
+**Ce qui n'a pas été fait**, et c'est délibéré : la remontée des photos vers le
+tableau de bord. Une photo déposée ne quitte aujourd'hui jamais le navigateur.
+La faire remonter demande une migration, un espace de stockage, des règles
+d'accès — et une décision sur la durée de conservation de photos prises en
+classe. Ce n'est pas un réglage de fin de session.
+
