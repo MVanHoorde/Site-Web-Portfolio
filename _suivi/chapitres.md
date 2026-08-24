@@ -184,63 +184,76 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 > ressources définitives → validé** (voir `CONSIGNES-sequence-SNT.md` §12).
 
 ### SNT-T0 — Introduction · Les systèmes informatisés 🧭
-- État : **refondue le 23/08/2026** — jalons 1 à 3 atteints, jalon 4 partiel,
-  **non validée**. Tout le contenu est une proposition.
+- État : **refondue le 23/08/2026, auditée le 24/08** — jalons 1 à 3 atteints,
+  jalon 4 partiel, **non validée**. Tout le contenu est une proposition.
 - Fichier : `pages/2nde-snt-t0-systemes-informatises.html`. Lié depuis la carte
   « Pour commencer » (en tête de `pages/2nde-snt.html`, `data-seances="4"`).
 - **Statut particulier — référentiel vivant** (`CONSIGNES-sequence-SNT.md` §8) :
   cours « Les systèmes informatisés » **entrelacé** avec le tutoriel du
   dispositif. Toute nouvelle idée de fonctionnement du cours se présente ici en
   premier ; les autres séquences portent un **rappel discret** en pied de page.
-- **3 séances + 1 débranchée · 23 étapes · 16 portes.** ≈ 4 h 30. Codes `SYS·x`.
+- **3 séances + 1 défi de classe · 24 étapes · 16 portes.** ≈ 4 h 30. Codes `SYS·x`.
   - **S1 — Des machines partout** (7 étapes) : le mode d'emploi complet (1.1),
     les systèmes informatisés (1.2), machines / réseau / services (1.3), ce qu'on
     fait sans connexion + première réponse rédigée (1.4), le rituel de la fiche
     (1.5), « et toi ? » (1.6), pour aller plus loin + clin d'œil NSI.
-  - **S2 — Dans le ventre de la machine** (7 étapes) : terminal et unité centrale
-    (2.1), l'alimentation (2.2), carte mère / CPU / RAM (2.3), cartes d'extension
-    et dépôt de copie d'écran (2.4), le stockage et le glossaire (2.5), autopsie
-    d'une vraie machine (2.6), bonus ROM/BIOS/UEFI et IDE→SATA.
+  - **S2 — Dans le ventre de la machine** (8 étapes) : terminal, matériel et
+    logiciel (2.1), **vidéo de dix minutes et prise de notes** (2.2, sans porte),
+    l'alimentation (2.3), carte mère / bus / ROM-BIOS / CPU / RAM (2.4), cartes
+    d'extension et dépôt de copie d'écran (2.5), le stockage et le glossaire
+    (2.6), **QCM de bilan de 15 questions, dont six avec photo** (2.7), bonus
+    podcasts + ROM/BIOS/UEFI + IDE→SATA + vidéo longue de 49 min.
   - **S3 — Brancher juste, choisir sa machine** (8 étapes) : connectiques et
     planche SVG (3.1), l'USB (3.2), autopsie d'une façade arrière (3.3), relevé
-    photo des ports (3.4), six critères de choix (3.5), entraide et mode
-    enseignant (3.6), « et toi ? » (3.7), bonus définition ≠ résolution.
-  - **Débranchée** — « autopsie d'une tour », maintenue **en chantier** (T0-3),
-    sans `data-gate`.
+    photo des ports (3.4), six critères de choix (3.5), mode enseignant et
+    glossaire (3.6, **sans porte**), ta machine présentée à la classe (3.7),
+    bonus définition ≠ résolution.
+  - **Défi de classe** — « combien d'éléments sais-tu nommer ? », devant une
+    machine démontée : photo déposée, éléments numérotés et nommés. Sans
+    `data-gate` : il dépend de la disponibilité du matériel.
 - **Mécanismes du cours présentés — et désormais tous PRATIQUÉS** (liste à tenir
   à jour à chaque nouveauté) :
   - [x] géographie séquence / séance / étape, entrée par le hub (1.1)
-  - [x] trajet d'une étape, pastilles ⚪ 🟡 🟢 (1.1)
+  - [x] trajet d'une étape, **six états de pastille sur deux familles** (1.1,
+        dessinées aux vraies couleurs du moteur, pas en emojis)
   - [x] révélation séquentielle et barre de progression repliable (1.1)
   - [x] échelle d'évaluabilité ★★ · ★ · ○ · ✦ · — (1.1, injectée par le moteur)
   - [x] déblocage par le mérite **et** plafond de deux séances d'avance (1.1)
   - [x] les cinq types d'exercice et **qui corrige quoi** (1.1, tableau)
   - [x] copier-coller bloqué et mode focus (1.1, pratiqué en 1.4)
-  - [x] **QCM plein écran** (1.1 → `SYS-Q1`, 8 questions)
+  - [x] **QCM plein écran** (1.1 → `SYS-Q1`, 10 questions)
   - [x] **réponse rédigée** envoyée en correction (1.4 → `SYS-R1`)
   - [x] **réponse personnelle** partagée, jamais notée (1.6 → `SYS-P1`)
-  - [x] **rituel de la fiche** de fin de séance (1.5) — le dépôt OneDrive
-        s'enseigne **hors ligne** (T0-4), la page n'enseigne que la génération
-  - [x] **dépôt de copie d'écran** (2.4 → `SYS-D1`, 3.4 → `SYS-D2`)
-  - [x] **« à retenir » masqué** (2.3 et 3.3) — s'ouvre **tout seul** une fois
+  - [x] **rituel de la fiche** de fin de séance (1.5, avec la capture de la
+        barre) — la fiche se dépose dans le **dossier SNT partagé sur OneDrive**
+  - [x] **poste de visionnage** et prise de notes (2.2)
+  - [x] **dépôt de copie d'écran** (2.5 → `SYS-D1`, 3.4 → `SYS-D2`, défi → `SYS-D3`)
+  - [x] **« à retenir » masqué** (2.4 et 3.3) — s'ouvre **tout seul** une fois
         l'exercice fait ; le bouton n'est qu'un compteur verrouillé
-  - [x] **glossaire permanent** et entrée écrite par l'élève (2.5 → `SYS-G-ssd`)
-  - [x] **tri glisser-déposer** (2.5, chronologie des supports de stockage)
-  - [x] **entraide** — « validé → tu peux aider » (3.4 puis 3.6)
+  - [x] **glossaire permanent** et entrée écrite par l'élève (2.6 → `SYS-G-ssd`)
+  - [x] **tri glisser-déposer** (2.6, chronologie des supports de stockage)
   - [x] **mode enseignant à code**, coupé à 30 min (3.6)
+  - [ ] **entraide** — reportée après la rentrée (T0-12), retirée des pages
+        élèves ; à réintroduire ici en premier le jour où elle se déploie
   - [ ] _(prochain mécanisme : à présenter ici d'abord)_
-- **Images** : 43 des 47 fichiers du dossier sont placés. Non utilisés à dessein :
-  `t0-resolution-ecran.jpg` (confond définition et résolution — refait en SVG),
-  `t0-boitier-tour.jpg`, `t0-ssd-et-hdd.jpg` et `t0-imprimante.jpg` (vignettes
-  redondantes). Crédit + licence portés sur les **deux images Wikimedia** ; les
-  photos de Loïc sont créditées « la machine du professeur » (T0-7).
+- **Images** : 5 photos Wikimedia livrées (valideur Navigo, caisse automatique,
+  lave-linge, montre connectée, baie de serveurs), **26 images réextraites du PDF
+  source avec leur masque de transparence** (elles étaient aplaties sur du noir)
+  et 4 images de bonus récupérées au passage — la **tablette** est placée en 1.2 ;
+  câble HDMI, microUSB-B et jacks colorés restent disponibles pour 3.1 et 3.2.
+  Une capture de la barre de fin de séance, prise sur la page rendue, illustre 1.5.
+  Attributions CC complètes dans `<span class="src">` ; les photos de Loïc sont
+  créditées « la machine du professeur » (T0-7).
+  ⚠ **37 images viennent du PDF d'un collègue et ne portent ni source ni licence**
+  (`IDEES.md`, décision à prendre).
 - **SVG maison** : planche des 14 connecteurs à la même échelle (remplace le
-  tableau anglophone écarté, T0-9), comparaison des slots PCIe x1/x4/x16,
-  pouces et diagonale, définition contre résolution.
-- 🚧 Restant : **cinq images** (borne de bus, caisse automatique, lave-linge —
-  l'accroche de la séance 1 —, montre connectée, baie de serveurs) ; fiche
-  d'observation `SYS·D` et diaporama `SYS·1` (liens inertes) ; arbitrage sur la
-  recherche en ligne de l'étape 2.4 ; sort de l'activité débranchée.
+  tableau anglophone écarté, T0-9 — broches VGA et DVI **recentrées** le 24/08),
+  comparaison des slots PCIe x1/x4/x16, pouces et diagonale, définition contre
+  résolution. Plus deux **surcouches d'annotation** sur les languettes PCIe des
+  cartes graphique et contrôleur USB (décoratives, `aria-hidden`).
+- 🚧 Restant : **captures de l'interface** pour l'étape 1.1 (lot suspendu, à
+  prendre depuis un compte élève) ; **licence des 37 images du PDF** ; barème
+  définitif du défi débranché ; validation de tout le contenu pédagogique.
 
 ### SNT-T1 — Internet
 - État : **validé sur le fond le 23/08/2026** — jalon 5 atteint, jalon 7 (CLOS)

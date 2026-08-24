@@ -84,6 +84,41 @@ contenu pédagogique ci-dessous est une proposition.
 | ⏳ **Trois images utiles mais non bloquantes** | Une carte mère ≥ 900 px, un SSD M.2 seul, un touchpad en gros plan |
 | ⏳ **Sort de l'activité débranchée** | L'exercice de légende n'a plus besoin d'un poste physique : l'étape 3.3 le fait en ligne sur deux photos réelles. La débranchée garde-t-elle une raison d'être, ou fusionne-t-elle avec 3.3 ? |
 
+## Audit 2 de `t0` « Les systèmes informatisés » — 24/08/2026
+
+Deuxième passe sur la séquence d'introduction, brief dicté après test en classe
+sur la page livrée le 23/08. La numérotation reprend à **T0-10** : `T0-4` à
+`T0-9` sont prises par les arbitrages du 23/08 et ne changent pas de sens.
+
+| # | Décision | Statut |
+|---|---|---|
+| T0-10 | **La page donne des consignes, pas des justifications pédagogiques.** Le « pourquoi » du dispositif se dit à l'oral, quand le professeur sent une réticence. Écrit, il allonge, il infantilise et il donne prise à la contestation | ✅ |
+| T0-11 | **Le gras redevient rare** : réservé au terme technique à sa première apparition et aux valeurs à retenir (230 V, x16, 2,54 cm). Jamais sur un verbe de consigne, une négation ou un membre de phrase. Six termes au maximum dans un « à retenir », aucun dans la colonne de droite d'un tableau | ✅ |
+| T0-12 | **L'entraide est reportée après la rentrée.** Le mécanisme est conçu mais non déployé : toutes ses mentions sortent des pages élèves (1.1, 3.4, 3.6). L'étape 3.6 est réduite au mode enseignant et au glossaire, et **perd son `data-gate`** | ✅ |
+| T0-13 | **La barre de fiche est masquée** tant que la dernière étape **à valider** de la séance n'est pas dévoilée. Jamais conditionnée à la validation : l'élève qui n'a pas fini à la sonnerie doit pouvoir déposer sa trace | ✅ |
+| T0-14 | **L'étape « Autopsie d'une vraie machine » (2.6) est remplacée** par un QCM de bilan de 15 questions, dont six avec photo. La photo de l'intérieur de la machine y sert de question | ✅ |
+| T0-15 | **L'inspecteur d'éléments est annoncé comme PC uniquement.** Safari sur iPad n'en a pas ; la voie officielle d'Apple passe par un Mac relié en USB. Aucun contournement (application tierce, marque-page JavaScript) n'est développé | ✅ |
+| T0-16 | **Le cours s'aligne sur le vocabulaire de la vidéo de 2.2** — matériel/logiciel, bus, BIOS, puce graphique intégrée — puisque c'est la première formulation que les élèves reçoivent. `SDRAM` n'est **pas** repris : il n'apparaît que dans la vidéo bonus de 49 min, hors programme | ✅ |
+| T0-17 | **Les élèves disposent d'un accès à la recherche web** (tablette ou salle informatique). Les exercices de recherche en ligne n'ont plus de version de repli — la question laissée ouverte le 23/08 est tranchée | ✅ |
+| T0-18 | **Aucune requête réseau ne part avant un clic de l'élève.** Mesuré au navigateur : une `<iframe>` YouTube, même en `nocookie` et même dans une étape masquée, contacte `fonts.gstatic.com`, `google.com` et `googleapis.com` **dès l'ouverture de la page**. Les vidéos passent donc derrière une affiche locale (`data-src` + `initVideos`), sur les quatre pages du moteur | ✅ |
+
+### Ce que la fiche de séance embarque désormais
+
+| Sujet | Décision | Statut |
+|---|---|---|
+| **Images dans la fiche** | Une fiche embarque **toutes les figures des étapes à valider** de la séance, avec leur légende, deux par ligne à l'impression. Motif : l'évaluation demande de **reconnaître** des objets, une fiche uniquement textuelle n'y prépare pas. Exclus : les figures des blocs « pour aller plus loin » et les surcouches d'annotation SVG, décoratives | ✅ |
+| **Pastille « rendu, pas encore relu »** | Le test `is-done` passait avant `attente-corr` : l'étape s'affichait verte pleine dans la barre de progression alors qu'elle est creuse et pointillée dans le fil. Des deux repères, le plus visible mentait. Corrigé ; l'étape continue de compter dans la progression | ✅ |
+| **Légende des pastilles** | Elle annonçait 4 états pour 6 réellement produits, sur **deux familles** de pastilles. Réécrite en deux tableaux, avec les pastilles **dessinées aux vraies couleurs du moteur** plutôt qu'en emojis — l'emoji ne ressemble pas à ce que l'élève a sous les yeux, c'était la source de la confusion | ✅ |
+
+### Ce qui reste ouvert
+
+| Sujet | Enjeu |
+|---|---|
+| ⏳ **Tout le contenu pédagogique reste à valider** | Y compris les 15 questions du QCM de bilan et les trois questions ajoutées à `SYS-Q1` |
+| ⏳ **Captures de l'interface pour l'étape 1.1** | Lot suspendu : les fichiers transmis le 24/08 étaient des documents personnels sans rapport avec le site (recette, documents de garde d'enfant). Emplacement réservé par un commentaire HTML. À reprendre depuis un compte élève en fonctionnement |
+| 📌 **Licence des images issues du PDF du collègue** | 37 images de `t0` viennent du document « 01 — Les systèmes informatisés (AD) — élèves » et ne portent ni source ni licence, sur un site public. Décision à prendre : accord de l'auteur, ou remplacement par des équivalents CC |
+| 📌 **Cadrage de la caisse automatique** | Des clients de supermarché sont visibles sur la photo (Wikimedia, CC BY 2.0). Recadrage possible si la projection en classe gêne |
+
 ## Clôture de `t1` « Internet » — 23/08/2026
 
 Audit dicté par Loïc, page ouverte, les 26 étapes descendues une à une. **Le thème

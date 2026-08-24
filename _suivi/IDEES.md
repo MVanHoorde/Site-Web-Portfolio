@@ -1,6 +1,6 @@
 # Idées & améliorations à trier
 
-> Mise à jour : 23/08/2026
+> Mise à jour : 24/08/2026
 > Réservoir vivant : Loïc y jette ses idées « au fil de l'eau », on les trie
 > ensuite (garder / différer / abandonner) et on les bascule en jalon 4
 > (« ajouts & approfondissements ») du chapitre concerné.
@@ -66,12 +66,60 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
   reste le bonus d'adressage 6.6, qui traite déjà IPv6 et l'hexadécimal. Elle
   ne doit pas figurer sur la fiche élève téléchargeable.
 
+### T0 — Introduction, reports de l'audit du 24/08/2026
+
+- 👍 **Entraide entre élèves** — mécanisme conçu, **non déployé à la rentrée 2026**.
+  Toutes ses mentions sont sorties des pages élèves (`t0` 1.1, 3.4 et 3.6), et
+  l'étape 3.6 a perdu son `data-gate`. À reprendre quand le fonctionnement de
+  base sera stabilisé en classe. Ce qui existait déjà : le vert « validé » ouvrait
+  le droit de consulter, corriger et conseiller un camarade bloqué sur *cette*
+  question, avec la qualité de l'aide comptée dans la note d'investissement.
+- 💡 **Glisser-déposer d'étiquettes sur les deux façades arrière** (`t0` 3.3).
+  Bloqué par la **qualité de la photo** de la machine récente : câblée, éclairage
+  RGB violet, les ports y sont largement masqués — un dépôt d'étiquettes dessus
+  serait illisible. Condition de reprise : **reprise de photo débranchée, lumière
+  neutre, cadrage frontal**. Le mécanisme lui-même (cadres de légende en dépôt,
+  plusieurs occurrences d'un même mot) reste à écrire dans le moteur.
+- 💡 **Carte mère en haute définition** (≥ 900 px) — permettrait un exercice de
+  légende sur la carte mère seule. L'image actuelle fait 640 × 480.
+- 💡 **Gros plan d'un SSD M.2 seul** — le format n'est visible sur aucune image du
+  dossier, alors que le « à retenir » du stockage le nomme.
+- 💡 **Gros plan de touchpad** et **montage de logos d'OS incluant ChromeOS**
+  (`t0` 3.5). Manque mineur : la légende de `t0-logos-os.png` dit déjà que
+  ChromeOS n'y est pas.
+- 💡 **`t0-resolution-ecran.jpg` à redessiner en SVG** (report existant, confirmé).
+- 📌 **Licence des images issues du PDF d'origine.** 37 images du dossier `t0`
+  proviennent du document « 01 — Les systèmes informatisés (AD) — élèves » d'un
+  collègue et ne portent **ni source ni licence**, alors que le reste du site suit
+  la règle Wikimedia + CC + attribution complète dans `<span class="src">`, et que
+  le site est **public**. Ce n'est pas une régression du chantier — elles y étaient
+  déjà — mais c'est un écart à la règle du projet. Décision à prendre : obtenir
+  l'accord de l'auteur, ou remplacer par des équivalents CC.
+- 💡 **Captures du site pour l'étape 1.1** (lot A7, suspendu) — la pastille dans
+  ses différents états, le bouton « Étape suivante ↓ », la barre de progression,
+  un exercice corrigé en direct. À prendre **depuis un compte élève en
+  fonctionnement**. L'emplacement est réservé dans la page par un commentaire HTML.
+  *Note : la capture de la barre de fin de séance, elle, a été prise directement
+  sur la page rendue en Chromium — c'est reproductible pour les autres.*
+- 💡 **Défi débranché** — barème définitif, liste d'éléments attendus, nature de la
+  récompense. La version en place est **volontairement minimale** (1 point par
+  élément nommé, 1 de plus s'il dit ce qu'il fait) et se remplace sans toucher à
+  la structure.
+- 💡 **Étiquette DEEE de la vieille tour** — comblement provisoire d'une remarque
+  dictée le 24/08 dont la phrase n'était pas reconstituable. Une ligne de plus dans
+  l'exercice de légende de 3.3, plus une phrase au « à retenir » et une entrée de
+  glossaire. Se retire en supprimant un `<label>` (marqué en commentaire HTML).
+
 ## Par chapitre
 ### T1-C4
 - 💡 Réintégrer le tableau périodique complet (actuellement bloc 🚧 différé).
 
 ## Publicités sur les postes de visionnage
 
+- 💡 *(mise à jour du 24/08/2026 : les vidéos sont désormais derrière une
+  **affiche locale** — rien n'est chargé chez YouTube tant que l'élève n'a pas
+  cliqué. Cela règle la fuite d'adresse IP à l'ouverture de la page, **pas** les
+  publicités : la piste ci-dessous reste ouverte.)*
 - 💡 **Supprimer les publicités des deux postes de visionnage du thème 1**
   (étapes 5.2, les couches, et 6.3, le DNS). `youtube-nocookie` supprime le
   cookie publicitaire, **pas les publicités** — c'est le motif de Loïc.

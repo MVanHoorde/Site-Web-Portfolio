@@ -1583,3 +1583,64 @@ vivants du moteur, employés 8, 3 et 10 fois dans `t1`. Les supprimer aurait
 retiré à `t0` le texte à trous, les associations et le partage des réponses
 personnelles. Seuls `data-qcm` et `data-free` étaient réellement des vestiges,
 et ils ont disparu. Une checklist se vérifie contre le code, elle aussi.
+
+---
+
+## 24/08/2026 — `t0`, deuxième audit : ce que le navigateur a montré
+
+Vingt lots dictés après un test en classe sur la page livrée la veille. Trois
+choses méritent d'être racontées, parce qu'aucune des trois ne se voyait dans le
+code.
+
+**L'archive d'images n'était jamais arrivée.** Le brief décrivait cinq photos
+livrées, une capture d'écran et vingt-six images reconstruites ; le dossier ne
+contenait que les fichiers du 23/08. Seuls le brief et une planche de contrôle
+avaient été déposés dans `Téléchargements`. Mais tout le matériau source était
+là : les cinq originaux Wikimedia, et surtout le PDF « 01 — Les systèmes
+informatisés (AD) — élèves » d'où viennent les images du dossier. La livraison a
+donc été refaite sur place. Le diagnostic du brief était exact : dans le PDF,
+chaque image est un JPEG **accompagné d'un masque de transparence**, et
+l'extraction qui avait alimenté le dossier avait gardé le JPEG en jetant le
+masque — d'où des objets aplatis sur du noir. Réextraction masque compris,
+composition sur blanc : **26 images** exactement, le compte annoncé. Quatre
+images de bonus dormaient dans le même PDF, dont la tablette qui manquait à
+l'accroche de 1.2. Quant à la capture de la barre de fin de séance, elle n'avait
+pas besoin d'être fournie : la page rendue dans un Chromium sans interface la
+produit mieux, et à jour.
+
+**La barre de fiche ne se masquait pas, et la raison était un ordre
+d'exécution.** Le verrou demandé était simple — la barre reste cachée tant que la
+dernière étape à valider n'est pas dévoilée. Écrit dans `refresh()`, il ne
+marchait pas : mesuré au navigateur, `barreCachee` valait `false` alors que
+l'étape était bien masquée. Le masquage initial est posé par `initReveal()`, qui
+vit dans le **bloc suivant** du fichier — donc *après* le premier `refresh()`. Au
+moment du calcul, aucune étape n'était encore masquée. La révélation prévient
+désormais la barre par un événement `etape-revelee`, seul moyen de traverser le
+cloisonnement des blocs. Sans un test dans un vrai navigateur, la page serait
+partie avec le verrou inopérant et l'air de fonctionner.
+
+**Les vidéos partaient chez Google avant que personne n'ait cliqué.** La
+checklist du brief demandait qu'aucune requête ne parte vers un autre domaine que
+`youtube-nocookie.com`. Vérification faite à l'ouverture de la page, sans la
+moindre interaction : `fonts.gstatic.com`, `www.google.com`,
+`jnn-pa.googleapis.com`. Une `<iframe>` YouTube charge ses ressources **dès le
+rendu**, y compris dans une étape masquée, y compris en mode `nocookie` — qui ne
+supprime que le cookie publicitaire. L'adresse IP de chaque élève partait donc à
+la seconde où il ouvrait le cours, ce que la règle des polices auto-hébergées
+interdit partout ailleurs sur le site. Les vidéos sont passées derrière une
+affiche locale : `data-src` dans les pages, `initVideos()` dans le moteur, et
+l'iframe n'est créée qu'au clic. Premier essai insuffisant — le remplacement en
+JavaScript arrivait après que le navigateur eut lancé la requête ; il a fallu que
+le `src` n'existe pas dans le HTML. Mesure finale : **zéro requête externe** au
+chargement de `t0`, `t1`, `t2` et `m1`, et la vidéo se charge normalement au clic.
+
+Deux corrections plus discrètes, du même genre. Les annotations posées sur les
+languettes PCIe tombaient dans le vide : les pourcentages étaient calculés sur le
+cadre de la figure, alors que l'image, contrainte en hauteur, n'en occupe qu'une
+partie — et le conteneur, enfant d'un flex, s'étirait encore au-delà. Il a fallu
+un conteneur ajusté à l'image et un `align-self`, puis mesurer la position réelle
+des contacts dorés dans les fichiers plutôt que de l'estimer. Et le brief
+annonçait « exactement 2 anomalies connues » pour `verifier.mjs` : le repère est
+**18**, les dix-huit liens `cfa/outil-*` vers des fiches non écrites, comme
+`CLAUDE.md` le dit. Un repère faux transforme une non-régression en fausse alerte.
+
