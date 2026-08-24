@@ -27,9 +27,9 @@ window.SEANCES_SNT = {
       "nom": "Brancher juste, et choisir sa machine"
     },
     {
-      "id": "deb",
-      "num": "⏳",
-      "nom": "Activité débranchée — autopsie d'une tour"
+      "id": "s4",
+      "num": "S4",
+      "nom": "Le défi de la machine démontée"
     }
   ],
   "snt-t1": [

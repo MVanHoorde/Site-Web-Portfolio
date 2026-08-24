@@ -1103,9 +1103,43 @@
   document.addEventListener('etape-validee',function(){ setTimeout(majPastilleCorr,60); });
   setTimeout(majPastilleCorr,1200);   /* après la ré-hydratation */
 
-  /* ---------- bonus dépliables ---------- */
+  /* ---------- bonus dépliables ----------
+     Le CSS ouvrait le bloc jusqu'à un plafond de 1600 px. Mesuré le 24/08 :
+     à 768 px de large — un iPad en portrait — le « pour aller plus loin » de
+     la séance 2 de t0 fait 1747 px, et le bas était donc coupé net, la vidéo
+     de fin avec. On mesure désormais la hauteur réelle pour l'animation, puis
+     on libère le plafond une fois l'animation finie : le bloc suit ensuite si
+     son contenu grandit (une image qui finit de charger, une vidéo qui
+     remplace son affiche).
+     Second défaut, signalé en test : sur un bloc situé en bas d'écran, tout
+     se déplie SOUS le bord de la fenêtre — rien ne bouge à l'écran et le clic
+     paraît sans effet. On ramène donc le bloc dans la vue. */
   document.querySelectorAll('[data-bonus-toggle]').forEach(function(h){
-    h.addEventListener('click',function(){h.closest('[data-bonus]').classList.toggle('open');});
+    var w=h.closest('[data-bonus]'); if(!w) return;
+    var corps=w.querySelector('.bonus-body'); if(!corps) return;
+    h.addEventListener('click',function(){
+      if(w.classList.contains('open')){
+        /* fermeture : repartir d'une hauteur chiffrée, sinon la transition
+           depuis 'none' ne joue pas du tout */
+        corps.style.maxHeight=corps.scrollHeight+'px';
+        void corps.offsetHeight;
+        w.classList.remove('open');
+        corps.style.maxHeight='';
+        return;
+      }
+      w.classList.add('open');
+      corps.style.maxHeight=corps.scrollHeight+'px';
+      var libere=function(){ corps.style.maxHeight='none'; corps.removeEventListener('transitionend',libere); };
+      corps.addEventListener('transitionend',libere);
+      setTimeout(libere,600);            /* filet : transitionend peut ne pas venir */
+      setTimeout(function(){
+        var r=w.getBoundingClientRect();
+        if(r.bottom>window.innerHeight || r.top<0){
+          var doux=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          w.scrollIntoView({behavior:doux?'smooth':'auto',block:'nearest'});
+        }
+      },360);
+    });
   });
 
   /* ---------- manip « piège à clic » (séquence Web, étape clickbait) ----------
@@ -1221,6 +1255,27 @@
         i.removeAttribute('loading');
       });
       out.push(c.outerHTML);
+    });
+    return out;
+  }
+
+  /* Les fiches d'élément du défi débranché : photo, nom, ce qu'il fait.
+     Elles entrent dans la fiche de séance — c'est aujourd'hui le seul chemin
+     par lequel ce travail sort de la page (la remontée vers le tableau de
+     bord reste à écrire). On ne retient que les fiches réellement remplies. */
+  function collectElements(sec){
+    var out=[];
+    sec.querySelectorAll('[data-elem]').forEach(function(f){
+      var img=f.querySelector('img');
+      var t=f.querySelector('[data-elem-titre]'), d=f.querySelector('[data-elem-desc]');
+      var nom=t?t.value.trim():'', dit=d?d.value.trim():'';
+      if(!img && !nom) return;
+      out.push({
+        n   : (f.querySelector('.elem-n')||{}).textContent||'',
+        nom : nom || '(sans nom)',
+        desc: dit,
+        src : img?img.src:''
+      });
     });
     return out;
   }
@@ -1529,6 +1584,16 @@
       '.figs figcaption b{color:var(--ink)}',
       '.figs .src{display:block;font-family:ui-monospace,monospace;font-size:10px;color:var(--ink-faint);margin-top:3px}',
       '@media (max-width:620px){.figs figure.ill{max-width:100%;flex-basis:100%}}',
+      /* les éléments identifiés devant la machine : trois par ligne */
+      '.elems{display:flex;flex-wrap:wrap;gap:10px}',
+      '.elems .el{flex:1 1 30%;max-width:32%;margin:0;border:1px solid var(--line);border-radius:10px;',
+      'padding:8px;background:#fff;page-break-inside:avoid}',
+      '.elems .el img{display:block;width:100%;height:34mm;object-fit:cover;border-radius:6px}',
+      '.elems .el-sans{height:34mm;display:flex;align-items:center;justify-content:center;border-radius:6px;',
+      'background:var(--surface-2);color:var(--ink-faint);font-size:11px}',
+      '.elems figcaption{font-size:12px;margin-top:6px;line-height:1.4}',
+      '.elems .el-d{display:block;color:var(--ink-soft);margin-top:2px}',
+      '@media (max-width:620px){.elems .el{max-width:48%;flex-basis:48%}}',
       /* barre d'action, jamais imprimée */
       '.barre{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 6px}',
       '.barre button{font:inherit;font-size:14px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;border-radius:9px;padding:8px 15px}',
@@ -1654,6 +1719,19 @@
     if(figs.length){
       h += titre('Les images de la séance');
       h += '<div class="figs">' + figs.join('') + '</div>';
+    }
+
+    /* ---- 3 quater. les éléments identifiés devant la machine ---- */
+    var elems = collectElements(sec);
+    if(elems.length){
+      h += titre('Les éléments que j’ai identifiés');
+      h += '<div class="elems">' + elems.map(function(e){
+        return '<figure class="el">' +
+               (e.src ? '<img src="' + e.src + '" alt="' + echapper(e.nom) + '">' : '<div class="el-sans">pas de photo</div>') +
+               '<figcaption><b>' + echapper(e.n ? e.n + '. ' : '') + echapper(e.nom) + '</b>' +
+               (e.desc ? '<span class="el-d">' + echapper(e.desc) + '</span>' : '') +
+               '</figcaption></figure>';
+      }).join('') + '</div>';
     }
 
     /* ---- 4. les tableaux, avec ce que l'élève y a écrit ---- */
@@ -3457,24 +3535,225 @@ function initZoom(){
 /* ---------- 8. Démarrage ---------- */
 /* ---------- Dépôt de copie d'écran (nouveau mécanisme, 22/07/2026) ----------
    L'image lue reste en mémoire JS (data URL dans le DOM), JAMAIS en localStorage.
-   Validation à l'envoi. Correction/relecture IA = plus tard (worker phase 2). */
+
+   ⚠ CORRIGÉ LE 25/08/2026. Ce bloc appelait `verdict()` et `markDone()`, qui
+   sont définis dans le PREMIER bloc du fichier — invisibles depuis ici. Chaque
+   dépôt levait donc « verdict is not defined » : l'aperçu de la photo
+   s'affichait, mais l'élève ne recevait aucune confirmation et surtout
+   l'étape n'était JAMAIS validée. Les trois dépôts de t0 étaient touchés.
+   Les fonctions équivalentes sont désormais locales à ce bloc, et la
+   validation passe par l'événement 'etape-validee', comme le QCM et les
+   textes à trous. */
+function depotVerdict(zone,cls,msg){
+  var v=$('.verdict',zone); if(!v) return;
+  v.className='verdict show '+cls; v.innerHTML=msg;
+}
+function depotValide(zone){
+  var s=zone.closest('[data-step]'); if(!s) return;
+  s.classList.remove('is-wait'); s.classList.add('is-done');
+  s.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
+}
 function initDepot(){
   $$('[data-depot]').forEach(function(zone){
     var input=$('input[type=file]',zone), apercu=$('[data-depot-apercu]',zone);
     if(!input||!apercu) return;
     input.addEventListener('change',function(){
       var f=input.files&&input.files[0]; if(!f) return;
-      if(!/^image\//.test(f.type)){ verdict(zone,'no','Choisis un fichier image (une copie d\'écran).'); return; }
+      if(!/^image\//.test(f.type)){ depotVerdict(zone,'no','Choisis un fichier image (une copie d\'écran).'); return; }
       var r=new FileReader();
       r.onload=function(){
         apercu.innerHTML='';
         var img=document.createElement('img'); img.src=r.result; img.alt='Ta copie d\'écran déposée';
         apercu.appendChild(img);
-        verdict(zone,'ok','✅ Copie d\'écran déposée — étape validée. (La relecture par l\'IA viendra plus tard.)');
-        markDone(zone);
+        depotVerdict(zone,'ok','✅ Copie d\'écran déposée — étape validée.');
+        depotValide(zone);
       };
       r.readAsDataURL(f);
     });
+  });
+}
+
+/* ---------- Étiquettes à poser sur une photo (25/08/2026) --------------------
+   Poser le nom d'un connecteur à l'endroit exact où il se trouve sur une vraie
+   façade arrière. C'est plus exigeant qu'un menu déroulant : il faut trouver
+   l'objet sur l'image, pas seulement reconnaître son nom dans une liste.
+
+   ⚠ On ne se sert PAS du glisser-déposer natif HTML5 : il ne fonctionne pas au
+   doigt sur iPad, qui est la cible du projet. Le geste retenu est en deux
+   temps — je touche l'étiquette, je touche l'endroit —, qui marche à la souris,
+   au doigt et au clavier (les étiquettes et les zones sont des <button>).
+   Une zone déjà servie renvoie son étiquette au bac si on la retouche. */
+function initEtiquettes(){
+  $$('[data-etiquettes]').forEach(function(jeu){
+    var bac=$('[data-etiq-bac]',jeu), verdictBoite=$('.verdict',jeu);
+    var choisie=null;
+
+    function choisir(e){
+      if(choisie===e){ choisie.classList.remove('choisie'); choisie=null; return; }
+      if(choisie) choisie.classList.remove('choisie');
+      choisie=e; e.classList.add('choisie');
+      jeu.classList.add('en-cours');
+    }
+    function rendre(etiq){
+      if(!etiq) return;
+      etiq.classList.remove('posee','juste','faux');
+      bac.appendChild(etiq);
+    }
+    $$('[data-etiq]',jeu).forEach(function(e){
+      e.addEventListener('click',function(){ choisir(e); });
+    });
+    $$('[data-zone]',jeu).forEach(function(z){
+      z.addEventListener('click',function(){
+        var deja=$('[data-etiq]',z);
+        if(!choisie){ if(deja) rendre(deja); return; }
+        if(deja) rendre(deja);
+        choisie.classList.add('posee');
+        choisie.classList.remove('choisie');
+        z.appendChild(choisie);
+        choisie=null;
+        jeu.classList.remove('en-cours');
+      });
+    });
+
+    var bouton=$('[data-etiq-verifier]',jeu);
+    if(bouton) bouton.addEventListener('click',function(){
+      var zones=$$('[data-zone]',jeu), justes=0, posees=0;
+      zones.forEach(function(z){
+        var e=$('[data-etiq]',z); if(!e) return;
+        posees++;
+        var ok = e.getAttribute('data-etiq')===z.getAttribute('data-zone');
+        e.classList.toggle('juste',ok); e.classList.toggle('faux',!ok);
+        if(ok) justes++;
+      });
+      if(verdictBoite){
+        verdictBoite.className='verdict show '+(justes===zones.length?'ok':(justes?'presque':'no'));
+        verdictBoite.innerHTML = justes===zones.length
+          ? '✅ Tout est à sa place — tu sais lire une façade arrière.'
+          : (posees===0 ? 'Commence par toucher une étiquette, puis l’endroit qui lui correspond sur la photo.'
+                        : '<b>'+justes+' sur '+zones.length+'</b> à la bonne place. Les étiquettes en rouge sont à déplacer&nbsp;: touche-les, puis touche le bon endroit.');
+      }
+      var etape=jeu.closest('[data-step]');
+      if(justes===zones.length && etape && !etape.classList.contains('is-done')){
+        etape.classList.add('is-done');
+        etape.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
+      }
+    });
+  });
+}
+
+/* ---------- Fiches d'élément : photo + nom + ce qu'il fait (25/08/2026) ------
+   Pour le défi de la machine démontée : l'élève photographie un composant,
+   le nomme, et dit en trois mots ce qu'il fait. Dix fiches côte à côte.
+
+   Trois précautions :
+   · la photo est REDIMENSIONNÉE dans le navigateur avant d'être affichée.
+     Une photo de téléphone pèse 3 à 5 Mo ; dix d'un coup feraient plier
+     l'onglet, et rendraient impossible l'envoi au tableau de bord qui viendra.
+   · le nom et la description partent en base au fil de la frappe (canal
+     'cours', comme les notes de visionnage), et reviennent à la visite
+     suivante. La photo, elle, reste dans la page tant que la remontée n'est
+     pas écrite : on ne prétend pas la conserver.
+   · l'étape se valide au nombre de fiches VRAIMENT remplies — photo et nom —,
+     pas au simple fait d'avoir cliqué quelque part. */
+function elemBase(){
+  return (typeof Progression!=='undefined' && Progression.disponible()) ? Progression : null;
+}
+function elemRedimensionne(fichier, cote, faire){
+  var r=new FileReader();
+  r.onload=function(){
+    var im=new Image();
+    im.onload=function(){
+      var e=Math.min(1, cote/Math.max(im.width,im.height));
+      var c=document.createElement('canvas');
+      c.width=Math.round(im.width*e); c.height=Math.round(im.height*e);
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      try{ faire(c.toDataURL('image/jpeg',0.82)); }
+      catch(err){ faire(r.result); }      /* image exotique : on garde l'original */
+    };
+    im.onerror=function(){ faire(r.result); };
+    im.src=r.result;
+  };
+  r.readAsDataURL(fichier);
+}
+function initElements(){
+  $$('[data-elements]').forEach(function(grille){
+    var fiches=$$('[data-elem]',grille);
+    var mini=parseInt(grille.getAttribute('data-elements-min'),10)||3;
+    /* le compteur vit à côté de la grille, pas dedans : on le cherche dans
+       l'étape, sinon il reste muet */
+    var etapeGrille=grille.closest('[data-step]')||document;
+    var compteur=$('[data-elements-compte]',etapeGrille);
+    var BASE=elemBase();
+
+    function remplies(){
+      return fiches.filter(function(f){
+        var t=$('[data-elem-titre]',f);
+        return !!$('img',f) && t && t.value.trim().length>1;
+      }).length;
+    }
+    function majEtat(){
+      var n=remplies();
+      if(compteur){
+        compteur.textContent = n===0
+          ? 'Aucun élément identifié pour l’instant — il en faut '+mini+' pour valider l’étape.'
+          : n+' élément'+(n>1?'s':'')+' sur '+fiches.length+' identifié'+(n>1?'s':'')+
+            (n<mini ? ' — encore '+(mini-n)+' pour valider l’étape.' : ' — étape validée. Continue si tu veux marquer plus de points.');
+      }
+      var etape=grille.closest('[data-step]');
+      if(n>=mini && etape && !etape.classList.contains('is-done')){
+        etape.classList.add('is-done');
+        etape.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
+      }
+    }
+
+    fiches.forEach(function(f){
+      var code=f.getAttribute('data-elem-code')||'';
+      var input=$('input[type=file]',f), zone=$('[data-elem-photo]',f);
+      var titre=$('[data-elem-titre]',f), desc=$('[data-elem-desc]',f);
+
+      if(input && zone){
+        input.addEventListener('change',function(){
+          var fi=input.files&&input.files[0]; if(!fi) return;
+          if(!/^image\//.test(fi.type)){ f.classList.add('erreur'); return; }
+          f.classList.remove('erreur');
+          elemRedimensionne(fi,1200,function(url){
+            var vide=$('.elem-vide',zone); if(vide) vide.hidden=true;
+            var img=$('img',zone);
+            if(!img){ img=document.createElement('img'); zone.appendChild(img); }
+            img.src=url; img.alt='Photo de l’élément '+(titre&&titre.value?titre.value:code);
+            f.classList.add('avec-photo');
+            majEtat();
+          });
+        });
+      }
+      /* nom et description : écriture différée, comme les notes de visionnage */
+      var t=null;
+      function enregistre(){
+        if(!BASE||!code) return;
+        clearTimeout(t);
+        t=setTimeout(function(){
+          /* hors classe (élève non inscrit), la base refuse l'écriture : c'est
+             attendu, et ce n'est pas une erreur à jeter dans la console. */
+          try{
+            var q=BASE.ecrire('cours','elem-'+code,{
+              titre:titre?titre.value:'', desc:desc?desc.value:''
+            });
+            if(q&&q.catch) q.catch(function(){});
+          }catch(e){}
+        },1200);
+      }
+      if(titre){ titre.addEventListener('input',function(){ enregistre(); majEtat(); }); }
+      if(desc){ desc.addEventListener('input',enregistre); }
+      if(BASE&&code){
+        BASE.lire('cours','elem-'+code).then(function(v){
+          if(!v) return;
+          if(titre&&v.titre&&!titre.value) titre.value=v.titre;
+          if(desc&&v.desc&&!desc.value) desc.value=v.desc;
+          majEtat();
+        }).catch(function(){});
+      }
+    });
+    majEtat();
   });
 }
 
@@ -3998,6 +4277,8 @@ function demarrer(){
   initGlossaire();
   initZoom();
   initDepot();
+  initElements();     /* les fiches d'élément du défi débranché */
+  initEtiquettes();   /* les étiquettes à poser sur une photo */
   initCalc();
   initBilan();
   var obs=new MutationObserver(function(){ majBarre(); bqMaj(); });
