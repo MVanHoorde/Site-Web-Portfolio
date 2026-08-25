@@ -84,230 +84,37 @@ fiches/fiche-2nde-tXcY.html            ← la fiche élève imprimable
 - Le PPTX et/ou le PDF du chapitre (le PDF fait foi pour le rendu final).
 - Le niveau, le thème, le numéro de chapitre → **slug** : `2nde-t1c2`, etc.
 - Le code de déblocage à 6 caractères, si Loïc veut le fixer lui-même.
-  **En régime A, s'il ne le donne pas : ne PAS demander — l'inventer** (voir
-  §1ter, « Codes de déblocage »). En régime B, où l'on peut échanger, demander
-  reste possible si Loïc n'a rien précisé.
+  **En V1 intégrale, s'il ne le donne pas : ne PAS demander — l'inventer**
+  (voir `CONSIGNES-V1-integrale-PC.md` §2). En régime B, où l'on peut échanger,
+  demander reste possible si Loïc n'a rien précisé.
 
-## 1bis. Deux régimes de production
+## 1bis. Deux temps de production
 
 La production d'un chapitre se fait en **deux temps**, à ne pas confondre :
 
-- **Régime A — Ébauche rapide** (§1ter) : transcription texte-only du cours,
-  manques signalés par des blocs `.a-faire` 🚧. But : **peupler le site d'un
-  coup**, avoir un ensemble navigable, à moindre coût en tokens. Plusieurs
-  chapitres peuvent s'enchaîner dans une même conversation.
-- **Régime B — Raffinage** (§2 et suivants) : reprise d'une ébauche, une
-  **conversation dédiée par chapitre**, pour traiter les `.a-faire` (images,
-  schémas SVG validés, fiche élève paginée, tests, delta). C'est le mode qui a
-  produit T1-C2 et T1-C4.
+- **V1 intégrale** — récupération sans perte du cours depuis son PPTX/PDF :
+  figures extraites et posées avec leurs légendes, exercices et corrections
+  rédigés en entier, données chiffrées sorties des images, liens décodés. Aucun
+  `.a-faire` sauf le DS. But : **Loïc lit son cours entier à l'écran** et juge
+  sur pièce. Autonomie totale, aucune question posée, plusieurs chapitres
+  peuvent s'enchaîner dans une même conversation.
+  🔴 **Consignes dédiées : `_modeles/CONSIGNES-V1-integrale-PC.md`.** Tout y
+  est — pipeline d'extraction, tableau de détection, traitement des erreurs de
+  physique, format du relevé.
+- **Régime B — Raffinage** (§2 et suivants) : reprise d'une V1, une
+  **conversation dédiée par chapitre**, pour transformer les figures `-source`
+  en SVG à la charte, intégrer les ajouts, puis produire la fiche élève. C'est
+  le mode qui a produit T1-C2 et T1-C4.
 
-Par défaut, si Loïc ne précise rien : demander lequel des deux régimes.
+> ⚠ Les 14 chapitres actuellement en ligne datent d'avant la V1 intégrale : ils
+> sont fidèles dans le texte mais **troués de blocs `.a-faire` à la place des
+> images**. Ils repassent tous par une V1 avant tout raffinage.
 
-## 1ter. Régime A — Ébauche rapide (chaîne de peuplement)
-
-**Objectif** : à partir du PPTX/PDF, produire *vite* une page de cours HTML
-fidèle dans le texte, structurée, verrouillée et liée depuis la page de niveau,
-où **tout ce qui demande un travail à part est remplacé par un bloc `.a-faire`
-visible** (🚧). On ne cherche pas la perfection visuelle : on cherche un site
-complet et honnête sur ses manques, prêt à être raffiné chapitre par chapitre.
-
-### Autonomie TOTALE — zéro interaction (règle capitale du régime A)
-
-En régime A, **ne JAMAIS interrompre Loïc, ne poser AUCUNE question, ne
-demander AUCUNE validation.** C'est une exception explicite et assumée à la
-règle générale « décisions silencieuses interdites » (qui, elle, reste
-pleinement en vigueur en régime B). Loïc dépose des fichiers et part vaquer à
-ses occupations ; il doit retrouver le travail **fait**, pas des questions en
-attente.
-
-Concrètement, en régime A :
-- prendre TOUTES les micro-décisions seul (choix de slug par convention,
-  placement des blocs 🚧, formulation des `.a-faire`, etc.) ;
-- **codes de déblocage : si Loïc n'en fournit pas, les inventer soi-même**,
-  un par chapitre, 6 caractères, sur le principe déjà en usage sur le site
-  (un mot clé du chapitre, une lettre remplacée par un chiffre visuellement
-  proche — ex. `AT0MES`, `AV0G4D`, `S0LUTE`, `C0UCHE`, `ST4BLE`). Calculer
-  l'empreinte SHA-256 et la poser directement dans le HTML — ne jamais
-  laisser `EMPREINTE_SHA256_A_REMPLACER` en placeholder. **Tester chaque
-  verrou via Playwright** (verrouillé au départ → mauvais code rejeté → bon
-  code en minuscules déverrouille → persiste au reload → `?verrou=1`
-  reverrouille) : c'est le seul test Playwright que le régime A ne s'interdit
-  pas (§ Budget), le verrou étant fonctionnel et pas seulement visuel. Lister
-  tous les codes en clair dans le récap final (Loïc les redonnera en classe) ;
-- **corriger automatiquement** les erreurs scientifiques évidentes, sans
-  demander — juste les lister dans le récap final ;
-- ne PAS reformuler le cours (fidélité au texte) ; **sauf** défaut manifeste
-  de formulation ou de guidage pédagogique : dans ce cas, un **mini-diagnostic
-  d'une ligne** dans le récap (« diapo 5 : l'énoncé de l'ex. 3 ne donne pas
-  l'unité de M — à préciser »), sans corriger le fond et sans y passer de
-  tokens ; Loïc jugera lui-même. Réservé aux défauts **gros et nets**.
-- ne s'arrêter que si une source est **inexploitable** (fichier corrompu,
-  contenu absent) : le signaler brièvement et passer au chapitre suivant.
-
-Le seul moment d'échange est **après** la chaîne, via le récap groupé. La
-phase riche en allers-retours, c'est le régime B.
-
-### Budget (ce qu'on NE fait PAS en régime A)
-
-Pour ne pas consommer de tokens inutilement :
-
-- ❌ pas d'extraction/optimisation de **photos réelles** (aucune photo copiée
-  ni recadrée — elles restent en `.a-faire type="image"`) ;
-- ❌ pas de maquette PNG, pas de SVG produit pour les **schémas et
-  illustrations récapitulatives** (protocoles en images, coupes d'atome,
-  graphiques à redessiner — cf. tableau de détection) ;
-- ✅ **le décodage des QR/liens vidéo et Kahoot est fait** (voir « Décodage
-  des liens ») — ce n'est plus un `.a-faire`, sauf lien indécodable ou lien
-  de DS (toujours différé, voir tableau) ;
-- ✅ **les exercices et leurs corrections sont rédigés en entier**, y compris
-  quand une image accompagne l'énoncé dans la source (seule l'image reste
-  `.a-faire`) ;
-- ✅ **les encarts formule (`.formule-bloc`) sont posés** quand la source les
-  rend comme une image (équation composée par le logiciel de présentation) —
-  ce n'est pas un schéma, c'est du texte scientifique à retyper ;
-- ✅ une **courte recherche web est possible** si un contenu semble manquant
-  pour que le cours reste compréhensible (ex. une définition implicite) —
-  à utiliser avec parcimonie, et à signaler dans le récap ;
-- ❌ pas de fiche élève, pas de PDF, pas de pagination ;
-- ❌ pas de Playwright pour le contenu (images, sommaire, captures) ;
-  **exception : test du verrou** (voir ci-dessus, un test court par chapitre,
-  pas de captures) ;
-- ❌ pas de vérification exhaustive des corrigés à la main au-delà du calcul
-  donné par la source (recalculer l'application numérique pour la valider
-  reste bienvenu — voir §5.2 — mais pas de contre-expertise scientifique
-  approfondie, **reportée au régime B**) ;
-- ❌ pas d'archive delta zippée par chapitre (livraison groupée en fin de
-  chaîne, §1ter-livraison).
-
-### Extraction (texte seul)
-
-Une seule extraction, le texte des diapositives, via `python-pptx` :
-
-```bash
-pip install python-pptx --break-system-packages -q
-python3 - <<'PY'
-from pptx import Presentation
-prs = Presentation('SOURCE.pptx')
-for i, s in enumerate(prs.slides, 1):
-    print(f"\n===== DIAPO {i} =====")
-    def walk(shapes):
-        for sh in shapes:
-            if sh.shape_type == 6:      # groupe
-                walk(sh.shapes); continue
-            if sh.has_text_frame and sh.text_frame.text.strip():
-                print(sh.text_frame.text.strip())
-    walk(s.shapes)
-PY
-```
-
-Le PPTX peut tronquer les exposants à l'affichage (ex. `10⁻²` au lieu de
-`10⁻²⁷`). En cas de doute sur une puissance de 10, **se fier au résultat
-numérique du corrigé** pour retrouver le bon exposant, et le signaler.
-
-### Détection : que devient chaque élément de la source
-
-| Élément dans la source | Action en régime A |
-|---|---|
-| Texte de cours, énoncé, corrigé | **Transcrit** directement (fidèle, §5) |
-| Exercice + correction, **même si une image l'accompagne** | **Transcrit intégralement** (énoncé + étapes de correction) ; seule l'image elle-même (photo, graphique support) devient `.a-faire` — le texte de l'exercice, lui, n'attend pas le régime B |
-| Formule donnée en image dans la source (équation rendue comme graphique par le logiciel de présentation) | **Reconstituée en `.formule-bloc`** (charte, §3) — ce n'est pas un schéma à dessiner, c'est du texte scientifique à retyper |
-| Définition, propriété ou tableau de données **essentiel à la compréhension**, piégé dans une image (ex. tableau grandeur/valeur, légende chiffrée) | **Extrait et retranscrit** en `.encart`/`table.tab` ; si un détail précis manque pour boucler l'explication, une **recherche web courte** est possible pour compléter (le signaler dans le récap) |
-| Photo réelle (halite, portrait, modèle 3D…) | Bloc `.a-faire type="image"` avec description ; **rien** dans le HTML |
-| Schéma pédagogique **illustratif ou récapitulatif** (protocole en images, cristal, coupes d'atome, graphique à redessiner) | Bloc `.a-faire type="schéma"` : décrire ce qu'il faut produire — ça reste un travail de maquette/SVG validé, donc régime B |
-| QR code / lien vidéo (Kahoot compris) | **Décoder et poser en vrai lien** `.video-chip` (voir « Décodage des liens », ci-dessous) — ce n'est plus un `.a-faire` |
-| Lien vers un **DS** | **Toujours en `.a-faire`**, quel que soit ce que contient la source : le DS change chaque année, seul Loïc décide lequel lier. Si un lien DS existe déjà dans le PPTX/PDF (ex. année précédente), le mentionner dans le `.a-faire` sans l'activer |
-| Tableau complexe / classification (grand tableau périodique illustré, etc.) | Bloc `.a-faire type="tableau"` : « à intégrer plus tard » |
-| Erreur scientifique **évidente** (exposant tronqué, formule ionique inversée type S₃Al₂→Al₂S₃, unité aberrante) | **Corrigée** + notée en une ligne dans le récap |
-| Corrigé au calcul non trivial | Transcrit tel quel ; vérification fine **reportée au régime B** |
-
-### Décodage des liens (QR + hyperliens texte)
-
-Deux mécanismes coexistent dans les PPTX de Loïc — vérifier les deux :
-
-```bash
-# 1) QR codes intégrés comme images
-apt-get install -y libzbar0 && pip install pyzbar --break-system-packages -q
-python3 -c "
-from pyzbar.pyzbar import decode
-from PIL import Image
-print(decode(Image.open('image_extraite.png')))
-"
-# extraire les images du PPTX au préalable (python-pptx : shape.image.blob
-# pour chaque shape.shape_type == PICTURE)
-
-# 2) hyperliens portés directement par le texte (fréquent quand la diapo
-# écrit « Apprendre en vidéo », « Pour réviser en vidéo »… en toutes lettres)
-python3 -c "
-from pptx import Presentation
-prs = Presentation('SOURCE.pptx')
-for i, s in enumerate(prs.slides, 1):
-    for sh in s.shapes:
-        if sh.has_text_frame:
-            for p in sh.text_frame.paragraphs:
-                for r in p.runs:
-                    if r.hyperlink and r.hyperlink.address:
-                        print(i, r.text, '->', r.hyperlink.address)
-"
-```
-
-Convertir le PPTX en PDF (`scripts/office/soffice.py`) puis en PNG
-(`pdftoppm -r 130`) donne un rendu fidèle des diapos pour repérer visuellement
-ce qui accompagne chaque lien et vérifier le sens de chaque exercice avant
-transcription — c'est la même vue que Loïc a en présentant son cours.
-
-Les liens décodés se posent en `.video-chip` réel (`href` direct, `target=
-"_blank" rel="noopener"`, `?si=` retiré) à l'endroit exact où le QR/texte
-apparaissait. Le Kahoot suit la même règle. Le DS, jamais (voir tableau
-ci-dessus).
-
-### Le bloc `.a-faire` (gabarit)
-
-Structure minimale (le CSS est dans `gabarit-chapitre.html`) :
-
-```html
-<div class="a-faire">
-  <span class="type">image</span>
-  <span class="quoi">Photo — cristal de halite (échantillon de sel gemme)</span>
-  <span class="detail">source : diapo 2 ; à extraire et optimiser en régime B</span>
-</div>
-```
-
-`type` ∈ { image, schéma, vidéo, tableau }. Le bloc se pose **exactement à
-l'emplacement du manque**, dans le fil du cours — pas de récapitulatif en fin
-de page (la navigation sur le site suffit à les repérer). Le type `vidéo` ne
-sert plus qu'au cas résiduel d'un lien indécodable (QR flou, image trop
-compressée) ou à un lien de DS laissé en attente — pas aux vidéos normales,
-désormais décodées.
-
-### Ce qu'on fait quand même (non négociable même en ébauche)
-
-- structure complète : sections `<details class="partie">`, `h2 id="ancre-N"`,
-  sommaires latéral + mobile synchronisés, checklist finale, signature ;
-- typographie scientifique (`.nb`, `<sub>`/`<sup>`, flèches `→`) — §5.3 ;
-- verrou v2 : si Loïc donne le code, calculer l'empreinte et le poser ;
-  sinon, laisser les placeholders et le signaler ;
-- **lier la page depuis `pages/NIVEAU-physique-chimie.html`** en respectant la
-  règle anti-préfixe (§5.8).
-
-### Chaîne multi-chapitres & livraison groupée
-
-En régime A, on peut enchaîner plusieurs chapitres dans **une même
-conversation** : traiter les sources l'une après l'autre. À la fin de la
-chaîne seulement :
-
-1. une **archive delta unique** regroupant tous les chapitres ébauchés
-   (`pages/…-cN.html` + la page de niveau mise à jour) ;
-2. un récapitulatif compact : par chapitre, la liste des `.a-faire` posés et
-   les erreurs corrigées.
-
-Aucune capture, aucun PDF. Le contrôle se fait **par Loïc, sur le site en
-ligne**, après push : il repère ce qui doit être retravaillé et ouvre une
-conversation de régime B par chapitre.
+Par défaut, si Loïc ne précise rien : demander lequel des deux temps.
 
 ## 2. Régime B — Raffinage : workflow imposé (maquettes AVANT implémentation)
 
-Le régime B reprend une ébauche (§1ter) et traite ses blocs `.a-faire` un par
-un, jusqu'à un chapitre « utilisable en classe l'an prochain ». Une
+Le régime B reprend une V1 intégrale et la porte, figure par figure, jusqu'à un chapitre « utilisable en classe l'an prochain ». Une
 **conversation dédiée par chapitre**. Beaucoup d'échanges : ici, on valide.
 
 **Ordre de travail** : d'abord le **cours** (texte affiné, images, schémas,
@@ -561,31 +368,14 @@ Pièges connus (ne pas les reproduire) :
 
 ## 9. Messages-types que Loïc colle en début de session
 
-### 9a. Régime A — ébauche (chaîne de peuplement)
+### 9a. V1 intégrale
 
-> Voici le PPTX (+ PDF) du/des chapitre(s) [préciser]. **Régime A — ébauche.**
-> Applique le §1ter de `_modeles/CONSIGNES-chapitre-PC.md` :
-> transcription texte-only sur `gabarit-chapitre.html`, exercices et
-> corrections rédigés en entier (même quand une image accompagne l'énoncé —
-> seule l'image reste `.a-faire`), encarts formule reconstitués quand la
-> source les rend en image, QR/liens vidéo et Kahoot décodés et posés en
-> vrais liens, lien de DS toujours en `.a-faire`. Tout élément restant
-> (photo réelle, schéma/illustration récapitulative, tableau complexe)
-> remplacé par un bloc `.a-faire` 🚧 à son emplacement, correction des
-> seules erreurs évidentes. Pas de fiche, pas de maquette, pas de captures.
-> Slug(s) : à construire par convention. Code(s) de déblocage :
-> **invente-les toi-même** (6 caractères, même principe que les codes déjà
-> en usage sur le site), pose l'empreinte SHA-256 directement dans le HTML,
-> teste chaque verrou via Playwright et liste les codes en clair dans le
-> récap. Lie chaque page depuis la page de niveau. En fin de chaîne : un
-> seul delta groupé + la liste des `.a-faire` par chapitre + les codes de
-> déblocage.
+Le message-type est dans `_modeles/CONSIGNES-V1-integrale-PC.md` §10.
 
 ### 9b. Régime B — raffinage (une conversation par chapitre)
 
 > Voici le PPTX et le PDF du chapitre [Thème X, Chapitre Y — TITRE, niveau
-> NIVEAU]. Slug : `SLUG`. Code de déblocage : `XXXXXX` (ou : « invente-le »,
-> selon le §1ter).
+> NIVEAU]. Slug : `SLUG`. Code de déblocage : `XXXXXX` (ou : « invente-le »).
 > Applique `_modeles/CONSIGNES-chapitre-PC.md` (**régime B**) :
 > extraction complète (images + QR, vérification visuelle des attributions),
 > maquettes PNG des composants nouveaux avant implémentation, page de cours sur

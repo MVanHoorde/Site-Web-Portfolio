@@ -23,7 +23,8 @@
 | savoir *pourquoi* c'est comme ça | `_suivi/DECISIONS.md` | 3 000 |
 | retrouver ce qui s'est passé | `_suivi/JOURNAL.md` | *ne pas lire par défaut* |
 | **produire une séquence SNT** | `_modeles/CONSIGNES-sequence-SNT.md` | 6 500 |
-| **produire un chapitre PC** | `_modeles/CONSIGNES-chapitre-PC.md` + `_modeles/gabarit-chapitre.html` | 8 500 |
+| **récupérer un chapitre PC depuis son PPTX/PDF (V1 intégrale)** | `_modeles/CONSIGNES-V1-integrale-PC.md` + `_modeles/gabarit-chapitre.html` | 6 000 |
+| **raffiner un chapitre PC / faire sa fiche** | `_modeles/CONSIGNES-chapitre-PC.md` + `_modeles/gabarit-chapitre.html` | 8 500 |
 | l'état fin d'un chapitre / d'une séquence | `_suivi/chapitres.md` (section concernée) | 500 par section |
 | toucher au **moteur** d'une séquence SNT | `assets/js/sequence-snt.js` (+ `_modeles/spec-snt-t1-internet.md` §13-15) | 21 000 |
 | toucher à la **grammaire visuelle** SNT | `assets/css/sequence-snt.css` | 14 000 |

@@ -37,6 +37,29 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## V1 intégrale des chapitres PC — 25/08/2026
+
+Dictée par Loïc : **voir d'abord son cours entier sur le web**, et seulement
+ensuite décider quoi changer. L'ébauche texte-only, qui laissait un `.a-faire` à
+la place de chaque image, ne le permet pas.
+
+| # | Décision | Statut |
+|---|---|---|
+| V1-1 | **Le régime A « ébauche rapide » est remplacé** par la V1 intégrale. Consignes : `_modeles/CONSIGNES-V1-integrale-PC.md` | ✅ |
+| V1-2 | **Aucun `.a-faire` ne peut être posé au motif qu'un contenu est une image.** Seule exception qui subsiste : le lien de DS | ✅ |
+| V1-3 | **Les schémas de la source sont posés tels quels**, suffixés `-source`, en attendant leur SVG à la charte. Un cours complet avec une image moche vaut mieux qu'un cours troué | ✅ |
+| V1-4 | **Les images sans licence identifiable sont reprises quand même.** Crédit quand la source est connue, `data-origine` sinon, inventaire dans le relevé du chapitre. *Note versée au dossier, comme en `T0-8` : le critère qui compte est le caractère **public** du site, pas l'usage non commercial — à rouvrir si le site s'ouvre à d'autres établissements* | ✅ |
+| V1-5 | **Les erreurs de physique évidentes sont corrigées sans demander**, mais jamais en silence : commentaire `<!-- SOURCE → CORRIGÉ … -->` à l'endroit exact + ligne dans le relevé, pour que Loïc vérifie | ✅ |
+| V1-6 | **Un relevé par chapitre** : `_suivi/tXcY-releve.md`. Cinq sections imposées, dont « remarques pédagogiques » où Claude signale sans corriger | ✅ |
+| V1-7 | **Le jalon 1 change de définition** (`chapitres.md`) : « ébauche en ligne » → « V1 intégrale en ligne ». Les 14 chapitres PC repassent en `🔄` | ✅ |
+| V1-8 | **La fiche élève reste le dernier jalon.** Aucune fiche ne se fait avant que le cours soit figé | ✅ |
+
+Premier chapitre traité : **T3-C1 « Émission et perception d'un son »**, en V1
+intégrale depuis le 25/08/2026 — 28 figures posées, un seul `.a-faire` (le lien de
+DS), quatre retouches de fond à valider dans `_suivi/t3c1-releve.md`.
+
+---
+
 ## Refonte de `t0` « Les systèmes informatisés » — 23/08/2026
 
 Séquence d'introduction refondue de bout en bout : elle enseigne les mécanismes

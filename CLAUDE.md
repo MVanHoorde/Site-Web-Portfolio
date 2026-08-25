@@ -112,7 +112,8 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
 
 | Fichier | Rôle |
 |---|---|
-| `_modeles/CONSIGNES-chapitre-PC.md` | Produire un chapitre de physique-chimie (+ fiche élève) |
+| `_modeles/CONSIGNES-V1-integrale-PC.md` | 🆕 **Récupérer un chapitre PC sans perte** depuis son PPTX/PDF : figures, légendes, exercices, corrections. Le passage obligé de tout chapitre. Remplace l'ancien « régime A » |
+| `_modeles/CONSIGNES-chapitre-PC.md` | Raffiner un chapitre de physique-chimie une fois sa V1 en ligne (+ fiche élève) |
 | `_modeles/CONSIGNES-sequence-SNT.md` | Produire une séquence SNT |
 | `_modeles/CONSIGNES-sequence-ES.md` | 🚧 Séquences ens. scientifique Term (frise, IA — 3ᵉ famille) |
 | `_modeles/gabarit-chapitre.html` · `gabarit-fiche.html` | Gabarits **PC uniquement** (le SNT n'a pas de gabarit : on décline la séquence du Web) |
