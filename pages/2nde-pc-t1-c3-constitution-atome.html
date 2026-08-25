@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2nde — Constitution de l'atome · Physique-Chimie</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<link rel="stylesheet" href="../assets/css/chapitre-commun.css?v=3">
+<link rel="stylesheet" href="../assets/css/chapitre-commun.css?v=4">
 <style>
   sub, sup { font-size:.68em; line-height:0; position:relative; }
   sup { top:-.05em; } sub { bottom:-.04em; }
@@ -314,9 +314,17 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
     .fh-origine { min-width:0; }
     .fh-grille { grid-template-columns:1fr; gap:1.2rem; }
     .fh-zone-conv { display:none; }
-    .fh-bas { grid-template-columns:1fr; }
+    /* minmax(0,1fr) et non 1fr : une piste de grille refuse de descendre sous la
+       largeur min-content de son contenu — ici la rangee flex du noeud, qui
+       poussait la frise 25 px hors de la page */
+    .fh-bas { grid-template-columns:minmax(0,1fr); }
+    .fh-noeud .fh-contenu { flex-wrap:wrap; gap:.8rem; }
     .fh-bulle { width:min(330px, 82vw); }
     .fh-h1 { font-size:1.7rem; }
+    /* le halo decoratif deborde de 26 px de part et d'autre du noeud : invisible
+       tant que la grille a des colonnes, il sortait de la page une fois repliee */
+    .fh-rayons { inset:-4px -6px -12px; }
+    .fh-legende, .fh-legende span { max-width:100%; }
   }
 </style>
 <div class="fh-affiche">
@@ -639,14 +647,14 @@ on parle d'<span class="terme">abondance isotopique</span>.</p>
 <p>Les masses des particules composant l'atome sont données dans le tableau ci-dessous.</p>
 
 <figure class="fig-etroite" style="max-width:380px;">
-  <table class="tab" style="width:100%;">
+  <div class="defile"><table class="tab" style="width:100%;">
     <thead><tr><th>Particule</th><th>Masse (kg)</th></tr></thead>
     <tbody>
       <tr><td>Électron</td><td><span class="nb">9,109 × 10⁻³¹</span></td></tr>
       <tr><td>Proton</td><td><span class="nb">1,673 × 10⁻²⁷</span></td></tr>
       <tr><td>Neutron</td><td><span class="nb">1,675 × 10⁻²⁷</span></td></tr>
     </tbody>
-  </table>
+  </table></div>
 </figure>
 
 <div class="encart propriete">

@@ -5,12 +5,17 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **25/08/2026** (dernière passe : **trois V1 intégrales de
-> chapitres PC** — `T3-C1` « Émission et perception d'un son », puis `T3-C3`
-> « Dispersion et spectres » et `T3-C4` « Réfraction et réflexion ». 82 figures
-> posées en tout, les données chiffrées sorties des images, sept corrections de
-> fond tracées — dont une lecture graphique refaite à la mesure et une mention
-> d'attribution qui prêtait à Loïc cinq corrections écrites par Claude)
+> Dernière réécriture : **25/08/2026** (dernière passe : **l'audit 1 de `T3-C1`**
+> — la V1 intégrale du matin, relue à voix haute par Loïc, est passée de *fidèle
+> mais sèche* à un cours qui respire : figures ramenées à une taille de lecture,
+> quatre mises en regard texte/figure, divisions en vraies fractions, cours étoffé
+> d'un bloc Méthode, de l'amplitude et des seuils de danger, vidéo d'expérience
+> intégrée sans fuite RGPD, puis **le socle CSS corrigé pour les 14 chapitres**
+> — les lignes de calcul se replient au lieu de défiler, ce qui rendait
+> 45 calculs sur 159 illisibles sur téléphone. Avant elle, dans la même journée : **trois V1
+> intégrales de chapitres PC** — `T3-C1`, `T3-C3` « Dispersion et spectres » et
+> `T3-C4` « Réfraction et réflexion », 82 figures posées, sept corrections de fond
+> tracées)
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 ---
@@ -24,7 +29,7 @@
 
 | Partie | État |
 |---|---|
-| **PC seconde** | 14 chapitres en ligne. 🆕 **Trois sont en V1 intégrale** (25/08) : `T3-C1` (28 figures), `T3-C3` (34) et `T3-C4` (20) — cours entier à l'écran, plus aucun `.a-faire` sauf le lien de DS. Leurs trois relevés attendent tes décisions. **Le thème 3 n'a plus que T3-C2 en ébauche.** T1-C1→C4 sont dégrossis à fond ; les **sept autres portent 81 blocs `.a-faire`**, à reprendre selon `_modeles/CONSIGNES-V1-integrale-PC.md`. 🆕 **Plus aucun exercice de PC n'est sans corrigé** : les trois qui manquaient (T2-C1 ex. 2 et 3, T2-C2 ex. 10) ont été rédigés le 25/08, figures comprises. Aucun cours validé. |
+| **PC seconde** | 14 chapitres en ligne. 🆕 **Trois sont en V1 intégrale** (25/08) : `T3-C1` (17 images + 2 tableaux + 1 vidéo intégrée, **audit 1 appliqué**), `T3-C3` (34 figures) et `T3-C4` (20) — cours entier à l'écran, plus aucun `.a-faire` sauf le lien de DS. Leurs trois relevés attendent tes décisions. **Le thème 3 n'a plus que T3-C2 en ébauche.** T1-C1→C4 sont dégrossis à fond ; les **sept autres portent 81 blocs `.a-faire`**, à reprendre selon `_modeles/CONSIGNES-V1-integrale-PC.md`. 🆕 **Plus aucun exercice de PC n'est sans corrigé** : les trois qui manquaient (T2-C1 ex. 2 et 3, T2-C2 ex. 10) ont été rédigés le 25/08, figures comprises. Aucun cours validé. |
 | **SNT** | 8 séquences de thème (`t0`→`t7`) **+ 1 module transversal** (`m1` « Représenter l'information »). `t0`, `t1` et `t2` sont sur le **moteur partagé** et en **V0 complète** ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). **`t1` est le seul thème validé sur le fond** (23/08) — il sera *clos* après la vérification des fiches. **`t0` a été refondue le 23/08 puis auditée le 24/08** : voir sa ligne. |
 | **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade) et **vérifié au rendu** dans un navigateur sans interface : bandeau, pictogramme et teinte mesurés sur les deux familles de pages, en mode élève et en mode enseignant. Le tableau de bord affiche les **dates de clôture** (cases de clôture et frise, format `12/09`). ✅ **`bdd/schema/013-verrou-progression.sql` a été exécuté le 20/08/2026** par Loïc : `mon_plafond()` répond en base, et un appel anonyme se heurte bien à `42501 permission denied` — la fonction est réservée aux comptes connectés, comme prévu. Le plafond est donc **actif de bout en bout**. Deux textes vus par les élèves attendent la validation de Loïc. |
 | **SNT — `t0` Introduction** | 🔄 **Refondue le 23/08/2026, reprise les 24 et 25/08.** État courant : **4 séances · 26 étapes · 18 portes · 6 QCM (39 questions) · 4 réponses rédigées corrigées · 2 réponses personnelles · 2 dépôts d'image · 10 fiches d'élément · 1 tri · 1 exercice d'étiquettes · 1 poste de visionnage · 4 SVG maison**. Apports du 25/08 : l'activité débranchée devient la **séance 4**, dans la cascade et avec sa fiche, où l'élève remplit **dix fiches d'élément** (photo redimensionnée dans le navigateur, nom, ce qu'il fait — trois suffisent à valider) ; un **exercice d'étiquettes à poser** sur la façade arrière en 3.3, dix zones contrôlées une à une sur l'image source ; **trois captures de l'interface** en 1.1, produites depuis la page rendue ; et la **carte du thème** enfin chargée — sans elle, le lien « ⌂ Sommaire » ne faisait rien. ⏳ **Rien n'est validé.** Restent ouverts : la **remontée des photos vers le tableau de bord** (chantier séparé, avec une durée de conservation à décider) et la **licence des 37 images issues du PDF d'un collègue**.

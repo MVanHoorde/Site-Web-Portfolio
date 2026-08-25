@@ -138,11 +138,12 @@
 - Jalons : 1 ✅ · 2 🔄 · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t3-c1-emission-perception-son.html`
 - Fiche : aucune. Code de déblocage : **S0NORE**.
-- 🥇 **Premier chapitre en V1 intégrale** (25/08/2026) — les 17 images de la source posées avec leurs légendes, aucun `.a-faire` sauf le lien de DS.
+- 🥇 **Premier chapitre en V1 intégrale** (25/08/2026) — les 17 images de la source posées avec leurs légendes, aucun `.a-faire` sauf le lien de DS. 🔎 **Audit 1 appliqué le 25/08** : figures recalibrées, fractions sur deux lignes, quatre mises en regard texte/figure, cours étoffé (bloc Méthode, amplitude, seuils de danger). Les textes ajoutés sont des **propositions à valider**.
 - 4 sections (caractéristiques d'un signal périodique · les ondes · émission & propagation d'un son · perception des sons).
 - **6 exercices** rédigés + **corrigés en entier** ; les graphes d'énoncé viennent de la source, les **corrections portent le graphe annoté** (T, 3T, 4T, extrema) découpé du rendu — ces annotations sont des formes PowerPoint, invisibles pour `pdfimages`.
-- 2 encarts formule (f = 1/T · c_son = d/Δt) ; 2 tables transcrites (vitesses du son · sous-domaines de fréquences).
-- Images : **28 fichiers** dans `assets/img/pc/2nde-pc-t3-c1/` (1,1 Mo), 28 figures sur la page, toutes marquées `data-origine` (licences non identifiées).
+- 2 encarts formule (f = 1/T · c_son = d/Δt, en **vraies fractions**) ; 1 bloc **Méthode** ; 1 encart **mise en garde** (hauteur ≠ intensité) ; 2 tables devenues **Tableau 1** (vitesses du son) et **Tableau 2** (sous-domaines de fréquences), toutes deux **en regard du texte**.
+- Figures : **17 images numérotées + 2 tableaux + 1 vidéo intégrée**. 28 fichiers dans `assets/img/pc/2nde-pc-t3-c1/` (1,1 Mo), 27 `<figure>` marquées `data-origine` (licences non identifiées).
+- 🎬 **Vidéo de la cloche à vide intégrée en façade cliquable** : illustration SVG maison, l'iframe `youtube-nocookie` n'est créée qu'au clic. **Aucune requête tierce au chargement** (mesuré).
 - Liens décodés : 8 vidéos (hyperliens de formes) + Kahoot activé. Le lien de DS de la source pointe vers un SharePoint d'établissement : **non posé** (site public) — c'est le seul 🚧 restant.
 - ⚠ **4 retouches de fond tracées** (`grep "SOURCE → CORRIGÉ"`) : intensité ∝ amplitude² (reformulée qualitativement), 382 → 380 Hz, 0,02325 → 23 ms, 689,6 s → 690 s ≈ 11 min 30 s.
 - 📄 **À lire et à trancher : `_suivi/t3c1-releve.md`** — 1 erreur de physique, 4 incohérences de calcul, 7 contenus récupérés, 6 remarques pédagogiques.

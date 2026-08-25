@@ -1697,3 +1697,105 @@ La faire remonter demande une migration, un espace de stockage, des règles
 d'accès — et une décision sur la durée de conservation de photos prises en
 classe. Ce n'est pas un réglage de fin de session.
 
+
+
+## 25/08/2026 — T3-C1, audit 1 : le cours reprend de la place
+
+Le matin, la V1 intégrale. L'après-midi, Loïc la relit page ouverte et dicte son
+verdict : **fidèle mais sèche**. Les images 1 et 2 donnent le bon équilibre, puis
+il se dégrade — les figures écrasent le texte, et le PPTX est plus fourni que la
+page, ce qui ne devrait jamais arriver.
+
+Six lots, enchaînés d'un trait à sa demande après le premier compte rendu.
+
+**Ce que la mesure a appris, et que la lecture du CSS n'aurait pas dit.** Le brief
+prescrivait `line-height:2.15` sur les lignes portant une fraction. Appliqué tel
+quel, l'interligne se propageait **à l'intérieur** de la fraction : chacun des
+deux étages doublait, et le bloc formule passait de 46 à **138 px** de haut. Un
+`.avec-frac .frac { line-height:1.15 }` le ramène à 88 px — le doublement honnête
+d'une fraction à deux étages.
+
+Même chose pour les vignettes : le brief demandait 150 px et « une seule ligne en
+desktop ». Mesure faite, la colonne de cours n'offre que **742 px** — à 150 px les
+cinq vignettes de l'exercice 4 passaient à la ligne. Une base flexible (118 px,
+étirée jusqu'à 150) donne une ligne en desktop, deux sur iPad, trois à 380 px.
+
+**Quatre signalements de collision étaient des artefacts** de ma propre mesure : je
+ne testais que l'axe vertical, or le crayon ✎ et la colonne `.grandeurs` sont
+*à côté* horizontalement. Le vrai test est l'intersection de rectangles.
+
+**Un défaut réel trouvé, et laissé.** À 380 px, cinq résultats encadrés débordent
+à droite et sont rognés. J'ai rendu la version d'avant l'audit pour trancher :
+**13 débordements avant, 13 après**, mêmes endroits, mêmes amplitudes. Ce n'est
+pas une régression — c'est `.resultat { white-space:nowrap }` combiné à
+`.eq-ligne { text-align:center }`, dans le socle. Le corriger touche les 14
+chapitres et leur `?v=N` : c'est une décision à part, posée en `A1-7`.
+
+**La vidéo de la cloche à vide entre dans le cours sans rien laisser fuir.** Une
+façade SVG maison (la cloche, la sonnerie, les ondes qui s'éteignent, la pompe),
+un bouton, et l'iframe `youtube-nocookie` créée **au clic seulement**. Vérifié au
+navigateur : **zéro requête vers un hôte externe au chargement**, zéro iframe dans
+le DOM avant le clic. Premier essai, le bouton rouge masquait la sonnerie — le
+sujet même de l'illustration ; il est descendu en bas de la façade.
+
+**Les trois vidéos anonymes ont retrouvé leur nom** — relevés sur l'oEmbed de
+YouTube, pas inventés : Les Bons Profs, Les génies des sciences, C'est pas
+sorcier.
+
+**Une incohérence antérieure est devenue visible en rapprochant les blocs** : la
+phrase « le domaine audible se subdivise en trois zones » annonçait un tableau qui
+en aligne cinq. Tant que le texte et le tableau étaient éloignés, personne ne le
+voyait. Corrigé.
+
+Retiré à sa demande : la remarque sur les **chiffres significatifs** de
+l'exercice 2 — la notion arrive après ce chapitre dans sa progression. Versé dans
+`IDEES.md` : les **animations interactives** (faire varier période et fréquence,
+voir le signal se déformer, l'entendre), qu'il veut, mais plus tard.
+
+Tous les textes ajoutés sont des **propositions à valider** : le bloc Méthode,
+l'énoncé étoffé de l'exercice 1, le lien grave/aigu, l'amplitude et sa mise en
+garde, la question sur la cloche à vide, les seuils de danger et de douleur.
+
+
+## 25/08/2026 — « fait tout de même » : le socle réparé
+
+J'avais laissé le débordement des résultats à 380 px en le posant comme une
+décision à part : il touche les 14 chapitres et leur `?v=N`. Loïc a tranché en
+trois mots.
+
+**Le coupable n'était pas celui que j'avais nommé.** J'avais accusé
+`.resultat { white-space:nowrap }`. En ouvrant le socle, c'est
+`.eq-ligne { white-space:nowrap; overflow-x:auto }` qui pose le problème :
+combiné à `text-align:center`, une ligne trop large sort des **deux** côtés, et
+le navigateur ne défile jamais vers la gauche — la moitié gauche du calcul est
+perdue pour de bon.
+
+**L'ampleur ne se devinait pas.** Mesure sur les 14 chapitres à 380 px :
+**45 lignes de calcul sur 159 amputées, sur 11 chapitres**, jusqu'à **324 px** de
+formule disparus (la masse molaire de la dopamine, en T1-C4). Trois pages avaient
+même un scroll horizontal complet. Le défaut ne touchait donc pas T3-C1 en
+particulier — il vivait là depuis le début, sur presque tout le cours de seconde.
+
+**La correction retenue** : une ligne de calcul se **replie**, elle ne défile
+pas. `white-space:normal` + `line-height:1.75` sur `.eq-ligne`, `.eq-exo` et
+`.formule-cours-rappel` ; les atomes restent insécables, ils l'étaient déjà
+(`.nb`, `.resultat`, `.frac`). Mesure après : **0 débordement**, sur les trois
+largeurs. Le repli tombe souvent juste — l'équation de combustion de T1-C2 se
+coupe **après la flèche**, exactement là où la typographie le veut. Il coupe
+parfois après un `×` : moins élégant, mais lisible, alors qu'avant le calcul
+était tronqué.
+
+**Le scroll horizontal venait d'ailleurs**, et deux causes se cachaient derrière :
+huit tableaux `.tab` **jamais enveloppés** dans un `<div class="defile">` (quatre
+rien qu'en T1-C1) ; et la frise historique de T1-C3, où `grid-template-columns:1fr`
+refusait de descendre sous la largeur *min-content* de la rangée flex du nœud —
+le classique qui se répare en `minmax(0,1fr)`. Les trois pages sont maintenant à
+380 px pile.
+
+Socle en **`?v=4`** dans les **17** fichiers qui le chargent — et non 14 : le
+gabarit, et **deux pages d'enseignement scientifique de terminale** que je ne
+soupçonnais pas. `verifier.mjs` contrôle lui-même cette cohérence, et la confirme.
+
+Vérifié : 18 problèmes (le repère), aucune erreur JS sur les 16 pages, balance des
+balises intacte sur les 7 pages dont j'ai modifié le HTML, verrou de T3-C1 rejoué
+en entier.

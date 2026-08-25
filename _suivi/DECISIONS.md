@@ -601,3 +601,50 @@ Loïc aura fait son dernier passage de vérification sur les fiches.
 | 25/07/2026 | **Frise débranchée (lot 5)** — les 20 étiquettes du document 04, **sans leurs dates**. Deux repères hors informatique (la Lune, le premier ordinateur portable) pour situer l'époque. **« Le premier ordinateur portable » est gardé sans réponse unique, exprès** : selon la définition retenue on trouve 1975, 1981 ou 1982 — l'enjeu devient *pourquoi les sources divergent*, ce qui prolonge la séance 3. Durée 30 → 45 min | ⏳ à valider |
 | 25/07/2026 | **Nomenclature des codes de champ unifiée** : `WEB-Q<séance><lettre>` pour les QCM, `WEB-R<séance><lettre>` pour les réponses rédigées. 22 codes, tous uniques, tous cohérents avec leur séance. Les codes `WEB-Q2` et `WEB-R4` retirés en cours de route ne sont **pas recyclés** | ✅ |
 
+
+
+---
+
+## Audit 1 de T3-C1 — 25/08/2026
+
+Audit oral de Loïc sur la V1 intégrale livrée le matin même. Trois points
+demandaient son arbitrage avant de coder ; il les a tranchés en ouverture.
+
+| # | Décision | Statut |
+|---|---|---|
+| A1-1 | **Une division s'écrit avec une vraie barre de fraction**, jamais avec un slash. Vaut pour **tous les chapitres de physique**, pas seulement T3-C1. Le socle a déjà `.frac` | ✅ |
+| A1-2 | **Vidéo d'expérience : façade cliquable.** Vignette SVG maison hébergée dans le dépôt + bouton ▶ ; l'iframe `youtube-nocookie` n'est injectée **qu'au clic**. Ni chip simple, ni iframe directe — celle-ci exposerait l'IP de l'élève à Google dès le chargement | ✅ |
+| A1-3 | **Image de l'exercice 2 : vignette de rappel** dans la colonne étroite (`.duo-x`), légendée « Rappel — le signal de l'exercice 1 », plutôt que suppression + renvoi par ancre. L'élève ne doit pas remonter dans la page pour faire un calcul | ✅ |
+| A1-4 | **Source sonore de l'exercice 1 : formulation neutre.** « Le signal électrique délivré par un microphone placé devant une source sonore » — la source PPTX ne dit pas de quel instrument il s'agit, on n'invente pas | ✅ |
+| A1-5 | **La remarque sur les chiffres significatifs est retirée de la page.** La notion arrive après ce chapitre dans la progression de Loïc. Les résultats restent arrondis, sans justification visible ; les commentaires `<!-- SOURCE → CORRIGÉ … -->` restent, invisibles pour l'élève | ✅ |
+| A1-6 | **Tout le CSS de l'audit reste dans le `<style>` local de la page.** Toucher `chapitre-commun.css` obligerait à incrémenter le `?v=N` dans les 14 chapitres — hors périmètre | ✅ |
+| A1-7 | **Une ligne de calcul se replie, elle ne défile pas.** Le vrai coupable n'était pas `.resultat` mais `.eq-ligne { white-space:nowrap; overflow-x:auto }` : combiné à `text-align:center`, une ligne trop large sortait des **deux** côtés, et la moitié gauche était **inatteignable au défilement**. Ampleur mesurée sur les 14 chapitres à 380 px : **45 lignes de calcul sur 159 amputées, sur 11 chapitres, jusqu'à 324 px perdus**. `white-space:normal` + `line-height:1.75` sur `.eq-ligne`, `.eq-exo` et `.formule-cours-rappel` ; les atomes (`.nb`, `.resultat`, `.frac`) restent insécables. **Mesure après : 0 débordement.** Socle passé en **`?v=4`** dans les 17 fichiers qui le chargent | ✅ |
+| A1-8 | ⏳ **Les fractions méritent-elles de monter dans le socle ?** La règle d'interligne (`.avec-frac`) et le garde-fou `.avec-frac .frac { line-height:1.15 }` — sans lui le bloc formule triple de hauteur — sont aujourd'hui locaux à T3-C1. Ils seront à remonter quand un deuxième chapitre passera en fractions | ⏳ |
+
+**Deux classes locales nouvelles**, à remonter au socle si elles se répètent :
+`.encart.attention` (mise en garde, filet rouge — le socle ne connaît que
+définition / propriété / exemple / notation) et `.duo-fig` (texte à gauche,
+figure ou tableau à droite). `.duo-fig` inverse volontairement les colonnes de
+`.duo` : l'ordre du DOM suit alors l'ordre de lecture — on définit, puis on
+illustre — y compris au repli en une colonne sous 900 px.
+
+
+### Trouvé en mesurant A1-7 — corrigé dans la foulée (25/08/2026)
+
+Trois pages avaient un **scroll horizontal de page entière** à 380 px, sans
+rapport avec les lignes de calcul.
+
+| # | Décision | Statut |
+|---|---|---|
+| A1-9 | **Huit tableaux `.tab` n'étaient pas enveloppés** dans un `<div class="defile">` (T1-C1 ×4, T1-C2, T1-C3, T1-C4, T1-C7). Sans lui, un tableau large pousse la page entière. Tous enveloppés ; `.defile{overflow-x:auto}` est sans effet tant que le tableau tient | ✅ |
+| A1-10 | **Frise historique de T1-C3** : le halo décoratif `.fh-rayons` déborde de 26 px de part et d'autre du nœud — invisible tant que la grille a des colonnes, hors page une fois repliée. Et `.fh-bas { grid-template-columns:1fr }` refusait de descendre sous la largeur *min-content* de la rangée flex du nœud. Corrigé en `minmax(0,1fr)` + halo resserré + `flex-wrap` dans la media query 720 px | ✅ |
+
+**Effet de bord assumé, à connaître** : les deux pages d'**enseignement
+scientifique de terminale** (`term-es-t2-c1`, `term-es-t2-c2`) chargent le même
+socle. Elles bénéficient de la correction et sont passées en `?v=4` comme les
+autres.
+
+**Reste imparfait, et c'est le prix du choix** : une ligne qui se replie coupe
+parfois après un `×` plutôt qu'avant. Bien grouper les produits demanderait
+d'entourer chaque facteur d'un `<span class="nb">` dans les 14 chapitres — une
+passe à part. **Lisible et un peu laid vaut mieux qu'amputé.**

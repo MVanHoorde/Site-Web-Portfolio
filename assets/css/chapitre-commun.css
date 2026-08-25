@@ -2,7 +2,7 @@
    chapitre-commun.css — socle partagé des chapitres de cours.
 
    USAGE (pour un NOUVEAU chapitre) : dans le <head>, après fonts.css,
-   ajouter :  <link rel="stylesheet" href="../assets/css/chapitre-commun.css?v=2">
+   ajouter :  <link rel="stylesheet" href="../assets/css/chapitre-commun.css?v=4">
    puis ne garder dans le <style> embarqué de la page QUE le CSS
    réellement spécifique à ce chapitre (illustrations, schémas, blocs propres).
 
@@ -10,10 +10,18 @@
    ne compte pas) : incrémenter le ?v=N du <link> dans TOUTES les pages
    (14 chapitres + _modeles/gabarit-chapitre.html) :
      git grep -l 'chapitre-commun.css' -- '*.html'
+   Aujourd'hui 17 fichiers : les 14 chapitres PC, 2 pages d'enseignement
+   scientifique de terminale, et _modeles/gabarit-chapitre.html.
    Sans cela, l'URL ne change pas : les navigateurs qui ont déjà ouvert un
    chapitre continuent de servir l'ANCIENNE feuille depuis leur cache, et les
    élèves ne voient pas la correction (ils ne feront pas de Ctrl+Shift+R).
    Vécu : la barre de fraction, corrigée mais invisible jusqu'au passage en ?v=2.
+
+   ?v=4 (25/08/2026) — les lignes de calcul se replient au lieu de defiler.
+   « white-space:nowrap » combiné à « text-align:center » faisait sortir une
+   ligne trop large des DEUX cotes, et la moitie gauche etait inatteignable au
+   defilement : 45 lignes sur 159 amputees a 380 px, sur 11 des 14 chapitres,
+   jusqu'a 324 px de calcul perdus. Mesure apres correction : 0.
 
    Le <style> de la page est chargé APRÈS cette feuille : une règle locale de
    même spécificité l'emporte donc, ce qui permet à un chapitre de surcharger
@@ -102,8 +110,15 @@
   .exemple img { width:100%; border:1px solid var(--encre); border-radius:6px; }
 
   /* Équation centrée hors paragraphe */
+  /* Une ligne de calcul se REPLIE ; elle ne defile pas.
+     Vecu (25/08/2026) : « white-space:nowrap » + « text-align:center » faisait
+     sortir une ligne trop large des DEUX cotes, et la moitie gauche etait
+     inatteignable au defilement — 45 lignes sur 159 amputees a 380 px, sur 11
+     chapitres, jusqu'a 324 px perdus. Les atomes restent insecables par
+     ailleurs : .nb, .resultat et .frac portent deja white-space:nowrap. */
   .eq-ligne { font-family:'Spectral',serif; font-style:italic; text-align:center;
-    font-size:1.15rem; margin:.7rem auto; max-width:none; white-space:nowrap; overflow-x:auto; }
+    font-size:1.15rem; line-height:1.75; margin:.7rem auto; max-width:none;
+    white-space:normal; overflow-x:auto; }
   .eq-ligne sub, .eq-ligne sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.58em; }
 
   /* Pictogramme « à noter sur la fiche » (crayon, coin haut droit) */
@@ -235,8 +250,9 @@
   .etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
   .resultat { border-bottom:2.5px solid var(--h-alpha); font-weight:600; padding-bottom:1px; white-space:nowrap; }
   .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--gris);
-    text-align:center; margin-bottom:.1rem; }
-  .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem; margin:1rem 0 1rem 1rem; }
+    text-align:center; margin-bottom:.1rem; white-space:normal; }
+  .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem;
+    line-height:1.75; margin:1rem 0 1rem 1rem; white-space:normal; }
   .eq-exo sub, .eq-exo sup { font-size:.6em; font-style:normal; font-family:'IBM Plex Mono',monospace; }
   .coef-ok { color:var(--h-alpha); font-weight:700; font-style:normal; }
   .frac { display:inline-block; vertical-align:middle; text-align:center; margin:0 .25em; }
