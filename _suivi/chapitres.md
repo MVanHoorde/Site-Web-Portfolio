@@ -8,11 +8,12 @@
 > 4 Ajouts&approfondissements · 5 Cours VALIDÉ (« utilisable l'an prochain ») ·
 > 6 Fiche élève VALIDÉE · 7 CHAPITRE CLOS
 >
-> 🔴 **1 chapitre PC sur 14 est en V1 intégrale : T3-C1.** Le jalon 1 a changé de
-> définition le 25/08/2026 : il exige désormais le cours **entier**, figures et
-> légendes comprises. Les 13 autres pages restent des ébauches — fidèles dans le
+> 🔴 **3 chapitres PC sur 14 sont en V1 intégrale : T3-C1, T3-C3 et T3-C4.** Le jalon 1
+> a changé de définition le 25/08/2026 : il exige désormais le cours **entier**, figures
+> et légendes comprises. Les 11 autres pages restent des ébauches — fidèles dans le
 > texte, mais trouées de blocs `.a-faire` à la place des images, d'où leur `🔄`.
-> T3-C1 sert de référence : voir sa fiche et `_suivi/t3c1-releve.md`.
+> **Le thème 3 est le plus avancé** : seul T3-C2 y reste en ébauche.
+> Relevés à lire : `_suivi/t3c1-releve.md`, `t3c3-releve.md`, `t3c4-releve.md`.
 >
 > ⚠ **RIEN n'est encore validé.** « Ébauche/fiche proposée » ≠ « validé ».
 > La validation est un acte explicite de Loïc, faite en régime B, cours d'abord.
@@ -156,26 +157,33 @@
 - Blocs 🚧 restants : ~8 — schémas (circuit à légender, nœuds A/B avec sens de I₅, mailles, caractéristiques U=f(I), grandeur d'entrée→capteur→sortie, courbe d'étalonnage) et photos (multimètre, oscilloscope, interface, micro:bit, Arduino). Lien DS en attente.
 
 ### T3-C3 — Dispersion de la lumière et spectres lumineux
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 ✅ · 2 🔄 · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- 🥇 **V1 intégrale le 25/08/2026** — les 18 images de la source posées, **34 figures**, plus aucun `.a-faire` sauf le lien de DS. Images : `assets/img/pc/2nde-pc-t3-c3/` (34 fichiers, 920 ko).
+- **Aucune erreur dans la source** — la seule correction de fond porte sur la **correction de l'exercice 1 rédigée à l'ébauche**, qui inversait monochromatique et polychromatique (`grep "ÉBAUCHE → CORRIGÉ"`).
+- Récupérés : les **valeurs de l'exercice 2** (l'énoncé n'en donnait aucune, l'exercice était inutilisable), les longueurs d'onde des sept couleurs, les bornes du visible, les trois températures des spectres continus, les 25 000 raies du spectre solaire, les trois spectres de raies, les cinq sources de lumière, les trois captures d'animations.
+- 📄 **À lire et à trancher : `_suivi/t3c3-releve.md`** — 1 correction d'ébauche, 9 contenus récupérés, 6 remarques (dont le doublon « Image 9 » de la source et la borne λ_R = 800 nm).
 - Fichier : `pages/2nde-pc-t3-c3-dispersion-spectres.html`
 - Fiche : aucune. Code de déblocage : **PR1SME**.
 - 2 sections (dispersion de la lumière · les spectres lumineux), sous-parties A–D.
 - **6 exercices** rédigés + **corrigés en entier** (mono/polychromatique, domaines de radiations, spectre EM, corps noir/QCM, feu d'artifice → lithium, acier du forgeron).
 - Le QCM du corps noir (Ex4) était **piégé dans une table d'image** : extrait et retranscrit (4 affirmations V/F + 3 questions). 1 table Li/Na (raies) transcrite.
-- 1 encart histoire des sciences (Newton, 1666, « expérience cruciale ») — portrait en 🚧 (licence à vérifier).
+- 1 encart histoire des sciences (Newton, 1666, « expérience cruciale ») — illustré par la gravure de la source.
 - Liens décodés : ~11 vidéos + 3 animations (PhET déviation, PhET corps noir, LaboSims) + Kahoot activé.
-- Blocs 🚧 restants : ~8 — schémas (prisme à légender, frise du spectre électromagnétique, arc-en-ciel/goutte, spectres continus et de raies) et images (spectre du feu d'artifice, barre d'acier + spectres a/b/c/d, portrait de Newton). Lien DS en attente.
+- Blocs 🚧 restants : **1**, le lien de DS.
 
 ### T3-C4 — Réfraction et réflexion de la lumière
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 ✅ · 2 🔄 · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- 🥇 **V1 intégrale le 25/08/2026** — les 15 images de la source posées, **20 figures**, plus aucun `.a-faire` sauf le lien de DS. Images : `assets/img/pc/2nde-pc-t3-c4/` (20 fichiers, 652 ko).
+- ⚠ **Deux corrections d'ébauche** : ① la lecture graphique de l'exercice 3 répondait « 20 °C », or la courbe **mesurée point par point** donne n = 1,333 vers **10 °C** ; ② les cinq corrections portaient la mention « rédigée par M. Van Hoorde » — **elles sont de Claude**, la mention est rectifiée.
+- Récupérés : la nomenclature I / i₁ / i₂ / r, le cas n₂ > n₁ (la moitié manquante de la règle), la question 1 de l'exercice 5 (« à l'aide de la simulation »), L = 8,6 km de Fizeau, les données du JWST, les deux renvois internes de la source.
+- 📄 **À lire et à trancher : `_suivi/t3c4-releve.md`** — **relecture prioritaire** : la source est la version élève, les cinq corrections sont de Claude (calculs refaits et justes).
 - Fichier : `pages/2nde-pc-t3-c4-refraction-reflexion.html`
 - Fiche : aucune. Code de déblocage : **M1RAGE**.
 - 4 sections (propriétés de la lumière · dioptre & réflexion · phénomène de réfraction · la réfraction au quotidien), sous-parties A–E.
-- ⚠ **Source = version ÉLÈVE, sans corrigés.** Les **5 corrections** (temps Soleil→Terre ; indice de l'eau ; indice→température ; réfraction eau→plexiglas ; angle limite eau→air) ont été **rédigées par Claude, calculs vérifiés**, et sont signalées comme telles sur la page (mention « à valider »). **À valider en priorité en régime B.**
-  - Ex3 (indice → température) dépend d'un graphe laissé en 🚧 : valeur ≈ 20 °C donnée sous réserve.
+- ⚠ **Source = version ÉLÈVE, sans corrigés.** Les **5 corrections** (temps Soleil→Terre ; indice de l'eau ; indice→température ; réfraction eau→plexiglas ; angle limite eau→air) ont été **rédigées par Claude**, refaites à la main le 25/08 et justes — la page le dit désormais explicitement. **À valider en priorité.**
 - 2 encarts formule reconstitués (n = c/v · n₁·sin i₁ = n₂·sin i₂) ; 1 table (indices de réfraction, 16 milieux) transcrite.
 - Liens décodés : ~11 vidéos + 1 animation PhET + 3 liens ressources (Institut d'Optique, physiqueludique, Ingenium) + Kahoot activé.
-- Blocs 🚧 restants : ~7 — schémas (réflexion + normale, trois rayons & plan d'incidence, graphe n = f(T), mirages chaud/froid) et images (Soleil aplati, crayon cassé, pièce cachée). Lien DS en attente.
+- Blocs 🚧 restants : **1**, le lien de DS.
 
 ## Seconde — Thèmes suivants
 _(à créer au fur et à mesure du dégrossissage : T4…)_
