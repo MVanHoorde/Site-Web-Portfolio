@@ -114,6 +114,15 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
 ### T1-C4
 - 💡 Réintégrer le tableau périodique complet (actuellement bloc 🚧 différé).
 
+### Chapitres PC — animations interactives (né de T3-C1, 25/08/2026)
+- 💡 **Faire varier période et fréquence à l'écran, voir le signal se déformer en
+  direct — et l'entendre.** Un curseur, un canvas, un oscillateur Web Audio : la
+  notion de fréquence cesse d'être un nombre sous une courbe. Loïc y tient, mais
+  **plus tard** — « on va faire un truc mainstream pour le moment ». Née de
+  l'audit de T3-C1 ; ses deux places naturelles y sont la **partie 1**
+  (période / fréquence) et la **partie 4 C** (amplitude / intensité). Transposable
+  à tout chapitre où une grandeur se lit sur une courbe.
+
 ## Publicités sur les postes de visionnage
 
 - 💡 *(mise à jour du 24/08/2026 : les vidéos sont désormais derrière une

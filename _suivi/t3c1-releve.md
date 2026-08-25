@@ -4,14 +4,17 @@
 > Source : `Thème 3 - Chapitre 1 [correction] - Emission et perception d'un son.pptx`
 > (+ PDF, 11 diapos + couverture) → `pages/2nde-pc-t3-c1-emission-perception-son.html`.
 >
+> **Audit 1 appliqué le 25/08/2026** (mise en forme + étoffement) : voir §6.
+>
 > **Ouvrir la page et le PDF côte à côte doit donner le même cours.** Les 17 images
 > de la source sont posées, légendes comprises ; il ne reste qu'un seul bloc 🚧,
 > celui du lien de DS. Ce document est ce que tu as à lire : chaque ligne appelle
 > une décision de ta part.
 >
 > **Ce qui a été produit** : 28 fichiers dans `assets/img/pc/2nde-pc-t3-c1/` (1,1 Mo),
-> 28 figures sur la page, 5 données chiffrées sorties des images, 4 corrections
-> tracées par un commentaire `<!-- SOURCE → CORRIGÉ … -->`.
+> **17 images numérotées + 2 tableaux numérotés + 1 vidéo intégrée** (27 `<figure>`
+> au total), 5 données chiffrées sorties des images, 4 corrections tracées par un
+> commentaire `<!-- SOURCE → CORRIGÉ … -->`.
 > Code de déblocage inchangé : **S0NORE**.
 
 ---
@@ -62,7 +65,9 @@ d'énoncé. Les cinq situations de l'exercice 4 sont désormais cinq photos lég
 **Toutes les figures.** Aucune des 17 images de la source ne porte de crédit. Conformément
 à ta décision du 25/08/2026 (§5 des consignes), tout est repris et chaque `<figure>` porte
 `data-origine="source PPTX — licence non identifiée"` — l'inventaire se sort à tout moment par
-`grep -c 'data-origine' pages/2nde-pc-t3-c1-emission-perception-son.html` (28 figures).
+`grep -c 'data-origine' pages/2nde-pc-t3-c1-emission-perception-son.html` (**27 figures** :
+le diapason et le signal du son pur ont été réunis sous une seule légende, et la façade
+de la vidéo est un SVG maison, sans origine externe).
 
 Trois familles, si l'on devait assainir un jour :
 
@@ -79,7 +84,7 @@ Trois familles, si l'on devait assainir un jour :
 
 | # | Remarque |
 |---|---|
-| **P1** | L'**amplitude** n'est jamais définie. Elle est en ordonnée de tous les graphes, elle fonde le IV-C, et l'erreur E1 portait dessus. Il manque un encart définition, probablement en I-C à côté des extrema. Rien n'a été ajouté : c'est du fond. |
+| **P1** | ✅ **Traité par l'audit 1.** L'**amplitude** est désormais nommée en **I-C** (« l'écart entre ces extrema donne l'amplitude »), avec le renvoi vers la partie 4, et **rappelée** en IV-C au lieu d'y réapparaître comme une notion neuve. La confusion hauteur / intensité est posée en I-C dans un encart de mise en garde, et redite en IV-C. **Ces textes sont des propositions à valider.** |
 | **P2** | La compétence DS n° 8 — « exploiter une échelle de niveau d'intensité sonore » — n'a **aucun exercice** en face. La seule ressource est l'échelle de l'Image 15, désormais posée avec ses seuils chiffrés dans la légende : de quoi bâtir un exercice court. |
 | **P3** | L'explication de la célérité par la densité (M1) est le raccourci scolaire habituel ; c'est la **rigidité** du milieu qui domine, pas sa masse volumique. Sans enjeu en seconde — transcrit tel quel, signalé pour mémoire. |
 | **P4** | Exercice 5 : « le son d'un éclair » — c'est le **tonnerre**. Formulation, pas physique : laissé tel quel. |
@@ -98,3 +103,49 @@ Trois familles, si l'on devait assainir un jour :
 | 4. Ajouts & approfondissements | ⬜ |
 | 5. Cours VALIDÉ | ⬜ |
 | 6. Fiche élève | ⬜ **seulement une fois le cours figé** |
+
+
+---
+
+## 6. Audit 1 — 25/08/2026 (mise en forme et étoffement)
+
+Audit oral de Loïc sur la V1 intégrale, le matin même. Diagnostic : *fidèle mais
+sec* — les figures écrasaient le texte, le cours allait droit au but sans
+paragraphes de liaison.
+
+**Ce qui a changé sur la page**
+
+| Lot | Objet |
+|---|---|
+| 0 | **12 divisions** passées en vraie barre de fraction (`.frac`). Figures recalibrées : `.fig-large` 720 → **460 px**, `.fig-moyenne` **380 px**, séries de vignettes **118-150 px** |
+| 1 | Bloc **Méthode « mesurer une période sur un graphe »** avant l'exercice 1 — la méthode des *n* motifs était enseignée dans un corrigé. Énoncé de l'ex. 1 étoffé. Image de l'ex. 2 en **vignette de rappel**. Lien **grave / aigu** posé sous l'image 3. **Amplitude** nommée en I-C + encart de mise en garde |
+| 2 | Bloc « Onde » **scindé** en définition + typologie ; l'image du bateau passe **à côté** du texte ; les 5 vignettes de l'ex. 4 tiennent **sur une ligne** |
+| 3 | Guitare / saxo en illustrations d'appui ; image 8 réduite ; **vidéo de la cloche à vide intégrée en façade cliquable** + question ; `c_son(air) = 340 m·s⁻¹` **surligné** ; **Tableau 1** à côté de la définition de célérité |
+| 4 | **Tableau 2** à côté des définitions ; images 10 à 12 réduites ; **diapason + son pur réunis** sous l'Image 13 ; seuils de danger et de douleur **développés** avec des exemples concrets, à côté de l'échelle en dB ; les trois vidéos anonymes **nommées** ; le `.a-faire` du lien de DS **sorti** du bloc `.videos` |
+| 5 | **Renumérotation** : 17 images + 2 tableaux, série continue, aucun renvoi orphelin |
+
+**Retiré à ta demande** : la remarque sur les **chiffres significatifs** dans la
+correction de l'exercice 2 — la notion arrive après ce chapitre dans ta
+progression. Les résultats restent arrondis, sans justification. Les commentaires
+`<!-- SOURCE → CORRIGÉ … -->` sont conservés : ils sont invisibles pour l'élève.
+
+**Corrigé au passage** : la phrase « le domaine audible se subdivise en **trois**
+zones » annonçait un tableau qui en aligne cinq. Elle nomme désormais les trois
+zones (graves, mediums, aigus) et dit que les infrasons et les ultrasons les
+encadrent. L'incohérence était antérieure ; la mise en regard du texte et du
+tableau l'a rendue visible.
+
+**Textes ajoutés — tous des propositions à valider** : le bloc Méthode, l'énoncé
+de l'exercice 1, le paragraphe grave/aigu, le paragraphe amplitude et l'encart de
+mise en garde de I-C, la question sur la vidéo de la cloche à vide, le rappel
+d'amplitude de IV-C, et les deux paragraphes sur les seuils de danger et de
+douleur.
+
+**Vérifié, mesuré** (Chrome piloté, aux trois largeurs 1440 / 768 / 380 px) :
+zéro chevauchement sur les 13 fractions, zéro scroll horizontal, aucune figure
+hors gabarit, les 4 mises en regard passent bien à une colonne sous 900 px, le
+verrou `S0NORE` fonctionne toujours, et la page **n'émet aucune requête vers un
+hôte externe au chargement**.
+
+**Non traité, et c'est délibéré** : la pauvreté de fond de la partie 3, qui relève
+d'une session d'écriture ; les animations interactives, versées dans `IDEES.md`.
