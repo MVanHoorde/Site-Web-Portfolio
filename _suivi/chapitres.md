@@ -90,7 +90,8 @@
 - 5 exercices : Ex4 et Ex5 rédigés + **corrigés en entier** (calculs de vitesse re-vérifiés) ; Ex1/Ex2/Ex3 = énoncés rédigés, tracés graphiques laissés en 🚧. **Ex1 : la case de correction est vide dans la source** (signalé, à rédiger en régime B).
 - 4 propriétés/formules vectorielles reconstituées (vecteur déplacement, vitesse moyenne, vitesse instantanée, nature du mouvement).
 - Liens décodés : 8 vidéos (hyperliens de formes, aucun QR) + Kahoot activé.
-- Blocs 🚧 restants : ~13 — schémas (repère, types de trajectoire, vecteurs position/déplacement/vitesse, mouvement circulaire) et photos/chronophotographies à extraire ; fiche mémo P. Olivier (licence à vérifier). Lien DS volontairement laissé en attente.
+- 🆕 **Les exercices 2 et 3 ont enfin leur correction** (25/08) — ils étaient les deux seuls exercices sans corrigé du chapitre. Ce sont des exercices **graphiques**, que la source laisse vierges *même dans sa version « correction »* : la chronophotographie du skieur est posée en support, et deux **SVG maison** montrent le tracé attendu (repère, points, vecteurs position, vecteur déplacement fermant le triangle). Les positions M₄, M₇, M₁₃ et M₂₁ ont été obtenues en **relevant les 34 croix de la chronophotographie** et en les numérotant depuis M₁, la croix la plus à droite — celle que la source étiquette. Corrections **rédigées par Claude, à valider**.
+- Blocs 🚧 restants : **15** — schémas (repère, types de trajectoire, vecteurs vitesse, mouvement circulaire) et photos à extraire ; fiche mémo P. Olivier (licence à vérifier). Lien DS volontairement laissé en attente.
 
 ### T2-C2 — Modéliser une action sur un système
 - Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
@@ -101,7 +102,9 @@
 - 2 formules-blocs reconstituées (gravitation universelle, poids P = m·g) + 2 relations d'action-réaction.
 - ⚠ Erreurs source corrigées / signalées : (1) **Ex6, unité corrigée** « kg » → **N** (valeur 1,98×10²⁰ exacte) ; (2) **Ex8, deux réserves** : inversion de g Paris/équateur vs Image 13 (physiquement g plus grand à Paris), et écart réel ≈ 0,8 % (et non « 8 % ») — transcrit fidèlement + aparté ; (3) **renumérotation** : le 2ᵉ « Exercice 10 » (plan incliné, diapo 13) devient **Ex11** (doublon de numéro dans la source).
 - Liens décodés : 8 vidéos (hyperliens de formes) + Kahoot activé. Portrait de Newton (1689) en 🚧 (encart histoire, licence à confirmer).
-- Blocs 🚧 restants : ~13 — schémas de forces (avion, pot de fleur, fusée, gravitation, poids, réaction, tension, plan incliné), diagrammes objets-interactions, 2 tableaux-images (astres, table de g), photos. Lien DS en attente.
+- 🆕 **L'exercice 10 a enfin sa correction** (25/08) — le seul du chapitre qui n'en avait pas. L'Image 14 est posée en support et un **SVG maison** montre le poids ajouté sur les deux situations. La correction insiste sur le piège : sur le plan incliné, **le poids reste vertical** alors que la réaction reste perpendiculaire au plan — les deux ne se compensent plus, et sans frottements le solide glisserait. Rédigée par Claude, **à valider**.
+- 🔧 Corrigé au passage : à **390 px**, les longues lignes d'équation (indices « Terre–Lune ») faisaient déborder la page entière ; elles défilent désormais dans leur propre cadre.
+- Blocs 🚧 restants : **20** — schémas de forces (avion, pot de fleur, fusée, gravitation, poids, réaction, tension, plan incliné), diagrammes objets-interactions, 2 tableaux-images (astres, table de g), photos. Lien DS en attente.
 
 ### T2-C3 — Le principe d'inertie
 - Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
