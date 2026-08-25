@@ -1,10 +1,18 @@
 # Tableau de bord détaillé — par chapitre
 
-> Mise à jour : 16/07/2026 · Flags : ⬜ à faire · 🔄 en cours · ✅ fait · ⚠ attention
+> Mise à jour : 25/08/2026 · Flags : ⬜ à faire · 🔄 en cours · ✅ fait · ⚠ attention
 > Jalons (dans l'ordre — la fiche est TOUJOURS le dernier) :
-> 1 Ébauche en ligne · 2 Texte&exos validés · 3 Images retravaillées ·
+> 1 **V1 intégrale en ligne** (cours entier, figures comprises —
+> `_modeles/CONSIGNES-V1-integrale-PC.md`) · 2 Texte&exos validés ·
+> 3 Images retravaillées ·
 > 4 Ajouts&approfondissements · 5 Cours VALIDÉ (« utilisable l'an prochain ») ·
 > 6 Fiche élève VALIDÉE · 7 CHAPITRE CLOS
+>
+> 🔴 **1 chapitre PC sur 14 est en V1 intégrale : T3-C1.** Le jalon 1 a changé de
+> définition le 25/08/2026 : il exige désormais le cours **entier**, figures et
+> légendes comprises. Les 13 autres pages restent des ébauches — fidèles dans le
+> texte, mais trouées de blocs `.a-faire` à la place des images, d'où leur `🔄`.
+> T3-C1 sert de référence : voir sa fiche et `_suivi/t3c1-releve.md`.
 >
 > ⚠ **RIEN n'est encore validé.** « Ébauche/fiche proposée » ≠ « validé ».
 > La validation est un acte explicite de Loïc, faite en régime B, cours d'abord.
@@ -16,25 +24,25 @@
 ## Seconde — Thème 1 : Constitution et transformations de la matière
 
 ### T1-C1 — La matière à l'échelle macroscopique
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t1-c1-matiere-macroscopique.html`
 - Fiche : aucune.
 - Blocs 🚧 restants : _à recenser en régime B_.
 
 ### T1-C2 — Transformations physiques et chimiques
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichiers : `pages/2nde-pc-t1-c2-transformations-physiques-chimiques.html` · `fiches/fiche-2nde-t1c2.html`
 - Sert de **référence de composants** (v2) — utile comme modèle, mais **non validé**.
 - Fiche : **proposée** (v4, ~8 pages), pas validée.
 
 ### T1-C3 — Constitution de l'atome
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t1-c3-constitution-atome.html`
 - Contenus produits : frise historique des modèles atomiques, pack SVG, code AT0MES.
 - Fiche : **proposée** (~6 pages), pas validée.
 
 ### T1-C4 — Dénombrer les entités
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichiers : `pages/2nde-pc-t1-c4-denombrer-les-entites.html` · `fiches/fiche-2nde-t1c4.html`
 - Code : AV0G4D · 4 SVG (cristal NaCl, atome, mole, case).
 - **Le plus abouti en production** (cours + fiche proposés, erreurs source corrigées),
@@ -42,14 +50,14 @@
 - Différé : réintégration du tableau périodique complet.
 
 ### T1-C5 — Les solutions aqueuses
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t1-c5-solutions-aqueuses.html`
 - Fiche : aucune. Code de déblocage : **S0LUTE** (choisi par Claude, à transmettre via le cahier de textes — Loïc peut le changer à tout moment).
 - 7 exercices rédigés en entier (énoncés + corrections), 3 encarts formule (concentration en masse, conservation de la masse de soluté, facteur de dilution), 12 liens vidéo décodés (QR) + Kahoot activé.
 - Blocs 🚧 restants : 10 — uniquement des schémas/illustrations à redessiner (dissolution microscopique, protocoles dissolution/dilution, échelle de teinte, courbes d'étalonnage) et 2 photos décoratives. Lien DS volontairement laissé en attente (voir ETAT-PROJET.md).
 
 ### T1-C6 — Le cortège électronique
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t1-c6-cortege-electronique.html`
 - Fiche : aucune. Code de déblocage : **C0UCHE** (choisi par Claude, à transmettre via le cahier de textes).
 - 7 exercices rédigés en entier (couches, sous-couches, configurations électroniques, classification, blocs s/p), 8 liens vidéo décodés (hyperliens texte du PPTX, pas de QR sur ce chapitre).
@@ -57,7 +65,7 @@
 - ⚠ Toujours pas de diapositive « Pour le DS » ni de Kahoot dans la source — compétences et lien à fournir par Loïc.
 
 ### T1-C7 — Stabilité des entités chimiques
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t1-c7-stabilite-entites-chimiques.html`
 - Fiche : aucune. Code de déblocage : **ST4BLE** (choisi par Claude, à transmettre via le cahier de textes).
 - 6 exercices rédigés en entier (configurations des gaz nobles, formation d'ions, liaisons covalentes, modèles de Lewis), table de données (charge de l'ion selon la colonne) transcrite en `table.tab`, 7 liens vidéo décodés (hyperliens texte).
@@ -74,7 +82,7 @@
 > (lisible mais à raffiner en régime B — voir ETAT-PROJET.md).
 
 ### T2-C1 — Décrire le mouvement
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t2-c1-decrire-le-mouvement.html`
 - Fiche : aucune. Code de déblocage : **REP3RE** (choisi par Claude, à transmettre via le cahier de textes — modifiable à tout moment).
 - 3 sections (système & référentiel · trajectoire & vecteur déplacement · vitesse).
@@ -84,7 +92,7 @@
 - Blocs 🚧 restants : ~13 — schémas (repère, types de trajectoire, vecteurs position/déplacement/vitesse, mouvement circulaire) et photos/chronophotographies à extraire ; fiche mémo P. Olivier (licence à vérifier). Lien DS volontairement laissé en attente.
 
 ### T2-C2 — Modéliser une action sur un système
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t2-c2-modeliser-une-action.html`
 - Fiche : aucune. Code de déblocage : **F0RCES**.
 - 3 sections (actions & force · principe des actions réciproques · exemples de forces : gravitation, poids, réaction du support, tension). Chapitre le plus dense.
@@ -95,7 +103,7 @@
 - Blocs 🚧 restants : ~13 — schémas de forces (avion, pot de fleur, fusée, gravitation, poids, réaction, tension, plan incliné), diagrammes objets-interactions, 2 tableaux-images (astres, table de g), photos. Lien DS en attente.
 
 ### T2-C3 — Le principe d'inertie
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t2-c3-principe-d-inertie.html`
 - Fiche : aucune. Code de déblocage : **IN3RTE**.
 - 4 sections (définitions : repos, inertie, résultante · principe d'inertie & réciproque · contraposée · chute libre).
@@ -123,17 +131,20 @@
 > faudrait renuméroter t3-c2 ↔ t3-c3 (fichiers, clés localStorage, titres) — régime B.
 
 ### T3-C1 — Émission et perception d'un son
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 ✅ · 2 🔄 · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t3-c1-emission-perception-son.html`
 - Fiche : aucune. Code de déblocage : **S0NORE**.
+- 🥇 **Premier chapitre en V1 intégrale** (25/08/2026) — les 17 images de la source posées avec leurs légendes, aucun `.a-faire` sauf le lien de DS.
 - 4 sections (caractéristiques d'un signal périodique · les ondes · émission & propagation d'un son · perception des sons).
-- **6 exercices** rédigés + **corrigés en entier** (période/fréquence/extrema, classification d'ondes, distance de l'orage, chant des baleines).
-- 2 encarts formule reconstitués (f = 1/T · c_son = d/Δt) ; 1 table de données (vitesses du son selon le milieu) transcrite.
-- Liens décodés : 8 vidéos (hyperliens de formes) + Kahoot activé.
-- Blocs 🚧 restants : ~11 — uniquement schémas à redessiner (motif/période, graphes des exercices, effet de la fréquence, vague, compressions-dilatations, frise des fréquences audibles, échelle des dB) et photos (guitare/saxophone, situations d'ondes, sonomètre). Lien DS en attente.
+- **6 exercices** rédigés + **corrigés en entier** ; les graphes d'énoncé viennent de la source, les **corrections portent le graphe annoté** (T, 3T, 4T, extrema) découpé du rendu — ces annotations sont des formes PowerPoint, invisibles pour `pdfimages`.
+- 2 encarts formule (f = 1/T · c_son = d/Δt) ; 2 tables transcrites (vitesses du son · sous-domaines de fréquences).
+- Images : **28 fichiers** dans `assets/img/pc/2nde-pc-t3-c1/` (1,1 Mo), 28 figures sur la page, toutes marquées `data-origine` (licences non identifiées).
+- Liens décodés : 8 vidéos (hyperliens de formes) + Kahoot activé. Le lien de DS de la source pointe vers un SharePoint d'établissement : **non posé** (site public) — c'est le seul 🚧 restant.
+- ⚠ **4 retouches de fond tracées** (`grep "SOURCE → CORRIGÉ"`) : intensité ∝ amplitude² (reformulée qualitativement), 382 → 380 Hz, 0,02325 → 23 ms, 689,6 s → 690 s ≈ 11 min 30 s.
+- 📄 **À lire et à trancher : `_suivi/t3c1-releve.md`** — 1 erreur de physique, 4 incohérences de calcul, 7 contenus récupérés, 6 remarques pédagogiques.
 
 ### T3-C2 — Signaux et capteurs
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t3-c2-signaux-et-capteurs.html`
 - Fiche : aucune. Code de déblocage : **S1GNAL**.
 - 6 sections (rappels d'électricité · loi des nœuds · loi des mailles · caractéristique tension-courant · loi d'Ohm · capteurs électriques).
@@ -145,7 +156,7 @@
 - Blocs 🚧 restants : ~8 — schémas (circuit à légender, nœuds A/B avec sens de I₅, mailles, caractéristiques U=f(I), grandeur d'entrée→capteur→sortie, courbe d'étalonnage) et photos (multimètre, oscilloscope, interface, micro:bit, Arduino). Lien DS en attente.
 
 ### T3-C3 — Dispersion de la lumière et spectres lumineux
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t3-c3-dispersion-spectres.html`
 - Fiche : aucune. Code de déblocage : **PR1SME**.
 - 2 sections (dispersion de la lumière · les spectres lumineux), sous-parties A–D.
@@ -156,7 +167,7 @@
 - Blocs 🚧 restants : ~8 — schémas (prisme à légender, frise du spectre électromagnétique, arc-en-ciel/goutte, spectres continus et de raies) et images (spectre du feu d'artifice, barre d'acier + spectres a/b/c/d, portrait de Newton). Lien DS en attente.
 
 ### T3-C4 — Réfraction et réflexion de la lumière
-- Jalons : 1 ✅ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t3-c4-refraction-reflexion.html`
 - Fiche : aucune. Code de déblocage : **M1RAGE**.
 - 4 sections (propriétés de la lumière · dioptre & réflexion · phénomène de réfraction · la réfraction au quotidien), sous-parties A–E.

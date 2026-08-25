@@ -5,10 +5,12 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **25/08/2026** (dernière passe : `t0` — l'activité débranchée
-> devient la séance 4 avec dix fiches d'élément, les étiquettes à poser sur la
-> façade arrière, les captures de l'interface en 1.1 — et trois défauts trouvés
-> en chemin, dont des dépôts de photo qui ne validaient rien)
+> Dernière réécriture : **25/08/2026** (dernière passe : `T3-C1` — **la première
+> V1 intégrale d'un chapitre de PC** : les 17 images de la source extraites et
+> posées avec leurs légendes, les annotations des graphes d'exercice découpées du
+> rendu, sept contenus qui n'étaient nulle part ailleurs récupérés, quatre
+> retouches de fond tracées. Avant elle : `t0`, l'activité débranchée devenue la
+> séance 4)
 > Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
 
 ---
@@ -22,7 +24,7 @@
 
 | Partie | État |
 |---|---|
-| **PC seconde** | 14 chapitres en ligne. T1-C1→C4 dégrossis à fond ; les 10 autres portent **206 blocs `.a-faire`**. Aucun cours validé. |
+| **PC seconde** | 14 chapitres en ligne. 🆕 **T3-C1 est le premier en V1 intégrale** (25/08) : cours entier à l'écran, 28 figures légendées, plus aucun `.a-faire` sauf le lien de DS — son relevé (`_suivi/t3c1-releve.md`) attend tes décisions. T1-C1→C4 sont dégrossis à fond ; les **neuf autres portent 99 blocs `.a-faire`**, à reprendre chapitre par chapitre selon `_modeles/CONSIGNES-V1-integrale-PC.md`. Aucun cours validé. |
 | **SNT** | 8 séquences de thème (`t0`→`t7`) **+ 1 module transversal** (`m1` « Représenter l'information »). `t0`, `t1` et `t2` sont sur le **moteur partagé** et en **V0 complète** ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). **`t1` est le seul thème validé sur le fond** (23/08) — il sera *clos* après la vérification des fiches. **`t0` a été refondue le 23/08 puis auditée le 24/08** : voir sa ligne. |
 | **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade) et **vérifié au rendu** dans un navigateur sans interface : bandeau, pictogramme et teinte mesurés sur les deux familles de pages, en mode élève et en mode enseignant. Le tableau de bord affiche les **dates de clôture** (cases de clôture et frise, format `12/09`). ✅ **`bdd/schema/013-verrou-progression.sql` a été exécuté le 20/08/2026** par Loïc : `mon_plafond()` répond en base, et un appel anonyme se heurte bien à `42501 permission denied` — la fonction est réservée aux comptes connectés, comme prévu. Le plafond est donc **actif de bout en bout**. Deux textes vus par les élèves attendent la validation de Loïc. |
 | **SNT — `t0` Introduction** | 🔄 **Refondue le 23/08/2026, reprise les 24 et 25/08.** État courant : **4 séances · 26 étapes · 18 portes · 6 QCM (39 questions) · 4 réponses rédigées corrigées · 2 réponses personnelles · 2 dépôts d'image · 10 fiches d'élément · 1 tri · 1 exercice d'étiquettes · 1 poste de visionnage · 4 SVG maison**. Apports du 25/08 : l'activité débranchée devient la **séance 4**, dans la cascade et avec sa fiche, où l'élève remplit **dix fiches d'élément** (photo redimensionnée dans le navigateur, nom, ce qu'il fait — trois suffisent à valider) ; un **exercice d'étiquettes à poser** sur la façade arrière en 3.3, dix zones contrôlées une à une sur l'image source ; **trois captures de l'interface** en 1.1, produites depuis la page rendue ; et la **carte du thème** enfin chargée — sans elle, le lien « ⌂ Sommaire » ne faisait rien. ⏳ **Rien n'est validé.** Restent ouverts : la **remontée des photos vers le tableau de bord** (chantier séparé, avec une durée de conservation à décider) et la **licence des 37 images issues du PDF d'un collègue**.
@@ -148,6 +150,16 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 
 ## Prochaines actions
 
+- [ ] 🆕 **`T3-C1` — lire le cours entier à l'écran et trancher `_suivi/t3c1-releve.md`** :
+      1 erreur de physique reformulée (intensité ∝ amplitude²), 4 corrections de calcul,
+      6 remarques pédagogiques dont deux qui appellent une décision — définir l'**amplitude**
+      (elle fonde tout le IV-C et n'est jamais définie), et écrire un exercice pour la
+      **compétence DS n° 8**, qui n'en a aucun. C'est le jalon 2 du chapitre.
+- [ ] 🆕 **Chapitre PC suivant en V1 intégrale.** Les neuf chapitres troués portent
+      **99 blocs `.a-faire`** : T2-C2 (21), T2-C1 (17), T3-C2 (11), T2-C3 et T3-C3 (10),
+      T1-C5 et T1-C6 (9), T1-C7 (7), T3-C4 (5). Méthode éprouvée sur T3-C1 : les trois
+      passes d'extraction, la vérification visuelle image par image, la découpe du rendu
+      pour les annotations qui sont des formes PowerPoint. Compter une session par chapitre.
 - [ ] **`t1` — présenter dans `t0` deux mécanismes nés en 4.2** (reporté ici le
       22/08 en retirant la note de chantier de la page, règle du référentiel vivant) :
       le **dépôt de copie d'écran** et le **« à retenir » différé** jusqu'à ce que
