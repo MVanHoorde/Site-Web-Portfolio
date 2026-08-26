@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche outil 2 — Les chiffres significatifs</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     FICHE OUTIL — famille « Outils transversaux » de physique-chimie.
+     Dérive de fiches/fiche-2nde-t1c4.html : même @page, même .feuille,
+     même bande à trois repères, même fond blanc forcé à l'impression.
+     Mêmes deux différences assumées que la fiche de l'outil 1 :
+     entièrement complétée (décision D5), et sans marge de notes.
+
+     Les exercices ne sont PAS sur la fiche : ils vivent en ligne, où
+     ils sont corrigés. Le QR code du verso y mène.
+     ============================================================ -->
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e; --gris:#6b6f7a;
+    --or-fonce:#b28a1d; --vert-fonce:#4c8a58;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { background:#9aa0ab; }
+  body { font-family:'Spectral', Georgia, serif; color:var(--encre);
+         font-size:9.2pt; line-height:1.28; }
+  .feuille { width:210mm; min-height:297mm; margin:8mm auto; padding:8mm 12mm 12mm;
+    background:var(--papier); position:relative; box-shadow:0 2px 14px rgba(0,0,0,.28);
+    display:flex; flex-direction:column; }
+  @page { size:A4; margin:0; }
+  @media print {
+    html, body { background:#fff; }
+    .feuille { margin:0; box-shadow:none; height:296mm; min-height:0; overflow:hidden;
+               page-break-after:always; background:#fff; }
+    .feuille:last-child { page-break-after:auto; }
+    .encart, .regle, .exres, .duo-c, .versexos { background:#fff; }
+  }
+  .bande { height:3.5px; background:var(--encre); position:relative; margin-bottom:3.2mm; }
+  .bande i { position:absolute; top:0; bottom:0; width:3px; }
+  .bande i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .bande i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .bande i:nth-child(3){ left:76%; background:var(--h-alpha); }
+
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:12.4pt; line-height:1.12; }
+  .sous { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris); margin:1mm 0 2.5mm; }
+  .sous .rouge { color:var(--h-alpha); }
+  .suite { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris);
+    letter-spacing:.1em; text-transform:uppercase; margin:0 0 2.5mm; }
+  .suite .n { color:var(--h-beta); }
+
+  .aquoi { font-family:'Space Grotesk',sans-serif; font-size:9.2pt; font-weight:600;
+    border-left:3px solid var(--h-beta); padding:1.1mm 0 1.1mm 3mm; margin-bottom:2mm; }
+
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:10.2pt; margin:2.4mm 0 1.2mm;
+       display:flex; align-items:baseline; gap:2.5mm;
+       border-top:2.2px solid var(--encre); padding-top:1.1mm; }
+  h2:first-child { margin-top:0; }
+  h2 .n { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--h-beta); }
+  h3 { font-family:'IBM Plex Mono',monospace; font-size:7.2pt; letter-spacing:.09em;
+       text-transform:uppercase; color:var(--gris); margin:1.6mm 0 .7mm; font-weight:600; }
+
+  p { margin-bottom:.9mm; }
+  sub, sup { font-size:.66em; }
+  b { font-weight:600; }
+  .mono { font-family:'IBM Plex Mono',monospace; font-size:.92em; white-space:nowrap; }
+
+  .regle { border:1.3px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 2mm 2mm 0; padding:1.5mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fff; }
+  .regle .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--h-gamma); margin-bottom:1mm; }
+
+  /* Les quatre règles de comptage — texte repris mot pour mot du cahier
+     de vacances, où il est déjà rédigé et validé. */
+  .quatre { list-style:none; margin:1mm 0 1.6mm; }
+  .quatre li { display:grid; grid-template-columns:5mm 1fr 22mm; gap:1.6mm;
+    align-items:baseline; padding:.7mm 0; border-bottom:1px dotted var(--grille); }
+  .quatre li:last-child { border-bottom:0; }
+  .quatre .num { font-family:'IBM Plex Mono',monospace; font-weight:700; color:var(--h-gamma); }
+  .quatre .ex { font-family:'IBM Plex Mono',monospace; font-size:8.4pt; color:var(--vert-fonce);
+    font-weight:700; text-align:right; white-space:nowrap; }
+
+  .exres { border:1px solid var(--vert-fonce); border-radius:2mm; padding:1.5mm 2.6mm;
+    margin:1.2mm 0 1.8mm; background:#fbfdfb; }
+  .exres .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--vert-fonce); margin-bottom:1.2mm; font-weight:600; }
+  .exres ol { list-style:none; counter-reset:et; }
+  .exres li { counter-increment:et; display:grid; grid-template-columns:5mm 1fr;
+    gap:1.4mm; margin-bottom:.5mm; align-items:baseline; }
+  .exres li:last-child { margin-bottom:0; }
+  .exres li::before { content:counter(et); font-family:'IBM Plex Mono',monospace;
+    font-size:7.4pt; font-weight:700; color:var(--vert-fonce); text-align:right; }
+  .calc { font-family:'IBM Plex Mono',monospace; font-size:8.4pt; line-height:1.42; margin:.4mm 0; }
+  .res { border:1.2px solid var(--vert-fonce); border-radius:1.4mm; padding:.2mm 1.4mm;
+    font-weight:700; white-space:nowrap; }
+  .barre { color:var(--gris); text-decoration:line-through; }
+
+  /* LE bloc de contraste : les deux règles côte à côte. C'est le cœur
+     de l'outil — l'élève applique la règle du produit à une somme, et
+     c'est cette page-là qui doit l'en empêcher. */
+  .duo { display:grid; grid-template-columns:1fr 1fr; gap:3.5mm; margin:1.4mm 0 2mm; }
+  .duo-c { border:1.2px solid var(--grille); border-radius:2mm; padding:1.6mm 2.4mm; background:#fff; }
+  .duo-c.mult { border-top:3px solid var(--h-gamma); }
+  .duo-c.addi { border-top:3px solid var(--h-alpha); }
+  .duo-t { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; letter-spacing:.07em;
+    text-transform:uppercase; font-weight:700; margin-bottom:1mm; }
+  .duo-c.mult .duo-t { color:var(--h-gamma); } .duo-c.addi .duo-t { color:var(--h-alpha); }
+  .duo-r { margin-bottom:1.2mm; }
+
+  .encart { border:1px solid var(--grille); border-left:3px solid var(--or-fonce);
+    border-radius:0 2mm 2mm 0; padding:1.2mm 2.6mm; margin:1.2mm 0 1.6mm; background:#fffdf5; font-size:8.8pt; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--or-fonce); margin-bottom:.8mm; font-weight:600; }
+  .encart.rouge { border-left-color:var(--h-alpha); background:#fffaf9; }
+  .encart.rouge .etq { color:var(--h-alpha); }
+
+  .versexos { border:1.3px solid var(--encre); border-radius:2mm; padding:1.6mm 2.4mm;
+    display:flex; align-items:center; gap:3.5mm; background:#fff; margin-top:auto; }
+  .versexos svg { flex:none; }
+  .versexos .txt { font-size:8.6pt; }
+  .versexos .txt b { font-family:'Space Grotesk',sans-serif; }
+  .versexos .url { font-family:'IBM Plex Mono',monospace; font-size:7.2pt;
+    color:var(--gris); word-break:break-all; margin-top:.8mm; }
+
+  .pied { position:absolute; bottom:5mm; left:12mm; right:12mm;
+          display:flex; justify-content:space-between;
+          font-family:'IBM Plex Mono',monospace; font-size:6.8pt; color:var(--gris); }
+  svg { display:block; }
+  .schema { border:1px solid var(--grille); border-radius:2mm; padding:1.2mm; margin:1.2mm 0 1.6mm; background:#fff; }
+  .schema .legende { font-family:'IBM Plex Mono',monospace; font-size:7pt; color:var(--gris);
+    margin-top:.8mm; line-height:1.45; text-align:center; }
+  .deux { display:grid; grid-template-columns:1fr 1fr; gap:3.5mm; align-items:start; }
+  .deux.large { grid-template-columns:1fr 78mm; }
+  .deux.schema-duo { grid-template-columns:96mm 1fr; }
+</style>
+</head>
+<body>
+
+<!-- ==================== RECTO ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <h1>Outil 2 — Les chiffres significatifs</h1>
+  <p class="sous">Physique-Chimie · <span class="rouge">Seconde</span> · fiche outil — à coller, elle sert toute l'année · M. Van Hoorde</p>
+
+  <p class="aquoi">Dès que la calculatrice affiche neuf chiffres et qu'il faut décider combien en écrire — c'est-à-dire à la fin de presque tous les calculs.</p>
+
+  <h2><span class="n">01</span> Compter les chiffres significatifs</h2>
+  <p>Les <b>chiffres significatifs</b> sont ceux qui <b>renseignent sur la précision</b> d'un résultat&nbsp;: tous les chiffres écrits n'en sont pas — certains zéros ne font que placer la virgule.</p>
+
+  <div class="regle">
+    <div class="etq">La règle — quatre cas, et il n'y en a pas d'autres</div>
+    <ol class="quatre">
+      <li><span class="num">1.</span><span>Tout chiffre non nul compte.</span><span class="ex">3,82 → 3</span></li>
+      <li><span class="num">2.</span><span>Un zéro entre deux chiffres compte.</span><span class="ex">502 → 3</span></li>
+      <li><span class="num">3.</span><span>Les zéros à gauche du 1<sup>er</sup> chiffre non nul ne comptent pas.</span><span class="ex">0,0048 → 2</span></li>
+      <li><span class="num">4.</span><span>Les zéros à droite, après la virgule, comptent.</span><span class="ex">0,250 → 3</span></li>
+    </ol>
+    <p>La <b>puissance de dix ne compte jamais</b>&nbsp;: dans <span class="mono">1,20 × 10<sup>3</sup></span>, il y a <b>trois</b> chiffres significatifs — ceux de 1,20.</p>
+  </div>
+
+  <div class="deux large">
+    <div class="exres" style="margin-top:0">
+      <div class="etq">✓ Compter sur 0,020540</div>
+      <ol>
+        <li><span><b>Le premier chiffre non nul.</b> C'est le <b>2</b>. Tout ce qui est à sa gauche ne fait que placer la virgule.</span></li>
+        <li><span><b>On écarte les zéros de tête.</b> <span class="calc" style="display:inline"><span class="barre">0,0</span><b>20540</b></span> — règle 3.</span></li>
+        <li><span><b>On compte tout le reste.</b> 2 · 0 · 5 · 4 · 0 — le zéro du milieu compte (règle 2), celui de fin aussi (règle 4).</span></li>
+        <li><span><b>Le résultat.</b> <span class="mono">0,020540</span> a <span class="res">5 chiffres significatifs</span></span></li>
+        <li><span><b>Le contrôle.</b> <span class="mono">0,020540 = 2,0540 × 10<sup>−2</sup></span> — et 2,0540 en porte bien cinq. <b>L'écriture scientifique montre les chiffres significatifs, et rien qu'eux.</b></span></li>
+      </ol>
+    </div>
+    <div class="encart rouge" style="margin-top:0">
+      <div class="etq">⚠ Le cas ambigu — un zéro de fin sans virgule</div>
+      Dans <span class="mono">100</span>, personne ne peut savoir si les zéros ont été <b>mesurés</b> ou s'ils ne font que <b>placer l'ordre de grandeur</b>. Les quatre règles ne tranchent pas ce cas — <b>l'écriture scientifique, si</b>&nbsp;:
+      <div class="calc" style="margin-top:1mm">
+        <span class="mono">1 × 10<sup>2</sup></span> → <b>1</b> chiffre&nbsp;: «&nbsp;environ cent&nbsp;»<br>
+        <span class="mono">1,0 × 10<sup>2</sup></span> → <b>2</b> chiffres<br>
+        <span class="mono">1,00 × 10<sup>2</sup></span> → <b>3</b> chiffres&nbsp;: tous mesurés
+      </div>
+      <p style="margin-top:1mm">Quand <b>tu</b> produis une donnée, c'est à toi de lever l'ambiguïté&nbsp;: écris-la en puissance de dix. <span style="color:var(--gris)">→ outil 1.</span></p>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span> Pourquoi ça n'est pas de la coquetterie</h2>
+  <p>Mathématiquement, <span class="mono">3,20 = 3,2</span>. <b>En physique-chimie, non</b>&nbsp;: écrire un chiffre, c'est affirmer qu'on l'a mesuré. Le zéro de <span class="mono">3,20</span> annonce que le <b>centième a été lu</b> — et qu'il vaut zéro.</p>
+  <p><b>Le nombre qui range tout le monde&nbsp;: <span class="mono">003,20</span></b>, qui porte les <b>deux</b> familles de zéros. Ceux de gauche s'effacent sans rien changer&nbsp;: il a <b>la même signification</b> que <span class="mono">3,20</span>. Celui de droite, non&nbsp;: il n'a <b>pas</b> la même signification que <span class="mono">3,2</span>.</p>
+
+  <div class="schema">
+    <svg viewBox="0 0 620 190" role="img" aria-label="Deux mesures sur le même axe : 3,2 laisse la vraie valeur entre 3,15 et 3,25, tandis que 3,20 la resserre entre 3,195 et 3,205 — une zone dix fois plus étroite.">
+      <defs>
+        <pattern id="f2-ha" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="7" height="7" fill="#fff"/><line x1="0" y1="0" x2="0" y2="7" stroke="#d6402b" stroke-width="2" opacity=".5"/>
+        </pattern>
+        <pattern id="f2-hb" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="7" height="7" fill="#fff"/><line x1="0" y1="0" x2="0" y2="7" stroke="#4c8a58" stroke-width="2" opacity=".55"/>
+        </pattern>
+      </defs>
+      <text x="8" y="36" font-family="IBM Plex Mono" font-size="15" font-weight="700" fill="#d6402b">3,2</text>
+      <text x="8" y="52" font-family="Spectral" font-size="11" fill="#6b6f7a">au dixième</text>
+      <rect x="220" y="20" width="220" height="26" rx="3" fill="url(#f2-ha)" stroke="#d6402b" stroke-width=".8" stroke-opacity=".6"/>
+      <line x1="110" y1="33" x2="550" y2="33" stroke="#141a26" stroke-width="1.4"/>
+      <line x1="330" y1="20" x2="330" y2="46" stroke="#d6402b" stroke-width="2"/>
+      <text x="330" y="14" font-family="IBM Plex Mono" font-size="11" font-weight="700" fill="#d6402b" text-anchor="middle">± 0,05</text>
+
+      <text x="8" y="96" font-family="IBM Plex Mono" font-size="15" font-weight="700" fill="#4c8a58">3,20</text>
+      <text x="8" y="112" font-family="Spectral" font-size="11" fill="#6b6f7a">au centième</text>
+      <rect x="319" y="80" width="22" height="26" rx="2" fill="url(#f2-hb)" stroke="#4c8a58" stroke-width=".8" stroke-opacity=".6"/>
+      <line x1="110" y1="93" x2="550" y2="93" stroke="#141a26" stroke-width="1.4"/>
+      <line x1="330" y1="80" x2="330" y2="106" stroke="#4c8a58" stroke-width="2"/>
+      <text x="330" y="74" font-family="IBM Plex Mono" font-size="11" font-weight="700" fill="#4c8a58" text-anchor="middle">± 0,005</text>
+
+      <line x1="110" y1="138" x2="550" y2="138" stroke="#141a26" stroke-width="1.4"/>
+      <g stroke="#141a26" stroke-width="1">
+        <line x1="110" y1="132" x2="110" y2="146"/><line x1="220" y1="132" x2="220" y2="146"/>
+        <line x1="330" y1="130" x2="330" y2="148"/><line x1="440" y1="132" x2="440" y2="146"/>
+        <line x1="550" y1="132" x2="550" y2="146"/>
+      </g>
+      <g font-family="IBM Plex Mono" font-size="11" fill="#6b6f7a" text-anchor="middle">
+        <text x="110" y="162">3,10</text><text x="220" y="162">3,15</text><text x="330" y="162">3,20</text>
+        <text x="440" y="162">3,25</text><text x="550" y="162">3,30</text>
+      </g>
+      <text x="330" y="182" font-family="Spectral" font-size="12" fill="#6b6f7a" text-anchor="middle">Même axe, même point mesuré — mais une incertitude dix fois plus étroite.</text>
+    </svg>
+    <p class="legende">La zone hachurée est celle où la vraie valeur peut se trouver.</p>
+  </div>
+
+  <div class="encart">
+    <div class="etq">L'incertitude, et ce qu'on appelle la précision</div>
+    <b>Toute mesure porte une incertitude</b> <span class="mono">ΔA</span>, estimée à la <b>moitié de la plus petite graduation</b> sur un instrument gradué (règle au millimètre&nbsp;: <span class="mono">± 0,5 mm</span>) ou à la <b>moitié de l'unité du dernier rang affiché</b> sur un appareil à écran (balance affichant <span class="mono">12,34 g</span>&nbsp;: <span class="mono">± 0,005 g</span>). <b>Le dernier chiffre significatif est le chiffre incertain</b>&nbsp;: en donner un de plus, c'est <b>annoncer une précision qu'on n'a pas</b>.
+    <p style="margin-top:.8mm"><b>La précision</b> n'est pas <span class="mono">ΔA</span> tout seul — <span class="mono">± 1 g</span> est dérisoire sur un sac de ciment, catastrophique sur un comprimé. Elle se lit sur l'<b>incertitude relative</b> <span class="mono">ΔA / A</span>&nbsp;: c'est le <b>rapport</b> qui compte.</p>
+  </div>
+
+  <div class="pied"><span>Fiche outil 2 · Chiffres significatifs — M. Van Hoorde</span><span>recto · page 1/2</span></div>
+</div>
+
+
+<!-- ==================== VERSO ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Outil 2</span> — les deux règles, et celle qu'on confond</p>
+
+  <h2><span class="n">03</span> Deux opérations, deux règles</h2>
+  <p style="margin-bottom:1.4mm"><b>C'est ici que tout se joue&nbsp;:</b> l'erreur la plus fréquente consiste à appliquer la règle de la multiplication à une addition. L'une compte des <b>chiffres</b>, l'autre repère un <b>rang</b>.</p>
+
+  <div class="duo">
+    <div class="duo-c mult">
+      <div class="duo-t">× et ÷ — on compte des chiffres</div>
+      <div class="duo-r">Le résultat porte <b>autant de chiffres significatifs</b> que la donnée qui en a le <b>moins</b>. Le nombre de <b>décimales</b> n'a aucune importance.</div>
+      <div class="calc">3,8 ÷ 19,3 = 0,19689…<br>3,8 → <b>2</b> chiffres · 19,3 → 3<br>→ <span class="res">0,20</span></div>
+    </div>
+    <div class="duo-c addi">
+      <div class="duo-t">+ et − — on repère un rang</div>
+      <div class="duo-r">On arrondit au <b>rang de la dernière décimale</b> de la donnée la <b>moins précise</b>. Le <b>compte</b> des chiffres n'intervient pas.</div>
+      <div class="calc">1,25 + 0,025 = 1,275<br>1,25 s'arrête au <b>centième</b><br>→ <span class="res">1,28</span></div>
+    </div>
+  </div>
+
+  <div class="encart">
+    <div class="etq">La question à se poser avant tout calcul, et une seule</div>
+    «&nbsp;Est-ce que je <b>multiplie</b>, ou est-ce que j'<b>additionne</b>&nbsp;?&nbsp;» La réponse décide de la règle. Dans un calcul qui mêle les deux, on applique chaque règle <b>à son étape</b> — mais <b>on n'arrondit qu'à la fin</b>.
+  </div>
+
+  <h2><span class="n">04</span> Pose l'addition, et regarde la colonne</h2>
+  <p>Les deux nombres l'un sous l'autre, <b>alignés sur la virgule</b>. Le trait rouge tombe là où la donnée la moins précise s'arrête. Tout ce qui est <b>à droite du trait</b> n'a été mesuré que par un seul des deux nombres&nbsp;: on ne peut pas le garder.</p>
+
+  <div class="deux schema-duo">
+    <div class="schema" style="margin-top:0">
+      <svg viewBox="0 0 340 190" role="img" aria-label="Addition posée : 1,25 et 0,025 alignés sur la virgule. La colonne des millièmes, à droite du trait d'arrêt, n'est renseignée que par un seul des deux nombres ; le résultat 1,275 s'arrête donc au centième et devient 1,28.">
+        <rect x="260" y="16" width="42" height="132" rx="3" fill="#fbe6e3"/>
+        <text x="281" y="12" font-family="Spectral" font-size="11" font-weight="700" fill="#d6402b" text-anchor="middle">millièmes</text>
+        <g font-family="IBM Plex Mono" font-size="10" fill="#6b6f7a" text-anchor="end">
+          <text x="128" y="58">1,25 · 2 déc.</text>
+          <text x="128" y="102">0,025 · 3 déc.</text>
+        </g>
+        <g font-family="IBM Plex Mono" font-size="21" font-weight="600" fill="#141a26" text-anchor="middle">
+          <text x="160" y="62">1</text><text x="182" y="62">,</text><text x="208" y="62">2</text><text x="240" y="62">5</text>
+          <text x="140" y="106" fill="#6b6f7a">+</text>
+          <text x="160" y="106">0</text><text x="182" y="106">,</text><text x="208" y="106">0</text><text x="240" y="106">2</text><text x="281" y="106">5</text>
+          <text x="160" y="146">1</text><text x="182" y="146">,</text><text x="208" y="146">2</text><text x="240" y="146">7</text>
+          <text x="281" y="146" fill="#6b6f7a" opacity=".5">5</text>
+        </g>
+        <line x1="146" y1="118" x2="302" y2="118" stroke="#141a26" stroke-width="1.4"/>
+        <line x1="260" y1="16" x2="260" y2="158" stroke="#d6402b" stroke-width="2" stroke-dasharray="5 3.5"/>
+        <text x="281" y="176" font-family="IBM Plex Mono" font-size="11" font-weight="700" fill="#d6402b" text-anchor="middle">on s'arrête ici</text>
+        <text x="86" y="176" font-family="IBM Plex Mono" font-size="14" font-weight="700" fill="#4c8a58" text-anchor="middle">1,275 → 1,28</text>
+      </svg>
+      <p class="legende">La colonne des millièmes n'est renseignée que par <b>un seul</b> des deux nombres&nbsp;: ce qui commande est une <b>colonne</b>, pas un décompte de chiffres.</p>
+    </div>
+    <div class="exres" style="margin-top:0">
+      <div class="etq">✓ Le contre-exemple : 250,0 + 5,0</div>
+      <ol>
+        <li><span><b>Les données.</b> <span class="mono">250,0</span> et <span class="mono">5,0</span> s'arrêtent toutes deux au <b>dixième</b>.</span></li>
+        <li><span><b>Le rang d'arrêt.</b> Le résultat s'arrêtera donc au <b>dixième</b>.</span></li>
+        <li><span><b>Le calcul.</b> <span class="calc" style="display:inline">250,0 + 5,0 = <span class="res">255,0</span></span></span></li>
+        <li><span><b>La phrase.</b> La somme vaut <b>255,0</b>, et ce zéro final <b>doit être écrit</b>&nbsp;: le retirer dirait qu'on ne connaît pas le dixième.</span></li>
+        <li><span><b>Le contrôle.</b> <b>255,0</b> porte <b>quatre</b> chiffres significatifs quand <b>5,0</b> n'en a que deux. Avec la règle du produit, on aurait écrit <span class="mono">2,6 × 10<sup>2</sup></span> — grossièrement faux. <b>C'est l'erreur que cette fiche sert à empêcher.</b></span></li>
+      </ol>
+    </div>
+  </div>
+
+
+  <h2><span class="n">05</span> On n'arrondit qu'à la toute fin</h2>
+
+  <div class="deux">
+    <div class="encart rouge" style="margin-top:0">
+      <div class="etq">✗ En arrondissant en cours de route</div>
+      <div class="calc">4,7 × 3,26 = 15,322 → arrondi → 15<br>15 ÷ 2,9 = 5,1724… → <span class="barre">5,2</span></div>
+    </div>
+    <div class="exres" style="margin-top:0">
+      <div class="etq">✓ D'un seul trait</div>
+      <div class="calc">(4,7 × 3,26) ÷ 2,9 = 15,322 ÷ 2,9<br>= 5,2834… → <span class="res">5,3</span></div>
+    </div>
+  </div>
+
+  <p><b>Un chiffre d'écart sur deux</b> — donc une erreur sur le <b>dernier chiffre qu'on avait le droit d'écrire</b>, et ce pour <b>un seul</b> arrondi intermédiaire. Garde tous les chiffres jusqu'au bout, ou laisse le résultat dans la mémoire de la calculatrice.</p>
+
+  <div class="regle">
+    <div class="etq">Les trois réflexes, dans l'ordre</div>
+    <p><b>1 ·</b> Avant de calculer, <b>compte</b> les chiffres significatifs des données.<br>
+    <b>2 ·</b> Fais le calcul <b>en entier</b>, sans rien arrondir.<br>
+    <b>3 ·</b> À la fin seulement, <b>arrondis</b> — au bon <b>compte</b> (× ÷) ou au bon <b>rang</b> (+ −).</p>
+  </div>
+
+  <div class="versexos">
+    <svg viewBox="0 0 45 45" width="66" height="66" role="img" aria-label="QR code vers la page de l'outil"><rect width="45" height="45" fill="#fff"/><path fill="#141a26" shape-rendering="crispEdges" d="M2 2h7v1h-7zM10 2h2v1h-2zM14 2h1v1h-1zM16 2h1v1h-1zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h2v1h-2zM30 2h5v1h-5zM36 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM12 3h1v1h-1zM17 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM29 3h1v1h-1zM32 3h1v1h-1zM34 3h1v1h-1zM36 3h1v1h-1zM42 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM10 4h1v1h-1zM12 4h3v1h-3zM21 4h2v1h-2zM28 4h2v1h-2zM32 4h1v1h-1zM34 4h1v1h-1zM36 4h1v1h-1zM38 4h3v1h-3zM42 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM10 5h1v1h-1zM13 5h1v1h-1zM18 5h1v1h-1zM20 5h1v1h-1zM23 5h2v1h-2zM26 5h1v1h-1zM30 5h2v1h-2zM33 5h1v1h-1zM36 5h1v1h-1zM38 5h3v1h-3zM42 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h2v1h-2zM16 6h1v1h-1zM18 6h1v1h-1zM21 6h2v1h-2zM25 6h1v1h-1zM27 6h2v1h-2zM30 6h2v1h-2zM33 6h2v1h-2zM36 6h1v1h-1zM38 6h3v1h-3zM42 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h6v1h-6zM18 7h1v1h-1zM22 7h1v1h-1zM24 7h1v1h-1zM26 7h5v1h-5zM34 7h1v1h-1zM36 7h1v1h-1zM42 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h1v1h-1zM26 8h1v1h-1zM28 8h1v1h-1zM30 8h1v1h-1zM32 8h1v1h-1zM34 8h1v1h-1zM36 8h7v1h-7zM12 9h2v1h-2zM17 9h2v1h-2zM23 9h1v1h-1zM28 9h1v1h-1zM30 9h1v1h-1zM33 9h2v1h-2zM4 10h6v1h-6zM15 10h1v1h-1zM18 10h2v1h-2zM22 10h1v1h-1zM24 10h5v1h-5zM31 10h1v1h-1zM37 10h4v1h-4zM42 10h1v1h-1zM2 11h2v1h-2zM5 11h2v1h-2zM11 11h1v1h-1zM13 11h2v1h-2zM17 11h2v1h-2zM20 11h3v1h-3zM25 11h2v1h-2zM30 11h1v1h-1zM33 11h4v1h-4zM38 11h1v1h-1zM40 11h3v1h-3zM2 12h7v1h-7zM11 12h2v1h-2zM14 12h1v1h-1zM16 12h1v1h-1zM19 12h1v1h-1zM23 12h1v1h-1zM27 12h1v1h-1zM29 12h1v1h-1zM34 12h5v1h-5zM2 13h1v1h-1zM4 13h1v1h-1zM6 13h2v1h-2zM13 13h1v1h-1zM16 13h3v1h-3zM23 13h2v1h-2zM29 13h1v1h-1zM33 13h2v1h-2zM37 13h3v1h-3zM4 14h2v1h-2zM7 14h2v1h-2zM10 14h1v1h-1zM12 14h1v1h-1zM14 14h6v1h-6zM21 14h1v1h-1zM24 14h1v1h-1zM27 14h2v1h-2zM31 14h1v1h-1zM33 14h1v1h-1zM37 14h1v1h-1zM39 14h4v1h-4zM2 15h1v1h-1zM4 15h1v1h-1zM6 15h2v1h-2zM11 15h4v1h-4zM17 15h1v1h-1zM19 15h2v1h-2zM22 15h2v1h-2zM26 15h15v1h-15zM42 15h1v1h-1zM3 16h6v1h-6zM11 16h2v1h-2zM14 16h1v1h-1zM18 16h2v1h-2zM21 16h1v1h-1zM31 16h1v1h-1zM35 16h1v1h-1zM37 16h5v1h-5zM2 17h1v1h-1zM5 17h2v1h-2zM9 17h1v1h-1zM11 17h1v1h-1zM13 17h2v1h-2zM17 17h1v1h-1zM20 17h5v1h-5zM26 17h1v1h-1zM28 17h1v1h-1zM30 17h1v1h-1zM33 17h2v1h-2zM36 17h1v1h-1zM42 17h1v1h-1zM2 18h3v1h-3zM6 18h3v1h-3zM10 18h1v1h-1zM12 18h4v1h-4zM17 18h1v1h-1zM19 18h1v1h-1zM21 18h1v1h-1zM26 18h3v1h-3zM31 18h3v1h-3zM35 18h1v1h-1zM37 18h1v1h-1zM40 18h1v1h-1zM42 18h1v1h-1zM4 19h2v1h-2zM9 19h1v1h-1zM12 19h2v1h-2zM17 19h1v1h-1zM19 19h5v1h-5zM25 19h1v1h-1zM27 19h1v1h-1zM30 19h1v1h-1zM33 19h1v1h-1zM36 19h3v1h-3zM41 19h2v1h-2zM2 20h1v1h-1zM4 20h3v1h-3zM8 20h2v1h-2zM11 20h1v1h-1zM13 20h2v1h-2zM18 20h2v1h-2zM22 20h2v1h-2zM26 20h5v1h-5zM34 20h1v1h-1zM38 20h1v1h-1zM40 20h1v1h-1zM4 21h2v1h-2zM9 21h3v1h-3zM16 21h2v1h-2zM19 21h2v1h-2zM23 21h5v1h-5zM32 21h2v1h-2zM35 21h1v1h-1zM38 21h2v1h-2zM2 22h3v1h-3zM7 22h2v1h-2zM12 22h2v1h-2zM15 22h1v1h-1zM21 22h1v1h-1zM23 22h1v1h-1zM26 22h1v1h-1zM28 22h2v1h-2zM31 22h1v1h-1zM34 22h1v1h-1zM40 22h3v1h-3zM5 23h3v1h-3zM10 23h4v1h-4zM15 23h2v1h-2zM18 23h1v1h-1zM20 23h6v1h-6zM27 23h1v1h-1zM30 23h1v1h-1zM32 23h1v1h-1zM34 23h5v1h-5zM41 23h2v1h-2zM6 24h1v1h-1zM8 24h1v1h-1zM11 24h2v1h-2zM14 24h1v1h-1zM17 24h1v1h-1zM19 24h2v1h-2zM24 24h1v1h-1zM27 24h3v1h-3zM31 24h1v1h-1zM34 24h1v1h-1zM36 24h1v1h-1zM38 24h3v1h-3zM4 25h1v1h-1zM7 25h1v1h-1zM11 25h1v1h-1zM13 25h4v1h-4zM20 25h1v1h-1zM23 25h3v1h-3zM28 25h2v1h-2zM32 25h1v1h-1zM34 25h1v1h-1zM37 25h3v1h-3zM41 25h1v1h-1zM3 26h1v1h-1zM7 26h2v1h-2zM10 26h2v1h-2zM16 26h1v1h-1zM19 26h2v1h-2zM24 26h6v1h-6zM31 26h1v1h-1zM33 26h1v1h-1zM40 26h1v1h-1zM42 26h1v1h-1zM2 27h6v1h-6zM9 27h2v1h-2zM12 27h1v1h-1zM16 27h3v1h-3zM20 27h3v1h-3zM25 27h1v1h-1zM28 27h1v1h-1zM30 27h1v1h-1zM32 27h2v1h-2zM36 27h4v1h-4zM41 27h2v1h-2zM3 28h3v1h-3zM7 28h3v1h-3zM11 28h3v1h-3zM17 28h2v1h-2zM24 28h1v1h-1zM26 28h1v1h-1zM28 28h2v1h-2zM31 28h2v1h-2zM34 28h1v1h-1zM38 28h1v1h-1zM2 29h1v1h-1zM9 29h2v1h-2zM13 29h1v1h-1zM15 29h1v1h-1zM18 29h1v1h-1zM22 29h3v1h-3zM30 29h1v1h-1zM32 29h8v1h-8zM41 29h2v1h-2zM2 30h1v1h-1zM4 30h1v1h-1zM6 30h4v1h-4zM11 30h2v1h-2zM15 30h2v1h-2zM19 30h1v1h-1zM22 30h1v1h-1zM26 30h3v1h-3zM31 30h3v1h-3zM39 30h2v1h-2zM2 31h1v1h-1zM4 31h2v1h-2zM7 31h1v1h-1zM13 31h1v1h-1zM15 31h2v1h-2zM19 31h1v1h-1zM29 31h1v1h-1zM32 31h2v1h-2zM36 31h7v1h-7zM2 32h1v1h-1zM5 32h1v1h-1zM8 32h1v1h-1zM10 32h2v1h-2zM14 32h1v1h-1zM16 32h3v1h-3zM20 32h1v1h-1zM22 32h8v1h-8zM31 32h2v1h-2zM34 32h4v1h-4zM39 32h3v1h-3zM2 33h1v1h-1zM6 33h2v1h-2zM9 33h3v1h-3zM14 33h1v1h-1zM17 33h1v1h-1zM23 33h3v1h-3zM29 33h2v1h-2zM32 33h2v1h-2zM35 33h2v1h-2zM38 33h2v1h-2zM42 33h1v1h-1zM2 34h1v1h-1zM4 34h2v1h-2zM8 34h2v1h-2zM12 34h1v1h-1zM15 34h2v1h-2zM18 34h2v1h-2zM24 34h2v1h-2zM27 34h2v1h-2zM31 34h2v1h-2zM34 34h6v1h-6zM41 34h1v1h-1zM10 35h1v1h-1zM12 35h2v1h-2zM15 35h1v1h-1zM18 35h1v1h-1zM20 35h3v1h-3zM24 35h2v1h-2zM30 35h3v1h-3zM34 35h1v1h-1zM38 35h5v1h-5zM2 36h7v1h-7zM10 36h2v1h-2zM14 36h2v1h-2zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM24 36h1v1h-1zM26 36h1v1h-1zM29 36h2v1h-2zM33 36h2v1h-2zM36 36h1v1h-1zM38 36h1v1h-1zM40 36h1v1h-1zM2 37h1v1h-1zM8 37h1v1h-1zM10 37h2v1h-2zM16 37h1v1h-1zM18 37h1v1h-1zM21 37h1v1h-1zM25 37h1v1h-1zM28 37h3v1h-3zM33 37h2v1h-2zM38 37h2v1h-2zM41 37h2v1h-2zM2 38h1v1h-1zM4 38h3v1h-3zM8 38h1v1h-1zM10 38h1v1h-1zM12 38h2v1h-2zM15 38h1v1h-1zM17 38h2v1h-2zM20 38h1v1h-1zM22 38h3v1h-3zM26 38h1v1h-1zM30 38h2v1h-2zM34 38h5v1h-5zM40 38h1v1h-1zM42 38h1v1h-1zM2 39h1v1h-1zM4 39h3v1h-3zM8 39h1v1h-1zM10 39h5v1h-5zM17 39h1v1h-1zM21 39h2v1h-2zM25 39h1v1h-1zM28 39h3v1h-3zM32 39h1v1h-1zM35 39h1v1h-1zM37 39h1v1h-1zM2 40h1v1h-1zM4 40h3v1h-3zM8 40h1v1h-1zM10 40h2v1h-2zM15 40h2v1h-2zM19 40h1v1h-1zM22 40h2v1h-2zM26 40h2v1h-2zM29 40h2v1h-2zM32 40h1v1h-1zM35 40h5v1h-5zM2 41h1v1h-1zM8 41h1v1h-1zM11 41h1v1h-1zM13 41h2v1h-2zM16 41h3v1h-3zM21 41h5v1h-5zM29 41h2v1h-2zM34 41h1v1h-1zM38 41h2v1h-2zM41 41h1v1h-1zM2 42h7v1h-7zM13 42h2v1h-2zM16 42h1v1h-1zM18 42h2v1h-2zM21 42h2v1h-2zM24 42h1v1h-1zM26 42h3v1h-3zM31 42h1v1h-1zM37 42h4v1h-4z"/></svg>
+    <div class="txt">
+      <b>Les exercices sont en ligne — et ils sont corrigés.</b> Six exercices, dont la <b>série mélangée de huit calculs</b> où rien ne dit quelle règle appliquer&nbsp;: c'est le seul exercice qui mesure vraiment si la distinction est acquise. Chacun a son <b>corrigé rédigé</b> dépliable.
+      <div class="url">mvanhoorde.github.io/Site-Web-Portfolio/pages/2nde-pc-o2-chiffres-significatifs.html</div>
+    </div>
+  </div>
+
+  <div class="pied"><span>Fiche outil 2 · Chiffres significatifs — M. Van Hoorde, lycée Isaac de l'Étoile</span><span>verso · page 2/2</span></div>
+</div>
+
+</body>
+</html>

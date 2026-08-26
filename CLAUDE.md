@@ -56,6 +56,11 @@ Le dépôt héberge **deux gabarits distincts**, chacun avec ses consignes :
 | Persistance | `localStorage` | **base Supabase** ; en local, le jeton de session et rien d'autre |
 | Maturité | rodé (14 chapitres ébauchés) | phase 1, **8 séquences amorcées** (t0-t7 ; Web/Internet/Intro en V0, les autres partielles) |
 
+Deux autres familles vivent à côté, avec leurs propres consignes : les **outils
+transversaux de physique-chimie** (`_modeles/CONSIGNES-outil-PC.md` — hors
+progression, ouverts toute l'année, sur le moteur SNT) et l'**enseignement
+scientifique de Terminale** (`_modeles/CONSIGNES-sequence-ES.md`).
+
 **Avant de produire ou de modifier une page, ouvre la consigne correspondante.**
 Elles sont autonomes : chacune rappelle son périmètre et ce qui ne se transpose
 pas à l'autre famille.
@@ -115,6 +120,7 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
 | `_modeles/CONSIGNES-V1-integrale-PC.md` | 🆕 **Récupérer un chapitre PC sans perte** depuis son PPTX/PDF : figures, légendes, exercices, corrections. Le passage obligé de tout chapitre. Remplace l'ancien « régime A » |
 | `_modeles/CONSIGNES-chapitre-PC.md` | Raffiner un chapitre de physique-chimie une fois sa V1 en ligne (+ fiche élève) |
 | `_modeles/CONSIGNES-sequence-SNT.md` | Produire une séquence SNT |
+| `_modeles/CONSIGNES-outil-PC.md` | 🆕 **Produire un outil transversal de PC** — méthode que tous les chapitres mobilisent, hors progression. Moteur SNT, fiche A4 **complétée**, corrigés **en ligne** |
 | `_modeles/CONSIGNES-sequence-ES.md` | 🚧 Séquences ens. scientifique Term (frise, IA — 3ᵉ famille) |
 | `_modeles/gabarit-chapitre.html` · `gabarit-fiche.html` | Gabarits **PC uniquement** (le SNT n'a pas de gabarit : on décline la séquence du Web) |
 | `MANIFESTE.md` | 🆕 **Index d'entrée** : quelle tâche → quel fichier → quel coût de lecture. À lire en premier |
@@ -135,6 +141,7 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 | Partie | Pages | Assets externes |
 |---|---|---|
 | **Physique-chimie** | `pages/2nde-pc-tX-cY-…html` | `assets/img/pc/2nde-pc-tX-cY/` · `assets/pdf/` · `audio/2nde-pc-tX-cY-intro.m4a` · fiches dans `fiches/` |
+| **Outils transversaux PC** 🆕 | `pages/2nde-pc-oN-…html` (2 sur 8 écrits) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · fiche A4 **complétée** dans `fiches/fiche-2nde-oN-…html` · SVG inline |
 | **SNT** | `pages/2nde-snt-tN-…html` | `assets/css/sequence-snt.css?v=N` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/snt/<slug>/` pour les photos · SVG et CSS de contenu **inline** |
 | **Cahier de vacances** | `cahier/…html` | `assets/img/cahier/` · `assets/pdf/cahier/` |
 | **Livret CFA** 🆕 | `cfa/index.html` · `cfa/outil-NN-…html` (17 outils) | `_modeles/gabarit-outil-CFA.html` · fiches à imprimer dans `fiches/cfa/` (**2 écrites sur 17** — les liens manquants forment le repère de 18 problèmes de `verifier.mjs`) · corrigés dans `_corriges-cfa/` · **client partagé** `assets/js/progression.js` |
@@ -149,7 +156,7 @@ version depuis leur cache :
 | Asset | Chargé par | À incrémenter dans |
 |---|---|---|
 | `assets/js/progression.js` | SNT (4 pages + hub) **et livret CFA (18 pages)** + `_modeles/gabarit-outil-CFA.html` | **24 fichiers** |
-| `assets/js/sequence-snt.js` · `assets/css/sequence-snt.css` | `m1`, `t1`, `t2` et le hub `2nde-snt.html` | **4 fichiers** (contrôlé par `verifier.mjs`, bloquant) |
+| `assets/js/sequence-snt.js` · `assets/css/sequence-snt.css` | `m1`, `t1`, `t2`, le hub `2nde-snt.html` **et les 2 outils transversaux de PC** | **6 fichiers** (contrôlé par `verifier.mjs`, bloquant) |
 | `assets/css/chapitre-commun.css` | les 14 chapitres PC | toutes les pages PC |
 
 Autrement dit : **une modification du client de progression faite pour le SNT

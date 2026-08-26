@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche outil 1 — Puissances de dix et écriture scientifique</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     FICHE OUTIL — famille « Outils transversaux » de physique-chimie.
+     Dérive de fiches/fiche-2nde-t1c4.html : même @page, même .feuille,
+     même bande à trois repères, même fond blanc forcé à l'impression.
+
+     DEUX DIFFÉRENCES ASSUMÉES avec la fiche de chapitre (décision D5) :
+       · elle est ENTIÈREMENT COMPLÉTÉE — aucun trou. Elle se distribue,
+         se colle, et sert toute l'année ; on ne perd pas une heure à la
+         remplir. Le travail de l'élève est dans les exercices en ligne.
+       · pas de marge de notes : la fiche est dense et le cours y tient
+         en entier. Deux pages, exactement — déborder est un défaut.
+
+     Les exercices ne sont PAS sur la fiche : ils vivent en ligne, où
+     ils sont corrigés. Le QR code du verso y mène.
+     ============================================================ -->
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e; --gris:#6b6f7a;
+    --or-fonce:#b28a1d; --vert-fonce:#4c8a58;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { background:#9aa0ab; }
+  body { font-family:'Spectral', Georgia, serif; color:var(--encre);
+         font-size:9.2pt; line-height:1.28; }
+  .feuille { width:210mm; min-height:297mm; margin:8mm auto; padding:8mm 12mm 12mm;
+    background:var(--papier); position:relative; box-shadow:0 2px 14px rgba(0,0,0,.28);
+    display:flex; flex-direction:column; }
+  @page { size:A4; margin:0; }
+  @media print {
+    html, body { background:#fff; }
+    .feuille { margin:0; box-shadow:none; height:296mm; min-height:0; overflow:hidden;
+               page-break-after:always; background:#fff; }
+    .feuille:last-child { page-break-after:auto; }
+    .encart, .regle, .exres, table.t th, .ecran, .prefixes th { background:#fff; }
+  }
+  .bande { height:3.5px; background:var(--encre); position:relative; margin-bottom:3.2mm; }
+  .bande i { position:absolute; top:0; bottom:0; width:3px; }
+  .bande i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .bande i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .bande i:nth-child(3){ left:76%; background:var(--h-alpha); }
+
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:12.4pt; line-height:1.12; }
+  .sous { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris); margin:1mm 0 2.5mm; }
+  .sous .rouge { color:var(--h-alpha); }
+  .suite { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris);
+    letter-spacing:.1em; text-transform:uppercase; margin:0 0 2.5mm; }
+  .suite .n { color:var(--h-beta); }
+
+  /* À quoi ça sert — une phrase, jamais un paragraphe (doctrine fiche-outil §2) */
+  .aquoi { font-family:'Space Grotesk',sans-serif; font-size:9.2pt; font-weight:600;
+    border-left:3px solid var(--h-beta); padding:1.1mm 0 1.1mm 3mm; margin-bottom:2mm; }
+
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:10.2pt; margin:2.4mm 0 1.2mm;
+       display:flex; align-items:baseline; gap:2.5mm;
+       border-top:2.2px solid var(--encre); padding-top:1.1mm; }
+  h2:first-child { margin-top:0; }
+  h2 .n { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--h-beta); }
+  h3 { font-family:'IBM Plex Mono',monospace; font-size:7.2pt; letter-spacing:.09em;
+       text-transform:uppercase; color:var(--gris); margin:1.6mm 0 .7mm; font-weight:600; }
+
+  p { margin-bottom:.9mm; }
+  sub, sup { font-size:.66em; }
+  b { font-weight:600; }
+  .mono { font-family:'IBM Plex Mono',monospace; font-size:.92em; white-space:nowrap; }
+
+  /* La règle — encadrée, quatre lignes maximum */
+  .regle { border:1.3px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 2mm 2mm 0; padding:1.5mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fff; }
+  .regle .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--h-gamma); margin-bottom:1mm; }
+  .regle .forme { font-family:'IBM Plex Mono',monospace; font-size:12pt; text-align:center;
+    margin:1mm 0; color:var(--encre); }
+
+  /* Exemple résolu — les cinq temps, toujours dans le même ordre */
+  .exres { border:1px solid var(--vert-fonce); border-radius:2mm; padding:1.5mm 2.6mm;
+    margin:1.2mm 0 1.8mm; background:#fbfdfb; }
+  .exres .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--vert-fonce); margin-bottom:1.2mm; font-weight:600; }
+  .exres ol { list-style:none; counter-reset:et; }
+  .exres li { counter-increment:et; display:grid; grid-template-columns:5mm 1fr;
+    gap:1.4mm; margin-bottom:.5mm; align-items:baseline; }
+  .exres li:last-child { margin-bottom:0; }
+  .exres li::before { content:counter(et); font-family:'IBM Plex Mono',monospace;
+    font-size:7.4pt; font-weight:700; color:var(--vert-fonce); text-align:right; }
+  .calc { font-family:'IBM Plex Mono',monospace; font-size:8.4pt; line-height:1.42; margin:.4mm 0; }
+  .res { border:1.2px solid var(--vert-fonce); border-radius:1.4mm; padding:.2mm 1.4mm;
+    font-weight:700; white-space:nowrap; }
+
+  /* À éviter */
+  .eviter { border:1.2px solid var(--h-alpha); border-left:4px solid var(--h-alpha);
+    border-radius:0 2mm 2mm 0; padding:1.3mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fffaf9; }
+  .eviter .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--h-alpha); margin-bottom:1mm; font-weight:600; }
+  .eviter ul { list-style:none; }
+  .eviter li { display:grid; grid-template-columns:28mm 1fr; gap:2mm; margin-bottom:.5mm; align-items:baseline; }
+  .eviter li:last-child { margin-bottom:0; }
+  .eviter .faux { font-family:'IBM Plex Mono',monospace; font-size:8.6pt;
+    text-decoration:line-through; color:var(--h-alpha); }
+
+  /* Les quatre règles de calcul sur les puissances — fond du collègue.
+     Une table plutôt qu'une liste : l'égalité et sa glose doivent se lire
+     sur la même ligne, et les égalités doivent s'aligner entre elles. */
+  .quatre-p { display:grid; grid-template-columns:repeat(2,1fr); gap:.8mm 4mm; }
+  .quatre-p .eq { display:block; font-family:'IBM Plex Mono',monospace; font-size:8pt;
+    font-weight:600; color:var(--h-gamma); }
+  .quatre-p .g { display:block; font-size:7.8pt; color:var(--gris); }
+
+  /* Tableau des préfixes — trois colonnes de paires, pour tenir en hauteur */
+  table.prefixes { border-collapse:collapse; width:100%; font-size:8.4pt;
+    font-family:'IBM Plex Mono',monospace; }
+  table.prefixes th, table.prefixes td { border:1px solid var(--grille); padding:.5mm 1.2mm; text-align:center; }
+  table.prefixes th { font-family:'Space Grotesk',sans-serif; font-size:7.4pt;
+    background:var(--papier); font-weight:600; }
+  table.prefixes td.nom { text-align:left; font-family:'Spectral',serif; font-size:8.6pt; }
+  table.prefixes tr.base td { background:#eef4f5; font-weight:700; }
+  table.prefixes .sy { font-weight:700; font-size:9.4pt; }
+
+  /* Repères d'échelle — §11 : rien du cours en ligne ne doit exister
+     SEULEMENT à l'écran. La frise de l'étape 1.1 se retrouve ici, en
+     table à trois colonnes : sur papier, elle sert de référence toute
+     l'année, et c'est ce que la frise verticale ne pouvait pas faire. */
+  table.echelles { border-collapse:collapse; width:100%; font-size:7.7pt; }
+  table.echelles td { border:1px solid var(--grille); padding:.3mm 1.4mm; }
+  table.echelles td.e { font-family:'IBM Plex Mono',monospace; font-weight:600;
+    color:var(--h-gamma); text-align:right; white-space:nowrap; width:12mm; }
+  table.echelles td.o { font-family:'Spectral',serif; }
+  table.echelles td.pivot { background:#eef4f5; font-weight:700; }
+
+  /* Encart de rappel */
+  .encart { border:1px solid var(--grille); border-left:3px solid var(--or-fonce);
+    border-radius:0 2mm 2mm 0; padding:1.2mm 2.6mm; margin:1.2mm 0 1.6mm; background:#fffdf5; font-size:8.8pt; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--or-fonce); margin-bottom:.8mm; font-weight:600; }
+
+  /* Les deux écrans de calculatrice */
+  .ecrans { display:grid; grid-template-columns:1fr 1fr; gap:3mm; margin:1.2mm 0 1.4mm; }
+  .ecran { border:1.2px solid var(--grille); border-radius:2mm; padding:1.3mm 2.2mm; background:#fff; }
+  .ecran .etq { font-family:'IBM Plex Mono',monospace; font-size:6.8pt; letter-spacing:.06em;
+    font-weight:700; margin-bottom:1mm; }
+  .ecran.bon { border-color:var(--vert-fonce); } .ecran.bon .etq { color:var(--vert-fonce); }
+  .ecran.mauvais { border-color:var(--h-alpha); } .ecran.mauvais .etq { color:var(--h-alpha); }
+  .ecran .saisie { font-family:'IBM Plex Mono',monospace; font-size:8pt; color:var(--gris); text-align:right; }
+  .ecran .sortie { font-family:'IBM Plex Mono',monospace; font-size:11.4pt; font-weight:700; text-align:right; margin-top:.6mm; }
+  .ecran.bon .sortie { color:var(--vert-fonce); } .ecran.mauvais .sortie { color:var(--h-alpha); }
+
+  /* Bandeau QR — les exercices vivent en ligne, corrigés */
+  .versexos { border:1.3px solid var(--encre); border-radius:2mm; padding:1.6mm 2.4mm;
+    display:flex; align-items:center; gap:3.5mm; background:#fff; margin-top:auto; }
+  .versexos svg { flex:none; }
+  .versexos .txt { font-size:8.6pt; }
+  .versexos .txt b { font-family:'Space Grotesk',sans-serif; }
+  .versexos .url { font-family:'IBM Plex Mono',monospace; font-size:7.2pt;
+    color:var(--gris); word-break:break-all; margin-top:.8mm; }
+
+  .pied { position:absolute; bottom:5mm; left:12mm; right:12mm;
+          display:flex; justify-content:space-between;
+          font-family:'IBM Plex Mono',monospace; font-size:6.8pt; color:var(--gris); }
+  svg { display:block; }
+  .schema { border:1px solid var(--grille); border-radius:2mm; padding:1.2mm; margin:1.2mm 0 1.6mm; background:#fff; }
+  .schema .legende { font-family:'IBM Plex Mono',monospace; font-size:7pt; color:var(--gris);
+    margin-top:.8mm; line-height:1.45; text-align:center; }
+  .deux { display:grid; grid-template-columns:1fr 1fr; gap:3.5mm; align-items:start; }
+  .deux.gauche { grid-template-columns:88mm 1fr; }
+</style>
+</head>
+<body>
+
+<!-- ==================== RECTO ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <h1>Outil 1 — Puissances de dix et écriture scientifique</h1>
+  <p class="sous">Physique-Chimie · <span class="rouge">Seconde</span> · fiche outil — à coller, elle sert toute l'année · M. Van Hoorde</p>
+
+  <p class="aquoi">Dès qu'un nombre est trop grand ou trop petit pour se lire d'un coup d'œil — et en physique-chimie, c'est presque toujours le cas.</p>
+
+
+  <div class="encart" style="margin:0 0 2mm">
+    <div class="etq">L'exposant EST l'échelle</div>
+    Chaque unité d'exposant vaut un <b>facteur dix</b>, et trois repères suffisent à situer n'importe quelle mesure&nbsp;: <span class="mono">10<sup>−10</sup> m</span> le rayon d'un atome · <span class="mono">10<sup>0</sup> m</span> toi · <span class="mono">10<sup>7</sup> m</span> le rayon de la Terre — <b>dix-sept graduations</b> en tout. <span style="color:var(--gris)">La frise complète, décade par décade, est en ligne.</span>
+  </div>
+
+  <h2><span class="n">01</span> La forme <span class="mono">a × 10<sup>n</sup></span></h2>
+
+  <div class="regle">
+    <div class="etq">La règle — deux conditions, et deux seulement</div>
+    <div class="forme">a × 10<sup>n</sup></div>
+    <p><b>1 ·</b> <span class="mono">1 ⩽ a &lt; 10</span> — un <b>seul chiffre non nul</b> avant la virgule.<br>
+    <b>2 ·</b> <span class="mono">n</span> est un <b>entier relatif</b> — positif, négatif ou nul, jamais à virgule.</p>
+    <p style="margin-top:1mm">Cette écriture ne change pas le nombre&nbsp;: elle le rend <b>lisible</b>, <b>comparable</b> et <b>recopiable sans erreur</b>. L'exposant <span class="mono">n</span> porte l'échelle.</p>
+  </div>
+
+  <h3>La méthode, en deux gestes</h3>
+  <p><b>Placer la virgule</b> derrière le premier chiffre non nul, puis <b>compter les rangs franchis</b> — ce compte donne <span class="mono">n</span>. Virgule déplacée <b>vers la gauche</b> (le nombre était grand)&nbsp;: <span class="mono">n</span> <b>positif</b>. <b>Vers la droite</b> (le nombre était petit)&nbsp;: <span class="mono">n</span> <b>négatif</b>.</p>
+
+  <div class="exres">
+    <div class="etq">✓ Deux nombres, dans les deux sens</div>
+    <ol>
+      <li><span><b>Un grand nombre</b> — la virgule est sous-entendue tout à droite, elle <b>recule</b>.
+        <div class="calc">5 250 000<b>,</b> → 5<b>,</b>250 000 → 5<b>,</b>25 &nbsp;&nbsp; <span style="font-family:'Spectral',serif">six rangs&nbsp;; les zéros de fin ne s'écrivent pas</span><br>
+        5 250 000 = <span class="res">5,25 × 10<sup>6</sup></span> &nbsp;&nbsp; <span style="font-family:'Spectral',serif">5,25 est entre 1 et 10 ✓ · 6 est entier ✓</span></div></span></li>
+      <li><span><b>Un petit nombre</b> — tout est identique, seul le sens change&nbsp;: elle <b>avance</b>.
+        <div class="calc">0<b>,</b>0048 → 0004<b>,</b>8 → 4<b>,</b>8 &nbsp;&nbsp; <span style="font-family:'Spectral',serif">trois rangs&nbsp;; les zéros de tête ne s'écrivent pas</span><br>
+        0,0048 = <span class="res">4,8 × 10<sup>−3</sup></span> &nbsp;&nbsp; <span style="font-family:'Spectral',serif">4,8 est entre 1 et 10 ✓ · −3 est entier ✓</span></div></span></li>
+      <li><span><b>Le contrôle des chiffres significatifs.</b> Ici on n'a fait que <b>réécrire</b>&nbsp;: on n'en gagne ni n'en perd — <b>5,25</b> en a trois comme 5 250 000, <b>4,8</b> en a deux comme 0,0048. <span style="color:var(--gris)">→ outil 2.</span></span></li>
+    </ol>
+  </div>
+
+  <div class="eviter">
+    <div class="etq">⚠ À éviter — les trois écritures fausses les plus fréquentes</div>
+    <ul>
+      <li><span class="faux">0,12 × 10<sup>−6</sup></span><span>le nombre devant la puissance est <b>plus petit que 1</b> → écrire <span class="mono">1,2 × 10<sup>−7</sup></span></span></li>
+      <li><span class="faux">10,4 × 10<sup>2</sup></span><span>le nombre devant la puissance est <b>plus grand que 10</b> → écrire <span class="mono">1,04 × 10<sup>3</sup></span></span></li>
+      <li><span class="faux">4,5 × 10<sup>2,3</sup></span><span>l'exposant <b>n'est pas un entier</b> → cette écriture n'existe pas&nbsp;: on ne la corrige pas, on la refuse</span></li>
+    </ul>
+  </div>
+
+  <h2><span class="n">02</span> L'ordre de grandeur</h2>
+
+  <div class="regle">
+    <div class="etq">La règle</div>
+    <p>L'<b>ordre de grandeur</b> d'un nombre est la <b>puissance de dix la plus proche</b> de lui. On écrit le nombre <span class="mono">a × 10<sup>n</sup></span>, puis on compare <b>a</b> à <span class="mono">√10 ≈ 3,16</span>&nbsp;:</p>
+    <div class="forme" style="font-size:10.4pt">a &lt; 3,16 → 10<sup>n</sup> &nbsp;&nbsp;·&nbsp;&nbsp; a ⩾ 3,16 → 10<sup>n+1</sup></div>
+    <p>Un ordre de grandeur <b>ne porte jamais de chiffre devant</b>&nbsp;: on écrit <span class="mono">10<sup>−30</sup></span>, jamais <span class="mono">1 × 10<sup>−30</sup></span> ni <span class="mono">9 × 10<sup>−31</sup></span>.</p>
+  </div>
+
+  <div class="deux">
+    <div class="schema">
+      <svg viewBox="0 0 340 130" role="img" aria-label="Axe logarithmique de 10 puissance n à 10 puissance n plus 1 : le seuil 3,16 tombe au milieu, partageant l'axe en deux zones de même longueur.">
+        <rect x="24" y="20" width="146" height="26" rx="3" fill="#eef0fa"/>
+        <rect x="170" y="20" width="146" height="26" rx="3" fill="#fdf3e6"/>
+        <text x="97" y="38" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" font-weight="700" fill="#4a3f9e">→ 10ⁿ</text>
+        <text x="243" y="38" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" font-weight="700" fill="#b28a1d">→ 10ⁿ⁺¹</text>
+        <line x1="24" y1="62" x2="316" y2="62" stroke="#141a26" stroke-width="1.4"/>
+        <g stroke="#141a26" stroke-width="1">
+          <line x1="24" y1="56" x2="24" y2="70"/><line x1="112" y1="58" x2="112" y2="68"/>
+          <line x1="163" y1="58" x2="163" y2="68"/><line x1="200" y1="58" x2="200" y2="68"/>
+          <line x1="228" y1="58" x2="228" y2="68"/><line x1="252" y1="58" x2="252" y2="68"/>
+          <line x1="271" y1="58" x2="271" y2="68"/><line x1="288" y1="58" x2="288" y2="68"/>
+          <line x1="303" y1="58" x2="303" y2="68"/><line x1="316" y1="56" x2="316" y2="70"/>
+        </g>
+        <g font-family="IBM Plex Mono" font-size="10" fill="#6b6f7a" text-anchor="middle">
+          <text x="24" y="82">1</text><text x="112" y="82">2</text><text x="163" y="82">3</text>
+          <text x="200" y="82">4</text><text x="228" y="82">5</text><text x="252" y="82">6</text>
+          <text x="271" y="82">7</text><text x="288" y="82">8</text><text x="303" y="82">9</text><text x="316" y="82">10</text>
+        </g>
+        <line x1="170" y1="16" x2="170" y2="92" stroke="#d6402b" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <text x="170" y="12" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" font-weight="700" fill="#d6402b">√10 ≈ 3,16</text>
+        <text x="170" y="108" text-anchor="middle" font-family="Spectral" font-size="10" fill="#6b6f7a">Les deux zones ont la même longueur.</text>
+        <text x="170" y="122" text-anchor="middle" font-family="Spectral" font-size="10" fill="#6b6f7a">5 est déjà plus près de 10 que de 1.</text>
+      </svg>
+      <p class="legende">On compare des <b>facteurs</b>, pas des écarts&nbsp;: de 1 à 3,16 on multiplie par 3,16, et de 3,16 à 10 encore par 3,16.</p>
+    </div>
+    <div class="exres" style="margin-top:1.6mm">
+      <div class="etq">✓ La masse d'un électron</div>
+      <ol>
+        <li><span><b>La donnée.</b> <span class="mono">m<sub>e</sub> = 9,1 × 10<sup>−31</sup> kg</span></span></li>
+        <li><span><b>On isole.</b> <span class="mono">a = 9,1</span> · <span class="mono">n = −31</span></span></li>
+        <li><span><b>On compare.</b> <span class="mono">9,1 &gt; 3,16</span> → on prend <span class="mono">10<sup>n+1</sup></span></span></li>
+        <li><span><b>Le résultat.</b> <span class="res">10<sup>−30</sup> kg</span><br>La masse d'un électron est <b>de l'ordre de 10<sup>−30</sup> kg</b>.</span></li>
+        <li><span><b>Le contrôle.</b> <span class="mono">9,1 × 10<sup>−31</sup> = 0,91 × 10<sup>−30</sup></span>&nbsp;: c'est bien tout près de <span class="mono">10<sup>−30</sup></span>. Et aucun chiffre devant ✓</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="pied"><span>Fiche outil 1 · Écriture scientifique — M. Van Hoorde</span><span>recto · page 1/2</span></div>
+</div>
+
+
+<!-- ==================== VERSO ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Outil 1</span> — préfixes, conversions et calculatrice</p>
+
+  <h2><span class="n">03</span> Les préfixes et les conversions</h2>
+
+  <div class="regle" style="margin-bottom:1.6mm">
+    <div class="etq">Calculer avec des puissances de dix — les quatre règles</div>
+    <div class="quatre-p">
+      <div><span class="eq">a×10<sup>m</sup> × b×10<sup>n</sup> = (a×b)×10<sup>m+n</sup></span><span class="g">les exposants <b>s'ajoutent</b></span></div>
+      <div><span class="eq">(a×10<sup>m</sup>) ÷ (b×10<sup>n</sup>) = (a÷b)×10<sup>m−n</sup></span><span class="g">ils <b>se soustraient</b></span></div>
+      <div><span class="eq">1 ÷ a<sup>n</sup> = a<sup>−n</sup></span><span class="g">au dénominateur, le signe <b>change</b></span></div>
+      <div><span class="eq">(a×10<sup>m</sup>)<sup>n</sup> = a<sup>n</sup>×10<sup>m×n</sup></span><span class="g">ils <b>se multiplient</b></span></div>
+    </div>
+  </div>
+
+  <div class="deux gauche">
+    <table class="prefixes">
+      <tr><th>Préfixe</th><th>Sym.</th><th>Puissance</th><th>Préfixe</th><th>Sym.</th><th>Puissance</th></tr>
+      <tr><td class="nom">giga</td><td class="sy">G</td><td>10<sup>9</sup></td>
+          <td class="nom">déci</td><td class="sy">d</td><td>10<sup>−1</sup></td></tr>
+      <tr><td class="nom">méga</td><td class="sy">M</td><td>10<sup>6</sup></td>
+          <td class="nom">centi</td><td class="sy">c</td><td>10<sup>−2</sup></td></tr>
+      <tr><td class="nom">kilo</td><td class="sy">k</td><td>10<sup>3</sup></td>
+          <td class="nom">milli</td><td class="sy">m</td><td>10<sup>−3</sup></td></tr>
+      <tr><td class="nom">hecto</td><td class="sy">h</td><td>10<sup>2</sup></td>
+          <td class="nom">micro</td><td class="sy">µ</td><td>10<sup>−6</sup></td></tr>
+      <tr><td class="nom">déca</td><td class="sy">da</td><td>10<sup>1</sup></td>
+          <td class="nom">nano</td><td class="sy">n</td><td>10<sup>−9</sup></td></tr>
+      <tr class="base"><td class="nom">l'unité</td><td class="sy">—</td><td>10<sup>0</sup></td>
+          <td class="nom">pico</td><td class="sy">p</td><td>10<sup>−12</sup></td></tr>
+      <tr><td class="nom" colspan="3" style="text-align:left;color:#6b6f7a;font-size:7.6pt">un préfixe = une puissance de dix baptisée</td>
+          <td class="nom">femto</td><td class="sy">f</td><td>10<sup>−15</sup></td></tr>
+    </table>
+
+    <div>
+      <div class="regle" style="margin-top:0">
+        <div class="etq">La règle</div>
+        <p><b>Remplace chaque préfixe par sa puissance de dix</b>, puis additionne les exposants — on ne compte plus de zéros.</p>
+        <p style="margin-top:.7mm">La 3<sup>e</sup> règle ci-dessus explique le <span class="mono">10<sup>−2</sup></span> du <span class="mono">g·cL<sup>−1</sup></span>&nbsp;; la 4<sup>e</sup> explique le <b>×3</b> des volumes, et le <b>×2</b> des surfaces.</p>
+      </div>
+      <div class="calc">
+        <b style="font-family:'Spectral',serif">1 · vers l'unité de base</b> — on remplace<br>
+        56 mm = 56 × 10<sup>−3</sup> m = <span class="res">5,6 × 10<sup>−2</sup> m</span><br>
+        <b style="font-family:'Spectral',serif">2 · vers un préfixe</b> — le signe <b>change</b><br>
+        37 g = 37 × 10<sup>−3</sup> kg &nbsp;·&nbsp; 3,49 g = 3,49 × 10<sup>3</sup> mg<br>
+        <b style="font-family:'Spectral',serif">3 · d'un préfixe à un autre</b> — les exposants s'ajoutent<br>
+        0,63 GHz = 0,63 × 10<sup>9</sup> Hz = <span class="res">6,3 × 10<sup>8</sup> Hz</span>
+      </div>
+      <div class="encart" style="margin-bottom:0">
+        <div class="etq">Le cas des volumes</div>
+        Un volume a <b>trois</b> dimensions&nbsp;: du mètre au décimètre, chaque côté est divisé par dix, donc le volume par <b>mille</b>. <span class="mono">1 m<sup>3</sup> = (10<sup>1</sup> dm)<sup>3</sup> = 10<sup>3</sup> dm<sup>3</sup></span>. Retiens <b>une seule</b> des trois égalités, les autres s'en déduisent&nbsp;:
+        <div class="calc" style="text-align:center;margin-top:.8mm"><span class="res">1 dm<sup>3</sup> = 1 L</span> &nbsp; <span class="res">1 m<sup>3</sup> = 1000 L</span> &nbsp; <span class="res">1 cm<sup>3</sup> = 1 mL</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exres">
+    <div class="etq">✓ Cas 3 — une unité composée : 32 kg·L⁻¹ en g·cL⁻¹</div>
+    <ol>
+      <li><span><b>Les données, avec leur unité.</b> <span class="mono">ρ = 32 kg·L<sup>−1</sup></span> · unité demandée <span class="mono">g·cL<sup>−1</sup></span></span></li>
+      <li><span><b>Les deux préfixes, séparément.</b> <span class="mono">1 kg = 10<sup>3</sup> g</span> &nbsp;·&nbsp; <span class="mono">1 L = 10<sup>2</sup> cL</span> — celui du dénominateur est <b>sous</b> la barre&nbsp;: sa puissance passe en <b>−2</b>, pas en <b>+2</b>.</span></li>
+      <li><span><b>L'application numérique.</b> <span class="mono">32 kg·L<sup>−1</sup> = 32 × 10<sup>3</sup> × 10<sup>−2</sup> g·cL<sup>−1</sup> = 32 × 10<sup>1</sup></span> = <span class="res">3,2 × 10<sup>2</sup> g·cL<sup>−1</sup></span></span></li>
+      <li><span><b>La phrase, et les contrôles.</b> Un litre pèse 32 kg, un centilitre <b>320 g</b>. <b>3,2</b> est entre 1 et 10 ✓, deux chiffres significatifs comme la donnée ✓. <b>Plausible&nbsp;?</b> Le centilitre est cent fois plus petit, le gramme mille fois plus léger&nbsp;: le nombre doit être <b>dix fois plus grand</b>. 32 → 320 ✓</span></li>
+    </ol>
+  </div>
+
+  <h2><span class="n">04</span> Le piège de la calculatrice</h2>
+  <p>Même saisie, deux touches, <span class="mono">10<sup>46</sup></span> d'écart&nbsp;: <span class="mono">×10ˣ</span> écrit <b>un seul nombre</b>, <span class="mono">^</span> écrit une <b>multiplication de plus</b>.</p>
+
+  <div class="deux">
+    <div class="ecran bon">
+      <div class="etq">✓ AVEC LA TOUCHE ×10ˣ</div>
+      <div class="saisie">1 ÷ 6.02 ×10ˣ 23</div>
+      <div class="sortie">1,66 × 10<sup>−24</sup></div>
+      <div class="calc" style="margin-top:1mm">1 ÷ (6,02 × 10<sup>23</sup>)</div>
+    </div>
+    <div class="ecran mauvais">
+      <div class="etq">✗ AVEC ^ ET SANS PARENTHÈSES</div>
+      <div class="saisie">1 ÷ 6.02 × 10 ^ 23</div>
+      <div class="sortie">1,66 × 10<sup>22</sup></div>
+      <div class="calc" style="margin-top:1mm">(1 ÷ 6,02) × 10<sup>23</sup></div>
+    </div>
+  </div>
+
+  <div class="encart">
+    <div class="etq">Les deux réflexes</div>
+    <b>Toujours la touche <span class="mono">×10ˣ</span></b> (ou <span class="mono">EXP</span>). Si tu tiens à <span class="mono">^</span>&nbsp;: <b>des parenthèses autour du dénominateur entier</b>. Et le vrai garde-fou, <b>l'ordre de grandeur attendu</b>&nbsp;: une entité parmi <span class="mono">6,02 × 10<sup>23</sup></span> donne forcément un nombre minuscule.
+  </div>
+
+
+
+  <div class="versexos">
+    <svg viewBox="0 0 45 45" width="66" height="66" role="img" aria-label="QR code vers la page de l'outil"><rect width="45" height="45" fill="#fff"/><path fill="#141a26" shape-rendering="crispEdges" d="M2 2h7v1h-7zM10 2h2v1h-2zM18 2h6v1h-6zM25 2h1v1h-1zM27 2h2v1h-2zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM12 3h2v1h-2zM16 3h4v1h-4zM22 3h2v1h-2zM26 3h5v1h-5zM34 3h1v1h-1zM36 3h1v1h-1zM42 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM10 4h1v1h-1zM12 4h1v1h-1zM18 4h3v1h-3zM23 4h5v1h-5zM32 4h1v1h-1zM34 4h1v1h-1zM36 4h1v1h-1zM38 4h3v1h-3zM42 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM10 5h1v1h-1zM15 5h1v1h-1zM18 5h1v1h-1zM21 5h1v1h-1zM23 5h1v1h-1zM26 5h1v1h-1zM28 5h4v1h-4zM33 5h1v1h-1zM36 5h1v1h-1zM38 5h3v1h-3zM42 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h4v1h-4zM15 6h2v1h-2zM18 6h1v1h-1zM20 6h3v1h-3zM24 6h2v1h-2zM27 6h1v1h-1zM30 6h5v1h-5zM36 6h1v1h-1zM38 6h3v1h-3zM42 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h2v1h-2zM13 7h2v1h-2zM16 7h1v1h-1zM18 7h1v1h-1zM22 7h1v1h-1zM24 7h1v1h-1zM26 7h5v1h-5zM34 7h1v1h-1zM36 7h1v1h-1zM42 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h1v1h-1zM26 8h1v1h-1zM28 8h1v1h-1zM30 8h1v1h-1zM32 8h1v1h-1zM34 8h1v1h-1zM36 8h7v1h-7zM12 9h2v1h-2zM15 9h1v1h-1zM17 9h2v1h-2zM23 9h1v1h-1zM28 9h1v1h-1zM30 9h1v1h-1zM33 9h2v1h-2zM4 10h6v1h-6zM11 10h2v1h-2zM15 10h2v1h-2zM18 10h2v1h-2zM22 10h1v1h-1zM24 10h5v1h-5zM31 10h1v1h-1zM37 10h4v1h-4zM42 10h1v1h-1zM7 11h1v1h-1zM10 11h2v1h-2zM14 11h1v1h-1zM16 11h3v1h-3zM20 11h3v1h-3zM25 11h2v1h-2zM30 11h1v1h-1zM33 11h4v1h-4zM38 11h1v1h-1zM40 11h3v1h-3zM3 12h4v1h-4zM8 12h2v1h-2zM11 12h4v1h-4zM16 12h2v1h-2zM19 12h1v1h-1zM23 12h1v1h-1zM27 12h1v1h-1zM29 12h1v1h-1zM34 12h1v1h-1zM37 12h2v1h-2zM2 13h1v1h-1zM6 13h1v1h-1zM14 13h1v1h-1zM16 13h2v1h-2zM23 13h2v1h-2zM29 13h1v1h-1zM33 13h2v1h-2zM37 13h3v1h-3zM2 14h1v1h-1zM5 14h1v1h-1zM8 14h3v1h-3zM12 14h8v1h-8zM21 14h2v1h-2zM24 14h1v1h-1zM26 14h3v1h-3zM30 14h2v1h-2zM33 14h2v1h-2zM37 14h1v1h-1zM39 14h4v1h-4zM4 15h1v1h-1zM6 15h2v1h-2zM11 15h3v1h-3zM15 15h1v1h-1zM20 15h1v1h-1zM23 15h1v1h-1zM28 15h2v1h-2zM31 15h10v1h-10zM42 15h1v1h-1zM3 16h3v1h-3zM8 16h1v1h-1zM11 16h3v1h-3zM15 16h2v1h-2zM18 16h1v1h-1zM22 16h6v1h-6zM29 16h3v1h-3zM35 16h1v1h-1zM37 16h5v1h-5zM5 17h1v1h-1zM9 17h1v1h-1zM12 17h1v1h-1zM14 17h1v1h-1zM16 17h3v1h-3zM23 17h3v1h-3zM29 17h1v1h-1zM36 17h1v1h-1zM42 17h1v1h-1zM2 18h1v1h-1zM4 18h2v1h-2zM8 18h1v1h-1zM18 18h2v1h-2zM25 18h1v1h-1zM27 18h3v1h-3zM31 18h3v1h-3zM35 18h1v1h-1zM37 18h1v1h-1zM40 18h1v1h-1zM42 18h1v1h-1zM3 19h2v1h-2zM12 19h1v1h-1zM20 19h3v1h-3zM25 19h1v1h-1zM30 19h2v1h-2zM33 19h1v1h-1zM36 19h3v1h-3zM41 19h2v1h-2zM2 20h1v1h-1zM6 20h1v1h-1zM8 20h3v1h-3zM15 20h1v1h-1zM17 20h1v1h-1zM20 20h1v1h-1zM22 20h1v1h-1zM24 20h1v1h-1zM29 20h2v1h-2zM34 20h1v1h-1zM38 20h1v1h-1zM40 20h1v1h-1zM4 21h2v1h-2zM9 21h1v1h-1zM13 21h1v1h-1zM17 21h1v1h-1zM21 21h1v1h-1zM28 21h3v1h-3zM33 21h1v1h-1zM35 21h1v1h-1zM38 21h2v1h-2zM2 22h3v1h-3zM7 22h2v1h-2zM10 22h1v1h-1zM12 22h2v1h-2zM16 22h2v1h-2zM20 22h1v1h-1zM23 22h2v1h-2zM26 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM34 22h1v1h-1zM37 22h1v1h-1zM40 22h3v1h-3zM2 23h1v1h-1zM6 23h2v1h-2zM9 23h1v1h-1zM11 23h1v1h-1zM13 23h1v1h-1zM15 23h2v1h-2zM18 23h1v1h-1zM21 23h3v1h-3zM25 23h1v1h-1zM27 23h2v1h-2zM30 23h1v1h-1zM32 23h1v1h-1zM34 23h6v1h-6zM41 23h2v1h-2zM5 24h2v1h-2zM8 24h2v1h-2zM11 24h2v1h-2zM14 24h1v1h-1zM17 24h1v1h-1zM19 24h2v1h-2zM24 24h1v1h-1zM27 24h3v1h-3zM31 24h1v1h-1zM34 24h1v1h-1zM36 24h3v1h-3zM40 24h1v1h-1zM4 25h1v1h-1zM7 25h1v1h-1zM10 25h5v1h-5zM20 25h1v1h-1zM23 25h3v1h-3zM28 25h2v1h-2zM32 25h1v1h-1zM34 25h1v1h-1zM38 25h2v1h-2zM42 25h1v1h-1zM3 26h1v1h-1zM6 26h5v1h-5zM19 26h2v1h-2zM24 26h6v1h-6zM31 26h1v1h-1zM33 26h1v1h-1zM40 26h3v1h-3zM2 27h1v1h-1zM4 27h1v1h-1zM6 27h2v1h-2zM18 27h1v1h-1zM20 27h3v1h-3zM25 27h1v1h-1zM28 27h1v1h-1zM30 27h1v1h-1zM32 27h2v1h-2zM36 27h4v1h-4zM41 27h2v1h-2zM2 28h2v1h-2zM7 28h2v1h-2zM11 28h4v1h-4zM17 28h2v1h-2zM24 28h1v1h-1zM26 28h1v1h-1zM28 28h2v1h-2zM31 28h2v1h-2zM34 28h1v1h-1zM38 28h1v1h-1zM3 29h2v1h-2zM6 29h1v1h-1zM15 29h1v1h-1zM22 29h3v1h-3zM30 29h1v1h-1zM32 29h3v1h-3zM37 29h3v1h-3zM41 29h1v1h-1zM2 30h1v1h-1zM4 30h1v1h-1zM6 30h1v1h-1zM8 30h1v1h-1zM11 30h3v1h-3zM15 30h2v1h-2zM18 30h2v1h-2zM27 30h2v1h-2zM31 30h3v1h-3zM35 30h1v1h-1zM39 30h2v1h-2zM2 31h5v1h-5zM13 31h1v1h-1zM15 31h2v1h-2zM18 31h2v1h-2zM22 31h1v1h-1zM26 31h2v1h-2zM29 31h2v1h-2zM32 31h11v1h-11zM2 32h1v1h-1zM5 32h1v1h-1zM8 32h1v1h-1zM10 32h3v1h-3zM19 32h1v1h-1zM21 32h1v1h-1zM23 32h2v1h-2zM32 32h1v1h-1zM35 32h3v1h-3zM39 32h3v1h-3zM2 33h1v1h-1zM9 33h3v1h-3zM14 33h1v1h-1zM17 33h2v1h-2zM20 33h5v1h-5zM26 33h1v1h-1zM28 33h1v1h-1zM30 33h1v1h-1zM33 33h4v1h-4zM38 33h2v1h-2zM42 33h1v1h-1zM2 34h1v1h-1zM4 34h3v1h-3zM8 34h2v1h-2zM16 34h4v1h-4zM21 34h1v1h-1zM24 34h1v1h-1zM27 34h2v1h-2zM31 34h9v1h-9zM41 34h1v1h-1zM10 35h1v1h-1zM12 35h3v1h-3zM16 35h1v1h-1zM18 35h2v1h-2zM21 35h5v1h-5zM27 35h2v1h-2zM30 35h3v1h-3zM34 35h1v1h-1zM38 35h5v1h-5zM2 36h7v1h-7zM10 36h1v1h-1zM12 36h1v1h-1zM15 36h1v1h-1zM18 36h2v1h-2zM22 36h2v1h-2zM26 36h5v1h-5zM33 36h2v1h-2zM36 36h1v1h-1zM38 36h1v1h-1zM40 36h1v1h-1zM2 37h1v1h-1zM8 37h1v1h-1zM10 37h2v1h-2zM13 37h3v1h-3zM18 37h4v1h-4zM23 37h2v1h-2zM27 37h1v1h-1zM29 37h2v1h-2zM32 37h3v1h-3zM38 37h2v1h-2zM41 37h2v1h-2zM2 38h1v1h-1zM4 38h3v1h-3zM8 38h1v1h-1zM10 38h3v1h-3zM16 38h3v1h-3zM22 38h2v1h-2zM26 38h1v1h-1zM28 38h1v1h-1zM30 38h1v1h-1zM32 38h1v1h-1zM34 38h5v1h-5zM40 38h1v1h-1zM42 38h1v1h-1zM2 39h1v1h-1zM4 39h3v1h-3zM8 39h1v1h-1zM10 39h2v1h-2zM13 39h2v1h-2zM17 39h1v1h-1zM20 39h3v1h-3zM24 39h2v1h-2zM29 39h2v1h-2zM32 39h1v1h-1zM35 39h1v1h-1zM37 39h1v1h-1zM40 39h1v1h-1zM2 40h1v1h-1zM4 40h3v1h-3zM8 40h1v1h-1zM10 40h2v1h-2zM15 40h2v1h-2zM22 40h2v1h-2zM26 40h2v1h-2zM29 40h2v1h-2zM32 40h1v1h-1zM35 40h5v1h-5zM2 41h1v1h-1zM8 41h1v1h-1zM11 41h1v1h-1zM13 41h2v1h-2zM17 41h2v1h-2zM21 41h5v1h-5zM29 41h2v1h-2zM34 41h1v1h-1zM38 41h2v1h-2zM41 41h1v1h-1zM2 42h7v1h-7zM11 42h1v1h-1zM13 42h1v1h-1zM19 42h4v1h-4zM24 42h1v1h-1zM26 42h3v1h-3zM31 42h1v1h-1zM37 42h4v1h-4z"/></svg>
+    <div class="txt">
+      <b>Les exercices sont en ligne — et ils sont corrigés.</b> Six exercices, chacun avec son <b>corrigé rédigé</b> dépliable&nbsp;: tu cherches sur ta feuille, puis tu compares, le soir, sans attendre le cours suivant.
+      <div class="url">mvanhoorde.github.io/Site-Web-Portfolio/pages/2nde-pc-o1-ecriture-scientifique.html</div>
+    </div>
+  </div>
+
+  <div class="pied"><span>Fiche outil 1 · Écriture scientifique — M. Van Hoorde, lycée Isaac de l'Étoile</span><span>verso · page 2/2</span></div>
+</div>
+
+</body>
+</html>

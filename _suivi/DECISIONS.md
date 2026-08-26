@@ -648,3 +648,72 @@ autres.
 parfois après un `×` plutôt qu'avant. Bien grouper les produits demanderait
 d'entourer chaque facteur d'un `<span class="nb">` dans les 14 chapitres — une
 passe à part. **Lisible et un peu laid vaut mieux qu'amputé.**
+
+---
+
+## Famille « Outils transversaux » de physique-chimie (25/08/2026)
+
+Quatrième famille du dépôt. Les huit décisions de cadrage, posées par Loïc au
+lancement du chantier :
+
+| # | Décision | Statut |
+|---|---|---|
+| D1 | Les outils sont une **famille à part entière**, pas un chapitre ni une séquence. Ils ne suivent aucune progression : un élève de janvier et un élève de septembre y accèdent pareil | ✅ |
+| D2 | Ils tournent sur le **moteur SNT** (`sequence-snt.js` + `sequence-snt.css`), pas sur `chapitre-commun.css`. Motif : c'est le seul moteur qui apporte les trous tolérants, les QCM plein écran, le mode enseignant et l'enregistrement en base | ✅ |
+| D3 | Les pages vivent dans **`pages/`**, préfixe **`oN`**. Motif : le contrôle de synchronisation des `?v=` de `verifier.mjs` ne parcourt que `pages/` ; un dossier à part sortait du filet sans que rien ne le signale | ✅ |
+| D4 | **Les corrigés sont en ligne**, sur la page, sous l'énoncé. C'est la différence assumée avec le livret CFA (§7 des consignes CFA : « les corrigés ne sont pas en ligne » — cette phrase ne vaut **que** pour le CFA). Motif : les exercices se font **à la maison**, l'élève doit pouvoir se corriger seul le soir | ✅ |
+| D5 | La **fiche A4 est complétée**, pas à trous. Le cours est écrit en entier, les exemples résolus. Elle se distribue en classe et se colle ; on ne perd pas d'heure à la remplir | ✅ |
+| D6 | Les `data-cle` sont posées **dès la V1**, préfixées par la clé de l'outil (`pc-o1-…`), pour que le branchement des comptes ne coûte rien plus tard. Les outils fonctionnent sans compte | ✅ |
+| D7 | **Aucun verrouillage entre outils, ni entre outils et chapitres.** C'est la progression de Loïc qui décide quand un outil est traité, pas le site | ✅ |
+| D8 | Le fond des fiches OneDrive des collègues est **conservé** ; seule la forme est refaite. Les erreurs de calcul repérées sont corrigées **et signalées** à Loïc, qui préviendra l'équipe | ✅ |
+
+### Arbitrages du lot 1 (25/08/2026)
+
+| # | Décision | Statut |
+|---|---|---|
+| O-1 | **Nommage des deux « fiches » à l'écran** : la fiche A4 imprimable est la **« fiche outil »**, le récapitulatif produit par le moteur devient **« Mes réponses »**. Le bouton du moteur est renommé **en local** par le script de la page — le moteur, partagé par huit pages, n'est pas touché | ✅ |
+| O-2 | **Le mot « Séance » dans la fiche générée par le moteur.** Faux sur un outil. Accepté en l'état pour le lot 1 ; les deux autres issues (attribut `data-libelle-section` lu par `ficheHTML()`, ou fiche générée désactivée sur les outils) touchent un asset partagé ou privent l'élève du récapitulatif de ses réponses | ⏳ |
+| O-3 | **L'incertitude reste dans `o2`**, en trois lignes marquées ○ support : sans elle, le chiffre significatif n'est qu'une convention arbitraire, et 3,20 ≠ 3,2 ne se justifie plus | ✅ |
+| O-4 | **Le statut des zéros de fin d'un entier.** Le brief traitait `50` comme deux chiffres significatifs (étape 1.3) et `100` comme un seul (exercice 2) — deux conventions incompatibles dans le même outil. Tranché en production : **les deux sont ambigus, et l'ambiguïté devient la leçon** — c'est elle qui justifie l'écriture scientifique, donc l'outil 1. Le compteur de l'étape 1.1 le montre en orange, une troisième couleur à côté de « compté » et « ne compte pas ». **C'est du fond : à confirmer** | ⏳ |
+| O-5 | **La série finale de `o2` compte huit calculs, contre six fournis.** Les deux ajoutés (`0,456 × 12,3` et `6,20 − 0,025`) ne réemploient **que des nombres déjà présents** dans les six autres, et couvrent chacun une règle. Proposition à valider | ⏳ |
+
+### Corrections apportées aux documents source — à signaler à l'équipe
+
+Les fiches OneDrive sont partagées avec des collègues : on refait la forme,
+jamais le fond. Trois exceptions, qui sont des erreurs de calcul.
+
+| Document | Erreur | Correction |
+|---|---|---|
+| `fiche (correction)_Convertir.pdf` | La ligne `379,45 kW` reprend par copier-coller les valeurs de la ligne précédente (`358 × 10³ W`) et aboutit à `3,58 × 10⁻⁴ GW` | `379,45 kW = 3,7945 × 10⁵ W` = **`3,7945 × 10⁻⁴ GW`** |
+| `fiche (correction)_Manipuler une relation algébrique.pdf`, niveau 1 | `a = b/c` donne `c = b/c` | `c = ` **`b/a`** — *à appliquer au lot 3* |
+| Brief du 25/08, §6.2 exercice 6 | « 47 ordres de grandeur d'écart » entre `1,66 × 10⁻²⁴` et `1,66 × 10²²` | **46** : l'écart des exposants vaut `22 − (−24) = 46`, soit un facteur `10⁴⁶` |
+
+### Trois propriétés du moteur qui piègent les réponses NUMÉRIQUES
+
+Découvertes et **mesurées** en produisant `o1` et `o2`. Le moteur a été conçu
+pour des mots ; ces trois comportements sont inoffensifs sur du texte et
+nuisibles sur des nombres. Consignées dans `_modeles/CONSIGNES-outil-PC.md` §6.
+
+| # | Constat | Contournement retenu |
+|---|---|---|
+| M-1 | **`normaliser()` efface le signe moins** : `-3` et `3` donnent tous deux `3`, et `10^-3` devient indistinguable de `10^3`. Un élève qui oublie le signe de l'exposant — l'erreur la plus fréquente — serait compté juste, en vert, sans rien voir | **Le signe passe par un `<select>`**, corrigé à l'exact et sans Levenshtein. Les `value` sont des jetons distincts après normalisation (`pos` / `neg`), jamais `+` / `−`, qui se normalisent tous deux en chaîne vide. Vérifié : un signe faux est refusé, et le menu est marqué `revoir` |
+| M-2 | **Levenshtein tolère une faute au-delà de 4 caractères.** Mesuré : `255,1` est accepté pour `255,0`, `9,6486` pour `9,6485` — marqués « presque », avec la bonne valeur réécrite dans la case et signalée à l'élève | Réponses courtes partout où c'est possible (`0,20`, `1,28`, `8,6`, entiers) : `seuil()` y vaut 0. Au-delà de trois chiffres significatifs, la tolérance existe et **on l'assume** — l'élève voit la bonne valeur, et le corrigé rédigé est juste dessous. Corriger `seuil()` toucherait le moteur partagé |
+| M-3 | **Une réponse en un seul champ est illisible** : `5,25×10⁶` saisi de six manières se normalise de six manières, et les exposants Unicode (`10⁻¹⁹`) disparaissent purement et simplement | **Une colonne par décision** : nombre, puis `a`, puis le signe de `n`, puis `n`. Chaque case ne porte qu'un choix, et chaque choix est vérifiable à l'exact |
+
+### Trois pièges d'outillage, à ne pas réapprendre
+
+| # | Piège | Ce qu'il faut faire |
+|---|---|---|
+| P-1 | **`.res` existe déjà dans `sequence-snt.css`**, en `display:flex; flex-direction:column`. Un encadré de résultat nommé ainsi éclate en trois lignes, sans erreur ni avertissement | Comparer **par script** les classes du `<style>` inline avec celles de la feuille partagée, avant de livrer. Classe renommée en `.encadre` |
+| P-2 | **`verifier.mjs` cherche le nom du sommaire généré, extension comprise, dans TOUT le HTML — commentaires inclus.** Un commentaire disant « ce fichier n'est pas chargé » faisait échouer le contrôle de version | Écrire le nom sans son extension : « le sommaire généré (`assets/js/seances-snt`) » |
+| P-3 | **Le mode headless de Chrome impose une largeur de mise en page minimale d'environ 500 px.** Une capture demandée à 390 px **rogne** au lieu de replier : on croit voir un défaut qui n'existe pas, ou l'on manque celui qui existe | Mesurer le `scrollWidth` dans une **iframe** de 390 px, et capturer cette iframe depuis une fenêtre plus large |
+
+### Ce que `verifier.mjs` ne voit pas sur un outil
+
+Son filtre `pagesSNT` ne retient que les pages `2nde-snt-tN` et `2nde-snt-mN` :
+une page `2nde-pc-oN-…` n'y entre pas. Trois contrôles ne s'appliquent donc
+**pas** aux outils et sont tenus à la main : couleurs en dur hors `:root`,
+`localStorage` interdit, unicité des `data-cle` d'étape. Le contrôle des versions
+d'assets, lui, balaie tout `pages/` et les couvre bien — c'est la raison d'être
+de D3. **Élargir le filtre est une modification de `verifier.mjs`, hors périmètre
+du chantier des outils.** ⏳

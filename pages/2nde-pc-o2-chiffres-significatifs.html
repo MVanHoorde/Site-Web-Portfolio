@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil 2 · Les chiffres significatifs — Physique-Chimie 2nde</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- Client de base de données partagé. Absent ou non configuré : l'outil
+     fonctionne, sans enregistrement. Sans "defer" à dessein : le script de
+     la page, en fin de body, doit le trouver déjà chargé. -->
+<script src="../assets/js/progression.js?v=16"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     OUTIL TRANSVERSAL — famille « Outils transversaux » de PC.
+     Tourne sur le moteur SNT (décision D2 du 25/08/2026).
+
+     Le sommaire généré (assets/js/seances-snt) et le verrou de
+     progression (verrou-snt) ne sont PAS chargés — décision D7 : un
+     outil ne suit aucune progression, il n'a ni rang, ni plafond
+     d'avance, ni verrou inter-pages. Le moteur teste window.VerrouSNT
+     avant de s'en servir : son absence est prévue.
+     ⚠ Ne pas réécrire le nom de ces fichiers avec leur extension,
+     même en commentaire : verifier.mjs cherche la chaîne « seances-
+     snt.js » dans TOUT le HTML, commentaires compris, et signalerait
+     la page comme le chargeant sans numéro de version.
+
+     CSS propre à l'outil, inline. Aucune couleur en dur : tout passe
+     par les variables de sequence-snt.css.
+     ============================================================ -->
+<style>
+  /* ---------- Encart intermédiaire — PAS un « à retenir » ---------- */
+  .point-cle{border-left:3px solid var(--link);background:var(--surface);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px;margin:10px 0}
+  .point-cle.alerte{border-left-color:var(--activity);background:var(--activity-wash)}
+  .point-cle code{background:var(--surface-2);padding:1px 5px;border-radius:4px;font-size:.9em;color:var(--link)}
+
+  /* ---------- Exemple entièrement résolu ---------- */
+  .exemple{border:1px solid var(--ok);background:var(--ok-wash);border-radius:12px;padding:12px 14px;margin:12px 0}
+  .exemple-titre{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+                 color:var(--ok);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .exemple-titre::before{content:"✓ exemple résolu";background:var(--ok);color:var(--surface);border-radius:5px;padding:1px 7px;letter-spacing:.05em}
+  .ex-etape{display:grid;grid-template-columns:22px 1fr;gap:9px;align-items:baseline;margin-bottom:9px}
+  .ex-etape:last-child{margin-bottom:0}
+  .ex-etape > .n{font-family:"IBM Plex Mono";font-size:12px;font-weight:700;color:var(--ok);
+                 border:1.5px solid var(--ok);border-radius:50%;width:20px;height:20px;
+                 display:flex;align-items:center;justify-content:center;line-height:1}
+  .ex-etape > div{min-width:0;font-size:14.5px}
+  .ex-lab{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+          color:var(--ink-faint);display:block;margin-bottom:2px}
+
+  .calcul{font-family:"IBM Plex Mono";font-size:15px;line-height:2;overflow-x:auto;margin:6px 0 2px}
+  .calcul b{color:var(--link)}
+  .calcul .encadre{color:var(--ok);font-weight:700;border:1.5px solid var(--ok);border-radius:6px;padding:1px 7px;white-space:nowrap}
+  .calcul .barre{color:var(--ink-faint);text-decoration:line-through}
+  @media(max-width:560px){.calcul{font-size:13px}}
+
+  .nb{font-family:"IBM Plex Mono";white-space:nowrap}
+  .nb sup{font-size:.7em}
+
+  /* ---------- Les quatre règles de comptage (étape 2.1) ----------
+     Texte repris MOT POUR MOT de l'encart du cahier de vacances
+     (cahier/diag-j01-…html), déjà rédigé et validé. */
+  .regles{display:grid;gap:7px;margin:10px 0}
+  .regle-l{display:grid;grid-template-columns:26px 1fr auto;gap:11px;align-items:baseline;
+           background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14.5px}
+  .regle-l .num{font-family:"IBM Plex Mono";font-size:12.5px;font-weight:700;color:var(--link)}
+  .regle-l .ex{font-family:"IBM Plex Mono";font-size:13px;color:var(--ok);white-space:nowrap;font-weight:600}
+  @media(max-width:520px){.regle-l{grid-template-columns:26px 1fr}.regle-l .ex{grid-column:2;margin-top:3px}}
+
+  /* ---------- Le compteur de chiffres (étape 2.1) — cœur de l'outil ---------- */
+  .compteur{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:13px}
+  .cpt-barre{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;font-size:13.5px;color:var(--ink-soft)}
+  .cpt-barre .btn[aria-pressed="true"]{background:var(--link);color:var(--surface);border-color:var(--link)}
+  .cpt-saisie{font-family:"IBM Plex Mono";font-size:15px;width:9em;border:1px solid var(--line);
+              border-bottom:2px solid var(--link);background:var(--link-wash);border-radius:6px;padding:4px 9px;color:var(--ink)}
+  .cpt-saisie:focus{outline:2px solid var(--link);outline-offset:1px}
+  .cpt-ecran{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 12px;
+             display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center}
+  .cpt-chiffres{display:flex;gap:3px;flex-wrap:wrap;justify-content:center}
+  .cpt-c{font-family:"IBM Plex Mono";font-size:clamp(26px,7vw,38px);font-weight:600;line-height:1.1;
+         min-width:.62em;text-align:center;border-bottom:3px solid transparent}
+  .cpt-c.oui{color:var(--link);border-bottom-color:var(--link)}
+  .cpt-c.non{color:var(--ink-faint);opacity:.55}
+  .cpt-c.doute{color:var(--activity);border-bottom-color:var(--activity);border-bottom-style:dashed}
+  .cpt-c.ponc{color:var(--ink-faint)}
+  .cpt-total{font-family:"Space Grotesk";font-weight:700;text-align:center;line-height:1.15}
+  .cpt-total .gros{display:block;font-size:44px;color:var(--ok)}
+  .cpt-total .lab{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint)}
+  .cpt-glose{font-size:13.5px;color:var(--ink-soft);margin-top:11px;line-height:1.55}
+  .cpt-legende{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:12.5px;color:var(--ink-faint);
+               font-family:"IBM Plex Mono"}
+  .cpt-legende i{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+  .cpt-legende .l1 i{background:var(--link)} .cpt-legende .l2 i{background:var(--ink-faint);opacity:.55}
+  .cpt-legende .l3 i{background:var(--activity)}
+
+  /* ---------- Les deux règles côte à côte (étape 2.4) ---------- */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  @media(max-width:620px){.duo{grid-template-columns:1fr}}
+  .duo-c{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+  .duo-c.mult{border-top:4px solid var(--link)}
+  .duo-c.addi{border-top:4px solid var(--activity)}
+  .duo-t{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+         font-weight:600;margin-bottom:7px}
+  .duo-c.mult .duo-t{color:var(--link)} .duo-c.addi .duo-t{color:var(--activity)}
+  .duo-r{font-size:14.5px;margin-bottom:8px}
+  .duo-x{font-family:"IBM Plex Mono";font-size:13.5px;background:var(--surface-2);border-radius:7px;padding:7px 10px;line-height:1.8}
+
+  /* ---------- SVG : règles graduées et alignement sur la virgule ---------- */
+  .fig{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px}
+  .fig svg{width:100%;height:auto;display:block}
+  .rg-axe{stroke:var(--ink-soft);stroke-width:2}
+  .rg-tick{stroke:var(--ink-soft);stroke-width:1.4}
+  .rg-val{font-family:"IBM Plex Mono";font-size:14px;fill:var(--ink-faint);text-anchor:middle}
+  .rg-lab{font-family:"IBM Plex Mono";font-size:16px;font-weight:700;text-anchor:start}
+  .rg-sub{font-family:"IBM Plex Sans";font-size:13px;fill:var(--ink-faint);text-anchor:start}
+  .rg-pt{stroke-width:2}
+  .rg-note{font-family:"IBM Plex Sans";font-size:14px;fill:var(--ink-soft);text-anchor:middle}
+  .al-c{font-family:"IBM Plex Mono";font-size:30px;font-weight:600;text-anchor:middle;fill:var(--ink)}
+  .al-c.hors{fill:var(--ink-faint);opacity:.5}
+  .al-lab{font-family:"IBM Plex Mono";font-size:14px;fill:var(--ink-faint);text-anchor:end}
+  .al-rang{font-family:"IBM Plex Sans";font-size:11.5px;fill:var(--ink-faint);text-anchor:middle}
+  .al-rang.alerte{fill:var(--err);font-weight:600}
+  .al-op{font-family:"IBM Plex Mono";font-size:28px;fill:var(--ink-soft);text-anchor:middle}
+  .al-trait{stroke:var(--ink);stroke-width:2}
+  .al-mur{stroke:var(--err);stroke-width:3;stroke-dasharray:7 5}
+  .al-mur-txt{font-family:"IBM Plex Mono";font-size:14px;font-weight:700;fill:var(--err);text-anchor:middle}
+  .al-colonne{fill:var(--err-wash)}
+  .al-note{font-family:"IBM Plex Sans";font-size:13.5px;fill:var(--ink-soft)}
+  .al-res{font-family:"IBM Plex Mono";font-size:23px;font-weight:700;fill:var(--ok);text-anchor:middle}
+
+  /* ---------- Le composant EXERCICE (§10 du brief) ---------- */
+  .exo{border:1px solid var(--line);border-left:4px solid var(--activity);border-radius:0 12px 12px 0;
+       background:var(--surface);padding:13px 15px;margin:16px 0}
+  .exo-num{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--activity);font-weight:600;margin:0 0 7px}
+  .exo-enonce{font-size:15px;margin:0 0 11px;line-height:1.6}
+  .exo-consigne{font-size:13.5px;color:var(--ink-soft);margin:12px 0 8px;font-style:italic}
+  .exo-corr{border-top:1px dashed var(--line);padding-top:9px;margin-top:4px}
+  .exo-corr summary{font-family:"IBM Plex Mono";font-size:13px;color:var(--link);cursor:pointer;
+                    padding:5px 2px;min-height:32px;display:flex;align-items:center;gap:6px}
+  .exo-corr summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:5px}
+  .exo-corr[open] summary{margin-bottom:8px;color:var(--ink-soft)}
+  .exo-corr .corps{font-size:14.5px;line-height:1.65;border-left:3px solid var(--ok);
+                   background:var(--ok-wash);border-radius:0 10px 10px 0;padding:11px 14px}
+  .exo-corr .corps p{margin:0 0 8px}
+  .exo-corr .corps p:last-child{margin-bottom:0}
+
+  /* ---------- Tables de saisie ---------- */
+  .saisie{width:100%;border-collapse:collapse;font-size:15px}
+  .saisie th{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;
+             color:var(--ink-faint);font-weight:600;text-align:left;padding:0 8px 7px;border-bottom:1px solid var(--line)}
+  .saisie th.c{text-align:center}
+  .saisie td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .saisie td.c{text-align:center}
+  .saisie tr:last-child td{border-bottom:0}
+  .saisie .depart{font-family:"IBM Plex Mono";font-size:15px;color:var(--ink);white-space:nowrap}
+  .saisie select.short{min-height:34px}
+  .saisie input.short{min-height:32px}
+
+  /* Un menu déroulant dont l'option la plus longue est une phrase prend
+     la largeur de cette phrase : sur téléphone, il sortait de la carte.
+     Il se borne à la largeur disponible ; le texte de l'option choisie
+     reste lisible une fois déroulé. */
+  .cloze select{max-width:100%}
+
+  /* La série finale mélange les deux règles : la colonne du milieu est
+     large, c'est là que se joue la question « lequel des deux cas ? ». */
+  .saisie select.regle-choix{min-height:34px;max-width:100%}
+
+  /* ---------- Repli téléphone des tables de saisie ----------
+     À 390 px, trois colonnes obligeaient à faire défiler le bloc
+     latéralement pour CHAQUE ligne — huit fois de suite sur la série
+     finale. La ligne devient donc un bloc : l'énoncé sur sa propre
+     ligne, les champs dessous. L'en-tête disparaît : il n'a plus de
+     colonnes à nommer, et les placeholders (a · n · ?) le remplacent. */
+  @media(max-width:560px){
+    .saisie{display:block}
+    .saisie tr:first-child{display:none}
+    .saisie tr{display:flex;flex-wrap:wrap;align-items:center;gap:9px 10px;
+               padding:11px 2px;border-bottom:1px solid var(--line)}
+    .saisie tr:last-child{border-bottom:0}
+    .saisie td{display:block;padding:0;border:0;text-align:left}
+    .saisie td.depart{flex-basis:100%;font-weight:600;white-space:normal}
+    .saisie select.regle-choix{flex:1 1 100%;max-width:100%}
+  }
+
+
+  .table-scroll .doc-table td,.table-scroll .doc-table th{white-space:nowrap}
+
+  .vers-fiche{display:inline-flex;align-items:center;gap:8px;font-size:14px;text-decoration:none;
+              color:var(--link);background:var(--link-wash);border:1px solid var(--line);
+              border-radius:10px;padding:9px 14px;margin-top:16px;min-height:44px}
+  .vers-fiche:hover{border-color:var(--link)}
+  .vers-fiche:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+</style>
+</head><body data-sequence="pc-o2">
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Physique-Chimie · Outil transversal · Seconde</div>
+    <h1 class="title">Les chiffres significatifs <span class="tag" style="display:block;margin-top:8px">compter · × ÷ · + −</span></h1>
+    <p class="lede">La calculatrice affiche <span class="nb">0,124137931</span>. Tu n'as pas le droit d'écrire ça — non par coquetterie, mais parce que ces neuf chiffres annoncent une précision que ta mesure n'a pas. Voici combien il faut en garder, et pourquoi la règle n'est <b>pas la même</b> selon l'opération.</p>
+    <div class="themes">
+      <span class="theme-chip">Outil 1 · Écriture scientifique</span><span class="theme-chip on">Outil 2 · Chiffres significatifs</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>Deux parties</b></span>
+      <span class="m">Durée <b>≈ 1 h</b></span>
+      <span class="m">Aucun verrou&nbsp;: <b>cet outil est ouvert toute l'année</b></span>
+    </div>
+    <a class="vers-fiche" href="../fiches/fiche-2nde-o2-chiffres-significatifs.html">🖨️ Fiche outil — la méthode à imprimer et à coller</a>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — tout est ouvert.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-physique-chimie.html">← Physique-Chimie</a>
+    <a href="#s1"><span class="n">1</span>La méthode</a>
+    <a href="#s2" data-navlock="2"><span class="n">2</span>S'entraîner <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip done"></span>Validé</span>
+  </div>
+
+
+  <!-- ===================== 1 — LA MÉTHODE ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">1</span>La méthode</h2>
+      <span class="seance-time">≈ 30 min</span>
+    </div>
+    <p class="seance-goal">Compter les chiffres significatifs d'un nombre, comprendre ce qu'ils disent de la précision d'une mesure, et arrondir un résultat — <b>différemment</b> selon qu'on a multiplié ou additionné.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- 1.1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o2-s1-compter">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1</div>
+            <h3 class="step-title">Compter les chiffres significatifs</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir dire, sans hésiter, combien un nombre porte de chiffres significatifs.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Les <b>chiffres significatifs</b> sont les chiffres qui <b>renseignent sur la précision</b> d'un résultat. Tous les chiffres écrits n'en sont pas&nbsp;: certains zéros ne servent qu'à placer la virgule.</p>
+
+            <div class="block-label">Les quatre règles<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="regles">
+              <div class="regle-l"><span class="num">1.</span><span>Tout chiffre non nul compte.</span><span class="ex">3,82 → 3</span></div>
+              <div class="regle-l"><span class="num">2.</span><span>Un zéro entre deux chiffres compte.</span><span class="ex">502 → 3</span></div>
+              <div class="regle-l"><span class="num">3.</span><span>Les zéros à gauche du 1<sup>er</sup> chiffre non nul ne comptent pas.</span><span class="ex">0,0048 → 2</span></div>
+              <div class="regle-l"><span class="num">4.</span><span>Les zéros à droite, après la virgule, comptent.</span><span class="ex">0,250 → 3</span></div>
+            </div>
+
+            <div class="block-label">Le compteur — vérifie chaque règle toi-même<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Choisis un nombre, ou écris le tien. Les chiffres <b>comptés</b> s'allument, les zéros <b>qui ne comptent pas</b> restent gris — et les zéros <b>ambigus</b> passent en orange&nbsp;: ceux-là, personne ne peut les trancher sans information supplémentaire.</p>
+
+            <div class="compteur" data-compteur>
+              <div class="cpt-barre">
+                <span>Essaie&nbsp;:</span>
+                <button class="btn ghost sm" type="button" data-nb="3,82" aria-pressed="true">3,82</button>
+                <button class="btn ghost sm" type="button" data-nb="502" aria-pressed="false">502</button>
+                <button class="btn ghost sm" type="button" data-nb="0,0048" aria-pressed="false">0,0048</button>
+                <button class="btn ghost sm" type="button" data-nb="0,250" aria-pressed="false">0,250</button>
+                <button class="btn ghost sm" type="button" data-nb="0,020540" aria-pressed="false">0,020540</button>
+                <button class="btn ghost sm" type="button" data-nb="003,20" aria-pressed="false">003,20</button>
+                <button class="btn ghost sm" type="button" data-nb="100" aria-pressed="false">100</button>
+                <label style="display:flex;gap:7px;align-items:center">ou le tien&nbsp;:
+                  <input class="cpt-saisie" type="text" inputmode="decimal" value="3,82"
+                         aria-label="nombre dont on compte les chiffres significatifs" data-cpt-input></label>
+              </div>
+              <div class="cpt-ecran">
+                <div class="cpt-chiffres" data-cpt-chiffres></div>
+                <div class="cpt-total"><span class="gros" data-cpt-total>3</span><span class="lab" data-cpt-lab>chiffres significatifs</span></div>
+              </div>
+              <div class="cpt-legende">
+                <span class="l1"><i></i>compté</span>
+                <span class="l2"><i></i>ne compte pas</span>
+                <span class="l3"><i></i>ambigu</span>
+              </div>
+              <div class="cpt-glose" data-cpt-glose></div>
+            </div>
+
+            <div class="point-cle alerte"><b>Le cas des zéros de fin sans virgule.</b> Dans <span class="nb">100</span>, personne ne peut savoir si les deux zéros ont été <b>mesurés</b> ou s'ils ne font que <b>placer l'ordre de grandeur</b>. L'écriture est ambiguë, et <b>c'est l'écriture scientifique qui la lève</b>&nbsp;: <span class="nb">1 × 10<sup>2</sup></span> (un chiffre), <span class="nb">1,0 × 10<sup>2</sup></span> (deux), <span class="nb">1,00 × 10<sup>2</sup></span> (trois). C'est le meilleur argument en faveur de <a href="2nde-pc-o1-ecriture-scientifique.html" style="color:var(--link)">l'outil 1</a> — et la raison pour laquelle un énoncé sérieux écrit ses données en puissances de dix.</div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Les <b>chiffres significatifs</b> sont ceux qui renseignent sur la <b>précision</b> d'un résultat. Quatre règles suffisent&nbsp;: <b>tout chiffre non nul compte</b> · <b>un zéro entre deux chiffres compte</b> · <b>les zéros à gauche du premier chiffre non nul ne comptent pas</b> (ils placent la virgule) · <b>les zéros à droite, après la virgule, comptent</b> (ils ont été mesurés). Un zéro de fin dans un entier sans virgule est <b>ambigu</b> — l'écriture scientifique lève le doute. La <b>puissance de dix ne compte jamais</b>&nbsp;: dans <span class="nb">1,20 × 10<sup>3</sup></span>, il y a <b>trois</b> chiffres significatifs, ceux de 1,20.</div>
+
+            <div class="exemple">
+              <div class="exemple-titre">Compter sur <span class="nb">0,020540</span></div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">On repère le premier chiffre non nul</span>
+                C'est le <b>2</b>. Tout ce qui est <b>à sa gauche</b> ne fait que placer la virgule.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">On écarte les zéros de gauche</span>
+                <div class="calcul"><span class="barre">0,0</span><b>20540</b> &nbsp;&nbsp; règle 3&nbsp;: les deux zéros de tête ne comptent pas</div></div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">On compte tout le reste</span>
+                <div class="calcul">2 · 0 · 5 · 4 · 0 &nbsp;&nbsp; le zéro du milieu compte (règle 2), celui de fin aussi (règle 4)</div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">Le résultat</span>
+                <div class="calcul"><span class="nb">0,020540</span> a <span class="encadre">5 chiffres significatifs</span></div></div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle</span>
+                En écriture scientifique, <span class="nb">0,020540 = 2,0540 × 10<sup>−2</sup></span> — et <b>2,0540</b> porte bien cinq chiffres. C'est le contrôle le plus sûr&nbsp;: <b>l'écriture scientifique montre les chiffres significatifs, et rien qu'eux.</b></div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Deux nombres, deux règles différentes.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> <span class="nb">0,0730</span> porte
+                <input class="short" data-answer="3" placeholder="?" aria-label="nombre de chiffres significatifs de 0,0730" data-indice1="Repère d'abord le premier chiffre non nul, puis compte tout ce qui suit." data-indice2="Deux zéros à traiter, et ils ne relèvent pas de la même règle."> chiffres significatifs.</div>
+                <div><b>2.</b> <span class="nb">1,20 × 10<sup>3</sup></span> porte
+                <input class="short" data-answer="3" placeholder="?" aria-label="nombre de chiffres significatifs de 1,20 fois 10 puissance 3" data-indice1="La puissance de dix n'est pas un chiffre significatif : ne compte que ce qui est devant." data-indice2="Le zéro est à droite, après la virgule."> chiffres significatifs.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o2-s1-precision">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2</div>
+            <h3 class="step-title">Pourquoi ça n'est pas de la coquetterie</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre que <span class="nb">3,20</span> et <span class="nb">3,2</span> ne disent pas la même chose.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Mathématiquement, <span class="nb">3,20 = 3,2</span>. <b>En physique-chimie, non</b>&nbsp;: écrire un chiffre, c'est affirmer qu'on l'a mesuré. Le zéro de <span class="nb">3,20</span> annonce que le centième a été lu — et qu'il vaut zéro.</p>
+
+            <div class="point-cle"><b>Le nombre qui range tout le monde&nbsp;: <span class="nb">003,20</span>.</b> Il porte les <b>deux</b> familles de zéros à la fois. Les deux de gauche ne servent à rien — on peut les effacer sans rien perdre&nbsp;: <span class="nb">003,20</span> a exactement <b>la même signification</b> que <span class="nb">3,20</span>. Celui de droite, lui, ne s'efface pas&nbsp;: <span class="nb">003,20</span> n'a <b>pas</b> la même signification que <span class="nb">3,2</span>. Trois chiffres significatifs dans les deux premiers cas, deux dans le troisième. <span style="color:var(--ink-faint)">Essaie-le dans le compteur de l'étape précédente.</span></div>
+
+            <div class="block-label">La même mesure, deux instruments<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Sur le même axe, la <b>zone hachurée</b> est celle où la vraie valeur peut se trouver. Regarde-la se resserrer d'un facteur dix&nbsp;:</p>
+
+            <div class="fig">
+              <svg viewBox="0 0 640 262" role="img" aria-label="Deux mesures sur le même axe : 3,2 laisse la vraie valeur entre 3,15 et 3,25, tandis que 3,20 la resserre entre 3,195 et 3,205 — une zone dix fois plus étroite.">
+                <defs>
+                  <pattern id="o2-hach-a" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                    <rect width="8" height="8" fill="var(--activity-wash)"/>
+                    <line x1="0" y1="0" x2="0" y2="8" stroke="var(--activity)" stroke-width="2.4" opacity=".45"/>
+                  </pattern>
+                  <pattern id="o2-hach-b" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                    <rect width="8" height="8" fill="var(--ok-wash)"/>
+                    <line x1="0" y1="0" x2="0" y2="8" stroke="var(--ok)" stroke-width="2.4" opacity=".45"/>
+                  </pattern>
+                </defs>
+                <!-- Les libellés étaient alignés à DROITE sur x=52 : « au
+                     centième » débordait de 11 px hors du viewBox, et SVG
+                     rogne en plein mot sans prévenir. Ils partent maintenant
+                     de la gauche, et l'axe commence à 110. -->
+                <text class="rg-lab" x="8" y="46" fill="var(--activity)">3,2</text>
+                <text class="rg-sub" x="8" y="66">au dixième</text>
+                <rect x="230" y="28" width="240" height="34" rx="4" fill="url(#o2-hach-a)" stroke="var(--activity)" stroke-width="1" stroke-opacity=".5"/>
+                <line class="rg-axe" x1="110" y1="45" x2="590" y2="45"/>
+                <line x1="350" y1="30" x2="350" y2="60" class="rg-pt" stroke="var(--activity)"/>
+                <text x="350" y="22" class="rg-val" fill="var(--activity)" font-weight="700">± 0,05</text>
+
+                <text class="rg-lab" x="8" y="126" fill="var(--ok)">3,20</text>
+                <text class="rg-sub" x="8" y="146">au centième</text>
+                <rect x="338" y="108" width="24" height="34" rx="3" fill="url(#o2-hach-b)" stroke="var(--ok)" stroke-width="1" stroke-opacity=".5"/>
+                <line class="rg-axe" x1="110" y1="125" x2="590" y2="125"/>
+                <line x1="350" y1="110" x2="350" y2="140" class="rg-pt" stroke="var(--ok)"/>
+                <text x="350" y="102" class="rg-val" fill="var(--ok)" font-weight="700">± 0,005</text>
+
+                <line class="rg-axe" x1="110" y1="185" x2="590" y2="185"/>
+                <g class="rg-tick">
+                  <line x1="110" y1="178" x2="110" y2="194"/><line x1="230" y1="178" x2="230" y2="194"/>
+                  <line x1="350" y1="176" x2="350" y2="196"/><line x1="470" y1="178" x2="470" y2="194"/>
+                  <line x1="590" y1="178" x2="590" y2="194"/>
+                </g>
+                <text class="rg-val" x="110" y="214">3,10</text><text class="rg-val" x="230" y="214">3,15</text>
+                <text class="rg-val" x="350" y="214">3,20</text><text class="rg-val" x="470" y="214">3,25</text>
+                <text class="rg-val" x="590" y="214">3,30</text>
+                <text class="rg-note" x="320" y="244">Même axe, même point mesuré — mais une incertitude dix fois plus étroite.</text>
+              </svg>
+            </div>
+
+            <div class="point-cle"><b>Toute mesure porte une incertitude</b>, notée <span class="nb">ΔA</span>. Elle s'estime de deux façons selon l'instrument&nbsp;: la <b>moitié de la plus petite graduation</b> sur un instrument gradué — une règle au millimètre donne <span class="nb">± 0,5 mm</span> — ou la <b>moitié de l'unité du dernier rang affiché</b> sur un appareil à écran — une balance qui affiche <span class="nb">12,34 g</span> donne <span class="nb">± 0,005 g</span>. <b>Le dernier chiffre significatif est toujours le chiffre incertain</b>&nbsp;: c'est lui qui porte le doute, et c'est pour cela qu'on n'en écrit pas un de plus.</div>
+
+            <div class="point-cle"><b>Et la précision, alors&nbsp;?</b> Ce n'est pas <span class="nb">ΔA</span> tout seul&nbsp;: <span class="nb">± 1 g</span> est dérisoire sur un sac de ciment et catastrophique sur un comprimé. Ce qui la mesure, c'est l'<b>incertitude relative</b>&nbsp;: <span class="nb">ΔA / A</span>, qu'on lit en pourcentage. <span style="color:var(--ink-faint)">La notion complète n'est pas au programme de cet outil — retiens seulement que c'est le <b>rapport</b> qui compte, pas l'écart brut.</span></div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Écrire un chiffre, c'est affirmer qu'on l'a mesuré. <span class="nb">3,20</span> n'est donc <b>pas</b> <span class="nb">3,2</span>&nbsp;: le premier est précis au <b>centième</b>, le second au <b>dixième</b> seulement — dix fois moins. <b>Le dernier chiffre significatif est le chiffre incertain</b>, et toute mesure porte une incertitude <span class="nb">ΔA</span> — moitié de la plus petite <b>graduation</b> sur un instrument gradué, moitié de l'unité du dernier rang <b>affiché</b> sur un appareil à écran. La <b>précision</b>, elle, se lit sur le rapport <span class="nb">ΔA / A</span>, pas sur l'écart brut. En donner davantage n'est pas une preuve de rigueur&nbsp;: c'est <b>annoncer une précision qu'on n'a pas</b>.</div>
+
+            <div class="exemple">
+              <div class="exemple-titre">Deux relevés du même volume</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">Les données, avec leur instrument</span>
+                Une <b>éprouvette graduée</b> de 2 en 2 mL, et une <b>pipette jaugée</b> de 20,0 mL.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">Ce que chaque instrument permet d'écrire</span>
+                <div class="calcul">éprouvette&nbsp;: V = 20 mL &nbsp;&nbsp;&nbsp; (incertitude ≈ ± 1 mL)<br>
+                pipette&nbsp;:&nbsp;&nbsp;&nbsp; V = <span class="encadre">20,00 mL</span> &nbsp;&nbsp;&nbsp; (incertitude ≈ ± 0,03 mL)</div></div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">La phrase</span>
+                Les deux nombres valent «&nbsp;vingt&nbsp;», mais ils ne racontent pas la même expérience&nbsp;: le second annonce que les centièmes de millilitre ont été maîtrisés.</div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">Le contrôle des chiffres significatifs</span>
+                <b>2</b> pour l'éprouvette, <b>4</b> pour la pipette. Écrire <span class="nb">20,00 mL</span> après une éprouvette serait un <b>mensonge sur la précision</b> — et écrire <span class="nb">20 mL</span> après une pipette jaugée, du gâchis.</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Ce que ça change plus loin</span>
+                Tout calcul qui utilisera ce volume héritera de sa précision. C'est l'objet des deux étapes suivantes.</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Une règle graduée au millimètre donne une longueur à
+                <input class="short" data-answer="0,5" placeholder="?" aria-label="incertitude d'une règle graduée au millimètre, en millimètres" data-indice1="La moitié de la plus petite graduation." data-indice2="La plus petite graduation vaut 1 mm."> mm près.</div>
+                <div style="margin-bottom:9px"><b>2.</b> <span class="nb">003,20</span> porte
+                <input class="short" data-answer="3" placeholder="?" aria-label="nombre de chiffres significatifs de 003,20" data-indice1="Les zéros de gauche et le zéro de droite ne relèvent pas de la même règle." data-indice2="Deux zéros s'effacent sans rien changer, un troisième non."> chiffres significatifs.</div>
+                <div><b>3.</b> Entre <span class="nb">3,2 cm</span> et <span class="nb">3,20 cm</span>, la mesure la plus précise est
+                  <select data-answer="b" aria-label="quelle mesure est la plus précise">
+                    <option value="">— choisis —</option>
+                    <option value="a">3,2 cm</option>
+                    <option value="b">3,20 cm</option>
+                    <option value="c">les deux, ce sont les mêmes nombres</option>
+                  </select>.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o2-s1-multiplication">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3</div>
+            <h3 class="step-title">Multiplication et division</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> arrondir un produit ou un quotient au bon nombre de chiffres significatifs.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">La règle<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="point-cle">Le résultat porte <b>autant de chiffres significatifs que la donnée qui en a le moins</b>. Une chaîne n'est pas plus solide que son maillon le plus faible&nbsp;: une seule donnée imprécise suffit à limiter tout le calcul.</div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Pour une <b>multiplication</b> ou une <b>division</b>&nbsp;: on <b>compte les chiffres significatifs</b> de chaque donnée, et le résultat en porte <b>autant que celle qui en a le moins</b>. On fait le calcul <b>en entier</b>, et on n'arrondit qu'<b>à la toute fin</b>. Le nombre de décimales du résultat n'a ici <b>aucune importance</b>&nbsp;: c'est le <b>compte des chiffres</b> qui commande, pas leur rang.</div>
+
+            <div class="exemple">
+              <div class="exemple-titre">Calculer 6,20 ÷ 50</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">Les données, avec leur compte</span>
+                <div class="calcul"><b>6,20</b> → 3 chiffres significatifs (le zéro de fin compte, règle 4)<br>
+                <b>50</b> → 2 chiffres significatifs</div>
+                <span style="font-size:13.5px;color:var(--ink-soft)">⚠ <b>50 écrit ainsi est ambigu</b> — comme <span class="nb">100</span> à l'étape 1.1. Ici, c'est une valeur <b>mesurée à deux chiffres</b>&nbsp;; un énoncé rigoureux l'écrirait <span class="nb">5,0 × 10<sup>1</sup></span>. Retiens la leçon&nbsp;: quand tu produis une donnée, <b>lève l'ambiguïté toi-même</b>.</span></div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">On repère le maillon faible</span>
+                Le plus petit compte est <b>2</b>, apporté par 50. Le résultat en portera donc <b>deux</b>.</div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">Le calcul en entier, puis l'arrondi</span>
+                <div class="calcul">6,20 ÷ 50 = 0,124 &nbsp;&nbsp; à la calculatrice<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="encadre">0,12</span> &nbsp;&nbsp; arrondi à 2 chiffres significatifs</div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">La phrase</span>
+                Le quotient vaut <b>0,12</b>, avec deux chiffres significatifs — les seuls que les données permettent d'affirmer.</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle des chiffres significatifs</span>
+                <b>0,12</b> porte bien <b>deux</b> chiffres&nbsp;: le zéro de tête ne compte pas (règle 3). Attention au piège du comptage&nbsp;: <b>0,12 a deux chiffres significatifs mais deux décimales</b> — les deux notions ne coïncident que par hasard, et l'étape suivante montre pourquoi il ne faut jamais les confondre.</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> <span class="nb">2,5 × 3,42</span> donne 8,55 à la calculatrice. Le résultat doit porter
+                <input class="short" data-answer="2" placeholder="?" aria-label="nombre de chiffres significatifs du produit 2,5 fois 3,42" data-indice1="Compte les chiffres significatifs de chaque donnée, et garde le plus petit des deux comptes." data-indice2="L'une des deux données est plus pauvre que l'autre."> chiffres significatifs,</div>
+                <div>donc on écrit
+                <input class="short" data-answer="8,6" placeholder="?" aria-label="résultat arrondi de 2,5 fois 3,42" data-indice1="Arrondis 8,55 au nombre de chiffres que tu viens de trouver." data-indice2="Le chiffre suivant est un 5 : on arrondit au supérieur."> .</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.4 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o2-s1-addition">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4</div>
+            <h3 class="step-title">Addition et soustraction — la règle change</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre qu'ici on ne compte plus des chiffres, on regarde une <b>colonne</b>.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="point-cle alerte"><b>C'est ici que se joue tout l'outil.</b> L'erreur la plus fréquente de la classe consiste à appliquer la règle de la multiplication à une addition. Ce sont <b>deux règles différentes</b>, et elles ne regardent pas la même chose&nbsp;: l'une compte des <b>chiffres</b>, l'autre repère un <b>rang</b>.</div>
+
+            <div class="block-label">La règle<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="point-cle">On arrondit le résultat <b>au rang de la dernière décimale de la donnée la moins précise</b>. Le compte des chiffres significatifs n'intervient pas&nbsp;: seul compte <b>l'endroit où s'arrête</b> la donnée la plus grossière.</div>
+
+            <div class="block-label">Pose l'addition, et regarde la colonne<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Les deux nombres, l'un sous l'autre, <b>alignés sur la virgule</b>. Le trait rouge tombe là où la donnée la moins précise s'arrête. Tout ce qui est <b>à droite du trait</b> n'a été mesuré que par un seul des deux nombres&nbsp;: on ne peut pas le garder.</p>
+
+            <div class="fig">
+              <svg viewBox="0 0 680 356" role="img" aria-label="Addition posée : 1,25 et 0,025 alignés sur la virgule. La colonne des millièmes, à droite du trait d'arrêt, n'est renseignée que par un seul des deux nombres ; le résultat 1,275 s'arrête donc au centième et devient 1,28.">
+                <!-- La colonne surlignée est celle des MILLIÈMES, à DROITE du
+                     trait d'arrêt : c'est la colonne qu'on doit abandonner. -->
+                <rect class="al-colonne" x="465" y="28" width="62" height="200" rx="6"/>
+                <!-- noms des rangs, au pas de 62 px : au pas de 52 px ils se
+                     chevauchaient et « centièmes » mangeait « millièmes ». -->
+                <text class="al-rang" x="300" y="44">unités</text>
+                <text class="al-rang" x="372" y="44">dixièmes</text>
+                <text class="al-rang" x="434" y="44">centièmes</text>
+                <text class="al-rang alerte" x="496" y="44">millièmes</text>
+
+                <text class="al-lab" x="225" y="102">1,25 · 2 décimales</text>
+                <text class="al-c" x="300" y="108">1</text>
+                <text class="al-c" x="332" y="108">,</text>
+                <text class="al-c" x="372" y="108">2</text>
+                <text class="al-c" x="434" y="108">5</text>
+
+                <text class="al-lab" x="225" y="166">0,025 · 3 décimales</text>
+                <text class="al-op" x="258" y="172">+</text>
+                <text class="al-c" x="300" y="172">0</text>
+                <text class="al-c" x="332" y="172">,</text>
+                <text class="al-c" x="372" y="172">0</text>
+                <text class="al-c" x="434" y="172">2</text>
+                <text class="al-c" x="496" y="172">5</text>
+
+                <line class="al-trait" x1="272" y1="192" x2="527" y2="192"/>
+
+                <text class="al-c" x="300" y="230">1</text>
+                <text class="al-c" x="332" y="230">,</text>
+                <text class="al-c" x="372" y="230">2</text>
+                <text class="al-c" x="434" y="230">7</text>
+                <text class="al-c hors" x="496" y="230">5</text>
+
+                <line class="al-mur" x1="465" y1="28" x2="465" y2="248"/>
+                <text class="al-mur-txt" x="465" y="272">on s'arrête ici</text>
+
+                <text class="al-note" x="34" y="302">La colonne des millièmes n'est renseignée que par <tspan font-weight="700">un seul</tspan> des deux nombres.</text>
+                <text class="al-note" x="34" y="324">Ce qui commande est une <tspan font-weight="700" fill="var(--err)">colonne</tspan>, pas un décompte de chiffres.</text>
+                <text class="al-res" x="340" y="350">1,275 → arrondi au centième → 1,28</text>
+              </svg>
+            </div>
+
+            <div class="block-label">Les deux règles, côte à côte<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="duo">
+              <div class="duo-c mult">
+                <div class="duo-t">× et ÷ — on compte des chiffres</div>
+                <div class="duo-r">Le résultat porte <b>autant de chiffres significatifs</b> que la donnée qui en a le <b>moins</b>.</div>
+                <div class="duo-x">3,8 ÷ 19,3 = 0,19689…<br>3,8 → <b>2</b> chiffres · 19,3 → 3<br>→ <span class="calcul" style="display:inline"><span class="encadre">0,20</span></span></div>
+              </div>
+              <div class="duo-c addi">
+                <div class="duo-t">+ et − — on repère un rang</div>
+                <div class="duo-r">On arrondit au <b>rang de la dernière décimale</b> de la donnée la <b>moins précise</b>.</div>
+                <div class="duo-x">1,25 + 0,025 = 1,275<br>1,25 s'arrête au <b>centième</b><br>→ <span class="calcul" style="display:inline"><span class="encadre">1,28</span></span></div>
+              </div>
+            </div>
+
+            <div class="point-cle"><b>La question à se poser avant tout calcul, et une seule&nbsp;:</b> «&nbsp;est-ce que je <b>multiplie</b> ou est-ce que j'<b>additionne</b>&nbsp;?&nbsp;» La réponse décide de la règle. Dans un calcul qui mêle les deux, on applique chaque règle <b>à son étape</b> — mais on n'arrondit qu'<b>à la fin</b>.</div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Pour une <b>addition</b> ou une <b>soustraction</b>, la règle <b>n'est pas la même</b> que pour un produit&nbsp;: on arrondit le résultat au <b>rang de la dernière décimale de la donnée la moins précise</b>. On ne compte plus des chiffres, on repère une <b>colonne</b>&nbsp;: pose les nombres l'un sous l'autre, alignés sur la virgule, et arrête-toi là où le plus grossier s'arrête. Ainsi <span class="nb">1,25 + 0,025 = 1,275</span> devient <b>1,28</b>, et <span class="nb">250,0 + 5,0 = 255,0</span> garde son zéro. Et dans tous les cas&nbsp;: <b>on n'arrondit qu'à la toute fin du calcul</b>.</div>
+
+            <div class="exemple">
+              <div class="exemple-titre">Calculer 250,0 + 5,0</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">Les données, avec leur dernier rang</span>
+                <div class="calcul"><b>250,0</b> → s'arrête au <b>dixième</b><br><b>5,0</b> → s'arrête au <b>dixième</b> aussi</div></div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">On repère le rang d'arrêt</span>
+                Les deux données s'arrêtent au même rang&nbsp;: le résultat s'arrêtera au <b>dixième</b>.</div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">Le calcul</span>
+                <div class="calcul">250,0 + 5,0 = <span class="encadre">255,0</span></div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">La phrase</span>
+                La somme vaut <b>255,0</b> — et ce zéro final <b>doit être écrit</b>&nbsp;: le retirer reviendrait à dire qu'on ne connaît pas le dixième, alors qu'on le connaît.</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle des chiffres significatifs</span>
+                <b>255,0</b> porte <b>quatre</b> chiffres significatifs, alors que <b>5,0</b> n'en a que deux. Avec la règle de la multiplication on aurait écrit <b>2,6 × 10<sup>2</sup></b> — grossièrement faux. <b>C'est exactement l'erreur que cette étape sert à empêcher.</b></div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Une addition, et la question qui va avec.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Pour <span class="nb">12,3 + 0,456</span>, la règle à appliquer est celle
+                  <select data-answer="rang" aria-label="quelle règle pour 12,3 plus 0,456">
+                    <option value="">— choisis —</option>
+                    <option value="compte">du compte des chiffres significatifs</option>
+                    <option value="rang">du rang de la dernière décimale</option>
+                  </select>.</div>
+                <div><b>2.</b> <span class="nb">12,3 + 0,456 = 12,756</span> à la calculatrice, donc on écrit
+                <input class="short" data-answer="12,8" placeholder="?" aria-label="résultat arrondi de 12,3 plus 0,456" data-indice1="Repère où s'arrête la donnée la moins précise, puis arrondis à ce rang." data-indice2="12,3 s'arrête au dixième."> .</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+
+  <!-- ===================== 2 — S'ENTRAÎNER ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">2</span>S'entraîner</h2>
+      <span class="seance-time">≈ 30 min</span>
+    </div>
+    <p class="seance-goal">Six exercices, à faire <b>à la maison</b>, sur ta feuille d'abord. Chacun a son corrigé <b>rédigé</b> juste en dessous&nbsp;: tu te corriges seul, le soir, sans attendre le cours suivant.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- 2.1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o2-s2-compter">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1</div>
+            <h3 class="step-title">Compter</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> appliquer les quatre règles, y compris sur le cas ambigu.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o2-s2-ex1">
+              <p class="exo-num">Exercice 1</p>
+              <p class="exo-enonce">Combien chacun de ces nombres porte-t-il de <b>chiffres significatifs</b>&nbsp;?</p>
+              <div class="field">
+                <span class="field-type">Exercice 1</span>
+                <div class="cloze" data-cloze data-cle="ex1">
+                  <div class="table-scroll">
+                    <table class="saisie">
+                      <tr><th>Nombre</th><th class="c">chiffres significatifs</th></tr>
+                      <tr><td class="depart">3,82</td><td class="c"><input class="short" data-answer="3" placeholder="?" aria-label="chiffres significatifs de 3,82" data-indice1="Règle 1 : tout chiffre non nul compte." data-indice2="Aucun zéro à trancher ici."></td></tr>
+                      <tr><td class="depart">502</td><td class="c"><input class="short" data-answer="3" placeholder="?" aria-label="chiffres significatifs de 502" data-indice1="Le zéro est coincé entre deux chiffres." data-indice2="C'est la règle 2."></td></tr>
+                      <tr><td class="depart">0,0048</td><td class="c"><input class="short" data-answer="2" placeholder="?" aria-label="chiffres significatifs de 0,0048" data-indice1="Les zéros à gauche du premier chiffre non nul ne font que placer la virgule." data-indice2="Il ne reste que deux chiffres à compter."></td></tr>
+                      <tr><td class="depart">0,250</td><td class="c"><input class="short" data-answer="3" placeholder="?" aria-label="chiffres significatifs de 0,250" data-indice1="Deux zéros, et ils ne relèvent pas de la même règle." data-indice2="Celui de fin est après la virgule : il a été mesuré."></td></tr>
+                      <tr><td class="depart">1,20 × 10<sup>3</sup></td><td class="c"><input class="short" data-answer="3" placeholder="?" aria-label="chiffres significatifs de 1,20 fois 10 puissance 3" data-indice1="La puissance de dix ne compte pas : ne regarde que le nombre devant." data-indice2="Le zéro est à droite, après la virgule."></td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 1</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <div class="calcul">
+                    <b>3,82</b> → aucun zéro, trois chiffres non nuls → <span class="encadre">3</span><br>
+                    <b>502</b> → le zéro est <b>entre</b> deux chiffres (règle 2) → <span class="encadre">3</span><br>
+                    <b>0,0048</b> → les trois zéros de tête ne comptent pas (règle 3) → <span class="encadre">2</span><br>
+                    <b>0,250</b> → le zéro de tête ne compte pas, celui de fin oui (règles 3 et 4) → <span class="encadre">3</span><br>
+                    <b>1,20 × 10<sup>3</sup></b> → on ne compte que 1, 2 et 0 → <span class="encadre">3</span>
+                  </div>
+                  <p><b>La ligne qui trie la classe, c'est 0,250.</b> Les deux zéros s'y ressemblent et ne font pas du tout la même chose&nbsp;: celui de <b>gauche</b> place la virgule et ne compte pas&nbsp;; celui de <b>droite</b> est un chiffre <b>mesuré</b>, et il compte. Écrire 0,25 à la place serait perdre une information — ce serait annoncer une mesure dix fois moins précise.</p>
+                  <p><b>Et la dernière&nbsp;?</b> Le <span class="nb">× 10<sup>3</sup></span> ne renseigne pas sur la précision&nbsp;: il ne dit que l'ordre de grandeur. Les chiffres significatifs sont <b>toujours et seulement</b> ceux de <b>a</b>.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exo" data-cle="pc-o2-s2-ex2">
+              <p class="exo-num">Exercice 2</p>
+              <p class="exo-enonce">Et pour <span class="nb">100</span>&nbsp;? Choisis, puis justifie ta réponse à l'écrit sur ta feuille.</p>
+              <div class="field">
+                <span class="field-type">Exercice 2</span>
+                <div class="cloze" data-cloze data-cle="ex2">
+                  <div style="margin-bottom:9px"><b>1.</b> Le nombre <span class="nb">100</span>, écrit tel quel, porte
+                    <select data-answer="ambigu" aria-label="combien de chiffres significatifs pour 100">
+                      <option value="">— choisis —</option>
+                      <option value="trois">trois chiffres significatifs, il y a trois chiffres écrits</option>
+                      <option value="ambigu">un seul, si rien ne dit le contraire : l'écriture est ambiguë</option>
+                      <option value="zero">aucun, les zéros ne comptent jamais</option>
+                    </select>.</div>
+                  <div><b>2.</b> Pour annoncer <b>sans ambiguïté</b> que les trois chiffres ont été mesurés, on écrit
+                    <select data-answer="c" aria-label="comment écrire cent avec trois chiffres significatifs">
+                      <option value="">— choisis —</option>
+                      <option value="a">1 × 10<sup>2</sup></option>
+                      <option value="b">1,0 × 10<sup>2</sup></option>
+                      <option value="c">1,00 × 10<sup>2</sup></option>
+                    </select>.</div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 2</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Réponse&nbsp;: c'est ambigu, et par défaut on ne peut affirmer qu'un seul chiffre significatif.</b> Rien, dans l'écriture <span class="nb">100</span>, ne permet de savoir si les zéros ont été <b>mesurés</b> ou s'ils ne font que <b>placer l'ordre de grandeur</b>. Les règles 1 à 4 ne tranchent pas ce cas&nbsp;: elles décrivent les zéros de tête et les zéros après la virgule, pas les zéros de fin d'un entier.</p>
+                  <p><b>L'écriture scientifique, elle, tranche</b> — et c'est son meilleur argument&nbsp;:</p>
+                  <div class="calcul">
+                    <span class="nb">1 × 10<sup>2</sup></span> → <b>1</b> chiffre significatif&nbsp;: «&nbsp;environ cent&nbsp;»<br>
+                    <span class="nb">1,0 × 10<sup>2</sup></span> → <b>2</b> chiffres&nbsp;: le dixième de centaine est connu<br>
+                    <span class="nb">1,00 × 10<sup>2</sup></span> → <span class="encadre">3 chiffres</span>&nbsp;: les trois ont été mesurés
+                  </div>
+                  <p><b>La leçon à emporter.</b> Quand <b>tu</b> produis une donnée — un relevé de TP, un résultat intermédiaire — c'est à toi de lever l'ambiguïté&nbsp;: écris-la en puissance de dix. Tu verras d'ailleurs le même cas à l'étape 1.3, avec le <span class="nb">50</span> de <span class="nb">6,20 ÷ 50</span>.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o2-s2-application">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2</div>
+            <h3 class="step-title">Une vraie situation de TP</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> mener un calcul de physique-chimie du début à la fin, avec la bonne précision.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o2-s2-ex5">
+              <p class="exo-num">Exercice 3</p>
+              <p class="exo-enonce">Un échantillon de masse <span class="nb">m = 2,50 g</span> occupe un volume <span class="nb">V = 1,3 mL</span>. Calcule sa <b>masse volumique</b> ρ, et donne-la avec le bon nombre de chiffres significatifs.</p>
+              <div class="field">
+                <span class="field-type">Exercice 3</span>
+                <div class="cloze" data-cloze data-cle="ex5">
+                  <div style="margin-bottom:9px"><b>1.</b> La donnée qui limite la précision est
+                    <select data-answer="v" aria-label="quelle donnée limite la précision">
+                      <option value="">— choisis —</option>
+                      <option value="m">la masse m = 2,50 g</option>
+                      <option value="v">le volume V = 1,3 mL</option>
+                    </select>, et le résultat portera
+                  <input class="short" data-answer="2" placeholder="?" aria-label="nombre de chiffres significatifs du résultat" data-indice1="Compte les chiffres significatifs de chaque donnée et garde le plus petit compte." data-indice2="Une des deux données n'en a que deux."> chiffres significatifs.</div>
+                  <div><b>2.</b> On écrit donc ρ =
+                  <input class="short" data-answer="1,9" placeholder="?" aria-label="valeur de la masse volumique arrondie" data-indice1="Fais la division en entier, puis arrondis seulement à la fin." data-indice2="La calculatrice affiche 1,923… ; le chiffre suivant est un 2."> g·mL<sup>−1</sup>.</div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 3</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Rédige le calcul en entier sur ta feuille — données, relation, application, phrase — puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>1 · Les données, avec leur unité et leur compte.</b><br>
+                  <span class="nb">m = 2,50 g</span> → <b>3</b> chiffres significatifs (le zéro de fin compte).<br>
+                  <span class="nb">V = 1,3 mL</span> → <b>2</b> chiffres significatifs.</p>
+                  <p><b>2 · La relation, en lettres.</b></p>
+                  <div class="calcul">ρ = m / V</div>
+                  <p><b>3 · L'application numérique, et le résultat encadré.</b></p>
+                  <div class="calcul">ρ = 2,50 / 1,3 = 1,923076… &nbsp;→&nbsp; <span class="encadre">ρ = 1,9 g·mL<sup>−1</sup></span></div>
+                  <p><b>4 · La phrase.</b> La masse volumique de l'échantillon vaut <b>1,9 g·mL<sup>−1</sup></b>.</p>
+                  <p><b>5 · Le contrôle des chiffres significatifs.</b> C'est une <b>division</b>&nbsp;: on compte les chiffres, et on garde le plus petit compte. Le volume n'en apporte que <b>deux</b> — c'est lui le maillon faible, et il commande tout le calcul. Écrire <b>1,92</b> reviendrait à prétendre que le volume était connu au centième de millilitre, ce qu'aucune éprouvette ne permet.</p>
+                  <p class="doc-note" style="margin-top:10px">Le réflexe à prendre en TP&nbsp;: <b>c'est l'instrument le plus grossier qui fixe la précision de tout le résultat.</b> Peser au dix-millième de gramme ne sert à rien si le volume est lu à l'éprouvette.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o2-s2-arrondi">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3</div>
+            <h3 class="step-title">Le piège de l'arrondi intermédiaire</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> voir de ses yeux ce que coûte un arrondi fait trop tôt.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o2-s2-ex6">
+              <p class="exo-num">Exercice 4</p>
+              <p class="exo-enonce">Calcule <span class="nb">(4,7 × 3,26) ÷ 2,9</span> de <b>deux façons</b>&nbsp;: d'abord en arrondissant le produit avant de diviser, puis en menant le calcul d'un seul trait et en n'arrondissant qu'à la fin. Compare.</p>
+              <div class="field">
+                <span class="field-type">Exercice 4</span>
+                <div class="cloze" data-cloze data-cle="ex6">
+                  <div style="margin-bottom:9px"><b>1.</b> En arrondissant <b>en cours de route</b> (4,7 × 3,26 ≈ 15, puis 15 ÷ 2,9), on trouve
+                  <input class="short" data-answer="5,2" placeholder="?" aria-label="résultat avec arrondi intermédiaire" data-indice1="Divise l'arrondi 15 par 2,9, puis garde deux chiffres significatifs." data-indice2="La calculatrice affiche 5,172…"> .</div>
+                  <div style="margin-bottom:9px"><b>2.</b> En menant le calcul <b>d'un seul trait</b> (15,322 ÷ 2,9), on trouve
+                  <input class="short" data-answer="5,3" placeholder="?" aria-label="résultat sans arrondi intermédiaire" data-indice1="Fais tout le calcul sans rien arrondir, puis garde deux chiffres significatifs à la fin." data-indice2="La calculatrice affiche 5,283…"> .</div>
+                  <div><b>3.</b> Le résultat juste est celui
+                    <select data-answer="fin" aria-label="quel résultat est le bon">
+                      <option value="">— choisis —</option>
+                      <option value="cours">obtenu en arrondissant en cours de route</option>
+                      <option value="fin">obtenu en n'arrondissant qu'à la fin</option>
+                      <option value="egal">les deux, l'écart est négligeable</option>
+                    </select>.</div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 4</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Fais vraiment les deux calculs sur ta machine&nbsp;: l'écart ne se croit pas, il se constate.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>En arrondissant en cours de route</b> — la mauvaise méthode&nbsp;:</p>
+                  <div class="calcul">4,7 × 3,26 = 15,322 &nbsp;→&nbsp; arrondi à 2 chiffres → 15<br>
+                  15 ÷ 2,9 = 5,1724… &nbsp;→&nbsp; <span class="barre">5,2</span></div>
+                  <p><b>D'un seul trait</b> — la bonne&nbsp;:</p>
+                  <div class="calcul">(4,7 × 3,26) ÷ 2,9 = 15,322 ÷ 2,9 = 5,2834… &nbsp;→&nbsp; <span class="encadre">5,3</span></div>
+                  <p><b>Un chiffre d'écart sur deux chiffres significatifs</b>, c'est-à-dire une erreur sur le <b>dernier chiffre qu'on avait le droit d'écrire</b> — donc sur tout ce que le résultat prétend affirmer. Et ce n'est ici qu'un arrondi intermédiaire&nbsp;; dans un calcul en quatre ou cinq étapes, les arrondis se cumulent et l'écart grandit.</p>
+                  <p><b>La règle, en une phrase&nbsp;: on n'arrondit qu'à la toute fin du calcul.</b> Entre-temps, on garde tous les chiffres — ou mieux, on laisse le résultat dans la mémoire de la calculatrice sans le recopier. Le nombre de chiffres significatifs <b>se décide au début</b> (en regardant les données) mais <b>s'applique à la fin</b> (sur le résultat).</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.4 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o2-s2-serie">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4</div>
+            <h3 class="step-title">La série mélangée — huit calculs</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> choisir la bonne règle sans qu'on te dise laquelle. C'est le seul exercice qui mesure vraiment si la distinction est acquise.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p class="doc-note">Les huit calculs sont <b>dans le désordre</b>&nbsp;: rien ne dit lequel relève de quelle règle. Pour chaque ligne, choisis d'abord la <b>règle</b>, puis écris le <b>résultat</b>. Dans les deux colonnes, une virgule&nbsp;: <code>0,20</code>, et pas <code>0.20</code>.</p>
+
+            <div class="exo" data-cle="pc-o2-s2-ex-serie">
+              <p class="exo-num">Exercices 5 et 6 — la série finale</p>
+              <p class="exo-enonce">Donne chaque résultat avec le <b>bon nombre de chiffres significatifs</b>, ou au <b>bon rang</b> — à toi de voir lequel des deux.</p>
+              <div class="field">
+                <span class="field-type">Série mélangée</span>
+                <div class="cloze" data-cloze data-cle="serie">
+                  <div class="table-scroll">
+                    <table class="saisie">
+                      <tr><th>Calcul</th><th class="c">quelle règle&nbsp;?</th><th class="c">résultat</th></tr>
+
+                      <tr><td class="depart">3,8 ÷ 19,3</td>
+                        <td class="c"><select class="regle-choix" data-answer="compte" aria-label="règle pour 3,8 divisé par 19,3"><option value="">— choisis —</option><option value="compte">compte des chiffres significatifs</option><option value="rang">rang de la dernière décimale</option></select></td>
+                        <td class="c"><input class="short" data-answer="0,20" placeholder="?" aria-label="résultat de 3,8 divisé par 19,3" data-indice1="La calculatrice affiche 0,19689… ; garde autant de chiffres que la donnée la plus pauvre." data-indice2="3,8 n'a que deux chiffres significatifs. N'oublie pas le zéro final : il compte."></td></tr>
+
+                      <tr><td class="depart">1,25 + 0,025</td>
+                        <td class="c"><select class="regle-choix" data-answer="rang" aria-label="règle pour 1,25 plus 0,025"><option value="">— choisis —</option><option value="compte">compte des chiffres significatifs</option><option value="rang">rang de la dernière décimale</option></select></td>
+                        <td class="c"><input class="short" data-answer="1,28" placeholder="?" aria-label="résultat de 1,25 plus 0,025" data-indice1="Pose l'addition alignée sur la virgule, et repère où s'arrête la donnée la moins précise." data-indice2="1,25 s'arrête au centième ; 1,275 arrondi au centième."></td></tr>
+
+                      <tr><td class="depart">2,5 × 3,42</td>
+                        <td class="c"><select class="regle-choix" data-answer="compte" aria-label="règle pour 2,5 fois 3,42"><option value="">— choisis —</option><option value="compte">compte des chiffres significatifs</option><option value="rang">rang de la dernière décimale</option></select></td>
+                        <td class="c"><input class="short" data-answer="8,6" placeholder="?" aria-label="résultat de 2,5 fois 3,42" data-indice1="La calculatrice affiche 8,55." data-indice2="2,5 n'a que deux chiffres significatifs."></td></tr>
+
+                      <tr><td class="depart">250,0 + 5,0</td>
+                        <td class="c"><select class="regle-choix" data-answer="rang" aria-label="règle pour 250,0 plus 5,0"><option value="">— choisis —</option><option value="compte">compte des chiffres significatifs</option><option value="rang">rang de la dernière décimale</option></select></td>
+                        <td class="c"><input class="short" data-answer="255,0" placeholder="?" aria-label="résultat de 250,0 plus 5,0" data-indice1="Les deux données s'arrêtent au même rang." data-indice2="Le zéro final doit être écrit : il a été mesuré."></td></tr>
+
+                      <tr><td class="depart">6,20 ÷ 50</td>
+                        <td class="c"><select class="regle-choix" data-answer="compte" aria-label="règle pour 6,20 divisé par 50"><option value="">— choisis —</option><option value="compte">compte des chiffres significatifs</option><option value="rang">rang de la dernière décimale</option></select></td>
+                        <td class="c"><input class="short" data-answer="0,12" placeholder="?" aria-label="résultat de 6,20 divisé par 50" data-indice1="La calculatrice affiche 0,124." data-indice2="50 est une valeur mesurée à deux chiffres significatifs."></td></tr>
+
+                      <tr><td class="depart">12,3 + 0,456</td>
+                        <td class="c"><select class="regle-choix" data-answer="rang" aria-label="règle pour 12,3 plus 0,456"><option value="">— choisis —</option><option value="compte">compte des chiffres significatifs</option><option value="rang">rang de la dernière décimale</option></select></td>
+                        <td class="c"><input class="short" data-answer="12,8" placeholder="?" aria-label="résultat de 12,3 plus 0,456" data-indice1="12,3 s'arrête au dixième : le résultat aussi." data-indice2="12,756 arrondi au dixième."></td></tr>
+
+                      <tr><td class="depart">0,456 × 12,3</td>
+                        <td class="c"><select class="regle-choix" data-answer="compte" aria-label="règle pour 0,456 fois 12,3"><option value="">— choisis —</option><option value="compte">compte des chiffres significatifs</option><option value="rang">rang de la dernière décimale</option></select></td>
+                        <td class="c"><input class="short" data-answer="5,61" placeholder="?" aria-label="résultat de 0,456 fois 12,3" data-indice1="La calculatrice affiche 5,6088. Les deux données ont le même nombre de chiffres significatifs." data-indice2="Trois chiffres significatifs — attention, ce n'est pas trois décimales."></td></tr>
+
+                      <tr><td class="depart">6,20 − 0,025</td>
+                        <td class="c"><select class="regle-choix" data-answer="rang" aria-label="règle pour 6,20 moins 0,025"><option value="">— choisis —</option><option value="compte">compte des chiffres significatifs</option><option value="rang">rang de la dernière décimale</option></select></td>
+                        <td class="c"><input class="short" data-answer="6,18" placeholder="?" aria-label="résultat de 6,20 moins 0,025" data-indice1="Une soustraction suit la même règle qu'une addition." data-indice2="6,20 s'arrête au centième ; 6,175 arrondi au centième."></td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier la série</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Pose chaque addition sur ta feuille, alignée sur la virgule&nbsp;: c'est le geste qui empêche l'erreur, pas la mémoire de la règle.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Les quatre produits et quotients — on compte des chiffres&nbsp;:</b></p>
+                  <div class="calcul">
+                    3,8 ÷ 19,3 = 0,19689… &nbsp;·&nbsp; 3,8 → <b>2</b> chiffres &nbsp;→&nbsp; <span class="encadre">0,20</span><br>
+                    2,5 × 3,42 = 8,55 &nbsp;·&nbsp; 2,5 → <b>2</b> chiffres &nbsp;→&nbsp; <span class="encadre">8,6</span><br>
+                    6,20 ÷ 50 = 0,124 &nbsp;·&nbsp; 50 → <b>2</b> chiffres &nbsp;→&nbsp; <span class="encadre">0,12</span><br>
+                    0,456 × 12,3 = 5,6088 &nbsp;·&nbsp; les deux → <b>3</b> chiffres &nbsp;→&nbsp; <span class="encadre">5,61</span>
+                  </div>
+                  <p><b>Les quatre sommes et différences — on repère un rang&nbsp;:</b></p>
+                  <div class="calcul">
+                    1,25 + 0,025 = 1,275 &nbsp;·&nbsp; arrêt au <b>centième</b> &nbsp;→&nbsp; <span class="encadre">1,28</span><br>
+                    250,0 + 5,0 = 255,0 &nbsp;·&nbsp; arrêt au <b>dixième</b> &nbsp;→&nbsp; <span class="encadre">255,0</span><br>
+                    12,3 + 0,456 = 12,756 &nbsp;·&nbsp; arrêt au <b>dixième</b> &nbsp;→&nbsp; <span class="encadre">12,8</span><br>
+                    6,20 − 0,025 = 6,175 &nbsp;·&nbsp; arrêt au <b>centième</b> &nbsp;→&nbsp; <span class="encadre">6,18</span>
+                  </div>
+                  <p><b>Les deux lignes à comparer absolument&nbsp;: <span class="nb">0,20</span> et <span class="nb">255,0</span>.</b> La première ne garde que <b>deux</b> chiffres alors qu'elle a deux décimales&nbsp;; la seconde en garde <b>quatre</b> alors que l'une de ses données n'en avait que deux. Si tu avais appliqué la règle du compte à l'addition, tu aurais écrit <span class="nb">2,6 × 10<sup>2</sup></span> au lieu de 255,0 — une perte de deux chiffres, sur un calcul où rien ne s'est perdu.</p>
+                  <p><b>Le zéro final de 0,20 n'est pas décoratif.</b> Écrire 0,2 annoncerait un seul chiffre significatif, donc une précision dix fois moindre que celle que les données permettent. On l'écrit.</p>
+                  <p><b>Et 0,456 × 12,3 = 5,61&nbsp;?</b> Trois chiffres significatifs — mais seulement <b>deux</b> décimales. C'est le rappel utile&nbsp;: <b>chiffres significatifs ≠ décimales</b>. Confondre les deux, c'est confondre les deux règles.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Outil transversal — proposition V1 du 25/08/2026.</b> Cet outil n'est pas un chapitre&nbsp;: il sert dans tous les chapitres, et il reste ouvert toute l'année. Les exercices se corrigent <b>en direct</b>, et chacun porte en plus son <b>corrigé rédigé</b>, dépliable à tout moment. 🖨️ La <a href="../fiches/fiche-2nde-o2-chiffres-significatifs.html" style="color:var(--link)">fiche outil</a> reprend toute la méthode sur une feuille à coller. 📐 Pour l'écriture des nombres eux-mêmes, vois <a href="2nde-pc-o1-ecriture-scientifique.html" style="color:var(--link)">l'outil 1</a>.
+  </footer>
+</div>
+
+<script src="../assets/js/sequence-snt.js?v=41"></script>
+
+<!-- ============================================================
+     JS propre à l'outil. Un seul composant : le compteur de chiffres
+     significatifs de l'étape 1.1. Le moteur partagé n'est pas touché
+     — ce compteur est une illustration, il n'enregistre rien et ne
+     valide rien.
+
+     Plus l'appoint d'affichage commun aux outils : renommer le bouton
+     de fiche produit par le moteur, pour que « fiche outil » (le cours
+     imprimable) et « Mes réponses » (le travail de l'élève) ne portent
+     pas le même mot.
+     ============================================================ -->
+<script>
+(function(){
+  'use strict';
+
+  /* =========================================================
+     COMPTEUR DE CHIFFRES SIGNIFICATIFS — étape 1.1
+     Analyse la CHAÎNE saisie, jamais un Number : « 0,250 » converti
+     en nombre devient 0.25 et perd précisément le zéro dont on
+     parle. Trois états par chiffre :
+       oui   — compté
+       non   — ne compte pas (zéro de tête)
+       doute — ambigu (zéro de fin d'un entier sans virgule)
+     ========================================================= */
+  function analyser(brut){
+    var t = String(brut || '').trim().replace(/\s/g, '').replace(/\./g, ',');
+    if (!/^[+-]?[0-9]*,?[0-9]*$/.test(t) || !/[0-9]/.test(t))
+      return { erreur:'Écris un nombre décimal, avec une virgule — par exemple 0,250.' };
+
+    t = t.replace(/^[+-]/, '');
+    var virgule = t.indexOf(',') >= 0;
+    var chiffres = [], i;
+    for (i = 0; i < t.length; i++) chiffres.push({ c:t[i], etat: t[i] === ',' ? 'ponc' : null });
+
+    /* zéros de tête : tout ce qui précède le premier chiffre non nul */
+    var vuNonNul = false;
+    for (i = 0; i < chiffres.length; i++){
+      var x = chiffres[i];
+      if (x.etat === 'ponc') continue;
+      if (!vuNonNul && x.c === '0') { x.etat = 'non'; continue; }
+      vuNonNul = true;
+      x.etat = 'oui';
+    }
+    if (!vuNonNul) {                       /* que des zéros : 0 · 0,00 */
+      return { chiffres:chiffres, total:1, doute:0,
+               glose:'Un nombre entièrement nul est un cas limite : on lui accorde par convention <b>un</b> chiffre significatif.' };
+    }
+
+    /* zéros de fin d'un ENTIER : ambigus, personne ne peut trancher */
+    var doute = 0;
+    if (!virgule){
+      for (i = chiffres.length - 1; i >= 0; i--){
+        if (chiffres[i].c !== '0') break;
+        chiffres[i].etat = 'doute'; doute++;
+      }
+    }
+    var total = 0;
+    chiffres.forEach(function(x){ if (x.etat === 'oui') total++; });
+
+    var g = [];
+    var tete = chiffres.filter(function(x){ return x.etat === 'non'; }).length;
+    if (tete) g.push('<b>Règle 3</b> — ' + tete + ' zéro' + (tete > 1 ? 's' : '')
+                     + ' de tête ne compte' + (tete > 1 ? 'nt' : '') + ' pas : ' + (tete > 1 ? 'ils placent' : 'il place') + ' la virgule.');
+    var interne = 0, fin = 0, apresVirgule = false;
+    chiffres.forEach(function(x, k){
+      if (x.etat === 'ponc') { apresVirgule = true; return; }
+      if (x.etat !== 'oui') return;
+      if (x.c !== '0') return;
+      var reste = chiffres.slice(k + 1).some(function(y){ return y.etat === 'oui' && y.c !== '0'; });
+      if (reste) interne++; else if (apresVirgule) fin++;
+    });
+    if (interne) g.push('<b>Règle 2</b> — ' + interne + ' zéro' + (interne > 1 ? 's' : '') + ' entre deux chiffres : il' + (interne > 1 ? 's comptent' : ' compte') + '.');
+    if (fin) g.push('<b>Règle 4</b> — ' + fin + ' zéro' + (fin > 1 ? 's' : '') + ' à droite après la virgule : il' + (fin > 1 ? 's ont' : ' a') + ' été mesuré' + (fin > 1 ? 's' : '') + ', donc il' + (fin > 1 ? 's comptent' : ' compte') + '.');
+    if (doute) g.push('<b>Cas ambigu</b> — ' + doute + ' zéro' + (doute > 1 ? 's' : '') + ' de fin sans virgule : impossible de savoir '
+                    + (doute > 1 ? "s'ils ont" : "s'il a") + ' été mesuré' + (doute > 1 ? 's' : '') + '. Écris le nombre en puissance de dix pour lever le doute.');
+    if (!g.length) g.push('Aucun zéro à trancher : tous les chiffres écrits sont significatifs (<b>règle 1</b>).');
+    return { chiffres:chiffres, total:total, doute:doute, glose:g.join('<br>') };
+  }
+
+  function compteur(hote){
+    var zone  = hote.querySelector('[data-cpt-chiffres]'),
+        tot   = hote.querySelector('[data-cpt-total]'),
+        lab   = hote.querySelector('[data-cpt-lab]'),
+        gl    = hote.querySelector('[data-cpt-glose]'),
+        champ = hote.querySelector('[data-cpt-input]'),
+        btns  = Array.prototype.slice.call(hote.querySelectorAll('[data-nb]'));
+    if (!zone || !champ) return;
+
+    function maj(){
+      var r = analyser(champ.value);
+      zone.textContent = '';
+      if (r.erreur){
+        tot.textContent = '—'; lab.textContent = '';
+        gl.innerHTML = r.erreur;
+        return;
+      }
+      r.chiffres.forEach(function(x){
+        var s = document.createElement('span');
+        s.className = 'cpt-c ' + x.etat;
+        s.textContent = x.c;
+        zone.appendChild(s);
+      });
+      tot.textContent = r.doute ? r.total + '…' + (r.total + r.doute) : r.total;
+      lab.textContent = r.doute ? 'ambigu' : (r.total > 1 ? 'chiffres significatifs' : 'chiffre significatif');
+      gl.innerHTML = r.glose;
+    }
+    champ.addEventListener('input', function(){
+      btns.forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.nb === champ.value ? 'true' : 'false'); });
+      maj();
+    });
+    btns.forEach(function(b){
+      b.addEventListener('click', function(){
+        champ.value = b.dataset.nb;
+        btns.forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        maj();
+      });
+    });
+    maj();
+  }
+
+  /* =========================================================
+     APPOINT D'AFFICHAGE — le nom de la fiche produite par le moteur.
+     Voir le commentaire jumeau dans l'outil 1 : le moteur est partagé
+     par huit pages et ne se modifie pas depuis ici (interdiction §0).
+     Une seule écriture, hors de .steps : le MutationObserver du moteur
+     ne surveille que les étapes.
+     ========================================================= */
+  function renommerFiche(){
+    document.querySelectorAll('.seance-actions').forEach(function(bar){
+      var dl = bar.querySelector('.btn.dl');
+      if (dl && dl.textContent.indexOf('Mes réponses') < 0) dl.textContent = '📄 Mes réponses (PDF)';
+      var lab = bar.querySelector('.sa-label');
+      if (lab && lab.dataset.renomme !== '1'){
+        lab.dataset.renomme = '1';
+        lab.innerHTML = '💾 <b>Mes réponses</b> rassemble ce que tu as écrit sur cette page, avec les corrections : '
+                      + 'à enregistrer en PDF et à déposer sur ton OneDrive. La <b>fiche outil</b>, elle, est le cours '
+                      + 'à imprimer — le lien est en haut de la page.';
+      }
+    });
+  }
+
+  function demarrer(){
+    document.querySelectorAll('[data-compteur]').forEach(compteur);
+    renommerFiche();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
+  else demarrer();
+})();
+</script>
+
+</body></html>

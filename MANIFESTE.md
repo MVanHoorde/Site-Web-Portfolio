@@ -23,6 +23,7 @@
 | savoir *pourquoi* c'est comme ça | `_suivi/DECISIONS.md` | 3 000 |
 | retrouver ce qui s'est passé | `_suivi/JOURNAL.md` | *ne pas lire par défaut* |
 | **produire une séquence SNT** | `_modeles/CONSIGNES-sequence-SNT.md` | 6 500 |
+| **produire un outil transversal de PC** | `_modeles/CONSIGNES-outil-PC.md` + `pages/2nde-pc-o1-ecriture-scientifique.html` | 7 000 |
 | **récupérer un chapitre PC depuis son PPTX/PDF (V1 intégrale)** | `_modeles/CONSIGNES-V1-integrale-PC.md` + `_modeles/gabarit-chapitre.html` | 6 000 |
 | **raffiner un chapitre PC / faire sa fiche** | `_modeles/CONSIGNES-chapitre-PC.md` + `_modeles/gabarit-chapitre.html` | 8 500 |
 | l'état fin d'un chapitre / d'une séquence | `_suivi/chapitres.md` (section concernée) | 500 par section |
@@ -56,8 +57,10 @@
 | Assets | `chapitre-commun.css?v=N` | `sequence-snt.css?v=N` + `sequence-snt.js` |
 | Maturité | rodé, 14 chapitres | phase 2, 8 séquences, 0 validée |
 
-Une troisième famille existe (Enseignement scientifique Terminale) :
-`_modeles/CONSIGNES-sequence-ES.md`.
+Deux autres familles existent : les **outils transversaux de physique-chimie**
+(`_modeles/CONSIGNES-outil-PC.md` — pas de progression, moteur SNT, fiche A4
+complétée, corrigés en ligne) et l'**Enseignement scientifique Terminale**
+(`_modeles/CONSIGNES-sequence-ES.md`).
 
 ---
 

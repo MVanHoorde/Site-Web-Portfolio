@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil 1 · Puissances de dix et écriture scientifique — Physique-Chimie 2nde</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- Client de base de données partagé. Absent ou non configuré : l'outil
+     fonctionne, sans enregistrement. Sans "defer" à dessein : le script de
+     la page, en fin de body, doit le trouver déjà chargé. -->
+<script src="../assets/js/progression.js?v=16"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     OUTIL TRANSVERSAL — famille « Outils transversaux » de PC.
+     Tourne sur le moteur SNT (décision D2 du 25/08/2026) : c'est le
+     seul moteur qui apporte les trous tolérants, les QCM plein écran,
+     le mode enseignant et l'enregistrement en base.
+
+     Le sommaire généré (assets/js/seances-snt) et le verrou de
+     progression (verrou-snt) ne sont PAS chargés — décision D7 : un
+     outil ne suit aucune progression, il n'a ni rang, ni plafond
+     d'avance, ni verrou inter-pages. Le moteur teste window.VerrouSNT
+     avant de s'en servir : son absence est prévue.
+     ⚠ Ne pas réécrire le nom de ces fichiers avec leur extension,
+     même en commentaire : verifier.mjs cherche la chaîne « seances-
+     snt.js » dans TOUT le HTML, commentaires compris, et signalerait
+     la page comme le chargeant sans numéro de version.
+
+     CSS propre à l'outil, inline comme dans m1. Aucune couleur en dur :
+     tout passe par les variables de sequence-snt.css.
+     ============================================================ -->
+<style>
+  /* ---------- Encart intermédiaire — PAS un « à retenir » ----------
+     La classe .retain du moteur porte son propre bandeau et la mention
+     ★★ : l'employer au milieu d'une étape ferait croire à du programme
+     là où il n'y a qu'une précision. */
+  .point-cle{border-left:3px solid var(--link);background:var(--surface);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px;margin:10px 0}
+  .point-cle.alerte{border-left-color:var(--activity);background:var(--activity-wash)}
+  .point-cle code{background:var(--surface-2);padding:1px 5px;border-radius:4px;font-size:.9em;color:var(--link)}
+
+  /* ---------- Exemple entièrement résolu, ouvert par défaut ----------
+     Sa structure EST la règle de rédaction d'un calcul : cinq lignes
+     numérotées, toujours les mêmes, dans le même ordre. L'élève finit
+     par les reconnaître sans qu'on ait eu à les énoncer. */
+  .exemple{border:1px solid var(--ok);background:var(--ok-wash);border-radius:12px;padding:12px 14px;margin:12px 0}
+  .exemple-titre{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+                 color:var(--ok);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .exemple-titre::before{content:"✓ exemple résolu";background:var(--ok);color:var(--surface);border-radius:5px;padding:1px 7px;letter-spacing:.05em}
+  .ex-etape{display:grid;grid-template-columns:22px 1fr;gap:9px;align-items:baseline;margin-bottom:9px}
+  .ex-etape:last-child{margin-bottom:0}
+  .ex-etape > .n{font-family:"IBM Plex Mono";font-size:12px;font-weight:700;color:var(--ok);
+                 border:1.5px solid var(--ok);border-radius:50%;width:20px;height:20px;
+                 display:flex;align-items:center;justify-content:center;line-height:1}
+  .ex-etape > div{min-width:0;font-size:14.5px}
+  .ex-lab{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+          color:var(--ink-faint);display:block;margin-bottom:2px}
+
+  /* le calcul déroulé : une ligne par égalité, en chasse fixe */
+  .calcul{font-family:"IBM Plex Mono";font-size:15px;line-height:2;overflow-x:auto;margin:6px 0 2px}
+  .calcul b{color:var(--link)}
+  .calcul .encadre{color:var(--ok);font-weight:700;border:1.5px solid var(--ok);border-radius:6px;padding:1px 7px;white-space:nowrap}
+  @media(max-width:560px){.calcul{font-size:13px}}
+
+  /* nombre au fil du texte, insécable : « 1,6 × 10⁻¹⁹ » cassé en deux
+     lignes se lit comme deux nombres. */
+  .nb{font-family:"IBM Plex Mono";white-space:nowrap}
+  .nb sup{font-size:.7em}
+
+  /* ---------- Les quatre règles de calcul sur les puissances (étape 1.3) ----------
+     Fond du collègue, repris de sa fiche « Écriture scientifique ». Sans
+     elles, « les puissances s'ajoutent » est une affirmation sans preuve. */
+  .regles-puiss{display:grid;gap:7px;margin:10px 0}
+  .rp{display:grid;grid-template-columns:1fr auto;gap:11px;align-items:center;
+      background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 13px}
+  .rp-eq{font-family:"IBM Plex Mono";font-size:15px;color:var(--link);font-weight:600}
+  .rp-g{font-size:13.5px;color:var(--ink-soft);text-align:right}
+  @media(max-width:620px){.rp{grid-template-columns:1fr}.rp-g{text-align:left;margin-top:3px}}
+
+  /* ---------- Encadré « à éviter » — repris du cahier de vacances ---------- */
+  .eviter{border:1px solid var(--err);border-left:4px solid var(--err);background:var(--err-wash);
+          border-radius:0 10px 10px 0;padding:11px 14px;margin:12px 0;font-size:14.5px}
+  .eviter .et{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+              color:var(--err);font-weight:600;display:block;margin-bottom:6px}
+  .eviter .faux{font-family:"IBM Plex Mono";text-decoration:line-through;color:var(--err);white-space:nowrap}
+  .eviter ul{margin:6px 0 0;padding-left:20px}
+  .eviter li{margin-bottom:5px}
+
+  /* ---------- Frise des échelles (étape 1.1) ---------- */
+  .echelles{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px}
+  .echelles svg{width:100%;height:auto;display:block;max-width:520px;margin:0 auto}
+  .ech-axe{stroke:var(--ink-soft);stroke-width:2}
+  .ech-tick{stroke:var(--ink-soft);stroke-width:1.5}
+  .ech-zero{stroke:var(--link);stroke-width:2.5}
+  .ech-exp{font-family:"IBM Plex Mono";font-size:17px;font-weight:600;fill:var(--link);text-anchor:end}
+  .ech-obj{font-family:"IBM Plex Sans";font-size:15px;fill:var(--ink-soft);text-anchor:start}
+  .ech-obj.fort{fill:var(--ink);font-weight:600}
+  .ech-cote{font-family:"IBM Plex Mono";font-size:13px;fill:var(--ink-faint);text-anchor:middle;letter-spacing:.06em}
+
+  /* ---------- Curseur d'exposant (étape 1.2) — le cœur de l'outil ---------- */
+  .curseur{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:13px}
+  .cur-barre{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;font-size:13.5px;color:var(--ink-soft)}
+  .cur-barre .btn[aria-pressed="true"]{background:var(--link);color:var(--surface);border-color:var(--link)}
+  .cur-ecran{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 12px;text-align:center}
+  .cur-sci{font-family:"IBM Plex Mono";font-size:clamp(22px,6vw,30px);font-weight:600;color:var(--link);line-height:1.3}
+  .cur-sci sup{font-size:.6em}
+  .cur-eq{font-family:"IBM Plex Mono";font-size:20px;color:var(--ink-faint);margin:4px 0}
+  .cur-dec{font-family:"IBM Plex Mono";font-size:clamp(15px,3.6vw,20px);font-weight:600;color:var(--ink);
+           word-break:break-all;line-height:1.6}
+  .cur-dec .z{color:var(--activity)}
+  .cur-glose{font-size:13.5px;color:var(--ink-soft);margin-top:9px;line-height:1.5}
+  .cur-reglage{display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:center;margin-top:13px}
+  .cur-reglage span{font-family:"IBM Plex Mono";font-size:15px;color:var(--ink-soft)}
+  .cur-reglage output{font-family:"IBM Plex Mono";font-size:19px;font-weight:700;color:var(--link);min-width:3.2em;text-align:right}
+  .cur-reglage input[type="range"]{width:100%;height:30px;accent-color:var(--link);cursor:pointer}
+  .cur-reglage input[type="range"]:focus{outline:2px solid var(--link);outline-offset:2px;border-radius:4px}
+
+  /* ---------- Axe logarithmique de l'ordre de grandeur (étape 1.4) ---------- */
+  .logaxe{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px}
+  .logaxe svg{width:100%;height:auto;display:block}
+  .lg-axe{stroke:var(--ink-soft);stroke-width:2}
+  .lg-tick{stroke:var(--ink-soft);stroke-width:1.5}
+  .lg-val{font-family:"IBM Plex Mono";font-size:15px;fill:var(--ink-soft);text-anchor:middle}
+  .lg-seuil{stroke:var(--err);stroke-width:2.5;stroke-dasharray:6 4}
+  .lg-seuil-txt{font-family:"IBM Plex Mono";font-size:15px;font-weight:700;fill:var(--err);text-anchor:middle}
+  .lg-zoneg{fill:var(--link-wash)}
+  .lg-zoned{fill:var(--activity-wash)}
+  .lg-zone-txt{font-family:"IBM Plex Mono";font-size:16px;font-weight:600;text-anchor:middle}
+  .lg-zone-txt.g{fill:var(--link)}
+  .lg-zone-txt.d{fill:var(--activity)}
+  .lg-note{font-family:"IBM Plex Sans";font-size:14px;fill:var(--ink-faint);text-anchor:middle}
+
+  /* ---------- Écrans de calculatrice (exercice 6) ---------- */
+  .calcs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  @media(max-width:620px){.calcs{grid-template-columns:1fr}}
+  .calcs svg{width:100%;height:auto;display:block}
+  .cs-boitier{fill:var(--surface);stroke:var(--line);stroke-width:2}
+  .cs-ecran{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+  .cs-saisie{font-family:"IBM Plex Mono";font-size:16px;fill:var(--ink-faint);text-anchor:end}
+  .cs-res{font-family:"IBM Plex Mono";font-size:25px;font-weight:700;text-anchor:end}
+  .cs-res.ok{fill:var(--ok)} .cs-res.ko{fill:var(--err)}
+  .cs-etiq{font-family:"IBM Plex Mono";font-size:13px;letter-spacing:.08em;text-anchor:start;font-weight:600}
+  .cs-etiq.ok{fill:var(--ok)} .cs-etiq.ko{fill:var(--err)}
+
+  /* ---------- Le composant EXERCICE (§10 du brief) ----------
+     Local à la page, jamais un ajout au moteur. Le corrigé est un
+     <details> fermé, jamais verrouillé, jamais minuté : l'élève est
+     chez lui, le soir. La phrase « cherche d'abord » est le contrat,
+     pas une serrure. */
+  .exo{border:1px solid var(--line);border-left:4px solid var(--activity);border-radius:0 12px 12px 0;
+       background:var(--surface);padding:13px 15px;margin:16px 0}
+  .exo-num{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--activity);font-weight:600;margin:0 0 7px}
+  .exo-enonce{font-size:15px;margin:0 0 11px;line-height:1.6}
+  .exo-consigne{font-size:13.5px;color:var(--ink-soft);margin:12px 0 8px;font-style:italic}
+  .exo-corr{border-top:1px dashed var(--line);padding-top:9px;margin-top:4px}
+  .exo-corr summary{font-family:"IBM Plex Mono";font-size:13px;color:var(--link);cursor:pointer;
+                    padding:5px 2px;min-height:32px;display:flex;align-items:center;gap:6px}
+  .exo-corr summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:5px}
+  .exo-corr[open] summary{margin-bottom:8px;color:var(--ink-soft)}
+  .exo-corr .corps{font-size:14.5px;line-height:1.65;border-left:3px solid var(--ok);
+                   background:var(--ok-wash);border-radius:0 10px 10px 0;padding:11px 14px}
+  .exo-corr .corps p{margin:0 0 8px}
+  .exo-corr .corps p:last-child{margin-bottom:0}
+
+  /* ---------- Table de saisie : a · signe de n · n ----------
+     Trois décisions séparées, une colonne chacune. Écrire « a × 10ⁿ »
+     dans une seule case était impossible : la normalisation du moteur
+     efface le signe moins, et « 10^-3 » devenait indistinguable de
+     « 10^3 » — l'erreur la plus fréquente aurait été comptée juste.
+     Le signe passe donc par un menu déroulant, corrigé à l'exact. */
+  .saisie{width:100%;border-collapse:collapse;font-size:15px}
+  .saisie th{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;
+             color:var(--ink-faint);font-weight:600;text-align:left;padding:0 8px 7px;border-bottom:1px solid var(--line)}
+  .saisie th.c{text-align:center}
+  .saisie td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .saisie td.c{text-align:center}
+  .saisie tr:last-child td{border-bottom:0}
+  .saisie .depart{font-family:"IBM Plex Mono";font-size:15px;color:var(--ink);white-space:nowrap}
+  .saisie .signe{font-family:"IBM Plex Mono";font-size:16px;color:var(--ink-faint)}
+  .saisie select.short{min-height:34px}
+  .saisie input.short{min-height:32px}
+
+  /* Un menu déroulant dont l'option la plus longue est une phrase prend
+     la largeur de cette phrase : sur téléphone, il sortait de la carte.
+     Il se borne à la largeur disponible ; le texte de l'option choisie
+     reste lisible une fois déroulé. */
+  .cloze select{max-width:100%}
+
+
+  /* ---------- Repli téléphone des tables de saisie ----------
+     À 390 px, trois colonnes obligeaient à faire défiler le bloc
+     latéralement pour CHAQUE ligne — huit fois de suite sur la série
+     finale. La ligne devient donc un bloc : l'énoncé sur sa propre
+     ligne, les champs dessous. L'en-tête disparaît : il n'a plus de
+     colonnes à nommer, et les placeholders (a · n · ?) le remplacent. */
+  @media(max-width:560px){
+    .saisie{display:block}
+    .saisie tr:first-child{display:none}
+    .saisie tr{display:flex;flex-wrap:wrap;align-items:center;gap:9px 10px;
+               padding:11px 2px;border-bottom:1px solid var(--line)}
+    .saisie tr:last-child{border-bottom:0}
+    .saisie td{display:block;padding:0;border:0;text-align:left}
+    .saisie td.depart{flex-basis:100%;font-weight:600;white-space:normal}
+    .saisie select.regle-choix{flex:1 1 100%;max-width:100%}
+  }
+
+
+  /* .table-scroll vient de la feuille partagée (défilement propre au
+     conteneur : la page, elle, ne défile jamais latéralement). On n'y
+     ajoute que ce qu'elle n'a pas — l'insécabilité de TOUTES les
+     cellules, et pas seulement de la première. */
+  .table-scroll .doc-table td,.table-scroll .doc-table th{white-space:nowrap}
+  .doc-table .base{background:var(--link-wash);font-weight:600}
+  .doc-table.volumes td,.doc-table.volumes th{text-align:center;font-family:"IBM Plex Mono";font-size:13.5px}
+
+  /* Lien vers la fiche imprimable, en tête de page. « Fiche outil »
+     et « Mes réponses » désignent deux objets différents : le cours
+     à coller, et le récapitulatif que le moteur produit. */
+  .vers-fiche{display:inline-flex;align-items:center;gap:8px;font-size:14px;text-decoration:none;
+              color:var(--link);background:var(--link-wash);border:1px solid var(--line);
+              border-radius:10px;padding:9px 14px;margin-top:16px;min-height:44px}
+  .vers-fiche:hover{border-color:var(--link)}
+  .vers-fiche:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+</style>
+</head><body data-sequence="pc-o1">
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Physique-Chimie · Outil transversal · Seconde</div>
+    <h1 class="title">Puissances de dix et écriture scientifique <span class="tag" style="display:block;margin-top:8px">a × 10ⁿ · préfixes · ordre de grandeur</span></h1>
+    <p class="lede">La charge d'un électron vaut 0,000&nbsp;000&nbsp;000&nbsp;000&nbsp;000&nbsp;000&nbsp;16&nbsp;C. Personne ne lit ce nombre, personne ne le recopie sans se tromper. L'écriture scientifique règle le problème en une ligne — et tu t'en serviras dans tous les chapitres de l'année, en chimie comme en physique.</p>
+    <div class="themes">
+      <span class="theme-chip on">Outil 1 · Écriture scientifique</span><span class="theme-chip">Outil 2 · Chiffres significatifs</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>Deux parties</b></span>
+      <span class="m">Durée <b>≈ 1 h</b></span>
+      <span class="m">Aucun verrou&nbsp;: <b>cet outil est ouvert toute l'année</b></span>
+    </div>
+    <a class="vers-fiche" href="../fiches/fiche-2nde-o1-ecriture-scientifique.html">🖨️ Fiche outil — la méthode à imprimer et à coller</a>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — tout est ouvert.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-physique-chimie.html">← Physique-Chimie</a>
+    <a href="#s1"><span class="n">1</span>La méthode</a>
+    <a href="#s2" data-navlock="2"><span class="n">2</span>S'entraîner <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip done"></span>Validé</span>
+  </div>
+
+
+  <!-- ===================== 1 — LA MÉTHODE ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">1</span>La méthode</h2>
+      <span class="seance-time">≈ 30 min</span>
+    </div>
+    <p class="seance-goal">Écrire n'importe quel nombre sous la forme <span class="nb">a × 10<sup>n</sup></span>, passer d'une unité à une autre sans compter les zéros à l'œil, et donner un ordre de grandeur.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- 1.1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o1-s1-pourquoi">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1</div>
+            <h3 class="step-title">Pourquoi cette écriture&nbsp;?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre que l'exposant n'est pas une décoration&nbsp;: il <b>est</b> l'échelle du nombre.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Le même nombre, deux fois<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Voici la <b>charge élémentaire</b>, celle que porte un proton. D'abord telle qu'on l'écrirait sans méthode&nbsp;:</p>
+            <div class="calcul" style="text-align:center">e = 0,000&nbsp;000&nbsp;000&nbsp;000&nbsp;000&nbsp;000&nbsp;16 C</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Compte les zéros. Recompte-les. C'est bien le problème&nbsp;: <b>personne</b> ne les compte juste du premier coup, et une erreur d'un seul zéro multiplie ou divise le résultat par dix. Maintenant la même charge, en écriture scientifique&nbsp;:</p>
+            <div class="calcul" style="text-align:center">e = <span class="encadre">1,6 × 10<sup>−19</sup> C</span></div>
+            <p style="font-size:14.5px;margin:4px 0 12px">Deux chiffres, un exposant, et rien à compter. L'exposant <b>−19</b> dit à lui seul de combien de rangs la virgule s'est déplacée&nbsp;: il porte toute l'échelle du nombre.</p>
+
+            <div class="block-label">Ce que l'exposant représente vraiment</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Sur cette frise, chaque graduation vaut <b>une puissance de dix</b> — donc <b>dix fois</b> la précédente. De l'atome à la Terre, il n'y a que dix-sept graduations&nbsp;: c'est tout ce que l'exposant a besoin de dire.</p>
+
+            <div class="echelles">
+              <svg viewBox="0 0 480 700" role="img" aria-label="Frise verticale des ordres de grandeur, de 10 puissance moins 10 mètre (rayon d'un atome) à 10 puissance 7 mètres (rayon de la Terre) : une graduation par puissance de dix.">
+                <line class="ech-axe" x1="168" y1="46" x2="168" y2="682"/>
+                <!-- 10^7 -->
+                <line class="ech-tick" x1="160" y1="58" x2="176" y2="58"/>
+                <text class="ech-exp" x="150" y="64">10⁷</text><text class="ech-obj fort" x="184" y="64">le rayon de la Terre</text>
+                <!-- 10^6 -->
+                <line class="ech-tick" x1="160" y1="94" x2="176" y2="94"/>
+                <text class="ech-exp" x="150" y="100">10⁶</text><text class="ech-obj" x="184" y="100">la France, du nord au sud</text>
+                <!-- 10^5 -->
+                <line class="ech-tick" x1="160" y1="130" x2="176" y2="130"/>
+                <text class="ech-exp" x="150" y="136">10⁵</text><text class="ech-obj" x="184" y="136">un département</text>
+                <!-- 10^4 -->
+                <line class="ech-tick" x1="160" y1="166" x2="176" y2="166"/>
+                <text class="ech-exp" x="150" y="172">10⁴</text><text class="ech-obj" x="184" y="172">une grande ville</text>
+                <!-- 10^3 -->
+                <line class="ech-tick" x1="160" y1="202" x2="176" y2="202"/>
+                <text class="ech-exp" x="150" y="208">10³</text><text class="ech-obj" x="184" y="208">un quartier — le kilomètre</text>
+                <!-- 10^2 -->
+                <line class="ech-tick" x1="160" y1="238" x2="176" y2="238"/>
+                <text class="ech-exp" x="150" y="244">10²</text><text class="ech-obj" x="184" y="244">un terrain de football</text>
+                <!-- 10^1 -->
+                <line class="ech-tick" x1="160" y1="274" x2="176" y2="274"/>
+                <text class="ech-exp" x="150" y="280">10¹</text><text class="ech-obj" x="184" y="280">une maison</text>
+                <!-- 10^0 -->
+                <line class="ech-zero" x1="152" y1="310" x2="184" y2="310"/>
+                <text class="ech-exp" x="142" y="316">10⁰</text><text class="ech-obj fort" x="192" y="316">toi — le mètre</text>
+                <!-- 10^-1 -->
+                <line class="ech-tick" x1="160" y1="346" x2="176" y2="346"/>
+                <text class="ech-exp" x="150" y="352">10⁻¹</text><text class="ech-obj" x="184" y="352">ta main</text>
+                <!-- 10^-2 -->
+                <line class="ech-tick" x1="160" y1="382" x2="176" y2="382"/>
+                <text class="ech-exp" x="150" y="388">10⁻²</text><text class="ech-obj" x="184" y="388">un ongle — le centimètre</text>
+                <!-- 10^-3 -->
+                <line class="ech-tick" x1="160" y1="418" x2="176" y2="418"/>
+                <text class="ech-exp" x="150" y="424">10⁻³</text><text class="ech-obj" x="184" y="424">un grain de sable — le millimètre</text>
+                <!-- 10^-4 -->
+                <line class="ech-tick" x1="160" y1="454" x2="176" y2="454"/>
+                <text class="ech-exp" x="150" y="460">10⁻⁴</text><text class="ech-obj" x="184" y="460">l'épaisseur d'un cheveu</text>
+                <!-- 10^-5 -->
+                <line class="ech-tick" x1="160" y1="490" x2="176" y2="490"/>
+                <text class="ech-exp" x="150" y="496">10⁻⁵</text><text class="ech-obj" x="184" y="496">un globule rouge</text>
+                <!-- 10^-6 -->
+                <line class="ech-tick" x1="160" y1="526" x2="176" y2="526"/>
+                <text class="ech-exp" x="150" y="532">10⁻⁶</text><text class="ech-obj" x="184" y="532">une bactérie — le micromètre</text>
+                <!-- 10^-7 -->
+                <line class="ech-tick" x1="160" y1="562" x2="176" y2="562"/>
+                <text class="ech-exp" x="150" y="568">10⁻⁷</text><text class="ech-obj" x="184" y="568">un virus de la grippe</text>
+                <!-- 10^-8 -->
+                <line class="ech-tick" x1="160" y1="598" x2="176" y2="598"/>
+                <text class="ech-exp" x="150" y="604">10⁻⁸</text><text class="ech-obj" x="184" y="604">une grosse protéine</text>
+                <!-- 10^-9 -->
+                <line class="ech-tick" x1="160" y1="634" x2="176" y2="634"/>
+                <text class="ech-exp" x="150" y="640">10⁻⁹</text><text class="ech-obj" x="184" y="640">une molécule d'ADN — le nanomètre</text>
+                <!-- 10^-10 -->
+                <line class="ech-tick" x1="160" y1="670" x2="176" y2="670"/>
+                <text class="ech-exp" x="150" y="676">10⁻¹⁰</text><text class="ech-obj fort" x="184" y="676">le rayon d'un atome</text>
+                <text class="ech-cote" x="240" y="26">UNE GRADUATION = UNE PUISSANCE DE DIX</text>
+              </svg>
+            </div>
+
+            <div class="point-cle alerte"><b>Une graduation, ce n'est pas «&nbsp;un peu plus&nbsp;».</b> Entre <span class="nb">10<sup>−10</sup></span> m et <span class="nb">10<sup>−9</sup></span> m, il y a un <b>facteur dix</b>. Entre l'atome et toi, dix graduations&nbsp;: un facteur <b>dix milliards</b>. C'est pour cela qu'on ne compare jamais deux nombres à l'œil sans regarder d'abord leurs exposants.</div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Un nombre en <b>écriture scientifique</b> s'écrit <span class="nb">a × 10<sup>n</sup></span>, avec <b>un seul chiffre non nul avant la virgule</b> et <b>n entier relatif</b>. Cette écriture ne change pas le nombre&nbsp;: elle le rend <b>lisible</b>, <b>comparable</b> et <b>recopiable sans erreur</b>. L'exposant <b>n</b> porte l'échelle&nbsp;: il dit de combien de rangs la virgule s'est déplacée, et le signe dit dans quel sens — <b>positif</b> vers les grands nombres, <b>négatif</b> vers les petits.</div>
+
+            <div class="exemple">
+              <div class="exemple-titre">Un nombre écrit en base 10, rang par rang</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">Ce que dit chaque chiffre</span>
+                Dans <span class="nb">3506</span>, le <b>5</b> ne vaut pas cinq&nbsp;: il vaut <b>cinq cents</b>. Le chiffre dit <i>combien de fois</i>, le rang dit <i>combien vaut chaque fois</i>.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">La décomposition</span>
+                <div class="calcul"><span class="nb">3506</span> = <b>3</b>×1000 + <b>5</b>×100 + <b>0</b>×10 + <b>6</b>×1</div></div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">Les rangs sont des puissances de dix</span>
+                <div class="calcul">1000 = 10<sup>3</sup> &nbsp;·&nbsp; 100 = 10<sup>2</sup> &nbsp;·&nbsp; 10 = 10<sup>1</sup> &nbsp;·&nbsp; 1 = 10<sup>0</sup></div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">En écriture scientifique</span>
+                <div class="calcul"><span class="nb">3506</span> = <span class="encadre">3,506 × 10<sup>3</sup></span></div>
+                Le premier chiffre reste seul devant la virgule&nbsp;; les trois rangs franchis donnent l'exposant.</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle</span>
+                <b>3,506</b> est bien entre 1 et 10, et <b>3</b> est bien un entier. L'écriture est valide.</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Deux cases, pas davantage&nbsp;: on vérifie que la méthode est passée, on ne t'évalue pas ici.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Dans l'écriture <span class="nb">1,6 × 10<sup>−19</sup></span>, le nombre placé devant la puissance de dix vaut
+                <input class="short" data-answer="1,6" placeholder="?" aria-label="valeur de a dans 1,6 fois 10 puissance moins 19" data-indice1="C'est le nombre qu'on lit avant le signe ×." data-indice2="Il est compris entre 1 et 10, et il s'écrit avec une virgule."> .</div>
+                <div><b>2.</b> Entre <span class="nb">10<sup>3</sup></span> m et <span class="nb">10<sup>6</sup></span> m, combien y a-t-il de graduations sur la frise&nbsp;?
+                <input class="short" data-answer="3" placeholder="?" aria-label="nombre de graduations entre 10 puissance 3 et 10 puissance 6" data-indice1="Compte les traits que tu franchis en remontant la frise, du kilomètre jusqu'à la France." data-indice2="Il suffit de soustraire les deux exposants."> graduations.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o1-s1-forme">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2</div>
+            <h3 class="step-title">La forme <span class="nb">a × 10<sup>n</sup></span></h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir placer la virgule au bon endroit, et reconnaître une écriture qui n'en est pas une.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Les deux conditions, et il n'y en a que deux<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Une écriture scientifique se reconnaît à deux choses, et deux seulement&nbsp;:</p>
+            <div class="point-cle"><b>1 ·</b> le nombre <b>a</b> vérifie <span class="nb">1 ⩽ a &lt; 10</span> — donc <b>un seul chiffre non nul avant la virgule</b>&nbsp;;<br><b>2 ·</b> l'exposant <b>n</b> est un <b>entier relatif</b> — positif, négatif ou nul, mais jamais à virgule.</div>
+
+            <div class="block-label">Déplace la virgule, et regarde les zéros<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Choisis un nombre <b>a</b>, puis fais glisser l'exposant. Le nombre du bas est <b>exactement le même</b> que celui du haut&nbsp;: seule son écriture change. Les chiffres colorés sont les zéros que l'exposant fait apparaître.</p>
+
+            <div class="curseur" data-curseur>
+              <div class="cur-barre">
+                <span>Choisis <b>a</b>&nbsp;:</span>
+                <button class="btn ghost sm" type="button" data-a="1,6" aria-pressed="true">1,6</button>
+                <button class="btn ghost sm" type="button" data-a="5,25" aria-pressed="false">5,25</button>
+                <button class="btn ghost sm" type="button" data-a="9,1" aria-pressed="false">9,1</button>
+              </div>
+              <div class="cur-ecran">
+                <div class="cur-sci" data-cur-sci>1,6 × 10<sup>0</sup></div>
+                <div class="cur-eq">=</div>
+                <div class="cur-dec" data-cur-dec>1,6</div>
+                <div class="cur-glose" data-cur-glose>Exposant nul&nbsp;: la virgule ne bouge pas. <span class="nb">10<sup>0</sup></span> vaut 1.</div>
+              </div>
+              <label class="cur-reglage">
+                <span>n =</span>
+                <input type="range" min="-12" max="12" step="1" value="0" data-cur-range aria-label="exposant n, de moins 12 à plus 12">
+                <output data-cur-out>0</output>
+              </label>
+            </div>
+
+            <div class="eviter">
+              <span class="et">⚠ À éviter</span>
+              Ces trois écritures sont <b>fausses</b>, et ce sont les trois qu'on rencontre le plus&nbsp;:
+              <ul>
+                <li><span class="faux">0,12 × 10⁻⁶</span> — le nombre devant la puissance est <b>plus petit que 1</b>. Il faut écrire <span class="nb">1,2 × 10<sup>−7</sup></span>.</li>
+                <li><span class="faux">10,4 × 10²</span> — le nombre devant la puissance est <b>plus grand que 10</b>. Il faut écrire <span class="nb">1,04 × 10<sup>3</sup></span>.</li>
+                <li><span class="faux">4,5 × 10²·³</span> — l'exposant <b>n'est pas un entier</b>. Cette écriture n'existe pas&nbsp;: on ne la corrige pas, on la refuse.</li>
+              </ul>
+            </div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Pour passer à l'écriture scientifique&nbsp;: <b>place la virgule derrière le premier chiffre non nul</b>, puis <b>compte les rangs franchis</b> — ce compte donne <b>n</b>. Si tu as déplacé la virgule <b>vers la gauche</b> (le nombre était grand), <b>n est positif</b>&nbsp;; <b>vers la droite</b> (le nombre était petit), <b>n est négatif</b>. Contrôle systématique&nbsp;: <span class="nb">1 ⩽ a &lt; 10</span> et <b>n entier</b>. Une écriture qui échoue à l'un des deux contrôles est à refaire.</div>
+
+            <div class="exemple">
+              <div class="exemple-titre">Deux nombres, dans les deux sens</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">Le nombre de départ</span>
+                <span class="nb">5&nbsp;250&nbsp;000</span> — un grand nombre, la virgule est sous-entendue tout à droite.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">Où placer la virgule</span>
+                Derrière le premier chiffre non nul, le <b>5</b>&nbsp;: on obtient <b>5,25</b>.</div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">Compter les rangs franchis</span>
+                <div class="calcul">5 250 000<b>,</b> &nbsp;&nbsp;&nbsp; ← la virgule est ici au départ<br>
+                5<b>,</b>250 000 &nbsp;&nbsp;&nbsp; ← elle a reculé de <b>6</b> rangs<br>
+                5<b>,</b>25 &nbsp;&nbsp;&nbsp; ← les zéros de fin ne s'écrivent pas</div>
+                Vers la gauche, donc <b>n = +6</b>.</div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">Le résultat</span>
+                <div class="calcul"><span class="nb">5&nbsp;250&nbsp;000</span> = <span class="encadre">5,25 × 10<sup>6</sup></span></div></div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle, puis le sens inverse</span>
+                <b>5,25</b> est entre 1 et 10 ✓, <b>6</b> est entier ✓.<br>
+                Avec un petit nombre, tout est identique sauf le sens&nbsp;:
+                <div class="calcul">0<b>,</b>0048 &nbsp;&nbsp;&nbsp; ← la virgule est ici au départ<br>
+                0004<b>,</b>8 &nbsp;&nbsp;&nbsp; ← elle a avancé de <b>3</b> rangs<br>
+                4<b>,</b>8 &nbsp;&nbsp;&nbsp; ← les zéros de tête ne s'écrivent pas<br>
+                <span class="nb">0,0048</span> = <span class="encadre">4,8 × 10<sup>−3</sup></span></div></div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Un nombre dans chaque sens. Choisis le signe de l'exposant dans le menu, puis écris sa valeur.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div class="table-scroll">
+                  <table class="saisie">
+                    <tr><th>Nombre</th><th class="c">a</th><th class="c">signe de n</th><th class="c">n</th></tr>
+                    <tr>
+                      <td class="depart">0,00047</td>
+                      <td class="c"><input class="short" data-answer="4,7" placeholder="a" aria-label="valeur de a pour 0,00047" data-indice1="Place la virgule derrière le premier chiffre non nul : le 4." data-indice2="Il ne reste que deux chiffres significatifs devant toi."></td>
+                      <td class="c"><select class="short" data-answer="neg" aria-label="signe de l'exposant pour 0,00047"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                      <td class="c"><input class="short" data-answer="4" placeholder="n" aria-label="valeur de n pour 0,00047" data-indice1="Compte les rangs que la virgule franchit pour venir se placer derrière le 4." data-indice2="Le nombre est plus petit que 1 : la virgule avance."></td>
+                    </tr>
+                    <tr>
+                      <td class="depart">62 000</td>
+                      <td class="c"><input class="short" data-answer="6,2" placeholder="a" aria-label="valeur de a pour 62000" data-indice1="Un seul chiffre non nul avant la virgule." data-indice2="Les zéros de droite ne se recopient pas dans a."></td>
+                      <td class="c"><select class="short" data-answer="pos" aria-label="signe de l'exposant pour 62000"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                      <td class="c"><input class="short" data-answer="4" placeholder="n" aria-label="valeur de n pour 62000" data-indice1="Compte les rangs franchis en reculant la virgule jusque derrière le 6." data-indice2="Le nombre est grand : la virgule recule."></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o1-s1-prefixes">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3</div>
+            <h3 class="step-title">Les préfixes et les conversions</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> convertir sans jamais compter les zéros&nbsp;: en remplaçant chaque préfixe par sa puissance de dix.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">D'abord, calculer avec des puissances de dix<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Convertir, c'est <b>multiplier et diviser des puissances de dix</b>. Quatre règles suffisent, et elles expliquent tout ce qui suit — en particulier pourquoi «&nbsp;les puissances s'ajoutent&nbsp;»&nbsp;:</p>
+
+            <div class="regles-puiss">
+              <div class="rp"><span class="rp-eq">a × 10<sup>m</sup> &nbsp;×&nbsp; b × 10<sup>n</sup> = (a × b) × 10<sup>m+n</sup></span><span class="rp-g">on multiplie&nbsp;: les exposants <b>s'ajoutent</b></span></div>
+              <div class="rp"><span class="rp-eq">(a × 10<sup>m</sup>) ÷ (b × 10<sup>n</sup>) = (a ÷ b) × 10<sup>m−n</sup></span><span class="rp-g">on divise&nbsp;: les exposants <b>se soustraient</b></span></div>
+              <div class="rp"><span class="rp-eq">1 ÷ a<sup>n</sup> = a<sup>−n</sup></span><span class="rp-g">passer au dénominateur <b>change le signe</b></span></div>
+              <div class="rp"><span class="rp-eq">(a × 10<sup>m</sup>)<sup>n</sup> = a<sup>n</sup> × 10<sup>m×n</sup></span><span class="rp-g">on élève à une puissance&nbsp;: les exposants <b>se multiplient</b></span></div>
+            </div>
+
+            <div class="point-cle">La troisième est la plus utile de toutes, et la moins connue&nbsp;: <b>ce qui passe sous la barre de fraction change de signe</b>. C'est elle qui explique le <span class="nb">10<sup>−2</sup></span> du <span class="nb">g·cL<sup>−1</sup></span> plus bas, et c'est elle qu'on oublie. La quatrième explique la règle des volumes, en fin d'étape&nbsp;: un cube, c'est une puissance 3, donc un exposant <b>multiplié par 3</b>.</div>
+
+            <div class="block-label">Le tableau des préfixes<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Un préfixe n'est rien d'autre qu'une <b>puissance de dix qu'on a baptisée</b>. «&nbsp;kilo&nbsp;» veut dire <span class="nb">10<sup>3</sup></span>, et cela vaut pour le mètre, le gramme, le watt, le joule — pour toutes les unités, sans exception.</p>
+
+            <div class="table-scroll">
+              <table class="doc-table">
+                <tr><th>Préfixe</th><th>Symbole</th><th>Puissance</th><th>Exemple</th></tr>
+                <tr><td>giga</td><td><b>G</b></td><td><span class="nb">10<sup>9</sup></span></td><td>1 GHz = <span class="nb">10<sup>9</sup></span> Hz</td></tr>
+                <tr><td>méga</td><td><b>M</b></td><td><span class="nb">10<sup>6</sup></span></td><td>1 MW = <span class="nb">10<sup>6</sup></span> W</td></tr>
+                <tr><td>kilo</td><td><b>k</b></td><td><span class="nb">10<sup>3</sup></span></td><td>1 km = <span class="nb">10<sup>3</sup></span> m</td></tr>
+                <tr><td>hecto</td><td><b>h</b></td><td><span class="nb">10<sup>2</sup></span></td><td>1 hL = <span class="nb">10<sup>2</sup></span> L</td></tr>
+                <tr><td>déca</td><td><b>da</b></td><td><span class="nb">10<sup>1</sup></span></td><td>1 dag = <span class="nb">10<sup>1</sup></span> g</td></tr>
+                <tr class="base"><td>—</td><td>—</td><td><span class="nb">10<sup>0</sup></span></td><td>l'unité elle-même</td></tr>
+                <tr><td>déci</td><td><b>d</b></td><td><span class="nb">10<sup>−1</sup></span></td><td>1 dL = <span class="nb">10<sup>−1</sup></span> L</td></tr>
+                <tr><td>centi</td><td><b>c</b></td><td><span class="nb">10<sup>−2</sup></span></td><td>1 cm = <span class="nb">10<sup>−2</sup></span> m</td></tr>
+                <tr><td>milli</td><td><b>m</b></td><td><span class="nb">10<sup>−3</sup></span></td><td>1 mL = <span class="nb">10<sup>−3</sup></span> L</td></tr>
+                <tr><td>micro</td><td><b>µ</b></td><td><span class="nb">10<sup>−6</sup></span></td><td>1 µm = <span class="nb">10<sup>−6</sup></span> m</td></tr>
+                <tr><td>nano</td><td><b>n</b></td><td><span class="nb">10<sup>−9</sup></span></td><td>1 nm = <span class="nb">10<sup>−9</sup></span> m</td></tr>
+                <tr><td>pico</td><td><b>p</b></td><td><span class="nb">10<sup>−12</sup></span></td><td>1 pF = <span class="nb">10<sup>−12</sup></span> F</td></tr>
+                <tr><td>femto</td><td><b>f</b></td><td><span class="nb">10<sup>−15</sup></span></td><td>1 fs = <span class="nb">10<sup>−15</sup></span> s</td></tr>
+              </table>
+            </div>
+
+            <div class="point-cle"><b>Le geste, toujours le même&nbsp;:</b> remplace le préfixe par sa puissance de dix, puis remets le résultat en écriture scientifique. Tu ne comptes plus jamais de zéros — tu <b>additionnes des exposants</b>.</div>
+
+            <div class="block-label">Les quatre cas, du plus simple au plus retors</div>
+            <p style="font-size:14.5px;margin:4px 0 6px"><b>Cas 1 — vers l'unité de base.</b> On remplace le préfixe par sa puissance, c'est tout.</p>
+            <div class="calcul">56 mm = 56 × 10<sup>−3</sup> m = <span class="encadre">5,6 × 10<sup>−2</sup> m</span><br>
+            6,427 nm = 6,427 × 10<sup>−9</sup> m &nbsp;·&nbsp; 619 km = 619 × 10<sup>3</sup> m</div>
+
+            <p style="font-size:14.5px;margin:12px 0 6px"><b>Cas 2 — de l'unité de base vers un préfixe.</b> C'est le trajet inverse, donc <b>le signe de la puissance change</b>&nbsp;: <b>+</b> devient <b>−</b>, et <b>−</b> devient <b>+</b>.</p>
+            <div class="calcul">37 g = 37 × 10<sup>−3</sup> kg &nbsp;·&nbsp; 3,49 g = 3,49 × 10<sup>3</sup> mg<br>
+            627 g = 627 × 10<sup>1</sup> dg &nbsp;·&nbsp; 1,584 g = 1,584 × 10<sup>−1</sup> dag</div>
+            <p class="doc-note">Le réflexe qui évite l'erreur&nbsp;: <b>vers une unité plus petite, le nombre grossit</b> (des grammes en milligrammes&nbsp;: ×10<sup>3</sup>) ; <b>vers une unité plus grande, il rapetisse</b> (des grammes en kilogrammes&nbsp;: ×10<sup>−3</sup>). Si ton résultat va dans l'autre sens, tu as inversé le signe.</p>
+
+            <p style="font-size:14.5px;margin:12px 0 6px"><b>Cas 3 — d'un préfixe à un autre.</b> On enchaîne les deux précédents en passant par l'unité de base, et <b>les exposants s'ajoutent</b> — première règle de calcul, ci-dessus.</p>
+            <div class="calcul">0,63 GHz = 0,63 × 10<sup>9</sup> Hz = <span class="encadre">6,3 × 10<sup>8</sup> Hz</span><br>
+            964 cm = 964 × 10<sup>−2</sup> m = 964 × 10<sup>−2</sup> × 10<sup>−3</sup> km = <span class="encadre">9,64 × 10<sup>−3</sup> km</span></div>
+            <p class="doc-note">Sur la seconde ligne&nbsp;: <span class="nb">−2 − 3 = −5</span>, donc <span class="nb">964 × 10<sup>−5</sup> km</span> — qu'on remet enfin sous la forme <span class="nb">a × 10<sup>n</sup></span>.</p>
+
+            <p style="font-size:14.5px;margin:12px 0 6px"><b>Cas 4 — les unités composées.</b> C'est la vraie difficulté&nbsp;: il y a <b>deux</b> préfixes à traiter, et celui du dénominateur change de signe — troisième règle de calcul.</p>
+
+            <div class="exemple">
+              <div class="exemple-titre">Convertir 32 kg·L⁻¹ en g·cL⁻¹</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">Les données, avec leur unité</span>
+                Masse volumique de départ&nbsp;: <b>ρ = 32 kg·L<sup>−1</sup></b>. Unité d'arrivée demandée&nbsp;: <b>g·cL<sup>−1</sup></b>.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">On traite les deux préfixes séparément</span>
+                <div class="calcul">au numérateur&nbsp;: 1 <b>kg</b> = 10<sup>3</sup> g<br>au dénominateur&nbsp;: 1 <b>L</b> = 10<sup>2</sup> cL</div>
+                Le préfixe du dénominateur est <b>sous</b> la barre&nbsp;: sa puissance passera donc en <b>−2</b>, pas en <b>+2</b>. C'est là que les erreurs se font.</div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">L'application numérique</span>
+                <div class="calcul">32 kg·L<sup>−1</sup> = 32 × 10<sup>3</sup> g × (10<sup>2</sup> cL)<sup>−1</sup><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 32 × 10<sup>3</sup> × 10<sup>−2</sup> g·cL<sup>−1</sup><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 32 × 10<sup>1</sup> g·cL<sup>−1</sup> = <span class="encadre">3,2 × 10<sup>2</sup> g·cL<sup>−1</sup></span></div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">La phrase de conclusion</span>
+                Un litre de ce liquide pèse 32 kg&nbsp;; un centilitre en pèse <b>320 g</b>, soit <span class="nb">3,2 × 10<sup>2</sup> g</span>.</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Les deux contrôles</span>
+                <b>3,2</b> est entre 1 et 10 ✓. Et le résultat est-il <b>plausible</b>&nbsp;? Un centilitre est cent fois plus petit qu'un litre, mais on compte en grammes, mille fois plus petits que le kilogramme&nbsp;: le nombre doit donc être <b>dix fois plus grand</b>. 32 → 320 ✓.</div></div>
+            </div>
+
+            <div class="block-label">Le cas des volumes<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="point-cle alerte"><b>Un volume a trois dimensions</b>&nbsp;: passer du mètre au décimètre divise chaque côté par dix, donc le volume par <b>mille</b>. Sur un volume, <b>les exposants se multiplient par 3</b> — quatrième règle de calcul&nbsp;: <span class="nb">1 m<sup>3</sup> = (10<sup>1</sup> dm)<sup>3</sup> = 10<sup>3</sup> dm<sup>3</sup></span>. Même règle pour les surfaces, avec un facteur <b>2</b>.</div>
+
+            <div class="table-scroll">
+              <table class="doc-table">
+                <tr><th>km<sup>3</sup></th><th>hm<sup>3</sup></th><th>dam<sup>3</sup></th><th class="base">m<sup>3</sup></th><th>dm<sup>3</sup></th><th>cm<sup>3</sup></th><th>mm<sup>3</sup></th></tr>
+                <tr><td>10<sup>9</sup></td><td>10<sup>6</sup></td><td>10<sup>3</sup></td><td class="base">10<sup>0</sup></td><td>10<sup>−3</sup></td><td>10<sup>−6</sup></td><td>10<sup>−9</sup></td></tr>
+              </table>
+            </div>
+
+            <p style="font-size:14.5px;margin:10px 0 6px">Un volume s'exprime de <b>deux façons</b>&nbsp;: en <b>litres</b> ou en <b>mètres cubes</b>. Ne jamais mélanger les deux dans un même calcul. Il suffit de retenir <b>une seule</b> des trois égalités suivantes — les deux autres s'en déduisent&nbsp;:</p>
+            <div class="calcul" style="text-align:center"><span class="encadre">1 dm<sup>3</sup> = 1 L</span> &nbsp;&nbsp; <span class="encadre">1 m<sup>3</sup> = 1000 L</span> &nbsp;&nbsp; <span class="encadre">1 cm<sup>3</sup> = 1 mL</span></div>
+
+            <div class="table-scroll">
+              <table class="doc-table volumes">
+                <tr><th colspan="2">m<sup>3</sup></th><th colspan="3">dm<sup>3</sup></th><th colspan="3">cm<sup>3</sup></th><th colspan="3">mm<sup>3</sup></th></tr>
+                <tr><td>—</td><td>kL</td><td>hL</td><td>daL</td><td class="base">L</td><td>dL</td><td>cL</td><td>mL</td><td>—</td><td>—</td><td>—</td></tr>
+              </table>
+            </div>
+            <p class="doc-note">Trois colonnes de litres par colonne de mètres cubes&nbsp;: c'est exactement la règle du facteur 3, lue dans l'autre sens. Le <b>litre</b> tombe sous le <b>dm<sup>3</sup></b>, et le <b>mL</b> sous le <b>cm<sup>3</sup></b>.</p>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Convertir, c'est <b>calculer avec des puissances de dix</b>&nbsp;: on multiplie, les exposants <b>s'ajoutent</b> ; on divise, ils <b>se soustraient</b> ; on passe au dénominateur, le signe <b>change</b> ; on élève au cube, l'exposant est <b>multiplié par 3</b>. En pratique&nbsp;: <b>remplace chaque préfixe par sa puissance de dix</b>, puis additionne les exposants. Le préfixe d'un <b>dénominateur change de signe</b>&nbsp;: <span class="nb">g·cL<sup>−1</sup></span> fait entrer <span class="nb">10<sup>−2</sup></span>, pas <span class="nb">10<sup>+2</sup></span>. Pour un <b>volume</b>, la puissance est <b>multipliée par 3</b> (<span class="nb">1 m<sup>3</sup> = 10<sup>3</sup> L</span>)&nbsp;; pour une <b>surface</b>, par 2. Termine toujours en remettant le résultat sous la forme <span class="nb">a × 10<sup>n</sup></span>.</div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Deux remplacements de préfixe, rien de plus.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> 1 mL vaut <span class="nb">10</span> puissance
+                <select class="short" data-answer="neg" aria-label="signe de l'exposant pour un millilitre"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select>
+                <input class="short" data-answer="3" placeholder="?" aria-label="valeur de l'exposant pour un millilitre" data-indice1="Cherche « milli » dans le tableau des préfixes ci-dessus." data-indice2="Le millilitre est plus petit que le litre : l'exposant est négatif."> litre.</div>
+                <div><b>2.</b> Dans la conversion de <span class="nb">g·cL<sup>−1</sup></span>, le préfixe <b>centi</b> entre dans le calcul avec la puissance <span class="nb">10</span> puissance
+                <select class="short" data-answer="pos" aria-label="signe de l'exposant du centi au dénominateur"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select>
+                <input class="short" data-answer="2" placeholder="?" aria-label="valeur de l'exposant du centi au dénominateur" data-indice1="« centi » vaut 10 puissance −2 — mais le cL est au dénominateur : relis l'étape 2 de l'exemple résolu." data-indice2="Être sous la barre de fraction change le signe de l'exposant."> .</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.4 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o1-s1-ordre">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4</div>
+            <h3 class="step-title">L'ordre de grandeur</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> donner la puissance de dix la plus proche d'un nombre, et comprendre pourquoi le seuil n'est pas 5.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Ce que c'est<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">L'<b>ordre de grandeur</b> d'un nombre, c'est la <b>puissance de dix la plus proche</b> de lui. Il ne sert pas à être précis&nbsp;: il sert à <b>comparer</b>, et à repérer d'un coup d'œil un résultat aberrant.</p>
+            <p style="font-size:14.5px;margin:4px 0 12px">Pour un nombre écrit <span class="nb">a × 10<sup>n</sup></span>, tout se joue sur <b>a</b>&nbsp;: on le compare à <span class="nb">√10 ≈ 3,16</span>. Si <span class="nb">a &lt; 3,16</span>, l'ordre de grandeur est <span class="nb">10<sup>n</sup></span>&nbsp;; sinon c'est <span class="nb">10<sup>n+1</sup></span>.</p>
+
+            <div class="block-label">Pourquoi 3,16 et pas 5<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Parce qu'on ne compare pas des <b>écarts</b>, on compare des <b>facteurs</b>. Sur l'axe ci-dessous, les nombres sont placés selon le facteur qui les sépare de 1 — c'est là que se lit la vraie distance à <span class="nb">10<sup>n</sup></span> et à <span class="nb">10<sup>n+1</sup></span>.</p>
+
+            <div class="logaxe">
+              <svg viewBox="0 0 640 250" role="img" aria-label="Axe logarithmique de 10 puissance n à 10 puissance n plus 1 : le seuil 3,16 tombe exactement au milieu, partageant l'axe en deux zones de même longueur.">
+                <rect class="lg-zoneg" x="60" y="60" width="260" height="52" rx="6"/>
+                <rect class="lg-zoned" x="320" y="60" width="260" height="52" rx="6"/>
+                <text class="lg-zone-txt g" x="190" y="93">→ 10ⁿ</text>
+                <text class="lg-zone-txt d" x="450" y="93">→ 10ⁿ⁺¹</text>
+                <line class="lg-axe" x1="60" y1="140" x2="580" y2="140"/>
+                <line class="lg-tick" x1="60" y1="132" x2="60" y2="152"/><text class="lg-val" x="60" y="176">1</text>
+                <line class="lg-tick" x1="217" y1="134" x2="217" y2="148"/><text class="lg-val" x="217" y="176">2</text>
+                <line class="lg-tick" x1="308" y1="134" x2="308" y2="148"/><text class="lg-val" x="308" y="176">3</text>
+                <line class="lg-tick" x1="373" y1="134" x2="373" y2="148"/><text class="lg-val" x="373" y="176">4</text>
+                <line class="lg-tick" x1="424" y1="134" x2="424" y2="148"/><text class="lg-val" x="424" y="176">5</text>
+                <line class="lg-tick" x1="465" y1="134" x2="465" y2="148"/><text class="lg-val" x="465" y="176">6</text>
+                <line class="lg-tick" x1="499" y1="134" x2="499" y2="148"/><text class="lg-val" x="499" y="176">7</text>
+                <line class="lg-tick" x1="530" y1="134" x2="530" y2="148"/><text class="lg-val" x="530" y="176">8</text>
+                <line class="lg-tick" x1="556" y1="134" x2="556" y2="148"/><text class="lg-val" x="556" y="176">9</text>
+                <line class="lg-tick" x1="580" y1="132" x2="580" y2="152"/><text class="lg-val" x="580" y="176">10</text>
+                <line class="lg-seuil" x1="320" y1="52" x2="320" y2="196"/>
+                <text class="lg-seuil-txt" x="320" y="42">√10 ≈ 3,16</text>
+                <text class="lg-note" x="320" y="222">Les deux zones ont exactement la même longueur.</text>
+                <text class="lg-note" x="320" y="242">5 est déjà bien plus près de 10 que de 1 — d'un facteur 2 contre 5.</text>
+              </svg>
+            </div>
+
+            <div class="point-cle"><b>La lecture qui fait tout comprendre&nbsp;:</b> de 1 à 3,16, on multiplie par 3,16. De 3,16 à 10, on multiplie encore par 3,16. Le seuil est donc <b>au milieu</b> — au milieu des <i>facteurs</i>, pas au milieu des <i>écarts</i>. En revanche, aller de 1 à 5 c'est multiplier par 5, tandis qu'aller de 5 à 10 ne demande qu'un facteur 2&nbsp;: <b>5 est déjà du côté de 10</b>.</div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">L'<b>ordre de grandeur</b> d'un nombre est la <b>puissance de dix la plus proche</b>. On écrit d'abord le nombre sous la forme <span class="nb">a × 10<sup>n</sup></span>, puis on compare <b>a</b> à <span class="nb">√10 ≈ 3,16</span>&nbsp;: si <span class="nb">a &lt; 3,16</span> l'ordre de grandeur est <span class="nb">10<sup>n</sup></span>, sinon c'est <span class="nb">10<sup>n+1</sup></span>. Un ordre de grandeur <b>n'a jamais de chiffre devant</b>&nbsp;: on écrit <span class="nb">10<sup>−30</sup></span>, jamais <span class="nb">1 × 10<sup>−30</sup></span> ni <span class="nb">9 × 10<sup>−31</sup></span>.</div>
+
+            <div class="exemple">
+              <div class="exemple-titre">L'ordre de grandeur de la masse d'un électron</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">La donnée, avec son unité</span>
+                <b>m<sub>e</sub> = 9,1 × 10<sup>−31</sup> kg</b>. Elle est déjà en écriture scientifique&nbsp;: rien à préparer.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">On isole a et n</span>
+                <div class="calcul">a = 9,1 &nbsp;·&nbsp; n = −31</div></div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">La comparaison</span>
+                <div class="calcul">9,1 &gt; 3,16 &nbsp;→&nbsp; on prend 10<sup>n+1</sup></div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">Le résultat, et la phrase</span>
+                <div class="calcul">ordre de grandeur = <span class="encadre">10<sup>−30</sup> kg</span></div>
+                La masse d'un électron est <b>de l'ordre de <span class="nb">10<sup>−30</sup></span> kg</b>.</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle</span>
+                <span class="nb">9,1 × 10<sup>−31</sup></span> vaut <span class="nb">0,91 × 10<sup>−30</sup></span>&nbsp;: c'est bien tout près de <span class="nb">10<sup>−30</sup></span>, et non de <span class="nb">10<sup>−31</sup></span>. Et le résultat ne porte aucun chiffre devant ✓.</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Un nombre de chaque côté du seuil.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> L'ordre de grandeur de <span class="nb">2,5 × 10<sup>3</sup></span> m est <span class="nb">10</span> puissance
+                <select class="short" data-answer="pos" aria-label="signe de l'exposant de l'ordre de grandeur de 2,5 fois 10 puissance 3"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select>
+                <input class="short" data-answer="3" placeholder="?" aria-label="valeur de l'exposant de l'ordre de grandeur de 2,5 fois 10 puissance 3" data-indice1="Compare 2,5 au seuil 3,16 : est-il en dessous ou au-dessus ?" data-indice2="En dessous du seuil, l'exposant ne change pas."> m.</div>
+                <div><b>2.</b> L'ordre de grandeur de <span class="nb">6,0 × 10<sup>23</sup></span> est <span class="nb">10</span> puissance
+                <select class="short" data-answer="pos" aria-label="signe de l'exposant de l'ordre de grandeur de 6,0 fois 10 puissance 23"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select>
+                <input class="short" data-answer="24" placeholder="?" aria-label="valeur de l'exposant de l'ordre de grandeur de 6,0 fois 10 puissance 23" data-indice1="Compare 6,0 au seuil 3,16." data-indice2="Au-dessus du seuil, l'exposant gagne une unité."> .</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+
+  <!-- ===================== 2 — S'ENTRAÎNER ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">2</span>S'entraîner</h2>
+      <span class="seance-time">≈ 30 min</span>
+    </div>
+    <p class="seance-goal">Six exercices, à faire <b>à la maison</b>, sur ta feuille d'abord. Chacun a son corrigé <b>rédigé</b> juste en dessous&nbsp;: tu te corriges seul, le soir, sans attendre le cours suivant.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- 2.1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o1-s2-ecrire">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1</div>
+            <h3 class="step-title">Écrire, et corriger ce qui n'en est pas</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> produire une écriture scientifique valide, et reconnaître les trois fausses.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p class="doc-note">Dans les tableaux de saisie&nbsp;: la première colonne attend <b>a</b>, la deuxième le <b>signe</b> de l'exposant, la troisième sa <b>valeur</b>. Écris <b>a</b> avec une virgule&nbsp;: <code>5,25</code>, pas <code>5.25</code> — le point est accepté, mais la virgule est ce qu'on écrit sur une copie.</p>
+
+            <div class="exo" data-cle="pc-o1-s2-ex1">
+              <p class="exo-num">Exercice 1</p>
+              <p class="exo-enonce">Écris chacun de ces nombres en <b>écriture scientifique</b>.</p>
+              <div class="field">
+                <span class="field-type">Exercice 1</span>
+                <div class="field-q">Cinq nombres, dans les deux sens.</div>
+                <div class="cloze" data-cloze data-cle="ex1">
+                  <div class="table-scroll">
+                    <table class="saisie">
+                      <tr><th>Nombre</th><th class="c">a</th><th class="c">signe de n</th><th class="c">n</th></tr>
+                      <tr><td class="depart">5 250 000</td>
+                        <td class="c"><input class="short" data-answer="5,25" placeholder="a" aria-label="a pour 5250000" data-indice1="Place la virgule derrière le premier chiffre non nul." data-indice2="Les zéros de fin ne se recopient pas dans a."></td>
+                        <td class="c"><select class="short" data-answer="pos" aria-label="signe de n pour 5250000"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="6" placeholder="n" aria-label="n pour 5250000" data-indice1="Compte les rangs franchis par la virgule." data-indice2="Le nombre est grand : la virgule recule."></td></tr>
+                      <tr><td class="depart">0,0048</td>
+                        <td class="c"><input class="short" data-answer="4,8" placeholder="a" aria-label="a pour 0,0048" data-indice1="Le premier chiffre non nul est le 4." data-indice2="Les zéros de tête ne se recopient pas dans a."></td>
+                        <td class="c"><select class="short" data-answer="neg" aria-label="signe de n pour 0,0048"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="3" placeholder="n" aria-label="n pour 0,0048" data-indice1="Compte les rangs que la virgule franchit vers la droite." data-indice2="Le nombre est plus petit que 1 : la virgule avance."></td></tr>
+                      <tr><td class="depart">96 485</td>
+                        <td class="c"><input class="short" data-answer="9,6485" placeholder="a" aria-label="a pour 96485" data-indice1="Un seul chiffre avant la virgule : le 9." data-indice2="Tous les autres chiffres passent derrière la virgule, dans l'ordre."></td>
+                        <td class="c"><select class="short" data-answer="pos" aria-label="signe de n pour 96485"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="4" placeholder="n" aria-label="n pour 96485" data-indice1="Le nombre a cinq chiffres." data-indice2="La virgule recule d'un rang de moins qu'il n'y a de chiffres."></td></tr>
+                      <tr><td class="depart">0,000 000 12</td>
+                        <td class="c"><input class="short" data-answer="1,2" placeholder="a" aria-label="a pour 0,00000012" data-indice1="Le premier chiffre non nul est le 1." data-indice2="Il ne reste que deux chiffres."></td>
+                        <td class="c"><select class="short" data-answer="neg" aria-label="signe de n pour 0,00000012"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="7" placeholder="n" aria-label="n pour 0,00000012" data-indice1="Compte les rangs jusqu'au 1, en partant de la virgule." data-indice2="Attention : c'est le rang du 1 qui compte, pas le nombre de zéros."></td></tr>
+                      <tr><td class="depart">13,6</td>
+                        <td class="c"><input class="short" data-answer="1,36" placeholder="a" aria-label="a pour 13,6" data-indice1="Il y a déjà une virgule, mais deux chiffres devant : il faut la déplacer d'un rang." data-indice2="Le 3 rejoint le 6 derrière la virgule."></td>
+                        <td class="c"><select class="short" data-answer="pos" aria-label="signe de n pour 13,6"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="1" placeholder="n" aria-label="n pour 13,6" data-indice1="La virgule ne recule que d'un seul rang." data-indice2="Le nombre est plus grand que 10 : le signe est positif."></td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 1</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p>Le geste est toujours le même&nbsp;: <b>placer la virgule derrière le premier chiffre non nul</b>, puis <b>compter les rangs franchis</b>. Le sens du déplacement donne le signe.</p>
+                  <div class="calcul">
+                    <span class="nb">5&nbsp;250&nbsp;000</span> → la virgule recule de 6 rangs → <span class="encadre">5,25 × 10<sup>6</sup></span><br>
+                    <span class="nb">0,0048</span> → la virgule avance de 3 rangs → <span class="encadre">4,8 × 10<sup>−3</sup></span><br>
+                    <span class="nb">96&nbsp;485</span> → la virgule recule de 4 rangs → <span class="encadre">9,6485 × 10<sup>4</sup></span><br>
+                    <span class="nb">0,000&nbsp;000&nbsp;12</span> → la virgule avance de 7 rangs → <span class="encadre">1,2 × 10<sup>−7</sup></span><br>
+                    <span class="nb">13,6</span> → la virgule recule de 1 rang → <span class="encadre">1,36 × 10<sup>1</sup></span>
+                  </div>
+                  <p><b>Le piège de la quatrième ligne.</b> Dans <span class="nb">0,000&nbsp;000&nbsp;12</span> il y a <b>sept</b> zéros après la virgule si l'on compte celui de gauche, et la réponse est <b>−7</b> — mais ce n'est pas «&nbsp;le nombre de zéros&nbsp;» qu'on compte&nbsp;: c'est <b>le rang du premier chiffre non nul</b>. Compter les zéros marche par hasard ici, et te trompera dès que le nombre commencera autrement. Compte les rangs.</p>
+                  <p><b>Et la cinquième&nbsp;?</b> <span class="nb">13,6</span> a déjà une virgule, et pourtant son écriture n'est pas scientifique&nbsp;: <b>13,6 n'est pas entre 1 et 10</b>. Un nombre à deux chiffres devant la virgule demande toujours <span class="nb">10<sup>1</sup></span>.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exo" data-cle="pc-o1-s2-ex2">
+              <p class="exo-num">Exercice 2</p>
+              <p class="exo-enonce">Ces trois écritures sont <b>fautives</b>. Corrige-les — ou dis pourquoi elles ne se corrigent pas.</p>
+              <div class="field">
+                <span class="field-type">Exercice 2</span>
+                <div class="field-q">Deux à réécrire, une à refuser.</div>
+                <div class="cloze" data-cloze data-cle="ex2">
+                  <div class="table-scroll">
+                    <table class="saisie">
+                      <tr><th>Écriture fautive</th><th class="c">a</th><th class="c">signe de n</th><th class="c">n</th></tr>
+                      <tr><td class="depart">0,12 × 10<sup>−6</sup></td>
+                        <td class="c"><input class="short" data-answer="1,2" placeholder="a" aria-label="a corrigé pour 0,12 fois 10 puissance moins 6" data-indice1="0,12 est plus petit que 1 : il faut déplacer la virgule d'un rang vers la droite." data-indice2="Ce que a gagne, l'exposant doit le perdre."></td>
+                        <td class="c"><select class="short" data-answer="neg" aria-label="signe de n corrigé pour 0,12 fois 10 puissance moins 6"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="7" placeholder="n" aria-label="n corrigé pour 0,12 fois 10 puissance moins 6" data-indice1="Le nombre total ne doit pas changer : si a est multiplié par 10, la puissance doit être divisée par 10." data-indice2="On part de −6 et l'on descend d'une unité."></td></tr>
+                      <tr><td class="depart">10,4 × 10<sup>2</sup></td>
+                        <td class="c"><input class="short" data-answer="1,04" placeholder="a" aria-label="a corrigé pour 10,4 fois 10 puissance 2" data-indice1="10,4 est plus grand que 10 : il faut reculer la virgule d'un rang." data-indice2="Le zéro reste, il tient sa place."></td>
+                        <td class="c"><select class="short" data-answer="pos" aria-label="signe de n corrigé pour 10,4 fois 10 puissance 2"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="3" placeholder="n" aria-label="n corrigé pour 10,4 fois 10 puissance 2" data-indice1="a a été divisé par 10 : la puissance doit être multipliée par 10." data-indice2="On part de 2 et l'on monte d'une unité."></td></tr>
+                    </table>
+                  </div>
+                  <div style="margin-top:12px"><b>Et <span class="nb">4,5 × 10<sup>2,3</sup></span>&nbsp;?</b>
+                    <select data-answer="entier" aria-label="que faire de 4,5 fois 10 puissance 2,3">
+                      <option value="">— choisis —</option>
+                      <option value="juste">cette écriture est correcte</option>
+                      <option value="arrondi">il suffit d'arrondir l'exposant à 2</option>
+                      <option value="entier">cette écriture n'existe pas : l'exposant doit être un entier</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 2</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>La règle qui gouverne les deux premières.</b> Corriger une écriture, ce n'est pas changer le nombre&nbsp;: c'est déplacer la virgule <b>et compenser sur l'exposant</b>. Ce que <b>a</b> gagne, <b>n</b> le perd.</p>
+                  <div class="calcul">
+                    <span class="nb">0,12 × 10<sup>−6</sup></span> = 1,2 × 10<sup>−1</sup> × 10<sup>−6</sup> = <span class="encadre">1,2 × 10<sup>−7</sup></span><br>
+                    <span class="nb">10,4 × 10<sup>2</sup></span> = 1,04 × 10<sup>1</sup> × 10<sup>2</sup> = <span class="encadre">1,04 × 10<sup>3</sup></span>
+                  </div>
+                  <p>Contrôle&nbsp;: <b>1,2</b> et <b>1,04</b> sont bien entre 1 et 10, et les deux exposants sont entiers.</p>
+                  <p><b>La troisième ne se corrige pas.</b> <span class="nb">10<sup>2,3</sup></span> est un nombre parfaitement défini en mathématiques (il vaut environ 200), mais ce <b>n'est pas une écriture scientifique</b> — la définition exige un exposant <b>entier relatif</b>. Arrondir 2,3 à 2 changerait le nombre&nbsp;: on ne corrige pas, on refuse l'écriture et on repart du nombre lui-même.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o1-s2-convertir">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2</div>
+            <h3 class="step-title">Convertir</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> passer d'un préfixe à un autre, y compris sur une unité composée.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p class="doc-note">Chaque réponse est demandée <b>en écriture scientifique</b>. Le tableau des préfixes de l'étape 1.3 est là pour ça&nbsp;: sers-t'en, on n'apprend pas des puissances par cœur avant de les avoir utilisées.</p>
+
+            <div class="exo" data-cle="pc-o1-s2-ex3">
+              <p class="exo-num">Exercice 3</p>
+              <p class="exo-enonce">Convertis dans l'unité demandée, et donne le résultat en écriture scientifique.</p>
+              <div class="field">
+                <span class="field-type">Exercice 3</span>
+                <div class="field-q">Trois conversions d'un préfixe à un autre.</div>
+                <div class="cloze" data-cloze data-cle="ex3">
+                  <div class="table-scroll">
+                    <table class="saisie">
+                      <tr><th>À convertir</th><th class="c">a</th><th class="c">signe de n</th><th class="c">n</th></tr>
+                      <tr><td class="depart">0,63 GHz → Hz</td>
+                        <td class="c"><input class="short" data-answer="6,3" placeholder="a" aria-label="a pour 0,63 gigahertz en hertz" data-indice1="Remplace G par sa puissance, puis remets le résultat sous la forme a × 10ⁿ." data-indice2="0,63 doit devenir un nombre entre 1 et 10."></td>
+                        <td class="c"><select class="short" data-answer="pos" aria-label="signe de n pour 0,63 gigahertz en hertz"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="8" placeholder="n" aria-label="n pour 0,63 gigahertz en hertz" data-indice1="giga vaut 10 puissance 9. Que devient l'exposant quand 0,63 devient 6,3 ?" data-indice2="a est multiplié par dix : la puissance doit descendre d'une unité."></td></tr>
+                      <tr><td class="depart">0,054 µm → km</td>
+                        <td class="c"><input class="short" data-answer="5,4" placeholder="a" aria-label="a pour 0,054 micromètre en kilomètre" data-indice1="Passe d'abord par le mètre, puis du mètre au kilomètre." data-indice2="Seul l'exposant change ; les chiffres 5 et 4 restent."></td>
+                        <td class="c"><select class="short" data-answer="neg" aria-label="signe de n pour 0,054 micromètre en kilomètre"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="11" placeholder="n" aria-label="n pour 0,054 micromètre en kilomètre" data-indice1="micro vaut 10 puissance −6, et passer au kilomètre retire encore 3." data-indice2="Additionne les trois contributions : celle de 0,054, celle de micro, celle de kilo."></td></tr>
+                      <tr><td class="depart">358 mV → kV</td>
+                        <td class="c"><input class="short" data-answer="3,58" placeholder="a" aria-label="a pour 358 millivolts en kilovolts" data-indice1="Les chiffres 3, 5 et 8 ne changent pas : seule la virgule bouge." data-indice2="Un seul chiffre avant la virgule."></td>
+                        <td class="c"><select class="short" data-answer="neg" aria-label="signe de n pour 358 millivolts en kilovolts"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="4" placeholder="n" aria-label="n pour 358 millivolts en kilovolts" data-indice1="milli retire 3, passer au kilovolt en retire encore 3." data-indice2="N'oublie pas le déplacement de virgule qui fait passer 358 à 3,58."></td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 3</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p>Dans les trois cas&nbsp;: on <b>remplace le préfixe par sa puissance</b>, on passe par l'unité de base, puis on remet le résultat sous la forme <span class="nb">a × 10<sup>n</sup></span>.</p>
+                  <div class="calcul">
+                    0,63 GHz = 0,63 × 10<sup>9</sup> Hz = <span class="encadre">6,3 × 10<sup>8</sup> Hz</span><br><br>
+                    0,054 µm = 0,054 × 10<sup>−6</sup> m = 5,4 × 10<sup>−8</sup> m<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 5,4 × 10<sup>−8</sup> ÷ 10<sup>3</sup> km = <span class="encadre">5,4 × 10<sup>−11</sup> km</span><br><br>
+                    358 mV = 358 × 10<sup>−3</sup> V = 3,58 × 10<sup>−1</sup> V<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 3,58 × 10<sup>−1</sup> ÷ 10<sup>3</sup> kV = <span class="encadre">3,58 × 10<sup>−4</sup> kV</span>
+                  </div>
+                  <p><b>Le contrôle de plausibilité, à faire à chaque fois.</b> Le kilomètre est une <b>grande</b> unité&nbsp;: exprimée en km, une longueur donne forcément un <b>petit</b> nombre — donc un exposant très négatif. Si tu avais trouvé <span class="nb">5,4 × 10<sup>−5</sup></span> km, un simple coup d'œil suffisait à voir que c'était trop gros pour 54 nanomètres.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exo" data-cle="pc-o1-s2-ex4">
+              <p class="exo-num">Exercice 4</p>
+              <p class="exo-enonce">Deux conversions de plus. La seconde porte sur une <b>unité composée</b>&nbsp;: traite les deux préfixes séparément.</p>
+              <div class="field">
+                <span class="field-type">Exercice 4</span>
+                <div class="field-q">Un grand écart de préfixes, puis une unité composée.</div>
+                <div class="cloze" data-cloze data-cle="ex4">
+                  <div class="table-scroll">
+                    <table class="saisie">
+                      <tr><th>À convertir</th><th class="c">a</th><th class="c">signe de n</th><th class="c">n</th></tr>
+                      <tr><td class="depart">379,45 kW → GW</td>
+                        <td class="c"><input class="short" data-answer="3,7945" placeholder="a" aria-label="a pour 379,45 kilowatts en gigawatts" data-indice1="Les chiffres ne changent pas : seule la virgule se déplace." data-indice2="Un seul chiffre avant la virgule : le 3."></td>
+                        <td class="c"><select class="short" data-answer="neg" aria-label="signe de n pour 379,45 kilowatts en gigawatts"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="4" placeholder="n" aria-label="n pour 379,45 kilowatts en gigawatts" data-indice1="Du kilo au giga, il y a six rangs d'écart — et le giga est le plus grand." data-indice2="N'oublie pas les deux rangs gagnés en passant de 379,45 à 3,7945."></td></tr>
+                      <tr><td class="depart">16,9 g·L<sup>−1</sup> → kg·L<sup>−1</sup></td>
+                        <td class="c"><input class="short" data-answer="1,69" placeholder="a" aria-label="a pour 16,9 grammes par litre en kilogrammes par litre" data-indice1="Seul le préfixe du numérateur change : le litre reste un litre." data-indice2="16,9 doit d'abord redevenir un nombre entre 1 et 10."></td>
+                        <td class="c"><select class="short" data-answer="neg" aria-label="signe de n pour 16,9 grammes par litre en kilogrammes par litre"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="2" placeholder="n" aria-label="n pour 16,9 grammes par litre en kilogrammes par litre" data-indice1="Le kilogramme est mille fois plus lourd que le gramme : le nombre doit devenir mille fois plus petit." data-indice2="Combine ce facteur mille avec le déplacement de virgule de 16,9 vers 1,69."></td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 4</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <div class="calcul">
+                    379,45 kW = 379,45 × 10<sup>3</sup> W = 3,7945 × 10<sup>5</sup> W<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 3,7945 × 10<sup>5</sup> ÷ 10<sup>9</sup> GW = <span class="encadre">3,7945 × 10<sup>−4</sup> GW</span><br><br>
+                    16,9 g·L<sup>−1</sup> = 16,9 × 10<sup>−3</sup> kg·L<sup>−1</sup> = <span class="encadre">1,69 × 10<sup>−2</sup> kg·L<sup>−1</sup></span>
+                  </div>
+                  <p><b>Pourquoi le litre ne bouge pas.</b> Dans <span class="nb">g·L<sup>−1</sup> → kg·L<sup>−1</sup></span>, un seul préfixe change&nbsp;: celui du numérateur. Le dénominateur reste le litre, donc rien n'entre de ce côté. Compare avec l'exemple résolu de l'étape 1.3, où les <b>deux</b> unités changeaient et où le dénominateur apportait un exposant <b>de signe opposé</b>.</p>
+                  <p><b>Le contrôle.</b> Le gigawatt est une unité énorme — c'est l'ordre de grandeur d'un réacteur nucléaire. 379 kW, c'est la puissance d'une grosse machine industrielle&nbsp;: elle doit donc représenter une <b>toute petite fraction</b> de gigawatt. <span class="nb">10<sup>−4</sup></span> GW, soit un dix-millième&nbsp;: c'est cohérent.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o1-s2-ordres">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3</div>
+            <h3 class="step-title">Donner un ordre de grandeur</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> appliquer le seuil 3,16 sur quatre constantes que tu recroiseras toute l'année.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o1-s2-ex5">
+              <p class="exo-num">Exercice 5</p>
+              <p class="exo-enonce">Donne l'<b>ordre de grandeur</b> de chacune de ces valeurs. Rappel&nbsp;: un ordre de grandeur ne porte <b>jamais</b> de chiffre devant la puissance.</p>
+              <div class="field">
+                <span class="field-type">Exercice 5</span>
+                <div class="field-q">Quatre valeurs, deux de chaque côté du seuil.</div>
+                <div class="cloze" data-cloze data-cle="ex5">
+                  <div class="table-scroll">
+                    <table class="saisie">
+                      <tr><th>Valeur</th><th class="c">signe de l'exposant</th><th class="c">exposant</th></tr>
+                      <tr><td class="depart">9,1 × 10<sup>−31</sup> kg</td>
+                        <td class="c"><select class="short" data-answer="neg" aria-label="signe de l'ordre de grandeur de 9,1 fois 10 puissance moins 31"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="30" placeholder="?" aria-label="exposant de l'ordre de grandeur de 9,1 fois 10 puissance moins 31" data-indice1="Compare 9,1 au seuil 3,16." data-indice2="Au-dessus du seuil, l'exposant gagne une unité — et gagner une unité sur −31 donne un nombre plus grand."></td></tr>
+                      <tr><td class="depart">6,0 × 10<sup>23</sup></td>
+                        <td class="c"><select class="short" data-answer="pos" aria-label="signe de l'ordre de grandeur de 6,0 fois 10 puissance 23"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="24" placeholder="?" aria-label="exposant de l'ordre de grandeur de 6,0 fois 10 puissance 23" data-indice1="Compare 6,0 au seuil 3,16." data-indice2="Au-dessus du seuil, l'exposant gagne une unité."></td></tr>
+                      <tr><td class="depart">1,6 × 10<sup>−19</sup> C</td>
+                        <td class="c"><select class="short" data-answer="neg" aria-label="signe de l'ordre de grandeur de 1,6 fois 10 puissance moins 19"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="19" placeholder="?" aria-label="exposant de l'ordre de grandeur de 1,6 fois 10 puissance moins 19" data-indice1="Compare 1,6 au seuil 3,16." data-indice2="En dessous du seuil, l'exposant ne bouge pas."></td></tr>
+                      <tr><td class="depart">2,5 × 10<sup>3</sup> m</td>
+                        <td class="c"><select class="short" data-answer="pos" aria-label="signe de l'ordre de grandeur de 2,5 fois 10 puissance 3"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select></td>
+                        <td class="c"><input class="short" data-answer="3" placeholder="?" aria-label="exposant de l'ordre de grandeur de 2,5 fois 10 puissance 3" data-indice1="Compare 2,5 au seuil 3,16." data-indice2="En dessous du seuil, l'exposant ne bouge pas."></td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 5</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p>Une seule comparaison par ligne&nbsp;: <b>a</b> face à <span class="nb">√10 ≈ 3,16</span>.</p>
+                  <div class="calcul">
+                    9,1 × 10<sup>−31</sup> kg &nbsp;·&nbsp; 9,1 &gt; 3,16 → <span class="encadre">10<sup>−30</sup> kg</span><br>
+                    6,0 × 10<sup>23</sup> &nbsp;·&nbsp; 6,0 &gt; 3,16 → <span class="encadre">10<sup>24</sup></span><br>
+                    1,6 × 10<sup>−19</sup> C &nbsp;·&nbsp; 1,6 &lt; 3,16 → <span class="encadre">10<sup>−19</sup> C</span><br>
+                    2,5 × 10<sup>3</sup> m &nbsp;·&nbsp; 2,5 &lt; 3,16 → <span class="encadre">10<sup>3</sup> m</span>
+                  </div>
+                  <p><b>Le piège de la première ligne.</b> Passer de <b>−31</b> à <b>−30</b> ressemble à une soustraction alors que c'est bien une <b>addition</b>&nbsp;: on ajoute 1 à l'exposant, ce qui rend le nombre <b>dix fois plus grand</b>. Vérifie avec la frise de l'étape 1.1 si le doute revient&nbsp;: <span class="nb">10<sup>−30</sup></span> est au-dessus de <span class="nb">10<sup>−31</sup></span>.</p>
+                  <p><b>Ces quatre valeurs ne sont pas prises au hasard.</b> Tu les recroiseras dans l'année&nbsp;: la masse de l'électron, la <b>constante d'Avogadro</b> (chapitre sur la mole), la <b>charge élémentaire</b>, et une distance de l'ordre du kilomètre. Retenir leur ordre de grandeur suffit souvent à voir qu'un résultat est faux.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.4 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o1-s2-calculatrice">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4</div>
+            <h3 class="step-title">Le piège de la calculatrice</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir saisir une puissance de dix sans que la machine te réponde autre chose que ce que tu lui demandes.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o1-s2-ex6">
+              <p class="exo-num">Exercice 6 — le plus utile de la page</p>
+              <p class="exo-enonce">Prends ta calculatrice. Calcule <span class="nb">1 ÷ (6,02 × 10<sup>23</sup>)</span> en utilisant la touche <code>×10ˣ</code> (parfois notée <code>EXP</code>). Recommence ensuite en tapant <span class="nb">1 ÷ 6,02 × 10 ^ 23</span>, avec la touche <b>puissance</b> <code>^</code> et <b>sans parenthèses</b>. Compare les deux affichages.</p>
+
+              <div class="calcs">
+                <svg viewBox="0 0 300 170" role="img" aria-label="Écran de calculatrice : la saisie 1 ÷ 6,02 ×10ˣ 23 affiche 1,66 fois 10 puissance moins 24. C'est le résultat attendu.">
+                  <rect class="cs-boitier" x="4" y="4" width="292" height="162" rx="14"/>
+                  <text class="cs-etiq ok" x="20" y="30">✓ AVEC LA TOUCHE ×10ˣ</text>
+                  <rect class="cs-ecran" x="20" y="44" width="260" height="104" rx="8"/>
+                  <text class="cs-saisie" x="264" y="76">1 ÷ 6.02 ×10ˣ 23</text>
+                  <text class="cs-res ok" x="264" y="122">1,66 × 10⁻²⁴</text>
+                </svg>
+                <svg viewBox="0 0 300 170" role="img" aria-label="Écran de calculatrice : la saisie 1 ÷ 6,02 × 10 puissance 23 sans parenthèses affiche 1,66 fois 10 puissance 22. C'est faux.">
+                  <rect class="cs-boitier" x="4" y="4" width="292" height="162" rx="14"/>
+                  <text class="cs-etiq ko" x="20" y="30">✗ AVEC ^ ET SANS PARENTHÈSES</text>
+                  <rect class="cs-ecran" x="20" y="44" width="260" height="104" rx="8"/>
+                  <text class="cs-saisie" x="264" y="76">1 ÷ 6.02 × 10 ^ 23</text>
+                  <text class="cs-res ko" x="264" y="122">1,66 × 10²²</text>
+                </svg>
+              </div>
+
+              <div class="field">
+                <span class="field-type">Exercice 6</span>
+                <div class="field-q">Une seule question, et elle vaut toute la page.</div>
+                <div class="cloze" data-cloze data-cle="ex6">
+                  <div style="margin-bottom:9px"><b>1.</b> Combien d'ordres de grandeur séparent les deux résultats&nbsp;?
+                  <input class="short" data-answer="46" placeholder="?" aria-label="nombre d'ordres de grandeur séparant les deux résultats" data-indice1="Soustrais les deux exposants." data-indice2="De −24 à +22, compte les rangs franchis : attention, le passage par zéro ne se saute pas."> ordres de grandeur.</div>
+                  <div><b>2.</b> Laquelle des deux touches faut-il utiliser pour saisir une puissance de dix&nbsp;?
+                    <select data-answer="exp" aria-label="quelle touche utiliser pour saisir une puissance de dix">
+                      <option value="">— choisis —</option>
+                      <option value="exp">la touche ×10ˣ (ou EXP)</option>
+                      <option value="chapeau">la touche puissance ^</option>
+                      <option value="peu">l'une ou l'autre, ça revient au même</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 6</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Fais vraiment les deux saisies sur ta machine avant de lire le corrigé. Le voir écrit ne suffit pas&nbsp;: il faut l'avoir vu s'afficher.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Ce que la machine a compris, dans chaque cas.</b> La touche <code>×10ˣ</code> ne fait pas une multiplication&nbsp;: elle écrit <b>un seul nombre</b>. <code>6.02 ×10ˣ 23</code> est un bloc insécable, et la division porte donc sur lui tout entier.</p>
+                  <div class="calcul">1 ÷ (6,02 × 10<sup>23</sup>) = <span class="encadre">1,66 × 10<sup>−24</sup></span></div>
+                  <p>Avec la touche <code>^</code>, la machine lit trois opérations distinctes et applique les priorités de calcul&nbsp;: la puissance d'abord, puis la division, puis la multiplication. Elle divise donc 1 par 6,02, <b>et multiplie ensuite</b> par <span class="nb">10<sup>23</sup></span> — au lieu de diviser par lui.</p>
+                  <div class="calcul">(1 ÷ 6,02) × 10<sup>23</sup> = 0,166 × 10<sup>23</sup> = <span class="encadre">1,66 × 10<sup>22</sup></span></div>
+                  <p><b>L'écart&nbsp;:</b> de <span class="nb">10<sup>−24</sup></span> à <span class="nb">10<sup>22</sup></span>, il y a <b>46 ordres de grandeur</b> — un facteur <span class="nb">10<sup>46</sup></span>. Pour te le représenter&nbsp;: le rapport entre la taille d'un atome et celle de la Terre n'est «&nbsp;que&nbsp;» de <span class="nb">10<sup>17</sup></span>. L'erreur est presque trois fois pire que ça.</p>
+                  <p><b>Les deux réflexes à garder.</b> Toujours la touche <code>×10ˣ</code> (ou <code>EXP</code>) pour saisir une puissance de dix — et si tu tiens à <code>^</code>, alors <b>des parenthèses autour du dénominateur tout entier</b>. Le second réflexe vaut d'ailleurs pour toute division&nbsp;: dès qu'il y a plus d'un facteur en bas, on parenthèse.</p>
+                  <p class="doc-note" style="margin-top:10px">Et le vrai garde-fou, celui qui te sauvera en évaluation&nbsp;: <b>l'ordre de grandeur attendu</b>. Une entité parmi <span class="nb">6,02 × 10<sup>23</sup></span>, ça donne forcément un nombre <b>minuscule</b>. Un résultat en <span class="nb">10<sup>22</sup></span> se repère sans calculer.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Outil transversal — proposition V1 du 25/08/2026.</b> Cet outil n'est pas un chapitre&nbsp;: il sert dans tous les chapitres, et il reste ouvert toute l'année. Les exercices se corrigent <b>en direct</b> par le navigateur, et chacun porte en plus son <b>corrigé rédigé</b>, dépliable à tout moment&nbsp;: tu travailles chez toi, tu dois pouvoir te corriger seul. 🖨️ La <a href="../fiches/fiche-2nde-o1-ecriture-scientifique.html" style="color:var(--link)">fiche outil</a> reprend toute la méthode, entièrement rédigée, sur une feuille à coller.
+  </footer>
+</div>
+
+<script src="../assets/js/sequence-snt.js?v=41"></script>
+
+<!-- ============================================================
+     JS propre à l'outil. Un seul composant, qui n'existe nulle part
+     ailleurs : le curseur d'exposant de l'étape 1.2. Le moteur
+     partagé n'est pas touché — ce curseur est une illustration, il
+     n'enregistre rien et ne valide rien.
+
+     Plus un appoint d'affichage : renommer le bouton de fiche que le
+     moteur ajoute en fin de partie. Sur un outil, « ma fiche »
+     désignerait deux objets différents — la fiche outil imprimable
+     (le cours) et le récapitulatif produit par le moteur (le travail
+     de l'élève). Le second s'appelle donc « Mes réponses ».
+     ============================================================ -->
+<script>
+(function(){
+  'use strict';
+
+  /* =========================================================
+     CURSEUR D'EXPOSANT — étape 1.2
+     Tout est fait sur des CHAÎNES, jamais sur des flottants :
+     1,6 × 10⁻¹² calculé en Number affiche 1.5999999999999999e-12,
+     et l'élève verrait apparaître des chiffres qui n'existent pas.
+     On déplace la virgule dans une suite de caractères, ce qui est
+     exactement le geste qu'on lui demande d'apprendre.
+     ========================================================= */
+  function repeter(c, n){ return n > 0 ? new Array(n + 1).join(c) : ''; }
+
+  /* Rend une liste de {c: caractère, z: vrai si c'est un zéro AJOUTÉ
+     par l'exposant}. Les zéros ajoutés se colorent : c'est eux qu'on
+     veut voir apparaître et disparaître. */
+  function developper(a, n){
+    var p = a.split(','), chiffres = p[0] + (p[1] || ''), pos = p[0].length + n, out = [], i;
+    if (pos <= 0){                       /* le nombre passe sous 1 : des zéros devant */
+      out.push({ c:'0', z:false }); out.push({ c:',', z:false });
+      for (i = 0; i < -pos; i++) out.push({ c:'0', z:true });
+      for (i = 0; i < chiffres.length; i++) out.push({ c:chiffres[i], z:false });
+      return out;
+    }
+    if (pos >= chiffres.length){         /* le nombre devient entier : des zéros derrière */
+      for (i = 0; i < chiffres.length; i++) out.push({ c:chiffres[i], z:false });
+      for (i = 0; i < pos - chiffres.length; i++) out.push({ c:'0', z:true });
+      return out;
+    }
+    for (i = 0; i < chiffres.length; i++){        /* la virgule tombe au milieu */
+      if (i === pos) out.push({ c:',', z:false });
+      out.push({ c:chiffres[i], z:false });
+    }
+    return out;
+  }
+
+  /* Groupement par trois, de part et d'autre de la virgule, avec une
+     espace fine insécable : sans lui, quatorze chiffres à la file ne
+     se lisent pas — et c'est justement l'argument de l'écriture
+     scientifique qu'on veut rendre visible. */
+  function enHTML(liste){
+    var virgule = -1, i;
+    for (i = 0; i < liste.length; i++) if (liste[i].c === ',') { virgule = i; break; }
+    var ent = virgule < 0 ? liste : liste.slice(0, virgule);
+    var fra = virgule < 0 ? [] : liste.slice(virgule + 1);
+    var sortie = [];
+    for (i = 0; i < ent.length; i++){
+      if (i > 0 && (ent.length - i) % 3 === 0) sortie.push({ sep:true });
+      sortie.push(ent[i]);
+    }
+    if (fra.length){
+      sortie.push({ c:',', z:false });
+      for (i = 0; i < fra.length; i++){
+        if (i > 0 && i % 3 === 0) sortie.push({ sep:true });
+        sortie.push(fra[i]);
+      }
+    }
+    var html = '', enZero = false;
+    sortie.forEach(function(x){
+      if (x.sep){ html += ' '; return; }
+      if (x.z && !enZero){ html += '<span class="z">'; enZero = true; }
+      if (!x.z && enZero){ html += '</span>'; enZero = false; }
+      html += x.c;
+    });
+    if (enZero) html += '</span>';
+    return html;
+  }
+
+  function glose(n){
+    if (n === 0) return 'Exposant nul : la virgule ne bouge pas. 10<sup>0</sup> vaut 1.';
+    var r = Math.abs(n) + (Math.abs(n) > 1 ? ' rangs' : ' rang');
+    return n > 0
+      ? 'Exposant <b>positif</b> : la virgule avance de ' + r + ' vers la <b>droite</b>. Le nombre devient <b>plus grand</b>.'
+      : 'Exposant <b>négatif</b> : la virgule recule de ' + r + ' vers la <b>gauche</b>. Le nombre devient <b>plus petit</b>.';
+  }
+
+  function curseur(hote){
+    var range = hote.querySelector('[data-cur-range]'),
+        out   = hote.querySelector('[data-cur-out]'),
+        sci   = hote.querySelector('[data-cur-sci]'),
+        dec   = hote.querySelector('[data-cur-dec]'),
+        gl    = hote.querySelector('[data-cur-glose]'),
+        btns  = Array.prototype.slice.call(hote.querySelectorAll('[data-a]')),
+        a     = '1,6';
+    if (!range || !sci || !dec) return;
+
+    function maj(){
+      var n = parseInt(range.value, 10) || 0;
+      out.textContent = (n > 0 ? '+' : '') + n;
+      sci.innerHTML = a + ' × 10<sup>' + (n < 0 ? '−' + Math.abs(n) : n) + '</sup>';
+      dec.innerHTML = enHTML(developper(a, n));
+      gl.innerHTML = glose(n);
+    }
+    range.addEventListener('input', maj);
+    btns.forEach(function(b){
+      b.addEventListener('click', function(){
+        a = b.dataset.a;
+        btns.forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        maj();
+      });
+    });
+    maj();
+  }
+
+  /* =========================================================
+     APPOINT D'AFFICHAGE — le nom de la fiche produite par le moteur.
+     Le moteur écrit « 📄 Ouvrir ma fiche (PDF) » ; il est partagé par
+     huit pages et ne se modifie pas depuis ici (interdiction §0 du
+     brief). On renomme donc le bouton dans la page, une seule fois.
+     Une seule écriture, hors de .steps : aucun risque de réveiller
+     le MutationObserver du moteur, qui ne surveille que les étapes.
+     ========================================================= */
+  function renommerFiche(){
+    document.querySelectorAll('.seance-actions').forEach(function(bar){
+      var dl = bar.querySelector('.btn.dl');
+      if (dl && dl.textContent.indexOf('Mes réponses') < 0) dl.textContent = '📄 Mes réponses (PDF)';
+      var lab = bar.querySelector('.sa-label');
+      if (lab && lab.dataset.renomme !== '1'){
+        lab.dataset.renomme = '1';
+        lab.innerHTML = '💾 <b>Mes réponses</b> rassemble ce que tu as écrit sur cette page, avec les corrections : '
+                      + 'à enregistrer en PDF et à déposer sur ton OneDrive. La <b>fiche outil</b>, elle, est le cours '
+                      + 'à imprimer — le lien est en haut de la page.';
+      }
+    });
+  }
+
+  function demarrer(){
+    document.querySelectorAll('[data-curseur]').forEach(curseur);
+    renommerFiche();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
+  else demarrer();
+})();
+</script>
+
+</body></html>

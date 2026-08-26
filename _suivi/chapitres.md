@@ -194,6 +194,78 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 
 ---
 
+## Seconde — Outils transversaux de physique-chimie
+
+> Quatrième famille, ouverte le **25/08/2026**. Consignes :
+> `_modeles/CONSIGNES-outil-PC.md`. Ces pages **ne suivent aucune progression** :
+> elles sont ouvertes toute l'année et ne se verrouillent ni entre elles, ni avec
+> les chapitres.
+>
+> **Jalons d'un outil** (différents de ceux d'un chapitre — il n'y a ni régime A,
+> ni code de déblocage) :
+> 1 **Page écran en V1** (méthode + exercices corrigés) · 2 **Fiche A4** en deux
+> pages · 3 **Entrée au hub** · 4 Contenu validé par Loïc · 5 Éprouvé en classe ·
+> 6 OUTIL CLOS
+>
+> ⚠ **Rien n'est validé.** Les jalons 1 à 3 sont techniques ; seul le 4 engage le fond.
+
+### O1 — Puissances de dix et écriture scientifique
+- Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Fichiers : `pages/2nde-pc-o1-ecriture-scientifique.html` · `fiches/fiche-2nde-o1-ecriture-scientifique.html`
+- **Méthode** — 4 étapes : pourquoi cette écriture (frise des échelles, 18 décades) ·
+  la forme `a × 10ⁿ` (curseur d'exposant de −12 à +12, encadré « à éviter ») ·
+  préfixes et conversions (13 préfixes, 3 cas dont l'unité composée résolue) ·
+  l'ordre de grandeur (axe logarithmique, le seuil √10 ≈ 3,16 tombe au milieu).
+- **S'entraîner** — 6 exercices corrigés, en 4 étapes. L'exercice 6 (le piège de
+  la calculatrice, `^` contre `×10ˣ`) porte deux écrans de calculatrice en SVG.
+- Sources : `fiche_Ecriture scientifique et chiffres significatifs.pdf` (partie
+  haute) et `fiche_Convertir.pdf`. Fond conservé, forme refaite. **Une erreur de
+  calcul du corrigé source corrigée** (ligne `379,45 kW`) — voir `DECISIONS.md`.
+- ⏳ À trancher : le mot « Séance » de la fiche générée (O-2).
+
+### O2 — Les chiffres significatifs
+- Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Fichiers : `pages/2nde-pc-o2-chiffres-significatifs.html` · `fiches/fiche-2nde-o2-chiffres-significatifs.html`
+- **Méthode** — 4 étapes : compter (les 4 règles du cahier de vacances, reprises
+  mot pour mot, + un compteur interactif à trois états — compté, ne compte pas,
+  **ambigu**) · pourquoi ce n'est pas de la coquetterie (double axe hachuré,
+  3,20 contre 3,2, l'incertitude en trois lignes) · multiplication et division ·
+  **addition et soustraction**, avec le schéma d'alignement sur la virgule et le
+  bloc de contraste des deux règles côte à côte.
+- **S'entraîner** — 6 exercices, dont la **série finale mélangée de 8 calculs** où
+  chaque ligne demande d'abord *quelle règle*, puis le résultat. C'est le seul
+  exercice qui mesure vraiment si la distinction est acquise.
+- Sources : `fiche_Ecriture scientifique et chiffres significatifs.pdf` (partie
+  basse) et l'encart du cahier de vacances `cahier/diag-j01-…html`.
+- ⏳ À trancher : le statut des zéros de fin d'un entier (O-4) et les deux calculs
+  ajoutés à la série finale (O-5).
+
+### O3 — Sécurité en salle de TP
+- Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- **Cadré, non écrit — lot 2.** 🔴 **Bloqué : les trois PDF sources manquent au
+  dépôt**, et deux d'entre eux ne contiennent que des images (les neuf
+  pictogrammes CLP, la verrerie). Tout le visuel est à produire en SVG.
+- Prévu : 9 pictogrammes en `<symbol>` réutilisables · la verrerie triée en
+  précise / usage courant · la paillasse aux 8 erreurs cliquables · un QCM de
+  6 questions. Fiche A4 : **4 pages tolérées** ici.
+
+### O4 — Manipuler une relation algébrique
+- Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- **Cadré, non écrit — lot 3.** 🔴 **Bloqué : le PDF source et son corrigé
+  manquent au dépôt.** Fond de Loïc, à conserver intégralement (les trois
+  méthodes, dans son ordre, avec son jugement).
+- Portage adapté de `cfa/outil-07-isoler-une-inconnue.html` : même geste, autre
+  public — tout le contexte d'atelier mécanique est à changer.
+- ⚠ Le corrigé source comporte une erreur au niveau 1 (`c = b/c` au lieu de
+  `c = b/a`) — à corriger et à signaler.
+
+### O5 à O8 — réservés
+Numéros réservés, **à ne pas produire sans commande** : `o5` convertir · `o6`
+présenter un calcul · `o7` construire et exploiter un graphique · `o8` rédiger un
+compte rendu de TP.
+
+---
+
 ## Seconde — SNT (Sciences numériques et technologie)
 
 > **Gabarit différent des chapitres de physique-chimie** : ce ne sont pas des
