@@ -8,6 +8,11 @@
 > 4 Ajouts&approfondissements · 5 Cours VALIDÉ (« utilisable l'an prochain ») ·
 > 6 Fiche élève VALIDÉE · 7 CHAPITRE CLOS
 >
+> 🆕 **Fiche vierge téléchargeable depuis le cours (26/08/2026)** — bloc
+> `.fiche-vierge.hors-verrou` sous le sous-titre, visible **même page verrouillée**.
+> Posé sur les **2 chapitres dont la fiche existe** : `t1c2`, `t1c4`. Les 12 autres
+> l'auront quand leur fiche sera écrite. Règle : `CONSIGNES-chapitre-PC.md` §6.
+>
 > 🔴 **3 chapitres PC sur 14 sont en V1 intégrale : T3-C1, T3-C3 et T3-C4.** Le jalon 1
 > a changé de définition le 25/08/2026 : il exige désormais le cours **entier**, figures
 > et légendes comprises. Les 11 autres pages restent des ébauches — fidèles dans le
@@ -143,8 +148,8 @@
 ### T3-C1 — Émission et perception d'un son
 - Jalons : 1 ✅ · 2 🔄 · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t3-c1-emission-perception-son.html`
-- Fiche : aucune. Code de déblocage : **S0NORE**.
-- 🥇 **Premier chapitre en V1 intégrale** (25/08/2026) — les 17 images de la source posées avec leurs légendes, aucun `.a-faire` sauf le lien de DS. 🔎 **Audit 1 appliqué le 25/08** : figures recalibrées, fractions sur deux lignes, quatre mises en regard texte/figure, cours étoffé (bloc Méthode, amplitude, seuils de danger). Les textes ajoutés sont des **propositions à valider**. 🔎 **Audit 2 appliqué le 26/08 (lots A et B)** : méthode « Mesurer une période » **en deux colonnes** avec une **figure d'étapes SVG** produite pour elle (4 vignettes, signal composé, T = 4,0 ms sur 4 motifs) ; images 6-7 portées à 200 px et 16-17 à 375 px (plafond du casque, mesuré) ; l'exercice 2 redonne le résultat de l'exercice 1 en toutes lettres ; **12 gras d'insistance retirés** (64 → 50) ; **plus aucun `.a-faire`**.
+- Fiche : **aucune — c'est le seul manque du chapitre**. Elle conditionne le bouton « Télécharger la fiche (vierge) » du lot E, posé partout ailleurs où une fiche existe. Jalon 6, verrouillé par le jalon 5 (« cours VALIDÉ », acte explicite de Loïc). Brief prêt : `BRIEF-CLAUDE-CODE-T3C1-fiche.md`. Code de déblocage : **S0NORE**.
+- 🥇 **Premier chapitre en V1 intégrale** (25/08/2026) — les 17 images de la source posées avec leurs légendes, aucun `.a-faire` sauf le lien de DS. 🔎 **Audit 1 appliqué le 25/08** : figures recalibrées, fractions sur deux lignes, quatre mises en regard texte/figure, cours étoffé (bloc Méthode, amplitude, seuils de danger). Les textes ajoutés sont des **propositions à valider**. 🔎 **Audit 2 appliqué EN ENTIER le 26/08 (lots A à E)** : méthode « Mesurer une période » **en deux colonnes** avec une **figure d'étapes SVG** produite pour elle (4 vignettes, signal composé, T = 4,0 ms sur 4 motifs) ; images 6-7 portées à 200 px et 16-17 à 375 px (plafond du casque, mesuré) ; l'exercice 2 redonne le résultat de l'exercice 1 en toutes lettres ; **12 gras d'insistance retirés** (64 → 50) ; **plus aucun `.a-faire`**. 🎨 **Lot C** : les 6 figures du PPTX refaites en **SVG maison** (fréquence, extrema, timbre, diapason+son pur fusionnés, amplitude, échelle des décibels) sur un **code couleur commun** — 233 Ko de JPEG crénelés → 65 Ko de vectoriel, la page perd 168 Ko ; + 2 icônes d'exercice (orage, baleine). ✍ **Lot D** : l'ouverture ne répète plus la définition qui suit, **8 transitions** (classe `.passage`) et **4 encarts `.histoire`** — le hertz, la cloche à vide, le la 440, le décibel. ⏳ **Le fond du lot D est une proposition, non validée.**
 - 4 sections (caractéristiques d'un signal périodique · les ondes · émission & propagation d'un son · perception des sons).
 - **6 exercices** rédigés + **corrigés en entier** ; les graphes d'énoncé viennent de la source, les **corrections portent le graphe annoté** (T, 3T, 4T, extrema) découpé du rendu — ces annotations sont des formes PowerPoint, invisibles pour `pdfimages`.
 - 2 encarts formule (f = 1/T · c_son = d/Δt, en **vraies fractions**) ; 1 bloc **Méthode** ; 1 encart **mise en garde** (hauteur ≠ intensité) ; 2 tables devenues **Tableau 1** (vitesses du son) et **Tableau 2** (sous-domaines de fréquences), toutes deux **en regard du texte**.

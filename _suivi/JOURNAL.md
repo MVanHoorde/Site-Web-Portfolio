@@ -2268,3 +2268,89 @@ Les indices : **0 bloc formule mal placé** contre 7 avant.
 T3-C4 — portent encore l'encart 🔧 « Lien du DS » alors que **leur lien DS est
 déjà posé**. Même redondance que celle retirée ici. T2-C2, T2-C3 et T3-C2 n'ont
 pas de lien DS : chez eux l'encart garde son sens.
+
+---
+
+## 26/08/2026 (suite) — T3-C1 : les lots C, D et E, et la fiche qui manque
+
+Consigne : « fais tout ». Les lots restants de l'audit 2 y sont passés, plus les
+quatre points laissés ouverts le matin.
+
+**Les points ouverts, d'abord.** La méthode déséquilibrait ses colonnes : 214 px
+de texte contre 603 px de figure, soit **389 px de blanc**. Empiler quatre
+vignettes dans une demi-largeur ne pouvait pas tomber juste. Passées en **2 × 2**,
+elles font 205 px : l'écart tombe à **33 px**. Au passage, la mesure a montré
+qu'il fallait 353 px de colonne pour que les étapes tiennent sur une ligne sèche
+— la colonne en offre 367, d'où la largeur de figure retenue (356 px, pas 420 qui
+avait inversé le déséquilibre). Les sous-titres des vignettes, qui redisaient mot
+pour mot les étapes de gauche, sont tombés : à 170 px de vignette ils étaient
+illisibles de toute façon.
+
+**Trois autres chapitres portaient l'encart 🔧 devenu faux** — T2-C1, T3-C3,
+T3-C4 — alors que leur lien de DS était posé. Retirés. T3-C3 et T3-C4 n'ont
+plus aucun `.a-faire` : leur CSS mort est parti avec, comme celui de T3-C1.
+T2-C2, T2-C3 et T3-C2 n'ont pas de lien DS ; chez eux l'encart dit encore vrai,
+on n'y touche pas.
+
+**Lot C — les six figures.** Le code couleur se fixe sur la figure 4 et tout s'y
+aligne : `U_max` en rouge, `U_min` en violet, l'amplitude en vert parce qu'elle
+se déduit des deux, le repérage en or, la courbe en encre. L'élève retrouve en
+partie 4 les couleurs de la partie 1.
+
+Un défaut de fond a failli passer : la normalisation du signal composé se faisait
+sur `max(|g|)`. Les creux d'un son composé étant plus profonds que les crêtes, la
+ligne `U_max` **n'était jamais atteinte par la courbe** — un maximum qui ne
+maximise rien. Normalisation refaite en **étendue** : la courbe touche exactement
++1 et −1, et l'axe passe au milieu, ce qui rend vraies *en même temps* les deux
+lectures de la figure 14 (amplitude = de l'axe au sommet ; écart des extrema = le
+double). Contrôle imprimé à chaque génération.
+
+Même vigilance sur la figure 3 : elle annonçait « f = 1 Hz » en traçant **un
+seul motif sur trois secondes**. Le nombre de motifs vaut f × durée ; corrigé, et
+la durée ramenée à 2 s pour que le contraste 1 Hz / 3 Hz reste lisible.
+
+Bilan de poids : **233 Ko de JPEG et PNG remplacés par 65 Ko de SVG**. La page
+s'allège de 168 Ko *et* devient nette à toute échelle. Les SVG sont **inline**,
+pas appelés comme fichiers : un SVG chargé en image vit dans un contexte isolé où
+les `@font-face` du site n'existent pas — toutes les étiquettes seraient tombées
+en police système.
+
+**Lot D — le texte respire.** La partie 1 s'ouvrait en redisant mot pour mot la
+définition qui suivait ; elle commence maintenant par une mise en route. Huit
+transitions posées, dans une classe `.passage` créée pour elles — filet fin et
+italique, distincte de `.aparte` qui est une note en mono. Quatre encarts
+`.histoire` (le composant existait dans le socle et ne servait pas) : le hertz,
+la cloche à vide de Boyle et Hooke, le la 440, le décibel des Bell Labs. Aucun
+portrait : rien de disponible sous une licence sûre, et la règle RGPD interdit
+d'aller en chercher sur un CDN. Les dates que les sources se disputent — année
+d'adoption du hertz, du la 440 — sont formulées de façon à rester vraies quelle
+que soit la version. **Tout ce lot est une proposition, le fond appartient à Loïc.**
+
+**Lot E — la fiche vierge.** `.hors-verrou` est la **seule exception** du dépôt à
+`body.verrouille`, qui masquait tout l'article sauf le cadenas. C'est une entorse
+assumée : le verrou protège le cours, pas le support que l'élève remplira en
+classe, et un élève absent doit pouvoir imprimer sa fiche. Effet de bord traité :
+l'article verrouillé porte désormais **deux** éléments visibles, il est passé en
+`flex-direction:column` — sans quoi le bouton se rangeait à côté du cadenas.
+
+Le bouton n'est posé que sur les **2 chapitres dont la fiche existe** (`t1c2`,
+`t1c4`). Poser un lien vers une fiche absente serait un lien cassé et une
+promesse non tenue. Le gabarit le porte en commentaire, la règle est dans
+`CONSIGNES-chapitre-PC.md` §6.
+
+**Un piège payé.** `verifier.mjs` est passé de 18 à 19 problèmes après le lot C.
+Le coupable : un commentaire CSS où j'avais écrit une balise image d'exemple —
+le vérificateur lit les attributs de source **jusque dans les commentaires** et
+la comptait en lien cassé. Reformulé, noté dans la page pour le prochain.
+
+**Contrôles.** `verifier.mjs` : **18**, retrouvés. Les **16 pages PC testées à
+390 px** : aucun débordement horizontal, aucune erreur JS. Façade vidéo
+re-mesurée : **0 requête tierce avant le clic**, lecteur fonctionnel. Le bouton
+de fiche vérifié visible **page verrouillée** et bien placé sous le cadenas.
+`chapitre-commun.css` passe en `?v=6` sur ses 17 fichiers.
+
+**Ce qui reste, et pourquoi.** La **fiche de T3-C1 n'existe pas**, donc le
+chapitre ne porte pas le bouton du lot E. Elle relève du jalon 6, et son brief
+(`BRIEF-CLAUDE-CODE-T3C1-fiche.md` §0) la verrouille explicitement derrière le
+jalon 5 — « cours VALIDÉ », un acte de Loïc, jamais présumé. Douze chapitres sur
+quatorze sont dans ce cas.

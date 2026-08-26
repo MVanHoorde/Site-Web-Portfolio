@@ -285,6 +285,25 @@
   .aparte { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--gris);
     border-left:2px solid var(--grille); padding-left:.7rem; margin:.6rem 0; }
 
+  /* ===== Telecharger la fiche VIERGE (26/08/2026) =====
+     Se place juste apres .sous-titre, et porte .hors-verrou : il reste visible
+     meme cadenasse (voir la regle du verrou plus bas). La fiche COMPLETEE ne
+     se met jamais en ligne — elle se remet de la main a la main aux absents,
+     aux eleves en situation de handicap et aux PAP. */
+  .fiche-vierge { margin:1.1rem 0 1.7rem; }
+  .fiche-vierge a { display:inline-flex; align-items:center; gap:.55rem;
+    font-family:'IBM Plex Mono',monospace; font-size:.82rem; color:var(--encre);
+    border:1px solid var(--encre); border-radius:999px; padding:.5rem 1.1rem;
+    background:var(--carte); text-decoration:none; box-shadow:2px 2px 0 rgba(74,63,158,.16);
+    transition:transform .14s ease, box-shadow .14s ease; }
+  .fiche-vierge a:hover, .fiche-vierge a:focus-visible {
+    transform:translate(-1px,-1px); box-shadow:3px 3px 0 rgba(74,63,158,.24); }
+  .fiche-vierge .quoi { color:var(--gris); font-size:.74rem; display:block;
+    margin-top:.4rem; font-family:'IBM Plex Mono',monospace; }
+  @media (prefers-reduced-motion:reduce) { .fiche-vierge a { transition:none; }
+    .fiche-vierge a:hover, .fiche-vierge a:focus-visible { transform:none; } }
+  @media print { .fiche-vierge { display:none; } }
+
   /* Checklist */
   .checklist { border:1px solid var(--encre); border-left:4px solid var(--h-gamma);
     border-radius:0 12px 12px 0; padding:1.2rem 1.4rem; margin:2.6rem 0 0; }
@@ -326,10 +345,21 @@
   /* ===== Verrou de fin de chapitre — v2 : porte centrée plein écran ===== */
   body.verrouille aside.sommaire,
   body.verrouille details.toc-mobile,
-  body.verrouille article.lecture > *:not(#porte) { display:none; }
+  /* 🔴 .hors-verrou — entorse ASSUMEE au dispositif, decidee le 26/08/2026.
+     La fiche VIERGE doit rester telechargeable « librement, en permanence »,
+     y compris par un eleve qui n'a pas encore le code : absent, malade, ou
+     simplement en avance. Le verrou protege le COURS, pas le support que
+     l'eleve remplira en classe. Rien d'autre ne porte cette classe. */
+  body.verrouille article.lecture > *:not(#porte):not(.hors-verrou) { display:none; }
+  /* verrouille, le bouton se recentre sous le cadenas */
+  body.verrouille .fiche-vierge { text-align:center; margin-top:0; }
   body.verrouille .page { grid-template-columns:minmax(0,1fr); max-width:720px; }
+  /* flex-direction:column — depuis que .hors-verrou laisse un second element
+     visible (le bouton de fiche vierge), l'article verrouille contient DEUX
+     items : en ligne, le bouton se rangeait a cote du cadenas au lieu de se
+     poser dessous. */
   body.verrouille article.lecture { min-height:min(70vh, 620px); display:flex;
-    align-items:center; justify-content:center; }
+    flex-direction:column; align-items:center; justify-content:center; }
   #porte { display:none; }
   body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; width:100%; }
   #porte .cadenas { font-size:2.6rem; margin-bottom:.8rem; }

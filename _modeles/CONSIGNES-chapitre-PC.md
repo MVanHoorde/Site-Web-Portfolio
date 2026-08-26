@@ -284,6 +284,40 @@ Règles d'or (leçons des chapitres 1 et 2) :
 
 ## 6. Règles de la fiche élève (v4)
 
+### 🔴 La fiche vierge se télécharge depuis le cours, en permanence (26/08/2026)
+
+Tout chapitre **dont la fiche existe** porte, juste sous `<p class="sous-titre">`,
+le bloc de téléchargement — il est dans `_modeles/gabarit-chapitre.html`, en
+commentaire, prêt à décommenter :
+
+```html
+<div class="fiche-vierge hors-verrou">
+  <a href="../fiches/fiche-2nde-tXcY.html">📄 Télécharger la fiche de cours (vierge)</a>
+  <span class="quoi">à imprimer et à compléter en classe — disponible en permanence, code ou pas</span>
+</div>
+```
+
+Trois points, dans l'ordre d'importance :
+
+1. **`.hors-verrou` est une entorse assumée au dispositif.** `body.verrouille`
+   masque tout l'`<article>` sauf `#porte` ; la classe ajoute la seule
+   exception du dépôt. Motif : la fiche vierge doit rester accessible à
+   l'élève **absent, malade ou en avance**, qui n'a pas encore le code. Le
+   verrou protège le **cours**, pas le support que l'élève remplira en classe.
+2. **Aucune fiche complétée en ligne, jamais.** Les fiches complétées existent
+   pour les absents, les élèves en situation de handicap et les PAP, mais se
+   remettent **de la main à la main**.
+3. **Pas de fiche ⇒ pas de bouton.** Un lien vers un fichier absent est un
+   lien cassé (bloquant pour `verifier.mjs`) et une promesse non tenue.
+   Au 26/08/2026, **2 chapitres sur 14** portent le bouton — `t1c2` et `t1c4`,
+   les seuls dont la fiche est écrite.
+
+⚠ Le bloc rend l'`<article>` verrouillé porteur de **deux** éléments visibles ;
+c'est pourquoi `body.verrouille article.lecture` est passé en
+`flex-direction:column`. Ne pas le remettre en ligne.
+
+---
+
 - Style aligné sur le site : mêmes encarts (`.definition`, `.propriete`,
   `.methode-f`, `.exercice-f`), **AUCUN pictogramme crayon** sur la fiche
   (le crayon ✎ n'existe que dans le cours en ligne).

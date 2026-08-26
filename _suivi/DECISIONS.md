@@ -101,9 +101,29 @@ supposait.
 | A2-6 | **Le gras marque le mot à retenir, jamais l'emphase orale.** 12 gras d'insistance retirés de T3-C1 (64 → 50). Règle à porter dans `CONSIGNES-chapitre-PC.md` | ✅ |
 | A2-7 | **La méthode passe en deux colonnes**, avec une figure d'étapes SVG produite pour elle : 4 vignettes, signal **composé** (fondamentale + 2 harmoniques déphasées), T = 4,0 ms sur 4 motifs — voisin de l'exercice 1 sans le copier | ✅ |
 
+### Suite du même jour — lots C, D, E et points laissés ouverts
+
+| # | Décision | Statut |
+|---|---|---|
+| A2-8 | **La figure d'étapes passe en 2 × 2.** Empilée, elle faisait 603 px contre 214 px pour le texte : 389 px de blanc. En deux rangées, l'écart tombe à 33 px et les quatre étapes tiennent chacune sur une ligne sèche (mesuré : il faut 353 px de colonne, elle en a 367). Les sous-titres des vignettes, qui redisaient le texte de gauche, sont supprimés | ✅ |
+| A2-9 | **Un code couleur commun à toutes les figures de signal**, fixé sur la figure 4 : `U_max` en rouge Hα, `U_min` en violet Hγ, l'amplitude — grandeur dérivée — en vert, le repérage en or, la courbe en encre. L'élève retrouve en partie 4 les couleurs vues en partie 1 | ✅ |
+| A2-10 | **Les 6 figures du lot 4 sont refaites en SVG inline** : 233 Ko de JPEG/PNG crénelés remplacés par 65 Ko de SVG nets à toute échelle — **la page s'allège de 168 Ko**. Inline et non appelées comme fichiers image : un SVG chargé en image vit dans un contexte isolé où les `@font-face` du site sont absentes, les étiquettes seraient tombées en police système | ✅ |
+| A2-11 | **Les figures 13 (diapason + son pur) fusionnent** : le diapason est redessiné et la sinusoïde recréée. `.fig-duo`, qui n'existait que pour ce couple, est retirée | ✅ |
+| A2-12 | **Deux icônes d'exercice** (orage, baleine), décoratives, `aria-hidden`, flottées à droite de l'énoncé | ✅ |
+| A2-13 | **Lot D — le texte respire** : la répétition d'ouverture de la partie 1 devient une mise en route ; **8 transitions** posées entre parties et sections, dans une classe `.passage` créée pour elles (filet fin + italique, distincte de `.aparte`) ; **4 encarts `.histoire`**, un par partie — le hertz, la cloche à vide de Boyle et Hooke, le la 440, le décibel des Bell Labs. ⏳ **Fond à valider** | ⏳ |
+| A2-14 | **Lot E — la fiche vierge se télécharge depuis le cours, en permanence.** Classe `.hors-verrou` : seule exception du dépôt à `body.verrouille`, qui masquait tout l'article. Motif : la fiche doit rester accessible à l'élève absent, malade ou en avance — le verrou protège le **cours**, pas le support que l'élève remplira. Posé sur les **2 chapitres dont la fiche existe** (`t1c2`, `t1c4`), en commentaire prêt à décommenter dans le gabarit. Règle inscrite dans `CONSIGNES-chapitre-PC.md` §6 | ✅ |
+| A2-15 | **L'encart 🔧 « Lien du DS » est retiré partout où le lien est posé** : T2-C1, T3-C3, T3-C4, en plus de T3-C1. T3-C3 et T3-C4 n'ont plus aucun `.a-faire`, leur CSS mort est retiré. T2-C2, T2-C3 et T3-C2 n'ont pas de lien DS : l'encart y garde son sens | ✅ |
+
+**Piège relevé au passage** : un commentaire CSS contenant une balise image
+d'exemple a fait passer `verifier.mjs` de 18 à 19 problèmes — il lit les
+attributs de source **jusque dans les commentaires**. Ne pas écrire de balise
+image d'exemple dans une page.
+
 Reste ouvert : l'alignement du bloc formule de 3-C (Loïc a tranché que le
-problème était l'indice, pas le centrage — le centrage n'a donc pas été touché),
-et le déséquilibre de hauteur entre les deux colonnes de la méthode.
+problème était l'indice, pas le centrage — le centrage n'a donc pas été touché)
+et, surtout, **la fiche de T3-C1 elle-même**, qui n'existe pas : le chapitre ne
+peut donc pas porter le bouton du lot E. Elle relève du jalon 6, verrouillé par
+la validation explicite du cours (jalon 5), que Loïc n'a pas donnée.
 
 ---
 
