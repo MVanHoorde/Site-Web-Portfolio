@@ -12,6 +12,65 @@
 
 ---
 
+## 27/08/2026 — Audit 1 des outils PC : deux décisions de fond, et un moteur sans garde
+
+Relecture de `o1` et `o2` par Loïc les 26 et 27/08. Le modèle est validé ; ce qui
+suit porte sur le contenu, la densité d'exercices et quatre défauts de forme.
+
+**Deux décisions de fond, appliquées au dépôt entier.** Le **seuil de l'ordre de
+grandeur passe de `√10 ≈ 3,16` à 5** — « on n'utilise pas du tout la racine de
+dix au lycée » — ce qui touche la page `o1`, sa fiche A4 et le cahier de vacances
+`diag-j01`, sans changer une seule réponse d'exercice. Et **l'ambiguïté des zéros
+de fin disparaît** : `100` fait trois chiffres significatifs, `50` en fait deux,
+c'est la fiche du collègue qui l'emporte. La notion de **nombre exact** (formule,
+définition, dénombrement) prend sa place — plus utile que celle qu'elle remplace,
+les élèves la rencontrent dès le premier calcul de physique.
+
+**L'argument du seuil ne survivait pas au changement de seuil.** Le brief
+proposait de garder l'idée que « les deux zones ont la même longueur ». Elle
+n'est vraie que pour `√10` : sur un axe linéaire de 1 à 10, les deux zones de
+part et d'autre de 5 font 4 et 5 unités, et « 5 est plus près de 10 que de 1 »
+n'est vrai qu'en facteur — c'est-à-dire l'argument qu'on abandonne. Le seuil est
+donc justifié par l'**arrondi**, et le schéma refait en axe linéaire, sans note
+sur les longueurs. Signalé comme proposition à valider (O-22).
+
+**Le moteur n'a pas de garde sur `#teacherMode`.** Le brief demandait de retirer
+la case cachée avec le bloc du mode enseignant. Fait, puis vérifié au navigateur :
+la page casse. `sequence-snt.js` l.350 fait
+`document.getElementById('teacherMode').addEventListener(...)` sans test, et toute
+l'initialisation s'arrête là — barre de progression et modales comprises. La case
+reste donc, inerte faute de `.ens-zone` pour la cocher, et c'est écrit dans les
+consignes pour `o3` à `o8`.
+
+**La densité d'exercices était le vrai sujet.** Chaque étape se fermait sur un
+micro-champ de deux cases, quel que soit ce qu'elle avait introduit. `o1` passe de
+4 à 12 blocs de vérification et gagne deux QCM (6 et 10 questions) ; `o2` passe de
+4 à 8 et gagne un QCM de 6. La méthode de `o1` s'est scindée en cinq étapes au
+passage — l'ancienne 1.3 empilait quatre règles de calcul, treize préfixes et
+quatre cas de conversion. Les **conversions de surfaces**, qui n'existaient que
+dans une incise, ont enfin un tableau, une règle et trois exercices.
+
+**Les « à retenir » passent à trois temps** — la règle, grande et centrée · le
+geste · le contrôle, plus « le piège » quand il y en a un. Motif : « quand tout
+est en gras, rien ne l'est ». Neuf blocs repris, plus les deux fiches A4, et la
+structure devient une convention de la famille (`CONSIGNES-outil-PC.md` §3).
+
+**Deux simplifications par rapport au brief, toutes deux mesurées avant d'agir.**
+Les huit pictogrammes de la frise tiennent dans les 104 px déjà libres à gauche de
+l'axe : le `viewBox` n'a pas bougé, aucune coordonnée existante n'a été décalée.
+Et la frise de la fiche A4 n'existe pas en SVG — c'est une phrase à trois
+repères : il n'y avait rien à illustrer.
+
+**Contrôles.** `verifier.mjs` : 18 problèmes, inchangés. Aucun asset partagé
+modifié. Les deux parties 1 jouées en entier au navigateur : 5/5 et 4/4 étapes,
+jauge à 100 %, partie 2 déverrouillée, zéro erreur console. Toutes les réponses
+attendues rejouées : 114/114 champs acceptés sur `o1`, 56/56 sur `o2`. Le mot
+« PDF » a disparu des trois endroits où le moteur l'écrivait, séance terminée
+comprise. Rendu mesuré en iframe à 768 et 390 px : aucun débordement. Les deux
+fiches tiennent toujours en deux pages exactement.
+
+---
+
 ## 22/08/2026 — Audit du module `m1` : onze lots, et deux bugs qui touchaient tout le site
 
 Troisième brief de la journée, sur le module « Représenter l'information ». Onze

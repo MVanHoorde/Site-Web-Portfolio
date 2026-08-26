@@ -228,12 +228,18 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 ### O1 — Puissances de dix et écriture scientifique
 - Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
 - Fichiers : `pages/2nde-pc-o1-ecriture-scientifique.html` · `fiches/fiche-2nde-o1-ecriture-scientifique.html`
-- **Méthode** — 4 étapes : pourquoi cette écriture (frise des échelles, 18 décades) ·
-  la forme `a × 10ⁿ` (curseur d'exposant de −12 à +12, encadré « à éviter ») ·
-  préfixes et conversions (13 préfixes, 3 cas dont l'unité composée résolue) ·
-  l'ordre de grandeur (axe logarithmique, le seuil √10 ≈ 3,16 tombe au milieu).
-- **S'entraîner** — 6 exercices corrigés, en 4 étapes. L'exercice 6 (le piège de
-  la calculatrice, `^` contre `×10ˣ`) porte deux écrans de calculatrice en SVG.
+- **Méthode** — **5 étapes** depuis l'audit du 27/08 : pourquoi cette écriture
+  (frise des échelles, 18 décades, **8 pictogrammes maison**, validée à la
+  lecture) · la forme `a × 10ⁿ` (curseur d'exposant, 6 lignes de saisie dont une
+  écriture fausse à corriger, **QCM de 6 questions** sur les pièges) · calculer
+  avec des puissances de dix et les préfixes (4 règles + test immédiat, 13
+  préfixes + **QCM de 10 questions** dans les deux sens) · convertir : unités
+  composées, volumes et **surfaces** (3 + 4 + 3 conversions à corriger
+  automatiquement) · l'ordre de grandeur (**axe linéaire, seuil 5**).
+- **S'entraîner** — 6 exercices corrigés, en 4 étapes. L'exercice 5 a gagné une
+  cinquième valeur, `3,8 × 10⁸ m`, qui tombe dans la bande où l'ancien seuil et
+  le nouveau donnaient des réponses opposées. L'exercice 6 (le piège de la
+  calculatrice, `^` contre `×10ˣ`) porte deux écrans de calculatrice en SVG.
 - Sources **reçues le 26/08** : `fiche_Ecriture scientifique et chiffres
   significatifs.pdf` (partie haute) et `fiche_Convertir.pdf`. Fond conservé, forme
   refaite. **Repris le 26/08 sur leur fond** : les quatre règles de calcul sur les
@@ -241,17 +247,27 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   préfixe, les trois équivalences de volume et le tableau m³ ↔ L. **Trois erreurs
   du corrigé source relevées** (`379,45 kW`, les lignes intermédiaires de
   `5933 dag·cm⁻³`, les chiffres significatifs de `0,98 m·s⁻¹`) — voir `DECISIONS.md`.
-- ⏳ À trancher : le mot « Séance » de la fiche générée (O-2).
+- 🔎 **Audit 1 appliqué le 27/08** : seuil de l'ordre de grandeur à **5**
+  (`√10` a disparu du dépôt, cahier de vacances compris), étape 1.3 **scindée en
+  deux**, « à retenir » en **trois temps**, récapitulatif PDF du moteur retiré,
+  majuscules automatiques supprimées là où elles cassaient les unités, plus de
+  texte barré. Durées revues : **≈ 1 h 45, en deux fois**.
+- ⏳ À valider : la nouvelle justification du seuil, par l'arrondi (O-22) — celle
+  d'avant, par les facteurs, n'était vraie que pour `√10`.
 
 ### O2 — Les chiffres significatifs
 - Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
 - Fichiers : `pages/2nde-pc-o2-chiffres-significatifs.html` · `fiches/fiche-2nde-o2-chiffres-significatifs.html`
-- **Méthode** — 4 étapes : compter (les 4 règles du cahier de vacances, reprises
-  mot pour mot, + un compteur interactif à trois états — compté, ne compte pas,
-  **ambigu**) · pourquoi ce n'est pas de la coquetterie (double axe hachuré,
-  3,20 contre 3,2, l'incertitude en trois lignes) · multiplication et division ·
-  **addition et soustraction**, avec le schéma d'alignement sur la virgule et le
-  bloc de contraste des deux règles côte à côte.
+- **Méthode** — 4 étapes : compter (les 4 règles, **6 nombres à compter**, le
+  compteur interactif à **deux** états, et les **nombres exacts** qui ne se
+  comptent pas) · pourquoi ce n'est pas de la coquetterie (le `±` expliqué
+  **avant** le schéma, double axe hachuré, **QCM de 6 questions**) ·
+  multiplication et division (la règle **justifiée par l'intervalle de mesure**,
+  4 calculs) · **addition et soustraction**, avec le schéma d'alignement, le
+  contre-exemple `250,0 + 5,0` chiffré, et 5 calculs dont deux soustractions.
+  Les deux règles sont désormais menées par **un principe unique** : un résultat
+  n'est jamais plus précis que la donnée la moins précise — en **proportion**
+  pour `× ÷`, en **rang** pour `+ −`.
 - **S'entraîner** — 6 exercices, dont la **série finale mélangée de 8 calculs** où
   chaque ligne demande d'abord *quelle règle*, puis le résultat. C'est le seul
   exercice qui mesure vraiment si la distinction est acquise.
@@ -260,11 +276,14 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   `cahier/diag-j01-…html`. **Repris le 26/08** : l'exemple `003,20` (le seul nombre
   qui porte les deux familles de zéros), l'incertitude relative `ΔA/A`, et la
   seconde estimation de `ΔA` (demi-unité du dernier rang **affiché**).
-- 🔴 ⏳ **O-4 rouvert par la source** : elle écrit « les zéros situés à droite sont
-  significatifs » et « 50 n'a que deux chiffres significatifs », ce qui donnerait
-  `100` → **3** quand le brief demandait **1**. La V1 tient une troisième voie.
-  C'est du fond, et c'est le point à trancher en premier. ⏳ Aussi : les deux
-  calculs ajoutés à la série finale (O-5).
+- 🔎 **Audit 1 appliqué le 27/08** : **O-4 est tranché** — il n'y a pas de zéro
+  ambigu en seconde, `100` fait trois chiffres significatifs, `50` en fait deux,
+  et c'est la fiche du collègue qui l'emporte. La notion des **nombres exacts**
+  prend la place de l'ambiguïté, l'exercice 2 de la section 2 est réécrit sur
+  elle, et le compteur perd son état orange. `ΔA / A` est démotée en note non
+  évaluée. Durées revues : **≈ 1 h 45, en deux fois**.
+- ⏳ Restent : les deux calculs ajoutés à la série finale (O-5), et l'édition des
+  exercices de la section 2, **hors périmètre** tant qu'elle n'est pas commandée.
 
 ### O3 — Sécurité en salle de TP
 - Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜

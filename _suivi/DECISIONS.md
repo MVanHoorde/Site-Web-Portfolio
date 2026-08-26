@@ -680,11 +680,50 @@ lancement du chantier :
 
 | # | Décision | Statut |
 |---|---|---|
-| O-1 | **Nommage des deux « fiches » à l'écran** : la fiche A4 imprimable est la **« fiche outil »**, le récapitulatif produit par le moteur devient **« Mes réponses »**. Le bouton du moteur est renommé **en local** par le script de la page — le moteur, partagé par huit pages, n'est pas touché | ✅ |
-| O-2 | **Le mot « Séance » dans la fiche générée par le moteur.** Faux sur un outil. Accepté en l'état pour le lot 1 ; les deux autres issues (attribut `data-libelle-section` lu par `ficheHTML()`, ou fiche générée désactivée sur les outils) touchent un asset partagé ou privent l'élève du récapitulatif de ses réponses | ⏳ |
+| O-1 | ~~**Nommage des deux « fiches » à l'écran** : la fiche A4 imprimable est la « fiche outil », le récapitulatif produit par le moteur devient « Mes réponses »~~ | ⛔ remplacée le 27/08 par **O-6** : il n'y a plus qu'une fiche |
+| O-2 | ~~**Le mot « Séance » dans la fiche générée par le moteur**~~ | ⛔ sans objet depuis le 27/08 : la fiche générée est retirée des outils (**O-6**) |
 | O-3 | **L'incertitude reste dans `o2`**, en trois lignes marquées ○ support : sans elle, le chiffre significatif n'est qu'une convention arbitraire, et 3,20 ≠ 3,2 ne se justifie plus | ✅ |
-| O-4 | **Le statut des zéros de fin d'un entier.** Le brief traitait `50` comme deux chiffres significatifs (étape 1.3) et `100` comme un seul (exercice 2) — deux conventions incompatibles dans le même outil. Tranché en production : **les deux sont ambigus, et l'ambiguïté devient la leçon** — c'est elle qui justifie l'écriture scientifique, donc l'outil 1. Le compteur de l'étape 1.1 le montre en orange, une troisième couleur à côté de « compté » et « ne compte pas ». **C'est du fond : à confirmer** | ⏳ |
+| O-4 | ~~**Le statut des zéros de fin d'un entier** : les deux sont ambigus, et l'ambiguïté devient la leçon~~ | ⛔ **tranché le 27/08 par Loïc**, voir **O-8** : il n'y a pas de zéro ambigu en seconde |
 | O-5 | **La série finale de `o2` compte huit calculs, contre six fournis.** Les deux ajoutés (`0,456 × 12,3` et `6,20 − 0,025`) ne réemploient **que des nombres déjà présents** dans les six autres, et couvrent chacun une règle. Proposition à valider | ⏳ |
+
+
+### Audit 1 des deux outils — arbitrages du 27/08/2026
+
+Relecture de `o1` et `o2` par Loïc les 26 et 27/08. Le modèle général est
+validé — structure en deux sections, trajet d'une étape, composant `.exemple`,
+bloc `.niv`, corrigés en ligne : *« c'est vraiment très bien »*. Ce qui suit ne
+porte que sur le contenu et sur quatre défauts de forme.
+
+| # | Décision | Statut |
+|---|---|---|
+| O-6 | 🔴 **Le récapitulatif de réponses du moteur est retiré des outils.** Sans objet ici : la fiche outil s'imprime complète, c'est elle qu'on colle. Le moteur l'émet à **trois** endroits (barre de fin de partie, modale de « Recommencer », pop-up de fin) — les trois sont neutralisés **en local** par `retirerFichePDF()`, avec un `MutationObserver` pour les deux modales, construites à la demande. Le bouton « Recommencer » reste. Remplace **O-1** et rend **O-2** sans objet | ✅ |
+| O-7 | 🔴 **Le seuil de l'ordre de grandeur est 5.** *« On n'utilise pas du tout la racine de dix au lycée. 5 comme frontière, c'est ce qu'on fait. »* `√10 ≈ 3,16` disparaît entièrement du dépôt pour la seconde — page `o1`, fiche A4 et cahier de vacances (`diag-j01`) compris. Aucune réponse d'exercice ne change ; seuls les textes bougent | ✅ |
+| O-8 | 🔴 **Il n'y a pas de zéro ambigu en seconde.** *« 100, c'est trois chiffres significatifs. Basta. »* La règle 4 devient « les zéros à droite comptent », sans réserve — c'est la convention de la **fiche du collègue**. Le troisième état du compteur (orange) disparaît. Conséquence assumée : `2000 g` porte **quatre** chiffres significatifs. Clôt la question ouverte le 25/08 (**O-4**) | ✅ |
+| O-9 | **Les nombres exacts prennent la place de l'ambiguïté** dans `o2` 1.1. Un nombre issu d'une **formule**, d'une **définition** ou d'un **dénombrement** n'est pas une mesure : il ne limite jamais la précision d'un résultat. Notion plus utile que celle qu'elle remplace — les élèves la rencontrent dès le premier calcul. L'exercice 2 de la section 2, qui portait entièrement sur `100`, devient l'exercice des nombres exacts | ✅ |
+| O-10 | **La structure des « à retenir » en trois temps** — la règle (grande, centrée, seule) · le geste · le contrôle, plus « le piège » quand il y en a un. Appliquée aux **neuf** blocs des deux outils et aux deux fiches A4, sans bloc témoin préalable. Motif : *« beaucoup de texte, beaucoup de gras »* — quand tout est en gras, rien ne l'est. Devient une **convention de la famille** et vaudra pour `o3` à `o8` (`CONSIGNES-outil-PC.md` §3) | ✅ |
+| O-11 | **La méthode de `o1` passe à cinq étapes.** L'ancienne 1.3 empilait les règles de calcul, le tableau des préfixes et quatre cas de conversion : elle se scinde en **1.3 Calculer avec des puissances de dix, et les préfixes** (`pc-o1-s1-prefixes`) et **1.4 Convertir : unités composées, volumes, surfaces** (`pc-o1-s1-convertir`). L'ordre de grandeur devient 1.5. Cinq est la limite haute admise par le §2 des consignes | ✅ |
+| O-12 | **Un test après chaque bloc de contenu, dimensionné au bloc.** *« À chaque fois qu'on ajoute une nouvelle chose, il faudrait tout de suite pouvoir tester. »* Remplace la règle du §3 (« un `data-cloze` d'une ou deux cases, pas davantage »), que l'audit invalide. `o1` passe de 4 à 12 blocs de vérification et gagne deux QCM (6 et 10 questions) ; `o2` passe de 4 à 8 et gagne un QCM de 6 questions | ✅ |
+| O-13 | **`o2` — un seul principe, deux lectures.** Un résultat ne peut pas être plus précis que la donnée la moins précise ; ce qui change, c'est le sens de « précis » — **en proportion** pour `×` et `÷` (on compte les chiffres significatifs), **en rang** pour `+` et `−` (on repère la colonne). Mène désormais les deux `.retain` et le bloc `.duo`. **Validé par Loïc le 27/08** | ✅ |
+| O-14 | **Les deux règles de `o2` sont justifiées par l'expérience**, en faisant tourner l'intervalle de mesure dans le calcul (`2,5 × 3,42`, `1,25 + 0,025`, et le contre-exemple `250,0 + 5,0`). Marqués **○ support** : l'élève doit savoir appliquer la règle, comprendre d'où elle sort est un bonus | ✅ |
+| O-15 | **L'incertitude relative `ΔA / A` est démotée** en note dépliable « pour plus tard », marquée **— non évalué**. Elle flottait sans emploi dans `o2` 1.2. Le vocabulaire de la précision **relative** reste (O-13), la formule ne s'exige plus | ✅ |
+| O-16 | **Le `±` s'explique avant d'être employé** (`o2` 1.2) : ce qu'il dit (un intervalle), ce qu'il ne dit pas (ce n'est ni une erreur ni une maladresse — toute mesure en porte une), et d'où vient le nombre (le `.point-cle` sur `ΔA`, **déplacé** avant le schéma plutôt que répété) | ✅ |
+| O-17 | **Les conversions de surfaces entrent dans `o1` 1.4** — tableau `km²`…`mm²`, règle du facteur 2, trois conversions. Elles n'existaient que dans une incise. **Sans les hectares** : arbitrage de Loïc du 27/08, on s'en tient aux unités du système | ✅ |
+| O-18 | **`o1` 1.1 se valide à la lecture.** Son exercice de phrases à compléter n'apportait rien : supprimé. L'étape garde son `data-gate` — le lui retirer ferait voir à l'élève une pastille qui ne se coche jamais — et se valide quand le moteur **révèle l'étape suivante** (`etape-revelee`), en annonçant `etape-validee` comme les autres moteurs. Aucune comptabilité parallèle : c'est le moteur qui enregistre | ✅ |
+| O-19 | **Plus de texte barré sur du contenu à lire.** `.eviter .faux` portait un `line-through` qui traversait chiffres et exposants — on ne lisait plus l'écriture qu'on doit apprendre à reconnaître. Remplacé par une croix rouge en tête de ligne | ✅ |
+| O-20 | 🔴 **Plus de `text-transform:uppercase` sur un texte pouvant porter une unité ou une variable.** `Convertir 32 kg·L⁻¹ en g·cL⁻¹` s'affichait `32 KG·L⁻¹ EN G·CL⁻¹` — où `G` est le giga et où `CL` n'existe pas. Retiré de `.exemple-titre`, `.ex-lab` (« On isole a et n » devenait « ON ISOLE A ET N ») et `.saisie th` sur les deux pages, et des `.etq` des encadrés sur les deux fiches. Les étiquettes qui ne portent rien de scientifique gardent leurs capitales | ✅ |
+| O-21 | **La case `#teacherMode` reste dans la page** alors que le mode enseignant est retiré de l'affichage. Le brief demandait de la supprimer ; **vérifié au navigateur, la page casse** : le moteur fait `document.getElementById('teacherMode').addEventListener(...)` **sans garde** (`sequence-snt.js` l.350) et toute son initialisation s'arrête — barre de progression et modales comprises. Sans le bloc `.ens-zone`, plus rien ne peut la cocher : elle est inerte | ✅ |
+| O-22 | **La justification du seuil ne peut plus être celle des facteurs.** *« Les deux zones ont la même longueur »* et *« 5 est déjà du côté de 10 »* ne sont vraies que pour `√10` — sur un axe **linéaire** de 1 à 10, les deux zones font 4 et 5 unités. Le seuil est donc justifié par l'**arrondi** : en dessous de 5 on descend, à partir de 5 on monte. Le schéma passe en axe linéaire, graduations régulières, sans note sur les longueurs. **Proposition à valider** | ⏳ |
+
+### Ce qui reste hors périmètre — à ne pas ouvrir sans commande
+
+- l'**édition des exercices du cahier de vacances** (`diag-j01`) : seul le seuil
+  y a été repris, rien d'autre ;
+- l'**édition des exercices de la section 2 de `o2`**, sauf l'exercice 2 qui
+  devait disparaître avec l'ambiguïté ;
+- l'ordre des sections de la **fiche A4 de `o1`** (`01` forme · `02` ordre de
+  grandeur · `03` préfixes · `04` calculatrice), qui ne suit pas celui de
+  l'écran et s'en écarte un peu plus depuis la scission de l'étape 1.3. Elle
+  tient en deux pages, c'est fragile : ne pas la réordonner sans commande.
 
 ### Corrections apportées aux documents source — à signaler à l'équipe
 

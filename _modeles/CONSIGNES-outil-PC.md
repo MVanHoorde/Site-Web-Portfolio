@@ -106,19 +106,28 @@ parcourue. C'est la cascade standard du moteur, rien à coder.
 **Aucun verrouillage entre outils, ni entre outils et chapitres.** C'est la
 progression du professeur qui décide quand un outil est traité, pas le site.
 
-### Vocabulaire à l'écran — deux objets, deux mots
+### Vocabulaire à l'écran — une seule fiche
 
-| Objet | Nom à l'écran |
-|---|---|
-| La fiche A4 imprimable (le cours) | **fiche outil** |
-| Le récapitulatif produit par le moteur (le travail de l'élève) | **Mes réponses** |
+Sur un outil, **« la fiche » désigne un seul objet** : la **fiche outil**, la
+feuille A4 imprimable qui porte le cours et qu'on colle dans le cahier. Le
+récapitulatif de réponses que le moteur SNT sait produire **n'existe pas ici** :
+il n'a aucun intérêt sur un outil, où la fiche s'imprime complète et où l'élève
+n'a rien à déposer.
 
-Le moteur écrit « 📄 Ouvrir ma fiche (PDF) » sur son bouton, et « Séance 1 » dans
-la fiche qu'il génère. Les deux sont faux sur un outil. **Ne pas modifier le
-moteur pour autant** : il est partagé par huit pages, et le §5 l'interdit. Le
-bouton se renomme **en local**, une seule fois, par le script de la page (voir la
-fonction `renommerFiche()` de `o1` et `o2`, à recopier telle quelle). Le mot
-« Séance » de la fiche générée reste, lui, en attente d'arbitrage.
+Le moteur, lui, le propose à **trois** endroits — la barre d'actions de fin de
+partie, la modale de « Recommencer » et la pop-up de fin de séance. **Ne pas
+modifier le moteur pour autant** : il est partagé par huit pages, et le §5
+l'interdit. On retire ses boutons **en local**, par le script de la page :
+recopier telle quelle la fonction `retirerFichePDF()` de `o1` ou `o2`, qui
+balaie la barre et installe un `MutationObserver` sur la modale — les deux
+dernières sont construites à la demande, un simple balayage au chargement les
+manquerait. Le bouton « Recommencer », lui, reste : il est utile.
+
+⚠ **La case `<input type="checkbox" id="teacherMode" hidden>` de `nav.seances`
+doit rester dans la page**, même quand le bloc `.ens-zone` du mode enseignant
+est retiré : le moteur l'attrape sans garde (`sequence-snt.js` l.350) et toute
+son initialisation s'arrête si elle manque — barre de progression et modales
+comprises. Sans `.ens-zone`, plus rien ne peut la cocher : elle est inerte.
 
 ---
 
@@ -129,13 +138,41 @@ Toujours dans cet ordre :
 1. **l'objectif** (🎯), une phrase ;
 2. **le contenu**, porté par un **visuel** — le schéma explique, le texte
    accompagne ;
-3. **un « à retenir »** (`.retain`, marque `★★`) : la règle, quatre lignes
-   maximum. **Posé en clair, pas dans un `data-bilan-wrap`** : sur un outil, le
-   micro-champ qui suit est une vérification, pas une évaluation — il n'y a rien
-   à protéger d'une révélation anticipée ;
+3. **un « à retenir »** (`.retain`, marque `★★`), en **trois temps** — voir
+   ci-dessous. **Posé en clair, pas dans un `data-bilan-wrap`** : sur un outil,
+   le test qui suit est une vérification, pas une évaluation — il n'y a rien à
+   protéger d'une révélation anticipée ;
 4. **un exemple entièrement résolu** (`.exemple`), ouvert par défaut ;
-5. **un micro-champ de vérification** — un `data-cloze` d'une ou deux cases, pas
-   davantage. La méthode se vérifie ici, elle ne s'évalue pas.
+5. **un test après chaque bloc de contenu, dimensionné au bloc.** Une étape qui
+   introduit quatre règles, un tableau et trois cas ne se ferme pas sur deux
+   cases : chaque bloc se teste **là où il est introduit**, avec l'outil qui lui
+   convient — `data-cloze` court pour une règle, tableau `.saisie` pour des
+   conversions, `.qcmbox` pour un tableau de référence ou une série de pièges.
+   La méthode se vérifie, elle ne s'évalue pas — mais elle se vérifie
+   **vraiment**.
+
+#### La structure d'un « à retenir » — trois temps
+
+Convention de la famille, arrêtée le 27/08/2026 après l'audit du lot 1. Elle
+vaut pour `o3` à `o8`. Le `.retain` du moteur reste le conteneur ; à
+l'intérieur, une grille locale de trois lignes, chacune précédée d'une petite
+étiquette monospace (`.ret-t` / `.ret-e` / `.ret-c`, à recopier de `o1`) :
+
+| Temps | Ce qu'il porte |
+|---|---|
+| **la règle** | la formule ou la phrase-règle, **grande, centrée, respirée** (`.ret-f`) — et rien d'autre |
+| **le geste** | ce qu'on fait, à l'infinitif, une ligne |
+| **le contrôle** | ce qu'on vérifie avant de passer à la suite, une ligne |
+| **le piège** | quatrième temps facultatif, étiquette en rouge (`.ret-t.piege`) |
+
+**Le gras ne sert plus qu'à un mot par ligne**, celui qui décide. Motif : le
+bloc d'avant était un pavé où tout était en gras — et quand tout est en gras,
+rien ne l'est. La référence de forme est le composant `.exemple`, qui fonctionne
+parce qu'il est structuré : étiquette courte, contenu bref, une idée par ligne.
+
+Une règle ne se **redit** pas dans le « à retenir » si elle est déjà affichée en
+clair juste au-dessus (les quatre règles de calcul de `o1` 1.3, les quatre cas
+de `o2` 1.1) : on y **renvoie**.
 
 ### Marquage d'évaluabilité
 
@@ -384,14 +421,21 @@ outils — c'est la raison pour laquelle les pages vivent là (§1).
 
 ## 11. Ce qui n'est pas encore arrêté
 
-1. **Le mot « Séance » dans la fiche générée par le moteur.** Faux sur un outil.
-   Trois issues : l'accepter, ajouter un attribut `data-libelle-section` lu par
-   `ficheHTML()`, ou désactiver la fiche générée sur les outils. Accepté pour
-   l'instant ; la deuxième touche un asset partagé par huit pages.
-2. **Le statut des zéros de fin d'un entier.** `50` et `100` sont traités
-   consciemment comme **ambigus** dans `o2`, et l'ambiguïté est devenue la leçon
-   — c'est elle qui justifie l'écriture scientifique. À confirmer : c'est un
-   choix de fond.
-3. **L'élargissement du filtre `pagesSNT` de `verifier.mjs`** aux pages
-   `2nde-pc-oN`, qui rendrait aux outils les trois contrôles du §9. Modification
-   de `verifier.mjs`, hors périmètre du chantier des outils.
+1. **L'élargissement du filtre `pagesSNT` de `verifier.mjs`** aux pages
+   `2nde-pc-oN`, qui rendrait aux outils les trois contrôles du §9 — et le
+   contrôle des biais de longueur des QCM, qui compte double depuis que les
+   outils en portent (six questions dans `o1` 1.2, dix dans `o1` 1.3, six dans
+   `o2` 1.2). Modification de `verifier.mjs`, hors périmètre du chantier.
+2. **Les neuf PDF sources du collègue ne sont pas dans le dépôt.** Sans
+   importance pour `o1` et `o2`, qui sont écrits — mais ils manqueront pour
+   `o3` à `o8`.
+
+### Deux questions tranchées le 27/08/2026 — ne pas les rouvrir
+
+- **Le mot « Séance » dans la fiche générée par le moteur** : la question tombe
+  d'elle-même, la fiche générée est retirée des outils (§2).
+- **Le statut des zéros de fin d'un entier** : tranché. **Les zéros à droite
+  comptent**, y compris dans un entier — `100` fait trois chiffres
+  significatifs, `50` en fait deux. Il n'y a **pas** de zéro ambigu en seconde,
+  et la notion qui prend sa place est celle du **nombre exact** (issu d'une
+  formule, d'une définition ou d'un dénombrement), qui ne se compte pas.
