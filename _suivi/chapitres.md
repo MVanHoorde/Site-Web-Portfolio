@@ -1,6 +1,6 @@
 # Tableau de bord détaillé — par chapitre
 
-> Mise à jour : 25/08/2026 · Flags : ⬜ à faire · 🔄 en cours · ✅ fait · ⚠ attention
+> Mise à jour : 26/08/2026 · Flags : ⬜ à faire · 🔄 en cours · ✅ fait · ⚠ attention
 > Jalons (dans l'ordre — la fiche est TOUJOURS le dernier) :
 > 1 **V1 intégrale en ligne** (cours entier, figures comprises —
 > `_modeles/CONSIGNES-V1-integrale-PC.md`) · 2 Texte&exos validés ·
@@ -14,6 +14,12 @@
 > texte, mais trouées de blocs `.a-faire` à la place des images, d'où leur `🔄`.
 > **Le thème 3 est le plus avancé** : seul T3-C2 y reste en ébauche.
 > Relevés à lire : `_suivi/t3c1-releve.md`, `t3c3-releve.md`, `t3c4-releve.md`.
+>
+> 🆕 **Les sujets de DS et de TP sont en ligne depuis le 26/08** — 6 DS et 15 TP
+> dans `assets/pdf/pc/`, liés depuis la carte du hub et depuis la page du chapitre
+> (le TP après sa section, le DS dans « Pour le DS, je sais »). Ils **ne comptent
+> pas dans les jalons ci-dessus**, qui suivent le cours et la fiche. Aucune
+> correction n'est en ligne : elles partent par mail contre preuve de travail.
 >
 > ⚠ **RIEN n'est encore validé.** « Ébauche/fiche proposée » ≠ « validé ».
 > La validation est un acte explicite de Loïc, faite en régime B, cours d'abord.
@@ -188,6 +194,16 @@
 - 2 encarts formule reconstitués (n = c/v · n₁·sin i₁ = n₂·sin i₂) ; 1 table (indices de réfraction, 16 milieux) transcrite.
 - Liens décodés : ~11 vidéos + 1 animation PhET + 3 liens ressources (Institut d'Optique, physiqueludique, Ingenium) + Kahoot activé.
 - Blocs 🚧 restants : **1**, le lien de DS.
+
+### T3-C5 — Formation d'une image
+- Jalons : **sans objet** — ce chapitre n'a pas de page de cours et n'en attend pas.
+- 🆕 **Carte créée au hub le 26/08/2026**, à la fin du thème 3. **Le TP13 tient lieu
+  de cours** : c'est le fonctionnement de Loïc depuis deux ans, la notion étant
+  intégralement reprise en première puis en terminale (D6).
+- Fichiers : aucun. La carte pointe vers `assets/pdf/pc/tp/tp13-formation-d-une-image.pdf`
+  et vers `assets/pdf/pc/ds/ds6-t3c3-t3c4-t3c5.pdf`.
+- ⏳ Le **texte de la carte** est une proposition, à valider. Deux propriétés à
+  garder s'il est réécrit : aucune tournure d'attente, et la raison énoncée simplement.
 
 ## Seconde — Thèmes suivants
 _(à créer au fur et à mesure du dégrossissage : T4…)_

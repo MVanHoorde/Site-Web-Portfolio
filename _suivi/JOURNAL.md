@@ -1944,3 +1944,96 @@ contre leur `viewBox`, aucun débordement. Aucun défilement horizontal à 768 n
 390 px. Les deux fiches sortent toujours en **deux pages A4 exactement**, avec
 8 à 26 mm de marge selon la page — quatre passes de rééquilibrage entre recto et
 verso ont été nécessaires pour loger le fond ajouté.
+
+---
+
+## 26/08/2026 — DS et TP : le premier lot descend dans les chapitres
+
+Vingt-et-un sujets sont arrivés — six DS, quinze TP — chacun dans son dossier de
+travail, avec ses corrections, ses `.docx`, ses tableurs et ses programmes. Le
+lot 1 les dépose, relie le **hub entier** et les **sept chapitres du thème 1**.
+
+**Le premier geste n'a pas été de copier un fichier, mais d'en interdire cent
+trente.** `_a-deposer/` n'était pas ignoré par git : un `git add -A` aurait mis
+en ligne les corrections de tous les TP, deux fichiers `.py` nommés
+`TP11 2de6 GP1 27-01-2023` et un classeur `TP10 2de6 GP1 03-02-2023.xlsx` — soit
+un groupe d'élèves, une date de séance, et des relevés. Le dossier est désormais
+dans `.gitignore` ; le tri se fait à la main, fichier par fichier, et **seul le
+PDF du sujet nu** rejoint `assets/pdf/pc/`.
+
+**Ce qui est publié.** 6 DS (`ds1-t1c1.pdf` … `ds6-t3c3-t3c4-t3c5.pdf`) et 15 TP
+(`tp01-…` … `tp15-…`), soit 30 Mo. Aucune correction, aucun `.docx`, aucune
+grille de notation, aucun fichier portant un nom de classe. Le chip SharePoint
+du DS corrigé de `c1` n'a pas été touché.
+
+**Le mécanisme, en deux points et un seul composant.** Sur le hub, la puce
+`Exercices 🚧` disparaît des quatorze cartes — elle n'annonçait rien qui existe —
+et cède la place à une puce par sujet. Dans la page du chapitre, le sujet
+réapparaît en `.video-chip`, à côté des vidéos : le TP **après la section dont il
+est l'application**, le DS dans « Pour le DS, je sais ». Rien n'a été ajouté à
+`chapitre-commun.css` : le composant existait déjà dans les quatorze chapitres.
+
+**Un sujet à cheval est lié partout où il porte.** DS2 apparaît dans `c2` et dans
+`c3`, DS5 dans `c5` (et dans T2-C1 au hub), TP1 dans `c1` et dans `c2` — vers le
+même fichier, avec un libellé qui le dit : « DS2 — Thème 1, ch. 2 et 3 (sujet) ».
+
+**Deux écarts du brief, tranchés en le disant.** Le lot 1 excluait `c7`, alors
+que le tableau des TP lui donne le TP15 : il est traité ici, il est du thème 1.
+Et les slugs suivent la règle du §5 (`ds1-t1c1.pdf`), pas les exemples du §4.1
+qui la contredisaient.
+
+**Trois cartes du thème 3 annonçaient un TP nommé** — « célérité du son »,
+« capteur de température », « spectroscope ». Les deux premières correspondent au
+TP6 et, de plus loin, au TP14 ; « spectroscope » au TP12. Ces puces d'attente ont
+cédé la place aux vrais sujets. Celle de T3-C2 est la moins évidente : le TP
+« capteur de température » annoncé n'existe pas dans le lot, c'est le TP14
+« Protection d'une LED » qui prend sa place — à confirmer.
+
+**Contrôles.** `verifier.mjs` : 18 problèmes avant, 18 après. Les 20 liens PDF
+posés pointent tous vers un fichier présent (le vingt-et-unième, `tp13`, attend
+sa carte au lot 2). Rendu mesuré à 390 px dans une iframe, chapitre déverrouillé :
+`scrollWidth = 390`, aucun débordement, aucun chip hors cadre, les trois chips de
+`c1` s'empilent proprement sous la checklist.
+
+---
+
+## 26/08/2026 — Lot 2 : les thèmes 2 et 3, et un chapitre qui n'a pas de page
+
+Le lot 2 termine le dépôt : dix chips de plus dans les six chapitres des thèmes 2
+et 3, et la carte du chapitre qui se traite en TP.
+
+**Où sont allés les dix chips.** TP7 dans « Vitesse d'un système » et DS5 dans la
+checklist de T2-C1 ; TP8 dans « Exemples de forces » (T2-C2) ; TP5 dans
+« Caractéristiques d'un signal périodique », TP6 dans « Émission et propagation
+d'un signal sonore » et DS4 dans la checklist de T3-C1 ; TP14 dans « Loi d'Ohm »
+(T3-C2) ; TP12 et DS6 dans T3-C3 ; DS6 dans T3-C4. Vingt-quatre chips en tout
+avec le lot 1, tous vérifiés section par section.
+
+**Le TP12 a été posé dans « Les spectres lumineux », pas dans « Dispersion ».**
+Il traverse les deux sections du chapitre ; le placer à la fin, c'est faire que
+l'élève le rencontre une fois qu'il a de quoi le faire. Et il porte aussi la
+**réfraction**, qui est T3-C4 : au titre de D4, une seconde puce s'y justifierait
+— posée en attente, le brief ne le rattachait qu'à T3-C3.
+
+**La carte « Formation d'une image ».** Créée à la fin du thème 3, en `CH. 5`.
+Elle n'a **pas** de puce « Cours en ligne », pas de `🚧`, aucune tournure
+d'attente : sa liste commence par le TP13, qui **est** le cours, et se poursuit
+par le DS6. La phrase de résumé le dit sans s'excuser — c'est une V1, à valider.
+Le DS6 garde ses chips internes dans `c3` et `c4`, qui ont chacun leur page ; la
+nouvelle carte n'en a aucun, faute de page où le poser.
+
+**Trois pièges de structure, dans les pages.** Le script qui pose les chips a
+d'abord visé, dans T1-C2, un `div.videos` **logé dans un encart d'exemple** — le
+chip s'est retrouvé sous le cuivre et le nitrate d'argent. Corrigé en mesurant la
+**profondeur d'imbrication** plutôt que l'indentation, qui ment : dans T3-C1 le
+bloc est collé à un `</figure><p>` en plein milieu de ligne. Puis, dans T3-C3, le
+bloc de chips **contient** un encart « à faire » — le chip se pose donc après le
+dernier `</a>`, jamais à la fin du bloc. Cet encart dit « Lien du DS — à poser
+chaque année » : il est désormais juste sous le DS6, donc redondant. Question
+posée, rien supprimé.
+
+**Contrôles.** `verifier.mjs` : 18 problèmes, inchangés. Les **21 PDF sont tous
+liés**, aucun orphelin, aucun lien mort. La carte CH. 5 ne contient ni `a-venir`,
+ni `🚧`, ni « Cours en ligne ». Rendu mesuré à 390 px : `scrollWidth = 390` sur le
+hub et sur T3-C3, aucun chip hors cadre, les puces de la nouvelle carte s'empilent
+comme les autres.

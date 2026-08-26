@@ -5,7 +5,13 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **26/08/2026** (dernière passe : **le hub de seconde** —
+> Dernière réécriture : **26/08/2026** (dernière passe : **les DS et les TP
+> déposés dans les chapitres de physique-chimie** — 21 sujets (6 DS, 15 TP)
+> publiés dans `assets/pdf/pc/`, liés depuis les 15 cartes du hub et depuis
+> 13 chapitres, la carte **T3-C5 « Formation d'une image »** créée sans page de
+> cours (le TP13 en tient lieu), et le dossier de travail `_a-deposer/` — 130
+> fichiers dont des corrections et des données de classe — mis hors de portée de
+> git ; aucune correction en ligne. Avant elle, dans la même journée : **le hub de seconde** —
 > les seize cartes de `pages/2nde-physique-chimie.html` ramenées à une phrase
 > d'accroche et, pour neuf d'entre elles, une vignette tirée du cours ; les
 > listes « Notions abordées » du thème 3 supprimées. La veille : **le lot 1 de la
@@ -39,7 +45,7 @@
 
 | Partie | État |
 |---|---|
-| **PC seconde** | 14 chapitres en ligne. 🆕 **Le hub a été repris le 26/08** : une phrase d'accroche par carte, une vignette tirée du cours sur 9 des 16 cartes (les 7 autres n'ont aucun visuel disponible). Les phrases ne sont pas validées. 🆕 **Trois sont en V1 intégrale** (25/08) : `T3-C1` (17 images + 2 tableaux + 1 vidéo intégrée, **audit 1 appliqué**), `T3-C3` (34 figures) et `T3-C4` (20) — cours entier à l'écran, plus aucun `.a-faire` sauf le lien de DS. Leurs trois relevés attendent tes décisions. **Le thème 3 n'a plus que T3-C2 en ébauche.** T1-C1→C4 sont dégrossis à fond ; les **sept autres portent 81 blocs `.a-faire`**, à reprendre selon `_modeles/CONSIGNES-V1-integrale-PC.md`. 🆕 **Plus aucun exercice de PC n'est sans corrigé** : les trois qui manquaient (T2-C1 ex. 2 et 3, T2-C2 ex. 10) ont été rédigés le 25/08, figures comprises. Aucun cours validé. |
+| **PC seconde** | 14 chapitres en ligne. 🆕 **Les sujets de DS et de TP sont en ligne depuis le 26/08** : 6 DS et 15 TP dans `assets/pdf/pc/`, une puce par sujet sur la carte du hub et un `.video-chip` dans la page — le TP après la section dont il est l'application, le DS dans « Pour le DS, je sais ». Un sujet à cheval est lié depuis chaque chapitre qu'il couvre. La puce « Exercices 🚧 » a disparu des 14 cartes. **Aucune correction n'est en ligne** (elles partent par mail contre preuve de travail), et aucun fichier portant un nom de classe ou une date de séance n'a rejoint le dépôt. Le hub compte désormais **15 cartes de chapitre** : T3-C5 « Formation d'une image » existe **sans page de cours** — le TP13 en tient lieu, c'est la forme retenue, pas un chantier. Sept fichiers annexes (programmes Python, tableurs, vidéo, fichiers Latis Pro) attendent un arbitrage avant toute publication. 🆕 **Le hub a été repris le 26/08** : une phrase d'accroche par carte, une vignette tirée du cours sur 9 des 17 cartes (les 8 autres n'ont aucun visuel disponible). Les phrases ne sont pas validées. 🆕 **Trois sont en V1 intégrale** (25/08) : `T3-C1` (17 images + 2 tableaux + 1 vidéo intégrée, **audit 1 appliqué**), `T3-C3` (34 figures) et `T3-C4` (20) — cours entier à l'écran, plus aucun `.a-faire` sauf le lien de DS. Leurs trois relevés attendent tes décisions. **Le thème 3 n'a plus que T3-C2 en ébauche.** T1-C1→C4 sont dégrossis à fond ; les **sept autres portent 81 blocs `.a-faire`**, à reprendre selon `_modeles/CONSIGNES-V1-integrale-PC.md`. 🆕 **Plus aucun exercice de PC n'est sans corrigé** : les trois qui manquaient (T2-C1 ex. 2 et 3, T2-C2 ex. 10) ont été rédigés le 25/08, figures comprises. Aucun cours validé. |
 | **Outils transversaux PC** 🆕 | **Quatrième famille, ouverte le 25/08.** Des méthodes que tous les chapitres mobilisent, hors progression, disponibles toute l'année. **2 outils sur 8 écrits** : `o1` « Puissances de dix et écriture scientifique » (4 étapes de méthode, 6 exercices corrigés, curseur d'exposant, frise des échelles, axe logarithmique du seuil √10) et `o2` « Les chiffres significatifs » (4 étapes, 6 exercices dont une **série mélangée de 8 calculs** où rien ne dit quelle règle appliquer, compteur de chiffres interactif, schéma d'alignement sur la virgule). Chacun a sa **fiche A4 complétée**, en deux pages exactement, avec QR code. Tournent sur le moteur SNT sans le modifier. 🆕 **Les neuf PDF sources ont été reçus le 26/08** : `o1` et `o2` ont été repris sur leur fond (quatre règles de calcul sur les puissances, conversion vers un préfixe, trois équivalences de volume, `003,20`, incertitude relative), et **les lots 2 et 3 ne sont plus bloqués**. `o3` sécurité en salle de TP et `o4` relation algébrique restent **cadrés, non écrits**. Trois erreurs de calcul de plus ont été relevées dans les corrigés du collègue, et deux écarts entre le brief et les sources attendent un arbitrage (le tri de la verrerie, le nombre de niveaux de `o4`). ⏳ **Rien n'est validé** : tout le contenu pédagogique est une proposition. |
 | **SNT** | 8 séquences de thème (`t0`→`t7`) **+ 1 module transversal** (`m1` « Représenter l'information »). `t0`, `t1` et `t2` sont sur le **moteur partagé** et en **V0 complète** ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). **`t1` est le seul thème validé sur le fond** (23/08) — il sera *clos* après la vérification des fiches. **`t0` a été refondue le 23/08 puis auditée le 24/08** : voir sa ligne. |
 | **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade) et **vérifié au rendu** dans un navigateur sans interface : bandeau, pictogramme et teinte mesurés sur les deux familles de pages, en mode élève et en mode enseignant. Le tableau de bord affiche les **dates de clôture** (cases de clôture et frise, format `12/09`). ✅ **`bdd/schema/013-verrou-progression.sql` a été exécuté le 20/08/2026** par Loïc : `mon_plafond()` répond en base, et un appel anonyme se heurte bien à `42501 permission denied` — la fonction est réservée aux comptes connectés, comme prévu. Le plafond est donc **actif de bout en bout**. Deux textes vus par les élèves attendent la validation de Loïc. |
@@ -165,6 +171,18 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 ---
 
 ## Prochaines actions
+
+- [ ] 🆕 **DS / TP — trancher les sept fichiers annexes et deux placements.**
+      À dire avant publication : les `.py` du TP07 et du TP14 (code élève ou
+      corrigé ?), la vidéo `.mp4` du TP09 (origine et droits), les trois `.ltp`
+      Latis Pro du TP06, les deux `.xlsx` du TP01 (gabarits vierges ?). À
+      confirmer aussi : le **TP12 couvre la réfraction**, donc T3-C4 — une
+      seconde puce ? ; la puce « TP — capteur de température » de T3-C2, remplacée
+      par le TP14 ; le **texte de la carte « Formation d'une image »**, qui est une
+      proposition ; et la note « Lien du DS — à poser chaque année », devenue
+      redondante dans les quatre chapitres qui ont maintenant leur sujet
+      (T2-C1, T3-C1, T3-C3, T3-C4). La **renumérotation des DS**
+      reste à ta main, elle n'a pas été touchée.
 
 - [x] ~~**Outils transversaux — me transmettre les PDF sources**~~ — ✅ **reçus le
       26/08/2026**, les neuf fiches. `o1` et `o2` repris sur leur fond dans la

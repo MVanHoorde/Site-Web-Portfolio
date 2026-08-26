@@ -34,6 +34,15 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 20/08/2026 | ~~⏳ **Les 51 leurres de QCM réécrits dans `t1`**~~ | Méthode retenue par Loïc (étoffer les distracteurs) appliquée aux 20 questions signalées. Chaque leurre a été rallongé et rendu plus plausible : **c'est du contenu**, à relire avant validation. Deux questions ont été touchées par ricochet et remises en état (`NET-Q8` q15, `NET-Q4` q2). **Validés le 23/08** (clôture de `t1`). |
 | 20/08/2026 | ~~⏳ **Les deux indices de niveau 2 réécrits** (`t1`)~~ | « Quelques centaines de km : 425 » et « Des gigaoctets par seconde : Go/s » livraient la réponse — le premier sur un exercice de **lecture de carte**, ce qui le vidait de son sens. Remplacés par un renvoi vers l'endroit où lire, et par une règle de construction d'unité. **Validés le 23/08** (clôture de `t1`). |
 | 25/07/2026 | ⏳ Hébergement des vidéos SNT | La vidéo DNS et celle des couches existent sur le **PeerTube du ministère** (`apps.education.fr`). `youtube-nocookie` supprime le cookie publicitaire mais **pas les publicités**, ce qui est le motif de Loïc. Réserve à lever avant de basculer : PeerTube peut diffuser en **pair-à-pair**, ce qui exposerait l'IP de l'élève à d'autres spectateurs. **23/08 : statu quo pour `t1`** — « ça fonctionne comme ça, c'est très bien ». Ne conditionne plus la validation du thème ; **Digiview** est ajouté aux pistes à évaluer (`IDEES.md`). |
+| 26/08/2026 | ⏳ **Les `.py` du TP07 et du TP14** | Lesquels sont le code **donné aux élèves** (« prog à modif » ?) et lesquels sont des corrigés ? Rien n'est publié tant que ce n'est pas dit. |
+| 26/08/2026 | ⏳ **La vidéo `DISSOLUTION … .mp4` du TP09** | Origine et droits non établis, vraisemblablement une vidéo tierce téléchargée. Un lien vaut mieux qu'un fichier lourd dans le dépôt. |
+| 26/08/2026 | ⏳ **Les trois `.ltp` du TP06** (Latis Pro) | Format propriétaire, utile en salle de TP seulement. À confirmer avant publication. |
+| 26/08/2026 | ⏳ **Les deux `.xlsx` du TP01** (« graphique (eau salée) », « valeurs (élèves) ») | Ni nom de classe ni date : probablement des gabarits vierges. À ouvrir et vérifier avant de publier. |
+| 26/08/2026 | ~~⏳ **La fiche « coups de pouce et mesures » du TP03**~~ | **Tranché le 26/08 : elle ne part pas.** « Ne mets pas les coups de pouce, juste les fichiers TP en PDF » — seul le PDF du sujet nu est publié. |
+| 26/08/2026 | ⏳ **Le TP12 couvre aussi la réfraction** | Le brief le rattache au seul T3-C3 « Dispersion et spectres », mais son titre et son sujet portent la réfraction, qui est T3-C4. Une seconde puce (D4) ? À trancher au lot 2. |
+| 26/08/2026 | ⏳ **La puce « TP — capteur de température » de T3-C2** | Ce TP annoncé n'existe pas dans le lot ; la puce d'attente a cédé la place au TP14 « Protection d'une LED ». À confirmer, ou à rétablir à côté. |
+| 26/08/2026 | ⏳ **La note « Lien du DS — à poser chaque année »** (7 chapitres) | Ce bloc `.a-faire` dit qu'un lien « DS » figure dans la source mais n'est jamais activé. Dans **T2-C1, T3-C1, T3-C3 et T3-C4** le sujet du DS est désormais posé juste au-dessus : la note y est redondante. La retirer sur ces quatre-là (elle reste juste sur T2-C2, T2-C3 et T3-C2, qui n'ont pas de DS), ou la garder pour les années suivantes ? |
+| 26/08/2026 | ⏳ **Le texte de la carte « Formation d'une image »** | La phrase qui dit que le TP **est** le cours est une V1 (§8.1 du brief). Deux propriétés à garder si Loïc la réécrit : aucune tournure d'attente, et la raison énoncée simplement. |
 
 ---
 
@@ -804,3 +813,34 @@ décider si les outils déjà écrits s'y alignent.
 ⚠ `fiche_La dissolution.pdf` ne correspond à **aucun** des huit outils : c'est du
 contenu de chapitre (solutions aqueuses, `T1-C5`). Son encadré sur le **ménisque**
 est en revanche celui que le brief demandait de reprendre dans `o3`.
+
+---
+
+## Dépôt des DS et des TP en physique-chimie — 26/08/2026
+
+Cadrage : `BRIEF-CLAUDE-CODE-DS-TP-PC.md`. Sept décisions de Loïc, en vigueur.
+
+| # | Décision | Statut |
+|---|---|---|
+| D1 | **Les corrections restent hors ligne**, transmises par mail contre preuve de travail. Aucun mécanisme de déblocage n'est construit. Le chip SharePoint « DS 2024/2025 (corrigé) » de `c1` reste tel quel | ✅ |
+| D2 | Les sujets sont déposés **avec leur numérotation actuelle** (DS1…DS6, TP01…TP15), héritée d'une progression antérieure. Pas de renumérotation | ✅ |
+| D3 | La puce `Exercices 🚧` **disparaît des 14 cartes** du hub, y compris celles qui ne reçoivent rien | ✅ |
+| D4 | Un sujet est lié à **tous** les chapitres qu'il couvre, vers le même fichier | ✅ |
+| D5 | **Seuls les PDF de sujet** rejoignent le dépôt. Docx, corrections, ressources annexes, code et tableurs restent dehors tant qu'ils ne sont pas triés | ✅ |
+| D6 | **T3-C5 « Formation d'une image » : carte au hub, sans page de cours.** Le TP13 tient lieu de cours — la notion est intégralement reprise en première et en terminale | ✅ *(carte créée le 26/08, texte à valider)* |
+| D7 | **Aucune formulation d'attente sur cette carte** : ni « cours à venir », ni « en travaux », ni `🚧`. C'est la forme retenue, pas un chantier | ✅ |
+
+**D8 (26/08, tranché par Loïc au §7 du brief)** — ✅ **Aucun fichier portant un
+nom de classe ou une date de séance ne rejoint le dépôt.** Exclusion, pas
+question ouverte : `TP10 2de6 GP1 03-02-2023.xlsx` et les deux
+`TP11 2de6 GP1/GP2 27-01-2023.py` restent définitivement hors dépôt.
+
+**Conséquence technique du 26/08** : `_a-deposer/` — le dossier de travail où
+arrivent les sujets bruts — n'était **pas** ignoré par git. Ajouté à
+`.gitignore`. Sans cela, un `git add -A` publiait les 130 fichiers du lot,
+corrections et données de classe comprises.
+
+**Écarts du brief tranchés en le disant** (26/08, à confirmer) : `c7` est traité
+au lot 1 alors que le §0 l'en excluait — le §3.2 lui attribue le TP15 et il est
+du thème 1. Les noms de fichiers suivent la règle du §5 (`ds1-t1c1.pdf`), pas les
+exemples du §4.1 qui la contredisaient.
