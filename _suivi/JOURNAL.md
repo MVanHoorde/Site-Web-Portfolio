@@ -2354,3 +2354,52 @@ chapitre ne porte pas le bouton du lot E. Elle relève du jalon 6, et son brief
 (`BRIEF-CLAUDE-CODE-T3C1-fiche.md` §0) la verrouille explicitement derrière le
 jalon 5 — « cours VALIDÉ », un acte de Loïc, jamais présumé. Douze chapitres sur
 quatorze sont dans ce cas.
+
+---
+
+## 26/08/2026 (fin) — les graphes d'exercice, reconstruits plutôt que recopiés
+
+« Et tu ne peux pas faire ces figures ? » Si. Les cinq graphes des exercices —
+énoncés 1 et 3, leurs deux corrections annotées, le rappel de l'exercice 2 —
+sont passés en SVG à leur tour.
+
+**Le problème n'était pas de dessiner, mais de rester fidèle.** Ces graphes ne
+sont pas décoratifs : l'énoncé de l'exercice 1 demande de mesurer une période
+**sur celui-là**, et le corrigé, déjà en ligne, annonce des valeurs précises. Une
+figure approximative aurait rendu son propre corrigé faux.
+
+Pour l'exercice 1, plutôt que de dessiner à vue un « signal composé qui y
+ressemble », j'ai relevé neuf points sur la courbe d'origine et **ajusté une série
+de Fourier à trois harmoniques par moindres carrés** : écart maximal **0,019 V**,
+minimum −1,326 V et maximum +1,634 V contre −1,32 et +1,60 relevés. Le tracé est
+reconstruit — il nous appartient — mais il a la même allure, la même période et
+les mêmes extrema. C'est ce que l'exercice demande de lire.
+
+**Une lecture à trancher sur l'exercice 3.** Le corrigé dit « 4 motifs sur
+4T = 93 ms », tandis que le texte alternatif de l'ancienne image parlait de
+« 3 à 93 ms » — soit 90 ms, ce qui aurait donné 44 Hz et non 43. La figure
+d'origine repérait les points de mi-descente ; de **maximum à maximum**, 6 → 99 ms,
+l'intervalle vaut exactement 93 ms. C'est cette lecture qui est dessinée : elle
+tombe juste au chiffre près sur le corrigé, et pointer un sommet est plus sûr pour
+un élève que pointer un passage à mi-hauteur.
+
+Chaque génération imprime ses contrôles : pics de l'exercice 1 à 0,30 / 2,93 /
+5,57 / 8,20 ms ; maxima de l'exercice 3 à 6 / 29,25 / 52,5 / 75,75 / 99 ms ;
+`f` = 43,0 Hz ; `u(6 ms)` = 4,00 V et `u(17,62 ms)` = 0,00 V. **Aucun corrigé n'a
+eu à bouger.**
+
+**Bilan du passage au vectoriel, maintenant complet** : **12 images remplacées,
+614 Ko** de JPEG et de PNG contre 76 Ko de HTML en plus — **538 Ko économisés au
+chargement**, et plus rien ne crénelle. Il reste 8 fichiers de source, ceux que
+l'audit avait explicitement laissés : sismogramme, ECG, guitare, vague, schéma
+des compressions, frise des fréquences, champ auditif, acuité selon l'âge.
+
+Contrôles : `verifier.mjs` **18**, aucun débordement à 390 ni à 1280 px, et le
+rappel de l'exercice 2 tient dans sa colonne de 200 px sans déborder — il reste
+petit, comme validé.
+
+**Conséquence pour la fiche** : les trois schémas que le brief déclarait
+indispensables (graphe de l'exercice 1, graphe de l'exercice 3, extrema et
+amplitude) existent désormais en SVG. La condition n° 2 du verrou de démarrage
+est levée. Restent la condition n° 1 — les lots de l'audit, faits — et la n° 3,
+la seule qui compte encore : **« cours validé », un acte de Loïc.**

@@ -7,9 +7,10 @@
 >
 > Dernière réécriture : **26/08/2026** (dernière passe : **l'audit 2 de T3-C1 mené
 > à son terme — lots A à E**. Le chapitre est refait de bout en bout : ses
-> **6 figures extraites du PPTX sont redessinées en SVG** (233 Ko de JPEG crénelés
-> → 65 Ko de vectoriel : la page s'allège de 168 Ko *et* devient nette à toute
-> échelle), un **code couleur commun** fixé sur les extrema traverse désormais
+> **12 figures sont redessinées en SVG** — les 6 du lot 4 plus les 5 graphes
+> d'exercice, dont le signal composé de l'exercice 1 **reconstruit par ajustement
+> de Fourier** sur des points relevés (écart 0,019 V) : **614 Ko d'images
+> remplacés, 538 Ko économisés au chargement**, et plus rien ne crénelle, un **code couleur commun** fixé sur les extrema traverse désormais
 > toutes les figures de signal, la méthode « mesurer une période » est **en deux
 > colonnes** avec une figure d'étapes produite pour elle, **8 transitions** et
 > **4 encarts d'histoire des sciences** font respirer le texte, et **la fiche
@@ -22,7 +23,8 @@
 > n'était pas coupable** : l'erreur 153 venait de notre propre
 > `referrerpolicy="no-referrer"`. `chapitre-commun.css` en `?v=6`.
 > ⏳ Le fond du lot D (transitions, histoire des sciences) attend validation, et
-> **la fiche de T3-C1 reste à écrire** — jalon 6, verrouillé par le jalon 5.
+> **la fiche de T3-C1 reste à écrire** — les schémas qu'elle exige existent
+> désormais, il ne lui manque plus que le jalon 5, « cours validé ».
 > Avant elle : **les deux outils de
 > seconde s'ouvrent en entier** — `o1` et `o2` ne verrouillent plus rien : toutes
 > leurs étapes sont visibles dès l'arrivée et la partie « S'entraîner » ne se

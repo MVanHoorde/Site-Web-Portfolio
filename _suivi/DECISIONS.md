@@ -114,6 +114,15 @@ supposait.
 | A2-14 | **Lot E — la fiche vierge se télécharge depuis le cours, en permanence.** Classe `.hors-verrou` : seule exception du dépôt à `body.verrouille`, qui masquait tout l'article. Motif : la fiche doit rester accessible à l'élève absent, malade ou en avance — le verrou protège le **cours**, pas le support que l'élève remplira. Posé sur les **2 chapitres dont la fiche existe** (`t1c2`, `t1c4`), en commentaire prêt à décommenter dans le gabarit. Règle inscrite dans `CONSIGNES-chapitre-PC.md` §6 | ✅ |
 | A2-15 | **L'encart 🔧 « Lien du DS » est retiré partout où le lien est posé** : T2-C1, T3-C3, T3-C4, en plus de T3-C1. T3-C3 et T3-C4 n'ont plus aucun `.a-faire`, leur CSS mort est retiré. T2-C2, T2-C3 et T3-C2 n'ont pas de lien DS : l'encart y garde son sens | ✅ |
 
+| A2-16 | **Les 5 graphes d'exercice passent aussi en SVG** (énoncés 1 et 3, leurs deux corrections annotées, le rappel de l'exercice 2). Ils n'étaient pas dans la liste du lot 4, mais ce sont les **seules figures dont un énoncé dépend** — sans elles, il n'y a rien à mesurer — et le brief de la fiche élève les suppose vectorielles. Le motif de l'exercice 1 est un **son composé reconstruit** : série de Fourier à 3 harmoniques ajustée par moindres carrés sur des points relevés sur la courbe d'origine (écart max **0,019 V**), donc même allure, même période, mêmes extrema, mais un tracé qui nous appartient | ✅ |
+| A2-17 | **Les figures disent exactement ce que disent les corrigés**, contrôlé à la génération : ex. 1 — pics à 0,30 / 2,93 / 5,57 / 8,20 ms, soit 3T = 7,9 ms entre `t_i` et `t_f` ; ex. 3 — maxima à 6 / 29,25 / 52,5 / 75,75 / 99 ms, soit **4T = 93 ms** de maximum à maximum, `f` = 43,0 Hz, `U_max` = 4 V et `U_min` = 0 V atteints au volt près. Aucun corrigé n'a eu à bouger | ✅ |
+
+**Bilan du passage au vectoriel** : **12 images remplacées, 614 Ko** de JPEG et de
+PNG contre 76 Ko de HTML en plus — **538 Ko économisés au chargement**, et des
+figures nettes à toute échelle. Il ne reste que 8 photos et schémas de source,
+ceux que l'audit a explicitement laissés (sismogramme, ECG, guitare, vague,
+compressions, frise, champ auditif, acuité).
+
 **Piège relevé au passage** : un commentaire CSS contenant une balise image
 d'exemple a fait passer `verifier.mjs` de 18 à 19 problèmes — il lit les
 attributs de source **jusque dans les commentaires**. Ne pas écrire de balise
