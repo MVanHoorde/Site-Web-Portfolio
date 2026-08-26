@@ -29,12 +29,25 @@ Cette phrase-là ne vaut **que** pour le livret CFA. Motif ici : les exercices
 d'un outil se font **à la maison**, le soir ; un élève doit pouvoir se corriger
 seul sans attendre le cours suivant. Ne pas « harmoniser » les deux familles.
 
-**État au 25/08/2026 :** deux outils produits (`o1` écriture scientifique, `o2`
-chiffres significatifs), en **V1 proposée, non validée**. `o3` sécurité en salle
-de TP et `o4` manipuler une relation algébrique sont cadrés mais non écrits.
-Numéros réservés, à ne pas produire sans commande : `o5` convertir · `o6`
-présenter un calcul · `o7` construire et exploiter un graphique · `o8` rédiger un
-compte rendu de TP.
+**État au 26/08/2026 :** deux outils produits (`o1` écriture scientifique, `o2`
+chiffres significatifs), en **V1 proposée, non validée**, repris le 26/08 sur le
+fond des PDF sources. `o3` sécurité en salle de TP et `o4` manipuler une relation
+algébrique sont cadrés mais non écrits. Numéros réservés, à ne pas produire sans
+commande : `o5` convertir · `o6` présenter un calcul · `o7` construire et
+exploiter un graphique · `o8` rédiger un compte rendu de TP.
+
+🔴 **Les neuf PDF sources sont arrivés le 26/08** — et ils ne recouvrent pas
+exactement le brief. Deux leçons durables :
+
+1. **Le brief résume la source, il ne la remplace pas.** Il annonçait « les trois
+   niveaux » d'une fiche qui en compte cinq, et un tri de la verrerie qui n'est pas
+   celui du collègue. **Toujours lire la source avant d'écrire**, même quand le
+   brief semble complet.
+2. **Une source peut contredire une autre.** La fiche « Écriture scientifique »
+   affirme que « les zéros situés à droite sont significatifs » ; le brief demande
+   que `100` soit ambigu. Quand deux fonds se contredisent, on ne tranche pas seul :
+   on écrit la version la plus défendable, **on la signale comme un écart**, et on
+   attend l'arbitrage.
 
 ---
 

@@ -1894,3 +1894,53 @@ Les autres hubs ne bougent pas d'un pixel.
 Vérifié au rendu dans un navigateur sans interface, à 1200 px et à 700 px, et
 `node verifier.mjs` sort toujours **18 problèmes** — le repère, donc aucune
 régression. **Les seize phrases sont des propositions, rien n'est validé.**
+
+---
+
+## 26/08/2026 — Les PDF sources arrivent, `o1` et `o2` repris sur leur fond
+
+Loïc a transmis les **neuf fiches sources** du chantier des outils. Elles
+confirment une partie du cadrage, en corrigent une autre, et débloquent les
+lots 2 et 3.
+
+**Cinq ajouts de fond** dans `o1` et `o2`, tous du collègue et tous absents de la
+V1 : les **quatre règles de calcul sur les puissances de dix** — ce sont elles
+qui *prouvent* ce que la V1 affirmait, en particulier pourquoi le dénominateur
+change de signe et pourquoi les volumes se multiplient par 3 ; la **conversion
+vers un préfixe** et sa règle du changement de signe ; les **trois équivalences
+de volume** et le tableau qui aligne les mètres cubes sur les litres ;
+**`003,20`**, le seul nombre qui porte les deux familles de zéros ; et
+l'**incertitude relative `ΔA/A`**, avec la seconde façon d'estimer `ΔA`.
+
+Arbitrage de place assumé sur la fiche de `o1` : la table des dix-huit repères
+d'échelle, ajoutée la veille, est réduite à ses trois bornes. Elle est ○ support
+à l'écran, où la frise reste entière ; les quatre règles sont ★★. Le fond passe
+avant le support.
+
+**Le point de fond rouvert.** La fiche du collègue écrit « les zéros situés à
+droite sont significatifs » et « 50 n'a que deux chiffres significatifs » — ce
+qui donne `100` → **3**, quand le brief demandait **1**. La contradiction n'est
+donc pas interne à l'outil : elle est **entre la source et le brief**. La V1 tient
+une troisième voie (l'ambiguïté nommée, qui justifie l'écriture scientifique),
+mais elle nuance une affirmation du collègue. Trois issues posées dans
+`DECISIONS.md`, en attente.
+
+**Trois erreurs de calcul de plus** dans les corrigés, portant le total à cinq.
+La plus vicieuse : `5933 dag·cm⁻³` aboutit au **bon** résultat par **deux erreurs
+qui se compensent** — toutes les lignes intermédiaires sont décalées d'un facteur
+dix (le corrigé prend `1 dag = 10² g`), puis une seconde faute ramène au bon
+exposant. Un élève qui suit ligne à ligne est perdu. Toutes recalculées en
+fractions exactes, jamais au flottant.
+
+**Deux écarts entre le brief et les sources**, à arbitrer avant le lot 2 : le
+**tri de la verrerie** (le brief dit « précise / usage courant », la fiche dit
+« pour contenir / pour mesurer un volume ») et le **nombre de niveaux de `o4`**
+(le brief en annonce trois, la fiche en compte cinq). Leçon consignée dans les
+consignes : **le brief résume la source, il ne la remplace pas.**
+
+**Contrôles.** `verifier.mjs` : 18 avant, 18 après. 16 assertions sur `o1`, **25**
+sur `o2` (trois de plus pour `003,20`), 0 erreur JS. 144 textes de SVG mesurés
+contre leur `viewBox`, aucun débordement. Aucun défilement horizontal à 768 ni à
+390 px. Les deux fiches sortent toujours en **deux pages A4 exactement**, avec
+8 à 26 mm de marge selon la page — quatre passes de rééquilibrage entre recto et
+verso ont été nécessaires pour loger le fond ajouté.

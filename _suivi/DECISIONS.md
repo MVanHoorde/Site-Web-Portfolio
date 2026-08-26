@@ -717,3 +717,90 @@ une page `2nde-pc-oN-…` n'y entre pas. Trois contrôles ne s'appliquent donc
 d'assets, lui, balaie tout `pages/` et les couvre bien — c'est la raison d'être
 de D3. **Élargir le filtre est une modification de `verifier.mjs`, hors périmètre
 du chantier des outils.** ⏳
+
+---
+
+## Outils PC — les PDF sources reçus le 26/08/2026
+
+Loïc a transmis les **neuf fiches sources**. Elles confirment une partie du
+cadrage, en corrigent une autre, et débloquent les lots 2 et 3.
+
+### Ce qu'elles ajoutent à `o1` et `o2` — du fond qui manquait
+
+| # | Ajout | D'où il vient |
+|---|---|---|
+| S-1 | **Les quatre règles de calcul sur les puissances de dix** — `a·10^m × b·10^n = ab·10^(m+n)` · `(a·10^m)/(b·10^n) = (a/b)·10^(m−n)` · `1/aⁿ = a⁻ⁿ` · `(a·10^m)ⁿ = aⁿ·10^(m·n)`. Elles **prouvent** ce que la V1 se contentait d'affirmer : pourquoi les exposants s'ajoutent, pourquoi le dénominateur change de signe, pourquoi les volumes se multiplient par 3 | `fiche_Ecriture scientifique…pdf` |
+| S-2 | **La conversion vers un préfixe** (et non vers l'unité de base) : « le signe de la puissance + devient − et − devient + », avec ses quatre exemples. La V1 ne traitait que le trajet vers l'unité de base puis d'un préfixe à l'autre | `fiche_Convertir.pdf` |
+| S-3 | **Les trois équivalences de volume** (`1 dm³ = 1 L` · `1 m³ = 1000 L` · `1 cm³ = 1 mL`, « retenir une seule des trois ») et le **tableau qui aligne** m³/dm³/cm³/mm³ sur kL…mL | `fiche_Convertir.pdf` |
+| S-4 | **`003,20`** — le seul nombre qui porte les **deux** familles de zéros : ceux de gauche s'effacent, celui de droite non. C'est l'exemple que la source a choisi, et il vaut mieux que deux nombres séparés | `fiche_Ecriture scientifique…pdf` |
+| S-5 | **L'incertitude relative `ΔA/A`**, et la **seconde** façon d'estimer `ΔA` : la moitié de l'unité du **dernier rang affiché** sur un appareil à écran. La V1 ne donnait que la demi-graduation d'un instrument gradué | `fiche_Ecriture scientifique…pdf` |
+
+**Ce que ces ajouts ont coûté sur la fiche A4 de `o1`** : la table des **dix-huit
+repères d'échelle**, ajoutée le 25/08 au titre du §11, est réduite à ses **trois
+bornes** (atome · toi · Terre). Arbitrage assumé : elle est marquée ○ **support**
+à l'écran, où la frise reste entière et bien plus lisible qu'une table ; les
+quatre règles de calcul, elles, sont ★★. **Le fond passe avant le support.**
+
+### 🔴 O-4 rouvert : ce que la source dit vraiment des zéros de fin
+
+La fiche du collègue **affirme** deux choses que la V1 avait nuancées :
+
+> « Les zéros situés à gauche du nombre ne sont pas significatifs, **ceux situés
+> à droite le sont**. »
+> « **50 n'a que deux chiffres significatifs** alors que 6,20 en a 3. »
+
+Appliquée à la lettre, cette règle donne **`100` → 3 chiffres significatifs**.
+Or le brief de Loïc demandait, à l'exercice 2, **`100` → 1 chiffre significatif,
+l'écriture étant ambiguë**.
+
+**La contradiction n'est donc pas interne à l'outil : elle est entre la fiche du
+collègue et le brief.** Trois issues, et c'est du fond :
+
+1. **suivre la source** — les zéros de fin comptent : `50` → 2, `100` → 3. Il
+   faut alors réécrire l'exercice 2, qui perd sa raison d'être ;
+2. **suivre le brief** — les zéros de fin d'un entier sont ambigus : `100` → 1,
+   et `50` → 1 aussi, ce qui casse l'exemple `6,20 ÷ 50 = 0,12` de la source ;
+3. **la voie tenue en V1** — l'ambiguïté est nommée et devient la leçon : elle
+   justifie l'écriture scientifique, donc l'outil 1. Le compteur la montre en
+   orange, troisième couleur. `50` reste à 2 chiffres *dans ce contexte*, parce
+   que l'énoncé le pose comme une mesure ; `100`, sans contexte, reste ambigu.
+
+La V1 tient la troisième. **Elle nuance une affirmation du collègue** — et la
+règle du dépôt est « on refait la forme, jamais le fond ». ⏳ **À trancher.**
+
+### Trois erreurs de plus dans les corrigés sources — à signaler à l'équipe
+
+Toutes recalculées en fractions exactes.
+
+| Document | Ce qui est écrit | Ce qui est juste |
+|---|---|---|
+| `fiche (correction)_Convertir.pdf`, ligne `379,45 kW` | `= 358 × 10³ W = … = 3,58 × 10⁻⁴ GW` — les valeurs de la ligne précédente ont été recopiées | **`3,7945 × 10⁻⁴ GW`** *(déjà signalé le 25/08, confirmé par la source)* |
+| `fiche (correction)_Convertir.pdf`, ligne `5933 dag·cm⁻³` | Le **résultat final `5,933 × 10¹⁸ cg·hm⁻³` est juste**, mais **toutes les lignes intermédiaires sont fausses** : le corrigé prend `1 dag = 10² g` au lieu de `10¹`, ce qui décale tout d'un facteur 10, puis une seconde erreur (`10¹³` écrit `= 5,933×10¹⁸ × 10⁻⁶`, qui vaut `10¹²`) ramène par hasard au bon résultat | Lignes justes : `5,933×10⁴ g·cm⁻³` → `5,933×10⁶ cg·cm⁻³` → `5,933×10¹² cg·m⁻³` → `5,933×10¹⁸ cg·hm⁻³`. **Un élève qui suit ligne à ligne est perdu** |
+| `fiche (correction)_Convertir.pdf`, ligne `0,98 m·s⁻¹` | `= 3,528 km·h⁻¹` — **quatre** chiffres significatifs pour une donnée qui en a **deux** | **`3,5 km·h⁻¹`**. C'est exactement ce que l'outil 2 sert à empêcher, et les deux fiches du même auteur se contredisent |
+| `fiche (correction)_Manipuler…pdf`, niveau 1 | `a = b/c` donne `c = b/c` | `c = ` **`b/a`** *(déjà signalé, confirmé)* |
+| `fiche (correction)_Manipuler…pdf`, niveau 5 | `d − e = R` donne `e = R − d` | `e = ` **`d − R`** — le signe est inversé |
+
+### Deux écarts entre le brief et les sources, pour les lots suivants
+
+| Lot | Le brief disait | La source dit | ⏳ |
+|---|---|---|---|
+| **2 — `o3` verrerie** | trier en **« précise »** (fiole jaugée, pipettes, burette) / **« usage courant »** (bécher, erlenmeyer, éprouvette, tube à essai) | trier en **« pour contenir »** (bécher, erlenmeyer, tube à essai, fiole jaugée, verre à pied, cristallisoir, coupelle, ballon) / **« pour mesurer un volume »** (éprouvette, pipette graduée, pipette jaugée, propipette, burette) / **« autre »** (entonnoir, ampoule à décanter, réfrigérant) — la précision étant une **sous-mention** de chaque pièce | ⏳ |
+| **2 — `o3` pictogrammes** | libellés « Nocif, irritant » et « Danger pour la santé » | libellés exacts du collègue : **« DANGEREUX POUR LA SANTE »** (point d'exclamation) et **« TRÈS DANGEREUX POUR LA SANTE »** (silhouette). Trois familles : dangers **physiques** (5), pour la **santé** (4), pour l'**environnement** (1) | ✅ on suit la source |
+| **3 — `o4` niveaux** | « les trois niveaux de la fiche source » | la source en compte **cinq** : N4 ajoute `√(b−d²)/c` et `10^(b−d)/√c`, N5 ajoute `log(a/b) = ∛(c/(d−e)²)`. Chacun porte un titre de la main de Loïc (« C'est moi le patron ! ») | ⏳ garder 3 ou aller à 5 ? |
+
+### Les quatre outils réservés ont désormais leur source
+
+`fiche_Convertir.pdf` → **o5** · `fiche_Présenter un calcul.pdf` → **o6** ·
+`fiche_Construire un graphique.pdf` → **o7** · `Fiche_guide - Rédiger un TP.pdf`
+→ **o8**. Rien n'est à produire sans commande.
+
+⚠ `fiche_Présenter un calcul.pdf` donne la méthode de rédaction d'un calcul **du
+collègue**, en huit temps. Elle recouvre les quatre règles du livret CFA
+retenues au §4 des consignes, plus la **conversion en unités du système
+international** et l'attribution d'un **symbole** à la grandeur cherchée. Quand
+`o6` sera commandé, c'est cette version-là qui fera référence, et il faudra
+décider si les outils déjà écrits s'y alignent.
+
+⚠ `fiche_La dissolution.pdf` ne correspond à **aucun** des huit outils : c'est du
+contenu de chapitre (solutions aqueuses, `T1-C5`). Son encadré sur le **ménisque**
+est en revanche celui que le brief demandait de reprendre dans `o3`.

@@ -218,9 +218,13 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   l'ordre de grandeur (axe logarithmique, le seuil √10 ≈ 3,16 tombe au milieu).
 - **S'entraîner** — 6 exercices corrigés, en 4 étapes. L'exercice 6 (le piège de
   la calculatrice, `^` contre `×10ˣ`) porte deux écrans de calculatrice en SVG.
-- Sources : `fiche_Ecriture scientifique et chiffres significatifs.pdf` (partie
-  haute) et `fiche_Convertir.pdf`. Fond conservé, forme refaite. **Une erreur de
-  calcul du corrigé source corrigée** (ligne `379,45 kW`) — voir `DECISIONS.md`.
+- Sources **reçues le 26/08** : `fiche_Ecriture scientifique et chiffres
+  significatifs.pdf` (partie haute) et `fiche_Convertir.pdf`. Fond conservé, forme
+  refaite. **Repris le 26/08 sur leur fond** : les quatre règles de calcul sur les
+  puissances de dix (elles prouvent ce que la V1 affirmait), la conversion vers un
+  préfixe, les trois équivalences de volume et le tableau m³ ↔ L. **Trois erreurs
+  du corrigé source relevées** (`379,45 kW`, les lignes intermédiaires de
+  `5933 dag·cm⁻³`, les chiffres significatifs de `0,98 m·s⁻¹`) — voir `DECISIONS.md`.
 - ⏳ À trancher : le mot « Séance » de la fiche générée (O-2).
 
 ### O2 — Les chiffres significatifs
@@ -235,34 +239,61 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 - **S'entraîner** — 6 exercices, dont la **série finale mélangée de 8 calculs** où
   chaque ligne demande d'abord *quelle règle*, puis le résultat. C'est le seul
   exercice qui mesure vraiment si la distinction est acquise.
-- Sources : `fiche_Ecriture scientifique et chiffres significatifs.pdf` (partie
-  basse) et l'encart du cahier de vacances `cahier/diag-j01-…html`.
-- ⏳ À trancher : le statut des zéros de fin d'un entier (O-4) et les deux calculs
-  ajoutés à la série finale (O-5).
+- Sources **reçues le 26/08** : `fiche_Ecriture scientifique et chiffres
+  significatifs.pdf` (partie basse) et l'encart du cahier de vacances
+  `cahier/diag-j01-…html`. **Repris le 26/08** : l'exemple `003,20` (le seul nombre
+  qui porte les deux familles de zéros), l'incertitude relative `ΔA/A`, et la
+  seconde estimation de `ΔA` (demi-unité du dernier rang **affiché**).
+- 🔴 ⏳ **O-4 rouvert par la source** : elle écrit « les zéros situés à droite sont
+  significatifs » et « 50 n'a que deux chiffres significatifs », ce qui donnerait
+  `100` → **3** quand le brief demandait **1**. La V1 tient une troisième voie.
+  C'est du fond, et c'est le point à trancher en premier. ⏳ Aussi : les deux
+  calculs ajoutés à la série finale (O-5).
 
 ### O3 — Sécurité en salle de TP
 - Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
-- **Cadré, non écrit — lot 2.** 🔴 **Bloqué : les trois PDF sources manquent au
-  dépôt**, et deux d'entre eux ne contiennent que des images (les neuf
-  pictogrammes CLP, la verrerie). Tout le visuel est à produire en SVG.
+- **Cadré, non écrit — lot 2. ✅ Débloqué le 26/08** : les trois PDF sources sont
+  arrivés. Deux ne contiennent que des images (les neuf pictogrammes CLP, la
+  verrerie) : tout le visuel reste à produire en SVG.
+- ⏳ **Arbitrage avant de commencer — le tri de la verrerie.** Le brief dit
+  « précise / usage courant » ; la source du collègue trie en **« pour contenir »**
+  / **« pour mesurer un volume »** / « autre », la précision n'étant qu'une
+  sous-mention. Ce n'est pas le même classement, et c'est du fond.
+- Les libellés des pictogrammes suivront la source **mot pour mot** :
+  « DANGEREUX POUR LA SANTE » (point d'exclamation) et « TRÈS DANGEREUX POUR LA
+  SANTE » (silhouette), en trois familles — physiques (5), santé (4),
+  environnement (1). Le **corrosif figure bien deux fois**, comme annoncé.
+- L'encadré **ménisque** demandé par le brief est dans `fiche_La dissolution.pdf`.
 - Prévu : 9 pictogrammes en `<symbol>` réutilisables · la verrerie triée en
   précise / usage courant · la paillasse aux 8 erreurs cliquables · un QCM de
   6 questions. Fiche A4 : **4 pages tolérées** ici.
 
 ### O4 — Manipuler une relation algébrique
 - Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
-- **Cadré, non écrit — lot 3.** 🔴 **Bloqué : le PDF source et son corrigé
-  manquent au dépôt.** Fond de Loïc, à conserver intégralement (les trois
-  méthodes, dans son ordre, avec son jugement).
+- **Cadré, non écrit — lot 3. ✅ Débloqué le 26/08.** Fond de Loïc, à conserver
+  intégralement : les trois méthodes (triangle, chiffres, opération inverse), dans
+  son ordre, avec son jugement (« ma pref »).
+- ⏳ **Arbitrage avant de commencer — le nombre de niveaux.** Le brief en demande
+  **trois** ; la fiche en compte **cinq**, chacun avec son titre de sa main
+  (« Je ne comprends même pas pourquoi je suis du côté des élèves… »). N4 ajoute
+  `√(b−d²)/c` et `10^(b−d)/√c`, N5 `log(a/b) = ∛(c/(d−e)²)`.
 - Portage adapté de `cfa/outil-07-isoler-une-inconnue.html` : même geste, autre
   public — tout le contexte d'atelier mécanique est à changer.
-- ⚠ Le corrigé source comporte une erreur au niveau 1 (`c = b/c` au lieu de
-  `c = b/a`) — à corriger et à signaler.
+- ⚠ **Deux** erreurs dans le corrigé source, confirmées : niveau 1, `c = b/c` au
+  lieu de `c = b/a` ; niveau 5, `e = R − d` au lieu de `e = d − R`, le signe étant
+  inversé. À corriger et à signaler.
 
-### O5 à O8 — réservés
-Numéros réservés, **à ne pas produire sans commande** : `o5` convertir · `o6`
-présenter un calcul · `o7` construire et exploiter un graphique · `o8` rédiger un
-compte rendu de TP.
+### O5 à O8 — réservés, et leurs sources sont là
+Numéros réservés, **à ne pas produire sans commande**. Depuis le 26/08, chacun a
+sa source au chaud : `fiche_Convertir.pdf` → **o5** · `fiche_Présenter un
+calcul.pdf` → **o6** · `fiche_Construire un graphique.pdf` → **o7** ·
+`Fiche_guide - Rédiger un TP.pdf` → **o8**.
+
+⚠ La fiche de **o6** donne la méthode de rédaction d'un calcul **du collègue**, en
+huit temps — elle recouvre les quatre règles du livret CFA retenues au §4 des
+consignes, plus la conversion en unités SI et l'attribution d'un symbole. Le jour
+où `o6` est commandé, c'est elle qui fera référence, et il faudra décider si les
+outils déjà écrits s'y alignent.
 
 ---
 
