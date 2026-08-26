@@ -181,6 +181,27 @@ l'Étoile · Poitiers), après la checklist.
 | Picto fiche | `.a-noter` (crayon ✎) | Sur chaque encart/figure repris dans la fiche élève (coin haut droit) | — |
 | Exercice | `.exercice` | Voir §5 | Hα rouge |
 
+### 🔴 Deux règles de composition qui se paient cher si on les oublie
+
+**1. Le gras marque le mot que l'élève doit RETENIR, jamais l'emphase orale.**
+Un `<strong>` qui insiste (« la lecture est **imprécise** », « le dommage est
+**immédiat et irréversible** ») ne repère plus rien : quand tout est gras, plus
+rien ne l'est. Le vocabulaire va en `.terme`, l'insistance passe en romain.
+*Mesure du 26/08/2026 : T3-C1 portait 64 gras, dont 12 de pure insistance —
+l'énoncé de son exercice 1 en alignait trois en deux phrases.*
+
+**2. Un conteneur `flex` ou `grid` transforme chaque fragment inline en cellule.**
+C'est le piège le plus coûteux du socle, rencontré **deux fois le même jour** :
+
+| Où | Ce qui arrivait | Correctif |
+|---|---|---|
+| `.formule-bloc .eq` | Chaque `<sub>` devenait un flex item, perdait son `vertical-align`, et `align-items:center` le remontait à mi-hauteur : `c_son` s'affichait `c son`. **7 blocs dans 5 chapitres** | Le contenu de `.eq` est enveloppé dans **`<span class="eq-corps">`** — un seul flex item, sub/sup redeviennent inline. **Obligatoire sur tout nouveau bloc formule** |
+| `.methode li` | Chaque fragment de l'étape (texte, `<strong>`, `.nb`) devenait une cellule de la grille à 2 colonnes : « Repérer un / motif qui se répète. / élémentaire » | Le numéro romain est passé en **position absolue** dans une gouttière ; plus de grid. Corrigé dans le socle, rien à faire dans les pages |
+
+À retenir pour tout nouveau composant : **avant de poser `display:flex` ou
+`display:grid` sur un bloc qui contient de la prose, vérifier au navigateur que
+le texte n'est pas découpé.** Un `getClientRects()` sur un mot suffit à le voir.
+
 ## 4. Protocole d'extraction des sources
 
 ```bash

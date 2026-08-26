@@ -12,6 +12,104 @@
 
 ---
 
+## 26/08/2026 — Le hub de seconde se replie : quinze panneaux, zéro JavaScript
+
+Quinze cartes ouvertes en permanence faisaient une page de trois écrans et demi,
+où le chapitre 12 se trouvait à la molette. Les cartes deviennent des `<details>`
+repliables : bande d'image de 88 px à gauche, numéro du chapitre en blanc dedans,
+titre, décompte des ressources, chevron. Au dépli, la bande passe à 186 px, le
+chiffre grossit de 2,1 à 4,4 rem, le résumé et les liens apparaissent —
+**tout ensemble, sur 0,36 s**.
+
+**L'ouverture continue sans une ligne de script.** `::details-content` transitionné
+sur `block-size`, `opacity` et `content-visibility`, avec
+`interpolate-size:allow-keywords` déclaré sur `:root` : sans cette déclaration,
+`block-size:auto` n'est pas interpolable et l'animation ne se produit tout
+simplement pas. Mesuré au navigateur, tous les 40 ms : la carte passe de 90 à
+377 px en huit paliers, la bande de 88 à 186, le chiffre de 34 à 70 px. Aucun
+saut de hauteur, aucune erreur JS.
+
+**Nouvelles classes, CSS local à la page.** `.chapitre` est chargée par quatre
+hubs ; la toucher dans `style.css` en aurait cassé trois sans qu'aucun test ne le
+dise. Le style vit donc sous `.chap-panneau` / `.cp-*`, dans le `<style>` de la
+page. `style.css` n'a **pas** été modifié — `git diff --stat` le confirme, et les
+trois autres hubs ont été rouverts au navigateur : 13, 13 et 25 cartes `.chapitre`,
+zéro panneau, rendu identique.
+
+**L'image passe par une variable CSS, pas par une balise.**
+`style="--img:url('…');--cp-focus:50% 62%"` sur `.cp-vis` : changer une
+illustration, c'est éditer une chaîne de caractères. Un mode d'emploi de dix
+lignes est posé en commentaire juste avant la première carte. Neuf des quinze
+photos sont en portrait et se font rogner dans une bande de rapport 2,6:1 :
+huit valeurs de cadrage mesurées par Loïc ont été recopiées telles quelles.
+
+**Ce qui a été vérifié pour de vrai**, au navigateur et pas au raisonnement :
+tous les chapitres repliés au chargement (15/15) ; 45 tabulations au clavier sans
+atteindre **un seul** lien de chapitre ; un fragment de texte `#:~:text=` — même
+mécanisme que Ctrl+F — **ouvre** le chapitre qui contient le mot ;
+`prefers-reduced-motion` donne l'état final en 25 ms ; aucun débordement
+horizontal à 1100, 820, 768 ni 390 px (ce dernier mesuré dans une iframe, le
+Chromium nu mettant en page à 500 px minimum) ; les quinze images se chargent.
+
+**Deux réglages ajoutés hors maquette**, la page à 820 px les réclamait : sous
+860 px le décompte descend sous le titre, qu'il frôlait quand celui-ci passait sur
+deux lignes ; sous 700 px les libellés de lien repassent en `display:inline`, sans
+quoi la mention « pdf » restait perchée en bout de première ligne.
+
+**Poids** : 723 ko d'images chargées à l'arrivée sur la page, 48 ko par carte en
+moyenne, la plus lourde à 103 ko (`t1c4-poudre-grains.jpg`). Sous le seuil du
+mégaoctet, aucune compression faite.
+
+**Signalé, non traité.** Les deux cartes « Outils transversaux » restent en
+`.chapitre` : le brief porte sur les cartes de **chapitre**, et les outils n'ont
+pas d'illustration attribuée. Elles cohabitent donc avec les panneaux, dans un
+style visiblement différent. Le cadrage de `t2c1-danseur-rotation.jpg` ne laisse
+qu'une masse rouge floue dans la bande repliée. Et la maquette de référence
+`panneau-ouverture-continue.html` n'était pas dans le dépôt : le CSS structurant
+vient du brief, le reste (titre, décompte, corps, liens) est dérivé de la charte
+« papier d'étude » de `style.css`.
+
+**Contrôle** : `verifier.mjs` → **18 problèmes**, les 18 liens `cfa/outil-*`
+attendus, inchangés.
+
+---
+
+## 26/08/2026 — Les outils de seconde s'ouvrent en entier
+
+Demande de Loïc, en une phrase : « débloquer systématiquement toutes les étapes
+dans les outils de seconde PC ». À l'ouverture du dossier, le code disait
+l'inverse de la consigne — `CONSIGNES-outil-PC.md` promet un outil « ouvert toute
+l'année », et un commentaire de `o1` l'écrivait noir sur blanc (« un outil est
+ouvert toute l'année, il n'a rien à déverrouiller »), pendant que les deux pages
+héritaient sans le vouloir des **deux** verrous du moteur SNT : la révélation
+étape par étape, et la cascade qui ferme la section 2 tant que la méthode n'est
+pas finie.
+
+**Ce qui a été fait.** Un drapeau de page, `data-etapes="ouvertes"` sur le
+`<body>`, et trois gardes dans `sequence-snt.js` : `initReveal()` ne masque plus
+rien et ne crée plus le bouton « Étape suivante ↓ », la cascade de `refresh()` ne
+pose plus `locked`, et `toutRevel()` ne remasque plus en quittant le mode
+enseignant — cet oubli-là aurait refermé la page au premier clic sur la case
+professeur. Le `locked` écrit en dur sur `#s2` est retiré des deux pages.
+
+**Le piège évité.** Écrire ces gardes en `classList.remove()` réveillait le
+`MutationObserver` des `.steps` et tuait l'onglet (piège du 22/08) : tout passe
+par `toggle(…, false)`, qui n'écrit rien quand il n'y a rien à retirer.
+
+**Mesuré au navigateur, pas déduit du CSS.** `o1` : 9 étapes sur 9 visibles,
+`s2` ouverte, aucun bouton « suivante », zéro erreur JS. `o2` : 8 sur 8. Témoins
+SNT inchangés — `t1` garde ses 19 étapes masquées et ses cinq séances fermées,
+`m1` ses 7. `node verifier.mjs` : 18 problèmes, le repère exact.
+
+**Un effet de bord assumé.** L'étape 1.1 de `o1` se validait « à la lecture », au
+moment où l'étape 1.2 se révélait. Ce signal n'existe plus : elle se coche
+maintenant au chargement. Sur un outil, la barre de progression est un
+pense-bête, pas une note — et une pastille qui ne se cocherait jamais serait
+pire. Le commentaire de la page a été réécrit plutôt que laissé à décrire un
+mécanisme disparu.
+
+---
+
 ## 27/08/2026 — Audit 1 des outils PC : deux décisions de fond, et un moteur sans garde
 
 Relecture de `o1` et `o2` par Loïc les 26 et 27/08. Le modèle est validé ; ce qui
@@ -2096,3 +2194,77 @@ liés**, aucun orphelin, aucun lien mort. La carte CH. 5 ne contient ni `a-venir
 ni `🚧`, ni « Cours en ligne ». Rendu mesuré à 390 px : `scrollWidth = 390` sur le
 hub et sur T3-C3, aucun chip hors cadre, les puces de la nouvelle carte s'empilent
 comme les autres.
+
+---
+
+## 26/08/2026 — Audit 2 de T3-C1 : quatre arbitrages demandés, un seul l'était vraiment
+
+L'audit remontait **quatre points à trancher**. Trois se sont réglés à la mesure,
+et le quatrième portait sur autre chose que ce qu'on croyait.
+
+**Deux décisions étaient déjà caduques.** L'audit s'appuyait sur `079753e` ; le
+commit `9d0b352` avait posé entre-temps les liens **TP5**, **TP6** et **DS4**. Le
+« il y a le lien pour le TP, c'est cool » de Loïc n'était donc pas une confusion :
+il auditait bien une version plus récente que celle relue. Seul restait l'encart
+🔧 devenu faux, retiré — T3-C1 n'a plus aucun `.a-faire`.
+
+**La coupure « célérité » se reproduit, mais pas où on la cherchait.** Mesurée à
+793 / 1024 / 1280 / 1440 px : le mot est entier aux deux premières largeurs,
+**césuré aux deux dernières**. `hyphens:auto` coupait `célé-` / `rité` **à
+l'intérieur du fond teal**. Un mot surligné ne peut pas se couper : `.terme` passe
+en `hyphens:none`, le texte courant garde sa césure. Correctif de socle, donc
+valable pour les 14 chapitres.
+
+**« Le souci de la formule, toujours au même niveau que le milieu de C » — ce
+n'était ni le placement du bloc, ni le crayon.** Les 15 crayons de la page sont au
+pixel près à la même position, et les deux blocs formule ont la même géométrie
+(480 px, décalés de 205). Loïc a tranché : c'est **l'indice `son` qui flottait à
+mi-hauteur du `c`**. Cause : `.eq` est un conteneur flex, le `<sub>` en devenait un
+flex item et perdait son `vertical-align` — `align-items:center` faisait le reste.
+Audit du dépôt : **7 blocs formule cassés dans 5 chapitres** (T1-C3, T1-C5, T2-C2,
+T3-C1, T3-C4). Les 19 blocs du dépôt et le gabarit portent désormais un
+`.eq-corps` qui rassemble le contenu en un seul flex item.
+
+**Le même piège, deux fois.** En passant la méthode en deux colonnes, les quatre
+étapes se sont disloquées : « Repérer un / motif qui se répète. / élémentaire ».
+`.methode li` était lui aussi un conteneur grid, et chaque fragment inline y
+devenait une cellule. Le défaut **préexistait** — le `<li>` de `HEAD` est
+identique — il ne se voyait pas en pleine largeur. Le numéro romain passe en
+position absolue : plus de grid, rendu inchangé, vérifié sur T1-C5 qui n'a pas
+bougé.
+
+**La vidéo de la cloche à vide n'était pas coupable.** Six candidates de
+remplacement testées, toutes « refusées » — 6/6, trop beau. Le test se faisait
+depuis `about:blank` : sans origine valide, YouTube renvoie l'erreur 153 pour
+**toutes** les vidéos. Retesté derrière un vrai serveur HTTP, la vidéo d'Unisciel
+s'intègre parfaitement. Le vrai coupable était dans notre propre JS :
+`referrerpolicy="no-referrer"` sur l'iframe créée au clic. Remplacé par
+`strict-origin-when-cross-origin` — YouTube apprend le **domaine**, jamais l'URL
+de la page ni le chapitre lu. Façade re-mesurée : **0 requête tierce avant le
+clic**, 32 après, lecteur fonctionnel. **Aucune vidéo n'a été changée.**
+
+**La figure d'étapes.** Quatre vignettes, signal **composé** (fondamentale +
+harmoniques 2 et 3 déphasées) : motif reconnaissable mais irrégulier, T = 4,0 ms
+sur 4 motifs de 2,0 à 18,0 ms — voisin de l'exercice 1 (T ≈ 2,6 ms, 3 motifs, axe
+en secondes) sans en être la copie. Le tracé, d'abord répété quatre fois, pesait
+29 Ko à lui seul : défini une fois dans `<defs>`, réutilisé par `<use>`, **12 Ko**.
+
+**Calibrages, mesurés.** Images 6-7 : 150 → 200 px de haut. Images 16-17 :
+110 → 375 px, dans une classe **distincte** de `.serie` pour ne pas toucher aux
+cinq vignettes de l'exercice 4, validées. La hauteur est **plafonnée par le
+casque** (source 303 × 377) : à 375 px il est affiché 302 px de large, un pixel
+sous le crénelage. Les deux occupent 629 px sur les 890 de la colonne — on ne peut
+pas aller plus loin sans abîmer l'image.
+
+**Chasse au gras** : 64 → 50 dans l'article, 12 retraits d'insistance orale, dont
+les trois de l'énoncé de l'exercice 1. L'exercice 2 redonne enfin le résultat de
+l'exercice 1 en toutes lettres.
+
+**Contrôles.** `verifier.mjs` : **18 problèmes**, inchangés. `chapitre-commun.css`
+passe en `?v=5` sur les **17 fichiers** qui le chargent. Aucune balise non fermée.
+Les indices : **0 bloc formule mal placé** contre 7 avant.
+
+**Signalé, non traité** (hors périmètre) : trois autres chapitres — T2-C1, T3-C3,
+T3-C4 — portent encore l'encart 🔧 « Lien du DS » alors que **leur lien DS est
+déjà posé**. Même redondance que celle retirée ici. T2-C2, T2-C3 et T3-C2 n'ont
+pas de lien DS : chez eux l'encart garde son sens.

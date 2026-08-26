@@ -285,6 +285,10 @@
         return (+a.getAttribute('data-seance')||0)-(+b.getAttribute('data-seance')||0);
       });
     var precedentesOk=true;
+    /* Page à étapes ouvertes (outils transversaux de PC) : aucun verrou de
+       séance. L'attribut se lit ici plutôt que par un appel à un autre bloc —
+       le fichier est découpé en IIFE cloisonnées. */
+    var toutOuvert = document.body.getAttribute('data-etapes')==='ouvertes';
     suite.forEach(function(sec,rang){
       /* Deux verrous, et ils s'additionnent (20/08/2026).
          · le MÉRITE, d'origine : la séance N+1 s'ouvre quand la N est finie ;
@@ -298,7 +302,10 @@
          Sans verrou-snt.js chargé (t3…t7, pages non raccordées à la base),
          'plafonne' vaut false et rien ne change. */
       var plafonne = !!(window.VerrouSNT && sec.id && !window.VerrouSNT.ouverte(sec.id));
-      if(rang>0 || plafonne) sec.classList.toggle('locked', !precedentesOk || plafonne);
+      /* toggle(…, false) plutôt que remove() : sans jeton à retirer il
+         n'écrit rien, et n'éveille donc pas le MutationObserver des .steps. */
+      if(toutOuvert)              sec.classList.toggle('locked', false);
+      else if(rang>0 || plafonne) sec.classList.toggle('locked', !precedentesOk || plafonne);
       precedentesOk = precedentesOk && seanceComplete(sec);
     });
     document.querySelectorAll('[data-navlock]').forEach(function(a){
@@ -2072,11 +2079,21 @@ function initVideos(){
   });
 }
 
-/* ---------- 1. Révélation séquentielle des étapes ---------- */
+/* ---------- 1. Révélation séquentielle des étapes ----------
+   Sauf sur une page qui déclare data-etapes="ouvertes" (outils transversaux
+   de PC) : un outil de méthode n'a pas de parcours — on y entre par la notion
+   qu'on cherche, en novembre comme en juin. Toutes ses étapes sont donc
+   visibles dès l'arrivée, sans bouton « Étape suivante ». Le reste du moteur
+   (validation, barre de progression, enregistrement) ne bouge pas.
+   Voir _modeles/CONSIGNES-outil-PC.md. */
 function initReveal(){
+  var toutOuvert = document.body.getAttribute('data-etapes')==='ouvertes';
   $$('.seance').forEach(function(sec){
     var pas=$$('.step',sec);
     if(pas.length<2) return;
+    /* dataset.reveal atteste que le moteur est passé : les pages s'en servent
+       comme garde-fou, il se pose donc dans les deux cas. */
+    if(toutOuvert){ sec.dataset.reveal='1'; return; }
     pas.forEach(function(p,i){ if(i>0) p.classList.add('masque'); });
     var bt=document.createElement('div');
     bt.className='step-suivant';
@@ -2105,7 +2122,10 @@ function initReveal(){
 }
 /* le mode enseignant ouvre tout d'un coup */
 function toutRevel(on){
-  $$('.step').forEach(function(p){ p.classList.toggle('masque',!on && p.dataset.dejaVu!=='1'); });
+  /* Quitter le mode enseignant remasque la suite — sauf là où rien n'a jamais
+     été masqué (data-etapes="ouvertes"). */
+  var toutOuvert = document.body.getAttribute('data-etapes')==='ouvertes';
+  $$('.step').forEach(function(p){ p.classList.toggle('masque',!toutOuvert && !on && p.dataset.dejaVu!=='1'); });
   if(on) $$('.step').forEach(function(p){ p.classList.remove('masque','replie'); });
   if(typeof majLignes==='function') majLignes();
   $$('.seance').forEach(placerBoutonSuivant);

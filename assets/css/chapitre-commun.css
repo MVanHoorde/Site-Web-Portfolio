@@ -100,8 +100,13 @@
   .encart p:last-child { margin-bottom:0; }
   .definition { border-left:4px solid var(--h-beta); }
   .definition .etq { color:var(--h-beta); }
+  /* hyphens:none — les <p> du socle sont justifies avec « hyphens:auto ». Sur un
+     mot SURLIGNE, la cesure coupe le fond en deux : « célé- » en fin de ligne,
+     « rité » au debut de la suivante (mesure du 26/08/2026 : visible des 1150 px
+     de fenetre, sur la definition « Celerite » de T3-C1). Le texte courant garde
+     sa cesure ; seuls les mots a fond colore restent entiers. */
   .terme { background:rgba(29,154,170,.16); border-radius:3px; padding:.02em .25em;
-    font-weight:600; color:#0f6b76; }
+    font-weight:600; color:#0f6b76; hyphens:none; }
   .propriete { border-left:4px solid var(--h-gamma); }
   .propriete .etq { color:var(--h-gamma); }
   .exemple { border-left:4px solid var(--vert); background:#fff; max-width:none; }
@@ -135,6 +140,14 @@
   .formule-bloc .eq { background:var(--encre); color:var(--papier); font-family:'Spectral',serif;
     font-style:italic; font-size:1.9rem; display:flex; align-items:center; padding:1rem 1.5rem;
     white-space:nowrap; border-radius:11px 0 0 11px; }
+  /* 🔴 .eq-corps est OBLIGATOIRE — ne pas le retirer.
+     .eq est un conteneur flex : sans lui, chaque <sub> devient un FLEX ITEM,
+     perd son vertical-align et « align-items:center » le remonte au milieu du
+     caractere qu'il indice (« c_son » rendu « c son » a mi-hauteur). Constate le
+     26/08/2026 sur 7 blocs formule dans 5 chapitres. Le span rassemble tout le
+     contenu en UN seul flex item, a l'interieur duquel sub/sup redeviennent
+     inline. Tout nouveau bloc formule doit le porter. */
+  .formule-bloc .eq > .eq-corps { display:block; }
   .formule-bloc .eq sub, .formule-bloc .eq sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.5em; }
   .formule-bloc .grandeurs { padding:.9rem 1.3rem; font-family:'IBM Plex Mono',monospace;
     font-size:.78rem; line-height:2.05; }
@@ -161,9 +174,16 @@
   .methode .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
     text-transform:uppercase; color:var(--or-fonce); margin-bottom:.5rem; }
   .methode ol { list-style:none; counter-reset:met; margin:0; }
-  .methode li { counter-increment:met; display:grid; grid-template-columns:2.2rem 1fr; gap:.5rem;
-    margin-bottom:.5rem; align-items:baseline; }
-  .methode li::before { content:counter(met,upper-roman) "."; font-family:'IBM Plex Mono',monospace;
+  /* 🔴 surtout PAS display:grid ici. Le li etait un conteneur grid a 2 colonnes :
+     chaque fragment inline de l'etape (noeud texte, <strong>, <span class="nb">…)
+     devenait une CELLULE, et l'etape partait en escalier —
+     « Reperer un / motif qui se repete. / elementaire ». Constate le 26/08/2026
+     sur les 4 etapes de la methode de T3-C1. Le numero romain est donc pose en
+     absolu dans une gouttiere : rendu identique, contenu reste inline. */
+  .methode li { counter-increment:met; position:relative; padding-left:2.7rem;
+    margin-bottom:.5rem; }
+  .methode li::before { content:counter(met,upper-roman) "."; position:absolute;
+    left:0; top:0; width:2.2rem; font-family:'IBM Plex Mono',monospace;
     font-weight:600; color:var(--or-fonce); text-align:right; }
 
   /* Encart Histoire des sciences */

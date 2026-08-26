@@ -262,8 +262,18 @@
               border-radius:10px;padding:9px 14px;margin-top:16px;min-height:44px}
   .vers-fiche:hover{border-color:var(--link)}
   .vers-fiche:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+  /* ---------- Glossaire permanent : sans objet en physique-chimie ----------
+     initGlossaire() du moteur partagé s'exécute sans condition et pose un
+     bouton flottant « 📖 Glossaire » sur TOUTE page qui charge le moteur.
+     Ici il n'ouvrirait qu'un panneau vide : un outil de PC n'alimente aucun
+     dictionnaire. Le masquage CSS évite de le voir clignoter avant que le
+     script de la page ne le retire du DOM (retirerGlossaire, plus bas).
+     Le glossaire des séquences SNT n'est pas concerné : le moteur partagé
+     n'est pas modifié, seule cette page se prive du bouton. */
+  #glo-ouvrir,.glo-back{display:none !important}
 </style>
-</head><body data-sequence="pc-o1">
+</head><body data-sequence="pc-o1" data-etapes="ouvertes">
 
 <header class="masthead">
   <div class="wrap">
@@ -1092,7 +1102,7 @@
 
 
   <!-- ===================== 2 — S'ENTRAÎNER ===================== -->
-  <section class="seance locked" id="s2" data-seance="2">
+  <section class="seance" id="s2" data-seance="2">
     <div class="seance-head">
       <h2><span class="s-num">2</span>S'entraîner</h2>
       <span class="seance-time">≈ 45 min</span>
@@ -1465,7 +1475,7 @@
   </footer>
 </div>
 
-<script src="../assets/js/sequence-snt.js?v=41"></script>
+<script src="../assets/js/sequence-snt.js?v=42"></script>
 
 <!-- ============================================================
      JS propre à l'outil. Un seul composant, qui n'existe nulle part
@@ -1669,12 +1679,14 @@
      du décompte, et l'élève verrait une pastille qui ne se coche
      jamais.
 
-     Le signal retenu : la révélation de l'étape SUIVANTE. Le moteur
-     l'annonce par 'etape-revelee' quand l'élève clique sur « Étape
-     suivante ↓ » — à ce moment-là, il a bien parcouru celle-ci. On
-     pose alors la classe et on annonce 'etape-validee', l'événement
-     que le moteur écoute déjà : c'est lui qui rafraîchit la barre et
-     qui enregistre en base. Aucune comptabilité parallèle.
+     Le signal retenu : l'étape SUIVANTE est visible. Sur un outil, elles
+     le sont toutes dès l'arrivée (data-etapes="ouvertes") : 1.1 se coche
+     donc au chargement. C'est assumé — la barre d'un outil consultable
+     toute l'année ne note personne, elle sert de pense-bête, et une
+     pastille qui ne se cocherait jamais serait pire. On pose la classe et
+     on annonce 'etape-validee', l'événement que le moteur écoute déjà :
+     c'est lui qui rafraîchit la barre et qui enregistre en base. Aucune
+     comptabilité parallèle.
      ========================================================= */
   function validerALaLecture(){
     var pourquoi = document.querySelector('[data-cle="pc-o1-s1-pourquoi"]'),
@@ -1683,9 +1695,9 @@
     var seance = pourquoi.closest('.seance');
 
     function verifier(){
-      /* dataset.reveal atteste que le moteur a posé le masquage initial :
-         sans ce garde-fou, on validerait l'étape avant même qu'il ait eu
-         le temps de masquer la suite. */
+      /* dataset.reveal atteste que le moteur est passé sur la séance :
+         sans ce garde-fou, on validerait l'étape avant même qu'il ait pu
+         restaurer l'état de l'élève. */
       if (!seance || seance.dataset.reveal !== '1') return;
       if (forme.classList.contains('masque')) return;
       if (pourquoi.classList.contains('is-done')) return;
@@ -1701,10 +1713,22 @@
     setTimeout(verifier, 1200);
   }
 
+  /* Le bouton « 📖 Glossaire » et son panneau sont créés par le moteur au
+     chargement, sans condition. On les sort du DOM : leurs écouteurs
+     partent avec eux, et le moteur ne les relit jamais — ses deux nœuds
+     ne vivent que dans des variables locales à initGlossaire(). */
+  function retirerGlossaire(){
+    ['#glo-ouvrir', '.glo-back'].forEach(function(sel){
+      var n = document.querySelector(sel);
+      if (n && n.parentNode) n.parentNode.removeChild(n);
+    });
+  }
+
   function demarrer(){
     document.querySelectorAll('[data-curseur]').forEach(curseur);
     retirerFichePDF();
     allegerBarre();
+    retirerGlossaire();
     validerALaLecture();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);

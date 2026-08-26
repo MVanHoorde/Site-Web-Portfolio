@@ -56,7 +56,7 @@ exactement le brief. Deux leçons durables :
 | Objet | Forme | Exemple |
 |---|---|---|
 | Page écran | `pages/2nde-pc-oN-<slug>.html` | `pages/2nde-pc-o1-ecriture-scientifique.html` |
-| Clé de page | `<body data-sequence="pc-oN">` | `data-sequence="pc-o1"` |
+| Clé de page | `<body data-sequence="pc-oN" data-etapes="ouvertes">` | `data-sequence="pc-o1"` |
 | Fiche A4 | `fiches/fiche-2nde-oN-<slug>.html` | `fiches/fiche-2nde-o1-ecriture-scientifique.html` |
 | Images éventuelles | `assets/img/pc/2nde-pc-oN-<slug>/` | — |
 | Préfixe des `data-cle` | `pc-oN-…` | `pc-o1-s2-convertir` |
@@ -64,6 +64,12 @@ exactement le brief. Deux leçons durables :
 
 `N` sur un chiffre. Le slug est en minuscules, sans accent, mots séparés par des
 tirets.
+
+🔴 **`data-etapes="ouvertes"` n'est pas décoratif** : c'est lui qui dit au moteur
+partagé de ne rien verrouiller sur cette page — ni révélation étape par étape,
+ni cascade de séances. **Tout outil le porte, sans exception.** L'oublier rend
+la page indistinguable d'une séquence SNT : l'élève arriverait sur une seule
+étape visible et devrait « mériter » la partie « S'entraîner ». Voir §2.
 
 🔴 **Les pages vivent dans `pages/`, pas dans un dossier à part.** Le contrôle de
 synchronisation des `?v=` de `verifier.mjs` ne parcourt que `pages/` : un dossier
@@ -76,7 +82,7 @@ séparé sortirait du filet sans que rien ne le signale.
 <script src="../assets/js/progression.js?v=16"></script>
 <link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
 <!-- … en fin de body : -->
-<script src="../assets/js/sequence-snt.js?v=41"></script>
+<script src="../assets/js/sequence-snt.js?v=42"></script>
 ```
 
 ⚠️ **Le sommaire des séances et le verrou de progression ne sont PAS chargés** :
@@ -100,8 +106,21 @@ Le moteur ne connaît que `section.seance` → `div.step`. On s'en sert ainsi,
 | **1** | `s1` | **La méthode** | 3 à 5 étapes de cours, chacune avec son visuel et son exemple entièrement résolu. Aucun exercice noté. |
 | **2** | `s2` | **S'entraîner** | Les exercices corrigés, en `data-gate`. C'est le travail à la maison. |
 
-La section 2 porte `class="seance locked"` : elle s'ouvre quand la méthode est
-parcourue. C'est la cascade standard du moteur, rien à coder.
+**Les deux sections sont ouvertes, et toutes leurs étapes avec elles.** La
+section 2 ne porte **pas** `locked`, et aucune étape n'est masquée : c'est
+`data-etapes="ouvertes"` sur le `<body>` qui neutralise les deux verrous du
+moteur partagé (`initReveal()` et la cascade de `refresh()` dans
+`sequence-snt.js`). Rien d'autre à coder — et rien à recopier de SNT : le bouton
+« Étape suivante ↓ » n'est même pas créé ici.
+
+Motif : un outil se consulte, il ne se parcourt pas. L'élève qui cherche
+comment convertir des cm³ en m³ un soir de mars doit tomber sur l'étape 1.4,
+pas sur un chemin à refaire depuis 1.1 ; et les exercices du soir ne se méritent
+pas — ils sont le travail à la maison, pas une récompense.
+
+Ce que le drapeau ne change **pas** : la barre de progression, les pastilles, la
+validation des étapes et l'enregistrement en base fonctionnent comme ailleurs.
+Sur un outil, la progression est un **pense-bête**, pas une note.
 
 **Aucun verrouillage entre outils, ni entre outils et chapitres.** C'est la
 progression du professeur qui décide quand un outil est traité, pas le site.

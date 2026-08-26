@@ -42,7 +42,68 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 26/08/2026 | ⏳ **Le TP12 couvre aussi la réfraction** | Le brief le rattache au seul T3-C3 « Dispersion et spectres », mais son titre et son sujet portent la réfraction, qui est T3-C4. Une seconde puce (D4) ? À trancher au lot 2. |
 | 26/08/2026 | ⏳ **La puce « TP — capteur de température » de T3-C2** | Ce TP annoncé n'existe pas dans le lot ; la puce d'attente a cédé la place au TP14 « Protection d'une LED ». À confirmer, ou à rétablir à côté. |
 | 26/08/2026 | ⏳ **La note « Lien du DS — à poser chaque année »** (7 chapitres) | Ce bloc `.a-faire` dit qu'un lien « DS » figure dans la source mais n'est jamais activé. Dans **T2-C1, T3-C1, T3-C3 et T3-C4** le sujet du DS est désormais posé juste au-dessus : la note y est redondante. La retirer sur ces quatre-là (elle reste juste sur T2-C2, T2-C3 et T3-C2, qui n'ont pas de DS), ou la garder pour les années suivantes ? |
+| 26/08/2026 | ⏳ **Les deux cartes « Outils transversaux » du hub 2nde PC** | Elles restent en `.chapitre`, ouvertes, pendant que les quinze chapitres deviennent des panneaux repliables. Le brief ne couvre que les cartes de chapitre et n'attribue pas d'illustration aux outils. Les convertir aussi (avec deux images à choisir), ou assumer les deux styles ? |
+| 26/08/2026 | ⏳ **Le cadrage de `t2c1-danseur-rotation.jpg`** | Dans la bande repliée (230 × 88), à `--cp-focus:50% 55%`, il ne reste qu'une masse rouge floue : le derviche n'est pas identifiable. Réglage à revoir, ou photo à changer — jamais l'image elle-même (§8.3 du brief). |
+| 26/08/2026 | ⏳ **La maquette `panneau-ouverture-continue.html`** | Absente du dépôt au moment de la refonte. Le CSS structurant (hauteurs, voile, chiffre, ouverture continue) vient du brief §3.3 ; `.cp-tit`, `.cp-num`, `h3`, `.cp-compte`, `.cp-chev`, `.cp-corps`, `.cp-res` et `.cp-liens` ont été dérivés de la charte « papier d'étude ». À réaligner si la maquette est déposée. |
 | 26/08/2026 | ⏳ **Le texte de la carte « Formation d'une image »** | La phrase qui dit que le TP **est** le cours est une V1 (§8.1 du brief). Deux propriétés à garder si Loïc la réécrit : aucune tournure d'attente, et la raison énoncée simplement. |
+
+---
+
+## Les cartes du hub 2nde PC se replient — 26/08/2026
+
+Maquette `panneau-ouverture-continue.html` retenue par Loïc : le panneau qui
+grandit. Quinze chapitres, une illustration chacun, tout replié au chargement.
+
+| # | Décision | Statut |
+|---|---|---|
+| D1 | **Le panneau qui grandit** : bande d'image à gauche, chiffre blanc dedans, titre et décompte à droite | ✅ |
+| D2 | **Ouverture continue en CSS pur, sans JavaScript** — `::details-content` + `interpolate-size:allow-keywords`. La dégradation naturelle sur navigateur ancien (ouverture instantanée, image et chiffre toujours animés) est acceptée : pas de script de repli | ✅ |
+| D3 | **Aucun lien atteignable tant que la carte est repliée**, « Cours en ligne » compris. Vérifié au clavier : 45 tabulations, zéro lien de chapitre atteint | ✅ |
+| D4 | **L'illustration se change en une ligne** : variable CSS `--img` posée en `style` sur `.cp-vis`, pas de balise `<img>`. Cadrage par `--cp-focus`, qui prend un couple horizontal **puis** vertical. Mode d'emploi en commentaire avant la première carte | ✅ |
+| D5 | **Un décompte de ressources reste visible au repli** (`cours · 2 TP · 1 éval`), rédigé à la main pour chaque carte à partir des liens réellement présents. T3-C5 n'a pas de cours en ligne : il affiche `1 TP · 1 éval` | ✅ |
+| D6 | **Bande à 88 px repliée / 186 px dépliée**, posées en variables CSS (`--cp-h-replie`, `--cp-h-deplie`) parce que ce sont des réglages. Rendu à quinze cartes : ni trop dense ni trop haut, valeurs conservées | ✅ |
+| D7 | **La refonte ne concerne que le hub de 2nde PC.** Les sélecteurs `.chapitre*` de `style.css` sont laissés intacts — ils servent encore à `1re-es`, `term-es` et `term-spe`, rouvertes au navigateur pour le confirmer. Nouvelles classes `.chap-panneau` / `.cp-*`, CSS local à la page | ✅ |
+| D8 | **Deux réglages responsive ajoutés hors maquette** : sous 860 px le décompte passe sous le titre (à 820 px il frôlait un titre sur deux lignes) ; sous 700 px les libellés de lien repassent en `display:inline`, la mention « pdf » restant sinon perchée en bout de première ligne | ✅ |
+
+---
+
+## Les outils PC s'ouvrent en entier — 26/08/2026
+
+Demande de Loïc : « débloquer systématiquement toutes les étapes dans les outils
+de seconde PC ». Le code disait l'inverse de la consigne — `CONSIGNES-outil-PC.md`
+annonçait un outil « ouvert toute l'année », et les deux pages héritaient sans
+le vouloir des deux verrous du moteur SNT.
+
+| # | Décision | Statut |
+|---|---|---|
+| OUV-1 | **Un drapeau déclaratif, `data-etapes="ouvertes"` sur `<body>`**, plutôt qu'un test sur le préfixe `pc-o` du slug. Le moteur reste ignorant de la famille de la page : ce qu'il lit, c'est une intention écrite dans le HTML. Toute page qui le portera sera ouverte, outil ou non | ✅ |
+| OUV-2 | **Les deux verrous tombent ensemble** : la révélation étape par étape (`initReveal`) et la cascade de séances (`refresh`). Ouvrir les étapes sans ouvrir la section 2 aurait laissé les exercices du soir derrière la méthode | ✅ |
+| OUV-3 | **Le moteur SNT n'est pas dupliqué.** Trois gardes de deux lignes dans `sequence-snt.js` (dont `toutRevel`, sinon quitter le mode enseignant remasquait tout). Mesuré au navigateur : `t1` et `m1` inchangées — 19 et 7 étapes masquées, séances suivantes verrouillées, zéro erreur JS | ✅ |
+| OUV-4 | **L'étape 1.1 de `o1` se coche au chargement.** Elle se validait « à la lecture », au signal de révélation de l'étape 1.2 — signal qui n'existe plus. Assumé : sur un outil la barre ne note personne, et une pastille qui ne se cocherait jamais serait pire. Le commentaire de la page a été réécrit en conséquence | ✅ |
+| OUV-5 | `sequence-snt.js` passe en **`?v=42` dans les 6 pages** qui le chargent (o1, o2, m1, t0, t1, t2). Le CSS n'a pas bougé : il reste en `?v=41` | ✅ |
+
+---
+
+## Audit 2 de T3-C1 « Émission et perception d'un son » — 26/08/2026
+
+Quatre points étaient remontés à l'arbitrage de Loïc dans
+`A-LIRE-T3C1-AUDIT-2-2026-08-26.md`. **Trois se sont réglés à la mesure**, un
+seul a demandé son arbitrage — et il portait sur autre chose que ce que l'audit
+supposait.
+
+| # | Décision | Statut |
+|---|---|---|
+| A2-1 | **Les liens TP et DS étaient déjà posés** (commit `9d0b352`, postérieur à l'audit) : TP5, TP6 et DS4. Les décisions 3 et 4 de l'audit tombent. Seul l'encart 🔧 « Lien du DS », devenu faux, est retiré — le chapitre n'a plus aucun `.a-faire` | ✅ |
+| A2-2 | **Un mot surligné ne se coupe jamais.** `hyphens:auto` sur les `<p>` justifiés césurait `célérité` **à l'intérieur du fond teal** dès 1150 px de fenêtre. `.terme` passe en `hyphens:none` dans le socle : le texte courant garde sa césure, les mots à fond coloré restent entiers | ✅ |
+| A2-3 | **Le contenu de `.eq` est enveloppé dans `.eq-corps`.** `.eq` est un conteneur flex : chaque `<sub>` en était un flex item, perdait son `vertical-align` et remontait à mi-hauteur du caractère indicé. C'était le vrai « souci de la formule ». **7 blocs formule dans 5 chapitres** étaient touchés ; les 19 blocs du dépôt et le gabarit portent désormais le span | ✅ |
+| A2-4 | **`.methode li` ne peut pas être un conteneur grid.** Même piège : chaque fragment inline d'une étape devenait une cellule, et l'étape partait en escalier (« Repérer un / motif qui se répète. / élémentaire »). Le numéro romain passe en position absolue dans une gouttière : rendu identique, contenu inline préservé | ✅ |
+| A2-5 | **La vidéo de la cloche à vide n'est pas en cause.** L'« erreur 153 » venait de `referrerpolicy="no-referrer"` sur l'iframe créée au clic : privé de referrer, YouTube refuse l'intégration. Remplacé par `strict-origin-when-cross-origin`, qui ne transmet que le **domaine** du site, jamais l'URL de la page ni le chapitre consulté. La façade reste étanche : **0 requête tierce avant le clic**, mesuré | ✅ |
+| A2-6 | **Le gras marque le mot à retenir, jamais l'emphase orale.** 12 gras d'insistance retirés de T3-C1 (64 → 50). Règle à porter dans `CONSIGNES-chapitre-PC.md` | ✅ |
+| A2-7 | **La méthode passe en deux colonnes**, avec une figure d'étapes SVG produite pour elle : 4 vignettes, signal **composé** (fondamentale + 2 harmoniques déphasées), T = 4,0 ms sur 4 motifs — voisin de l'exercice 1 sans le copier | ✅ |
+
+Reste ouvert : l'alignement du bloc formule de 3-C (Loïc a tranché que le
+problème était l'indice, pas le centrage — le centrage n'a donc pas été touché),
+et le déséquilibre de hauteur entre les deux colonnes de la méthode.
 
 ---
 
