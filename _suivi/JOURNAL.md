@@ -1799,3 +1799,98 @@ soupçonnais pas. `verifier.mjs` contrôle lui-même cette cohérence, et la con
 Vérifié : 18 problèmes (le repère), aucune erreur JS sur les 16 pages, balance des
 balises intacte sur les 7 pages dont j'ai modifié le HTML, verrou de T3-C1 rejoué
 en entier.
+
+---
+
+## 25/08/2026 — Lot 1 des outils transversaux de physique-chimie
+
+Quatrième famille du dépôt, ouverte sur brief. Deux outils produits de bout en
+bout, plus les consignes durables.
+
+**Livré** — `pages/2nde-pc-o1-ecriture-scientifique.html` et
+`pages/2nde-pc-o2-chiffres-significatifs.html` sur le moteur SNT, sans le
+modifier ; leurs deux fiches A4 **complétées**, en deux pages exactement ; la
+famille « Outils transversaux » au hub PC, avant le thème 1 ;
+`_modeles/CONSIGNES-outil-PC.md`, autonome ; et l'inscription de la famille dans
+`MANIFESTE.md` et `CLAUDE.md`.
+
+**Ce qui a surpris, et qui a changé la production.**
+
+Le moteur partagé a été conçu pour des **mots**, et trois de ses comportements
+sont nuisibles sur des **nombres**. Le plus grave : sa normalisation efface le
+signe moins, si bien que `10^-3` et `10^3` sont indistinguables — un élève qui
+oublie le signe de l'exposant, l'erreur la plus fréquente sur cet outil, aurait
+été compté juste, en vert, sans rien voir. Le contournement ne touche pas le
+moteur : le signe passe par un `<select>`, que le moteur corrige à l'exact et
+sans Levenshtein, avec des `value` opaques (`pos` / `neg`) parce que `+` et `−`
+se normalisent tous deux en chaîne vide. D'où la table de saisie à trois
+colonnes — **une colonne par décision** — qui structure les deux outils. Les
+deux autres comportements et leurs mesures sont consignés dans `DECISIONS.md`
+(M-1 à M-3).
+
+Trois pièges d'outillage se sont ajoutés (P-1 à P-3) : `.res` existait déjà dans
+la feuille partagée en `display:flex` et faisait éclater tous les encadrés de
+résultat sans la moindre erreur ; `verifier.mjs` cherche le nom du sommaire
+généré jusque dans les **commentaires** HTML, si bien qu'un commentaire disant
+« ce fichier n'est pas chargé » faisait échouer le contrôle de version ; et le
+mode headless de Chrome impose une largeur de mise en page minimale d'environ
+500 px, ce qui fait **rogner** une capture demandée à 390 px au lieu de la faire
+replier — j'ai cru une demi-heure à un défaut de responsive qui n'existait pas.
+
+Aucun générateur de QR code n'existait dans le dépôt, et aucune bibliothèque
+n'est autorisée. L'encodeur écrit pour l'occasion (version 6, niveau M, mode
+octet) **s'autovérifie** avant de sortir quoi que ce soit : syndromes
+Reed-Solomon tous nuls, et relecture de la matrice produite rendant l'URL de
+départ. Le contrôle a fait son travail dès le premier essai, en trouvant deux
+vrais défauts — un polynôme générateur construit à l'envers, et un bit de format
+écrasé par le module toujours noir.
+
+**Contrôles.** `verifier.mjs` : 18 problèmes avant, 18 après. 15 assertions
+passées sur `o1` (curseur exact sur toute la plage, aucun artefact de flottant),
+22 sur `o2` (compteur exact sur onze nombres, mauvaise règle refusée, résultat
+faux d'un chiffre refusé), 0 erreur JS sans base configurée. 144 textes de SVG
+mesurés contre leur `viewBox` : aucun débordement. Aucun défilement horizontal à
+768 ni à 390 px. Les deux fiches sortent en **deux pages A4 exactement**.
+
+**Corrections de fond.** Trois erreurs de calcul relevées, dont deux dans des
+documents partagés avec des collègues — à leur signaler. Détail dans
+`DECISIONS.md`.
+
+**Reste ouvert.** Les lots 2 (`o3`, sécurité en salle de TP) et 3 (`o4`,
+relation algébrique) sont **bloqués faute de leurs PDF sources**, absents du
+dépôt — et deux d'entre eux ne contiennent que des images. Quatre points de fond
+attendent l'arbitrage de Loïc (O-2, O-4, O-5, plus les trois corrections).
+
+---
+
+## 26/08/2026 — Le hub de seconde : une phrase, une image, seize cartes qui se ressemblent
+
+Passe de forme sur `pages/2nde-physique-chimie.html`, sur demande.
+
+**Les seize cartes parlaient trois langues.** Les deux outils transversaux
+annonçaient leur contenu en deux phrases ; les chapitres des thèmes 1 et 2 en une
+ligne d'énumération de notions ; ceux du thème 3 en une phrase suivie d'une liste
+« Notions abordées » de quatre puces — un sommaire qui redisait celui du cours,
+sur la page censée donner envie de l'ouvrir. Tout est ramené à **une seule phrase
+d'accroche**, écrite pour l'élève qui hésite à cliquer, et les listes disparaissent.
+
+**Neuf cartes portent une vignette tirée du cours** : huile et eau, coulée de
+fer, modèle de Bohr, lingots d'or, chronophotographie du skieur, réaction du
+support, diapason, prisme, crayon brisé. Aucune image nouvelle — chacune est déjà
+dans son chapitre, avec son `alt`, repris tel quel.
+
+**Sept cartes restent sans vignette, et c'est un état, pas un choix définitif** :
+T1-C5, T1-C6, T1-C7, T2-C3 et T3-C2 sont des ébauches sans le moindre visuel, et
+les deux outils n'ont que des SVG inline, non réutilisables en fichier. L'image
+viendra avec leur V1 intégrale. En attendant, ces cartes gardent le texte pleine
+largeur : rien de vide, rien d'inventé.
+
+**Le CSS partagé est scopé par classe.** `style.css` sert six pages, dont trois
+hubs qui utilisent aussi `.chapitre-corps`. La variante vit donc sous
+`.chapitre-corps.avec-vignette`, et une media query — la **première du fichier**,
+à 760 px — fait repasser la vignette au-dessus du texte sur iPad en portrait.
+Les autres hubs ne bougent pas d'un pixel.
+
+Vérifié au rendu dans un navigateur sans interface, à 1200 px et à 700 px, et
+`node verifier.mjs` sort toujours **18 problèmes** — le repère, donc aucune
+régression. **Les seize phrases sont des propositions, rien n'est validé.**

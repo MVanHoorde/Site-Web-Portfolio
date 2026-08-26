@@ -5,7 +5,17 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **25/08/2026** (dernière passe : **l'audit 1 de `T3-C1`**
+> Dernière réécriture : **26/08/2026** (dernière passe : **le hub de seconde** —
+> les seize cartes de `pages/2nde-physique-chimie.html` ramenées à une phrase
+> d'accroche et, pour neuf d'entre elles, une vignette tirée du cours ; les
+> listes « Notions abordées » du thème 3 supprimées. La veille : **le lot 1 de la
+> quatrième famille — les outils transversaux de physique-chimie**. Deux outils
+> produits de bout en bout, `o1` « Puissances de dix et écriture scientifique »
+> et `o2` « Les chiffres significatifs », chacun avec sa page écran sur le moteur
+> SNT, sa fiche A4 complétée en deux pages exactement, et son QR code généré et
+> autovérifié ; la famille est posée au hub PC avant le thème 1, et
+> `_modeles/CONSIGNES-outil-PC.md` fixe les conventions. Avant elle, dans la même
+> journée : **l'audit 1 de `T3-C1`**
 > — la V1 intégrale du matin, relue à voix haute par Loïc, est passée de *fidèle
 > mais sèche* à un cours qui respire : figures ramenées à une taille de lecture,
 > quatre mises en regard texte/figure, divisions en vraies fractions, cours étoffé
@@ -29,7 +39,8 @@
 
 | Partie | État |
 |---|---|
-| **PC seconde** | 14 chapitres en ligne. 🆕 **Trois sont en V1 intégrale** (25/08) : `T3-C1` (17 images + 2 tableaux + 1 vidéo intégrée, **audit 1 appliqué**), `T3-C3` (34 figures) et `T3-C4` (20) — cours entier à l'écran, plus aucun `.a-faire` sauf le lien de DS. Leurs trois relevés attendent tes décisions. **Le thème 3 n'a plus que T3-C2 en ébauche.** T1-C1→C4 sont dégrossis à fond ; les **sept autres portent 81 blocs `.a-faire`**, à reprendre selon `_modeles/CONSIGNES-V1-integrale-PC.md`. 🆕 **Plus aucun exercice de PC n'est sans corrigé** : les trois qui manquaient (T2-C1 ex. 2 et 3, T2-C2 ex. 10) ont été rédigés le 25/08, figures comprises. Aucun cours validé. |
+| **PC seconde** | 14 chapitres en ligne. 🆕 **Le hub a été repris le 26/08** : une phrase d'accroche par carte, une vignette tirée du cours sur 9 des 16 cartes (les 7 autres n'ont aucun visuel disponible). Les phrases ne sont pas validées. 🆕 **Trois sont en V1 intégrale** (25/08) : `T3-C1` (17 images + 2 tableaux + 1 vidéo intégrée, **audit 1 appliqué**), `T3-C3` (34 figures) et `T3-C4` (20) — cours entier à l'écran, plus aucun `.a-faire` sauf le lien de DS. Leurs trois relevés attendent tes décisions. **Le thème 3 n'a plus que T3-C2 en ébauche.** T1-C1→C4 sont dégrossis à fond ; les **sept autres portent 81 blocs `.a-faire`**, à reprendre selon `_modeles/CONSIGNES-V1-integrale-PC.md`. 🆕 **Plus aucun exercice de PC n'est sans corrigé** : les trois qui manquaient (T2-C1 ex. 2 et 3, T2-C2 ex. 10) ont été rédigés le 25/08, figures comprises. Aucun cours validé. |
+| **Outils transversaux PC** 🆕 | **Quatrième famille, ouverte le 25/08.** Des méthodes que tous les chapitres mobilisent, hors progression, disponibles toute l'année. **2 outils sur 8 écrits** : `o1` « Puissances de dix et écriture scientifique » (4 étapes de méthode, 6 exercices corrigés, curseur d'exposant, frise des échelles, axe logarithmique du seuil √10) et `o2` « Les chiffres significatifs » (4 étapes, 6 exercices dont une **série mélangée de 8 calculs** où rien ne dit quelle règle appliquer, compteur de chiffres interactif, schéma d'alignement sur la virgule). Chacun a sa **fiche A4 complétée**, en deux pages exactement, avec QR code. Tournent sur le moteur SNT sans le modifier. 🆕 **Les neuf PDF sources ont été reçus le 26/08** : `o1` et `o2` ont été repris sur leur fond (quatre règles de calcul sur les puissances, conversion vers un préfixe, trois équivalences de volume, `003,20`, incertitude relative), et **les lots 2 et 3 ne sont plus bloqués**. `o3` sécurité en salle de TP et `o4` relation algébrique restent **cadrés, non écrits**. Trois erreurs de calcul de plus ont été relevées dans les corrigés du collègue, et deux écarts entre le brief et les sources attendent un arbitrage (le tri de la verrerie, le nombre de niveaux de `o4`). ⏳ **Rien n'est validé** : tout le contenu pédagogique est une proposition. |
 | **SNT** | 8 séquences de thème (`t0`→`t7`) **+ 1 module transversal** (`m1` « Représenter l'information »). `t0`, `t1` et `t2` sont sur le **moteur partagé** et en **V0 complète** ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). **`t1` est le seul thème validé sur le fond** (23/08) — il sera *clos* après la vérification des fiches. **`t0` a été refondue le 23/08 puis auditée le 24/08** : voir sa ligne. |
 | **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade) et **vérifié au rendu** dans un navigateur sans interface : bandeau, pictogramme et teinte mesurés sur les deux familles de pages, en mode élève et en mode enseignant. Le tableau de bord affiche les **dates de clôture** (cases de clôture et frise, format `12/09`). ✅ **`bdd/schema/013-verrou-progression.sql` a été exécuté le 20/08/2026** par Loïc : `mon_plafond()` répond en base, et un appel anonyme se heurte bien à `42501 permission denied` — la fonction est réservée aux comptes connectés, comme prévu. Le plafond est donc **actif de bout en bout**. Deux textes vus par les élèves attendent la validation de Loïc. |
 | **SNT — `t0` Introduction** | 🔄 **Refondue le 23/08/2026, reprise les 24 et 25/08.** État courant : **4 séances · 26 étapes · 18 portes · 6 QCM (39 questions) · 4 réponses rédigées corrigées · 2 réponses personnelles · 2 dépôts d'image · 10 fiches d'élément · 1 tri · 1 exercice d'étiquettes · 1 poste de visionnage · 4 SVG maison**. Apports du 25/08 : l'activité débranchée devient la **séance 4**, dans la cascade et avec sa fiche, où l'élève remplit **dix fiches d'élément** (photo redimensionnée dans le navigateur, nom, ce qu'il fait — trois suffisent à valider) ; un **exercice d'étiquettes à poser** sur la façade arrière en 3.3, dix zones contrôlées une à une sur l'image source ; **trois captures de l'interface** en 1.1, produites depuis la page rendue ; et la **carte du thème** enfin chargée — sans elle, le lien « ⌂ Sommaire » ne faisait rien. ⏳ **Rien n'est validé.** Restent ouverts : la **remontée des photos vers le tableau de bord** (chantier séparé, avec une durée de conservation à décider) et la **licence des 37 images issues du PDF d'un collègue**.
@@ -155,6 +166,26 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 
 ## Prochaines actions
 
+- [x] ~~**Outils transversaux — me transmettre les PDF sources**~~ — ✅ **reçus le
+      26/08/2026**, les neuf fiches. `o1` et `o2` repris sur leur fond dans la
+      foulée. Les sources de `o5` à `o8` sont là aussi, à ne pas produire sans commande.
+- [ ] 🆕 **Outils transversaux — lot 2 (`o3`, sécurité en salle de TP), débloqué.**
+      Le plus lourd en dessin : neuf pictogrammes CLP en `<symbol>`, la verrerie,
+      la paillasse aux huit erreurs. Deux arbitrages à rendre avant : le **tri de
+      la verrerie** (le brief dit « précise / usage courant », la source dit
+      « pour contenir / pour mesurer un volume ») et le **nombre de niveaux de
+      `o4`** (le brief en demande 3, la source en a 5).
+- [ ] 🆕 **Outils transversaux — lire `o1` et `o2` à l'écran et trancher.**
+      🔴 **Le point le plus important est O-4, et les sources l'ont rouvert** : la
+      fiche du collègue écrit « les zéros situés à droite sont significatifs » et
+      « 50 n'a que deux chiffres significatifs », ce qui donnerait `100` → **3**
+      chiffres — quand le brief demandait `100` → **1**, ambigu. La V1 tient une
+      troisième voie (l'ambiguïté nommée, qui justifie l'écriture scientifique),
+      mais elle **nuance une affirmation du collègue**. Les trois issues sont
+      posées dans `DECISIONS.md`. Attendent aussi : les deux calculs ajoutés à la
+      série finale de `o2` (O-5), le mot « Séance » de la fiche générée (O-2), et
+      **cinq erreurs de calcul** relevées dans les documents sources, à signaler
+      à l'équipe.
 - [ ] 🆕 **Lire les trois cours à l'écran et trancher leurs relevés** (`t3c1`, `t3c3`, `t3c4`).
       Trois décisions sortent du lot : définir l'**amplitude** dans T3-C1 (elle fonde tout le
       IV-C sans être définie) ; choisir la sortie du **graphe de l'exercice 3 de T3-C4**, qui

@@ -209,6 +209,36 @@ h2.theme {
 .chapitre-corps ul { margin: 0 0 0.8rem 1.2rem; }
 .chapitre-corps li { margin-bottom: 0.3rem; }
 
+/* Variante « avec vignette » : une image tirée du cours à gauche du texte.
+   Réservée aux cartes qui portent la classe, pour ne rien changer aux hubs
+   dont les chapitres n'ont pas encore d'illustration. */
+.chapitre-corps.avec-vignette {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 1.3rem;
+  align-items: start;
+}
+.chapitre-vignette {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--filet-fonce);
+  background: var(--papier);
+}
+/* Schémas et figures : on montre la figure entière plutôt que de la rogner */
+.chapitre-vignette.contient {
+  object-fit: contain;
+  padding: 0.35rem;
+}
+.chapitre-texte > p:last-child { margin-bottom: 0; }
+
+/* iPad en portrait et téléphones : la vignette repasse au-dessus du texte */
+@media (max-width: 760px) {
+  .chapitre-corps.avec-vignette { grid-template-columns: 1fr; gap: 0.9rem; }
+  .chapitre-vignette { max-width: 260px; }
+}
+
 /* Boutons de ressources */
 .docs {
   list-style: none;
