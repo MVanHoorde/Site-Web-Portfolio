@@ -419,3 +419,40 @@
 .a-venir .tv{margin-left:.35em;font-size:.9em;opacity:.8}
 .a-venir .sr{position:absolute;width:1px;height:1px;overflow:hidden;
   clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+
+/* ===== Audit 3 (F1) — agrandissement d'une figure au clic =====
+   Les figures marquées .zoomable s'ouvrent en pleine page. Le voile est construit
+   par le script de la page ; ici, seulement l'habillage. */
+.zoomable { cursor: zoom-in; }
+.zoomable:focus-visible { outline: 3px solid var(--h-gamma); outline-offset: 4px; }
+.zoom-voile { position: fixed; inset: 0; z-index: 9000; display: flex;
+  align-items: center; justify-content: center; padding: 2.2rem 1.2rem;
+  background: rgba(20, 26, 38, .88); cursor: zoom-out; }
+.zoom-cadre { width: min(1100px, 96vw); max-height: 92vh; overflow: auto;
+  background: var(--papier); border-radius: 10px; padding: 1.1rem; cursor: default; }
+.zoom-cadre svg, .zoom-cadre img { width: 100%; max-width: none; height: auto; display: block;
+  cursor: default; }
+.zoom-fermer { position: fixed; top: 1rem; right: 1.2rem; width: 46px; height: 46px;
+  border: 0; border-radius: 50%; background: var(--papier); color: var(--encre);
+  font-size: 1.7rem; line-height: 1; cursor: pointer; }
+.zoom-fermer:focus-visible { outline: 3px solid var(--or); outline-offset: 3px; }
+
+/* ===== Audit 3 (F2) — le pilote d'une figure animée ===== */
+.pilote-fig { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap;
+  justify-content: center; margin: .6rem 0 .2rem; font-family: 'IBM Plex Mono', monospace;
+  font-size: .78rem; color: var(--gris); }
+.pilote-fig input[type="range"] { flex: 0 1 220px; accent-color: var(--h-gamma); }
+.pilote-fig output { font-weight: 600; color: var(--h-gamma); min-width: 4.2em; }
+.pilote-fig .anim-btn { border: 1px solid var(--grille); border-radius: 999px;
+  background: var(--carte); color: var(--encre); padding: .22rem .8rem;
+  font-family: inherit; font-size: inherit; cursor: pointer; }
+.pilote-fig .anim-btn:focus-visible { outline: 3px solid var(--h-gamma); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .zoom-voile, .zoom-cadre { transition: none !important; animation: none !important; }
+}
+
+@media print {
+  .zoom-voile { display: none !important; }
+  .pilote-fig { display: none !important; }
+}

@@ -5,84 +5,45 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **26/08/2026** (dernière passe : **l'audit 2 de T3-C1 mené
-> à son terme — lots A à E**. Le chapitre est refait de bout en bout : ses
-> **12 figures sont redessinées en SVG** — les 6 du lot 4 plus les 5 graphes
-> d'exercice, dont le signal composé de l'exercice 1 **reconstruit par ajustement
-> de Fourier** sur des points relevés (écart 0,019 V) : **614 Ko d'images
-> remplacés, 538 Ko économisés au chargement**, et plus rien ne crénelle, un **code couleur commun** fixé sur les extrema traverse désormais
-> toutes les figures de signal, la méthode « mesurer une période » est **en deux
-> colonnes** avec une figure d'étapes produite pour elle, **8 transitions** et
-> **4 encarts d'histoire des sciences** font respirer le texte, et **la fiche
-> vierge se télécharge depuis le haut du cours, verrou ou pas** — une entorse
-> assumée au cadenas, posée sur les 2 chapitres dont la fiche existe. Trois
-> défauts de socle trouvés en chemin, tous du même genre — **un conteneur flex ou
-> grid qui découpe la prose qu'on lui confie** : les indices `<sub>` des blocs
-> formule (7 cassés dans 5 chapitres), les étapes de `.methode` (4 en escalier),
-> et le bouton de fiche rangé à côté du cadenas. **La vidéo de la cloche à vide
-> n'était pas coupable** : l'erreur 153 venait de notre propre
-> `referrerpolicy="no-referrer"`. `chapitre-commun.css` en `?v=6`.
-> ⏳ Le fond du lot D (transitions, histoire des sciences) attend validation, et
-> **la fiche de T3-C1 reste à écrire** — les schémas qu'elle exige existent
-> désormais, il ne lui manque plus que le jalon 5, « cours validé ».
-> Avant elle : **les deux outils de
-> seconde s'ouvrent en entier** — `o1` et `o2` ne verrouillent plus rien : toutes
-> leurs étapes sont visibles dès l'arrivée et la partie « S'entraîner » ne se
-> mérite plus. Le moteur partagé le lit sur un drapeau de page,
-> `data-etapes="ouvertes"` ; les six séquences SNT, qui ne le portent pas, sont
-> inchangées — vérifié au navigateur. `sequence-snt.js` passe en `?v=42` dans les
-> six pages qui le chargent. Avant elle : **l'audit 2 de T3-C1
-> « Émission et perception d'un son »**, lots A et B appliqués. Quatre points
-> attendaient un arbitrage : **deux étaient déjà réglés** — les liens TP5, TP6 et
-> DS4 avaient été posés après l'audit —, **un s'est tranché à la mesure** (la
-> césure du mot surligné `célérité`, visible dès 1150 px), et le dernier portait
-> sur **autre chose que ce que l'audit supposait** : ce n'était ni le placement du
-> bloc formule ni le crayon, mais **l'indice `son` remonté à mi-hauteur du `c`**.
-> Cause commune à trois défauts trouvés ce jour-là : **un conteneur flex ou grid
-> qui reçoit du contenu inline en fait des cellules** — les `<sub>` de `.eq`
-> (7 blocs formule cassés dans 5 chapitres), les fragments d'étape de
-> `.methode li` (les 4 étapes de T3-C1 en escalier). Corrigés dans le socle, donc
-> pour les 14 chapitres. **La vidéo de la cloche à vide n'était pas coupable** :
-> l'erreur 153 venait de notre `referrerpolicy="no-referrer"`, pas de la vidéo —
-> aucune n'a été changée, et la façade reste à **0 requête tierce avant le clic**.
-> La méthode passe en **deux colonnes** avec une figure d'étapes SVG produite pour
-> elle. Avant elle : **l'audit 1 des deux
-> outils transversaux de physique-chimie** — `o1` et `o2` relus par Loïc les 26
-> et 27/08, et repris de bout en bout : deux décisions de fond appliquées au
-> dépôt entier (le **seuil de l'ordre de grandeur passe à 5**, l'**ambiguïté des
-> zéros de fin disparaît** au profit des nombres exacts), la méthode de `o1`
-> scindée en cinq étapes, un test après **chaque** bloc de contenu — trois QCM
-> et treize blocs de vérification ajoutés —, les neuf « à retenir » restructurés
-> en trois temps, huit pictogrammes dessinés dans la frise des échelles, le
-> récapitulatif PDF du moteur retiré des outils, et les majuscules automatiques
-> supprimées partout où elles changeaient le sens d'une unité. Avant elle :
-> **les DS et les TP déposés dans les chapitres de physique-chimie** — 21 sujets (6 DS, 15 TP)
-> publiés dans `assets/pdf/pc/`, liés depuis les 15 cartes du hub et depuis
-> 13 chapitres, la carte **T3-C5 « Formation d'une image »** créée sans page de
-> cours (le TP13 en tient lieu), et le dossier de travail `_a-deposer/` — 130
-> fichiers dont des corrections et des données de classe — mis hors de portée de
-> git ; aucune correction en ligne. Avant elle, dans la même journée : **le hub de seconde** —
-> les seize cartes de `pages/2nde-physique-chimie.html` ramenées à une phrase
-> d'accroche et, pour neuf d'entre elles, une vignette tirée du cours ; les
-> listes « Notions abordées » du thème 3 supprimées. La veille : **le lot 1 de la
-> quatrième famille — les outils transversaux de physique-chimie**. Deux outils
-> produits de bout en bout, `o1` « Puissances de dix et écriture scientifique »
-> et `o2` « Les chiffres significatifs », chacun avec sa page écran sur le moteur
-> SNT, sa fiche A4 complétée en deux pages exactement, et son QR code généré et
-> autovérifié ; la famille est posée au hub PC avant le thème 1, et
-> `_modeles/CONSIGNES-outil-PC.md` fixe les conventions. Avant elle, dans la même
-> journée : **l'audit 1 de `T3-C1`**
-> — la V1 intégrale du matin, relue à voix haute par Loïc, est passée de *fidèle
-> mais sèche* à un cours qui respire : figures ramenées à une taille de lecture,
-> quatre mises en regard texte/figure, divisions en vraies fractions, cours étoffé
-> d'un bloc Méthode, de l'amplitude et des seuils de danger, vidéo d'expérience
-> intégrée sans fuite RGPD, puis **le socle CSS corrigé pour les 14 chapitres**
-> — les lignes de calcul se replient au lieu de défiler, ce qui rendait
-> 45 calculs sur 159 illisibles sur téléphone. Avant elle, dans la même journée : **trois V1
-> intégrales de chapitres PC** — `T3-C1`, `T3-C3` « Dispersion et spectres » et
-> `T3-C4` « Réfraction et réflexion », 82 figures posées, sept corrections de fond
-> tracées)
-> Site : https://mvanhoorde.github.io/Site-Web-Portfolio/ · Repo : MVanHoorde/Site-Web-Portfolio
+> Dernière réécriture : **27/08/2026** (dernière passe : **l'audit 3 de T3-C1,
+> lots A à F**). Le chapitre est passé du chantier de forme au **fond**. Trois
+> énoncés étaient faux et ne le sont plus, dont un qui comptait : **l'amplitude
+> valait, dans la page, l'écart entier entre les extrema — elle en vaut la
+> moitié**. Quatre passages disaient la même erreur et ont bougé ensemble ; un
+> troisième encart formule pose `A = (U_max − U_min)/2`.
+>
+> Le vrai sujet était ailleurs. La **partie 4 portait 764 mots, 9 figures, la
+> moitié de la checklist du DS — et aucun exercice.** Quatre exercices ont été
+> écrits, calqués sur ce que le DS4 demande réellement : l'écho de la falaise
+> (aller-retour), l'audibilité d'un clic de dauphin à 125 kHz, la comparaison de
+> trois signaux **sans le moindre calcul**, et la lecture de l'échelle en
+> décibels — ce dernier règle la compétence `ds8`, sans exercice depuis le 25/08.
+> Les corrections 4, 5 et 6, qui faisaient 24, 30 et 40 mots, sont rédigées.
+> **Le chapitre porte désormais 10 exercices et 18 figures.**
+>
+> **L'Image 3 est refondue et pilotable** : un seul repère au lieu de deux
+> panneaux séparés, les deux signaux superposés, l'axe des ordonnées enfin sur le
+> zéro — et un curseur qui fait varier la fréquence de 1 à 8 Hz, tracé, étiquette
+> et réglette redessinés ensemble. La **frise des fréquences** (Image 9) est
+> refaite en SVG maison : il ne reste plus un seul `-source` dans la partie 4.
+> Les figures du bloc Méthode **s'agrandissent au clic**, mécanisme posé dans la
+> feuille commune. Neuf images ont été produites dans la session — l'archive que
+> le brief annonçait n'existait pas, mais toutes les sources brutes étaient là.
+>
+> 🔴 **`chapitre-commun.css` passe en `?v=7` — dans 17 fichiers, pas 14.** Le
+> brief et `CLAUDE.md` parlent des « 14 pages PC » ; le dépôt compte trois
+> fichiers de plus qui chargent cette feuille : `_modeles/gabarit-chapitre.html`
+> et les **deux pages d'enseignement scientifique de Terminale**. La consigne est
+> à corriger.
+>
+> ⏳ **Tout le contenu neuf est une proposition non validée** : les quatre
+> exercices, les trois corrections rédigées, l'accroche du chapitre (une
+> « partie 0 » posée devant l'ouverture, qui n'a pas bougé), la partie 2 étoffée,
+> les définitions du sismogramme et de l'électrocardiogramme. **La fiche élève
+> n'a pas démarré** : elle est le lot G, verrouillé par le jalon 5 — « ce cours me
+> convient », un acte explicite de Loïc, que rien dans cette session ne remplace.
+> Un point attend son manuel : le renvoi `22 p.266` est cité en face de **deux**
+> compétences différentes de la checklist DS.
 
 ---
 

@@ -973,3 +973,38 @@ corrections et données de classe comprises.
 au lot 1 alors que le §0 l'en excluait — le §3.2 lui attribue le TP15 et il est
 du thème 1. Les noms de fichiers suivent la règle du §5 (`ds1-t1c1.pdf`), pas les
 exemples du §4.1 qui la contredisaient.
+
+---
+
+## 27/08/2026 — Audit 3 de T3-C1 : huit arbitrages de Loïc
+
+**Statut : en vigueur.** Tranchés par Loïc en séance, appliqués dans la foulée.
+
+| # | Question | Décision |
+|---|---|---|
+| 1 | Seuil de danger : 80 ou 85 dB(A) ? | **80 dB conservé.** C'est la valeur de la source et celle du DS4 déjà en ligne. 85 dB(A) est le seuil d'action réglementaire, 80 le seuil d'alerte : l'écart est réel, mais aligner le cours obligerait à reprendre un PDF déjà distribué. |
+| 2 | « Le son d'un éclair » | **Corrigé en « tonnerre ».** Formulation, pas physique. L'énoncé dit maintenant « Tu vois un éclair, puis le tonnerre te parvient 9 secondes plus tard ». |
+| 3 | 3,06 km à partir d'un « 9 s » | **Arrondi à 3 km.** Trois chiffres significatifs pour une donnée qui n'en porte qu'un. La correction explique pourquoi, et donne au passage le repère « 3 secondes pour 1 km ». |
+| 4 | Notation de la célérité : `c_son` ou `v` ? | **`c_son` gardé, `v` mentionné.** La notation du programme reste celle du cours ; un aparté prévient que les sujets de devoir écrivent `v`. Le DS4, déjà en ligne en PDF, ne bouge pas. |
+| 5 | L'exercice d'écho : en remplacement du 6 ou en plus ? | **En plus.** L'exercice 6 (la baleine) reste comme marche intermédiaire — un trajet simple — avant l'aller-retour. L'écho devient l'exercice 7. |
+| 6 | L'accroche du chapitre | **Une « partie 0 » ajoutée devant**, le paragraphe d'ouverture conservé tel quel. Trois paragraphes hors numérotation, avec lettrine. |
+| 7 | Le saxophone : repère ou médaillon ? | **Repère « anche » sur le bec**, même traitement que la guitare. L'annotation est dessinée dans le PNG lui-même. |
+| 8 | L'erreur relative, demandée au DS4 | **Rien ajouté au cours** : elle relève du TP5/TP6. Signalée, non écrite. |
+
+**Ce qui reste ouvert.** Le doublon `22 p.266`, cité en face de deux compétences différentes
+de la checklist DS (`ds4` période/fréquence et `ds7` intensité/niveau), n'est **pas tranché** :
+il faut le manuel, qui n'est pas dans le dépôt. Deux compétences n'ont par ailleurs aucun
+exercice de manuel en face : `ds1` (caisse de résonance) et `ds6` (fréquence → hauteur).
+
+---
+
+## 27/08/2026 — `chapitre-commun.css` passe en `?v=7`, dans 17 fichiers et non 14
+
+**Statut : en vigueur.** L'audit 3 ajoute à la feuille commune l'agrandissement d'une figure
+au clic (lot F1) et l'habillage du pilote d'une figure animée (F2).
+
+Le brief et `CLAUDE.md` parlent des « 14 pages PC ». **Le dépôt en compte 17** qui chargent
+cette feuille : les 14 chapitres de physique-chimie, `_modeles/gabarit-chapitre.html`, et les
+**deux pages d'enseignement scientifique de Terminale** (`term-es-t2-c1`, `term-es-t2-c2`).
+Les trois dernières auraient servi l'ancienne feuille depuis le cache. Le `?v=N` doit donc être
+incrémenté dans **17 fichiers**, et la consigne devrait être corrigée en ce sens.

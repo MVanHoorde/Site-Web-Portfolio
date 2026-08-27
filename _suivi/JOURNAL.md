@@ -2403,3 +2403,155 @@ indispensables (graphe de l'exercice 1, graphe de l'exercice 3, extrema et
 amplitude) existent désormais en SVG. La condition n° 2 du verrou de démarrage
 est levée. Restent la condition n° 1 — les lots de l'audit, faits — et la n° 3,
 la seule qui compte encore : **« cours validé », un acte de Loïc.**
+
+---
+
+## 27/08/2026 — Audit 3 de T3-C1, lot 0 : les images, produites ici faute d'archive
+
+Le brief de l'audit 3 annonçait une archive `images-t3c1-audit-3.zip` à extraire à
+la racine, neuf fichiers prêts à poser, « aucune conversion, aucun recadrage ».
+**Cette archive n'existe nulle part** : ni à la racine, ni dans `Downloads`, et le
+dépôt était propre au démarrage. Le dossier `assets/img/pc/2nde-pc-t3-c1/` portait
+encore ses fichiers d'avant — `t3c1-guitare-source.jpg`, `t3c1-saxophone.jpg`, un
+diapason de 4,5 ko et un casque de 9,7 ko.
+
+En revanche, **toutes les sources brutes étaient là**, téléchargées le matin même.
+Le traitement a donc été refait dans la session, à partir d'elles.
+
+**Provenance des fichiers** (à consigner ici, comme demandé) :
+
+| Fichier produit | Source | Licence |
+|---|---|---|
+| `t3c1-portrait-hertz.jpg` | `Heinrich_Rudolf_Hertz_2.jpg` | Wikimedia Commons — domaine public |
+| `t3c1-portrait-bell.jpg` | `Alexander_Graham_Bell.jpg` | Wikimedia Commons — domaine public |
+| `t3c1-diapason.jpg` | `pexels-thirdman-6194035.jpg` | Pexels — licence libre, sans attribution |
+| `t3c1-casque-anti-bruit.jpg` | `pexels-vintage-stories-5697799.jpg` | Pexels — licence libre, sans attribution |
+| `t3c1-guitare.svg` | `openclipart-vectors-guitar-149427.svg` | Pixabay / OpenClipart — licence libre |
+| `t3c1-saxophone.png` | `alles-saxophone-1473373.ai` | Pixabay — licence libre |
+| `t3c1-icone-orage.svg` | `openicons-thunderstorm-98541.svg` | Pixabay / OpenIcons — licence libre |
+| `t3c1-icone-baleine.svg` | `openclipart-vectors-animal-159277.svg` | Pixabay / OpenClipart — licence libre |
+| figure du La | dessin de session + croche fournie par Loïc | maison |
+
+**Ce qui a été fait.** Hertz arrivait déjà au format de l'encart (340×364) : simple
+recompression. Bell est passé de 480×624 à 400×520. Le diapason était un portrait
+4311×6466 : recadré en paysage 3:2 serré sur l'instrument, **boule du manche
+comprise** — un premier cadrage la coupait, il a fallu réélargir. Le casque, 6000×4000,
+est resserré sur le buste.
+
+Le saxophone était un PDF Illustrator à dégradés. Converti en vectoriel il aurait
+pesé plus d'un mégaoctet ; il a donc été rendu à 4× par PyMuPDF, détouré sur son
+fond blanc, recadré sur le contenu opaque, ramené à 600×1000 et quantifié à
+128 couleurs — **49 ko, fond transparent**. La conversion vectorielle n'est pas à
+retenter.
+
+La guitare porte désormais son annotation : `viewBox` étendu de `0 0 991.59 1057.4`
+à `0 0 991.59 1210` pour loger, sous l'instrument, un repère « caisse de résonance »
+relié au corps par un trait en `--h-gamma`. Le groupe est isolé sous
+`id="annot-caisse"` : il se déplace ou se retire d'un bloc. Le texte est en
+`'IBM Plex Mono'` avec repli monospace — **chargé par `<img>`, un SVG n'accède pas
+aux polices auto-hébergées de la page** : le repli système s'appliquera. Inliner le
+SVG dans la page reste possible si la police du site est indispensable, au prix de
+38 ko de HTML.
+
+**La clé de sol, tracée à la plume.** Le dessin est construit
+paramétriquement : une goutte inclinée qui se resserre, puis une volute enroulée
+sur la ligne de sol. Les proportions ont été calées sur un glyphe de référence,
+mesuré puis écarté — **baseline sur la ligne du bas de la portée, interligne
+= 267 unités em**, ce qui donne une clé de 6,5 interlignes de haut. Le contour
+d'une police n'est pas redistribuable ; seules ses proportions ont servi.
+
+Le premier jet, un trait d'épaisseur constante, ne ressemblait pas à une clé de
+sol. Ce qui manquait était la **plume** : le contour est désormais l'enveloppe
+d'un segment de plume à angle fixe (25°) translaté le long de la courbe — épais
+quand la courbe est perpendiculaire à la plume, fin quand elle lui est parallèle.
+La largeur suit en plus un profil le long du parcours : la plume attaque en
+s'élargissant sur la queue, s'affine au sommet de la boucle, et **décroît de deux
+tiers dans la volute**, sans quoi les spires se rejoignent et le centre se bouche.
+
+Le calage musical est juste : le **La₃ tombe bien dans le deuxième interligne en
+partant du bas**, la position exacte en clé de sol. Loïc a retenu cette variante
+— portée complète — parmi trois. Les deux autres, employant la croche qu'il a
+fournie, restent dans `_apercus-audit3-t3c1/` : la figure entière sans portée, et
+la portée avec la croche en repère.
+
+Après `svgo` à une décimale : **4,8 ko**, lisible à 380 px de large.
+
+**Ce qui est déposé.** Sept fichiers neufs dans `assets/img/pc/2nde-pc-t3-c1/`. Les
+deux substitutions qui écrasent un fichier référencé — diapason et casque —
+attendent le lot C, où la règle CSS de hauteur fixe qui coupait le diapason sera
+traitée dans le même geste : écraser sans elle laisserait la page dans un état
+intermédiaire incohérent.
+
+Contrôle : `verifier.mjs` **18**.
+
+---
+
+## 27/08/2026 (suite) — Audit 3 de T3-C1 : les lots A à F, d'un trait
+
+Loïc a levé l'arrêt entre chaque lot — « tu peux tout lancer » — après avoir
+tranché les huit arbitrages en attente. Le lot G, la fiche élève, n'a **pas**
+démarré : « tout lancer » n'est pas le jalon 5, qui est un acte explicite.
+
+**Ce qui était faux, et qui ne l'est plus.** L'amplitude valait, dans la page,
+l'écart entier entre les extrema. Elle en vaut la moitié. Les quatre passages
+concernés ont bougé ensemble et un encart formule pose désormais
+`A = (U_max − U_min)/2`. À la vérification, l'énoncé de l'exercice 3 ne demandait
+pas l'amplitude : il n'y avait donc pas de « 4 V » erroné à reprendre, mais un
+exercice à compléter — c'est le seul du chapitre où l'amplitude se lit sur un
+graphe. Sa correction dit maintenant le piège plutôt que le résultat.
+
+La définition du niveau d'intensité sonore parlait du lien entre `L` et
+l'amplitude ; c'est le lien entre `L` et l'intensité `I` qui est en jeu, et c'est
+d'ailleurs de `I` que parle le paragraphe juste au-dessus.
+
+**Le vrai sujet de l'audit était ailleurs : la partie 4.** 764 mots, 9 figures, la
+moitié de la checklist du DS — et aucun exercice. Quatre exercices ont été écrits,
+calqués sur ce que le DS4 demande réellement : l'écho de la falaise, l'audibilité
+d'un clic de dauphin à 125 kHz, la comparaison de trois signaux sans le moindre
+calcul, et la lecture de l'échelle en décibels. Le troisième s'appuie sur une
+figure produite pour lui — trois signaux sur la même fenêtre de temps, sans
+aucune graduation chiffrée, pour que la comparaison se fasse à l'œil et pas à la
+règle.
+
+**Deux points du brief ne correspondaient plus à la page.** Le diapason n'était
+pas coupé : l'Image 13 est un SVG maison depuis l'audit 2 et la photo n'était pas
+employée — d'où la décision de poser la photo ailleurs, en regard de la partition
+du La (Image 14). Et dans la correction de l'exercice 1, `t_i` et `t_f` étaient
+déjà sur des maximums, à 0,30 et 8,20 ms : le défaut réel était que les pointillés
+s'arrêtaient au sommet du pic. Ils descendent maintenant jusqu'à l'axe des temps,
+et chaque maximum porte un point cerclé.
+
+**L'Image 3, refondue.** Elle portait deux panneaux séparés, chacun avec son
+repère : la comparaison ne pouvait pas se faire. Un seul repère désormais, les
+deux signaux superposés, l'axe des ordonnées passant enfin par le zéro de l'axe
+des temps — il était tracé une graduation avant. Deux réglettes sous la courbe
+montrent que trois motifs du signal à 3 Hz tiennent dans un motif du signal à
+1 Hz. Et la figure est **pilotable** : un curseur fait varier la fréquence du
+signal violet de 1 à 8 Hz, le tracé, l'étiquette et la réglette se redessinent
+ensemble. Un bouton d'animation balaie la plage — il ne s'affiche pas si l'élève
+a désactivé les animations.
+
+**Ce qui a changé dans la feuille commune.** L'agrandissement d'une figure au clic
+(F1) : voile sombre, fermeture au clic extérieur et à Échap, focus rendu à
+l'élément d'origine, figure navigable au clavier. Une erreur à noter, trouvée à la
+mesure et pas à la lecture : le cadre était en `max-width` et se dimensionnait au
+contenu, pendant que le SVG se dimensionnait au cadre — la figure « agrandie »
+faisait 300 px. Une largeur explicite règle la boucle.
+
+**Le `?v=7` touche 17 fichiers, pas 14.** Le brief et `CLAUDE.md` parlent des
+« 14 pages PC ». Le dépôt en compte trois de plus qui chargent
+`chapitre-commun.css` : le gabarit de chapitre et les **deux pages
+d'enseignement scientifique de Terminale**. Elles auraient servi l'ancienne
+feuille depuis le cache des élèves. La consigne est à corriger.
+
+**Contrôles.** Chromium sans interface aux trois largeurs 1440 / 768 / 380 px :
+aucun débordement horizontal, aucun élément hors cadre, aucune erreur JavaScript.
+Le verrou S0NORE ouvre toujours la page — empreinte SHA-256 recalculée et
+comparée à celle qu'attend le script. Aucune requête vers un hôte externe au
+chargement. Série des figures continue de 1 à 18, aucun renvoi orphelin après
+l'insertion de l'Image 14. `verifier.mjs` → **18**.
+
+**Ce qui reste à Loïc.** Tout le contenu neuf — quatre exercices, trois
+corrections rédigées, l'accroche, la partie 2 étoffée, les définitions du
+sismogramme et de l'électrocardiogramme — est une **proposition**. Et le doublon
+`22 p.266` de la checklist DS attend son manuel.

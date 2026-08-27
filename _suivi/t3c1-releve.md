@@ -149,3 +149,78 @@ hôte externe au chargement**.
 
 **Non traité, et c'est délibéré** : la pauvreté de fond de la partie 3, qui relève
 d'une session d'écriture ; les animations interactives, versées dans `IDEES.md`.
+
+---
+
+## 7. Audit 3 — 27/08/2026 (le fond, et le déséquilibre des exercices)
+
+Relecture de Loïc section par section, complétée par une confrontation de la page
+au sujet du **DS4** et à la checklist « Pour le DS ». Les lots A à F ont été
+appliqués en entier ; le lot G — la fiche élève — n'a pas démarré, il reste
+verrouillé par le jalon 5.
+
+### Ce qui était faux
+
+**🔴 L'amplitude.** La page écrivait « l'écart entre ces extrema donne
+l'amplitude ». C'est la **moitié** de cet écart. Quatre passages disaient la même
+chose fausse et ont bougé ensemble : le texte de I-C, la légende de l'Image 15
+(ex-14), le rappel de IV-C, et la correction de l'exercice 3. Un **encart formule**
+pose désormais `A = (U_max − U_min)/2`, en vraie fraction comme les deux autres
+formules du chapitre.
+
+Un point mérite d'être noté : l'énoncé de l'exercice 3 ne **demandait pas**
+l'amplitude, il n'y avait donc pas de « 4 V » erroné à corriger. La question a été
+ajoutée, précisément parce que c'est le seul exercice où l'amplitude se lit — et
+sa correction insiste sur le piège : la courbe monte bien de 0 à 4 V, mais
+l'amplitude vaut 2 V.
+
+**Le niveau d'intensité sonore.** La définition disait que `L` « n'est pas
+proportionnel à l'**amplitude** ». Ce qui est en jeu est le lien entre `L` et
+l'**intensité** `I` — dont parle le paragraphe juste au-dessus. Réécrit, avec le
+repère « ×10 sur l'intensité → +10 dB », citable en seconde bien que le logarithme
+soit hors programme.
+
+### Le déséquilibre des exercices, mesuré puis corrigé
+
+La partie 4 portait **764 mots, 9 figures, 4 des 8 compétences du DS — et zéro
+exercice**. La confrontation au DS4 montrait trois raisonnements que le chapitre
+ne faisait jamais travailler.
+
+Quatre exercices ont été écrits : l'**écho de la falaise** (aller-retour Δt = 2d/v,
+partie 3), l'**audibilité d'un clic de dauphin** (125 kHz, pont avec le TP6), la
+**comparaison qualitative de trois signaux** sans mesure ni calcul, et la **lecture
+de l'échelle en dB** — ce dernier règle la remarque P2, en souffrance depuis le
+25/08 : la compétence `ds8` n'avait aucun exercice.
+
+Les corrections 4, 5 et 6 faisaient 24, 30 et 40 mots contre 173 pour la première.
+Elles sont rédigées : le critère mécanique / électromagnétique et pourquoi le
+Soleil rayonne à travers le vide ; pourquoi on néglige le trajet de la lumière de
+l'éclair et le repère « 3 secondes pour 1 km » ; la conversion des kilomètres et
+la comparaison avec l'air.
+
+**Tous ces textes sont des propositions à valider.**
+
+### Ce qui n'était pas cassé
+
+Deux points du brief ne correspondaient plus à l'état de la page. **Le diapason
+n'était pas coupé** (C4) : l'Image 13 est un SVG maison depuis l'audit 2, la photo
+n'était pas utilisée. Et dans la correction de l'exercice 1 (C3), **t_i et t_f
+étaient déjà calés sur des maximums** — à 0,30 et 8,20 ms, deux pics. Le vrai
+défaut était que les pointillés rouges s'arrêtaient au sommet du pic : ils
+descendent maintenant jusqu'à l'axe des temps, et chaque maximum porte un point
+cerclé.
+
+### Ce qui reste à trancher
+
+Le doublon **`22 p.266`**, cité en face de deux compétences différentes (`ds4` et
+`ds7`) : il faut le manuel. Et deux compétences n'ont aucun exercice de manuel en
+face — `ds1` (caisse de résonance) et `ds6` (fréquence → hauteur).
+
+### Vérifié, mesuré
+
+Chromium sans interface, aux trois largeurs **1440 / 768 / 380 px** : aucun
+débordement horizontal, aucun élément hors cadre, aucune erreur JavaScript. Le
+verrou **S0NORE** ouvre toujours la page (empreinte SHA-256 recalculée et
+comparée). **Aucune requête vers un hôte externe au chargement.** La série des
+figures est continue de 1 à 18, sans renvoi orphelin après l'insertion de
+l'Image 14. `node verifier.mjs` → **18**.
