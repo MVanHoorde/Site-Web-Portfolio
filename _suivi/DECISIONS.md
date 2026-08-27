@@ -49,6 +49,32 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## La page d'accueil passe en deux colonnes — 27/08/2026
+
+Onze maquettes jetables produites et comparées côte à côte : dix organisations
+possibles, puis six fonds de page appliqués à celle qui a été retenue. L'accueil
+était la seule page à n'avoir pas suivi le reste — quatre blocs centrés de même
+largeur, dont le plus imposant (la planche du jour, 450 px) est vide tant que
+`gravures/` n'est pas rempli, pendant que le hub PC recevait ses panneaux
+illustrés.
+
+| # | Décision | Statut |
+|---|---|---|
+| ACC-1 | **Maquette 03, « deux colonnes asymétriques »** (2,05fr / 1fr, gouttière 3,4 rem). La colonne large porte ce qui **est** une classe, la colonne étroite collante ce qui n'en est pas — gravure, fiches-outils, animations, Mission Spectra | ✅ |
+| ACC-2 | **Le fond de page ne change pas.** Cinq partis pris ont été maquettés sur la structure retenue — encre inversée, deux papiers, spectre étiré, strates, blanc de laboratoire — et comparés au quadrillage de 32 px actuel, qui est conservé | ✅ |
+| ACC-3 | **Une seule porte CFA**, étiquetée `CFA MATHS`, les deux diplômes nommés dans le résumé (« BTS MMCM et Bac pro MVTR »). Remplace le doublon de la table des matières, qui n'était documenté que par un commentaire dans `index.html`. **Sans effet sur la base** : les deux codes de classe `CFA26A` et `MVT26A` du 19/08 restent distincts | ✅ |
+| ACC-4 | **Les trois classes deviennent des portes illustrées**, grammaire `.porte` dérivée de `.chap-panneau` du hub PC (bande de 230 px, voile, niveau en blanc) en version lien simple. Nom distinct : `.chapitre` et `.chap-panneau` ne sont pas réemployés | ✅ |
+| ACC-5 | **L'accroche du chapeau devient neutre** — « Cours, travaux pratiques et corrigés, ouverts à toute heure. » Mission Spectra est désormais visible dans son encadré carmin : l'annoncer aussi dans le chapeau faisait redite | ✅ |
+| ACC-6 | **Le lien « Voir la collection » est retiré** tant que `gravures/` est vide. Il bouclait sur lui-même. Aucune page `gravures.html` n'est créée : le sourcing (8 → 15-20 planches) n'est pas fait | ✅ |
+| ACC-7 | **Le compte à rebours bascule.** Avant le 1er septembre : « N jours avant la rentrée », au singulier la veille. Après : « En chantier · ouverture en cours d'année ». Un `Math.max(0, …)` aurait affiché « 0 jours » indéfiniment. **La formule d'après-rentrée est une proposition à valider** | ✅ |
+| ACC-8 | **Les trois niveaux dont les chapitres sont à venir** (1ʳᵉ ES, Tˡᵉ ES, Tˡᵉ spé) portent `.a-venir` **sur leur étiquette**, pas sur leur lien : les hubs sont ouverts et cliquables, ce sont leurs chapitres qui manquent | ✅ |
+| ACC-9 | **Onglet « Auteur & vidéo » ouvert** : bande pleine largeur en pied de page pour l'activité d'auto-entreprise, trois entrées en cadre pointillé, toutes « en chantier ». Sans `🚧` : c'est une bande entière en attente, pas un lien manquant dans une liste | ✅ |
+| ACC-10 | **Le bloc `<dl>` « Courriel / Établissement / ENT » disparaît** au profit d'une rubrique « Écrire » en colonne large — 38 caractères en monospace ne tiennent pas dans la colonne étroite. **Conséquence : l'espace classe ENT n'est plus annoncé sur l'accueil** ; sa case de suivi est requalifiée | ✅ |
+| ACC-11 | **`style.css` n'est pas touché** (`git diff --stat` : `index.html` seul). Il sert de reliure à quatre autres hubs. Tout le CSS de l'accueil reste inline. Piège associé : `body` y porte `background-size: 32px 32px`, donc toute future règle qui poserait un `background-image` sur `body` sans réinitialiser `background-size` verrait sa trame repliée sur un carreau de 32 px, sans erreur visible | ✅ |
+| ACC-12 | **Deux réglages ajoutés hors maquette** : sous 900 px la planche est bornée à 420 px (elle s'étirait sur toute la mesure, gravure perdue au milieu d'un cadre de 800 px) ; la planche garde `object-fit: contain` sur fond blanc, comme avant la refonte — une planche gravée est une figure, on ne la rogne pas | ✅ |
+
+---
+
 ## Les cartes du hub 2nde PC se replient — 26/08/2026
 
 Maquette `panneau-ouverture-continue.html` retenue par Loïc : le panneau qui

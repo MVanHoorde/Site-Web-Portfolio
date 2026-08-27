@@ -5,8 +5,13 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **27/08/2026** (dernière passe : **l'audit 3 de T3-C1,
-> lots A à F**). Le chapitre est passé du chantier de forme au **fond**. Trois
+> Dernière réécriture : **27/08/2026** (dernière passe : **la refonte de la page
+> d'accueil** — onze maquettes comparées, la 03 « deux colonnes asymétriques »
+> retenue, fond de page inchangé ; voir la ligne « Coque » du tableau et
+> ACC-1 à ACC-12 dans `DECISIONS.md`).
+>
+> Passe précédente : **l'audit 3 de T3-C1, lots A à F**. Le chapitre est passé du
+> chantier de forme au **fond**. Trois
 > énoncés étaient faux et ne le sont plus, dont un qui comptait : **l'amplitude
 > valait, dans la page, l'écart entier entre les extrema — elle en vaut la
 > moitié**. Quatre passages disaient la même erreur et ont bougé ensemble ; un
@@ -68,6 +73,7 @@
 | **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
 | **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 (une seule colonne, un seul bord d'attaque), puis **audit de contenu des dix-sept outils le même jour** : accroche recentrée sur l'atelier, « effort » → « force » partout, `ε` pour l'écart et `θ` pour les angles de rotation, paliers 1 dégonflés de leur guidage, sous-questions concaténées, vecteurs fléchés et racines couvrantes. Deux figures produites (bras de levage de l'Outil 5, composantes de l'Outil 14), une dizaine corrigées. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé : **l'Outil 0 est le premier attendu en relecture**. Depuis le 19/08 le livret est **branché sur le dispositif de comptes** : connecté, le travail va en base et suit l'apprenti d'un appareil à l'autre ; sans compte, tout reste sur l'appareil comme avant, et la page le dit. Les deux codes de classe (`CFA26A`, `MVT26A`) sont ouverts : `bdd/schema/012-classes-cfa.sql` a été exécuté le 20/08. |
 | **Cahier de vacances** | 14 pages, 2 blocs 🚧. La partie la plus finie du dépôt. |
+| **Coque — page d'accueil** 🆕 | 🔄 **Refondue le 27/08** après comparaison de onze maquettes (dix organisations, puis six fonds). Deux colonnes asymétriques : à gauche les trois classes en portes illustrées — PC, SNT, CFA en **une seule porte** pour les deux diplômes — les trois autres niveaux en lignes sobres marquées `.a-venir`, puis l'adresse professionnelle réelle ; à droite une colonne collante (gravure du jour, 4 fiches-outils, Animations 🚧, Mission Spectra). Nouvelle bande « Auteur & vidéo » en pied, **vide, trois entrées en chantier**. Le compte à rebours bascule sur l'état du projet passé le 1er septembre. `style.css` **non modifié** ; tout le CSS reste inline. Décisions ACC-1 à ACC-12. ⏳ **Deux formulations à valider** : la bascule d'après-rentrée (« En chantier · ouverture en cours d'année ») et le libellé des trois entrées « Auteur & vidéo ». La planche du jour reste un **cadre annoté** tant que `gravures/` est vide. |
 | **ES Terminale** | frise fonctionnelle en local ; `serveur-frise/` et `ia-correction/` en chantier. |
 
 **Validation** : un seul contenu est validé à ce jour — **`t1` « Internet », sur
@@ -337,11 +343,18 @@ vide annoté à la place de la planche.
 - [ ] `07-champ-faraday.jpg` — Faraday, lignes de champ, 1852
 - [ ] `08-spectre-fraunhofer.jpg` — Fraunhofer, spectre solaire, 1814
 
-**Accueil**
+**Accueil** — refondu le 27/08 : deux colonnes, trois portes illustrées, atelier
+collant à droite, bande « Auteur & vidéo » en pied. Détail dans `DECISIONS.md`
+(ACC-1 à ACC-12).
 
-- [ ] Remplacer `prenom.nom@exemple.fr` par la vraie adresse
-- [ ] Mettre le vrai lien de l'espace classe ENT (actuellement `href="#"`)
-- [ ] (plus tard) Page « collection de gravures »
+- [x] Vraie adresse en place : `l.vanhoorde@enseignant.isaac-etoile.fr`
+- [ ] **Espace classe ENT — où l'annoncer ?** Le bloc « Courriel / Établissement /
+      ENT » a disparu avec la refonte, et son lien mort avec lui. Rien ne le
+      remplace pour l'instant
+- [ ] **Bande « Auteur & vidéo »** : trois entrées en chantier (Auteur, Vidéo,
+      Prestations). Elle attend du contenu, pas du code
+- [ ] (plus tard) Page « collection de gravures ». Le lien « Voir la collection »
+      est retiré de l'accueil tant que `gravures/` est vide
 
 **Base de données — réflexes permanents** (pas des cases à cocher)
 

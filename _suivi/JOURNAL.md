@@ -12,6 +12,57 @@
 
 ---
 
+## 27/08/2026 — L'accueil quitte la page de titre pour deux colonnes
+
+L'accueil empilait quatre blocs centrés de même largeur et de même rythme — titre,
+gravure du jour, table des matières, Mission Spectra — sans hiérarchie entre eux.
+Le plus imposant, la planche du jour (450 px de haut), est **vide** : `gravures/`
+ne contient que son `A-LIRE.txt`. Pendant ce temps le hub PC recevait ses panneaux
+illustrés. L'accueil était devenu la page la moins illustrée du site.
+
+**Onze maquettes, comparées côte à côte.** Dix organisations : la porte d'entrée
+(01), le sommaire du cahier (02), deux colonnes asymétriques (03), par public
+plutôt que par niveau (04), le tableau de bord « reprendre où j'en étais » (05),
+la planche en fond (06), trois portes (07), l'index filtrable (08), le mur de
+quinze images (09), le cahier de bord daté (10). **La 03 est retenue** : elle
+casse l'empilement vertical sans rien promettre qui n'existe pas — le tableau de
+bord (05) et le cahier daté (10) supposent un entretien hebdomadaire, le mur
+d'images (09) ne montre qu'une matière sur trois.
+
+Puis cinq fonds appliqués à la maquette retenue — encre inversée, deux papiers,
+spectre étiré, strates, blanc de laboratoire — face au fond actuel servant de
+témoin. **Le quadrillage de 32 px est conservé.**
+
+**Le piège du fond, pour la fois où la question reviendra.** `style.css` pose
+`background-size: 32px 32px` sur `body`. Une nouvelle règle qui poserait un
+`background-image` sur `body` sans réinitialiser `background-size` verrait sa
+trame repliée sur un carreau de 32 px — sans erreur, sans rien dans la console,
+juste un fond qui ne ressemble pas à ce qu'on a écrit.
+
+**Ce que la page dit maintenant.** Colonne large : les trois classes réellement
+suivies, en portes illustrées (photo, niveau en blanc sur voile, matière en
+monospace), puis les trois autres niveaux en lignes sobres, puis l'adresse
+professionnelle — la vraie, `l.vanhoorde@enseignant.isaac-etoile.fr`, à la place
+du gabarit `prenom.nom@exemple.fr`. Colonne étroite, collante : la gravure du
+jour, les quatre fiches-outils, une entrée « Animations » en attente, et Mission
+Spectra dans son encadré carmin. En pied de page, une bande neuve « Auteur &
+vidéo » pour l'activité d'auto-entreprise, entièrement en chantier.
+
+**Vérifié au navigateur**, pas seulement dans le CSS : zéro débordement
+horizontal à 1360, 900 et 380 px (le 380 mesuré dans une iframe, le Chromium nu
+mettant en page à ~500 px minimum) ; les quatre ancres de navigation existent ;
+les trois photos de porte se résolvent depuis la racine ; le repli de la planche
+s'affiche bien en cadre annoté, l'image restant masquée ; huit tabulations
+donnent un contour carmin de 2 px sur chaque lien et chaque porte. Le compte à
+rebours a été rejoué horloge truquée : « 1 jour » le 31 août, bascule sur l'état
+du projet le 1er septembre et après. `verifier.mjs` : **18 problèmes avant, 18
+après**, et le compteur de liens inertes reste à 2.
+
+`style.css` n'a pas bougé — il relie quatre autres hubs, et `git diff --stat` ne
+montre qu'`index.html`.
+
+---
+
 ## 26/08/2026 — Le hub de seconde se replie : quinze panneaux, zéro JavaScript
 
 Quinze cartes ouvertes en permanence faisaient une page de trois écrans et demi,
@@ -816,8 +867,8 @@ production, un fichier par gabarit : `_modeles/CONSIGNES-chapitre-PC.md` et
 ## 🎨 Identité graphique (décision du 16/07)
 
 **Reliure « papier d'étude »** (variante B validée sur maquettes) appliquée à la
-**coque du site uniquement** : accueil refondu (page de titre, gravure du jour en
-rotation quotidienne, table des matières des classes, Mission Spectra), pages de
+**coque du site uniquement** : accueil (refondu depuis, voir l'entrée du
+27/08/2026 : deux colonnes, portes illustrées, atelier collant), pages de
 niveau via `style.css`, et fond/nav/pied des pages de chapitre via un bloc
 `reliure-papier-etude` injecté (aussi dans `gabarit-chapitre.html`).
 **L'intérieur des cours est intact** : encarts Hα/Hβ/Hγ, panneau de formule
@@ -848,10 +899,13 @@ un cadre vide annoté à la place de la planche.
 
 **Autres retouches d'accueil en attente**
 
-- [ ] Remplacer le courriel placeholder `prenom.nom@exemple.fr` par la vraie adresse
-- [ ] Mettre le vrai lien de l'espace classe ENT (actuellement `href="#"`)
-- [ ] (plus tard) Créer la page « collection de gravures » ; le lien
-      « Parcourir la collection » de l'accueil boucle pour l'instant sur `#gravures`
+- [x] Remplacer le courriel placeholder `prenom.nom@exemple.fr` par la vraie
+      adresse — fait le 27/08 : `l.vanhoorde@enseignant.isaac-etoile.fr`
+- [ ] Décider où annoncer l'espace classe ENT : le bloc « Courriel /
+      Établissement / ENT » a disparu de l'accueil le 27/08, son lien mort avec lui
+- [ ] (plus tard) Créer la page « collection de gravures ». Le lien
+      « Voir la collection » a été retiré de l'accueil le 27/08 : il bouclait sur
+      lui-même
 
 **Base de données — vigilance permanente** (pas une case à cocher, un réflexe)
 

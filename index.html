@@ -9,8 +9,11 @@
 <link rel="stylesheet" href="style.css">
 <style>
   /* ============================================================
-     PAGE D'ACCUEIL — « page de titre » du site (reliure
-     papier d'étude, variante B). Le reste vit dans style.css.
+     PAGE D'ACCUEIL — deux colonnes asymétriques.
+     La colonne large porte ce qui EST une classe, la colonne
+     étroite ce qui n'en est pas (l'atelier). Tout le style propre
+     à l'accueil vit ici : style.css sert de reliure à quatre
+     autres hubs, on n'y touche pas.
      ============================================================ */
 
   html { scroll-behavior: smooth; }
@@ -19,208 +22,142 @@
     * { animation: none !important; transition: none !important; }
   }
 
-  /* NAVIGATION — variante avec menu complet */
-  .nav-inner { max-width: 1200px; }
-  nav ul {
-    display: flex;
-    gap: 2rem;
-    list-style: none;
-    font-size: 1rem;
-  }
-  nav a {
-    color: var(--encre);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    padding-bottom: 2px;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  nav a:hover, nav a:focus-visible { color: var(--h-alpha); }
-  nav a.actif { border-color: var(--h-alpha); }
-  nav a:focus-visible { outline: 2px solid var(--h-alpha); outline-offset: 3px; }
+  /* NAVIGATION — la reliure cadre .nav-inner sur 880 px, mesure des
+     pages de texte ; l'accueil travaille sur 1200 px comme les hubs
+     illustrés, sinon le menu se décrocherait de la grille. */
+  .nav-inner{max-width:1200px}
+  nav ul{display:flex;gap:1.6rem;list-style:none;font-size:1rem;margin:0;padding:0}
+  nav a{color:var(--encre);text-decoration:none;border-bottom:1px solid transparent;
+    padding-bottom:2px;transition:border-color .2s,color .2s}
+  nav a:hover,nav a:focus-visible{color:var(--h-alpha)}
+  nav a.actif{border-color:var(--h-alpha)}
+  nav a:focus-visible{outline:2px solid var(--h-alpha);outline-offset:3px}
 
-  .surtitre {
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.26em;
-    text-transform: uppercase;
-    font-size: 0.78rem;
-    color: var(--h-alpha);
-  }
+  .surtitre{font-family:'IBM Plex Mono',monospace;letter-spacing:.26em;
+    text-transform:uppercase;font-size:.78rem;color:var(--h-alpha)}
+  .zone{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+  footer .footer-inner{max-width:1200px;text-align:center}
 
-  /* HÉROS — page de titre */
-  header.hero {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 4rem 1.5rem 0;
-    text-align: center;
-  }
-  .filet-court {
-    width: 56px; height: 1px;
-    background: var(--encre);
-    margin: 20px auto;
-  }
-  .hero h1 {
-    font-weight: 500;
-    font-size: clamp(2.3rem, 5.5vw, 3.3rem);
-    line-height: 1.14;
-    margin: 0;
-  }
-  .hero h1 em { font-style: italic; }
-  .hero p.intro {
-    font-style: italic;
-    font-size: 1.2rem;
-    max-width: 560px;
-    margin: 24px auto 0;
-    color: var(--encre-douce);
-  }
-  .hero p.intro strong { color: var(--h-alpha); font-weight: 500; }
+  /* ---- La grille : 2,05fr pour les classes, 1fr pour l'atelier ---- */
+  .deux-col{display:grid;grid-template-columns:minmax(0,2.05fr) minmax(0,1fr);
+    gap:3.4rem;padding-top:3rem;padding-bottom:3.5rem;align-items:start}
+  .col-large h1{font-weight:500;font-size:clamp(2rem,4vw,2.7rem);line-height:1.14;margin:.55rem 0 0}
+  .col-large h1 em{font-style:italic}
+  .intro{font-style:italic;color:var(--encre-douce);margin-top:.9rem;max-width:46ch}
+  .rubrique{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--sepia);margin:2.6rem 0 .9rem;
+    padding-bottom:.4rem;border-bottom:1px solid var(--filet)}
 
-  /* GRAVURE DU JOUR */
-  .gravure-du-jour {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 4rem 1.5rem 0;
-    text-align: center;
-  }
-  .gravure-du-jour .date {
-    font-size: 0.9rem;
-    color: var(--sepia);
-    margin-top: 6px;
-    font-style: italic;
-  }
-  .planche {
-    margin: 24px auto 0;
-    max-width: 640px;
-    border: 1px solid var(--filet-fonce);
-    padding: 14px;
-    background: var(--papier-clair);
-  }
-  .planche img {
-    display: block;
-    width: 100%;
-    height: 330px;
-    object-fit: contain;
-    border: 1px solid #ddd2b8;
-    background: #fff;
-    filter: sepia(.25);   /* homogénéise les scans */
-  }
-  /* Repli tant que la planche du jour n'est pas déposée dans gravures/ */
-  .planche .manque {
-    display: none;
-    height: 330px;
-    border: 1px dashed var(--pointille);
-    background: #fff;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  .planche .manque span {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--sepia);
-    max-width: 40ch;
-  }
-  .legende-titre { font-size: 1.15rem; margin-top: 14px; }
-  .legende { font-size: 0.92rem; color: var(--sepia); font-style: italic; margin-top: 4px; }
-  .lien-carmin {
-    display: inline-block;
-    margin-top: 14px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--h-alpha);
-    text-decoration: none;
-    border-bottom: 1px solid var(--h-alpha);
-    padding-bottom: 2px;
-  }
+  /* ---- Les portes de classe. Grammaire reprise de .chap-panneau du
+         hub PC (bande de 230 px, chiffre blanc sur voile), en version
+         lien simple : ici il n'y a rien à déplier. Nom distinct pour
+         que les deux jeux de règles n'entrent jamais en collision. ---- */
+  .portes{display:grid;gap:.75rem}
+  .porte{display:grid;grid-template-columns:230px 1fr;gap:1.3rem;align-items:center;
+    background:var(--papier-clair);border:1px solid var(--filet-fonce);
+    text-decoration:none;color:var(--encre);transition:border-color .18s}
+  .porte:hover,.porte:focus-visible{border-color:var(--h-alpha)}
+  .porte:focus-visible{outline:2px solid var(--h-alpha);outline-offset:-3px}
+  .porte-vis{position:relative;height:104px;overflow:hidden;
+    background-image:var(--img);background-size:cover;
+    background-position:var(--focus,50% 50%);background-color:var(--encre)}
+  /* Le voile assure le contraste du niveau en blanc : c'est lui qui le
+     rend lisible, jamais la photo. Ne pas le retirer. */
+  .porte-voile{position:absolute;inset:0;
+    background:linear-gradient(to top,rgba(12,10,8,.84) 0%,rgba(12,10,8,.3) 44%,transparent 74%)}
+  /* Sans le nowrap, la matière passe à la ligne sous le niveau. */
+  .porte-gros{position:absolute;left:.75rem;bottom:.05rem;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2.1rem;
+    line-height:.85;color:#fff;letter-spacing:-.02em;white-space:nowrap}
+  .porte-gros small{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:.78rem;
+    letter-spacing:.16em;margin-left:.5rem;opacity:.92;vertical-align:.18em}
+  .porte-txt{padding:.85rem 1.4rem .85rem 0;min-width:0}
+  .porte-num{display:block;font-family:'IBM Plex Mono',monospace;font-size:.72rem;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--h-alpha);margin-bottom:.18rem}
+  .porte h3{font-family:'EB Garamond',Garamond,Georgia,serif;font-weight:600;
+    font-size:1.28rem;line-height:1.22;margin:0}
+  .porte p{font-size:.92rem;color:var(--sepia);font-style:italic;margin:.25rem 0 0;max-width:58ch}
 
-  /* TABLE DES MATIÈRES — les 5 classes */
-  .toc {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 4.2rem 1.5rem 0;
-  }
-  .toc .titre {
-    text-align: center;
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.26em;
-    text-transform: uppercase;
-    font-size: 0.78rem;
-    color: var(--h-alpha);
-    margin-bottom: 6px;
-  }
-  .toc .double-filet {
-    height: 3px;
-    border-top: 1px solid var(--encre);
-    border-bottom: 1px solid var(--encre);
-    margin: 14px 0 28px;
-  }
-  .toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
-  .toc .ligne { display: flex; align-items: baseline; gap: 10px; font-size: 1.15rem; }
-  .toc .ligne a { color: var(--encre); text-decoration: none; }
-  .toc .ligne a:hover { color: var(--h-alpha); }
-  .toc .num { color: var(--h-alpha); min-width: 40px; }
-  .toc .points { flex: 1; border-bottom: 1px dotted var(--pointille); transform: translateY(-4px); }
-  .toc .niveau { color: var(--sepia); font-size: 0.92rem; letter-spacing: 0.08em; }
-  .toc .detail { font-size: 0.92rem; color: var(--sepia); font-style: italic; padding-left: 50px; margin-top: 2px; }
+  /* ---- Les niveaux dont le hub est ouvert mais les chapitres à venir ---- */
+  .liste-sobre{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
+  .liste-sobre li{display:flex;align-items:baseline;gap:.7rem;font-size:1.05rem}
+  .liste-sobre a{color:var(--encre);text-decoration:none;border-bottom:1px dotted var(--pointille)}
+  .liste-sobre a:hover{color:var(--h-alpha);border-color:var(--h-alpha)}
+  .liste-sobre a:focus-visible{outline:2px solid var(--h-alpha);outline-offset:3px}
+  .liste-sobre .etiq{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.7rem;
+    letter-spacing:.1em;color:var(--sepia);white-space:nowrap}
 
-  /* MISSION SPECTRA (projet fil rouge) */
-  .spectra { max-width: 1200px; margin: 4rem auto 0; padding: 0 1.5rem; }
-  .spectra .cadre {
-    border: 1px solid var(--h-alpha);
-    padding: 36px 44px;
-    text-align: center;
-    background: var(--papier-clair);
-  }
-  .spectra h2 { font-size: 2rem; font-weight: 500; margin: 12px 0 0; }
-  .spectra p {
-    font-style: italic;
-    font-size: 1.05rem;
-    max-width: 560px;
-    margin: 12px auto 0;
-    color: var(--encre-douce);
-  }
-  .spectra .compteur { margin-top: 18px; font-size: 0.95rem; color: var(--sepia); }
-  .spectra .compteur strong { color: var(--h-alpha); font-weight: 400; }
+  /* ---- Écrire. L'adresse tient en colonne large : 38 caractères en
+         monospace ne rentrent pas dans la colonne de l'atelier. ---- */
+  .adresse{margin-top:.2rem}
+  .adresse a{font-family:'IBM Plex Mono',monospace;font-size:.92rem;color:var(--encre);
+    text-decoration:none;border-bottom:1px solid var(--h-alpha);padding-bottom:2px}
+  .adresse a:hover{color:var(--h-alpha)}
+  .adresse a:focus-visible{outline:2px solid var(--h-alpha);outline-offset:3px}
+  .adresse-note{font-style:italic;color:var(--sepia);font-size:.92rem;margin-top:.7rem;max-width:52ch}
 
-  /* À PROPOS + CONTACT */
-  .a-propos {
-    max-width: 1200px;
-    margin: 4rem auto 0;
-    border-top: 1px solid var(--filet);
-    padding: 36px 1.5rem 40px;
-    display: flex;
-    justify-content: space-between;
-    gap: 40px;
-    flex-wrap: wrap;
-  }
-  .a-propos .bio {
-    max-width: 520px;
-    font-size: 1rem;
-    color: var(--encre-douce);
-    font-style: italic;
-  }
-  .a-propos .bio p { margin-bottom: 0.8rem; }
-  .a-propos dl { font-size: 0.95rem; display: grid; gap: 8px; margin: 0; align-content: start; }
-  .a-propos dt {
-    color: var(--h-alpha);
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-size: 0.72rem;
-  }
-  .a-propos dd { margin: 0 0 4px; }
-  .a-propos dd a { color: var(--encre); text-decoration: none; border-bottom: 1px dotted var(--h-alpha); }
-  .a-propos dd a:hover { color: var(--h-alpha); }
+  /* ---- Colonne de droite : l'atelier, collant au défilement ---- */
+  .collant{position:sticky;top:4.6rem;display:grid;gap:1.9rem}
+  .bloc .surtitre{display:block;margin-bottom:.7rem}
+  .date{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.04em;
+    color:var(--sepia);margin:-.4rem 0 .7rem}
+  .planchette{border:1px solid var(--filet-fonce);background:var(--papier-clair);padding:10px;margin:0}
+  /* contain, pas cover : une planche gravée est une figure, on ne la rogne
+     pas. Le sépia homogénéise des scans d'origines différentes. */
+  .planchette img{display:block;width:100%;height:185px;object-fit:contain;
+    background:#fff;border:1px solid var(--filet-fonce);filter:sepia(.25)}
+  /* Repli tant que la planche du jour n'est pas déposée dans gravures/ :
+     un cadre annoté, jamais une image cassée. Même hauteur que la planche. */
+  .planchette .manque{display:none;height:185px;border:1px dashed var(--pointille);
+    background:#fff;align-items:center;justify-content:center;padding:1rem;text-align:center}
+  .planchette .manque span{font-family:'IBM Plex Mono',monospace;font-size:.68rem;
+    color:var(--sepia);max-width:32ch;line-height:1.5}
+  .legende-titre{font-size:1rem;margin-top:.55rem}
+  .legende{font-size:.86rem;color:var(--sepia);font-style:italic;margin-top:.2rem}
+  .outils{list-style:none;margin:0;padding:0;display:grid;gap:.3rem}
+  .outils li{display:flex;align-items:baseline;gap:.6rem;font-size:.95rem}
+  .outils b{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--h-alpha);
+    font-weight:400;min-width:1.4rem}
+  .outils a{color:var(--encre);text-decoration:none;border-bottom:1px dotted var(--pointille)}
+  .outils a:hover{color:var(--h-alpha)}
+  .outils a:focus-visible{outline:2px solid var(--h-alpha);outline-offset:3px}
+  .encadre{border:1px solid var(--h-alpha);background:var(--papier-clair);padding:1.3rem 1.4rem}
+  .encadre h2{font-size:1.5rem;font-weight:500;margin:.2rem 0 0}
+  .mini{font-size:.92rem;color:var(--encre-douce);font-style:italic;margin-top:.4rem}
+  .compte{margin-top:.8rem;font-size:.88rem;color:var(--sepia)}
+  .compte strong{color:var(--h-alpha);font-weight:400}
 
-  footer .footer-inner {
-    max-width: 1200px;
-    text-align: center;
-  }
+  /* ---- Bande « auteur & vidéo » : l'activité hors du lycée, en attente ---- */
+  .auteur{border-top:1px solid var(--filet);padding:2.4rem 0 3rem}
+  .auteur-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);
+    gap:3.4rem;align-items:start}
+  .auteur h2{font-size:1.75rem;font-weight:500;margin:.45rem 0 0}
+  .auteur p{color:var(--encre-douce);margin-top:.7rem;max-width:60ch}
+  .chantier{display:grid;gap:.5rem;margin-top:.4rem}
+  .chantier li{display:flex;align-items:baseline;gap:.8rem;
+    border:1px dashed var(--pointille);padding:.7rem 1rem;list-style:none}
+  .chantier b{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--sepia);font-weight:400}
+  .chantier span{font-style:italic;color:var(--encre-douce)}
+  .chantier em{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.66rem;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--sepia);font-style:normal;
+    white-space:nowrap}
 
-  @media (max-width: 700px) {
-    header.hero { padding-top: 3rem; }
-    .toc .detail { padding-left: 0; }
+  /* iPad en portrait : une seule colonne, et l'atelier cesse de coller —
+     collant sur une page déjà empilée, il resterait figé sous le pouce. */
+  @media(max-width:900px){
+    .deux-col{grid-template-columns:1fr;gap:2.6rem}
+    .collant{position:static}
+    .auteur-inner{grid-template-columns:1fr;gap:1.6rem}
+    /* En une colonne, la planche s'étirerait sur toute la mesure : un cadre
+       de 185 px de haut sur 800 px de large, avec la gravure perdue au milieu. */
+    .planchette{max-width:420px}
+  }
+  /* Téléphone : le bandeau illustré passe au-dessus du titre de la porte. */
+  @media(max-width:700px){
+    .porte{grid-template-columns:1fr}
+    .porte-vis{height:120px}
+    .porte-txt{padding:.85rem 1.2rem}
   }
 </style>
 </head>
@@ -233,118 +170,141 @@
     <div class="nav-logo">M. Van Hoorde <span>·</span> Physique-Chimie</div>
     <ul>
       <li><a class="actif" href="index.html">Accueil</a></li>
-      <li><a href="#cours">Cours</a></li>
-      <li><a href="#gravures">Gravures</a></li>
-      <li><a href="#projets">Projets</a></li>
+      <li><a href="#classes">Mes classes</a></li>
+      <li><a href="#atelier">L'atelier</a></li>
+      <li><a href="#auteur">Auteur &amp; vidéo</a></li>
       <li><a href="#contact"><em>Contact</em></a></li>
     </ul>
   </div>
 </nav>
 
-<header class="hero">
-  <p class="surtitre">Cahier de bord — année 2026-2027</p>
-  <div class="filet-court" aria-hidden="true"></div>
-  <h1>La physique-chimie,<br>du <em>cahier</em> au <em>laboratoire</em>.</h1>
-  <p class="intro">
-    Cours, travaux pratiques et projets pédagogiques. Cette année, un
-    <strong>jeu de rôle fil rouge</strong> accompagne nos chapitres : chaque notion
-    débloque une nouvelle étape de l'aventure.
-  </p>
-</header>
+<!-- Enveloppe sans style aujourd'hui : point d'accroche laissé en place
+     pour un fond propre à la zone des classes, si la question du fond de
+     page revient (cinq variantes ont été maquettées, aucune retenue). -->
+<div class="strate-classes">
+  <div class="zone deux-col">
 
-<section class="gravure-du-jour" id="gravures">
-  <p class="surtitre">Gravure du jour</p>
-  <p class="date" id="date-du-jour"></p>
-  <figure class="planche">
-    <img id="gravure-img" src="" alt="Gravure scientifique du jour">
-    <div class="manque" id="gravure-manque"><span></span></div>
-  </figure>
-  <p class="legende-titre" id="gravure-titre"></p>
-  <p class="legende" id="gravure-legende"></p>
-  <p><a class="lien-carmin" href="#gravures">Parcourir la collection de gravures</a></p>
-</section>
+    <main class="col-large">
+      <p class="surtitre">Cahier de bord — année 2026-2027</p>
+      <h1>La physique-chimie,<br>du <em>cahier</em> au <em>laboratoire</em>.</h1>
+      <p class="intro">Cours, travaux pratiques et corrigés, ouverts à toute heure.</p>
 
-<section class="toc" id="cours">
-  <p class="titre">Table des matières — mes classes</p>
-  <div class="double-filet" aria-hidden="true"></div>
-  <ol>
-    <li>
-      <div class="ligne"><span class="num">I.</span><a href="pages/2nde-physique-chimie.html">Physique-Chimie</a><span class="points"></span><span class="niveau">2nde</span></div>
-      <div class="detail">Corps purs et mélanges · mouvement et interactions · ondes et signaux.</div>
-    </li>
-    <li>
-      <div class="ligne"><span class="num">II.</span><a href="pages/2nde-snt.html">SNT — Sciences numériques et technologie</a><span class="points"></span><span class="niveau">2nde</span></div>
-      <div class="detail">Réseaux et communication · données structurées · objets numériques.</div>
-    </li>
-    <li>
-      <div class="ligne"><span class="num">III.</span><a href="pages/1re-enseignement-scientifique.html">Enseignement scientifique</a><span class="points"></span><span class="niveau">1re</span></div>
-      <div class="detail">Histoire de la matière · le Soleil, notre source d'énergie · son et musique.</div>
-    </li>
-    <li>
-      <div class="ligne"><span class="num">IV.</span><a href="pages/term-enseignement-scientifique.html">Enseignement scientifique</a><span class="points"></span><span class="niveau">Term</span></div>
-      <div class="detail">Science, climat et société · le futur des énergies · une histoire du vivant.</div>
-    </li>
-    <li>
-      <div class="ligne"><span class="num">V.</span><a href="pages/term-spe-physique-chimie.html">Spécialité Physique-Chimie</a><span class="points"></span><span class="niveau">Term · Spé</span></div>
-      <div class="detail">Acides et bases · mécanique newtonienne · ondes, lumière et photon.</div>
-    </li>
-    <!-- ============================================================
-         ESPACE CFA — deux portes, une par public d'apprentis.
-         Elles mènent au même livret : les dix-sept fiches-outils sont
-         intégralement mutualisées entre les deux diplômes. Ce qui ne se
-         mutualise pas — le palier 3, le rythme, les attentes
-         d'évaluation — vit à l'intérieur des fiches, pas dans deux
-         parcours séparés.
-         Deux entrées quand même, et non une seule : un apprenti doit
-         pouvoir reconnaître SON diplôme dans la table des matières.
-         ============================================================ -->
-    <li>
-      <div class="ligne"><span class="num">VI.</span><a href="cfa/index.html">Remise à niveau mathématique</a><span class="points"></span><span class="niveau">CFA · BTS MMCM</span></div>
-      <div class="detail">Maintenance des matériels de construction et de manutention — dix-sept fiches-outils, du calcul rédigé aux vecteurs.</div>
-    </li>
-    <li>
-      <div class="ligne"><span class="num">VII.</span><a href="cfa/index.html">Remise à niveau mathématique</a><span class="points"></span><span class="niveau">CFA · Bac pro MVTR</span></div>
-      <div class="detail">Maintenance des véhicules, option transport routier — le même livret, attaquable sans préparation, un palier où personne ne peut échouer.</div>
-    </li>
-  </ol>
-</section>
+      <p class="rubrique" id="classes">Mes classes</p>
+      <div class="portes">
+        <a class="porte" href="pages/2nde-physique-chimie.html" style="--img:url('assets/img/pc/2nde-pc-t1-c2/t1c2-fer-fusion-coulee.jpg');--focus:50% 62%">
+          <span class="porte-vis">
+            <span class="porte-voile"></span>
+            <span class="porte-gros">2<sup>de</sup><small>PC</small></span>
+          </span>
+          <span class="porte-txt">
+            <span class="porte-num">15 chapitres</span>
+            <h3>Physique-Chimie</h3>
+            <p>Corps purs et mélanges · mouvement et interactions · ondes et signaux.</p>
+          </span>
+        </a>
+        <a class="porte" href="pages/2nde-snt.html" style="--img:url('assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-mere.jpg');--focus:50% 50%">
+          <span class="porte-vis">
+            <span class="porte-voile"></span>
+            <span class="porte-gros">2<sup>de</sup><small>SNT</small></span>
+          </span>
+          <span class="porte-txt">
+            <span class="porte-num">8 séquences</span>
+            <h3>Sciences numériques et technologie</h3>
+            <p>Internet, le web, données structurées, photographie numérique.</p>
+          </span>
+        </a>
+        <!-- Une seule porte pour les deux diplômes (27/08/2026). Les dix-sept
+             fiches-outils sont intégralement mutualisées ; ce qui ne se mutualise
+             pas — le palier 3, le rythme, les attentes d'évaluation — vit à
+             l'intérieur des fiches. Les deux diplômes sont nommés dans le résumé :
+             un apprenti y reconnaît le sien sans qu'il faille deux entrées. -->
+        <a class="porte" href="cfa/index.html" style="--img:url('assets/img/pc/2nde-pc-t2-c2/t2c2-pommes-branche.jpg');--focus:50% 45%">
+          <span class="porte-vis">
+            <span class="porte-voile"></span>
+            <span class="porte-gros">CFA<small>MATHS</small></span>
+          </span>
+          <span class="porte-txt">
+            <span class="porte-num">17 fiches-outils</span>
+            <h3>Remise à niveau mathématique</h3>
+            <p>BTS MMCM et Bac pro MVTR — du calcul rédigé aux vecteurs.</p>
+          </span>
+        </a>
+      </div>
 
-<section class="spectra" id="projets">
-  <div class="cadre">
-    <p class="surtitre">Projet secret — λ = 434 nm</p>
-    <h2>Mission Spectra</h2>
-    <p>
-      Un jeu de rôle scientifique sur l'année entière : votre classe incarne une
-      équipe de recherche. Chaque chapitre débloque des indices, des expériences
-      et des points de compétence.
-    </p>
-    <p class="compteur">En travaux · disponible à la rentrée 2026 —
-      <strong><span id="jours">—</span> jours avant la rentrée</strong></p>
+      <p class="rubrique">Autres niveaux</p>
+      <ul class="liste-sobre">
+        <li><a href="pages/1re-enseignement-scientifique.html">Enseignement scientifique</a><span class="etiq a-venir">1<sup>re</sup> · ES<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — chapitres en chantier</span></span></li>
+        <li><a href="pages/term-enseignement-scientifique.html">Enseignement scientifique</a><span class="etiq a-venir">T<sup>le</sup> · ES<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — chapitres en chantier</span></span></li>
+        <li><a href="pages/term-spe-physique-chimie.html">Spécialité Physique-Chimie</a><span class="etiq a-venir">T<sup>le</sup> · SPÉ PC<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — chapitres en chantier</span></span></li>
+      </ul>
+
+      <p class="rubrique" id="contact">Écrire</p>
+      <p class="adresse"><a href="mailto:l.vanhoorde@enseignant.isaac-etoile.fr">l.vanhoorde@enseignant.isaac-etoile.fr</a></p>
+      <p class="adresse-note">Lycée Isaac de l'Étoile. Les corrigés de devoirs et de TP
+        circulent par courriel, jamais en ligne.</p>
+    </main>
+
+    <aside class="col-etroite" id="atelier">
+      <div class="collant">
+
+        <div class="bloc">
+          <p class="surtitre">Gravure du jour</p>
+          <p class="date" id="date-du-jour"></p>
+          <figure class="planchette">
+            <img id="gravure-img" src="" alt="">
+            <div class="manque" id="gravure-manque"><span></span></div>
+          </figure>
+          <p class="legende-titre" id="gravure-titre"></p>
+          <p class="legende" id="gravure-legende"></p>
+        </div>
+
+        <div class="bloc">
+          <p class="surtitre">Fiches-outils</p>
+          <ul class="outils">
+            <li><b>o1</b><a href="pages/2nde-pc-o1-ecriture-scientifique.html">Écriture scientifique</a></li>
+            <li><b>o2</b><a href="pages/2nde-pc-o2-chiffres-significatifs.html">Chiffres significatifs</a></li>
+            <li><b>o3</b><span class="a-venir">Sécurité au laboratoire<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — en chantier</span></span></li>
+            <li><b>o4</b><span class="a-venir">Calcul littéral<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — en chantier</span></span></li>
+          </ul>
+        </div>
+
+        <div class="bloc">
+          <p class="surtitre">Animations</p>
+          <p class="mini"><span class="a-venir">Période, fréquence, amplitude : des schémas
+            qu'on fait bouger<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — en chantier</span></span></p>
+        </div>
+
+        <div class="bloc encadre">
+          <p class="surtitre">λ = 434 nm</p>
+          <h2>Mission Spectra</h2>
+          <p class="mini">Le jeu de rôle scientifique de l'année.</p>
+          <p class="compte" id="compte-spectra"></p>
+        </div>
+
+      </div>
+    </aside>
+
   </div>
-</section>
+</div>
 
-<section class="a-propos" id="contact">
-  <div class="bio">
-    <p>
-      Enseignant de Physique-Chimie, je conçois mes séquences autour de la
-      démarche d'investigation : observer, questionner, expérimenter. Ce site
-      rassemble mes ressources pour que les élèves (et leurs parents) puissent
-      retrouver cours, protocoles et projets à tout moment.
-    </p>
-    <p>Les documents sont librement réutilisables par mes collègues dans un cadre pédagogique.</p>
+<section class="auteur" id="auteur">
+  <div class="zone auteur-inner">
+    <div>
+      <p class="surtitre">Hors du lycée</p>
+      <h2>Auteur &amp; vidéo</h2>
+      <p>Une seconde activité, en auto-entreprise : écrire des ressources de
+        physique-chimie pour d'autres enseignants, et les mettre en vidéo.</p>
+    </div>
+    <ul class="chantier">
+      <li><b>Auteur</b><span>Ressources et manuels</span><em>en chantier</em></li>
+      <li><b>Vidéo</b><span>La chaîne</span><em>en chantier</em></li>
+      <li><b>Prestations</b><span>Formation et relecture</span><em>en chantier</em></li>
+    </ul>
   </div>
-  <dl>
-    <dt>Courriel</dt>
-    <dd><a href="mailto:prenom.nom@exemple.fr">prenom.nom@exemple.fr</a></dd>
-    <dt>Établissement</dt>
-    <dd>Isaac de l'Étoile</dd>
-    <dt>ENT</dt>
-    <dd><span class="a-venir">Espace classe sur l'ENT<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — en travaux</span></span></dd>
-  </dl>
 </section>
 
 <footer>
-  <div class="footer-inner">© 2026 · M. Van Hoorde — Physique-Chimie, fait main en HTML / CSS / JS.</div>
+  <div class="footer-inner">© 2026 · M. Van Hoorde</div>
 </footer>
 
 <div class="spectre" aria-hidden="true"></div>
@@ -372,8 +332,7 @@ var jourDeLAnnee = Math.floor((maintenant - new Date(maintenant.getFullYear(), 0
 var g = COLLECTION[jourDeLAnnee % COLLECTION.length];
 
 document.getElementById("date-du-jour").textContent =
-  maintenant.toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long", year:"numeric" })
-  + " — la planche change chaque matin";
+  maintenant.toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
 var img = document.getElementById("gravure-img");
 img.src = g.fichier;
 img.alt = g.titre;
@@ -385,15 +344,21 @@ img.addEventListener("error", function () {
   manque.querySelector("span").textContent = "planche à déposer : " + g.fichier;
 });
 document.getElementById("gravure-titre").innerHTML = "Planche " + g.numero + " — <em>" + g.titre + "</em>";
-document.getElementById("gravure-legende").textContent = g.legende;
+document.getElementById("gravure-legende").textContent = g.legende + " Une nouvelle planche chaque matin.";
 
 // ============================================================
-// COMPTE À REBOURS — jours restants avant la rentrée
+// COMPTE À REBOURS — jours restants avant la rentrée, puis bascule.
+// Passé le 1er septembre, un compteur figé à zéro mentirait
+// indéfiniment : la ligne annonce alors l'état du projet.
 // ============================================================
 var rentree = new Date(2026, 8, 1);   // 1er septembre 2026 (mois indexés à 0)
-var msParJour = 1000 * 60 * 60 * 24;
-document.getElementById("jours").textContent =
-  Math.max(0, Math.ceil((rentree - maintenant) / msParJour));
+var jours = Math.ceil((rentree - maintenant) / 864e5);
+var compte = document.getElementById("compte-spectra");
+if (jours > 0) {
+  compte.innerHTML = "<strong>" + jours + (jours > 1 ? " jours" : " jour") + "</strong> avant la rentrée";
+} else {
+  compte.textContent = "En chantier · ouverture en cours d'année";
+}
 </script>
 
 </body>
