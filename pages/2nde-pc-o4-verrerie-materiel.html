@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil 4 · La verrerie et le matériel de laboratoire — Physique-Chimie 2nde</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- Client de base de données partagé. Absent ou non configuré : l'outil
+     fonctionne, sans enregistrement. Sans "defer" à dessein : le script de
+     la page, en fin de body, doit le trouver déjà chargé. -->
+<script src="../assets/js/progression.js?v=16"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     OUTIL TRANSVERSAL 4 — LA VERRERIE ET LE MATÉRIEL.
+     Produit le 28/08/2026 depuis _modeles/gabarit-outil-PC.html.
+
+     Sources : fiche_La verrerie de laboratoire.pdf (qui ne contient
+     QUE des images : tout le visuel est redessiné ici), l'encadré
+     ménisque de fiche_La dissolution.pdf, et le TP11 « La précision
+     de la verrerie au laboratoire ».
+
+     🔴 DÉCISION O-24 — LE TRI EST DOUBLE, ET DANS CET ORDRE.
+     Le tri FONCTIONNEL de la source est le tri principal : pour
+     contenir · pour mesurer un volume · autre. C'est le fond du
+     collègue, on n'y touche pas. La PRÉCISION devient une seconde
+     lecture, dans une étape à part (1.2), sous forme d'échelle
+     ordonnée. Motif : la compétence du programme est « choisir la
+     verrerie adaptée », elle demande le critère de précision — et ce
+     critère est déjà établi EXPÉRIMENTALEMENT par le TP11, où l'on
+     pèse l'eau prélevée avec cinq verreries. L'outil renvoie au TP,
+     le TP justifie l'échelle. Rien n'est retiré à la source, un axe
+     lui est ajouté. Proposition à valider.
+
+     Le sommaire généré (assets/js/seances-snt) et le verrou de
+     progression ne sont PAS chargés — un outil ne suit aucune
+     progression.
+     ============================================================ -->
+<style>
+  /* ---------- Encart intermédiaire — PAS un « à retenir » ---------- */
+  .point-cle{border-left:3px solid var(--link);background:var(--surface);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px;margin:10px 0}
+  .point-cle.alerte{border-left-color:var(--activity);background:var(--activity-wash)}
+
+  /* ---------- Exemple entièrement résolu, ouvert par défaut ---------- */
+  .exemple{border:1px solid var(--ok);background:var(--ok-wash);border-radius:12px;padding:12px 14px;margin:12px 0}
+  /* Pas de text-transform ici (O-20) : les titres portent des unités. */
+  .exemple-titre{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;
+                 color:var(--ok);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .exemple-titre::before{content:"✓ exemple résolu";text-transform:uppercase;background:var(--ok);color:var(--surface);border-radius:5px;padding:1px 7px;letter-spacing:.05em}
+  .ex-etape{display:grid;grid-template-columns:22px 1fr;gap:9px;align-items:baseline;margin-bottom:9px}
+  .ex-etape:last-child{margin-bottom:0}
+  .ex-etape > .n{font-family:"IBM Plex Mono";font-size:12px;font-weight:700;color:var(--ok);
+                 border:1.5px solid var(--ok);border-radius:50%;width:20px;height:20px;
+                 display:flex;align-items:center;justify-content:center;line-height:1}
+  .ex-etape > div{min-width:0;font-size:14.5px}
+  .ex-lab{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.07em;
+          color:var(--ink-faint);display:block;margin-bottom:2px}
+  .calcul{font-family:"IBM Plex Mono";font-size:15px;line-height:2;overflow-x:auto;margin:6px 0 2px}
+  .calcul .encadre{color:var(--ok);font-weight:700;border:1.5px solid var(--ok);border-radius:6px;padding:1px 7px;white-space:nowrap}
+  @media(max-width:560px){.calcul{font-size:13px}}
+  .nb{font-family:"IBM Plex Mono";white-space:nowrap}
+
+  /* ---------- Encadré « à éviter » ---------- */
+  .eviter{border:1px solid var(--err);border-left:4px solid var(--err);background:var(--err-wash);
+          border-radius:0 10px 10px 0;padding:11px 14px;margin:12px 0;font-size:14.5px}
+  .eviter .et{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+              color:var(--err);font-weight:600;display:block;margin-bottom:6px}
+  .eviter ul{margin:6px 0 0;padding-left:20px}
+  .eviter li{margin-bottom:5px}
+
+  /* ---------- Structure des « à retenir » (O-10) — trois temps ---------- */
+  .ret-t{display:grid;grid-template-columns:82px 1fr;gap:11px;align-items:baseline;margin-bottom:10px}
+  .ret-t:last-child{margin-bottom:0}
+  .ret-e{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+         color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 0;text-align:center}
+  .ret-t.piege .ret-e{color:var(--err);border-color:var(--err)}
+  .ret-c{min-width:0}
+  .ret-f{font-family:"IBM Plex Mono";font-size:19px;font-weight:600;text-align:center;
+         line-height:1.6;margin:2px 0 4px;color:var(--ink)}
+  @media(max-width:520px){
+    .ret-t{grid-template-columns:1fr;gap:4px}
+    .ret-e{justify-self:start;padding:2px 8px}
+    .ret-f{font-size:16px}
+  }
+
+  /* ---------- Le composant EXERCICE ---------- */
+  .exo{border:1px solid var(--line);border-left:4px solid var(--activity);border-radius:0 12px 12px 0;
+       background:var(--surface);padding:13px 15px;margin:16px 0}
+  .exo-num{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--activity);font-weight:600;margin:0 0 7px}
+  .exo-enonce{font-size:15px;margin:0 0 11px;line-height:1.6}
+  .exo-consigne{font-size:13.5px;color:var(--ink-soft);margin:12px 0 8px;font-style:italic}
+  .exo-corr{border-top:1px dashed var(--line);padding-top:9px;margin-top:4px}
+  .exo-corr summary{font-family:"IBM Plex Mono";font-size:13px;color:var(--link);cursor:pointer;
+                    padding:5px 2px;min-height:32px;display:flex;align-items:center;gap:6px}
+  .exo-corr summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:5px}
+  .exo-corr[open] summary{margin-bottom:8px;color:var(--ink-soft)}
+  .exo-corr .corps{font-size:14.5px;line-height:1.65;border-left:3px solid var(--ok);
+                   background:var(--ok-wash);border-radius:0 10px 10px 0;padding:11px 14px}
+  .exo-corr .corps p{margin:0 0 8px}
+  .exo-corr .corps p:last-child{margin-bottom:0}
+
+  /* ---------- Table de saisie : une colonne par décision ---------- */
+  .saisie{width:100%;border-collapse:collapse;font-size:15px}
+  .saisie th{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.07em;
+             color:var(--ink-faint);font-weight:600;text-align:left;padding:0 8px 7px;border-bottom:1px solid var(--line)}
+  .saisie th.c{text-align:center}
+  .saisie td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .saisie td.c{text-align:center}
+  .saisie tr:last-child td{border-bottom:0}
+  .saisie select.short{min-height:34px}
+  .cloze select{max-width:100%}
+  @media(max-width:560px){
+    .saisie{display:block}
+    .saisie tr:first-child{display:none}
+    .saisie tr{display:flex;flex-wrap:wrap;align-items:center;gap:9px 10px;
+               padding:11px 2px;border-bottom:1px solid var(--line)}
+    .saisie tr:last-child{border-bottom:0}
+    .saisie td{display:block;padding:0;border:0;text-align:left}
+    .saisie td.depart{flex-basis:100%;font-weight:600;white-space:normal}
+    .saisie select{flex:1 1 100%;max-width:100%}
+  }
+
+  .vers-fiche{display:inline-flex;align-items:center;gap:8px;font-size:14px;text-decoration:none;
+              color:var(--link);background:var(--link-wash);border:1px solid var(--line);
+              border-radius:10px;padding:9px 14px;margin-top:16px;min-height:44px}
+  .vers-fiche:hover{border-color:var(--link)}
+  .vers-fiche:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+  #glo-ouvrir,.glo-back{display:none !important}
+
+
+  /* ============================================================
+     CSS PROPRE À L'OUTIL 4
+     ============================================================ */
+
+  /* ---------- Les pièces de verrerie, dessinées au trait ----------
+     Un <symbol> par pièce, réutilisé sur la page ET sur la fiche A4 :
+     l'élève doit reconnaître sur le papier exactement ce qu'il a vu à
+     l'écran. Aucune couleur en dur — le trait suit le thème. */
+  .vt{fill:none;stroke:var(--ink-soft);stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+  .vt .jauge{stroke:var(--link);stroke-width:2.8}
+  .vt .leger{stroke-dasharray:3 3;opacity:.55}
+
+  .familles{display:grid;gap:14px;margin:12px 0}
+  .famille{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px 13px}
+  .famille > h4{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+                color:var(--link);margin:0 0 3px;font-weight:600}
+  .famille > .fam-sous{font-size:13.5px;color:var(--ink-soft);margin:0 0 10px}
+  .grille-v{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+  .piece{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px;text-align:center}
+  .piece svg{width:100%;max-width:60px;height:auto;display:block;margin:0 auto 6px}
+  .piece .nom{font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:4px}
+  .piece .use{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+  .piece .pour{display:block;font-family:"IBM Plex Mono";font-size:11px;color:var(--link);margin-top:4px}
+  .piece .prec{display:block;font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.04em;
+               color:var(--ok);margin-top:4px;font-weight:600}
+
+  /* ---------- L'échelle de précision (étape 1.2) ---------- */
+  .echelle{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:13px}
+  .echelle svg{width:100%;height:auto;display:block;max-width:620px;margin:0 auto}
+  .ec-axe{stroke:var(--ink-soft);stroke-width:2}
+  .ec-fleche{fill:var(--ink-soft)}
+  .ec-cran{stroke:var(--ink-soft);stroke-width:1.5}
+  .ec-nom{font-family:"IBM Plex Sans";font-size:13px;fill:var(--ink);text-anchor:middle}
+  .ec-nom.fort{font-weight:600;fill:var(--ok)}
+  .ec-bout{font-family:"IBM Plex Mono";font-size:13px;fill:var(--ink-faint)}
+  .ec-bout.d{text-anchor:end}
+
+  /* ---------- Les ménisques (étape 1.3 et exercice 2) ---------- */
+  .menisques{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:12px 0}
+  .men{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:10px;text-align:center}
+  .men svg{width:100%;max-width:120px;height:auto;display:block;margin:0 auto 7px}
+  .men .lg{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
+  .men .verdict-txt{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.05em;
+                    display:block;margin-top:5px;font-weight:600}
+  .men.bon .verdict-txt{color:var(--ok)} .men.mauvais .verdict-txt{color:var(--err)}
+  .mn-verre{fill:none;stroke:var(--ink-soft);stroke-width:2.2;stroke-linecap:round}
+  .mn-liquide{fill:var(--link-wash);stroke:none}
+  .mn-surface{fill:none;stroke:var(--link);stroke-width:2.2}
+  .mn-trait{stroke:var(--err);stroke-width:2.4}
+  .mn-oeil{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round}
+  .mn-vue{stroke:var(--ink-faint);stroke-width:1.6;stroke-dasharray:4 3}
+  .mn-lab{font-family:"IBM Plex Mono";font-size:9px;fill:var(--ink-faint);text-anchor:middle}
+</style>
+</head><body data-sequence="pc-o4" data-etapes="ouvertes">
+
+<!-- ============================================================
+     LA VERRERIE ET LE MATÉRIEL, redessinés au trait dans le style de
+     la source. Un <symbol> par pièce, appelé par <use> ici ET sur la
+     fiche A4 — toute retouche se fait des deux côtés.
+
+     Repère de dessin : viewBox 0 0 60 100, la pièce occupe
+     x ∈ [8, 52] et y ∈ [6, 94].
+
+     ⚠ style="display:none" et NON l'attribut hidden : mesuré au
+     navigateur, `hidden` ne masque pas un <svg> inline — il garde sa
+     taille par défaut de 300 × 150 px et pousse toute la page.
+     ============================================================ -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="v-becher" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M16,26 v56 a5,5 0 0 0 5,5 h18 a5,5 0 0 0 5,-5 v-56"/>
+      <path d="M16,26 h-4 l2,-5 h32 l2,5 h-4"/>
+      <path d="M18,44 h7 M18,56 h7 M18,68 h7"/>
+    </g>
+  </symbol>
+  <symbol id="v-erlenmeyer" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M24,16 v18 l-14,44 a5,5 0 0 0 5,9 h30 a5,5 0 0 0 5,-9 l-14,-44 v-18"/>
+      <path d="M22,16 h16"/>
+      <path d="M17,66 h9 M15,74 h9"/>
+    </g>
+  </symbol>
+  <symbol id="v-tube" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M22,14 v62 a8,8 0 0 0 16,0 v-62"/>
+      <path d="M20,14 h20"/>
+    </g>
+  </symbol>
+  <symbol id="v-fiole" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M25,12 v30 c-9,5 -14,14 -14,24 a19,19 0 0 0 38,0 c0,-10 -5,-19 -14,-24 v-30"/>
+      <path d="M23,12 h14"/>
+      <path d="M25,32 h10" class="jauge"/>
+    </g>
+  </symbol>
+  <symbol id="v-verrepied" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M14,22 l10,34 v14 M46,22 l-10,34 v14"/>
+      <path d="M14,22 h32"/>
+      <path d="M24,70 h12 M22,88 h16"/>
+      <path d="M30,70 v18"/>
+    </g>
+  </symbol>
+  <symbol id="v-cristallisoir" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M10,52 v28 a4,4 0 0 0 4,4 h32 a4,4 0 0 0 4,-4 v-28"/>
+      <path d="M8,52 h44"/>
+    </g>
+  </symbol>
+  <symbol id="v-coupelle" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M10,56 q20,26 40,0"/>
+      <path d="M10,56 q20,9 40,0"/>
+      <path d="M14,52 q16,7 32,0" class="leger"/>
+    </g>
+  </symbol>
+  <symbol id="v-ballon" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M25,12 v22 M35,12 v22"/>
+      <path d="M23,12 h14"/>
+      <circle cx="30" cy="56" r="22"/>
+      <path d="M16,84 h28 v6 h-28 z"/>
+    </g>
+  </symbol>
+  <symbol id="v-eprouvette" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M22,12 v66 h16 v-66"/>
+      <path d="M20,12 h20"/>
+      <path d="M24,22 h6 M24,30 h6 M24,38 h6 M24,46 h6 M24,54 h6 M24,62 h6 M24,70 h6"/>
+      <path d="M18,78 q12,10 24,0 M18,88 h24"/>
+      <path d="M22,78 h16"/>
+    </g>
+  </symbol>
+  <symbol id="v-pipettegraduee" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M26,10 v6 M34,10 v6"/>
+      <path d="M26,16 v60 l4,12 l4,-12 v-60"/>
+      <path d="M24,10 h12"/>
+      <path d="M27,24 h6 M27,32 h6 M27,40 h6 M27,48 h6 M27,56 h6 M27,64 h6"/>
+    </g>
+  </symbol>
+  <symbol id="v-pipettejaugee" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M26,10 v18 c-4,3 -6,7 -6,12 c0,7 4,12 10,12 c6,0 10,-5 10,-12 c0,-5 -2,-9 -6,-12 v-18"/>
+      <path d="M24,10 h12"/>
+      <path d="M27,50 v30 M33,50 v30"/>
+      <path d="M27,80 q3,9 6,0"/>
+      <path d="M26,22 h8" class="jauge"/>
+    </g>
+  </symbol>
+  <symbol id="v-propipette" viewBox="0 0 60 100">
+    <g class="vt">
+      <circle cx="30" cy="44" r="18"/>
+      <path d="M30,26 v-8 M24,18 h12 v-6 h-12 z"/>
+      <path d="M30,62 v10 M24,72 h12 v8 h-12 z"/>
+      <path d="M48,44 h6 v-6 h-6"/>
+    </g>
+  </symbol>
+  <symbol id="v-burette" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M24,8 v62 h12 v-62"/>
+      <path d="M22,8 h16"/>
+      <path d="M26,18 h5 M26,26 h5 M26,34 h5 M26,42 h5 M26,50 h5 M26,58 h5"/>
+      <path d="M24,70 h12 l-3,6 h-6 z"/>
+      <circle cx="30" cy="79" r="4"/>
+      <path d="M22,79 h4 M34,79 h4"/>
+      <path d="M27,83 v6 M33,83 v6 M27,89 q3,6 6,0"/>
+    </g>
+  </symbol>
+  <symbol id="v-entonnoir" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M12,26 l16,26 v30 M48,26 l-16,26 v30"/>
+      <path d="M12,26 h36"/>
+      <path d="M28,82 h4"/>
+    </g>
+  </symbol>
+  <symbol id="v-ampoule" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M22,10 h16 v6 h-16 z"/>
+      <path d="M24,16 v10 c-8,6 -12,14 -12,22 c0,10 8,18 18,18 c10,0 18,-8 18,-18 c0,-8 -4,-16 -12,-22 v-10"/>
+      <path d="M30,66 v8"/>
+      <circle cx="30" cy="78" r="4"/>
+      <path d="M22,78 h4 M34,78 h4"/>
+      <path d="M30,82 v8"/>
+    </g>
+  </symbol>
+  <symbol id="v-refrigerant" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M24,8 v10 M36,8 v10"/>
+      <path d="M22,8 h16"/>
+      <path d="M22,18 v64 M38,18 v64"/>
+      <path d="M26,20 q8,4 0,8 q-8,4 0,8 q8,4 0,8 q-8,4 0,8 q8,4 0,8 q-8,4 0,8 q8,4 0,8"/>
+      <path d="M22,26 h-8 v6 M38,72 h8 v-6"/>
+      <path d="M24,82 v10 M36,82 v10 M22,92 h16"/>
+    </g>
+  </symbol>
+  <symbol id="v-chauffeballon" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M10,46 h40 a4,4 0 0 1 4,4 v26 a4,4 0 0 1 -4,4 h-40 a4,4 0 0 1 -4,-4 v-26 a4,4 0 0 1 4,-4 z"/>
+      <path d="M18,46 a12,12 0 0 0 24,0"/>
+      <circle cx="16" cy="76" r="3"/>
+      <path d="M28,74 h18"/>
+    </g>
+  </symbol>
+  <symbol id="v-elevateur" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M10,38 h40 M10,84 h40"/>
+      <path d="M12,40 l36,20 M48,40 l-36,20"/>
+      <path d="M12,62 l36,20 M48,62 l-36,20"/>
+    </g>
+  </symbol>
+  <symbol id="v-potence" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M12,88 h36 M20,88 v-4 h20 v4"/>
+      <path d="M30,84 v-72"/>
+      <path d="M30,32 h14 M42,29 h6 v6 h-6 z"/>
+      <path d="M30,56 h14 M42,53 h6 v6 h-6 z"/>
+    </g>
+  </symbol>
+  <symbol id="v-balance" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M8,62 h44 a3,3 0 0 1 3,3 v14 a3,3 0 0 1 -3,3 h-44 a3,3 0 0 1 -3,-3 v-14 a3,3 0 0 1 3,-3 z"/>
+      <path d="M14,50 h32 v6 h-32 z"/>
+      <path d="M30,56 v6"/>
+      <path d="M34,68 h16 v8 h-16 z"/>
+      <circle cx="14" cy="72" r="3"/>
+    </g>
+  </symbol>
+  <symbol id="v-spatule" viewBox="0 0 60 100">
+    <g class="vt">
+      <path d="M30,22 v50"/>
+      <path d="M23,22 q7,-14 14,0 q-7,6 -14,0 z"/>
+      <path d="M26,72 h8 l-1,10 h-6 z"/>
+    </g>
+  </symbol>
+</svg>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Physique-Chimie · Outil transversal · Seconde</div>
+    <h1 class="title">La verrerie et le matériel de laboratoire <span class="tag" style="display:block;margin-top:8px">nommer · choisir · le geste juste</span></h1>
+    <p class="lede">Un bécher porte des graduations, et pourtant il ne sert pas à mesurer un volume. Une fiole jaugée n'en porte qu'une seule, et c'est la plus précise de la salle. Cet outil t'apprend à <b>nommer</b> chaque pièce, à <b>choisir</b> la bonne, et à t'en servir correctement — c'est la compétence que tous les TP de l'année mobilisent.</p>
+    <div class="themes">
+      <span class="theme-chip">Outil 1 · Écriture scientifique</span><span class="theme-chip">Outil 2 · Chiffres significatifs</span><span class="theme-chip">Outil 3 · Sécurité</span><span class="theme-chip on">Outil 4 · La verrerie</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>Deux parties</b></span>
+      <span class="m">Durée <b>≈ 1 h 30</b>, en deux fois</span>
+    </div>
+    <a class="vers-fiche" href="../assets/pdf/pc/fiches/fiche-2nde-o4-verrerie-materiel.pdf">🖨️ Fiche outil (PDF) — la méthode complète, à imprimer et à coller</a>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-physique-chimie.html">← Physique-Chimie</a>
+    <a href="#s1"><span class="n">1</span>La méthode</a>
+    <a href="#s2" data-navlock="2"><span class="n">2</span>S'entraîner <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <!-- 🔴 NE PAS SUPPRIMER — décision O-21. Le moteur attrape cette
+         case sans garde (sequence-snt.js l.350) : sans elle, toute son
+         initialisation s'arrête. Elle est inerte sans .ens-zone. -->
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip done"></span>Validé</span>
+  </div>
+
+
+  <!-- ===================== 1 — LA MÉTHODE ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">1</span>La méthode</h2>
+      <span class="seance-time">≈ 55 min</span>
+    </div>
+    <p class="seance-goal">Nommer les pièces de verrerie et le matériel courant, savoir laquelle choisir selon la précision demandée, et lire correctement un volume au trait de jauge.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- 1.1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s1-nommer">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1</div>
+            <h3 class="step-title">Nommer</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> mettre un nom sur chaque pièce, et savoir <b>à quoi elle sert</b>.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 12px">Le classement ci-dessous est <b>fonctionnel</b>&nbsp;: il range les pièces selon ce qu'on leur demande de faire. C'est le premier réflexe — avant de choisir une verrerie, on se demande si on veut <b>contenir</b> quelque chose ou <b>mesurer</b> un volume. Ce n'est pas la même famille, et ce ne sont pas les mêmes pièces.</p>
+
+            <div class="block-label">Pour contenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="familles">
+              <div class="famille">
+                <h4>Pour contenir</h4>
+                <p class="fam-sous">Elles reçoivent, elles mélangent, elles chauffent. Aucune ne sert à mesurer un volume, <b>même celles qui portent des graduations</b>.</p>
+                <div class="grille-v">
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="bécher"><use href="#v-becher"/></svg>
+                    <div class="nom">bécher</div><div class="use">utilisations diverses</div>
+                    <span class="pour">les graduations ne mesurent pas</span></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="erlenmeyer"><use href="#v-erlenmeyer"/></svg>
+                    <div class="nom">erlenmeyer</div><div class="use">mélanges et agitation de solutions, limite les éclaboussures</div></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="tube à essai"><use href="#v-tube"/></svg>
+                    <div class="nom">tube à essai</div><div class="use">petites quantités, tests caractéristiques</div></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="fiole jaugée"><use href="#v-fiole"/></svg>
+                    <div class="nom">fiole jaugée</div><div class="use">préparation de solutions de concentration précise</div>
+                    <span class="pour">→ dilutions, dissolutions</span></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="verre à pied"><use href="#v-verrepied"/></svg>
+                    <div class="nom">verre à pied</div><div class="use">utilisations diverses</div></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="cristallisoir"><use href="#v-cristallisoir"/></svg>
+                    <div class="nom">cristallisoir</div><div class="use">stockage de volumes d'eau ou de glace</div>
+                    <span class="pour">→ bain-marie, bain de glace</span></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="coupelle de pesée"><use href="#v-coupelle"/></svg>
+                    <div class="nom">coupelle de pesée</div><div class="use">pesée de solides (poudre, cristaux)</div></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="ballon"><use href="#v-ballon"/></svg>
+                    <div class="nom">ballon</div><div class="use">mélanger, faire réagir, chauffer les espèces chimiques</div>
+                    <span class="pour">→ synthèses, distillations</span></div>
+                </div>
+              </div>
+
+              <div class="famille">
+                <h4>Pour mesurer un volume</h4>
+                <p class="fam-sous">Celles-ci, et <b>seulement</b> celles-ci, servent à prélever ou à mesurer. Chacune annonce sa précision — c'est l'étape 1.2.</p>
+                <div class="grille-v">
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="éprouvette graduée"><use href="#v-eprouvette"/></svg>
+                    <div class="nom">éprouvette graduée</div><div class="use">mesure d'un volume quelconque</div>
+                    <span class="prec">précision moyenne</span></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="pipette graduée"><use href="#v-pipettegraduee"/></svg>
+                    <div class="nom">pipette graduée</div><div class="use">prélèvement d'un volume au choix</div>
+                    <span class="prec">bonne précision</span><span class="pour">→ dilutions, prélèvements</span></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="pipette jaugée"><use href="#v-pipettejaugee"/></svg>
+                    <div class="nom">pipette jaugée <span style="font-weight:400">(à un ou deux traits)</span></div><div class="use">prélèvement d'<b>un seul</b> volume, celui du trait</div>
+                    <span class="prec">très bonne précision</span><span class="pour">→ dilutions, prélèvements</span></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="propipette"><use href="#v-propipette"/></svg>
+                    <div class="nom">propipette</div><div class="use">aspiration de solutions, combinée avec une pipette</div></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="burette"><use href="#v-burette"/></svg>
+                    <div class="nom">burette</div><div class="use">versement de volumes variables</div>
+                    <span class="prec">très bonne précision</span><span class="pour">→ dosages, dilutions</span></div>
+                </div>
+              </div>
+
+              <div class="famille">
+                <h4>Autre verrerie</h4>
+                <p class="fam-sous">Ni contenir ni mesurer&nbsp;: transférer, séparer, refroidir.</p>
+                <div class="grille-v">
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="entonnoir"><use href="#v-entonnoir"/></svg>
+                    <div class="nom">entonnoir</div><div class="use">transfert de solides ou de liquides</div>
+                    <span class="pour">→ filtration</span></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="ampoule à décanter"><use href="#v-ampoule"/></svg>
+                    <div class="nom">ampoule à décanter</div><div class="use">séparation de liquides de phases différentes</div>
+                    <span class="pour">→ extraction liquide-liquide</span></div>
+                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="réfrigérant"><use href="#v-refrigerant"/></svg>
+                    <div class="nom">réfrigérant <span style="font-weight:400">(droit, à boule, à serpentin)</span></div><div class="use">refroidissement de vapeurs</div>
+                    <span class="pour">→ montage à reflux, distillation</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="point-cle"><b>La question qui range tout&nbsp;:</b> «&nbsp;est-ce que je veux <b>contenir</b>, ou <b>mesurer</b>&nbsp;?&nbsp;» Un bécher et une éprouvette se ressemblent — l'un contient, l'autre mesure, et les confondre fausse tout un protocole sans qu'aucune erreur ne se voie.</div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">contenir · mesurer · autre</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Avant de prendre une pièce, se demander ce qu'on lui <b>demande</b> — et non ce qu'elle a sous la main.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Pour un volume, la pièce vient forcément de la famille «&nbsp;<b>mesurer</b>&nbsp;». Il n'y en a que cinq.</div></div>
+            </div>
+
+            <div class="block-label">À toi — reconnais huit pièces<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Huit dessins, huit noms à retrouver.</div>
+              <div class="cloze" data-cloze data-cle="nommer">
+                <table class="saisie">
+                  <tr><th>Le dessin</th><th>Son nom</th></tr>
+                  <tr><td class="depart"><svg viewBox="0 0 60 100" style="width:34px;height:56px" role="img" aria-label="pièce à nommer, ligne 1"><use href="#v-erlenmeyer"/></svg></td>
+                    <td><select class="short" data-answer="erlen" aria-label="nom de la pièce 1"><option value="">choisis…</option><option value="becher">bécher</option><option value="erlen">erlenmeyer</option><option value="fiole">fiole jaugée</option><option value="eprouvette">éprouvette graduée</option><option value="pipettej">pipette jaugée</option><option value="burette">burette</option><option value="entonnoir">entonnoir</option><option value="ampoule">ampoule à décanter</option><option value="cristallisoir">cristallisoir</option><option value="ballon">ballon</option></select></td></tr>
+                  <tr><td class="depart"><svg viewBox="0 0 60 100" style="width:34px;height:56px" role="img" aria-label="pièce à nommer, ligne 2"><use href="#v-fiole"/></svg></td>
+                    <td><select class="short" data-answer="fiole" aria-label="nom de la pièce 2"><option value="">choisis…</option><option value="becher">bécher</option><option value="erlen">erlenmeyer</option><option value="fiole">fiole jaugée</option><option value="eprouvette">éprouvette graduée</option><option value="pipettej">pipette jaugée</option><option value="burette">burette</option><option value="entonnoir">entonnoir</option><option value="ampoule">ampoule à décanter</option><option value="cristallisoir">cristallisoir</option><option value="ballon">ballon</option></select></td></tr>
+                  <tr><td class="depart"><svg viewBox="0 0 60 100" style="width:34px;height:56px" role="img" aria-label="pièce à nommer, ligne 3"><use href="#v-eprouvette"/></svg></td>
+                    <td><select class="short" data-answer="eprouvette" aria-label="nom de la pièce 3"><option value="">choisis…</option><option value="becher">bécher</option><option value="erlen">erlenmeyer</option><option value="fiole">fiole jaugée</option><option value="eprouvette">éprouvette graduée</option><option value="pipettej">pipette jaugée</option><option value="burette">burette</option><option value="entonnoir">entonnoir</option><option value="ampoule">ampoule à décanter</option><option value="cristallisoir">cristallisoir</option><option value="ballon">ballon</option></select></td></tr>
+                  <tr><td class="depart"><svg viewBox="0 0 60 100" style="width:34px;height:56px" role="img" aria-label="pièce à nommer, ligne 4"><use href="#v-pipettejaugee"/></svg></td>
+                    <td><select class="short" data-answer="pipettej" aria-label="nom de la pièce 4"><option value="">choisis…</option><option value="becher">bécher</option><option value="erlen">erlenmeyer</option><option value="fiole">fiole jaugée</option><option value="eprouvette">éprouvette graduée</option><option value="pipettej">pipette jaugée</option><option value="burette">burette</option><option value="entonnoir">entonnoir</option><option value="ampoule">ampoule à décanter</option><option value="cristallisoir">cristallisoir</option><option value="ballon">ballon</option></select></td></tr>
+                  <tr><td class="depart"><svg viewBox="0 0 60 100" style="width:34px;height:56px" role="img" aria-label="pièce à nommer, ligne 5"><use href="#v-burette"/></svg></td>
+                    <td><select class="short" data-answer="burette" aria-label="nom de la pièce 5"><option value="">choisis…</option><option value="becher">bécher</option><option value="erlen">erlenmeyer</option><option value="fiole">fiole jaugée</option><option value="eprouvette">éprouvette graduée</option><option value="pipettej">pipette jaugée</option><option value="burette">burette</option><option value="entonnoir">entonnoir</option><option value="ampoule">ampoule à décanter</option><option value="cristallisoir">cristallisoir</option><option value="ballon">ballon</option></select></td></tr>
+                  <tr><td class="depart"><svg viewBox="0 0 60 100" style="width:34px;height:56px" role="img" aria-label="pièce à nommer, ligne 6"><use href="#v-ampoule"/></svg></td>
+                    <td><select class="short" data-answer="ampoule" aria-label="nom de la pièce 6"><option value="">choisis…</option><option value="becher">bécher</option><option value="erlen">erlenmeyer</option><option value="fiole">fiole jaugée</option><option value="eprouvette">éprouvette graduée</option><option value="pipettej">pipette jaugée</option><option value="burette">burette</option><option value="entonnoir">entonnoir</option><option value="ampoule">ampoule à décanter</option><option value="cristallisoir">cristallisoir</option><option value="ballon">ballon</option></select></td></tr>
+                  <tr><td class="depart"><svg viewBox="0 0 60 100" style="width:34px;height:56px" role="img" aria-label="pièce à nommer, ligne 7"><use href="#v-becher"/></svg></td>
+                    <td><select class="short" data-answer="becher" aria-label="nom de la pièce 7"><option value="">choisis…</option><option value="becher">bécher</option><option value="erlen">erlenmeyer</option><option value="fiole">fiole jaugée</option><option value="eprouvette">éprouvette graduée</option><option value="pipettej">pipette jaugée</option><option value="burette">burette</option><option value="entonnoir">entonnoir</option><option value="ampoule">ampoule à décanter</option><option value="cristallisoir">cristallisoir</option><option value="ballon">ballon</option></select></td></tr>
+                  <tr><td class="depart"><svg viewBox="0 0 60 100" style="width:34px;height:56px" role="img" aria-label="pièce à nommer, ligne 8"><use href="#v-ballon"/></svg></td>
+                    <td><select class="short" data-answer="ballon" aria-label="nom de la pièce 8"><option value="">choisis…</option><option value="becher">bécher</option><option value="erlen">erlenmeyer</option><option value="fiole">fiole jaugée</option><option value="eprouvette">éprouvette graduée</option><option value="pipettej">pipette jaugée</option><option value="burette">burette</option><option value="entonnoir">entonnoir</option><option value="ampoule">ampoule à décanter</option><option value="cristallisoir">cristallisoir</option><option value="ballon">ballon</option></select></td></tr>
+                </table>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s1-precision">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2</div>
+            <h3 class="step-title">Choisir&nbsp;: l'échelle de précision</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> classer les verreries de mesure par précision, et savoir laquelle prendre selon le volume demandé.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Un trait de jauge n'est pas une graduation<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">C'est le cœur de cette étape, et la source du collègue le dit sans détour&nbsp;: <b>les graduations d'un bécher ne sont pas assez précises pour mesurer un volume</b>. Elles sont là pour te donner un ordre d'idée pendant que tu verses, pas pour établir une mesure.</p>
+            <p style="font-size:14.5px;margin:4px 0 12px">À l'inverse, le <b>trait de jauge</b> d'une fiole ou d'une pipette n'indique <b>qu'un seul</b> volume — et il l'indique très précisément. Moins il y a de traits, plus c'est précis&nbsp;: c'est contre-intuitif, et c'est la clé.</p>
+
+            <div class="eviter">
+              <span class="et">⚠ Les deux confusions à ne pas faire</span>
+              <ul>
+                <li><b>Beaucoup de graduations ≠ précis.</b> Un bécher en porte cinq, une fiole jaugée un seul trait — et c'est la fiole qui est précise.</li>
+                <li><b>Grand volume ≠ imprécis.</b> Une fiole jaugée de 1&nbsp;L est plus précise qu'un bécher de 50&nbsp;mL. Ce qui compte, c'est le <b>type</b> de verrerie, pas sa taille.</li>
+              </ul>
+            </div>
+
+            <div class="block-label">L'échelle, du moins précis au plus précis<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+
+            <div class="echelle">
+              <svg viewBox="0 0 640 150" role="img" aria-label="Échelle de précision croissante : bécher et erlenmeyer, puis éprouvette graduée, puis pipette graduée, puis pipette jaugée, fiole jaugée et burette.">
+                <line class="ec-axe" x1="30" y1="86" x2="600" y2="86"/>
+                <polygon class="ec-fleche" points="600,80 616,86 600,92"/>
+                <text class="ec-bout" x="30" y="112">précision faible</text>
+                <text class="ec-bout d" x="612" y="112">précision élevée</text>
+                <line class="ec-cran" x1="96" y1="78" x2="96" y2="94"/>
+                <line class="ec-cran" x1="248" y1="78" x2="248" y2="94"/>
+                <line class="ec-cran" x1="382" y1="78" x2="382" y2="94"/>
+                <line class="ec-cran" x1="524" y1="78" x2="524" y2="94"/>
+                <text class="ec-nom" x="96" y="46">bécher</text>
+                <text class="ec-nom" x="96" y="64">erlenmeyer</text>
+                <text class="ec-nom" x="248" y="46">éprouvette</text>
+                <text class="ec-nom" x="248" y="64">graduée</text>
+                <text class="ec-nom" x="382" y="46">pipette</text>
+                <text class="ec-nom" x="382" y="64">graduée</text>
+                <text class="ec-nom fort" x="524" y="38">pipette jaugée</text>
+                <text class="ec-nom fort" x="524" y="56">fiole jaugée</text>
+                <text class="ec-nom fort" x="524" y="74">burette</text>
+                <text class="ec-nom" x="96" y="134" style="font-size:11.5px;fill:var(--ink-faint)">on ne mesure pas</text>
+                <text class="ec-nom" x="524" y="134" style="font-size:11.5px;fill:var(--ink-faint)">verrerie jaugée</text>
+              </svg>
+            </div>
+
+            <div class="point-cle alerte">🧪 <b>Cette échelle n'est pas une opinion&nbsp;: elle a été mesurée en classe.</b> C'est tout l'objet du <b>TP11</b>, «&nbsp;La précision de la verrerie au laboratoire&nbsp;»&nbsp;: on prélève 20&nbsp;mL d'eau avec cinq verreries différentes, on <b>pèse</b> ce qu'on a prélevé (l'eau a une masse volumique de <span class="nb">1,0 g·mL⁻¹</span>, donc 1&nbsp;g = 1&nbsp;mL), et on compare la <b>dispersion</b> des résultats de toute la classe. Le classement ci-dessus est ce que les mesures donnent.</div>
+
+            <div class="block-label">Quelle verrerie pour quel volume<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le nombre de chiffres de l'énoncé te dit quelle précision on attend de toi. C'est un signal, et il est fiable&nbsp;:</p>
+            <ul style="font-size:14.5px;line-height:1.7;margin:4px 0 12px;padding-left:22px">
+              <li>«&nbsp;prélever <b>environ 20 mL</b>&nbsp;» ou «&nbsp;<span class="nb">20 mL</span>&nbsp;» → une <b>éprouvette graduée</b> suffit.</li>
+              <li>«&nbsp;prélever <span class="nb">20,0 mL</span>&nbsp;» → trois chiffres significatifs, donc une <b>pipette jaugée</b> de 20 mL.</li>
+              <li>«&nbsp;préparer <span class="nb">100,0 mL</span> de solution&nbsp;» → une <b>fiole jaugée</b> de 100 mL, et rien d'autre.</li>
+            </ul>
+
+            <div class="exemple">
+              <div class="exemple-titre">Choisir sa verrerie pour préparer 50,0 mL de solution</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">Ce que l'énoncé demande</span>
+                Un volume de <b><span class="nb">50,0 mL</span></b>&nbsp;: trois chiffres significatifs, dont un zéro après la virgule. L'énoncé exige donc une <b>précision au dixième de millilitre</b>.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">Contenir ou mesurer&nbsp;?</span>
+                On <b>prépare une solution</b>, donc on doit contenir <i>et</i> ajuster un volume final&nbsp;: c'est le rôle propre de la <b>fiole jaugée</b>.</div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">Le choix</span>
+                <div class="calcul">→ <span class="encadre">fiole jaugée de 50 mL</span></div>
+                Une éprouvette de 50 mL contiendrait bien 50 mL, mais avec une précision moyenne&nbsp;: elle ne tient pas les trois chiffres.</div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">La phrase de conclusion</span>
+                Pour préparer <span class="nb">50,0 mL</span> de solution, on utilise une <b>fiole jaugée de 50 mL</b>.</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle</span>
+                La pièce choisie appartient-elle à la famille qui convient&nbsp;? Oui. Sa précision correspond-elle au nombre de chiffres demandé&nbsp;? Oui — un chiffre de plus dans l'énoncé aurait exigé la même fiole, un de moins aurait autorisé l'éprouvette.</div></div>
+            </div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">bécher · erlenmeyer → éprouvette →<br>pipette graduée → jaugée · fiole · burette</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Compter les <b>chiffres</b> du volume demandé&nbsp;: ils disent la précision attendue, donc la verrerie.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Un volume <b>avec une décimale</b> impose de la verrerie <b>jaugée</b>. Jamais un bécher.</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Croire que les <b>graduations</b> d'un bécher servent à mesurer. Elles ne servent qu'à te situer.</div></div>
+            </div>
+
+            <div class="block-label">À toi — six questions sur le choix<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="qcmbox" data-code="O4-Q-precision">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Un protocole demande de prélever 20,0 mL. Que prends-tu ?",
+  "o": [
+   "Un bécher de 50 mL, en visant la graduation",
+   "Une pipette jaugée de 20 mL",
+   "Une éprouvette graduée de 50 mL",
+   "Un erlenmeyer de 100 mL, plus maniable"
+  ],
+  "r": 1,
+  "c": "<b>20,0</b> porte trois chiffres significatifs : l'énoncé demande le dixième de millilitre. Seule la verrerie <b>jaugée</b> le tient, et il existe une pipette jaugée de 20 mL — c'est exactement le volume du trait."
+ },
+ {
+  "q": "Pourquoi les graduations d'un bécher ne servent-elles pas à mesurer ?",
+  "o": [
+   "Parce qu'elles s'effacent au lavage avec le temps",
+   "Parce qu'elles sont écrites en millilitres et non en litres",
+   "Parce qu'elles ne sont pas assez précises pour cela",
+   "Parce qu'un bécher n'a pas le droit de contenir un liquide"
+  ],
+  "r": 2,
+  "c": "C'est écrit tel quel sur la fiche : « les graduations ne sont pas assez précises pour mesurer un volume ». Un bécher est large, et un millimètre de hauteur y représente beaucoup de liquide."
+ },
+ {
+  "q": "Entre une fiole jaugée de 1 L et un bécher de 50 mL, lequel est le plus précis ?",
+  "o": [
+   "La fiole jaugée, malgré son grand volume",
+   "Le bécher, parce qu'il mesure un petit volume",
+   "Les deux se valent : tout dépend du liquide",
+   "Le bécher, parce qu'il porte plus de graduations"
+  ],
+  "r": 0,
+  "c": "C'est le <b>type</b> de verrerie qui décide, pas sa taille. Une fiole jaugée reste de la verrerie jaugée à n'importe quel volume ; un bécher reste un bécher."
+ },
+ {
+  "q": "Quelle verrerie a été classée la plus précise dans le TP11 ?",
+  "o": [
+   "L'erlenmeyer, qui limite les éclaboussures",
+   "L'éprouvette graduée, l'outil polyvalent",
+   "Le bécher, le plus rapide à utiliser",
+   "La verrerie jaugée : fiole et pipette"
+  ],
+  "r": 3,
+  "c": "La mesure de la classe donne, par précision croissante : bécher et erlenmeyer à peu près équivalents, puis l'éprouvette graduée, puis <b>la fiole jaugée et la pipette jaugée</b>. Ce sont celles-là que le chocolatier du TP doit employer."
+ },
+ {
+  "q": "On te demande « environ 100 mL d'eau » pour un bain-marie.",
+  "o": [
+   "Une fiole jaugée de 100 mL, par sécurité",
+   "Un bécher : le mot « environ » le permet",
+   "Une pipette jaugée, en s'y reprenant à cinq fois",
+   "Une burette, qui verse des volumes variables"
+  ],
+  "r": 1,
+  "c": "« Environ » dit explicitement que la précision n'est pas en jeu. Mobiliser de la verrerie jaugée ici serait une perte de temps — et la fiole serait indisponible pour ceux qui en ont besoin."
+ },
+ {
+  "q": "Que veut dire « pipette jaugée à deux traits » ?",
+  "o": [
+   "Elle mesure deux volumes différents au choix",
+   "Elle porte une graduation tous les deux millilitres",
+   "Elle se vide entre le trait du haut et celui du bas",
+   "Elle sert deux fois avant d'être relavée"
+  ],
+  "r": 2,
+  "c": "Le volume annoncé est celui compris <b>entre les deux traits</b> : on ajuste au trait du haut, on laisse couler jusqu'à celui du bas. Une pipette à un seul trait, elle, se vide entièrement."
+ }
+]
+              </script>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s1-geste">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3</div>
+            <h3 class="step-title">Le geste</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> ajuster un volume au trait de jauge sans se tromper, et se servir d'une pipette correctement.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Le ménisque, et l'œil au bon niveau<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">La surface d'un liquide dans un tube étroit n'est pas plate&nbsp;: elle se creuse. Cette courbe s'appelle le <b>ménisque</b>. Deux règles, et elles vont ensemble&nbsp;:</p>
+            <ul style="font-size:14.5px;line-height:1.7;margin:4px 0 12px;padding-left:22px">
+              <li>c'est le <b>bas</b> du ménisque qui doit être sur le trait de jauge&nbsp;;</li>
+              <li>l'<b>œil</b> doit être <b>au niveau du trait</b> au moment où tu regardes.</li>
+            </ul>
+
+            <div class="menisques">
+              <div class="men mauvais">
+                <svg viewBox="0 0 120 130" role="img" aria-label="Œil placé trop haut : la ligne de visée coupe le tube au-dessus du trait, on croit avoir dépassé.">
+                  <rect class="mn-liquide" x="34" y="66" width="34" height="52"/>
+                  <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
+                  <path class="mn-surface" d="M34,62 q17,12 34,0"/>
+                  <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
+                  <line class="mn-vue" x1="70" y1="48" x2="102" y2="34"/>
+                  <path class="mn-oeil" d="M100,28 q10,6 0,12 q-10,-6 0,-12 z"/>
+                  <circle cx="105" cy="34" r="2" fill="var(--ink)"/>
+                  <text class="mn-lab" x="60" y="128">œil trop haut</text>
+                </svg>
+                <div class="lg">La visée plonge&nbsp;: on lit <b>au-dessus</b> du trait et on arrête de verser trop tôt.<span class="verdict-txt">✗ volume trop petit</span></div>
+              </div>
+              <div class="men bon">
+                <svg viewBox="0 0 120 130" role="img" aria-label="Œil au niveau du trait : la ligne de visée est horizontale, le bas du ménisque affleure le trait de jauge.">
+                  <rect class="mn-liquide" x="34" y="72" width="34" height="46"/>
+                  <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
+                  <path class="mn-surface" d="M34,62 q17,12 34,0"/>
+                  <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
+                  <line class="mn-vue" x1="70" y1="72" x2="102" y2="72"/>
+                  <path class="mn-oeil" d="M100,66 q10,6 0,12 q-10,-6 0,-12 z"/>
+                  <circle cx="105" cy="72" r="2" fill="var(--ink)"/>
+                  <text class="mn-lab" x="60" y="128">œil au niveau</text>
+                </svg>
+                <div class="lg">Visée horizontale&nbsp;: le <b>bas du ménisque</b> affleure le trait.<span class="verdict-txt">✓ c'est le bon geste</span></div>
+              </div>
+              <div class="men mauvais">
+                <svg viewBox="0 0 120 130" role="img" aria-label="Œil placé trop bas : la ligne de visée remonte, on croit ne pas avoir atteint le trait et on verse trop.">
+                  <rect class="mn-liquide" x="34" y="78" width="34" height="40"/>
+                  <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
+                  <path class="mn-surface" d="M34,68 q17,12 34,0"/>
+                  <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
+                  <line class="mn-vue" x1="70" y1="96" x2="102" y2="110"/>
+                  <path class="mn-oeil" d="M100,104 q10,6 0,12 q-10,-6 0,-12 z"/>
+                  <circle cx="105" cy="110" r="2" fill="var(--ink)"/>
+                  <text class="mn-lab" x="60" y="128">œil trop bas</text>
+                </svg>
+                <div class="lg">La visée remonte&nbsp;: on croit manquer de liquide et on <b>verse trop</b>.<span class="verdict-txt">✗ volume trop grand</span></div>
+              </div>
+            </div>
+
+            <div class="point-cle"><b>Pourquoi l'œil compte autant que le liquide.</b> Le trait est <b>devant</b> et <b>derrière</b> le tube. Vu de biais, les deux ne se superposent plus, et tu vises une hauteur qui n'existe pas. Œil au niveau, les deux traits se confondent en un seul&nbsp;: c'est le signe que tu es bien placé.</div>
+
+            <div class="block-label">Les trois autres gestes<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <ul style="font-size:14.5px;line-height:1.75;margin:4px 0 12px;padding-left:22px">
+              <li><b>La propipette, jamais la bouche.</b> Une pipette s'emplit avec une propipette — on n'aspire <b>jamais</b> à la bouche, quel que soit le produit, même de l'eau. C'est la règle de l'<a href="2nde-pc-o3-securite-laboratoire.html" style="color:var(--link)">outil 3</a>&nbsp;: rien ne se porte à la bouche.</li>
+              <li><b>Rincer la coupelle et l'entonnoir.</b> Après avoir versé un solide dans la fiole, il en reste toujours un peu sur la coupelle et dans l'entonnoir. On les <b>rince à l'eau distillée au-dessus de la fiole</b> : sans ce rinçage, une partie du solide pesé n'entre jamais dans la solution, et la concentration est fausse.</li>
+              <li><b>Compléter goutte à goutte.</b> Les derniers millilitres avant le trait se versent lentement, à la pissette. Une fiole dépassée ne se rattrape pas&nbsp;: on recommence.</li>
+            </ul>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">bas du ménisque sur le trait<br>œil au niveau du trait</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Se <b>baisser</b> jusqu'à avoir le trait à hauteur des yeux, puis ajuster à la pissette.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Les deux traits — devant et derrière — se <b>confondent</b> en un seul&nbsp;: tu es au bon niveau.</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Aspirer à la <b>pipette</b> avec la bouche. Jamais, sous aucun prétexte.</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Trois gestes à nommer.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Sur le trait de jauge, on ajuste
+                <select class="short" data-answer="bas" aria-label="quelle partie du ménisque se place sur le trait"><option value="">choisis…</option><option value="bas">le bas du ménisque</option><option value="haut">le haut du ménisque</option><option value="milieu">le milieu du ménisque</option><option value="bord">le bord contre le verre</option></select>.</div>
+                <div style="margin-bottom:9px"><b>2.</b> Pour lire, l'œil doit être
+                <select class="short" data-answer="niveau" aria-label="position de l'œil pour lire un volume"><option value="">choisis…</option><option value="niveau">au niveau du trait</option><option value="dessus">au-dessus du trait</option><option value="dessous">en dessous du trait</option><option value="loin">le plus loin possible</option></select>.</div>
+                <div><b>3.</b> Une pipette s'emplit avec
+                <select class="short" data-answer="propipette" aria-label="avec quoi remplir une pipette"><option value="">choisis…</option><option value="propipette">une propipette</option><option value="bouche">la bouche</option><option value="pissette">une pissette</option><option value="entonnoir">un entonnoir</option></select>.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.4 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s1-materiel">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4</div>
+            <h3 class="step-title">Le reste du matériel</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> nommer les cinq objets non en verre qu'on retrouve à chaque TP.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Cinq pièces, une ligne chacune<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="famille" style="margin:10px 0">
+              <div class="grille-v">
+                <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="chauffe-ballon"><use href="#v-chauffeballon"/></svg>
+                  <div class="nom">chauffe-ballon</div><div class="use">chauffage du mélange réactionnel mis dans un ballon</div>
+                  <span class="pour">→ synthèses, distillations</span></div>
+                <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="support élévateur"><use href="#v-elevateur"/></svg>
+                  <div class="nom">support élévateur</div><div class="use">élévation du chauffe-ballon lors des montages de chimie organique</div>
+                  <span class="pour">→ synthèses, distillations</span></div>
+                <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="potence avec pinces et noix de serrage"><use href="#v-potence"/></svg>
+                  <div class="nom">potence <span style="font-weight:400">(pinces, noix)</span></div><div class="use">maintien pour divers montages</div>
+                  <span class="pour">→ synthèses, distillations</span></div>
+                <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="balance"><use href="#v-balance"/></svg>
+                  <div class="nom">balance</div><div class="use">pesée d'un solide, sur une coupelle et après <b>tare</b></div></div>
+                <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="spatule"><use href="#v-spatule"/></svg>
+                  <div class="nom">spatule</div><div class="use">prélèvement d'un solide — <b>jamais les doigts</b></div></div>
+              </div>
+            </div>
+
+            <div class="point-cle"><b>Tarer, c'est quoi&nbsp;?</b> Poser la coupelle <b>vide</b> sur la balance, puis remettre l'affichage à zéro. La balance oublie la coupelle et ne pèse plus que ce que tu ajoutes. Sans tare, tu pèses la coupelle avec le produit — et tu ne sais plus ce qui est quoi.</div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">peser sur une coupelle, après tare</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Coupelle vide → <b>tare</b> → solide à la <b>spatule</b>, petit à petit.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">La balance affiche <b>zéro</b> avec la coupelle dessus avant que tu ajoutes quoi que ce soit.</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Deux gestes de pesée.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Avant d'ajouter le solide, on pose la coupelle vide et on
+                <select class="short" data-answer="tare" aria-label="geste avant d'ajouter le solide"><option value="">choisis…</option><option value="tare">tare la balance</option><option value="note">note la masse de la coupelle</option><option value="essuie">essuie la coupelle</option><option value="attend">attend une minute</option></select>.</div>
+                <div><b>2.</b> Le solide se prélève avec
+                <select class="short" data-answer="spatule" aria-label="avec quoi prélever un solide"><option value="">choisis…</option><option value="spatule">une spatule</option><option value="doigts">les doigts</option><option value="pipette">une pipette</option><option value="entonnoir">un entonnoir</option></select>.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+
+  <!-- ===================== 2 — S'ENTRAÎNER ===================== -->
+  <section class="seance" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">2</span>S'entraîner</h2>
+      <span class="seance-time">≈ 35 min</span>
+    </div>
+    <p class="seance-goal">Cinq exercices&nbsp;: choisir la verrerie de six protocoles, lire trois ménisques, classer six pièces par précision, trancher entre cinq opérateurs, et compléter un protocole de dissolution.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- 2.1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s2-choisir">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1</div>
+            <h3 class="step-title">Quelle verrerie pour quel geste</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> passer de l'énoncé à la pièce, six fois de suite.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o4-s2-ex1">
+              <p class="exo-num">Exercice 1</p>
+              <p class="exo-enonce">Six lignes de protocole, tirées des TP de dissolution et de dilution de l'année. Pour chacune, choisis la verrerie. <b>Regarde le nombre de chiffres du volume&nbsp;: il décide.</b></p>
+              <div class="field">
+                <span class="field-type">Exercice 1</span>
+                <div class="field-q">Six choix de verrerie.</div>
+                <div class="cloze" data-cloze data-cle="ex1">
+                  <table class="saisie">
+                    <tr><th>La ligne de protocole</th><th>La verrerie</th></tr>
+                    <tr><td class="depart">« Prélever <b>10,0 mL</b> de la solution mère. »</td>
+                      <td><select class="short" data-answer="pipettej" aria-label="verrerie pour prélever 10,0 mL"><option value="">choisis…</option><option value="becher">un bécher</option><option value="eprouvette">une éprouvette graduée</option><option value="pipettej">une pipette jaugée de 10 mL</option><option value="fiole">une fiole jaugée</option><option value="coupelle">une coupelle de pesée</option><option value="entonnoir">un entonnoir</option></select></td></tr>
+                    <tr><td class="depart">« Compléter jusqu'au trait pour obtenir <b>100,0 mL</b> de solution fille. »</td>
+                      <td><select class="short" data-answer="fiole" aria-label="verrerie pour obtenir 100,0 mL de solution"><option value="">choisis…</option><option value="becher">un bécher</option><option value="eprouvette">une éprouvette graduée</option><option value="pipettej">une pipette jaugée de 10 mL</option><option value="fiole">une fiole jaugée de 100 mL</option><option value="coupelle">une coupelle de pesée</option><option value="entonnoir">un entonnoir</option></select></td></tr>
+                    <tr><td class="depart">« Peser <b>2,5 g</b> de sulfate de cuivre. »</td>
+                      <td><select class="short" data-answer="coupelle" aria-label="verrerie pour peser un solide"><option value="">choisis…</option><option value="becher">un bécher</option><option value="eprouvette">une éprouvette graduée</option><option value="pipettej">une pipette jaugée de 10 mL</option><option value="fiole">une fiole jaugée</option><option value="coupelle">une coupelle de pesée</option><option value="entonnoir">un entonnoir</option></select></td></tr>
+                    <tr><td class="depart">« Verser le solide dans la fiole sans en perdre. »</td>
+                      <td><select class="short" data-answer="entonnoir" aria-label="verrerie pour transférer un solide"><option value="">choisis…</option><option value="becher">un bécher</option><option value="eprouvette">une éprouvette graduée</option><option value="pipettej">une pipette jaugée de 10 mL</option><option value="fiole">une fiole jaugée</option><option value="coupelle">une coupelle de pesée</option><option value="entonnoir">un entonnoir</option></select></td></tr>
+                    <tr><td class="depart">« Préparer <b>environ 50 mL</b> d'eau pour le bain-marie. »</td>
+                      <td><select class="short" data-answer="becher" aria-label="verrerie pour environ 50 mL"><option value="">choisis…</option><option value="becher">un bécher</option><option value="eprouvette">une éprouvette graduée</option><option value="pipettej">une pipette jaugée de 10 mL</option><option value="fiole">une fiole jaugée</option><option value="coupelle">une coupelle de pesée</option><option value="entonnoir">un entonnoir</option></select></td></tr>
+                    <tr><td class="depart">« Mesurer <b>35 mL</b> de solution avant de la chauffer. »</td>
+                      <td><select class="short" data-answer="eprouvette" aria-label="verrerie pour mesurer 35 mL"><option value="">choisis…</option><option value="becher">un bécher</option><option value="eprouvette">une éprouvette graduée</option><option value="pipettej">une pipette jaugée de 10 mL</option><option value="fiole">une fiole jaugée</option><option value="coupelle">une coupelle de pesée</option><option value="entonnoir">un entonnoir</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 1</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Le raisonnement est le même six fois.</b> On lit le volume, on compte ses chiffres, on en déduit la précision attendue — puis on choisit dans la bonne famille.</p>
+                  <p><b>1 · 10,0 mL → pipette jaugée de 10 mL.</b> Trois chiffres significatifs : verrerie jaugée obligatoire. On <b>prélève</b>, donc c'est la pipette et non la fiole.</p>
+                  <p><b>2 · 100,0 mL de solution fille → fiole jaugée de 100 mL.</b> Même précision, mais le geste est différent : on ne prélève pas, on <b>prépare un volume final</b>. C'est la définition même de la fiole jaugée.</p>
+                  <p><b>3 · peser 2,5 g → coupelle de pesée.</b> Aucun volume ici. La coupelle se pose sur la balance, on tare, on ajoute à la spatule.</p>
+                  <p><b>4 · transférer le solide → entonnoir.</b> Il ne contient rien et ne mesure rien : il fait passer. Et il se <b>rince</b> ensuite au-dessus de la fiole, sinon une partie du solide pesé n'entre jamais dans la solution.</p>
+                  <p><b>5 · environ 50 mL → un bécher.</b> Le mot « environ » libère la précision. Un bécher suffit, et ses graduations sont là exactement pour ça : se situer, sans mesurer.</p>
+                  <p><b>6 · 35 mL → éprouvette graduée.</b> Deux chiffres, pas de décimale : la précision moyenne suffit, et l'éprouvette est faite pour un volume quelconque. Une pipette jaugée ne saurait pas faire 35 mL — elle ne connaît que le volume de son trait.</p>
+                  <p><b>Le contrôle.</b> Deux lignes demandaient de la verrerie jaugée, deux n'en demandaient pas, et deux ne portaient pas de volume du tout. Si tu as mis de la verrerie jaugée partout, tu as répondu à une question que l'énoncé ne posait pas.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s2-menisques">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2</div>
+            <h3 class="step-title">Lire trois ménisques</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> juger un ajustement, et dire dans quel sens il est faux.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o4-s2-ex2">
+              <p class="exo-num">Exercice 2</p>
+              <p class="exo-enonce">Trois élèves ajustent une fiole jaugée au trait. Voici ce qu'on voit dans chaque cas. Pour chacun, dis si le volume obtenu est <b>juste</b>, <b>trop petit</b> ou <b>trop grand</b>.</p>
+
+              <div class="menisques">
+                <div class="men">
+                  <svg viewBox="0 0 120 130" role="img" aria-label="Cas A : le bas du ménisque est nettement au-dessus du trait de jauge.">
+                    <rect class="mn-liquide" x="34" y="58" width="34" height="60"/>
+                    <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
+                    <path class="mn-surface" d="M34,48 q17,12 34,0"/>
+                    <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
+                    <line class="mn-vue" x1="70" y1="72" x2="102" y2="72"/>
+                    <path class="mn-oeil" d="M100,66 q10,6 0,12 q-10,-6 0,-12 z"/>
+                    <circle cx="105" cy="72" r="2" fill="var(--ink)"/>
+                    <text class="mn-lab" x="60" y="128">cas A</text>
+                  </svg>
+                  <div class="lg">Le bas du ménisque est <b>au-dessus</b> du trait.</div>
+                </div>
+                <div class="men">
+                  <svg viewBox="0 0 120 130" role="img" aria-label="Cas B : le bas du ménisque affleure exactement le trait de jauge, l'œil est au niveau.">
+                    <rect class="mn-liquide" x="34" y="72" width="34" height="46"/>
+                    <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
+                    <path class="mn-surface" d="M34,62 q17,12 34,0"/>
+                    <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
+                    <line class="mn-vue" x1="70" y1="72" x2="102" y2="72"/>
+                    <path class="mn-oeil" d="M100,66 q10,6 0,12 q-10,-6 0,-12 z"/>
+                    <circle cx="105" cy="72" r="2" fill="var(--ink)"/>
+                    <text class="mn-lab" x="60" y="128">cas B</text>
+                  </svg>
+                  <div class="lg">Le bas du ménisque <b>affleure</b> le trait, œil au niveau.</div>
+                </div>
+                <div class="men">
+                  <svg viewBox="0 0 120 130" role="img" aria-label="Cas C : le haut du ménisque a été aligné sur le trait, donc le bas est en dessous.">
+                    <rect class="mn-liquide" x="34" y="82" width="34" height="36"/>
+                    <path class="mn-surface" d="M34,72 q17,12 34,0"/>
+                    <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
+                    <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
+                    <line class="mn-vue" x1="70" y1="72" x2="102" y2="72"/>
+                    <path class="mn-oeil" d="M100,66 q10,6 0,12 q-10,-6 0,-12 z"/>
+                    <circle cx="105" cy="72" r="2" fill="var(--ink)"/>
+                    <text class="mn-lab" x="60" y="128">cas C</text>
+                  </svg>
+                  <div class="lg">C'est le <b>haut</b> du ménisque qui a été mis sur le trait.</div>
+                </div>
+              </div>
+
+              <div class="field">
+                <span class="field-type">Exercice 2</span>
+                <div class="field-q">Trois jugements.</div>
+                <div class="cloze" data-cloze data-cle="ex2">
+                  <table class="saisie">
+                    <tr><th>Le cas</th><th>Le volume obtenu</th></tr>
+                    <tr><td class="depart"><b>A</b> — le bas du ménisque est au-dessus du trait</td>
+                      <td><select class="short" data-answer="grand" aria-label="volume obtenu dans le cas A"><option value="">choisis…</option><option value="juste">juste</option><option value="petit">trop petit</option><option value="grand">trop grand</option></select></td></tr>
+                    <tr><td class="depart"><b>B</b> — le bas du ménisque affleure le trait, œil au niveau</td>
+                      <td><select class="short" data-answer="juste" aria-label="volume obtenu dans le cas B"><option value="">choisis…</option><option value="juste">juste</option><option value="petit">trop petit</option><option value="grand">trop grand</option></select></td></tr>
+                    <tr><td class="depart"><b>C</b> — le haut du ménisque a été aligné sur le trait</td>
+                      <td><select class="short" data-answer="petit" aria-label="volume obtenu dans le cas C"><option value="">choisis…</option><option value="juste">juste</option><option value="petit">trop petit</option><option value="grand">trop grand</option></select></td></tr>
+                    </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 2</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>A · trop grand.</b> Le bas du ménisque est au-dessus du trait : il y a <b>plus</b> de liquide que le volume annoncé par la fiole. L'élève a versé trop loin — et une fiole dépassée ne se rattrape pas : on vide et on recommence.</p>
+                  <p><b>B · juste.</b> Bas du ménisque sur le trait, œil au niveau du trait : les deux conditions sont remplies. C'est le geste de référence.</p>
+                  <p><b>C · trop petit.</b> C'est l'erreur la plus courante, et la plus discrète : aligner le <b>haut</b> du ménisque. Le liquide s'arrête alors avant le trait, et il en manque — de l'épaisseur du ménisque, soit quelques dixièmes de millilitre. Sur une fiole de 100 mL, c'est peu ; sur une pipette de 10 mL, cela se voit dans le résultat final.</p>
+                  <p><b>Ce qu'il faut voir dans les trois.</b> Dans les cas A et C, l'œil était pourtant <b>bien placé</b> — c'est le <b>choix du repère sur le ménisque</b> qui a fauté. Les deux règles sont indépendantes : on peut viser correctement une mauvaise ligne.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s2-classer">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3</div>
+            <h3 class="step-title">Classer six verreries</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> remettre l'échelle de précision dans l'ordre, sans la regarder.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o4-s2-ex3">
+              <p class="exo-num">Exercice 3</p>
+              <p class="exo-enonce">Attribue à chaque pièce son rang, de <b>1</b> (la moins précise) à <b>4</b> (la plus précise). Deux pièces partagent le rang&nbsp;1, et deux autres le rang&nbsp;4&nbsp;: le TP11 ne les a pas départagées.</p>
+              <div class="field">
+                <span class="field-type">Exercice 3</span>
+                <div class="field-q">Six rangs à attribuer.</div>
+                <div class="cloze" data-cloze data-cle="ex3">
+                  <table class="saisie">
+                    <tr><th>La pièce</th><th>Son rang</th></tr>
+                    <tr><td class="depart">pipette graduée</td>
+                      <td><select class="short" data-answer="rang3" aria-label="rang de la pipette graduée"><option value="">choisis…</option><option value="rang1">1 — la moins précise</option><option value="rang2">2</option><option value="rang3">3</option><option value="rang4">4 — la plus précise</option></select></td></tr>
+                    <tr><td class="depart">fiole jaugée</td>
+                      <td><select class="short" data-answer="rang4" aria-label="rang de la fiole jaugée"><option value="">choisis…</option><option value="rang1">1 — la moins précise</option><option value="rang2">2</option><option value="rang3">3</option><option value="rang4">4 — la plus précise</option></select></td></tr>
+                    <tr><td class="depart">bécher</td>
+                      <td><select class="short" data-answer="rang1" aria-label="rang du bécher"><option value="">choisis…</option><option value="rang1">1 — la moins précise</option><option value="rang2">2</option><option value="rang3">3</option><option value="rang4">4 — la plus précise</option></select></td></tr>
+                    <tr><td class="depart">pipette jaugée</td>
+                      <td><select class="short" data-answer="rang4" aria-label="rang de la pipette jaugée"><option value="">choisis…</option><option value="rang1">1 — la moins précise</option><option value="rang2">2</option><option value="rang3">3</option><option value="rang4">4 — la plus précise</option></select></td></tr>
+                    <tr><td class="depart">éprouvette graduée</td>
+                      <td><select class="short" data-answer="rang2" aria-label="rang de l'éprouvette graduée"><option value="">choisis…</option><option value="rang1">1 — la moins précise</option><option value="rang2">2</option><option value="rang3">3</option><option value="rang4">4 — la plus précise</option></select></td></tr>
+                    <tr><td class="depart">erlenmeyer</td>
+                      <td><select class="short" data-answer="rang1" aria-label="rang de l'erlenmeyer"><option value="">choisis…</option><option value="rang1">1 — la moins précise</option><option value="rang2">2</option><option value="rang3">3</option><option value="rang4">4 — la plus précise</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 3</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Rang 1 — bécher et erlenmeyer.</b> Ni l'un ni l'autre ne mesure. Le TP11 les a trouvés « à peu près équivalents », c'est-à-dire tous deux très dispersés : d'un groupe à l'autre, les volumes prélevés varient beaucoup.</p>
+                  <p><b>Rang 2 — éprouvette graduée.</b> Précision moyenne. Elle mesure vraiment, mais son diamètre reste large et ses graduations espacées.</p>
+                  <p><b>Rang 3 — pipette graduée.</b> Bonne précision : le tube est fin, donc un millimètre de hauteur représente très peu de volume.</p>
+                  <p><b>Rang 4 — pipette jaugée et fiole jaugée.</b> Très bonne précision, et c'est là que se trouve la <b>burette</b> aussi. Ce sont les trois verreries <b>jaugées</b> : elles ne connaissent qu'un volume, et elles le connaissent bien.</p>
+                  <p><b>La logique à retenir, si tu oublies l'ordre.</b> Plus le tube est <b>fin</b> à l'endroit de la lecture, plus la mesure est précise — parce qu'une même erreur de hauteur y représente moins de liquide. Regarde le col d'une fiole jaugée : c'est le tube le plus fin de toute la salle, et ce n'est pas un hasard.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.4 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s2-operateurs">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4</div>
+            <h3 class="step-title">Les cinq opérateurs du chocolatier</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> reconnaître, dans cinq façons de faire, celle qui tient et celles qui dérivent.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o4-s2-ex4">
+              <p class="exo-num">Exercice 4</p>
+              <p class="exo-enonce">C'est la situation du <b>TP11</b>. Dans le laboratoire d'un grand chocolatier, la recette phare donne des résultats différents selon les jours&nbsp;: parfois la garniture est trop liquide, parfois trop épaisse. Chaque opérateur prélève les liquides à sa façon. Voici leurs témoignages.</p>
+
+              <div class="field">
+                <span class="field-type">Exercice 4</span>
+                <div class="field-q">Pour chaque opérateur, dis si sa méthode convient.</div>
+                <div class="cloze" data-cloze data-cle="ex4">
+                  <table class="saisie">
+                    <tr><th>L'opérateur</th><th>Sa méthode</th></tr>
+                    <tr><td class="depart"><b>Tom</b> — «&nbsp;J'utilise le plus souvent un bécher&nbsp;: rapidité et efficacité.&nbsp;»</td>
+                      <td><select class="short" data-answer="non" aria-label="la méthode de Tom convient-elle"><option value="">choisis…</option><option value="oui">elle convient</option><option value="non">elle ne convient pas</option></select></td></tr>
+                    <tr><td class="depart"><b>Lucie</b> — «&nbsp;Je prends toujours une pipette jaugée&nbsp;: c'est plus stylé.&nbsp;»</td>
+                      <td><select class="short" data-answer="oui" aria-label="la méthode de Lucie convient-elle"><option value="">choisis…</option><option value="oui">elle convient</option><option value="non">elle ne convient pas</option></select></td></tr>
+                    <tr><td class="depart"><b>Jean</b> — «&nbsp;J'aime utiliser une éprouvette, un outil polyvalent.&nbsp;»</td>
+                      <td><select class="short" data-answer="moyen" aria-label="la méthode de Jean convient-elle"><option value="">choisis…</option><option value="oui">elle convient</option><option value="non">elle ne convient pas</option><option value="moyen">elle dépanne, sans plus</option></select></td></tr>
+                    <tr><td class="depart"><b>Sabine</b> — «&nbsp;Dès que je peux je mesure avec une fiole jaugée.&nbsp;»</td>
+                      <td><select class="short" data-answer="oui" aria-label="la méthode de Sabine convient-elle"><option value="">choisis…</option><option value="oui">elle convient</option><option value="non">elle ne convient pas</option></select></td></tr>
+                    <tr><td class="depart"><b>Mickaël</b> — «&nbsp;J'utilise la première verrerie graduée qui me passe sous la main.&nbsp;»</td>
+                      <td><select class="short" data-answer="non" aria-label="la méthode de Mickaël convient-elle"><option value="">choisis…</option><option value="oui">elle convient</option><option value="non">elle ne convient pas</option></select></td></tr>
+                    <tr><td class="depart">Qui le chocolatier doit-il imiter pour que sa recette soit <b>reproductible</b>&nbsp;?</td>
+                      <td><select class="short" data-answer="jauge" aria-label="qui imiter pour une recette reproductible"><option value="">choisis…</option><option value="jauge">Lucie et Sabine, qui emploient de la verrerie jaugée</option><option value="rapide">Tom, le plus rapide</option><option value="poly">Jean, le plus polyvalent</option><option value="souple">Mickaël, le plus souple</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 4</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Tom — non.</b> «&nbsp;Rapidité et efficacité&nbsp;» : il a raison sur la rapidité, et c'est bien là le piège. Un bécher ne mesure pas, et c'est précisément lui qui explique que la garniture change d'un jour à l'autre.</p>
+                  <p><b>Lucie — oui</b>, même si son argument est mauvais. «&nbsp;C'est plus stylé&nbsp;» n'est pas une raison ; la pipette jaugée est pourtant le bon choix. Retiens que <b>le bon geste et la bonne justification sont deux choses différentes</b> — en TP, on te demandera les deux.</p>
+                  <p><b>Jean — elle dépanne, sans plus.</b> L'éprouvette mesure vraiment, avec une précision moyenne. Pour «&nbsp;environ&nbsp;», elle suffit ; pour une recette qui doit être identique chaque jour, elle laisse passer trop de dispersion.</p>
+                  <p><b>Sabine — oui.</b> La fiole jaugée est de la verrerie jaugée, donc au sommet de l'échelle. Son image du «&nbsp;filtre magique&nbsp;» est amusante mais la méthode est juste.</p>
+                  <p><b>Mickaël — non</b>, et c'est le cas le plus grave des cinq. Ce n'est pas seulement <i>imprécis</i> : c'est <b>différent à chaque fois</b>. Même si toutes ses verreries étaient précises, changer d'outil à chaque prélèvement empêche tout résultat reproductible.</p>
+                  <p><b>La conclusion du TP.</b> Le chocolatier doit imposer la <b>verrerie jaugée</b> — fiole et pipette — à tous ses opérateurs. Et « à tous » compte autant que « jaugée » : la reproductibilité vient de ce que <b>tout le monde fait pareil</b>.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.5 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s2-protocole">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.5</div>
+            <h3 class="step-title">Un protocole à compléter</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> écrire un protocole de dissolution avec la bonne verrerie à chaque étape.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o4-s2-ex5">
+              <p class="exo-num">Exercice 5</p>
+              <p class="exo-enonce">Voici le protocole de dissolution, celui que tu suivras à chaque préparation de solution. Cinq mots manquent&nbsp;: ce sont les pièces de verrerie.</p>
+              <div class="field">
+                <span class="field-type">Exercice 5</span>
+                <div class="field-q">Cinq étapes, cinq pièces à retrouver.</div>
+                <div class="cloze" data-cloze data-cle="ex5">
+                  <div style="margin-bottom:10px"><b>Étape 1.</b> Sur une balance tarée et à l'aide d'une
+                  <select class="short" data-answer="coupelle" aria-label="pièce de l'étape 1"><option value="">choisis…</option><option value="coupelle">coupelle</option><option value="fiole">fiole jaugée</option><option value="entonnoir">entonnoir</option><option value="pissette">pissette</option><option value="eprouvette">éprouvette</option></select>,
+                  peser une masse <span class="nb">m</span> de soluté.</div>
+                  <div style="margin-bottom:10px"><b>Étape 2.</b> Introduire le solide dans la
+                  <select class="short" data-answer="fiole" aria-label="pièce de l'étape 2"><option value="">choisis…</option><option value="coupelle">coupelle</option><option value="fiole">fiole jaugée</option><option value="entonnoir">entonnoir</option><option value="pissette">pissette</option><option value="eprouvette">éprouvette</option></select>
+                  de volume <span class="nb">V</span>, en s'aidant d'un
+                  <select class="short" data-answer="entonnoir" aria-label="pièce de transfert de l'étape 2"><option value="">choisis…</option><option value="coupelle">coupelle</option><option value="fiole">fiole jaugée</option><option value="entonnoir">entonnoir</option><option value="pissette">pissette</option><option value="eprouvette">éprouvette</option></select>.
+                  Rincer ensuite les deux à l'eau distillée et <b>récupérer l'eau de rinçage dans la fiole</b>.</div>
+                  <div style="margin-bottom:10px"><b>Étape 3.</b> Ajouter de l'eau distillée jusqu'aux <b>deux tiers</b> de la fiole, boucher et agiter jusqu'à dissolution complète.</div>
+                  <div style="margin-bottom:10px"><b>Étape 4.</b> Compléter la fiole jusqu'au
+                  <select class="short" data-answer="trait" aria-label="repère de l'étape 4"><option value="">choisis…</option><option value="trait">trait de jauge</option><option value="bord">bord supérieur</option><option value="bouchon">bouchon</option><option value="milieu">milieu du col</option></select>,
+                  en versant les derniers millilitres à la
+                  <select class="short" data-answer="pissette" aria-label="pièce pour les derniers millilitres"><option value="">choisis…</option><option value="coupelle">coupelle</option><option value="fiole">fiole jaugée</option><option value="entonnoir">entonnoir</option><option value="pissette">pissette</option><option value="eprouvette">éprouvette</option></select>.</div>
+                  <div><b>Étape 5.</b> Boucher et agiter <b>par retournement</b> pour homogénéiser la solution.</div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 5</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>1 · la coupelle</b>, sur une balance <b>tarée</b> — sinon on pèse la coupelle avec le produit.</p>
+                  <p><b>2 · la fiole jaugée</b> et l'<b>entonnoir</b>. Et le rinçage des deux n'est pas une politesse : ce qui reste collé à la coupelle ou dans l'entonnoir a été <b>pesé</b> mais n'entrera jamais dans la solution. La concentration serait plus faible que celle annoncée, sans qu'aucune erreur ne soit visible.</p>
+                  <p><b>3 · les deux tiers.</b> On ne remplit pas d'emblée jusqu'au trait : il faut de la place pour agiter, et un solide qui se dissout peut faire varier le volume. On dissout d'abord, on ajuste ensuite.</p>
+                  <p><b>4 · le trait de jauge</b>, à la <b>pissette</b> pour la fin. Bas du ménisque sur le trait, œil au niveau — c'est l'étape 1.3. Un dépassement ne se rattrape pas.</p>
+                  <p><b>5 · par retournement.</b> Une fiole bouchée se retourne plusieurs fois ; on ne l'agite pas comme un shaker. C'est ce qui homogénéise sans faire mousser ni projeter.</p>
+                  <p><b>L'ordre a un sens, et il ne se change pas.</b> Peser → transférer → rincer → dissoudre → ajuster → homogénéiser. Ajuster <b>avant</b> d'avoir tout dissous donnerait un volume final faux, parce que le volume change encore pendant la dissolution.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Outil transversal — proposition V1 du 28/08/2026.</b> Cet outil n'est pas un chapitre&nbsp;: il sert dans tous les TP de l'année, et il reste ouvert toute l'année. Les exercices se corrigent <b>en direct</b> par le navigateur, et chacun porte en plus son <b>corrigé rédigé</b>, dépliable à tout moment. 🖨️ La <a href="../assets/pdf/pc/fiches/fiche-2nde-o4-verrerie-materiel.pdf" style="color:var(--link)">fiche outil (PDF)</a> reprend toute la méthode, planche de verrerie comprise, sur une feuille à coller.
+  </footer>
+</div>
+
+<script src="../assets/js/sequence-snt.js?v=42"></script>
+
+<!-- ============================================================
+     JS propre à l'outil. Aucun composant nouveau ici : seulement les
+     deux appoints d'affichage communs aux outils — le retrait de la
+     fiche récapitulative du moteur, et l'allègement de la barre
+     « tu es ici ». Le moteur partagé n'est pas touché (§5).
+     ============================================================ -->
+<script>
+(function(){
+  'use strict';
+
+  var TEXTE_FICHE = '🖨️ Pour garder la méthode sous les yeux, imprime la <b>fiche outil</b> — '
+                  + 'le lien est en haut de la page.';
+
+  function retirerBoutonsFiche(racine){
+    Array.prototype.forEach.call(racine.querySelectorAll('.btn.dl'), function(b){
+      if (b.parentNode) b.parentNode.removeChild(b);
+    });
+  }
+
+  /* La modale du moteur est un nœud unique, réécrit à chaque
+     ouverture : on marque le paragraphe qu'on réécrit, ce qui évite à
+     la fois la boucle et l'oubli. */
+  function surveillerModale(){
+    var mb = document.querySelector('.modal-back');
+    if (!mb || !window.MutationObserver) return;
+    function corriger(){
+      retirerBoutonsFiche(mb);
+      var titre = mb.querySelector('h3'), p = mb.querySelector('.m-body p');
+      if (!titre || !p || p.classList.contains('sans-fiche')) return;
+      if (titre.textContent.indexOf('Recommencer') >= 0){
+        p.innerHTML = 'Tu vas repartir d\'une partie vierge : ce que tu as écrit sera effacé de '
+                    + 'l\'écran. La <b>fiche outil</b> imprimable, elle, ne bouge pas.';
+        p.classList.add('sans-fiche');
+      } else if (titre.textContent.indexOf('terminée') >= 0){
+        p.innerHTML = TEXTE_FICHE;
+        p.classList.add('sans-fiche');
+      }
+    }
+    new MutationObserver(corriger).observe(mb, {childList:true, subtree:true});
+    corriger();
+  }
+
+  function retirerFichePDF(){
+    Array.prototype.forEach.call(document.querySelectorAll('.seance-actions'), function(bar){
+      retirerBoutonsFiche(bar);
+      var lab = bar.querySelector('.sa-label');
+      if (lab && lab.dataset.reecrit !== '1'){
+        lab.dataset.reecrit = '1';
+        lab.innerHTML = TEXTE_FICHE;
+      }
+    });
+    surveillerModale();
+  }
+
+  function allegerBarre(){
+    var b4 = document.getElementById('prog4');
+    if (!b4) return;
+    var menu = b4.querySelector('.p4-menu');          /* le ☰ ouvre un sommaire qui n'existe pas */
+    if (menu && menu.parentNode) menu.parentNode.removeChild(menu);
+    var ret = b4.querySelector('.p4-retour');
+    if (ret){
+      ret.setAttribute('title', 'Revenir à la physique-chimie');
+      ret.setAttribute('aria-label', 'Revenir à la physique-chimie');
+      var lab = ret.querySelector('.p4-lab');
+      if (lab) lab.textContent = 'Retour';
+    }
+  }
+
+  function retirerGlossaire(){
+    ['#glo-ouvrir', '.glo-back'].forEach(function(sel){
+      var n = document.querySelector(sel);
+      if (n && n.parentNode) n.parentNode.removeChild(n);
+    });
+  }
+
+  function demarrer(){
+    retirerFichePDF();
+    allegerBarre();
+    retirerGlossaire();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
+  else demarrer();
+})();
+</script>
+
+</body></html>

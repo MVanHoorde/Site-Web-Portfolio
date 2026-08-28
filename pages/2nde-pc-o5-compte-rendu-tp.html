@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil 5 · Rédiger un compte rendu de TP — Physique-Chimie 2nde</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- Client de base de données partagé. Absent ou non configuré : l'outil
+     fonctionne, sans enregistrement. Sans "defer" à dessein : le script de
+     la page, en fin de body, doit le trouver déjà chargé. -->
+<script src="../assets/js/progression.js?v=16"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     OUTIL TRANSVERSAL 5 — RÉDIGER UN COMPTE RENDU DE TP.
+     Produit le 28/08/2026 depuis _modeles/gabarit-outil-PC.html.
+     Source : Fiche_guide - Rédiger un TP.pdf.
+
+     🔴 DÉCISION O-29 — LA NUMÉROTATION DE LA SOURCE EST REFAITE.
+     Elle porte DEUX rubriques n°6 (« expérience » et « observation et
+     interprétation »), numérote le schéma n°5 alors qu'il est imprimé
+     APRÈS le n°6 « expérience », et sa conclusion renvoie aux
+     « objectifs fixés dans le n°1 » alors que le n°1 est le titre —
+     l'objectif est le n°2.
+     Retenu : huit rubriques renumérotées dans l'ordre que la
+     numérotation de la source RÉVÈLE (le schéma est bien pensé AVANT
+     la manipulation), et le renvoi final corrigé vers le n°2. Aucune
+     rubrique n'est ajoutée, retirée ni réécrite : c'est une
+     correction de forme sur un document de collègue, signalée dans
+     _suivi/erreurs-sources-fiches-outils.md. Proposition à valider.
+
+     🔴 DÉCISION O-28 — LE RENVOI VIDÉO RESTE, SUR LA PAGE SEULEMENT.
+     Le §5 des consignes interdit les ressources CHARGÉES depuis
+     l'extérieur ; un lien hypertexte n'en est pas une — rien ne part
+     vers YouTube tant que l'élève ne clique pas, et aucune adresse IP
+     n'est exposée au chargement. Pas sur la fiche A4, qui porte déjà
+     son QR code. Proposition à valider.
+
+     Contexte : quinze sujets de TP attendent leur mise en ligne.
+     Cet outil est leur compagnon — le plus souvent ouvert de l'année.
+     ============================================================ -->
+<style>
+  /* ---------- Encart intermédiaire — PAS un « à retenir » ---------- */
+  .point-cle{border-left:3px solid var(--link);background:var(--surface);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px;margin:10px 0}
+  .point-cle.alerte{border-left-color:var(--activity);background:var(--activity-wash)}
+
+  /* ---------- Exemple entièrement résolu, ouvert par défaut ---------- */
+  .exemple{border:1px solid var(--ok);background:var(--ok-wash);border-radius:12px;padding:12px 14px;margin:12px 0}
+  /* Pas de text-transform ici (O-20) : les titres portent des unités. */
+  .exemple-titre{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;
+                 color:var(--ok);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .exemple-titre::before{content:"✓ exemple résolu";text-transform:uppercase;background:var(--ok);color:var(--surface);border-radius:5px;padding:1px 7px;letter-spacing:.05em}
+  .ex-etape{display:grid;grid-template-columns:22px 1fr;gap:9px;align-items:baseline;margin-bottom:9px}
+  .ex-etape:last-child{margin-bottom:0}
+  .ex-etape > .n{font-family:"IBM Plex Mono";font-size:12px;font-weight:700;color:var(--ok);
+                 border:1.5px solid var(--ok);border-radius:50%;width:20px;height:20px;
+                 display:flex;align-items:center;justify-content:center;line-height:1}
+  .ex-etape > div{min-width:0;font-size:14.5px}
+  .ex-lab{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.07em;
+          color:var(--ink-faint);display:block;margin-bottom:2px}
+  .calcul{font-family:"IBM Plex Mono";font-size:15px;line-height:2;overflow-x:auto;margin:6px 0 2px}
+  .calcul .encadre{color:var(--ok);font-weight:700;border:1.5px solid var(--ok);border-radius:6px;padding:1px 7px;white-space:nowrap}
+  @media(max-width:560px){.calcul{font-size:13px}}
+  .nb{font-family:"IBM Plex Mono";white-space:nowrap}
+
+  /* ---------- Encadré « à éviter » ---------- */
+  .eviter{border:1px solid var(--err);border-left:4px solid var(--err);background:var(--err-wash);
+          border-radius:0 10px 10px 0;padding:11px 14px;margin:12px 0;font-size:14.5px}
+  .eviter .et{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+              color:var(--err);font-weight:600;display:block;margin-bottom:6px}
+  .eviter ul{margin:6px 0 0;padding-left:20px}
+  .eviter li{margin-bottom:5px}
+
+  /* ---------- Structure des « à retenir » (O-10) — trois temps ---------- */
+  .ret-t{display:grid;grid-template-columns:82px 1fr;gap:11px;align-items:baseline;margin-bottom:10px}
+  .ret-t:last-child{margin-bottom:0}
+  .ret-e{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+         color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 0;text-align:center}
+  .ret-t.piege .ret-e{color:var(--err);border-color:var(--err)}
+  .ret-c{min-width:0}
+  .ret-f{font-family:"IBM Plex Mono";font-size:18px;font-weight:600;text-align:center;
+         line-height:1.6;margin:2px 0 4px;color:var(--ink)}
+  @media(max-width:520px){
+    .ret-t{grid-template-columns:1fr;gap:4px}
+    .ret-e{justify-self:start;padding:2px 8px}
+    .ret-f{font-size:15.5px}
+  }
+
+  /* ---------- Le composant EXERCICE ---------- */
+  .exo{border:1px solid var(--line);border-left:4px solid var(--activity);border-radius:0 12px 12px 0;
+       background:var(--surface);padding:13px 15px;margin:16px 0}
+  .exo-num{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--activity);font-weight:600;margin:0 0 7px}
+  .exo-enonce{font-size:15px;margin:0 0 11px;line-height:1.6}
+  .exo-consigne{font-size:13.5px;color:var(--ink-soft);margin:12px 0 8px;font-style:italic}
+  .exo-corr{border-top:1px dashed var(--line);padding-top:9px;margin-top:4px}
+  .exo-corr summary{font-family:"IBM Plex Mono";font-size:13px;color:var(--link);cursor:pointer;
+                    padding:5px 2px;min-height:32px;display:flex;align-items:center;gap:6px}
+  .exo-corr summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:5px}
+  .exo-corr[open] summary{margin-bottom:8px;color:var(--ink-soft)}
+  .exo-corr .corps{font-size:14.5px;line-height:1.65;border-left:3px solid var(--ok);
+                   background:var(--ok-wash);border-radius:0 10px 10px 0;padding:11px 14px}
+  .exo-corr .corps p{margin:0 0 8px}
+  .exo-corr .corps p:last-child{margin-bottom:0}
+
+  /* ---------- Table de saisie : une colonne par décision ---------- */
+  .saisie{width:100%;border-collapse:collapse;font-size:15px}
+  .saisie th{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.07em;
+             color:var(--ink-faint);font-weight:600;text-align:left;padding:0 8px 7px;border-bottom:1px solid var(--line)}
+  .saisie th.c{text-align:center}
+  .saisie td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .saisie tr:last-child td{border-bottom:0}
+  .saisie select.short{min-height:34px}
+  .cloze select{max-width:100%}
+  @media(max-width:560px){
+    .saisie{display:block}
+    .saisie tr:first-child{display:none}
+    .saisie tr{display:flex;flex-wrap:wrap;align-items:center;gap:9px 10px;
+               padding:11px 2px;border-bottom:1px solid var(--line)}
+    .saisie tr:last-child{border-bottom:0}
+    .saisie td{display:block;padding:0;border:0;text-align:left}
+    .saisie td.depart{flex-basis:100%;font-weight:600;white-space:normal}
+    .saisie select{flex:1 1 100%;max-width:100%}
+  }
+
+  .vers-fiche{display:inline-flex;align-items:center;gap:8px;font-size:14px;text-decoration:none;
+              color:var(--link);background:var(--link-wash);border:1px solid var(--line);
+              border-radius:10px;padding:9px 14px;margin-top:16px;min-height:44px}
+  .vers-fiche:hover{border-color:var(--link)}
+  .vers-fiche:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+  #glo-ouvrir,.glo-back{display:none !important}
+
+
+  /* ============================================================
+     CSS PROPRE À L'OUTIL 5
+     ============================================================ */
+
+  /* ---------- La puce vidéo (décision O-28) ----------
+     Recopiée de .video-chip des chapitres, en local : un outil ne
+     charge pas la feuille des chapitres (assets/css/chapitre-commun).
+     ⚠ Ne pas écrire ce nom de fichier suivi de son extension, même
+     ici : verifier.mjs cherche la chaîne dans TOUT le HTML,
+     commentaires compris, et signale alors la page comme la chargeant
+     sans numéro de version. Même piège que pour le sommaire généré.
+     La puce est un LIEN, pas une ressource
+     chargée — rien ne part vers l'extérieur tant qu'on ne clique pas.
+     Elle ne figure PAS sur la fiche A4. */
+  .video-chip{font-family:"IBM Plex Mono";font-size:13px;display:inline-flex;align-items:center;gap:7px;
+              text-decoration:none;color:var(--link);background:var(--link-wash);
+              border:1px solid var(--line);border-radius:9px;padding:8px 13px;margin:8px 0;min-height:40px}
+  .video-chip:hover{border-color:var(--link)}
+  .video-chip:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+  /* ---------- La frise des huit rubriques (étape 1.1) ---------- */
+  .frise-cr{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:13px}
+  .frise-cr svg{width:100%;height:auto;display:block;max-width:560px;margin:0 auto}
+  .fr-rail{stroke:var(--line);stroke-width:3}
+  .fr-pastille{fill:var(--surface);stroke:var(--link);stroke-width:2.4}
+  .fr-pastille.centre{fill:var(--link-wash);stroke-width:3.2}
+  .fr-num{font-family:"IBM Plex Mono";font-size:13px;font-weight:700;fill:var(--link);text-anchor:middle}
+  .fr-nom{font-family:"IBM Plex Sans";font-size:15px;fill:var(--ink);font-weight:600}
+  .fr-quoi{font-family:"IBM Plex Sans";font-size:13px;fill:var(--ink-soft)}
+  .fr-groupe{fill:none;stroke:var(--ink-faint);stroke-width:1.4;stroke-dasharray:5 4}
+  .fr-glab{font-family:"IBM Plex Mono";font-size:11.5px;fill:var(--ink-faint);letter-spacing:.06em}
+
+  /* ---------- Le tri observation / interprétation ---------- */
+  .duo-oi{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  @media(max-width:620px){.duo-oi{grid-template-columns:1fr}}
+  .oi{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface-2)}
+  .oi.obs{border-left:4px solid var(--link)}
+  .oi.interp{border-left:4px solid var(--ok)}
+  .oi > .t{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+           font-weight:600;margin-bottom:6px}
+  .oi.obs > .t{color:var(--link)} .oi.interp > .t{color:var(--ok)}
+  .oi > .d{font-size:14px;line-height:1.55;margin-bottom:8px}
+  .oi > .ex{font-size:14px;font-style:italic;color:var(--ink-soft);
+            border-top:1px dashed var(--line);padding-top:8px;line-height:1.5}
+</style>
+</head><body data-sequence="pc-o5" data-etapes="ouvertes">
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Physique-Chimie · Outil transversal · Seconde</div>
+    <h1 class="title">Rédiger un compte rendu de TP <span class="tag" style="display:block;margin-top:8px">huit rubriques · observer ≠ interpréter · conclure</span></h1>
+    <p class="lede">Un compte rendu n'est pas un exercice de style, et il ne s'écrit pas pour le professeur — il s'écrit pour <b>quelqu'un qui n'était pas là</b>. C'est le seul critère qui compte, et c'est aussi le plus simple à vérifier. Tu ouvriras cet outil à chaque TP de l'année.</p>
+    <div class="themes">
+      <span class="theme-chip">Outil 3 · Sécurité</span><span class="theme-chip">Outil 4 · La verrerie</span><span class="theme-chip on">Outil 5 · Compte rendu de TP</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>Deux parties</b></span>
+      <span class="m">Durée <b>≈ 1 h 15</b>, en deux fois</span>
+    </div>
+    <a class="vers-fiche" href="../assets/pdf/pc/fiches/fiche-2nde-o5-compte-rendu-tp.pdf">🖨️ Fiche outil (PDF) — la méthode complète, à imprimer et à coller</a>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-physique-chimie.html">← Physique-Chimie</a>
+    <a href="#s1"><span class="n">1</span>La méthode</a>
+    <a href="#s2" data-navlock="2"><span class="n">2</span>S'entraîner <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <!-- 🔴 NE PAS SUPPRIMER — décision O-21 : le moteur attrape cette
+         case sans garde et toute son initialisation s'arrête sans elle. -->
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip done"></span>Validé</span>
+  </div>
+
+
+  <!-- ===================== 1 — LA MÉTHODE ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">1</span>La méthode</h2>
+      <span class="seance-time">≈ 45 min</span>
+    </div>
+    <p class="seance-goal">Connaître les huit rubriques d'un compte rendu, rédiger une hypothèse vérifiable, distinguer ce qu'on observe de ce qu'on en conclut, et écrire une conclusion qui répond à l'objectif.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- 1.1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o5-s1-quoi">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1</div>
+            <h3 class="step-title">À quoi sert un compte rendu</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre pour qui l'on écrit, et connaître les huit rubriques.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">La définition, et elle suffit<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">écrire pour quelqu'un qui n'a jamais fait le TP</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Un compte rendu doit lui permettre de comprendre <b>ce que tu as fait</b> et <b>pourquoi</b> tu l'as fait.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Relis-toi en te demandant&nbsp;: «&nbsp;quelqu'un qui n'était <b>pas là</b> comprendrait-il&nbsp;?&nbsp;»</div></div>
+            </div>
+
+            <p style="font-size:14.5px;margin:10px 0">Ce critère règle presque toutes les questions que tu te poseras. «&nbsp;Faut-il expliquer ce qu'est un bécher&nbsp;?&nbsp;» Non — le lecteur connaît la physique-chimie. «&nbsp;Faut-il dire quel volume j'ai prélevé&nbsp;?&nbsp;» Oui — sans lui, il ne peut pas refaire l'expérience.</p>
+
+            <div class="block-label">Les huit rubriques, dans l'ordre<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+
+            <div class="frise-cr">
+              <svg viewBox="0 0 560 452" role="img" aria-label="Frise verticale des huit rubriques d'un compte rendu : titre, objectif, hypothèses, matériel et schéma avant de manipuler ; expérience pendant ; observation et interprétation puis conclusion après.">
+                <line class="fr-rail" x1="34" y1="30" x2="34" y2="424"/>
+
+                <rect class="fr-groupe" x="14" y="14" width="532" height="188" rx="10"/>
+                <text class="fr-glab" x="512" y="32" text-anchor="end">AVANT DE MANIPULER</text>
+
+                <circle class="fr-pastille" cx="34" cy="52" r="14"/>
+                <text class="fr-num" x="34" y="57">1</text>
+                <text class="fr-nom" x="60" y="48">Titre</text>
+                <text class="fr-quoi" x="60" y="66">souvent déjà sur le sujet distribué</text>
+
+                <circle class="fr-pastille" cx="34" cy="100" r="14"/>
+                <text class="fr-num" x="34" y="105">2</text>
+                <text class="fr-nom" x="60" y="96">Objectif</text>
+                <text class="fr-quoi" x="60" y="114">ce que tu cherches, en quelques mots</text>
+
+                <circle class="fr-pastille" cx="34" cy="148" r="14"/>
+                <text class="fr-num" x="34" y="153">3</text>
+                <text class="fr-nom" x="60" y="144">Hypothèse(s)</text>
+                <text class="fr-quoi" x="60" y="162">tes idées pour répondre à l'objectif</text>
+
+                <circle class="fr-pastille" cx="34" cy="188" r="14"/>
+                <text class="fr-num" x="34" y="193">4</text>
+                <text class="fr-nom" x="60" y="184">Matériel</text>
+                <text class="fr-quoi" x="60" y="202">il découle des expériences prévues</text>
+
+                <circle class="fr-pastille" cx="34" cy="232" r="14"/>
+                <text class="fr-num" x="34" y="237">5</text>
+                <text class="fr-nom" x="60" y="228">Schéma de l'expérience</text>
+                <text class="fr-quoi" x="60" y="246">légendé — il se pense AVANT de manipuler</text>
+
+                <rect class="fr-groupe" x="14" y="258" width="532" height="52" rx="10"/>
+                <text class="fr-glab" x="512" y="276" text-anchor="end">PENDANT</text>
+                <circle class="fr-pastille" cx="34" cy="292" r="14"/>
+                <text class="fr-num" x="34" y="297">6</text>
+                <text class="fr-nom" x="60" y="288">Expérience</text>
+                <text class="fr-quoi" x="60" y="306">les étapes, à l'infinitif</text>
+
+                <rect class="fr-groupe" x="14" y="322" width="532" height="116" rx="10"/>
+                <text class="fr-glab" x="512" y="340" text-anchor="end">APRÈS</text>
+
+                <circle class="fr-pastille centre" cx="34" cy="360" r="15"/>
+                <text class="fr-num" x="34" y="365">7</text>
+                <text class="fr-nom" x="60" y="356">Observation et interprétation</text>
+                <text class="fr-quoi" x="60" y="374">l'étape centrale — j'observe que… donc j'en conclus que…</text>
+
+                <circle class="fr-pastille" cx="34" cy="410" r="14"/>
+                <text class="fr-num" x="34" y="415">8</text>
+                <text class="fr-nom" x="60" y="406">Conclusion</text>
+                <text class="fr-quoi" x="60" y="424">courte, chiffrée, elle répond à l'objectif du n° 2</text>
+              </svg>
+            </div>
+
+            <div class="point-cle"><b>Pourquoi le schéma vient avant l'expérience.</b> On le dessine pour <b>prévoir</b> le montage, pas pour se souvenir de ce qu'on a fait. Un schéma tracé après coup est un dessin&nbsp;; un schéma tracé avant est un plan — et c'est lui qui te fait repérer le matériel qui manque.</div>
+
+            <a class="video-chip" href="https://www.youtube.com/watch?v=rKkrIpte5SE" target="_blank" rel="noopener">▶ Vidéo bilan — Réaliser un rapport de laboratoire (Gaelle Kroonen) ↗</a>
+
+            <div class="block-label">À toi — remets les rubriques dans l'ordre<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Quatre rubriques à situer.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Le <b>schéma</b> se pense
+                <select class="short" data-answer="avant" aria-label="quand se pense le schéma"><option value="">choisis…</option><option value="avant">avant de manipuler</option><option value="pendant">pendant la manipulation</option><option value="apres">après, de mémoire</option><option value="jamais">il est facultatif</option></select>.</div>
+                <div style="margin-bottom:9px"><b>2.</b> La <b>liste du matériel</b> découle
+                <select class="short" data-answer="hypothese" aria-label="d'où découle la liste du matériel"><option value="">choisis…</option><option value="hypothese">des expériences prévues pour tester l'hypothèse</option><option value="prof">de ce que le professeur a posé sur la paillasse</option><option value="titre">du titre du TP</option><option value="conclusion">de la conclusion</option></select>.</div>
+                <div><b>3.</b> La <b>conclusion</b> répond
+                <select class="short" data-answer="objectif" aria-label="à quoi répond la conclusion"><option value="">choisis…</option><option value="objectif">à l'objectif, la rubrique n° 2</option><option value="titre">au titre, la rubrique n° 1</option><option value="materiel">à la liste du matériel</option><option value="tout">à l'ensemble du compte rendu</option></select>.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o5-s1-avant">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2</div>
+            <h3 class="step-title">Avant de manipuler</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> écrire une hypothèse qu'on peut <b>vérifier</b>, et en déduire l'expérience et le matériel.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Le point dur&nbsp;: une hypothèse se rédige de façon vérifiable<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Une hypothèse n'est <b>ni une question, ni un souhait, ni une évidence</b>. C'est une <b>affirmation</b> — quelque chose dont on peut dire, à la fin, si c'était vrai ou faux. Et elle doit <b>appeler l'expérience</b> qui la teste&nbsp;: c'est ainsi que tu trouves ta liste de matériel.</p>
+
+            <div class="eviter">
+              <span class="et">⚠ Trois hypothèses qui n'en sont pas</span>
+              <ul>
+                <li>«&nbsp;<i>Est-ce que le sucre se dissout mieux dans l'eau chaude&nbsp;?</i>&nbsp;» — c'est une <b>question</b>. On ne peut pas la déclarer vraie ou fausse.</li>
+                <li>«&nbsp;<i>Je pense qu'il va se passer quelque chose.</i>&nbsp;» — trop <b>vague</b>. Aucune expérience ne peut la contredire.</li>
+                <li>«&nbsp;<i>L'eau bout à 100&nbsp;°C.</i>&nbsp;» — c'est une <b>connaissance</b>, pas une hypothèse. Il n'y a rien à découvrir.</li>
+              </ul>
+            </div>
+
+            <div class="exemple">
+              <div class="exemple-titre">D'un objectif à une hypothèse, puis au matériel</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">L'objectif (rubrique 2)</span>
+                Déterminer si la <b>température</b> influence la vitesse de dissolution du sucre dans l'eau.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">L'hypothèse (rubrique 3)</span>
+                <b>Le sucre se dissout plus vite dans l'eau chaude que dans l'eau froide.</b> C'est une affirmation&nbsp;: à la fin, on pourra dire si elle est vraie ou fausse.</div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">L'expérience qu'elle appelle</span>
+                Dissoudre <b>la même masse</b> de sucre dans <b>le même volume</b> d'eau, à deux températures différentes, et <b>chronométrer</b>. Tout le reste doit être identique&nbsp;: sinon on ne saurait pas ce qui a agi.</div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">Le matériel (rubrique 4) — il en découle</span>
+                Deux béchers · une balance et une coupelle · une éprouvette graduée · un thermomètre · un chronomètre · du sucre · de l'eau chaude et de l'eau froide.</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle</span>
+                Chaque objet de la liste sert-il à quelque chose dans l'expérience&nbsp;? Et l'expérience teste-t-elle bien l'hypothèse, <b>et elle seule</b>&nbsp;? Ici oui&nbsp;: une seule chose change, la température.</div></div>
+            </div>
+
+            <div class="block-label">Le schéma et les étapes<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <ul style="font-size:14.5px;line-height:1.75;margin:4px 0 12px;padding-left:22px">
+              <li><b>Le schéma se légende.</b> Chaque pièce porte son nom — celui de l'<a href="2nde-pc-o4-verrerie-materiel.html" style="color:var(--link)">outil 4</a>. Un schéma sans légende ne dit rien à quelqu'un qui n'était pas là.</li>
+              <li><b>Les étapes se décrivent à l'infinitif.</b> «&nbsp;Peser 5,0 g de sucre&nbsp;», «&nbsp;verser 100 mL d'eau&nbsp;» — jamais «&nbsp;j'ai pesé&nbsp;» ni «&nbsp;on pèse&nbsp;». C'est la forme d'une recette&nbsp;: quelqu'un doit pouvoir la suivre.</li>
+              <li><b>Les valeurs y figurent.</b> «&nbsp;Verser un peu d'eau&nbsp;» n'est pas reproductible. «&nbsp;Verser 100 mL&nbsp;» l'est.</li>
+            </ul>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">une hypothèse est une affirmation<br>qu'on peut déclarer vraie ou fausse</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">L'écrire, puis se demander&nbsp;: «&nbsp;quelle <b>expérience</b> la teste&nbsp;?&nbsp;» La réponse donne le matériel.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Une seule chose <b>change</b> d'une expérience à l'autre&nbsp;; tout le reste est identique.</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Écrire une <b>question</b> à la place d'une hypothèse. Une question ne se vérifie pas.</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Trois formulations à juger.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> «&nbsp;<i>Le sel fait-il fondre la glace plus vite&nbsp;?</i>&nbsp;» est
+                <select class="short" data-answer="question" aria-label="nature de la formulation 1"><option value="">choisis…</option><option value="hypothese">une hypothèse correcte</option><option value="question">une question, pas une hypothèse</option><option value="savoir">une connaissance du cours</option></select>.</div>
+                <div style="margin-bottom:9px"><b>2.</b> «&nbsp;<i>La glace salée fond plus vite que la glace pure.</i>&nbsp;» est
+                <select class="short" data-answer="hypothese" aria-label="nature de la formulation 2"><option value="">choisis…</option><option value="hypothese">une hypothèse correcte</option><option value="question">une question, pas une hypothèse</option><option value="savoir">une connaissance du cours</option></select>.</div>
+                <div><b>3.</b> Dans l'expérience qui la teste, ce qui doit <b>changer</b>, c'est
+                <select class="short" data-answer="sel" aria-label="ce qui doit changer dans l'expérience"><option value="">choisis…</option><option value="sel">la présence de sel, et rien d'autre</option><option value="tout">plusieurs choses à la fois, pour aller plus vite</option><option value="rien">rien : on refait deux fois la même chose</option><option value="masse">la masse de glace et la présence de sel</option></select>.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o5-s1-observation">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3</div>
+            <h3 class="step-title">Observation et interprétation — l'étape centrale</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> séparer ce que tu <b>vois</b> de ce que tu en <b>déduis</b>. C'est la compétence la plus évaluée de l'année.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">La formule qui règle tout<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">j'observe que… <span style="color:var(--ink-faint)">donc</span> j'en conclus que…</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Écrire la phrase <b>en deux temps</b>, avec le mot «&nbsp;donc&nbsp;» au milieu. Ce qui est avant se <b>voit</b>&nbsp;; ce qui est après se <b>déduit</b>.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Quelqu'un d'autre, devant la même paillasse, écrirait-il la <b>même observation</b>&nbsp;? Si oui, c'est bien une observation.</div></div>
+            </div>
+
+            <div class="duo-oi">
+              <div class="oi obs">
+                <div class="t">L'observation</div>
+                <div class="d">Ce que <b>n'importe qui</b> verrait à ta place. Une couleur, un dépôt, une valeur lue, un temps mesuré. Elle ne dépend pas de ce que tu sais.</div>
+                <div class="ex">«&nbsp;J'observe que la solution devient bleue et qu'un dépôt se forme au fond du tube.&nbsp;»</div>
+              </div>
+              <div class="oi interp">
+                <div class="t">L'interprétation</div>
+                <div class="d">Ce que tu en <b>déduis</b>, en mobilisant le cours. Elle répond à l'hypothèse. Deux personnes peuvent observer la même chose et l'interpréter différemment — c'est normal, et c'est là qu'on discute.</div>
+                <div class="ex">«&nbsp;Donc j'en conclus qu'il s'est formé une nouvelle espèce chimique&nbsp;: il y a eu réaction.&nbsp;»</div>
+              </div>
+            </div>
+
+            <div class="eviter">
+              <span class="et">⚠ L'erreur la plus fréquente — interpréter en croyant observer</span>
+              <ul>
+                <li>✗ «&nbsp;<i>J'observe qu'il y a eu une réaction chimique.</i>&nbsp;» — non&nbsp;: une réaction ne se <b>voit</b> pas. Ce qui se voit, c'est un changement de couleur, un dépôt, un dégagement de gaz.</li>
+                <li>✗ «&nbsp;<i>J'observe que le sel accélère la fonte.</i>&nbsp;» — non&nbsp;: ce qui se voit, c'est que <b>la glace salée a fondu en 4 min et la glace pure en 7 min</b>. Le reste est une déduction.</li>
+              </ul>
+            </div>
+
+            <div class="point-cle alerte"><b>La remarque de la fiche, et elle vaut à elle seule cette étape&nbsp;:</b><br>
+              <span style="display:block;font-weight:600;font-size:15.5px;margin:8px 0 4px">Avoir une hypothèse fausse n'est pas une erreur&nbsp;; laisser une hypothèse fausse en est une.</span>
+              Tu peux — et tu dois — <b>rectifier</b> ton hypothèse dans cette rubrique si l'expérience la contredit. Un compte rendu qui dit «&nbsp;mon hypothèse était fausse, voici ce que l'expérience montre&nbsp;» vaut mieux qu'un compte rendu qui fait semblant. C'est le même geste que dans l'<a href="2nde-pc-o3-securite-laboratoire.html" style="color:var(--link)">outil 3</a>&nbsp;: signaler n'est jamais une faute, cacher en est une.</div>
+
+            <div class="block-label">À toi — six phrases à trier<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Observation ou interprétation&nbsp;?</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <table class="saisie">
+                  <tr><th>La phrase</th><th>C'est…</th></tr>
+                  <tr><td class="depart">«&nbsp;La solution est passée de l'incolore au rose.&nbsp;»</td>
+                    <td><select class="short" data-answer="obs" aria-label="nature de la phrase 1"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                  <tr><td class="depart">«&nbsp;Le milieu est devenu basique.&nbsp;»</td>
+                    <td><select class="short" data-answer="interp" aria-label="nature de la phrase 2"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                  <tr><td class="depart">«&nbsp;Le thermomètre indique 62&nbsp;°C.&nbsp;»</td>
+                    <td><select class="short" data-answer="obs" aria-label="nature de la phrase 3"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                  <tr><td class="depart">«&nbsp;Le sucre s'est entièrement dissous en 45 secondes.&nbsp;»</td>
+                    <td><select class="short" data-answer="obs" aria-label="nature de la phrase 4"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                  <tr><td class="depart">«&nbsp;La température accélère la dissolution.&nbsp;»</td>
+                    <td><select class="short" data-answer="interp" aria-label="nature de la phrase 5"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                  <tr><td class="depart">«&nbsp;Un gaz s'est dégagé et a fait déborder le tube.&nbsp;»</td>
+                    <td><select class="short" data-answer="obs" aria-label="nature de la phrase 6"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                </table>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.4 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o5-s1-conclure">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4</div>
+            <h3 class="step-title">Conclure</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> écrire une conclusion courte, chiffrée, qui répond à l'objectif — et à rien d'autre.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Trois qualités, et elles se vérifient<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <ul style="font-size:14.5px;line-height:1.75;margin:4px 0 12px;padding-left:22px">
+              <li><b>Courte.</b> Deux ou trois phrases. C'est un résumé de ce qu'on a découvert, pas un récit de la séance.</li>
+              <li><b>Chiffrée.</b> Si tu as mesuré, les valeurs y figurent — avec leur <b>unité</b> et le bon nombre de <a href="2nde-pc-o2-chiffres-significatifs.html" style="color:var(--link)">chiffres significatifs</a>.</li>
+              <li><b>Elle répond à l'objectif de la rubrique&nbsp;2</b>, et à rien d'autre. Pas au titre, pas à ce qui t'a intéressé en chemin.</li>
+            </ul>
+
+            <div class="exemple">
+              <div class="exemple-titre">Une conclusion écrite à partir d'un objectif et de trois mesures</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">L'objectif à relire</span>
+                «&nbsp;Déterminer si la température influence la vitesse de dissolution du sucre.&nbsp;»</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">Les mesures</span>
+                <div class="calcul">10 °C → 96 s &nbsp;·&nbsp; 25 °C → 52 s &nbsp;·&nbsp; 50 °C → 21 s</div></div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">Ce qu'elles montrent</span>
+                Le temps de dissolution <b>diminue</b> quand la température augmente. De 10 à 50&nbsp;°C, il est divisé par plus de quatre.</div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">La conclusion rédigée</span>
+                «&nbsp;<b>La température influence bien la vitesse de dissolution du sucre&nbsp;: le temps nécessaire passe de 96 s à 10&nbsp;°C à 21 s à 50&nbsp;°C. Plus l'eau est chaude, plus la dissolution est rapide. Notre hypothèse est donc vérifiée.</b>&nbsp;»</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle</span>
+                Je relis l'objectif, je relis la conclusion&nbsp;: <b>se répondent-ils&nbsp;?</b> L'objectif demandait «&nbsp;si la température influence&nbsp;» — la conclusion dit «&nbsp;oui, et voici de combien&nbsp;». Elle est courte, chiffrée, et elle se prononce sur l'hypothèse ✓.</div></div>
+            </div>
+
+            <div class="eviter">
+              <span class="et">⚠ Trois conclusions qui ne concluent rien</span>
+              <ul>
+                <li>«&nbsp;<i>Ce TP était intéressant et nous avons appris beaucoup de choses.</i>&nbsp;» — elle parle de <b>toi</b>, pas du résultat.</li>
+                <li>«&nbsp;<i>Nous avons pesé le sucre, versé l'eau, puis chronométré.</i>&nbsp;» — c'est la rubrique <b>6</b>, recopiée. Une conclusion ne raconte pas ce qu'on a fait.</li>
+                <li>«&nbsp;<i>Le sucre se dissout.</i>&nbsp;» — vrai, mais on le savait avant de commencer. Elle ne répond pas à l'objectif, qui portait sur la <b>température</b>.</li>
+              </ul>
+            </div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">courte · chiffrée · elle répond<br>à l'objectif du n° 2</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Relire l'objectif <b>juste avant</b> d'écrire la conclusion. Les deux doivent se répondre mot à mot.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Elle dit si l'<b>hypothèse</b> est vérifiée ou non — et si elle ne l'est pas, elle le dit franchement.</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Raconter la <b>séance</b> au lieu de donner le résultat.</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Deux questions sur la conclusion.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Avant d'écrire la conclusion, on relit
+                <select class="short" data-answer="objectif" aria-label="ce qu'on relit avant d'écrire la conclusion"><option value="">choisis…</option><option value="objectif">l'objectif</option><option value="titre">le titre</option><option value="materiel">la liste du matériel</option><option value="schema">le schéma</option></select>.</div>
+                <div><b>2.</b> Si l'expérience contredit l'hypothèse, la conclusion
+                <select class="short" data-answer="dit" aria-label="que faire si l'expérience contredit l'hypothèse"><option value="">choisis…</option><option value="dit">le dit franchement</option><option value="tait">n'en parle pas</option><option value="change">change l'hypothèse sans le signaler</option><option value="refait">annonce qu'on refera le TP</option></select>.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+
+  <!-- ===================== 2 — S'ENTRAÎNER ===================== -->
+  <section class="seance" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">2</span>S'entraîner</h2>
+      <span class="seance-time">≈ 30 min</span>
+    </div>
+    <p class="seance-goal">Cinq exercices&nbsp;: remettre un compte rendu dans l'ordre, trier six phrases, réécrire trois hypothèses, repérer ce qui manque, et choisir la bonne conclusion.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- 2.1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o5-s2-ordre">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1</div>
+            <h3 class="step-title">Un compte rendu en désordre</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> reconnaître chaque rubrique à son contenu, et lui rendre son rang.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o5-s2-ex1">
+              <p class="exo-num">Exercice 1</p>
+              <p class="exo-enonce">Voici les huit blocs d'un compte rendu, mélangés. Rends à chacun son numéro de rubrique, de <b>1</b> à <b>8</b>.</p>
+              <div class="field">
+                <span class="field-type">Exercice 1</span>
+                <div class="field-q">Huit blocs à numéroter.</div>
+                <div class="cloze" data-cloze data-cle="ex1">
+                  <table class="saisie">
+                    <tr><th>Le bloc</th><th>Sa rubrique</th></tr>
+                    <tr><td class="depart">«&nbsp;Deux béchers, une balance, un thermomètre, un chronomètre.&nbsp;»</td>
+                      <td><select class="short" data-answer="r4" aria-label="rubrique du bloc 1"><option value="">choisis…</option><option value="r1">1 — titre</option><option value="r2">2 — objectif</option><option value="r3">3 — hypothèse</option><option value="r4">4 — matériel</option><option value="r5">5 — schéma</option><option value="r6">6 — expérience</option><option value="r7">7 — observation et interprétation</option><option value="r8">8 — conclusion</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;J'observe que le sucre disparaît en 45 s dans l'eau chaude et en 96 s dans l'eau froide, donc j'en conclus que la chaleur accélère la dissolution.&nbsp;»</td>
+                      <td><select class="short" data-answer="r7" aria-label="rubrique du bloc 2"><option value="">choisis…</option><option value="r1">1 — titre</option><option value="r2">2 — objectif</option><option value="r3">3 — hypothèse</option><option value="r4">4 — matériel</option><option value="r5">5 — schéma</option><option value="r6">6 — expérience</option><option value="r7">7 — observation et interprétation</option><option value="r8">8 — conclusion</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;Le sucre se dissout plus vite dans l'eau chaude que dans l'eau froide.&nbsp;»</td>
+                      <td><select class="short" data-answer="r3" aria-label="rubrique du bloc 3"><option value="">choisis…</option><option value="r1">1 — titre</option><option value="r2">2 — objectif</option><option value="r3">3 — hypothèse</option><option value="r4">4 — matériel</option><option value="r5">5 — schéma</option><option value="r6">6 — expérience</option><option value="r7">7 — observation et interprétation</option><option value="r8">8 — conclusion</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;Dissolution du sucre et température&nbsp;»</td>
+                      <td><select class="short" data-answer="r1" aria-label="rubrique du bloc 4"><option value="">choisis…</option><option value="r1">1 — titre</option><option value="r2">2 — objectif</option><option value="r3">3 — hypothèse</option><option value="r4">4 — matériel</option><option value="r5">5 — schéma</option><option value="r6">6 — expérience</option><option value="r7">7 — observation et interprétation</option><option value="r8">8 — conclusion</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;Peser 5,0 g de sucre. Verser 100 mL d'eau dans chaque bécher. Déclencher le chronomètre.&nbsp;»</td>
+                      <td><select class="short" data-answer="r6" aria-label="rubrique du bloc 5"><option value="">choisis…</option><option value="r1">1 — titre</option><option value="r2">2 — objectif</option><option value="r3">3 — hypothèse</option><option value="r4">4 — matériel</option><option value="r5">5 — schéma</option><option value="r6">6 — expérience</option><option value="r7">7 — observation et interprétation</option><option value="r8">8 — conclusion</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;La température influence la vitesse de dissolution&nbsp;: 45 s à 50&nbsp;°C contre 96 s à 10&nbsp;°C. Notre hypothèse est vérifiée.&nbsp;»</td>
+                      <td><select class="short" data-answer="r8" aria-label="rubrique du bloc 6"><option value="">choisis…</option><option value="r1">1 — titre</option><option value="r2">2 — objectif</option><option value="r3">3 — hypothèse</option><option value="r4">4 — matériel</option><option value="r5">5 — schéma</option><option value="r6">6 — expérience</option><option value="r7">7 — observation et interprétation</option><option value="r8">8 — conclusion</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;Déterminer si la température influence la vitesse de dissolution du sucre.&nbsp;»</td>
+                      <td><select class="short" data-answer="r2" aria-label="rubrique du bloc 7"><option value="">choisis…</option><option value="r1">1 — titre</option><option value="r2">2 — objectif</option><option value="r3">3 — hypothèse</option><option value="r4">4 — matériel</option><option value="r5">5 — schéma</option><option value="r6">6 — expérience</option><option value="r7">7 — observation et interprétation</option><option value="r8">8 — conclusion</option></select></td></tr>
+                    <tr><td class="depart">Un dessin légendé des deux béchers, avec le thermomètre dans chacun.</td>
+                      <td><select class="short" data-answer="r5" aria-label="rubrique du bloc 8"><option value="">choisis…</option><option value="r1">1 — titre</option><option value="r2">2 — objectif</option><option value="r3">3 — hypothèse</option><option value="r4">4 — matériel</option><option value="r5">5 — schéma</option><option value="r6">6 — expérience</option><option value="r7">7 — observation et interprétation</option><option value="r8">8 — conclusion</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 1</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Deux blocs se ressemblent, et c'est là que tout se joue&nbsp;: le 7 et le 8.</b></p>
+                  <p>Le bloc «&nbsp;j'observe que… donc j'en conclus que…&nbsp;» est la rubrique <b>7</b>&nbsp;: il donne les valeurs brutes et ce qu'on en tire, dans la foulée. Le bloc «&nbsp;la température influence… notre hypothèse est vérifiée&nbsp;» est la <b>8</b>&nbsp;: il ne redonne les chiffres que pour appuyer, et il se prononce sur l'<b>hypothèse</b>. C'est ce dernier point qui les sépare — seule la conclusion revient sur l'hypothèse.</p>
+                  <p><b>Le 2 et le 3 se distinguent par leur forme.</b> L'objectif commence par un <b>verbe à l'infinitif</b> (« déterminer si… ») : il dit ce qu'on cherche. L'hypothèse est une <b>affirmation</b> (« le sucre se dissout plus vite… ») : elle dit ce qu'on croit.</p>
+                  <p><b>Le 6 se reconnaît à ses infinitifs et à ses valeurs.</b> « Peser 5,0 g », « verser 100 mL » : c'est une suite d'actions reproductibles, avec des nombres.</p>
+                  <p><b>Le 5, le schéma, vient avant le 6.</b> Il se pense pour prévoir le montage — pas pour se souvenir après coup.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o5-s2-trier">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2</div>
+            <h3 class="step-title">Observation ou interprétation</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> six phrases de plus, prises dans de vrais comptes rendus.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o5-s2-ex2">
+              <p class="exo-num">Exercice 2</p>
+              <p class="exo-enonce">Six phrases, plus difficiles que celles de l'étape 1.3. La question à te poser à chaque fois&nbsp;: <b>est-ce que quelqu'un qui ne connaît pas le cours écrirait la même chose&nbsp;?</b></p>
+              <div class="field">
+                <span class="field-type">Exercice 2</span>
+                <div class="field-q">Six phrases à trier.</div>
+                <div class="cloze" data-cloze data-cle="ex2">
+                  <table class="saisie">
+                    <tr><th>La phrase</th><th>C'est…</th></tr>
+                    <tr><td class="depart">«&nbsp;Des bulles se forment sur le morceau de métal.&nbsp;»</td>
+                      <td><select class="short" data-answer="obs" aria-label="nature de la phrase 1"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;Le métal réagit avec l'acide en produisant du dihydrogène.&nbsp;»</td>
+                      <td><select class="short" data-answer="interp" aria-label="nature de la phrase 2"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;La masse est passée de 12,4 g à 12,1 g.&nbsp;»</td>
+                      <td><select class="short" data-answer="obs" aria-label="nature de la phrase 3"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;Une partie du solide s'est donc échappée sous forme de gaz.&nbsp;»</td>
+                      <td><select class="short" data-answer="interp" aria-label="nature de la phrase 4"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;Le papier pH prend une teinte orangée.&nbsp;»</td>
+                      <td><select class="short" data-answer="obs" aria-label="nature de la phrase 5"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;La solution est acide, son pH vaut environ 4.&nbsp;»</td>
+                      <td><select class="short" data-answer="interp" aria-label="nature de la phrase 6"><option value="">choisis…</option><option value="obs">une observation</option><option value="interp">une interprétation</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 2</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Les phrases vont par paires&nbsp;: 1-2, 3-4, 5-6.</b> À chaque fois, la première est ce qu'on voit, la seconde ce qu'on en déduit. Mises bout à bout avec un « donc », elles forment exactement la phrase de la rubrique 7.</p>
+                  <p><b>1 · observation.</b> « Des bulles se forment » : n'importe qui le verrait. <b>2 · interprétation</b> — reconnaître le <b>dihydrogène</b> demande le cours, et une réaction ne se voit pas.</p>
+                  <p><b>3 · observation.</b> Une masse lue sur une balance, avec ses chiffres. <b>4 · interprétation</b> — le mot « donc » est même resté dans la phrase, et « sous forme de gaz » est une explication de la perte, pas la perte elle-même.</p>
+                  <p><b>5 · observation.</b> « Une teinte orangée » : c'est une couleur. <b>6 · interprétation</b> — passer de la couleur à « pH ≈ 4 » demande l'échelle de teintes, et « la solution est acide » en découle.</p>
+                  <p><b>Le cas 5-6 est le plus subtil</b>, parce que la lecture d'un pH <i>paraît</i> être une mesure. Mais on ne lit pas un pH : on lit une <b>couleur</b>, et on la traduit. Sur un pH-mètre, en revanche, « le pH-mètre indique 4,2 » serait bien une observation.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o5-s2-hypotheses">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3</div>
+            <h3 class="step-title">Trois hypothèses mal rédigées</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> diagnostiquer ce qui cloche, puis lire une réécriture.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o5-s2-ex3">
+              <p class="exo-num">Exercice 3</p>
+              <p class="exo-enonce">Trois élèves proposent une hypothèse pour l'objectif suivant&nbsp;: «&nbsp;<i>Déterminer si la longueur d'un pendule influence sa période.</i>&nbsp;» Aucune des trois ne convient. Dis <b>pourquoi</b>.</p>
+              <div class="field">
+                <span class="field-type">Exercice 3</span>
+                <div class="field-q">Trois défauts à nommer.</div>
+                <div class="cloze" data-cloze data-cle="ex3">
+                  <table class="saisie">
+                    <tr><th>L'hypothèse proposée</th><th>Ce qui cloche</th></tr>
+                    <tr><td class="depart">«&nbsp;<i>Est-ce que la longueur change la période&nbsp;?</i>&nbsp;»</td>
+                      <td><select class="short" data-answer="question" aria-label="défaut de l'hypothèse 1"><option value="">choisis…</option><option value="question">c'est une question, pas une affirmation</option><option value="vague">c'est trop vague pour être vérifié</option><option value="connu">c'est une connaissance du cours</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;<i>Je pense que la longueur a un effet sur le pendule.</i>&nbsp;»</td>
+                      <td><select class="short" data-answer="vague" aria-label="défaut de l'hypothèse 2"><option value="">choisis…</option><option value="question">c'est une question, pas une affirmation</option><option value="vague">c'est trop vague pour être vérifié</option><option value="connu">c'est une connaissance du cours</option></select></td></tr>
+                    <tr><td class="depart">«&nbsp;<i>Un pendule oscille de part et d'autre de sa position d'équilibre.</i>&nbsp;»</td>
+                      <td><select class="short" data-answer="connu" aria-label="défaut de l'hypothèse 3"><option value="">choisis…</option><option value="question">c'est une question, pas une affirmation</option><option value="vague">c'est trop vague pour être vérifié</option><option value="connu">c'est une connaissance du cours</option></select></td></tr>
+                    <tr><td class="depart">Parmi ces quatre formulations, laquelle est une <b>bonne</b> hypothèse&nbsp;?</td>
+                      <td><select class="short" data-answer="bonne" aria-label="la bonne hypothèse"><option value="">choisis…</option><option value="bonne">« Plus le pendule est long, plus sa période est grande. »</option><option value="autre1">« Le pendule va sûrement bouger différemment. »</option><option value="autre2">« Quelle est l'influence de la longueur ? »</option><option value="autre3">« La période d'un pendule se mesure en secondes. »</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 3</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>1 · une question.</b> Elle se termine par un point d'interrogation, et c'est le signe le plus visible. On ne peut pas dire d'une question qu'elle est vraie ou fausse — donc l'expérience ne peut pas la trancher. Réécriture : «&nbsp;<b>La période augmente quand la longueur augmente.</b>&nbsp;»</p>
+                  <p><b>2 · trop vague.</b> « Un effet » : lequel&nbsp;? Dans quel sens&nbsp;? Aucune mesure ne pourrait la contredire — même une période qui <i>diminue</i> serait « un effet ». Une hypothèse qu'aucun résultat ne peut démentir n'apprend rien. Réécriture : la même que ci-dessus.</p>
+                  <p><b>3 · une connaissance.</b> C'est vrai, c'est dans le cours, et personne n'a besoin d'une expérience pour le savoir. Une hypothèse porte sur ce qu'on <b>ignore</b> au moment où on l'écrit. De plus, elle ne parle même pas de la longueur : elle est <b>hors sujet</b> par rapport à l'objectif.</p>
+                  <p><b>La bonne formulation</b> — «&nbsp;Plus le pendule est long, plus sa période est grande&nbsp;» — coche les trois cases : c'est une <b>affirmation</b>, elle est <b>précise</b> (elle dit dans quel sens), et elle <b>appelle son expérience</b> : mesurer la période pour plusieurs longueurs, tout le reste étant identique.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.4 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o5-s2-manque">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4</div>
+            <h3 class="step-title">Qu'est-ce qui manque&nbsp;?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> relire un compte rendu comme le fera ton professeur.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o5-s2-ex4">
+              <p class="exo-num">Exercice 4</p>
+              <p class="exo-enonce">Voici le compte rendu rendu par un élève. Il n'est pas faux — il est <b>incomplet</b>. Lis-le, puis réponds.</p>
+
+              <div style="border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:13px 15px;margin:12px 0;font-size:14.5px;line-height:1.7">
+                <p style="margin:0 0 8px"><b>TP — La conductivité des solutions</b></p>
+                <p style="margin:0 0 8px"><b>Objectif&nbsp;:</b> déterminer si l'eau salée conduit mieux le courant que l'eau pure.</p>
+                <p style="margin:0 0 8px"><b>Matériel&nbsp;:</b> un bécher, du sel, un conductimètre, de l'eau.</p>
+                <p style="margin:0 0 8px"><b>Expérience&nbsp;:</b> on a mis du sel dans l'eau puis on a mesuré avec le conductimètre.</p>
+                <p style="margin:0 0 8px"><b>Observation&nbsp;:</b> l'eau salée conduit mieux.</p>
+                <p style="margin:0"><b>Conclusion&nbsp;:</b> ce TP nous a permis de découvrir la conductivité, c'était intéressant.</p>
+              </div>
+
+              <div class="field">
+                <span class="field-type">Exercice 4</span>
+                <div class="field-q">Quatre défauts à identifier.</div>
+                <div class="cloze" data-cloze data-cle="ex4">
+                  <div style="margin-bottom:9px"><b>1.</b> Deux rubriques sont totalement absentes&nbsp;:
+                  <select class="short" data-answer="hypschema" aria-label="les deux rubriques absentes"><option value="">choisis…</option><option value="hypschema">l'hypothèse et le schéma</option><option value="titreobj">le titre et l'objectif</option><option value="matexp">le matériel et l'expérience</option><option value="obsconc">l'observation et la conclusion</option></select>.</div>
+                  <div style="margin-bottom:9px"><b>2.</b> Le défaut de la rubrique «&nbsp;Expérience&nbsp;»&nbsp;:
+                  <select class="short" data-answer="valeurs" aria-label="défaut de la rubrique expérience"><option value="">choisis…</option><option value="valeurs">aucune valeur, et pas d'infinitifs : ce n'est pas reproductible</option><option value="longue">elle est trop longue</option><option value="technique">elle est trop technique</option><option value="ordre">les étapes sont dans le désordre</option></select>.</div>
+                  <div style="margin-bottom:9px"><b>3.</b> Le défaut de la rubrique «&nbsp;Observation&nbsp;»&nbsp;:
+                  <select class="short" data-answer="interp" aria-label="défaut de la rubrique observation"><option value="">choisis…</option><option value="interp">c'est une interprétation, sans les valeurs mesurées</option><option value="courte">elle est trop courte</option><option value="fausse">elle est fausse</option><option value="repete">elle répète l'objectif</option></select>.</div>
+                  <div><b>4.</b> Le défaut de la «&nbsp;Conclusion&nbsp;»&nbsp;:
+                  <select class="short" data-answer="ressenti" aria-label="défaut de la conclusion"><option value="">choisis…</option><option value="ressenti">elle donne un ressenti et ne répond pas à l'objectif</option><option value="chiffres">elle contient trop de chiffres</option><option value="longue">elle est trop longue</option><option value="hypothese">elle parle de l'hypothèse</option></select>.</div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 4</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>1 · l'hypothèse et le schéma manquent.</b> Sans hypothèse, la conclusion n'a rien à confirmer ni à démentir — c'est pourquoi celle de cet élève ne peut que parler d'autre chose. Sans schéma, on ne sait pas comment le conductimètre était placé.</p>
+                  <p><b>2 · l'expérience n'est pas reproductible.</b> « On a mis du sel dans l'eau » : combien de sel&nbsp;? dans combien d'eau&nbsp;? Quelqu'un qui n'était pas là ne peut pas refaire cette expérience — c'est exactement le critère de l'étape 1.1. Il faudrait : «&nbsp;<b>Verser 100 mL d'eau distillée dans un bécher. Mesurer la conductivité. Ajouter 5,0 g de sel, agiter, mesurer à nouveau.</b>&nbsp;»</p>
+                  <p><b>3 · l'observation est une interprétation.</b> « L'eau salée conduit mieux » est déjà une conclusion. Ce qui s'observe, c'est le <b>nombre affiché</b> : «&nbsp;J'observe que le conductimètre indique 0,02 mS·cm⁻¹ pour l'eau distillée et 9,4 mS·cm⁻¹ pour l'eau salée.&nbsp;»</p>
+                  <p><b>4 · la conclusion donne un ressenti.</b> « C'était intéressant » parle de l'élève, pas du résultat. Il fallait répondre à l'objectif : «&nbsp;<b>L'eau salée conduit bien mieux le courant que l'eau distillée : 9,4 contre 0,02 mS·cm⁻¹, soit près de 500 fois plus.</b>&nbsp;»</p>
+                  <p><b>Ce que cet exemple montre.</b> Aucune phrase de ce compte rendu n'est <i>fausse</i>. C'est ce qui le rend instructif : on peut écrire six lignes exactes et ne rien transmettre. Le critère n'est pas « est-ce vrai&nbsp;? » mais « <b>quelqu'un qui n'était pas là peut-il comprendre et refaire&nbsp;?</b> »</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.5 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o5-s2-conclusion">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.5</div>
+            <h3 class="step-title">Écrire une conclusion</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> à partir d'un objectif et de trois mesures, choisir puis rédiger.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o5-s2-ex5">
+              <p class="exo-num">Exercice 5</p>
+              <p class="exo-enonce"><b>Objectif du TP&nbsp;:</b> déterminer si la longueur d'un pendule influence sa période.<br>
+              <b>Hypothèse&nbsp;:</b> plus le pendule est long, plus sa période est grande.<br>
+              <b>Mesures&nbsp;:</b> <span class="nb">20 cm → 0,90 s</span> · <span class="nb">50 cm → 1,42 s</span> · <span class="nb">80 cm → 1,79 s</span>.</p>
+              <div class="field">
+                <span class="field-type">Exercice 5</span>
+                <div class="field-q">Trois décisions, puis la rédaction.</div>
+                <div class="cloze" data-cloze data-cle="ex5">
+                  <div style="margin-bottom:9px"><b>1.</b> Les mesures montrent que la période
+                  <select class="short" data-answer="augmente" aria-label="ce que montrent les mesures"><option value="">choisis…</option><option value="augmente">augmente quand la longueur augmente</option><option value="diminue">diminue quand la longueur augmente</option><option value="constante">reste constante</option><option value="hasard">varie au hasard</option></select>.</div>
+                  <div style="margin-bottom:9px"><b>2.</b> L'hypothèse est donc
+                  <select class="short" data-answer="verifiee" aria-label="statut de l'hypothèse"><option value="">choisis…</option><option value="verifiee">vérifiée</option><option value="fausse">contredite</option><option value="indecidable">impossible à trancher</option></select>.</div>
+                  <div style="margin-bottom:9px"><b>3.</b> Parmi ces trois conclusions, la bonne est&nbsp;:
+                  <select class="short" data-answer="c" aria-label="la meilleure conclusion"><option value="">choisis…</option><option value="a">A — « Nous avons mesuré la période pour trois longueurs de pendule. »</option><option value="b">B — « La période dépend de la longueur du pendule. »</option><option value="c">C — « La période augmente avec la longueur : 0,90 s pour 20 cm contre 1,79 s pour 80 cm. L'hypothèse est vérifiée. »</option></select></div>
+                  <div><b>4.</b> Ce qui manque à la conclusion <b>B</b> pour être complète&nbsp;:
+                  <select class="short" data-answer="chiffres" aria-label="ce qui manque à la conclusion B"><option value="">choisis…</option><option value="chiffres">les valeurs mesurées, et le sort de l'hypothèse</option><option value="materiel">la liste du matériel</option><option value="ressenti">l'avis de l'élève sur le TP</option><option value="rien">rien, elle est complète</option></select>.</div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 5</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>A raconte la séance.</b> « Nous avons mesuré… » décrit ce qu'on a fait : c'est la rubrique 6, pas la conclusion. Et surtout, elle ne dit pas le <b>résultat</b>.</p>
+                  <p><b>B est vraie mais nue.</b> « La période dépend de la longueur » répond bien à l'objectif — mais sans chiffre, personne ne sait de combien, et elle ne dit pas si l'hypothèse tient. Il lui manque les <b>valeurs</b> et le <b>sort de l'hypothèse</b>.</p>
+                  <p><b>C coche les trois cases.</b> Courte (deux phrases), chiffrée (0,90 s et 1,79 s, avec leurs unités et deux chiffres significatifs comme les mesures), et elle répond à l'objectif <i>en se prononçant sur l'hypothèse</i>.</p>
+                  <p><b>Une précision qui vaut d'être vue.</b> La période n'est <b>pas proportionnelle</b> à la longueur : quadrupler la longueur (de 20 à 80 cm) ne quadruple pas la période, elle est seulement multipliée par deux environ. La conclusion C a raison de dire « augmente avec », et aurait tort de dire « est proportionnelle à ». <b>On conclut ce que les mesures montrent, pas ce qu'on aurait aimé qu'elles montrent.</b></p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Outil transversal — proposition V1 du 28/08/2026.</b> Cet outil accompagne <b>tous les TP de l'année</b>&nbsp;: garde-le ouvert pendant que tu rédiges. Les exercices se corrigent <b>en direct</b> par le navigateur, et chacun porte son <b>corrigé rédigé</b>, dépliable à tout moment. 🖨️ La <a href="../assets/pdf/pc/fiches/fiche-2nde-o5-compte-rendu-tp.pdf" style="color:var(--link)">fiche outil (PDF)</a> se colle en tête du classeur de TP et sert de checklist.
+  </footer>
+</div>
+
+<script src="../assets/js/sequence-snt.js?v=42"></script>
+
+<!-- ============================================================
+     JS propre à l'outil : les deux appoints d'affichage communs aux
+     outils. Aucun composant nouveau. Le moteur partagé n'est pas
+     touché (§5 des consignes).
+     ============================================================ -->
+<script>
+(function(){
+  'use strict';
+
+  var TEXTE_FICHE = '🖨️ Pour garder la méthode sous les yeux, imprime la <b>fiche outil</b> — '
+                  + 'le lien est en haut de la page.';
+
+  function retirerBoutonsFiche(racine){
+    Array.prototype.forEach.call(racine.querySelectorAll('.btn.dl'), function(b){
+      if (b.parentNode) b.parentNode.removeChild(b);
+    });
+  }
+
+  function surveillerModale(){
+    var mb = document.querySelector('.modal-back');
+    if (!mb || !window.MutationObserver) return;
+    function corriger(){
+      retirerBoutonsFiche(mb);
+      var titre = mb.querySelector('h3'), p = mb.querySelector('.m-body p');
+      if (!titre || !p || p.classList.contains('sans-fiche')) return;
+      if (titre.textContent.indexOf('Recommencer') >= 0){
+        p.innerHTML = 'Tu vas repartir d\'une partie vierge : ce que tu as écrit sera effacé de '
+                    + 'l\'écran. La <b>fiche outil</b> imprimable, elle, ne bouge pas.';
+        p.classList.add('sans-fiche');
+      } else if (titre.textContent.indexOf('terminée') >= 0){
+        p.innerHTML = TEXTE_FICHE;
+        p.classList.add('sans-fiche');
+      }
+    }
+    new MutationObserver(corriger).observe(mb, {childList:true, subtree:true});
+    corriger();
+  }
+
+  function retirerFichePDF(){
+    Array.prototype.forEach.call(document.querySelectorAll('.seance-actions'), function(bar){
+      retirerBoutonsFiche(bar);
+      var lab = bar.querySelector('.sa-label');
+      if (lab && lab.dataset.reecrit !== '1'){
+        lab.dataset.reecrit = '1';
+        lab.innerHTML = TEXTE_FICHE;
+      }
+    });
+    surveillerModale();
+  }
+
+  function allegerBarre(){
+    var b4 = document.getElementById('prog4');
+    if (!b4) return;
+    var menu = b4.querySelector('.p4-menu');          /* le ☰ ouvre un sommaire qui n'existe pas */
+    if (menu && menu.parentNode) menu.parentNode.removeChild(menu);
+    var ret = b4.querySelector('.p4-retour');
+    if (ret){
+      ret.setAttribute('title', 'Revenir à la physique-chimie');
+      ret.setAttribute('aria-label', 'Revenir à la physique-chimie');
+      var lab = ret.querySelector('.p4-lab');
+      if (lab) lab.textContent = 'Retour';
+    }
+  }
+
+  function retirerGlossaire(){
+    ['#glo-ouvrir', '.glo-back'].forEach(function(sel){
+      var n = document.querySelector(sel);
+      if (n && n.parentNode) n.parentNode.removeChild(n);
+    });
+  }
+
+  function demarrer(){
+    retirerFichePDF();
+    allegerBarre();
+    retirerGlossaire();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
+  else demarrer();
+})();
+</script>
+
+</body></html>

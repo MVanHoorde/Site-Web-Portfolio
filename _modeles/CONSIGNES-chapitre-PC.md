@@ -292,8 +292,8 @@ commentaire, prêt à décommenter :
 
 ```html
 <div class="fiche-vierge hors-verrou">
-  <a href="../fiches/fiche-2nde-tXcY.html">📄 Télécharger la fiche de cours (vierge)</a>
-  <span class="quoi">à imprimer et à compléter en classe — disponible en permanence, code ou pas</span>
+  <a href="../assets/pdf/pc/fiches/fiche-2nde-tXcY.pdf">📄 Télécharger la fiche de cours (PDF, vierge)</a>
+  <span class="quoi">la feuille distribuée en classe, à compléter — disponible en permanence, code ou pas</span>
 </div>
 ```
 
@@ -311,6 +311,33 @@ Trois points, dans l'ordre d'importance :
    lien cassé (bloquant pour `verifier.mjs`) et une promesse non tenue.
    Au 26/08/2026, **2 chapitres sur 14** portent le bouton — `t1c2` et `t1c4`,
    les seuls dont la fiche est écrite.
+
+### 🔴 Le PDF est un export, le HTML est la source (28/08/2026)
+
+**Les fiches de 2nde PC se distribuent en PDF**, jamais en page HTML. Pour un
+chapitre, **c'est Loïc qui imprime et distribue** en classe : le PDF en ligne
+sert à la retrouver — absent, malade, feuille perdue. Le HTML de la fiche reste
+dans `fiches/`, à son nom actuel ; le PDF va dans `assets/pdf/pc/fiches/`, sous
+le nom `fiche-2nde-tXcY.pdf`.
+
+Le HTML est ce qu'on maintient, corrige et relit ; le PDF se **régénère** :
+
+    node exporter-fiches.mjs          toutes les fiches
+    node exporter-fiches.mjs t1c4     seulement celle-là
+
+Un PDF corrigé à la main serait écrasé au premier export suivant, et les deux
+divergeraient sans que rien ne le signale. Le script contrôle chaque export
+**à la mesure** — format `209,9 × 297,0 mm` (un écart signale une mise à
+l'échelle), une `.feuille` de la source pour une page du PDF (une page de plus
+= du contenu qui a débordé), polices auto-hébergées bien **incorporées**, et
+signalement des caractères servis par une police système.
+
+**L'ordre est : produire l'export, le vérifier, puis changer le lien** — jamais
+l'inverse. Le PDF et le HTML partent **dans la même livraison**.
+
+Le libellé n'est pas le même que sur un outil transversal : la fiche de chapitre
+est **à trous**, distribuée en classe ; la fiche d'outil est **complète**, et
+c'est l'élève qui l'imprime (`CONSIGNES-outil-PC.md` §7).
 
 ⚠ Le bloc rend l'`<article>` verrouillé porteur de **deux** éléments visibles ;
 c'est pourquoi `body.verrouille article.lecture` est passé en

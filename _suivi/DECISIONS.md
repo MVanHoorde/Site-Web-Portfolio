@@ -1069,3 +1069,90 @@ cette feuille : les 14 chapitres de physique-chimie, `_modeles/gabarit-chapitre.
 **deux pages d'enseignement scientifique de Terminale** (`term-es-t2-c1`, `term-es-t2-c2`).
 Les trois dernières auraient servi l'ancienne feuille depuis le cache. Le `?v=N` doit donc être
 incrémenté dans **17 fichiers**, et la consigne devrait être corrigée en ce sens.
+
+---
+
+## 28/08/2026 — L'ornement des encarts « Histoire des sciences » : variante B
+
+**Statut : en vigueur.** Tranché par Loïc. Ce n'était pas une question de goût :
+le fleuron `U+2766` n'existe dans **aucune** des vingt-deux polices auto-hébergées
+du dépôt — les sous-ensembles latins s'arrêtent à la ponctuation courante. Il
+s'affichait donc **par repli sur une police système** : dessin variable d'un
+appareil à l'autre, rendu possible en emoji couleur, tofu possible.
+
+**Retenu — variante B :** de part et d'autre du libellé, en partant de l'extérieur,
+un **filet horizontal court** puis un **losange plein**. Symétrique, **tout en CSS**,
+zéro glyphe, zéro SVG, zéro image. Le losange est un carré de 5px tourné à 45°
+(7,1px de diagonale, la place lui est réservée par des marges de 1,05px).
+
+Ce que la production a ajouté au brief, et pourquoi :
+
+- **`text-align:center` conservé en plus de `justify-content:center`.** Le brief
+  demandait de le remplacer. Mesuré à 390px : le libellé passe sur deux lignes, et
+  sans `text-align` les deux lignes se collent à gauche dans leur item de flex —
+  la seconde laissait un grand vide face au losange de droite. Les deux propriétés
+  ne font pas le même travail : l'une place les items, l'autre les lignes de texte.
+- **`print-color-adjust:exact`.** Filets et losanges sont des arrière-plans ;
+  l'ancien fleuron était du texte. Sans cette ligne, l'ornement disparaît quand le
+  navigateur n'imprime pas les graphiques d'arrière-plan.
+- **Le losange est resté un fond plein, pas quatre bordures.** La variante en
+  bordures s'imprime en toutes circonstances, mais Chrome arrondit une bordure de
+  2,5px à 2px sur un écran non-Retina : le losange y perdait un cinquième de sa
+  taille. Mesuré : 288,80px de large avec le fond, 286,80px avec les bordures.
+
+Portée : la modification tient en **une règle** de `assets/css/chapitre-commun.css`,
+partagée. Elle touche donc les **dix encarts** des sept fichiers concernés, dont
+`term-es-t2-c1`, qui **n'est pas de la seconde**. C'est voulu — l'ornement doit
+rester unique sur le site.
+
+Contrôles passés : plus aucune occurrence du fleuron dans le dépôt · `?v=8` dans
+les 17 fichiers · symétrie mesurée au pixel (12,00px de chaque côté entre filet et
+losange) · centre du losange à **0,22px** de la médiane des capitales · rendu à
+1200px, 500px et 390px · simulation photocopie (niveaux de gris + seuil dur) :
+filets et losanges survivent.
+
+---
+
+## 28/08/2026 — Les fiches de 2nde PC se distribuent en PDF
+
+**Statut : en vigueur.** Tranché par Loïc. La consigne **ne vaut que pour la
+seconde physique-chimie** — ni SNT, ni CFA, ni enseignement scientifique.
+
+**Deux distributions, deux libellés :**
+
+| Famille | Qui imprime | Point d'entrée | Ce que dit le lien |
+|---|---|---|---|
+| Chapitres de 2nde PC | **Loïc**, et il distribue en classe | `.fiche-vierge.hors-verrou`, en haut du cours | « Télécharger la fiche de cours (PDF, vierge) » · *la feuille distribuée en classe, à compléter* |
+| Outils transversaux `o1`…`oN` | **l'élève**, quand il en a besoin | le hub PC **et** la page de l'outil | « Fiche outil (PDF) — la méthode complète, à imprimer et à coller » |
+
+Libellés = **propositions à valider**. Le lien d'un outil n'est jamais derrière un
+verrou : l'outil est ouvert toute l'année, sa fiche aussi.
+
+🔴 **Le HTML est la source, le PDF est un export. Jamais l'inverse.** Un PDF
+corrigé à la main serait écrasé au premier export suivant, et les deux
+divergeraient sans que rien ne le signale. L'export est scripté —
+`node exporter-fiches.mjs` — et **contrôle à la mesure** : format
+`209,9 × 297,0 mm`, une `.feuille` de la source pour une page du PDF, polices
+auto-hébergées incorporées. Il refuse de valider un export en écart.
+
+Ce que la production a changé par rapport au brief :
+
+- **Le nombre de pages n'est pas figé fiche par fiche.** Le brief prévoyait un
+  nombre arrêté ; la source le dit déjà, une `.feuille` valant une page. Le
+  contrôle est devenu « une feuille dedans, une page dehors », qui attrape le
+  débordement d'un paragraphe ajouté sans y penser. Constaté à l'export :
+  `t1c2` fait **10 pages**, `t1c4` **6** — ce sont bien des fiches longues, pas
+  un débordement.
+- **Le script ne tient pas de liste de fiches**, il lit `fiches/`. Décidé après
+  avoir vu `o3` puis `o4` apparaître pendant la session : une liste tenue à la
+  main dérive.
+
+Ce qui **ne change pas** : le QR code des fiches d'outils continue de pointer vers
+la **page en ligne** de l'outil, pas vers le PDF.
+
+**Reste ouvert — les caractères servis par une police système.** L'export mesure
+que six fiches sur six contiennent des caractères qu'aucune de nos six familles ne
+couvre : exposants et indices Unicode (`⁺` `⁻¹` `₆`), symboles (`⩽` `⩾` `≈` `✓` `⚠`
+`⚙` `π` `Δ`), et dans `o3`/`o4` les libellés en Arial des planches SVG (55 et
+plusieurs dizaines de glyphes). Même piège que le fleuron ci-dessus, mais sur du
+contenu : c'est **du fond**, rien n'a été touché.

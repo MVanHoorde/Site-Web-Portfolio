@@ -189,9 +189,35 @@
   /* Encart Histoire des sciences */
   .histoire { border:1.5px solid var(--sepia); outline:1px solid var(--sepia); outline-offset:3px;
     background:#f8f2e2; padding:1.2rem 1.4rem; margin:1.8rem 3px; }
+  /* Ornement de l'étiquette : filet court + losange de part et d'autre du libellé.
+     Tout en CSS, aucun glyphe : le fleuron U+2766 n'existe dans aucune des polices
+     auto-hébergées du dépôt et s'affichait par repli sur une police système. */
   .histoire .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.18em;
-    text-transform:uppercase; color:var(--sepia); text-align:center; margin-bottom:.8rem; }
-  .histoire .etq::before, .histoire .etq::after { content:"❦"; margin:0 .6rem; }
+    text-transform:uppercase; color:var(--sepia); margin-bottom:.8rem;
+    display:flex; align-items:center; justify-content:center; gap:.55rem;
+    text-align:center; /* garde les deux lignes centrées quand le libellé passe à la ligne */
+    width:fit-content; margin-inline:auto; padding-inline:2.2rem;
+    background-image:linear-gradient(var(--sepia),var(--sepia)),
+                     linear-gradient(var(--sepia),var(--sepia));
+    background-size:1.5rem 1px; background-position:left center,right center;
+    background-repeat:no-repeat;
+    /* Filets et losanges sont des arrière-plans, et print-color-adjust s'hérite jusqu'aux
+       pseudo-éléments : sans cette ligne l'ornement disparaît quand le navigateur n'imprime
+       pas les graphiques d'arrière-plan. */
+    -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  /* Losange = carré de 5px tourné à 45° : 7,1px de diagonale, d'où les marges de 1,05px qui
+     lui réservent sa place. Fond plein plutôt que quatre bordures : une bordure de 2,5px est
+     arrondie à 2px sur un écran non-Retina, le losange y perdrait un cinquième de sa taille.
+     Le letter-spacing de .18em laisse une espace fantôme après la dernière lettre : on la
+     retire à gauche du losange de droite, sinon le libellé paraît décalé d'un cheveu. */
+  .histoire .etq::before, .histoire .etq::after { content:""; flex:0 0 5px; height:5px;
+    background:var(--sepia); transform:rotate(45deg); margin-inline:1.05px; }
+  .histoire .etq::after { margin-inline-start:calc(1.05px - .18em); }
+  /* Sous 520px le libellé passe sur deux lignes : on raccourcit les filets pour lui laisser
+     la largeur ; les losanges restent collés au texte, symétriques, jamais orphelins. */
+  @media (max-width:520px) {
+    .histoire .etq { padding-inline:1.4rem; background-size:.9rem 1px; gap:.45rem; }
+  }
   .histoire .duo-h { display:grid; grid-template-columns:170px 1fr; gap:1.2rem; align-items:start; }
   .histoire img { width:100%; border:1px solid var(--sepia); padding:3px; background:#fff; }
   .histoire .credit { font-family:'IBM Plex Mono',monospace; font-size:.65rem; color:var(--sepia);

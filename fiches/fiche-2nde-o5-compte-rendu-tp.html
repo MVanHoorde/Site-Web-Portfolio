@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche outil 5 — Rédiger un compte rendu de TP</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     FICHE OUTIL 5 — RÉDIGER UN COMPTE RENDU DE TP.
+     Produite le 28/08/2026 depuis _modeles/gabarit-fiche-outil-PC.html.
+
+     DEUX PAGES exactement. Elle doit pouvoir se coller en tête du
+     classeur de TP et servir de CHECKLIST : le recto porte les huit
+     rubriques et ce qu'on attend de chacune, le verso l'étape
+     centrale (observation / interprétation), la conclusion et les
+     cases à cocher avant de rendre.
+
+     🔴 DÉCISION O-28 — le lien vidéo de la source est sur la PAGE, pas
+     ici : la fiche porte déjà son QR code, et un lien imprimé ne se
+     clique pas.
+     🔴 DÉCISION O-29 — la numérotation de la source est refaite (elle
+     portait deux n°6 et renvoyait au n°1 pour l'objectif). Détail dans
+     _suivi/erreurs-sources-fiches-outils.md.
+     ============================================================ -->
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e; --gris:#6b6f7a;
+    --or-fonce:#b28a1d; --vert-fonce:#4c8a58;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { background:#9aa0ab; }
+  body { font-family:'Spectral', Georgia, serif; color:var(--encre);
+         font-size:9.2pt; line-height:1.28; }
+  .feuille { width:210mm; min-height:297mm; margin:8mm auto; padding:8mm 12mm 12mm;
+    background:var(--papier); position:relative; box-shadow:0 2px 14px rgba(0,0,0,.28);
+    display:flex; flex-direction:column; }
+  @page { size:A4; margin:0; }
+  @media print {
+    html, body { background:#fff; }
+    .feuille { margin:0; box-shadow:none; height:296mm; min-height:0; overflow:hidden;
+               page-break-after:always; background:#fff; }
+    .feuille:last-child { page-break-after:auto; }
+    .encart, .regle, .exres, .rub, .oi, .eviter { background:#fff; }
+  }
+  .bande { height:3.5px; background:var(--encre); position:relative; margin-bottom:3.2mm; }
+  .bande i { position:absolute; top:0; bottom:0; width:3px; }
+  .bande i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .bande i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .bande i:nth-child(3){ left:76%; background:var(--h-alpha); }
+
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:12.4pt; line-height:1.12; }
+  .sous { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris); margin:1mm 0 2.5mm; }
+  .sous .rouge { color:var(--h-alpha); }
+  .suite { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris);
+    letter-spacing:.1em; text-transform:uppercase; margin:0 0 2.5mm; }
+  .suite .n { color:var(--h-beta); }
+  .aquoi { font-family:'Space Grotesk',sans-serif; font-size:9.2pt; font-weight:600;
+    border-left:3px solid var(--h-beta); padding:1.1mm 0 1.1mm 3mm; margin-bottom:2mm; }
+
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:10.2pt; margin:2.4mm 0 1.2mm;
+       display:flex; align-items:baseline; gap:2.5mm;
+       border-top:2.2px solid var(--encre); padding-top:1.1mm; }
+  h2:first-child { margin-top:0; }
+  h2 .n { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--h-beta); }
+  h3 { font-family:'IBM Plex Mono',monospace; font-size:7.2pt; letter-spacing:.09em;
+       text-transform:uppercase; color:var(--gris); margin:1.6mm 0 .7mm; font-weight:600; }
+
+  p { margin-bottom:.9mm; }
+  b { font-weight:600; }
+  .mono { font-family:'IBM Plex Mono',monospace; font-size:.92em; white-space:nowrap; }
+  ol, ul { margin:0 0 1mm 4.6mm; }
+  li { margin-bottom:.5mm; }
+
+  .regle { border:1.3px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 2mm 2mm 0; padding:1.5mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fff; }
+  .rt { display:grid; grid-template-columns:15mm 1fr; gap:2mm; align-items:baseline; margin-top:1mm; }
+  .rt .e { font-family:'IBM Plex Mono',monospace; font-size:6.2pt; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--gris); border:.7px solid var(--grille);
+    border-radius:1mm; padding:.2mm 0; text-align:center; }
+  .rt.piege .e { color:var(--h-alpha); border-color:var(--h-alpha); }
+  .regle .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--h-gamma); margin-bottom:1mm; }
+  .regle .forme { font-family:'IBM Plex Mono',monospace; font-size:10pt; text-align:center;
+    margin:1mm 0; color:var(--encre); line-height:1.5; }
+
+  .encart { border:1px solid var(--grille); border-left:3px solid var(--or-fonce);
+    border-radius:0 2mm 2mm 0; padding:1.2mm 2.6mm; margin:1.2mm 0 1.6mm; background:#fffdf5; font-size:8.8pt; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--or-fonce); margin-bottom:.8mm; font-weight:600; }
+  .eviter { border:1.2px solid var(--h-alpha); border-left:4px solid var(--h-alpha);
+    border-radius:0 2mm 2mm 0; padding:1.3mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fffaf9; }
+  .eviter .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--h-alpha); margin-bottom:1mm; font-weight:600; }
+  .exres { border:1px solid var(--vert-fonce); border-radius:2mm; padding:1.5mm 2.6mm;
+    margin:1.2mm 0 1.8mm; background:#fbfdfb; }
+  .exres .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--vert-fonce); margin-bottom:1.2mm; font-weight:600; }
+
+  /* ---------- Les huit rubriques, en fiches numérotées ---------- */
+  .rubs { display:grid; grid-template-columns:1fr 1fr; gap:1.6mm 4mm; }
+  .rub { display:grid; grid-template-columns:6mm 1fr; gap:2mm; align-items:start;
+    border-top:.8px solid var(--grille); padding-top:1.2mm; }
+  .rub .num { font-family:'IBM Plex Mono',monospace; font-size:9pt; font-weight:700;
+    color:var(--h-gamma); text-align:center; }
+  .rub .nom { font-family:'Space Grotesk',sans-serif; font-size:8.6pt; font-weight:600; }
+  .rub .d { font-size:8pt; color:var(--gris); line-height:1.3; }
+  .rub.centre .num { color:var(--h-alpha); }
+  .rub.centre .nom { color:var(--h-alpha); }
+  .moment { font-family:'IBM Plex Mono',monospace; font-size:6.8pt; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--h-beta); grid-column:1 / -1; margin-top:1mm; }
+
+  /* ---------- Observation / interprétation ---------- */
+  .duo { display:grid; grid-template-columns:1fr 1fr; gap:3mm; margin:1.2mm 0 1.6mm; }
+  .oi { border:1px solid var(--grille); border-radius:2mm; padding:1.4mm 2.2mm; background:#fff; }
+  .oi.obs { border-left:3px solid var(--h-gamma); }
+  .oi.interp { border-left:3px solid var(--vert-fonce); }
+  .oi .t { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    text-transform:uppercase; font-weight:700; margin-bottom:.8mm; }
+  .oi.obs .t { color:var(--h-gamma); } .oi.interp .t { color:var(--vert-fonce); }
+  .oi .d { font-size:8.2pt; line-height:1.35; }
+  .oi .ex { font-size:8pt; font-style:italic; color:var(--gris); margin-top:1mm;
+    border-top:.6px dashed var(--grille); padding-top:.8mm; line-height:1.3; }
+
+  /* ---------- La checklist avant de rendre ---------- */
+  .check { display:grid; grid-template-columns:1fr 1fr; gap:.8mm 5mm; margin:1.2mm 0 1.6mm; }
+  .check > div { display:grid; grid-template-columns:4mm 1fr; gap:1.6mm; align-items:baseline;
+    font-size:8.4pt; border-top:.6px dotted var(--grille); padding-top:.9mm; }
+  .check .case { width:3.2mm; height:3.2mm; border:1px solid var(--encre); border-radius:.6mm; }
+
+  .versexos { border:1.3px solid var(--encre); border-radius:2mm; padding:1.6mm 2.4mm;
+    display:flex; align-items:center; gap:3.5mm; background:#fff; margin-top:auto; }
+  .versexos svg { flex:none; }
+  .versexos .txt { font-size:8.6pt; }
+  .versexos .txt b { font-family:'Space Grotesk',sans-serif; }
+  .versexos .url { font-family:'IBM Plex Mono',monospace; font-size:7.2pt;
+    color:var(--gris); word-break:break-all; margin-top:.8mm; }
+  .pied { position:absolute; bottom:5mm; left:12mm; right:12mm;
+          display:flex; justify-content:space-between;
+          font-family:'IBM Plex Mono',monospace; font-size:6.8pt; color:var(--gris); }
+  svg { display:block; }
+</style>
+</head>
+<body>
+
+<!-- ==================== RECTO — LES HUIT RUBRIQUES ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <h1>Outil 5 — Rédiger un compte rendu de TP</h1>
+  <p class="sous">Physique-Chimie · <span class="rouge">Seconde</span> · fiche outil — à coller en tête du classeur de TP · M. Van Hoorde</p>
+
+  <p class="aquoi">À chaque TP de l'année. Colle-la en première page de ton classeur : elle sert de checklist.</p>
+
+  <div class="regle">
+    <div class="etq">La règle — le seul critère qui compte</div>
+    <div class="forme">écrire pour quelqu'un qui n'a jamais fait le TP</div>
+    <div class="rt"><span class="e">le geste</span><div>Lui permettre de comprendre <b>ce que tu as fait</b> et <b>pourquoi</b> tu l'as fait.</div></div>
+    <div class="rt"><span class="e">le contrôle</span><div>Relis-toi en te demandant : « quelqu'un qui n'était <b>pas là</b> pourrait-il comprendre — et <b>refaire</b> ? »</div></div>
+  </div>
+
+  <h2><span class="n">01</span> Les huit rubriques</h2>
+
+  <div class="rubs">
+    <div class="moment">Avant de manipuler</div>
+    <div class="rub"><span class="num">1</span><div><span class="nom">Titre</span><div class="d">souvent déjà écrit sur le sujet distribué</div></div></div>
+    <div class="rub"><span class="num">2</span><div><span class="nom">Objectif</span><div class="d">ce que tu cherches, en quelques mots, à l'infinitif : « déterminer si… »</div></div></div>
+    <div class="rub"><span class="num">3</span><div><span class="nom">Hypothèse(s)</span><div class="d">une <b>affirmation</b> qu'on pourra déclarer vraie ou fausse. Elle appelle l'expérience qui la teste</div></div></div>
+    <div class="rub"><span class="num">4</span><div><span class="nom">Matériel</span><div class="d">il <b>découle</b> des expériences prévues — pas de ce qui traîne sur la paillasse</div></div></div>
+    <div class="rub"><span class="num">5</span><div><span class="nom">Schéma de l'expérience</span><div class="d">légendé, avec le nom exact de chaque pièce. Il se pense <b>avant</b> : c'est un plan, pas un souvenir</div></div></div>
+
+    <div class="moment">Pendant</div>
+    <div class="rub"><span class="num">6</span><div><span class="nom">Expérience</span><div class="d">les étapes, <b>à l'infinitif</b>, avec les valeurs : « peser 5,0 g », « verser 100 mL »</div></div></div>
+
+    <div class="moment">Après</div>
+    <div class="rub centre"><span class="num">7</span><div><span class="nom">Observation et interprétation</span><div class="d">l'étape centrale — voir le verso</div></div></div>
+    <div class="rub"><span class="num">8</span><div><span class="nom">Conclusion</span><div class="d">courte, chiffrée, elle répond à l'objectif du <b>n° 2</b> et dit le sort de l'hypothèse</div></div></div>
+  </div>
+
+  <h2><span class="n">02</span> L'hypothèse — le point dur</h2>
+  <p style="margin-bottom:1mm">Une hypothèse n'est <b>ni une question, ni un souhait, ni une évidence</b>. C'est une affirmation dont on pourra dire, à la fin, si elle était vraie ou fausse — et elle doit appeler l'expérience qui la teste : c'est ainsi que tu trouves ta liste de matériel.</p>
+
+  <div class="eviter">
+    <div class="etq">⚠ Trois hypothèses qui n'en sont pas</div>
+    « <i>Est-ce que le sucre se dissout mieux dans l'eau chaude ?</i> » — une <b>question</b> : on ne peut pas la déclarer vraie ou fausse.<br>
+    « <i>Je pense qu'il va se passer quelque chose.</i> » — trop <b>vague</b> : aucune expérience ne peut la contredire.<br>
+    « <i>L'eau bout à 100 °C.</i> » — une <b>connaissance</b> : il n'y a rien à découvrir.
+  </div>
+
+  <div class="exres">
+    <div class="etq">✓ D'un objectif à une hypothèse, puis au matériel</div>
+    <ol>
+      <li><b>Objectif</b> — déterminer si la température influence la vitesse de dissolution du sucre.</li>
+      <li><b>Hypothèse</b> — <i>le sucre se dissout plus vite dans l'eau chaude que dans l'eau froide.</i> C'est une affirmation : on pourra la trancher.</li>
+      <li><b>L'expérience qu'elle appelle</b> — même masse de sucre, même volume d'eau, deux températures, et un chronomètre. <b>Une seule chose change</b> : la température.</li>
+      <li><b>Le matériel en découle</b> — 2 béchers · balance et coupelle · éprouvette graduée · thermomètre · chronomètre · sucre · eau chaude et froide.</li>
+    </ol>
+  </div>
+
+  <div class="encart" style="margin-top:auto">
+    <div class="etq">Le schéma se pense avant, et il se légende</div>
+    On le dessine pour <b>prévoir</b> le montage, pas pour se souvenir. Un schéma tracé après coup est un dessin ; tracé avant, c'est un plan — et c'est lui qui te fait repérer le matériel qui manque. Chaque pièce porte son nom exact (→ <b>outil 4</b>).
+  </div>
+
+  <div class="pied"><span>Fiche outil 5 · Compte rendu de TP — M. Van Hoorde</span><span>recto · page 1/2</span></div>
+</div>
+
+<!-- ==================== VERSO — L'ÉTAPE CENTRALE ET LA CHECKLIST ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Outil 5</span> — observer, interpréter, conclure</p>
+
+  <h2><span class="n">03</span> Observation et interprétation — rubrique 7</h2>
+
+  <div class="regle">
+    <div class="etq">La règle — la formule qui règle tout</div>
+    <div class="forme">j'observe que… <span style="color:var(--gris)">donc</span> j'en conclus que…</div>
+    <div class="rt"><span class="e">le geste</span><div>Écrire la phrase <b>en deux temps</b>, avec « donc » au milieu. Avant : ce qui se <b>voit</b>. Après : ce qui se <b>déduit</b>.</div></div>
+    <div class="rt"><span class="e">le contrôle</span><div>Quelqu'un d'autre, devant la même paillasse, écrirait-il la <b>même observation</b> ? Si oui, c'en est bien une.</div></div>
+  </div>
+
+  <div class="duo">
+    <div class="oi obs">
+      <div class="t">L'observation</div>
+      <div class="d">Ce que <b>n'importe qui</b> verrait à ta place : une couleur, un dépôt, une valeur lue, un temps mesuré. Elle ne dépend pas de ce que tu sais.</div>
+      <div class="ex">« J'observe que la solution devient bleue et qu'un dépôt se forme au fond du tube. »</div>
+    </div>
+    <div class="oi interp">
+      <div class="t">L'interprétation</div>
+      <div class="d">Ce que tu en <b>déduis</b>, en mobilisant le cours. Elle répond à l'hypothèse. Deux personnes peuvent observer la même chose et l'interpréter autrement.</div>
+      <div class="ex">« Donc j'en conclus qu'il s'est formé une nouvelle espèce chimique : il y a eu réaction. »</div>
+    </div>
+  </div>
+
+  <div class="eviter">
+    <div class="etq">⚠ L'erreur la plus fréquente — interpréter en croyant observer</div>
+    ✗ « <i>J'observe qu'il y a eu une réaction chimique.</i> » — une réaction <b>ne se voit pas</b>. Ce qui se voit : un changement de couleur, un dépôt, un dégagement de gaz.<br>
+    ✗ « <i>J'observe que le sel accélère la fonte.</i> » — ce qui se voit : <b>la glace salée a fondu en 4 min, la glace pure en 7 min</b>. Le reste est une déduction.
+  </div>
+
+  <div class="encart">
+    <div class="etq">La remarque qui vaut à elle seule cette rubrique</div>
+    <b style="font-size:9.4pt">Avoir une hypothèse fausse n'est pas une erreur ; laisser une hypothèse fausse en est une.</b><br>
+    Tu peux — et tu dois — <b>rectifier</b> ton hypothèse ici si l'expérience la contredit. Un compte rendu qui dit « mon hypothèse était fausse, voici ce que l'expérience montre » vaut mieux qu'un compte rendu qui fait semblant.
+  </div>
+
+  <h2><span class="n">04</span> Conclure — rubrique 8</h2>
+  <p style="margin-bottom:1mm">Trois qualités, et elles se vérifient : <b>courte</b> (deux ou trois phrases) · <b>chiffrée</b> (les valeurs, avec leur unité et le bon nombre de chiffres significatifs → outil 2) · <b>elle répond à l'objectif du n° 2</b>, et à rien d'autre.</p>
+
+  <div class="exres">
+    <div class="etq">✓ Une conclusion écrite à partir d'un objectif et de trois mesures</div>
+    <p style="margin-bottom:1mm"><b>Objectif</b> — déterminer si la température influence la vitesse de dissolution du sucre.<br>
+    <b>Mesures</b> — <span class="mono">10 °C → 96 s · 25 °C → 52 s · 50 °C → 21 s</span></p>
+    <p style="margin-bottom:1mm"><b>Conclusion</b> — « <i>La température influence bien la vitesse de dissolution du sucre : le temps nécessaire passe de 96 s à 10 °C à 21 s à 50 °C. Plus l'eau est chaude, plus la dissolution est rapide. Notre hypothèse est donc vérifiée.</i> »</p>
+    <p style="font-size:8.4pt;color:var(--gris)"><b>Le contrôle :</b> je relis l'objectif, je relis la conclusion — <b>se répondent-ils ?</b></p>
+  </div>
+
+  <div class="eviter">
+    <div class="etq">⚠ Trois conclusions qui ne concluent rien</div>
+    « <i>Ce TP était intéressant.</i> » — elle parle de <b>toi</b>, pas du résultat.<br>
+    « <i>Nous avons pesé le sucre, versé l'eau, puis chronométré.</i> » — c'est la rubrique <b>6</b>, recopiée.<br>
+    « <i>Le sucre se dissout.</i> » — vrai, mais on le savait avant. Elle ne répond pas à l'objectif, qui portait sur la <b>température</b>.
+  </div>
+
+  <h2><span class="n">05</span> Avant de rendre — la checklist</h2>
+  <div class="check">
+    <div><span class="case"></span><span>Les <b>huit rubriques</b> y sont, dans l'ordre</span></div>
+    <div><span class="case"></span><span>L'hypothèse est une <b>affirmation</b>, pas une question</span></div>
+    <div><span class="case"></span><span>Le schéma est <b>légendé</b></span></div>
+    <div><span class="case"></span><span>Les étapes sont à l'<b>infinitif</b>, avec les valeurs</span></div>
+    <div><span class="case"></span><span>Mes observations ne contiennent <b>aucune déduction</b></span></div>
+    <div><span class="case"></span><span>Chaque valeur porte son <b>unité</b></span></div>
+    <div><span class="case"></span><span>La conclusion répond à l'<b>objectif du n° 2</b></span></div>
+    <div><span class="case"></span><span>Elle dit si l'hypothèse est <b>vérifiée ou non</b></span></div>
+  </div>
+
+  <div class="versexos">
+    <svg viewBox="0 0 45 45" width="66" height="66" role="img" aria-label="QR code vers la page de l'outil 5"><rect width="45" height="45" fill="#fff"/><path fill="#141a26" shape-rendering="crispEdges" d="M2 2h7v1h-7zM10 2h1v1h-1zM12 2h1v1h-1zM14 2h3v1h-3zM18 2h3v1h-3zM23 2h1v1h-1zM25 2h3v1h-3zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM13 3h3v1h-3zM17 3h1v1h-1zM19 3h1v1h-1zM23 3h1v1h-1zM26 3h4v1h-4zM32 3h1v1h-1zM36 3h1v1h-1zM42 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM10 4h3v1h-3zM14 4h1v1h-1zM16 4h2v1h-2zM19 4h2v1h-2zM22 4h3v1h-3zM26 4h2v1h-2zM30 4h1v1h-1zM34 4h1v1h-1zM36 4h1v1h-1zM38 4h3v1h-3zM42 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM10 5h2v1h-2zM14 5h2v1h-2zM21 5h1v1h-1zM23 5h1v1h-1zM26 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM32 5h1v1h-1zM36 5h1v1h-1zM38 5h3v1h-3zM42 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h3v1h-3zM17 6h2v1h-2zM20 6h2v1h-2zM24 6h3v1h-3zM30 6h1v1h-1zM33 6h2v1h-2zM36 6h1v1h-1zM38 6h3v1h-3zM42 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h2v1h-2zM14 7h1v1h-1zM22 7h2v1h-2zM28 7h3v1h-3zM36 7h1v1h-1zM42 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h1v1h-1zM26 8h1v1h-1zM28 8h1v1h-1zM30 8h1v1h-1zM32 8h1v1h-1zM34 8h1v1h-1zM36 8h7v1h-7zM13 9h2v1h-2zM16 9h3v1h-3zM20 9h1v1h-1zM22 9h5v1h-5zM30 9h1v1h-1zM32 9h3v1h-3zM4 10h6v1h-6zM11 10h3v1h-3zM16 10h1v1h-1zM19 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h3v1h-3zM30 10h2v1h-2zM37 10h4v1h-4zM42 10h1v1h-1zM4 11h3v1h-3zM9 11h3v1h-3zM14 11h2v1h-2zM17 11h6v1h-6zM25 11h1v1h-1zM30 11h11v1h-11zM3 12h6v1h-6zM11 12h1v1h-1zM13 12h1v1h-1zM22 12h1v1h-1zM24 12h1v1h-1zM26 12h1v1h-1zM29 12h3v1h-3zM35 12h1v1h-1zM37 12h1v1h-1zM39 12h1v1h-1zM41 12h1v1h-1zM4 13h3v1h-3zM10 13h2v1h-2zM14 13h2v1h-2zM17 13h2v1h-2zM23 13h3v1h-3zM29 13h1v1h-1zM33 13h1v1h-1zM38 13h2v1h-2zM2 14h1v1h-1zM7 14h3v1h-3zM11 14h1v1h-1zM14 14h1v1h-1zM19 14h1v1h-1zM21 14h2v1h-2zM25 14h4v1h-4zM30 14h2v1h-2zM35 14h1v1h-1zM39 14h3v1h-3zM4 15h1v1h-1zM6 15h2v1h-2zM9 15h5v1h-5zM16 15h4v1h-4zM24 15h1v1h-1zM29 15h1v1h-1zM32 15h1v1h-1zM34 15h1v1h-1zM37 15h3v1h-3zM41 15h2v1h-2zM5 16h1v1h-1zM8 16h2v1h-2zM14 16h2v1h-2zM19 16h1v1h-1zM22 16h1v1h-1zM24 16h3v1h-3zM28 16h3v1h-3zM33 16h1v1h-1zM35 16h2v1h-2zM38 16h2v1h-2zM2 17h2v1h-2zM5 17h1v1h-1zM7 17h1v1h-1zM13 17h1v1h-1zM18 17h3v1h-3zM23 17h1v1h-1zM25 17h1v1h-1zM29 17h1v1h-1zM33 17h3v1h-3zM38 17h2v1h-2zM3 18h1v1h-1zM6 18h1v1h-1zM8 18h1v1h-1zM10 18h1v1h-1zM12 18h1v1h-1zM15 18h1v1h-1zM17 18h2v1h-2zM24 18h2v1h-2zM27 18h3v1h-3zM31 18h4v1h-4zM40 18h1v1h-1zM42 18h1v1h-1zM5 19h1v1h-1zM9 19h5v1h-5zM16 19h2v1h-2zM20 19h3v1h-3zM25 19h1v1h-1zM28 19h1v1h-1zM30 19h13v1h-13zM3 20h1v1h-1zM8 20h1v1h-1zM10 20h1v1h-1zM12 20h1v1h-1zM17 20h1v1h-1zM20 20h1v1h-1zM22 20h1v1h-1zM24 20h1v1h-1zM26 20h1v1h-1zM29 20h3v1h-3zM36 20h1v1h-1zM39 20h2v1h-2zM3 21h1v1h-1zM5 21h2v1h-2zM11 21h1v1h-1zM13 21h3v1h-3zM17 21h1v1h-1zM22 21h1v1h-1zM28 21h5v1h-5zM36 21h2v1h-2zM42 21h1v1h-1zM7 22h2v1h-2zM10 22h1v1h-1zM12 22h3v1h-3zM16 22h1v1h-1zM18 22h1v1h-1zM20 22h2v1h-2zM23 22h2v1h-2zM29 22h1v1h-1zM38 22h3v1h-3zM2 23h1v1h-1zM9 23h1v1h-1zM11 23h3v1h-3zM15 23h2v1h-2zM21 23h2v1h-2zM25 23h1v1h-1zM27 23h2v1h-2zM32 23h3v1h-3zM36 23h2v1h-2zM39 23h4v1h-4zM2 24h4v1h-4zM7 24h2v1h-2zM13 24h2v1h-2zM24 24h1v1h-1zM29 24h2v1h-2zM36 24h1v1h-1zM40 24h1v1h-1zM3 25h2v1h-2zM9 25h4v1h-4zM14 25h2v1h-2zM17 25h2v1h-2zM22 25h3v1h-3zM30 25h1v1h-1zM34 25h1v1h-1zM36 25h2v1h-2zM39 25h2v1h-2zM2 26h4v1h-4zM8 26h2v1h-2zM14 26h1v1h-1zM16 26h1v1h-1zM18 26h3v1h-3zM26 26h3v1h-3zM31 26h2v1h-2zM34 26h1v1h-1zM42 26h1v1h-1zM2 27h3v1h-3zM6 27h1v1h-1zM9 27h2v1h-2zM12 27h3v1h-3zM17 27h2v1h-2zM20 27h4v1h-4zM25 27h2v1h-2zM28 27h1v1h-1zM30 27h10v1h-10zM41 27h1v1h-1zM3 28h4v1h-4zM8 28h1v1h-1zM11 28h2v1h-2zM15 28h1v1h-1zM17 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM26 28h1v1h-1zM29 28h2v1h-2zM34 28h1v1h-1zM36 28h3v1h-3zM40 28h1v1h-1zM42 28h1v1h-1zM4 29h2v1h-2zM7 29h1v1h-1zM9 29h1v1h-1zM11 29h1v1h-1zM14 29h2v1h-2zM17 29h2v1h-2zM20 29h2v1h-2zM23 29h1v1h-1zM25 29h2v1h-2zM28 29h1v1h-1zM30 29h1v1h-1zM32 29h6v1h-6zM39 29h1v1h-1zM41 29h2v1h-2zM4 30h2v1h-2zM7 30h4v1h-4zM14 30h1v1h-1zM16 30h1v1h-1zM18 30h2v1h-2zM24 30h1v1h-1zM27 30h3v1h-3zM31 30h1v1h-1zM33 30h2v1h-2zM36 30h3v1h-3zM40 30h1v1h-1zM42 30h1v1h-1zM2 31h3v1h-3zM6 31h1v1h-1zM10 31h1v1h-1zM14 31h2v1h-2zM18 31h1v1h-1zM20 31h1v1h-1zM22 31h1v1h-1zM26 31h1v1h-1zM29 31h4v1h-4zM35 31h1v1h-1zM37 31h2v1h-2zM41 31h2v1h-2zM2 32h1v1h-1zM4 32h7v1h-7zM13 32h2v1h-2zM16 32h1v1h-1zM18 32h1v1h-1zM20 32h2v1h-2zM23 32h1v1h-1zM28 32h1v1h-1zM34 32h1v1h-1zM36 32h3v1h-3zM40 32h2v1h-2zM2 33h1v1h-1zM4 33h1v1h-1zM6 33h1v1h-1zM10 33h1v1h-1zM14 33h1v1h-1zM16 33h1v1h-1zM21 33h3v1h-3zM26 33h1v1h-1zM28 33h1v1h-1zM30 33h1v1h-1zM36 33h2v1h-2zM42 33h1v1h-1zM2 34h1v1h-1zM4 34h3v1h-3zM8 34h1v1h-1zM12 34h1v1h-1zM17 34h1v1h-1zM20 34h2v1h-2zM24 34h1v1h-1zM27 34h1v1h-1zM31 34h1v1h-1zM34 34h5v1h-5zM40 34h2v1h-2zM10 35h1v1h-1zM12 35h1v1h-1zM14 35h1v1h-1zM18 35h2v1h-2zM21 35h5v1h-5zM27 35h1v1h-1zM30 35h1v1h-1zM33 35h2v1h-2zM38 35h2v1h-2zM2 36h7v1h-7zM10 36h3v1h-3zM15 36h2v1h-2zM18 36h2v1h-2zM23 36h1v1h-1zM27 36h3v1h-3zM32 36h3v1h-3zM36 36h1v1h-1zM38 36h2v1h-2zM2 37h1v1h-1zM8 37h1v1h-1zM10 37h2v1h-2zM14 37h1v1h-1zM16 37h1v1h-1zM19 37h2v1h-2zM22 37h3v1h-3zM27 37h1v1h-1zM33 37h2v1h-2zM38 37h1v1h-1zM2 38h1v1h-1zM4 38h3v1h-3zM8 38h1v1h-1zM10 38h1v1h-1zM13 38h3v1h-3zM17 38h2v1h-2zM23 38h1v1h-1zM25 38h2v1h-2zM28 38h2v1h-2zM32 38h1v1h-1zM34 38h5v1h-5zM40 38h1v1h-1zM42 38h1v1h-1zM2 39h1v1h-1zM4 39h3v1h-3zM8 39h1v1h-1zM10 39h1v1h-1zM16 39h2v1h-2zM19 39h4v1h-4zM24 39h2v1h-2zM30 39h2v1h-2zM33 39h1v1h-1zM41 39h1v1h-1zM2 40h1v1h-1zM4 40h3v1h-3zM8 40h1v1h-1zM10 40h1v1h-1zM15 40h1v1h-1zM17 40h3v1h-3zM24 40h1v1h-1zM28 40h4v1h-4zM33 40h7v1h-7zM2 41h1v1h-1zM8 41h1v1h-1zM11 41h2v1h-2zM14 41h3v1h-3zM21 41h5v1h-5zM28 41h2v1h-2zM32 41h4v1h-4zM37 41h2v1h-2zM41 41h1v1h-1zM2 42h7v1h-7zM11 42h2v1h-2zM16 42h2v1h-2zM19 42h6v1h-6zM26 42h3v1h-3zM31 42h1v1h-1zM33 42h1v1h-1zM35 42h2v1h-2zM38 42h2v1h-2z"/></svg>
+    <div class="txt">
+      <b>Les exercices sont en ligne — et ils sont corrigés.</b> Cinq exercices : remettre un compte rendu en désordre dans l'ordre, trier six phrases entre observation et interprétation, réécrire trois hypothèses, repérer ce qui manque à un compte rendu incomplet, et choisir la bonne conclusion. Une <b>vidéo bilan</b> y est aussi liée.
+      <div class="url">mvanhoorde.github.io/Site-Web-Portfolio/pages/2nde-pc-o5-compte-rendu-tp.html</div>
+    </div>
+  </div>
+
+  <div class="pied"><span>Fiche outil 5 · Compte rendu de TP — M. Van Hoorde, lycée Isaac de l'Étoile</span><span>verso · page 2/2</span></div>
+</div>
+
+</body>
+</html>

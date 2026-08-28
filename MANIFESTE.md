@@ -33,6 +33,7 @@
 | toucher au **client** de progression | `assets/js/progression.js` — 🔴 **partagé SNT + livret CFA** : `?v=` à incrémenter dans **24 fichiers** | 9 500 |
 | **produire un outil du livret CFA** | `_modeles/gabarit-outil-CFA.html` + un `cfa/outil-NN-….html` existant | 6 000 |
 | toucher à la **pré-correction IA** | `ia-snt/README.md` + `ia-snt/moteur.mjs` | 4 000 |
+| **regénérer les fiches PDF** de 2nde PC 🆕 | `node exporter-fiches.mjs` — après toute retouche d'une fiche de `fiches/` | 0 |
 | vérifier que rien n'est cassé | `node verifier.mjs` | 0 |
 | donner un état du dépôt à un assistant | `node verifier.mjs --bilan` | ~800 |
 

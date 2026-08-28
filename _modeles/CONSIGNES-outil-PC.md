@@ -29,21 +29,20 @@ Cette phrase-là ne vaut **que** pour le livret CFA. Motif ici : les exercices
 d'un outil se font **à la maison**, le soir ; un élève doit pouvoir se corriger
 seul sans attendre le cours suivant. Ne pas « harmoniser » les deux familles.
 
-**État au 28/08/2026 :** deux outils produits (`o1` écriture scientifique, `o2`
-chiffres significatifs), en **V1 proposée, non validée**. Le catalogue est
-**renuméroté** (décision O-23) et compte **huit outils**, rangés dans l'ordre où
-un élève de seconde les rencontre :
+**État au 28/08/2026 :** **les huit outils sont écrits**, tous en **V1 proposée,
+non validée**. Le catalogue a été **renuméroté** le 28/08 (décision O-23) et
+range les outils dans l'ordre où un élève de seconde les rencontre :
 
 | N | Titre | État |
 |---|---|---|
 | `o1` | Puissances de dix et écriture scientifique | écrit, V1 |
 | `o2` | Les chiffres significatifs | écrit, V1 |
-| `o3` | Sécurité au laboratoire | 🔴 en production |
-| `o4` | La verrerie et le matériel de laboratoire | 🔴 |
-| `o5` | Rédiger un compte rendu de TP | 🔴 |
-| `o6` | Présenter un calcul | 🔴 |
-| `o7` | Manipuler une relation algébrique | 🟠 |
-| `o8` | Construire et exploiter un graphique | 🟡 |
+| `o3` | Sécurité au laboratoire | écrit, V1 |
+| `o4` | La verrerie et le matériel de laboratoire | écrit, V1 |
+| `o5` | Rédiger un compte rendu de TP | écrit, V1 |
+| `o6` | Présenter un calcul | écrit, V1 |
+| `o7` | Manipuler une relation algébrique | écrit, V1 |
+| `o8` | Construire et exploiter un graphique | écrit, V1 |
 
 **« Convertir » ne fait plus partie du catalogue.** `o1` en a absorbé tout le fond
 le 26/08 — les préfixes dans les deux sens, les unités composées, les volumes, les
@@ -116,10 +115,14 @@ séparé sortirait du filet sans que rien ne le signale.
 un outil n'a ni rang, ni plafond d'avance, ni verrou inter-pages. Le moteur les
 teste par `window.VerrouSNT &&` : leur absence est prévue et gérée.
 
-🔴 **Ne jamais écrire le nom du fichier `seances-snt` suivi de son extension,
-même dans un commentaire HTML.** `verifier.mjs` cherche cette chaîne dans **tout**
-le HTML, commentaires compris, et signale alors la page comme le chargeant sans
-numéro de version. Écrire « le sommaire généré (`assets/js/seances-snt`) ».
+🔴 **Ne jamais écrire le nom d'une feuille ou d'un script versionné suivi de son
+extension, même dans un commentaire HTML.** `verifier.mjs` cherche ces chaînes
+dans **tout** le HTML, commentaires compris, et signale alors la page comme les
+chargeant sans numéro de version. Cela vaut au moins pour **`seances-snt`** et
+pour **`chapitre-commun`** — les deux ont mordu, le second le 28/08 dans un
+commentaire de `o5` qui disait simplement qu'un outil ne charge pas cette
+feuille. Écrire « le sommaire généré (`assets/js/seances-snt`) » et « la feuille
+des chapitres (`assets/css/chapitre-commun`) ».
 
 ---
 
@@ -359,6 +362,15 @@ choix étant vérifiable à l'exact.
 
 ## 7. La fiche A4 — complétée, imprimable
 
+🔴 **Le HTML est la SOURCE, le PDF est ce qui se distribue.** Depuis le 28/08,
+`fiches/fiche-2nde-oN-….html` n'est plus lié directement : la page et le hub
+pointent vers son export `assets/pdf/pc/fiches/fiche-2nde-oN-….pdf`, produit par
+`node exporter-fiches.mjs`. Le script contrôle à la mesure le format (A4
+209,9 × 297,0 mm), la pagination (une `.feuille` = une page) et les polices
+incorporées — trois écarts qu'une impression manuelle laisse passer et qui ne se
+voient que sur la photocopie distribuée en classe. **Ne jamais modifier un PDF
+directement** : on modifie le HTML et on relance le script.
+
 Dérive de `fiches/fiche-2nde-t1c4.html` : `@page size:A4; margin:0`, `.feuille`
 de 210 × 297 mm, la bande à trois repères, fond blanc forcé à l'impression.
 
@@ -379,6 +391,43 @@ de 210 × 297 mm, la bande à trois repères, fond blanc forcé à l'impression.
 - Lisible **en noir et blanc sur une photocopie**. Une zone d'incertitude, un
   danger, une différence de précision se marquent par des **hachures** autant que
   par la couleur.
+
+### 🔴 Le PDF est un export, le HTML est la source
+
+Décision du 28/08/2026. **Les fiches de 2nde PC se distribuent en PDF**, jamais
+en page HTML. Pour un outil, **c'est l'élève qui imprime**, quand il en a
+besoin : le lien vers le PDF n'est donc **jamais derrière un verrou** et
+n'attend rien — l'outil est ouvert toute l'année (§2), sa fiche aussi.
+
+Le HTML reste ce qu'on maintient, corrige et relit ; le PDF se **régénère**. Un
+PDF corrigé à la main serait écrasé au premier export suivant, et les deux
+divergeraient sans que rien ne le signale.
+
+    node exporter-fiches.mjs        toutes les fiches
+    node exporter-fiches.mjs o3     seulement celle-là
+
+Le script pilote Chrome par le protocole de débogage, dépose dans
+`assets/pdf/pc/fiches/`, et **contrôle chaque export à la mesure** :
+
+- **format** — `209,9 × 297,0 mm`, la signature d'un A4 non redimensionné. Un
+  écart veut dire que le `@page size:A4` de la fiche a été ignoré : c'est ce que
+  fait « Ctrl+P → Enregistrer en PDF », qui sort du Letter sans le dire.
+- **pagination** — une `.feuille` dans la source, une page dans le PDF. Une page
+  de plus, c'est du contenu qui a débordé de sa feuille. Le plafond de deux
+  pages (quatre pour `o3`) est contrôlé en plus.
+- **polices incorporées** — les six familles sont auto-hébergées, elles doivent
+  se retrouver *dans* le PDF, sinon la fiche imprimée n'a plus la tête du site.
+  Le script signale aussi les **polices de repli** : un caractère servi par
+  Consolas ou Times est un caractère qu'aucune de nos six familles ne couvre —
+  même piège que le fleuron `U+2766` des encarts d'histoire.
+
+**L'ordre est : produire l'export, le vérifier, puis changer le lien.** Un lien
+vers un PDF absent est pire que l'ancien lien HTML. Et le PDF **repart dans la
+même livraison que le HTML modifié**, jamais l'un sans l'autre.
+
+Ce qui **ne change pas** : le **QR code** de la fiche continue de pointer vers la
+**page en ligne** de l'outil, pas vers le PDF — son intérêt est de ramener
+l'élève aux exercices corrigés, qui ne sont pas sur la feuille.
 
 ### Générer le QR code
 

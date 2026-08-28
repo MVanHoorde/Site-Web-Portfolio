@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil 7 · Manipuler une relation algébrique — Physique-Chimie 2nde</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- Client de base de données partagé. Absent ou non configuré : l'outil
+     fonctionne, sans enregistrement. Sans "defer" à dessein : le script de
+     la page, en fin de body, doit le trouver déjà chargé. -->
+<script src="../assets/js/progression.js?v=16"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     OUTIL TRANSVERSAL 7 — MANIPULER UNE RELATION ALGÉBRIQUE.
+     Produit le 28/08/2026 depuis _modeles/gabarit-outil-PC.html.
+     Sources : fiche_Manipuler une relation algébrique.pdf et sa
+     correction — toutes deux de Loïc.
+
+     🔴 LE FOND EST DE LOÏC ET SE CONSERVE INTÉGRALEMENT : les trois
+     méthodes dans SON ordre, avec SON jugement (« ma pref » sur la
+     troisième), et les titres de niveaux de sa main, mot pour mot.
+
+     🔴 DÉCISION O-26 — LES CINQ NIVEAUX, avec un marquage
+     d'évaluabilité qui fait le tri : niveaux 1 à 3 « ★ à savoir
+     faire » · niveau 4 « ○ support » · niveau 5 « — non évalué »,
+     présenté comme un défi. Rien n'est retiré de la fiche, et rien
+     d'inaccessible n'est exigé. Le log est hors programme de seconde :
+     on le dit en une ligne, on ne l'enseigne pas. Proposition à valider.
+
+     ⚠ TROIS ERREURS DE LA CORRECTION SOURCE sont corrigées ici, et
+     listées dans _suivi/erreurs-sources-fiches-outils.md :
+       · niveau 1 : « c = b/c » → c = b/a
+       · niveau 5, expression de c : écrite en fraction → il faut
+         MULTIPLIER par (d−e)²
+       · niveau 5, expression de e : « e = R − d » → e = d − R
+     Elles ne sont pas reproduites, et l'élève n'en voit rien.
+
+     🔴 FRACTIONS EN NUMÉRATEUR / DÉNOMINATEUR, JAMAIS EN NOTATION
+     SLASH. Règle globale du dépôt, et ici elle décide de la
+     lisibilité de toute la page : « a = b/c−d » est ambigu, la
+     fraction empilée ne l'est pas.
+     ============================================================ -->
+<style>
+  /* ---------- Encart intermédiaire — PAS un « à retenir » ---------- */
+  .point-cle{border-left:3px solid var(--link);background:var(--surface);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px;margin:10px 0}
+  .point-cle.alerte{border-left-color:var(--activity);background:var(--activity-wash)}
+
+  /* ---------- Exemple entièrement résolu, ouvert par défaut ---------- */
+  .exemple{border:1px solid var(--ok);background:var(--ok-wash);border-radius:12px;padding:12px 14px;margin:12px 0}
+  .exemple-titre{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;
+                 color:var(--ok);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .exemple-titre::before{content:"✓ exemple résolu";text-transform:uppercase;background:var(--ok);color:var(--surface);border-radius:5px;padding:1px 7px;letter-spacing:.05em}
+  .ex-etape{display:grid;grid-template-columns:22px 1fr;gap:9px;align-items:baseline;margin-bottom:9px}
+  .ex-etape:last-child{margin-bottom:0}
+  .ex-etape > .n{font-family:"IBM Plex Mono";font-size:12px;font-weight:700;color:var(--ok);
+                 border:1.5px solid var(--ok);border-radius:50%;width:20px;height:20px;
+                 display:flex;align-items:center;justify-content:center;line-height:1}
+  .ex-etape > div{min-width:0;font-size:14.5px}
+  .ex-lab{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.07em;
+          color:var(--ink-faint);display:block;margin-bottom:2px}
+  .calcul{font-family:"IBM Plex Mono";font-size:15px;line-height:2.1;overflow-x:auto;margin:6px 0 2px}
+  .calcul .encadre{color:var(--ok);font-weight:700;border:1.5px solid var(--ok);border-radius:6px;padding:1px 7px;white-space:nowrap}
+  @media(max-width:560px){.calcul{font-size:13px}}
+  .nb{font-family:"IBM Plex Mono";white-space:nowrap}
+
+  /* ---------- Encadré « à éviter » ---------- */
+  .eviter{border:1px solid var(--err);border-left:4px solid var(--err);background:var(--err-wash);
+          border-radius:0 10px 10px 0;padding:11px 14px;margin:12px 0;font-size:14.5px}
+  .eviter .et{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+              color:var(--err);font-weight:600;display:block;margin-bottom:6px}
+  .eviter ul{margin:6px 0 0;padding-left:20px}
+  .eviter li{margin-bottom:5px}
+
+  /* ---------- Structure des « à retenir » (O-10) — trois temps ---------- */
+  .ret-t{display:grid;grid-template-columns:82px 1fr;gap:11px;align-items:baseline;margin-bottom:10px}
+  .ret-t:last-child{margin-bottom:0}
+  .ret-e{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+         color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 0;text-align:center}
+  .ret-t.piege .ret-e{color:var(--err);border-color:var(--err)}
+  .ret-c{min-width:0}
+  .ret-f{font-family:"IBM Plex Mono";font-size:18px;font-weight:600;text-align:center;
+         line-height:1.7;margin:2px 0 4px;color:var(--ink)}
+  @media(max-width:520px){
+    .ret-t{grid-template-columns:1fr;gap:4px}
+    .ret-e{justify-self:start;padding:2px 8px}
+    .ret-f{font-size:15.5px}
+  }
+
+  /* ---------- Le composant EXERCICE ---------- */
+  .exo{border:1px solid var(--line);border-left:4px solid var(--activity);border-radius:0 12px 12px 0;
+       background:var(--surface);padding:13px 15px;margin:16px 0}
+  .exo-num{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--activity);font-weight:600;margin:0 0 7px}
+  .exo-enonce{font-size:15px;margin:0 0 11px;line-height:1.6}
+  .exo-consigne{font-size:13.5px;color:var(--ink-soft);margin:12px 0 8px;font-style:italic}
+  .exo-corr{border-top:1px dashed var(--line);padding-top:9px;margin-top:4px}
+  .exo-corr summary{font-family:"IBM Plex Mono";font-size:13px;color:var(--link);cursor:pointer;
+                    padding:5px 2px;min-height:32px;display:flex;align-items:center;gap:6px}
+  .exo-corr summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:5px}
+  .exo-corr[open] summary{margin-bottom:8px;color:var(--ink-soft)}
+  .exo-corr .corps{font-size:14.5px;line-height:1.65;border-left:3px solid var(--ok);
+                   background:var(--ok-wash);border-radius:0 10px 10px 0;padding:11px 14px}
+  .exo-corr .corps p{margin:0 0 8px}
+  .exo-corr .corps p:last-child{margin-bottom:0}
+
+  /* ---------- Table de saisie ---------- */
+  .saisie{width:100%;border-collapse:collapse;font-size:15px}
+  .saisie th{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.07em;
+             color:var(--ink-faint);font-weight:600;text-align:left;padding:0 8px 7px;border-bottom:1px solid var(--line)}
+  .saisie td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .saisie tr:last-child td{border-bottom:0}
+  .saisie select.short{min-height:34px}
+  .cloze select{max-width:100%}
+  @media(max-width:560px){
+    .saisie{display:block}
+    .saisie tr:first-child{display:none}
+    .saisie tr{display:flex;flex-wrap:wrap;align-items:center;gap:9px 10px;
+               padding:11px 2px;border-bottom:1px solid var(--line)}
+    .saisie tr:last-child{border-bottom:0}
+    .saisie td{display:block;padding:0;border:0;text-align:left}
+    .saisie td.depart{flex-basis:100%;font-weight:600;white-space:normal}
+    .saisie select{flex:1 1 100%;max-width:100%}
+  }
+
+  .vers-fiche{display:inline-flex;align-items:center;gap:8px;font-size:14px;text-decoration:none;
+              color:var(--link);background:var(--link-wash);border:1px solid var(--line);
+              border-radius:10px;padding:9px 14px;margin-top:16px;min-height:44px}
+  .vers-fiche:hover{border-color:var(--link)}
+  .vers-fiche:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+  #glo-ouvrir,.glo-back{display:none !important}
+
+
+  /* ============================================================
+     CSS PROPRE À L'OUTIL 7
+     ============================================================ */
+
+  /* ---------- 🔴 LA FRACTION EMPILÉE ----------
+     Règle globale du dépôt : numérateur au-dessus, dénominateur en
+     dessous, JAMAIS de notation slash. Ce n'est pas une coquetterie
+     typographique — « a = b/c−d » ne dit pas si d est au
+     dénominateur, et c'est précisément la distinction que les
+     niveaux 2 et 3 demandent de voir. La fraction empilée lève
+     l'ambiguïté sans un mot d'explication.
+     Nom local .fr et non .frac : le nom court reste lisible dans les
+     dizaines d'expressions de cette page. */
+  .fr{display:inline-grid;grid-template-rows:auto auto;justify-items:center;
+      vertical-align:middle;margin:0 3px;font-family:"IBM Plex Mono"}
+  .fr > .h{padding:0 6px 2px;border-bottom:1.6px solid currentColor;line-height:1.35}
+  .fr > .b{padding:2px 6px 0;line-height:1.35}
+  .rac{display:inline-flex;align-items:stretch;font-family:"IBM Plex Mono"}
+  .rac::before{content:"√";font-size:1.15em;line-height:1;padding-right:1px}
+  .rac > span{border-top:1.5px solid currentColor;padding:2px 3px 0}
+  .rac.cube::before{content:"∛"}
+
+  /* ---------- La table des opérations inverses ---------- */
+  .inverses{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin:12px 0}
+  .inv{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);
+       padding:11px 13px;text-align:center}
+  .inv .op{font-family:"IBM Plex Mono";font-size:19px;font-weight:600;color:var(--ink)}
+  .inv .fl{font-family:"IBM Plex Mono";font-size:15px;color:var(--link);margin:0 7px}
+  .inv .lg{font-size:12.5px;color:var(--ink-soft);margin-top:6px;line-height:1.4}
+  .inv.hp{border-style:dashed}
+  .inv.hp .op{color:var(--ink-faint)}
+
+  /* ---------- Le triangle (méthode 1) ---------- */
+  .triangle{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:13px}
+  .triangle svg{width:100%;height:auto;display:block;max-width:420px;margin:0 auto}
+  .tr-bord{fill:none;stroke:var(--ink-soft);stroke-width:2.4;stroke-linejoin:round}
+  .tr-sep{stroke:var(--ink-soft);stroke-width:1.8}
+  .tr-l{font-family:"IBM Plex Mono";font-size:26px;font-weight:600;fill:var(--ink);text-anchor:middle}
+  .tr-cache{fill:var(--link);opacity:.16}
+  .tr-lg{font-family:"IBM Plex Sans";font-size:14px;fill:var(--ink-soft);text-anchor:middle}
+  .tr-res{font-family:"IBM Plex Mono";font-size:17px;font-weight:600;fill:var(--link);text-anchor:middle}
+
+  /* ---------- Les cinq niveaux ---------- */
+  .niveaux{display:grid;gap:11px;margin:12px 0}
+  .niv-b{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px}
+  .niv-b > .tete{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:7px}
+  .niv-b .num{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+              font-weight:700;color:var(--surface);background:var(--link);border-radius:5px;padding:2px 8px}
+  .niv-b .titre{font-size:14.5px;font-style:italic;color:var(--ink-soft);flex:1;min-width:180px}
+  .niv-b .rels{display:flex;gap:16px;flex-wrap:wrap;font-size:16px;margin-top:4px}
+  .niv-b.support{border-style:dashed}
+  .niv-b.support .num{background:var(--ink-faint)}
+  .niv-b.defi{border-style:dashed;border-color:var(--activity)}
+  .niv-b.defi .num{background:var(--activity)}
+</style>
+</head><body data-sequence="pc-o7" data-etapes="ouvertes">
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Physique-Chimie · Outil transversal · Seconde</div>
+    <h1 class="title">Manipuler une relation algébrique <span class="tag" style="display:block;margin-top:8px">le triangle · les chiffres · l'opération inverse</span></h1>
+    <p class="lede">En physique, tu auras très régulièrement besoin de manipuler des relations algébriques — plus communément appelées «&nbsp;formules&nbsp;». Trois méthodes existent&nbsp;: deux pour te dépanner, une pour <b>comprendre</b>. Cet outil te donne les trois, dans cet ordre, et te dit franchement laquelle privilégier.</p>
+    <div class="themes">
+      <span class="theme-chip">Outil 5 · Compte rendu de TP</span><span class="theme-chip">Outil 6 · Présenter un calcul</span><span class="theme-chip on">Outil 7 · Relation algébrique</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>Deux parties</b></span>
+      <span class="m">Durée <b>≈ 1 h 30</b>, en deux fois</span>
+    </div>
+    <a class="vers-fiche" href="../assets/pdf/pc/fiches/fiche-2nde-o7-relation-algebrique.pdf">🖨️ Fiche outil (PDF) — la méthode complète, à imprimer et à coller</a>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-physique-chimie.html">← Physique-Chimie</a>
+    <a href="#s1"><span class="n">1</span>La méthode</a>
+    <a href="#s2" data-navlock="2"><span class="n">2</span>S'entraîner <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <!-- 🔴 NE PAS SUPPRIMER — décision O-21. -->
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip done"></span>Validé</span>
+  </div>
+
+
+  <!-- ===================== 1 — LA MÉTHODE ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">1</span>La méthode</h2>
+      <span class="seance-time">≈ 55 min</span>
+    </div>
+    <p class="seance-goal">Isoler n'importe quelle grandeur dans une relation, en connaissant les limites des deux méthodes de dépannage et le principe de la troisième — celle qui marche toujours.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- 1.1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o7-s1-triangle">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1</div>
+            <h3 class="step-title">Première méthode&nbsp;: le triangle</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> connaître la méthode de dépannage, et surtout savoir <b>où elle s'arrête</b>.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 10px"><i>Niveau début de seconde, pour te sauver la vie si vraiment tu n'arrives pas à faire autrement.</i> On apprend la relation sous forme de <b>multiplication</b> et on la place dans un triangle. En <b>cachant</b> la grandeur qu'on veut isoler, on lit directement le résultat.</p>
+
+            <div class="triangle">
+              <svg viewBox="0 0 420 210" role="img" aria-label="Le triangle de U égale R fois I : U occupe le haut, R et I le bas. En cachant R, on lit U sur I ; en cachant I, on lit U sur R.">
+                <!-- triangle 1 : on cache R -->
+                <path class="tr-bord" d="M70,20 L130,120 L10,120 z"/>
+                <line class="tr-sep" x1="34" y1="78" x2="106" y2="78"/>
+                <text class="tr-l" x="70" y="62">U</text>
+                <rect class="tr-cache" x="16" y="84" width="46" height="32" rx="5"/>
+                <text class="tr-l" x="39" y="110">R</text>
+                <text class="tr-l" x="101" y="110">I</text>
+                <text class="tr-lg" x="70" y="150">on cache R</text>
+                <text class="tr-res" x="70" y="178">R =</text>
+                <g transform="translate(104,160)">
+                  <text class="tr-res" x="0" y="8">U</text>
+                  <line class="tr-sep" x1="-11" y1="14" x2="11" y2="14"/>
+                  <text class="tr-res" x="0" y="32">I</text>
+                </g>
+
+                <!-- triangle 2 : on cache I -->
+                <path class="tr-bord" d="M280,20 L340,120 L220,120 z"/>
+                <line class="tr-sep" x1="244" y1="78" x2="316" y2="78"/>
+                <text class="tr-l" x="280" y="62">U</text>
+                <text class="tr-l" x="249" y="110">R</text>
+                <rect class="tr-cache" x="288" y="84" width="40" height="32" rx="5"/>
+                <text class="tr-l" x="308" y="110">I</text>
+                <text class="tr-lg" x="280" y="150">on cache I</text>
+                <text class="tr-res" x="282" y="178">I =</text>
+                <g transform="translate(314,160)">
+                  <text class="tr-res" x="0" y="8">U</text>
+                  <line class="tr-sep" x1="-11" y1="14" x2="11" y2="14"/>
+                  <text class="tr-res" x="0" y="32">R</text>
+                </g>
+              </svg>
+            </div>
+
+            <div class="point-cle"><b>Comment se lit un triangle&nbsp;?</b> La grandeur du <b>haut</b> est le produit des deux du bas&nbsp;: <span class="nb">U = R × I</span>. Si tu caches une grandeur du <b>bas</b>, tu lis une <b>fraction</b>&nbsp;: le haut sur celle qui reste. Si tu caches celle du <b>haut</b>, tu lis le <b>produit</b> des deux autres.</div>
+
+            <div class="eviter">
+              <span class="et">⚠ Où le triangle s'arrête — et la fiche ne le dit pas</span>
+              Le triangle ne marche que pour une relation à <b>trois grandeurs</b> de la forme <span class="nb">a = b × c</span>. Dès qu'il y a&nbsp;:
+              <ul>
+                <li>une <b>somme</b> ou une <b>différence</b> — <span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c</span></span> − d</span> —, il ne sert plus&nbsp;;</li>
+                <li>un <b>carré</b> ou une <b>racine</b> — <span class="nb">a = <span class="fr"><span class="h">b²</span><span class="b">c</span></span></span> —, il ne sert plus&nbsp;;</li>
+                <li><b>quatre grandeurs</b> ou plus, il ne sert plus.</li>
+              </ul>
+              <b>C'est pour cela que la troisième méthode est la bonne</b>&nbsp;: elle, elle ne s'arrête jamais.
+            </div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">le triangle ne vaut que pour<br>a = b × c</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Placer le <b>produit</b> en haut, les deux facteurs en bas, puis <b>cacher</b> ce qu'on cherche.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Y a-t-il une <b>somme</b>, un <b>carré</b>, ou plus de trois grandeurs&nbsp;? Alors le triangle ne s'applique pas.</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Vouloir le forcer sur une relation qu'il ne couvre pas. C'est un <b>dépannage</b>, pas une méthode.</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Trois questions sur le triangle.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Dans le triangle de <span class="nb">U = R × I</span>, en cachant <span class="nb">U</span> on lit
+                <select class="short" data-answer="prod" aria-label="ce qu'on lit en cachant U"><option value="">choisis…</option><option value="prod">R × I</option><option value="frac1">R ÷ I</option><option value="frac2">I ÷ R</option></select>.</div>
+                <div style="margin-bottom:9px"><b>2.</b> Le triangle s'applique à la relation
+                <select class="short" data-answer="ok" aria-label="relation où le triangle s'applique"><option value="">choisis…</option><option value="ok">c = m ÷ V</option><option value="ko1">a = b² ÷ (c − d)</option><option value="ko2">a = b ÷ c − d</option><option value="ko3">F = G × m × m' ÷ d²</option></select>.</div>
+                <div><b>3.</b> Cette méthode est
+                <select class="short" data-answer="depan" aria-label="statut de la méthode du triangle"><option value="">choisis…</option><option value="depan">un dépannage, pas la méthode à privilégier</option><option value="best">la meilleure des trois</option><option value="seule">la seule qui existe</option></select>.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o7-s1-chiffres">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2</div>
+            <h3 class="step-title">Deuxième méthode&nbsp;: les chiffres</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> retrouver l'opération en remplaçant les lettres par des nombres qui marchent.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 10px"><i>Encore niveau de seconde, pour te sauver la vie.</i> L'idée&nbsp;: les lettres t'intimident, les nombres non. On remplace donc les grandeurs par des chiffres <b>qui vérifient la relation</b>, on retrouve l'opération sur les nombres, puis on revient aux lettres.</p>
+
+            <div class="exemple">
+              <div class="exemple-titre">Isoler R dans U = R × I, avec des chiffres</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">Des nombres qui marchent</span>
+                On cherche trois nombres tels que le premier soit le produit des deux autres&nbsp;: <span class="nb"><b>6 = 2 × 3</b></span>.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">On associe</span>
+                <div class="calcul">6 ↔ U &nbsp;·&nbsp; 2 ↔ R &nbsp;·&nbsp; 3 ↔ I</div></div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">L'opération, sur les nombres</span>
+                Comment obtenir <b>2</b> à partir de 6 et 3&nbsp;? On divise&nbsp;:
+                <div class="calcul">2 = <span class="fr"><span class="h">6</span><span class="b">3</span></span></div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">Retour aux lettres</span>
+                <div class="calcul">R = <span class="encadre"><span class="fr"><span class="h">U</span><span class="b">I</span></span></span></div></div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle</span>
+                On vérifie sur les nombres&nbsp;: <span class="nb">6 ÷ 3 = 2</span> ✓. Et sur les <b>unités</b>, si on les connaît&nbsp;: des volts divisés par des ampères donnent bien des ohms.</div></div>
+            </div>
+
+            <div class="point-cle"><b>Choisis des nombres faciles, et surtout différents.</b> Avec <span class="nb">4 = 2 × 2</span>, tu ne saurais plus lequel des deux 2 correspond à R&nbsp;: prends <span class="nb">6 = 2 × 3</span>. Et évite <b>0</b> et <b>1</b>, qui font disparaître les opérations.</div>
+
+            <div class="eviter">
+              <span class="et">⚠ La limite de cette méthode</span>
+              Elle marche bien tant que la relation reste simple. Dès que plusieurs opérations s'enchaînent — <span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c</span></span> − d</span> —, il faut trouver <b>quatre</b> nombres compatibles, puis suivre deux opérations de suite&nbsp;: c'est plus long que la troisième méthode, et plus facile à rater.
+            </div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">remplacer les lettres par des nombres,<br>puis revenir aux lettres</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Trouver des nombres qui <b>vérifient</b> la relation, retrouver l'opération sur eux, la transposer.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Les nombres choisis sont-ils <b>différents</b> les uns des autres, et différents de 0 et 1&nbsp;?</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Deux questions.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Pour isoler <span class="nb">I</span> dans <span class="nb">U = R × I</span> avec <span class="nb">6 = 2 × 3</span>, on cherche comment obtenir
+                <select class="short" data-answer="trois" aria-label="quel nombre on cherche à obtenir"><option value="">choisis…</option><option value="trois">3, à partir de 6 et 2</option><option value="deux">2, à partir de 6 et 3</option><option value="six">6, à partir de 2 et 3</option></select>.</div>
+                <div><b>2.</b> Le triplet <span class="nb">4 = 2 × 2</span> est un mauvais choix parce que
+                <select class="short" data-answer="ident" aria-label="pourquoi 4 = 2 x 2 est un mauvais choix"><option value="">choisis…</option><option value="ident">deux nombres sont identiques : on ne sait plus lequel est lequel</option><option value="petit">les nombres sont trop petits</option><option value="pair">les nombres sont pairs</option></select>.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o7-s1-inverse">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3</div>
+            <h3 class="step-title">Troisième méthode&nbsp;: l'opération inverse</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> la méthode à comprendre&nbsp;: elle manipule <b>n'importe quelle</b> relation.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="point-cle alerte">⭐ <b>C'est «&nbsp;ma pref&nbsp;»</b>, et c'est celle qu'il faut privilégier et comprendre pour pouvoir manipuler n'importe quelle relation. Les deux précédentes dépannent&nbsp;; celle-ci ne s'arrête jamais.</div>
+
+            <div class="block-label">Le principe, en une phrase<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Pour «&nbsp;passer&nbsp;» une grandeur de l'autre côté du signe égal, on lui fait subir l'<b>opération mathématique inverse</b> de celle dans laquelle elle est impliquée — et on la fait subir <b>aux deux membres</b> de l'égalité.</p>
+
+            <div class="block-label">La table des opérations inverses<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="inverses">
+              <div class="inv"><div><span class="op">+</span><span class="fl">↔</span><span class="op">−</span></div>
+                <div class="lg">ajouter ↔ soustraire</div></div>
+              <div class="inv"><div><span class="op">×</span><span class="fl">↔</span><span class="op">÷</span></div>
+                <div class="lg">multiplier ↔ diviser</div></div>
+              <div class="inv"><div><span class="op">x²</span><span class="fl">↔</span><span class="op"><span class="rac"><span>x</span></span></span></div>
+                <div class="lg">élever au carré ↔ prendre la racine</div></div>
+              <div class="inv hp"><div><span class="op">log(x)</span><span class="fl">↔</span><span class="op">10<sup>x</sup></span></div>
+                <div class="lg">hors programme de seconde — tu le rencontreras en terminale</div></div>
+            </div>
+
+            <div class="exemple">
+              <div class="exemple-titre">Isoler I dans U = R × I</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">Ce dans quoi R est impliqué</span>
+                <span class="nb">R</span> est dans une <b>multiplication</b>. Son opération inverse est la <b>division</b>.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">On divise les DEUX membres par R</span>
+                <div class="calcul"><span class="fr"><span class="h">U</span><span class="b">R</span></span> = <span class="fr"><span class="h">R × I</span><span class="b">R</span></span></div>
+                <b>Toujours faire subir la même opération aux deux membres</b> — c'est ce qui garde l'égalité vraie.</div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">On simplifie à droite</span>
+                <div class="calcul"><span class="fr"><span class="h">U</span><span class="b">R</span></span> = <span class="fr"><span class="h">R × I</span><span class="b">R</span></span> = I</div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">Le résultat</span>
+                <div class="calcul">I = <span class="encadre"><span class="fr"><span class="h">U</span><span class="b">R</span></span></span></div></div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle</span>
+                La grandeur cherchée est-elle <b>seule</b> d'un côté du signe égal&nbsp;? Oui ✓. Et les unités&nbsp;: <span class="nb">V ÷ Ω = A</span> ✓.</div></div>
+            </div>
+
+            <div class="exemple">
+              <div class="exemple-titre">Isoler d dans la loi de la gravitation</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">La relation de départ</span>
+                <div class="calcul">F = G × <span class="fr"><span class="h">m<sub>A</sub> × m<sub>B</sub></span><span class="b">d²</span></span></div>
+                On cherche <span class="nb">d</span>&nbsp;: il faudra <b>trois</b> opérations inverses de suite.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">d² est dans une division → on multiplie</span>
+                <div class="calcul">d² × F = G × m<sub>A</sub> × m<sub>B</sub></div></div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">F est dans une multiplication → on divise</span>
+                <div class="calcul">d² = <span class="fr"><span class="h">G × m<sub>A</sub> × m<sub>B</sub></span><span class="b">F</span></span></div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">d est au carré → on prend la racine</span>
+                <div class="calcul">d = <span class="encadre"><span class="rac"><span><span class="fr"><span class="h">G × m<sub>A</sub> × m<sub>B</sub></span><span class="b">F</span></span></span></span></span></div></div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle</span>
+                <span class="nb">d</span> est seule à gauche ✓, et chaque étape a bien été appliquée <b>aux deux membres</b> ✓. <i>Avec l'habitude, certaines étapes disparaîtront et tu manipuleras les relations très rapidement.</i></div></div>
+            </div>
+
+            <div class="eviter">
+              <span class="et">⚠ Les deux fautes qui reviennent le plus</span>
+              <ul>
+                <li><b>N'appliquer l'opération qu'à un seul membre.</b> Si tu divises à gauche, tu divises à droite. Sinon l'égalité devient fausse, et tout ce qui suit avec elle.</li>
+                <li><b>Confondre <span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c</span></span> − d</span> et <span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c − d</span></span></span>.</b> Ce ne sont pas les mêmes relations, et elles ne se manipulent pas pareil — c'est exactement pour cela qu'on écrit les fractions <b>empilées</b> et jamais avec une barre oblique.</li>
+              </ul>
+            </div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">faire subir la même opération<br>aux deux membres de l'égalité</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Repérer l'opération qui <b>emprisonne</b> la grandeur, appliquer son <b>inverse</b> des deux côtés, simplifier. Recommencer.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">La grandeur cherchée est <b>seule</b> d'un côté du signe égal, et elle n'apparaît plus de l'autre.</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Oublier un <b>membre</b>. Une opération faite d'un seul côté casse l'égalité.</div></div>
+            </div>
+
+            <div class="block-label">À toi — quatre opérations inverses<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Quelle opération applique-t-on&nbsp;?</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <table class="saisie">
+                  <tr><th>La grandeur cherchée est…</th><th>On applique aux deux membres…</th></tr>
+                  <tr><td class="depart">dans une <b>multiplication</b></td>
+                    <td><select class="short" data-answer="div" aria-label="inverse de la multiplication"><option value="">choisis…</option><option value="div">une division</option><option value="mul">une multiplication</option><option value="add">une addition</option><option value="rac">une racine</option></select></td></tr>
+                  <tr><td class="depart">dans une <b>division</b> (au dénominateur)</td>
+                    <td><select class="short" data-answer="mul" aria-label="inverse de la division"><option value="">choisis…</option><option value="div">une division</option><option value="mul">une multiplication</option><option value="add">une addition</option><option value="rac">une racine</option></select></td></tr>
+                  <tr><td class="depart">dans une <b>soustraction</b></td>
+                    <td><select class="short" data-answer="add" aria-label="inverse de la soustraction"><option value="">choisis…</option><option value="div">une division</option><option value="mul">une multiplication</option><option value="add">une addition</option><option value="rac">une racine</option></select></td></tr>
+                  <tr><td class="depart">élevée <b>au carré</b></td>
+                    <td><select class="short" data-answer="rac" aria-label="inverse du carré"><option value="">choisis…</option><option value="div">une division</option><option value="mul">une multiplication</option><option value="add">une addition</option><option value="rac">une racine</option></select></td></tr>
+                </table>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.4 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o7-s1-niveaux">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4</div>
+            <h3 class="step-title">Les cinq niveaux</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir où tu en es, et jusqu'où on te demande d'aller.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 12px">Les dix relations d'entraînement, rangées en cinq niveaux. <b>Les niveaux 1 à 3 sont à savoir faire</b>&nbsp;; le niveau 4 est un support&nbsp;; le niveau 5 est un <b>défi</b>, il n'est pas évalué. Pour chaque relation, on demande d'exprimer <span class="nb">b</span>, <span class="nb">c</span> et <span class="nb">d</span> en fonction des autres lettres.</p>
+
+            <div class="niveaux">
+              <div class="niv-b">
+                <div class="tete"><span class="num">Niveau 1</span><span class="niv">★ <b>à savoir faire</b></span></div>
+                <p class="titre">«&nbsp;je débute, soyez cool avec moi&nbsp;»</p>
+                <div class="rels">
+                  <span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c</span></span></span>
+                  <span class="nb">a = b − c</span>
+                </div>
+              </div>
+
+              <div class="niv-b">
+                <div class="tete"><span class="num">Niveau 2</span><span class="niv">★ <b>à savoir faire</b></span></div>
+                <p class="titre">«&nbsp;OK, je pense avoir compris, je passe au niveau intermédiaire&nbsp;»</p>
+                <div class="rels">
+                  <span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c</span></span> − d</span>
+                  <span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c − d</span></span></span>
+                </div>
+                <p style="font-size:13.5px;color:var(--ink-soft);margin-top:8px">Les deux relations se ressemblent&nbsp;: <b>regarde bien où s'arrête la barre de fraction</b>. C'est toute la difficulté de ce niveau.</p>
+              </div>
+
+              <div class="niv-b">
+                <div class="tete"><span class="num">Niveau 3</span><span class="niv">★ <b>à savoir faire</b></span></div>
+                <p class="titre">«&nbsp;J'ai confiance en moi, je ne suis pas loin d'être un expert&nbsp;»</p>
+                <div class="rels">
+                  <span class="nb">a = <span class="fr"><span class="h">b²</span><span class="b">c − d</span></span></span>
+                  <span class="nb">a = <span class="fr"><span class="h">(b − d)²</span><span class="b">c</span></span></span>
+                </div>
+              </div>
+
+              <div class="niv-b support">
+                <div class="tete"><span class="num">Niveau 4</span><span class="niv">○ <b>support</b></span></div>
+                <p class="titre">«&nbsp;Manipuler une formule, je le fais dans mon sommeil. C'est moi le patron&nbsp;!&nbsp;»</p>
+                <div class="rels">
+                  <span class="nb">a = <span class="fr"><span class="h"><span class="rac"><span>b − d²</span></span></span><span class="b">c</span></span></span>
+                  <span class="nb">a = <span class="fr"><span class="h">10<sup>b−d</sup></span><span class="b"><span class="rac"><span>c</span></span></span></span></span>
+                </div>
+              </div>
+
+              <div class="niv-b defi">
+                <div class="tete"><span class="num">Niveau 5</span><span class="niv">— <b>non évalué · défi</b></span></div>
+                <p class="titre">«&nbsp;Je ne comprends même pas pourquoi je suis du côté des élèves… Laissez-moi l'estrade&nbsp;!&nbsp;»</p>
+                <div class="rels">
+                  <span class="nb">log<span style="margin:0 2px">(</span><span class="fr"><span class="h">a</span><span class="b">b</span></span><span style="margin:0 2px">)</span> = <span class="rac cube"><span><span class="fr"><span class="h">c</span><span class="b">(d − e)²</span></span></span></span></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="point-cle alerte">📐 <b>Le logarithme est hors programme de seconde.</b> Il apparaît au niveau 4 et au niveau 5, et tu le rencontreras vraiment en <b>terminale</b>. Ici, retiens seulement qu'il possède lui aussi une opération inverse — <span class="nb">10<sup>x</sup></span> — et que la méthode marche exactement pareil. On ne te demandera pas de l'employer.</div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">niveaux 1 à 3 : à savoir faire<br>niveau 4 : support · niveau 5 : défi</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Commencer au niveau 1 même si tu te crois au niveau 3&nbsp;: les deux premiers se font en deux minutes et confirment la méthode.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Regarder <b>où s'arrête la barre de fraction</b> avant de commencer. C'est là que se jouent les niveaux 2 et 3.</div></div>
+            </div>
+
+            <div class="block-label">À toi — situe deux relations<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Deux questions sur les niveaux.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Dans <span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c − d</span></span></span>, la lettre <span class="nb">d</span> est
+                <select class="short" data-answer="denom" aria-label="où se trouve d"><option value="">choisis…</option><option value="denom">au dénominateur, avec c</option><option value="hors">en dehors de la fraction</option><option value="num">au numérateur</option></select>.</div>
+                <div><b>2.</b> Le niveau 5 est
+                <select class="short" data-answer="defi" aria-label="statut du niveau 5"><option value="">choisis…</option><option value="defi">un défi, non évalué</option><option value="exig">exigible au contrôle</option><option value="obl">obligatoire pour valider l'outil</option></select>.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+
+  <!-- ===================== 2 — S'ENTRAÎNER ===================== -->
+  <section class="seance" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">2</span>S'entraîner</h2>
+      <span class="seance-time">≈ 35 min</span>
+    </div>
+    <p class="seance-goal">La fiche d'entraînement, en ligne et corrigée&nbsp;: les dix relations des cinq niveaux, chacune avec ses corrigés <b>rédigés étape par étape</b> — pas seulement le résultat.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- 2.1 — niveau 1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o7-s2-niveau1">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1</div>
+            <h3 class="step-title">Niveau 1</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> deux relations à trois lettres, une seule opération à défaire.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o7-s2-ex1">
+              <p class="exo-num">Exercice 1 — «&nbsp;je débute, soyez cool avec moi&nbsp;»</p>
+              <p class="exo-enonce">Exprime <span class="nb">b</span> puis <span class="nb">c</span> en fonction des autres lettres.</p>
+              <div class="field">
+                <span class="field-type">Exercice 1</span>
+                <div class="field-q">Quatre expressions.</div>
+                <div class="cloze" data-cloze data-cle="ex1">
+                  <table class="saisie">
+                    <tr><th>La relation, et la lettre à isoler</th><th>Ta réponse</th></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c</span></span></span> → <span class="nb">b</span></td>
+                      <td><select class="short" data-answer="bac" aria-label="isoler b dans a = b sur c"><option value="">choisis…</option><option value="bac">b = a × c</option><option value="bca">b = c ÷ a</option><option value="bad">b = a ÷ c</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c</span></span></span> → <span class="nb">c</span></td>
+                      <td><select class="short" data-answer="cba" aria-label="isoler c dans a = b sur c"><option value="">choisis…</option><option value="cba">c = b ÷ a</option><option value="cbc">c = b ÷ c</option><option value="cab">c = a ÷ b</option><option value="cmul">c = a × b</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = b − c</span> → <span class="nb">b</span></td>
+                      <td><select class="short" data-answer="bplus" aria-label="isoler b dans a = b moins c"><option value="">choisis…</option><option value="bplus">b = a + c</option><option value="bmoins">b = a − c</option><option value="bca2">b = c − a</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = b − c</span> → <span class="nb">c</span></td>
+                      <td><select class="short" data-answer="cba2" aria-label="isoler c dans a = b moins c"><option value="">choisis…</option><option value="cba2">c = b − a</option><option value="cab2">c = a − b</option><option value="cplus">c = a + b</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 1</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Écris chaque étape sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>a = <span class="fr" style="font-size:.95em"><span class="h">b</span><span class="b">c</span></span> → isoler b.</b> <span class="nb">b</span> est au numérateur d'une fraction, donc dans une <b>division</b> par <span class="nb">c</span> : on <b>multiplie les deux membres</b> par <span class="nb">c</span>.</p>
+                  <div class="calcul">a × c = <span class="fr"><span class="h">b</span><span class="b">c</span></span> × c = b &nbsp;&nbsp;soit&nbsp;&nbsp; <b>b = a × c</b></div>
+                  <p><b>→ isoler c.</b> Deux gestes cette fois. On part de <span class="nb">b = a × c</span> (qu'on vient d'établir) : <span class="nb">c</span> est dans une multiplication, on <b>divise les deux membres</b> par <span class="nb">a</span>.</p>
+                  <div class="calcul"><span class="fr"><span class="h">b</span><span class="b">a</span></span> = <span class="fr"><span class="h">a × c</span><span class="b">a</span></span> = c &nbsp;&nbsp;soit&nbsp;&nbsp; <b>c = <span class="fr"><span class="h">b</span><span class="b">a</span></span></b></div>
+                  <p><b>a = b − c → isoler b.</b> <span class="nb">c</span> est <b>soustrait</b> : on <b>ajoute c aux deux membres</b>.</p>
+                  <div class="calcul">a + c = b − c + c = b &nbsp;&nbsp;soit&nbsp;&nbsp; <b>b = a + c</b></div>
+                  <p><b>→ isoler c.</b> De <span class="nb">b = a + c</span>, on soustrait <span class="nb">a</span> des deux membres : <b>c = b − a</b>. On peut aussi le lire directement sur <span class="nb">a = b − c</span> : ce qu'on retire de <span class="nb">b</span> pour obtenir <span class="nb">a</span>, c'est bien <span class="nb">b − a</span>.</p>
+                  <p><b>⚠ Le piège de ce niveau, et il attrape beaucoup de monde&nbsp;:</b> écrire <span class="nb">c = <span class="fr" style="font-size:.95em"><span class="h">b</span><span class="b">c</span></span></span> au lieu de <span class="nb">c = <span class="fr" style="font-size:.95em"><span class="h">b</span><span class="b">a</span></span></span>. Une lettre ne peut pas apparaître <b>des deux côtés</b> du signe égal quand on vient de l'isoler : c'est le contrôle qui repère la faute immédiatement.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.2 — niveau 2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o7-s2-niveau2">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2</div>
+            <h3 class="step-title">Niveau 2</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> deux relations qui se ressemblent, et qui ne se manipulent pas pareil.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o7-s2-ex2">
+              <p class="exo-num">Exercice 2 — «&nbsp;OK, je pense avoir compris, je passe au niveau intermédiaire&nbsp;»</p>
+              <p class="exo-enonce">Deux relations. <b>Regarde d'abord où s'arrête la barre de fraction</b> — c'est tout l'enjeu.</p>
+              <div class="field">
+                <span class="field-type">Exercice 2</span>
+                <div class="field-q">Quatre expressions.</div>
+                <div class="cloze" data-cloze data-cle="ex2">
+                  <table class="saisie">
+                    <tr><th>La relation, et la lettre à isoler</th><th>Ta réponse</th></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c</span></span> − d</span> → <span class="nb">b</span></td>
+                      <td><select class="short" data-answer="b1" aria-label="isoler b, relation 1"><option value="">choisis…</option><option value="b1">b = c × (a + d)</option><option value="b2">b = c × (a − d)</option><option value="b3">b = (a + d) ÷ c</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c</span></span> − d</span> → <span class="nb">d</span></td>
+                      <td><select class="short" data-answer="d1" aria-label="isoler d, relation 1"><option value="">choisis…</option><option value="d1">d = (b ÷ c) − a</option><option value="d2">d = a − (b ÷ c)</option><option value="d3">d = a + (b ÷ c)</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c − d</span></span></span> → <span class="nb">b</span></td>
+                      <td><select class="short" data-answer="b4" aria-label="isoler b, relation 2"><option value="">choisis…</option><option value="b4">b = a × (c − d)</option><option value="b5">b = a × c − d</option><option value="b6">b = (a ÷ c) − d</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">b</span><span class="b">c − d</span></span></span> → <span class="nb">c</span></td>
+                      <td><select class="short" data-answer="c4" aria-label="isoler c, relation 2"><option value="">choisis…</option><option value="c4">c = (b ÷ a) + d</option><option value="c5">c = (b ÷ a) − d</option><option value="c6">c = b ÷ (a + d)</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 2</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Écris chaque étape sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Première relation&nbsp;: <span class="nb">a = <span class="fr" style="font-size:.95em"><span class="h">b</span><span class="b">c</span></span> − d</span></b> — ici <span class="nb">d</span> est <b>en dehors</b> de la fraction.</p>
+                  <p><b>Isoler b.</b> On ajoute <span class="nb">d</span> aux deux membres, puis on multiplie par <span class="nb">c</span> :</p>
+                  <div class="calcul">a + d = <span class="fr"><span class="h">b</span><span class="b">c</span></span> &nbsp;→&nbsp; c × (a + d) = b &nbsp;&nbsp;soit&nbsp;&nbsp; <b>b = c (a + d)</b></div>
+                  <p><b>Isoler d.</b> On isole d'abord le terme qui la contient :</p>
+                  <div class="calcul">a − <span class="fr"><span class="h">b</span><span class="b">c</span></span> = −d &nbsp;→&nbsp; <b>d = <span class="fr"><span class="h">b</span><span class="b">c</span></span> − a</b></div>
+                  <p><b>Deuxième relation&nbsp;: <span class="nb">a = <span class="fr" style="font-size:.95em"><span class="h">b</span><span class="b">c − d</span></span></span></b> — cette fois <span class="nb">d</span> est <b>au dénominateur</b>.</p>
+                  <p><b>Isoler b.</b> Le dénominateur entier <span class="nb">(c − d)</span> passe par multiplication :</p>
+                  <div class="calcul">a × (c − d) = b &nbsp;&nbsp;soit&nbsp;&nbsp; <b>b = a (c − d)</b></div>
+                  <p><b>Isoler c.</b> On part de <span class="nb">a (c − d) = b</span>, on divise par <span class="nb">a</span>, puis on ajoute <span class="nb">d</span> :</p>
+                  <div class="calcul">c − d = <span class="fr"><span class="h">b</span><span class="b">a</span></span> &nbsp;→&nbsp; <b>c = <span class="fr"><span class="h">b</span><span class="b">a</span></span> + d</b></div>
+                  <p><b>Compare les deux résultats pour b&nbsp;:</b> <span class="nb">c (a + d)</span> d'un côté, <span class="nb">a (c − d)</span> de l'autre. <b>Rien à voir</b> — et pourtant les deux relations de départ ne diffèrent que par la longueur d'un trait de fraction. C'est exactement pour cela qu'on ne les écrit <b>jamais</b> avec une barre oblique.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.3 — niveau 3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o7-s2-niveau3">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3</div>
+            <h3 class="step-title">Niveau 3</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> deux relations avec un carré&nbsp;: la racine entre en jeu.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o7-s2-ex3">
+              <p class="exo-num">Exercice 3 — «&nbsp;J'ai confiance en moi, je ne suis pas loin d'être un expert&nbsp;»</p>
+              <p class="exo-enonce">Attention à ce qui est <b>sous</b> le carré&nbsp;: <span class="nb">b²</span> et <span class="nb">(b − d)²</span> ne se défont pas de la même façon.</p>
+              <div class="field">
+                <span class="field-type">Exercice 3</span>
+                <div class="field-q">Quatre expressions.</div>
+                <div class="cloze" data-cloze data-cle="ex3">
+                  <table class="saisie">
+                    <tr><th>La relation, et la lettre à isoler</th><th>Ta réponse</th></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">b²</span><span class="b">c − d</span></span></span> → <span class="nb">b</span></td>
+                      <td><select class="short" data-answer="b7" aria-label="isoler b, relation 3"><option value="">choisis…</option><option value="b7">b = √( a (c − d) )</option><option value="b8">b = a (c − d)</option><option value="b9">b = √a × (c − d)</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">b²</span><span class="b">c − d</span></span></span> → <span class="nb">d</span></td>
+                      <td><select class="short" data-answer="d7" aria-label="isoler d, relation 3"><option value="">choisis…</option><option value="d7">d = c − (b² ÷ a)</option><option value="d8">d = (b² ÷ a) − c</option><option value="d9">d = c + (b² ÷ a)</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">(b − d)²</span><span class="b">c</span></span></span> → <span class="nb">b</span></td>
+                      <td><select class="short" data-answer="b10" aria-label="isoler b, relation 4"><option value="">choisis…</option><option value="b10">b = √(a c) + d</option><option value="b11">b = √(a c) − d</option><option value="b12">b = √(a c + d)</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">(b − d)²</span><span class="b">c</span></span></span> → <span class="nb">d</span></td>
+                      <td><select class="short" data-answer="d10" aria-label="isoler d, relation 4"><option value="">choisis…</option><option value="d10">d = b − √(a c)</option><option value="d11">d = √(a c) − b</option><option value="d12">d = b + √(a c)</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 3</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Écris chaque étape sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Première relation&nbsp;: <span class="nb">a = <span class="fr" style="font-size:.95em"><span class="h">b²</span><span class="b">c − d</span></span></span></b></p>
+                  <p><b>Isoler b</b> — trois gestes : multiplier par <span class="nb">(c − d)</span>, puis prendre la racine.</p>
+                  <div class="calcul">a (c − d) = b² &nbsp;→&nbsp; <b>b = <span class="rac"><span>a (c − d)</span></span></b></div>
+                  <p><b>Isoler d</b> — on part de <span class="nb">a (c − d) = b²</span>, on divise par <span class="nb">a</span>, puis on isole <span class="nb">d</span> :</p>
+                  <div class="calcul">c − d = <span class="fr"><span class="h">b²</span><span class="b">a</span></span> &nbsp;→&nbsp; <b>d = c − <span class="fr"><span class="h">b²</span><span class="b">a</span></span></b></div>
+                  <p><b>Deuxième relation&nbsp;: <span class="nb">a = <span class="fr" style="font-size:.95em"><span class="h">(b − d)²</span><span class="b">c</span></span></span></b></p>
+                  <p><b>Isoler b</b> — on multiplie par <span class="nb">c</span>, on prend la racine, puis on ajoute <span class="nb">d</span> :</p>
+                  <div class="calcul">a c = (b − d)² &nbsp;→&nbsp; <span class="rac"><span>a c</span></span> = b − d &nbsp;→&nbsp; <b>b = <span class="rac"><span>a c</span></span> + d</b></div>
+                  <p><b>Isoler d</b> — même départ, mais on isole <span class="nb">d</span> à la fin : <b>d = b − <span class="rac"><span>a c</span></span></b>.</p>
+                  <p><b>La différence à voir entre les deux relations.</b> Dans la première, la racine ne porte que sur <span class="nb">b</span> : elle donne <span class="nb">b</span> directement. Dans la seconde, elle porte sur <span class="nb">(b − d)</span> : elle donne <b>la différence</b>, et il reste un geste à faire ensuite. <b>La racine défait le carré de ce qui est dessous — pas de ce qui est à côté.</b></p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.4 — niveaux 4 et 5 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o7-s2-defi">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4</div>
+            <h3 class="step-title">Niveaux 4 et 5 — pour le plaisir</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> aller voir plus loin. <b>Rien ici n'est évalué</b>&nbsp;: ni au contrôle, ni au DS.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="point-cle alerte">🎯 <b>Ce bloc est un défi, et il ne compte pas.</b> Le <span class="nb">log</span> est hors programme de seconde&nbsp;: tu le rencontreras en terminale. Si tu passes ton chemin, tu n'as rien manqué de ce qu'on te demandera. Si tu t'y attaques, tu verras que la méthode est <b>exactement la même</b> — seules les opérations inverses changent.</div>
+
+            <div class="exo" data-cle="pc-o7-s2-ex4">
+              <p class="exo-num">Exercice 4 — niveau 4 · «&nbsp;Manipuler une formule, je le fais dans mon sommeil. C'est moi le patron&nbsp;!&nbsp;»</p>
+              <p class="exo-enonce">Deux relations, avec une racine et une puissance de dix.</p>
+              <div class="field">
+                <span class="field-type">Exercice 4</span>
+                <div class="field-q">Trois expressions.</div>
+                <div class="cloze" data-cloze data-cle="ex4">
+                  <table class="saisie">
+                    <tr><th>La relation, et la lettre à isoler</th><th>Ta réponse</th></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h"><span class="rac"><span>b − d²</span></span></span><span class="b">c</span></span></span> → <span class="nb">b</span></td>
+                      <td><select class="short" data-answer="b13" aria-label="isoler b, niveau 4"><option value="">choisis…</option><option value="b13">b = (a c)² + d²</option><option value="b14">b = (a c)² − d²</option><option value="b15">b = a c + d²</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h"><span class="rac"><span>b − d²</span></span></span><span class="b">c</span></span></span> → <span class="nb">c</span></td>
+                      <td><select class="short" data-answer="c13" aria-label="isoler c, niveau 4"><option value="">choisis…</option><option value="c13">c = √(b − d²) ÷ a</option><option value="c14">c = a ÷ √(b − d²)</option><option value="c15">c = a × √(b − d²)</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">a = <span class="fr"><span class="h">10<sup>b−d</sup></span><span class="b"><span class="rac"><span>c</span></span></span></span></span> → <span class="nb">c</span></td>
+                      <td><select class="short" data-answer="c16" aria-label="isoler c, niveau 4 bis"><option value="">choisis…</option><option value="c16">c = (10^(b−d) ÷ a)²</option><option value="c17">c = 10^(b−d) ÷ a</option><option value="c18">c = √(10^(b−d) ÷ a)</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 4</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Relation&nbsp;: <span class="nb">a = <span class="fr" style="font-size:.95em"><span class="h"><span class="rac"><span>b − d²</span></span></span><span class="b">c</span></span></span></b></p>
+                  <p><b>Isoler b</b> — on multiplie par <span class="nb">c</span>, on élève au carré, on ajoute <span class="nb">d²</span> :</p>
+                  <div class="calcul">a c = <span class="rac"><span>b − d²</span></span> &nbsp;→&nbsp; (a c)² = b − d² &nbsp;→&nbsp; <b>b = (a c)² + d²</b></div>
+                  <p><b>Isoler c</b> — <span class="nb">c</span> est au dénominateur : elle passe par multiplication, puis on divise par <span class="nb">a</span>.</p>
+                  <div class="calcul">a c = <span class="rac"><span>b − d²</span></span> &nbsp;→&nbsp; <b>c = <span class="fr"><span class="h"><span class="rac"><span>b − d²</span></span></span><span class="b">a</span></span></b></div>
+                  <p><b>Relation&nbsp;: <span class="nb">a = <span class="fr" style="font-size:.95em"><span class="h">10<sup>b−d</sup></span><span class="b"><span class="rac"><span>c</span></span></span></span></span> → isoler c.</b> Le dénominateur <span class="rac"><span>c</span></span> passe par multiplication, puis on divise par <span class="nb">a</span> — et il reste une <b>racine</b> à défaire, donc on élève au carré :</p>
+                  <div class="calcul">a <span class="rac"><span>c</span></span> = 10<sup>b−d</sup> &nbsp;→&nbsp; <span class="rac"><span>c</span></span> = <span class="fr"><span class="h">10<sup>b−d</sup></span><span class="b">a</span></span> &nbsp;→&nbsp; <b>c = <span style="white-space:nowrap">(<span class="fr"><span class="h">10<sup>b−d</sup></span><span class="b">a</span></span>)²</span></b></div>
+                  <p><b>Ce qu'il faut voir&nbsp;:</b> la puissance de dix ne se manipule pas ici — elle reste telle quelle, comme un bloc. On ne la touche que si l'on cherche <span class="nb">b</span> ou <span class="nb">d</span>, et c'est là qu'il faudrait le logarithme.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exo" data-cle="pc-o7-s2-ex5">
+              <p class="exo-num">Exercice 5 — niveau 5 · «&nbsp;Je ne comprends même pas pourquoi je suis du côté des élèves… Laissez-moi l'estrade&nbsp;!&nbsp;»</p>
+              <p class="exo-enonce">Une seule relation, et cinq lettres&nbsp;:
+                <span class="nb" style="font-size:17px">log<span style="margin:0 2px">(</span><span class="fr"><span class="h">a</span><span class="b">b</span></span><span style="margin:0 2px">)</span> = <span class="rac cube"><span><span class="fr"><span class="h">c</span><span class="b">(d − e)²</span></span></span></span></span></p>
+              <div class="field">
+                <span class="field-type">Exercice 5</span>
+                <div class="field-q">Deux expressions, pour le défi.</div>
+                <div class="cloze" data-cloze data-cle="ex5">
+                  <table class="saisie">
+                    <tr><th>La lettre à isoler</th><th>Ta réponse</th></tr>
+                    <tr><td class="depart"><span class="nb">c</span></td>
+                      <td><select class="short" data-answer="cmul" aria-label="isoler c au niveau 5"><option value="">choisis…</option><option value="cmul">c = (log(a/b))³ × (d − e)²</option><option value="cdiv">c = (log(a/b))³ ÷ (d − e)²</option><option value="csom">c = (log(a/b))³ + (d − e)²</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">e</span>, en posant <span class="nb">R = <span class="rac"><span><span class="fr"><span class="h">c</span><span class="b">(log(a/b))³</span></span></span></span></span></td>
+                      <td><select class="short" data-answer="edr" aria-label="isoler e au niveau 5"><option value="">choisis…</option><option value="edr">e = d − R</option><option value="erd">e = R − d</option><option value="edplus">e = d + R</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 5</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Prends ton temps — et rappelle-toi que rien ici n'est évalué.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Isoler c.</b> Le membre de droite est une <b>racine cubique</b> : son opération inverse est le <b>cube</b>. On élève les deux membres au cube.</p>
+                  <div class="calcul">(log(<span class="fr"><span class="h">a</span><span class="b">b</span></span>))³ = <span class="fr"><span class="h">c</span><span class="b">(d − e)²</span></span></div>
+                  <p>Puis <span class="nb">(d − e)²</span> est au <b>dénominateur</b> : elle passe par <b>multiplication</b>.</p>
+                  <div class="calcul"><b>c = (log(<span class="fr"><span class="h">a</span><span class="b">b</span></span>))³ × (d − e)²</b></div>
+                  <p><b>⚠ C'est une multiplication, pas une division.</b> L'erreur est facile : on voit une fraction et on divise par réflexe. Mais <span class="nb">(d − e)²</span> était <b>sous</b> la barre — pour la faire remonter, on multiplie.</p>
+                  <p><b>Isoler e.</b> On repart de <span class="nb">(log(a/b))³ = <span class="fr" style="font-size:.95em"><span class="h">c</span><span class="b">(d − e)²</span></span></span> et on isole <span class="nb">(d − e)²</span>, puis on prend la racine :</p>
+                  <div class="calcul">(d − e)² = <span class="fr"><span class="h">c</span><span class="b">(log(a/b))³</span></span> &nbsp;→&nbsp; d − e = R &nbsp;&nbsp;<span style="color:var(--ink-faint)">avec R = <span class="rac"><span><span class="fr"><span class="h">c</span><span class="b">(log(a/b))³</span></span></span></span></span></div>
+                  <p>Et de <span class="nb">d − e = R</span>, on tire <b>e = d − R</b>.</p>
+                  <p><b>⚠ Le signe est le piège de cette dernière ligne.</b> De <span class="nb">d − e = R</span>, on n'obtient <b>pas</b> <span class="nb">e = R − d</span> : on ajoute <span class="nb">e</span> aux deux membres, ce qui donne <span class="nb">d = R + e</span>, puis on retire <span class="nb">R</span> : <span class="nb">e = d − R</span>. Écris les deux gestes plutôt que d'aller vite — c'est précisément ici qu'on se trompe.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Outil transversal — proposition V1 du 28/08/2026.</b> Les trois méthodes, leur ordre et les titres des cinq niveaux viennent de la fiche d'entraînement de M. Van Hoorde. Les exercices se corrigent <b>en direct</b>, et chaque corrigé est <b>rédigé étape par étape</b> — pas seulement le résultat. 🖨️ La <a href="../assets/pdf/pc/fiches/fiche-2nde-o7-relation-algebrique.pdf" style="color:var(--link)">fiche outil (PDF)</a> porte les trois méthodes, la table des opérations inverses et les deux exemples résolus.
+  </footer>
+</div>
+
+<script src="../assets/js/sequence-snt.js?v=42"></script>
+
+<!-- ============================================================
+     JS propre à l'outil : les deux appoints d'affichage communs aux
+     outils. Aucun composant nouveau — le moteur n'est pas touché.
+     ============================================================ -->
+<script>
+(function(){
+  'use strict';
+
+  var TEXTE_FICHE = '🖨️ Pour garder la méthode sous les yeux, imprime la <b>fiche outil</b> — '
+                  + 'le lien est en haut de la page.';
+
+  function retirerBoutonsFiche(racine){
+    Array.prototype.forEach.call(racine.querySelectorAll('.btn.dl'), function(b){
+      if (b.parentNode) b.parentNode.removeChild(b);
+    });
+  }
+
+  function surveillerModale(){
+    var mb = document.querySelector('.modal-back');
+    if (!mb || !window.MutationObserver) return;
+    function corriger(){
+      retirerBoutonsFiche(mb);
+      var titre = mb.querySelector('h3'), p = mb.querySelector('.m-body p');
+      if (!titre || !p || p.classList.contains('sans-fiche')) return;
+      if (titre.textContent.indexOf('Recommencer') >= 0){
+        p.innerHTML = 'Tu vas repartir d\'une partie vierge : ce que tu as écrit sera effacé de '
+                    + 'l\'écran. La <b>fiche outil</b> imprimable, elle, ne bouge pas.';
+        p.classList.add('sans-fiche');
+      } else if (titre.textContent.indexOf('terminée') >= 0){
+        p.innerHTML = TEXTE_FICHE;
+        p.classList.add('sans-fiche');
+      }
+    }
+    new MutationObserver(corriger).observe(mb, {childList:true, subtree:true});
+    corriger();
+  }
+
+  function retirerFichePDF(){
+    Array.prototype.forEach.call(document.querySelectorAll('.seance-actions'), function(bar){
+      retirerBoutonsFiche(bar);
+      var lab = bar.querySelector('.sa-label');
+      if (lab && lab.dataset.reecrit !== '1'){
+        lab.dataset.reecrit = '1';
+        lab.innerHTML = TEXTE_FICHE;
+      }
+    });
+    surveillerModale();
+  }
+
+  function allegerBarre(){
+    var b4 = document.getElementById('prog4');
+    if (!b4) return;
+    var menu = b4.querySelector('.p4-menu');          /* le ☰ ouvre un sommaire qui n'existe pas */
+    if (menu && menu.parentNode) menu.parentNode.removeChild(menu);
+    var ret = b4.querySelector('.p4-retour');
+    if (ret){
+      ret.setAttribute('title', 'Revenir à la physique-chimie');
+      ret.setAttribute('aria-label', 'Revenir à la physique-chimie');
+      var lab = ret.querySelector('.p4-lab');
+      if (lab) lab.textContent = 'Retour';
+    }
+  }
+
+  function retirerGlossaire(){
+    ['#glo-ouvrir', '.glo-back'].forEach(function(sel){
+      var n = document.querySelector(sel);
+      if (n && n.parentNode) n.parentNode.removeChild(n);
+    });
+  }
+
+  function demarrer(){
+    retirerFichePDF();
+    allegerBarre();
+    retirerGlossaire();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
+  else demarrer();
+})();
+</script>
+
+</body></html>

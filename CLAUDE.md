@@ -130,6 +130,7 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
 | `_suivi/chapitres.md` | Tableau de bord **par chapitre / par séquence**, avec les jalons |
 | `_suivi/IDEES.md` | Réservoir d'idées à trier |
 | `verifier.mjs` | 🆕 `node verifier.mjs` rejoue la checklist · `--bilan` sort un digest compact du dépôt · `--qcm` liste les biais de longueur des QCM. **Repère : exactement 18 problèmes** — les 18 liens `cfa/outil-*` vers des fiches à imprimer pas encore écrites. Tout autre écart est une régression |
+| `exporter-fiches.mjs` | 🆕 `node exporter-fiches.mjs` régénère les **fiches PDF de 2nde PC** depuis `fiches/*.html` vers `assets/pdf/pc/fiches/`, et contrôle chaque export à la mesure (A4 `209,9×297,0 mm`, une `.feuille` = une page, polices incorporées). **Le HTML est la source, le PDF un export** — jamais l'inverse |
 | `_suivi/BDD-cadrage.md` | 🆕 Volet base de données : architecture, décisions, modèle de données, jalons |
 | `bdd/README.md` | 🆕 Discipline des fichiers de schéma SQL + avertissement `supabase/migrations/` |
 
@@ -140,8 +141,8 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 
 | Partie | Pages | Assets externes |
 |---|---|---|
-| **Physique-chimie** | `pages/2nde-pc-tX-cY-…html` | `assets/img/pc/2nde-pc-tX-cY/` · `assets/pdf/` · `audio/2nde-pc-tX-cY-intro.m4a` · fiches dans `fiches/` |
-| **Outils transversaux PC** 🆕 | `pages/2nde-pc-oN-…html` (2 sur 8 écrits) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · fiche A4 **complétée** dans `fiches/fiche-2nde-oN-…html` · SVG inline |
+| **Physique-chimie** | `pages/2nde-pc-tX-cY-…html` | `assets/img/pc/2nde-pc-tX-cY/` · `assets/pdf/` · `audio/2nde-pc-tX-cY-intro.m4a` · fiche **source** dans `fiches/`, **PDF distribué** dans `assets/pdf/pc/fiches/` 🆕 |
+| **Outils transversaux PC** 🆕 | `pages/2nde-pc-oN-…html` (4 sur 8 écrits) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · fiche A4 **complétée** : source `fiches/fiche-2nde-oN-…html`, **PDF** `assets/pdf/pc/fiches/` 🆕 · SVG inline |
 | **SNT** | `pages/2nde-snt-tN-…html` | `assets/css/sequence-snt.css?v=N` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/snt/<slug>/` pour les photos · SVG et CSS de contenu **inline** |
 | **Cahier de vacances** | `cahier/…html` | `assets/img/cahier/` · `assets/pdf/cahier/` |
 | **Livret CFA** 🆕 | `cfa/index.html` · `cfa/outil-NN-…html` (17 outils) | `_modeles/gabarit-outil-CFA.html` · fiches à imprimer dans `fiches/cfa/` (**2 écrites sur 17** — les liens manquants forment le repère de 18 problèmes de `verifier.mjs`) · corrigés dans `_corriges-cfa/` · **client partagé** `assets/js/progression.js` |

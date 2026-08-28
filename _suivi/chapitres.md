@@ -13,6 +13,12 @@
 > Posé sur les **2 chapitres dont la fiche existe** : `t1c2`, `t1c4`. Les 12 autres
 > l'auront quand leur fiche sera écrite. Règle : `CONSIGNES-chapitre-PC.md` §6.
 >
+> 🆕 **Ce lien pointe vers un PDF depuis le 28/08/2026** — `assets/pdf/pc/fiches/`.
+> Le HTML de la fiche reste la source, le PDF est un export régénéré par
+> `node exporter-fiches.mjs` ; les deux partent dans la même livraison. Une fiche
+> de chapitre est **imprimée et distribuée par Loïc** ; une fiche d'outil est
+> imprimée **par l'élève**.
+>
 > 🔴 **3 chapitres PC sur 14 sont en V1 intégrale : T3-C1, T3-C3 et T3-C4.** Le jalon 1
 > a changé de définition le 25/08/2026 : il exige désormais le cours **entier**, figures
 > et légendes comprises. Les 11 autres pages restent des ébauches — fidèles dans le
@@ -45,7 +51,7 @@
 - Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichiers : `pages/2nde-pc-t1-c2-transformations-physiques-chimiques.html` · `fiches/fiche-2nde-t1c2.html`
 - Sert de **référence de composants** (v2) — utile comme modèle, mais **non validé**.
-- Fiche : **proposée** (v4, ~8 pages), pas validée.
+- Fiche : **proposée** (v4), pas validée. **10 pages A4** mesurées à l'export PDF.
 
 ### T1-C3 — Constitution de l'atome
 - Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
@@ -57,6 +63,7 @@
 - Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichiers : `pages/2nde-pc-t1-c4-denombrer-les-entites.html` · `fiches/fiche-2nde-t1c4.html`
 - Code : AV0G4D · 4 SVG (cristal NaCl, atome, mole, case).
+- Fiche : **6 pages A4** mesurées à l'export PDF.
 - **Le plus abouti en production** (cours + fiche proposés, erreurs source corrigées),
   mais **non validé** par Loïc. Sert de repère de ce qu'un chapitre fini peut être.
 - Différé : réintégration du tableau périodique complet.
@@ -389,7 +396,11 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   dans un cahier ne se retourne pas vite.
 
 ### O4 — La verrerie et le matériel de laboratoire 🔴
-- Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- **V1 produite le 28/08/2026.** 4 étapes de méthode, 5 exercices, 1 QCM de 6
+  questions, 39 champs. **21 pièces de verrerie et de matériel dessinées en SVG**,
+  réutilisées sur la fiche. Fiche A4 en 2 pages : la planche au recto, l'échelle
+  de précision et le geste du ménisque au verso.
 - Sources : `fiche_La verrerie de laboratoire.pdf` (images uniquement — tout le
   visuel est à redessiner), `_a-deposer/tp/TP11 - La précision de la verrerie au
   laboratoire/`, l'encadré **ménisque** de `fiche_La dissolution.pdf`, et les QCM
@@ -419,7 +430,10 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   précision et le geste au verso.
 
 ### O5 — Rédiger un compte rendu de TP 🔴
-- Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- **V1 produite le 28/08/2026.** 4 étapes, 5 exercices, 40 champs. Frise verticale
+  des huit rubriques en SVG. Fiche A4 en 2 pages, conçue comme une **checklist** à
+  coller en tête du classeur de TP. Le renvoi vidéo (O-28) est sur la page seulement.
 - Source : `Fiche_guide - Rédiger un TP.pdf`.
 - **Contexte** : quinze sujets de TP attendent leur mise en ligne
   (`_a-deposer/tp/`). `o5` est leur compagnon obligé — c'est l'outil qui sera le
@@ -461,7 +475,18 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   TP et servir de checklist.
 
 ### O6 — Présenter un calcul 🔴
-- Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- **V1 produite le 28/08/2026.** 5 étapes — une par étiquette —, 6 exercices tirés
+  de calculs déjà présents sur le site, 43 champs. Le visuel qui porte l'outil est
+  la **copie annotée** : deux copies du même calcul, l'une à 1 pt, l'autre à 5 pts.
+  Fiche A4 en 2 pages.
+- ⚠ **Mesure du 28/08, qui nuance le brief.** Le dépôt porte **143 blocs `.etape`**
+  sur dix chapitres ; **90 seulement** emploient l'une des cinq étiquettes, les 53
+  autres portant des libellés libres. **Deux chapitres n'en emploient aucune** :
+  `t2-c1` (0/10) et `t3-c3` (0/7), et 13 corrections seulement commencent par
+  « Extraction des informations ». Le modèle existe donc, mais il n'est **pas**
+  systématique : la page ne dit nulle part à l'élève qu'il le retrouvera partout.
+  ⏳ Aligner les chapitres reste **hors périmètre**.
 - Sources : `fiche_Présenter un calcul.pdf` **et** les corrections rédigées des
   chapitres en ligne — 104 blocs sur huit chapitres.
 - ⏳ **O-25 appliqué (tranché par défaut) — le point le plus scruté du chantier.**
@@ -496,7 +521,12 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   de rendre une copie.
 
 ### O7 — Manipuler une relation algébrique 🟠
-- Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- **V1 produite le 28/08/2026.** 4 étapes, 5 exercices (un par niveau), 28 champs.
+  Le triangle en SVG, la table des opérations inverses, et **les fractions empilées**
+  partout — la distinction du niveau 2 en dépend. Fiche A4 en 2 pages.
+- ✅ **Les trois erreurs de la correction source sont corrigées et non reproduites**
+  (niveau 1 `c = b/c`, niveau 5 expression de `c` en fraction, niveau 5 signe de `e`).
 - Sources : `fiche_Manipuler une relation algébrique.pdf` et sa correction.
 - 🔴 **Le fond est de Loïc et se conserve intégralement** : les trois méthodes,
   dans **son** ordre, avec **son** jugement (« ma pref » sur la troisième), et les
@@ -532,7 +562,12 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   opérations inverses, les deux exemples résolus, les niveaux 1 à 3 à faire.
 
 ### O8 — Construire et exploiter un graphique 🟡
-- Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- **V1 produite le 28/08/2026.** 4 étapes, 4 exercices, 30 champs. Cinq graphiques en
+  SVG dont un **tracé fautif** à six défauts et une **grille vierge** au verso de la
+  fiche — la seule fiche d'outil sur laquelle l'élève écrit. Fiche A4 en 2 pages.
+- ⏳ **Deux ajouts en proposition**, absents de la source : l'**unité** du coefficient
+  directeur, et le sens d'une **droite passant par l'origine** (proportionnalité).
 - Source : `fiche_Construire un graphique.pdf`.
 - **Méthode — quatre étapes** : poser les axes (tout au crayon à papier ;
   `P = f(m)` — **la première grandeur nommée va en ordonnée**, celle qui suit le

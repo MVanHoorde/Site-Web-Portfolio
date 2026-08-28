@@ -2668,3 +2668,133 @@ tourne mal »**, contenu neuf, seul contenu du dépôt qui engage la sécurité
 d'élèves — à relire contre le règlement du laboratoire et les équipements réels
 de la salle 0.26.
 
+---
+
+## 28/08/2026 (suite) — Deux chantiers transverses : l'ornement, et les fiches en PDF
+
+Deux chantiers indépendants, tous deux hors d'un chapitre particulier.
+
+### L'ornement des encarts « Histoire des sciences »
+
+Une seule ligne à réécrire, et pourtant le motif comptait : le fleuron `U+2766`
+n'existe dans **aucune** des vingt-deux polices auto-hébergées, il s'affichait donc
+par repli sur une police système. Remplacé par un **filet court + un losange**
+(variante B, tranchée par Loïc), tout en CSS.
+
+Trois choses que le brief n'avait pas prévues, toutes trouvées à la mesure :
+
+1. **Le caractère n'était pas `U+2767`, mais `U+2766`.** Le brief nommait le
+   premier. Chercher le mauvais code point ne rend rien, et on conclut que
+   l'ornement n'existe nulle part.
+2. **`text-align:center` ne se remplace pas par `justify-content:center`.** Le
+   brief demandait la substitution ; les deux propriétés ne font pas le même
+   travail. Mesuré dans une iframe de 390px : le libellé passe sur deux lignes et,
+   sans `text-align`, les deux lignes se collaient à gauche de leur item de flex.
+3. **Le losange en quatre bordures est une fausse bonne idée.** Elle garantit
+   l'impression (une bordure s'imprime toujours, un fond non), mais Chrome arrondit
+   une bordure de 2,5px à 2px sur un écran non-Retina : mesuré, l'étiquette passait
+   de 288,80px à 286,80px de large. Retour au fond plein, et
+   `print-color-adjust:exact` — qui s'hérite jusqu'aux pseudo-éléments — pour
+   l'impression.
+
+**Contrôles.** Symétrie mesurée sur la capture, pas jugée à l'œil : 12,00px entre
+filet et losange **de chaque côté** (mon impression visuelle disait le contraire —
+c'était le cadrage du crop). Centre du losange à **0,22px** de la médiane des
+capitales, calculée depuis `fontBoundingBoxAscent` et la cap-height du canvas.
+Photocopie simulée : PDF → niveaux de gris → seuil dur à 200 ; filets et losanges
+survivent intacts.
+
+**Piège rencontré.** Mesurer les encarts sur une vraie page ne donne rien : le
+verrou masque tout l'`<article>`. Il faut retirer `body.verrouille` dans le script
+de mesure — ou, comme ici, extraire les dix encarts réels des sept fichiers dans
+une page de contrôle jetable.
+
+### Les fiches de 2nde PC passent en PDF
+
+Six fiches exportées, contrôlées, et **dix-sept liens** basculés. Trois choses à
+retenir :
+
+1. **`--print-to-pdf` en ligne de commande sort du Letter**, 612×792 pt, même quand
+   la fiche déclare `@page size:A4`. Seul `Page.printToPDF` par le protocole de
+   débogage expose `preferCSSPageSize`. D'où `exporter-fiches.mjs`, qui pilote
+   Chrome par CDP — WebSocket natif de Node, aucune dépendance.
+2. **Le nombre de pages ne se fige pas fiche par fiche.** Première version du
+   script : « deux pages par outil, deux par chapitre » — et `t1c2` sortait à 10,
+   `t1c4` à 6. Ce ne sont pas des débordements : ces fiches portent 10 et 6
+   `.feuille`. Le contrôle est devenu **une feuille dedans, une page dehors**, qui
+   attrape le vrai débordement sans rien figer.
+3. **Le script lit `fiches/` au lieu de tenir une liste.** Décidé après avoir vu
+   `o3` puis `o4` apparaître **pendant** la session : la liste écrite au début
+   était déjà fausse au milieu.
+
+**Ce que l'export a révélé.** Les métadonnées d'un PDF Chrome se lisent en clair,
+sans bibliothèque : `/MediaBox`, `/Count`, `/BaseFont`, `/FontFile`. En les
+regardant, six fiches sur six embarquent des **polices système** — Consolas, Times,
+Cambria Math, Segoe UI Symbol, Arial. Diagnostic affiné en interrogeant Chrome
+lui-même (`CSS.getPlatformFontsForNode`, qui donne la police réelle et le nombre de
+glyphes par nœud) : exposants et indices Unicode, symboles mathématiques et de
+signalisation, et — le plus visible — les **55 glyphes en Arial** des libellés de la
+silhouette de sécurité de `o3`, alors que leur règle CSS demande bien IBM Plex Sans.
+C'est le même piège que le fleuron, mais sur du contenu : **rien n'a été touché**,
+tout est reporté dans `ETAT-PROJET.md`.
+
+**Contrôles.** `node verifier.mjs` → **18**, avant comme après. Aucun lien mort vers
+`assets/pdf/pc/fiches/`. Les six PDF mesurent `209,9 × 297,0 mm` et portent leurs
+polices incorporées. `chapitre-commun.css` en `?v=8` dans les **17** fichiers.
+
+---
+
+## 28/08/2026 — Les cinq outils restants (lots C à G)
+
+`o4` verrerie · `o5` compte rendu de TP · `o6` présenter un calcul · `o7`
+relation algébrique · `o8` graphique. **Les huit outils du catalogue sont
+désormais écrits.** Chacun a sa page, sa fiche A4 et sa carte au hub.
+
+**Tout le visuel est dessiné ici**, sans une seule image téléchargée : 21 pièces
+de verrerie et de matériel (`o4`), une frise verticale des huit rubriques (`o5`),
+deux copies annotées (`o6`), le triangle et les fractions empilées (`o7`), cinq
+graphiques dont un tracé fautif à six défauts et une grille vierge (`o8`).
+
+**La convention des fiches a changé pendant le chantier**, et les cinq outils s'y
+sont alignés : le HTML reste la **source**, mais ce qui se distribue est son
+**export PDF** (`node exporter-fiches.mjs`). Les liens des pages et du hub
+pointent vers le PDF.
+
+**Ce qui a mordu, et qui vaut d'être retenu.**
+
+1. **Le nom d'une feuille versionnée dans un COMMENTAIRE suffit à casser le
+   contrôle.** Un commentaire de `o5` disait « un outil ne charge pas
+   chapitre-commun.css » — `verifier.mjs` a compté la page comme chargeant la
+   feuille sans numéro de version. Exactement le piège déjà documenté pour
+   `seances-snt`. La règle est maintenant **généralisée** dans les consignes et
+   dans le gabarit : ne jamais écrire le nom d'une feuille ou d'un script
+   versionné suivi de son extension, même en commentaire.
+2. **`getBBox()` rend des coordonnées LOCALES.** Un `<text>` placé dans un
+   `<g transform="translate(...)">` y paraît hors de son viewBox alors qu'il est
+   en place — quatre faux positifs sur le triangle de `o7`. Le contrôle compare
+   désormais les **rectangles écran**, qui intègrent les transforms.
+3. **La pop-up de fin de séance du moteur intercepte les clics suivants.** Le
+   harnais comptait comme « en échec » cinq blocs de `o5` qu'il n'avait jamais pu
+   cliquer. Ce n'est pas un défaut de la page : c'est le comportement normal du
+   moteur quand toutes les étapes passent au vert. Le harnais referme la modale
+   entre deux vérifications.
+4. **Une mesure qui nuance le brief, sur `o6`.** Le brief annonçait « 104 blocs »
+   employant les cinq étiquettes du cours. Le dépôt porte **143 blocs `.etape`**,
+   dont **90 seulement** emploient l'une des cinq ; deux chapitres n'en emploient
+   **aucune** (`t2-c1` 0/10, `t3-c3` 0/7), et 13 corrections seulement commencent
+   par « Extraction des informations ». Le modèle existe, il n'est pas
+   systématique — et la page se garde donc de dire à l'élève qu'il le retrouvera
+   « partout ».
+
+**Contrôles.** `node verifier.mjs` → **18**, le repère retrouvé. Aucun asset
+partagé modifié de mon fait. Pour les cinq outils : **zéro erreur console**, tous
+les champs rejoués rendent « tout est juste » (39 · 40 · 43 · 28 · 30), aucun
+texte SVG hors de son cadre, rendu sans débordement à 1200, 768 et **390 px
+mesurés en iframe**, fiches en **2 pages exactement** vérifiées à la mesure puis
+par l'export PDF, QR codes générés et autovérifiés (syndromes Reed-Solomon nuls +
+relecture rendant l'URL).
+
+**Ce qui reste à Loïc.** Tout est proposition. En priorité l'étape 1.5 de `o3`,
+puis les six arbitrages en attente. Et le lot H — la série « Convertir » versée
+dans `o1` — n'est **pas** fait : il attend la validation d'O-23.
+

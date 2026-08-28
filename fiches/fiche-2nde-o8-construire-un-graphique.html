@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche outil 8 — Construire et exploiter un graphique</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     FICHE OUTIL 8 — CONSTRUIRE ET EXPLOITER UN GRAPHIQUE.
+     Produite le 28/08/2026 depuis _modeles/gabarit-fiche-outil-PC.html.
+
+     DEUX PAGES exactement. Recto : la méthode en quatre temps et le
+     coefficient directeur. Verso : le tableau de mesures et une
+     GRILLE VIERGE prête pour le tracé — c'est la seule fiche d'outil
+     sur laquelle l'élève écrit, et c'est voulu : un graphique ne
+     s'apprend qu'en le traçant.
+
+     La nuance de Loïc sur le titre est conservée telle quelle.
+     ⏳ Deux ajouts en proposition, absents de la source : l'unité du
+     coefficient directeur, et le sens d'une droite passant par
+     l'origine.
+
+     ⚠ Cette fiche est la SOURCE ; ce qui se distribue est son export
+     PDF dans assets/pdf/pc/fiches/, produit par `node
+     exporter-fiches.mjs`. Ne jamais modifier le PDF directement.
+     ============================================================ -->
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e; --gris:#6b6f7a;
+    --or-fonce:#b28a1d; --vert-fonce:#4c8a58;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { background:#9aa0ab; }
+  body { font-family:'Spectral', Georgia, serif; color:var(--encre);
+         font-size:9.2pt; line-height:1.28; }
+  .feuille { width:210mm; min-height:297mm; margin:8mm auto; padding:8mm 12mm 12mm;
+    background:var(--papier); position:relative; box-shadow:0 2px 14px rgba(0,0,0,.28);
+    display:flex; flex-direction:column; }
+  @page { size:A4; margin:0; }
+  @media print {
+    html, body { background:#fff; }
+    .feuille { margin:0; box-shadow:none; height:296mm; min-height:0; overflow:hidden;
+               page-break-after:always; background:#fff; }
+    .feuille:last-child { page-break-after:auto; }
+    .encart, .regle, .exres, .eviter, .schema { background:#fff; }
+  }
+  .bande { height:3.5px; background:var(--encre); position:relative; margin-bottom:3.2mm; }
+  .bande i { position:absolute; top:0; bottom:0; width:3px; }
+  .bande i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .bande i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .bande i:nth-child(3){ left:76%; background:var(--h-alpha); }
+
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:12.4pt; line-height:1.12; }
+  .sous { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris); margin:1mm 0 2.5mm; }
+  .sous .rouge { color:var(--h-alpha); }
+  .suite { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris);
+    letter-spacing:.1em; text-transform:uppercase; margin:0 0 2.5mm; }
+  .suite .n { color:var(--h-beta); }
+  .aquoi { font-family:'Space Grotesk',sans-serif; font-size:9.2pt; font-weight:600;
+    border-left:3px solid var(--h-beta); padding:1.1mm 0 1.1mm 3mm; margin-bottom:2mm; }
+
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:10.2pt; margin:2.4mm 0 1.2mm;
+       display:flex; align-items:baseline; gap:2.5mm;
+       border-top:2.2px solid var(--encre); padding-top:1.1mm; }
+  h2:first-child { margin-top:0; }
+  h2 .n { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--h-beta); }
+  h3 { font-family:'IBM Plex Mono',monospace; font-size:7.2pt; letter-spacing:.09em;
+       text-transform:uppercase; color:var(--gris); margin:1.6mm 0 .7mm; font-weight:600; }
+
+  p { margin-bottom:.9mm; }
+  b { font-weight:600; }
+  .mono { font-family:'IBM Plex Mono',monospace; font-size:.92em; white-space:nowrap; }
+  ol, ul { margin:0 0 1mm 4.6mm; }
+  li { margin-bottom:.5mm; }
+
+  .regle { border:1.3px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 2mm 2mm 0; padding:1.5mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fff; }
+  .rt { display:grid; grid-template-columns:15mm 1fr; gap:2mm; align-items:baseline; margin-top:1mm; }
+  .rt .e { font-family:'IBM Plex Mono',monospace; font-size:6.2pt; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--gris); border:.7px solid var(--grille);
+    border-radius:1mm; padding:.2mm 0; text-align:center; }
+  .rt.piege .e { color:var(--h-alpha); border-color:var(--h-alpha); }
+  .regle .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--h-gamma); margin-bottom:1mm; }
+  .regle .forme { font-family:'IBM Plex Mono',monospace; font-size:10.4pt; text-align:center;
+    margin:1mm 0; color:var(--encre); }
+
+  .encart { border:1px solid var(--grille); border-left:3px solid var(--or-fonce);
+    border-radius:0 2mm 2mm 0; padding:1.2mm 2.6mm; margin:1.2mm 0 1.6mm; background:#fffdf5; font-size:8.8pt; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--or-fonce); margin-bottom:.8mm; font-weight:600; }
+  .eviter { border:1.2px solid var(--h-alpha); border-left:4px solid var(--h-alpha);
+    border-radius:0 2mm 2mm 0; padding:1.3mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fffaf9; }
+  .eviter .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--h-alpha); margin-bottom:1mm; font-weight:600; }
+  .exres { border:1px solid var(--vert-fonce); border-radius:2mm; padding:1.5mm 2.6mm;
+    margin:1.2mm 0 1.8mm; background:#fbfdfb; }
+  .exres .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--vert-fonce); margin-bottom:1.2mm; font-weight:600; }
+  .calc { font-family:'IBM Plex Mono',monospace; font-size:8.4pt; line-height:1.5; margin:.4mm 0; }
+  .res { border:1.2px solid var(--vert-fonce); border-radius:1.4mm; padding:.2mm 1.4mm;
+    font-weight:700; white-space:nowrap; }
+
+  /* ---------- Les quatre temps de la méthode ---------- */
+  .temps { display:grid; grid-template-columns:1fr 1fr; gap:1.6mm 4mm; margin:1.2mm 0 1.8mm; }
+  .tp { display:grid; grid-template-columns:5mm 1fr; gap:2mm; align-items:start;
+    border-top:.8px solid var(--grille); padding-top:1.2mm; }
+  .tp .num { font-family:'IBM Plex Mono',monospace; font-size:8.6pt; font-weight:700;
+    color:var(--h-gamma); text-align:center; }
+  .tp .nom { font-family:'Space Grotesk',sans-serif; font-size:8.6pt; font-weight:600; }
+  .tp .d { font-size:8pt; color:var(--gris); line-height:1.32; }
+
+  /* ---------- Les graphiques ---------- */
+  .schema { border:1px solid var(--grille); border-radius:2mm; padding:1.2mm; background:#fff; margin:1.2mm 0; }
+  .schema svg { width:100%; height:auto; display:block; }
+  .g-grille { stroke:var(--grille); stroke-width:.8; }
+  .g-axe { stroke:var(--encre); stroke-width:2; fill:none; }
+  .g-fleche { fill:var(--encre); }
+  .g-lab { font-family:'IBM Plex Sans',sans-serif; font-size:13px; fill:var(--encre); font-weight:700; }
+  .g-grad { font-family:'IBM Plex Mono',monospace; font-size:11.5px; fill:var(--gris); text-anchor:middle; }
+  .g-grad.g { text-anchor:end; }
+  .g-point { stroke:var(--h-gamma); stroke-width:2; fill:none; }
+  .g-droite { stroke:var(--vert-fonce); stroke-width:2; fill:none; }
+  .g-aide { stroke:var(--h-alpha); stroke-width:1.6; stroke-dasharray:5 4; fill:none; }
+  .g-ab { font-family:'IBM Plex Mono',monospace; font-size:12px; fill:var(--h-alpha); font-weight:700; }
+  .g-titre { font-family:'IBM Plex Sans',sans-serif; font-size:12px; fill:var(--gris);
+    text-anchor:middle; font-style:italic; }
+
+  /* la grille vierge du verso : c'est là que l'élève trace */
+  .vierge { border:1.2px solid var(--encre); border-radius:2mm; padding:2mm; background:#fff; }
+  .vierge svg { width:100%; height:auto; display:block; }
+  .vg-fin { stroke:var(--grille); stroke-width:.7; }
+  .vg-fort { stroke:#cfd6df; stroke-width:1.1; }
+
+  table.mes { border-collapse:collapse; width:100%; font-family:'IBM Plex Mono',monospace;
+    font-size:8pt; text-align:center; margin:1.2mm 0; }
+  table.mes th, table.mes td { border:.8px solid var(--grille); padding:.7mm .4mm; }
+  table.mes th { background:#f2f4f8; font-weight:700; }
+  table.mes tr th:first-child { text-align:left; padding-left:1.4mm; }
+
+  .versexos { border:1.3px solid var(--encre); border-radius:2mm; padding:1.6mm 2.4mm;
+    display:flex; align-items:center; gap:3.5mm; background:#fff; margin-top:auto; }
+  .versexos svg { flex:none; }
+  .versexos .txt { font-size:8.6pt; }
+  .versexos .txt b { font-family:'Space Grotesk',sans-serif; }
+  .versexos .url { font-family:'IBM Plex Mono',monospace; font-size:7.2pt;
+    color:var(--gris); word-break:break-all; margin-top:.8mm; }
+  .pied { position:absolute; bottom:5mm; left:12mm; right:12mm;
+          display:flex; justify-content:space-between;
+          font-family:'IBM Plex Mono',monospace; font-size:6.8pt; color:var(--gris); }
+  svg { display:block; }
+  .deux { display:grid; grid-template-columns:1fr 1fr; gap:4mm; align-items:start; }
+</style>
+</head>
+<body>
+
+<!-- ==================== RECTO — LA MÉTHODE ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <h1>Outil 8 — Construire et exploiter un graphique</h1>
+  <p class="sous">Physique-Chimie · <span class="rouge">Seconde</span> · fiche outil — à coller, elle sert toute l'année · M. Van Hoorde</p>
+
+  <p class="aquoi">Dès qu'un TP produit un tableau de mesures. Le verso porte une grille vierge, prête pour ton tracé.</p>
+
+  <div class="regle">
+    <div class="etq">La règle — tout au crayon à papier</div>
+    <div class="forme">P = f(m) → P en ordonnée, m en abscisse</div>
+    <div class="rt"><span class="e">le geste</span><div>La <b>première grandeur nommée</b> va en ordonnée ; celle qui suit le <span class="mono">f</span> va en abscisse.</div></div>
+    <div class="rt"><span class="e">le contrôle</span><div>La grandeur <b>qu'on fait varier</b> est en abscisse ; celle <b>qu'on mesure</b> est en ordonnée.</div></div>
+    <div class="rt piege"><span class="e">le piège</span><div>Oublier l'<b>unité</b> au bout d'un axe. C'est l'omission la plus fréquente — et le coefficient directeur en devient inexploitable.</div></div>
+  </div>
+
+  <h2><span class="n">01</span> Les quatre temps</h2>
+  <div class="temps">
+    <div class="tp"><span class="num">1</span><div><span class="nom">Poser les axes</span>
+      <div class="d">Deux <b>flèches perpendiculaires</b>. La grandeur <b>et son unité</b> au bout de chacune. Le graphique prend <b>le plus de place possible</b>.</div></div></div>
+    <div class="tp"><span class="num">2</span><div><span class="nom">Choisir les échelles</span>
+      <div class="d">Une <b>par axe</b>, <b>régulière</b>, avec un <b>étalement maximal</b>. On note la première graduation puis les principales — pas chaque centimètre.</div></div></div>
+    <div class="tp"><span class="num">3</span><div><span class="nom">Placer les points, tracer</span>
+      <div class="d">Une <b>croix +</b> par mesure, le plus précisément possible. Courbe → <b>à main levée</b>. Droite → <b>à la règle</b>, en <b>droite moyenne</b> : autant de points au-dessus qu'en dessous.</div></div></div>
+    <div class="tp"><span class="num">4</span><div><span class="nom">Exploiter</span>
+      <div class="d">Le <b>coefficient directeur</b>, et la lecture par <b>interpolation</b> d'une valeur non mesurée.</div></div></div>
+  </div>
+
+  <div class="encart">
+    <div class="etq">Sur le titre — chacun son avis</div>
+    « <i>Pour moi il n'est pas indispensable si vous avez correctement légendé les axes, mais attention, certains professeurs l'exigent (en SVT par exemple), c'est donc préférable d'avoir le réflexe de titrer un graphique.</i> »
+  </div>
+
+  <h2><span class="n">02</span> Le coefficient directeur</h2>
+  <div class="regle">
+    <div class="etq">La règle</div>
+    <div class="forme">k = (y<sub>A</sub> − y<sub>B</sub>) ÷ (x<sub>A</sub> − x<sub>B</sub>)</div>
+    <div class="rt"><span class="e">le geste</span><div>Choisir A et B <b>sur la droite tracée</b>, aussi <b>éloignés</b> que possible.</div></div>
+    <div class="rt piege"><span class="e">le piège</span><div>Prendre A et B <b>parmi les points de mesure</b> : on réintroduit les erreurs que la droite moyenne venait de gommer.</div></div>
+  </div>
+
+  <div class="deux">
+    <div class="exres" style="margin:0">
+      <div class="etq">✓ Sur la droite P = f(m)</div>
+      <div class="calc">A (0 ; 0) &nbsp;·&nbsp; B (0,50 kg ; 4,90 N)<br>
+      k = (0 − 4,90) ÷ (0 − 0,50)<br>
+      k = 4,90 ÷ 0,50 = <span class="res">9,8 N·kg⁻¹</span></div>
+      <p style="margin-top:1mm;font-size:8.2pt">On y reconnaît <b>l'intensité de la pesanteur g</b> : la droite se lit <span class="mono">P = m × g</span>.</p>
+    </div>
+    <div>
+      <div class="encart" style="margin-top:0">
+        <div class="etq">⏳ L'unité de k — proposition</div>
+        Elle se lit <b>sur les axes</b> : c'est l'unité de l'ordonnée <b>divisée</b> par celle de l'abscisse. Ici <span class="mono">N ÷ kg = N·kg⁻¹</span>.
+      </div>
+      <div class="encart" style="margin-bottom:0">
+        <div class="etq">⏳ La droite passe par l'origine — proposition</div>
+        Alors les deux grandeurs sont <b>proportionnelles</b> : <span class="mono">y = k × x</span>. Si elle n'y passe pas, il n'y a <b>pas</b> proportionnalité — même si c'est une belle droite.
+      </div>
+    </div>
+  </div>
+
+  <div class="eviter" style="margin-top:auto">
+    <div class="etq">⚠ Les six défauts qui rendent un graphique illisible</div>
+    Pas de <b>flèches</b> ni d'<b>unités</b> au bout des axes · graduations <b>irrégulières</b> · graphique <b>tassé</b> dans un coin · points <b>ronds</b> au lieu de croix · <b>ligne brisée</b> reliant les points un à un · des <b>mesures manquantes</b>.<br>
+    <b>Aucun n'est une erreur de calcul</b> — tous rendent le graphique impossible à relire par quelqu'un d'autre, et c'est précisément à cela qu'il sert.
+  </div>
+
+  <div class="pied"><span>Fiche outil 8 · Construire un graphique — M. Van Hoorde</span><span>recto · page 1/2</span></div>
+</div>
+
+<!-- ==================== VERSO — L'EXEMPLE ET LA GRILLE VIERGE ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Outil 8</span> — un exemple lu, et une grille pour ton tracé</p>
+
+  <h2><span class="n">03</span> Un graphique complet, lu par interpolation</h2>
+
+  <div class="deux">
+    <div class="schema" style="margin:0">
+      <svg viewBox="0 0 440 320" role="img" aria-label="Le poids en fonction de la masse : neuf croix, une droite moyenne passant par l'origine, et la lecture par interpolation de 0,28 kg donnant environ 2,7 newtons.">
+        <g class="g-grille">
+          <line x1="56" y1="56" x2="392" y2="56"/><line x1="56" y1="96" x2="392" y2="96"/>
+          <line x1="56" y1="136" x2="392" y2="136"/><line x1="56" y1="176" x2="392" y2="176"/>
+          <line x1="56" y1="216" x2="392" y2="216"/>
+          <line x1="123" y1="40" x2="123" y2="256"/><line x1="190" y1="40" x2="190" y2="256"/>
+          <line x1="257" y1="40" x2="257" y2="256"/><line x1="324" y1="40" x2="324" y2="256"/>
+          <line x1="391" y1="40" x2="391" y2="256"/>
+        </g>
+        <line class="g-axe" x1="56" y1="256" x2="412" y2="256"/>
+        <polygon class="g-fleche" points="412,250 428,256 412,262"/>
+        <line class="g-axe" x1="56" y1="256" x2="56" y2="40"/>
+        <polygon class="g-fleche" points="50,40 56,24 62,40"/>
+        <text class="g-lab" x="344" y="282">m (kg)</text>
+        <text class="g-lab" x="14" y="44">P (N)</text>
+        <text class="g-grad g" x="48" y="261">0</text>
+        <text class="g-grad g" x="48" y="221">1</text>
+        <text class="g-grad g" x="48" y="181">2</text>
+        <text class="g-grad g" x="48" y="141">3</text>
+        <text class="g-grad g" x="48" y="101">4</text>
+        <text class="g-grad g" x="48" y="61">5</text>
+        <text class="g-grad" x="123" y="276">0,1</text>
+        <text class="g-grad" x="190" y="276">0,2</text>
+        <text class="g-grad" x="257" y="276">0,3</text>
+        <text class="g-grad" x="324" y="276">0,4</text>
+        <text class="g-grad" x="391" y="276">0,5</text>
+        <line class="g-droite" x1="56" y1="256" x2="391" y2="60"/>
+        <g class="g-point">
+          <path d="M118,217 h10 M123,212 v10"/>
+          <path d="M152,197 h10 M157,192 v10"/>
+          <path d="M185,178 h10 M190,173 v10"/>
+          <path d="M219,157 h10 M224,152 v10"/>
+          <path d="M252,139 h10 M257,134 v10"/>
+          <path d="M286,118 h10 M291,113 v10"/>
+          <path d="M319,100 h10 M324,95 v10"/>
+          <path d="M353,80 h10 M358,75 v10"/>
+          <path d="M386,60 h10 M391,55 v10"/>
+        </g>
+        <path class="g-aide" d="M244,256 V148 H56"/>
+        <text class="g-ab" x="248" y="252">0,28</text>
+        <text class="g-ab" x="62" y="142">≈ 2,7 N</text>
+        <text class="g-titre" x="234" y="310">Poids en fonction de la masse</text>
+      </svg>
+    </div>
+    <div>
+      <div class="exres" style="margin-top:0">
+        <div class="etq">✓ Lire une valeur qu'on n'a pas mesurée</div>
+        <ol>
+          <li>Partir de <span class="mono">m = 0,28 kg</span> sur l'axe des abscisses.</li>
+          <li>Monter <b>perpendiculairement</b> jusqu'à la droite.</li>
+          <li>Aller horizontalement jusqu'à l'axe des ordonnées.</li>
+          <li>Lire : <span class="res">P ≈ 2,7 N</span></li>
+        </ol>
+        <p style="margin-top:1mm;font-size:8.2pt;color:var(--gris)">Vérification par le calcul : <span class="mono">9,8 × 0,28 = 2,74 N</span> ✓</p>
+      </div>
+      <div class="encart" style="margin-bottom:0">
+        <div class="etq">Interpoler, oui — extrapoler, prudence</div>
+        Lire <b>entre</b> les mesures s'appelle une <b>interpolation</b> : le tracé l'autorise. Lire <b>au-delà</b> du domaine mesuré est une <b>extrapolation</b> : le graphique ne prouve rien là où l'on n'a pas mesuré.
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span> À toi — trace P = f(m)</h2>
+  <table class="mes">
+    <tr><th>m (kg)</th><td>0,1</td><td>0,15</td><td>0,2</td><td>0,25</td><td>0,3</td><td>0,35</td><td>0,4</td><td>0,45</td><td>0,5</td></tr>
+    <tr><th>P (N)</th><td>0,98</td><td>1,49</td><td>1,95</td><td>2,46</td><td>2,92</td><td>3,45</td><td>3,93</td><td>4,42</td><td>4,91</td></tr>
+  </table>
+
+  <div class="vierge">
+    <svg viewBox="0 0 640 400" role="img" aria-label="Grille vierge de 32 sur 20 carreaux, prête pour tracer le graphique.">
+      <g class="vg-fin">
+        <line x1="20" y1="30" x2="620" y2="30"/><line x1="20" y1="48" x2="620" y2="48"/>
+        <line x1="20" y1="66" x2="620" y2="66"/><line x1="20" y1="84" x2="620" y2="84"/>
+        <line x1="20" y1="102" x2="620" y2="102"/><line x1="20" y1="120" x2="620" y2="120"/>
+        <line x1="20" y1="138" x2="620" y2="138"/><line x1="20" y1="156" x2="620" y2="156"/>
+        <line x1="20" y1="174" x2="620" y2="174"/><line x1="20" y1="192" x2="620" y2="192"/>
+        <line x1="20" y1="210" x2="620" y2="210"/><line x1="20" y1="228" x2="620" y2="228"/>
+        <line x1="20" y1="246" x2="620" y2="246"/><line x1="20" y1="264" x2="620" y2="264"/>
+        <line x1="20" y1="282" x2="620" y2="282"/><line x1="20" y1="300" x2="620" y2="300"/>
+        <line x1="20" y1="318" x2="620" y2="318"/><line x1="20" y1="336" x2="620" y2="336"/>
+        <line x1="20" y1="354" x2="620" y2="354"/><line x1="20" y1="372" x2="620" y2="372"/>
+        <line x1="38" y1="12" x2="38" y2="390"/><line x1="56" y1="12" x2="56" y2="390"/>
+        <line x1="74" y1="12" x2="74" y2="390"/><line x1="92" y1="12" x2="92" y2="390"/>
+        <line x1="110" y1="12" x2="110" y2="390"/><line x1="128" y1="12" x2="128" y2="390"/>
+        <line x1="146" y1="12" x2="146" y2="390"/><line x1="164" y1="12" x2="164" y2="390"/>
+        <line x1="182" y1="12" x2="182" y2="390"/><line x1="200" y1="12" x2="200" y2="390"/>
+        <line x1="218" y1="12" x2="218" y2="390"/><line x1="236" y1="12" x2="236" y2="390"/>
+        <line x1="254" y1="12" x2="254" y2="390"/><line x1="272" y1="12" x2="272" y2="390"/>
+        <line x1="290" y1="12" x2="290" y2="390"/><line x1="308" y1="12" x2="308" y2="390"/>
+        <line x1="326" y1="12" x2="326" y2="390"/><line x1="344" y1="12" x2="344" y2="390"/>
+        <line x1="362" y1="12" x2="362" y2="390"/><line x1="380" y1="12" x2="380" y2="390"/>
+        <line x1="398" y1="12" x2="398" y2="390"/><line x1="416" y1="12" x2="416" y2="390"/>
+        <line x1="434" y1="12" x2="434" y2="390"/><line x1="452" y1="12" x2="452" y2="390"/>
+        <line x1="470" y1="12" x2="470" y2="390"/><line x1="488" y1="12" x2="488" y2="390"/>
+        <line x1="506" y1="12" x2="506" y2="390"/><line x1="524" y1="12" x2="524" y2="390"/>
+        <line x1="542" y1="12" x2="542" y2="390"/><line x1="560" y1="12" x2="560" y2="390"/>
+        <line x1="578" y1="12" x2="578" y2="390"/><line x1="596" y1="12" x2="596" y2="390"/>
+      </g>
+      <g class="vg-fort">
+        <line x1="20" y1="12" x2="620" y2="12"/><line x1="20" y1="102" x2="620" y2="102"/>
+        <line x1="20" y1="192" x2="620" y2="192"/><line x1="20" y1="282" x2="620" y2="282"/>
+        <line x1="20" y1="372" x2="620" y2="372"/><line x1="20" y1="390" x2="620" y2="390"/>
+        <line x1="20" y1="12" x2="20" y2="390"/><line x1="110" y1="12" x2="110" y2="390"/>
+        <line x1="200" y1="12" x2="200" y2="390"/><line x1="290" y1="12" x2="290" y2="390"/>
+        <line x1="380" y1="12" x2="380" y2="390"/><line x1="470" y1="12" x2="470" y2="390"/>
+        <line x1="560" y1="12" x2="560" y2="390"/><line x1="620" y1="12" x2="620" y2="390"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="versexos">
+    <svg viewBox="0 0 45 45" width="60" height="60" role="img" aria-label="QR code vers la page de l'outil 8"><rect width="45" height="45" fill="#fff"/><path fill="#141a26" shape-rendering="crispEdges" d="M2 2h7v1h-7zM10 2h1v1h-1zM12 2h1v1h-1zM16 2h1v1h-1zM19 2h1v1h-1zM21 2h5v1h-5zM27 2h1v1h-1zM33 2h2v1h-2zM36 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM12 3h3v1h-3zM16 3h1v1h-1zM19 3h1v1h-1zM22 3h2v1h-2zM27 3h4v1h-4zM32 3h1v1h-1zM36 3h1v1h-1zM42 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM10 4h3v1h-3zM14 4h1v1h-1zM17 4h4v1h-4zM23 4h3v1h-3zM27 4h1v1h-1zM29 4h2v1h-2zM34 4h1v1h-1zM36 4h1v1h-1zM38 4h3v1h-3zM42 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h4v1h-4zM17 5h1v1h-1zM21 5h1v1h-1zM23 5h1v1h-1zM26 5h1v1h-1zM28 5h3v1h-3zM32 5h1v1h-1zM36 5h1v1h-1zM38 5h3v1h-3zM42 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h2v1h-2zM15 6h4v1h-4zM20 6h2v1h-2zM24 6h3v1h-3zM30 6h1v1h-1zM33 6h2v1h-2zM36 6h1v1h-1zM38 6h3v1h-3zM42 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h3v1h-3zM14 7h2v1h-2zM22 7h2v1h-2zM28 7h3v1h-3zM36 7h1v1h-1zM42 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h1v1h-1zM26 8h1v1h-1zM28 8h1v1h-1zM30 8h1v1h-1zM32 8h1v1h-1zM34 8h1v1h-1zM36 8h7v1h-7zM13 9h2v1h-2zM17 9h2v1h-2zM20 9h1v1h-1zM22 9h5v1h-5zM30 9h1v1h-1zM32 9h3v1h-3zM4 10h6v1h-6zM13 10h4v1h-4zM18 10h2v1h-2zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h3v1h-3zM30 10h2v1h-2zM37 10h4v1h-4zM42 10h1v1h-1zM2 11h1v1h-1zM4 11h2v1h-2zM7 11h1v1h-1zM10 11h2v1h-2zM13 11h4v1h-4zM19 11h4v1h-4zM25 11h1v1h-1zM30 11h13v1h-13zM4 12h3v1h-3zM8 12h4v1h-4zM13 12h2v1h-2zM17 12h2v1h-2zM22 12h1v1h-1zM24 12h1v1h-1zM26 12h1v1h-1zM29 12h3v1h-3zM36 12h2v1h-2zM39 12h1v1h-1zM2 13h1v1h-1zM4 13h4v1h-4zM9 13h1v1h-1zM11 13h1v1h-1zM14 13h2v1h-2zM17 13h1v1h-1zM23 13h3v1h-3zM29 13h1v1h-1zM33 13h1v1h-1zM35 13h1v1h-1zM38 13h2v1h-2zM41 13h2v1h-2zM2 14h3v1h-3zM7 14h2v1h-2zM11 14h1v1h-1zM14 14h1v1h-1zM17 14h1v1h-1zM19 14h1v1h-1zM21 14h2v1h-2zM25 14h4v1h-4zM30 14h2v1h-2zM35 14h1v1h-1zM39 14h2v1h-2zM42 14h1v1h-1zM2 15h3v1h-3zM9 15h2v1h-2zM12 15h6v1h-6zM23 15h2v1h-2zM27 15h1v1h-1zM29 15h1v1h-1zM32 15h1v1h-1zM34 15h2v1h-2zM37 15h3v1h-3zM41 15h2v1h-2zM2 16h1v1h-1zM5 16h1v1h-1zM8 16h2v1h-2zM12 16h1v1h-1zM14 16h1v1h-1zM16 16h1v1h-1zM18 16h1v1h-1zM20 16h1v1h-1zM22 16h1v1h-1zM25 16h2v1h-2zM28 16h6v1h-6zM35 16h2v1h-2zM38 16h2v1h-2zM2 17h2v1h-2zM5 17h3v1h-3zM12 17h1v1h-1zM14 17h3v1h-3zM23 17h1v1h-1zM25 17h1v1h-1zM28 17h2v1h-2zM32 17h4v1h-4zM38 17h2v1h-2zM2 18h1v1h-1zM5 18h4v1h-4zM10 18h1v1h-1zM13 18h2v1h-2zM19 18h1v1h-1zM24 18h6v1h-6zM31 18h1v1h-1zM33 18h2v1h-2zM40 18h1v1h-1zM42 18h1v1h-1zM4 19h1v1h-1zM7 19h1v1h-1zM12 19h1v1h-1zM14 19h2v1h-2zM17 19h1v1h-1zM21 19h2v1h-2zM25 19h1v1h-1zM28 19h1v1h-1zM30 19h2v1h-2zM33 19h10v1h-10zM3 20h1v1h-1zM8 20h1v1h-1zM11 20h1v1h-1zM17 20h1v1h-1zM20 20h1v1h-1zM24 20h1v1h-1zM29 20h1v1h-1zM31 20h1v1h-1zM34 20h1v1h-1zM36 20h1v1h-1zM39 20h2v1h-2zM3 21h4v1h-4zM9 21h2v1h-2zM17 21h2v1h-2zM28 21h1v1h-1zM31 21h3v1h-3zM36 21h2v1h-2zM42 21h1v1h-1zM5 22h1v1h-1zM7 22h3v1h-3zM11 22h8v1h-8zM20 22h2v1h-2zM23 22h3v1h-3zM29 22h1v1h-1zM39 22h2v1h-2zM4 23h3v1h-3zM9 23h2v1h-2zM12 23h2v1h-2zM21 23h2v1h-2zM25 23h1v1h-1zM27 23h2v1h-2zM32 23h3v1h-3zM36 23h3v1h-3zM40 23h3v1h-3zM2 24h1v1h-1zM7 24h2v1h-2zM12 24h5v1h-5zM24 24h1v1h-1zM29 24h2v1h-2zM36 24h3v1h-3zM3 25h3v1h-3zM9 25h1v1h-1zM14 25h1v1h-1zM17 25h2v1h-2zM22 25h3v1h-3zM30 25h1v1h-1zM34 25h1v1h-1zM36 25h2v1h-2zM39 25h1v1h-1zM6 26h3v1h-3zM10 26h2v1h-2zM15 26h2v1h-2zM18 26h3v1h-3zM26 26h3v1h-3zM31 26h2v1h-2zM34 26h1v1h-1zM39 26h2v1h-2zM3 27h1v1h-1zM5 27h2v1h-2zM9 27h1v1h-1zM12 27h2v1h-2zM17 27h2v1h-2zM20 27h4v1h-4zM25 27h2v1h-2zM28 27h1v1h-1zM30 27h10v1h-10zM41 27h2v1h-2zM3 28h1v1h-1zM7 28h2v1h-2zM11 28h5v1h-5zM18 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM26 28h1v1h-1zM29 28h2v1h-2zM34 28h1v1h-1zM36 28h3v1h-3zM40 28h2v1h-2zM2 29h1v1h-1zM5 29h2v1h-2zM9 29h1v1h-1zM11 29h1v1h-1zM13 29h3v1h-3zM17 29h2v1h-2zM20 29h2v1h-2zM23 29h1v1h-1zM25 29h2v1h-2zM28 29h1v1h-1zM30 29h1v1h-1zM32 29h6v1h-6zM39 29h1v1h-1zM3 30h1v1h-1zM5 30h2v1h-2zM8 30h3v1h-3zM13 30h1v1h-1zM16 30h2v1h-2zM19 30h1v1h-1zM24 30h1v1h-1zM27 30h3v1h-3zM31 30h1v1h-1zM33 30h2v1h-2zM36 30h3v1h-3zM40 30h1v1h-1zM2 31h1v1h-1zM4 31h1v1h-1zM6 31h2v1h-2zM10 31h2v1h-2zM14 31h2v1h-2zM17 31h1v1h-1zM20 31h1v1h-1zM22 31h2v1h-2zM26 31h1v1h-1zM29 31h2v1h-2zM32 31h1v1h-1zM35 31h1v1h-1zM37 31h2v1h-2zM41 31h2v1h-2zM2 32h1v1h-1zM4 32h2v1h-2zM7 32h4v1h-4zM12 32h1v1h-1zM14 32h2v1h-2zM17 32h2v1h-2zM21 32h1v1h-1zM23 32h1v1h-1zM28 32h1v1h-1zM34 32h1v1h-1zM36 32h3v1h-3zM40 32h2v1h-2zM2 33h1v1h-1zM4 33h1v1h-1zM6 33h1v1h-1zM10 33h1v1h-1zM12 33h1v1h-1zM16 33h1v1h-1zM18 33h1v1h-1zM21 33h4v1h-4zM26 33h1v1h-1zM28 33h1v1h-1zM30 33h1v1h-1zM36 33h2v1h-2zM42 33h1v1h-1zM2 34h1v1h-1zM4 34h5v1h-5zM12 34h2v1h-2zM15 34h2v1h-2zM18 34h2v1h-2zM21 34h1v1h-1zM24 34h1v1h-1zM26 34h3v1h-3zM30 34h2v1h-2zM34 34h5v1h-5zM40 34h2v1h-2zM10 35h1v1h-1zM12 35h1v1h-1zM15 35h2v1h-2zM19 35h9v1h-9zM30 35h1v1h-1zM32 35h3v1h-3zM38 35h1v1h-1zM40 35h1v1h-1zM2 36h7v1h-7zM10 36h4v1h-4zM16 36h1v1h-1zM18 36h2v1h-2zM23 36h1v1h-1zM26 36h5v1h-5zM32 36h3v1h-3zM36 36h1v1h-1zM38 36h1v1h-1zM2 37h1v1h-1zM8 37h1v1h-1zM10 37h2v1h-2zM14 37h3v1h-3zM18 37h3v1h-3zM23 37h3v1h-3zM27 37h1v1h-1zM29 37h1v1h-1zM33 37h2v1h-2zM38 37h1v1h-1zM2 38h1v1h-1zM4 38h3v1h-3zM8 38h1v1h-1zM10 38h2v1h-2zM13 38h3v1h-3zM17 38h2v1h-2zM23 38h1v1h-1zM25 38h2v1h-2zM28 38h1v1h-1zM32 38h1v1h-1zM34 38h5v1h-5zM40 38h1v1h-1zM42 38h1v1h-1zM2 39h1v1h-1zM4 39h3v1h-3zM8 39h1v1h-1zM10 39h2v1h-2zM17 39h1v1h-1zM20 39h3v1h-3zM24 39h2v1h-2zM30 39h2v1h-2zM34 39h1v1h-1zM39 39h1v1h-1zM2 40h1v1h-1zM4 40h3v1h-3zM8 40h1v1h-1zM10 40h2v1h-2zM17 40h2v1h-2zM20 40h1v1h-1zM24 40h1v1h-1zM28 40h4v1h-4zM33 40h6v1h-6zM2 41h1v1h-1zM8 41h1v1h-1zM11 41h1v1h-1zM14 41h1v1h-1zM19 41h7v1h-7zM28 41h2v1h-2zM32 41h4v1h-4zM37 41h3v1h-3zM41 41h1v1h-1zM2 42h7v1h-7zM11 42h1v1h-1zM15 42h1v1h-1zM17 42h8v1h-8zM26 42h3v1h-3zM31 42h1v1h-1zM33 42h1v1h-1zM35 42h2v1h-2zM38 42h1v1h-1zM40 42h1v1h-1z"/></svg>
+    <div class="txt">
+      <b>Le corrigé tracé est en ligne</b>, avec trois autres exercices : six défauts à trouver sur un graphique fautif, un coefficient directeur à calculer avec son unité, et quatre lectures par interpolation.
+      <div class="url">mvanhoorde.github.io/Site-Web-Portfolio/pages/2nde-pc-o8-construire-un-graphique.html</div>
+    </div>
+  </div>
+
+  <div class="pied"><span>Fiche outil 8 · Construire un graphique — M. Van Hoorde, lycée Isaac de l'Étoile</span><span>verso · page 2/2</span></div>
+</div>
+
+</body>
+</html>
