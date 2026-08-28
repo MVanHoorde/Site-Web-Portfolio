@@ -29,15 +29,34 @@ Cette phrase-là ne vaut **que** pour le livret CFA. Motif ici : les exercices
 d'un outil se font **à la maison**, le soir ; un élève doit pouvoir se corriger
 seul sans attendre le cours suivant. Ne pas « harmoniser » les deux familles.
 
-**État au 26/08/2026 :** deux outils produits (`o1` écriture scientifique, `o2`
-chiffres significatifs), en **V1 proposée, non validée**, repris le 26/08 sur le
-fond des PDF sources. `o3` sécurité en salle de TP et `o4` manipuler une relation
-algébrique sont cadrés mais non écrits. Numéros réservés, à ne pas produire sans
-commande : `o5` convertir · `o6` présenter un calcul · `o7` construire et
-exploiter un graphique · `o8` rédiger un compte rendu de TP.
+**État au 28/08/2026 :** deux outils produits (`o1` écriture scientifique, `o2`
+chiffres significatifs), en **V1 proposée, non validée**. Le catalogue est
+**renuméroté** (décision O-23) et compte **huit outils**, rangés dans l'ordre où
+un élève de seconde les rencontre :
 
-🔴 **Les neuf PDF sources sont arrivés le 26/08** — et ils ne recouvrent pas
-exactement le brief. Deux leçons durables :
+| N | Titre | État |
+|---|---|---|
+| `o1` | Puissances de dix et écriture scientifique | écrit, V1 |
+| `o2` | Les chiffres significatifs | écrit, V1 |
+| `o3` | Sécurité au laboratoire | 🔴 en production |
+| `o4` | La verrerie et le matériel de laboratoire | 🔴 |
+| `o5` | Rédiger un compte rendu de TP | 🔴 |
+| `o6` | Présenter un calcul | 🔴 |
+| `o7` | Manipuler une relation algébrique | 🟠 |
+| `o8` | Construire et exploiter un graphique | 🟡 |
+
+**« Convertir » ne fait plus partie du catalogue.** `o1` en a absorbé tout le fond
+le 26/08 — les préfixes dans les deux sens, les unités composées, les volumes, les
+surfaces : un outil dédié ferait doublon avec son étape 1.4. Sa série de douze
+conversions rejoint la section 2 de `o1`.
+
+**Deux gabarits existent depuis le 28/08** : `_modeles/gabarit-outil-PC.html` et
+`_modeles/gabarit-fiche-outil-PC.html`. Un nouvel outil s'écrit **en les
+copiant**. Jusqu'ici `o1` servait de gabarit par copier-coller, et c'est
+exactement la manière de perdre une convention en la recopiant de travers.
+
+🔴 **Les douze PDF sources sont dans `_a-deposer/fiches-outils/`** — dossier
+gitignoré, jamais publié. Trois leçons durables, toutes payées :
 
 1. **Le brief résume la source, il ne la remplace pas.** Il annonçait « les trois
    niveaux » d'une fiche qui en compte cinq, et un tri de la verrerie qui n'est pas
@@ -48,6 +67,14 @@ exactement le brief. Deux leçons durables :
    que `100` soit ambigu. Quand deux fonds se contredisent, on ne tranche pas seul :
    on écrit la version la plus défendable, **on la signale comme un écart**, et on
    attend l'arbitrage.
+3. **Un arbitrage en attente arrête la production.** Deux d'entre eux ont coûté
+   deux jours en août. Depuis le 28/08, chaque arbitrage porte un **défaut
+   appliqué sans attendre**, marqué `PROPOSITION À VALIDER` dans le fichier
+   produit et listé dans le `A-LIRE`. On ne bloque plus, on propose.
+
+**Les erreurs de calcul des documents sources se corrigent *et* se listent**, dans
+`_suivi/erreurs-sources-fiches-outils.md`, pour que l'équipe soit prévenue. C'est
+la seule exception à la règle « on refait la forme, jamais le fond ».
 
 ---
 
@@ -445,9 +472,14 @@ outils — c'est la raison pour laquelle les pages vivent là (§1).
    contrôle des biais de longueur des QCM, qui compte double depuis que les
    outils en portent (six questions dans `o1` 1.2, dix dans `o1` 1.3, six dans
    `o2` 1.2). Modification de `verifier.mjs`, hors périmètre du chantier.
-2. **Les neuf PDF sources du collègue ne sont pas dans le dépôt.** Sans
-   importance pour `o1` et `o2`, qui sont écrits — mais ils manqueront pour
-   `o3` à `o8`.
+2. **Sept arbitrages sont appliqués par défaut, non confirmés** — O-23 à O-29,
+   tous ⏳ sauf O-27 (la conduite en cas d'incident, tranchée par Loïc le 28/08).
+   Chacun est marqué `PROPOSITION À VALIDER` dans le fichier qu'il produit. Ils
+   ne bloquent plus la production : c'est le point de la leçon 3 ci-dessus.
+3. 🔴 **`o3` engage la sécurité d'élèves.** Son étape « Si ça tourne mal » doit
+   être relue contre le **règlement du laboratoire de l'établissement** et contre
+   les équipements réellement présents en **salle 0.26**. Aucun autre contenu du
+   dépôt n'a cette contrainte.
 
 ### Deux questions tranchées le 27/08/2026 — ne pas les rouvrir
 

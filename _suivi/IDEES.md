@@ -200,3 +200,14 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
   apparition : le bonus 5.5 de `t1` a été supprimé parce qu'il n'était « pas
   très intéressant » — un bonus écrit pour remplir une case ne vaut pas mieux
   que pas de bonus du tout.
+- 🔎 **Aligner les `.ex-lab` de `o1` et `o2` sur les cinq étiquettes du cours en
+  ligne** (posé le 28/08/2026, à la suite de la décision O-25). Le composant
+  `.exemple` de ces deux outils porte ses propres libellés — `Les données, avec
+  leur unité`, `L'application numérique`, `La phrase de conclusion`,
+  `Le contrôle`… — proches mais pas identiques à `Extraction des informations` /
+  `Formule du cours` / `Manipulation d'expression algébrique` /
+  `Application numérique` / `Conclusion`, qui sont ce que l'élève lit dans les
+  104 corrections rédigées des chapitres. **C'est un audit, pas un lot** : il
+  touche deux pages et deux fiches déjà en ligne, et il ne se lance qu'après
+  validation d'O-25. Laissés tels quels dans le chantier des lots 2 à 8.
+

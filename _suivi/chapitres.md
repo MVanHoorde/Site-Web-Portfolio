@@ -230,6 +230,52 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 > 6 OUTIL CLOS
 >
 > ⚠ **Rien n'est validé.** Les jalons 1 à 3 sont techniques ; seul le 4 engage le fond.
+>
+> **Gabarits** (depuis le 28/08) : `_modeles/gabarit-outil-PC.html` et
+> `_modeles/gabarit-fiche-outil-PC.html`. Un nouvel outil s'écrit **en les
+> copiant**, plus jamais en dupliquant `o1` — c'est ainsi qu'on perd une
+> convention.
+
+### Le catalogue — huit outils, renumérotés le 28/08
+
+Les numéros suivent désormais **l'ordre où un élève de seconde les rencontre**,
+et non l'ordre où les fiches sont arrivées. La renumérotation était gratuite :
+aucun des fichiers concernés n'existait, et elle ne touche ni un `data-cle`, ni
+un QR code, ni un lien.
+
+| N | Titre | Sources | État |
+|---|---|---|---|
+| **o1** | Puissances de dix et écriture scientifique | Écriture scientifique + Convertir | écrit, V1 |
+| **o2** | Les chiffres significatifs | Écriture scientifique (partie basse) | écrit, V1 |
+| **o3** | Sécurité au laboratoire | Sécurité + Pictogrammes | 🔴 priorité labo |
+| **o4** | La verrerie et le matériel de laboratoire | Verrerie + TP11 + ménisque | 🔴 priorité labo |
+| **o5** | Rédiger un compte rendu de TP | Fiche_guide | 🔴 priorité labo |
+| **o6** | Présenter un calcul | Présenter un calcul + le cours en ligne | 🔴 |
+| **o7** | Manipuler une relation algébrique | Manipuler + sa correction | 🟠 |
+| **o8** | Construire et exploiter un graphique | Construire un graphique | 🟡 |
+
+**« Convertir » ne fait plus partie du catalogue.** `o1` en a absorbé tout le
+fond le 26/08 — les préfixes dans les deux sens, les unités composées, les
+volumes, les surfaces : un outil « Convertir » ferait doublon avec son étape 1.4.
+Ce qui reste de la fiche, sa **série de douze conversions**, rejoint la section 2
+de `o1` (lot H, à lancer après validation).
+
+### Les sept arbitrages du 28/08 — tranchés par défaut, à confirmer
+
+Deux d'entre eux (le tri de la verrerie, le nombre de niveaux) avaient arrêté la
+production pendant deux jours. Chacun porte désormais un **défaut appliqué sans
+attendre**, marqué `PROPOSITION À VALIDER` dans les fichiers produits. Détail et
+motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
+
+| Décision | Objet | Défaut appliqué | Statut |
+|---|---|---|---|
+| O-23 | catalogue et numérotation | huit outils, ordre de rencontre | ⏳ |
+| O-24 | tri de la verrerie (`o4`) | tri fonctionnel principal + précision en seconde lecture | ⏳ |
+| O-25 | modèle de rédaction d'un calcul (`o6`) | les **cinq étiquettes du cours en ligne**, mot pour mot | ⏳ |
+| O-26 | niveaux de `o7` | les cinq niveaux, marquage d'évaluabilité décroissant | ⏳ |
+| O-27 | conduite en cas d'incident (`o3`) | cinquième étape « Si ça tourne mal » | ✅ **tranché par Loïc le 28/08** |
+| O-28 | renvoi vidéo de `o5` | le lien reste, sur la page seulement | ⏳ |
+| O-29 | numérotation de `Fiche_guide` | huit rubriques renumérotées, renvoi final corrigé | ⏳ |
 
 ### O1 — Puissances de dix et écriture scientifique
 - Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
@@ -252,7 +298,8 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   puissances de dix (elles prouvent ce que la V1 affirmait), la conversion vers un
   préfixe, les trois équivalences de volume et le tableau m³ ↔ L. **Trois erreurs
   du corrigé source relevées** (`379,45 kW`, les lignes intermédiaires de
-  `5933 dag·cm⁻³`, les chiffres significatifs de `0,98 m·s⁻¹`) — voir `DECISIONS.md`.
+  `5933 dag·cm⁻³`, les chiffres significatifs de `0,98 m·s⁻¹`) — voir
+  `_suivi/erreurs-sources-fiches-outils.md`.
 - 🔎 **Audit 1 appliqué le 27/08** : seuil de l'ordre de grandeur à **5**
   (`√10` a disparu du dépôt, cahier de vacances compris), étape 1.3 **scindée en
   deux**, « à retenir » en **trois temps**, récapitulatif PDF du moteur retiré,
@@ -260,6 +307,10 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
   texte barré. Durées revues : **≈ 1 h 45, en deux fois**.
 - ⏳ À valider : la nouvelle justification du seuil, par l'arrondi (O-22) — celle
   d'avant, par les facteurs, n'était vraie que pour `√10`.
+- ⬜ **Lot H, à lancer après validation d'O-23** : verser la série de douze
+  conversions de `fiche_Convertir.pdf` en **exercice 7** de la section 2, en
+  table `.saisie` à colonnes, les douze corrigés **recalculés en fractions
+  exactes**. Ne rien changer d'autre — ni la méthode, ni la fiche A4.
 
 ### O2 — Les chiffres significatifs
 - Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
@@ -291,50 +342,219 @@ _(à créer au fur et à mesure du dégrossissage : T4…)_
 - ⏳ Restent : les deux calculs ajoutés à la série finale (O-5), et l'édition des
   exercices de la section 2, **hors périmètre** tant qu'elle n'est pas commandée.
 
-### O3 — Sécurité en salle de TP
+### O3 — Sécurité au laboratoire 🔴
+- Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Fichiers : `pages/2nde-pc-o3-securite-laboratoire.html` · `fiches/fiche-2nde-o3-securite-laboratoire.html`
+- **V1 produite le 28/08/2026.** 5 étapes de méthode, 5 exercices, 17 questions de
+  QCM, 30 champs à menu déroulant, 9 pictogrammes CLP + 5 équipements dessinés en
+  SVG maison. Fiche A4 en **4 pages** (la seule fiche d'outil qui y ait droit),
+  QR code généré et autovérifié. Carte posée au hub.
+- Sources : `fiche_Sécurité au laboratoire de Chimie.pdf` (le texte, quatre
+  moments) et `fiche_Pictogrammes de sécurité.pdf` (les visuels et les libellés).
+  Cette dernière **ne contient que des images** : les neuf pictogrammes sont
+  entièrement à produire en SVG.
+- **Méthode — cinq étapes** : avant de venir (silhouette annotée, QCM 5 questions)
+  · **lire une étiquette** (les 9 pictogrammes CLP en 3 familles, appariement à
+  9 cases) · pendant la manipulation (la paillasse aux erreurs, 6 erreurs
+  cliquables) · après la manipulation (`data-cloze` court) · **si ça tourne mal**
+  (les 5 équipements de la salle, 4 scénarios à trancher).
+- 🔴 **Les neuf pictogrammes se dessinent en SVG, sans exception** — losange rouge
+  sur fond blanc, symbole noir. En `<symbol>` réutilisables, posés une fois dans
+  un `<svg hidden>` en tête de page, appelés par `<use>` sur la page **et** sur la
+  fiche A4. On ne télécharge jamais un pictogramme CLP.
+- Les libellés suivent la source **mot pour mot** : « DANGEREUX POUR LA SANTÉ »
+  (point d'exclamation) et « TRÈS DANGEREUX POUR LA SANTÉ » (silhouette) sont
+  **deux** pictogrammes distincts, et le **corrosif figure bien deux fois**
+  (dangers physiques *et* dangers pour la santé) : c'est voulu, on le dit à
+  l'élève plutôt que de le corriger.
+- 🆕 **L'étape 1.5 « Si ça tourne mal » est du contenu neuf** (O-27, tranché par
+  Loïc le 28/08) : les douze fiches sources ne disent rien de la conduite en cas
+  d'incident. Six situations, une ligne de geste chacune ; le premier temps du
+  « à retenir » est *prévenir immédiatement le professeur, toujours* ; le
+  contrôle est le repérage des cinq équipements **en entrant dans la salle**.
+- ⚠️ **À faire vérifier par Loïc avant validation** : cette étape doit être
+  cohérente avec le **règlement du laboratoire de l'établissement** et avec les
+  équipements réellement présents en **salle 0.26**. C'est le seul contenu du
+  chantier qui engage la sécurité d'élèves.
+- Hors périmètre : un schéma SVG de la salle (la 0.26 change d'une année à
+  l'autre), et toute mention d'un produit précis avec sa fiche de données de
+  sécurité.
+- **S'entraîner** — 5 exercices : trois étiquettes de flacon à lire · la paillasse
+  aux **huit** erreurs · « peut-on mélanger ces deux flacons ? » · **quatre
+  scénarios d'incident** à trancher · un QCM final de 8 questions.
+- **Fiche A4 : quatre pages tolérées** (recto-verso ×2) — les pictogrammes
+  prennent la place qu'ils prennent, et une page entière peut être leur planche.
+  🔴 **Le bloc « si ça tourne mal » va en pied de la page 1**, encadré, jamais au
+  verso : c'est le seul contenu qu'on cherche dans l'urgence, et une fiche collée
+  dans un cahier ne se retourne pas vite.
+
+### O4 — La verrerie et le matériel de laboratoire 🔴
 - Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
-- **Cadré, non écrit — lot 2. ✅ Débloqué le 26/08** : les trois PDF sources sont
-  arrivés. Deux ne contiennent que des images (les neuf pictogrammes CLP, la
-  verrerie) : tout le visuel reste à produire en SVG.
-- ⏳ **Arbitrage avant de commencer — le tri de la verrerie.** Le brief dit
-  « précise / usage courant » ; la source du collègue trie en **« pour contenir »**
-  / **« pour mesurer un volume »** / « autre », la précision n'étant qu'une
-  sous-mention. Ce n'est pas le même classement, et c'est du fond.
-- Les libellés des pictogrammes suivront la source **mot pour mot** :
-  « DANGEREUX POUR LA SANTE » (point d'exclamation) et « TRÈS DANGEREUX POUR LA
-  SANTE » (silhouette), en trois familles — physiques (5), santé (4),
-  environnement (1). Le **corrosif figure bien deux fois**, comme annoncé.
-- L'encadré **ménisque** demandé par le brief est dans `fiche_La dissolution.pdf`.
-- Prévu : 9 pictogrammes en `<symbol>` réutilisables · la verrerie triée en
-  précise / usage courant · la paillasse aux 8 erreurs cliquables · un QCM de
-  6 questions. Fiche A4 : **4 pages tolérées** ici.
+- Sources : `fiche_La verrerie de laboratoire.pdf` (images uniquement — tout le
+  visuel est à redessiner), `_a-deposer/tp/TP11 - La précision de la verrerie au
+  laboratoire/`, l'encadré **ménisque** de `fiche_La dissolution.pdf`, et les QCM
+  déjà écrits dans `cahier/diag-j05-protocoles-formules.html` et
+  `cahier/diag-j06-dilution.html` — **réemployables tels quels**, ils sont de Loïc.
+- ⏳ **O-24 appliqué (tranché par défaut).** Le tri **fonctionnel** de la source
+  est le tri **principal** — *pour contenir* / *pour mesurer un volume* / *autre* /
+  *autre matériel* : c'est le fond du collègue, on n'y touche pas. La **précision**
+  devient une **seconde lecture**, dans une étape à part, sous forme d'échelle
+  ordonnée : bécher · erlenmeyer → éprouvette graduée → pipette graduée →
+  **pipette jaugée · fiole jaugée · burette**. Motif : la compétence du programme
+  est *« choisir la verrerie adaptée »*, et le critère de précision est déjà
+  **établi expérimentalement** par le TP11. L'outil renvoie au TP, le TP justifie
+  l'échelle. Rien n'est retiré à la source, un axe lui est ajouté.
+- **Méthode — quatre étapes** : nommer (chaque pièce redessinée en SVG au trait,
+  un `<symbol>` par pièce, réemployé sur la fiche ; appariement 8 pièces) ·
+  choisir, l'échelle de précision (**un trait de jauge n'est pas une
+  graduation** — les graduations d'un bécher ne servent pas à mesurer ; QCM 6
+  questions) · le geste (ménisque, œil au niveau du trait, le **bas** du ménisque
+  sur le trait ; la propipette jamais à la bouche ; 3 lectures à juger) · le reste
+  du matériel (chauffe-ballon, support élévateur, potence, balance, spatule).
+- **S'entraîner** — 5 exercices : quelle verrerie pour quel geste (6 cas tirés des
+  protocoles du cahier) · lire trois ménisques · classer six verreries par
+  précision croissante · le témoignage des cinq opérateurs du TP11 · un protocole
+  à trous.
+- **Fiche A4 : deux pages** — la planche de verrerie au recto, l'échelle de
+  précision et le geste au verso.
 
-### O4 — Manipuler une relation algébrique
+### O5 — Rédiger un compte rendu de TP 🔴
 - Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
-- **Cadré, non écrit — lot 3. ✅ Débloqué le 26/08.** Fond de Loïc, à conserver
-  intégralement : les trois méthodes (triangle, chiffres, opération inverse), dans
-  son ordre, avec son jugement (« ma pref »).
-- ⏳ **Arbitrage avant de commencer — le nombre de niveaux.** Le brief en demande
-  **trois** ; la fiche en compte **cinq**, chacun avec son titre de sa main
-  (« Je ne comprends même pas pourquoi je suis du côté des élèves… »). N4 ajoute
-  `√(b−d²)/c` et `10^(b−d)/√c`, N5 `log(a/b) = ∛(c/(d−e)²)`.
-- Portage adapté de `cfa/outil-07-isoler-une-inconnue.html` : même geste, autre
-  public — tout le contexte d'atelier mécanique est à changer.
-- ⚠ **Deux** erreurs dans le corrigé source, confirmées : niveau 1, `c = b/c` au
-  lieu de `c = b/a` ; niveau 5, `e = R − d` au lieu de `e = d − R`, le signe étant
-  inversé. À corriger et à signaler.
+- Source : `Fiche_guide - Rédiger un TP.pdf`.
+- **Contexte** : quinze sujets de TP attendent leur mise en ligne
+  (`_a-deposer/tp/`). `o5` est leur compagnon obligé — c'est l'outil qui sera le
+  plus souvent ouvert de l'année.
+- ⏳ **O-29 appliqué (tranché par défaut).** La source porte **deux rubriques
+  n°6**, numérote le schéma `n°5` alors qu'il est imprimé après l'expérience, et
+  sa conclusion renvoie aux « objectifs fixés dans le n°1 » alors que l'objectif
+  est le n°2. Défaut retenu : **huit rubriques renumérotées proprement**, dans
+  l'ordre que la numérotation de la source révèle (le schéma est bien pensé
+  *avant* la manipulation) — 1 titre · 2 objectif · 3 hypothèse(s) · 4 matériel ·
+  5 schéma de l'expérience · 6 expérience · 7 observation et interprétation ·
+  8 conclusion — et le renvoi final corrigé vers le **n°2**.
+- ⏳ **O-28 appliqué (tranché par défaut).** La source renvoie à une vidéo YouTube
+  (Gaelle Kroonen, « Réaliser un rapport de laboratoire »). Le §5 des consignes
+  interdit les ressources **chargées** ; un lien hypertexte n'en est pas une. Le
+  lien reste, **sur la page seulement**, dans une puce locale copiée de la
+  `.video-chip` des chapitres, avec `target="_blank" rel="noopener"`. Pas sur la
+  fiche A4, qui porte déjà son QR code.
+- **Méthode — quatre étapes** qui regroupent les huit rubriques : à quoi sert un
+  compte rendu (la définition de la source — *permettre à quelqu'un qui n'a jamais
+  fait le TP de comprendre ce que tu as fait et pourquoi* — puis les huit
+  rubriques en frise verticale SVG) · avant de manipuler (**une hypothèse se
+  rédige de façon vérifiable**, et elle appelle l'expérience qui la teste ; étapes
+  à l'infinitif) · observation et interprétation, l'étape centrale (*j'observe
+  que… donc j'en conclus que…* ; 6 phrases à ranger) · conclure (courte, chiffrée,
+  elle répond à l'objectif du n°2 — et pas à autre chose).
+- 🔴 La remarque de la source vaut un « à retenir » à elle seule : **avoir une
+  hypothèse fausse n'est pas une erreur ; laisser une hypothèse fausse en est
+  une.** Elle répond à la remarque de `o3` sur la déclaration d'un incident —
+  c'est voulu, les deux outils se répondent.
+- **S'entraîner** — 5 exercices : un compte rendu en désordre à remettre dans
+  l'ordre (8 blocs) · six phrases à trier observation / interprétation · trois
+  hypothèses mal rédigées à réécrire · un compte rendu incomplet, qu'est-ce qui
+  manque · une conclusion à écrire à partir d'un objectif et de trois mesures.
+- **Renvois croisés obligatoires** : vers `o6` (tout calcul suit les cinq étapes),
+  `o4` (nommer la verrerie du schéma), `o8` (si le TP produit un graphique), `o3`
+  (les consignes de sécurité se lisent avant, pas pendant).
+- **Fiche A4 : deux pages** — elle doit pouvoir se coller en tête du classeur de
+  TP et servir de checklist.
 
-### O5 à O8 — réservés, et leurs sources sont là
-Numéros réservés, **à ne pas produire sans commande**. Depuis le 26/08, chacun a
-sa source au chaud : `fiche_Convertir.pdf` → **o5** · `fiche_Présenter un
-calcul.pdf` → **o6** · `fiche_Construire un graphique.pdf` → **o7** ·
-`Fiche_guide - Rédiger un TP.pdf` → **o8**.
+### O6 — Présenter un calcul 🔴
+- Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Sources : `fiche_Présenter un calcul.pdf` **et** les corrections rédigées des
+  chapitres en ligne — 104 blocs sur huit chapitres.
+- ⏳ **O-25 appliqué (tranché par défaut) — le point le plus scruté du chantier.**
+  Trois vocabulaires coexistaient pour le même geste : les chapitres en ligne, le
+  §4 des consignes, la fiche du collègue en huit temps. Défaut retenu : **les cinq
+  étiquettes du cours en ligne l'emportent, mot pour mot** — `Extraction des
+  informations` → `Formule du cours` → `Manipulation d'expression algébrique` →
+  `Application numérique` → `Conclusion`. Motif : ce sont les étiquettes que
+  l'élève voit dans **toutes** les corrections du site (16 blocs en T1-C2, 33 en
+  T1-C3, 25 en T1-C4, 17 en T2-C2, 13 en T3-C1). L'outil ne fait que les
+  **nommer** ; toute autre formulation créerait un troisième objet.
+- Les deux temps propres à la fiche du collègue ne se perdent pas, ils
+  s'**absorbent** : *convertir en unités SI* et *attribuer un symbole à la
+  grandeur cherchée* entrent dans **Extraction des informations**, dont ils
+  deviennent les deux gestes explicites ; *écrire le résultat avec le bon nombre
+  de chiffres significatifs* devient le **contrôle de la Conclusion**, avec renvoi
+  vers `o2`. L'étape `Manipulation d'expression algébrique` **n'apparaît que
+  lorsque la relation n'est pas dans le bon sens** — comme dans les chapitres, où
+  elle est absente des corrections directes. Le dire à l'élève.
+- **Le visuel qui porte l'outil : la copie annotée.** Deux copies côte à côte pour
+  **le même calcul** — celle qui donne juste le résultat, celle qui suit les cinq
+  étapes — avec en marge les points perdus repérés étape par étape. Traduction
+  visuelle de la phrase de Loïc, à garder : *si tous les éléments ne sont pas
+  présents sur la copie, tous les points du calcul ne seront pas donnés*.
+- **S'entraîner** — 6 exercices, tous rédigés selon les cinq étiquettes et tous
+  tirés de calculs **déjà présents sur le site**, pour que l'élève reconnaisse
+  l'objet : `v = d/Δt` (T2-C1) · `f = 1/T` (T3-C1) · `Q = m × L` (T1-C2) ·
+  `n = m/M` (T1-C4) · `c = m/V` (T1-C5) · un dernier où la relation doit être
+  retournée.
+- **Fiche A4 : deux pages** — recto : les cinq étapes et un exemple entièrement
+  résolu ; verso : la copie annotée et une checklist de sept lignes à cocher avant
+  de rendre une copie.
 
-⚠ La fiche de **o6** donne la méthode de rédaction d'un calcul **du collègue**, en
-huit temps — elle recouvre les quatre règles du livret CFA retenues au §4 des
-consignes, plus la conversion en unités SI et l'attribution d'un symbole. Le jour
-où `o6` est commandé, c'est elle qui fera référence, et il faudra décider si les
-outils déjà écrits s'y alignent.
+### O7 — Manipuler une relation algébrique 🟠
+- Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Sources : `fiche_Manipuler une relation algébrique.pdf` et sa correction.
+- 🔴 **Le fond est de Loïc et se conserve intégralement** : les trois méthodes,
+  dans **son** ordre, avec **son** jugement (« ma pref » sur la troisième), et les
+  titres de niveaux de sa main, mot pour mot.
+- ⏳ **O-26 appliqué (tranché par défaut).** Le brief de juillet demandait trois
+  niveaux ; la fiche en compte **cinq**. Défaut retenu : **les cinq niveaux, avec
+  un marquage d'évaluabilité qui fait le tri** — niveaux 1 à 3 `★` à savoir faire ·
+  niveau 4 `○` support · niveau 5 `—` non évalué, présenté comme un défi, titre de
+  Loïc conservé tel quel. Rien n'est retiré de sa fiche, et rien d'inaccessible
+  n'est exigé. Le `log` est hors programme de seconde : le dire en une ligne, ne
+  pas l'enseigner.
+- **Méthode — quatre étapes** : le triangle, méthode de dépannage (à dire
+  explicitement, parce que la fiche ne le dit pas et que c'est la raison pour
+  laquelle la méthode 3 est la préférée : **il ne marche que pour une relation à
+  trois grandeurs de la forme `a = b × c`**) · les chiffres (`6 = 2 × 3`,
+  retrouver l'opération, revenir aux lettres) · l'opération inverse, la méthode à
+  comprendre (la table `+ ↔ −` · `× ↔ ÷` · `x² ↔ √x` · `log(x) ↔ 10ˣ`, et le
+  principe : **faire subir la même opération aux deux membres** ; les deux
+  exemples de la fiche résolus en entier) · les cinq niveaux.
+- 🔴 **Fractions en numérateur/dénominateur, jamais en notation slash** — règle
+  globale du dépôt, et ici elle décide de la lisibilité de toute la page.
+- **S'entraîner** — la fiche d'entraînement de Loïc, en ligne et corrigée : les dix
+  relations des cinq niveaux, chacune avec ses trois questions, **avec les
+  corrigés rédigés étape par étape**, pas seulement le résultat.
+- Portage adapté de `cfa/outil-07-isoler-une-inconnue.html` : **le geste, pas le
+  texte**. Tout le contexte d'atelier mécanique est à retirer — un élève de
+  seconde n'isole pas une inconnue pour calculer un jeu de soupape.
+- ⚠ **Trois erreurs du corrigé source**, à corriger et à ne pas reproduire : niveau
+  1 (`c = b/c` au lieu de `c = b/a`), niveau 5 expression de `c` (écrite en
+  fraction), niveau 5 expression de `e` (signe inversé). Voir
+  `_suivi/erreurs-sources-fiches-outils.md`.
+- **Fiche A4 : deux pages** — recto : les trois méthodes ; verso : la table des
+  opérations inverses, les deux exemples résolus, les niveaux 1 à 3 à faire.
+
+### O8 — Construire et exploiter un graphique 🟡
+- Jalons : 1 ⬜ · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜
+- Source : `fiche_Construire un graphique.pdf`.
+- **Méthode — quatre étapes** : poser les axes (tout au crayon à papier ;
+  `P = f(m)` — **la première grandeur nommée va en ordonnée**, celle qui suit le
+  `f` en abscisse ; grandeur **et unité** au bout de chaque axe) · choisir les
+  échelles (régulières, étalement maximal, une échelle par axe) · placer les points
+  et tracer (croix `+` ; courbe à main levée, droite à la règle, **droite moyenne**
+  avec autant de points au-dessus qu'en dessous) · exploiter (le coefficient
+  directeur `k = (y_A − y_B)/(x_A − x_B)`, avec **A et B choisis sur la droite, pas
+  parmi les points de mesure** — la faute classique, que la fiche signale déjà).
+- Nuance de Loïc à garder telle quelle sur le titre du graphique : *pour moi il
+  n'est pas indispensable si les axes sont légendés, mais certains professeurs
+  l'exigent*.
+- ⏳ **À ajouter, en proposition** : l'unité de `k`, et ce que signifie une droite
+  qui passe par l'origine (proportionnalité).
+- **S'entraîner** — 4 exercices : le tableau `P = f(m)` de la source à tracer
+  (grille SVG imprimable + corrigé tracé) · un graphique correct et un graphique
+  fautif à comparer, six défauts à trouver · un coefficient directeur à calculer
+  avec son unité · une lecture par interpolation.
+- 💡 **Passerelle repérée, hors périmètre** : le jeu `P = f(m)` est exactement
+  celui du poids en **T2-C2**, un chapitre qui manque d'exercices exigeants. Ne
+  **pas** modifier T2-C2 dans ce chantier.
+- **Fiche A4 : deux pages**, dont un demi-verso de grille vierge.
 
 ---
 

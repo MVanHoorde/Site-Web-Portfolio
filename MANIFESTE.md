@@ -23,7 +23,7 @@
 | savoir *pourquoi* c'est comme ça | `_suivi/DECISIONS.md` | 3 000 |
 | retrouver ce qui s'est passé | `_suivi/JOURNAL.md` | *ne pas lire par défaut* |
 | **produire une séquence SNT** | `_modeles/CONSIGNES-sequence-SNT.md` | 6 500 |
-| **produire un outil transversal de PC** | `_modeles/CONSIGNES-outil-PC.md` + `pages/2nde-pc-o1-ecriture-scientifique.html` | 7 000 |
+| **produire un outil transversal de PC** | `_modeles/CONSIGNES-outil-PC.md` + `_modeles/gabarit-outil-PC.html` + `_modeles/gabarit-fiche-outil-PC.html` | 7 000 |
 | **récupérer un chapitre PC depuis son PPTX/PDF (V1 intégrale)** | `_modeles/CONSIGNES-V1-integrale-PC.md` + `_modeles/gabarit-chapitre.html` | 6 000 |
 | **raffiner un chapitre PC / faire sa fiche** | `_modeles/CONSIGNES-chapitre-PC.md` + `_modeles/gabarit-chapitre.html` | 8 500 |
 | l'état fin d'un chapitre / d'une séquence | `_suivi/chapitres.md` (section concernée) | 500 par section |

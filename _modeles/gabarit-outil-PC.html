@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil ⟨N⟩ · ⟨Titre de l'outil⟩ — Physique-Chimie 2nde</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- Client de base de données partagé. Absent ou non configuré : l'outil
+     fonctionne, sans enregistrement. Sans "defer" à dessein : le script de
+     la page, en fin de body, doit le trouver déjà chargé. -->
+<script src="../assets/js/progression.js?v=16"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     GABARIT — OUTIL TRANSVERSAL de physique-chimie.
+     Extrait de pages/2nde-pc-o1-ecriture-scientifique.html le
+     28/08/2026, vidé de tout contenu de physique. Consignes de
+     production : _modeles/CONSIGNES-outil-PC.md.
+
+     🔴 CE FICHIER EST UN GABARIT, PAS UNE PAGE. Il ne se publie pas,
+     il ne se lie depuis nulle part : on le COPIE vers
+     pages/2nde-pc-oN-<slug>.html, puis on remplit les zones marquées
+     ⟨à remplir⟩. Motif de son existence : jusqu'ici o1 servait de
+     gabarit par copier-coller, et c'est exactement la manière de
+     perdre une convention en la recopiant de travers.
+
+     ------------------------------------------------------------
+     LES CINQ RAPPELS QUI ONT DÉJÀ MORDU
+     ------------------------------------------------------------
+     1. <body data-sequence="pc-oN" data-etapes="ouvertes"> — le
+        second attribut n'est PAS décoratif : c'est lui qui dit au
+        moteur partagé de ne rien verrouiller. Sans lui, l'élève
+        arrive sur une seule étape visible et doit « mériter » la
+        partie « S'entraîner ». Un outil se consulte, il ne se
+        parcourt pas.
+     2. La case #teacherMode de nav.seances RESTE, même sans mode
+        enseignant affiché (décision O-21) : le moteur l'attrape sans
+        garde et toute son initialisation s'arrête si elle manque —
+        barre de progression et modales comprises. Sans .ens-zone,
+        rien ne peut la cocher : elle est inerte.
+     3. DEUX SECTIONS, JAMAIS PLUS : s1 « La méthode » (3 à 5 étapes)
+        et s2 « S'entraîner ».
+     4. Les trois versions d'assets ci-dessus se recopient TELLES
+        QUELLES. Elles sont contrôlées par verifier.mjs sur tout
+        pages/, et le contrôle est bloquant.
+     5. Ne jamais écrire le nom du fichier « seances-snt » suivi de
+        son extension, même dans un commentaire HTML : verifier.mjs
+        cherche cette chaîne dans TOUT le HTML, commentaires compris,
+        et signale alors la page comme le chargeant sans numéro de
+        version. Écrire « le sommaire généré (assets/js/seances-snt) ».
+
+     Le sommaire généré (assets/js/seances-snt) et le verrou de
+     progression (verrou-snt) ne sont PAS chargés — décision D7 : un
+     outil ne suit aucune progression, il n'a ni rang, ni plafond
+     d'avance, ni verrou inter-pages. Le moteur teste window.VerrouSNT
+     avant de s'en servir : son absence est prévue.
+
+     CSS propre à l'outil, inline comme dans m1. Aucune couleur en dur :
+     tout passe par les variables de sequence-snt.css.
+     ============================================================ -->
+<style>
+  /* ============================================================
+     PARTIE 1 — LES COMPOSANTS DE LA FAMILLE.
+     Ils se recopient tels quels, commentaires compris : ces
+     commentaires portent les décisions O-10, O-19 et O-20, et une
+     règle dont on a oublié le motif est une règle qu'on casse à la
+     révision suivante. Ne pas les redessiner, ne pas en inventer.
+     ============================================================ */
+
+  /* ---------- Encart intermédiaire — PAS un « à retenir » ----------
+     La classe .retain du moteur porte son propre bandeau et la mention
+     ★★ : l'employer au milieu d'une étape ferait croire à du programme
+     là où il n'y a qu'une précision. */
+  .point-cle{border-left:3px solid var(--link);background:var(--surface);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px;margin:10px 0}
+  .point-cle.alerte{border-left-color:var(--activity);background:var(--activity-wash)}
+  .point-cle code{background:var(--surface-2);padding:1px 5px;border-radius:4px;font-size:.9em;color:var(--link)}
+
+  /* ---------- Exemple entièrement résolu, ouvert par défaut ----------
+     Sa structure EST la règle de rédaction d'un calcul : cinq lignes
+     numérotées, toujours les mêmes, dans le même ordre. L'élève finit
+     par les reconnaître sans qu'on ait eu à les énoncer. */
+  .exemple{border:1px solid var(--ok);background:var(--ok-wash);border-radius:12px;padding:12px 14px;margin:12px 0}
+  /* Pas de text-transform ici (O-20) : le titre porte des unités, et les
+     majuscules automatiques les changeaient de sens — kg·L⁻¹ devenait
+     KG·L⁻¹, où G est le giga et où CL n'existe pas. Seule l'étiquette
+     du ::before, qui ne contient rien de scientifique, reste capitale. */
+  .exemple-titre{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;
+                 color:var(--ok);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .exemple-titre::before{content:"✓ exemple résolu";text-transform:uppercase;background:var(--ok);color:var(--surface);border-radius:5px;padding:1px 7px;letter-spacing:.05em}
+  .ex-etape{display:grid;grid-template-columns:22px 1fr;gap:9px;align-items:baseline;margin-bottom:9px}
+  .ex-etape:last-child{margin-bottom:0}
+  .ex-etape > .n{font-family:"IBM Plex Mono";font-size:12px;font-weight:700;color:var(--ok);
+                 border:1.5px solid var(--ok);border-radius:50%;width:20px;height:20px;
+                 display:flex;align-items:center;justify-content:center;line-height:1}
+  .ex-etape > div{min-width:0;font-size:14.5px}
+  .ex-lab{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.07em;
+          color:var(--ink-faint);display:block;margin-bottom:2px}
+
+  /* le calcul déroulé : une ligne par égalité, en chasse fixe */
+  .calcul{font-family:"IBM Plex Mono";font-size:15px;line-height:2;overflow-x:auto;margin:6px 0 2px}
+  .calcul b{color:var(--link)}
+  .calcul .encadre{color:var(--ok);font-weight:700;border:1.5px solid var(--ok);border-radius:6px;padding:1px 7px;white-space:nowrap}
+  @media(max-width:560px){.calcul{font-size:13px}}
+
+  /* nombre au fil du texte, insécable : « 1,6 × 10⁻¹⁹ » cassé en deux
+     lignes se lit comme deux nombres. */
+  .nb{font-family:"IBM Plex Mono";white-space:nowrap}
+  .nb sup{font-size:.7em}
+
+  /* ---------- Encadré « à éviter » — repris du cahier de vacances ---------- */
+  .eviter{border:1px solid var(--err);border-left:4px solid var(--err);background:var(--err-wash);
+          border-radius:0 10px 10px 0;padding:11px 14px;margin:12px 0;font-size:14.5px}
+  .eviter .et{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+              color:var(--err);font-weight:600;display:block;margin-bottom:6px}
+  /* Pas de line-through (O-19) : le trait passait au milieu des chiffres
+     et de l'exposant, et on ne lisait plus l'écriture qu'on doit apprendre
+     à reconnaître. La couleur, la croix, la bordure et le fond lavé disent
+     déjà le statut du contenu. */
+  .eviter .faux{font-family:"IBM Plex Mono";color:var(--err);white-space:nowrap;font-weight:600}
+  .eviter .faux::before{content:"✗ "}
+  .eviter ul{margin:6px 0 0;padding-left:20px}
+  .eviter li{margin-bottom:5px}
+
+  /* ---------- Structure des « à retenir » (arbitrage du 27/08/2026) ----------
+     Le bloc était un pavé de gras où plus rien ne se distinguait : quand tout
+     est en gras, rien ne l'est. Il reprend la logique du composant .exemple,
+     qui fonctionne parce qu'il est STRUCTURÉ — une étiquette courte, un
+     contenu bref, une ligne par idée. Trois temps, toujours les mêmes :
+     la règle (grande, centrée, seule), le geste (ce qu'on fait), le contrôle
+     (ce qu'on vérifie) — plus « le piège » quand il y en a un. Le gras ne
+     sert plus qu'à UN mot par ligne : celui qui décide.
+
+     Une règle déjà affichée en clair juste au-dessus ne se REDIT pas ici :
+     on y renvoie. */
+  .ret-t{display:grid;grid-template-columns:82px 1fr;gap:11px;align-items:baseline;margin-bottom:10px}
+  .ret-t:last-child{margin-bottom:0}
+  .ret-e{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+         color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 0;text-align:center}
+  .ret-t.piege .ret-e{color:var(--err);border-color:var(--err)}
+  .ret-c{min-width:0}
+  .ret-f{font-family:"IBM Plex Mono";font-size:20px;font-weight:600;text-align:center;
+         line-height:1.6;margin:2px 0 4px;color:var(--ink)}
+  @media(max-width:520px){
+    .ret-t{grid-template-columns:1fr;gap:4px}
+    .ret-e{justify-self:start;padding:2px 8px}
+    .ret-f{font-size:17px}
+  }
+
+  /* ---------- Le composant EXERCICE ----------
+     Local à la page, jamais un ajout au moteur. Le corrigé est un
+     <details> fermé, jamais verrouillé, jamais minuté : l'élève est
+     chez lui, le soir. La phrase « cherche d'abord » est le contrat,
+     pas une serrure. */
+  .exo{border:1px solid var(--line);border-left:4px solid var(--activity);border-radius:0 12px 12px 0;
+       background:var(--surface);padding:13px 15px;margin:16px 0}
+  .exo-num{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--activity);font-weight:600;margin:0 0 7px}
+  .exo-enonce{font-size:15px;margin:0 0 11px;line-height:1.6}
+  .exo-consigne{font-size:13.5px;color:var(--ink-soft);margin:12px 0 8px;font-style:italic}
+  .exo-corr{border-top:1px dashed var(--line);padding-top:9px;margin-top:4px}
+  .exo-corr summary{font-family:"IBM Plex Mono";font-size:13px;color:var(--link);cursor:pointer;
+                    padding:5px 2px;min-height:32px;display:flex;align-items:center;gap:6px}
+  .exo-corr summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:5px}
+  .exo-corr[open] summary{margin-bottom:8px;color:var(--ink-soft)}
+  .exo-corr .corps{font-size:14.5px;line-height:1.65;border-left:3px solid var(--ok);
+                   background:var(--ok-wash);border-radius:0 10px 10px 0;padding:11px 14px}
+  .exo-corr .corps p{margin:0 0 8px}
+  .exo-corr .corps p:last-child{margin-bottom:0}
+
+  /* ---------- Table de saisie : UNE COLONNE PAR DÉCISION ----------
+     Écrire « a × 10ⁿ » dans une seule case était impossible : la
+     normalisation du moteur efface le signe moins, et « 10^-3 »
+     devenait indistinguable de « 10^3 » — l'erreur la plus fréquente
+     aurait été comptée juste, en vert, sans que l'élève voie rien.
+     Le signe passe donc par un menu déroulant, corrigé à l'exact.
+     Règle générale : une case = un choix vérifiable. */
+  .saisie{width:100%;border-collapse:collapse;font-size:15px}
+  .saisie th{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.07em;
+             color:var(--ink-faint);font-weight:600;text-align:left;padding:0 8px 7px;border-bottom:1px solid var(--line)}
+  .saisie th.c{text-align:center}
+  .saisie td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .saisie td.c{text-align:center}
+  .saisie tr:last-child td{border-bottom:0}
+  .saisie .depart{font-family:"IBM Plex Mono";font-size:15px;color:var(--ink);white-space:nowrap}
+  .saisie .signe{font-family:"IBM Plex Mono";font-size:16px;color:var(--ink-faint)}
+  .saisie select.short{min-height:34px}
+  .saisie input.short{min-height:32px}
+
+  /* Un menu déroulant dont l'option la plus longue est une phrase prend
+     la largeur de cette phrase : sur téléphone, il sortait de la carte.
+     Il se borne à la largeur disponible ; le texte de l'option choisie
+     reste lisible une fois déroulé. */
+  .cloze select{max-width:100%}
+
+  /* ---------- Repli téléphone des tables de saisie ----------
+     À 390 px, trois colonnes obligeaient à faire défiler le bloc
+     latéralement pour CHAQUE ligne — huit fois de suite sur la série
+     finale. La ligne devient donc un bloc : l'énoncé sur sa propre
+     ligne, les champs dessous. L'en-tête disparaît : il n'a plus de
+     colonnes à nommer, et les placeholders le remplacent. */
+  @media(max-width:560px){
+    .saisie{display:block}
+    .saisie tr:first-child{display:none}
+    .saisie tr{display:flex;flex-wrap:wrap;align-items:center;gap:9px 10px;
+               padding:11px 2px;border-bottom:1px solid var(--line)}
+    .saisie tr:last-child{border-bottom:0}
+    .saisie td{display:block;padding:0;border:0;text-align:left}
+    .saisie td.depart{flex-basis:100%;font-weight:600;white-space:normal}
+    .saisie select.regle-choix{flex:1 1 100%;max-width:100%}
+  }
+
+  /* .table-scroll vient de la feuille partagée (défilement propre au
+     conteneur : la page, elle, ne défile jamais latéralement). On n'y
+     ajoute que ce qu'elle n'a pas — l'insécabilité de TOUTES les
+     cellules, et pas seulement de la première. */
+  .table-scroll .doc-table td,.table-scroll .doc-table th{white-space:nowrap}
+  .doc-table .base{background:var(--link-wash);font-weight:600}
+
+  /* Lien vers la fiche imprimable, en tête de page. C'est la seule
+     fiche d'un outil : le récapitulatif du moteur est retiré. */
+  .vers-fiche{display:inline-flex;align-items:center;gap:8px;font-size:14px;text-decoration:none;
+              color:var(--link);background:var(--link-wash);border:1px solid var(--line);
+              border-radius:10px;padding:9px 14px;margin-top:16px;min-height:44px}
+  .vers-fiche:hover{border-color:var(--link)}
+  .vers-fiche:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+  /* ---------- Glossaire permanent : sans objet en physique-chimie ----------
+     initGlossaire() du moteur partagé s'exécute sans condition et pose un
+     bouton flottant « 📖 Glossaire » sur TOUTE page qui charge le moteur.
+     Ici il n'ouvrirait qu'un panneau vide : un outil de PC n'alimente aucun
+     dictionnaire. Le masquage CSS évite de le voir clignoter avant que le
+     script de la page ne le retire du DOM (retirerGlossaire, plus bas).
+     Le glossaire des séquences SNT n'est pas concerné : le moteur partagé
+     n'est pas modifié, seule cette page se prive du bouton. */
+  #glo-ouvrir,.glo-back{display:none !important}
+
+  /* ============================================================
+     PARTIE 2 — LE CSS PROPRE À CET OUTIL.
+
+     ⟨à remplir⟩ Les visuels de l'outil : schémas SVG, planches de
+     pictogrammes, tables de référence. Trois règles, toutes déjà
+     payées ailleurs :
+       · AUCUNE COULEUR EN DUR. Tout passe par les variables de
+         sequence-snt.css (--link, --ok, --err, --activity, --ink,
+         --ink-soft, --ink-faint, --line, --surface, --surface-2, et
+         les *-wash). verifier.mjs ne contrôle PAS ce point sur une
+         page 2nde-pc-oN : son filtre pagesSNT ne l'attrape pas. À
+         tenir à la main.
+       · VÉRIFIER LES COLLISIONS avec sequence-snt.css par script, pas
+         à l'œil : .res y existe déjà en display:flex, et un encadré
+         de résultat nommé ainsi éclate en trois lignes sans prévenir.
+       · Un SVG se dessine ici, jamais ne se télécharge (§5).
+     ============================================================ */
+
+</style>
+</head><body data-sequence="pc-o⟨N⟩" data-etapes="ouvertes">
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Physique-Chimie · Outil transversal · Seconde</div>
+    <h1 class="title">⟨à remplir⟩ Titre de l'outil, sans son numéro <span class="tag" style="display:block;margin-top:8px">⟨à remplir⟩ trois mots-clés · séparés · par des points médians</span></h1>
+    <p class="lede">⟨à remplir⟩ Le chapeau. Il part d'un cas concret que l'élève reconnaît, et dit en une phrase à quoi l'outil sert dans l'année. Pas de définition ici.</p>
+    <div class="themes">
+      <!-- ⟨à remplir⟩ La bande des outils existants. Le sien porte « on ».
+           On n'y met QUE les outils déjà écrits : on ne promet rien. -->
+      <span class="theme-chip">Outil 1 · Écriture scientifique</span><span class="theme-chip">Outil 2 · Chiffres significatifs</span><span class="theme-chip on">Outil ⟨N⟩ · ⟨titre court⟩</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>Deux parties</b></span>
+      <span class="m">Durée <b>≈ ⟨à remplir⟩</b>, en deux fois</span>
+    </div>
+    <a class="vers-fiche" href="../fiches/fiche-2nde-o⟨N⟩-⟨slug⟩.html">🖨️ Fiche outil — la méthode à imprimer et à coller</a>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-physique-chimie.html">← Physique-Chimie</a>
+    <a href="#s1"><span class="n">1</span>La méthode</a>
+    <a href="#s2" data-navlock="2"><span class="n">2</span>S'entraîner <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <!-- 🔴 NE PAS SUPPRIMER — décision O-21.
+         Le mode enseignant est retiré de l'affichage : un outil est ouvert
+         toute l'année, il n'a rien à déverrouiller. La case, elle, RESTE :
+         le moteur partagé l'attrape sans garde (sequence-snt.js l.350) et
+         toute son initialisation s'arrête si elle manque — barre de
+         progression et modales comprises. Vérifié au navigateur : la page
+         casse. Sans le bloc .ens-zone, plus rien ne peut la cocher : elle
+         est inerte. -->
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip done"></span>Validé</span>
+  </div>
+
+
+  <!-- ===================== 1 — LA MÉTHODE =====================
+       De 3 à 5 étapes, jamais plus (§2 des consignes). Aucun exercice
+       noté ici : la méthode se vérifie, elle ne s'évalue pas. -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">1</span>La méthode</h2>
+      <span class="seance-time">≈ ⟨à remplir⟩</span>
+    </div>
+    <p class="seance-goal">⟨à remplir⟩ Ce que l'élève saura faire à la fin de la section, en une phrase, verbes à l'infinitif.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ==========================================================
+           ÉTAPE MODÈLE — le trajet du §3 des consignes, dans l'ordre.
+           Les cinq temps sont dans cet ordre et ne s'intervertissent
+           pas : objectif → contenu porté par un visuel → à retenir →
+           exemple résolu → test. Dupliquer ce bloc autant de fois
+           qu'il y a d'étapes.
+           ========================================================== -->
+      <div class="step" data-step data-gate data-cle="pc-o⟨N⟩-s1-⟨cle-courte⟩">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1</div>
+            <h3 class="step-title">⟨à remplir⟩ Le titre de l'étape</h3>
+            <!-- ① L'OBJECTIF — une phrase, pas deux. -->
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> ⟨à remplir⟩ ce que l'élève saura faire, une phrase.</span></div>
+          </div>
+          <div class="card-body">
+
+            <!-- ② LE CONTENU, PORTÉ PAR UN VISUEL.
+                 Le schéma explique, le texte accompagne — et non
+                 l'inverse. Le marquage d'évaluabilité (.niv) suit
+                 l'échelle SNT : ★★ à savoir · ★ à savoir faire ·
+                 ○ support · — non évalué. Un outil est presque
+                 intégralement ★★ et ★ : c'est sa nature. -->
+            <div class="block-label">⟨à remplir⟩ Titre du bloc<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">⟨à remplir⟩ Le texte. Phrases courtes, une consigne par phrase, verbe à l'infinitif en tête. Jamais « il suffit de », « on sait que », « rappelons que ». Tutoiement.</p>
+
+            <!-- ⟨à remplir⟩ LE VISUEL — SVG dessiné ici, jamais chargé.
+                 Contrôle obligatoire avant livraison : getBBox() sur
+                 CHAQUE <text>, aucun débordement du viewBox. Un texte
+                 qui déborde est rogné en plein mot, sans prévenir, et
+                 cela ne se voit pas à l'œil. -->
+
+            <!-- Précision au fil de l'étape : .point-cle, PAS un .retain.
+                 Le .retain porte son bandeau et sa mention ★★ : l'employer
+                 ici ferait croire à du programme là où il n'y a qu'une
+                 précision. -->
+            <div class="point-cle">⟨à remplir⟩ La précision qui évite l'erreur, ou le mot qui manque.</div>
+
+            <!-- ③ LE « À RETENIR » — trois temps, toujours les mêmes.
+                 Posé en clair, PAS dans un data-bilan-wrap : sur un
+                 outil, le test qui suit est une vérification, pas une
+                 évaluation — il n'y a rien à protéger d'une révélation
+                 anticipée. Le quatrième temps « le piège » est
+                 facultatif ; son étiquette passe en rouge. -->
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">⟨à remplir⟩ la formule ou la phrase-règle, seule</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">⟨à remplir⟩ ce qu'on fait, à l'infinitif, une ligne. Un seul <b>mot</b> en gras : celui qui décide.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">⟨à remplir⟩ ce qu'on vérifie avant de passer à la suite, une ligne.</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">⟨facultatif⟩ l'erreur que tout le monde fait.</div></div>
+            </div>
+
+            <!-- ④ L'EXEMPLE ENTIÈREMENT RÉSOLU, ouvert par défaut.
+                 Sa structure EST la règle de rédaction d'un calcul
+                 (§4 des consignes) : cinq lignes numérotées, toujours
+                 dans le même ordre, la cinquième étant le CONTRÔLE —
+                 signature de la famille. Un exemple sans contrôle est
+                 un exemple incomplet. -->
+            <div class="exemple">
+              <div class="exemple-titre">⟨à remplir⟩ Ce que l'exemple traite</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">Les données, avec leur unité</span>
+                ⟨à remplir⟩</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">La relation, en lettres</span>
+                <div class="calcul">⟨à remplir⟩</div></div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">L'application numérique</span>
+                <div class="calcul">⟨à remplir⟩ = <span class="encadre">résultat avec son unité</span></div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">La phrase de conclusion</span>
+                ⟨à remplir⟩ la phrase chiffrée.</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle</span>
+                ⟨à remplir⟩ vraisemblance, unité, et le bon nombre de chiffres significatifs.</div></div>
+            </div>
+
+            <!-- ⑤ LE TEST, DIMENSIONNÉ AU BLOC.
+                 Une étape qui introduit quatre règles, un tableau et
+                 trois cas ne se ferme pas sur deux cases : chaque bloc
+                 se teste LÀ OÙ IL EST INTRODUIT, avec l'outil qui lui
+                 convient — data-cloze court pour une règle, table
+                 .saisie pour des valeurs, .qcmbox pour un tableau de
+                 référence ou une série de pièges.
+
+                 🔴 TROIS PIÈGES DU MOTEUR SUR LES RÉPONSES NUMÉRIQUES
+                    (§6 des consignes, tous les trois mesurés) :
+                 a. La normalisation EFFACE LE SIGNE MOINS : -3 et 3 se
+                    valent après normalisation. Le signe passe par un
+                    <select>, jamais par un champ texte, et ses value
+                    sont des jetons distincts APRÈS normalisation —
+                    « pos »/« neg », jamais « + »/« − » qui se
+                    normalisent tous deux en chaîne vide.
+                 b. Levenshtein TOLÈRE UNE FAUTE au-delà de 4
+                    caractères normalisés : 255,1 est accepté pour
+                    255,0. Sans faute : les entiers, et toute réponse
+                    dont la forme normalisée tient en 4 caractères.
+                    Au-delà de trois chiffres significatifs, découper.
+                 c. Une réponse composée d'un SEUL champ est illisible :
+                    une colonne par décision. -->
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">⟨à remplir⟩ Ce que le test demande, une phrase.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div>⟨à remplir⟩ L'énoncé, avec ses trous. Exemple de trou à réponse
+                signée, à recopier tel quel quand la réponse porte un signe :
+                <select class="short" data-answer="pos" aria-label="⟨à remplir⟩ ce que ce menu demande"><option value="">?</option><option value="pos">+</option><option value="neg">−</option></select>
+                <input class="short" data-answer="⟨réponse⟩" placeholder="?" aria-label="⟨à remplir⟩ ce que ce champ demande" data-indice1="⟨à remplir⟩ le premier indice : il oriente, il ne donne pas." data-indice2="⟨à remplir⟩ le second : il donne presque la réponse.">
+                </div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <!-- Variante QCM — pour un tableau de référence ou une série
+                 de pièges. Le data-code est libre mais unique dans la page.
+                 🔴 Surveiller le BIAIS DE LONGUEUR : une bonne réponse
+                 nettement plus longue que les autres se devine sans rien
+                 savoir. `node verifier.mjs --qcm` mesure l'écart. -->
+            <div class="qcmbox" data-code="O⟨N⟩-Q-⟨cle⟩">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "⟨à remplir⟩ La question",
+  "o": [
+   "⟨à remplir⟩ une option",
+   "⟨à remplir⟩ une autre, de longueur comparable",
+   "⟨à remplir⟩ la bonne",
+   "⟨à remplir⟩ la dernière"
+  ],
+  "r": 2,
+  "c": "⟨à remplir⟩ Le corrigé : il explique POURQUOI, il ne répète pas la bonne réponse."
+ }
+]
+              </script>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ⟨à remplir⟩ Les autres étapes de la méthode, sur ce modèle.
+           Trois au minimum, cinq au maximum. -->
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+
+  <!-- ===================== 2 — S'ENTRAÎNER =====================
+       Les exercices corrigés : c'est le travail à la maison.
+       La section ne porte PAS `locked` et aucune étape n'est masquée —
+       les exercices du soir ne se méritent pas. -->
+  <section class="seance" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">2</span>S'entraîner</h2>
+      <span class="seance-time">≈ ⟨à remplir⟩</span>
+    </div>
+    <p class="seance-goal">⟨à remplir⟩ Ce que la série d'exercices couvre.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <div class="step" data-step data-gate data-cle="pc-o⟨N⟩-s2-⟨cle-courte⟩">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1</div>
+            <h3 class="step-title">⟨à remplir⟩ Le titre du groupe d'exercices</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> ⟨à remplir⟩</span></div>
+          </div>
+          <div class="card-body">
+
+            <!-- ==========================================================
+                 EXERCICE MODÈLE — §6 des consignes.
+                 Le data-cle du .exo est préfixé par la clé de l'outil ;
+                 le .cloze porte une clé COURTE, que le moteur compose en
+                 <clé d'étape>/<clé de cloze>. La clé enregistrée est donc
+                 déjà préfixée et INDÉPENDANTE de la position du champ dans
+                 la page : réordonner les exercices ne perd la progression
+                 de personne.
+                 ========================================================== -->
+            <div class="exo" data-cle="pc-o⟨N⟩-s2-ex1">
+              <p class="exo-num">Exercice 1</p>
+              <p class="exo-enonce">⟨à remplir⟩ L'énoncé.</p>
+              <div class="field">
+                <span class="field-type">Exercice 1</span>
+                <div class="field-q">⟨à remplir⟩ Ce que l'exercice demande.</div>
+                <div class="cloze" data-cloze data-cle="ex1">
+                  ⟨à remplir⟩ les champs — une colonne par décision.
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 1</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <!-- Le corrigé est un <details> FERMÉ, jamais verrouillé,
+                   jamais minuté. L'élève est chez lui, le soir : lui refuser
+                   le corrigé pendant trois minutes ne l'aide pas, ça le
+                   décourage. La phrase « cherche d'abord » est le contrat,
+                   pas une serrure.
+                   Et il est RÉDIGÉ, pas un nombre : un corrigé qui affiche
+                   « 0,12 » n'apprend rien à qui a trouvé 0,124. -->
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p>⟨à remplir⟩ Le raisonnement, puis le calcul rédigé selon les cinq temps du §4.</p>
+                  <div class="calcul">⟨à remplir⟩ = <span class="encadre">résultat avec son unité</span></div>
+                  <p><b>Le contrôle.</b> ⟨à remplir⟩ pourquoi ce résultat est vraisemblable.</p>
+                </div>
+              </details>
+            </div>
+
+            <!-- ⟨à remplir⟩ Les autres exercices, sur ce modèle. -->
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Outil transversal — proposition V1 du ⟨date⟩.</b> Cet outil n'est pas un chapitre&nbsp;: il sert dans tous les chapitres, et il reste ouvert toute l'année. Les exercices se corrigent <b>en direct</b> par le navigateur, et chacun porte en plus son <b>corrigé rédigé</b>, dépliable à tout moment&nbsp;: tu travailles chez toi, tu dois pouvoir te corriger seul. 🖨️ La <a href="../fiches/fiche-2nde-o⟨N⟩-⟨slug⟩.html" style="color:var(--link)">fiche outil</a> reprend toute la méthode, entièrement rédigée, sur une feuille à coller.
+  </footer>
+</div>
+
+<script src="../assets/js/sequence-snt.js?v=42"></script>
+
+<!-- ============================================================
+     JS propre à l'outil. Deux appoints d'affichage COMMUNS À TOUS
+     LES OUTILS, à recopier tels quels : le retrait de la fiche
+     récapitulative que le moteur propose (sur un outil, la fiche,
+     c'est la fiche imprimable du cours), et l'allègement de la barre
+     « tu es ici », qui parle de thèmes et de sommaire.
+
+     🔴 Le moteur partagé n'est JAMAIS modifié depuis ici (§5). S'il
+     manque quelque chose : le signaler dans la livraison, et coder
+     l'appoint en local dans cette page.
+     ============================================================ -->
+<script>
+(function(){
+  'use strict';
+
+  /* =========================================================
+     APPOINT D'AFFICHAGE — ce que le moteur SNT dit et qui ne vaut
+     pas pour un outil.
+
+     1. LA FICHE DU MOTEUR. Il propose partout d'ouvrir « ma fiche
+        (PDF) », un récapitulatif des réponses. Utile sur une
+        séquence, sans objet ici : la fiche d'un outil, c'est la
+        fiche imprimable liée en haut de page, et elle est complète
+        sans le travail de l'élève. Le moteur est partagé par huit
+        pages et ne se modifie pas depuis ici (§5 des consignes) —
+        on retire donc le bouton dans la page, aux TROIS endroits où
+        il paraît : la barre de fin de partie, la modale de
+        « Recommencer », et la pop-up de fin. Les deux dernières
+        sont construites à la demande : il faut un observateur, un
+        simple balayage au chargement les manquerait.
+     2. LA BARRE « TU ES ICI ». Elle annonce un retour « Thèmes » et
+        un bouton de sommaire. Un outil n'a ni thème ni sommaire.
+     ========================================================= */
+  var TEXTE_FICHE = '🖨️ Pour garder la méthode sous les yeux, imprime la <b>fiche outil</b> — '
+                  + 'le lien est en haut de la page.';
+
+  function retirerBoutonsFiche(racine){
+    Array.prototype.forEach.call(racine.querySelectorAll('.btn.dl'), function(b){
+      if (b.parentNode) b.parentNode.removeChild(b);
+    });
+  }
+
+  /* La modale du moteur est un nœud unique, réécrit à chaque ouverture.
+     On marque le paragraphe qu'on réécrit : le marqueur disparaît avec
+     le paragraphe à l'ouverture suivante, ce qui évite à la fois la
+     boucle (on ne retouche pas ce qu'on vient d'écrire) et l'oubli
+     (une seconde ouverture est bien retraitée). Aucune dépendance au
+     vocabulaire du moteur, qui peut changer sans nous prévenir. */
+  function surveillerModale(){
+    var mb = document.querySelector('.modal-back');
+    if (!mb || !window.MutationObserver) return;
+    function corriger(){
+      retirerBoutonsFiche(mb);
+      var titre = mb.querySelector('h3'), p = mb.querySelector('.m-body p');
+      if (!titre || !p || p.classList.contains('sans-fiche')) return;
+      if (titre.textContent.indexOf('Recommencer') >= 0){
+        p.innerHTML = 'Tu vas repartir d\'une partie vierge : ce que tu as écrit sera effacé de '
+                    + 'l\'écran. La <b>fiche outil</b> imprimable, elle, ne bouge pas.';
+        p.classList.add('sans-fiche');
+      } else if (titre.textContent.indexOf('terminée') >= 0){
+        p.innerHTML = TEXTE_FICHE;
+        p.classList.add('sans-fiche');
+      }
+    }
+    new MutationObserver(corriger).observe(mb, {childList:true, subtree:true});
+    corriger();
+  }
+
+  function retirerFichePDF(){
+    Array.prototype.forEach.call(document.querySelectorAll('.seance-actions'), function(bar){
+      retirerBoutonsFiche(bar);
+      var lab = bar.querySelector('.sa-label');
+      if (lab && lab.dataset.reecrit !== '1'){
+        lab.dataset.reecrit = '1';
+        lab.innerHTML = TEXTE_FICHE;
+      }
+    });
+    surveillerModale();
+  }
+
+  function allegerBarre(){
+    var b4 = document.getElementById('prog4');
+    if (!b4) return;
+    var menu = b4.querySelector('.p4-menu');          /* le ☰ ouvre un sommaire qui n'existe pas */
+    if (menu && menu.parentNode) menu.parentNode.removeChild(menu);
+    var ret = b4.querySelector('.p4-retour');
+    if (ret){
+      ret.setAttribute('title', 'Revenir à la physique-chimie');
+      ret.setAttribute('aria-label', 'Revenir à la physique-chimie');
+      var lab = ret.querySelector('.p4-lab');
+      if (lab) lab.textContent = 'Retour';
+    }
+  }
+
+  /* Le bouton « 📖 Glossaire » et son panneau sont créés par le moteur au
+     chargement, sans condition. On les sort du DOM : leurs écouteurs
+     partent avec eux, et le moteur ne les relit jamais — ses deux nœuds
+     ne vivent que dans des variables locales à initGlossaire(). */
+  function retirerGlossaire(){
+    ['#glo-ouvrir', '.glo-back'].forEach(function(sel){
+      var n = document.querySelector(sel);
+      if (n && n.parentNode) n.parentNode.removeChild(n);
+    });
+  }
+
+  /* =========================================================
+     ⟨facultatif⟩ VALIDER UNE ÉTAPE À LA LECTURE.
+     À ne poser que sur une étape qui n'a AUCUN champ à remplir.
+     Elle garde son data-gate — le lui retirer la sortirait du
+     décompte, et l'élève verrait une pastille qui ne se coche
+     jamais.
+
+     Le signal retenu : l'étape SUIVANTE est visible. Sur un outil,
+     elles le sont toutes dès l'arrivée (data-etapes="ouvertes") :
+     l'étape se coche donc au chargement. C'est assumé — la barre
+     d'un outil consultable toute l'année ne note personne, elle sert
+     de pense-bête. On pose la classe et on annonce 'etape-validee',
+     l'événement que le moteur écoute déjà : c'est lui qui rafraîchit
+     la barre et qui enregistre en base. Aucune comptabilité
+     parallèle.
+
+     🔴 Poser la classe avec classList.add et non par un remplacement
+     de className : le MutationObserver du moteur se réveille sur
+     l'attribut entier.
+     ========================================================= */
+  function validerALaLecture(){
+    var cible  = document.querySelector('[data-cle="pc-o⟨N⟩-s1-⟨cle-courte⟩"]'),
+        suivante = document.querySelector('[data-cle="pc-o⟨N⟩-s1-⟨cle-suivante⟩"]');
+    if (!cible || !suivante) return;
+    var seance = cible.closest('.seance');
+
+    function verifier(){
+      /* dataset.reveal atteste que le moteur est passé sur la séance :
+         sans ce garde-fou, on validerait l'étape avant même qu'il ait pu
+         restaurer l'état de l'élève. */
+      if (!seance || seance.dataset.reveal !== '1') return;
+      if (suivante.classList.contains('masque')) return;
+      if (cible.classList.contains('is-done')) return;
+      cible.classList.add('is-done');
+      cible.dispatchEvent(new CustomEvent('etape-validee', { bubbles: true }));
+    }
+
+    document.addEventListener('etape-revelee', verifier);
+    document.addEventListener('etape-validee', verifier);
+    verifier();
+    /* la restauration depuis la base arrive après coup, et sans événement :
+       une dernière passe une fois qu'elle a eu lieu. */
+    setTimeout(verifier, 1200);
+  }
+
+  function demarrer(){
+    /* ⟨à remplir⟩ l'initialisation des composants propres à l'outil */
+    retirerFichePDF();
+    allegerBarre();
+    retirerGlossaire();
+    /* validerALaLecture();  ⟨à décommenter si une étape se valide à la lecture⟩ */
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
+  else demarrer();
+})();
+</script>
+
+</body></html>

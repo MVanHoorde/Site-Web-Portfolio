@@ -2609,3 +2609,62 @@ l'insertion de l'Image 14. `verifier.mjs` → **18**.
 corrections rédigées, l'accroche, la partie 2 étoffée, les définitions du
 sismogramme et de l'électrocardiogramme — est une **proposition**. Et le doublon
 `22 p.266` de la checklist DS attend son manuel.
+
+---
+
+## 28/08/2026 — Outils transversaux, lots A et B
+
+**Le catalogue est renuméroté.** Les numéros `o3` à `o8` avaient été réservés en
+juillet dans un ordre qui ne correspondait plus aux priorités. Aucun de ces
+fichiers n'existait : la renumérotation était gratuite ce jour, elle ne l'aurait
+plus jamais été. Les huit outils suivent désormais l'ordre où un élève de seconde
+les rencontre. **« Convertir » sort du catalogue** — `o1` en avait absorbé tout le
+fond le 26/08, un outil dédié aurait fait doublon avec son étape 1.4.
+
+**Deux gabarits, enfin.** `_modeles/gabarit-outil-PC.html` et
+`gabarit-fiche-outil-PC.html`, extraits de `o1` et vidés de toute physique.
+Jusqu'ici `o1` servait de gabarit par copier-coller — la manière exacte de perdre
+une convention en la recopiant de travers. Les commentaires qui portent les
+décisions O-10, O-19, O-20 et O-21 sont conservés en entier : une règle dont on a
+oublié le motif est une règle qu'on casse à la révision suivante.
+
+**Sept arbitrages, tranchés par défaut.** Deux d'entre eux — le tri de la
+verrerie et le nombre de niveaux — traînaient depuis le 26/08 et avaient arrêté
+la production deux jours. Chacun porte désormais un défaut appliqué sans
+attendre, marqué comme proposition. O-27 fait exception : Loïc l'a tranché.
+
+**`o3` Sécurité au laboratoire est écrit.** 5 étapes, 5 exercices, 17 questions de
+QCM, 30 champs à menu déroulant, deux paillasses aux erreurs cliquables, une
+fiche A4 de 4 pages. Les **neuf pictogrammes CLP** et les **cinq équipements de
+sécurité** sont dessinés en SVG maison — on ne télécharge jamais un pictogramme
+de danger.
+
+**Trois choses ont mordu, et méritent d'être retenues.**
+
+1. **`<svg hidden>` ne masque pas un SVG inline.** Il garde sa taille par défaut
+   de 300 × 150 px et pousse toute la page vers le bas. Le défaut est invisible à
+   la lecture du code : il ne se voit qu'au rendu. `style="display:none"` règle
+   la question, dans la page comme dans la fiche.
+2. **`fill:none` ne capture pas le pointeur.** Les zones cliquables des paillasses
+   n'étaient atteignables que sur les traits du dessin — l'élève devait viser un
+   trait de 2 px. `fill:transparent` rend toute la zone sensible. Trouvé en
+   rejouant les clics par script, pas à l'œil.
+3. **Mesurer une fiche A4 avec `scrollHeight` ne prouve rien** : en `media print`,
+   `.feuille` porte `overflow:hidden`, et un débordement est écrêté avant d'être
+   mesuré. Il faut relâcher `height` et `overflow`, puis mesurer le bas du dernier
+   enfant. Les quatre pages ont été vérifiées ainsi.
+
+**Contrôles.** `node verifier.mjs` → **18**, avant comme après. Aucun asset
+partagé modifié (`git status -- assets/` vide). Zéro erreur console. Les 30
+champs rejoués rendent « Tout est juste » ; les 14 zones des deux paillasses
+répondent et se remettent à zéro. Rendu sans débordement à 1100, 768 et **390 px
+mesurés dans une iframe** — le headless imposant une largeur minimale d'environ
+500 px, une capture demandée à 390 px rogne au lieu de replier. QR code généré
+par l'encodeur maison et autovérifié deux fois : syndromes Reed-Solomon nuls sur
+les quatre blocs, et relecture de la matrice rendant l'URL.
+
+**Ce qui reste à Loïc.** Tout est proposition. En priorité : **l'étape 1.5 « Si ça
+tourne mal »**, contenu neuf, seul contenu du dépôt qui engage la sécurité
+d'élèves — à relire contre le règlement du laboratoire et les équipements réels
+de la salle 0.26.
+

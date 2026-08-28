@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche outil 3 — Sécurité au laboratoire</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     FICHE OUTIL 3 — SÉCURITÉ AU LABORATOIRE.
+     Produite le 28/08/2026 depuis _modeles/gabarit-fiche-outil-PC.html.
+     Dérive de fiches/fiche-2nde-t1c4.html : même @page, même .feuille,
+     même bande à trois repères, même fond blanc forcé à l'impression.
+
+     🔴 QUATRE PAGES, ET C'EST LA SEULE FICHE D'OUTIL QUI Y A DROIT.
+     Les autres tiennent en deux, sans exception. Ici les neuf
+     pictogrammes prennent la place qu'ils prennent, et la page 2 leur
+     est entièrement consacrée : c'est l'objet que l'élève regardera
+     le plus souvent de l'année.
+
+     🔴 LE BLOC « SI ÇA TOURNE MAL » EST EN PIED DE LA PAGE 1.
+     Jamais au verso, jamais en page 3 : c'est le seul contenu de la
+     fiche qu'on cherche dans l'urgence, et une fiche collée dans un
+     cahier ne se retourne pas vite. Le DÉTAIL des gestes est en
+     page 3 ; le pied de page 1 en porte l'essentiel, lisible seul.
+
+     Les exercices ne sont PAS sur la fiche : ils vivent en ligne, où
+     ils sont corrigés. Le QR code de la page 4 y mène.
+     ============================================================ -->
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e; --gris:#6b6f7a;
+    --or-fonce:#b28a1d; --vert-fonce:#4c8a58;
+    /* Les trois couleurs normatives du pictogramme CLP. Elles ne
+       suivent aucun thème : un pictogramme de danger est rouge sur
+       blanc, symbole noir, et l'élève doit reconnaître en salle
+       exactement ce qu'il a vu ici. */
+    --clp-rouge:#e2001a; --clp-noir:#0c0c0c; --clp-blanc:#ffffff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { background:#9aa0ab; }
+  body { font-family:'Spectral', Georgia, serif; color:var(--encre);
+         font-size:9.2pt; line-height:1.28; }
+  .feuille { width:210mm; min-height:297mm; margin:8mm auto; padding:8mm 12mm 12mm;
+    background:var(--papier); position:relative; box-shadow:0 2px 14px rgba(0,0,0,.28);
+    display:flex; flex-direction:column; }
+  @page { size:A4; margin:0; }
+  @media print {
+    html, body { background:#fff; }
+    .feuille { margin:0; box-shadow:none; height:296mm; min-height:0; overflow:hidden;
+               page-break-after:always; background:#fff; }
+    .feuille:last-child { page-break-after:auto; }
+    .encart, .regle, .exres, .urgence, .pic, .eq, table.t th { background:#fff; }
+  }
+  .bande { height:3.5px; background:var(--encre); position:relative; margin-bottom:3.2mm; }
+  .bande i { position:absolute; top:0; bottom:0; width:3px; }
+  .bande i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .bande i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .bande i:nth-child(3){ left:76%; background:var(--h-alpha); }
+
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:12.4pt; line-height:1.12; }
+  .sous { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris); margin:1mm 0 2.5mm; }
+  .sous .rouge { color:var(--h-alpha); }
+  .suite { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris);
+    letter-spacing:.1em; text-transform:uppercase; margin:0 0 2.5mm; }
+  .suite .n { color:var(--h-beta); }
+  .aquoi { font-family:'Space Grotesk',sans-serif; font-size:9.2pt; font-weight:600;
+    border-left:3px solid var(--h-beta); padding:1.1mm 0 1.1mm 3mm; margin-bottom:2mm; }
+
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:10.2pt; margin:2.4mm 0 1.2mm;
+       display:flex; align-items:baseline; gap:2.5mm;
+       border-top:2.2px solid var(--encre); padding-top:1.1mm; }
+  h2:first-child { margin-top:0; }
+  h2 .n { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--h-beta); }
+  h3 { font-family:'IBM Plex Mono',monospace; font-size:7.2pt; letter-spacing:.09em;
+       text-transform:uppercase; color:var(--gris); margin:1.6mm 0 .7mm; font-weight:600; }
+
+  p { margin-bottom:.9mm; }
+  sub, sup { font-size:.66em; }
+  b { font-weight:600; }
+  .mono { font-family:'IBM Plex Mono',monospace; font-size:.92em; white-space:nowrap; }
+  ol, ul { margin:0 0 1mm 4.6mm; }
+  li { margin-bottom:.5mm; }
+
+  .regle { border:1.3px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 2mm 2mm 0; padding:1.5mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fff; }
+  .rt { display:grid; grid-template-columns:15mm 1fr; gap:2mm; align-items:baseline; margin-top:1mm; }
+  .rt .e { font-family:'IBM Plex Mono',monospace; font-size:6.2pt; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--gris); border:.7px solid var(--grille);
+    border-radius:1mm; padding:.2mm 0; text-align:center; }
+  .rt.piege .e { color:var(--h-alpha); border-color:var(--h-alpha); }
+  .regle .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--h-gamma); margin-bottom:1mm; }
+  .regle .forme { font-family:'IBM Plex Mono',monospace; font-size:10.6pt; text-align:center;
+    margin:1mm 0; color:var(--encre); line-height:1.45; }
+
+  .encart { border:1px solid var(--grille); border-left:3px solid var(--or-fonce);
+    border-radius:0 2mm 2mm 0; padding:1.2mm 2.6mm; margin:1.2mm 0 1.6mm; background:#fffdf5; font-size:8.8pt; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--or-fonce); margin-bottom:.8mm; font-weight:600; }
+
+  .eviter { border:1.2px solid var(--h-alpha); border-left:4px solid var(--h-alpha);
+    border-radius:0 2mm 2mm 0; padding:1.3mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fffaf9; }
+  .eviter .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--h-alpha); margin-bottom:1mm; font-weight:600; }
+
+  /* ---------- Le bloc d'urgence, en pied de page 1 ----------
+     Encadré épais : c'est le seul contenu qu'on cherche dans
+     l'urgence. margin-top:auto le colle en bas de la feuille. */
+  .urgence { border:2px solid var(--h-alpha); border-radius:2mm; padding:2mm 3mm;
+    background:#fff; margin-top:auto; }
+  .urgence .etq { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--h-alpha); font-weight:700; margin-bottom:1.2mm; }
+  .urgence .cri { font-family:'Space Grotesk',sans-serif; font-size:10.6pt; font-weight:700;
+    text-align:center; margin:.8mm 0 1.4mm; line-height:1.3; }
+  .urgence .cri small { display:block; font-family:'Spectral',serif; font-size:8.2pt;
+    font-weight:400; color:var(--gris); margin-top:.6mm; }
+  .ug { display:grid; grid-template-columns:1fr 1fr; gap:.6mm 4mm; font-size:8.2pt; }
+  .ug > div { display:grid; grid-template-columns:26mm 1fr; gap:1.6mm; align-items:baseline;
+    border-top:.6px dotted var(--grille); padding-top:.7mm; }
+  .ug .s { font-weight:600; }
+
+  /* ---------- La planche des neuf pictogrammes (page 2) ---------- */
+  .fam { border:1px solid var(--grille); border-radius:2mm; padding:1.6mm 2mm; margin-bottom:2mm; }
+  .fam > .t { font-family:'IBM Plex Mono',monospace; font-size:7.2pt; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--h-beta); font-weight:600; margin-bottom:.4mm; }
+  .fam > .s { font-size:8pt; color:var(--gris); margin-bottom:1.4mm; }
+  .planche { display:grid; grid-template-columns:repeat(5,1fr); gap:2mm; }
+  .planche.sante { grid-template-columns:repeat(4,1fr); }
+  .planche.env { grid-template-columns:repeat(5,1fr); }
+  .pic { border:.8px solid var(--grille); border-radius:1.6mm; padding:1.2mm 1.4mm; background:#fff; }
+  .pic.deuxfois { border-style:dashed; border-color:var(--h-gamma); }
+  .pic svg { width:100%; max-width:17mm; display:block; margin:0 auto .8mm; }
+  .pic .nom { font-family:'IBM Plex Mono',monospace; font-size:6.2pt; font-weight:700;
+    text-align:center; line-height:1.25; margin-bottom:.8mm; }
+  .pic .q { font-size:7.2pt; color:var(--encre); line-height:1.35; }
+  .pic .q li { margin-bottom:.3mm; }
+  .pic .q ul { margin:0 0 0 3.2mm; }
+  .pic .deja { display:block; font-family:'IBM Plex Mono',monospace; font-size:6pt;
+    color:var(--h-gamma); text-align:center; margin-top:.8mm; }
+
+  /* ---------- Les cinq équipements (page 3) ---------- */
+  .equips { display:grid; grid-template-columns:repeat(5,1fr); gap:2.4mm; margin:1.4mm 0 2mm; }
+  .eq { border:1px solid var(--grille); border-radius:1.6mm; padding:1.4mm; text-align:center; background:#fff; }
+  .eq svg { width:11mm; height:11mm; display:block; margin:0 auto .8mm; }
+  .eq .n2 { font-size:7.6pt; font-weight:600; line-height:1.25; }
+  .eq-s { fill:none; stroke:var(--vert-fonce); stroke-width:3.4; stroke-linecap:round; stroke-linejoin:round; }
+  .eq-p { fill:var(--vert-fonce); }
+  .eq.feu .eq-s { stroke:var(--h-alpha); } .eq.feu .eq-p { fill:var(--h-alpha); }
+
+  /* ---------- La silhouette de la tenue (page 1) ---------- */
+  .schema { border:1px solid var(--grille); border-radius:2mm; padding:1.2mm; background:#fff; }
+  .schema svg { width:100%; height:auto; display:block; }
+  .sil-corps { fill:#fff; stroke:var(--gris); stroke-width:2; stroke-linejoin:round; }
+  .sil-blouse { fill:#f2f4fb; stroke:var(--h-gamma); stroke-width:2; stroke-linejoin:round; }
+  .sil-trait { stroke:var(--gris); stroke-width:1.6; fill:none; stroke-linecap:round; }
+  .sil-fleche { stroke:var(--h-gamma); stroke-width:1.6; fill:none; stroke-linecap:round; }
+  .sil-txt { font-family:'IBM Plex Sans',sans-serif; font-size:13px; fill:var(--encre); dominant-baseline:middle; }
+  .sil-txt.g { text-anchor:end; }
+  .sil-num { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:700; fill:#fff; }
+  .sil-pastille { fill:var(--h-gamma); }
+
+  /* ---------- Les couleurs du pictogramme, sur la fiche ---------- */
+  .clp-cadre { fill:var(--clp-rouge); }
+  .clp-fond  { fill:var(--clp-blanc); }
+  .clp-s     { fill:var(--clp-noir); }
+  .clp-t     { fill:none; stroke:var(--clp-noir); stroke-width:3.2; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* ---------- La checklist de la page 4 ---------- */
+  .check { display:grid; grid-template-columns:1fr 1fr; gap:.8mm 5mm; margin:1.4mm 0 2mm; }
+  .check > div { display:grid; grid-template-columns:4mm 1fr; gap:1.6mm; align-items:baseline;
+    font-size:8.6pt; border-top:.6px dotted var(--grille); padding-top:.9mm; }
+  .check .case { width:3.2mm; height:3.2mm; border:1px solid var(--encre); border-radius:.6mm; }
+
+  .deux { display:grid; grid-template-columns:1fr 1fr; gap:4mm; align-items:start; }
+  .deux.gauche { grid-template-columns:74mm 1fr; }
+
+  .versexos { border:1.3px solid var(--encre); border-radius:2mm; padding:1.6mm 2.4mm;
+    display:flex; align-items:center; gap:3.5mm; background:#fff; margin-top:auto; }
+  .versexos svg { flex:none; }
+  .versexos .txt { font-size:8.6pt; }
+  .versexos .txt b { font-family:'Space Grotesk',sans-serif; }
+  .versexos .url { font-family:'IBM Plex Mono',monospace; font-size:7.2pt;
+    color:var(--gris); word-break:break-all; margin-top:.8mm; }
+
+  .pied { position:absolute; bottom:5mm; left:12mm; right:12mm;
+          display:flex; justify-content:space-between;
+          font-family:'IBM Plex Mono',monospace; font-size:6.8pt; color:var(--gris); }
+  svg { display:block; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LES NEUF PICTOGRAMMES ET LES CINQ ÉQUIPEMENTS.
+     Recopiés à l'identique depuis pages/2nde-pc-o3-…html : les deux
+     fichiers doivent montrer EXACTEMENT le même dessin, sinon
+     l'élève apprend un symbole à l'écran et en reconnaît un autre sur
+     le papier. Toute retouche se fait des deux côtés.
+
+     ⚠ style="display:none" et NON l'attribut hidden : mesuré au
+     navigateur, `hidden` ne masque pas un <svg> inline — il garde sa
+     taille par défaut de 300 × 150 px et décale toute la mise en page.
+     Sur une fiche au millimètre, cela déborde d'une page.
+     ============================================================ -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+
+  <!-- le cadre, commun aux neuf -->
+  <symbol id="clp-cadre" viewBox="0 0 100 100">
+    <polygon class="clp-cadre" points="50,1.5 98.5,50 50,98.5 1.5,50"/>
+    <polygon class="clp-fond"  points="50,12.5 87.5,50 50,87.5 12.5,50"/>
+  </symbol>
+
+  <!-- 1 · EXPLOSIF -->
+  <symbol id="clp-explosif" viewBox="0 0 100 100">
+    <use href="#clp-cadre"/>
+    <g class="clp-s">
+      <polygon points="50,44 55,36 55,44 63,38 59,47 68,45 61,51 69,55 60,56 65,63 56,59 57,68 50,61 43,68 44,59 35,63 40,56 31,55 39,51 32,45 41,47 37,38 45,44 45,36"/>
+      <path d="M57,41 L67,31 M63,48 L75,44 M62,58 L71,66 M43,41 L33,31 M38,48 L25,44 M39,58 L30,66 M50,38 L50,27"
+            stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+      <circle cx="71" cy="28" r="1.9"/><circle cx="29" cy="28" r="1.6"/>
+      <circle cx="79" cy="52" r="1.6"/><circle cx="21" cy="51" r="1.9"/>
+      <circle cx="66" cy="71" r="1.7"/><circle cx="34" cy="71" r="1.5"/>
+    </g>
+  </symbol>
+
+  <!-- 2 · GAZ SOUS PRESSION -->
+  <symbol id="clp-gaz" viewBox="0 0 100 100">
+    <use href="#clp-cadre"/>
+    <g class="clp-t">
+      <path d="M34,40 h26 a4,4 0 0 1 4,4 v2 h5 a3,3 0 0 1 3,3 v2 a3,3 0 0 1 -3,3 h-5 v2 a4,4 0 0 1 -4,4 h-26
+               a10,10 0 0 1 0,-20 z"/>
+      <path d="M38,42 v16 M43,42 v16"/>
+    </g>
+  </symbol>
+
+  <!-- 3 · INFLAMMABLE -->
+  <symbol id="clp-inflammable" viewBox="0 0 100 100">
+    <use href="#clp-cadre"/>
+    <g class="clp-s">
+      <path d="M50,22 c3,8 -1,11 -4,15 c-2,3 -3,5 -1,8 c-3,-1 -5,-4 -5,-7
+               c-4,4 -6,8 -6,13 c0,9 7,15 16,15 c9,0 16,-6 16,-15
+               c0,-8 -6,-12 -9,-17 c-4,-5 -7,-8 -7,-12 z"/>
+      <rect x="32" y="66" width="36" height="3.6" rx="1.2"/>
+    </g>
+  </symbol>
+
+  <!-- 4 · COMBURANT — la flamme AU-DESSUS du cercle.
+       La flamme est celle de l'inflammable, réduite par un transform
+       (x' = 0,6x + 20 · y' = 0,6y + 8,8) : une seule courbe à tenir à
+       jour pour les deux pictogrammes. Elle s'arrête avant le cercle
+       — s'ils se touchent, on lit une flamme POSÉE sur un cercle. -->
+  <symbol id="clp-comburant" viewBox="0 0 100 100">
+    <use href="#clp-cadre"/>
+    <g class="clp-s">
+      <path transform="matrix(0.6,0,0,0.6,20,8.8)"
+            d="M50,22 c3,8 -1,11 -4,15 c-2,3 -3,5 -1,8 c-3,-1 -5,-4 -5,-7
+               c-4,4 -6,8 -6,13 c0,9 7,15 16,15 c9,0 16,-6 16,-15
+               c0,-8 -6,-12 -9,-17 c-4,-5 -7,-8 -7,-12 z"/>
+      <circle cx="50" cy="57" r="7.2" fill="none" stroke="currentColor" stroke-width="3.4"/>
+      <rect x="34" y="68" width="32" height="3.4" rx="1.2"/>
+    </g>
+  </symbol>
+
+  <!-- 5 · CORROSIF — ce que le produit ronge : la surface, la main -->
+  <symbol id="clp-corrosif" viewBox="0 0 100 100">
+    <use href="#clp-cadre"/>
+    <g class="clp-s">
+      <path d="M28,29 l6,-3.5 l9,16 l-6,3.5 z"/>
+      <path d="M39,50 l1.8,4.5 l-1.8,4.5 l-1.8,-4.5 z"/>
+      <path d="M30,62 h18 l-2.6,3.6 h-13 z"/>
+      <path d="M35,58 l2,3.5 M41,57 l1.6,4.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+      <path d="M72,29 l-6,-3.5 l-9,16 l6,3.5 z"/>
+      <path d="M61,50 l1.8,4.5 l-1.8,4.5 l-1.8,-4.5 z"/>
+      <!-- la main : paume, trois doigts, pouce. Bornée à x ⩽ 67 et
+           y ⩽ 69,5 — au-delà elle sortirait du losange par le bas. -->
+      <path d="M54,69.5 v-5.5 c0,-1.4 1.1,-2.5 2.5,-2.5 h8 c1.4,0 2.5,1.1 2.5,2.5 v5.5 z"/>
+      <rect x="56.6" y="57" width="2.4" height="5" rx="1.2"/>
+      <rect x="59.9" y="55.8" width="2.4" height="6.2" rx="1.2"/>
+      <rect x="63.2" y="57" width="2.4" height="5" rx="1.2"/>
+      <path d="M54,66.5 l-3.2,-1.6 c-1.3,-0.6 -0.4,-2.5 0.9,-1.9 l2.3,0.9 z"/>
+    </g>
+  </symbol>
+
+  <!-- 6 · TOXIQUE OU MORTEL -->
+  <symbol id="clp-toxique" viewBox="0 0 100 100">
+    <use href="#clp-cadre"/>
+    <g class="clp-s">
+      <path d="M50,24 c-9.5,0 -16.5,7 -16.5,15.5 c0,5.2 2.6,8.7 5.2,11.3 c0.9,0.9 0.9,1.7 0.9,3.4 v1.7
+               c0,1.7 1.7,2.6 3.4,2.6 h13.9 c1.7,0 3.4,-0.9 3.4,-2.6 v-1.7 c0,-1.7 0,-2.6 0.9,-3.4
+               c2.6,-2.6 5.2,-6.1 5.2,-11.3 c0,-8.5 -7,-15.5 -16.5,-15.5 z"/>
+      <ellipse cx="43.5" cy="39.5" rx="4.3" ry="5.2" fill="var(--clp-blanc)"/>
+      <ellipse cx="56.5" cy="39.5" rx="4.3" ry="5.2" fill="var(--clp-blanc)"/>
+      <path d="M50,45.5 l-2.6,5.2 h5.2 z" fill="var(--clp-blanc)"/>
+      <path d="M45.5,54.5 v3.4 M50,54.5 v3.4 M54.5,54.5 v3.4" stroke="var(--clp-blanc)" stroke-width="1.7" fill="none"/>
+      <path d="M37,63 L63,71 M63,63 L37,71" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <circle cx="36" cy="62.2" r="2.8"/><circle cx="64" cy="62.2" r="2.8"/>
+      <circle cx="36" cy="71.8" r="2.8"/><circle cx="64" cy="71.8" r="2.8"/>
+    </g>
+  </symbol>
+
+  <!-- 7 · DANGEREUX POUR LA SANTÉ — le point d'exclamation -->
+  <symbol id="clp-exclamation" viewBox="0 0 100 100">
+    <use href="#clp-cadre"/>
+    <g class="clp-s">
+      <path d="M44.5,26 h11 l-2.3,33 h-6.4 z"/>
+      <circle cx="50" cy="68.5" r="5.6"/>
+    </g>
+  </symbol>
+
+  <!-- 8 · TRÈS DANGEREUX POUR LA SANTÉ — le buste, l'atteinte interne -->
+  <symbol id="clp-sante" viewBox="0 0 100 100">
+    <use href="#clp-cadre"/>
+    <g class="clp-s">
+      <path d="M50,23 c-4.3,0 -7.8,3.5 -7.8,7.8 c0,3.4 1.7,6 4.3,7.2 c-7.8,1.7 -13.9,7.8 -13.9,16.5 v13.5 h34.8 v-13.5
+               c0,-8.7 -6.1,-14.8 -13.9,-16.5 c2.6,-1.2 4.3,-3.8 4.3,-7.2 c0,-4.3 -3.5,-7.8 -7.8,-7.8 z"/>
+      <path d="M50,44 l3.4,7.8 l8.7,-2.6 l-6.1,7 l6.1,7 l-8.7,-2.6 l-3.4,7.8 l-3.4,-7.8 l-8.7,2.6 l6.1,-7 l-6.1,-7 l8.7,2.6 z"
+            fill="var(--clp-blanc)"/>
+    </g>
+  </symbol>
+
+  <!-- 9 · DANGEREUX POUR L'ENVIRONNEMENT AQUATIQUE -->
+  <symbol id="clp-environnement" viewBox="0 0 100 100">
+    <use href="#clp-cadre"/>
+    <g class="clp-s">
+      <path d="M37,63 v-22" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+      <path d="M37,48 l-6.5,-7.5 M37,45 l6.5,-8 M37,54 l-6,-5 M37,52 l6,-6 M37,41 l-3.4,-6.5 M37,41 l3.4,-7"
+            stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+      <path d="M30,63.5 h40" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      <path d="M33,69 q4.2,-3.4 8.4,0 q4.2,3.4 8.4,0 q4.2,-3.4 8.4,0 q4.2,3.4 8.4,0"
+            stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M50,58 c5,-4.2 13,-4.2 17,0 c-4,4.2 -12,4.2 -17,0 z"/>
+      <path d="M69,54.5 l5,-3.4 v7.6 z"/>
+      <path d="M58,55.6 l1.7,1.7 M59.7,55.6 l-1.7,1.7" stroke="var(--clp-blanc)" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+    </g>
+  </symbol>
+
+  <!-- ===== Les cinq équipements de la salle ===== -->
+  <symbol id="eq-douche" viewBox="0 0 60 60">
+    <path class="eq-s" d="M30,6 v7 M18,15 h24 M22,15 a8,8 0 0 1 16,0"/>
+    <path class="eq-s" d="M22,22 v6 M26,22 v8 M30,22 v6 M34,22 v8 M38,22 v6"/>
+    <path class="eq-s" d="M30,36 a4,4 0 1 1 0,0.1 M30,42 v8 M24,54 l6,-4 l6,4 M23,45 h14"/>
+  </symbol>
+  <symbol id="eq-rincoeil" viewBox="0 0 60 60">
+    <path class="eq-s" d="M12,44 h36 M30,44 v-8 M22,36 h16"/>
+    <path class="eq-s" d="M24,36 c0,-6 -3,-9 -7,-11 M36,36 c0,-6 3,-9 7,-11"/>
+    <path class="eq-s" d="M12,20 c3,-5 8,-5 11,0 M37,20 c3,-5 8,-5 11,0"/>
+    <path class="eq-p" d="M17,10 a2.4,2.4 0 1 1 0,0.1 z M43,10 a2.4,2.4 0 1 1 0,0.1 z"/>
+  </symbol>
+  <symbol id="eq-extincteur" viewBox="0 0 60 60">
+    <path class="eq-s" d="M22,20 h14 a4,4 0 0 1 4,4 v26 a4,4 0 0 1 -4,4 h-14 a4,4 0 0 1 -4,-4 v-26 a4,4 0 0 1 4,-4 z"/>
+    <path class="eq-s" d="M25,20 v-4 h8 v4 M33,14 h9 M42,14 v10 M42,24 l-6,4"/>
+    <path class="eq-s" d="M22,30 h14"/>
+  </symbol>
+  <symbol id="eq-couverture" viewBox="0 0 60 60">
+    <path class="eq-s" d="M14,12 h32 v30 l-16,10 l-16,-10 z"/>
+    <path class="eq-s" d="M30,22 c1.6,4 -0.6,5.6 -2,7.4 c-1,1.4 -1.4,2.6 -0.4,4
+                          c-1.6,-0.6 -2.6,-2 -2.6,-3.6 c-2,2 -3,4 -3,6.4 c0,4.4 3.6,7.4 8,7.4
+                          c4.4,0 8,-3 8,-7.4 c0,-4 -3,-6 -4.6,-8.4 c-2,-2.4 -3.4,-4 -3.4,-5.8 z"/>
+  </symbol>
+  <symbol id="eq-sortie" viewBox="0 0 60 60">
+    <path class="eq-s" d="M34,10 h14 v40 h-14"/>
+    <path class="eq-p" d="M22,12 a3.4,3.4 0 1 1 0,0.1 z"/>
+    <path class="eq-s" d="M22,20 l-6,8 l0,10 M22,20 l6,6 M22,20 l0,10 l-7,10 M22,30 l7,8 l0,10"/>
+    <path class="eq-s" d="M6,30 h12 M14,25 l5,5 l-5,5"/>
+  </symbol>
+</svg>
+
+<!-- ==================== PAGE 1 · RECTO ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <h1>Outil 3 — Sécurité au laboratoire</h1>
+  <p class="sous">Physique-Chimie · <span class="rouge">Seconde</span> · fiche outil — à coller, elle sert toute l'année · M. Van Hoorde</p>
+
+  <p class="aquoi">À lire une fois en début d'année, et à retrouver en trois secondes le jour où quelque chose se passe mal.</p>
+
+  <h2><span class="n">01</span> Avant de venir</h2>
+
+  <div class="deux gauche">
+    <div class="schema">
+      <svg viewBox="0 0 400 250" role="img" aria-label="Silhouette d'un élève en tenue de laboratoire : cheveux attachés, blouse en coton, jambes couvertes, chaussures fermées.">
+        <circle class="sil-corps" cx="200" cy="42" r="18"/>
+        <path class="sil-trait" d="M184,34 q16,-14 32,0"/>
+        <path class="sil-trait" d="M218,44 q10,4 6,14"/>
+        <path class="sil-blouse" d="M200,62 l-26,10 l-8,52 h12 l3,58 h38 l3,-58 h12 l-8,-52 z"/>
+        <path class="sil-trait" d="M200,64 v116"/>
+        <path class="sil-blouse" d="M174,72 l-14,50 l11,4 l16,-44 z"/>
+        <path class="sil-blouse" d="M226,72 l14,50 l-11,4 l-16,-44 z"/>
+        <path class="sil-corps" d="M182,182 h36 l-3,42 h-13 l-1,-30 l-1,30 h-13 z"/>
+        <path class="sil-trait" d="M200,182 v42"/>
+        <path class="sil-corps" d="M179,224 h16 v8 h-20 a3,3 0 0 1 0,-8 z"/>
+        <path class="sil-corps" d="M221,224 h-16 v8 h20 a3,3 0 0 1 0,-8 z"/>
+        <path class="sil-fleche" d="M181,40 h-30"/>
+        <circle class="sil-pastille" cx="141" cy="40" r="9"/>
+        <text class="sil-num" x="141" y="41" text-anchor="middle">1</text>
+        <text class="sil-txt g" x="126" y="40">Cheveux attachés</text>
+        <path class="sil-fleche" d="M171,110 h-20"/>
+        <circle class="sil-pastille" cx="141" cy="110" r="9"/>
+        <text class="sil-num" x="141" y="111" text-anchor="middle">2</text>
+        <text class="sil-txt g" x="126" y="110">Blouse en coton</text>
+        <path class="sil-fleche" d="M217,196 h34"/>
+        <circle class="sil-pastille" cx="261" cy="196" r="9"/>
+        <text class="sil-num" x="261" y="197" text-anchor="middle">3</text>
+        <text class="sil-txt" x="276" y="196">Jambes couvertes</text>
+        <path class="sil-fleche" d="M225,228 h26"/>
+        <circle class="sil-pastille" cx="261" cy="228" r="9"/>
+        <text class="sil-num" x="261" y="229" text-anchor="middle">4</text>
+        <text class="sil-txt" x="276" y="228">Chaussures fermées</text>
+      </svg>
+    </div>
+    <div>
+      <div class="regle">
+        <div class="etq">La règle — elle se décide chez toi, le matin</div>
+        <div class="forme">cheveux attachés · blouse coton<br>jambes couvertes · chaussures fermées</div>
+        <div class="rt"><span class="e">en plus</span><div><b>Lunettes</b> et <b>gants</b> quand le professeur le demande : la consigne arrive au début de la séance et dépend du produit.</div></div>
+        <div class="rt piege"><span class="e">le piège</span><div>Les <b>lentilles</b> de contact sont vivement déconseillées : elles <b>retiennent le produit contre l'œil</b> et gênent le rinçage.</div></div>
+      </div>
+      <div class="encart">
+        <div class="etq">Pourquoi le coton</div>
+        Une blouse <b>synthétique fond</b> au contact d'une flamme et colle à la peau. Le coton brûle sans coller — c'est toute la différence.
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span> Pendant la manipulation</h2>
+  <div class="deux">
+    <ol>
+      <li><b>Ne jamais</b> sentir, boire, manger, ni porter à la bouche un produit, quel qu'il soit.</li>
+      <li><b>Manipuler debout</b>, limiter les déplacements, ranger les tabourets sous les paillasses.</li>
+      <li><b>Laisser libres</b> les accès et les lieux de passage.</li>
+    </ol>
+    <ol start="4">
+      <li><b>Garder</b> un plan de travail propre et dégagé.</li>
+      <li><b>Utiliser une spatule</b> pour prélever un solide — jamais les doigts.</li>
+      <li><b>Manipuler sous la hotte</b> si le produit présente un risque par inhalation.</li>
+    </ol>
+  </div>
+
+  <h2><span class="n">03</span> Après la manipulation</h2>
+  <div class="deux">
+    <ol>
+      <li>Verser les résidus dans les <b>bacs de récupération</b>.</li>
+      <li><b>Ne jamais réintroduire</b> un produit dans son flacon d'origine — il est contaminé, et ce n'est plus celui de l'étiquette.</li>
+    </ol>
+    <ol start="3">
+      <li><b>Laver</b> la verrerie et <b>ranger</b> la paillasse.</li>
+      <li><b>Se laver les mains</b> en fin de séance.</li>
+    </ol>
+  </div>
+
+  <h2><span class="n">04</span> Les cinq réflexes de l'année</h2>
+  <div class="deux">
+    <ol>
+      <li>Je <b>lis l'étiquette</b> avant de toucher le flacon.</li>
+      <li>Je ne <b>sens</b> jamais, je ne <b>goûte</b> jamais, je ne porte jamais rien à la bouche.</li>
+      <li>Je prélève un solide à la <b>spatule</b>, un liquide à la <b>propipette</b> — jamais autrement.</li>
+    </ol>
+    <ol start="4">
+      <li>Je ne mélange que ce que le <b>protocole</b> demande.</li>
+      <li>S'il se passe quelque chose : je <b>préviens</b>, et je rince à l'<b>eau</b> si j'ai été touché.</li>
+    </ol>
+  </div>
+
+  <!-- 🔴 EN PIED DE LA PAGE 1, jamais ailleurs : c'est le seul
+       contenu de la fiche qu'on cherche dans l'urgence. -->
+  <div class="urgence">
+    <div class="etq">🔴 Si ça tourne mal — le détail est en page 3</div>
+    <div class="cri">Prévenir immédiatement le professeur. Toujours.
+      <small>Signaler un incident n'est jamais une faute — le cacher en est une.</small></div>
+    <div class="ug">
+      <div><span class="s">Dans l'œil</span><span>Rincer <b>tout de suite</b>, paupière ouverte, <b>15 min</b>, sans frotter.</span></div>
+      <div><span class="s">Verre cassé</span><span><b>Jamais</b> à main nue. Pelle et balayette, conteneur à verre.</span></div>
+      <div><span class="s">Sur la peau</span><span>Rincer à l'eau <b>15 min</b>. Retirer le vêtement <b>pendant</b> le rinçage.</span></div>
+      <div><span class="s">Début de feu</span><span>Ne pas souffler. Couper le chauffage, s'écarter, prévenir.</span></div>
+      <div><span class="s">Dans la bouche</span><span>Ne rien avaler, <b>ne pas faire vomir</b>, rincer à l'eau.</span></div>
+      <div><span class="s">Renversé</span><span><b>Demander avant d'éponger</b> : le papier n'est pas toujours la réponse.</span></div>
+    </div>
+  </div>
+
+  <div class="pied"><span>Fiche outil 3 · Sécurité au laboratoire — M. Van Hoorde</span><span>page 1/4</span></div>
+</div>
+
+<!-- ==================== PAGE 2 · VERSO — LA PLANCHE ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Outil 3</span> — lire une étiquette : les neuf pictogrammes</p>
+
+  <h2><span class="n">05</span> Les neuf pictogrammes de danger</h2>
+  <p style="margin-bottom:1.6mm">Avant de toucher un flacon, on <b>lit son étiquette en entier</b> : les pictogrammes d'abord, les mentions écrites à côté ensuite. Le dessin annonce, le texte précise.</p>
+
+  <div class="fam">
+    <div class="t">Les dangers physiques</div>
+    <div class="s">Ce que le produit fait <b>tout seul</b> : il explose, il brûle, il attaque la matière.</div>
+    <div class="planche">
+      <div class="pic">
+        <svg viewBox="0 0 100 100" role="img" aria-label="pictogramme explosif"><use href="#clp-explosif"/></svg>
+        <div class="nom">EXPLOSIF</div>
+        <div class="q"><ul><li>Peut exploser au contact d'une flamme, d'une étincelle, d'électricité statique, sous l'effet de la chaleur, d'un choc ou de frottements</li></ul></div>
+      </div>
+      <div class="pic">
+        <svg viewBox="0 0 100 100" role="img" aria-label="pictogramme comburant"><use href="#clp-comburant"/></svg>
+        <div class="nom">COMBURANT</div>
+        <div class="q"><ul><li>Peut provoquer ou aggraver un incendie</li><li>Peut provoquer une explosion en présence de produits inflammables</li></ul></div>
+      </div>
+      <div class="pic">
+        <svg viewBox="0 0 100 100" role="img" aria-label="pictogramme inflammable"><use href="#clp-inflammable"/></svg>
+        <div class="nom">INFLAMMABLE</div>
+        <div class="q"><ul><li>Peut s'enflammer au contact d'une flamme, d'une étincelle, sous l'effet de la chaleur, de frottements, au contact de l'air ou de l'eau</li></ul></div>
+      </div>
+      <div class="pic">
+        <svg viewBox="0 0 100 100" role="img" aria-label="pictogramme gaz sous pression"><use href="#clp-gaz"/></svg>
+        <div class="nom">GAZ SOUS PRESSION</div>
+        <div class="q"><ul><li>Peut exploser sous l'effet de la chaleur</li><li>Peut causer des brûlures ou blessures liées au froid</li></ul></div>
+      </div>
+      <div class="pic deuxfois">
+        <svg viewBox="0 0 100 100" role="img" aria-label="pictogramme corrosif"><use href="#clp-corrosif"/></svg>
+        <div class="nom">CORROSIF</div>
+        <div class="q"><ul><li>Le produit ronge</li><li>Peut attaquer ou détruire les métaux</li></ul></div>
+        <span class="deja">↓ il revient ci-dessous</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fam">
+    <div class="t">Les dangers pour la santé</div>
+    <div class="s">Ce que le produit fait <b>à toi</b>, tout de suite ou beaucoup plus tard.</div>
+    <div class="planche sante">
+      <div class="pic deuxfois">
+        <svg viewBox="0 0 100 100" role="img" aria-label="pictogramme corrosif"><use href="#clp-corrosif"/></svg>
+        <div class="nom">CORROSIF</div>
+        <div class="q"><ul><li>Peut provoquer des brûlures de la peau et des lésions aux yeux en cas de contact ou de projection</li></ul></div>
+        <span class="deja">↑ le même que ci-dessus</span>
+      </div>
+      <div class="pic">
+        <svg viewBox="0 0 100 100" role="img" aria-label="pictogramme toxique ou mortel"><use href="#clp-toxique"/></svg>
+        <div class="nom">TOXIQUE OU MORTEL</div>
+        <div class="q"><ul><li>Peut tuer rapidement</li><li>Empoisonne rapidement, même à faible dose</li></ul></div>
+      </div>
+      <div class="pic">
+        <svg viewBox="0 0 100 100" role="img" aria-label="pictogramme dangereux pour la santé"><use href="#clp-exclamation"/></svg>
+        <div class="nom">DANGEREUX POUR LA SANTÉ</div>
+        <div class="q"><ul><li>Peut empoisonner à forte dose</li><li>Irrite la peau, les yeux, les voies respiratoires</li><li>Allergies cutanées, somnolence, vertige</li></ul></div>
+      </div>
+      <div class="pic">
+        <svg viewBox="0 0 100 100" role="img" aria-label="pictogramme très dangereux pour la santé"><use href="#clp-sante"/></svg>
+        <div class="nom">TRÈS DANGEREUX POUR LA SANTÉ</div>
+        <div class="q"><ul><li>Cancer, modification de l'ADN</li><li>Nuit à la fertilité ou au fœtus</li><li>Altère certains organes</li><li>Mortel par ingestion ou pénétration dans les voies respiratoires</li><li>Difficultés ou allergies respiratoires</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fam">
+    <div class="t">Le danger pour l'environnement</div>
+    <div class="s">Ce que le produit fait <b>ailleurs</b>, une fois versé dans l'évier.</div>
+    <div class="planche env">
+      <div class="pic">
+        <svg viewBox="0 0 100 100" role="img" aria-label="pictogramme dangereux pour l'environnement aquatique"><use href="#clp-environnement"/></svg>
+        <div class="nom">DANGEREUX POUR L'ENVIRONNEMENT AQUATIQUE</div>
+        <div class="q"><ul><li>Le produit pollue</li><li>Effets néfastes, à court et&nbsp;/&nbsp;ou à long terme, sur les organismes du milieu aquatique</li></ul></div>
+      </div>
+      <div style="grid-column:2 / span 4">
+        <div class="encart" style="margin:0 0 1.4mm">
+          <div class="etq">Neuf pictogrammes, dix cases</div>
+          Le <b>corrosif</b> figure dans <b>deux</b> familles, et ce n'est pas une erreur : le même produit <b>ronge le métal</b> et <b>brûle la peau</b>. Un pictogramme peut porter deux dangers de nature différente — c'est pour cela qu'on lit l'étiquette <b>en entier</b>, et pas seulement le dessin.
+        </div>
+        <div class="eviter" style="margin:0">
+          <div class="etq">⚠ Les deux qu'on confond</div>
+          <b>DANGEREUX POUR LA SANTÉ</b> (point d'exclamation) : ça irrite, ça pique — effet <b>immédiat et passager</b>.<br>
+          <b>TRÈS DANGEREUX POUR LA SANTÉ</b> (silhouette) : cancer, ADN, organes — l'effet peut apparaître <b>des années plus tard</b>, et c'est ce qui le rend dangereux : sur le moment, on ne sent rien.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="encart" style="margin-top:auto">
+    <div class="etq">Le piège</div>
+    <b>Pas de pictogramme ne veut pas dire « sans danger »</b> : cela veut dire « pas de danger classé ». Les règles de la page 1 tiennent toujours — on ne sent jamais un produit, quel qu'il soit.
+  </div>
+
+  <div class="pied"><span>Fiche outil 3 · Sécurité au laboratoire — M. Van Hoorde</span><span>page 2/4</span></div>
+</div>
+
+<!-- ==================== PAGE 3 · SI ÇA TOURNE MAL ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Outil 3</span> — si ça tourne mal : le détail</p>
+
+  <h2><span class="n">06</span> Six situations, six gestes</h2>
+  <p style="margin-bottom:1.4mm">Les produits d'une salle de seconde sont, pour l'essentiel, <b>bénins</b>. Cette page n'est pas là pour faire peur : elle est là parce qu'un réflexe se prépare <b>avant</b>. Le jour où quelque chose arrive, personne ne relit une fiche.</p>
+
+  <div class="regle">
+    <div class="etq">Avant tout — et il n'y a pas d'autre premier geste</div>
+    <div class="forme">Prévenir immédiatement le professeur.<br>Toujours. Même si ça paraît bénin.</div>
+    <div class="rt"><span class="e">pourquoi</span><div><b>Signaler un incident n'est jamais une faute — le cacher en est une.</b> Personne n'a jamais eu d'ennuis pour avoir prévenu trop tôt.</div></div>
+  </div>
+
+  <table style="width:100%;border-collapse:collapse;font-size:8.6pt;margin:1.4mm 0 2mm">
+    <tr><td style="width:38mm;padding:1.2mm 2mm 1.2mm 0;border-bottom:.8px solid var(--grille);font-weight:600;vertical-align:top">Projection dans l'œil</td>
+        <td style="padding:1.2mm 0;border-bottom:.8px solid var(--grille)">Rincer <b>tout de suite</b> au rince-œil ou à l'eau courante, paupière maintenue ouverte, <b>au moins 15 minutes</b>, sans frotter — puis prévenir.</td></tr>
+    <tr><td style="padding:1.2mm 2mm 1.2mm 0;border-bottom:.8px solid var(--grille);font-weight:600;vertical-align:top">Projection sur la peau<br>ou les vêtements</td>
+        <td style="padding:1.2mm 0;border-bottom:.8px solid var(--grille)">Rincer abondamment à l'eau, <b>15 minutes</b>, sous la douche de sécurité si la surface est étendue. Retirer le vêtement imbibé <b>pendant</b> le rinçage.</td></tr>
+    <tr><td style="padding:1.2mm 2mm 1.2mm 0;border-bottom:.8px solid var(--grille);font-weight:600;vertical-align:top">Produit porté à la bouche</td>
+        <td style="padding:1.2mm 0;border-bottom:.8px solid var(--grille)">Ne rien avaler, <b>ne pas faire vomir</b>, rincer la bouche à l'eau, prévenir immédiatement.</td></tr>
+    <tr><td style="padding:1.2mm 2mm 1.2mm 0;border-bottom:.8px solid var(--grille);font-weight:600;vertical-align:top">Verre cassé</td>
+        <td style="padding:1.2mm 0;border-bottom:.8px solid var(--grille)"><b>Ne jamais</b> ramasser à main nue. Prévenir, puis pelle et balayette, dans le <b>conteneur à verre</b> — jamais la poubelle ordinaire.</td></tr>
+    <tr><td style="padding:1.2mm 2mm 1.2mm 0;border-bottom:.8px solid var(--grille);font-weight:600;vertical-align:top">Début d'inflammation</td>
+        <td style="padding:1.2mm 0;border-bottom:.8px solid var(--grille)">Ne pas souffler dessus. Couper le chauffage. S'écarter et prévenir. <b>C'est le professeur qui intervient</b>, jamais l'élève.</td></tr>
+    <tr><td style="padding:1.2mm 2mm 1.2mm 0;font-weight:600;vertical-align:top">Produit renversé<br>sur la paillasse</td>
+        <td style="padding:1.2mm 0">Ne pas éponger avant d'avoir demandé : selon le produit, <b>le papier n'est pas la bonne réponse</b>.</td></tr>
+  </table>
+
+  <div class="eviter">
+    <div class="etq">⚠ Trois choses que tu ne fais pas, même en voulant bien faire</div>
+    <b>Tu ne neutralises rien</b> et tu n'appliques aucun produit sur une brûlure : de l'eau, longtemps, et c'est tout.<br>
+    <b>Tu ne prends pas l'extincteur.</b> Mal employé, il aggrave certains départs de feu — et il n'est pas à ta charge.<br>
+    <b>Tu n'appelles pas les secours toi-même</b> depuis la salle : c'est le professeur qui décide et qui appelle.
+  </div>
+
+  <h3>Ce qui se sait avant, pas pendant</h3>
+  <p style="margin-bottom:1mm">Repérer ces cinq équipements <b>en entrant dans la salle</b>, à la première séance de l'année. Cinq secondes, une fois — et le jour où ça sert, tu ne les cherches pas.</p>
+
+  <div class="equips">
+    <div class="eq"><svg viewBox="0 0 60 60" role="img" aria-label="douche de sécurité"><use href="#eq-douche"/></svg><div class="n2">La douche de sécurité</div></div>
+    <div class="eq"><svg viewBox="0 0 60 60" role="img" aria-label="rince-œil"><use href="#eq-rincoeil"/></svg><div class="n2">Le rince-œil</div></div>
+    <div class="eq feu"><svg viewBox="0 0 60 60" role="img" aria-label="extincteur"><use href="#eq-extincteur"/></svg><div class="n2">L'extincteur</div></div>
+    <div class="eq feu"><svg viewBox="0 0 60 60" role="img" aria-label="couverture anti-feu"><use href="#eq-couverture"/></svg><div class="n2">La couverture anti-feu</div></div>
+    <div class="eq"><svg viewBox="0 0 60 60" role="img" aria-label="sortie"><use href="#eq-sortie"/></svg><div class="n2">La sortie</div></div>
+  </div>
+
+  <div class="encart" style="margin-top:auto">
+    <div class="etq">Les deux liens qui font tenir l'outil ensemble</div>
+    <b>Avec la page 1 —</b> c'est ici que la consigne sur les <b>lentilles</b> prend son sens : une lentille retient le produit contre l'œil, et les 15 minutes de rinçage ne servent plus à grand-chose.<br>
+    <b>Avec la page 2 —</b> le pictogramme lu <b>avant</b> de manipuler est ce qui évite d'avoir à lire cette page-ci. Tout l'outil tient dans cet ordre : lire, puis manipuler.
+  </div>
+
+  <div class="pied"><span>Fiche outil 3 · Sécurité au laboratoire — M. Van Hoorde</span><span>page 3/4</span></div>
+</div>
+
+<!-- ==================== PAGE 4 · LA CHECKLIST ET LES EXERCICES ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Outil 3</span> — la checklist du jour de TP</p>
+
+  <h2><span class="n">07</span> Avant d'entrer en salle</h2>
+  <p style="margin-bottom:1.2mm">Huit points à cocher mentalement. Les quatre premiers se décident <b>chez toi</b> ; les quatre suivants, sur le pas de la porte.</p>
+
+  <div class="check">
+    <div><span class="case"></span><span>Chaussures <b>fermées</b>, jambes couvertes</span></div>
+    <div><span class="case"></span><span>Cheveux longs <b>attachés</b></span></div>
+    <div><span class="case"></span><span>Blouse en <b>coton</b>, et je la ferme</span></div>
+    <div><span class="case"></span><span>Pas de <b>lentilles</b> — ou je l'ai signalé</span></div>
+    <div><span class="case"></span><span>Sac <b>hors du passage</b>, tabouret rangé</span></div>
+    <div><span class="case"></span><span>Paillasse <b>dégagée</b> : le protocole, de quoi écrire</span></div>
+    <div><span class="case"></span><span>J'écoute la consigne <b>lunettes / gants</b></span></div>
+    <div><span class="case"></span><span>Je repère <b>douche, rince-œil, extincteur, couverture, sortie</b></span></div>
+  </div>
+
+  <h2><span class="n">08</span> Du pictogramme au geste</h2>
+  <p style="margin-bottom:1.2mm">Ce n'est pas le pictogramme le plus impressionnant qui commande : c'est celui qui correspond à <b>ce que tu vas faire</b>. Tu chauffes ? Regarde la flamme. Tu verses ? Regarde le corrosif. Tu jettes ? Regarde l'environnement.</p>
+
+  <table style="width:100%;border-collapse:collapse;font-size:8.4pt;margin-bottom:2mm">
+    <tr><td style="width:9mm;padding:.9mm 2mm .9mm 0;border-bottom:.8px solid var(--grille)"><svg viewBox="0 0 100 100" style="width:8mm;height:8mm" role="img" aria-label="explosif"><use href="#clp-explosif"/></svg></td>
+        <td style="padding:.9mm 0;border-bottom:.8px solid var(--grille)">Aucun choc, aucun frottement, aucune source de chaleur. <b>On ne le manipule pas en seconde sans le professeur.</b></td></tr>
+    <tr><td style="padding:.9mm 2mm .9mm 0;border-bottom:.8px solid var(--grille)"><svg viewBox="0 0 100 100" style="width:8mm;height:8mm" role="img" aria-label="comburant"><use href="#clp-comburant"/></svg></td>
+        <td style="padding:.9mm 0;border-bottom:.8px solid var(--grille)">Je le tiens <b>loin de tout produit inflammable</b> — c'est le seul pictogramme qui parle d'un <b>autre</b> flacon.</td></tr>
+    <tr><td style="padding:.9mm 2mm .9mm 0;border-bottom:.8px solid var(--grille)"><svg viewBox="0 0 100 100" style="width:8mm;height:8mm" role="img" aria-label="inflammable"><use href="#clp-inflammable"/></svg></td>
+        <td style="padding:.9mm 0;border-bottom:.8px solid var(--grille)">Jamais près d'une <b>flamme nue</b> : chauffage au bain-marie ou au chauffe-ballon. Ce sont les <b>vapeurs</b> qui prennent feu.</td></tr>
+    <tr><td style="padding:.9mm 2mm .9mm 0;border-bottom:.8px solid var(--grille)"><svg viewBox="0 0 100 100" style="width:8mm;height:8mm" role="img" aria-label="gaz sous pression"><use href="#clp-gaz"/></svg></td>
+        <td style="padding:.9mm 0;border-bottom:.8px solid var(--grille)">Je ne déplace pas la bouteille, je ne la chauffe pas, je ne touche pas au détendeur.</td></tr>
+    <tr><td style="padding:.9mm 2mm .9mm 0;border-bottom:.8px solid var(--grille)"><svg viewBox="0 0 100 100" style="width:8mm;height:8mm" role="img" aria-label="corrosif"><use href="#clp-corrosif"/></svg></td>
+        <td style="padding:.9mm 0;border-bottom:.8px solid var(--grille)"><b>Lunettes et gants</b>, sans discussion. Je verse lentement, loin du visage. En cas de contact : eau, 15 minutes.</td></tr>
+    <tr><td style="padding:.9mm 2mm .9mm 0;border-bottom:.8px solid var(--grille)"><svg viewBox="0 0 100 100" style="width:8mm;height:8mm" role="img" aria-label="toxique ou mortel"><use href="#clp-toxique"/></svg></td>
+        <td style="padding:.9mm 0;border-bottom:.8px solid var(--grille)">Sous la <b>hotte</b>, gants, et rien ne s'approche du visage. Lavage des mains obligatoire ensuite.</td></tr>
+    <tr><td style="padding:.9mm 2mm .9mm 0;border-bottom:.8px solid var(--grille)"><svg viewBox="0 0 100 100" style="width:8mm;height:8mm" role="img" aria-label="dangereux pour la santé"><use href="#clp-exclamation"/></svg></td>
+        <td style="padding:.9mm 0;border-bottom:.8px solid var(--grille)">J'évite le contact avec la peau et les yeux ; j'aère si ça sent fort. Je me lave les mains à la fin.</td></tr>
+    <tr><td style="padding:.9mm 2mm .9mm 0;border-bottom:.8px solid var(--grille)"><svg viewBox="0 0 100 100" style="width:8mm;height:8mm" role="img" aria-label="très dangereux pour la santé"><use href="#clp-sante"/></svg></td>
+        <td style="padding:.9mm 0;border-bottom:.8px solid var(--grille)">Sous la <b>hotte</b>, gants. On ne sent rien sur le moment : c'est précisément ce qui le rend dangereux.</td></tr>
+    <tr><td style="padding:.9mm 2mm .9mm 0"><svg viewBox="0 0 100 100" style="width:8mm;height:8mm" role="img" aria-label="dangereux pour l'environnement"><use href="#clp-environnement"/></svg></td>
+        <td style="padding:.9mm 0">Le reste ne va <b>jamais à l'évier</b> : bac de récupération, en fin de séance.</td></tr>
+  </table>
+
+  <div class="encart">
+    <div class="etq">Ce qui prime sur cette fiche</div>
+    Les consignes de ton <b>professeur</b> en début de séance et le <b>règlement du laboratoire</b> de l'établissement passent avant cette feuille. En cas de différence, ce sont les leurs qui s'appliquent.
+  </div>
+
+  <!-- ==========================================================
+       LE QR CODE — généré pour CETTE page, jamais recopié.
+       Encodeur maison version 6 · niveau M · mode octet, autovérifié
+       de deux façons avant sortie : syndromes Reed-Solomon tous nuls
+       sur les quatre blocs, et relecture de la matrice produite
+       (démasquage, désentrelacement, décodage) rendant l'URL de
+       départ, caractère pour caractère.
+       ⚠ Reprendre le chemin d'une autre fiche produirait un QR qui
+       renvoie silencieusement au mauvais cours.
+       ========================================================== -->
+  <div class="versexos">
+    <svg viewBox="0 0 45 45" width="66" height="66" role="img" aria-label="QR code vers la page de l'outil 3"><rect width="45" height="45" fill="#fff"/><path fill="#141a26" shape-rendering="crispEdges" d="M2 2h7v1h-7zM10 2h5v1h-5zM16 2h5v1h-5zM22 2h1v1h-1zM27 2h2v1h-2zM32 2h1v1h-1zM36 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM13 3h1v1h-1zM15 3h1v1h-1zM20 3h2v1h-2zM23 3h2v1h-2zM27 3h2v1h-2zM31 3h1v1h-1zM33 3h2v1h-2zM36 3h1v1h-1zM42 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM12 4h4v1h-4zM18 4h1v1h-1zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h4v1h-4zM31 4h2v1h-2zM36 4h1v1h-1zM38 4h3v1h-3zM42 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM10 5h2v1h-2zM14 5h1v1h-1zM18 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM26 5h1v1h-1zM28 5h2v1h-2zM34 5h1v1h-1zM36 5h1v1h-1zM38 5h3v1h-3zM42 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h1v1h-1zM13 6h1v1h-1zM16 6h4v1h-4zM21 6h2v1h-2zM26 6h1v1h-1zM30 6h4v1h-4zM36 6h1v1h-1zM38 6h3v1h-3zM42 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM12 7h3v1h-3zM16 7h4v1h-4zM22 7h1v1h-1zM24 7h2v1h-2zM28 7h1v1h-1zM31 7h1v1h-1zM36 7h1v1h-1zM42 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h1v1h-1zM26 8h1v1h-1zM28 8h1v1h-1zM30 8h1v1h-1zM32 8h1v1h-1zM34 8h1v1h-1zM36 8h7v1h-7zM10 9h2v1h-2zM13 9h2v1h-2zM16 9h1v1h-1zM18 9h1v1h-1zM20 9h2v1h-2zM24 9h7v1h-7zM32 9h1v1h-1zM2 10h3v1h-3zM6 10h1v1h-1zM8 10h1v1h-1zM10 10h2v1h-2zM13 10h2v1h-2zM19 10h1v1h-1zM21 10h2v1h-2zM26 10h1v1h-1zM28 10h1v1h-1zM31 10h1v1h-1zM33 10h1v1h-1zM35 10h1v1h-1zM37 10h3v1h-3zM42 10h1v1h-1zM3 11h1v1h-1zM6 11h1v1h-1zM9 11h2v1h-2zM12 11h1v1h-1zM14 11h8v1h-8zM23 11h3v1h-3zM28 11h2v1h-2zM31 11h3v1h-3zM37 11h3v1h-3zM3 12h3v1h-3zM7 12h5v1h-5zM13 12h2v1h-2zM16 12h1v1h-1zM18 12h2v1h-2zM24 12h3v1h-3zM28 12h3v1h-3zM34 12h1v1h-1zM36 12h1v1h-1zM39 12h2v1h-2zM2 13h2v1h-2zM5 13h2v1h-2zM9 13h2v1h-2zM12 13h1v1h-1zM15 13h1v1h-1zM19 13h1v1h-1zM30 13h2v1h-2zM33 13h1v1h-1zM37 13h3v1h-3zM41 13h2v1h-2zM2 14h1v1h-1zM8 14h1v1h-1zM10 14h3v1h-3zM14 14h4v1h-4zM22 14h1v1h-1zM24 14h1v1h-1zM30 14h1v1h-1zM33 14h1v1h-1zM37 14h1v1h-1zM5 15h1v1h-1zM11 15h2v1h-2zM15 15h1v1h-1zM19 15h1v1h-1zM21 15h1v1h-1zM24 15h1v1h-1zM26 15h3v1h-3zM30 15h5v1h-5zM37 15h2v1h-2zM40 15h1v1h-1zM42 15h1v1h-1zM2 16h2v1h-2zM5 16h1v1h-1zM7 16h2v1h-2zM11 16h3v1h-3zM19 16h1v1h-1zM23 16h1v1h-1zM27 16h1v1h-1zM30 16h1v1h-1zM32 16h4v1h-4zM38 16h1v1h-1zM42 16h1v1h-1zM3 17h2v1h-2zM6 17h2v1h-2zM10 17h1v1h-1zM12 17h1v1h-1zM14 17h1v1h-1zM16 17h1v1h-1zM20 17h2v1h-2zM24 17h1v1h-1zM26 17h1v1h-1zM29 17h1v1h-1zM34 17h1v1h-1zM36 17h1v1h-1zM38 17h5v1h-5zM2 18h3v1h-3zM7 18h2v1h-2zM10 18h1v1h-1zM12 18h4v1h-4zM21 18h2v1h-2zM24 18h4v1h-4zM37 18h1v1h-1zM42 18h1v1h-1zM3 19h2v1h-2zM6 19h1v1h-1zM9 19h1v1h-1zM11 19h4v1h-4zM18 19h1v1h-1zM20 19h3v1h-3zM24 19h1v1h-1zM27 19h1v1h-1zM29 19h1v1h-1zM31 19h1v1h-1zM33 19h2v1h-2zM38 19h3v1h-3zM5 20h5v1h-5zM14 20h2v1h-2zM18 20h1v1h-1zM21 20h6v1h-6zM29 20h1v1h-1zM31 20h3v1h-3zM37 20h1v1h-1zM42 20h1v1h-1zM6 21h1v1h-1zM10 21h2v1h-2zM13 21h1v1h-1zM15 21h1v1h-1zM19 21h2v1h-2zM22 21h1v1h-1zM24 21h3v1h-3zM28 21h1v1h-1zM30 21h1v1h-1zM33 21h1v1h-1zM35 21h3v1h-3zM39 21h4v1h-4zM3 22h1v1h-1zM5 22h4v1h-4zM11 22h1v1h-1zM14 22h3v1h-3zM21 22h1v1h-1zM23 22h2v1h-2zM27 22h2v1h-2zM30 22h1v1h-1zM32 22h2v1h-2zM36 22h3v1h-3zM40 22h1v1h-1zM42 22h1v1h-1zM2 23h1v1h-1zM10 23h4v1h-4zM16 23h3v1h-3zM20 23h2v1h-2zM23 23h1v1h-1zM25 23h1v1h-1zM27 23h4v1h-4zM33 23h1v1h-1zM35 23h1v1h-1zM38 23h2v1h-2zM3 24h1v1h-1zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h2v1h-2zM19 24h1v1h-1zM22 24h1v1h-1zM24 24h2v1h-2zM28 24h4v1h-4zM34 24h1v1h-1zM38 24h1v1h-1zM40 24h1v1h-1zM2 25h3v1h-3zM11 25h1v1h-1zM13 25h4v1h-4zM19 25h1v1h-1zM22 25h1v1h-1zM25 25h1v1h-1zM29 25h1v1h-1zM31 25h1v1h-1zM34 25h5v1h-5zM2 26h1v1h-1zM5 26h1v1h-1zM7 26h2v1h-2zM10 26h1v1h-1zM12 26h2v1h-2zM16 26h1v1h-1zM20 26h3v1h-3zM24 26h3v1h-3zM30 26h1v1h-1zM32 26h2v1h-2zM36 26h1v1h-1zM39 26h4v1h-4zM2 27h1v1h-1zM4 27h1v1h-1zM7 27h1v1h-1zM11 27h1v1h-1zM13 27h1v1h-1zM15 27h1v1h-1zM17 27h2v1h-2zM20 27h1v1h-1zM25 27h3v1h-3zM29 27h4v1h-4zM36 27h3v1h-3zM40 27h1v1h-1zM42 27h1v1h-1zM5 28h1v1h-1zM7 28h3v1h-3zM11 28h1v1h-1zM13 28h1v1h-1zM20 28h3v1h-3zM24 28h1v1h-1zM26 28h2v1h-2zM29 28h1v1h-1zM33 28h8v1h-8zM42 28h1v1h-1zM2 29h1v1h-1zM4 29h1v1h-1zM6 29h2v1h-2zM9 29h2v1h-2zM12 29h1v1h-1zM14 29h3v1h-3zM18 29h1v1h-1zM20 29h3v1h-3zM24 29h3v1h-3zM29 29h1v1h-1zM32 29h2v1h-2zM35 29h3v1h-3zM39 29h2v1h-2zM42 29h1v1h-1zM2 30h1v1h-1zM4 30h2v1h-2zM7 30h3v1h-3zM13 30h2v1h-2zM17 30h1v1h-1zM24 30h4v1h-4zM29 30h2v1h-2zM33 30h3v1h-3zM38 30h1v1h-1zM2 31h5v1h-5zM10 31h6v1h-6zM20 31h1v1h-1zM23 31h3v1h-3zM30 31h3v1h-3zM34 31h3v1h-3zM38 31h1v1h-1zM2 32h2v1h-2zM5 32h2v1h-2zM8 32h1v1h-1zM11 32h1v1h-1zM13 32h1v1h-1zM15 32h3v1h-3zM19 32h3v1h-3zM26 32h1v1h-1zM28 32h2v1h-2zM31 32h1v1h-1zM34 32h1v1h-1zM38 32h2v1h-2zM41 32h2v1h-2zM2 33h2v1h-2zM5 33h1v1h-1zM7 33h1v1h-1zM9 33h1v1h-1zM12 33h1v1h-1zM16 33h3v1h-3zM20 33h3v1h-3zM24 33h2v1h-2zM27 33h2v1h-2zM32 33h1v1h-1zM35 33h3v1h-3zM39 33h4v1h-4zM2 34h8v1h-8zM11 34h1v1h-1zM13 34h1v1h-1zM15 34h2v1h-2zM18 34h2v1h-2zM21 34h2v1h-2zM25 34h1v1h-1zM28 34h4v1h-4zM34 34h9v1h-9zM10 35h1v1h-1zM14 35h1v1h-1zM16 35h3v1h-3zM21 35h1v1h-1zM23 35h3v1h-3zM28 35h7v1h-7zM38 35h1v1h-1zM40 35h3v1h-3zM2 36h7v1h-7zM11 36h5v1h-5zM17 36h1v1h-1zM19 36h2v1h-2zM24 36h2v1h-2zM28 36h3v1h-3zM33 36h2v1h-2zM36 36h1v1h-1zM38 36h2v1h-2zM2 37h1v1h-1zM8 37h1v1h-1zM11 37h1v1h-1zM13 37h3v1h-3zM17 37h3v1h-3zM23 37h2v1h-2zM28 37h1v1h-1zM32 37h3v1h-3zM38 37h1v1h-1zM41 37h2v1h-2zM2 38h1v1h-1zM4 38h3v1h-3zM8 38h1v1h-1zM10 38h1v1h-1zM13 38h3v1h-3zM19 38h2v1h-2zM22 38h2v1h-2zM26 38h6v1h-6zM33 38h7v1h-7zM2 39h1v1h-1zM4 39h3v1h-3zM8 39h1v1h-1zM15 39h2v1h-2zM23 39h1v1h-1zM25 39h1v1h-1zM27 39h1v1h-1zM29 39h4v1h-4zM35 39h1v1h-1zM41 39h1v1h-1zM2 40h1v1h-1zM4 40h3v1h-3zM8 40h1v1h-1zM10 40h3v1h-3zM15 40h1v1h-1zM17 40h1v1h-1zM19 40h3v1h-3zM27 40h3v1h-3zM31 40h1v1h-1zM33 40h1v1h-1zM35 40h1v1h-1zM37 40h4v1h-4zM42 40h1v1h-1zM2 41h1v1h-1zM8 41h1v1h-1zM10 41h1v1h-1zM12 41h1v1h-1zM14 41h1v1h-1zM17 41h5v1h-5zM25 41h1v1h-1zM30 41h1v1h-1zM32 41h2v1h-2zM36 41h4v1h-4zM42 41h1v1h-1zM2 42h7v1h-7zM10 42h1v1h-1zM13 42h3v1h-3zM17 42h1v1h-1zM21 42h1v1h-1zM23 42h5v1h-5zM33 42h6v1h-6zM40 42h1v1h-1z"/></svg>
+    <div class="txt">
+      <b>Les exercices sont en ligne — et ils sont corrigés.</b> Cinq exercices : trois étiquettes de flacon à lire, deux paillasses à corriger, un mélange à juger, quatre incidents à trancher, et un bilan de huit questions. Chacun porte son <b>corrigé rédigé</b>, dépliable : tu cherches, puis tu compares, le soir même.
+      <div class="url">mvanhoorde.github.io/Site-Web-Portfolio/pages/2nde-pc-o3-securite-laboratoire.html</div>
+    </div>
+  </div>
+
+  <div class="pied"><span>Fiche outil 3 · Sécurité au laboratoire — M. Van Hoorde, lycée Isaac de l'Étoile</span><span>page 4/4</span></div>
+</div>
+
+</body>
+</html>

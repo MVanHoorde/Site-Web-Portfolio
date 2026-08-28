@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche outil ⟨N⟩ — ⟨Titre de l'outil⟩</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     GABARIT — FICHE OUTIL de physique-chimie.
+     Extrait de fiches/fiche-2nde-o1-ecriture-scientifique.html le
+     28/08/2026, vidé de tout contenu de physique. Elle-même dérive
+     de fiches/fiche-2nde-t1c4.html : même @page, même .feuille,
+     même bande à trois repères, même fond blanc forcé à l'impression.
+
+     🔴 CE FICHIER EST UN GABARIT, PAS UNE FICHE. On le COPIE vers
+     fiches/fiche-2nde-oN-<slug>.html, puis on remplit les zones
+     marquées ⟨à remplir⟩.
+
+     DEUX DIFFÉRENCES ASSUMÉES avec la fiche de chapitre (décision D5) :
+       · elle est ENTIÈREMENT COMPLÉTÉE — aucun trou. Elle se distribue,
+         se colle, et sert toute l'année ; on ne perd pas une heure à la
+         remplir. Le travail de l'élève est dans les exercices en ligne.
+       · pas de marge de notes : la fiche est dense et le cours y tient
+         en entier.
+
+     ------------------------------------------------------------
+     LES QUATRE RÈGLES DE LA FICHE
+     ------------------------------------------------------------
+     1. DEUX PAGES EXACTEMENT, recto-verso. Déborder est un bug, pas
+        un choix de mise en page. Seul o3 (sécurité) va à quatre : les
+        neuf pictogrammes prennent la place qu'ils prennent. Se
+        vérifie à l'aperçu avant impression ET à la mesure (hauteur de
+        contenu contre 297 mm), jamais à l'estime.
+     2. AUCUNE INFORMATION SEULEMENT À L'ÉCRAN, pour la partie cours :
+        ce qui est dans la méthode en ligne est ici. Un composant
+        interactif (curseur, compteur) n'est pas de l'information : il
+        se remplace par la table ou le schéma qui porte le même
+        contenu. C'est la règle qui coûte le plus cher à rattraper.
+     3. LES EXERCICES NE SONT PAS SUR LA FICHE : ils vivent en ligne,
+        où ils sont corrigés. Le QR code du verso y mène.
+     4. LISIBLE EN NOIR ET BLANC SUR PHOTOCOPIE. Une zone
+        d'incertitude, un danger, une différence de précision se
+        marquent par des HACHURES autant que par la couleur.
+
+     Les couleurs sont en dur ici, et c'est normal : une fiche
+     imprimée ne charge pas sequence-snt.css et n'a pas de thème.
+     Elles restent groupées dans :root — jamais une couleur au fil du
+     document.
+     ============================================================ -->
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e; --gris:#6b6f7a;
+    --or-fonce:#b28a1d; --vert-fonce:#4c8a58;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { background:#9aa0ab; }
+  body { font-family:'Spectral', Georgia, serif; color:var(--encre);
+         font-size:9.2pt; line-height:1.28; }
+  .feuille { width:210mm; min-height:297mm; margin:8mm auto; padding:8mm 12mm 12mm;
+    background:var(--papier); position:relative; box-shadow:0 2px 14px rgba(0,0,0,.28);
+    display:flex; flex-direction:column; }
+  @page { size:A4; margin:0; }
+  @media print {
+    html, body { background:#fff; }
+    .feuille { margin:0; box-shadow:none; height:296mm; min-height:0; overflow:hidden;
+               page-break-after:always; background:#fff; }
+    .feuille:last-child { page-break-after:auto; }
+    /* Tout fond teinté repasse en blanc : une photocopie noircit les
+       aplats, et le texte posé dessus devient illisible. Compléter
+       cette liste de chaque nouveau bloc à fond coloré. */
+    .encart, .regle, .exres, table.t th, .prefixes th { background:#fff; }
+  }
+
+  /* La bande à trois repères — signature visuelle de la famille.
+     Les trois positions sont fixes : ne pas les déplacer d'une fiche
+     à l'autre, c'est ce qui fait qu'on les reconnaît de loin. */
+  .bande { height:3.5px; background:var(--encre); position:relative; margin-bottom:3.2mm; }
+  .bande i { position:absolute; top:0; bottom:0; width:3px; }
+  .bande i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .bande i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .bande i:nth-child(3){ left:76%; background:var(--h-alpha); }
+
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:12.4pt; line-height:1.12; }
+  .sous { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris); margin:1mm 0 2.5mm; }
+  .sous .rouge { color:var(--h-alpha); }
+  .suite { font-family:'IBM Plex Mono',monospace; font-size:7.4pt; color:var(--gris);
+    letter-spacing:.1em; text-transform:uppercase; margin:0 0 2.5mm; }
+  .suite .n { color:var(--h-beta); }
+
+  /* À quoi ça sert — une phrase, jamais un paragraphe */
+  .aquoi { font-family:'Space Grotesk',sans-serif; font-size:9.2pt; font-weight:600;
+    border-left:3px solid var(--h-beta); padding:1.1mm 0 1.1mm 3mm; margin-bottom:2mm; }
+
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:10.2pt; margin:2.4mm 0 1.2mm;
+       display:flex; align-items:baseline; gap:2.5mm;
+       border-top:2.2px solid var(--encre); padding-top:1.1mm; }
+  h2:first-child { margin-top:0; }
+  h2 .n { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--h-beta); }
+  h3 { font-family:'IBM Plex Mono',monospace; font-size:7.2pt; letter-spacing:.09em;
+       text-transform:uppercase; color:var(--gris); margin:1.6mm 0 .7mm; font-weight:600; }
+
+  p { margin-bottom:.9mm; }
+  sub, sup { font-size:.66em; }
+  b { font-weight:600; }
+  .mono { font-family:'IBM Plex Mono',monospace; font-size:.92em; white-space:nowrap; }
+
+  /* La règle — encadrée, quatre lignes maximum.
+     Les trois temps de l'écran sont repris ici pour que l'élève
+     retrouve la même grammaire sur la fiche et sur la page : une
+     étiquette courte, un contenu bref, une ligne par idée. */
+  .regle { border:1.3px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 2mm 2mm 0; padding:1.5mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fff; }
+  .rt { display:grid; grid-template-columns:15mm 1fr; gap:2mm; align-items:baseline; margin-top:1mm; }
+  .rt .e { font-family:'IBM Plex Mono',monospace; font-size:6.2pt; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--gris); border:.7px solid var(--grille);
+    border-radius:1mm; padding:.2mm 0; text-align:center; }
+  .rt.piege .e { color:var(--h-alpha); border-color:var(--h-alpha); }
+  .regle .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--h-gamma); margin-bottom:1mm; }
+  .regle .forme { font-family:'IBM Plex Mono',monospace; font-size:12pt; text-align:center;
+    margin:1mm 0; color:var(--encre); }
+
+  /* Exemple résolu — les cinq temps, toujours dans le même ordre.
+     ⚠ La classe du résultat encadré s'appelle .res. Sur la PAGE elle
+     serait interdite (sequence-snt.css la définit déjà en
+     display:flex) ; ici la feuille partagée n'est pas chargée, il n'y
+     a pas de collision possible. Ne pas transposer l'inverse. */
+  .exres { border:1px solid var(--vert-fonce); border-radius:2mm; padding:1.5mm 2.6mm;
+    margin:1.2mm 0 1.8mm; background:#fbfdfb; }
+  .exres .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--vert-fonce); margin-bottom:1.2mm; font-weight:600; }
+  .exres ol { list-style:none; counter-reset:et; }
+  .exres li { counter-increment:et; display:grid; grid-template-columns:5mm 1fr;
+    gap:1.4mm; margin-bottom:.5mm; align-items:baseline; }
+  .exres li:last-child { margin-bottom:0; }
+  .exres li::before { content:counter(et); font-family:'IBM Plex Mono',monospace;
+    font-size:7.4pt; font-weight:700; color:var(--vert-fonce); text-align:right; }
+  .calc { font-family:'IBM Plex Mono',monospace; font-size:8.4pt; line-height:1.42; margin:.4mm 0; }
+  .res { border:1.2px solid var(--vert-fonce); border-radius:1.4mm; padding:.2mm 1.4mm;
+    font-weight:700; white-space:nowrap; }
+
+  /* À éviter */
+  .eviter { border:1.2px solid var(--h-alpha); border-left:4px solid var(--h-alpha);
+    border-radius:0 2mm 2mm 0; padding:1.3mm 2.6mm; margin:1.2mm 0 1.8mm; background:#fffaf9; }
+  .eviter .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--h-alpha); margin-bottom:1mm; font-weight:600; }
+  .eviter ul { list-style:none; }
+  .eviter li { display:grid; grid-template-columns:28mm 1fr; gap:2mm; margin-bottom:.5mm; align-items:baseline; }
+  .eviter li:last-child { margin-bottom:0; }
+  .eviter .faux { font-family:'IBM Plex Mono',monospace; font-size:8.6pt;
+    text-decoration:line-through; color:var(--h-alpha); }
+
+  /* Encart de rappel */
+  .encart { border:1px solid var(--grille); border-left:3px solid var(--or-fonce);
+    border-radius:0 2mm 2mm 0; padding:1.2mm 2.6mm; margin:1.2mm 0 1.6mm; background:#fffdf5; font-size:8.8pt; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:7pt; letter-spacing:.08em;
+    color:var(--or-fonce); margin-bottom:.8mm; font-weight:600; }
+
+  /* Table de référence générique — à renommer si l'outil en a plusieurs */
+  table.t { border-collapse:collapse; width:100%; font-size:8.4pt;
+    font-family:'IBM Plex Mono',monospace; }
+  table.t th, table.t td { border:1px solid var(--grille); padding:.5mm 1.2mm; text-align:center; }
+  table.t th { font-family:'Space Grotesk',sans-serif; font-size:7.4pt;
+    background:var(--papier); font-weight:600; }
+  table.t td.nom { text-align:left; font-family:'Spectral',serif; font-size:8.6pt; }
+  table.t tr.base td { background:#eef4f5; font-weight:700; }
+
+  /* Bandeau QR — les exercices vivent en ligne, corrigés.
+     margin-top:auto le colle en bas de la feuille quelle que soit la
+     hauteur du contenu : c'est la propriété qui tient la mise en page,
+     ne pas la retirer. */
+  .versexos { border:1.3px solid var(--encre); border-radius:2mm; padding:1.6mm 2.4mm;
+    display:flex; align-items:center; gap:3.5mm; background:#fff; margin-top:auto; }
+  .versexos svg { flex:none; }
+  .versexos .txt { font-size:8.6pt; }
+  .versexos .txt b { font-family:'Space Grotesk',sans-serif; }
+  .versexos .url { font-family:'IBM Plex Mono',monospace; font-size:7.2pt;
+    color:var(--gris); word-break:break-all; margin-top:.8mm; }
+
+  .pied { position:absolute; bottom:5mm; left:12mm; right:12mm;
+          display:flex; justify-content:space-between;
+          font-family:'IBM Plex Mono',monospace; font-size:6.8pt; color:var(--gris); }
+  svg { display:block; }
+  .schema { border:1px solid var(--grille); border-radius:2mm; padding:1.2mm; margin:1.2mm 0 1.6mm; background:#fff; }
+  .schema .legende { font-family:'IBM Plex Mono',monospace; font-size:7pt; color:var(--gris);
+    margin-top:.8mm; line-height:1.45; text-align:center; }
+  .deux { display:grid; grid-template-columns:1fr 1fr; gap:3.5mm; align-items:start; }
+  .deux.gauche { grid-template-columns:88mm 1fr; }
+
+  /* ⟨à remplir⟩ Le CSS propre à cette fiche : planches de SVG, tables
+     de référence particulières. Le garder groupé ici, en bas, pour
+     que le tronc commun reste comparable d'une fiche à l'autre. */
+
+</style>
+</head>
+<body>
+
+<!-- ==================== RECTO ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <h1>Outil ⟨N⟩ — ⟨à remplir⟩ Titre de l'outil</h1>
+  <p class="sous">Physique-Chimie · <span class="rouge">Seconde</span> · fiche outil — à coller, elle sert toute l'année · M. Van Hoorde</p>
+
+  <!-- Une phrase. Elle dit QUAND l'outil sert, pas ce qu'il contient. -->
+  <p class="aquoi">⟨à remplir⟩ Dès que… — la situation où l'élève doit penser à cet outil.</p>
+
+  <h2><span class="n">01</span> ⟨à remplir⟩ Première partie</h2>
+
+  <div class="regle">
+    <div class="etq">La règle — ⟨à remplir⟩</div>
+    <div class="forme">⟨à remplir⟩ la formule ou la phrase-règle</div>
+    <div class="rt"><span class="e">le geste</span><div>⟨à remplir⟩ ce qu'on fait, une ligne.</div></div>
+    <div class="rt"><span class="e">le contrôle</span><div>⟨à remplir⟩ ce qu'on vérifie, une ligne.</div></div>
+  </div>
+
+  <h3>⟨à remplir⟩ Le sous-titre</h3>
+  <p>⟨à remplir⟩ Le cours, rédigé. Il est COMPLET : ce qui est en ligne est ici.</p>
+
+  <div class="exres">
+    <div class="etq">✓ ⟨à remplir⟩ ce que l'exemple traite</div>
+    <ol>
+      <li><span><b>⟨à remplir⟩</b> le premier temps.
+        <div class="calc">⟨à remplir⟩ = <span class="res">résultat avec son unité</span></div></span></li>
+      <li><span><b>⟨à remplir⟩</b> le deuxième temps.</span></li>
+      <li><span><b>Le contrôle.</b> ⟨à remplir⟩ — le nombre de chiffres significatifs, la vraisemblance. <span style="color:var(--gris)">→ outil 2.</span></span></li>
+    </ol>
+  </div>
+
+  <div class="eviter">
+    <div class="etq">⚠ À éviter — ⟨à remplir⟩</div>
+    <ul>
+      <li><span class="faux">⟨à remplir⟩</span><span>⟨à remplir⟩ pourquoi c'est faux → ce qu'il faut écrire</span></li>
+    </ul>
+  </div>
+
+  <div class="pied"><span>Fiche outil ⟨N⟩ · ⟨titre court⟩ — M. Van Hoorde</span><span>recto · page 1/2</span></div>
+</div>
+
+<!-- ==================== VERSO ==================== -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Outil ⟨N⟩</span> — ⟨à remplir⟩ ce que le verso couvre</p>
+
+  <h2><span class="n">02</span> ⟨à remplir⟩ Seconde partie</h2>
+
+  <p>⟨à remplir⟩ La suite du cours.</p>
+
+  <!-- ==========================================================
+       LE BANDEAU QR — toujours en bas du verso.
+
+       🔴 LE QR CODE NE SE RECOPIE JAMAIS À LA MAIN, ni depuis une
+       autre fiche. Il encode une URL DIFFÉRENTE pour chaque outil :
+       reprendre le chemin d'à côté produit une fiche qui renvoie
+       silencieusement vers le mauvais cours, et rien ne le signale.
+
+       Il se génère avec l'encodeur maison (version 6 · niveau M ·
+       mode octet), qui vit dans le répertoire de travail de la
+       session et non dans le dépôt — §5 interdit toute bibliothèque
+       et tout appel externe. Il s'autovérifie de deux façons avant de
+       sortir quoi que ce soit : syndromes Reed-Solomon tous nuls, et
+       relecture de la matrice produite rendant l'URL de départ.
+       Coller le fichier généré, puis comparer l'attribut d avec la
+       sortie du générateur.
+       ========================================================== -->
+  <div class="versexos">
+    <!-- ⟨à remplir⟩ le SVG du QR code généré pour CETTE page -->
+    <svg viewBox="0 0 45 45" width="66" height="66" role="img" aria-label="QR code vers la page de l'outil"><rect width="45" height="45" fill="#fff"/><!-- ⟨à remplir⟩ <path d="…"> --></svg>
+    <div class="txt">
+      <b>Les exercices sont en ligne — et ils sont corrigés.</b> ⟨à remplir⟩ Combien d'exercices, chacun avec son <b>corrigé rédigé</b> dépliable&nbsp;: tu cherches sur ta feuille, puis tu compares, le soir, sans attendre le cours suivant.
+      <div class="url">mvanhoorde.github.io/Site-Web-Portfolio/pages/2nde-pc-o⟨N⟩-⟨slug⟩.html</div>
+    </div>
+  </div>
+
+  <div class="pied"><span>Fiche outil ⟨N⟩ · ⟨titre court⟩ — M. Van Hoorde, lycée Isaac de l'Étoile</span><span>verso · page 2/2</span></div>
+</div>
+
+</body>
+</html>
