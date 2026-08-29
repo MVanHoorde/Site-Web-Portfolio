@@ -49,6 +49,24 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## Fin des illustrations figuratives dessinées de mémoire — 29/08/2026
+
+Les visuels de l'outil 3 avaient été dessinés en SVG le 28/08. Relus à l'écran,
+ils ne tenaient pas : la silhouette de l'élève était disgracieuse, et les neuf
+pictogrammes CLP avaient des **formes inventées** — or c'est précisément l'objet
+que l'élève doit reconnaître **à l'identique** sur un flacon. Un pictogramme
+approximatif n'est pas un défaut esthétique, c'est une erreur de cours.
+
+| # | Décision | Statut |
+|---|---|---|
+| IMG-1 | **Pas d'illustration figurative dessinée de mémoire.** Un schéma SVG maison reste légitime quand il représente une **structure** (axes, flèches, graphes, montages, arbres de décision) : là, le tracé est le contenu. Il ne l'est pas pour un **objet du monde** — silhouette, appareil, animal, pictogramme réglementaire, matériel de laboratoire. Portée : les 14 chapitres, pas seulement `o3` | ✅ |
+| IMG-2 | **À la place, un cadre de réservation `.reserve`** aux dimensions finales, portant le nom de fichier attendu, une phrase décrivant ce qu'il faut y voir, et la contrainte de format. Loïc récupère l'image ; l'intégration se réduit à remplacer une balise. Patron de référence : `pages/2nde-pc-o3-securite-laboratoire.html` | ✅ |
+| IMG-3 | ~~**« Les symboles CLP se dessinent maison »**~~ — **renversée.** Le sprite **vectorisé depuis les pictogrammes officiels** fait référence et se recopie tel quel d'un fichier à l'autre. Motif : l'élève doit reconnaître sur le flacon exactement ce qu'il a vu en cours. Cette règle antérieure avait produit neuf formes inventées | ✅ |
+| IMG-4 | **Les cinq équipements de `o3` restent en attente d'image** : douche, rince-œil, extincteur, couverture anti-feu, sortie. L'outil 3 est **publié avec cinq cadres visibles**, ce qui est assumé — un trou doit se voir. Les références **ISO 7010** exactes restent à relire sur une planche avant de récupérer les fichiers | ✅ |
+| IMG-5 | **Trois fichiers de référence réécrits** au lieu d'être coiffés d'une mise à jour : `CLAUDE.md` § Règles techniques communes, `_modeles/CONSIGNES-outil-PC.md` §5 et `_modeles/CONSIGNES-sequence-SNT.md` §consignes techniques portaient tous « les pictogrammes et les schémas se dessinent en SVG » | ✅ |
+
+---
+
 ## La page d'accueil passe en deux colonnes — 27/08/2026
 
 Onze maquettes jetables produites et comparées côte à côte : dix organisations

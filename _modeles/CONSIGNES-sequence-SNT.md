@@ -159,8 +159,10 @@ de `pages/2nde-snt-t1-internet.html`, seule séquence déjà portée.
 - Pas de framework, pas de build : HTML/CSS/JS vanilla, lisible et modifiable.
 - Responsive (**cible iPad**), focus clavier visible, `prefers-reduced-motion`
   respecté.
-- Ressources externes chargées **par lien** (vidéos, CodeBetter…). Illustrations
-  maison en **SVG** quand c'est possible.
+- Ressources externes chargées **par lien** (vidéos, CodeBetter…). Les **schémas
+  de structure** se dessinent en SVG maison ; une **illustration figurative** ne
+  se dessine pas de mémoire — cadre de réservation `.reserve` et image fournie
+  par Loïc. Voir `CLAUDE.md`, « Règles techniques communes ».
 - 🗂 **Une séquence SNT est autonome pour son code.** Tout le **CSS**, tout le **JS**
   et **tous les SVG** vivent **inline** dans `pages/2nde-snt-tN-….html`.
   ⚠️ **Modifié le 21/07/2026** : la règle « aucun fichier d'asset externe » s'est

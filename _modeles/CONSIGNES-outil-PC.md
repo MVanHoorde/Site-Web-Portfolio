@@ -277,7 +277,10 @@ même ordre. L'élève finit par les reconnaître sans qu'on les lui ait récit�
 - ❌ **Tout générateur aléatoire, tirage, score chiffré ou note.** Listes
   d'exercices **fixes**, identiques pour tous.
 - ❌ **Toute ressource externe** : pas de CDN, pas de police distante, pas d'image
-  téléchargée à la volée. Les pictogrammes et les schémas se **dessinent en SVG**.
+  téléchargée à la volée. Les **schémas de structure** se dessinent en SVG ; une
+  **illustration figurative** — silhouette, appareil, pictogramme réglementaire,
+  matériel — **ne se dessine pas de mémoire** : cadre de réservation `.reserve`
+  et image fournie par Loïc. Voir `CLAUDE.md`, « Règles techniques communes ».
 - ❌ **Toute couleur en dur.** Tout passe par les variables de `sequence-snt.css`.
 
 ---

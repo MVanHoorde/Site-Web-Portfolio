@@ -101,8 +101,22 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
   données minimales. **Polices auto-hébergées** (`assets/css/fonts.css`) —
   jamais de `fonts.googleapis.com` ni d'autre CDN qui exposerait l'IP des élèves.
 - Pas de framework, pas de build : HTML/CSS/JS vanilla, lisible et modifiable.
-- Ressources externes chargées par lien (vidéos, CodeBetter…). Illustrations
-  maison en **SVG** quand c'est possible.
+- Ressources externes chargées par lien (vidéos, CodeBetter…).
+- 🔴 **Pas d'illustration figurative dessinée de mémoire.** Un schéma SVG maison
+  est légitime quand il représente une **structure** : axes, flèches, graphes,
+  montages, arbres de décision, schémas de principe — là, le tracé est le
+  contenu. Il ne l'est pas pour un **objet du monde** : silhouette, appareil,
+  animal, pictogramme réglementaire, matériel de laboratoire. Ces dessins-là
+  sortent faux ou laids, et un pictogramme faux est une erreur de cours.
+- 🔴 À la place : poser un **cadre de réservation** (`.reserve`) aux dimensions
+  finales, portant le nom de fichier attendu, une phrase décrivant ce qu'il faut
+  y voir, et la contrainte de format. Loïc récupère l'image ; l'intégration se
+  réduit alors à remplacer une balise. Patron de référence :
+  `pages/2nde-pc-o3-securite-laboratoire.html`.
+- 🔴 Les **symboles CLP** ne se dessinent pas : le sprite vectorisé depuis les
+  pictogrammes officiels fait référence, et se recopie tel quel d'un fichier à
+  l'autre. Il annule la règle antérieure « symboles CLP toujours dessinés
+  maison », qui avait produit neuf formes inventées.
 - Responsive (**cible iPad**), focus clavier visible, `prefers-reduced-motion`
   respecté.
 - Livraison en **archive delta** (jamais le site complet) + mise à jour de

@@ -2798,3 +2798,86 @@ relecture rendant l'URL).
 puis les six arbitrages en attente. Et le lot H — la série « Convertir » versée
 dans `o1` — n'est **pas** fait : il attend la validation d'O-23.
 
+
+---
+
+## 29/08/2026 — Outil 3 : les dessins maison cèdent la place à de vraies images
+
+Trois remplacements dans les deux seuls fichiers de l'outil 3
+(`fiches/fiche-2nde-o3-securite-laboratoire.html` et
+`pages/2nde-pc-o3-securite-laboratoire.html`), plus une règle transverse.
+
+**Provenance des fichiers — c'est le point important.**
+
+- `assets/img/pc/2nde-pc-o3/o3-tenue-laboratoire.png` — **illustration générée**,
+  fournie par Loïc le 28/08/2026. Retouches : recadrage des marges, réduction à
+  1280 px, quantification 128 couleurs (365 Ko, 1280 × 935, rapport 1,37 : 1).
+  Marquée `data-origine` dans les deux fichiers, pour que l'origine voyage avec
+  la balise et non dans un fichier de suivi qu'on n'ouvre pas.
+- **Sprite CLP** — vectorisé le 29/08/2026 depuis les neuf images embarquées dans
+  `_a-deposer/fiches-outils/fiche_Pictogrammes de sécurité.pdf` (173 × 173 px,
+  couche alpha), par `potrace` en suréchantillonnage 4×, alphamax 1.3. Les
+  pictogrammes SGH/CLP sont des **symboles réglementaires**, pas des créations
+  graphiques.
+
+**Lot A — les neuf pictogrammes.** Remplacement à zéro friction : mêmes `id`,
+même `viewBox`, mêmes classes, donc **aucun des 47 `<use>`** (28 dans la page,
+19 dans la fiche) n'a été touché. Deux différences de structure : `#clp-cadre`,
+l'ancien losange partagé, disparaît — chaque pictogramme porte son cadre ; et
+`.clp-fond` change de sens, c'est désormais le losange **entier**, posé en
+premier, sans quoi le symbole noir baignerait dans la couleur du bloc sur la
+page web (la source PDF a un intérieur transparent).
+
+**Le contrôle qui a servi à quelque chose.** Plutôt que de juger à l'œil, les
+neuf symboles ont été rendus en 173 × 173 dans Chrome puis **appariés** aux neuf
+pictogrammes du PDF, comparaison sur l'encre visible. Résultat : **bijection
+9/9**, écart 2 à 3 %, deuxième candidat toujours 2 à 4 fois plus loin. Chaque
+symbole est donc mesurément le bon, et aucun n'est confondable avec un autre.
+
+⚠️ **Deux pièges rencontrés, à retenir.** (1) Comparer les **silhouettes alpha**
+ne prouve rien : les neuf sont des losanges, distance nulle pour tous. C'est
+l'encre qu'il faut comparer. (2) `pymupdf.Pixmap(doc, xref)` **perd le SMask** :
+le hors-losange sort en noir opaque, la bbox devient le carré entier et
+l'appariement renvoie n'importe quoi. Il faut recomposer image + masque via
+`doc.extract_image()`.
+
+**Lot B — l'illustration de la tenue.** Le `<svg>` de silhouette cède la place à
+un `<img>`, `loading="lazy"` **sur la page web uniquement** (une image différée
+sur une fiche faite pour l'impression est un risque inutile). Les 8 règles
+`.sil-*` sont retirées de chaque côté. La page 1 de la fiche **ne déborde pas** :
+aucune des trois solutions de repli prévues n'a été nécessaire, `.urgence` reste
+en pied de page 1.
+
+**Lot C — les cinq équipements passent en cadres de réservation.** Les icônes
+`eq-*` n'avaient pas de source de remplacement : elles deviennent cinq `.reserve`
+portant le nom du fichier attendu, ce qu'il faut y voir, et la contrainte de
+format. Les cinq `<symbol id="eq-…">` quittent les deux sprites, avec `.eq svg`,
+`.eq-s`, `.eq-p` et `.eq.feu .eq-s`. La classe `feu` **reste posée** sur deux
+cartes : son sort se tranchera quand les images arriveront, selon qu'elles
+portent ou non leur fond de couleur.
+
+**Deux écarts au brief, assumés et mesurés.** (1) La grille des cinq équipements
+passe de **70 à 97 px** de haut (+ 9,5 mm) : un cadre lisible ne tient pas dans
+les 11 mm de l'ancienne icône. La page 3 avait la place, elle ne déborde pas.
+(2) Les cinq cadres sont alignés sur une **hauteur commune** (`.eq` en flex
+colonne, `.reserve` en `flex:1`) : sans cela les descriptions, de longueurs
+inégales, faisaient danser la ligne des cinq titres.
+
+**Trois textes réécrits parce qu'ils étaient devenus faux** — la doc décrit
+l'état courant : l'en-tête `<svg>` de la page (« on ne télécharge JAMAIS un
+pictogramme de danger », et la contrainte de tracé du losange intérieur, qui
+décrivait un code disparu), `CONSIGNES-outil-PC.md` §5 et
+`CONSIGNES-sequence-SNT.md`. Corrigé aussi l'`aria-label` du pictogramme
+environnement : le poisson y est **échoué** sur la rive, pas mort dans l'eau —
+la source le confirme.
+
+⚠️ **Fins de ligne.** La page était en **CRLF intégral**, la fiche en LF ; le bloc
+injecté a rendu la page mixte. `.gitattributes` impose `eol=lf` : la page a été
+normalisée en LF. Vérifié — `git diff --stat` **inchangé** après conversion, Git
+normalisait déjà à l'index. Aucun diff parasite.
+
+**Contrôles.** `node verifier.mjs` → **18**, le repère tenu. Zéro `<use
+href="#clp-cadre">` résiduel, 9 symboles de chaque côté, les deux blocs
+**identiques au `diff`**. Aucun asset partagé modifié : les CSS touchés sont
+inline dans les deux fichiers, pas de `?v=N` à incrémenter. PDF de la fiche
+régénéré depuis la source corrigée.

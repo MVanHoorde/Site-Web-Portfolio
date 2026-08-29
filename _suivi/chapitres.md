@@ -353,13 +353,16 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
 - Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
 - Fichiers : `pages/2nde-pc-o3-securite-laboratoire.html` · `fiches/fiche-2nde-o3-securite-laboratoire.html`
 - **V1 produite le 28/08/2026.** 5 étapes de méthode, 5 exercices, 17 questions de
-  QCM, 30 champs à menu déroulant, 9 pictogrammes CLP + 5 équipements dessinés en
-  SVG maison. Fiche A4 en **4 pages** (la seule fiche d'outil qui y ait droit),
-  QR code généré et autovérifié. Carte posée au hub.
+  QCM, 30 champs à menu déroulant. Fiche A4 en **4 pages** (la seule fiche d'outil
+  qui y ait droit), QR code généré et autovérifié. Carte posée au hub.
+- 🆕 **Visuel repris le 29/08/2026.** Les 9 pictogrammes CLP sont **vectorisés**
+  depuis le PDF officiel (appariement mesuré 9/9), la tenue est une **illustration
+  fournie**, et les 5 équipements sont des **cadres de réservation** — leurs images
+  restent à récupérer. Inventaire complet : `_suivi/o3-releve.md`.
 - Sources : `fiche_Sécurité au laboratoire de Chimie.pdf` (le texte, quatre
   moments) et `fiche_Pictogrammes de sécurité.pdf` (les visuels et les libellés).
-  Cette dernière **ne contient que des images** : les neuf pictogrammes sont
-  entièrement à produire en SVG.
+  Cette dernière **ne contient que des images** : les neuf pictogrammes en ont été
+  **vectorisés** le 29/08, et non redessinés.
 - **Méthode — cinq étapes** : avant de venir (silhouette annotée, QCM 5 questions)
   · **lire une étiquette** (les 9 pictogrammes CLP en 3 familles, appariement à
   9 cases) · pendant la manipulation (la paillasse aux erreurs, 6 erreurs
