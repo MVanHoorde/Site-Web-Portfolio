@@ -69,7 +69,7 @@ gitignoré, jamais publié. Trois leçons durables, toutes payées :
 3. **Un arbitrage en attente arrête la production.** Deux d'entre eux ont coûté
    deux jours en août. Depuis le 28/08, chaque arbitrage porte un **défaut
    appliqué sans attendre**, marqué `PROPOSITION À VALIDER` dans le fichier
-   produit et listé dans le `A-LIRE`. On ne bloque plus, on propose.
+   produit et listé dans la note de livraison. On ne bloque plus, on propose.
 
 **Les erreurs de calcul des documents sources se corrigent *et* se listent**, dans
 `_suivi/erreurs-sources-fiches-outils.md`, pour que l'équipe soit prévenue. C'est
@@ -510,7 +510,9 @@ outils — c'est la raison pour laquelle les pages vivent là (§1).
 - Mise à jour de `_suivi/ETAT-PROJET.md` (réécrit, pas empilé),
   `_suivi/DECISIONS.md`, `_suivi/chapitres.md` (une section par outil) et
   `_suivi/JOURNAL.md` (en ajout).
-- Un `A-LIRE-…` court : ce qui est fait, ce qui reste, ce qui a surpris.
+- Une **note de livraison** courte : ce qui est fait, ce qui reste, ce qui a
+  surpris. Elle se dépose dans `_suivi/archives/livraisons/` — c'est un récit
+  daté, pas une consigne, et la racine n'en porte plus.
 - **Signaler toute correction apportée à un document source partagé avec des
   collègues** : on refait la forme, jamais le fond — sauf erreur de calcul, qui
   se corrige *et* se liste, pour que l'équipe soit prévenue.
