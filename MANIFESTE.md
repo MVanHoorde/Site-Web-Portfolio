@@ -25,7 +25,10 @@
 | **produire une séquence SNT** | `_modeles/CONSIGNES-sequence-SNT.md` | 6 500 |
 | **produire un outil transversal de PC** | `_modeles/CONSIGNES-outil-PC.md` + `_modeles/gabarit-outil-PC.html` + `_modeles/gabarit-fiche-outil-PC.html` | 7 000 |
 | **récupérer un chapitre PC depuis son PPTX/PDF (V1 intégrale)** | `_modeles/CONSIGNES-V1-integrale-PC.md` + `_modeles/gabarit-chapitre.html` | 6 000 |
-| **raffiner un chapitre PC / faire sa fiche** | `_modeles/CONSIGNES-chapitre-PC.md` + `_modeles/gabarit-chapitre.html` | 8 500 |
+| **raffiner un chapitre PC** | `_modeles/CONSIGNES-chapitre-PC.md` + `_modeles/gabarit-chapitre.html` | 8 500 |
+| **concevoir la fiche élève d'un chapitre PC** 🆕 | `_modeles/CONSIGNES-fiche-eleve-PC.md` | 4 000 |
+| **régénérer une fiche de chapitre** après retouche du cours 🆕 | `cd _outils/fiches && python fiche_<code>.py`, puis `node exporter-fiches.mjs` | 0 |
+| **concevoir le diaporama de projection d'un chapitre PC** 🆕 | `_modeles/CONSIGNES-diaporama-PC.md` | 3 500 |
 | l'état fin d'un chapitre / d'une séquence | `_suivi/chapitres.md` (section concernée) | 500 par section |
 | toucher au **moteur** d'une séquence SNT | `assets/js/sequence-snt.js` (+ `_modeles/spec-snt-t1-internet.md` §13-15) | 21 000 |
 | toucher à la **grammaire visuelle** SNT | `assets/css/sequence-snt.css` | 14 000 |
@@ -34,6 +37,7 @@
 | **produire un outil du livret CFA** | `_modeles/gabarit-outil-CFA.html` + un `cfa/outil-NN-….html` existant | 6 000 |
 | toucher à la **pré-correction IA** | `ia-snt/README.md` + `ia-snt/moteur.mjs` | 4 000 |
 | **regénérer les fiches PDF** de 2nde PC 🆕 | `node exporter-fiches.mjs` — après toute retouche d'une fiche de `fiches/` | 0 |
+| retrouver une note de livraison passée | `_suivi/archives/livraisons/` — *récit, jamais une consigne* | *ne pas lire par défaut* |
 | vérifier que rien n'est cassé | `node verifier.mjs` | 0 |
 | donner un état du dépôt à un assistant | `node verifier.mjs --bilan` | ~800 |
 
@@ -56,7 +60,7 @@
 | Exemple | `pages/2nde-pc-t1-c3-constitution-atome.html` | `pages/2nde-snt-t2-le-web.html` |
 | Persistance | `localStorage` | base Supabase |
 | Assets | `chapitre-commun.css?v=N` | `sequence-snt.css?v=N` + `sequence-snt.js` |
-| Maturité | rodé, 14 chapitres | phase 2, 8 séquences, 0 validée |
+| Maturité | rodé, 14 chapitres | phase 1, 8 séquences, 0 validée |
 
 Deux autres familles existent : les **outils transversaux de physique-chimie**
 (`_modeles/CONSIGNES-outil-PC.md` — pas de progression, moteur SNT, fiche A4

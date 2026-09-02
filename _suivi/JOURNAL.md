@@ -2881,3 +2881,183 @@ href="#clp-cadre">` résiduel, 9 symboles de chaque côté, les deux blocs
 **identiques au `diff`**. Aucun asset partagé modifié : les CSS touchés sont
 inline dans les deux fichiers, pas de `?v=N` à incrémenter. PDF de la fiche
 régénéré depuis la source corrigée.
+
+---
+
+## 02/09/2026 — Les supports de classe entrent dans le dépôt, et la racine est rangée
+
+Deux documents écrits hors dépôt le 29/08 arrivent : le standard des **fiches
+élève** et celui des **diaporamas de projection**, tous deux établis en
+produisant T3-C1. Ils sont déposés dans `_modeles/` sous le nommage des
+consignes — `CONSIGNES-fiche-eleve-PC.md`, `CONSIGNES-diaporama-PC.md` — pour
+qu'une seule convention réponde à « ce que j'ouvre avant de produire X ».
+
+**L'audit demandé avec le dépôt a trouvé plus que du rangement.**
+
+*Les chaînes de production n'existent pas.* Les deux documents décrivent, étape
+par étape, un outillage introuvable sur le disque entier : `gabarit_fiche.py`,
+`fiche_t3c1.py` et `mesurer_pages.py` d'un côté, `extract_svg.py`, `build.js` et
+`anime.py` de l'autre. La règle R12 des fiches — « ne jamais résoudre un problème
+de chapitre en modifiant le gabarit » — est inapplicable faute de gabarit. Les
+deux consignes portent désormais l'avertissement en tête, et `_outils/fiches/`
+comme `_outils/diaporamas/` attendent, vides.
+
+*La fiche de T3-C1 non plus.* Elle a bien été produite — 8 pages, 18 cadres à
+lignes, 5 QR relus — mais ni sa source HTML, ni son PDF, ni son lien ne sont
+dans le dépôt ; seul un aperçu subsiste dans `_a-deposer/fiches-t3c1/`, hors
+Git. Or `chapitres.md` verrouille ce jalon derrière la validation du cours par
+Loïc. La contradiction est posée en arbitrage plutôt que tranchée.
+
+*Sept prescriptions recalées.* L'étape 5 des fiches demandait une impression
+manuelle depuis un navigateur alors que `exporter-fiches.mjs` fait la même chose
+par Chrome **et** mesure chaque page : elle pointe maintenant sur l'outil. Le
+contrôle des polices entre dans la checklist — six fiches sur six portent des
+caractères (`⁻¹`, `⩽`, `π`, `Δ`) qu'aucune des six familles auto-hébergées ne
+couvre, servis en Arial ; T3-C1 écrit `m·s⁻¹`. Comptés sur la page plutôt que
+recopiés : **seize** marqueurs `a-noter` et non quatorze, dix-huit images
+numérotées (R6 était juste). Le tableau des célérités du diaporama, encore
+annoncé « saisi de mémoire », est celui du cours depuis que la fiche l'a recalé :
+cinq milieux. Le code de déblocage cherché par les points ouverts est **S0NORE**,
+il était dans `t3c1-releve.md`. Enfin `MANIFESTE.md` disait le SNT en « phase 2 »
+quand `CLAUDE.md`, plus récent d'un jour, dit « phase 1 ».
+
+**Le rangement.** Vingt notes de livraison datées vivaient à la racine —
+quinze `A-LIRE-*`, quatre `BRIEF-*`, `LOT-CFA-a-lire`. C'est du récit posé là où
+on cherche des consignes, et le cas limite le montre : `A-LIRE-DABORD.md`,
+nom impératif, contenait une procédure d'extraction périmée depuis le 23/07 —
+exactement le fichier qu'un assistant ouvre en premier. Toutes sont dans
+`_suivi/archives/livraisons/`, avec un README qui dit ce qu'elles sont et ce qui
+fait foi à la place. Les trois `_test-*.mjs` deviennent `_outils/tests/` (ils
+lisent `DEPOT = '.'` : se lancent depuis la racine, vérifié). Les deux dossiers
+d'aperçus d'audit — 3,7 Mo, 23 fichiers suivis — sortent du suivi Git.
+
+**Contrôles.** `node verifier.mjs` → **18**, le repère tenu. `node
+_outils/tests/normaliser.mjs` passe depuis sa nouvelle place. Aucune page, aucun
+asset partagé, aucun `?v=N` touché : la passe est entièrement documentaire.
+
+---
+
+## 02/09/2026 (suite) — La chaîne des fiches arrive, et le PDF perdait son cartouche
+
+Loïc dépose dans `_outils/` l'archive du 29/08 : le générateur des fiches élève
+(`gabarit_fiche.py`, `fiche_t3c1.py`, `mesurer_pages.py`), la fiche de T3-C1
+générée, le logo « LYCÉE », le bandeau de cartouche, et la note d'intégration.
+L'archive portant son arborescence relative, chaque fichier est remonté à sa
+place réelle ; la note rejoint `_suivi/archives/livraisons/`.
+
+**Premier contrôle : la chaîne tourne-t-elle vraiment ?** Elle ne tournait pas.
+Trois défauts, tous propres au poste de production — la chaîne a été écrite dans
+un sandbox Linux.
+
+*La console.* Python meurt sur `UnicodeEncodeError` en écrivant `✓` dans une
+console cp1252 — et il meurt **avant** d'écrire la fiche, si bien que le message
+d'erreur parle d'un caractère au lieu de parler du QR. `sys.stdout.reconfigure`
+en tête du gabarit et de `mesurer_pages.py`.
+
+*La relecture des QR.* Contrôle **bloquant** du standard, muet ici : `cairosvg`
+exige la DLL cairo, absente des postes Windows. Plutôt que de renoncer, le repli
+repeint le tracé SVG lui-même — une grille de `M x y h w v1 h-w z` — et le décode
+avec pyzbar. Il relit donc bien le fichier livré, et non la matrice d'origine.
+Les cinq QR passent `✓`.
+
+*poppler.* `mesurer_pages.py` appelait `pdftoppm`, pas installé. Rendu par
+PyMuPDF, sans binaire externe ni fichier temporaire.
+
+La chaîne régénère alors la fiche **octet pour octet**. Le cours n'a pas bougé
+depuis le 29/08, et la reproductibilité est acquise.
+
+**Le vrai défaut n'était visible que dans le PDF.** À l'export, la page 1 accusait
+60 mm de creux, la page 8 « DÉBORDE ». Capture d'écran du HTML dans Chrome : le
+cartouche est parfait. Capture du PDF : **il n'y est pas** — ni bandeau, ni logo,
+ni titre, ni introduction. Le PDF ne contenait aucune image.
+
+Cause : `.feuille` est un conteneur flex, et passe en **hauteur fixe** à
+l'impression. Ses enfants deviennent alors compressibles, et le cartouche, qui
+porte `height:60mm; overflow:hidden`, était écrasé à zéro — silencieusement. Le
+gabarit se contredisait lui-même : sa règle de tête dit « pas de flex ni de grid
+là où un tableau suffit ». `.feuille > *:not(.corps) { flex-shrink:0 }` rétablit
+tout, et le creux cumulé retombe à **39 mm** — exactement le chiffre annoncé par
+le standard, ce qui confirme la correction.
+
+**La page 8 débordait pour une autre raison, et la première piste était fausse.**
+Réduire le bloc « L'essentiel » de 5 à 4 lignes n'a rien changé du tout : ce
+n'est pas la colonne principale qui fixe la hauteur du corps de page, c'est la
+**marge de notes** — 33 lignes de 7,6 mm, soit 250 mm, plus haute que tout le
+reste. Elle poussait le bloc de clôture par-dessus le pied, qui traversait les
+cases du code de déblocage et les deux QR. La page qui porte une clôture passe à
+`lignes_notes=30` ; les 5 lignes du bloc « essentiel » sont rétablies telles que
+Loïc les avait écrites.
+
+**Au passage, l'aperçu du 29/08 cesse d'être une référence** : mesuré, il porte
+272 mm de creux — l'état d'avant les corrections de remplissage. Le générateur
+fait foi.
+
+**Livré.** `fiches/fiche-2nde-t3c1.html` (généré, ne pas éditer),
+`assets/pdf/pc/fiches/fiche-2nde-t3c1.pdf` (8 pages, 209,9 × 297,0 mm, 10 polices
+incorporées), et le bouton « Télécharger la fiche (vierge) » posé en
+`hors-verrou` sur la page du chapitre — accessible sans code, pour l'élève
+absent. `node verifier.mjs` → **18**, le repère tenu.
+
+**Deux points laissés à Loïc.** La fiche est **en avance sur la validation** : le
+jalon 5 (« cours VALIDÉ ») n'a jamais été posé, et la fiche est déjà
+téléchargeable. Et `fonts.css` **ne fournit pas d'italique pour IBM Plex Mono** :
+les mentions « Donnée : … » des énoncés sortent du PDF en Consolas, dans un autre
+dessin que le reste — ça vaut pour toutes les fiches, pas seulement celle-ci.
+
+---
+
+## 02/09/2026 (fin) — La chaîne des diaporamas n'existe pas ; le fichier, si
+
+Réponse de Loïc à la question laissée ouverte : « elle n'existe pas ».
+`extract_svg.py`, `build.js` et `anime.py` ont vécu le temps d'une session hors
+dépôt. Il n'y a rien à attendre, et `_outils/diaporamas/` est supprimé plutôt
+que laissé vide — un dossier qui attend indéfiniment est un mensonge de
+rangement.
+
+`CONSIGNES-diaporama-PC.md` est requalifié : **une méthode, pas un mode
+d'emploi**. Les neuf règles, la séquence d'animation et les pièges disent quoi
+refaire le jour où l'on réoutille ; la §4 est titrée « telle qu'elle a tourné une
+fois », avec l'avertissement que ses commandes ne peuvent plus être lancées.
+Corollaire posé noir sur blanc : **un diaporama se retouche à la main dans
+PowerPoint.**
+
+**Le fichier, lui, a été retrouvé** dans `Téléchargements` — et il y en avait
+deux, d'apparence identique : 12 diapositives, 53 étapes d'animation, 34 médias
+chacun. Quatre diapositives diffèrent. Le départage s'est fait sur la règle R4 :
+la bonne est celle dont les indices sont **typographiques** (`U` + `max` en deux
+runs) ; l'autre porte encore `U max` en texte plat. Elle est mise à l'abri dans
+`_a-deposer/diaporamas/` — zone ignorée par Git : rien n'est publié, mais rien
+n'est sauvegardé non plus. Où le ranger pour de bon reste à trancher, et la
+question presse maintenant qu'il n'est plus régénérable.
+
+🔴 **Le contrôle a trouvé une erreur de cours dans le fichier.** Le tableau des
+célérités y est toujours celui saisi de mémoire : Air 340 · Eau **1 500** ·
+**Bois 3 300** · Acier **5 000**. Le cours en ligne et la fiche élève donnent
+cinq milieux — Eau 1450 · Glace 3200 · Verre 5300 · Acier 5750. Projeté tel
+quel, l'écran contredit la feuille que l'élève complète.
+
+`STANDARD-fiches` affirmait pourtant que « le diaporama a été recalé ». C'était
+faux, et l'affirmation avait été reprise telle quelle dans la consigne le matin
+même, en croyant recaler une contradiction entre les deux documents. Le fichier
+tranche : les deux documents disaient faux, dans des sens opposés. Corrigé, avec
+la mention qu'il faut y aller à la main — et que passer de quatre à cinq
+colonnes touche la mise en page du tableau, ce n'est pas un remplacement de
+valeurs.
+
+**Versionné le jour même.** Loïc tranche : « tu peux versionner ». Le fichier
+part dans `assets/pptx/pc/diaporama-2nde-t3c1.pptx`, à côté des PDF de fiches et
+de DS, sous le nommage des fiches (`diaporama-2nde-<code>`). Motif : il n'est
+plus régénérable, et une zone ignorée par Git ne sauvegarde rien.
+
+Contrôlé avant d'être versé, puisque le dépôt est public et que GitHub Pages
+sert tout ce qu'il contient : aucune correction à l'écran (R1 tenue), aucun nom
+de classe ni d'élève, métadonnées limitées à la signature du professeur — déjà
+publique sur le site. Aucune page n'y renvoie ; il reste néanmoins accessible
+par son URL, ce qui est assumé.
+
+**Un angle mort au passage.** `.gitattributes` déclarait dix formats binaires,
+mais pas `pptx` — or un `.pptx` est un zip, et la règle générale du dépôt est
+`* text=auto eol=lf`. La détection automatique de Git avait suffi jusqu'ici
+(vérifié : le seul `.m4a` déjà versionné, `audio/2nde-pc-t3-c4-intro.m4a`, est
+intact), mais rien ne le garantissait. `pptx`, `docx`, `m4a`, `mp3` et `mp4`
+sont désormais déclarés explicitement.

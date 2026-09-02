@@ -132,7 +132,9 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
 | Fichier | Rôle |
 |---|---|
 | `_modeles/CONSIGNES-V1-integrale-PC.md` | 🆕 **Récupérer un chapitre PC sans perte** depuis son PPTX/PDF : figures, légendes, exercices, corrections. Le passage obligé de tout chapitre. Remplace l'ancien « régime A » |
-| `_modeles/CONSIGNES-chapitre-PC.md` | Raffiner un chapitre de physique-chimie une fois sa V1 en ligne (+ fiche élève) |
+| `_modeles/CONSIGNES-chapitre-PC.md` | Raffiner un chapitre de physique-chimie une fois sa V1 en ligne |
+| `_modeles/CONSIGNES-fiche-eleve-PC.md` | 🆕 **Concevoir la fiche élève** d'un chapitre PC — la feuille A4 distribuée en classe, qui *fait écrire* le cours. Sa chaîne vit dans `_outils/fiches/` : `python fiche_<code>.py` régénère, `node exporter-fiches.mjs` exporte |
+| `_modeles/CONSIGNES-diaporama-PC.md` | 🆕 **Concevoir le diaporama de projection** d'un chapitre PC — support de classe, sans corrections, animé au clic. Établi sur T3-C1. 🔴 **Méthode, pas outil** : la chaîne qui l'a produit n'existe pas, un diaporama se retouche à la main dans PowerPoint |
 | `_modeles/CONSIGNES-sequence-SNT.md` | Produire une séquence SNT |
 | `_modeles/CONSIGNES-outil-PC.md` | 🆕 **Produire un outil transversal de PC** — méthode que tous les chapitres mobilisent, hors progression. Moteur SNT, fiche A4 **complétée**, corrigés **en ligne** |
 | `_modeles/CONSIGNES-sequence-ES.md` | 🚧 Séquences ens. scientifique Term (frise, IA — 3ᵉ famille) |
@@ -159,6 +161,8 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 | **Outils transversaux PC** 🆕 | `pages/2nde-pc-oN-…html` (4 sur 8 écrits) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · fiche A4 **complétée** : source `fiches/fiche-2nde-oN-…html`, **PDF** `assets/pdf/pc/fiches/` 🆕 · SVG inline |
 | **SNT** | `pages/2nde-snt-tN-…html` | `assets/css/sequence-snt.css?v=N` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/snt/<slug>/` pour les photos · SVG et CSS de contenu **inline** |
 | **Cahier de vacances** | `cahier/…html` | `assets/img/cahier/` · `assets/pdf/cahier/` |
+| **Diaporamas de projection PC** 🆕 | *(pas de page)* | `assets/pptx/pc/diaporama-2nde-<code>.pptx` — **versionnés** parce qu'ils ne sont plus régénérables. 🔴 Aucune page n'y renvoie : c'est un support de projection, pas un document d'élève — mais le dépôt étant public, le fichier reste accessible par son URL. Consignes : `_modeles/CONSIGNES-diaporama-PC.md` |
+| **Outillage** 🆕 | *(pas de page)* | `_outils/fiches/` **le générateur des fiches élève PC** — `gabarit_fiche.py` (commun aux 14 fiches, 🔴 ne pas y résoudre un problème de chapitre) + `fiche_<code>.py` + `mesurer_pages.py` · `_outils/tests/` scripts de contrôle, à lancer depuis la racine |
 | **Livret CFA** 🆕 | `cfa/index.html` · `cfa/outil-NN-…html` (17 outils) | `_modeles/gabarit-outil-CFA.html` · fiches à imprimer dans `fiches/cfa/` (**2 écrites sur 17** — les liens manquants forment le repère de 18 problèmes de `verifier.mjs`) · corrigés dans `_corriges-cfa/` · **client partagé** `assets/js/progression.js` |
 | **Coque / accueil / niveaux** | `index.html` (racine) · `pages/2nde-physique-chimie.html`, `pages/…-scientifique.html`, `pages/terminale-…` | `assets/fonts/`, `assets/css/`, `gravures/` |
 | **Base de données** 🆕 | *(pas de page)* | `bdd/schema/NNN-….sql` (schéma, numéroté, rejouable) · `bdd/README.md` · plus tard `supabase/` (produit par la CLI, **jamais à la main**) · client partagé `assets/js/progression.js` |

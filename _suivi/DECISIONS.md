@@ -45,7 +45,69 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 26/08/2026 | ⏳ **Les deux cartes « Outils transversaux » du hub 2nde PC** | Elles restent en `.chapitre`, ouvertes, pendant que les quinze chapitres deviennent des panneaux repliables. Le brief ne couvre que les cartes de chapitre et n'attribue pas d'illustration aux outils. Les convertir aussi (avec deux images à choisir), ou assumer les deux styles ? |
 | 26/08/2026 | ⏳ **Le cadrage de `t2c1-danseur-rotation.jpg`** | Dans la bande repliée (230 × 88), à `--cp-focus:50% 55%`, il ne reste qu'une masse rouge floue : le derviche n'est pas identifiable. Réglage à revoir, ou photo à changer — jamais l'image elle-même (§8.3 du brief). |
 | 26/08/2026 | ⏳ **La maquette `panneau-ouverture-continue.html`** | Absente du dépôt au moment de la refonte. Le CSS structurant (hauteurs, voile, chiffre, ouverture continue) vient du brief §3.3 ; `.cp-tit`, `.cp-num`, `h3`, `.cp-compte`, `.cp-chev`, `.cp-corps`, `.cp-res` et `.cp-liens` ont été dérivés de la charte « papier d'étude ». À réaligner si la maquette est déposée. |
+| 02/09/2026 | ~~⏳ **La chaîne des diaporamas**~~ | **Tranché le jour même : elle n'existe pas** et ne sera pas récupérée. Voir « La chaîne des diaporamas n'existe pas ». |
+| 02/09/2026 | ~~⏳ **La place du `.pptx` de T3-C1**~~ | **Tranché le jour même : versionné** dans `assets/pptx/pc/`. Voir « La chaîne des diaporamas n'existe pas », DIA-7 et DIA-8. |
+| 02/09/2026 | ⏳ **La fiche de T3-C1 est en avance sur la validation du cours** | Elle est intégrée et téléchargeable depuis le 02/09, alors que le **jalon 5** (« cours VALIDÉ », acte explicite de Loïc) n'a jamais été posé. Soit le cours est validé et le jalon suit, soit la fiche attend — mais l'état actuel dit les deux à la fois. |
+| 02/09/2026 | ⏳ **IBM Plex Mono n'a pas d'italique auto-hébergée** | Les mentions « Donnée : … » des énoncés sortent du PDF en `Consolas-Italic`, dans un autre dessin que le reste. Ajouter la fonte italique à `assets/css/fonts.css`, ou renoncer à l'italique sur le mono ? Concerne toutes les fiches, pas seulement T3-C1. |
 | 26/08/2026 | ⏳ **Le texte de la carte « Formation d'une image »** | La phrase qui dit que le TP **est** le cours est une V1 (§8.1 du brief). Deux propriétés à garder si Loïc la réécrit : aucune tournure d'attente, et la raison énoncée simplement. |
+
+---
+
+## La chaîne des diaporamas n'existe pas — 02/09/2026
+
+Loïc : « elle n'existe pas ». `extract_svg.py`, `build.js` et `anime.py` ont vécu
+le temps d'une session hors dépôt et ne sont pas récupérables. Le fichier produit,
+lui, a été retrouvé et vérifié.
+
+| # | Décision | Statut |
+|---|---|---|
+| DIA-1 | **`CONSIGNES-diaporama-PC.md` est une méthode, pas un mode d'emploi.** Les neuf règles, la mécanique d'animation et les pièges disent *quoi refaire* ; aucune commande de la §4 ne peut être lancée. Le document le dit maintenant en tête, et la §4 est titrée « telle qu'elle a tourné une fois » | ✅ |
+| DIA-2 | **`_outils/diaporamas/` est supprimé.** Un dossier vide qui attend une chaîne qui n'arrivera pas est un mensonge de rangement | ✅ |
+| DIA-3 | **Un diaporama se retouche à la main dans PowerPoint.** Corollaire de DIA-1 : rien ne peut le régénérer. Le standard §8 le disait déjà pour les animations — ça vaut désormais pour tout le fichier | ✅ |
+| DIA-4 | **La version finale est identifiée** : celle dont les indices sont typographiques (`U`+`max` en deux runs), conforme à R4. Le second fichier de `Téléchargements`, d'apparence identique (12 diapositives, 53 étapes, 34 médias), porte encore `U max` en texte plat | ✅ |
+| DIA-5 | **Le `.pptx` est mis à l'abri dans `_a-deposer/diaporamas/`** — zone **ignorée par Git**, donc rien n'est publié, mais rien n'est sauvegardé non plus. Geste conservatoire : il ne vivait que dans `Téléchargements` | ✅ |
+| DIA-7 | **Le `.pptx` est versionné** — `assets/pptx/pc/diaporama-2nde-<code>.pptx`, 2 Mo. Motif : il n'est plus régénérable, et une zone ignorée par Git ne sauvegarde rien. Contrôlé avant d'être versé, le dépôt étant public : aucune correction à l'écran (R1), aucune donnée d'élève ni de classe, métadonnées limitées à la signature du professeur — déjà publique sur le site. **Aucune page n'y renvoie**, mais il reste accessible par son URL | ✅ |
+| DIA-8 | **`.gitattributes` déclare les formats binaires manquants** — `pptx`, `docx`, `m4a`, `mp3`, `mp4`. Un `.pptx` est un zip : traité comme du texte sous `* text=auto eol=lf`, il serait corrompu. `audio/2nde-pc-t3-c4-intro.m4a` était déjà versionné dans cet angle mort ; vérifié intact, la détection automatique avait suffi — la déclaration explicite verrouille le comportement | ✅ |
+| DIA-6 | 🔴 **Le tableau des célérités du diaporama est faux.** Vérifié dans le fichier : Air 340 · Eau **1 500** · **Bois 3 300** · Acier **5 000**, alors que le cours et la fiche donnent cinq milieux — Air 340 · Eau 1450 · Glace 3200 · Verre 5300 · Acier 5750. `STANDARD-fiches` affirmait que « le diaporama a été recalé » : **c'était faux**, et l'affirmation avait été reprise telle quelle dans la consigne le 02/09 au matin. Corrigée | ✅ |
+
+---
+
+## La chaîne des fiches élève entre dans le dépôt — 02/09/2026
+
+Le générateur écrit hors dépôt le 29/08 est déposé dans `_outils/fiches/`, avec
+la fiche de T3-C1 et ses deux images. Vérifié sur place : il régénère la fiche
+**octet pour octet**. Trois défauts que seul le passage sur le poste de
+production pouvait révéler ont été corrigés, dont un qui abîmait le PDF sans se
+voir à l'écran.
+
+| # | Décision | Statut |
+|---|---|---|
+| FIC-1 | **Le cartouche ne peut plus être avalé.** `.feuille` est un conteneur flex qui passe en hauteur fixe à l'impression : ses enfants y deviennent compressibles, et le cartouche (`height:60mm; overflow:hidden`) était **écrasé à zéro** — titre, logo, bandeau et introduction absents du PDF, alors que l'écran les montrait. `.feuille > *:not(.corps) { flex-shrink:0 }` : seul `.corps` absorbe, et un vrai débordement redevient visible | ✅ |
+| FIC-2 | **La clôture ne passe plus sous le pied.** C'est la marge de notes (33 lignes × 7,6 mm), plus haute que la colonne principale, qui fixe la hauteur du corps de page : elle poussait le bloc « code de déblocage + QR » par-dessus le pied. La page qui porte une clôture passe à `lignes_notes=30`. Réduire la colonne principale n'y changeait rien — c'est la fausse piste à ne pas reprendre | ✅ |
+| FIC-3 | **La chaîne tourne sous Windows.** Console en cp1252 : les `✓` et `⚠` levaient `UnicodeEncodeError` et tuaient le script **avant** l'écriture de la fiche → `sys.stdout.reconfigure(encoding="utf-8")`. `pdftoppm` (poppler) n'est pas installé → `mesurer_pages.py` rend par **PyMuPDF**, sans binaire externe. Fins de ligne forcées en LF | ✅ |
+| FIC-4 | **La relecture des QR ne dépend plus de cairo.** `cairosvg` exige une DLL absente des postes Windows, ce qui rendait muet un contrôle **bloquant**. Le repli repeint le tracé SVG lui-même — donc relit bien le fichier livré, pas la matrice d'origine. Les cinq QR de T3-C1 passent `✓` | ✅ |
+| FIC-5 | **La fiche est en ligne** : source générée `fiches/fiche-2nde-t3c1.html`, PDF de 8 pages, bouton `hors-verrou` sur la page du chapitre. Creux cumulé 44 mm, aucun débordement, A4 exact, 10 polices incorporées | ✅ |
+| FIC-6 | **L'aperçu du 29/08 n'est plus une référence** : il porte 272 mm de creux, l'état d'avant les corrections de remplissage. Le générateur fait foi | ✅ |
+
+---
+
+## Les supports de classe entrent dans le dépôt — 02/09/2026
+
+Deux standards de production écrits le 29/08 hors dépôt — la **fiche élève** et le
+**diaporama de projection** de T3-C1 — y sont déposés. L'audit qui a accompagné ce
+dépôt a trouvé que les deux documents décrivent un outillage **absent du disque
+entier**, et que la racine portait vingt notes de livraison datées, c'est-à-dire du
+récit rangé là où on cherche des consignes.
+
+| # | Décision | Statut |
+|---|---|---|
+| SUP-1 | **Les deux standards deviennent des `CONSIGNES-`** : `_modeles/CONSIGNES-fiche-eleve-PC.md` et `_modeles/CONSIGNES-diaporama-PC.md`. Une seule convention pour « ce que j'ouvre avant de produire X » — le préfixe `STANDARD-` aurait fait cohabiter deux nommages pour la même fonction | ✅ |
+| SUP-2 | **La chaîne d'export PDF est celle du dépôt.** Le standard prescrivait une impression manuelle depuis un navigateur ; `node exporter-fiches.mjs` fait la même chose par Chrome (`printToPDF`, `preferCSSPageSize`) **et** contrôle chaque export à la mesure. §4 étape 5 réécrite | ✅ |
+| SUP-3 | **Le contrôle des polices entre dans la checklist des fiches.** Six fiches sur six portent des caractères qu'aucune des six familles auto-hébergées ne couvre (`⁻¹`, `⩽`, `π`, `Δ`…), servis en Arial. C'est le piège du fleuron, mais sur du contenu | ✅ |
+| SUP-4 | **Les vingt notes de livraison passent en archive** — `_suivi/archives/livraisons/`. Elles racontent une session, elles ne prescrivent rien. `A-LIRE-DABORD.md` était le cas limite : un nom impératif sur une procédure d'extraction périmée depuis le 23/07 | ✅ |
+| SUP-5 | **Les aperçus d'audit sortent du suivi Git** (`/_apercus-*/`, 3,7 Mo, 23 fichiers). Ce sont des captures de contrôle de la passe en cours, pas des assets du site | ✅ |
+| SUP-6 | **`_outils/` est créé** : `tests/` pour les trois scripts de contrôle qui traînaient à la racine (ils lisent `DEPOT = '.'` — à lancer depuis la racine), `fiches/` et `diaporamas/` réservés aux chaînes de production | ✅ |
+| SUP-7 | **Chiffres recalés** : seize marqueurs `a-noter` sur T3-C1 et non quatorze ; le tableau des célérités est celui du cours (cinq milieux) ; le code de déblocage est **S0NORE** ; `MANIFESTE.md` disait le SNT en « phase 2 » quand `CLAUDE.md`, plus récent, dit « phase 1 » | ✅ |
 
 ---
 

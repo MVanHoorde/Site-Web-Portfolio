@@ -5,7 +5,11 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **29/08/2026** (dernière passe : **les dessins figuratifs de
+> Dernière réécriture : **02/09/2026** (dernière passe : **la fiche élève de T3-C1
+> est en ligne, et sa chaîne de production tourne depuis le dépôt** — bloc ci-dessous.
+> Passe du même jour : **les supports de classe entrent dans le dépôt, et la racine
+> est rangée**. Passe du 29/08 :
+> **les dessins figuratifs de
 > `o3` cèdent la place à de vraies images** — les 9 pictogrammes CLP vectorisés depuis
 > le PDF officiel, la tenue en illustration fournie, les 5 équipements en cadres de
 > réservation ; et la règle transverse qui en découle dans `CLAUDE.md`. Passe du
@@ -18,6 +22,78 @@
 > mal » de `o3` — contenu neuf, seul contenu du dépôt qui engage la **sécurité
 > d'élèves**, à confronter au règlement du laboratoire et aux équipements de la salle
 > 0.26. Ensuite, les **six arbitrages en attente** (O-23 à O-26, O-28, O-29).
+
+**La fiche élève de T3-C1 est en ligne, et sa chaîne tourne depuis le dépôt.** Le
+générateur est dans `_outils/fiches/` — `gabarit_fiche.py` (commun aux quatorze
+fiches), `fiche_t3c1.py` (le chapitre), `mesurer_pages.py` (le remplissage). Vérifié
+sur place : il **régénère la fiche octet pour octet**. La fiche est distribuée en PDF
+(8 pages, A4 exact, 10 polices incorporées) et son bouton `hors-verrou` est posé sur
+la page du chapitre — accessible sans code, pour l'élève absent.
+
+🔴 **Un défaut abîmait le PDF sans se voir à l'écran.** `.feuille` est un conteneur
+flex qui passe en hauteur fixe à l'impression : ses enfants y deviennent
+compressibles, et le **cartouche entier — bandeau, logo, titre, introduction — était
+écrasé à zéro et absent du PDF**, alors que le navigateur l'affichait parfaitement.
+Une ligne de CSS (`flex-shrink:0` sur tout sauf `.corps`) le rétablit ; le creux
+cumulé retombe à 39 mm, exactement le chiffre annoncé par le standard. Sur la dernière
+page, c'est la **marge de notes** — plus haute que la colonne principale — qui
+poussait le bloc « code de déblocage + QR » par-dessus le pied : la page qui porte une
+clôture passe à `lignes_notes=30`.
+
+**Trois autres corrections pour que la chaîne tourne sur le poste** : la console
+Windows en cp1252 tuait le script sur un `✓` **avant** l'écriture de la fiche ;
+`pdftoppm` n'y est pas installé, la mesure passe par PyMuPDF ; et la relecture des QR,
+contrôle **bloquant**, dépendait de `cairosvg` et de sa DLL cairo absente — le repli
+repeint le tracé SVG lui-même, les cinq QR passent `✓`.
+
+⏳ **Deux choses à trancher.** La fiche est **en avance sur la validation** : le jalon 5
+(« cours VALIDÉ », acte explicite de Loïc) n'a jamais été posé, et la fiche est déjà
+téléchargeable. Et `fonts.css` **n'a pas d'italique pour IBM Plex Mono** : les mentions
+« Donnée : … » sortent en Consolas — ça concerne toutes les fiches.
+
+**Les supports de classe ont leurs consignes.** Les
+deux standards écrits le 29/08 hors dépôt sont déposés dans `_modeles/` sous le nom
+`CONSIGNES-fiche-eleve-PC.md` et `CONSIGNES-diaporama-PC.md`. Ils décrivent, sur le
+gabarit T3-C1, comment concevoir la **feuille A4 qui fait écrire le cours** et le
+**diaporama de projection** qui ne montre jamais de correction.
+
+**La chaîne des diaporamas n'existe pas** — tranché par Loïc. Elle ne sera pas
+récupérée : `CONSIGNES-diaporama-PC.md` reste une **méthode** (les neuf règles, la
+séquence d'animation, les pièges), pas un mode d'emploi, et `_outils/diaporamas/` a
+été supprimé plutôt que laissé vide. **Un diaporama se retouche à la main dans
+PowerPoint.**
+
+Le fichier de T3-C1, lui, a été retrouvé : 12 diapositives, 53 étapes d'animation,
+34 médias, dans la version aux indices typographiques (l'autre copie porte encore
+`U max` en texte plat). Il ne vivait que dans `Téléchargements` ; il est désormais
+**versionné** dans `assets/pptx/pc/diaporama-2nde-t3c1.pptx`, précisément parce qu'il
+n'est plus régénérable. Contrôlé avant d'être versé — le dépôt est public : aucune
+correction à l'écran, aucune donnée d'élève. **Aucune page n'y renvoie**, mais son URL
+reste accessible. Au passage, `.gitattributes` déclare enfin `pptx`, `docx`, `m4a`,
+`mp3` et `mp4` comme binaires : un `.pptx` est un zip, et le seul `.m4a` déjà
+versionné vivait dans cet angle mort (vérifié intact).
+
+🔴 **Le tableau des célérités du diaporama est faux**, vérifié dans le fichier : Eau
+**1 500** · **Bois 3 300** · Acier **5 000**, quand le cours et la fiche donnent cinq
+milieux — Eau 1450 · Glace 3200 · Verre 5300 · Acier 5750. Projeté tel quel, l'écran
+contredit la feuille que l'élève complète. `STANDARD-fiches` affirmait le contraire
+(« le diaporama a été recalé ») : c'était faux, et l'erreur avait été reprise dans la
+consigne le matin même. À corriger **à la main** — rien ne peut régénérer ce fichier.
+
+**Sept chiffres et prescriptions recalés** dans les consignes déposées : l'export PDF
+passe par `node exporter-fiches.mjs` et non par une impression manuelle ; le contrôle
+des polices entre dans la checklist (six fiches sur six portent des caractères servis
+en Arial) ; seize marqueurs `a-noter` sur T3-C1 et non quatorze ; le tableau des
+célérités est celui du cours, cinq milieux ; le code de déblocage est **S0NORE** ;
+et `MANIFESTE.md` annonçait le SNT en « phase 2 » quand `CLAUDE.md` dit « phase 1 ».
+
+**La racine est rangée.** Les **vingt notes de livraison** (`A-LIRE-*`, `BRIEF-*`,
+`LOT-CFA-a-lire`) passent dans `_suivi/archives/livraisons/` : ce sont des récits, et
+la règle du dépôt veut que la doc décrive l'état courant. Le cas limite était
+`A-LIRE-DABORD.md` — un nom impératif sur une procédure d'extraction périmée depuis le
+23/07, exactement le piège qu'un assistant ouvre en premier. Les trois `_test-*.mjs`
+rejoignent `_outils/tests/` ; les **3,7 Mo d'aperçus d'audit** sortent du suivi Git.
+`verifier.mjs` reste à **18**.
 
 **L'ornement des encarts « Histoire des sciences » ne repose plus sur un glyphe.**
 Le fleuron `U+2766` n'existait dans aucune des vingt-deux polices auto-hébergées : il
