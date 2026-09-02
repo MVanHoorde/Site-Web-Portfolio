@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche élève — Thème 1 · Chapitre 3 — Constitution de l'atome</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  :root {
+    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
+    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e; --gris:#6b6f7a;
+    --or-fonce:#b28a1d; --vert-fonce:#4c8a58;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { background:#9aa0ab; }
+  body { font-family:'Spectral', Georgia, serif; color:var(--encre);
+         font-size:10.5pt; line-height:1.5; }
+  .feuille { width:210mm; min-height:297mm; margin:8mm auto; padding:10mm 13mm 16mm;
+    background:var(--papier); position:relative; box-shadow:0 2px 14px rgba(0,0,0,.28);
+    display:flex; flex-direction:column; }
+  .feuille .corps { flex:1; }
+  @page { size:A4; margin:0; }
+  @media print {
+    html, body { background:#fff; }
+    .feuille { margin:0; box-shadow:none; height:296mm; min-height:0; overflow:hidden;
+               page-break-after:always; background:#fff; }
+    .feuille:last-child { page-break-after:auto; }
+    .encart, .formule-s, .schema, .frise-f, table.t th { background:#fff; }
+  }
+  .bande { height:3.5px; background:var(--encre); position:relative; margin-bottom:3.5mm; }
+  .bande i { position:absolute; top:0; bottom:0; width:3px; }
+  .bande i:nth-child(1){ left:18%; background:var(--h-gamma); }
+  .bande i:nth-child(2){ left:31%; background:var(--h-beta); }
+  .bande i:nth-child(3){ left:76%; background:var(--h-alpha); }
+  h1 { font-family:'Space Grotesk',sans-serif; font-size:13.5pt; line-height:1.15; }
+  .sous { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--gris); margin:1mm 0 2mm; }
+  .sous .rouge { color:var(--h-alpha); }
+  .idligne { font-family:'IBM Plex Mono',monospace; font-size:8.5pt;
+    display:flex; gap:3mm; align-items:baseline; margin-bottom:3.5mm; }
+  .idligne .trou { border-bottom:1.3px dotted var(--encre); }
+  .idligne .etire { flex:1; }
+
+  .corps { display:grid; grid-template-columns:minmax(0,1fr) 40mm; column-gap:5mm; align-items:stretch; }
+  .principal { min-width:0; }
+  aside.marge-notes { border-left:1px dashed var(--gris); padding-left:3mm; display:flex; flex-direction:column; }
+  aside.marge-notes .etq-notes { font-family:'IBM Plex Mono',monospace; font-size:7pt;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--gris); margin-bottom:1.5mm; }
+  aside.marge-notes .zone { flex:1; min-height:30mm;
+    background:repeating-linear-gradient(to bottom, transparent, transparent 7mm,
+      var(--grille) 7mm, var(--grille) 7.2mm); }
+
+  /* Délimitation FORTE de chaque partie + champ date */
+  h2 { font-family:'Space Grotesk',sans-serif; font-size:11.5pt; margin:8mm 0 2mm;
+       display:flex; align-items:baseline; gap:2.5mm;
+       border-top:2.5px solid var(--encre); padding-top:2mm; }
+  h2 .n { font-family:'IBM Plex Mono',monospace; font-size:8pt; color:var(--h-beta); }
+  h2 .date-sec { margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:7.6pt;
+    font-weight:400; color:var(--gris); }
+  h2 .date-sec i { display:inline-block; width:22mm; border-bottom:1.2px dotted var(--encre); height:1em; vertical-align:-1px; }
+  .principal h2:first-child { margin-top:0; }
+  .suite { font-family:'IBM Plex Mono',monospace; font-size:7.6pt; color:var(--gris);
+    letter-spacing:.1em; text-transform:uppercase; margin:0 0 2mm;
+    border-top:2.5px solid var(--encre); padding-top:2mm; }
+  .suite .n { color:var(--h-beta); }
+
+  p { margin-bottom:1.4mm; text-align:justify; }
+  sub, sup { font-size:.68em; }
+  .trou { display:inline-block; border-bottom:1.3px dotted var(--encre);
+          min-width:24mm; height:1.05em; vertical-align:-1px; }
+  .trou.court { min-width:14mm; } .trou.long { min-width:46mm; }
+  .ligne { display:block; border-bottom:1.3px dotted var(--encre); height:6.4mm; }
+
+  /* Encarts (miroir des composants du cours, sans crayon) */
+  .encart { border:1px solid var(--encre); border-radius:0 2mm 2mm 0;
+    padding:2mm 3mm 2.2mm; margin:1.8mm 0 2.6mm; background:#fff; }
+  .encart .etq { font-family:'IBM Plex Mono',monospace; font-size:7.3pt; letter-spacing:.08em;
+    text-transform:uppercase; margin-bottom:1mm; }
+  .definition { border-left:3px solid var(--h-beta); }
+  .definition .etq { color:var(--h-beta); }
+  .definition .partie-def { font-family:'Space Grotesk',sans-serif; font-size:8.8pt;
+    font-weight:600; margin:1.4mm 0 .4mm; }
+  .propriete { border-left:3px solid var(--h-gamma); }
+  .propriete .etq { color:var(--h-gamma); }
+  .exercice-f { border-left:3px solid var(--h-alpha); background:#fdfdfb; }
+  .exercice-f .etq { color:var(--h-alpha); }
+
+  /* Cadre formule sobre : formule à gauche, grandeurs & unités à droite */
+  .formule-s { border:1px solid var(--encre); border-radius:2.5mm; display:grid;
+    grid-template-columns:1fr 1.2fr; margin:2mm 0 2.6mm; background:#fff; }
+  .formule-s .eq { font-family:'Spectral',serif; font-style:italic; font-size:13pt;
+    display:flex; align-items:center; justify-content:center; gap:2mm; padding:3mm;
+    border-right:1px dashed var(--grille); }
+  .formule-s .grandeurs { padding:2mm 3mm; }
+  .formule-s .grandeurs .etq { font-family:'IBM Plex Mono',monospace; font-size:7.3pt;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--gris); margin-bottom:1mm; }
+  .boite { display:inline-block; width:9mm; height:6.4mm; border:1.2px solid var(--encre);
+           border-radius:1mm; vertical-align:middle; }
+  .boite.pt { width:6.5mm; height:5.4mm; }
+
+  /* Écriture conventionnelle A/Z X : A et Z empilés AVANT le symbole.
+     Même construction que le cours, jamais de caractères Unicode en exposant. */
+  .azx-f { white-space:nowrap; font-style:normal; }
+  .azx-f .az { display:inline-flex; flex-direction:column; align-items:flex-end;
+    font-size:.62em; line-height:1.15; margin-right:.08em; vertical-align:.8em;
+    font-family:'IBM Plex Mono',monospace; font-style:normal; }
+
+  table.t { border-collapse:collapse; width:100%; font-size:9pt; }
+  table.t th, table.t td { border:1px solid var(--encre); padding:1.2mm 2mm; text-align:center; }
+  table.t th { font-family:'Space Grotesk',sans-serif; font-size:8pt; background:var(--papier); }
+  td.vide { height:11mm; }
+
+  .lignes { background:repeating-linear-gradient(to bottom, transparent, transparent 6.8mm,
+            var(--grille) 6.8mm, var(--grille) 7mm); }
+  .calc { border:1px dashed var(--gris); border-radius:1mm; margin-top:1mm; }
+
+  .eq-c { font-family:'Spectral',serif; font-style:italic; font-size:11.5pt;
+    text-align:center; margin:1.6mm 0; }
+  .eq-c sub, .eq-c sup { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.58em; }
+  .mini { font-family:'IBM Plex Mono',monospace; font-size:7.3pt; color:var(--gris); }
+  .question-f { font-style:italic; font-size:9.3pt; }
+  svg { display:block; }
+  .schema { border:1px solid var(--grille); border-radius:2mm; padding:2mm; margin:1.8mm 0; background:#fff; }
+  .schema .legende { font-family:'IBM Plex Mono',monospace; font-size:7.3pt; color:var(--gris);
+    margin-top:1mm; line-height:1.5; text-align:justify; }
+
+  /* Frise historique — À LIRE, rien à y compléter.
+     Le trait plein marque une contribution directe au modèle, le pointillé un
+     prolongement ; l'étoile signale les trois piliers du modèle de Seconde. */
+  .frise-f { border:1px solid var(--grille); border-left:3px solid var(--or-fonce);
+    border-radius:0 2mm 2mm 0; padding:2mm 3mm 2.4mm; margin:1.8mm 0 2.6mm; background:#fff; }
+  .frise-f > .etq { font-family:'IBM Plex Mono',monospace; font-size:7.3pt; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--or-fonce); margin-bottom:1.6mm;
+    display:flex; align-items:baseline; gap:2mm; }
+  .frise-f > .etq .lire { color:var(--gris); letter-spacing:0; text-transform:none; font-size:7pt; }
+  .frise-f .lignees { display:grid; grid-template-columns:repeat(3,1fr); gap:0 3mm; }
+  .frise-f .lignee > b { display:block; font-family:'Space Grotesk',sans-serif; font-size:8pt;
+    letter-spacing:.06em; text-transform:uppercase; padding-bottom:.6mm; margin-bottom:1mm;
+    border-bottom:1.6px solid currentColor; }
+  .frise-f .lignee.chi > b { color:#186f8f; }
+  .frise-f .lignee.exp > b { color:#c2371f; }
+  .frise-f .lignee.qua > b { color:#4a3d92; }
+  .frise-f .savant { font-size:8pt; line-height:1.28; margin-bottom:.9mm; }
+  .frise-f .savant b { font-family:'Space Grotesk',sans-serif; font-size:8.6pt; }
+  .frise-f .savant i { font-family:'IBM Plex Mono',monospace; font-style:normal;
+    font-size:7.2pt; color:var(--gris); }
+  .frise-f .savant .pilier, .frise-f .bilan .pilier { display:inline-block; width:2.4mm; height:2.4mm;
+    border-radius:50%; background:var(--or-fonce); vertical-align:.2mm; }
+  .frise-f .bilan { font-family:'IBM Plex Mono',monospace; font-size:7.2pt; line-height:1.42;
+    border-top:1px dashed var(--grille); margin-top:1.4mm; padding-top:1.2mm; }
+  .frise-f .bilan b { font-family:'Space Grotesk',sans-serif; }
+
+  .pied { position:absolute; bottom:6mm; left:13mm; right:13mm;
+          display:flex; justify-content:space-between;
+          font-family:'IBM Plex Mono',monospace; font-size:7pt; color:var(--gris); }
+  .deblocage { border:1.4px solid var(--encre); border-left:4px solid var(--h-gamma);
+    border-radius:0 2mm 2mm 0; padding:3mm 3.5mm; display:flex; align-items:center;
+    gap:4mm; flex-wrap:wrap; background:#fff; }
+  .deblocage .cases { display:flex; gap:1.5mm; }
+  .deblocage .cases i { width:7mm; height:8mm; border:1.2px solid var(--encre); border-radius:1mm; display:block; }
+
+  .frac-f { display:inline-flex; flex-direction:column; align-items:center; gap:1mm; vertical-align:middle; }
+  .frac-f > .boite { display:block; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ page 1 ══════════════════ -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <h1>Thème 1 · Chapitre 3 — Constitution de l'atome</h1>
+  <p class="sous">Physique-Chimie · <span class="rouge">Seconde</span> · fiche de cours — à compléter en classe · M. Van Hoorde</p>
+  <div class="idligne"><b>Nom</b><span class="trou etire"></span><b>Prénom</b><span class="trou etire"></span><b>Classe</b><span class="trou" style="min-width:16mm;"></span></div>
+  <div class="corps">
+    <div class="principal">
+
+<h2><span class="n">01</span> Histoire du modèle atomique<span class="date-sec">date : <i></i></span></h2>
+
+<div class="frise-f">
+  <div class="etq">La construction du modèle atomique <span class="lire">— à lire, rien à compléter</span></div>
+  <div class="lignees">
+    <div class="lignee chi">
+      <b>Lignée chimique</b>
+      <div class="savant"><b>Lavoisier</b> <i>1789</i><br>conservation de la masse</div>
+      <div class="savant"><b>Dalton</b> <i>1808</i><br>sphère indivisible</div>
+      <div class="savant"><b>Mendeleïev</b> <i>1869</i><br>classification périodique</div>
+    </div>
+    <div class="lignee exp">
+      <b>Lignée expérimentale</b>
+      <div class="savant"><b>P. &amp; M. Curie</b> <i>1898</i><br>radioactivité</div>
+      <div class="savant"><b>Thomson</b> <i>1904</i><br>électron · plum pudding</div>
+      <div class="savant"><b>Rutherford</b> <span class="pilier"></span> <i>1909–1911</i><br>noyau</div>
+      <div class="savant"><b>Chadwick</b> <span class="pilier"></span> <i>1932</i><br>neutron</div>
+    </div>
+    <div class="lignee qua">
+      <b>Lignée quantique</b>
+      <div class="savant"><b>Bohr</b> <span class="pilier"></span> <i>1913</i><br>couches électroniques</div>
+      <div class="savant"><b>de Broglie</b> <i>1924</i><br>dualité onde-corpuscule</div>
+      <div class="savant"><b>Schrödinger</b> <i>1926</i><br>nuage électronique</div>
+    </div>
+  </div>
+  <p class="bilan"><span class="pilier"></span> <b>Les trois piliers du modèle étudié en Seconde</b> — Rutherford (le noyau), Chadwick (le neutron), Bohr (les couches). Avant eux, l'atome de Leucippe et Démocrite (≈ 450 av. J.-C.) n'était qu'une idée&nbsp;: <i>atomos</i>, l'insécable, sans aucune preuve — et le débat resta gelé près de 2 000 ans après Aristote.</p>
+</div>
+
+<h2><span class="n">02</span> Le modèle de Bohr<span class="date-sec">date : <i></i></span></h2>
+
+<div class="encart definition">
+  <div class="etq">Définition — Le noyau</div>
+  <span class="ligne"></span><span class="ligne"></span>
+</div>
+
+<div class="encart definition">
+  <div class="etq">Définition — Le cortège électronique</div>
+  <span class="ligne"></span><span class="ligne"></span>
+</div>
+
+<div class="encart definition">
+  <div class="etq">Définition — Les nucléons</div>
+  <span class="ligne"></span><span class="ligne"></span>
+  <div class="partie-def">Le proton</div>
+  <span class="ligne"></span>
+  <div class="partie-def">Le neutron</div>
+  <span class="ligne"></span>
+</div>
+
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 3</span><span>page 1/6 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ══════════════════ page 2 ══════════════════ -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Thème 1 · Chapitre 3</span> — suite</p>
+  <div class="corps">
+    <div class="principal">
+
+<div class="encart definition">
+  <div class="etq">Notations — écriture symbolique des particules</div>
+  <table class="t">
+    <thead><tr><th>Particule</th><th>Symbole</th><th>Charge</th></tr></thead>
+    <tbody>
+      <tr><td>électron</td><td class="vide"></td><td></td></tr>
+      <tr><td>proton</td><td class="vide"></td><td></td></tr>
+      <tr><td>neutron</td><td class="vide"></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2><span class="n">03</span> Écriture symbolique du noyau<span class="date-sec">date : <i></i></span></h2>
+
+<div class="encart definition">
+  <div class="etq">Définition — L'écriture conventionnelle du noyau</div>
+  <p class="mini">Elle s'écrit <span class="azx-f"><span class="az"><span>A</span><span>Z</span></span>X</span> et porte trois informations.</p>
+  <div class="partie-def">X</div>
+  <span class="ligne"></span>
+  <div class="partie-def">A</div>
+  <span class="ligne"></span>
+  <div class="partie-def">Z</div>
+  <span class="ligne"></span>
+</div>
+
+<div class="formule-s">
+  <div class="eq"><span class="boite"></span> = <span class="boite"></span> − <span class="boite"></span></div>
+  <div class="grandeurs">
+    <div class="etq">Grandeurs</div>
+    <b>N</b> <span class="trou long"></span><br>
+    <b>A</b> <span class="trou long"></span><br>
+    <b>Z</b> <span class="trou long"></span>
+  </div>
+</div>
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 1 — Composition d'un noyau</div>
+  <p class="question-f">Donner la composition du noyau <span class="azx-f"><span class="az"><span>35</span><span>17</span></span>Cl</span>.</p>
+  <div class="calc lignes" style="height:20mm;"></div>
+</div>
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 2 — Notation symbolique</div>
+  <p class="question-f">Donner la notation symbolique du noyau d'oxygène possédant 8 protons et 8 neutrons.</p>
+  <div class="calc lignes" style="height:20mm;"></div>
+</div>
+
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 3</span><span>page 2/6 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ══════════════════ page 3 ══════════════════ -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Thème 1 · Chapitre 3</span> — suite</p>
+  <div class="corps">
+    <div class="principal">
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 3 — De la composition à l'écriture conventionnelle</div>
+  <p class="question-f">Donner l'écriture conventionnelle des deux noyaux représentés au tableau — il faut les compter&nbsp;!</p>
+  <p class="mini">a) noyau à identifier</p>
+  <div class="calc lignes" style="height:12mm;"></div>
+  <p class="mini" style="margin-top:1.4mm;">b) noyau à identifier</p>
+  <div class="calc lignes" style="height:12mm;"></div>
+</div>
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 4 — Schémas de noyaux atomiques</div>
+  <p class="question-f">Réaliser le schéma du noyau de&nbsp;: <span class="azx-f"><span class="az"><span>1</span><span>1</span></span>H</span>, <span class="azx-f"><span class="az"><span>14</span><span>6</span></span>C</span>, <span class="azx-f"><span class="az"><span>9</span><span>4</span></span>Be</span>.</p>
+  <div class="calc" style="height:20mm;"></div>
+  <p class="mini" style="margin-top:1mm;">Convention&nbsp;: proton en rouge, neutron en gris, particules qui se touchent sans se recouvrir.</p>
+</div>
+
+<h2><span class="n">04</span> Isotopes<span class="date-sec">date : <i></i></span></h2>
+
+<div class="encart definition">
+  <div class="etq">Définition — Noyaux isotopes</div>
+  <span class="ligne"></span><span class="ligne"></span>
+</div>
+
+<h2><span class="n">05</span> Masse de l'atome<span class="date-sec">date : <i></i></span></h2>
+
+<div class="encart propriete">
+  <div class="etq">Propriété — Masse des nucléons</div>
+  <span class="ligne"></span>
+  <p class="eq-c" style="margin-top:1.4mm;">m<sub>neutron</sub> ≈ m<sub>proton</sub> = <span class="trou court"></span> × 10<sup><span class="trou court" style="min-width:8mm;"></span></sup> <span class="trou court" style="min-width:9mm;"></span></p>
+</div>
+
+<p class="mini">Les masses de l'électron, du proton et du neutron sont <b>fournies</b> dans les énoncés&nbsp;: elles ne sont pas à apprendre.</p>
+
+<div class="formule-s">
+  <div class="eq"><span class="boite"></span> = <span class="boite"></span> × <span class="boite"></span></div>
+  <div class="grandeurs">
+    <div class="etq">Grandeurs &amp; unités</div>
+    <b>m</b> <span class="trou long"></span><br>
+    <b>A</b> <span class="trou long"></span><br>
+    <b>m<sub>n</sub></b> <span class="trou long"></span>
+  </div>
+</div>
+
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 3</span><span>page 3/6 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ══════════════════ page 4 ══════════════════ -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Thème 1 · Chapitre 3</span> — suite</p>
+  <div class="corps">
+    <div class="principal">
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 5 — Isotopes de l'uranium</div>
+  <p class="question-f">Donner la composition des noyaux <span class="azx-f"><span class="az"><span>238</span><span>92</span></span>U</span> et <span class="azx-f"><span class="az"><span>235</span><span>92</span></span>U</span>, puis justifier que ce sont des isotopes.</p>
+  <div class="calc lignes" style="height:22mm;"></div>
+</div>
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 6 — Masse d'un électron et masse d'un nucléon</div>
+  <p class="question-f">Comparer la masse d'un électron à celle d'un nucléon. Qu'en déduire&nbsp;?</p>
+  <div class="calc lignes" style="height:20mm;"></div>
+</div>
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 7 — Masse du tritium</div>
+  <p class="question-f">Le tritium est un atome d'hydrogène <span class="mini">(Z = 1)</span> possédant deux neutrons. Donner l'écriture conventionnelle de son noyau, puis calculer sa masse.</p>
+  <div class="calc lignes" style="height:22mm;"></div>
+</div>
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 8 — Masse d'un atome d'or</div>
+  <p class="question-f">Calculer la masse d'un atome d'or, de noyau <span class="azx-f"><span class="az"><span>197</span><span>79</span></span>Au</span>.</p>
+  <div class="calc lignes" style="height:20mm;"></div>
+</div>
+
+<h2><span class="n">06</span> Charges électriques<span class="date-sec">date : <i></i></span></h2>
+
+<div class="encart definition">
+  <div class="etq">Définition — La charge élémentaire</div>
+  <span class="ligne"></span><span class="ligne"></span>
+</div>
+
+<div class="formule-s">
+  <div class="eq">e = <span class="boite"></span> × 10<sup><span class="boite pt"></span></sup> <span class="boite pt"></span></div>
+  <div class="grandeurs">
+    <div class="etq">Grandeurs &amp; unités</div>
+    <b>e</b> <span class="trou long"></span><br>
+    L'unité de la charge électrique est<br>le <span class="trou long"></span>
+  </div>
+</div>
+
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 3</span><span>page 4/6 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ══════════════════ page 5 ══════════════════ -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Thème 1 · Chapitre 3</span> — suite</p>
+  <div class="corps">
+    <div class="principal">
+
+<div class="formule-s">
+  <div class="eq">Q<sub>noyau</sub> = <span class="boite"></span> × <span class="boite"></span></div>
+  <div class="grandeurs">
+    <div class="etq">Grandeurs &amp; unités</div>
+    <b>Q<sub>noyau</sub></b> <span class="trou long"></span><br>
+    <b>Z</b> <span class="trou long"></span><br>
+    <b>e</b> <span class="trou long"></span>
+  </div>
+</div>
+
+<div class="encart propriete">
+  <div class="etq">Propriété — Neutralité électrique de l'atome</div>
+  <span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+</div>
+
+<div class="formule-s">
+  <div class="eq">Q<sub>électrons</sub> = <span class="boite"></span> Q<sub>noyau</sub></div>
+  <div class="grandeurs">
+    <div class="etq">Grandeurs &amp; unités</div>
+    <b>Q<sub>électrons</sub></b> <span class="trou long"></span><br>
+    <b>Q<sub>noyau</sub></b> <span class="trou long"></span><br>
+    L'atome entier porte donc une charge <span class="trou court"></span>
+  </div>
+</div>
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 9 — Atome de chlore</div>
+  <p class="question-f">Quelle est la composition d'un atome de chlore de noyau <span class="azx-f"><span class="az"><span>35</span><span>17</span></span>Cl</span>&nbsp;? Quelle est la charge de son noyau&nbsp;? En déduire celle de son cortège électronique.</p>
+  <div class="calc lignes" style="height:36mm;"></div>
+</div>
+
+<h2><span class="n">07</span> Dimensions de l'atome<span class="date-sec">date : <i></i></span></h2>
+
+<div class="encart propriete">
+  <div class="etq">Propriété — Une structure lacunaire</div>
+  <span class="ligne"></span><span class="ligne"></span>
+</div>
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 10 — Un noyau comme une bille de stylo</div>
+  <p class="question-f">Quel serait le diamètre d'un atome si le rayon de son noyau était celui d'une bille de stylo <span class="mini">(r = 0,50 mm)</span>&nbsp;?</p>
+  <div class="calc lignes" style="height:30mm;"></div>
+</div>
+
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 3</span><span>page 5/6 · lycée Isaac de l'étoile</span></div>
+</div>
+
+<!-- ══════════════════ page 6 ══════════════════ -->
+<div class="feuille">
+  <div class="bande"><i></i><i></i><i></i></div>
+  <p class="suite"><span class="n">Thème 1 · Chapitre 3</span> — synthèse</p>
+  <div class="corps">
+    <div class="principal">
+
+<h2><span class="n">08</span> Les ions monoatomiques<span class="date-sec">date : <i></i></span></h2>
+
+<div class="encart definition">
+  <div class="etq">Définition — L'ion monoatomique</div>
+  <span class="ligne"></span><span class="ligne"></span>
+  <div class="partie-def">L'anion</div>
+  <span class="ligne"></span>
+  <div class="partie-def">Le cation</div>
+  <span class="ligne"></span>
+</div>
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 11 — Composition d'ions monoatomiques</div>
+  <p class="question-f">Donner la composition des ions Mg<sup>2+</sup>, H<sup>+</sup> et F<sup>−</sup>. Noyaux&nbsp;: <span class="azx-f"><span class="az"><span>24</span><span>12</span></span>Mg</span>, <span class="azx-f"><span class="az"><span>1</span><span>1</span></span>H</span>, <span class="azx-f"><span class="az"><span>19</span><span>9</span></span>F</span>.</p>
+  <div class="calc lignes" style="height:30mm;"></div>
+</div>
+
+<h2><span class="n">09</span> Élément chimique<span class="date-sec">date : <i></i></span></h2>
+
+<div class="encart definition">
+  <div class="etq">Définition — L'élément chimique</div>
+  <span class="ligne"></span><span class="ligne"></span>
+</div>
+
+<div class="encart exercice-f">
+  <div class="etq">Exercice 12 — Un élément, plusieurs entités</div>
+  <p class="question-f">Associer les entités du même élément&nbsp;: H · O · <span class="azx-f"><span class="az"><span>19</span><span>9</span></span>F</span> · <span class="azx-f"><span class="az"><span>1</span><span>1</span></span>H</span> · H<sup>+</sup> · F<sup>−</sup> · O<sup>2−</sup> · <span class="azx-f"><span class="az"><span>16</span><span>8</span></span>O</span> · F<sub>2</sub>.</p>
+  <div class="calc lignes" style="height:24mm;"></div>
+</div>
+
+<p class="mini" style="letter-spacing:.1em;text-transform:uppercase;color:var(--h-beta);margin:3mm 0 2mm;">L'essentiel du chapitre, avec mes mots</p>
+<span class="ligne"></span><span class="ligne"></span><span class="ligne"></span><span class="ligne"></span>
+
+    </div>
+    <aside class="marge-notes"><span class="etq-notes">notes</span><div class="zone"></div></aside>
+  </div>
+  <div class="pleine-largeur" style="margin-top:4mm;">
+    <div class="deblocage">
+      <span style="font-family:'Space Grotesk',sans-serif; font-weight:600;">🔓 Fin du chapitre —</span>
+      <span>code de déblocage du cours en ligne :</span>
+      <span class="cases"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      <span class="mini">→ vidéos, corrections, Kahoots et bonus sur le site</span>
+    </div>
+  </div>
+  <div class="pied"><span>Fiche élève · Thème 1 — Chapitre 3 · M. Van Hoorde — Lycée général Isaac de l'Étoile, Poitiers</span><span>page 6/6</span></div>
+</div>
+
+</body>
+</html>

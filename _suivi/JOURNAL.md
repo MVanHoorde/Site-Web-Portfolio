@@ -3124,3 +3124,36 @@ construites, légendes descendues sous la figure.
 **Ce qui reste à Loïc** : l'origine des treize photographies du chapitre — c'est le
 seul point qui engage autre chose que de la mise en forme, et l'Atomium en est le
 cas le plus sensible. Puis la validation de la page, qui débloquera la fiche.
+
+---
+
+## 02/09/2026 — La fiche élève de T1-C3
+
+Page validée par Loïc, la fiche suit dans la foulée. Six pages A4, les 19 notions
+et les 12 exercices du chapitre.
+
+**Une demande qui change le gabarit : la frise doit être sur la fiche, mais pas à
+compléter.** Toutes les autres fiches du parc sont intégralement à trous — c'est
+leur raison d'être. La frise historique fait exception : elle se lit, elle ne se
+récite pas. Elle est donc posée en bloc `.frise-f`, trois colonnes pour les trois
+lignées, chaque savant avec sa date et son apport, et l'étiquette dit explicitement
+« à lire, rien à compléter » pour qu'aucun élève ne cherche un blanc à remplir.
+
+**La pagination s'est faite à la mesure, en trois passes.** La première version
+tenait sur six pages, mais la deuxième faisait 333 mm de haut : à l'écran elle
+s'étirait sans rien signaler, à l'impression — où `.feuille` est figée à 296 mm
+avec `overflow:hidden` — le bas aurait été coupé net. Le passage à huit pages a
+réglé le débordement mais laissé trois pages à moitié vides, dont une à 22 %. Le
+retour à six pages a demandé de resserrer les zones de calcul et de densifier la
+frise. État final mesuré : 81, 87, 87, 89, 95 et 87 % de remplissage, aucun titre
+de section seul en bas de page.
+
+**Un caractère de repli évité.** Le premier export signalait trois polices système,
+dont Segoe UI Symbol : c'était l'étoile ★ qui marque les trois piliers du modèle de
+Seconde, et qu'aucune des six polices du dépôt ne couvre. Remplacée par une pastille
+dessinée en CSS. Restent Consolas et Times New Roman italique, replis déjà connus et
+partagés par les six autres fiches du parc.
+
+T1-C3 devient le troisième chapitre sur quatorze à porter sa fiche, après t1-c2 et
+t1-c4. Le bouton `hors-verrou` est posé sur la page : la fiche vierge reste
+accessible à l'élève absent ou en avance, qui n'a pas encore le code.

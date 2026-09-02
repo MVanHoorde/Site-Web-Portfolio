@@ -62,9 +62,12 @@
   commentaire `<!-- SOURCE → CORRIGÉ · … -->`, cinq notions passées en encart
   (13 → 19 marqueurs `.a-noter`), Image 10 retirée comme doublon du tableau
   périodique et figures renumérotées 1 → 10.
-- Fiche : **à produire**, après validation de la page par Loïc. Les 19 `.a-noter`
-  fixent son contenu ; le compte a changé, l'ancienne proposition à ~6 pages est
-  caduque.
+- **Page validée par Loïc le 02/09/2026.**
+- Fiche : **écrite** — `fiches/fiche-2nde-t1c3.html`, exportée en `assets/pdf/pc/fiches/fiche-2nde-t1c3.pdf`
+  (**6 pages** A4 exactes, remplissage mesuré 81-95 %). Les 19 `.a-noter` y sont, plus
+  les 12 exercices. La **frise historique y figure en lecture**, explicitement marquée
+  « à lire, rien à compléter » — c'est le seul bloc de la fiche qui ne se complète pas.
+  Le bouton de téléchargement `hors-verrou` est posé sur la page. **Non validée.**
 - ⚠ Reste à la main de Loïc : l'origine des treize photographies du chapitre
   (portraits et Atomium), inventoriée dans `_suivi/t1c3-releve.md` §2.
 

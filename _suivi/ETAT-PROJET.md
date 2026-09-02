@@ -37,11 +37,20 @@ Chaque figure a été rendue en PNG et mesurée : aucun débordement de viewBox,
 bande vide, aucun texte croisé par un trait. `node verifier.mjs` reste à **18
 problèmes**.
 
-🔴 **Ce qui attend Loïc sur T1-C3** : (1) **l'origine des treize photographies** du
-chapitre — portraits de savants et Atomium — inventoriée dans
+**La page a été validée par Loïc le 02/09/2026, et la fiche élève suit.**
+`fiches/fiche-2nde-t1c3.html` → `assets/pdf/pc/fiches/fiche-2nde-t1c3.pdf`, **6 pages**
+A4 exactes, 9 polices incorporées, remplissage mesuré entre 81 et 95 % — aucune page
+ne déborde, aucun titre de section seul en bas. Elle porte les 19 notions et les
+12 exercices. La **frise historique y figure en lecture**, marquée « à lire, rien à
+compléter » : c'est le seul bloc qui ne se complète pas, à la demande de Loïc. Le
+bouton `hors-verrou` est posé sur la page du cours — T1-C3 devient le **3ᵉ chapitre
+sur 14** à porter sa fiche, après t1-c2 et t1-c4.
+
+🔴 **Ce qui attend encore Loïc sur T1-C3** : (1) **l'origine des treize photographies**
+du chapitre — portraits de savants et Atomium — inventoriée dans
 `_suivi/t1c3-releve.md` §2, seul point qui engage autre chose que de la mise en
-forme ; (2) la **validation de la page**, qui débloquera la fiche élève ; (3) la
-répartition des exercices de manuel entre les compétences **`ds2` et `ds3`**.
+forme ; (2) la **validation de la fiche** ; (3) la répartition des exercices de manuel
+entre les compétences **`ds2` et `ds3`**.
 
 **Deux constats sortis du relevé, à trancher plus tard.** Les checklists DS ne
 souffrent pas d'une duplication générale — il n'y en a qu'une sur tout le site,
