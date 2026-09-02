@@ -5,7 +5,8 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **02/09/2026** (dernière passe : **la fiche élève de T3-C1
+> Dernière réécriture : **02/09/2026** (dernière passe : **l'audit de T1-C3 et son lot
+> transverse sont appliqués** — bloc ci-dessous. Passe du même jour : **la fiche élève de T3-C1
 > est en ligne, et sa chaîne de production tourne depuis le dépôt** — bloc ci-dessous.
 > Passe du même jour : **les supports de classe entrent dans le dépôt, et la racine
 > est rangée**. Passe du 29/08 :
@@ -22,6 +23,32 @@
 > mal » de `o3` — contenu neuf, seul contenu du dépôt qui engage la **sécurité
 > d'élèves**, à confronter au règlement du laboratoire et aux équipements de la salle
 > 0.26. Ensuite, les **six arbitrages en attente** (O-23 à O-26, O-28, O-29).
+
+**T1-C3 est corrigé de bout en bout, et le lot transverse avec.** Les deux briefs
+d'audit du 02/09 sont appliqués : les puissances de dix passent en balise sur les
+8 fichiers de seconde PC concernés (62 conversions, 22 sur T1-C3), la notation A/Z X
+monte dans `chapitre-commun.css` — qui passe en **?v=9** sur ses 17 fichiers —, les
+21 pieds de page de `pages/` disent la même année `© 2026/2027`, et les quatre liens
+publics vers un DS **corrigé** sont retirés. Sur le chapitre : sept figures refaites
+au schéma de noyau de référence plus le SVG inline de l'exercice 3, six erreurs de
+fond corrigées et tracées, cinq notions passées en encart (13 → **19** marqueurs
+`.a-noter`), l'Image 10 supprimée comme doublon et les figures renumérotées 1 → 10.
+Chaque figure a été rendue en PNG et mesurée : aucun débordement de viewBox, aucune
+bande vide, aucun texte croisé par un trait. `node verifier.mjs` reste à **18
+problèmes**.
+
+🔴 **Ce qui attend Loïc sur T1-C3** : (1) **l'origine des treize photographies** du
+chapitre — portraits de savants et Atomium — inventoriée dans
+`_suivi/t1c3-releve.md` §2, seul point qui engage autre chose que de la mise en
+forme ; (2) la **validation de la page**, qui débloquera la fiche élève ; (3) la
+répartition des exercices de manuel entre les compétences **`ds2` et `ds3`**.
+
+**Deux constats sortis du relevé, à trancher plus tard.** Les checklists DS ne
+souffrent pas d'une duplication générale — il n'y en a qu'une sur tout le site,
+celle de T1-C3 : le vrai trou est que **tout le thème 3 est nu** (19 compétences
+sans aucune référence de manuel). Et les **outils `o1`…`o8`** sont restés hors de
+la passe sur les exposants : ils tournent sur le moteur SNT, donc la règle `sup` du
+CSS commun ne les atteint pas — `o1` « écriture scientifique » en compte 73.
 
 **La fiche élève de T3-C1 est en ligne, et sa chaîne tourne depuis le dépôt.** Le
 générateur est dans `_outils/fiches/` — `gabarit_fiche.py` (commun aux quatorze

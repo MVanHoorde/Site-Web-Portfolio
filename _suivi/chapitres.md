@@ -55,9 +55,18 @@
 
 ### T1-C3 — Constitution de l'atome
 - Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- Fichier : `pages/2nde-pc-t1-c3-constitution-atome.html`
+- Fichier : `pages/2nde-pc-t1-c3-constitution-atome.html` · relevé : `_suivi/t1c3-releve.md`
 - Contenus produits : frise historique des modèles atomiques, pack SVG, code AT0MES.
-- Fiche : **proposée** (~6 pages), pas validée.
+- **Audit du 02/09/2026 appliqué en entier** (lots A à I) : sept figures refaites au
+  schéma de noyau de référence, six erreurs de fond corrigées et tracées par un
+  commentaire `<!-- SOURCE → CORRIGÉ · … -->`, cinq notions passées en encart
+  (13 → 19 marqueurs `.a-noter`), Image 10 retirée comme doublon du tableau
+  périodique et figures renumérotées 1 → 10.
+- Fiche : **à produire**, après validation de la page par Loïc. Les 19 `.a-noter`
+  fixent son contenu ; le compte a changé, l'ancienne proposition à ~6 pages est
+  caduque.
+- ⚠ Reste à la main de Loïc : l'origine des treize photographies du chapitre
+  (portraits et Atomium), inventoriée dans `_suivi/t1c3-releve.md` §2.
 
 ### T1-C4 — Dénombrer les entités
 - Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜

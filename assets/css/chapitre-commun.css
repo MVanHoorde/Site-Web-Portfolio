@@ -88,7 +88,24 @@
   ul.cours { max-width:75ch; margin:0 0 .9rem 1.2rem; text-align:justify; }
   ul.cours li { margin-bottom:.5rem; }
   .nb { white-space:nowrap; }
-  sub, sup { font-size:.68em; }
+  /* Exposants et indices : les puissances de dix s'ecrivent en balises, jamais
+     en caracteres Unicode — IBM Plex Mono n'a pas les glyphes et le navigateur
+     substitue une police pour le seul signe moins, qui arrive desaligne. */
+  sub, sup { font-size:.68em; line-height:0; position:relative; }
+  sup { top:-.05em; }
+  sub { bottom:-.04em; }
+
+  /* Ecriture conventionnelle du noyau : A et Z empiles AVANT le symbole.
+     .azx reste en flux inline pur — le symbole chimique est un noeud texte,
+     il repose donc exactement sur la ligne de base du texte courant. La colonne
+     A/Z est un inline-flex cale par vertical-align, calcule pour centrer la
+     colonne sur la hauteur de capitale du symbole. Un inline-flex sur .azx
+     ferait porter la ligne de base par la colonne, et toute la notation
+     flotterait au-dessus de la ligne. */
+  .azx { white-space:nowrap; font-style:normal; }
+  .azx .az { display:inline-flex; flex-direction:column; align-items:flex-end;
+    font-size:.62em; line-height:1.15; margin-right:.08em; vertical-align:.8em;
+    font-family:'IBM Plex Mono',monospace; font-style:normal; }
 
   /* ===== BIBLIOTHÈQUE DE COMPOSANTS (validée sur le chapitre T1-C2) ===== */
 
@@ -251,8 +268,11 @@
   figure { margin:1.6rem 0; }
   figure svg, figure img { max-width:100%; height:auto; display:block; }
   figure img.photo { border:1px solid var(--encre); border-radius:6px; }
+  /* La legende suit la largeur de SA figure, pas celle de la colonne de lecture :
+     un max-width fixe donnait des pavés étroits sous les figures larges (tableau
+     périodique). Les figures étroites, elles, restent contraintes par la figure. */
   figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
-    margin-top:.55rem; max-width:66ch; line-height:1.55; }
+    margin-top:.55rem; max-width:100%; line-height:1.55; }
   figcaption .eqc { display:block; font-family:'Spectral',serif; font-style:italic; font-size:.95rem;
     color:var(--encre); margin:.35rem 0; text-align:center; }
   figcaption .eqc sub { font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:.6em; }
@@ -295,6 +315,11 @@
     align-items:center; gap:.5rem; }
   .etape::after { content:""; flex:1; border-top:1px dotted var(--grille); }
   .resultat { border-bottom:2.5px solid var(--h-alpha); font-weight:600; padding-bottom:1px; white-space:nowrap; }
+  /* Le soulignement est cale sur la ligne de base : quand le resultat est une
+     notation de noyau, il traverse la colonne A/Z et raye le Z. Ce padding le
+     descend sous la boite entiere — mesure en rendu reel : le trait passe
+     5,7 px sous le bas du Z. */
+  .resultat:has(.azx) { padding-bottom:.16em; }
   .formule-cours-rappel { font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--gris);
     text-align:center; margin-bottom:.1rem; white-space:normal; }
   .eq-exo { font-family:'Spectral',serif; font-style:italic; font-size:1.18rem;

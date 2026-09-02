@@ -1236,3 +1236,115 @@ couvre : exposants et indices Unicode (`⁺` `⁻¹` `₆`), symboles (`⩽` `�
 `⚙` `π` `Δ`), et dans `o3`/`o4` les libellés en Arial des planches SVG (55 et
 plusieurs dizaines de glyphes). Même piège que le fleuron ci-dessus, mais sur du
 contenu : c'est **du fond**, rien n'a été touché.
+
+---
+
+## 02/09/2026 — Audit T1-C3 et lot transverse : ce qui a été tranché
+
+**En vigueur.** Appliqué le jour même, sur les deux briefs d'audit du 02/09.
+
+### T-01 · Les puissances de dix s'écrivent en balise, jamais en Unicode
+
+`10⁻²⁷` saisi en caractères Unicode oblige le navigateur à chercher une police de
+substitution **pour le seul signe moins** — IBM Plex Mono n'a pas ces glyphes — et
+le signe arrive avec sa propre hauteur d'exposant. Le défaut est invisible dans un
+éditeur et systématique à l'écran. La forme retenue est `10<sup>−27</sup>`, avec le
+vrai signe moins U+2212.
+
+**Ce qui ne bouge pas :** les **charges chimiques** (`Cl⁻`, `O²⁻`, `Fe³⁺`, `p⁺`,
+`n⁰`, `e⁻`) et les **configurations électroniques** (`1s² 2s² 2p⁶`) restent en
+Unicode. Elles font partie de l'écriture du symbole chimique, elles s'affichent en
+police sérif où le rendu est correct, et les convertir casserait les recherches
+plein texte.
+
+**Étendu au-delà du brief :** les **exposants d'unité** (`kg⁻¹`, `m·s⁻¹`,
+`g·mol⁻¹`, `cm³`) souffrent exactement du même défaut, plusieurs étant dans des
+`.nb` en IBM Plex Mono. Ils sont passés en balise eux aussi. En SVG, où `<sup>`
+n'existe pas, l'exposant se pose en `<tspan>` avec un `dy` et une taille
+**absolue en px**.
+
+### T-02 · La notation A/Z X quitte le `<style>` de T1-C3 pour le CSS commun
+
+T1-C6 et T1-C7 en auront besoin. `.azx` et `.azx .az` vivent désormais dans
+`assets/css/chapitre-commun.css`.
+
+**Le correctif n'est pas celui que le brief envisageait.** Le brief proposait
+`align-items: baseline` ou un empilement en `<sup>`/`<sub>`. La voie retenue est
+une troisième : **`.azx` repasse en flux inline pur**, sans `inline-flex`. Le
+symbole chimique redevient un nœud texte, il repose donc sur la ligne de base par
+construction, et non par un réglage à ajuster. Mesuré en rendu réel sur les
+24 notations de la page : **écart 0,00 px**.
+
+**Le `.resultat` qui rayait le Z n'était pas un défaut indépendant** — c'était une
+conséquence du précédent. Le brief le traitait comme un point séparé et proposait
+un `padding-bottom`. Ce padding seul ne suffisait pas : le trait restait 4,86 px
+trop haut. Une fois la colonne A/Z correctement calée
+(`vertical-align: .8em`, centrage mesuré à 0,02 px près), le padding nécessaire
+**tombe de 0,62 em à 0,16 em**. Le trait passe 5,7 px sous le bas du Z.
+
+`chapitre-commun.css` passe en **`?v=9`** sur ses 17 fichiers.
+
+### T-03 · Un seul format d'année en pied de page : `© 2026/2027`
+
+Quatre formats coexistaient (`© 2025`, `© 2025/2026`, `© 2025-2026`, `© 2026`) —
+le brief n'en avait relevé que trois. Vingt et une pages de `pages/` sont alignées.
+`2nde-snt.html` reste dehors : le périmètre posé par Loïc pour cette passe est la
+physique-chimie de seconde.
+
+Au passage, les **quatre chapitres du thème 3** portaient un pied de page
+identique, sans numéro de chapitre : on ne pouvait pas les distinguer. Ils portent
+désormais « Thème 3, Chapitre N — Ondes et signaux ». Le **fil d'ariane**, lui,
+garde la forme commune à tous les chapitres (« Thème N — nom du thème »).
+
+### T-04 · Les liens « DS (corrigé) » sont retirés
+
+Quatre pages (t1-c1 à t1-c4) portaient un lien SharePoint public vers un sujet de
+DS **corrigé**, dont deux vers le même fichier. Cela contredisait la règle du
+projet : les corrections ne sont pas publiées, elles sont distribuées par courriel
+contre preuve de travail. Les liens vers les **sujets** (`assets/pdf/pc/ds/`) sont
+conservés. Plus aucun lien SharePoint ne subsiste dans `pages/`.
+
+### T1C3-01 · L'Image 10 est supprimée (arbitrage Q1 du brief chapitre)
+
+La figure « principe de rangement » précédait immédiatement le tableau périodique
+complet, qui dit la même chose en mieux, et sa flèche « de gauche à droite »
+contredisait le saut visible entre Mg et B. Les figures sont renumérotées 1 → 10.
+Le fichier `t1c3-fig-classification-principe.svg` reste sur disque, plus référencé
+par aucune page.
+
+### T1C3-02 · Les autres arbitrages du brief chapitre, tranchés par défaut
+
+- **Q2** — l'ion F²⁻ de l'exercice 12 devient le **difluor F₂** : le fluor ne forme
+  que F⁻, et le difluor appartient bien à l'élément fluor, ce qui est un piège plus
+  formateur.
+- **Q3** — le « À retenir » du bandeau de frise **sort de la construction** et
+  devient un paragraphe sous la frise.
+- **Q4** — le second élément de l'Image 9 est le **cuivre**.
+- **Q5** — l'exemple travaillé du lithium 7 n'a pas été ajouté en partie 03 : la
+  décision D2 le fait déjà vivre dans l'Image 8 et sa légende, et la partie 03 est
+  déjà dense. **À rouvrir si Loïc le souhaite.**
+
+### T1C3-03 · Deux points du brief sont tombés sans objet
+
+- **C3** — le composant `.notation-noyau`, dont le brief demandait de retirer le
+  `position:absolute`, n'a **aucune occurrence dans le HTML** : c'était du CSS
+  mort. Les règles ont été supprimées plutôt que refactorées.
+- **D1** — le fichier `Isotope_CNO.svg` annoncé comme fourni **n'est pas dans le
+  dépôt**. La grille maison, qui porte déjà le carbone, l'azote et l'oxygène, a été
+  conservée et refaite. **Conséquence favorable : aucune attribution CC BY-SA n'est
+  due.** Détail dans `_suivi/t1c3-releve.md`.
+
+### En attente d'un arbitrage de Loïc
+
+- Les compétences **`ds2` et `ds3`** de T1-C3 partagent des références de manuel
+  identiques (`man. 15 p.81 | 22 p.83`). C'est la **seule duplication stricte du
+  site** — le brief la disait générale, le relevé sur les 11 chapitres qui portent
+  une checklist dit l'inverse. Rien n'a été réattribué.
+- Le vrai défaut général des checklists est ailleurs : **tout le thème 3 est nu**
+  (19 compétences sans aucune référence de manuel, dont 7 sur t3-c1, 6 sur t3-c3 et
+  6 sur t3-c4). Rattacher des exercices à des compétences relève du fond.
+- Les **outils transversaux `o1`…`o8`** sont restés hors de la passe sur les
+  puissances de dix : ils tournent sur le moteur SNT et ne chargent pas
+  `chapitre-commun.css`, donc la règle `sup` ne s'y applique pas. `o1`
+  « écriture scientifique » en compte **73 occurrences** — il faudra sa propre
+  règle dans `sequence-snt.css`.

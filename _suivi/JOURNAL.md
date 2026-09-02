@@ -3061,3 +3061,66 @@ mais pas `pptx` — or un `.pptx` est un zip, et la règle générale du dépôt
 (vérifié : le seul `.m4a` déjà versionné, `audio/2nde-pc-t3-c4-intro.m4a`, est
 intact), mais rien ne le garantissait. `pptx`, `docx`, `m4a`, `mp3` et `mp4`
 sont désormais déclarés explicitement.
+
+---
+
+## 02/09/2026 — L'audit de T1-C3, et le transverse qu'il a révélé
+
+Deux briefs, exécutés d'affilée : le transverse d'abord, parce que ses lots 1 et 2
+touchent `chapitre-commun.css` et imposent un seul bump de version, puis le
+chapitre.
+
+**Ce que la mesure a démenti.** Le brief traitait le `.resultat` qui raye la
+notation de noyau comme un défaut indépendant, à corriger par un
+`padding-bottom`. Appliqué tel quel, le trait restait **4,86 px trop haut** : il
+rayait toujours le Z. Le padding a d'abord été poussé à 0,62 em, ce qui faisait
+passer le trait — mais corrigeait un symptôme. En calibrant l'alignement de la
+colonne A/Z (ligne de base mesurée par une sonde de hauteur nulle, hauteur de
+capitale par `TextMetrics`), l'écart réel était de **11 px**. Une fois
+`vertical-align: .8em` posé, le padding nécessaire retombe à 0,16 em. Le point 2c
+du brief n'existait que parce que le point 2a n'était pas corrigé.
+
+**Le périmètre réel des puissances de dix débordait le brief.** Le `grep` remontait
+17 fichiers, dont des pages qui ne chargent pas `chapitre-commun.css` — les outils
+transversaux de PC et des séquences SNT. Borné à la seconde PC sur décision de
+Loïc, il reste 8 fichiers et 62 conversions, dont **22 sur T1-C3 — exactement le
+chiffre annoncé par le brief**. Deux occurrences étaient dans du SVG inline, où
+`<sup>` n'existe pas : posées en `<tspan>` avec `dy` et taille absolue.
+
+Le relevé a aussi sorti **66 exposants d'unité** (`kg⁻¹`, `m·s⁻¹`) que le brief ne
+mentionnait pas, et qui souffrent du même défaut de police. Traités. Les
+configurations électroniques de t1-c6 et t1-c7 (`1s² 2s² 2p⁶`, 198 occurrences),
+elles, restent en Unicode : même statut que les charges chimiques.
+
+**Un ratage, corrigé.** Le numéro de chapitre destiné aux pieds de page du thème 3
+est d'abord parti dans le **fil d'ariane**, dont les autres chapitres ne portent
+pas de numéro — une incohérence introduite en corrigeant une incohérence. Annulé
+et reposé au bon endroit.
+
+**Les figures.** Sept refaites, plus le SVG inline de l'exercice 3. Un générateur
+commun pose les nucléons sur un **empilement hexagonal** : les centres sont
+distants d'exactement deux rayons, donc les particules se touchent sans se
+recouvrir — c'est la condition pour que l'élève puisse les compter, et c'était
+précisément ce qui manquait à l'exercice 3, qui annonçait « 13 protons et
+14 neutrons » sur un dessin de sept particules noyées dans un halo orange.
+
+Chaque figure a été rendue en PNG et **mesurée** : débordement de viewBox et
+proportion de hauteur vide. Le contrôle a attrapé ce que l'œil laisse passer — une
+légende sortant de 64 px à droite sur l'Image 1, 23 % de vide sur l'Image 3, une
+ligne de texte hors cadre sur l'Image 7 — et l'œil a attrapé ce que la mesure ne
+voit pas : deux légendes qui se chevauchent, et surtout, sur l'Image 7, **la ligne
+médiane du terrain passant exactement sur le point du noyau**, qui devenait
+invisible. Elle a été retirée : le rectangle et le rond central suffisent à dire
+« terrain de football ».
+
+**La grille des isotopes portait un défaut que le brief demandait seulement de
+vérifier.** Ses deux légendes étaient **interverties** — la flèche horizontale
+annonçait « même ligne : même élément chimique » alors qu'elle décrit la variation
+du nombre de neutrons — et elle traversait son propre texte. Ses notations, enfin,
+étaient saisies en exposants Unicode et s'affichaient « 16O » : dans un SVG servi
+par `<img>`, les polices du site ne s'appliquent pas. Refaite, notations
+construites, légendes descendues sous la figure.
+
+**Ce qui reste à Loïc** : l'origine des treize photographies du chapitre — c'est le
+seul point qui engage autre chose que de la mise en forme, et l'Atomium en est le
+cas le plus sensible. Puis la validation de la page, qui débloquera la fiche.

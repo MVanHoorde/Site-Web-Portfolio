@@ -5,14 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2nde — Constitution de l'atome · Physique-Chimie</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<link rel="stylesheet" href="../assets/css/chapitre-commun.css?v=8">
+<link rel="stylesheet" href="../assets/css/chapitre-commun.css?v=9">
 <style>
-  sub, sup { font-size:.68em; line-height:0; position:relative; }
-  sup { top:-.05em; } sub { bottom:-.04em; }
-  /* Écriture conventionnelle du noyau : A et Z empilés AVANT le symbole */
-  .azx { display:inline-flex; align-items:center; white-space:nowrap; font-style:normal; }
-  .azx .az { display:inline-flex; flex-direction:column; align-items:flex-end;
-    font-size:.62em; line-height:1.15; margin-right:.08em; font-family:'IBM Plex Mono',monospace; }
   figcaption .fig-num { font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--encre); }
   figure img.fig-svg { max-width:100%; height:auto; display:block; margin:0 auto;
     background:#fff; border:1px solid var(--grille); border-radius:10px; }
@@ -38,19 +32,6 @@
   .frise-item p { font-size:.78rem; text-align:left; max-width:none; margin:0; hyphens:auto; }
   .frise-synthese { margin-top:1.1rem; padding-top:.8rem; border-top:1px dashed var(--sepia); }
   .frise-synthese p { margin-bottom:0; }
-
-  /* Encadré notation conventionnelle A/Z X */
-  .notation-noyau { border:1px solid var(--encre); border-radius:10px; background:#fff;
-    padding:1.4rem 1.6rem; margin:1.2rem 0; max-width:640px;
-    display:grid; grid-template-columns:auto 1fr; gap:2.4rem; align-items:center; }
-  .notation-noyau .boite-symb { font-family:'Spectral',serif; text-align:center; position:relative;
-    padding:0 2.4rem 0 .8rem; }
-  .notation-noyau .boite-symb .A { display:block; font-size:2.1rem; line-height:1.05; }
-  .notation-noyau .boite-symb .Z { display:block; font-size:2.1rem; line-height:1.05; }
-  .notation-noyau .boite-symb .X { font-size:4rem; font-style:italic; position:absolute;
-    right:-.4rem; top:50%; transform:translateY(-50%); }
-  .notation-noyau .legende-liste { font-family:'IBM Plex Mono',monospace; font-size:.85rem; line-height:2.3; }
-  .notation-noyau .legende-liste b { color:var(--h-beta); }
 
   /* Grille isotopes colorée */
   .grille-isotopes { border:1px solid var(--encre); border-radius:10px; background:#fff;
@@ -104,7 +85,6 @@
   @media (max-width:960px) {
     .frise-grille { grid-template-columns:repeat(2,1fr); }
     .frise-grille::before { display:none; }
-    .notation-noyau { grid-template-columns:1fr; gap:1.2rem; justify-items:center; }
     .ptable { overflow-x:auto; }
   }
 </style>
@@ -201,8 +181,6 @@ footer{border-top:1px solid #d8cfba;}
 <summary><h2 id="ancre-1"><span class="num">01</span> Histoire du modèle atomique</h2></summary>
 <div class="partie-corps">
 
-<p class="aparte">Synthèse de l'Activité 1 p. 90.</p>
-
 <p>Le modèle de l'atome que nous étudions en classe de Seconde est le <strong>modèle de Bohr</strong>.
 D'après ce modèle, l'atome est constitué d'un <strong>noyau positif</strong> autour duquel gravitent
 des <strong>électrons négatifs répartis sur des couches</strong>.</p>
@@ -223,14 +201,23 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
   .fh-sous { font-family:'IBM Plex Mono',monospace; font-size:.8rem; letter-spacing:.06em;
     text-transform:uppercase; color:var(--fh-encre); margin-top:.8rem; max-width:34ch; }
   .fh-origine { border:2px dashed var(--fh-or); border-radius:10px; padding:1.7rem 1.4rem .9rem; position:relative;
-    min-width:360px; background:var(--fh-carte); }
+    min-width:360px; flex:1 1 420px; background:var(--fh-carte); }
+  /* Le ruban chevauchait le portrait de droite : il reste sur une ligne, et le bloc
+     lui reserve sa gouttiere par un padding-top. */
   .fh-origine .fh-ruban { position:absolute; top:-14px; left:50%; transform:translateX(-50%);
-    background:var(--fh-or); color:var(--fh-creme); font-family:'IBM Plex Mono',monospace; font-size:.78rem;
-    letter-spacing:.14em; padding:.25rem 1.1rem; border-radius:4px; }
+    background:var(--fh-or); color:var(--fh-creme); font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+    letter-spacing:.12em; padding:.25rem 1.1rem; border-radius:4px; white-space:nowrap; }
   .fh-origine .fh-duo { display:flex; justify-content:space-around; align-items:flex-start; gap:.6rem; }
-  .fh-origine .fh-item { text-align:center; font-family:'IBM Plex Mono',monospace; font-size:.72rem; line-height:1.5; position:relative; }
-  .fh-origine .fh-item b { display:block; font-family:'Space Grotesk',sans-serif; font-size:.9rem; }
-  .fh-origine .fh-lien-pointille { flex:0 0 70px; border-top:2.5px dashed var(--fh-encre); margin-top:24px; position:relative; }
+  .fh-origine .fh-item { text-align:center; font-family:'IBM Plex Mono',monospace; font-size:.72rem; line-height:1.5; position:relative;
+    flex:1 1 0; min-width:0; }
+  .fh-origine .fh-item b { display:block; font-family:'Space Grotesk',sans-serif; font-size:.9rem;
+    margin-top:.5rem; }
+  /* la date se coupait en « J.- / C. » : elle reste d'un seul tenant */
+  .fh-origine .fh-item i { display:block; font-style:italic; color:var(--fh-or);
+    font-size:.7rem; white-space:nowrap; margin:.15rem 0 .35rem; }
+  .fh-origine .fh-item .fh-quoi { display:block; }
+  .fh-origine .fh-lien-pointille { flex:0 0 70px; align-self:flex-start; border-top:2.5px dashed var(--fh-encre);
+    margin-top:34px; position:relative; }
   .fh-origine .fh-lien-pointille::after { content:""; position:absolute; right:-2px; top:-6px;
     border:5px solid transparent; border-left:9px solid var(--fh-encre); }
   .fh-grille { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.6rem; align-items:stretch; }
@@ -269,8 +256,11 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
   .fh-zone-conv { height:92px; margin:0 0 .2rem; }
   .fh-zone-conv svg { width:100%; height:100%; display:block; }
   /* Rangée basse : légende | nœud | post-it — plus aucune superposition */
-  .fh-bas { display:grid; grid-template-columns:330px minmax(0,1fr) 248px; gap:1.4rem; align-items:stretch; }
-  .fh-noeud-zone { position:relative; align-self:start; }
+  /* Le noeud etait comprime dans une colonne centrale de ~130 px, ou « SECONDE »
+     debordait et la medaille se faisait couper. Il prend maintenant toute la
+     largeur, et la legende passe dessous, en une ligne discrete. */
+  .fh-bas { display:flex; flex-direction:column; gap:1rem; }
+  .fh-noeud-zone { order:1; position:relative; align-self:stretch; }
   .fh-rayons { position:absolute; inset:-4px -26px -22px; background:
     repeating-conic-gradient(from 0deg, rgba(168,130,31,.13) 0 4deg, transparent 4deg 12deg);
     border-radius:50%; z-index:0; }
@@ -280,17 +270,11 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
     background:var(--fh-or); border-radius:50%; border:3px solid var(--fh-creme); display:flex; align-items:center; justify-content:center; }
   .fh-noeud .fh-h2n { font-family:'Space Grotesk',sans-serif; text-transform:uppercase; letter-spacing:.05em;
     color:var(--fh-or); font-size:1.3rem; margin-bottom:.5rem; }
-  .fh-noeud .fh-contenu { display:flex; align-items:center; justify-content:center; gap:1.4rem; }
+  .fh-noeud .fh-contenu { display:flex; align-items:center; justify-content:center; gap:1.4rem; flex-wrap:wrap; }
   .fh-noeud .fh-txt { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.02rem; color:var(--fh-encre); line-height:1.7; }
-  .fh-postit { background:#fbf3d8; border:1px solid var(--fh-or-clair); box-shadow:3px 4px 0 rgba(26,34,51,.15);
-    padding:1.3rem 1rem .9rem; font-family:'IBM Plex Mono',monospace; font-size:.75rem; line-height:1.65;
-    transform:rotate(.6deg); position:relative; align-self:stretch; }
-  .fh-postit::before { content:"📎"; position:absolute; top:-13px; left:14px; font-size:1.2rem; }
-  .fh-postit b { display:block; font-family:'Space Grotesk',sans-serif; color:var(--fh-or); letter-spacing:.08em;
-    text-transform:uppercase; margin-bottom:.4rem; }
-  .fh-legende { border:2px dashed var(--fh-or); border-radius:10px; padding:.8rem 1rem;
-    display:flex; flex-direction:column; gap:.65rem; justify-content:center;
-    font-family:'IBM Plex Mono',monospace; font-size:.72rem; line-height:1.45; }
+  .fh-legende { order:2; border:none; border-top:1px dashed var(--fh-or); border-radius:0;
+    padding:.7rem 0 0; display:flex; flex-flow:row wrap; gap:.4rem 1.6rem; justify-content:flex-start;
+    font-family:'IBM Plex Mono',monospace; font-size:.66rem; line-height:1.4; color:var(--gris); }
   .fh-legende > span { display:flex; align-items:center; gap:.6rem; }
   .fh-legende .fh-fl { flex:none; }
   /* --- bulle commune --- */
@@ -339,12 +323,12 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
     <div class="fh-duo">
       <div class="fh-item">
         <span style="display:inline-flex;width:56px;height:56px;border-radius:50%;overflow:hidden;border:2.2px solid #a8821f;background:#fff;"><img src="../assets/img/pc/2nde-pc-t1-c3/t1c3-portrait-democrite.jpg" alt="Buste de Démocrite" style="width:100%;height:100%;object-fit:cover;filter:grayscale(1);"></span>
-        <b>Leucippe &amp; Démocrite</b>≈ 450 av. J.-C.<br>atomos : indivisible,<br>sans preuve
+        <b>Leucippe &amp; Démocrite</b><i>≈ 450 av. J.-C.</i><span class="fh-quoi">atomos : indivisible, sans preuve</span>
       </div>
       <div class="fh-lien-pointille"></div>
       <div class="fh-item">
         <span style="display:inline-flex;width:56px;height:56px;border-radius:50%;overflow:hidden;border:2.2px solid #a8821f;background:#fff;"><img src="../assets/img/pc/2nde-pc-t1-c3/t1c3-portrait-aristote.jpg" alt="Buste d'Aristote" style="width:100%;height:100%;object-fit:cover;filter:grayscale(1);"></span>
-        <b>Aristote</b>≈ 350 av. J.-C.<br>le débat gelé<br>≈ 2 000 ans
+        <b>Aristote</b><i>≈ 350 av. J.-C.</i><span class="fh-quoi">le débat gelé ≈ 2 000 ans</span>
       </div>
     </div>
   </div>
@@ -374,7 +358,9 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
   <div class="fh-noeud-zone">
     <div class="fh-rayons"></div>
     <div class="fh-noeud">
-      <div class="fh-medaille"><svg viewBox="0 0 40 40" width="30" height="30"><g stroke="#f7f2e4" stroke-width="2" fill="none"><ellipse cx="20" cy="20" rx="16" ry="7" transform="rotate(30 20 20)"/><ellipse cx="20" cy="20" rx="16" ry="7" transform="rotate(-30 20 20)"/></g><circle cx="20" cy="20" r="4" fill="#f7f2e4"/></svg></div>
+      <!-- SOURCE → CORRIGÉ · lot A3 / décision D3 : la médaille dessinait deux ellipses croisées,
+           c'est-à-dire le modèle de Rutherford, pour annoncer le modèle de Bohr. -->
+      <div class="fh-medaille"><svg viewBox="0 0 40 40" width="30" height="30" aria-hidden="true"><g stroke="#f7f2e4" stroke-width="1.8" fill="none"><circle cx="20" cy="20" r="8"/><circle cx="20" cy="20" r="15"/></g><circle cx="20" cy="20" r="3.4" fill="#f7f2e4"/><circle cx="20" cy="12" r="2" fill="#f7f2e4"/><circle cx="20" cy="5" r="2" fill="#f7f2e4"/><circle cx="33" cy="24" r="2" fill="#f7f2e4"/></svg></div>
       <div class="fh-h2n">Modèle étudié en Seconde</div>
       <div class="fh-contenu">
         <svg viewBox="0 0 90 90" width="86" height="86" aria-label="Noyau : protons et neutrons"><g stroke="#1a2233" stroke-width="1.6"><circle cx="36" cy="34" r="14" fill="#c9a227"/><circle cx="56" cy="36" r="14" fill="#b9bec9"/><circle cx="34" cy="54" r="14" fill="#b9bec9"/><circle cx="54" cy="56" r="14" fill="#c9a227"/><circle cx="45" cy="45" r="14" fill="#c9a227"/></g><g font-family="monospace" font-size="13" font-weight="700" fill="#fff" text-anchor="middle"><text x="36" y="39">+</text><text x="54" y="61">+</text><text x="45" y="50">+</text></g></svg>
@@ -383,13 +369,11 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
       </div>
     </div>
   </div>
-  <div class="fh-postit">
-    <b>À retenir</b>
-    Des idées, des expériences et des modèles successifs ont permis de construire notre vision actuelle de l'atome. 💡
-  </div>
 </div>
 </div>
 </div>
+
+<p class="aparte">Des idées, des expériences et des modèles successifs ont permis de construire notre vision actuelle de l'atome.</p>
 
 <div class="videos">
   <a class="video-chip" href="https://www.youtube.com/watch?v=GZlSapUc9nA&t=514s" target="_blank" rel="noopener">▶ L'évolution du modèle atomique en vidéo ↗</a>
@@ -406,20 +390,29 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
 
 <p class="aparte">Nous adoptons donc le modèle de Bohr. Première question : de quoi l'atome est-il fait ?</p>
 
-<p>L'atome est formé :</p>
-<ul class="cours">
-  <li>d'un <span class="terme">noyau</span>, constitué de <span class="terme">nucléons</span>,
-    <strong>chargé positivement</strong> ;</li>
-  <li>d'un <span class="terme">cortège électronique</span>, situé autour du noyau et constitué
-    d'<span class="terme">électrons</span>, <strong>chargé négativement</strong>.</li>
-</ul>
+<p>L'atome est formé de deux parties.</p>
 
-<p>Les nucléons, signifiant littéralement « particules du noyau », peuvent être des
-<span class="terme">protons</span> ou des <span class="terme">neutrons</span>.</p>
-<ul class="cours">
-  <li>Les protons sont chargés positivement.</li>
-  <li>Les neutrons n'ont pas de charge.</li>
-</ul>
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Le <span class="terme">noyau</span> est la partie centrale de l'atome. Il est constitué de
+  <span class="terme">nucléons</span> et il est <strong>chargé positivement</strong>.</p>
+</div>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Le <span class="terme">cortège électronique</span> est situé autour du noyau. Il est constitué
+  d'<span class="terme">électrons</span> et il est <strong>chargé négativement</strong>.</p>
+</div>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Les <span class="terme">nucléons</span> — littéralement « particules du noyau » — sont de deux
+  sortes : les <span class="terme">protons</span>, <strong>chargés positivement</strong>, et les
+  <span class="terme">neutrons</span>, <strong>sans charge</strong>.</p>
+</div>
 
 <figure>
   <img class="fig-svg" src="../assets/img/pc/2nde-pc-t1-c3/t1c3-fig-modele-bohr.svg" alt="Modèle de Bohr : noyau chargé positivement au centre, électrons sur des couches ; zoom sur le noyau montrant protons et neutrons" loading="lazy">
@@ -518,31 +511,51 @@ atome qui n'était au départ modélisé que par une simple sphère dure.</p>
   <div class="etiquette">Exercice 3 — De la composition à l'écriture conventionnelle</div>
   <p class="question">Donner l'écriture conventionnelle des deux noyaux représentés ci-dessous.</p>
   <figure style="margin:.4rem 0 .6rem;">
-    <svg viewBox="0 0 640 210" role="img" aria-label="Deux schémas de noyaux à identifier : à gauche un noyau d'aluminium annoté 13 protons et 14 neutrons ; à droite un noyau à compter avec 2 protons et 2 neutrons" style="max-width:560px;display:block;margin:0 auto;" font-family="'IBM Plex Mono',monospace">
-      <!-- légende -->
-      <circle cx="200" cy="16" r="7" fill="#d6402b" stroke="#141a26" stroke-width="1"/>
-      <text x="212" y="20" font-size="11" fill="#141a26">proton</text>
-      <circle cx="300" cy="16" r="7" fill="#b9bec9" stroke="#141a26" stroke-width="1"/>
-      <text x="312" y="20" font-size="11" fill="#141a26">neutron</text>
-      <!-- Noyau a) aluminium, annoté -->
-      <g stroke="#141a26" stroke-width="1.1">
-        <circle cx="140" cy="105" r="34" fill="#f3c9c2"/>
-        <circle cx="128" cy="94" r="9" fill="#d6402b"/><circle cx="148" cy="90" r="9" fill="#b9bec9"/>
-        <circle cx="120" cy="112" r="9" fill="#b9bec9"/><circle cx="140" cy="110" r="9" fill="#d6402b"/>
-        <circle cx="158" cy="106" r="9" fill="#b9bec9"/><circle cx="132" cy="126" r="9" fill="#d6402b"/>
-        <circle cx="152" cy="124" r="9" fill="#b9bec9"/>
+    <svg viewBox="0 0 640 250" role="img" aria-label="Deux schémas de noyaux à identifier : à gauche un noyau de 13 protons et 14 neutrons, à droite un noyau de 2 protons et 2 neutrons ; les particules sont dénombrables">
+      <!-- légende, redescendue dans le cadre -->
+      <circle cx="196" cy="26" r="7" fill="#d6402b" stroke="#141a26" stroke-width="1"/>
+      <text x="208" y="30" font-size="11.5" fill="#141a26" font-family="'IBM Plex Mono',monospace">proton</text>
+      <circle cx="300" cy="26" r="7" fill="#b9bec9" stroke="#141a26" stroke-width="1"/>
+      <text x="312" y="30" font-size="11.5" fill="#141a26" font-family="'IBM Plex Mono',monospace">neutron</text>
+      <!-- a) 13 protons + 14 neutrons, sans annotation : à l'élève de compter -->
+      <g>
+        <circle cx="165.0" cy="130.0" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="156.0" cy="114.4" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="174.0" cy="114.4" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="147.0" cy="130.0" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="183.0" cy="130.0" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="156.0" cy="145.6" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="174.0" cy="145.6" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="165.0" cy="98.8" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="138.0" cy="114.4" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="192.0" cy="114.4" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="138.0" cy="145.6" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="192.0" cy="145.6" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="165.0" cy="161.2" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="147.0" cy="98.8" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="183.0" cy="98.8" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="129.0" cy="130.0" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="201.0" cy="130.0" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="147.0" cy="161.2" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="183.0" cy="161.2" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="156.0" cy="83.2" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="174.0" cy="83.2" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="120.0" cy="114.4" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="210.0" cy="114.4" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="120.0" cy="145.6" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="210.0" cy="145.6" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="156.0" cy="176.8" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="174.0" cy="176.8" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
       </g>
-      <line x1="172" y1="92" x2="228" y2="74" stroke="#6b6f7a" stroke-width="1.1"/>
-      <text x="232" y="72" font-size="11.5" fill="#141a26">13 protons</text>
-      <line x1="172" y1="120" x2="228" y2="140" stroke="#6b6f7a" stroke-width="1.1"/>
-      <text x="232" y="150" font-size="11.5" fill="#141a26">14 neutrons</text>
-      <text x="140" y="172" text-anchor="middle" font-size="12.5" fill="#141a26">a) noyau d'aluminium</text>
-      <!-- Noyau b) à compter -->
-      <g stroke="#141a26" stroke-width="1.3">
-        <circle cx="475" cy="98" r="15" fill="#d6402b"/><circle cx="505" cy="102" r="15" fill="#b9bec9"/>
-        <circle cx="480" cy="128" r="15" fill="#b9bec9"/><circle cx="508" cy="130" r="15" fill="#d6402b"/>
+      <text x="165" y="238" text-anchor="middle" font-size="12.5" fill="#141a26" font-family="'IBM Plex Mono',monospace">a) noyau à identifier</text>
+      <!-- b) même rayon de nucléon que a) -->
+      <g>
+        <circle cx="484.5" cy="137.8" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="475.5" cy="122.2" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="493.5" cy="122.2" r="9" fill="#d6402b" stroke="#141a26" stroke-width="1.1"/>
+    <circle cx="466.5" cy="137.8" r="9" fill="#b9bec9" stroke="#141a26" stroke-width="1.1"/>
       </g>
-      <text x="493" y="172" text-anchor="middle" font-size="12.5" fill="#141a26">b) noyau à identifier (compter !)</text>
+      <text x="480" y="238" text-anchor="middle" font-size="12.5" fill="#141a26" font-family="'IBM Plex Mono',monospace">b) noyau à identifier</text>
     </svg>
   </figure>
   <details class="correction">
@@ -601,7 +614,7 @@ donc pas la même masse.</p>
 
 <figure>
   <img class="fig-svg" src="../assets/img/pc/2nde-pc-t1-c3/t1c3-fig-isotopes-grille.svg" alt="Grille d'isotopes : chaque ligne est un élément (même Z), le nombre de neutrons varie vers la droite" loading="lazy">
-  <figcaption><b class="fig-num">Image 4</b> — Chaque ligne regroupe les isotopes d'un même élément : même Z, nombre de neutrons différent.</figcaption>
+  <figcaption><b class="fig-num">Image 4</b> — Chaque ligne regroupe les isotopes d'un même élément : même Z, nombre de neutrons différent. Des isotopes sont des « sosies » chimiques, mais leurs propriétés physiques diffèrent, et leurs usages avec : le carbone 12 est stable et largement majoritaire, le carbone 13 stable et minoritaire, tandis que le carbone 14, radioactif, sert à dater les vestiges archéologiques.</figcaption>
 </figure>
 <figure>
   <img class="fig-svg" src="../assets/img/pc/2nde-pc-t1-c3/t1c3-fig-abondances-plomb.svg" alt="Diagramme circulaire des abondances isotopiques du plomb : plomb 208 à 52,4 %, plomb 206 à 24,1 %, plomb 207 à 22,1 %, plomb 204 à 1,4 %" loading="lazy">
@@ -646,23 +659,25 @@ on parle d'<span class="terme">abondance isotopique</span>.</p>
 
 <p>Les masses des particules composant l'atome sont données dans le tableau ci-dessous.</p>
 
-<figure class="fig-etroite" style="max-width:380px;">
+<figure class="fig-etroite" style="max-width:380px; margin-left:auto; margin-right:auto;">
   <div class="defile"><table class="tab" style="width:100%;">
     <thead><tr><th>Particule</th><th>Masse (kg)</th></tr></thead>
     <tbody>
-      <tr><td>Électron</td><td><span class="nb">9,109 × 10⁻³¹</span></td></tr>
-      <tr><td>Proton</td><td><span class="nb">1,673 × 10⁻²⁷</span></td></tr>
-      <tr><td>Neutron</td><td><span class="nb">1,675 × 10⁻²⁷</span></td></tr>
+      <tr><td>Électron</td><td><span class="nb">9,109 × 10<sup>−31</sup></span></td></tr>
+      <tr><td>Proton</td><td><span class="nb">1,673 × 10<sup>−27</sup></span></td></tr>
+      <tr><td>Neutron</td><td><span class="nb">1,675 × 10<sup>−27</sup></span></td></tr>
     </tbody>
   </table></div>
 </figure>
+
+<p class="aparte">Ces trois valeurs ne sont pas à apprendre : elles sont fournies dans les énoncés.</p>
 
 <div class="encart propriete">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Propriété</div>
   <p>La masse d'un neutron est très proche de celle d'un proton, de telle manière qu'ils sont
   considérés de même masse :</p>
-  <p class="eq-ligne">m<sub>neutron</sub> ≈ m<sub>proton</sub> = 1,67 × 10⁻²⁷ kg</p>
+  <p class="eq-ligne">m<sub>neutron</sub> ≈ m<sub>proton</sub> = 1,67 × 10<sup>−27</sup> kg</p>
 </div>
 
 <div class="exercice">
@@ -672,12 +687,17 @@ on parle d'<span class="terme">abondance isotopique</span>.</p>
     <summary>Voir la correction</summary>
     <div class="etape">Application numérique</div>
     <p class="eq-ligne"><span class="frac"><span class="haut">m<sub>nucléon</sub></span><span class="bas">m<sub>électron</sub></span></span>
-    = <span class="frac"><span class="haut">1,67 × 10⁻²⁷</span><span class="bas">9,11 × 10⁻³¹</span></span>
-    ≈ <span class="resultat">1833</span></p>
+    = <span class="frac"><span class="haut">1,67 × 10<sup>−27</sup></span><span class="bas">9,11 × 10<sup>−31</sup></span></span>
+    <!-- SOURCE → CORRIGÉ · lot E2 : la source donnait « ≈ 1833 », soit quatre chiffres
+         significatifs tirés de données qui n'en portent que trois. -->
+    ≈ <span class="resultat">1,83 × 10<sup>3</sup></span></p>
     <div class="etape">Conclusion</div>
     <p>Un nucléon est plus de 1800 fois plus massif qu'un électron. On dit que <strong>la masse d'un
     électron est négligeable devant la masse d'un nucléon</strong>. Lors du calcul de la masse d'un
     atome, il n'est donc pas nécessaire de prendre en compte la participation des électrons.</p>
+    <p>Puisque seuls les nucléons pèsent, et qu'ils pèsent tous à peu près la même chose, la masse
+    d'un atome ne dépend que de <strong>A</strong>. C'est précisément pour cette raison que A porte
+    le nom de <strong>nombre de masse</strong>.</p>
   </details>
 </div>
 
@@ -691,7 +711,7 @@ la relation suivante :</p>
     <span class="titre">Grandeurs &amp; unités</span>
     <b>m</b> masse de l'atome · kg<br>
     <b>A</b> nombre de masse (nucléons)<br>
-    <b>m<sub>n</sub></b> masse d'un nucléon · <span class="nb">1,67 × 10⁻²⁷ kg</span>
+    <b>m<sub>n</sub></b> masse d'un nucléon · <span class="nb">1,67 × 10<sup>−27</sup> kg</span>
   </div>
 </div>
 
@@ -712,7 +732,7 @@ la relation suivante :</p>
     <div class="etape">Formule du cours</div>
     <p class="formule-cours-rappel">m = A × m<sub>n</sub></p>
     <div class="etape">Application numérique</div>
-    <p>m = 3 × 1,67 × 10⁻²⁷ = <span class="resultat">5,01 × 10⁻²⁷ kg</span></p>
+    <p>m = 3 × 1,67 × 10<sup>−27</sup> = <span class="resultat">5,01 × 10<sup>−27</sup> kg</span></p>
   </details>
 </div>
 
@@ -727,7 +747,7 @@ la relation suivante :</p>
     <div class="etape">Formule du cours</div>
     <p class="formule-cours-rappel">m = A × m<sub>n</sub></p>
     <div class="etape">Application numérique</div>
-    <p>m = 197 × 1,67 × 10⁻²⁷ ≈ <span class="resultat">3,29 × 10⁻²⁵ kg</span></p>
+    <p>m = 197 × 1,67 × 10<sup>−27</sup> ≈ <span class="resultat">3,29 × 10<sup>−25</sup> kg</span></p>
   </details>
 </div>
 
@@ -751,7 +771,7 @@ la relation suivante :</p>
 
 <div class="formule-bloc">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
-  <div class="eq"><span class="eq-corps">e = 1,602 × 10⁻¹⁹ C</span></div>
+  <div class="eq"><span class="eq-corps">e = 1,602 × 10<sup>−19</sup> C</span></div>
   <div class="grandeurs">
     <span class="titre">Grandeurs &amp; unités</span>
     <b>e</b> charge élémentaire<br>
@@ -760,11 +780,17 @@ la relation suivante :</p>
   </div>
 </div>
 
-<div class="encart propriete">
+<p>Un noyau porte une charge positive, qui se calcule en utilisant la formule suivante :</p>
+
+<div class="formule-bloc">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
-  <div class="etq">Propriété</div>
-  <p>Un noyau porte une charge positive qui se calcule en utilisant la formule :</p>
-  <p class="eq-ligne">Q<sub>noyau</sub> = Z × e</p>
+  <div class="eq"><span class="eq-corps">Q<sub>noyau</sub> = Z × e</span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>Q<sub>noyau</sub></b> charge du noyau · C<br>
+    <b>Z</b> numéro atomique (protons)<br>
+    <b>e</b> charge élémentaire · <span class="nb">1,602 × 10<sup>−19</sup> C</span>
+  </div>
 </div>
 
 <div class="encart propriete">
@@ -773,7 +799,18 @@ la relation suivante :</p>
   <p>L'atome est <span class="terme">électriquement neutre</span>, c'est-à-dire qu'il contient autant
   de protons, chargés positivement, que d'électrons, chargés négativement. Ainsi la charge de
   l'ensemble des électrons (cortège électronique) est l'opposée de la charge du noyau de l'atome :</p>
-  <p class="eq-ligne">Q<sub>électrons</sub> = −Q<sub>noyau</sub></p>
+</div>
+
+<div class="formule-bloc">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq"><span class="eq-corps">Q<sub>électrons</sub> = −Q<sub>noyau</sub></span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>Q<sub>électrons</sub></b> charge du cortège · C<br>
+    <b>Q<sub>noyau</sub></b> charge du noyau · C<br>
+    L'atome entier porte donc<br>
+    une charge <b>nulle</b>.
+  </div>
 </div>
 
 <figure>
@@ -799,10 +836,12 @@ la relation suivante :</p>
     <div class="etape">Charge du noyau — formule du cours</div>
     <p class="formule-cours-rappel">Q<sub>noyau</sub> = Z × e</p>
     <div class="etape">Application numérique</div>
-    <p>Q<sub>noyau</sub> = 17 × 1,602 × 10⁻¹⁹ = <span class="resultat">2,7234 × 10⁻¹⁸ C</span></p>
+    <!-- SOURCE → CORRIGÉ · lot F3 : la source donnait 2,7234 x 10^-18, soit cinq chiffres
+         significatifs à partir d'une donnée qui en porte quatre. -->
+    <p>Q<sub>noyau</sub> = 17 × 1,602 × 10<sup>−19</sup> = <span class="resultat">2,723 × 10<sup>−18</sup> C</span></p>
     <div class="etape">Charge du cortège électronique</div>
     <p class="formule-cours-rappel">Q<sub>électrons</sub> = −Q<sub>noyau</sub></p>
-    <p>Q<sub>électrons</sub> = <span class="resultat">−2,7234 × 10⁻¹⁸ C</span></p>
+    <p>Q<sub>électrons</sub> = <span class="resultat">−2,723 × 10<sup>−18</sup> C</span></p>
   </details>
 </div>
 
@@ -818,15 +857,15 @@ la relation suivante :</p>
 <p class="aparte">Dernière caractéristique, et pas des moindres : la taille. Préparez-vous à beaucoup de vide.</p>
 
 <p>Le <span class="terme">rayon de l'atome</span>, assimilé à une sphère, est de l'ordre de
-<span class="nb">10⁻¹⁰ m</span>, soit un dixième de milliardième de mètre. Cette dimension a donné
-naissance à sa propre unité, l'angström <span class="nb">(10⁻¹⁰ m = 1 Å)</span>.</p>
+<span class="nb">10<sup>−10</sup> m</span>, soit un dixième de milliardième de mètre. Cette dimension a donné
+naissance à sa propre unité, l'angström <span class="nb">(10<sup>−10</sup> m = 1 Å)</span>.</p>
 
 <p>Le <span class="terme">rayon du noyau de l'atome</span>, assimilé à une sphère, est de l'ordre de
-<span class="nb">10⁻¹⁵ m</span>, soit un millionième de milliardième de mètre. Il existe également
-une unité adaptée, le femtomètre <span class="nb">(10⁻¹⁵ m = 1 fm)</span>.</p>
+<span class="nb">10<sup>−15</sup> m</span>, soit un millionième de milliardième de mètre. Il existe également
+une unité adaptée, le femtomètre <span class="nb">(10<sup>−15</sup> m = 1 fm)</span>.</p>
 
 <p>La comparaison de ces deux rayons nous donne :</p>
-<p class="eq-ligne"><span class="frac"><span class="haut">10⁻¹⁰</span><span class="bas">10⁻¹⁵</span></span> = 10⁵ = 100 000</p>
+<p class="eq-ligne"><span class="frac"><span class="haut">10<sup>−10</sup></span><span class="bas">10<sup>−15</sup></span></span> = 10<sup>5</sup> = 100 000</p>
 
 <div class="encart propriete">
   <span class="a-noter" title="À compléter sur la fiche">✎</span>
@@ -841,17 +880,23 @@ une unité adaptée, le femtomètre <span class="nb">(10⁻¹⁵ m = 1 fm)</span
 </figure>
 
 <div class="exercice">
-  <div class="etiquette">Exercice 10 — Un noyau comme une balle de tennis</div>
-  <p class="question">Quel serait le diamètre d'un atome si le rayon de son noyau était similaire à
-  celui d'une balle de tennis <span class="nb">(r<sub>BT</sub> = 3,2 cm)</span> ?</p>
+  <!-- SOURCE → CORRIGÉ · lot G2 : l'énoncé partait d'une balle de tennis et tombait sur 6,4 km,
+       ce qui contredisait le terrain de football de l'Image 7. La source 2025/2026 portait déjà la
+       bonne donnée dans sa figure — la bille de stylo de 0,5 mm : on la remet dans l'énoncé. -->
+  <div class="etiquette">Exercice 10 — Un noyau comme une bille de stylo</div>
+  <p class="question">Quel serait le diamètre d'un atome si le rayon de son noyau était celui d'une
+  bille de stylo <span class="nb">(r = 0,50 mm)</span> ?</p>
   <details class="correction">
     <summary>Voir la correction</summary>
     <div class="etape">Extraction des informations</div>
-    <p>r<sub>noyau</sub> = r<sub>BT</sub>. L'atome est 100 000 fois plus grand que son noyau.</p>
+    <p>r<sub>noyau</sub> = r<sub>bille</sub> = <span class="nb">0,50 mm</span>. L'atome est
+    100 000 fois plus grand que son noyau.</p>
     <div class="etape">Manipulation d'expression algébrique</div>
-    <p class="eq-ligne">d<sub>atome</sub> = 2 × r<sub>atome</sub> = 2 × 100 000 × r<sub>noyau</sub> = 2 × 100 000 × r<sub>BT</sub></p>
+    <p class="eq-ligne">d<sub>atome</sub> = 2 × r<sub>atome</sub> = 2 × 10<sup>5</sup> × r<sub>bille</sub></p>
     <div class="etape">Application numérique</div>
-    <p>d<sub>atome</sub> = 2 × 100 000 × 3,2 = 640 000 cm = 6 400 m = <span class="resultat">6,4 km</span></p>
+    <p>d<sub>atome</sub> = 2 × 10<sup>5</sup> × 0,50 = <span class="nb">1,0 × 10<sup>5</sup> mm</span>
+    = <span class="resultat">1,0 × 10<sup>2</sup> m</span>, soit environ la longueur d'un terrain
+    de football.</p>
   </details>
 </div>
 
@@ -873,19 +918,31 @@ une unité adaptée, le femtomètre <span class="nb">(10⁻¹⁵ m = 1 fm)</span
   entre le nombre de protons et d'électrons.</p>
 </div>
 
-<p>Il en existe de deux types :</p>
-<ul class="cours">
-  <li>Les <span class="terme">anions</span> ont gagné un ou plusieurs électrons, ils sont
-    <strong>chargés négativement</strong> : Cl⁻ provient d'un atome de chlore ayant gagné un
-    électron, O²⁻ d'un atome d'oxygène qui en a gagné deux.</li>
-  <li>Les <span class="terme">cations</span> ont perdu un ou plusieurs électrons, ils sont
-    <strong>chargés positivement</strong> : K⁺ provient d'un atome de potassium ayant perdu un
-    électron, Fe³⁺ d'un atome de fer qui en a perdu trois.</li>
-</ul>
+<p>Il en existe de deux types.</p>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Les <span class="terme">anions</span> ont <strong>gagné</strong> un ou plusieurs électrons :
+  ils sont <strong>chargés négativement</strong>.</p>
+  <p><em>Exemples :</em> Cl⁻ provient d'un atome de chlore ayant gagné un électron, O²⁻ d'un atome
+  d'oxygène qui en a gagné deux.</p>
+</div>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition</div>
+  <p>Les <span class="terme">cations</span> ont <strong>perdu</strong> un ou plusieurs électrons :
+  ils sont <strong>chargés positivement</strong>.</p>
+  <p><em>Exemples :</em> K⁺ provient d'un atome de potassium ayant perdu un électron, Fe³⁺ d'un
+  atome de fer qui en a perdu trois.</p>
+</div>
 
 <figure>
-  <img class="fig-svg" src="../assets/img/pc/2nde-pc-t1-c3/t1c3-fig-ion-lithium.svg" alt="L'atome de lithium (3 protons, 3 électrons) perd un électron et devient l'ion lithium plus (3 protons, 2 électrons)" loading="lazy">
-  <figcaption><b class="fig-num">Image 8</b> — Lorsque l'atome de lithium Li (3 p⁺ | 3 e⁻ | 3 n⁰) perd un électron, il devient le cation monoatomique Li⁺ (3 p⁺ | 2 e⁻ | 3 n⁰).</figcaption>
+  <img class="fig-svg" src="../assets/img/pc/2nde-pc-t1-c3/t1c3-fig-ion-lithium.svg" alt="L'atome de lithium 7 (3 protons, 4 neutrons, 3 électrons) perd un électron et devient l'ion lithium plus (3 protons, 4 neutrons, 2 électrons)" loading="lazy">
+  <!-- SOURCE → CORRIGÉ · lot H2 / décision D2 : la source enseignait le lithium 7 (3 protons,
+       4 neutrons) mais sa diapositive 10 en dessinait 3. On rétablit l'isotope naturel majoritaire. -->
+  <figcaption><b class="fig-num">Image 8</b> — Lorsque l'atome de lithium Li (3 p⁺ | 3 e⁻ | 4 n⁰) perd un électron, il devient le cation monoatomique Li⁺ (3 p⁺ | 2 e⁻ | 4 n⁰).</figcaption>
 </figure>
 
 <div class="exercice">
@@ -942,10 +999,6 @@ chimiques</span>.</p>
 <figure>
   <img class="fig-svg" src="../assets/img/pc/2nde-pc-t1-c3/t1c3-fig-element-fer.svg" alt="Le noyau de fer, l'atome de fer, les ions fer II et fer III ont tous Z égal à 26 : ils appartiennent au même élément chimique" loading="lazy">
   <figcaption><b class="fig-num">Image 9</b> — Autour de l'élément fer : noyau, atome et ions partagent le même numéro atomique Z = 26.</figcaption>
-</figure>
-<figure>
-  <img class="fig-svg" src="../assets/img/pc/2nde-pc-t1-c3/t1c3-fig-classification-principe.svg" alt="Principe de rangement de la classification périodique : les éléments sont rangés par numéro atomique croissant" loading="lazy">
-  <figcaption><b class="fig-num">Image 10</b> — Le principe de rangement : numéro atomique Z croissant, de gauche à droite et de haut en bas.</figcaption>
 </figure>
 <figure>
   <div class="ptable">
@@ -1070,7 +1123,7 @@ chimiques</span>.</p>
 <div class="el renvoi" style="grid-row:6;grid-column:3;" title="Lanthanides"><i>57-71</i><b>La-Lu</b></div>
 <div class="el renvoi" style="grid-row:7;grid-column:3;" title="Actinides"><i>89-103</i><b>Ac-Lr</b></div>
 </div>
-  <figcaption><b class="fig-num">Image 11</b> — Tableau périodique des éléments chimiques, rangés par numéro atomique Z croissant.
+  <figcaption><b class="fig-num">Image 10</b> — Tableau périodique des éléments chimiques, rangés par numéro atomique Z croissant.
   Chaque case indique : le numéro atomique Z (en haut), le symbole, et la masse atomique en u
   (survoler une case pour lire le nom de l'élément). Une masse entre crochets, comme [98] pour le
   technétium, désigne le nombre de masse de l'isotope le plus stable — ces éléments n'existent pas
@@ -1100,11 +1153,13 @@ chimiques</span>.</p>
 </div>
 
 <div class="exercice">
+  <!-- SOURCE → CORRIGÉ · lot I3 / décision D5 : la source proposait l'ion F²⁻, qui n'existe pas
+       (le fluor ne forme que F⁻). Remplacé par le difluor F₂, piège plus juste et plus formateur. -->
   <div class="etiquette">Exercice 12 — Un élément, plusieurs entités</div>
   <p class="question">Associer les entités chimiques appartenant au même élément :
   H · O · <span class="azx"><span class="az"><span>19</span><span>9</span></span>F</span> ·
   <span class="azx"><span class="az"><span>1</span><span>1</span></span>H</span> · H⁺ · F⁻ · O²⁻ ·
-  <span class="azx"><span class="az"><span>16</span><span>8</span></span>O</span> · F²⁻.</p>
+  <span class="azx"><span class="az"><span>16</span><span>8</span></span>O</span> · F<sub>2</sub>.</p>
   <details class="correction">
     <summary>Voir la correction</summary>
     <div class="etape">Élément hydrogène (H)</div>
@@ -1112,7 +1167,9 @@ chimiques</span>.</p>
     <div class="etape">Élément oxygène (O)</div>
     <p><span class="resultat">O | O²⁻ | <span class="azx"><span class="az"><span>16</span><span>8</span></span>O</span></span></p>
     <div class="etape">Élément fluor (F)</div>
-    <p><span class="resultat">F⁻ | F²⁻ | <span class="azx"><span class="az"><span>19</span><span>9</span></span>F</span></span></p>
+    <p><span class="resultat">F⁻ | F<sub>2</sub> | <span class="azx"><span class="az"><span>19</span><span>9</span></span>F</span></span></p>
+    <p>Le difluor F<sub>2</sub> est une molécule, mais ses deux atomes sont des atomes de fluor :
+    elle appartient donc bien à l'élément fluor.</p>
   </details>
 </div>
 
@@ -1133,7 +1190,6 @@ chimiques</span>.</p>
   </ol>
   <div class="videos" style="margin:1rem 0 0;">
     <a class="video-chip" href="https://create.kahoot.it/share/bilan-constitution-de-l-atome/30d07b3b-4c6d-4eb4-8dee-3033011abd9e" target="_blank" rel="noopener">🎯 Kahoot bilan du chapitre ↗</a>
-    <a class="video-chip" href="https://isaacetoile-my.sharepoint.com/:b:/g/personal/l_vanhoorde_enseignant_isaac-etoile_fr/EcwJ4BTdXjRBn8Q1VFXwOlABKPT1Xz7-gS1qhRbgAn4BAg?e=OmcdnZ" target="_blank" rel="noopener">📄 DS 2024/2025 (corrigé) ↗</a>
     <a class="video-chip" href="../assets/pdf/pc/ds/ds2-t1c2-t1c3.pdf">📄 DS2 — Thème 1, ch. 2 et 3 (sujet) →</a>
   </div>
 </section>
@@ -1147,7 +1203,7 @@ chimiques</span>.</p>
 <button id="haut" type="button" aria-label="Revenir en haut de page">↑ haut</button>
 
 <footer>
-  <div class="footer-inner">© 2025/2026 &middot; M. Van Hoorde — Physique-Chimie &middot; Seconde générale &middot; Thème 1, Chapitre 3</div>
+  <div class="footer-inner">© 2026/2027 · M. Van Hoorde — Physique-Chimie · Seconde générale · Thème 1, Chapitre 3</div>
 </footer>
 
 <script>
