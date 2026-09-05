@@ -5,7 +5,9 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **02/09/2026** (dernière passe : **l'audit de T1-C3 et son lot
+> Dernière réécriture : **04/09/2026** (dernière passe : **la rentrée — les 14
+> groupes de SNT existent en base et chaque enseignant a son tableau de bord**,
+> bloc ci-dessous). Passe du 02/09 : **l'audit de T1-C3 et son lot
 > transverse sont appliqués** — bloc ci-dessous. Passe du même jour : **la fiche élève de T3-C1
 > est en ligne, et sa chaîne de production tourne depuis le dépôt** — bloc ci-dessous.
 > Passe du même jour : **les supports de classe entrent dans le dépôt, et la racine
@@ -23,6 +25,71 @@
 > mal » de `o3` — contenu neuf, seul contenu du dépôt qui engage la **sécurité
 > d'élèves**, à confronter au règlement du laboratoire et aux équipements de la salle
 > 0.26. Ensuite, les **six arbitrages en attente** (O-23 à O-26, O-28, O-29).
+
+## 🆕 La rentrée est faite : 14 groupes, cinq enseignants, une base cloisonnée
+
+**Exécuté et vérifié en base le 04/09/2026.** `bdd/schema/016` (cloisonnement)
+puis `017` (les groupes) sont passés ; Loïc est rattaché à ses trois groupes plus
+les deux classes de démonstration, et son tableau de bord ne montre plus que
+ça — les deux classes du CFA en sont sorties, comme voulu.
+
+Les 14 codes sont `SNT26A` … `SNT26N`, sur les lettres que le lycée emploie déjà.
+`avance_max = 2` sur B, E et N ; **40 (tout ouvert) partout ailleurs**, parce que
+le plafond se déduit des séances déclarées faites et bloquerait sinon les élèves
+d'un collègue qui ne tient pas le cahier de textes.
+
+🔴 **Deux défauts préexistants trouvés en chemin, tous deux réparés :** les trois
+fonctions de correction (`security definer`, donc hors RLS) ne vérifiaient que
+« est-ce un professeur ? » — n'importe quel enseignant aurait pu valider
+n'importe quelle copie du lycée ; et **aucune policy d'écriture n'existait sur
+`classes`**, si bien que le réglage du plafond d'avance n'écrivait rien depuis
+août tout en affichant un succès.
+
+✅ **Le rangement Supabase est fait aussi.** `supabase migration list` répond
+**11 migrations locales, 0 absente du registre distant** : local et distant
+concordent enfin, et un push ne rejouera rien. Six migrations ont dû être
+déclarées appliquées, pas cinq — **le `011` du 01/08 n'avait jamais été inscrit
+au registre non plus**, ce qu'aucun fichier de doc ne disait. L'état de
+l'historique se lit avec `supabase migration list`, jamais dans une note.
+
+⏳ **Et à mesure que les collègues donnent une adresse** : créer leur compte dans
+*Authentication → Users*, puis décommenter leur ligne au §3 du `017`. Onze
+groupes attendent encore leur enseignant, ce qui est normal.
+
+## 🔴 Les polices IBM Plex Sans sont cassées, et ça dépasse largement le tableau de bord
+
+Mesuré au navigateur le 04/09/2026, famille par famille, sur 88 caractères de
+français courant :
+
+| Famille | Glyphes servis |
+|---|---|
+| **IBM Plex Sans** (400, 400i, 500, 600) | **11 sur 88** |
+| IBM Plex Mono · Space Grotesk · Inter · Spectral · EB Garamond | 86 sur 88 ✓ |
+
+Les quatre fichiers `assets/fonts/IBMPlexSans-*.woff2` sont des sous-ensembles
+quasi vides. Conséquence : `assets/css/sequence-snt.css` en fait le corps de
+texte de **toutes les séquences SNT et des huit outils de PC**, qui rendent donc
+en Segoe UI sur Windows, en San Francisco sur iPad — et en **Times New Roman**,
+un serif au milieu d'une page sans empattement, aux deux endroits où aucun repli
+n'est déclaré (`.cloze input` et `.diagram text`). C'est ce dernier point qui est
+visible à l'œil.
+
+Ça n'a jamais sauté aux yeux parce que les polices système de remplacement sont
+correctes. Ce ne sont simplement pas celles qu'on a choisies.
+
+**Rien n'a été touché** : `sequence-snt.css` est un asset partagé, et le réparer
+impose d'incrémenter le `?v=N` sur ses 6 fichiers. Trois voies, au choix de
+Loïc :
+
+1. **Regénérer de vraies polices** IBM Plex Sans (OFL) et les sous-ensembler
+   correctement — restitue l'intention typographique, demande de récupérer les
+   fichiers source ;
+2. **Intercaler `'Inter'`** juste après `'IBM Plex Sans'` dans la pile. Inter est
+   auto-hébergée, complète, du même genre ; tout redevient déterministe d'un
+   appareil à l'autre, et Plex Sans reprend la main d'elle-même le jour où elle
+   est réparée. C'est ce qui a été fait **dans les deux guides seulement** ;
+3. **Ne rien faire**, en corrigeant au minimum les deux déclarations sans repli
+   qui tombent en Times.
 
 **T1-C3 est corrigé de bout en bout, et le lot transverse avec.** Les deux briefs
 d'audit du 02/09 sont appliqués : les puissances de dix passent en balise sur les
@@ -517,7 +584,7 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
 - [ ] Nettoyer les couleurs en dur hors `:root` (les six restantes ≈ 46).
       `t2` : les 52 du `<style>` sont parties avec le portage, **18 subsistent dans ses SVG**
       (invisibles du vérificateur, qui ne lit que les balises `<style>`)
-- [ ] Nettoyage avant rentrée : compte `leproftest` + lignes de test
+- [x] ~~Nettoyage avant rentrée : compte `leproftest` + lignes de test~~ — **tranché le 04/09 : on garde.** Les comptes de test deviennent le matériel de démonstration (`SNTDEM`, 35 copies) et le terrain d'essai des collègues (`PROF26`). Seule `SNTTEA` a été supprimée
 - [ ] 🔴 Révoquer la clé `service_role` — **dernière action avant la mise en service**
 
 ## ⏳ En attente de Loïc — rappels récurrents

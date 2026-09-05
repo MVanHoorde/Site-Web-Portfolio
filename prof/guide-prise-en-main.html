@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Prendre en main le tableau de bord — SNT</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/guide-prise-en-main.html — le guide des collègues
+     ------------------------------------------------------------
+     PUBLIC : les quatre enseignants de SNT autres que Loïc. Ils ne
+     connaissent ni la base de données, ni le dépôt, et n'ont aucune
+     raison de les connaître. Ce guide ne parle que de gestes.
+
+     🔴 RÈGLE DE MAINTENANCE — ce guide fait partie du périmètre
+     « tableau de bord ». Toute modification de prof/index.html qui
+     change un écran, un onglet ou un bouton se répercute ICI dans
+     la même livraison, et la date de révision ci-dessous est
+     remise à jour. Un guide faux est pire que pas de guide : il
+     envoie chercher le problème au mauvais endroit.
+
+     Son jumeau technique : prof/guide-dispositif.html (pour Loïc).
+
+     PAGE PUBLIQUE, servie par GitHub Pages. Aucun mot de passe,
+     aucun nom d'élève, aucun code de classe réel ne doit y figurer.
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+  --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+  --link:#2445c7; --link-wash:#e7ebfb;
+  --ok:#12805c; --ok-wash:#e0f2ea;
+  --err:#c33a2f; --err-wash:#fbe6e3;
+  --wait:#9a6a00; --wait-wash:#fbf1d8;
+  --r:10px;
+}
+*{box-sizing:border-box}
+/* 🔴 'Inter' est intercalé DÉLIBÉRÉMENT entre IBM Plex Sans et le
+   repli système. Mesure du 04/09/2026 : les quatre fichiers
+   assets/fonts/IBMPlexSans-*.woff2 ne portent que 5 glyphes sur 69
+   — la famille est inutilisable, et tout le texte tombait en Segoe
+   UI sur Windows, en Times New Roman quand aucun repli n'était
+   déclaré. Inter est auto-hébergée, complète (86/88 glyphes) et du
+   même genre. Le jour où Plex Sans est réparée, elle reprend la
+   main d'elle-même : rien à défaire ici. */
+body{margin:0;background:var(--bg);color:var(--ink);
+     font-family:'IBM Plex Sans','Inter',system-ui,sans-serif;font-size:15.5px;line-height:1.6}
+h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;font-weight:600;margin:0}
+code,.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.94em}
+a{color:var(--link)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+/* Reprise exacte de la barre de prof/index.html : ces guides
+   sont la suite du tableau de bord, pas une seconde charte. */
+header.barre{background:var(--surface);border-bottom:1px solid var(--line);
+  padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:5}
+header.barre .titre{font-family:'Space Grotesk',sans-serif;font-weight:600}
+header.barre a{color:var(--link);text-decoration:none;font-size:13.5px;margin-left:auto}
+header.barre a:hover{text-decoration:underline}
+
+main{max-width:760px;margin:0 auto;padding:26px 18px 70px}
+.carte{background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:22px 24px;margin:0 0 18px}
+h1{font-size:25px;line-height:1.25}
+h2{font-size:19px;margin:34px 0 10px;padding-top:6px}
+h2:first-of-type{margin-top:14px}
+h3{font-size:16px;margin:20px 0 6px}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:6px 0}
+.chapo{font-size:17px;color:var(--ink-soft);margin:6px 0 0}
+.revision{font-size:13px;color:var(--ink-faint);margin:14px 0 0;
+  border-top:1px solid var(--line);padding-top:12px}
+
+.encadre{background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r);padding:13px 16px;margin:14px 0}
+.attention{background:var(--err-wash);border-color:#eab5ae}
+.utile{background:var(--ok-wash);border-color:#a9d8c5}
+.encadre p:first-child{margin-top:0}
+.encadre p:last-child{margin-bottom:0}
+.etiq{display:inline-block;font-family:'Space Grotesk',sans-serif;font-weight:600;
+  font-size:12.5px;letter-spacing:.02em;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;margin:0 0 6px}
+.attention .etiq{background:#f5cfc9;color:#8f271e}
+.utile .etiq{background:#bfe6d4;color:#0b5b41}
+
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-family:'Space Grotesk',sans-serif;font-weight:600}
+.enveloppe{overflow-x:auto}
+
+ol.gestes{counter-reset:g;list-style:none;padding-left:0}
+ol.gestes>li{counter-increment:g;position:relative;padding-left:40px;margin:16px 0}
+ol.gestes>li::before{content:counter(g);position:absolute;left:0;top:1px;
+  width:27px;height:27px;border-radius:50%;background:var(--link);color:#fff;
+  font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;
+  display:flex;align-items:center;justify-content:center}
+ol.gestes>li>b{display:block}
+
+.sommaire{background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r);padding:14px 18px;margin:18px 0 0}
+.sommaire ol{margin:6px 0 0;padding-left:20px}
+.sommaire a{text-decoration:none}
+.sommaire a:hover{text-decoration:underline}
+
+@media (max-width:520px){ main{padding:18px 12px 50px} .carte{padding:18px 15px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+
+/* ---- impression / export PDF ----
+   @page size:A4 : c'est lui que respecte l'export. Sans lui,
+   Chrome produit du Letter sans le dire. */
+@page{ size:A4; margin:15mm 16mm; }
+@media print{
+  body{background:#fff;font-size:11pt;line-height:1.5}
+  header.barre{background:#fff;color:var(--ink);padding:0 0 10px;
+    border-bottom:2px solid var(--ink);margin-bottom:14px;position:static}
+  header.barre a{display:none}
+  main{max-width:none;padding:0}
+  .carte{border:0;border-radius:0;padding:0;margin:0}
+  .sommaire{display:none}
+  h1{font-size:19pt}
+  h2{font-size:14pt;margin-top:20pt;break-after:avoid}
+  h3{font-size:12pt;break-after:avoid}
+  .encadre,table,li{break-inside:avoid}
+  a{color:var(--ink);text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <span class="titre">Guide — prise en main</span>
+  <a href="index.html">← Tableau de bord</a>
+</header>
+
+<main>
+<article class="carte">
+
+  <h1>Le tableau de bord de SNT, en pratique</h1>
+  <p class="chapo">Ce guide s'adresse aux enseignants de l'équipe. Il ne parle que
+  de gestes : se connecter, tenir une séance, corriger. Aucune connaissance
+  technique n'est nécessaire, et rien de ce qui suit n'est irréversible.</p>
+
+  <nav class="sommaire" aria-label="Sommaire">
+    <b>Dans ce guide</b>
+    <ol>
+      <li><a href="#quoi">Ce que c'est, en deux phrases</a></li>
+      <li><a href="#connexion">Se connecter</a></li>
+      <li><a href="#voir">Ce que vous voyez — et ce que personne ne voit</a></li>
+      <li><a href="#onglets">Les quatre onglets</a></li>
+      <li><a href="#essayer">Essayer sans risque</a></li>
+      <li><a href="#eleves">Côté élève : comment ils entrent</a></li>
+      <li><a href="#eviter">Les trois choses à ne pas faire</a></li>
+      <li><a href="#coince">Si ça coince</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="quoi">1. Ce que c'est, en deux phrases</h2>
+
+  <p>Les séquences de SNT existent en ligne sous forme de pages que les élèves
+  parcourent séance après séance. Quand un élève s'y connecte avec un compte, son
+  travail est <b>enregistré sur un serveur</b> plutôt que dans le navigateur de la
+  machine : il le retrouve au lycée, chez lui, sur un autre poste.</p>
+
+  <p>Le tableau de bord est l'autre bout de ce fil. Il vous montre où en est
+  chacun de vos élèves, vous permet de lire et de corriger leurs réponses
+  rédigées, et tient votre cahier de textes.</p>
+
+  <div class="encadre utile">
+    <span class="etiq">Bon à savoir</span>
+    <p><b>Vous pouvez ne vous servir que du cahier de textes.</b> L'onglet
+    <i>Séance</i> fonctionne même si aucun de vos élèves n'a jamais créé de
+    compte : vous notez ce qui a été fait, ce qui a été donné, qui était absent,
+    et vous récupérez le texte tout rédigé pour École Directe. C'est utilisable
+    dès la première heure, sans rien demander aux élèves.</p>
+  </div>
+
+  <h2 id="connexion">2. Se connecter</h2>
+
+  <ol class="gestes">
+    <li><b>Ouvrez la page du tableau de bord.</b>
+      Le lien vous est transmis par Loïc. Mettez-le en favori : c'est la même
+      adresse toute l'année, sur ordinateur comme sur iPad.</li>
+    <li><b>Saisissez l'adresse de connexion et le mot de passe qui vous ont été
+      donnés.</b> Ce ne sont pas vos codes de l'établissement : ce compte n'a
+      rien à voir avec École Directe, Microsoft ou le réseau du lycée.</li>
+    <li><b>Changez ce mot de passe dès que possible</b> en le demandant à Loïc —
+      celui qu'on vous a remis est provisoire.</li>
+  </ol>
+
+  <p>Deux messages d'erreur veulent dire deux choses différentes, et la nuance
+  fait gagner du temps :</p>
+
+  <div class="enveloppe">
+  <table>
+    <tr>
+      <th>Ce que vous lisez</th>
+      <th>Ce que ça veut dire</th>
+    </tr>
+    <tr>
+      <td>« Adresse ou mot de passe incorrect. »</td>
+      <td>Une faute de frappe, ou le mot de passe n'est pas le bon. Réessayez.</td>
+    </tr>
+    <tr>
+      <td>« Ce compte n'est pas un compte professeur. »</td>
+      <td>Votre mot de passe est bon. C'est le compte qui n'a pas encore été
+      déclaré comme enseignant. Signalez-le à Loïc : c'est une ligne à ajouter,
+      pas un problème de votre côté.</td>
+    </tr>
+  </table>
+  </div>
+
+  <p>La session dure <b>douze heures</b>, ou jusqu'à ce que vous cliquiez sur
+  <i>Quitter</i>. Sur un poste partagé, cliquez sur <i>Quitter</i> en partant.</p>
+
+  <h2 id="voir">3. Ce que vous voyez — et ce que personne ne voit</h2>
+
+  <p>Le tableau de bord ne vous montre <b>que vos groupes</b>. Pas ceux de vos
+  collègues, même si vous cherchez : la restriction n'est pas un affichage filtré,
+  elle est posée dans le serveur lui-même.</p>
+
+  <ul>
+    <li>Vos groupes apparaissent dans les listes déroulantes, aucun autre.</li>
+    <li>La file de correction ne contient que les copies de <b>vos</b> élèves.</li>
+    <li>Vous ne pouvez pas modifier le cahier de textes d'un groupe qui n'est pas
+      le vôtre, ni valider la copie d'un élève qui n'est pas le vôtre.</li>
+    <li><b>La réciproque est vraie</b> : personne ne lit vos groupes, Loïc compris.</li>
+  </ul>
+
+  <div class="encadre utile">
+    <span class="etiq">Sur les données personnelles</span>
+    <p>Le serveur ne contient <b>aucun nom d'élève</b>. Chaque élève y est un
+    identifiant qu'il a choisi lui-même — jamais son nom, jamais son adresse.
+    Si vous voulez voir les vrais noms en face des identifiants, l'onglet
+    <i>Réglages</i> vous laisse charger un fichier depuis votre appareil : il
+    <b>n'est jamais envoyé</b>, il est lu sur place et s'efface avec votre session.
+    Ce fichier doit vivre sur le OneDrive de l'établissement, nulle part ailleurs.</p>
+  </div>
+
+  <h2 id="onglets">4. Les quatre onglets</h2>
+
+  <h3>À corriger</h3>
+  <p>La pile des réponses rédigées que vos élèves ont envoyées. Elles arrivent
+  <b>pré-analysées</b> : une proposition de correction vous est présentée, avec
+  un message destiné à l'élève. Vous gardez toujours le dernier mot.</p>
+  <ul>
+    <li><b>Valider</b> — la correction devient visible pour l'élève. Si vous
+      écrivez un mot dans le champ prévu, c'est le vôtre qu'il lira, pas celui
+      qui était proposé.</li>
+    <li><b>Renvoyer à refaire</b> — l'élève est invité à réécrire sa réponse.
+      Il faut dire pourquoi : sans explication, l'écran refuse le renvoi.
+      C'est délibéré — « à reprendre » sans motif n'apprend rien.</li>
+    <li><b>Passer</b> — la copie retourne dans la pile, vous y reviendrez.</li>
+  </ul>
+  <p>Une phrase que vous écrivez souvent peut être <b>mémorisée</b> et
+  réutilisée d'un clic. Votre bibliothèque de phrases est personnelle : vos
+  collègues ne la voient pas.</p>
+
+  <h3>Séance — le cœur de l'usage</h3>
+  <p>Cet onglet s'utilise en deux gestes qui encadrent l'heure de cours.</p>
+  <ol class="gestes">
+    <li><b>En arrivant</b> — cochez les absents.</li>
+    <li><b>En partant</b> — indiquez la séance qui vient d'être faite, deux
+      phrases sur ce qui a été vu, le travail donné, et ce qui n'a pas été
+      terminé. Vous validez.</li>
+  </ol>
+  <p>Cette clôture fait tout le reste toute seule : elle avance le curseur du
+  groupe, recolore la grille de suivi, et rédige le cahier de textes. Un bouton
+  vous le copie, tout formaté, pour le coller dans École Directe. Aucune saisie
+  n'est faite deux fois.</p>
+  <p>Si vous avez déjà fait cette séance avec un autre de vos groupes, les textes
+  du premier vous sont proposés. Ils ne remplissent que les champs vides : ce que
+  vous avez déjà écrit n'est jamais écrasé.</p>
+
+  <h3>Suivi</h3>
+  <p>Une grille : vos élèves en lignes, les séances en colonnes. Elle montre d'un
+  coup d'œil qui a pris du retard, et sur quoi. Cliquer sur un élève ouvre le
+  détail de son parcours.</p>
+
+  <h3>Réglages</h3>
+  <p>La table des noms, décrite plus haut. C'est aussi ici que vous verrez la
+  correspondance entre un identifiant et un élève réel, le temps de votre session.</p>
+
+  <h2 id="essayer">5. Essayer sans risque</h2>
+
+  <p>Un groupe de démonstration existe pour ça : <b>tous les enseignants de
+  l'équipe y ont accès</b>, et il ne contient aucun élève réel. Loïc vous en
+  donnera le code.</p>
+
+  <p>Vous pouvez y créer autant d'élèves fictifs que vous voulez, en suivant le
+  parcours d'un élève : ouvrir une séquence, créer un compte avec le code du
+  groupe de démonstration, répondre, envoyer. Vous verrez ensuite leurs copies
+  arriver dans votre file de correction, et vous pourrez faire le tour du
+  dispositif sans conséquence.</p>
+
+  <div class="encadre">
+    <p><b>Une seule convention à respecter</b> : donnez à vos élèves fictifs un
+    identifiant commençant par <code>zz-</code> — par exemple
+    <code>zz-essai-01</code>. C'est ce qui permettra de les reconnaître et de les
+    effacer tous en fin d'année, sans risquer de toucher à un vrai élève.</p>
+  </div>
+
+  <h2 id="eleves">6. Côté élève : comment ils entrent</h2>
+
+  <p>Chaque groupe a un <b>code à six caractères</b> que vous dictez en classe.
+  L'élève ouvre la séquence, choisit un identifiant et un mot de passe, saisit ce
+  code, et son compte est créé. Il retrouvera son travail depuis n'importe quel
+  appareil avec ces deux mots.</p>
+
+  <ul>
+    <li>L'identifiant est <b>choisi par l'élève</b> et n'a pas à être son nom.
+      Faites-le noter sur la fiche bilan de SNT : un identifiant oublié est
+      introuvable, y compris pour nous.</li>
+    <li>Un élève sans compte peut <b>quand même</b> travailler sur les séquences :
+      rien ne se ferme, mais rien n'est enregistré et vous ne verrez rien.</li>
+    <li>Les inscriptions d'un groupe se referment quand vous le demandez, en
+      général après la deuxième séance, pour éviter les inscriptions sauvages.</li>
+  </ul>
+
+  <h3>Le plafond d'avance</h3>
+  <p>Par défaut, vos groupes sont <b>entièrement ouverts</b> : un élève peut
+  parcourir toutes les séances, y compris celles que vous n'avez pas faites.</p>
+  <p>Si vous préférez qu'il ne prenne pas trop d'avance, l'onglet <i>Séance</i>
+  vous laisse fixer un nombre de séances au-delà de la dernière séance déclarée
+  faite. C'est un choix par groupe, modifiable à tout moment.</p>
+
+  <div class="encadre attention">
+    <span class="etiq">Le piège</span>
+    <p>Ce plafond se calcule à partir des séances que <b>vous</b> déclarez faites
+    dans l'onglet <i>Séance</i>. Si vous fixez un plafond sans tenir le cahier de
+    textes, vos élèves se retrouveront bloqués très vite, sans comprendre
+    pourquoi. Plafond et clôture de séance vont ensemble, ou ni l'un ni l'autre.</p>
+  </div>
+
+  <h2 id="eviter">7. Les trois choses à ne pas faire</h2>
+
+  <ol class="gestes">
+    <li><b>Ne jamais écrire un nom d'élève dans le cahier de textes.</b>
+      Ces champs décrivent le contenu du cours, et ils sont pensés pour ne
+      contenir aucune donnée personnelle. Pour signaler un élève, il y a la case
+      des absents.</li>
+    <li><b>Ne pas déposer le fichier des noms ailleurs que sur le OneDrive de
+      l'établissement.</b> C'est le seul document du dispositif qui associe un
+      identifiant à un nom.</li>
+    <li><b>Ne pas laisser une session ouverte sur un poste partagé.</b>
+      Douze heures, c'est long. <i>Quitter</i> efface aussi la table des noms.</li>
+  </ol>
+
+  <h2 id="coince">8. Si ça coince</h2>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Symptôme</th><th>Ce que c'est</th></tr>
+    <tr>
+      <td>La liste des groupes est vide.</td>
+      <td>Votre compte existe mais n'est rattaché à aucun groupe. Une ligne à
+      ajouter côté serveur : signalez-le.</td>
+    </tr>
+    <tr>
+      <td>Un groupe manque dans la liste.</td>
+      <td>Même chose, pour ce groupe-là.</td>
+    </tr>
+    <tr>
+      <td>La file de correction reste vide.</td>
+      <td>Normal tant qu'aucun élève n'a envoyé de réponse rédigée. Les questions
+      à choix multiples ne passent pas par la correction.</td>
+    </tr>
+    <tr>
+      <td>« Pas de connexion au serveur. »</td>
+      <td>Le réseau, ou le serveur en pause. Réessayez dans un moment, puis
+      signalez si ça persiste.</td>
+    </tr>
+    <tr>
+      <td>Un élève dit avoir perdu son identifiant.</td>
+      <td>Il est introuvable — c'est le prix de l'anonymat côté serveur. Il crée
+      un nouveau compte ; son travail précédent reste attaché à l'ancien.</td>
+    </tr>
+  </table>
+  </div>
+
+  <p>Pour tout le reste : <b>Loïc Van Hoorde</b>. Rien de ce que vous ferez
+  depuis ce tableau de bord n'est définitif — une correction se rouvre, une
+  séance se corrige, un plafond se relève.</p>
+
+  <p class="revision">
+    Guide de prise en main du tableau de bord de SNT — Ensemble scolaire Isaac de
+    l'Étoile, année 2026-2027.<br>
+    Dernière révision : <b>4 septembre 2026</b>.
+    Version technique de ce document : <a href="guide-dispositif.html">le dispositif en détail</a>.
+  </p>
+
+</article>
+</main>
+
+</body>
+</html>

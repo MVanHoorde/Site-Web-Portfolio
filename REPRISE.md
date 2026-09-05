@@ -39,9 +39,21 @@ fond** (23/08) — tout le reste est une proposition. `t0` a été **refondue le
 23/08** : fork inline supprimé, portage sur le moteur, **trois séances** au lieu
 de deux, contenu des documents source porté en entier. Non validée.
 
-**Comptes de test à supprimer avant la rentrée :** `leproftest`, `test02`,
-plus ceux créés le 01/08. Classes de test : `SNTTSA`, `SNTTSB`.
-*(Non revérifié depuis le 01/08 — à contrôler dans Supabase.)*
+**Comptes de test : CONSERVÉS** (décision du 04/09/2026). Ils ne sont plus des
+reliquats à effacer mais le **bac à sable de démonstration** — c'est sur eux que
+se font les captures d'écran des guides, plutôt que sur des copies de vrais
+élèves. Deux classes s'en chargent, et elles ne font pas le même travail :
+
+| Code | Rôle |
+|---|---|
+| `SNTDEM` | L'ancienne classe pilote, renommée pour libérer `SNT26A`. **35 copies** : le seul matériel du dépôt qui montre une vraie file de correction. Rattachée à Loïc seul |
+| `PROF26` | Le terrain d'essai **commun aux cinq enseignants**, où chacun crée ses élèves fictifs. Convention : pseudo préfixé `zz-`, pour qu'ils restent repérables et supprimables en bloc |
+
+🔴 **Le relevé du 01/08 était faux, et personne ne l'avait revérifié.** Il
+annonçait deux classes de test, `SNTTSA` et `SNTTSB` : ni l'une ni l'autre
+n'existait. Il n'y en avait qu'une, `SNTTEA` « Test - Classe A », **supprimée le
+04/09** après déplacement de ses 2 élèves vers `SNTDEM`. Le ménage écrit d'après
+ce relevé avait d'abord visé à côté sans rien trouver.
 
 ---
 

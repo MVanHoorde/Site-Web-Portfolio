@@ -12,6 +12,51 @@
 
 ---
 
+## 04/09/2026 — La rentrée : 14 groupes, cinq enseignants, et une base cloisonnée
+
+L'équipe de SNT passe de un à cinq. Dix classes de 2nde redécoupées en 14 groupes
+d'environ 25, en quatre barrettes ; la classe 2.10, à 24 élèves, est déjà à la
+taille d'un groupe et n'est pas scindée. Répartition relevée sur la présentation
+de rentrée et confirmée par Loïc : COUVRAT A·F·K, VAN HOORDE B·E·N, MARTIN
+D·H·J·L, SANCHEZ ALZATE I·M, MAGOPHY C·G — chaque enseignant a exactement un
+groupe par barrette, ce qui a servi de contrôle de cohérence.
+
+Deux fichiers exécutés dans la foulée. Le `016` pose le cloisonnement : jusque-là
+`est_enseignant()` était booléen, et tout compte inscrit lisait toutes les
+classes, tous les élèves et toutes les copies du lycée. Le `017` crée les 14
+groupes, renomme la classe pilote en `SNTDEM` pour libérer `SNT26A` — le groupe A
+appartient à Couvrat cette année —, et supprime la classe de test.
+
+**Ce que le cloisonnement a révélé de plus important, ce n'est pas ce qu'il a
+fermé, c'est ce qu'il a fallu fermer en plus.** Les corrections ne passent pas
+par une écriture directe mais par trois fonctions `security definer` qui
+contournent la RLS par construction : fermer la lecture n'aurait rien garanti.
+Et l'audit du `016` a confirmé au passage qu'aucune policy d'écriture n'existait
+sur `classes` — le réglage du plafond d'avance n'avait donc jamais rien écrit,
+en affichant un succès depuis le mois d'août.
+
+Le relevé des classes de test de `REPRISE.md` s'est révélé faux (`SNTTSA` /
+`SNTTSB` annoncées, `SNTTEA` en réalité, et une seule au lieu de deux). Le
+ménage écrit d'après lui n'a d'abord rien trouvé — le bon comportement, mais un
+aller-retour de perdu. Le fichier portait pourtant sa propre alerte « non
+revérifié depuis le 01/08 ».
+
+Deux classes hors progression sont conservées et ne font pas le même travail :
+`PROF26` est le terrain d'essai commun aux cinq, où chacun crée ses élèves
+fictifs sous le préfixe `zz-` ; `SNTDEM` garde ses 35 copies, seul matériel du
+dépôt montrant une vraie file de correction, et sert aux captures d'écran des
+guides.
+
+Deux guides écrits et branchés sur un bouton *Aide* : la prise en main pour les
+collègues, le dispositif en détail pour Loïc, avec export PDF contrôlé à la
+mesure. Leur rédaction a mis au jour un défaut bien plus large qu'eux :
+**les quatre fichiers `IBMPlexSans-*.woff2` ne portent que 5 glyphes sur 69**.
+Toutes les séquences SNT et les huit outils de PC rendent donc leur texte en
+police système — et en Times New Roman là où aucun repli n'est déclaré. Mesuré
+au navigateur, famille par famille ; les cinq autres sont saines.
+
+---
+
 ## 27/08/2026 — L'accueil quitte la page de titre pour deux colonnes
 
 L'accueil empilait quatre blocs centrés de même largeur et de même rythme — titre,

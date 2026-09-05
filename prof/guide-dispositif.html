@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Le dispositif en détail — SNT</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/guide-dispositif.html — le guide technique
+     ------------------------------------------------------------
+     PUBLIC : Loïc, et lui seul pour l'instant. Décrit ce qui se
+     passe derrière l'écran et donne les gestes d'administration
+     prêts à jouer.
+
+     🔴 RÈGLE DE MAINTENANCE — comme son jumeau
+     prof/guide-prise-en-main.html, ce guide fait partie du
+     périmètre « tableau de bord » : toute modification de
+     prof/index.html, de assets/js/prof-api.js ou du schéma de la
+     base se répercute ICI dans la même livraison, et la date de
+     révision est remise à jour.
+
+     PAGE PUBLIQUE, servie par GitHub Pages. Elle décrit
+     l'architecture — ce qui ne coûte rien, la sécurité ne reposant
+     pas sur le secret — mais ne doit contenir AUCUN code de classe
+     réel, aucune adresse de connexion, aucune clé.
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+  --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+  --link:#2445c7; --link-wash:#e7ebfb;
+  --ok:#12805c; --ok-wash:#e0f2ea;
+  --err:#c33a2f; --err-wash:#fbe6e3;
+  --wait:#9a6a00; --wait-wash:#fbf1d8;
+  --r:10px;
+}
+*{box-sizing:border-box}
+/* 🔴 'Inter' est intercalé DÉLIBÉRÉMENT entre IBM Plex Sans et le
+   repli système. Mesure du 04/09/2026 : les quatre fichiers
+   assets/fonts/IBMPlexSans-*.woff2 ne portent que 5 glyphes sur 69
+   — la famille est inutilisable, et tout le texte tombait en Segoe
+   UI sur Windows, en Times New Roman quand aucun repli n'était
+   déclaré. Inter est auto-hébergée, complète (86/88 glyphes) et du
+   même genre. Le jour où Plex Sans est réparée, elle reprend la
+   main d'elle-même : rien à défaire ici. */
+body{margin:0;background:var(--bg);color:var(--ink);
+     font-family:'IBM Plex Sans','Inter',system-ui,sans-serif;font-size:15.5px;line-height:1.6}
+h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;font-weight:600;margin:0}
+code,.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.94em}
+a{color:var(--link)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+/* Reprise exacte de la barre de prof/index.html : ces guides
+   sont la suite du tableau de bord, pas une seconde charte. */
+header.barre{background:var(--surface);border-bottom:1px solid var(--line);
+  padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:5}
+header.barre .titre{font-family:'Space Grotesk',sans-serif;font-weight:600}
+header.barre a{color:var(--link);text-decoration:none;font-size:13.5px;margin-left:auto}
+header.barre a:hover{text-decoration:underline}
+
+main{max-width:800px;margin:0 auto;padding:26px 18px 70px}
+.carte{background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:22px 24px;margin:0 0 18px}
+h1{font-size:25px;line-height:1.25}
+h2{font-size:19px;margin:34px 0 10px;padding-top:6px}
+h2:first-of-type{margin-top:14px}
+h3{font-size:16px;margin:22px 0 6px}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:6px 0}
+.chapo{font-size:17px;color:var(--ink-soft);margin:6px 0 0}
+.revision{font-size:13px;color:var(--ink-faint);margin:14px 0 0;
+  border-top:1px solid var(--line);padding-top:12px}
+
+pre{background:var(--ink);color:#e8ecf6;border-radius:var(--r);
+  padding:13px 15px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;
+  font-size:13px;line-height:1.5;margin:12px 0}
+pre .c{color:#93a2c4}
+.schema{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+
+.encadre{background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r);padding:13px 16px;margin:14px 0}
+.attention{background:var(--err-wash);border-color:#eab5ae}
+.utile{background:var(--ok-wash);border-color:#a9d8c5}
+.attente{background:var(--wait-wash);border-color:#e6cf94}
+.encadre p:first-child{margin-top:0}
+.encadre p:last-child{margin-bottom:0}
+.etiq{display:inline-block;font-family:'Space Grotesk',sans-serif;font-weight:600;
+  font-size:12.5px;letter-spacing:.02em;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;margin:0 0 6px}
+.attention .etiq{background:#f5cfc9;color:#8f271e}
+.utile .etiq{background:#bfe6d4;color:#0b5b41}
+.attente .etiq{background:#f0dcaa;color:#7a5300}
+
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-family:'Space Grotesk',sans-serif;font-weight:600}
+td code{white-space:nowrap}
+.enveloppe{overflow-x:auto}
+
+.sommaire{background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r);padding:14px 18px;margin:18px 0 0}
+.sommaire ol{margin:6px 0 0;padding-left:20px}
+.sommaire a{text-decoration:none}
+.sommaire a:hover{text-decoration:underline}
+
+@media (max-width:520px){ main{padding:18px 12px 50px} .carte{padding:18px 15px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+
+@page{ size:A4; margin:15mm 16mm; }
+@media print{
+  body{background:#fff;font-size:10.5pt;line-height:1.45}
+  header.barre{background:#fff;color:var(--ink);padding:0 0 10px;
+    border-bottom:2px solid var(--ink);margin-bottom:14px;position:static}
+  header.barre a{display:none}
+  main{max-width:none;padding:0}
+  .carte{border:0;border-radius:0;padding:0;margin:0}
+  .sommaire{display:none}
+  h1{font-size:19pt}
+  h2{font-size:14pt;margin-top:20pt;break-after:avoid}
+  h3{font-size:11.5pt;break-after:avoid}
+  pre{background:#f4f6fb;color:var(--ink);border:1px solid var(--line);
+      font-size:9pt}
+  pre .c{color:#5b6884}
+  .encadre,table,pre,li{break-inside:avoid}
+  a{color:var(--ink);text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <span class="titre">Guide — le dispositif en détail</span>
+  <a href="index.html">← Tableau de bord</a>
+</header>
+
+<main>
+<article class="carte">
+
+  <h1>Le dispositif SNT, sous le capot</h1>
+  <p class="chapo">Ce que fait le serveur, comment les droits sont posés, et les
+  gestes d'administration prêts à jouer. Sa version sans technique, destinée aux
+  collègues, est <a href="guide-prise-en-main.html">le guide de prise en main</a>.</p>
+
+  <nav class="sommaire" aria-label="Sommaire">
+    <b>Dans ce guide</b>
+    <ol>
+      <li><a href="#archi">L'architecture en un schéma</a></li>
+      <li><a href="#comptes">Deux sortes de comptes</a></li>
+      <li><a href="#tables">Ce que contient la base</a></li>
+      <li><a href="#cloison">Le cloisonnement — qui voit quoi</a></li>
+      <li><a href="#classes">Le parc de classes</a></li>
+      <li><a href="#gestes">Les gestes d'administration</a></li>
+      <li><a href="#worker">La correction assistée</a></li>
+      <li><a href="#entretien">Entretien : sauvegardes et mise en pause</a></li>
+      <li><a href="#depot">Où vit quoi dans le dépôt</a></li>
+      <li><a href="#ouvert">Ce qui reste ouvert</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="archi">1. L'architecture en un schéma</h2>
+
+<pre class="schema">   Pages du site  (GitHub Pages, HTML/CSS/JS sans build)
+          |
+          |  HTTPS, clé publique « anon »
+          v
+   Supabase  --  PostgreSQL managé, West EU (Paris)
+          |        - comptes et jetons de session
+          |        - API générée, filtrée ligne par ligne (RLS)
+          ^
+          |  se sert et repose son résultat
+   Worker de correction  (le PC de Loïc, tâche planifiée)
+          +--  API Mistral</pre>
+
+  <p>Trois propriétés à garder en tête :</p>
+  <ul>
+    <li><b>Le worker n'est pas dans la chaîne du site.</b> Il se réveille, prend
+      les copies en attente, fait analyser, réécrit le résultat. Si le PC est
+      éteint, le cours continue de fonctionner — les copies attendent.</li>
+    <li><b>La serrure est côté base, jamais côté page.</b> Le tableau de bord est
+      une page publique sans secret : elle n'affiche rien sans compte professeur.
+      C'est PostgreSQL qui refuse, pas le JavaScript qui masque.</li>
+    <li><b>Tout replie vers l'ouverture.</b> Sans compte, sans réseau, ou si la
+      base ne répond pas, les séquences restent entièrement utilisables : rien
+      n'est enregistré, rien n'est fermé. Le cours passe avant le dispositif.</li>
+  </ul>
+
+  <h2 id="comptes">2. Deux sortes de comptes</h2>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th></th><th>Élève</th><th>Enseignant</th></tr>
+    <tr>
+      <td><b>Identifiant</b></td>
+      <td>Choisi par l'élève. Le client en fabrique une adresse interne
+        <code>identifiant@snt.local</code>, jamais sollicitée.</td>
+      <td>Une vraie adresse, saisie telle quelle. Aucun domaine n'est ajouté.</td>
+    </tr>
+    <tr>
+      <td><b>Création</b></td>
+      <td>Par l'élève, avec le code de classe.</td>
+      <td>À la main : <i>Authentication → Users → Add user</i>, en cochant
+        « Auto confirm user ».</td>
+    </tr>
+    <tr>
+      <td><b>Devient actif</b></td>
+      <td>Immédiatement — <code>rejoindre_classe()</code> crée sa fiche.</td>
+      <td>Quand <code>rattacher_enseignant()</code> l'a inscrit et rattaché.</td>
+    </tr>
+    <tr>
+      <td><b>Mot de passe</b></td>
+      <td colspan="2">Haché par Supabase. On <b>réinitialise</b>, on ne lit jamais.</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="encadre attention">
+    <span class="etiq">Le seul document nominatif</span>
+    <p>La base ne contient aucun nom. La correspondance identifiant → élève vit
+    dans un fichier, sur le OneDrive de l'établissement, chargé à la demande dans
+    l'onglet <i>Réglages</i> : lu sur l'appareil, jamais envoyé, effacé avec la
+    session. <b>Sans ce fichier, un identifiant oublié est définitivement
+    introuvable</b> — d'où la consigne de le faire noter sur la fiche bilan le
+    jour de la création des comptes.</p>
+  </div>
+
+  <h2 id="tables">3. Ce que contient la base</h2>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Table</th><th>Ce qu'elle porte</th></tr>
+    <tr><td><code>classes</code></td><td>Le code à six caractères, le libellé, l'année, l'ouverture des inscriptions, le plafond d'avance.</td></tr>
+    <tr><td><code>eleves</code></td><td>Le pseudo et la classe. Unicité du pseudo <i>dans</i> une classe.</td></tr>
+    <tr><td><code>progression</code></td><td>L'état courant du parcours, en JSON.</td></tr>
+    <tr><td><code>evenements</code></td><td>L'historique, en ajout seul : on n'efface jamais.</td></tr>
+    <tr><td><code>reponses_libres</code></td><td>Les copies : texte, statut, analyse, commentaire.</td></tr>
+    <tr><td><code>reponses_versions</code></td><td>Chaque version remplacée, archivée automatiquement.</td></tr>
+    <tr><td><code>seances_faites</code></td><td>Le cahier de textes : séance, date réelle, notes, travail donné.</td></tr>
+    <tr><td><code>absences</code> · <code>jalons</code></td><td>Note de travail sur les absents ; dates cibles par thème.</td></tr>
+    <tr><td><code>enseignants</code> · <code>enseignants_classes</code></td><td>Qui est professeur, et qui enseigne où.</td></tr>
+    <tr><td><code>modeles_correction</code></td><td>La bibliothèque de phrases, cloisonnée par compte depuis l'origine.</td></tr>
+  </table>
+  </div>
+
+  <p>Deux principes de conception qui expliquent le reste :</p>
+  <ul>
+    <li><b>Le curseur n'est pas stocké</b>, il se déduit de <code>seances_faites</code>.
+      Reculer d'une séance recolore tout, sans script de rattrapage.</li>
+    <li><b>Les colonnes JSON se lisent toujours avec une valeur par défaut.</b>
+      On ajoute des champs, on n'en renomme aucun, on n'en supprime aucun : le
+      format évolue sans migration ni casse.</li>
+  </ul>
+
+  <h2 id="cloison">4. Le cloisonnement — qui voit quoi</h2>
+
+  <p>Posé le 4 septembre 2026, quand l'équipe est passée d'un à cinq enseignants.
+  Avant, un seul test existait — « ce compte est-il un professeur ? » — et il
+  ouvrait tout le lycée.</p>
+
+  <p>Aujourd'hui, une table de rattachement dit qui enseigne où, et toutes les
+  règles s'y adossent. Concrètement :</p>
+
+  <ul>
+    <li>Un enseignant ne lit que ses classes, ses élèves, leurs copies et leur
+      progression.</li>
+    <li>Il n'écrit le cahier de textes, les absences, les jalons et le plafond que
+      sur ses groupes.</li>
+    <li><b>Une classe rattachée à personne est invisible de tous.</b> C'est ainsi
+      que les deux classes du livret CFA sortent de ce tableau de bord : sans
+      filtre, sans colonne, sans code — pendant que les apprentis continuent de
+      s'inscrire et de travailler normalement.</li>
+  </ul>
+
+  <div class="encadre">
+    <span class="etiq">Le point qui n'était pas évident</span>
+    <p>Fermer la lecture ne suffisait pas. Les corrections ne passent pas par une
+    écriture directe mais par trois fonctions privilégiées — valider, renvoyer,
+    rouvrir — qui <b>contournent les règles de lecture par construction</b>. Sans
+    contrôle supplémentaire, un enseignant aurait pu valider n'importe quelle
+    copie du lycée en connaissant son identifiant interne. Le cloisonnement rend
+    cet identifiant introuvable, mais introuvable n'est pas interdit : les trois
+    fonctions vérifient désormais la classe avant d'agir.</p>
+  </div>
+
+  <p>Pour vérifier à tout moment qu'aucune règle n'a fui, le fichier
+  <code>bdd/schema/016-cloisonnement-enseignant.sql</code> se termine par sept
+  contrôles. Le plus important liste toutes les règles des tables concernées et
+  signale celles qui ne seraient pas cloisonnées.</p>
+
+  <h2 id="classes">5. Le parc de classes</h2>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Famille</th><th>Rôle</th><th>Plafond</th></tr>
+    <tr>
+      <td>Les 14 groupes de SNT</td>
+      <td>Un par groupe de la barrette, rattaché à son enseignant.</td>
+      <td>2 sur les trois groupes de Loïc, tout ouvert ailleurs.</td>
+    </tr>
+    <tr>
+      <td>Le groupe de démonstration commun</td>
+      <td>Rattaché aux cinq. C'est là que chacun crée ses élèves fictifs, sous
+        le préfixe <code>zz-</code>.</td>
+      <td>Tout ouvert.</td>
+    </tr>
+    <tr>
+      <td>L'ancienne classe pilote</td>
+      <td>Rattachée à Loïc seul. Ses copies sont le seul matériel qui montre une
+        vraie file de correction : les captures d'écran des guides s'y font.</td>
+      <td>Tout ouvert.</td>
+    </tr>
+    <tr>
+      <td>Les deux classes du livret CFA</td>
+      <td>Hors tableau de bord, par décision. Elles fonctionnent seules.</td>
+      <td>—</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="encadre attention">
+    <span class="etiq">Pourquoi « tout ouvert » par défaut</span>
+    <p>Le plafond se calcule à partir des séances déclarées faites. Un enseignant
+    qui ne tient pas le cahier de textes a un journal vide : ses élèves seraient
+    bloqués dès la deuxième séance et concluraient que le dispositif est cassé.
+    Un plafond ne se pose donc que sur un groupe dont on clôture les séances.</p>
+  </div>
+
+  <h2 id="gestes">6. Les gestes d'administration</h2>
+
+  <p>Tous se jouent dans <i>SQL Editor</i> du tableau de bord Supabase. Les codes
+  de classe réels ne figurent pas ici — la page est publique.</p>
+
+  <h3>Ajouter un enseignant</h3>
+  <p>Créer d'abord son compte dans <i>Authentication → Users</i>, « Auto confirm
+  user » coché. Puis une seule ligne, qui retrouve le compte par son adresse,
+  l'inscrit comme professeur et pose ses rattachements :</p>
+<pre>select public.rattacher_enseignant(
+  'adresse@exemple.fr',      <span class="c">-- son adresse de connexion</span>
+  'NOM',                     <span class="c">-- ce qu'affiche le tableau de bord</span>
+  array['CODE1','CODE2']);   <span class="c">-- ses groupes</span></pre>
+  <p>Rejouable : relancée, elle met à jour le libellé et n'ajoute que les
+  rattachements manquants. Si elle répond « Aucun compte pour… », c'est que le
+  compte n'a pas été créé, ou que l'adresse diffère d'un caractère.</p>
+
+  <h3>Retirer un groupe à un enseignant</h3>
+<pre>delete from public.enseignants_classes ec
+ using public.classes c, public.enseignants e
+ where ec.classe_id = c.id and ec.auth_id = e.auth_id
+   and c.code = 'CODE' and e.libelle = 'NOM';</pre>
+
+  <h3>Fermer ou rouvrir les inscriptions d'un groupe</h3>
+  <p>À faire en général après la deuxième séance, pour éviter les inscriptions
+  sauvages. Le code reste valable pour se reconnecter ; c'est la création de
+  nouveaux comptes qui se ferme.</p>
+<pre>update public.classes set actif = false where code = 'CODE';  <span class="c">-- fermer</span>
+update public.classes set actif = true  where code = 'CODE';  <span class="c">-- rouvrir</span></pre>
+
+  <h3>Faire le tour de l'année</h3>
+<pre><span class="c">-- qui enseigne où</span>
+select e.libelle, count(*) as groupes,
+       string_agg(c.code, ' · ' order by c.code) as codes
+from public.enseignants_classes ec
+join public.enseignants e on e.auth_id = ec.auth_id
+join public.classes     c on c.id      = ec.classe_id
+group by e.libelle order by e.libelle;
+
+<span class="c">-- combien d'élèves inscrits par groupe</span>
+select c.code, c.libelle, count(el.id) as inscrits
+from public.classes c
+left join public.eleves el on el.classe_id = c.id
+group by c.code, c.libelle order by c.code;
+
+<span class="c">-- les groupes que personne n'enseigne (le CFA doit y figurer)</span>
+select c.code, c.libelle from public.classes c
+where not exists (select 1 from public.enseignants_classes ec
+                  where ec.classe_id = c.id)
+order by c.code;</pre>
+
+  <h3>Effacer les élèves fictifs en fin d'année</h3>
+  <p>D'où la convention de préfixe. On les recense d'abord :</p>
+<pre>select el.pseudo, c.code
+from public.eleves el join public.classes c on c.id = el.classe_id
+where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
+  <div class="encadre attention">
+    <span class="etiq">À faire dans l'interface, pas en SQL</span>
+    <p>Supprimer la ligne de <code>eleves</code> laisserait le compte
+    d'authentification orphelin. C'est le compte qu'il faut supprimer, dans
+    <i>Authentication → Users</i> : la fiche élève, sa progression et ses copies
+    partent avec lui, en cascade. Le sens inverse ne marche pas.</p>
+  </div>
+
+  <h2 id="worker">7. La correction assistée</h2>
+
+  <p>Le worker tourne sur le PC de Loïc, en tâche planifiée. À chaque réveil, il
+  prend les vingt plus anciennes copies en attente <b>de toute la base</b>, sans
+  distinction de classe, les fait analyser, et réécrit le résultat.</p>
+
+  <p><b>Il ne tranche rien.</b> Le statut reste « en attente » : il attend une
+  validation humaine. Ce qu'il produit est une proposition, affichée dans la file
+  du professeur concerné.</p>
+
+  <div class="encadre utile">
+    <span class="etiq">Pourquoi il n'a pas besoin de filtre</span>
+    <p>Il écrit globalement, mais le tri se fait à la <b>lecture</b> : une copie
+    corrigée n'apparaît que dans la file de l'enseignant de l'élève, par le jeu
+    des règles du §4. Aucune ligne de code de tri n'existe — et c'est
+    précisément pour ça qu'elle ne peut pas se tromper.</p>
+  </div>
+
+  <p>Conséquence assumée : des copies d'élèves fictifs consomment des jetons comme
+  les autres. À l'échelle de trois cent cinquante élèves, la dépense annuelle se
+  compte en euros.</p>
+
+  <h2 id="entretien">8. Entretien : sauvegardes et mise en pause</h2>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Quand</th><th>Quoi</th><th>À surveiller</th></tr>
+    <tr>
+      <td>Mercredi 18 h</td>
+      <td>Sauvegarde complète vers <code>C:\Sauvegardes-SNT</code>, et une ligne
+        dans le journal.</td>
+      <td>Une ligne <code>OK</code> par semaine dans <code>journal.log</code>.
+        Une ligne <code>ECHEC</code>, ou pas de ligne du tout, veut dire une
+        sauvegarde muette.</td>
+    </tr>
+    <tr>
+      <td>Tous les jours, 12 h 30</td>
+      <td>Une requête, pour que le compteur d'inactivité reparte de zéro.</td>
+      <td>Une tâche manquée parce que le PC était éteint se rattrape au
+        démarrage — mais un réveil en retard ne réveille rien.</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="encadre attention">
+    <span class="etiq">Sept jours</span>
+    <p><b>Sept jours consécutifs sans allumer le PC mettent le projet en pause.</b>
+    Rien n'est perdu et la relance se fait d'un clic, mais entre-temps le site ne
+    répond plus : les élèves travaillent sans que rien ne soit enregistré. C'est
+    le risque des vacances scolaires. À vérifier au retour, avant la reprise.</p>
+  </div>
+
+  <p>La sauvegarde couvre les tables et leurs données, <b>pas les comptes</b>, qui
+  vivent dans une zone appartenant à Supabase. Une restauration dans un projet
+  neuf retrouverait les fiches élèves mais plus les comptes qui les
+  authentifient : à garder en tête pour toute migration.</p>
+
+  <h2 id="depot">9. Où vit quoi dans le dépôt</h2>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Chemin</th><th>Rôle</th></tr>
+    <tr><td><code>prof/index.html</code></td><td>Le tableau de bord.</td></tr>
+    <tr><td><code>assets/js/prof-api.js</code></td><td>Son client : connexion, lecture, écriture.</td></tr>
+    <tr><td><code>assets/js/progression.js</code></td><td>Le client des élèves. <b>Partagé</b> avec le livret CFA : le toucher pour la SNT touche le CFA.</td></tr>
+    <tr><td><code>bdd/schema/*.sql</code></td><td>Le schéma, numéroté, commenté, rejouable dans l'ordre.</td></tr>
+    <tr><td><code>supabase/migrations/</code></td><td>La même chose, horodatée, appliquée automatiquement au push.</td></tr>
+    <tr><td><code>ia-snt/</code></td><td>Le worker et ses grilles d'analyse.</td></tr>
+    <tr><td><code>prof/guide-*.html</code></td><td>Ces deux guides.</td></tr>
+  </table>
+  </div>
+
+  <div class="encadre attention">
+    <span class="etiq">Le piège du push</span>
+    <p>Tout fichier <code>.sql</code> déposé dans <code>supabase/migrations/</code>
+    est <b>appliqué à la base au prochain push</b>, sans confirmation. Le bon
+    ordre est donc toujours : exécuter à la main dans l'éditeur SQL, lire les
+    vérifications de fin de fichier, <i>puis</i> déposer la copie horodatée et la
+    déclarer déjà appliquée. L'inverse applique du SQL sans que personne n'en
+    lise le résultat.</p>
+  </div>
+
+  <h2 id="ouvert">10. Ce qui reste ouvert</h2>
+
+  <ul>
+    <li><b>Les chapitres de physique-chimie</b> ne sont pas branchés : leur
+      progression vit dans le navigateur de l'élève, et n'apparaît nulle part ici.</li>
+    <li><b>Les photos prises en classe</b> ne quittent pas le navigateur. Les
+      remonter demanderait un espace de stockage, une table, des règles — et une
+      durée de conservation décidée avant la première ligne de code.</li>
+    <li><b>Le bouton « voir mes versions »</b> côté élève n'existe pas encore,
+      alors que l'archivage des versions fonctionne depuis le début.</li>
+    <li><b>La cible souveraine</b> reste un hébergeur français, à proposer à
+      l'établissement. Le sol est déjà français ; c'est l'entreprise qui ne
+      l'est pas.</li>
+  </ul>
+
+  <p class="revision">
+    Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
+    année 2026-2027.<br>
+    Dernière révision : <b>4 septembre 2026</b>, à la pose du cloisonnement par
+    enseignant. Version destinée aux collègues :
+    <a href="guide-prise-en-main.html">la prise en main</a>.
+  </p>
+
+</article>
+</main>
+
+</body>
+</html>

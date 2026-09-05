@@ -165,7 +165,8 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 | **Outillage** 🆕 | *(pas de page)* | `_outils/fiches/` **le générateur des fiches élève PC** — `gabarit_fiche.py` (commun aux 14 fiches, 🔴 ne pas y résoudre un problème de chapitre) + `fiche_<code>.py` + `mesurer_pages.py` · `_outils/tests/` scripts de contrôle, à lancer depuis la racine |
 | **Livret CFA** 🆕 | `cfa/index.html` · `cfa/outil-NN-…html` (17 outils) | `_modeles/gabarit-outil-CFA.html` · fiches à imprimer dans `fiches/cfa/` (**2 écrites sur 17** — les liens manquants forment le repère de 18 problèmes de `verifier.mjs`) · corrigés dans `_corriges-cfa/` · **client partagé** `assets/js/progression.js` |
 | **Coque / accueil / niveaux** | `index.html` (racine) · `pages/2nde-physique-chimie.html`, `pages/…-scientifique.html`, `pages/terminale-…` | `assets/fonts/`, `assets/css/`, `gravures/` |
-| **Base de données** 🆕 | *(pas de page)* | `bdd/schema/NNN-….sql` (schéma, numéroté, rejouable) · `bdd/README.md` · plus tard `supabase/` (produit par la CLI, **jamais à la main**) · client partagé `assets/js/progression.js` |
+| **Base de données** 🆕 | *(pas de page)* | `bdd/schema/NNN-….sql` (schéma, numéroté, rejouable) · `bdd/README.md` · `supabase/migrations/` (horodaté par la CLI, **contenu recopié de `bdd/schema/`**) · client partagé `assets/js/progression.js` |
+| **Tableau de bord enseignant** 🆕 | `prof/index.html` · `prof/guide-prise-en-main.html` · `prof/guide-dispositif.html` | `assets/js/prof-api.js` · PDF des guides dans `assets/pdf/prof/`, régénérés par `node exporter-guides.mjs` |
 
 🔴 **Trois assets sont PARTAGÉS entre plusieurs parties.** Les toucher déborde du
 périmètre où l'on croit travailler, et impose d'incrémenter le `?v=N` **partout
@@ -182,6 +183,25 @@ Autrement dit : **une modification du client de progression faite pour le SNT
 touche le livret CFA**, et réciproquement. Ce n'est pas un défaut de rangement,
 c'est un choix — une seule copie du client Supabase à maintenir — mais il doit
 être annoncé dans toute livraison qui y touche.
+
+🔴 **Le tableau de bord se livre avec ses deux guides.** `prof/index.html` est
+décrit par `prof/guide-prise-en-main.html` (les collègues, sans technique) et
+`prof/guide-dispositif.html` (Loïc, avec la technique). Toute modification qui
+change un écran, un onglet, un bouton ou un message **se répercute dans le ou les
+guides concernés au sein de la même livraison**, leur date de révision est remise
+à jour, et `node exporter-guides.mjs` régénère les PDF. Motif : un guide faux
+envoie chercher le problème au mauvais endroit — il coûte plus cher que pas de
+guide du tout.
+
+🔴 **`assets/fonts/IBMPlexSans-*.woff2` sont inutilisables** — mesuré au
+navigateur le 04/09/2026 : **5 glyphes sur 69**, sur les quatre faces (400, 400i,
+500, 600). Tout texte qui demande cette famille tombe en Segoe UI, ou en **Times
+New Roman** là où aucun repli n'est déclaré. Les cinq autres familles sont
+saines. En attendant de vraies polices, intercaler `'Inter'` juste après
+`'IBM Plex Sans'` dans la pile : Inter est auto-hébergée, complète et du même
+genre, et Plex Sans reprendra la main d'elle-même une fois réparée. Concerne
+`assets/css/sequence-snt.css` (donc **toutes les séquences SNT et les 8 outils
+PC**), `prof/index.html` et 3 fiches.
 
 Détail des conventions de nommage (3 formes de slug par chapitre PC) :
 `_modeles/CONSIGNES-chapitre-PC.md` §0. Un nouveau contenu se range **toujours**
