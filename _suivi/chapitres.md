@@ -32,6 +32,16 @@
 > pas dans les jalons ci-dessus**, qui suivent le cours et la fiche. Aucune
 > correction n'est en ligne : elles partent par mail contre preuve de travail.
 >
+> 🆕 **Les quinze sujets de TP ont été remplacés et renumérotés le 05/09/2026.**
+> Le site porte désormais le numéro imprimé sur la feuille distribuée : TP1
+> *Analyse d'un son*, TP2 *Écholocation*, TP3 *Pourquoi saler…*, TP4
+> *Transformation chimique*, TP5 *Panique à la rentrée*, TP6 *Quantité de
+> matière*, TP9 *La verrerie au laboratoire*, TP10 *Dosage par étalonnage*,
+> TP11 *Échelle de teintes*, TP12 *Protection d'une LED*, TP13 *Réfraction /
+> Dispersion / Spectres*, TP14 *Formation d'une image* — TP7, TP8 et TP15 ne
+> bougent pas. ⚠ **Les dossiers de `_a-deposer/tp/` gardent l'ancienne
+> numérotation** : table de correspondance dans `DECISIONS.md` (D2).
+>
 > ⚠ **RIEN n'est encore validé.** « Ébauche/fiche proposée » ≠ « validé ».
 > La validation est un acte explicite de Loïc, faite en régime B, cours d'abord.
 > La mise en ligne n'est PAS un critère de suivi (tout est/sera en ligne) :
@@ -176,7 +186,7 @@
 - **3 encarts formule** (f = 1/T · c_son = d/Δt · **A = (U_max − U_min)/2**, posée à l'audit 3, en **vraies fractions**) ; 1 bloc **Méthode** ; 1 encart **mise en garde** (hauteur ≠ intensité) ; 2 tables devenues **Tableau 1** (vitesses du son) et **Tableau 2** (sous-domaines de fréquences), toutes deux **en regard du texte**.
 - Figures : **18 images numérotées + 2 tableaux + 1 vidéo intégrée**, série continue et sans renvoi orphelin. L'audit 3 a ajouté l'**Image 14** (le diapason et le La₃ sur une portée, en regard) et refait la **frise des fréquences** (Image 9) en SVG maison — il ne reste plus de `-source` dans la partie 4.
 - 🎬 **Vidéo de la cloche à vide intégrée en façade cliquable** : illustration SVG maison, l'iframe `youtube-nocookie` n'est créée qu'au clic. **Aucune requête tierce au chargement** (mesuré : 0 avant le clic, 32 après). ⚠ Elle affichait « erreur de configuration du lecteur » : la cause n'était pas la vidéo mais notre `referrerpolicy="no-referrer"`, qui privait YouTube de toute origine. Corrigé le 26/08 en `strict-origin-when-cross-origin` — seul le **domaine** est transmis, jamais l'URL de la page.
-- Liens décodés : 8 vidéos (hyperliens de formes) + Kahoot activé. Le **DS4** et les **TP5 / TP6** sont posés depuis le 26/08 (`assets/pdf/pc/`) ; l'encart 🔧 « Lien du DS », devenu faux, a été retiré — **le chapitre n'a plus aucun 🚧**.
+- Liens décodés : 8 vidéos (hyperliens de formes) + Kahoot activé. Le **DS4** et les **TP1 / TP2** sont posés depuis le 26/08 (`assets/pdf/pc/`) ; l'encart 🔧 « Lien du DS », devenu faux, a été retiré — **le chapitre n'a plus aucun 🚧**.
 - ⚠ **4 retouches de fond tracées** (`grep "SOURCE → CORRIGÉ"`) : intensité ∝ amplitude² (reformulée qualitativement), 382 → 380 Hz, 0,02325 → 23 ms, 689,6 s → 690 s ≈ 11 min 30 s.
 - 📄 **À lire et à trancher : `_suivi/t3c1-releve.md`** — 1 erreur de physique, 4 incohérences de calcul, 7 contenus récupérés, 6 remarques pédagogiques.
 
@@ -223,10 +233,10 @@
 
 ### T3-C5 — Formation d'une image
 - Jalons : **sans objet** — ce chapitre n'a pas de page de cours et n'en attend pas.
-- 🆕 **Carte créée au hub le 26/08/2026**, à la fin du thème 3. **Le TP13 tient lieu
+- 🆕 **Carte créée au hub le 26/08/2026**, à la fin du thème 3. **Le TP14 tient lieu
   de cours** : c'est le fonctionnement de Loïc depuis deux ans, la notion étant
   intégralement reprise en première puis en terminale (D6).
-- Fichiers : aucun. La carte pointe vers `assets/pdf/pc/tp/tp13-formation-d-une-image.pdf`
+- Fichiers : aucun. La carte pointe vers `assets/pdf/pc/tp/tp14-formation-d-une-image.pdf`
   et vers `assets/pdf/pc/ds/ds6-t3c3-t3c4-t3c5.pdf`.
 - ⏳ Le **texte de la carte** est une proposition, à valider. Deux propriétés à
   garder s'il est réécrit : aucune tournure d'attente, et la raison énoncée simplement.
@@ -268,7 +278,7 @@ un QR code, ni un lien.
 | **o1** | Puissances de dix et écriture scientifique | Écriture scientifique + Convertir | écrit, V1 |
 | **o2** | Les chiffres significatifs | Écriture scientifique (partie basse) | écrit, V1 |
 | **o3** | Sécurité au laboratoire | Sécurité + Pictogrammes | 🔴 priorité labo |
-| **o4** | La verrerie et le matériel de laboratoire | Verrerie + TP11 + ménisque | 🔴 priorité labo |
+| **o4** | La verrerie et le matériel de laboratoire | Verrerie + TP9 + ménisque | 🔴 priorité labo |
 | **o5** | Rédiger un compte rendu de TP | Fiche_guide | 🔴 priorité labo |
 | **o6** | Présenter un calcul | Présenter un calcul + le cours en ligne | 🔴 |
 | **o7** | Manipuler une relation algébrique | Manipuler + sa correction | 🟠 |
@@ -431,7 +441,7 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   de précision et le geste du ménisque au verso.
 - Sources : `fiche_La verrerie de laboratoire.pdf` (images uniquement — tout le
   visuel est à redessiner), `_a-deposer/tp/TP11 - La précision de la verrerie au
-  laboratoire/`, l'encadré **ménisque** de `fiche_La dissolution.pdf`, et les QCM
+  laboratoire/` (déposé sous le n° **TP9**, cf. la renumérotation du 05/09), l'encadré **ménisque** de `fiche_La dissolution.pdf`, et les QCM
   déjà écrits dans `cahier/diag-j05-protocoles-formules.html` et
   `cahier/diag-j06-dilution.html` — **réemployables tels quels**, ils sont de Loïc.
 - ⏳ **O-24 appliqué (tranché par défaut).** Le tri **fonctionnel** de la source
@@ -441,7 +451,7 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   ordonnée : bécher · erlenmeyer → éprouvette graduée → pipette graduée →
   **pipette jaugée · fiole jaugée · burette**. Motif : la compétence du programme
   est *« choisir la verrerie adaptée »*, et le critère de précision est déjà
-  **établi expérimentalement** par le TP11. L'outil renvoie au TP, le TP justifie
+  **établi expérimentalement** par le TP9. L'outil renvoie au TP, le TP justifie
   l'échelle. Rien n'est retiré à la source, un axe lui est ajouté.
 - **Méthode — quatre étapes** : nommer (chaque pièce redessinée en SVG au trait,
   un `<symbol>` par pièce, réemployé sur la fiche ; appariement 8 pièces) ·
@@ -452,7 +462,7 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   du matériel (chauffe-ballon, support élévateur, potence, balance, spatule).
 - **S'entraîner** — 5 exercices : quelle verrerie pour quel geste (6 cas tirés des
   protocoles du cahier) · lire trois ménisques · classer six verreries par
-  précision croissante · le témoignage des cinq opérateurs du TP11 · un protocole
+  précision croissante · le témoignage des cinq opérateurs du TP9 · un protocole
   à trous.
 - **Fiche A4 : deux pages** — la planche de verrerie au recto, l'échelle de
   précision et le geste au verso.

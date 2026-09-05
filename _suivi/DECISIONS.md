@@ -1157,6 +1157,44 @@ est en revanche celui que le brief demandait de reprendre dans `o3`.
 
 ---
 
+---
+
+## Renumérotation des TP de seconde — 05/09/2026
+
+Loïc a retravaillé les quinze sujets pendant l'été et les a **renumérotés** :
+douze PDF sur quinze portent un numéro nouveau, et douze sur quinze ont un
+contenu modifié (TP7, TP8 et TP15 sont inchangés au bit près).
+
+| # | Décision | Statut |
+|---|---|---|
+| T1 | **Le site suit le numéro imprimé sur la feuille distribuée en classe.** Les fichiers, les pastilles de chapitre, les liens du hub et l'outil O4 sont renumérotés. Motif : un élève qui a la feuille en main doit retrouver le même numéro à l'écran ; c'est la seule référence commune au papier et au site | ✅ |
+| T2 | **Les anciennes URL ne sont pas conservées** — pas de copie de compatibilité. Les liens `tp01-pourquoi-saler…`, `tp05-analyse-d-un-son`… posés le 26/08 cassent. Motif : douze PDF en double pour dix jours de liens partagés ne valent pas la dette | ✅ |
+| T3 | **Le TP9 prend le titre du PDF** : « La verrerie au laboratoire », et non plus « La précision de la verrerie ». L'outil O4 le cite six fois, sa fiche A4 deux fois — toutes mises à jour, PDF de fiche ré-exporté | ✅ |
+| T4 | ⏳ **Les dossiers de `_a-deposer/tp/` gardent l'ancienne numérotation.** Ils sont la zone de dépôt des sources brutes, citée telle quelle par le journal et les archives. À renommer un jour, ou à laisser avec la table ci-dessous pour boussole | ⏳ |
+
+**Table de correspondance** — ancien nom de fichier → nouveau :
+
+| Nouveau | Titre | Ancien fichier | Contenu |
+|---|---|---|---|
+| `tp01-analyse-d-un-son` | Analyse d'un son | `tp05-analyse-d-un-son` | modifié |
+| `tp02-echolocation` | Écholocation | `tp06-echolocation` | modifié |
+| `tp03-pourquoi-saler-les-routes-enneigees` | Pourquoi saler les routes enneigées | `tp01-…` | modifié |
+| `tp04-transformation-chimique` | Transformation chimique | `tp02-…` | modifié |
+| `tp05-panique-a-la-rentree` | Panique à la rentrée | `tp03-…` | modifié |
+| `tp06-quantite-de-matiere` | Quantités de matière des réactifs | `tp04-…` | modifié |
+| `tp07-trajectoire-de-la-fusee-ariane` | Trajectoire de la fusée Ariane | *(inchangé)* | **identique** |
+| `tp08-un-tir-au-canon` | Un tir au canon | *(inchangé)* | **identique** |
+| `tp09-la-verrerie-au-laboratoire` | La verrerie au laboratoire | `tp11-precision-de-la-verrerie` | modifié |
+| `tp10-dosage-par-etalonnage` | Détermination d'une concentration | `tp09-…` | modifié |
+| `tp11-echelle-de-teintes` | Échelle de teintes (Dakin) | `tp10-…` | modifié |
+| `tp12-protection-d-une-led` | Protection d'une LED | `tp14-…` | modifié |
+| `tp13-refraction-dispersion-spectres` | Réfraction / Dispersion / Spectres | `tp12-…` | modifié |
+| `tp14-formation-d-une-image` | Formation d'une image | `tp13-…` | modifié |
+| `tp15-molecules-et-modele-de-lewis` | Molécules et modèle de Lewis | *(inchangé)* | **identique** |
+
+Contrôle : chaque PDF a été **ouvert et lu** pour vérifier que le numéro imprimé
+en première page correspond au numéro du fichier — les quinze concordent.
+
 ## Dépôt des DS et des TP en physique-chimie — 26/08/2026
 
 Cadrage : `BRIEF-CLAUDE-CODE-DS-TP-PC.md`. Sept décisions de Loïc, en vigueur.
@@ -1164,11 +1202,11 @@ Cadrage : `BRIEF-CLAUDE-CODE-DS-TP-PC.md`. Sept décisions de Loïc, en vigueur.
 | # | Décision | Statut |
 |---|---|---|
 | D1 | **Les corrections restent hors ligne**, transmises par mail contre preuve de travail. Aucun mécanisme de déblocage n'est construit. Le chip SharePoint « DS 2024/2025 (corrigé) » de `c1` reste tel quel | ✅ |
-| D2 | Les sujets sont déposés **avec leur numérotation actuelle** (DS1…DS6, TP01…TP15), héritée d'une progression antérieure. Pas de renumérotation | ✅ |
+| D2 | ~~Les sujets sont déposés **avec leur numérotation actuelle** (DS1…DS6, TP01…TP15), héritée d'une progression antérieure. Pas de renumérotation~~ | ~~✅~~ **Remplacée le 05/09/2026** par T1 ci-dessous : les TP sont renumérotés, les DS ne bougent pas |
 | D3 | La puce `Exercices 🚧` **disparaît des 14 cartes** du hub, y compris celles qui ne reçoivent rien | ✅ |
 | D4 | Un sujet est lié à **tous** les chapitres qu'il couvre, vers le même fichier | ✅ |
 | D5 | **Seuls les PDF de sujet** rejoignent le dépôt. Docx, corrections, ressources annexes, code et tableurs restent dehors tant qu'ils ne sont pas triés | ✅ |
-| D6 | **T3-C5 « Formation d'une image » : carte au hub, sans page de cours.** Le TP13 tient lieu de cours — la notion est intégralement reprise en première et en terminale | ✅ *(carte créée le 26/08, texte à valider)* |
+| D6 | **T3-C5 « Formation d'une image » : carte au hub, sans page de cours.** Le TP14 (ex-TP13) tient lieu de cours — la notion est intégralement reprise en première et en terminale | ✅ *(carte créée le 26/08, texte à valider)* |
 | D7 | **Aucune formulation d'attente sur cette carte** : ni « cours à venir », ni « en travaux », ni `🚧`. C'est la forme retenue, pas un chantier | ✅ |
 
 **D8 (26/08, tranché par Loïc au §7 du brief)** — ✅ **Aucun fichier portant un

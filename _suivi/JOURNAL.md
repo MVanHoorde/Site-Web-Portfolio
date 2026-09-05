@@ -12,6 +12,48 @@
 
 ---
 
+## 05/09/2026 — Les quinze TP de seconde reviennent renumérotés
+
+Loïc a retravaillé ses quinze sujets de TP pendant l'été et les a redéposés. La
+demande tenait en une ligne — « faire la maj, enlever la mention (1) dans les noms
+des fichiers ». Le `(1)` n'était que la marque d'un re-téléchargement : les cinq
+doublons se sont révélés identiques au MD5 près, aucune ambiguïté sur la source à
+prendre.
+
+**Ce que la lecture des PDF a révélé, et qui n'était pas dans la demande.** Le
+numéro imprimé en première page a bougé pour **douze sujets sur quinze**. *Analyse
+d'un son* passe de TP5 à TP1, *Pourquoi saler les routes enneigées* de TP1 à TP3,
+*La verrerie* de TP11 à TP9 — et ainsi de suite. Or le dépôt nomme ses fichiers
+d'après ce numéro et l'affiche sur ses pastilles. Remplacer les octets sans
+toucher aux noms aurait fait dire au site l'inverse de ce que lit l'élève sur sa
+feuille. Question posée, tranchée par Loïc : **le site suit le papier**, sans
+copie de compatibilité pour les anciennes URL.
+
+**Le chantier réel.** Quinze fichiers renommés ; quinze pastilles et une étiquette
+de synthèse dans dix pages de chapitre ; treize liens du hub ; l'outil `o4`
+verrerie, qui citait « le TP11 » six fois et sa fiche A4 deux fois — le TP y prend
+au passage le titre de son PDF, « La verrerie au laboratoire » ; le PDF de la
+fiche `o4` ré-exporté ; `chapitres.md`, `DECISIONS.md` (D2 barrée, remplacée par
+T1–T4) et `erreurs-sources-fiches-outils.md`.
+
+**Contrôlé à la lecture, pas au nom de fichier.** Les quinze PDF ont été ouverts
+et leur première page lue : le numéro imprimé correspond au numéro du fichier,
+quinze fois sur quinze. `node verifier.mjs` rend **18 problèmes**, les 18 liens
+`cfa/outil-*` du repère — aucun lien de TP cassé.
+
+**Un piège de sed, en passant.** Le remplacement du titre du TP9 contenait des
+`&nbsp;` : `sed` interprète `&` dans la chaîne de remplacement comme « le motif
+entier », et la ligne est ressortie avec le titre imbriqué trois fois. Repéré à la
+relecture du diff, réparé en Python. Les remplacements suivants ont évité `&` dans
+la partie droite.
+
+**Ce qui reste ouvert.** Les dossiers de `_a-deposer/tp/` gardent l'ancienne
+numérotation : `TP11 - La précision de la verrerie au laboratoire/` désigne
+désormais le TP publié sous le n° 9. Zone de dépôt de sources brutes, citée telle
+quelle par ce journal et les archives — renommage non fait, arbitrage T4.
+
+---
+
 ## 04/09/2026 — La rentrée : 14 groupes, cinq enseignants, et une base cloisonnée
 
 L'équipe de SNT passe de un à cinq. Dix classes de 2nde redécoupées en 14 groupes

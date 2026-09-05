@@ -126,7 +126,7 @@ changent rien au fond.
 - **Le tri de la verrerie** (*pour contenir* / *pour mesurer un volume* / *autre*)
   est conservé comme tri **principal**. Un second axe — la précision — lui est
   **ajouté**, sans que rien ne soit retiré : la compétence du programme est
-  « choisir la verrerie adaptée », et le TP11 de l'établissement établit déjà ce
+  « choisir la verrerie adaptée », et le TP9 de l'établissement établit déjà ce
   classement expérimentalement.
 - **Les cinq niveaux** de `Manipuler une relation algébrique` sont tous
   conservés, titres compris. Les niveaux 4 et 5 sont simplement marqués comme non
