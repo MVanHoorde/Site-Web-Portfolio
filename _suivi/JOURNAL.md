@@ -3202,3 +3202,48 @@ partagés par les six autres fiches du parc.
 T1-C3 devient le troisième chapitre sur quatorze à porter sa fiche, après t1-c2 et
 t1-c4. Le bouton `hors-verrou` est posé sur la page : la fiche vierge reste
 accessible à l'élève absent ou en avance, qui n'a pas encore le code.
+
+## 05/09/2026 — Le hub de 2nde PC : les chapitres d'abord, six outils refermés
+
+Demande de Loïc : *« les outils de seconde non validés marqués en travaux et non
+accessibles, ne garder que les fiches outil 1 et 2, et les fiches placées sous les
+cours, plus importants chronologiquement. »* Trois gestes sur
+`pages/2nde-physique-chimie.html`, un sur `index.html`. Décisions O-30 à O-32.
+
+**Ce qui a bougé.** La section « Outils transversaux » — titre, chapeau et huit
+cartes, 142 lignes — est passée d'avant le thème 1 à la fin du `<main>`. Les six
+cartes `o3` à `o8` ont perdu leurs deux liens au profit d'une mention `.a-venir`
+« Cours et fiche 🚧 ». Une règle `.docs .a-venir` a été ajoutée au `<style>` de la
+page : sans elle, la mention tombait en texte nu à côté de boutons encadrés, et la
+carte fermée ressemblait à une carte inachevée plutôt qu'à une carte en attente.
+Elle reprend donc la forme et la place du bouton voisin, en trait **pointillé** et
+en encre pâle — la différence se lit sans avoir à lire.
+
+**Le chapeau de la section était devenu faux** et a été réécrit, pas surchargé : il
+promettait que *« chaque outil se lit en ligne »*, ce qui ne vaut plus que pour deux
+sur huit.
+
+**Contrôlé au navigateur, pas dans le CSS.** Relevé CDP sur le hub rendu : ordre des
+quatre `h2.theme` conforme (thèmes 1, 2, 3 puis outils, ce dernier à 2 283 px sur
+une page de 4 621) ; `o1` et `o2` portent bien leurs deux `href` chacun, `o3` à `o8`
+en portent **zéro** ; la mention rend en `inline-block`, bordure `dashed 1px`,
+curseur `default`, `text-decoration:none`, 150 × 33 px, et `closest('a')` est nul —
+elle n'est cliquable par aucun chemin. 0 erreur JS.
+
+**Aucune porte dérobée.** Recherche sur tout le dépôt : hors les six pages
+elles-mêmes et leurs six fiches sources, **rien ne pointe vers `o3`…`o8`**. Le hub
+était leur unique point d'entrée. `o1` et `o2`, restés ouverts, ne renvoient qu'à
+`o1` et à leurs propres PDF — aucun des deux ne rouvre un outil fermé par un lien
+de contenu.
+
+**Un libellé périmé corrigé en passant.** L'accueil annonçait `o4` « Calcul
+littéral », nom d'avant la renumérotation O-23 du 25/08. C'est « Verrerie et
+matériel ».
+
+`node verifier.mjs` : **18 problèmes**, tous des liens `cfa/outil-*` vers des fiches
+non écrites. Le repère est intact, aucune régression.
+
+Rien n'a été supprimé : les six pages, leurs six PDF et leurs six fiches sources
+restent en place. Elles restent d'ailleurs **atteignables par leur URL** — le dépôt
+est public et retirer un lien ne ferme pas une porte. Rouvrir un outil, le jour où
+il est validé, se réduit à rendre à sa liste `.docs` ses deux entrées de liens.

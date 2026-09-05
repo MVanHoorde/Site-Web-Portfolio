@@ -1375,3 +1375,55 @@ par aucune page.
   `chapitre-commun.css`, donc la règle `sup` ne s'y applique pas. `o1`
   « écriture scientifique » en compte **73 occurrences** — il faudra sa propre
   règle dans `sequence-snt.css`.
+
+---
+
+## 05/09/2026 — Les outils transversaux passent sous les chapitres, et six d'entre eux ferment
+
+**En vigueur.** Appliqué le jour même sur `pages/2nde-physique-chimie.html` et
+`index.html`. Demande de Loïc.
+
+### O-30 · La section « Outils transversaux » se place APRÈS les trois thèmes
+
+L'ordre du 25/08 mettait les outils **en tête du hub**, au motif qu'ils sont hors
+progression et ouverts toute l'année. Motif retenu contre lui : ce qui est ouvert
+toute l'année n'est pas pour autant ce qu'on vient chercher en premier. L'élève
+arrive sur le hub pour **le chapitre de la semaine** — c'est la progression qui
+fait sa chronologie, et huit cartes d'outils entre lui et le thème 1 repoussaient
+les chapitres sous la ligne de flottaison. Les outils sont une **boîte à outils**,
+consultée au besoin : ils ferment la page. Mesuré après déplacement, le thème 1
+commence à **461 px** au lieu de ~1 300, et la section des outils à 2 283 px.
+
+Le commentaire du fichier qui justifiait l'ordre inverse a été **réécrit**, pas
+surchargé.
+
+### O-31 · Seuls `o1` et `o2` restent ouverts ; `o3` à `o8` sont marqués « en travaux »
+
+Les huit outils sont **écrits** depuis le 28/08, mais aucun n'est validé et les
+arbitrages O-22 à O-29 restent en attente. Défaut retenu : **ne pas exposer aux
+élèves un contenu qui n'a pas été relu**, `o3` en particulier — sa cinquième
+étape engage la sécurité en salle 0.26 et sa rédaction doit encore être vérifiée
+contre le règlement du laboratoire (O-27).
+
+Forme retenue : **la carte reste visible**, avec son titre et son résumé — l'élève
+voit ce qui arrivera — et ses deux liens sont remplacés par **une mention unique**
+`.a-venir` « Cours et fiche 🚧 », doublée pour les lecteurs d'écran. Pas de lien
+mort, pas de carte escamotée. C'est le mécanisme déjà employé dix fois sur ce hub
+pour les TP et les évaluations à venir, et déjà appliqué à `o3`/`o4` dans la
+colonne « Fiches-outils » de l'accueil : le geste **aligne le hub sur l'accueil**,
+il n'invente rien.
+
+**Ce que cela ne fait pas.** Les six pages et leurs six PDF **restent en ligne et
+atteignables par leur URL** — le dépôt est public, retirer un lien ne ferme pas la
+porte. Vérifié : aucune autre page du dépôt ne pointe vers `o3`…`o8`, le hub était
+leur unique point d'entrée. Ce qui est visé est l'exposition aux élèves, pas le
+secret.
+
+**Comment on rouvre un outil :** rendre à sa liste `.docs` ses deux entrées de
+liens. Rien d'autre n'a été retiré — ni page, ni PDF, ni fiche source.
+
+### O-32 · Le libellé de `o4` sur l'accueil est corrigé
+
+`index.html` annonçait `o4` « Calcul littéral » — un reste de la numérotation
+d'avant O-23, où `o4` désignait autre chose. L'outil 4 est **« La verrerie et le
+matériel »**. Corrigé.

@@ -280,6 +280,18 @@ volumes, les surfaces : un outil « Convertir » ferait doublon avec son étape 
 Ce qui reste de la fiche, sa **série de douze conversions**, rejoint la section 2
 de `o1` (lot H, à lancer après validation).
 
+### 🔴 Ce qui est OUVERT aux élèves — état du 05/09/2026
+
+Les huit outils sont **écrits**, page et fiche. Deux seulement sont **ouverts** :
+`o1` et `o2`. Les six autres gardent leur carte au hub de 2nde PC, sans aucun
+lien, marquée « en travaux 🚧 » — rien n'étant validé (décision O-31). Leurs
+pages et leurs PDF existent toujours, et restent atteignables par leur URL : le
+dépôt est public. Rouvrir un outil = rendre à sa liste `.docs`, dans
+`pages/2nde-physique-chimie.html`, ses deux entrées de liens.
+
+Les jalons ci-dessous suivent la **production**, pas la publication : un outil
+peut avoir ses jalons 1 à 3 en ✅ et rester fermé.
+
 ### Les sept arbitrages du 28/08 — tranchés par défaut, à confirmer
 
 Deux d'entre eux (le tri de la verrerie, le nombre de niveaux) avaient arrêté la

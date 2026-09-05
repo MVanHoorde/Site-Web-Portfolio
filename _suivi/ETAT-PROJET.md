@@ -5,7 +5,9 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **04/09/2026** (dernière passe : **la rentrée — les 14
+> Dernière réécriture : **05/09/2026** (dernière passe : **le hub de 2nde PC — les
+> chapitres remontent en tête, six outils sur huit se referment**, bloc ci-dessous).
+> Passe du 04/09 : **la rentrée — les 14
 > groupes de SNT existent en base et chaque enseignant a son tableau de bord**,
 > bloc ci-dessous). Passe du 02/09 : **l'audit de T1-C3 et son lot
 > transverse sont appliqués** — bloc ci-dessous. Passe du même jour : **la fiche élève de T3-C1
@@ -25,6 +27,40 @@
 > mal » de `o3` — contenu neuf, seul contenu du dépôt qui engage la **sécurité
 > d'élèves**, à confronter au règlement du laboratoire et aux équipements de la salle
 > 0.26. Ensuite, les **six arbitrages en attente** (O-23 à O-26, O-28, O-29).
+
+## 🆕 Le hub de 2nde PC : les chapitres d'abord, six outils refermés
+
+**Appliqué le 05/09/2026** sur `pages/2nde-physique-chimie.html` et `index.html`.
+Décisions O-30 à O-32.
+
+**L'ordre de la page a changé.** La section « Outils transversaux » ne s'ouvre plus
+le hub : elle le **ferme**, sous les trois thèmes. Motif : l'élève arrive pour le
+chapitre de la semaine, et huit cartes d'outils le repoussaient sous la ligne de
+flottaison. Mesuré après coup, le thème 1 commence à **461 px** au lieu de ~1 300.
+
+**Six outils sur huit sont refermés.** Seuls `o1` (écriture scientifique) et `o2`
+(chiffres significatifs) restent ouverts, avec leur cours et leur fiche PDF. `o3` à
+`o8` gardent leur carte — titre et résumé visibles, l'élève voit ce qui arrivera —
+mais leurs deux liens sont remplacés par une mention unique **« Cours et fiche
+🚧 »**, grisée, en trait pointillé, doublée pour les lecteurs d'écran. C'est
+le mécanisme `.a-venir` déjà employé dix fois sur ce hub, et déjà appliqué à `o3` et
+`o4` dans la colonne de l'accueil : le geste **aligne le hub sur l'accueil**.
+
+Motif : les huit outils sont **écrits** depuis le 28/08 mais **aucun n'est validé**,
+et les arbitrages O-22 à O-29 restent en attente — `o3` au premier chef, dont
+l'étape « Si ça tourne mal » engage la sécurité en salle 0.26.
+
+🔴 **Ce qui n'est pas fait, et qu'il faut savoir.** Les six pages et leurs six
+PDF **restent atteignables par leur URL** : le dépôt est public, retirer un lien ne
+ferme pas la porte. Vérifié qu'aucune autre page du dépôt n'y renvoie — le hub était
+leur unique point d'entrée — mais une adresse déjà connue d'un élève continue de
+fonctionner. Si cela doit changer, il faut poser un bandeau sur les six pages, ou
+les sortir du dépôt publié.
+
+**Rouvrir un outil** le jour où il est validé : rendre à sa liste `.docs` ses deux
+entrées de liens. Rien n'a été supprimé — ni page, ni PDF, ni fiche source.
+
+`node verifier.mjs` : **18 problèmes**, tous des liens `cfa/outil-*`. Repère intact.
 
 ## 🆕 La rentrée est faite : 14 groupes, cinq enseignants, une base cloisonnée
 
@@ -286,7 +322,7 @@ fleuron, mais **sur du contenu** : rien n'a été modifié, c'est du fond.
 | Partie | État |
 |---|---|
 | **PC seconde** | 14 chapitres en ligne. 🆕 **Les sujets de DS et de TP sont en ligne depuis le 26/08** : 6 DS et 15 TP dans `assets/pdf/pc/`, une puce par sujet sur la carte du hub et un `.video-chip` dans la page — le TP après la section dont il est l'application, le DS dans « Pour le DS, je sais ». Un sujet à cheval est lié depuis chaque chapitre qu'il couvre. La puce « Exercices 🚧 » a disparu des 14 cartes. **Aucune correction n'est en ligne** (elles partent par mail contre preuve de travail), et aucun fichier portant un nom de classe ou une date de séance n'a rejoint le dépôt. Le hub compte désormais **15 cartes de chapitre** : T3-C5 « Formation d'une image » existe **sans page de cours** — le TP13 en tient lieu, c'est la forme retenue, pas un chantier. Sept fichiers annexes (programmes Python, tableurs, vidéo, fichiers Latis Pro) attendent un arbitrage avant toute publication. 🆕 **Le hub a été repris le 26/08** : une phrase d'accroche par carte, une vignette tirée du cours sur 9 des 17 cartes (les 8 autres n'ont aucun visuel disponible). Les phrases ne sont pas validées. 🆕 **Trois sont en V1 intégrale** (25/08) : `T3-C1` (**audits 1 et 2 entièrement appliqués** au 26/08 — 6 figures refaites en SVG maison, méthode en deux colonnes avec figure d'étapes, 8 transitions, 4 encarts d'histoire des sciences, 2 icônes d'exercice, 12 gras d'insistance retirés, **plus aucun `.a-faire`** ; il ne lui manque que sa fiche élève), `T3-C3` (34 figures) et `T3-C4` (20) — cours entier à l'écran, plus aucun `.a-faire` sauf le lien de DS. 🆕 **L'encart 🔧 « Lien du DS » a été retiré partout où le lien est posé** (T2-C1, T3-C3, T3-C4, en plus de T3-C1) : T3-C3 et T3-C4 n'ont désormais plus aucun `.a-faire`. Chez T2-C2, T2-C3 et T3-C2, sans lien DS, l'encart garde son sens et reste en place. 🆕 **La fiche vierge se télécharge depuis le haut de la page de cours**, `.hors-verrou`, même sans le code — posé sur `t1c2` et `t1c4`, **les 2 seuls chapitres sur 14 dont la fiche est écrite** ; les 12 autres attendent la leur. Leurs trois relevés attendent tes décisions. **Le thème 3 n'a plus que T3-C2 en ébauche.** T1-C1→C4 sont dégrossis à fond ; les **sept autres portent 81 blocs `.a-faire`**, à reprendre selon `_modeles/CONSIGNES-V1-integrale-PC.md`. 🆕 **Plus aucun exercice de PC n'est sans corrigé** : les trois qui manquaient (T2-C1 ex. 2 et 3, T2-C2 ex. 10) ont été rédigés le 25/08, figures comprises. Aucun cours validé. |
-| **Outils transversaux PC** | **Quatrième famille, ouverte le 25/08.** Des méthodes que tous les chapitres mobilisent, hors progression, disponibles toute l'année. 🆕 **LES HUIT OUTILS SONT ÉCRITS** au 28/08, tous en V1 proposée : `o1` écriture scientifique · `o2` chiffres significatifs · `o3` sécurité au laboratoire · `o4` verrerie · `o5` compte rendu de TP · `o6` présenter un calcul · `o7` relation algébrique · `o8` graphique. Le catalogue a été **renuméroté** (O-23) dans l'ordre où un élève les rencontre, et **« Convertir » en sort** — `o1` en avait absorbé tout le fond le 26/08. Chaque outil a sa page, sa **fiche A4** (2 pages, 4 pour `o3`) et sa carte au hub. **Le visuel est dessiné ici, sauf le figuratif** (règle du 29/08) : 21 pièces de verrerie (`o4`), une frise de rubriques (`o5`), deux copies annotées (`o6`), le triangle et les fractions empilées (`o7`), cinq graphiques dont une grille vierge (`o8`). 🆕 **`o3` fait exception depuis le 29/08** : ses 9 pictogrammes CLP sont **vectorisés** depuis le PDF officiel, sa tenue est une **illustration fournie**, et ses 5 équipements sont des **cadres de réservation** en attente d'image. 🆕 **Deux gabarits** (`_modeles/gabarit-outil-PC.html` et `gabarit-fiche-outil-PC.html`) : un nouvel outil se copie depuis eux, et non plus depuis `o1`. Tous tournent sur le moteur SNT **sans le modifier**, et **les fiches se distribuent en PDF** depuis le 28/08 (`node exporter-fiches.mjs`). 🔴 **Décisions de fond en vigueur** : seuil de l'ordre de grandeur à **5**, pas de zéro ambigu en seconde, « à retenir » en **trois temps**. ⏳ **Rien n'est validé**, et **sept arbitrages sont appliqués par défaut** (O-23 à O-29), tous en attente sauf O-27. ⚠️ **`o3` engage la sécurité d'élèves** : son étape « Si ça tourne mal » doit être relue contre le règlement du laboratoire et les équipements réels de la salle 0.26. |
+| **Outils transversaux PC** | **Quatrième famille, ouverte le 25/08.** Des méthodes que tous les chapitres mobilisent, hors progression, disponibles toute l'année. 🆕 **LES HUIT OUTILS SONT ÉCRITS** au 28/08, tous en V1 proposée : `o1` écriture scientifique · `o2` chiffres significatifs · `o3` sécurité au laboratoire · `o4` verrerie · `o5` compte rendu de TP · `o6` présenter un calcul · `o7` relation algébrique · `o8` graphique. Le catalogue a été **renuméroté** (O-23) dans l'ordre où un élève les rencontre, et **« Convertir » en sort** — `o1` en avait absorbé tout le fond le 26/08. Chaque outil a sa page, sa **fiche A4** (2 pages, 4 pour `o3`) et sa carte au hub. 🔴 **Mais seuls `o1` et `o2` sont OUVERTS aux élèves depuis le 05/09** : rien n'étant validé, les cartes de `o3` à `o8` restent visibles au hub mais **sans aucun lien**, marquées « en travaux 🚧 » (O-31). Les pages et les PDF existent toujours et restent atteignables par leur URL. La section des outils est passée **sous les trois thèmes** (O-30). **Le visuel est dessiné ici, sauf le figuratif** (règle du 29/08) : 21 pièces de verrerie (`o4`), une frise de rubriques (`o5`), deux copies annotées (`o6`), le triangle et les fractions empilées (`o7`), cinq graphiques dont une grille vierge (`o8`). 🆕 **`o3` fait exception depuis le 29/08** : ses 9 pictogrammes CLP sont **vectorisés** depuis le PDF officiel, sa tenue est une **illustration fournie**, et ses 5 équipements sont des **cadres de réservation** en attente d'image. 🆕 **Deux gabarits** (`_modeles/gabarit-outil-PC.html` et `gabarit-fiche-outil-PC.html`) : un nouvel outil se copie depuis eux, et non plus depuis `o1`. Tous tournent sur le moteur SNT **sans le modifier**, et **les fiches se distribuent en PDF** depuis le 28/08 (`node exporter-fiches.mjs`). 🔴 **Décisions de fond en vigueur** : seuil de l'ordre de grandeur à **5**, pas de zéro ambigu en seconde, « à retenir » en **trois temps**. ⏳ **Rien n'est validé**, et **sept arbitrages sont appliqués par défaut** (O-23 à O-29), tous en attente sauf O-27. ⚠️ **`o3` engage la sécurité d'élèves** : son étape « Si ça tourne mal » doit être relue contre le règlement du laboratoire et les équipements réels de la salle 0.26. |
 | **SNT** | 8 séquences de thème (`t0`→`t7`) **+ 1 module transversal** (`m1` « Représenter l'information »). `t0`, `t1` et `t2` sont sur le **moteur partagé** et en **V0 complète** ; `t3`→`t7` en V0 partielle (S1 rédigée, suite en 🚧). **`t1` est le seul thème validé sur le fond** (23/08) — il sera *clos* après la vérification des fiches. **`t0` a été refondue le 23/08 puis auditée le 24/08** : voir sa ligne. |
 | **SNT — plafond d'avance** | 🆕 Écrit le 20/08, **branché sur `t0`, `t1`, `t2` et le hub**, testé (21 assertions sur le module, harnais DOM sur la cascade) et **vérifié au rendu** dans un navigateur sans interface : bandeau, pictogramme et teinte mesurés sur les deux familles de pages, en mode élève et en mode enseignant. Le tableau de bord affiche les **dates de clôture** (cases de clôture et frise, format `12/09`). ✅ **`bdd/schema/013-verrou-progression.sql` a été exécuté le 20/08/2026** par Loïc : `mon_plafond()` répond en base, et un appel anonyme se heurte bien à `42501 permission denied` — la fonction est réservée aux comptes connectés, comme prévu. Le plafond est donc **actif de bout en bout**. Deux textes vus par les élèves attendent la validation de Loïc. |
 | **SNT — `t0` Introduction** | 🔄 **Refondue le 23/08/2026, reprise les 24 et 25/08.** État courant : **4 séances · 26 étapes · 18 portes · 6 QCM (39 questions) · 4 réponses rédigées corrigées · 2 réponses personnelles · 2 dépôts d'image · 10 fiches d'élément · 1 tri · 1 exercice d'étiquettes · 1 poste de visionnage · 4 SVG maison**. Apports du 25/08 : l'activité débranchée devient la **séance 4**, dans la cascade et avec sa fiche, où l'élève remplit **dix fiches d'élément** (photo redimensionnée dans le navigateur, nom, ce qu'il fait — trois suffisent à valider) ; un **exercice d'étiquettes à poser** sur la façade arrière en 3.3, dix zones contrôlées une à une sur l'image source ; **trois captures de l'interface** en 1.1, produites depuis la page rendue ; et la **carte du thème** enfin chargée — sans elle, le lien « ⌂ Sommaire » ne faisait rien. ⏳ **Rien n'est validé.** Restent ouverts : la **remontée des photos vers le tableau de bord** (chantier séparé, avec une durée de conservation à décider) et la **licence des 37 images issues du PDF d'un collègue**.
@@ -472,6 +508,9 @@ l'objet `API` de `pages/term-es-s01-frise.html`, qui retombe encore sur
       « pour contenir / pour mesurer un volume ») et le **nombre de niveaux de
       `o4`** (le brief en demande 3, la source en a 5).
 - [ ] 🆕 **Outils transversaux — lire `o1` et `o2` à l'écran et trancher.**
+      ⚠️ **Ce sont les deux seuls outils OUVERTS aux élèves depuis le 05/09** (O-31) : ils sont donc lus en classe pendant que la relecture attend. Les six
+      autres sont refermés, ce qui rend leur relecture moins urgente — mais **pas**
+      celle de ces deux-là.
       🔴 **Le point le plus important est O-4, et les sources l'ont rouvert** : la
       fiche du collègue écrit « les zéros situés à droite sont significatifs » et
       « 50 n'a que deux chiffres significatifs », ce qui donnerait `100` → **3**
