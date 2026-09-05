@@ -6,6 +6,15 @@
  *  séquences confondues — le plafond franchit donc les fins de
  *  thème.
  *
+ *  🔴 LES OUTILS TRANSVERSAUX SONT HORS PROGRESSION
+ *  Une séquence dont la clé commence par `snt-m` (aujourd'hui le
+ *  seul `snt-m1`, Représenter l'information) n'est pas une étape de
+ *  l'année : c'est un outil que plusieurs thèmes mobilisent. Elle est
+ *  donc TOUJOURS ouverte, et ne compte pas dans le curseur — la
+ *  clôturer n'ouvre aucune séance de thème.
+ *  C'est une règle PROVISOIRE (05/09/2026), à reprendre quand la
+ *  progression de l'année sera établie : voir DECISIONS.md.
+ *
  *  DEUX VERROUS QUI S'ADDITIONNENT
  *  Le verrou de mérite existe depuis l'origine : la séance N+1
  *  s'ouvre quand la N est finie. Il n'avait pas de plafond, et un
@@ -44,6 +53,14 @@
    *  generer-seances.mjs à partir des huit pages. On linéarise
    *  t0 → t7, et dans chaque thème l'ordre du fichier.
    *
+   *  🔴 LE TRI ALPHABÉTIQUE NE SUFFIT PAS. `'snt-m1'` se range AVANT
+   *  `'snt-t0'`, et le module s'était donc installé aux rangs 0 et 1
+   *  de l'année : avec avance_max = 2 et rien de clôturé, les deux
+   *  seules séances ouvertes étaient celles du module, et la toute
+   *  première séance du cours était fermée (constaté le 05/09/2026).
+   *  On écarte les séquences transversales de la linéarisation :
+   *  elles n'ont pas de rang, donc pas de place dans la file.
+   *
    *  Le tableau de bord du professeur lit CE calcul-ci, il n'en
    *  refait pas un second : deux ordres séparés finiraient par ne
    *  plus dire la même chose, et c'est l'élève qui verrait la
@@ -51,10 +68,18 @@
    * ---------------------------------------------------------- */
   var _rangs = null;
 
+  /* Une séquence hors progression : outil transversal, ouvert toute
+   * l'année. Le préfixe est la convention du hub (famille « Outils
+   * transversaux », pages 2nde-snt-mN-…). */
+  function estTransversale(sequence) {
+    return /^snt-m/.test(String(sequence || ''));
+  }
+
   function rangs() {
     if (_rangs) return _rangs;
     var table = global.SEANCES_SNT || {};
-    var themes = Object.keys(table).sort();   /* snt-t0, snt-t1, … */
+    var themes = Object.keys(table).sort()    /* snt-t0, snt-t1, … */
+                   .filter(function (k) { return !estTransversale(k); });
     var liste = [];
     themes.forEach(function (sequence) {
       (table[sequence] || []).forEach(function (s) {
@@ -100,6 +125,7 @@
   function ouverteSeance(sequence, seance) {
     if (!etatCourant.connu || !etatCourant.classe) return true;   /* repli 1 et 2 */
     if (etatCourant.plafondLeve) return true;                     /* soupape */
+    if (estTransversale(sequence)) return true;                   /* hors progression */
     var r = rangDe(sequence, seance);
     if (r < 0) return true;                                       /* repli 3 */
     return r <= etatCourant.plafond;
@@ -130,7 +156,10 @@
 
     /* Rang de la dernière séance faite, tous thèmes confondus. Une
      * séance faite mais absente du référentiel (page pas encore
-     * générée) est ignorée : elle ne doit ni ouvrir, ni fermer. */
+     * générée) est ignorée : elle ne doit ni ouvrir, ni fermer.
+     * Les séances d'outil transversal n'ayant pas de rang, elles
+     * tombent dans le même cas : clôturer le module n'avance pas le
+     * curseur de l'année, ce qui est la règle voulue. */
     var dernier = -1, vues = {};
     (reponse.faites || []).forEach(function (f) {
       if (!f || vues[cle(f.sequence, f.seance)]) return;
@@ -277,6 +306,7 @@
   global.VerrouSNT = {
     rangs        : rangs,
     rangDe       : rangDe,
+    estTransversale: estTransversale,
     etat         : etat,
     ouverte      : ouverte,
     ouverteSeance: ouverteSeance,

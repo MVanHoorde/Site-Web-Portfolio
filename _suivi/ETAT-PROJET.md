@@ -5,7 +5,10 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **05/09/2026** (dernière passe : **le hub de 2nde PC — les
+> Dernière réécriture : **05/09/2026** (dernière passe : **le plafond d'avance
+> ouvrait le module `snt-m1` au lieu de la première séance du cours — les outils
+> transversaux sortent de la file**, bloc ci-dessous). Passe du même jour : **le
+> hub de 2nde PC — les
 > chapitres remontent en tête, six outils sur huit se referment**, bloc ci-dessous).
 > Passe du 04/09 : **la rentrée — les 14
 > groupes de SNT existent en base et chaque enseignant a son tableau de bord**,
@@ -27,6 +30,42 @@
 > mal » de `o3` — contenu neuf, seul contenu du dépôt qui engage la **sécurité
 > d'élèves**, à confronter au règlement du laboratoire et aux équipements de la salle
 > 0.26. Ensuite, les **six arbitrages en attente** (O-23 à O-26, O-28, O-29).
+
+## 🆕 Le plafond d'avance ouvrait le module, pas le cours — corrigé
+
+**Appliqué le 05/09/2026.** Décision : « Les outils transversaux sortent du
+plafond » (`DECISIONS.md`), **provisoire**, à reprendre quand la progression de
+l'année SNT sera arrêtée.
+
+**Ce qui n'allait pas.** Sur un groupe neuf à `avance_max = 2`, la frise du
+tableau de bord n'ouvrait pas la première séance du cours : elle ouvrait les deux
+séances du module `snt-m1` et fermait `snt-t0/s1`. `verrou-snt.js` triait la file
+des séances par `Object.keys(SEANCES_SNT).sort()`, et `'snt-m1'` se range avant
+`'snt-t0'` — le module tenait les rangs 0 et 1 de l'année. Curseur à −1, plafond
+à 1 : seuls ces deux rangs étaient ouverts. Le tableau de bord lisant ce même
+calcul, il affichait fidèlement une file fausse. **Trois groupes concernés côté
+élève** : B, E et N, les seuls à `avance_max = 2` ; les onze autres sont à
+« tout ouvert » et ne voyaient rien.
+
+**La règle.** Une séquence dont la clé commence par `snt-m` est hors
+progression : toujours ouverte, jamais comptée dans le curseur, absente de la
+frise. Le préfixe est déjà la convention du hub (famille « Outils
+transversaux ») — un futur `snt-m2` en hérite sans qu'on y touche.
+
+**Le suivi n'est pas touché.** Cahier de textes, absents, grille élève par élève,
+compteurs de retard et de dette fonctionnent pour un module comme pour un thème,
+en le choisissant dans le menu Thème : cette chaîne lit `seances_faites` filtré
+sur la séquence, jamais `VerrouSNT`. Vérifié avant livraison.
+
+**Corrigé au passage** : `snt-m1` s'affichait brut dans les menus de thème et
+dans la phrase du plafond (`replace('snt-t', 'Thème ')` ne l'attrapait pas), ce
+qui rendait le module quasi introuvable — donc son suivi aussi. Une fonction
+`nomSequence()` nomme les deux familles : « Thème 3 », « Module M1 ».
+
+**Fichiers.** `assets/js/verrou-snt.js` (la règle), `prof/index.html` (libellés +
+ligne « Hors plafond » sous la frise), `?v=2 → ?v=3` dans les **6 fichiers** qui
+chargent le verrou, les **deux guides** `prof/` et leurs PDF régénérés.
+`node verifier.mjs` : **18 problèmes**, repère intact.
 
 ## 🆕 Le hub de 2nde PC : les chapitres d'abord, six outils refermés
 

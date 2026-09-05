@@ -3247,3 +3247,57 @@ Rien n'a été supprimé : les six pages, leurs six PDF et leurs six fiches sour
 restent en place. Elles restent d'ailleurs **atteignables par leur URL** — le dépôt
 est public et retirer un lien ne ferme pas une porte. Rouvrir un outil, le jour où
 il est validé, se réduit à rendre à sa liste `.docs` ses deux entrées de liens.
+
+---
+
+## 05/09/2026 — Le plafond ouvrait le module au lieu du cours
+
+Signalé par Loïc depuis le tableau de bord : le premier cours de l'année est une
+séance du thème 0, or « débloquer deux séances » débloquait `snt-m1`.
+
+**La cause tenait à un tri.** `verrou-snt.js` construit la file des séances par
+`Object.keys(SEANCES_SNT).sort()`. `'snt-m1'` se range avant `'snt-t0'` — m avant
+t : le module transversal occupait les rangs 0 et 1 de l'année entière. Sur un
+groupe neuf, curseur à −1 et `avance_max = 2`, le plafond valait 1 : les deux
+seules séances ouvertes étaient celles du module, et `snt-t0/s1` était fermée.
+
+Le tableau de bord n'inventait rien — il lit ce calcul-là, délibérément, pour que
+le professeur et l'élève ne voient jamais deux ordres différents. Il affichait donc
+fidèlement une file fausse. Côté élève, **trois groupes** étaient touchés : B, E et
+N, les seuls à `avance_max = 2` ; les onze autres sont à « tout ouvert ».
+
+**La règle posée** (provisoire, `DECISIONS.md`) : une séquence en `snt-m*` est hors
+progression — toujours ouverte, hors curseur, hors frise. Le préfixe est déjà la
+convention du hub, un futur `snt-m2` en hérite seul.
+
+**Question de Loïc en cours de route** : « et si on valide une séance transversale
+dans le cahier de textes, le suivi s'active-t-il pour les élèves ? » Vérifié plutôt
+qu'affirmé : la grille, les absents, les compteurs de retard et de dette passent par
+`seancesDu(ctx.theme)` et `rangCurseur()`, qui lisent `seances_faites` filtré sur la
+séquence — jamais `VerrouSNT`, dont l'usage se limite à `rendrePlafond()`. Le suivi
+d'un module est donc entier ; seul l'avancement du curseur de l'année lui est retiré,
+ce qui est la règle voulue.
+
+**Un défaut trouvé en chemin.** `snt-m1` s'affichait **brut** dans le menu Thème et
+dans la phrase du plafond : le `replace('snt-t', 'Thème ')` ne l'attrape pas. Le
+module en était quasi introuvable dans le tableau de bord — donc son suivi aussi,
+alors même qu'il fonctionnait. Une fonction `nomSequence()` nomme désormais les deux
+familles, « Thème 3 » et « Module M1 ». Sans ce correctif, la réponse rassurante à
+la question ci-dessus aurait été vraie sur le papier et inutilisable en pratique.
+
+**Ce qui est absent de la frise se dit.** Une ligne sous la frise nomme les
+séquences hors plafond et rappelle où leur suivi se lit : une disparition muette se
+serait lue comme une panne.
+
+`?v=2 → ?v=3` sur `verrou-snt.js` dans les 6 fichiers qui le chargent. Les deux
+guides `prof/` reçoivent le passage correspondant — la prise en main dans le
+registre des collègues, le dispositif avec la cause technique et l'aveu du symptôme
+— et leurs PDF sont régénérés (5 et 8 pages, A4 mesuré, polices incorporées).
+
+`node verifier.mjs` : **18 problèmes**, tous des liens `cfa/outil-*` vers des fiches
+non écrites. Repère intact, aucune régression.
+
+**Un faux positif de `verifier.mjs` en passant.** Le paragraphe ajouté au guide
+technique nommait `seances-snt.js` en prose, dans une balise `<code>`. Le contrôle
+qui exige un `?v=` sur ce fichier balaie **tout** le HTML du dépôt, sans distinguer
+un chargement de script dune

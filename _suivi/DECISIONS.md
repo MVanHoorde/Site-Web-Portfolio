@@ -50,6 +50,50 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 02/09/2026 | ⏳ **La fiche de T3-C1 est en avance sur la validation du cours** | Elle est intégrée et téléchargeable depuis le 02/09, alors que le **jalon 5** (« cours VALIDÉ », acte explicite de Loïc) n'a jamais été posé. Soit le cours est validé et le jalon suit, soit la fiche attend — mais l'état actuel dit les deux à la fois. |
 | 02/09/2026 | ⏳ **IBM Plex Mono n'a pas d'italique auto-hébergée** | Les mentions « Donnée : … » des énoncés sortent du PDF en `Consolas-Italic`, dans un autre dessin que le reste. Ajouter la fonte italique à `assets/css/fonts.css`, ou renoncer à l'italique sur le mono ? Concerne toutes les fiches, pas seulement T3-C1. |
 | 26/08/2026 | ⏳ **Le texte de la carte « Formation d'une image »** | La phrase qui dit que le TP **est** le cours est une V1 (§8.1 du brief). Deux propriétés à garder si Loïc la réécrit : aucune tournure d'attente, et la raison énoncée simplement. |
+| 05/09/2026 | ⏳ **La place des outils transversaux dans la progression SNT** | Règle provisoire posée ce jour : `snt-m*` est hors de la file du plafond, toujours ouvert, jamais compté. Loïc la reprendra **quand la progression de l'année sera établie** — le module pourrait alors devenir une étape datée, ou rester une ressource permanente. Voir « Les outils transversaux sortent du plafond ». |
+
+---
+
+## Les outils transversaux sortent du plafond — 05/09/2026
+
+**Le symptôme.** Sur le tableau de bord, la frise d'un groupe neuf à
+`avance_max = 2` n'ouvrait pas la première séance du cours : elle ouvrait les
+deux séances du module `snt-m1`, et fermait `snt-t0/s1`.
+
+**La cause.** `verrou-snt.js` linéarisait la file des séances par
+`Object.keys(SEANCES_SNT).sort()`. `'snt-m1'` se range avant `'snt-t0'` : le
+module occupait les rangs 0 et 1 de l'année. Curseur à −1, plafond à
+−1 + 2 = 1 → seuls les rangs 0 et 1 étaient ouverts. Le tableau de bord lisant
+ce même calcul, il affichait fidèlement une file fausse. Trois groupes étaient
+concernés côté élève : B, E et N, les seuls à `avance_max = 2`.
+
+**La règle retenue.** Une séquence dont la clé commence par `snt-m` est **hors
+progression** :
+
+- **toujours ouverte**, quel que soit le plafond ;
+- **jamais comptée** dans le curseur — clôturer M1 S1 n'ouvre aucune séance de
+  thème ;
+- **absente de la frise**, qui ne montre que ce que le plafond commande ; une
+  ligne sous la frise le dit, pour que l'absence ne se lise pas comme un oubli.
+
+Le préfixe est déjà la convention du hub (famille « Outils transversaux »,
+pages `2nde-snt-mN-…`) : un futur `snt-m2` héritera de la règle sans qu'on y
+touche.
+
+**Ce que la règle ne touche pas.** Le **suivi** d'un module est celui de
+n'importe quelle séquence — cahier de textes, absents, grille élève par élève,
+compteurs de retard et de dette — en le choisissant comme thème. Cette chaîne
+passe par `seances_faites` filtré sur la séquence, jamais par `VerrouSNT`.
+Vérifié avant livraison.
+
+**Corrigé au passage.** `snt-m1` s'affichait **brut** dans les menus de thème et
+dans la phrase du plafond : `replace('snt-t', 'Thème ')` ne l'attrapait pas. Une
+fonction `nomSequence()` nomme désormais les deux familles (« Thème 3 »,
+« Module M1 »). Le module en devenait quasi introuvable dans le tableau de bord,
+donc son suivi aussi.
+
+**Statut : provisoire.** Inscrite en attente d'arbitrage ci-dessus. Elle vaut
+tant que la progression de l'année n'est pas arrêtée.
 
 ---
 

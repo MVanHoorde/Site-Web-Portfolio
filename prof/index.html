@@ -335,6 +335,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         </div>
         <p id="pl-phrase" class="muet" style="margin:8px 0 0"></p>
         <div id="pl-frise" class="pl-frise"></div>
+        <p id="pl-transversaux" class="muet" style="margin:8px 0 0;font-size:12.5px;display:none"></p>
         <div class="rangee" style="margin:12px 0 0">
           <label for="pl-avance" style="margin:0">Avance autorisée</label>
           <select id="pl-avance"></select>
@@ -495,7 +496,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
 </div>
 
 <script src="../assets/js/seances-snt.js?v=16"></script>
-<script src="../assets/js/verrou-snt.js?v=2"></script>
+<script src="../assets/js/verrou-snt.js?v=3"></script>
 <script src="../assets/js/questions-snt.js"></script>
 <script src="../assets/js/prof-api.js"></script>
 <script>
@@ -997,6 +998,17 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
 
   function seancesDu(theme){ return (window.SEANCES_SNT || {})[theme] || []; }
 
+  /* Nommer une séquence. Deux familles cohabitent dans SEANCES_SNT :
+     les thèmes du programme ('snt-t0'…'snt-t7') et les outils
+     transversaux ('snt-m1'), qui sont hors progression. Un simple
+     replace('snt-t', …) laissait « snt-m1 » brut dans les menus. */
+  function nomSequence(cle, court){
+    var m = /^snt-([tm])(\d+)$/.exec(String(cle || ''));
+    if(!m) return String(cle || '');
+    if(m[1] === 'm') return (court ? 'M' : 'Module M') + m[2];
+    return (court ? 'T' : 'Thème ') + m[2];
+  }
+
   function remplirSelect(sel, options, valeur){
     sel.innerHTML = '';
     options.forEach(function(o){
@@ -1016,8 +1028,11 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         var opts = CLASSES.map(function(c){ return { v: c.id, t: c.libelle + ' (' + c.code + ')' }; });
         remplirSelect($('#s-classe'), opts, ctx.classe);
         remplirSelect($('#g-classe'), opts, ctx.classe);
+        /* Sans tri : l'ordre du fichier généré est déjà le bon (t0 → t7,
+           puis les outils transversaux). Trier remonterait « snt-m1 »
+           en tête du menu, alors qu'il n'ouvre pas l'année. */
         var themes = Object.keys(window.SEANCES_SNT || {}).map(function(k){
-          return { v: k, t: k.replace('snt-t', 'Thème ') };
+          return { v: k, t: nomSequence(k) };
         });
         remplirSelect($('#s-theme'), themes, ctx.theme);
         remplirSelect($('#g-theme'), themes, ctx.theme);
@@ -1154,7 +1169,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     /* la phrase */
     function nommer(x){
       if(!x) return '?';
-      return x.sequence.replace('snt-t', 'Thème ') + ' · ' + (x.num || '') + ' ' + (x.nom || '');
+      return nomSequence(x.sequence) + ' · ' + (x.num || '') + ' ' + (x.nom || '');
     }
     var derniereFaite = dernier >= 0 ? liste[dernier] : null;
     var derniereOuverte = null;
@@ -1186,11 +1201,29 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       el.className = 'pl-case ' + cls;
       el.title = nommer(x) + ' — ' + (cls === 'faite' ? ('faite le ' + (quand || '?'))
                                     : cls === 'ouverte' ? 'ouverte' : 'fermée');
-      el.innerHTML = '<b>' + echapper(x.sequence.replace('snt-t', 'T') + ' ' + (x.num || '')) + '</b>'
+      el.innerHTML = '<b>' + echapper(nomSequence(x.sequence, true) + ' ' + (x.num || '')) + '</b>'
                    + '<span class="pl-nom">' + echapper(x.nom || '') + '</span>'
                    + (cls === 'faite' ? '<span class="pl-date">' + echapper(dateCourte(quand)) + '</span>' : '');
       frise.appendChild(el);
     });
+
+    /* Les outils transversaux ne sont PAS dans la frise : ils n'ont pas
+       de rang, le plafond ne les commande pas. Leur absence se lirait
+       comme un oubli — on la dit, plutôt que de la laisser deviner.
+       La liste est calculée, jamais écrite à la main : un module M2
+       apparaîtra ici sans qu'on y touche. */
+    var transv = Object.keys(window.SEANCES_SNT || {})
+                   .filter(function(k){ return window.VerrouSNT.estTransversale(k); });
+    var ligne = $('#pl-transversaux');
+    if(ligne){
+      ligne.style.display = transv.length ? '' : 'none';
+      ligne.innerHTML = transv.length
+        ? 'Hors plafond&nbsp;: <b>' + echapper(transv.map(function(k){ return nomSequence(k); }).join(', '))
+          + '</b>. Les outils transversaux servent à plusieurs thèmes&nbsp;; ils restent ouverts '
+          + 'toute l’année et n’avancent pas le curseur ci-dessus. Leur suivi élève par élève '
+          + 'se lit normalement dans la grille, en les choisissant comme thème.'
+        : '';
+    }
 
     /* les deux réglages */
     var sel = $('#pl-avance');
@@ -1388,7 +1421,10 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     var d  = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
     var t = [];
     t.push((cl ? cl.libelle : '') + ' — ' + d);
-    t.push(ctx.theme.replace('snt-t', 'SNT · thème ') + ' — ' + (s ? (s.num + ' ' + s.nom) : ''));
+    /* « SNT · thème 1 », « SNT · module M1 » : seul le mot de tête
+       se décapitalise — un `toLowerCase()` global écrirait « m1 ». */
+    var quoi = nomSequence(ctx.theme).replace(/^(Thème|Module)/, function(w){ return w.toLowerCase(); });
+    t.push('SNT · ' + quoi + ' — ' + (s ? (s.num + ' ' + s.nom) : ''));
     t.push('');
     var note = $('#s-note').value.trim();
     t.push('Vu en séance : ' + (note || '—'));
