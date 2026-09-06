@@ -50,7 +50,62 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 02/09/2026 | ⏳ **La fiche de T3-C1 est en avance sur la validation du cours** | Elle est intégrée et téléchargeable depuis le 02/09, alors que le **jalon 5** (« cours VALIDÉ », acte explicite de Loïc) n'a jamais été posé. Soit le cours est validé et le jalon suit, soit la fiche attend — mais l'état actuel dit les deux à la fois. |
 | 02/09/2026 | ⏳ **IBM Plex Mono n'a pas d'italique auto-hébergée** | Les mentions « Donnée : … » des énoncés sortent du PDF en `Consolas-Italic`, dans un autre dessin que le reste. Ajouter la fonte italique à `assets/css/fonts.css`, ou renoncer à l'italique sur le mono ? Concerne toutes les fiches, pas seulement T3-C1. |
 | 26/08/2026 | ⏳ **Le texte de la carte « Formation d'une image »** | La phrase qui dit que le TP **est** le cours est une V1 (§8.1 du brief). Deux propriétés à garder si Loïc la réécrit : aucune tournure d'attente, et la raison énoncée simplement. |
+| 06/09/2026 | ⏳ **Les six images manquantes de l'ES 1re** (ES-01 à ES-06) | Quatre figures des cristaux, la courbe GeoGebra de la radioactivité, le graphique de Melde, l'image 5 du son à coder, le schéma de l'horizon. Toutes sont **vectorielles dans les PPTX** et non extractibles du PDF. Sans elles, `a = 2r`, `4R = a√2` et le Pythagore de l'horizon tombent du ciel. Une copie d'écran de diapositive suffit. |
+| 06/09/2026 | ⏳ **Les trois notions du 4.1 absentes du dossier « Son et musique »** (ES-03) | Production/propagation, célérité, niveau sonore. Elles sont **déjà écrites** dans le chapitre de seconde T3-C1, en V1 intégrale. Les rehausser au niveau 1re et les insérer, ou les considérer acquises de seconde ? Rien n'a été recopié — c'est du fond pédagogique. |
+| 06/09/2026 | ⏳ **Les droits des documents repris en ES 1re** (ES-07, ES-08, ES-09) | Une infographie **AFP**, quatre **extraits de manuel**, et 81 images dont la provenance se résume à « reprise du cours de M. Van Hoorde ». Le dépôt est public. Même dossier que les treize photographies de T1-C3 (`t1c3-releve.md` §2). |
+| 06/09/2026 | ⏳ **Le contenu des 24 vidéos récupérées par QR code** (ES-11) | Les adresses sont sûres (décodage des QR des diaporamas), mais **ni le titre ni la durée n'ont pu être vérifiés**. Un coup d'œil suffit. Concerne notamment les trois épisodes de « L'origine des éléments chimiques ». |
+| 06/09/2026 | ⏳ **Le sort de `pages/1re-pc-cristaux.html`** (ES-14) | La page statique n'a pas été touchée ; le hub pointe vers la nouvelle séquence et garde un second lien vers elle. À supprimer une fois `1re-es-t1-c3-cristaux.html` validé. |
+| 06/09/2026 | ⏳ **Les sept erreurs trouvées dans les documents sources de l'ES** | Exposant perdu (9,35 × 10⁻² au lieu de 10⁻²⁶), dénominateur a³ manquant, facteur 150 au lieu de 160, 3¹² ≈ 2⁹ au lieu de 2¹⁹, « 16 fois » au lieu de « 2 fois », « N = 8 o » au lieu de 3 octets, oxygène en Z = 6. **Corrigées dans les pages, pas dans les PDF.** Détail : `es1-verification.md` §7. |
 | 05/09/2026 | ⏳ **La place des outils transversaux dans la progression SNT** | Règle provisoire posée ce jour : `snt-m*` est hors de la file du plafond, toujours ouvert, jamais compté. Loïc la reprendra **quand la progression de l'année sera établie** — le module pourrait alors devenir une étape datée, ou rester une ressource permanente. Voir « Les outils transversaux sortent du plafond ». |
+
+---
+
+## L'enseignement scientifique de 1re passe sur le moteur — 06/09/2026
+
+Six chapitres portés en une session, depuis les documents de `_a-deposer/es1/`.
+Décisions prises **par Claude**, à confirmer :
+
+- **ES-D1 — le moteur SNT est réutilisé tel quel.** Aucune modification de
+  `sequence-snt.css` ni de `sequence-snt.js`, aucun composant neuf. Deux besoins
+  annoncés comme manquants par le brief se sont révélés **déjà couverts** : les
+  « associations » par `initEtiquettes` (touche l'étiquette, touche l'endroit), et
+  les **QCM à réponses multiples** par le champ `"r"` du JSON, qui accepte un tableau.
+- **ES-D2 — pas de base de données, et pas de client de progression non plus.**
+  Le brief interdisait le branchement ; il n'interdisait pas de charger
+  `progression.js`. Il **n'est pourtant pas chargé** : sans `data-sequence`, il
+  afficherait le bandeau « connecte-toi pour enregistrer ton travail » alors que
+  **rien ne serait enregistré**. Sans lui, le moteur bascule sur son repli local, qui
+  dit la vérité : « gardé pour cette séance, pense à télécharger ta fiche ». À
+  rétablir au branchement.
+- **ES-D3 — les pages ES entrent dans le filtre de `verifier.mjs`, pas dans les
+  générateurs.** Le filtre `pagesSNT` couvre désormais `1re-es-tN-cN` : les six pages
+  sont contrôlées (CDN, `localStorage`, `<div>`, CHANTIER, indices, biais de QCM). En
+  revanche les tables de `generer-seances.mjs` et `generer-questions.mjs` **ne sont
+  pas touchées** : y inscrire des pages sans `data-sequence` produirait des entrées de
+  séquence pour des pages non branchées. Le contrôle « questions-snt.js à jour » a été
+  restreint aux pages **qui portent réellement un `data-sequence`** (nouvelle constante
+  `pagesEnBase`) — sinon les six pages ES faisaient clignoter 50 faux écarts.
+- **ES-D4 — la fiche de révision n'a pas de partie fixe.** Aucun
+  `<template data-fiche-fixe>` n'a été écrit : la §17.2 des consignes SNT en attend
+  ≈ 4 schémas SVG par séance, or le brief ES1 §4 interdit de produire la moindre
+  image. La fiche se rabat sur les « à retenir », comme `t1` aujourd'hui.
+- **ES-D5 — le chapitre 1 porte le tutoriel du dispositif, au futur.** La
+  nucléosynthèse joue pour l'ES le rôle de `t0` pour le SNT : cours et fonctionnement
+  entrelacés, jamais séparés. Comme la base n'est pas branchée, tout le tutoriel est
+  **rédigé au futur proche** — à repasser au présent au branchement, et à rien d'autre.
+- **ES-D6 — la numérotation du hub suit celle de Loïc.** Les six chapitres traités
+  portent **C1, C2, C3** ; les autres cartes (SVT, thème 2 écarté, PEN) gardent la
+  numérotation officielle. Une phrase du chapeau l'explique. Deux cartes distinctes
+  pour nucléosynthèse et radioactivité, comme demandé. La carte **3.3 « La Terre dans
+  l'Univers »** a été créée en `.a-venir`.
+- **ES-D7 — les QR codes des diaporamas sont une source de liens.** Un PPTX exporté
+  en PDF perd ses liens hypertexte mais garde ses QR codes, qui se décodent.
+  **24 URL récupérées**, dont les trois épisodes de « L'origine des éléments
+  chimiques » que le brief donnait pour perdus. Méthode ajoutée à `CLAUDE.md` ; elle
+  résout au passage le point ouvert de `term-es-t2-c1` (« décoder les QR → liens
+  vidéo, 7 chips en # »).
+
+Relevé complet et décisions attendues : **`_suivi/es1-verification.md`**.
 
 ---
 

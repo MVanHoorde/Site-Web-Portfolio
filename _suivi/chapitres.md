@@ -1325,7 +1325,44 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   classe. À reprendre après le premier passage.
 
 ## Première / Terminale
-_(pages d'accueil existantes ; chapitres à venir)_
+_(pages d'accueil existantes ; chapitres de PC à venir)_
+
+## Enseignement scientifique — Première (nouvelle partie, 06/09/2026)
+
+**Six chapitres portés sur le moteur de séquences en une session**, depuis les
+documents déposés dans `_a-deposer/es1/`. **18 séances**, 72 étapes, 22 QCM.
+🔴 **Aucun n'est branché en base** (ni client de progression, ni `data-sequence`) :
+c'est un deuxième temps. Relevé complet, décisions attendues et tri du dossier de
+dépôt : **`_suivi/es1-verification.md`**.
+
+| Page | Séances | État | Ce qui bloque |
+|---|---|---|---|
+| `1re-es-t1-c1-nucleosynthese` | 2 | **V0 complète** — porte aussi le **tutoriel du dispositif**, entrelacé (rôle de `t0` pour le SNT) | rien de bloquant · tutoriel écrit **au futur** tant que la base n'est pas branchée (ES-13) |
+| `1re-es-t1-c2-radioactivite` | 4 | **V0 complète** — 3 activités Quizéo portées, dont le QCM à réponses multiples et le jeu d'étiquettes | courbe GeoGebra de l'exercice 1 (ES-02) · droits AFP (ES-07) · PhET et REMon à tester (ES-10) |
+| `1re-es-t1-c3-cristaux` | 3 | **V0 complète** — la page statique `1re-pc-cristaux.html` reste en place jusqu'à validation | **4 figures manquantes** (ES-01) : sans elles, `a = 2r` et `4R = a√2` ne se justifient plus |
+| `1re-es-t2-c1-son-et-musique` | 3 | **V0 complète** — le TP tournant (résonance, corde de Melde, colonne d'air) + l'activité octave | 3 notions du 4.1 absentes (ES-03) · graphique de Melde (ES-04) · droits des extraits de manuel (ES-08) |
+| `1re-es-t2-c2-son-a-coder` | 3 | **V0 complète** — les 7 exercices et leurs corrigés | image 5 (ES-05) · 8 à 10 liens vidéo · extraits sonores à 5 débits (ES-20) |
+| `1re-es-t3-c1-forme-terre` | 3 | **V0 complète** — les 5 exercices, dont la triangulation découpée en 4 blocs | schéma de la distance à l'horizon (ES-06) · ~10 liens vidéo |
+
+**Jalons** (mêmes que les séquences SNT) :
+
+1. ✅ `Maquette V0 en ligne` — les six pages sont navigables, liées depuis le hub
+2. ✅ `Contenu complet` — les 18 séances sont rédigées, « à retenir » pré-remplis
+3. 🔄 `Interactivité complète` — tous les champs sont codés et corrigés en direct ;
+   **manquent 6 images** sans lesquelles trois exercices n'ont pas d'énoncé complet
+4. 🔄 `Ressources définitives` — 24 URL récupérées par décodage de QR codes, **non
+   vérifiées quant à leur contenu** · ~15 liens restent à fournir
+5. ⬜ `VALIDÉ` — rien n'est validé
+
+**Mécanismes présentés dans le chapitre d'entrée (C1 nucléosynthèse)** : où va le
+travail · ce que voit le professeur · ce qui se corrige tout seul et ce qui est relu
+par un humain · le QCM plein écran · le texte à trous tolérant · la réponse rédigée à
+page floutée · la fiche de révision. ⚠ **Tout est au futur** tant que la base n'est
+pas branchée (ES-13).
+
+**Sept erreurs de source** trouvées et corrigées dans les documents de Loïc
+(exposant perdu, dénominateur manquant, facteur faux, égalité fausse d'un facteur
+mille…) : détail au §7 de `es1-verification.md`. À reprendre dans les PDF d'origine.
 
 ## Enseignement scientifique — Terminale (nouvelle partie, 19/07)
 

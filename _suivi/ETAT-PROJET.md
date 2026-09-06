@@ -5,7 +5,9 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **05/09/2026** (dernière passe : **les quinze sujets de
+> Dernière réécriture : **06/09/2026** (dernière passe : **l'enseignement
+> scientifique de 1re passe sur le moteur — six chapitres, 18 séances**, bloc
+> ci-dessous). Passe du 05/09 : **les quinze sujets de
 > TP de seconde sont remplacés et renumérotés**, bloc ci-dessous). Passe du même
 > jour : **le plafond d'avance
 > ouvrait le module `snt-m1` au lieu de la première séance du cours — les outils
@@ -32,6 +34,64 @@
 > mal » de `o3` — contenu neuf, seul contenu du dépôt qui engage la **sécurité
 > d'élèves**, à confronter au règlement du laboratoire et aux équipements de la salle
 > 0.26. Ensuite, les **six arbitrages en attente** (O-23 à O-26, O-28, O-29).
+> 🆕 Et depuis le 06/09 : les **six images manquantes de l'ES 1re** (ES-01 à ES-06),
+> sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
+> d'écran de diapositives que Loïc a déjà. Tout est listé dans
+> `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 L'enseignement scientifique de 1re passe sur le moteur
+
+**Fait le 06/09/2026.** Les six chapitres dont Loïc a le contenu sont portés sur le
+moteur de séquences, depuis les documents de `_a-deposer/es1/`. **18 séances**,
+72 étapes, 22 QCM, 81 questions, 179 champs à remplir, 81 images. Le livrable qui
+compte est **`_suivi/es1-verification.md`** : c'est là que vivent le récapitulatif
+chiffré, les 22 décisions attendues classées par blocage, le relevé chapitre par
+chapitre et le tri du dossier de dépôt.
+
+| Chapitre | Page | Séances |
+|---|---|---|
+| C1 nucléosynthèse (+ tutoriel du dispositif) | `1re-es-t1-c1-nucleosynthese.html` | 2 |
+| C2 radioactivité | `1re-es-t1-c2-radioactivite.html` | 4 |
+| C3 cristaux | `1re-es-t1-c3-cristaux.html` | 3 |
+| C1 son et musique | `1re-es-t2-c1-son-et-musique.html` | 3 |
+| C2 le son, une information à coder | `1re-es-t2-c2-son-a-coder.html` | 3 |
+| C1 la forme de la Terre | `1re-es-t3-c1-forme-terre.html` | 3 |
+
+**Ce qui bloque vraiment** : **six images** (ES-01 à ES-06). Quatre figures des
+cristaux, la courbe GeoGebra de la radioactivité, le graphique de la corde de Melde,
+l'image 5 du son à coder, le schéma de la distance à l'horizon. Toutes sont
+**vectorielles dans les PPTX** et ne sortent pas du PDF. Sans elles, `a = 2r`,
+`4R = a√2` et le Pythagore de l'horizon arrivent sans justification. Une copie
+d'écran de diapositive suffit à chaque fois.
+
+**Trois bonnes surprises.** ① Le **TP tournant sur le son n'était pas absent** : il
+était déposé sous le nom `[Dossier] [Correction] Thème 2 - Chapitre 1.pdf` — dossier
+d'activités complet, corrigés compris. Le chapitre annoncé comme « le seul à écrire
+entièrement » est donc un portage comme les autres. ② Les **QR codes des diaporamas
+se décodent** : 24 URL récupérées, dont les trois épisodes de « L'origine des éléments
+chimiques » que les `.mp4` déposés ne permettaient pas d'intégrer. La méthode résout
+au passage le point ouvert de `term-es-t2-c1`. ③ Deux composants annoncés comme
+manquants **existaient déjà** dans le moteur : les associations (`initEtiquettes`) et
+les QCM à réponses multiples (le champ `"r"` accepte un tableau). **Le moteur n'a pas
+été modifié d'une ligne.**
+
+**Sept erreurs trouvées dans les documents sources** (exposant perdu, dénominateur
+manquant, facteur 150 au lieu de 160, 3¹² ≈ 2⁹ au lieu de 2¹⁹, « 16 fois » au lieu de
+« 2 fois », « N = 8 o » au lieu de 3 octets, oxygène en Z = 6). Corrigées dans les
+pages, signalées sur place, listées au §7 du fichier de vérification — **pas encore
+dans les PDF d'origine**.
+
+🔴 **Rien n'est branché en base**, et le **client de progression n'est pas chargé**
+non plus : sans `data-sequence`, il afficherait aux élèves « connecte-toi pour
+enregistrer ton travail » alors que rien ne serait enregistré. Sans lui, le moteur
+dit la vérité (« gardé pour cette séance »). Ce qu'il faudra faire au branchement
+tient en six gestes, listés au §4 du fichier de vérification.
+
+`node verifier.mjs` : **18 problèmes avant, 18 après** — le repère est intact. Le
+filtre `pagesSNT` couvre désormais les pages ES et a immédiatement attrapé quatre
+indices qui livraient la réponse et huit QCM biaisés en longueur : corrigés.
+
+---
 
 ## 🆕 Les quinze TP de seconde, remplacés et renumérotés
 
@@ -409,6 +469,7 @@ fleuron, mais **sur du contenu** : rien n'a été modifié, c'est du fond.
 | **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 (une seule colonne, un seul bord d'attaque), puis **audit de contenu des dix-sept outils le même jour** : accroche recentrée sur l'atelier, « effort » → « force » partout, `ε` pour l'écart et `θ` pour les angles de rotation, paliers 1 dégonflés de leur guidage, sous-questions concaténées, vecteurs fléchés et racines couvrantes. Deux figures produites (bras de levage de l'Outil 5, composantes de l'Outil 14), une dizaine corrigées. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé : **l'Outil 0 est le premier attendu en relecture**. Depuis le 19/08 le livret est **branché sur le dispositif de comptes** : connecté, le travail va en base et suit l'apprenti d'un appareil à l'autre ; sans compte, tout reste sur l'appareil comme avant, et la page le dit. Les deux codes de classe (`CFA26A`, `MVT26A`) sont ouverts : `bdd/schema/012-classes-cfa.sql` a été exécuté le 20/08. |
 | **Cahier de vacances** | 14 pages, 2 blocs 🚧. La partie la plus finie du dépôt. |
 | **Coque — page d'accueil** 🆕 | 🔄 **Refondue le 27/08** après comparaison de onze maquettes (dix organisations, puis six fonds). Deux colonnes asymétriques : à gauche les trois classes en portes illustrées — PC, SNT, CFA en **une seule porte** pour les deux diplômes — les trois autres niveaux en lignes sobres marquées `.a-venir`, puis l'adresse professionnelle réelle ; à droite une colonne collante (gravure du jour, 4 fiches-outils, Animations 🚧, Mission Spectra). Nouvelle bande « Auteur & vidéo » en pied, **vide, trois entrées en chantier**. Le compte à rebours bascule sur l'état du projet passé le 1er septembre. `style.css` **non modifié** ; tout le CSS reste inline. Décisions ACC-1 à ACC-12. ⏳ **Deux formulations à valider** : la bascule d'après-rentrée (« En chantier · ouverture en cours d'année ») et le libellé des trois entrées « Auteur & vidéo ». La planche du jour reste un **cadre annoté** tant que `gravures/` est vide. |
+| **ES Première** 🆕 | **Ouvert le 06/09/2026.** Six chapitres, **18 séances**, sur le moteur de séquences — nucléosynthèse (qui porte aussi le **tutoriel du dispositif**, rôle de `t0` pour le SNT), radioactivité, cristaux, son et musique, son à coder, forme de la Terre. Tout est porté depuis les documents de Loïc ; **40 cadres `.proposition`** signalent ce que Claude a ajouté, **13 cadres de réservation** ce qui manque. 🔴 **Rien n'est branché en base** (ni client de progression, ni `data-sequence`) : c'est un deuxième temps. 🔴 **Six images bloquent trois exercices** (ES-01 à ES-06). Le hub porte la numérotation de Loïc (C1, C2, C3) et une carte `.a-venir` pour **3.3 « La Terre dans l'Univers »**. `1re-pc-cristaux.html` reste en place jusqu'à validation. **Rien n'est validé** — relevé complet : `_suivi/es1-verification.md`. |
 | **ES Terminale** | frise fonctionnelle en local ; `serveur-frise/` et `ia-correction/` en chantier. |
 
 **Validation** : un seul contenu est validé à ce jour — **`t1` « Internet », sur

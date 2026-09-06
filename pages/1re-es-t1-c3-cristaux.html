@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ES 1re · Les cristaux — Séquence élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- 🔴 Le client de base de données n'est PAS chargé ici : sans lui, le moteur
+     bascule sur son repli local, qui dit honnêtement « gardé pour cette
+     séance ». Le charger afficherait « connecte-toi pour enregistrer ton
+     travail » alors que rien ne serait enregistré. À rétablir au branchement,
+     avec data-sequence sur <body>. -->
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     ENSEIGNEMENT SCIENTIFIQUE 1re — Thème 1, chapitre 3 :
+     « Les structures ordonnées, les cristaux ».
+     Sous-thème 1.2 du programme officiel.
+
+     ⚠ Une page statique antérieure existe : pages/1re-pc-cristaux.html.
+     Elle N'EST PAS supprimée tant que cette séquence n'est pas validée
+     (brief ES1 §3.3). Le hub pointe désormais vers celle-ci.
+
+     Tourne sur le moteur des séquences SNT. 🔴 PAS DE BASE DE DONNÉES
+     dans cette version (brief ES1 §3.2).
+     ⚠ Ne pas réécrire ici le nom de ces fichiers avec leur extension,
+     même en commentaire : verifier.mjs cherche la chaîne « seances-
+     snt.js » dans TOUT le HTML, commentaires compris.
+
+     Contenu : porté depuis le PDF de cours ET sa correction. Les liens
+     vidéo proviennent des QR codes des diapositives, décodés — leur
+     contenu exact reste à confirmer.
+     ============================================================ -->
+<style>
+  /* ---------- Cadre « proposition » — mécanisme du chantier ES1 ---------- */
+  .proposition{border:2px dashed var(--hist);border-radius:12px;
+    background:var(--hist-wash);padding:12px 15px;margin:14px 0;
+    font-size:13.5px;line-height:1.55;color:var(--ink)}
+  .proposition .pl{font-family:"IBM Plex Mono",monospace;font-size:11px;
+    letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+    color:var(--hist);display:flex;gap:7px;align-items:center;
+    margin-bottom:5px;flex-wrap:wrap}
+  .proposition p{margin:5px 0}
+  .proposition ul{margin:5px 0 0;padding-left:18px}
+
+  /* ---------- Cadre de réservation d'image ---------- */
+  .reserve{border:1.5px dashed var(--link);border-radius:8px;
+    background:repeating-linear-gradient(45deg,var(--surface-2) 0 8px,var(--surface) 8px 16px);
+    display:flex;flex-direction:column;justify-content:center;gap:3px;
+    padding:16px 10px;text-align:center;margin:12px auto}
+  .reserve .rf{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--link);word-break:break-all}
+  .reserve .rd{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
+  .reserve .rr{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+
+  /* ---------- Formule posée au centre ---------- */
+  .formule{text-align:center;font-family:"IBM Plex Mono",monospace;font-size:19px;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:14px 12px;margin:12px 0;color:var(--ink);overflow-x:auto}
+  .formule .u{font-size:12px;color:var(--ink-faint);display:block;margin-top:6px;
+    font-family:"IBM Plex Sans",system-ui,sans-serif}
+  .formule .etape{display:block;margin:4px 0}
+</style>
+
+</head><body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Enseignement scientifique · 1re · Thème 1</div>
+    <h1 class="title">Les cristaux <span class="tag">chapitre 3</span></h1>
+    <p class="lede">Un caillou, un flocon, un grain de sel, une lame d'acier : la même idée à l'intérieur — un motif minuscule, répété à l'identique des milliards de fois. Il suffit d'un cube et d'un peu de comptage pour en déduire la masse volumique d'un métal.</p>
+    <div class="themes">
+      <span class="theme-chip">Nucléosynthèse</span><span class="theme-chip">La radioactivité</span>
+      <span class="theme-chip on">Les cristaux</span><span class="theme-chip">Son et musique</span>
+      <span class="theme-chip">Le son, une information à coder</span><span class="theme-chip">La forme de la Terre</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>3 séances</b></span>
+      <span class="m">Durée <b>≈ 4 h 30</b></span>
+      <span class="m">Chaque séance se débloque quand la <b>précédente est validée</b></span>
+    </div>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — toutes les séances sont ouvertes.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="1re-enseignement-scientifique.html">← Enseignement scientifique</a>
+    <a href="#s1"><span class="n">S1</span>Cristal &amp; maille</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>Compter les atomes <span class="lockico">🔒</span></a>
+    <a href="#s3" data-navlock="3"><span class="n">S3</span>Compacité &amp; masse volumique <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- CHANTIER -->
+  <aside class="chantier decision">
+    <div class="cl">📌 Décision attendue — état de cette page, et l'ancienne page statique</div>
+    V0 portée depuis le PDF de cours <b>et sa correction</b>. La page statique
+    <code>pages/1re-pc-cristaux.html</code> <b>existe toujours</b> et n'a pas été touchée&nbsp;:
+    le hub pointe désormais ici, mais l'ancienne reste accessible par son URL tant que cette
+    séquence n'est pas validée. <b>À supprimer une fois cette page validée.</b>
+    La progression n'est pas enregistrée (ni base, ni stockage local).
+  </aside>
+  <!-- /CHANTIER -->
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>Qu'est-ce qu'un cristal ? La maille élémentaire</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Comprendre ce qui distingue un solide cristallin des autres, et savoir ce qu'est la brique élémentaire qui, répétée, le construit tout entier.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 -->
+      <div class="step" data-step data-gate data-cle="es-t1c3-definition">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Un solide cristallin, c'est une répétition</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir définir un solide cristallin, et distinguer <b>monocristallin</b> et <b>polycristallin</b>.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Poste de visionnage — découverte<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>La vidéo de découverte du cours (format court).</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/bhvPfkEmQGM" title="Découverte — les cristaux" allowfullscreen></iframe>
+              </div>
+              <div class="poste-corps">
+                <div class="poste-notes">
+                  <div class="pl">📝 Mes notes de visionnage</div>
+                  <textarea data-notes="CRI-1video" placeholder="Ce que tu retiens…" aria-label="Notes de visionnage"></textarea>
+                </div>
+                <div class="poste-dico">
+                  <div class="pl">📖 Dictionnaire</div>
+                  <dl>
+                    <dt>Entité</dt><dd>Ce qui se répète dans le cristal : un atome, une molécule ou un ion.</dd>
+                    <dt>Périodique</dt><dd>Qui se répète à intervalles réguliers, toujours de la même façon.</dd>
+                    <dt>Macroscopique</dt><dd>À notre échelle, ce qu'on peut voir et toucher — par opposition à l'échelle des atomes.</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🔍 Lien récupéré par QR code — titre à confirmer</div>
+              Les vidéos de cette page proviennent des <b>QR codes des diapositives</b> du PDF de
+              cours, décodés automatiquement. Les <b>adresses</b> sont donc sûres, mais ni le titre ni
+              la durée n'ont pu être vérifiés&nbsp;: les intitulés affichés («&nbsp;la vidéo de
+              découverte&nbsp;», «&nbsp;réviser en vidéo&nbsp;») reprennent seulement l'étiquette du
+              bouton dans le diaporama. <b>À vérifier d'un coup d'œil.</b>
+            </aside>
+            <!-- /CHANTIER -->
+
+            <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Les <b>solides cristallins</b> (cristaux) sont composés de la <b>répétition ordonnée et périodique</b> d'entités de base — atomes, molécules ou ions.</div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c3/t1c3-exemples-solides-cristallins.jpg" alt="Quatre exemples : image par microscopie à effet tunnel d'un cristal d'or, blocs monocristallins de pyrite, assemblage polycristallin de pyrite, morceau de fer usiné" loading="lazy">
+              <figcaption>Quatre solides cristallins. À gauche, l'arrangement <b>régulier</b> des atomes d'or, vu au microscope à effet tunnel. Puis la pyrite en <b>blocs monocristallins</b> (à l'état naturel), en <b>assemblage polycristallin</b>, et enfin un morceau de fer usiné — où les blocs sont bien trop petits pour être vus.<span class="src">Images reprises du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Mono ou poly ?<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Un solide cristallin peut être soit <b>monocristallin</b> — constitué d'un seul bloc périodique —, soit <b>polycristallin</b> — constitué de plusieurs blocs monocristallins collés les uns aux autres, <b>sans ordre</b> entre eux.</div>
+
+            <div class="block-label">Variétés allotropiques</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Un solide cristallin peut exister sous différentes <b>formes cristallines</b>, c'est-à-dire avec une géométrie différente de répétition de ses entités élémentaires. On parle de <b>variétés allotropiques</b>.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c3/t1c3-diamant-et-graphite.jpg" alt="En haut des diamants taillés et un morceau de graphite ; en dessous, leurs structures : réseau tridimensionnel pour le diamant, feuillets empilés pour le graphite" loading="lazy">
+              <figcaption>Le <b>diamant</b> et le <b>graphite</b> sont deux variétés allotropiques du carbone solide C<sub>(s)</sub> : leurs structures cristallographiques sont différentes, et <b>par conséquent leurs propriétés macroscopiques également</b>. Même élément chimique, même atome — et pourtant l'un raye tout et l'autre s'effrite sur une feuille de papier.<span class="src">Images reprises du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="CRI-1a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Qu'est-ce qui caractérise un solide cristallin ?",
+  "o": [
+   "La répétition ordonnée et périodique d'entités de base",
+   "Sa transparence et sa capacité à réfléchir la lumière",
+   "Sa dureté supérieure à celle des autres solides",
+   "Sa formation exclusive dans les roches profondes"
+  ],
+  "r": 0,
+  "c": "C'est la <b>répétition ordonnée et périodique</b>, et rien d'autre. Un morceau de fer est cristallin ; il n'est ni transparent ni particulièrement dur."
+ },
+ {
+  "q": "Quelle est la différence entre un solide monocristallin et un solide polycristallin ?",
+  "o": [
+   "Le monocristallin est fait d'un seul élément chimique, le polycristallin en mélange plusieurs",
+   "Le monocristallin est un seul bloc périodique, le polycristallin en assemble plusieurs sans ordre entre eux",
+   "Le monocristallin se forme naturellement, le polycristallin est toujours fabriqué par l'homme",
+   "Le monocristallin est toujours plus petit que le polycristallin, à masse égale"
+  ],
+  "r": 1,
+  "c": "C'est une affaire de <b>blocs</b>, pas d'éléments. Un morceau de fer est polycristallin : des milliards de petits blocs cristallins, orientés au hasard les uns par rapport aux autres."
+ },
+ {
+  "q": "Le diamant et le graphite sont deux variétés allotropiques du carbone. Cela signifie que…",
+  "o": [
+   "ils sont faits d'éléments chimiques différents, d'où leurs propriétés opposées",
+   "ils sont faits du même élément, mais rangé selon des géométries différentes",
+   "l'un est un solide cristallin et l'autre n'en est pas un, faute d'ordre interne",
+   "ils ont exactement les mêmes propriétés macroscopiques, à la couleur près"
+  ],
+  "r": 1,
+  "c": "<b>Même atome, rangement différent</b> — et des propriétés macroscopiques radicalement différentes. C'est la démonstration la plus spectaculaire que la <b>structure</b> compte autant que la composition."
+ },
+ {
+  "q": "Un morceau de fer usiné est-il cristallin ?",
+  "o": [
+   "Non : sa surface est bien trop régulière et lisse pour qu'il soit cristallin",
+   "Non : les métaux usinés ne sont jamais cristallins, le laminage détruit tout ordre",
+   "Oui : il est polycristallin, ses blocs sont simplement trop petits pour être vus",
+   "Oui : il est monocristallin, exactement comme un diamant taillé d'un seul bloc"
+  ],
+  "r": 2,
+  "c": "<b>Polycristallin</b>. C'est le cas de presque tous les métaux d'usage courant : les blocs monocristallins y sont microscopiques, mais l'ordre existe bel et bien à l'intérieur de chacun."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 -->
+      <div class="step" data-step data-gate data-cle="es-t1c3-maille">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">La maille élémentaire</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir ce qu'est une maille, et reconnaître les <b>trois mailles cubiques</b> au programme.</span></div>
+          </div>
+          <div class="card-body">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c3/t1c3-roche-mineral-cristal-maille.jpg" alt="Quatre étapes de zoom : un granite, un cristal de quartz, le réseau cristallin de la silice, puis la maille élémentaire avec les ions silicium et oxygène" loading="lazy">
+              <figcaption>Du visible à l'invisible, en quatre zooms : la <b>roche</b> (granite) → le <b>minéral</b> (quartz, SiO₂) → le <b>cristal</b> (le réseau) → la <b>maille élémentaire</b>. C'est le même objet, à quatre échelles.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">La <b>maille (élémentaire)</b> est un <b>volume minimal</b> qui, par répétition, permet de <b>paver tout l'espace</b>. En 3D, elle est de forme <b>parallélépipédique</b>.
+              <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:14px">Structure cristalline = réseau + motif</div>
+            </div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c3/t1c3-reseau-3d-et-maille.jpg" alt="À gauche un réseau cubique tridimensionnel étendu, à droite un seul cube isolé étiqueté maille élémentaire" loading="lazy">
+              <figcaption>Le <b>réseau 3D</b> et la <b>maille élémentaire</b> qui, répétée, le construit entièrement.<span class="src">Schéma repris du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Les trois mailles cubiques au programme<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Les atomes ou ions qui composent les cristaux sont modélisés par des <b>sphères dures</b> positionnées à différentes positions de la maille élémentaire. Seules certaines mailles cubiques sont au programme cette année :</p>
+            <table class="doc-table">
+              <tr><th>Maille</th><th>Sigle</th><th>Où sont les sphères</th></tr>
+              <tr><td>Cubique <b>simple</b></td><td><code>CS</code></td><td>une sphère sur <b>chaque sommet</b></td></tr>
+              <tr><td>Cubique <b>centrée</b></td><td><code>CC</code></td><td>une sphère sur chaque sommet, <b>plus une au centre</b> du cube</td></tr>
+              <tr><td>Cubique <b>faces centrées</b></td><td><code>CFC</code></td><td>une sphère sur chaque sommet, <b>plus une au centre de chaque face</b></td></tr>
+            </table>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c3/t1c3-trois-mailles-cubiques.jpg" alt="Les trois mailles cubiques en représentation éclatée et en représentation compacte : cubique simple, cubique centrée, cubique faces centrées" loading="lazy">
+              <figcaption>Les trois mailles, en <b>représentation éclatée</b> (en haut, les sphères sont réduites pour qu'on voie leurs positions) et en <b>représentation compacte</b> (en bas, les sphères ont leur taille réelle et se touchent). Ce sont les <b>mêmes</b> mailles, dessinées de deux façons.<span class="src">Schéma repris du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète le tableau des trois mailles.</div>
+              <div class="cloze" data-cloze>
+                La maille cubique <b>simple</b> (CS) possède une sphère sur chaque <input data-answer="sommet" placeholder="?" aria-label="position des sphères CS" data-variantes="sommets|les sommets|coin|coins" data-indice1="Les huit coins du cube." data-indice2="Le mot commence par « som ».">.<br>
+                La maille cubique <b>centrée</b> (CC) possède une sphère sur chaque sommet, ainsi qu'une au <input data-answer="centre" placeholder="?" aria-label="position supplémentaire CC" data-variantes="centre du cube|milieu|au centre" data-indice1="C'est ce que dit son nom, si tu le relis bien." data-indice2="Au milieu du cube."> du cube.<br>
+                La maille cubique <b>faces centrées</b> (CFC) possède une sphère sur chaque sommet, ainsi qu'au centre de chacune de ses <input data-answer="faces" placeholder="?" aria-label="position supplémentaire CFC" data-variantes="face|6 faces|six faces|les faces" data-indice1="Un cube en a six." data-indice2="C'est ce que dit son nom : « faces centrées ».">.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Le cours source ne comporte <b>aucun exercice</b> sur cette partie&nbsp;: il enchaîne
+              directement sur la multiplicité. Le texte à trous ci-dessus et le QCM de l'étape&nbsp;1.1
+              sont ajoutés, pour que la séance&nbsp;1 ait de quoi se valider.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>Compter les atomes d'une maille : la multiplicité</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Une maille CC de fer semble contenir neuf atomes. Elle en contient deux. Voici pourquoi, et comment on compte.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 2.1 -->
+      <div class="step" data-step data-gate data-cle="es-t1c3-multiplicite">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Chaque atome ne compte que pour une fraction</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre le partage des atomes entre mailles voisines, et savoir la contribution de chaque position.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Chaque maille élémentaire du cristal est composée d'atomes ou d'ions, et il faut être capable de les <b>compter</b>. C'est ce que l'on appelle établir la <b>multiplicité (Z)</b> de la maille.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c3/t1c3-maille-cc-fer-minusc.jpg" alt="Maille cubique centrée du fer obtenue avec le logiciel Minusc : huit sphères aux sommets et une au centre" loading="lazy">
+              <figcaption>Maille <b>cubique centrée</b> du fer, obtenue avec le logiciel <b>Minusc</b>. Neuf sphères sont visibles… et pourtant Z<sub>Fe</sub> = 2.<span class="src">Copie d'écran du cours de M. Van Hoorde</span></figcaption>
+            </figure>
+
+            <div class="block-label">Le principe<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Les atomes appartenant à <b>plusieurs mailles simultanément</b> comptent pour une <b>fraction</b> correspondant au nombre de mailles qui se les partagent. Un atome situé sur une <b>face</b> est partagé par deux mailles : il participe donc à hauteur de <b>½</b>. La multiplicité de la maille est la <b>somme</b> de la participation de chaque atome ou ion.</div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c3/t1c3-contribution-selon-position.jpg" alt="Tableau des contributions : au centre 1 maille donc 1, sur une face 2 mailles donc 1/2, sur une arête 4 mailles donc 1/4, sur un sommet 8 mailles donc 1/8" loading="lazy">
+              <figcaption>Participation d'un atome à la composition d'une maille, <b>selon sa position</b>. C'est le tableau à connaître par cœur — tout le reste du chapitre en découle.<span class="src">Tableau repris du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field">
+              <span class="field-type">Tableau à compléter</span>
+              <div class="field-q">Complète le tableau des contributions.</div>
+              <div class="cloze" data-cloze>
+                <table class="doc-table">
+                  <tr><th>Emplacement de la sphère</th><th>Nombre de mailles qui la partagent</th><th>Contribution à la maille</th></tr>
+                  <tr><td>Au <b>centre</b></td>
+                      <td><input class="short" data-answer="1" placeholder="?" aria-label="mailles partageant le centre" data-indice1="Combien de cubes contiennent le milieu d'un cube ?" data-indice2="Un seul."></td>
+                      <td><input class="short" data-answer="1" placeholder="?" aria-label="contribution du centre" data-variantes="1/1|entier" data-indice1="Elle appartient entièrement à cette maille." data-indice2="La totalité, soit 1."></td></tr>
+                  <tr><td>Sur une <b>face</b></td>
+                      <td><input class="short" data-answer="2" placeholder="?" aria-label="mailles partageant une face" data-indice1="Une face sépare deux cubes voisins." data-indice2="Deux."></td>
+                      <td><input class="short" data-answer="1/2" placeholder="?" aria-label="contribution d'une face" data-variantes="0,5|0.5|½|un demi" data-indice1="Partagée par 2, donc une fraction de dénominateur 2." data-indice2="Écris-la sous la forme 1/…"></td></tr>
+                  <tr><td>Sur une <b>arête</b></td>
+                      <td><input class="short" data-answer="4" placeholder="?" aria-label="mailles partageant une arête" data-indice1="Combien de cubes se rejoignent le long d'une arête ?" data-indice2="Quatre."></td>
+                      <td><input class="short" data-answer="1/4" placeholder="?" aria-label="contribution d'une arête" data-variantes="0,25|0.25|¼|un quart" data-indice1="Partagée par 4." data-indice2="Écris-la sous la forme 1/…"></td></tr>
+                  <tr><td>Sur un <b>sommet</b></td>
+                      <td><input class="short" data-answer="8" placeholder="?" aria-label="mailles partageant un sommet" data-indice1="Combien de cubes se rejoignent en un coin ?" data-indice2="Huit."></td>
+                      <td><input class="short" data-answer="1/8" placeholder="?" aria-label="contribution d'un sommet" data-variantes="0,125|0.125|un huitième" data-indice1="Partagé par 8." data-indice2="Écris-la sous la forme 1/…"></td></tr>
+                </table>
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">L'exemple du fer, maille CC</div>
+            <div class="formule">
+              <span class="etape">Z<sub>Fe</sub> = 1 + 8 × (1/8)</span>
+              <span class="etape">Z<sub>Fe</sub> = 2</span>
+              <span class="u">1 atome au centre (entier) + 8 atomes aux sommets, comptant chacun pour 1/8</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 -->
+      <div class="step" data-step data-gate data-cle="es-t1c3-cs-cfc">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Multiplicité de la maille CS, puis exercice 1 : la CFC</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir établir la multiplicité d'une maille par le comptage, sur les trois mailles au programme.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">La maille cubique simple (CS)</div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c3/t1c3-representations-maille-cs.jpg" alt="Quatre représentations de la maille cubique simple : empilement réel, atomes dans la maille, billes et barres, maille élémentaire nue" loading="lazy">
+              <figcaption>Différentes représentations schématiques de la maille <b>CS</b>. Quatre dessins, une seule maille.<span class="src">Schéma repris du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+            <p style="font-size:14.5px;margin:4px 0 10px">Les 8 atomes situés aux sommets du cube contribuent chacun pour <b>1/8</b> — chacun d'eux est potentiellement partagé par 8 mailles.</p>
+            <div class="formule">
+              <span class="etape">Z<sub>CS</sub> = 8 × (1/8) = 1</span>
+              <span class="u">La maille CS contient <b>un</b> atome ou ion.</span>
+            </div>
+
+            <div class="block-label">Exercice 1 — la maille cubique faces centrées (CFC)<span class="niv" style="margin-left:8px">★ <b>à savoir-faire</b></span></div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c3/t1c3-representations-maille-cfc.jpg" alt="Deux représentations de la maille cubique faces centrées : sphères aux sommets et au centre des faces, puis réseau et motif" loading="lazy">
+              <figcaption>Différentes représentations schématiques de la maille <b>CFC</b>.<span class="src">Schéma repris du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Établis la multiplicité d'une maille CFC.</div>
+              <div class="cloze" data-cloze>
+                Les <input class="short" data-answer="8" placeholder="?" aria-label="nombre d'atomes aux sommets" data-variantes="huit" data-indice1="Compte les coins d'un cube." data-indice2="Huit."> atomes situés aux <b>sommets</b> contribuent chacun pour <input class="short" data-answer="1/8" placeholder="?" aria-label="contribution d'un sommet" data-variantes="0,125|0.125|un huitième" data-indice1="Un sommet est partagé par 8 mailles." data-indice2="Écris 1/8.">.<br>
+                Les <input class="short" data-answer="6" placeholder="?" aria-label="nombre d'atomes sur les faces" data-variantes="six" data-indice1="Compte les faces d'un cube." data-indice2="Six."> atomes situés sur les <b>faces</b> contribuent chacun pour <input class="short" data-answer="1/2" placeholder="?" aria-label="contribution d'une face" data-variantes="0,5|0.5|½|un demi" data-indice1="Une face est partagée par 2 mailles." data-indice2="Écris 1/2.">.<br>
+                D'où : Z<sub>CFC</sub> = 8 × (1/8) + 6 × (1/2) = <input class="short" data-answer="4" placeholder="?" aria-label="multiplicité CFC" data-variantes="quatre|4 atomes" data-indice1="8 × 1/8 = 1 et 6 × 1/2 = 3." data-indice2="1 + 3.">.<br>
+                La maille CFC contient donc <b>quatre</b> atomes ou ions.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="CRI-2a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Pourquoi un atome situé au sommet d'une maille ne compte-t-il que pour 1/8 ?",
+  "o": [
+   "Parce qu'il est huit fois plus petit que les autres atomes de la maille",
+   "Parce qu'il est partagé entre les huit mailles qui se rejoignent en ce sommet",
+   "Parce que seuls 8 sommets sur 64 appartiennent réellement à la maille",
+   "Parce que la maille est une approximation valable à 1/8 près"
+  ],
+  "r": 1,
+  "c": "C'est un <b>partage</b>, pas une taille. Le cristal est un empilement de mailles collées : le coin de l'une est aussi le coin des <b>sept autres</b> qui l'entourent. Chacune n'en revendique qu'un huitième."
+ },
+ {
+  "q": "Quelles sont les multiplicités des trois mailles au programme ? Coche tout ce qui est juste.",
+  "o": [
+   "Z = 1 pour la cubique simple",
+   "Z = 2 pour la cubique centrée",
+   "Z = 4 pour la cubique faces centrées",
+   "Z = 9 pour la cubique centrée, puisqu'on y voit neuf sphères"
+  ],
+  "r": [0, 1, 2],
+  "c": "<b>1, 2 et 4</b>. Les neuf sphères visibles de la CC sont un piège d'apparence : huit d'entre elles ne comptent que pour un huitième."
+ },
+ {
+  "q": "Un atome situé au milieu d'une arête compte pour…",
+  "o": [
+   "1/2",
+   "1/4",
+   "1/8",
+   "1, comme au centre"
+  ],
+  "r": 1,
+  "c": "<b>1/4</b> : quatre mailles se rejoignent le long d'une arête. Retiens la logique plutôt que la liste : <b>centre 1, face 1/2, arête 1/4, sommet 1/8</b> — on divise par deux à chaque fois qu'on va vers l'extérieur."
+ }
+]
+              </script>
+            </div>
+
+            <div class="block-label">Ressource — s'exercer en vidéo<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>La vidéo d'entraînement du cours (bouton « S'exercer en vidéo » de la diapositive).</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/T7F2-lYyQrQ" title="S'exercer — multiplicité d'une maille" allowfullscreen></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 3 ===================== -->
+  <section class="seance locked" id="s3" data-seance="3">
+    <div class="seance-head">
+      <h2><span class="s-num">S3</span>Compacité et masse volumique</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Combien de vide y a-t-il dans un métal ? Et comment retrouver sa masse volumique en partant d'un simple cube.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 3.1 -->
+      <div class="step" data-step data-gate data-cle="es-t1c3-compacite">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">La compacité : quelle part du cube est réellement occupée ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir définir la compacité et la calculer pour la maille CS.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">La <b>compacité (C)</b> est le rapport du volume réellement occupé par les atomes ou ions d'une maille sur le <b>volume total</b> de la maille.</div>
+            <div class="formule">C = V<sub>occupé</sub> / V<sub>total</sub>
+              <span class="u">un nombre sans unité, entre 0 et 1 — qu'on exprime souvent en pourcentage</span>
+            </div>
+
+            <div class="block-label">Les deux volumes</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le <b>volume total</b> s'exprime simplement en fonction du <b>paramètre de maille a</b>, qui n'est autre que la longueur d'une <b>arête</b> du cube :</p>
+            <div class="formule">V<sub>total</sub> = a × a × a = a³</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le <b>volume occupé</b> correspond au volume de tous les atomes et ions de la maille : il se calcule en multipliant la <b>multiplicité</b> par le volume d'une sphère.</p>
+            <div class="formule">V<sub>occupé</sub> = Z × V<sub>sphère</sub> = Z × (4/3) π r³</div>
+            <div class="reveal show" style="border-color:var(--activity);background:var(--activity-wash)">
+              <div class="rl" style="color:var(--activity)">⚠️ Toute la difficulté est là</div>
+              Il faut exprimer le <b>rayon r</b> de l'atome <b>en fonction de a</b> — et cela <b>dépend de la structure</b> de la maille considérée. C'est la seule étape qui change d'une maille à l'autre.
+            </div>
+
+            <div class="reserve" style="min-height:190px;max-width:620px">
+              <div class="rf">t1c3-parametre-de-maille.png &nbsp;·&nbsp; t1c3-rayon-dans-maille-cs.png</div>
+              <div class="rd">Les <b>images 9 et 10</b> du cours — le <b>paramètre de maille a</b> sur un cube, et le <b>rayon d'une sphère dans une maille CS</b> (les sphères se touchent le long d'une arête) — n'ont pas pu être extraites du PDF&nbsp;: elles y sont vectorielles. Ce sont pourtant les deux figures qui justifient la relation a = 2r. <b>À refournir</b>&nbsp;: une copie d'écran de chaque diapositive suffit.</div>
+              <div class="rr">2 images · paysage ou carré · ≥ 500 px</div>
+            </div>
+
+            <div class="block-label">La maille cubique simple (CS)</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Dans une maille CS, les sphères se touchent le long d'une <b>arête</b> du cube. On en déduit rapidement :</p>
+            <div class="formule">a = 2r &nbsp;&nbsp;⟹&nbsp;&nbsp; r = a/2</div>
+            <div class="formule">
+              <span class="etape">C<sub>CS</sub> = [1 × (4/3) π × (a/2)³] / a³</span>
+              <span class="etape">C<sub>CS</sub> = 4π / 24 ≈ 0,52 = <b>52 %</b></span>
+              <span class="u">La maille CS est occupée à 52 % — le reste est du vide.</span>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="52 % de matière"
+                 data-focus-question="Une maille cubique simple n'est occupée qu'à 52 % : presque la moitié du volume est vide. Cela te surprend-il, pour un solide ? Qu'est-ce que cela dit de la matière ?"
+                 data-focus-max="600" data-focus-min="20" data-focus-code="CRI-3a">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Une maille CS n'est occupée qu'à 52 %. Qu'est-ce que cela dit de la matière ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🔭 Pour compléter</div>
+                Et encore : ce 52 % suppose que les atomes sont des <b>sphères dures</b> qui se touchent. En réalité, un atome est lui-même presque entièrement <b>vide</b> — son noyau occupe une fraction infime de son volume. La matière solide, celle qui te paraît la plus pleine du monde, est essentiellement du vide organisé.
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Cette question ouverte est ajoutée. Le cours source enchaîne directement sur l'exercice de
+              la CFC. Elle sert de respiration au milieu d'une séance très calculatoire — <b>à retirer
+              si tu manques de temps</b>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.2 -->
+      <div class="step" data-step data-gate data-cle="es-t1c3-ex2">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 2 — la compacité de la maille CFC</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> refaire le raisonnement complet sur une maille où les sphères se touchent le long d'une <b>diagonale de face</b>.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="reserve" style="min-height:170px;max-width:600px">
+              <div class="rf">t1c3-rayon-dans-maille-cfc.png</div>
+              <div class="rd">L'<b>image 11</b> du cours — le rayon d'une sphère dans une maille <b>CFC</b>, montrant que les sphères se touchent le long de la <b>diagonale d'une face</b> et non d'une arête — n'a pas pu être extraite du PDF. Sans elle, la relation 4R = a√2 tombe du ciel. <b>À refournir.</b></div>
+              <div class="rr">carré · ≥ 500 px</div>
+            </div>
+
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🔍 Légende à corriger dans le PDF</div>
+              Dans le cours source, l'image&nbsp;11 est légendée «&nbsp;Le rayon d'une sphère dans une
+              maille <b>cubique simple</b>&nbsp;» — la même légende que l'image&nbsp;10, alors qu'elle
+              illustre la maille <b>CFC</b>. Copier-coller resté en place. À corriger dans le PDF si tu
+              le rediffuses.
+            </aside>
+            <!-- /CHANTIER -->
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Dans une maille CFC, les sphères se touchent le long de la <b>diagonale d'une face</b>. On en déduit la relation entre le rayon R et le paramètre de maille a :</p>
+            <div class="formule">4R = a√2 &nbsp;&nbsp;⟹&nbsp;&nbsp; R = a√2 / 4</div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Établis la compacité de la maille CFC.</div>
+              <div class="cloze" data-cloze>
+                On sait déjà que Z<sub>CFC</sub> = <input class="short" data-answer="4" placeholder="?" aria-label="multiplicité CFC" data-variantes="quatre" data-indice1="C'est le résultat de l'exercice 1, en séance 2." data-indice2="8 × 1/8 + 6 × 1/2.">.<br>
+                On remplace R par son expression en fonction de a :<br>
+                C<sub>CFC</sub> = [4 × (4/3) π × (a√2/4)³] / a³ = (√2 × π) / <input class="short" data-answer="6" placeholder="?" aria-label="dénominateur" data-variantes="six" data-indice1="Après simplification, le dénominateur est un petit entier." data-indice2="Le même qu'au dénominateur de π/6 trouvé pour la CS.">.<br>
+                Numériquement : C<sub>CFC</sub> ≈ <input class="short" data-answer="0,74" placeholder="?" aria-label="compacité CFC" data-variantes="0.74|74|74 %|0,74 = 74%" data-indice1="√2 ≈ 1,414 et π ≈ 3,1416 : multiplie, puis divise par 6." data-indice2="Un peu moins des trois quarts.">, soit <b>74 %</b>.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="retain">La maille <b>CFC</b> est occupée à <b>74 %</b>, contre <b>52 %</b> pour la CS. C'est <b>l'empilement le plus compact possible</b> de sphères identiques — et c'est pour cela que tant de métaux l'adoptent : l'or, l'argent, l'aluminium, le cuivre.</div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              La dernière phrase du «&nbsp;à retenir&nbsp;» (74&nbsp;% = empilement le plus compact
+              possible, et la liste des métaux CFC) ne figure pas dans le cours source. Elle donne du
+              sens au résultat&nbsp;: sans elle, 74&nbsp;% n'est qu'un nombre de plus. <b>À valider.</b>
+            </div>
+
+            <div class="block-label">Ressource — réviser en vidéo<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>Vidéo de révision sur la compacité (QR code de la diapositive).</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/G7Gev7eEkaw" title="Réviser — la compacité d'une maille" allowfullscreen></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.3 -->
+      <div class="step" data-step data-gate data-cle="es-t1c3-masse-volumique">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 3 — la masse volumique du fer, à partir de sa maille</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> retrouver une grandeur mesurable au laboratoire — la masse volumique — à partir d'un modèle microscopique.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">La <b>masse volumique ρ</b> est le rapport de la <b>masse des entités contenues dans la maille</b> sur le <b>volume de la maille</b>.</div>
+            <div class="formule">ρ = m / V<sub>maille</sub> = (Z × m<sub>entité</sub>) / a³
+              <span class="u">valable pour une maille ne contenant qu'un seul type d'entité · ρ en kg·m⁻³</span>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              Le cours source écrit à cet endroit «&nbsp;ρ = Z × m<sub>entité</sub>&nbsp;», <b>sans le
+              dénominateur a³</b> — une ligne manifestement tronquée à la mise en page, puisque la
+              correction de l'exercice, elle, divise bien par a³. La formule est rétablie ci-dessus.
+              <b>À confirmer</b>, et à corriger dans le PDF.
+            </div>
+
+            <div class="reserve" style="min-height:150px;max-width:560px">
+              <div class="rf">t1c3-maille-cc-fer.png</div>
+              <div class="rd">L'<b>image 13</b> du cours — la maille cristalline cubique centrée du fer, avec son paramètre de maille coté — n'a pas pu être extraite du PDF. À défaut, la copie d'écran <b>Minusc</b> de la séance 2 montre la même maille, sans la cote. <b>À refournir</b> si tu veux la version cotée.</div>
+              <div class="rr">carré · ≥ 500 px</div>
+            </div>
+
+            <p class="doc-note"><b>Données</b> : m<sub>atome de fer</sub> = 9,35 × 10⁻²⁶ kg · a<sub>Fe</sub> = 2,87 Å = 2,87 × 10⁻¹⁰ m</p>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              La donnée du PDF est imprimée «&nbsp;m = 9,35 × 10<sup>−2</sup> kg&nbsp;», ce qui est
+              <b>impossible</b> pour un atome (ce serait 93 grammes) et ne redonne pas le résultat de la
+              correction. Avec <b>10<sup>−26</sup></b>, le calcul tombe exactement sur les
+              7,91 × 10³ kg·m⁻³ annoncés. L'exposant a manifestement été perdu à l'impression&nbsp;:
+              corrigé ici. <b>À confirmer.</b>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Établis la masse volumique du fer à partir de sa structure cristallographique.</div>
+              <div class="cloze" data-cloze>
+                Ici, la maille est <b>cubique centrée</b> et les entités sont des atomes de fer. Sa multiplicité vaut Z<sub>CC</sub> = 1 + 8 × (1/8) = <input class="short" data-answer="2" placeholder="?" aria-label="multiplicité CC" data-variantes="deux" data-indice1="Un atome entier au centre, plus huit huitièmes aux sommets." data-indice2="1 + 1.">.<br>
+                Le volume de la maille vaut a³ = (2,87 × 10⁻¹⁰)³ ≈ <input class="short" data-answer="2,36" placeholder="? × 10⁻²⁹" aria-label="volume de la maille, mantisse" data-variantes="2.36|2,4|2,364" data-indice1="Élève 2,87 au cube — et n'oublie pas de cuber aussi la puissance de dix." data-indice2="Écris la mantisse seule : le résultat est ≈ 2,36 × 10⁻²⁹ m³."> × 10⁻²⁹ m³.<br>
+                D'où ρ<sub>Fe</sub> = (2 × 9,35 × 10⁻²⁶) / (2,36 × 10⁻²⁹) ≈ <input class="short" data-answer="7,91" placeholder="? × 10³" aria-label="masse volumique, mantisse" data-variantes="7.91|7,9|7900|7 900" data-indice1="Divise 1,87 × 10⁻²⁵ par 2,36 × 10⁻²⁹." data-indice2="Un peu moins de 8 : écris la mantisse, le résultat est ≈ 7,91 × 10³ kg·m⁻³."> × 10³ kg·m⁻³.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Confronter au réel"
+                 data-focus-question="La masse volumique du fer mesurée au laboratoire vaut environ 7,87 × 10³ kg·m⁻³. Compare avec ta valeur calculée. Que penses-tu de l'accord ? Qu'est-ce que cela valide ?"
+                 data-focus-max="600" data-focus-min="20" data-focus-code="CRI-3b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Compare ta valeur calculée à la valeur mesurée du fer (≈ 7,87 × 10³ kg·m⁻³). Qu'est-ce que cet accord valide ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🔭 Ce qu'il fallait voir</div>
+                L'écart est inférieur à <b>1 %</b>. Ce n'est pas un détail : on est parti d'un <b>modèle</b> (des sphères dures rangées dans un cube) et on retrouve une grandeur qu'on peut peser sur une balance. C'est exactement ce qu'on demande à un modèle scientifique — et c'est ce qui autorise à croire que les atomes sont bien rangés ainsi.
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              La confrontation à la valeur mesurée (7,87 × 10³ kg·m⁻³) est <b>ajoutée</b> : le cours
+              source s'arrête au résultat du calcul. Sans cette comparaison, l'exercice reste un calcul
+              de plus ; avec elle, il devient une <b>validation de modèle</b>. <b>À valider.</b>
+            </div>
+
+            <div class="block-label">Le bilan du chapitre<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+            <div class="retain" data-bilan-wrap>
+              <ul style="margin:0;padding-left:18px">
+                <li>Un <b>solide cristallin</b> est la répétition ordonnée et périodique d'entités de base. Il est <b>monocristallin</b> ou <b>polycristallin</b>.</li>
+                <li>La <b>maille élémentaire</b> est le volume minimal qui, répété, pave tout l'espace. Trois mailles cubiques au programme : <b>CS</b>, <b>CC</b>, <b>CFC</b>.</li>
+                <li>La <b>multiplicité Z</b> compte les entités de la maille, en tenant compte du partage : centre 1, face ½, arête ¼, sommet ⅛. <b>Z<sub>CS</sub> = 1 · Z<sub>CC</sub> = 2 · Z<sub>CFC</sub> = 4</b>.</li>
+                <li>La <b>compacité C = V<sub>occupé</sub>/V<sub>total</sub></b> vaut <b>52 %</b> pour la CS et <b>74 %</b> pour la CFC.</li>
+                <li>La <b>masse volumique</b> se déduit de la maille : <b>ρ = Z × m<sub>entité</sub> / a³</b>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.4 — bonus -->
+      <div class="step" data-step data-cle="es-t1c3-bonus">
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
+      <div class="bonus-wrap" data-bonus>
+        <div class="bonus-head" data-bonus-toggle>
+          <span class="ix">3.4</span>
+          <span class="bl">Pour aller plus loin</span>
+          <span class="bonus-tag">hors 100&nbsp;% · non évalué</span>
+          <span class="chev">▸</span>
+        </div>
+        <div class="bonus-body">
+          <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Les quatre vidéos que porte la dernière diapositive du cours, récupérées par leurs QR codes.</p>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Le cours en vidéo (bouton « Le cours en vidéo ! »).</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/MtENHCUtqSk" title="Les cristaux — le cours en vidéo" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Réviser en vidéo — la masse volumique à partir de la maille.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/RXPm_g65uTo" title="Réviser — masse volumique et maille" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Une autre façon d'expliquer (deuxième QR de la diapositive de révision).</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/-AviSs0o5Zk" title="Les cristaux — autre explication" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Quatrième lien de la dernière diapositive.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/GIphJQtNqZs" title="Les cristaux — complément" allowfullscreen></iframe>
+            </div>
+          </div>
+
+          <div class="field" data-share data-share-note>
+            <span class="field-type">Réflexion perso — non notée</span>
+            <div class="field-q">Le diamant et le graphite sont le même atome, rangé autrement. À quoi d'autre, dans la vie courante, l'organisation compte-t-elle plus que le contenu ?</div>
+            <textarea placeholder="Écris ce que tu veux : personne ne corrige, personne ne note." aria-label="Réflexion personnelle"></textarea>
+            <div class="verdict"></div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Thème 1, chapitre 3 — Les cristaux.</b> QCM, textes à trous et tableaux corrigés <b>en direct</b> ; réponses rédigées <b>envoyées en correction</b> ; réflexions perso <b>non notées</b>. 🧭 Un doute sur le fonctionnement du cours&nbsp;? Revois <a href="1re-es-t1-c1-nucleosynthese.html" style="color:var(--link)">le chapitre&nbsp;1</a>, qui l'explique en entier. ⚠ Dans cette version, <b>ta progression n'est pas encore enregistrée</b>&nbsp;: pense à télécharger ta fiche avant de partir.
+  </footer>
+</div>
+
+<script type="application/json" id="dico-source">
+[
+ {
+  "mot": "Solide cristallin",
+  "origine": "ES · Les cristaux",
+  "def": "Un solide composé de la répétition ordonnée et périodique d'entités de base : atomes, molécules ou ions."
+ },
+ {
+  "mot": "Monocristallin",
+  "origine": "ES · Les cristaux",
+  "def": "Constitué d'un seul bloc périodique."
+ },
+ {
+  "mot": "Polycristallin",
+  "origine": "ES · Les cristaux",
+  "def": "Constitué de plusieurs blocs monocristallins collés les uns aux autres sans ordre entre eux. C'est le cas de la plupart des métaux."
+ },
+ {
+  "mot": "Variété allotropique",
+  "origine": "ES · Les cristaux",
+  "def": "Une des formes cristallines que peut prendre un même corps. Le diamant et le graphite sont deux variétés allotropiques du carbone."
+ },
+ {
+  "mot": "Maille élémentaire",
+  "origine": "ES · Les cristaux",
+  "def": "Le volume minimal qui, par répétition, pave tout l'espace. En 3D, elle est parallélépipédique."
+ },
+ {
+  "mot": "Paramètre de maille",
+  "origine": "ES · Les cristaux",
+  "def": "Noté a : la longueur d'une arête du cube. Le volume de la maille vaut a³."
+ },
+ {
+  "mot": "Multiplicité",
+  "origine": "ES · Les cristaux",
+  "def": "Notée Z : le nombre d'entités réellement contenues dans une maille, en tenant compte du partage avec les mailles voisines. CS : 1 · CC : 2 · CFC : 4."
+ },
+ {
+  "mot": "Compacité",
+  "origine": "ES · Les cristaux",
+  "def": "Notée C : le rapport du volume occupé par les entités sur le volume total de la maille. CS : 52 % · CFC : 74 %."
+ },
+ {
+  "mot": "Masse volumique",
+  "origine": "ES · Les cristaux",
+  "def": "Notée ρ : la masse par unité de volume. Depuis la maille : ρ = Z × m(entité) / a³, en kg·m⁻³."
+ },
+ {
+  "mot": "Cubique simple (CS)",
+  "origine": "ES · Les cristaux",
+  "def": "Maille avec une sphère sur chaque sommet. Z = 1, compacité 52 %."
+ },
+ {
+  "mot": "Cubique centrée (CC)",
+  "origine": "ES · Les cristaux",
+  "def": "Maille avec une sphère sur chaque sommet et une au centre du cube. Z = 2. C'est celle du fer."
+ },
+ {
+  "mot": "Cubique faces centrées (CFC)",
+  "origine": "ES · Les cristaux",
+  "def": "Maille avec une sphère sur chaque sommet et au centre de chaque face. Z = 4, compacité 74 % — l'empilement le plus compact."
+ }
+]
+</script>
+<script src="../assets/js/sequence-snt.js?v=42"></script>
+
+</body>
+</html>

@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ES 1re · La radioactivité — Séquence élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- 🔴 Le client de base de données n'est PAS chargé ici — voir le bloc
+     ci-dessous. Sans lui, le moteur bascule sur son repli local, qui dit
+     honnêtement « gardé pour cette séance, pense à télécharger ta fiche ».
+     Le charger afficherait le bandeau « connecte-toi pour enregistrer ton
+     travail », alors que rien ne serait enregistré : un mensonge d'écran.
+     À rétablir au branchement, avec data-sequence sur <body>. -->
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     ENSEIGNEMENT SCIENTIFIQUE 1re — Thème 1, chapitre 2.
+     Tourne sur le moteur des séquences SNT (assets/css/sequence-snt.css
+     + assets/js/sequence-snt.js), grammaire séquence → séance → étape →
+     champ.
+
+     🔴 PAS DE BASE DE DONNÉES dans cette version — décision du brief ES1
+     §3.2. Concrètement : le client de progression n'est pas chargé, il n'y
+     a aucun attribut data-sequence sur <body> (donc EtatSNT reste inerte),
+     et ni le sommaire généré (seances-snt) ni le plafond d'avance
+     (verrou-snt) ne sont chargés. Aucun localStorage non plus.
+     Le branchement est un deuxième temps : il demandera le client de
+     progression, data-sequence="es-t1-c2", verrou-snt, un code de classe
+     ES et une migration.
+     ⚠ Ne pas réécrire ici le nom de ces fichiers avec leur extension,
+     même en commentaire : verifier.mjs cherche la chaîne « seances-
+     snt.js » dans TOUT le HTML, commentaires compris.
+
+     Contenu : porté depuis les cinq exports Quizéo de Loïc (cours + 3
+     activités + S'exercer). Tout ce qui n'en vient pas est signalé par un
+     cadre .proposition. Images extraites des PDF sources, jamais
+     redessinées.
+     ============================================================ -->
+<style>
+  /* ---------- Cadre « proposition » — mécanisme du chantier ES1 ----------
+     Tout ce qui ne vient pas des documents de Loïc porte ce cadre. Une
+     seule classe pour les trois types (Programme / Difficulté / Manque),
+     distingués par le mot en tête : Loïc doit pouvoir les retirer tous
+     d'un seul chercher-remplacer une fois arbitrés.
+     Hors mécanique : pas de data-gate, pas de comptage, invisible pour la
+     fiche élève. */
+  .proposition{border:2px dashed var(--hist);border-radius:12px;
+    background:var(--hist-wash);padding:12px 15px;margin:14px 0;
+    font-size:13.5px;line-height:1.55;color:var(--ink)}
+  .proposition .pl{font-family:"IBM Plex Mono",monospace;font-size:11px;
+    letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+    color:var(--hist);display:flex;gap:7px;align-items:center;
+    margin-bottom:5px;flex-wrap:wrap}
+  .proposition p{margin:5px 0}
+  .proposition ul{margin:5px 0 0;padding-left:18px}
+
+  /* ---------- Cadre de réservation d'image ----------
+     Emplacement tenu aux dimensions finales, en attente de l'image.
+     Repris à l'identique de l'outil o3 (sécurité au laboratoire). */
+  .reserve{border:1.5px dashed var(--link);border-radius:8px;
+    background:repeating-linear-gradient(45deg,var(--surface-2) 0 8px,var(--surface) 8px 16px);
+    display:flex;flex-direction:column;justify-content:center;gap:3px;
+    padding:16px 10px;text-align:center;margin:12px auto}
+  .reserve .rf{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--link);word-break:break-all}
+  .reserve .rd{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
+  .reserve .rr{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+
+  /* ---------- Bandeau d'avertissement sur un service externe ---------- */
+  .avert{border-left:3px solid var(--activity);background:var(--activity-wash);
+    padding:11px 14px;border-radius:0 10px 10px 0;font-size:13.5px;margin:12px 0}
+  .avert .al{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;
+    text-transform:uppercase;font-weight:700;color:var(--activity);display:block;margin-bottom:4px}
+
+  /* ---------- Écriture d'un noyau : symbole, A et Z ----------
+     Pas un dessin : de la mise en page typographique. Le A en haut, le Z
+     en bas, collés à gauche du symbole, comme dans un manuel. */
+  .noy{display:inline-flex;align-items:center;font-family:"IBM Plex Mono",monospace;
+    font-size:15px;line-height:1;vertical-align:middle;margin:0 2px}
+  .noy .az{display:inline-flex;flex-direction:column;align-items:flex-end;
+    font-size:10.5px;line-height:1.15;margin-right:1px;color:var(--ink-soft)}
+  .noy .sym{font-weight:700;font-size:17px;color:var(--ink)}
+
+  /* ---------- Tableau des demi-vies (exercice 1) ---------- */
+  .tdemi td:nth-child(2){font-family:"IBM Plex Mono",monospace;text-align:right;white-space:nowrap}
+</style>
+
+</head><body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Enseignement scientifique · 1re · Thème 1</div>
+    <h1 class="title">La radioactivité <span class="tag">chapitre 2</span></h1>
+    <p class="lede">Un phénomène invisible, spontané, imprévisible pour un noyau seul — et pourtant parfaitement prévisible pour un milliard d'entre eux. Il est partout autour de toi, dans les roches, dans l'air, et dans ton propre corps.</p>
+    <div class="themes">
+      <span class="theme-chip">Nucléosynthèse</span><span class="theme-chip on">La radioactivité</span>
+      <span class="theme-chip">Les cristaux</span><span class="theme-chip">Son et musique</span>
+      <span class="theme-chip">Le son, une information à coder</span><span class="theme-chip">La forme de la Terre</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>4 séances</b></span>
+      <span class="m">Durée <b>≈ 6 h</b></span>
+      <span class="m">Chaque séance se débloque quand la <b>précédente est validée</b></span>
+    </div>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — toutes les séances sont ouvertes.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="1re-enseignement-scientifique.html">← Enseignement scientifique</a>
+    <a href="#s1"><span class="n">S1</span>Les désintégrations</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>L'exposition <span class="lockico">🔒</span></a>
+    <a href="#s3" data-navlock="3"><span class="n">S3</span>Décroissance &amp; demi-vie <span class="lockico">🔒</span></a>
+    <a href="#s4" data-navlock="4"><span class="n">S4</span>S'exercer <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- CHANTIER -->
+  <aside class="chantier decision">
+    <div class="cl">📌 Décision attendue — état de cette page</div>
+    Cette séquence est une <b>V0 portée depuis les exports Quizéo</b>. Rien n'y est
+    validé. La <b>progression n'est pas enregistrée</b> : ni base de données, ni
+    stockage local — c'est le périmètre arrêté pour cette session. Tout ce que tu vois
+    en <b>cadre violet</b> est une proposition de Claude, à garder, corriger ou retirer.
+    Le relevé complet est dans <code>_suivi/es1-verification.md</code>.
+  </aside>
+  <!-- /CHANTIER -->
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>Les désintégrations radioactives</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Comprendre pourquoi certains noyaux se transforment tout seuls, ce qu'ils émettent en le faisant, et pourquoi personne ne peut dire quand.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 — DIAGNOSTIC -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-avant">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Avant le cours : ce que le mot évoque</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> poser ce que tu as déjà en tête, avant tout cours. Personne ne le note : cela sert à mesurer le chemin parcouru d'ici la fin du chapitre.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Entrée diagnostique ajoutée&nbsp;: elle n'existe pas dans le cours Quizéo. Elle
+              reprend le mécanisme éprouvé en SNT (l'élève écrit sa définition avant le cours,
+              et la relit à la fin). À garder ou à retirer.
+            </div>
+            <p style="font-size:14.5px;margin:4px 0 12px">« Radioactivité » est un mot que tu as déjà entendu — au journal, dans un film, à propos d'une centrale ou d'un accident. <b>Aucune recherche</b> : ce qui compte ici, c'est ce que tu as déjà, juste ou faux.</p>
+
+            <div class="field" data-focus
+                 data-focus-titre="La radioactivité — première idée"
+                 data-focus-question="Sans faire aucune recherche : qu'est-ce que la radioactivité, selon toi ? Et cite un endroit, un objet ou une situation où tu penses qu'il y en a."
+                 data-focus-max="400" data-focus-min="20"
+                 data-focus-code="RAD-1a" data-focus-strict="1" data-focus-prevenir="1">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris, pour que tu ne recopies rien.</span></button></span>
+              <div class="field-q">Qu'est-ce que la radioactivité, selon toi ? Et où penses-tu qu'il y en a ?</div>
+              <p style="font-size:13px;color:var(--ink-soft);margin:0 0 11px">En cliquant, le reste de la page se floute : tu écris sans rien pouvoir recopier. Il n'y a <b>pas de bonne réponse attendue</b> à ce stade.</p>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Écrire ma première idée</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 — LE COURS : définition -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-definition">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Un noyau instable se désintègre</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir dire ce qu'est un noyau radioactif, et ce qui lui arrive quand il se désintègre.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Poste de visionnage — rappels sur les transformations nucléaires<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>Rappels de seconde : les transformations nucléaires. Mets en pause dès que tu veux noter quelque chose.</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/BZDTu-siDBg" title="Rappels — les transformations nucléaires" allowfullscreen></iframe>
+              </div>
+              <div class="poste-corps">
+                <div class="poste-notes">
+                  <div class="pl">📝 Mes notes de visionnage</div>
+                  <textarea data-notes="RAD-1video" placeholder="Ce qui distingue une transformation nucléaire d'une transformation chimique…" aria-label="Notes de visionnage"></textarea>
+                </div>
+                <div class="poste-dico">
+                  <div class="pl">📖 Dictionnaire</div>
+                  <dl>
+                    <dt>Noyau</dt><dd>Le cœur de l'atome : les protons et les neutrons. Le cortège d'électrons tourne autour, et ne participe pas à la radioactivité.</dd>
+                    <dt>Nucléide</dt><dd>Une espèce de noyau, définie par son nombre de protons <b>et</b> son nombre de neutrons.</dd>
+                    <dt>Spontané</dt><dd>Qui se produit tout seul, sans qu'on ait rien à faire pour le déclencher.</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+            <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Certains noyaux sont <b>instables</b> et se désintègrent : on dit qu'ils sont <b>radioactifs</b>.</div>
+
+            <div class="block-label">Doc — pourquoi un noyau est-il instable ?</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Ces noyaux radioactifs sont instables car ils possèdent un <b>excès de protons ou de neutrons</b>, ce qui déséquilibre les forces qui maintiennent le noyau cohérent.</p>
+            <p class="doc-note">Les termes <b>radionucléides</b> ou <b>radioisotopes</b> sont également utilisés pour désigner un noyau radioactif — tu les rencontreras dans les documents.</p>
+            <p style="font-size:14.5px;margin:10px 0 4px">Les noyaux radioactifs <b>ne disparaissent pas</b>, mais se transforment spontanément en un autre noyau, selon des réactions dont <b>la connaissance n'est pas évaluée</b> dans ce cours.</p>
+
+            <div class="block-label">Doc — la cascade de l'uranium 238<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c2/t1c2-cascade-uranium-238-plomb-206.jpg" alt="Chaîne de désintégrations de l'uranium 238 jusqu'au plomb 206, chaque étape portant le type de désintégration et la demi-vie du noyau" loading="lazy">
+              <figcaption>Cascade de désintégration de l'uranium&nbsp;238 au plomb&nbsp;206. Chaque flèche est une désintégration&nbsp;: <b>α</b> ou <b>β</b>. Sous chaque noyau, sa demi-vie — de la milliseconde au milliard d'années.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+            <p style="font-size:14.5px;margin:4px 0 10px">L'uranium&nbsp;238 est un noyau instable car il contient un très grand nombre de protons et de neutrons, ce qui rend les forces de cohésion insuffisantes face aux répulsions électriques entre protons. Pour se stabiliser, il se désintègre progressivement en une série d'étapes (appelée <b>cascade de désintégrations</b>), jusqu'à devenir du <b>plomb&nbsp;206</b>, un noyau stable.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Lorsqu'il se désintègre, le <b>noyau père</b> radioactif se transforme en <b>noyau fils</b> plus stable. Cette désintégration s'accompagne d'une <b>émission de particules</b> et d'une <b>radiation</b>.</p>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="RAD-1b">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Qu'est-ce qui caractérise un noyau radioactif ?",
+  "o": [
+   "Il est instable et se transforme spontanément en un autre noyau",
+   "Il est stable mais devient dangereux au contact de l'air ambiant",
+   "Il a perdu ses électrons et cherche à en récupérer auprès d'un voisin",
+   "Il est plus lourd que la moyenne des noyaux présents sur la Terre"
+  ],
+  "r": 0,
+  "c": "C'est bien l'<b>instabilité du noyau</b> qui est en cause, et elle se règle toute seule, par une désintégration. Les électrons, eux, ne participent pas : la radioactivité est une affaire de noyau."
+ },
+ {
+  "q": "Un noyau radioactif qui se désintègre…",
+  "o": [
+   "disparaît complètement, il ne reste rien à sa place",
+   "se transforme en un autre noyau, plus stable",
+   "se coupe toujours en deux moitiés strictement égales",
+   "redevient stable sans que rien ne soit émis"
+  ],
+  "r": 1,
+  "c": "Rien ne disparaît : le <b>noyau père</b> devient un <b>noyau fils</b> plus stable, en émettant une particule et un rayonnement."
+ },
+ {
+  "q": "Pourquoi l'uranium 238 est-il instable ?",
+  "o": [
+   "Parce qu'il possède beaucoup trop peu de neutrons pour maintenir ensemble le très grand nombre de protons de son noyau",
+   "Parce qu'il est radioactif, et que tous les noyaux radioactifs sont par définition instables, quelle que soit leur taille",
+   "Parce que ses très nombreux protons se repoussent électriquement, au-delà de ce que la cohésion du noyau peut compenser",
+   "Parce qu'il a été fabriqué artificiellement dans un réacteur nucléaire, et non formé lors de la nucléosynthèse"
+  ],
+  "r": 2,
+  "c": "Les protons sont tous chargés positivement : ils se repoussent. Dans un très gros noyau, cette répulsion finit par l'emporter sur ce qui tient le noyau ensemble. Attention à la deuxième réponse : elle ne fait que redire la question avec d'autres mots."
+ },
+ {
+  "q": "L'uranium 238 finit sa cascade en devenant…",
+  "o": [
+   "du plomb 206, qui est stable",
+   "du radium 226, qui est stable",
+   "du radon 222, qui est un gaz stable",
+   "de l'hélium 4, qui est le plus léger des noyaux stables"
+  ],
+  "r": 0,
+  "c": "Le <b>plomb 206</b> termine la chaîne : il est stable, la cascade s'y arrête. Le radium et le radon sont des étapes intermédiaires — eux-mêmes radioactifs."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 — alpha, bêta, gamma -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-alpha-beta-gamma">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Ce qui est émis : α, β⁻ et γ</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir ce que le noyau émet en se désintégrant, et nommer les trois rayonnements.</span></div>
+          </div>
+          <div class="card-body">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c2/t1c2-radioactivites-alpha-beta.jpg" alt="Un noyau instable donnant d'un côté un noyau fils et un noyau d'hélium avec un rayonnement gamma, de l'autre un noyau fils et un électron avec un rayonnement gamma" loading="lazy">
+              <figcaption>Deux exemples de radioactivité. En haut, le noyau émet un <b>noyau d'hélium</b> (particule α). En bas, il émet un <b>électron</b> (radioactivité β⁻). Dans les deux cas, un <b>rayonnement γ</b> part aussi.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+            <p style="font-size:14.5px;margin:4px 0 10px">Sur l'image, la particule émise est soit un <b>noyau d'hélium</b> <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span>, appelée <b>particule α</b> (radioactivité α), soit un <b>électron</b> <span class="noy"><span class="sym">e⁻</span></span> (radioactivité β⁻) ; alors qu'un <b>rayonnement gamma γ</b> est toujours émis.</p>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              <p>Le tableau ci-dessous résume les trois rayonnements en une ligne chacun. Il ne figure pas
+              tel quel dans le cours Quizéo, où l'information est dispersée entre la partie I et la
+              partie II&nbsp;: c'est un regroupement, pas un ajout de notion.</p>
+            </div>
+            <table class="doc-table">
+              <tr><th>Rayonnement</th><th>Ce qui part du noyau</th><th>Ce que c'est</th></tr>
+              <tr><td><b>α</b> (alpha)</td><td><span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span></td><td>un noyau d'hélium : 2 protons + 2 neutrons</td></tr>
+              <tr><td><b>β⁻</b> (bêta moins)</td><td><span class="noy"><span class="sym">e⁻</span></span></td><td>un électron</td></tr>
+              <tr><td><b>γ</b> (gamma)</td><td>un rayonnement</td><td>pas de matière : de l'énergie, comme la lumière — <b>toujours</b> émis</td></tr>
+            </table>
+
+            <div class="block-label">Exercice — associe chaque noyau à son rôle<span class="niv" style="margin-left:8px">★ <b>à savoir-faire</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Voici une désintégration α, celle du radium&nbsp;226. <b>Touche une étiquette</b>, puis <b>touche le noyau</b> qui lui correspond sur l'image. Pour corriger, touche le noyau&nbsp;: l'étiquette revient dans la réserve.</p>
+            <div class="field">
+              <span class="field-type">Étiquettes à poser</span>
+              <div class="etiq-jeu" data-etiquettes>
+                <div class="etiq-image">
+                  <img src="../assets/img/es/1re-es-t1-c2/t1c2-desintegration-alpha-radium.jpg" alt="Désintégration alpha : un noyau de radium 226 donne un noyau de radon 222 et un noyau d'hélium 4" loading="lazy">
+                  <button type="button" class="etiq-zone" data-zone="pere" style="left:5%;top:44%;width:29%;height:44%" aria-label="Le noyau de gauche"><span class="ez-n">1</span></button>
+                  <button type="button" class="etiq-zone" data-zone="fils" style="left:48%;top:3%;width:32%;height:40%" aria-label="Le noyau en haut à droite"><span class="ez-n">2</span></button>
+                  <button type="button" class="etiq-zone" data-zone="alpha" style="left:63%;top:59%;width:22%;height:30%" aria-label="Le petit noyau en bas à droite"><span class="ez-n">3</span></button>
+                </div>
+                <div class="etiq-bac" data-etiq-bac>
+                <button type="button" class="etiq" data-etiq="pere">Radium 226 — noyau père (instable et radioactif)</button>
+                <button type="button" class="etiq" data-etiq="fils">Radon 222 — noyau fils (plus stable)</button>
+                <button type="button" class="etiq" data-etiq="alpha">Hélium 4 — particule alpha</button>
+                </div>
+                <p class="etiq-aide">💡 Agrandis l'image si tu hésites : les nombres écrits à côté de chaque symbole te disent tout.</p>
+                <div style="margin-top:12px"><button class="btn ghost" type="button" data-etiq-verifier>Vérifier</button></div>
+                <div class="verdict"></div>
+              </div>
+            </div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="RAD-1c">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Lequel de ces noyaux est appelé « particule α » ?",
+  "o": [
+   "Le noyau d'hélium, formé de 2 protons et de 2 neutrons",
+   "Le noyau d'azote 14, formé de 7 protons et de 7 neutrons",
+   "Le noyau de plomb 207, formé de 82 protons et de 125 neutrons",
+   "Le noyau de polonium 211, formé de 84 protons et de 127 neutrons"
+  ],
+  "r": 0,
+  "c": "La particule α est un <b>noyau d'hélium</b> : deux protons, deux neutrons, et rien d'autre. C'est la plus grosse des trois émissions — et, on le verra en séance 2, la plus facile à arrêter."
+ },
+ {
+  "q": "Dans une désintégration, le rayonnement γ…",
+  "o": [
+   "n'apparaît que dans les désintégrations β⁻",
+   "n'apparaît que dans les désintégrations α",
+   "est toujours émis, quelle que soit la désintégration",
+   "n'est émis que si le noyau fils est lui-même radioactif"
+  ],
+  "r": 2,
+  "c": "Le γ accompagne <b>toujours</b> la désintégration : le noyau fils se retrouve avec un excès d'énergie, dont il se débarrasse sous forme de rayonnement."
+ },
+ {
+  "q": "Le radium 226 se désintègre en radon 222 en émettant une particule α. Que peut-on en dire ?",
+  "o": [
+   "Le radium est le noyau fils, le radon est le noyau père",
+   "Le radium est le noyau père, le radon est le noyau fils",
+   "Le radium et le radon sont deux noyaux pères d'une même particule",
+   "Le radon est la particule α émise par le radium au moment de la désintégration"
+  ],
+  "r": 1,
+  "c": "Celui qui se désintègre est le <b>père</b> ; celui qui apparaît est le <b>fils</b>. La particule α, elle, est le petit noyau d'hélium émis au passage — pas le radon."
+ },
+ {
+  "q": "Parmi ces trois émissions, laquelle n'est pas de la matière ?",
+  "o": [
+   "La particule α, parce qu'elle est trop petite pour être pesée",
+   "L'électron émis lors d'une radioactivité β⁻",
+   "Le rayonnement γ, qui transporte de l'énergie, comme la lumière",
+   "Aucune : les trois sont des morceaux de matière arrachés au noyau"
+  ],
+  "r": 2,
+  "c": "α et β⁻ sont bien des particules de matière. Le <b>γ</b>, lui, est un rayonnement : de l'énergie qui voyage, de la même famille que la lumière et les rayons X."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.4 — Activité 1 : simulation PhET -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-activite-phet">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Activité 1 — voir une désintégration α, et son horloge folle</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> exploiter une simulation numérique pour comprendre le phénomène de désintégration d'un noyau radioactif — et constater de tes propres yeux que l'instant de la désintégration est <b>imprévisible</b>.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Ressource — animation PhET « désintégration alpha »<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Ouvre l'animation, puis va dans l'onglet <b>Atome seul</b>. Une animation se lance.</p>
+            <p><a class="btn ghost" href="https://phet.colorado.edu/sims/cheerpj/nuclear-physics/latest/nuclear-physics.html?simulation=alpha-decay&amp;locale=fr" target="_blank" rel="noopener noreferrer">▶ Ouvrir l'animation PhET (nouvel onglet)</a></p>
+
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🔍 Ressource à tester depuis un poste du lycée</div>
+              PhET tourne ici avec <b>CheerpJ</b> (une ancienne simulation Java rejouée dans le
+              navigateur)&nbsp;: c'est lourd, et le filtrage du lycée peut le bloquer.
+              <b>À vérifier depuis une salle</b> avant la séance, comme cela avait été fait pour
+              CodeBetter. Repli possible&nbsp;: l'animation d'ensciences.fr utilisée en séance 3.
+            </aside>
+            <!-- /CHANTIER -->
+
+            <div class="block-label">1 · Décrire ce que tu observes</div>
+            <div class="field" data-focus
+                 data-focus-titre="Ce que montre l'animation"
+                 data-focus-question="Décris ce que tu observes. Quel est le noyau père ? Le noyau fils ? La particule émise ?"
+                 data-focus-max="500" data-focus-min="20" data-focus-code="RAD-1d">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Décris ce que tu observes. Quel est le noyau père, le noyau fils, la particule émise ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">☢ Pour compléter ta réponse</div>
+                L'animation montre la désintégration α du <b>polonium 211</b> : il émet une <b>particule α</b> (un noyau d'hélium) et devient du <b>plomb 207</b>. Ce que tu ne peux pas prévoir, c'est <b>quand</b> : relance la simulation, le temps est différent à chaque fois.
+              </div>
+            </div>
+
+            <div class="block-label">2 · Six désintégrations, six temps différents</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Lance <b>5 autres simulations</b> en cliquant sur le bouton <i>Réinitialiser le noyau</i>. Note les temps de désintégration à l'issue de chaque simulation — ils s'affichent dans la partie supérieure gauche de l'animation.</p>
+
+            <div class="field" data-focus
+                 data-focus-titre="Mes six temps de désintégration"
+                 data-focus-question="Donne tes résultats (les six temps relevés) puis analyse-les : sont-ils proches ? peux-tu prédire le suivant ?"
+                 data-focus-max="600" data-focus-min="20" data-focus-code="RAD-1e">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Donner et analyser vos résultats.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">☢ Ce qu'il fallait voir</div>
+                Les six temps n'ont <b>rien à voir entre eux</b> — et pourtant c'est le même noyau, dans les mêmes conditions. L'instant de désintégration d'un noyau radioactif <b>individuel est aléatoire</b>. C'est le cœur du chapitre : on ne prédit pas un noyau. On prédit une population, et on le fera en séance 3.
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              La ressource « En savoir plus&nbsp;: impact du polonium 210 sur l'homme » (IRSN) était
+              rattachée à cette activité dans Quizéo. Elle est placée ici en <b>bonus de fin de
+              séance</b> plutôt qu'au milieu de l'activité, pour ne pas couper l'élève entre ses deux
+              relevés. À déplacer si tu préfères l'ordre d'origine.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.5 — l'aléatoire et le bilan -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-aleatoire">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.5 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Imprévisible pour un noyau, prévisible pour un milliard</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> tenir ensemble les deux moitiés de la phrase, sans en lâcher une.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">L'instant de désintégration d'un noyau radioactif <b>individuel est aléatoire</b>. Cependant, nous le verrons dans la suite de ce cours, il est tout à fait possible de <b>prédire l'évolution d'un grand nombre</b> de ces noyaux radioactifs.</p>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète le bilan de la séance.</div>
+              <div class="cloze" data-cloze>
+                Un noyau instable se <input data-answer="désintègre" placeholder="verbe" aria-label="ce que fait un noyau instable" data-variantes="desintegre|désintégre|désintegre" data-indice1="Le mot est de la même famille que « radioactivité » — c'est le verbe employé depuis le début du cours." data-indice2="Il commence par « désin… » et finit par « …ègre »."> : on dit qu'il est <input data-answer="radioactif" placeholder="adjectif" aria-label="adjectif" data-variantes="radio-actif" data-indice1="C'est le mot qui donne son titre au chapitre." data-indice2="Radio + actif.">. Il ne disparaît pas : il se transforme en un noyau <input data-answer="fils" placeholder="?" aria-label="nom du noyau obtenu" data-variantes="le fils|noyau fils" data-indice1="Si celui qui se désintègre est le père…" data-indice2="Trois lettres, c'est le mot de la famille qui manque.">, plus <input data-answer="stable" placeholder="?" aria-label="propriété du noyau obtenu" data-variantes="stables" data-indice1="C'est le contraire de ce qu'était le noyau père." data-indice2="Six lettres, et le mot est dans la question.">. À l'échelle d'un seul noyau, l'instant de la désintégration est <input data-answer="aléatoire" placeholder="?" aria-label="caractère de l'instant de désintégration" data-variantes="aleatoire|imprévisible|imprevisible|au hasard" data-indice1="Tes six temps relevés dans l'animation n'avaient aucun rapport entre eux." data-indice2="Le mot commence par « alé… » — comme les aléas.">, alors que pour un grand nombre de noyaux, l'évolution est <input data-answer="prévisible" placeholder="?" aria-label="caractère de l'évolution d'un grand nombre" data-variantes="previsible|prédictible|predictible" data-indice1="C'est le contraire du mot précédent." data-indice2="On peut la « prévoir » : l'adjectif se devine.">.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Le bilan de la séance<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+            <div class="retain" data-bilan-wrap>
+              <ul style="margin:0;padding-left:18px">
+                <li>Certains noyaux d'atomes sont <b>instables</b> : on dit qu'ils sont <b>radioactifs</b>.</li>
+                <li>Leur désintégration est <b>spontanée et aléatoire</b> à l'échelle individuelle.</li>
+                <li>Ils <b>ne disparaissent pas</b>, mais se transforment en d'autres noyaux plus stables.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.6 — BONUS -->
+      <div class="step" data-step data-cle="es-t1c2-bonus-s1">
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
+      <div class="bonus-wrap" data-bonus>
+        <div class="bonus-head" data-bonus-toggle>
+          <span class="ix">1.6</span>
+          <span class="bl">Pour aller plus loin</span>
+          <span class="bonus-tag">hors 100&nbsp;%</span>
+          <span class="chev">▸</span>
+        </div>
+        <div class="bonus-body">
+          <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Facultatif, jamais évalué — mais si tu as fini avant les autres, c'est là que ça devient intéressant.</p>
+          <div class="block-label">La vallée de la stabilité</div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Pourquoi certains noyaux tiennent et d'autres non : la carte des noyaux, et la vallée où ils cherchent tous à tomber.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/VZHpAwSGYZE" title="La vallée de la stabilité" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="block-label">Le polonium 210, un poison célèbre</div>
+          <p style="font-size:14.5px;margin:4px 0 10px">L'IRSN — l'institut public français de recherche sur les risques nucléaires — décrit l'impact du polonium 210 sur l'organisme. Un émetteur α : inoffensif à l'extérieur du corps, redoutable à l'intérieur. Tu comprendras pourquoi en séance 2.</p>
+          <p><a class="btn ghost" href="https://www.irsn.fr/savoir-comprendre/sante/impact-polonium-210-sur-lhomme" target="_blank" rel="noopener noreferrer">🔗 Lire la fiche IRSN (nouvel onglet)</a></p>
+        </div>
+      </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>L'exposition à la radioactivité</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Sortir du noyau pour aller vers toi : d'où vient la radioactivité que tu reçois, combien tu en reçois vraiment, ce qu'elle fait au corps et comment on s'en protège.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 2.1 -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-naturelle-artificielle">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Radioactivité naturelle et radioactivité artificielle</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir que la radioactivité existe sans nous, et savoir ce que les activités humaines y ajoutent.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Poste de visionnage<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>Naturelle ou artificielle : d'où vient la radioactivité qui nous entoure.</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/FY_hqTGyW1U" title="Radioactivité naturelle et artificielle" allowfullscreen></iframe>
+              </div>
+              <div class="poste-corps">
+                <div class="poste-notes">
+                  <div class="pl">📝 Mes notes de visionnage</div>
+                  <textarea data-notes="RAD-2video" placeholder="D'où vient la radioactivité naturelle ? Que fabrique-t-on artificiellement, et pour quoi faire ?" aria-label="Notes de visionnage"></textarea>
+                </div>
+                <div class="poste-dico">
+                  <div class="pl">📖 Dictionnaire</div>
+                  <dl>
+                    <dt>Nucléosynthèse</dt><dd>La fabrication des noyaux, dans le Big Bang puis dans les étoiles. C'est le <b>chapitre 1</b> de ce thème.</dd>
+                    <dt>Croûte terrestre</dt><dd>La couche externe de la Terre, celle sur laquelle nous vivons — et qui contient des noyaux radioactifs depuis sa formation.</dd>
+                    <dt>Radiothérapie</dt><dd>Un traitement médical qui utilise des rayonnements pour détruire des cellules cancéreuses.</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+            <div class="block-label">Doc — la radioactivité est d'abord un phénomène naturel</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">La radioactivité est un <b>phénomène naturel</b> : des noyaux radioactifs formés lors des différentes étapes de la <b>nucléosynthèse</b> se désintègrent continûment dans les roches qui forment la croûte terrestre.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Certains noyaux radioactifs <b>n'existent plus</b> sur la Terre ; ils peuvent cependant être <b>recréés artificiellement</b>. Depuis le début du XX<sup>e</sup> siècle, les activités humaines ont entraîné la présence de radioactivité artificielle dans l'environnement, qui <b>s'ajoute</b> à la radioactivité naturellement présente.</p>
+            <p class="doc-note">La production de radionucléides artificiels se fait au moyen d'un <b>accélérateur de particules</b> ou d'un <b>réacteur nucléaire</b>. Certains servent de source de rayonnements pour des radiographies, ou de source d'irradiation pour des applications industrielles ou médicales (radiothérapie). D'autres, fortement radioactifs et actuellement inutilisés, constituent des <b>déchets nucléaires</b> devant être stockés sous haute surveillance.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c2/t1c2-effluents-installation-nucleaire.jpg" alt="Schéma des effluents liquides et gazeux d'une installation nucléaire et de leur traitement" loading="lazy">
+              <figcaption>Origine et typologie simplifiées des effluents d'une installation nucléaire.<span class="src">Crédit © Chromatiques/IRSN — Source : IRSN</span></figcaption>
+            </figure>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="RAD-2a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "S'il n'y avait aucune activité humaine sur Terre, y aurait-il de la radioactivité ?",
+  "o": [
+   "Non : toute la radioactivité terrestre provient des centrales et de la médecine",
+   "Oui : les roches de la croûte terrestre contiennent des noyaux radioactifs depuis toujours",
+   "Oui, mais uniquement à très haute altitude, là où arrivent les rayons cosmiques",
+   "Non : elle a entièrement disparu depuis la formation de la Terre, il y a 4,5 milliards d'années"
+  ],
+  "r": 1,
+  "c": "La radioactivité est d'abord <b>naturelle</b>. Les noyaux radioactifs des roches viennent de la nucléosynthèse, bien avant la Terre elle-même. L'activité humaine <b>s'ajoute</b> à ce fond, elle ne le crée pas."
+ },
+ {
+  "q": "Comment fabrique-t-on un radionucléide artificiel ?",
+  "o": [
+   "Dans un accélérateur de particules ou dans un réacteur nucléaire",
+   "En chauffant très fortement un minerai naturellement radioactif",
+   "En concentrant par distillation la radioactivité contenue dans l'eau de mer",
+   "En exposant un métal ordinaire à la lumière du Soleil pendant plusieurs mois"
+  ],
+  "r": 0,
+  "c": "Ce sont les deux voies : l'<b>accélérateur de particules</b> et le <b>réacteur nucléaire</b>. Aucune manipulation chimique ordinaire ne rend un noyau radioactif — la radioactivité est une affaire de noyau, pas de molécule."
+ },
+ {
+  "q": "Un radionucléide artificiel, à quoi peut-il servir ?",
+  "o": [
+   "À rien : tous les radionucléides artificiels sont des déchets à stocker",
+   "Uniquement à produire de l'électricité dans une centrale nucléaire",
+   "À des radiographies, à des traitements par radiothérapie, à des usages industriels",
+   "À rendre les aliments comestibles plus longtemps en les stérilisant, et à rien d'autre"
+  ],
+  "r": 2,
+  "c": "Les usages sont variés — <b>imagerie</b>, <b>radiothérapie</b>, <b>industrie</b>. Certains radionucléides, eux, ne servent à rien aujourd'hui : ce sont les <b>déchets</b>, stockés sous haute surveillance."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-penetration">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Ce qui traverse, ce qui s'arrête</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir classer α, β et γ selon leur pouvoir de pénétration — et comprendre le piège du raisonnement « le plus pénétrant est le plus dangereux ».</span></div>
+          </div>
+          <div class="card-body">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c2/t1c2-penetration-rayonnements.jpg" alt="Trois rayonnements issus d'un noyau radioactif : alpha arrêté par une feuille de papier, bêta par une plaque d'aluminium, gamma traversant jusqu'au béton" loading="lazy">
+              <figcaption>Pénétration des trois types de rayonnement dans divers matériaux.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Les atomes radioactifs émettent trois types de rayonnement : <b>alpha α</b>, <b>bêta β</b> et <b>gamma γ</b>.</p>
+            <ul style="font-size:14.5px;margin:4px 0 10px;padding-left:20px">
+              <li>Très peu pénétrants, les rayons <b>alpha</b> sont arrêtés par une <b>feuille de papier</b>.</li>
+              <li>Les rayons <b>bêta</b>, bien que plus pénétrants, sont aussi facilement arrêtés par quelques <b>millimètres d'aluminium</b>.</li>
+              <li>Les rayons <b>gamma</b>, quant à eux, sont <b>pénétrants mais moins nocifs</b>. On s'en protège en interposant des écrans (plusieurs mètres d'eau, un mètre de verre au plomb).</li>
+            </ul>
+            <div class="reveal show" style="border-color:var(--err);background:var(--err-wash);color:#8f2a22">
+              <div class="rl" style="color:var(--err)">⚠️ Le piège de ce chapitre</div>
+              Les rayons <b>alpha et bêta</b> deviennent dangereux <b>si l'atome radioactif s'est fixé dans la matière vivante</b> — par ingestion, inhalation ou pénétration cutanée. Autrement dit : le rayonnement le plus facile à arrêter de l'extérieur devient le plus redoutable une fois à l'intérieur, parce qu'il dépose toute son énergie sur quelques cellules. « Peu pénétrant » ne veut pas dire « inoffensif ».
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète le tableau de protection, d'après le schéma.</div>
+              <div class="cloze" data-cloze>
+                Le rayonnement <b>α</b> est arrêté par une simple feuille de <input data-answer="papier" placeholder="?" aria-label="matériau qui arrête alpha" data-variantes="papier|carton" data-indice1="C'est le matériau le plus fin des trois du schéma." data-indice2="Celui sur lequel on écrit.">. Le rayonnement <b>β</b> est arrêté par quelques millimètres d'<input data-answer="aluminium" placeholder="?" aria-label="matériau qui arrête bêta" data-variantes="alu|aluminium" data-indice1="C'est le métal du papier d'emballage de cuisine." data-indice2="Symbole chimique Al.">, et le rayonnement <b>γ</b>, le plus pénétrant, ne s'arrête qu'avec du <input data-answer="béton" placeholder="?" aria-label="matériau qui arrête gamma" data-variantes="beton|plomb|béton ou plomb" data-indice1="Sur le schéma, c'est le bloc le plus épais, tout à droite." data-indice2="Le matériau des murs d'un parking souterrain — on accepte aussi « plomb ».">. Un émetteur α devient dangereux lorsqu'il se retrouve à l'<input data-answer="intérieur" placeholder="?" aria-label="où l'émetteur alpha devient dangereux" data-variantes="interieur|dans le corps|à l'intérieur du corps" data-indice1="Relis l'encadré rouge juste au-dessus." data-indice2="Le contraire de « à l'extérieur »."> du corps.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 — activité 2, partie 1 -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-activite-remon">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Activité 2 — la radioactivité au-dessus de ta ville</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> lire une donnée sur une carte de mesure européenne, la convertir, et la comparer aux seuils réglementaires.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Ressource — REMon, la surveillance européenne<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le réseau <b>REMon</b> (<i lang="en">Radioactivity Environmental Monitoring</i>) publie en continu les mesures des balises de surveillance de toute l'Europe. Rejoins la carte, cherche <b>Poitiers</b>, et extrais la <b>dose maximale reçue dans ta ville lors de la semaine écoulée</b>.</p>
+            <p><a class="btn ghost" href="https://remap.jrc.ec.europa.eu/Advanced.aspx" target="_blank" rel="noopener noreferrer">🗺 Ouvrir la carte REMon (nouvel onglet)</a></p>
+
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🔍 Ressource à tester depuis un poste du lycée</div>
+              Carte du <b>JRC (Centre commun de recherche de la Commission européenne)</b> — service
+              public européen. Reste à vérifier&nbsp;: l'accès depuis une salle du lycée, et la
+              présence effective d'une balise près de Poitiers au moment de la séance.
+            </aside>
+            <!-- /CHANTIER -->
+
+            <div class="block-label">1 · Ta dose annuelle naturelle</div>
+            <p class="doc-note">La dose n'est pas directement donnée en <b>Sv</b> sur la carte interactive, mais en <b>nSv/h</b>. Il convient donc d'effectuer une <b>conversion</b> et de prendre en compte un <b>intervalle de temps</b>.</p>
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              La conversion nSv/h → mSv/an suppose deux gestes qui ne sont pas rappelés dans le
+              document source&nbsp;: passer des <b>nano</b> aux <b>milli</b> (facteur 10⁻⁶) et
+              multiplier par le nombre d'heures dans une année (<b>8&nbsp;760&nbsp;h</b>). Une piste
+              chiffrée est proposée ci-dessous — à retirer si tu veux laisser les élèves buter dessus.
+            </div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>Aide — les puissances de 10 et les préfixes en physique-chimie.</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/UfgZ0YoYS-k" title="Les puissances de 10 et les préfixes" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Ma dose annuelle naturelle à Poitiers"
+                 data-focus-question="À quelle dose de radioactivité naturelle sommes-nous exposés à Poitiers en un an ? Donne ta valeur relevée en nSv/h, ton calcul, et ton résultat en mSv/an."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="RAD-2b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">À quelle dose de radioactivité naturelle sommes-nous exposés à Poitiers en un an ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">☢ La méthode</div>
+                Une année compte <b>8 760 heures</b> (365 × 24). Multiplie ta valeur en nSv/h par 8 760 : tu obtiens des nSv/an. Puis convertis : <b>1 mSv = 1 000 000 nSv</b>. Exemple de raisonnement, avec une valeur fictive de 90 nSv/h : 90 × 8 760 = 788 400 nSv/an ≈ <b>0,79 mSv/an</b>.
+              </div>
+            </div>
+
+            <div class="block-label">2 · Comparer aux seuils</div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c2/t1c2-seuils-reglementaires-exposition.jpg" alt="Diagramme comparant plusieurs expositions à la radioactivité aux limites réglementaires de 1 mSv pour la population et 20 mSv pour les travailleurs" loading="lazy">
+              <figcaption>Comparaison de l'exposition à la radioactivité par rapport aux seuils réglementaires.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+            <p class="doc-note">Attention, la radioactivité naturelle n'est <b>pas la seule</b> à prendre en compte lorsque l'on cherche à évaluer notre exposition personnelle.</p>
+
+            <div class="field" data-focus
+                 data-focus-titre="Analyse de ma dose"
+                 data-focus-question="Analyse ton résultat précédent en t'appuyant sur le diagramme des seuils réglementaires : ta dose est-elle grande ? petite ? à quoi la compares-tu ?"
+                 data-focus-max="600" data-focus-min="20" data-focus-code="RAD-2c">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Analyser votre résultat précédent. Utiliser pour cela le diagramme des seuils.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.4 — activité 2, partie 2 : ExPop -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-activite-expop">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Ton exposition personnelle</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> estimer ta propre exposition annuelle, et découvrir que le lieu d'habitation n'en est qu'une partie.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>D'où vient, concrètement, la dose que reçoit chacun d'entre nous ?</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/zunPlwlrnTQ" title="Les sources d'exposition à la radioactivité" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Les autres sources d'exposition"
+                 data-focus-question="La radioactivité naturelle liée à ton lieu d'habitation est-elle la seule source d'exposition ? Développe."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="RAD-2d">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">La radioactivité naturelle liée à ton lieu d'habitation est-elle la seule source d'exposition ? Développer.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Ressource — ExPop, le calculateur de l'ASNR<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">L'<b>ASNR</b> (Autorité de sûreté nucléaire et de radioprotection, service public français) met en ligne un questionnaire qui estime ton exposition annuelle. Complète-le, puis <b>enregistre le résultat dans ton dossier numérique d'enseignement scientifique</b> — ou imprime-le pour le conserver.</p>
+
+            <div class="avert">
+              <span class="al">🛡 Tes données t'appartiennent</span>
+              Ce questionnaire te demande des informations personnelles (lieu de vie, examens médicaux,
+              voyages en avion…). <b>Tu n'es pas obligé de les renseigner sincèrement.</b> Tu peux très
+              bien <b>simuler le profil de quelqu'un d'autre</b> — un pilote de ligne, un habitant du
+              Kerala, une personne qui vient de passer un scanner : l'exercice fonctionne aussi bien, et
+              c'est même plus instructif. Le service est public et n'enregistre pas tes réponses, mais la
+              règle reste la même partout : on ne donne jamais une donnée personnelle sans savoir pourquoi.
+            </div>
+            <p><a class="btn ghost" href="https://expop.asnr.fr/" target="_blank" rel="noopener noreferrer">📊 Ouvrir ExPop — ASNR (nouvel onglet)</a></p>
+
+            <div class="field" data-focus
+                 data-focus-titre="Mon exposition annuelle estimée"
+                 data-focus-question="Quelle est ton exposition à la radioactivité, d'après le questionnaire ? Donne la valeur totale et les deux ou trois postes qui pèsent le plus."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="RAD-2e">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Quelle est ton exposition à la radioactivité ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Analyse de mon exposition"
+                 data-focus-question="Analyse ce résultat : où te situes-tu par rapport à la moyenne française (≈ 4,5 mSv/an) ? Qu'est-ce qui, dans ton profil, pèse le plus lourd ?"
+                 data-focus-max="600" data-focus-min="20" data-focus-code="RAD-2f">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Analyser ce résultat.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="reveal show" style="border-color:var(--hist);background:var(--hist-wash)">
+              <div class="rl" style="color:var(--hist)">🔎 Le sais-tu</div>
+              Même s'ils sont rares en proportion, les atomes radioactifs peuvent être innombrables. <b>Notre propre corps est naturellement radioactif</b> : un adulte de 80 kg émet environ <b>8 000 désintégrations par seconde</b> (soit 8 000 Bq), sans aucune conséquence pour sa santé.<br><span style="font-size:12.5px;color:var(--ink-soft)">Source : Encyclopédie de l'énergie.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.5 — effets et protection -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-sante">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.5 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Les effets sur la santé, et comment on s'en protège</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir que l'effet dépend de la <b>dose</b> et de la <b>durée</b>, connaître l'unité, et savoir ce que fait un professionnel exposé.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">L'exposition à de fortes doses de radiations, mesurée en <b>sievert (Sv)</b>, fragilise notre organisme et provoque de nombreux effets sur notre santé.</p>
+            <p class="doc-note">La réglementation française fixe à <b>1 millisievert (mSv) par an</b> la dose efficace maximale admissible résultant des activités humaines, en dehors de la radioactivité naturelle et des doses reçues en médecine. Il s'agit de « doses corps entier ». Pour les expositions d'un organe ou d'un tissu, on considère les <b>doses équivalentes</b> : les limites pour le cristallin et pour la peau sont fixées respectivement à <b>15 mSv/an</b> et <b>50 mSv/an</b>. <i>Source : LaRadioactivité.com</i></p>
+
+            <div class="duo-ill">
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t1-c2/t1c2-effets-de-la-radioactivite.jpg" alt="Schéma des effets de la radioactivité sur l'organisme" loading="lazy">
+                <figcaption>Les effets de la radioactivité.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+              </figure>
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t1-c2/t1c2-doses-et-consequences-sante.jpg" alt="Échelle des doses en millisieverts et conséquences correspondantes sur la santé, de l'absence d'effet au décès" loading="lazy">
+                <figcaption>Doses de radioactivité et conséquences sur la santé. L'échelle est en <b>mSv</b> : compare-la à ta propre exposition annuelle, calculée à l'étape précédente.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+              </figure>
+            </div>
+
+            <div class="block-label">Doc — se protéger</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Les particules et radiations émises par la radioactivité <b>peuvent être contenues</b>. Certaines particules, comme la particule <b>α</b>, sont arrêtées par une simple feuille de papier ou une plaque métallique. Mais les rayonnements fortement ionisants, comme les rayonnements <b>γ</b>, traversent jusqu'au béton et ne sont arrêtés que par des protections en <b>plomb</b>.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Les professionnels de <b>radiologie médicale</b> réalisent des diagnostics (radiologie conventionnelle, scanographie, résonance magnétique, scintigraphie…) ou effectuent des traitements de radiothérapie. Ce personnel est exposé à des doses répétées de radiations ionisantes — plus fortes lorsqu'il se trouve à proximité du patient.</p>
+
+            <div class="duo-ill">
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t1-c2/t1c2-radiologie-medicale.jpg" alt="Personnel de radiologie médicale au travail auprès d'un patient" loading="lazy">
+                <figcaption>Pour les manipulateurs en radiologie médicale, la protection contre les rayonnements ionisants est <b>impérative</b>.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+              </figure>
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t1-c2/t1c2-epi-travailleurs.jpg" alt="Équipements de protection individuelle pour les travailleurs exposés aux rayonnements" loading="lazy">
+                <figcaption>Les équipements de protection individuelle des travailleurs en contact avec de la radioactivité.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+              </figure>
+            </div>
+            <p class="doc-note">La protection passe par le <b>collectif</b> (vérification périodique des appareils, formation, délimitation et signalisation des zones d'émission, écrans de protection…) <b>et</b> par l'<b>individuel</b> (dosimétrie, surveillance médicale renforcée, port d'équipements de protection…).</p>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="RAD-2g">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "En quelle unité mesure-t-on la dose de radioactivité reçue par un organisme ?",
+  "o": [
+   "Le becquerel (Bq), qui compte les désintégrations par seconde",
+   "Le sievert (Sv), et son sous-multiple le millisievert (mSv)",
+   "Le watt (W), qui mesure une puissance reçue par le corps",
+   "Le gray-heure (Gy·h), qui combine une durée et une intensité"
+  ],
+  "r": 1,
+  "c": "La dose reçue se mesure en <b>sievert</b>. Le becquerel existe bien, mais il mesure autre chose : le <b>nombre de désintégrations par seconde</b> d'une source — pas ce que ton corps encaisse."
+ },
+ {
+  "q": "Quelle est la limite réglementaire française d'exposition pour la population, hors radioactivité naturelle et hors médecine ?",
+  "o": [
+   "1 mSv par an, en dose corps entier",
+   "20 mSv par an, en dose corps entier",
+   "50 mSv par an, en dose corps entier",
+   "Il n'existe aucune limite réglementaire pour la population générale"
+  ],
+  "r": 0,
+  "c": "<b>1 mSv/an</b> pour la population. Le seuil de 20 mSv/an concerne les <b>travailleurs</b> du secteur ; 50 mSv/an est la limite de dose <b>équivalente à la peau</b>, ce qui n'est pas la même chose qu'une dose corps entier."
+ },
+ {
+  "q": "De quoi dépendent les effets de la radioactivité sur la santé ?",
+  "o": [
+   "Uniquement de la dose reçue, quelle que soit la durée d'exposition",
+   "Uniquement du type de rayonnement, α, β ou γ",
+   "De la dose reçue et de la durée de l'exposition",
+   "De l'âge de la personne exposée, et de rien d'autre"
+  ],
+  "r": 2,
+  "c": "Les deux comptent : <b>la dose</b> et <b>la durée</b>. Une même dose étalée sur des années n'a pas les mêmes conséquences que reçue en une fois."
+ },
+ {
+  "q": "Comment protège-t-on un professionnel exposé aux rayonnements ? Coche tout ce qui est vrai.",
+  "o": [
+   "Par des écrans de protection et la délimitation des zones d'émission",
+   "Par le port d'un dosimètre et une surveillance médicale renforcée",
+   "En le faisant travailler exclusivement de nuit, quand le fond naturel baisse",
+   "En lui faisant boire de l'eau en grande quantité avant chaque intervention"
+  ],
+  "r": [0, 1],
+  "c": "La protection est à la fois <b>collective</b> (écrans, zones délimitées, appareils vérifiés, formation) et <b>individuelle</b> (dosimétrie, suivi médical, équipements). Le fond naturel, lui, ne baisse pas la nuit."
+ }
+]
+              </script>
+            </div>
+
+            <div class="block-label">Le bilan de la séance<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+            <div class="retain" data-bilan-wrap>
+              <ul style="margin:0;padding-left:18px">
+                <li>La radioactivité est un <b>phénomène naturel</b> qui peut toutefois être favorisé artificiellement. Elle est partout autour de nous, même en l'absence d'activité humaine.</li>
+                <li>La dose de radioactivité reçue s'exprime en <b>sievert (Sv)</b> et en <b>millisieverts (mSv)</b>.</li>
+                <li>En France, l'exposition annuelle moyenne est d'environ <b>4,5 mSv</b>.</li>
+                <li>La radioactivité a des effets sur la santé qui dépendent de la <b>dose reçue</b> et de la <b>durée d'exposition</b>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.6 — bonus -->
+      <div class="step" data-step data-cle="es-t1c2-bonus-s2">
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
+      <div class="bonus-wrap" data-bonus>
+        <div class="bonus-head" data-bonus-toggle>
+          <span class="ix">2.6</span>
+          <span class="bl">Pour aller plus loin</span>
+          <span class="bonus-tag">hors 100&nbsp;%</span>
+          <span class="chev">▸</span>
+        </div>
+        <div class="bonus-body">
+          <div class="block-label">Comprendre les unités de la radioactivité</div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Becquerel, gray, sievert : trois unités qu'on confond tout le temps, et qui ne mesurent pas la même chose.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/xl6Cz7qZE5s" title="Comprendre les unités de la radioactivité" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="block-label">Deux bilans en vidéo</div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Bilan 1 — L'exposition à la radioactivité.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/_zn4gsc_ZX8" title="Bilan — l'exposition à la radioactivité" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Bilan 2 — La radioactivité expliquée en 3 minutes.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/_R22zEQFxsU" title="La radioactivité expliquée en 3 minutes" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="block-label">Deux lectures</div>
+          <ul style="font-size:14.5px;padding-left:20px">
+            <li><a href="https://www.irsn.fr/savoir-comprendre/environnement/sources-radioactivite-artificielle" target="_blank" rel="noopener noreferrer">Les sources de radioactivité artificielle</a> — IRSN.</li>
+            <li><a href="https://www.actu-environnement.com/ae/news/rayonnements-ionisants-exposition-bilan-2018-IRSN-34037.php4" target="_blank" rel="noopener noreferrer">Bilan de l'exposition professionnelle aux rayonnements ionisants en France (2018)</a> — Actu-Environnement.</li>
+            <li><a href="https://www.youtube.com/@ASNRvideo" target="_blank" rel="noopener noreferrer">La chaîne de l'ASNR</a> — l'autorité française de sûreté nucléaire et de radioprotection.</li>
+          </ul>
+          <!-- CHANTIER -->
+          <aside class="chantier">
+            <div class="cl">⚖️ Lien à vérifier</div>
+            Le cours source renvoyait aussi vers un <b>rapport EDF sur la centrale de Cattenom</b>
+            (PDF, 2015). Lien non repris ici&nbsp;: à revérifier avant remise en ligne, l'URL d'origine
+            pointait vers un chemin daté qui bouge souvent.
+          </aside>
+          <!-- /CHANTIER -->
+        </div>
+      </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 3 ===================== -->
+  <section class="seance locked" id="s3" data-seance="3">
+    <div class="seance-head">
+      <h2><span class="s-num">S3</span>La décroissance radioactive et la demi-vie</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Passer du noyau seul, imprévisible, à la population de noyaux, parfaitement prévisible — et apprendre à lire une demi-vie sur une courbe.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 3.1 -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-loi-decroissance">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">La loi de décroissance radioactive</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir qu'un grand nombre de noyaux suit une loi, et savoir la reconnaître sur un graphique.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">D'un point de vue probabiliste, il n'est <b>pas possible de prédire</b> à quel instant un unique noyau radioactif va se désintégrer. En revanche, il est possible de déterminer la <b>loi d'évolution globale</b> du nombre de désintégrations dans un échantillon contenant un nombre important de noyaux radioactifs. C'est la <b>loi de décroissance radioactive</b>.</p>
+
+            <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">La <b>loi de décroissance radioactive</b> décrit comment le nombre de noyaux radioactifs diminue au cours du temps, de manière <b>prévisible</b>, même si chaque désintégration est <b>aléatoire</b>.</div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c2/t1c2-loi-decroissance-proportion.jpg" alt="Graphique de la proportion d'atomes radioactifs au cours du temps, avec les paliers 100 %, 50 %, 25 % et 12,5 % à chaque demi-vie" loading="lazy">
+              <figcaption>Loi de décroissance radioactive. Les noyaux <b>radioactifs</b> sont figurés en jaune et noir, sous la courbe rouge qui suit l'évolution de leur nombre ; les noyaux verts sont ceux, stables, qui ont déjà été produits.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              La légende de cette image, dans le cours Quizéo, disait «&nbsp;les noyaux <b>stables</b> sont
+              en jaune et noir&nbsp;». C'est l'inverse&nbsp;: les pictogrammes jaune et noir sont le
+              symbole du danger radioactif, et c'est bien leur nombre qui décroît sous la courbe. La
+              légende a été corrigée ci-dessus — à confirmer.
+            </div>
+
+            <div class="block-label">Manipulation — simuler une décroissance<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">N'hésite pas à jouer avec la simulation. Lance-la en appuyant sur <b>Simuler</b> :</p>
+            <ul style="font-size:14.5px;margin:4px 0 10px;padding-left:20px">
+              <li>tu peux régler le nombre de <b>points rouges</b> qui apparaissent à l'écran en modifiant la valeur de <b>N</b> — chacun représente un noyau radioactif ;</li>
+              <li>observe le temps qui passe : les points rouges <b>disparaissent petit à petit</b> (les noyaux radioactifs se désintègrent en noyaux stables) ;</li>
+              <li>regarde la courbe qui se trace en dessous : elle indique combien de noyaux restent actifs au fil du temps — c'est une <b>courbe de décroissance radioactive</b> ;</li>
+              <li>essaie de modifier la valeur de la <b>constante radioactive λ</b>.</li>
+            </ul>
+            <p><a class="btn ghost" href="https://physique-chimie.ac-normandie.fr/IMG/IMG2/html/radioactivite.html" target="_blank" rel="noopener noreferrer">▶ Ouvrir la simulation (académie de Normandie)</a></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.2 -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-lambda">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">L'expression de la loi, et le rôle de λ</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir nommer les grandeurs de la loi, et dire ce que change λ sur la courbe. <b>L'expression exacte n'est pas à connaître.</b></span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">La loi de décroissance radioactive se modélise par une <b>fonction exponentielle décroissante</b>. Son <b>expression exacte n'est pas à connaître</b> ; les grandeurs qui la composent, si.</p>
+            <p style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:20px;margin:16px 0;color:var(--ink)">N(t) = N<sub>0</sub> × e<sup>−λt</sup></p>
+            <table class="doc-table">
+              <tr><th>Symbole</th><th>Ce que c'est</th></tr>
+              <tr><td><b>λ</b> (lambda)</td><td>la <b>constante radioactive</b> du noyau — propre à chaque radionucléide</td></tr>
+              <tr><td><b>N<sub>0</sub></b></td><td>la population de noyaux <b>au départ</b></td></tr>
+              <tr><td><b>e</b></td><td>une fonction mathématique, la <b>fonction exponentielle</b> — tu la trouves sur ta calculatrice</td></tr>
+              <tr><td><b>N(t)</b></td><td>le nombre de noyaux radioactifs <b>à l'instant t</b></td></tr>
+            </table>
+
+            <div class="block-label">Doc — ce que change λ</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">λ est la <b>constante de décroissance radioactive</b>. C'est une valeur qui indique <b>à quelle vitesse</b> les noyaux se désintègrent :</p>
+            <ul style="font-size:14.5px;margin:4px 0 10px;padding-left:20px">
+              <li>plus λ est <b>grand</b> → les noyaux se désintègrent <b>vite</b> → la courbe décroît rapidement ;</li>
+              <li>plus λ est <b>petit</b> → les noyaux se désintègrent <b>lentement</b> → la courbe décroît doucement.</li>
+            </ul>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c2/t1c2-effet-de-lambda.jpg" alt="Plusieurs courbes de décroissance superposées, correspondant à différentes valeurs de la constante radioactive lambda" loading="lazy">
+              <figcaption>Tracé illustrant l'effet de <b>λ</b> (lambda) sur la décroissance radioactive.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="RAD-3a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Que représente N₀ dans la loi de décroissance radioactive ?",
+  "o": [
+   "Le nombre de noyaux radioactifs présents au départ, à t = 0",
+   "Le nombre de noyaux qu'il reste au bout d'une demi-vie",
+   "Le nombre de noyaux stables produits à la fin de la désintégration",
+   "Le nombre de désintégrations qui se produisent chaque seconde"
+  ],
+  "r": 0,
+  "c": "Le <b>zéro en indice</b> est là pour ça : c'est la population <b>de départ</b>, à l'instant t = 0."
+ },
+ {
+  "q": "Deux échantillons contiennent le même nombre de noyaux au départ, mais le premier a un λ deux fois plus grand. Que peut-on en dire ?",
+  "o": [
+   "Le premier se désintègre plus vite : sa courbe décroît plus rapidement",
+   "Le premier se désintègre plus lentement : sa courbe décroît plus doucement",
+   "Les deux courbes sont identiques : λ ne change que l'unité de l'axe des temps",
+   "Le premier contient deux fois plus de noyaux stables dès le départ"
+  ],
+  "r": 0,
+  "c": "λ mesure la <b>vitesse</b> de désintégration : plus il est grand, plus ça va vite, plus la courbe plonge tôt."
+ },
+ {
+  "q": "Que faut-il savoir de l'expression N(t) = N₀ × e^(−λt) pour ce chapitre ?",
+  "o": [
+   "L'apprendre par cœur et savoir la redémontrer",
+   "Savoir reconnaître les grandeurs qui la composent, sans connaître l'expression exacte",
+   "Savoir la dériver pour retrouver le nombre de désintégrations par seconde",
+   "Rien : cette formule n'apparaît jamais en enseignement scientifique"
+  ],
+  "r": 1,
+  "c": "Le cours le dit explicitement : <b>l'expression exacte n'est pas à connaître, les grandeurs qui la composent le sont</b>. Sache dire ce que sont N₀, λ, N(t) et t."
+ },
+ {
+  "q": "La courbe de décroissance radioactive est…",
+  "o": [
+   "une droite décroissante : on perd le même nombre de noyaux chaque seconde",
+   "une courbe qui descend d'abord rapidement, puis de plus en plus lentement",
+   "une courbe qui descend d'abord lentement, puis s'effondre d'un coup",
+   "une courbe en cloche : elle monte, atteint un maximum, puis redescend"
+  ],
+  "r": 1,
+  "c": "C'est une <b>exponentielle décroissante</b> : forte pente au début, puis un aplatissement qui n'en finit jamais tout à fait. Ce n'est <b>pas</b> une droite — c'est l'erreur la plus fréquente sur ce chapitre."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.3 -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-demi-vie">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Le temps de demi-vie</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir définir le temps de demi-vie, et savoir le <b>lire sur une courbe</b>.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">On ne peut pas prévoir quand un noyau se désintégrera. Mais si on connaît la <b>demi-vie</b> du noyau (qui dépend de sa nature), on peut calculer la <b>probabilité</b> que ce noyau a de se désintégrer dans les <i>x</i> prochaines minutes, semaines, années…</p>
+
+            <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Le <b>temps de demi-vie t<sub>1/2</sub></b> est le temps au bout duquel la <b>moitié</b> des noyaux radioactifs présents initialement se sont désintégrés.<br><span style="font-family:'IBM Plex Mono',monospace;font-size:15px;display:inline-block;margin-top:6px">N(t<sub>1/2</sub>) = N<sub>0</sub> / 2</span></div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c2/t1c2-demi-vie-sur-courbe.jpg" alt="Courbe de décroissance N(t) avec les repères N0/2 à t1/2 et N0/4 à 2 t1/2" loading="lazy">
+              <figcaption>Le temps de demi-vie lu sur une courbe de décroissance. À <b>2 t<sub>1/2</sub></b>, il ne reste que le <b>quart</b> des noyaux — pas zéro.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Méthode — lire un temps de demi-vie sur une courbe<span class="niv" style="margin-left:8px">★ <b>à savoir-faire</b></span></div>
+            <table class="doc-table">
+              <tr><th>Étape</th><th>Ce que tu fais</th></tr>
+              <tr><td><b>1</b></td><td>Regarde la valeur de départ, à <b>t = 0</b> : c'est le nombre initial de noyaux N₀. Par exemple N₀ = 100.</td></tr>
+              <tr><td><b>2</b></td><td>Calcule la <b>moitié</b> de cette valeur. Si on commence avec 100, on cherche le moment où il en reste <b>50</b>.</td></tr>
+              <tr><td><b>3</b></td><td>Repère sur la courbe le moment où le nombre de noyaux passe à la moitié : pars de 50 <b>horizontalement</b> jusqu'à couper la courbe, puis descends <b>verticalement</b> jusqu'à l'axe des temps.</td></tr>
+              <tr><td><b>4</b></td><td>Lis la valeur du temps : c'est le temps de demi-vie <b>t<sub>1/2</sub></b>.</td></tr>
+            </table>
+
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>Méthode graphique — déterminer la demi-vie d'un noyau radioactif.</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/6MMr8cSP_lw" title="Méthode graphique — déterminer la demi-vie" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <div class="reveal show" style="border-color:var(--ok);background:var(--ok-wash)">
+              <div class="rl" style="color:var(--ok)">✔ Propriété</div>
+              Chaque noyau radioactif possède un <b>temps de demi-vie qui lui est propre</b>, et qui permet de le <b>reconnaître</b>. C'est cette propriété qui rend possible la datation — et l'exercice 1 de la séance 4.
+            </div>
+
+            <div class="block-label">Manipulation — PhET, atomes multiples<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Reviens sur l'animation PhET de la séance 1 et expérimente librement avec l'onglet <b>Atomes multiples</b> : cette fois, tu ne regardes plus un noyau, mais une population entière.</p>
+            <p><a class="btn ghost" href="https://phet.colorado.edu/sims/cheerpj/nuclear-physics/latest/nuclear-physics.html?simulation=alpha-decay&amp;locale=fr" target="_blank" rel="noopener noreferrer">▶ Ouvrir l'animation PhET (nouvel onglet)</a></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.4 — Activité 3 -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-activite-demi-vie">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Activité 3 — la demi-vie ne dépend pas du nombre de noyaux</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> établir, par la simulation, que le temps de demi-vie caractérise <b>la nature du noyau</b> — et pas la taille de l'échantillon.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Ressource — animation « désintégration radioactive »<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Rejoins l'animation, puis fixe la constante radioactive à <b>λ = 0,5 s⁻¹</b>. <i>Si tu es sur tablette, tu ne peux pas modifier cette valeur : ce n'est pas grave, tu peux continuer.</i></p>
+            <p><a class="btn ghost" href="https://www.ensciences.fr/animations/desintegration/index.html" target="_blank" rel="noopener noreferrer">▶ Ouvrir l'animation (ensciences.fr)</a></p>
+
+            <div class="block-label">1 · Une première mesure</div>
+            <div class="field" data-focus
+                 data-focus-titre="Demi-vie pour N₀ = 1000"
+                 data-focus-question="Lance la simulation avec N₀ = 1000. Quel est le temps de demi-vie de ces noyaux radioactifs ? Explique comment tu l'as lu."
+                 data-focus-max="500" data-focus-min="20" data-focus-code="RAD-3b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Lancer la simulation avec N₀ = 1000. Quel est le temps de demi-vie de ces noyaux radioactifs ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              L'énoncé d'origine indiquait «&nbsp;<b>N₀ = 1001</b>&nbsp;» — la valeur extraite du PDF est
+              ambiguë (elle pourrait être 100 ou 1000). Écrit ici <b>1000</b>, valeur ronde et
+              cohérente avec la suite de l'activité. <b>À confirmer.</b>
+            </div>
+
+            <div class="block-label">2 · Changer la population, pas le noyau</div>
+            <div class="field" data-focus
+                 data-focus-titre="La demi-vie dépend-elle de N₀ ?"
+                 data-focus-question="Sans changer la valeur de λ, modifie N₀ (plusieurs fois) et note les temps de demi-vie obtenus. Conclus."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="RAD-3c">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Sans changer la valeur de λ, modifier N₀ et noter les temps de demi-vie obtenus. Conclure.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">☢ Ce qu'il fallait conclure</div>
+                Le temps de demi-vie <b>ne change pas</b> quand on change N₀. Il ne dépend que de <b>λ</b>, c'est-à-dire de la <b>nature du noyau</b>. Deux échantillons de tailles très différentes du même radionucléide ont exactement la même demi-vie — c'est ce qui en fait une <b>carte d'identité</b>.
+              </div>
+            </div>
+
+            <div class="block-label">3 · Valider ses apprentissages</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète le texte ci-dessous. <span style="color:var(--ink-soft)">Mots utiles : décroissance · prévisible · radioactifs · aléatoire · demi-vie · constante</span></div>
+              <div class="cloze" data-cloze>
+                Certains noyaux sont dits <input data-answer="radioactifs" placeholder="?" aria-label="nature des noyaux" data-variantes="radioactif" data-indice1="C'est le titre du chapitre, au pluriel." data-indice2="Radio + actifs."> car ils se désintègrent spontanément en émettant un rayonnement. La désintégration d'un radionucléide seul est un phénomène <input data-answer="aléatoire" placeholder="prévisible / aléatoire" aria-label="caractère de la désintégration d'un noyau seul" data-variantes="aleatoire" data-indice1="Rappelle-toi tes six temps relevés dans PhET, tous différents." data-indice2="Le mot commence par « alé ».">, mais le comportement d'un grand nombre de ces noyaux est <input data-answer="prévisible" placeholder="prévisible / aléatoire" aria-label="caractère du comportement d'un grand nombre" data-variantes="previsible" data-indice1="C'est justement ce qui permet d'écrire une loi." data-indice2="Le contraire du mot précédent.">. L'évolution du nombre de noyaux radioactifs au cours du temps suit la loi de <input data-answer="décroissance" placeholder="?" aria-label="nom de la loi" data-variantes="decroissance" data-indice1="Le nombre de noyaux ne fait que diminuer : la loi porte le nom de ce mouvement." data-indice2="Dé + croissance."> radioactive ; elle dépend de la <input data-answer="constante" placeholder="?" aria-label="grandeur lambda" data-variantes="constante radioactive|constante de décroissance" data-indice1="C'est le nom donné à λ dans le cours." data-indice2="Elle ne varie pas : elle est…"> radioactive et du temps de <input data-answer="demi-vie" placeholder="?" aria-label="temps caractéristique" data-variantes="demi vie|demivie|demi-vie t1/2" data-indice1="Le temps au bout duquel la moitié des noyaux se sont désintégrés." data-indice2="Deux mots reliés par un trait d'union : demi-…">, qui sont propres à chaque radionucléide.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="qcmbox" data-code="RAD-3d">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Quelle proportion de noyaux radioactifs présents au départ s'est désintégrée après une durée égale à t₁/₂ ?",
+  "o": [
+   "0 %",
+   "25 %",
+   "50 %",
+   "75 %",
+   "100 %",
+   "Il n'est pas possible de le dire : ce phénomène est aléatoire"
+  ],
+  "r": 2,
+  "c": "C'est exactement la définition de la demi-vie : au bout de t₁/₂, la <b>moitié</b> des noyaux se sont désintégrés — il en reste donc l'autre moitié. La dernière réponse est le piège du chapitre : l'aléatoire porte sur <b>un</b> noyau, pas sur la population."
+ },
+ {
+  "q": "Quelles affirmations sont justes ? Coche tout ce qui convient.",
+  "o": [
+   "Il est possible de prédire le moment où un noyau radioactif donné va se désintégrer",
+   "La loi de décroissance radioactive est une droite décroissante",
+   "Naturellement, le nombre de noyaux radioactifs d'une population ne peut que diminuer",
+   "Les noyaux issus d'une désintégration sont toujours stables",
+   "Le temps de demi-vie est le temps au bout duquel tous les noyaux radioactifs se sont désintégrés",
+   "Le temps de demi-vie ne dépend pas du nombre de noyaux radioactifs présents au départ"
+  ],
+  "r": [2, 5],
+  "c": "Deux affirmations seulement sont justes. Les autres sont les quatre erreurs classiques : l'instant d'<b>un</b> noyau est imprévisible ; la loi est <b>exponentielle</b>, pas linéaire ; un noyau fils peut être <b>lui-même radioactif</b> (revois la cascade de l'uranium 238) ; et au bout de t₁/₂ il reste encore <b>la moitié</b> des noyaux."
+ },
+ {
+  "q": "Le carbone 14 a une demi-vie de 5 730 ans. Un échantillon en contient 800 noyaux aujourd'hui. Combien en restera-t-il dans 11 460 ans ?",
+  "o": [
+   "400",
+   "200",
+   "0",
+   "100"
+  ],
+  "r": 1,
+  "c": "11 460 ans = <b>2 demi-vies</b>. On divise donc deux fois par deux : 800 → 400 → <b>200</b>. Un piège fréquent consiste à croire qu'au bout de deux demi-vies il ne reste plus rien."
+ }
+]
+              </script>
+            </div>
+
+            <div class="block-label">Le bilan de la séance<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+            <div class="retain" data-bilan-wrap>
+              <ul style="margin:0;padding-left:18px">
+                <li>Les noyaux radioactifs disparaissent peu à peu avec le temps en suivant la <b>loi de décroissance radioactive</b>.</li>
+                <li>La désintégration est un phénomène <b>aléatoire</b> au niveau d'un noyau, mais <b>prévisible</b> pour un grand nombre d'entre eux.</li>
+                <li>La quantité de noyaux diminue rapidement au début, puis plus lentement ensuite : cette évolution suit une <b>loi exponentielle décroissante</b>.</li>
+                <li>Le <b>temps de demi-vie</b> est la durée au bout de laquelle la moitié des noyaux radioactifs d'un échantillon s'est désintégrée.</li>
+                <li>C'est une <b>caractéristique propre à chaque radionucléide</b>.</li>
+                <li>Cette propriété permet, par exemple, de <b>dater des objets anciens</b> ou de suivre l'évolution d'une contamination radioactive.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.5 — le radium, exemple + bonus -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-radium">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.5 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Un exemple : le radium 226 et son horloge de 1 600 ans</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> lire une vraie courbe de décroissance, et mesurer ce que « 1 600 ans de demi-vie » veut dire concrètement.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Le <b>radium 226</b> est un isotope radioactif découvert par <b>Marie et Pierre Curie</b> en 1898. Il possède une demi-vie propre de <b>1 600 ans</b>.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Dans les années <b>1910-1930</b>, le radium fut massivement utilisé dans des <b>peintures luminescentes</b> pour les montres, les instruments de bord d'avion ou les cadrans de téléphone, car il émettait des radiations qui faisaient briller un composant phosphorescent.</p>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c2/t1c2-decroissance-radium-226.jpg" alt="Courbe de décroissance du radium 226 depuis 1915, montrant qu'il reste environ 95 % des noyaux en 2025 et 50 % après 1600 ans" loading="lazy">
+              <figcaption>Courbe de décroissance radioactive du radium&nbsp;226, depuis 1915.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+            <p style="font-size:14.5px;margin:4px 0 10px">Certaines montres peintes au radium en <b>1915</b> peuvent théoriquement encore contenir près de <b>95 %</b> du radium initial en 2025. Cela illustre que le noyau de radium « ignore » les siècles qui passent : il se désintègre selon <b>sa propre horloge nucléaire</b>.</p>
+
+            <div class="field" data-focus
+                 data-focus-titre="Lire la courbe du radium"
+                 data-focus-question="À l'aide de la courbe : en quelle année environ ne restera-t-il plus que la moitié du radium peint en 1915 ? Et le quart ? Explique ta lecture."
+                 data-focus-max="500" data-focus-min="20" data-focus-code="RAD-3e">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">En quelle année environ ne restera-t-il plus que la moitié du radium peint en 1915 ? Et le quart ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">☢ La méthode</div>
+                Une demi-vie après 1915, il reste la moitié : <b>1915 + 1 600 = 3515</b>. Deux demi-vies après, il reste le quart : <b>1915 + 3 200 = 5115</b>. C'est ce qui rend certains objets anciens encore actifs aujourd'hui — et pourquoi on ne bricole pas une vieille montre au radium.
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Cette question de lecture de courbe est ajoutée&nbsp;: le cours source présentait
+              l'exemple du radium sans exercice associé. Elle prépare directement l'exercice 3 de la
+              séance 4 (Tchernobyl), qui demande le même raisonnement.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.6 — bonus -->
+      <div class="step" data-step data-cle="es-t1c2-bonus-s3">
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
+      <div class="bonus-wrap" data-bonus>
+        <div class="bonus-head" data-bonus-toggle>
+          <span class="ix">3.6</span>
+          <span class="bl">Pour aller plus loin</span>
+          <span class="bonus-tag">hors 100&nbsp;%</span>
+          <span class="chev">▸</span>
+        </div>
+        <div class="bonus-body">
+          <div class="block-label">L'histoire des <i lang="en">Radium Girls</i></div>
+          <p style="font-size:14.5px;margin:4px 0 10px">Les ouvrières qui peignaient les cadrans au radium affinaient leur pinceau <b>avec les lèvres</b>. On leur avait dit que c'était sans danger. Ce que tu as appris en séance 2 sur les émetteurs α <b>à l'intérieur du corps</b> explique la suite — et leur procès a fondé une partie du droit du travail moderne.</p>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>L'histoire des Radium Girls.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/xJlbIUx6u0Q" title="L'histoire des Radium Girls" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="field" data-share data-share-note>
+            <span class="field-type">Réflexion perso — non notée</span>
+            <div class="field-q">Les <i lang="en">Radium Girls</i> ne savaient pas. Aujourd'hui, quels produits utilisons-nous en nous fiant à ce qu'on nous en dit ? Qu'est-ce qui te ferait douter ?</div>
+            <textarea placeholder="Écris ce que tu veux : personne ne corrige, personne ne note." aria-label="Réflexion personnelle"></textarea>
+            <div class="verdict"></div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 4 ===================== -->
+  <section class="seance locked" id="s4" data-seance="4">
+    <div class="seance-head">
+      <h2><span class="s-num">S4</span>S'exercer</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Trois exercices pour se servir de tout ce qui précède : reconnaître un noyau à sa demi-vie, remonter le temps d'un échantillon, et estimer quand une zone contaminée redevient fréquentable.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 4.1 -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-ex1">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 4.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 1 — reconnaître un noyau radioactif</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> identifier un radionucléide à partir de la seule demi-vie lue sur sa courbe de décroissance.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — demi-vies de quelques radionucléides<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <table class="doc-table tdemi">
+              <tr><th>Noyau radioactif</th><th>Temps de demi-vie (années)</th></tr>
+              <tr><td>cobalt 60</td><td>5,2</td></tr>
+              <tr><td>tritium</td><td>12,2</td></tr>
+              <tr><td>strontium 90</td><td>28,1</td></tr>
+              <tr><td>césium 137</td><td>30</td></tr>
+              <tr><td>américium 241</td><td>432</td></tr>
+              <tr><td>radium 226</td><td>1 600</td></tr>
+              <tr><td>carbone 14</td><td>5 730</td></tr>
+              <tr><td>plutonium 239</td><td>24 110</td></tr>
+              <tr><td>neptunium 237</td><td>2 140 000</td></tr>
+              <tr><td>iode 129</td><td>15 700 000</td></tr>
+              <tr><td>uranium 238</td><td>4 470 000 000</td></tr>
+            </table>
+
+            <div class="block-label">La courbe à exploiter</div>
+            <div class="reserve" style="min-height:220px;max-width:560px">
+              <div class="rf">t1c2-courbe-exercice-1.png</div>
+              <div class="rd">Copie d'écran (ou export) du <b>modèle GeoGebra</b> de l'exercice 1 : une courbe de décroissance radioactive, avec le point A déplaçable, dont il faut extraire la demi-vie pour identifier le noyau dans le tableau ci-dessus. Les axes doivent être lisibles (nombre de noyaux et temps en années).</div>
+              <div class="rr">paysage · ≥ 900 px de large</div>
+            </div>
+
+            <!-- CHANTIER -->
+            <aside class="chantier decision">
+              <div class="cl">📌 Décision attendue — le fichier GeoGebra</div>
+              L'énoncé d'origine renvoie vers un fichier <code>.ggb</code> hébergé sur le <b>S3 de
+              Quizéo</b> (<code>quizeo-prod.s3.eu-west-3.amazonaws.com</code>), accessible par QR code.
+              Deux problèmes&nbsp;: le fichier disparaîtra avec le compte Quizéo, et il exige d'installer
+              GeoGebra. <b>À rapatrier dans le dépôt tant que le compte existe</b> — soit le
+              <code>.ggb</code> lui-même, soit une simple image de la courbe (le cadre de réservation
+              ci-dessus), qui suffit pour l'exercice.
+            </aside>
+            <!-- /CHANTIER -->
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Consulte le tableau des demi-vies. Déplace le point A sur l'animation GeoGebra pour extraire des données de la courbe de décroissance radioactive.</p>
+
+            <div class="field" data-focus
+                 data-focus-titre="Identifier le noyau"
+                 data-focus-question="Identifie la nature des noyaux à l'origine de la courbe de décroissance. Donne la demi-vie que tu as lue, la façon dont tu l'as lue, et le noyau que tu en déduis."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="RAD-4a">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Identifier la nature des noyaux à l'origine de la courbe de décroissance radioactive précédente.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.2 -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-ex2">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 4.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 2 — le radium 226, à rebours</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir remonter le temps : si on divise par deux à chaque demi-vie en avançant, on <b>multiplie</b> par deux en reculant.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">1 · Quel est le temps de demi-vie du radium 226 ?</div>
+              <div class="cloze" data-cloze>
+                Le temps de demi-vie du radium 226 est de <input class="short" data-answer="1600" placeholder="?" aria-label="demi-vie du radium 226 en années" data-variantes="1 600|1600 ans|1 600 ans" data-indice1="Il est dans le tableau de l'exercice 1 — et dans l'exemple de la séance 3." data-indice2="Un peu plus de quinze siècles."> ans.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">2 · Remonter le temps</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Dans un échantillon, on comptabilise <b>2 milliards</b> de noyaux radioactifs de radium 226. Combien cet échantillon en contenait-il <b>il y a 1 600 ans</b> ? Et <b>il y a 9 600 ans</b> ?</p>
+
+            <div class="field" data-focus
+                 data-focus-titre="Le radium à rebours"
+                 data-focus-question="Combien l'échantillon contenait-il de noyaux il y a 1 600 ans ? Et il y a 9 600 ans ? Donne ton raisonnement, pas seulement le résultat."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="RAD-4b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Combien cet échantillon contenait-il de noyaux il y a 1 600 ans ? Et il y a 9 600 ans ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">☢ La méthode</div>
+                En reculant d'une demi-vie, on <b>multiplie par 2</b>. Il y a 1 600 ans (1 demi-vie) : 2 × 2 = <b>4 milliards</b>. Il y a 9 600 ans, cela fait 9 600 ÷ 1 600 = <b>6 demi-vies</b> : on multiplie six fois par 2, soit 2 × 2⁶ = 2 × 64 = <b>128 milliards</b> de noyaux.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.3 -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-ex3">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 4.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 3 — l'héritage de Tchernobyl</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> mobiliser la demi-vie sur une question réelle : à partir de quand une zone contaminée cesse-t-elle d'être dangereuse ?</span></div>
+          </div>
+          <div class="card-body">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c2/t1c2-cycle-radioactivite-afp.jpg" alt="Infographie sur le cycle de la radioactivité et la décroissance du césium 137 depuis l'accident de Tchernobyl en 1986" loading="lazy">
+              <figcaption>Le cycle de la radioactivité, appliqué au césium&nbsp;137 de Tchernobyl. Chaque bloc de l'infographie correspond à une demi-vie écoulée.<span class="src">Infographie AFP, d'après le Centre d'étude de l'énergie nucléaire (CEN) — ⚠ droits à vérifier avant publication</span></figcaption>
+            </figure>
+
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">⚖️ Copyright à régler</div>
+              Cette infographie est signée <b>AFP</b>. Le dépôt est public&nbsp;: son usage doit être
+              tranché avant mise en ligne large — remplacement, autorisation, ou renvoi par lien.
+              Même dossier que les treize photographies de T1-C3.
+            </aside>
+            <!-- /CHANTIER -->
+
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>Du césium 137 radioactif dans le parc du Mercantour — quarante ans après, en France.</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/gfilbvP7mZU" title="Du césium 137 radioactif dans le parc du Mercantour" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <div class="block-label">1 · Les effets du césium 137</div>
+            <div class="field" data-focus
+                 data-focus-titre="Effets du césium 137 sur la santé"
+                 data-focus-question="Quels sont les effets du césium 137 sur la santé ? Appuie-toi sur la vidéo et sur ce que tu as vu en séance 2."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="RAD-4c">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Quels sont les effets du césium 137 sur la santé ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">2 · Sa demi-vie</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Retrouve le temps de demi-vie du césium 137 dans le tableau de l'exercice 1.</div>
+              <div class="cloze" data-cloze>
+                Le temps de demi-vie du césium 137 est de <input class="short" data-answer="30" placeholder="?" aria-label="demi-vie du césium 137 en années" data-variantes="30 ans|trente" data-indice1="Regarde le tableau de l'exercice 1 : le césium 137 est le quatrième de la liste." data-indice2="Une durée ronde, proche de celle du strontium 90."> ans.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">3 · Quand la zone d'exclusion redeviendra-t-elle sûre ?</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">En considérant que les dangers liés au césium 137 deviennent <b>négligeables à partir de 5 %</b> de la quantité initiale, à partir de quelle <b>année</b> pourra-t-on considérer que la zone d'exclusion de Tchernobyl redevient sans risque majeur pour la santé humaine ?</p>
+
+            <div class="field" data-focus
+                 data-focus-titre="L'année où la zone redevient sûre"
+                 data-focus-question="À partir de quelle année la zone d'exclusion de Tchernobyl redevient-elle sans risque majeur ? Détaille : combien de demi-vies faut-il pour descendre sous 5 %, et à quelle année cela conduit-il ?"
+                 data-focus-max="700" data-focus-min="20" data-focus-code="RAD-4d">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">À partir de quelle année pourra-t-on considérer que la zone d'exclusion de Tchernobyl redevient sans risque majeur pour la santé humaine ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">☢ La méthode</div>
+                On divise par deux à chaque demi-vie : 100 % → 50 % → 25 % → 12,5 % → 6,25 % → <b>3,125 %</b>. Il faut donc <b>5 demi-vies</b> pour passer sous 5 %, soit 5 × 30 = <b>150 ans</b>. L'accident date de <b>1986</b> : 1986 + 150 = <b>2136</b>.<br>Une remarque qui vaut le détour : le césium 137 n'est pas le seul radionucléide déposé là-bas. Le <b>plutonium 239</b>, avec ses 24 110 ans de demi-vie, tient une autre échelle de temps.
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              L'énoncé source ne fixe pas l'année de l'accident&nbsp;; elle est rappelée ici
+              (<b>1986</b>) pour que la question ait une réponse. Le raisonnement «&nbsp;5 %&nbsp;»
+              tombe entre deux demi-vies&nbsp;: on retient la première qui passe sous le seuil (5 demi-vies,
+              3,1 %). À arbitrer si tu préfères un calcul exact par la fonction exponentielle — mais ce
+              serait au-delà du programme d'enseignement scientifique.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.4 — bilan -->
+      <div class="step" data-step data-gate data-cle="es-t1c2-bilan">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 4.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Bilan du chapitre</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> vérifier que tout tient ensemble, du noyau instable jusqu'à la zone d'exclusion.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              QCM de bilan écrit pour cette version&nbsp;: il n'existe pas dans les documents source, qui
+              se terminaient par un Kahoot. Il balaie les quatre séances et sert de révision avant
+              évaluation.
+            </div>
+            <div class="qcmbox" data-code="RAD-4e">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Un noyau se désintègre en émettant une particule α. Que devient-il ?",
+  "o": [
+   "Il devient un noyau fils différent, plus stable, et un rayonnement γ part aussi",
+   "Il devient un noyau fils identique au père, mais chargé positivement",
+   "Il disparaît, et seule la particule α subsiste",
+   "Il devient systématiquement du plomb 206, quel que soit le noyau de départ"
+  ],
+  "r": 0,
+  "c": "Un <b>noyau fils</b> plus stable, une <b>particule</b> émise, et un <b>rayonnement γ</b> qui accompagne toujours. Le plomb 206 n'est que le terminus de la cascade de l'uranium 238, pas de toutes les désintégrations."
+ },
+ {
+  "q": "Classe correctement ces trois rayonnements du moins pénétrant au plus pénétrant.",
+  "o": [
+   "α, puis β, puis γ",
+   "γ, puis β, puis α",
+   "β, puis α, puis γ",
+   "Les trois pénètrent exactement de la même façon"
+  ],
+  "r": 0,
+  "c": "Une feuille de papier arrête α ; quelques millimètres d'aluminium arrêtent β ; il faut du béton ou du plomb pour γ. Attention : <b>le moins pénétrant n'est pas le moins dangereux</b> — un émetteur α ingéré est redoutable."
+ },
+ {
+  "q": "Quelles grandeurs sont propres à chaque radionucléide ? Coche tout ce qui convient.",
+  "o": [
+   "Le temps de demi-vie t₁/₂",
+   "La constante radioactive λ",
+   "Le nombre de noyaux N₀ présents dans l'échantillon",
+   "La durée qui sépare deux désintégrations successives dans l'échantillon"
+  ],
+  "r": [0, 1],
+  "c": "<b>t₁/₂</b> et <b>λ</b> sont deux façons de dire la même chose : la vitesse propre du noyau. N₀ dépend, lui, de l'échantillon qu'on a sous la main — c'est le résultat de l'activité 3."
+ },
+ {
+  "q": "En France, l'exposition annuelle moyenne d'une personne à la radioactivité est d'environ…",
+  "o": [
+   "0,045 mSv",
+   "0,45 mSv",
+   "4,5 mSv",
+   "45 mSv"
+  ],
+  "r": 2,
+  "c": "<b>4,5 mSv par an</b> en moyenne, en comptant la radioactivité naturelle et les examens médicaux. C'est bien plus que la limite de 1 mSv/an — qui ne concerne, elle, que ce que les <b>activités humaines</b> ajoutent en dehors de la médecine."
+ },
+ {
+  "q": "Après trois demi-vies, quelle proportion des noyaux radioactifs du départ reste-t-il ?",
+  "o": [
+   "Un tiers, soit environ 33 %",
+   "Un huitième, soit 12,5 %",
+   "Un sixième, soit environ 17 %",
+   "Aucun : après trois demi-vies, tout est désintégré"
+  ],
+  "r": 1,
+  "c": "On divise par deux à chaque fois : 100 % → 50 % → 25 % → <b>12,5 %</b>. Trois demi-vies ne font pas « trois tiers » : la décroissance est <b>exponentielle</b>, pas proportionnelle."
+ },
+ {
+  "q": "Pourquoi peut-on dater un objet ancien grâce à la radioactivité ?",
+  "o": [
+   "Parce que la radioactivité d'un objet augmente régulièrement avec son âge",
+   "Parce que chaque radionucléide a une demi-vie qui lui est propre et constante",
+   "Parce que les noyaux radioactifs se désintègrent tous en même temps, à date fixe",
+   "Parce que le nombre de noyaux au départ est le même pour tous les objets"
+  ],
+  "r": 1,
+  "c": "La demi-vie est une <b>horloge</b> : constante, propre à chaque noyau, insensible à tout le reste. En mesurant ce qu'il reste, on remonte au temps écoulé. C'est le principe de la datation au carbone 14."
+ }
+]
+              </script>
+            </div>
+
+            <div class="block-label">Pour finir — un petit Kahoot ?</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le bilan du chapitre en jeu, tous ensemble.</p>
+            <p><a class="btn ghost" href="https://create.kahoot.it/share/bilan-la-radioactivite/f765c901-5837-4408-bbba-7152315e0282" target="_blank" rel="noopener noreferrer">🎮 Ouvrir le Kahoot « Bilan — la radioactivité »</a></p>
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🔍 Lien à vérifier</div>
+              Le lien Kahoot est celui de l'<b>édition</b> (create.kahoot.it) repris du cours source&nbsp;:
+              il mène à la copie du quiz, pas à une partie. Pour la classe, c'est l'enseignant qui lance
+              la partie et distribue le code — à confirmer avant la séance.
+            </aside>
+            <!-- /CHANTIER -->
+
+            <div class="field" data-focus
+                 data-focus-titre="Ce que je sais maintenant"
+                 data-focus-question="Relis ta toute première réponse, en séance 1 : « qu'est-ce que la radioactivité, selon toi ? ». Qu'est-ce que tu répondrais aujourd'hui ? Qu'est-ce qui a changé ?"
+                 data-focus-max="700" data-focus-min="20" data-focus-code="RAD-4f">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Reprends ta définition du tout début. Que réponds-tu aujourd'hui ? Qu'est-ce qui a changé ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Thème 1, chapitre 2 — La radioactivité.</b> Les champs fonctionnent comme dans les autres séquences&nbsp;: QCM, textes à trous et étiquettes corrigés <b>en direct</b> par le navigateur ; réponses rédigées <b>envoyées en correction</b> (copier-coller bloqué) ; réflexions perso <b>non notées</b> ; verrouillage des séances tant que la précédente n'est pas validée, avec un <b>mode enseignant</b> pour ouvrir en cas de blocage. ⚠ Dans cette version, <b>ta progression n'est pas encore enregistrée</b>&nbsp;: si tu fermes la page, tout est à refaire. Pense à télécharger ta fiche avant de partir.
+  </footer>
+</div>
+
+<script type="application/json" id="dico-source">
+[
+ {
+  "mot": "Radioactivité",
+  "origine": "ES · La radioactivité",
+  "def": "La transformation spontanée de noyaux instables, qui deviennent d'autres noyaux plus stables en émettant particules et rayonnement."
+ },
+ {
+  "mot": "Noyau radioactif",
+  "origine": "ES · La radioactivité",
+  "def": "Un noyau instable, qui se désintègre tout seul. On dit aussi radionucléide ou radioisotope."
+ },
+ {
+  "mot": "Radionucléide",
+  "origine": "ES · La radioactivité",
+  "def": "Autre nom d'un noyau radioactif. Synonyme : radioisotope."
+ },
+ {
+  "mot": "Désintégration",
+  "origine": "ES · La radioactivité",
+  "def": "La transformation d'un noyau père instable en un noyau fils plus stable, avec émission d'une particule et d'un rayonnement."
+ },
+ {
+  "mot": "Noyau père",
+  "origine": "ES · La radioactivité",
+  "def": "Le noyau radioactif de départ, celui qui se désintègre."
+ },
+ {
+  "mot": "Noyau fils",
+  "origine": "ES · La radioactivité",
+  "def": "Le noyau obtenu après la désintégration. Plus stable que le père — mais parfois radioactif lui aussi."
+ },
+ {
+  "mot": "Particule alpha",
+  "origine": "ES · La radioactivité",
+  "def": "Un noyau d'hélium (2 protons, 2 neutrons) émis par certains noyaux radioactifs. Arrêtée par une feuille de papier."
+ },
+ {
+  "mot": "Radioactivité bêta",
+  "origine": "ES · La radioactivité",
+  "def": "Une désintégration dans laquelle le noyau émet un électron. Arrêtée par quelques millimètres d'aluminium."
+ },
+ {
+  "mot": "Rayonnement gamma",
+  "origine": "ES · La radioactivité",
+  "def": "Un rayonnement très pénétrant, de la même famille que la lumière, toujours émis lors d'une désintégration."
+ },
+ {
+  "mot": "Cascade de désintégrations",
+  "origine": "ES · La radioactivité",
+  "def": "Une suite de désintégrations successives, jusqu'à un noyau stable. Exemple : de l'uranium 238 au plomb 206."
+ },
+ {
+  "mot": "Becquerel",
+  "origine": "ES · La radioactivité",
+  "def": "Unité d'activité d'une source : une désintégration par seconde. Un adulte de 80 kg est à environ 8 000 Bq."
+ },
+ {
+  "mot": "Sievert",
+  "origine": "ES · La radioactivité",
+  "def": "Unité de dose reçue par un organisme. On l'emploie surtout en millisieverts (mSv)."
+ },
+ {
+  "mot": "Loi de décroissance radioactive",
+  "origine": "ES · La radioactivité",
+  "def": "La loi qui décrit comment le nombre de noyaux radioactifs diminue au cours du temps, de façon prévisible pour un grand nombre de noyaux."
+ },
+ {
+  "mot": "Constante radioactive",
+  "origine": "ES · La radioactivité",
+  "def": "Notée λ : elle indique à quelle vitesse les noyaux d'un radionucléide se désintègrent. Grande = vite."
+ },
+ {
+  "mot": "Temps de demi-vie",
+  "origine": "ES · La radioactivité",
+  "def": "Noté t1/2 : le temps au bout duquel la moitié des noyaux radioactifs présents au départ se sont désintégrés. Propre à chaque radionucléide."
+ },
+ {
+  "mot": "Radioactivité naturelle",
+  "origine": "ES · La radioactivité",
+  "def": "Celle des noyaux présents sur Terre depuis sa formation, dans les roches, l'air et les êtres vivants."
+ },
+ {
+  "mot": "Radioactivité artificielle",
+  "origine": "ES · La radioactivité",
+  "def": "Celle des noyaux recréés par l'homme, en accélérateur de particules ou en réacteur nucléaire. Elle s'ajoute à la naturelle."
+ }
+]
+</script>
+<script src="../assets/js/sequence-snt.js?v=42"></script>
+
+</body>
+</html>

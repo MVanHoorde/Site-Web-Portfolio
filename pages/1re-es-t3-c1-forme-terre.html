@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ES 1re · La forme de la Terre — Séquence élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- 🔴 Le client de base de données n'est PAS chargé ici : sans lui, le moteur
+     bascule sur son repli local, qui dit honnêtement « gardé pour cette
+     séance ». Le charger afficherait « connecte-toi pour enregistrer ton
+     travail » alors que rien ne serait enregistré. À rétablir au branchement,
+     avec data-sequence sur <body>. -->
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     ENSEIGNEMENT SCIENTIFIQUE 1re — Thème 3 « La Terre, un astre
+     singulier », chapitre 1 : « La forme de la Terre ».
+     Sous-thème 3.1 du programme officiel.
+
+     Tourne sur le moteur des séquences SNT. 🔴 PAS DE BASE DE DONNÉES
+     dans cette version (brief ES1 §3.2).
+     ⚠ Ne pas réécrire ici le nom de ces fichiers avec leur extension,
+     même en commentaire : verifier.mjs cherche la chaîne « seances-
+     snt.js » dans TOUT le HTML, commentaires compris.
+
+     Contenu : porté depuis le PDF de cours ET sa correction — les
+     corrigés des cinq exercices viennent de Loïc. Images extraites des
+     PDF, jamais redessinées.
+     ============================================================ -->
+<style>
+  /* ---------- Cadre « proposition » — mécanisme du chantier ES1 ---------- */
+  .proposition{border:2px dashed var(--hist);border-radius:12px;
+    background:var(--hist-wash);padding:12px 15px;margin:14px 0;
+    font-size:13.5px;line-height:1.55;color:var(--ink)}
+  .proposition .pl{font-family:"IBM Plex Mono",monospace;font-size:11px;
+    letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+    color:var(--hist);display:flex;gap:7px;align-items:center;
+    margin-bottom:5px;flex-wrap:wrap}
+  .proposition p{margin:5px 0}
+  .proposition ul{margin:5px 0 0;padding-left:18px}
+
+  /* ---------- Cadre de réservation d'image ---------- */
+  .reserve{border:1.5px dashed var(--link);border-radius:8px;
+    background:repeating-linear-gradient(45deg,var(--surface-2) 0 8px,var(--surface) 8px 16px);
+    display:flex;flex-direction:column;justify-content:center;gap:3px;
+    padding:16px 10px;text-align:center;margin:12px auto}
+  .reserve .rf{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--link);word-break:break-all}
+  .reserve .rd{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
+  .reserve .rr{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+
+  /* ---------- Formule posée au centre ---------- */
+  .formule{text-align:center;font-family:"IBM Plex Mono",monospace;font-size:19px;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:14px 12px;margin:12px 0;color:var(--ink);overflow-x:auto}
+  .formule .u{font-size:12px;color:var(--ink-faint);display:block;margin-top:6px;
+    font-family:"IBM Plex Sans",system-ui,sans-serif}
+
+  /* ---------- Tableau de proportionnalité ---------- */
+  .prop td, .prop th{text-align:center}
+  .prop td:first-child, .prop th:first-child{text-align:left;font-weight:600}
+</style>
+
+</head><body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Enseignement scientifique · 1re · La Terre, un astre singulier</div>
+    <h1 class="title">La forme de la Terre <span class="tag">chapitre 1</span></h1>
+    <p class="lede">Un puits, une ombre d'obélisque et un peu de géométrie ont suffi, deux siècles avant notre ère, à mesurer la planète entière à 1 % près. Deux mille ans plus tard, deux hommes ont failli y laisser leur vie pour définir le mètre.</p>
+    <div class="themes">
+      <span class="theme-chip">Nucléosynthèse</span><span class="theme-chip">La radioactivité</span>
+      <span class="theme-chip">Les cristaux</span><span class="theme-chip">Son et musique</span>
+      <span class="theme-chip">Le son, une information à coder</span><span class="theme-chip on">La forme de la Terre</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>3 séances</b></span>
+      <span class="m">Durée <b>≈ 4 h 30</b></span>
+      <span class="m">Chaque séance se débloque quand la <b>précédente est validée</b></span>
+    </div>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — toutes les séances sont ouvertes.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="1re-enseignement-scientifique.html">← Enseignement scientifique</a>
+    <a href="#s1"><span class="n">S1</span>Sphéricité &amp; Ératosthène</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>Triangulation &amp; le mètre <span class="lockico">🔒</span></a>
+    <a href="#s3" data-navlock="3"><span class="n">S3</span>Se repérer sur la Terre <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- CHANTIER -->
+  <aside class="chantier decision">
+    <div class="cl">📌 Décision attendue — état de cette page</div>
+    V0 portée depuis le PDF de cours <b>et sa correction</b>. Les corrigés des cinq
+    exercices viennent donc de toi. La <b>progression n'est pas enregistrée</b> (ni base,
+    ni stockage local). Les <b>cadres violets</b> sont des propositions. Relevé complet
+    dans <code>_suivi/es1-verification.md</code>.
+  </aside>
+  <!-- /CHANTIER -->
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>La sphéricité de la Terre, et sa mesure par Ératosthène</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Comment on a su que la Terre était ronde bien avant d'en sortir — et comment un bibliothécaire grec en a mesuré la circonférence avec une ombre.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 -->
+      <div class="step" data-step data-gate data-cle="es-t3c1-histoire">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">L'histoire d'une idée : la Terre est une sphère</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir que la sphéricité est établie depuis l'Antiquité, et connaître deux arguments d'observation qui l'ont fait admettre.</span></div>
+          </div>
+          <div class="card-body">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t3-c1/t3c1-frise-spericite.jpg" alt="Frise chronologique de l'idée de sphéricité de la Terre, d'Anaximandre à aujourd'hui, avec Pythagore, Aristote, Ératosthène, Magellan, Newton, Delambre et Méchain, Spoutnik et les satellites" loading="lazy">
+              <figcaption>L'histoire de l'idée de sphéricité, d'<b>Anaximandre</b> (~600 av. J.-C.) à aujourd'hui. La bande du bas prolonge celle du haut&nbsp;: c'est <b>une seule frise</b>, coupée en deux dans le document d'origine.<span class="src">Frise du cours de M. Van Hoorde — provenance des portraits à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Deux arguments qu'on peut vérifier soi-même<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <b>Argument 1 —</b> l'horizon est <b>arrondi</b> sur la mer et semble s'éloigner au fur et à mesure que l'on s'en approche&nbsp;; les mâts des navires arrivant de loin sont <b>de plus en plus visibles</b>, la coque apparaissant en dernier.<br>
+              <b>Argument 2 —</b> lors des <b>éclipses de Lune</b>, l'ombre de la Terre sur cette dernière est nettement <b>arrondie</b>.
+            </div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="TER-1a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Depuis quand sait-on que la Terre est sphérique ?",
+  "o": [
+   "Depuis les premières photographies prises depuis l'espace, en 1957",
+   "Depuis le voyage de Magellan, au XVIᵉ siècle",
+   "Depuis l'Antiquité grecque : Pythagore la conçoit ronde vers 550 av. J.-C.",
+   "Depuis Newton, au XVIIIᵉ siècle"
+  ],
+  "r": 2,
+  "c": "L'idée est <b>antique</b>. Magellan (1519) l'a confirmée par un tour du monde, Newton a précisé qu'elle était <b>aplatie aux pôles</b> (1744), et les satellites en ont donné la forme exacte — mais l'idée elle-même a plus de 2 500 ans."
+ },
+ {
+  "q": "Un navire arrive de l'horizon. Qu'observe-t-on ?",
+  "o": [
+   "On voit d'abord les mâts, puis la coque apparaît en dernier",
+   "On voit d'abord la coque, puis les mâts apparaissent en dernier",
+   "Le navire apparaît d'un seul coup, entièrement visible",
+   "Le navire semble d'abord grandir, puis rétrécir"
+  ],
+  "r": 0,
+  "c": "Les <b>mâts d'abord</b> : la coque est encore cachée derrière la courbure. Sur une Terre plate, le navire apparaîtrait entier, simplement de plus en plus grand."
+ },
+ {
+  "q": "Que dit l'ombre de la Terre lors d'une éclipse de Lune ?",
+  "o": [
+   "Qu'elle est plate, puisque l'ombre est droite",
+   "Qu'elle est arrondie, puisque l'ombre projetée l'est toujours",
+   "Rien : l'ombre est celle de la Lune sur elle-même",
+   "Qu'elle tourne autour du Soleil"
+  ],
+  "r": 1,
+  "c": "L'ombre est <b>toujours</b> arrondie, quelle que soit l'orientation de la Terre. Seul un corps sphérique projette une ombre ronde dans toutes les positions — un disque plat, lui, donnerait parfois un trait."
+ },
+ {
+  "q": "Que sait-on de la forme de la Terre aujourd'hui ? Coche tout ce qui convient.",
+  "o": [
+   "Elle est légèrement aplatie aux pôles : c'est un ellipsoïde",
+   "Sa forme réelle, le géoïde, s'écarte de l'ellipsoïde d'environ 200 m",
+   "Elle est parfaitement sphérique, aux montagnes près",
+   "Ses irrégularités viennent de l'hétérogénéité des masses internes"
+  ],
+  "r": [0, 1, 3],
+  "c": "L'hypothèse de <b>Newton</b> (aplatissement aux pôles) a été validée en 1744, puis les satellites ont révélé le <b>géoïde</b> : « déformé comme une patate », avec des écarts d'environ 200 m par rapport à l'ellipsoïde parfait, dus aux masses internes."
+ }
+]
+              </script>
+            </div>
+
+            <div class="block-label">Ressources — pour aller plus loin<span class="niv" style="margin-left:8px">— <b>non évalué</b></span></div>
+            <div class="reserve" style="min-height:150px;max-width:600px">
+              <div class="rf">2 liens vidéo cités dans le cours source, sans URL récupérable</div>
+              <div class="rd">« Comment sait-on que la Terre est ronde ? Relativité 4 » (Science4All) et « La véritable forme de la Terre : qu'est-ce que la géodésie ? » (IGN Communication). <b>Adresses à fournir</b> — la seconde, signée IGN, est un service public et fait une excellente ouverture sur le géoïde.</div>
+              <div class="rr">2 liens externes · à fournir</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 -->
+      <div class="step" data-step data-gate data-cle="es-t3c1-eratosthene">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Ératosthène mesure la Terre</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre le raisonnement, et savoir refaire le calcul de la circonférence terrestre.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="duo-ill">
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t3-c1/t3c1-buste-eratosthene.jpg" alt="Buste antique en marbre d'Ératosthène, barbu" loading="lazy">
+                <figcaption>Buste d'Ératosthène (~276 – ~194 av. J.-C.).<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+              </figure>
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t3-c1/t3c1-schema-eratosthene.jpg" alt="Schéma de la mesure d'Ératosthène : rayons solaires parallèles, obélisque à Alexandrie projetant une ombre d'angle alpha, puits à Syène éclairé au fond" loading="lazy">
+                <figcaption>La mesure du rayon de la Terre par Ératosthène : le même angle <b>α</b> se retrouve au sommet de l'obélisque et au centre de la Terre.<span class="src">Schéma du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+              </figure>
+            </div>
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Ératosthène, conservateur de la bibliothèque d'Alexandrie, serait l'initiateur de la division du globe par un système de lignes <b>méridiennes</b> et <b>latitudinales</b>. C'est surtout à lui que l'on attribue le calcul d'une valeur <b>correcte</b> de la circonférence terrestre.</p>
+
+            <div class="block-label">Doc — ses trois hypothèses</div>
+            <table class="doc-table">
+              <tr><th>Hypothèse</th><th>Ce qu'elle suppose</th></tr>
+              <tr><td>Même méridien</td><td>Il considère que <b>Syène</b> et <b>Alexandrie</b> (en Égypte) sont alignées sur le même méridien.</td></tr>
+              <tr><td>Rayons parallèles</td><td>Les rayons du Soleil sont supposés <b>parallèles</b>, en raison de l'éloignement de l'astre. Les droites qui coupent ces parallèles donnent des <b>angles alternes-internes égaux</b>.</td></tr>
+              <tr><td>Arcs proportionnels</td><td>Les arcs qui sous-tendent des angles égaux sont <b>semblables</b>. Ératosthène mesure donc l'angle de l'ombre du gnomon à Alexandrie à l'heure où, à Syène, le Soleil au zénith éclaire le <b>fond d'un puits</b>.</td></tr>
+            </table>
+
+            <div class="reveal show" style="border-color:var(--hist);background:var(--hist-wash)">
+              <div class="rl" style="color:var(--hist)">🔎 Le sais-tu — un raisonnement « chargé de théorie »</div>
+              L'hypothèse des rayons parallèles est <b>majeure</b> : un Soleil de petite taille et peu éloigné d'une Terre <b>plate</b> produirait <i>aussi</i> des rayons inclinés à Alexandrie. Le raisonnement d'Ératosthène ne <b>prouve</b> donc pas la sphéricité : il la <b>suppose</b>, et en tire une mesure. C'est un bel exemple de ce que veut dire « une mesure n'est jamais neutre ».
+            </div>
+
+            <div class="block-label">Exercice 1 — retrouver la circonférence terrestre<span class="niv" style="margin-left:8px">★ <b>à savoir-faire</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Ératosthène estime la distance Alexandrie–Syène à <b>5 000 stades égyptiens</b>.</p>
+            <p class="doc-note"><b>Données</b> : 1 stade = 160 m · α = 7,2°</p>
+            <table class="doc-table prop">
+              <tr><th>Arc de cercle (km)</th><td>800</td><td><b>?</b></td></tr>
+              <tr><th>Angle (°)</th><td>7,2</td><td>360</td></tr>
+            </table>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Refais le calcul, étape par étape.</div>
+              <div class="cloze" data-cloze>
+                La distance Alexandrie–Syène vaut D = 5 000 × 160 = <input class="short" data-answer="800000" placeholder="?" aria-label="distance en mètres" data-variantes="800 000|800000 m|800 000 m" data-indice1="Multiplie le nombre de stades par la longueur d'un stade." data-indice2="5 × 16 = 80, puis compte les zéros."> m, soit <input class="short" data-answer="800" placeholder="?" aria-label="distance en km" data-variantes="800 km" data-indice1="1 km = 1 000 m." data-indice2="Divise le résultat précédent par mille."> km.<br>
+                L'arc de cercle est <b>proportionnel</b> à l'angle qui en est à l'origine. Le méridien complet correspond à <input class="short" data-answer="360" placeholder="?" aria-label="angle du tour complet" data-variantes="360°|360 degrés" data-indice1="Un tour complet, en degrés." data-indice2="Le nombre de degrés d'un cercle entier.">°, donc :<br>
+                D<sub>méridien</sub> = 800 × 360 ÷ 7,2 = <input class="short" data-answer="40000" placeholder="?" aria-label="circonférence en km" data-variantes="40 000|40000 km|40 000 km|4,0 x 10^4" data-indice1="800 × 360 = 288 000, qu'il reste à diviser par 7,2." data-indice2="Un nombre rond, à cinq chiffres — celui que tout le monde connaît."> km.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              La correction d'origine écrit «&nbsp;<b>5000 × 150</b> = 800 000 m&nbsp;», alors que la
+              donnée annonce <b>1 stade = 160 m</b> — et c'est bien 160 qui donne 800 000. Le
+              «&nbsp;150&nbsp;» est une <b>coquille</b>&nbsp;: corrigée ici en 160. <b>À confirmer</b>,
+              et à reprendre dans le PDF si tu le rediffuses.
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Ce que vaut cette mesure"
+                 data-focus-question="La valeur admise aujourd'hui pour la circonférence terrestre est d'environ 40 075 km à l'équateur. Que penses-tu du résultat d'Ératosthène, obtenu il y a plus de 2 200 ans avec une ombre et un puits ?"
+                 data-focus-max="600" data-focus-min="20" data-focus-code="TER-1b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Que penses-tu du résultat d'Ératosthène, comparé à la valeur admise aujourd'hui (≈ 40 075 km) ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Cette question de mise en perspective est ajoutée. Elle n'existe pas dans le cours
+              source, qui s'arrête au calcul. Elle prépare le regard critique demandé en séance 2 sur
+              les erreurs de Delambre et Méchain.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 -->
+      <div class="step" data-step data-gate data-cle="es-t3c1-ex2">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 2 — et si aucune ville n'est sur le tropique ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> généraliser la méthode d'Ératosthène à deux villes quelconques, et en déduire le rayon de la Terre.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Que faire si <b>aucun</b> point de référence ne se trouve sur le tropique — c'est-à-dire si le Soleil n'est <b>jamais à la verticale</b> d'aucun des deux points ?</p>
+            <table class="doc-table">
+              <tr><th>Lieu</th><th>Observation, le 21 juin au midi solaire</th></tr>
+              <tr><td><b>Belgrade</b></td><td>les rayons du Soleil forment un angle <b>α = 21,3°</b> avec la verticale</td></tr>
+              <tr><td><b>Corfou</b>, 580 km au sud</td><td>les rayons forment un angle <b>β = 16,1°</b> avec la verticale</td></tr>
+            </table>
+            <p class="doc-note">On rappelle que Corfou <b>ne se situe pas</b> en zone tropicale — et donc que les rayons y arrivant à ce moment sont inclinés vers le sud.</p>
+            <div class="formule">l = θ × R
+              <span class="u">valable seulement si θ est exprimé en <b>radians</b></span>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Le schéma de la situation"
+                 data-focus-question="Fais un schéma de la situation faisant figurer la Terre, les deux villes, la distance de 580 km et les deux angles α et β. Décris-le ici (ou dépose-le à ton professeur sur papier)."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="TER-1c">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">1 · Faire un schéma de la situation : la Terre, les deux villes, la distance de 580 km, les angles α et β.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ Le schéma attendu</div>
+                <figure class="ill" style="margin-top:8px"><span class="loupe">⤢ agrandir</span>
+                  <img src="../assets/img/es/1re-es-t3-c1/t3c1-belgrade-corfou-correction.jpg" alt="Portion de sphère terrestre avec Belgrade et Corfou, les rayons solaires parallèles, les angles 21,3° et 16,1° et l'angle au centre alpha moins bêta" loading="lazy">
+                  <figcaption>Les deux verticales, prolongées, se coupent <b>au centre de la Terre</b> : c'est là que se lit l'angle cherché.<span class="src">Schéma de correction de M. Van Hoorde</span></figcaption>
+                </figure>
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              Le schéma de la question&nbsp;1 est ici <b>caché derrière l'envoi</b> de la réponse&nbsp;:
+              il ne se révèle qu'une fois que l'élève a proposé le sien. C'est le seul moyen de garder
+              l'exercice sans priver l'élève du corrigé. <b>À arbitrer</b>&nbsp;: si tu préfères le
+              schéma visible d'emblée, il suffit de le sortir du bloc de révélation.
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">2 · Exprime l'angle θ formé, au centre de la Terre, par le rayon passant par Belgrade et celui passant par Corfou, en fonction de α et β. Puis calcule-le.</div>
+              <div class="cloze" data-cloze>
+                L'angle vaut θ = <input data-answer="α − β" placeholder="?" aria-label="expression de theta" data-variantes="alpha - beta|α-β|a-b|alpha moins beta|α - β" data-indice1="C'est une soustraction des deux angles mesurés." data-indice2="Le plus grand moins le plus petit : α … β."> = 21,3 − 16,1 = <input class="short" data-answer="5,2" placeholder="?" aria-label="valeur de theta en degrés" data-variantes="5.2|5,2°|5,2 degrés" data-indice1="Fais la soustraction." data-indice2="Un peu plus de cinq degrés.">°.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <table class="doc-table prop">
+              <tr><th>Arc de cercle (km)</th><td>580</td><td><b>?</b></td></tr>
+              <tr><th>Angle (°)</th><td>5,2</td><td>360</td></tr>
+            </table>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">3 et 4 · Retrouve la circonférence de la Terre, puis son rayon.</div>
+              <div class="cloze" data-cloze>
+                C = 580 × 360 ÷ 5,2 ≈ <input class="short" data-answer="40000" placeholder="?" aria-label="circonférence en km" data-variantes="40 000|4,0 x 10^4|40000 km|40 000 km" data-indice1="580 × 360 = 208 800, à diviser par 5,2." data-indice2="On retrouve le même nombre rond qu'avec Ératosthène."> km.<br>
+                Pour le rayon, deux méthodes.<br>
+                <b>Méthode 1</b> — on convertit θ en radians : 5,2° = 5,2 × 2π ÷ 360 ≈ <input class="short" data-answer="0,091" placeholder="?" aria-label="theta en radians" data-variantes="0.091|0,091 rad|0,09" data-indice1="Multiplie 5,2 par 2π (≈ 6,283), puis divise par 360." data-indice2="Un nombre qui commence par 0,09."> rad. Puis R = l ÷ θ = 580 ÷ 0,091 ≈ <input class="short" data-answer="6400" placeholder="?" aria-label="rayon en km, méthode 1" data-variantes="6 400|6,4 x 10^3|6400 km|6 400 km" data-indice1="580 divisé par 0,091." data-indice2="Un peu plus de six mille kilomètres."> km.<br>
+                <b>Méthode 2</b> — on part de la circonférence : R = C ÷ 2π = 40 000 ÷ 6,283 ≈ <input class="short" data-answer="6400" placeholder="?" aria-label="rayon en km, méthode 2" data-variantes="6 400|6,4 x 10^3|6400 km|6 400 km" data-indice1="Divise 40 000 par 2π." data-indice2="Le même résultat que par la méthode 1."> km.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="retain">Retiens l'ordre de grandeur : la Terre fait environ <b>40 000 km</b> de circonférence et <b>6 400 km</b> de rayon. Ces deux nombres se retrouvent l'un à partir de l'autre par C = 2πR.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>Mesurer un méridien : la triangulation et la naissance du mètre</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Pourquoi la France a eu besoin de mesurer la Terre pour se donner une unité de longueur — et comment on mesure 1 000 km sans jamais parcourir la distance.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 2.1 -->
+      <div class="step" data-step data-gate data-cle="es-t3c1-metre">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">250 000 unités de mesure, et une idée pour en finir</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir d'où vient le mètre, et pourquoi sa définition d'origine oblige à mesurer la Terre.</span></div>
+          </div>
+          <div class="card-body">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t3-c1/t3c1-tableau-poids-et-mesures.jpg" alt="Planche ancienne « Tableau de l'enseignement des poids et mesures », montrant balances, poids, mesures de capacité et de longueur" loading="lazy">
+              <figcaption>Jusqu'à la Révolution, il a coexisté près de <b>250 000 unités de mesure différentes</b>, créant un chaos peu propice au commerce et aux échanges entre pays — et au sein même de la France.<span class="src">Planche reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Le marquis de <b>Condorcet</b> (1743-1794), mathématicien et auteur, pense alors un système qui permettrait d'<b>unifier et de rationaliser</b> les poids et mesures. C'est la naissance du <b>système métrique</b>.</p>
+
+            <div class="block-label">La définition d'origine du mètre<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">L'unité de longueur sera le <b>mètre</b>. Il est alors défini comme <b>le quart de la dix-millionième partie du méridien terrestre</b> — le méridien étant la distance séparant les deux pôles terrestres.</div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Vérifie que cette définition tient debout, avec la circonférence trouvée en séance 1.</div>
+              <div class="cloze" data-cloze>
+                Le tour complet de la Terre par les pôles mesure <input class="short" data-answer="40000" placeholder="?" aria-label="circonférence en km" data-variantes="40 000|40000 km|40 000 km" data-indice1="C'est le résultat des deux exercices de la séance 1." data-indice2="Un nombre rond à cinq chiffres."> km. Son <b>quart</b> — du pôle Nord à l'équateur — vaut donc <input class="short" data-answer="10000" placeholder="?" aria-label="quart de méridien en km" data-variantes="10 000|10000 km|10 000 km" data-indice1="Divise la circonférence par 4." data-indice2="Dix mille kilomètres, pile."> km, soit 10 000 000 m. La <b>dix-millionième partie</b> de cette longueur vaut alors exactement <input class="short" data-answer="1" placeholder="?" aria-label="valeur en mètre" data-variantes="1 m|un|1 mètre" data-indice1="Divise 10 000 000 m par dix millions." data-indice2="C'est la définition même du mètre."> m.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Cette vérification n'est pas dans le cours source. Elle est ajoutée parce qu'elle
+              referme la boucle&nbsp;: c'est <b>parce que</b> la Terre fait 40 000 km que le mètre vaut
+              ce qu'il vaut — et non l'inverse. Une phrase de plus, et la définition cesse d'être
+              arbitraire.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 -->
+      <div class="step" data-step data-gate data-cle="es-t3c1-delambre">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Delambre et Méchain, ou cinq ans sur les routes</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir en quoi consiste la <b>triangulation</b>, et pourquoi c'est la seule méthode praticable.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Mais pour définir le mètre ainsi, encore faut-il <b>mesurer ce méridien</b>. C'est l'aventure titanesque dans laquelle vont s'engager <b>Jean-Baptiste Delambre</b> et <b>Pierre Méchain</b>, entre <b>1792 et 1797</b>. Ils vont avoir recours à la méthode de <b>triangulation</b>.</p>
+
+            <div class="duo-ill">
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t3-c1/t3c1-delambre-et-mechain.jpg" alt="Portraits peints de Jean-Baptiste Delambre et Pierre Méchain" loading="lazy">
+                <figcaption>Jean-Baptiste Delambre et Pierre Méchain.<span class="src">Portraits repris du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+              </figure>
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t3-c1/t3c1-cercle-repetiteur-borda.jpg" alt="Cercle répétiteur de Borda, instrument de mesure d'angles en laiton monté sur trépied" loading="lazy">
+                <figcaption>Le <b>cercle répétiteur de Borda</b>, l'instrument de l'expédition. Musée des arts et métiers.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+              </figure>
+            </div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t3-c1/t3c1-carte-triangulation-france.jpg" alt="Carte ancienne de France couverte d'une chaîne de triangles reliant Dunkerque à la frontière espagnole le long du méridien de Paris" loading="lazy">
+              <figcaption>En 1792, Delambre et Méchain ont pour mission de mesurer précisément la longueur d'une <b>portion de méridien</b> (l'arc de cercle reliant les deux pôles) pour en déduire la longueur totale. Départ à <b>Dunkerque</b>, arrivée prévue cinq ans plus tard à <b>Barcelone</b> — et une chaîne de triangles pour relier les deux.<span class="src">Carte reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="reveal show" style="border-color:var(--hist);background:var(--hist-wash)">
+              <div class="rl" style="color:var(--hist)">🔎 Le sais-tu — mesurer sous la Terreur</div>
+              L'expédition part en <b>1792</b>, en pleine Révolution. Méchain et Delambre sont arrêtés plusieurs fois par des gardes nationaux qui les prennent pour des espions — ils grimpent sur des clochers avec des instruments de cuivre et notent des chiffres. Méchain, bloqué en Espagne par la guerre, découvrira une <b>incohérence</b> dans ses propres mesures à Barcelone, la dissimulera, et en portera le poids jusqu'à sa mort.
+            </div>
+
+            <div class="block-label">Ressources — les erreurs de Delambre et Méchain<span class="niv" style="margin-left:8px">— <b>non évalué</b></span></div>
+            <div class="reserve" style="min-height:150px;max-width:600px">
+              <div class="rf">2 liens vidéo : « Le mètre ne fait pas 1 m », parties 1 et 2 (Scilabus)</div>
+              <div class="rd">Le cours source cite ces deux vidéos, sans URL récupérable depuis le PDF. Elles racontent précisément l'erreur de Méchain et ce qu'elle a coûté. <b>Adresses à fournir</b> — puis à intégrer en façade « clic pour charger ».</div>
+              <div class="rr">2 liens externes · à fournir</div>
+            </div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="TER-2a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Pourquoi Delambre et Méchain devaient-ils mesurer un méridien ?",
+  "o": [
+   "Pour prouver que la Terre est ronde, ce qui restait contesté",
+   "Parce que le mètre était défini comme une fraction du méridien terrestre",
+   "Pour dresser la première carte complète de la France",
+   "Pour déterminer la position exacte du méridien de Greenwich"
+  ],
+  "r": 1,
+  "c": "Le mètre valait, par définition, <b>le quart de la dix-millionième partie du méridien</b>. Impossible de fabriquer l'étalon sans avoir mesuré la Terre : c'est toute la raison de l'expédition."
+ },
+ {
+  "q": "En quoi consiste la triangulation ?",
+  "o": [
+   "À mesurer une seule distance au sol, puis des angles, et à calculer tout le reste",
+   "À mesurer toutes les distances au sol, une par une, avec une chaîne d'arpenteur",
+   "À trianguler la position d'un point à partir de trois satellites",
+   "À découper le territoire en triangles de surface égale"
+  ],
+  "r": 0,
+  "c": "C'est l'astuce : on mesure sur le terrain <b>une seule</b> longueur (la « base »), puis uniquement des <b>angles</b> — bien plus faciles à relever de loin. La trigonométrie fait le reste. Mesurer 1 000 km au sol, à la chaîne, serait impossible."
+ },
+ {
+  "q": "Combien de temps a duré l'expédition, et entre quelles villes ?",
+  "o": [
+   "Cinq ans, de 1792 à 1797, de Dunkerque à Barcelone",
+   "Un an, en 1792, de Paris à Dunkerque",
+   "Vingt ans, de 1780 à 1800, de Brest à Strasbourg",
+   "Trois mois, en 1795, de Paris à Barcelone"
+  ],
+  "r": 0,
+  "c": "<b>1792-1797</b>, de <b>Dunkerque</b> à <b>Barcelone</b>, en pleine Révolution. Delambre remontait le nord, Méchain le sud."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 -->
+      <div class="step" data-step data-gate data-cle="es-t3c1-ex3">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 3 — mesurer une portion de méridien par triangulation</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> enchaîner trois triangles avec la <b>loi des sinus</b> pour obtenir une longueur qu'on n'a jamais parcourue.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">On souhaite mesurer une portion de méridien terrestre <b>[AE]</b>. On utilise pour cela <b>3 triangles</b> dont on mesure certains angles, et on mesure la distance <b>AC = 20,5 km</b>.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t3-c1/t3c1-figure-triangulation-exercice.jpg" alt="Figure de triangulation : les points A, B, C, D, E avec le segment AE en rouge, les points M et N dessus, et les angles 38°, 42°, 76°, 31°, 28°, 63° et 72°" loading="lazy">
+              <figcaption>La figure de l'exercice. Le segment <b>[AE]</b>, en rouge, est la portion de méridien cherchée&nbsp;; <b>M</b> et <b>N</b> sont les points où les visées le coupent.<span class="src">Figure du cours de M. Van Hoorde</span></figcaption>
+            </figure>
+
+            <div class="block-label">Rappels de géométrie<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Dans <b>tout</b> triangle de côtés a, b, c opposés aux angles α, β, γ :
+              <div class="formule" style="margin:10px 0 4px;background:transparent;border:0;padding:4px">a / sin(α) = b / sin(β) = c / sin(γ)</div>
+              <div class="formule" style="margin:0;background:transparent;border:0;padding:4px">α + β + γ = 180°</div>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">1 · Détermine l'angle <b>AM̂C</b>, puis calcule les distances <b>AM</b> et <b>MC</b>.</div>
+              <div class="cloze" data-cloze>
+                Dans le triangle AMC, la somme des angles vaut 180° : AM̂C = 180 − (38 + 42) = <input class="short" data-answer="100" placeholder="?" aria-label="angle AMC en degrés" data-variantes="100°|100 degrés" data-indice1="38 + 42 = 80, à retrancher de 180." data-indice2="Un angle rond, juste au-dessus de l'angle droit.">°.<br>
+                Loi des sinus : AM ÷ sin 42 = MC ÷ sin 38 = AC ÷ sin 100. On en déduit :<br>
+                AM = 20,5 × sin 42 ÷ sin 100 = <input class="short" data-answer="13,93" placeholder="?" aria-label="AM en km" data-variantes="13.93|13,9|13,93 km" data-indice1="sin 42 ≈ 0,669 et sin 100 ≈ 0,985." data-indice2="Un peu moins de 14 km."> km<br>
+                MC = 20,5 × sin 38 ÷ sin 100 = <input class="short" data-answer="12,82" placeholder="?" aria-label="MC en km" data-variantes="12.82|12,8|12,82 km" data-indice1="sin 38 ≈ 0,616 et sin 100 ≈ 0,985." data-indice2="Un peu moins de 13 km."> km
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">2 · Détermine l'angle <b>CM̂N</b> et l'angle <b>MN̂C</b>.</div>
+              <div class="cloze" data-cloze>
+                Les angles CM̂N et CM̂A sont <b>supplémentaires</b> (ils forment un angle plat le long de [AE]), donc CM̂N = 180 − 100 = <input class="short" data-answer="80" placeholder="?" aria-label="angle CMN" data-variantes="80°|80 degrés" data-indice1="Deux angles qui forment un angle plat sont supplémentaires : leur somme vaut un demi-tour." data-indice2="180 − 100.">°.<br>
+                Dans le triangle MNC : MN̂C = 180 − (80 + 31) = <input class="short" data-answer="69" placeholder="?" aria-label="angle MNC" data-variantes="69°|69 degrés" data-indice1="80 + 31 = 111, à retrancher de 180." data-indice2="Un de moins que 70.">°.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">3 · Calcule les distances <b>MN</b> et <b>NC</b>.</div>
+              <div class="cloze" data-cloze>
+                Loi des sinus dans MNC : MN ÷ sin 31 = NC ÷ sin 80 = MC ÷ sin 69. Donc :<br>
+                MN = 12,82 × sin 31 ÷ sin 69 = <input class="short" data-answer="7,07" placeholder="?" aria-label="MN en km" data-variantes="7.07|7,1|7,07 km|7,06" data-indice1="sin 31 ≈ 0,515 et sin 69 ≈ 0,934." data-indice2="Environ sept kilomètres."> km<br>
+                NC = 12,82 × sin 80 ÷ sin 69 = <input class="short" data-answer="13,52" placeholder="?" aria-label="NC en km" data-variantes="13.52|13,5|13,52 km" data-indice1="sin 80 ≈ 0,985 et sin 69 ≈ 0,934." data-indice2="Un peu plus de 13 km."> km
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">4 et 5 · Calcule la distance <b>NE</b>, puis déduis-en <b>AE</b>.</div>
+              <div class="cloze" data-cloze>
+                On commence par les angles : CN̂E = 180 − MN̂C = 180 − 69 = <input class="short" data-answer="111" placeholder="?" aria-label="angle CNE" data-variantes="111°|111 degrés" data-indice1="Encore deux angles supplémentaires le long de [AE]." data-indice2="180 − 69.">° puis NÊC = 180 − (111 + 28) = <input class="short" data-answer="41" placeholder="?" aria-label="angle NEC" data-variantes="41°|41 degrés" data-indice1="111 + 28 = 139, à retrancher de 180." data-indice2="Un de plus que 40.">°.<br>
+                Loi des sinus : NE = 13,52 × sin 28 ÷ sin 41 = <input class="short" data-answer="9,67" placeholder="?" aria-label="NE en km" data-variantes="9.67|9,7|9,67 km" data-indice1="sin 28 ≈ 0,469 et sin 41 ≈ 0,656." data-indice2="Un peu moins de 10 km."> km.<br>
+                Enfin : AE = AM + MN + NE = 13,93 + 7,07 + 9,67 ≈ <input class="short" data-answer="30,7" placeholder="?" aria-label="AE en km" data-variantes="30.7|30,7 km|30,67|31" data-indice1="Additionne les trois longueurs trouvées." data-indice2="Un peu plus de 30 km."> km.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="retain">Bilan de la méthode : <b>une seule distance mesurée sur le terrain</b> (AC = 20,5 km) et <b>sept angles</b> ont suffi à obtenir une longueur de 30,7 km qu'on n'a jamais parcourue. Répète l'opération une centaine de fois, de Dunkerque à Barcelone, et tu as un méridien.</div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Pourquoi mesurer des angles plutôt que des distances ?"
+                 data-focus-question="Delambre et Méchain auraient pu mesurer directement la distance au sol. Pourquoi ne l'ont-ils pas fait ? Qu'est-ce qui rend un angle plus facile à mesurer qu'une longueur, sur le terrain ?"
+                 data-focus-max="600" data-focus-min="20" data-focus-code="TER-2b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Pourquoi mesure-t-on des angles plutôt que des distances ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🔭 Pour compléter</div>
+                Un angle se mesure <b>depuis un seul point</b>, en visant deux repères éloignés — un clocher, un sommet. Une distance, elle, oblige à <b>parcourir</b> le terrain : rivières, forêts, montagnes, propriétés privées, et une erreur qui s'accumule à chaque report de la chaîne d'arpenteur. Mesurer un angle avec un cercle de Borda prend une heure ; mesurer 30 km au sol prend des semaines et se fait moins bien.
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              Cet exercice est <b>long</b> : quatre questions enchaînées, sept applications de la loi des
+              sinus, et chaque résultat sert au suivant — une erreur au début fausse toute la suite. Il
+              a été découpé ici en <b>quatre blocs séparés</b>, chacun validant l'étape, pour qu'un
+              élève bloqué à la question 3 ne perde pas les questions 1 et 2. <b>À arbitrer</b>&nbsp;:
+              faut-il donner les valeurs intermédiaires au tableau, ou laisser chacun buter&nbsp;?
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 3 ===================== -->
+  <section class="seance locked" id="s3" data-seance="3">
+    <div class="seance-head">
+      <h2><span class="s-num">S3</span>Se repérer sur la Terre</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Latitude, longitude, et la question qui suit immédiatement : quelle distance sépare deux points d'une sphère ?</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 3.1 -->
+      <div class="step" data-step data-gate data-cle="es-t3c1-coordonnees">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Latitude et longitude</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir définir les deux coordonnées, connaître leurs deux références, et savoir lire N/S et E/O.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Pour se repérer sur la Terre, on la découpe « horizontalement » (du nord au sud) par des cercles parallèles à l'équateur, appelés <b>parallèles</b>. On la découpe aussi « verticalement » par des demi-cercles qui joignent le pôle Nord et le pôle Sud : les <b>méridiens</b>.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t3-c1/t3c1-paralleles-et-meridiens.jpg" alt="Globe terrestre avec les parallèles, les méridiens, l'équateur, les tropiques, les cercles polaires et le méridien de Greenwich" loading="lazy">
+              <figcaption>Les parallèles (en noir) et les méridiens (en rouge). Les latitudes au <b>Nord</b> de l'équateur portent la lettre <b>N</b>, celles au sud la lettre <b>S</b>. De même, les longitudes à l'<b>Est</b> du méridien de Greenwich prennent un <b>E</b>, à l'ouest un <b>O</b>.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Définitions<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">On repère un point à la surface de la Terre par <b>deux coordonnées angulaires</b> — ce sont des <b>angles</b> — sa <b>latitude</b> et sa <b>longitude</b>. Elles sont définies à partir de deux références : l'<b>équateur</b> pour la latitude, et le <b>méridien de Greenwich</b> pour la longitude.
+              <ul style="margin:8px 0 0;padding-left:18px">
+                <li><b>Latitude</b> d'un point X : l'angle entre le rayon passant par X et le rayon passant par l'équateur au même méridien.</li>
+                <li><b>Longitude</b> d'un point X : l'angle entre le rayon passant par l'intersection du méridien de X et de l'équateur, et le rayon passant par le méridien de Greenwich et l'équateur.</li>
+              </ul>
+            </div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t3-c1/t3c1-latitude-et-longitude.jpg" alt="Globe en coupe montrant l'angle de latitude, mesuré depuis l'équateur, et l'angle de longitude, mesuré depuis le méridien de Greenwich" loading="lazy">
+              <figcaption>Les deux angles, vus depuis le <b>centre</b> de la Terre. La latitude se compte vers le haut ou le bas ; la longitude, vers l'est ou l'ouest.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+            <p class="doc-note"><b>Exemple</b> : Paris a pour latitude <b>48,8534° Nord</b> et pour longitude <b>2,3488° Est</b>.</p>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="TER-3a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Quelle est la référence de la latitude ?",
+  "o": [
+   "L'équateur",
+   "Le méridien de Greenwich",
+   "Le pôle Nord",
+   "Le tropique du Cancer"
+  ],
+  "r": 0,
+  "c": "L'<b>équateur</b> est la latitude 0°. Le méridien de Greenwich, lui, est la référence de la <b>longitude</b> — c'est l'erreur la plus fréquente sur ce chapitre."
+ },
+ {
+  "q": "Un point a pour coordonnées 33° 51′ S et 151° 11′ E. Que peut-on en dire ?",
+  "o": [
+   "Il est au nord de l'équateur et à l'ouest de Greenwich",
+   "Il est au sud de l'équateur et à l'est de Greenwich",
+   "Il est au sud de l'équateur et à l'ouest de Greenwich",
+   "Il est sur l'équateur, à 151° de Greenwich"
+  ],
+  "r": 1,
+  "c": "Le <b>S</b> de la latitude place le point dans l'hémisphère sud ; le <b>E</b> de la longitude, à l'est de Greenwich. Ce sont les coordonnées de Sydney."
+ },
+ {
+  "q": "Latitude et longitude sont…",
+  "o": [
+   "des distances, exprimées en kilomètres depuis les références",
+   "des angles, exprimés en degrés depuis le centre de la Terre",
+   "des coordonnées cartésiennes, comme x et y sur un quadrillage",
+   "des altitudes mesurées par rapport au niveau de la mer"
+  ],
+  "r": 1,
+  "c": "Ce sont des <b>coordonnées angulaires</b>. C'est ce qui explique qu'un degré de longitude ne représente pas la même distance à l'équateur et près des pôles — on y revient à l'étape suivante."
+ },
+ {
+  "q": "Que vaut la longitude du méridien de Greenwich lui-même ?",
+  "o": [
+   "0°",
+   "90°",
+   "180°",
+   "Elle n'est pas définie"
+  ],
+  "r": 0,
+  "c": "<b>0°</b>, par convention : c'est la référence. Le méridien à 180° est, lui, celui qui passe grosso modo par la ligne de changement de date, dans le Pacifique."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.2 -->
+      <div class="step" data-step data-gate data-cle="es-t3c1-ex4">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 4 — placer et lire des coordonnées</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir se servir d'un planisphère gradué, dans les deux sens.</span></div>
+          </div>
+          <div class="card-body">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t3-c1/t3c1-planisphere-exercice.jpg" alt="Planisphère avec les parallèles en rouge et les méridiens en bleu, gradués tous les 10 degrés, et quatre points marqués" loading="lazy">
+              <figcaption>Le planisphère de l'exercice. Les parallèles sont en <b>rouge</b>, les méridiens en <b>bleu</b>, gradués tous les 10°. Quatre villes y sont déjà marquées d'un point.<span class="src">Carte reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field" data-focus
+                 data-focus-titre="Placer trois villes"
+                 data-focus-question="Sur la carte (imprimée, ou décrite ici) : où placerais-tu Beijing (39° 54′ N, 116° 23′ E), Acapulco (16° 51′ N, 99° 53′ O) et Sydney (33° 51′ S, 151° 11′ E) ? Décris pour chacune le continent et le repère utilisé."
+                 data-focus-max="700" data-focus-min="20" data-focus-code="TER-3b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">1 · Placer Beijing, Acapulco et Sydney sur la carte, et dire comment tu t'y prends.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🔭 La méthode</div>
+                On commence <b>toujours</b> par la lettre : N ou S situe l'hémisphère, E ou O le côté de Greenwich. <b>Beijing</b> (39° N, 116° E) : hémisphère nord, loin à l'est — c'est la Chine. <b>Acapulco</b> (16° N, 99° O) : nord, mais à l'<b>ouest</b> — Mexique. <b>Sydney</b> (33° S, 151° E) : hémisphère <b>sud</b>, très à l'est — Australie. Les minutes (′) sont des soixantièmes de degré : 54′ = 0,9°.
+              </div>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Tableau à compléter</span>
+              <div class="field-q">2 · Retrouve les coordonnées des quatre villes déjà marquées sur la carte. <span style="color:var(--ink-soft)">(Au degré près, avec la lettre.)</span></div>
+              <div class="cloze" data-cloze>
+                <table class="doc-table">
+                  <tr><th>Ville</th><th>Latitude</th><th>Longitude</th></tr>
+                  <tr><td><b>Tokyo</b> (Japon)</td>
+                      <td><input class="short" data-answer="35 N" placeholder="? N/S" aria-label="latitude de Tokyo" data-variantes="35°n|35° n|35n|35 nord|35°N" data-indice1="Le point japonais est un peu au-dessus du parallèle 30°, dans l'hémisphère nord." data-indice2="Entre 30 et 40 : lis le nombre à mi-chemin."></td>
+                      <td><input class="short" data-answer="139 E" placeholder="? E/O" aria-label="longitude de Tokyo" data-variantes="139°e|139° e|139e|139 est|140 e|139°E" data-indice1="Très loin à l'est de Greenwich." data-indice2="Autour de 140° — écris la valeur avec la lettre E."></td></tr>
+                  <tr><td><b>Ambalavao</b> (Madagascar)</td>
+                      <td><input class="short" data-answer="21 S" placeholder="? N/S" aria-label="latitude d'Ambalavao" data-variantes="21°s|21° s|21s|21 sud|21°S|20 s" data-indice1="Madagascar est dans l'hémisphère sud." data-indice2="Autour de 21°, avec la lettre S."></td>
+                      <td><input class="short" data-answer="46 E" placeholder="? E/O" aria-label="longitude d'Ambalavao" data-variantes="46°e|46° e|46e|46 est|46°E|45 e" data-indice1="À l'est de Greenwich, dans l'océan Indien." data-indice2="Un peu moins de 50°, avec la lettre E."></td></tr>
+                  <tr><td><b>Amiens</b> (France)</td>
+                      <td><input class="short" data-answer="50 N" placeholder="? N/S" aria-label="latitude d'Amiens" data-variantes="50°n|50° n|50n|50 nord|50°N|49 n" data-indice1="Amiens est au nord de Paris." data-indice2="Un nombre rond, autour de 50, avec la lettre N."></td>
+                      <td><input class="short" data-answer="2 E" placeholder="? E/O" aria-label="longitude d'Amiens" data-variantes="2°e|2° e|2e|2 est|2°E|0 e" data-indice1="La France est juste à l'est de Greenwich." data-indice2="Un tout petit nombre, avec la lettre E."></td></tr>
+                  <tr><td><b>Los Angeles</b> (USA)</td>
+                      <td><input class="short" data-answer="34 N" placeholder="? N/S" aria-label="latitude de Los Angeles" data-variantes="34°n|34° n|34n|34 nord|34°N|35 n" data-indice1="Hémisphère nord, à la même latitude que Tokyo, ou presque." data-indice2="Entre 30 et 40, avec la lettre N."></td>
+                      <td><input class="short" data-answer="118 O" placeholder="? E/O" aria-label="longitude de Los Angeles" data-variantes="118°o|118° o|118o|118 ouest|118 w|120 o|118°O" data-indice1="La côte ouest des États-Unis : à l'ouest de Greenwich." data-indice2="Autour de 118°, avec la lettre O."></td></tr>
+                </table>
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              <p>Deux points à arbitrer sur cet exercice&nbsp;:</p>
+              <ul>
+                <li>la question&nbsp;1 demandait de <b>placer</b> des villes sur une carte papier. Sans
+                composant de placement à la souris, elle est ici <b>décrite par écrit</b>. Le composant
+                d'étiquettes du moteur pourrait la rendre cliquable — c'est un vrai travail de relevé
+                de coordonnées sur l'image, signalé dans le fichier de vérification&nbsp;;</li>
+                <li>les réponses attendues sont celles de la correction (35° N / 139° E, etc.). Une
+                <b>tolérance de quelques degrés</b> a été ajoutée&nbsp;: une lecture sur une carte
+                graduée tous les 10° ne peut pas être exacte au degré près.</li>
+              </ul>
+            </div>
+
+            <div class="reserve" style="min-height:130px;max-width:560px">
+              <div class="rf">Lien vers l'animation GeoGebra « Se repérer sur la Terre »</div>
+              <div class="rd">Le cours cite une animation GeoGebra du collège Jules-Verne (Déville-lès-Rouen) pour s'entraîner, ainsi qu'une vidéo « 3e — Repérer un point sur une sphère ». <b>URL à fournir</b> pour l'une comme pour l'autre.</div>
+              <div class="rr">2 liens externes · à fournir</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.3 -->
+      <div class="step" data-step data-gate data-cle="es-t3c1-distance">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">La distance entre deux points de la Terre</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir que le plus court chemin est l'arc de <b>grand cercle</b>, et savoir calculer la longueur d'un arc de parallèle.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Le plus court chemin<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Le plus court chemin entre deux points A et B à la surface de la Terre est l'arc du <b>grand cercle</b> qui les relie — autrement dit, l'arc du cercle ayant pour centre le <b>centre de la Terre</b> et sur lequel se trouvent les deux points.</div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t3-c1/t3c1-grand-cercle-plus-court-chemin.jpg" alt="Sphère avec deux points A et B reliés par deux trajets : un arc de parallèle vert et un arc de grand cercle bleu, plus court" loading="lazy">
+              <figcaption>Deux façons d'aller de A à B. Le trajet <b>vert</b> suit le parallèle ; le trajet <b>bleu</b> est l'arc de grand cercle — et c'est lui le plus court. C'est pour cela que les avions Paris–New York remontent vers le Groenland.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Le rayon d'un parallèle</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">À la latitude θ, faire le tour de la Terre est <b>plus court</b> qu'au niveau de l'équateur : le rayon R<sub>L</sub> de ce cercle est plus petit que le rayon de la Terre R<sub>T</sub>. Un peu de géométrie de niveau collège permet de montrer que :</p>
+            <div class="formule">R<sub>L</sub> = R<sub>T</sub> × cos θ &nbsp;&nbsp;(ou encore R<sub>L</sub> = R<sub>T</sub> × sin(90 − θ))
+              <span class="u">Donnée : R<sub>T</sub> = 6 371 km</span>
+            </div>
+
+            <div class="duo-ill">
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t3-c1/t3c1-rayon-du-parallele.jpg" alt="Sphère montrant le rayon terrestre incliné d'un angle thêta et le rayon du parallèle, plus petit" loading="lazy">
+                <figcaption>Le cercle vert est le parallèle de latitude θ ; son rayon R<sub>L</sub> est plus petit que R<sub>T</sub>.<span class="src">Schéma du cours de M. Van Hoorde</span></figcaption>
+              </figure>
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t3-c1/t3c1-rayon-du-parallele-detail.jpg" alt="Détail du triangle rectangle formé par l'axe des pôles, le rayon du parallèle et le rayon terrestre, avec les angles thêta et 90 moins thêta" loading="lazy">
+                <figcaption>Le détail : un simple <b>triangle rectangle</b>, où R<sub>L</sub> est le côté adjacent à θ. D'où le cosinus.<span class="src">Schéma du cours de M. Van Hoorde</span></figcaption>
+              </figure>
+            </div>
+
+            <div class="block-label">Exercice 5 — l'arc de parallèle<span class="niv" style="margin-left:8px">★ <b>à savoir-faire</b></span></div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t3-c1/t3c1-arc-de-parallele.jpg" alt="Sphère avec un parallèle de rayon RL, l'angle alpha au centre de ce parallèle et l'arc correspondant" loading="lazy">
+              <figcaption>L'arc de parallèle intercepté par l'angle α. Sa longueur vaut l = R<sub>L</sub> × α, <b>avec α en radians</b>.<span class="src">Schéma du cours de M. Van Hoorde</span></figcaption>
+            </figure>
+            <p class="doc-note"><b>Coordonnées</b> — Belgrade : 44,8° N ; 20,5° E · Bordeaux : 44,8° N ; 0,6° <b>O</b></p>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">1 · Calcule l'arc de parallèle entre Belgrade et Bordeaux.</div>
+              <div class="cloze" data-cloze>
+                Le rayon du cercle décrivant le parallèle 44,8° N vaut R<sub>L</sub> = 6 371 × cos 44,8 = <input class="short" data-answer="4527" placeholder="?" aria-label="rayon du parallèle en km" data-variantes="4 527|4527 km|4 527 km|4530" data-indice1="cos 44,8° ≈ 0,7105." data-indice2="Environ 4 500 km."> km.<br>
+                La différence de longitude vaut α = 20,5 − (− 0,6) = <input class="short" data-answer="21,1" placeholder="?" aria-label="différence de longitude en degrés" data-variantes="21.1|21,1°|21,1 degrés" data-indice1="Bordeaux est à l'OUEST : sa longitude compte négativement. Soustraire un nombre négatif revient à l'ajouter." data-indice2="20,5 + 0,6.">°.<br>
+                Converti en radians : α = 21,1 × π ÷ 180 ≈ <input class="short" data-answer="0,368" placeholder="?" aria-label="alpha en radians" data-variantes="0.368|0,368 rad|0,37" data-indice1="Multiplie par π (≈ 3,1416) puis divise par 180." data-indice2="Un nombre qui commence par 0,36.">  rad.<br>
+                D'où l = R<sub>L</sub> × α = 4 527 × 0,368 ≈ <input class="short" data-answer="1667" placeholder="?" aria-label="longueur de l'arc en km" data-variantes="1 667|1667 km|1 667 km|1670" data-indice1="Multiplie le rayon du parallèle par l'angle en radians." data-indice2="Un peu plus de 1 600 km."> km.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="reveal show" style="border-color:var(--err);background:var(--err-wash);color:#8f2a22">
+              <div class="rl" style="color:var(--err)">⚠️ Les deux pièges de ce calcul</div>
+              <b>1.</b> N'oublie pas que <b>Bordeaux est à 0,6° Ouest</b> alors que Belgrade est à 20,5° <b>Est</b> : les deux villes sont de part et d'autre de Greenwich, il faut donc <b>additionner</b> les deux longitudes, pas les soustraire.<br>
+              <b>2.</b> N'oublie pas de <b>convertir en radians</b> : la relation l = R × α n'est vraie qu'en radians. C'est l'erreur qui fait perdre le plus de points sur ce chapitre.
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Oslo — Saint-Pétersbourg"
+                 data-focus-question="Même question pour Oslo (60° N, 10° E) et Saint-Pétersbourg (60° N, 30° E). Donne ton calcul complet."
+                 data-focus-max="700" data-focus-min="20" data-focus-code="TER-3c">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">2 · Même question pour Oslo (60° N, 10° E) et Saint-Pétersbourg (60° N, 30° E).</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Les deux villes sont <b>du même côté</b> de Greenwich cette fois : α = 30 − 10 = 20°, soit 0,349 rad. R<sub>L</sub> = 6 371 × cos 60 = 3 186 km. D'où l = 3 186 × 0,349 ≈ <b>1 112 km</b> — la correction d'origine donne <b>1 114 km</b>, l'écart vient des arrondis.
+              </div>
+            </div>
+
+            <div class="block-label">Le bilan du chapitre<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+            <div class="retain" data-bilan-wrap>
+              <ul style="margin:0;padding-left:18px">
+                <li>La <b>sphéricité</b> de la Terre est connue depuis l'Antiquité ; sa forme réelle, le <b>géoïde</b>, s'écarte de la sphère d'environ 200 m.</li>
+                <li><b>Ératosthène</b> mesure la circonférence terrestre (≈ 40 000 km) avec deux villes, une ombre et une proportionnalité.</li>
+                <li>Le <b>mètre</b> a été défini comme le quart de la dix-millionième partie du méridien — d'où l'expédition de <b>Delambre et Méchain</b> (1792-1797) et sa <b>triangulation</b>.</li>
+                <li>On se repère par deux <b>angles</b> : la <b>latitude</b> (référence : l'équateur) et la <b>longitude</b> (référence : le méridien de Greenwich).</li>
+                <li>Le plus court chemin entre deux points est l'arc de <b>grand cercle</b>. La longueur d'un arc vaut <b>l = R × α</b>, avec α <b>en radians</b>, et le rayon d'un parallèle vaut <b>R<sub>L</sub> = R<sub>T</sub> × cos θ</b>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.4 — bonus -->
+      <div class="step" data-step data-cle="es-t3c1-bonus">
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
+      <div class="bonus-wrap" data-bonus>
+        <div class="bonus-head" data-bonus-toggle>
+          <span class="ix">3.4</span>
+          <span class="bl">Pour aller plus loin</span>
+          <span class="bonus-tag">hors 100&nbsp;% · non évalué</span>
+          <span class="chev">▸</span>
+        </div>
+        <div class="bonus-body">
+          <div class="block-label">Jusqu'où voit-on depuis la tour Eiffel ?</div>
+          <p style="font-size:14.5px;margin:4px 0 10px">Un homme se tient au <b>deuxième étage</b> de la tour Eiffel. Quelle est la distance de sa ligne d'horizon ? Le calcul tient en un théorème de Pythagore.</p>
+
+          <div class="duo-ill">
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t3-c1/t3c1-cotes-tour-eiffel.jpg" alt="Élévation cotée de la tour Eiffel : 57,63 m au premier étage, 115,73 m au deuxième, 276,13 m au troisième, 325 m au sommet des antennes" loading="lazy">
+              <figcaption>Les cotes de la tour Eiffel. Le <b>plancher</b> du deuxième étage est à <b>115,73 m</b>, sa <b>plateforme supérieure</b> à <b>149,23 m</b>.<span class="src">Schéma repris du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+            <div class="reserve" style="min-height:200px">
+              <div class="rf">t3c1-distance-horizon.png</div>
+              <div class="rd">Le <b>schéma géométrique</b> de la distance à l'horizon — un triangle rectangle avec le centre de la Terre O, l'observateur A (à la hauteur R<sub>T</sub> + h) et le point de tangence B — n'a pas pu être extrait du PDF. Sans lui, le théorème de Pythagore ci-dessous tombe du ciel. <b>À refournir</b>&nbsp;: une copie d'écran de la diapositive suffit.</div>
+              <div class="rr">portrait ou carré · ≥ 500 px</div>
+            </div>
+          </div>
+
+          <p style="font-size:14.5px;margin:4px 0 10px">On pose : AO = R<sub>T</sub> + h (l'observateur), OB = R<sub>T</sub> (le rayon de la Terre), AB = D<sub>h</sub> (la distance à l'horizon). Le triangle est <b>rectangle en B</b>, donc :</p>
+          <div class="formule">(R<sub>T</sub> + h)² = D<sub>h</sub>² + R<sub>T</sub>² &nbsp; ⟹ &nbsp; D<sub>h</sub> = √[(R<sub>T</sub> + h)² − R<sub>T</sub>²]</div>
+
+          <div class="field">
+            <span class="field-type">Texte à trous</span>
+            <div class="field-q">Applique, avec h = 149,23 + 1,70 = 150,93 m (la plateforme, plus la taille de l'observateur) et R<sub>T</sub> = 6 371 km.</div>
+            <div class="cloze" data-cloze>
+              Attention aux unités : h = 150,93 m = <input class="short" data-answer="0,15093" placeholder="?" aria-label="hauteur en km" data-variantes="0.15093|0,151|0,15" data-indice1="1 km = 1 000 m : divise par mille." data-indice2="Un nombre qui commence par 0,15."> km.<br>
+              D'où D<sub>h</sub> = √[(6 371 + 0,15093)² − 6 371²] ≈ <input class="short" data-answer="43,85" placeholder="?" aria-label="distance à l'horizon en km" data-variantes="43.85|43,9|44|43,85 km" data-indice1="Développe : (R+h)² − R² = 2Rh + h², soit environ 2 × 6371 × 0,151." data-indice2="Un peu moins de 44 km."> km.
+            </div>
+            <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+            <div class="verdict"></div>
+          </div>
+
+          <div class="proposition">
+            <div class="pl">⬖ Proposition — Difficulté</div>
+            Cet exercice porte le numéro <b>4</b> dans le PDF source, alors qu'un autre exercice&nbsp;4
+            (le repérage des villes) le précède déjà. Renuméroté ici en <b>bonus</b>&nbsp;: il mobilise
+            Pythagore plus que le repérage, et il n'est pas au cœur du programme. <b>À arbitrer</b>.
+          </div>
+
+          <div class="block-label">Pourquoi le Vendée Globe passe par le sud</div>
+          <figure class="ill"><span class="loupe">⤢ agrandir</span>
+            <img src="../assets/img/es/1re-es-t3-c1/t3c1-vendee-globe.jpg" alt="Carte du parcours du Vendée Globe autour de l'Antarctique, partant des Sables-d'Olonne et passant par les trois caps" loading="lazy">
+            <figcaption>Le tour du monde du <b>Vendée Globe</b>. Plus on descend vers le sud, plus le parallèle est <b>court</b> — mais plus les mers sont dures. Toute la course est un arbitrage entre R<sub>L</sub> = R<sub>T</sub> cos θ et la limite de la zone d'exclusion des glaces.<span class="src">Carte reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+          </figure>
+
+          <div class="field" data-share data-share-note>
+            <span class="field-type">Réflexion perso — non notée</span>
+            <div class="field-q">Un skipper qui descend de 10° vers le sud raccourcit son tour du monde de plusieurs centaines de kilomètres — et rentre dans les mers les plus dangereuses du globe. À sa place, tu ferais quoi ?</div>
+            <textarea placeholder="Écris ce que tu veux : personne ne corrige, personne ne note." aria-label="Réflexion personnelle"></textarea>
+            <div class="verdict"></div>
+          </div>
+
+          <div class="reserve" style="min-height:150px;max-width:600px">
+            <div class="rf">4 liens vidéo de révision cités dans le cours</div>
+            <div class="rd">« La forme de la Terre » (NOVELCLASS et Éditions LeLivreScolaire), « E3C : la forme de la Terre » (NOVELCLASS), « Le théorème de Pythagore pour calculer la distance de la ligne d'horizon » (Label Maths), plus les deux vidéos « monsieur albert » sur Ératosthène et la triangulation. <b>Adresses à fournir.</b></div>
+            <div class="rr">4 à 6 liens externes · à fournir</div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Thème 3, chapitre 1 — La forme de la Terre.</b> QCM, textes à trous et tableaux corrigés <b>en direct</b> ; réponses rédigées <b>envoyées en correction</b> ; réflexions perso <b>non notées</b>. 🧭 Un doute sur le fonctionnement du cours&nbsp;? Revois <a href="1re-es-t1-c1-nucleosynthese.html" style="color:var(--link)">le chapitre&nbsp;1</a>, qui l'explique en entier. ⚠ Dans cette version, <b>ta progression n'est pas encore enregistrée</b>&nbsp;: pense à télécharger ta fiche avant de partir.
+  </footer>
+</div>
+
+<script type="application/json" id="dico-source">
+[
+ {
+  "mot": "Sphéricité",
+  "origine": "ES · La forme de la Terre",
+  "def": "Le fait d'avoir la forme d'une sphère. Établie dès l'Antiquité grecque pour la Terre."
+ },
+ {
+  "mot": "Géoïde",
+  "origine": "ES · La forme de la Terre",
+  "def": "La forme réelle de la Terre, déformée par l'hétérogénéité des masses internes. Elle s'écarte de l'ellipsoïde parfait d'environ 200 m."
+ },
+ {
+  "mot": "Méridien",
+  "origine": "ES · La forme de la Terre",
+  "def": "Demi-cercle joignant le pôle Nord au pôle Sud. Celui de Greenwich sert de référence aux longitudes."
+ },
+ {
+  "mot": "Parallèle",
+  "origine": "ES · La forme de la Terre",
+  "def": "Cercle parallèle à l'équateur. Son rayon vaut RL = RT × cos θ, où θ est la latitude."
+ },
+ {
+  "mot": "Latitude",
+  "origine": "ES · La forme de la Terre",
+  "def": "Angle entre le rayon passant par un point et le rayon passant par l'équateur au même méridien. Référence : l'équateur. Notée N ou S."
+ },
+ {
+  "mot": "Longitude",
+  "origine": "ES · La forme de la Terre",
+  "def": "Angle mesuré depuis le méridien de Greenwich. Notée E ou O."
+ },
+ {
+  "mot": "Gnomon",
+  "origine": "ES · La forme de la Terre",
+  "def": "Une tige verticale dont on mesure l'ombre. L'instrument d'Ératosthène — un obélisque en faisait office."
+ },
+ {
+  "mot": "Triangulation",
+  "origine": "ES · La forme de la Terre",
+  "def": "Méthode qui consiste à mesurer une seule distance au sol et beaucoup d'angles, puis à calculer tout le reste par la trigonométrie."
+ },
+ {
+  "mot": "Loi des sinus",
+  "origine": "ES · La forme de la Terre",
+  "def": "Dans tout triangle : a/sin(α) = b/sin(β) = c/sin(γ). C'est l'outil de la triangulation."
+ },
+ {
+  "mot": "Système métrique",
+  "origine": "ES · La forme de la Terre",
+  "def": "Le système d'unités né sous la Révolution, pensé par Condorcet, pour remplacer les 250 000 unités qui coexistaient alors."
+ },
+ {
+  "mot": "Mètre",
+  "origine": "ES · La forme de la Terre",
+  "def": "Défini à l'origine comme le quart de la dix-millionième partie du méridien terrestre. D'où la nécessité de mesurer la Terre."
+ },
+ {
+  "mot": "Grand cercle",
+  "origine": "ES · La forme de la Terre",
+  "def": "Cercle de la sphère dont le centre est celui de la sphère. L'arc de grand cercle est le plus court chemin entre deux points de la surface."
+ },
+ {
+  "mot": "Radian",
+  "origine": "ES · La forme de la Terre",
+  "def": "L'unité d'angle des calculs d'arcs : l = R × θ n'est vraie qu'en radians. 180° = π rad."
+ }
+]
+</script>
+<script src="../assets/js/sequence-snt.js?v=42"></script>
+
+</body>
+</html>

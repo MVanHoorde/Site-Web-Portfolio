@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ES 1re · La nucléosynthèse — Séquence élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- 🔴 Le client de base de données n'est PAS chargé ici — voir le bloc
+     ci-dessous. Sans lui, le moteur bascule sur son repli local, qui dit
+     honnêtement « gardé pour cette séance, pense à télécharger ta fiche ».
+     Le charger afficherait le bandeau « connecte-toi pour enregistrer ton
+     travail », alors que rien ne serait enregistré : un mensonge d'écran.
+     À rétablir au branchement, avec data-sequence sur <body>. -->
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     ENSEIGNEMENT SCIENTIFIQUE 1re — Thème 1, chapitre 1.
+     Tourne sur le moteur des séquences SNT (assets/css/sequence-snt.css
+     + assets/js/sequence-snt.js), grammaire séquence → séance → étape →
+     champ.
+
+     🔴 CE CHAPITRE PORTE LE TUTORIEL DU DISPOSITIF — il joue pour
+     l'enseignement scientifique le rôle que la séquence t0 joue pour le
+     SNT : le cours et l'apprentissage du fonctionnement sont ENTRELACÉS,
+     jamais séparés en un mode d'emploi que personne ne lit. Toute
+     nouvelle mécanique du cours se présente ICI en premier, et les
+     autres chapitres n'en portent que des rappels d'une ligne.
+     ⚠ Le dispositif n'étant pas branché en base dans cette version, le
+     tutoriel est rédigé au FUTUR PROCHE : on décrit ce qui va se passer,
+     pas ce qui se passe déjà.
+
+     🔴 PAS DE BASE DE DONNÉES dans cette version — décision du brief ES1
+     §3.2. Ni client de progression, ni data-sequence, ni sommaire généré,
+     ni plafond d'avance, ni localStorage.
+     ⚠ Ne pas réécrire ici le nom de ces fichiers avec leur extension,
+     même en commentaire : verifier.mjs cherche la chaîne « seances-
+     snt.js » dans TOUT le HTML, commentaires compris.
+
+     Contenu : porté depuis « Thème 1 - Chapitre 1 - La nucléosynthèse »
+     (PDF de cours). Tout ce qui n'en vient pas porte un cadre
+     .proposition. Images extraites du PDF, jamais redessinées.
+     ============================================================ -->
+<style>
+  /* ---------- Cadre « proposition » — mécanisme du chantier ES1 ---------- */
+  .proposition{border:2px dashed var(--hist);border-radius:12px;
+    background:var(--hist-wash);padding:12px 15px;margin:14px 0;
+    font-size:13.5px;line-height:1.55;color:var(--ink)}
+  .proposition .pl{font-family:"IBM Plex Mono",monospace;font-size:11px;
+    letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+    color:var(--hist);display:flex;gap:7px;align-items:center;
+    margin-bottom:5px;flex-wrap:wrap}
+  .proposition p{margin:5px 0}
+  .proposition ul{margin:5px 0 0;padding-left:18px}
+
+  /* ---------- Cadre de réservation d'image ---------- */
+  .reserve{border:1.5px dashed var(--link);border-radius:8px;
+    background:repeating-linear-gradient(45deg,var(--surface-2) 0 8px,var(--surface) 8px 16px);
+    display:flex;flex-direction:column;justify-content:center;gap:3px;
+    padding:16px 10px;text-align:center;margin:12px auto}
+  .reserve .rf{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--link);word-break:break-all}
+  .reserve .rd{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
+  .reserve .rr{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+
+  /* ---------- Écriture d'un noyau : symbole, A et Z ---------- */
+  .noy{display:inline-flex;align-items:center;font-family:"IBM Plex Mono",monospace;
+    font-size:15px;line-height:1;vertical-align:middle;margin:0 2px}
+  .noy .az{display:inline-flex;flex-direction:column;align-items:flex-end;
+    font-size:10.5px;line-height:1.15;margin-right:1px;color:var(--ink-soft)}
+  .noy .sym{font-weight:700;font-size:17px;color:var(--ink)}
+
+  /* ---------- Une réaction nucléaire posée sur une ligne ---------- */
+  .reac{display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:9px 13px;margin:8px 0;font-size:15px}
+  .reac .fl{color:var(--link);font-weight:700;font-size:17px;margin:0 3px}
+  .reac .num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-faint);
+    min-width:22px}
+
+  /* ---------- Le tutoriel du dispositif : encart repérable ---------- */
+  .tuto{border:1px solid var(--ok);border-left:4px solid var(--ok);
+    background:var(--ok-wash);border-radius:0 12px 12px 0;padding:13px 16px;margin:14px 0;
+    font-size:14.5px;line-height:1.55}
+  .tuto .tl{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.09em;
+    text-transform:uppercase;font-weight:700;color:var(--ok);display:block;margin-bottom:6px}
+  .tuto ul{margin:6px 0 0;padding-left:18px}
+  .tuto li{margin:3px 0}
+</style>
+
+</head><body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Enseignement scientifique · 1re · Thème 1</div>
+    <h1 class="title">La nucléosynthèse <span class="tag">chapitre 1</span></h1>
+    <p class="lede">Tout ce qui t'entoure — ta main, ton téléphone, l'air que tu respires — est fait d'une petite centaine d'éléments chimiques. Aucun n'existait au début de l'Univers. Voici où et comment ils ont été fabriqués.</p>
+    <div class="themes">
+      <span class="theme-chip on">Nucléosynthèse</span><span class="theme-chip">La radioactivité</span>
+      <span class="theme-chip">Les cristaux</span><span class="theme-chip">Son et musique</span>
+      <span class="theme-chip">Le son, une information à coder</span><span class="theme-chip">La forme de la Terre</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>2 séances</b></span>
+      <span class="m">Durée <b>≈ 3 h</b></span>
+      <span class="m"><b>Premier chapitre de l'année</b> — il explique aussi comment ce cours fonctionne</span>
+    </div>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — toutes les séances sont ouvertes.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="1re-enseignement-scientifique.html">← Enseignement scientifique</a>
+    <a href="#s1"><span class="n">S1</span>Les éléments chimiques</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>Les trois nucléosynthèses <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- CHANTIER -->
+  <aside class="chantier decision">
+    <div class="cl">📌 Décision attendue — état de cette page</div>
+    V0 portée depuis le PDF de cours. Rien n'y est validé. La <b>progression n'est pas
+    enregistrée</b> (ni base, ni stockage local) — c'est le périmètre arrêté pour cette
+    session, et c'est pour cela que le tutoriel du dispositif, ci-dessous, est écrit
+    <b>au futur</b>. Les <b>cadres violets</b> sont des propositions de Claude. Relevé
+    complet dans <code>_suivi/es1-verification.md</code>.
+  </aside>
+  <!-- /CHANTIER -->
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>Les éléments chimiques et leurs abondances</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Savoir ce qu'est un élément chimique, découvrir lesquels dominent dans l'Univers, dans les roches et dans ton propre corps — et apprendre au passage comment ce cours va fonctionner toute l'année.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 — TUTORIEL DU DISPOSITIF, entrelacé -->
+      <div class="step" data-step data-gate data-cle="es-t1c1-comment-ca-marche">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Comment ce cours va fonctionner</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir où va ton travail, ce que ton professeur en voit, ce qui se corrige tout seul et ce qui est relu par un humain.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 12px">Ce cours n'est pas un PDF à lire. C'est une <b>suite d'étapes</b> : tu lis, tu regardes, tu manipules, puis <b>tu produis quelque chose</b>. Chaque étape que tu valides fait avancer la barre en haut de la séance ; quand une séance est entièrement validée, <b>la suivante se déverrouille</b>.</p>
+
+            <div class="tuto">
+              <span class="tl">🧭 Ce qui va se passer</span>
+              <ul>
+                <li><b>Ce qui se corrige tout seul</b> : les QCM, les textes à trous, les étiquettes à poser. La réponse est dans la page ; le navigateur te dit tout de suite si c'est juste, et pourquoi.</li>
+                <li><b>Ce qu'un humain relira</b> : tes <b>réponses rédigées</b>. Elles partiront à ton professeur, qui les lira et te répondra. Une étape est validée <b>dès l'envoi</b> — pas besoin d'attendre la correction pour continuer.</li>
+                <li><b>Ce que personne ne notera jamais</b> : les <b>réflexions perso</b>. Pas de bon, pas de mauvais. On les lit, on n'y met pas de note.</li>
+                <li><b>Ta trace</b> : en fin de séance, tu pourras <b>télécharger ta fiche</b>, un récapitulatif de ce que tu as écrit, à déposer dans ton dossier numérique d'enseignement scientifique.</li>
+              </ul>
+            </div>
+
+            <!-- CHANTIER -->
+            <aside class="chantier decision">
+              <div class="cl">📌 Décision attendue — le futur proche du tutoriel</div>
+              Ce bloc et les trois encarts verts de la séance sont écrits <b>au futur</b> («&nbsp;elles
+              partiront&nbsp;», «&nbsp;tu pourras&nbsp;») parce que la base n'est pas branchée&nbsp;:
+              aujourd'hui, une réponse rédigée reste dans le navigateur de l'élève et disparaît au
+              rechargement. <b>À repasser au présent au branchement</b> — c'est la seule retouche à
+              faire, le texte est déjà juste pour la suite.
+            </aside>
+            <!-- /CHANTIER -->
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Toute cette étape est ajoutée&nbsp;: elle ne vient pas du PDF de cours. Elle joue pour
+              l'enseignement scientifique le rôle de la séquence d'introduction du SNT. Le choix de
+              l'<b>entrelacer</b> au chapitre 1 plutôt que d'en faire une séance «&nbsp;mode
+              d'emploi&nbsp;» suit la règle du dépôt&nbsp;: personne ne lit un mode d'emploi.
+            </div>
+
+            <div class="block-label">Ta première mécanique : la réponse rédigée</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">On commence tout de suite. Le champ ci-dessous est une <b>réponse rédigée</b> : quand tu cliques, le reste de la page se <b>floute</b> — tu écris sans rien pouvoir recopier, et le copier-coller est bloqué. C'est voulu : ce qui compte, c'est ce que tu sais formuler.</p>
+
+            <div class="field" data-focus
+                 data-focus-titre="D'où vient la matière ?"
+                 data-focus-question="Sans faire aucune recherche : d'où viennent, selon toi, les atomes qui composent ton corps ? Ont-ils toujours existé ?"
+                 data-focus-max="400" data-focus-min="20"
+                 data-focus-code="NUC-1a" data-focus-strict="1" data-focus-prevenir="1">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris, pour que tu ne recopies rien.</span></button></span>
+              <div class="field-q">D'où viennent, selon toi, les atomes qui composent ton corps ? Ont-ils toujours existé ?</div>
+              <p style="font-size:13px;color:var(--ink-soft);margin:0 0 11px">Aucune recherche, aucune bonne réponse attendue. Tu reliras cette phrase à la fin du chapitre.</p>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Écrire ma réponse</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 — les éléments chimiques -->
+      <div class="step" data-step data-gate data-cle="es-t1c1-elements">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Qu'est-ce qu'un élément chimique ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir que c'est le <b>nombre de protons</b>, et lui seul, qui décide de l'élément — et savoir lire un tableau périodique.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Il existe, à l'état naturel, environ <b>90 « types » d'atomes</b> différents. Par exemple, il y a les atomes d'hydrogène, de carbone, de fer… Ces différents types d'atomes sont appelés des <b>éléments chimiques</b>.</p>
+
+            <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Le fait qu'un atome soit de tel ou tel <b>élément chimique</b> dépend <b>uniquement du nombre de protons</b> que contient son noyau. On appelle ce nombre le <b>numéro atomique Z</b>.</div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c1/t1c1-tableau-periodique.jpg" alt="Tableau périodique des éléments, avec les groupes et les périodes, et un code de couleurs distinguant les gaz, les liquides et les éléments artificiels" loading="lazy">
+              <figcaption>Le tableau périodique dresse une liste <b>organisée</b> de tous les éléments chimiques connus à ce jour. Les éléments encadrés en rouge sont <b>artificiels</b>.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <p style="font-size:14.5px;margin:4px 0 10px">On peut créer en laboratoire les éléments qui ont un numéro atomique <b>supérieur à 92</b> grâce à des réactions nucléaires, mais ils ont presque tous une durée de vie <b>brève, voire très brève</b> : ils sont <b>radioactifs</b>.</p>
+            <p class="doc-note">La radioactivité, justement, fait l'objet du <a href="1re-es-t1-c2-radioactivite.html" style="color:var(--link)">chapitre 2</a> — c'est le chapitre suivant.</p>
+
+            <div class="tuto">
+              <span class="tl">🧭 Deuxième mécanique : le QCM</span>
+              Le bouton ci-dessous ouvre un <b>QCM en plein écran</b>. Les questions s'enchaînent une par une ; à la fin, tu obtiendras un <b>récapitulatif des bonnes réponses</b> avec l'explication de chacune. Tes bonnes réponses de QCM <b>n'apparaîtront pas</b> sur ta fiche de révision : sinon elle deviendrait un corrigé, et ne servirait plus à réviser.
+            </div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="NUC-1b">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Qu'est-ce qui détermine l'élément chimique auquel appartient un atome ?",
+  "o": [
+   "Le nombre de protons de son noyau, appelé numéro atomique Z",
+   "Le nombre de neutrons de son noyau, qui varie d'un atome à l'autre",
+   "Le nombre total de particules du noyau, protons et neutrons réunis",
+   "Le nombre d'électrons qui gravitent autour de son noyau"
+  ],
+  "r": 0,
+  "c": "Le <b>numéro atomique Z</b>, et rien d'autre. Deux atomes de carbone peuvent avoir des nombres de neutrons différents (ce sont des <b>isotopes</b>) : ils restent du carbone. Change le nombre de protons, et tu changes d'élément."
+ },
+ {
+  "q": "Combien d'éléments chimiques existent à l'état naturel, environ ?",
+  "o": [
+   "Une dizaine",
+   "Une quarantaine",
+   "Environ 90",
+   "Plus de 300"
+  ],
+  "r": 2,
+  "c": "<b>Environ 90</b>. C'est peu : toute la matière que tu connais, vivante ou non, se fabrique avec ces quatre-vingt-dix briques."
+ },
+ {
+  "q": "Que peut-on dire des éléments dont le numéro atomique est supérieur à 92 ?",
+  "o": [
+   "Ils sont les plus abondants dans l'Univers, car les plus stables",
+   "On peut les créer en laboratoire, mais ils sont radioactifs et vivent peu",
+   "Ils n'existent que dans le cœur des étoiles les plus massives",
+   "Ils ne peuvent être ni créés ni observés : ce sont des hypothèses théoriques"
+  ],
+  "r": 1,
+  "c": "On les fabrique par <b>réactions nucléaires</b>, et ils se désintègrent presque aussitôt — parfois en une fraction de seconde. Le tableau périodique les encadre en rouge : ce sont les éléments <b>artificiels</b>."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 — Exercice 1 : abondances -->
+      <div class="step" data-step data-gate data-cle="es-t1c1-abondances">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 1 — abondance relative des éléments</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comparer la composition de l'Univers, de la croûte terrestre et du corps humain — et découvrir qu'elles n'ont presque rien en commun.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Doc — abondance relative, en nombre d'atomes<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Voici les éléments les plus abondants dans trois milieux — mais <b>les titres des colonnes ont été retirés</b>. À toi de les remettre.</p>
+            <table class="doc-table">
+              <tr><th>Colonne A</th><th>Colonne B</th><th>Colonne C</th></tr>
+              <tr>
+                <td>H : 61 %<br>O : 24,1 %<br>C : 12,6 %<br>N : 1,4 %<br>Autres : 0,9 %</td>
+                <td>O : 47,7 %<br>Si : 27,7 %<br>Al : 8,2 %<br>Fe : 4,1 %<br>Ca : 4,1 %<br>Na : 2,3 %<br>Mg : 2,3 %<br>K : 2,1 %<br>Autres : 1,5 %</td>
+                <td>H : 90 %<br>He : 9 %<br>Autres : 1 %</td>
+              </tr>
+            </table>
+
+            <div class="tuto">
+              <span class="tl">🧭 Troisième mécanique : le texte à trous</span>
+              Écris ta réponse dans chaque case, puis clique sur <b>Vérifier</b>. L'orthographe est <b>tolérée</b> : une faute d'accent ou une lettre oubliée passe en <b>jaune « presque »</b> — l'étape est validée quand même, et le mot juste s'affiche. On corrige, on ne sanctionne pas. Deux <b>indices</b> sont disponibles par case si tu bloques.
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">1 · Attribue chaque colonne à son milieu : <b>l'Univers</b>, <b>le corps humain</b>, <b>la lithosphère</b> (la couche rocheuse externe de la Terre).</div>
+              <div class="cloze" data-cloze>
+                La colonne <b>A</b> décrit <input data-answer="le corps humain" placeholder="?" aria-label="milieu de la colonne A" data-variantes="corps humain|l'homme|le corps|être humain|l'être humain" data-indice1="Beaucoup d'hydrogène et d'oxygène — ce sont les deux atomes de l'eau — et une part importante de carbone, l'atome du vivant." data-indice2="Tu es composé à environ 60 % d'eau, et le carbone est la base de toutes les molécules du vivant.">.<br>
+                La colonne <b>B</b> décrit <input data-answer="la lithosphère" placeholder="?" aria-label="milieu de la colonne B" data-variantes="lithosphère|lithosphere|la litosphère|la croûte terrestre|croûte terrestre|les roches" data-indice1="Silicium, aluminium, fer, calcium : la liste des ingrédients d'un caillou." data-indice2="Le mot commence par « litho- », qui veut dire pierre en grec.">.<br>
+                La colonne <b>C</b> décrit <input data-answer="l'univers" placeholder="?" aria-label="milieu de la colonne C" data-variantes="univers|l'univers|le cosmos" data-indice1="90 % d'hydrogène, 9 % d'hélium : les deux éléments les plus simples, et presque rien d'autre." data-indice2="C'est le plus grand des trois milieux proposés.">.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">2 · Quel est l'élément le plus abondant dans l'Univers ?</div>
+              <div class="cloze" data-cloze>
+                L'élément le plus abondant de l'Univers est l'<input data-answer="hydrogène" placeholder="?" aria-label="élément le plus abondant de l'Univers" data-variantes="hydrogene|h|l'hydrogène" data-indice1="C'est le premier de la première ligne du tableau périodique." data-indice2="Un seul proton, symbole H.">, avec <input class="short" data-answer="90" placeholder="?" aria-label="pourcentage" data-variantes="90 %|90%|environ 90"> % des atomes. Vient ensuite l'<input data-answer="hélium" placeholder="?" aria-label="deuxième élément le plus abondant" data-variantes="helium|he|l'hélium" data-indice1="C'est le gaz des ballons de fête — et le deuxième du tableau périodique." data-indice2="Deux protons, symbole He.">.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Ressource — la vidéo d'appui<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>La vidéo que le cours indique pour la question 2 — l'énoncé précise «&nbsp;<b>à partir de 2:51</b>&nbsp;».</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/6j-pY_QjYRU?start=171" title="Abondance des éléments chimiques" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <div class="block-label">3 · Les trois graphiques, à légender</div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c1/t1c1-abondances-trois-graphiques.jpg" alt="Trois graphiques sans titre ni légende : un camembert, un diagramme en barres et un anneau, représentant les abondances des éléments" loading="lazy">
+              <figcaption>Trois graphiques, <b>sans titre ni légende</b> — c'est justement le travail demandé.<span class="src">Graphiques du cours de M. Van Hoorde</span></figcaption>
+            </figure>
+
+            <div class="field" data-focus
+                 data-focus-titre="Légender les trois graphiques"
+                 data-focus-question="Pour chacun des trois graphiques : quel milieu représente-t-il (Univers, corps humain, lithosphère) ? Quel titre lui donnerais-tu ? Et où se trouvent l'hydrogène et l'oxygène dans chaque cas ?"
+                 data-focus-max="800" data-focus-min="20" data-focus-code="NUC-1c">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Légender et donner un titre à chacun des trois graphiques. Mettre en évidence la proportion d'hydrogène et d'oxygène dans chaque cas.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🔭 Ce qu'il fallait remarquer</div>
+                Le graphique à deux parts (90 / 9 / 1) est celui de l'<b>Univers</b> ; celui en barres décroissantes, avec cinq valeurs, est celui du <b>corps humain</b> ; l'anneau à neuf secteurs est celui de la <b>lithosphère</b>. Le point le plus étonnant : l'<b>hydrogène</b>, écrasant dans l'Univers et majoritaire dans ton corps, est <b>absent du palmarès des roches</b> — et l'<b>oxygène</b>, deuxième chez toi, est <b>premier</b> dans les roches, où il est piégé dans les minéraux, pas dans l'air.
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              L'exercice d'origine demandait de légender les graphiques <b>sur le document papier</b>. Ici,
+              l'élève décrit ses légendes par écrit&nbsp;: c'est ce que le moteur sait corriger
+              aujourd'hui. Une version «&nbsp;à cliquer&nbsp;» (poser des étiquettes sur chaque secteur)
+              serait possible avec le composant d'étiquettes, mais demande de <b>découper les trois
+              graphiques</b> en images séparées et de relever les coordonnées de chaque part.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.4 — la vidéo 1/3 -->
+      <div class="step" data-step data-gate data-cle="es-t1c1-video-1">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">L'origine des éléments chimiques (1/3)</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> entrer dans le récit : du Big Bang jusqu'à nous.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>« L'origine des éléments chimiques », épisode 1/3 — du Big Bang à nous. Mets en pause dès que tu veux noter.</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/Jp5XXrVUcmw" title="L'origine des éléments chimiques — épisode 1" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🔍 Lien récupéré par QR code — à vérifier d'un coup d'œil</div>
+              Les fichiers <code>.mp4</code> des trois épisodes sont déposés dans
+              <code>_a-deposer/es1/</code>, mais une vidéo ne s'intègre pas par son fichier&nbsp;: il
+              faut une <b>adresse en ligne</b>. Elle a été retrouvée en <b>décodant les QR codes</b> des
+              diapositives du PDF de cours (page&nbsp;4 pour l'épisode&nbsp;1, page&nbsp;5 pour le 2,
+              page&nbsp;7 pour le 3). Les adresses sont donc sûres, mais <b>le contenu exact n'a pas pu
+              être vérifié</b>&nbsp;: un coup d'œil suffira à confirmer que ce sont bien les bons
+              épisodes. Les <code>.mp4</code> peuvent alors sortir du dossier de dépôt — ils
+              pèseraient lourd dans un dépôt public, pour rien.
+            </aside>
+            <!-- /CHANTIER -->
+
+            <div class="field">
+              <span class="field-type">Mes notes de visionnage</span>
+              <div class="field-q">Note ce que tu retiens de l'épisode : les grandes étapes, les durées, les éléments cités.</div>
+              <textarea data-notes="NUC-1video" placeholder="Les étapes citées, dans l'ordre…" aria-label="Notes de visionnage"></textarea>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Ce que je retiens de l'épisode 1"
+                 data-focus-question="En trois ou quatre phrases : que raconte cet épisode ? Quels éléments chimiques ont été fabriqués en premier, et quand ?"
+                 data-focus-max="600" data-focus-min="20" data-focus-code="NUC-1d">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Que raconte cet épisode ? Quels éléments ont été fabriqués en premier, et quand ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Le bilan de la séance<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+            <div class="retain" data-bilan-wrap>
+              <ul style="margin:0;padding-left:18px">
+                <li>Un <b>élément chimique</b> est un type d'atome, défini par son <b>numéro atomique Z</b> — le nombre de protons de son noyau.</li>
+                <li>Il en existe <b>environ 90 à l'état naturel</b> ; ceux dont Z &gt; 92 sont fabriqués en laboratoire, et sont radioactifs.</li>
+                <li>Les abondances sont <b>très différentes</b> selon le milieu : hydrogène et hélium dominent l'<b>Univers</b> (99 %) ; oxygène et silicium dominent la <b>lithosphère</b> ; hydrogène, oxygène et carbone dominent le <b>corps humain</b>.</li>
+              </ul>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Le PDF de cours ne comporte pas de «&nbsp;à retenir&nbsp;» rédigé — c'est un diaporama de
+              projection. Les bilans de ce chapitre sont donc <b>écrits</b> à partir de son contenu, et
+              non repris. Ils sont à relire de près.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.5 — bonus -->
+      <div class="step" data-step data-cle="es-t1c1-bonus-s1">
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
+      <div class="bonus-wrap" data-bonus>
+        <div class="bonus-head" data-bonus-toggle>
+          <span class="ix">1.5</span>
+          <span class="bl">Pour aller plus loin</span>
+          <span class="bonus-tag">hors 100&nbsp;%</span>
+          <span class="chev">▸</span>
+        </div>
+        <div class="bonus-body">
+          <div class="block-label">Mendeleïev, ou l'art de laisser des cases vides</div>
+          <p style="font-size:14.5px;margin:4px 0 10px">En 1869, Dmitri Mendeleïev range les éléments connus par masse croissante et remarque que leurs propriétés <b>reviennent périodiquement</b>. Là où la régularité se casse, il fait un choix qu'aucun de ses contemporains n'ose : il <b>laisse la case vide</b> et prédit les propriétés de l'élément manquant. Le gallium, le scandium et le germanium seront découverts ensuite — conformes à la prédiction.</p>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>« En apprendre plus sur Mendeleïev » — le lien du bouton de la diapositive 2.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/0lNuTSz6KVM?start=26" title="En apprendre plus sur Mendeleïev" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="field" data-share data-share-note>
+            <span class="field-type">Réflexion perso — non notée</span>
+            <div class="field-q">Mendeleïev a fait confiance à une régularité au point d'affirmer l'existence de choses que personne n'avait vues. Cela te paraît-il scientifique, ou risqué ?</div>
+            <textarea placeholder="Écris ce que tu veux : personne ne corrige, personne ne note." aria-label="Réflexion personnelle"></textarea>
+            <div class="verdict"></div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>Les trois nucléosynthèses</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Trois usines, trois époques : les premières minutes de l'Univers, la vie des étoiles, et leur mort explosive. Chacune fabrique une partie du tableau périodique.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 2.1 — primordiale -->
+      <div class="step" data-step data-gate data-cle="es-t1c1-primordiale">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">A — La nucléosynthèse primordiale</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir que les tout premiers noyaux se sont formés dans les <b>vingt premières minutes</b> de l'Univers, et lesquels.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Selon la théorie du <b>Big Bang</b>, un premier phénomène massif de nucléosynthèse s'est déroulé dans les premiers temps de l'histoire de l'Univers — <b>entre 10 secondes et 20 minutes</b> — lorsque la température avoisinait les <b>10⁹ K</b>. Il est appelé <b>nucléosynthèse primordiale</b> (<i lang="en">BBN : Big Bang Nucleosynthesis</i>).</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c1/t1c1-histoire-univers-big-bang.jpg" alt="Frise de l'histoire de l'Univers selon le scénario du Big Bang, du temps zéro à 13,8 milliards d'années, avec les étapes de la fusion nucléaire et du fond diffus cosmologique" loading="lazy">
+              <figcaption>L'histoire de l'Univers selon le scénario du Big Bang. Repère la bande «&nbsp;<b>début</b>&nbsp;» et «&nbsp;<b>fin de la fusion nucléaire</b>&nbsp;» : c'est la fenêtre de la nucléosynthèse primordiale, entre quelques secondes et quelques minutes.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Lors de cet événement se sont formés la majorité des noyaux de <b>deutérium</b> et d'<b>hélium 3 et 4</b>, ainsi qu'un peu de <b>lithium</b>, <b>béryllium</b> et <b>bore</b> — le reste se formant grâce aux rayons cosmiques par <b>spallation</b>.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c1/t1c1-chaine-nucleosynthese-primordiale.jpg" alt="Chaîne de réactions de fusion de la nucléosynthèse primordiale, du proton au lithium 7 en passant par le deutérium, l'hélium 3, l'hélium 4 et le béryllium 7" loading="lazy">
+              <figcaption>Chaîne de réactions de fusion de la nucléosynthèse primordiale. Chaque flèche est une <b>fusion</b> : deux noyaux s'assemblent, un rayonnement γ part.<span class="src">ca-se-passe-la-haut.fr — crédit visible sur l'image, à confirmer</span></figcaption>
+            </figure>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              Le mot <b>spallation</b> n'est expliqué nulle part dans le cours source, et il ne figure
+              pas au programme d'enseignement scientifique. Une définition d'une ligne est ajoutée
+              ci-dessous&nbsp;; à supprimer si tu préfères ne pas ouvrir le mot du tout.
+            </div>
+            <p class="doc-note"><b>Spallation</b> : la fragmentation d'un noyau lourd frappé par une particule très énergétique venue de l'espace (un rayon cosmique). Les morceaux qui en résultent sont des noyaux légers — c'est ainsi que se forme une partie du lithium, du béryllium et du bore.</p>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="NUC-2a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Quand s'est déroulée la nucléosynthèse primordiale ?",
+  "o": [
+   "Entre 10 secondes et 20 minutes après le Big Bang",
+   "Pendant le premier milliard d'années de l'Univers",
+   "Au moment de la formation des premières étoiles",
+   "Elle se poursuit encore aujourd'hui, en continu"
+  ],
+  "r": 0,
+  "c": "Une fenêtre extrêmement courte : <b>de 10 s à 20 min</b>. Ensuite l'Univers, en se dilatant, devient trop froid pour que la fusion continue — et il faudra attendre les étoiles pour que ça reprenne."
+ },
+ {
+  "q": "Quels noyaux se sont formés lors de la nucléosynthèse primordiale ? Coche tout ce qui convient.",
+  "o": [
+   "Le deutérium et l'hélium 3 et 4",
+   "Un peu de lithium, de béryllium et de bore",
+   "Le carbone 12 et l'oxygène 16, en grande quantité",
+   "Le fer 56, qui est le noyau le plus stable"
+  ],
+  "r": [0, 1],
+  "c": "Uniquement les noyaux <b>très légers</b> : deutérium, hélium, et un peu de lithium, béryllium et bore. Le carbone, l'oxygène et le fer viendront bien plus tard, dans les étoiles."
+ },
+ {
+  "q": "Quelle température régnait lors de la nucléosynthèse primordiale ?",
+  "o": [
+   "Environ 10⁹ K, soit un milliard de kelvins",
+   "Environ 10⁴ K, soit dix mille kelvins",
+   "Environ 5 800 K, la température de surface du Soleil",
+   "Environ 3 K, la température actuelle de l'Univers"
+  ],
+  "r": 0,
+  "c": "<b>10⁹ K</b>. Il faut cette température pour vaincre la répulsion électrique entre deux noyaux et les faire fusionner — c'est précisément la condition qu'on retrouvera au cœur des étoiles."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 — stellaire -->
+      <div class="step" data-step data-gate data-cle="es-t1c1-stellaire">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">B — La nucléosynthèse stellaire</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir ce qu'une étoile fabrique au cours de sa vie, et pourquoi cela dépend de sa <b>masse</b>.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>« L'origine des éléments chimiques », épisode 2/3 — au cœur des étoiles.</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/d7yaMkP-PTU" title="L'origine des éléments chimiques — épisode 2" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <p style="font-size:14.5px;margin:4px 0 10px">On parle de <b>nucléosynthèse stellaire</b> car, au cours de sa vie, une étoile synthétise :</p>
+            <ul style="font-size:14.5px;margin:4px 0 10px;padding-left:20px">
+              <li>l'<b>hélium 4</b> à partir de l'hydrogène qui la constitue, et ce durant la majeure partie de sa vie, lorsqu'elle est en <b>séquence principale</b> ;</li>
+              <li>le <b>carbone 12</b> et l'<b>oxygène 16</b> durant les dernières phases de vie d'une étoile de la taille du Soleil ;</li>
+              <li>jusqu'au <b>silicium 28</b> pour les étoiles de plus de <b>3 masses solaires</b> ;</li>
+              <li>jusqu'au <b>nickel 56</b>, se désintégrant en <b>fer 56</b>, pour les étoiles de plus de <b>8 masses solaires</b>.</li>
+            </ul>
+
+            <div class="duo-ill">
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t1-c1/t1c1-chaine-proton-proton.jpg" alt="Chaîne proton-proton : quatre protons fusionnent en passant par le deutérium et l'hélium 3 pour donner un noyau d'hélium 4" loading="lazy">
+                <figcaption>La <b>chaîne proton-proton</b> (ici PPI), qui aboutit à la synthèse de l'hélium 4. Dominante entre 10 et 14 millions de kelvins, elle représente <b>85 %</b> des chaînes PP pour une étoile de type solaire.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+              </figure>
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t1-c1/t1c1-couches-etoile-massive.jpg" alt="Coupe en couches concentriques d'une étoile massive, de l'hydrogène en surface au fer et nickel au centre" loading="lazy">
+                <figcaption>Structure <b>en couches</b> d'une étoile massive sur le point d'exploser : chaque couche fabrique un élément plus lourd que celle du dessus, et le fer occupe le cœur.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+              </figure>
+            </div>
+
+            <div class="block-label">Doc — les fusions successives, du cœur vers la surface<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c1/t1c1-fusions-successives-tableau.jpg" alt="Tableau des fusions successives dans une étoile de 25 masses solaires : noyaux pères, produits de fusion, durée, température et densité" loading="lazy">
+              <figcaption>Fusions successives au cours de la vie et jusqu'à la mort d'une étoile de <b>25 masses solaires</b>. Regarde la colonne « durée » : <b>7 millions d'années</b> pour brûler l'hydrogène… et <b>un seul jour</b> pour le silicium.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="retain">Une étoile est une <b>usine à éléments</b>. Tant qu'elle est en séquence principale, elle transforme son <b>hydrogène en hélium</b>. Ensuite, et seulement si elle est assez massive, elle enchaîne des fusions de plus en plus lourdes — carbone, oxygène, silicium — de plus en plus <b>vite</b>, jusqu'au <b>fer</b>.</div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="NUC-2b">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Que fabrique une étoile pendant la majeure partie de sa vie ?",
+  "o": [
+   "De l'hélium 4, à partir de l'hydrogène qui la constitue",
+   "Du fer 56, qui s'accumule dans son cœur dès le départ",
+   "Tous les éléments du tableau périodique, simultanément",
+   "Rien : elle se contente de briller en consommant sa réserve initiale"
+  ],
+  "r": 0,
+  "c": "C'est la <b>séquence principale</b>, et elle occupe l'essentiel de la vie d'une étoile : hydrogène → hélium 4. Notre Soleil en est là, et pour encore cinq milliards d'années environ."
+ },
+ {
+  "q": "Pourquoi toutes les étoiles ne fabriquent-elles pas les mêmes éléments ?",
+  "o": [
+   "Parce que leur composition de départ est totalement différente",
+   "Parce que cela dépend de leur masse : plus elle est grande, plus les fusions peuvent aller loin",
+   "Parce que les étoiles jeunes fabriquent les éléments légers et les vieilles les éléments lourds, quelle que soit leur masse",
+   "Parce que cela dépend de leur distance au centre de la galaxie"
+  ],
+  "r": 1,
+  "c": "C'est la <b>masse</b> qui commande. Il faut une pression et une température énormes pour enchaîner les fusions lourdes : seule une étoile massive les atteint. Le Soleil s'arrêtera au carbone et à l'oxygène."
+ },
+ {
+  "q": "Jusqu'à quel élément une étoile de plus de 8 masses solaires peut-elle aller ?",
+  "o": [
+   "Jusqu'au carbone 12",
+   "Jusqu'au silicium 28",
+   "Jusqu'au nickel 56, qui se désintègre ensuite en fer 56",
+   "Jusqu'à l'uranium 238, le plus lourd des éléments naturels"
+  ],
+  "r": 2,
+  "c": "<b>Nickel 56 → fer 56</b>, et pas au-delà : le fer a la cohésion de noyau la plus forte. Fusionner du fer <b>coûterait</b> de l'énergie au lieu d'en fournir. L'uranium, lui, se fabrique ailleurs — c'est l'étape suivante."
+ },
+ {
+  "q": "Dans le tableau des fusions successives, la durée de chaque étape…",
+  "o": [
+   "reste constante : chaque fusion dure environ un million d'années",
+   "s'allonge : les éléments lourds prennent de plus en plus de temps",
+   "s'effondre : de 7 millions d'années pour l'hydrogène à un jour pour le silicium",
+   "n'a aucun rapport avec l'élément fusionné"
+  ],
+  "r": 2,
+  "c": "L'accélération est vertigineuse : <b>7 Ma</b> pour l'hydrogène, puis 0,5 Ma, 600 ans, 1 an, 6 mois… et <b>un jour</b> pour le silicium. L'étoile passe ses derniers instants à fabriquer frénétiquement — juste avant de s'effondrer."
+ }
+]
+              </script>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              <p>Le cours source présente aussi, à cet endroit, le <b>cycle CNO</b> (avec sa dépendance
+              en T¹⁷), la <b>réaction triple α</b> de l'hélium flash et le <b>diagramme de
+              Hertzsprung-Russell</b>. Ces trois documents <b>dépassent le socle</b> du programme
+              d'enseignement scientifique&nbsp;: ils supposent de connaître les cycles catalytiques, les
+              exposants de température et la classification spectrale.</p>
+              <p><b>Proposition retenue&nbsp;:</b> ils sont conservés, mais déplacés dans le bonus
+              «&nbsp;pour aller plus loin&nbsp;» en fin de séance — donc <b>facultatifs et non
+              évalués</b>. À remonter dans le corps du cours si tu les traites en classe.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 — explosive -->
+      <div class="step" data-step data-gate data-cle="es-t1c1-explosive">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">C — La nucléosynthèse explosive</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre pourquoi la fabrication s'arrête au fer, et d'où viennent alors tous les éléments plus lourds.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>« L'origine des éléments chimiques », épisode 3/3 — des étoiles à la Terre.</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/LFR2OjzhrYw?start=61" title="L'origine des éléments chimiques — épisode 3" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Une étoile <b>ne peut pas</b> synthétiser par fusion avec des particules α les éléments plus lourds que le <b>nickel 56</b> — se désintégrant ensuite en <b>fer 56</b> —, ces derniers ayant une <b>cohésion de leurs noyaux maximale</b>.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le cœur de l'étoile <b>s'effondre alors sur lui-même</b>, provoquant par rebond l'éjection de ses couches externes dans une violente explosion appelée <b>supernova</b>.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c1/t1c1-etoile-fin-de-vie.jpg" alt="Vue d'artiste d'une étoile supergéante rouge sur fond d'étoiles" loading="lazy">
+              <figcaption>Une étoile massive en fin de vie, juste avant l'effondrement de son cœur.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🔍 Légende à trancher</div>
+              Dans le PDF de cours, cette image est légendée «&nbsp;<b>Explosion de supernova</b>&nbsp;».
+              Or elle montre une <b>étoile intacte</b> (une supergéante rouge), pas une explosion. La
+              légende a été corrigée ici. Si tu veux vraiment une image d'explosion, une photographie de
+              <b>rémanent de supernova</b> (le Crabe, Cassiopée A) ferait l'affaire — à fournir.
+            </aside>
+            <!-- /CHANTIER -->
+
+            <p style="font-size:14.5px;margin:4px 0 10px">On parle alors de <b>nucléosynthèse explosive</b> car les éléments plus lourds que le fer sont formés par <b>captures neutroniques</b>, <b>captures protoniques</b>, ou encore à la suite de <b>photodésintégrations</b> ou de <b>photofissions</b>.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c1/t1c1-capture-neutronique.jpg" alt="Capture neutronique : un neutron entre dans un noyau d'uranium 233, formant un noyau excité d'uranium 234 qui se désexcite en émettant des rayons gamma" loading="lazy">
+              <figcaption><b>Capture neutronique</b> : un noyau avale un neutron, se retrouve <b>excité</b>, et se calme en émettant un rayonnement γ. Répète l'opération des dizaines de fois et tu remontes le tableau périodique jusqu'à l'or et l'uranium.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="retain">Une étoile fabrique les éléments <b>jusqu'au fer</b>. <b>Tout ce qui est plus lourd</b> — le cuivre de tes câbles, l'argent, l'or, l'uranium — s'est formé lors d'événements <b>explosifs</b>, en particulier les supernovæ. Ces atomes-là ont été fabriqués dans la mort d'une étoile, puis dispersés dans l'espace avant de se retrouver ici.</div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="NUC-2c">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Pourquoi la fusion s'arrête-t-elle au fer dans une étoile ?",
+  "o": [
+   "Parce que le fer est trop rare pour que la réaction continue",
+   "Parce que le fer a la cohésion de noyau maximale : fusionner au-delà ne libère plus d'énergie",
+   "Parce que le fer est radioactif et détruit les noyaux voisins",
+   "Parce que la température du cœur retombe brutalement quand le fer apparaît"
+  ],
+  "r": 1,
+  "c": "Le fer est le <b>fond de la vallée</b> : son noyau est le mieux lié de tous. Fusionner du fer coûterait de l'énergie au lieu d'en produire — l'étoile n'a plus de carburant, et son cœur s'effondre."
+ },
+ {
+  "q": "D'où viennent les éléments plus lourds que le fer, comme l'or ou l'uranium ?",
+  "o": [
+   "Ils se forment lentement au cœur des étoiles en séquence principale",
+   "Ils datent de la nucléosynthèse primordiale, juste après le Big Bang",
+   "Ils se forment lors d'événements explosifs, par captures de neutrons ou de protons",
+   "Ils se forment sur les planètes rocheuses, par pression géologique"
+  ],
+  "r": 2,
+  "c": "<b>Nucléosynthèse explosive</b>. Il faut un flux de neutrons colossal, que seule une catastrophe stellaire fournit. L'or d'une alliance a été fabriqué dans une explosion."
+ },
+ {
+  "q": "Qu'est-ce qu'une capture neutronique ?",
+  "o": [
+   "Un noyau absorbe un neutron, devient excité, puis se désexcite en émettant un rayonnement γ",
+   "Un noyau expulse l'un de ses neutrons vers l'extérieur, ce qui lui permet de se stabiliser",
+   "Deux neutrons libres s'assemblent l'un à l'autre et forment à eux seuls un nouveau noyau",
+   "Un neutron se transforme spontanément en proton à l'intérieur du noyau, qui change d'élément"
+  ],
+  "r": 0,
+  "c": "Le noyau <b>avale</b> le neutron. Il gagne une unité de masse, se retrouve excité, et évacue le surplus en γ. Répété en chaîne, ce mécanisme construit les noyaux les plus lourds."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.4 — exercice 2 -->
+      <div class="step" data-step data-gate data-cle="es-t1c1-ex2">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 2 — quelle nucléosynthèse ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir rattacher chaque élément à l'étape qui l'a fabriqué.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">1 · Rappelle les noms des trois étapes de la nucléosynthèse.</div>
+              <div class="cloze" data-cloze>
+                La nucléosynthèse <input data-answer="primordiale" placeholder="?" aria-label="première étape" data-variantes="primordial|du big bang|primordiale (bbn)" data-indice1="Celle des vingt premières minutes de l'Univers." data-indice2="Son sigle anglais est BBN : Big Bang Nucleosynthesis.">, la nucléosynthèse <input data-answer="stellaire" placeholder="?" aria-label="deuxième étape" data-variantes="stellaires|des étoiles" data-indice1="Celle qui se produit pendant la vie d'une étoile." data-indice2="De « stella », l'étoile en latin.">, et la nucléosynthèse <input data-answer="explosive" placeholder="?" aria-label="troisième étape" data-variantes="explosives|des supernovae|supernova" data-indice1="Celle de la mort de l'étoile." data-indice2="Elle se produit pendant une explosion : elle est…">.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">2 · Dans quelle phase chaque élément s'est-il formé ?</div>
+            <div class="field">
+              <span class="field-type">Tableau à compléter</span>
+              <div class="field-q">Écris pour chaque élément l'étape qui l'a fabriqué : <b>primordiale</b>, <b>stellaire</b> ou <b>explosive</b>. Attention, certains relèvent de <b>deux</b> étapes — dans ce cas, écris celle qui en produit le plus.</div>
+              <div class="cloze" data-cloze>
+                <table class="doc-table">
+                  <tr><th>Élément</th><th>Étape de la nucléosynthèse</th></tr>
+                  <tr><td><span class="noy"><span class="az"><span>28</span><span>14</span></span><span class="sym">Si</span></span> silicium</td>
+                      <td><input data-answer="stellaire" placeholder="?" aria-label="silicium" data-variantes="nucléosynthèse stellaire|stellaires" data-indice1="Le silicium 28 est cité comme la limite des étoiles de plus de 3 masses solaires." data-indice2="Il se fabrique pendant la vie de l'étoile."></td></tr>
+                  <tr><td><span class="noy"><span class="az"><span>12</span><span>6</span></span><span class="sym">C</span></span> carbone</td>
+                      <td><input data-answer="stellaire" placeholder="?" aria-label="carbone" data-variantes="nucléosynthèse stellaire|stellaires" data-indice1="Le carbone 12 apparaît « durant les dernières phases de vie d'une étoile de la taille du Soleil »." data-indice2="Il se fabrique pendant la vie de l'étoile."></td></tr>
+                  <tr><td><span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> hélium</td>
+                      <td><input data-answer="primordiale" placeholder="?" aria-label="hélium" data-variantes="primordial|primordiale et stellaire|nucléosynthèse primordiale" data-indice1="Il représente déjà 9 % des atomes de l'Univers, et les étoiles en fabriquent encore." data-indice2="La majorité de l'hélium 4 date des vingt premières minutes."></td></tr>
+                  <tr><td><span class="noy"><span class="az"><span>56</span><span>26</span></span><span class="sym">Fe</span></span> fer</td>
+                      <td><input data-answer="stellaire" placeholder="?" aria-label="fer" data-variantes="nucléosynthèse stellaire|stellaires" data-indice1="C'est le dernier élément qu'une étoile massive fabrique avant de mourir." data-indice2="Il se fabrique pendant la vie de l'étoile — c'est sa toute dernière étape."></td></tr>
+                  <tr><td><span class="noy"><span class="az"><span>89</span><span>39</span></span><span class="sym">Y</span></span> yttrium</td>
+                      <td><input data-answer="explosive" placeholder="?" aria-label="yttrium" data-variantes="nucléosynthèse explosive|explosives" data-indice1="Son numéro atomique (39) est bien supérieur à celui du fer (26)." data-indice2="Tout ce qui est plus lourd que le fer vient de là."></td></tr>
+                  <tr><td><span class="noy"><span class="az"><span>9</span><span>4</span></span><span class="sym">Be</span></span> béryllium</td>
+                      <td><input data-answer="primordiale" placeholder="?" aria-label="béryllium" data-variantes="primordial|nucléosynthèse primordiale" data-indice1="Il est cité avec le lithium et le bore, en petite quantité." data-indice2="Ces trois-là datent des premières minutes (et de la spallation)."></td></tr>
+                  <tr><td><span class="noy"><span class="az"><span>1</span><span>1</span></span><span class="sym">H</span></span> hydrogène</td>
+                      <td><input data-answer="primordiale" placeholder="?" aria-label="hydrogène" data-variantes="primordial|aucune|nucléosynthèse primordiale" data-indice1="C'est le noyau le plus simple : un seul proton. Il n'a même pas eu besoin d'être assemblé." data-indice2="Il est là depuis les premiers instants — donc l'étape primordiale."></td></tr>
+                </table>
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              <p>Deux cases du tableau sont <b>discutables</b>, et c'est ce qui les rend
+              intéressantes&nbsp;:</p>
+              <ul>
+                <li>l'<b>hélium</b> relève des étapes primordiale <i>et</i> stellaire — la réponse
+                attendue ici est «&nbsp;primordiale&nbsp;», puisque l'essentiel de l'hélium de l'Univers
+                date des premières minutes&nbsp;;</li>
+                <li>l'<b>hydrogène</b> n'est fabriqué par aucune nucléosynthèse au sens strict&nbsp;:
+                c'est un simple proton, présent d'emblée. «&nbsp;Primordiale&nbsp;» et
+                «&nbsp;aucune&nbsp;» sont tous deux acceptés.</li>
+              </ul>
+              <p><b>À arbitrer</b>&nbsp;: soit on garde ces deux pièges (et on les explique en classe),
+              soit on retire ces deux lignes.</p>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Quatre éléments de plus"
+                 data-focus-question="Propose quatre autres éléments chimiques à ajouter au tableau, et indique pour chacun l'étape de nucléosynthèse qui l'a fabriqué. Justifie brièvement."
+                 data-focus-max="700" data-focus-min="20" data-focus-code="NUC-2d">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Proposer quatre autres éléments chimiques à ajouter au tableau précédent.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🔭 Une piste de méthode</div>
+                Il n'y a pas une seule bonne réponse. La méthode, elle, est simple : regarde le <b>numéro atomique Z</b> dans le tableau périodique. Z très petit (1 à 5) → primordiale. Z entre 6 et 26 → stellaire. Z supérieur à 26 (le fer) → explosive. Essaie avec l'or (Z = 79), l'oxygène (Z = 8) ou le lithium (Z = 3).
+              </div>
+            </div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c1/t1c1-tableau-periodique-detail.jpg" alt="Tableau périodique détaillé avec, pour chaque case, le numéro atomique, la masse atomique, le symbole et le nom de l'élément" loading="lazy">
+              <figcaption>Le tableau périodique, en détail : chaque case porte le <b>numéro atomique</b>, la masse atomique, le symbole et le nom. C'est ton outil pour la question précédente.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.5 — fusion / fission -->
+      <div class="step" data-step data-gate data-cle="es-t1c1-fusion-fission">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.5 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Fusion ou fission nucléaire ?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> distinguer les deux mécanismes, et savoir reconnaître lequel est à l'œuvre dans une réaction écrite.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">En fin de vie, l'étoile a « brûlé » tout son hydrogène et son cœur contient essentiellement de l'hélium. Commencent alors d'autres réactions de <b>fusion</b> et de <b>fission</b> qui produisent des éléments plus lourds (oxygène, carbone…).</p>
+
+            <div class="block-label">A — La fusion nucléaire<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">La <b>fusion nucléaire</b> (ou thermonucléaire) est une réaction nucléaire dans laquelle <b>deux noyaux atomiques s'assemblent</b> pour former un noyau <b>plus lourd</b>.</div>
+            <div class="reac"><span class="num">a</span><span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>8</span><span>4</span></span><span class="sym">Be</span></span></div>
+            <div class="reac"><span class="num">b</span><span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> + <span class="noy"><span class="az"><span>8</span><span>4</span></span><span class="sym">Be</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>12</span><span>6</span></span><span class="sym">C</span></span></div>
+            <div class="reac"><span class="num">c</span><span class="noy"><span class="az"><span>12</span><span>6</span></span><span class="sym">C</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>16</span><span>8</span></span><span class="sym">O</span></span></div>
+
+            <div class="block-label">B — La fission nucléaire<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">La <b>fission nucléaire</b> forme de nouveaux noyaux atomiques (et donc de nouveaux éléments) en « <b>cassant</b> » un noyau grâce à l'impact d'une particule (proton, neutron…). En plus des deux noyaux plus petits créés par fission du noyau originel, il peut également y avoir d'autres petites particules produites (neutrons ou protons).</div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t1-c1/t1c1-fission-nucleaire.jpg" alt="Schéma de la fission nucléaire : un neutron frappe un noyau d'uranium qui se casse en deux noyaux plus légers en libérant des neutrons et de l'énergie" loading="lazy">
+              <figcaption>La <b>fission</b> : un neutron frappe un gros noyau, qui se casse en deux noyaux plus légers, libère d'autres neutrons — et de l'énergie. Ce sont ces neutrons libérés qui peuvent frapper d'autres noyaux : c'est la <b>réaction en chaîne</b>.<span class="src">Image reprise du cours de M. Van Hoorde — schéma en anglais, provenance à confirmer</span></figcaption>
+            </figure>
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Par exemple, certaines étoiles en fin de vie fabriquent du carbone à partir d'azote 15, lui-même produit par fusion nucléaire. La fission de l'azote 15 par collision avec un proton produit du carbone 12 :</p>
+            <div class="reac"><span class="num">d</span><span class="noy"><span class="az"><span>15</span><span>7</span></span><span class="sym">N</span></span> + <span class="noy"><span class="az"><span>1</span><span>1</span></span><span class="sym">H</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>12</span><span>6</span></span><span class="sym">C</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span></div>
+
+            <div class="block-label">Ressource — fission ou fusion ?<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>La vidéo du bouton « Fission ou fusion » de la diapositive 9.</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/2dKaCpZR9Qg" title="Fission ou fusion nucléaire" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <div class="block-label">Exercice 3 — réactions nucléaires<span class="niv" style="margin-left:8px">★ <b>à savoir-faire</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Voici six réactions. À toi de dire lesquelles relèvent d'une <b>fusion</b>, lesquelles d'une <b>fission</b> — et de justifier.</p>
+            <div class="reac"><span class="num">1</span><span class="noy"><span class="az"><span>210</span><span>83</span></span><span class="sym">Bi</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>210</span><span>84</span></span><span class="sym">Po</span></span> + <span class="noy"><span class="sym">e⁻</span></span></div>
+            <div class="reac"><span class="num">2</span><span class="noy"><span class="az"><span>14</span><span>7</span></span><span class="sym">N</span></span> + <span class="noy"><span class="az"><span>1</span><span>1</span></span><span class="sym">H</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>15</span><span>8</span></span><span class="sym">O</span></span> + γ</div>
+            <div class="reac"><span class="num">3</span><span class="noy"><span class="az"><span>226</span><span>88</span></span><span class="sym">Ra</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>222</span><span>86</span></span><span class="sym">Rn</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span></div>
+            <div class="reac"><span class="num">4</span><span class="noy"><span class="az"><span>235</span><span>92</span></span><span class="sym">U</span></span> + <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>139</span><span>54</span></span><span class="sym">Xe</span></span> + <span class="noy"><span class="az"><span>94</span><span>38</span></span><span class="sym">Sr</span></span> + 3 <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span></div>
+            <div class="reac"><span class="num">5</span>4 <span class="noy"><span class="az"><span>1</span><span>1</span></span><span class="sym">H</span></span> + 2 <span class="noy"><span class="sym">e⁻</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span></div>
+            <div class="reac"><span class="num">6</span><span class="noy"><span class="az"><span>7</span><span>3</span></span><span class="sym">Li</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>10</span><span>5</span></span><span class="sym">B</span></span> + <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span></div>
+
+            <div class="qcmbox" data-code="NUC-2e">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Parmi les six réactions, lesquelles sont des FUSIONS ? Coche tout ce qui convient.",
+  "o": [
+   "Réaction 2 : ¹⁴N + ¹H → ¹⁵O + γ",
+   "Réaction 5 : 4 ¹H + 2 e⁻ → ⁴He",
+   "Réaction 6 : ⁷Li + ⁴He → ¹⁰B + n",
+   "Réaction 1 : ²¹⁰Bi → ²¹⁰Po + e⁻",
+   "Réaction 3 : ²²⁶Ra → ²²²Rn + ⁴He"
+  ],
+  "r": [0, 1, 2],
+  "c": "Dans une <b>fusion</b>, deux noyaux (ou plus) entrent et un noyau plus lourd sort : c'est le cas des réactions <b>2, 5 et 6</b>. Les réactions 1 et 3 n'ont qu'<b>un seul noyau au départ</b> : ce sont des désintégrations radioactives, pas des fusions."
+ },
+ {
+  "q": "Quelle réaction est une FISSION ?",
+  "o": [
+   "La réaction 4 : ²³⁵U + n → ¹³⁹Xe + ⁹⁴Sr + 3 n",
+   "La réaction 3 : ²²⁶Ra → ²²²Rn + ⁴He",
+   "La réaction 1 : ²¹⁰Bi → ²¹⁰Po + e⁻",
+   "La réaction 6 : ⁷Li + ⁴He → ¹⁰B + n"
+  ],
+  "r": 0,
+  "c": "La <b>4</b> : un neutron frappe un très gros noyau (uranium 235), qui se <b>casse en deux</b> morceaux de tailles comparables (xénon et strontium), en libérant trois neutrons. C'est la signature de la fission — et le principe d'un réacteur nucléaire."
+ },
+ {
+  "q": "Les réactions 1 et 3 ne sont ni des fusions ni des fissions. Que sont-elles ?",
+  "o": [
+   "Des désintégrations radioactives : un seul noyau instable se transforme spontanément",
+   "Des captures neutroniques : le noyau avale un neutron venu de l'extérieur et s'alourdit",
+   "Des réactions chimiques ordinaires, où le noyau reste identique et seuls les électrons bougent",
+   "Des erreurs d'écriture : de telles réactions ne peuvent pas exister dans la nature"
+  ],
+  "r": 0,
+  "c": "Ce sont des <b>désintégrations</b> : β⁻ pour la 1 (émission d'un électron), α pour la 3 (émission d'un noyau d'hélium). C'est exactement le sujet du <b>chapitre 2</b>. Piège volontaire : « réaction nucléaire » ne veut pas dire « fusion ou fission »."
+ },
+ {
+  "q": "Parmi ces réactions, lesquelles peuvent avoir lieu au cœur d'une étoile ? Coche tout ce qui convient.",
+  "o": [
+   "La réaction 2 (¹⁴N + ¹H) : c'est une étape du cycle CNO",
+   "La réaction 5 (4 ¹H → ⁴He) : c'est le bilan de la chaîne proton-proton",
+   "La réaction 4 (fission de l'uranium 235) : c'est ce qui alimente une étoile",
+   "La réaction 6 (⁷Li + ⁴He) : une fusion de noyaux légers"
+  ],
+  "r": [0, 1, 3],
+  "c": "Une étoile vit de <b>fusions</b> de noyaux légers : 2, 5 et 6 y ont leur place. La <b>fission de l'uranium</b>, elle, n'alimente aucune étoile — c'est la réaction de nos réacteurs sur Terre, et elle demande un noyau très lourd qu'une étoile ne produit même pas."
+ }
+]
+              </script>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              <p>Deux corrections d'écriture ont été faites sur les réactions du cours source, où le
+              numéro atomique était erroné&nbsp;:</p>
+              <ul>
+                <li>réaction 2, l'oxygène était écrit avec <b>Z = 6</b> — il vaut <b>8</b> (et la
+                conservation de la charge l'impose&nbsp;: 7 + 1 = 8)&nbsp;;</li>
+                <li>même vérification faite sur les cinq autres&nbsp;: elles sont justes.</li>
+              </ul>
+              <p><b>À confirmer</b> avant de rediffuser le PDF d'origine, qui porte encore l'erreur.</p>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Justifier fusion ou fission"
+                 data-focus-question="Pour chacune des six réactions : fusion, fission, ou autre chose ? Justifie à chaque fois en une phrase (regarde combien de noyaux entrent et combien sortent)."
+                 data-focus-max="900" data-focus-min="20" data-focus-code="NUC-2f">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Identifier, parmi les six réactions, celles qui relèvent d'une fusion ou d'une fission, en justifiant.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Le bilan du chapitre<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+            <div class="retain" data-bilan-wrap>
+              <ul style="margin:0;padding-left:18px">
+                <li>La <b>nucléosynthèse primordiale</b>, entre 10 s et 20 min après le Big Bang, forme l'hélium et les noyaux les plus légers.</li>
+                <li>La <b>nucléosynthèse stellaire</b> fabrique, pendant la vie de l'étoile, tout ce qui va de l'hélium jusqu'au <b>fer</b> — d'autant plus loin que l'étoile est massive.</li>
+                <li>La <b>nucléosynthèse explosive</b>, lors des supernovæ, fabrique tout ce qui est <b>plus lourd que le fer</b>.</li>
+                <li>La <b>fusion</b> assemble deux noyaux en un plus lourd ; la <b>fission</b> casse un gros noyau en deux plus petits. Ni l'une ni l'autre ne doit être confondue avec une <b>désintégration radioactive</b>, où un seul noyau se transforme tout seul.</li>
+              </ul>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Ce que je sais maintenant"
+                 data-focus-question="Relis ta toute première réponse, en séance 1 : « d'où viennent les atomes de ton corps ? ». Que réponds-tu aujourd'hui ?"
+                 data-focus-max="600" data-focus-min="20" data-focus-code="NUC-2g">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Reprends ta réponse du tout début : d'où viennent les atomes de ton corps ? Que réponds-tu maintenant ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">🔭 Pour situer ta réponse</div>
+                L'<b>hydrogène</b> de ton corps date des premières minutes de l'Univers. Ton <b>carbone</b>, ton <b>oxygène</b>, ton <b>azote</b> ont été fabriqués dans des étoiles mortes depuis longtemps. Le <b>fer</b> de ton sang vient du cœur d'une étoile massive, et le peu d'<b>iode</b> ou de <b>zinc</b> que tu contiens vient d'une explosion. Tu es, littéralement, de la poussière d'étoiles recyclée.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.6 — bonus -->
+      <div class="step" data-step data-cle="es-t1c1-bonus-s2">
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
+      <div class="bonus-wrap" data-bonus>
+        <div class="bonus-head" data-bonus-toggle>
+          <span class="ix">2.6</span>
+          <span class="bl">Pour aller plus loin</span>
+          <span class="bonus-tag">hors 100&nbsp;% · non évalué</span>
+          <span class="chev">▸</span>
+        </div>
+        <div class="bonus-body">
+          <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Ces trois documents étaient dans le cours ; ils dépassent le socle attendu en enseignement scientifique. Ils sont ici pour ceux que ça intéresse — <b>jamais évalués</b>.</p>
+
+          <div class="block-label">L'autre façon de brûler l'hydrogène : le cycle CNO</div>
+          <figure class="ill"><span class="loupe">⤢ agrandir</span>
+            <img src="../assets/img/es/1re-es-t1-c1/t1c1-cycle-cno.jpg" alt="Cycle CNO : le carbone 12 capture successivement des protons en passant par l'azote 13, le carbone 13, l'azote 14, l'oxygène 15 et l'azote 15, et redonne du carbone 12 avec un noyau d'hélium 4" loading="lazy">
+            <figcaption>Le <b>cycle CNO</b> (ici CNO-I) est l'autre processus de fusion de l'hydrogène en hélium 4. Le carbone n'est pas consommé : il sert de <b>catalyseur</b> et se retrouve à la fin. Minoritaire pour une étoile de type solaire (≈ 1 %), il devient majoritaire pour les étoiles plus massives.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+          </figure>
+          <p class="doc-note">Pourquoi le cycle CNO l'emporte-t-il dans les étoiles massives ? Parce que sa production d'énergie varie comme <b>T¹⁷</b>, contre <b>T⁴</b> pour les chaînes proton-proton. Une petite hausse de température le multiplie donc de façon vertigineuse.</p>
+
+          <div class="block-label">La réaction triple α, ou comment sauter par-dessus un trou</div>
+          <figure class="ill"><span class="loupe">⤢ agrandir</span>
+            <img src="../assets/img/es/1re-es-t1-c1/t1c1-reaction-triple-alpha.jpg" alt="Réaction triple alpha : deux noyaux d'hélium 4 forment un béryllium 8, qui capture un troisième hélium 4 pour donner du carbone 12" loading="lazy">
+            <figcaption>La réaction <b>triple α</b>, qui se produit lors de la phase d'<i>hélium flash</i>. Le béryllium 8 intermédiaire est <b>extrêmement instable</b> : il doit rencontrer un troisième hélium avant de se défaire. Tout le carbone de l'Univers — donc tout le vivant — dépend de cette rencontre improbable.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+          </figure>
+
+          <div class="block-label">Ranger les étoiles : le diagramme de Hertzsprung-Russell</div>
+          <figure class="ill"><span class="loupe">⤢ agrandir</span>
+            <img src="../assets/img/es/1re-es-t1-c1/t1c1-diagramme-hertzsprung-russell.jpg" alt="Diagramme de Hertzsprung-Russell : luminosité des étoiles en fonction de leur température de surface, avec la séquence principale, les géantes, les supergéantes et les naines blanches" loading="lazy">
+            <figcaption>Le <b>diagramme H-R</b> donne la luminosité d'une étoile en fonction de sa température : au cours de la majorité de sa vie (<i lang="en">main sequence</i>), dans ses dernières étapes (<i lang="en">giants, supergiants</i>) ou à sa mort (<i lang="en">white dwarfs</i>). Le Soleil est au milieu de la diagonale.<span class="src">Image reprise du cours de M. Van Hoorde — diagramme en anglais, provenance à confirmer</span></figcaption>
+          </figure>
+          <div class="proposition">
+            <div class="pl">⬖ Proposition — Difficulté</div>
+            Le diagramme H-R est en <b>anglais</b>. Ce n'est pas rédhibitoire (les mots sont
+            transparents), mais une version française existe sur Wikimedia si tu préfères.
+          </div>
+
+          <div class="block-label">Réviser en vidéo, puis jouer</div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>« Réviser en vidéo » — le lien de la dernière diapositive.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/BEUJr1zYNhs" title="Réviser — la nucléosynthèse" allowfullscreen></iframe>
+            </div>
+          </div>
+          <p style="font-size:14.5px;margin:10px 0 4px">Et pour finir, le jeu de bilan du chapitre&nbsp;:</p>
+          <p><a class="btn ghost" href="https://create.kahoot.it/share/1ere-es-les-elements-chimiques/3590ce94-0245-415f-bd9f-a9a4c1e7c6e4" target="_blank" rel="noopener noreferrer">🎮 Ouvrir le Kahoot « 1re ES — les éléments chimiques »</a></p>
+          <!-- CHANTIER -->
+          <aside class="chantier">
+            <div class="cl">🔍 Lien à vérifier</div>
+            Ce lien Kahoot est celui de l'<b>édition</b> (create.kahoot.it), tel qu'il figure dans le QR
+            code du cours&nbsp;: il mène à la copie du quiz, pas à une partie. Pour la classe, c'est
+            l'enseignant qui lance la partie et distribue le code.
+          </aside>
+          <!-- /CHANTIER -->
+        </div>
+      </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Thème 1, chapitre 1 — La nucléosynthèse.</b> C'est le chapitre d'entrée&nbsp;: il t'apprend le cours <b>et</b> le fonctionnement du dispositif. Les autres chapitres n'y reviendront pas — 🧭 un doute sur les fiches, le verrouillage ou l'entraide&nbsp;? Reviens ici. ⚠ Dans cette version, <b>ta progression n'est pas encore enregistrée</b>&nbsp;: si tu fermes la page, tout est à refaire. Pense à télécharger ta fiche avant de partir.
+  </footer>
+</div>
+
+<script type="application/json" id="dico-source">
+[
+ {
+  "mot": "Élément chimique",
+  "origine": "ES · La nucléosynthèse",
+  "def": "Un type d'atome, défini uniquement par son nombre de protons (le numéro atomique Z). Il en existe environ 90 à l'état naturel."
+ },
+ {
+  "mot": "Numéro atomique",
+  "origine": "ES · La nucléosynthèse",
+  "def": "Noté Z : le nombre de protons du noyau. C'est lui, et lui seul, qui décide de l'élément chimique."
+ },
+ {
+  "mot": "Tableau périodique",
+  "origine": "ES · La nucléosynthèse",
+  "def": "La liste organisée de tous les éléments chimiques connus, rangés par numéro atomique croissant et par propriétés semblables."
+ },
+ {
+  "mot": "Nucléosynthèse",
+  "origine": "ES · La nucléosynthèse",
+  "def": "La fabrication des noyaux atomiques. Elle s'est faite en trois temps : primordiale, stellaire, explosive."
+ },
+ {
+  "mot": "Nucléosynthèse primordiale",
+  "origine": "ES · La nucléosynthèse",
+  "def": "Celle des premières minutes de l'Univers (10 s à 20 min après le Big Bang), à 10⁹ K. Elle forme le deutérium, l'hélium 3 et 4, un peu de lithium, de béryllium et de bore."
+ },
+ {
+  "mot": "Nucléosynthèse stellaire",
+  "origine": "ES · La nucléosynthèse",
+  "def": "Celle qui se produit pendant la vie d'une étoile : hydrogène → hélium, puis jusqu'au carbone, à l'oxygène, au silicium ou au fer selon la masse de l'étoile."
+ },
+ {
+  "mot": "Nucléosynthèse explosive",
+  "origine": "ES · La nucléosynthèse",
+  "def": "Celle des supernovæ. Elle seule fabrique les éléments plus lourds que le fer, par captures de neutrons et de protons."
+ },
+ {
+  "mot": "Séquence principale",
+  "origine": "ES · La nucléosynthèse",
+  "def": "La longue période de la vie d'une étoile pendant laquelle elle transforme son hydrogène en hélium. Le Soleil y est aujourd'hui."
+ },
+ {
+  "mot": "Supernova",
+  "origine": "ES · La nucléosynthèse",
+  "def": "L'explosion d'une étoile massive dont le cœur s'effondre, éjectant ses couches externes. C'est là que naissent les éléments plus lourds que le fer."
+ },
+ {
+  "mot": "Fusion nucléaire",
+  "origine": "ES · La nucléosynthèse",
+  "def": "Deux noyaux s'assemblent pour former un noyau plus lourd. C'est ce qui fait briller les étoiles."
+ },
+ {
+  "mot": "Fission nucléaire",
+  "origine": "ES · La nucléosynthèse",
+  "def": "Un gros noyau se casse en deux noyaux plus petits sous l'impact d'une particule. C'est la réaction des réacteurs nucléaires."
+ },
+ {
+  "mot": "Capture neutronique",
+  "origine": "ES · La nucléosynthèse",
+  "def": "Un noyau absorbe un neutron et devient excité, puis se désexcite en émettant un rayonnement γ. Répétée, elle construit les noyaux lourds."
+ },
+ {
+  "mot": "Spallation",
+  "origine": "ES · La nucléosynthèse",
+  "def": "La fragmentation d'un noyau frappé par un rayon cosmique très énergétique. Elle produit des noyaux légers : lithium, béryllium, bore."
+ },
+ {
+  "mot": "Masse solaire",
+  "origine": "ES · La nucléosynthèse",
+  "def": "L'unité de masse des astronomes : la masse du Soleil. Une étoile de 8 masses solaires est huit fois plus lourde que lui."
+ }
+]
+</script>
+<script src="../assets/js/sequence-snt.js?v=42"></script>
+
+</body>
+</html>

@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ES 1re · Le son, une information à coder — Séquence élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- 🔴 Le client de base de données n'est PAS chargé ici : sans lui, le moteur
+     bascule sur son repli local, qui dit honnêtement « gardé pour cette
+     séance ». Le charger afficherait « connecte-toi pour enregistrer ton
+     travail » alors que rien ne serait enregistré. À rétablir au branchement,
+     avec data-sequence sur <body>. -->
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     ENSEIGNEMENT SCIENTIFIQUE 1re — Thème 2 (numérotation Loïc),
+     chapitre 2 : « Le son, une information à coder ».
+     Sous-thème 4.3 du programme officiel.
+
+     Tourne sur le moteur des séquences SNT. 🔴 PAS DE BASE DE DONNÉES
+     dans cette version (brief ES1 §3.2) : ni client de progression, ni
+     data-sequence, ni sommaire généré, ni plafond d'avance, ni
+     localStorage.
+     ⚠ Ne pas réécrire ici le nom de ces fichiers avec leur extension,
+     même en commentaire : verifier.mjs cherche la chaîne « seances-
+     snt.js » dans TOUT le HTML, commentaires compris.
+
+     Contenu : porté depuis le PDF de cours ET sa CORRECTION — les
+     corrigés des sept exercices viennent donc de Loïc, pas de Claude.
+     Images extraites des PDF, jamais redessinées.
+     ============================================================ -->
+<style>
+  /* ---------- Cadre « proposition » — mécanisme du chantier ES1 ---------- */
+  .proposition{border:2px dashed var(--hist);border-radius:12px;
+    background:var(--hist-wash);padding:12px 15px;margin:14px 0;
+    font-size:13.5px;line-height:1.55;color:var(--ink)}
+  .proposition .pl{font-family:"IBM Plex Mono",monospace;font-size:11px;
+    letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+    color:var(--hist);display:flex;gap:7px;align-items:center;
+    margin-bottom:5px;flex-wrap:wrap}
+  .proposition p{margin:5px 0}
+  .proposition ul{margin:5px 0 0;padding-left:18px}
+
+  /* ---------- Cadre de réservation d'image ---------- */
+  .reserve{border:1.5px dashed var(--link);border-radius:8px;
+    background:repeating-linear-gradient(45deg,var(--surface-2) 0 8px,var(--surface) 8px 16px);
+    display:flex;flex-direction:column;justify-content:center;gap:3px;
+    padding:16px 10px;text-align:center;margin:12px auto}
+  .reserve .rf{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--link);word-break:break-all}
+  .reserve .rd{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
+  .reserve .rr{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+
+  /* ---------- Formule posée au centre ---------- */
+  .formule{text-align:center;font-family:"IBM Plex Mono",monospace;font-size:19px;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:14px 12px;margin:12px 0;color:var(--ink);overflow-x:auto}
+  .formule .u{font-size:12px;color:var(--ink-faint);display:block;margin-top:6px;
+    font-family:"IBM Plex Sans",system-ui,sans-serif}
+
+  /* ---------- Tableau de numérisation : cases binaires ---------- */
+  .tbin input{width:5.2em}
+  .tbin td{text-align:center}
+  .tbin code{font-size:13px}
+</style>
+
+</head><body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Enseignement scientifique · 1re · Son, musique et audition</div>
+    <h1 class="title">Le son, une information à coder <span class="tag">chapitre 2</span></h1>
+    <p class="lede">Un son est une onde continue ; un fichier est une suite de nombres. Entre les deux, il faut choisir : combien de mesures par seconde, combien de valeurs possibles, et quoi jeter. Ce chapitre est celui de ces choix.</p>
+    <div class="themes">
+      <span class="theme-chip">Nucléosynthèse</span><span class="theme-chip">La radioactivité</span>
+      <span class="theme-chip">Les cristaux</span><span class="theme-chip">Son et musique</span>
+      <span class="theme-chip on">Le son, une information à coder</span><span class="theme-chip">La forme de la Terre</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>3 séances</b></span>
+      <span class="m">Durée <b>≈ 4 h 30</b></span>
+      <span class="m">Chaque séance se débloque quand la <b>précédente est validée</b></span>
+    </div>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — toutes les séances sont ouvertes.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="1re-enseignement-scientifique.html">← Enseignement scientifique</a>
+    <a href="#s1"><span class="n">S1</span>Du son au signal numérique</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>Résolution &amp; format CD <span class="lockico">🔒</span></a>
+    <a href="#s3" data-navlock="3"><span class="n">S3</span>Stockage &amp; compression <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- CHANTIER -->
+  <aside class="chantier decision">
+    <div class="cl">📌 Décision attendue — état de cette page</div>
+    V0 portée depuis le PDF de cours <b>et sa correction</b>. Les corrigés des sept
+    exercices viennent donc de toi, pas de Claude. La <b>progression n'est pas
+    enregistrée</b> (ni base, ni stockage local). Les <b>cadres violets</b> sont des
+    propositions. Relevé complet dans <code>_suivi/es1-verification.md</code>.
+  </aside>
+  <!-- /CHANTIER -->
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>Du son au signal numérique</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Comprendre ce qu'est un son, ce qui le distingue d'un fichier, et le premier des deux réglages de la numérisation : la fréquence d'échantillonnage.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-son-pression">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Un son est une variation de pression</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir ce qu'est un <b>signal analogique</b>, et pourquoi le son en est un.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Un son est une <b>variation de pression au cours du temps</b>. C'est un <b>signal analogique</b>, c'est-à-dire un signal qui varie de manière <b>continue</b> au cours du temps — une fonction continue, si tu veux.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-son-compressions-dilatations.jpg" alt="Un haut-parleur émet un son : les particules de l'air se regroupent puis s'écartent en zones successives, sous une courbe sinusoïdale" loading="lazy">
+              <figcaption>Un son qui se propage fait <b>vibrer la matière</b>, provoquant des <b>compressions</b> et des <b>dilatations</b> successives — c'est-à-dire des variations de pression.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <p style="font-size:14.5px;margin:4px 0 10px">Lorsqu'un micro reçoit un son, la variation de pression atmosphérique au point où il se trouve ressemble à quelque chose comme la courbe ci-dessous :</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-signal-analogique-compose.jpg" alt="Courbe irrégulière de la variation de pression en fonction du temps, formée de plusieurs oscillations superposées" loading="lazy">
+              <figcaption>Variation de pression par rapport à la pression atmosphérique, en fonction du temps. C'est un <b>signal analogique composé</b> — plusieurs vibrations superposées, comme dans un vrai son.<span class="src">Graphique du cours de M. Van Hoorde</span></figcaption>
+            </figure>
+
+            <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Un signal <b>analogique</b> varie de manière <b>continue</b> : entre deux instants, il prend toutes les valeurs intermédiaires. Un signal <b>numérique</b> est une <b>suite de nombres</b> qui ne peuvent prendre que des valeurs <b>discrètes</b> — un ensemble de valeurs prédéfinies, pas n'importe quelle valeur.</div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Ce chapitre s'appuie sur des notions de <b>seconde</b> (le son comme phénomène vibratoire,
+              la fréquence, la période) et sur des notions de <b>SNT</b> (le binaire). Un renvoi vers le
+              chapitre <b>«&nbsp;Son et musique&nbsp;»</b> serait naturel ici — mais ce chapitre reste à
+              écrire. Le lien est posé plus bas sous forme de rappel, à activer quand il existera.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-chaine">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">La chaîne d'acquisition</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir nommer les trois signaux qui se succèdent entre l'instrument et le fichier, et l'appareil qui les convertit.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">La numérisation d'un son passe par une première étape : sa transformation en <b>signal électrique analogique</b> par le <b>microphone</b>. Puis le signal électrique délivré par le microphone est <b>numérisé par la carte son</b>.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-chaine-numerisation.jpg" alt="Chaîne de numérisation : une guitare envoie un signal sonore analogique vers un micro, qui donne un signal électrique analogique, converti par une carte son en signal électrique numérique" loading="lazy">
+              <figcaption>Chaîne de numérisation d'un son. Trois signaux, deux conversions : le <b>micro</b> transforme le son en électricité, la <b>carte son</b> transforme l'électricité en nombres.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-echantillonnage-quantification.jpg" alt="Une sinusoïde bleue continue superposée à un tracé rouge en escalier, sur un quadrillage dont les axes portent la fréquence d'échantillonnage et la quantification" loading="lazy">
+              <figcaption>Comparaison d'un <b>signal analogique</b> (en bleu) — un signal sonore ou électrique en provenance d'un instrument de musique — avec un <b>signal numérique</b> (en rouge) tel qu'il pourrait être codé par un ordinateur. Remarque les deux axes : l'un donne le nombre de mesures, l'autre le nombre de niveaux disponibles. Ce sont les <b>deux réglages</b> de tout ce chapitre.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète la chaîne d'acquisition.</div>
+              <div class="cloze" data-cloze>
+                La guitare émet un <b>signal sonore</b>, qui est <input data-answer="analogique" placeholder="?" aria-label="nature du signal sonore" data-variantes="analogiques|continu" data-indice1="Il varie de manière continue : il prend toutes les valeurs intermédiaires." data-indice2="Le contraire de « numérique ».">. Le <input data-answer="microphone" placeholder="?" aria-label="appareil qui transforme le son en électricité" data-variantes="micro|le micro|le microphone" data-indice1="C'est l'appareil dans lequel on parle ou on chante." data-indice2="On l'appelle aussi « micro » en abrégé."> le transforme en <b>signal électrique</b>, encore analogique. Enfin, la <input data-answer="carte son" placeholder="?" aria-label="appareil qui numérise" data-variantes="la carte son|carte-son|carte audio" data-indice1="C'est la pièce de l'ordinateur qui s'occupe de tout ce qui est audio." data-indice2="Deux mots : « carte » + le mot qui donne son nom au chapitre."> le <b>numérise</b> : il devient une suite de nombres.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="COD-1a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Qu'est-ce qui distingue un signal analogique d'un signal numérique ?",
+  "o": [
+   "L'analogique varie continûment, le numérique ne prend que des valeurs discrètes",
+   "L'analogique est plus récent que le numérique et donc de meilleure qualité",
+   "L'analogique concerne le son, le numérique concerne uniquement l'image",
+   "Le numérique varie continûment, l'analogique procède par sauts"
+  ],
+  "r": 0,
+  "c": "L'<b>analogique</b> est continu : entre deux valeurs, il passe par toutes les autres. Le <b>numérique</b> est une suite de nombres pris dans un ensemble fini de valeurs possibles. Attention à la dernière réponse : c'est exactement l'inverse."
+ },
+ {
+  "q": "Dans la chaîne d'acquisition, quel appareil réalise la numérisation ?",
+  "o": [
+   "Le microphone, qui capte les variations de pression",
+   "La carte son, qui convertit le signal électrique en nombres",
+   "Le haut-parleur, qui restitue le son en sortie",
+   "L'écran, qui affiche la courbe du signal"
+  ],
+  "r": 1,
+  "c": "Le <b>micro</b> convertit une pression en tension électrique — les deux restent analogiques. C'est la <b>carte son</b> qui fait le passage au numérique."
+ },
+ {
+  "q": "Un son, physiquement, c'est…",
+  "o": [
+   "une variation de pression de l'air au cours du temps",
+   "un déplacement d'air d'un point à un autre, comme le vent",
+   "une onde électrique qui circule dans l'air",
+   "une variation de température de l'air au cours du temps"
+  ],
+  "r": 0,
+  "c": "Une <b>variation de pression</b> : les particules d'air se resserrent puis s'écartent sur place. Elles ne voyagent pas avec le son — c'est la <b>perturbation</b> qui se propage, pas la matière."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-echantillonnage">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Premier réglage : la fréquence d'échantillonnage</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir ce qu'est une période et une fréquence d'échantillonnage, connaître la relation qui les lie, et savoir ce que change une fréquence plus élevée.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Pour numériser le signal analogique, la carte son effectue une <b>mesure du signal à intervalle de temps régulier</b>, que l'on appelle la <b>période d'échantillonnage</b>, notée <b>T<sub>e</sub></b>. On dit qu'elle fait un <b>échantillonnage</b>.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le nombre de mesures réalisées chaque seconde est appelé la <b>fréquence d'échantillonnage</b>, notée <b>f<sub>e</sub></b>. On a alors la relation :</p>
+
+            <div class="formule">f<sub>e</sub> = 1 / T<sub>e</sub>
+              <span class="u">f<sub>e</sub> en hertz (Hz) · T<sub>e</sub> en secondes (s)</span>
+            </div>
+
+            <div class="reserve" style="min-height:170px;max-width:600px">
+              <div class="rf">t2c2-echantillonnage-deux-frequences.png</div>
+              <div class="rd">L'<b>image 5</b> du cours source — deux échantillonnages du <b>même</b> signal côte à côte, celui de gauche avec une fréquence plus grande — n'a pas pu être extraite du PDF (elle y est vectorielle). C'est pourtant la figure qui fait comprendre le paragraphe ci-dessous. À refournir&nbsp;: une copie d'écran de la diapositive suffit.</div>
+              <div class="rr">paysage · ≥ 800 px de large</div>
+            </div>
+
+            <div class="retain">Plus la fréquence d'échantillonnage est <b>élevée</b>, mieux les mesures suivront l'évolution de la tension analogique (<b>la numérisation sera plus fidèle</b>) — mais plus il y aura de <b>valeurs à traiter</b> chaque seconde, ce qui demande davantage de ressources processeur et mémoire.</div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Un peu de calcul. <b>Aide-toi de la relation ci-dessus.</b></div>
+              <div class="cloze" data-cloze>
+                Une carte son mesure le signal toutes les <b>T<sub>e</sub> = 0,02 s</b>. Sa fréquence d'échantillonnage vaut alors f<sub>e</sub> = <input class="short" data-answer="50" placeholder="?" aria-label="fréquence d'échantillonnage en Hz" data-variantes="50 hz|50hz" data-indice1="f est l'inverse de T : divise 1 par 0,02." data-indice2="1 ÷ 0,02 = 1 ÷ (2 ÷ 100) = 100 ÷ 2."> Hz, soit <input class="short" data-answer="50" placeholder="?" aria-label="nombre de mesures par seconde" data-variantes="cinquante" data-indice1="La fréquence d'échantillonnage, c'est justement le nombre de mesures par seconde." data-indice2="C'est le même nombre que celui de la case précédente."> mesures chaque seconde.<br>
+                Inversement, une carte son qui prend <b>1 000 mesures par seconde</b> a une période d'échantillonnage de T<sub>e</sub> = <input class="short" data-answer="0,001" placeholder="?" aria-label="période d'échantillonnage en secondes" data-variantes="0.001|1/1000|0,001 s|10^-3|1 ms" data-indice1="T est l'inverse de f : divise 1 par 1 000." data-indice2="Un millième de seconde — écris-le en secondes, avec une virgule."> s.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Cet exercice de calcul est ajouté&nbsp;: le cours source énonce la relation
+              f<sub>e</sub>&nbsp;=&nbsp;1/T<sub>e</sub> sans la faire manipuler avant l'exercice&nbsp;3,
+              qui arrive deux séances plus loin. Deux applications directes suffisent à installer le
+              réflexe.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.4 -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-binaire">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Rappels de SNT — bits, octets et puissances de 2</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir qu'une information codée sur <b>n</b> bits peut prendre <b>2<sup>n</sup></b> valeurs, et savoir le calculer.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Une information codée sur <b>1 bit</b> ne pourra prendre que <b>deux</b> valeurs (0 ou 1). Une information codée sur <b>deux bits</b> pourra prendre <b>4</b> valeurs (00, 01, 10, 11). Une information codée sur <b>n bits</b> pourra prendre <b>2<sup>n</sup></b> valeurs.</p>
+            <div class="retain">Plus le nombre de bits utilisés par l'information est grand, plus cette information prendra de ressources processeur et mémoire pour être <b>traitée</b> et <b>stockée</b>.</div>
+
+            <div class="block-label">Exercice 1 — compléter le rappel</div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-bits-et-octets.jpg" alt="Encart rappelant qu'un octet vaut huit bits, qu'un bit vaut 0 ou 1, et qu'un octet peut donc prendre 256 valeurs, avec des exemples d'octets" loading="lazy">
+              <figcaption>Petit rappel concernant les <b>bits</b> et les <b>octets</b>.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète le rappel de l'image ci-dessus.</div>
+              <div class="cloze" data-cloze>
+                1 octet = <input class="short" data-answer="8" placeholder="?" aria-label="nombre de bits dans un octet" data-variantes="huit" data-indice1="C'est écrit sur l'image, première ligne." data-indice2="Le même nombre que les côtés d'un octogone."> bits. 1 bit peut valoir <input class="short" data-answer="0" placeholder="?" aria-label="première valeur d'un bit" data-indice1="Les deux seules valeurs du binaire." data-indice2="La plus petite des deux."> ou <input class="short" data-answer="1" placeholder="?" aria-label="seconde valeur d'un bit" data-indice1="Les deux seules valeurs du binaire." data-indice2="La plus grande des deux.">. Un octet peut donc prendre 2<sup>8</sup> = <input class="short" data-answer="256" placeholder="?" aria-label="nombre de valeurs d'un octet" data-variantes="256 valeurs" data-indice1="2 multiplié par lui-même huit fois : 2, 4, 8, 16, 32, 64, 128…" data-indice2="Le nombre suivant 128 dans la suite des puissances de 2."> valeurs.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="COD-1b">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Combien de valeurs différentes peut prendre une information codée sur 4 bits ?",
+  "o": [
+   "4 valeurs, une par bit disponible",
+   "8 valeurs, soit deux fois le nombre de bits",
+   "16 valeurs, soit 2⁴",
+   "32 valeurs, soit 2⁵"
+  ],
+  "r": 2,
+  "c": "<b>2⁴ = 16</b>. Chaque bit ajouté <b>double</b> le nombre de possibilités : 2, 4, 8, 16… Ce n'est pas 4 × 2 mais 2 × 2 × 2 × 2."
+ },
+ {
+  "q": "Que se passe-t-il quand on ajoute un bit à un codage ?",
+  "o": [
+   "Le nombre de valeurs possibles augmente de 1",
+   "Le nombre de valeurs possibles est multiplié par 2",
+   "Le nombre de valeurs possibles est multiplié par 8",
+   "Le nombre de valeurs possibles ne change pas, seule la précision augmente"
+  ],
+  "r": 1,
+  "c": "Chaque bit supplémentaire <b>double</b> le nombre de valeurs. C'est pour cela que passer de 8 à 16 bits ne double pas la précision : il la multiplie par 256."
+ },
+ {
+  "q": "Un octet, c'est…",
+  "o": [
+   "8 bits, soit 256 valeurs possibles",
+   "10 bits, soit 1024 valeurs possibles",
+   "16 bits, soit 65 536 valeurs possibles",
+   "un synonyme de « bit », employé en français"
+  ],
+  "r": 0,
+  "c": "<b>8 bits</b>, donc 2⁸ = 256 valeurs. En anglais on dit <i lang=\"en\">byte</i> — à ne pas confondre avec <i lang=\"en\">bit</i>, qui est huit fois plus petit. Une erreur qui fait facilement un facteur 8 sur une taille de fichier."
+ },
+ {
+  "q": "Pourquoi ne code-t-on pas tout sur un très grand nombre de bits, tant qu'à faire ?",
+  "o": [
+   "Parce que les ordinateurs ne savent pas manipuler plus de 16 bits",
+   "Parce que l'oreille humaine ne perçoit pas les valeurs au-delà de 8 bits",
+   "Parce que plus il y a de bits, plus l'information est lourde à traiter et à stocker",
+   "Parce que la loi limite la taille des fichiers audio"
+  ],
+  "r": 2,
+  "c": "C'est tout l'enjeu du chapitre : la <b>fidélité</b> se paie en <b>ressources</b>. Chaque bit gagné en précision coûte de la mémoire, du processeur et du débit."
+ }
+]
+              </script>
+            </div>
+
+            <div class="block-label">Ressources — pour revoir le binaire<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="reserve" style="min-height:140px;max-width:560px">
+              <div class="rf">2 liens vidéo : « Introduction au langage binaire » (Educode) et « Le binaire c'est quoi ? » (codeur-pro)</div>
+              <div class="rd">Le cours source cite ces deux vidéos par leur titre et leur chaîne, sans URL récupérable depuis le PDF. <b>Adresses à fournir</b> — ou à remplacer par la séquence SNT du dépôt sur la représentation de l'information.</div>
+              <div class="rr">2 liens externes · à fournir</div>
+            </div>
+            <p class="doc-note">🔁 Le binaire est aussi traité en <b>SNT</b>, dans le module « Représenter l'information ». Un renvoi vers cette page pourrait remplacer les deux vidéos — <b>à arbitrer</b> : la règle du dépôt est d'<i>intégrer plutôt que de renvoyer</i>, mais ici le rappel est court.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>Résolution et format CD</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Le second réglage : combien de niveaux pour coder chaque mesure. Puis le standard qui a fixé les valeurs de référence pendant quarante ans.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 2.1 -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-resolution">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Second réglage : la résolution de la numérisation</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre pourquoi la carte son doit <b>approximer</b>, et ce que change le nombre de bits.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">La valeur mesurée au moment de l'échantillonnage est une <b>information</b> — un nombre. Une fois numérisée, elle ne peut prendre qu'un <b>nombre fini de valeurs</b> (par exemple 256 valeurs si elle est codée sur 8 bits). Il s'ensuit que cette valeur ne peut <b>pas toujours être convertie de manière exacte</b>, si elle ne correspond pas à l'une des valeurs possibles.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">La carte son doit alors procéder à une <b>approximation</b>. Moins il y a de valeurs possibles, plus cette approximation peut être grande.</p>
+
+            <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">La <b>résolution de la numérisation</b> (aussi appelée <i>format d'échantillonnage</i>, ou <i>profondeur de numérisation</i>) est le <b>nombre de bits</b> sur lesquels la valeur est codée. Plus grande est la résolution, plus fidèlement est stockée l'information — mais plus elle est <b>lourde</b> à traiter et à stocker.</div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-numerisation-4-bits.jpg" alt="Un signal analogique noir et son approximation numérique en escalier verte, avec à droite les seize valeurs binaires de 0000 à 1111 et le pas p indiqué" loading="lazy">
+              <figcaption>Signal analogique numérisé en <b>4 bits</b>. Les seize niveaux disponibles sont écrits à droite, de <code>0000</code> à <code>1111</code> ; le tracé en escalier ne correspond <b>pas toujours</b> à la réalité du signal. L'écart entre deux niveaux s'appelle le <b>pas p</b>.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-comparaison-resolutions.jpg" alt="Quatre tracés superposés du même signal : original lisse en studio, 24 bits presque lisse, 16 bits légèrement en escalier, MP3 franchement en escalier" loading="lazy">
+              <figcaption>Le même signal à quatre résolutions : original en studio, <b>24 bits</b>, <b>16 bits</b> (le CD), puis compressé en MP3. Plus l'escalier est grossier, plus l'information s'éloigne du signal de départ.<span class="src">Image reprise du cours de M. Van Hoorde — schéma en anglais, provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="COD-2a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Qu'est-ce que la résolution de numérisation ?",
+  "o": [
+   "Le nombre de mesures du signal effectuées chaque seconde par la carte son",
+   "Le nombre de bits sur lesquels chaque valeur mesurée est codée",
+   "La durée totale du fichier une fois la numérisation terminée",
+   "Le nombre de canaux enregistrés dans le fichier : mono ou stéréo"
+  ],
+  "r": 1,
+  "c": "Le <b>nombre de bits par valeur</b>. À ne pas confondre avec la <b>fréquence d'échantillonnage</b>, qui est le nombre de mesures par seconde : ce sont les deux réglages, et ils sont indépendants."
+ },
+ {
+  "q": "Pourquoi la carte son doit-elle faire une approximation ?",
+  "o": [
+   "Parce que le microphone est imprécis et introduit des erreurs de mesure",
+   "Parce que la valeur mesurée ne tombe pas toujours sur l'un des niveaux disponibles",
+   "Parce que le calcul serait trop long si elle gardait la valeur exacte",
+   "Parce que l'oreille humaine ne distingue pas les valeurs exactes"
+  ],
+  "r": 1,
+  "c": "Le signal continu peut prendre <b>n'importe quelle</b> valeur ; le codage n'en offre qu'un nombre fini. Il faut donc choisir le niveau le plus proche — et cet écart est une <b>erreur de numérisation</b>."
+ },
+ {
+  "q": "En passant d'une résolution de 4 bits à 8 bits, on…",
+  "o": [
+   "double le nombre de niveaux disponibles",
+   "multiplie par 16 le nombre de niveaux disponibles",
+   "multiplie par 2 la taille du fichier et divise par 2 l'erreur",
+   "ne change rien à la qualité, seulement à la taille"
+  ],
+  "r": 1,
+  "c": "De 2⁴ = 16 à 2⁸ = 256 niveaux : <b>seize fois plus</b>. La taille, elle, double seulement (8 bits au lieu de 4 par mesure). C'est un très bon marché — et c'est exactement le raisonnement de l'exercice suivant."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 — exercice 2 -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-ex2">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 2 — le pèse-personne numérique</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> calculer un pas de numérisation, en mesurer l'imprécision, et comparer 4 bits et 8 bits sur un cas concret.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Imaginons un pèse-personne numérique, capable de peser un poids compris entre <b>0 et 120 kg</b>. On s'intéresse à la <b>numérisation de la valeur de la masse pesée</b>. Imaginons dans un premier temps qu'il la numérise sur <b>4 bits</b>.</p>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">1 · Combien de niveaux différents peut-on coder sur 4 bits ?</div>
+              <div class="cloze" data-cloze>
+                Sur 4 bits, on peut coder 2<sup>4</sup> = <input class="short" data-answer="16" placeholder="?" aria-label="nombre de niveaux sur 4 bits" data-variantes="16 valeurs|seize" data-indice1="2 × 2 × 2 × 2." data-indice2="Le double de 8."> niveaux différents.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Tableau à compléter</span>
+              <div class="field-q">2 · On suppose que ces niveaux sont répartis de manière <b>équitable</b> entre 0 et 120 kg. Complète le tableau. <span style="color:var(--ink-soft)">(La première et la dernière ligne sont données.)</span></div>
+              <div class="cloze" data-cloze>
+                <table class="doc-table tbin">
+                  <tr><th>Valeur binaire</th><th>Masse (kg)</th><th>Valeur binaire</th><th>Masse (kg)</th></tr>
+                  <tr><td><code>0000</code></td><td>0</td>
+                      <td><code>1000</code></td><td><input class="short" data-answer="64" placeholder="?" aria-label="masse pour 1000" data-indice1="Le pas est constant : chaque ligne ajoute la même chose." data-indice2="8 niveaux à 8 kg chacun."></td></tr>
+                  <tr><td><code>0001</code></td><td><input class="short" data-answer="8" placeholder="?" aria-label="masse pour 0001" data-indice1="120 kg répartis sur 15 intervalles." data-indice2="120 ÷ 15."></td>
+                      <td><code>1001</code></td><td><input class="short" data-answer="72" placeholder="?" aria-label="masse pour 1001" data-indice1="64 + le pas." data-indice2="64 + 8."></td></tr>
+                  <tr><td><code>0010</code></td><td><input class="short" data-answer="16" placeholder="?" aria-label="masse pour 0010" data-indice1="Deux fois le pas." data-indice2="8 + 8."></td>
+                      <td><code>1010</code></td><td><input class="short" data-answer="80" placeholder="?" aria-label="masse pour 1010" data-indice1="72 + le pas." data-indice2="72 + 8."></td></tr>
+                  <tr><td><code>0011</code></td><td><input class="short" data-answer="24" placeholder="?" aria-label="masse pour 0011" data-indice1="Trois fois le pas." data-indice2="16 + 8."></td>
+                      <td><code>1011</code></td><td><input class="short" data-answer="88" placeholder="?" aria-label="masse pour 1011" data-indice1="80 + le pas." data-indice2="80 + 8."></td></tr>
+                  <tr><td><code>0100</code></td><td><input class="short" data-answer="32" placeholder="?" aria-label="masse pour 0100" data-indice1="Quatre fois le pas." data-indice2="24 + 8."></td>
+                      <td><code>1100</code></td><td><input class="short" data-answer="96" placeholder="?" aria-label="masse pour 1100" data-indice1="88 + le pas." data-indice2="88 + 8."></td></tr>
+                  <tr><td><code>0101</code></td><td><input class="short" data-answer="40" placeholder="?" aria-label="masse pour 0101" data-indice1="Cinq fois le pas." data-indice2="32 + 8."></td>
+                      <td><code>1101</code></td><td><input class="short" data-answer="104" placeholder="?" aria-label="masse pour 1101" data-indice1="96 + le pas." data-indice2="96 + 8."></td></tr>
+                  <tr><td><code>0110</code></td><td><input class="short" data-answer="48" placeholder="?" aria-label="masse pour 0110" data-indice1="Six fois le pas." data-indice2="40 + 8."></td>
+                      <td><code>1110</code></td><td><input class="short" data-answer="112" placeholder="?" aria-label="masse pour 1110" data-indice1="104 + le pas." data-indice2="104 + 8."></td></tr>
+                  <tr><td><code>0111</code></td><td><input class="short" data-answer="56" placeholder="?" aria-label="masse pour 0111" data-indice1="Sept fois le pas." data-indice2="48 + 8."></td>
+                      <td><code>1111</code></td><td>120</td></tr>
+                </table>
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">3 · Quel est le « pas » de cette numérisation, c'est-à-dire l'écart en kg entre deux niveaux consécutifs ?</div>
+              <div class="cloze" data-cloze>
+                Le pas se calcule par p = 120 ÷ (16 − 1) : les 16 niveaux laissent <input class="short" data-answer="15" placeholder="?" aria-label="nombre d'intervalles" data-variantes="quinze" data-indice1="Entre 16 poteaux d'une clôture, combien d'intervalles ?" data-indice2="Un de moins que le nombre de niveaux."> intervalles. Le pas vaut donc <input class="short" data-answer="8" placeholder="?" aria-label="valeur du pas en kg" data-variantes="8 kg|8kg" data-indice1="120 ÷ 15." data-indice2="Deux fois quatre."> kg.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Une masse de 45 kg"
+                 data-focus-question="En supposant que la valeur est arrondie au niveau le plus proche lorsqu'elle est numérisée, quelle valeur binaire prendra une masse de 45 kg ? Quelle est l'imprécision générée par cette numérisation ?"
+                 data-focus-max="600" data-focus-min="20" data-focus-code="COD-2b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">4 · Quelle valeur binaire prendra une masse de 45 kg ? Quelle est l'imprécision générée ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                La valeur la plus proche de 45 kg stockée par le pèse-personne est <b>48 kg</b> — c'est donc cette valeur de 48 kg qui sera conservée en mémoire, sous le code <code>0110</code>. Il en résulte une <b>imprécision de 3 kg</b>, soit une erreur de <b>7 % environ</b>.
+              </div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Et sur 8 bits ?"
+                 data-focus-question="Supposons maintenant que cette numérisation se fasse sur 8 bits au lieu de 4. Quel est le pas de cette nouvelle numérisation ? Quel est l'avantage, et quel est l'inconvénient d'une plus grande profondeur d'échantillonnage ?"
+                 data-focus-max="700" data-focus-min="20" data-focus-code="COD-2c">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">5 · Quel est le pas si l'on numérise sur 8 bits ? Avantage et inconvénient d'une plus grande profondeur ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                En 8 bits, il y a <b>256 valeurs</b> disponibles au lieu de 16. Le pas devient p = 120 ÷ 255 ≈ <b>0,47 kg</b>. L'imprécision n'excède jamais la <b>moitié du pas</b> : elle est donc bien moins importante en 8 bits qu'en 4 bits. En revanche, la quantité de données à stocker est <b>deux fois plus grande</b> par mesure.
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              La correction d'origine écrit «&nbsp;<b>la quantité de données à stocker est 16 fois plus
+              grande</b>&nbsp;». Ce n'est pas le cas&nbsp;: on passe de 4 à 8 bits par valeur, donc la
+              taille <b>double</b>. Ce qui est multiplié par 16, c'est le <b>nombre de niveaux</b>
+              disponibles (16 → 256). La correction affichée ci-dessus dit «&nbsp;deux fois plus
+              grande&nbsp;». <b>À confirmer</b>, et à corriger dans le PDF si tu le rediffuses.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 — format CD -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-format-cd">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Le format « CD », un standard de numérisation</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> connaître les deux valeurs du format CD, et savoir calculer le nombre de bits d'une seconde de musique.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="retain">Le format <b>« CD »</b> correspond à une fréquence d'échantillonnage de <b>44,1 kHz</b> (44 100 mesures chaque seconde), codée sur <b>16 bits</b> (soit 65 536 valeurs possibles).</div>
+
+            <p style="font-size:14.5px;margin:10px 0 4px">Une seconde au format CD correspond donc à <b>44 100 × 16 = 705 600 bits</b> — à multiplier par deux s'il s'agit d'un son <b>stéréo</b>.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-principe-du-cd.jpg" alt="Schéma d'un CD vu de dessous et par la tranche, avec les creux et les plats lus par le faisceau laser, et l'épaisseur des couches" loading="lazy">
+              <figcaption>Le principe du <b>Compact Disc</b>. Le laser lit une succession de <b>creux</b> (<i lang="en">pits</i>) et de <b>plats</b> (<i lang="en">lands</i>) gravés en spirale : chaque transition code un bit.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Applique le format CD.</div>
+              <div class="cloze" data-cloze>
+                Au format CD, la fréquence d'échantillonnage vaut <input class="short" data-answer="44100" placeholder="?" aria-label="fréquence d'échantillonnage du CD en Hz" data-variantes="44 100|44,1 khz|44100 hz|44 100 hz" data-indice1="On la donne d'habitude en kHz : 44,1 kHz." data-indice2="44,1 kHz = 44,1 × 1000 Hz."> Hz et la résolution est de <input class="short" data-answer="16" placeholder="?" aria-label="résolution du CD en bits" data-variantes="16 bits" data-indice1="C'est le nombre de bits par mesure." data-indice2="Deux octets."> bits, soit <input class="short" data-answer="65536" placeholder="?" aria-label="nombre de valeurs" data-variantes="65 536|65536 valeurs" data-indice1="2 puissance 16." data-indice2="256 × 256."> valeurs possibles. Une seconde de son <b>mono</b> pèse donc <input class="short" data-answer="705600" placeholder="?" aria-label="nombre de bits par seconde en mono" data-variantes="705 600|705600 bits" data-indice1="Multiplie la fréquence d'échantillonnage par la résolution." data-indice2="44 100 × 16."> bits.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Le cours source enchaîne ici sur une écoute comparée à <b>16, 32, 64, 128 et 256
+              kbps</b> («&nbsp;Et si on écoutait&nbsp;?&nbsp;»), sans fichiers joints. C'est une très
+              bonne activité de classe, mais elle demande des <b>extraits sonores</b>&nbsp;: à préparer
+              (un même extrait exporté à cinq débits), puis à déposer dans
+              <code>assets/</code>. Repérée dans le fichier de vérification.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.4 — exercice 3 -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-ex3">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Exercice 3 — conversion analogique / numérique</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> lire les deux réglages directement sur un graphique.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Sur le graphique ci-dessous, on a représenté en <b>bleu</b> la tension amplifiée <b>u<sub>a</sub>(t)</b> issue d'un microphone, et en <b>rouge</b> la tension <b>u<sub>n</sub>(t)</b> envoyée par la carte son à son module de conversion en binaire.</p>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-exercice-conversion-analogique-numerique.jpg" alt="Graphique de tension en fonction du temps en microsecondes : une courbe bleue lisse et un tracé rouge en escalier qui la suit" loading="lazy">
+              <figcaption>En bleu <b>u<sub>a</sub>(t)</b>, en rouge <b>u<sub>n</sub>(t)</b>. L'axe des temps est gradué en <b>microsecondes</b>.<span class="src">Graphique du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field" data-focus
+                 data-focus-titre="Analogique ou numérique ?"
+                 data-focus-question="Les tensions u_a(t) et u_n(t) sont-elles numériques ou analogiques ? Justifie."
+                 data-focus-max="500" data-focus-min="20" data-focus-code="COD-2d">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">1 · Les tensions u<sub>a</sub>(t) et u<sub>n</sub>(t) sont-elles numériques ou analogiques ? Justifier.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                La tension <b>u<sub>a</sub>(t) est analogique</b> : son tracé est <b>continu</b>. La tension <b>u<sub>n</sub>(t) est numérique</b>, car elle prend des <b>valeurs discrètes</b> — d'où son allure en escalier.
+              </div>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">2 · Combien de valeurs différentes peut prendre le signal u<sub>n</sub> sur ce graphique ? Combien de bits sont nécessaires pour coder cet ensemble de valeurs ?</div>
+              <div class="cloze" data-cloze>
+                Le signal u<sub>n</sub> peut prendre <input class="short" data-answer="16" placeholder="?" aria-label="nombre de valeurs" data-variantes="16 valeurs|seize" data-indice1="Compte les paliers horizontaux disponibles sur l'axe des tensions." data-indice2="C'est une puissance de 2, entre 8 et 32."> valeurs ; il est donc codé sur <input class="short" data-answer="4" placeholder="?" aria-label="nombre de bits" data-variantes="4 bits|quatre" data-indice1="Cherche n tel que 2^n donne le nombre de valeurs trouvé." data-indice2="2⁴ = 16."> bits.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="La fréquence d'échantillonnage du graphique"
+                 data-focus-question="Détermine la fréquence d'échantillonnage du convertisseur. Donne ta lecture de la période d'échantillonnage, puis ton calcul."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="COD-2e">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">3 · Déterminer la fréquence d'échantillonnage du convertisseur.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Une graduation sur l'axe des abscisses correspond à <b>20 μs</b>. Puisqu'une valeur est codée par graduation :<br>
+                T<sub>e</sub> = 20 μs = 2,0 × 10⁻⁵ s<br>
+                d'où f<sub>e</sub> = 1 / T<sub>e</sub> = 1 / (2,0 × 10⁻⁵) = <b>50 000 Hz = 50 kHz</b>.
+              </div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Se rapprocher du signal d'origine"
+                 data-focus-question="Comment faudrait-il modifier les paramètres d'échantillonnage (profondeur et fréquence) pour que le signal u_n se rapproche davantage de u_a ?"
+                 data-focus-max="500" data-focus-min="20" data-focus-code="COD-2f">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">4 · Comment modifier les paramètres pour que u<sub>n</sub> se rapproche de u<sub>a</sub> ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Il faudrait <b>augmenter la fréquence d'échantillonnage</b> (en hertz) — les marches deviennent plus étroites — <b>ou la résolution</b> (en bits) — les marches deviennent moins hautes. Les deux ensemble, idéalement. Dans les deux cas, le fichier grossit.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 3 ===================== -->
+  <section class="seance locked" id="s3" data-seance="3">
+    <div class="seance-head">
+      <h2><span class="s-num">S3</span>Stockage et compression</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Combien pèse une chanson, et pourquoi celle de ton téléphone pèse cent fois moins que celle d'un CD.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 3.1 -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-octets">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Octets « classiques » ou « binaires »</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir pourquoi ton ordinateur affiche deux nombres différents pour la même taille de fichier.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">La taille d'un fichier est mesurée en <b>octet</b> : 1 octet (o) = <b>8 bits</b>, soit 256 valeurs possibles. Les multiples des octets peuvent être calculés de <b>deux manières</b> :</p>
+            <table class="doc-table">
+              <tr><th>Manière</th><th>Règle</th><th>Exemples</th></tr>
+              <tr><td><b>Classique</b> (décimale)</td><td>on multiplie par 1 000</td><td>1 ko = 10³ o = 1 000 o · 1 Mo = 10⁶ o</td></tr>
+              <tr><td><b>Binaire</b></td><td>on multiplie par 1 024</td><td>1 kio = 2¹⁰ o = 1 024 o · 1 Mio = 2²⁰ o = 1 048 576 o</td></tr>
+            </table>
+            <p class="doc-note">Remarque le « <b>i</b> » qui apparaît lorsqu'on exprime la taille en multiples binaires : <b>kio</b>, <b>Mio</b>, <b>Gio</b>. On utilisera dans la suite du cours la <b>manière classique</b>.</p>
+
+            <div class="block-label">Exercice 4 — octets « classiques » ou « binaires »</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Dans le document ci-contre, tu trouves ce qu'affiche l'ordinateur du professeur lorsqu'il ouvre les <b>propriétés</b> du fichier <code>.pptx</code> de ce cours.</p>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-proprietes-fichier.jpg" alt="Fenêtre des propriétés d'un fichier PowerPoint sous Windows, indiquant une taille de 1,47 Mo (1 543 029 octets)" loading="lazy">
+              <figcaption>Les propriétés du fichier de ce cours. Windows affiche <b>deux</b> nombres pour la même taille — et c'est là toute la question.<span class="src">Copie d'écran de M. Van Hoorde · le chemin du fichier a été masqué (le dépôt est public)</span></figcaption>
+            </figure>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">1 · Retrouve la taille du fichier. <b>Note bien</b> que deux valeurs sont données : le « Mo » affiché par Windows est en fait un <b>Mio</b>.</div>
+              <div class="cloze" data-cloze>
+                La taille du fichier est de <input class="short" data-answer="1543029" placeholder="?" aria-label="taille en octets" data-variantes="1 543 029|1543029 octets|1 543 029 octets" data-indice1="C'est le nombre entre parenthèses sur la copie d'écran." data-indice2="Il commence par 1 543…"> octets, ou <input class="short" data-answer="1,47" placeholder="?" aria-label="taille en Mio" data-variantes="1.47|1,47 mio|1,47 mo" data-indice1="C'est le premier nombre affiché par Windows." data-indice2="Entre 1 et 2, avec deux décimales."> Mio.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Convertir en Mo puis en Mio"
+                 data-focus-question="Exprime la taille du fichier en Mo (manière classique). Puis retrouve la valeur binaire (Mio) par le calcul. Détaille."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="COD-3a">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">2 et 3 · Exprimer la taille en Mo, puis retrouver la valeur binaire (Mio) par le calcul.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                En Mo (classique) : 1 543 029 o = <b>1,543029 Mo</b> (on divise par 10⁶).<br>
+                En Mio (binaire) : 1 Mio = 2²⁰ o = 1 048 576 o, donc 1 543 029 ÷ 1 048 576 ≈ <b>1,47 Mio</b>.<br>
+                C'est le même fichier. Seule l'unité change — et c'est pour cela qu'un disque « de 500 Go » n'affiche que 465 Gio une fois branché.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.2 -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-taille">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Calculer la taille d'un fichier non compressé</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> connaître la formule, savoir nommer ses quatre grandeurs avec leurs unités, et l'appliquer.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">La formule<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="formule">Taille du fichier = f<sub>e</sub> × Δt × N × c
+              <span class="u">résultat en bits</span>
+            </div>
+
+            <div class="block-label">Exercice 5 — nommer les variables</div>
+            <div class="field">
+              <span class="field-type">Tableau à compléter</span>
+              <div class="field-q">À l'aide de ton cours, retrouve le <b>nom</b> et l'<b>unité</b> de chaque variable de la formule.</div>
+              <div class="cloze" data-cloze>
+                <table class="doc-table">
+                  <tr><th>Symbole</th><th>Nom de la grandeur</th><th>Unité</th></tr>
+                  <tr><td><b>f<sub>e</sub></b></td>
+                      <td><input data-answer="fréquence d'échantillonnage" placeholder="?" aria-label="nom de fe" data-variantes="frequence d'echantillonnage|fréquence d'échantillonage|la fréquence d'échantillonnage" data-indice1="C'est le nombre de mesures par seconde." data-indice2="Deux mots : « fréquence » + le mot qui décrit l'opération de mesure régulière."></td>
+                      <td><input class="short" data-answer="Hz" placeholder="?" aria-label="unité de fe" data-variantes="hertz|hz|s^-1|s-1" data-indice1="L'unité de toutes les fréquences." data-indice2="Son symbole s'écrit avec deux lettres, la première en majuscule."></td></tr>
+                  <tr><td><b>Δt</b></td>
+                      <td><input data-answer="durée du fichier" placeholder="?" aria-label="nom de delta t" data-variantes="durée|la durée|durée de l'enregistrement|durée du son" data-indice1="C'est combien de temps dure la musique." data-indice2="Un seul mot suffit : la…"></td>
+                      <td><input class="short" data-answer="s" placeholder="?" aria-label="unité de delta t" data-variantes="seconde|secondes|sec" data-indice1="L'unité de temps du Système international." data-indice2="Une seule lettre."></td></tr>
+                  <tr><td><b>N</b></td>
+                      <td><input data-answer="résolution" placeholder="?" aria-label="nom de N" data-variantes="resolution|profondeur|nombre de bits|résolution de numérisation|profondeur de numérisation" data-indice1="C'est le nombre de bits par valeur mesurée." data-indice2="Le mot du cours commence par « réso »."></td>
+                      <td><input class="short" data-answer="bits" placeholder="?" aria-label="unité de N" data-variantes="bit|b" data-indice1="Ce n'est pas une unité de temps ni de fréquence." data-indice2="La plus petite unité d'information."></td></tr>
+                  <tr><td><b>c</b></td>
+                      <td><input data-answer="nombre de canaux" placeholder="?" aria-label="nom de c" data-variantes="canaux|nombre de voies|le nombre de canaux" data-indice1="Il vaut 1 en mono et 2 en stéréo." data-indice2="« nombre de … » — le mot désigne les voies sonores."></td>
+                      <td><input class="short" data-answer="1 ou 2" placeholder="?" aria-label="valeurs de c" data-variantes="sans unité|aucune|1 ou 2 (mono ou stéréo)|mono=1 stéréo=2|1;2" data-indice1="Ce n'est pas vraiment une unité : c'est un simple nombre." data-indice2="Mono = 1, stéréo = 2 : écris « 1 ou 2 »."></td></tr>
+                </table>
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Exercice 6 — taille d'un fichier</div>
+            <div class="field" data-focus
+                 data-focus-titre="45 minutes au format CD"
+                 data-focus-question="Calcule la taille d'un fichier son non compressé contenant 45 minutes de musique stéréo au format CD. Donne ton calcul complet et convertis en Mo."
+                 data-focus-max="700" data-focus-min="20" data-focus-code="COD-3b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">1 · Calculer la taille d'un fichier son non compressé contenant 45 minutes de musique stéréo au format CD.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Pour le format CD : f<sub>e</sub> = 44,1 kHz = 44,1 × 10³ Hz et N = 16 bits.<br>
+                Δt = 45 × 60 = <b>2 700 s</b> · c = 2 (stéréo).<br>
+                Taille = 44,1 × 10³ × 2 700 × 16 × 2 = <b>3 810 240 000 bits</b> = 476 280 000 o = <b>476,28 Mo</b> ≈ 454,22 Mio.
+              </div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="45 minutes au format studio"
+                 data-focus-question="Même question pour le format « studio » : fe = 192 kHz, résolution de 3 octets, stéréo."
+                 data-focus-max="700" data-focus-min="20" data-focus-code="COD-3c">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">2 · Même question pour le format « studio » (f<sub>e</sub> = 192 kHz, 3 octets par valeur, stéréo).</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                f<sub>e</sub> = 192 kHz = 192 × 10³ Hz et N = 3 octets = 3 × 8 = <b>24 bits</b>.<br>
+                Δt = 2 700 s · c = 2.<br>
+                Taille = 192 × 10³ × 2 700 × 24 × 2 = 2,48832 × 10¹⁰ bits = 3 110 400 000 o = <b>3,1104 Go</b> ≈ 2,97 Gio.<br>
+                Presque <b>sept fois</b> le fichier CD — pour la même musique.
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              Le piège de l'exercice 6.2 est l'énoncé «&nbsp;<b>N = 8 o</b>&nbsp;» du PDF source, qui doit
+              se lire «&nbsp;<b>3 octets</b>&nbsp;» (le calcul de la correction fait bien 3 × 8 = 24
+              bits). L'énoncé a été réécrit ici en «&nbsp;3 octets par valeur&nbsp;» pour lever
+              l'ambiguïté. <b>À confirmer.</b>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.3 -->
+      <div class="step" data-step data-gate data-cle="es-t2c2-compression">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Compresser : avec ou sans perte</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir calculer un taux de compression, et distinguer une compression <b>avec</b> perte d'une compression <b>sans</b> perte.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">À l'origine — milieu des années 80, avec la création des CD — les fichiers son <b>n'étaient pas compressés</b> : la compression et la décompression au moment de la lecture demandent une puissance de calcul qui n'existait pas alors. Le format <b>wav</b> est un format non compressé.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le problème de ces fichiers, c'est qu'ils sont <b>très volumineux</b> — plus de <b>300 Mo par heure</b> en son mono. Il faut donc beaucoup d'espace mémoire pour les stocker, et une connexion à large bande passante pour les écouter en streaming. D'où l'apparition des <b>formats de compression</b>. Il en existe de deux types.</p>
+
+            <div class="block-label">Le taux de compression<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Le <b>taux de compression τ</b> est le <b>pourcentage de volume mémoire perdu</b> lors de la compression. Si un fichier non compressé fait 100 Mo et qu'après compression il ne fait plus que 20 Mo, le taux de compression est de <b>80 %</b>.</div>
+            <div class="formule">τ = 1 − (Taille compressée / Taille non compressée)
+              <span class="u">à multiplier par 100 pour l'exprimer en pourcentage</span>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q"><b>Exercice 7</b> — retrouve par le calcul le taux de compression annoncé dans le texte.</div>
+              <div class="cloze" data-cloze>
+                τ = (1 − 20×10⁶ / 100×10⁶) × 100 = <input class="short" data-answer="80" placeholder="?" aria-label="taux de compression en pourcentage" data-variantes="80 %|80%|80 pour cent" data-indice1="20 divisé par 100 fait 0,2 ; il reste à faire 1 − 0,2, puis ×100." data-indice2="Le fichier a perdu les quatre cinquièmes de son poids."> %.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">1) Compression AVEC perte — MP3, AAC…</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Lors de la compression avec perte, une quantité plus ou moins importante d'information est <b>perdue</b>. L'algorithme est conçu de telle manière que cette perte soit <b>le moins audible possible</b>.</p>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c2/t2c2-spectres-mp3-debits.jpg" alt="Quatre spectres de fréquences comparés : signal original, MP3 256, MP3 192 et MP3 128 ; les hautes fréquences disparaissent progressivement" loading="lazy">
+              <figcaption>Lors d'une compression avec perte, on choisit de supprimer <b>avant tout ce qui ne s'entend pas ou peu</b>. Ici, les <b>hautes fréquences</b> : regarde le mur qui apparaît vers 16 kHz en MP3 192, et dès 13 kHz en MP3 128. La même logique s'applique aux graves inaudibles en stéréo (passés en mono) ou aux fréquences <b>masquées</b> par d'autres, plus intenses.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le taux de compression de ces formats est <b>paramétrable</b> par l'utilisateur. Plus ce taux est important, plus la perte de qualité sonore est importante. En MP3, les taux les plus courants sont <b>128 kb/s</b>, <b>256 kb/s</b> et <b>320 kb/s</b>.</p>
+            <p class="doc-note">La différence entre les formats de compression tient à leur statut « <b>ouvert</b> » ou « <b>propriétaire</b> », et à leur capacité à offrir un meilleur rapport qualité/taille. Le MP3 est dominant pour des raisons <b>historiques</b> — donc de compatibilité des lecteurs — mais ce n'est pas le meilleur : à ce jour, c'est <b>OGG Vorbis</b>.</p>
+
+            <div class="block-label">2) Compression SANS perte — FLAC…</div>
+            <p style="font-size:14.5px;margin:4px 0 10px"><b>FLAC</b> : <i lang="en">Free Lossless Audio Codec</i>. Ce sont des algorithmes de compression qui <b>ne détruisent pas d'information</b> : il est possible de récupérer l'intégralité des informations — et donc de la qualité du son — contenues dans le fichier non compressé. Leur taux de compression est cependant bien moindre que celui des formats avec perte : <b>20 à 40 %</b>.</p>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Le cours source développe le sigle FLAC en «&nbsp;<b>Fast</b> Lossless Audio Codec&nbsp;».
+              Le sigle officiel est «&nbsp;<b>Free</b> Lossless Audio Codec&nbsp;» — c'est écrit ainsi
+              par le projet lui-même. Corrigé ci-dessus, <b>à confirmer</b>.
+            </div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="COD-3d">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Un fichier de 80 Mo est compressé et n'en fait plus que 20. Quel est le taux de compression ?",
+  "o": [
+   "25 %",
+   "60 %",
+   "75 %",
+   "400 %"
+  ],
+  "r": 2,
+  "c": "τ = (1 − 20/80) × 100 = (1 − 0,25) × 100 = <b>75 %</b>. Le taux mesure ce qui a été <b>perdu</b>, pas ce qui reste : 25 % serait la proportion conservée."
+ },
+ {
+  "q": "Quelle est la différence entre une compression avec perte et sans perte ?",
+  "o": [
+   "Sans perte, on peut retrouver l'intégralité du fichier d'origine ; avec perte, non",
+   "Sans perte, le fichier ne diminue pas du tout de taille",
+   "Avec perte, le fichier devient illisible sur certains appareils",
+   "Il n'y a aucune différence : les deux mots désignent la même chose"
+  ],
+  "r": 0,
+  "c": "C'est le point décisif : le <b>sans perte</b> (FLAC) est réversible, on récupère exactement le fichier d'origine. Le <b>avec perte</b> (MP3) jette de l'information pour de bon — mais compresse beaucoup plus."
+ },
+ {
+  "q": "Pourquoi le MP3 supprime-t-il d'abord les hautes fréquences ?",
+  "o": [
+   "Parce qu'elles occupent la plus grande partie du fichier",
+   "Parce qu'elles sont peu ou pas audibles par l'oreille humaine",
+   "Parce qu'elles abîment les haut-parleurs à la lecture",
+   "Parce que les lecteurs anciens ne savent pas les restituer"
+  ],
+  "r": 1,
+  "c": "L'algorithme mise sur les limites de l'<b>oreille</b> : on jette d'abord ce qui ne s'entend pas ou peu — hautes fréquences, graves inaudibles en stéréo, sons masqués par d'autres plus intenses."
+ },
+ {
+  "q": "Parmi ces affirmations, lesquelles sont vraies ? Coche tout ce qui convient.",
+  "o": [
+   "Le format wav n'est pas compressé du tout : il stocke toutes les valeurs numérisées",
+   "Le FLAC compresse nettement moins que le MP3, mais il ne perd aucune information",
+   "Le MP3 est le meilleur format de compression existant aujourd'hui, tous critères confondus",
+   "Le taux de compression du MP3 est réglable par l'utilisateur, entre 128 et 320 kb/s"
+  ],
+  "r": [0, 1, 3],
+  "c": "Le <b>wav</b> est le format non compressé de référence ; le <b>FLAC</b> compresse de 20 à 40 % sans perte ; le <b>MP3</b> se règle (128, 256, 320 kb/s). En revanche, le MP3 n'est pas le meilleur : il domine pour des raisons <b>historiques</b> de compatibilité."
+ }
+]
+              </script>
+            </div>
+
+            <div class="block-label">Le bilan du chapitre<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+            <div class="retain" data-bilan-wrap>
+              <ul style="margin:0;padding-left:18px">
+                <li>Un son est un signal <b>analogique</b> (continu) ; un fichier est <b>numérique</b> (une suite de valeurs discrètes). Le micro et la <b>carte son</b> font le passage.</li>
+                <li>Deux réglages commandent la numérisation : la <b>fréquence d'échantillonnage f<sub>e</sub></b> (mesures par seconde, f<sub>e</sub> = 1/T<sub>e</sub>) et la <b>résolution N</b> (bits par mesure, 2<sup>N</sup> niveaux).</li>
+                <li>Le <b>format CD</b> : 44,1 kHz sur 16 bits.</li>
+                <li>La taille d'un fichier non compressé vaut <b>f<sub>e</sub> × Δt × N × c</b>, en bits.</li>
+                <li>La compression <b>avec perte</b> (MP3) jette ce qui s'entend le moins ; la compression <b>sans perte</b> (FLAC) conserve tout, mais compresse moins. Le <b>taux τ</b> mesure ce qui a été perdu.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.4 — bonus -->
+      <div class="step" data-step data-cle="es-t2c2-bonus-s3">
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
+      <div class="bonus-wrap" data-bonus>
+        <div class="bonus-head" data-bonus-toggle>
+          <span class="ix">3.4</span>
+          <span class="bl">Pour aller plus loin</span>
+          <span class="bonus-tag">hors 100&nbsp;% · non évalué</span>
+          <span class="chev">▸</span>
+        </div>
+        <div class="bonus-body">
+          <div class="block-label">Comment un CD stocke-t-il des bits ?</div>
+          <figure class="ill"><span class="loupe">⤢ agrandir</span>
+            <img src="../assets/img/es/1re-es-t2-c2/t2c2-pits-lands-cd.jpg" alt="Bande de cases de 0,278 micromètre représentant les creux et les plats d'un CD, et en dessous la suite binaire correspondante" loading="lazy">
+            <figcaption>Sur un CD, chaque case fait <b>0,278 μm</b>. Une transition creux/plat code un <b>1</b>, l'absence de transition un <b>0</b>. La suite binaire du bas est ce que lit réellement le laser.<span class="src">Image reprise du cours de M. Van Hoorde — provenance à confirmer</span></figcaption>
+          </figure>
+
+          <div class="block-label">Six vidéos pour creuser</div>
+          <div class="reserve" style="min-height:190px;max-width:620px">
+            <div class="rf">6 liens vidéo cités dans le cours source, sans URL récupérable</div>
+            <div class="rd">Le PDF cite&nbsp;: «&nbsp;Quickie #01 — Le CD&nbsp;» et «&nbsp;#11 — Le MP3&nbsp;» (Le Point Genius)&nbsp;; «&nbsp;2 MIN POUR… les problèmes de qualité du MP3&nbsp;» (Audiofanzine)&nbsp;; «&nbsp;La Compression | Décompression de Données&nbsp;» (Théorisons)&nbsp;; «&nbsp;Audio numérique compressée&nbsp;: MP3 vs FLAC&nbsp;» (La Belle Écoute)&nbsp;; et les trois vidéos de révision d'Éric Menonville (SEM03-01, 02 et 03). <b>Adresses à fournir</b>, et à intégrer en façade « clic pour charger ».</div>
+            <div class="rr">6 à 8 liens externes · à fournir</div>
+          </div>
+
+          <div class="field" data-share data-share-note>
+            <span class="field-type">Réflexion perso — non notée</span>
+            <div class="field-q">Tes musiques, tu les écoutes en streaming, en MP3, en FLAC ? Entends-tu la différence ? Et si non — cela change-t-il quelque chose que de l'information ait été jetée ?</div>
+            <textarea placeholder="Écris ce que tu veux : personne ne corrige, personne ne note." aria-label="Réflexion personnelle"></textarea>
+            <div class="verdict"></div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Thème 2, chapitre 2 — Le son, une information à coder.</b> QCM, textes à trous et tableaux corrigés <b>en direct</b> ; réponses rédigées <b>envoyées en correction</b> ; réflexions perso <b>non notées</b>. 🧭 Un doute sur le fonctionnement du cours&nbsp;? Revois <a href="1re-es-t1-c1-nucleosynthese.html" style="color:var(--link)">le chapitre&nbsp;1</a>, qui l'explique en entier. ⚠ Dans cette version, <b>ta progression n'est pas encore enregistrée</b>&nbsp;: pense à télécharger ta fiche avant de partir.
+  </footer>
+</div>
+
+<script type="application/json" id="dico-source">
+[
+ {
+  "mot": "Signal analogique",
+  "origine": "ES · Le son, une information à coder",
+  "def": "Un signal qui varie de manière continue au cours du temps : entre deux valeurs, il prend toutes les valeurs intermédiaires."
+ },
+ {
+  "mot": "Signal numérique",
+  "origine": "ES · Le son, une information à coder",
+  "def": "Une suite de nombres qui ne peuvent prendre qu'un nombre fini de valeurs prédéfinies (des valeurs discrètes)."
+ },
+ {
+  "mot": "Échantillonnage",
+  "origine": "ES · Le son, une information à coder",
+  "def": "La mesure du signal à intervalle de temps régulier, effectuée par la carte son."
+ },
+ {
+  "mot": "Période d'échantillonnage",
+  "origine": "ES · Le son, une information à coder",
+  "def": "Notée Te : l'intervalle de temps entre deux mesures successives, en secondes."
+ },
+ {
+  "mot": "Fréquence d'échantillonnage",
+  "origine": "ES · Le son, une information à coder",
+  "def": "Notée fe : le nombre de mesures par seconde, en hertz. fe = 1/Te."
+ },
+ {
+  "mot": "Résolution de numérisation",
+  "origine": "ES · Le son, une information à coder",
+  "def": "Le nombre de bits sur lesquels chaque valeur est codée. Sur N bits, 2^N niveaux sont disponibles. On dit aussi profondeur de numérisation."
+ },
+ {
+  "mot": "Pas de numérisation",
+  "origine": "ES · Le son, une information à coder",
+  "def": "L'écart entre deux niveaux consécutifs. Plus il est petit, plus la numérisation est fidèle."
+ },
+ {
+  "mot": "Bit",
+  "origine": "ES · Le son, une information à coder",
+  "def": "La plus petite unité d'information : elle vaut 0 ou 1."
+ },
+ {
+  "mot": "Octet",
+  "origine": "ES · Le son, une information à coder",
+  "def": "Huit bits, soit 256 valeurs possibles. C'est l'unité de taille des fichiers."
+ },
+ {
+  "mot": "Mo et Mio",
+  "origine": "ES · Le son, une information à coder",
+  "def": "1 Mo = 10⁶ octets (manière classique) ; 1 Mio = 2²⁰ = 1 048 576 octets (manière binaire). Le « i » signale le multiple binaire."
+ },
+ {
+  "mot": "Format CD",
+  "origine": "ES · Le son, une information à coder",
+  "def": "Le standard de numérisation du son : 44,1 kHz d'échantillonnage, sur 16 bits (65 536 valeurs)."
+ },
+ {
+  "mot": "Taux de compression",
+  "origine": "ES · Le son, une information à coder",
+  "def": "Noté τ : le pourcentage de volume mémoire perdu lors de la compression."
+ },
+ {
+  "mot": "Compression avec perte",
+  "origine": "ES · Le son, une information à coder",
+  "def": "MP3, AAC… : de l'information est définitivement jetée, en visant ce qui s'entend le moins. Taux réglable."
+ },
+ {
+  "mot": "Compression sans perte",
+  "origine": "ES · Le son, une information à coder",
+  "def": "FLAC… : rien n'est perdu, le fichier d'origine est intégralement récupérable. Compresse de 20 à 40 % seulement."
+ }
+]
+</script>
+<script src="../assets/js/sequence-snt.js?v=42"></script>
+
+</body>
+</html>

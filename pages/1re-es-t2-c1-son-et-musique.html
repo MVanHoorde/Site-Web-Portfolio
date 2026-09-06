@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ES 1re · Son et musique — Séquence élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- 🔴 Le client de base de données n'est PAS chargé ici : sans lui, le moteur
+     bascule sur son repli local, qui dit honnêtement « gardé pour cette
+     séance ». Le charger afficherait « connecte-toi pour enregistrer ton
+     travail » alors que rien ne serait enregistré. À rétablir au branchement,
+     avec data-sequence sur <body>. -->
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
+
+<!-- ============================================================
+     ENSEIGNEMENT SCIENTIFIQUE 1re — Thème 2 (numérotation Loïc),
+     chapitre 1 : « Son et musique ».
+     Sous-thèmes 4.1 (le son, phénomène vibratoire) et 4.2 (la musique,
+     ou l'art de faire entendre les nombres) du programme officiel.
+
+     🔴 CE CHAPITRE A CHANGÉ DE NATURE EN COURS DE CHANTIER.
+     Le brief ES1 §2bis annonçait le 4.1 comme « du contenu à créer », le
+     TP tournant de Loïc étant réputé absent des documents fournis. Il
+     était en fait dans le dépôt, sous un nom qui ne le disait pas :
+     « [Dossier] [Correction] Thème 2 - Chapitre 1 ». C'est un dossier
+     d'activités complet, avec corrigés : TP acoustique musicale,
+     activité résonance, TP corde de Melde, TP colonne d'air, exercices.
+     Ce chapitre est donc, comme les autres, un PORTAGE — pas une
+     création. Ce qui reste à écrire est signalé en .proposition.
+
+     Tourne sur le moteur des séquences SNT. 🔴 PAS DE BASE DE DONNÉES
+     dans cette version (brief ES1 §3.2).
+     ⚠ Ne pas réécrire ici le nom de ces fichiers avec leur extension,
+     même en commentaire : verifier.mjs cherche la chaîne « seances-
+     snt.js » dans TOUT le HTML, commentaires compris.
+     ============================================================ -->
+<style>
+  /* ---------- Cadre « proposition » — mécanisme du chantier ES1 ---------- */
+  .proposition{border:2px dashed var(--hist);border-radius:12px;
+    background:var(--hist-wash);padding:12px 15px;margin:14px 0;
+    font-size:13.5px;line-height:1.55;color:var(--ink)}
+  .proposition .pl{font-family:"IBM Plex Mono",monospace;font-size:11px;
+    letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+    color:var(--hist);display:flex;gap:7px;align-items:center;
+    margin-bottom:5px;flex-wrap:wrap}
+  .proposition p{margin:5px 0}
+  .proposition ul{margin:5px 0 0;padding-left:18px}
+
+  /* ---------- Cadre de réservation d'image ---------- */
+  .reserve{border:1.5px dashed var(--link);border-radius:8px;
+    background:repeating-linear-gradient(45deg,var(--surface-2) 0 8px,var(--surface) 8px 16px);
+    display:flex;flex-direction:column;justify-content:center;gap:3px;
+    padding:16px 10px;text-align:center;margin:12px auto}
+  .reserve .rf{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--link);word-break:break-all}
+  .reserve .rd{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
+  .reserve .rr{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+
+  /* ---------- Formule posée au centre ---------- */
+  .formule{text-align:center;font-family:"IBM Plex Mono",monospace;font-size:19px;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:14px 12px;margin:12px 0;color:var(--ink);overflow-x:auto}
+  .formule .u{font-size:12px;color:var(--ink-faint);display:block;margin-top:6px;
+    font-family:"IBM Plex Sans",system-ui,sans-serif}
+
+  /* ---------- Le tableau des fréquences de la gamme tempérée ---------- */
+  .gamme{font-size:12.5px}
+  .gamme td, .gamme th{padding:3px 5px;text-align:right;white-space:nowrap}
+  .gamme td:first-child, .gamme th:first-child{text-align:left;font-weight:600}
+  .gamme .oct{background:var(--link-wash)}
+  .tab-large{overflow-x:auto;margin:8px 0}
+
+  /* ---------- Étiquette de poste, pour le TP tournant ---------- */
+  .poste-num{display:inline-flex;align-items:center;gap:7px;
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.08em;
+    text-transform:uppercase;font-weight:700;color:var(--activity);
+    background:var(--activity-wash);border-radius:20px;padding:3px 11px;margin-bottom:6px}
+</style>
+
+</head><body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Enseignement scientifique · 1re · Son, musique et audition</div>
+    <h1 class="title">Son et musique <span class="tag">chapitre 1</span></h1>
+    <p class="lede">Pourquoi douze notes et pas treize ? Pourquoi deux instruments jouant la même note ne sonnent-ils pas pareil ? Tout tient dans une suite de nombres — et dans une corde qu'on peut tendre plus ou moins fort.</p>
+    <div class="themes">
+      <span class="theme-chip">Nucléosynthèse</span><span class="theme-chip">La radioactivité</span>
+      <span class="theme-chip">Les cristaux</span><span class="theme-chip on">Son et musique</span>
+      <span class="theme-chip">Le son, une information à coder</span><span class="theme-chip">La forme de la Terre</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>3 séances</b></span>
+      <span class="m">Durée <b>≈ 4 h 30</b></span>
+      <span class="m"><b>Séance 2 en TP tournant</b> — trois ateliers</span>
+    </div>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — toutes les séances sont ouvertes.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="1re-enseignement-scientifique.html">← Enseignement scientifique</a>
+    <a href="#s1"><span class="n">S1</span>Le son, phénomène vibratoire</a>
+    <a href="#s2" data-navlock="2"><span class="n">S2</span>TP — produire un son <span class="lockico">🔒</span></a>
+    <a href="#s3" data-navlock="3"><span class="n">S3</span>Les maths et la musique <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
+    <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
+  </div>
+
+  <!-- CHANTIER -->
+  <aside class="chantier decision">
+    <div class="cl">📌 Décision attendue — ce chapitre n'était pas celui qu'on croyait</div>
+    Le brief annonçait le sous-thème 4.1 comme <b>du contenu entièrement à créer</b>, ton TP
+    tournant étant réputé absent. Il était en fait déposé, sous un nom qui ne le disait
+    pas&nbsp;: <code>[Dossier] [Correction] Thème 2 - Chapitre 1.pdf</code> — un dossier
+    d'activités complet, corrigés compris. <b>Ce chapitre est donc un portage, pas une
+    création</b>, et il est nettement plus fourni que prévu. Ce qui reste réellement à écrire
+    (célérité, niveau sonore) est signalé en cadre violet, à la fin de la séance 1.
+  </aside>
+  <!-- /CHANTIER -->
+
+  <!-- ===================== SÉANCE 1 ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>Le son, phénomène vibratoire</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Les bases : ce qu'est un spectre, ce qui distingue un son pur d'un son complexe, ce qu'on appelle la hauteur — et pourquoi une note porte toujours plusieurs fréquences à la fois.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 -->
+      <div class="step" data-step data-gate data-cle="es-t2c1-spectre">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">L'analyse spectrale d'un son</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir lire un spectre en fréquence, et connaître la relation entre une harmonique et la fondamentale.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">L'être humain perçoit le monde à l'aide de <b>signaux porteurs d'information</b>, dont certains sont de nature <b>sonore</b>. De l'Antiquité jusqu'à nos jours, il a combiné les sons de manière harmonieuse pour en faire un art : la <b>musique</b>.</p>
+
+            <div class="block-label">Document 1 — l'analyse spectrale d'un son<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Un son est une <b>onde mécanique périodique</b>. Le mathématicien <b>Joseph Fourier</b> (1768-1830) a montré qu'un signal périodique de fréquence f₁ peut être décomposé en une <b>somme de signaux sinusoïdaux</b> : un de fréquence f₁ (la <b>fréquence fondamentale</b>) et d'autres de fréquences f<sub>n</sub>, <b>multiples</b> de la fondamentale (les <b>fréquences harmoniques</b>).</p>
+            <div class="formule">f<sub>n</sub> = n × f₁
+              <span class="u">n est un entier positif</span>
+            </div>
+            <div class="retain">L'ensemble de ces fréquences constitue le <b>spectre en fréquence</b> d'un son. La fréquence du <b>1<sup>er</sup> pic</b> correspond à la fréquence fondamentale — autrement dit à la <b>fréquence de la note jouée</b>. Les autres pics sont appelés <b>harmoniques</b>.</div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c1/t2c1-spectre-en-frequence.jpg" alt="Spectre en fréquence schématique : trois raies d'intensités décroissantes, la première étiquetée fréquence fondamentale" loading="lazy">
+              <figcaption>Un spectre en fréquence. Le <b>premier pic</b> donne la note ; les suivants sont ses <b>harmoniques</b>, et ce sont eux qui font qu'un violon ne sonne pas comme une flûte.<span class="src">Schéma du dossier d'activités de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+            <p class="doc-note">L'analyse spectrale est réalisée par un logiciel spécialisé — <b>Audacity</b> en salle — après un enregistrement.</p>
+
+            <div class="block-label">Document 2 — son pur et son complexe<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">Un <b>son pur</b> est un son dont le signal est <b>sinusoïdal</b>. Son spectre en fréquence ne présente qu'un <b>seul pic</b> : la fondamentale.<br>
+              La plupart des sons — dont ceux produits par un instrument jouant une seule note — sont bien <b>périodiques mais pas sinusoïdaux</b>. On parle alors de <b>sons complexes</b> : leur spectre présente <b>plusieurs pics</b>.</div>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c1/t2c1-son-pur.jpg" alt="À gauche une sinusoïde régulière de période T, à droite un spectre à une seule raie" loading="lazy">
+              <figcaption><b>Son pur</b> : signal sinusoïdal à gauche, <b>une seule raie</b> à droite.<span class="src">Schéma du dossier d'activités de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c1/t2c1-son-complexe.jpg" alt="À gauche un signal périodique mais très découpé, de période T, à droite un spectre à nombreuses raies étiquetées harmoniques" loading="lazy">
+              <figcaption><b>Son complexe</b> : le signal se répète bien (même période T), mais il n'est pas sinusoïdal — et le spectre est peuplé d'<b>harmoniques</b>.<span class="src">Schéma du dossier d'activités de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">Document 3 — la hauteur d'un son<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">La <b>hauteur</b> d'un son est une <b>sensation physiologique</b>. Elle désigne la <b>fréquence</b>, en hertz (Hz), du son : elle correspond à la <b>fréquence fondamentale</b> du son joué, pur ou complexe. Un son est <b>grave</b> si sa fréquence est faible, <b>aigu</b> si elle est élevée.</div>
+
+            <div class="block-label">Vérifie ta compréhension</div>
+            <div class="qcmbox" data-code="SON-1a">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Sur un spectre en fréquence, à quoi correspond le premier pic ?",
+  "o": [
+   "À la fréquence fondamentale, c'est-à-dire à la note jouée",
+   "À la première harmonique, toujours plus aiguë que la note",
+   "Au bruit de fond de l'enregistrement",
+   "À l'intensité sonore, exprimée en décibels"
+  ],
+  "r": 0,
+  "c": "Le premier pic donne la <b>fondamentale</b>, donc la <b>note</b>. Les pics suivants, ses harmoniques, ne changent pas la note : ils changent le <b>timbre</b>."
+ },
+ {
+  "q": "Un son a une fondamentale à 220 Hz. Quelle est la fréquence de sa troisième harmonique ?",
+  "o": [
+   "223 Hz",
+   "440 Hz",
+   "660 Hz",
+   "880 Hz"
+  ],
+  "r": 2,
+  "c": "f₃ = 3 × f₁ = 3 × 220 = <b>660 Hz</b>. Les harmoniques sont des <b>multiples entiers</b> de la fondamentale — c'est ce qui permet de les reconnaître sur un spectre."
+ },
+ {
+  "q": "Comment reconnaît-on un son pur ? Coche tout ce qui convient.",
+  "o": [
+   "Son signal temporel, observé à l'oscilloscope, est une sinusoïde",
+   "Son spectre en fréquence ne présente qu'un seul pic significatif",
+   "Il est toujours plus fort et plus intense qu'un son complexe",
+   "Il est produit par un diapason, pas par un instrument de musique"
+  ],
+  "r": [0, 1, 3],
+  "c": "Deux critères complémentaires — <b>signal sinusoïdal</b> et <b>un seul pic</b> — et une observation : un instrument produit presque toujours un son <b>complexe</b>. L'intensité, elle, n'a rien à voir avec la pureté."
+ },
+ {
+  "q": "Deux instruments jouent la même note. Que peut-on dire de leurs spectres ?",
+  "o": [
+   "Ils sont identiques : même note, même spectre",
+   "Ils ont la même fondamentale, mais des harmoniques d'intensités différentes",
+   "Ils ont des fondamentales différentes mais les mêmes harmoniques",
+   "On ne peut rien en dire sans connaître le volume sonore"
+  ],
+  "r": 1,
+  "c": "Même note = <b>même fondamentale</b>. Ce qui change, c'est la <b>richesse en harmoniques</b> — et c'est exactement ce qu'on appelle le <b>timbre</b> : ce qui te fait reconnaître une guitare d'un piano les yeux fermés."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 -->
+      <div class="step" data-step data-gate data-cle="es-t2c1-audacity">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">TP — analyser des sons avec Audacity</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> enregistrer un son, en tracer le spectre, et identifier la note jouée.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Le mode d'emploi<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <table class="doc-table">
+              <tr><th>Geste</th><th>Comment faire</th></tr>
+              <tr><td><b>Enregistrer</b></td><td>Clique sur le <b>rond rouge</b> pour démarrer, sur le <b>carré</b> pour arrêter.</td></tr>
+              <tr><td><b>Agrandir un signal</b></td><td>Sélectionne une partie de la bande son (clique et glisse), puis clique sur l'icône <b>loupe</b> pour l'ajuster à la largeur de la fenêtre.</td></tr>
+              <tr><td><b>Tracer le spectre</b></td><td>Onglet <b>Analyse</b> → <b>Tracer le spectre…</b> Puis : <b>Taille</b> = 4 096, <b>Fonction</b> = Fenêtre Welch, <b>Axe</b> = Fréquence linéaire (ou logarithmique si tu vois mal).</td></tr>
+              <tr><td><b>Lire une fréquence</b></td><td>Place la souris près d'un pic : la valeur s'affiche en bas de la fenêtre, du type <code>Pic : 3515 Hz = −33,5 dB</code>.</td></tr>
+            </table>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c1/t2c1-audacity-spectre.jpg" alt="Copie d'écran de la fenêtre d'analyse spectrale d'Audacity, avec les réglages Taille, Fonction et Axe" loading="lazy">
+              <figcaption>La fenêtre d'analyse spectrale d'<b>Audacity</b>, avec les réglages à utiliser.<span class="src">Copie d'écran du dossier d'activités de M. Van Hoorde</span></figcaption>
+            </figure>
+
+            <div class="block-label">1 · Le diapason</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Enregistre le son produit par un <b>diapason</b>. Réalise le spectre en fréquence. Dépose ci-dessous une <b>copie d'écran</b> du signal <b>et</b> du spectre obtenus.</p>
+            <div class="field" data-depot data-depot-code="SON-D1">
+              <span class="field-type">Dépôt de copie d'écran · reste affichée</span>
+              <div class="field-q">Dépose ta copie d'écran du signal et du spectre du diapason.</div>
+              <div class="depot-zone">
+                <label class="btn ghost depot-btn">📷 Choisir ma copie d'écran<input type="file" accept="image/*" hidden aria-label="Déposer une copie d'écran du spectre du diapason"></label>
+                <div class="depot-apercu" data-depot-apercu></div>
+                <div class="verdict"></div>
+              </div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="La note du diapason"
+                 data-focus-question="Donne la hauteur du son émis par le diapason et détermine la note jouée. Explique comment tu l'as lue."
+                 data-focus-max="500" data-focus-min="20" data-focus-code="SON-1b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">2 · Donner la hauteur du son émis par le diapason. Déterminer la note jouée.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                On peut déterminer la <b>période</b> du signal pour en calculer la fréquence — mais il est encore plus simple de <b>repérer la fréquence du pic</b> sur le spectre. Cela donne <b>435 Hz</b>, soit une fréquence très proche d'un <b>La de 3ᵉ octave</b> (440 Hz).
+              </div>
+            </div>
+
+            <div class="block-label">Document 4 — la gamme tempérée<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Voici la valeur des fréquences fondamentales (en Hz) de chaque note, pour plusieurs octaves. Repère la ligne du <b>La</b> : chaque colonne double la précédente.</p>
+            <div class="tab-large">
+            <table class="doc-table gamme">
+              <tr><th>Note</th><th>−1</th><th>0</th><th>1</th><th>2</th><th class="oct">3</th><th>4</th><th>5</th><th>6</th></tr>
+              <tr><td>Do</td><td>16,35</td><td>32,7</td><td>65,4</td><td>130,8</td><td class="oct">262</td><td>523</td><td>1 047</td><td>2 093</td></tr>
+              <tr><td>Do♯</td><td>17,3</td><td>34,6</td><td>69,3</td><td>138,6</td><td class="oct">277</td><td>554</td><td>1 109</td><td>2 217</td></tr>
+              <tr><td>Ré</td><td>18,35</td><td>36,7</td><td>73,4</td><td>146,8</td><td class="oct">294</td><td>587</td><td>1 175</td><td>2 349</td></tr>
+              <tr><td>Ré♯ / Mi♭</td><td>19,45</td><td>38,9</td><td>77,8</td><td>155,6</td><td class="oct">311</td><td>622</td><td>1 245</td><td>2 489</td></tr>
+              <tr><td>Mi</td><td>20,6</td><td>41,2</td><td>82,4</td><td>164,8</td><td class="oct">330</td><td>659</td><td>1 319</td><td>2 637</td></tr>
+              <tr><td>Fa</td><td>21,8</td><td>43,7</td><td>87,3</td><td>174,6</td><td class="oct">349</td><td>698</td><td>1 397</td><td>2 794</td></tr>
+              <tr><td>Fa♯</td><td>23,1</td><td>46,2</td><td>92,5</td><td>185</td><td class="oct">370</td><td>740</td><td>1 480</td><td>2 960</td></tr>
+              <tr><td>Sol</td><td>24,5</td><td>49</td><td>98</td><td>196,0</td><td class="oct">392</td><td>784</td><td>1 568</td><td>3 136</td></tr>
+              <tr><td>Sol♯ / La♭</td><td>26</td><td>51,9</td><td>103,8</td><td>207,7</td><td class="oct">415</td><td>831</td><td>1 661</td><td>3 322</td></tr>
+              <tr><td><b>La</b></td><td>27,5</td><td>55</td><td>110,0</td><td>220</td><td class="oct"><b>440</b></td><td>880</td><td>1 760</td><td>3 520</td></tr>
+              <tr><td>La♯ / Si♭</td><td>29,1</td><td>58,3</td><td>116,5</td><td>233</td><td class="oct">466</td><td>932</td><td>1 865</td><td>3 729</td></tr>
+              <tr><td>Si</td><td>30,9</td><td>61,7</td><td>123,5</td><td>247</td><td class="oct">494</td><td>988</td><td>1 976</td><td>3 951</td></tr>
+            </table>
+            </div>
+
+            <div class="block-label">3 · Ta propre voix</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">En utilisant le microphone d'un casque, essaie de <b>reproduire cette note avec ta voix</b>. Réalise le spectre associé et dépose-le.</p>
+            <div class="field" data-depot data-depot-code="SON-D2">
+              <span class="field-type">Dépôt de copie d'écran · reste affichée</span>
+              <div class="field-q">Dépose ta copie d'écran du signal et du spectre de ta voix.</div>
+              <div class="depot-zone">
+                <label class="btn ghost depot-btn">📷 Choisir ma copie d'écran<input type="file" accept="image/*" hidden aria-label="Déposer une copie d'écran du spectre de la voix"></label>
+                <div class="depot-apercu" data-depot-apercu></div>
+                <div class="verdict"></div>
+              </div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Ai-je chanté la bonne note ?"
+                 data-focus-question="Es-tu parvenu à jouer la même note que le diapason ? Justifie à partir de ton spectre."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="SON-1c">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">4 · Es-tu parvenu à jouer la même note que le diapason ? Justifier.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Le spectre montre un premier pic à <b>440 Hz</b> environ — la fondamentale — indiquant que la note chantée est bien un <b>La de 3ᵉ octave</b>. Les autres pics présents sont des <b>multiples</b> de cette fondamentale : 880 Hz, 1 320 Hz… Ce sont les <b>fréquences harmoniques</b>.
+              </div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Pur ou complexe ?"
+                 data-focus-question="Associe les termes « son pur » et « son complexe » aux deux signaux enregistrés (diapason et voix). Utilise deux justifications complémentaires."
+                 data-focus-max="700" data-focus-min="20" data-focus-code="SON-1d">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">5 · Associer « son pur » et « son complexe » aux deux enregistrements, avec <b>deux</b> justifications complémentaires.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Le signal temporel du son produit par un <b>diapason</b> est une <b>sinusoïde</b> : c'est donc un <b>son pur</b>. En traçant le spectre, on constate également la présence d'un <b>seul pic significatif</b> — deuxième justification, et elle est indépendante de la première.<br>
+                Le signal obtenu avec la <b>voix</b> n'est pas pur mais <b>complexe</b> : il est périodique mais non sinusoïdal. De plus, plusieurs pics sont visibles sur son spectre : les <b>harmoniques</b>.
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              <p>Les deux <b>dépôts de copie d'écran</b> remplacent le «&nbsp;imprimer et coller
+              ci-dessous&nbsp;» du dossier papier. Le mécanisme existe déjà dans le moteur (il sert
+              dans la séquence SNT Internet) et l'image reste affichée dans la page.</p>
+              <p>⚠ <b>Limite connue</b>&nbsp;: aujourd'hui, ces dépôts ne sont <b>pas repris dans la
+              fiche de révision</b> — c'est un manque déjà identifié dans les consignes SNT (§17.2), pas
+              un défaut de cette page. Tant qu'il n'est pas comblé, l'élève doit garder sa copie
+              d'écran de son côté.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 -->
+      <div class="step" data-step data-gate data-cle="es-t2c1-exercices-spectres">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">S'exercer — lire trois spectres</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir tirer d'un spectre la note, le caractère pur ou complexe, et les harmoniques manquantes.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">A — comparer des signaux</div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c1/t2c1-spectres-diapason-guitare.jpg" alt="Deux spectres superposés : en haut celui d'un diapason avec une seule raie, en bas celui d'une guitare avec huit raies" loading="lazy">
+              <figcaption>L'analyse spectrale des sons émis par un <b>diapason</b> (en haut) et par une <b>guitare</b> (en bas).<span class="src">Document du dossier d'activités de M. Van Hoorde — ⚠ extrait de manuel, droits à vérifier</span></figcaption>
+            </figure>
+
+            <div class="field" data-focus
+                 data-focus-titre="Légender les deux spectres"
+                 data-focus-question="Légende chaque spectre avec les termes : son pur, son complexe, fondamentale, harmoniques. Justifie. Puis dis si l'un des instruments a joué un son plus aigu que l'autre, et écris une relation entre les fréquences du 1er et du 4e pic du spectre de la guitare."
+                 data-focus-max="900" data-focus-min="20" data-focus-code="SON-1e">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">1 à 3 · Légender les deux spectres ; dire si l'un est plus aigu ; relier les fréquences du 1<sup>er</sup> et du 4<sup>e</sup> pic de la guitare.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                <b>1.</b> Le <b>diapason</b> (spectre du haut) ne présente qu'un seul pic, le fondamental : il émet un <b>son pur</b>. La <b>guitare</b> émet un <b>son complexe</b>, car son spectre présente plusieurs pics : le fondamental et ses <b>harmoniques</b>.<br>
+                <b>2.</b> La fréquence fondamentale est la <b>même</b> pour les deux : ils jouent la <b>même note</b>. Aucun n'est plus aigu que l'autre.<br>
+                <b>3.</b> Le 1<sup>er</sup> pic est la fondamentale f₁, le 4<sup>e</sup> est l'harmonique de rang 4 : <b>f₄ = 4 × f₁</b>.
+              </div>
+            </div>
+
+            <div class="block-label">B — le spectre d'une note</div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c1/t2c1-spectre-une-note.jpg" alt="Représentation temporelle d'un signal complexe et son spectre en fréquences, avec six raies entre 200 et 1400 Hz" loading="lazy">
+              <figcaption>Une même note, vue dans le temps (à gauche) et en fréquences (à droite).<span class="src">Document du dossier d'activités de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">1 et 2 · Combien de sons purs composent ce spectre ? Quelle est la fréquence de la note jouée ?</div>
+              <div class="cloze" data-cloze>
+                Chacun des pics correspond à une fréquence, donc à un <b>son pur</b>&nbsp;: ce son est la somme de <input class="short" data-answer="6" placeholder="?" aria-label="nombre de sons purs" data-variantes="six|6 sons purs" data-indice1="Compte les raies verticales du spectre." data-indice2="Six."> sons purs.<br>
+                La fréquence de la note jouée est celle de la <b>fondamentale</b>, soit la plus <input data-answer="faible" placeholder="?" aria-label="quelle fréquence" data-variantes="petite|basse|faible fréquence" data-indice1="La fondamentale est toujours le premier pic, le plus à gauche." data-indice2="La plus… petite."> : ici f₁ = <input class="short" data-answer="220" placeholder="?" aria-label="fréquence fondamentale" data-variantes="220 hz|220hz" data-indice1="Lis l'abscisse du premier pic." data-indice2="C'est un La — regarde le tableau de la gamme tempérée."> Hz.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Les harmoniques absentes"
+                 data-focus-question="Détermine les harmoniques de fréquence inférieure à 2 000 Hz qui sont absentes de ce spectre. Justifie par le calcul."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="SON-1f">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">3 · Quelles harmoniques de fréquence inférieure à 2 000 Hz sont absentes de ce spectre ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                <b>Toutes les harmoniques ne sont pas forcément présentes</b> — c'est le cas ici. En calculant celles qui seraient inférieures à 2 000 Hz :<br>
+                f₇ = 7 × 220 = <b>1 540 Hz</b> · f₈ = 8 × 220 = <b>1 760 Hz</b> · f₉ = 9 × 220 = <b>1 980 Hz</b>.<br>
+                Ce sont les trois qui manquent.
+              </div>
+            </div>
+
+            <div class="block-label">C — le spectre mystère</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le son émis par un instrument a été enregistré avec un logiciel d'acquisition. Parmi les trois spectres proposés, retrouve celui qui correspond au son enregistré — et <b>justifie</b>.</p>
+            <div class="duo-ill">
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t2-c1/t2c1-enregistrement-son-mystere.jpg" alt="Signal enregistré : tension en fonction du temps en millisecondes, motif se répétant environ toutes les 2,75 ms" loading="lazy">
+                <figcaption>Le son enregistré, en <b>représentation temporelle</b>. Compte les motifs entre 0 et 5,5 ms.<span class="src">Document du dossier d'activités de M. Van Hoorde — ⚠ extrait de manuel, droits à vérifier</span></figcaption>
+              </figure>
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t2-c1/t2c1-trois-spectres-mystere.jpg" alt="Trois spectres candidats : le premier avec une seule raie, le second avec quatre raies régulièrement espacées, le troisième avec deux raies rapprochées" loading="lazy">
+                <figcaption>Les trois spectres candidats.<span class="src">Document du dossier d'activités de M. Van Hoorde — ⚠ extrait de manuel, droits à vérifier</span></figcaption>
+              </figure>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Le spectre mystère"
+                 data-focus-question="Quel spectre correspond au son enregistré ? Justifie en deux temps : d'abord la période et la fréquence fondamentale, puis l'élimination des deux autres spectres."
+                 data-focus-max="900" data-focus-min="20" data-focus-code="SON-1g">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">Retrouver le spectre qui correspond au son enregistré. Justifier.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Sur l'enregistrement, on observe <b>deux motifs</b> entre 0 et 5,5 ms. La période vaut donc T = 5,5 / 2 = <b>2,75 ms</b>, soit une fondamentale f₁ = 1 / (2,75 × 10⁻³) ≈ <b>364 Hz</b>. Cela pourrait correspondre aux trois spectres.<br>
+                Le son enregistré est <b>non sinusoïdal</b> : ce n'est donc pas un son pur, et le <b>premier spectre</b> (une seule raie) est éliminé.<br>
+                Sur le <b>troisième spectre</b>, le 2ᵉ pic est à environ 550 Hz — ce n'est <b>pas le double</b> de la fondamentale, donc pas une harmonique : éliminé aussi.<br>
+                Sur le <b>deuxième spectre</b>, on retrouve bien f₂ = 728 Hz, f₃ = 1 092 Hz et f₄ = 1 456 Hz. <b>C'est lui.</b>
+              </div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Manque</div>
+              <p>Trois notions du sous-thème <b>4.1</b> du programme officiel ne figurent nulle part
+              dans le dossier d'activités&nbsp;:</p>
+              <ul>
+                <li>la <b>production et la propagation</b> du son (le son a besoin d'un milieu
+                matériel)&nbsp;;</li>
+                <li>la <b>célérité</b> du son (≈ 340 m·s⁻¹ dans l'air) et la relation d = v × t&nbsp;;</li>
+                <li>le <b>niveau sonore</b> en décibels, et les seuils de risque auditif.</li>
+              </ul>
+              <p>Elles sont <b>déjà écrites dans le dépôt</b>&nbsp;: le chapitre de seconde
+              <b>T3-C1 «&nbsp;Émission et perception d'un son&nbsp;»</b> les traite, en V1 intégrale,
+              figures refaites et définitions corrigées après audit. <b>Décision attendue</b>&nbsp;:
+              faut-il les rehausser au niveau 1re et les insérer ici (une quatrième étape en
+              séance&nbsp;1), ou les considérer comme acquises de seconde et n'en faire qu'un
+              rappel&nbsp;? Rien n'a été recopié pour l'instant.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 2 ===================== -->
+  <section class="seance locked" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>TP tournant — comment on produit un son</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Trois ateliers : la résonance (au bureau), la corde vibrante et la colonne d'air (sur ta paillasse). Chaque groupe passe sur chacun ; on met tout en commun à la fin.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 2.1 -->
+      <div class="step" data-step data-gate data-cle="es-t2c1-resonance">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">La résonance mécanique</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir ce qu'est une fréquence de résonance, et reconnaître le phénomène dans la vie courante.</span></div>
+          </div>
+          <div class="card-body">
+            <span class="poste-num">⚙ Poste 1 · démonstration au bureau</span>
+
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>La vidéo du dossier d'activités sur la résonance (QR code de la page 5).</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/fhGx8MwhkU8" title="Le phénomène de résonance" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🔍 Liens récupérés par QR code — titres à confirmer</div>
+              Toutes les vidéos de cette page ont été récupérées en <b>décodant les QR codes</b> du
+              dossier d'activités. Les adresses sont sûres&nbsp;; le titre et la durée n'ont pas pu
+              être vérifiés. Le dossier en portait <b>sept</b> — cinq sont placées ici, aux endroits
+              où le document les appelle. <b>Un coup d'œil suffira à confirmer.</b>
+            </aside>
+            <!-- /CHANTIER -->
+
+            <div class="field" data-focus
+                 data-focus-titre="Définir la résonance"
+                 data-focus-question="Définis, avec tes mots, le phénomène de résonance. Donne deux exemples de la vie courante où il intervient."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="SON-2a">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">1 · Définir, avec tes mots, le phénomène de résonance. Donner deux exemples de la vie courante.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Un solide — ou plus généralement un système mécanique — est <b>sensible à certaines fréquences</b>, appelées <b>fréquences de résonance</b>. Un objet qui entre en résonance peut <b>accumuler de l'énergie</b>, si celle-ci est appliquée sous forme périodique et proche de sa fréquence de résonance. Soumis à une telle excitation, le système subit des oscillations <b>de plus en plus importantes</b>, parfois jusqu'à la <b>rupture</b> d'un composant.<br>
+                Deux exemples : les <b>instruments de musique</b> et les oscillations d'une <b>balançoire</b>.
+              </div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="Tacoma, 7 novembre 1940"
+                 data-focus-question="Explique ce qu'il s'est passé le 7 novembre 1940 sur la route reliant Tacoma à Gig Harbor, dans l'État de Washington."
+                 data-focus-max="600" data-focus-min="20" data-focus-code="SON-2b">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">2 · Expliquer ce qu'il s'est passé le 7 novembre 1940 entre Tacoma et Gig Harbor.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Ce 7 novembre 1940, les <b>vents forts</b> qui soufflaient autour du <b>pont de Tacoma</b> ont atteint sa <b>fréquence de résonance</b>. Les oscillations du pont se sont <b>amplifiées</b> jusqu'au point de rupture : le pont s'est effondré.
+              </div>
+            </div>
+
+            <div class="block-label">L'expérience des deux diapasons</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Ton enseignant réalise une expérience mettant en jeu <b>deux diapasons</b> et une <b>balle de tennis de table</b> pendue à un fil. Observe attentivement.</p>
+
+            <div class="field" data-focus
+                 data-focus-titre="Les deux diapasons"
+                 data-focus-question="Qu'as-tu observé ? Comment analyses-tu ce qui s'est produit ?"
+                 data-focus-max="700" data-focus-min="20" data-focus-code="SON-2c">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">3 · Qu'avez-vous observé, comment pouvez-vous analyser ce qu'il s'est produit ?</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                L'enseignant frappe un diapason de <b>440 Hz</b>, dont la caisse de résonance est ouverte en direction de la caisse d'un <b>second diapason identique</b>. Une balle de ping-pong est maintenue en contact avec ce second diapason par une potence et un fil. Cette balle permet de <b>visualiser</b>, par son mouvement, les vibrations qui se sont propagées du premier vers le second diapason.<br>
+                Les ondes sonores émises par le premier sont, <b>par définition</b>, à la fréquence de résonance des deux diapasons — ce qui explique qu'elles puissent faire vibrer le second <b>à distance</b>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 -->
+      <div class="step" data-step data-gate data-cle="es-t2c1-corde">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">La corde vibrante — la corde de Melde</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> établir expérimentalement de quoi dépend la note émise par une corde, et vérifier la relation L ∝ √T.</span></div>
+          </div>
+          <div class="card-body">
+            <span class="poste-num">⚙ Poste 2 · à réaliser sur ta paillasse</span>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c1/t2c1-instruments-nature-morte.jpg" alt="Nature morte ancienne représentant une mandoline, un violon, un archet, une guitare et des partitions" loading="lazy">
+              <figcaption>Un <b>instrument à cordes</b> est un instrument dans lequel le son est produit par la vibration d'une ou plusieurs cordes.<span class="src">Peinture reprise du dossier d'activités de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="block-label">A — le montage expérimental</div>
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c1/t2c1-montage-corde-de-melde.jpg" alt="Schéma du montage : générateur de fréquence variable, électro-aimant, lame vibrante, corde de longueur L passant sur une poulie et tendue par une masse M" loading="lazy">
+              <figcaption>Le montage de la <b>corde de Melde</b> : un vibreur à une extrémité, une <b>poulie</b> et une <b>masse</b> à l'autre, qui tend la corde.<span class="src">Schéma du dossier d'activités de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field" data-focus
+                 data-focus-titre="Le principe de l'expérience"
+                 data-focus-question="Décris simplement le principe de cette expérience. Puis réalise un schéma légendé du montage (décris-le ici, ou dépose ton schéma à ton professeur)."
+                 data-focus-max="800" data-focus-min="20" data-focus-code="SON-2d">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">2 et 3 · Décrire le principe de cette expérience, et réaliser un schéma légendé du montage.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Les ondes produites sur la corde par un <b>vibreur électrique</b> se propagent jusqu'à une <b>poulie</b>. Là, une <b>masse</b> tend la corde, de sorte que l'onde incidente se <b>réfléchit</b> et repart dans le sens opposé. La rencontre et la superposition des ondes incidentes et réfléchies est à l'origine d'un phénomène d'<b>interférence d'ondes</b>. En fixant la distance entre le vibreur et la poulie, on peut déterminer une tension pour laquelle apparaissent des <b>ondes stationnaires</b> (les <b>fuseaux</b>). On distingue alors des points qui demeurent immobiles, appelés <b>nœuds</b>.
+              </div>
+            </div>
+
+            <div class="block-label">B — les documents</div>
+            <div class="duo-ill">
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t2-c1/t2c1-doc-instruments-et-notes.jpg" alt="Document sur les six cordes d'une guitare, leurs masses linéiques et l'effet de la tension et de la longueur sur la fréquence" loading="lazy">
+                <figcaption><b>Document 5</b> — les instruments et les notes. Définition de la <b>masse linéique</b> μ = m / ℓ, en kg·m⁻¹.<span class="src">Document du dossier d'activités de M. Van Hoorde — ⚠ extrait de manuel, droits à vérifier</span></figcaption>
+              </figure>
+              <figure class="ill"><span class="loupe">⤢ agrandir</span>
+                <img src="../assets/img/es/1re-es-t2-c1/t2c1-doc-corde-vibrante.jpg" alt="Document sur Franz Melde, les fuseaux d'une corde vibrante à un et deux fuseaux, et la formule de la fréquence fondamentale" loading="lazy">
+                <figcaption><b>Document 6</b> — la corde vibrante, les fuseaux, et la <b>formule de la fréquence fondamentale</b>.<span class="src">Document du dossier d'activités de M. Van Hoorde — ⚠ extrait de manuel, droits à vérifier</span></figcaption>
+              </figure>
+            </div>
+
+            <div class="formule">f₁ = (1 / 2ℓ) × √(T / μ)
+              <span class="u">ℓ : longueur de la corde (m) · T : tension (N) · μ : masse linéique (kg·m⁻¹)</span>
+            </div>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">1 · De quels paramètres (cites-en trois) la fréquence fondamentale du son émis par une corde dépend-elle ?</div>
+              <div class="cloze" data-cloze>
+                Elle dépend de la <input data-answer="longueur" placeholder="?" aria-label="premier paramètre" data-variantes="longueur de la corde|la longueur" data-indice1="C'est ce que fait varier le guitariste en posant ses doigts sur le manche." data-indice2="Notée ℓ dans la formule."> de la corde, de sa <input data-answer="tension" placeholder="?" aria-label="deuxième paramètre" data-variantes="tension de la corde|la tension" data-indice1="C'est ce qu'on règle en tournant une clé de guitare." data-indice2="Notée T dans la formule.">, et de sa <input data-answer="masse linéique" placeholder="?" aria-label="troisième paramètre" data-variantes="masse lineique|masse linéaire|μ|mu" data-indice1="Elle est liée au diamètre de la corde et au matériau qui la compose." data-indice2="Deux mots : « masse » + un adjectif ; c'est μ dans la formule.">, liée à son diamètre et au matériau qui la compose.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">C — l'influence de la tension</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">On fait varier la <b>masse suspendue</b> à l'extrémité de la corde. La tension est <b>proportionnelle</b> à cette masse : en changeant la masse, c'est bien la tension qu'on modifie. La fréquence fondamentale est obtenue lorsque tu observes un <b>beau fuseau unique</b> sur la corde.</p>
+            <p class="doc-note">Avec une masse de <b>100 g</b> (soit <b>0,1 kg</b>), on observe un fuseau unique pour une longueur de corde de <b>L = 75 cm</b>.</p>
+
+            <div class="tab-large">
+            <table class="doc-table gamme">
+              <tr><th>Masse suspendue m (kg)</th><td>0,002</td><td>0,005</td><td>0,01</td><td>0,02</td><td>0,05</td><td>0,1</td><td>0,2</td></tr>
+              <tr><th>√m (√kg)</th><td>0,0447</td><td>0,0707</td><td>0,1</td><td>0,1414</td><td>0,2236</td><td>0,3162</td><td>0,4472</td></tr>
+              <tr><th>L (m)</th><td>0,12</td><td>0,16</td><td>0,27</td><td>0,37</td><td>0,56</td><td>0,75</td><td>1,05</td></tr>
+            </table>
+            </div>
+
+            <div class="reserve" style="min-height:180px;max-width:600px">
+              <div class="rf">t2c1-graphique-melde.png</div>
+              <div class="rd">Le <b>graphique L = f(√m)</b> tracé au tableur, avec sa <b>courbe de tendance</b> (y = 2,3123x + 0,0247 · R² = 0,9973), figure dans la correction mais n'a pas pu être extrait du PDF&nbsp;: il y est vectoriel. C'est pourtant lui qui porte toute la démonstration de la question 4. <b>À refournir</b>&nbsp;: une copie d'écran du tableur suffit.</div>
+              <div class="rr">paysage · ≥ 800 px de large</div>
+            </div>
+
+            <div class="field" data-focus
+                 data-focus-titre="L proportionnelle à la racine de T"
+                 data-focus-question="Trace L = f(√m) au tableur, avec titre, titres d'axes et courbe de tendance. Puis montre que les résultats sont cohérents avec la formule du Document 6, en t'appuyant sur la courbe de tendance."
+                 data-focus-max="900" data-focus-min="20" data-focus-code="SON-2e">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">3 et 4 · Tracer L = f(√m), puis montrer que les résultats sont cohérents avec la formule du Document 6.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                La courbe de tendance est une <b>fonction linéaire</b> : L est donc <b>proportionnelle à √m</b>. Or la masse m est elle-même proportionnelle à la <b>tension T</b> de la corde. On peut donc dire que <b>L ∝ √T</b>.<br>
+                C'est bien en accord avec la formule du Document 6 :<br>
+                f₁ = (1/2L)√(T/μ) &nbsp;⟺&nbsp; L = (1/2f₁)√(T/μ) &nbsp;⟺&nbsp; L = [1 / (2 f₁ √μ)] × √T.<br>
+                <i>Le signe ∝ signifie « proportionnel à ».</i>
+              </div>
+            </div>
+
+            <div class="block-label">D — l'influence de la longueur</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète les trois observations, avec une masse de 20 g.</div>
+              <div class="cloze" data-cloze>
+                Avec 20 g, on obtient un fuseau unique pour L₁ = <input class="short" data-answer="0,37" placeholder="?" aria-label="L1 en mètres" data-variantes="0.37|0,37 m|37 cm" data-indice1="Cherche la colonne m = 0,02 kg dans le tableau ci-dessus." data-indice2="Entre 0,3 et 0,4 m."> m.<br>
+                En fixant la longueur à L₂ = 2 × L₁, on observe l'apparition d'un <input class="short" data-answer="second" placeholder="?" aria-label="ce qui apparaît" data-variantes="deuxième|2e|2ème|second fuseau|deuxième fuseau" data-indice1="Le nombre de fuseaux change." data-indice2="Il y en a un de plus : un…"> fuseau.<br>
+                Trois fuseaux apparaissent pour L₃ = <input class="short" data-answer="3" placeholder="?" aria-label="coefficient pour L3" data-variantes="3 × L1|trois|3L1" data-indice1="Le nombre de fuseaux est égal au coefficient multiplicateur." data-indice2="Trois fuseaux → trois fois L₁."> × L₁.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+            <div class="retain">Des fuseaux sont obtenus pour des longueurs de corde <b>multiples de L₁</b>. Le <b>nombre de fuseaux</b> correspond au coefficient multiplicateur.</div>
+
+            <div class="block-label">Si tu as manqué de temps — la version numérique</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Il est possible de refaire l'expérience avec l'animation de l'<b>université de Nantes</b> (un service public, pas de traceur).</p>
+            <p><a class="btn ghost" href="https://phyanim.sciences.univ-nantes.fr/Ondes/ondes_stationnaires/melde.php" target="_blank" rel="noopener noreferrer">▶ Ouvrir l'animation « corde de Melde » (université de Nantes)</a></p>
+            <!-- CHANTIER -->
+            <aside class="chantier">
+              <div class="cl">🔍 Ressource à tester depuis un poste du lycée</div>
+              L'animation de l'université de Nantes est ancienne&nbsp;: à vérifier qu'elle fonctionne
+              encore dans les navigateurs actuels (certaines animations de cette collection étaient en
+              Flash ou en Java), et qu'elle passe le filtrage du lycée.
+            </aside>
+            <!-- /CHANTIER -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 -->
+      <div class="step" data-step data-gate data-cle="es-t2c1-colonne-air">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">La vibration d'une colonne d'air</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> retrouver, sur un instrument à vent, la même mécanique de fuseaux et d'harmoniques que sur une corde.</span></div>
+          </div>
+          <div class="card-body">
+            <span class="poste-num">⚙ Poste 3 · à réaliser sur ta paillasse</span>
+
+            <figure class="ill"><span class="loupe">⤢ agrandir</span>
+              <img src="../assets/img/es/1re-es-t2-c1/t2c1-aulos-antique.jpg" alt="Détail d'un vase grec antique montrant un musicien jouant de l'aulos, une double flûte" loading="lazy">
+              <figcaption>Un <b>instrument à vent</b> (ou aérophone) est un instrument dont le son est produit par les vibrations d'une <b>colonne d'air</b>, provoquées par le souffle d'un instrumentiste (flûte, trompette), d'une soufflerie mécanique (orgue, accordéon) ou d'une poche d'air (cornemuse, veuze).<span class="src">Céramique grecque reprise du dossier d'activités de M. Van Hoorde — provenance à confirmer</span></figcaption>
+            </figure>
+
+            <div class="field" data-focus
+                 data-focus-titre="Le principe du montage"
+                 data-focus-question="Décris simplement le principe de cette expérience. Identifie l'émetteur et le récepteur. Puis réalise un schéma légendé du montage."
+                 data-focus-max="800" data-focus-min="20" data-focus-code="SON-2f">
+              <span class="field-type"><button type="button" class="plustard def" data-plustard aria-label="Ce que fait ce champ">Réponse rédigée<span class="bulle">La page se floute pendant que tu écris. Ta réponse part en correction.</span></button></span>
+              <div class="field-q">2 et 3 · Décrire le principe de l'expérience, identifier l'émetteur et le récepteur, réaliser un schéma légendé.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+              <div class="reveal" data-reveal>
+                <div class="rl">✔ La correction</div>
+                Ce montage permet d'étudier les <b>fuseaux</b> qui se forment à l'intérieur d'une colonne d'air vibrante, à la manière d'un instrument à vent. La fréquence du son émis par un <b>haut-parleur</b> (l'émetteur) est contrôlée par un <b>GBF</b>. L'onde sonore se propage dans la colonne, et un <b>microphone mobile</b> (le récepteur), relié à un <b>oscilloscope</b>, permet de mesurer l'intensité de l'onde à différentes positions dans le tube.<br>
+                Les <b>nœuds</b> correspondent à des intensités quasi nulles — un signal très faible sur l'oscilloscope.
+              </div>
+            </div>
+
+            <div class="block-label">L'étude expérimentale</div>
+            <p style="font-size:14.5px;margin:4px 0 10px">La fréquence de résonance de la colonne d'air est de <b>440 Hz</b>. Règle le GBF de manière à ne créer qu'un <b>seul fuseau</b>. Déplace le microphone à l'intérieur de la colonne et note les positions des <b>nœuds</b>. Recommence pour <b>880 Hz</b>, puis <b>1 320 Hz</b>.</p>
+
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Complète tes observations, puis conclus.</div>
+              <div class="cloze" data-cloze>
+                À 440 Hz — la fréquence <input data-answer="fondamentale" placeholder="?" aria-label="nature de 440 Hz" data-variantes="fondamental|de résonance|fréquence fondamentale" data-indice1="C'est la fréquence de résonance de la colonne, la plus basse qui fonctionne." data-indice2="Le mot de la séance 1 : la fréquence…"> — on obtient <input class="short" data-answer="1" placeholder="?" aria-label="nombre de fuseaux à 440 Hz" data-variantes="un|un seul" data-indice1="C'est ce que demande la consigne." data-indice2="Un seul."> fuseau.<br>
+                À 880 Hz, soit <input class="short" data-answer="2" placeholder="?" aria-label="rapport à 880 Hz" data-variantes="deux|2 fois" data-indice1="880 ÷ 440." data-indice2="Le double."> × 440 Hz, on en obtient <input class="short" data-answer="2" placeholder="?" aria-label="nombre de fuseaux à 880 Hz" data-variantes="deux" data-indice1="Le nombre de fuseaux suit le rang de l'harmonique." data-indice2="Deux."> ; à 1 320 Hz, on en obtient <input class="short" data-answer="3" placeholder="?" aria-label="nombre de fuseaux à 1320 Hz" data-variantes="trois" data-indice1="1 320 ÷ 440 = 3." data-indice2="Trois.">.<br>
+                Conclusion : on obtient un fuseau de plus à chaque <input data-answer="harmonique" placeholder="?" aria-label="nom des multiples" data-variantes="harmoniques|fréquence harmonique|multiple" data-indice1="C'est le mot du chapitre pour les multiples de la fondamentale." data-indice2="Harmo…">, c'est-à-dire à chaque multiple de 440 Hz.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="retain">Corde tendue ou colonne d'air, <b>c'est la même mécanique</b> : une onde qui se réfléchit sur les extrémités, des <b>ondes stationnaires</b>, des <b>fuseaux</b> et des <b>nœuds</b>, et un nombre de fuseaux qui suit le rang de l'harmonique. C'est pour cela qu'une guitare et une flûte peuvent jouer la même note.</div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Programme</div>
+              Ce «&nbsp;à retenir&nbsp;» est <b>ajouté</b>&nbsp;: le dossier d'activités traite les deux
+              TP séparément, sans les rapprocher. Or c'est précisément ce rapprochement qui fait le
+              cours — sans lui, l'élève a fait deux manipulations, pas compris une idée. <b>À
+              valider.</b>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <!-- ===================== SÉANCE 3 ===================== -->
+  <section class="seance locked" id="s3" data-seance="3">
+    <div class="seance-head">
+      <h2><span class="s-num">S3</span>Les mathématiques et la musique</h2>
+      <span class="seance-time">≈ 1 h 30</span>
+    </div>
+    <p class="seance-goal">Pourquoi douze notes ? Parce que douze quintes tombent presque sur sept octaves — et que « presque » a occupé les musiciens pendant deux mille ans.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 3.1 -->
+      <div class="step" data-step data-gate data-cle="es-t2c1-octave-video">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Activité introductive — l'octave et la quinte</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir ce qu'est une <b>octave</b> (×2) et une <b>quinte</b> (×3/2), et comprendre d'où viennent les douze notes.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">Poste de visionnage<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">La vidéo dure environ 24 minutes et les questions suivent son <b>minutage</b>. Mets-la en pause à chaque bloc.</p>
+            <div class="poste">
+              <div class="poste-media">
+                <p class="consigne">🎬 <span>« Les mathématiques de la musique », avec Vled Tapas — la vidéo de l'activité introductive.</span></p>
+                <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/cTYvCpLRwao" title="Les mathématiques de la musique — Vled Tapas" allowfullscreen></iframe>
+              </div>
+              <div class="poste-corps">
+                <div class="poste-notes">
+                  <div class="pl">📝 Mes notes de visionnage</div>
+                  <textarea data-notes="SON-3video" placeholder="Les mots nouveaux : octave, quinte, cycle des quintes, tempérament…" aria-label="Notes de visionnage"></textarea>
+                </div>
+                <div class="poste-dico">
+                  <div class="pl">📖 Dictionnaire</div>
+                  <dl>
+                    <dt>Octave</dt><dd>L'intervalle entre une note et celle de fréquence <b>double</b>. Les deux portent le même nom.</dd>
+                    <dt>Quinte</dt><dd>L'intervalle correspondant au rapport de fréquences <b>3/2</b>.</dd>
+                    <dt>Tempérament</dt><dd>La façon de répartir les douze notes à l'intérieur d'une octave. Il en existe plusieurs, et aucun n'est parfait.</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+            <div class="block-label">De 0:00 à 2:00</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Questions 1 à 4.</div>
+              <div class="cloze" data-cloze>
+                <b>1.</b> Il y a, de manière classique, <input class="short" data-answer="12" placeholder="?" aria-label="nombre de notes" data-variantes="douze|12 notes" data-indice1="C'est le nombre de touches, blanches et noires, dans une octave de piano." data-indice2="Douze."> notes en musique.<br>
+                <b>2.</b> Le milieu de propagation de l'onde sonore, quand on étudie la musique, est <input data-answer="l'air" placeholder="?" aria-label="milieu de propagation" data-variantes="air|dans l'air|l'atmosphère" data-indice1="Ce qui sépare l'instrument de ton oreille." data-indice2="Trois lettres, avec un article.">.<br>
+                <b>3.</b> La hauteur d'un son est sa <input data-answer="fréquence" placeholder="?" aria-label="définition de la hauteur" data-variantes="frequence|fréquence en hertz|la fréquence" data-indice1="On l'exprime en hertz." data-indice2="C'est ce que tu as vu en séance 1.">, en hertz (Hz).<br>
+                <b>4.</b> Entre une onde à 440 Hz et une onde à 1 500 Hz, la plus <b>grave</b> est celle à <input class="short" data-answer="440" placeholder="?" aria-label="fréquence la plus grave" data-variantes="440 hz|la première|onde 1" data-indice1="Grave = fréquence faible." data-indice2="La plus petite des deux valeurs."> Hz, car 440 &lt; 1 500.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">De 2:00 à 5:00</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Questions 5 à 7.</div>
+              <div class="cloze" data-cloze>
+                <b>5.</b> Pour faire varier la fréquence d'un son émis par une corde de guitare, on peut jouer sur son <input data-answer="diamètre" placeholder="?" aria-label="premier paramètre" data-variantes="diametre|épaisseur|masse linéique" data-indice1="C'est ce qui distingue les six cordes d'une guitare entre elles." data-indice2="Leur grosseur : le…">, sa <input data-answer="longueur" placeholder="?" aria-label="deuxième paramètre" data-variantes="la longueur" data-indice1="Ce que change le guitariste en pinçant la corde sur le manche." data-indice2="Notée ℓ."> et sa <input data-answer="tension" placeholder="?" aria-label="troisième paramètre" data-variantes="la tension" data-indice1="Ce que règle la clé d'accordage." data-indice2="Notée T.">. <span style="color:var(--ink-soft)">(Ce sont exactement les trois paramètres du TP de la séance 2.)</span><br>
+                <b>6.</b> La fréquence 2F s'appelle le <input data-answer="second harmonique" placeholder="?" aria-label="nom de 2F" data-variantes="deuxième harmonique|2e harmonique|second harmonique|harmonique 2|l'octave" data-indice1="C'est le rang 2 dans la série vue en séance 1." data-indice2="Deux mots : « second » + le mot du chapitre."> ; 2F est aussi appelé l'<input data-answer="octave" placeholder="?" aria-label="autre nom de 2F" data-variantes="l'octave|octave de f" data-indice1="Huit notes plus haut, d'où son nom." data-indice2="Le mot vient de « huit »."> de F.<br>
+                <b>7.</b> Deux autres octaves du La 440 Hz : <input class="short" data-answer="220" placeholder="?" aria-label="octave inférieure" data-variantes="220 hz" data-indice1="L'octave en dessous : on divise par 2." data-indice2="440 ÷ 2."> Hz (F/2) et <input class="short" data-answer="3520" placeholder="?" aria-label="octave supérieure ×8" data-variantes="3 520|3520 hz|880|1760" data-indice1="La correction propose 8F : multiplie 440 par 8." data-indice2="440 × 8 — on accepte aussi 880 ou 1760, qui sont bien des octaves."> Hz (8F).
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">De 5:00 à 9:00 — la quinte et le cycle</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Questions 8 à 12.</div>
+              <div class="cloze" data-cloze>
+                <b>8.</b> La troisième harmonique est <b>3F</b>. Pour la note 440 Hz, elle vaut <input class="short" data-answer="1320" placeholder="?" aria-label="troisième harmonique de 440" data-variantes="1 320|1320 hz" data-indice1="Multiplie 440 par 3." data-indice2="440 × 3."> Hz.<br>
+                <b>9.</b> 3F est la <input data-answer="quinte" placeholder="?" aria-label="nom de 3F" data-variantes="la quinte|quinte de f" data-indice1="C'est le second intervalle fondamental de la musique, après l'octave." data-indice2="Le mot vient du chiffre cinq."> de F.<br>
+                <b>10.</b> Il n'existe que 12 notes parce qu'après <input class="short" data-answer="12" placeholder="?" aria-label="nombre de quintes" data-variantes="douze|12 quintes" data-indice1="C'est le nombre de notes lui-même." data-indice2="Douze."> quintes, la fréquence obtenue est <b>presque</b> la même que celle de départ.<br>
+                <b>11.</b> Ce cycle s'appelle le <input data-answer="cycle des quintes" placeholder="?" aria-label="nom du cycle" data-variantes="cycle des quinte|le cycle des quintes|spirale des quintes" data-indice1="Il porte le nom de l'intervalle qui l'engendre." data-indice2="« cycle des … »">.<br>
+                <b>12.</b> L'égalité mathématique qui l'explique : <b>12 quintes ≈ 7 octaves</b>, c'est-à-dire (3/2)<sup>12</sup> ≈ 2<sup><input class="short" data-answer="7" placeholder="?" aria-label="exposant de 2" data-variantes="sept" data-indice1="C'est le nombre d'octaves." data-indice2="Sept."></sup>, ou encore 3<sup>12</sup> ≈ 2<sup><input class="short" data-answer="19" placeholder="?" aria-label="second exposant" data-variantes="dix-neuf" data-indice1="La correction du cours écrit 2⁹ — vérifie : 3¹² vaut 531 441, et 2¹⁹ vaut 524 288." data-indice2="Dix-neuf : c'est 12 + 7."></sup>.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="proposition">
+              <div class="pl">⬖ Proposition — Difficulté</div>
+              <p>La correction d'origine écrit «&nbsp;3<sup>12</sup> ≈ 2<sup>9</sup>&nbsp;». C'est
+              <b>faux d'un facteur mille</b>&nbsp;: 3<sup>12</sup> = 531 441 et 2<sup>9</sup> = 512.
+              L'égalité correcte, qui découle de (3/2)<sup>12</sup> ≈ 2<sup>7</sup>, est
+              <b>3<sup>12</sup> ≈ 2<sup>19</sup></b> (531 441 contre 524 288, à 1,4&nbsp;% près) — et
+              c'est bien cet écart de 1,4&nbsp;% qui est le <b>comma pythagoricien</b>, la source de
+              tout le problème.</p>
+              <p>La valeur <b>19</b> est donc demandée ci-dessus, avec l'indice qui la fait retrouver.
+              <b>À confirmer</b>, et à corriger dans le document. Reste à décider si ce niveau de détail
+              est demandé aux élèves&nbsp;: on peut aussi se contenter de «&nbsp;12 quintes ≈ 7
+              octaves&nbsp;».</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.2 -->
+      <div class="step" data-step data-gate data-cle="es-t2c1-temperament">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 3.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Le loup, et comment on s'en débarrasse</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre pourquoi aucun accordage n'est parfait, et connaître la solution moderne.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="block-label">De 9:00 à 14:00</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Questions 13 à 15.</div>
+              <div class="cloze" data-cloze>
+                <b>13.</b> Le schéma présenté correspond à l'accord <input data-answer="pythagoricien" placeholder="?" aria-label="type d'accord" data-variantes="pythagoricien|accord pythagoricien|de pythagore" data-indice1="Il porte le nom du mathématicien grec du théorème sur les triangles rectangles." data-indice2="Pythago…">.<br>
+                <b>14.</b> La quinte fausse qui en résulte s'appelle la <input data-answer="quinte du loup" placeholder="?" aria-label="nom de la quinte fausse" data-variantes="le loup|quinte du loup|la quinte du loup|loup" data-indice1="Le nom vient du hurlement qu'elle évoque." data-indice2="« la quinte du … » — un animal.">, ou simplement «&nbsp;le loup&nbsp;».<br>
+                <b>15.</b> L'autre problème de cet accord : les <input data-answer="tierces majeures" placeholder="?" aria-label="autre problème" data-variantes="tierces|les tierces majeures|tierce majeure" data-indice1="Un autre intervalle musical, celui de trois degrés." data-indice2="« tierces … » — le qualificatif s'oppose à « mineures »."> sonnent faux également.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">De 14:00 à 24:00</div>
+            <div class="field">
+              <span class="field-type">Texte à trous</span>
+              <div class="field-q">Questions 16 à 18.</div>
+              <div class="cloze" data-cloze>
+                <b>16.</b> Cette manière d'accorder les instruments s'appelle le tempérament <input data-answer="mésotonique" placeholder="?" aria-label="nom du tempérament" data-variantes="mesotonique|tempérament mésotonique|méso-tonique" data-indice1="Le mot commence par « méso », qui veut dire « milieu » en grec." data-indice2="Méso + tonique.">.<br>
+                <b>17.</b> Trois familles d'instruments peuvent s'affranchir des problèmes de fréquence liés aux changements de gamme : les instruments à <input data-answer="cordes" placeholder="?" aria-label="première famille" data-variantes="corde|instruments à cordes" data-indice1="Le violon en fait partie : le doigt se pose où il veut sur la touche." data-indice2="Ceux du poste 2 du TP.">, le <input data-answer="trombone" placeholder="?" aria-label="deuxième famille" data-variantes="le trombone|trombone à coulisse" data-indice1="Un cuivre dont la longueur du tube se règle en continu." data-indice2="Il a une coulisse.">, et la <input data-answer="voix humaine" placeholder="?" aria-label="troisième famille" data-variantes="voix|la voix|la voix humaine|cordes vocales" data-indice1="L'instrument que tu as utilisé en séance 1 pour chanter le La." data-indice2="Deux mots : « voix » + un adjectif.">.<br>
+                <b>18.</b> Les deux solutions modernes : le tempérament <input data-answer="égal" placeholder="?" aria-label="première solution" data-variantes="egal|tempérament égal|à parties égales" data-indice1="On répartit les douze notes de façon parfaitement régulière." data-indice2="Toutes les parties sont…">, et la musique <input data-answer="microtonale" placeholder="?" aria-label="deuxième solution" data-variantes="micro-tonale|musique microtonale" data-indice1="Elle utilise des intervalles plus petits que le demi-ton." data-indice2="Micro + tonale.">.
+              </div>
+              <div style="margin-top:14px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="block-label">Le bilan du chapitre<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
+            <div class="retain" data-bilan-wrap>
+              <ul style="margin:0;padding-left:18px">
+                <li>Un son est une <b>onde mécanique périodique</b>. Son <b>spectre en fréquence</b> montre la <b>fondamentale f₁</b> (la note) et ses <b>harmoniques f<sub>n</sub> = n × f₁</b> (le timbre).</li>
+                <li>Un <b>son pur</b> est sinusoïdal et n'a qu'un pic ; un <b>son complexe</b> est périodique, non sinusoïdal, et en a plusieurs.</li>
+                <li>La <b>hauteur</b> d'un son est sa fréquence fondamentale : grave si faible, aiguë si élevée.</li>
+                <li>Un système possède des <b>fréquences de résonance</b> : excité à ces fréquences, il accumule de l'énergie — jusqu'à la rupture, parfois.</li>
+                <li>La note d'une <b>corde</b> dépend de sa <b>longueur</b>, de sa <b>tension</b> et de sa <b>masse linéique</b> : f₁ = (1/2ℓ)√(T/μ). Une <b>colonne d'air</b> obéit à la même mécanique de fuseaux.</li>
+                <li>L'<b>octave</b> double la fréquence (×2) ; la <b>quinte</b> la multiplie par 3/2. Comme <b>12 quintes ≈ 7 octaves</b> sans jamais tomber juste, il faut choisir un <b>tempérament</b> — aucun n'est parfait.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.3 — bonus -->
+      <div class="step" data-step data-cle="es-t2c1-bonus">
+        <div class="rail"></div><div class="step-pip" style="border-style:dotted"></div>
+      <div class="bonus-wrap" data-bonus>
+        <div class="bonus-head" data-bonus-toggle>
+          <span class="ix">3.3</span>
+          <span class="bl">Pour aller plus loin</span>
+          <span class="bonus-tag">hors 100&nbsp;% · non évalué</span>
+          <span class="chev">▸</span>
+        </div>
+        <div class="bonus-body">
+          <p style="font-size:14px;color:var(--ink-soft);margin-top:0">Les autres vidéos du dossier d'activités, récupérées par leurs QR codes.</p>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Vidéo du dossier — page 2.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/P3QLmP1nxrA" title="Son et musique — complément 1" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Vidéo du dossier — page 8, section corde vibrante.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/CAjZjEyMAKo" title="Son et musique — complément 2" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Vidéo du dossier — page 11, section colonne d'air.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/jGmIFWf4pnI" title="Son et musique — complément 3" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="poste">
+            <div class="poste-media">
+              <p class="consigne">🎬 <span>Vidéo du dossier — page 12, section exercices.</span></p>
+              <iframe height="315" data-src="https://www.youtube-nocookie.com/embed/55uKzZ3U07s" title="Son et musique — complément 4" allowfullscreen></iframe>
+            </div>
+          </div>
+
+          <div class="field" data-share data-share-note>
+            <span class="field-type">Réflexion perso — non notée</span>
+            <div class="field-q">Aucun accordage n'est mathématiquement parfait : on a choisi de répartir l'erreur également sur toutes les notes plutôt que de la concentrer sur une seule. Est-ce que ce genre de compromis te fait penser à autre chose ?</div>
+            <textarea placeholder="Écris ce que tu veux : personne ne corrige, personne ne note." aria-label="Réflexion personnelle"></textarea>
+            <div class="verdict"></div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+  <footer class="note">
+    <b>Thème 2, chapitre 1 — Son et musique.</b> QCM, textes à trous et tableaux corrigés <b>en direct</b> ; réponses rédigées <b>envoyées en correction</b> ; réflexions perso <b>non notées</b>. 🧭 Un doute sur le fonctionnement du cours&nbsp;? Revois <a href="1re-es-t1-c1-nucleosynthese.html" style="color:var(--link)">le chapitre&nbsp;1</a>. Ce chapitre prépare directement <a href="1re-es-t2-c2-son-a-coder.html" style="color:var(--link)">« Le son, une information à coder »</a>. ⚠ Dans cette version, <b>ta progression n'est pas encore enregistrée</b>&nbsp;: pense à télécharger ta fiche avant de partir.
+  </footer>
+</div>
+
+<script type="application/json" id="dico-source">
+[
+ {
+  "mot": "Spectre en fréquence",
+  "origine": "ES · Son et musique",
+  "def": "La décomposition d'un son en ses fréquences : la fondamentale et ses harmoniques. On l'obtient avec un logiciel d'analyse comme Audacity."
+ },
+ {
+  "mot": "Fréquence fondamentale",
+  "origine": "ES · Son et musique",
+  "def": "Notée f1 : la fréquence du premier pic du spectre. C'est elle qui donne la note jouée."
+ },
+ {
+  "mot": "Harmonique",
+  "origine": "ES · Son et musique",
+  "def": "Une fréquence multiple entier de la fondamentale : fn = n × f1. Les harmoniques font le timbre de l'instrument."
+ },
+ {
+  "mot": "Son pur",
+  "origine": "ES · Son et musique",
+  "def": "Un son dont le signal est sinusoïdal. Son spectre ne présente qu'un seul pic. Exemple : le diapason."
+ },
+ {
+  "mot": "Son complexe",
+  "origine": "ES · Son et musique",
+  "def": "Un son périodique mais non sinusoïdal. Son spectre présente plusieurs pics. C'est le cas de presque tous les instruments."
+ },
+ {
+  "mot": "Hauteur",
+  "origine": "ES · Son et musique",
+  "def": "Sensation physiologique correspondant à la fréquence fondamentale. Faible = grave, élevée = aigu."
+ },
+ {
+  "mot": "Résonance",
+  "origine": "ES · Son et musique",
+  "def": "Un système excité à l'une de ses fréquences propres accumule de l'énergie et oscille de plus en plus fort — parfois jusqu'à la rupture."
+ },
+ {
+  "mot": "Onde stationnaire",
+  "origine": "ES · Son et musique",
+  "def": "L'onde qui naît de la superposition d'une onde et de sa réflexion. Elle fait apparaître des fuseaux et des nœuds."
+ },
+ {
+  "mot": "Fuseau",
+  "origine": "ES · Son et musique",
+  "def": "Un ventre d'oscillation sur une corde ou dans une colonne d'air. Le nombre de fuseaux donne le rang de l'harmonique."
+ },
+ {
+  "mot": "Nœud",
+  "origine": "ES · Son et musique",
+  "def": "Un point d'une onde stationnaire qui reste immobile — intensité quasi nulle."
+ },
+ {
+  "mot": "Masse linéique",
+  "origine": "ES · Son et musique",
+  "def": "Notée μ, en kg·m⁻¹ : la masse d'une corde par unité de longueur. μ = m / ℓ."
+ },
+ {
+  "mot": "Octave",
+  "origine": "ES · Son et musique",
+  "def": "L'intervalle entre une note et celle de fréquence double (×2). Les deux notes portent le même nom."
+ },
+ {
+  "mot": "Quinte",
+  "origine": "ES · Son et musique",
+  "def": "L'intervalle correspondant au rapport de fréquences 3/2. Douze quintes tombent presque, mais pas tout à fait, sur sept octaves."
+ },
+ {
+  "mot": "Tempérament",
+  "origine": "ES · Son et musique",
+  "def": "La façon de répartir les douze notes dans une octave. Le tempérament égal, moderne, répartit l'erreur également sur toutes les notes."
+ },
+ {
+  "mot": "Gamme tempérée",
+  "origine": "ES · Son et musique",
+  "def": "La gamme de douze notes utilisée aujourd'hui, où chaque demi-ton multiplie la fréquence par le même facteur."
+ }
+]
+</script>
+<script src="../assets/js/sequence-snt.js?v=42"></script>
+
+</body>
+</html>

@@ -12,6 +12,59 @@
 
 ---
 
+## 06/09/2026 — L'enseignement scientifique de 1re passe sur le moteur
+
+Six chapitres portés en une session, 18 séances, depuis les documents déposés dans
+`_a-deposer/es1/`. Le brief était explicite : aller au bout de ce qui est faisable
+sans Loïc, ne pas demander de validation intermédiaire, et rendre à la fin un
+fichier de vérification point par point. C'est ce qui a été fait — le livrable est
+`_suivi/es1-verification.md`.
+
+Trois choses ne se sont pas passées comme prévu, toutes dans le bon sens.
+
+**Le TP tournant n'était pas absent.** Le brief §2bis annonçait le sous-thème 4.1
+comme « le seul endroit du chantier où il faut produire un cours entier », le TP de
+Loïc étant réputé non déposé. Il l'était, sous un nom qui ne le disait pas :
+`[Dossier] [Correction] Thème 2 - Chapitre 1.pdf`. Ouvert par acquit de conscience,
+il s'est révélé être un dossier d'activités complet, corrigés compris — TP
+d'acoustique musicale sur Audacity, activité sur la résonance avec Tacoma et les
+deux diapasons, TP de la corde de Melde avec ses mesures, TP de la colonne d'air,
+et trois exercices de lecture de spectres. Le chapitre le plus coûteux du chantier
+est devenu un portage comme les autres.
+
+**Les vidéos ont été retrouvées sans les fichiers.** Les trois épisodes de
+« L'origine des éléments chimiques » avaient été déposés en `.mp4` — inutilisables
+(Claude ne les regarde pas, et une vidéo n'a rien à faire dans un dépôt public) et
+sans URL. Les diaporamas exportés en PDF ne contiennent aucun lien hypertexte, mais
+ils contiennent des **QR codes**. Décodés en multi-échelle : **24 adresses**, dont
+les trois épisodes. La méthode vaut au-delà de ce chantier — c'est exactement le
+point resté ouvert sur `term-es-t2-c1` (« décoder les QR → liens vidéo, 7 chips
+en # »). Elle est notée dans `CLAUDE.md`.
+
+**Sept erreurs dormaient dans les documents sources.** Un atome de fer à 93 grammes
+(exposant −2 au lieu de −26), un dénominateur `a³` disparu à la mise en page, un
+stade à 150 m dans un calcul qui n'aboutit qu'à 160, une égalité fausse d'un facteur
+mille (3¹² ≈ 2⁹ au lieu de 2¹⁹ — et c'est justement l'écart qui *est* le comma
+pythagoricien), un « seize fois plus de données » qui vaut deux, un « N = 8 o » à
+lire « 3 octets », un oxygène en Z = 6. Toutes corrigées dans les pages, toutes
+signalées sur place par un cadre violet, toutes listées au §7 du fichier de
+vérification. Les PDF d'origine, eux, les portent encore.
+
+Côté technique, deux composants annoncés comme manquants existaient déjà : les
+« associations » se font avec `initEtiquettes`, et les QCM à réponses multiples sont
+gérés depuis toujours par le champ `"r"` du JSON, qui accepte un tableau. Le moteur
+n'a donc pas été touché d'une ligne. Une seule décision mérite d'être retenue : le
+client de progression n'est **pas** chargé sur ces pages. Chargé sans
+`data-sequence`, il aurait affiché aux élèves « connecte-toi pour enregistrer ton
+travail » alors que rien n'aurait été enregistré. Sans lui, le moteur dit la vérité.
+
+`verifier.mjs` revient à son repère de **18 problèmes** — les 18 liens `cfa/outil-*`
+connus. Le filtre `pagesSNT` couvre désormais les pages ES ; il a immédiatement
+attrapé quatre indices de niveau 1 qui livraient la réponse et huit QCM dont la
+bonne réponse était la plus longue. Corrigés.
+
+---
+
 ## 05/09/2026 — Les quinze TP de seconde reviennent renumérotés
 
 Loïc a retravaillé ses quinze sujets de TP pendant l'été et les a redéposés. La

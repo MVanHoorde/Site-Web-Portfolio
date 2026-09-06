@@ -59,7 +59,11 @@ Le dépôt héberge **deux gabarits distincts**, chacun avec ses consignes :
 Deux autres familles vivent à côté, avec leurs propres consignes : les **outils
 transversaux de physique-chimie** (`_modeles/CONSIGNES-outil-PC.md` — hors
 progression, ouverts toute l'année, sur le moteur SNT) et l'**enseignement
-scientifique de Terminale** (`_modeles/CONSIGNES-sequence-ES.md`).
+scientifique** (`_modeles/CONSIGNES-sequence-ES.md`) — dont les **six chapitres de
+1re**, portés sur le moteur SNT le 06/09/2026 (`pages/1re-es-tN-cN-…html`), qui
+suivent la grammaire séquence → séance → étape → champ **sans être branchés en
+base** : leur état et ce qui reste à décider vivent dans
+`_suivi/es1-verification.md`.
 
 **Avant de produire ou de modifier une page, ouvre la consigne correspondante.**
 Elles sont autonomes : chacune rappelle son périmètre et ce qui ne se transpose
@@ -164,6 +168,7 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 | **Diaporamas de projection PC** 🆕 | *(pas de page)* | `assets/pptx/pc/diaporama-2nde-<code>.pptx` — **versionnés** parce qu'ils ne sont plus régénérables. 🔴 Aucune page n'y renvoie : c'est un support de projection, pas un document d'élève — mais le dépôt étant public, le fichier reste accessible par son URL. Consignes : `_modeles/CONSIGNES-diaporama-PC.md` |
 | **Outillage** 🆕 | *(pas de page)* | `_outils/fiches/` **le générateur des fiches élève PC** — `gabarit_fiche.py` (commun aux 14 fiches, 🔴 ne pas y résoudre un problème de chapitre) + `fiche_<code>.py` + `mesurer_pages.py` · `_outils/tests/` scripts de contrôle, à lancer depuis la racine |
 | **Livret CFA** 🆕 | `cfa/index.html` · `cfa/outil-NN-…html` (17 outils) | `_modeles/gabarit-outil-CFA.html` · fiches à imprimer dans `fiches/cfa/` (**2 écrites sur 17** — les liens manquants forment le repère de 18 problèmes de `verifier.mjs`) · corrigés dans `_corriges-cfa/` · **client partagé** `assets/js/progression.js` |
+| **Enseignement scientifique 1re** 🆕 | `pages/1re-es-tN-cN-…html` (6 chapitres, 18 séances) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/es/1re-es-tN-cN/` · 🔴 **pas encore branché en base** : ni client de progression, ni `data-sequence` — voir `_suivi/es1-verification.md` |
 | **Coque / accueil / niveaux** | `index.html` (racine) · `pages/2nde-physique-chimie.html`, `pages/…-scientifique.html`, `pages/terminale-…` | `assets/fonts/`, `assets/css/`, `gravures/` |
 | **Base de données** 🆕 | *(pas de page)* | `bdd/schema/NNN-….sql` (schéma, numéroté, rejouable) · `bdd/README.md` · `supabase/migrations/` (horodaté par la CLI, **contenu recopié de `bdd/schema/`**) · client partagé `assets/js/progression.js` |
 | **Tableau de bord enseignant** 🆕 | `prof/index.html` · `prof/guide-prise-en-main.html` · `prof/guide-dispositif.html` | `assets/js/prof-api.js` · PDF des guides dans `assets/pdf/prof/`, régénérés par `node exporter-guides.mjs` |
@@ -202,6 +207,24 @@ saines. En attendant de vraies polices, intercaler `'Inter'` juste après
 genre, et Plex Sans reprendra la main d'elle-même une fois réparée. Concerne
 `assets/css/sequence-snt.css` (donc **toutes les séquences SNT et les 8 outils
 PC**), `prof/index.html` et 3 fiches.
+
+🔴 **`_a-deposer/` — dossier tampon, hors Git.** Loïc y dépose les sources brutes
+d'un chantier, dans un **sous-dossier par chantier** (`es1/`, `tp/`, `ds/`…). Rien de
+ce qui s'y trouve ne part sur GitHub Pages. Contrepartie : **toute session qui
+l'utilise rend un tri en fin de session** — une ligne par fichier, avec exactement
+l'un de ces trois verdicts : **UTILISÉ — intégré** (tout ce qui compte est repris ;
+dire *où*, sinon Loïc ne peut pas supprimer en confiance) · **UTILISÉ — à conserver**
+(source non régénérable ; proposer le chemin cible dans `assets/` ou `_suivi/`) ·
+**NON UTILISÉ** (avec la raison : hors périmètre, doublon, illisible, pas encore
+traité). **Le dossier doit être vide entre deux chantiers.** Modèle de tri :
+`_suivi/es1-verification.md` §8.
+Deux choses n'ont pas à y être déposées : les **fichiers vidéo** — Claude ne peut pas
+les regarder, et une vidéo pèse lourd dans un dépôt public ; il lui faut le **titre,
+la durée et l'URL** dans un fichier texte. Et les fichiers **déjà présents dans le
+dépôt**.
+💡 Un **diaporama exporté en PDF perd ses liens hypertexte mais garde ses QR codes**,
+et ceux-ci se décodent : c'est ainsi que les 24 URL du chantier ES1 ont été
+retrouvées. Réflexe à avoir avant de déclarer un lien perdu.
 
 Détail des conventions de nommage (3 formes de slug par chapitre PC) :
 `_modeles/CONSIGNES-chapitre-PC.md` §0. Un nouveau contenu se range **toujours**
