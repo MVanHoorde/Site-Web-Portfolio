@@ -8,7 +8,10 @@
 > Dernière réécriture : **12/09/2026** (dernière passe : **l'outil 3 « Sécurité au
 > laboratoire » est relu contre la circulaire 2024-074 — deux contradictions
 > corrigées, quatre consignes officielles ajoutées, la vérification des neuf
-> pictogrammes passe en fenêtre**, bloc ci-dessous). Passe du 06/09 : **l'enseignement
+> pictogrammes passe en fenêtre**, bloc ci-dessous). Passe du même jour :
+> **l'enseignement scientifique de terminale passe sur le moteur — deux chapitres,
+> 5 séances, et le hub réduit à ce qui est traité**, bloc ci-dessous).
+> Passe du 06/09 : **l'enseignement
 > scientifique de 1re passe sur le moteur — six chapitres, 18 séances**, bloc
 > ci-dessous). Passe du 05/09 : **les quinze sujets de
 > TP de seconde sont remplacés et renumérotés**, bloc ci-dessous). Passe du même
@@ -95,6 +98,59 @@ en pied de parcours (`assets/pdf/pc/reference/`, nouveau dossier).
    officielle ISO 7010. Les quatre photos fournies sont des visuels de catalogue, dont
    une porte « reproduction interdite » : elles servent de référence, pas de fichiers à
    publier dans un dépôt public.
+
+## 🆕 L'enseignement scientifique de terminale passe sur le moteur
+
+**Les deux chapitres du thème 2 sont portés** (`term-es-t2-c1`, `term-es-t2-c2`) :
+ils tournaient sur le gabarit des chapitres de physique-chimie, ils tournent
+désormais sur le moteur des séquences, dans la grammaire de l'ES de 1re. **5 séances,
+25 étapes, 8 QCM, 20 textes à trous (79 champs), 7 réponses rédigées, 32 figures.**
+Le portage s'est fait **en place**, sous le même nom de fichier : les liens du hub
+n'ont pas bougé.
+
+**Le hub de terminale n'affiche plus que ce qui est traité.** Thème 1 entier, 2.3,
+2.4 et thème 3 entier passent **en commentaire HTML** — retirés de l'affichage, pas
+du fichier, chaque bloc portant la ligne qui dit comment le rétablir. La **séquence
+d'ouverture (la frise) reste visible**. Le chapeau, qui annonçait « trois grands
+thèmes » devant un seul, est réécrit.
+
+**Le chapitre 2 avait zéro image ; il en a dix-sept.** Son bloc « à faire » demandait
+d'ouvrir un **PPTX de 230 Mo** pour les extraire : elles étaient toutes dans le PDF de
+correction, qui pèse 2,8 Mo. La carte de la géothermie y était **coupée en deux
+morceaux**, recollés avant export. Il ne manque plus qu'**une seule image** dans les
+deux chapitres — les trois photos de turbines du T2-C2, présentes en vignettes de
+120 px, inutilisables. Un cadre de réservation les attend.
+
+**Les QR codes ont de nouveau payé — mais pas partout.** Le diaporama du T2-C1 en
+portait : **7 vidéos et 2 Kahoot** récupérées, les 11 puces `href="#"` sont remplies,
+chaque titre vérifié un par un. La **correction de l'exercice 2** (groupe électrogène)
+et sa **fiche technique** étaient page 7 du même PDF. 🔴 **Mais le PDF du T2-C2 ne
+porte aucun QR code** : ses 15 liens vidéo restent introuvables. Leurs titres exacts
+sont listés — une recherche suffit pour chacun.
+
+🔴 **Cinq erreurs de source, dont une était visible des élèves** : l'exercice 3 du
+T2-C1 proposait en ligne **l'arséniure de gallium** là où la correction dit
+**germanium**. Les quatre autres : une légende « cycles de Milankovitch » devant un
+graphique ΔT/CO₂, un « PES » pour « FES », une batterie au lithium à 90 % dans
+l'énoncé et 80 % dans sa propre correction, trois numéros d'image employés deux fois.
+**Corrigées dans les pages, pas dans les PDF.**
+
+🔴 **Rien n'est branché en base**, comme l'ES de 1re : ni client de progression, ni
+`data-sequence`. Le moteur dit alors la vérité (« gardé pour cette séance ») au lieu
+d'afficher « connecte-toi pour enregistrer ton travail » devant un stockage qui
+n'existe pas.
+
+**Le moteur n'a pas été modifié d'une ligne.** `node verifier.mjs` : **18 problèmes
+avant, 18 après**. Les deux pages ouvertes dans un Chromium : aucune erreur JS,
+aucune ressource en échec, **aucune iframe ne porte de `src`** au chargement.
+
+⏳ **Rien n'est validé**, et **7 décisions attendent** (D1-D7) : le sort de la
+checklist « Pour le DS », la contradiction sur le coût des tours de béton, la forme
+de l'exercice 3, la chaîne YouTube à confirmer, le branchement en base, le retour des
+chapitres masqués, les fiches élève. Relevé complet :
+**`_suivi/es-term-verification.md`**.
+
+---
 
 ## 🆕 L'enseignement scientifique de 1re passe sur le moteur
 
@@ -430,8 +486,9 @@ rejoignent `_outils/tests/` ; les **3,7 Mo d'aperçus d'audit** sortent du suivi
 Le fleuron `U+2766` n'existait dans aucune des vingt-deux polices auto-hébergées : il
 s'affichait par repli sur une police système. Il est remplacé par un **filet court +
 un losange**, dessinés en CSS, dans **une seule règle** de `chapitre-commun.css`. La
-feuille passe en **`?v=8` dans les 17 fichiers**. Dix encarts changent d'allure, dont
-**un hors seconde PC** — `term-es-t2-c1` : la feuille est partagée, c'est voulu.
+feuille passe en **`?v=8` dans les 17 fichiers**. Dix encarts changent d'allure. ⚠ Le dixième
+était `term-es-t2-c1` : **cette page a quitté la feuille commune le 12/09**, en passant
+sur le moteur des séquences.
 Vérifié à la mesure : symétrie au pixel, losange à 0,22px de la médiane des capitales,
 libellé sur deux lignes à 390px sans losange orphelin, et **survie à la photocopie**
 (niveaux de gris + seuil dur).
@@ -487,11 +544,11 @@ fleuron, mais **sur du contenu** : rien n'a été modifié, c'est du fond.
 > feuille commune. Neuf images ont été produites dans la session — l'archive que
 > le brief annonçait n'existait pas, mais toutes les sources brutes étaient là.
 >
-> 🔴 **`chapitre-commun.css` est en `?v=8` — dans 17 fichiers, pas 14.** Le
-> brief et `CLAUDE.md` parlent des « 14 pages PC » ; le dépôt compte trois
-> fichiers de plus qui chargent cette feuille : `_modeles/gabarit-chapitre.html`
-> et les **deux pages d'enseignement scientifique de Terminale**. La consigne est
-> à corriger.
+> 🔴 **La feuille commune des chapitres est lue par 15 fichiers, pas 14.** Le
+> brief et `CLAUDE.md` parlent des « 14 pages PC » ; il faut y ajouter
+> `_modeles/gabarit-chapitre.html`. Les **deux pages d'enseignement scientifique
+> de Terminale**, qui la chargeaient aussi, en sont sorties le 12/09 en passant
+> sur le moteur des séquences. La consigne est à corriger.
 >
 > ⏳ **Tout le contenu neuf est une proposition non validée** : les quatre
 > exercices, les trois corrections rédigées, l'accroche du chapitre (une
@@ -527,7 +584,7 @@ fleuron, mais **sur du contenu** : rien n'a été modifié, c'est du fond.
 | **Cahier de vacances** | 14 pages, 2 blocs 🚧. La partie la plus finie du dépôt. |
 | **Coque — page d'accueil** 🆕 | 🔄 **Refondue le 27/08** après comparaison de onze maquettes (dix organisations, puis six fonds). Deux colonnes asymétriques : à gauche les trois classes en portes illustrées — PC, SNT, CFA en **une seule porte** pour les deux diplômes — les trois autres niveaux en lignes sobres marquées `.a-venir`, puis l'adresse professionnelle réelle ; à droite une colonne collante (gravure du jour, 4 fiches-outils, Animations 🚧, Mission Spectra). Nouvelle bande « Auteur & vidéo » en pied, **vide, trois entrées en chantier**. Le compte à rebours bascule sur l'état du projet passé le 1er septembre. `style.css` **non modifié** ; tout le CSS reste inline. Décisions ACC-1 à ACC-12. ⏳ **Deux formulations à valider** : la bascule d'après-rentrée (« En chantier · ouverture en cours d'année ») et le libellé des trois entrées « Auteur & vidéo ». La planche du jour reste un **cadre annoté** tant que `gravures/` est vide. |
 | **ES Première** 🆕 | **Ouvert le 06/09/2026.** Six chapitres, **18 séances**, sur le moteur de séquences — nucléosynthèse (qui porte aussi le **tutoriel du dispositif**, rôle de `t0` pour le SNT), radioactivité, cristaux, son et musique, son à coder, forme de la Terre. Tout est porté depuis les documents de Loïc ; **40 cadres `.proposition`** signalent ce que Claude a ajouté, **13 cadres de réservation** ce qui manque. 🔴 **Rien n'est branché en base** (ni client de progression, ni `data-sequence`) : c'est un deuxième temps. 🔴 **Six images bloquent trois exercices** (ES-01 à ES-06). Le hub porte la numérotation de Loïc (C1, C2, C3) et une carte `.a-venir` pour **3.3 « La Terre dans l'Univers »**. `1re-pc-cristaux.html` reste en place jusqu'à validation. **Rien n'est validé** — relevé complet : `_suivi/es1-verification.md`. |
-| **ES Terminale** | frise fonctionnelle en local ; `serveur-frise/` et `ia-correction/` en chantier. |
+| **ES Terminale** 🆕 | **Les deux chapitres du thème 2 sont passés sur le moteur des séquences le 12/09** : `t2-c1` « Deux siècles d'énergie électrique » (2 séances) et `t2-c2` « Production et stockage de l'électricité » (3 séances) — 25 étapes, 8 QCM, 79 champs à remplir, **32 figures** dont 17 extraites du PDF corrigé pour un chapitre qui n'en avait aucune. Les **7 vidéos et 2 Kahoot** du `t2-c1` sont posées (QR décodés) ; les **15 liens du `t2-c2` restent introuvables** — ce PDF-là n'a pas de QR code. 🔴 **Rien n'est branché en base**, comme en 1re. 🔴 **Le hub n'affiche plus que ce qui est traité** : thème 1, 2.3, 2.4 et thème 3 sont **en commentaire**, la frise reste visible. **Rien n'est validé**, 7 décisions attendent (D1-D7) — relevé complet : `_suivi/es-term-verification.md`. À côté : frise fonctionnelle en local ; `serveur-frise/` et `ia-correction/` en chantier. |
 
 **Validation** : un seul contenu est validé à ce jour — **`t1` « Internet », sur
 le fond, le 23/08/2026**, et il n'est pas encore *clos* (il attend la vérification

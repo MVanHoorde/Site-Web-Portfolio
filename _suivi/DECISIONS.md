@@ -52,11 +52,62 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 26/08/2026 | ⏳ **Le texte de la carte « Formation d'une image »** | La phrase qui dit que le TP **est** le cours est une V1 (§8.1 du brief). Deux propriétés à garder si Loïc la réécrit : aucune tournure d'attente, et la raison énoncée simplement. |
 | 06/09/2026 | ⏳ **Les six images manquantes de l'ES 1re** (ES-01 à ES-06) | Quatre figures des cristaux, la courbe GeoGebra de la radioactivité, le graphique de Melde, l'image 5 du son à coder, le schéma de l'horizon. Toutes sont **vectorielles dans les PPTX** et non extractibles du PDF. Sans elles, `a = 2r`, `4R = a√2` et le Pythagore de l'horizon tombent du ciel. Une copie d'écran de diapositive suffit. |
 | 06/09/2026 | ⏳ **Les trois notions du 4.1 absentes du dossier « Son et musique »** (ES-03) | Production/propagation, célérité, niveau sonore. Elles sont **déjà écrites** dans le chapitre de seconde T3-C1, en V1 intégrale. Les rehausser au niveau 1re et les insérer, ou les considérer acquises de seconde ? Rien n'a été recopié — c'est du fond pédagogique. |
+| 12/09/2026 | ⏳ **D1 — Le sort de la checklist « Pour le DS, je sais »** (ES Term) | Elle existait en cases à cocher sauvegardées dans le navigateur ; le moteur des séquences n'a pas ce composant. Devenue un **tableau de renvoi vers les étapes**. Trois formes possibles : garder ce tableau · en faire un **QCM de fin de chapitre** · la **sortir vers la fiche élève**. À trancher **pour les deux chapitres à la fois**. |
+| 12/09/2026 | ⏳ **D2 — Le coût des tours de béton : deux conclusions opposées** (T2-C2, ex. 2 et 3) | L'exercice 2 conclut « économiquement intéressant » (135 €/kWh contre 400 pour une batterie) ; l'exercice 3, « très élevé » (les STEP sont à 5-20 €/kWh). Les deux sont exactes — elles ne comparent pas à la même chose. Mais l'élève qui enchaîne lira une contradiction. Ajouter une incise, ou **faire de cette tension une question** ? |
+| 12/09/2026 | ⏳ **D3 — Exercice 3 du T2-C2 : un champ ou neuf ?** | Posé en une seule réponse rédigée, comme la source. En **neuf champs courts** (un par critère), on garantirait qu'aucun n'est oublié — ce que l'exercice sanctionne justement. Rédaction continue (format bac) contre méthode complète. |
+| 12/09/2026 | ⏳ **D4 — La chaîne `@CogitoErgoSum1` est-elle celle de Loïc ?** | Le QR « Découvrir la chaîne YouTube de mon enseignant » (T2-C1) y mène. Rien dans le PDF ne le confirme. Si oui, le même lien est à poser au T2-C2, étape 1.4. |
+| 12/09/2026 | ⏳ **D5 — Le branchement en base de l'ES de terminale** | Comme la 1re : ni client de progression, ni `data-sequence`. À faire **en même temps que la 1re**, ou séparément ? Les six gestes sont listés au §4 de `es1-verification.md`. |
+| 12/09/2026 | ⏳ **D6 — Le retour des chapitres masqués au hub de terminale** | Thème 1, 2.3, 2.4 et thème 3 sont en commentaire depuis le 12/09. Doivent-ils réapparaître **un par un** au fil de l'année, ou tous ensemble ? |
+| 12/09/2026 | ⏳ **D7 — Les fiches élève de l'ES de terminale** | Aucune n'existe. Sur le modèle des chapitres PC (`CONSIGNES-fiche-eleve-PC.md`), ou sur autre chose — l'ES n'ayant pas la même économie de séance ? |
+| 12/09/2026 | ⏳ **Les 20 liens vidéo introuvables de l'ES de terminale** | Le PDF du T2-C2 ne porte **aucun QR code**, et cinq diapositives du T2-C1 non plus. Les **titres exacts** sont listés au §3.2 de `es-term-verification.md` : une recherche suffit pour chacun. |
+| 12/09/2026 | ⏳ **Les 5 erreurs et contradictions trouvées dans les sources de l'ES Term** | Germanium annoncé comme arséniure de gallium (**seule erreur visible des élèves**, corrigée) · légende « cycles de Milankovitch » sur un graphique ΔT/CO₂ · « PES » pour « FES » · batterie lithium à 90 % dans l'énoncé et 80 % dans la correction · numéros d'image employés deux fois. **Corrigées dans les pages, pas dans les PDF.** Détail : `es-term-verification.md` §5. |
 | 06/09/2026 | ⏳ **Les droits des documents repris en ES 1re** (ES-07, ES-08, ES-09) | Une infographie **AFP**, quatre **extraits de manuel**, et 81 images dont la provenance se résume à « reprise du cours de M. Van Hoorde ». Le dépôt est public. Même dossier que les treize photographies de T1-C3 (`t1c3-releve.md` §2). |
 | 06/09/2026 | ⏳ **Le contenu des 24 vidéos récupérées par QR code** (ES-11) | Les adresses sont sûres (décodage des QR des diaporamas), mais **ni le titre ni la durée n'ont pu être vérifiés**. Un coup d'œil suffit. Concerne notamment les trois épisodes de « L'origine des éléments chimiques ». |
 | 06/09/2026 | ⏳ **Le sort de `pages/1re-pc-cristaux.html`** (ES-14) | La page statique n'a pas été touchée ; le hub pointe vers la nouvelle séquence et garde un second lien vers elle. À supprimer une fois `1re-es-t1-c3-cristaux.html` validé. |
 | 06/09/2026 | ⏳ **Les sept erreurs trouvées dans les documents sources de l'ES** | Exposant perdu (9,35 × 10⁻² au lieu de 10⁻²⁶), dénominateur a³ manquant, facteur 150 au lieu de 160, 3¹² ≈ 2⁹ au lieu de 2¹⁹, « 16 fois » au lieu de « 2 fois », « N = 8 o » au lieu de 3 octets, oxygène en Z = 6. **Corrigées dans les pages, pas dans les PDF.** Détail : `es1-verification.md` §7. |
 | 05/09/2026 | ⏳ **La place des outils transversaux dans la progression SNT** | Règle provisoire posée ce jour : `snt-m*` est hors de la file du plafond, toujours ouvert, jamais compté. Loïc la reprendra **quand la progression de l'année sera établie** — le module pourrait alors devenir une étape datée, ou rester une ressource permanente. Voir « Les outils transversaux sortent du plafond ». |
+
+---
+
+## L'enseignement scientifique de terminale passe sur le moteur — 12/09/2026
+
+Les deux chapitres du thème 2 qui existaient en ligne sont portés sur le moteur des
+séquences, et le hub de terminale est réduit à ce qui est traité.
+
+**✅ Le découpage en séances — T2-C1 en 2 séances, T2-C2 en 3.** Arbitré par Loïc
+avant écriture, en suivant le découpage des parties existantes (alternateur /
+photovoltaïque d'un côté ; production / stockage / impacts de l'autre). Deux autres
+formes avaient été proposées : isoler les rendements et les exercices dans une
+séance de fin, ou n'en faire qu'un seul bloc sans verrouillage.
+
+**✅ Le portage se fait en place, sous le même nom de fichier.** Les liens du hub ne
+bougent pas, et l'ancienne version reste dans l'historique Git. Les deux pages
+sortent du même coup des fichiers qui chargent la feuille commune des chapitres PC
+— elle n'est plus lue que par 15 fichiers au lieu de 17.
+
+**✅ Les chapitres non traités sont masqués, pas supprimés.** Thème 1 entier, 2.3,
+2.4 et thème 3 entier passent **en commentaire HTML** dans le hub, chaque bloc
+portant la ligne qui dit comment le rétablir. La **séquence d'ouverture (la frise)
+reste visible** : Loïc l'a explicitement conservée. Le chapeau de la page a été
+réécrit en conséquence — il annonçait « trois grands thèmes » devant un seul.
+
+**✅ Les 17 figures du T2-C2 viennent du PDF de correction, pas du PPTX.** Le
+chapitre n'avait **aucune image**, et son bloc « à faire » demandait d'ouvrir un
+PPTX de 230 Mo. Tout était dans le PDF de 2,8 Mo. La carte de la géothermie y était
+**coupée en deux morceaux**, recollés avant export.
+
+**✅ Les pages restent hors base, comme l'ES de 1re.** Ni client de progression, ni
+`data-sequence` : le moteur dit honnêtement « gardé pour cette séance » plutôt que
+d'afficher « connecte-toi pour enregistrer ton travail » devant un stockage qui
+n'existe pas. Voir D5.
+
+**⚠ Une erreur de contenu qui était en ligne a été corrigée.** L'exercice 3 du T2-C1
+proposait **l'arséniure de gallium** comme réponse (signalée « à confirmer » depuis
+juillet). Le PDF corrigé dit **germanium**, avec la nuance rendement/coût qui est le
+cœur de l'exercice. Voir `es-term-verification.md` §5.
+
+**Le moteur n'a pas été modifié d'une ligne** — ni le JS, ni la feuille de style, ni
+le client de progression. Rien de partagé n'a bougé.
 
 ---
 

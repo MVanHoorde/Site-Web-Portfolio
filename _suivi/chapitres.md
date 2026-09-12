@@ -1387,15 +1387,21 @@ mille…) : détail au §7 de `es1-verification.md`. À reprendre dans les PDF d
 | Page | État | Prochains jalons |
 |---|---|---|
 | term-es-s01-frise | ✅ V1 locale | brancher serveur · champ image · vote titres |
-| term-es-t2-c1-deux-siecles-energie-electrique | **ébauche complète** (texte fidèle, 14 images posées, 6 encarts, 3 exercices dont 2 corrigés) | décoder les QR → liens vidéo (7 chips en #) · correction ex.2 (groupe électrogène) · verrou (code à fournir) · fiche PDF |
-| term-es-t2-c2-production-stockage-electricite | **ébauche complète** (texte fidèle, 3 sections, 4 exercices, corrections proposées) | extraire images du pptx 230 Mo (régime B) · liens vidéo · trancher où vit « transport/effet Joule » (2.2 ou 2.3) · DS à créer |
-| 2.3 / cours IA / débat | 🚧 annoncés sur la page de niveau | cours 1 s'écrit après S3 (frise réelle de la classe) |
+| term-es-t2-c1-deux-siecles-energie-electrique | **V0 portée sur le moteur des séquences** (12/09) — 2 séances, 12 étapes, 4 QCM, 9 textes à trous, 15 figures. Les **7 vidéos et 2 Kahoot** sont posées (QR décodés) ; la **correction de l'exercice 2** et la fiche technique du groupe électrogène sont en ligne | 5 liens vidéo de la séance 2 (sans QR dans la source) · confirmer la chaîne `@CogitoErgoSum1` · sort de la checklist DS (D1) · fiche élève |
+| term-es-t2-c2-production-stockage-electricite | **V0 portée sur le moteur des séquences** (12/09) — 3 séances, 13 étapes, 4 QCM, 11 textes à trous, **17 figures extraites du PDF corrigé** (le chapitre n'en avait aucune) | 15 liens vidéo + 3 documents (ce PDF n'a **aucun** QR code) · photo des 3 turbines · arbitrage du coût Energy Vault (D2) · forme de l'exercice 3 (D3) · fiche élève · DS |
+| 2.3 / 2.4 / thème 1 / thème 3 | **masqués au hub le 12/09** — en commentaire, pas supprimés | les rétablir au fil de l'année (D6) |
+| cours IA / débat | 🚧 annoncés sur la page de niveau | cours 1 s'écrit après S3 (frise réelle de la classe) |
+
+**Les deux chapitres du thème 2 ont leur fichier de vérification :
+`_suivi/es-term-verification.md`** — c'est là que vivent le détail des étapes, les
+20 liens à retrouver, les 7 décisions attendues (D1-D7) et les 5 erreurs de source.
 
 **Remarques d'audit à trancher par Loïc :**
 - Titre page de niveau 2.2 (« Les atouts de l'électricité ») ≠ titre du cours
   (« Production et stockage ») — harmoniser ?
-- Le diaporama 2.2 ouvre sur les **cycles de Milankovitch** (image 1) : recyclage
-  probable du Thème 1 climat — candidate au retrait dans la version web (retirée
-  de l'ébauche, à confirmer).
-- Corrections des exercices « pile à hydrogène » et « Energy Vault » **rédigées
-  par Claude** (chiffres vérifiés) : à relire pour le ton avant classe.
+- L'image d'ouverture du 2.2 est **conservée** : ce n'est pas un recyclage du thème 1.
+  Elle porte les courbes ΔT/CO₂ sur 450 000 ans, et sert à poser la question du
+  chapitre (pourquoi chercher à produire sans combustion). Sa légende d'origine,
+  qui annonçait des « cycles de Milankovitch », était fausse — réécrite dans la page.
+- Corrections des exercices « pile à hydrogène » et « Energy Vault » : elles viennent
+  désormais **du PDF corrigé de Loïc**, et non plus d'une rédaction de Claude.

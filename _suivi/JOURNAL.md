@@ -12,6 +12,56 @@
 
 ---
 
+## 12/09/2026 — L'enseignement scientifique de terminale passe sur le moteur
+
+Deux chapitres portés, et un hub remis à la taille de ce qui est réellement traité.
+La demande tenait en deux phrases : transformer les deux cours de terminale « dans le
+même mode que ce qu'il y a en première enseignement scientifique », et faire
+disparaître du hub tout ce qui n'est pas traité — thème 1 entier, 2.3, 2.4, thème 3
+entier.
+
+**Le point de départ n'était pas une page vide.** Les deux chapitres étaient en ligne
+depuis juillet, mais sur le gabarit des chapitres de physique-chimie : un cours qu'on
+déroule, avec des encarts et une checklist « Pour le DS » à cocher. Ils tournent
+désormais sur le moteur des séquences — séances verrouillées, étapes à valider, QCM,
+textes à trous, réponses rédigées — dans la grammaire de l'ES de 1re et du SNT. Le
+texte du cours n'a pas été réécrit ; ce qui est neuf, ce sont les questions, et
+chacune porte son cadre « proposition ».
+
+**Trois choses qu'on croyait perdues ne l'étaient pas.** ① Le chapitre 2 n'avait
+**aucune image**, et son bloc « à faire » demandait d'ouvrir un **PPTX de 230 Mo**
+pour les extraire. Les **17 figures** étaient dans le PDF de correction, qui pèse
+2,8 Mo — dont la carte de la géothermie, stockée **en deux morceaux** qu'il a fallu
+recoller. ② La **correction de l'exercice 2** du chapitre 1 (groupe électrogène),
+réclamée depuis juillet, est page 7 du PDF, avec la **fiche technique** sans laquelle
+l'exercice n'a pas d'énoncé. ③ Les **QR codes du diaporama du chapitre 1** ont livré
+**7 vidéos et 2 Kahoot** — les 11 puces en `href="#"` sont remplies, chaque titre
+vérifié un par un. Le réflexe vient du chantier ES1 du 06/09 ; il a de nouveau payé.
+
+**Mais il a ses limites.** Le PDF du chapitre 2 **ne porte aucun QR code** : ses
+15 liens vidéo restent introuvables. Ce qu'on peut faire de mieux, c'est ce qui a été
+fait — lister les **titres exacts et les chaînes**, tels que le cours les donne, pour
+qu'une recherche suffise.
+
+**Cinq erreurs de source, dont une était visible des élèves.** L'exercice 3 du
+chapitre 1 proposait en ligne **l'arséniure de gallium** ; la correction dit
+**germanium**. Le reste : une légende annonçant des « cycles de Milankovitch » devant
+un graphique ΔT/CO₂, un « PES » pour « FES », une batterie au lithium donnée à 90 %
+dans l'énoncé et 80 % dans sa propre correction, et trois numéros d'image employés
+deux fois. Toutes corrigées dans les pages, signalées sur place, listées au §5 du
+fichier de vérification — **pas encore dans les PDF d'origine**.
+
+**Ce qui n'a pas bougé.** Le moteur n'a pas été modifié d'une ligne : ni le JS, ni la
+feuille de style, ni le client de progression. `node verifier.mjs` : **18 problèmes
+avant, 18 après** — le repère est intact. Les deux pages ont été ouvertes dans un
+Chromium : aucune erreur JS, aucune ressource en échec, et **aucune iframe ne porte
+de `src`** au chargement.
+
+Livrable : `_suivi/es-term-verification.md`, sur le modèle de celui de l'ES1 —
+25 étapes détaillées, 20 liens à retrouver, **7 décisions attendues (D1-D7)**.
+
+---
+
 ## 06/09/2026 — L'enseignement scientifique de 1re passe sur le moteur
 
 Six chapitres portés en une session, 18 séances, depuis les documents déposés dans
