@@ -164,14 +164,74 @@
   .famille > h4{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
                 color:var(--link);margin:0 0 3px;font-weight:600}
   .famille > .fam-sous{font-size:13.5px;color:var(--ink-soft);margin:0 0 10px}
-  .grille-picto{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:11px}
-  .pic{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px}
+  /* Une famille tient sur UNE ligne : la planche se lit d'un coup d'œil, et
+     le détail s'ouvre au clic dans un panneau sous la rangée (audit du
+     12/09/2026 — la page donnait dix pavés de texte empilés). Le flex
+     centre la rangée, ce qui règle aussi le cas de la troisième famille :
+     un seul pictogramme, au milieu. */
+  .grille-picto{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+  .pic{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 7px;
+       flex:0 1 132px;max-width:152px}
   .pic svg{width:100%;max-width:78px;height:auto;display:block;margin:0 auto 7px}
   .pic .nom{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.04em;
             color:var(--ink);font-weight:600;text-align:center;line-height:1.35;margin-bottom:5px}
   .pic .quoi{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
   .pic .quoi li{margin-bottom:2px}
   .pic .quoi ul{margin:0;padding-left:15px}
+  /* Les règles ci-dessous ne valent QUE si le script a pris la main
+     (.js-planches) : sans JavaScript, les descriptions restent affichées
+     sous chaque pictogramme, comme avant — on ne cache rien qu'on ne
+     sache rouvrir. */
+  .familles.js-planches .pic{cursor:pointer;transition:border-color .15s,box-shadow .15s}
+  .familles.js-planches .pic:hover{border-color:var(--link)}
+  .familles.js-planches .pic:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+  .familles.js-planches .pic .quoi,
+  .familles.js-planches .pic .deja{display:none}
+  .familles.js-planches .pic.ouvert{border-color:var(--link);box-shadow:0 0 0 2px var(--surface-2)}
+  .pic .plus{display:none}
+  .familles.js-planches .pic .plus{display:block;text-align:center;font-family:"IBM Plex Mono";
+       font-size:9.5px;letter-spacing:.05em;color:var(--link);margin-top:5px}
+  .pic-detail{display:none;margin-top:11px;border:1px solid var(--link);border-radius:10px;
+       background:var(--surface);padding:11px 13px}
+  .pic-detail.ouvert{display:block}
+  .pic-detail .pd-nom{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.05em;
+       font-weight:600;color:var(--link);margin-bottom:6px}
+  .pic-detail .quoi{font-size:13.5px;color:var(--ink-soft);line-height:1.5}
+  .pic-detail .quoi ul{margin:0;padding-left:17px}
+  .pic-detail .quoi li{margin-bottom:3px}
+  .pic-detail .deja{display:block;font-family:"IBM Plex Mono";font-size:10px;letter-spacing:.05em;
+       color:var(--link);margin-top:7px}
+
+  /* ---------- La vérification des neuf, en fenêtre ----------
+     Demande du 12/09/2026 : l'élève ne doit pas pouvoir remonter lire la
+     planche pendant qu'il répond. Le voile grise la page et bloque le
+     défilement ; le champ, lui, NE BOUGE PAS du flux — il est seulement
+     remonté en z-index. Le déplacer dans le voile le sortirait de son
+     .step, et le moteur retrouve son étape par closest('.step') au clic
+     sur « Vérifier » : l'étape ne se validerait plus. */
+  .o3-voile{position:fixed;inset:0;z-index:80;background:rgba(22,31,51,.55);
+       -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  .o3-verif-on{overflow:hidden}          /* posée sur <html> ET <body> */
+  .field.o3-verif-actif{position:relative;z-index:95;border-color:var(--link);
+       background:var(--surface);box-shadow:0 18px 50px rgba(0,0,0,.35)}
+  @media (prefers-reduced-motion:reduce){
+    .o3-voile{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(22,31,51,.74)}
+  }
+  .o3-un-a-la-fois tr.o3-ligne{display:none}
+  .o3-un-a-la-fois tr.o3-ligne.o3-courant{display:table-row}
+  .o3-porte{margin:10px 0 2px}
+  .o3-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;
+       margin-top:13px;flex-wrap:wrap}
+  .o3-nav .o3-boutons{display:flex;gap:8px;flex-wrap:wrap}
+  .o3-jauge{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--ink-faint)}
+  .o3-points{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+  .o3-points i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
+  .o3-points i.remplie{background:var(--link)}
+  .o3-points i.courante{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--link)}
+  .o3-avert{font-size:12.5px;color:var(--wait);background:var(--wait-wash);
+       border:1px solid var(--wait);border-radius:9px;padding:8px 11px;margin-top:10px;display:none}
+  .o3-avert.show{display:block}
+
   /* le corrosif paraît dans DEUX familles : on le signale au lieu de
      le corriger — c'est le fond de la source, et c'est juste. */
   .pic.deuxfois{border-color:var(--link);border-style:dashed}
@@ -1250,8 +1310,10 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
 
             <div class="point-cle"><b>Pourquoi le coton&nbsp;?</b> Une blouse synthétique <b>fond</b> au contact d'une flamme et colle à la peau. Le coton, lui, brûle sans se coller — c'est ce qui fait la différence entre une brûlure et une greffe.</div>
 
-            <div class="block-label">Ce que le professeur peut demander en plus<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
-            <p style="font-size:14.5px;margin:4px 0 10px">Les <b>lunettes de protection</b> et les <b>gants</b> ne sont pas systématiques&nbsp;: ils se portent <b>quand le professeur le demande</b>, selon le produit manipulé. La consigne arrive au début de la séance — c'est le premier moment où l'on écoute.</p>
+            <div class="block-label">Les deux équipements de base, et ce qui s'y ajoute<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">La <b>blouse en coton, boutonnée</b>, et les <b>lunettes de protection</b> sont les deux équipements de base&nbsp;: ils se portent <b>à chaque séance</b>, sans avoir à le demander — c'est écrit au règlement du laboratoire. Les <b>gants</b> s'y ajoutent selon le produit manipulé&nbsp;: cette consigne-là arrive au début de la séance, c'est le premier moment où l'on écoute.</p>
+
+            <div class="point-cle"><b>Une blouse ouverte ne protège pas.</b> Elle est faite pour recevoir la projection à la place de tes vêtements et de ta peau&nbsp;: déboutonnée, elle laisse passer ce qu'elle devait arrêter. Même chose pour les lunettes relevées sur le front — on les a, on ne les porte pas.</div>
 
             <div class="eviter">
               <span class="et">⚠ Le port de lentilles est vivement déconseillé</span>
@@ -1260,9 +1322,9 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
 
             <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">
-              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">cheveux attachés · blouse coton<br>jambes couvertes · chaussures fermées</div></div></div>
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">cheveux attachés · blouse coton boutonnée<br>lunettes · jambes couvertes · chaussures fermées</div></div></div>
               <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">S'habiller <b>chez soi</b> en pensant au TP&nbsp;: devant la porte de la salle, plus rien ne se rattrape.</div></div>
-              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Lunettes et gants&nbsp;: écouter la <b>consigne</b> du début de séance, elle dépend du produit.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Blouse et lunettes&nbsp;: <b>à chaque séance</b>. Les <b>gants</b>&nbsp;: écouter la consigne du début de séance, elle dépend du produit.</div></div>
               <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Les <b>lentilles</b> — elles ne protègent pas, elles retiennent le produit contre l'œil.</div></div>
             </div>
 
@@ -1306,13 +1368,13 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
  {
   "q": "Les lunettes de protection, quand les portes-tu ?",
   "o": [
-   "À chaque séance de TP, sans exception",
    "Seulement si tu manipules un liquide coloré",
+   "À chaque séance, comme la blouse",
    "Jamais : elles sont réservées au professeur",
-   "Quand le professeur le demande, selon le produit"
+   "Uniquement quand le professeur le demande"
   ],
-  "r": 3,
-  "c": "Elles ne sont pas systématiques : la consigne arrive <b>au début de la séance</b> et dépend du produit. C'est pour cela que les deux premières minutes du TP s'écoutent."
+  "r": 1,
+  "c": "Blouse et lunettes sont les <b>deux équipements de base</b> : ils se portent à chaque séance, sans qu'on ait à le demander. Ce qui dépend du produit — et donc de la consigne de début de séance — ce sont les <b>gants</b>."
  },
  {
   "q": "Tu portes des lentilles de contact. Que dit la fiche ?",
@@ -1400,7 +1462,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
                   <div class="pic">
                     <svg viewBox="0 0 100 100" role="img" aria-label="Pictogramme dangereux pour la santé : un point d'exclamation"><use href="#clp-exclamation"/></svg>
                     <div class="nom">DANGEREUX POUR LA SANTÉ</div>
-                    <div class="quoi"><ul><li>Peut empoisonner à forte dose</li><li>Peut irriter la peau, les yeux, les voies respiratoires</li><li>Peut provoquer des allergies cutanées, une somnolence ou un vertige</li></ul></div>
+                    <div class="quoi"><ul><li>Peut empoisonner à forte dose</li><li>Peut irriter la peau, les yeux, les voies respiratoires</li><li>Peut provoquer des allergies cutanées, une somnolence ou un vertige</li><li>Peut détruire l'ozone dans la haute atmosphère</li></ul></div>
                   </div>
                   <div class="pic">
                     <svg viewBox="0 0 100 100" role="img" aria-label="Pictogramme très dangereux pour la santé : un buste humain marqué d'une étoile"><use href="#clp-sante"/></svg>
@@ -1433,10 +1495,19 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
               </ul>
             </div>
 
+            <div class="block-label">Le reste de l'étiquette — le dessin ne dit pas tout<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Sous les pictogrammes, trois choses sont écrites en toutes lettres. Elles ne sont pas décoratives&nbsp;: c'est là qu'on apprend <b>ce que le produit fait</b>, et <b>ce qu'on doit faire</b>.</p>
+            <ul style="font-size:14.5px;line-height:1.7;margin:4px 0 12px;padding-left:22px">
+              <li><b>La mention d'avertissement</b> — un seul mot, <b>DANGER</b> ou <b>ATTENTION</b>. «&nbsp;DANGER&nbsp;» est réservé aux produits qui demandent le plus de précautions&nbsp;; «&nbsp;ATTENTION&nbsp;» signale un danger moindre. Un coup d'œil suffit à les distinguer.</li>
+              <li><b>Les mentions de danger</b>, numérotées <b>H</b> (<i>hazard</i>, danger en anglais) — ce que le produit <b>peut faire</b>. Exemple&nbsp;: <b>H314</b>, «&nbsp;provoque de graves brûlures de la peau et des lésions oculaires&nbsp;».</li>
+              <li><b>Les conseils de prudence</b>, numérotés <b>P</b> (<i>precautionary</i>) — ce que <b>tu dois faire</b>&nbsp;: porter des gants, ne pas respirer les vapeurs, et quoi faire en cas de contact.</li>
+            </ul>
+            <div class="point-cle"><b>Et sur les flacons du laboratoire&nbsp;?</b> Une solution préparée par le professeur porte une étiquette faite maison&nbsp;: le nom du produit, sa concentration, les pictogrammes, et la <b>date de préparation</b>. C'est la même lecture, sur une étiquette écrite à la main.</div>
+
             <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">
               <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">lire l'étiquette AVANT de toucher</div></div></div>
-              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Repérer les pictogrammes, puis lire les <b>mentions</b> écrites à côté&nbsp;: le dessin annonce, le texte précise.</div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Repérer les pictogrammes, puis lire ce qui est écrit&nbsp;: la mention <b>DANGER</b> ou <b>ATTENTION</b>, les mentions <b>H</b> (ce qu'il fait), les conseils <b>P</b> (ce que tu fais).</div></div>
               <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Trois familles&nbsp;: ce que le produit fait <b>seul</b> · ce qu'il te fait <b>à toi</b> · ce qu'il fait <b>ailleurs</b>.</div></div>
               <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Pas de pictogramme ne veut pas dire <b>sans danger</b> — cela veut dire « pas de danger classé ». On demande quand même.</div></div>
             </div>
@@ -1516,6 +1587,14 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
               <li><b>Manipuler sous la hotte</b> lorsque le produit présente des risques par inhalation.</li>
             </ol>
 
+            <div class="block-label">Deux gestes qu'on oublie, et qui comptent autant<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <ul style="font-size:14.5px;line-height:1.7;margin:4px 0 12px;padding-left:22px">
+              <li><b>Refermer le flacon</b> aussitôt après s'être servi. Un flacon laissé ouvert laisse sortir ses vapeurs dans la salle, et le bouchon posé sur la paillasse se contamine — c'est lui qu'on remet ensuite sur le produit.</li>
+              <li><b>Écrire le nom du produit</b> sur tout récipient dans lequel on verse. Dès qu'une solution quitte son flacon d'origine, elle n'a plus d'étiquette&nbsp;: un bécher sans nom est un produit inconnu, et un produit inconnu ne se manipule pas.</li>
+            </ul>
+
+            <div class="point-cle"><b>Aucun récipient anonyme ne reste sur la paillasse.</b> À la fin de la séance, tout ce qui contient quelque chose porte un nom&nbsp;: le tien sur le cahier, celui du produit sur le bécher. C'est ce qui permet au professeur — ou à la personne qui range — de savoir quoi en faire.</div>
+
             <div class="point-cle"><b>Et la verrerie&nbsp;?</b> Elle est <b>chère</b>, et elle se manipule avec précaution. Ce n'est pas qu'une question d'argent&nbsp;: un bécher ébréché coupe, et un ballon fêlé casse au chauffage. La verrerie aura son propre outil.</div>
 
             <div class="block-label">Six erreurs sur une paillasse — clique-les<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
@@ -1590,7 +1669,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
 
             <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">
-              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">jamais sentir · jamais goûter<br>debout · dégagé · à la spatule</div></div></div>
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">jamais sentir · jamais goûter<br>debout · dégagé · à la spatule<br>flacon refermé · récipient nommé</div></div></div>
               <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Avant de commencer&nbsp;: ranger le <b>tabouret</b>, poser le sac hors du passage, dégager la paillasse.</div></div>
               <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Un produit qui s'inhale se manipule <b>sous la hotte</b> — pas sur la paillasse.</div></div>
             </div>
@@ -1672,7 +1751,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
           <div class="card-top">
             <div class="step-kicker">ÉTAPE 1.5</div>
             <h3 class="step-title">Si ça tourne mal</h3>
-            <div class="objective"><span>🎯</span><span><b>Objectif —</b> avoir un <b>réflexe</b> tout prêt pour six situations, et savoir où sont les équipements avant d'en avoir besoin.</span></div>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> avoir un <b>réflexe</b> tout prêt pour sept situations, et savoir où sont les équipements avant d'en avoir besoin.</span></div>
           </div>
           <div class="card-body">
 
@@ -1686,14 +1765,15 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
               <p style="font-size:14.5px;margin:0">Et la raison pour laquelle on le fait vraiment&nbsp;: <b>signaler un incident n'est jamais une faute — le cacher en est une.</b> Personne n'a jamais eu d'ennuis pour avoir prévenu trop tôt.</p>
             </div>
 
-            <div class="block-label">Six situations, six gestes<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="block-label">Sept situations, sept gestes<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
 
             <div class="gestes">
-              <div class="geste"><span class="sit">Projection dans l'œil</span><span>Rincer <b>tout de suite</b> au rince-œil ou à l'eau courante, paupière maintenue ouverte, <b>au moins 15 minutes</b>, sans frotter — puis prévenir.</span></div>
-              <div class="geste"><span class="sit">Projection sur la peau ou les vêtements</span><span>Rincer abondamment à l'eau, <b>15 minutes</b>, sous la douche de sécurité si la surface est étendue. Retirer le vêtement imbibé <b>pendant</b> le rinçage.</span></div>
+              <div class="geste"><span class="sit">Projection dans l'œil</span><span>Rincer <b>tout de suite</b> au rince-œil ou à l'eau courante, paupière maintenue ouverte, <b>au moins 15 minutes</b>, sans frotter — puis prévenir. Si tu portes des lentilles, <b>ne cherche pas à les retirer</b>&nbsp;: tu rinces par-dessus, et tu le dis.</span></div>
+              <div class="geste"><span class="sit">Projection sur la peau ou les vêtements</span><span>Rincer abondamment à l'eau, <b>15 minutes</b>, sous la douche de sécurité si la surface est étendue. Retirer le vêtement imbibé <b>pendant</b> le rinçage — sauf s'il <b>colle à la peau</b>&nbsp;: alors on n'y touche pas, on rince par-dessus.</span></div>
               <div class="geste"><span class="sit">Produit porté à la bouche</span><span>Ne rien avaler, <b>ne pas faire vomir</b>, rincer la bouche à l'eau, prévenir immédiatement.</span></div>
               <div class="geste"><span class="sit">Verre cassé</span><span><b>Ne jamais</b> ramasser à main nue. Prévenir, puis pelle et balayette, dans le <b>conteneur à verre</b> — jamais la poubelle ordinaire.</span></div>
               <div class="geste"><span class="sit">Début d'inflammation</span><span>Ne pas souffler dessus. Couper le chauffage. S'écarter et prévenir. <b>C'est le professeur qui intervient</b>, jamais l'élève.</span></div>
+              <div class="geste"><span class="sit">Le feu prend sur les vêtements de quelqu'un</span><span><b>L'empêcher de courir</b> — courir attise les flammes. On le fait s'allonger et on étouffe le feu&nbsp;: couverture anti-feu, ou linges mouillés. Là encore, <b>c'est le professeur qui intervient</b>&nbsp;; toi, tu préviens et tu dégages le passage.</span></div>
               <div class="geste"><span class="sit">Produit renversé sur la paillasse</span><span>Ne pas éponger avant d'avoir demandé&nbsp;: selon le produit, <b>le papier n'est pas la bonne réponse</b>.</span></div>
             </div>
 
@@ -1796,7 +1876,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
       <h2><span class="s-num">2</span>S'entraîner</h2>
       <span class="seance-time">≈ 35 min</span>
     </div>
-    <p class="seance-goal">Cinq exercices&nbsp;: trois étiquettes à lire, une paillasse à corriger, un mélange à juger, quatre incidents à trancher, et un bilan de huit questions.</p>
+    <p class="seance-goal">Cinq exercices&nbsp;: trois étiquettes à lire, une paillasse à corriger, un mélange à juger, quatre incidents à trancher, et un bilan de treize questions.</p>
     <div class="progress-line"><i data-progress></i></div>
 
     <div class="lockable">
@@ -1844,7 +1924,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
               </div>
 
               <div class="field">
-                <span class="field-type">Exercice 1</span>
+                <span class="field-type">Vérification</span>
                 <div class="field-q">Une décision par colonne.</div>
                 <div class="cloze" data-cloze data-cle="ex1">
                   <table class="saisie">
@@ -1873,8 +1953,8 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
               <details class="exo-corr">
                 <summary>Voir le corrigé rédigé</summary>
                 <div class="corps">
-                  <p><b>A · éthanol.</b> Deux pictogrammes, mais un seul commande le geste&nbsp;: la <b>flamme</b>. « Liquide et vapeurs très inflammables » — ce sont les <b>vapeurs</b> qui prennent feu, et elles descendent le long de la paillasse. On ne l'approche donc jamais d'un bec allumé, et on le chauffe au bain-marie ou au chauffe-ballon, jamais à la flamme nue. Le point d'exclamation ajoute l'irritation des yeux&nbsp;: lunettes si le professeur le demande.</p>
-                  <p><b>B · hydroxyde de sodium.</b> Un seul pictogramme, et il suffit&nbsp;: <b>corrosif</b>. Les mentions disent les deux versants du même symbole — il brûle la peau et les yeux (danger pour la santé) <i>et</i> il attaque les métaux (danger physique). C'est exactement le pictogramme qui figure <b>deux fois</b> dans l'étape 1.2. Manipulation avec <b>lunettes et gants</b>, sans exception.</p>
+                  <p><b>A · éthanol.</b> Deux pictogrammes, mais un seul commande le geste&nbsp;: la <b>flamme</b>. « Liquide et vapeurs très inflammables » — ce sont les <b>vapeurs</b> qui prennent feu, et elles descendent le long de la paillasse. On ne l'approche donc jamais d'un bec allumé, et on le chauffe au bain-marie ou au chauffe-ballon, jamais à la flamme nue. Le point d'exclamation ajoute l'irritation des yeux — les lunettes, que tu portes de toute façon, prennent ici tout leur sens.</p>
+                  <p><b>B · hydroxyde de sodium.</b> Un seul pictogramme, et il suffit&nbsp;: <b>corrosif</b>. Les mentions disent les deux versants du même symbole — il brûle la peau et les yeux (danger pour la santé) <i>et</i> il attaque les métaux (danger physique). C'est exactement le pictogramme qui figure <b>deux fois</b> dans l'étape 1.2. La mention écrite porte le code <b>H314</b> — et derrière ce numéro, une phrase qu'il vaut mieux avoir lue une fois&nbsp;: <b>une seule goutte dans un œil peut faire perdre la vue</b>. D'où les <b>gants</b> en plus des lunettes, le prélèvement à la <b>propipette</b> et jamais à la bouche, et, en cas de projection oculaire, un rinçage de 15 minutes <b>suivi d'une consultation chez l'ophtalmologiste</b> — le rinçage ne clôt pas l'affaire.</p>
                   <p><b>C · sulfate de cuivre.</b> Le point d'exclamation dit l'irritation, mais c'est le second pictogramme qui décide du geste de <b>fin de séance</b>&nbsp;: « très toxique pour les organismes aquatiques ». Le reste ne va <b>pas</b> à l'évier — il va au <b>bac de récupération</b>. C'est le lien direct avec l'étape 1.4.</p>
                   <p><b>Le contrôle, à faire à chaque fois.</b> Un flacon peut porter <b>plusieurs</b> pictogrammes, et ce n'est pas le plus impressionnant qui commande&nbsp;: c'est celui qui correspond à <b>ce que tu vas faire</b>. Tu chauffes&nbsp;? Regarde la flamme. Tu verses&nbsp;? Regarde le corrosif. Tu jettes&nbsp;? Regarde l'environnement.</p>
                 </div>
@@ -1988,7 +2068,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
               </div>
 
               <div class="field">
-                <span class="field-type">Exercice 2</span>
+                <span class="field-type">Vérification</span>
                 <div class="field-q">Deux questions sur ce que tu viens de repérer.</div>
                 <div class="cloze" data-cloze data-cle="ex2">
                   <div style="margin-bottom:9px"><b>1.</b> Parmi ces huit erreurs, celle qui peut blesser <b>quelqu'un d'autre</b>, plus tard, hors de la salle&nbsp;:
@@ -2049,7 +2129,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
               </div>
 
               <div class="field">
-                <span class="field-type">Exercice 3</span>
+                <span class="field-type">Vérification</span>
                 <div class="field-q">Trois décisions.</div>
                 <div class="cloze" data-cloze data-cle="ex3">
                   <div style="margin-bottom:9px"><b>1.</b> Ta réponse à ton camarade&nbsp;:
@@ -2093,7 +2173,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
               <p class="exo-num">Exercice 4</p>
               <p class="exo-enonce">Quatre scènes. Pour chacune, choisis le <b>premier</b> geste — celui que tu fais avant tous les autres.</p>
               <div class="field">
-                <span class="field-type">Exercice 4</span>
+                <span class="field-type">Vérification</span>
                 <div class="field-q">Quatre situations, un premier geste chacune.</div>
                 <div class="cloze" data-cloze data-cle="ex4">
                   <table class="saisie">
@@ -2143,13 +2223,13 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
           <div class="card-top">
             <div class="step-kicker">ÉTAPE 2.5</div>
             <h3 class="step-title">Le bilan</h3>
-            <div class="objective"><span>🎯</span><span><b>Objectif —</b> huit questions qui balaient les cinq étapes.</span></div>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> treize questions qui balaient les cinq étapes.</span></div>
           </div>
           <div class="card-body">
 
             <div class="exo" data-cle="pc-o3-s2-ex5">
               <p class="exo-num">Exercice 5</p>
-              <p class="exo-enonce">Huit questions sur l'ensemble de l'outil. Si l'une te fait hésiter, l'étape correspondante est juste au-dessus — c'est fait pour.</p>
+              <p class="exo-enonce">Treize questions sur l'ensemble de l'outil. Si l'une te fait hésiter, l'étape correspondante est juste au-dessus — c'est fait pour.</p>
               <div class="qcmbox" data-code="O3-Q-bilan">
                 <script type="application/json" class="qcm-data">
 [
@@ -2240,6 +2320,61 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
   ],
   "r": 0,
   "c": "L'absence de pictogramme signifie « pas de danger <b>classé</b> », ce qui n'est pas la même chose que « sans danger ». Et les règles de l'étape 1.3 tiennent toujours : on ne sent jamais un produit, quel qu'il soit."
+ },
+ {
+  "q": "Ce que tu portes à <b>chaque</b> séance de travaux pratiques, sans qu'on te le demande :",
+  "o": [
+   "La blouse en coton boutonnée et les lunettes",
+   "La blouse en coton, les gants et un masque",
+   "Les gants et les lunettes, la blouse si on chauffe",
+   "La blouse seule, le reste selon la manipulation"
+  ],
+  "r": 0,
+  "c": "Blouse <b>boutonnée</b> et lunettes sont les deux équipements de base — c'est le règlement du laboratoire, pas une consigne du jour. Les <b>gants</b>, eux, dépendent du produit : la consigne arrive en début de séance."
+ },
+ {
+  "q": "Ta blouse est mise, mais ouverte, et tes lunettes sont relevées sur le front. Où en es-tu ?",
+  "o": [
+   "Protégé à moitié : l'essentiel est d'avoir le matériel",
+   "Protégé, puisque tout peut se fermer en une seconde",
+   "Pas protégé : un équipement ouvert ne protège de rien",
+   "Protégé si tu ne manipules aucun produit corrosif"
+  ],
+  "r": 2,
+  "c": "Une blouse ouverte laisse passer ce qu'elle devait arrêter, et des lunettes sur le front ne couvrent rien. C'est l'erreur la plus fréquente de la séance, et la plus facile à corriger : on les porte, ou on n'est pas protégé."
+ },
+ {
+  "q": "Ce pictogramme est sur le flacon que tu t'apprêtes à chauffer. Qu'annonce-t-il&nbsp;?<br><svg viewBox=\"0 0 100 100\" style=\"width:72px;height:72px;margin-top:8px\" role=\"img\" aria-label=\"pictogramme comburant\"><use href=\"#clp-comburant\"/></svg>",
+  "o": [
+   "Le produit peut provoquer ou aggraver un incendie",
+   "Le produit prend feu au contact d'une flamme",
+   "Le produit explose sous l'effet d'un choc",
+   "Le produit dégage un gaz sous forte pression"
+  ],
+  "r": 0,
+  "c": "C'est le <b>comburant</b> : la flamme posée sur un cercle. Il ne brûle pas lui-même — il fait brûler les autres, et il devient dangereux dès qu'un produit inflammable est à côté."
+ },
+ {
+  "q": "Et celui-ci, sur un flacon dont il te reste 20&nbsp;mL&nbsp;:<br><svg viewBox=\"0 0 100 100\" style=\"width:72px;height:72px;margin-top:8px\" role=\"img\" aria-label=\"pictogramme dangereux pour l'environnement aquatique\"><use href=\"#clp-environnement\"/></svg>",
+  "o": [
+   "Le reste part au bac de récupération, jamais à l'évier",
+   "Le reste part à l'évier, avec beaucoup d'eau",
+   "Le reste retourne dans le flacon d'origine",
+   "Le reste part à la poubelle, dans son bécher"
+  ],
+  "r": 0,
+  "c": "L'arbre et le poisson annoncent le <b>milieu aquatique</b>. C'est le seul pictogramme dont l'effet ne se voit pas dans la salle : il se voit dans la rivière, et c'est exactement la raison d'être des bacs de récupération."
+ },
+ {
+  "q": "Ce pictogramme-là, sur un produit que tu manipules une fois dans l'année&nbsp;:<br><svg viewBox=\"0 0 100 100\" style=\"width:72px;height:72px;margin-top:8px\" role=\"img\" aria-label=\"pictogramme très dangereux pour la santé\"><use href=\"#clp-sante\"/></svg>",
+  "o": [
+   "Un effet qui peut n'apparaître que des années plus tard",
+   "Une irritation de la peau qui passe en quelques heures",
+   "Une brûlure immédiate de la peau et des yeux",
+   "Un empoisonnement en quelques minutes à faible dose"
+  ],
+  "r": 0,
+  "c": "La silhouette au thorax étoilé annonce le <b>long terme</b> : cancer, ADN, organes, fertilité. C'est ce qui le rend redoutable — sur le moment, on ne sent rien, et c'est pourquoi on ne juge jamais un produit à ce qu'on ressent."
  }
 ]
                 </script>
@@ -2255,12 +2390,17 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
   </section>
 
   <footer class="note">
-    <b>Outil transversal — proposition V1 du 28/08/2026.</b> Cet outil n'est pas un chapitre&nbsp;: il sert dans tous les TP de l'année, et il reste ouvert toute l'année. Les exercices se corrigent <b>en direct</b> par le navigateur, et chacun porte en plus son <b>corrigé rédigé</b>, dépliable à tout moment. 🖨️ La <a href="../assets/pdf/pc/fiches/fiche-2nde-o3-securite-laboratoire.pdf" style="color:var(--link)">fiche outil (PDF)</a> reprend toute la méthode sur une feuille à coller, planche des neuf pictogrammes comprise.
+    <b>Outil transversal — proposition V1 du 28/08/2026.</b> Cet outil n'est pas un chapitre&nbsp;: il sert dans tous les TP de l'année, et il reste ouvert toute l'année. Les exercices se corrigent <b>en direct</b> par le navigateur, et chacun porte en plus son <b>corrigé rédigé</b>, qui s'ouvre dès la correction et se referme si tu veux le relire plus tard. 🖨️ La <a href="../assets/pdf/pc/fiches/fiche-2nde-o3-securite-laboratoire.pdf" style="color:var(--link)">fiche outil (PDF)</a> reprend toute la méthode sur une feuille à coller, planche des neuf pictogrammes comprise.
+    <br><br>📄 <b>D'où viennent ces règles.</b> Rien ici n'est une invention de professeur&nbsp;: tout vient de la
+    <a href="../assets/pdf/pc/reference/circulaire-2024-074-securite-laboratoires.pdf" style="color:var(--link)">circulaire du 5 septembre 2024 sur la sécurité dans les laboratoires de sciences (PDF)</a>
+    et des deux guides de l'Observatoire national de la sécurité qui l'accompagnent — les neuf pictogrammes, les
+    quinze minutes de rinçage, les bacs de récupération, la conduite à tenir en cas d'accident. Tu peux la télécharger
+    et aller vérifier&nbsp;: c'est un document public.
     <br><br>⚠️ <b>Les consignes de cette page ne remplacent pas le règlement du laboratoire de ton établissement</b>, ni les consignes que ton professeur donne en début de séance. En cas de différence, ce sont les siennes qui s'appliquent.
   </footer>
 </div>
 
-<script src="../assets/js/sequence-snt.js?v=42"></script>
+<script src="../assets/js/sequence-snt.js?v=43"></script>
 
 <!-- ============================================================
      JS propre à l'outil. Un seul composant qui n'existe nulle part
@@ -2409,8 +2549,308 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
     });
   }
 
+
+  /* =========================================================
+     LA PLANCHE DES NEUF — une famille par ligne, le détail au clic
+     Dix pavés de texte empilés se lisaient mal, et la troisième famille
+     (un seul pictogramme) tombait à gauche d'une grille faite pour cinq.
+     La rangée est maintenant centrée, et chaque tuile ouvre sa
+     description dans un panneau unique, sous la rangée de sa famille.
+
+     Le texte n'est PAS déplacé : il reste dans sa tuile, seulement
+     masqué par CSS, et le panneau en recopie le contenu. Sans
+     JavaScript, la classe .js-planches n'est jamais posée et tout
+     s'affiche comme avant — on ne cache rien qu'on ne sache rouvrir.
+     ========================================================= */
+  function planches(){
+    var hote = document.querySelector('.familles');
+    if (!hote) return;
+    hote.classList.add('js-planches');
+    var n = 0;
+
+    Array.prototype.forEach.call(hote.querySelectorAll('.famille'), function(fam){
+      var grille = fam.querySelector('.grille-picto');
+      if (!grille) return;
+
+      var panneau = document.createElement('div');
+      panneau.className = 'pic-detail';
+      panneau.id = 'o3-detail-' + (++n);
+      panneau.setAttribute('role', 'region');
+      panneau.setAttribute('aria-live', 'polite');
+      grille.parentNode.insertBefore(panneau, grille.nextSibling);
+
+      var tuiles = Array.prototype.slice.call(grille.querySelectorAll('.pic'));
+      tuiles.forEach(function(t){
+        t.setAttribute('role', 'button');
+        t.setAttribute('tabindex', '0');
+        t.setAttribute('aria-expanded', 'false');
+        t.setAttribute('aria-controls', panneau.id);
+        var plus = document.createElement('span');
+        plus.className = 'plus';
+        plus.textContent = '+ ce qu\'il annonce';
+        t.appendChild(plus);
+
+        function basculer(){
+          var etaitOuverte = t.classList.contains('ouvert');
+          tuiles.forEach(function(x){
+            x.classList.remove('ouvert');
+            x.setAttribute('aria-expanded', 'false');
+          });
+          if (etaitOuverte){
+            panneau.classList.remove('ouvert');
+            panneau.innerHTML = '';
+            return;
+          }
+          t.classList.add('ouvert');
+          t.setAttribute('aria-expanded', 'true');
+          var nom  = t.querySelector('.nom'),
+              quoi = t.querySelector('.quoi'),
+              deja = t.querySelector('.deja');
+          panneau.innerHTML =
+            '<div class="pd-nom">' + (nom ? nom.innerHTML : '') + '</div>' +
+            '<div class="quoi">'  + (quoi ? quoi.innerHTML : '') + '</div>' +
+            (deja ? '<span class="deja">' + deja.innerHTML + '</span>' : '');
+          panneau.classList.add('ouvert');
+        }
+
+        t.addEventListener('click', basculer);
+        t.addEventListener('keydown', function(e){
+          if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
+            e.preventDefault(); basculer();
+          }
+        });
+      });
+    });
+  }
+
+  /* =========================================================
+     LA VÉRIFICATION DES NEUF, EN FENÊTRE
+     Demande du 12/09/2026 : l'élève ne doit pas pouvoir remonter lire la
+     planche pendant qu'il répond. Un voile grise la page et bloque le
+     défilement, les pictogrammes défilent un par un, et la validation
+     n'arrive qu'à la fin.
+
+     ⚠ Le champ NE QUITTE PAS le flux de la page : il est seulement
+     remonté en z-index au-dessus du voile. Le déplacer dans le voile le
+     sortirait de son .step, et le moteur retrouve l'étape à valider par
+     closest('.step') au moment du clic sur « Vérifier » (§5 de
+     sequence-snt.js) : l'étape ne se validerait plus jamais.
+
+     Le bouton « Vérifier » du moteur reste le seul à corriger et à
+     enregistrer : on ne fait que le cacher, le montrer, et le cliquer.
+     La reprise d'une session le clique elle aussi (rehydraterReponses) —
+     d'où le rappel d'état par l'événement etape-validee.
+     ========================================================= */
+  function fenetrePictos(){
+    var bloc = document.querySelector('.cloze[data-cle="apparier"]');
+    if (!bloc) return;
+    var champ = bloc.closest('.field');
+    if (!champ) return;
+    var valider = champ.querySelector('[data-check-cloze]');
+    var lignes = Array.prototype.slice.call(bloc.querySelectorAll('tr')).filter(function(tr){
+      return tr.querySelector('select[data-answer]');
+    });
+    if (!valider || !lignes.length) return;
+    lignes.forEach(function(tr){ tr.classList.add('o3-ligne'); });
+
+    var porte = document.createElement('div');
+    porte.className = 'o3-porte';
+    porte.innerHTML =
+      '<button type="button" class="btn" data-o3-ouvrir>🔍 Commencer la vérification</button>' +
+      '<p class="doc-note">Les neuf pictogrammes défilent <b>un par un</b>, et la page est masquée pendant ' +
+      'ce temps&nbsp;: c\'est de mémoire, pas en remontant lire la planche. Tu valides <b>tout à la fin</b>, ' +
+      'et tu peux revenir en arrière autant que tu veux avant.</p>';
+    bloc.parentNode.insertBefore(porte, bloc);
+
+    var nav = document.createElement('div');
+    nav.className = 'o3-nav';
+    nav.innerHTML =
+      '<span><span class="o3-jauge" data-o3-jauge></span><span class="o3-points" data-o3-points></span></span>' +
+      '<span class="o3-boutons">' +
+        '<button type="button" class="btn ghost" data-o3-tard>Plus tard</button>' +
+        '<button type="button" class="btn ghost" data-o3-prec>&lsaquo;&nbsp;Précédent</button>' +
+        '<button type="button" class="btn" data-o3-suiv>Suivant&nbsp;&rsaquo;</button>' +
+        '<button type="button" class="btn" data-o3-finir>Terminer et vérifier</button>' +
+      '</span>';
+    bloc.parentNode.insertBefore(nav, bloc.nextSibling);
+
+    var avert = document.createElement('div');
+    avert.className = 'o3-avert';
+    nav.parentNode.insertBefore(avert, nav.nextSibling);
+
+    var voile = null, index = 0, prevenu = false, yAvant = 0;
+    var jauge  = nav.querySelector('[data-o3-jauge]'),
+        points = nav.querySelector('[data-o3-points]'),
+        bPrec  = nav.querySelector('[data-o3-prec]'),
+        bSuiv  = nav.querySelector('[data-o3-suiv]'),
+        bFinir = nav.querySelector('[data-o3-finir]');
+
+    function sansReponse(){
+      return lignes.filter(function(tr){
+        var s = tr.querySelector('select');
+        return !s || !s.value;
+      }).length;
+    }
+
+    function montrer(i){
+      index = Math.max(0, Math.min(lignes.length - 1, i));
+      lignes.forEach(function(tr, k){ tr.classList.toggle('o3-courant', k === index); });
+      jauge.textContent = 'Pictogramme ' + (index + 1) + ' sur ' + lignes.length;
+      points.innerHTML = lignes.map(function(tr, k){
+        var s = tr.querySelector('select'), c = [];
+        if (s && s.value) c.push('remplie');
+        if (k === index)  c.push('courante');
+        return '<i class="' + c.join(' ') + '"></i>';
+      }).join('');
+      var dernier = (index === lignes.length - 1);
+      bPrec.disabled = (index === 0);
+      bSuiv.style.display  = dernier ? 'none' : '';
+      bFinir.style.display = dernier ? '' : 'none';
+      var sel = lignes[index].querySelector('select');
+      if (sel) sel.focus();
+    }
+
+    /* la porte se referme : le tableau repart hors de vue, sans rien perdre */
+    function replier(){
+      fermer();
+      porte.style.display = '';
+      bloc.style.display = 'none';
+      valider.style.display = 'none';
+    }
+
+    function ouvrir(){
+      if (voile) return;
+      prevenu = false;
+      avert.classList.remove('show');
+      bFinir.textContent = 'Terminer et vérifier';
+      porte.style.display = 'none';
+      bloc.style.display = '';
+      bloc.classList.add('o3-un-a-la-fois');
+      nav.style.display = '';
+      valider.style.display = 'none';
+      champ.classList.add('o3-verif-actif');
+
+      /* on se place AVANT de verrouiller : une fois la page figée, plus
+         rien ne défile, scrollIntoView compris. */
+      champ.scrollIntoView({block: 'center'});
+
+      /* Verrouillage du défilement. overflow:hidden seul REMET LA PAGE EN
+         HAUT (mesuré au navigateur le 12/09/2026 : le champ sortait de
+         l'écran à l'ouverture). On fige donc le corps de page à sa
+         position courante, décalé de la hauteur déjà défilée : à l'écran
+         rien ne bouge, et il n'y a plus rien à faire défiler. */
+      yAvant = window.pageYOffset || document.documentElement.scrollTop || 0;
+      document.body.style.position = 'fixed';
+      document.body.style.top = (-yAvant) + 'px';
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.documentElement.classList.add('o3-verif-on');
+      document.body.classList.add('o3-verif-on');
+
+      voile = document.createElement('div');
+      voile.className = 'o3-voile';
+      voile.addEventListener('touchmove', function(e){ e.preventDefault(); }, {passive: false});
+      document.body.appendChild(voile);
+      montrer(0);
+    }
+
+    function fermer(){
+      if (voile && voile.parentNode) voile.parentNode.removeChild(voile);
+      voile = null;
+      document.documentElement.classList.remove('o3-verif-on');
+      document.body.classList.remove('o3-verif-on');
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      window.scrollTo(0, yAvant);
+      champ.classList.remove('o3-verif-actif');
+      bloc.classList.remove('o3-un-a-la-fois');
+      lignes.forEach(function(tr){ tr.classList.remove('o3-courant'); });
+      nav.style.display = 'none';
+      avert.classList.remove('show');
+    }
+
+    /* l'état de repos : porte fermée tant que rien n'est corrigé, tout
+       déplié dès que le moteur a marqué le bloc vérifié — y compris au
+       retour sur la page, où c'est lui qui reclique « Vérifier ». */
+    function etatRepos(){
+      if (voile) return;
+      var fait = (bloc.dataset.verifie === '1');
+      porte.style.display   = fait ? 'none' : '';
+      bloc.style.display    = fait ? '' : 'none';
+      valider.style.display = fait ? '' : 'none';
+      nav.style.display     = 'none';
+    }
+
+    porte.querySelector('[data-o3-ouvrir]').addEventListener('click', ouvrir);
+    bPrec.addEventListener('click', function(){ montrer(index - 1); });
+    bSuiv.addEventListener('click', function(){ montrer(index + 1); });
+    nav.querySelector('[data-o3-tard]').addEventListener('click', replier);
+
+    bFinir.addEventListener('click', function(){
+      var trous = sansReponse();
+      if (trous && !prevenu){
+        prevenu = true;
+        avert.innerHTML = 'Il reste <b>' + trous + '</b> pictogramme' + (trous > 1 ? 's' : '') +
+          ' sans réponse. Tu peux revenir en arrière avec «&nbsp;Précédent&nbsp;», ou vérifier ' +
+          'quand même — un blanc compte comme une erreur, rien de plus.';
+        avert.classList.add('show');
+        bFinir.textContent = 'Vérifier quand même';
+        return;
+      }
+      fermer();
+      valider.click();                 /* le moteur corrige, note et valide l'étape */
+      etatRepos();
+      champ.scrollIntoView({block: 'center', behavior: 'smooth'});
+    });
+
+    bloc.addEventListener('change', function(e){
+      if (voile && e.target && e.target.tagName === 'SELECT') montrer(index);
+    });
+
+    document.addEventListener('keydown', function(e){
+      if (voile && e.key === 'Escape') replier();
+    });
+
+    /* la reprise d'une session reclique « Vérifier » : on repasse après elle */
+    document.addEventListener('etape-validee', etatRepos);
+    etatRepos();
+  }
+
+
+  /* =========================================================
+     LE CORRIGÉ RÉDIGÉ S'OUVRE TOUT SEUL
+     Il fallait un second clic sur « Voir le corrigé rédigé » juste après
+     avoir cliqué « Vérifier » — un clic pour rien, sur un texte qu'on
+     vient précisément de mériter. Le <details> s'ouvre donc à la
+     correction, et reste refermable.
+
+     ⚠ Sauf à la REPRISE d'une session : le moteur reclique lui-même
+     « Vérifier » pour rétablir les verdicts (rehydraterReponses), et il
+     pose data-sans-compter le temps de ce clic. Ouvrir le corrigé là
+     donnerait la correction à un élève qui n'a encore rien retenté —
+     c'est la décision du 23/08 sur la révélation des corrections.
+     ========================================================= */
+  function corrigeALaCorrection(){
+    Array.prototype.forEach.call(document.querySelectorAll('[data-check-cloze]'), function(btn){
+      var champ = btn.closest('.field') || btn.parentNode;
+      var exo   = btn.closest('.exo');
+      var det   = exo ? exo.querySelector('details.exo-corr') : null;
+      if (!det) return;
+      btn.addEventListener('click', function(){
+        var bloc = champ ? champ.querySelector('.cloze') : null;
+        if (bloc && bloc.dataset.sansCompter === '1') return;   /* reprise de session */
+        det.open = true;
+      });
+    });
+  }
+
   function demarrer(){
     document.querySelectorAll('.scene').forEach(scene);
+    planches();
+    fenetrePictos();
+    corrigeALaCorrection();
     retirerFichePDF();
     allegerBarre();
     retirerGlossaire();

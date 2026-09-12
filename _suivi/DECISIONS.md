@@ -1564,3 +1564,128 @@ liens. Rien d'autre n'a été retiré — ni page, ni PDF, ni fiche source.
 `index.html` annonçait `o4` « Calcul littéral » — un reste de la numérotation
 d'avant O-23, où `o4` désignait autre chose. L'outil 4 est **« La verrerie et le
 matériel »**. Corrigé.
+
+---
+
+## 12/09/2026 — Audit de l'outil 3 « Sécurité au laboratoire », contre la circulaire 2024-074
+
+Loïc a audité l'outil écran par écran, puis a fourni la **circulaire n° 2024-074 du
+05/09/2024** (académie de Créteil) et ses deux annexes de l'Observatoire national de
+la sécurité. La page a été relue contre ce texte : deux passages la contredisaient,
+quatre consignes officielles manquaient. Tout ce qui suit est validé par Loïc.
+
+### O-33 · Les lunettes de protection sont un équipement de base, pas une consigne du jour
+
+La page écrivait : « les lunettes et les gants ne sont pas systématiques, ils se
+portent quand le professeur le demande ». Le guide ONS écrit l'inverse — *« port
+obligatoire de lunettes de protection »* — et range **blouse en coton boutonnée +
+lunettes** dans les EPI de base, consignés au règlement intérieur ; seuls **gants et
+masques** sont « spécifiés et justifiés par l'enseignant à chaque opération ».
+
+Retenu : **blouse boutonnée et lunettes à chaque séance, gants sur consigne.** La
+formulation a changé dans la page (étape 1.1, « À retenir », QCM dont la bonne
+réponse était devenue fausse, corrigé A de l'exercice 1) **et dans la fiche A4**
+(bloc 01 et checklist de la page 4).
+
+### O-34 · Un vêtement qui colle à la peau ne s'arrache pas, une lentille ne se retire pas
+
+La page disait « retirer le vêtement imbibé **pendant** le rinçage », sans réserve.
+La conduite à tenir ONS dit : *« ne pas chercher à ôter les vêtements collés sur la
+peau »* et *« ne pas chercher à enlever les lentilles de contact »*. Ce n'est pas une
+nuance de style : un tissu collé arrache la peau brûlée. Les deux réserves sont
+ajoutées, page et fiche.
+
+### O-35 · Quatre consignes officielles absentes entrent dans l'outil
+
+- **Refermer le flacon après usage** et **écrire le nom du produit sur tout récipient
+  dans lequel on verse** (ONS, consignes de rangement) — en bloc séparé à l'étape 1.3,
+  pour ne pas casser le compte des **six règles**, auquel l'image à venir est adossée.
+- **Le feu sur les vêtements de quelqu'un** (l'empêcher de courir, l'allonger,
+  couverture anti-feu) — l'étape 1.5 passe de six à **sept situations**. Elle listait
+  la couverture anti-feu dans les équipements sans jamais dire à quoi elle sert.
+- **Le reste de l'étiquette** : mention d'avertissement **DANGER / ATTENTION**,
+  mentions **H**, conseils **P**, et la date de préparation des flacons du laboratoire.
+  L'étape s'appelle « lire l'étiquette **en entier** » : il y manquait l'entier.
+- Le pictogramme au point d'exclamation récupère la **destruction de l'ozone**, qui
+  est dans son intitulé officiel.
+
+### O-36 · La planche des neuf tient sur trois lignes, le détail s'ouvre au clic
+
+Dix pavés de texte empilés, et une troisième famille (un seul pictogramme) collée à
+gauche d'une grille faite pour cinq. Chaque famille est maintenant une **rangée
+centrée** ; une tuile ouvre sa description dans un panneau unique sous sa rangée. Le
+texte n'est pas déplacé : il reste dans sa tuile, masqué par CSS, et le panneau le
+recopie — **sans JavaScript, tout s'affiche comme avant**.
+
+### O-37 · La vérification des neuf pictogrammes se fait en fenêtre, un pictogramme à la fois
+
+L'élève pouvait remonter lire la planche pendant qu'il répondait. Désormais : une
+**porte** (« Commencer la vérification »), un **voile** qui grise la page et fige le
+défilement, **un pictogramme à la fois** avec retour arrière libre, et **une seule
+validation à la fin**.
+
+🔴 **Le champ ne quitte pas le flux de la page** — il est seulement remonté en
+`z-index` au-dessus du voile. Le déplacer dans le voile le sortirait de son `.step`,
+et le moteur retrouve l'étape à valider par `closest('.step')` au moment du clic sur
+« Vérifier » : l'étape ne se validerait plus jamais. Le bouton « Vérifier » du moteur
+reste le seul à corriger et à enregistrer ; la page ne fait que le cacher, le montrer
+et le cliquer. **`sequence-snt.js` n'est pas touché.**
+
+Mesuré au navigateur : `overflow:hidden` seul **remet la page en haut** et le champ
+sortait de l'écran à l'ouverture. Le corps de page est donc figé à sa position
+courante (`position:fixed; top:-<défilement>`), et rendu au même endroit à la
+fermeture.
+
+### O-38 · Le corrigé rédigé s'ouvre à la correction, et la numérotation des exercices cesse de bégayer
+
+Il fallait un second clic sur « Voir le corrigé rédigé » juste après « Vérifier ». Le
+`<details>` s'ouvre maintenant tout seul à la correction, et reste refermable —
+**sauf à la reprise d'une session**, où le moteur reclique « Vérifier » lui-même pour
+rétablir les verdicts (`data-sans-compter`) : ouvrir le corrigé là donnerait la
+correction à un élève qui n'a rien retenté.
+
+Le badge du champ de réponses répétait « Exercice N » sous le titre « Exercice N ». Il
+dit maintenant « Vérification », comme dans la séance 1.
+
+### O-39 · Le bilan passe de huit à treize questions : EPI et pictogrammes en visuel
+
+Cinq questions ajoutées — deux sur les EPI (ce qu'on porte à chaque séance ; blouse
+ouverte et lunettes sur le front), trois montrant un **pictogramme dessiné dans
+l'énoncé** (comburant, environnement aquatique, très dangereux pour la santé). Les
+énoncés de QCM sont injectés en `innerHTML` par le moteur, les **options ne le sont
+pas** (`baliserSobre`) : un visuel ne peut donc vivre que dans la question.
+
+### O-40 · La circulaire est jointe en fin de parcours, en téléchargement
+
+Nouveau dossier **`assets/pdf/pc/reference/`**, et un lien en pied de page : « d'où
+viennent ces règles ». Document public, hébergé dans le dépôt plutôt que lié en
+externe — pas d'IP d'élève exposée à un serveur tiers, et pas de lien qui pourrit.
+
+### O-41 · Les cinq pictogrammes d'équipement ne se dessinent pas — correction d'un avis donné trop vite
+
+Pendant l'audit, il a été dit que la signalétique normalisée (douche, rince-œil,
+extincteur, couverture, sortie) relevait de la « structure » et pouvait donc se
+dessiner en SVG maison. **C'est faux** : `CLAUDE.md` range explicitement le
+**pictogramme réglementaire** parmi les objets qu'on ne dessine pas de mémoire, et
+c'est exactement la règle que les neuf formes CLP inventées avaient coûtée. Les cinq
+cadres `.reserve` restent donc en place, et les images doivent être **vectorisées
+depuis une source officielle** (ISO 7010 : E011 rince-œil, E012 douche, F001
+extincteur, E003 premiers secours, E002 sortie), comme l'a été le sprite CLP.
+
+Les photos fournies le 12/09 (affiche d'évacuation Guillard, extincteur Andrieu,
+douche et rince-œil de catalogue) servent **de référence pour vectoriser, pas de
+fichiers à publier** : l'affiche porte « modèle déposé — reproduction interdite », et
+le dépôt est public.
+
+### O-42 · L'exercice 2 attend son image, et la numérotation des erreurs est à trancher
+
+L'image fournie porte **sept erreurs annotées**, la page en annonce **huit** (la
+huitième étant « blouse ouverte »). Elle porte aussi une incohérence interne : l'élève
+verse dans un évier **étiqueté « Bac de récupération »**, ce qui rend l'erreur nº 6
+illisible. Une version **propre** (sans bulles, sans numéros, sans traits de rappel)
+est attendue : la page dessinera elle-même les repères en HTML, ce qu'exige de toute
+façon un exercice cliquable.
+
+**Ce qui n'est pas encore fait, faute de ces images :** la scène SVG cliquable de
+l'étape 2.2 reste en place, et l'étape 1.3 garde sa scène des six erreurs en attendant
+l'image unique des six règles.

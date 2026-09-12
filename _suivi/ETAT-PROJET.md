@@ -5,7 +5,10 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **06/09/2026** (dernière passe : **l'enseignement
+> Dernière réécriture : **12/09/2026** (dernière passe : **l'outil 3 « Sécurité au
+> laboratoire » est relu contre la circulaire 2024-074 — deux contradictions
+> corrigées, quatre consignes officielles ajoutées, la vérification des neuf
+> pictogrammes passe en fenêtre**, bloc ci-dessous). Passe du 06/09 : **l'enseignement
 > scientifique de 1re passe sur le moteur — six chapitres, 18 séances**, bloc
 > ci-dessous). Passe du 05/09 : **les quinze sujets de
 > TP de seconde sont remplacés et renumérotés**, bloc ci-dessous). Passe du même
@@ -31,13 +34,67 @@
 > et le passage des fiches de 2nde PC en PDF).
 >
 > 🔴 **Ce qui demande une relecture de Loïc en priorité** : l'étape 1.5 « Si ça tourne
-> mal » de `o3` — contenu neuf, seul contenu du dépôt qui engage la **sécurité
-> d'élèves**, à confronter au règlement du laboratoire et aux équipements de la salle
-> 0.26. Ensuite, les **six arbitrages en attente** (O-23 à O-26, O-28, O-29).
+> mal » de `o3` — seul contenu du dépôt qui engage la **sécurité d'élèves**. Elle est
+> désormais conforme à la **circulaire 2024-074** (relue le 12/09, sept situations),
+> mais reste à confronter au **règlement du laboratoire** et aux **équipements réels de
+> la salle 0.26** : le texte officiel ne dit pas où sont la douche et le rince-œil. Ensuite, les **six arbitrages en attente** (O-23 à O-26, O-28, O-29).
 > 🆕 Et depuis le 06/09 : les **six images manquantes de l'ES 1re** (ES-01 à ES-06),
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 L'outil 3 « Sécurité au laboratoire » est relu contre la circulaire officielle
+
+**Fait le 12/09/2026.** Loïc a audité l'outil écran par écran, puis fourni la
+**circulaire n° 2024-074 du 05/09/2024** et ses deux annexes de l'Observatoire
+national de la sécurité. La page et la fiche A4 ont été relues contre ce texte.
+Décisions **O-33 à O-42** dans `DECISIONS.md`.
+
+**Deux passages contredisaient le texte officiel**, et sont corrigés partout (page,
+fiche, QCM, corrigés) :
+
+| Ce que disait l'outil | Ce que dit le texte officiel |
+|---|---|
+| « Lunettes et gants ne sont pas systématiques » | Blouse **boutonnée** + **lunettes** = EPI de base, à chaque séance ; seuls les **gants** dépendent du produit |
+| « Retirer le vêtement imbibé pendant le rinçage » | Ne **pas** ôter un vêtement **collé à la peau** — et ne pas retirer une lentille |
+
+**Quatre consignes officielles manquaient**, elles sont entrées : refermer le flacon ·
+nommer tout récipient dans lequel on verse · le feu sur les vêtements de quelqu'un
+(1.5 passe à **sept situations**) · le reste de l'étiquette (**DANGER / ATTENTION**,
+mentions **H**, conseils **P**, date de préparation). Le pictogramme au point
+d'exclamation récupère la **destruction de l'ozone**.
+
+**Trois changements d'interaction**, tous dans la page — `sequence-snt.js` n'est pas
+touché, aucun `?v=` à incrémenter :
+
+- **la planche des neuf** tient sur trois rangées centrées, le détail s'ouvre au clic
+  sur un pictogramme (sans JavaScript, tout s'affiche comme avant) ;
+- **la vérification des neuf** se fait en **fenêtre** : porte, voile qui grise la page
+  et fige le défilement, **un pictogramme à la fois**, une seule validation à la fin.
+  🔴 Le champ ne quitte pas son `.step` — c'est `closest('.step')` qui fait valider
+  l'étape au clic sur « Vérifier », et le moteur reste seul à corriger et enregistrer ;
+- **le corrigé rédigé s'ouvre à la correction** (sauf à la reprise d'une session), et
+  le badge du champ ne répète plus « Exercice N » sous le titre « Exercice N ».
+
+**Le bilan passe à treize questions** : deux sur les EPI, trois montrant un
+pictogramme dessiné dans l'énoncé. Et la **circulaire est jointe en téléchargement**
+en pied de parcours (`assets/pdf/pc/reference/`, nouveau dossier).
+
+**Ce qui reste, et qui attend deux images de Loïc :**
+
+1. **L'étape 1.3** garde sa scène SVG des six erreurs, en attendant **l'image unique
+   des six règles** qui doit la remplacer (le « cliquer dans l'ordre » ne l'intéresse
+   pas).
+2. **L'exercice 2.2** garde sa scène SVG des huit erreurs, en attendant l'image de
+   paillasse **propre** — celle fournie porte ses annotations, **sept** erreurs au lieu
+   de huit, et un évier étiqueté « Bac de récupération » qui rend l'erreur nº 6
+   illisible. La page dessinera elle-même les repères en HTML.
+3. **Les cinq pictogrammes d'équipement** (douche, rince-œil, extincteur, couverture,
+   sortie) restent en cadres `.reserve` : ce sont des **pictogrammes réglementaires**,
+   qui ne se dessinent pas de mémoire (O-41) — il faut les vectoriser depuis une source
+   officielle ISO 7010. Les quatre photos fournies sont des visuels de catalogue, dont
+   une porte « reproduction interdite » : elles servent de référence, pas de fichiers à
+   publier dans un dépôt public.
 
 ## 🆕 L'enseignement scientifique de 1re passe sur le moteur
 

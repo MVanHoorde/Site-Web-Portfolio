@@ -394,6 +394,24 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   depuis le PDF officiel (appariement mesuré 9/9), la tenue est une **illustration
   fournie**, et les 5 équipements sont des **cadres de réservation** — leurs images
   restent à récupérer. Inventaire complet : `_suivi/o3-releve.md`.
+- 🆕 **Audité et corrigé le 12/09/2026, contre la circulaire n° 2024-074 du
+  05/09/2024** (fournie par Loïc) et ses deux annexes ONS — le PDF est joint en
+  téléchargement en pied de parcours (`assets/pdf/pc/reference/`). Deux passages
+  contredisaient le texte officiel (**lunettes = EPI de base** et non consigne du
+  jour ; **un vêtement collé à la peau ne s'arrache pas**), quatre consignes
+  manquaient (flacon refermé, récipient nommé, feu sur une personne, mentions
+  **H**/**P** et **DANGER**/**ATTENTION**). L'étape 1.5 passe à **sept situations**,
+  le bilan à **treize questions** (EPI + pictogrammes en visuel). Côté interaction :
+  la planche des neuf tient sur trois rangées avec détail au clic, la vérification
+  se fait **en fenêtre, un pictogramme à la fois**, et le corrigé rédigé s'ouvre à
+  la correction. Page **et** fiche A4 à jour, PDF réexporté (4 pages, A4 mesuré).
+  Décisions **O-33 à O-42**.
+- ⏳ **Deux images attendues de Loïc** : l'image unique des **six règles** (étape 1.3,
+  qui remplacera la scène cliquable) et la paillasse **propre** aux **huit** erreurs
+  (exercice 2.2 — celle fournie porte ses annotations, sept erreurs, et un évier
+  étiqueté « Bac de récupération »). Les cinq pictogrammes d'équipement restent des
+  cadres `.reserve` : **pictogrammes réglementaires, à vectoriser depuis l'ISO 7010**,
+  jamais à dessiner (O-41).
 - Sources : `fiche_Sécurité au laboratoire de Chimie.pdf` (le texte, quatre
   moments) et `fiche_Pictogrammes de sécurité.pdf` (les visuels et les libellés).
   Cette dernière **ne contient que des images** : les neuf pictogrammes en ont été

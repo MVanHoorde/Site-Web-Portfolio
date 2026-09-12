@@ -3396,3 +3396,74 @@ non écrites. Repère intact, aucune régression.
 technique nommait `seances-snt.js` en prose, dans une balise `<code>`. Le contrôle
 qui exige un `?v=` sur ce fichier balaie **tout** le HTML du dépôt, sans distinguer
 un chargement de script dune
+
+
+---
+
+## 12/09/2026 — `o3` relu contre la circulaire, et la vérification des neuf passe en fenêtre
+
+Loïc a audité l'outil 3 écran par écran, à voix haute, sans rien coder : ce qui va,
+ce qui ne va pas, ce qu'il veut à la place. Puis il a déposé la **circulaire
+n° 2024-074 du 05/09/2024** et ses deux annexes de l'Observatoire national de la
+sécurité, avec une demande simple — « tu peux vérifier notre travail avec ce doc ? ».
+
+**La relecture a trouvé deux contradictions.** L'outil écrivait que les lunettes « ne
+sont pas systématiques » ; le guide ONS écrit *« port obligatoire de lunettes de
+protection »* et les range, avec la blouse boutonnée, dans les EPI de base consignés
+au règlement intérieur. L'outil écrivait aussi qu'on retire le vêtement imbibé pendant
+le rinçage ; la conduite à tenir officielle interdit d'ôter un vêtement **collé à la
+peau**. La première était une question de doctrine, la seconde une question de peau
+arrachée. Les deux sont corrigées, page et fiche, jusque dans un QCM dont la bonne
+réponse était devenue fausse.
+
+Quatre consignes officielles manquaient — refermer le flacon, nommer tout récipient
+dans lequel on verse, le feu sur les vêtements de quelqu'un, et le **reste de
+l'étiquette** (DANGER/ATTENTION, mentions H, conseils P). Cette dernière valait le
+détour : l'étape s'appelle « lire l'étiquette **en entier** » et n'en montrait que les
+dessins.
+
+**Trois interactions ont changé**, toutes dans la page, sans toucher au moteur
+partagé. La planche des neuf pictogrammes tient sur trois rangées centrées, le texte
+s'ouvrant au clic — la troisième famille, un seul pictogramme, était jusque-là collée
+à gauche d'une grille faite pour cinq. La vérification des neuf se fait maintenant en
+**fenêtre** : un voile grise la page, les pictogrammes défilent un par un, la
+validation n'arrive qu'à la fin. Et le corrigé rédigé s'ouvre tout seul à la
+correction, au lieu de demander un second clic sur ce qu'on vient de mériter.
+
+**Deux pièges du moteur, évités de justesse.** Le premier : déplacer le champ dans la
+fenêtre aurait été le geste naturel — c'est ce que fait le moteur pour le rappel de
+mémoire. Mais le moteur retrouve l'étape à valider par `closest('.step')` **au moment
+du clic** sur « Vérifier » : le champ sorti de son étape, l'étape ne se validerait plus
+jamais. Le champ reste donc en place, simplement remonté en `z-index` au-dessus du
+voile. Le second : la reprise d'une session reclique « Vérifier » toute seule pour
+rétablir les verdicts — sans garde, le corrigé se serait ouvert au chargement de la
+page, devant un élève qui n'a encore rien retenté.
+
+**Et une mesure qui a démenti le code.** `overflow:hidden` pour figer le défilement
+remet la page en haut : le champ sortait de l'écran à l'ouverture de la fenêtre. Vu en
+capture, pas deviné. Le corps de page est maintenant figé à sa position courante, et
+rendu au même endroit à la fermeture. Au passage, une leçon sur l'outil de contrôle
+lui-même : en Chrome headless, `window.scrollTo` ne fait rien — un premier diagnostic
+a accusé la page de ce qui était un artefact de capture.
+
+**Un avis corrigé en cours de route.** L'audit avait conclu que la signalétique
+normalisée des cinq équipements (douche, rince-œil, extincteur, couverture, sortie)
+relevait de la « structure » et pouvait donc se dessiner en SVG maison. `CLAUDE.md`
+dit exactement le contraire : le **pictogramme réglementaire** fait partie des objets
+qu'on ne dessine pas de mémoire — c'est la règle née des neuf formes CLP inventées.
+Les cadres de réservation restent, et les images se vectoriseront depuis l'ISO 7010.
+Les quatre photos fournies sont des visuels de catalogue, dont une affiche porte
+« modèle déposé — reproduction interdite » : dans un dépôt public, elles servent de
+référence, pas de fichiers.
+
+`node exporter-fiches.mjs o3` : 4 pages, 209,9 × 297,0 mm, polices incorporées. Le
+repli **Consolas** signalé par l'export **existait déjà avant cette session** (vérifié
+contre le PDF de `HEAD`) : un caractère du dépôt n'est couvert par aucune police
+monospace auto-hébergée. À traiter à part.
+
+`node verifier.mjs` : le repère de **18 problèmes** est intact pour ce qui relève de
+cette session. Le dépôt en affichait 20 au moment du contrôle, les deux écarts
+supplémentaires venant d'une **session parallèle** en cours sur les pages
+d'enseignement scientifique (`sequence-snt.js` passé en `?v=43` partout sauf
+`term-es-t2-c1`, et un `pages/_capture-tmp.html` laissé en place). Rien n'y a été
+touché.
