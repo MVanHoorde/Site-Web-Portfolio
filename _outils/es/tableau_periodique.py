@@ -208,7 +208,7 @@ def main():
         os.makedirs(SORTIE)
     for nom, txt in TABLEAUX.items():
         chemin = os.path.join(SORTIE, "t1c1-%s.svg" % nom)
-        with io.open(chemin, "w", encoding="utf-8") as f:
+        with io.open(chemin, "w", encoding="utf-8", newline="\n") as f:
             f.write(txt + "\n")
     src = io.open(PAGE, encoding="utf-8").read()
     poses = []
@@ -216,7 +216,7 @@ def main():
         src, ok = injecter(src, nom, txt)
         poses.append("%s : %s" % (nom, "injecte" if ok else "MARQUEURS ABSENTS"))
     if "--verifier" not in sys.argv:
-        with io.open(PAGE, "w", encoding="utf-8") as f:
+        with io.open(PAGE, "w", encoding="utf-8", newline="\n") as f:
             f.write(src)
     # controles
     tous = sum(len(p) for p in PERIODES) + len(LANTHANIDES) + len(ACTINIDES)
