@@ -3549,3 +3549,25 @@ supplémentaires venant d'une **session parallèle** en cours sur les pages
 d'enseignement scientifique (`sequence-snt.js` passé en `?v=43` partout sauf
 `term-es-t2-c1`, et un `pages/_capture-tmp.html` laissé en place). Rien n'y a été
 touché.
+
+## 12/09/2026 — `o3` : les paillasses aux erreurs sortent
+
+Loïc a relu la page et tranché : la scène des six erreurs de l'étape 1.3 ne convient
+pas, elle part ; l'exercice aux huit erreurs part avec elle. Les images attendues pour
+les remplacer (O-42) ne viendront pas sous cette forme — l'idée d'exemples de
+mauvaises manipulations revient plus tard, sur photos de la salle de TP. Décision O-43.
+
+Retirés : les deux blocs, le CSS `.scene`/`.zone`/`.sc-*` et la fonction JS qui les
+animait. Renumérotés : étapes 2.2 à 2.4, exercices 2 à 4, un renvoi interne, le chapô
+de la séance 2. Les `data-cle` sont conservés. Le pied de page perd l'encart « Outil
+transversal — proposition V1 », qui parlait de production ; le chapô de la séance 1
+perd la borne `max-width:70ch` du moteur (surcharge locale, `sequence-snt.css` non
+touché, aucun `?v=` à incrémenter).
+
+Contrôle au navigateur (Playwright, 1024 px) : 9 étapes numérotées 1.1–1.5 et
+2.1–2.4, 4 exercices, aucune `.scene` ni `.zone` restante, chapô justifié sur
+880 px, zéro erreur console. `node verifier.mjs` : 18 problèmes, le repère.
+
+Laissé en l'état : la **fiche A4**, jugée très bien par Loïc — mais son encart final
+annonce encore « cinq exercices, deux paillasses à corriger, un bilan de huit
+questions ». Signalé, pas corrigé.

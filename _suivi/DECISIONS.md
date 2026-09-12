@@ -1745,7 +1745,7 @@ douche et rince-œil de catalogue) servent **de référence pour vectoriser, pas
 fichiers à publier** : l'affiche porte « modèle déposé — reproduction interdite », et
 le dépôt est public.
 
-### O-42 · L'exercice 2 attend son image, et la numérotation des erreurs est à trancher
+### ~~O-42 · L'exercice 2 attend son image, et la numérotation des erreurs est à trancher~~ → remplacée par O-43
 
 L'image fournie porte **sept erreurs annotées**, la page en annonce **huit** (la
 huitième étant « blouse ouverte »). Elle porte aussi une incohérence interne : l'élève
@@ -1757,3 +1757,14 @@ façon un exercice cliquable.
 **Ce qui n'est pas encore fait, faute de ces images :** la scène SVG cliquable de
 l'étape 2.2 reste en place, et l'étape 1.3 garde sa scène des six erreurs en attendant
 l'image unique des six règles.
+
+### O-43 · Les paillasses aux erreurs sortent de l'outil 3 ✅
+
+**12/09/2026, décision de Loïc.** La scène des six erreurs (étape 1.3) et l'exercice
+aux huit erreurs (ancienne étape 2.2) sont **supprimés**, sans image de remplacement
+attendue : le dessin ne convenait pas. L'idée d'exemples de mauvaises manipulations
+est **gardée pour plus tard**, sur photos prises dans la salle de TP (`IDEES.md`).
+La séance 2 passe à quatre exercices, renumérotés à l'affichage ; les `data-cle`
+restent ceux d'origine, pour ne pas effacer de progression enregistrée. Le pied de
+page ne garde que ce qui sert à l'élève : la source officielle et l'avertissement sur
+le règlement de l'établissement.

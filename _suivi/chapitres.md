@@ -387,8 +387,8 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
 ### O3 — Sécurité au laboratoire 🔴
 - Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
 - Fichiers : `pages/2nde-pc-o3-securite-laboratoire.html` · `fiches/fiche-2nde-o3-securite-laboratoire.html`
-- **V1 produite le 28/08/2026.** 5 étapes de méthode, 5 exercices, 17 questions de
-  QCM, 30 champs à menu déroulant. Fiche A4 en **4 pages** (la seule fiche d'outil
+- **V1 produite le 28/08/2026.** 5 étapes de méthode, **4 exercices**, 22 questions de
+  QCM, 28 champs à menu déroulant. Fiche A4 en **4 pages** (la seule fiche d'outil
   qui y ait droit), QR code généré et autovérifié. Carte posée au hub.
 - 🆕 **Visuel repris le 29/08/2026.** Les 9 pictogrammes CLP sont **vectorisés**
   depuis le PDF officiel (appariement mesuré 9/9), la tenue est une **illustration
@@ -406,20 +406,27 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   se fait **en fenêtre, un pictogramme à la fois**, et le corrigé rédigé s'ouvre à
   la correction. Page **et** fiche A4 à jour, PDF réexporté (4 pages, A4 mesuré).
   Décisions **O-33 à O-42**.
-- ⏳ **Deux images attendues de Loïc** : l'image unique des **six règles** (étape 1.3,
-  qui remplacera la scène cliquable) et la paillasse **propre** aux **huit** erreurs
-  (exercice 2.2 — celle fournie porte ses annotations, sept erreurs, et un évier
-  étiqueté « Bac de récupération »). Les cinq pictogrammes d'équipement restent des
-  cadres `.reserve` : **pictogrammes réglementaires, à vectoriser depuis l'ISO 7010**,
-  jamais à dessiner (O-41).
+- 🆕 **Allégé le 12/09/2026 (O-43).** Les deux paillasses aux erreurs sont retirées
+  (la scène des six erreurs de l'étape 1.3 et l'exercice aux huit erreurs) : la
+  séance 2 compte **quatre exercices**. Le pied de page ne garde que la source
+  officielle et l'avertissement sur le règlement de l'établissement. L'idée
+  d'exemples de **mauvaises manipulations** est gardée pour plus tard, sur photos de
+  la salle de TP (`IDEES.md`).
+- ⏳ **Images attendues de Loïc** : les cinq pictogrammes d'équipement restent des
+  cadres `.reserve` — **pictogrammes réglementaires, à vectoriser depuis l'ISO 7010**,
+  jamais à dessiner (O-41) — et les photos de la salle de TP.
+- ⏳ **La fiche A4 n'est pas encore alignée** : son encart final annonce « cinq
+  exercices, deux paillasses à corriger, un bilan de huit questions ».
+- 💡 Vidéos possibles à ajouter (Loïc).
+- Page jugée satisfaisante par Loïc le 12/09/2026 — **pas de validation formelle**.
 - Sources : `fiche_Sécurité au laboratoire de Chimie.pdf` (le texte, quatre
   moments) et `fiche_Pictogrammes de sécurité.pdf` (les visuels et les libellés).
   Cette dernière **ne contient que des images** : les neuf pictogrammes en ont été
   **vectorisés** le 29/08, et non redessinés.
 - **Méthode — cinq étapes** : avant de venir (silhouette annotée, QCM 5 questions)
   · **lire une étiquette** (les 9 pictogrammes CLP en 3 familles, appariement à
-  9 cases) · pendant la manipulation (la paillasse aux erreurs, 6 erreurs
-  cliquables) · après la manipulation (`data-cloze` court) · **si ça tourne mal**
+  9 cases) · pendant la manipulation (six règles, deux consignes de rangement,
+  `data-cloze` court) · après la manipulation (`data-cloze` court) · **si ça tourne mal**
   (les 5 équipements de la salle, 4 scénarios à trancher).
 - 🔴 **Les neuf pictogrammes se dessinent en SVG, sans exception** — losange rouge
   sur fond blanc, symbole noir. En `<symbol>` réutilisables, posés une fois dans
@@ -442,9 +449,9 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
 - Hors périmètre : un schéma SVG de la salle (la 0.26 change d'une année à
   l'autre), et toute mention d'un produit précis avec sa fiche de données de
   sécurité.
-- **S'entraîner** — 5 exercices : trois étiquettes de flacon à lire · la paillasse
-  aux **huit** erreurs · « peut-on mélanger ces deux flacons ? » · **quatre
-  scénarios d'incident** à trancher · un QCM final de 8 questions.
+- **S'entraîner** — 4 exercices : trois étiquettes de flacon à lire · « peut-on
+  mélanger ces deux flacons ? » · **quatre scénarios d'incident** à trancher · un
+  bilan de 13 questions.
 - **Fiche A4 : quatre pages tolérées** (recto-verso ×2) — les pictogrammes
   prennent la place qu'ils prennent, et une page entière peut être leur planche.
   🔴 **Le bloc « si ça tourne mal » va en pied de la page 1**, encadré, jamais au

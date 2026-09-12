@@ -276,34 +276,12 @@
     .geste > .sit{color:var(--err)}
   }
 
-  /* ---------- La paillasse aux erreurs ----------
-     Illustration interactive, à la manière du curseur d'exposant de
-     o1 : elle n'enregistre rien et ne valide rien. C'est le test qui
-     suit, lui, qui ferme l'étape. */
-  .scene{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px}
-  .scene svg{width:100%;height:auto;display:block;max-width:560px;margin:0 auto}
-  .sc-fond{fill:var(--surface)}
-  .sc-trait{fill:none;stroke:var(--ink-soft);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-  .sc-plein{fill:var(--ink-soft)}
-  .zone{cursor:pointer}
-  /* 🔴 fill:transparent et NON fill:none — mesuré au navigateur : avec
-     fill:none, le rectangle ne capture PAS le pointeur, et seuls les
-     traits du dessin sont cliquables. L'élève devait viser un trait de
-     2 px. Avec fill:transparent, toute la zone répond. */
-  .zone .halo{fill:transparent;stroke:var(--link);stroke-width:1.6;stroke-dasharray:4 4;opacity:.32;rx:7}
-  .zone:hover .halo{opacity:.85;stroke-width:2}
-  .zone:focus-visible .halo{opacity:1;stroke-dasharray:none}
-  .zone.trouvee .halo{opacity:1;stroke:var(--err);stroke-dasharray:none;stroke-width:2.6}
-  .zone.trouvee .sc-trait{stroke:var(--err)}
-  .zone.trouvee .sc-plein{fill:var(--err)}
-  .sc-compte{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:11px;
-             font-size:13.5px;color:var(--ink-soft)}
-  .sc-compte b{color:var(--link);font-family:"IBM Plex Mono"}
-  .sc-liste{margin:10px 0 0;padding:0;list-style:none;font-size:14px}
-  .sc-liste li{padding:6px 0 6px 24px;position:relative;color:var(--ink-faint);border-top:1px solid var(--line)}
-  .sc-liste li::before{content:"○";position:absolute;left:4px;color:var(--ink-faint)}
-  .sc-liste li.vue{color:var(--ink)}
-  .sc-liste li.vue::before{content:"✓";color:var(--err);font-weight:700}
+  /* ---------- Le chapô de séance, sur toute la largeur ----------
+     Le moteur partagé justifie déjà .seance-goal, mais le borne à
+     70ch : le texte s'arrête alors bien avant le bord des cartes.
+     Ici il court sur toute la largeur. Surcharge locale —
+     sequence-snt.css est chargé par 22 fichiers. */
+  .seance-goal{max-width:none}
 
   /* ---------- Les étiquettes de flacon (section 2) ---------- */
   .flacons{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
@@ -1597,76 +1575,6 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
 
             <div class="point-cle"><b>Et la verrerie&nbsp;?</b> Elle est <b>chère</b>, et elle se manipule avec précaution. Ce n'est pas qu'une question d'argent&nbsp;: un bécher ébréché coupe, et un ballon fêlé casse au chauffage. La verrerie aura son propre outil.</div>
 
-            <div class="block-label">Six erreurs sur une paillasse — clique-les<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
-            <p style="font-size:14.5px;margin:4px 0 10px">Cette paillasse porte <b>six</b> erreurs, une par règle. Clique sur chacune pour la marquer&nbsp;: la liste se coche en dessous.</p>
-
-            <div class="scene">
-              <svg viewBox="0 0 560 270" role="img" aria-label="Une paillasse de laboratoire vue de face, portant six erreurs à repérer : une canette de boisson, un élève qui sent un flacon, une pipette portée à la bouche, un doigt qui prélève un solide, un sac au sol dans le passage, un tabouret laissé dans l'allée.">
-                <!-- le plan de travail -->
-                <rect class="sc-fond" x="20" y="150" width="520" height="14" rx="3"/>
-                <path class="sc-trait" d="M20,164 h520 M40,164 v70 M520,164 v70"/>
-
-                <!-- ERREUR 1 : la canette sur la paillasse -->
-                <g class="zone" data-err="1" tabindex="0" role="button" aria-label="Erreur : une canette de boisson posée sur la paillasse">
-                  <rect class="halo" x="44" y="112" width="40" height="42"/>
-                  <path class="sc-trait" d="M56,150 v-28 h16 v28 z M56,128 h16"/>
-                  <path class="sc-plein" d="M60,116 h8 v6 h-8 z"/>
-                </g>
-
-                <!-- ERREUR 2 : on sent le flacon -->
-                <g class="zone" data-err="2" tabindex="0" role="button" aria-label="Erreur : un élève sent le contenu d'un flacon">
-                  <rect class="halo" x="104" y="60" width="86" height="94"/>
-                  <circle class="sc-trait" cx="126" cy="80" r="13"/>
-                  <path class="sc-trait" d="M126,93 v34 M126,104 l22,10"/>
-                  <path class="sc-trait" d="M152,150 v-22 h14 v22 z M152,134 h14 M156,128 v-6 h6 v6"/>
-                  <path class="sc-trait" d="M139,88 q7,-3 10,4" stroke-dasharray="3 3"/>
-                </g>
-
-                <!-- ERREUR 3 : la pipette à la bouche -->
-                <g class="zone" data-err="3" tabindex="0" role="button" aria-label="Erreur : une pipette portée à la bouche">
-                  <rect class="halo" x="204" y="60" width="80" height="94"/>
-                  <circle class="sc-trait" cx="226" cy="80" r="13"/>
-                  <path class="sc-trait" d="M226,93 v34"/>
-                  <path class="sc-trait" d="M238,84 l26,26"/>
-                  <ellipse class="sc-plein" cx="243" cy="89" rx="3" ry="3"/>
-                  <path class="sc-trait" d="M258,124 v26 h10 v-26 z"/>
-                </g>
-
-                <!-- ERREUR 4 : le doigt dans le solide -->
-                <g class="zone" data-err="4" tabindex="0" role="button" aria-label="Erreur : un solide prélevé avec les doigts au lieu d'une spatule">
-                  <rect class="halo" x="300" y="96" width="76" height="58"/>
-                  <path class="sc-trait" d="M312,150 v-16 h30 v16 z"/>
-                  <path class="sc-plein" d="M314,148 h26 l-4,-8 h-18 z"/>
-                  <path class="sc-trait" d="M330,132 l14,-18 M344,114 l8,-6"/>
-                  <path class="sc-trait" d="M340,118 l6,4"/>
-                </g>
-
-                <!-- ERREUR 5 : le sac au sol -->
-                <g class="zone" data-err="5" tabindex="0" role="button" aria-label="Erreur : un sac laissé au sol dans le passage">
-                  <rect class="halo" x="396" y="196" width="58" height="44"/>
-                  <path class="sc-trait" d="M406,234 v-24 h38 v24 z M414,210 q11,-14 22,0"/>
-                </g>
-
-                <!-- ERREUR 6 : le tabouret dans l'allée -->
-                <g class="zone" data-err="6" tabindex="0" role="button" aria-label="Erreur : un tabouret laissé dans l'allée au lieu d'être rangé sous la paillasse">
-                  <rect class="halo" x="466" y="186" width="62" height="54"/>
-                  <path class="sc-trait" d="M478,204 h38 M482,204 v30 M512,204 v30 M486,220 h24"/>
-                </g>
-              </svg>
-              <div class="sc-compte">
-                <span>Erreurs repérées&nbsp;: <b data-sc-compte>0</b> sur 6</span>
-                <button class="btn ghost" data-sc-reset type="button">Tout remettre à zéro</button>
-              </div>
-              <ul class="sc-liste">
-                <li data-err-txt="1">Une <b>boisson</b> sur la paillasse — on ne boit ni ne mange au laboratoire.</li>
-                <li data-err-txt="2">On <b>sent</b> le flacon — jamais&nbsp;: on ne met pas le nez au-dessus d'un produit.</li>
-                <li data-err-txt="3">Une <b>pipette portée à la bouche</b> — elle se remplit à la propipette.</li>
-                <li data-err-txt="4">Un solide prélevé <b>aux doigts</b> — c'est le rôle de la spatule.</li>
-                <li data-err-txt="5">Un <b>sac au sol</b> dans le passage — les accès restent libres.</li>
-                <li data-err-txt="6">Un <b>tabouret</b> laissé dans l'allée — il se range sous la paillasse.</li>
-              </ul>
-            </div>
-
             <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">
               <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">jamais sentir · jamais goûter<br>debout · dégagé · à la spatule<br>flacon refermé · récipient nommé</div></div></div>
@@ -1876,7 +1784,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
       <h2><span class="s-num">2</span>S'entraîner</h2>
       <span class="seance-time">≈ 35 min</span>
     </div>
-    <p class="seance-goal">Cinq exercices&nbsp;: trois étiquettes à lire, une paillasse à corriger, un mélange à juger, quatre incidents à trancher, et un bilan de treize questions.</p>
+    <p class="seance-goal">Quatre exercices&nbsp;: trois étiquettes à lire, un mélange à juger, quatre incidents à trancher, et un bilan de treize questions.</p>
     <div class="progress-line"><i data-progress></i></div>
 
     <div class="lockable">
@@ -1965,148 +1873,19 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
         </div>
       </div>
 
-      <!-- ---------- 2.2 ---------- -->
-      <div class="step" data-step data-gate data-cle="pc-o3-s2-paillasse">
-        <div class="rail"></div><div class="step-pip"></div>
-        <div class="card">
-          <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.2</div>
-            <h3 class="step-title">La paillasse aux huit erreurs</h3>
-            <div class="objective"><span>🎯</span><span><b>Objectif —</b> repérer d'un coup d'œil ce qui ne va pas, comme on doit savoir le faire en entrant en salle.</span></div>
-          </div>
-          <div class="card-body">
-
-            <div class="exo" data-cle="pc-o3-s2-ex2">
-              <p class="exo-num">Exercice 2</p>
-              <p class="exo-enonce">Une autre paillasse, en pleine séance. Elle porte <b>huit</b> erreurs — deux de plus que celle de l'étape 1.3, et elles ne sont pas les mêmes. Clique chacune, puis compte.</p>
-
-              <div class="scene">
-                <svg viewBox="0 0 560 280" role="img" aria-label="Deuxième paillasse en cours de manipulation, portant huit erreurs à repérer : cheveux détachés, blouse ouverte, lunettes relevées sur le front, flacon laissé ouvert, produit chauffé à la flamme nue, verre cassé ramassé à main nue, reste versé dans l'évier, paillasse encombrée.">
-                  <rect class="sc-fond" x="20" y="160" width="520" height="14" rx="3"/>
-                  <path class="sc-trait" d="M20,174 h520 M40,174 v72 M520,174 v72"/>
-
-                  <!-- 1 : cheveux détachés -->
-                  <g class="zone" data-err="1" tabindex="0" role="button" aria-label="Erreur : cheveux longs laissés détachés">
-                    <rect class="halo" x="40" y="42" width="62" height="52"/>
-                    <circle class="sc-trait" cx="71" cy="70" r="14"/>
-                    <path class="sc-trait" d="M57,64 q14,-16 28,0 M57,64 q-4,16 2,24 M85,64 q4,16 -2,24"/>
-                  </g>
-
-                  <!-- 2 : blouse ouverte -->
-                  <g class="zone" data-err="2" tabindex="0" role="button" aria-label="Erreur : blouse laissée ouverte">
-                    <rect class="halo" x="42" y="112" width="60" height="52"/>
-                    <path class="sc-trait" d="M56,160 l4,-44 h22 l4,44"/>
-                    <path class="sc-trait" d="M66,116 l5,20 l5,-20"/>
-                    <path class="sc-trait" d="M71,136 v24"/>
-                  </g>
-
-                  <!-- 3 : lunettes sur le front -->
-                  <g class="zone" data-err="3" tabindex="0" role="button" aria-label="Erreur : lunettes de protection relevées sur le front">
-                    <rect class="halo" x="120" y="42" width="76" height="52"/>
-                    <circle class="sc-trait" cx="158" cy="72" r="14"/>
-                    <path class="sc-trait" d="M144,56 h28"/>
-                    <rect class="sc-trait" x="144" y="50" width="12" height="8" rx="2"/>
-                    <rect class="sc-trait" x="160" y="50" width="12" height="8" rx="2"/>
-                  </g>
-
-                  <!-- 4 : flacon resté ouvert -->
-                  <g class="zone" data-err="4" tabindex="0" role="button" aria-label="Erreur : flacon laissé ouvert, bouchon posé à côté">
-                    <rect class="halo" x="212" y="106" width="66" height="58"/>
-                    <path class="sc-trait" d="M228,160 v-28 h16 v28 z M228,138 h16 M232,132 v-8 h8 v8"/>
-                    <path class="sc-plein" d="M258,152 h12 v8 h-12 z"/>
-                  </g>
-
-                  <!-- 5 : chauffage à la flamme nue -->
-                  <g class="zone" data-err="5" tabindex="0" role="button" aria-label="Erreur : produit inflammable chauffé à la flamme nue">
-                    <rect class="halo" x="292" y="90" width="72" height="74"/>
-                    <path class="sc-trait" d="M310,160 v-16 h30 v16 z"/>
-                    <path class="sc-trait" d="M318,144 v-10 h14 v10"/>
-                    <path class="sc-plein" d="M325,132 c2,-6 -1,-8 -1,-12 c5,4 9,8 9,13 c0,4 -3,7 -8,7 c-4,0 -7,-3 -7,-7 c0,-3 2,-5 4,-7 c0,3 1,5 3,6 z"/>
-                    <path class="sc-trait" d="M300,120 h14 v-14 h-14 z"/>
-                    <path class="sc-trait" d="M303,113 h8"/>
-                  </g>
-
-                  <!-- 6 : verre cassé ramassé à la main -->
-                  <g class="zone" data-err="6" tabindex="0" role="button" aria-label="Erreur : verre cassé ramassé à main nue">
-                    <rect class="halo" x="196" y="196" width="86" height="54"/>
-                    <path class="sc-trait" d="M212,244 l10,-12 l8,8 l10,-14 l8,18 z"/>
-                    <path class="sc-trait" d="M250,214 l14,-10 M252,220 c-6,2 -8,8 -4,12"/>
-                    <path class="sc-trait" d="M262,200 a5,5 0 1 1 0,0.1"/>
-                  </g>
-
-                  <!-- 7 : reste versé dans l'évier -->
-                  <g class="zone" data-err="7" tabindex="0" role="button" aria-label="Erreur : reste de produit versé dans l'évier au lieu du bac de récupération">
-                    <rect class="halo" x="392" y="96" width="82" height="68"/>
-                    <path class="sc-trait" d="M404,138 h58 v22 h-58 z"/>
-                    <path class="sc-trait" d="M433,138 v-14 M433,124 h14 v-16"/>
-                    <path class="sc-trait" d="M418,120 l8,-14 l-6,-2 z"/>
-                    <path class="sc-plein" d="M424,126 l2,5 l-2,5 l-2,-5 z"/>
-                  </g>
-
-                  <!-- 8 : paillasse encombrée -->
-                  <g class="zone" data-err="8" tabindex="0" role="button" aria-label="Erreur : paillasse encombrée de sac, trousse et cahiers">
-                    <rect class="halo" x="486" y="106" width="58" height="58"/>
-                    <path class="sc-trait" d="M496,160 v-16 h38 v16 z"/>
-                    <path class="sc-trait" d="M500,144 v-12 h30 v12 z"/>
-                    <path class="sc-trait" d="M506,132 v-10 h18 v10 z"/>
-                  </g>
-                </svg>
-                <div class="sc-compte">
-                  <span>Erreurs repérées&nbsp;: <b data-sc-compte>0</b> sur 8</span>
-                  <button class="btn ghost" data-sc-reset type="button">Tout remettre à zéro</button>
-                </div>
-                <ul class="sc-liste">
-                  <li data-err-txt="1"><b>Cheveux détachés</b> — ils passeront devant la flamme dès qu'elle se penchera.</li>
-                  <li data-err-txt="2"><b>Blouse ouverte</b> — elle ne protège que fermée.</li>
-                  <li data-err-txt="3"><b>Lunettes relevées sur le front</b> — c'est l'erreur la plus fréquente&nbsp;: on les a, on ne les porte pas.</li>
-                  <li data-err-txt="4"><b>Flacon laissé ouvert</b> — les vapeurs sortent, et le bouchon posé se contamine.</li>
-                  <li data-err-txt="5"><b>Chauffage à la flamme nue</b> — jamais pour un produit inflammable.</li>
-                  <li data-err-txt="6"><b>Verre cassé ramassé à main nue</b> — pelle et balayette, après avoir prévenu.</li>
-                  <li data-err-txt="7"><b>Reste versé dans l'évier</b> — c'est le bac de récupération.</li>
-                  <li data-err-txt="8"><b>Paillasse encombrée</b> — le plan de travail reste propre et dégagé.</li>
-                </ul>
-              </div>
-
-              <div class="field">
-                <span class="field-type">Vérification</span>
-                <div class="field-q">Deux questions sur ce que tu viens de repérer.</div>
-                <div class="cloze" data-cloze data-cle="ex2">
-                  <div style="margin-bottom:9px"><b>1.</b> Parmi ces huit erreurs, celle qui peut blesser <b>quelqu'un d'autre</b>, plus tard, hors de la salle&nbsp;:
-                  <select class="short" data-answer="verre" aria-label="erreur qui peut blesser quelqu'un d'autre plus tard"><option value="">choisis…</option><option value="verre">le verre cassé ramassé à main nue</option><option value="cheveux">les cheveux détachés</option><option value="lunettes">les lunettes sur le front</option><option value="encombre">la paillasse encombrée</option></select>.</div>
-                  <div><b>2.</b> Celle qui ne se voit pas le jour même, mais dans la rivière&nbsp;:
-                  <select class="short" data-answer="evier" aria-label="erreur dont l'effet est différé et hors de la salle"><option value="">choisis…</option><option value="evier">le reste versé dans l'évier</option><option value="flacon">le flacon laissé ouvert</option><option value="flamme">le chauffage à la flamme nue</option><option value="blouse">la blouse ouverte</option></select>.</div>
-                </div>
-                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 2</button></div>
-                <div class="verdict"></div>
-              </div>
-              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
-              <details class="exo-corr">
-                <summary>Voir le corrigé rédigé</summary>
-                <div class="corps">
-                  <p><b>1 · le verre cassé ramassé à main nue.</b> Les sept autres erreurs ne menacent que celui qui les commet, et sur le moment. Celle-ci a une suite&nbsp;: si les morceaux partent à la poubelle ordinaire, c'est la personne qui videra le sac qui se coupera — quelqu'un qui n'était pas là, qui n'a rien manipulé, et qui n'a aucun moyen de savoir. C'est pour cela que le <b>conteneur à verre</b> n'est pas un détail de tri.</p>
-                  <p><b>2 · le reste versé dans l'évier.</b> Le sulfate de cuivre de l'exercice 1 est « très toxique pour les organismes aquatiques ». Rien ne se passe dans la salle, rien ne se voit&nbsp;: l'effet est ailleurs et plus tard. C'est exactement ce que dit le neuvième pictogramme, et c'est la raison d'être des <b>bacs de récupération</b>.</p>
-                  <p><b>Ce que l'exercice cherche à installer.</b> Les huit erreurs ne se valent pas. Certaines se rattrapent en une seconde (fermer sa blouse), d'autres ont des conséquences qu'on ne verra jamais. Savoir les classer, c'est déjà savoir lesquelles ne se négocient pas.</p>
-                </div>
-              </details>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
       <!-- ---------- 2.3 ---------- -->
       <div class="step" data-step data-gate data-cle="pc-o3-s2-melange">
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.3</div>
+            <div class="step-kicker">ÉTAPE 2.2</div>
             <h3 class="step-title">Peut-on mélanger ces deux flacons&nbsp;?</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre que deux produits peuvent être dangereux <b>ensemble</b> sans l'être séparément.</span></div>
           </div>
           <div class="card-body">
 
             <div class="exo" data-cle="pc-o3-s2-ex3">
-              <p class="exo-num">Exercice 3</p>
+              <p class="exo-num">Exercice 2</p>
               <p class="exo-enonce">Sur la paillasse, deux flacons. Le premier porte le pictogramme <b>comburant</b>, le second le pictogramme <b>inflammable</b>. Un camarade propose de verser l'un dans l'autre «&nbsp;pour voir&nbsp;».</p>
 
               <div class="flacons">
@@ -2139,7 +1918,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
                   <div><b>3.</b> Ce que tu fais&nbsp;:
                   <select class="short" data-answer="protocole" aria-label="conduite à tenir"><option value="">choisis…</option><option value="protocole">on ne mélange que ce que le protocole demande</option><option value="essayer">on essaie avec très peu de produit</option><option value="apres">on essaie après le TP</option><option value="voisin">on demande au voisin de le faire</option></select>.</div>
                 </div>
-                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 3</button></div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 2</button></div>
                 <div class="verdict"></div>
               </div>
               <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
@@ -2163,14 +1942,14 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.4</div>
+            <div class="step-kicker">ÉTAPE 2.3</div>
             <h3 class="step-title">Quatre incidents à trancher</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> décider vite, et accepter que la bonne réponse soit souvent «&nbsp;prévenir, et rien d'autre&nbsp;».</span></div>
           </div>
           <div class="card-body">
 
             <div class="exo" data-cle="pc-o3-s2-ex4">
-              <p class="exo-num">Exercice 4</p>
+              <p class="exo-num">Exercice 3</p>
               <p class="exo-enonce">Quatre scènes. Pour chacune, choisis le <b>premier</b> geste — celui que tu fais avant tous les autres.</p>
               <div class="field">
                 <span class="field-type">Vérification</span>
@@ -2196,7 +1975,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
                     </tr>
                   </table>
                 </div>
-                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 4</button></div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 3</button></div>
                 <div class="verdict"></div>
               </div>
               <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
@@ -2206,7 +1985,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
                   <p><b>1 · rincer à l'eau, et prévenir.</b> « Ça ne pique presque pas » n'est pas une information&nbsp;: certains produits ne se signalent qu'au bout de plusieurs minutes, et le temps perdu ne se rattrape pas. Rinçage abondant, 15 minutes, pendant qu'on prévient.</p>
                   <p><b>2 · s'écarter et prévenir, sans rien toucher.</b> Deux dangers se superposent — du verre et un produit répandu, dont tu ne sais pas s'il faut l'éponger. Le point de l'étape 1.5 s'applique&nbsp;: <b>ne pas éponger avant d'avoir demandé</b>. Ramasser les morceaux, c'est ajouter une coupure au problème.</p>
                   <p><b>3 · prévenir quand même.</b> C'est la scène la plus utile des quatre, parce que la tentation de ne rien dire y est maximale&nbsp;: il ne s'est <i>rien</i> passé. Mais le professeur a besoin de savoir qu'un tube projette — le tien, et donc peut-être les cinq autres du même montage. <b>Signaler n'est jamais une faute.</b></p>
-                  <p><b>4 · arrêter et le dire.</b> Ici, aucune blessure&nbsp;: juste une erreur, et l'envie très humaine de la rattraper seul. C'est exactement ce qu'il ne faut pas faire — tu ne sais pas ce que donne le mélange que tu viens de créer, et « ajouter le bon produit » par-dessus le mauvais est un mélange non prévu, donc l'exercice 3.</p>
+                  <p><b>4 · arrêter et le dire.</b> Ici, aucune blessure&nbsp;: juste une erreur, et l'envie très humaine de la rattraper seul. C'est exactement ce qu'il ne faut pas faire — tu ne sais pas ce que donne le mélange que tu viens de créer, et « ajouter le bon produit » par-dessus le mauvais est un mélange non prévu, donc l'exercice 2.</p>
                   <p><b>Ce que les quatre ont en commun.</b> Dans deux cas sur quatre, la bonne réponse est <b>prévenir et ne rien faire d'autre</b>. C'est contre-intuitif&nbsp;: on a l'impression de ne pas agir. Mais réparer seul est précisément ce qui transforme un incident en accident.</p>
                 </div>
               </details>
@@ -2221,14 +2000,14 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
         <div class="rail"></div><div class="step-pip"></div>
         <div class="card">
           <div class="card-top">
-            <div class="step-kicker">ÉTAPE 2.5</div>
+            <div class="step-kicker">ÉTAPE 2.4</div>
             <h3 class="step-title">Le bilan</h3>
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> treize questions qui balaient les cinq étapes.</span></div>
           </div>
           <div class="card-body">
 
             <div class="exo" data-cle="pc-o3-s2-ex5">
-              <p class="exo-num">Exercice 5</p>
+              <p class="exo-num">Exercice 4</p>
               <p class="exo-enonce">Treize questions sur l'ensemble de l'outil. Si l'une te fait hésiter, l'étape correspondante est juste au-dessus — c'est fait pour.</p>
               <div class="qcmbox" data-code="O3-Q-bilan">
                 <script type="application/json" class="qcm-data">
@@ -2390,8 +2169,7 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
   </section>
 
   <footer class="note">
-    <b>Outil transversal — proposition V1 du 28/08/2026.</b> Cet outil n'est pas un chapitre&nbsp;: il sert dans tous les TP de l'année, et il reste ouvert toute l'année. Les exercices se corrigent <b>en direct</b> par le navigateur, et chacun porte en plus son <b>corrigé rédigé</b>, qui s'ouvre dès la correction et se referme si tu veux le relire plus tard. 🖨️ La <a href="../assets/pdf/pc/fiches/fiche-2nde-o3-securite-laboratoire.pdf" style="color:var(--link)">fiche outil (PDF)</a> reprend toute la méthode sur une feuille à coller, planche des neuf pictogrammes comprise.
-    <br><br>📄 <b>D'où viennent ces règles.</b> Rien ici n'est une invention de professeur&nbsp;: tout vient de la
+    📄 <b>D'où viennent ces règles.</b> Rien ici n'est une invention de professeur&nbsp;: tout vient de la
     <a href="../assets/pdf/pc/reference/circulaire-2024-074-securite-laboratoires.pdf" style="color:var(--link)">circulaire du 5 septembre 2024 sur la sécurité dans les laboratoires de sciences (PDF)</a>
     et des deux guides de l'Observatoire national de la sécurité qui l'accompagnent — les neuf pictogrammes, les
     quinze minutes de rinçage, les bacs de récupération, la conduite à tenir en cas d'accident. Tu peux la télécharger
@@ -2403,72 +2181,19 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
 <script src="../assets/js/sequence-snt.js?v=43"></script>
 
 <!-- ============================================================
-     JS propre à l'outil. Un seul composant qui n'existe nulle part
-     ailleurs : les paillasses aux erreurs. Comme le curseur
-     d'exposant de o1, c'est une ILLUSTRATION — elle n'enregistre
-     rien, ne valide rien, et le moteur partagé n'est pas touché.
+     JS propre à l'outil. Deux composants d'affichage qui lui
+     appartiennent : les planches de pictogrammes et leur fenêtre de
+     détail. Ni l'un ni l'autre n'enregistre quoi que ce soit, et le
+     moteur partagé n'est pas touché.
 
-     Plus les deux appoints d'affichage communs aux outils : le
-     retrait de la fiche récapitulative du moteur, et l'allègement de
-     la barre « tu es ici ».
+     Plus les appoints d'affichage communs aux outils : l'ouverture
+     du corrigé à la correction, le retrait de la fiche
+     récapitulative du moteur, l'allègement de la barre « tu es ici »
+     et le retrait du glossaire.
      ============================================================ -->
 <script>
 (function(){
   'use strict';
-
-  /* =========================================================
-     LES PAILLASSES AUX ERREURS
-     Chaque erreur est un <g class="zone"> cliquable, apparié à une
-     ligne <li data-err-txt> par son numéro. Rien n'est enregistré :
-     l'étape se ferme sur le test qui suit, pas sur ce composant.
-
-     Le <g> porte tabindex et role="button" : au clavier, Entrée et
-     Espace font ce que fait le clic. Un SVG n'est pas focusable tout
-     seul, et une illustration qui ne s'atteint qu'à la souris
-     laisserait un élève de côté.
-     ========================================================= */
-  function scene(hote){
-    var zones  = Array.prototype.slice.call(hote.querySelectorAll('.zone')),
-        lignes = Array.prototype.slice.call(hote.querySelectorAll('[data-err-txt]')),
-        sortie = hote.querySelector('[data-sc-compte]'),
-        raz    = hote.querySelector('[data-sc-reset]');
-    if (!zones.length) return;
-
-    function majCompte(){
-      var n = hote.querySelectorAll('.zone.trouvee').length;
-      if (sortie) sortie.textContent = n;
-    }
-
-    function basculer(z){
-      var n = z.dataset.err;
-      /* classList.add/remove et non un remplacement de className :
-         le MutationObserver du moteur se réveille sur l'attribut
-         entier, et repasserait sur toute la carte pour rien. */
-      z.classList.toggle('trouvee');
-      var vue = z.classList.contains('trouvee');
-      lignes.forEach(function(li){
-        if (li.dataset.errTxt === n) li.classList.toggle('vue', vue);
-      });
-      majCompte();
-    }
-
-    zones.forEach(function(z){
-      z.addEventListener('click', function(){ basculer(z); });
-      z.addEventListener('keydown', function(e){
-        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
-          e.preventDefault(); basculer(z);
-        }
-      });
-    });
-
-    if (raz) raz.addEventListener('click', function(){
-      zones.forEach(function(z){ z.classList.remove('trouvee'); });
-      lignes.forEach(function(li){ li.classList.remove('vue'); });
-      majCompte();
-    });
-
-    majCompte();
-  }
 
   /* =========================================================
      APPOINT D'AFFICHAGE — ce que le moteur SNT dit et qui ne vaut
@@ -2847,7 +2572,6 @@ c-1708 -1709 -1716 -1716 -1764 -1716 -76 0 -3432 3356 -3432 3432 0 78 3350
   }
 
   function demarrer(){
-    document.querySelectorAll('.scene').forEach(scene);
     planches();
     fenetrePictos();
     corrigeALaCorrection();

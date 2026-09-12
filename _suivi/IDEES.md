@@ -123,6 +123,14 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
   (période / fréquence) et la **partie 4 C** (amplitude / intensité). Transposable
   à tout chapitre où une grandeur se lit sur une courbe.
 
+### O3 — Sécurité au laboratoire (12/09/2026)
+- 💡 **Des exemples de mauvaises manipulations**, sur **photos prises dans la salle
+  de TP** — la place qu'occupaient les deux paillasses aux erreurs dessinées,
+  retirées (O-43). Forme non arrêtée : cliquable ou non, dans la méthode ou en
+  exercice.
+- 💡 **Quelques vidéos** pour étoffer l'outil — Loïc ira les chercher (titre, durée,
+  URL dans un fichier texte, jamais le fichier vidéo).
+
 ## Publicités sur les postes de visionnage
 
 - 💡 *(mise à jour du 24/08/2026 : les vidéos sont désormais derrière une

@@ -140,15 +140,20 @@ touché, aucun `?v=` à incrémenter :
 pictogramme dessiné dans l'énoncé. Et la **circulaire est jointe en téléchargement**
 en pied de parcours (`assets/pdf/pc/reference/`, nouveau dossier).
 
-**Ce qui reste, et qui attend deux images de Loïc :**
+**Les deux paillasses aux erreurs sont retirées (O-43).** La scène des six erreurs de
+l'étape 1.3 et l'exercice aux huit erreurs disparaissent, CSS et JS compris : la
+séance 2 compte **quatre exercices**, renumérotés (les `data-cle` ne changent pas, pour
+ne pas effacer de progression). Le pied de page perd l'encart de production et ne
+garde que « D'où viennent ces règles » et l'avertissement sur le règlement ; le chapô
+de la séance 1 court sur toute la largeur. L'idée d'**exemples de mauvaises
+manipulations** revient plus tard, sur photos de la salle de TP (`IDEES.md`). Loïc
+trouve la page satisfaisante — ce n'est pas une validation.
 
-1. **L'étape 1.3** garde sa scène SVG des six erreurs, en attendant **l'image unique
-   des six règles** qui doit la remplacer (le « cliquer dans l'ordre » ne l'intéresse
-   pas).
-2. **L'exercice 2.2** garde sa scène SVG des huit erreurs, en attendant l'image de
-   paillasse **propre** — celle fournie porte ses annotations, **sept** erreurs au lieu
-   de huit, et un évier étiqueté « Bac de récupération » qui rend l'erreur nº 6
-   illisible. La page dessinera elle-même les repères en HTML.
+**Ce qui reste :**
+
+1. **La fiche A4** annonce encore « cinq exercices, deux paillasses à corriger, un
+   bilan de huit questions » (dernier encart) : une phrase à corriger, puis réexport.
+2. **Les photos de la salle de TP**, et d'éventuelles vidéos, à fournir par Loïc.
 3. **Les cinq pictogrammes d'équipement** (douche, rince-œil, extincteur, couverture,
    sortie) restent en cadres `.reserve` : ce sont des **pictogrammes réglementaires**,
    qui ne se dessinent pas de mémoire (O-41) — il faut les vectoriser depuis une source
