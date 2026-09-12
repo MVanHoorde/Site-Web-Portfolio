@@ -15,6 +15,18 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 12/09/2026 — Audit du chapitre ES Term T2-C1 « Deux siècles d'énergie électrique »
+
+| Date | Décision | Statut |
+|---|---|---|
+| 12/09/2026 | **Le « à retenir » ferme sa partie**, dans tous les chapitres de ce type : il vient après le cours et les vidéos, jamais en tête d'étape. Seule l'activité qui le vérifie peut le suivre. | ✅ en vigueur (interprétation à confirmer, `es-term-verification.md` §8.2) |
+| 12/09/2026 | **Pas de correction en ligne pour les questions ouvertes** d'ES de terminale : elles se corrigent en classe. Les corrigés vivent dans `_corriges-es/`, ignoré par Git. Les QCM, textes à trous et exercices à relier gardent leur correction immédiate. | ✅ en vigueur |
+| 12/09/2026 | **Plus de mention « reprise du cours de M. Van Hoorde »** sous les figures (T2-C1) : seules les sources nommées restent. | ✅ en vigueur (T2-C1 ; T2-C2 non repris) |
+| 12/09/2026 | **Une activité de vérification posée juste sous son texte s'ouvre en fenêtre floutée** (bouton « Ouvrir l'activité »), pour qu'elle ne se recopie pas. Composant local à la page, pas dans le moteur. | ✅ en vigueur |
+| 12/09/2026 | **Les fractions s'écrivent sur deux niveaux** (`.frac`) en ES aussi, comme en 2nde PC. | ✅ en vigueur |
+| 12/09/2026 | **D1 tranché pour le T2-C1** : « Pour le devoir, je sais » en vraies cases à cocher, dans une séance « Bilan du chapitre » à part, non verrouillée. Le T2-C2 reste à aligner. | ✅ en vigueur (T2-C1) |
+| 12/09/2026 | ⏳ **« Je dois aussi … de ce chapitre-là »** (audit T2-C1) : un mot manque dans le vocal ; aucune ressource supplémentaire trouvée dans le PPTX. **Question ouverte.** | ⏳ |
+
 ## 12/09/2026 — Audit du chapitre ES T1-C1
 
 | Date | Décision | Statut |

@@ -3571,3 +3571,31 @@ Contrôle au navigateur (Playwright, 1024 px) : 9 étapes numérotées 1.1–1.5
 Laissé en l'état : la **fiche A4**, jugée très bien par Loïc — mais son encart final
 annonce encore « cinq exercices, deux paillasses à corriger, un bilan de huit
 questions ». Signalé, pas corrigé.
+
+## 12/09/2026 — ES Term T2-C1 : le chapitre refondu sur audit
+
+Loïc a dicté l'audit en trois vocaux (séance 1 étape par étape, puis séance 2), en
+demandant d'attendre son feu vert avant toute lecture ; puis « tu fais tout d'un
+coup ». Tout le relevé et ce qui reste fragile : `es-term-verification.md` §8.
+
+Trouvaille de la session : les **sources du chapitre étaient dans les
+Téléchargements, PPTX compris**. Le PDF avait perdu cinq hyperliens de la séance 2,
+que le portage avait déclarés introuvables ; le PPTX les porte en clair. Les 9
+images-QR du PPTX ont été redécodées (pyzbar) : il n'y a pas de troisième Kahoot.
+
+Page réécrite en entier (1 058 → 1 982 lignes) sur les conventions de la
+nucléosynthèse refondue le même jour : `b.cle` rouge, cadre d'activité orange,
+`.transi`, glossaire progressif, séance non verrouillée pour le bilan. Trois
+composants locaux : la fenêtre floutée d'activité (le champ reste à sa place dans
+le DOM, sinon le moteur ne valide plus l'étape par `closest('.step')`), les
+exercices à relier (le composant d'étiquettes du moteur, zones sorties de leur
+image), les cases « je sais ». Deux pièges rencontrés : le moteur ajoute lui-même
+le bandeau « À RETENIR » dans `.retain` (le mien faisait doublon) ; et un écouteur
+de page posé en fin de `<body>` s'exécute **avant** ceux du moteur, qui attend le
+`DOMContentLoaded` — le verdict des étiquettes se réécrit donc dans un
+`setTimeout`.
+
+Contrôles : `node verifier.mjs` → 18 ; Playwright 1024 et 768 px → zéro erreur,
+parcours validé étape par étape. Le verrouillage de la séance 2 se réarme à chaque
+validation en séance 1 : un test qui déverrouille une fois au chargement échoue
+plus loin — il faut déverrouiller avant chaque partie.
