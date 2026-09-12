@@ -5,7 +5,10 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **12/09/2026** (dernière passe : **l'outil 3 « Sécurité au
+> Dernière réécriture : **12/09/2026** (dernière passe : **le chapitre ES T1-C1
+> « La nucléosynthèse » est refondu sur audit — 3 séances, 14 étapes, 8 schémas SVG
+> tracés, un glossaire progressif, et trois corrections descendues dans le moteur
+> partagé**, bloc ci-dessous). Passe du même jour : **l'outil 3 « Sécurité au
 > laboratoire » est relu contre la circulaire 2024-074 — deux contradictions
 > corrigées, quatre consignes officielles ajoutées, la vérification des neuf
 > pictogrammes passe en fenêtre**, bloc ci-dessous). Passe du même jour :
@@ -45,6 +48,60 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 Le chapitre ES T1-C1 « La nucléosynthèse » est refondu sur audit
+
+**Fait le 12/09/2026.** Loïc a audité le chapitre de bout en bout — mise en forme,
+vocabulaire, structure des deux séances, activités, ressources — et fourni le
+dépouillement complet des cinq vidéos du parcours. Le cahier des charges tenait en sept
+parties ; elles sont toutes traitées. **Rien n'est validé** : tout ce qui touche au fond
+reste une proposition.
+
+**Ce qui a changé dans la page**
+
+| | Avant | Après |
+|---|---|---|
+| Séances | 2 (déséquilibrées) | **3** — fusion/fission passe en fin de S1, et une séance **« Réviser »** s'ajoute |
+| Étapes | 11 | **14** |
+| Gras | **237** | 148, plus **14 mises en évidence rouges** sur le vocabulaire évaluable |
+| Schémas tracés | 0 | **8 SVG** générés par script — deux tableaux périodiques, six schémas de noyaux |
+| QCM | 5 (17 questions) | **7 (44 questions)**, dont un QCM de prérequis *sans enjeu* et un QCM bilan de 18 questions |
+| Activités interactives | 0 | **5** — 3 graphiques à légender, 6 réactions à qualifier, 1 tri de noyaux |
+| Glossaire | statique, complet dès l'arrivée | **progressif** : 18 entrées qui s'ouvrent à la validation de leur étape |
+
+**Deux outils sont nés**, et ils se relancent&nbsp;:
+`python _outils/es/tableau_periodique.py` regénère les deux tableaux périodiques,
+`python _outils/es/noyaux.py` les six schémas de noyaux. Les deux **s'injectent seuls**
+dans la page, entre marqueurs. Le second **refuse de dessiner au-delà de 20 nucléons** :
+un amas de billes qui ne compte pas le bon nombre de nucléons serait un schéma faux.
+
+**Trois corrections sont descendues dans le moteur partagé** (`sequence-snt.js`, donc
+`?v=43` sur **20 fichiers**) :
+1. la pastille de niveau ne pend plus dans le coin d'un « à retenir » — elle tombait
+   hors du padding parce que le contenu avait déjà été enveloppé ; sur un champ, elle
+   se pose maintenant **sur l'étiquette de type** ;
+2. un QCM peut être déclaré `data-facultatif` : il ne valide rien et s'annonce
+   honnêtement « sans enjeu » — il n'existait aucun moyen de poser un test de
+   diagnostic ;
+3. l'origine d'un mot moissonné pour le glossaire était écrite **« Séquence Internet »
+   en dur** : elle se déclare sur `<body data-origine-glossaire>`.
+
+**Une erreur scientifique du cours source a été corrigée** : la chaîne de la
+nucléosynthèse primordiale fait entrer un **neutron** dans la formation du béryllium 7.
+4 + 1 ne fait pas 7 — c'est un noyau d'**hélium 3**. Le schéma tracé est juste, **le PDF
+d'origine porte encore l'erreur**.
+
+🔴 **Ce qui reste à faire, et qui n'appartient qu'à Loïc**
+- **Déposer la photographie du réacteur PULSTAR** dans `_a-deposer/es1/` : elle est
+  arrivée avec l'audit mais n'existe pas dans le dépôt. Cadre de réservation posé,
+  légende déjà en place.
+- **Trancher l'animation « vie et mort des étoiles »** (2.3) : une piste vérifiée
+  (Observatoire de Paris, mais ce sont des pages, pas une animation), une piste non
+  vérifiée (`starinabox.net`, vraie animation interactive, que je n'ai pas pu ouvrir).
+- **Lever une ambiguïté de l'audit** : « le second QCM doit remonter en 1.1 ». Le
+  mini-QCM de prérequis est écrit et posé ; quel *autre* QCM devait remonter reste
+  indéterminé.
+- Les **autres vidéos annoncées** dans l'audit et pas encore fournies.
 
 ## 🆕 L'outil 3 « Sécurité au laboratoire » est relu contre la circulaire officielle
 

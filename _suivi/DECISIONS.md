@@ -15,10 +15,27 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 12/09/2026 — Audit du chapitre ES T1-C1
+
+| Date | Décision | Statut |
+|---|---|---|
+| 12/09/2026 | **Trois niveaux de mise en évidence, jamais cumulés** dans les chapitres ES : `<b>` pour la structure (terme de programme, première occurrence), `<b class="cle">` en rouge pour **le mot à restituer en évaluation**, `.plustard def` pour ce qui s'ouvre au survol. Le rouge de mise en évidence (`--cle`) n'est **pas** celui des verdicts (`--err`) : celui-là veut dire « faux ». Doses : 2 gras par paragraphe, 1 par puce, 1 par correction de QCM, **0 dans une légende de figure**. | ✅ en vigueur |
+| 12/09/2026 | **Une activité porte sa couleur** : orange (`--activity`), déjà la couleur de « tu agis » dans ce moteur. `.card.activite` quand l'étape entière en est une, `.activite` sinon. Et **le mot « exercice » ne s'écrit nulle part** — il n'y a que des activités. | ✅ en vigueur |
+| 12/09/2026 | **Chaque étape s'ouvre sur un `.transi`** : deux phrases qui rappellent ce qui vient d'être fait et annoncent la suite. | ✅ en vigueur |
+| 12/09/2026 | **La trace écrite ne s'appelle pas « dossier numérique »** en enseignement scientifique : l'élève dépose sa fiche dans un dossier OneDrive **s'il le souhaite**, avec le conseil de le faire. | ✅ en vigueur |
+| 12/09/2026 | **Le glossaire d'un chapitre ES se construit** : une seule source (`#dico-source`), qui alimente à la fois les infobulles de survol et un glossaire de bas de page dont chaque entrée s'ouvre **à la validation de l'étape qui définit le mot**. Le panneau flottant du moteur reste ce qu'il est : le lexique cherchable de l'année. | ✅ en vigueur |
+| 12/09/2026 | **Les schémas de noyaux et les tableaux périodiques sont générés**, pas écrits à la main : `_outils/es/noyaux.py` et `_outils/es/tableau_periodique.py`, injection entre marqueurs. Le premier **refuse de dessiner au-delà de 20 nucléons** — pour l'uranium, on garde le schéma du cours. | ✅ en vigueur |
+| 12/09/2026 | **Une séance « Réviser » ne se verrouille pas et ne compte pas** : pas de `data-gate`, pas de `locked`. On y entre quand on veut. Ses « à retenir » **ne contiennent rien qui ne soit ailleurs dans le chapitre** ; son QCM, lui, a le droit d'aller au-delà du programme, et le signale dans ses corrections. | ✅ en vigueur |
+| 12/09/2026 | **Un QCM peut être déclaré `data-facultatif`** : il ne valide pas l'étape et s'annonce « sans enjeu ». Ajouté au moteur pour les tests de diagnostic. | ✅ en vigueur |
+
+
 ## En attente d'arbitrage
 
 | Date posée | Sujet | Enjeu |
 |---|---|---|
+| 12/09/2026 | ⏳ **Le comptage des éléments chimiques** (ES T1-C1) | Retenu pour tout le parcours : **118 connus, 94 naturels**, aligné sur la vidéo que les élèves voient. Le cours disait « environ 90, jusqu'à 92 ». Conséquence assumée : le technétium et le prométhium **ne sont plus marqués artificiels** sur le tableau périodique, puisqu'on les trouve à l'état de traces. Les 24 anthropiques sont exactement Z ≥ 95. **Choix de Loïc, appliqué ; à confirmer une fois vu en classe.** |
+| 12/09/2026 | ⏳ **L'animation « vie et mort des étoiles »** (ES T1-C1, 2.3) | L'audit demande de remplacer l'image de géante rouge par une animation. Une piste vérifiée (Observatoire de Paris — des pages, pas une animation), une non vérifiée (`starinabox.net`). L'image reste en place : **le choix d'une ressource relève du fond**. |
+| 12/09/2026 | ⏳ **« Le second QCM doit remonter en 1.1 »** (ES T1-C1, audit B2) | Le mini-QCM de prérequis est écrit, posé en 1.1, et déclaré sans enjeu. Mais *quel* QCM existant devait remonter n'a pas pu être déterminé — aucun ne porte sur ce que 1.1 vient de faire. **Question ouverte.** |
 | 18/07/2026 | ⏳ Volume horaire type d'une séquence SNT | Le Web fait ≈ 6 h sur 4 séances + 1 débranchée. |
 | 18/07/2026 | ⏳ Équivalent d'un « régime A » pour les séquences SNT | Non tranché : une séquence se rédige, elle ne se transcrit pas d'un PPTX. |
 | 16/07/2026 | ⏳ Ordre du Thème 3 (PC) | Ordre des PPTX conservé, ou renumérotation son / spectres / signaux. |

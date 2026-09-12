@@ -12,6 +12,38 @@
 
 ---
 
+## 12/09/2026 — L'audit du chapitre ES T1-C1, appliqué de bout en bout
+
+Loïc a dicté un audit du chapitre « La nucléosynthèse » et l'a complété du
+dépouillement exhaustif des cinq vidéos du parcours — repères temporels, chiffres,
+vocabulaire. Sept parties, une quarantaine de demandes. Tout a été traité dans l'ordre,
+en huit lots.
+
+Ce que l'audit a révélé au passage, et qui dépassait le chapitre :
+
+- **le gras**. 237 occurrences dans une seule page — « un rendu généré par IA », et l'œil
+  n'a plus aucun repère. L'allègement mécanique par zone en a retiré 83 ; le passage
+  qualitatif a rendu leur poids aux mots qui comptent, en rouge cette fois ;
+- **une pastille mal placée**, signalée comme « encadré mal cadré ». La cause était dans
+  le moteur : `demarrer()` enveloppe le contenu d'un « à retenir » dans un `.rb`, puis
+  `initEvaluabilite()` colle la pastille **après** — donc hors du padding, au bord du
+  cadre. Corrigé pour les 20 pages qui chargent le moteur ;
+- **un texte en dur**. Le dictionnaire d'un poste de visionnage versait ses mots au
+  glossaire en les étiquetant « Séquence Internet », quelle que soit la séquence ;
+- **une erreur scientifique** dans le cours source : la chaîne de la nucléosynthèse
+  primordiale y fait entrer un neutron dans la formation du béryllium 7. C'est un hélium 3.
+
+Deux générateurs sont nés (`_outils/es/`), parce que huit schémas écrits à la main ne se
+corrigent pas : un pour les tableaux périodiques, un pour les noyaux en « petites
+boules ». Le second refuse de dessiner au-delà de vingt nucléons — un amas de billes qui
+n'en compte pas le bon nombre serait un schéma faux, et un schéma faux est une erreur de
+cours.
+
+Tout ce qui touche au fond reste une proposition. Le détail, lot par lot, est dans
+`_suivi/es1-verification.md` §9.
+
+---
+
 ## 12/09/2026 — L'enseignement scientifique de terminale passe sur le moteur
 
 Deux chapitres portés, et un hub remis à la taille de ce qui est réellement traité.

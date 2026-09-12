@@ -26,6 +26,55 @@ participatives de l'ens. scientifique de Terminale**. Première pièce :
    titre retenu) + bonus manuel enseignant ; les jetons donnent un **droit de
    choisir** (pôle, camp du débat), jamais des points de note.
 
+---
+
+# Les six chapitres d'ES de 1re — sur le moteur SNT
+
+Deuxième pièce de la famille, et de loin la plus fournie : `pages/1re-es-tN-cN-….html`,
+**6 chapitres, 18 séances**, portés le 06/09/2026. Ils ne suivent **pas** les règles
+ci-dessus (pas de frise, pas de jetons, pas de tirage) : ils tournent sur le **moteur
+des séquences SNT** (`assets/css/sequence-snt.css` + `assets/js/sequence-snt.js`), avec
+sa grammaire séquence → séance → étape → champ. État et points en attente :
+`_suivi/es1-verification.md`. 🔴 **Pas encore branchés en base** : ni client de
+progression, ni `data-sequence`.
+
+## Conventions de mise en forme (audit du 12/09/2026)
+
+Motif : le gras employé partout donne un rendu « généré par IA », et l'œil n'a plus
+aucun repère pour distinguer ce qui compte. Trois niveaux, **jamais cumulés** :
+
+| Forme | Sens | Dose |
+|---|---|---|
+| `<b>` | structure du texte : terme de programme, à sa **première** occurrence dans l'étape | 2 par paragraphe, 1 par puce, 1 par correction de QCM, **0 dans une légende de figure** |
+| `<b class="cle">` | rouge — **le mot que l'élève doit pouvoir restituer** en évaluation | 1 par bloc « à retenir », 1 par puce de bilan |
+| `.plustard def` | mot dont la définition s'ouvre au survol (et alimente le glossaire) | à volonté |
+
+Le rouge de mise en évidence (`--cle: #b3122b`) n'est **pas** le rouge des verdicts
+(`--err`) : celui-là veut dire « faux », et un mot important ne doit jamais porter
+cette couleur.
+
+**Une activité se reconnaît à sa couleur avant d'être lue.** L'orange (`--activity`)
+est déjà, dans ce moteur, la couleur de « tu agis » — QCM, étiquettes à poser : on la
+reprend, on n'en invente pas une autre. Deux formes : `.card.activite` (+ badge
+`.badge.act`) quand l'étape entière est une activité, `.activite` quand elle n'en
+occupe qu'une partie.
+
+**Le mot « exercice » ne s'écrit nulle part.** Il n'y a que des **activités**. Pour
+une liste d'illustrations, on parle d'**exemples**, jamais de « a / b / c ».
+
+**Chaque étape s'ouvre sur un `.transi`** : deux phrases rappelant ce qui vient d'être
+fait et annonçant la suite. Il est placé en tête du `.card-body`, avant l'objectif —
+c'est ce que l'élève lit en dépliant l'étape.
+
+**La trace écrite.** En enseignement scientifique, la notion de *dossier numérique*
+n'existe pas. Formulation à tenir : l'élève dépose sa fiche dans un dossier qu'il crée
+sur OneDrive **s'il le souhaite**, ou la conserve comme il lui convient — avec le
+conseil de passer par OneDrive.
+
+Les trois composants (`.cle`, `.activite`, `.transi`) vivent dans le `<style>` de
+chaque page ES, pas dans le CSS partagé : le SNT ne les a pas encore adoptés. Patron de
+référence : `pages/1re-es-t1-c1-nucleosynthese.html`.
+
 ## 🚧 Chantiers ouverts de la famille
 - cours-01-histoire (après S3, à partir de la frise réelle de la classe)
 - cours-02-ia (fonctionnement, biais, outils, vigilances)

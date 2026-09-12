@@ -1355,7 +1355,7 @@ dépôt : **`_suivi/es1-verification.md`**.
 
 | Page | Séances | État | Ce qui bloque |
 |---|---|---|---|
-| `1re-es-t1-c1-nucleosynthese` | 2 | **V0 complète** — porte aussi le **tutoriel du dispositif**, entrelacé (rôle de `t0` pour le SNT) | rien de bloquant · tutoriel écrit **au futur** tant que la base n'est pas branchée (ES-13) |
+| `1re-es-t1-c1-nucleosynthese` | 3 | **V1 refondue sur audit (12/09)** — 14 étapes, 8 schémas SVG tracés, glossaire progressif, 5 activités interactives, séance « Réviser ». Porte aussi le **tutoriel du dispositif**, entrelacé | photo PULSTAR à déposer · animation « vie et mort des étoiles » à trancher · tutoriel écrit **au futur** tant que la base n'est pas branchée (ES-13) |
 | `1re-es-t1-c2-radioactivite` | 4 | **V0 complète** — 3 activités Quizéo portées, dont le QCM à réponses multiples et le jeu d'étiquettes | courbe GeoGebra de l'exercice 1 (ES-02) · droits AFP (ES-07) · PhET et REMon à tester (ES-10) |
 | `1re-es-t1-c3-cristaux` | 3 | **V0 complète** — la page statique `1re-pc-cristaux.html` reste en place jusqu'à validation | **4 figures manquantes** (ES-01) : sans elles, `a = 2r` et `4R = a√2` ne se justifient plus |
 | `1re-es-t2-c1-son-et-musique` | 3 | **V0 complète** — le TP tournant (résonance, corde de Melde, colonne d'air) + l'activité octave | 3 notions du 4.1 absentes (ES-03) · graphique de Melde (ES-04) · droits des extraits de manuel (ES-08) |

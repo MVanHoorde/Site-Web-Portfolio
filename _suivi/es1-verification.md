@@ -624,3 +624,97 @@ en clair** dans le document, elle est donc sûre.
 6. Relire les **40 cadres `.proposition`** et les **81 questions de QCM** : c'est tout
    le contenu que Claude a écrit, et il est intégralement signalé comme tel.
 7. Puis, séparément : **le branchement en base** (§4).
+
+---
+
+## 11. L'audit du chapitre T1-C1, appliqué — 12/09/2026
+
+> Cette section **ne remplace pas** les précédentes : elle porte sur le seul chapitre
+> `1re-es-t1-c1-nucleosynthese`, refondu à partir de l'audit dicté et du dépouillement
+> des cinq vidéos. Les autres chapitres ES n'ont pas bougé.
+
+### 11.1 Les huit lots, et ce qu'ils ont produit
+
+| Lot | Audit | Fait |
+|---|---|---|
+| **0** Conventions | A1–A3, A5 | Gras **237 → 148** + 14 rouges. « Exercice » éliminé (6 occurrences). Trace écrite reformulée sans « dossier numérique ». **7 textes de transition**. Cadre d'activité orange. Comptage **118/94** aligné partout. « Anthropique » introduit en 1.2, « lithosphère » passée en infobulle. |
+| **1** Glossaire | A4 | **Réponse à ta question : non, ce n'était pas implémenté.** Un glossaire existait (panneau flottant, 14 mots) mais **complet dès l'arrivée** et sans lien avec les survols. Il y a maintenant **18 entrées** qui s'ouvrent à la validation de leur étape, et **une seule source** — `#dico-source` — qui alimente aussi les infobulles. |
+| **2** Structure | B1, B2, B3, C1 | Fusion/fission remonte **en fin de S1** (étape 1.4) ; l'ancienne 1.4 est démontée, sa vidéo rejoint 2.1. **Mini-QCM de prérequis** en 1.1, 5 questions, *sans enjeu*. Étape 1.2 complétée : rappel atome/ion/isotope, « peut-on aller au-delà de 92 », plutonium en réacteur, cadre pour la photo PULSTAR. |
+| **3** Tableau périodique | E1 n°1-2 | **Deux tableaux SVG** générés par `_outils/es/tableau_periodique.py` : états + CHON (1.2), provenances + anthropique (2.4). 118 cases, contrôlées. |
+| **4** Schémas | E1 n°3-7 | **Six schémas** générés par `_outils/es/noyaux.py` : noyaux légers (atelier), chaîne primordiale, chaîne p-p, couches de l'étoile, fusions, fission. Plus un **atelier de reconnaissance** : 6 amas à identifier avant de dévoiler la chaîne. |
+| **5** Postes et QCM | B5, C2 | **Deux postes de visionnage** complets (notes + dictionnaire), sur le modèle SNT. QCM de 2.1 : **3 → 8** questions ; 2.2 : **4 → 8**. Tous les biais de longueur de la page corrigés. |
+| **6** Activités | B4, B7, C4 | Les trois graphiques **découpés en trois images**, chacun avec son **titre en menu déroulant** et **deux étiquettes à poser** (positions mesurées). **Choix cliquable** sous chacune des 6 réactions. **Tri des noyaux** : tirage au nombre choisi (5 à 24), 4 destinations, réinitialisable. |
+| **7** Bilan et révisions | D1, D2 | La question d'ouverture revient en **étape à part entière** (2.5), avec ce qu'on attend d'une réponse en devoir. Abondances du bilan S1 **en tableau**. Nouvelle **séance « Réviser »** : les 5 « à retenir » rassemblés, les 5 vidéos, un **QCM bilan de 18 questions**. |
+
+### 11.2 Ce que l'audit a fait remonter dans le moteur partagé
+
+Trois corrections dans `assets/js/sequence-snt.js` — donc **`?v=43` sur 20 fichiers**
+(et non 6 : `CLAUDE.md` sous-estimait le périmètre, il est à corriger).
+
+1. **La pastille de niveau tombait hors du cadre.** C'est ton « encadré mal cadré, en bas
+   à droite du bloc À retenir ». Cause : `demarrer()` enveloppe le contenu d'un `.retain`
+   dans un `.rb`, **puis** `initEvaluabilite()` ajoute la pastille — qui se retrouve
+   frère du `.rb`, donc hors du padding. Désormais : **rien sur un « à retenir »** (son
+   bandeau dit déjà « ★ À retenir »), et sur un champ, la pastille se pose **sur
+   l'étiquette de type**. 17 champs concernés dans cette seule page.
+2. **`data-facultatif` sur un QCM** : il ne valide pas l'étape et s'annonce « sans
+   enjeu ». Il n'existait aucun moyen de poser un test de diagnostic.
+3. **L'origine du glossaire** était écrite « Séquence Internet » **en dur**, aux deux
+   points de moisson. Elle se déclare sur `<body data-origine-glossaire>`.
+
+### 11.3 Une erreur scientifique de plus dans les sources
+
+S'ajoute aux sept du §7 :
+
+| # | Où | Ce qui est faux | Corrigé |
+|---|---|---|---|
+| 8 | Schéma de la chaîne primordiale (PDF de cours, repris de `ca-se-passe-la-haut.fr`) | Un **neutron** entre dans la réaction qui forme le béryllium 7. **4 + 1 ≠ 7.** | Le schéma tracé fait entrer un **hélium 3** (³He + ⁴He → ⁷Be + γ), et place le neutron à l'étape suivante (⁷Be + n → ⁷Li + p). **Le PDF d'origine porte encore l'erreur.** |
+
+### 11.4 Ce qui n'a pas pu être fait, et pourquoi
+
+| Demande | État |
+|---|---|
+| **Photo du réacteur PULSTAR** (B3) | **Bloqué.** L'image est arrivée dans la conversation, pas dans le dépôt : elle ne peut pas être écrite sur le disque depuis là. Cadre de réservation posé aux bonnes dimensions, **légende déjà en place, mot pour mot**. Dépose le fichier dans `_a-deposer/es1/` et l'intégration se réduit à remplacer une balise. |
+| **Animation « vie et mort des étoiles »** (C3) | **Cherché, pas tranché.** Une piste vérifiée (Observatoire de Paris, `media4.obspm.fr` — mais ce sont des pages illustrées, pas une animation) ; une piste non vérifiée (`starinabox.net`, vraie animation interactive, très utilisée en classe, **que je n'ai pas pu ouvrir**). L'image de géante rouge reste : **le choix d'une ressource t'appartient.** |
+| **« Le second QCM doit remonter en 1.1 »** (B2) | **Ambigu.** Le mini-QCM de prérequis est écrit et posé. Mais aucun QCM existant ne porte sur « ce qui vient d'être fait » en 1.1 — celui de 1.2 porte bien sur 1.2. **Dis-moi lequel tu visais.** |
+| **Autres vidéos** (E3) | Annoncées dans l'audit, **pas fournies**. |
+| **« À retenir » final à revoir ensemble** (D1) | Il est désormais **rassemblé en 3.1**, cinq encadrés, strictement dans le programme. À relire. |
+
+### 11.5 La question du bas de page (B6)
+
+Tu demandais à quoi sert « la zone de discussion en bas à droite ». Il y a **deux**
+éléments flottants à cet endroit, et aucun n'est une zone de discussion :
+
+- **📖 Glossaire** (violet, toujours visible) : le lexique **de toute l'année**,
+  cherchable, tous chapitres confondus. Il vient du moteur, il est utile — son rôle
+  n'était simplement **annoncé nulle part**. Il l'est maintenant, dans l'en-tête du
+  glossaire de bas de page.
+- **💬 N retours** (`#corr-pastille`) : le raccourci vers **les retours du professeur**
+  sur les réponses rédigées. Il **ne s'affiche que s'il y a des retours** — donc jamais
+  sur cette page, tant que la base n'est pas branchée. **À conserver.**
+
+### 11.6 Comment régénérer les schémas
+
+```
+python _outils/es/tableau_periodique.py     # les 2 tableaux périodiques
+python _outils/es/noyaux.py                 # les 6 schémas de noyaux
+```
+
+Les deux **écrivent les `.svg` dans `assets/img/es/1re-es-t1-c1/` et les injectent dans
+la page**, entre marqueurs `<!-- SVG:nom -->`. Ne pas retoucher un SVG à la main dans le
+HTML : la prochaine exécution l'écrasera. 🔴 `noyaux.py` **refuse de dessiner au-delà de
+20 nucléons** — pour l'uranium, on garde le schéma du cours.
+
+### 11.7 Contrôles passés
+
+- `node verifier.mjs` → **18 problèmes**, le repère exact (les 18 liens `cfa/outil-*`).
+  Aucun point de vigilance sur cette page : ni couleur en dur, ni id dupliqué, ni biais
+  de longueur de QCM.
+- Au navigateur, page entière dépliée : **0 erreur JS**, **0 id dupliqué**, **0 iframe
+  chargée** avant clic (les 7 vidéos sont montées en affiches de consentement), 0
+  pastille orpheline.
+- Les deux activités **jouées pour de vrai** : les 6 choix se corrigent et valident
+  l'étape ; le tri tire 24 noyaux, les place, annonce 24/24 et se réinitialise.
+- Le glossaire **testé en validant deux étapes** : 6 mots sur 16 s'ouvrent, les autres
+  restent annoncés « à découvrir — étape 2.2 ».
+

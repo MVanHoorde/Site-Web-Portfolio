@@ -2207,9 +2207,27 @@ function initEvaluabilite(){
     /* et rien non plus à l'intérieur d'un « pour aller plus loin » : l'en-tête
        du bloc dit déjà « hors 100 % », le reste ne ferait que se répéter. */
     if(el.closest('.bonus-wrap')) return;
+    /* Audit ES du 12/09/2026 — deux corrections de placement.
+       a) Un « à retenir » n'en reçoit aucune : son bandeau dit déjà
+          « ★ À retenir ». La pastille y répétait l'information ET tombait
+          mal, parce que demarrer() a enveloppé le contenu dans .rb AVANT
+          cet appel : appendée au .retain, elle se posait hors du padding
+          du .rb, collée au bord bas-droit du cadre.
+       b) Un champ qui porte une étiquette de type (« Réponse rédigée »,
+          « Texte à trous ») reçoit la sienne SUR cette étiquette, où la
+          lecture la cherche. En coin, elle pendait sous le bouton. */
+    if(el.classList.contains('retain')) return;
+    var type=el.querySelector(':scope > .field-type');
+    if(type){
+      e.classList.add('niv-tete');
+      type.parentNode.insertBefore(e, type.nextSibling);
+      e.style.display='inline-block'; e.style.marginLeft='8px';
+      return;
+    }
     e.classList.add('niv-coin');
     el.style.position=el.style.position||'relative';
-    el.appendChild(e);
+    /* dans le corps du bloc quand il en a un, pour rester dans le padding */
+    (el.querySelector(':scope > .rb') || el).appendChild(e);
   });
 }
 
@@ -2963,10 +2981,15 @@ function initQcm(){
        ni dans les 100 %, et l'annoncer « obligatoire » était faux — c'était
        déjà le cas de WEB-Q2b dans la séquence du Web. */
     var etapeDuQcm=box.closest('[data-step]');
-    var obligatoire=!!(etapeDuQcm && etapeDuQcm.hasAttribute('data-gate'));
+    /* data-facultatif : un QCM de diagnostic (« teste tes prérequis ») ne
+       valide rien et ne doit pas s'annoncer obligatoire, même posé sur une
+       étape à valider. Ajouté pour l'audit ES du 12/09/2026, B2. */
+    var sansEnjeu=box.hasAttribute('data-facultatif');
+    var obligatoire=!sansEnjeu && !!(etapeDuQcm && etapeDuQcm.hasAttribute('data-gate'));
     lanceur.innerHTML='<span class="ql">✍️ QCM · '+data.length+(data.length>1?' questions':' question')+'</span>'+
                       '<span class="qcm-consigne" style="font-size:13.5px;color:'+(obligatoire?'#8a4c0c':'var(--ink-soft)')+'">'+
-                      (obligatoire?"Obligatoire pour valider l'étape.":"Facultatif : ne compte pas dans ta progression.")+'</span>'+
+                      (sansEnjeu?"Sans enjeu&nbsp;: tu te testes, rien n'est retenu."
+                       :obligatoire?"Obligatoire pour valider l'étape.":"Facultatif : ne compte pas dans ta progression.")+'</span>'+
                       '<button type="button">Commencer</button>';
     box.appendChild(lanceur);
     var recap=document.createElement('div'); recap.className='qcm-recap'; recap.style.display='none';
@@ -3124,8 +3147,10 @@ function jouerQcm(data,box,recap,lanceur){
     });
     recap.innerHTML=h; recap.style.display='block';
     lanceur.querySelector('button').textContent='Refaire le QCM';
-    /* validation À L'ENVOI : le QCM fait est le QCM validé, juste ou faux */
-    var etape=box.closest('.step');
+    /* validation À L'ENVOI : le QCM fait est le QCM validé, juste ou faux.
+       Sauf data-facultatif : un QCM de diagnostic ne valide pas l'étape,
+       sinon l'élève l'aurait « faite » sans avoir rien produit. */
+    var etape=box.hasAttribute('data-facultatif') ? null : box.closest('.step');
     if(etape){
       etape.classList.add('is-done');
       etape.dataset.qcmScore=n+'/'+data.length;
@@ -3430,6 +3455,12 @@ function initCloze(){
 /* ---------- 6. Glossaire permanent, cherchable ---------- */
 var DICO=[];
 function initGlossaire(){
+  /* L'origine d'un mot moissonne etait ecrite « Sequence Internet » en dur
+     aux deux points de moisson : faux des qu'une autre sequence pose un
+     bloc de vocabulaire ou un dictionnaire de poste. La page la declare
+     maintenant sur <body data-origine-glossaire="..."> (audit ES du
+     12/09/2026). */
+  var ORIGINE = document.body.getAttribute('data-origine-glossaire') || 'cette séquence';
   var src=$('#dico-source');
   if(src){ try{ DICO=JSON.parse(src.textContent); }catch(e){ DICO=[]; } }
 
@@ -3453,7 +3484,7 @@ function initGlossaire(){
         if(!mot) return;
         var ex=DICO.filter(function(x){ return normaliser(x.mot)===normaliser(mot); })[0];
         if(ex){ if(!ex.def) ex.def=def; }
-        else DICO.push({mot:mot, def:def, origine:'Séquence Internet'});
+        else DICO.push({mot:mot, def:def, origine:ORIGINE});
       });
     });
   }
@@ -3471,7 +3502,7 @@ function initGlossaire(){
         var def=el.textContent.trim().replace(/\s+/g,' ');
         var ex=DICO.filter(function(x){ return normaliser(x.mot)===normaliser(mot); })[0];
         if(ex){ if(!ex.def) ex.def=def; }
-        else DICO.push({mot:mot, def:def, origine:'Séquence Internet'});
+        else DICO.push({mot:mot, def:def, origine:ORIGINE});
         mot=null;
       });
     });
