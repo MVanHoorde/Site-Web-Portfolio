@@ -622,11 +622,15 @@
         /* rendu, mais pas encore relu : pastille creuse (voir CSS) */
         var se=stepOf(champ); if(se) se.classList.add('attente-corr');
       }).catch(function(e){
-        verdict(champ,'ok','✅ Réponse gardée pour cette séance. (Enregistrement indisponible : pense à télécharger ta fiche.)');
+        verdict(champ,'ok', document.body.getAttribute('data-fiche')==='non'
+          ? '✅ Réponse gardée pour cette séance. (Enregistrement indisponible : garde la page ouverte.)'
+          : '✅ Réponse gardée pour cette séance. (Enregistrement indisponible : pense à télécharger ta fiche.)');
         showReveal(champ); markDone(champ);
       });
     } else {
-      verdict(champ,'ok','✅ Réponse gardée pour cette séance. Pense à <b>télécharger ta fiche</b> en fin de séance.');
+      verdict(champ,'ok', document.body.getAttribute('data-fiche')==='non'
+        ? '✅ Réponse gardée pour cette séance.'
+        : '✅ Réponse gardée pour cette séance. Pense à <b>télécharger ta fiche</b> en fin de séance.');
       showReveal(champ); markDone(champ);
     }
   }
@@ -874,7 +878,8 @@
          honnêtement. On ne laisse pas croire que c'est enregistré. */
       if(!BASE || !code){
         ta.readOnly=true; btn.disabled=true;
-        note.textContent='✅ Gardé pour cette séance — pense à télécharger ta fiche en fin d\'heure.';
+        note.textContent = document.body.getAttribute('data-fiche')==='non' ? '✅ Gardé pour cette séance.'
+          : '✅ Gardé pour cette séance — pense à télécharger ta fiche en fin d\'heure.';
         persoValide(box); marquerPartage(box);
         return;
       }
@@ -895,10 +900,12 @@
         var invite = /PAS_INSCRIT/.test(String(e && e.message || e));
         if(invite){
           ta.readOnly=true;
-          note.textContent='✅ Gardé pour cette séance — pense à télécharger ta fiche en fin d\'heure.';
+          note.textContent = document.body.getAttribute('data-fiche')==='non' ? '✅ Gardé pour cette séance.'
+            : '✅ Gardé pour cette séance — pense à télécharger ta fiche en fin d\'heure.';
         }else{
           btn.disabled=false;
-          note.textContent='⚠️ Enregistrement indisponible. Ton texte est toujours là : réessaie, ou télécharge ta fiche en fin d\'heure.';
+          note.textContent = document.body.getAttribute('data-fiche')==='non' ? '⚠️ Enregistrement indisponible. Ton texte est toujours là : réessaie.'
+            : '⚠️ Enregistrement indisponible. Ton texte est toujours là : réessaie, ou télécharge ta fiche en fin d\'heure.';
         }
         persoValide(box); marquerPartage(box);
       });
@@ -2158,22 +2165,33 @@
     refresh();
   }
 
-  /* barre d'actions (télécharger / recommencer) à la fin de chaque séance à valider */
+  /* barre d'actions (télécharger / recommencer) à la fin de chaque séance à valider.
+     <body data-fiche="non"> retire la fiche de la page — barre, fin de séance,
+     messages — sans rien retirer d'autre : l'interrupteur d'une page dont la
+     fiche n'est pas encore relue (ES 1re, 13/09/2026). */
+  var SANS_FICHE = document.body.getAttribute('data-fiche')==='non';
   document.querySelectorAll('.seance').forEach(function(sec){
     if(!sec.querySelector('[data-gate]')) return;
     var host=sec.querySelector('.lockable'); if(!host) return;
     var bar=document.createElement('div'); bar.className='seance-actions';
-    bar.innerHTML='<span class="sa-label">💾 Ta fiche s\'ouvre dans un onglet : imprime-la, ou enregistre-la en PDF, puis dépose-la sur ton OneDrive.</span>';
+    bar.innerHTML = SANS_FICHE
+      ? '<span class="sa-label">Besoin de reprendre cette séance depuis le début&nbsp;?</span>'
+      : '<span class="sa-label">💾 Ta fiche s\'ouvre dans un onglet : imprime-la, ou enregistre-la en PDF, puis dépose-la sur ton OneDrive.</span>';
     var dl=document.createElement('button'); dl.className='btn dl sm'; dl.textContent='📄 Ouvrir ma fiche (PDF)';
     dl.addEventListener('click',function(){downloadFiche(sec);});
     var rs=document.createElement('button'); rs.className='btn reset sm'; rs.textContent='🔁 Recommencer';
     rs.addEventListener('click',function(){
-      openModal('🔁','Recommencer cette séance ?',
+      if(SANS_FICHE) openModal('🔁','Recommencer cette séance ?',
+        '<p>Tu vas repartir de zéro pour cette séance. Tes réponses actuelles seront effacées.</p>',
+        [{label:'Annuler',cls:'ghost'},
+         {label:'Recommencer',cls:'reset',fn:function(){resetSeance(sec);}}]);
+      else openModal('🔁','Recommencer cette séance ?',
         '<p>Tu vas repartir d\'une fiche vierge pour cette séance. Tes réponses actuelles seront effacées de l\'écran.<br><b>Ouvre et enregistre d\'abord ta fiche</b> si tu veux garder tes réponses et tes corrections.</p>',
         [{label:'📄 Ouvrir ma fiche d\'abord',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
          {label:'Recommencer',cls:'reset',fn:function(){resetSeance(sec);}}]);
     });
-    bar.appendChild(dl); bar.appendChild(rs);
+    if(!SANS_FICHE) bar.appendChild(dl);
+    bar.appendChild(rs);
     bar.hidden=true;              /* révélée par majBarreFiche() — voir T0-5 */
     host.appendChild(bar);
   });
@@ -2183,6 +2201,12 @@
     var title=seanceTitle(sec);
     var rows=[]; sec.querySelectorAll('[data-step].is-done .step-title').forEach(function(t){rows.push(t.textContent.trim());});
     var recap='<div class="recap">'+rows.map(function(t){return '<div class="ri"><span>'+t+'</span><b>✓</b></div>';}).join('')+'</div>';
+    if(SANS_FICHE){
+      openModal('🎉','Séance terminée — bravo !',
+        recap+'<p style="margin-top:2px">Tu as validé toute la séance.</p>',
+        [{label:'Continuer',cls:'ghost'}]);
+      return;
+    }
     openModal('🎉','Séance terminée — bravo !',
       recap+'<p style="margin-top:2px">Tu as validé toute la séance. Ouvre ta fiche, enregistre-la en PDF, puis dépose-la sur ton OneDrive.</p>',
       [{label:'📄 Ouvrir ma fiche (PDF)',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},

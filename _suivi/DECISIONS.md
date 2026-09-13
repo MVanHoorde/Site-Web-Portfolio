@@ -15,6 +15,14 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 13/09/2026 — ES 1re : seule la nucléosynthèse est ouverte, fiches masquées
+
+| Date | Décision | Statut |
+|---|---|---|
+| 13/09/2026 | **Seul le chapitre T1-C1 « La nucléosynthèse » est ouvert aux élèves de 1re.** Les cinq autres, pas terminés, sont retirés du hub (liens en commentaire, repère `MASQUÉ-ES1`) ; les pages restent en ligne à leur URL. | ✅ en vigueur — **provisoire** |
+| 13/09/2026 | **Aucune fiche de séance en ES 1re** tant que Loïc ne les a pas relues. Mécanisme : `<body data-fiche="non">`, nouvel interrupteur du moteur partagé, qui retire bouton, fenêtres et messages liés à la fiche. | ✅ en vigueur — **provisoire** |
+| 13/09/2026 | 🔴 **Dès qu'on retravaille l'ES 1re, on démasque** : liste exacte dans `_suivi/es1-verification.md` §0bis. | ✅ en vigueur |
+
 ## 13/09/2026 — SNT : « à retenir » lisibles d'un regard, gras allégé partout
 
 | Date | Décision | Statut |

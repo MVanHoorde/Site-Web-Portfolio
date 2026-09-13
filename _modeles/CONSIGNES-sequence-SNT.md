@@ -615,6 +615,13 @@ partir de la page et du travail de l'élève. Elle s'ouvre dans un onglet ; l'é
 l'enregistre en PDF et la dépose dans le **dossier OneDrive qui sert de classeur
 numérique**.
 
+**Couper la fiche d'une page** : `<body data-fiche="non">`. Le moteur retire alors
+tout ce qui parle de la fiche — bouton de la barre de fin de séance, fenêtre « Séance
+terminée », fenêtre « Recommencer », messages « pense à télécharger ta fiche » — et
+garde le reste (« Recommencer » compris). Sert à une page dont la fiche n'est pas
+encore relue ; en usage sur les six chapitres d'ES 1re (voir
+`_suivi/es1-verification.md` §0bis).
+
 ### 17.1 Qui décide de son contenu
 
 🔴 **Le générateur produit une V1, l'audit de Loïc fait foi.** Sans partie fixe

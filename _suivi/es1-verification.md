@@ -11,6 +11,24 @@
 
 ---
 
+## 0bis. 🔴 Masqué aux élèves — à rétablir dès qu'on retravaille l'ES 1re
+
+Décision de Loïc du 13/09/2026 : **seule la nucléosynthèse est ouverte aux élèves**,
+et **aucune fiche de séance** tant qu'elles ne sont pas relues. Rien n'est supprimé ;
+tout porte le repère **`MASQUÉ-ES1`** (`grep -rn MASQUÉ-ES1 pages/`).
+
+| Quoi | Où | Pour rétablir |
+|---|---|---|
+| Liens des 5 autres chapitres + « Ancienne fiche de cours » | `pages/1re-enseignement-scientifique.html` | décommenter chaque lien, retirer la ligne « Séquence interactive 🚧 » posée à sa place |
+| Fiche de séance | `data-fiche="non"` sur `<body>` des **6** pages `1re-es-t*.html` | retirer l'attribut |
+| Phrases qui annoncent la fiche (tutoriel 1.1, encart QCM) | `1re-es-t1-c1-nucleosynthese.html` | décommenter ; la puce « Ta trace » est à **repasser au présent** |
+| Lien vers le chapitre 2 (étape 1.2) | idem | décommenter le lien |
+
+Les pages restent **accessibles par leur URL** (dépôt public) : le masquage retire les
+chemins, pas les fichiers.
+
+---
+
 ## 0. Ce qui a été fait, en une page
 
 **Les six chapitres du périmètre sont portés, aucun n'est laissé à moitié.**
@@ -96,7 +114,7 @@
 | **ES-10** | `t1-c2` étapes 1.4, 2.3 · `t2-c1` 2.2 | 🔍 **Trois ressources à tester depuis un poste du lycée** : PhET (CheerpJ, lourd), la carte **REMon** du JRC, l'animation **corde de Melde** de l'université de Nantes (ancienne). Comme cela avait été fait pour CodeBetter. |
 | **ES-11** | `t1-c1` 1.4 · `t1-c3` 1.1 · `t2-c1` 2.1 | 🔍 **Les 24 liens vidéo viennent des QR codes**, décodés automatiquement. Les **adresses sont sûres**, mais **le contenu n'a pas été vérifié** — ni titre, ni durée. Un coup d'œil suffit à confirmer que ce sont les bonnes. |
 | **ES-12** | `t1-c1` étape 2.2 | ⚖️ **Cycle CNO, triple α et diagramme H-R** ont été **déplacés en bonus** (facultatifs, non évalués) : ils dépassent le socle du programme. À remonter dans le cours si tu les traites en classe. |
-| **ES-13** | `t1-c1` étape 1.1 | 📌 Le **tutoriel du dispositif** est écrit **au futur** (« ta réponse partira à ton professeur »), parce que la base n'est pas branchée. Au branchement : **repasser au présent**, le texte est déjà juste pour la suite. |
+| **ES-13** | `t1-c1` étape 1.1 | ✅ **Tutoriel repassé au présent** le 13/09 (proposition à relire) : « Elles partent à ton professeur, qui les lit et les reprend en classe » — « te répondra » était faux, les réponses d'ES ne reçoivent pas de retour dans la page. La puce « Ta trace » dit désormais que le travail se retrouve une fois connecté ; l'ancienne, sur la fiche, est masquée (§0bis). |
 | **ES-14** | `t1-c3` | 📌 `pages/1re-pc-cristaux.html` **n'a pas été touché** et reste accessible par son URL. Le hub pointe vers la nouvelle page, et garde un second lien « Ancienne fiche de cours ». **À supprimer une fois la séquence validée.** |
 
 ### 🟡 À trancher quand tu passeras dessus
@@ -166,7 +184,7 @@ voir §7) · les énoncés des trois exercices · les treize images.
 **Ce qui bloque** — rien de bloquant. Les `.mp4` du dossier de dépôt peuvent partir
 (les URL sont en place). Restent ES-09 (provenance des images reprises du cours : les
 mentions « cours de M. Van Hoorde » ont été retirées de la page, **la question reste
-ouverte ici**), ES-12, ES-13, ES-15.
+ouverte ici**), ES-12, ES-15.
 
 ---
 
@@ -453,7 +471,7 @@ les dix-sept images.
 | **Bandeau ExPop** | ✅ Posé à côté du questionnaire de l'ASNR (`t1-c2` 2.4) : l'élève n'est pas obligé de renseigner ses données et peut simuler quelqu'un d'autre. |
 | **Responsive** | ✅ Aucun débordement horizontal à 1280, 820 et 390 px sur les six pages. |
 | **Verrouillage progressif** | ✅ Testé au navigateur sur chaque page : séances suivantes verrouillées à l'arrivée, déverrouillées quand toutes les étapes `data-gate` de la précédente sont validées. |
-| **Fiche de révision** | Se rabat sur les « à retenir » — **aucun `<template data-fiche-fixe>`** n'a été écrit : ils demandent ≈ 4 schémas SVG par séance, ce que le brief §4 interdit de produire. |
+| **Fiche de révision** | 🔴 **Masquée aux élèves** (`data-fiche="non"`, §0bis). Se rabat sur les « à retenir » — **aucun `<template data-fiche-fixe>`** n'a été écrit : ils demandent ≈ 4 schémas SVG par séance, ce que le brief §4 interdit de produire. |
 
 ### Le branchement en base — fait le 13/09/2026
 
@@ -627,9 +645,7 @@ en clair** dans le document, elle est donc sûre.
 5. **Décider pour le 4.1** (ES-03) : rehausser le chapitre de seconde T3-C1, ou non.
 6. Relire les **40 cadres `.proposition`** et les **81 questions de QCM** : c'est tout
    le contenu que Claude a écrit, et il est intégralement signalé comme tel.
-7. ~~Le branchement en base~~ — **fait le 13/09/2026** (§4). Reste **ES-13** : le tutoriel
-   du dispositif, en T1-C1, est encore écrit **au futur** alors que la base est branchée —
-   à repasser au présent (ta formulation, pas la mienne).
+7. **Relire les fiches de séance**, puis rétablir tout ce que liste le §0bis.
 
 ---
 

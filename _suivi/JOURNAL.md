@@ -3884,3 +3884,20 @@ Avec le bonus rempli, elle reste à 5.
 Pendant la session, l'autre conversation a commité son lot (`progression.js?v=17`) :
 inventaire refait au moment du `?v=46`, 21 fichiers. `verifier.mjs` : 19 problèmes,
 les mêmes que sur HEAD.
+
+
+## 13/09/2026 — ES 1re : la nucléosynthèse seule, fiches coupées
+
+Loïc demande de cacher les chapitres d'ES 1re pas terminés — ne rester que sur la
+nucléosynthèse — et les fiches, qu'il n'a pas relues, puis de rendre la nucléosynthèse
+prête pour les élèves. Hub : cinq liens et l'ancienne fiche des cristaux en
+commentaire. Fiche : un attribut de page plutôt qu'une règle CSS locale, parce que le
+moteur la mentionne aussi dans ses fenêtres et ses messages de secours — d'où
+data-fiche="non" dans sequence-snt.js et le ?v=47 sur 21 fichiers.
+
+En relisant la page, deux choses fausses pour un élève : le pied de page annonçait
+encore une progression non enregistrée, et le glossaire du chapitre relisait les étapes
+faites au chargement, avant que la reprise depuis la base ne les remette — un élève
+connecté revenait sur un glossaire vide. La reprise annonce etape-validee sur le
+document : le glossaire relit tout sur ce signal. Vérifié au navigateur (reprise
+simulée : 9 mots rouverts ; 0 erreur JS ; SNT t1 garde ses 6 boutons de fiche).
