@@ -161,6 +161,45 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
     color:#fff;border-radius:var(--r);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .annuler button{background:transparent;color:#fff;border-color:#5a6580}
 
+/* --- la file visible : colonne des copies à gauche, copie ouverte à droite.
+   Sous 900 px (iPad en portrait), la colonne passe au-dessus et se replie
+   derrière un bouton : elle mangerait sinon la moitié de la copie. --- */
+.k-grille{display:grid;grid-template-columns:270px minmax(0,1fr);gap:20px;align-items:start}
+.k-file{position:sticky;top:64px;border:1px solid var(--line);border-radius:var(--r);
+    background:var(--surface-2);display:flex;flex-direction:column;max-height:calc(100dvh - 90px)}
+.k-file-tete{padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink-soft);
+    display:flex;align-items:center;gap:8px}
+.k-file-tete b{color:var(--ink);font-size:14px}
+#btn-file{display:none;width:100%;text-align:left}
+.k-liste{list-style:none;margin:0;padding:6px;overflow-y:auto;flex:1}
+.k-liste button{display:grid;grid-template-columns:6px minmax(0,1fr) auto;gap:0 9px;width:100%;
+    text-align:left;padding:7px 9px 7px 7px;border:1px solid transparent;border-radius:8px;
+    background:transparent;margin-bottom:2px;align-items:center}
+.k-liste button:hover{background:var(--surface);border-color:var(--line)}
+.k-liste button:focus-visible{outline:2px solid var(--link);outline-offset:1px}
+.k-liste button[aria-current="true"]{background:var(--surface);border-color:var(--link);
+    box-shadow:0 0 0 1px var(--link) inset}
+.k-age{grid-row:1 / span 2;align-self:stretch;border-radius:3px}
+.k-nom{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.k-sous{grid-column:2;font-size:12px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.k-drapeau{grid-row:1 / span 2;grid-column:3;font-size:13px;color:#8a4b16}
+.k-legende{padding:8px 12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-soft);
+    display:flex;flex-wrap:wrap;gap:4px 10px}
+.k-legende i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:0}
+/* Quatre âges d'attente. Couleurs franches mais pas criardes : la colonne
+   se lit en coup d'œil pendant qu'on circule dans la classe. */
+.age-frais{background:#3f9a4a}.age-seance{background:#e2b100}
+.age-long{background:#e07a1f}.age-vieux{background:#c33a2f}
+.k-nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.k-nav button{padding:6px 11px;font-size:13.5px}
+@media (max-width:900px){
+  .k-grille{grid-template-columns:minmax(0,1fr);gap:12px}
+  .k-file{position:static;max-height:none}
+  #btn-file{display:block}
+  .k-file.replie .k-liste,.k-file.replie .k-legende,.k-file.replie .k-file-tete{display:none}
+  .k-liste{max-height:55dvh}
+}
+
 /* --- rituel de séance --- */
 select{font:inherit;padding:8px 11px;border:1px solid var(--line);border-radius:var(--r);
     background:var(--surface);color:var(--ink)}
@@ -251,20 +290,36 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
   <main>
     <section class="panneau actif" id="p-correction">
       <div class="rangee" style="margin-top:0">
+        <label for="k-classe" style="margin:0">Classe</label>
+        <select id="k-classe"></select>
         <button id="btn-recharger">Recharger la file</button>
         <button id="btn-lot" style="display:none"></button>
         <button id="btn-sans-ia" style="display:none"></button>
         <span id="etat-file" class="muet"></span>
-        <span id="jauge-file" class="pastille att" style="display:none"></span>
       </div>
 
       <div id="etat-worker" class="bandeau" style="display:none"></div>
 
       <div id="file-vide" class="vide" style="display:none">
-        <div class="g">Rien à corriger</div>
-        Aucune copie pré-corrigée en attente. Si tes élèves ont répondu,
-        lance le worker&nbsp;: <code class="mono">node precorrection-snt.mjs</code>
+        <div class="g" id="file-vide-titre">Rien à corriger</div>
+        <span id="file-vide-txt">Aucune copie pré-corrigée en attente. Si tes élèves ont répondu,
+        lance le worker&nbsp;: <code class="mono">node precorrection-snt.mjs</code></span>
       </div>
+
+      <div class="k-grille" id="k-grille" style="display:none">
+      <!-- La file des copies, rangée par nom d'élève. La barre de couleur
+           dit depuis combien de temps la copie attend (légende en pied). -->
+      <aside class="k-file" id="k-file" aria-label="File des copies">
+        <button id="btn-file" type="button" aria-expanded="false" aria-controls="k-liste"></button>
+        <div class="k-file-tete"><b id="k-compte"></b><span id="k-classe-nom"></span></div>
+        <ol class="k-liste" id="k-liste"></ol>
+        <div class="k-legende" aria-label="Légende des couleurs d'attente">
+          <span><i class="age-frais"></i>&lt; 10 min</span>
+          <span><i class="age-seance"></i>10 à 40 min</span>
+          <span><i class="age-long"></i>&gt; 40 min</span>
+          <span><i class="age-vieux"></i>depuis la veille</span>
+        </div>
+      </aside>
 
       <article id="copie" style="display:none">
         <div id="alerte-tri" class="bandeau" style="display:none"></div>
@@ -275,6 +330,11 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
             <span class="tresmuet" id="c-meta"></span>
           </div>
           <span class="pastille" id="c-verdict"></span>
+          <div class="k-nav">
+            <button id="btn-precedente" type="button" title="Copie précédente (flèche gauche)">← Précédente</button>
+            <span id="jauge-file" class="pastille att"></span>
+            <button id="btn-suivante" type="button" title="Copie suivante (flèche droite)">Suivante →</button>
+          </div>
         </div>
 
         <h3 class="sous">La question posée</h3>
@@ -304,10 +364,10 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         <div class="rangee">
           <button id="btn-valider" class="primaire">Valider</button>
           <button id="btn-signaler">Renvoyer à refaire</button>
-          <button id="btn-passer">Passer</button>
         </div>
         <div id="err-action" class="alerte err"></div>
       </article>
+      </div>
 
       <div id="annuler-zone" class="annuler" style="display:none">
         <span id="annuler-txt"></span>
@@ -599,7 +659,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       var r = ProfAPI.chargerNoms(lecteur.result, f.name);
       majEtatNoms();
       montrerApercu(r, f.name);
-      afficher();   /* la copie à l'écran passe du pseudonyme au vrai nom */
+      rendreCorrection();   /* pseudonymes → vrais noms, et la file se re-trie */
       rendreSeance(); rendreGrille();
       if(!r.n) alert("Aucun nom lu. Vérifie le format : un identifiant, un séparateur, un nom.");
     };
@@ -636,7 +696,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     $('#fichier-noms').value = '';
     $('#apercu-noms').style.display = 'none';
     majEtatNoms();
-    afficher();   /* retour immédiat au mode projection */
+    rendreCorrection();   /* retour immédiat au mode projection */
     rendreSeance(); rendreGrille();
   });
 
@@ -649,10 +709,14 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
      affichent pas — inutile de corriger sans son travail préparatoire,
      et leur présence donnerait une fausse impression de retard.
 
-     ORDRE — les copies signalées par  tri.a_verifier  passent devant,
-     le reste par ancienneté. Le tri se fait ici et non en SQL : le
-     drapeau vit dans le JSONB, et sur trois groupes le volume ne
-     justifie pas une vue dédiée.
+     CLASSE ET ORDRE (13/09/2026, demande des collègues) — on corrige
+     une classe à la fois, choisie en haut de l'onglet. La file est
+     VISIBLE en colonne et rangée par NOM d'élève (le vrai nom si la
+     table est chargée, le pseudonyme sinon) ; les copies signalées par
+     tri.a_verifier portent un ⚠ mais ne passent plus devant. Une barre
+     de couleur dit depuis combien de temps chaque copie attend.
+     Filtre et tri se font ici et non en SQL : les noms ne vivent que
+     dans le navigateur, la base ne saurait pas trier dessus.
      ============================================================ */
   /* PHRASES TOUTES FAITES — proposition V1, à réécrire dans TON ton.
      Une ligne = un bouton. Cliquer insère le texte dans la zone de
@@ -667,50 +731,217 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     "C'est juste, et bien formulé. Continue comme ça."
   ];
 
-  var file = [], rang = 0, derniere = null;
+  /* toutes = tout ce que la base renvoie, toutes classes confondues.
+     file  = la vue : la classe choisie, rangée par nom. C'est sur elle
+     que travaillent rang, Précédente/Suivante et la validation en lot —
+     un lot ne déborde donc jamais sur une autre classe. */
+  var toutes = [], file = [], rang = 0, derniere = null;
+  var CLASSE_TOUTES = '*';
+  var kClasse = null;   /* null tant que les classes ne sont pas lues */
 
   function analyseDe(c){
     return (c && c.correction_ia && c.correction_ia.analyse) || {};
   }
 
+  /* ---------- l'âge d'une copie ----------
+     PROPOSITION V1, à ajuster : les séances durent 1 h 15.
+       < 10 min            vert    elle vient d'arriver
+       10 à 40 min         jaune   elle attend depuis un bout de séance
+       > 40 min            orange  plus de la moitié de la séance
+       depuis la veille    rouge   elle n'a pas été corrigée en séance
+     Des constantes et non des colonnes : on change un chiffre, toute
+     la colonne se recolore. */
+  var AGE_FRAIS_MIN = 10, AGE_SEANCE_MIN = 40;
+
+  function classeAge(c){
+    var t = new Date(c.envoye_le);
+    var min = (Date.now() - t.getTime()) / 60000;
+    if(min < AGE_FRAIS_MIN)  return 'age-frais';
+    if(min < AGE_SEANCE_MIN) return 'age-seance';
+    /* « depuis la veille » se lit au calendrier, pas en 24 h : une copie
+       d'hier 17 h n'est pas plus fraîche le matin qu'une d'hier 9 h. */
+    var aujourdhui = new Date(); aujourdhui.setHours(0, 0, 0, 0);
+    return t < aujourdhui ? 'age-vieux' : 'age-long';
+  }
+
+  function quandCourt(iso){
+    var t = new Date(iso), min = Math.round((Date.now() - t.getTime()) / 60000);
+    if(min < 1)  return 'à l’instant';
+    if(min < 60) return 'il y a ' + min + ' min';
+    var aujourdhui = new Date(); aujourdhui.setHours(0, 0, 0, 0);
+    var heure = t.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+    if(t >= aujourdhui) return 'aujourd’hui ' + heure;
+    return t.toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'2-digit' }) + ' ' + heure;
+  }
+
+  function nomCopie(c){
+    return ProfAPI.nomDe((c.eleves && c.eleves.pseudo) || '—');
+  }
+
   function chargerFile(){
     $('#etat-file').textContent = 'Chargement…';
+    /* classe_id vient avec le pseudo : un seul aller-retour sert à la
+       fois la file et les compteurs du sélecteur de classe. */
     var chemin = 'reponses_libres'
-      + '?select=id,code_activite,texte,statut,version,envoye_le,correction_ia,eleves(pseudo)'
+      + '?select=id,code_activite,texte,statut,version,envoye_le,correction_ia,eleves(pseudo,classe_id)'
       + '&statut=eq.en_attente'
       + (sansIA ? '&correction_ia=is.null' : '&correction_ia=not.is.null')
       + '&order=envoye_le.asc';
     return ProfAPI.lire(chemin).then(function(l){
-      file = (l || []).sort(function(a, b){
-        var pa = analyseDe(a).tri && analyseDe(a).tri.a_verifier ? 0 : 1;
-        var pb = analyseDe(b).tri && analyseDe(b).tri.a_verifier ? 0 : 1;
-        if(pa !== pb) return pa - pb;
-        return String(a.envoye_le).localeCompare(String(b.envoye_le));
-      });
-      rang = 0;
+      toutes = l || [];
       $('#etat-file').textContent = '';
-      afficher();
+      rendreCorrection();
     }).catch(function(e){
       $('#etat-file').textContent = 'Lecture impossible : ' + (e.message || e);
     });
   }
 
+  function classeDe(c){ return c.eleves && c.eleves.classe_id; }
+
+  /* Filtre + tri + liste + copie ouverte. On garde la copie ouverte par
+     son id et non par son rang : un rechargement automatique qui fait
+     entrer une nouvelle copie ne doit pas changer celle qu'on lit. */
+  function rendreCorrection(){
+    var ouverte = file[rang] && file[rang].id;
+    var coll = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
+    file = toutes.filter(function(c){
+      return kClasse === null || kClasse === CLASSE_TOUTES || classeDe(c) === kClasse;
+    }).sort(function(a, b){
+      var n = coll.compare(nomCopie(a), nomCopie(b));
+      if(n) return n;
+      return String(a.envoye_le).localeCompare(String(b.envoye_le));
+    });
+    var i = ouverte ? file.findIndex(function(c){ return c.id === ouverte; }) : -1;
+    rang = i >= 0 ? i : Math.min(rang, Math.max(0, file.length - 1));
+    majSelecteurClasse();
+    afficher();
+  }
+
+  /* Le sélecteur porte le nombre de copies de chaque classe : on voit
+     d'un coup d'œil qu'une autre classe attend, sans aller la chercher. */
+  function majSelecteurClasse(){
+    var sel = $('#k-classe');
+    if(!CLASSES.length){ sel.style.display = 'none'; return; }
+    sel.style.display = '';
+    var compte = {};
+    toutes.forEach(function(c){ var k = classeDe(c); compte[k] = (compte[k] || 0) + 1; });
+    var opts = CLASSES.map(function(cl){
+      return { v: cl.id, t: cl.libelle + ' (' + (compte[cl.id] || 0) + ')' };
+    });
+    if(CLASSES.length > 1) opts.push({ v: CLASSE_TOUTES, t: 'Toutes mes classes (' + toutes.length + ')' });
+    remplirSelect(sel, opts, kClasse);
+  }
+
+  function libelleClasse(id){
+    if(id === CLASSE_TOUTES) return 'toutes mes classes';
+    var cl = CLASSES.find(function(c){ return c.id === id; });
+    return cl ? cl.libelle : '';
+  }
+
+  /* La colonne. Un <button> par copie : focus clavier et lecteur d'écran
+     gratuits, et aria-current dit laquelle est ouverte. */
+  function rendreListe(){
+    var ol = $('#k-liste');
+    ol.innerHTML = '';
+    file.forEach(function(c, i){
+      var a = analyseDe(c);
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-current', i === rang ? 'true' : 'false');
+      var age = document.createElement('span'); age.className = 'k-age ' + classeAge(c);
+      var nom = document.createElement('span'); nom.className = 'k-nom'; nom.textContent = nomCopie(c);
+      var sous = document.createElement('span'); sous.className = 'k-sous';
+      sous.textContent = c.code_activite + (c.version > 1 ? ' · réécr. ' + c.version : '')
+        + ' · ' + quandCourt(c.envoye_le);
+      b.appendChild(age); b.appendChild(nom);
+      if(a.tri && a.tri.a_verifier){
+        var d = document.createElement('span'); d.className = 'k-drapeau';
+        d.textContent = '⚠'; d.title = 'À vérifier';
+        b.appendChild(d);
+      }
+      b.appendChild(sous);
+      b.title = sous.textContent;
+      b.addEventListener('click', function(){ ouvrir(i); if(estEtroit()) replierFile(true); });
+      b.addEventListener('keydown', function(ev){
+        var cible = ev.key === 'ArrowDown' ? i + 1 : ev.key === 'ArrowUp' ? i - 1 : null;
+        if(cible === null || cible < 0 || cible >= file.length) return;
+        ev.preventDefault();
+        var boutons = ol.querySelectorAll('button');
+        boutons[cible].focus();
+      });
+      li.appendChild(b);
+      ol.appendChild(li);
+    });
+    $('#k-compte').textContent = file.length + (file.length > 1 ? ' copies' : ' copie');
+    $('#k-classe-nom').textContent = kClasse ? '· ' + libelleClasse(kClasse) : '';
+    var c = file[rang];
+    $('#btn-file').textContent = c
+      ? '☰ ' + nomCopie(c) + ' — copie ' + (rang + 1) + ' / ' + file.length + ' (changer)'
+      : '☰ File des copies';
+    var courante = ol.querySelector('button[aria-current="true"]');
+    if(courante && courante.scrollIntoView) courante.scrollIntoView({ block: 'nearest' });
+  }
+
+  /* ---------- colonne repliable sur écran étroit ---------- */
+  var mqEtroit = window.matchMedia('(max-width:900px)');
+  function estEtroit(){ return mqEtroit.matches; }
+  function replierFile(oui){
+    $('#k-file').classList.toggle('replie', oui);
+    $('#btn-file').setAttribute('aria-expanded', oui ? 'false' : 'true');
+  }
+  replierFile(true);
+  $('#btn-file').addEventListener('click', function(){
+    replierFile(!$('#k-file').classList.contains('replie'));
+  });
+
+  /* Changer de copie en ayant commencé à écrire perdrait le texte :
+     on demande avant, une fois. */
+  function ouvrir(i){
+    if(i === rang || i < 0 || i >= file.length) return;
+    if(enTrainDeDecider() && !window.confirm('Ton message pour cette copie n’est pas envoyé. Changer de copie quand même ?')) return;
+    rang = i;
+    afficher();
+    remonterSurCopie();
+  }
+
+  /* Une nouvelle copie se lit depuis son en-tête : si on l'a ouverte
+     depuis le bas de la précédente, on remonte — sous la barre collante. */
+  function remonterSurCopie(){
+    var el = $('#copie');
+    if(!el || el.style.display === 'none') return;
+    var haut = el.getBoundingClientRect().top - 70;
+    if(haut < 0) window.scrollBy({ top: haut, behavior: 'instant' });
+  }
+
   function afficher(){
     var c = file[rang];
     $('#err-action').classList.remove('show');
+    majBoutonLot();
     if(!c){
+      $('#k-grille').style.display = 'none';
       $('#copie').style.display = 'none';
       $('#file-vide').style.display = '';
-      $('#jauge-file').style.display = 'none';
-      majBoutonLot();
+      /* Rien ici, mais peut-être ailleurs : le dire évite de croire la
+         journée terminée alors qu'une autre classe attend. */
+      var ailleurs = toutes.length - file.length;
+      if(kClasse && kClasse !== CLASSE_TOUTES && ailleurs > 0){
+        $('#file-vide-titre').textContent = 'Rien à corriger en ' + libelleClasse(kClasse);
+        $('#file-vide-txt').textContent = ailleurs + ' copie(s) attendent dans tes autres classes — change de classe en haut.';
+      } else {
+        $('#file-vide-titre').textContent = 'Rien à corriger';
+        $('#file-vide-txt').innerHTML = 'Aucune copie pré-corrigée en attente. Si tes élèves ont répondu, '
+          + 'lance le worker&nbsp;: <code class="mono">node precorrection-snt.mjs</code>';
+      }
       return;
     }
     $('#file-vide').style.display = 'none';
+    $('#k-grille').style.display = '';
     $('#copie').style.display = '';
-    var j = $('#jauge-file');
-    j.style.display = '';
-    j.textContent = (rang + 1) + ' / ' + file.length;
-    majBoutonLot();
+    $('#jauge-file').textContent = (rang + 1) + ' / ' + file.length;
+    $('#btn-precedente').disabled = rang === 0;
+    $('#btn-suivante').disabled = rang >= file.length - 1;
+    rendreListe();
 
     var a = analyseDe(c);
     var pseudo = (c.eleves && c.eleves.pseudo) || '—';
@@ -815,17 +1046,23 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     z.classList.add('show');
   }
 
+  /* Après une décision, la copie sort de la file et la suivante dans
+     l'ordre alphabétique prend sa place au même rang. */
   function retirerCourante(){
+    var c = file[rang];
     file.splice(rang, 1);
+    toutes = toutes.filter(function(x){ return !c || x.id !== c.id; });
     if(rang >= file.length) rang = Math.max(0, file.length - 1);
+    majSelecteurClasse();
     afficher();
+    remonterSurCopie();
   }
 
   function agir(fonction, libelle){
     var c = file[rang];
     if(!c) return;
     var mot = $('#c-mot').value;
-    var boutons = ['#btn-valider','#btn-signaler','#btn-passer'];
+    var boutons = ['#btn-valider','#btn-signaler','#btn-precedente','#btn-suivante'];
     boutons.forEach(function(s){ $(s).disabled = true; });
     ProfAPI.appeler(fonction, { p_copie: c.id, p_commentaire: mot || null })
       .then(function(){
@@ -835,16 +1072,54 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         retirerCourante();
       })
       .catch(erreurAction)
-      .then(function(){ boutons.forEach(function(s){ $(s).disabled = false; }); });
+      .then(function(){
+        $('#btn-valider').disabled = false; $('#btn-signaler').disabled = false;
+        /* pas afficher() : en cas d'échec, il effacerait le message tapé */
+        $('#btn-precedente').disabled = rang === 0;
+        $('#btn-suivante').disabled = rang >= file.length - 1;
+      });
   }
 
   $('#btn-valider').addEventListener('click', function(){ agir('valider_copie', 'validée'); });
   $('#btn-signaler').addEventListener('click', function(){ agir('signaler_copie', 'renvoyée à refaire'); });
 
-  $('#btn-passer').addEventListener('click', function(){
-    if(rang < file.length - 1){ rang++; afficher(); }
-    else { rang = 0; afficher(); }
+  $('#btn-precedente').addEventListener('click', function(){ ouvrir(rang - 1); });
+  $('#btn-suivante').addEventListener('click', function(){ ouvrir(rang + 1); });
+
+  /* Flèches gauche/droite pour feuilleter — sauf quand on écrit : dans
+     le champ de message, elles doivent déplacer le curseur, pas la copie. */
+  document.addEventListener('keydown', function(ev){
+    if(ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight') return;
+    if(ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+    if(!$('#p-correction').classList.contains('actif') || !file.length) return;
+    var el = document.activeElement;
+    if(el && /^(TEXTAREA|INPUT|SELECT)$/.test(el.tagName)) return;
+    ev.preventDefault();
+    ouvrir(rang + (ev.key === 'ArrowRight' ? 1 : -1));
   });
+
+  /* Changer de classe ici la change aussi dans Séance et Suivi : en
+     cours, on est devant un seul groupe, on ne le choisit qu'une fois.
+     « Toutes mes classes » reste propre à cet onglet. */
+  $('#k-classe').addEventListener('change', function(){
+    if(enTrainDeDecider() && !window.confirm('Ton message pour cette copie n’est pas envoyé. Changer de classe quand même ?')){
+      this.value = kClasse; return;
+    }
+    kClasse = this.value;
+    rang = 0; file = [];
+    rendreCorrection();
+    if(kClasse !== CLASSE_TOUTES && kClasse !== ctx.classe){
+      ctx.classe = kClasse;
+      $('#s-classe').value = kClasse; $('#g-classe').value = kClasse;
+      $('#s-seance').value = '';
+      chargerContexte().then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); });
+    }
+  });
+
+  /* Les barres de couleur vieillissent même sans rechargement. */
+  setInterval(function(){
+    if(!document.hidden && file.length && $('#p-correction').classList.contains('actif')) rendreListe();
+  }, 60000);
 
   /* Annuler : rouvrir_copie remet la copie dans la file, en gardant le
      travail du worker. C'est le filet du clic malheureux — il n'est
@@ -1028,6 +1303,9 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         var opts = CLASSES.map(function(c){ return { v: c.id, t: c.libelle + ' (' + c.code + ')' }; });
         remplirSelect($('#s-classe'), opts, ctx.classe);
         remplirSelect($('#g-classe'), opts, ctx.classe);
+        /* La file de correction attendait les classes pour se filtrer. */
+        if(kClasse === null) kClasse = ctx.classe;
+        rendreCorrection();
         /* Sans tri : l'ordre du fichier généré est déjà le bon (t0 → t7,
            puis les outils transversaux). Trier remonterait « snt-m1 »
            en tête du menu, alors qu'il n'ouvre pas l'année. */
@@ -1673,6 +1951,11 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       $('#s-classe').value = ctx.classe; $('#g-classe').value = ctx.classe;
       $('#s-theme').value  = ctx.theme;  $('#g-theme').value  = ctx.theme;
       $('#s-seance').value = '';
+      /* la file de correction suit — sauf si l'on y regarde toutes les
+         classes, choix explicite qu'on ne défait pas en douce */
+      if(kClasse !== CLASSE_TOUTES && kClasse !== ctx.classe && !enTrainDeDecider()){
+        kClasse = ctx.classe; rang = 0; file = []; rendreCorrection();
+      }
       chargerContexte().then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); });
     };
   }
@@ -1846,7 +2129,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
      worker » veut donc dire : faire entrer dans la file les copies
      qu'il n'a pas encore vues, pour les corriger à la main.
      Utile en séance, quand une copie vient d'arriver et qu'on veut
-     répondre tout de suite plutôt que d'attendre le quart d'heure.
+     répondre tout de suite plutôt que d'attendre la prochaine passe.
      Ces copies s'affichent sans critères ni message proposé — il n'y
      a rien à afficher, et c'est normal.
      ============================================================ */

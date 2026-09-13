@@ -3600,6 +3600,35 @@ parcours validé étape par étape. Le verrouillage de la séance 2 se réarme �
 validation en séance 1 : un test qui déverrouille une fois au chargement échoue
 plus loin — il faut déverrouiller avant chaque partie.
 
+## 13/09/2026 — La file de correction par classe, et le worker calé sur les séances
+
+Remarque des collègues relayée par Loïc : la file de correction mélangeait les
+classes et ne se voyait pas — on feuilletait à l'aveugle avec « Passer ». Elle se
+choisit désormais par classe (synchronisée avec Séance et Suivi), s'affiche en
+colonne rangée par nom, et chaque copie porte une barre de couleur d'attente
+dont Loïc a dicté le principe (vert sous 10 min, puis la demi-séance, puis la
+veille). Une seule lecture ramène toutes les classes avec leur `classe_id` : les
+compteurs du sélecteur et le filtre se font dans la page, et le tri par nom ne
+pourrait de toute façon pas se faire en base, les noms n'y étant pas. La copie
+ouverte est suivie par son id : le rechargement automatique ne la change plus
+sous les doigts. Testé sous Playwright avec un `ProfAPI` simulé (deux classes,
+cinq copies, table de noms) à 1180 et 820 px.
+
+Worker : Loïc voyait sa carte graphique travailler tous les quarts d'heure.
+Remarque au passage : une passe sans copie n'appelle pas le modèle, l'activité
+vue avait donc peut-être une autre source. Nouveau calendrier dans
+`horaires-worker.psd1`, deux tâches (le réveil est un réglage de tâche, pas de
+déclencheur : une seule tâche aurait réveillé le PC à 18 h). Deux pièges évités
+au test : `New-ScheduledTaskTrigger` écrit l'heure en UTC (« …T16:00:00Z » pour
+18 h), ce qui décalerait tout d'une heure à l'heure d'hiver ; et un PC réveillé
+par minuterie sans présence se rendort en deux minutes, d'où
+`SetThreadExecutionState` pendant le créneau. Minuteries de réveil vérifiées
+actives sur secteur. Installation en administrateur laissée à Loïc ; allumage
+depuis l'arrêt renvoyé au BIOS, modèle de carte mère à relever.
+
+Contrôles : `node verifier.mjs` → 18 ; `node exporter-guides.mjs` → 2 guides (le
+repli italique Segoe UI préexistait).
+
 ## 13/09/2026 — Second audit du chapitre ES T1-C1, repris après une session interrompue
 
 La session du 12/09 s'était arrêtée en boucle au milieu du chantier, en laissant une

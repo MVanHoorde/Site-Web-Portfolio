@@ -31,6 +31,14 @@ sans objet » est calculé, jamais oscillant.
   résultat ATTENDU (annoté) au produit et sort un rapport de conformité (ne
   montre que les divergences). `node evaluation.mjs [--code NET-1b] [--repeat 3]`.
 - `_test-verdict.mjs` — test des fonctions déterministes (aucun modèle requis).
+- `horaires-worker.psd1` — **le calendrier** : créneaux de SNT, pas de 5 min,
+  marge de 15 min, heure du soir. Seul fichier à retoucher quand l'emploi du
+  temps change.
+- `planifier-worker.ps1` — installe les deux tâches planifiées qui suivent ce
+  calendrier (PowerShell **administrateur**) ; `-Etat`, `-Retirer`, `-Boucle`.
+- `boucle-worker.ps1` — ce que lancent les tâches : `-UneFois`, `-Seance`
+  (passes jusqu'à la fin du créneau, veille empêchée), ou sans option la boucle
+  sans privilèges.
 
 ## Cadre (acté, non négociable)
 - **Jamais de note.** L'IA observe des critères + justifie ; Loïc reste souverain
@@ -57,6 +65,9 @@ sans objet » est calculé, jamais oscillant.
 1. Node 18+, Ollama lancé, `ollama pull mistral-nemo`.
 2. `.env` renseigné (voir `.env.exemple`).
 3. `node precorrection-snt.mjs`  (ou `node banc-essai.mjs` pour tester sans base).
+4. En automatique : `powershell -ExecutionPolicy Bypass -File .\planifier-worker.ps1`
+   dans un PowerShell administrateur. Le réveil sort le PC de **veille**, il ne
+   l'allume pas : les soirs avant une séance, mettre en veille plutôt qu'éteindre.
 
 ## Le verdict, en clair
 `accepté` si TOUS les critères `socle` sont « observé » (les `plus_loin` ne

@@ -171,8 +171,8 @@ td code{white-space:nowrap}
           |        - API générée, filtrée ligne par ligne (RLS)
           ^
           |  se sert et repose son résultat
-   Worker de correction  (le PC de Loïc, tâche planifiée)
-          +--  API Mistral</pre>
+   Worker de correction  (le PC de Loïc, tâches planifiées)
+          +--  Ollama, modèle local (mistral-nemo) sur la carte graphique</pre>
 
   <p>Trois propriétés à garder en tête :</p>
   <ul>
@@ -417,9 +417,51 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
 
   <h2 id="worker">7. La correction assistée</h2>
 
-  <p>Le worker tourne sur le PC de Loïc, en tâche planifiée. À chaque réveil, il
-  prend les vingt plus anciennes copies en attente <b>de toute la base</b>, sans
-  distinction de classe, les fait analyser, et réécrit le résultat.</p>
+  <p>Le worker tourne sur le PC de Loïc, avec un modèle local servi par Ollama.
+  À chaque passe, il prend les vingt plus anciennes copies en attente <b>de toute
+  la base</b>, sans distinction de classe, les fait analyser, et réécrit le
+  résultat. Une passe sans copie n'appelle pas le modèle.</p>
+
+  <h3>Quand il passe</h3>
+  <p>Le calendrier vit dans <code>ia-snt/horaires-worker.psd1</code>, seul fichier
+  à retoucher quand l'emploi du temps change. <code>planifier-worker.ps1</code>,
+  lancé dans un PowerShell <b>administrateur</b>, en tire deux tâches planifiées :</p>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Tâche</th><th>Quand</th><th>Réveille le PC</th></tr>
+    <tr>
+      <td><code>SNT - precorrection IA</code></td>
+      <td>Une passe à l'ouverture de session, une à 18 h si le PC est allumé.</td>
+      <td>Non</td>
+    </tr>
+    <tr>
+      <td><code>SNT - precorrection IA (seances)</code></td>
+      <td>Mardi 11 h 05 – 12 h 20 · jeudi 8 h 15 – 9 h 55 · jeudi 13 h 10 – 14 h 25
+        · vendredi 10 h 15 – 11 h 30. Une passe toutes les 5 minutes, jusqu'à
+        15 minutes après la fin.</td>
+      <td>Oui, 10 minutes avant le début</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="encadre attention">
+    <span class="etiq">Veille, pas extinction</span>
+    <p>Le réveil sort le PC de <b>veille</b>. Il ne l'allume pas s'il est éteint :
+    seul le BIOS le peut, et le PC resterait de toute façon à l'écran de connexion,
+    alors qu'Ollama a besoin d'une session ouverte pour accéder à la carte
+    graphique. <b>Les soirs qui précèdent une séance, mettre en veille.</b> Pendant
+    un créneau, le script empêche le PC de se rendormir : sans cela, Windows
+    rendort une machine réveillée par minuterie au bout de deux minutes environ.</p>
+  </div>
+
+  <p>Les créneaux sont ceux de Loïc. Les copies des groupes des collègues qui
+  arrivent en dehors attendent la passe suivante — le matin ou 18 h. Le bouton
+  <i>Corriger sans l'IA</i> du tableau de bord permet de ne pas attendre.
+  Vérifier : <code>.\planifier-worker.ps1 -Etat</code> ; journal dans
+  <code>ia-snt/worker.log</code>.</p>
+
+  <h3>Ce qu'il produit</h3>
 
   <p><b>Il ne tranche rien.</b> Le statut reste « en attente » : il attend une
   validation humaine. Ce qu'il produit est une proposition, affichée dans la file
@@ -433,9 +475,18 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
     précisément pour ça qu'elle ne peut pas se tromper.</p>
   </div>
 
-  <p>Conséquence assumée : des copies d'élèves fictifs consomment des jetons comme
-  les autres. À l'échelle de trois cent cinquante élèves, la dépense annuelle se
-  compte en euros.</p>
+  <p>Conséquence assumée : les copies d'élèves fictifs sont analysées comme les
+  autres et occupent la carte graphique le temps de leur passe. Le modèle étant
+  local, cela ne coûte rien et aucune copie ne quitte le PC de Loïc.</p>
+
+  <h3>Côté tableau de bord</h3>
+  <p>La file se lit <b>classe par classe</b> : une seule lecture ramène les copies
+  de toutes les classes avec leur <code>classe_id</code>, et le filtrage, le tri par
+  nom et les compteurs du sélecteur se font dans la page. Le tri ne peut pas se
+  faire en SQL : les noms ne vivent que dans le navigateur. La validation en lot
+  ne porte que sur la classe affichée. Les seuils de couleur d'attente (10 et
+  40 minutes, puis la veille) sont des constantes en tête du bloc « file de
+  correction » de <code>prof/index.html</code>.</p>
 
   <h2 id="entretien">8. Entretien : sauvegardes et mise en pause</h2>
 
@@ -515,8 +566,8 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <p class="revision">
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
-    Dernière révision : <b>5 septembre 2026</b>, à la sortie des outils
-    transversaux de la file du plafond. Version destinée aux collègues :
+    Dernière révision : <b>13 septembre 2026</b> — file de correction par classe,
+    et calendrier du worker calé sur les séances. Version destinée aux collègues :
     <a href="guide-prise-en-main.html">la prise en main</a>.
   </p>
 

@@ -15,6 +15,16 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 13/09/2026 — File de correction et calendrier du worker
+
+| Date | Décision | Statut |
+|---|---|---|
+| 13/09/2026 | **On corrige une classe à la file**, choisie en tête de l'onglet « À corriger » (option « Toutes mes classes » en plus). Le choix est partagé avec Séance et Suivi. La validation en lot ne porte que sur la classe affichée. | ✅ en vigueur |
+| 13/09/2026 | **La file des copies est visible et rangée par nom d'élève** — elle remplace le tri « copies signalées d'abord, puis ancienneté ». Le ⚠ reste affiché mais ne fait plus remonter la copie. « Passer » disparaît au profit de Précédente / Suivante. | ✅ en vigueur — remplace l'ordre du lot B (31/07) |
+| 13/09/2026 | **Code couleur d'attente** : vert < 10 min, jaune 10-40 min, orange > 40 min, rouge depuis la veille. | ⏳ seuils proposés, à valider par Loïc |
+| 13/09/2026 | **Le worker ne tourne plus toutes les 15 min en continu** : une passe à l'ouverture de session, une à 18 h si le PC est allumé, et toutes les 5 min pendant les créneaux de SNT (marge de 15 min après la fin). Calendrier dans `ia-snt/horaires-worker.psd1`. | ✅ en vigueur (tâches à réinstaller en administrateur) |
+| 13/09/2026 | **Le PC est réveillé de veille 10 min avant chaque séance**, pas allumé : les soirs avant une séance, mise en veille plutôt qu'extinction. L'allumage depuis l'arrêt passerait par le BIOS. Pas de connexion automatique sans mot de passe : `ia-snt/.env` porte la clé `service_role`. | ✅ en vigueur · ⏳ piste BIOS à explorer |
+
 ## 13/09/2026 — Second audit du chapitre ES T1-C1
 
 | Date | Décision | Statut |

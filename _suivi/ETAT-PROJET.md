@@ -5,7 +5,10 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **12/09/2026** (dernière passe : **le chapitre ES Term T2-C1
+> Dernière réécriture : **13/09/2026** (dernière passe : **le tableau de bord corrige
+> classe par classe, avec la file des copies visible et rangée par nom ; le worker
+> passe sur un calendrier calé sur les séances de SNT**, bloc ci-dessous). Passe du
+> 12/09 : **le chapitre ES Term T2-C1
 > « Deux siècles d'énergie électrique » est refondu sur audit — « à retenir » en bas
 > de chaque partie, questions ouvertes corrigées en classe, séance Bilan à part,
 > les 5 liens manquants retrouvés dans le PPTX** ; détail `es-term-verification.md`
@@ -52,6 +55,41 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 La correction se fait classe par classe, et le worker suit les séances
+
+**Fait le 13/09/2026**, à la demande des collègues.
+
+**Tableau de bord** (`prof/index.html`, onglet « À corriger ») : un sélecteur de
+classe en tête, avec le nombre de copies en attente par classe, plus « Toutes mes
+classes » ; il est synchronisé avec Séance et Suivi. La **file des copies est
+visible** en colonne, **rangée par nom** (vrai nom si la table est chargée), avec une
+barre de couleur d'attente — vert < 10 min, jaune 10-40 min, orange > 40 min, rouge
+depuis la veille (seuils proposés, constantes en tête du bloc). « Passer » est
+remplacé par Précédente / Suivante et les flèches du clavier. La validation en lot
+ne porte plus que sur la classe affichée. Sur iPad en portrait, la file se replie
+derrière un bouton. Testé sous Playwright avec une base simulée (1180 et 820 px,
+0 erreur JS, pas de débordement). Guides mis à jour et PDF régénérés.
+
+**Worker** (`ia-snt/`) : fini la passe toutes les 15 min en continu. Le calendrier vit
+dans `horaires-worker.psd1` ; `planifier-worker.ps1` en tire **deux tâches** —
+ouverture de session + 18 h (sans réveil), et les quatre créneaux de SNT (mardi
+11 h 05-12 h 20, jeudi 8 h 15-9 h 55 et 13 h 10-14 h 25, vendredi 10 h 15-11 h 30) avec
+**réveil du PC 10 min avant**, une passe toutes les 5 min jusqu'à 15 min après la fin,
+et la veille empêchée pendant le créneau. Heures posées en heure locale (Windows les
+écrivait en UTC : décalage d'une heure au changement d'heure). Syntaxe et calendrier
+testés ; **les tâches ne sont pas encore installées**.
+
+⏳ **Reste à Loïc** :
+1. Relancer `planifier-worker.ps1` dans un **PowerShell administrateur** (l'ancienne
+   tâche à 15 min tourne jusque-là).
+2. Les soirs avant une séance : **mettre en veille, ne pas éteindre**.
+3. Allumage depuis un PC éteint : piste **BIOS (RTC Alarm)**, modèle de carte mère à
+   relever.
+4. Valider ou ajuster les seuils de couleur d'attente.
+
+⚠ Les créneaux sont ceux de Loïc : les copies des groupes des collègues arrivées hors
+créneau attendent le matin ou 18 h (bouton « Corriger sans l'IA » en attendant).
 
 ## 🆕 Le chapitre ES T1-C1 « La nucléosynthèse » est refondu sur deux audits
 
@@ -636,7 +674,7 @@ fleuron, mais **sur du contenu** : rien n'a été modifié, c'est du fond.
 | **SNT — module `m1` Représenter l'information** | 🔎 **Audits des 22 et 23/08 traités en entier.** 2 séances, 9 étapes, **6 QCM** (dont un bonus adossé à une vidéo), 9 exercices, **4 composants SVG maison** et un bilan de 12 questions. Le module pose le socle mathématique : ce qu'est une base, ce qu'est une puissance, la notation en indice (`1011₂`). **Apports du 23/08** : la décomposition positionnelle fait saisir *les chiffres* et pas seulement les poids, avec un exemple posé avant ; la base 60 se décompose en six temps ; le tableau des combinaisons **se complète** de 5 bits au cas général n ; l'atelier 1.5 est **découpé en trois groupes** A/B/C, chacun avec sa correction détaillée ; le classement passe à **11 écritures** et ses deux règles deviennent un indice ; l'écart de 2.2 se calcule sur la **formule générale** ; le bonus 1.1 devient **vidéo Veritasium + QCM de 5 questions**, et `REP-R1` un résumé. Les trois outils manipulables **annoncent enfin leur limite** (1 à 4095) et disent pourquoi ils refusent un nombre ; la flèche de la potence est **rectiligne**. Tout vérifié au navigateur : les 9 blocs passent « tout est juste » sur les réponses attendues, **0 erreur JS**, repli à 390 px sans débordement de page. **Le bloc de chantier et les badges « à valider » ont été retirés le 23/08** à la demande de Loïc — geste d'affichage, pas validation : **rien n'est validé, tout le contenu pédagogique reste une proposition.** |
 | **SNT — moteur partagé (`sequence-snt.js` v41)** | 🔧 **Deux composants et trois correctifs le 25/08**, après les quatre changements du 24/08 (vidéos derrière une affiche, barre de fiche verrouillée, pastille « rendu pas relu », figures dans la fiche). Nouveaux : **`initElements`** — des fiches photo + nom + description, l'image étant **redimensionnée dans le navigateur** (une photo de téléphone pèse 3 à 5 Mo, dix feraient plier l'onglet) ; **`initEtiquettes`** — des noms à poser sur une photo, en **deux temps** plutôt qu'en glisser natif, qui ne fonctionne pas au doigt sur iPad. Corrigés : ① **les dépôts de photo ne validaient aucune étape** — `initDepot` appelait deux fonctions d'un autre bloc du fichier et levait une erreur à chaque dépôt ; ② le plafond de 1600 px des blocs « pour aller plus loin », qui coupait la vidéo de fin sur iPad ; ③ un bloc qui se dépliait hors de l'écran, où le clic paraissait sans effet.
 | **Base de données** | ✅ **en service.** Supabase, région **West EU (Paris)**. 7 tables, 10 policies RLS, 4 fonctions, sauvegarde hebdo + réveil quotidien. Pilote prouvé de bout en bout sur `t1`. |
-| **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). ⚠ boucle non fermée — voir ci-dessous. |
+| **Pré-correction IA SNT** | ✅ worker local complet, testé, avec garde-fous et tri de relecture (`ia-snt/`). Calendrier calé sur les séances depuis le 13/09 (`horaires-worker.psd1`) — ⏳ **tâches à réinstaller en administrateur**. ⚠ boucle non fermée — voir ci-dessous. |
 | **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 (une seule colonne, un seul bord d'attaque), puis **audit de contenu des dix-sept outils le même jour** : accroche recentrée sur l'atelier, « effort » → « force » partout, `ε` pour l'écart et `θ` pour les angles de rotation, paliers 1 dégonflés de leur guidage, sous-questions concaténées, vecteurs fléchés et racines couvrantes. Deux figures produites (bras de levage de l'Outil 5, composantes de l'Outil 14), une dizaine corrigées. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé : **l'Outil 0 est le premier attendu en relecture**. Depuis le 19/08 le livret est **branché sur le dispositif de comptes** : connecté, le travail va en base et suit l'apprenti d'un appareil à l'autre ; sans compte, tout reste sur l'appareil comme avant, et la page le dit. Les deux codes de classe (`CFA26A`, `MVT26A`) sont ouverts : `bdd/schema/012-classes-cfa.sql` a été exécuté le 20/08. |
 | **Cahier de vacances** | 14 pages, 2 blocs 🚧. La partie la plus finie du dépôt. |
 | **Coque — page d'accueil** 🆕 | 🔄 **Refondue le 27/08** après comparaison de onze maquettes (dix organisations, puis six fonds). Deux colonnes asymétriques : à gauche les trois classes en portes illustrées — PC, SNT, CFA en **une seule porte** pour les deux diplômes — les trois autres niveaux en lignes sobres marquées `.a-venir`, puis l'adresse professionnelle réelle ; à droite une colonne collante (gravure du jour, 4 fiches-outils, Animations 🚧, Mission Spectra). Nouvelle bande « Auteur & vidéo » en pied, **vide, trois entrées en chantier**. Le compte à rebours bascule sur l'état du projet passé le 1er septembre. `style.css` **non modifié** ; tout le CSS reste inline. Décisions ACC-1 à ACC-12. ⏳ **Deux formulations à valider** : la bascule d'après-rentrée (« En chantier · ouverture en cours d'année ») et le libellé des trois entrées « Auteur & vidéo ». La planche du jour reste un **cadre annoté** tant que `gravures/` est vide. |
