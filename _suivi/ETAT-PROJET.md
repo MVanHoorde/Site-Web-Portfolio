@@ -6,8 +6,8 @@
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
 > Dernière réécriture : **13/09/2026** (dernière passe : **le tableau de bord passe
-> en espaces — lot 1, la base : migration `018` écrite et éprouvée, pas encore
-> exécutée**, bloc ci-dessous). Passe du même jour : **le tableau de bord corrige
+> en espaces — les cinq lots sont livrés — base, tableau de bord, client élève et ES
+> branchée, suivi des chapitres PC, documentation ; reste à jouer le `019` dans Supabase**, bloc ci-dessous). Passe du même jour : **le tableau de bord corrige
 > classe par classe, avec la file des copies visible et rangée par nom ; le worker
 > passe sur un calendrier calé sur les séances de SNT**, bloc ci-dessous). Passe du
 > 12/09 : **le chapitre ES Term T2-C1
@@ -89,30 +89,42 @@ arrivent directement sur le SNT et ne voient rien de changé. Décisions :
 
 | Lot | Contenu | État |
 |---|---|---|
-| **1 — base** | `bdd/schema/018-espaces-et-classes-multiples.sql` : espaces, un compte dans plusieurs classes, lecture cloisonnée par famille, `mon_plafond()` sur la classe SNT, cinq classes fermées | ✅ **exécuté le 13/09** · ⏳ inscription au registre de migrations |
-| **2 — tableau de bord** | Accueil des espaces (sauté s'il n'y en a qu'un), onglets par espace, élèves lus par `eleves_classes`, vue d'ensemble des outils PC (O1…O8, clic → détail par séance) et du livret CFA (fiche par fiche), ES avec Séance et Suivi sans file de correction. Sommaire généré par `generer-sequences-espaces.mjs`. Guides et PDF à jour. **39 contrôles** sous Chromium avec base simulée (collègue SNT seul, Loïc cinq espaces, iPad 820 px) | ✅ **codé et testé** · ⏳ **à pousser en même temps que le §8 du `018`** |
-| **3 — client élève et ES** | « Rejoindre une autre classe » dans `progression.js` (**24 fichiers, CFA compris**) ; branchement des 6 pages d'ES 1re et des 2 de Terminale, clés `es1-` / `est-`, réponses en statut `partage` | ⏳ |
-| **4 — PC 2nde** | Consultation des 14 chapitres (le client n'y est pas chargé aujourd'hui) et clics de téléchargement ; annonce aux élèves (RGPD) | ⏳ |
-| **5 — documentation** | Guides `prof/`, `CLAUDE.md`, `BDD-cadrage.md` | ⏳ |
+| **1 — base** | `bdd/schema/018` : espaces, un compte dans plusieurs classes, lecture cloisonnée par famille (progression, absences, copies), `mon_plafond()` sur la classe SNT, cinq classes. **36 contrôles** sur PostgreSQL local | ✅ exécuté le 13/09 |
+| **2 — tableau de bord** | Accueil des espaces (sauté s'il n'y en a qu'un), onglets par espace, élèves lus par `eleves_classes`, vue d'ensemble outils PC et livret CFA, ES sans file de correction. Les classes fermées à l'inscription ne disparaissent plus | ✅ en ligne |
+| **3 — client élève et ES** | `progression.js?v=17` (**55 fichiers**) : un code tapé par un compte existant ajoute la classe ; menu « Mes classes » du badge ; connexion **sur place** (`data-accueil="sur-place"`) ; `data-reponses="personnelles"`. Les **8 pages d'ES** branchées (`es1-tN-cN`, `est-tN-cN`), leurs `data-cle` de terminale passées en `est-` | ✅ codé et testé |
+| **4 — PC 2nde** | `assets/js/suivi-pc.js` sur les **14 chapitres** et les **8 outils** : ouverture, déblocage par le code, PDF ouverts. Vue « Chapitres et documents » et fiche élève complète au tableau de bord | ✅ codé et testé |
+| **5 — documentation** | Guides `prof/` et PDF, `CLAUDE.md`, `MANIFESTE.md`, consignes chapitre PC / outil PC / ES, gabarits, fichiers de vérification ES, `bdd/README.md` | ✅ |
 
-**Éprouvé comment.** Chaîne `001`→`017` rejouée sur un PostgreSQL 18 jetable
-(imitation minimale de Supabase : rôles, `auth.users`, `auth.uid()`), `018`
-appliquée **deux fois**, §8 extrait du fichier et joué deux fois. **36 contrôles sur
-36** : inscriptions croisées, refus d'un second groupe SNT, plafond d'un élève inscrit
-d'abord en 2nde 1, et surtout le cloisonnement — **Martin ne lit pas les outils PC de
-son élève venu en 2nde 1, Loïc ne lit ni ne valide ses copies SNT**, et le tableau de
-bord de Loïc reste identique tant que le §8 n'est pas joué.
+**Éprouvé comment.** Base : chaîne `001`→`019` rejouée sur un PostgreSQL 18 jetable
+(rôles, `auth.users`, `auth.uid()` imités), `018` et `019` appliqués deux fois,
+**36 contrôles d'intrusion** — Martin ne lit pas les outils PC de son élève venu en
+2nde 1, Loïc ne lit ni ne valide ses copies SNT — et le cas d'échec du `019`.
+Pages : Chromium avec une base simulée, **43 contrôles** au tableau de bord (collègue
+SNT seul, Loïc cinq espaces, iPad 820 px) et **28 au parcours élève** (inscription ES
+sur place, élève SNT qui entre en 2nde 1 puis en AP, second groupe SNT refusé,
+réponse d'ES en statut `partage`, ouverture et déblocage d'un chapitre, PDF
+enregistré puis ouvert, rien d'écrit sans compte).
 
-🔴 **Ordre d'exécution à respecter.**
-1. Exécuter le `018` **sans le §8** (il est en commentaire) : rien ne change à
-   l'écran pour personne, les cinq classes existent mais sont fermées.
-2. Au lot 2 : jouer le §8 (rattachement de Loïc, retrouvé par `SNTDEM`) **en même
-   temps** que la mise en ligne du tableau de bord — joué avant, il mêlerait CFA, ES
-   et 2nde 1 aux groupes SNT dans la liste actuelle.
-3. Aux lots 3-4 : ouvrir les classes (`update … set actif = true`, requête dans le
-   §7) **seulement** quand le client élève sait rejoindre une seconde classe.
-4. Ne **pas** copier le fichier dans `supabase/migrations/` avant exécution : ce
-   dossier s'applique tout seul au push.
+🔴 **Mise en service : un seul geste, dans Supabase.** Coller et exécuter
+`bdd/schema/019-mise-en-service-espaces.sql` dans l'éditeur SQL. Il rattache Loïc à
+ses sept classes hors SNT et ouvre les cinq nouvelles classes ; il répond
+« RATTACHEMENT FAIT : 7 classe(s) hors SNT ». Ensuite, **distribuer les codes** :
+`ES1R02` (1re 2), `EST303` (T3), `EST606` (T6), `PC2S01` (2nde 1), `AP2S26` (AP).
+Un élève de 2nde qui a déjà son compte SNT tape **son identifiant et son mot de passe
+habituels** avec le code, ou passe par « Mes classes » dans son badge.
+
+⏳ **Ce qui reste ouvert après la livraison**
+- **ES-13** : le tutoriel du dispositif (T1-C1) est écrit **au futur** alors que la base
+  est branchée — à repasser au présent, formulation de Loïc.
+- **Les textes des trois bandeaux de connexion** : proposition de Claude, à valider.
+- **Un indice qui livre la réponse** en terminale T2-C2 (2 cas) : `verifier.mjs` le voit
+  depuis qu'il contrôle aussi la terminale ; le repère passe à **19** tant que ce n'est
+  pas tranché.
+- **La checklist « Pour le DS, je sais »** des chapitres PC ne remonte pas : à décider.
+- **Registre de migrations** : déposer `018` et `019` dans `supabase/migrations/`
+  **après** `supabase migration repair --status applied`, jamais avant.
+- **Présenter « Mes classes » dans t0** (règle du référentiel vivant) : aucun texte
+  n'a été écrit dans la séquence d'introduction.
 
 ## 🆕 Les fiches de séance de t0 sont auditées, et le générateur suit de nouvelles règles
 
@@ -317,10 +329,9 @@ graphique ΔT/CO₂, un « PES » pour « FES », une batterie au lithium à 90 
 l'énoncé et 80 % dans sa propre correction, trois numéros d'image employés deux fois.
 **Corrigées dans les pages, pas dans les PDF.**
 
-🔴 **Rien n'est branché en base**, comme l'ES de 1re : ni client de progression, ni
-`data-sequence`. Le moteur dit alors la vérité (« gardé pour cette séance ») au lieu
-d'afficher « connecte-toi pour enregistrer ton travail » devant un stockage qui
-n'existe pas.
+✅ **Branché en base le 13/09/2026**, avec l'ES de 1re : `data-sequence="est-t2-cN"`,
+réponses rédigées en réponses personnelles. Voir le bloc « Le tableau de bord passe
+en espaces ».
 
 **Le moteur n'a pas été modifié d'une ligne.** `node verifier.mjs` : **18 problèmes
 avant, 18 après**. Les deux pages ouvertes dans un Chromium : aucune erreur JS,
@@ -376,11 +387,9 @@ manquant, facteur 150 au lieu de 160, 3¹² ≈ 2⁹ au lieu de 2¹⁹, « 16 fo
 pages, signalées sur place, listées au §7 du fichier de vérification — **pas encore
 dans les PDF d'origine**.
 
-🔴 **Rien n'est branché en base**, et le **client de progression n'est pas chargé**
-non plus : sans `data-sequence`, il afficherait aux élèves « connecte-toi pour
-enregistrer ton travail » alors que rien ne serait enregistré. Sans lui, le moteur
-dit la vérité (« gardé pour cette séance »). Ce qu'il faudra faire au branchement
-tient en six gestes, listés au §4 du fichier de vérification.
+✅ **Branché en base le 13/09/2026** : client de progression chargé,
+`data-sequence="es1-tN-cN"`, réponses rédigées en réponses personnelles, connexion sur
+place. Voir le bloc « Le tableau de bord passe en espaces ».
 
 `node verifier.mjs` : **18 problèmes avant, 18 après** — le repère est intact. Le
 filtre `pagesSNT` couvre désormais les pages ES et a immédiatement attrapé quatre
@@ -765,8 +774,8 @@ fleuron, mais **sur du contenu** : rien n'a été modifié, c'est du fond.
 | **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 (une seule colonne, un seul bord d'attaque), puis **audit de contenu des dix-sept outils le même jour** : accroche recentrée sur l'atelier, « effort » → « force » partout, `ε` pour l'écart et `θ` pour les angles de rotation, paliers 1 dégonflés de leur guidage, sous-questions concaténées, vecteurs fléchés et racines couvrantes. Deux figures produites (bras de levage de l'Outil 5, composantes de l'Outil 14), une dizaine corrigées. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé : **l'Outil 0 est le premier attendu en relecture**. Depuis le 19/08 le livret est **branché sur le dispositif de comptes** : connecté, le travail va en base et suit l'apprenti d'un appareil à l'autre ; sans compte, tout reste sur l'appareil comme avant, et la page le dit. Les deux codes de classe (`CFA26A`, `MVT26A`) sont ouverts : `bdd/schema/012-classes-cfa.sql` a été exécuté le 20/08. |
 | **Cahier de vacances** | 14 pages, 2 blocs 🚧. La partie la plus finie du dépôt. |
 | **Coque — page d'accueil** 🆕 | 🔄 **Refondue le 27/08** après comparaison de onze maquettes (dix organisations, puis six fonds). Deux colonnes asymétriques : à gauche les trois classes en portes illustrées — PC, SNT, CFA en **une seule porte** pour les deux diplômes — les trois autres niveaux en lignes sobres marquées `.a-venir`, puis l'adresse professionnelle réelle ; à droite une colonne collante (gravure du jour, 4 fiches-outils, Animations 🚧, Mission Spectra). Nouvelle bande « Auteur & vidéo » en pied, **vide, trois entrées en chantier**. Le compte à rebours bascule sur l'état du projet passé le 1er septembre. `style.css` **non modifié** ; tout le CSS reste inline. Décisions ACC-1 à ACC-12. ⏳ **Deux formulations à valider** : la bascule d'après-rentrée (« En chantier · ouverture en cours d'année ») et le libellé des trois entrées « Auteur & vidéo ». La planche du jour reste un **cadre annoté** tant que `gravures/` est vide. |
-| **ES Première** 🆕 | **Ouvert le 06/09/2026.** Six chapitres, **18 séances**, sur le moteur de séquences — nucléosynthèse (qui porte aussi le **tutoriel du dispositif**, rôle de `t0` pour le SNT), radioactivité, cristaux, son et musique, son à coder, forme de la Terre. Tout est porté depuis les documents de Loïc ; **40 cadres `.proposition`** signalent ce que Claude a ajouté, **13 cadres de réservation** ce qui manque. 🔴 **Rien n'est branché en base** (ni client de progression, ni `data-sequence`) : c'est un deuxième temps. 🔴 **Six images bloquent trois exercices** (ES-01 à ES-06). Le hub porte la numérotation de Loïc (C1, C2, C3) et une carte `.a-venir` pour **3.3 « La Terre dans l'Univers »**. `1re-pc-cristaux.html` reste en place jusqu'à validation. **Rien n'est validé** — relevé complet : `_suivi/es1-verification.md`. |
-| **ES Terminale** 🆕 | **Les deux chapitres du thème 2 tournent sur le moteur des séquences** : `t2-c2` « Production et stockage de l'électricité » (3 séances, tel que porté) et `t2-c1` « Deux siècles d'énergie électrique », **refondu sur audit le 12/09** (2 séances + une séance Bilan, 16 étapes, 5 QCM, 12 questions ouvertes **corrigées en classe** — corrigés hors Git dans `_corriges-es/`). Les **12 vidéos et 2 Kahoot** du `t2-c1` sont posées (QR + hyperliens du PPTX) ; les **15 liens du `t2-c2` restent introuvables** — son PPTX n'a pas encore été ouvert. 🔴 **Rien n'est branché en base**, comme en 1re. 🔴 **Le hub n'affiche que ce qui est traité** : thème 1, 2.3, 2.4 et thème 3 sont **en commentaire**. **Rien n'est validé** ; points à vérifier en priorité sur le `t2-c1` et décisions D1-D7 : `_suivi/es-term-verification.md` §4 et §8. À côté : frise fonctionnelle en local ; `serveur-frise/` et `ia-correction/` en chantier. |
+| **ES Première** 🆕 | **Ouvert le 06/09/2026.** Six chapitres, **18 séances**, sur le moteur de séquences — nucléosynthèse (qui porte aussi le **tutoriel du dispositif**, rôle de `t0` pour le SNT), radioactivité, cristaux, son et musique, son à coder, forme de la Terre. Tout est porté depuis les documents de Loïc ; **40 cadres `.proposition`** signalent ce que Claude a ajouté, **13 cadres de réservation** ce qui manque. ✅ **Branché en base le 13/09/2026** (`es1-tN-cN`, réponses personnelles). 🔴 **Six images bloquent trois exercices** (ES-01 à ES-06). Le hub porte la numérotation de Loïc (C1, C2, C3) et une carte `.a-venir` pour **3.3 « La Terre dans l'Univers »**. `1re-pc-cristaux.html` reste en place jusqu'à validation. **Rien n'est validé** — relevé complet : `_suivi/es1-verification.md`. |
+| **ES Terminale** 🆕 | **Les deux chapitres du thème 2 tournent sur le moteur des séquences** : `t2-c2` « Production et stockage de l'électricité » (3 séances, tel que porté) et `t2-c1` « Deux siècles d'énergie électrique », **refondu sur audit le 12/09** (2 séances + une séance Bilan, 16 étapes, 5 QCM, 12 questions ouvertes **corrigées en classe** — corrigés hors Git dans `_corriges-es/`). Les **12 vidéos et 2 Kahoot** du `t2-c1` sont posées (QR + hyperliens du PPTX) ; les **15 liens du `t2-c2` restent introuvables** — son PPTX n'a pas encore été ouvert. ✅ **Branché en base le 13/09/2026**, comme la 1re (`est-tN-cN`). 🔴 **Le hub n'affiche que ce qui est traité** : thème 1, 2.3, 2.4 et thème 3 sont **en commentaire**. **Rien n'est validé** ; points à vérifier en priorité sur le `t2-c1` et décisions D1-D7 : `_suivi/es-term-verification.md` §4 et §8. À côté : frise fonctionnelle en local ; `serveur-frise/` et `ia-correction/` en chantier. |
 
 **Validation** : un seul contenu est validé à ce jour — **`t1` « Internet », sur
 le fond, le 23/08/2026**, et il n'est pas encore *clos* (il attend la vérification

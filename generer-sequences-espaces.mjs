@@ -17,9 +17,9 @@
  *
  *  LES CLÉS
  *  Elles suivent la convention de famille du 018 (`famille_de_cle()`) :
- *  pc-oN, es1-tN-cN, est-tN-cN, cfa-oNN. Les pages d'ES ne portent pas
- *  encore leur data-sequence (branchement au lot 3) : c'est ici que
- *  leur clé est fixée, et la page devra la reprendre telle quelle.
+ *  pc-oN, pc-tN-cN, es1-tN-cN, est-tN-cN, cfa-oNN. Chaque page porte la
+ *  sienne (data-sequence, ou data-suivi pour un chapitre de PC) : les
+ *  deux doivent rester identiques.
  *
  *  QUAND LE RELANCER
  *  Après avoir ajouté, supprimé ou renommé une séance, un outil ou un
@@ -60,6 +60,11 @@ export const ESPACES = {
     ['est-t2-c1', 'pages/term-es-t2-c1-deux-siecles-energie-electrique.html'],
     ['est-t2-c2', 'pages/term-es-t2-c2-production-stockage-electricite.html']
   ],
+  /* Les chapitres de 2nde : pas de séances, une ligne de consultation
+     par chapitre (assets/js/suivi-pc.js). Clé pc-tN-cN, famille PC. */
+  pc2_chapitres: fs.readdirSync('pages')
+    .filter((x) => /^2nde-pc-t\d+-c\d+-.*\.html$/.test(x)).sort()
+    .map((x) => { const m = /^2nde-pc-(t\d+)-(c\d+)-/.exec(x); return ['pc-' + m[1] + '-' + m[2], 'pages/' + x]; }),
   cfa: Array.from({ length: 17 }, (_, i) => {
     const n = String(i).padStart(2, '0');
     const f = fs.readdirSync('cfa').find((x) => x.startsWith('outil-' + n + '-'));
@@ -74,6 +79,7 @@ export const ESPACES = {
      « Outil 0 — Rédiger un calcul… · Livret CFA »             → après « — », avant « · Livret » */
 function nomDePage(html, espace) {
   const t = (/<title>([^<]*)<\/title>/.exec(html) || [, ''])[1].replace(/\s+/g, ' ').trim();
+  if (espace === 'pc2_chapitres') return t.split(' · ')[0].replace(/^(2nde|Seconde)\s*—\s*/, '');
   if (espace === 'cfa') return t.replace(/\s*·\s*Livret CFA\s*$/, '').replace(/^Outil \d+\s*—\s*/, '');
   const avant = t.split(' — ')[0];
   if (espace === 'es1' || espace === 'est') return avant.replace(/^ES [^·]*·\s*/, '');
@@ -99,7 +105,7 @@ export function construire() {
         num: numero(cle),
         nom: nomDePage(html, espace),
         /* le livret CFA n'a pas de séances : une fiche = une ligne */
-        seances: espace === 'cfa' ? [] : extraire(html)
+        seances: (espace === 'cfa' || espace === 'pc2_chapitres') ? [] : extraire(html)
       };
     });
   }

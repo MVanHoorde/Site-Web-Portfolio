@@ -38,17 +38,17 @@ const FICHIERS = parcourir(RACINE);
 const lire = (f) => readFileSync(join(RACINE, f), "utf8");
 const html = FICHIERS.filter((f) => f.endsWith(".html"));
 /* Les pages qui tournent sur le MOTEUR de séquences : les huit thèmes SNT
-   (t0…t7), les modules transversaux (m1…), et depuis le 06/09/2026 les
-   chapitres d'enseignement scientifique de 1re (1re-es-tN-cN-…). Ils ne
-   sont pas tous des thèmes du programme, mais tous suivent la même
-   grammaire — et surtout, un fichier qui échapperait à ce filtre
-   passerait aussi à travers le contrôle localStorage, §2 plus bas, sans
-   qu'aucune erreur ne le signale. Le piège avait déjà été rencontré pour
-   le module m1.
-   ⚠ Les pages ES ne sont volontairement PAS dans les tables de
-   generer-seances / generer-questions : elles n'ont pas de data-sequence
-   tant que la base n'est pas branchée (décision du chantier ES1). */
-const pagesSNT = html.filter((f) => /pages\/(2nde-snt-(t\d|m\d)|1re-es-t\d-c\d)/.test(f));
+   (t0…t7), les modules transversaux (m1…), et les chapitres
+   d'enseignement scientifique de 1re et de terminale (1re-es-tN-cN-…,
+   term-es-tN-cN-…). Ils ne sont pas tous des thèmes du programme, mais
+   tous suivent la même grammaire — et surtout, un fichier qui échapperait
+   à ce filtre passerait aussi à travers le contrôle localStorage, §2 plus
+   bas, sans qu'aucune erreur ne le signale. Le piège avait déjà été
+   rencontré pour le module m1, puis pour la terminale (ajoutée le
+   13/09/2026, au branchement en base).
+   Les pages ES sont dans generer-questions (réponses personnelles), PAS
+   dans generer-seances : son ordre commande le plafond d'avance du SNT. */
+const pagesSNT = html.filter((f) => /pages\/(2nde-snt-(t\d|m\d)|1re-es-t\d-c\d|term-es-t\d-c\d)/.test(f));
 /* Parmi elles, celles qui sont RÉELLEMENT branchées en base : elles seules
    portent un data-sequence sur <body>. Le répertoire des questions ne
    concerne qu'elles — une page non branchée n'a pas de copie à rappeler au

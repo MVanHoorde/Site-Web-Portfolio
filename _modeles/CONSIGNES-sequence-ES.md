@@ -35,8 +35,14 @@ Deuxième pièce de la famille, et de loin la plus fournie : `pages/1re-es-tN-cN
 ci-dessus (pas de frise, pas de jetons, pas de tirage) : ils tournent sur le **moteur
 des séquences SNT** (`assets/css/sequence-snt.css` + `assets/js/sequence-snt.js`), avec
 sa grammaire séquence → séance → étape → champ. État et points en attente :
-`_suivi/es1-verification.md`. 🔴 **Pas encore branchés en base** : ni client de
-progression, ni `data-sequence`.
+`_suivi/es1-verification.md`. 🔴 **Branchés en base depuis le 13/09/2026**, comme
+les deux chapitres de terminale : `progression.js` dans le `<head>`, et sur `<body>`
+`data-sequence="es1-tN-cN"` (terminale : `est-tN-cN`), `data-reponses="personnelles"`
+— les réponses rédigées se corrigent **en classe**, elles partent en réponses
+personnelles, jamais dans la file ni chez le worker —, `data-accueil="sur-place"`
+et `data-renvoi-texte`. Les `data-cle` d'étape de terminale commencent par `est-`.
+Pas de plafond d'avance. Un nouveau chapitre s'ajoute à `generer-questions.mjs` et
+`generer-sequences-espaces.mjs`.
 
 ## Conventions de mise en forme (audit du 12/09/2026)
 

@@ -447,7 +447,7 @@ les dix-sept images.
 | **Moteur** | `assets/css/sequence-snt.css?v=41` + `assets/js/sequence-snt.js?v=42`, **réutilisés tels quels**. Aucune modification, aucun composant neuf. |
 | **Composant « associations »** | Le brief le donnait pour absent. **Il n'a pas fallu l'écrire** : `initEtiquettes` (touche l'étiquette, touche l'endroit) fait exactement le travail, sur l'image même de la désintégration du radium. Voir `t1-c2` étape 1.3. |
 | **QCM à réponses multiples** | Le brief demandait de vérifier. **Le moteur les gère déjà** : `"r"` accepte un tableau d'index. Le QCM de l'activité 3 de Quizéo est repris à l'identique. **9 questions** en usent dans les six pages. |
-| **Base de données** | ❌ **Aucune.** Ni client de progression chargé, ni `data-sequence`, ni sommaire généré, ni plafond d'avance. Aucune migration SQL, aucun code de classe ES. |
+| **Base de données** | ✅ **Branchée le 13/09/2026.** `progression.js` chargé, `data-sequence="es1-tN-cN"`, réponses rédigées en **réponses personnelles** (`data-reponses`), connexion sur place (`data-accueil`). Classe `1re 2` créée (`bdd/schema/018`), ouverte par le `019`. Pas de plafond d'avance ni de sommaire SNT. Suivi dans le tableau de bord, espace ES 1re. |
 | **`localStorage`** | ❌ Aucun. Contrôlé par `verifier.mjs` (voir ci-dessous). |
 | **RGPD** | ✅ Aucune requête externe au chargement des six pages (mesuré au navigateur). Les 31 vidéos sont en **façade « clic pour charger »**, `youtube-nocookie`. Polices auto-hébergées. |
 | **Bandeau ExPop** | ✅ Posé à côté du questionnaire de l'ASNR (`t1-c2` 2.4) : l'élève n'est pas obligé de renseigner ses données et peut simuler quelqu'un d'autre. |
@@ -455,19 +455,16 @@ les dix-sept images.
 | **Verrouillage progressif** | ✅ Testé au navigateur sur chaque page : séances suivantes verrouillées à l'arrivée, déverrouillées quand toutes les étapes `data-gate` de la précédente sont validées. |
 | **Fiche de révision** | Se rabat sur les « à retenir » — **aucun `<template data-fiche-fixe>`** n'a été écrit : ils demandent ≈ 4 schémas SVG par séance, ce que le brief §4 interdit de produire. |
 
-### 🔴 Le point à connaître : pourquoi le client de progression n'est pas chargé
+### Le branchement en base — fait le 13/09/2026
 
-Les pages ES **ne chargent pas** `assets/js/progression.js`. Ce n'est pas un oubli.
-Chargé, il affiche en bas de page le bandeau *« Tu n'es pas connecté — ton travail
-ne sera pas enregistré · Se connecter → »*. Or **même connecté, rien ne serait
-enregistré** (pas de `data-sequence`) : le bandeau enverrait l'élève créer un compte
-pour rien. Sans le client, le moteur bascule sur son repli local, qui dit la vérité :
-*« Réponse gardée pour cette séance. Pense à télécharger ta fiche. »*
-
-**Au branchement**, il faudra donc : rétablir la balise `<script>` du client dans les
-six pages, ajouter `data-sequence="es-tN-cN"` sur `<body>`, charger le sommaire et le
-verrou de progression, ajouter les six pages aux tables de `generer-seances.mjs` et
-`generer-questions.mjs`, créer les codes de classe ES, et écrire la migration.
+Les six pages chargent `assets/js/progression.js` et portent sur `<body>`
+`data-sequence="es1-tN-cN"`, `data-reponses="personnelles"` (les réponses rédigées
+partent en réponses personnelles : corrigées en classe, jamais dans la file ni chez le
+worker), `data-accueil="sur-place"` (le bandeau ouvre le formulaire dans la page) et
+`data-renvoi-texte`. La classe 1re 2 existe en base (`bdd/schema/018`), ouverte par le
+`019`. Pas de plafond d'avance ni de sommaire généré : ce sont des affaires de SNT.
+Le suivi se lit au tableau de bord, espace ES 1re. Reste **ES-13** : le tutoriel du
+dispositif est encore au futur.
 
 ---
 
@@ -630,7 +627,9 @@ en clair** dans le document, elle est donc sûre.
 5. **Décider pour le 4.1** (ES-03) : rehausser le chapitre de seconde T3-C1, ou non.
 6. Relire les **40 cadres `.proposition`** et les **81 questions de QCM** : c'est tout
    le contenu que Claude a écrit, et il est intégralement signalé comme tel.
-7. Puis, séparément : **le branchement en base** (§4).
+7. ~~Le branchement en base~~ — **fait le 13/09/2026** (§4). Reste **ES-13** : le tutoriel
+   du dispositif, en T1-C1, est encore écrit **au futur** alors que la base est branchée —
+   à repasser au présent (ta formulation, pas la mienne).
 
 ---
 

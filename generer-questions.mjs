@@ -50,7 +50,19 @@ const THEMES = [
      doit le connaître d'avance — sinon la première question ajoutée au
      module manquerait au tableau de bord sans que rien ne le signale.
      Même remarque que dans generer-seances.mjs et verifier.mjs. */
-  ['snt-m1', '2nde-snt-m1-representer-information.html']
+  ['snt-m1', '2nde-snt-m1-representer-information.html'],
+  /* Enseignement scientifique, branché le 13/09/2026. Ses réponses
+     rédigées sont des réponses personnelles (corrigées en classe) : le
+     tableau de bord s'en sert pour rappeler l'énoncé, jamais pour une
+     file de correction. Clés alignées sur generer-sequences-espaces.mjs. */
+  ['es1-t1-c1', '1re-es-t1-c1-nucleosynthese.html'],
+  ['es1-t1-c2', '1re-es-t1-c2-radioactivite.html'],
+  ['es1-t1-c3', '1re-es-t1-c3-cristaux.html'],
+  ['es1-t2-c1', '1re-es-t2-c1-son-et-musique.html'],
+  ['es1-t2-c2', '1re-es-t2-c2-son-a-coder.html'],
+  ['es1-t3-c1', '1re-es-t3-c1-forme-terre.html'],
+  ['est-t2-c1', 'term-es-t2-c1-deux-siecles-energie-electrique.html'],
+  ['est-t2-c2', 'term-es-t2-c2-production-stockage-electricite.html']
 ];
 
 /* Même liste courte d'entités que generer-seances.mjs : mieux vaut

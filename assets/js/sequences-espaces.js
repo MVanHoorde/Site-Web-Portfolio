@@ -331,6 +331,92 @@ window.SEQUENCES_ESPACES = {
       ]
     }
   ],
+  "pc2_chapitres": [
+    {
+      "cle": "pc-t1-c1",
+      "num": "T1-C1",
+      "nom": "La matière à l'échelle macroscopique",
+      "seances": []
+    },
+    {
+      "cle": "pc-t1-c2",
+      "num": "T1-C2",
+      "nom": "Transformations physiques et chimiques",
+      "seances": []
+    },
+    {
+      "cle": "pc-t1-c3",
+      "num": "T1-C3",
+      "nom": "Constitution de l'atome",
+      "seances": []
+    },
+    {
+      "cle": "pc-t1-c4",
+      "num": "T1-C4",
+      "nom": "Dénombrer les entités",
+      "seances": []
+    },
+    {
+      "cle": "pc-t1-c5",
+      "num": "T1-C5",
+      "nom": "Les solutions aqueuses",
+      "seances": []
+    },
+    {
+      "cle": "pc-t1-c6",
+      "num": "T1-C6",
+      "nom": "Le cortège électronique",
+      "seances": []
+    },
+    {
+      "cle": "pc-t1-c7",
+      "num": "T1-C7",
+      "nom": "Stabilité des entités chimiques",
+      "seances": []
+    },
+    {
+      "cle": "pc-t2-c1",
+      "num": "T2-C1",
+      "nom": "Décrire le mouvement",
+      "seances": []
+    },
+    {
+      "cle": "pc-t2-c2",
+      "num": "T2-C2",
+      "nom": "Modéliser une action sur un système",
+      "seances": []
+    },
+    {
+      "cle": "pc-t2-c3",
+      "num": "T2-C3",
+      "nom": "Le principe d'inertie",
+      "seances": []
+    },
+    {
+      "cle": "pc-t3-c1",
+      "num": "T3-C1",
+      "nom": "Émission et perception d'un son",
+      "seances": []
+    },
+    {
+      "cle": "pc-t3-c2",
+      "num": "T3-C2",
+      "nom": "Signaux et capteurs",
+      "seances": []
+    },
+    {
+      "cle": "pc-t3-c3",
+      "num": "T3-C3",
+      "nom": "Dispersion de la lumière et spectres lumineux",
+      "seances": []
+    },
+    {
+      "cle": "pc-t3-c4",
+      "num": "T3-C4",
+      "nom": "Réfraction et réflexion de la lumière",
+      "seances": []
+    }
+  ],
   "cfa": [
     {
       "cle": "cfa-o00",

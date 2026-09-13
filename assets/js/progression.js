@@ -426,13 +426,48 @@
           return session();
         })
         .then(function (dejaInscrit) {
-          if (dejaInscrit) return dejaInscrit;
+          /* Déjà inscrit ET un code tapé : c'est l'élève de SNT qui entre
+             en 2nde 1 ou en AP avec son compte habituel (018). On ajoute
+             la classe plutôt que de l'ignorer en silence — il repartirait
+             persuadé d'être inscrit. Même classe que la sienne : la
+             fonction répond sans rien changer. */
+          if (dejaInscrit) {
+            var codeTape = String(codeClasse || '').trim();
+            if (!codeTape) return dejaInscrit;
+            return rejoindreAutreClasse(codeTape).then(function () { return dejaInscrit; });
+          }
           return rpc('rejoindre_classe', {
             p_code  : String(codeClasse || '').trim().toUpperCase(),
             p_pseudo: id
           }).then(function () { profil = null; return session(); });
         });
     });
+  }
+
+  /* Rejoindre une classe de plus, avec le compte qu'on a déjà
+   * (bdd/schema/018). Le cas type : l'élève de SNT qui entre en 2nde 1
+   * ou en AP de physique-chimie. Renvoie le libellé de la classe.
+   * Erreurs : CODE_CLASSE_INCONNU · DEJA_UNE_CLASSE_SNT · PAS_ENCORE_INSCRIT */
+  function rejoindreAutreClasse(code) {
+    return Promise.resolve().then(function () {
+      exigeConfiguration();
+      return assurerSession();
+    }).then(function () {
+      return rpc('rejoindre_autre_classe', { p_code: String(code || '').trim().toUpperCase() });
+    }).then(function (libelle) {
+      journal('classe_rejointe', {});
+      return libelle;
+    });
+  }
+
+  /* Toutes les classes du compte : [{ classe_libelle, espace, inscription }].
+   * La classe d'inscription vient en premier. */
+  function mesInscriptions() {
+    if (!disponible()) return Promise.resolve([]);
+    return assurerSession()
+      .then(function () { return rpc('mes_inscriptions'); })
+      .then(function (l) { return l || []; })
+      .catch(function () { return []; });
   }
 
   /* Se connecter : identifiant + mot de passe. Pour les visites
@@ -574,6 +609,14 @@
    *  un nouveau texte mérite une nouvelle relecture.
    * ---------------------------------------------------------- */
   function envoyerReponse(codeActivite, texte) {
+    /* Une page dont les réponses se corrigent EN CLASSE le déclare :
+       <body data-reponses="personnelles"> (l'enseignement scientifique,
+       décision du 12/09/2026). Ses réponses rédigées partent alors en
+       réponse personnelle — lue par le professeur, jamais dans la file
+       de correction, jamais soumise au worker. Le moteur des séquences
+       n'a rien à savoir : il appelle envoyerReponse comme partout. */
+    var b = global.document && global.document.body;
+    if (b && b.getAttribute('data-reponses') === 'personnelles') return partager(codeActivite, texte);
     return session().then(function (moi) {
       if (!moi) throw new Error('PAS_INSCRIT : rejoindre une classe avant d\'envoyer une réponse.');
       var propre = String(texte || '').trim();
@@ -739,7 +782,13 @@
    '.acc-badge-nom{font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'+
    '.acc-menu{position:absolute;right:0;margin-top:6px;background:var(--surface,#fff);border:1px solid var(--line,#d3dae7);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);overflow:hidden;min-width:180px}'+
    '.acc-menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:11px 14px;font-size:13px;color:var(--ink,#161f33);cursor:pointer;font-family:inherit}'+
-   '.acc-menu button:hover{background:var(--bg,#e9edf4)}';
+   '.acc-menu button:hover{background:var(--bg,#e9edf4)}'+
+   /* Chapitres de PC : leur en-tête porte « ← Retour aux cours » en haut à
+      droite, que le badge recouvrait (mesuré à 820 px, 13/09/2026). Le
+      badge y passe en bas à gauche — « ↑ haut » occupe le bas à droite —
+      et son menu s'ouvre vers le haut. */
+   'body[data-suivi^="pc-t"] .acc-badge{top:auto;right:auto;bottom:14px;left:14px}'+
+   'body[data-suivi^="pc-t"] .acc-menu{right:auto;left:0;bottom:100%;margin:0 0 6px}';
 
   var ICONE_BOUCLIER =
    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z"/><path d="M9 12l2 2 4-4"/></svg>';
@@ -753,7 +802,9 @@
     IDENTIFIANTS_INCORRECTS: 'Identifiant ou mot de passe incorrect.',
     TROP_DE_TENTATIVES     : 'Trop d\'essais en peu de temps. Attends une minute et recommence.',
     CODE_CLASSE_INCONNU    : 'Code de classe inconnu, ou inscriptions fermées.',
-    PSEUDO_DEJA_PRIS       : 'Cet identifiant est déjà utilisé dans cette classe.'
+    PSEUDO_DEJA_PRIS       : 'Cet identifiant est déjà utilisé dans cette classe.',
+    DEJA_UNE_CLASSE_SNT    : 'Tu es déjà dans un groupe de SNT : on ne peut pas en rejoindre un second. Demande à ton professeur si tu as changé de groupe.',
+    PAS_ENCORE_INSCRIT     : 'Ton compte n\'a pas encore de classe : crée-le avec le code de ta classe.'
   };
   function messageErreur(e) {
     return (e && MSG_ERREUR[e.code]) || 'Quelque chose n\'a pas fonctionné. Réessaie dans un instant.';
@@ -822,6 +873,7 @@
       +   '<span aria-hidden="true">▾</span>'
       + '</button>'
       + '<div class="acc-menu" hidden>'
+      +   '<button type="button" data-classes>Mes classes · en rejoindre une</button>'
       +   '<button type="button" data-changer>Changer de compte</button>'
       +   '<button type="button" data-deco>Se déconnecter</button>'
       + '</div>';
@@ -862,8 +914,62 @@
     function changerDeCompte() { quitter().then(function () { afficherPortes('connecter'); }); }
     badge.querySelector('[data-changer]').addEventListener('click', changerDeCompte);
     badge.querySelector('[data-deco]').addEventListener('click', deconnexion);
+    badge.querySelector('[data-classes]').addEventListener('click', function () {
+      menu.hidden = true;
+      afficherRejoindre();
+    });
 
     global.document.body.appendChild(badge);
+  }
+
+  /* « Mes classes » : la liste de ses classes, et un champ pour en
+   * rejoindre une de plus avec son code (018). Demandée par l'élève,
+   * donc jamais subie — même exception que « Changer de compte ». */
+  function afficherRejoindre() {
+    injecterStyleAccueil();
+    retirerFond();
+    var fond = global.document.createElement('div');
+    fond.className = 'acc-fond';
+    fond.innerHTML =
+      '<div class="acc-carte" role="dialog" aria-modal="true" aria-label="Mes classes">'
+      +   '<div class="acc-tete"><span class="acc-pastille">' + ICONE_BOUCLIER + '</span>'
+      +     '<span class="acc-titre">Mes classes</span></div>'
+      +   '<p class="acc-intro" data-liste>Un instant…</p>'
+      +   '<div class="acc-err" role="alert" hidden></div>'
+      +   '<form data-form>'
+      +     '<label class="acc-label" for="acc-code2">Rejoindre une autre classe</label>'
+      +     '<input id="acc-code2" type="text" autocomplete="off" placeholder="code donné par ton professeur">'
+      +     '<p class="acc-aide">Tu gardes ton identifiant et ton mot de passe&nbsp;: la classe s\'ajoute à ton compte.</p>'
+      +     '<button type="submit" class="acc-primaire">Rejoindre</button>'
+      +   '</form>'
+      +   '<div class="acc-pied"><button class="acc-lien" data-fermer>Fermer</button></div>'
+      + '</div>';
+    var liste = fond.querySelector('[data-liste]');
+    mesInscriptions().then(function (l) {
+      liste.innerHTML = l.length
+        ? 'Ton compte est inscrit en&nbsp;: <b>' + l.map(function (x) { return esc(x.classe_libelle); }).join('</b>, <b>') + '</b>.'
+        : 'Ton compte n\'a pas encore de classe.';
+    });
+    fond.querySelector('[data-fermer]').addEventListener('click', retirerFond);
+    var form = fond.querySelector('[data-form]');
+    var erreur = fond.querySelector('.acc-err');
+    var bouton = fond.querySelector('.acc-primaire');
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      erreur.hidden = true;
+      var code = (fond.querySelector('#acc-code2') || {}).value || '';
+      if (!code.trim()) return;
+      bouton.disabled = true; bouton.textContent = 'Un instant…';
+      rejoindreAutreClasse(code).then(function () {
+        global.location.reload();
+      }).catch(function (e) {
+        erreur.textContent = messageErreur(e);
+        erreur.hidden = false;
+        bouton.disabled = false; bouton.textContent = 'Rejoindre';
+      });
+    });
+    global.document.body.appendChild(fond);
+    fond.querySelector('#acc-code2').focus();
   }
 
   /* Compte reconnu : on ne redemande pas le mot de passe, on
@@ -911,6 +1017,7 @@
         + '<div style="height:12px"></div>'
         + '<label class="acc-label" for="acc-code">Code de la classe</label>'
         + '<input id="acc-code" type="text" autocomplete="off" placeholder="donné par ton professeur">'
+        + '<p class="acc-aide">Tu as déjà un compte (en SNT par exemple)&nbsp;? Tape ton identifiant et ton mot de passe habituels avec ce code&nbsp;: la classe s\'ajoute à ton compte.</p>'
       : '<label class="acc-label" for="acc-id">Identifiant</label>'
         + '<input id="acc-id" type="text" autocomplete="username" placeholder="dede-33">'
         + '<div style="height:12px"></div>'
@@ -1042,6 +1149,29 @@
       || 'Tu n\'es pas connecté — ton travail ne sera pas enregistré.';
     var bandeau = global.document.createElement('div');
     bandeau.className = 'acc-bandeau';
+
+    /* <body data-accueil="sur-place"> — les pages qui n'ont pas de hub de
+       connexion (ES, physique-chimie, 13/09/2026). Le bouton ouvre le
+       formulaire ICI, à la demande de l'élève : ce n'est pas la modale
+       subie que le §10 bis écarte. Et le bandeau se ferme : un élève qui
+       n'a pas de compte dans ce cours — une autre classe que celles
+       suivies — n'a pas à le garder sous les yeux tout le chapitre. */
+    if (b && b.getAttribute('data-accueil') === 'sur-place') {
+      bandeau.innerHTML = '<span aria-hidden="true">👤</span>'
+        + '<span>' + esc(texte) + '</span>'
+        + '<button type="button" data-ouvrir>Se connecter</button>'
+        + '<button type="button" data-fermer aria-label="Fermer ce bandeau" style="margin-left:4px">✕</button>';
+      bandeau.querySelector('[data-ouvrir]').addEventListener('click', function () {
+        bandeau.parentNode.removeChild(bandeau);
+        afficherPortes('creer');
+      });
+      bandeau.querySelector('[data-fermer]').addEventListener('click', function () {
+        bandeau.parentNode.removeChild(bandeau);
+      });
+      global.document.body.appendChild(bandeau);
+      return;
+    }
+
     bandeau.innerHTML = '<span aria-hidden="true">⚠️</span>'
       + '<span>' + esc(texte) + '</span>'
       + '<a href="' + esc(urlAccueil()) + '">Se connecter →</a>';
@@ -1076,6 +1206,8 @@
     journal       : journal,
     envoyerReponse: envoyerReponse,
     partager      : partager,
+    rejoindreAutreClasse: rejoindreAutreClasse,
+    mesInscriptions     : mesInscriptions,
     mesReponses   : mesReponses,
     versions      : versions
   };

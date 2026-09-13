@@ -372,7 +372,11 @@ td code{white-space:nowrap}
     <tr><td>PC 2nde</td><td>Suivi · Réglages</td>
       <td>Vue d'ensemble : une colonne par outil (étapes validées), la dernière
         activité, le nombre d'outils finis. Un clic sur O1…O8 ouvre le détail par
-        séance. Hors progression : ni retard ni curseur.</td></tr>
+        séance. Hors progression : ni retard ni curseur.<br>
+        Vue <i>Chapitres et documents</i> : une colonne par chapitre — « 3× » ouvert
+        trois fois, vert s'il a été débloqué avec le code — suivi d'une flèche et du
+        nombre de PDF ouverts depuis la page. La fiche d'un élève liste ses outils, ses chapitres
+        et chaque document ouvert, avec sa date.</td></tr>
     <tr><td>CFA</td><td>Suivi · Réglages</td>
       <td>Une colonne par fiche : une coche si l'apprenti l'a déclarée faite, sinon le
         nombre de champs remplis.</td></tr>
@@ -381,6 +385,35 @@ td code{white-space:nowrap}
   <p>Les noms des outils, chapitres et fiches viennent des pages elles-mêmes, par
   <code>node generer-sequences-espaces.mjs</code> — à relancer après avoir ajouté
   ou renommé une séance ; <code>verifier.mjs</code> signale un sommaire en retard.</p>
+
+  <h3>Côté élève : entrer dans une classe</h3>
+  <ul>
+    <li><b>Nouveau compte</b> : identifiant, mot de passe et code de la classe, comme en
+      SNT. Sur les pages d'ES et de physique-chimie, le formulaire s'ouvre <b>dans la
+      page</b> depuis un bandeau que l'élève peut refermer (<code>data-accueil="sur-place"</code>) ;
+      en SNT, la connexion reste au hub des thèmes.</li>
+    <li><b>Compte existant</b> (l'élève de SNT qui entre en 2nde 1) : il tape son
+      identifiant et son mot de passe <b>habituels</b> avec le nouveau code — la classe
+      s'ajoute —, ou passe par <i>Mes classes</i> dans le menu de son badge.</li>
+    <li>Un second groupe SNT est refusé, avec un message qui renvoie vers le professeur.</li>
+  </ul>
+
+  <h3>Ce qui est enregistré, famille par famille</h3>
+  <div class="enveloppe">
+  <table>
+    <tr><th>Pages</th><th>Ce qui part en base (élève connecté)</th></tr>
+    <tr><td>Séquences SNT</td><td>Étapes, champs, copies à corriger, réponses personnelles.</td></tr>
+    <tr><td>Chapitres d'ES</td><td>Étapes et champs ; les réponses rédigées partent en <b>réponses
+      personnelles</b> (<code>data-reponses="personnelles"</code>) — jamais dans la file, jamais
+      chez le worker : elles se corrigent en classe.</td></tr>
+    <tr><td>Outils de PC</td><td>Étapes et champs ; les PDF ouverts depuis la page.</td></tr>
+    <tr><td>Chapitres de PC</td><td>Par <code>assets/js/suivi-pc.js</code> : l'ouverture (dates,
+      visites espacées de 30 minutes), le déblocage par le code, les PDF ouverts. <b>Pas</b> de
+      temps passé, de défilement ni de checklist « Pour le DS ». Les élèves sont prévenus
+      par le bandeau de la page.</td></tr>
+    <tr><td>Livret CFA</td><td>Les champs et la fiche déclarée faite (inchangé depuis le 19/08).</td></tr>
+  </table>
+  </div>
 
   <div class="encadre attention">
     <span class="etiq">Pourquoi « tout ouvert » par défaut</span>
@@ -618,16 +651,11 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <h2 id="ouvert">10. Ce qui reste ouvert</h2>
 
   <ul>
-    <li><b>Les chapitres de physique-chimie</b> ne sont pas branchés : leur
-      progression vit dans le navigateur de l'élève, et n'apparaît nulle part ici.
-      La consultation des chapitres et les téléchargements de la 2nde 1 sont le
-      prochain chantier.</li>
-    <li><b>Les pages d'ES</b> n'enregistrent pas encore : l'espace existe, ses
-      grilles restent vides jusqu'au branchement des pages (clés
-      <code>es1-tN-cN</code> et <code>est-tN-cN</code>, réponses rédigées en
-      réponses personnelles, jamais dans la file).</li>
-    <li><b>Les cinq classes hors SNT</b> sont fermées à l'inscription tant que les
-      élèves ne savent pas rejoindre une seconde classe depuis le site.</li>
+    <li><b>Les chapitres de physique-chimie</b> gardent leur verrou et leur checklist
+      dans le navigateur de l'élève ; seuls l'ouverture, le déblocage et les PDF ouverts
+      remontent. Faire remonter la checklist « Pour le DS » reste à décider.</li>
+    <li><b>Un repère « où on en est »</b> dans les chapitres de PC, pour guider les
+      révisions sans restreindre l'accès : à réfléchir.</li>
     <li><b>Les photos prises en classe</b> ne quittent pas le navigateur. Les
       remonter demanderait un espace de stockage, une table, des règles — et une
       durée de conservation décidée avant la première ligne de code.</li>
@@ -641,7 +669,8 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <p class="revision">
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
-    Dernière révision : <b>13 septembre 2026</b> — le tableau de bord en espaces
+    Dernière révision : <b>13 septembre 2026</b> — pages d'ES branchées, suivi des
+    chapitres de PC, entrée des élèves dans une seconde classe ; le tableau de bord en espaces
     (SNT, ES, PC 2nde, CFA), un compte élève dans plusieurs classes et le
     cloisonnement par famille ; file de correction par classe, et calendrier du
     worker calé sur les séances. Version destinée aux collègues :

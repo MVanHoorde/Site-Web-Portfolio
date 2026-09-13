@@ -161,15 +161,15 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 
 | Partie | Pages | Assets externes |
 |---|---|---|
-| **Physique-chimie** | `pages/2nde-pc-tX-cY-…html` | `assets/img/pc/2nde-pc-tX-cY/` · `assets/pdf/` · `audio/2nde-pc-tX-cY-intro.m4a` · fiche **source** dans `fiches/`, **PDF distribué** dans `assets/pdf/pc/fiches/` 🆕 |
+| **Physique-chimie** | `pages/2nde-pc-tX-cY-…html` | `assets/img/pc/2nde-pc-tX-cY/` · `assets/pdf/` · `audio/2nde-pc-tX-cY-intro.m4a` · fiche **source** dans `fiches/`, **PDF distribué** dans `assets/pdf/pc/fiches/` 🆕 · **suivi de consultation** pour l'élève connecté : `progression.js` + `assets/js/suivi-pc.js` en fin de body, `data-suivi="pc-tX-cY"` (voir `CONSIGNES-chapitre-PC.md`) |
 | **Outils transversaux PC** 🆕 | `pages/2nde-pc-oN-…html` (4 sur 8 écrits) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · fiche A4 **complétée** : source `fiches/fiche-2nde-oN-…html`, **PDF** `assets/pdf/pc/fiches/` 🆕 · SVG inline |
 | **SNT** | `pages/2nde-snt-tN-…html` | `assets/css/sequence-snt.css?v=N` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/snt/<slug>/` pour les photos · SVG et CSS de contenu **inline** |
 | **Cahier de vacances** | `cahier/…html` | `assets/img/cahier/` · `assets/pdf/cahier/` |
 | **Diaporamas de projection PC** 🆕 | *(pas de page)* | `assets/pptx/pc/diaporama-2nde-<code>.pptx` — **versionnés** parce qu'ils ne sont plus régénérables. 🔴 Aucune page n'y renvoie : c'est un support de projection, pas un document d'élève — mais le dépôt étant public, le fichier reste accessible par son URL. Consignes : `_modeles/CONSIGNES-diaporama-PC.md` |
 | **Outillage** 🆕 | *(pas de page)* | `_outils/fiches/` **le générateur des fiches élève PC** — `gabarit_fiche.py` (commun aux 14 fiches, 🔴 ne pas y résoudre un problème de chapitre) + `fiche_<code>.py` + `mesurer_pages.py` · `_outils/tests/` scripts de contrôle, à lancer depuis la racine |
 | **Livret CFA** 🆕 | `cfa/index.html` · `cfa/outil-NN-…html` (17 outils) | `_modeles/gabarit-outil-CFA.html` · fiches à imprimer dans `fiches/cfa/` (**2 écrites sur 17** — les liens manquants forment le repère de 18 problèmes de `verifier.mjs`) · corrigés dans `_corriges-cfa/` · **client partagé** `assets/js/progression.js` |
-| **Enseignement scientifique 1re** 🆕 | `pages/1re-es-tN-cN-…html` (6 chapitres, 18 séances) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/es/1re-es-tN-cN/` · 🔴 **pas encore branché en base** : ni client de progression, ni `data-sequence` — voir `_suivi/es1-verification.md` |
-| **Enseignement scientifique Terminale** 🆕 | `pages/term-es-t2-cN-…html` (2 chapitres, 5 séances, portés le 12/09) · `pages/term-es-s01-frise.html` (la frise, à part) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/es/term-es-t2-cN/` · 🔴 **pas encore branché en base**, comme la 1re · 🔴 le hub n'affiche que les chapitres traités, les autres sont **en commentaire** — voir `_suivi/es-term-verification.md` |
+| **Enseignement scientifique 1re** 🆕 | `pages/1re-es-tN-cN-…html` (6 chapitres, 18 séances) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/es/1re-es-tN-cN/` · **branché en base** (13/09) : `data-sequence="es1-tN-cN"`, réponses rédigées en réponses personnelles — voir `_suivi/es1-verification.md` |
+| **Enseignement scientifique Terminale** 🆕 | `pages/term-es-t2-cN-…html` (2 chapitres, 5 séances, portés le 12/09) · `pages/term-es-s01-frise.html` (la frise, à part) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/es/term-es-t2-cN/` · **branché en base** comme la 1re (`est-tN-cN`) · 🔴 le hub n'affiche que les chapitres traités, les autres sont **en commentaire** — voir `_suivi/es-term-verification.md` |
 | **Coque / accueil / niveaux** | `index.html` (racine) · `pages/2nde-physique-chimie.html`, `pages/…-scientifique.html`, `pages/terminale-…` | `assets/fonts/`, `assets/css/`, `gravures/` |
 | **Base de données** 🆕 | *(pas de page)* | `bdd/schema/NNN-….sql` (schéma, numéroté, rejouable) · `bdd/README.md` · `supabase/migrations/` (horodaté par la CLI, **contenu recopié de `bdd/schema/`**) · client partagé `assets/js/progression.js` |
 | **Tableau de bord enseignant** 🆕 | `prof/index.html` · `prof/guide-prise-en-main.html` · `prof/guide-dispositif.html` | `assets/js/prof-api.js` · PDF des guides dans `assets/pdf/prof/`, régénérés par `node exporter-guides.mjs` |
@@ -181,7 +181,7 @@ version depuis leur cache :
 
 | Asset | Chargé par | À incrémenter dans |
 |---|---|---|
-| `assets/js/progression.js` | SNT (4 pages + hub) **et livret CFA (18 pages)** + `_modeles/gabarit-outil-CFA.html` | **24 fichiers** |
+| `assets/js/progression.js` | SNT (4 pages + hub), **livret CFA (18 pages)**, **ES (8 pages)**, **outils PC (8)**, **chapitres PC (14)** + `gabarit-outil-CFA.html` et `gabarit-outil-PC.html` | **55 fichiers** au 13/09/2026 |
 | `assets/js/sequence-snt.js` · `assets/css/sequence-snt.css` | les séquences SNT, le hub `2nde-snt.html`, **les 8 outils transversaux de PC**, **les 6 chapitres d'ES de 1re** et **les 2 de terminale** | **22 fichiers** au 12/09/2026 (contrôlé par `verifier.mjs`, bloquant : toute page qui reste sur l'ancienne version le fait échouer) |
 | `assets/css/chapitre-commun.css` | les 14 chapitres PC **et** `_modeles/gabarit-chapitre.html` | **15 fichiers** — les 2 pages d'ES de terminale en sont sorties le 12/09 |
 

@@ -37,7 +37,13 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 13/09/2026 | **Les copies ne sont lisibles que par les classes SNT et ES.** Un code d'activité (`SYS-R1`) ne dit pas sa famille : sans cette règle, l'élève du groupe SNT d'un collègue qui rejoint la 2nde 1 apporterait ses copies SNT dans la file de Loïc. Une classe de PC ou du CFA n'ouvre jamais l'accès aux copies. **Le jour où une page de PC enverra des copies, préfixer ses codes.** | ✅ en vigueur (`018`) |
 | 13/09/2026 | 🔴 **Le tableau de bord ne masque plus les classes fermées à l'inscription.** Il filtrait `actif = false`, alors que ce champ ne commande que l'inscription : refermer un groupe après la 2ᵉ séance (option B du 20/07) l'aurait fait disparaître du tableau de bord de son enseignant. Défaut préexistant, corrigé avec les espaces. | ✅ en vigueur |
 | 13/09/2026 | **Vue d'ensemble en PC 2nde et au CFA** : une ligne par élève, une colonne par outil (étapes validées) ou par fiche (coche si déclarée faite, sinon nombre de champs remplis), plus la dernière activité. Pas de retard ni de curseur : ces contenus sont hors progression. | ✅ en vigueur |
-| 13/09/2026 | **Les réponses rédigées d'ES partiront en statut `partage`** (réponse personnelle du `014` : lue par le professeur, jamais corrigée, jamais vue par le worker), et non en `en_attente`. | ⏳ à appliquer au branchement de l'ES (lot 3) |
+| 13/09/2026 | **Les réponses rédigées d'ES partent en statut `partage`** (réponse personnelle du `014` : lue par le professeur, jamais corrigée, jamais vue par le worker). Mécanisme : `<body data-reponses="personnelles">`, lu par `progression.js` ; le moteur partagé n'est pas modifié. | ✅ en vigueur |
+| 13/09/2026 | **Connexion « sur place »** (`data-accueil="sur-place"`) sur les pages sans hub de connexion — ES, outils et chapitres PC : un bandeau refermable dont le bouton ouvre le formulaire dans la page. Pas de modale subie : la règle du 24/07 (« la connexion se fait au hub ») reste celle du SNT. | ✅ en vigueur |
+| 13/09/2026 | **Un élève déjà inscrit qui tape un code à la création de compte rejoint la classe** au lieu d'être ignoré ; il peut aussi passer par « Mes classes » dans le menu de son badge. | ✅ en vigueur |
+| 13/09/2026 | **Suivi de consultation des chapitres PC** (`assets/js/suivi-pc.js`) : ouverture (dates, visites espacées de 30 min), déblocage par le code, PDF ouverts depuis la page. **Pas** de temps passé, de défilement ni de checklist « Pour le DS » (auto-évaluation de l'élève). Le clic sur un PDF retient la navigation 1,2 s au plus pour que l'écriture aboutisse. | ✅ en vigueur · ⏳ remonter la checklist DS : à décider |
+| 13/09/2026 | **Consultation des chapitres : aucune restriction d'accès**, l'élève révise où il veut. Un repère « où on en est » est à réfléchir plus tard. | ✅ en vigueur · ⏳ repère |
+| 13/09/2026 | **Les `data-cle` d'étape de terminale passent de `es-` à `est-`** — gratuit ce jour, aucune donnée n'étant encore enregistrée ; `es-t2c2-ex3` existait en 1re et en terminale. | ✅ en vigueur |
+| 13/09/2026 | **Textes des bandeaux de connexion** : ES « Connecte-toi pour garder ton travail d'une séance à l'autre… » ; outils « Élève de 2nde 1 ou de l'AP ? Connecte-toi : ton professeur verra ton travail et les documents que tu ouvres. » ; chapitres « Élève de 2nde 1 ? Connecte-toi : ton professeur verra que tu as ouvert ce chapitre et ses documents. » Ils disent aux élèves ce qui est enregistré (RGPD). | ⏳ proposition de Claude, à valider |
 
 ## 13/09/2026 — Audit des fiches de séance de t0 (règles portables des fiches SNT)
 
@@ -188,7 +194,7 @@ chapitre n'avait **aucune image**, et son bloc « à faire » demandait d'ouvrir
 PPTX de 230 Mo. Tout était dans le PDF de 2,8 Mo. La carte de la géothermie y était
 **coupée en deux morceaux**, recollés avant export.
 
-**✅ Les pages restent hors base, comme l'ES de 1re.** Ni client de progression, ni
+**~~✅ Les pages restent hors base, comme l'ES de 1re.~~** *Remplacée le 13/09/2026 : les pages d'ES sont branchées.* Ni client de progression, ni
 `data-sequence` : le moteur dit honnêtement « gardé pour cette séance » plutôt que
 d'afficher « connecte-toi pour enregistrer ton travail » devant un stockage qui
 n'existe pas. Voir D5.

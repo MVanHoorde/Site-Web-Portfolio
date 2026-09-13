@@ -3827,3 +3827,32 @@ t7. La bulle recopiée dans le vocabulaire de fiche venait de `collectVocabulair
 qui prenait le `innerHTML` du `<dd>` tel quel : elle retire désormais la bulle et garde
 le mot du bouton, comme le fait déjà `ficheRetenirHTML()`. Non corrigé : « nos minutes
 par 60 secondes » (m1), une ellipse juste.
+
+## 13/09/2026 — Tableau de bord à espaces : lots 3, 4 et 5
+
+Les lots 1 et 2 étaient déjà en ligne : l'autre conversation du jour avait poussé
+leurs commits avec les siens. Arbre de travail propre au moment du go, vérifié avant
+de toucher `progression.js`.
+
+Lot 3. Le client élève sait ajouter une classe à un compte (code tapé à la création
+par un compte existant, ou « Mes classes » dans le badge) et connaît un mode de
+connexion « sur place » pour les pages sans hub. Les réponses rédigées d'une page
+`data-reponses="personnelles"` partent en `partage` : le moteur partagé n'a pas été
+touché. Les huit pages d'ES sont branchées. Deux défauts de mon propre script de
+branchement, trouvés au contrôle : l'insertion d'un commentaire contenant `<body>`
+avait reçu les attributs à la place de la vraie balise (ES et o3), et un `sed` lancé
+depuis bash avait mangé les antislashs d'une regex. Corrigés, puis contrôle mécanique
+des 30 pages.
+
+Lot 4. `assets/js/suivi-pc.js` sur les chapitres et les outils de PC. Le clic sur un
+PDF retient la navigation le temps d'écrire (1,2 s au plus), sinon l'écriture partait
+avec la page. Le badge recouvrait « ← Retour aux cours » des chapitres à 820 px : il y
+passe en bas à gauche.
+
+Étendre `pagesSNT` de `verifier.mjs` à la terminale, désormais en base, a fait
+apparaître deux défauts existants : une `data-cle` en double entre 1re et terminale
+(les clés de terminale passent en `est-`, gratuit tant que rien n'est enregistré) et
+un indice qui livre la réponse en T2-C2, laissé à Loïc — le repère passe à 19.
+
+Mise en service réunie dans `bdd/schema/019`, éprouvé sur la chaîne complète, cas
+d'échec compris. Tests : 43 contrôles au tableau de bord, 28 au parcours élève.

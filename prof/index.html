@@ -244,6 +244,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
 .dette{font-weight:600}.dette.zero{color:var(--ink-faint);font-weight:400}
 table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;color:var(--link);
     cursor:pointer;text-transform:inherit;letter-spacing:inherit}
+table.grille thead th{white-space:nowrap}
 .derniere{font-size:12.5px;color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
 
 /* --- accueil des espaces (13/09/2026) ---
@@ -485,7 +486,7 @@ table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;c
 
       <div class="legende">
         <span><i class="p ok"></i><span id="leg-ok">terminée</span></span>
-        <span><i class="p enc"></i>en cours</span>
+        <span><i class="p enc"></i><span id="leg-enc">en cours</span></span>
         <span><i class="p gris"></i>pas encore</span>
         <span data-avec-seances><i class="p ret"></i>en retard</span>
         <span data-avec-seances><i class="p abs"></i>absent, à rattraper</span>
@@ -586,8 +587,8 @@ table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;c
 
 <script src="../assets/js/seances-snt.js?v=16"></script>
 <script src="../assets/js/verrou-snt.js?v=3"></script>
-<script src="../assets/js/questions-snt.js?v=2"></script>
-<script src="../assets/js/sequences-espaces.js?v=1"></script>
+<script src="../assets/js/questions-snt.js?v=3"></script>
+<script src="../assets/js/sequences-espaces.js?v=2"></script>
 <script src="../assets/js/prof-api.js"></script>
 <script>
 (function(){
@@ -1497,6 +1498,9 @@ table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;c
      une colonne par outil ou par fiche. Valeur de thème à part, jamais
      écrite en base. */
   var VUE_ENSEMBLE = '*';
+  /* « Chapitres et documents » (PC 2nde) : la consultation des chapitres
+     et les PDF ouverts, écrits par assets/js/suivi-pc.js. */
+  var VUE_CHAPITRES = '#chapitres';
 
   function themesDeLEspace(){
     if(ESPACE === 'snt'){
@@ -1509,7 +1513,8 @@ table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;c
     }
     var liste = sequencesDe(ESPACE).map(function(s){ return { v: s.cle, t: nomSequence(s.cle) }; });
     if(ESPACE === 'cfa') return [{ v: VUE_ENSEMBLE, t: 'Toutes les fiches' }];
-    if(ESPACE === 'pc2') return [{ v: VUE_ENSEMBLE, t: 'Tous les outils' }].concat(liste);
+    if(ESPACE === 'pc2') return [{ v: VUE_ENSEMBLE, t: 'Tous les outils' },
+                                 { v: VUE_CHAPITRES, t: 'Chapitres et documents' }].concat(liste);
     return liste;
   }
 
@@ -1567,10 +1572,12 @@ table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;c
     /* la vue d'ensemble lit toutes les séquences de l'espace d'un coup :
        pc-o1 … pc-o8, ou cfa-o00 … cfa-o16 (le like de PostgREST écrit
        son joker « * ») */
+    var base = 'progression?select=eleve_id,cle,valeur,maj_le&domaine=eq.cours';
     var cheminProgs = ctx.theme === VUE_ENSEMBLE
-      ? 'progression?select=eleve_id,cle,valeur,maj_le&domaine=eq.cours&cle=like.'
-          + (ESPACE === 'cfa' ? 'cfa-o*' : 'pc-o*')
-      : 'progression?select=eleve_id,cle,valeur,maj_le&domaine=eq.cours&cle=eq.' + th;
+      ? base + '&cle=like.' + (ESPACE === 'cfa' ? 'cfa-o*' : 'pc-o*')
+      : ctx.theme === VUE_CHAPITRES
+      ? base + '&or=(cle.like.pc-t*,cle.eq.pc-telechargements)'
+      : base + '&cle=eq.' + th;
     return Promise.all([
       ProfAPI.lire('eleves_classes?select=eleves(id,pseudo)&classe_id=eq.' + cl),
       avecSeances ? ProfAPI.lire('seances_faites?select=*&classe_id=eq.' + cl + '&sequence=eq.' + th) : rien,
@@ -1999,6 +2006,10 @@ table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;c
      LOT D — la grille de suivi
      ============================================================ */
   function rendreGrille(){
+    $('#leg-ok').textContent = ESPACE === 'cfa' ? 'fiche terminée'
+                             : ctx.theme === VUE_CHAPITRES ? 'débloqué (code saisi)' : 'terminée';
+    $('#leg-enc').textContent = ctx.theme === VUE_CHAPITRES ? 'ouvert, pas débloqué' : 'en cours';
+    if(ctx.theme === VUE_CHAPITRES){ rendreVueChapitres(); return; }
     if(ctx.theme === VUE_ENSEMBLE){ rendreVueEnsemble(); return; }
     /* Hors progression (outils de PC) : pas de curseur, donc ni retard
        ni dette — on montre l'avancement et la dernière visite. */
@@ -2111,6 +2122,89 @@ table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;c
     return { cls: 'gris', txt: '0/' + r.t };
   }
 
+  /* ============================================================
+     CHAPITRES ET DOCUMENTS — PC 2nde (13/09/2026)
+     ------------------------------------------------------------
+     Une colonne par chapitre : combien de fois l'élève l'a ouvert, et
+     s'il l'a débloqué avec le code de fin de chapitre. Plus le nombre
+     de PDF du cours ouverts (fiche, TP, DS). Rien d'autre n'est
+     enregistré : ni temps passé, ni défilement (suivi-pc.js).
+     ============================================================ */
+  function fichiersDe(eleveId){
+    var p = progDe(eleveId, 'pc-telechargements');
+    return (p && p.valeur && p.valeur.fichiers) || {};
+  }
+  function etatChapitre(p, docs){
+    var v = p && p.valeur;
+    if(!v || !v.visites){ return { cls: 'gris', txt: docs ? '⬇' + docs : '·' }; }
+    var txt = v.visites + '×' + (docs ? ' ⬇' + docs : '');
+    return { cls: v.debloque_le ? 'ok' : 'enc', txt: txt };
+  }
+  function dateFr(iso){
+    return iso ? new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : '—';
+  }
+
+  function rendreVueChapitres(){
+    var chap = sequencesDe('pc2_chapitres');
+    var t = $('#g-table'); t.innerHTML = '';
+    var thead = document.createElement('thead');
+    var tr = document.createElement('tr');
+    ['Élève', 'Chapitres ouverts', 'Débloqués', 'Documents', 'Dernière activité'].forEach(function(x){
+      var th = document.createElement('th'); th.textContent = x; tr.appendChild(th);
+    });
+    chap.forEach(function(s){
+      var th = document.createElement('th'); th.textContent = s.num; th.title = s.nom; tr.appendChild(th);
+    });
+    thead.appendChild(tr); t.appendChild(thead);
+
+    var tb = document.createElement('tbody');
+    Eleves.forEach(function(e){
+      var ligne = document.createElement('tr');
+      var td0 = document.createElement('td');
+      var nb = document.createElement('button');
+      nb.className = 'nom-cliquable'; nb.textContent = ProfAPI.nomDe(e.pseudo);
+      nb.addEventListener('click', function(){ ouvrirEleve(e); });
+      td0.appendChild(nb); ligne.appendChild(td0);
+
+      var fichiers = fichiersDe(e.id), nbDocs = Object.keys(fichiers).length;
+      var parPage = {};
+      Object.keys(fichiers).forEach(function(k){ var pg = fichiers[k].page; if(pg) parPage[pg] = (parPage[pg] || 0) + 1; });
+      var ouverts = 0, debloques = 0, recente = progDe(e.id, 'pc-telechargements');
+      var cases = chap.map(function(s){
+        var p = progDe(e.id, s.cle);
+        if(p && p.valeur && p.valeur.visites){ ouverts++; if(p.valeur.debloque_le) debloques++; }
+        if(p && (!recente || String(p.maj_le) > String(recente.maj_le))) recente = p;
+        var et = etatChapitre(p, parPage[s.cle] || 0);
+        var v = p && p.valeur;
+        et.titre = s.num + ' · ' + s.nom + (v && v.visites
+          ? ' — ouvert ' + v.visites + ' fois, du ' + dateFr(v.premier_le) + ' au ' + dateFr(v.dernier_le)
+            + (v.debloque_le ? ', débloqué le ' + dateFr(v.debloque_le) : ', pas débloqué')
+          : ' — jamais ouvert') + (parPage[s.cle] ? ' · ' + parPage[s.cle] + ' document(s) ouvert(s)' : '');
+        return et;
+      });
+      [ouverts + '/' + chap.length, String(debloques), String(nbDocs)].forEach(function(x, i){
+        var td = document.createElement('td');
+        var zero = i === 0 ? !ouverts : x === '0';
+        td.className = 'dette' + (zero ? ' zero' : ''); td.textContent = x;
+        ligne.appendChild(td);
+      });
+      var tdV = document.createElement('td');
+      tdV.innerHTML = '<span class="derniere">' + echapper(recente ? derniereVisite({ maj_le: recente.maj_le }) : '—') + '</span>';
+      ligne.appendChild(tdV);
+      cases.forEach(function(et){
+        var td = document.createElement('td');
+        var sp = document.createElement('span');
+        sp.className = 'case ' + et.cls; sp.textContent = et.txt; sp.title = et.titre;
+        td.appendChild(sp); ligne.appendChild(td);
+      });
+      tb.appendChild(ligne);
+    });
+    t.appendChild(tb);
+    $('#g-note').textContent = !Eleves.length ? 'Aucun élève dans cette classe.'
+      : '« 3× » : chapitre ouvert trois fois (visites espacées de plus de 30 min) · vert : débloqué avec le code de fin de chapitre · ⬇ : PDF ouverts depuis la page. Survole une case pour les dates. Seuls les élèves connectés sont comptés.';
+    $('#g-perso-bloc').style.display = 'none';
+  }
+
   function rendreVueEnsemble(){
     var seqs = sequencesDe(ESPACE);
     var t = $('#g-table'); t.innerHTML = '';
@@ -2192,7 +2286,10 @@ table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;c
     var rep = window.QUESTIONS_SNT || {};
     return Object.keys(rep)
       .filter(function(code){
-        return rep[code].notee === false && rep[code].sequence === ctx.theme;
+        /* En ES, toute réponse rédigée est personnelle : elle se corrige
+           en classe (data-reponses="personnelles" sur la page). */
+        var perso = rep[code].notee === false || ESPACE === 'es1' || ESPACE === 'est';
+        return perso && rep[code].sequence === ctx.theme;
       })
       .sort(function(a, b){
         var sa = rep[a].seance || '', sb = rep[b].seance || '';
@@ -2275,19 +2372,48 @@ table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;c
     if(ESPACE === 'pc2' || ESPACE === 'cfa'){
       ProfAPI.lire('progression?select=cle,valeur,maj_le&domaine=eq.cours'
         + '&eleve_id=eq.' + encodeURIComponent(e.id)
-        + '&cle=like.' + (ESPACE === 'cfa' ? 'cfa-o*' : 'pc-o*'))
+        + '&cle=like.' + (ESPACE === 'cfa' ? 'cfa-o*' : 'pc-*'))
         .then(function(l){
+          l = l || [];
           z.innerHTML = '';
-          sequencesDe(ESPACE).forEach(function(s){
-            var p = (l || []).find(function(x){ return x.cle === s.cle; });
-            var et = ESPACE === 'cfa' ? etatFiche(p) : etatOutil(p);
+          function titre(t){ var h = document.createElement('h3'); h.className = 'sous'; h.textContent = t; z.appendChild(h); }
+          function ligneEtat(et, nom, droite){
             var d = document.createElement('div');
             d.style.cssText = 'display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding:9px 0';
             var c = document.createElement('span'); c.className = 'case ' + et.cls; c.textContent = et.txt;
-            var n = document.createElement('span'); n.style.flex = '1'; n.textContent = s.num + ' · ' + s.nom;
-            var v = document.createElement('span'); v.className = 'derniere'; v.textContent = p ? derniereVisite(p) : '';
+            var n = document.createElement('span'); n.style.flex = '1'; n.textContent = nom;
+            var v = document.createElement('span'); v.className = 'derniere'; v.textContent = droite || '';
             d.appendChild(c); d.appendChild(n); d.appendChild(v);
             z.appendChild(d);
+          }
+          if(ESPACE === 'pc2') titre('Les outils');
+          sequencesDe(ESPACE).forEach(function(s){
+            var p = l.find(function(x){ return x.cle === s.cle; });
+            ligneEtat(ESPACE === 'cfa' ? etatFiche(p) : etatOutil(p), s.num + ' · ' + s.nom, p ? derniereVisite(p) : '');
+          });
+          if(ESPACE !== 'pc2') return;
+
+          titre('Les chapitres');
+          sequencesDe('pc2_chapitres').forEach(function(s){
+            var p = l.find(function(x){ return x.cle === s.cle; }), v = p && p.valeur;
+            ligneEtat(etatChapitre(p, 0), s.num + ' · ' + s.nom,
+              v && v.visites ? ('dernière ouverture ' + dateFr(v.dernier_le) + (v.debloque_le ? ' · débloqué le ' + dateFr(v.debloque_le) : ''))
+                             : 'jamais ouvert');
+          });
+
+          titre('Les documents ouverts');
+          var tel = l.find(function(x){ return x.cle === 'pc-telechargements'; });
+          var fichiers = (tel && tel.valeur && tel.valeur.fichiers) || {};
+          var noms = Object.keys(fichiers).sort();
+          if(!noms.length){
+            var vide = document.createElement('p'); vide.className = 'tresmuet';
+            vide.textContent = 'Aucun PDF ouvert depuis le site.'; z.appendChild(vide);
+          }
+          noms.forEach(function(k){
+            var f = fichiers[k];
+            var ou = f.page ? nomSequence(f.page) : '';
+            ligneEtat({ cls: 'ok', txt: (f.n || 1) + '×' }, k + (ou && ou !== f.page ? ' — depuis ' + ou : ''),
+                      'le ' + dateFr(f.dernier_le));
           });
         })
         .catch(function(err){ z.innerHTML = ''; var p = document.createElement('p');

@@ -105,11 +105,19 @@ séparé sortirait du filet sans que rien ne le signale.
 
 ```html
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<script src="../assets/js/progression.js?v=16"></script>
+<script src="../assets/js/progression.js?v=17"></script>
 <link rel="stylesheet" href="../assets/css/sequence-snt.css?v=41">
 <!-- … en fin de body : -->
 <script src="../assets/js/sequence-snt.js?v=42"></script>
 ```
+
+🔴 **Sur `<body>`, en plus de `data-sequence="pc-oN"`** : `data-suivi="pc-oN"`,
+`data-accueil="sur-place"` (connexion depuis la page, bandeau refermable) et
+`data-renvoi-texte`. **En fin de body**, après le moteur :
+`<script src="../assets/js/suivi-pc.js?v=1"></script>` — il enregistre, pour un
+élève connecté seulement, les PDF ouverts depuis la page. Le préfixe **`pc-`** de
+la clé est obligatoire : c'est lui qui range la ligne dans la famille PC en base
+(`bdd/schema/018`), donc hors de vue des collègues de SNT. Le gabarit porte tout.
 
 ⚠️ **Le sommaire des séances et le verrou de progression ne sont PAS chargés** :
 un outil n'a ni rang, ni plafond d'avance, ni verrou inter-pages. Le moteur les

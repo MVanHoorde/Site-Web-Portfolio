@@ -18,12 +18,24 @@ différents, l'un rodé, l'autre en phase 1.
 | Structure | thème → chapitre → sections | séquence → séance → étape → champ |
 | Style | gabarit + `style.css` du site | CSS inline dans la page |
 | Déblocage | code 6 caractères + SHA-256 | verrouillage progressif + mode enseignant |
-| Persistance | `localStorage` | **interdit** — téléchargement de fiche |
+| Persistance | `localStorage` (verrou, checklist) + **suivi de consultation en base** pour l'élève connecté | **interdit** — téléchargement de fiche |
 | Trace élève | fiche imprimable A4 (§6) | « Télécharger ma fiche » (récap HTML) |
 
 Communs aux deux : RGPD (polices auto-hébergées, jamais de CDN), HTML/CSS/JS
 vanilla sans build, responsive (cible iPad), livraison en archive delta, mise à
 jour de `_suivi/`.
+
+## 🔴 Le suivi de consultation (13/09/2026)
+
+Chaque chapitre charge, **en fin de body et après la porte à code**,
+`progression.js` puis `assets/js/suivi-pc.js`, et porte sur `<body>`
+`data-suivi="pc-tX-cY"`, `data-accueil="sur-place"` et `data-renvoi-texte`.
+Pour un élève **connecté** (2nde 1), la base reçoit : l'ouverture du chapitre
+(dates, nombre de visites), le **déblocage par le code**, les **PDF ouverts** depuis
+la page. Rien d'autre — ni temps passé, ni défilement, ni la checklist « Pour le
+DS ». Sans compte : rien n'est écrit. Le tableau de bord le montre dans l'espace
+PC 2nde, vue « Chapitres et documents ». Le gabarit porte déjà tout ; un nouveau
+chapitre relance `node generer-sequences-espaces.mjs`.
 
 ## Le travail
 
