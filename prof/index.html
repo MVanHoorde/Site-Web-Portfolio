@@ -262,6 +262,15 @@ table.grille thead th{white-space:nowrap}
 .espace .e-classes{display:flex;flex-wrap:wrap;gap:5px}
 .espace .e-classes span{font-size:12.5px;padding:2px 9px;border-radius:999px;background:var(--surface-2);
     border:1px solid var(--line);color:var(--ink-soft)}
+.espace .e-classes code{color:var(--ink);letter-spacing:.04em}
+
+/* --- le code à donner aux élèves (13/09/2026) ---
+   Affiché à côté de chaque sélecteur de classe : on le dicte ou on le
+   recopie au tableau sans ouvrir le menu. Sélectionnable d'un clic. */
+.code-eleves{font-size:13px;color:var(--ink-soft);white-space:nowrap}
+.code-eleves code{display:inline-block;margin-left:4px;padding:2px 9px;border-radius:7px;
+    background:var(--surface);border:1px solid var(--line);color:var(--ink);
+    font-size:15px;font-weight:600;letter-spacing:.08em;user-select:all;-webkit-user-select:all}
 </style>
 </head>
 <body>
@@ -322,6 +331,7 @@ table.grille thead th{white-space:nowrap}
       <div class="rangee" style="margin-top:0">
         <label for="k-classe" style="margin:0">Classe</label>
         <select id="k-classe"></select>
+        <span class="code-eleves" id="k-code"></span>
         <button id="btn-recharger">Recharger la file</button>
         <button id="btn-lot" style="display:none"></button>
         <button id="btn-sans-ia" style="display:none"></button>
@@ -409,6 +419,7 @@ table.grille thead th{white-space:nowrap}
       <div class="rangee" style="margin-top:0">
         <select id="s-classe"></select>
         <select id="s-theme"></select>
+        <span class="code-eleves" id="s-code"></span>
         <span id="s-curseur" class="pastille neutre"></span>
       </div>
 
@@ -480,6 +491,7 @@ table.grille thead th{white-space:nowrap}
       <div class="rangee" style="margin-top:0">
         <select id="g-classe"></select>
         <select id="g-theme"></select>
+        <span class="code-eleves" id="g-code"></span>
         <button id="g-rafraichir">Rafraîchir</button>
         <span id="g-etat" class="muet"></span>
       </div>
@@ -672,7 +684,12 @@ table.grille thead th{white-space:nowrap}
       var q = document.createElement('span'); q.className = 'e-quoi'; q.textContent = d.quoi;
       var cl = document.createElement('span'); cl.className = 'e-classes';
       TOUTES_CLASSES.filter(function(c){ return espaceDe(c) === e; }).forEach(function(c){
-        var s = document.createElement('span'); s.textContent = c.libelle; cl.appendChild(s);
+        var s = document.createElement('span'); s.textContent = c.libelle;
+        if(c.code){
+          var k = document.createElement('code'); k.textContent = c.code;
+          s.appendChild(document.createTextNode(' · ')); s.appendChild(k);
+        }
+        cl.appendChild(s);
       });
       b.appendChild(n); b.appendChild(q); b.appendChild(cl);
       b.addEventListener('click', function(){ choisirEspace(e); });
@@ -708,9 +725,10 @@ table.grille thead th{white-space:nowrap}
 
     CLASSES = TOUTES_CLASSES.filter(function(c){ return espaceDe(c) === ESPACE; });
     ctx.classe = CLASSES.length ? CLASSES[0].id : null;
-    var opts = CLASSES.map(function(c){ return { v: c.id, t: c.libelle + ' (' + c.code + ')' }; });
+    var opts = CLASSES.map(function(c){ return { v: c.id, t: c.libelle }; });
     remplirSelect($('#s-classe'), opts, ctx.classe);
     remplirSelect($('#g-classe'), opts, ctx.classe);
+    majCodes();
 
     var themes = themesDeLEspace();
     ctx.theme = themes.length ? themes[0].v : null;
@@ -995,7 +1013,7 @@ table.grille thead th{white-space:nowrap}
   function majSelecteurClasse(){
     var sel = $('#k-classe');
     var snt = classesSNT();
-    if(!snt.length){ sel.style.display = 'none'; return; }
+    if(!snt.length){ sel.style.display = 'none'; majCodes(); return; }
     sel.style.display = '';
     var compte = {};
     toutes.forEach(function(c){ var k = classeDe(c); compte[k] = (compte[k] || 0) + 1; });
@@ -1004,6 +1022,25 @@ table.grille thead th{white-space:nowrap}
     });
     if(snt.length > 1) opts.push({ v: CLASSE_TOUTES, t: 'Toutes mes classes (' + toutes.length + ')' });
     remplirSelect(sel, opts, kClasse);
+    majCodes();
+  }
+
+  /* Le code à donner aux élèves, à côté des trois sélecteurs de classe.
+     « Toutes mes classes » n'a pas de code : la pastille se masque. */
+  function afficherCode(z, id){
+    var cl = TOUTES_CLASSES.find(function(c){ return c.id === id; });
+    z.textContent = '';
+    if(!cl || !cl.code){ z.style.display = 'none'; return; }
+    z.style.display = '';
+    var k = document.createElement('code'); k.textContent = cl.code;
+    k.title = 'Le code que les élèves saisissent pour rejoindre ' + cl.libelle;
+    z.appendChild(document.createTextNode('Code élèves'));
+    z.appendChild(k);
+  }
+  function majCodes(){
+    afficherCode($('#k-code'), $('#k-classe').style.display === 'none' ? null : kClasse);
+    afficherCode($('#s-code'), ctx.classe);
+    afficherCode($('#g-code'), ctx.classe);
   }
 
   function libelleClasse(id){
@@ -1317,6 +1354,7 @@ table.grille thead th{white-space:nowrap}
       $('#s-seance').value = '';
       chargerContexte().then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); });
     }
+    majCodes();
   });
 
   /* Les barres de couleur vieillissent même sans rechargement. */
@@ -2484,6 +2522,7 @@ table.grille thead th{white-space:nowrap}
       if(ESPACE === 'snt' && kClasse !== CLASSE_TOUTES && kClasse !== ctx.classe && !enTrainDeDecider()){
         kClasse = ctx.classe; rang = 0; file = []; rendreCorrection();
       }
+      majCodes();
       chargerContexte().then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); });
     };
   }
