@@ -49,6 +49,10 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 13/09/2026 | **Panneau « Classification périodique »** consultable à tout moment dans T1-C1 : nom, Z, état, CHON — **jamais la provenance**, et masqué pendant QCM et réponses rédigées. Les noms vivent dans le générateur, le panneau les relit. | ✅ en vigueur · ⏳ à valider par Loïc |
 | 13/09/2026 | **Plus de mention « reprise du cours de M. Van Hoorde »** sous les figures de T1-C1 non plus : la question de provenance reste tracée dans `es1-verification.md` (ES-09). | ✅ en vigueur |
 | 13/09/2026 | **Couches de l'étoile massive : ²⁸Si → ⁵⁶Ni**, contre ⁵⁸Ni dans le cours source. | ✅ en vigueur |
+| 13/09/2026 | **Audit de Claude sur T1-C1 : seules les corrections certaines s'appliquent**, sans modification qui obligerait à réauditer. Le rythme de la séance 1 n'est pas un problème (le surplus passe en travail à la maison) ; les points de programme non couverts et les idées d'activités attendent. | ✅ en vigueur |
+| 13/09/2026 | **Tableau d'abondance de 1.3 : l'unité est dite, les valeurs ne changent pas** — colonnes Univers et corps humain en nombre d'atomes, lithosphère en masse. L'absence d'hydrogène dans le palmarès des roches s'explique par l'unité. | ✅ en vigueur |
+| 13/09/2026 | **Exemple de fission de 1.4 : ²³⁵U + n → ¹⁴¹Ba + ⁹²Kr + 3 n**, à la place de ¹⁵N + ¹H → ¹²C + ⁴He, qui n'est pas une fission. Plus de schéma en billes pour la fission. | ✅ en vigueur |
+| 13/09/2026 | **Cadres `.chantier` et `.proposition` visibles en mode enseignant seulement** dans T1-C1. Les autres chapitres ES ne sont pas repris. | ✅ en vigueur (T1-C1) |
 
 ## 12/09/2026 — Audit du chapitre ES Term T2-C1 « Deux siècles d'énergie électrique »
 

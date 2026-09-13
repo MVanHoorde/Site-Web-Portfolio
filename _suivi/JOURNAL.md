@@ -3700,3 +3700,32 @@ n'a été touché ; `sequence-snt.js` contrôlé zone par zone avant d'y écrire
 Contrôles : `node verifier.mjs` → 18. `questions-snt.js` était en retard avant ce
 chantier (texte de SYS-P2) : régénéré.
 
+## 13/09/2026 — Troisième audit de T1-C1, par Claude, et ses corrections certaines
+
+Loïc a demandé un tour complet du chapitre — contenu, forme, rythme — assorti de
+conseils cotés par effort. Lecture faite sur le texte tel que l'élève le voit
+(extraction étape par étape au navigateur, 54 questions de QCM), confrontée au BO.
+Rapport : `_suivi/t1c1-audit-claude-2026-09-13.md`.
+
+Deux trouvailles de fond. Les pourcentages de la lithosphère sont en masse — 27,7 %
+de silicium est impossible en nombre d'atomes — alors que la page les annonçait en
+nombre d'atomes et en tirait, quatre fois, que l'hydrogène manque aux roches ; le BO,
+lui, range l'hydrogène parmi les constituants de la Terre. Et l'exemple de fission du
+cours (¹⁵N + ¹H) fait entrer deux noyaux et en sortir deux : il contredisait la méthode
+enseignée juste en dessous. Le générateur de schémas en portait aussi la légende
+fausse.
+
+Loïc a tranché : corrections certaines seulement, l'unité précisée sans toucher aux
+valeurs, le rythme laissé tel quel (la séance 1 débordera à la maison), le programme
+et les idées pour plus tard. Vingt-sept remplacements exacts, un schéma retiré.
+
+Deux choses vues en vérifiant. Le mécanisme de validation bloc par bloc de la veille
+gardait le « à retenir » fermé même en mode enseignant : règles CSS restreintes à
+`body:not(.teacher)`. Et le moteur partagé désactive le bouton « Afficher le « à
+retenir » » sans que le mode enseignant le réactive — défaut antérieur, 22 pages,
+signalé, non corrigé. Un premier test de ce point était trompeur : il simulait le mode
+enseignant par sa seule classe CSS, et un `click(force=True)` sur un bouton désactivé
+ne déclenche rien ; il a fallu tester la règle CSS directement.
+
+Contrôles : parcours d'élève 9/9, 0 erreur JS, cadres 0/14 côté élève et 14/14 en mode
+enseignant, `node verifier.mjs` → 18, plus aucune couleur en dur sur la page.

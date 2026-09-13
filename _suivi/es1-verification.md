@@ -648,7 +648,7 @@ en clair** dans le document, elle est donc sûre.
 | **1** Glossaire | A4 | **Réponse à ta question : non, ce n'était pas implémenté.** Un glossaire existait (panneau flottant, 14 mots) mais **complet dès l'arrivée** et sans lien avec les survols. Il y a maintenant **18 entrées** qui s'ouvrent à la validation de leur étape, et **une seule source** — `#dico-source` — qui alimente aussi les infobulles. |
 | **2** Structure | B1, B2, B3, C1 | Fusion/fission remonte **en fin de S1** (étape 1.4) ; l'ancienne 1.4 est démontée, sa vidéo rejoint 2.1. **Mini-QCM de prérequis** en 1.1, 5 questions, *sans enjeu*. Étape 1.2 complétée : rappel atome/ion/isotope, « peut-on aller au-delà de 92 », plutonium en réacteur, cadre pour la photo PULSTAR. |
 | **3** Tableau périodique | E1 n°1-2 | **Deux tableaux SVG** générés par `_outils/es/tableau_periodique.py` : états + CHON (1.2), provenances + anthropique (2.4). 118 cases, contrôlées. |
-| **4** Schémas | E1 n°3-7 | **Cinq schémas** générés par `_outils/es/noyaux.py` : chaîne primordiale, chaîne p-p, couches de l'étoile, fusions, fission. (L'atelier de reconnaissance et son schéma de noyaux légers ont été retirés au second audit.) |
+| **4** Schémas | E1 n°3-7 | **Quatre schémas** générés par `_outils/es/noyaux.py` : chaîne primordiale, chaîne p-p, couches de l'étoile, fusions. (L'atelier de reconnaissance et son schéma de noyaux légers ont été retirés au second audit ; le schéma de fission, avec le faux exemple ¹⁵N + ¹H, le 13/09.) |
 | **5** Postes et QCM | B5, C2 | **Deux postes de visionnage** complets (notes + dictionnaire), sur le modèle SNT. QCM de 2.1 : **3 → 8** questions ; 2.2 : **4 → 8**. Tous les biais de longueur de la page corrigés. |
 | **6** Activités | B4, B7, C4 | Les trois graphiques **découpés en trois images**, chacun avec son **titre en menu déroulant** et une **légende libre** à repères numérotés (positions mesurées — voir ES-21). **Choix cliquable** sous chacune des 6 réactions. **Tri des noyaux** : tirage au nombre choisi (5 à 24), 4 destinations, réinitialisable. |
 | **7** Bilan et révisions | D1, D2 | La question d'ouverture revient en **étape à part entière** (2.5), avec ce qu'on attend d'une réponse en devoir. Abondances du bilan S1 **en tableau**. Nouvelle **séance « Réviser »** : les 5 « à retenir » rassemblés, les 5 vidéos, un **QCM bilan de 18 questions**. |
@@ -790,7 +790,25 @@ QCM et les réponses rédigées. Utilisable au clavier (Tab, Entrée, Échap).
 Les **118 noms français** vivent dans `_outils/es/tableau_periodique.py` et vont dans le
 `<title>` de chaque case (survol, lecteur d'écran) : le panneau les y relit.
 
-### 12.5 Vu pendant le second audit, hors de son périmètre
+### 12.5 Corrections issues de l'audit de Claude (13/09)
+
+Audit complet par Claude dans `_suivi/t1c1-audit-claude-2026-09-13.md`. Seules les
+**corrections certaines** ont été appliquées (§7 de l'audit) :
+
+- **Lithosphère** : la colonne B du tableau de 1.3 est en **pourcentages de masse** ;
+  l'unité est désormais dite, sans changer les valeurs, et l'« absence d'hydrogène »
+  est expliquée par l'unité (remarque, bilan S1, révision, QCM).
+- **Exemple de fission** : ¹⁵N + ¹H n'en était pas une ; remplacé par la fission de
+  l'uranium 235. Schéma en billes retiré.
+- QCM : « Z > 92 » → « Z > 94 » ; réaction du bore retirée des réactions stellaires ;
+  distracteur « fission spontanée » remplacé ; surface du Soleil en K.
+- Plutonium présenté comme élément de la frontière (Z = 94), plus comme exception
+  aux 24 anthropiques ; seuil du silicium à 8 masses solaires ; règle du Z « en
+  première approximation », sans chevauchement ; chaîne p-p écrite en e⁺ comme sur le
+  schéma de 2.2 ; en-tête « presque aucun élément ».
+- **Les cadres `.chantier` et `.proposition` ne s'affichent plus qu'en mode enseignant.**
+
+### 12.6 Vu pendant le second audit, hors de son périmètre
 
 - **Les boutons `.btn` du moteur s'affichent en Times New Roman** (« Vérifier »,
   « Répondre », « Nouveau tirage »…) : la règle de `sequence-snt.css` demande

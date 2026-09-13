@@ -118,8 +118,10 @@ Relevé détaillé : `_suivi/es1-verification.md` §11 (premier audit) et §12 (
 
 **La page aujourd'hui** — 3 séances (dont « Réviser », non verrouillée) · 14 étapes
 (9 à valider) · 7 QCM (54 questions, dont un de prérequis *sans enjeu*) · 3 légendes
-de graphique à compléter · 6 réactions à qualifier · 1 tri de noyaux · 7 schémas SVG
+de graphique à compléter · 6 réactions à qualifier · 1 tri de noyaux · 6 schémas SVG
 générés · glossaire progressif de 18 entrées · **153 gras dont 17 rouges**.
+Un **troisième audit, par Claude**, a suivi le 13/09 : seules ses corrections certaines
+sont appliquées (§7 de `_suivi/t1c1-audit-claude-2026-09-13.md`), le reste attend.
 
 **Ce que le second audit a ajouté**
 - **Une étape se valide quand tout y est fait**, et plus au premier bloc réussi : son
@@ -133,11 +135,15 @@ générés · glossaire progressif de 18 entrées · **153 gras dont 17 rouges**
 - Photos du **réacteur PULSTAR** et du **rémanent de Kepler** en place ; légendes des
   graphiques d'abondance en **saisie libre, sans correction** ; atelier « reconnaître
   les noyaux » retiré ; gras et rouge remis à la table des conventions.
-- **Deuxième erreur de source corrigée** : la fusion du silicium donne du **⁵⁶Ni**, pas
-  du ⁵⁸Ni. (La première : un hélium 3, et non un neutron, forme le béryllium 7.)
+- **Erreurs de source corrigées** : la fusion du silicium donne du **⁵⁶Ni**, pas du ⁵⁸Ni ;
+  un hélium 3, et non un neutron, forme le béryllium 7 ; l'exemple de « fission »
+  ¹⁵N + ¹H n'en était pas une (remplacé par l'uranium 235) ; les pourcentages de la
+  lithosphère sont **en masse** — l'unité est dite, les valeurs n'ont pas bougé.
+- **Les cadres professeur** (`.chantier`, `.proposition`) ne s'affichent plus qu'en
+  mode enseignant.
 
 **Régénérer les schémas** : `python _outils/es/tableau_periodique.py` (2 tableaux) et
-`python _outils/es/noyaux.py` (5 schémas de noyaux), qui s'injectent seuls dans la page.
+`python _outils/es/noyaux.py` (4 schémas de noyaux), qui s'injectent seuls dans la page.
 
 🔴 **Ce qui reste à Loïc**
 - **Relire et valider** — en particulier la validation bloc par bloc et le panneau,
@@ -147,6 +153,11 @@ générés · glossaire progressif de 18 entrées · **153 gras dont 17 rouges**
   768×1024. Préciser l'appareil (Safari iPad ?).
 - **Lever l'ambiguïté** « le second QCM doit remonter en 1.1 », et fournir les **autres
   vidéos** annoncées dans le premier audit.
+- **Trancher les suites de l'audit de Claude** : rythme de la séance 1 (écarté pour
+  l'instant), points du programme non couverts (produire un graphique, « De Fraunhofer à
+  Bethe »), idées d'activités — tout est coté par effort dans l'audit.
+- **Mode enseignant** : le bouton « Afficher le « à retenir » » reste désactivé tant que
+  l'étape n'est pas remplie — défaut du moteur partagé, 22 pages, non corrigé.
 - **Provenance des images reprises du cours** (ES-09) : les mentions ont été retirées de
   la page, la question reste ouverte.
 

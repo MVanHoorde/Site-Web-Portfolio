@@ -97,7 +97,8 @@
      Le rouge de mise en evidence (--cle) n'est PAS le rouge des verdicts
      (--err) : celui-la veut dire « faux », et un mot important ne doit
      jamais porter cette couleur. */
-  :root{--cle:#b3122b; --cle-wash:#fceaed; --activity-line:#e0b075}
+  :root{--cle:#b3122b; --cle-wash:#fceaed; --activity-line:#e0b075;
+         --fond-image:#fff; --sur-couleur:#fff; --ombre-repere:rgba(0,0,0,.28); --ombre-panneau:rgba(22,31,51,.24)}
   .cle{color:var(--cle);font-weight:600}
   .retain .cle{color:var(--cle)}
 
@@ -262,12 +263,12 @@
   .legende-libre{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
   @media (max-width:700px){.legende-libre{grid-template-columns:1fr}}
   .ll-image{position:relative;line-height:0;border:1px solid var(--line);border-radius:10px;
-    overflow:hidden;background:#fff}
+    overflow:hidden;background:var(--fond-image)}
   .ll-image img{display:block;width:100%;height:auto}
   .ll-n{position:absolute;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;
-    border:2px solid #fff;background:var(--activity);color:#fff;font:600 12.5px/1 "IBM Plex Mono",monospace;
+    border:2px solid var(--sur-couleur);background:var(--activity);color:var(--sur-couleur);font:600 12.5px/1 "IBM Plex Mono",monospace;
     display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;
-    box-shadow:0 1px 4px rgba(0,0,0,.28)}
+    box-shadow:0 1px 4px var(--ombre-repere)}
   .ll-n:hover,.ll-n:focus-visible{outline:3px solid var(--activity-line);outline-offset:1px}
   .ll-n.rempli{background:var(--ok)}
   .ll-lignes{display:flex;flex-direction:column;gap:7px}
@@ -290,8 +291,14 @@
     background:conic-gradient(var(--sc,var(--link)) calc(var(--avance)*1%),var(--bg) 0);
     border-color:var(--sc,var(--link))}
   .bilan-attend{display:none;font-size:13.5px;color:var(--ink-soft);margin:12px 0 0}
-  .step[data-avance]:not(.is-done) [data-bilan-wrap]{display:none!important}
-  .step[data-avance]:not(.is-done) [data-bilan-wrap][data-ouvert="1"] + .bilan-attend{display:block}
+  body:not(.teacher) .step[data-avance]:not(.is-done) [data-bilan-wrap]{display:none!important}
+  body:not(.teacher) .step[data-avance]:not(.is-done) [data-bilan-wrap][data-ouvert="1"] + .bilan-attend{display:block}
+
+  /* ---------- CADRES PROFESSEUR (audit de Claude du 13/09/2026) ----------
+     .chantier et .proposition s'adressent à l'enseignant : ils ne s'affichent
+     qu'en mode enseignant. Le moteur ne les masquait que sous body.eleve,
+     que cette page ne pose pas. */
+  body:not(.teacher) .chantier, body:not(.teacher) .proposition{display:none}
 
   /* ---------- PANNEAU « CLASSIFICATION PÉRIODIQUE » (audit du 12/09/2026) ----------
      Consultable à tout moment, sans quitter sa prise de notes : pas de voile,
@@ -301,10 +308,10 @@
   #tp-ouvrir{position:fixed;right:14px;bottom:66px;z-index:41;min-height:44px;padding:0 15px;
     border-radius:999px;border:1px solid var(--link);background:var(--surface);color:var(--link);
     font:600 14px/1 "Inter",system-ui,sans-serif;cursor:pointer;box-shadow:var(--shadow)}
-  #tp-ouvrir[aria-expanded="true"]{background:var(--link);color:#fff}
+  #tp-ouvrir[aria-expanded="true"]{background:var(--link);color:var(--sur-couleur)}
   #tp-panneau{position:fixed;right:14px;bottom:120px;z-index:42;width:min(640px,calc(100vw - 28px));
     max-height:calc(100vh - var(--barre-h,96px) - 132px);overflow:auto;background:var(--surface);
-    border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px rgba(22,31,51,.24);
+    border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px var(--ombre-panneau);
     padding:10px 14px 14px}
   body.qcm-on #tp-ouvrir, body.qcm-on #tp-panneau,
   body.focus-on #tp-ouvrir, body.focus-on #tp-panneau{display:none!important}
@@ -368,7 +375,7 @@
   <div class="wrap">
     <div class="eyebrow">Enseignement scientifique · 1re · Thème 1</div>
     <h1 class="title">La nucléosynthèse <span class="tag">chapitre 1</span></h1>
-    <p class="lede">Tout ce qui t'entoure — ta main, ton téléphone, l'air que tu respires — est fait d'une petite centaine d'éléments chimiques. Aucun n'existait au début de l'Univers. Voici où et comment ils ont été fabriqués.</p>
+    <p class="lede">Tout ce qui t'entoure — ta main, ton téléphone, l'air que tu respires — est fait d'une petite centaine d'éléments chimiques. Presque aucun n'existait au début de l'Univers. Voici où et comment ils ont été fabriqués.</p>
     <div class="themes">
       <span class="theme-chip on">Nucléosynthèse</span><span class="theme-chip">La radioactivité</span>
       <span class="theme-chip">Les cristaux</span><span class="theme-chip">Son et musique</span>
@@ -786,10 +793,9 @@
             on lance des noyaux légers sur une cible d'atomes lourds. Une collision sur des milliards
             réussit&nbsp;: le noyau de la cible avale le projectile et un noyau plus lourd apparaît.
             Il vit parfois quelques millisecondes — assez pour être détecté, jamais pour être
-            mis en flacon. C'est ainsi qu'ont été créés les 24 éléments anthropiques du tableau.</p>
-            <p style="font-size:14.5px;margin:4px 0 10px">Un cas sort de ce lot&nbsp;: le
-            <b>plutonium</b>. Il ne vient pas d'un accélérateur mais d'un réacteur nucléaire,
-            et en quantité industrielle. L'uranium 238, majoritaire dans le combustible, capture un
+            mis en flacon. C'est ainsi qu'ont été créés les éléments les plus lourds du tableau.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Un réacteur nucléaire, lui, fabrique
+            en quantité industrielle un élément de la frontière&nbsp;: le <b>plutonium</b> (Z&nbsp;=&nbsp;94). L'uranium 238, majoritaire dans le combustible, capture un
             neutron&nbsp;; le noyau obtenu se désintègre deux fois, et donne du plutonium 239&nbsp;:</p>
             <div class="reac"><span class="num">1</span><span class="noy"><span class="az"><span>238</span><span>92</span></span><span class="sym">U</span></span> + <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>239</span><span>92</span></span><span class="sym">U</span></span></div>
             <div class="reac"><span class="num">2</span><span class="noy"><span class="az"><span>239</span><span>92</span></span><span class="sym">U</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>239</span><span>93</span></span><span class="sym">Np</span></span> + <span class="noy"><span class="sym">e⁻</span></span></div>
@@ -842,15 +848,15 @@
   "c": "<b>94</b>. Le piège est l'uranium : c'est le dernier élément que la nature fournit <i>en quantité</i>, mais le neptunium (93) et le plutonium (94) existent aussi dans la nature, à l'état de traces. Les 24 autres éléments du tableau sont anthropiques — fabriqués par l'homme."
  },
  {
-  "q": "Que peut-on dire des éléments dont le numéro atomique est supérieur à 92 ?",
+  "q": "Que peut-on dire des éléments dont le numéro atomique est supérieur à 94 ?",
   "o": [
    "Ils sont les plus abondants dans l'Univers, car les plus stables",
-   "On peut les créer en laboratoire, mais ils sont radioactifs et vivent peu",
+   "On sait les fabriquer par réactions nucléaires, et ils sont tous radioactifs",
    "Ils n'existent que dans le cœur des étoiles les plus massives",
    "Ils ne peuvent être ni créés ni observés : ce sont des hypothèses théoriques"
   ],
   "r": 1,
-  "c": "On les fabrique par <b>réactions nucléaires</b>, et ils se désintègrent presque aussitôt — parfois en une fraction de seconde. Le tableau périodique les encadre en rouge : ce sont les éléments artificiels."
+  "c": "Ce sont les <b>24 éléments anthropiques</b> : on les fabrique par réactions nucléaires, et aucun n'est stable. Certains disparaissent en une fraction de seconde, d'autres durent des milliers d'années. Le tableau périodique les encadre en rouge."
  }
 ]
               </script>
@@ -870,11 +876,12 @@
           </div>
           <div class="card-body">
             <p class="transi">Un élément, c'est donc un nombre de protons, et rien d'autre. Reste à savoir en quelle quantité chacun est présent : la réponse n'est pas la même dans l'Univers, dans un caillou et dans ton corps.</p>
-            <div class="block-label">Doc — abondance relative, en nombre d'atomes<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <div class="block-label">Doc — abondance relative des éléments<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
             <p style="font-size:14.5px;margin:4px 0 10px">Voici les éléments les plus abondants
             dans trois milieux — mais <b>les titres des colonnes ont été retirés</b>. À toi de les
-            remettre. Les nombres sont des <b>pourcentages en nombre d'atomes</b>&nbsp;: sur 100 atomes
-            prélevés dans ce milieu, combien sont de cet élément.</p>
+            remettre. Attention aux unités&nbsp;: les colonnes A et C sont des pourcentages en nombre
+            d'atomes (sur 100 atomes prélevés, combien sont de cet élément), la colonne B un
+            pourcentage <b>en masse</b> (sur 100 g prélevés, combien de grammes de cet élément).</p>
             <table class="doc-table">
               <tr><th>Rang</th><th>Colonne A</th><th>Colonne B</th><th>Colonne C</th></tr>
               <tr><td>1<sup>er</sup></td><td>H — 61 %</td><td>O — 47,7 %</td><td>H — 90 %</td></tr>
@@ -1042,9 +1049,11 @@
               <div class="rl">🔭 Ce qu'il fallait remarquer</div>
               Le disque presque plein est celui de l'Univers&nbsp;; les barres décroissantes,
               celui du corps humain&nbsp;; l'anneau à neuf secteurs, celui de la lithosphère. Le point
-              le plus étonnant&nbsp;: l'hydrogène, écrasant dans l'Univers et premier dans ton corps,
-              est <b>absent du palmarès des roches</b> — et l'oxygène, deuxième chez toi, y est
-              premier, piégé dans les minéraux et non dans l'air.
+              le plus étonnant&nbsp;: l'oxygène, deuxième chez toi, est <b>premier dans les roches</b>,
+              piégé dans les minéraux et non dans l'air. Et si l'hydrogène, écrasant dans l'Univers
+              et premier dans ton corps, manque au palmarès des roches, c'est d'abord une question
+              d'unité&nbsp;: ce palmarès est établi en masse, et l'hydrogène est l'atome le plus
+              léger — même présent, il pèse très peu.
             </div>
 
             <!-- CHANTIER -->
@@ -1222,77 +1231,9 @@
               <figcaption>La fission : un neutron frappe un gros noyau, qui se casse en deux noyaux plus légers, libère d'autres neutrons — et de l'énergie. Ce sont ces neutrons libérés qui peuvent frapper d'autres noyaux : c'est la réaction en chaîne.</figcaption>
             </figure>
 
-            <p style="font-size:14.5px;margin:4px 0 10px">Par exemple, certaines étoiles en fin de vie fabriquent du carbone à partir d'azote 15, lui-même produit par fusion nucléaire. La fission de l'azote 15 par collision avec un proton produit du carbone 12 :</p>
-            <div class="reac"><span class="num">4</span><span class="noy"><span class="az"><span>15</span><span>7</span></span><span class="sym">N</span></span> + <span class="noy"><span class="az"><span>1</span><span>1</span></span><span class="sym">H</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>12</span><span>6</span></span><span class="sym">C</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Par exemple, dans le cœur d'un réacteur nucléaire, un neutron frappe un noyau d'uranium 235, qui se casse en baryum 141 et en krypton 92 en libérant trois neutrons&nbsp;:</p>
+            <div class="reac"><span class="num">4</span><span class="noy"><span class="az"><span>235</span><span>92</span></span><span class="sym">U</span></span> + <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>141</span><span>56</span></span><span class="sym">Ba</span></span> + <span class="noy"><span class="az"><span>92</span><span>36</span></span><span class="sym">Kr</span></span> + 3 <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span></div>
 
-            <figure class="ill centree">
-              <!-- SVG:fissions — genere par _outils/es/noyaux.py, ne pas editer a la main -->
-<svg class="nx nx-fissions" viewBox="0 0 465 218" role="img" aria-labelledby="nx-fissions-t" xmlns="http://www.w3.org/2000/svg">
-<title id="nx-fissions-t">La fission de l'azote 15 par un proton : le noyau se casse en carbone 12 et hélium 4.</title>
-<defs><marker id="pointe-nx-fissions" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker></defs>
-<g class="noy ">
-<title>N, 15 nucléons dont 7 protons</title>
-<circle class="n" cx="72.2" cy="49.7" r="9.5"/>
-<circle class="n" cx="64.0" cy="63.8" r="9.5"/>
-<circle class="n" cx="80.4" cy="63.8" r="9.5"/>
-<circle class="n" cx="47.7" cy="63.8" r="9.5"/>
-<circle class="n" cx="96.7" cy="63.8" r="9.5"/>
-<circle class="p" cx="72.2" cy="78.0" r="9.5"/>
-<circle class="n" cx="55.8" cy="78.0" r="9.5"/>
-<circle class="p" cx="88.5" cy="78.0" r="9.5"/>
-<circle class="n" cx="39.5" cy="78.0" r="9.5"/>
-<circle class="n" cx="104.9" cy="78.0" r="9.5"/>
-<circle class="p" cx="64.0" cy="92.2" r="9.5"/>
-<circle class="p" cx="80.4" cy="92.2" r="9.5"/>
-<circle class="p" cx="47.7" cy="92.2" r="9.5"/>
-<circle class="p" cx="96.7" cy="92.2" r="9.5"/>
-<circle class="p" cx="72.2" cy="106.3" r="9.5"/>
-<text class="et" x="72.2" y="134.8"><tspan class="ex">15</tspan>N</text>
-</g>
-<text class="lb op" x="134.4" y="85.0">+</text>
-<g class="noy ">
-<title>H, 1 nucléons dont 1 protons</title>
-<circle class="p" cx="163.9" cy="78.0" r="9.5"/>
-<text class="et" x="163.9" y="106.5"><tspan class="ex">1</tspan>H</text>
-</g>
-<line class="fl" x1="177.4" y1="78.0" x2="255.4" y2="78.0" marker-end="url(#pointe-nx-fissions)"/>
-<g class="noy ">
-<title>C, 12 nucléons dont 6 protons</title>
-<circle class="n" cx="299.4" cy="49.7" r="9.5"/>
-<circle class="n" cx="291.2" cy="63.8" r="9.5"/>
-<circle class="n" cx="307.5" cy="63.8" r="9.5"/>
-<circle class="n" cx="274.9" cy="63.8" r="9.5"/>
-<circle class="n" cx="323.9" cy="63.8" r="9.5"/>
-<circle class="p" cx="299.4" cy="78.0" r="9.5"/>
-<circle class="n" cx="283.0" cy="78.0" r="9.5"/>
-<circle class="p" cx="315.7" cy="78.0" r="9.5"/>
-<circle class="p" cx="291.2" cy="92.2" r="9.5"/>
-<circle class="p" cx="307.5" cy="92.2" r="9.5"/>
-<circle class="p" cx="274.9" cy="92.2" r="9.5"/>
-<circle class="p" cx="323.9" cy="92.2" r="9.5"/>
-<text class="et" x="299.4" y="120.7"><tspan class="ex">12</tspan>C</text>
-</g>
-<text class="lb op" x="353.4" y="85.0">+</text>
-<g class="noy ">
-<title>He, 4 nucléons dont 2 protons</title>
-<circle class="n" cx="391.0" cy="63.8" r="9.5"/>
-<circle class="p" cx="399.2" cy="78.0" r="9.5"/>
-<circle class="n" cx="382.9" cy="78.0" r="9.5"/>
-<circle class="p" cx="415.6" cy="78.0" r="9.5"/>
-<text class="et" x="399.2" y="106.5"><tspan class="ex">4</tspan>He</text>
-</g>
-<text class="cap pt" x="232.5" y="176.0">Un noyau entre, deux noyaux sortent : la signature d'une fission.</text>
-<g class="lg-pn">
-<circle class="p" cx="146.5" cy="200.0" r="7"/>
-<text class="cap g" x="158.5" y="204.0">proton</text>
-<circle class="n" cx="230.5" cy="200.0" r="7"/>
-<text class="cap g" x="242.5" y="204.0">neutron</text>
-</g>
-</svg>
-              <!-- /SVG:fissions -->
-              <figcaption>Le même exemple, noyau par noyau. Un gros amas entre, deux plus
-                petits sortent.<span class="src">Schéma tracé pour ce cours</span></figcaption>
-            </figure>
 
             <div class="block-label">Ressource — fission ou fusion ?<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
             <div class="poste">
@@ -1312,8 +1253,8 @@
             <div class="choix" data-choix-item="3" data-bon="autre" data-aussi="fission" data-exp="Un seul noyau au départ, et rien ne vient le frapper : c'est une <b>désintégration radioactive</b> (α), ni fusion ni fission." data-exp-aussi="Accepté : un gros noyau qui donne deux morceaux, cela ressemble beaucoup à une fission. Mais regarde à gauche de la flèche — <b>rien ne vient le frapper</b> : le radium se transforme tout seul. C'est une désintégration radioactive, donc en toute rigueur «&nbsp;ni l'une ni l'autre&nbsp;». Ce piège dépasse ce qu'on attend de toi cette année ; tu le retrouveras au chapitre 2."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
             <div class="reac"><span class="num">4</span><span class="noy"><span class="az"><span>235</span><span>92</span></span><span class="sym">U</span></span> + <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>139</span><span>54</span></span><span class="sym">Xe</span></span> + <span class="noy"><span class="az"><span>94</span><span>38</span></span><span class="sym">Sr</span></span> + 3 <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span></div>
             <div class="choix" data-choix-item="4" data-bon="fission" data-exp="Fission. Regarde à gauche de la flèche : un <b>neutron</b> accompagne le très gros noyau. C'est lui qui vient le casser, et c'est le cas de presque toutes les fissions — un neutron à gauche, un gros noyau, deux morceaux de tailles comparables à droite, et d'autres neutrons libérés."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
-            <div class="reac"><span class="num">5</span>4 <span class="noy"><span class="az"><span>1</span><span>1</span></span><span class="sym">H</span></span> + 2 <span class="noy"><span class="sym">e⁻</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span></div>
-            <div class="choix" data-choix-item="5" data-bon="fusion" data-exp="Fusion — et c'est le vrai piège de la série. À gauche, on ne voit qu'un seul symbole, ¹H : on croirait un noyau unique. Mais le <b>4 devant</b> compte : ce sont quatre noyaux d'hydrogène, qui s'assemblent en un seul noyau d'hélium, plus lourd. Quatre entrent, un sort : fusion. (Les deux électrons servent à équilibrer les charges ; ce ne sont pas des noyaux.) C'est le bilan de la chaîne proton-proton, celle du Soleil."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
+            <div class="reac"><span class="num">5</span>4 <span class="noy"><span class="az"><span>1</span><span>1</span></span><span class="sym">H</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> + 2 <span class="noy"><span class="sym">e⁺</span></span> + 2 <span class="noy"><span class="sym">ν</span></span></div>
+            <div class="choix" data-choix-item="5" data-bon="fusion" data-exp="Fusion — et c'est le vrai piège de la série. À gauche, on ne voit qu'un seul symbole, ¹H : on croirait un noyau unique. Mais le <b>4 devant</b> compte : ce sont quatre noyaux d'hydrogène, qui s'assemblent en un seul noyau d'hélium, plus lourd. Quatre entrent, un sort : fusion. (Les deux positons e⁺ et les deux neutrinos ν, à droite, ne sont pas des noyaux.) C'est le bilan de la chaîne proton-proton, celle du Soleil."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
             <div class="reac"><span class="num">6</span><span class="noy"><span class="az"><span>7</span><span>3</span></span><span class="sym">Li</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>10</span><span>5</span></span><span class="sym">B</span></span> + <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span></div>
             <div class="choix" data-choix-item="6" data-bon="fusion" data-exp="Deux noyaux entrent, un noyau plus lourd sort — le neutron libéré ne change rien : <b>fusion</b>."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
 
@@ -1393,10 +1334,10 @@
    "La réaction 2 (¹⁴N + ¹H) : c'est une étape du cycle CNO",
    "La réaction 5 (4 ¹H → ⁴He) : c'est le bilan de la chaîne proton-proton",
    "La réaction 4 (fission de l'uranium 235) : c'est ce qui alimente une étoile",
-   "La réaction 6 (⁷Li + ⁴He) : une fusion de noyaux légers"
+   "La réaction 3 (²²⁶Ra → ²²²Rn + ⁴He) : une fusion qui produit de l'hélium"
   ],
-  "r": [0, 1, 3],
-  "c": "Une étoile vit de <b>fusions</b> de noyaux légers : 2, 5 et 6 y ont leur place. La fission de l'uranium n'alimente aucune étoile — c'est la réaction de nos réacteurs sur Terre."
+  "r": [0, 1],
+  "c": "Une étoile vit de <b>fusions</b> de noyaux légers : les réactions 2 et 5 en sont. La réaction 3 n'est pas une fusion mais une désintégration — un seul noyau à gauche. La fission de l'uranium n'alimente aucune étoile : c'est la réaction de nos réacteurs sur Terre."
  },
  {
   "q": "Un noyau d'uranium 235 frappé par un neutron donne du xénon 139, du strontium 94 et trois neutrons. Pourquoi parle-t-on de réaction en chaîne ?",
@@ -1438,7 +1379,7 @@
               <table class="doc-table" style="margin:10px 0 4px">
                 <tr><th>Milieu</th><th>En tête</th><th>Ce qu'il faut retenir</th></tr>
                 <tr><td>Univers</td><td>H puis He</td><td>à eux deux, <b>99 %</b> des atomes</td></tr>
-                <tr><td>Lithosphère</td><td>O puis Si</td><td>pas d'hydrogène dans le palmarès</td></tr>
+                <tr><td>Lithosphère</td><td>O puis Si (en masse)</td><td>l'oxygène, piégé dans les minéraux</td></tr>
                 <tr><td>Corps humain</td><td>H, O puis C</td><td>l'eau et le carbone du vivant</td></tr>
               </table>
               <ul style="margin:0;padding-left:18px">
@@ -1841,8 +1782,8 @@
             <ul style="font-size:14.5px;margin:4px 0 10px;padding-left:20px">
               <li>l'<b>hélium 4</b> à partir de l'hydrogène qui la constitue, et ce durant la majeure partie de sa vie, lorsqu'elle est en <button type="button" class="plustard def" data-plustard data-glossaire="Séquence principale">séquence principale<span class="bulle"></span></button> ;</li>
               <li>le <b>carbone 12</b> et l'oxygène 16 durant les dernières phases de vie d'une étoile de la taille du Soleil ;</li>
-              <li>jusqu'au <b>silicium 28</b> pour les étoiles de plus de 3 <button type="button" class="plustard def" data-plustard data-glossaire="Masse solaire">masses solaires<span class="bulle"></span></button>&nbsp;;</li>
-              <li>jusqu'au <b>nickel 56</b>, se désintégrant en fer 56, pour les étoiles de plus de 8 masses solaires.</li>
+              <li>jusqu'au <b>silicium 28</b> pour les étoiles de plus de 8 <button type="button" class="plustard def" data-plustard data-glossaire="Masse solaire">masses solaires<span class="bulle"></span></button>&nbsp;;</li>
+              <li>puis jusqu'au <b>nickel 56</b>, se désintégrant en fer 56, pour ces mêmes étoiles, à la fin de leur vie.</li>
             </ul>
 
             <figure class="ill">
@@ -2080,7 +2021,7 @@
    "Environ 5 800 degrés, comme sa surface"
   ],
   "r": 0,
-  "c": "<b>Plusieurs millions de degrés.</b> La surface du Soleil, elle, n'est qu'à 5 800 °C : c'est au centre que tout se joue."
+  "c": "<b>Plusieurs millions de degrés.</b> La surface du Soleil, elle, n'est qu'à environ 5 800 K (5 500 °C) : c'est au centre que tout se joue."
  },
  {
   "q": "Combien d'hydrogène le Soleil consomme-t-il chaque seconde ?",
@@ -2596,7 +2537,7 @@
             <div class="block-label">2 · Les abondances<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">Les éléments sont répartis <b class="cle">très inégalement</b>. Dans
             l'Univers, l'hydrogène et l'hélium font 99 % des atomes. Dans la lithosphère, l'oxygène et
-            le silicium dominent. Dans le corps humain, l'hydrogène, l'oxygène et le carbone.</div>
+            le silicium dominent en masse. Dans le corps humain, l'hydrogène, l'oxygène et le carbone.</div>
 
             <div class="block-label">3 · Fusion et fission<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">La <b class="cle">fusion</b> assemble deux noyaux en un plus lourd. La
@@ -2616,8 +2557,8 @@
 
             <div class="block-label">5 · La règle qui sert en devoir<span class="niv" style="margin-left:8px">★ <b>à savoir-faire</b></span></div>
             <div class="retain">Pour retrouver l'origine d'un élément, lis son <b class="cle">numéro
-            atomique</b>&nbsp;: Z ≤ 5 → primordiale · 6 ≤ Z ≤ 26 → stellaire · Z &gt; 26 → explosive ·
-            Z ≥ 95 → fabriqué par l'homme.</div>
+            atomique</b> — en première approximation&nbsp;: Z ≤ 5 → primordiale · 6 ≤ Z ≤ 26 → stellaire ·
+            27 ≤ Z ≤ 94 → explosive · Z ≥ 95 → fabriqué par l'homme.</div>
 
             <div class="proposition">
               <div class="pl">⬖ Proposition — Programme</div>
@@ -2637,7 +2578,7 @@
           <div class="card-top">
             <div class="step-kicker">RÉVISION 3.2</div>
             <h3 class="step-title">Revoir les vidéos, puis jouer</h3>
-            <div class="objective"><span>🎯</span><span><b>Objectif —</b> revoir en douze minutes ce que le chapitre a mis trois heures à construire.</span></div>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> revoir en un quart d'heure ce que le chapitre a mis trois heures à construire.</span></div>
           </div>
           <div class="card-body">
             <p class="transi">Les cinq vidéos du parcours, dans l'ordre du récit, puis une vidéo qui
@@ -2648,7 +2589,7 @@
               <a class="res-item" href="https://www.youtube.com/watch?v=6j-pY_QjYRU" target="_blank" rel="noopener noreferrer">
                 <span class="res-code">1.3</span><span class="res-main"><b>Les éléments chimiques et leurs abondances</b><br>5 min — le rappel sur le noyau atomique, puis les abondances (à partir de 3:09)</span></a>
               <a class="res-item" href="https://www.youtube.com/watch?v=2dKaCpZR9Qg" target="_blank" rel="noopener noreferrer">
-                <span class="res-code">1.4</span><span class="res-main"><b>Différencier fusion et fission</b><br>4 min — la méthode : regarder le nombre de masse de part et d'autre de la flèche</span></a>
+                <span class="res-code">1.4</span><span class="res-main"><b>Différencier fusion et fission</b><br>4 min — une autre méthode que celle du cours : comparer les nombres de masse de part et d'autre de la flèche</span></a>
               <a class="res-item" href="https://www.youtube.com/watch?v=Jp5XXrVUcmw" target="_blank" rel="noopener noreferrer">
                 <span class="res-code">2.1</span><span class="res-main"><b>L'origine des éléments — épisode 1</b><br>2 min — du Big Bang à nous</span></a>
               <a class="res-item" href="https://www.youtube.com/watch?v=d7yaMkP-PTU" target="_blank" rel="noopener noreferrer">
@@ -2755,15 +2696,15 @@
   "c": "L'<b>hydrogène</b>, 90 % des atomes ; l'hélium suit avec 9 %. Les 116 autres éléments se partagent le dernier pour cent."
  },
  {
-  "q": "Pourquoi ne trouve-t-on pas d'hydrogène dans le palmarès des roches ?",
+  "q": "Le palmarès des roches, établi en masse, ne cite pas l'hydrogène. Pourquoi ?",
   "o": [
    "Parce qu'il s'est entièrement désintégré depuis la formation de la Terre",
-   "Parce qu'il est trop léger pour rester dans les minéraux terrestres",
+   "Parce que c'est l'atome le plus léger : même présent, il pèse très peu",
    "Parce qu'il n'a jamais été fabriqué en quantité dans notre galaxie",
-   "Parce que les roches sont faites d'éléments plus lourds, oxygène en tête"
+   "Parce que les roches ne contiennent absolument aucun atome d'hydrogène"
   ],
-  "r": 3,
-  "c": "La lithosphère est dominée par l'<b>oxygène</b> et le silicium, piégés dans les minéraux. L'hydrogène, lui, est ailleurs : dans l'eau et dans le vivant."
+  "r": 1,
+  "c": "Le palmarès des roches est établi <b>en masse</b>. L'hydrogène est l'atome le plus léger : présent dans l'eau des minéraux, il ne pèse presque rien dans le total. Compté en nombre d'atomes, il remonterait dans le classement."
  },
  {
   "q": "Quand s'est déroulée la nucléosynthèse primordiale ?",
@@ -2834,7 +2775,7 @@
  {
   "q": "Une réaction où un seul noyau se transforme spontanément, sans rien recevoir, s'appelle…",
   "o": [
-   "une fission spontanée du noyau lourd",
+   "une fission provoquée par un neutron",
    "une fusion à basse température",
    "une capture neutronique inversée",
    "une désintégration radioactive"

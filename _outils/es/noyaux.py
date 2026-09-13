@@ -4,12 +4,16 @@
 Un noyau se dessine ici en « petites boules » : un disque par nucleon,
 protons et neutrons alternes, poses sur un reseau triangulaire compact.
 C'est la representation du cours source, et c'est une STRUCTURE — le trace
-est le contenu, pas un objet du monde. Cinq schemas en sortent :
+est le contenu, pas un objet du monde. Quatre schemas en sortent :
   chaine-primordiale  la chaine de la nucleosynthese primordiale (2.1)
   chaine-pp           la chaine proton-proton, deux branches (2.2)
   couches-etoile      la structure en couches d'une etoile massive (2.2)
   fusions             les trois equations de fusion du cours (1.4)
-  fissions            l'exemple de fission du cours (1.4)
+
+Il n'y a plus de schema de fission : l'exemple du cours (15N + 1H -> 12C + 4He)
+n'en etait pas une — deux noyaux entrent, deux sortent — et a ete remplace le
+13/09/2026 par la fission de l'uranium 235, que la limite ci-dessous interdit
+de dessiner en billes.
 
 🔴 Limite assumee : au-dela de 20 nucleons, le script REFUSE de dessiner.
 Un amas de billes qui ne compte pas le bon nombre de nucleons serait un
@@ -341,11 +345,6 @@ def construire():
          ([(4, 2, "He"), (8, 4, "Be")], [(12, 6, "C")]),
          ([(12, 6, "C"), (4, 2, "He")], [(16, 8, "O")])],
         "Compte les billes de part et d'autre de la flèche : rien ne se perd.")
-    SCHEMAS["fissions"] = svg_equations(
-        "nx-fissions",
-        "La fission de l'azote 15 par un proton : le noyau se casse en carbone 12 et hélium 4.",
-        [([(15, 7, "N"), (1, 1, "H")], [(12, 6, "C"), (4, 2, "He")])],
-        "Un noyau entre, deux noyaux sortent : la signature d'une fission.")
 
 # ============================================================
 # Injection
