@@ -5,7 +5,9 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **13/09/2026** (dernière passe : **le tableau de bord corrige
+> Dernière réécriture : **13/09/2026** (dernière passe : **le tableau de bord passe
+> en espaces — lot 1, la base : migration `018` écrite et éprouvée, pas encore
+> exécutée**, bloc ci-dessous). Passe du même jour : **le tableau de bord corrige
 > classe par classe, avec la file des copies visible et rangée par nom ; le worker
 > passe sur un calendrier calé sur les séances de SNT**, bloc ci-dessous). Passe du
 > 12/09 : **le chapitre ES Term T2-C1
@@ -55,6 +57,41 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 Le tableau de bord passe en espaces — toutes les classes de Loïc
+
+**Demandé le 13/09/2026.** Un seul tableau de bord, à la même adresse, organisé en
+**espaces** : SNT · ES 1re (1re 2) · ES Terminale (T3, T6) · PC 2nde (2nde 1 et AP)
+· CFA. Loïc voit les cinq ; les collègues, rattachés à des groupes SNT seulement,
+arrivent directement sur le SNT et ne voient rien de changé. Décisions :
+`DECISIONS.md`, « Le tableau de bord s'organise en espaces ».
+
+| Lot | Contenu | État |
+|---|---|---|
+| **1 — base** | `bdd/schema/018-espaces-et-classes-multiples.sql` : espaces, un compte dans plusieurs classes, lecture cloisonnée par famille, `mon_plafond()` sur la classe SNT, cinq classes fermées | ✅ **exécuté le 13/09** · ⏳ inscription au registre de migrations |
+| **2 — tableau de bord** | Page d'accueil des espaces (sautée s'il n'y en a qu'un), onglets par espace, élèves lus par `eleves_classes` et non plus `eleves.classe_id`. Guides et PDF à suivre | ⏳ |
+| **3 — client élève et ES** | « Rejoindre une autre classe » dans `progression.js` (**24 fichiers, CFA compris**) ; branchement des 6 pages d'ES 1re et des 2 de Terminale, clés `es1-` / `est-`, réponses en statut `partage` | ⏳ |
+| **4 — PC 2nde** | Consultation des 14 chapitres (le client n'y est pas chargé aujourd'hui) et clics de téléchargement ; annonce aux élèves (RGPD) | ⏳ |
+| **5 — documentation** | Guides `prof/`, `CLAUDE.md`, `BDD-cadrage.md` | ⏳ |
+
+**Éprouvé comment.** Chaîne `001`→`017` rejouée sur un PostgreSQL 18 jetable
+(imitation minimale de Supabase : rôles, `auth.users`, `auth.uid()`), `018`
+appliquée **deux fois**, §8 extrait du fichier et joué deux fois. **36 contrôles sur
+36** : inscriptions croisées, refus d'un second groupe SNT, plafond d'un élève inscrit
+d'abord en 2nde 1, et surtout le cloisonnement — **Martin ne lit pas les outils PC de
+son élève venu en 2nde 1, Loïc ne lit ni ne valide ses copies SNT**, et le tableau de
+bord de Loïc reste identique tant que le §8 n'est pas joué.
+
+🔴 **Ordre d'exécution à respecter.**
+1. Exécuter le `018` **sans le §8** (il est en commentaire) : rien ne change à
+   l'écran pour personne, les cinq classes existent mais sont fermées.
+2. Au lot 2 : jouer le §8 (rattachement de Loïc, retrouvé par `SNTDEM`) **en même
+   temps** que la mise en ligne du tableau de bord — joué avant, il mêlerait CFA, ES
+   et 2nde 1 aux groupes SNT dans la liste actuelle.
+3. Aux lots 3-4 : ouvrir les classes (`update … set actif = true`, requête dans le
+   §7) **seulement** quand le client élève sait rejoindre une seconde classe.
+4. Ne **pas** copier le fichier dans `supabase/migrations/` avant exécution : ce
+   dossier s'applique tout seul au push.
 
 ## 🆕 Les fiches de séance de t0 sont auditées, et le générateur suit de nouvelles règles
 

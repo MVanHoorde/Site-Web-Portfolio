@@ -3748,3 +3748,25 @@ Vu en passant, non corrigé : `2nde-snt-t2-le-web.html` porte **deux « ÉTAPE 4
 en séance 4 (cookies, puis adresse IP) — le repère affiche donc 4.2 pour les deux.
 
 Contrôles : repère testé sur les 47 questions, `node verifier.mjs` → 18.
+
+## 13/09/2026 — Tableau de bord à espaces : lot 1, la base
+
+Bilan demandé par Loïc : seul le SNT était réellement suivi ; l'ES de 1re et de
+terminale n'enregistrait rien au-delà de la séance, les outils de PC enregistraient
+sans que personne puisse le lire, le CFA était en base mais hors tableau de bord.
+Demande qui en découle : un tableau de bord à espaces, toutes ses classes pour lui,
+le SNT seul pour les collègues.
+
+Le point dur était en base : un compte élève ne portait qu'une classe, alors que tout
+élève de 2nde a déjà son compte SNT. Choix de Loïc : un compte, plusieurs classes.
+Migration `018` écrite en conséquence, puis éprouvée sur un PostgreSQL local jetable.
+
+Trou trouvé en écrivant le test d'intrusion, avant tout essai : avec la seule
+appartenance comme critère, l'élève du groupe SNT d'un collègue venu en 2nde 1 aurait
+apporté ses copies SNT dans la file de Loïc, validables. Les codes d'activité ne
+disent pas leur famille ; la règle retenue est que seules les classes SNT et ES
+ouvrent les copies. Deuxième constat : les clés `es-t2c1` de 1re et de terminale se
+seraient confondues — convention de préfixe par famille posée (`es1-`, `est-`).
+
+36 contrôles sur 36. Rien n'est exécuté en base réelle ; le §8 (rattachement de
+Loïc) est en commentaire jusqu'au lot 2.
