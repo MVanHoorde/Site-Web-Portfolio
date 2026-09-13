@@ -1025,6 +1025,10 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   base quand `CLE_ANON` est vide, alors il en reste un, et c'est voulu.*
 - Fichier : `pages/2nde-snt-t1-internet.html` (autonome, CSS/JS inline, décliné
   de la séquence du Web). Lié depuis `pages/2nde-snt.html` (carte « SNT 1 · Internet »).
+- **Fiches de séance auditées le 13/09/2026** : les six séances ont leur partie fixe
+  (`CONSIGNES-sequence-SNT.md` §17.3). Mesurées remplies : S1 2 · S2 3 · S3 1 · S4 4
+  (5 avec le bonus) · S5 3 · S6 3 pages. Textes écrits pour la fiche **à relire par
+  Loïc** (détail `ETAT-PROJET.md`).
 - **Enseigné avant le Web** (ordre de l'année) : le développement historique
   complet (Pouzin/CYCLADES/datagramme, Minitel, biblio sourcée) vit ici, en S2 ;
   la séquence du Web a été raccourci en conséquence (rappel + renvoi).

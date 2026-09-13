@@ -5,7 +5,9 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **13/09/2026** (dernière passe : **le tableau de bord passe
+> Dernière réécriture : **13/09/2026** (dernière passe : **les six fiches de séance
+> d'Internet sont auditées, et le générateur place enfin les tableaux remplis**, bloc
+> ci-dessous). Passe du même jour : **le tableau de bord passe
 > en espaces — les cinq lots sont livrés — base, tableau de bord, client élève et ES
 > branchée, suivi des chapitres PC, documentation ; reste à jouer le `019` dans Supabase**, bloc ci-dessous). Passe du même jour : **le tableau de bord corrige
 > classe par classe, avec la file des copies visible et rangée par nom ; le worker
@@ -58,6 +60,38 @@
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
 
+## 🆕 Les fiches de séance d'Internet (t1) sont auditées
+
+Audit de Loïc du 13/09/2026, séances 1 à 6. Chaque séance a sa partie fixe, rangée
+**par étape du cours** : l'« à retenir » à côté de son image, le travail de l'élève en
+cadres titrés. Schémas de structure redessinés aux couleurs de la fiche : services /
+route (S1), datagramme avec détour et mini-frise des quatre dates de 2.3 (S2),
+topologies (S4), encapsulation **complétée** — celle de la page est construite en JS —
+et réseau A-B-C-D (S5), adresse IPv4 en octets, réseau local et hiérarchie DNS (S6).
+
+Mesurées remplies (Chromium, PDF A4) : **S1 2 · S2 3 · S3 1 · S4 4** (5 avec le
+bonus rempli) **· S5 3 · S6 3** pages. Banc d'essai : fausses réponses d'environ
+130 caractères ; des réponses réelles plus longues allongent S4.
+
+**Générateur** (`sequence-snt.js?v=46`, 21 fichiers) : emplacement
+`data-fiche-tableaux` ; les productions d'un bonus (perso, dépôts, notes) vont dans
+« Pour aller plus loin » ; le renvoi « 🔭 à voir plus tard » ne s'imprime plus dans les
+« à retenir » ; classes `fx-sans-lbl`, `fx-petit`, `fx-trio`. Et un défaut ancien :
+le filtre des tableaux visait `[data-reveal]`, que le moteur pose sur **chaque
+section** — aucun tableau rempli n'arrivait sur une fiche. Effet mesuré sur t0 et
+m1 : même nombre de pages, m1 S1 retrouve son tableau des combinaisons.
+
+- 🔴 **À relire par Loïc** : les textes écrits pour la fiche — l'« à retenir » du
+  datagramme (la page n'en a pas), le paragraphe de synthèse de 4.4, la phrase
+  d'exemples de câbles, les adresses d'exemple de S6 (`203.0.113.7`, réservée à la
+  documentation ; `1.1.1.1`, `8.8.8.8`).
+- ⏳ **Deux écarts relevés dans la page, non tranchés** : la correction de la frise
+  (2.4) marque six « dates à retenir » (1969, 1973, 1978, 1980, 1983, 1989) quand
+  l'« à retenir » de 2.3 en donne d'autres (1971, 1983, 1986) — la fiche suit 2.3 ;
+  l'encadré 2.2 CYCLADES est marqué « ✦ bonus » alors que le datagramme est central.
+- ⏳ Le bandeau « il reste à envoyer » répète le nom d'une étape autant de fois qu'elle
+  a de questions (S4 : trois fois « Du réseau mondial à ta maison »).
+
 ## 🆕 SNT : les « à retenir » se lisent d'un regard, le gras est allégé
 
 **Fait le 13/09/2026, sur les 9 pages SNT** (t0-t7, m1) et donc sur leurs fiches, qui
@@ -66,7 +100,7 @@ lisent les blocs dans la page. Les 80 « à retenir » sont passés en puces cou
 par deux environ (t1 : 636 → 329 · t2 : 493 → 264 · m1 : 455 → 220 · t0 : 525 → 310).
 Règles : `CONSIGNES-sequence-SNT.md` §6 ; contrôle : `python _outils/tests/mesure_retenir.py
 pages/<page>.html` → `alertes=0` partout. Moteur partagé : `sequence-snt.css?v=43`,
-`sequence-snt.js?v=45`. Fiches générées et mesurées (1 à 3 pages A4, vides).
+`sequence-snt.js` (depuis passé en `?v=46`). Fiches générées et mesurées (1 à 3 pages A4, vides).
 
 **Corrections de fond faites à la suite, avec l'accord de Loïc** : t2 — l'IP n'est plus
 dite « passerelle » (c'est la box), étapes renumérotées (séance 3 : 3.1-3.4 ; séance 4 :
@@ -141,8 +175,8 @@ Audit de Loïc du 13/09/2026, séance par séance, sur les fiches déposées dan
   « à retenir » réécrit pour la fiche de 2.5 (sans PCIe) et le récap du cours en S1.
 - ⏳ **Restent hors de ce chantier** : `m1` affiche deux sections « Pour aller plus
   loin » (la sienne, statique, et la nouvelle) ; les fiches sans partie fixe restent
-  en V1 automatique — `t1` séance 4 fait 8 pages ; les réponses « plus loin » sans
-  code ne survivent pas à un rechargement.
+  en V1 automatique (t2 à t7) ; les réponses « plus loin » sans code ne survivent pas
+  à un rechargement.
 
 ## 🆕 La correction se fait classe par classe, et le worker suit les séances
 

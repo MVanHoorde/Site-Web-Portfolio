@@ -3856,3 +3856,31 @@ un indice qui livre la réponse en T2-C2, laissé à Loïc — le repère passe 
 
 Mise en service réunie dans `bdd/schema/019`, éprouvé sur la chaîne complète, cas
 d'échec compris. Tests : 43 contrôles au tableau de bord, 28 au parcours élève.
+
+## 13/09/2026 — Audit des fiches de séance d'Internet (t1)
+
+La dictée de Loïc mêlait S1 et S2 au début ; remise en ordre, plan validé avec trois
+choix : corriger le générateur en fin de chantier, dates de 2.3 pour S2, six fiches
+d'un coup. Parties fixes écrites dans le scratchpad puis posées par script dans la
+page, pour itérer sans risque.
+
+Banc d'essai Playwright Python : remplir la séance (échos, perso, notes, dépôts,
+trous), capter la fiche en remplaçant `window.open`, PDF A4, pages comptées. Départ
+mesuré : S4 à 8 pages, S6 à 4.
+
+Trois défauts du générateur trouvés en route. Le renvoi « 🔭 à voir plus tard »
+s'imprimait dans l'« à retenir » d'ARPANET. Les productions de bonus hors réponse
+rédigée tombaient hors de « Pour aller plus loin ». Et surtout, le nouveau tableau de
+Lannion n'apparaissait pas : le filtre `closest('[data-reveal]')` rencontrait le
+`data-reveal="1"` que le moteur pose sur la section — il écartait tous les tableaux,
+partout. Corrigé en `.reveal` ; t0 et m1 remesurés avec le générateur de HEAD et le
+nouveau : même nombre de pages.
+
+S4 a demandé cinq passes pour tenir en 4 pages : captures réduites, étiquette « Ma
+réponse » tue dans les cadres titrés, cadres fusionnés, tableau des technologies en
+trois colonnes, bloc texte + image du trafic réordonné pour qu'il puisse se couper.
+Avec le bonus rempli, elle reste à 5.
+
+Pendant la session, l'autre conversation a commité son lot (`progression.js?v=17`) :
+inventaire refait au moment du `?v=46`, 21 fichiers. `verifier.mjs` : 19 problèmes,
+les mêmes que sur HEAD.

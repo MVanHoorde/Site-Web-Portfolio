@@ -45,6 +45,17 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 13/09/2026 | **Les `data-cle` d'étape de terminale passent de `es-` à `est-`** — gratuit ce jour, aucune donnée n'étant encore enregistrée ; `es-t2c2-ex3` existait en 1re et en terminale. | ✅ en vigueur |
 | 13/09/2026 | **Textes des bandeaux de connexion** : ES « Connecte-toi pour garder ton travail d'une séance à l'autre… » ; outils « Élève de 2nde 1 ou de l'AP ? Connecte-toi : ton professeur verra ton travail et les documents que tu ouvres. » ; chapitres « Élève de 2nde 1 ? Connecte-toi : ton professeur verra que tu as ouvert ce chapitre et ses documents. » Ils disent aux élèves ce qui est enregistré (RGPD). | ⏳ proposition de Claude, à valider |
 
+## 13/09/2026 — Audit des fiches de séance d'Internet (t1)
+
+| Date | Décision | Statut |
+|---|---|---|
+| 13/09/2026 | **Une fiche se range par étape du cours**, pas en « essentiel / images / vocabulaire » : l'« à retenir » à côté de l'image qui l'illustre, le travail de l'élève dans des cadres titrés. | ✅ en vigueur (t1) |
+| 13/09/2026 | **La frise complète ne va pas sur la fiche de t1 S2** : seules les dates de l'« à retenir » de 2.3 (1971, 1983, 1986) avec 1969, en mini-frise ; 1973 dans le cadre CYCLADES. | ✅ en vigueur · ⏳ harmoniser la correction de la frise 2.4 |
+| 13/09/2026 | **CYCLADES et le datagramme entrent sur la fiche de S2**, avec un « à retenir » écrit pour la fiche. | ✅ en vigueur · ⏳ texte à valider |
+| 13/09/2026 | **Les productions d'un bonus** (réponse perso, dépôt, notes) **vont dans « Pour aller plus loin »**, comme les réponses rédigées. | ✅ en vigueur — règle portable |
+| 13/09/2026 | **Emplacement `data-fiche-tableaux`** : un tableau rempli par l'élève se place à côté du cours qui l'explique (Lannion, tables de routage). | ✅ en vigueur — règle portable |
+| 13/09/2026 | **Le générateur de fiches passe en `sequence-snt.js?v=46`**, corrections faites en fin de chantier, après inventaire des fichiers touchés par l'autre session. | ✅ en vigueur |
+
 ## 13/09/2026 — Audit des fiches de séance de t0 (règles portables des fiches SNT)
 
 | Date | Décision | Statut |
