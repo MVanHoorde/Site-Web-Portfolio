@@ -212,6 +212,25 @@ amusantes**, l'esprit critique (fiabilité, IA, sécurité).
 **Ton des « à retenir »** : simples, calibrés seconde, et **pré-remplis** — c'est
 une trace de référence, pas un champ à compléter. Choix arrêté.
 
+🔴 **Forme des « à retenir » — lisibles d'un regard sur un écran de PC** (13/09/2026).
+Un pavé uniforme ne se lit pas : le regard doit pouvoir varier.
+
+1. **Des puces courtes** dès que le bloc dépasse ~300 caractères ou porte plusieurs
+   idées — une idée par puce, la première porte l'idée centrale. Jamais de `<br>`.
+2. **Une seule taille, une seule couleur de texte** : aucun `<code>` dans un bloc, les
+   sigles s'écrivent en texte simple. Pas d'emoji, pas de style inline.
+3. **Le rouge, c'est `<dfn>`** — le vocabulaire nouveau du bloc, **3 au plus**.
+4. **Le gras : 2 au plus**, pour l'idée à ne pas rater ou le piège. Jamais sur une
+   énumération, une étiquette de puce, un petit mot d'insistance, un terme déjà rouge.
+
+Dans le reste de la page, un terme n'est en gras qu'à sa première apparition dans
+l'étape, et les intitulés de questions n'en portent aucun ; le vocabulaire nouveau
+passe en `<dfn>`, deux au plus par paragraphe. Le CSS (`sequence-snt.css`, portée
+`body[data-sequence^="snt-"]` ; CSS inline pour t3-t7) aligne les blocs à gauche,
+sans césure, et neutralise `<code>` ; la fiche reprend les blocs tels quels.
+Contrôle : `python _outils/tests/mesure_retenir.py pages/<page>.html` doit rendre
+`alertes=0` (`--detail` liste chaque bloc).
+
 Chaque ouverture historique s'accompagne de **liens biblio**.
 
 ## 7. Les deux phases — phase 1 acquise, phase 2 EN COURS

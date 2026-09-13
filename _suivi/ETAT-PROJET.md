@@ -58,6 +58,27 @@
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
 
+## 🆕 SNT : les « à retenir » se lisent d'un regard, le gras est allégé
+
+**Fait le 13/09/2026, sur les 9 pages SNT** (t0-t7, m1) et donc sur leurs fiches, qui
+lisent les blocs dans la page. Les 80 « à retenir » sont passés en puces courtes, sans
+`<code>`, avec 3 `<dfn>` rouges et 2 gras au plus. Le gras du corps a été divisé
+par deux environ (t1 : 636 → 329 · t2 : 493 → 264 · m1 : 455 → 220 · t0 : 525 → 310).
+Règles : `CONSIGNES-sequence-SNT.md` §6 ; contrôle : `python _outils/tests/mesure_retenir.py
+pages/<page>.html` → `alertes=0` partout. Moteur partagé : `sequence-snt.css?v=43`,
+`sequence-snt.js?v=45`. Fiches générées et mesurées (1 à 3 pages A4, vides).
+
+**Corrections de fond faites à la suite, avec l'accord de Loïc** : t2 — l'IP n'est plus
+dite « passerelle » (c'est la box), étapes renumérotées (séance 3 : 3.1-3.4 ; séance 4 :
+4.1-4.5) · t0 1.1 — « passe au vert dès que tu as répondu », la validation du
+professeur venant ensuite · t5 — trois sphères se coupent en **deux** points · t6 —
+Apollo « l'un des pionniers » · t7 — consigne de la frise au tutoiement · fiche : la
+bulle d'un mot du vocabulaire ne sort plus brute (`collectVocabulaire()`). Laissé :
+m1 1.1 « nos minutes par 60 secondes » (ellipse correcte).
+
+⏳ **À revoir si un terme manque** : dans les blocs qui avaient plus de 3 `<dfn>`, t0
+*box*, *jack*, *M.2*, *bus*, *ROM*, *serveur*… sont repassés en texte simple.
+
 ## 🆕 Le tableau de bord passe en espaces — toutes les classes de Loïc
 
 **Demandé le 13/09/2026.** Un seul tableau de bord, à la même adresse, organisé en

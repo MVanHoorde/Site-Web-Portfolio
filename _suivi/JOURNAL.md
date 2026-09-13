@@ -3791,3 +3791,39 @@ vérifications 9a-9c du `018` n'ont pas été relues par Claude ; l'éditeur SQL
 
 Une autre conversation modifiait en même temps le moteur partagé et une vingtaine de
 pages : seuls les fichiers de cette livraison ont été commités.
+
+## 13/09/2026 — SNT : les « à retenir » se lisent d'un regard
+
+Loïc avait trouvé t0 trop gras (« très IA ») et ses « à retenir » immangeables. La
+demande : reprendre tout le SNT, cours et fiches. Les captures (Chromium, blocs isolés
+dans la page) ont montré ce que la lecture du HTML ne disait pas : pastilles `<code>`
+plus petites et bleues à chaque sigle, texte justifié avec césure (« ce-lui »,
+« Ac-cès ») dans des blocs de cinq lignes, rouge + bleu + gras dans le même bloc, et
+jusqu'à 16 gras. Loïc a confirmé que le rouge reste au vocabulaire nouveau — il suffit
+à faire varier le regard — et a demandé tout le travail sans témoin.
+
+Mesure d'abord (`_outils/tests/mesure_retenir.py`, écrit pour l'occasion) : 80 blocs,
+77 en alerte. CSS partagé modifié avant tout, pour éviter les écritures croisées, et
+limité au SNT par `data-sequence^="snt-"` — t3-t7 ne chargent pas le moteur, leur CSS
+inline a été aligné à part. Puis six agents, un par page ou groupe de pages, sur un
+brief commun : la forme, jamais le fond, toute reformulation listée.
+
+Deux retours en arrière après relecture des rapports : un agent avait remonté
+« œuvre collective » avant les trois dates (t1) — ordre d'origine rétabli ; un autre
+avait changé la liste numérotée des six critères (t0) en puces — `<ol>` rétabli, et le
+CSS et la mesure l'acceptent désormais.
+
+Fiches ouvertes par la page elle-même (clic sur « Ouvrir ma fiche », popup capturée) :
+les blocs y arrivent en puces, 1 à 3 pages A4 à vide. La bulle « TCP / UDP » recopiée
+brute dans le vocabulaire de t1 S5 existait déjà avant (comparé à `HEAD`).
+
+Contrôles : `mesure_retenir.py` → `alertes=0` sur les 9 pages · `node verifier.mjs` → 18 ·
+`questions-snt.js` régénéré, inchangé.
+
+Suite, même jour : Loïc a donné son accord pour les points de fond relevés. Corrigés :
+l'IP « passerelle » de t2 (et la numérotation de ses séances 3 et 4), la phrase de
+validation de t0 1.1, les sphères de t5, Apollo en t6, le vouvoiement de la frise de
+t7. La bulle recopiée dans le vocabulaire de fiche venait de `collectVocabulaire()`,
+qui prenait le `innerHTML` du `<dd>` tel quel : elle retire désormais la bulle et garde
+le mot du bouton, comme le fait déjà `ficheRetenirHTML()`. Non corrigé : « nos minutes
+par 60 secondes » (m1), une ellipse juste.

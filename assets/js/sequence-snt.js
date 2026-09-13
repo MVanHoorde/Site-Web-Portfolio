@@ -1296,7 +1296,14 @@
       var mot=null;
       Array.prototype.slice.call(dl.children).forEach(function(el){
         if(el.tagName==='DT'){ mot=el.textContent.trim(); return; }
-        if(el.tagName==='DD' && mot){ out.push({mot:mot, def:el.innerHTML.trim()}); mot=null; }
+        if(el.tagName==='DD' && mot){
+          /* une bulle ne s'imprime pas : le bouton rend son mot, sans sa bulle
+             (13/09/2026 — la bulle « TCP / UDP » de t1 S5 sortait brute) */
+          var c=el.cloneNode(true);
+          c.querySelectorAll('.bulle').forEach(function(x){ x.remove(); });
+          c.querySelectorAll('.plustard').forEach(function(b){ b.replaceWith(document.createTextNode(b.textContent)); });
+          out.push({mot:mot, def:c.innerHTML.trim()}); mot=null;
+        }
       });
     });
     return out;
@@ -1759,6 +1766,8 @@
          gras allégé : une fiche où tout est gras ne fait plus rien ressortir */
       'dfn{font-style:normal;font-weight:600;color:#b3261e}',
       '.r b,.fx-note b,.fx-txt b{font-weight:600}',
+      /* les « à retenir » découpés en puces (SNT, 13/09/2026) */
+      '.r ul,.r ol{margin:2px 0 0;padding-left:18px}.r li+li{margin-top:3px}',
       '.depot{margin:8px 0 0}.depot img{display:block;max-width:100%;max-height:62mm;border-radius:8px;border:1px solid var(--line)}',
       '.depot figcaption{font-size:12px;color:var(--ink-soft);margin-top:4px}',
       '.plus-loin{border-left:3px solid var(--activity)}',

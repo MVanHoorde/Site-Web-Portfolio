@@ -15,6 +15,15 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 13/09/2026 — SNT : « à retenir » lisibles d'un regard, gras allégé partout
+
+| Date | Décision | Statut |
+|---|---|---|
+| 13/09/2026 | **Forme des « à retenir » SNT** : puces courtes au-delà de ~300 caractères ou dès plusieurs idées · une seule taille et une seule couleur de texte (aucun `<code>`, pas d'emoji, pas de style inline) · **rouge = `<dfn>`, 3 au plus** · **gras 2 au plus**, jamais sur une énumération ni une étiquette de puce. Motif : « immangeables » sur un écran de PC, le regard doit pouvoir varier | ✅ en vigueur |
+| 13/09/2026 | **Le rouge reste réservé au vocabulaire nouveau** (`<dfn>`), sans autre usage — choix de Loïc | ✅ en vigueur |
+| 13/09/2026 | Hors « à retenir » : règle du 25/07 rejouée (gras à la première apparition dans l'étape, aucun dans les intitulés de questions) + vocabulaire nouveau en `<dfn>`, 2 au plus par paragraphe. Appliqué aux **9 pages SNT** (t0-t7, m1) | ✅ en vigueur |
+| 13/09/2026 | CSS limité au SNT : `body[data-sequence^="snt-"]` dans `sequence-snt.css` (alignement à gauche sans césure, `<code>` neutralisé) ; CSS inline pour t3-t7. Les « à retenir » en trois temps des outils de PC et ceux de l'ES n'en héritent pas | ✅ en vigueur |
+
 ## 13/09/2026 — Le tableau de bord s'organise en espaces (toutes les classes de Loïc)
 
 | Date | Décision | Statut |
