@@ -3729,3 +3729,22 @@ ne déclenche rien ; il a fallu tester la règle CSS directement.
 
 Contrôles : parcours d'élève 9/9, 0 erreur JS, cadres 0/14 côté élève et 14/14 en mode
 enseignant, `node verifier.mjs` → 18, plus aucune couleur en dur sur la page.
+
+## 13/09/2026 — Tableau de bord : la file des copies située dans le cours
+
+Loïc ne lisait pas les codes d'activité (`NET-R4`, `NET-R3a`) dans la colonne de
+correction. Chaque copie porte désormais un repère `T1 · S4 · Q13 +` (thème, séance,
+rang de la question dans la séance, `+` pour « pour aller plus loin », `Transv.` pour
+un module), et l'infobulle déplie séance nommée, étape, rang sur le total, énoncé et
+code. Même repère dans l'en-tête de la copie ouverte.
+
+`generer-questions.mjs` ajoute à chaque question `etape`, `etape_titre`, `bonus`,
+`rang` et `sur`. Trois balisages d'étape coexistent (bandeau « ÉTAPE 1.3 », pastille
+`.ix` des bonus, encadré « Fierté française » à titre en `<h4>`) : les trois sont lus.
+`questions-snt.js` passe en `?v=2` dans le tableau de bord. Guide de prise en main
+complété et réexporté.
+
+Vu en passant, non corrigé : `2nde-snt-t2-le-web.html` porte **deux « ÉTAPE 4.2 »**
+en séance 4 (cookies, puis adresse IP) — le repère affiche donc 4.2 pour les deux.
+
+Contrôles : repère testé sur les 47 questions, `node verifier.mjs` → 18.

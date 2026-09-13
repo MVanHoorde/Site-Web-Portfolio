@@ -16,7 +16,12 @@ window.QUESTIONS_SNT = {
     "min": "40",
     "max": "500",
     "seance": "s1",
-    "seance_num": "1"
+    "seance_num": "1",
+    "etape": "1.4",
+    "etape_titre": "Ce qu'on fait avec le réseau — et ce qu'on fait sans",
+    "bonus": false,
+    "rang": 1,
+    "sur": 1
   },
   "SYS-G-ssd": {
     "sequence": "snt-t0",
@@ -25,7 +30,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "220",
     "seance": "s2",
-    "seance_num": "2"
+    "seance_num": "2",
+    "etape": "2.6",
+    "etape_titre": "Le stockage : optique, magnétique, flash",
+    "bonus": false,
+    "rang": 1,
+    "sur": 1
   },
   "SYS-R-ports": {
     "sequence": "snt-t0",
@@ -34,7 +44,12 @@ window.QUESTIONS_SNT = {
     "min": "40",
     "max": "500",
     "seance": "s3",
-    "seance_num": "3"
+    "seance_num": "3",
+    "etape": "3.4",
+    "etape_titre": "Relève les ports de ton poste",
+    "bonus": false,
+    "rang": 1,
+    "sur": 2
   },
   "SYS-R2": {
     "sequence": "snt-t0",
@@ -43,7 +58,12 @@ window.QUESTIONS_SNT = {
     "min": "60",
     "max": "600",
     "seance": "s3",
-    "seance_num": "3"
+    "seance_num": "3",
+    "etape": "3.5",
+    "etape_titre": "Choisir une machine : six critères",
+    "bonus": false,
+    "rang": 2,
+    "sur": 2
   },
   "SYS-P1": {
     "sequence": "snt-t0",
@@ -72,7 +92,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "180",
     "seance": "s1",
-    "seance_num": "1"
+    "seance_num": "1",
+    "etape": "1.1",
+    "etape_titre": "Avant tout : c'est quoi, Internet ?",
+    "bonus": false,
+    "rang": 1,
+    "sur": 3
   },
   "NET-1b": {
     "sequence": "snt-t1",
@@ -81,7 +106,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "200",
     "seance": "s1",
-    "seance_num": "1"
+    "seance_num": "1",
+    "etape": "1.2",
+    "etape_titre": "Inter + Net : le réseau des réseaux",
+    "bonus": false,
+    "rang": 2,
+    "sur": 3
   },
   "NET-2c": {
     "sequence": "snt-t1",
@@ -90,7 +120,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s1",
-    "seance_num": "1"
+    "seance_num": "1",
+    "etape": "1.3",
+    "etape_titre": "Aux origines d'Internet",
+    "bonus": false,
+    "rang": 3,
+    "sur": 3
   },
   "NET-R1": {
     "sequence": "snt-t1",
@@ -99,7 +134,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s2",
-    "seance_num": "2"
+    "seance_num": "2",
+    "etape": "2.2",
+    "etape_titre": "Louis Pouzin, CYCLADES et le datagramme",
+    "bonus": false,
+    "rang": 1,
+    "sur": 1
   },
   "NET-R2": {
     "sequence": "snt-t1",
@@ -108,7 +148,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s3",
-    "seance_num": "3"
+    "seance_num": "3",
+    "etape": "3.3",
+    "etape_titre": "Pour aller plus loin",
+    "bonus": true,
+    "rang": 1,
+    "sur": 1
   },
   "NET-R-amitie": {
     "sequence": "snt-t1",
@@ -117,7 +162,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.2",
+    "etape_titre": "Les câbles sous-marins : l'autoroute invisible",
+    "bonus": false,
+    "rang": 1,
+    "sur": 13
   },
   "NET-R-2africa": {
     "sequence": "snt-t1",
@@ -126,7 +176,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "450",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.2",
+    "etape_titre": "Les câbles sous-marins : l'autoroute invisible",
+    "bonus": false,
+    "rang": 2,
+    "sur": 13
   },
   "NET-R-pose": {
     "sequence": "snt-t1",
@@ -135,7 +190,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.2",
+    "etape_titre": "Les câbles sous-marins : l'autoroute invisible",
+    "bonus": false,
+    "rang": 3,
+    "sur": 13
   },
   "NET-R-dangers": {
     "sequence": "snt-t1",
@@ -144,7 +204,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.2",
+    "etape_titre": "Les câbles sous-marins : l'autoroute invisible",
+    "bonus": false,
+    "rang": 4,
+    "sur": 13
   },
   "NET-R-zones": {
     "sequence": "snt-t1",
@@ -153,7 +218,12 @@ window.QUESTIONS_SNT = {
     "min": "15",
     "max": "350",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.3",
+    "etape_titre": "Du réseau mondial à ta maison",
+    "bonus": false,
+    "rang": 5,
+    "sur": 13
   },
   "NET-R-correze": {
     "sequence": "snt-t1",
@@ -162,7 +232,12 @@ window.QUESTIONS_SNT = {
     "min": "15",
     "max": "350",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.3",
+    "etape_titre": "Du réseau mondial à ta maison",
+    "bonus": false,
+    "rang": 6,
+    "sur": 13
   },
   "NET-G-fibre": {
     "sequence": "snt-t1",
@@ -171,7 +246,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "200",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.3",
+    "etape_titre": "Du réseau mondial à ta maison",
+    "bonus": false,
+    "rang": 7,
+    "sur": 13
   },
   "NET-G-adsl": {
     "sequence": "snt-t1",
@@ -180,7 +260,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "220",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.3",
+    "etape_titre": "Du réseau mondial à ta maison",
+    "bonus": false,
+    "rang": 8,
+    "sur": 13
   },
   "NET-G-4g5g": {
     "sequence": "snt-t1",
@@ -189,7 +274,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "220",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.3",
+    "etape_titre": "Du réseau mondial à ta maison",
+    "bonus": false,
+    "rang": 9,
+    "sur": 13
   },
   "NET-G-satellite": {
     "sequence": "snt-t1",
@@ -198,7 +288,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "220",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.3",
+    "etape_titre": "Du réseau mondial à ta maison",
+    "bonus": false,
+    "rang": 10,
+    "sur": 13
   },
   "NET-R-evolution": {
     "sequence": "snt-t1",
@@ -207,7 +302,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.3",
+    "etape_titre": "Du réseau mondial à ta maison",
+    "bonus": false,
+    "rang": 11,
+    "sur": 13
   },
   "NET-R-ecolo": {
     "sequence": "snt-t1",
@@ -216,7 +316,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "450",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.4",
+    "etape_titre": "Les données et leur trafic",
+    "bonus": false,
+    "rang": 12,
+    "sur": 13
   },
   "NET-R4": {
     "sequence": "snt-t1",
@@ -225,7 +330,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.5",
+    "etape_titre": "Pour aller plus loin",
+    "bonus": true,
+    "rang": 13,
+    "sur": 13
   },
   "NET-R3a": {
     "sequence": "snt-t1",
@@ -234,7 +344,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s5",
-    "seance_num": "5"
+    "seance_num": "5",
+    "etape": "5.1",
+    "etape_titre": "C'est quoi, un protocole ?",
+    "bonus": false,
+    "rang": 1,
+    "sur": 7
   },
   "NET-G-protocole": {
     "sequence": "snt-t1",
@@ -243,7 +358,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "200",
     "seance": "s5",
-    "seance_num": "5"
+    "seance_num": "5",
+    "etape": "5.2",
+    "etape_titre": "Les modèles en couches : OSI et TCP/IP",
+    "bonus": false,
+    "rang": 2,
+    "sur": 7
   },
   "NET-G-modele-tcpip": {
     "sequence": "snt-t1",
@@ -252,7 +372,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "220",
     "seance": "s5",
-    "seance_num": "5"
+    "seance_num": "5",
+    "etape": "5.2",
+    "etape_titre": "Les modèles en couches : OSI et TCP/IP",
+    "bonus": false,
+    "rang": 3,
+    "sur": 7
   },
   "NET-G-datagramme": {
     "sequence": "snt-t1",
@@ -261,7 +386,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "220",
     "seance": "s5",
-    "seance_num": "5"
+    "seance_num": "5",
+    "etape": "5.2",
+    "etape_titre": "Les modèles en couches : OSI et TCP/IP",
+    "bonus": false,
+    "rang": 4,
+    "sur": 7
   },
   "NET-G-routeur": {
     "sequence": "snt-t1",
@@ -270,7 +400,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "200",
     "seance": "s5",
-    "seance_num": "5"
+    "seance_num": "5",
+    "etape": "5.4",
+    "etape_titre": "Le routage : l'aiguillage des paquets",
+    "bonus": false,
+    "rang": 5,
+    "sur": 7
   },
   "NET-G-switch": {
     "sequence": "snt-t1",
@@ -279,7 +414,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "200",
     "seance": "s5",
-    "seance_num": "5"
+    "seance_num": "5",
+    "etape": "5.4",
+    "etape_titre": "Le routage : l'aiguillage des paquets",
+    "bonus": false,
+    "rang": 6,
+    "sur": 7
   },
   "NET-G-modem": {
     "sequence": "snt-t1",
@@ -288,7 +428,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "200",
     "seance": "s5",
-    "seance_num": "5"
+    "seance_num": "5",
+    "etape": "5.4",
+    "etape_titre": "Le routage : l'aiguillage des paquets",
+    "bonus": false,
+    "rang": 7,
+    "sur": 7
   },
   "NET-R6": {
     "sequence": "snt-t1",
@@ -297,7 +442,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s6",
-    "seance_num": "6"
+    "seance_num": "6",
+    "etape": "6.4",
+    "etape_titre": "Diagnostic réseau : trois commandes magiques",
+    "bonus": false,
+    "rang": 1,
+    "sur": 2
   },
   "NET-R7": {
     "sequence": "snt-t1",
@@ -306,7 +456,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "500",
     "seance": "s6",
-    "seance_num": "6"
+    "seance_num": "6",
+    "etape": "6.6",
+    "etape_titre": "Pour aller plus loin",
+    "bonus": true,
+    "rang": 2,
+    "sur": 2
   },
   "NET-P1": {
     "sequence": "snt-t1",
@@ -345,7 +500,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s1",
-    "seance_num": "1"
+    "seance_num": "1",
+    "etape": "1.2",
+    "etape_titre": "Navigateur ou moteur de recherche ?",
+    "bonus": false,
+    "rang": 1,
+    "sur": 3
   },
   "WEB-R1b": {
     "sequence": "snt-t2",
@@ -354,7 +514,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "500",
     "seance": "s1",
-    "seance_num": "1"
+    "seance_num": "1",
+    "etape": "1.2",
+    "etape_titre": "Navigateur ou moteur de recherche ?",
+    "bonus": false,
+    "rang": 2,
+    "sur": 3
   },
   "WEB-R1c": {
     "sequence": "snt-t2",
@@ -363,7 +528,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s1",
-    "seance_num": "1"
+    "seance_num": "1",
+    "etape": "1.6",
+    "etape_titre": "Pour aller plus loin",
+    "bonus": true,
+    "rang": 3,
+    "sur": 3
   },
   "WEB-R2a": {
     "sequence": "snt-t2",
@@ -372,7 +542,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s2",
-    "seance_num": "2"
+    "seance_num": "2",
+    "etape": "2.3",
+    "etape_titre": "Le rôle des balises, avec tes mots",
+    "bonus": false,
+    "rang": 1,
+    "sur": 2
   },
   "WEB-R2b": {
     "sequence": "snt-t2",
@@ -381,7 +556,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s2",
-    "seance_num": "2"
+    "seance_num": "2",
+    "etape": "2.6",
+    "etape_titre": "Pour aller plus loin",
+    "bonus": true,
+    "rang": 2,
+    "sur": 2
   },
   "WEB-R3b": {
     "sequence": "snt-t2",
@@ -390,7 +570,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s3",
-    "seance_num": "3"
+    "seance_num": "3",
+    "etape": "3.4",
+    "etape_titre": "Évaluer la fiabilité d'un site",
+    "bonus": false,
+    "rang": 1,
+    "sur": 2
   },
   "WEB-R3c": {
     "sequence": "snt-t2",
@@ -399,7 +584,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s3",
-    "seance_num": "3"
+    "seance_num": "3",
+    "etape": "3.5",
+    "etape_titre": "Pour aller plus loin",
+    "bonus": true,
+    "rang": 2,
+    "sur": 2
   },
   "WEB-R4b": {
     "sequence": "snt-t2",
@@ -408,7 +598,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "600",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.2",
+    "etape_titre": "Reprendre la main sur les cookies",
+    "bonus": false,
+    "rang": 1,
+    "sur": 3
   },
   "WEB-R4a": {
     "sequence": "snt-t2",
@@ -417,7 +612,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.2",
+    "etape_titre": "Ton adresse IP et tes traces en ligne",
+    "bonus": false,
+    "rang": 2,
+    "sur": 3
   },
   "WEB-R4c": {
     "sequence": "snt-t2",
@@ -426,7 +626,12 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s4",
-    "seance_num": "4"
+    "seance_num": "4",
+    "etape": "4.6",
+    "etape_titre": "Pour aller plus loin",
+    "bonus": true,
+    "rang": 3,
+    "sur": 3
   },
   "REP-R1": {
     "sequence": "snt-m1",
@@ -435,6 +640,11 @@ window.QUESTIONS_SNT = {
     "min": "20",
     "max": "400",
     "seance": "s1",
-    "seance_num": "1"
+    "seance_num": "1",
+    "etape": "1.1",
+    "etape_titre": "Pourquoi seulement deux chiffres ?",
+    "bonus": false,
+    "rang": 1,
+    "sur": 1
   }
 };

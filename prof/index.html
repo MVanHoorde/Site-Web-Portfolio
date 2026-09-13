@@ -557,7 +557,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
 
 <script src="../assets/js/seances-snt.js?v=16"></script>
 <script src="../assets/js/verrou-snt.js?v=3"></script>
-<script src="../assets/js/questions-snt.js"></script>
+<script src="../assets/js/questions-snt.js?v=2"></script>
 <script src="../assets/js/prof-api.js"></script>
 <script>
 (function(){
@@ -838,6 +838,32 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     return cl ? cl.libelle : '';
   }
 
+  /* Situer une copie dans le cours. Le code d'activité (« NET-R3a ») est
+     une clé de base, pas un repère de lecture : la colonne affiche
+     « T1 · S5 · Q1 », et l'infobulle déplie séance, étape, rang et
+     énoncé. Tout vient de questions-snt.js ; un code qu'il ne connaît
+     pas ressort tel quel plutôt que de disparaître. */
+  function repereCopie(c){
+    var q = (window.QUESTIONS_SNT || {})[c.code_activite];
+    if(!q || !q.sequence) return { court: c.code_activite, long: c.code_activite };
+    var transv = /^snt-m/.test(q.sequence);
+    var court = (transv ? 'Transv.' : nomSequence(q.sequence, true))
+      + (q.seance_num ? ' · S' + q.seance_num : '')
+      + (q.rang ? ' · Q' + q.rang : '')
+      + (q.bonus ? ' +' : '');
+    var seance = seancesDu(q.sequence).find(function(s){ return s.id === q.seance; });
+    var lignes = [
+      (transv ? 'Transversal ' + nomSequence(q.sequence, true) : nomSequence(q.sequence))
+        + (q.seance_num ? ' — séance ' + q.seance_num + (seance ? ' « ' + seance.nom + ' »' : '') : ''),
+      q.etape ? 'Étape ' + q.etape + (q.etape_titre ? ' « ' + q.etape_titre + ' »' : '')
+        + (q.bonus && q.etape_titre !== 'Pour aller plus loin' ? ' — pour aller plus loin' : '') : '',
+      q.rang ? 'Question ' + q.rang + (q.sur ? ' sur ' + q.sur + ' dans la séance' : '') : '',
+      (q.titre ? q.titre + ' — ' : '') + (q.question || ''),
+      '(' + c.code_activite + ')'
+    ].filter(Boolean);
+    return { court: court, long: lignes.join('\n') };
+  }
+
   /* La colonne. Un <button> par copie : focus clavier et lecteur d'écran
      gratuits, et aria-current dit laquelle est ouverte. */
   function rendreListe(){
@@ -852,7 +878,8 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       var age = document.createElement('span'); age.className = 'k-age ' + classeAge(c);
       var nom = document.createElement('span'); nom.className = 'k-nom'; nom.textContent = nomCopie(c);
       var sous = document.createElement('span'); sous.className = 'k-sous';
-      sous.textContent = c.code_activite + (c.version > 1 ? ' · réécr. ' + c.version : '')
+      var rep = repereCopie(c);
+      sous.textContent = rep.court + (c.version > 1 ? ' · réécr. ' + c.version : '')
         + ' · ' + quandCourt(c.envoye_le);
       b.appendChild(age); b.appendChild(nom);
       if(a.tri && a.tri.a_verifier){
@@ -861,7 +888,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
         b.appendChild(d);
       }
       b.appendChild(sous);
-      b.title = sous.textContent;
+      b.title = nomCopie(c) + '\n' + rep.long;
       b.addEventListener('click', function(){ ouvrir(i); if(estEtroit()) replierFile(true); });
       b.addEventListener('keydown', function(ev){
         var cible = ev.key === 'ArrowDown' ? i + 1 : ev.key === 'ArrowUp' ? i - 1 : null;
@@ -949,7 +976,9 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     /* nomDe() rend le vrai nom si la table est chargée, le pseudonyme
        sinon : c'est ce repli qui fait le mode projection. */
     $('#c-qui').textContent = ProfAPI.nomDe(pseudo);
-    $('#c-meta').textContent = ' · ' + c.code_activite
+    var repC = repereCopie(c);
+    $('#c-meta').title = repC.long;
+    $('#c-meta').textContent = ' · ' + repC.court
       + (c.version > 1 ? ' · réécriture n°' + c.version : '')
       + ' · ' + new Date(c.envoye_le).toLocaleDateString('fr-FR',
           { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });

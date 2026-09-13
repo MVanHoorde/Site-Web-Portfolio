@@ -104,6 +104,40 @@ export function extraire(html) {
     for (const s of seances) { if (s.pos < pos) trouvee = s; else break; }
     return trouvee;
   };
+
+  /* Même besoin, un cran plus fin : l'étape. La file de correction
+     n'a que la largeur d'une colonne pour situer une copie, et « T1 ·
+     S4 » ne suffit pas quand une séance porte cinq questions. On prend
+     le numéro que l'élève voit (« ÉTAPE 1.3 ») ; à défaut de bandeau,
+     le rang de l'étape dans sa séance. */
+  const etapes = [];
+  const reEtape = /<div(?:[^>"]|"[^"]*")*>/g;
+  let me;
+  while ((me = reEtape.exec(html)) !== null) {
+    if (/\bdata-step\b/.test(me[0])) etapes.push({ pos: me.index });
+  }
+  etapes.forEach((e, i) => {
+    const fin = i + 1 < etapes.length ? etapes[i + 1].pos : html.length;
+    const bout = html.slice(e.pos, fin);
+    /* Deux bandeaux possibles : « ÉTAPE 1.3 » pour l'essentiel, la
+       pastille  .ix  d'un bonus « Pour aller plus loin ». */
+    const k = /class="step-kicker"[^>]*>\s*[ÉE]TAPE\s+([\w.]+)/i.exec(bout)
+           || /class="ix"[^>]*>\s*([\w.]+)/.exec(bout);
+    const t = /class="step-title"[^>]*>([\s\S]*?)<\/h\d>/.exec(bout)
+           || /<h4[^>]*>([\s\S]*?)<\/h4>/.exec(bout.slice(0, 1500));
+    const s = seanceDe(e.pos);
+    const rang = etapes.slice(0, i + 1).filter((x) => seanceDe(x.pos) === s).length;
+    e.num = k ? k[1] : (s && s.num ? s.num + '.' + rang : String(rang));
+    e.bonus = /\bdata-bonus\b|data-cle="[^"]*bonus/.test(bout.slice(0, 400));
+    e.titre = t ? texteBrut(t[1]) : (e.bonus ? 'Pour aller plus loin' : null);
+  });
+  const etapeDe = (pos) => {
+    let trouvee = null;
+    for (const e of etapes) { if (e.pos < pos) trouvee = e; else break; }
+    return trouvee;
+  };
+  /* Rang de la question corrigée dans sa séance : « question 2 / 5 ». */
+  const rangs = new Map();
   /* On repart du conteneur .field pour ramasser les attributs qui
      entourent data-focus-code, où qu'ils soient placés.
 
@@ -124,14 +158,27 @@ export function extraire(html) {
     const code = attribut(bloc, 'data-focus-code');
     if (!code) continue;
     const s = seanceDe(m.index);
+    const e = etapeDe(m.index);
+    const cle = s ? s.pos : -1;
+    rangs.set(cle, (rangs.get(cle) || 0) + 1);
     out[code] = {
       titre   : texteBrut(attribut(bloc, 'data-focus-titre')),
       question: texteBrut(attribut(bloc, 'data-focus-question')),
       min     : attribut(bloc, 'data-focus-min') || null,
       max     : attribut(bloc, 'data-focus-max') || null,
       seance  : s ? (s.id || null) : null,
-      seance_num: s ? (s.num || null) : null
+      seance_num: s ? (s.num || null) : null,
+      etape   : e && e.pos > (s ? s.pos : -1) ? e.num : null,
+      etape_titre: e && e.pos > (s ? s.pos : -1) ? e.titre : null,
+      bonus   : !!(e && e.pos > (s ? s.pos : -1) && e.bonus),
+      rang    : rangs.get(cle),
+      _cle    : cle
     };
+  }
+  /* Le total par séance ne se connaît qu'une fois tout lu. */
+  for (const q of Object.values(out)) {
+    q.sur = rangs.get(q._cle);
+    delete q._cle;
   }
 
   /* Les réponses PERSONNELLES (20/08/2026). Même besoin que les
