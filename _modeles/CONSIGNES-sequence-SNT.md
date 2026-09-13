@@ -655,8 +655,9 @@ nouveau compteur) se **redemande** à Loïc avant d'être porté.
    | **le mot du professeur**, s'il en a écrit un — son absence ne se signale pas | |
 
 4. **« Pour aller plus loin » : seulement ce que l'élève y a fait.** Le contenu
-   des blocs `.bonus-wrap` ne va jamais sur la fiche ; une réponse écrite dans l'un
-   d'eux ferme la fiche, dans sa propre section.
+   des blocs `.bonus-wrap` ne va jamais sur la fiche ; ce que l'élève y a produit —
+   réponse rédigée, réponse personnelle, copie d'écran, notes — ferme la fiche, dans
+   sa propre section.
 5. **Longueur** : **2 pages A4** pour une séance ordinaire, **4 au maximum** pour
    une grosse séance, et c'est exceptionnel. Repère mesuré le 13/09/2026 sur les
    17 séances rédigées (t0, t1, t2, m1) : environ **5 étapes et 4 productions
@@ -695,6 +696,7 @@ du cours).
 | `data-fiche-retenir="<data-cle>"` | les « à retenir » de l'étape, **lus dans la page** : une seule version à tenir, celle du cours |
 | `data-fiche-travail="<code>"` | un champ de l'élève, retrouvé par `data-focus-code`, `data-perso-code`, `data-depot-code` ou `data-notes` — à défaut de code, par son `data-focus-titre`. `"elements"` = les fiches du défi débranché |
 | `data-fiche-question="non"` | n'imprime que la réponse, sans l'énoncé |
+| `data-fiche-tableaux="<data-cle>"` | les tableaux que l'élève a **remplis** dans cette étape (saisies figées) ; ils ne reviennent pas dans « Les tableaux que j'ai complétés ». L'élément garde ses classes (`fx-duo` pour deux tables côte à côte) |
 | `data-fiche-si` | sur un cadre : il disparaît si **aucun** de ses emplacements n'est rempli |
 
 Un emplacement vide disparaît sans trace. **Tout travail non placé reprend sa
@@ -706,12 +708,20 @@ vide : on emploie un cadre `data-fiche-si` avec un `.fx-k2`.
 🔴 **Aucune couleur en dur dans le template.** Les SVG emploient les classes
 `f-*` (`f-bleu`, `f-pris-vert`, `f-case-orange`…), la mise en page les classes
 `fx-*` (`fx-cote`, `fx-imgs`, `fx-cadre`, `fx-liste`, `fx-fig`, `fx-train`…).
-Toutes sont définies dans `ficheCSS()` : **une seule palette à tenir**.
+Toutes sont définies dans `ficheCSS()` : **une seule palette à tenir**. Un trait
+neutre s'écrit `stroke="currentColor"` avec une opacité : ce n'est pas une couleur
+en dur. Pour les cadres de travail : `fx-sans-lbl` tait l'étiquette « Ma réponse »
+quand le titre du cadre et ses pastilles `fx-tag` la disent déjà ; `fx-petit` réduit
+les captures d'écran à 30 mm ; `fx-trio` aligne trois éléments.
+
+🔴 Un tableau du cours dans une partie fixe porte `style="page-break-inside:avoid"` :
+sinon son en-tête peut rester seul en bas de page.
 
 Les numéros de section du template sont **écrits à la main** ; les sections
 suivantes reprennent automatiquement après (le générateur compte les `<h2>`).
 
-Parties fixes écrites : `m1` séance 1 ; `t0` séances 1 à 4 (audit du 13/09/2026).
+Parties fixes écrites : `m1` séances 1 et 2 ; `t0` séances 1 à 4 ; `t1` séances 1 à 6
+(audits du 13/09/2026).
 
 ### 17.4 Le piège technique à ne pas rouvrir
 

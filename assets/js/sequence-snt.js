@@ -1226,8 +1226,10 @@
   function collectReperes(sec){
     var out=[];
     sec.querySelectorAll('table.doc-table').forEach(function(t){
-      /* la correction d'un tri, un tableau de bonus : pas sur la fiche */
-      if(t.closest('.tri-suite,[data-reveal],.bonus-wrap')) return;
+      /* la correction d'un tri, un tableau de bonus : pas sur la fiche.
+         🔴 .reveal et non [data-reveal] : le moteur pose data-reveal="1" sur la
+         SECTION elle-même, et ce filtre écartait tous les tableaux (13/09/2026) */
+      if(t.closest('.tri-suite,.reveal,.bonus-wrap')) return;
       var etape=t.closest('[data-step]');
       var ti=etape?etape.querySelector('.step-title'):null;
       var c=t.cloneNode(true);
@@ -1236,7 +1238,7 @@
          tableau des combinaisons de m1 1.4). On y fige la saisie de l'élève :
          une fiche de révision ne contient pas de formulaire. */
       ficheFiger(c);
-      out.push({titre:ti?ti.textContent.trim():'Repères', html:c.outerHTML});
+      out.push({titre:ti?ti.textContent.trim():'Repères', html:c.outerHTML, el:t});
     });
     sec.querySelectorAll('.frise').forEach(function(fr){
       out.push({titre:'La frise de l\'histoire d\'Internet', html:fr.outerHTML});
@@ -1532,7 +1534,8 @@
       cle     : p.getAttribute('data-perso-code') || '',
       etape   : ficheTexte(st ? st.querySelector('.step-title') : null),
       question: ficheTexte(p.querySelector('.field-q')),
-      texte   : ta.value.trim()
+      texte   : ta.value.trim(),
+      bonus   : !!p.closest('.bonus-wrap')
     };
   }
   function fichePerso(sec){
@@ -1611,8 +1614,13 @@
     st.querySelectorAll('.retain').forEach(function(r){
       var c = r.cloneNode(true);
       c.querySelectorAll('.niv,.a-noter,.bulle').forEach(function(x){ x.remove(); });
-      /* une bulle de définition garde son mot, pas son bouton */
-      c.querySelectorAll('.plustard').forEach(function(b){ b.replaceWith(document.createTextNode(b.textContent)); });
+      /* une bulle de définition garde son mot, pas son bouton ; un renvoi
+         « 🔭 à voir plus tard » (.pl-txt) disparaît tout entier — 13/09/2026,
+         il s'imprimait en clair dans l'« à retenir » d'ARPANET (t1 S2) */
+      c.querySelectorAll('.plustard').forEach(function(b){
+        if(b.querySelector('.pl-txt')) b.remove();
+        else b.replaceWith(document.createTextNode(b.textContent));
+      });
       out += '<div class="r"><span class="lbl">À retenir</span>' + c.innerHTML.trim() + '</div>';
     });
     return out;
@@ -1666,6 +1674,27 @@
     return html;
   }
 
+  /* data-fiche-tableaux="<data-cle d'étape>" — 13/09/2026, audit de t1 : les
+     tableaux que l'élève a remplis dans cette étape (le relevé de Lannion, les
+     tables de routage), saisies figées, à côté du cours qui les explique. Un
+     tableau placé ici ne revient pas dans « Les tableaux que j'ai complétés ». */
+  function ficheTableaux(sec, cle, places){
+    var st = null, html = '';
+    sec.querySelectorAll('[data-step][data-cle]').forEach(function(s){ if(s.getAttribute('data-cle') === cle) st = s; });
+    if(!st) return '';
+    st.querySelectorAll('table.doc-table').forEach(function(t){
+      if(t.closest('.tri-suite,.reveal,.bonus-wrap')) return;
+      if(!t.querySelector('input,select')) return;
+      places.tables.push(t);
+      var c = t.cloneNode(true);
+      c.querySelectorAll('.plustard').forEach(function(b){ b.remove(); });
+      ficheFiger(c);
+      var rempli = Array.prototype.some.call(c.querySelectorAll('.saisi'), function(s){ return s.textContent !== '…'; });
+      if(rempli) html += c.outerHTML;
+    });
+    return html;
+  }
+
   function fichePartieFixe(sec, fixe, places){
     var box = document.createElement('div');
     box.appendChild(fixe.content.cloneNode(true));
@@ -1681,6 +1710,12 @@
       var h = ficheTravail(sec, s.getAttribute('data-fiche-travail'),
                            s.getAttribute('data-fiche-question') !== 'non', places);
       if(h){ s.innerHTML = h; s.removeAttribute('data-fiche-travail'); s.className = 'fx-rempli'; }
+      else s.remove();
+    });
+    box.querySelectorAll('[data-fiche-tableaux]').forEach(function(s){
+      var h = ficheTableaux(sec, s.getAttribute('data-fiche-tableaux'), places);
+      /* classList et non className : l'emplacement garde sa mise en page (fx-duo) */
+      if(h){ s.innerHTML = h; s.removeAttribute('data-fiche-tableaux'); s.classList.add('fx-rempli'); }
       else s.remove();
     });
     /* un cadre qui n'existe que pour du travail (data-fiche-si) disparaît si
@@ -1785,6 +1820,13 @@
       '.fx-cadre .fx-k2{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--link);font-weight:600;margin-bottom:4px}',
       '.fx-liste{margin:4px 0 8px;padding-left:18px;font-size:14px}.fx-liste li{margin-bottom:3px}',
       '.fx-credit{display:block;font-size:10px;color:var(--ink-faint);margin-top:2px}',
+      /* un cadre qui porte plusieurs captures d'écran les réduit (t1 S4, S6) */
+      '.fx-petit .depot img{max-height:30mm}',
+      /* dans un cadre titré, l'étiquette « Ma réponse » redit le titre : on la
+         tait (t1, 13/09/2026). « Le mot du professeur » garde la sienne. */
+      '.fx-sans-lbl .a>.lbl{display:none}',
+      '.fx-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}',
+      '@media (max-width:620px){.fx-trio{grid-template-columns:1fr}}',
       '@media (max-width:620px){.fx-cote,.fx-cote.inv{grid-template-columns:1fr}}',
       /* barre d'action, jamais imprimée */
       '.barre{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 6px}',
@@ -1884,7 +1926,7 @@
          'Ce qui fait foi, c’est le tableau de suivi de ton professeur.</p>';
 
     /* ---- 3. partie fixe, déclarée par la page, avec ses emplacements ---- */
-    var places = {};
+    var places = { tables: [] };
     var fixe = sec.querySelector('template[data-fiche-fixe]');
     if(fixe && fixe.innerHTML.trim()){
       h += fichePartieFixe(sec, fixe, places);
@@ -1932,6 +1974,7 @@
        ce qui est corrigé automatiquement ne va pas sur la fiche. ---- */
     var rep = collectReperes(sec).filter(function(r){
       var d = document.createElement('div'); d.innerHTML = r.html;
+      if(places.tables.indexOf(r.el) >= 0) return false;   /* déjà posé par data-fiche-tableaux */
       return fixe ? !!d.querySelector('.saisi') : true;
     });
     if(rep.length){
@@ -1952,7 +1995,8 @@
     }
 
     /* ---- 7. mes recherches personnelles ---- */
-    var perso = fichePerso(sec).filter(function(p){ return !places[p.cle]; });
+    var persoTout = fichePerso(sec).filter(function(p){ return !places[p.cle]; });
+    var perso = persoTout.filter(function(p){ return !p.bonus; });
     if(perso.length){
       h += titre('Mes recherches et mes réponses personnelles');
       perso.forEach(function(p){
@@ -1961,10 +2005,11 @@
     }
 
     /* ---- 8. mes dépôts ---- */
-    var depots = [];
+    var depots = [], depotsBonus = [];
     sec.querySelectorAll('[data-depot]').forEach(function(z){
       var d = ficheDepotDe(z);
-      if(d && !d.bonus && !places[d.cle]) depots.push(d);
+      if(!d || places[d.cle]) return;
+      (d.bonus ? depotsBonus : depots).push(d);
     });
     if(depots.length){
       h += titre('Mes photos et copies d’écran');
@@ -1974,11 +2019,12 @@
     }
 
     /* ---- 9. mes notes de visionnage ---- */
-    var notes = [];
+    var notes = [], notesBonus = [];
     sec.querySelectorAll('textarea[data-notes]').forEach(function(ta){
       if(!ta.value.trim() || places[ta.getAttribute('data-notes')]) return;
       var st = ta.closest('[data-step]');
-      notes.push({ titre: ficheTexte(st ? st.querySelector('.step-title') : null) || 'Notes', texte: ta.value.trim() });
+      (ta.closest('.bonus-wrap') ? notesBonus : notes)
+        .push({ titre: ficheTexte(st ? st.querySelector('.step-title') : null) || 'Notes', texte: ta.value.trim() });
     });
     if(notes.length){
       h += titre('Mes notes');
@@ -1989,11 +2035,24 @@
     }
 
     /* ---- 10. pour aller plus loin : SEULEMENT ce que l'élève y a fait ---- */
+    /* 13/09/2026 : une réponse personnelle, un dépôt ou des notes écrits dans
+       un bonus y vont aussi — ils partaient dans « Mes recherches » ou « Mes
+       notes », ou n'apparaissaient nulle part (les dépôts). */
     var redBonus = red.filter(function(r){ return r.bonus; });
-    if(redBonus.length){
+    var persoBonus = persoTout.filter(function(p){ return p.bonus; });
+    if(redBonus.length || persoBonus.length || depotsBonus.length || notesBonus.length){
       h += titre('Pour aller plus loin');
       redBonus.forEach(function(r){
         h += '<div class="e plus-loin">' + ficheRedigeeHTML(r, true) + '</div>';
+      });
+      persoBonus.forEach(function(p){
+        h += '<div class="e plus-loin">' + fichePersoHTML(p, true) + '</div>';
+      });
+      depotsBonus.forEach(function(d){
+        h += '<div class="e plus-loin">' + ficheDepotHTML(d, true) + '</div>';
+      });
+      notesBonus.forEach(function(x){
+        h += '<div class="e plus-loin"><div class="hh">Mes notes</div><div class="a">' + echapper(x.texte) + '</div></div>';
       });
     }
 
