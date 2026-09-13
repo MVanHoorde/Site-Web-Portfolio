@@ -109,7 +109,7 @@
 | **ES-18** | `t3-c1` étape 2.3 | L'**exercice 3 de triangulation est long** (7 applications de la loi des sinus, chaque résultat servant au suivant). Il est découpé en **4 blocs validants** pour qu'un élève bloqué ne perde pas tout. Donner les valeurs intermédiaires au tableau ? |
 | **ES-19** | `t3-c1` étape 3.2 | La question « **placer trois villes sur la carte** » est passée en réponse rédigée. Le composant d'étiquettes du moteur la rendrait cliquable — c'est un travail de relevé de coordonnées sur l'image, pas encore fait. |
 | **ES-20** | `t2-c2` étape 2.3 | L'écoute comparée « **Et si on écoutait ?** » (16 / 32 / 64 / 128 / 256 kbps) demande des **extraits sonores** : un même extrait exporté à cinq débits, à déposer dans `assets/`. |
-| **ES-21** | `t1-c1` étape 1.3 | L'exercice des **trois graphiques d'abondance** est en réponse rédigée. Une version cliquable demanderait de **découper les trois graphiques** en images séparées. |
+| **ES-21** | `t1-c1` étape 1.3 | Les **trois graphiques d'abondance** se légendent en **saisie libre** (repères numérotés sur l'image, élément + pourcentage) **sans correction ni enregistrement** : seul le titre, en menu déroulant, se corrige. Si les légendes doivent un jour se corriger, les positions des 13 repères sont mesurées et prêtes. |
 | **ES-22** | toutes | 📌 **Volume horaire** : 18 séances de 1 h 30 pour six chapitres. Le brief posait 2 + 4 + 3 + 3 + 3 + 3 ; c'est ce qui a été produit. Aucun débordement à signaler. |
 
 ---
@@ -118,15 +118,19 @@
 
 ### C1 — La nucléosynthèse · `1re-es-t1-c1-nucleosynthese.html`
 
-**Ce qui est en ligne** — 2 séances · 11 étapes (9 à valider) · 5 QCM (17 questions) ·
-4 textes à trous (16 champs) · 6 réponses rédigées · 1 réflexion perso ·
-7 vidéos en façade · 14 images · 14 entrées de glossaire.
+**Ce qui est en ligne** — 3 séances · 14 étapes (9 à valider) · 7 QCM (54 questions) ·
+6 textes à trous · 3 légendes libres · 4 réponses rédigées · 6 choix fusion/fission ·
+1 tri des noyaux · 7 vidéos en façade · 17 figures · 18 entrées de glossaire · panneau
+« Classification ». Détail des deux audits : §11 et §12.
 
-- **S1 — Les éléments chimiques et leurs abondances** : 1.1 comment marche ce cours
-  (tutoriel) · 1.2 qu'est-ce qu'un élément chimique · 1.3 exercice 1, abondances ·
-  1.4 épisode 1/3 + bilan · 1.5 bonus Mendeleïev.
+- **S1 — Les éléments chimiques et leurs abondances** : 1.1 comment ce cours va
+  fonctionner (tutoriel + QCM de prérequis) · 1.2 qu'est-ce qu'un élément chimique ·
+  1.3 activité, abondances · 1.4 fusion ou fission + bilan de séance · 1.5 bonus.
 - **S2 — Les trois nucléosynthèses** : 2.1 primordiale · 2.2 stellaire · 2.3
-  explosive · 2.4 exercice 2 · 2.5 fusion/fission + exercice 3 · 2.6 bonus.
+  explosive · 2.4 activité « quelle nucléosynthèse ? » + bilan du chapitre · 2.5 d'où
+  viennent les atomes de ton corps · 2.6 bonus.
+- **S3 — Réviser** : 3.1 les « à retenir » rassemblés · 3.2 vidéos et Kahoot · 3.3
+  QCM bilan.
 
 **Cadres de réservation d'image** — aucun. Les huit QR codes du diaporama ont été
 décodés : plus rien ne manque côté ressources.
@@ -160,7 +164,9 @@ les définitions de fusion et fission · les six réactions de l'exercice 3 (à 
 voir §7) · les énoncés des trois exercices · les treize images.
 
 **Ce qui bloque** — rien de bloquant. Les `.mp4` du dossier de dépôt peuvent partir
-(les URL sont en place). Restent ES-12, ES-13, ES-15, ES-21.
+(les URL sont en place). Restent ES-09 (provenance des images reprises du cours : les
+mentions « cours de M. Van Hoorde » ont été retirées de la page, **la question reste
+ouverte ici**), ES-12, ES-13, ES-15.
 
 ---
 
@@ -532,8 +538,9 @@ Sept erreurs, corrigées dans les pages et signalées sur place par un cadre
 - **Cristaux, image 11** : légendée « rayon dans une maille **cubique simple** », la
   même que l'image 10, alors qu'elle illustre la **CFC**. Copier-coller resté en place.
 - **Nucléosynthèse, image 10** : légendée « **Explosion** de supernova », alors qu'elle
-  montre une étoile intacte (supergéante rouge). Une photo de **rémanent** (le Crabe,
-  Cassiopée A) conviendrait mieux.
+  montre une étoile intacte (supergéante rouge). Dans la page, elle est légendée comme
+  une étoile avant l'effondrement, et suivie d'une photo du **rémanent de Kepler**
+  (NASA/ESA, domaine public).
 - **Forme de la Terre** : **deux exercices portent le numéro 4** (repérage des villes,
   puis distance à l'horizon). Le second est passé en bonus.
 - **Cristaux** : le PDF est titré « **Chapitre 2** : Les édifices ordonnés » alors que
@@ -637,13 +644,13 @@ en clair** dans le document, elle est donc sûre.
 
 | Lot | Audit | Fait |
 |---|---|---|
-| **0** Conventions | A1–A3, A5 | Gras **237 → 148** + 14 rouges. « Exercice » éliminé (6 occurrences). Trace écrite reformulée sans « dossier numérique ». **7 textes de transition**. Cadre d'activité orange. Comptage **118/94** aligné partout. « Anthropique » introduit en 1.2, « lithosphère » passée en infobulle. |
+| **0** Conventions | A1–A3, A5 | Gras **237 → 148** + 14 rouges (ramenés à 153 dont 17 rouges au second audit, §12). « Exercice » éliminé (6 occurrences). Trace écrite reformulée sans « dossier numérique ». **7 textes de transition**. Cadre d'activité orange. Comptage **118/94** aligné partout. « Anthropique » introduit en 1.2, « lithosphère » passée en infobulle. |
 | **1** Glossaire | A4 | **Réponse à ta question : non, ce n'était pas implémenté.** Un glossaire existait (panneau flottant, 14 mots) mais **complet dès l'arrivée** et sans lien avec les survols. Il y a maintenant **18 entrées** qui s'ouvrent à la validation de leur étape, et **une seule source** — `#dico-source` — qui alimente aussi les infobulles. |
 | **2** Structure | B1, B2, B3, C1 | Fusion/fission remonte **en fin de S1** (étape 1.4) ; l'ancienne 1.4 est démontée, sa vidéo rejoint 2.1. **Mini-QCM de prérequis** en 1.1, 5 questions, *sans enjeu*. Étape 1.2 complétée : rappel atome/ion/isotope, « peut-on aller au-delà de 92 », plutonium en réacteur, cadre pour la photo PULSTAR. |
 | **3** Tableau périodique | E1 n°1-2 | **Deux tableaux SVG** générés par `_outils/es/tableau_periodique.py` : états + CHON (1.2), provenances + anthropique (2.4). 118 cases, contrôlées. |
-| **4** Schémas | E1 n°3-7 | **Six schémas** générés par `_outils/es/noyaux.py` : noyaux légers (atelier), chaîne primordiale, chaîne p-p, couches de l'étoile, fusions, fission. Plus un **atelier de reconnaissance** : 6 amas à identifier avant de dévoiler la chaîne. |
+| **4** Schémas | E1 n°3-7 | **Cinq schémas** générés par `_outils/es/noyaux.py` : chaîne primordiale, chaîne p-p, couches de l'étoile, fusions, fission. (L'atelier de reconnaissance et son schéma de noyaux légers ont été retirés au second audit.) |
 | **5** Postes et QCM | B5, C2 | **Deux postes de visionnage** complets (notes + dictionnaire), sur le modèle SNT. QCM de 2.1 : **3 → 8** questions ; 2.2 : **4 → 8**. Tous les biais de longueur de la page corrigés. |
-| **6** Activités | B4, B7, C4 | Les trois graphiques **découpés en trois images**, chacun avec son **titre en menu déroulant** et **deux étiquettes à poser** (positions mesurées). **Choix cliquable** sous chacune des 6 réactions. **Tri des noyaux** : tirage au nombre choisi (5 à 24), 4 destinations, réinitialisable. |
+| **6** Activités | B4, B7, C4 | Les trois graphiques **découpés en trois images**, chacun avec son **titre en menu déroulant** et une **légende libre** à repères numérotés (positions mesurées — voir ES-21). **Choix cliquable** sous chacune des 6 réactions. **Tri des noyaux** : tirage au nombre choisi (5 à 24), 4 destinations, réinitialisable. |
 | **7** Bilan et révisions | D1, D2 | La question d'ouverture revient en **étape à part entière** (2.5), avec ce qu'on attend d'une réponse en devoir. Abondances du bilan S1 **en tableau**. Nouvelle **séance « Réviser »** : les 5 « à retenir » rassemblés, les 5 vidéos, un **QCM bilan de 18 questions**. |
 
 ### 11.2 Ce que l'audit a fait remonter dans le moteur partagé
@@ -669,13 +676,14 @@ S'ajoute aux sept du §7 :
 | # | Où | Ce qui est faux | Corrigé |
 |---|---|---|---|
 | 8 | Schéma de la chaîne primordiale (PDF de cours, repris de `ca-se-passe-la-haut.fr`) | Un **neutron** entre dans la réaction qui forme le béryllium 7. **4 + 1 ≠ 7.** | Le schéma tracé fait entrer un **hélium 3** (³He + ⁴He → ⁷Be + γ), et place le neutron à l'étape suivante (⁷Be + n → ⁷Li + p). **Le PDF d'origine porte encore l'erreur.** |
+| 9 | Couches d'une étoile massive (PDF de cours) | La fusion du silicium donne du **⁵⁸Ni**. | **⁵⁶Ni**, qui se désintègre en ⁵⁶Fe — c'est ce que dit le texte du cours lui-même. |
 
 ### 11.4 Ce qui n'a pas pu être fait, et pourquoi
 
 | Demande | État |
 |---|---|
-| **Photo du réacteur PULSTAR** (B3) | **Bloqué.** L'image est arrivée dans la conversation, pas dans le dépôt : elle ne peut pas être écrite sur le disque depuis là. Cadre de réservation posé aux bonnes dimensions, **légende déjà en place, mot pour mot**. Dépose le fichier dans `_a-deposer/es1/` et l'intégration se réduit à remplacer une balise. |
-| **Animation « vie et mort des étoiles »** (C3) | **Cherché, pas tranché.** Une piste vérifiée (Observatoire de Paris, `media4.obspm.fr` — mais ce sont des pages illustrées, pas une animation) ; une piste non vérifiée (`starinabox.net`, vraie animation interactive, très utilisée en classe, **que je n'ai pas pu ouvrir**). L'image de géante rouge reste : **le choix d'une ressource t'appartient.** |
+| **Photo du réacteur PULSTAR** (B3) | **Fait au second audit** : `t1c1-reacteur-pulstar.jpg`, CC BY-SA 3.0, Wikimedia Commons. |
+| **Animation « vie et mort des étoiles »** (C3) | **Remplacée au second audit** par un paragraphe sur le rémanent et la photo du rémanent de Kepler ; le lien Observatoire de Paris est passé dans le bonus 2.6. `starinabox.net` n'a toujours pas été ouvert. |
 | **« Le second QCM doit remonter en 1.1 »** (B2) | **Ambigu.** Le mini-QCM de prérequis est écrit et posé. Mais aucun QCM existant ne porte sur « ce qui vient d'être fait » en 1.1 — celui de 1.2 porte bien sur 1.2. **Dis-moi lequel tu visais.** |
 | **Autres vidéos** (E3) | Annoncées dans l'audit, **pas fournies**. |
 | **« À retenir » final à revoir ensemble** (D1) | Il est désormais **rassemblé en 3.1**, cinq encadrés, strictement dans le programme. À relire. |
@@ -717,4 +725,80 @@ HTML : la prochaine exécution l'écrasera. 🔴 `noyaux.py` **refuse de dessine
   l'étape ; le tri tire 24 noyaux, les place, annonce 24/24 et se réinitialise.
 - Le glossaire **testé en validant deux étapes** : 6 mots sur 16 s'ouvrent, les autres
   restent annoncés « à découvrir — étape 2.2 ».
+
+---
+
+## 12. Second audit du chapitre T1-C1 — 12-13/09/2026
+
+> Porte sur la seule page `1re-es-t1-c1-nucleosynthese`, après ta relecture du
+> 12/09. Tout se fait **dans la page** et dans les deux générateurs : le moteur partagé
+> `sequence-snt.js` n'a **pas** été touché.
+
+### 12.1 Ce qui a changé dans la page
+
+| Où | Fait |
+|---|---|
+| Partout | Mentions « cours de M. Van Hoorde » retirées (13) ; cadres « Proposition — Difficulté » retirés (6) ; réactions `.reac` centrées. |
+| 1.1 | Encart « Première mécanique : le QCM » avant le QCM de prérequis ; « Deuxième mécanique : la réponse rédigée ». |
+| 1.2 | Photo PULSTAR en place. QCM : « éléments naturels » → 92 / **94** / 118 / 103. Encart « 🧭 La classification te suit » sous le tableau. |
+| 1.3 | Cinquième rang au tableau (Ca 4,1 % ; autres 8,2 %). Légendes des trois graphiques en **saisie libre** (ES-21), la légende avant le titre. Encart « Quatrième mécanique : la légende à compléter ». |
+| 1.4 | Explications des six choix réécrites ; l'item 3 accepte aussi « fission », avec l'explication du piège (désintégration α, chapitre 2). Réponse rédigée NUC-2f supprimée (redondante). QCM NUC-2e réécrit, 8 questions. |
+| 2.1 | Second cadre de notes et atelier « reconnaître les noyaux » supprimés ; lien Observatoire de Paris déplacé en bonus 2.6. |
+| 2.3 | Paragraphe « rémanent de supernova » + photo du rémanent de Kepler ; question « Qu'est-ce qu'une supernova ? » ajoutée au QCM. |
+| 2.4 | Ancien tableau à compléter supprimé : « Chaque noyau à son usine » devient le point 2. |
+| 2.5 | Tableau des provenances placé **après** la réponse rédigée, sous « Pour conclure — qui a fabriqué quoi ». |
+| 3.2 | Vidéo de révision et Kahoot rapatriés depuis le bonus ; 5 liens YouTube réparés (`youtube-nocookie.com/watch` n'existe pas). |
+| Schémas | Chaîne p-p redessinée (bilan 4 ¹H → ⁴He + 2 e⁺ + 2 ν) ; couches de l'étoile en disques pleins ; **⁵⁸Ni → ⁵⁶Ni** (§11.3, n° 9) ; doublons « 2²H » / « 3³He » de la chaîne primordiale corrigés ; légende en vraies billes. |
+| QCM de prérequis | Coquille « l'isotype considéré » → « l'isotope ». |
+
+### 12.2 Une étape se valide quand TOUT y est fait
+
+Le moteur valide une étape au **premier** bloc réussi : en 1.3, un seul « Vérifier »
+remplissait le cercle. Un script en fin de page intercepte `etape-validee` en phase de
+capture et le **retient** tant qu'un bloc de l'étape reste à faire (réponse rédigée,
+QCM non facultatif, texte à trous vérifié, tri réussi, légende libre remplie, les six
+choix justes). Le cercle de l'étape se **remplit au prorata** (`data-avance`), et le
+« à retenir » reste fermé avec la note « il te reste N activités ».
+
+Joué au navigateur en parcours d'élève réel, sans rien forcer : les 9 étapes à valider
+se valident ; 1.3 progresse de 13 en 13 % et ne se valide qu'au 8ᵉ bloc ; 1.4 marche
+dans les deux ordres ; 2.4 attend le texte à trous **et** le tri ; 0 erreur JS.
+
+🔴 Le mécanisme vit **dans cette page**. S'il convient, il a vocation à remonter dans
+le moteur — mais alors pour les 22 pages, avec le bump `?v=` qui va avec.
+
+### 12.3 Gras et rouge, remis à la table des conventions
+
+**153 gras dont 17 rouges** (au lieu de 203 dont 23). Plus aucun gras dans une légende de
+figure ; plus aucun rouge hors d'un « à retenir » ; un seul gras par correction de QCM
+et par explication de choix ; un terme en gras à sa **première** occurrence seulement ;
+dans un « à retenir », le rouge seul, sans gras d'appoint. Le gras d'interface
+(« Objectif — », « à savoir », titres de ressources) et celui des cadres de chantier
+n'ont pas été touchés.
+
+Une exception assumée : l'encadré 3 de la révision (« Fusion et fission ») garde **deux
+rouges**, les deux mots formant une seule notion à restituer.
+
+### 12.4 Le panneau « Classification périodique »
+
+Bouton **🧪 Classification**, au-dessus du glossaire. Il ouvre, sans voile, le tableau de
+l'étape 1.2 ; une case touchée affiche la fiche de l'élément : nom, symbole, Z (= nombre
+de protons), état à 20 °C, artificiel ou non, CHON, famille (lanthanides, actinides).
+**La provenance n'y figure pas** : c'est la réponse de la séance 2. Masqué pendant les
+QCM et les réponses rédigées. Utilisable au clavier (Tab, Entrée, Échap).
+
+Les **118 noms français** vivent dans `_outils/es/tableau_periodique.py` et vont dans le
+`<title>` de chaque case (survol, lecteur d'écran) : le panneau les y relit.
+
+### 12.5 Vu pendant le second audit, hors de son périmètre
+
+- **Les boutons `.btn` du moteur s'affichent en Times New Roman** (« Vérifier »,
+  « Répondre », « Nouveau tirage »…) : la règle de `sequence-snt.css` demande
+  `"IBM Plex Sans"` **sans police de secours**, et cette police est cassée (voir
+  `CLAUDE.md`). Correctif d'une ligne, mais dans le CSS partagé : 22 pages et un bump.
+- **Tri des noyaux** : noyau sélectionné + toucher une colonne **sur un noyau déjà
+  posé** → c'est ce noyau-là qui est sélectionné, au lieu d'y déposer le premier.
+- **Bug « Étape suivante descend trop loin »** (séance 1) : **non reproduit** en 820×1180,
+  1024×768 et 768×1024, y compris 1.4 → bonus 1.5 — le défilement se pose toujours à
+  108 px, sous la barre. À revoir avec l'appareil exact (Safari iPad ?).
 

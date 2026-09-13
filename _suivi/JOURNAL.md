@@ -3599,3 +3599,42 @@ Contrôles : `node verifier.mjs` → 18 ; Playwright 1024 et 768 px → zéro er
 parcours validé étape par étape. Le verrouillage de la séance 2 se réarme à chaque
 validation en séance 1 : un test qui déverrouille une fois au chargement échoue
 plus loin — il faut déverrouiller avant chaque partie.
+
+## 13/09/2026 — Second audit du chapitre ES T1-C1, repris après une session interrompue
+
+La session du 12/09 s'était arrêtée en boucle au milieu du chantier, en laissant une
+passation (`_suivi/passation-es1-t1c1-audit2.md`) et un script de validation inséré
+mais jamais testé. Loïc demandait, si ça rebouclait, de trouver où. Rien n'a rebouclé :
+le script n'écrit une classe que si elle change, et ses autres écritures (`data-avance`,
+`--avance`) échappent au `MutationObserver` du moteur, filtré sur `class`. La boucle
+tenait vraisemblablement à la session, pas à la page. Méthode retenue pour la suite :
+des tests Playwright qui écrivent leur journal ligne à ligne, chaque action bornée
+par un délai, et une passation tenue à jour à chaque point terminé.
+
+Le parcours d'élève a été rejoué sans rien forcer, avec le bouton « Étape suivante » :
+les neuf étapes à valider tombent, 1.3 progresse de 13 en 13 % et ne cède qu'au
+huitième bloc, 1.4 tient dans les deux ordres. Un faux négatif en route : le tri des
+noyaux « échouait » parce que le test cliquait au centre d'une colonne, sur un noyau
+déjà posé — ce qui sélectionne ce noyau au lieu d'y déposer l'autre. Défaut réel pour
+un élève sur iPad, noté hors périmètre. Autre fausse piste : un −33 px mesuré à
+700 ms sur le défilement vers l'étape suivante, qui semblait reproduire le bug signalé
+par Loïc ; un échantillonnage toutes les 100 ms a montré que le défilement se pose
+toujours à 108 px — la mesure tombait en pleine animation.
+
+Gras et rouge : mesurés par script sur le DOM (bs4 absent, analyse faite dans
+Chromium), puis retouchés en 55 remplacements exacts, chacun devant trouver son texte
+une seule fois. 203 → 153 gras, 23 → 17 rouges. La passe a fait sortir une coquille
+de QCM (« isotype ») et une violation de la règle « pas d'exercice » dans la note
+écrite la veille.
+
+Panneau « Classification » : les noms français sont allés dans le générateur plutôt
+que dans la page, pour qu'un seul fichier porte les données ; le panneau clone le SVG
+de l'étape 1.2 et lit le `<title>` de chaque case. Testé en 820×1180, 1024×768 et
+1366×1024 — en paysage la fiche sortait du panneau, elle y défile désormais.
+
+Trois onglets tournaient en parallèle sur le dépôt. Les fichiers de suivi partagés
+ont reçu leurs entrées en copie de travail, mais seul l'ajout de ce chantier est parti
+dans le commit, reconstruit sur HEAD — les modifications des autres onglets restent
+non commitées, à eux de les livrer.
+
+Contrôles : `node verifier.mjs` → 18.

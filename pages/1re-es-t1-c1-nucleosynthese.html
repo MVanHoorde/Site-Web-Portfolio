@@ -283,6 +283,52 @@
   .ll-u{font-size:14px;color:var(--ink-soft)}
   .ll-aide{font-size:13px;color:var(--ink-soft);margin:6px 0 0;line-height:1.45}
 
+  /* ---------- CERCLE D'ÉTAPE REMPLI AU PRORATA (audit du 12/09/2026) ----------
+     data-avance / --avance sont posés par le script de fin de page : une
+     étape à cinq blocs dont deux sont faits montre un cercle rempli à 40 %. */
+  .seance .step[data-avance]:not(.is-done):not(.is-wait) .step-pip{
+    background:conic-gradient(var(--sc,var(--link)) calc(var(--avance)*1%),var(--bg) 0);
+    border-color:var(--sc,var(--link))}
+  .bilan-attend{display:none;font-size:13.5px;color:var(--ink-soft);margin:12px 0 0}
+  .step[data-avance]:not(.is-done) [data-bilan-wrap]{display:none!important}
+  .step[data-avance]:not(.is-done) [data-bilan-wrap][data-ouvert="1"] + .bilan-attend{display:block}
+
+  /* ---------- PANNEAU « CLASSIFICATION PÉRIODIQUE » (audit du 12/09/2026) ----------
+     Consultable à tout moment, sans quitter sa prise de notes : pas de voile,
+     la page reste utilisable dessous. Masqué pendant un QCM et pendant une
+     réponse rédigée, comme le glossaire — sinon ce serait une antisèche.
+     Le bouton se pose au-dessus de celui du glossaire (#glo-ouvrir). */
+  #tp-ouvrir{position:fixed;right:14px;bottom:66px;z-index:41;min-height:44px;padding:0 15px;
+    border-radius:999px;border:1px solid var(--link);background:var(--surface);color:var(--link);
+    font:600 14px/1 "Inter",system-ui,sans-serif;cursor:pointer;box-shadow:var(--shadow)}
+  #tp-ouvrir[aria-expanded="true"]{background:var(--link);color:#fff}
+  #tp-panneau{position:fixed;right:14px;bottom:120px;z-index:42;width:min(640px,calc(100vw - 28px));
+    max-height:calc(100vh - var(--barre-h,96px) - 132px);overflow:auto;background:var(--surface);
+    border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px rgba(22,31,51,.24);
+    padding:10px 14px 14px}
+  body.qcm-on #tp-ouvrir, body.qcm-on #tp-panneau,
+  body.focus-on #tp-ouvrir, body.focus-on #tp-panneau{display:none!important}
+  .tpp-tete{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .tpp-tete h2{font:600 15px/1.3 "Space Grotesk","Inter",system-ui,sans-serif;margin:0}
+  .tpp-fermer{min-width:44px;min-height:44px;border:0;background:none;font-size:18px;
+    color:var(--ink-soft);cursor:pointer;border-radius:9px}
+  .tpp-fermer:hover{background:var(--surface-2)}
+  .tpp-aide{font-size:13px;color:var(--ink-soft);margin:0 0 6px}
+  .tpp-svg .tp g.c[data-z]{cursor:pointer;outline:none}
+  .tpp-svg .tp g.c[data-z]:focus-visible rect,
+  .tpp-svg .tp g.c.choisi rect{stroke:var(--link);stroke-width:3.2}
+  .tpp-fiche{display:flex;gap:14px;align-items:flex-start;margin-top:10px;padding:10px 12px;
+    border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-size:14px;line-height:1.45}
+  .tpp-fiche:empty{display:none}
+  .tpp-case{flex:none;width:62px;height:62px;border:1.5px solid var(--ink);border-radius:6px;
+    background:var(--surface);display:flex;flex-direction:column;justify-content:space-between;padding:4px 6px}
+  .tpp-case .z{font:11px/1 "IBM Plex Mono",monospace;color:var(--ink-faint)}
+  .tpp-case .s{font:600 24px/1 "Space Grotesk","Inter",system-ui,sans-serif;text-align:center;padding-bottom:4px}
+  .tpp-nom{font:600 16px/1.2 "Space Grotesk","Inter",system-ui,sans-serif;margin:2px 0 4px}
+  .tpp-fiche ul{margin:0;padding-left:18px}
+  .tpp-fiche li{margin:1px 0}
+  @media print{#tp-ouvrir,#tp-panneau{display:none!important}}
+
   /* ---------- TRI DES NOYAUX (audit C4) ---------- */
   .tri{margin:14px 0}
   .tri-barre{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;
@@ -392,7 +438,7 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> situer tes acquis de seconde, puis savoir où va ton travail, ce que ton professeur en voit, ce qui se corrige tout seul et ce qui est relu par un humain.</span></div>
           </div>
           <div class="card-body">
-            <p style="font-size:14.5px;margin:4px 0 12px">Ce cours n'est pas un PDF à lire. C'est une <b>suite d'étapes</b> : tu lis, tu regardes, tu manipules, puis <b>tu produis quelque chose</b>. Chaque étape que tu valides fait avancer la barre en haut de la séance ; quand une séance est entièrement validée, la suivante se déverrouille.</p>
+            <p style="font-size:14.5px;margin:4px 0 12px">Ce cours n'est pas un PDF à lire. C'est une suite d'étapes : tu lis, tu regardes, tu manipules, puis <b>tu produis quelque chose</b>. Chaque étape que tu valides fait avancer la barre en haut de la séance ; quand une séance est entièrement validée, la suivante se déverrouille.</p>
 
             <div class="tuto">
               <span class="tl">🧭 Ce qui va se passer</span>
@@ -443,7 +489,7 @@
    "Les deux mots désignent la même chose selon le contexte"
   ],
   "r": 0,
-  "c": "L'atome est la brique&nbsp;; la <b>molécule</b> est l'assemblage. L'eau H₂O est une molécule de trois atomes. Un atome qui a gagné ou perdu des électrons, lui, s'appelle un <b>ion</b>."
+  "c": "L'atome est la brique&nbsp;; la <b>molécule</b> est l'assemblage. L'eau H₂O est une molécule de trois atomes. Un atome qui a gagné ou perdu des électrons, lui, s'appelle un ion."
  },
  {
   "q": "Quels éléments chimiques forment l'essentiel des molécules du vivant ?",
@@ -454,7 +500,7 @@
    "L'hélium, le néon, l'argon et le krypton"
   ],
   "r": 1,
-  "c": "<b>C, H, O, N</b> — on les retient sous le nom de <b>CHON</b>. Tout le reste (fer, zinc, calcium…) est présent, mais en très petite quantité. Tu le vérifieras à l'étape 1.3, chiffres en main."
+  "c": "C, H, O, N — on les retient sous le nom de <b>CHON</b>. Tout le reste (fer, zinc, calcium…) est présent, mais en très petite quantité. Tu le vérifieras à l'étape 1.3, chiffres en main."
  },
  {
   "q": "Parmi ces quatre éléments, lequel n'est pas un métal ?",
@@ -487,7 +533,7 @@
    "De protons et d'électrons, en nombres toujours égaux"
   ],
   "r": 0,
-  "c": "Protons et neutrons&nbsp;: ensemble, on les appelle les <b>nucléons</b>. Les <b>électrons</b>, eux, sont à l'extérieur du noyau. Tout ce chapitre parle de ce qui arrive aux noyaux — donc aux nucléons."
+  "c": "Protons et neutrons&nbsp;: ensemble, on les appelle les <b>nucléons</b>. Les électrons, eux, sont à l'extérieur du noyau. Tout ce chapitre parle de ce qui arrive aux noyaux — donc aux nucléons."
  }
 ]
               </script>
@@ -496,7 +542,7 @@
             sont rappelées dans la vidéo de l'étape 1.3, de 0:03 à 2:44.</p>
 
             <div class="block-label">Deuxième mécanique : la réponse rédigée</div>
-            <p style="font-size:14.5px;margin:4px 0 10px">On commence tout de suite. Le champ ci-dessous est une <b>réponse rédigée</b> : quand tu cliques, le reste de la page se <b>floute</b> — tu écris sans rien pouvoir recopier, et le copier-coller est bloqué. C'est voulu : ce qui compte, c'est ce que tu sais formuler.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">On commence tout de suite. Le champ ci-dessous est une <b>réponse rédigée</b> : quand tu cliques, le reste de la page se floute — tu écris sans rien pouvoir recopier, et le copier-coller est bloqué. C'est voulu : ce qui compte, c'est ce que tu sais formuler.</p>
 
             <div class="field" data-focus
                  data-focus-titre="D'où vient la matière ?"
@@ -524,26 +570,26 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir que c'est le nombre de protons, et lui seul, qui décide de l'élément — et savoir lire un tableau périodique.</span></div>
           </div>
           <div class="card-body">
-            <p class="transi">Tu viens d'écrire, sans aucune aide, d'où viennent selon toi les atomes de ton corps. Garde cette phrase en tête : tu la reliras à la fin du chapitre. Pour y répondre vraiment, il faut d'abord savoir <b>de quoi on parle</b> — ce qu'est un élément chimique.</p>
-            <p style="font-size:14.5px;margin:4px 0 10px">Il existe plusieurs «&nbsp;types&nbsp;» d'atomes&nbsp;: les atomes d'hydrogène, de carbone, de fer… Ces différents types d'atomes sont appelés des <b class="cle">éléments chimiques</b>. On en connaît aujourd'hui <b>118</b>, dont <b>94 existent dans la nature</b>&nbsp;; les 24 autres n'ont jamais été observés ailleurs que dans un laboratoire&nbsp;: ils sont d'origine <button type="button" class="plustard def" data-plustard data-glossaire="Anthropique">anthropique<span class="bulle">Dû à l'activité humaine. Un élément anthropique n'existe pas dans la nature&nbsp;: c'est l'homme qui l'a fabriqué. Tu retrouveras ce mot en séance 2, sur le tableau périodique des provenances.</span></button>.</p>
+            <p class="transi">Tu viens d'écrire, sans aucune aide, d'où viennent selon toi les atomes de ton corps. Garde cette phrase en tête : tu la reliras à la fin du chapitre. Pour y répondre vraiment, il faut d'abord savoir de quoi on parle — ce qu'est un élément chimique.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Il existe plusieurs «&nbsp;types&nbsp;» d'atomes&nbsp;: les atomes d'hydrogène, de carbone, de fer… Ces différents types d'atomes sont appelés des <b>éléments chimiques</b>. On en connaît aujourd'hui 118, dont <b>94 existent dans la nature</b>&nbsp;; les 24 autres n'ont jamais été observés ailleurs que dans un laboratoire&nbsp;: ils sont d'origine <button type="button" class="plustard def" data-plustard data-glossaire="Anthropique">anthropique<span class="bulle">Dû à l'activité humaine. Un élément anthropique n'existe pas dans la nature&nbsp;: c'est l'homme qui l'a fabriqué. Tu retrouveras ce mot en séance 2, sur le tableau périodique des provenances.</span></button>.</p>
 
             <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
-            <div class="retain">Le fait qu'un atome soit de tel ou tel <b>élément chimique</b> dépend uniquement du nombre de protons que contient son noyau. On appelle ce nombre le <b class="cle">numéro atomique Z</b>.</div>
+            <div class="retain">Le fait qu'un atome soit de tel ou tel élément chimique dépend uniquement du nombre de protons que contient son noyau. On appelle ce nombre le <b class="cle">numéro atomique Z</b>.</div>
 
 
             <div class="block-label">Rappel de seconde — une case, trois mots</div>
             <p style="font-size:14.5px;margin:4px 0 10px">C'est ici que la confusion se glisse
-            toujours&nbsp;: <b>atome</b> et <b>élément chimique</b> ne sont pas la même chose. Trois
-            objets différents peuvent occuper la <b>même case</b> du tableau périodique&nbsp;:</p>
+            toujours&nbsp;: <b>atome</b> et élément chimique ne sont pas la même chose. Trois
+            objets différents peuvent occuper la même case du tableau périodique&nbsp;:</p>
             <ul style="font-size:14.5px;margin:4px 0 10px;padding-left:20px">
-              <li>un <b>atome</b> neutre — autant d'électrons autour que de protons dans le noyau&nbsp;;</li>
+              <li>un atome neutre — autant d'électrons autour que de protons dans le noyau&nbsp;;</li>
               <li>un <b>ion</b> — le même atome, qui a gagné ou perdu des électrons. Son noyau, lui,
                 n'a pas bougé&nbsp;;</li>
               <li>un <b>isotope</b> — le même élément, avec un nombre de <i>neutrons</i> différent.
                 Son nombre de protons, lui, n'a pas bougé.</li>
             </ul>
             <p style="font-size:14.5px;margin:4px 0 10px">Dans les trois cas, Z est le même&nbsp;:
-            c'est donc le <b class="cle">même élément chimique</b>. Le sodium Na, l'ion sodium
+            c'est donc le même élément chimique. Le sodium Na, l'ion sodium
             Na<sup>+</sup> et le sodium 22 occupent une seule et même case&nbsp;: la onzième.</p>
             <figure class="ill">
               <!-- SVG:tableau-etats — genere par _outils/es/tableau_periodique.py, ne pas editer a la main -->
@@ -574,124 +620,124 @@
 <text class="rep dr" x="22" y="234">5</text>
 <text class="rep dr" x="22" y="278">6</text>
 <text class="rep dr" x="22" y="322">7</text>
-<g class="c gaz"><title>H — numéro atomique 1</title><rect x="30" y="34" width="41" height="41" rx="3"/><text class="z" x="33" y="45">1</text><text class="s" x="50" y="64">H</text><circle class="chon" cx="64" cy="42" r="3.2"/></g>
-<g class="c gaz"><title>He — numéro atomique 2</title><rect x="778" y="34" width="41" height="41" rx="3"/><text class="z" x="781" y="45">2</text><text class="s" x="798" y="64">He</text></g>
-<g class="c"><title>Li — numéro atomique 3</title><rect x="30" y="78" width="41" height="41" rx="3"/><text class="z" x="33" y="89">3</text><text class="s" x="50" y="108">Li</text></g>
-<g class="c"><title>Be — numéro atomique 4</title><rect x="74" y="78" width="41" height="41" rx="3"/><text class="z" x="77" y="89">4</text><text class="s" x="94" y="108">Be</text></g>
-<g class="c"><title>B — numéro atomique 5</title><rect x="558" y="78" width="41" height="41" rx="3"/><text class="z" x="561" y="89">5</text><text class="s" x="578" y="108">B</text></g>
-<g class="c"><title>C — numéro atomique 6</title><rect x="602" y="78" width="41" height="41" rx="3"/><text class="z" x="605" y="89">6</text><text class="s" x="622" y="108">C</text><circle class="chon" cx="636" cy="86" r="3.2"/></g>
-<g class="c gaz"><title>N — numéro atomique 7</title><rect x="646" y="78" width="41" height="41" rx="3"/><text class="z" x="649" y="89">7</text><text class="s" x="666" y="108">N</text><circle class="chon" cx="680" cy="86" r="3.2"/></g>
-<g class="c gaz"><title>O — numéro atomique 8</title><rect x="690" y="78" width="41" height="41" rx="3"/><text class="z" x="693" y="89">8</text><text class="s" x="710" y="108">O</text><circle class="chon" cx="724" cy="86" r="3.2"/></g>
-<g class="c gaz"><title>F — numéro atomique 9</title><rect x="734" y="78" width="41" height="41" rx="3"/><text class="z" x="737" y="89">9</text><text class="s" x="754" y="108">F</text></g>
-<g class="c gaz"><title>Ne — numéro atomique 10</title><rect x="778" y="78" width="41" height="41" rx="3"/><text class="z" x="781" y="89">10</text><text class="s" x="798" y="108">Ne</text></g>
-<g class="c"><title>Na — numéro atomique 11</title><rect x="30" y="122" width="41" height="41" rx="3"/><text class="z" x="33" y="133">11</text><text class="s" x="50" y="152">Na</text></g>
-<g class="c"><title>Mg — numéro atomique 12</title><rect x="74" y="122" width="41" height="41" rx="3"/><text class="z" x="77" y="133">12</text><text class="s" x="94" y="152">Mg</text></g>
-<g class="c"><title>Al — numéro atomique 13</title><rect x="558" y="122" width="41" height="41" rx="3"/><text class="z" x="561" y="133">13</text><text class="s" x="578" y="152">Al</text></g>
-<g class="c"><title>Si — numéro atomique 14</title><rect x="602" y="122" width="41" height="41" rx="3"/><text class="z" x="605" y="133">14</text><text class="s" x="622" y="152">Si</text></g>
-<g class="c"><title>P — numéro atomique 15</title><rect x="646" y="122" width="41" height="41" rx="3"/><text class="z" x="649" y="133">15</text><text class="s" x="666" y="152">P</text></g>
-<g class="c"><title>S — numéro atomique 16</title><rect x="690" y="122" width="41" height="41" rx="3"/><text class="z" x="693" y="133">16</text><text class="s" x="710" y="152">S</text></g>
-<g class="c gaz"><title>Cl — numéro atomique 17</title><rect x="734" y="122" width="41" height="41" rx="3"/><text class="z" x="737" y="133">17</text><text class="s" x="754" y="152">Cl</text></g>
-<g class="c gaz"><title>Ar — numéro atomique 18</title><rect x="778" y="122" width="41" height="41" rx="3"/><text class="z" x="781" y="133">18</text><text class="s" x="798" y="152">Ar</text></g>
-<g class="c"><title>K — numéro atomique 19</title><rect x="30" y="166" width="41" height="41" rx="3"/><text class="z" x="33" y="177">19</text><text class="s" x="50" y="196">K</text></g>
-<g class="c"><title>Ca — numéro atomique 20</title><rect x="74" y="166" width="41" height="41" rx="3"/><text class="z" x="77" y="177">20</text><text class="s" x="94" y="196">Ca</text></g>
-<g class="c"><title>Sc — numéro atomique 21</title><rect x="118" y="166" width="41" height="41" rx="3"/><text class="z" x="121" y="177">21</text><text class="s" x="138" y="196">Sc</text></g>
-<g class="c"><title>Ti — numéro atomique 22</title><rect x="162" y="166" width="41" height="41" rx="3"/><text class="z" x="165" y="177">22</text><text class="s" x="182" y="196">Ti</text></g>
-<g class="c"><title>V — numéro atomique 23</title><rect x="206" y="166" width="41" height="41" rx="3"/><text class="z" x="209" y="177">23</text><text class="s" x="226" y="196">V</text></g>
-<g class="c"><title>Cr — numéro atomique 24</title><rect x="250" y="166" width="41" height="41" rx="3"/><text class="z" x="253" y="177">24</text><text class="s" x="270" y="196">Cr</text></g>
-<g class="c"><title>Mn — numéro atomique 25</title><rect x="294" y="166" width="41" height="41" rx="3"/><text class="z" x="297" y="177">25</text><text class="s" x="314" y="196">Mn</text></g>
-<g class="c"><title>Fe — numéro atomique 26</title><rect x="338" y="166" width="41" height="41" rx="3"/><text class="z" x="341" y="177">26</text><text class="s" x="358" y="196">Fe</text></g>
-<g class="c"><title>Co — numéro atomique 27</title><rect x="382" y="166" width="41" height="41" rx="3"/><text class="z" x="385" y="177">27</text><text class="s" x="402" y="196">Co</text></g>
-<g class="c"><title>Ni — numéro atomique 28</title><rect x="426" y="166" width="41" height="41" rx="3"/><text class="z" x="429" y="177">28</text><text class="s" x="446" y="196">Ni</text></g>
-<g class="c"><title>Cu — numéro atomique 29</title><rect x="470" y="166" width="41" height="41" rx="3"/><text class="z" x="473" y="177">29</text><text class="s" x="490" y="196">Cu</text></g>
-<g class="c"><title>Zn — numéro atomique 30</title><rect x="514" y="166" width="41" height="41" rx="3"/><text class="z" x="517" y="177">30</text><text class="s" x="534" y="196">Zn</text></g>
-<g class="c"><title>Ga — numéro atomique 31</title><rect x="558" y="166" width="41" height="41" rx="3"/><text class="z" x="561" y="177">31</text><text class="s" x="578" y="196">Ga</text></g>
-<g class="c"><title>Ge — numéro atomique 32</title><rect x="602" y="166" width="41" height="41" rx="3"/><text class="z" x="605" y="177">32</text><text class="s" x="622" y="196">Ge</text></g>
-<g class="c"><title>As — numéro atomique 33</title><rect x="646" y="166" width="41" height="41" rx="3"/><text class="z" x="649" y="177">33</text><text class="s" x="666" y="196">As</text></g>
-<g class="c"><title>Se — numéro atomique 34</title><rect x="690" y="166" width="41" height="41" rx="3"/><text class="z" x="693" y="177">34</text><text class="s" x="710" y="196">Se</text></g>
-<g class="c liq"><title>Br — numéro atomique 35</title><rect x="734" y="166" width="41" height="41" rx="3"/><text class="z" x="737" y="177">35</text><text class="s" x="754" y="196">Br</text></g>
-<g class="c gaz"><title>Kr — numéro atomique 36</title><rect x="778" y="166" width="41" height="41" rx="3"/><text class="z" x="781" y="177">36</text><text class="s" x="798" y="196">Kr</text></g>
-<g class="c"><title>Rb — numéro atomique 37</title><rect x="30" y="210" width="41" height="41" rx="3"/><text class="z" x="33" y="221">37</text><text class="s" x="50" y="240">Rb</text></g>
-<g class="c"><title>Sr — numéro atomique 38</title><rect x="74" y="210" width="41" height="41" rx="3"/><text class="z" x="77" y="221">38</text><text class="s" x="94" y="240">Sr</text></g>
-<g class="c"><title>Y — numéro atomique 39</title><rect x="118" y="210" width="41" height="41" rx="3"/><text class="z" x="121" y="221">39</text><text class="s" x="138" y="240">Y</text></g>
-<g class="c"><title>Zr — numéro atomique 40</title><rect x="162" y="210" width="41" height="41" rx="3"/><text class="z" x="165" y="221">40</text><text class="s" x="182" y="240">Zr</text></g>
-<g class="c"><title>Nb — numéro atomique 41</title><rect x="206" y="210" width="41" height="41" rx="3"/><text class="z" x="209" y="221">41</text><text class="s" x="226" y="240">Nb</text></g>
-<g class="c"><title>Mo — numéro atomique 42</title><rect x="250" y="210" width="41" height="41" rx="3"/><text class="z" x="253" y="221">42</text><text class="s" x="270" y="240">Mo</text></g>
-<g class="c"><title>Tc — numéro atomique 43</title><rect x="294" y="210" width="41" height="41" rx="3"/><text class="z" x="297" y="221">43</text><text class="s" x="314" y="240">Tc</text></g>
-<g class="c"><title>Ru — numéro atomique 44</title><rect x="338" y="210" width="41" height="41" rx="3"/><text class="z" x="341" y="221">44</text><text class="s" x="358" y="240">Ru</text></g>
-<g class="c"><title>Rh — numéro atomique 45</title><rect x="382" y="210" width="41" height="41" rx="3"/><text class="z" x="385" y="221">45</text><text class="s" x="402" y="240">Rh</text></g>
-<g class="c"><title>Pd — numéro atomique 46</title><rect x="426" y="210" width="41" height="41" rx="3"/><text class="z" x="429" y="221">46</text><text class="s" x="446" y="240">Pd</text></g>
-<g class="c"><title>Ag — numéro atomique 47</title><rect x="470" y="210" width="41" height="41" rx="3"/><text class="z" x="473" y="221">47</text><text class="s" x="490" y="240">Ag</text></g>
-<g class="c"><title>Cd — numéro atomique 48</title><rect x="514" y="210" width="41" height="41" rx="3"/><text class="z" x="517" y="221">48</text><text class="s" x="534" y="240">Cd</text></g>
-<g class="c"><title>In — numéro atomique 49</title><rect x="558" y="210" width="41" height="41" rx="3"/><text class="z" x="561" y="221">49</text><text class="s" x="578" y="240">In</text></g>
-<g class="c"><title>Sn — numéro atomique 50</title><rect x="602" y="210" width="41" height="41" rx="3"/><text class="z" x="605" y="221">50</text><text class="s" x="622" y="240">Sn</text></g>
-<g class="c"><title>Sb — numéro atomique 51</title><rect x="646" y="210" width="41" height="41" rx="3"/><text class="z" x="649" y="221">51</text><text class="s" x="666" y="240">Sb</text></g>
-<g class="c"><title>Te — numéro atomique 52</title><rect x="690" y="210" width="41" height="41" rx="3"/><text class="z" x="693" y="221">52</text><text class="s" x="710" y="240">Te</text></g>
-<g class="c"><title>I — numéro atomique 53</title><rect x="734" y="210" width="41" height="41" rx="3"/><text class="z" x="737" y="221">53</text><text class="s" x="754" y="240">I</text></g>
-<g class="c gaz"><title>Xe — numéro atomique 54</title><rect x="778" y="210" width="41" height="41" rx="3"/><text class="z" x="781" y="221">54</text><text class="s" x="798" y="240">Xe</text></g>
-<g class="c"><title>Cs — numéro atomique 55</title><rect x="30" y="254" width="41" height="41" rx="3"/><text class="z" x="33" y="265">55</text><text class="s" x="50" y="284">Cs</text></g>
-<g class="c"><title>Ba — numéro atomique 56</title><rect x="74" y="254" width="41" height="41" rx="3"/><text class="z" x="77" y="265">56</text><text class="s" x="94" y="284">Ba</text></g>
-<g class="c"><title>Hf — numéro atomique 72</title><rect x="162" y="254" width="41" height="41" rx="3"/><text class="z" x="165" y="265">72</text><text class="s" x="182" y="284">Hf</text></g>
-<g class="c"><title>Ta — numéro atomique 73</title><rect x="206" y="254" width="41" height="41" rx="3"/><text class="z" x="209" y="265">73</text><text class="s" x="226" y="284">Ta</text></g>
-<g class="c"><title>W — numéro atomique 74</title><rect x="250" y="254" width="41" height="41" rx="3"/><text class="z" x="253" y="265">74</text><text class="s" x="270" y="284">W</text></g>
-<g class="c"><title>Re — numéro atomique 75</title><rect x="294" y="254" width="41" height="41" rx="3"/><text class="z" x="297" y="265">75</text><text class="s" x="314" y="284">Re</text></g>
-<g class="c"><title>Os — numéro atomique 76</title><rect x="338" y="254" width="41" height="41" rx="3"/><text class="z" x="341" y="265">76</text><text class="s" x="358" y="284">Os</text></g>
-<g class="c"><title>Ir — numéro atomique 77</title><rect x="382" y="254" width="41" height="41" rx="3"/><text class="z" x="385" y="265">77</text><text class="s" x="402" y="284">Ir</text></g>
-<g class="c"><title>Pt — numéro atomique 78</title><rect x="426" y="254" width="41" height="41" rx="3"/><text class="z" x="429" y="265">78</text><text class="s" x="446" y="284">Pt</text></g>
-<g class="c"><title>Au — numéro atomique 79</title><rect x="470" y="254" width="41" height="41" rx="3"/><text class="z" x="473" y="265">79</text><text class="s" x="490" y="284">Au</text></g>
-<g class="c liq"><title>Hg — numéro atomique 80</title><rect x="514" y="254" width="41" height="41" rx="3"/><text class="z" x="517" y="265">80</text><text class="s" x="534" y="284">Hg</text></g>
-<g class="c"><title>Tl — numéro atomique 81</title><rect x="558" y="254" width="41" height="41" rx="3"/><text class="z" x="561" y="265">81</text><text class="s" x="578" y="284">Tl</text></g>
-<g class="c"><title>Pb — numéro atomique 82</title><rect x="602" y="254" width="41" height="41" rx="3"/><text class="z" x="605" y="265">82</text><text class="s" x="622" y="284">Pb</text></g>
-<g class="c"><title>Bi — numéro atomique 83</title><rect x="646" y="254" width="41" height="41" rx="3"/><text class="z" x="649" y="265">83</text><text class="s" x="666" y="284">Bi</text></g>
-<g class="c"><title>Po — numéro atomique 84</title><rect x="690" y="254" width="41" height="41" rx="3"/><text class="z" x="693" y="265">84</text><text class="s" x="710" y="284">Po</text></g>
-<g class="c"><title>At — numéro atomique 85</title><rect x="734" y="254" width="41" height="41" rx="3"/><text class="z" x="737" y="265">85</text><text class="s" x="754" y="284">At</text></g>
-<g class="c gaz"><title>Rn — numéro atomique 86</title><rect x="778" y="254" width="41" height="41" rx="3"/><text class="z" x="781" y="265">86</text><text class="s" x="798" y="284">Rn</text></g>
-<g class="c"><title>Fr — numéro atomique 87</title><rect x="30" y="298" width="41" height="41" rx="3"/><text class="z" x="33" y="309">87</text><text class="s" x="50" y="328">Fr</text></g>
-<g class="c"><title>Ra — numéro atomique 88</title><rect x="74" y="298" width="41" height="41" rx="3"/><text class="z" x="77" y="309">88</text><text class="s" x="94" y="328">Ra</text></g>
-<g class="c art"><title>Rf — numéro atomique 104</title><rect x="162" y="298" width="41" height="41" rx="3"/><text class="z" x="165" y="309">104</text><text class="s" x="182" y="328">Rf</text></g>
-<g class="c art"><title>Db — numéro atomique 105</title><rect x="206" y="298" width="41" height="41" rx="3"/><text class="z" x="209" y="309">105</text><text class="s" x="226" y="328">Db</text></g>
-<g class="c art"><title>Sg — numéro atomique 106</title><rect x="250" y="298" width="41" height="41" rx="3"/><text class="z" x="253" y="309">106</text><text class="s" x="270" y="328">Sg</text></g>
-<g class="c art"><title>Bh — numéro atomique 107</title><rect x="294" y="298" width="41" height="41" rx="3"/><text class="z" x="297" y="309">107</text><text class="s" x="314" y="328">Bh</text></g>
-<g class="c art"><title>Hs — numéro atomique 108</title><rect x="338" y="298" width="41" height="41" rx="3"/><text class="z" x="341" y="309">108</text><text class="s" x="358" y="328">Hs</text></g>
-<g class="c art"><title>Mt — numéro atomique 109</title><rect x="382" y="298" width="41" height="41" rx="3"/><text class="z" x="385" y="309">109</text><text class="s" x="402" y="328">Mt</text></g>
-<g class="c art"><title>Ds — numéro atomique 110</title><rect x="426" y="298" width="41" height="41" rx="3"/><text class="z" x="429" y="309">110</text><text class="s" x="446" y="328">Ds</text></g>
-<g class="c art"><title>Rg — numéro atomique 111</title><rect x="470" y="298" width="41" height="41" rx="3"/><text class="z" x="473" y="309">111</text><text class="s" x="490" y="328">Rg</text></g>
-<g class="c art"><title>Cn — numéro atomique 112</title><rect x="514" y="298" width="41" height="41" rx="3"/><text class="z" x="517" y="309">112</text><text class="s" x="534" y="328">Cn</text></g>
-<g class="c art"><title>Nh — numéro atomique 113</title><rect x="558" y="298" width="41" height="41" rx="3"/><text class="z" x="561" y="309">113</text><text class="s" x="578" y="328">Nh</text></g>
-<g class="c art"><title>Fl — numéro atomique 114</title><rect x="602" y="298" width="41" height="41" rx="3"/><text class="z" x="605" y="309">114</text><text class="s" x="622" y="328">Fl</text></g>
-<g class="c art"><title>Mc — numéro atomique 115</title><rect x="646" y="298" width="41" height="41" rx="3"/><text class="z" x="649" y="309">115</text><text class="s" x="666" y="328">Mc</text></g>
-<g class="c art"><title>Lv — numéro atomique 116</title><rect x="690" y="298" width="41" height="41" rx="3"/><text class="z" x="693" y="309">116</text><text class="s" x="710" y="328">Lv</text></g>
-<g class="c art"><title>Ts — numéro atomique 117</title><rect x="734" y="298" width="41" height="41" rx="3"/><text class="z" x="737" y="309">117</text><text class="s" x="754" y="328">Ts</text></g>
-<g class="c art"><title>Og — numéro atomique 118</title><rect x="778" y="298" width="41" height="41" rx="3"/><text class="z" x="781" y="309">118</text><text class="s" x="798" y="328">Og</text></g>
-<g class="c lan"><title>La — numéro atomique 57</title><rect x="118" y="368" width="41" height="41" rx="3"/><text class="z" x="121" y="379">57</text><text class="s" x="138" y="398">La</text></g>
-<g class="c lan"><title>Ce — numéro atomique 58</title><rect x="162" y="368" width="41" height="41" rx="3"/><text class="z" x="165" y="379">58</text><text class="s" x="182" y="398">Ce</text></g>
-<g class="c lan"><title>Pr — numéro atomique 59</title><rect x="206" y="368" width="41" height="41" rx="3"/><text class="z" x="209" y="379">59</text><text class="s" x="226" y="398">Pr</text></g>
-<g class="c lan"><title>Nd — numéro atomique 60</title><rect x="250" y="368" width="41" height="41" rx="3"/><text class="z" x="253" y="379">60</text><text class="s" x="270" y="398">Nd</text></g>
-<g class="c lan"><title>Pm — numéro atomique 61</title><rect x="294" y="368" width="41" height="41" rx="3"/><text class="z" x="297" y="379">61</text><text class="s" x="314" y="398">Pm</text></g>
-<g class="c lan"><title>Sm — numéro atomique 62</title><rect x="338" y="368" width="41" height="41" rx="3"/><text class="z" x="341" y="379">62</text><text class="s" x="358" y="398">Sm</text></g>
-<g class="c lan"><title>Eu — numéro atomique 63</title><rect x="382" y="368" width="41" height="41" rx="3"/><text class="z" x="385" y="379">63</text><text class="s" x="402" y="398">Eu</text></g>
-<g class="c lan"><title>Gd — numéro atomique 64</title><rect x="426" y="368" width="41" height="41" rx="3"/><text class="z" x="429" y="379">64</text><text class="s" x="446" y="398">Gd</text></g>
-<g class="c lan"><title>Tb — numéro atomique 65</title><rect x="470" y="368" width="41" height="41" rx="3"/><text class="z" x="473" y="379">65</text><text class="s" x="490" y="398">Tb</text></g>
-<g class="c lan"><title>Dy — numéro atomique 66</title><rect x="514" y="368" width="41" height="41" rx="3"/><text class="z" x="517" y="379">66</text><text class="s" x="534" y="398">Dy</text></g>
-<g class="c lan"><title>Ho — numéro atomique 67</title><rect x="558" y="368" width="41" height="41" rx="3"/><text class="z" x="561" y="379">67</text><text class="s" x="578" y="398">Ho</text></g>
-<g class="c lan"><title>Er — numéro atomique 68</title><rect x="602" y="368" width="41" height="41" rx="3"/><text class="z" x="605" y="379">68</text><text class="s" x="622" y="398">Er</text></g>
-<g class="c lan"><title>Tm — numéro atomique 69</title><rect x="646" y="368" width="41" height="41" rx="3"/><text class="z" x="649" y="379">69</text><text class="s" x="666" y="398">Tm</text></g>
-<g class="c lan"><title>Yb — numéro atomique 70</title><rect x="690" y="368" width="41" height="41" rx="3"/><text class="z" x="693" y="379">70</text><text class="s" x="710" y="398">Yb</text></g>
-<g class="c lan"><title>Lu — numéro atomique 71</title><rect x="734" y="368" width="41" height="41" rx="3"/><text class="z" x="737" y="379">71</text><text class="s" x="754" y="398">Lu</text></g>
-<g class="c act"><title>Ac — numéro atomique 89</title><rect x="118" y="412" width="41" height="41" rx="3"/><text class="z" x="121" y="423">89</text><text class="s" x="138" y="442">Ac</text></g>
-<g class="c act"><title>Th — numéro atomique 90</title><rect x="162" y="412" width="41" height="41" rx="3"/><text class="z" x="165" y="423">90</text><text class="s" x="182" y="442">Th</text></g>
-<g class="c act"><title>Pa — numéro atomique 91</title><rect x="206" y="412" width="41" height="41" rx="3"/><text class="z" x="209" y="423">91</text><text class="s" x="226" y="442">Pa</text></g>
-<g class="c act"><title>U — numéro atomique 92</title><rect x="250" y="412" width="41" height="41" rx="3"/><text class="z" x="253" y="423">92</text><text class="s" x="270" y="442">U</text></g>
-<g class="c act"><title>Np — numéro atomique 93</title><rect x="294" y="412" width="41" height="41" rx="3"/><text class="z" x="297" y="423">93</text><text class="s" x="314" y="442">Np</text></g>
-<g class="c act"><title>Pu — numéro atomique 94</title><rect x="338" y="412" width="41" height="41" rx="3"/><text class="z" x="341" y="423">94</text><text class="s" x="358" y="442">Pu</text></g>
-<g class="c art act"><title>Am — numéro atomique 95</title><rect x="382" y="412" width="41" height="41" rx="3"/><text class="z" x="385" y="423">95</text><text class="s" x="402" y="442">Am</text></g>
-<g class="c art act"><title>Cm — numéro atomique 96</title><rect x="426" y="412" width="41" height="41" rx="3"/><text class="z" x="429" y="423">96</text><text class="s" x="446" y="442">Cm</text></g>
-<g class="c art act"><title>Bk — numéro atomique 97</title><rect x="470" y="412" width="41" height="41" rx="3"/><text class="z" x="473" y="423">97</text><text class="s" x="490" y="442">Bk</text></g>
-<g class="c art act"><title>Cf — numéro atomique 98</title><rect x="514" y="412" width="41" height="41" rx="3"/><text class="z" x="517" y="423">98</text><text class="s" x="534" y="442">Cf</text></g>
-<g class="c art act"><title>Es — numéro atomique 99</title><rect x="558" y="412" width="41" height="41" rx="3"/><text class="z" x="561" y="423">99</text><text class="s" x="578" y="442">Es</text></g>
-<g class="c art act"><title>Fm — numéro atomique 100</title><rect x="602" y="412" width="41" height="41" rx="3"/><text class="z" x="605" y="423">100</text><text class="s" x="622" y="442">Fm</text></g>
-<g class="c art act"><title>Md — numéro atomique 101</title><rect x="646" y="412" width="41" height="41" rx="3"/><text class="z" x="649" y="423">101</text><text class="s" x="666" y="442">Md</text></g>
-<g class="c art act"><title>No — numéro atomique 102</title><rect x="690" y="412" width="41" height="41" rx="3"/><text class="z" x="693" y="423">102</text><text class="s" x="710" y="442">No</text></g>
-<g class="c art act"><title>Lr — numéro atomique 103</title><rect x="734" y="412" width="41" height="41" rx="3"/><text class="z" x="737" y="423">103</text><text class="s" x="754" y="442">Lr</text></g>
+<g class="c gaz" data-z="1"><title>Hydrogène (H) — numéro atomique 1</title><rect x="30" y="34" width="41" height="41" rx="3"/><text class="z" x="33" y="45">1</text><text class="s" x="50" y="64">H</text><circle class="chon" cx="64" cy="42" r="3.2"/></g>
+<g class="c gaz" data-z="2"><title>Hélium (He) — numéro atomique 2</title><rect x="778" y="34" width="41" height="41" rx="3"/><text class="z" x="781" y="45">2</text><text class="s" x="798" y="64">He</text></g>
+<g class="c" data-z="3"><title>Lithium (Li) — numéro atomique 3</title><rect x="30" y="78" width="41" height="41" rx="3"/><text class="z" x="33" y="89">3</text><text class="s" x="50" y="108">Li</text></g>
+<g class="c" data-z="4"><title>Béryllium (Be) — numéro atomique 4</title><rect x="74" y="78" width="41" height="41" rx="3"/><text class="z" x="77" y="89">4</text><text class="s" x="94" y="108">Be</text></g>
+<g class="c" data-z="5"><title>Bore (B) — numéro atomique 5</title><rect x="558" y="78" width="41" height="41" rx="3"/><text class="z" x="561" y="89">5</text><text class="s" x="578" y="108">B</text></g>
+<g class="c" data-z="6"><title>Carbone (C) — numéro atomique 6</title><rect x="602" y="78" width="41" height="41" rx="3"/><text class="z" x="605" y="89">6</text><text class="s" x="622" y="108">C</text><circle class="chon" cx="636" cy="86" r="3.2"/></g>
+<g class="c gaz" data-z="7"><title>Azote (N) — numéro atomique 7</title><rect x="646" y="78" width="41" height="41" rx="3"/><text class="z" x="649" y="89">7</text><text class="s" x="666" y="108">N</text><circle class="chon" cx="680" cy="86" r="3.2"/></g>
+<g class="c gaz" data-z="8"><title>Oxygène (O) — numéro atomique 8</title><rect x="690" y="78" width="41" height="41" rx="3"/><text class="z" x="693" y="89">8</text><text class="s" x="710" y="108">O</text><circle class="chon" cx="724" cy="86" r="3.2"/></g>
+<g class="c gaz" data-z="9"><title>Fluor (F) — numéro atomique 9</title><rect x="734" y="78" width="41" height="41" rx="3"/><text class="z" x="737" y="89">9</text><text class="s" x="754" y="108">F</text></g>
+<g class="c gaz" data-z="10"><title>Néon (Ne) — numéro atomique 10</title><rect x="778" y="78" width="41" height="41" rx="3"/><text class="z" x="781" y="89">10</text><text class="s" x="798" y="108">Ne</text></g>
+<g class="c" data-z="11"><title>Sodium (Na) — numéro atomique 11</title><rect x="30" y="122" width="41" height="41" rx="3"/><text class="z" x="33" y="133">11</text><text class="s" x="50" y="152">Na</text></g>
+<g class="c" data-z="12"><title>Magnésium (Mg) — numéro atomique 12</title><rect x="74" y="122" width="41" height="41" rx="3"/><text class="z" x="77" y="133">12</text><text class="s" x="94" y="152">Mg</text></g>
+<g class="c" data-z="13"><title>Aluminium (Al) — numéro atomique 13</title><rect x="558" y="122" width="41" height="41" rx="3"/><text class="z" x="561" y="133">13</text><text class="s" x="578" y="152">Al</text></g>
+<g class="c" data-z="14"><title>Silicium (Si) — numéro atomique 14</title><rect x="602" y="122" width="41" height="41" rx="3"/><text class="z" x="605" y="133">14</text><text class="s" x="622" y="152">Si</text></g>
+<g class="c" data-z="15"><title>Phosphore (P) — numéro atomique 15</title><rect x="646" y="122" width="41" height="41" rx="3"/><text class="z" x="649" y="133">15</text><text class="s" x="666" y="152">P</text></g>
+<g class="c" data-z="16"><title>Soufre (S) — numéro atomique 16</title><rect x="690" y="122" width="41" height="41" rx="3"/><text class="z" x="693" y="133">16</text><text class="s" x="710" y="152">S</text></g>
+<g class="c gaz" data-z="17"><title>Chlore (Cl) — numéro atomique 17</title><rect x="734" y="122" width="41" height="41" rx="3"/><text class="z" x="737" y="133">17</text><text class="s" x="754" y="152">Cl</text></g>
+<g class="c gaz" data-z="18"><title>Argon (Ar) — numéro atomique 18</title><rect x="778" y="122" width="41" height="41" rx="3"/><text class="z" x="781" y="133">18</text><text class="s" x="798" y="152">Ar</text></g>
+<g class="c" data-z="19"><title>Potassium (K) — numéro atomique 19</title><rect x="30" y="166" width="41" height="41" rx="3"/><text class="z" x="33" y="177">19</text><text class="s" x="50" y="196">K</text></g>
+<g class="c" data-z="20"><title>Calcium (Ca) — numéro atomique 20</title><rect x="74" y="166" width="41" height="41" rx="3"/><text class="z" x="77" y="177">20</text><text class="s" x="94" y="196">Ca</text></g>
+<g class="c" data-z="21"><title>Scandium (Sc) — numéro atomique 21</title><rect x="118" y="166" width="41" height="41" rx="3"/><text class="z" x="121" y="177">21</text><text class="s" x="138" y="196">Sc</text></g>
+<g class="c" data-z="22"><title>Titane (Ti) — numéro atomique 22</title><rect x="162" y="166" width="41" height="41" rx="3"/><text class="z" x="165" y="177">22</text><text class="s" x="182" y="196">Ti</text></g>
+<g class="c" data-z="23"><title>Vanadium (V) — numéro atomique 23</title><rect x="206" y="166" width="41" height="41" rx="3"/><text class="z" x="209" y="177">23</text><text class="s" x="226" y="196">V</text></g>
+<g class="c" data-z="24"><title>Chrome (Cr) — numéro atomique 24</title><rect x="250" y="166" width="41" height="41" rx="3"/><text class="z" x="253" y="177">24</text><text class="s" x="270" y="196">Cr</text></g>
+<g class="c" data-z="25"><title>Manganèse (Mn) — numéro atomique 25</title><rect x="294" y="166" width="41" height="41" rx="3"/><text class="z" x="297" y="177">25</text><text class="s" x="314" y="196">Mn</text></g>
+<g class="c" data-z="26"><title>Fer (Fe) — numéro atomique 26</title><rect x="338" y="166" width="41" height="41" rx="3"/><text class="z" x="341" y="177">26</text><text class="s" x="358" y="196">Fe</text></g>
+<g class="c" data-z="27"><title>Cobalt (Co) — numéro atomique 27</title><rect x="382" y="166" width="41" height="41" rx="3"/><text class="z" x="385" y="177">27</text><text class="s" x="402" y="196">Co</text></g>
+<g class="c" data-z="28"><title>Nickel (Ni) — numéro atomique 28</title><rect x="426" y="166" width="41" height="41" rx="3"/><text class="z" x="429" y="177">28</text><text class="s" x="446" y="196">Ni</text></g>
+<g class="c" data-z="29"><title>Cuivre (Cu) — numéro atomique 29</title><rect x="470" y="166" width="41" height="41" rx="3"/><text class="z" x="473" y="177">29</text><text class="s" x="490" y="196">Cu</text></g>
+<g class="c" data-z="30"><title>Zinc (Zn) — numéro atomique 30</title><rect x="514" y="166" width="41" height="41" rx="3"/><text class="z" x="517" y="177">30</text><text class="s" x="534" y="196">Zn</text></g>
+<g class="c" data-z="31"><title>Gallium (Ga) — numéro atomique 31</title><rect x="558" y="166" width="41" height="41" rx="3"/><text class="z" x="561" y="177">31</text><text class="s" x="578" y="196">Ga</text></g>
+<g class="c" data-z="32"><title>Germanium (Ge) — numéro atomique 32</title><rect x="602" y="166" width="41" height="41" rx="3"/><text class="z" x="605" y="177">32</text><text class="s" x="622" y="196">Ge</text></g>
+<g class="c" data-z="33"><title>Arsenic (As) — numéro atomique 33</title><rect x="646" y="166" width="41" height="41" rx="3"/><text class="z" x="649" y="177">33</text><text class="s" x="666" y="196">As</text></g>
+<g class="c" data-z="34"><title>Sélénium (Se) — numéro atomique 34</title><rect x="690" y="166" width="41" height="41" rx="3"/><text class="z" x="693" y="177">34</text><text class="s" x="710" y="196">Se</text></g>
+<g class="c liq" data-z="35"><title>Brome (Br) — numéro atomique 35</title><rect x="734" y="166" width="41" height="41" rx="3"/><text class="z" x="737" y="177">35</text><text class="s" x="754" y="196">Br</text></g>
+<g class="c gaz" data-z="36"><title>Krypton (Kr) — numéro atomique 36</title><rect x="778" y="166" width="41" height="41" rx="3"/><text class="z" x="781" y="177">36</text><text class="s" x="798" y="196">Kr</text></g>
+<g class="c" data-z="37"><title>Rubidium (Rb) — numéro atomique 37</title><rect x="30" y="210" width="41" height="41" rx="3"/><text class="z" x="33" y="221">37</text><text class="s" x="50" y="240">Rb</text></g>
+<g class="c" data-z="38"><title>Strontium (Sr) — numéro atomique 38</title><rect x="74" y="210" width="41" height="41" rx="3"/><text class="z" x="77" y="221">38</text><text class="s" x="94" y="240">Sr</text></g>
+<g class="c" data-z="39"><title>Yttrium (Y) — numéro atomique 39</title><rect x="118" y="210" width="41" height="41" rx="3"/><text class="z" x="121" y="221">39</text><text class="s" x="138" y="240">Y</text></g>
+<g class="c" data-z="40"><title>Zirconium (Zr) — numéro atomique 40</title><rect x="162" y="210" width="41" height="41" rx="3"/><text class="z" x="165" y="221">40</text><text class="s" x="182" y="240">Zr</text></g>
+<g class="c" data-z="41"><title>Niobium (Nb) — numéro atomique 41</title><rect x="206" y="210" width="41" height="41" rx="3"/><text class="z" x="209" y="221">41</text><text class="s" x="226" y="240">Nb</text></g>
+<g class="c" data-z="42"><title>Molybdène (Mo) — numéro atomique 42</title><rect x="250" y="210" width="41" height="41" rx="3"/><text class="z" x="253" y="221">42</text><text class="s" x="270" y="240">Mo</text></g>
+<g class="c" data-z="43"><title>Technétium (Tc) — numéro atomique 43</title><rect x="294" y="210" width="41" height="41" rx="3"/><text class="z" x="297" y="221">43</text><text class="s" x="314" y="240">Tc</text></g>
+<g class="c" data-z="44"><title>Ruthénium (Ru) — numéro atomique 44</title><rect x="338" y="210" width="41" height="41" rx="3"/><text class="z" x="341" y="221">44</text><text class="s" x="358" y="240">Ru</text></g>
+<g class="c" data-z="45"><title>Rhodium (Rh) — numéro atomique 45</title><rect x="382" y="210" width="41" height="41" rx="3"/><text class="z" x="385" y="221">45</text><text class="s" x="402" y="240">Rh</text></g>
+<g class="c" data-z="46"><title>Palladium (Pd) — numéro atomique 46</title><rect x="426" y="210" width="41" height="41" rx="3"/><text class="z" x="429" y="221">46</text><text class="s" x="446" y="240">Pd</text></g>
+<g class="c" data-z="47"><title>Argent (Ag) — numéro atomique 47</title><rect x="470" y="210" width="41" height="41" rx="3"/><text class="z" x="473" y="221">47</text><text class="s" x="490" y="240">Ag</text></g>
+<g class="c" data-z="48"><title>Cadmium (Cd) — numéro atomique 48</title><rect x="514" y="210" width="41" height="41" rx="3"/><text class="z" x="517" y="221">48</text><text class="s" x="534" y="240">Cd</text></g>
+<g class="c" data-z="49"><title>Indium (In) — numéro atomique 49</title><rect x="558" y="210" width="41" height="41" rx="3"/><text class="z" x="561" y="221">49</text><text class="s" x="578" y="240">In</text></g>
+<g class="c" data-z="50"><title>Étain (Sn) — numéro atomique 50</title><rect x="602" y="210" width="41" height="41" rx="3"/><text class="z" x="605" y="221">50</text><text class="s" x="622" y="240">Sn</text></g>
+<g class="c" data-z="51"><title>Antimoine (Sb) — numéro atomique 51</title><rect x="646" y="210" width="41" height="41" rx="3"/><text class="z" x="649" y="221">51</text><text class="s" x="666" y="240">Sb</text></g>
+<g class="c" data-z="52"><title>Tellure (Te) — numéro atomique 52</title><rect x="690" y="210" width="41" height="41" rx="3"/><text class="z" x="693" y="221">52</text><text class="s" x="710" y="240">Te</text></g>
+<g class="c" data-z="53"><title>Iode (I) — numéro atomique 53</title><rect x="734" y="210" width="41" height="41" rx="3"/><text class="z" x="737" y="221">53</text><text class="s" x="754" y="240">I</text></g>
+<g class="c gaz" data-z="54"><title>Xénon (Xe) — numéro atomique 54</title><rect x="778" y="210" width="41" height="41" rx="3"/><text class="z" x="781" y="221">54</text><text class="s" x="798" y="240">Xe</text></g>
+<g class="c" data-z="55"><title>Césium (Cs) — numéro atomique 55</title><rect x="30" y="254" width="41" height="41" rx="3"/><text class="z" x="33" y="265">55</text><text class="s" x="50" y="284">Cs</text></g>
+<g class="c" data-z="56"><title>Baryum (Ba) — numéro atomique 56</title><rect x="74" y="254" width="41" height="41" rx="3"/><text class="z" x="77" y="265">56</text><text class="s" x="94" y="284">Ba</text></g>
+<g class="c" data-z="72"><title>Hafnium (Hf) — numéro atomique 72</title><rect x="162" y="254" width="41" height="41" rx="3"/><text class="z" x="165" y="265">72</text><text class="s" x="182" y="284">Hf</text></g>
+<g class="c" data-z="73"><title>Tantale (Ta) — numéro atomique 73</title><rect x="206" y="254" width="41" height="41" rx="3"/><text class="z" x="209" y="265">73</text><text class="s" x="226" y="284">Ta</text></g>
+<g class="c" data-z="74"><title>Tungstène (W) — numéro atomique 74</title><rect x="250" y="254" width="41" height="41" rx="3"/><text class="z" x="253" y="265">74</text><text class="s" x="270" y="284">W</text></g>
+<g class="c" data-z="75"><title>Rhénium (Re) — numéro atomique 75</title><rect x="294" y="254" width="41" height="41" rx="3"/><text class="z" x="297" y="265">75</text><text class="s" x="314" y="284">Re</text></g>
+<g class="c" data-z="76"><title>Osmium (Os) — numéro atomique 76</title><rect x="338" y="254" width="41" height="41" rx="3"/><text class="z" x="341" y="265">76</text><text class="s" x="358" y="284">Os</text></g>
+<g class="c" data-z="77"><title>Iridium (Ir) — numéro atomique 77</title><rect x="382" y="254" width="41" height="41" rx="3"/><text class="z" x="385" y="265">77</text><text class="s" x="402" y="284">Ir</text></g>
+<g class="c" data-z="78"><title>Platine (Pt) — numéro atomique 78</title><rect x="426" y="254" width="41" height="41" rx="3"/><text class="z" x="429" y="265">78</text><text class="s" x="446" y="284">Pt</text></g>
+<g class="c" data-z="79"><title>Or (Au) — numéro atomique 79</title><rect x="470" y="254" width="41" height="41" rx="3"/><text class="z" x="473" y="265">79</text><text class="s" x="490" y="284">Au</text></g>
+<g class="c liq" data-z="80"><title>Mercure (Hg) — numéro atomique 80</title><rect x="514" y="254" width="41" height="41" rx="3"/><text class="z" x="517" y="265">80</text><text class="s" x="534" y="284">Hg</text></g>
+<g class="c" data-z="81"><title>Thallium (Tl) — numéro atomique 81</title><rect x="558" y="254" width="41" height="41" rx="3"/><text class="z" x="561" y="265">81</text><text class="s" x="578" y="284">Tl</text></g>
+<g class="c" data-z="82"><title>Plomb (Pb) — numéro atomique 82</title><rect x="602" y="254" width="41" height="41" rx="3"/><text class="z" x="605" y="265">82</text><text class="s" x="622" y="284">Pb</text></g>
+<g class="c" data-z="83"><title>Bismuth (Bi) — numéro atomique 83</title><rect x="646" y="254" width="41" height="41" rx="3"/><text class="z" x="649" y="265">83</text><text class="s" x="666" y="284">Bi</text></g>
+<g class="c" data-z="84"><title>Polonium (Po) — numéro atomique 84</title><rect x="690" y="254" width="41" height="41" rx="3"/><text class="z" x="693" y="265">84</text><text class="s" x="710" y="284">Po</text></g>
+<g class="c" data-z="85"><title>Astate (At) — numéro atomique 85</title><rect x="734" y="254" width="41" height="41" rx="3"/><text class="z" x="737" y="265">85</text><text class="s" x="754" y="284">At</text></g>
+<g class="c gaz" data-z="86"><title>Radon (Rn) — numéro atomique 86</title><rect x="778" y="254" width="41" height="41" rx="3"/><text class="z" x="781" y="265">86</text><text class="s" x="798" y="284">Rn</text></g>
+<g class="c" data-z="87"><title>Francium (Fr) — numéro atomique 87</title><rect x="30" y="298" width="41" height="41" rx="3"/><text class="z" x="33" y="309">87</text><text class="s" x="50" y="328">Fr</text></g>
+<g class="c" data-z="88"><title>Radium (Ra) — numéro atomique 88</title><rect x="74" y="298" width="41" height="41" rx="3"/><text class="z" x="77" y="309">88</text><text class="s" x="94" y="328">Ra</text></g>
+<g class="c art" data-z="104"><title>Rutherfordium (Rf) — numéro atomique 104</title><rect x="162" y="298" width="41" height="41" rx="3"/><text class="z" x="165" y="309">104</text><text class="s" x="182" y="328">Rf</text></g>
+<g class="c art" data-z="105"><title>Dubnium (Db) — numéro atomique 105</title><rect x="206" y="298" width="41" height="41" rx="3"/><text class="z" x="209" y="309">105</text><text class="s" x="226" y="328">Db</text></g>
+<g class="c art" data-z="106"><title>Seaborgium (Sg) — numéro atomique 106</title><rect x="250" y="298" width="41" height="41" rx="3"/><text class="z" x="253" y="309">106</text><text class="s" x="270" y="328">Sg</text></g>
+<g class="c art" data-z="107"><title>Bohrium (Bh) — numéro atomique 107</title><rect x="294" y="298" width="41" height="41" rx="3"/><text class="z" x="297" y="309">107</text><text class="s" x="314" y="328">Bh</text></g>
+<g class="c art" data-z="108"><title>Hassium (Hs) — numéro atomique 108</title><rect x="338" y="298" width="41" height="41" rx="3"/><text class="z" x="341" y="309">108</text><text class="s" x="358" y="328">Hs</text></g>
+<g class="c art" data-z="109"><title>Meitnérium (Mt) — numéro atomique 109</title><rect x="382" y="298" width="41" height="41" rx="3"/><text class="z" x="385" y="309">109</text><text class="s" x="402" y="328">Mt</text></g>
+<g class="c art" data-z="110"><title>Darmstadtium (Ds) — numéro atomique 110</title><rect x="426" y="298" width="41" height="41" rx="3"/><text class="z" x="429" y="309">110</text><text class="s" x="446" y="328">Ds</text></g>
+<g class="c art" data-z="111"><title>Roentgenium (Rg) — numéro atomique 111</title><rect x="470" y="298" width="41" height="41" rx="3"/><text class="z" x="473" y="309">111</text><text class="s" x="490" y="328">Rg</text></g>
+<g class="c art" data-z="112"><title>Copernicium (Cn) — numéro atomique 112</title><rect x="514" y="298" width="41" height="41" rx="3"/><text class="z" x="517" y="309">112</text><text class="s" x="534" y="328">Cn</text></g>
+<g class="c art" data-z="113"><title>Nihonium (Nh) — numéro atomique 113</title><rect x="558" y="298" width="41" height="41" rx="3"/><text class="z" x="561" y="309">113</text><text class="s" x="578" y="328">Nh</text></g>
+<g class="c art" data-z="114"><title>Flérovium (Fl) — numéro atomique 114</title><rect x="602" y="298" width="41" height="41" rx="3"/><text class="z" x="605" y="309">114</text><text class="s" x="622" y="328">Fl</text></g>
+<g class="c art" data-z="115"><title>Moscovium (Mc) — numéro atomique 115</title><rect x="646" y="298" width="41" height="41" rx="3"/><text class="z" x="649" y="309">115</text><text class="s" x="666" y="328">Mc</text></g>
+<g class="c art" data-z="116"><title>Livermorium (Lv) — numéro atomique 116</title><rect x="690" y="298" width="41" height="41" rx="3"/><text class="z" x="693" y="309">116</text><text class="s" x="710" y="328">Lv</text></g>
+<g class="c art" data-z="117"><title>Tennesse (Ts) — numéro atomique 117</title><rect x="734" y="298" width="41" height="41" rx="3"/><text class="z" x="737" y="309">117</text><text class="s" x="754" y="328">Ts</text></g>
+<g class="c art" data-z="118"><title>Oganesson (Og) — numéro atomique 118</title><rect x="778" y="298" width="41" height="41" rx="3"/><text class="z" x="781" y="309">118</text><text class="s" x="798" y="328">Og</text></g>
+<g class="c lan" data-z="57"><title>Lanthane (La) — numéro atomique 57</title><rect x="118" y="368" width="41" height="41" rx="3"/><text class="z" x="121" y="379">57</text><text class="s" x="138" y="398">La</text></g>
+<g class="c lan" data-z="58"><title>Cérium (Ce) — numéro atomique 58</title><rect x="162" y="368" width="41" height="41" rx="3"/><text class="z" x="165" y="379">58</text><text class="s" x="182" y="398">Ce</text></g>
+<g class="c lan" data-z="59"><title>Praséodyme (Pr) — numéro atomique 59</title><rect x="206" y="368" width="41" height="41" rx="3"/><text class="z" x="209" y="379">59</text><text class="s" x="226" y="398">Pr</text></g>
+<g class="c lan" data-z="60"><title>Néodyme (Nd) — numéro atomique 60</title><rect x="250" y="368" width="41" height="41" rx="3"/><text class="z" x="253" y="379">60</text><text class="s" x="270" y="398">Nd</text></g>
+<g class="c lan" data-z="61"><title>Prométhium (Pm) — numéro atomique 61</title><rect x="294" y="368" width="41" height="41" rx="3"/><text class="z" x="297" y="379">61</text><text class="s" x="314" y="398">Pm</text></g>
+<g class="c lan" data-z="62"><title>Samarium (Sm) — numéro atomique 62</title><rect x="338" y="368" width="41" height="41" rx="3"/><text class="z" x="341" y="379">62</text><text class="s" x="358" y="398">Sm</text></g>
+<g class="c lan" data-z="63"><title>Europium (Eu) — numéro atomique 63</title><rect x="382" y="368" width="41" height="41" rx="3"/><text class="z" x="385" y="379">63</text><text class="s" x="402" y="398">Eu</text></g>
+<g class="c lan" data-z="64"><title>Gadolinium (Gd) — numéro atomique 64</title><rect x="426" y="368" width="41" height="41" rx="3"/><text class="z" x="429" y="379">64</text><text class="s" x="446" y="398">Gd</text></g>
+<g class="c lan" data-z="65"><title>Terbium (Tb) — numéro atomique 65</title><rect x="470" y="368" width="41" height="41" rx="3"/><text class="z" x="473" y="379">65</text><text class="s" x="490" y="398">Tb</text></g>
+<g class="c lan" data-z="66"><title>Dysprosium (Dy) — numéro atomique 66</title><rect x="514" y="368" width="41" height="41" rx="3"/><text class="z" x="517" y="379">66</text><text class="s" x="534" y="398">Dy</text></g>
+<g class="c lan" data-z="67"><title>Holmium (Ho) — numéro atomique 67</title><rect x="558" y="368" width="41" height="41" rx="3"/><text class="z" x="561" y="379">67</text><text class="s" x="578" y="398">Ho</text></g>
+<g class="c lan" data-z="68"><title>Erbium (Er) — numéro atomique 68</title><rect x="602" y="368" width="41" height="41" rx="3"/><text class="z" x="605" y="379">68</text><text class="s" x="622" y="398">Er</text></g>
+<g class="c lan" data-z="69"><title>Thulium (Tm) — numéro atomique 69</title><rect x="646" y="368" width="41" height="41" rx="3"/><text class="z" x="649" y="379">69</text><text class="s" x="666" y="398">Tm</text></g>
+<g class="c lan" data-z="70"><title>Ytterbium (Yb) — numéro atomique 70</title><rect x="690" y="368" width="41" height="41" rx="3"/><text class="z" x="693" y="379">70</text><text class="s" x="710" y="398">Yb</text></g>
+<g class="c lan" data-z="71"><title>Lutécium (Lu) — numéro atomique 71</title><rect x="734" y="368" width="41" height="41" rx="3"/><text class="z" x="737" y="379">71</text><text class="s" x="754" y="398">Lu</text></g>
+<g class="c act" data-z="89"><title>Actinium (Ac) — numéro atomique 89</title><rect x="118" y="412" width="41" height="41" rx="3"/><text class="z" x="121" y="423">89</text><text class="s" x="138" y="442">Ac</text></g>
+<g class="c act" data-z="90"><title>Thorium (Th) — numéro atomique 90</title><rect x="162" y="412" width="41" height="41" rx="3"/><text class="z" x="165" y="423">90</text><text class="s" x="182" y="442">Th</text></g>
+<g class="c act" data-z="91"><title>Protactinium (Pa) — numéro atomique 91</title><rect x="206" y="412" width="41" height="41" rx="3"/><text class="z" x="209" y="423">91</text><text class="s" x="226" y="442">Pa</text></g>
+<g class="c act" data-z="92"><title>Uranium (U) — numéro atomique 92</title><rect x="250" y="412" width="41" height="41" rx="3"/><text class="z" x="253" y="423">92</text><text class="s" x="270" y="442">U</text></g>
+<g class="c act" data-z="93"><title>Neptunium (Np) — numéro atomique 93</title><rect x="294" y="412" width="41" height="41" rx="3"/><text class="z" x="297" y="423">93</text><text class="s" x="314" y="442">Np</text></g>
+<g class="c act" data-z="94"><title>Plutonium (Pu) — numéro atomique 94</title><rect x="338" y="412" width="41" height="41" rx="3"/><text class="z" x="341" y="423">94</text><text class="s" x="358" y="442">Pu</text></g>
+<g class="c art act" data-z="95"><title>Américium (Am) — numéro atomique 95</title><rect x="382" y="412" width="41" height="41" rx="3"/><text class="z" x="385" y="423">95</text><text class="s" x="402" y="442">Am</text></g>
+<g class="c art act" data-z="96"><title>Curium (Cm) — numéro atomique 96</title><rect x="426" y="412" width="41" height="41" rx="3"/><text class="z" x="429" y="423">96</text><text class="s" x="446" y="442">Cm</text></g>
+<g class="c art act" data-z="97"><title>Berkélium (Bk) — numéro atomique 97</title><rect x="470" y="412" width="41" height="41" rx="3"/><text class="z" x="473" y="423">97</text><text class="s" x="490" y="442">Bk</text></g>
+<g class="c art act" data-z="98"><title>Californium (Cf) — numéro atomique 98</title><rect x="514" y="412" width="41" height="41" rx="3"/><text class="z" x="517" y="423">98</text><text class="s" x="534" y="442">Cf</text></g>
+<g class="c art act" data-z="99"><title>Einsteinium (Es) — numéro atomique 99</title><rect x="558" y="412" width="41" height="41" rx="3"/><text class="z" x="561" y="423">99</text><text class="s" x="578" y="442">Es</text></g>
+<g class="c art act" data-z="100"><title>Fermium (Fm) — numéro atomique 100</title><rect x="602" y="412" width="41" height="41" rx="3"/><text class="z" x="605" y="423">100</text><text class="s" x="622" y="442">Fm</text></g>
+<g class="c art act" data-z="101"><title>Mendélévium (Md) — numéro atomique 101</title><rect x="646" y="412" width="41" height="41" rx="3"/><text class="z" x="649" y="423">101</text><text class="s" x="666" y="442">Md</text></g>
+<g class="c art act" data-z="102"><title>Nobélium (No) — numéro atomique 102</title><rect x="690" y="412" width="41" height="41" rx="3"/><text class="z" x="693" y="423">102</text><text class="s" x="710" y="442">No</text></g>
+<g class="c art act" data-z="103"><title>Lawrencium (Lr) — numéro atomique 103</title><rect x="734" y="412" width="41" height="41" rx="3"/><text class="z" x="737" y="423">103</text><text class="s" x="754" y="442">Lr</text></g>
 <path class="fil" d="M138 295 L138 368"/>
 <rect class="c lan trou" x="118" y="254" width="41" height="41" rx="3"/>
 <rect class="c act trou" x="118" y="298" width="41" height="41" rx="3"/>
@@ -703,11 +749,19 @@
 <g class="lg"><circle class="chon" cx="257" cy="484" r="3.2"/><text x="268" y="488">Dans ton corps (C, H, O, N)</text></g>
 </svg>
             <!-- /SVG:tableau-etats -->
-              <figcaption>Les <b>118</b> éléments connus, rangés par numéro atomique croissant. Chaque
+              <figcaption>Les 118 éléments connus, rangés par numéro atomique croissant. Chaque
                 colonne réunit des éléments aux propriétés semblables — c'est ce qui fait la force du
                 rangement. Les quatre éléments marqués d'un point sont ceux qui composent l'essentiel
                 de ton corps.</figcaption>
             </figure>
+
+            <div class="tuto">
+              <span class="tl">🧭 La classification te suit</span>
+              Ce tableau te servira tout le chapitre. Le bouton <b>🧪 Classification</b>, en bas à
+              droite de l'écran, le rouvre à tout moment par-dessus ta page&nbsp;: touche une case, et
+              la fiche de l'élément s'affiche — son nom, son numéro atomique, son état à 20&nbsp;°C.
+              Il s'efface pendant les QCM et les réponses rédigées.
+            </div>
 
             <!-- CHANTIER -->
             <aside class="chantier decision">
@@ -724,24 +778,24 @@
             <!-- /CHANTIER -->
 
             <div class="block-label">Peut-on aller au-delà de 92&nbsp;?</div>
-            <p style="font-size:14.5px;margin:4px 0 10px">L'<b class="cle">uranium (Z&nbsp;=&nbsp;92)</b> est le
+            <p style="font-size:14.5px;margin:4px 0 10px">L'<b>uranium (Z&nbsp;=&nbsp;92)</b> est le
             dernier élément que la nature fournit en quantité notable. Au-delà, il n'y a plus rien à
             récolter&nbsp;: il faut le fabriquer. C'est faisable, et cela se fait —
             mais pas de la façon qu'on imagine.</p>
             <p style="font-size:14.5px;margin:4px 0 10px">Dans un <b>accélérateur de particules</b>,
             on lance des noyaux légers sur une cible d'atomes lourds. Une collision sur des milliards
             réussit&nbsp;: le noyau de la cible avale le projectile et un noyau plus lourd apparaît.
-            Il vit parfois quelques <b>millisecondes</b> — assez pour être détecté, jamais pour être
+            Il vit parfois quelques millisecondes — assez pour être détecté, jamais pour être
             mis en flacon. C'est ainsi qu'ont été créés les 24 éléments anthropiques du tableau.</p>
             <p style="font-size:14.5px;margin:4px 0 10px">Un cas sort de ce lot&nbsp;: le
-            <b>plutonium</b>. Il ne vient pas d'un accélérateur mais d'un <b>réacteur nucléaire</b>,
+            <b>plutonium</b>. Il ne vient pas d'un accélérateur mais d'un réacteur nucléaire,
             et en quantité industrielle. L'uranium 238, majoritaire dans le combustible, capture un
             neutron&nbsp;; le noyau obtenu se désintègre deux fois, et donne du plutonium 239&nbsp;:</p>
             <div class="reac"><span class="num">1</span><span class="noy"><span class="az"><span>238</span><span>92</span></span><span class="sym">U</span></span> + <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>239</span><span>92</span></span><span class="sym">U</span></span></div>
             <div class="reac"><span class="num">2</span><span class="noy"><span class="az"><span>239</span><span>92</span></span><span class="sym">U</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>239</span><span>93</span></span><span class="sym">Np</span></span> + <span class="noy"><span class="sym">e⁻</span></span></div>
             <div class="reac"><span class="num">3</span><span class="noy"><span class="az"><span>239</span><span>93</span></span><span class="sym">Np</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>239</span><span>94</span></span><span class="sym">Pu</span></span> + <span class="noy"><span class="sym">e⁻</span></span></div>
             <p style="font-size:14.5px;margin:4px 0 10px">Autrement dit&nbsp;: un réacteur qui
-            produit de l'électricité produit <b>aussi</b> du plutonium, simplement en fonctionnant.
+            produit de l'électricité produit aussi du plutonium, simplement en fonctionnant.
             C'est pour cela que le plutonium existe par tonnes sur Terre, alors qu'on n'en trouve
             dans la nature que des traces infimes.</p>
 
@@ -815,7 +869,7 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> comparer la composition de l'Univers, de la croûte terrestre et du corps humain — et découvrir qu'elles n'ont presque rien en commun.</span></div>
           </div>
           <div class="card-body">
-            <p class="transi">Un élément, c'est donc un nombre de protons, et rien d'autre. Reste à savoir <b>en quelle quantité</b> chacun est présent : la réponse n'est pas la même dans l'Univers, dans un caillou et dans ton corps.</p>
+            <p class="transi">Un élément, c'est donc un nombre de protons, et rien d'autre. Reste à savoir en quelle quantité chacun est présent : la réponse n'est pas la même dans l'Univers, dans un caillou et dans ton corps.</p>
             <div class="block-label">Doc — abondance relative, en nombre d'atomes<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
             <p style="font-size:14.5px;margin:4px 0 10px">Voici les éléments les plus abondants
             dans trois milieux — mais <b>les titres des colonnes ont été retirés</b>. À toi de les
@@ -1019,11 +1073,11 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> distinguer les deux mécanismes, et savoir reconnaître lequel est à l'œuvre dans une réaction écrite.</span></div>
           </div>
           <div class="card-body">
-            <p class="transi">Tu sais maintenant quels éléments existent, et en quelles proportions. Avant de raconter <b>comment</b> ils ont été fabriqués, il faut un peu d'outillage&nbsp;: les deux seules façons de transformer un noyau. Toute la séance 2 s'appuiera là-dessus.</p>
+            <p class="transi">Tu sais maintenant quels éléments existent, et en quelles proportions. Avant de raconter comment ils ont été fabriqués, il faut un peu d'outillage&nbsp;: les deux seules façons de transformer un noyau. Toute la séance 2 s'appuiera là-dessus.</p>
             <p style="font-size:14.5px;margin:4px 0 10px">Un noyau n'est pas éternel&nbsp;: il peut s'assembler à un autre, ou se casser. Ces deux transformations — la <b>fusion</b> et la <b>fission</b> — sont les outils de toute la fabrication des éléments. Tu les retrouveras dans les trois nucléosynthèses de la séance 2, et la fission au cœur de nos réacteurs nucléaires.</p>
 
             <div class="block-label">A — La fusion nucléaire<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
-            <div class="retain">La <b class="cle">fusion nucléaire</b> (ou thermonucléaire) est une réaction nucléaire dans laquelle <b>deux noyaux atomiques s'assemblent</b> pour former un noyau plus lourd.</div>
+            <div class="retain">La <b class="cle">fusion nucléaire</b> (ou thermonucléaire) est une réaction nucléaire dans laquelle deux noyaux atomiques s'assemblent pour former un noyau plus lourd.</div>
             <div class="reac"><span class="num">1</span><span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>8</span><span>4</span></span><span class="sym">Be</span></span></div>
             <div class="reac"><span class="num">2</span><span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> + <span class="noy"><span class="az"><span>8</span><span>4</span></span><span class="sym">Be</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>12</span><span>6</span></span><span class="sym">C</span></span></div>
             <div class="reac"><span class="num">3</span><span class="noy"><span class="az"><span>12</span><span>6</span></span><span class="sym">C</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>16</span><span>8</span></span><span class="sym">O</span></span></div>
@@ -1156,12 +1210,12 @@
 </g>
 </svg>
               <!-- /SVG:fusions -->
-              <figcaption>Les trois <b>exemples</b> ci-dessus, noyau par noyau. Deux amas entrent,
+              <figcaption>Les trois exemples ci-dessus, noyau par noyau. Deux amas entrent,
                 un seul sort&nbsp;: c'est la définition même de la fusion.<span class="src">Schéma tracé pour ce cours</span></figcaption>
             </figure>
 
             <div class="block-label">B — La fission nucléaire<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
-            <div class="retain">La <b class="cle">fission nucléaire</b> forme de nouveaux noyaux atomiques (et donc de nouveaux éléments) en « <b>cassant</b> » un noyau grâce à l'impact d'une particule (proton, neutron…). En plus des deux noyaux plus petits créés par fission du noyau originel, il peut également y avoir d'autres petites particules produites (neutrons ou protons).</div>
+            <div class="retain">La <b class="cle">fission nucléaire</b> forme de nouveaux noyaux atomiques (et donc de nouveaux éléments) en « cassant » un noyau grâce à l'impact d'une particule (proton, neutron…). En plus des deux noyaux plus petits créés par fission du noyau originel, il peut également y avoir d'autres petites particules produites (neutrons ou protons).</div>
 
             <figure class="ill"><span class="loupe">⤢ agrandir</span>
               <img src="../assets/img/es/1re-es-t1-c1/t1c1-fission-nucleaire.jpg" alt="Schéma de la fission nucléaire : un neutron frappe un noyau d'uranium qui se casse en deux noyaux plus légers en libérant des neutrons et de l'énergie" loading="lazy">
@@ -1236,7 +1290,7 @@
 </g>
 </svg>
               <!-- /SVG:fissions -->
-              <figcaption>Le même <b>exemple</b>, noyau par noyau. Un gros amas entre, deux plus
+              <figcaption>Le même exemple, noyau par noyau. Un gros amas entre, deux plus
                 petits sortent.<span class="src">Schéma tracé pour ce cours</span></figcaption>
             </figure>
 
@@ -1257,9 +1311,9 @@
             <div class="reac"><span class="num">3</span><span class="noy"><span class="az"><span>226</span><span>88</span></span><span class="sym">Ra</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>222</span><span>86</span></span><span class="sym">Rn</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span></div>
             <div class="choix" data-choix-item="3" data-bon="autre" data-aussi="fission" data-exp="Un seul noyau au départ, et rien ne vient le frapper : c'est une <b>désintégration radioactive</b> (α), ni fusion ni fission." data-exp-aussi="Accepté : un gros noyau qui donne deux morceaux, cela ressemble beaucoup à une fission. Mais regarde à gauche de la flèche — <b>rien ne vient le frapper</b> : le radium se transforme tout seul. C'est une désintégration radioactive, donc en toute rigueur «&nbsp;ni l'une ni l'autre&nbsp;». Ce piège dépasse ce qu'on attend de toi cette année ; tu le retrouveras au chapitre 2."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
             <div class="reac"><span class="num">4</span><span class="noy"><span class="az"><span>235</span><span>92</span></span><span class="sym">U</span></span> + <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>139</span><span>54</span></span><span class="sym">Xe</span></span> + <span class="noy"><span class="az"><span>94</span><span>38</span></span><span class="sym">Sr</span></span> + 3 <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span></div>
-            <div class="choix" data-choix-item="4" data-bon="fission" data-exp="<b>Fission.</b> Regarde à gauche de la flèche : un <b>neutron</b> accompagne le très gros noyau. C'est lui qui vient le casser, et c'est le cas de presque toutes les fissions — un neutron à gauche, un gros noyau, deux morceaux de tailles comparables à droite, et d'autres neutrons libérés."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
+            <div class="choix" data-choix-item="4" data-bon="fission" data-exp="Fission. Regarde à gauche de la flèche : un <b>neutron</b> accompagne le très gros noyau. C'est lui qui vient le casser, et c'est le cas de presque toutes les fissions — un neutron à gauche, un gros noyau, deux morceaux de tailles comparables à droite, et d'autres neutrons libérés."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
             <div class="reac"><span class="num">5</span>4 <span class="noy"><span class="az"><span>1</span><span>1</span></span><span class="sym">H</span></span> + 2 <span class="noy"><span class="sym">e⁻</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span></div>
-            <div class="choix" data-choix-item="5" data-bon="fusion" data-exp="<b>Fusion</b> — et c'est le vrai piège de la série. À gauche, on ne voit qu'un seul symbole, ¹H : on croirait un noyau unique. Mais le <b>4 devant</b> compte : ce sont <b>quatre</b> noyaux d'hydrogène, qui s'assemblent en un seul noyau d'hélium, plus lourd. Quatre entrent, un sort : fusion. (Les deux électrons servent à équilibrer les charges ; ce ne sont pas des noyaux.) C'est le bilan de la chaîne proton-proton, celle du Soleil."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
+            <div class="choix" data-choix-item="5" data-bon="fusion" data-exp="Fusion — et c'est le vrai piège de la série. À gauche, on ne voit qu'un seul symbole, ¹H : on croirait un noyau unique. Mais le <b>4 devant</b> compte : ce sont quatre noyaux d'hydrogène, qui s'assemblent en un seul noyau d'hélium, plus lourd. Quatre entrent, un sort : fusion. (Les deux électrons servent à équilibrer les charges ; ce ne sont pas des noyaux.) C'est le bilan de la chaîne proton-proton, celle du Soleil."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
             <div class="reac"><span class="num">6</span><span class="noy"><span class="az"><span>7</span><span>3</span></span><span class="sym">Li</span></span> + <span class="noy"><span class="az"><span>4</span><span>2</span></span><span class="sym">He</span></span> <span class="fl">→</span> <span class="noy"><span class="az"><span>10</span><span>5</span></span><span class="sym">B</span></span> + <span class="noy"><span class="az"><span>1</span><span>0</span></span><span class="sym">n</span></span></div>
             <div class="choix" data-choix-item="6" data-bon="fusion" data-exp="Deux noyaux entrent, un noyau plus lourd sort — le neutron libéré ne change rien : <b>fusion</b>."><button type="button" data-choix="fusion" aria-pressed="false">Fusion</button><button type="button" data-choix="fission" aria-pressed="false">Fission</button><button type="button" data-choix="autre" aria-pressed="false">Ni l'une ni l'autre</button><span class="cm"></span></div>
 
@@ -1298,7 +1352,7 @@
    "Que la réaction se répète quatre fois de suite"
   ],
   "r": 0,
-  "c": "Le nombre <b>devant</b> un symbole compte les noyaux. Le nombre de masse, lui, s'écrit <b>en haut à gauche</b> du symbole. Confondre les deux, c'est prendre quatre noyaux pour un seul."
+  "c": "Le nombre <b>devant</b> un symbole compte les noyaux. Le nombre de masse, lui, s'écrit en haut à gauche du symbole. Confondre les deux, c'est prendre quatre noyaux pour un seul."
  },
  {
   "q": "Les réactions 1 et 3 de l'activité ne comportent qu'un seul noyau à gauche de la flèche. Comment appelle-t-on ce type de transformation ?",
@@ -1377,8 +1431,8 @@
             <div class="retain" data-bilan-wrap>
               <ul style="margin:0;padding-left:18px">
                 <li>Un <b>élément chimique</b> est un type d'atome, défini par son <b class="cle">numéro atomique Z</b> — le nombre de protons de son noyau.</li>
-                <li>On connaît <b class="cle">118</b> éléments, dont <b class="cle">94 naturels</b>. Les autres sont <b>anthropiques</b>&nbsp;: fabriqués en laboratoire, et radioactifs.</li>
-                <li>Deux transformations, et deux seulement, changent un noyau&nbsp;: la <b>fusion</b> (deux noyaux s'assemblent) et la <b>fission</b> (un gros noyau se casse). Une <b class="cle">désintégration radioactive</b> n'est ni l'une ni l'autre.</li>
+                <li>On connaît <b class="cle">118 éléments, dont 94 naturels</b>. Les autres sont <b>anthropiques</b>&nbsp;: fabriqués en laboratoire, et radioactifs.</li>
+                <li>Deux transformations, et deux seulement, changent un noyau&nbsp;: la fusion (deux noyaux s'assemblent) et la fission (un gros noyau se casse). Une <b class="cle">désintégration radioactive</b> n'est ni l'une ni l'autre.</li>
                 <li>Les abondances sont <b class="cle">très inégales</b> selon le milieu&nbsp;:</li>
               </ul>
               <table class="doc-table" style="margin:10px 0 4px">
@@ -1506,7 +1560,7 @@
               <div class="verdict"></div>
             </div>
 
-            <p style="font-size:14.5px;margin:4px 0 10px">Selon la théorie du Big Bang, un premier phénomène massif de nucléosynthèse s'est déroulé dans les premiers temps de l'histoire de l'Univers — <b class="cle">entre 10 secondes et 20 minutes</b> — lorsque la température avoisinait les 10⁹ K. Il est appelé <b>nucléosynthèse primordiale</b> (<i lang="en">BBN : Big Bang Nucleosynthesis</i>).</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Selon la théorie du Big Bang, un premier phénomène massif de nucléosynthèse s'est déroulé dans les premiers temps de l'histoire de l'Univers — <b>entre 10 secondes et 20 minutes</b> — lorsque la température avoisinait les 10⁹ K. Il est appelé <b>nucléosynthèse primordiale</b> (<i lang="en">BBN : Big Bang Nucleosynthesis</i>).</p>
 
             <figure class="ill"><span class="loupe">⤢ agrandir</span>
               <img src="../assets/img/es/1re-es-t1-c1/t1c1-histoire-univers-big-bang.jpg" alt="Frise de l'histoire de l'Univers selon le scénario du Big Bang, du temps zéro à 13,8 milliards d'années, avec les étapes de la fusion nucléaire et du fond diffus cosmologique" loading="lazy">
@@ -1620,7 +1674,7 @@
 </g>
 </svg>
               <!-- /SVG:chaine-primordiale -->
-              <figcaption>Chaque flèche horizontale est une <b>fusion</b>&nbsp;: le noyau grossit d'un
+              <figcaption>Chaque flèche horizontale est une fusion&nbsp;: le noyau grossit d'un
                 étage à l'autre. Ce qui entre arrive par le haut, ce qui repart s'échappe par le bas.
                 Cinq réactions suffisent à passer du proton au lithium&nbsp;7.<span class="src">Schéma tracé pour ce cours</span></figcaption>
             </figure>
@@ -1901,10 +1955,10 @@
 </g>
 </svg>
               <!-- /SVG:chaine-pp -->
-              <figcaption>La <b>chaîne proton-proton</b> (ici PPI), qui aboutit à la
+              <figcaption>La chaîne proton-proton (ici PPI), qui aboutit à la
                 synthèse de l'hélium 4. Dominante entre 10 et 14 millions de kelvins, elle
                 représente 85 % des chaînes PP pour une étoile de type solaire. Les deux
-                branches sont <b>identiques</b> : il en faut deux pour un seul
+                branches sont identiques : il en faut deux pour un seul
                 hélium 4.<span class="src">Schéma tracé pour ce cours</span></figcaption>
             </figure>
 
@@ -1955,7 +2009,7 @@
 <text class="lb cq-t g" x="400.0" y="83.5">H <tspan class="cq-n">— l'enveloppe, qui ne fusionne plus</tspan></text>
 </svg>
               <!-- /SVG:couches-etoile -->
-              <figcaption>Structure <b>en couches</b> d'une étoile massive sur le point
+              <figcaption>Structure en couches d'une étoile massive sur le point
                 d'exploser : chaque couche fabrique un élément plus lourd que celle qui
                 l'entoure, et le fer occupe le cœur. On n'en voit ici qu'un quart : le cœur
                 est en bas à gauche.<span class="src">Schéma tracé pour ce cours</span></figcaption>
@@ -1967,7 +2021,7 @@
               <figcaption>Fusions successives au cours de la vie et jusqu'à la mort d'une étoile de 25 masses solaires. Regarde la colonne « durée » : 7 millions d'années pour brûler l'hydrogène… et un seul jour pour le silicium.</figcaption>
             </figure>
 
-            <div class="retain">Une étoile est une usine à éléments. Tant qu'elle est en <b>séquence principale</b>, elle transforme son hydrogène en hélium. Ensuite, et seulement si elle est assez massive, elle enchaîne des fusions de plus en plus lourdes — carbone, oxygène, silicium — de plus en plus vite, <b class="cle">jusqu'au fer</b>.</div>
+            <div class="retain">Une étoile est une usine à éléments. Tant qu'elle est en séquence principale, elle transforme son hydrogène en hélium. Ensuite, et seulement si elle est assez massive, elle enchaîne des fusions de plus en plus lourdes — carbone, oxygène, silicium — de plus en plus vite, <b class="cle">jusqu'au fer</b>.</div>
 
             <div class="block-label">Vérifie ta compréhension</div>
             <div class="qcmbox" data-code="NUC-2b">
@@ -2079,7 +2133,7 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> comprendre pourquoi la fabrication s'arrête au fer, et d'où viennent alors tous les éléments plus lourds.</span></div>
           </div>
           <div class="card-body">
-            <p class="transi">Une étoile s'arrête au fer, même la plus massive. Or ton corps contient du zinc, et une pièce d'un euro du nickel et du cuivre — tous <b>plus lourds que le fer</b>. <b>Troisième usine : la mort des étoiles.</b></p>
+            <p class="transi">Une étoile s'arrête au fer, même la plus massive. Or ton corps contient du zinc, et une pièce d'un euro du nickel et du cuivre — tous plus lourds que le fer. <b>Troisième usine : la mort des étoiles.</b></p>
             <div class="poste">
               <div class="poste-media">
                 <p class="consigne">🎬 <span>« L'origine des éléments chimiques », épisode 3/3 — des étoiles à la Terre.</span></p>
@@ -2087,7 +2141,7 @@
               </div>
             </div>
 
-            <p style="font-size:14.5px;margin:4px 0 10px">Une étoile <b>ne peut pas</b> synthétiser par fusion avec des particules α les éléments plus lourds que le <b>nickel 56</b> — se désintégrant ensuite en fer 56 —, ces derniers ayant une cohésion de leurs noyaux maximale.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Une étoile ne peut pas synthétiser par fusion avec des particules α les éléments plus lourds que le <b>nickel 56</b> — se désintégrant ensuite en fer 56 —, ces derniers ayant une cohésion de leurs noyaux maximale.</p>
             <p style="font-size:14.5px;margin:4px 0 10px">Le cœur de l'étoile <b>s'effondre alors sur lui-même</b>, provoquant par rebond l'éjection de ses couches externes dans une violente explosion appelée <button type="button" class="plustard def" data-plustard data-glossaire="Supernova">supernova<span class="bulle"></span></button>.</p>
 
             <figure class="ill"><span class="loupe">⤢ agrandir</span>
@@ -2114,7 +2168,7 @@
               <figcaption>Capture neutronique : un noyau avale un neutron, se retrouve excité, et se calme en émettant un rayonnement γ. Répète l'opération des dizaines de fois et tu remontes le tableau périodique jusqu'à l'or et l'uranium.</figcaption>
             </figure>
 
-            <div class="retain">Une étoile fabrique les éléments <b>jusqu'au fer</b>. Tout ce qui est plus lourd — le cuivre de tes câbles, l'argent, l'or, l'uranium — s'est formé lors d'événements <b class="cle">explosifs</b>, en particulier les supernovæ. Ces atomes-là ont été fabriqués dans la mort d'une étoile, puis dispersés dans l'espace avant de se retrouver ici.</div>
+            <div class="retain">Une étoile fabrique les éléments jusqu'au fer. Tout ce qui est plus lourd — le cuivre de tes câbles, l'argent, l'or, l'uranium — s'est formé lors d'événements <b class="cle">explosifs</b>, en particulier les supernovæ. Ces atomes-là ont été fabriqués dans la mort d'une étoile, puis dispersés dans l'espace avant de se retrouver ici.</div>
 
             <div class="block-label">Vérifie ta compréhension</div>
             <div class="qcmbox" data-code="NUC-2c">
@@ -2181,7 +2235,7 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir rattacher chaque élément à l'étape qui l'a fabriqué.</span></div>
           </div>
           <div class="card-body">
-            <p class="transi">Les trois usines sont en place : les premières minutes, la vie des étoiles, leur mort. Il te reste à savoir <b>laquelle a fabriqué quoi</b> — c'est exactement ce qu'on peut te demander en devoir.</p>
+            <p class="transi">Les trois usines sont en place : les premières minutes, la vie des étoiles, leur mort. Il te reste à savoir laquelle a fabriqué quoi — c'est exactement ce qu'on peut te demander en devoir.</p>
             <div class="field">
               <span class="field-type">Texte à trous</span>
               <div class="field-q">1 · Rappelle les noms des trois étapes de la nucléosynthèse.</div>
@@ -2239,7 +2293,7 @@
                 <li>La <b>nucléosynthèse primordiale</b>, entre 10 s et 20 min après le Big Bang, forme l'hélium et les noyaux les plus légers.</li>
                 <li>La <b>nucléosynthèse stellaire</b> fabrique, pendant la vie de l'étoile, tout ce qui va de l'hélium <b class="cle">jusqu'au fer</b> — d'autant plus loin que l'étoile est massive.</li>
                 <li>La <b>nucléosynthèse explosive</b>, lors des supernovæ, fabrique tout ce qui est <b class="cle">plus lourd que le fer</b>.</li>
-                <li>La <b>fusion</b> assemble deux noyaux en un plus lourd ; la <b>fission</b> casse un gros noyau en deux plus petits. Ni l'une ni l'autre ne doit être confondue avec une <b class="cle">désintégration radioactive</b>, où un seul noyau se transforme tout seul.</li>
+                <li>La fusion assemble deux noyaux en un plus lourd ; la fission casse un gros noyau en deux plus petits. Ni l'une ni l'autre ne doit être confondue avec une <b class="cle">désintégration radioactive</b>, où un seul noyau se transforme tout seul.</li>
               </ul>
             </div>
 
@@ -2261,7 +2315,7 @@
             quoi que ce soit&nbsp;: <b>d'où viennent les atomes de ton corps&nbsp;?</b> Tu y as répondu
             de mémoire, à l'étape&nbsp;1.1. Le moment est venu d'y revenir.</p>
 
-            <div class="retain">Cette question est <b class="cle">typiquement celle qu'on pose en
+            <div class="retain">Cette question est <b>typiquement celle qu'on pose en
             devoir</b>&nbsp;: elle ne demande aucun calcul, mais elle exige de raconter les trois
             nucléosynthèses dans l'ordre, en les reliant à des éléments précis. Prends le temps de la
             rédiger — c'est un entraînement, pas une formalité.</div>
@@ -2284,7 +2338,7 @@
               <div class="verdict"></div>
               <div class="reveal" data-reveal>
                 <div class="rl">🔭 Pour situer ta réponse</div>
-                L'<b>hydrogène</b> de ton corps date des premières minutes de l'Univers. Ton <b>carbone</b>, ton <b>oxygène</b>, ton <b>azote</b> ont été fabriqués dans des étoiles mortes depuis longtemps. Le <b>fer</b> de ton sang vient du cœur d'une étoile massive, et le peu d'<b>iode</b> ou de <b>zinc</b> que tu contiens vient d'une explosion. Tu es, littéralement, de la poussière d'étoiles recyclée.
+                L'hydrogène de ton corps date des premières minutes de l'Univers. Ton carbone, ton oxygène, ton azote ont été fabriqués dans des étoiles mortes depuis longtemps. Le fer de ton sang vient du cœur d'une étoile massive, et le peu d'iode ou de zinc que tu contiens vient d'une explosion. Tu es, littéralement, de la poussière d'étoiles recyclée.
               </div>
             </div>
 
@@ -2318,124 +2372,124 @@
 <text class="rep dr" x="22" y="234">5</text>
 <text class="rep dr" x="22" y="278">6</text>
 <text class="rep dr" x="22" y="322">7</text>
-<g class="c prim"><title>H — numéro atomique 1</title><rect x="30" y="34" width="41" height="41" rx="3"/><text class="z" x="33" y="45">1</text><text class="s" x="50" y="64">H</text><circle class="chon" cx="64" cy="42" r="3.2"/></g>
-<g class="c prim"><title>He — numéro atomique 2</title><rect x="778" y="34" width="41" height="41" rx="3"/><text class="z" x="781" y="45">2</text><text class="s" x="798" y="64">He</text></g>
-<g class="c prim"><title>Li — numéro atomique 3</title><rect x="30" y="78" width="41" height="41" rx="3"/><text class="z" x="33" y="89">3</text><text class="s" x="50" y="108">Li</text></g>
-<g class="c prim"><title>Be — numéro atomique 4</title><rect x="74" y="78" width="41" height="41" rx="3"/><text class="z" x="77" y="89">4</text><text class="s" x="94" y="108">Be</text></g>
-<g class="c prim"><title>B — numéro atomique 5</title><rect x="558" y="78" width="41" height="41" rx="3"/><text class="z" x="561" y="89">5</text><text class="s" x="578" y="108">B</text></g>
-<g class="c stel"><title>C — numéro atomique 6</title><rect x="602" y="78" width="41" height="41" rx="3"/><text class="z" x="605" y="89">6</text><text class="s" x="622" y="108">C</text><circle class="chon" cx="636" cy="86" r="3.2"/></g>
-<g class="c stel"><title>N — numéro atomique 7</title><rect x="646" y="78" width="41" height="41" rx="3"/><text class="z" x="649" y="89">7</text><text class="s" x="666" y="108">N</text><circle class="chon" cx="680" cy="86" r="3.2"/></g>
-<g class="c stel"><title>O — numéro atomique 8</title><rect x="690" y="78" width="41" height="41" rx="3"/><text class="z" x="693" y="89">8</text><text class="s" x="710" y="108">O</text><circle class="chon" cx="724" cy="86" r="3.2"/></g>
-<g class="c stel"><title>F — numéro atomique 9</title><rect x="734" y="78" width="41" height="41" rx="3"/><text class="z" x="737" y="89">9</text><text class="s" x="754" y="108">F</text></g>
-<g class="c stel"><title>Ne — numéro atomique 10</title><rect x="778" y="78" width="41" height="41" rx="3"/><text class="z" x="781" y="89">10</text><text class="s" x="798" y="108">Ne</text></g>
-<g class="c stel"><title>Na — numéro atomique 11</title><rect x="30" y="122" width="41" height="41" rx="3"/><text class="z" x="33" y="133">11</text><text class="s" x="50" y="152">Na</text></g>
-<g class="c stel"><title>Mg — numéro atomique 12</title><rect x="74" y="122" width="41" height="41" rx="3"/><text class="z" x="77" y="133">12</text><text class="s" x="94" y="152">Mg</text></g>
-<g class="c stel"><title>Al — numéro atomique 13</title><rect x="558" y="122" width="41" height="41" rx="3"/><text class="z" x="561" y="133">13</text><text class="s" x="578" y="152">Al</text></g>
-<g class="c stel"><title>Si — numéro atomique 14</title><rect x="602" y="122" width="41" height="41" rx="3"/><text class="z" x="605" y="133">14</text><text class="s" x="622" y="152">Si</text></g>
-<g class="c stel"><title>P — numéro atomique 15</title><rect x="646" y="122" width="41" height="41" rx="3"/><text class="z" x="649" y="133">15</text><text class="s" x="666" y="152">P</text></g>
-<g class="c stel"><title>S — numéro atomique 16</title><rect x="690" y="122" width="41" height="41" rx="3"/><text class="z" x="693" y="133">16</text><text class="s" x="710" y="152">S</text></g>
-<g class="c stel"><title>Cl — numéro atomique 17</title><rect x="734" y="122" width="41" height="41" rx="3"/><text class="z" x="737" y="133">17</text><text class="s" x="754" y="152">Cl</text></g>
-<g class="c stel"><title>Ar — numéro atomique 18</title><rect x="778" y="122" width="41" height="41" rx="3"/><text class="z" x="781" y="133">18</text><text class="s" x="798" y="152">Ar</text></g>
-<g class="c stel"><title>K — numéro atomique 19</title><rect x="30" y="166" width="41" height="41" rx="3"/><text class="z" x="33" y="177">19</text><text class="s" x="50" y="196">K</text></g>
-<g class="c stel"><title>Ca — numéro atomique 20</title><rect x="74" y="166" width="41" height="41" rx="3"/><text class="z" x="77" y="177">20</text><text class="s" x="94" y="196">Ca</text></g>
-<g class="c stel"><title>Sc — numéro atomique 21</title><rect x="118" y="166" width="41" height="41" rx="3"/><text class="z" x="121" y="177">21</text><text class="s" x="138" y="196">Sc</text></g>
-<g class="c stel"><title>Ti — numéro atomique 22</title><rect x="162" y="166" width="41" height="41" rx="3"/><text class="z" x="165" y="177">22</text><text class="s" x="182" y="196">Ti</text></g>
-<g class="c stel"><title>V — numéro atomique 23</title><rect x="206" y="166" width="41" height="41" rx="3"/><text class="z" x="209" y="177">23</text><text class="s" x="226" y="196">V</text></g>
-<g class="c stel"><title>Cr — numéro atomique 24</title><rect x="250" y="166" width="41" height="41" rx="3"/><text class="z" x="253" y="177">24</text><text class="s" x="270" y="196">Cr</text></g>
-<g class="c stel"><title>Mn — numéro atomique 25</title><rect x="294" y="166" width="41" height="41" rx="3"/><text class="z" x="297" y="177">25</text><text class="s" x="314" y="196">Mn</text></g>
-<g class="c stel"><title>Fe — numéro atomique 26</title><rect x="338" y="166" width="41" height="41" rx="3"/><text class="z" x="341" y="177">26</text><text class="s" x="358" y="196">Fe</text></g>
-<g class="c expl"><title>Co — numéro atomique 27</title><rect x="382" y="166" width="41" height="41" rx="3"/><text class="z" x="385" y="177">27</text><text class="s" x="402" y="196">Co</text></g>
-<g class="c expl"><title>Ni — numéro atomique 28</title><rect x="426" y="166" width="41" height="41" rx="3"/><text class="z" x="429" y="177">28</text><text class="s" x="446" y="196">Ni</text></g>
-<g class="c expl"><title>Cu — numéro atomique 29</title><rect x="470" y="166" width="41" height="41" rx="3"/><text class="z" x="473" y="177">29</text><text class="s" x="490" y="196">Cu</text></g>
-<g class="c expl"><title>Zn — numéro atomique 30</title><rect x="514" y="166" width="41" height="41" rx="3"/><text class="z" x="517" y="177">30</text><text class="s" x="534" y="196">Zn</text></g>
-<g class="c expl"><title>Ga — numéro atomique 31</title><rect x="558" y="166" width="41" height="41" rx="3"/><text class="z" x="561" y="177">31</text><text class="s" x="578" y="196">Ga</text></g>
-<g class="c expl"><title>Ge — numéro atomique 32</title><rect x="602" y="166" width="41" height="41" rx="3"/><text class="z" x="605" y="177">32</text><text class="s" x="622" y="196">Ge</text></g>
-<g class="c expl"><title>As — numéro atomique 33</title><rect x="646" y="166" width="41" height="41" rx="3"/><text class="z" x="649" y="177">33</text><text class="s" x="666" y="196">As</text></g>
-<g class="c expl"><title>Se — numéro atomique 34</title><rect x="690" y="166" width="41" height="41" rx="3"/><text class="z" x="693" y="177">34</text><text class="s" x="710" y="196">Se</text></g>
-<g class="c expl"><title>Br — numéro atomique 35</title><rect x="734" y="166" width="41" height="41" rx="3"/><text class="z" x="737" y="177">35</text><text class="s" x="754" y="196">Br</text></g>
-<g class="c expl"><title>Kr — numéro atomique 36</title><rect x="778" y="166" width="41" height="41" rx="3"/><text class="z" x="781" y="177">36</text><text class="s" x="798" y="196">Kr</text></g>
-<g class="c expl"><title>Rb — numéro atomique 37</title><rect x="30" y="210" width="41" height="41" rx="3"/><text class="z" x="33" y="221">37</text><text class="s" x="50" y="240">Rb</text></g>
-<g class="c expl"><title>Sr — numéro atomique 38</title><rect x="74" y="210" width="41" height="41" rx="3"/><text class="z" x="77" y="221">38</text><text class="s" x="94" y="240">Sr</text></g>
-<g class="c expl"><title>Y — numéro atomique 39</title><rect x="118" y="210" width="41" height="41" rx="3"/><text class="z" x="121" y="221">39</text><text class="s" x="138" y="240">Y</text></g>
-<g class="c expl"><title>Zr — numéro atomique 40</title><rect x="162" y="210" width="41" height="41" rx="3"/><text class="z" x="165" y="221">40</text><text class="s" x="182" y="240">Zr</text></g>
-<g class="c expl"><title>Nb — numéro atomique 41</title><rect x="206" y="210" width="41" height="41" rx="3"/><text class="z" x="209" y="221">41</text><text class="s" x="226" y="240">Nb</text></g>
-<g class="c expl"><title>Mo — numéro atomique 42</title><rect x="250" y="210" width="41" height="41" rx="3"/><text class="z" x="253" y="221">42</text><text class="s" x="270" y="240">Mo</text></g>
-<g class="c expl"><title>Tc — numéro atomique 43</title><rect x="294" y="210" width="41" height="41" rx="3"/><text class="z" x="297" y="221">43</text><text class="s" x="314" y="240">Tc</text></g>
-<g class="c expl"><title>Ru — numéro atomique 44</title><rect x="338" y="210" width="41" height="41" rx="3"/><text class="z" x="341" y="221">44</text><text class="s" x="358" y="240">Ru</text></g>
-<g class="c expl"><title>Rh — numéro atomique 45</title><rect x="382" y="210" width="41" height="41" rx="3"/><text class="z" x="385" y="221">45</text><text class="s" x="402" y="240">Rh</text></g>
-<g class="c expl"><title>Pd — numéro atomique 46</title><rect x="426" y="210" width="41" height="41" rx="3"/><text class="z" x="429" y="221">46</text><text class="s" x="446" y="240">Pd</text></g>
-<g class="c expl"><title>Ag — numéro atomique 47</title><rect x="470" y="210" width="41" height="41" rx="3"/><text class="z" x="473" y="221">47</text><text class="s" x="490" y="240">Ag</text></g>
-<g class="c expl"><title>Cd — numéro atomique 48</title><rect x="514" y="210" width="41" height="41" rx="3"/><text class="z" x="517" y="221">48</text><text class="s" x="534" y="240">Cd</text></g>
-<g class="c expl"><title>In — numéro atomique 49</title><rect x="558" y="210" width="41" height="41" rx="3"/><text class="z" x="561" y="221">49</text><text class="s" x="578" y="240">In</text></g>
-<g class="c expl"><title>Sn — numéro atomique 50</title><rect x="602" y="210" width="41" height="41" rx="3"/><text class="z" x="605" y="221">50</text><text class="s" x="622" y="240">Sn</text></g>
-<g class="c expl"><title>Sb — numéro atomique 51</title><rect x="646" y="210" width="41" height="41" rx="3"/><text class="z" x="649" y="221">51</text><text class="s" x="666" y="240">Sb</text></g>
-<g class="c expl"><title>Te — numéro atomique 52</title><rect x="690" y="210" width="41" height="41" rx="3"/><text class="z" x="693" y="221">52</text><text class="s" x="710" y="240">Te</text></g>
-<g class="c expl"><title>I — numéro atomique 53</title><rect x="734" y="210" width="41" height="41" rx="3"/><text class="z" x="737" y="221">53</text><text class="s" x="754" y="240">I</text></g>
-<g class="c expl"><title>Xe — numéro atomique 54</title><rect x="778" y="210" width="41" height="41" rx="3"/><text class="z" x="781" y="221">54</text><text class="s" x="798" y="240">Xe</text></g>
-<g class="c expl"><title>Cs — numéro atomique 55</title><rect x="30" y="254" width="41" height="41" rx="3"/><text class="z" x="33" y="265">55</text><text class="s" x="50" y="284">Cs</text></g>
-<g class="c expl"><title>Ba — numéro atomique 56</title><rect x="74" y="254" width="41" height="41" rx="3"/><text class="z" x="77" y="265">56</text><text class="s" x="94" y="284">Ba</text></g>
-<g class="c expl"><title>Hf — numéro atomique 72</title><rect x="162" y="254" width="41" height="41" rx="3"/><text class="z" x="165" y="265">72</text><text class="s" x="182" y="284">Hf</text></g>
-<g class="c expl"><title>Ta — numéro atomique 73</title><rect x="206" y="254" width="41" height="41" rx="3"/><text class="z" x="209" y="265">73</text><text class="s" x="226" y="284">Ta</text></g>
-<g class="c expl"><title>W — numéro atomique 74</title><rect x="250" y="254" width="41" height="41" rx="3"/><text class="z" x="253" y="265">74</text><text class="s" x="270" y="284">W</text></g>
-<g class="c expl"><title>Re — numéro atomique 75</title><rect x="294" y="254" width="41" height="41" rx="3"/><text class="z" x="297" y="265">75</text><text class="s" x="314" y="284">Re</text></g>
-<g class="c expl"><title>Os — numéro atomique 76</title><rect x="338" y="254" width="41" height="41" rx="3"/><text class="z" x="341" y="265">76</text><text class="s" x="358" y="284">Os</text></g>
-<g class="c expl"><title>Ir — numéro atomique 77</title><rect x="382" y="254" width="41" height="41" rx="3"/><text class="z" x="385" y="265">77</text><text class="s" x="402" y="284">Ir</text></g>
-<g class="c expl"><title>Pt — numéro atomique 78</title><rect x="426" y="254" width="41" height="41" rx="3"/><text class="z" x="429" y="265">78</text><text class="s" x="446" y="284">Pt</text></g>
-<g class="c expl"><title>Au — numéro atomique 79</title><rect x="470" y="254" width="41" height="41" rx="3"/><text class="z" x="473" y="265">79</text><text class="s" x="490" y="284">Au</text></g>
-<g class="c expl"><title>Hg — numéro atomique 80</title><rect x="514" y="254" width="41" height="41" rx="3"/><text class="z" x="517" y="265">80</text><text class="s" x="534" y="284">Hg</text></g>
-<g class="c expl"><title>Tl — numéro atomique 81</title><rect x="558" y="254" width="41" height="41" rx="3"/><text class="z" x="561" y="265">81</text><text class="s" x="578" y="284">Tl</text></g>
-<g class="c expl"><title>Pb — numéro atomique 82</title><rect x="602" y="254" width="41" height="41" rx="3"/><text class="z" x="605" y="265">82</text><text class="s" x="622" y="284">Pb</text></g>
-<g class="c expl"><title>Bi — numéro atomique 83</title><rect x="646" y="254" width="41" height="41" rx="3"/><text class="z" x="649" y="265">83</text><text class="s" x="666" y="284">Bi</text></g>
-<g class="c expl"><title>Po — numéro atomique 84</title><rect x="690" y="254" width="41" height="41" rx="3"/><text class="z" x="693" y="265">84</text><text class="s" x="710" y="284">Po</text></g>
-<g class="c expl"><title>At — numéro atomique 85</title><rect x="734" y="254" width="41" height="41" rx="3"/><text class="z" x="737" y="265">85</text><text class="s" x="754" y="284">At</text></g>
-<g class="c expl"><title>Rn — numéro atomique 86</title><rect x="778" y="254" width="41" height="41" rx="3"/><text class="z" x="781" y="265">86</text><text class="s" x="798" y="284">Rn</text></g>
-<g class="c expl"><title>Fr — numéro atomique 87</title><rect x="30" y="298" width="41" height="41" rx="3"/><text class="z" x="33" y="309">87</text><text class="s" x="50" y="328">Fr</text></g>
-<g class="c expl"><title>Ra — numéro atomique 88</title><rect x="74" y="298" width="41" height="41" rx="3"/><text class="z" x="77" y="309">88</text><text class="s" x="94" y="328">Ra</text></g>
-<g class="c anth"><title>Rf — numéro atomique 104</title><rect x="162" y="298" width="41" height="41" rx="3"/><text class="z" x="165" y="309">104</text><text class="s" x="182" y="328">Rf</text></g>
-<g class="c anth"><title>Db — numéro atomique 105</title><rect x="206" y="298" width="41" height="41" rx="3"/><text class="z" x="209" y="309">105</text><text class="s" x="226" y="328">Db</text></g>
-<g class="c anth"><title>Sg — numéro atomique 106</title><rect x="250" y="298" width="41" height="41" rx="3"/><text class="z" x="253" y="309">106</text><text class="s" x="270" y="328">Sg</text></g>
-<g class="c anth"><title>Bh — numéro atomique 107</title><rect x="294" y="298" width="41" height="41" rx="3"/><text class="z" x="297" y="309">107</text><text class="s" x="314" y="328">Bh</text></g>
-<g class="c anth"><title>Hs — numéro atomique 108</title><rect x="338" y="298" width="41" height="41" rx="3"/><text class="z" x="341" y="309">108</text><text class="s" x="358" y="328">Hs</text></g>
-<g class="c anth"><title>Mt — numéro atomique 109</title><rect x="382" y="298" width="41" height="41" rx="3"/><text class="z" x="385" y="309">109</text><text class="s" x="402" y="328">Mt</text></g>
-<g class="c anth"><title>Ds — numéro atomique 110</title><rect x="426" y="298" width="41" height="41" rx="3"/><text class="z" x="429" y="309">110</text><text class="s" x="446" y="328">Ds</text></g>
-<g class="c anth"><title>Rg — numéro atomique 111</title><rect x="470" y="298" width="41" height="41" rx="3"/><text class="z" x="473" y="309">111</text><text class="s" x="490" y="328">Rg</text></g>
-<g class="c anth"><title>Cn — numéro atomique 112</title><rect x="514" y="298" width="41" height="41" rx="3"/><text class="z" x="517" y="309">112</text><text class="s" x="534" y="328">Cn</text></g>
-<g class="c anth"><title>Nh — numéro atomique 113</title><rect x="558" y="298" width="41" height="41" rx="3"/><text class="z" x="561" y="309">113</text><text class="s" x="578" y="328">Nh</text></g>
-<g class="c anth"><title>Fl — numéro atomique 114</title><rect x="602" y="298" width="41" height="41" rx="3"/><text class="z" x="605" y="309">114</text><text class="s" x="622" y="328">Fl</text></g>
-<g class="c anth"><title>Mc — numéro atomique 115</title><rect x="646" y="298" width="41" height="41" rx="3"/><text class="z" x="649" y="309">115</text><text class="s" x="666" y="328">Mc</text></g>
-<g class="c anth"><title>Lv — numéro atomique 116</title><rect x="690" y="298" width="41" height="41" rx="3"/><text class="z" x="693" y="309">116</text><text class="s" x="710" y="328">Lv</text></g>
-<g class="c anth"><title>Ts — numéro atomique 117</title><rect x="734" y="298" width="41" height="41" rx="3"/><text class="z" x="737" y="309">117</text><text class="s" x="754" y="328">Ts</text></g>
-<g class="c anth"><title>Og — numéro atomique 118</title><rect x="778" y="298" width="41" height="41" rx="3"/><text class="z" x="781" y="309">118</text><text class="s" x="798" y="328">Og</text></g>
-<g class="c expl"><title>La — numéro atomique 57</title><rect x="118" y="368" width="41" height="41" rx="3"/><text class="z" x="121" y="379">57</text><text class="s" x="138" y="398">La</text></g>
-<g class="c expl"><title>Ce — numéro atomique 58</title><rect x="162" y="368" width="41" height="41" rx="3"/><text class="z" x="165" y="379">58</text><text class="s" x="182" y="398">Ce</text></g>
-<g class="c expl"><title>Pr — numéro atomique 59</title><rect x="206" y="368" width="41" height="41" rx="3"/><text class="z" x="209" y="379">59</text><text class="s" x="226" y="398">Pr</text></g>
-<g class="c expl"><title>Nd — numéro atomique 60</title><rect x="250" y="368" width="41" height="41" rx="3"/><text class="z" x="253" y="379">60</text><text class="s" x="270" y="398">Nd</text></g>
-<g class="c expl"><title>Pm — numéro atomique 61</title><rect x="294" y="368" width="41" height="41" rx="3"/><text class="z" x="297" y="379">61</text><text class="s" x="314" y="398">Pm</text></g>
-<g class="c expl"><title>Sm — numéro atomique 62</title><rect x="338" y="368" width="41" height="41" rx="3"/><text class="z" x="341" y="379">62</text><text class="s" x="358" y="398">Sm</text></g>
-<g class="c expl"><title>Eu — numéro atomique 63</title><rect x="382" y="368" width="41" height="41" rx="3"/><text class="z" x="385" y="379">63</text><text class="s" x="402" y="398">Eu</text></g>
-<g class="c expl"><title>Gd — numéro atomique 64</title><rect x="426" y="368" width="41" height="41" rx="3"/><text class="z" x="429" y="379">64</text><text class="s" x="446" y="398">Gd</text></g>
-<g class="c expl"><title>Tb — numéro atomique 65</title><rect x="470" y="368" width="41" height="41" rx="3"/><text class="z" x="473" y="379">65</text><text class="s" x="490" y="398">Tb</text></g>
-<g class="c expl"><title>Dy — numéro atomique 66</title><rect x="514" y="368" width="41" height="41" rx="3"/><text class="z" x="517" y="379">66</text><text class="s" x="534" y="398">Dy</text></g>
-<g class="c expl"><title>Ho — numéro atomique 67</title><rect x="558" y="368" width="41" height="41" rx="3"/><text class="z" x="561" y="379">67</text><text class="s" x="578" y="398">Ho</text></g>
-<g class="c expl"><title>Er — numéro atomique 68</title><rect x="602" y="368" width="41" height="41" rx="3"/><text class="z" x="605" y="379">68</text><text class="s" x="622" y="398">Er</text></g>
-<g class="c expl"><title>Tm — numéro atomique 69</title><rect x="646" y="368" width="41" height="41" rx="3"/><text class="z" x="649" y="379">69</text><text class="s" x="666" y="398">Tm</text></g>
-<g class="c expl"><title>Yb — numéro atomique 70</title><rect x="690" y="368" width="41" height="41" rx="3"/><text class="z" x="693" y="379">70</text><text class="s" x="710" y="398">Yb</text></g>
-<g class="c expl"><title>Lu — numéro atomique 71</title><rect x="734" y="368" width="41" height="41" rx="3"/><text class="z" x="737" y="379">71</text><text class="s" x="754" y="398">Lu</text></g>
-<g class="c expl"><title>Ac — numéro atomique 89</title><rect x="118" y="412" width="41" height="41" rx="3"/><text class="z" x="121" y="423">89</text><text class="s" x="138" y="442">Ac</text></g>
-<g class="c expl"><title>Th — numéro atomique 90</title><rect x="162" y="412" width="41" height="41" rx="3"/><text class="z" x="165" y="423">90</text><text class="s" x="182" y="442">Th</text></g>
-<g class="c expl"><title>Pa — numéro atomique 91</title><rect x="206" y="412" width="41" height="41" rx="3"/><text class="z" x="209" y="423">91</text><text class="s" x="226" y="442">Pa</text></g>
-<g class="c expl"><title>U — numéro atomique 92</title><rect x="250" y="412" width="41" height="41" rx="3"/><text class="z" x="253" y="423">92</text><text class="s" x="270" y="442">U</text></g>
-<g class="c expl"><title>Np — numéro atomique 93</title><rect x="294" y="412" width="41" height="41" rx="3"/><text class="z" x="297" y="423">93</text><text class="s" x="314" y="442">Np</text></g>
-<g class="c expl"><title>Pu — numéro atomique 94</title><rect x="338" y="412" width="41" height="41" rx="3"/><text class="z" x="341" y="423">94</text><text class="s" x="358" y="442">Pu</text></g>
-<g class="c anth"><title>Am — numéro atomique 95</title><rect x="382" y="412" width="41" height="41" rx="3"/><text class="z" x="385" y="423">95</text><text class="s" x="402" y="442">Am</text></g>
-<g class="c anth"><title>Cm — numéro atomique 96</title><rect x="426" y="412" width="41" height="41" rx="3"/><text class="z" x="429" y="423">96</text><text class="s" x="446" y="442">Cm</text></g>
-<g class="c anth"><title>Bk — numéro atomique 97</title><rect x="470" y="412" width="41" height="41" rx="3"/><text class="z" x="473" y="423">97</text><text class="s" x="490" y="442">Bk</text></g>
-<g class="c anth"><title>Cf — numéro atomique 98</title><rect x="514" y="412" width="41" height="41" rx="3"/><text class="z" x="517" y="423">98</text><text class="s" x="534" y="442">Cf</text></g>
-<g class="c anth"><title>Es — numéro atomique 99</title><rect x="558" y="412" width="41" height="41" rx="3"/><text class="z" x="561" y="423">99</text><text class="s" x="578" y="442">Es</text></g>
-<g class="c anth"><title>Fm — numéro atomique 100</title><rect x="602" y="412" width="41" height="41" rx="3"/><text class="z" x="605" y="423">100</text><text class="s" x="622" y="442">Fm</text></g>
-<g class="c anth"><title>Md — numéro atomique 101</title><rect x="646" y="412" width="41" height="41" rx="3"/><text class="z" x="649" y="423">101</text><text class="s" x="666" y="442">Md</text></g>
-<g class="c anth"><title>No — numéro atomique 102</title><rect x="690" y="412" width="41" height="41" rx="3"/><text class="z" x="693" y="423">102</text><text class="s" x="710" y="442">No</text></g>
-<g class="c anth"><title>Lr — numéro atomique 103</title><rect x="734" y="412" width="41" height="41" rx="3"/><text class="z" x="737" y="423">103</text><text class="s" x="754" y="442">Lr</text></g>
+<g class="c prim" data-z="1"><title>Hydrogène (H) — numéro atomique 1</title><rect x="30" y="34" width="41" height="41" rx="3"/><text class="z" x="33" y="45">1</text><text class="s" x="50" y="64">H</text><circle class="chon" cx="64" cy="42" r="3.2"/></g>
+<g class="c prim" data-z="2"><title>Hélium (He) — numéro atomique 2</title><rect x="778" y="34" width="41" height="41" rx="3"/><text class="z" x="781" y="45">2</text><text class="s" x="798" y="64">He</text></g>
+<g class="c prim" data-z="3"><title>Lithium (Li) — numéro atomique 3</title><rect x="30" y="78" width="41" height="41" rx="3"/><text class="z" x="33" y="89">3</text><text class="s" x="50" y="108">Li</text></g>
+<g class="c prim" data-z="4"><title>Béryllium (Be) — numéro atomique 4</title><rect x="74" y="78" width="41" height="41" rx="3"/><text class="z" x="77" y="89">4</text><text class="s" x="94" y="108">Be</text></g>
+<g class="c prim" data-z="5"><title>Bore (B) — numéro atomique 5</title><rect x="558" y="78" width="41" height="41" rx="3"/><text class="z" x="561" y="89">5</text><text class="s" x="578" y="108">B</text></g>
+<g class="c stel" data-z="6"><title>Carbone (C) — numéro atomique 6</title><rect x="602" y="78" width="41" height="41" rx="3"/><text class="z" x="605" y="89">6</text><text class="s" x="622" y="108">C</text><circle class="chon" cx="636" cy="86" r="3.2"/></g>
+<g class="c stel" data-z="7"><title>Azote (N) — numéro atomique 7</title><rect x="646" y="78" width="41" height="41" rx="3"/><text class="z" x="649" y="89">7</text><text class="s" x="666" y="108">N</text><circle class="chon" cx="680" cy="86" r="3.2"/></g>
+<g class="c stel" data-z="8"><title>Oxygène (O) — numéro atomique 8</title><rect x="690" y="78" width="41" height="41" rx="3"/><text class="z" x="693" y="89">8</text><text class="s" x="710" y="108">O</text><circle class="chon" cx="724" cy="86" r="3.2"/></g>
+<g class="c stel" data-z="9"><title>Fluor (F) — numéro atomique 9</title><rect x="734" y="78" width="41" height="41" rx="3"/><text class="z" x="737" y="89">9</text><text class="s" x="754" y="108">F</text></g>
+<g class="c stel" data-z="10"><title>Néon (Ne) — numéro atomique 10</title><rect x="778" y="78" width="41" height="41" rx="3"/><text class="z" x="781" y="89">10</text><text class="s" x="798" y="108">Ne</text></g>
+<g class="c stel" data-z="11"><title>Sodium (Na) — numéro atomique 11</title><rect x="30" y="122" width="41" height="41" rx="3"/><text class="z" x="33" y="133">11</text><text class="s" x="50" y="152">Na</text></g>
+<g class="c stel" data-z="12"><title>Magnésium (Mg) — numéro atomique 12</title><rect x="74" y="122" width="41" height="41" rx="3"/><text class="z" x="77" y="133">12</text><text class="s" x="94" y="152">Mg</text></g>
+<g class="c stel" data-z="13"><title>Aluminium (Al) — numéro atomique 13</title><rect x="558" y="122" width="41" height="41" rx="3"/><text class="z" x="561" y="133">13</text><text class="s" x="578" y="152">Al</text></g>
+<g class="c stel" data-z="14"><title>Silicium (Si) — numéro atomique 14</title><rect x="602" y="122" width="41" height="41" rx="3"/><text class="z" x="605" y="133">14</text><text class="s" x="622" y="152">Si</text></g>
+<g class="c stel" data-z="15"><title>Phosphore (P) — numéro atomique 15</title><rect x="646" y="122" width="41" height="41" rx="3"/><text class="z" x="649" y="133">15</text><text class="s" x="666" y="152">P</text></g>
+<g class="c stel" data-z="16"><title>Soufre (S) — numéro atomique 16</title><rect x="690" y="122" width="41" height="41" rx="3"/><text class="z" x="693" y="133">16</text><text class="s" x="710" y="152">S</text></g>
+<g class="c stel" data-z="17"><title>Chlore (Cl) — numéro atomique 17</title><rect x="734" y="122" width="41" height="41" rx="3"/><text class="z" x="737" y="133">17</text><text class="s" x="754" y="152">Cl</text></g>
+<g class="c stel" data-z="18"><title>Argon (Ar) — numéro atomique 18</title><rect x="778" y="122" width="41" height="41" rx="3"/><text class="z" x="781" y="133">18</text><text class="s" x="798" y="152">Ar</text></g>
+<g class="c stel" data-z="19"><title>Potassium (K) — numéro atomique 19</title><rect x="30" y="166" width="41" height="41" rx="3"/><text class="z" x="33" y="177">19</text><text class="s" x="50" y="196">K</text></g>
+<g class="c stel" data-z="20"><title>Calcium (Ca) — numéro atomique 20</title><rect x="74" y="166" width="41" height="41" rx="3"/><text class="z" x="77" y="177">20</text><text class="s" x="94" y="196">Ca</text></g>
+<g class="c stel" data-z="21"><title>Scandium (Sc) — numéro atomique 21</title><rect x="118" y="166" width="41" height="41" rx="3"/><text class="z" x="121" y="177">21</text><text class="s" x="138" y="196">Sc</text></g>
+<g class="c stel" data-z="22"><title>Titane (Ti) — numéro atomique 22</title><rect x="162" y="166" width="41" height="41" rx="3"/><text class="z" x="165" y="177">22</text><text class="s" x="182" y="196">Ti</text></g>
+<g class="c stel" data-z="23"><title>Vanadium (V) — numéro atomique 23</title><rect x="206" y="166" width="41" height="41" rx="3"/><text class="z" x="209" y="177">23</text><text class="s" x="226" y="196">V</text></g>
+<g class="c stel" data-z="24"><title>Chrome (Cr) — numéro atomique 24</title><rect x="250" y="166" width="41" height="41" rx="3"/><text class="z" x="253" y="177">24</text><text class="s" x="270" y="196">Cr</text></g>
+<g class="c stel" data-z="25"><title>Manganèse (Mn) — numéro atomique 25</title><rect x="294" y="166" width="41" height="41" rx="3"/><text class="z" x="297" y="177">25</text><text class="s" x="314" y="196">Mn</text></g>
+<g class="c stel" data-z="26"><title>Fer (Fe) — numéro atomique 26</title><rect x="338" y="166" width="41" height="41" rx="3"/><text class="z" x="341" y="177">26</text><text class="s" x="358" y="196">Fe</text></g>
+<g class="c expl" data-z="27"><title>Cobalt (Co) — numéro atomique 27</title><rect x="382" y="166" width="41" height="41" rx="3"/><text class="z" x="385" y="177">27</text><text class="s" x="402" y="196">Co</text></g>
+<g class="c expl" data-z="28"><title>Nickel (Ni) — numéro atomique 28</title><rect x="426" y="166" width="41" height="41" rx="3"/><text class="z" x="429" y="177">28</text><text class="s" x="446" y="196">Ni</text></g>
+<g class="c expl" data-z="29"><title>Cuivre (Cu) — numéro atomique 29</title><rect x="470" y="166" width="41" height="41" rx="3"/><text class="z" x="473" y="177">29</text><text class="s" x="490" y="196">Cu</text></g>
+<g class="c expl" data-z="30"><title>Zinc (Zn) — numéro atomique 30</title><rect x="514" y="166" width="41" height="41" rx="3"/><text class="z" x="517" y="177">30</text><text class="s" x="534" y="196">Zn</text></g>
+<g class="c expl" data-z="31"><title>Gallium (Ga) — numéro atomique 31</title><rect x="558" y="166" width="41" height="41" rx="3"/><text class="z" x="561" y="177">31</text><text class="s" x="578" y="196">Ga</text></g>
+<g class="c expl" data-z="32"><title>Germanium (Ge) — numéro atomique 32</title><rect x="602" y="166" width="41" height="41" rx="3"/><text class="z" x="605" y="177">32</text><text class="s" x="622" y="196">Ge</text></g>
+<g class="c expl" data-z="33"><title>Arsenic (As) — numéro atomique 33</title><rect x="646" y="166" width="41" height="41" rx="3"/><text class="z" x="649" y="177">33</text><text class="s" x="666" y="196">As</text></g>
+<g class="c expl" data-z="34"><title>Sélénium (Se) — numéro atomique 34</title><rect x="690" y="166" width="41" height="41" rx="3"/><text class="z" x="693" y="177">34</text><text class="s" x="710" y="196">Se</text></g>
+<g class="c expl" data-z="35"><title>Brome (Br) — numéro atomique 35</title><rect x="734" y="166" width="41" height="41" rx="3"/><text class="z" x="737" y="177">35</text><text class="s" x="754" y="196">Br</text></g>
+<g class="c expl" data-z="36"><title>Krypton (Kr) — numéro atomique 36</title><rect x="778" y="166" width="41" height="41" rx="3"/><text class="z" x="781" y="177">36</text><text class="s" x="798" y="196">Kr</text></g>
+<g class="c expl" data-z="37"><title>Rubidium (Rb) — numéro atomique 37</title><rect x="30" y="210" width="41" height="41" rx="3"/><text class="z" x="33" y="221">37</text><text class="s" x="50" y="240">Rb</text></g>
+<g class="c expl" data-z="38"><title>Strontium (Sr) — numéro atomique 38</title><rect x="74" y="210" width="41" height="41" rx="3"/><text class="z" x="77" y="221">38</text><text class="s" x="94" y="240">Sr</text></g>
+<g class="c expl" data-z="39"><title>Yttrium (Y) — numéro atomique 39</title><rect x="118" y="210" width="41" height="41" rx="3"/><text class="z" x="121" y="221">39</text><text class="s" x="138" y="240">Y</text></g>
+<g class="c expl" data-z="40"><title>Zirconium (Zr) — numéro atomique 40</title><rect x="162" y="210" width="41" height="41" rx="3"/><text class="z" x="165" y="221">40</text><text class="s" x="182" y="240">Zr</text></g>
+<g class="c expl" data-z="41"><title>Niobium (Nb) — numéro atomique 41</title><rect x="206" y="210" width="41" height="41" rx="3"/><text class="z" x="209" y="221">41</text><text class="s" x="226" y="240">Nb</text></g>
+<g class="c expl" data-z="42"><title>Molybdène (Mo) — numéro atomique 42</title><rect x="250" y="210" width="41" height="41" rx="3"/><text class="z" x="253" y="221">42</text><text class="s" x="270" y="240">Mo</text></g>
+<g class="c expl" data-z="43"><title>Technétium (Tc) — numéro atomique 43</title><rect x="294" y="210" width="41" height="41" rx="3"/><text class="z" x="297" y="221">43</text><text class="s" x="314" y="240">Tc</text></g>
+<g class="c expl" data-z="44"><title>Ruthénium (Ru) — numéro atomique 44</title><rect x="338" y="210" width="41" height="41" rx="3"/><text class="z" x="341" y="221">44</text><text class="s" x="358" y="240">Ru</text></g>
+<g class="c expl" data-z="45"><title>Rhodium (Rh) — numéro atomique 45</title><rect x="382" y="210" width="41" height="41" rx="3"/><text class="z" x="385" y="221">45</text><text class="s" x="402" y="240">Rh</text></g>
+<g class="c expl" data-z="46"><title>Palladium (Pd) — numéro atomique 46</title><rect x="426" y="210" width="41" height="41" rx="3"/><text class="z" x="429" y="221">46</text><text class="s" x="446" y="240">Pd</text></g>
+<g class="c expl" data-z="47"><title>Argent (Ag) — numéro atomique 47</title><rect x="470" y="210" width="41" height="41" rx="3"/><text class="z" x="473" y="221">47</text><text class="s" x="490" y="240">Ag</text></g>
+<g class="c expl" data-z="48"><title>Cadmium (Cd) — numéro atomique 48</title><rect x="514" y="210" width="41" height="41" rx="3"/><text class="z" x="517" y="221">48</text><text class="s" x="534" y="240">Cd</text></g>
+<g class="c expl" data-z="49"><title>Indium (In) — numéro atomique 49</title><rect x="558" y="210" width="41" height="41" rx="3"/><text class="z" x="561" y="221">49</text><text class="s" x="578" y="240">In</text></g>
+<g class="c expl" data-z="50"><title>Étain (Sn) — numéro atomique 50</title><rect x="602" y="210" width="41" height="41" rx="3"/><text class="z" x="605" y="221">50</text><text class="s" x="622" y="240">Sn</text></g>
+<g class="c expl" data-z="51"><title>Antimoine (Sb) — numéro atomique 51</title><rect x="646" y="210" width="41" height="41" rx="3"/><text class="z" x="649" y="221">51</text><text class="s" x="666" y="240">Sb</text></g>
+<g class="c expl" data-z="52"><title>Tellure (Te) — numéro atomique 52</title><rect x="690" y="210" width="41" height="41" rx="3"/><text class="z" x="693" y="221">52</text><text class="s" x="710" y="240">Te</text></g>
+<g class="c expl" data-z="53"><title>Iode (I) — numéro atomique 53</title><rect x="734" y="210" width="41" height="41" rx="3"/><text class="z" x="737" y="221">53</text><text class="s" x="754" y="240">I</text></g>
+<g class="c expl" data-z="54"><title>Xénon (Xe) — numéro atomique 54</title><rect x="778" y="210" width="41" height="41" rx="3"/><text class="z" x="781" y="221">54</text><text class="s" x="798" y="240">Xe</text></g>
+<g class="c expl" data-z="55"><title>Césium (Cs) — numéro atomique 55</title><rect x="30" y="254" width="41" height="41" rx="3"/><text class="z" x="33" y="265">55</text><text class="s" x="50" y="284">Cs</text></g>
+<g class="c expl" data-z="56"><title>Baryum (Ba) — numéro atomique 56</title><rect x="74" y="254" width="41" height="41" rx="3"/><text class="z" x="77" y="265">56</text><text class="s" x="94" y="284">Ba</text></g>
+<g class="c expl" data-z="72"><title>Hafnium (Hf) — numéro atomique 72</title><rect x="162" y="254" width="41" height="41" rx="3"/><text class="z" x="165" y="265">72</text><text class="s" x="182" y="284">Hf</text></g>
+<g class="c expl" data-z="73"><title>Tantale (Ta) — numéro atomique 73</title><rect x="206" y="254" width="41" height="41" rx="3"/><text class="z" x="209" y="265">73</text><text class="s" x="226" y="284">Ta</text></g>
+<g class="c expl" data-z="74"><title>Tungstène (W) — numéro atomique 74</title><rect x="250" y="254" width="41" height="41" rx="3"/><text class="z" x="253" y="265">74</text><text class="s" x="270" y="284">W</text></g>
+<g class="c expl" data-z="75"><title>Rhénium (Re) — numéro atomique 75</title><rect x="294" y="254" width="41" height="41" rx="3"/><text class="z" x="297" y="265">75</text><text class="s" x="314" y="284">Re</text></g>
+<g class="c expl" data-z="76"><title>Osmium (Os) — numéro atomique 76</title><rect x="338" y="254" width="41" height="41" rx="3"/><text class="z" x="341" y="265">76</text><text class="s" x="358" y="284">Os</text></g>
+<g class="c expl" data-z="77"><title>Iridium (Ir) — numéro atomique 77</title><rect x="382" y="254" width="41" height="41" rx="3"/><text class="z" x="385" y="265">77</text><text class="s" x="402" y="284">Ir</text></g>
+<g class="c expl" data-z="78"><title>Platine (Pt) — numéro atomique 78</title><rect x="426" y="254" width="41" height="41" rx="3"/><text class="z" x="429" y="265">78</text><text class="s" x="446" y="284">Pt</text></g>
+<g class="c expl" data-z="79"><title>Or (Au) — numéro atomique 79</title><rect x="470" y="254" width="41" height="41" rx="3"/><text class="z" x="473" y="265">79</text><text class="s" x="490" y="284">Au</text></g>
+<g class="c expl" data-z="80"><title>Mercure (Hg) — numéro atomique 80</title><rect x="514" y="254" width="41" height="41" rx="3"/><text class="z" x="517" y="265">80</text><text class="s" x="534" y="284">Hg</text></g>
+<g class="c expl" data-z="81"><title>Thallium (Tl) — numéro atomique 81</title><rect x="558" y="254" width="41" height="41" rx="3"/><text class="z" x="561" y="265">81</text><text class="s" x="578" y="284">Tl</text></g>
+<g class="c expl" data-z="82"><title>Plomb (Pb) — numéro atomique 82</title><rect x="602" y="254" width="41" height="41" rx="3"/><text class="z" x="605" y="265">82</text><text class="s" x="622" y="284">Pb</text></g>
+<g class="c expl" data-z="83"><title>Bismuth (Bi) — numéro atomique 83</title><rect x="646" y="254" width="41" height="41" rx="3"/><text class="z" x="649" y="265">83</text><text class="s" x="666" y="284">Bi</text></g>
+<g class="c expl" data-z="84"><title>Polonium (Po) — numéro atomique 84</title><rect x="690" y="254" width="41" height="41" rx="3"/><text class="z" x="693" y="265">84</text><text class="s" x="710" y="284">Po</text></g>
+<g class="c expl" data-z="85"><title>Astate (At) — numéro atomique 85</title><rect x="734" y="254" width="41" height="41" rx="3"/><text class="z" x="737" y="265">85</text><text class="s" x="754" y="284">At</text></g>
+<g class="c expl" data-z="86"><title>Radon (Rn) — numéro atomique 86</title><rect x="778" y="254" width="41" height="41" rx="3"/><text class="z" x="781" y="265">86</text><text class="s" x="798" y="284">Rn</text></g>
+<g class="c expl" data-z="87"><title>Francium (Fr) — numéro atomique 87</title><rect x="30" y="298" width="41" height="41" rx="3"/><text class="z" x="33" y="309">87</text><text class="s" x="50" y="328">Fr</text></g>
+<g class="c expl" data-z="88"><title>Radium (Ra) — numéro atomique 88</title><rect x="74" y="298" width="41" height="41" rx="3"/><text class="z" x="77" y="309">88</text><text class="s" x="94" y="328">Ra</text></g>
+<g class="c anth" data-z="104"><title>Rutherfordium (Rf) — numéro atomique 104</title><rect x="162" y="298" width="41" height="41" rx="3"/><text class="z" x="165" y="309">104</text><text class="s" x="182" y="328">Rf</text></g>
+<g class="c anth" data-z="105"><title>Dubnium (Db) — numéro atomique 105</title><rect x="206" y="298" width="41" height="41" rx="3"/><text class="z" x="209" y="309">105</text><text class="s" x="226" y="328">Db</text></g>
+<g class="c anth" data-z="106"><title>Seaborgium (Sg) — numéro atomique 106</title><rect x="250" y="298" width="41" height="41" rx="3"/><text class="z" x="253" y="309">106</text><text class="s" x="270" y="328">Sg</text></g>
+<g class="c anth" data-z="107"><title>Bohrium (Bh) — numéro atomique 107</title><rect x="294" y="298" width="41" height="41" rx="3"/><text class="z" x="297" y="309">107</text><text class="s" x="314" y="328">Bh</text></g>
+<g class="c anth" data-z="108"><title>Hassium (Hs) — numéro atomique 108</title><rect x="338" y="298" width="41" height="41" rx="3"/><text class="z" x="341" y="309">108</text><text class="s" x="358" y="328">Hs</text></g>
+<g class="c anth" data-z="109"><title>Meitnérium (Mt) — numéro atomique 109</title><rect x="382" y="298" width="41" height="41" rx="3"/><text class="z" x="385" y="309">109</text><text class="s" x="402" y="328">Mt</text></g>
+<g class="c anth" data-z="110"><title>Darmstadtium (Ds) — numéro atomique 110</title><rect x="426" y="298" width="41" height="41" rx="3"/><text class="z" x="429" y="309">110</text><text class="s" x="446" y="328">Ds</text></g>
+<g class="c anth" data-z="111"><title>Roentgenium (Rg) — numéro atomique 111</title><rect x="470" y="298" width="41" height="41" rx="3"/><text class="z" x="473" y="309">111</text><text class="s" x="490" y="328">Rg</text></g>
+<g class="c anth" data-z="112"><title>Copernicium (Cn) — numéro atomique 112</title><rect x="514" y="298" width="41" height="41" rx="3"/><text class="z" x="517" y="309">112</text><text class="s" x="534" y="328">Cn</text></g>
+<g class="c anth" data-z="113"><title>Nihonium (Nh) — numéro atomique 113</title><rect x="558" y="298" width="41" height="41" rx="3"/><text class="z" x="561" y="309">113</text><text class="s" x="578" y="328">Nh</text></g>
+<g class="c anth" data-z="114"><title>Flérovium (Fl) — numéro atomique 114</title><rect x="602" y="298" width="41" height="41" rx="3"/><text class="z" x="605" y="309">114</text><text class="s" x="622" y="328">Fl</text></g>
+<g class="c anth" data-z="115"><title>Moscovium (Mc) — numéro atomique 115</title><rect x="646" y="298" width="41" height="41" rx="3"/><text class="z" x="649" y="309">115</text><text class="s" x="666" y="328">Mc</text></g>
+<g class="c anth" data-z="116"><title>Livermorium (Lv) — numéro atomique 116</title><rect x="690" y="298" width="41" height="41" rx="3"/><text class="z" x="693" y="309">116</text><text class="s" x="710" y="328">Lv</text></g>
+<g class="c anth" data-z="117"><title>Tennesse (Ts) — numéro atomique 117</title><rect x="734" y="298" width="41" height="41" rx="3"/><text class="z" x="737" y="309">117</text><text class="s" x="754" y="328">Ts</text></g>
+<g class="c anth" data-z="118"><title>Oganesson (Og) — numéro atomique 118</title><rect x="778" y="298" width="41" height="41" rx="3"/><text class="z" x="781" y="309">118</text><text class="s" x="798" y="328">Og</text></g>
+<g class="c expl" data-z="57"><title>Lanthane (La) — numéro atomique 57</title><rect x="118" y="368" width="41" height="41" rx="3"/><text class="z" x="121" y="379">57</text><text class="s" x="138" y="398">La</text></g>
+<g class="c expl" data-z="58"><title>Cérium (Ce) — numéro atomique 58</title><rect x="162" y="368" width="41" height="41" rx="3"/><text class="z" x="165" y="379">58</text><text class="s" x="182" y="398">Ce</text></g>
+<g class="c expl" data-z="59"><title>Praséodyme (Pr) — numéro atomique 59</title><rect x="206" y="368" width="41" height="41" rx="3"/><text class="z" x="209" y="379">59</text><text class="s" x="226" y="398">Pr</text></g>
+<g class="c expl" data-z="60"><title>Néodyme (Nd) — numéro atomique 60</title><rect x="250" y="368" width="41" height="41" rx="3"/><text class="z" x="253" y="379">60</text><text class="s" x="270" y="398">Nd</text></g>
+<g class="c expl" data-z="61"><title>Prométhium (Pm) — numéro atomique 61</title><rect x="294" y="368" width="41" height="41" rx="3"/><text class="z" x="297" y="379">61</text><text class="s" x="314" y="398">Pm</text></g>
+<g class="c expl" data-z="62"><title>Samarium (Sm) — numéro atomique 62</title><rect x="338" y="368" width="41" height="41" rx="3"/><text class="z" x="341" y="379">62</text><text class="s" x="358" y="398">Sm</text></g>
+<g class="c expl" data-z="63"><title>Europium (Eu) — numéro atomique 63</title><rect x="382" y="368" width="41" height="41" rx="3"/><text class="z" x="385" y="379">63</text><text class="s" x="402" y="398">Eu</text></g>
+<g class="c expl" data-z="64"><title>Gadolinium (Gd) — numéro atomique 64</title><rect x="426" y="368" width="41" height="41" rx="3"/><text class="z" x="429" y="379">64</text><text class="s" x="446" y="398">Gd</text></g>
+<g class="c expl" data-z="65"><title>Terbium (Tb) — numéro atomique 65</title><rect x="470" y="368" width="41" height="41" rx="3"/><text class="z" x="473" y="379">65</text><text class="s" x="490" y="398">Tb</text></g>
+<g class="c expl" data-z="66"><title>Dysprosium (Dy) — numéro atomique 66</title><rect x="514" y="368" width="41" height="41" rx="3"/><text class="z" x="517" y="379">66</text><text class="s" x="534" y="398">Dy</text></g>
+<g class="c expl" data-z="67"><title>Holmium (Ho) — numéro atomique 67</title><rect x="558" y="368" width="41" height="41" rx="3"/><text class="z" x="561" y="379">67</text><text class="s" x="578" y="398">Ho</text></g>
+<g class="c expl" data-z="68"><title>Erbium (Er) — numéro atomique 68</title><rect x="602" y="368" width="41" height="41" rx="3"/><text class="z" x="605" y="379">68</text><text class="s" x="622" y="398">Er</text></g>
+<g class="c expl" data-z="69"><title>Thulium (Tm) — numéro atomique 69</title><rect x="646" y="368" width="41" height="41" rx="3"/><text class="z" x="649" y="379">69</text><text class="s" x="666" y="398">Tm</text></g>
+<g class="c expl" data-z="70"><title>Ytterbium (Yb) — numéro atomique 70</title><rect x="690" y="368" width="41" height="41" rx="3"/><text class="z" x="693" y="379">70</text><text class="s" x="710" y="398">Yb</text></g>
+<g class="c expl" data-z="71"><title>Lutécium (Lu) — numéro atomique 71</title><rect x="734" y="368" width="41" height="41" rx="3"/><text class="z" x="737" y="379">71</text><text class="s" x="754" y="398">Lu</text></g>
+<g class="c expl" data-z="89"><title>Actinium (Ac) — numéro atomique 89</title><rect x="118" y="412" width="41" height="41" rx="3"/><text class="z" x="121" y="423">89</text><text class="s" x="138" y="442">Ac</text></g>
+<g class="c expl" data-z="90"><title>Thorium (Th) — numéro atomique 90</title><rect x="162" y="412" width="41" height="41" rx="3"/><text class="z" x="165" y="423">90</text><text class="s" x="182" y="442">Th</text></g>
+<g class="c expl" data-z="91"><title>Protactinium (Pa) — numéro atomique 91</title><rect x="206" y="412" width="41" height="41" rx="3"/><text class="z" x="209" y="423">91</text><text class="s" x="226" y="442">Pa</text></g>
+<g class="c expl" data-z="92"><title>Uranium (U) — numéro atomique 92</title><rect x="250" y="412" width="41" height="41" rx="3"/><text class="z" x="253" y="423">92</text><text class="s" x="270" y="442">U</text></g>
+<g class="c expl" data-z="93"><title>Neptunium (Np) — numéro atomique 93</title><rect x="294" y="412" width="41" height="41" rx="3"/><text class="z" x="297" y="423">93</text><text class="s" x="314" y="442">Np</text></g>
+<g class="c expl" data-z="94"><title>Plutonium (Pu) — numéro atomique 94</title><rect x="338" y="412" width="41" height="41" rx="3"/><text class="z" x="341" y="423">94</text><text class="s" x="358" y="442">Pu</text></g>
+<g class="c anth" data-z="95"><title>Américium (Am) — numéro atomique 95</title><rect x="382" y="412" width="41" height="41" rx="3"/><text class="z" x="385" y="423">95</text><text class="s" x="402" y="442">Am</text></g>
+<g class="c anth" data-z="96"><title>Curium (Cm) — numéro atomique 96</title><rect x="426" y="412" width="41" height="41" rx="3"/><text class="z" x="429" y="423">96</text><text class="s" x="446" y="442">Cm</text></g>
+<g class="c anth" data-z="97"><title>Berkélium (Bk) — numéro atomique 97</title><rect x="470" y="412" width="41" height="41" rx="3"/><text class="z" x="473" y="423">97</text><text class="s" x="490" y="442">Bk</text></g>
+<g class="c anth" data-z="98"><title>Californium (Cf) — numéro atomique 98</title><rect x="514" y="412" width="41" height="41" rx="3"/><text class="z" x="517" y="423">98</text><text class="s" x="534" y="442">Cf</text></g>
+<g class="c anth" data-z="99"><title>Einsteinium (Es) — numéro atomique 99</title><rect x="558" y="412" width="41" height="41" rx="3"/><text class="z" x="561" y="423">99</text><text class="s" x="578" y="442">Es</text></g>
+<g class="c anth" data-z="100"><title>Fermium (Fm) — numéro atomique 100</title><rect x="602" y="412" width="41" height="41" rx="3"/><text class="z" x="605" y="423">100</text><text class="s" x="622" y="442">Fm</text></g>
+<g class="c anth" data-z="101"><title>Mendélévium (Md) — numéro atomique 101</title><rect x="646" y="412" width="41" height="41" rx="3"/><text class="z" x="649" y="423">101</text><text class="s" x="666" y="442">Md</text></g>
+<g class="c anth" data-z="102"><title>Nobélium (No) — numéro atomique 102</title><rect x="690" y="412" width="41" height="41" rx="3"/><text class="z" x="693" y="423">102</text><text class="s" x="710" y="442">No</text></g>
+<g class="c anth" data-z="103"><title>Lawrencium (Lr) — numéro atomique 103</title><rect x="734" y="412" width="41" height="41" rx="3"/><text class="z" x="737" y="423">103</text><text class="s" x="754" y="442">Lr</text></g>
 <path class="fil" d="M138 295 L138 368"/>
 <rect class="c lan trou" x="118" y="254" width="41" height="41" rx="3"/>
 <rect class="c act trou" x="118" y="298" width="41" height="41" rx="3"/>
@@ -2447,11 +2501,11 @@
 <g class="lg"><rect class="c anth" x="313" y="477" width="14" height="14" rx="2"/><text x="333" y="488">Anthropique</text></g>
 </svg>
             <!-- /SVG:tableau-provenances -->
-              <figcaption>Le même tableau qu'en séance 1, colorié par <b>origine</b>. Trois lectures à
-                faire&nbsp;: la <b>primordiale</b> ne tient que dans un coin (cinq éléments)&nbsp;; la
-                <b>stellaire</b> couvre tout ce qui te compose&nbsp;; l'<b>explosive</b> occupe la plus
+              <figcaption>Le même tableau qu'en séance 1, colorié par origine. Trois lectures à
+                faire&nbsp;: la primordiale ne tient que dans un coin (cinq éléments)&nbsp;; la
+                stellaire couvre tout ce qui te compose&nbsp;; l'explosive occupe la plus
                 grande part du tableau. Le gris cerné de rouge, enfin, n'a aucune origine naturelle&nbsp;:
-                ces 24 éléments sont <b>anthropiques</b>.<span class="src">Même tracé que le tableau de l'étape 1.2</span></figcaption>
+                ces 24 éléments sont anthropiques.<span class="src">Même tracé que le tableau de l'étape 1.2</span></figcaption>
             </figure>
           </div>
         </div>
@@ -2537,7 +2591,7 @@
             <div class="retain">Un <b>élément chimique</b> est un type d'atome, défini uniquement par
             son <b class="cle">numéro atomique Z</b> — le nombre de protons de son noyau. Atome, ion et
             isotope d'un même élément partagent la même case du tableau périodique. On connaît
-            <b>118</b> éléments, dont <b>94</b> existent dans la nature.</div>
+            118 éléments, dont 94 existent dans la nature.</div>
 
             <div class="block-label">2 · Les abondances<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">Les éléments sont répartis <b class="cle">très inégalement</b>. Dans
@@ -2547,7 +2601,7 @@
             <div class="block-label">3 · Fusion et fission<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">La <b class="cle">fusion</b> assemble deux noyaux en un plus lourd. La
             <b class="cle">fission</b> casse un gros noyau en deux plus légers, sous le choc d'une
-            particule. Aucune des deux ne se confond avec une <b>désintégration radioactive</b>, où un
+            particule. Aucune des deux ne se confond avec une désintégration radioactive, où un
             seul noyau se transforme de lui-même.</div>
 
             <div class="block-label">4 · Les trois nucléosynthèses<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
@@ -2588,7 +2642,7 @@
           <div class="card-body">
             <p class="transi">Les cinq vidéos du parcours, dans l'ordre du récit, puis une vidéo qui
             résume tout et un jeu pour se tester. Aucune n'est à regarder pour la première fois
-            ici&nbsp;: elles sont là pour être <b>revues</b>.</p>
+            ici&nbsp;: elles sont là pour être revues.</p>
 
             <div class="res">
               <a class="res-item" href="https://www.youtube.com/watch?v=6j-pY_QjYRU" target="_blank" rel="noopener noreferrer">
@@ -2645,7 +2699,7 @@
           </div>
           <div class="card-body">
             <p class="transi">Dix-huit questions sur tout le chapitre. Il ne compte pas, tu peux le
-            refaire autant de fois que tu veux — et le récapitulatif final explique <b>chaque</b>
+            refaire autant de fois que tu veux — et le récapitulatif final explique chaque
             réponse, juste ou fausse.</p>
 
             <div class="retain">Quelques questions vont <b>au-delà du programme</b>&nbsp;: elles portent
@@ -2684,10 +2738,10 @@
    "Non : l'ion en occupe une autre, puisqu'il est chargé",
    "Non : l'isotope en occupe une autre, puisque sa masse diffère",
    "Oui : tous trois ont le même nombre de protons",
-   "Cela dépend du nombre de neutrons de l'isotype considéré"
+   "Cela dépend du nombre de neutrons de l'isotope considéré"
   ],
   "r": 2,
-  "c": "<b>Oui.</b> L'ion a perdu ou gagné des électrons, l'isotope a un autre nombre de neutrons — mais aucun des deux n'a touché au nombre de <b>protons</b>. Même Z, même case."
+  "c": "Oui. L'ion a perdu ou gagné des électrons, l'isotope a un autre nombre de neutrons — mais aucun des deux n'a touché au nombre de <b>protons</b>. Même Z, même case."
  },
  {
   "q": "Quel est l'élément le plus abondant de l'Univers, et dans quelle proportion ?",
@@ -2709,7 +2763,7 @@
    "Parce que les roches sont faites d'éléments plus lourds, oxygène en tête"
   ],
   "r": 3,
-  "c": "La lithosphère est dominée par l'<b>oxygène</b> et le <b>silicium</b>, piégés dans les minéraux. L'hydrogène, lui, est ailleurs : dans l'eau et dans le vivant."
+  "c": "La lithosphère est dominée par l'<b>oxygène</b> et le silicium, piégés dans les minéraux. L'hydrogène, lui, est ailleurs : dans l'eau et dans le vivant."
  },
  {
   "q": "Quand s'est déroulée la nucléosynthèse primordiale ?",
@@ -2775,7 +2829,7 @@
    "La fusion concerne les électrons, la fission le noyau"
   ],
   "r": 1,
-  "c": "Regarde de part et d'autre de la flèche : <b>deux noyaux entrent, un sort</b> — fusion. <b>Un gros entre, deux sortent</b> — fission."
+  "c": "Regarde de part et d'autre de la flèche : deux noyaux entrent, un sort — fusion. Un gros entre, deux sortent — fission."
  },
  {
   "q": "Une réaction où un seul noyau se transforme spontanément, sans rien recevoir, s'appelle…",
@@ -3221,6 +3275,10 @@
         + (reserve.children.length ? ', et il en reste ' + reserve.children.length + ' en réserve.' : '.');
     if(justes === total && total > 0){
       var etape = jeu.closest('.step');
+      /* deux traces : data-fait pour la validation bloc par bloc (plus bas),
+         triScore pour le « à retenir » du moteur, qui l'attend pour s'ouvrir */
+      jeu.dataset.fait = '1';
+      if(etape) etape.dataset.triScore = justes + '/' + total;
       if(etape && !etape.classList.contains('is-done')){
         etape.classList.add('is-done');
         etape.dispatchEvent(new CustomEvent('etape-validee', {bubbles:true}));
@@ -3228,6 +3286,199 @@
     }
   });
   tirer();
+})();
+
+/* ---------- Une étape se valide quand TOUT y est fait (audit du 12/09/2026) ----------
+   Le moteur valide une étape au premier bloc réussi : en 1.3, un seul
+   « Vérifier » remplissait le cercle. On ne touche pas au moteur (22 pages) :
+   on intercepte ici, en CAPTURE, « etape-validee ». Si l'étape n'est pas
+   finie, on retire is-done et l'événement s'arrête là — ni enregistrement ni
+   déblocage. Le cercle se remplit au prorata des blocs faits. */
+(function(){
+  function blocs(step){
+    return Array.prototype.filter.call(
+      step.querySelectorAll('[data-focus], .qcmbox:not([data-facultatif]), .cloze, [data-tri], .legende-libre'),
+      function(el){
+        if(el.closest('.bonus-wrap')) return false;
+        return !(el.matches('.cloze') && el.closest('[data-focus]'));
+      });
+  }
+  function fait(el, step){
+    if(el.matches('[data-focus]')){
+      var echo = el.querySelector('[data-focus-echo]');
+      return el.classList.contains('rempli') || !!(echo && echo.textContent.trim());
+    }
+    if(el.matches('.qcmbox')){
+      var rec = el.querySelector('.qcm-recap');
+      return !!el.querySelector('.qcm-fait') || !!(rec && rec.textContent.trim());
+    }
+    if(el.matches('.cloze'))  return el.dataset.verifie === '1';
+    if(el.matches('[data-tri]')) return el.dataset.fait === '1';
+    if(el.matches('.legende-libre'))
+      return Array.prototype.every.call(el.querySelectorAll('input'), function(i){ return i.value.trim(); });
+    return true;
+  }
+  function etat(step){
+    var liste = blocs(step), total = liste.length;
+    var faits = liste.filter(function(el){ return fait(el, step); }).length;
+    var choix = step.querySelectorAll('[data-choix-item]');
+    if(choix.length){
+      total++;
+      if(Array.prototype.every.call(choix, function(c){ return c.querySelector('button.juste'); })) faits++;
+    }
+    return {faits: faits, total: total};
+  }
+  /* on n'écrit que ce qui change : le moteur observe le sous-arbre des étapes */
+  function peindre(step, e){
+    var v = String(e.total ? Math.round(100 * e.faits / e.total) : 0);
+    if(step.dataset.avance !== v){ step.dataset.avance = v; step.style.setProperty('--avance', v); }
+    var note = step.querySelector('.bilan-attend');
+    if(note){
+      var reste = e.total - e.faits;
+      var txt = '🔒 Le « à retenir » s’affichera quand toute l’étape sera faite : '
+        + (reste > 1 ? 'il te reste ' + reste + ' activités.' : 'il te reste une activité.');
+      if(note.textContent !== txt) note.textContent = txt;
+    }
+  }
+  /* Le moteur ouvre le « à retenir » quand SES blocs sont faits ; il ignore
+     les choix de 1.4. La CSS le garde fermé tant que l'étape n'est pas
+     validée, et cette note, posée une fois ici, dit ce qui manque. */
+  document.querySelectorAll('.step[data-gate] [data-bilan-wrap]').forEach(function(w){
+    var note = document.createElement('p');
+    note.className = 'bilan-attend';
+    w.parentNode.insertBefore(note, w.nextSibling);
+  });
+  document.addEventListener('etape-validee', function(ev){
+    var step = ev.target && ev.target.closest ? ev.target.closest('.step') : null;
+    if(!step || !step.hasAttribute('data-gate')) return;
+    var e = etat(step);
+    peindre(step, e);
+    if(e.faits < e.total){
+      if(step.classList.contains('is-done')) step.classList.remove('is-done');
+      ev.stopImmediatePropagation();
+    }
+  }, true);
+  function tenter(step){
+    if(!step || !step.hasAttribute('data-gate')) return;
+    var e = etat(step);
+    peindre(step, e);
+    if(e.total && e.faits === e.total && !step.classList.contains('is-done')){
+      step.classList.add('is-done');
+      step.dispatchEvent(new CustomEvent('etape-validee', {bubbles:true}));
+    }
+  }
+  /* la légende libre n'a pas de bouton : c'est la frappe qui peut clore l'étape */
+  document.addEventListener('input', function(ev){
+    var ll = ev.target.closest && ev.target.closest('.legende-libre');
+    if(ll) tenter(ll.closest('.step'));
+  });
+  /* filet : un bloc peut se terminer après que l'événement a été arrêté
+     (réponse rédigée enregistrée dans sa modale, par exemple) */
+  document.addEventListener('click', function(ev){
+    var step = ev.target.closest && ev.target.closest('.step[data-gate]');
+    if(step) setTimeout(function(){ tenter(step); }, 80);
+  });
+})();
+
+/* ---------- Légende à compléter : le repère met le curseur dans sa ligne ---------- */
+(function(){
+  document.querySelectorAll('.legende-libre').forEach(function(ll){
+    function ligne(n){ var i = ll.querySelector('[data-ll-el="' + n + '"]'); return i ? i.closest('.ll-ligne') : null; }
+    ll.querySelectorAll('.ll-n').forEach(function(m){
+      m.addEventListener('click', function(){
+        var l = ligne(m.dataset.ll); if(!l) return;
+        ll.querySelectorAll('.ll-ligne.vise').forEach(function(x){ if(x !== l) x.classList.remove('vise'); });
+        if(!l.classList.contains('vise')) l.classList.add('vise');
+        l.querySelector('input').focus();
+      });
+    });
+    ll.addEventListener('input', function(){
+      ll.querySelectorAll('.ll-n').forEach(function(m){
+        var n = m.dataset.ll;
+        var el = ll.querySelector('[data-ll-el="' + n + '"]'), pc = ll.querySelector('[data-ll-pc="' + n + '"]');
+        var plein = !!(el && pc && el.value.trim() && pc.value.trim());
+        if(m.classList.contains('rempli') !== plein) m.classList.toggle('rempli', plein);
+      });
+    });
+  });
+})();
+
+/* ---------- Panneau « Classification périodique » (audit du 12/09/2026) ----------
+   Le tableau de l'étape 1.2, rouvert à la demande par-dessus la page. On
+   CLONE le SVG déjà injecté plutôt que d'en écrire un second : le nom, le
+   symbole et Z se lisent dans le <title> de chaque case, l'état dans ses
+   classes — une seule source, _outils/es/tableau_periodique.py. La
+   provenance n'est pas affichée : c'est la réponse de la séance 2. */
+(function(){
+  var source = document.querySelector('svg.tp-etats');
+  if(!source) return;
+
+  var bouton = document.createElement('button');
+  bouton.type = 'button'; bouton.id = 'tp-ouvrir';
+  bouton.setAttribute('aria-expanded', 'false');
+  bouton.setAttribute('aria-controls', 'tp-panneau');
+  bouton.textContent = '🧪 Classification';
+
+  var pan = document.createElement('section');
+  pan.id = 'tp-panneau'; pan.hidden = true;
+  pan.setAttribute('role', 'dialog');
+  pan.setAttribute('aria-labelledby', 'tp-pan-titre');
+  pan.innerHTML = '<div class="tpp-tete"><h2 id="tp-pan-titre" tabindex="-1">Classification périodique</h2>'
+    + '<button type="button" class="tpp-fermer" aria-label="Fermer la classification">✕</button></div>'
+    + '<p class="tpp-aide">Touche une case pour lire la fiche de l’élément.</p>'
+    + '<div class="tpp-svg"></div><div class="tpp-fiche" aria-live="polite"></div>';
+
+  var copie = source.cloneNode(true);
+  copie.removeAttribute('aria-labelledby');
+  var t = copie.querySelector('title[id]'); if(t) t.removeAttribute('id');
+  copie.setAttribute('aria-label', 'Classification périodique : choisis un élément');
+  pan.querySelector('.tpp-svg').appendChild(copie);
+
+  var fiche = pan.querySelector('.tpp-fiche'), choisie = null;
+  function montrer(g){
+    var titre = g.querySelector('title').textContent;
+    var m = titre.match(/^(.+) \(([A-Za-z]+)\)/);
+    var z = parseInt(g.dataset.z, 10), cl = g.classList;
+    var etat = cl.contains('art') ? 'inconnu — on n’en a jamais fabriqué assez pour l’observer'
+             : cl.contains('gaz') ? 'gazeux' : cl.contains('liq') ? 'liquide' : 'solide';
+    var lignes = ['Numéro atomique Z = ' + z + '&nbsp;: ' + z + (z > 1 ? ' protons' : ' proton') + ' dans le noyau',
+                  'État à 20&nbsp;°C&nbsp;: ' + etat];
+    if(cl.contains('art')) lignes.push('Élément artificiel&nbsp;: il n’existe que parce qu’on l’a fabriqué');
+    if(g.querySelector('.chon')) lignes.push('L’un des quatre éléments — C, H, O, N — qui composent l’essentiel de ton corps');
+    if(cl.contains('lan')) lignes.push('Famille des lanthanides (rangée détachée du bas)');
+    if(cl.contains('act')) lignes.push('Famille des actinides (rangée détachée du bas)');
+    fiche.innerHTML = '<div class="tpp-case"><span class="z">' + z + '</span><span class="s">' + m[2] + '</span></div>'
+      + '<div><p class="tpp-nom">' + m[1] + '</p><ul><li>' + lignes.join('</li><li>') + '</li></ul></div>';
+    if(choisie) choisie.classList.remove('choisi');
+    choisie = g; g.classList.add('choisi');
+    /* en paysage, le panneau défile : la fiche tombait sous le bord */
+    fiche.scrollIntoView({block: 'nearest'});
+  }
+  copie.querySelectorAll('g.c[data-z]').forEach(function(g){
+    g.setAttribute('tabindex', '0');
+    g.setAttribute('role', 'button');
+    g.setAttribute('aria-label', g.querySelector('title').textContent);
+    g.addEventListener('click', function(){ montrer(g); });
+    g.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); montrer(g); }
+    });
+  });
+
+  function ouvrir(){
+    pan.hidden = false; bouton.setAttribute('aria-expanded', 'true');
+    pan.querySelector('#tp-pan-titre').focus();
+  }
+  function fermer(rendreFocus){
+    pan.hidden = true; bouton.setAttribute('aria-expanded', 'false');
+    if(rendreFocus) bouton.focus();
+  }
+  bouton.addEventListener('click', function(){ pan.hidden ? ouvrir() : fermer(false); });
+  pan.querySelector('.tpp-fermer').addEventListener('click', function(){ fermer(true); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !pan.hidden && pan.contains(document.activeElement)) fermer(true);
+  });
+  document.body.appendChild(bouton);
+  document.body.appendChild(pan);
 })();
 </script>
 </body>

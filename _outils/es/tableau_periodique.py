@@ -62,6 +62,27 @@ ACTINIDES = [("Ac", 89), ("Th", 90), ("Pa", 91), ("U", 92), ("Np", 93), ("Pu", 9
              ("Am", 95), ("Cm", 96), ("Bk", 97), ("Cf", 98), ("Es", 99), ("Fm", 100),
              ("Md", 101), ("No", 102), ("Lr", 103)]
 
+# Noms francais, indexes par Z (NOMS[z]). Ils vont dans le <title> de chaque
+# case — survol et lecteur d'ecran — et le panneau « Classification » de la
+# page les y relit : pas de seconde liste a tenir a jour cote HTML.
+NOMS = [None,
+    "Hydrogène", "Hélium", "Lithium", "Béryllium", "Bore", "Carbone", "Azote", "Oxygène",
+    "Fluor", "Néon", "Sodium", "Magnésium", "Aluminium", "Silicium", "Phosphore", "Soufre",
+    "Chlore", "Argon", "Potassium", "Calcium", "Scandium", "Titane", "Vanadium", "Chrome",
+    "Manganèse", "Fer", "Cobalt", "Nickel", "Cuivre", "Zinc", "Gallium", "Germanium",
+    "Arsenic", "Sélénium", "Brome", "Krypton", "Rubidium", "Strontium", "Yttrium", "Zirconium",
+    "Niobium", "Molybdène", "Technétium", "Ruthénium", "Rhodium", "Palladium", "Argent",
+    "Cadmium", "Indium", "Étain", "Antimoine", "Tellure", "Iode", "Xénon", "Césium", "Baryum",
+    "Lanthane", "Cérium", "Praséodyme", "Néodyme", "Prométhium", "Samarium", "Europium",
+    "Gadolinium", "Terbium", "Dysprosium", "Holmium", "Erbium", "Thulium", "Ytterbium",
+    "Lutécium", "Hafnium", "Tantale", "Tungstène", "Rhénium", "Osmium", "Iridium", "Platine",
+    "Or", "Mercure", "Thallium", "Plomb", "Bismuth", "Polonium", "Astate", "Radon", "Francium",
+    "Radium", "Actinium", "Thorium", "Protactinium", "Uranium", "Neptunium", "Plutonium",
+    "Américium", "Curium", "Berkélium", "Californium", "Einsteinium", "Fermium", "Mendélévium",
+    "Nobélium", "Lawrencium", "Rutherfordium", "Dubnium", "Seaborgium", "Bohrium", "Hassium",
+    "Meitnérium", "Darmstadtium", "Roentgenium", "Copernicium", "Nihonium", "Flérovium",
+    "Moscovium", "Livermorium", "Tennesse", "Oganesson"]
+
 GAZ = {1, 2, 7, 8, 9, 10, 17, 18, 36, 54, 86}   # a 20 °C, sous 1 bar
 LIQUIDES = {35, 80}                              # brome et mercure
 CHON = {1, 6, 7, 8}
@@ -101,8 +122,8 @@ def case(sym, z, x, y, classes):
     """Une case : un rectangle, un symbole, et le numero atomique en petit.
     Le titre <title> sert l'accessibilite ET le survol du navigateur."""
     cl = " ".join(["c"] + classes)
-    out = ['<g class="%s">' % cl]
-    out.append('<title>%s — numéro atomique %d</title>' % (sym, z))
+    out = ['<g class="%s" data-z="%d">' % (cl, z)]
+    out.append('<title>%s (%s) — numéro atomique %d</title>' % (NOMS[z], sym, z))
     out.append('<rect x="%d" y="%d" width="%d" height="%d" rx="3"/>' % (x, y, CASE, CASE))
     out.append('<text class="z" x="%d" y="%d">%d</text>' % (x + 3, y + 11, z))
     out.append('<text class="s" x="%d" y="%d">%s</text>' % (x + CASE / 2.0, y + CASE - 11, sym))
@@ -227,6 +248,7 @@ def main():
     print("%d cases, %d numeros atomiques distincts" % (tous, len(zs)))
     print("manque :", sorted(set(range(1, 119)) - zs) or "rien")
     print("anthropiques : %d" % len(ANTHROPIQUES))
+    print("noms : %d" % (len(NOMS) - 1) + ("" if len(NOMS) == 119 else "  <-- IL EN MANQUE"))
     for p in poses:
         print(" -", p)
 

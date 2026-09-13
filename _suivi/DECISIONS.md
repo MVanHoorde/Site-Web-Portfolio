@@ -15,6 +15,16 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 13/09/2026 — Second audit du chapitre ES T1-C1
+
+| Date | Décision | Statut |
+|---|---|---|
+| 13/09/2026 | **Une étape ES à plusieurs activités ne se valide qu'une fois toutes faites** : son cercle se remplit au prorata, le « à retenir » attend la dernière. Mécanisme **local à la page T1-C1** (interception de `etape-validee` en capture), le moteur partagé n'est pas touché. | ✅ en vigueur (T1-C1) · ⏳ remontée dans le moteur à décider |
+| 13/09/2026 | **Légendes de graphique en saisie libre, sans correction ni enregistrement** : l'élève confronte lui-même sa légende au tableau ; seul le titre se corrige. | ✅ en vigueur |
+| 13/09/2026 | **Panneau « Classification périodique »** consultable à tout moment dans T1-C1 : nom, Z, état, CHON — **jamais la provenance**, et masqué pendant QCM et réponses rédigées. Les noms vivent dans le générateur, le panneau les relit. | ✅ en vigueur · ⏳ à valider par Loïc |
+| 13/09/2026 | **Plus de mention « reprise du cours de M. Van Hoorde »** sous les figures de T1-C1 non plus : la question de provenance reste tracée dans `es1-verification.md` (ES-09). | ✅ en vigueur |
+| 13/09/2026 | **Couches de l'étoile massive : ²⁸Si → ⁵⁶Ni**, contre ⁵⁸Ni dans le cours source. | ✅ en vigueur |
+
 ## 12/09/2026 — Audit du chapitre ES Term T2-C1 « Deux siècles d'énergie électrique »
 
 | Date | Décision | Statut |
