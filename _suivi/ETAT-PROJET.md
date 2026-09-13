@@ -69,7 +69,7 @@ arrivent directement sur le SNT et ne voient rien de changé. Décisions :
 | Lot | Contenu | État |
 |---|---|---|
 | **1 — base** | `bdd/schema/018-espaces-et-classes-multiples.sql` : espaces, un compte dans plusieurs classes, lecture cloisonnée par famille, `mon_plafond()` sur la classe SNT, cinq classes fermées | ✅ **exécuté le 13/09** · ⏳ inscription au registre de migrations |
-| **2 — tableau de bord** | Page d'accueil des espaces (sautée s'il n'y en a qu'un), onglets par espace, élèves lus par `eleves_classes` et non plus `eleves.classe_id`. Guides et PDF à suivre | ⏳ |
+| **2 — tableau de bord** | Accueil des espaces (sauté s'il n'y en a qu'un), onglets par espace, élèves lus par `eleves_classes`, vue d'ensemble des outils PC (O1…O8, clic → détail par séance) et du livret CFA (fiche par fiche), ES avec Séance et Suivi sans file de correction. Sommaire généré par `generer-sequences-espaces.mjs`. Guides et PDF à jour. **39 contrôles** sous Chromium avec base simulée (collègue SNT seul, Loïc cinq espaces, iPad 820 px) | ✅ **codé et testé** · ⏳ **à pousser en même temps que le §8 du `018`** |
 | **3 — client élève et ES** | « Rejoindre une autre classe » dans `progression.js` (**24 fichiers, CFA compris**) ; branchement des 6 pages d'ES 1re et des 2 de Terminale, clés `es1-` / `est-`, réponses en statut `partage` | ⏳ |
 | **4 — PC 2nde** | Consultation des 14 chapitres (le client n'y est pas chargé aujourd'hui) et clics de téléchargement ; annonce aux élèves (RGPD) | ⏳ |
 | **5 — documentation** | Guides `prof/`, `CLAUDE.md`, `BDD-cadrage.md` | ⏳ |

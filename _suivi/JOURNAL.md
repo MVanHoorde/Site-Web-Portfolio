@@ -3770,3 +3770,24 @@ seraient confondues — convention de préfixe par famille posée (`es1-`, `est-
 
 36 contrôles sur 36. Rien n'est exécuté en base réelle ; le §8 (rattachement de
 Loïc) est en commentaire jusqu'au lot 2.
+
+## 13/09/2026 — Tableau de bord à espaces : lot 2, l'interface
+
+`018` exécuté par Loïc (sans son §8). Tableau de bord étendu sans changer d'adresse :
+accueil des espaces pour un compte qui en a plusieurs, entrée directe sinon — l'écran
+d'un collègue reste celui qu'il connaît, au thème par défaut près (T0 au lieu de T1,
+reste du pilote). La grille de suivi existante se généralisait d'elle-même : le résumé
+`{séance, fait, total}` qu'elle lit est écrit par le moteur partagé, qui est aussi celui
+des outils de PC et de l'ES. Ajouts : vue d'ensemble outils / fiches, fiche élève par
+outil, sommaire généré des espaces hors SNT (fichier séparé de `seances-snt.js`, dont
+l'ordre commande le plafond).
+
+Trouvé en chemin : le tableau de bord masquait les classes à `actif = false`, donc tout
+groupe dont on aurait refermé les inscriptions. Corrigé.
+
+Lecture en base réelle refusée par le garde-fou des accès en production : les
+vérifications 9a-9c du `018` n'ont pas été relues par Claude ; l'éditeur SQL s'arrêtant
+à la première erreur, l'affichage de la 9d suffit à établir que le fichier est passé.
+
+Une autre conversation modifiait en même temps le moteur partagé et une vingtaine de
+pages : seuls les fichiers de cette livraison ont été commités.

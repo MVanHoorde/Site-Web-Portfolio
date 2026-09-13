@@ -291,6 +291,21 @@ try {
   notes.push("assets/js/seances-snt.js absent ou illisible — lancer : node generer-seances.mjs");
 }
 
+/* Même contrôle pour le sommaire des espaces hors SNT (tableau de bord :
+   outils de PC, ES, livret CFA). Non bloquant, pour la même raison. */
+try {
+  const { construire } = await import("./generer-sequences-espaces.mjs");
+  const genere = readFileSync("assets/js/sequences-espaces.js", "utf8");
+  const actuel = JSON.parse(genere.slice(genere.indexOf("{"), genere.lastIndexOf("}") + 1));
+  const frais = construire();
+  const ecarts = Object.keys(frais).filter((e) => JSON.stringify(frais[e]) !== JSON.stringify(actuel[e] || []));
+  notes.push(ecarts.length
+    ? `assets/js/sequences-espaces.js en retard sur ${ecarts.join(", ")} — relancer : node generer-sequences-espaces.mjs`
+    : "assets/js/sequences-espaces.js — à jour");
+} catch (e) {
+  notes.push("assets/js/sequences-espaces.js absent ou illisible — lancer : node generer-sequences-espaces.mjs");
+}
+
 /* ---------- Le sommaire généré est-il servi dans la MÊME version partout ? ----------
    `seances-snt.js` porte l'ordre des séances : c'est lui qui donne son rang à
    chacune, donc le plafond d'avance. Deux pages qui n'en servent pas la même

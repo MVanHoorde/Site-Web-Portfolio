@@ -231,8 +231,9 @@ td code{white-space:nowrap}
   <div class="enveloppe">
   <table>
     <tr><th>Table</th><th>Ce qu'elle porte</th></tr>
-    <tr><td><code>classes</code></td><td>Le code à six caractères, le libellé, l'année, l'ouverture des inscriptions, le plafond d'avance.</td></tr>
-    <tr><td><code>eleves</code></td><td>Le pseudo et la classe. Unicité du pseudo <i>dans</i> une classe.</td></tr>
+    <tr><td><code>classes</code></td><td>Le code à six caractères, le libellé, l'année, l'ouverture des inscriptions, le plafond d'avance, et l'<b>espace</b> : <code>snt</code>, <code>es1</code>, <code>est</code>, <code>pc2</code> ou <code>cfa</code>.</td></tr>
+    <tr><td><code>eleves</code></td><td>Le pseudo et la classe d'<b>inscription</b> — celle du code tapé à la création du compte. Unicité du pseudo <i>dans</i> une classe.</td></tr>
+    <tr><td><code>eleves_classes</code></td><td>Toutes les classes de l'élève, celle d'inscription comprise (un déclencheur l'y tient). Un élève de SNT suivi en 2nde 1 et en AP y a trois lignes, pour un seul compte.</td></tr>
     <tr><td><code>progression</code></td><td>L'état courant du parcours, en JSON.</td></tr>
     <tr><td><code>evenements</code></td><td>L'historique, en ajout seul : on n'efface jamais.</td></tr>
     <tr><td><code>reponses_libres</code></td><td>Les copies : texte, statut, analyse, commentaire.</td></tr>
@@ -267,11 +268,38 @@ td code{white-space:nowrap}
       progression.</li>
     <li>Il n'écrit le cahier de textes, les absences, les jalons et le plafond que
       sur ses groupes.</li>
-    <li><b>Une classe rattachée à personne est invisible de tous.</b> C'est ainsi
-      que les deux classes du livret CFA sortent de ce tableau de bord : sans
-      filtre, sans colonne, sans code — pendant que les apprentis continuent de
-      s'inscrire et de travailler normalement.</li>
+    <li><b>Une classe rattachée à personne est invisible de tous.</b></li>
+    <li><b>Un compte voit les espaces où il a une classe.</b> Pas de rôle
+      administrateur : Loïc voit cinq espaces (SNT, ES 1re, ES terminale, PC 2nde,
+      CFA) parce qu'il est rattaché à des classes des cinq ; un collègue n'a que
+      des groupes SNT, entre directement dans le SNT et ne voit jamais l'accueil
+      des espaces.</li>
   </ul>
+
+  <h3>Un élève, plusieurs classes, plusieurs enseignants</h3>
+  <p>Depuis le 13 septembre 2026 (<code>bdd/schema/018</code>), un élève garde un
+  seul compte et rejoint d'autres classes avec leur code — un seul groupe SNT au
+  plus. Le même élève peut donc être dans le groupe SNT d'un collègue et dans la
+  2nde 1 de Loïc. Chacun doit voir sa part, et rien d'autre :</p>
+  <ul>
+    <li><b>La progression et les absences</b> se lisent par <b>famille</b>, sur le
+      préfixe de leur clé : <code>snt-</code>, <code>pc-</code>, <code>es1-</code> /
+      <code>est-</code>, <code>cfa-</code>. Le collègue lit la SNT de l'élève, pas
+      ses outils de PC ; Loïc, l'inverse.</li>
+    <li><b>Les copies</b> ne portent pas de préfixe (<code>SYS-R1</code>) : seules les
+      classes <b>SNT et ES</b> y donnent accès, puisque ce sont les seules pages qui
+      en envoient. Une classe de PC ou du CFA n'ouvre jamais la file de correction
+      d'un autre.</li>
+  </ul>
+
+  <div class="encadre attention">
+    <span class="etiq">La convention qui tient tout</span>
+    <p>Une page nouvelle doit porter une clé de séquence qui commence par le
+    préfixe de sa famille. Une page de PC dont la clé commencerait autrement
+    serait lue comme du SNT : visible des collègues, invisible de l'espace PC.
+    Et le jour où une page de PC enverra des copies, il faudra préfixer ses codes
+    d'activité et revoir la règle des copies.</p>
+  </div>
 
   <div class="encadre">
     <span class="etiq">Le point qui n'était pas évident</span>
@@ -312,12 +340,47 @@ td code{white-space:nowrap}
       <td>Tout ouvert.</td>
     </tr>
     <tr>
+      <td>Enseignement scientifique : la 1re 2, les terminales 3 et 6</td>
+      <td>Rattachées à Loïc. Onglets <i>Séance</i> et <i>Suivi</i>, <b>sans file de
+        correction</b> : les questions ouvertes se corrigent en classe.</td>
+      <td>Sans objet — le plafond est une affaire de SNT.</td>
+    </tr>
+    <tr>
+      <td>Physique-chimie : la 2nde 1 et l'AP</td>
+      <td>Rattachées à Loïc. L'onglet <i>Suivi</i> montre les huit outils
+        transversaux, élève par élève ; l'AP ne suit que les outils. L'AP réunit
+        des élèves d'origines diverses : son libellé ne dit rien de leur classe.</td>
+      <td>Sans objet.</td>
+    </tr>
+    <tr>
       <td>Les deux classes du livret CFA</td>
-      <td>Hors tableau de bord, par décision. Elles fonctionnent seules.</td>
+      <td>Rattachées à Loïc, dans leur propre espace : fiche par fiche, faite ou
+        commencée.</td>
       <td>—</td>
     </tr>
   </table>
   </div>
+
+  <h3>Ce que montre chaque espace</h3>
+  <div class="enveloppe">
+  <table>
+    <tr><th>Espace</th><th>Onglets</th><th>La grille de suivi</th></tr>
+    <tr><td>SNT</td><td>À corriger · Séance · Suivi · Réglages</td>
+      <td>Séance par séance, avec retard du jour, dette et absents.</td></tr>
+    <tr><td>ES 1re · ES terminale</td><td>Séance · Suivi · Réglages</td>
+      <td>Comme en SNT : cahier de textes, absents, retards. Chapitre au lieu de thème.</td></tr>
+    <tr><td>PC 2nde</td><td>Suivi · Réglages</td>
+      <td>Vue d'ensemble : une colonne par outil (étapes validées), la dernière
+        activité, le nombre d'outils finis. Un clic sur O1…O8 ouvre le détail par
+        séance. Hors progression : ni retard ni curseur.</td></tr>
+    <tr><td>CFA</td><td>Suivi · Réglages</td>
+      <td>Une colonne par fiche : une coche si l'apprenti l'a déclarée faite, sinon le
+        nombre de champs remplis.</td></tr>
+  </table>
+  </div>
+  <p>Les noms des outils, chapitres et fiches viennent des pages elles-mêmes, par
+  <code>node generer-sequences-espaces.mjs</code> — à relancer après avoir ajouté
+  ou renommé une séance ; <code>verifier.mjs</code> signale un sommaire en retard.</p>
 
   <div class="encadre attention">
     <span class="etiq">Pourquoi « tout ouvert » par défaut</span>
@@ -377,7 +440,8 @@ td code{white-space:nowrap}
   <h3>Fermer ou rouvrir les inscriptions d'un groupe</h3>
   <p>À faire en général après la deuxième séance, pour éviter les inscriptions
   sauvages. Le code reste valable pour se reconnecter ; c'est la création de
-  nouveaux comptes qui se ferme.</p>
+  nouveaux comptes — et l'ajout de cette classe à un compte existant — qui se
+  ferme. Le groupe <b>reste dans le tableau de bord</b>.</p>
 <pre>update public.classes set actif = false where code = 'CODE';  <span class="c">-- fermer</span>
 update public.classes set actif = true  where code = 'CODE';  <span class="c">-- rouvrir</span></pre>
 
@@ -390,13 +454,13 @@ join public.enseignants e on e.auth_id = ec.auth_id
 join public.classes     c on c.id      = ec.classe_id
 group by e.libelle order by e.libelle;
 
-<span class="c">-- combien d'élèves inscrits par groupe</span>
-select c.code, c.libelle, count(el.id) as inscrits
+<span class="c">-- combien d'élèves par classe (inscrits ou venus avec un second code)</span>
+select c.espace, c.code, c.libelle, count(ap.eleve_id) as eleves
 from public.classes c
-left join public.eleves el on el.classe_id = c.id
-group by c.code, c.libelle order by c.code;
+left join public.eleves_classes ap on ap.classe_id = c.id
+group by c.espace, c.code, c.libelle order by c.espace, c.code;
 
-<span class="c">-- les groupes que personne n'enseigne (le CFA doit y figurer)</span>
+<span class="c">-- les classes que personne n'enseigne (vide en principe)</span>
 select c.code, c.libelle from public.classes c
 where not exists (select 1 from public.enseignants_classes ec
                   where ec.classe_id = c.id)
@@ -480,8 +544,10 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   local, cela ne coûte rien et aucune copie ne quitte le PC de Loïc.</p>
 
   <h3>Côté tableau de bord</h3>
-  <p>La file se lit <b>classe par classe</b> : une seule lecture ramène les copies
-  de toutes les classes avec leur <code>classe_id</code>, et le filtrage, le tri par
+  <p>La file se lit <b>classe par classe</b>, et seulement dans l'espace SNT : une
+  seule lecture ramène les copies de toutes les classes avec les appartenances de
+  chaque élève — sa classe SNT n'est pas forcément sa classe d'inscription —, et
+  le filtrage, le tri par
   nom et les compteurs du sélecteur se font dans la page. Le tri ne peut pas se
   faire en SQL : les noms ne vivent que dans le navigateur. La validation en lot
   ne porte que sur la classe affichée. Les seuils de couleur d'attente (10 et
@@ -530,6 +596,7 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
     <tr><th>Chemin</th><th>Rôle</th></tr>
     <tr><td><code>prof/index.html</code></td><td>Le tableau de bord.</td></tr>
     <tr><td><code>assets/js/prof-api.js</code></td><td>Son client : connexion, lecture, écriture.</td></tr>
+    <tr><td><code>assets/js/sequences-espaces.js</code></td><td>Les noms des outils, chapitres, fiches et séances hors SNT. <b>Généré</b> par <code>node generer-sequences-espaces.mjs</code>.</td></tr>
     <tr><td><code>assets/js/progression.js</code></td><td>Le client des élèves. <b>Partagé</b> avec le livret CFA : le toucher pour la SNT touche le CFA.</td></tr>
     <tr><td><code>bdd/schema/*.sql</code></td><td>Le schéma, numéroté, commenté, rejouable dans l'ordre.</td></tr>
     <tr><td><code>supabase/migrations/</code></td><td>La même chose, horodatée, appliquée automatiquement au push.</td></tr>
@@ -552,7 +619,15 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
 
   <ul>
     <li><b>Les chapitres de physique-chimie</b> ne sont pas branchés : leur
-      progression vit dans le navigateur de l'élève, et n'apparaît nulle part ici.</li>
+      progression vit dans le navigateur de l'élève, et n'apparaît nulle part ici.
+      La consultation des chapitres et les téléchargements de la 2nde 1 sont le
+      prochain chantier.</li>
+    <li><b>Les pages d'ES</b> n'enregistrent pas encore : l'espace existe, ses
+      grilles restent vides jusqu'au branchement des pages (clés
+      <code>es1-tN-cN</code> et <code>est-tN-cN</code>, réponses rédigées en
+      réponses personnelles, jamais dans la file).</li>
+    <li><b>Les cinq classes hors SNT</b> sont fermées à l'inscription tant que les
+      élèves ne savent pas rejoindre une seconde classe depuis le site.</li>
     <li><b>Les photos prises en classe</b> ne quittent pas le navigateur. Les
       remonter demanderait un espace de stockage, une table, des règles — et une
       durée de conservation décidée avant la première ligne de code.</li>
@@ -566,8 +641,10 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <p class="revision">
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
-    Dernière révision : <b>13 septembre 2026</b> — file de correction par classe,
-    et calendrier du worker calé sur les séances. Version destinée aux collègues :
+    Dernière révision : <b>13 septembre 2026</b> — le tableau de bord en espaces
+    (SNT, ES, PC 2nde, CFA), un compte élève dans plusieurs classes et le
+    cloisonnement par famille ; file de correction par classe, et calendrier du
+    worker calé sur les séances. Version destinée aux collègues :
     <a href="guide-prise-en-main.html">la prise en main</a>.
   </p>
 

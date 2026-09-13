@@ -242,6 +242,25 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
 .nom-cliquable{background:none;border:0;padding:0;font:inherit;color:var(--link);
     cursor:pointer;text-align:left}
 .dette{font-weight:600}.dette.zero{color:var(--ink-faint);font-weight:400}
+table.grille th button.th-lien{background:none;border:0;padding:0;font:inherit;color:var(--link);
+    cursor:pointer;text-transform:inherit;letter-spacing:inherit}
+.derniere{font-size:12.5px;color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* --- accueil des espaces (13/09/2026) ---
+   N'apparaît qu'aux comptes rattachés à plus d'un espace : un collègue
+   qui n'a que des groupes SNT ne le voit jamais. */
+#accueil-espaces{width:100%;max-width:1120px;margin:0 auto;padding:22px 16px 28px}
+#accueil-espaces h1{font-size:21px;margin:0 0 4px}
+.espaces{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:18px}
+.espace{display:block;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);
+    border-radius:14px;padding:18px;cursor:pointer}
+.espace:hover{border-color:var(--link)}
+.espace:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.espace .e-nom{display:block;font-family:'Space Grotesk','IBM Plex Sans',sans-serif;font-weight:600;font-size:17px}
+.espace .e-quoi{display:block;font-size:13px;color:var(--ink-soft);margin:3px 0 10px}
+.espace .e-classes{display:flex;flex-wrap:wrap;gap:5px}
+.espace .e-classes span{font-size:12.5px;padding:2px 9px;border-radius:999px;background:var(--surface-2);
+    border:1px solid var(--line);color:var(--ink-soft)}
 </style>
 </head>
 <body>
@@ -274,11 +293,21 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
 <!-- ============ écran 2 : l'application ============ -->
 <div id="ecran-appli">
   <header class="barre">
-    <span class="titre">Tableau de bord SNT</span>
+    <span class="titre" id="titre-appli">Tableau de bord SNT</span>
+    <button id="btn-espaces" type="button" style="display:none;padding:5px 11px;font-size:13.5px;margin-left:0">⌂ Mes espaces</button>
     <span class="qui"><span id="qui-nom"></span></span>
     <a class="lien-aide" href="guide-prise-en-main.html" target="_blank" rel="noopener">Aide</a>
     <button id="lien-quitter" style="padding:5px 11px;font-size:13.5px">Quitter</button>
   </header>
+
+  <!-- Accueil des espaces : visible seulement quand le compte a des
+       classes dans plusieurs espaces (bdd/schema/018). Rempli par
+       rendreAccueil(). -->
+  <section id="accueil-espaces" style="display:none">
+    <h1>Mes espaces</h1>
+    <p class="muet" style="margin:0">Choisis un espace&nbsp;; tu y retrouves ses classes.</p>
+    <div class="espaces" id="liste-espaces"></div>
+  </section>
 
   <nav class="onglets" role="tablist">
     <button data-onglet="correction" class="actif">À corriger</button>
@@ -455,11 +484,11 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       </div>
 
       <div class="legende">
-        <span><i class="p ok"></i>terminée</span>
+        <span><i class="p ok"></i><span id="leg-ok">terminée</span></span>
         <span><i class="p enc"></i>en cours</span>
         <span><i class="p gris"></i>pas encore</span>
-        <span><i class="p ret"></i>en retard</span>
-        <span><i class="p abs"></i>absent, à rattraper</span>
+        <span data-avec-seances><i class="p ret"></i>en retard</span>
+        <span data-avec-seances><i class="p abs"></i>absent, à rattraper</span>
       </div>
 
       <div class="tableau-enveloppe">
@@ -558,6 +587,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
 <script src="../assets/js/seances-snt.js?v=16"></script>
 <script src="../assets/js/verrou-snt.js?v=3"></script>
 <script src="../assets/js/questions-snt.js?v=2"></script>
+<script src="../assets/js/sequences-espaces.js?v=1"></script>
 <script src="../assets/js/prof-api.js"></script>
 <script>
 (function(){
@@ -570,10 +600,137 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     $('#ecran-appli').style.display = 'flex';
     var m = ProfAPI.moi();
     $('#qui-nom').textContent = (m && m.libelle) || '';
-    chargerFile();
-    etatWorker();
-    compterSansIA();
-    demarrerSuivi();
+    chargerClasses()
+      .then(entrer)
+      .catch(function(e){ $('#g-etat').textContent = 'Lecture impossible : ' + (e.message || e); });
+  }
+
+  /* ============================================================
+     LES ESPACES (13/09/2026, bdd/schema/018)
+     ------------------------------------------------------------
+     Chaque classe appartient à un espace. Le compte voit les espaces
+     où il a au moins une classe — pas de rôle à part : Loïc en voit
+     cinq parce qu'il est rattaché à cinq sortes de classes, un
+     collègue n'en voit qu'un.
+     UN SEUL ESPACE → on y entre directement, sans accueil : l'écran
+     d'un collègue de SNT reste exactement celui qu'il connaît.
+
+     onglets  ce que l'espace montre. Pas de file de correction hors
+              du SNT : l'ES se corrige en classe (décision du 12/09),
+              les outils de PC et le livret CFA n'envoient pas de copie.
+     seances  vrai quand l'espace suit une progression de séances,
+              avec cahier de textes, absents et retards. Les outils et
+              le livret sont hors progression : ni retard ni curseur.
+     ============================================================ */
+  var ESPACES_DEF = {
+    snt: { nom: 'SNT',                            quoi: 'Seconde · sciences numériques et technologie',
+           onglets: ['correction', 'seance', 'suivi', 'reglages'], seances: true },
+    es1: { nom: 'Enseignement scientifique 1re',  quoi: 'Première · suivi du travail, corrigé en classe',
+           onglets: ['seance', 'suivi', 'reglages'], seances: true },
+    est: { nom: 'Enseignement scientifique Term.', quoi: 'Terminale · suivi du travail, corrigé en classe',
+           onglets: ['seance', 'suivi', 'reglages'], seances: true },
+    pc2: { nom: 'Physique-chimie 2nde',           quoi: 'Seconde · les outils transversaux',
+           onglets: ['suivi', 'reglages'], seances: false },
+    cfa: { nom: 'Livret CFA',                     quoi: 'Apprentis · les dix-sept fiches-outils',
+           onglets: ['suivi', 'reglages'], seances: false }
+  };
+  var ORDRE_ESPACES = ['snt', 'es1', 'est', 'pc2', 'cfa'];
+  var ESPACE = null;
+  var suiviSNTDemarre = false;
+  var CLE_ESPACE = 'snt.prof.espace';   /* sessionStorage : le dernier espace ouvert */
+
+  function espaceDe(c){ return (c && c.espace) || 'snt'; }
+
+  function espacesDisponibles(){
+    var vus = {};
+    TOUTES_CLASSES.forEach(function(c){ vus[espaceDe(c)] = true; });
+    return ORDRE_ESPACES.filter(function(e){ return vus[e]; });
+  }
+
+  function entrer(){
+    var dispo = espacesDisponibles();
+    $('#btn-espaces').style.display = dispo.length > 1 ? '' : 'none';
+    if(dispo.length <= 1){ choisirEspace(dispo[0] || 'snt'); return; }
+    var garde = null;
+    try { garde = sessionStorage.getItem(CLE_ESPACE); } catch(e){}
+    if(garde && dispo.indexOf(garde) >= 0) choisirEspace(garde);
+    else rendreAccueil();
+  }
+
+  function rendreAccueil(){
+    $('#accueil-espaces').style.display = '';
+    document.querySelector('nav.onglets').style.display = 'none';
+    document.querySelector('main').style.display = 'none';
+    $('#titre-appli').textContent = 'Tableau de bord';
+    var z = $('#liste-espaces'); z.innerHTML = '';
+    espacesDisponibles().forEach(function(e){
+      var d = ESPACES_DEF[e];
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'espace';
+      var n = document.createElement('span'); n.className = 'e-nom'; n.textContent = d.nom;
+      var q = document.createElement('span'); q.className = 'e-quoi'; q.textContent = d.quoi;
+      var cl = document.createElement('span'); cl.className = 'e-classes';
+      TOUTES_CLASSES.filter(function(c){ return espaceDe(c) === e; }).forEach(function(c){
+        var s = document.createElement('span'); s.textContent = c.libelle; cl.appendChild(s);
+      });
+      b.appendChild(n); b.appendChild(q); b.appendChild(cl);
+      b.addEventListener('click', function(){ choisirEspace(e); });
+      z.appendChild(b);
+    });
+  }
+
+  $('#btn-espaces').addEventListener('click', function(){
+    try { sessionStorage.removeItem(CLE_ESPACE); } catch(e){}
+    rendreAccueil();
+  });
+
+  function choisirEspace(e){
+    ESPACE = ESPACES_DEF[e] ? e : 'snt';
+    var def = ESPACES_DEF[ESPACE];
+    try { sessionStorage.setItem(CLE_ESPACE, ESPACE); } catch(err){}
+    $('#accueil-espaces').style.display = 'none';
+    document.querySelector('nav.onglets').style.display = '';
+    document.querySelector('main').style.display = '';
+    $('#titre-appli').textContent = ESPACE === 'snt' ? 'Tableau de bord SNT' : 'Tableau de bord — ' + def.nom;
+
+    /* les onglets de l'espace, le premier ouvert */
+    var premier = null;
+    document.querySelectorAll('nav.onglets button').forEach(function(b){
+      var montre = def.onglets.indexOf(b.dataset.onglet) >= 0;
+      b.style.display = montre ? '' : 'none';
+      if(montre && !premier) premier = b;
+    });
+    document.querySelectorAll('[data-avec-seances]').forEach(function(x){
+      x.style.display = def.seances ? '' : 'none';
+    });
+    $('#leg-ok').textContent = ESPACE === 'cfa' ? 'fiche terminée' : 'terminée';
+
+    CLASSES = TOUTES_CLASSES.filter(function(c){ return espaceDe(c) === ESPACE; });
+    ctx.classe = CLASSES.length ? CLASSES[0].id : null;
+    var opts = CLASSES.map(function(c){ return { v: c.id, t: c.libelle + ' (' + c.code + ')' }; });
+    remplirSelect($('#s-classe'), opts, ctx.classe);
+    remplirSelect($('#g-classe'), opts, ctx.classe);
+
+    var themes = themesDeLEspace();
+    ctx.theme = themes.length ? themes[0].v : null;
+    remplirSelect($('#s-theme'), themes.filter(function(t){ return t.v !== VUE_ENSEMBLE; }), ctx.theme);
+    remplirSelect($('#g-theme'), themes, ctx.theme);
+    $('#g-theme').style.display = themes.length > 1 ? '' : 'none';
+    $('#s-seance').value = '';
+
+    if(premier) premier.click();
+
+    /* La file de correction ne sert qu'en SNT. Lancée une fois, elle
+       vit ensuite sa vie (rafraîchissement automatique). */
+    if(ESPACE === 'snt' && !suiviSNTDemarre){
+      suiviSNTDemarre = true;
+      if(kClasse === null) kClasse = ctx.classe;
+      chargerFile(); etatWorker(); compterSansIA();
+    }
+    $('#g-etat').textContent = 'Chargement…';
+    chargerContexte()
+      .then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); $('#g-etat').textContent = ''; })
+      .catch(function(err){ $('#g-etat').textContent = 'Lecture impossible : ' + (err.message || err); });
   }
   function montrerConnexion(message){
     $('#ecran-appli').style.display = 'none';
@@ -782,8 +939,11 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     $('#etat-file').textContent = 'Chargement…';
     /* classe_id vient avec le pseudo : un seul aller-retour sert à la
        fois la file et les compteurs du sélecteur de classe. */
+    /* eleves_classes : un élève peut avoir rejoint la 2nde 1 avant son
+       groupe SNT (018), sa classe d'inscription n'est alors pas la
+       bonne. La RLS ne rend que les appartenances à MES classes. */
     var chemin = 'reponses_libres'
-      + '?select=id,code_activite,texte,statut,version,envoye_le,correction_ia,eleves(pseudo,classe_id)'
+      + '?select=id,code_activite,texte,statut,version,envoye_le,correction_ia,eleves(pseudo,classe_id,eleves_classes(classe_id))'
       + '&statut=eq.en_attente'
       + (sansIA ? '&correction_ia=is.null' : '&correction_ia=not.is.null')
       + '&order=envoye_le.asc';
@@ -796,7 +956,19 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     });
   }
 
-  function classeDe(c){ return c.eleves && c.eleves.classe_id; }
+  /* La classe SNT de l'élève qui a écrit la copie : parmi ses
+     appartenances, celle qui est un de mes groupes SNT. Repli sur la
+     classe d'inscription — c'était la seule avant le 018. */
+  function classeDe(c){
+    var e = c.eleves; if(!e) return null;
+    var snt = classesSNT();
+    var ap = (e.eleves_classes || []).map(function(x){ return x.classe_id; });
+    var trouvee = snt.find(function(cl){ return ap.indexOf(cl.id) >= 0; });
+    return trouvee ? trouvee.id : e.classe_id;
+  }
+  function classesSNT(){
+    return TOUTES_CLASSES.filter(function(c){ return espaceDe(c) === 'snt'; });
+  }
 
   /* Filtre + tri + liste + copie ouverte. On garde la copie ouverte par
      son id et non par son rang : un rechargement automatique qui fait
@@ -821,20 +993,21 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
      d'un coup d'œil qu'une autre classe attend, sans aller la chercher. */
   function majSelecteurClasse(){
     var sel = $('#k-classe');
-    if(!CLASSES.length){ sel.style.display = 'none'; return; }
+    var snt = classesSNT();
+    if(!snt.length){ sel.style.display = 'none'; return; }
     sel.style.display = '';
     var compte = {};
     toutes.forEach(function(c){ var k = classeDe(c); compte[k] = (compte[k] || 0) + 1; });
-    var opts = CLASSES.map(function(cl){
+    var opts = snt.map(function(cl){
       return { v: cl.id, t: cl.libelle + ' (' + (compte[cl.id] || 0) + ')' };
     });
-    if(CLASSES.length > 1) opts.push({ v: CLASSE_TOUTES, t: 'Toutes mes classes (' + toutes.length + ')' });
+    if(snt.length > 1) opts.push({ v: CLASSE_TOUTES, t: 'Toutes mes classes (' + toutes.length + ')' });
     remplirSelect(sel, opts, kClasse);
   }
 
   function libelleClasse(id){
     if(id === CLASSE_TOUTES) return 'toutes mes classes';
-    var cl = CLASSES.find(function(c){ return c.id === id; });
+    var cl = TOUTES_CLASSES.find(function(c){ return c.id === id; });
     return cl ? cl.libelle : '';
   }
 
@@ -1137,7 +1310,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     kClasse = this.value;
     rang = 0; file = [];
     rendreCorrection();
-    if(kClasse !== CLASSE_TOUTES && kClasse !== ctx.classe){
+    if(ESPACE === 'snt' && kClasse !== CLASSE_TOUTES && kClasse !== ctx.classe){
       ctx.classe = kClasse;
       $('#s-classe').value = kClasse; $('#g-classe').value = kClasse;
       $('#s-seance').value = '';
@@ -1290,7 +1463,10 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
   /* ============================================================
      CONTEXTE PARTAGÉ — classes, thèmes, données de suivi
      ============================================================ */
-  var CLASSES = [], ctx = { classe: null, theme: 'snt-t1' };
+  /* TOUTES_CLASSES : tout ce qui est rattaché au compte, tous espaces.
+     CLASSES : celles de l'espace ouvert — c'est elles que listent les
+     menus des onglets Séance et Suivi. */
+  var TOUTES_CLASSES = [], CLASSES = [], ctx = { classe: null, theme: 'snt-t1' };
   var Eleves = [], Faites = [], Absences = [], Progs = [];
   var FaitesToutes = [];   /* toutes séquences : le plafond les franchit */
 
@@ -1300,15 +1476,56 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
      pas une colonne — on change le chiffre, tout se recolore. */
   var JOURS_RATTRAPAGE = 14;
 
-  function seancesDu(theme){ return (window.SEANCES_SNT || {})[theme] || []; }
+  /* Les séquences d'un espace hors SNT : outils, chapitres, fiches.
+     Généré depuis les pages (generer-sequences-espaces.mjs). */
+  function sequencesDe(espace){ return (window.SEQUENCES_ESPACES || {})[espace] || []; }
+  function sequenceHorsSNT(cle){
+    var trouve = null;
+    Object.keys(window.SEQUENCES_ESPACES || {}).forEach(function(e){
+      sequencesDe(e).forEach(function(s){ if(s.cle === cle) trouve = s; });
+    });
+    return trouve;
+  }
 
-  /* Nommer une séquence. Deux familles cohabitent dans SEANCES_SNT :
-     les thèmes du programme ('snt-t0'…'snt-t7') et les outils
-     transversaux ('snt-m1'), qui sont hors progression. Un simple
-     replace('snt-t', …) laissait « snt-m1 » brut dans les menus. */
+  function seancesDu(theme){
+    if(/^snt-/.test(String(theme || ''))) return (window.SEANCES_SNT || {})[theme] || [];
+    var s = sequenceHorsSNT(theme);
+    return s ? s.seances : [];
+  }
+
+  /* « Tous les outils » / « Toutes les fiches » : une ligne par élève,
+     une colonne par outil ou par fiche. Valeur de thème à part, jamais
+     écrite en base. */
+  var VUE_ENSEMBLE = '*';
+
+  function themesDeLEspace(){
+    if(ESPACE === 'snt'){
+      /* Sans tri : l'ordre du fichier généré est déjà le bon (t0 → t7,
+         puis les outils transversaux). Trier remonterait « snt-m1 »
+         en tête du menu, alors qu'il n'ouvre pas l'année. */
+      return Object.keys(window.SEANCES_SNT || {}).map(function(k){
+        return { v: k, t: nomSequence(k) };
+      });
+    }
+    var liste = sequencesDe(ESPACE).map(function(s){ return { v: s.cle, t: nomSequence(s.cle) }; });
+    if(ESPACE === 'cfa') return [{ v: VUE_ENSEMBLE, t: 'Toutes les fiches' }];
+    if(ESPACE === 'pc2') return [{ v: VUE_ENSEMBLE, t: 'Tous les outils' }].concat(liste);
+    return liste;
+  }
+
+  /* Nommer une séquence. En SNT, deux familles cohabitent dans
+     SEANCES_SNT : les thèmes du programme ('snt-t0'…'snt-t7') et les
+     outils transversaux ('snt-m1'), hors progression. Un simple
+     replace('snt-t', …) laissait « snt-m1 » brut dans les menus.
+     Hors SNT, le nom vient des pages : « T1-C1 · La nucléosynthèse »,
+     « O3 · Sécurité au laboratoire ». */
   function nomSequence(cle, court){
     var m = /^snt-([tm])(\d+)$/.exec(String(cle || ''));
-    if(!m) return String(cle || '');
+    if(!m){
+      var s = sequenceHorsSNT(cle);
+      if(!s) return String(cle || '');
+      return court ? s.num : s.num + ' · ' + s.nom;
+    }
     if(m[1] === 'm') return (court ? 'M' : 'Module M') + m[2];
     return (court ? 'T' : 'Thème ') + m[2];
   }
@@ -1323,44 +1540,51 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     });
   }
 
+  /* Toutes les classes du compte. Le menu des onglets est rempli par
+     choisirEspace(), qui ne garde que celles de l'espace ouvert.
+     🔴 PAS de filtre sur  actif  : ce champ ne commande que
+     l'INSCRIPTION (012, 017). Le filtre qui était ici faisait
+     disparaître du tableau de bord un groupe dont on refermait les
+     inscriptions après la deuxième séance — décision du 20/07. */
   function chargerClasses(){
-    return ProfAPI.lire('classes?select=id,code,libelle,actif,avance_max,ouvert_jusqu_au&order=code.asc')
-      .then(function(l){
-        CLASSES = (l || []).filter(function(c){ return c.actif !== false; });
-        if(!CLASSES.length) return;
-        if(!ctx.classe) ctx.classe = CLASSES[0].id;
-        var opts = CLASSES.map(function(c){ return { v: c.id, t: c.libelle + ' (' + c.code + ')' }; });
-        remplirSelect($('#s-classe'), opts, ctx.classe);
-        remplirSelect($('#g-classe'), opts, ctx.classe);
-        /* La file de correction attendait les classes pour se filtrer. */
-        if(kClasse === null) kClasse = ctx.classe;
-        rendreCorrection();
-        /* Sans tri : l'ordre du fichier généré est déjà le bon (t0 → t7,
-           puis les outils transversaux). Trier remonterait « snt-m1 »
-           en tête du menu, alors qu'il n'ouvre pas l'année. */
-        var themes = Object.keys(window.SEANCES_SNT || {}).map(function(k){
-          return { v: k, t: nomSequence(k) };
-        });
-        remplirSelect($('#s-theme'), themes, ctx.theme);
-        remplirSelect($('#g-theme'), themes, ctx.theme);
-      });
+    return ProfAPI.lire('classes?select=id,code,libelle,actif,avance_max,ouvert_jusqu_au,espace&order=code.asc')
+      .then(function(l){ TOUTES_CLASSES = l || []; });
   }
 
   /* Une seule lecture sert au rituel ET à la grille : les deux ont
-     besoin des mêmes quatre jeux de données. */
+     besoin des mêmes jeux de données.
+     Les élèves se lisent par  eleves_classes  (018) : un élève de la
+     2nde 1 a le plus souvent un groupe SNT pour classe d'inscription,
+     et  eleves.classe_id  ne le rangerait pas en 2nde 1. */
   function chargerContexte(){
-    if(!ctx.classe) return Promise.resolve();
+    if(!ctx.classe || !ctx.theme) {
+      Eleves = []; Faites = []; Absences = []; Progs = []; FaitesToutes = [];
+      return Promise.resolve();
+    }
     var cl = encodeURIComponent(ctx.classe), th = encodeURIComponent(ctx.theme);
+    var avecSeances = ESPACES_DEF[ESPACE] && ESPACES_DEF[ESPACE].seances;
+    var rien = Promise.resolve([]);
+    /* la vue d'ensemble lit toutes les séquences de l'espace d'un coup :
+       pc-o1 … pc-o8, ou cfa-o00 … cfa-o16 (le like de PostgREST écrit
+       son joker « * ») */
+    var cheminProgs = ctx.theme === VUE_ENSEMBLE
+      ? 'progression?select=eleve_id,cle,valeur,maj_le&domaine=eq.cours&cle=like.'
+          + (ESPACE === 'cfa' ? 'cfa-o*' : 'pc-o*')
+      : 'progression?select=eleve_id,cle,valeur,maj_le&domaine=eq.cours&cle=eq.' + th;
     return Promise.all([
-      ProfAPI.lire('eleves?select=id,pseudo&classe_id=eq.' + cl + '&order=pseudo.asc'),
-      ProfAPI.lire('seances_faites?select=*&classe_id=eq.' + cl + '&sequence=eq.' + th),
-      ProfAPI.lire('absences?select=*&sequence=eq.' + th),
-      ProfAPI.lire('progression?select=eleve_id,valeur&domaine=eq.cours&cle=eq.' + th),
+      ProfAPI.lire('eleves_classes?select=eleves(id,pseudo)&classe_id=eq.' + cl),
+      avecSeances ? ProfAPI.lire('seances_faites?select=*&classe_id=eq.' + cl + '&sequence=eq.' + th) : rien,
+      avecSeances ? ProfAPI.lire('absences?select=*&sequence=eq.' + th) : rien,
+      ProfAPI.lire(cheminProgs),
       /* SANS filtre de thème : le plafond franchit les fins de thème,
          il lui faut donc tout ce que la classe a clôturé, partout. */
-      ProfAPI.lire('seances_faites?select=sequence,seance,faite_le&classe_id=eq.' + cl)
+      avecSeances ? ProfAPI.lire('seances_faites?select=sequence,seance,faite_le&classe_id=eq.' + cl) : rien
     ]).then(function(r){
-      Eleves = r[0] || []; Faites = r[1] || []; Absences = r[2] || []; Progs = r[3] || [];
+      var coll = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
+      Eleves = (r[0] || []).map(function(x){ return x.eleves; })
+        .filter(Boolean)
+        .sort(function(a, b){ return coll.compare(a.pseudo, b.pseudo); });
+      Faites = r[1] || []; Absences = r[2] || []; Progs = r[3] || [];
       FaitesToutes = r[4] || [];
       /* les absences sont lues pour tout le monde : on ne garde que
          les élèves de la classe affichée */
@@ -1386,8 +1610,11 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
   function estAbsent(eleveId, idSeance){
     return Absences.some(function(a){ return a.eleve_id === eleveId && a.seance === idSeance; });
   }
-  function resumeDe(eleveId){
-    var p = Progs.find(function(x){ return x.eleve_id === eleveId; });
+  function progDe(eleveId, cle){
+    return Progs.find(function(x){ return x.eleve_id === eleveId && x.cle === (cle || ctx.theme); }) || null;
+  }
+  function resumeDe(eleveId, cle){
+    var p = progDe(eleveId, cle);
     return (p && p.valeur && p.valeur.resume) || null;
   }
   function chiffresSeance(eleveId, idSeance){
@@ -1450,7 +1677,8 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
   function rendrePlafond(){
     var boite = $('#s-plafond');
     var cl = classeCourante();
-    if(!boite || !cl || !window.VerrouSNT){ if(boite) boite.style.display = 'none'; return; }
+    /* le plafond d'avance est une affaire de SNT (018 §5) */
+    if(!boite || !cl || !window.VerrouSNT || ESPACE !== 'snt'){ if(boite) boite.style.display = 'none'; return; }
     boite.style.display = '';
 
     var liste = window.VerrouSNT.rangs();
@@ -1729,9 +1957,14 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     var t = [];
     t.push((cl ? cl.libelle : '') + ' — ' + d);
     /* « SNT · thème 1 », « SNT · module M1 » : seul le mot de tête
-       se décapitalise — un `toLowerCase()` global écrirait « m1 ». */
-    var quoi = nomSequence(ctx.theme).replace(/^(Thème|Module)/, function(w){ return w.toLowerCase(); });
-    t.push('SNT · ' + quoi + ' — ' + (s ? (s.num + ' ' + s.nom) : ''));
+       se décapitalise — un `toLowerCase()` global écrirait « m1 ».
+       En ES : « Enseignement scientifique · T1-C1 · La nucléosynthèse ». */
+    if(ESPACE === 'snt'){
+      var quoi = nomSequence(ctx.theme).replace(/^(Thème|Module)/, function(w){ return w.toLowerCase(); });
+      t.push('SNT · ' + quoi + ' — ' + (s ? (s.num + ' ' + s.nom) : ''));
+    } else {
+      t.push('Enseignement scientifique · ' + nomSequence(ctx.theme) + ' — ' + (s ? (s.num + ' ' + s.nom) : ''));
+    }
     t.push('');
     var note = $('#s-note').value.trim();
     t.push('Vu en séance : ' + (note || '—'));
@@ -1766,12 +1999,17 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
      LOT D — la grille de suivi
      ============================================================ */
   function rendreGrille(){
-    var l = seancesDu(ctx.theme), cur = rangCurseur();
+    if(ctx.theme === VUE_ENSEMBLE){ rendreVueEnsemble(); return; }
+    /* Hors progression (outils de PC) : pas de curseur, donc ni retard
+       ni dette — on montre l'avancement et la dernière visite. */
+    var avecSeances = !!(ESPACES_DEF[ESPACE] && ESPACES_DEF[ESPACE].seances);
+    var l = seancesDu(ctx.theme), cur = avecSeances ? rangCurseur() : -1;
     var t = $('#g-table'); t.innerHTML = '';
 
     var thead = document.createElement('thead');
     var tr = document.createElement('tr');
-    ['Élève','Retard du jour','Dette'].concat(l.map(function(s){ return s.num || s.id; }))
+    (avecSeances ? ['Élève','Retard du jour','Dette'] : ['Élève','Avancement','Dernière visite'])
+      .concat(l.map(function(s){ return s.num || s.id; }))
       .forEach(function(x){ var th = document.createElement('th'); th.textContent = x; tr.appendChild(th); });
     thead.appendChild(tr); t.appendChild(thead);
 
@@ -1789,20 +2027,30 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       /* Deux compteurs distincts, comme demandé : beaucoup d'élèves
          seront « en cours » partout sans que ça veuille dire la même
          chose selon qu'ils traînent depuis octobre ou depuis mardi. */
-      var duJour = 0, dette = 0;
-      l.forEach(function(s, i){
-        if(i > cur) return;
-        var et = etatCase(e.id, s.id, i, cur);
-        if(et.cls === 'ret' || et.cls === 'enc' || et.cls === 'abs'){
-          if(i === cur) duJour++; else dette++;
-        }
-      });
-      [duJour, dette].forEach(function(n){
-        var td = document.createElement('td');
-        td.className = 'dette' + (n ? '' : ' zero');
-        td.textContent = n ? n : '·';
-        ligne.appendChild(td);
-      });
+      if(avecSeances){
+        var duJour = 0, dette = 0;
+        l.forEach(function(s, i){
+          if(i > cur) return;
+          var et = etatCase(e.id, s.id, i, cur);
+          if(et.cls === 'ret' || et.cls === 'enc' || et.cls === 'abs'){
+            if(i === cur) duJour++; else dette++;
+          }
+        });
+        [duJour, dette].forEach(function(n){
+          var td = document.createElement('td');
+          td.className = 'dette' + (n ? '' : ' zero');
+          td.textContent = n ? n : '·';
+          ligne.appendChild(td);
+        });
+      } else {
+        var r = resumeDe(e.id), p = progDe(e.id);
+        var tdA = document.createElement('td');
+        tdA.className = 'dette' + (r && r.f ? '' : ' zero');
+        tdA.textContent = r && r.t ? (r.f + '/' + r.t) : '·';
+        var tdV = document.createElement('td');
+        tdV.innerHTML = '<span class="derniere">' + echapper(derniereVisite(p)) + '</span>';
+        ligne.appendChild(tdA); ligne.appendChild(tdV);
+      }
 
       l.forEach(function(s, i){
         var et = etatCase(e.id, s.id, i, cur);
@@ -1815,13 +2063,113 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     });
     t.appendChild(tb);
 
-    $('#g-note').textContent = Eleves.length
-      ? ('Curseur : ' + (cur < 0 ? 'aucune séance enregistrée'
+    $('#g-note').textContent = !Eleves.length ? 'Aucun élève dans cette classe.'
+      : !avecSeances ? 'Outil hors progression : chaque case compte les étapes validées sur la séance.'
+      : ('Curseur : ' + (cur < 0 ? 'aucune séance enregistrée'
           : (l[cur].num + ' ' + l[cur].nom)) + '. Une séance manquée redevient un retard après '
-          + JOURS_RATTRAPAGE + ' jours.')
-      : 'Aucun élève dans cette classe.';
+          + JOURS_RATTRAPAGE + ' jours.');
 
     remplirQuestionsPerso();
+  }
+
+  /* « il y a 3 j », « aujourd'hui » : la date de la dernière écriture en
+     base. Côté outil, c'est vu_le que la page pose ; côté livret CFA,
+     maj_le de la ligne. */
+  function derniereVisite(p){
+    var iso = p && ((p.valeur && p.valeur.vu_le) || p.maj_le);
+    if(!iso) return '—';
+    var t = new Date(iso), j = new Date(); j.setHours(0, 0, 0, 0);
+    if(t >= j) return 'aujourd’hui';
+    var n = Math.ceil((j - t) / 86400000);
+    return n === 1 ? 'hier' : 'il y a ' + n + ' j';
+  }
+
+  /* ============================================================
+     VUE D'ENSEMBLE — outils de PC, livret CFA
+     ------------------------------------------------------------
+     Une ligne par élève, une colonne par outil ou par fiche. C'est la
+     question qu'on se pose vraiment en 2nde : « qui a fait ses
+     outils ? », pas « où en est-il de la séance 2 de l'outil 5 ».
+     Un clic sur l'en-tête d'un outil ouvre son détail par séance.
+
+       outil  f/t étapes validées, depuis le résumé que la page écrit
+       fiche  ✓ si l'apprenti l'a déclarée faite, sinon le nombre de
+              champs remplis (valeur { champs, fait } de cfa-livret.js)
+     ============================================================ */
+  function etatFiche(p){
+    if(!p || !p.valeur) return { cls: 'gris', txt: '·' };
+    if(p.valeur.fait) return { cls: 'ok', txt: '✓' };
+    var ch = p.valeur.champs || {};
+    var n = Object.keys(ch).filter(function(k){ return String(ch[k] == null ? '' : ch[k]).trim() !== ''; }).length;
+    return n ? { cls: 'enc', txt: String(n) } : { cls: 'gris', txt: '·' };
+  }
+  function etatOutil(p){
+    var r = p && p.valeur && p.valeur.resume;
+    if(!r || !r.t) return { cls: 'gris', txt: '·' };
+    if(r.f >= r.t) return { cls: 'ok', txt: r.f + '/' + r.t };
+    if(r.f > 0)    return { cls: 'enc', txt: r.f + '/' + r.t };
+    return { cls: 'gris', txt: '0/' + r.t };
+  }
+
+  function rendreVueEnsemble(){
+    var seqs = sequencesDe(ESPACE);
+    var t = $('#g-table'); t.innerHTML = '';
+    var thead = document.createElement('thead');
+    var tr = document.createElement('tr');
+    var th0 = document.createElement('th'); th0.textContent = 'Élève'; tr.appendChild(th0);
+    var thT = document.createElement('th'); thT.textContent = ESPACE === 'cfa' ? 'Fiches faites' : 'Outils finis'; tr.appendChild(thT);
+    var thV = document.createElement('th'); thV.textContent = 'Dernière activité'; tr.appendChild(thV);
+    seqs.forEach(function(s){
+      var th = document.createElement('th');
+      th.title = s.nom;
+      if(ESPACE === 'pc2'){
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'th-lien'; b.textContent = s.num;
+        b.addEventListener('click', function(){ $('#g-theme').value = s.cle; $('#g-theme').dispatchEvent(new Event('change')); });
+        th.appendChild(b);
+      } else th.textContent = s.num;
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr); t.appendChild(thead);
+
+    var tb = document.createElement('tbody');
+    Eleves.forEach(function(e){
+      var ligne = document.createElement('tr');
+      var td0 = document.createElement('td');
+      var nb = document.createElement('button');
+      nb.className = 'nom-cliquable'; nb.textContent = ProfAPI.nomDe(e.pseudo);
+      nb.addEventListener('click', function(){ ouvrirEleve(e); });
+      td0.appendChild(nb); ligne.appendChild(td0);
+
+      var finis = 0, plusRecente = null;
+      var cases = seqs.map(function(s){
+        var p = progDe(e.id, s.cle);
+        if(p && (!plusRecente || String(p.maj_le) > String(plusRecente.maj_le))) plusRecente = p;
+        var et = ESPACE === 'cfa' ? etatFiche(p) : etatOutil(p);
+        if(et.cls === 'ok') finis++;
+        return et;
+      });
+      var tdT = document.createElement('td');
+      tdT.className = 'dette' + (finis ? '' : ' zero');
+      tdT.textContent = finis + '/' + seqs.length;
+      var tdV = document.createElement('td');
+      tdV.innerHTML = '<span class="derniere">' + echapper(derniereVisite(plusRecente)) + '</span>';
+      ligne.appendChild(tdT); ligne.appendChild(tdV);
+      cases.forEach(function(et){
+        var td = document.createElement('td');
+        var sp = document.createElement('span');
+        sp.className = 'case ' + et.cls; sp.textContent = et.txt;
+        td.appendChild(sp); ligne.appendChild(td);
+      });
+      tb.appendChild(ligne);
+    });
+    t.appendChild(tb);
+
+    $('#g-note').textContent = !Eleves.length ? 'Aucun élève dans cette classe.'
+      : ESPACE === 'cfa'
+        ? '✓ fiche déclarée faite par l’apprenti · un chiffre : champs remplis, fiche pas encore déclarée faite.'
+        : 'Étapes validées par outil. Clique sur un outil (O1, O2…) pour le détail séance par séance.';
+    $('#g-perso-bloc').style.display = 'none';
   }
 
   /* ============================================================
@@ -1922,6 +2270,31 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     var z = $('#e-contenu');
     z.innerHTML = '<p class="muet">Chargement…</p>';
 
+    /* Outils de PC et livret CFA : pas de copie, un état par outil ou
+       par fiche. La RLS ne rend que la famille de l'espace (018). */
+    if(ESPACE === 'pc2' || ESPACE === 'cfa'){
+      ProfAPI.lire('progression?select=cle,valeur,maj_le&domaine=eq.cours'
+        + '&eleve_id=eq.' + encodeURIComponent(e.id)
+        + '&cle=like.' + (ESPACE === 'cfa' ? 'cfa-o*' : 'pc-o*'))
+        .then(function(l){
+          z.innerHTML = '';
+          sequencesDe(ESPACE).forEach(function(s){
+            var p = (l || []).find(function(x){ return x.cle === s.cle; });
+            var et = ESPACE === 'cfa' ? etatFiche(p) : etatOutil(p);
+            var d = document.createElement('div');
+            d.style.cssText = 'display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding:9px 0';
+            var c = document.createElement('span'); c.className = 'case ' + et.cls; c.textContent = et.txt;
+            var n = document.createElement('span'); n.style.flex = '1'; n.textContent = s.num + ' · ' + s.nom;
+            var v = document.createElement('span'); v.className = 'derniere'; v.textContent = p ? derniereVisite(p) : '';
+            d.appendChild(c); d.appendChild(n); d.appendChild(v);
+            z.appendChild(d);
+          });
+        })
+        .catch(function(err){ z.innerHTML = ''; var p = document.createElement('p');
+          p.textContent = 'Lecture impossible : ' + (err.message || err); z.appendChild(p); });
+      return;
+    }
+
     ProfAPI.lire('reponses_libres?select=code_activite,texte,statut,version,envoye_le,'
       + 'commentaire_prof,correction_ia&eleve_id=eq.' + encodeURIComponent(e.id)
       + '&order=envoye_le.asc')
@@ -1982,7 +2355,7 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
       $('#s-seance').value = '';
       /* la file de correction suit — sauf si l'on y regarde toutes les
          classes, choix explicite qu'on ne défait pas en douce */
-      if(kClasse !== CLASSE_TOUTES && kClasse !== ctx.classe && !enTrainDeDecider()){
+      if(ESPACE === 'snt' && kClasse !== CLASSE_TOUTES && kClasse !== ctx.classe && !enTrainDeDecider()){
         kClasse = ctx.classe; rang = 0; file = []; rendreCorrection();
       }
       chargerContexte().then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); });
@@ -2007,13 +2380,6 @@ table.grille tbody tr:hover td:first-child{background:var(--surface-2)}
     $('#g-etat').textContent = 'Chargement…';
     chargerContexte().then(function(){ rendreGrille(); $('#g-etat').textContent = ''; });
   });
-
-  function demarrerSuivi(){
-    return chargerClasses()
-      .then(chargerContexte)
-      .then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); })
-      .catch(function(e){ $('#g-etat').textContent = 'Lecture impossible : ' + (e.message || e); });
-  }
 
   /* ============================================================
      L'ÉTAT DU WORKER
