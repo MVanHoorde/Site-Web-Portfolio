@@ -1264,6 +1264,15 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
 - Jalons : `✅ Maquette V0` · `✅ Contenu complet` · `✅ Interactivité complète` ·
   `✅ Ressources définitives` (aucune ressource externe — tout est produit maison) ·
   `⬜ VALIDÉ`.
+- **Fiches de séance auditées par Loïc (13/09/2026)** — les deux séances ont une
+  partie fixe (`<template data-fiche-fixe>`). S1 : ajout « Le bit — pourquoi 0 et
+  1 » (transistor, bit, comparaison base 10 / base 2), paragraphe sur 2⁸ puis 2ⁿ,
+  « Pour aller plus loin » sans lien vidéo, avec un résumé de la vidéo et le
+  résumé de l'élève (`REP-R1`) à sa place. S2 : préfixes (schéma × 1000, tableau
+  informatique / physique-chimie), les deux séries ko/kio en regard, bit ou
+  octet, ordres de grandeur par usage, couleur reliée à l'octet ; **le bilan 2.4
+  n'est sur aucune fiche** (il couvre tout le module). Textes ajoutés : **à
+  valider** par Loïc.
 - **Ce n'est pas un thème du programme.** Le préfixe `m` (et non `t`) le dit :
   c'est un outil que d'autres thèmes mobilisent — l'adresse IP en `t1` (étape
   5.1), le poids des images en `t7`. **Aucun verrouillage inter-séquences n'est
