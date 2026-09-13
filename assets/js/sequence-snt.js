@@ -236,7 +236,7 @@
 
   /* petit easter egg pour les curieux qui ouvrent la console */
   console.log("%c📡 Bien reçu !","font-size:16px;font-weight:bold;color:#2445c7");
-  console.log("%cTu as ouvert la console — le réflexe d'un vrai administrateur réseau.\nEssaie de taper  ping('lycee.fr')  juste ici, et appuie sur Entrée…\n— M. Vanhoorde","font-size:12px;color:#12805c");
+  console.log("%cTu as ouvert la console — le réflexe d'un vrai administrateur réseau.\nEssaie de taper  ping('lycee.fr')  juste ici, et appuie sur Entrée…\n— M. Van Hoorde","font-size:12px;color:#12805c");
   window.ping = function(host){
     host = host || 'localhost';
     var t = Math.floor(Math.random()*40)+8;
@@ -1226,6 +1226,8 @@
   function collectReperes(sec){
     var out=[];
     sec.querySelectorAll('table.doc-table').forEach(function(t){
+      /* la correction d'un tri, un tableau de bonus : pas sur la fiche */
+      if(t.closest('.tri-suite,[data-reveal],.bonus-wrap')) return;
       var etape=t.closest('[data-step]');
       var ti=etape?etape.querySelector('.step-title'):null;
       var c=t.cloneNode(true);
@@ -1281,7 +1283,7 @@
         n   : (f.querySelector('.elem-n')||{}).textContent||'',
         nom : nom || '(sans nom)',
         desc: dit,
-        src : img?img.src:''
+        src : img?ficheImageReduite(img, 700):''
       });
     });
     return out;
@@ -1477,57 +1479,209 @@
     return noeud;
   }
 
-  /* Les réponses rédigées, AVEC leur correction et leurs conseils. C'est le
-     cœur de la partie adaptative : l'élève relit ce qu'il a écrit et ce qu'on
-     lui a répondu, au même endroit. */
-  function ficheRedigees(sec){
+  /* Les réponses écrites par l'élève dans un champ [data-focus] : rédigées
+     envoyées en correction (avec code), réponses courtes et questions des
+     « pour aller plus loin » (sans code, gardées le temps de la séance).
+     Règle du 13/09/2026 : la fiche ne porte que la TRACE DE L'ÉLÈVE. Aucune
+     correction automatique, aucune mention « pas encore corrigé » — seul le
+     mot du professeur, s'il en a écrit un. Son absence ne se signale pas. */
+  function ficheParCode(){
     var parCode = {};
     mesCopies.forEach(function(x){ parCode[x.code_activite] = x; });
-    var out = [];
-    sec.querySelectorAll('[data-focus-code]').forEach(function(f){
-      var code = f.dataset.focusCode;
-      var x    = parCode[code] || {};
-      var echo = f.querySelector('[data-focus-echo]');
-      var texte = (echo && echo.textContent.trim()) || (x.texte || '').trim();
-      if(!texte) return;                       /* rien écrit, rien à imprimer */
-      var q  = f.querySelector('.field-q');
-      var st = f.closest('[data-step]');
-      var t  = st ? st.querySelector('.step-title') : null;
-      var a  = (x.correction_ia && x.correction_ia.analyse) || {};
-      var fe = a.feedback_eleve || {};
-      var mot = (x.commentaire_prof && x.commentaire_prof.trim()) ? x.commentaire_prof.trim() : '';
-      out.push({
-        etape   : t ? t.textContent.trim() : '',
-        question: q ? q.textContent.replace(/\s+/g,' ').trim() : '',
-        texte   : texte,
-        statut  : x.statut || '',
-        verdict : a.verdict || '',
-        retour  : mot || (fe.message || ''),
-        parProf : !!mot,
-        plusLoin: fe.pour_aller_plus_loin || '',
-        bonus   : !!f.closest('.bonus-wrap')
-      });
+    return parCode;
+  }
+  function ficheTexte(el){ return el ? el.textContent.replace(/\s+/g,' ').trim() : ''; }
+  function ficheRedigee(f, parCode){
+    var code = f.dataset.focusCode || '';
+    var x    = (code && parCode[code]) || {};
+    var echo = f.querySelector('[data-focus-echo]');
+    var texte = (echo && echo.textContent.trim()) || (x.texte || '').trim();
+    if(!texte) return null;                    /* rien écrit, rien à imprimer */
+    var st = f.closest('[data-step]');
+    return {
+      cle     : code || f.getAttribute('data-focus-titre') || '',
+      etape   : ficheTexte(st ? st.querySelector('.step-title') : null),
+      question: ficheTexte(f.querySelector('.field-q')) || (f.getAttribute('data-focus-question') || ''),
+      texte   : texte,
+      prof    : (x.commentaire_prof || '').trim(),
+      bonus   : !!f.closest('.bonus-wrap')
+    };
+  }
+  function ficheRedigees(sec){
+    var parCode = ficheParCode(), out = [];
+    sec.querySelectorAll('[data-focus]').forEach(function(f){
+      var r = ficheRedigee(f, parCode); if(r) out.push(r);
     });
     return out;
   }
 
   /* Recherches personnelles, enquêtes familiales, « et toi ? » : ce que
      l'élève est allé chercher hors de la page. Il y tient, ça reste. */
+  function fichePersoDe(p){
+    var ta = p.querySelector('textarea');
+    if(!ta || !ta.value.trim()) return null;
+    var st = p.closest('[data-step]');
+    return {
+      cle     : p.getAttribute('data-perso-code') || '',
+      etape   : ficheTexte(st ? st.querySelector('.step-title') : null),
+      question: ficheTexte(p.querySelector('.field-q')),
+      texte   : ta.value.trim()
+    };
+  }
   function fichePerso(sec){
     var out = [];
-    sec.querySelectorAll('.perso').forEach(function(p){
-      var ta = p.querySelector('textarea');
-      if(!ta || !ta.value.trim()) return;
-      var st = p.closest('[data-step]');
-      var t  = st ? st.querySelector('.step-title') : null;
-      var q  = p.querySelector('.field-q');
-      out.push({
-        etape   : t ? t.textContent.trim() : '',
-        question: q ? q.textContent.replace(/\s+/g,' ').trim() : '',
-        texte   : ta.value.trim()
-      });
+    sec.querySelectorAll('.perso').forEach(function(p){ var r = fichePersoDe(p); if(r) out.push(r); });
+    return out;
+  }
+
+  /* Une image déposée vit en data URL, à la taille de l'appareil photo :
+     plusieurs mégaoctets par photo de tablette. On la réduit pour la fiche,
+     sinon le PDF déposé sur OneDrive pèse vite 20 Mo. Une image servie par le
+     site (chemin http/file) n'est pas touchée : le canvas serait « teinté ». */
+  function ficheImageReduite(img, max){
+    if(!img) return '';
+    var src = img.getAttribute('src') || '';
+    if(!/^data:image\//.test(src)) return img.src;
+    try{
+      if(!img.complete || !img.naturalWidth) return src;
+      var w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, (max || 1000) / Math.max(w, h));
+      var c = document.createElement('canvas');
+      c.width = Math.round(w * k); c.height = Math.round(h * k);
+      var g = c.getContext('2d');
+      g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);   /* un PNG transparent devient noir en JPEG */
+      g.drawImage(img, 0, 0, c.width, c.height);
+      return c.toDataURL('image/jpeg', 0.82);
+    }catch(e){ return src; }
+  }
+
+  /* Les dépôts de copie d'écran ou de photo ([data-depot]). Décidé le
+     23/08/2026, codé le 13/09/2026 : la page annonçait à l'élève que sa copie
+     « se retrouve sur la fiche », et ce n'était pas vrai. */
+  function ficheDepotDe(z){
+    var img = z.querySelector('[data-depot-apercu] img');
+    if(!img) return null;
+    var st = z.closest('[data-step]');
+    return {
+      cle     : z.getAttribute('data-depot-code') || '',
+      etape   : ficheTexte(st ? st.querySelector('.step-title') : null),
+      question: ficheTexte(z.querySelector('.field-q')),
+      src     : ficheImageReduite(img, 1000),
+      bonus   : !!z.closest('.bonus-wrap')
+    };
+  }
+
+  /* ---- rendus HTML du travail de l'élève, communs aux emplacements et aux
+         sections génériques ---- */
+  function ficheRedigeeHTML(r, avecQuestion){
+    return (avecQuestion && r.question ? '<div class="q-en">' + echapper(r.question) + '</div>' : '') +
+      '<div class="a"><span class="lbl">Ma réponse</span>' + echapper(r.texte) + '</div>' +
+      (r.prof ? '<div class="corr"><span class="lbl">Le mot du professeur</span>' + echapper(r.prof) + '</div>' : '');
+  }
+  function fichePersoHTML(p, avecQuestion){
+    return (avecQuestion && p.question ? '<div class="q-en">' + echapper(p.question) + '</div>' : '') +
+      '<div class="a">' + echapper(p.texte) + '</div>';
+  }
+  function ficheDepotHTML(d, avecQuestion){
+    return '<figure class="depot"><img src="' + d.src + '" alt="' + echapper(d.question || 'Mon dépôt') + '">' +
+      (avecQuestion && d.question ? '<figcaption>' + echapper(d.question) + '</figcaption>' : '') + '</figure>';
+  }
+  function ficheElementsHTML(elems){
+    return '<div class="elems">' + elems.map(function(e){
+      return '<figure class="el">' +
+             (e.src ? '<img src="' + e.src + '" alt="' + echapper(e.nom) + '">' : '<div class="el-sans">pas de photo</div>') +
+             '<figcaption><b>' + echapper(e.n ? e.n + '. ' : '') + echapper(e.nom) + '</b>' +
+             (e.desc ? '<span class="el-d">' + echapper(e.desc) + '</span>' : '') +
+             '</figcaption></figure>';
+    }).join('') + '</div>';
+  }
+
+  /* ---- les « à retenir » d'une étape, lus dans la page ---- */
+  function ficheRetenirHTML(sec, cle){
+    var st = null;
+    sec.querySelectorAll('[data-cle]').forEach(function(s){ if(s.getAttribute('data-cle') === cle) st = s; });
+    if(!st) return '';
+    var out = '';
+    st.querySelectorAll('.retain').forEach(function(r){
+      var c = r.cloneNode(true);
+      c.querySelectorAll('.niv,.a-noter,.bulle').forEach(function(x){ x.remove(); });
+      /* une bulle de définition garde son mot, pas son bouton */
+      c.querySelectorAll('.plustard').forEach(function(b){ b.replaceWith(document.createTextNode(b.textContent)); });
+      out += '<div class="r"><span class="lbl">À retenir</span>' + c.innerHTML.trim() + '</div>';
     });
     return out;
+  }
+
+  /* =========================================================================
+     LES EMPLACEMENTS D'UNE PARTIE FIXE — 13/09/2026, audit de t0
+
+     La partie fixe n'est plus un bloc posé AVANT le travail de l'élève : elle
+     l'accueille là où il a du sens — la photo du relevé à côté du cours sur
+     les ports, la machine présentée à la classe dans son cadre.
+       · data-fiche-retenir="<data-cle>"  les « à retenir » de cette étape,
+         lus dans la page : une seule version à tenir, celle du cours ;
+       · data-fiche-travail="<code>"      un champ de l'élève, retrouvé par son
+         code (data-focus-code, data-perso-code, data-depot-code, data-notes)
+         ou, à défaut de code, par son data-focus-titre. "elements" désigne
+         les fiches du défi débranché. data-fiche-question="non" n'imprime
+         que la réponse.
+     Un emplacement vide — l'élève n'a rien produit — disparaît sans laisser
+     de trace. Tout travail NON placé reprend sa section générique en fin de
+     fiche : une page qui oublie un emplacement ne perd rien.
+     ========================================================================= */
+  function ficheTravail(sec, cle, avecQuestion, places){
+    var parCode = ficheParCode(), html = '';
+    if(cle === 'elements'){
+      var el = collectElements(sec);
+      places.elements = 1;
+      return el.length ? ficheElementsHTML(el) : '';
+    }
+    sec.querySelectorAll('[data-focus]').forEach(function(f){
+      if(html) return;
+      if(f.getAttribute('data-focus-code') !== cle && f.getAttribute('data-focus-titre') !== cle) return;
+      var r = ficheRedigee(f, parCode); places[cle] = 1;
+      if(r) html = ficheRedigeeHTML(r, avecQuestion);
+    });
+    sec.querySelectorAll('.perso[data-perso-code]').forEach(function(p){
+      if(html || p.getAttribute('data-perso-code') !== cle) return;
+      var r = fichePersoDe(p); places[cle] = 1;
+      if(r) html = fichePersoHTML(r, avecQuestion);
+    });
+    sec.querySelectorAll('[data-depot-code]').forEach(function(z){
+      if(html || z.getAttribute('data-depot-code') !== cle) return;
+      var d = ficheDepotDe(z); places[cle] = 1;
+      if(d) html = ficheDepotHTML(d, avecQuestion);
+    });
+    sec.querySelectorAll('textarea[data-notes]').forEach(function(ta){
+      if(html || ta.getAttribute('data-notes') !== cle) return;
+      places[cle] = 1;
+      if(ta.value.trim()) html = '<div class="a">' + echapper(ta.value.trim()) + '</div>';
+    });
+    return html;
+  }
+
+  function fichePartieFixe(sec, fixe, places){
+    var box = document.createElement('div');
+    box.appendChild(fixe.content.cloneNode(true));
+    /* la fiche s'ouvre dans un about:blank : un chemin relatif n'y pointe sur rien */
+    box.querySelectorAll('img[src]').forEach(function(i){
+      try{ i.setAttribute('src', new URL(i.getAttribute('src'), location.href).href); }catch(e){}
+    });
+    box.querySelectorAll('[data-fiche-retenir]').forEach(function(s){
+      var h = ficheRetenirHTML(sec, s.getAttribute('data-fiche-retenir'));
+      if(h) s.outerHTML = h; else s.remove();
+    });
+    box.querySelectorAll('[data-fiche-travail]').forEach(function(s){
+      var h = ficheTravail(sec, s.getAttribute('data-fiche-travail'),
+                           s.getAttribute('data-fiche-question') !== 'non', places);
+      if(h){ s.innerHTML = h; s.removeAttribute('data-fiche-travail'); s.className = 'fx-rempli'; }
+      else s.remove();
+    });
+    /* un cadre qui n'existe que pour du travail (data-fiche-si) disparaît si
+       aucun de ses emplacements n'a été rempli */
+    box.querySelectorAll('[data-fiche-si]').forEach(function(c){
+      if(c.querySelector('.fx-rempli')) c.removeAttribute('data-fiche-si'); else c.remove();
+    });
+    return box.innerHTML;
   }
 
   function ficheCSS(){
@@ -1536,7 +1690,7 @@
       '--surface-2:#f4f6fb;--link:#2445c7;--link-wash:#e7ebfb;--ok:#12805c;--ok-wash:#e0f2ea;',
       '--activity:#c26a12;--activity-wash:#faeede;--hist:#6b4a9a;--hist-wash:#efe9f7}',
       '*{box-sizing:border-box}',
-      'body{margin:0;background:#e9edf4;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.55}',
+      'body{margin:0;background:#e9edf4;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;line-height:1.5}',
       '.page{max-width:830px;margin:22px auto;background:#fff;padding:26px 30px 34px;border-radius:6px;box-shadow:0 8px 28px rgba(22,31,51,.10)}',
       /* en-tête */
       '.head{border-bottom:3px solid var(--ink);padding-bottom:14px;margin-bottom:6px}',
@@ -1547,16 +1701,16 @@
       '.who{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:12px;font-size:12.5px;color:var(--ink-faint)}',
       '.ident{flex:1;border:1px dashed var(--line);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink-soft)}',
       /* bandeau de complétion */
-      '.bilan{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0 6px}',
+      '.bilan{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:16px 0 6px}',
       '.bc{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--surface-2)}',
       '.bc .k{font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint)}',
       '.bc .v{font-size:21px;font-weight:700;margin-top:2px}',
       '.bc.plein .v{color:var(--ok)}.bc.creux .v{color:var(--activity)}',
       '.reste{font-size:13px;color:var(--ink-soft);border-left:3px solid var(--activity);background:var(--activity-wash);',
       'border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:6px}',
-      '.avert{font-size:12px;color:var(--ink-faint);margin:0 0 18px}',
+      '.avert{font-size:12px;color:var(--ink-faint);margin:0 0 8px}',
       /* sections */
-      'h2{font-size:15px;margin:26px 0 10px;display:flex;align-items:center;gap:9px;letter-spacing:.01em}',
+      'h2{font-size:15px;margin:18px 0 8px;display:flex;align-items:center;gap:9px;letter-spacing:.01em}',
       'h2 .n{font-family:ui-monospace,monospace;font-size:11px;font-weight:600;color:#fff;background:var(--ink);border-radius:5px;padding:2px 7px;letter-spacing:.06em}',
       'h2::after{content:"";flex:1;height:1px;background:var(--line)}',
       '.e{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;page-break-inside:avoid}',
@@ -1601,6 +1755,28 @@
       '.elems figcaption{font-size:12px;margin-top:6px;line-height:1.4}',
       '.elems .el-d{display:block;color:var(--ink-soft);margin-top:2px}',
       '@media (max-width:620px){.elems .el{max-width:48%;flex-basis:48%}}',
+      /* 13/09/2026 — le vocabulaire nouveau (<dfn> dans la page) en rouge, le
+         gras allégé : une fiche où tout est gras ne fait plus rien ressortir */
+      'dfn{font-style:normal;font-weight:600;color:#b3261e}',
+      '.r b,.fx-note b,.fx-txt b{font-weight:600}',
+      '.depot{margin:8px 0 0}.depot img{display:block;max-width:100%;max-height:62mm;border-radius:8px;border:1px solid var(--line)}',
+      '.depot figcaption{font-size:12px;color:var(--ink-soft);margin-top:4px}',
+      '.plus-loin{border-left:3px solid var(--activity)}',
+      /* mises en page des parties fixes : texte et image côte à côte */
+      '.fx-cote{display:grid;grid-template-columns:1fr 34%;gap:14px;align-items:start;margin:0 0 8px;page-break-inside:avoid}',
+      '.fx-cote.inv{grid-template-columns:40% 1fr}.fx-cote .depot{margin:0}.fx-cote .a{margin-top:0}',
+      '.fx-cote img,.fx-imgs img{display:block;width:100%;height:auto;max-height:46mm;object-fit:contain;border-radius:8px}',
+      '.fx-cote figcaption,.fx-imgs figcaption{font-size:11.5px;color:var(--ink-soft);margin-top:4px;line-height:1.35}',
+      '.fx-cote figure,.fx-imgs figure{margin:0}',
+      '.fx-txt{font-size:14px}.fx-txt p{margin:0 0 8px}',
+      '.fx-imgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:8px 0 10px;page-break-inside:avoid}',
+      '.fx-imgs img{height:25mm;object-fit:contain}',
+      '.fx-fig svg{max-height:50mm}',
+      '.fx-cadre{border:2px solid var(--link);border-radius:12px;padding:10px 14px;margin:10px 0;background:#fff}',
+      '.fx-cadre .fx-k2{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--link);font-weight:600;margin-bottom:4px}',
+      '.fx-liste{margin:4px 0 8px;padding-left:18px;font-size:14px}.fx-liste li{margin-bottom:3px}',
+      '.fx-credit{display:block;font-size:10px;color:var(--ink-faint);margin-top:2px}',
+      '@media (max-width:620px){.fx-cote,.fx-cote.inv{grid-template-columns:1fr}}',
       /* barre d'action, jamais imprimée */
       '.barre{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 6px}',
       '.barre button{font:inherit;font-size:14px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;border-radius:9px;padding:8px 15px}',
@@ -1680,17 +1856,16 @@
       return '<div class="bc' + cl + '"><div class="k">' + k + '</div>' +
              '<div class="v">' + fait + ' sur ' + total + '</div></div>';
     }
+    /* Deux compteurs depuis le 13/09/2026 : la fiche dit que le travail est
+       FAIT et ENVOYÉ, pas s'il a été corrigé — ça, c'est le tableau de bord. */
     h += '<div class="bilan">' +
          carte('Étapes parcourues', comp.etapesF, comp.etapesT) +
-         carte('Questions envoyées', comp.envoyees, comp.questions) +
-         carte('Corrections reçues', comp.corrigees, comp.questions) +
+         (comp.questions ? carte('Questions envoyées', comp.envoyees, comp.questions) : '') +
          '</div>';
 
     var reste = [];
     if(comp.manquent.length)
       reste.push('il reste à envoyer&nbsp;: <b>' + comp.manquent.map(echapper).join('</b>, <b>') + '</b>');
-    if(comp.attente.length)
-      reste.push('en attente de correction&nbsp;: <b>' + comp.attente.map(echapper).join('</b>, <b>') + '</b>');
     if(comp.etapesT && comp.etapesF < comp.etapesT)
       reste.push('<b>' + (comp.etapesT - comp.etapesF) + '</b> étape(s) pas encore validée(s)');
     h += reste.length
@@ -1699,106 +1874,103 @@
     h += '<p class="avert">Ce bandeau est indicatif&nbsp;: il est calculé sur ton appareil, à partir de ce que ta page a enregistré. ' +
          'Ce qui fait foi, c’est le tableau de suivi de ton professeur.</p>';
 
-    /* ---- 3. partie fixe, déclarée par la page ---- */
+    /* ---- 3. partie fixe, déclarée par la page, avec ses emplacements ---- */
+    var places = {};
     var fixe = sec.querySelector('template[data-fiche-fixe]');
     if(fixe && fixe.innerHTML.trim()){
-      h += fixe.innerHTML;
+      h += fichePartieFixe(sec, fixe, places);
       /* la partie fixe porte ses propres numéros de section : les suivantes
          reprennent après, sinon la fiche recommence à 1 au milieu */
       n = (fixe.innerHTML.match(/<h2[\s>]/g) || []).length;
+    } else {
+      /* ---- 3 bis. sans partie fixe : la V1 automatique, que Loïc audite.
+         Les « à retenir » portent le cours, les images suivent. ---- */
+      var essentiel = collectEtapes(sec).filter(function(r){ return r.retenirs.length; });
+      if(essentiel.length){
+        h += titre('L’essentiel du cours');
+        essentiel.forEach(function(r){
+          h += '<div class="e"><div class="hh">' + echapper(r.title) + '</div>' +
+               (r.objectif ? '<div class="ob">' + echapper(r.objectif) + '</div>' : '') +
+               r.retenirs.map(function(x){ return '<div class="r"><span class="lbl">À retenir</span>' + x + '</div>'; }).join('') +
+               '</div>';
+        });
+      }
+      var figs = collectFigures(sec);
+      if(figs.length){
+        h += titre('Les images de la séance');
+        h += '<div class="figs">' + figs.join('') + '</div>';
+      }
+      var voc = collectVocabulaire(sec);
+      if(voc.length){
+        h += titre('Le vocabulaire de la séance');
+        h += '<dl class="voc">' + voc.map(function(v){
+          return '<dt>' + echapper(v.mot) + '</dt><dd>' + v.def + '</dd>';
+        }).join('') + '</dl>';
+      }
     }
 
-    /* ---- 3 bis. à défaut, les « à retenir » portent le cours ---- */
-    var rows = collectEtapes(sec);
-    var essentiel = rows.filter(function(r){ return r.retenirs.length; });
-    if(essentiel.length){
-      h += titre(fixe ? 'L’essentiel, en mots' : 'L’essentiel du cours');
-      essentiel.forEach(function(r){
-        h += '<div class="e"><div class="hh">' + echapper(r.title) + '</div>' +
-             (r.objectif ? '<div class="ob">' + echapper(r.objectif) + '</div>' : '') +
-             r.retenirs.map(function(x){ return '<div class="r"><span class="lbl">À retenir</span>' + x + '</div>'; }).join('') +
-             '</div>';
-      });
+    /* ---- 4. les éléments identifiés devant la machine ---- */
+    if(!places.elements){
+      var elems = collectElements(sec);
+      if(elems.length){
+        h += titre('Les éléments que j’ai identifiés');
+        h += ficheElementsHTML(elems);
+      }
     }
 
-    /* ---- 3 ter. les images de la séance, à reconnaître ---- */
-    var figs = collectFigures(sec);
-    if(figs.length){
-      h += titre('Les images de la séance');
-      h += '<div class="figs">' + figs.join('') + '</div>';
-    }
-
-    /* ---- 3 quater. les éléments identifiés devant la machine ---- */
-    var elems = collectElements(sec);
-    if(elems.length){
-      h += titre('Les éléments que j’ai identifiés');
-      h += '<div class="elems">' + elems.map(function(e){
-        return '<figure class="el">' +
-               (e.src ? '<img src="' + e.src + '" alt="' + echapper(e.nom) + '">' : '<div class="el-sans">pas de photo</div>') +
-               '<figcaption><b>' + echapper(e.n ? e.n + '. ' : '') + echapper(e.nom) + '</b>' +
-               (e.desc ? '<span class="el-d">' + echapper(e.desc) + '</span>' : '') +
-               '</figcaption></figure>';
-      }).join('') + '</div>';
-    }
-
-    /* ---- 4. les tableaux, avec ce que l'élève y a écrit ---- */
-    var rep = collectReperes(sec);
+    /* ---- 5. les tableaux. Sans partie fixe, tous ceux du cours ; avec, seuls
+       ceux que l'élève a remplis. Jamais ceux d'une correction ni d'un bonus :
+       ce qui est corrigé automatiquement ne va pas sur la fiche. ---- */
+    var rep = collectReperes(sec).filter(function(r){
+      var d = document.createElement('div'); d.innerHTML = r.html;
+      return fixe ? !!d.querySelector('.saisi') : true;
+    });
     if(rep.length){
-      h += titre('Les repères, et ce que tu y as complété');
+      h += titre(fixe ? 'Les tableaux que j’ai complétés' : 'Les repères, et ce que tu y as complété');
       rep.forEach(function(r){
         h += '<div class="e"><div class="hh">' + echapper(r.titre) + '</div>' + r.html + '</div>';
       });
     }
 
-    /* ---- 5. le vocabulaire ---- */
-    var voc = collectVocabulaire(sec);
-    if(voc.length){
-      h += titre('Le vocabulaire de la séance');
-      h += '<dl class="voc">' + voc.map(function(v){
-        return '<dt>' + echapper(v.mot) + '</dt><dd>' + v.def + '</dd>';
-      }).join('') + '</dl>';
-    }
-
-    /* ---- 6. mon travail rédigé, avec la correction ---- */
-    var red = ficheRedigees(sec);
-    if(red.length){
-      h += titre('Mes réponses rédigées, et ce qu’on m’a répondu');
-      red.forEach(function(r){
-        h += '<div class="e"><div class="hh">' + echapper(r.etape) +
-             (r.bonus ? '<span class="tagb">bonus</span>' : '') + '</div>' +
-             (r.question ? '<div class="q-en">' + echapper(r.question) + '</div>' : '') +
-             '<div class="a"><span class="lbl">Ma réponse</span>' + echapper(r.texte) + '</div>';
-        if(r.statut === 'corrige' && r.retour){
-          h += '<div class="corr"><span class="lbl">' +
-               (r.parProf ? 'Le mot du professeur' : 'La correction') +
-               (r.verdict ? ' · ' + echapper(r.verdict) : '') + '</span>' +
-               echapper(r.retour) + '</div>';
-          if(r.plusLoin && r.plusLoin.trim())
-            h += '<div class="plus"><span class="lbl">Pour aller plus loin</span>' + echapper(r.plusLoin) + '</div>';
-        } else if(r.statut === 'signale'){
-          h += '<div class="corr attente"><span class="lbl">À reprendre</span>' +
-               echapper(r.retour || 'Ton professeur t’a demandé de reprendre cette réponse.') + '</div>';
-        } else {
-          h += '<div class="corr attente"><span class="lbl">Correction</span>' +
-               'Pas encore reçue.</div>';
-        }
-        h += '</div>';
+    /* ---- 6. mes réponses écrites (hors « pour aller plus loin ») ---- */
+    var red = ficheRedigees(sec).filter(function(r){ return !places[r.cle]; });
+    var redBase = red.filter(function(r){ return !r.bonus; });
+    if(redBase.length){
+      h += titre('Mes réponses');
+      redBase.forEach(function(r){
+        h += '<div class="e">' + (r.etape ? '<div class="hh">' + echapper(r.etape) + '</div>' : '') + ficheRedigeeHTML(r, true) + '</div>';
       });
     }
 
     /* ---- 7. mes recherches personnelles ---- */
-    var perso = fichePerso(sec);
+    var perso = fichePerso(sec).filter(function(p){ return !places[p.cle]; });
     if(perso.length){
       h += titre('Mes recherches et mes réponses personnelles');
       perso.forEach(function(p){
-        h += '<div class="e"><div class="hh">' + echapper(p.etape) + '</div>' +
-             (p.question ? '<div class="q-en">' + echapper(p.question) + '</div>' : '') +
-             '<div class="a">' + echapper(p.texte) + '</div></div>';
+        h += '<div class="e"><div class="hh">' + echapper(p.etape) + '</div>' + fichePersoHTML(p, true) + '</div>';
       });
     }
 
-    /* ---- 8. mes notes de visionnage ---- */
-    var notes = collectNotes(sec);
+    /* ---- 8. mes dépôts ---- */
+    var depots = [];
+    sec.querySelectorAll('[data-depot]').forEach(function(z){
+      var d = ficheDepotDe(z);
+      if(d && !d.bonus && !places[d.cle]) depots.push(d);
+    });
+    if(depots.length){
+      h += titre('Mes photos et copies d’écran');
+      depots.forEach(function(d){
+        h += '<div class="e"><div class="hh">' + echapper(d.etape) + '</div>' + ficheDepotHTML(d, true) + '</div>';
+      });
+    }
+
+    /* ---- 9. mes notes de visionnage ---- */
+    var notes = [];
+    sec.querySelectorAll('textarea[data-notes]').forEach(function(ta){
+      if(!ta.value.trim() || places[ta.getAttribute('data-notes')]) return;
+      var st = ta.closest('[data-step]');
+      notes.push({ titre: ficheTexte(st ? st.querySelector('.step-title') : null) || 'Notes', texte: ta.value.trim() });
+    });
     if(notes.length){
       h += titre('Mes notes');
       notes.forEach(function(x){
@@ -1807,19 +1979,20 @@
       });
     }
 
-    /* ---- 9. mon glossaire ---- */
-    var glo = collectGlossaire();
-    if(glo.length){
-      h += titre('Mon glossaire');
-      glo.forEach(function(g){
-        h += '<div class="e"><div class="hh">' + echapper(g.mot) + '</div>' +
-             '<div class="a">' + echapper(g.texte) + '</div></div>';
+    /* ---- 10. pour aller plus loin : SEULEMENT ce que l'élève y a fait ---- */
+    var redBonus = red.filter(function(r){ return r.bonus; });
+    if(redBonus.length){
+      h += titre('Pour aller plus loin');
+      redBonus.forEach(function(r){
+        h += '<div class="e plus-loin">' + ficheRedigeeHTML(r, true) + '</div>';
       });
     }
 
-    /* Les bonnes réponses des QCM et les sources des documents ne sont PAS
-       reprises : décision du 23/08/2026. Les premières feraient de la fiche un
-       corrigé, les secondes n'ont rien à y faire. */
+    /* N'y entrent pas, décisions du 23/08 et du 13/09/2026 : les QCM, trous,
+       associations et tris (corrigés automatiquement), les corrections
+       automatiques des réponses rédigées, les sources des documents, et le
+       glossaire de l'année — la définition écrite dans la séance y est déjà,
+       comme réponse. */
 
     return '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">' +
       '<meta name="viewport" content="width=device-width,initial-scale=1">' +

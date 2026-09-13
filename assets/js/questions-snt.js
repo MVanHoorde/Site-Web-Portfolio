@@ -57,8 +57,8 @@ window.QUESTIONS_SNT = {
   },
   "SYS-P2": {
     "sequence": "snt-t0",
-    "titre": "La machine que j'utilise le plus",
-    "question": "Décris le système informatisé que tu utilises le plus (téléphone, console, PC, tablette…) : son système d'exploitation, sa taille d'écran, son stockage, sa mémoire vive si tu la trouves. Qu'est-ce qui te plaît le plus dedans, et qu'est-ce que tu changerais ?",
+    "titre": "La machine que je présente à la classe",
+    "question": "À faire à la maison : choisis un appareil de ton entourage et relève toutes ses caractéristiques — taille et définition de l'écran, processeur (nom, fréquence, nombre de cœurs), mémoire vive, stockage et sa technologie, système d'exploitation et version. Tu le présenteras à la classe : ce qu'il vaut, ce qui te plaît, ce que tu changerais.",
     "min": null,
     "max": null,
     "notee": false,

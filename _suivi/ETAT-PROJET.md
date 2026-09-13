@@ -56,6 +56,24 @@
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
 
+## 🆕 Les fiches de séance de t0 sont auditées, et le générateur suit de nouvelles règles
+
+Audit de Loïc du 13/09/2026, séance par séance, sur les fiches déposées dans OneDrive.
+
+- **Générateur (toutes les pages sur le moteur : SNT, outils PC, ES)** : deux
+  compteurs, trace de l'élève seulement, mot du professeur s'il existe, « pour aller
+  plus loin » seulement si rempli, dépôts photo enfin repris (réduits), glossaire de
+  l'année retiré. Règles dans `CONSIGNES-sequence-SNT.md` §17.
+- **t0** : quatre parties fixes à emplacements ; mesurées remplies à 2 / 3 / 4 / 2
+  pages. Affiche des ports en 3.1, « à retenir » restructurés et balisés `<dfn>`,
+  corrections d'audit (en-tête 4 séances, 2.1, 2.6 M.2 et ordre, jacks, Blu-ray).
+- 🔴 **À relire par Loïc** : le contenu des quatre fiches de t0, en particulier le
+  « à retenir » réécrit pour la fiche de 2.5 (sans PCIe) et le récap du cours en S1.
+- ⏳ **Restent hors de ce chantier** : `m1` affiche deux sections « Pour aller plus
+  loin » (la sienne, statique, et la nouvelle) ; les fiches sans partie fixe restent
+  en V1 automatique — `t1` séance 4 fait 8 pages ; les réponses « plus loin » sans
+  code ne survivent pas à un rechargement.
+
 ## 🆕 La correction se fait classe par classe, et le worker suit les séances
 
 **Fait le 13/09/2026**, à la demande des collègues.

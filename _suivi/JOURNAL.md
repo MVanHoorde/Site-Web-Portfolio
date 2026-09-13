@@ -3667,3 +3667,36 @@ dans le commit, reconstruit sur HEAD — les modifications des autres onglets re
 non commitées, à eux de les livrer.
 
 Contrôles : `node verifier.mjs` → 18.
+
+## 13/09/2026 — Audit des fiches de séance de t0
+
+Loïc a dicté son audit fiche par fiche, en demandant d'attendre la fin avant de
+toucher quoi que ce soit. Deux niveaux en sont sortis : des règles valables pour
+toutes les fiches, et du contenu propre à chaque séance. Il a précisé que le
+générateur ne fait qu'une V1 : une fois auditée, la fiche vit dans la page.
+
+Lecture du générateur avant d'écrire : la fiche de t0, sans partie fixe, empilait
+tous les « à retenir » (mode d'emploi compris), toutes les photos dans une section à
+part — l'effet « images pas liées au texte » —, la correction du tri de 2.6, et le
+glossaire de l'année. Elle oubliait les dépôts photo, pourtant annoncés à l'élève en
+2.5, et les réponses « plus loin », faute de code.
+
+Mécanisme retenu : des emplacements dans le template plutôt qu'un texte recopié, pour
+que les « à retenir » restent à une seule source — la page. Un cadre à deux
+emplacements (photo + réponse) disparaissait dès que le premier était vide ; corrigé
+avant le premier test.
+
+Mesure dans Chromium (Playwright Python, page servie en local, séance remplie de
+fausses réponses et d'images générées) : premier jet 3 / 4 / 4 / 2 pages, avec de
+grands blancs — des cadres interdits de coupure plus hauts que le reste de la page.
+Après resserrement : 2 (+1 si « plus loin ») / 3 / 4 / 2. t1 et m1 rejoués sans
+erreur JS.
+
+L'image de ChatGPT montre le jack bleu en « casque + micro » : corrigé en légende,
+pas dans l'image. Convertie en JPEG q90 (1,7 Mo → 520 Ko). Une autre conversation
+modifiait `_suivi/`, `prof/` et `ia-snt/` en parallèle : rien de ce qui lui appartient
+n'a été touché ; `sequence-snt.js` contrôlé zone par zone avant d'y écrire.
+
+Contrôles : `node verifier.mjs` → 18. `questions-snt.js` était en retard avant ce
+chantier (texte de SYS-P2) : régénéré.
+

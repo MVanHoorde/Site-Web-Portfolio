@@ -15,6 +15,21 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 13/09/2026 — Audit des fiches de séance de t0 (règles portables des fiches SNT)
+
+| Date | Décision | Statut |
+|---|---|---|
+| 13/09/2026 | **Le générateur de fiches produit une V1 ; l'audit de Loïc fait foi.** Règle portable → générateur ; exception de contenu → partie fixe de la séance. Tout ajout valable pour toutes les fiches se redemande. | ✅ en vigueur |
+| 13/09/2026 | **Deux compteurs en tête de fiche** (étapes parcourues, questions envoyées). Plus de « corrections reçues » ni de « en attente de correction ». | ✅ en vigueur — remplace les trois compteurs du 23/08 |
+| 13/09/2026 | **Seule la trace de l'élève entre sur la fiche** : ni QCM, trous, associations, tris, ni leurs corrections, ni la correction automatique des rédigées, ni le glossaire de l'année. **Le mot du professeur seulement s'il existe**, sans jamais signaler son absence. | ✅ en vigueur — remplace « rédigées avec la correction et les conseils » (23/08) |
+| 13/09/2026 | **« Pour aller plus loin » : sur la fiche seulement si l'élève y a répondu.** | ✅ en vigueur |
+| 13/09/2026 | **Longueur : 2 pages A4 par séance, 4 au maximum pour une grosse séance, exceptionnellement.** | ✅ en vigueur — remplace « aucune contrainte de place » (23/08) |
+| 13/09/2026 | **Les photos et copies d'écran déposées entrent sur la fiche**, réduites à 1000 px. | ✅ en vigueur — exécute la décision du 23/08 |
+| 13/09/2026 | **Vocabulaire nouveau en `<dfn>`, rouge, dans le cours comme sur la fiche** ; le gras allégé. Appliqué à t0. | ✅ en vigueur |
+| 13/09/2026 | **Parties fixes à emplacements** (`data-fiche-retenir`, `data-fiche-travail`, `data-fiche-si`) : les « à retenir » sont lus dans la page, le travail de l'élève se place là où il a du sens. | ✅ en vigueur |
+| 13/09/2026 | **t0 3.1 : l'affiche des ports générée avec ChatGPT remplace la planche SVG**, créditée en légende ; son erreur sur le jack bleu est corrigée dans la légende. | ✅ en vigueur |
+| 13/09/2026 | **Nom du professeur écrit « M. Van Hoorde » partout** (crédits photo, messages de console). | ✅ en vigueur |
+
 ## 13/09/2026 — File de correction et calendrier du worker
 
 | Date | Décision | Statut |

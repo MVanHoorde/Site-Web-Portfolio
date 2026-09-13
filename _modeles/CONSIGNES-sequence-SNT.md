@@ -328,7 +328,8 @@ Code.
   □ mode enseignant : déverrouille tout, et le rétablit à l'extinction
   □ chaque type de champ : QCM (bon/mauvais), trous, schéma à légender,
     texte libre (en attente → validé), réflexion perso (jamais de verdict)
-  □ « Télécharger ma fiche » : le fichier se génère et contient les réponses
+  □ « Ouvrir ma fiche » : elle se génère, porte la trace de l'élève et tient
+    dans la longueur visée (§17.2, mesurée en PDF)
   □ « Recommencer » : remet tout à zéro
   □ captures bureau (1280px) + iPad (820px) + mobile (390px)
 □ Contrôle visuel des captures AVANT livraison
@@ -588,109 +589,129 @@ est un défaut, pas un détail.
 
 ---
 
-## 17. La fiche de révision — refonte du 23/08/2026
+## 17. La fiche de séance
 
 La fiche est produite par `ficheHTML()` dans `assets/js/sequence-snt.js`, à
 partir de la page et du travail de l'élève. Elle s'ouvre dans un onglet ; l'élève
 l'enregistre en PDF et la dépose dans le **dossier OneDrive qui sert de classeur
 numérique**.
 
-### 17.1 Ce que le contexte d'usage impose
+### 17.1 Qui décide de son contenu
 
-**La fiche n'est jamais imprimée.** Elle est déposée. Trois conséquences, et
-elles commandent toute la conception :
+🔴 **Le générateur produit une V1, l'audit de Loïc fait foi.** Sans partie fixe
+(§17.3), la fiche se construit toute seule à partir de la page : c'est la version
+que Loïc audite. Une fois l'audit fait, le contenu retenu vit **dans la page**,
+en `<template data-fiche-fixe>`, et ne se régénère plus.
 
-- **aucune contrainte de place** — six pages ne posent pas de problème. Chaque
-  section a son cadre ; le document s'allonge selon ce que l'élève a produit ;
-- **aucun cadre à remplir au crayon** — un tableau vierge à compléter à la main
-  n'a plus d'objet sur un document qu'on ne sort pas de l'écran ;
-- **rien à automatiser côté dépôt** — le circuit OneDrive est volontairement
-  manuel : il sert autant à archiver qu'à évaluer l'investissement de l'élève.
-  Le site produit une fiche déposable, c'est tout ce qu'on lui demande.
+Chaque demande d'audit se trie en deux :
 
-### 17.2 Les quatre parties
+- **règle portable** → le générateur, pour toutes les fiches (liste en §17.2) ;
+- **exception de contenu** → la partie fixe de la séance concernée, et elle seule.
+
+Tout ajout qui toucherait **toutes** les fiches (en-tête, nouvelle section,
+nouveau compteur) se **redemande** à Loïc avant d'être porté.
+
+### 17.2 Les règles portables (générateur)
 
 1. **L'en-tête** lit le **thème** dans `h1.title` (le `.tag` est retiré) et la
    **séance** dans `.seance-head h2` (le `.s-num` devient « Séance 1 »).
-   🔴 **Jamais de chaîne en dur** : ce moteur sert les huit séquences. Jamais
-   de « S1 » non plus — c'est un identifiant interne, l'élève ne le connaît pas.
+   🔴 **Jamais de chaîne en dur** : ce moteur sert toutes les séquences. Jamais
+   de « S1 » non plus — c'est un identifiant interne.
+2. **Deux compteurs** en tête : *étapes parcourues* et *questions envoyées*,
+   plus une ligne nommant ce qui manque. **Rien sur la correction** : la fiche
+   dit que le travail est fait et envoyé, pas s'il a été validé.
+   🔴 Le premier compteur appelle **`EtatSNT.resume()`** — le calcul que la page
+   écrit en base et que le tableau de bord relit. **Jamais de second comptage** :
+   deux calculs finissent par diverger, et c'est l'élève qui voit l'écart. Le
+   bandeau est **informatif, pas probant**, et la fiche le dit.
+3. **Seule la trace de l'élève entre** :
 
-2. **Le bandeau de complétion**, trois compteurs, parce que « fait » n'a pas le
-   même sens selon l'objet : *étapes parcourues*, *questions ouvertes envoyées*,
-   *corrections reçues*. Plus une ligne nommant ce qui manque.
-   🔴 **Il appelle `EtatSNT.resume()`** — le calcul que la page écrit en base et
-   que le tableau de bord relit. **Ne jamais écrire un second comptage à côté** :
-   deux calculs séparés finissent par diverger, et c'est l'élève qui voit
-   l'écart. Même règle que pour l'ordre des séances dans `verrou-snt.js`.
-   Le bandeau est **informatif, pas probant** — il est calculé dans le navigateur
-   de l'élève, et la fiche le dit.
-
-3. **La partie fixe**, propre à chaque séance, déclarée **dans la page** :
-
-   ```html
-   <template data-fiche-fixe>
-     <h2><span class="n">1</span>Titre de section</h2>
-     <p class="fx-note">Une à deux phrases, pleine largeur.</p>
-     <figure class="fx-fig"><svg …>…</svg><figcaption>…</figcaption></figure>
-   </template>
-   ```
-
-   Posé **juste après `</div><!-- /lockable -->`**, dans la `<section class="seance">`.
-   Un `<template>` n'est pas rendu : invisible pour l'élève tant qu'il n'ouvre
-   pas sa fiche.
-
-   **Principe éditorial : le schéma porte l'explication, le texte l'accompagne.**
-   Compter environ **quatre schémas SVG par séance** — c'est le poste de travail
-   le plus lourd du chantier, et le seul à refaire à chaque fois.
-
-   🔴 **Aucune couleur en dur dans le template.** Les SVG emploient les classes
-   `f-*` (`f-bleu`, `f-case`, `f-pris-vert`, `f-fleche`…) et la mise en page les
-   classes `fx-*` (`fx-fig`, `fx-duo`, `fx-train`, `fx-loin`…). Elles sont
-   toutes définies dans `ficheCSS()` : **une seule palette à tenir**.
-
-   Les numéros de section du template sont **écrits à la main** ; les sections
-   suivantes reprennent automatiquement après (le générateur compte les `<h2>`).
-
-   Sans template, la fiche se rabat sur les « à retenir » et reste utilisable :
-   c'est le cas de `t1` et de la séance 2 de `m1` aujourd'hui.
-
-   **Le modèle est reproductible** : en-tête, numérotation, entraînement à
-   réponses retournées (`.fx-train` + `.fx-rv`, qui pivote le corrigé à 180°),
-   bloc mots-clés (`.fx-kw`) se recopient tels quels d'une séance à l'autre.
-
-4. **La partie adaptative** — le travail de l'élève.
-
-   | Entre | Sort |
+   | Entre | N'entre pas |
    |---|---|
-   | les réponses rédigées, **avec la correction et les conseils** | ❌ les bonnes réponses des QCM — elles feraient de la fiche un corrigé |
-   | les recherches personnelles, enquêtes familiales (`.perso`) | ❌ « Sources des documents » — sans intérêt sur une fiche de révision |
-   | les notes de visionnage, le glossaire | |
-   | les tableaux complétés, **saisies figées** (`ficheFiger()`) | |
-   | ⏳ **les copies d'écran déposées** (`[data-depot]`) — *à écrire* | |
+   | les réponses rédigées, les réponses courtes | les QCM, trous, associations, tris — **tout ce qui est corrigé automatiquement**, correction comprise |
+   | les réponses personnelles, enquêtes familiales (`.perso`) | la correction automatique d'une réponse rédigée |
+   | les photos et copies d'écran déposées (`[data-depot]`), **réduites à 1000 px** | toute mention « pas encore corrigé » |
+   | les notes de visionnage, les fiches du défi débranché | les sources des documents |
+   | les tableaux que l'élève a remplis, **saisies figées** (`ficheFiger()`) | le glossaire de l'année — la définition écrite dans la séance y est déjà, comme réponse |
+   | **le mot du professeur**, s'il en a écrit un — son absence ne se signale pas | |
 
-   ⏳ **Entrée à ajouter : les dépôts d'image.** Décidé le 23/08/2026 à la
-   clôture de `t1`, **pas encore codé**. `collectEtapes()` ramasse les échos de
-   réponse, les `.perso textarea`, les trous et les menus — mais pas les
-   `[data-depot-apercu]`. Or l'étape 6.4 de `t1` demande désormais deux copies
-   d'écran du terminal (`NET-D6`, `NET-D7`), et c'est **leur seule raison
-   d'être** : une fenêtre de commandes se referme et il n'en reste rien. Même
-   besoin pour les quatre dépôts de l'étape 4.2. L'image vit en **data URL dans
-   le DOM** ; elle se recopie donc telle quelle dans la fiche, sans réseau ni
-   base. Attention au poids du PDF : une copie d'écran non redimensionnée pèse
-   plusieurs mégaoctets.
+4. **« Pour aller plus loin » : seulement ce que l'élève y a fait.** Le contenu
+   des blocs `.bonus-wrap` ne va jamais sur la fiche ; une réponse écrite dans l'un
+   d'eux ferme la fiche, dans sa propre section.
+5. **Longueur** : **2 pages A4** pour une séance ordinaire, **4 au maximum** pour
+   une grosse séance, et c'est exceptionnel. Repère mesuré le 13/09/2026 sur les
+   17 séances rédigées (t0, t1, t2, m1) : environ **5 étapes et 4 productions
+   d'élève** par séance. Les séances de t0 sont parmi les plus grosses (7 à 8
+   étapes). Une fiche se **mesure** — Chromium headless, séance remplie de
+   fausses réponses, pages comptées dans le PDF —, elle ne s'estime pas.
+6. **Typographie** : le vocabulaire nouveau, à sa première apparition, est balisé
+   `<dfn>` **dans la page** — rouge (`--err`) dans le cours comme sur la fiche. Le
+   gras est réservé à ce qui doit ressortir ; une énumération ne se met pas en gras.
 
-### 17.3 Le piège technique à ne pas rouvrir
+### 17.3 La partie fixe et ses emplacements
 
-Un `doc-table` peut désormais contenir de **vrais champs** (le tableau des
-combinaisons de `m1` 1.4). `ficheFiger()` remplace chaque `input`/`select` par un
-`span.saisi` portant la valeur, et retire boutons, bulles et messages. Sans lui,
-la fiche embarquerait des formulaires vides à la place des réponses de l'élève.
+Déclarée **dans la page**, juste après `</div><!-- /lockable -->`, dans la
+`<section class="seance">`. Un `<template>` n'est pas rendu : invisible pour
+l'élève tant qu'il n'ouvre pas sa fiche. Quand elle existe, elle **remplace**
+toute la partie « cours » automatique (à retenir, images, vocabulaire, tableaux
+du cours).
 
-### 17.4 Ce que l'élève ne doit pas lire
+```html
+<template data-fiche-fixe>
+  <h2><span class="n">1</span>Titre de section</h2>
+  <div class="fx-cote">
+    <div class="fx-txt"><div data-fiche-retenir="t0-alimentation"></div></div>
+    <figure><img src="../assets/img/…/photo.jpg" alt="…"><figcaption>…</figcaption></figure>
+  </div>
+  <div data-fiche-travail="SYS-R1"></div>
+  <div class="fx-cadre" data-fiche-si>
+    <div class="fx-k2">Ma machine, présentée à la classe</div>
+    <div data-fiche-travail="SYS-P2" data-fiche-question="non"></div>
+  </div>
+</template>
+```
+
+| Emplacement | Ce qu'il reçoit |
+|---|---|
+| `data-fiche-retenir="<data-cle>"` | les « à retenir » de l'étape, **lus dans la page** : une seule version à tenir, celle du cours |
+| `data-fiche-travail="<code>"` | un champ de l'élève, retrouvé par `data-focus-code`, `data-perso-code`, `data-depot-code` ou `data-notes` — à défaut de code, par son `data-focus-titre`. `"elements"` = les fiches du défi débranché |
+| `data-fiche-question="non"` | n'imprime que la réponse, sans l'énoncé |
+| `data-fiche-si` | sur un cadre : il disparaît si **aucun** de ses emplacements n'est rempli |
+
+Un emplacement vide disparaît sans trace. **Tout travail non placé reprend sa
+section générique en fin de fiche** : une page qui oublie un emplacement ne perd
+rien. Les `src` d'image sont absolutisés par le générateur (la fiche s'ouvre dans
+un `about:blank`). Un `<h2>` ne se met pas au-dessus d'un contenu qui peut être
+vide : on emploie un cadre `data-fiche-si` avec un `.fx-k2`.
+
+🔴 **Aucune couleur en dur dans le template.** Les SVG emploient les classes
+`f-*` (`f-bleu`, `f-pris-vert`, `f-case-orange`…), la mise en page les classes
+`fx-*` (`fx-cote`, `fx-imgs`, `fx-cadre`, `fx-liste`, `fx-fig`, `fx-train`…).
+Toutes sont définies dans `ficheCSS()` : **une seule palette à tenir**.
+
+Les numéros de section du template sont **écrits à la main** ; les sections
+suivantes reprennent automatiquement après (le générateur compte les `<h2>`).
+
+Parties fixes écrites : `m1` séance 1 ; `t0` séances 1 à 4 (audit du 13/09/2026).
+
+### 17.4 Le piège technique à ne pas rouvrir
+
+Un `doc-table` peut contenir de **vrais champs** (le tableau des combinaisons de
+`m1` 1.4). `ficheFiger()` remplace chaque `input`/`select` par un `span.saisi`
+portant la valeur, et retire boutons, bulles et messages. Sans lui, la fiche
+embarquerait des formulaires vides à la place des réponses de l'élève.
+
+Les réponses aux questions « pour aller plus loin » **sans code** ne sont pas
+enregistrées en base : elles ne vivent que le temps de la séance. Une fiche
+ouverte après rechargement ne les contient plus. Leur donner un code les ferait
+entrer dans la file de correction — ce n'est pas décidé.
+
+### 17.5 Ce que l'élève ne doit pas lire
 
 `correction_ia` contient aussi ce qui est destiné au professeur —
 `analyse.tri.raisons`, `analyse.a_verifier_par_le_prof`, les constats critère par
 critère. **`progression.js` ne rapatrie plus que les trois champs utiles**
 (verdict, message, « pour aller plus loin ») par sélection de sous-champs jsonb.
 C'est de l'hygiène, **pas un verrou** : le durcissement côté base est proposé,
-non exécuté, dans `bdd/schema/015-correction-eleve.sql`.
+non exécuté, dans `bdd/schema/015-correction-eleve.sql`. La fiche, elle, n'en
+affiche plus rien.

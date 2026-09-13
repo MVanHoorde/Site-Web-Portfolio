@@ -677,7 +677,7 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   cours « Les systèmes informatisés » **entrelacé** avec le tutoriel du
   dispositif. Toute nouvelle idée de fonctionnement du cours se présente ici en
   premier ; les autres séquences portent un **rappel discret** en pied de page.
-- **4 séances · 26 étapes · 18 portes.** ≈ 5 h 15. Codes `SYS·x`.
+- **4 séances · 26 étapes · 18 portes.** ≈ 4 h 30 — les séances 1 et 2 se font d'un seul tenant. Codes `SYS·x`.
   - **S1 — Des machines partout** (7 étapes) : le mode d'emploi complet (1.1),
     les systèmes informatisés (1.2), machines / réseau / services (1.3), ce qu'on
     fait sans connexion + première réponse rédigée (1.4), le rituel de la fiche
@@ -689,7 +689,7 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
     (2.6), **QCM de bilan de 15 questions, dont six avec photo** (2.7), bonus
     podcasts + ROM/BIOS/UEFI + IDE→SATA + vidéo longue de 49 min.
   - **S3 — Brancher juste, choisir sa machine** (8 étapes) : connectiques et
-    planche SVG (3.1), l'USB (3.2), autopsie d'une façade arrière (3.3), relevé
+    affiche des ports, générée avec ChatGPT (3.1), l'USB (3.2), autopsie d'une façade arrière (3.3), relevé
     photo des ports (3.4), six critères de choix (3.5), mode enseignant et
     glossaire (3.6, **sans porte**), ta machine présentée à la classe (3.7),
     bonus définition ≠ résolution.
@@ -698,6 +698,10 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
     qu'il fait en trois mots (4.2, trois fiches suffisent à valider). Depuis le
     25/08 c'est une **séance à part entière** : elle entre dans la cascade et porte
     sa propre fiche. Elle ferme la séquence, donc elle ne bloque rien en aval.
+- **Fiches de séance auditées le 13/09/2026** : les quatre séances ont leur partie
+  fixe (`data-fiche-fixe` à emplacements, `CONSIGNES-sequence-SNT.md` §17.3).
+  Mesurées séance remplie : S1 2 pages (3 avec le « plus loin »), S2 3, S3 4, S4 2.
+  Contenu proposé, **à relire par Loïc**.
 - **Mécanismes du cours présentés — et désormais tous PRATIQUÉS** (liste à tenir
   à jour à chaque nouveauté) :
   - [x] géographie séquence / séance / étape, entrée par le hub (1.1)
