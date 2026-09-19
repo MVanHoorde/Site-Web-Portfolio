@@ -7,7 +7,7 @@
  *  l'inverse : on ne retouche pas un PDF.
  *
  *  USAGE
- *    node exporter-guides.mjs                 les deux
+ *    node exporter-guides.mjs                 les quatre
  *    node exporter-guides.mjs prise-en-main   seulement celui-là
  *
  *  Sort en code 1 si un contrôle échoue.
@@ -37,6 +37,8 @@ const DOSSIER = 'assets/pdf/prof';
 
 const GUIDES = [
   { cle: 'prise-en-main', html: 'prof/guide-prise-en-main.html', pdf: 'guide-prise-en-main.pdf' },
+  { cle: 'es',            html: 'prof/guide-es.html',            pdf: 'guide-es.pdf'            },
+  { cle: 'ap',            html: 'prof/guide-ap.html',            pdf: 'guide-ap.pdf'            },
   { cle: 'dispositif',    html: 'prof/guide-dispositif.html',    pdf: 'guide-dispositif.pdf'    },
 ];
 

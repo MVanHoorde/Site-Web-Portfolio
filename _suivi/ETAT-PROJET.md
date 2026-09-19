@@ -5,7 +5,11 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **13/09/2026** (dernière passe : **les six fiches de séance
+> Dernière réécriture : **19/09/2026** (dernière passe : **les deux collègues sont
+> en base et rattachées, un guide par matière, et `verifier.mjs` rappelle
+> désormais ce qui reste masqué**, bloc ci-dessous). Passe du **17/09/2026** :
+> **deux collègues entrent dans le tableau de bord — ES 1re et AP de
+> physique-chimie, quatre classes, deux guides de plus**, même bloc. Passe du **13/09/2026** : **les six fiches de séance
 > d'Internet sont auditées, et le générateur place enfin les tableaux remplis**, bloc
 > ci-dessous). Passe du même jour : **le tableau de bord passe
 > en espaces — les cinq lots sont livrés — base, tableau de bord, client élève et ES
@@ -59,6 +63,83 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 Ce qui est prêt doit arriver aux collègues — et `verifier.mjs` le rappelle
+
+Règle posée par Loïc le 19/09/2026, dans `CLAUDE.md` : *« quand c'est gérable pour
+un cours et que je vais l'utiliser, mes collègues doivent l'avoir — quitte à ce que
+tu me le rappelles. »*
+
+Le rappel ne repose pas sur la mémoire. `node verifier.mjs` sort maintenant, en
+points de vigilance, les **contenus écrits mais hors d'atteinte depuis l'accueil** :
+il part d'`index.html` et suit les liens de proche en proche, **commentaires HTML
+retirés**. Ce que ce parcours n'atteint pas n'existe pas pour un élève — ni pour une
+collègue.
+
+**Neuf contenus au 19/09/2026** :
+
+| Masqué | Depuis | Pour qui ça compte |
+|---|---|---|
+| `1re-es-t1-c2-radioactivite` · `t1-c3-cristaux` · `t2-c1-son-et-musique` · `t2-c2-son-a-coder` · `t3-c1-forme-terre` | 13/09 (`MASQUÉ-ES1`) | **CASTEL**, qui a deux classes d'ES et n'a donc qu'un chapitre à montrer |
+| `1re-pc-cristaux` (ancienne fiche) | 13/09 | idem |
+| `2nde-pc-o6` · `o7` · `o8` | 05/09 (🚧 au hub) | **CASTEL et HUSSON** en AP : cinq outils sur huit |
+
+🔴 **Le parcours, pas le lien entrant.** Un chapitre masqué garde un lien vers le
+suivant, masqué lui aussi : compter les liens entrants en déclarait deux accessibles
+sur neuf. Mesuré le 19/09 en écrivant le contrôle.
+
+Quand l'un d'eux s'ouvre, la livraison comprend : le lien rétabli, le **guide de la
+matière** et sa date de révision, le PDF régénéré, et le **mot à envoyer** aux
+collègues, proposé à Loïc.
+
+## 🆕 Deux collègues dans le tableau de bord : ES 1re et AP de physique-chimie
+
+Demande de Loïc du 17/09/2026. **CASTEL** prend l'enseignement scientifique en
+**1re 5** et **1re 6**, *plus* un groupe d'**AP** de physique-chimie ; **HUSSON**
+prend un groupe d'**AP**, et rien d'autre. Elles ne font pas de SNT.
+
+**Rien à coder côté espaces** : depuis le `018`, un compte voit les espaces où il a
+une classe. CASTEL aura donc l'accueil « Mes espaces » à deux cartes, HUSSON entrera
+directement dans l'espace de physique-chimie. Le cloisonnement du `016` fait le
+reste : chacune ne voit que ses classes.
+
+**Ce qui est livré**
+
+| Quoi | Où |
+|---|---|
+| Quatre classes + les deux rattachements | `bdd/schema/020-classes-collegues-es-ap.sql` |
+| Guide « enseignement scientifique de 1re » | `prof/guide-es.html` · PDF `assets/pdf/prof/guide-es.pdf` |
+| Guide « l'AP de physique-chimie » | `prof/guide-ap.html` · PDF `assets/pdf/prof/guide-ap.pdf` |
+| 🔴 Un guide **par matière**, pas par personne (19/09) | qui a les deux cours reçoit les deux guides |
+| Lien *Aide* qui suit l'espace ouvert, encart des guides | `prof/index.html` |
+| Les quatre guides à l'export | `exporter-guides.mjs` |
+
+Les deux guides couvrent, en plus des gestes du tableau de bord, **les adresses du
+site en toutes lettres** (cliquables à l'écran, lisibles sur le PDF) et **la mise du
+site sur l'écran d'accueil de l'iPad** — geste à faire faire à la classe entière à la
+première séance.
+
+**Les quatre codes** (19/09) : `ES1R05` · `ES1R06` · `APCAST` · `APHUSS`. Les deux
+groupes d'AP portent le **nom de leur professeure** parce qu'ils ne correspondent à
+aucune classe de 2nde : ils mélangent des élèves de toutes les secondes, et leur
+composition bouge dans l'année.
+
+🔴 **Il reste un geste à faire, dans Supabase, et il ne peut pas l'être d'ici**
+
+**Créer les deux comptes** (Authentication → Users → Add user, *Auto confirm* coché,
+mot de passe conforme à la politique du projet), puis exécuter les deux lignes
+`rattacher_enseignant()` du `020` §3 — elles sont écrites, adresses comprises. Tant que
+ce n'est pas fait, leur tableau de bord est vide : c'est le seul effet visible de
+l'entre-deux, et il se répare en une ligne.
+
+**Ce qui n'a pas été changé, et qu'il faudra regarder**
+
+- **L'ES 1re reste masquée** (13/09) : CASTEL n'aura qu'une séquence — la
+  nucléosynthèse — et aucune fiche de séance. Son guide le dit franchement. C'est le
+  chantier à ouvrir en premier si elle veut s'en servir vraiment (`es1-verification.md`
+  §0bis).
+- **Trois outils de PC sur huit** restent marqués 🚧 sur le hub de 2nde (O6, O7, O8) :
+  l'AP dispose donc de cinq outils.
 
 ## 🆕 ES 1re : la nucléosynthèse seule, prête pour les élèves
 

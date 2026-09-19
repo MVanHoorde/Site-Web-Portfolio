@@ -149,7 +149,7 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
 | `_suivi/JOURNAL.md` | 🆕 Historique en ajout seul. Pas relu par défaut |
 | `_suivi/chapitres.md` | Tableau de bord **par chapitre / par séquence**, avec les jalons |
 | `_suivi/IDEES.md` | Réservoir d'idées à trier |
-| `verifier.mjs` | 🆕 `node verifier.mjs` rejoue la checklist · `--bilan` sort un digest compact du dépôt · `--qcm` liste les biais de longueur des QCM. **Repère : exactement 18 problèmes** — les 18 liens `cfa/outil-*` vers des fiches à imprimer pas encore écrites. Tout autre écart est une régression |
+| `verifier.mjs` | 🆕 `node verifier.mjs` rejoue la checklist · `--bilan` sort un digest compact du dépôt · `--qcm` liste les biais de longueur des QCM. **Repère au 19/09/2026 : exactement 19 problèmes** — les 18 liens `cfa/outil-*` vers des fiches à imprimer pas encore écrites, **plus** un indice de niveau 1 qui livre la réponse dans `term-es-t2-c2` (2 cas, à reprendre). Tout autre écart est une régression. 🆕 Sort aussi, en vigilance, les **contenus hors d'atteinte depuis l'accueil** : ce que les élèves et les collègues ne voient pas |
 | `exporter-fiches.mjs` | 🆕 `node exporter-fiches.mjs` régénère les **fiches PDF de 2nde PC** depuis `fiches/*.html` vers `assets/pdf/pc/fiches/`, et contrôle chaque export à la mesure (A4 `209,9×297,0 mm`, une `.feuille` = une page, polices incorporées). **Le HTML est la source, le PDF un export** — jamais l'inverse |
 | `_suivi/BDD-cadrage.md` | 🆕 Volet base de données : architecture, décisions, modèle de données, jalons |
 | `bdd/README.md` | 🆕 Discipline des fichiers de schéma SQL + avertissement `supabase/migrations/` |
@@ -162,7 +162,7 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 | Partie | Pages | Assets externes |
 |---|---|---|
 | **Physique-chimie** | `pages/2nde-pc-tX-cY-…html` | `assets/img/pc/2nde-pc-tX-cY/` · `assets/pdf/` · `audio/2nde-pc-tX-cY-intro.m4a` · fiche **source** dans `fiches/`, **PDF distribué** dans `assets/pdf/pc/fiches/` 🆕 · **suivi de consultation** pour l'élève connecté : `progression.js` + `assets/js/suivi-pc.js` en fin de body, `data-suivi="pc-tX-cY"` (voir `CONSIGNES-chapitre-PC.md`) |
-| **Outils transversaux PC** 🆕 | `pages/2nde-pc-oN-…html` (4 sur 8 écrits) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · fiche A4 **complétée** : source `fiches/fiche-2nde-oN-…html`, **PDF** `assets/pdf/pc/fiches/` 🆕 · SVG inline |
+| **Outils transversaux PC** 🆕 | `pages/2nde-pc-oN-…html` (8 écrits, **5 ouverts** au hub : O6-O8 en relecture) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · fiche A4 **complétée** : source `fiches/fiche-2nde-oN-…html`, **PDF** `assets/pdf/pc/fiches/` 🆕 · SVG inline |
 | **SNT** | `pages/2nde-snt-tN-…html` | `assets/css/sequence-snt.css?v=N` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/snt/<slug>/` pour les photos · SVG et CSS de contenu **inline** |
 | **Cahier de vacances** | `cahier/…html` | `assets/img/cahier/` · `assets/pdf/cahier/` |
 | **Diaporamas de projection PC** 🆕 | *(pas de page)* | `assets/pptx/pc/diaporama-2nde-<code>.pptx` — **versionnés** parce qu'ils ne sont plus régénérables. 🔴 Aucune page n'y renvoie : c'est un support de projection, pas un document d'élève — mais le dépôt étant public, le fichier reste accessible par son URL. Consignes : `_modeles/CONSIGNES-diaporama-PC.md` |
@@ -190,14 +190,37 @@ touche le livret CFA**, et réciproquement. Ce n'est pas un défaut de rangement
 c'est un choix — une seule copie du client Supabase à maintenir — mais il doit
 être annoncé dans toute livraison qui y touche.
 
-🔴 **Le tableau de bord se livre avec ses deux guides.** `prof/index.html` est
-décrit par `prof/guide-prise-en-main.html` (les collègues, sans technique) et
-`prof/guide-dispositif.html` (Loïc, avec la technique). Toute modification qui
-change un écran, un onglet, un bouton ou un message **se répercute dans le ou les
-guides concernés au sein de la même livraison**, leur date de révision est remise
-à jour, et `node exporter-guides.mjs` régénère les PDF. Motif : un guide faux
-envoie chercher le problème au mauvais endroit — il coûte plus cher que pas de
-guide du tout.
+🔴 **Ce qui est prêt doit arriver aux collègues — sans que Loïc ait à y penser.**
+Depuis le 17/09/2026, deux collègues enseignent avec ce site (enseignement
+scientifique de 1re, AP de physique-chimie). Un contenu qui devient utilisable en
+classe ne s'arrête donc plus à « Loïc s'en sert » : **dans la même livraison**, on
+rétablit son lien sur le hub, on met à jour le **guide de la matière** et sa date
+de révision, on régénère le PDF, et **on propose à Loïc le mot à envoyer** aux
+collègues concernées. Le critère est le sien : *« quand c'est gérable pour un
+cours et que je vais l'utiliser, elles doivent l'avoir »* — pas besoin d'attendre
+la perfection.
+
+Le rappel est **mécanique**, parce que Loïc dit lui-même qu'il oubliera :
+`node verifier.mjs` liste, en points de vigilance, les **contenus écrits mais hors
+d'atteinte depuis l'accueil** (parcours réel des liens, commentaires retirés).
+Cette liste **est** celle de ce que les collègues ne voient pas. La parcourir fait
+partie de toute session qui touche un cours partagé — et **le dire à Loïc** quand
+l'un d'eux est devenu utilisable.
+
+🔴 **Le tableau de bord se livre avec ses quatre guides** — un par public :
+`prof/guide-prise-en-main.html` (SNT), `prof/guide-es.html` (ens. scientifique
+de 1re), `prof/guide-ap.html` (AP de physique-chimie) et
+`prof/guide-dispositif.html` (Loïc, avec la technique). 🔴 **Un guide par
+matière, jamais par personne** : une collègue qui a deux de ces cours reçoit
+deux guides et lit ce qu'elle veut. Les trois premiers **se recouvrent
+volontairement** : chacun se lit et s'envoie seul, donc une modification d'un
+écran commun — connexion, table des noms, suivi, code élèves — se reporte dans
+les trois. Toute modification qui change un écran, un onglet, un
+bouton ou un message **se répercute dans le ou les guides concernés au sein de la
+même livraison**, leur date de révision est remise à jour, et
+`node exporter-guides.mjs` régénère les PDF. Motif : un guide faux envoie
+chercher le problème au mauvais endroit — il coûte plus cher que pas de guide du
+tout.
 
 🔴 **`assets/fonts/IBMPlexSans-*.woff2` sont inutilisables** — mesuré au
 navigateur le 04/09/2026 : **5 glyphes sur 69**, sur les quatre faces (400, 400i,

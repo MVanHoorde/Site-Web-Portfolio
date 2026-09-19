@@ -173,6 +173,70 @@ for (const f of html) {
 }
 if (inertes) info(`liens inertes href="#" visibles des élèves : ${inertes}`);
 
+/* ---------- 7bis. Contenus écrits, mais hors d'atteinte des élèves ----------
+   Demande de Loïc, 19/09/2026 : « quand un cours est utilisable, il faut que
+   mes collègues l'aient — quitte à ce que tu me le rappelles. »
+
+   Ce contrôle EST ce rappel, et il est mécanique. On part de l'accueil et on
+   suit les liens de proche en proche, comme le ferait un élève : ce qui n'est
+   pas atteint n'existe pas pour lui.
+
+   Deux façons de masquer une page, toutes deux attrapées ici :
+     · son lien est mis en commentaire (repère MASQUÉ-…, l'ES de 1re) ;
+     · son lien est remplacé par une mention « en travaux » (les outils de PC).
+   Les commentaires HTML sont retirés avant de relever les liens : un lien
+   commenté n'est pas un chemin.
+
+   🔴 POURQUOI UN PARCOURS, ET PAS « CETTE PAGE A-T-ELLE UN LIEN ENTRANT ? »
+   Un chapitre masqué garde souvent un lien vers le chapitre suivant, masqué
+   lui aussi. Compter les liens entrants déclarerait donc le second
+   accessible — alors que personne ne peut arriver au premier. Mesuré le
+   19/09/2026 : la question naïve en manquait deux sur neuf.
+
+   NON BLOQUANT. Masquer est un choix légitime — une page pas relue n'a rien
+   à faire devant une classe. Ce qui ne l'est pas, c'est de l'oublier : une
+   page prête et masquée, personne ne la voit, et surtout pas les collègues à
+   qui on a ouvert le cours. */
+{
+  const liensVivants = (f) => {
+    const sortants = [];
+    const sansCommentaires = lire(f).replace(/<!--[\s\S]*?-->/g, "");
+    for (const m of sansCommentaires.matchAll(/(?:href|src)\s*=\s*["']([^"']+)["']/gi)) {
+      const u = m[1].trim();
+      if (/^(https?:|mailto:|data:|#|javascript:|tel:|\$\{)/i.test(u)) continue;
+      const cible = normalize(join(dirname(join(RACINE, f)), decodeURIComponent(u.split("#")[0].split("?")[0])));
+      sortants.push(relative(RACINE, cible).replace(/\\/g, "/"));
+    }
+    return sortants;
+  };
+
+  /* L'accueil du site, et lui seul : tout le reste doit s'y raccrocher.
+     Le tableau de bord n'en fait pas partie — il est privé, et ses guides
+     ne sont pas du contenu d'élève. */
+  const atteintes = new Set(["index.html"]);
+  const aVisiter = ["index.html"];
+  while (aVisiter.length) {
+    const f = aVisiter.pop();
+    if (!f.endsWith(".html") || !existsSync(join(RACINE, f))) continue;
+    for (const cible of liensVivants(f)) {
+      if (atteintes.has(cible)) continue;
+      atteintes.add(cible);
+      if (cible.endsWith(".html")) aVisiter.push(cible);
+    }
+  }
+
+  const orphelines = html
+    .filter((f) => /^(pages|cahier|cfa)\//.test(f))
+    .filter((f) => !atteintes.has(f))
+    .sort();
+
+  if (orphelines.length) {
+    info(`contenus écrits mais hors d'atteinte depuis l'accueil — invisibles des élèves ET des collègues : ${orphelines.length}`);
+    for (const f of orphelines) info(`   ↳ ${f}`);
+    info(`   🔔 RAPPEL (règle du 19/09/2026) : dès qu'un de ces contenus est utilisable en classe, il s'ouvre — lien rétabli, guide de la matière mis à jour, et un mot aux collègues concernées.`);
+  }
+}
+
 /* ---------- 8. Versionnage du CSS commun (piège du cache navigateur) ---------- */
 const versions = new Set();
 for (const f of html) for (const m of lire(f).matchAll(/chapitre-commun\.css(\?v=(\d+))?/g))
@@ -226,7 +290,7 @@ function bilan() {
   const l = [];
   l.push("## Bilan du dépôt — " + new Date().toISOString().slice(0, 10));
   try {
-    l.push("\nDernier commit : " + execSync("git log -1 --format='%ad %s' --date=short", { encoding: "utf8" }).trim());
+    l.push("\nDernier commit : " + execSync('git log -1 --format="%ad %s" --date=short', { encoding: "utf8" }).trim());
     const sale = execSync("git status --short", { encoding: "utf8" }).trim();
     l.push("Modifs non commitées : " + (sale ? sale.split("\n").length + " fichier(s)" : "aucune"));
   } catch { l.push("\n(hors dépôt git)"); }

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>L'enseignement scientifique de 1re en ligne — prise en main</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/guide-es.html — le guide de l'enseignement scientifique
+     de première
+     ------------------------------------------------------------
+     PUBLIC : une collègue qui prend l'enseignement scientifique en
+     1re. Elle ne connaît ni la base de données, ni le dépôt, et n'a
+     aucune raison de les connaître. Ce guide ne parle que de gestes.
+
+     🔴 UN GUIDE PAR MATIÈRE, PAS PAR PERSONNE (19/09/2026, Loïc).
+     Une collègue qui a l'ES *et* un groupe d'AP reçoit les deux
+     guides et lit ce qu'elle veut. Chacun se lit donc seul, et les
+     écrans communs — connexion, table des noms, code élèves,
+     compte de l'élève, écran d'accueil de l'iPad — sont décrits
+     dans les deux. Une modification de l'un d'eux se reporte dans
+     prof/guide-ap.html, et réciproquement.
+
+     🔴 CE GUIDE DIT L'ÉTAT RÉEL DU COURS EN LIGNE, §5 : une seule
+     séquence est ouverte aux élèves, et les fiches de séance sont
+     coupées (décision du 13/09/2026, _suivi/es1-verification.md
+     §0bis). Le jour où l'ES 1re est rétablie, ce paragraphe est à
+     réécrire — pas à surcharger d'une mise à jour.
+
+     🔴 RÈGLE DE MAINTENANCE — ce guide fait partie du périmètre
+     « tableau de bord ». Toute modification de prof/index.html qui
+     change un écran, un onglet ou un bouton se répercute ICI dans
+     la même livraison, et la date de révision est remise à jour.
+
+     PAGE PUBLIQUE, servie par GitHub Pages. Aucun mot de passe,
+     aucun nom d'élève, aucun code de classe réel ne doit y figurer :
+     le code se lit dans le tableau de bord, à côté de la classe.
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+  --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+  --link:#2445c7; --link-wash:#e7ebfb;
+  --ok:#12805c; --ok-wash:#e0f2ea;
+  --err:#c33a2f; --err-wash:#fbe6e3;
+  --wait:#9a6a00; --wait-wash:#fbf1d8;
+  --r:10px;
+}
+*{box-sizing:border-box}
+/* 🔴 'Inter' est intercalé DÉLIBÉRÉMENT entre IBM Plex Sans et le
+   repli système. Mesure du 04/09/2026 : les quatre fichiers
+   assets/fonts/IBMPlexSans-*.woff2 ne portent que 5 glyphes sur 69
+   — la famille est inutilisable, et tout le texte tombait en Segoe
+   UI sur Windows, en Times New Roman quand aucun repli n'était
+   déclaré. Inter est auto-hébergée, complète (86/88 glyphes) et du
+   même genre. Le jour où Plex Sans est réparée, elle reprend la
+   main d'elle-même : rien à défaire ici. */
+body{margin:0;background:var(--bg);color:var(--ink);
+     font-family:'IBM Plex Sans','Inter',system-ui,sans-serif;font-size:15.5px;line-height:1.6}
+h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;font-weight:600;margin:0}
+code,.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.94em}
+a{color:var(--link)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+/* Reprise exacte de la barre de prof/index.html : ces guides
+   sont la suite du tableau de bord, pas une seconde charte. */
+header.barre{background:var(--surface);border-bottom:1px solid var(--line);
+  padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:5}
+header.barre .titre{font-family:'Space Grotesk',sans-serif;font-weight:600}
+header.barre a{color:var(--link);text-decoration:none;font-size:13.5px;margin-left:auto}
+header.barre a:hover{text-decoration:underline}
+
+main{max-width:760px;margin:0 auto;padding:26px 18px 70px}
+.carte{background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:22px 24px;margin:0 0 18px}
+h1{font-size:25px;line-height:1.25}
+h2{font-size:19px;margin:34px 0 10px;padding-top:6px}
+h2:first-of-type{margin-top:14px}
+h3{font-size:16px;margin:20px 0 6px}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:6px 0}
+.chapo{font-size:17px;color:var(--ink-soft);margin:6px 0 0}
+.revision{font-size:13px;color:var(--ink-faint);margin:14px 0 0;
+  border-top:1px solid var(--line);padding-top:12px}
+
+.encadre{background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r);padding:13px 16px;margin:14px 0}
+.attention{background:var(--err-wash);border-color:#eab5ae}
+.utile{background:var(--ok-wash);border-color:#a9d8c5}
+.encadre p:first-child{margin-top:0}
+.encadre p:last-child{margin-bottom:0}
+.etiq{display:inline-block;font-family:'Space Grotesk',sans-serif;font-weight:600;
+  font-size:12.5px;letter-spacing:.02em;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;margin:0 0 6px}
+.attention .etiq{background:#f5cfc9;color:#8f271e}
+.utile .etiq{background:#bfe6d4;color:#0b5b41}
+
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-family:'Space Grotesk',sans-serif;font-weight:600}
+.enveloppe{overflow-x:auto}
+
+ol.gestes{counter-reset:g;list-style:none;padding-left:0}
+ol.gestes>li{counter-increment:g;position:relative;padding-left:40px;margin:16px 0}
+ol.gestes>li::before{content:counter(g);position:absolute;left:0;top:1px;
+  width:27px;height:27px;border-radius:50%;background:var(--link);color:#fff;
+  font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;
+  display:flex;align-items:center;justify-content:center}
+ol.gestes>li>b{display:block}
+
+.sommaire{background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r);padding:14px 18px;margin:18px 0 0}
+.sommaire ol{margin:6px 0 0;padding-left:20px}
+.sommaire a{text-decoration:none}
+.sommaire a:hover{text-decoration:underline}
+
+@media (max-width:520px){ main{padding:18px 12px 50px} .carte{padding:18px 15px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+
+/* ---- impression / export PDF ----
+   @page size:A4 : c'est lui que respecte l'export. Sans lui,
+   Chrome produit du Letter sans le dire. */
+@page{ size:A4; margin:15mm 16mm; }
+@media print{
+  body{background:#fff;font-size:11pt;line-height:1.5}
+  header.barre{background:#fff;color:var(--ink);padding:0 0 10px;
+    border-bottom:2px solid var(--ink);margin-bottom:14px;position:static}
+  header.barre a{display:none}
+  main{max-width:none;padding:0}
+  .carte{border:0;border-radius:0;padding:0;margin:0}
+  .sommaire{display:none}
+  h1{font-size:19pt}
+  h2{font-size:14pt;margin-top:20pt;break-after:avoid}
+  h3{font-size:12pt;break-after:avoid}
+  .encadre,table,li{break-inside:avoid}
+  a{color:var(--ink);text-decoration:none}
+}
+</style>
+<style>
+/* Ajouts propres à ce guide : les adresses y sont écrites en toutes
+   lettres, pour rester lisibles sur le PDF imprimé — où un lien ne
+   se clique pas. Elles doivent pouvoir se couper. */
+a.adr{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.93em;
+      word-break:break-all;overflow-wrap:anywhere}
+.tresmuet{font-size:13px;color:var(--ink-faint)}
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <span class="titre">Guide — enseignement scientifique 1re</span>
+  <a href="index.html">← Tableau de bord</a>
+</header>
+
+<main>
+<article class="carte">
+
+  <h1>L'enseignement scientifique de 1re en ligne, en pratique</h1>
+  <p class="chapo">Ce guide s'adresse à la collègue qui prend l'enseignement
+  scientifique en première. Il ne parle que de gestes : où est le cours, comment vos
+  élèves y accèdent, et ce que le tableau de bord vous montre de leur travail.
+  Aucune connaissance technique n'est nécessaire, et rien de ce qui suit n'est
+  irréversible.</p>
+
+  <nav class="sommaire" aria-label="Sommaire">
+    <b>Dans ce guide</b>
+    <ol>
+      <li><a href="#quoi">Ce que c'est, en deux phrases</a></li>
+      <li><a href="#adresses">Les trois adresses</a></li>
+      <li><a href="#connexion">Se connecter</a></li>
+      <li><a href="#voir">Ce que vous voyez — et ce que personne ne voit</a></li>
+      <li><a href="#etat">Ce qui est en ligne aujourd'hui</a></li>
+      <li><a href="#seance">L'onglet Séance — le cahier de textes</a></li>
+      <li><a href="#suivi">L'onglet Suivi</a></li>
+      <li><a href="#eleves">Côté élève : comment ils entrent</a></li>
+      <li><a href="#ipad">Garder le site sur l'iPad</a></li>
+      <li><a href="#eviter">Les trois choses à ne pas faire</a></li>
+      <li><a href="#coince">Si ça coince</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="quoi">1. Ce que c'est, en deux phrases</h2>
+
+  <p>Le cours existe en ligne sous forme de <b>pages que l'élève parcourt</b>, séance
+  après séance. Quand il s'y connecte avec un compte, son travail est <b>enregistré
+  sur un serveur</b> plutôt que dans le navigateur de la machine : il le retrouve au
+  lycée, chez lui, sur un autre poste.</p>
+
+  <p>Le tableau de bord est l'autre bout de ce fil. Il vous montre où en est chacun
+  de vos élèves, vous laisse lire ce qu'ils ont rédigé, et tient votre cahier de
+  textes.</p>
+
+  <div class="encadre utile">
+    <span class="etiq">Bon à savoir</span>
+    <p><b>Vous pouvez ne vous servir que du cahier de textes.</b> L'onglet
+    <i>Séance</i> fonctionne même si aucun de vos élèves n'a jamais créé de
+    compte : vous notez ce qui a été fait, ce qui a été donné, qui était absent,
+    et vous récupérez le texte tout rédigé pour École Directe. C'est utilisable
+    dès la première heure, sans rien demander aux élèves.</p>
+  </div>
+
+  <h2 id="adresses">2. Les trois adresses</h2>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Quoi</th><th>Adresse</th></tr>
+    <tr>
+      <td><b>Le site</b><br><span class="tresmuet">l'entrée, à donner aux élèves</span></td>
+      <td><a class="adr" href="https://mvanhoorde.github.io/Site-Web-Portfolio/">https://mvanhoorde.github.io/Site-Web-Portfolio/</a></td>
+    </tr>
+    <tr>
+      <td><b>Enseignement scientifique 1re</b><br><span class="tresmuet">les chapitres, thème par thème</span></td>
+      <td><a class="adr" href="https://mvanhoorde.github.io/Site-Web-Portfolio/pages/1re-enseignement-scientifique.html">https://mvanhoorde.github.io/Site-Web-Portfolio/pages/1re-enseignement-scientifique.html</a></td>
+    </tr>
+    <tr>
+      <td><b>Le tableau de bord</b><br><span class="tresmuet">pour vous seule</span></td>
+      <td><a class="adr" href="https://mvanhoorde.github.io/Site-Web-Portfolio/prof/">https://mvanhoorde.github.io/Site-Web-Portfolio/prof/</a></td>
+    </tr>
+  </table>
+  </div>
+
+  <p>Ce sont les mêmes adresses toute l'année, sur ordinateur comme sur iPad.
+  Mettez la dernière en favori.</p>
+
+  <h2 id="connexion">3. Se connecter</h2>
+
+  <ol class="gestes">
+    <li><b>Ouvrez l'adresse du tableau de bord</b> et mettez-la en favori.</li>
+    <li><b>Saisissez l'adresse de connexion et le mot de passe qui vous ont été
+      donnés.</b> Ce ne sont pas vos codes de l'établissement : ce compte n'a rien
+      à voir avec École Directe, Microsoft ou le réseau du lycée.</li>
+    <li><b>Demandez à Loïc de changer ce mot de passe</b> dès que possible : celui
+      qu'on vous a remis est provisoire, et vous ne pouvez pas le changer
+      vous-même.</li>
+  </ol>
+
+  <p>Deux messages d'erreur veulent dire deux choses différentes, et la nuance
+  fait gagner du temps :</p>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Ce que vous lisez</th><th>Ce que ça veut dire</th></tr>
+    <tr>
+      <td>« Adresse ou mot de passe incorrect. »</td>
+      <td>Une faute de frappe, ou le mot de passe n'est pas le bon. Réessayez.</td>
+    </tr>
+    <tr>
+      <td>« Ce compte n'est pas un compte professeur. »</td>
+      <td>Votre mot de passe est bon. C'est le compte qui n'a pas encore été
+      déclaré comme enseignant. Signalez-le à Loïc : c'est une ligne à ajouter,
+      pas un problème de votre côté.</td>
+    </tr>
+  </table>
+  </div>
+
+  <p>La session dure <b>douze heures</b>, ou jusqu'à ce que vous cliquiez sur
+  <i>Quitter</i>. Sur un poste partagé, cliquez sur <i>Quitter</i> en partant.</p>
+
+  <h2 id="voir">4. Ce que vous voyez — et ce que personne ne voit</h2>
+
+  <p>Le tableau de bord ne vous montre <b>que vos classes</b>. Pas celles de vos
+  collègues, même si vous cherchez : la restriction n'est pas un affichage filtré,
+  elle est posée dans le serveur lui-même. <b>La réciproque est vraie</b> :
+  personne ne lit vos classes, Loïc compris.</p>
+
+  <p>Vos classes apparaissent dans la liste déroulante en haut de chaque onglet,
+  et le <b>code à six caractères</b> que vous dicterez aux élèves s'affiche juste à
+  côté (<i>Code élèves</i>) : un clic dessus le sélectionne pour le copier.</p>
+
+  <div class="encadre utile">
+    <span class="etiq">Sur les données personnelles</span>
+    <p>Le serveur ne contient <b>aucun nom d'élève</b>. Chaque élève y est un
+    identifiant qu'il a choisi lui-même — jamais son nom, jamais son adresse.
+    Si vous voulez voir les vrais noms en face des identifiants, l'onglet
+    <i>Réglages</i> vous laisse charger un fichier depuis votre appareil : il
+    <b>n'est jamais envoyé</b>, il est lu sur place et s'efface avec votre session.
+    Ce fichier doit vivre sur le OneDrive de l'établissement, nulle part ailleurs.</p>
+  </div>
+
+  <div class="encadre">
+    <p><b>Si vous avez aussi un groupe d'AP de physique-chimie</b>, le tableau de
+    bord vous accueille par un écran <i>Mes espaces</i> : une carte par cours, avec
+    ses classes et leurs codes. Le bouton ⌂ <b>Mes espaces</b>, en haut à gauche,
+    y ramène à tout moment. L'AP a son propre guide — il décrit des écrans
+    différents, puisque ce cours ne suit pas de progression.</p>
+  </div>
+
+  <h2 id="etat">5. Ce qui est en ligne aujourd'hui</h2>
+
+  <div class="encadre attention">
+    <span class="etiq">À lire avant de le montrer aux élèves</span>
+    <p><b>Une seule séquence est ouverte : « La nucléosynthèse ».</b> Les cinq
+    autres chapitres du programme existent, mais ils n'ont pas été relus et leur
+    lien est retiré de la page de première — ils y apparaissent marqués 🚧.
+    Ce n'est pas une panne : c'est un choix, le temps de la relecture. Loïc vous
+    préviendra à mesure qu'ils s'ouvriront.</p>
+    <p>Dans le même esprit, la <b>fiche de séance téléchargeable</b> (le
+    récapitulatif que l'élève emporte) est coupée pour l'instant. Le cours en
+    ligne, lui, est complet.</p>
+  </div>
+
+  <p>La séquence ouverte est un bon point de départ : elle explique aussi
+  <b>comment fonctionne le cours</b> — créer son compte, ce qui est enregistré,
+  comment on avance d'une étape à l'autre. C'est par elle qu'on commence l'année.
+  Elle tient deux séances, plus des révisions.</p>
+
+  <h2 id="seance">6. L'onglet Séance — le cahier de textes</h2>
+
+  <p>C'est le cœur de l'usage, et il fonctionne sans aucun élève connecté. En
+  haut, votre classe et le chapitre ; en dessous, trois temps :</p>
+
+  <ol class="gestes">
+    <li><b>Ouverture — qui n'est pas là ?</b> Vous choisissez la séance du jour et
+      vous cochez les absents. C'est une note de travail : elle ne fait pas foi,
+      la vie scolaire tient le registre officiel.</li>
+    <li><b>Clôture — ce qui a été fait.</b> Vous cochez la ou les séances traitées,
+      puis vous remplissez trois champs : <i>ce qu'on a fait</i>, <i>le travail
+      donné</i>, <i>ce qui n'est pas terminé</i>. Deux phrases suffisent — et le
+      micro du clavier dicte très bien.</li>
+    <li><b>Cahier de textes.</b> Tout s'empile là, séance par séance. Le bouton
+      <i>Copier pour École Directe</i> met le texte tout rédigé dans le
+      presse-papiers : il n'y a plus qu'à coller.</li>
+  </ol>
+
+  <p>Aucun plafond d'avance ici : vos élèves peuvent parcourir les séances dans
+  l'ordre qu'ils veulent. Ce réglage n'existe qu'en SNT.</p>
+
+  <h2 id="suivi">7. L'onglet Suivi</h2>
+
+  <p>Une ligne par élève, une colonne par séance du chapitre choisi : vert quand
+  c'est terminé, orange quand c'est en cours, gris quand ce n'est pas commencé.
+  Un clic sur le nom d'un élève ouvre <b>sa fiche</b>, avec tout ce qu'il a fait ;
+  <i>← Retour au suivi</i> revient à la grille.</p>
+
+  <p>La liste des chapitres vous propose <b>les six</b>, y compris ceux qui ne
+  sont pas encore ouverts aux élèves (§5) : leurs colonnes resteront simplement
+  grises.</p>
+
+  <div class="encadre utile">
+    <span class="etiq">Les réponses rédigées</span>
+    <p>En enseignement scientifique, ce que l'élève rédige n'est <b>ni noté ni
+    corrigé en ligne</b> : il n'y a pas de file de correction, le travail se
+    reprend en classe. Ces réponses sont rassemblées en bas de l'onglet
+    <i>Suivi</i>, sous 💬 <b>Réponses personnelles de la classe</b> : vous
+    choisissez une question, vous cliquez sur <i>Afficher</i>, et vous lisez les
+    trente réponses d'un coup — de quoi préparer une mise en commun.</p>
+  </div>
+
+  <h2 id="eleves">8. Côté élève : comment ils entrent</h2>
+
+  <p>Chacune de vos classes a un <b>code à six caractères</b> que vous dictez en
+  classe, et que vous lisez dans le tableau de bord, à droite du choix de la
+  classe. La marche à suivre, côté élève :</p>
+
+  <ol class="gestes">
+    <li><b>Ouvrir le cours</b> depuis la page d'enseignement scientifique.</li>
+    <li><b>Créer un compte</b> dans le bandeau d'accueil : un identifiant et un mot
+      de passe qu'il choisit, puis le code de votre classe.</li>
+    <li><b>C'est fait.</b> Il retrouvera son travail depuis n'importe quel appareil
+      avec ces deux mots.</li>
+  </ol>
+
+  <ul>
+    <li>L'identifiant est <b>choisi par l'élève</b> et n'a pas à être son nom.
+      Faites-le noter quelque part : un identifiant oublié est introuvable,
+      y compris pour nous. L'élève en recrée un, et son travail précédent reste
+      attaché à l'ancien.</li>
+    <li>Un élève sans compte peut <b>quand même</b> travailler : rien ne se ferme,
+      mais rien n'est enregistré et vous ne verrez rien.</li>
+    <li>Un élève qui a <b>déjà un compte</b> — la SNT de l'an dernier, un autre
+      cours — n'en crée pas un second : il se connecte avec son identifiant
+      habituel, puis rejoint votre classe par <i>Mes classes · en rejoindre une</i>,
+      dans le menu de son badge en haut de page.</li>
+    <li>Les inscriptions d'une classe se referment quand vous le demandez, en
+      général après la deuxième séance, pour éviter les inscriptions sauvages. La
+      classe <b>reste dans votre tableau de bord</b> : seule la création de
+      nouveaux comptes se ferme.</li>
+  </ul>
+
+  <h2 id="ipad">9. Garder le site sur l'iPad</h2>
+
+  <p>Les élèves auront besoin de revenir sur ce site toute l'année. Plutôt qu'un
+  favori qu'ils ne retrouveront pas, faites-leur poser <b>une icône sur l'écran
+  d'accueil</b> de l'iPad. C'est le geste à faire faire à toute la classe la
+  première fois, en deux minutes :</p>
+
+  <ol class="gestes">
+    <li><b>Ouvrir Safari</b> — pas Chrome, et pas un lien ouvert depuis Teams ou
+      École Directe : le bouton nécessaire n'existe que dans Safari.</li>
+    <li><b>Aller à l'adresse du site</b> (la première du tableau au §2). Le plus
+      simple est de la dicter une fois, ou de la projeter.</li>
+    <li><b>Toucher le bouton Partager</b> — le carré avec une flèche vers le haut,
+      en haut de l'écran.</li>
+    <li><b>Faire défiler la liste et choisir « Sur l'écran d'accueil »</b>
+      (« Ajouter à l'écran d'accueil » selon la version d'iPadOS).</li>
+    <li><b>Raccourcir le nom proposé</b> — « Sciences » suffit — puis toucher
+      <b>Ajouter</b>.</li>
+  </ol>
+
+  <p>Une icône apparaît alors sur l'écran d'accueil : un appui dessus rouvre le
+  site directement. L'élève reste reconnu, puisque c'est le même Safari — il n'a
+  pas à retaper son identifiant.</p>
+
+  <div class="encadre utile">
+    <span class="etiq">Le bon moment</span>
+    <p>Faites-le à la <b>première séance</b>, juste après la création des comptes,
+    pendant que tout le monde est sur la même page. Un élève qui doit retrouver
+    l'adresse trois semaines plus tard ne la retrouve pas.</p>
+  </div>
+
+  <h2 id="eviter">10. Les trois choses à ne pas faire</h2>
+
+  <ol class="gestes">
+    <li><b>Ne jamais écrire un nom d'élève dans le cahier de textes.</b> Ces champs
+      décrivent le contenu du cours, et ils sont pensés pour ne contenir aucune
+      donnée personnelle. Pour signaler un élève, il y a la case des absents.</li>
+    <li><b>Ne pas déposer le fichier des noms ailleurs que sur le OneDrive de
+      l'établissement.</b> C'est le seul document du dispositif qui associe un
+      identifiant à un nom.</li>
+    <li><b>Ne pas laisser une session ouverte sur un poste partagé.</b> Douze
+      heures, c'est long. <i>Quitter</i> efface aussi la table des noms.</li>
+  </ol>
+
+  <h2 id="coince">11. Si ça coince</h2>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Symptôme</th><th>Ce que c'est</th></tr>
+    <tr>
+      <td>La liste des classes est vide.</td>
+      <td>Votre compte existe mais n'est rattaché à aucune classe. Une ligne à
+      ajouter côté serveur : signalez-le.</td>
+    </tr>
+    <tr>
+      <td>Une classe manque dans la liste.</td>
+      <td>Même chose, pour cette classe-là. Si vous avez aussi un groupe d'AP,
+      vérifiez d'abord que vous êtes dans le bon espace : une classe de première
+      n'apparaît pas dans l'espace de physique-chimie.</td>
+    </tr>
+    <tr>
+      <td>La grille de suivi est vide, avec des points gris partout.</td>
+      <td>Aucun de vos élèves n'a encore créé de compte, ou aucun n'a encore ouvert
+      le cours. Normal avant la première séance.</td>
+    </tr>
+    <tr>
+      <td>Un élève dit avoir travaillé, sa ligne reste grise.</td>
+      <td>Il a travaillé <b>sans compte</b>, ou avec un compte rattaché à une autre
+      classe. Faites-lui vérifier le badge en haut de la page : il doit y lire son
+      identifiant et le nom de votre classe.</td>
+    </tr>
+    <tr>
+      <td>Un élève ne peut pas créer son compte : « code de classe inconnu ».</td>
+      <td>Une faute de frappe, ou les inscriptions de la classe ont été refermées.
+      Le code se lit à côté du choix de la classe.</td>
+    </tr>
+    <tr>
+      <td>« Cet identifiant est déjà pris. »</td>
+      <td>Quelqu'un l'a choisi avant lui — ou c'est le sien, d'un autre cours. Dans
+      ce second cas, il passe par <i>Me connecter</i> plutôt que par <i>Créer mon
+      compte</i>.</td>
+    </tr>
+    <tr>
+      <td>« Pas de connexion au serveur. »</td>
+      <td>Le réseau, ou le serveur en pause. Réessayez dans un moment, puis
+      signalez si ça persiste. Les pages du cours, elles, continuent de
+      fonctionner : seul l'enregistrement s'arrête.</td>
+    </tr>
+    <tr>
+      <td>Un chapitre est marqué 🚧 et n'a pas de lien.</td>
+      <td>Il est écrit mais pas encore relu (§5). Celui qui est ouvert suffit pour
+      commencer l'année ; les autres s'ouvriront au fil des semaines.</td>
+    </tr>
+  </table>
+  </div>
+
+  <p>Pour tout le reste : <b>Loïc Van Hoorde</b>. Rien de ce que vous ferez depuis
+  ce tableau de bord n'est définitif — une séance se corrige, un cahier de textes
+  se réécrit.</p>
+
+  <p class="revision">
+    Guide de l'enseignement scientifique de 1re en ligne — Ensemble scolaire Isaac
+    de l'Étoile, année 2026-2027.<br>
+    Première version : <b>19 septembre 2026</b>.
+    Si vous avez aussi un groupe d'AP de physique-chimie, son guide est
+    <a href="guide-ap.html">ici</a>.
+  </p>
+
+</article>
+</main>
+
+</body>
+</html>

@@ -12,6 +12,72 @@
 
 ---
 
+## 19/09/2026 — Les collègues sont en base, et l'oubli devient mécaniquement visible
+
+Suite de la session du 17. Trois choses ont bougé, dont une qui dépasse le chantier.
+
+**Les codes d'AP ont changé de logique.** La convention arrêtée le 17 — `AP2S` + le
+numéro de la classe de 2nde — supposait qu'un groupe d'AP corresponde à une classe.
+Loïc a corrigé : un groupe d'AP mélange des élèves de toutes les secondes, et sa
+composition bouge dans l'année. Le code porte donc le **nom de la collègue** :
+`APCAST`, `APHUSS`. C'est la seule exception du dépôt à « la base ne porte pas
+d'annuaire », et elle est assumée — il n'y a pas d'autre façon de nommer un groupe
+qui n'a ni classe ni lettre. Le garde-fou du fichier `020` a fait son travail au
+passage : Loïc l'a exécuté avec les codes non complétés, et il a refusé d'écrire.
+
+**Les guides se découpent par matière**, non plus par personne : `guide-es.html` et
+`guide-ap.html` remplacent le guide combiné. Une collègue qui a les deux cours reçoit
+les deux fichiers et lit ce qu'elle veut. Plus lisible, et surtout : le jour où une
+troisième personne prend l'un des deux cours, il n'y a rien à réécrire.
+
+**Et la vraie demande du jour** : *« il faut que mes collègues aient accès aux choses
+validées, quitte à ce que tu me le rappelles — je vais sûrement oublier. »* Une règle
+de plus dans `CLAUDE.md` n'aurait été qu'une phrase à lire. `verifier.mjs` la rend
+mécanique : il part de l'accueil, suit les liens de proche en proche en retirant les
+commentaires HTML, et liste ce qu'il n'atteint pas. Neuf contenus aujourd'hui.
+
+Le détail qui compte, et qui a été mesuré plutôt que supposé : la première version du
+contrôle demandait « cette page a-t-elle un lien entrant ? ». Elle en manquait deux
+sur neuf — un chapitre masqué garde un lien vers le chapitre suivant, masqué lui
+aussi. Une question presque juste rend une réponse fausse en silence.
+
+## 17/09/2026 — Deux collègues rejoignent le tableau de bord
+
+Loïc ouvre le dispositif à deux collègues de physique-chimie : l'une prend
+l'enseignement scientifique en 1re 5 et 1re 6 **plus** un groupe d'AP, l'autre un
+groupe d'AP seul.
+
+La bonne surprise de la séance : **il n'y avait presque rien à coder**. Les espaces du
+`018` font déjà exactement ce que Loïc décrivait — un compte voit les espaces où il a
+une classe, donc deux cartes pour l'une, une entrée directe pour l'autre. Le travail
+s'est déplacé là où il était réellement : un fichier SQL de données, et **deux guides**.
+
+Trois arbitrages ont été pris avant d'écrire une ligne :
+
+- **une classe d'AP par collègue**, pas un code commun — le cloisonnement du `016` est
+  par classe, un code partagé aurait mélangé trois groupes dans le même *Suivi* ;
+- **pas de rattachement à `PROF26`** : le bac à sable des collègues de SNT est une
+  classe de l'espace `snt`, et il aurait ouvert à deux professeures qui ne font pas de
+  SNT un espace parasite, avec sa file de correction ;
+- **l'ES 1re reste masquée**. Une collègue arrive avec deux classes sur un cours dont
+  une seule séquence est ouverte : le choix de Loïc est de ne pas démasquer dans la
+  précipitation, et d'**écrire la limite dans le guide** plutôt que de la laisser
+  découvrir comme une panne.
+
+Le `020` a été éprouvé sur un PostgreSQL jetable monté pour l'occasion : garde-fou des
+codes non complétés (il refuse et n'écrit rien), codes tapés en minuscules normalisés,
+libellés calculés (« 2nde 5 — AP physique-chimie »), fichier rejoué deux fois sans
+effet de bord.
+
+Deux relevés au passage, qui ne concernaient pas la demande :
+
+- le commentaire du hub de 2nde annonçait « seuls les outils 1 et 2 sont ouverts »
+  alors que le balisage en ouvre **cinq** ;
+- `CLAUDE.md` annonce « 4 sur 8 écrits » alors que les huit pages existent.
+
+C'est exactement le genre d'écart que la règle du 23/07 vise : un commentaire qui
+décrit un état révolu finit par commander une session de travail fausse.
+
 ## 12/09/2026 — L'audit du chapitre ES T1-C1, appliqué de bout en bout
 
 Loïc a dicté un audit du chapitre « La nucléosynthèse » et l'a complété du

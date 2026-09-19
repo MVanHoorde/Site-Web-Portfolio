@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>L'AP de physique-chimie en ligne — prise en main</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/guide-ap.html — le guide de l'AP de physique-chimie
+     ------------------------------------------------------------
+     PUBLIC : une collègue qui n'a QUE l'accompagnement personnalisé
+     de 2nde, donc un seul espace dans le tableau de bord et deux
+     onglets. Elle ne connaît ni la base de données, ni le dépôt, et
+     n'a aucune raison de les connaître. Ce guide ne parle que de
+     gestes.
+
+     🔴 UN GUIDE PAR MATIÈRE, PAS PAR PERSONNE (19/09/2026, Loïc).
+     Une collègue qui a l'AP *et* l'enseignement scientifique de 1re
+     reçoit les deux guides et lit ce qu'elle veut. Chacun se lit
+     donc seul, et les écrans communs — connexion, table des noms,
+     code élèves, compte de l'élève, écran d'accueil de l'iPad —
+     sont décrits dans les deux. Une modification de l'un d'eux se
+     reporte dans prof/guide-es.html, et réciproquement.
+
+     🔴 RÈGLE DE MAINTENANCE — ce guide fait partie du périmètre
+     « tableau de bord ». Toute modification de prof/index.html qui
+     change un écran, un onglet ou un bouton se répercute ICI dans
+     la même livraison, et la date de révision est remise à jour.
+     Un guide faux est pire que pas de guide : il envoie chercher le
+     problème au mauvais endroit.
+
+     PAGE PUBLIQUE, servie par GitHub Pages. Aucun mot de passe,
+     aucun nom d'élève, aucun code de classe réel ne doit y figurer :
+     le code se lit dans le tableau de bord, à côté de la classe.
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+  --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+  --link:#2445c7; --link-wash:#e7ebfb;
+  --ok:#12805c; --ok-wash:#e0f2ea;
+  --err:#c33a2f; --err-wash:#fbe6e3;
+  --wait:#9a6a00; --wait-wash:#fbf1d8;
+  --r:10px;
+}
+*{box-sizing:border-box}
+/* 🔴 'Inter' est intercalé DÉLIBÉRÉMENT entre IBM Plex Sans et le
+   repli système. Mesure du 04/09/2026 : les quatre fichiers
+   assets/fonts/IBMPlexSans-*.woff2 ne portent que 5 glyphes sur 69
+   — la famille est inutilisable, et tout le texte tombait en Segoe
+   UI sur Windows, en Times New Roman quand aucun repli n'était
+   déclaré. Inter est auto-hébergée, complète (86/88 glyphes) et du
+   même genre. Le jour où Plex Sans est réparée, elle reprend la
+   main d'elle-même : rien à défaire ici. */
+body{margin:0;background:var(--bg);color:var(--ink);
+     font-family:'IBM Plex Sans','Inter',system-ui,sans-serif;font-size:15.5px;line-height:1.6}
+h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;font-weight:600;margin:0}
+code,.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.94em}
+a{color:var(--link)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+/* Reprise exacte de la barre de prof/index.html : ces guides
+   sont la suite du tableau de bord, pas une seconde charte. */
+header.barre{background:var(--surface);border-bottom:1px solid var(--line);
+  padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:5}
+header.barre .titre{font-family:'Space Grotesk',sans-serif;font-weight:600}
+header.barre a{color:var(--link);text-decoration:none;font-size:13.5px;margin-left:auto}
+header.barre a:hover{text-decoration:underline}
+
+main{max-width:760px;margin:0 auto;padding:26px 18px 70px}
+.carte{background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:22px 24px;margin:0 0 18px}
+h1{font-size:25px;line-height:1.25}
+h2{font-size:19px;margin:34px 0 10px;padding-top:6px}
+h2:first-of-type{margin-top:14px}
+h3{font-size:16px;margin:20px 0 6px}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:6px 0}
+.chapo{font-size:17px;color:var(--ink-soft);margin:6px 0 0}
+.revision{font-size:13px;color:var(--ink-faint);margin:14px 0 0;
+  border-top:1px solid var(--line);padding-top:12px}
+
+.encadre{background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r);padding:13px 16px;margin:14px 0}
+.attention{background:var(--err-wash);border-color:#eab5ae}
+.utile{background:var(--ok-wash);border-color:#a9d8c5}
+.encadre p:first-child{margin-top:0}
+.encadre p:last-child{margin-bottom:0}
+.etiq{display:inline-block;font-family:'Space Grotesk',sans-serif;font-weight:600;
+  font-size:12.5px;letter-spacing:.02em;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;margin:0 0 6px}
+.attention .etiq{background:#f5cfc9;color:#8f271e}
+.utile .etiq{background:#bfe6d4;color:#0b5b41}
+
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-family:'Space Grotesk',sans-serif;font-weight:600}
+.enveloppe{overflow-x:auto}
+
+ol.gestes{counter-reset:g;list-style:none;padding-left:0}
+ol.gestes>li{counter-increment:g;position:relative;padding-left:40px;margin:16px 0}
+ol.gestes>li::before{content:counter(g);position:absolute;left:0;top:1px;
+  width:27px;height:27px;border-radius:50%;background:var(--link);color:#fff;
+  font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;
+  display:flex;align-items:center;justify-content:center}
+ol.gestes>li>b{display:block}
+
+.sommaire{background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r);padding:14px 18px;margin:18px 0 0}
+.sommaire ol{margin:6px 0 0;padding-left:20px}
+.sommaire a{text-decoration:none}
+.sommaire a:hover{text-decoration:underline}
+
+@media (max-width:520px){ main{padding:18px 12px 50px} .carte{padding:18px 15px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+
+/* ---- impression / export PDF ----
+   @page size:A4 : c'est lui que respecte l'export. Sans lui,
+   Chrome produit du Letter sans le dire. */
+@page{ size:A4; margin:15mm 16mm; }
+@media print{
+  body{background:#fff;font-size:11pt;line-height:1.5}
+  header.barre{background:#fff;color:var(--ink);padding:0 0 10px;
+    border-bottom:2px solid var(--ink);margin-bottom:14px;position:static}
+  header.barre a{display:none}
+  main{max-width:none;padding:0}
+  .carte{border:0;border-radius:0;padding:0;margin:0}
+  .sommaire{display:none}
+  h1{font-size:19pt}
+  h2{font-size:14pt;margin-top:20pt;break-after:avoid}
+  h3{font-size:12pt;break-after:avoid}
+  .encadre,table,li{break-inside:avoid}
+  a{color:var(--ink);text-decoration:none}
+}
+</style>
+<style>
+/* Ajouts propres à ce guide : les adresses y sont écrites en toutes
+   lettres, pour rester lisibles sur le PDF imprimé — où un lien ne
+   se clique pas. Elles doivent pouvoir se couper. */
+a.adr{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.93em;
+      word-break:break-all;overflow-wrap:anywhere}
+.tresmuet{font-size:13px;color:var(--ink-faint)}
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <span class="titre">Guide — AP de physique-chimie</span>
+  <a href="index.html">← Tableau de bord</a>
+</header>
+
+<main>
+<article class="carte">
+
+  <h1>L'AP de physique-chimie en ligne, en pratique</h1>
+  <p class="chapo">Ce guide s'adresse à la collègue qui prend un groupe d'AP de
+  seconde. Il ne parle que de gestes : où sont les fiches-outils, comment vos
+  élèves y accèdent, et ce que le tableau de bord vous montre de leur travail.
+  Aucune connaissance technique n'est nécessaire, et rien de ce qui suit n'est
+  irréversible.</p>
+
+  <nav class="sommaire" aria-label="Sommaire">
+    <b>Dans ce guide</b>
+    <ol>
+      <li><a href="#quoi">Ce que c'est, en deux phrases</a></li>
+      <li><a href="#adresses">Les trois adresses</a></li>
+      <li><a href="#outils">Ce que contiennent les fiches-outils</a></li>
+      <li><a href="#connexion">Se connecter au tableau de bord</a></li>
+      <li><a href="#voir">Ce que vous voyez — et ce que personne ne voit</a></li>
+      <li><a href="#onglets">Les deux onglets</a></li>
+      <li><a href="#eleves">Côté élève : comment ils entrent</a></li>
+      <li><a href="#ipad">Garder le site sur l'iPad</a></li>
+      <li><a href="#eviter">Les trois choses à ne pas faire</a></li>
+      <li><a href="#coince">Si ça coince</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="quoi">1. Ce que c'est, en deux phrases</h2>
+
+  <p>Les <b>outils transversaux</b> de physique-chimie sont des méthodes que tous
+  les chapitres mobilisent — l'écriture scientifique, les chiffres significatifs,
+  la sécurité au laboratoire… Chacun existe en <b>page en ligne</b>, avec ses
+  exercices corrigés, et en <b>fiche A4 à imprimer</b> pour le classeur. Ils ne
+  suivent aucune progression : une fois ouverts, ils le restent toute l'année, et
+  l'élève y revient quand il en a besoin.</p>
+
+  <p>Le tableau de bord est l'autre bout du fil. Quand un élève travaille avec un
+  compte, son avancement est <b>enregistré sur un serveur</b> plutôt que dans le
+  navigateur de la machine : il le retrouve au lycée comme chez lui, et vous
+  voyez, outil par outil, qui a fait quoi.</p>
+
+  <div class="encadre utile">
+    <span class="etiq">Bon à savoir</span>
+    <p><b>Le cours ne dépend pas du compte.</b> Les pages et les fiches PDF sont
+    publiques : un élève sans compte lit tout, fait tous les exercices et obtient
+    toutes les corrections. Le compte ne sert qu'à <i>enregistrer</i> son
+    avancement — et à vous le montrer. Vous pouvez donc utiliser les outils en
+    classe dès la première heure, sans rien demander à personne.</p>
+  </div>
+
+  <h2 id="adresses">2. Les trois adresses</h2>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Quoi</th><th>Adresse</th></tr>
+    <tr>
+      <td><b>Le site</b><br><span class="tresmuet">l'entrée, à donner aux élèves</span></td>
+      <td><a class="adr" href="https://mvanhoorde.github.io/Site-Web-Portfolio/">https://mvanhoorde.github.io/Site-Web-Portfolio/</a></td>
+    </tr>
+    <tr>
+      <td><b>La page de 2nde</b><br><span class="tresmuet">les chapitres, puis les outils, tout en bas</span></td>
+      <td><a class="adr" href="https://mvanhoorde.github.io/Site-Web-Portfolio/pages/2nde-physique-chimie.html">https://mvanhoorde.github.io/Site-Web-Portfolio/pages/2nde-physique-chimie.html</a></td>
+    </tr>
+    <tr>
+      <td><b>Le tableau de bord</b><br><span class="tresmuet">pour vous seule</span></td>
+      <td><a class="adr" href="https://mvanhoorde.github.io/Site-Web-Portfolio/prof/">https://mvanhoorde.github.io/Site-Web-Portfolio/prof/</a></td>
+    </tr>
+  </table>
+  </div>
+
+  <p>Ce sont les mêmes adresses toute l'année, sur ordinateur comme sur iPad.
+  Mettez la dernière en favori.</p>
+
+  <h2 id="outils">3. Ce que contiennent les fiches-outils</h2>
+
+  <p>Huit outils sont prévus ; <b>cinq sont ouverts</b> aujourd'hui, les trois
+  derniers sont écrits et arrivent après relecture. Sur la page de 2nde, ils
+  ferment la page, sous les chapitres :</p>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th></th><th>Outil</th><th>Ce qu'on y travaille</th></tr>
+    <tr><td><b>1</b></td><td>Puissances de dix et écriture scientifique</td>
+        <td>Écrire <i>a</i> × 10<sup><i>n</i></sup>, passer d'un préfixe à l'autre, ne pas se faire piéger par la calculatrice.</td></tr>
+    <tr><td><b>2</b></td><td>Les chiffres significatifs</td>
+        <td>Combien de chiffres garder, et pourquoi la règle change entre une multiplication et une addition.</td></tr>
+    <tr><td><b>3</b></td><td>Sécurité au laboratoire</td>
+        <td>La tenue, les neuf pictogrammes d'une étiquette, les gestes de la paillasse, et quoi faire en cas d'incident.</td></tr>
+    <tr><td><b>4</b></td><td>La verrerie et le matériel</td>
+        <td>Nommer chaque pièce, choisir selon la précision demandée, lire un volume au trait de jauge.</td></tr>
+    <tr><td><b>5</b></td><td>Rédiger un compte rendu de TP</td>
+        <td>Les huit rubriques, l'hypothèse vérifiable, et la distinction entre observer et conclure.</td></tr>
+    <tr><td>6 · 7 · 8</td><td>Présenter un calcul · Utiliser une relation algébrique · Construire un graphique</td>
+        <td>Marqués 🚧 sur la page : écrits, en relecture.</td></tr>
+  </table>
+  </div>
+
+  <p>Chaque outil ouvert propose <b>le cours en ligne</b> (avec ses exercices et
+  leurs corrections) et <b>la fiche à imprimer</b> en PDF. La fiche est déjà
+  complétée : c'est une fiche de méthode à coller au classeur, pas un exercice à
+  trous.</p>
+
+  <h2 id="connexion">4. Se connecter au tableau de bord</h2>
+
+  <ol class="gestes">
+    <li><b>Ouvrez l'adresse du tableau de bord</b> (tableau ci-dessus) et mettez-la
+      en favori.</li>
+    <li><b>Saisissez l'adresse de connexion et le mot de passe qui vous ont été
+      donnés.</b> Ce ne sont pas vos codes de l'établissement : ce compte n'a rien
+      à voir avec École Directe, Microsoft ou le réseau du lycée.</li>
+    <li><b>Demandez à Loïc de changer ce mot de passe</b> dès que possible : celui
+      qu'on vous a remis est provisoire, et vous ne pouvez pas le changer
+      vous-même.</li>
+  </ol>
+
+  <p>Deux messages d'erreur veulent dire deux choses différentes, et la nuance
+  fait gagner du temps :</p>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Ce que vous lisez</th><th>Ce que ça veut dire</th></tr>
+    <tr>
+      <td>« Adresse ou mot de passe incorrect. »</td>
+      <td>Une faute de frappe, ou le mot de passe n'est pas le bon. Réessayez.</td>
+    </tr>
+    <tr>
+      <td>« Ce compte n'est pas un compte professeur. »</td>
+      <td>Votre mot de passe est bon. C'est le compte qui n'a pas encore été
+      déclaré comme enseignant. Signalez-le à Loïc : c'est une ligne à ajouter,
+      pas un problème de votre côté.</td>
+    </tr>
+  </table>
+  </div>
+
+  <p>La session dure <b>douze heures</b>, ou jusqu'à ce que vous cliquiez sur
+  <i>Quitter</i>. Sur un poste partagé, cliquez sur <i>Quitter</i> en partant.</p>
+
+  <h2 id="voir">5. Ce que vous voyez — et ce que personne ne voit</h2>
+
+  <p>Le tableau de bord ne vous montre <b>que votre groupe d'AP</b>. Pas les
+  classes de vos collègues, même si vous cherchez : la restriction n'est pas un
+  affichage filtré, elle est posée dans le serveur lui-même. <b>La réciproque est
+  vraie</b> : personne ne lit votre groupe, Loïc compris.</p>
+
+  <p>Plusieurs de vos élèves font aussi de la SNT, ou ont un autre cours de
+  physique-chimie en ligne. Ils n'ont <b>qu'un seul compte</b> pour tout le site,
+  mais chaque enseignant ne voit que la part qui le concerne : vous verrez leurs
+  outils, pas leur SNT, et leur professeur de SNT ne verra rien de vos outils.</p>
+
+  <div class="encadre">
+    <p><b>Si vous avez aussi l'enseignement scientifique en 1re</b>, le tableau de
+    bord vous accueille par un écran <i>Mes espaces</i> : une carte par cours, avec
+    ses classes et leurs codes. Le bouton ⌂ <b>Mes espaces</b>, en haut à gauche,
+    y ramène à tout moment. La première a son propre guide — il décrit des écrans
+    différents, puisque ce cours-là suit une progression, avec cahier de textes et
+    absents.</p>
+  </div>
+
+  <div class="encadre utile">
+    <span class="etiq">Sur les données personnelles</span>
+    <p>Le serveur ne contient <b>aucun nom d'élève</b>. Chaque élève y est un
+    identifiant qu'il a choisi lui-même — jamais son nom, jamais son adresse.
+    Si vous voulez voir les vrais noms en face des identifiants, l'onglet
+    <i>Réglages</i> vous laisse charger un fichier depuis votre appareil : il
+    <b>n'est jamais envoyé</b>, il est lu sur place et s'efface avec votre session.
+    Ce fichier doit vivre sur le OneDrive de l'établissement, nulle part ailleurs.</p>
+  </div>
+
+  <h2 id="onglets">6. Les deux onglets</h2>
+
+  <p>Votre tableau de bord en a deux — <i>Suivi</i> et <i>Réglages</i>. Les
+  onglets <i>À corriger</i> et <i>Séance</i> qu'ont les collègues de SNT ne
+  s'affichent pas chez vous : les outils n'envoient pas de copie à corriger, et
+  ils ne suivent pas de progression séance après séance. Il n'y a donc ni cahier
+  de textes, ni retard, ni plafond d'avance.</p>
+
+  <h3>Suivi</h3>
+  <p>Une ligne par élève. En haut, deux listes déroulantes : votre classe, et ce
+  que vous voulez regarder. Le <b>code à donner aux élèves</b> s'affiche juste à
+  côté (<i>Code élèves</i>) : un clic dessus le sélectionne pour le copier.</p>
+
+  <ul>
+    <li><b>Tous les outils</b> — la vue d'ensemble. Une colonne par outil, et la
+      réponse à la seule question qu'on se pose vraiment : qui a fait ses outils ?
+      Chaque case donne le nombre d'étapes validées sur le total
+      (<span class="mono">4/6</span>), verte quand l'outil est fini.</li>
+    <li><b>Chapitres et documents</b> — combien de fois chaque chapitre de
+      physique-chimie a été ouvert, s'il a été débloqué avec son code de fin, et
+      combien de PDF du cours ont été téléchargés. Rien d'autre n'est enregistré :
+      ni temps passé, ni défilement.</li>
+    <li><b>Un outil en particulier</b> — le détail étape par étape, pour voir où
+      ça bloque.</li>
+  </ul>
+
+  <p>Un clic sur le nom d'un élève ouvre <b>sa fiche</b> : tout ce qu'il a fait,
+  rassemblé. Le bouton <i>← Retour au suivi</i> revient à la grille.</p>
+
+  <h3>Réglages</h3>
+  <p>La table des noms (voir l'encadré plus haut), et les guides. C'est tout :
+  il n'y a rien à régler qui puisse casser quelque chose.</p>
+
+  <h2 id="eleves">7. Côté élève : comment ils entrent</h2>
+
+  <p>Votre groupe a un <b>code à six caractères</b> que vous dictez en classe.
+  Vous le lisez dans l'onglet <i>Suivi</i>, à droite du choix de la classe. La
+  marche à suivre, côté élève :</p>
+
+  <ol class="gestes">
+    <li><b>Ouvrir un outil</b> depuis la page de 2nde.</li>
+    <li><b>Créer un compte</b> dans la fenêtre d'accueil : un identifiant et un
+      mot de passe qu'il choisit, puis le code de votre groupe.</li>
+    <li><b>C'est fait.</b> Il retrouvera son travail depuis n'importe quel
+      appareil avec ces deux mots.</li>
+  </ol>
+
+  <ul>
+    <li>L'identifiant est <b>choisi par l'élève</b> et n'a pas à être son nom.
+      Faites-le noter quelque part : un identifiant oublié est introuvable,
+      y compris pour nous. L'élève en recrée un, et son travail précédent reste
+      attaché à l'ancien.</li>
+    <li>Un élève sans compte peut <b>quand même</b> tout faire : rien ne se ferme,
+      mais rien n'est enregistré et vous ne verrez rien.</li>
+    <li>Un élève qui a <b>déjà un compte</b> pour la SNT ou pour un autre cours
+      n'en crée pas un second : il se connecte avec son identifiant habituel, puis
+      rejoint votre groupe par <i>Mes classes · en rejoindre une</i>, dans le menu
+      de son badge en haut de page.</li>
+    <li>Les inscriptions de votre groupe se referment quand vous le demandez, en
+      général après la deuxième séance, pour éviter les inscriptions sauvages. Le
+      groupe <b>reste dans votre tableau de bord</b> : seule la création de
+      nouveaux comptes se ferme.</li>
+  </ul>
+
+  <h2 id="ipad">8. Garder le site sur l'iPad</h2>
+
+  <p>Les élèves auront besoin de revenir sur ce site toute l'année. Plutôt qu'un
+  favori qu'ils ne retrouveront pas, faites-leur poser <b>une icône sur l'écran
+  d'accueil</b> de l'iPad. C'est le geste à faire faire à toute la classe la
+  première fois, en deux minutes :</p>
+
+  <ol class="gestes">
+    <li><b>Ouvrir Safari</b> — pas Chrome, et pas un lien ouvert depuis Teams ou
+      École Directe : le bouton nécessaire n'existe que dans Safari.</li>
+    <li><b>Aller à l'adresse du site</b> (la première du tableau au §2). Le plus
+      simple est de la dicter une fois, ou de la projeter.</li>
+    <li><b>Toucher le bouton Partager</b> — le carré avec une flèche vers le haut,
+      en haut de l'écran.</li>
+    <li><b>Faire défiler la liste et choisir « Sur l'écran d'accueil »</b>
+      (« Ajouter à l'écran d'accueil » selon la version d'iPadOS).</li>
+    <li><b>Raccourcir le nom proposé</b> — « Physique-chimie » suffit — puis
+      toucher <b>Ajouter</b>.</li>
+  </ol>
+
+  <p>Une icône apparaît alors sur l'écran d'accueil : un appui dessus rouvre le
+  site directement. L'élève reste reconnu, puisque c'est le même Safari — il n'a
+  pas à retaper son identifiant.</p>
+
+  <div class="encadre utile">
+    <span class="etiq">Le bon moment</span>
+    <p>Faites-le à la <b>première séance</b>, juste après la création des comptes,
+    pendant que tout le monde est sur la même page. Un élève qui doit retrouver
+    l'adresse trois semaines plus tard ne la retrouve pas.</p>
+  </div>
+
+  <h2 id="eviter">9. Les trois choses à ne pas faire</h2>
+
+  <ol class="gestes">
+    <li><b>Ne pas déposer le fichier des noms ailleurs que sur le OneDrive de
+      l'établissement.</b> C'est le seul document du dispositif qui associe un
+      identifiant à un nom.</li>
+    <li><b>Ne pas laisser une session ouverte sur un poste partagé.</b> Douze
+      heures, c'est long. <i>Quitter</i> efface aussi la table des noms.</li>
+    <li><b>Ne pas promettre qu'un identifiant perdu sera retrouvé.</b> Il ne l'est
+      pas : c'est le prix de l'anonymat côté serveur. Mieux vaut le faire noter
+      dès le premier jour.</li>
+  </ol>
+
+  <h2 id="coince">10. Si ça coince</h2>
+
+  <div class="enveloppe">
+  <table>
+    <tr><th>Symptôme</th><th>Ce que c'est</th></tr>
+    <tr>
+      <td>La liste des classes est vide.</td>
+      <td>Votre compte existe mais n'est rattaché à aucune classe. Une ligne à
+      ajouter côté serveur : signalez-le.</td>
+    </tr>
+    <tr>
+      <td>La grille de suivi est vide, avec des points gris partout.</td>
+      <td>Aucun de vos élèves n'a encore créé de compte, ou aucun n'a encore
+      ouvert d'outil. Normal avant la première séance.</td>
+    </tr>
+    <tr>
+      <td>Un élève dit avoir travaillé, sa ligne reste grise.</td>
+      <td>Il a travaillé <b>sans compte</b>, ou avec un compte rattaché à une
+      autre classe. Faites-lui vérifier le badge en haut de la page : il doit y
+      lire son identifiant et le nom de votre groupe.</td>
+    </tr>
+    <tr>
+      <td>Un élève ne peut pas créer son compte : « code de classe inconnu ».</td>
+      <td>Une faute de frappe, ou les inscriptions du groupe ont été refermées.
+      Le code se lit dans votre onglet <i>Suivi</i>.</td>
+    </tr>
+    <tr>
+      <td>« Cet identifiant est déjà pris. »</td>
+      <td>Quelqu'un l'a choisi avant lui — ou c'est le sien, d'un autre cours.
+      Dans ce second cas, il passe par <i>Me connecter</i> plutôt que par
+      <i>Créer mon compte</i>.</td>
+    </tr>
+    <tr>
+      <td>« Pas de connexion au serveur. »</td>
+      <td>Le réseau, ou le serveur en pause. Réessayez dans un moment, puis
+      signalez si ça persiste. Les pages du cours, elles, continuent de
+      fonctionner : seul l'enregistrement s'arrête.</td>
+    </tr>
+    <tr>
+      <td>Un outil est marqué 🚧 et n'a pas de lien.</td>
+      <td>Il est écrit mais pas encore relu. Les cinq autres suffisent pour
+      commencer l'année ; ceux-là s'ouvriront au fil des semaines.</td>
+    </tr>
+  </table>
+  </div>
+
+  <p>Pour tout le reste : <b>Loïc Van Hoorde</b>. Rien de ce que vous ferez depuis
+  ce tableau de bord n'est définitif.</p>
+
+  <p class="revision">
+    Guide de l'AP de physique-chimie en ligne — Ensemble scolaire Isaac de
+    l'Étoile, année 2026-2027.<br>
+    Première version : <b>17 septembre 2026</b> · revu le <b>19 septembre</b>.
+    Si vous avez aussi l'enseignement scientifique en 1re, son guide est
+    <a href="guide-es.html">ici</a>.
+  </p>
+
+</article>
+</main>
+
+</body>
+</html>

@@ -15,6 +15,31 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 19/09/2026 — Ce qui est prêt arrive aux collègues, et un guide par matière
+
+| Date | Décision | Statut |
+|---|---|---|
+| 19/09/2026 | 🔴 **Un contenu utilisable en classe s'ouvre aux collègues dans la même livraison** : lien rétabli sur le hub, guide de la matière et sa date de révision mis à jour, PDF régénéré, et le mot à envoyer proposé à Loïc. Critère de Loïc : « quand c'est gérable pour un cours et que je vais l'utiliser, elles doivent l'avoir ». | ✅ en vigueur |
+| 19/09/2026 | **Le rappel est mécanique, pas mémoriel** — Loïc dit qu'il oubliera. `verifier.mjs` liste désormais les **contenus hors d'atteinte depuis l'accueil**, par parcours réel des liens (commentaires HTML retirés). 9 au 19/09 : 5 chapitres d'ES de 1re, l'ancienne fiche des cristaux, les outils O6-O7-O8. | ✅ en vigueur |
+| 19/09/2026 | 🔴 **Le parcours, et non « cette page a-t-elle un lien entrant ? »** : un chapitre masqué garde un lien vers le suivant, masqué lui aussi — la question naïve en déclarait deux accessibles sur neuf. | ✅ en vigueur |
+| 19/09/2026 | **Un guide par matière, jamais par personne** : `guide-es.html` et `guide-ap.html` remplacent le guide combiné « ES + AP ». Une collègue qui a les deux cours reçoit les deux guides et lit ce qu'elle veut. Motif de Loïc : c'est plus lisible. | ✅ en vigueur — remplace le découpage du 17/09 |
+
+## 17/09/2026 — Deux collègues entrent dans le tableau de bord (ES 1re, AP de PC)
+
+| Date | Décision | Statut |
+|---|---|---|
+| 17/09/2026 | **Deux comptes enseignants de plus** : **CASTEL** (enseignement scientifique en 1re 5 et 1re 6, **plus** un groupe d'AP de physique-chimie) et **HUSSON** (un groupe d'AP, rien d'autre). Aucun rôle nouveau : elles voient les espaces où elles ont une classe, comme tout le monde depuis le `018`. | ⏳ comptes à créer dans Auth → Users, puis `020` §3 à décommenter |
+| 17/09/2026 | **Une classe d'AP par collègue**, et non une classe d'AP partagée. Motif : le cloisonnement du `016` se fait **par classe** — un code commun aurait mis les élèves des trois groupes dans le même onglet *Suivi*, sans moyen de trier. | ✅ en vigueur |
+| 17/09/2026 | ~~**Codes de classe** : `ES1R05` et `ES1R06` ; l'AP prend **`AP2S` + le numéro de la classe de 2nde**, convention qui prolonge `PC2S01`.~~ | ~~remplacée~~ — voir 19/09 ci-dessous |
+| 19/09/2026 | **Codes de classe** : `ES1R05` et `ES1R06` (sur le modèle d'`ES1R02`) ; l'AP prend **`AP` + les quatre premières lettres du nom de la collègue** — `APCAST`, `APHUSS`. Motif : un groupe d'AP ne correspond à **aucune classe de 2nde** — il mélange des élèves de toutes les secondes et sa composition bouge dans l'année. Le numéro d'une 2nde n'aurait rien dit à l'élève ; le nom de sa professeure, si. `AP2S26`, le groupe de Loïc, garde son code générique : il était seul quand il a été créé. | ✅ en vigueur (`020`) |
+| 19/09/2026 | 🔴 **Exception assumée à « la base ne porte pas d'annuaire »** (`017`) : ici le **code** et le **libellé** portent le nom de la collègue. C'est le seul endroit de la base où un nom d'adulte figure ailleurs que dans `enseignants`. Il n'y a pas d'autre façon de nommer un groupe qui n'a ni classe ni lettre. | ✅ en vigueur |
+| 19/09/2026 | **Adresses de connexion** des enseignants : première lettre du prénom, point, nom, `@enseignant.isaac-etoile.fr` — la convention de l'établissement. | ✅ en vigueur |
+| 17/09/2026 | **Les quatre classes naissent ouvertes à l'inscription** (`actif = true`), contrairement à celles du `018`. La raison qui les fermait — pas de tableau de bord pour les suivre — a disparu le 13/09. | ✅ en vigueur (`020`) |
+| 17/09/2026 | **Pas de rattachement au bac à sable `PROF26`.** C'est une classe de l'espace `snt` : elle ouvrirait à deux collègues qui ne font pas de SNT un espace de plus, avec sa file de correction. Pour s'exercer, chacune crée un compte élève fictif (pseudo `zz-`) dans sa propre classe. | ✅ en vigueur |
+| 17/09/2026 | **L'ES 1re reste masquée** (décision du 13/09) bien qu'une collègue l'utilise avec deux classes : une seule séquence ouverte, fiches de séance coupées. Conséquence assumée — **son guide le dit franchement**, pour qu'elle ne le prenne pas pour une panne. | ✅ en vigueur — **provisoire** |
+| 17/09/2026 | ~~**Quatre guides au lieu de deux**, un par public : SNT · ES 1re + AP · AP seul · dispositif.~~ Découpage revu le 19/09 : **un par matière**. Les trois premiers **se recouvrent volontairement** — chacun se lit et s'envoie seul. Prix à payer : une modification d'un écran commun se reporte dans les trois. | ✅ en vigueur |
+| 17/09/2026 | **Le lien « Aide » du tableau de bord suit l'espace ouvert** (`es1` → guide ES+AP, `pc2` → guide AP, le reste → guide SNT). Il pointait toujours sur le guide de SNT. | ✅ en vigueur |
+
 ## 13/09/2026 — ES 1re : seule la nucléosynthèse est ouverte, fiches masquées
 
 | Date | Décision | Statut |

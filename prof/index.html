@@ -24,10 +24,17 @@
 
      noindex : inutile qu'elle traîne dans les moteurs de recherche.
 
-     🔴 DEUX GUIDES DÉCRIVENT CETTE PAGE, ET FONT PARTIE DE SON
+     🔴 QUATRE GUIDES DÉCRIVENT CETTE PAGE, ET FONT PARTIE DE SON
      PÉRIMÈTRE :
-         prof/guide-prise-en-main.html   les collègues, sans technique
+         prof/guide-prise-en-main.html   les collègues de SNT
+         prof/guide-es.html              ens. scientifique de 1re
+         prof/guide-ap.html              l'AP de physique-chimie
          prof/guide-dispositif.html      Loïc, avec la technique
+     UN GUIDE PAR MATIÈRE, PAS PAR PERSONNE (19/09/2026) : une
+     collègue qui a deux de ces cours reçoit deux guides. Les trois
+     premiers se recouvrent donc : chacun se lit et s'envoie seul.
+     Une modification d'un écran COMMUN (connexion, table des noms,
+     suivi, code élèves) se reporte dans les trois.
      Toute modification qui change un écran, un onglet, un bouton ou
      un message se répercute DANS LA MÊME LIVRAISON dans le ou les
      guides concernés, et leur date de révision est remise à jour.
@@ -566,19 +573,35 @@ table.grille thead th{white-space:nowrap}
         aucun.
       </div>
 
-      <h2 style="font-size:17px;margin-top:26px">Les deux guides</h2>
+      <h2 style="font-size:17px;margin-top:26px">Les guides</h2>
       <p class="muet" style="margin:6px 0 0">
-        Le premier s'envoie tel quel à un collègue&nbsp;; le second décrit ce qui se
-        passe derrière l'écran. Les versions PDF sont faites pour la pièce jointe.
+        Les trois premiers s'envoient tels quels à un collègue, <b>un par
+        matière</b> — qui en a deux en reçoit deux&nbsp;; le dernier décrit ce qui
+        se passe derrière l'écran. Les versions PDF sont faites pour la pièce
+        jointe.
       </p>
 
       <div class="encadre">
         <p style="margin:0 0 8px">
           <b><a href="guide-prise-en-main.html">Prendre en main le tableau de bord</a></b>
-          — pour les enseignants de l'équipe. Se connecter, tenir une séance,
+          — pour les enseignants de <b>SNT</b>. Se connecter, tenir une séance,
           corriger, essayer sans risque. Aucune technique.<br>
           <a class="mono" style="font-size:13px"
              href="../assets/pdf/prof/guide-prise-en-main.pdf">guide-prise-en-main.pdf</a>
+        </p>
+        <p style="margin:0 0 8px">
+          <b><a href="guide-es.html">L'enseignement scientifique de 1re</a></b>
+          — cahier de textes, suivi du travail, réponses personnelles de la
+          classe.<br>
+          <a class="mono" style="font-size:13px"
+             href="../assets/pdf/prof/guide-es.pdf">guide-es.pdf</a>
+        </p>
+        <p style="margin:0 0 8px">
+          <b><a href="guide-ap.html">L'AP de physique-chimie</a></b>
+          — les fiches-outils, le suivi élève par élève. Deux onglets, hors
+          progression.<br>
+          <a class="mono" style="font-size:13px"
+             href="../assets/pdf/prof/guide-ap.pdf">guide-ap.pdf</a>
         </p>
         <p style="margin:0">
           <b><a href="guide-dispositif.html">Le dispositif en détail</a></b>
@@ -589,9 +612,10 @@ table.grille thead th{white-space:nowrap}
       </div>
 
       <p class="tresmuet">
-        Ces deux guides décrivent cette page&nbsp;: toute modification du tableau de
+        Ces guides décrivent cette page&nbsp;: toute modification du tableau de
         bord doit s'y répercuter dans la même livraison, sinon ils envoient
-        chercher un problème au mauvais endroit.
+        chercher un problème au mauvais endroit. Le lien <i>Aide</i>, en haut,
+        ouvre celui de l'espace ouvert.
       </p>
     </section>
   </main>
@@ -634,16 +658,22 @@ table.grille thead th{white-space:nowrap}
      seances  vrai quand l'espace suit une progression de séances,
               avec cahier de textes, absents et retards. Les outils et
               le livret sont hors progression : ni retard ni curseur.
+     guide    le guide qui décrit CET espace, ouvert par le lien
+              « Aide » de la barre. Un espace sans guide propre garde
+              celui de la SNT, le plus général.
      ============================================================ */
+  var GUIDE_PAR_DEFAUT = 'guide-prise-en-main.html';
   var ESPACES_DEF = {
     snt: { nom: 'SNT',                            quoi: 'Seconde · sciences numériques et technologie',
            onglets: ['correction', 'seance', 'suivi', 'reglages'], seances: true },
     es1: { nom: 'Enseignement scientifique 1re',  quoi: 'Première · suivi du travail, corrigé en classe',
-           onglets: ['seance', 'suivi', 'reglages'], seances: true },
+           onglets: ['seance', 'suivi', 'reglages'], seances: true,
+           guide: 'guide-es.html' },
     est: { nom: 'Enseignement scientifique Term.', quoi: 'Terminale · suivi du travail, corrigé en classe',
            onglets: ['seance', 'suivi', 'reglages'], seances: true },
     pc2: { nom: 'Physique-chimie 2nde',           quoi: 'Seconde · les outils transversaux',
-           onglets: ['suivi', 'reglages'], seances: false },
+           onglets: ['suivi', 'reglages'], seances: false,
+           guide: 'guide-ap.html' },
     cfa: { nom: 'Livret CFA',                     quoi: 'Apprentis · les dix-sept fiches-outils',
            onglets: ['suivi', 'reglages'], seances: false }
   };
@@ -710,6 +740,7 @@ table.grille thead th{white-space:nowrap}
     document.querySelector('nav.onglets').style.display = '';
     document.querySelector('main').style.display = '';
     $('#titre-appli').textContent = ESPACE === 'snt' ? 'Tableau de bord SNT' : 'Tableau de bord — ' + def.nom;
+    $('.lien-aide').setAttribute('href', def.guide || GUIDE_PAR_DEFAUT);
 
     /* les onglets de l'espace, le premier ouvert */
     var premier = null;
