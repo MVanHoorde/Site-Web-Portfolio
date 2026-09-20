@@ -3967,3 +3967,63 @@ faites au chargement, avant que la reprise depuis la base ne les remette — un 
 connecté revenait sur un glossaire vide. La reprise annonce etape-validee sur le
 document : le glossaire relit tout sur ce signal. Vérifié au navigateur (reprise
 simulée : 9 mots rouverts ; 0 erreur JS ; SNT t1 garde ses 6 boutons de fiche).
+
+## 20/09/2026 — Outils O4, O5, O6 repris (images, méthode, exercices)
+
+Chantier mené à partir du rapport d'audit &laquo; Audit et cahier des charges des
+fiches méthode O4, O5, O6 &raquo; et du brief associé, tous deux du 20/09.
+
+**Images.** 44 fichiers déposés dans `_a-deposer/o4/` — rien pour O5 ni O6.
+35 retenus, copiés dans `assets/img/pc/2nde-pc-o4/` avec un `CREDITS.md`,
+9 écartés. Les photos d'objets isolés ont été **recadrées sur leur sujet**
+(une burette occupait un dixième de son carré, illisible en vignette)&nbsp;; les
+métadonnées de provenance ont été réinjectées et vérifiées fichier par fichier.
+
+**Deux images fausses repérées à l'œil.** La fiole jaugée porte une échelle
+graduée complète au lieu d'un trait unique, avec &laquo; 70 &raquo; écrit deux fois&nbsp;;
+le verre à pied redemandé dans la journée porte &laquo; 300 &raquo; deux fois. Les deux
+figures de priorité haute de O4 restent donc des cadres de réservation.
+
+**O4.** Photos adjointes aux 17 schémas au trait · encadré In/Ex · tableau des
+tolérances de classe A en &laquo; pour aller plus loin &raquo; · rinçage de la verrerie,
+double trait, tare · huit pièces de matériel courant ajoutées (pissette,
+agitateur, verre de montre, pince en bois, thermomètre, compte-gouttes,
+pipette Pasteur, entonnoir) · **nouvelle étape 1.5** sur le schéma normalisé,
+avec cinq montages de cycle terminal en bonus repliable · exercice 6, la copie
+d'un élève qui mesure 20 mL au bécher · grille d'auto-évaluation.
+
+**O5.** Le moule &laquo; si… alors… &raquo; · protocole / expérience distingués dans le
+texte (et **non** dans la frise, voir DECISIONS) · temps et personne · tableau
+de mesures avec ses règles · comparaison à une valeur de référence · retour
+critique · exercice 6, la conclusion qui ne répond pas à l'objectif · grille.
+Deux cadres de réservation (O5-02, O5-04).
+
+**O6.** La page avait déjà la phrase-réponse et le contrôle de vraisemblance,
+contrairement à ce que le brief supposait. Ajouté&nbsp;: trois séries d'exercices
+(conversions qui piègent, résultats à juger, loi d'Ohm et réfraction), soit les
+exercices 7 à 10, et la grille d'auto-évaluation.
+
+**Outillage.** `verifier.mjs` contrôle désormais que toute image de
+`assets/img/**` est nommée dans le `CREDITS.md` de son dossier. Le repère reste
+à **19 problèmes**, inchangé.
+
+**Mesuré au navigateur**&nbsp;: les trois pages ne débordent ni sur iPad (820 px) ni
+sur téléphone (390 px), toutes les images se chargent, aucun `alt` vide, aucune
+erreur JavaScript, et les huit nouveaux exercices se corrigent juste comme faux.
+Trois défauts de mise en page repérés à cette occasion et corrigés&nbsp;: vignettes
+écrasées par un ratio carré imposé, `<select>` à options longues qui poussaient
+la page hors de l'écran, et renvois d'étape insécables dans la grille
+d'auto-évaluation.
+
+**Fiches A4 et ouverture, dans la foulée.** Loïc a validé les deux : l'outil 6
+est **ouvert** (hub, `prof/guide-ap.html`, PDF des quatre guides régénérés), et les **trois
+fiches sont enrichies**. Chacune tient toujours en deux pages exactement.
+Le verso de O5 était plein : le resserrement des espacements a suffi pour la
+valeur de référence et le retour critique, mais pas pour le tableau de mesures
+rempli — seules ses **règles** sont sur le papier, le modèle reste en ligne.
+Les tolérances de classe A, non exigibles, sont restées sur la page elles aussi.
+Sur o4 et o5, **seule la forme du verso a changé ; aucun texte n'a été retiré**.
+
+**Reste à faire**&nbsp;: envoyer le mot aux collègues, trancher le cas de `o7`
+(devenu atteignable par le renvoi depuis O6 alors que le hub l'annonce en
+travaux), et fournir les quatre figures manquantes.

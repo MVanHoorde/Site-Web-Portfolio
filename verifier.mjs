@@ -244,6 +244,31 @@ for (const f of html) for (const m of lire(f).matchAll(/chapitre-commun\.css(\?v
 if (versions.size > 1) ko("versions de chapitre-commun.css incohérentes", [...versions].join(" / "));
 else if (versions.size) info(`chapitre-commun.css?v=${[...versions][0]} — cohérent partout`);
 
+/* ---------- 8 bis. Toute image publiée a une ligne de crédits ----------
+   Ajouté le 20/09/2026, chantier O4-O5-O6. L'exception pédagogique française
+   ne couvre PAS un site ouvert au public : une image dont on ne sait plus d'où
+   elle vient ne peut pas y rester. La règle est donc mécanique — un dossier
+   d'images porte un CREDITS.md, et chaque fichier y est nommé.
+   Le plafond de 480 000 px de la licence Canva n'est PAS contrôlé ici : aucune
+   image du dépôt ne vient de Canva. Le jour où une ligne `canva-design`
+   apparaîtra dans un CREDITS.md, c'est ici qu'il faudra l'ajouter. */
+const IMG_EXT = /\.(png|jpe?g|webp|gif|svg|avif)$/i;
+const imagesPubliees = FICHIERS.filter((f) => f.startsWith("assets/img/") && IMG_EXT.test(f));
+const dossiersImg = [...new Set(imagesPubliees.map((f) => f.slice(0, f.lastIndexOf("/"))))];
+let sansCredits = 0, nonCitees = 0;
+for (const d of dossiersImg) {
+  const fiche = `${d}/CREDITS.md`;
+  if (!FICHIERS.includes(fiche)) { sansCredits++; continue; }
+  const texte = lire(fiche);
+  for (const f of imagesPubliees.filter((x) => x.slice(0, x.lastIndexOf("/")) === d)) {
+    const nom = f.slice(f.lastIndexOf("/") + 1);
+    if (!texte.includes(nom)) { ko("image sans ligne de crédits", `${f} — absente de ${fiche}`); nonCitees++; }
+  }
+}
+if (sansCredits) info(`dossiers d'images sans CREDITS.md : ${sansCredits} (à combler au fil des reprises)`);
+if (dossiersImg.length && !nonCitees)
+  info(`crédits d'images — ${imagesPubliees.length} image(s) dans ${dossiersImg.length - sansCredits} dossier(s) documenté(s), toutes citées`);
+
 /* ---------- 9. Secrets : rien qui ressemble à une clé service_role ---------- */
 for (const f of FICHIERS) {
   if (f.endsWith(".env") || extname(f) === "") continue;

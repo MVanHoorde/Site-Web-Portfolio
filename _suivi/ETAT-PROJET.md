@@ -5,7 +5,9 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **19/09/2026** (dernière passe : **les deux collègues sont
+> Dernière réécriture : **20/09/2026** (dernière passe : **les outils O4, O5 et O6
+> sont repris — photos de matériel, méthode complétée, huit exercices de plus,
+> les trois fiches A4 enrichies, et O6 ouvert aux collègues**, bloc ci-dessous). Passe du **19/09/2026** (dernière passe : **les deux collègues sont
 > en base et rattachées, un guide par matière, et `verifier.mjs` rappelle
 > désormais ce qui reste masqué**, bloc ci-dessous). Passe du **17/09/2026** :
 > **deux collègues entrent dans le tableau de bord — ES 1re et AP de
@@ -63,6 +65,56 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 Les outils O4, O5 et O6 sont repris, fiches comprises — et O6 est ouvert
+
+Chantier du 20/09/2026, mené depuis le rapport d'audit et le brief du même jour.
+Décisions&nbsp;: `DECISIONS.md`, bloc du 20/09. Récit&nbsp;: `JOURNAL.md`.
+
+**État des trois pages**
+
+| | Ce qui a été ajouté | Figures |
+|---|---|---|
+| **o4** | photos adjointes aux 17 schémas · In/Ex · tolérances A/B (hors programme) · rinçage, double trait, tare · 8 pièces de matériel courant · **étape 1.5 &laquo; Dessiner le montage &raquo;** · exercice 6 (copie à corriger) · grille d'auto-évaluation | **9 posées** · 2 cadres de réservation |
+| **o5** | &laquo; si… alors… &raquo; · protocole / expérience · temps et personne · tableau de mesures · valeur de référence · retour critique · exercice 6 · grille | 0 · **2 cadres de réservation** |
+| **o6** | exercices **7 à 10** en trois séries — conversions qui piègent, résultats à juger, loi d'Ohm et réfraction · grille | 0 · aucun cadre&nbsp;: les trois figures demandées existent déjà en HTML |
+
+**🔴 Ce qui bloque — deux figures, et une seule cause.** Les figures **O4-04**
+(fiole jaugée) et **O4-05** (pipette à deux traits) sont les deux figures de
+priorité haute de O4, et les deux images déposées sont **fausses**&nbsp;: la fiole
+porte une échelle graduée complète au lieu d'un trait unique, avec &laquo; 70 &raquo;
+écrit deux fois. Ce qu'il faut voir sur chacune est écrit dans le cadre de
+réservation, sur la page. Deux autres cadres attendent en O5&nbsp;: le schéma
+&laquo; bon contre mauvais &raquo; (O5-02) et la copie annotée en trois couleurs (O5-04).
+
+**✅ O6 est ouvert aux élèves et aux collègues** (20/09, décision de Loïc). Lien
+rétabli sur le hub de 2nde PC, `guide-ap.html` mis à jour — &laquo; six outils ouverts &raquo;,
+descriptions d'O4 et d'O5 complétées, date de révision au 20 septembre — et les
+quatre PDF de guides régénérés. **Reste à envoyer le mot à CASTEL et HUSSON.**
+
+🔴 **Effet de bord à trancher&nbsp;: `o7` est devenu atteignable.** L'outil 6 renvoie
+vers l'outil 7 pour isoler une grandeur&nbsp;; en ouvrant `o6`, ce renvoi rend `o7`
+accessible alors que le hub l'annonce encore &laquo; 🚧 en travaux &raquo;. Deux sorties&nbsp;:
+l'ouvrir lui aussi, ou retirer le renvoi. `verifier.mjs` ne compte plus que **7**
+contenus hors d'atteinte, contre 9 le 19/09.
+
+**✅ Les trois fiches A4 sont enrichies**, et chacune tient toujours en **deux pages
+exactement** (mesuré : `209,9 × 297,0 mm`, une `.feuille` = une page).
+
+| Fiche | Ce qui y est descendu | Ce qu'il a fallu arbitrer |
+|---|---|---|
+| **o4** | In/Ex · le petit matériel de la paillasse (8 pièces) · rinçage de la verrerie · double trait · tare | rien — le recto avait de la place |
+| **o5** | protocole / expérience et les temps de verbe · les règles du tableau de mesures · valeur de référence et retour critique · deux cases de checklist | le verso était plein&nbsp;: le **tableau de mesures rempli** n'y est pas, seules ses **règles** y figurent — le modèle vit sur la page en ligne |
+| **o6** | le barème des **six conversions qui piègent** | il remplace le bloc &laquo; trois oublis &raquo;, dont il reprend les deux pièges |
+
+🔴 **Les tolérances de classe A ne sont pas descendues sur la fiche O4** — faute de
+place, et parce qu'elles ne sont **pas exigibles**. Elles restent en &laquo; pour aller
+plus loin &raquo; sur la page. À recouper avec les inscriptions de la verrerie du lycée.
+
+Sur `o4` et `o5`, les espacements du verso ont été resserrés pour accueillir ces
+ajouts&nbsp;: **seule la forme a changé, aucun texte n'a été retiré**. Les trois
+planches de cartes de `2nde-pc-o4/` n'ont finalement pas servi — les fiches portent
+déjà leurs propres schémas au trait.
 
 ## 🆕 Ce qui est prêt doit arriver aux collègues — et `verifier.mjs` le rappelle
 

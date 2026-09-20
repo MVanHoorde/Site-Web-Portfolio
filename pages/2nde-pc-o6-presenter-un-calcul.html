@@ -113,6 +113,15 @@
   .saisie td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
   .saisie td.c{text-align:center}
   .saisie tr:last-child td{border-bottom:0}
+  /* Un <select> prend par defaut la largeur de son option la plus longue :
+     sur telephone, cela poussait la page hors de l ecran. */
+  .saisie{table-layout:fixed}
+  .saisie td select{max-width:100%;width:100%}
+  .saisie td.depart{overflow-wrap:anywhere}
+  /* .nb ne se coupe pas : une ligne de calcul entiere poussait la page
+     hors de l ecran du telephone. Dans les corriges, on l autorise a passer
+     a la ligne ; ailleurs, les nombres restent insecables. */
+  .exo-corr .corps .nb{white-space:normal;overflow-wrap:anywhere}
   .saisie select.short{min-height:34px}
   .saisie input.short{min-height:32px}
   .cloze select{max-width:100%}
@@ -182,6 +191,49 @@
     .lc{grid-template-columns:1fr}
     .lc .marge{text-align:left}
   }
+  /* ---------- Cadre de reservation — figure attendue, pas encore la.
+     Doit rester visible et laid : c'est un rappel de tache.
+     Patron repris de 2nde-pc-o3 (.reserve / .rf / .rd / .rr). ---------- */
+  .reserve{border:1.5px dashed var(--activity);border-radius:10px;background:var(--surface-2);
+           padding:14px;margin:14px 0;min-height:180px;display:flex;flex-direction:column;
+           justify-content:center;gap:6px;text-align:center}
+  .reserve .rf{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;
+               color:var(--activity);font-weight:600;word-break:break-all}
+  .reserve .rd{font-size:13px;color:var(--ink-soft);line-height:1.4}
+  .reserve .rr{font-family:"IBM Plex Mono";font-size:10.5px;color:var(--ink-faint)}
+
+  /* ---------- Tableau de valeurs ---------- */
+  .tol{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0}
+  .tol th,.tol td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+  .tol th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:11.5px;
+          letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  .tol td.n{font-family:"IBM Plex Mono";text-align:right;white-space:nowrap}
+  .tol-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+  /* ---------- Bloc « pour aller plus loin », repliable ---------- */
+  details.plus{border:1px solid var(--line);border-left:3px solid var(--ink-faint);
+               border-radius:0 10px 10px 0;background:var(--surface-2);padding:10px 13px;margin:12px 0}
+  details.plus > summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--ink);list-style:none}
+  details.plus > summary::-webkit-details-marker{display:none}
+  details.plus > summary::before{content:"▸ ";color:var(--ink-faint)}
+  details.plus[open] > summary::before{content:"▾ "}
+  details.plus > summary .tag{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.06em;
+        text-transform:uppercase;color:var(--ink-faint);border:1px solid var(--line);
+        border-radius:5px;padding:1px 6px;margin-left:7px;white-space:nowrap}
+  details.plus .pl-corps{font-size:14px;line-height:1.55;margin-top:9px}
+
+  /* ---------- Grille d'auto-evaluation de fin de page ---------- */
+  .autoeval{border:1px solid var(--ok);background:var(--ok-wash);border-radius:12px;padding:13px 15px;margin:16px 0}
+  .autoeval h4{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+               color:var(--ok);margin:0 0 4px}
+  .autoeval .ae-sous{font-size:13.5px;color:var(--ink-soft);margin:0 0 10px}
+  .autoeval label{display:flex;gap:9px;align-items:flex-start;font-size:14.5px;
+                  line-height:1.5;padding:5px 0;cursor:pointer}
+  .autoeval input[type=checkbox]{margin-top:3px;flex:0 0 auto;width:17px;height:17px;accent-color:var(--ok)}
+  /* le label est un conteneur flex : sans wrap, le renvoi d etape en fin de
+     ligne sortait de l ecran du telephone au lieu de passer a la ligne. */
+  .autoeval label{flex-wrap:wrap}
+  .autoeval label .nb{white-space:normal}
 </style>
 </head><body data-sequence="pc-o6" data-etapes="ouvertes" data-suivi="pc-o6" data-accueil="sur-place" data-renvoi-texte="Élève de 2nde 1 ou de l'AP ? Connecte-toi : ton professeur verra ton travail et les documents que tu ouvres.">
 
@@ -423,7 +475,7 @@
 
             <div class="point-cle"><b>C'est exactement ce que font les corrections de tes chapitres.</b> Dans une correction directe, tu ne verras jamais cette étiquette — elle serait vide. Dès qu'il faut retourner la relation, elle apparaît, avec ce nom-là.</div>
 
-            <div class="point-cle alerte">🧮 <b>Comment retourner une relation&nbsp;?</b> C'est le sujet entier de l'<a href="2nde-pc-o7-relation-algebrique.html" style="color:var(--link)">outil 7</a>&nbsp;: le triangle, les chiffres, et l'opération inverse. Ici on ne s'occupe que d'une chose — <b>savoir que cette étape doit apparaître</b>, et lui donner son nom.</div>
+            <div class="point-cle alerte">🧮 <b>Comment retourner une relation&nbsp;?</b> C'est le sujet entier de l'<a href="2nde-pc-o7-relation-algebrique.html" style="color:var(--link)">outil 7</a>&nbsp;: une seule méthode, l'opération inverse, et 71 relations pour s'y faire la main. Ici on ne s'occupe que d'une chose — <b>savoir que cette étape doit apparaître</b>, et lui donner son nom.</div>
 
             <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">
@@ -889,8 +941,218 @@
         </div>
       </div>
 
+
+      <!-- ---------- 2.3 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o6-s2-conversions">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3</div>
+            <h3 class="step-title">Les conversions qui piègent</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> convertir avant de calculer. C'est l'étape&nbsp;1, et c'est là que se perd le plus de points — sur des calculs par ailleurs justes.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o6-s2-ex7">
+              <p class="exo-num">Exercice 7 — six conversions, avant tout calcul</p>
+              <p class="exo-enonce">Aucun calcul ici&nbsp;: seulement l'étape&nbsp;1. Convertis chaque donnée dans l'unité demandée, en gardant le bon nombre de chiffres significatifs.</p>
+              <div class="field">
+                <span class="field-type">Exercice 7</span>
+                <div class="field-q">Six conversions.</div>
+                <div class="cloze" data-cloze data-cle="ex7">
+                  <table class="saisie">
+                    <tr><th>La donnée</th><th>En unité demandée</th></tr>
+                    <tr><td class="depart"><span class="nb">250 mL</span> → en litres</td>
+                      <td><select class="short" data-answer="a1" aria-label="250 mL en litres"><option value="">choisis…</option><option value="a1">0,250 L</option><option value="a2">2,50 L</option><option value="a3">25,0 L</option><option value="a4">250 000 L</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">150 g</span> → en kilogrammes</td>
+                      <td><select class="short" data-answer="b1" aria-label="150 g en kilogrammes"><option value="">choisis…</option><option value="b1">0,150 kg</option><option value="b2">1,50 kg</option><option value="b3">15,0 kg</option><option value="b4">150 000 kg</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">2,5 ms</span> → en secondes</td>
+                      <td><select class="short" data-answer="c1" aria-label="2,5 ms en secondes"><option value="">choisis…</option><option value="c1">2,5 × 10⁻³ s</option><option value="c2">2,5 × 10³ s</option><option value="c3">2,5 × 10⁻⁶ s</option><option value="c4">0,25 s</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">45 mA</span> → en ampères</td>
+                      <td><select class="short" data-answer="d1" aria-label="45 mA en amperes"><option value="">choisis…</option><option value="d1">4,5 × 10⁻² A</option><option value="d2">4,5 × 10² A</option><option value="d3">45 000 A</option><option value="d4">4,5 A</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">90 km·h⁻¹</span> → en m·s⁻¹</td>
+                      <td><select class="short" data-answer="e1" aria-label="90 km par heure en metres par seconde"><option value="">choisis…</option><option value="e1">25 m·s⁻¹</option><option value="e2">324 m·s⁻¹</option><option value="e3">90 m·s⁻¹</option><option value="e4">1,5 m·s⁻¹</option></select></td></tr>
+                    <tr><td class="depart"><span class="nb">1,2 L</span> → en mètres cubes</td>
+                      <td><select class="short" data-answer="f1" aria-label="1,2 L en metres cubes"><option value="">choisis…</option><option value="f1">1,2 × 10⁻³ m³</option><option value="f2">1,2 × 10³ m³</option><option value="f3">1,2 m³</option><option value="f4">0,12 m³</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 7</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Convertis d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b><span class="nb">250 mL = 0,250 L</span>.</b> Un millilitre est un millième de litre&nbsp;: on divise par <span class="nb">1000</span>. Le zéro final se garde&nbsp;: <span class="nb">250</span> porte trois chiffres significatifs, <span class="nb">0,250</span> aussi.</p>
+                  <p><b><span class="nb">150 g = 0,150 kg</span>.</b> Même division par <span class="nb">1000</span>, même conservation du zéro.</p>
+                  <p><b><span class="nb">2,5 ms = 2,5 × 10⁻³ s</span>.</b> Milli vaut toujours <span class="nb">10⁻³</span>, quelle que soit la grandeur. Le piège&nbsp;: écrire <span class="nb">10³</span> parce que le nombre &laquo; paraît petit &raquo;. Une milliseconde est <b>plus courte</b> qu'une seconde&nbsp;: l'exposant est négatif.</p>
+                  <p><b><span class="nb">45 mA = 4,5 × 10⁻² A</span>,</b> soit <span class="nb">0,045 A</span>. Toujours le même milli.</p>
+                  <p><b><span class="nb">90 km·h⁻¹ = 25 m·s⁻¹</span>.</b> Celle-ci se fait en deux temps, et c'est pour ça qu'elle piège&nbsp;: <span class="nb">90 km = 90 000 m</span> et <span class="nb">1 h = 3600 s</span>, donc <span class="nb">90 000 ÷ 3600 = 25</span>. Le raccourci à retenir&nbsp;: <b>diviser par <span class="nb">3,6</span></b>. Et le contrôle&nbsp;: un résultat en m·s⁻¹ est toujours <b>plus petit</b> que la valeur en km·h⁻¹.</p>
+                  <p><b><span class="nb">1,2 L = 1,2 × 10⁻³ m³</span>.</b> Un litre vaut un décimètre cube, et <span class="nb">1 m³ = 1000 L</span>. C'est la conversion la plus oubliée de l'année&nbsp;: en physique, les volumes passent en mètres cubes.</p>
+                  <p><b>Le réflexe qui évite tout ça&nbsp;:</b> après chaque conversion, demande-toi si le nombre obtenu est <b>plus grand ou plus petit</b> que celui de départ, et si c'est <b>normal</b>. Des grammes vers des kilogrammes, le nombre doit rétrécir. Il grandit&nbsp;? Tu as multiplié au lieu de diviser.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.4 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o6-s2-vraisemblance">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4</div>
+            <h3 class="step-title">Ce résultat est-il vraisemblable&nbsp;?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> repérer un résultat absurde avant de le rendre, et savoir d'où vient l'erreur.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o6-s2-ex8">
+              <p class="exo-num">Exercice 8 — quatre résultats à juger</p>
+              <p class="exo-enonce">Quatre élèves rendent ces résultats. Sans refaire les calculs&nbsp;: lesquels sont <b>impossibles</b>&nbsp;?</p>
+              <div class="field">
+                <span class="field-type">Exercice 8</span>
+                <div class="field-q">Vraisemblable, ou impossible&nbsp;?</div>
+                <div class="cloze" data-cloze data-cle="ex8">
+                  <table class="saisie">
+                    <tr><th>Le résultat rendu</th><th>Ton verdict</th></tr>
+                    <tr><td class="depart">La vitesse de marche d'un piéton est de <span class="nb">5000 m·s⁻¹</span>.</td>
+                      <td><select class="short" data-answer="non" aria-label="verdict sur la vitesse du pieton"><option value="">choisis…</option><option value="oui">plausible</option><option value="non">impossible</option></select></td></tr>
+                    <tr><td class="depart">La masse d'un élève de seconde est de <span class="nb">0,060 kg</span>.</td>
+                      <td><select class="short" data-answer="non" aria-label="verdict sur la masse de l eleve"><option value="">choisis…</option><option value="oui">plausible</option><option value="non">impossible</option></select></td></tr>
+                    <tr><td class="depart">La masse volumique de l'huile est de <span class="nb">0,92 g·mL⁻¹</span>.</td>
+                      <td><select class="short" data-answer="oui" aria-label="verdict sur la masse volumique de l huile"><option value="">choisis…</option><option value="oui">plausible</option><option value="non">impossible</option></select></td></tr>
+                    <tr><td class="depart">La fréquence d'un son audible est de <span class="nb">4,0 × 10⁶ Hz</span>.</td>
+                      <td><select class="short" data-answer="non" aria-label="verdict sur la frequence du son"><option value="">choisis…</option><option value="oui">plausible</option><option value="non">impossible</option></select></td></tr>
+                    <tr><td class="depart">Dans le premier cas, l'erreur vient</td>
+                      <td><select class="short" data-answer="conv" aria-label="origine de l erreur"><option value="">choisis…</option><option value="conv">d'une conversion&nbsp;: km·h⁻¹ pris pour des m·s⁻¹</option><option value="formule">d'une formule inconnue</option><option value="cs">d'un mauvais arrondi</option><option value="rien">de rien, le résultat est bon</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 8</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Cherche un ordre de grandeur que tu connais pour chaque ligne, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Le piéton à <span class="nb">5000 m·s⁻¹</span>&nbsp;: impossible.</b> Cela ferait <span class="nb">18 000 km·h⁻¹</span>, quinze fois la vitesse du son. Un piéton marche à environ <span class="nb">1,4 m·s⁻¹</span>, soit <span class="nb">5 km·h⁻¹</span>. Tu reconnais le <span class="nb">5</span>&nbsp;? L'élève a trouvé <span class="nb">5 km·h⁻¹</span>, puis a écrit &laquo; m·s⁻¹ &raquo; en multipliant par mille au lieu de diviser par <span class="nb">3,6</span>.</p>
+                  <p><b>L'élève à <span class="nb">0,060 kg</span>&nbsp;: impossible.</b> Soixante grammes, c'est un œuf. L'élève a converti des grammes en kilogrammes une fois de trop&nbsp;: <span class="nb">60 kg</span> était le résultat.</p>
+                  <p><b>L'huile à <span class="nb">0,92 g·mL⁻¹</span>&nbsp;: plausible.</b> L'huile flotte sur l'eau, sa masse volumique doit donc être <b>un peu inférieure</b> à <span class="nb">1,00 g·mL⁻¹</span>. Un peu&nbsp;: <span class="nb">0,92</span> convient, <span class="nb">0,10</span> serait suspect.</p>
+                  <p><b>Le son à <span class="nb">4,0 × 10⁶ Hz</span>&nbsp;: impossible.</b> L'oreille humaine entend de <span class="nb">20 Hz</span> à <span class="nb">20 000 Hz</span>. Quatre millions de hertz, c'est un ultrason d'échographie — pas un son audible. Ici, l'exposant a sauté de trois rangs.</p>
+                  <p><b>Ce que ces quatre lignes ont en commun.</b> Aucune ne demande de refaire le calcul&nbsp;: il suffit de connaître <b>un</b> ordre de grandeur de référence. Un piéton à <span class="nb">5 km·h⁻¹</span>, un élève à <span class="nb">60 kg</span>, l'eau à <span class="nb">1,00 g·mL⁻¹</span>, l'oreille de <span class="nb">20</span> à <span class="nb">20 000 Hz</span>. Ces quelques repères te font gagner plus de points que n'importe quelle formule&nbsp;: <b>trois de ces quatre erreurs sont des conversions</b>, et elles se voient sans calculer.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.5 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o6-s2-deuxautres">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.5</div>
+            <h3 class="step-title">Deux calculs d'autres chapitres</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> vérifier que les cinq étapes tiennent aussi en électricité et en optique. Ce sont les mêmes, toujours.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o6-s2-ex9">
+              <p class="exo-num">Exercice 9 — la loi d'Ohm (thème 2)</p>
+              <p class="exo-enonce">Un résistor de résistance <span class="nb">R = 220 Ω</span> est traversé par un courant d'intensité <span class="nb">I = 45 mA</span>. Calcule la tension à ses bornes.</p>
+              <div class="field">
+                <span class="field-type">Exercice 9</span>
+                <div class="field-q">Quatre décisions.</div>
+                <div class="cloze" data-cloze data-cle="ex9">
+                  <table class="saisie">
+                    <tr><th>L'étape</th><th>Ta réponse</th></tr>
+                    <tr><td class="depart"><b>1.</b> Extraction — l'intensité en unité SI</td>
+                      <td><select class="short" data-answer="i45" aria-label="intensite en unite SI"><option value="">choisis…</option><option value="i45">I = 4,5 × 10⁻² A</option><option value="i45k">I = 45 A</option><option value="i45m">I = 4,5 × 10² A</option></select></td></tr>
+                    <tr><td class="depart"><b>2.</b> Formule du cours</td>
+                      <td><select class="short" data-answer="uri" aria-label="loi d Ohm"><option value="">choisis…</option><option value="uri">U = R × I</option><option value="uir">U = I ÷ R</option><option value="uri2">U = R ÷ I</option></select></td></tr>
+                    <tr><td class="depart"><b>3.</b> Manipulation d'expression algébrique</td>
+                      <td><select class="short" data-answer="pas" aria-label="l etape 3 est-elle necessaire"><option value="">choisis…</option><option value="pas">elle n'apparaît pas</option><option value="oui">elle est nécessaire</option></select></td></tr>
+                    <tr><td class="depart"><b>4.</b> Application numérique — le résultat</td>
+                      <td><select class="short" data-answer="u99" aria-label="resultat de la tension"><option value="">choisis…</option><option value="u99">U = 9,9 V</option><option value="u9900">U = 9900 V</option><option value="u0005">U = 0,20 V</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 9</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Rédige les quatre étapes sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Extraction des informations.</b> <span class="nb">R = 220 Ω</span> · <span class="nb">I = 45 mA = 4,5 × 10⁻² A</span>. On cherche la tension <span class="nb">U</span>, en volts.</p>
+                  <p><b>Formule du cours.</b> <span class="nb">U = R × I</span></p>
+                  <p><i>Pas de manipulation&nbsp;: la formule donne déjà U.</i></p>
+                  <p><b>Application numérique.</b> <span class="nb">U = 220 × 4,5 × 10⁻² = 9,9</span> → <span class="nb">U = <b>9,9 V</b></span></p>
+                  <p><b>Conclusion.</b> La tension aux bornes du résistor est de <b>9,9 V</b>.</p>
+                  <p><b>Deux contrôles.</b> <b>Chiffres significatifs&nbsp;:</b> <span class="nb">45</span> en porte deux, le résultat aussi. <b>Vraisemblance&nbsp;:</b> une dizaine de volts, c'est l'ordre de grandeur d'une pile de <span class="nb">9 V</span> — crédible pour un montage de classe. Si tu avais oublié de convertir les milliampères, tu aurais trouvé <span class="nb">9900 V</span>&nbsp;: de quoi électrocuter la salle. L'invraisemblance saute aux yeux.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exo" data-cle="pc-o6-s2-ex10">
+              <p class="exo-num">Exercice 10 — la réfraction (thème 3)</p>
+              <p class="exo-enonce">Un rayon lumineux passe de l'air (<span class="nb">n₁ = 1,00</span>) dans l'eau (<span class="nb">n₂ = 1,33</span>) avec un angle d'incidence <span class="nb">i₁ = 45°</span>. Calcule l'angle de réfraction <span class="nb">i₂</span>.<br>Donnée&nbsp;: <span class="nb">sin 45° = 0,707</span>.</p>
+              <div class="field">
+                <span class="field-type">Exercice 10</span>
+                <div class="field-q">Quatre décisions.</div>
+                <div class="cloze" data-cloze data-cle="ex10">
+                  <table class="saisie">
+                    <tr><th>L'étape</th><th>Ta réponse</th></tr>
+                    <tr><td class="depart"><b>2.</b> Formule du cours</td>
+                      <td><select class="short" data-answer="snell" aria-label="loi de la refraction"><option value="">choisis…</option><option value="snell">n₁ × sin i₁ = n₂ × sin i₂</option><option value="faux1">n₁ × i₁ = n₂ × i₂</option><option value="faux2">n₁ ÷ sin i₁ = n₂ ÷ sin i₂</option></select></td></tr>
+                    <tr><td class="depart"><b>3.</b> Manipulation — isoler <span class="nb">sin i₂</span></td>
+                      <td><select class="short" data-answer="iso" aria-label="expression de sin i2"><option value="">choisis…</option><option value="iso">sin i₂ = (n₁ × sin i₁) ÷ n₂</option><option value="iso2">sin i₂ = (n₂ × sin i₁) ÷ n₁</option><option value="iso3">sin i₂ = n₁ × n₂ × sin i₁</option></select></td></tr>
+                    <tr><td class="depart"><b>4.</b> Application — la valeur de <span class="nb">sin i₂</span></td>
+                      <td><select class="short" data-answer="v053" aria-label="valeur de sin i2"><option value="">choisis…</option><option value="v053">sin i₂ = 0,532</option><option value="v094">sin i₂ = 0,940</option><option value="v133">sin i₂ = 1,33</option></select></td></tr>
+                    <tr><td class="depart"><b>5.</b> Conclusion — l'angle, et ce qu'il dit</td>
+                      <td><select class="short" data-answer="c32" aria-label="angle de refraction"><option value="">choisis…</option><option value="c32">i₂ = 32° : le rayon se rapproche de la normale</option><option value="c32b">i₂ = 32° : le rayon s'écarte de la normale</option><option value="c70">i₂ = 70° : le rayon s'écarte de la normale</option></select></td></tr>
+                  </table>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 10</button></div>
+                <div class="verdict"></div>
+              </div>
+              <p class="exo-consigne">✏️ Rédige les cinq étapes sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Extraction des informations.</b> <span class="nb">n₁ = 1,00</span> · <span class="nb">i₁ = 45°</span> · <span class="nb">n₂ = 1,33</span>. On cherche l'angle de réfraction <span class="nb">i₂</span>, en degrés. <i>Aucune conversion ici&nbsp;: les indices n'ont pas d'unité, et les angles restent en degrés.</i></p>
+                  <p><b>Formule du cours.</b> <span class="nb">n₁ × sin i₁ = n₂ × sin i₂</span></p>
+                  <p><b>Manipulation d'expression algébrique.</b> Ici elle apparaît, car <span class="nb">i₂</span> est pris dans un sinus, du mauvais côté de l'égalité&nbsp;:<br>
+                    <span class="nb">sin i₂ = (n₁ × sin i₁) ÷ n₂</span> — voir l'<a href="2nde-pc-o7-relation-algebrique.html" style="color:var(--link)">outil 7</a>.</p>
+                  <p><b>Application numérique.</b> <span class="nb">sin i₂ = (1,00 × 0,707) ÷ 1,33 = 0,532</span>, puis à la calculatrice <span class="nb">i₂ = <b>32°</b></span>.</p>
+                  <p><b>Conclusion.</b> L'angle de réfraction est de <b>32°</b>&nbsp;: en entrant dans l'eau, le rayon <b>se rapproche de la normale</b>.</p>
+                  <p><b>Le contrôle, et il est joli.</b> L'eau est plus réfringente que l'air (<span class="nb">n₂ &gt; n₁</span>), donc le rayon <b>doit</b> se rapprocher de la normale&nbsp;: <span class="nb">i₂</span> doit être <b>plus petit</b> que <span class="nb">i₁ = 45°</span>. <span class="nb">32° &lt; 45°</span> ✓. Si tu avais trouvé <span class="nb">70°</span>, c'est que tu aurais inversé les deux indices — et la physique te l'aurait dit avant la correction. <b>Et un sinus ne dépasse jamais 1&nbsp;:</b> une valeur comme <span class="nb">1,33</span> est impossible, quelle que soit la situation.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
     </div><!-- /lockable -->
+
+    <div class="autoeval">
+      <h4>Je sais que j'ai réussi si…</h4>
+      <p class="ae-sous">À cocher pour toi, en fin de révision. Une case que tu ne peux pas cocher t'indique l'étape à relire.</p>
+      <label><input type="checkbox"> j'ai <b>extrait les données</b> avec leur symbole et leur unité, avant tout calcul <span class="nb">(1.1)</span></label>
+      <label><input type="checkbox"> j'ai <b>converti</b> en unités SI, et vérifié que le nombre grandit ou rétrécit dans le bon sens <span class="nb">(1.1, exercice 7)</span></label>
+      <label><input type="checkbox"> j'ai écrit la <b>formule littérale avant les chiffres</b>, sans aucun nombre dedans <span class="nb">(1.2)</span></label>
+      <label><input type="checkbox"> j'ai <b>isolé la grandeur cherchée en lettres</b> avant de remplacer <span class="nb">(1.3)</span></label>
+      <label><input type="checkbox"> mon résultat porte son <b>unité</b> et le bon nombre de <b>chiffres significatifs</b> <span class="nb">(1.4)</span></label>
+      <label><input type="checkbox"> j'ai écrit une <b>phrase de conclusion</b> qui contient le nombre et répond à la question <span class="nb">(1.5)</span></label>
+      <label><input type="checkbox"> j'ai vérifié que le résultat est <b>vraisemblable</b>, par un ordre de grandeur que je connais <span class="nb">(1.5, exercice 8)</span></label>
+    </div>
+
   </section>
 
   <footer class="note">

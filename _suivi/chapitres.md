@@ -278,9 +278,9 @@ un QR code, ni un lien.
 | **o1** | Puissances de dix et écriture scientifique | Écriture scientifique + Convertir | écrit, V1 |
 | **o2** | Les chiffres significatifs | Écriture scientifique (partie basse) | écrit, V1 |
 | **o3** | Sécurité au laboratoire | Sécurité + Pictogrammes | 🔴 priorité labo |
-| **o4** | La verrerie et le matériel de laboratoire | Verrerie + TP9 + ménisque | 🔴 priorité labo |
-| **o5** | Rédiger un compte rendu de TP | Fiche_guide | 🔴 priorité labo |
-| **o6** | Présenter un calcul | Présenter un calcul + le cours en ligne | 🔴 |
+| **o4** | La verrerie et le matériel de laboratoire | Verrerie + TP9 + ménisque | 🆕 20/09 — repris&nbsp;: photos, In/Ex, tolérances, schéma normalisé, 6 exercices, fiche enrichie (In/Ex, matériel, rinçage, tare). **2 figures manquent** (fiole, pipette) |
+| **o5** | Rédiger un compte rendu de TP | Fiche_guide | 🆕 20/09 — repris&nbsp;: protocole/expérience, tableau de mesures, valeur de référence, retour critique, 6 exercices, fiche enrichie. **2 figures manquent** |
+| **o6** | Présenter un calcul | Présenter un calcul + le cours en ligne | 🆕 20/09 — **10 exercices**, méthode complète, fiche enrichie (conversions). ✅ **ouvert au hub** le 20/09 |
 | **o7** | Manipuler une relation algébrique | Manipuler + sa correction | 🟠 |
 | **o8** | Construire et exploiter un graphique | Construire un graphique | 🟡 |
 

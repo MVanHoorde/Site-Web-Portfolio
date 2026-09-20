@@ -181,6 +181,80 @@
   .mn-oeil{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round}
   .mn-vue{stroke:var(--ink-faint);stroke-width:1.6;stroke-dasharray:4 3}
   .mn-lab{font-family:"IBM Plex Mono";font-size:9px;fill:var(--ink-faint);text-anchor:middle}
+
+  /* ---------- Photo + schema cote a cote dans une piece ----------
+     Le schema au trait porte les regles du dessin normalise (c'est
+     du contenu de cours ici) ; la photo montre l'objet reel. Les deux
+     ensemble, jamais l'un a la place de l'autre. */
+  .piece .duo{display:flex;align-items:flex-end;justify-content:center;gap:7px;margin:0 auto 7px}
+  .piece .duo svg{margin:0;max-width:40px;flex:0 0 auto}
+  .piece .duo img{height:58px;width:auto;max-width:62px;object-fit:contain;flex:0 0 auto;
+                  background:#fff;border:1px solid var(--line);border-radius:7px;padding:2px}
+  @media(max-width:420px){.piece .duo img{height:48px;max-width:52px}.piece .duo svg{max-width:34px}}
+  .piece img.seule{height:82px;width:auto;max-width:100%;object-fit:contain;display:block;
+                   margin:0 auto 7px;background:#fff;border:1px solid var(--line);border-radius:7px;padding:2px}
+
+  /* ---------- Figure pleine largeur ---------- */
+  figure.fig{margin:14px 0;border:1px solid var(--line);border-radius:12px;
+             background:var(--surface);padding:10px;overflow:hidden}
+  figure.fig img{display:block;width:100%;height:auto;max-width:100%;border-radius:8px}
+  figure.fig.objet img{width:auto;max-height:340px;margin:0 auto}
+  figure.fig figcaption{font-size:13px;color:var(--ink-soft);line-height:1.45;margin-top:8px}
+  figure.fig .fig-num{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;
+                      color:var(--link);font-weight:600;text-transform:uppercase}
+
+  /* ---------- Cadre de reservation — figure attendue, pas encore la.
+     Doit rester visible et laid : c'est un rappel de tache.
+     Patron repris de 2nde-pc-o3 (.reserve / .rf / .rd / .rr). ---------- */
+  .reserve{border:1.5px dashed var(--activity);border-radius:10px;background:var(--papier,var(--surface-2));
+           padding:14px;margin:14px 0;min-height:180px;display:flex;flex-direction:column;
+           justify-content:center;gap:6px;text-align:center}
+  .reserve .rf{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;
+               color:var(--activity);font-weight:600;word-break:break-all}
+  .reserve .rd{font-size:13px;color:var(--ink-soft);line-height:1.4}
+  .reserve .rr{font-family:"IBM Plex Mono";font-size:10.5px;color:var(--ink-faint)}
+
+  /* ---------- Tableau de valeurs (tolerances) ---------- */
+  .tol{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0}
+  .tol th,.tol td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+  .tol th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:11.5px;
+          letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  .tol td.n{font-family:"IBM Plex Mono";text-align:right;white-space:nowrap}
+  .tol-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+  /* ---------- Bloc « pour aller plus loin », repliable ---------- */
+  details.plus{border:1px solid var(--line);border-left:3px solid var(--ink-faint);
+               border-radius:0 10px 10px 0;background:var(--surface-2);padding:10px 13px;margin:12px 0}
+  details.plus > summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--ink);list-style:none}
+  details.plus > summary::-webkit-details-marker{display:none}
+  details.plus > summary::before{content:"▸ ";color:var(--ink-faint)}
+  details.plus[open] > summary::before{content:"▾ "}
+  details.plus > summary .tag{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.06em;
+        text-transform:uppercase;color:var(--ink-faint);border:1px solid var(--line);
+        border-radius:5px;padding:1px 6px;margin-left:7px;white-space:nowrap}
+  details.plus .pl-corps{font-size:14px;line-height:1.55;margin-top:9px}
+
+  /* ---------- Grille d'auto-evaluation de fin de page ---------- */
+  .autoeval{border:1px solid var(--ok);background:var(--ok-wash);border-radius:12px;padding:13px 15px;margin:16px 0}
+  .autoeval h4{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+               color:var(--ok);margin:0 0 4px}
+  .autoeval .ae-sous{font-size:13.5px;color:var(--ink-soft);margin:0 0 10px}
+  .autoeval label{display:flex;gap:9px;align-items:flex-start;font-size:14.5px;
+                  line-height:1.5;padding:5px 0;cursor:pointer}
+  .autoeval input[type=checkbox]{margin-top:3px;flex:0 0 auto;width:17px;height:17px;accent-color:var(--ok)}
+  /* le label est un conteneur flex : sans wrap, le renvoi d etape en fin de
+     ligne sortait de l ecran du telephone au lieu de passer a la ligne. */
+  .autoeval label{flex-wrap:wrap}
+  .autoeval label .nb{white-space:normal}
+
+  /* ---------- Credits des images (pied de page, replie) ---------- */
+  .credits-images{border-top:1px solid var(--line);margin-top:22px;padding-top:12px}
+  .credits-images > summary{cursor:pointer;font-family:"IBM Plex Mono";font-size:11px;
+        letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);list-style:none}
+  .credits-images > summary::-webkit-details-marker{display:none}
+  .credits-images > summary::before{content:"▸ "}
+  .credits-images[open] > summary::before{content:"▾ "}
+  .credits-images ul{margin:9px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
 </style>
 </head><body data-sequence="pc-o4" data-etapes="ouvertes" data-suivi="pc-o4" data-accueil="sur-place" data-renvoi-texte="Élève de 2nde 1 ou de l'AP ? Connecte-toi : ton professeur verra ton travail et les documents que tu ouvres.">
 
@@ -432,24 +506,24 @@
                 <h4>Pour contenir</h4>
                 <p class="fam-sous">Elles reçoivent, elles mélangent, elles chauffent. Aucune ne sert à mesurer un volume, <b>même celles qui portent des graduations</b>.</p>
                 <div class="grille-v">
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="bécher"><use href="#v-becher"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-becher-photo.jpg" alt="Bécher en verre, gradué sur le côté, avec un bec verseur" loading="lazy" width="803" height="1164"><svg viewBox="0 0 60 100" role="img" aria-label="bécher"><use href="#v-becher"/></svg></span>
                     <div class="nom">bécher</div><div class="use">utilisations diverses</div>
                     <span class="pour">les graduations ne mesurent pas</span></div>
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="erlenmeyer"><use href="#v-erlenmeyer"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-erlenmeyer-photo.jpg" alt="Erlenmeyer : fiole conique à col étroit, graduée" loading="lazy" width="667" height="1107"><svg viewBox="0 0 60 100" role="img" aria-label="erlenmeyer"><use href="#v-erlenmeyer"/></svg></span>
                     <div class="nom">erlenmeyer</div><div class="use">mélanges et agitation de solutions, limite les éclaboussures</div></div>
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="tube à essai"><use href="#v-tube"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-tube-essai-photo.jpg" alt="Tube à essai en verre, cylindrique, à fond arrondi" loading="lazy" width="265" height="1216"><svg viewBox="0 0 60 100" role="img" aria-label="tube à essai"><use href="#v-tube"/></svg></span>
                     <div class="nom">tube à essai</div><div class="use">petites quantités, tests caractéristiques</div></div>
                   <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="fiole jaugée"><use href="#v-fiole"/></svg>
                     <div class="nom">fiole jaugée</div><div class="use">préparation de solutions de concentration précise</div>
                     <span class="pour">→ dilutions, dissolutions</span></div>
                   <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="verre à pied"><use href="#v-verrepied"/></svg>
                     <div class="nom">verre à pied</div><div class="use">utilisations diverses</div></div>
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="cristallisoir"><use href="#v-cristallisoir"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-cristallisoir-photo.jpg" alt="Cristallisoir : récipient cylindrique bas et large" loading="lazy" width="1244" height="834"><svg viewBox="0 0 60 100" role="img" aria-label="cristallisoir"><use href="#v-cristallisoir"/></svg></span>
                     <div class="nom">cristallisoir</div><div class="use">stockage de volumes d'eau ou de glace</div>
                     <span class="pour">→ bain-marie, bain de glace</span></div>
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="coupelle de pesée"><use href="#v-coupelle"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-coupelle-pesee-photo.jpg" alt="Coupelle de pesée : petite soucoupe en verre peu profonde" loading="lazy" width="936" height="516"><svg viewBox="0 0 60 100" role="img" aria-label="coupelle de pesée"><use href="#v-coupelle"/></svg></span>
                     <div class="nom">coupelle de pesée</div><div class="use">pesée de solides (poudre, cristaux)</div></div>
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="ballon"><use href="#v-ballon"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-ballon-photo.jpg" alt="Ballon en verre, sphérique, à col court" loading="lazy" width="913" height="1217"><svg viewBox="0 0 60 100" role="img" aria-label="ballon"><use href="#v-ballon"/></svg></span>
                     <div class="nom">ballon</div><div class="use">mélanger, faire réagir, chauffer les espèces chimiques</div>
                     <span class="pour">→ synthèses, distillations</span></div>
                 </div>
@@ -459,7 +533,7 @@
                 <h4>Pour mesurer un volume</h4>
                 <p class="fam-sous">Celles-ci, et <b>seulement</b> celles-ci, servent à prélever ou à mesurer. Chacune annonce sa précision — c'est l'étape 1.2.</p>
                 <div class="grille-v">
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="éprouvette graduée"><use href="#v-eprouvette"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-eprouvette-photo.jpg" alt="Éprouvette graduée : cylindre haut et étroit sur un pied, gradué sur toute sa hauteur" loading="lazy" width="402" height="1234"><svg viewBox="0 0 60 100" role="img" aria-label="éprouvette graduée"><use href="#v-eprouvette"/></svg></span>
                     <div class="nom">éprouvette graduée</div><div class="use">mesure d'un volume quelconque</div>
                     <span class="prec">précision moyenne</span></div>
                   <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="pipette graduée"><use href="#v-pipettegraduee"/></svg>
@@ -468,11 +542,21 @@
                   <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="pipette jaugée"><use href="#v-pipettejaugee"/></svg>
                     <div class="nom">pipette jaugée <span style="font-weight:400">(à un ou deux traits)</span></div><div class="use">prélèvement d'<b>un seul</b> volume, celui du trait</div>
                     <span class="prec">très bonne précision</span><span class="pour">→ dilutions, prélèvements</span></div>
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="propipette"><use href="#v-propipette"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-propipette-photo.jpg" alt="Propipette : poire en caoutchouc à trois valves repérées A, S et E" loading="lazy" width="858" height="634"><svg viewBox="0 0 60 100" role="img" aria-label="propipette"><use href="#v-propipette"/></svg></span>
                     <div class="nom">propipette</div><div class="use">aspiration de solutions, combinée avec une pipette</div></div>
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="burette"><use href="#v-burette"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-burette-photo.jpg" alt="Burette graduée verticale, fermée en bas par un robinet" loading="lazy" width="240" height="1024"><svg viewBox="0 0 60 100" role="img" aria-label="burette"><use href="#v-burette"/></svg></span>
                     <div class="nom">burette</div><div class="use">versement de volumes variables</div>
                     <span class="prec">très bonne précision</span><span class="pour">→ dosages, dilutions</span></div>
+                </div>
+
+
+                <!-- FIGURE O4-04 et O4-05 — photos attendues, pas encore disponibles -->
+                <div class="reserve" data-figure-id="O4-04 / O4-05">
+                  <div class="rf">o4-fiole-jaugee-photo.jpg &nbsp;·&nbsp; o4-pipette-jaugee-photo.jpg</div>
+                  <div class="rd"><b>Deux photos manquent ici.</b><br>
+                    La <b>fiole jaugée</b>&nbsp;: un <b>unique</b> trait de jauge sur le col — surtout pas une échelle graduée — et les inscriptions lisibles (volume, <span class="nb">20&nbsp;°C</span>, tolérance).<br>
+                    La <b>pipette jaugée à deux traits</b>&nbsp;: les <b>deux</b> traits visibles, l'un au-dessus du renflement, l'autre près de la pointe.</div>
+                  <div class="rr">fond blanc · pièce entière · ≥ 800 px de haut</div>
                 </div>
               </div>
 
@@ -480,16 +564,17 @@
                 <h4>Autre verrerie</h4>
                 <p class="fam-sous">Ni contenir ni mesurer&nbsp;: transférer, séparer, refroidir.</p>
                 <div class="grille-v">
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="entonnoir"><use href="#v-entonnoir"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-entonnoir-photo.jpg" alt="Entonnoir en verre, conique, à tige longue" loading="lazy" width="705" height="1095"><svg viewBox="0 0 60 100" role="img" aria-label="entonnoir"><use href="#v-entonnoir"/></svg></span>
                     <div class="nom">entonnoir</div><div class="use">transfert de solides ou de liquides</div>
                     <span class="pour">→ filtration</span></div>
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="ampoule à décanter"><use href="#v-ampoule"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-ampoule-decanter-photo.jpg" alt="Ampoule à décanter : récipient en forme de poire, robinet en bas, bouchon en haut" loading="lazy" width="448" height="1264"><svg viewBox="0 0 60 100" role="img" aria-label="ampoule à décanter"><use href="#v-ampoule"/></svg></span>
                     <div class="nom">ampoule à décanter</div><div class="use">séparation de liquides de phases différentes</div>
                     <span class="pour">→ extraction liquide-liquide</span></div>
-                  <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="réfrigérant"><use href="#v-refrigerant"/></svg>
+                  <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-refrigerant-photo.jpg" alt="Réfrigérant droit : tube central entouré d'une enveloppe à deux tubulures" loading="lazy" width="374" height="1259"><svg viewBox="0 0 60 100" role="img" aria-label="réfrigérant"><use href="#v-refrigerant"/></svg></span>
                     <div class="nom">réfrigérant <span style="font-weight:400">(droit, à boule, à serpentin)</span></div><div class="use">refroidissement de vapeurs</div>
                     <span class="pour">→ montage à reflux, distillation</span></div>
                 </div>
+
               </div>
             </div>
 
@@ -550,6 +635,20 @@
             <p style="font-size:14.5px;margin:4px 0 10px">C'est le cœur de cette étape, et la source du collègue le dit sans détour&nbsp;: <b>les graduations d'un bécher ne sont pas assez précises pour mesurer un volume</b>. Elles sont là pour te donner un ordre d'idée pendant que tu verses, pas pour établir une mesure.</p>
             <p style="font-size:14.5px;margin:4px 0 12px">À l'inverse, le <b>trait de jauge</b> d'une fiole ou d'une pipette n'indique <b>qu'un seul</b> volume — et il l'indique très précisément. Moins il y a de traits, plus c'est précis&nbsp;: c'est contre-intuitif, et c'est la clé.</p>
 
+            <div class="block-label">Deux façons d'être précis&nbsp;: <span class="nb">In</span> et <span class="nb">Ex</span><span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Regarde le col d'une fiole ou le haut d'une pipette&nbsp;: tu y liras <b>In</b> ou <b>Ex</b> (parfois <b>TC</b> ou <b>TD</b>). Ce n'est pas un numéro de série, c'est la <b>manière</b> dont la pièce est juste.</p>
+            <div class="familles" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr))">
+              <div class="famille">
+                <h4><span class="nb">In</span> — pour contenir</h4>
+                <p class="fam-sous" style="margin-bottom:0">La pièce contient exactement le volume annoncé quand le liquide affleure le trait. Ce qui reste collé aux parois n'a aucune importance&nbsp;: il fait partie du volume.<br><b>→ la fiole jaugée.</b></p>
+              </div>
+              <div class="famille">
+                <h4><span class="nb">Ex</span> — pour délivrer</h4>
+                <p class="fam-sous" style="margin-bottom:0">La pièce <b>délivre</b> exactement le volume annoncé. Le fabricant a tenu compte du film qui reste sur les parois&nbsp;: c'est pourquoi on ne souffle <b>jamais</b> la dernière goutte d'une pipette.<br><b>→ la pipette jaugée, la pipette graduée, la burette.</b></p>
+              </div>
+            </div>
+            <div class="point-cle">Le moyen de s'en souvenir&nbsp;: <b>In</b> comme «&nbsp;<i>dedans</i>&nbsp;», <b>Ex</b> comme «&nbsp;<i>sortie</i>&nbsp;». Une fiole garde, une pipette rend.</div>
+
             <div class="eviter">
               <span class="et">⚠ Les deux confusions à ne pas faire</span>
               <ul>
@@ -585,6 +684,29 @@
             </div>
 
             <div class="point-cle alerte">🧪 <b>Cette échelle n'est pas une opinion&nbsp;: elle a été mesurée en classe.</b> C'est tout l'objet du <b>TP9</b>, «&nbsp;La verrerie au laboratoire&nbsp;»&nbsp;: on prélève 20&nbsp;mL d'eau avec cinq verreries différentes, on <b>pèse</b> ce qu'on a prélevé (l'eau a une masse volumique de <span class="nb">1,0 g·mL⁻¹</span>, donc 1&nbsp;g = 1&nbsp;mL), et on compare la <b>dispersion</b> des résultats de toute la classe. Le classement ci-dessus est ce que les mesures donnent.</div>
+
+            <details class="plus">
+              <summary>Pour aller plus loin&nbsp;: ce que la verrerie a écrit sur elle<span class="tag">non exigible</span></summary>
+              <div class="pl-corps">
+                <p style="margin:0 0 8px">Une verrerie jaugée porte trois indications gravées&nbsp;: son <b>volume</b>, la <b>température</b> à laquelle il est garanti (<span class="nb">20&nbsp;°C</span> — le verre se dilate), et sa <b>tolérance</b>, c'est-à-dire l'écart maximal admis entre le volume annoncé et le volume réel.</p>
+                <p style="margin:0 0 8px">On la range en deux <b>classes</b>&nbsp;: la <b>classe A</b> est la plus serrée&nbsp;; la <b>classe B</b> admet un écart environ <b>une fois et demie à deux fois</b> plus grand. Au lycée, la verrerie est généralement de classe&nbsp;B — largement suffisante ici.</p>
+                <div class="tol-wrap">
+                  <table class="tol">
+                    <caption style="caption-side:top;text-align:left;font-size:12.5px;color:var(--ink-faint);padding-bottom:5px">Tolérances de classe A, à <span class="nb">20&nbsp;°C</span>. Ordres de grandeur&nbsp;: c'est l'inscription de <b>ta</b> verrerie qui fait foi.</caption>
+                    <tr><th>Pièce</th><th>Volume</th><th>Tolérance (classe A)</th></tr>
+                    <tr><td>Fiole jaugée</td><td class="n">25 mL</td><td class="n">± 0,04 mL</td></tr>
+                    <tr><td>Fiole jaugée</td><td class="n">50 mL</td><td class="n">± 0,06 mL</td></tr>
+                    <tr><td>Fiole jaugée</td><td class="n">100 mL</td><td class="n">± 0,10 mL</td></tr>
+                    <tr><td>Fiole jaugée</td><td class="n">250 mL</td><td class="n">± 0,15 mL</td></tr>
+                    <tr><td>Pipette jaugée</td><td class="n">10 mL</td><td class="n">± 0,02 mL</td></tr>
+                    <tr><td>Pipette jaugée</td><td class="n">20 mL</td><td class="n">± 0,03 mL</td></tr>
+                    <tr><td>Pipette jaugée</td><td class="n">25 mL</td><td class="n">± 0,03 mL</td></tr>
+                    <tr><td>Bécher, erlenmeyer</td><td class="n">—</td><td class="n">10 à 20&nbsp;%</td></tr>
+                  </table>
+                </div>
+                <p style="margin:8px 0 0">La dernière ligne vaut la peine d'être regardée&nbsp;: sur un bécher, l'écart se compte en <b>pourcentage</b>, pas en centièmes de millilitre. Prélever «&nbsp;<span class="nb">20&nbsp;mL</span>&nbsp;» au bécher, c'est prendre entre <span class="nb">16</span> et <span class="nb">24&nbsp;mL</span> sans le savoir.</p>
+              </div>
+            </details>
 
             <div class="block-label">Quelle verrerie pour quel volume<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <p style="font-size:14.5px;margin:4px 0 10px">Le nombre de chiffres de l'énoncé te dit quelle précision on attend de toi. C'est un signal, et il est fiable&nbsp;:</p>
@@ -713,76 +835,56 @@
               <li>l'<b>œil</b> doit être <b>au niveau du trait</b> au moment où tu regardes.</li>
             </ul>
 
-            <div class="menisques">
-              <div class="men mauvais">
-                <svg viewBox="0 0 120 130" role="img" aria-label="Œil placé trop haut : la ligne de visée coupe le tube au-dessus du trait, on croit avoir dépassé.">
-                  <rect class="mn-liquide" x="34" y="66" width="34" height="52"/>
-                  <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
-                  <path class="mn-surface" d="M34,62 q17,12 34,0"/>
-                  <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
-                  <line class="mn-vue" x1="70" y1="48" x2="102" y2="34"/>
-                  <path class="mn-oeil" d="M100,28 q10,6 0,12 q-10,-6 0,-12 z"/>
-                  <circle cx="105" cy="34" r="2" fill="var(--ink)"/>
-                  <text class="mn-lab" x="60" y="128">œil trop haut</text>
-                </svg>
-                <div class="lg">La visée plonge&nbsp;: on lit <b>au-dessus</b> du trait et on arrête de verser trop tôt.<span class="verdict-txt">✗ volume trop petit</span></div>
-              </div>
-              <div class="men bon">
-                <svg viewBox="0 0 120 130" role="img" aria-label="Œil au niveau du trait : la ligne de visée est horizontale, le bas du ménisque affleure le trait de jauge.">
-                  <rect class="mn-liquide" x="34" y="72" width="34" height="46"/>
-                  <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
-                  <path class="mn-surface" d="M34,62 q17,12 34,0"/>
-                  <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
-                  <line class="mn-vue" x1="70" y1="72" x2="102" y2="72"/>
-                  <path class="mn-oeil" d="M100,66 q10,6 0,12 q-10,-6 0,-12 z"/>
-                  <circle cx="105" cy="72" r="2" fill="var(--ink)"/>
-                  <text class="mn-lab" x="60" y="128">œil au niveau</text>
-                </svg>
-                <div class="lg">Visée horizontale&nbsp;: le <b>bas du ménisque</b> affleure le trait.<span class="verdict-txt">✓ c'est le bon geste</span></div>
-              </div>
-              <div class="men mauvais">
-                <svg viewBox="0 0 120 130" role="img" aria-label="Œil placé trop bas : la ligne de visée remonte, on croit ne pas avoir atteint le trait et on verse trop.">
-                  <rect class="mn-liquide" x="34" y="78" width="34" height="40"/>
-                  <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
-                  <path class="mn-surface" d="M34,68 q17,12 34,0"/>
-                  <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
-                  <line class="mn-vue" x1="70" y1="96" x2="102" y2="110"/>
-                  <path class="mn-oeil" d="M100,104 q10,6 0,12 q-10,-6 0,-12 z"/>
-                  <circle cx="105" cy="110" r="2" fill="var(--ink)"/>
-                  <text class="mn-lab" x="60" y="128">œil trop bas</text>
-                </svg>
-                <div class="lg">La visée remonte&nbsp;: on croit manquer de liquide et on <b>verse trop</b>.<span class="verdict-txt">✗ volume trop grand</span></div>
-              </div>
-            </div>
+            <!-- FIGURE O4-08 -->
+            <figure class="fig">
+              <img src="../assets/img/pc/2nde-pc-o4/o4-menisque-parallaxe.png"
+                   alt="Trois éprouvettes identiques remplies jusqu'à 25 mL, vues avec l'œil placé à trois hauteurs. Œil trop haut : la visée plonge, on lit au-dessus du trait et le volume obtenu est trop petit. Œil à niveau : la visée est horizontale, le bas du ménisque affleure le trait, c'est le bon geste. Œil trop bas : la visée remonte, on croit manquer de liquide et le volume obtenu est trop grand."
+                   width="1774" height="887">
+              <figcaption><span class="fig-num">Figure 1</span> — la même éprouvette, le même liquide, trois positions d'œil. Seule celle du milieu donne <span class="nb">25&nbsp;mL</span>.</figcaption>
+            </figure>
 
             <div class="point-cle"><b>Pourquoi l'œil compte autant que le liquide.</b> Le trait est <b>devant</b> et <b>derrière</b> le tube. Vu de biais, les deux ne se superposent plus, et tu vises une hauteur qui n'existe pas. Œil au niveau, les deux traits se confondent en un seul&nbsp;: c'est le signe que tu es bien placé.</div>
 
-            <div class="block-label">Les trois autres gestes<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="block-label">Les autres gestes<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <ul style="font-size:14.5px;line-height:1.75;margin:4px 0 12px;padding-left:22px">
               <li><b>La propipette, jamais la bouche.</b> Une pipette s'emplit avec une propipette — on n'aspire <b>jamais</b> à la bouche, quel que soit le produit, même de l'eau. C'est la règle de l'<a href="2nde-pc-o3-securite-laboratoire.html" style="color:var(--link)">outil 3</a>&nbsp;: rien ne se porte à la bouche.</li>
               <li><b>Rincer la coupelle et l'entonnoir.</b> Après avoir versé un solide dans la fiole, il en reste toujours un peu sur la coupelle et dans l'entonnoir. On les <b>rince à l'eau distillée au-dessus de la fiole</b> : sans ce rinçage, une partie du solide pesé n'entre jamais dans la solution, et la concentration est fausse.</li>
               <li><b>Compléter goutte à goutte.</b> Les derniers millilitres avant le trait se versent lentement, à la pissette. Une fiole dépassée ne se rattrape pas&nbsp;: on recommence.</li>
+              <li><b>La pipette et la burette se rincent avec la solution.</b> Voilà qui surprend&nbsp;: une pipette encore humide d'eau distillée <b>diluerait</b> ce qu'elle prélève. On la rince donc avec un peu de la <b>solution à prélever</b>, qu'on jette. Le bécher et l'erlenmeyer qui <i>reçoivent</i>, eux, se rincent à l'<b>eau distillée</b>&nbsp;: quelques gouttes d'eau en plus ne changent rien à la quantité de matière qu'ils contiennent.</li>
+              <li><b>La pipette à deux traits se vide jusqu'au second.</b> Une pipette jaugée à <b>un</b> trait se laisse couler entièrement, pointe contre la paroi&nbsp;; une pipette à <b>deux</b> traits délivre le volume compris <b>entre les deux</b>&nbsp;: on ajuste au trait du haut, puis on arrête au trait du bas. Dans les deux cas, on ne souffle <b>jamais</b> la goutte qui reste — elle a été prévue par le fabricant (c'est le <span class="nb">Ex</span> de l'étape 1.2).</li>
+              <li><b>La balance se met à zéro avant chaque pesée&nbsp;: c'est la <span class="nb">tare</span>.</b> On pose la coupelle vide, on appuie sur <b>Tare</b> (ou <b>0</b>), l'écran revient à <span class="nb">0,00 g</span>&nbsp;: la balance oublie la coupelle. Ce qu'elle affichera ensuite est la masse du <b>solide seul</b>. Sans la tare, on pèse le solide <i>et</i> la coupelle, et toute la suite est fausse.</li>
             </ul>
+
+            <!-- FIGURE O4-11 -->
+            <figure class="fig objet">
+              <img src="../assets/img/pc/2nde-pc-o4/o4-balance-photo.jpg"
+                   alt="Balance électronique de précision, plateau rond sous une cage vitrée qui protège des courants d'air, écran numérique et touches en façade dont la touche de tare."
+                   loading="lazy" width="857" height="869">
+              <figcaption><span class="fig-num">Figure 2</span> — la balance de précision. Les parois vitrées ne sont pas décoratives&nbsp;: un courant d'air suffit à faire bouger le dernier chiffre. On les referme avant de lire.</figcaption>
+            </figure>
 
             <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">
               <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">bas du ménisque sur le trait<br>œil au niveau du trait</div></div></div>
               <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Se <b>baisser</b> jusqu'à avoir le trait à hauteur des yeux, puis ajuster à la pissette.</div></div>
               <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Les deux traits — devant et derrière — se <b>confondent</b> en un seul&nbsp;: tu es au bon niveau.</div></div>
-              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Aspirer à la <b>pipette</b> avec la bouche. Jamais, sous aucun prétexte.</div></div>
+              <div class="ret-t"><span class="ret-e">avant de peser</span><div class="ret-c">Coupelle vide sur le plateau, puis <b>Tare</b>&nbsp;: l'écran doit afficher <span class="nb">0,00 g</span> avant que le solide arrive.</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Aspirer à la <b>pipette</b> avec la bouche. Jamais, sous aucun prétexte. Et rincer une pipette à l'<b>eau</b> juste avant de prélever&nbsp;: elle dilue.</div></div>
             </div>
 
             <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
             <div class="field">
               <span class="field-type">Vérification</span>
-              <div class="field-q">Trois gestes à nommer.</div>
+              <div class="field-q">Quatre gestes à nommer.</div>
               <div class="cloze" data-cloze data-cle="verif">
                 <div style="margin-bottom:9px"><b>1.</b> Sur le trait de jauge, on ajuste
                 <select class="short" data-answer="bas" aria-label="quelle partie du ménisque se place sur le trait"><option value="">choisis…</option><option value="bas">le bas du ménisque</option><option value="haut">le haut du ménisque</option><option value="milieu">le milieu du ménisque</option><option value="bord">le bord contre le verre</option></select>.</div>
                 <div style="margin-bottom:9px"><b>2.</b> Pour lire, l'œil doit être
                 <select class="short" data-answer="niveau" aria-label="position de l'œil pour lire un volume"><option value="">choisis…</option><option value="niveau">au niveau du trait</option><option value="dessus">au-dessus du trait</option><option value="dessous">en dessous du trait</option><option value="loin">le plus loin possible</option></select>.</div>
-                <div><b>3.</b> Une pipette s'emplit avec
+                <div style="margin-bottom:9px"><b>3.</b> Une pipette s'emplit avec
                 <select class="short" data-answer="propipette" aria-label="avec quoi remplir une pipette"><option value="">choisis…</option><option value="propipette">une propipette</option><option value="bouche">la bouche</option><option value="pissette">une pissette</option><option value="entonnoir">un entonnoir</option></select>.</div>
+                <div><b>4.</b> Juste avant de prélever, une pipette se rince
+                <select class="short" data-answer="solution" aria-label="avec quoi rincer une pipette avant de prélever"><option value="">choisis…</option><option value="solution">avec la solution à prélever</option><option value="eau">à l'eau distillée</option><option value="rien">pas du tout</option><option value="air">en soufflant dedans</option></select>.</div>
               </div>
               <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
@@ -799,26 +901,53 @@
           <div class="card-top">
             <div class="step-kicker">ÉTAPE 1.4</div>
             <h3 class="step-title">Le reste du matériel</h3>
-            <div class="objective"><span>🎯</span><span><b>Objectif —</b> nommer les cinq objets non en verre qu'on retrouve à chaque TP.</span></div>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> nommer les objets non en verre qu'on retrouve à chaque TP, et savoir à quoi sert chacun.</span></div>
           </div>
           <div class="card-body">
 
-            <div class="block-label">Cinq pièces, une ligne chacune<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="block-label">Monter, chauffer, peser<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
             <div class="famille" style="margin:10px 0">
               <div class="grille-v">
-                <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="chauffe-ballon"><use href="#v-chauffeballon"/></svg>
+                <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-chauffe-ballon-photo.jpg" alt="Chauffe-ballon : socle électrique à cuve hémisphérique, avec son réglage de température" loading="lazy" width="969" height="760"><svg viewBox="0 0 60 100" role="img" aria-label="chauffe-ballon"><use href="#v-chauffeballon"/></svg></span>
                   <div class="nom">chauffe-ballon</div><div class="use">chauffage du mélange réactionnel mis dans un ballon</div>
                   <span class="pour">→ synthèses, distillations</span></div>
-                <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="support élévateur"><use href="#v-elevateur"/></svg>
+                <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-support-elevateur-photo.jpg" alt="Support élévateur : plateau métallique monté sur un mécanisme à ciseaux réglable par une vis" loading="lazy" width="822" height="792"><svg viewBox="0 0 60 100" role="img" aria-label="support élévateur"><use href="#v-elevateur"/></svg></span>
                   <div class="nom">support élévateur</div><div class="use">élévation du chauffe-ballon lors des montages de chimie organique</div>
                   <span class="pour">→ synthèses, distillations</span></div>
-                <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="potence avec pinces et noix de serrage"><use href="#v-potence"/></svg>
+                <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-potence-photo.jpg" alt="Potence : tige verticale sur un socle lourd, garnie de pinces et de noix de serrage" loading="lazy" width="613" height="1018"><svg viewBox="0 0 60 100" role="img" aria-label="potence <span style="font-weight:400">(pinces, noix)</span>"><use href="#v-potence"/></svg></span>
                   <div class="nom">potence <span style="font-weight:400">(pinces, noix)</span></div><div class="use">maintien pour divers montages</div>
                   <span class="pour">→ synthèses, distillations</span></div>
-                <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="balance"><use href="#v-balance"/></svg>
+                <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-balance-photo.jpg" alt="Balance électronique de précision, sous cage vitrée" loading="lazy" width="857" height="869"><svg viewBox="0 0 60 100" role="img" aria-label="balance"><use href="#v-balance"/></svg></span>
                   <div class="nom">balance</div><div class="use">pesée d'un solide, sur une coupelle et après <b>tare</b></div></div>
-                <div class="piece"><svg viewBox="0 0 60 100" role="img" aria-label="spatule"><use href="#v-spatule"/></svg>
+                <div class="piece"><span class="duo"><img src="../assets/img/pc/2nde-pc-o4/o4-spatule-photo.jpg" alt="Spatule : longue tige métallique, plate à un bout et creuse à l'autre" loading="lazy" width="1208" height="781"><svg viewBox="0 0 60 100" role="img" aria-label="spatule"><use href="#v-spatule"/></svg></span>
                   <div class="nom">spatule</div><div class="use">prélèvement d'un solide — <b>jamais les doigts</b></div></div>
+              </div>
+            </div>
+
+            <div class="block-label">Celui que tu auras sous la main à chaque TP<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Ceux-là ne sont ni de la verrerie de mesure ni du gros matériel. Ils traînent sur la paillasse, on s'en sert sans y penser — et chacun a pourtant un usage précis.</p>
+            <div class="famille" style="margin:10px 0">
+              <div class="grille-v">
+                <div class="piece"><img class="seule" src="../assets/img/pc/2nde-pc-o4/o4-pissette-photo.jpg" alt="Pissette : flacon souple en plastique portant l'étiquette « eau distillée », muni d'un tube verseur recourbé" loading="lazy" width="687" height="1253">
+                  <div class="nom">pissette</div><div class="use">jet d'eau distillée dirigé, pour rincer et pour compléter au trait</div>
+                  <span class="pour">→ ajustage, rinçages</span></div>
+                <div class="piece"><img class="seule" src="../assets/img/pc/2nde-pc-o4/o4-agitateur-magnetique-photo.jpg" alt="Agitateur magnétique chauffant : boîtier à plaque chauffante avec deux molettes, et son barreau aimanté blanc posé à côté" loading="lazy" width="1174" height="934">
+                  <div class="nom">agitateur magnétique</div><div class="use">mélange sans intervenir&nbsp;: le <b>barreau aimanté</b> tourne au fond du bécher</div>
+                  <span class="pour">→ dissolutions</span></div>
+                <div class="piece"><img class="seule" src="../assets/img/pc/2nde-pc-o4/o4-verre-montre-photo.jpg" alt="Verre de montre : disque de verre légèrement creux" loading="lazy" width="1157" height="542">
+                  <div class="nom">verre de montre</div><div class="use">couvre un bécher, ou reçoit un solide à sécher</div></div>
+                <div class="piece"><img class="seule" src="../assets/img/pc/2nde-pc-o4/o4-pince-bois-photo.jpg" alt="Pince en bois à deux branches, serrées par un ressort métallique" loading="lazy" width="1237" height="813">
+                  <div class="nom">pince en bois</div><div class="use">tient un tube à essai qu'on chauffe — <b>jamais les doigts</b></div></div>
+                <div class="piece"><img class="seule" src="../assets/img/pc/2nde-pc-o4/o4-thermometre-photo.jpg" alt="Thermomètre numérique : boîtier à écran relié par un câble à une longue sonde métallique fine" loading="lazy" width="1206" height="1157">
+                  <div class="nom">thermomètre</div><div class="use">mesure une température&nbsp;; la sonde plonge <b>sans toucher</b> le fond</div></div>
+                <div class="piece"><img class="seule" src="../assets/img/pc/2nde-pc-o4/o4-compte-gouttes-photo.jpg" alt="Compte-gouttes en verre à embout effilé, surmonté d'une poire en caoutchouc rouge" loading="lazy" width="930" height="1093">
+                  <div class="nom">compte-gouttes</div><div class="use">ajoute un réactif <b>goutte à goutte</b></div>
+                  <span class="pour">→ tests, indicateurs colorés</span></div>
+                <div class="piece"><img class="seule" src="../assets/img/pc/2nde-pc-o4/o4-pipettes-pasteur-photo.jpg" alt="Pipettes Pasteur en plastique transparent, à bulbe souple intégré" loading="lazy" width="1176" height="1212">
+                  <div class="nom">pipette Pasteur</div><div class="use">même usage, en plastique et jetable — elle ne mesure <b>pas</b> un volume</div></div>
+                <div class="piece"><img class="seule" src="../assets/img/pc/2nde-pc-o4/o4-entonnoir-photo.jpg" alt="Entonnoir en verre, conique, à tige longue" loading="lazy" width="705" height="1095">
+                  <div class="nom">entonnoir</div><div class="use">transvase sans perte&nbsp;; garni d'un papier filtre, il <b>filtre</b></div>
+                  <span class="pour">→ filtration</span></div>
               </div>
             </div>
 
@@ -840,6 +969,115 @@
                 <select class="short" data-answer="tare" aria-label="geste avant d'ajouter le solide"><option value="">choisis…</option><option value="tare">tare la balance</option><option value="note">note la masse de la coupelle</option><option value="essuie">essuie la coupelle</option><option value="attend">attend une minute</option></select>.</div>
                 <div><b>2.</b> Le solide se prélève avec
                 <select class="short" data-answer="spatule" aria-label="avec quoi prélever un solide"><option value="">choisis…</option><option value="spatule">une spatule</option><option value="doigts">les doigts</option><option value="pipette">une pipette</option><option value="entonnoir">un entonnoir</option></select>.</div>
+              </div>
+              <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
+              <div class="verdict"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ---------- 1.5 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s1-schema">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.5</div>
+            <h3 class="step-title">Dessiner le montage</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> représenter une expérience par un <b>schéma normalisé</b>, et savoir en quoi il diffère d'un dessin.</span></div>
+          </div>
+          <div class="card-body">
+
+            <p style="font-size:14.5px;margin:4px 0 12px">Le programme demande de &laquo;&nbsp;<b>représenter la situation par un schéma</b>&nbsp;&raquo;. Ce n'est pas la même chose que dessiner ce qu'on voit&nbsp;: un schéma <b>retire</b> tout ce qui ne compte pas pour ne garder que ce qui explique. C'est pour cela qu'il se lit en une seconde, alors qu'une photo demande à être déchiffrée.</p>
+
+            <div class="block-label">Un schéma n'est pas un dessin<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <ul style="font-size:14.5px;line-height:1.75;margin:4px 0 12px;padding-left:22px">
+              <li><b>Au crayon à papier et à la règle.</b> Un schéma se corrige&nbsp;; au stylo, il se refait.</li>
+              <li><b>En deux dimensions, jamais en perspective.</b> Pas d'ombre, pas de relief, pas d'épaisseur de verre&nbsp;: la verrerie se ramène à son <b>contour</b>.</li>
+              <li><b>Des formes conventionnelles.</b> Un bécher est un rectangle à bec, un erlenmeyer un trapèze à col, une fiole jaugée une poire à long col avec <b>un</b> trait. On dessine la forme admise, pas celle qu'on a sous les yeux.</li>
+              <li><b>Le contenu se montre.</b> Le liquide s'arrête à un niveau tracé à la règle&nbsp;; un solide se hachure.</li>
+              <li><b>Les légendes sont horizontales</b>, alignées sur le côté, reliées par des traits à la règle qui <b>ne se croisent pas</b> et ne touchent pas le dessin.</li>
+              <li><b>Un titre</b>, en dessous&nbsp;: ce que le schéma représente, en quelques mots.</li>
+            </ul>
+
+            <!-- FIGURE O4-15 -->
+            <figure class="fig">
+              <img src="../assets/img/pc/2nde-pc-o4/o4-planche-schemas-trait.jpg"
+                   alt="Huit verreries dessinées au trait, alignées : bécher gradué à bec verseur, erlenmeyer, tube à essai, fiole jaugée à un seul trait portant 100 mL et 20 degrés, verre à pied, cristallisoir, verre de montre, ballon."
+                   loading="lazy" width="1680" height="944">
+              <figcaption><span class="fig-num">Figure 3</span> — les formes à connaître, telles qu'on les trace. Compare avec les photos de l'étape&nbsp;1.1&nbsp;: c'est le même objet, débarrassé de tout ce qui n'apprend rien. Remarque le <b>trait unique</b> de la fiole jaugée.</figcaption>
+            </figure>
+
+            <div class="point-cle"><b>Le test qui ne trompe pas&nbsp;:</b> si ton voisin peut <b>refaire ton expérience</b> avec ton seul schéma sous les yeux, il est bon. S'il doit te demander ce qu'il y a dans le bécher, il manque une légende.</div>
+
+            <div class="block-label">De la paillasse au schéma<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+
+            <!-- FIGURE O4-18 -->
+            <figure class="fig">
+              <img src="../assets/img/pc/2nde-pc-o4/o4-paillasse-dilution.jpg"
+                   alt="Paillasse préparée pour une dilution : pissette d'eau distillée, bécher, fiole jaugée de 250 mL contenant une solution bleue, éprouvette graduée, pipette jaugée et sa propipette, coupelle de pesée et spatule."
+                   loading="lazy" width="1680" height="944">
+              <figcaption><span class="fig-num">Figure 4</span> — une paillasse prête pour une dilution. Exercice de lecture&nbsp;: nomme chaque pièce, puis demande-toi laquelle mesure vraiment un volume. Il y en a deux.</figcaption>
+            </figure>
+
+            <details class="plus">
+              <summary>Pour aller plus loin&nbsp;: des montages que tu verras plus tard<span class="tag">hors programme de 2<sup>de</sup></span></summary>
+              <div class="pl-corps">
+                <p style="margin:0 0 10px">Ces cinq montages ne sont <b>pas au programme de seconde</b> et ne seront pas évalués. Ils sont là pour une seule raison&nbsp;: te montrer que les pièces de l'étape&nbsp;1.1 s'assemblent, et que la verrerie que tu apprends à nommer cette année est celle que tu retrouveras en première et en terminale.</p>
+                <figure class="fig">
+                  <img src="../assets/img/pc/2nde-pc-o4/o4-paillasse-reflux.jpg"
+                       alt="Montage de chauffage à reflux : ballon posé sur un chauffe-ballon, surmonté d'un réfrigérant vertical parcouru par deux tuyaux d'eau, le tout tenu par des pinces sur une potence."
+                       loading="lazy" width="1680" height="944">
+                  <figcaption><span class="fig-num">Figure 5</span> — chauffage à reflux&nbsp;: on chauffe sans rien perdre, les vapeurs se condensent dans le réfrigérant et retombent dans le ballon.</figcaption>
+                </figure>
+                <figure class="fig">
+                  <img src="../assets/img/pc/2nde-pc-o4/o4-paillasse-extraction.jpg"
+                       alt="Extraction liquide-liquide : ampoule à décanter tenue par une pince sur une potence, contenant deux liquides superposés de couleurs différentes, un erlenmeyer dessous pour recueillir la phase inférieure."
+                       loading="lazy" width="1680" height="944">
+                  <figcaption><span class="fig-num">Figure 6</span> — extraction liquide-liquide&nbsp;: l'ampoule à décanter sépare deux liquides qui ne se mélangent pas.</figcaption>
+                </figure>
+                <figure class="fig">
+                  <img src="../assets/img/pc/2nde-pc-o4/o4-paillasse-filtration.jpg"
+                       alt="Filtration sous vide : entonnoir Büchner en porcelaine emmanché sur une fiole à vide par un joint de caoutchouc, un tuyau reliant la fiole à la trompe à eau."
+                       loading="lazy" width="1680" height="944">
+                  <figcaption><span class="fig-num">Figure 7</span> — filtration sous vide&nbsp;: l'aspiration traverse le filtre bien plus vite que la pesanteur seule.</figcaption>
+                </figure>
+                <figure class="fig">
+                  <img src="../assets/img/pc/2nde-pc-o4/o4-paillasse-titrage.jpg"
+                       alt="Titrage suivi par conductimétrie : burette graduée fixée au-dessus d'un erlenmeyer posé sur un agitateur magnétique, sonde d'un conductimètre plongée dans la solution."
+                       loading="lazy" width="1680" height="944">
+                  <figcaption><span class="fig-num">Figure 8</span> — titrage&nbsp;: la burette verse goutte à goutte pendant qu'un appareil suit le changement dans la solution.</figcaption>
+                </figure>
+                <figure class="fig">
+                  <img src="../assets/img/pc/2nde-pc-o4/o4-paillasse-calorimetrie.jpg"
+                       alt="Mesure de température assistée par ordinateur : calorimètre fermé par un couvercle traversé d'une sonde de température, reliée à une interface puis à un ordinateur portable qui trace la courbe."
+                       loading="lazy" width="1680" height="944">
+                  <figcaption><span class="fig-num">Figure 9</span> — mesure assistée par ordinateur&nbsp;: la sonde relaie la température en continu, la courbe se trace toute seule.</figcaption>
+                </figure>
+              </div>
+            </details>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">crayon · règle · 2D · légendes horizontales · titre</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Tracer les <b>contours</b>, poser le niveau de liquide, puis légender à côté — jamais sur le dessin.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Quelqu'un qui n'était pas là peut-il <b>refaire</b> l'expérience avec ce seul schéma&nbsp;?</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Dessiner en <b>perspective</b>, avec des ombres. C'est plus joli, c'est moins lisible, et ça coûte des points.</div></div>
+            </div>
+
+            <div class="block-label">À toi — vérifie que tu as suivi<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="field">
+              <span class="field-type">Vérification</span>
+              <div class="field-q">Trois règles du schéma.</div>
+              <div class="cloze" data-cloze data-cle="verif">
+                <div style="margin-bottom:9px"><b>1.</b> Un schéma de montage se dessine
+                <select class="short" data-answer="2d" aria-label="en quelle dimension dessiner un schéma"><option value="">choisis…</option><option value="2d">à plat, en deux dimensions</option><option value="3d">en perspective, avec du relief</option><option value="ombre">avec des ombres portées</option><option value="couleur">en couleur, au feutre</option></select>.</div>
+                <div style="margin-bottom:9px"><b>2.</b> Les légendes se placent
+                <select class="short" data-answer="cote" aria-label="où placer les légendes"><option value="">choisis…</option><option value="cote">horizontalement, sur le côté, reliées par un trait</option><option value="dessus">à l'intérieur du dessin</option><option value="oblique">en oblique, le long des pièces</option><option value="sans">nulle part, le dessin se suffit</option></select>.</div>
+                <div><b>3.</b> Sur un schéma, une fiole jaugée porte
+                <select class="short" data-answer="un" aria-label="combien de traits sur une fiole jaugée"><option value="">choisis…</option><option value="un">un seul trait</option><option value="echelle">une échelle graduée complète</option><option value="deux">deux traits</option><option value="aucun">aucun trait</option></select>.</div>
               </div>
               <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier</button></div>
               <div class="verdict"></div>
@@ -1177,13 +1415,102 @@
         </div>
       </div>
 
+
+      <!-- ---------- 2.6 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s2-copie">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.6</div>
+            <h3 class="step-title">La copie d'un élève à corriger</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> repérer une erreur de verrerie dans un compte rendu, et proposer le bon geste.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo" data-cle="pc-o4-s2-ex6">
+              <p class="exo-num">Exercice 6</p>
+              <p class="exo-enonce">Le protocole demandait&nbsp;: &laquo;&nbsp;<i>prélever <span class="nb">20,0 mL</span> de la solution mère et les verser dans une fiole jaugée de <span class="nb">100 mL</span></i>&nbsp;&raquo;. Voici ce qu'un élève a écrit dans son compte rendu.</p>
+
+              <div class="eviter">
+                <span class="et">✍ La copie de l'élève</span>
+                <p style="margin:6px 0 0;font-size:14.5px;line-height:1.7"><i>&laquo;&nbsp;J'ai pris un bécher de <span class="nb">50 mL</span> et j'ai versé la solution jusqu'à la graduation <span class="nb">20</span>. Comme j'avais un peu dépassé, j'ai enlevé ce qu'il y avait en trop à la pipette. Puis j'ai tout versé dans la fiole jaugée, que j'avais rincée à l'eau distillée juste avant.&nbsp;&raquo;</i></p>
+              </div>
+
+              <div class="field">
+                <span class="field-type">Exercice 6</span>
+                <div class="field-q">Trois questions sur cette copie.</div>
+                <div class="cloze" data-cloze data-cle="ex6">
+                  <div style="margin-bottom:10px"><b>1.</b> L'erreur principale est
+                  <select class="short" data-answer="becher" aria-label="erreur principale de la copie"><option value="">choisis…</option><option value="becher">d'avoir mesuré un volume avec un bécher</option><option value="fiole">d'avoir utilisé une fiole jaugée</option><option value="rincage">d'avoir rincé la fiole à l'eau distillée</option><option value="aucune">il n'y a pas d'erreur</option></select>.</div>
+                  <div style="margin-bottom:10px"><b>2.</b> Pour prélever <span class="nb">20,0 mL</span>, il fallait prendre
+                  <select class="short" data-answer="pipettej" aria-label="verrerie correcte pour 20,0 mL"><option value="">choisis…</option><option value="pipettej">une pipette jaugée de 20 mL</option><option value="eprouvette">une éprouvette graduée de 50 mL</option><option value="becher">un bécher de 50 mL</option><option value="fiole">une fiole jaugée de 20 mL</option></select>.</div>
+                  <div><b>3.</b> Avant de prélever, cette pièce se rince
+                  <select class="short" data-answer="solution" aria-label="avec quoi rincer avant de prélever"><option value="">choisis…</option><option value="solution">avec un peu de la solution à prélever</option><option value="eau">à l'eau distillée</option><option value="rien">pas du tout</option><option value="savon">à l'eau savonneuse</option></select>.</div>
+                </div>
+                <div style="margin-top:12px"><button class="btn ghost" data-check-cloze>Vérifier l'exercice 6</button></div>
+                <div class="verdict"></div>
+              </div>
+
+              <p class="exo-consigne">✏️ Cherche d'abord sur ta feuille, puis compare.</p>
+              <details class="exo-corr">
+                <summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>1 · le bécher.</b> L'énoncé demandait <span class="nb">20,0 mL</span>&nbsp;: trois chiffres significatifs, donc de la verrerie <b>jaugée</b>. Les graduations d'un bécher donnent un ordre d'idée à <b>10 ou 20&nbsp;%</b> près&nbsp;: en visant <span class="nb">20</span>, cet élève a pu prendre entre <span class="nb">16</span> et <span class="nb">24&nbsp;mL</span>. Toute la concentration de sa solution fille est fausse — et rien, dans son compte rendu, ne le laisse voir.</p>
+                  <p><b>Et le geste de rattrapage aggrave tout.</b> &laquo;&nbsp;Enlever ce qu'il y avait en trop à la pipette&nbsp;&raquo; ne corrige rien&nbsp;: il ne savait déjà pas combien il avait versé. On ne rattrape pas une mesure imprécise en retirant une quantité imprécise. On recommence.</p>
+                  <p><b>2 · la pipette jaugée de 20 mL.</b> Un seul trait, un seul volume, et c'est exactement celui qu'on demande. À défaut, une pipette graduée de 20 mL conviendrait, avec une précision un peu moindre. L'éprouvette, elle, ne tient pas le dixième de millilitre.</p>
+                  <p><b>3 · avec la solution à prélever.</b> C'est le point qui surprend tout le monde. Une pipette rincée à l'eau garde un film d'eau à l'intérieur, qui <b>dilue</b> la solution aspirée. On la rince donc deux fois avec un peu de la solution elle-même, qu'on jette.</p>
+                  <p><b>Ce que l'élève a fait de juste, en revanche&nbsp;:</b> rincer la <b>fiole</b> à l'eau distillée. Elle <i>reçoit</i> et sera complétée à l'eau jusqu'au trait&nbsp;: quelques gouttes d'eau déjà présentes ne changent rien. Rincer avec la solution mère, là, aurait été une faute.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
     </div><!-- /lockable -->
+
+    <div class="autoeval">
+      <h4>Je sais que j'ai réussi si…</h4>
+      <p class="ae-sous">À cocher pour toi, en fin de révision. Une case que tu ne peux pas cocher t'indique l'étape à relire.</p>
+      <label><input type="checkbox"> je sais <b>nommer</b> chaque pièce et dire si elle sert à contenir, à mesurer, ou à autre chose <span class="nb">(1.1)</span></label>
+      <label><input type="checkbox"> je choisis ma verrerie d'après le <b>nombre de chiffres</b> du volume demandé <span class="nb">(1.2)</span></label>
+      <label><input type="checkbox"> je sais pourquoi on ne mesure <b>jamais</b> un volume au bécher <span class="nb">(1.2)</span></label>
+      <label><input type="checkbox"> je lis un volume le <b>bas du ménisque sur le trait</b>, l'œil à hauteur <span class="nb">(1.3)</span></label>
+      <label><input type="checkbox"> je sais ce qui se rince à l'eau distillée et ce qui se rince <b>avec la solution</b> <span class="nb">(1.3)</span></label>
+      <label><input type="checkbox"> je <b>tare</b> la balance avant d'ajouter le solide <span class="nb">(1.3, 1.4)</span></label>
+      <label><input type="checkbox"> je sais dessiner un <b>schéma normalisé</b> légendé, et pourquoi ce n'est pas un dessin <span class="nb">(1.5)</span></label>
+      <label><input type="checkbox"> je peux écrire le <b>protocole de dissolution</b> de mémoire, dans l'ordre <span class="nb">(exercice 5)</span></label>
+    </div>
   </section>
 
   <footer class="note">
     <b>Outil transversal — proposition V1 du 28/08/2026.</b> Cet outil n'est pas un chapitre&nbsp;: il sert dans tous les TP de l'année, et il reste ouvert toute l'année. Les exercices se corrigent <b>en direct</b> par le navigateur, et chacun porte en plus son <b>corrigé rédigé</b>, dépliable à tout moment. 🖨️ La <a href="../assets/pdf/pc/fiches/fiche-2nde-o4-verrerie-materiel.pdf" style="color:var(--link)">fiche outil (PDF)</a> reprend toute la méthode, planche de verrerie comprise, sur une feuille à coller.
   </footer>
+
+  <!-- Bloc rédigé à partir de assets/img/pc/2nde-pc-o4/CREDITS.md,
+       qui reste la source de vérité. Ne rien saisir ici sans l'y porter. -->
+  <details class="credits-images">
+    <summary>Crédits des images</summary>
+    <ul>
+      <li><b>Figure 1</b> — le ménisque et la position de l'œil&nbsp;: image générée par intelligence artificielle (OpenAI), d'après une description de L. Van Hoorde.</li>
+      <li><b>Figure 2</b> — la balance de précision&nbsp;: image générée par intelligence artificielle (OpenAI), d'après une description de L. Van Hoorde.</li>
+      <li><b>Figure 3</b> — les huit formes au trait&nbsp;: image générée par intelligence artificielle (OpenAI), d'après une description de L. Van Hoorde.</li>
+      <li><b>Figure 4</b> — une paillasse prête pour une dilution&nbsp;: image générée par intelligence artificielle (OpenAI), d'après une description de L. Van Hoorde.</li>
+      <li><b>Figure 5</b> — chauffage à reflux&nbsp;: image générée par intelligence artificielle (OpenAI), d'après une description de L. Van Hoorde.</li>
+      <li><b>Figure 6</b> — extraction liquide-liquide&nbsp;: image générée par intelligence artificielle (OpenAI), d'après une description de L. Van Hoorde.</li>
+      <li><b>Figure 7</b> — filtration sous vide&nbsp;: image générée par intelligence artificielle (OpenAI), d'après une description de L. Van Hoorde.</li>
+      <li><b>Figure 8</b> — titrage&nbsp;: image générée par intelligence artificielle (OpenAI), d'après une description de L. Van Hoorde.</li>
+      <li><b>Figure 9</b> — mesure assistée par ordinateur&nbsp;: image générée par intelligence artificielle (OpenAI), d'après une description de L. Van Hoorde.</li>
+    </ul>
+    <p style="font-size:12.5px;color:var(--ink-faint);line-height:1.6;margin:9px 0 0">
+      Les photos de verrerie et de matériel des étapes&nbsp;1.1 et&nbsp;1.4 ont la même
+      origine. Les schémas au trait, l'échelle de précision et les vignettes des
+      exercices sont dessinés pour cette page. Détail par fichier&nbsp;:
+      <span class="nb">assets/img/pc/2nde-pc-o4/CREDITS.md</span>.
+    </p>
+  </details>
 </div>
 
 <script src="../assets/js/sequence-snt.js?v=47"></script>
