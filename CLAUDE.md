@@ -149,6 +149,7 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
 | `_suivi/JOURNAL.md` | 🆕 Historique en ajout seul. Pas relu par défaut |
 | `_suivi/chapitres.md` | Tableau de bord **par chapitre / par séquence**, avec les jalons |
 | `_suivi/IDEES.md` | Réservoir d'idées à trier |
+| `_suivi/o7-o8-a-revoir.md` | 🆕 **Le fichier à ouvrir pour reprendre les outils 7 et 8** — quatre décisions à trancher, 3 figures et 8 captures à produire, 17 procédures de calculatrice à confirmer, et ce qu’il ne faut **pas** rouvrir |
 | `verifier.mjs` | 🆕 `node verifier.mjs` rejoue la checklist · `--bilan` sort un digest compact du dépôt · `--qcm` liste les biais de longueur des QCM. **Repère au 19/09/2026 : exactement 19 problèmes** — les 18 liens `cfa/outil-*` vers des fiches à imprimer pas encore écrites, **plus** un indice de niveau 1 qui livre la réponse dans `term-es-t2-c2` (2 cas, à reprendre). Tout autre écart est une régression. 🆕 Sort aussi, en vigilance, les **contenus hors d'atteinte depuis l'accueil** : ce que les élèves et les collègues ne voient pas |
 | `exporter-fiches.mjs` | 🆕 `node exporter-fiches.mjs` régénère les **fiches PDF de 2nde PC** depuis `fiches/*.html` vers `assets/pdf/pc/fiches/`, et contrôle chaque export à la mesure (A4 `209,9×297,0 mm`, une `.feuille` = une page, polices incorporées). **Le HTML est la source, le PDF un export** — jamais l'inverse |
 | `_suivi/BDD-cadrage.md` | 🆕 Volet base de données : architecture, décisions, modèle de données, jalons |

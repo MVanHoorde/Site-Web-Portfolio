@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil 8 · Construire un graphique avec un tableur — Physique-Chimie 2nde</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- Client de base de données partagé. Absent ou non configuré : l'outil
+     fonctionne, sans enregistrement. Sans "defer" à dessein : le script de
+     la page, en fin de body, doit le trouver déjà chargé. -->
+<script src="../assets/js/progression.js?v=17"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=43">
+
+<!-- ============================================================
+     OUTIL 8 · CONSTRUIRE UN GRAPHIQUE AVEC UN TABLEUR
+     Page sœur de l'outil 8, produite le 20/09/2026.
+
+     🔴 CE N'EST PAS UN NOUVEL OUTIL. La numérotation des outils de
+     physique-chimie reste 1 → 8 : cette page ne figure pas sur le
+     hub, on n'y entre que depuis l'outil 8, dont elle prolonge la
+     méthode. Le tronc commun (tracer et exploiter à la main) est un
+     PRÉREQUIS AFFICHÉ : on ne laisse pas la machine calculer une
+     pente que l'élève ne sait pas définir.
+
+     🔴 LES MÊMES ÉTAPES, LES MÊMES INTITULÉS, POUR TOUS LES
+     MATÉRIELS. Un élève qui change de logiciel ou de calculatrice
+     doit retrouver la même liste, dans le même ordre. C'est pour
+     cela que la page est GÉNÉRÉE à partir d'une table de parcours
+     et non écrite à la main.
+
+     🔴 STATUT DE VÉRIFICATION — chaque parcours porte data-verifie
+     sur chacune de ses étapes, et la SOURCE est citée juste au-dessus
+     en commentaire HTML. « non » = procédure à confirmer sur la
+     machine : elle est alors signalée À L'ÉLÈVE aussi, avec un repli.
+     Une procédure fausse fait perdre vingt minutes à un élève seul
+     chez lui : c'est pire qu'une procédure absente.
+
+     🔴 LE JEU DE DONNÉES VIT AILLEURS — assets/js/o8-donnees.js,
+     partagé par les trois pages de l'outil. Pente, ordonnée, R² et
+     interpolations y sont CALCULÉS, jamais recopiés : ce que lit
+     l'élève ne peut pas diverger du tableau qu'il a sous les yeux.
+     Ce fichier est chargé par TROIS pages : le modifier oblige à
+     incrémenter son ?v=N dans les trois.
+
+     🔴 CAPTURES D'ÉCRAN — aucune n'est produite ici. Les cadres de
+     réservation portent l'identifiant, le nom de fichier attendu et
+     ce qu'on doit y voir. Contraintes de droit à respecter à
+     l'intégration : capture Microsoft NON ROGNÉE et NON ANNOTÉE,
+     légende se terminant par « Used with permission from
+     Microsoft. » ; crédit NumWorks / © Texas Instruments / © CASIO
+     selon l'origine. Le repérage se fait par pastilles HTML
+     positionnées AU-DESSUS de l'image (composant .capture-annotee),
+     jamais en dessinant dans l'image.
+
+     🔴 PAS D'APPEL COMMERCIAL SUR CETTE PAGE. NumWorks publie
+     Epsilon sous une licence non commerciale, et TI comme Casio
+     tolèrent l'usage pédagogique « non commercial » : aucun bandeau,
+     aucun lien vers une offre, ici.
+     ============================================================ -->
+<style>
+  /* ---------- Encart intermédiaire — PAS un « à retenir » ---------- */
+  .point-cle{border-left:3px solid var(--link);background:var(--surface);padding:11px 14px;border-radius:0 10px 10px 0;font-size:14.5px;margin:10px 0}
+  .point-cle.alerte{border-left-color:var(--activity);background:var(--activity-wash)}
+
+  /* ---------- Exemple entièrement résolu ---------- */
+  .exemple{border:1px solid var(--ok);background:var(--ok-wash);border-radius:12px;padding:12px 14px;margin:12px 0}
+  .exemple-titre{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;
+                 color:var(--ok);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .exemple-titre::before{content:"✓ exemple résolu";text-transform:uppercase;background:var(--ok);color:var(--surface);border-radius:5px;padding:1px 7px;letter-spacing:.05em}
+  .ex-etape{display:grid;grid-template-columns:22px 1fr;gap:9px;align-items:baseline;margin-bottom:9px}
+  .ex-etape:last-child{margin-bottom:0}
+  .ex-etape > .n{font-family:"IBM Plex Mono";font-size:12px;font-weight:700;color:var(--ok);
+                 border:1.5px solid var(--ok);border-radius:50%;width:20px;height:20px;
+                 display:flex;align-items:center;justify-content:center;line-height:1}
+  .ex-etape > div{min-width:0;font-size:14.5px}
+  .ex-lab{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.07em;
+          color:var(--ink-faint);display:block;margin-bottom:2px}
+  .nb{font-family:"IBM Plex Mono";white-space:nowrap}
+  .f{font-family:"IBM Plex Mono";font-size:.93em;background:var(--surface-2);
+     border:1px solid var(--line);border-radius:5px;padding:1px 6px;white-space:nowrap}
+
+  /* ---------- Encadré « à éviter » ---------- */
+  .eviter{border:1px solid var(--err);border-left:4px solid var(--err);background:var(--err-wash);
+          border-radius:0 10px 10px 0;padding:11px 14px;margin:12px 0;font-size:14.5px}
+  .eviter .et{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+              color:var(--err);font-weight:600;display:block;margin-bottom:6px}
+  .eviter ul{margin:6px 0 0;padding-left:20px}
+  .eviter li{margin-bottom:5px}
+
+  /* ---------- « à retenir » — trois temps ---------- */
+  .ret-t{display:grid;grid-template-columns:82px 1fr;gap:11px;align-items:baseline;margin-bottom:10px}
+  .ret-t:last-child{margin-bottom:0}
+  .ret-e{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+         color:var(--ink-faint);border:1px solid var(--line);border-radius:5px;padding:2px 0;text-align:center}
+  .ret-t.piege .ret-e{color:var(--err);border-color:var(--err)}
+  .ret-c{min-width:0}
+  .ret-f{font-family:"IBM Plex Mono";font-size:18px;font-weight:600;text-align:center;
+         line-height:1.7;margin:2px 0 4px;color:var(--ink)}
+  @media(max-width:520px){
+    .ret-t{grid-template-columns:1fr;gap:4px}
+    .ret-e{justify-self:start;padding:2px 8px}
+    .ret-f{font-size:15.5px}
+  }
+
+  /* ---------- Exercice et corrigé dépliable ---------- */
+  .exo{border:1px solid var(--line);border-left:4px solid var(--activity);border-radius:0 12px 12px 0;
+       background:var(--surface);padding:13px 15px;margin:16px 0}
+  .exo-num{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--activity);font-weight:600;margin:0 0 7px}
+  .exo-enonce{font-size:15px;margin:0 0 11px;line-height:1.6}
+  .exo-consigne{font-size:13.5px;color:var(--ink-soft);margin:12px 0 8px;font-style:italic}
+  .exo-corr{border-top:1px dashed var(--line);padding-top:9px;margin-top:8px}
+  .exo-corr summary{font-family:"IBM Plex Mono";font-size:13px;color:var(--link);cursor:pointer;
+                    padding:5px 2px;min-height:32px;display:flex;align-items:center;gap:6px}
+  .exo-corr summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:5px}
+  .exo-corr[open] summary{margin-bottom:8px;color:var(--ink-soft)}
+  .exo-corr .corps{font-size:14.5px;line-height:1.65;border-left:3px solid var(--ok);
+                   background:var(--ok-wash);border-radius:0 10px 10px 0;padding:11px 14px}
+  .exo-corr .corps p{margin:0 0 8px}
+  .exo-corr .corps p:last-child{margin-bottom:0}
+
+  .vers-fiche{display:inline-flex;align-items:center;gap:8px;font-size:14px;text-decoration:none;
+              color:var(--link);background:var(--link-wash);border:1px solid var(--line);
+              border-radius:10px;padding:9px 14px;margin-top:16px;min-height:44px}
+  .vers-fiche:hover{border-color:var(--link)}
+  .vers-fiche:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+  #glo-ouvrir,.glo-back{display:none !important}
+
+  /* ---------- Fraction empilée — règle globale du dépôt ---------- */
+  .fr{display:inline-grid;grid-template-rows:auto auto;justify-items:center;
+      vertical-align:middle;margin:0 3px;font-family:"IBM Plex Mono"}
+  .fr > .h{padding:0 6px 2px;border-bottom:1.6px solid currentColor;line-height:1.35}
+  .fr > .b{padding:2px 6px 0;line-height:1.35}
+
+  /* ============================================================
+     CSS PROPRE AUX PAGES À PARCOURS (O8b et O8c)
+     ============================================================ */
+
+  /* ---------- Le prérequis, en tête de page ----------
+     On ne laisse pas la machine calculer une pente que l'élève ne
+     sait pas définir : le tronc commun se lit d'abord. */
+  .prereq{border:1.5px solid var(--link);border-radius:12px;background:var(--link-wash);
+          padding:13px 16px;margin:0 0 18px}
+  .prereq .et{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+              color:var(--link);font-weight:600;display:block;margin-bottom:6px}
+  .prereq p{font-size:14.5px;margin:0 0 8px;line-height:1.6}
+  .prereq a{color:var(--link);font-weight:600}
+
+  /* ---------- Le sélecteur de matériel ----------
+     🔴 Des boutons radio, pas un menu déroulant : les options doivent
+     être TOUTES visibles, parce que l'élève ne sait pas toujours
+     nommer son matériel et se reconnaît dans la liste.
+     Le choix est gardé en localStorage — c'est une préférence
+     d'affichage, pas du travail d'élève : rien ne part en base. */
+  .choix{border:1.5px solid var(--ink-faint);border-radius:14px;background:var(--surface);
+         padding:15px 17px;margin:0 0 20px}
+  .choix legend{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;
+                text-transform:uppercase;color:var(--ink-soft);font-weight:600;padding:0 6px}
+  .choix .intro{font-size:14.5px;margin:2px 0 12px;line-height:1.6}
+  .choix-l{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .choix-o{display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start;
+           border:1px solid var(--line);border-radius:11px;padding:11px 13px;
+           cursor:pointer;min-height:44px;background:var(--surface)}
+  .choix-o:hover{border-color:var(--link)}
+  .choix-o:focus-within{outline:2px solid var(--link);outline-offset:2px}
+  .choix-o input{margin:3px 0 0}
+  .choix-o .nom{font-size:15px;font-weight:600;display:block}
+  .choix-o .det{font-size:13px;color:var(--ink-soft);line-height:1.45;display:block;margin-top:2px}
+  .choix-o:has(input:checked){border-color:var(--link);border-width:2px;background:var(--link-wash);padding:10px 12px}
+
+  /* ---------- Un parcours ----------
+     Un seul visible à la fois. [hidden] suffit — pas de display:none
+     en dur, qu'un style d'impression ne saurait pas défaire. */
+  .parc[hidden]{display:none}
+  .parc-tete{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+             color:var(--link);font-weight:600;border-bottom:1px solid var(--line);
+             padding-bottom:6px;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .parc-tete .vf{font-size:9.5px;letter-spacing:.05em;border-radius:4px;padding:1px 6px;font-weight:500}
+  .parc-tete .vf.non{color:var(--activity);border:1px solid var(--activity)}
+  .parc h4{font-size:14.5px;margin:12px 0 5px}
+  .parc p{font-size:14.5px;margin:0 0 8px;line-height:1.6}
+  .parc ul{font-size:14.5px;margin:0 0 8px;padding-left:20px;line-height:1.6}
+  .parc li{margin-bottom:4px}
+
+  /* ---------- L'avertissement « ce n'est pas disponible ici » ---------- */
+  .jamais{border:1.5px solid var(--err);border-left:4px solid var(--err);background:var(--err-wash);
+          border-radius:0 10px 10px 0;padding:11px 14px;margin:12px 0}
+  .jamais .et{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+              color:var(--err);font-weight:600;display:block;margin-bottom:7px}
+  .jamais p{font-size:14.5px;margin:0 0 8px;line-height:1.6}
+  .jamais p:last-child{margin-bottom:0}
+
+  .avert{border:1.5px dashed var(--activity);background:var(--activity-wash);
+         border-radius:10px;padding:11px 14px;margin:12px 0}
+  .avert .et{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+             color:var(--activity);font-weight:600;display:block;margin-bottom:7px}
+  .avert p{font-size:14.5px;margin:0 0 8px;line-height:1.6}
+  .avert p:last-child{margin-bottom:0}
+
+  .attn{font-size:14px;color:var(--ink-soft);border-left:3px solid var(--activity);
+        padding:2px 0 2px 11px;margin:8px 0;line-height:1.6}
+  .attn2{border:1px solid var(--activity);border-radius:10px;background:var(--activity-wash);
+         padding:10px 13px;margin:10px 0}
+  .attn2 .et{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+             color:var(--activity);font-weight:600;display:block;margin-bottom:6px}
+  .attn2 p{font-size:14.5px;margin:0 0 7px;line-height:1.6}
+  .attn2 p:last-child{margin-bottom:0}
+
+  /* ---------- Une mini-feuille de tableur, en HTML ---------- */
+  .mini{border-collapse:collapse;font-family:"IBM Plex Mono";font-size:13px;margin:8px 0 10px}
+  .mini th,.mini td{border:1px solid var(--line);padding:5px 12px;text-align:left}
+  .mini th{background:var(--surface-2);color:var(--ink-faint);font-weight:600;text-align:center;font-size:11.5px}
+  .mini td{background:var(--surface)}
+
+  /* ---------- Le tableau des fonctions ---------- */
+  .fct{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 10px}
+  .fct th,.fct td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  .fct th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:11px;
+          letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  .fct td.f{font-family:"IBM Plex Mono";font-size:13px;white-space:nowrap;background:none;border-radius:0;padding:7px 10px}
+
+  /* ---------- L'équation attendue, écrite avec les grandeurs ---------- */
+  .eq-attendue{font-family:"IBM Plex Mono";font-size:16px;text-align:center;
+               border:1.5px solid var(--ok);border-radius:10px;background:var(--ok-wash);
+               padding:11px 14px;margin:10px 0;line-height:1.9;overflow-x:auto}
+  .eq-attendue .uni{font-size:12.5px;color:var(--ink-soft);white-space:nowrap}
+
+  /* ---------- Le tableau de valeurs, posé par o8-donnees ---------- */
+  .tv-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:10px 0}
+  .tv{border-collapse:collapse;font-size:14px;min-width:100%}
+  .tv caption{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+              color:var(--ink-faint);text-align:left;padding-bottom:6px}
+  .tv th,.tv td{border:1px solid var(--line);padding:7px 11px;text-align:center;white-space:nowrap}
+  .tv th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:13px;
+         color:var(--ink);font-weight:600;text-align:left}
+  .tv td{font-family:"IBM Plex Mono"}
+
+  /* ---------- Cadre de réservation — figure attendue, pas encore là.
+     Doit rester visible et laid : c'est un rappel de tâche. ---------- */
+  .reserve{border:1.5px dashed var(--activity);border-radius:10px;background:var(--papier,var(--surface-2));
+           padding:14px;margin:14px 0;min-height:160px;display:flex;flex-direction:column;
+           justify-content:center;gap:6px;text-align:center}
+  .reserve .rf{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;
+               color:var(--activity);font-weight:600;word-break:break-all}
+  .reserve .rd{font-size:13px;color:var(--ink-soft);line-height:1.45}
+  .reserve .rr{font-family:"IBM Plex Mono";font-size:10.5px;color:var(--ink-faint)}
+
+  /* ---------- 🔴 LA CAPTURE ANNOTÉE — composant à venir ----------
+     Le repérage se fait EN HTML, par des pastilles numérotées
+     positionnées au-dessus de l'image : l'image elle-même reste
+     INTACTE. C'est une obligation juridique pour les captures
+     Microsoft (« Do not alter the screenshot except to resize it »),
+     et on l'applique à toutes les captures sans exception — Loïc peut
+     ainsi ajuster une pastille sans rouvrir un logiciel de dessin.
+
+     Les coordonnées sont en POURCENTAGE, pour tenir sur téléphone.
+     Markup, quand l'image sera fournie :
+
+       <figure class="capture-annotee">
+         <div class="ca-img">
+           IMG  src = le fichier dans assets/img/pc/2nde-pc-o8/
+                alt descriptif, width, height, loading=lazy
+                (ecrit ici sans balise : verifier.mjs lit AUSSI les
+                 commentaires, et signalerait un lien casse)
+           <b class="ca-p" style="--x:32%;--y:18%">1</b>
+           <b class="ca-p" style="--x:61%;--y:44%">2</b>
+         </div>
+         <figcaption>… <span class="src">Used with permission from Microsoft.</span></figcaption>
+       </figure>
+     ---------- */
+  .capture-annotee{margin:14px 0}
+  .capture-annotee .ca-img{position:relative;display:block;border:1px solid var(--line);
+                           border-radius:10px;overflow:hidden;background:var(--surface-2)}
+  .capture-annotee img{display:block;width:100%;height:auto}
+  .capture-annotee .ca-p{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);
+                         font-family:"IBM Plex Mono";font-size:13px;font-weight:700;line-height:1;
+                         width:24px;height:24px;border-radius:50%;
+                         background:var(--activity);color:#fff;border:2px solid #fff;
+                         display:flex;align-items:center;justify-content:center;
+                         box-shadow:0 1px 4px rgba(0,0,0,.35)}
+  .capture-annotee figcaption{font-size:13px;color:var(--ink-soft);line-height:1.5;margin-top:7px}
+  .capture-annotee .src{display:block;font-family:"IBM Plex Mono";font-size:11px;
+                        color:var(--ink-faint);margin-top:4px}
+
+  /* ---------- Renvoi vers l'autre page de l'outil ---------- */
+  .vers-soeur{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 4px}
+  .vers-soeur a{flex:1 1 240px;display:block;text-decoration:none;color:inherit;
+                border:1px solid var(--line);border-radius:12px;padding:12px 15px;background:var(--surface)}
+  .vers-soeur a:hover{border-color:var(--link)}
+  .vers-soeur a:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+  .vers-soeur .q{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.08em;
+                 text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:4px}
+  .vers-soeur .t{font-size:15px;font-weight:600;color:var(--link);display:block}
+  .vers-soeur .d{font-size:13px;color:var(--ink-soft);line-height:1.45;display:block;margin-top:3px}
+</style>
+</head><body data-sequence="pc-o8b" data-etapes="ouvertes" data-suivi="pc-o8b" data-accueil="sur-place" data-renvoi-texte="Élève de 2nde 1 ou de l'AP ? Connecte-toi : ton professeur verra ton travail et les documents que tu ouvres.">
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Physique-Chimie · Outil 8 · Seconde</div>
+    <h1 class="title">Construire un graphique avec un tableur <span class="tag" style="display:block;margin-top:8px">Excel · Excel en ligne · LibreOffice · Google Sheets · GeoGebra</span></h1>
+    <p class="lede">Un tableur trace le nuage, calcule la droite et affiche son équation en trois clics. Encore faut-il <b>les bons trois clics</b> — et savoir que le premier piège, celui qui fausse tout sans rien dire, est de choisir «&nbsp;Courbe&nbsp;» au lieu de «&nbsp;Nuage de points&nbsp;».</p>
+    <div class="themes">
+      <span class="theme-chip">Outil 8 · À la main</span><span class="theme-chip on">Au tableur</span><span class="theme-chip">À la calculatrice</span>
+    </div>
+    <div class="meta-row">
+      <span class="m"><b>Deux parties</b></span>
+      <span class="m">Durée <b>≈ 30 min</b></span>
+      <span class="m"><b>5 parcours</b> au choix</span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="2nde-pc-o8-construire-un-graphique.html">← Outil 8</a>
+    <a href="#s1"><span class="n">1</span>La méthode</a>
+    <a href="#s2" data-navlock="2"><span class="n">2</span>S'entraîner <span class="lockico">🔒</span></a>
+    <span class="spacer"></span>
+    <!-- 🔴 NE PAS SUPPRIMER — décision O-21. -->
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip done"></span>Validé</span>
+  </div>
+
+  <!-- 🔴 LE PRÉREQUIS, AFFIRMÉ AVANT TOUT LE RESTE -->
+  <div class="prereq">
+    <span class="et">à lire avant cette page</span>
+    <p>Cette page t'apprend à faire faire le travail par une machine. <b>Elle ne t'apprend pas ce que tu lui demandes.</b> Coefficient directeur, droite moyenne, unité de la pente, domaine de validité&nbsp;: tout cela est dans l'<a href="2nde-pc-o8-construire-un-graphique.html">outil 8, «&nbsp;à la main&nbsp;»</a>.</p>
+    <p>Une machine te donnera toujours une pente — <b>même quand une droite ne convient pas</b>. Savoir le voir s'apprend sur le papier, pas ici.</p>
+  </div>
+
+  <!-- 🔴 LE SÉLECTEUR — des radios, pas un menu déroulant : l'élève
+       ne sait pas toujours nommer son matériel, il se reconnaît dans
+       la liste. Choix gardé en localStorage (préférence d'affichage,
+       jamais du travail d'élève : rien ne part en base). -->
+  <fieldset class="choix" id="choix-materiel">
+    <legend>Mon matériel</legend>
+    <p class="intro">Choisis ce que tu as vraiment sous la main. Un seul parcours s'affichera ensuite — les six étapes sont les mêmes pour tous, seuls les menus changent.</p>
+    <div class="choix-l">
+        <label class="choix-o">
+          <input type="radio" name="o8-materiel" value="excel-bureau">
+          <span><span class="nom">Excel sur ordinateur</span><span class="det">Microsoft Excel installé sur un PC ou un Mac (Microsoft 365, 2021, 2024)</span></span>
+        </label>
+        <label class="choix-o">
+          <input type="radio" name="o8-materiel" value="excel-web">
+          <span><span class="nom">Excel en ligne ou sur tablette</span><span class="det">Excel ouvert depuis l'ENT, dans le navigateur, ou l'application sur iPad ou Android</span></span>
+        </label>
+        <label class="choix-o">
+          <input type="radio" name="o8-materiel" value="libreoffice">
+          <span><span class="nom">LibreOffice Calc</span><span class="det">Gratuit, installé sur beaucoup de postes du lycée, et téléchargeable chez toi</span></span>
+        </label>
+        <label class="choix-o">
+          <input type="radio" name="o8-materiel" value="google-sheets">
+          <span><span class="nom">Google Sheets</span><span class="det">Dans le navigateur, avec un compte Google</span></span>
+        </label>
+        <label class="choix-o">
+          <input type="radio" name="o8-materiel" value="rien">
+          <span><span class="nom">Je n'ai rien de tout ça</span><span class="det">Pas de tableur installé, pas de compte — seulement un navigateur</span></span>
+        </label>
+    </div>
+  </fieldset>
+
+
+      <div class="parc" data-mat="excel-bureau" hidden>
+        <div class="point-cle">Le parcours complet&nbsp;: Excel de bureau sait tout faire, courbe de tendance comprise. Si tu as le choix, c'est celui-là.</div>
+        
+      </div>
+      <div class="parc" data-mat="excel-web" hidden>
+        <div class="point-cle">🔴 <b>Ici, la courbe de tendance n'existe pas.</b> Ce n'est pas une option cachée&nbsp;: Microsoft ne l'a pas mise dans la version web. On l'obtient autrement, et le résultat est exactement le même — ce parcours est aussi complet que celui d'Excel de bureau.</div>
+        <div class="avert"><span class="et">⚠ ce que cette version ne sait pas faire</span><p><b>Vérifié le 20/09/2026</b> auprès de la documentation Microsoft&nbsp;: sur un <b>nuage de points</b>, Excel pour le web ne permet <b>pas de créer</b> une courbe de tendance. Un graphique fabriqué sur Excel de bureau, lui, s'y <b>affiche</b> normalement. Si un jour le bouton apparaît chez toi, préviens ton professeur&nbsp;: cette page sera à mettre à jour.</p></div>
+      </div>
+      <div class="parc" data-mat="libreoffice" hidden>
+        <div class="point-cle">Parcours complet, et gratuit. LibreOffice sait tout ce que sait Excel de bureau — les menus portent d'autres noms, voilà tout.</div>
+        
+      </div>
+      <div class="parc" data-mat="google-sheets" hidden>
+        <div class="point-cle">Parcours complet dans le navigateur. Une seule limite&nbsp;: forcer le passage par l'origine n'est pas proposé directement.</div>
+        
+      </div>
+      <div class="parc" data-mat="rien" hidden>
+        <div class="point-cle">Un navigateur suffit. <b>GeoGebra</b> fonctionne en ligne, <b>gratuitement et sans compte</b>, sur ordinateur comme sur tablette — et il fait exactement le travail attendu.</div>
+        
+      </div>
+
+  <!-- ===================== 1 — LA MÉTHODE ===================== -->
+  <section class="seance" id="s1" data-seance="1">
+    <div class="seance-head">
+      <h2><span class="s-num">1</span>La méthode</h2>
+      <span class="seance-time">6 étapes</span>
+    </div>
+    <p class="seance-goal">Les mêmes 6 étapes, dans le même ordre, quel que soit ton matériel — seuls les menus changent.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- étape 1 — Saisir le tableau ---------- -->
+      <div class="step" data-step data-gate data-valide-sur-interaction data-cle="pc-o8b-s1-saisir">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1</div>
+            <h3 class="step-title">Saisir le tableau</h3>
+          </div>
+          <div class="card-body">
+
+            <!-- Excel sur ordinateur · statut VÉRIFIÉ · source : Microsoft — support.microsoft.com/fr-fr/office/trendline-options-in-office -->
+            <div class="parc" data-mat="excel-bureau" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel sur ordinateur</div>
+              <p>Deux colonnes, et <b>les unités dans l'en-tête</b> — pas dans les cellules, sinon Excel les lit comme du texte et ne trace rien.</p>
+              <table class="mini"><tr><th></th><th>A</th><th>B</th></tr>
+              <tr><th>1</th><td><b>I (A)</b></td><td><b>U (V)</b></td></tr>
+              <tr><th>2</th><td>0</td><td>0,00</td></tr>
+              <tr><th>3</th><td>0,020</td><td>1,98</td></tr>
+              <tr><th>4</th><td>…</td><td>…</td></tr></table>
+              <p class="attn">⚠ <b>Convertis avant de saisir.</b> Si tu tapes les intensités en milliampères, la pente que te rendra Excel sera mille fois trop petite — et elle ne sera plus en ohms.</p>
+              <p>Sélectionne ensuite les deux colonnes, en-têtes comprises.</p>
+
+            </div>
+
+            <!-- Excel en ligne ou sur tablette · statut VÉRIFIÉ · source : identique à Excel de bureau — la saisie ne diffère pas -->
+            <div class="parc" data-mat="excel-web" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel en ligne ou sur tablette</div>
+              <p>Exactement comme sur Excel de bureau&nbsp;: deux colonnes, <b>les unités dans l'en-tête</b>.</p>
+              <table class="mini"><tr><th></th><th>A</th><th>B</th></tr>
+              <tr><th>1</th><td><b>I (A)</b></td><td><b>U (V)</b></td></tr>
+              <tr><th>2</th><td>0</td><td>0,00</td></tr>
+              <tr><th>3</th><td>0,020</td><td>1,98</td></tr>
+              <tr><th>4</th><td>…</td><td>…</td></tr></table>
+              <p class="attn">⚠ <b>Convertis avant de saisir</b> — les intensités en ampères, pas en milliampères.</p>
+
+            </div>
+
+            <!-- LibreOffice Calc · statut VÉRIFIÉ · source : help.libreoffice.org/latest/fr/text/schart/01/04050100.html -->
+            <div class="parc" data-mat="libreoffice" data-verifie="oui" hidden>
+              <div class="parc-tete">LibreOffice Calc</div>
+              <p>Deux colonnes, <b>unités dans l'en-tête</b>. Sélectionne les deux, en-têtes comprises.</p>
+              <table class="mini"><tr><th></th><th>A</th><th>B</th></tr>
+              <tr><th>1</th><td><b>I (A)</b></td><td><b>U (V)</b></td></tr>
+              <tr><th>2</th><td>0</td><td>0,00</td></tr>
+              <tr><th>3</th><td>0,020</td><td>1,98</td></tr></table>
+              <p class="attn">⚠ <b>Convertis avant de saisir</b>, et vérifie le <b>séparateur décimal</b>&nbsp;: une cellule alignée à gauche contient du texte, pas un nombre.</p>
+
+            </div>
+
+            <!-- Google Sheets · statut VÉRIFIÉ · source : support.google.com/docs/answer/6075154?hl=fr -->
+            <div class="parc" data-mat="google-sheets" data-verifie="oui" hidden>
+              <div class="parc-tete">Google Sheets</div>
+              <p>Deux colonnes, <b>unités dans l'en-tête</b>, puis sélectionne les deux.</p>
+              <table class="mini"><tr><th></th><th>A</th><th>B</th></tr>
+              <tr><th>1</th><td><b>I (A)</b></td><td><b>U (V)</b></td></tr>
+              <tr><th>2</th><td>0</td><td>0,00</td></tr>
+              <tr><th>3</th><td>0,020</td><td>1,98</td></tr></table>
+              <p class="attn">⚠ <b>Convertis avant de saisir</b>, et travaille dans le <b>navigateur</b>&nbsp;: l'application mobile ne propose pas tout ce qui suit.</p>
+
+            </div>
+
+            <!-- Je n'ai rien de tout ça · statut VÉRIFIÉ · source : GeoGebra — Calculatrice Graphique / Classique en ligne, vue Tableur -->
+            <div class="parc" data-mat="rien" data-verifie="oui" hidden>
+              <div class="parc-tete">Je n'ai rien de tout ça</div>
+              <p>Ouvre <b>geogebra.org</b> → <b>Calculatrice Graphique</b> (aucun compte n'est demandé pour l'usage de base). Affiche la vue <b>Tableur</b>.</p>
+              <p>Saisis tes valeurs dans les colonnes <b>A</b> et <b>B</b> — les abscisses en A, les ordonnées en B — puis <b>sélectionne les deux colonnes</b>.</p>
+              <p class="attn">⚠ <b>Convertis avant de saisir</b>, et utilise le <b>point</b> comme séparateur décimal si la virgule n'est pas acceptée.</p>
+
+            </div>
+            <p class="sans-choix" hidden><b>Choisis d'abord ton matériel</b> — le sélecteur est en haut de la page.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- étape 2 — Insérer un nuage de points ---------- -->
+      <div class="step" data-step data-gate data-valide-sur-interaction data-cle="pc-o8b-s1-nuage">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.2</div>
+            <h3 class="step-title">Insérer un nuage de points</h3>
+          </div>
+          <div class="card-body">
+
+            <!-- Excel sur ordinateur · statut VÉRIFIÉ · source : Microsoft Learn — « the X axis is plotted as only a linear series, regardless of what the labels actually are » -->
+            <div class="parc" data-mat="excel-bureau" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel sur ordinateur</div>
+              <p><b>Insertion</b> → <b>Nuage de points</b> → la première vignette, <b>marqueurs seuls</b>.</p>
+              <div class="jamais">
+              <span class="et">🔴 jamais « Ligne » ni « Courbe »</span>
+              <p>C'est l'erreur numéro un, et elle est invisible. Un graphique «&nbsp;Ligne&nbsp;» traite les abscisses comme des <b>étiquettes</b> rangées à intervalles égaux&nbsp;: tes valeurs de <span class="nb">I</span> sont alors espacées régulièrement à l'écran, quel que soit leur écart réel. La courbe a l'air juste. <b>La pente, elle, est fausse.</b></p>
+              <p>Le nuage de points, lui, place chaque point à sa vraie abscisse. C'est le seul type de graphique qui convienne à une mesure de physique.</p>
+              </div>
+
+              <!-- FIGURE O8-10 — capture attendue de Loïc, pas produite ici -->
+              <div class="reserve" data-figure-id="O8-10">
+                <div class="rf">o8-excel-bureau-insertion-nuage.png</div>
+                <div class="rd"><b>Capture manquante.</b><br>Le ruban <b>Insertion</b> d'Excel de bureau, onglet ouvert, avec le bouton <b>Nuage de points</b> et son menu déroulant déployé. On doit distinguer la vignette « Nuage de points » (marqueurs seuls, celle qu'il faut) des vignettes « Ligne » et « Courbe » voisines.</div>
+                <div class="rr">capture NON ROGNÉE, non annotée · fenêtre entière · ≥ 1200 px de large</div>
+              </div>
+            </div>
+
+            <!-- Excel en ligne ou sur tablette · statut VÉRIFIÉ · source : le nuage de points est disponible en ligne ; seule la courbe de tendance ne l'est pas -->
+            <div class="parc" data-mat="excel-web" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel en ligne ou sur tablette</div>
+              <p><b>Insertion</b> → <b>Graphique</b> → <b>Nuage de points</b>. Cette partie-là fonctionne en ligne.</p>
+              <div class="jamais">
+              <span class="et">🔴 jamais « Ligne » ni « Courbe »</span>
+              <p>Même piège qu'ailleurs, et même conséquence&nbsp;: un graphique «&nbsp;Ligne&nbsp;» range les abscisses à intervalles égaux comme s'il s'agissait d'étiquettes. Le dessin paraît juste, la pente est fausse.</p>
+              </div>
+
+            </div>
+
+            <!-- LibreOffice Calc · statut VÉRIFIÉ · source : LibreOffice — type de graphique « XY (Nuage de points) » obligatoire, sinon l'équation est fausse -->
+            <div class="parc" data-mat="libreoffice" data-verifie="oui" hidden>
+              <div class="parc-tete">LibreOffice Calc</div>
+              <p><b>Insertion</b> → <b>Diagramme…</b> → type <b>XY (Nuage de points)</b> → <b>Points seuls</b> → <b>Terminer</b>.</p>
+              <div class="jamais">
+              <span class="et">🔴 le type XY est obligatoire</span>
+              <p>Avec un diagramme «&nbsp;Ligne&nbsp;» ou «&nbsp;Colonne&nbsp;», LibreOffice traite les abscisses comme des catégories&nbsp;: la courbe de tendance qu'il calculera ensuite sera <b>fausse</b>, et rien ne te le dira.</p>
+              </div>
+
+              <!-- FIGURE O8-12 — capture attendue de Loïc, pas produite ici -->
+              <div class="reserve" data-figure-id="O8-12">
+                <div class="rf">o8-libreoffice-type-xy.png</div>
+                <div class="rd"><b>Capture manquante.</b><br>La boîte de dialogue <b>Type de diagramme</b> de LibreOffice Calc, avec <b>XY (Nuage de points)</b> sélectionné dans la liste de gauche et la vignette <b>Points seuls</b> choisie à droite.</div>
+                <div class="rr">capture d'écran de la fenêtre de dialogue entière · ≥ 900 px de large</div>
+              </div>
+            </div>
+
+            <!-- Google Sheets · statut VÉRIFIÉ · source : Google — Insertion → Graphique, puis type « Nuage de points » -->
+            <div class="parc" data-mat="google-sheets" data-verifie="oui" hidden>
+              <div class="parc-tete">Google Sheets</div>
+              <p><b>Insertion</b> → <b>Graphique</b>. Dans le volet <b>Configuration</b>, choisis le type <b>Nuage de points</b>.</p>
+              <div class="jamais">
+              <span class="et">🔴 jamais « Courbe » ni « Ligne »</span>
+              <p>Google Sheets propose souvent un graphique «&nbsp;Courbe&nbsp;» tout seul&nbsp;: il range les abscisses à intervalles réguliers. Change le type à la main.</p>
+              </div>
+
+            </div>
+
+            <!-- Je n'ai rien de tout ça · statut VÉRIFIÉ · source : GeoGebra — Analyse de deux variables, ou commande NuagePoints -->
+            <div class="parc" data-mat="rien" data-verifie="oui" hidden>
+              <div class="parc-tete">Je n'ai rien de tout ça</div>
+              <p>Les deux colonnes étant sélectionnées&nbsp;: clic droit → <b>Analyse de deux variables</b>. Le nuage s'affiche.</p>
+              <p>Autre chemin, par la ligne de saisie&nbsp;: <span class="f">NuagePoints({{0,0},{0.02,1.98},…})</span>.</p>
+
+            </div>
+            <p class="sans-choix" hidden><b>Choisis d'abord ton matériel</b> — le sélecteur est en haut de la page.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- étape 3 — Nommer les axes ---------- -->
+      <div class="step" data-step data-gate data-valide-sur-interaction data-cle="pc-o8b-s1-axes">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.3</div>
+            <h3 class="step-title">Nommer les axes</h3>
+          </div>
+          <div class="card-body">
+
+            <!-- Excel sur ordinateur · statut VÉRIFIÉ · source : Microsoft — Création de graphique → Ajouter un élément graphique → Titres des axes -->
+            <div class="parc" data-mat="excel-bureau" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel sur ordinateur</div>
+              <p>Clique sur le graphique, puis&nbsp;: <b>Création de graphique</b> → <b>Ajouter un élément graphique</b> → <b>Titres des axes</b> → <b>Titre de l'axe horizontal principal</b>, puis le vertical.</p>
+              <p>Écris la <b>grandeur ET son unité</b> — <span class="nb">I (A)</span>, <span class="nb">U (V)</span>. Un axe sans unité rend le graphique illisible pour qui ne l'a pas tracé, et c'est la remarque la plus fréquente sur une copie.</p>
+              <p>Donne aussi un <b>titre</b> au graphique&nbsp;: <span class="nb">U = f(I)</span>.</p>
+
+            </div>
+
+            <!-- Excel en ligne ou sur tablette · statut VÉRIFIÉ · source : Excel pour le web — volet Graphique → Titres des axes -->
+            <div class="parc" data-mat="excel-web" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel en ligne ou sur tablette</div>
+              <p>Clique sur le graphique, ouvre le volet de mise en forme, et renseigne les <b>titres des axes</b>&nbsp;: <span class="nb">I (A)</span> et <span class="nb">U (V)</span>, grandeur <b>et</b> unité.</p>
+              <p class="attn">⚠ Si tu ne trouves pas l'entrée dans ton interface, note-le et fais-le à la main sur ta copie&nbsp;: un graphique sans unités n'est pas exploitable, c'est ce qui compte.</p>
+
+            </div>
+
+            <!-- LibreOffice Calc · statut VÉRIFIÉ · source : LibreOffice — Insertion → Titres, en mode édition du diagramme -->
+            <div class="parc" data-mat="libreoffice" data-verifie="oui" hidden>
+              <div class="parc-tete">LibreOffice Calc</div>
+              <p><b>Double-clic</b> sur le diagramme pour entrer en <b>mode édition</b> (un cadre gris l'entoure), puis <b>Insertion</b> → <b>Titres…</b></p>
+              <p>Renseigne le <b>Titre</b> (<span class="nb">U = f(I)</span>), l'<b>Axe X</b> (<span class="nb">I (A)</span>) et l'<b>Axe Y</b> (<span class="nb">U (V)</span>) — grandeur <b>et</b> unité.</p>
+
+            </div>
+
+            <!-- Google Sheets · statut VÉRIFIÉ · source : Google — Personnaliser → Titres des axes et du graphique -->
+            <div class="parc" data-mat="google-sheets" data-verifie="oui" hidden>
+              <div class="parc-tete">Google Sheets</div>
+              <p>Volet <b>Personnaliser</b> → <b>Titres des axes et du graphique</b>. Choisis dans la liste déroulante <b>Titre de l'axe horizontal</b>, écris <span class="nb">I (A)</span>&nbsp;; puis <b>Titre de l'axe vertical</b>, <span class="nb">U (V)</span>.</p>
+
+            </div>
+
+            <!-- Je n'ai rien de tout ça · statut VÉRIFIÉ · source : GeoGebra — Paramètres → Axes → Étiquette -->
+            <div class="parc" data-mat="rien" data-verifie="oui" hidden>
+              <div class="parc-tete">Je n'ai rien de tout ça</div>
+              <p>Ouvre les <b>Paramètres</b> de la vue graphique → onglet <b>AxeX</b> puis <b>AxeY</b> → champ <b>Étiquette</b>.</p>
+              <p>Écris <span class="nb">I (A)</span> et <span class="nb">U (V)</span> — grandeur <b>et</b> unité.</p>
+
+            </div>
+            <p class="sans-choix" hidden><b>Choisis d'abord ton matériel</b> — le sélecteur est en haut de la page.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- étape 4 — Ajouter la droite modèle ---------- -->
+      <div class="step" data-step data-gate data-valide-sur-interaction data-cle="pc-o8b-s1-modele">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.4</div>
+            <h3 class="step-title">Ajouter la droite modèle</h3>
+          </div>
+          <div class="card-body">
+
+            <!-- Excel sur ordinateur · statut VÉRIFIÉ · source : Microsoft — support.microsoft.com/fr-fr/office/trendline-options-in-office -->
+            <div class="parc" data-mat="excel-bureau" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel sur ordinateur</div>
+              <p>Clique sur <b>un point</b> du nuage — toute la série se sélectionne — puis sur le bouton <b>+</b> à droite du graphique → <b>Courbe de tendance</b> → <b>Linéaire</b>.</p>
+              <p>Autre chemin&nbsp;: clic droit sur un point → <b>Ajouter une courbe de tendance…</b></p>
+              <p class="attn">⚠ <b>« Courbe de tendance » est le nom d'Excel.</b> En physique, on dit <b>modéliser</b>&nbsp;: on propose une droite et on regarde si elle rend compte des mesures. Ce n'est pas la même chose que relier les points.</p>
+
+              <!-- FIGURE O8-11 — capture attendue de Loïc, pas produite ici -->
+              <div class="reserve" data-figure-id="O8-11">
+                <div class="rf">o8-excel-bureau-courbe-tendance.png</div>
+                <div class="rd"><b>Capture manquante.</b><br>Le graphique en nuage de points sélectionné, le bouton <b>+</b> cliqué, et le menu <b>Courbe de tendance</b> ouvert sur ses options — « Linéaire » visible.</div>
+                <div class="rr">capture NON ROGNÉE, non annotée · fenêtre entière · ≥ 1200 px de large</div>
+              </div>
+            </div>
+
+            <!-- Excel en ligne ou sur tablette · statut VÉRIFIÉ · source : Microsoft Q&A — « In Excel online, it is not feasible to add a trendline for a scatter graph » ; contournement par les fonctions de feuille -->
+            <div class="parc" data-mat="excel-web" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel en ligne ou sur tablette</div>
+              <p>Pas de bouton ici. On calcule la droite <b>dans des cellules</b>, puis on la trace comme <b>seconde série</b> de deux points. C'est plus long à lire qu'à faire.</p>
+              <h4>① Les trois cellules</h4>
+              <table class="fct">
+              <tr><th>Dans une cellule libre</th><th>Ce que tu obtiens</th></tr>
+              <tr><td class="f">=PENTE(B2:B8 ; A2:A8)</td><td>le coefficient directeur <span class="nb">a</span></td></tr>
+              <tr><td class="f">=ORDONNEE.ORIGINE(B2:B8 ; A2:A8)</td><td>l'ordonnée à l'origine <span class="nb">b</span></td></tr>
+              <tr><td class="f">=COEFFICIENT.DETERMINATION(B2:B8 ; A2:A8)</td><td><span class="nb">R²</span></td></tr>
+              </table>
+              <p class="attn">⚠ <b>(y ; x)</b> et non (x ; y). Les trois fonctions veulent d'abord les ordonnées. Inversées, elles rendent un nombre — le mauvais.</p>
+              <h4>② La droite, en deux points</h4>
+              <p>Dans quatre cellules libres, fabrique les deux extrémités de la droite&nbsp;: la plus petite abscisse et la plus grande, avec les ordonnées que le modèle leur donne.</p>
+              <table class="mini"><tr><th></th><th>D</th><th>E</th></tr>
+              <tr><th>1</th><td><b>x modèle</b></td><td><b>y modèle</b></td></tr>
+              <tr><th>2</th><td>=MIN(A2:A8)</td><td>=$D$10*D2+$E$10</td></tr>
+              <tr><th>3</th><td>=MAX(A2:A8)</td><td>=$D$10*D3+$E$10</td></tr></table>
+              <p style="font-size:13.5px;color:var(--ink-soft)">(en supposant la pente en <span class="nb">D10</span> et l'ordonnée à l'origine en <span class="nb">E10</span>)</p>
+              <h4>③ Ajouter cette série au graphique</h4>
+              <p>Sélectionne le graphique, puis étends la plage de données pour y inclure <span class="nb">D2:E3</span> — ou crée un second nuage et superpose-le. Choisis pour cette série l'affichage <b>avec ligne, sans marqueur</b>&nbsp;: c'est ta droite modèle.</p>
+
+            </div>
+
+            <!-- LibreOffice Calc · statut VÉRIFIÉ · source : LibreOffice — clic droit sur un point → « Insérer une courbe de tendance… » → Linéaire -->
+            <div class="parc" data-mat="libreoffice" data-verifie="oui" hidden>
+              <div class="parc-tete">LibreOffice Calc</div>
+              <p>Toujours en <b>mode édition</b> (double-clic), fais un <b>clic droit sur un point</b> du nuage → <b>Insérer une courbe de tendance…</b> → <b>Linéaire</b>.</p>
+              <p>La même boîte propose <b>Forcer l'ordonnée à l'origine</b>, avec sa valeur. <b>Ne la coche que si un argument physique l'impose.</b></p>
+
+            </div>
+
+            <!-- Google Sheets · statut VÉRIFIÉ · source : Google — Personnaliser → Série → cocher « Courbe de tendance » → Linéaire -->
+            <div class="parc" data-mat="google-sheets" data-verifie="oui" hidden>
+              <div class="parc-tete">Google Sheets</div>
+              <p>Volet <b>Personnaliser</b> → <b>Série</b> → coche <b>Courbe de tendance</b>, puis choisis le type <b>Linéaire</b>.</p>
+              <p class="attn">⚠ <b>Forcer le passage par l'origine n'est pas proposé.</b> Si un argument physique l'exige, calcule la pente à part avec <span class="f">=SOMMEPROD(A2:A8 ; B2:B8) / SOMMEPROD(A2:A8 ; A2:A8)</span> — c'est la pente de la droite <span class="nb">y = a x</span> au sens des moindres carrés.</p>
+
+              <!-- FIGURE O8-14 — capture attendue de Loïc, pas produite ici -->
+              <div class="reserve" data-figure-id="O8-14">
+                <div class="rf">o8-google-sheets-tendance.png</div>
+                <div class="rd"><b>Capture manquante.</b><br>Le volet <b>Personnaliser → Série</b> de Google Sheets, avec la case <b>Courbe de tendance</b> cochée, le type <b>Linéaire</b>, et les réglages <b>Étiquette</b> et <b>Afficher R²</b> visibles en dessous.</div>
+                <div class="rr">capture du volet entier · ≥ 700 px de large</div>
+              </div>
+            </div>
+
+            <!-- Je n'ai rien de tout ça · statut VÉRIFIÉ · source : GeoGebra — AjustementLinéaire (alias RegLin) -->
+            <div class="parc" data-mat="rien" data-verifie="oui" hidden>
+              <div class="parc-tete">Je n'ai rien de tout ça</div>
+              <p>Dans la fenêtre <b>Analyse de deux variables</b>, choisis le modèle de régression <b>Linéaire</b> dans la liste déroulante.</p>
+              <p>Par la ligne de saisie&nbsp;: <span class="f">AjustementLinéaire(liste_de_points)</span> trace la droite et en donne l'équation.</p>
+
+            </div>
+            <p class="sans-choix" hidden><b>Choisis d'abord ton matériel</b> — le sélecteur est en haut de la page.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- étape 5 — Afficher l'équation et R² ---------- -->
+      <div class="step" data-step data-gate data-valide-sur-interaction data-cle="pc-o8b-s1-equation">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.5</div>
+            <h3 class="step-title">Afficher l'équation et R²</h3>
+          </div>
+          <div class="card-body">
+
+            <!-- Excel sur ordinateur · statut VÉRIFIÉ · source : Microsoft — « Afficher l'équation sur le graphique » / « Afficher le coefficient de détermination (R²) » ; learn.microsoft.com/fr-fr/office/troubleshoot/excel/inaccurate-chart-trendline-formula -->
+            <div class="parc" data-mat="excel-bureau" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel sur ordinateur</div>
+              <p>Double-clic sur la droite&nbsp;: le volet <b>Format de la courbe de tendance</b> s'ouvre. Coche&nbsp;:</p>
+              <ul><li><b>Afficher l'équation sur le graphique</b></li>
+              <li><b>Afficher le coefficient de détermination (R²) sur le graphique</b></li></ul>
+              <div class="attn2">
+              <span class="et">⚠ le piège des décimales</span>
+              <p>Par défaut, Excel affiche l'équation avec <b>trop peu de chiffres</b> — une pente de 100,52 peut s'afficher «&nbsp;101&nbsp;», ou pire, une pente de 0,00070 s'afficher «&nbsp;0,0007&nbsp;» voire «&nbsp;0&nbsp;». Microsoft le documente comme un défaut d'affichage, pas de calcul.</p>
+              <p><b>Clique sur l'équation</b>, puis règle le <b>format du nombre</b> pour augmenter les décimales. Vérifie toujours ce que tu recopies.</p>
+              </div>
+              <p>Pour forcer le passage par l'origine, le même volet propose <b>Définir l'interception</b> = <span class="nb">0</span>. <b>Ne la coche que si un argument physique l'impose</b> — l'étape suivante y revient.</p>
+
+            </div>
+
+            <!-- Excel en ligne ou sur tablette · statut VÉRIFIÉ · source : contournement — l'équation est écrite par l'élève à partir des cellules calculées -->
+            <div class="parc" data-mat="excel-web" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel en ligne ou sur tablette</div>
+              <p>Ici, c'est <b>toi</b> qui écris l'équation, à partir des deux cellules. Avantage inattendu&nbsp;: tu vois les chiffres complets, sans le problème d'arrondi de l'affichage automatique.</p>
+              <p class="eq-attendue"><span data-o8-valeur="D1.equation"></span> &nbsp;<span class="uni">avec U en V et I en A</span></p>
+              <p>Et le <span class="nb">R²</span> se lit dans sa cellule&nbsp;: <span class="nb" data-o8-valeur="D1.r2Texte"></span>.</p>
+              <p class="attn">⚠ <b>N'affiche pas tous les chiffres de la cellule.</b> Excel en donne quinze&nbsp;; tes mesures en portent trois. Garde <b>trois chiffres significatifs</b> — renvoi à l'outil 2.</p>
+
+            </div>
+
+            <!-- LibreOffice Calc · statut VÉRIFIÉ · source : LibreOffice — « Afficher l'équation » dans la boîte de tendance ; R² par clic droit sur l'équation → « Insérer R² » -->
+            <div class="parc" data-mat="libreoffice" data-verifie="oui" hidden>
+              <div class="parc-tete">LibreOffice Calc</div>
+              <p>Dans la même boîte, coche <b>Afficher l'équation</b>. Tu peux aussi <b>renommer les variables X et Y</b> — profites-en pour mettre <span class="nb">I</span> et <span class="nb">U</span>&nbsp;: LibreOffice est le seul à le proposer directement.</p>
+              <p>Pour le <span class="nb">R²</span>&nbsp;: clique sur l'équation affichée, puis <b>clic droit</b> → <b>Insérer R²</b>.</p>
+              <p class="eq-attendue"><span data-o8-valeur="D1.equation"></span> &nbsp;<span class="uni">avec U en V et I en A</span></p>
+              <p class="attn">⚠ Vérifie le <b>nombre de décimales</b> de l'équation affichée avant de la recopier. Trois chiffres significatifs suffisent — renvoi à l'outil 2.</p>
+
+              <!-- FIGURE O8-13 — capture attendue de Loïc, pas produite ici -->
+              <div class="reserve" data-figure-id="O8-13">
+                <div class="rf">o8-libreoffice-courbe-tendance.png</div>
+                <div class="rd"><b>Capture manquante.</b><br>La boîte de dialogue <b>Courbe de tendance</b> de LibreOffice, onglet <b>Type</b>&nbsp;: <b>Linéaire</b> sélectionné, et les cases <b>Afficher l'équation</b> et <b>Forcer l'ordonnée à l'origine</b> visibles.</div>
+                <div class="rr">capture de la fenêtre de dialogue entière · ≥ 900 px de large</div>
+              </div>
+            </div>
+
+            <!-- Google Sheets · statut VÉRIFIÉ · source : Google — Étiquette → « Utiliser l'équation » ; case « Afficher R² » -->
+            <div class="parc" data-mat="google-sheets" data-verifie="oui" hidden>
+              <div class="parc-tete">Google Sheets</div>
+              <p>Toujours dans <b>Série</b>, sous la courbe de tendance&nbsp;: <b>Étiquette</b> → <b>Utiliser l'équation</b>, et coche <b>Afficher R²</b>.</p>
+              <p class="eq-attendue"><span data-o8-valeur="D1.equation"></span> &nbsp;<span class="uni">avec U en V et I en A</span></p>
+
+            </div>
+
+            <!-- Je n'ai rien de tout ça · statut VÉRIFIÉ · source : GeoGebra — l'équation et r s'affichent dans le panneau d'analyse -->
+            <div class="parc" data-mat="rien" data-verifie="oui" hidden>
+              <div class="parc-tete">Je n'ai rien de tout ça</div>
+              <p>L'équation s'affiche sous le graphique, avec le coefficient de corrélation <span class="nb">r</span>. Le <span class="nb">R²</span> est le carré de <span class="nb">r</span>&nbsp;: <span class="f">CoefficientDetermination</span> le donne directement.</p>
+              <p class="eq-attendue"><span data-o8-valeur="D1.equation"></span> &nbsp;<span class="uni">avec U en V et I en A</span></p>
+
+            </div>
+            <p class="sans-choix" hidden><b>Choisis d'abord ton matériel</b> — le sélecteur est en haut de la page.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- étape 6 — Exploiter ---------- -->
+      <div class="step" data-step data-gate data-valide-sur-interaction data-cle="pc-o8b-s1-exploiter">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.6</div>
+            <h3 class="step-title">Exploiter</h3>
+          </div>
+          <div class="card-body">
+
+            <!-- Excel sur ordinateur · statut VÉRIFIÉ · source : Microsoft — PENTE, ORDONNEE.ORIGINE, COEFFICIENT.DETERMINATION, PREVISION -->
+            <div class="parc" data-mat="excel-bureau" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel sur ordinateur</div>
+              <p>L'équation affichée par Excel s'écrit <span class="nb">y = 100,52x − 0,0168</span>. <b>Ce n'est pas la réponse attendue.</b> Réécris-la avec les grandeurs physiques et leurs unités&nbsp;:</p>
+              <p class="eq-attendue"><span data-o8-valeur="D1.equation"></span> &nbsp;<span class="uni">avec U en V et I en A</span></p>
+              <p>La pente est alors <b>la résistance</b>&nbsp;: <span class="nb"><span data-o8-valeur="D1.aTexte"></span> Ω</span>.</p>
+              <h4>Les quatre fonctions à connaître</h4>
+              <table class="fct">
+              <tr><th>Fonction</th><th>Ce qu'elle rend</th></tr>
+              <tr><td class="f">=PENTE(plage_y ; plage_x)</td><td>le coefficient directeur <span class="nb">a</span></td></tr>
+              <tr><td class="f">=ORDONNEE.ORIGINE(plage_y ; plage_x)</td><td>l'ordonnée à l'origine <span class="nb">b</span></td></tr>
+              <tr><td class="f">=COEFFICIENT.DETERMINATION(plage_y ; plage_x)</td><td><span class="nb">R²</span></td></tr>
+              <tr><td class="f">=PREVISION(x ; plage_y ; plage_x)</td><td>le <span class="nb">y</span> correspondant à un <span class="nb">x</span> — l'interpolation</td></tr>
+              </table>
+              <p class="attn">⚠ <b>L'ordre des arguments est (y ; x)</b>, pas l'inverse. C'est contre-intuitif, et l'erreur ne se voit pas&nbsp;: tu obtiens une pente, elle est simplement l'inverse de la bonne.</p>
+
+            </div>
+
+            <!-- Excel en ligne ou sur tablette · statut VÉRIFIÉ · source : Microsoft — PREVISION ; calcul direct à partir de la pente -->
+            <div class="parc" data-mat="excel-web" data-verifie="oui" hidden>
+              <div class="parc-tete">Excel en ligne ou sur tablette</div>
+              <p>La pente est <b>la résistance</b>&nbsp;: <span class="nb"><span data-o8-valeur="D1.aTexte"></span> Ω</span>. On la compare à la valeur nominale du composant.</p>
+              <p>Pour <b>interpoler</b> — lire une valeur qu'on n'a pas mesurée — deux moyens&nbsp;:</p>
+              <ul>
+              <li><span class="f">=PREVISION(x ; B2:B8 ; A2:A8)</span> ;</li>
+              <li>ou le calcul direct <span class="nb">y = a × x + b</span> à partir de tes deux cellules.</li>
+              </ul>
+              <p>Pour retrouver un <span class="nb">x</span> à partir d'un <span class="nb">y</span>, c'est l'outil 7 qui sert&nbsp;: <span class="nb">x = (y − b) ÷ a</span>.</p>
+
+            </div>
+
+            <!-- LibreOffice Calc · statut VÉRIFIÉ · source : LibreOffice — DROITEREG (matricielle, Ctrl+Maj+Entrée), PENTE, ORDONNEE.ORIGINE -->
+            <div class="parc" data-mat="libreoffice" data-verifie="oui" hidden>
+              <div class="parc-tete">LibreOffice Calc</div>
+              <p>La pente est <b>la résistance</b>&nbsp;: <span class="nb"><span data-o8-valeur="D1.aTexte"></span> Ω</span>. Réécris l'équation avec les grandeurs et leurs unités&nbsp;: <span class="nb" data-o8-valeur="D1.equation"></span>.</p>
+              <p>Les fonctions de feuille existent aussi&nbsp;:</p>
+              <table class="fct">
+              <tr><th>Fonction</th><th>Ce qu'elle rend</th></tr>
+              <tr><td class="f">=PENTE(plage_y ; plage_x)</td><td>le coefficient directeur</td></tr>
+              <tr><td class="f">=ORDONNEE.ORIGINE(plage_y ; plage_x)</td><td>l'ordonnée à l'origine</td></tr>
+              <tr><td class="f">=DROITEREG(plage_y ; plage_x)</td><td>les deux à la fois — <b>matricielle</b>&nbsp;: valide par <span class="nb">Ctrl + Maj + Entrée</span></td></tr>
+              </table>
+
+            </div>
+
+            <!-- Google Sheets · statut VÉRIFIÉ · source : Google — PENTE, ORDONNEE.ORIGINE, COEFFICIENT.DETERMINATION, PREVISION (mêmes noms qu'Excel) -->
+            <div class="parc" data-mat="google-sheets" data-verifie="oui" hidden>
+              <div class="parc-tete">Google Sheets</div>
+              <p>La pente est <b>la résistance</b>&nbsp;: <span class="nb"><span data-o8-valeur="D1.aTexte"></span> Ω</span>.</p>
+              <p>Les fonctions portent les mêmes noms que dans Excel&nbsp;: <span class="f">=PENTE(y ; x)</span>, <span class="f">=ORDONNEE.ORIGINE(y ; x)</span>, <span class="f">=COEFFICIENT.DETERMINATION(y ; x)</span>, <span class="f">=PREVISION(x ; y ; x)</span>.</p>
+              <p class="attn">⚠ <b>(y ; x)</b>, toujours dans cet ordre.</p>
+
+            </div>
+
+            <!-- Je n'ai rien de tout ça · statut VÉRIFIÉ · source : GeoGebra — lecture des coordonnées sur la droite -->
+            <div class="parc" data-mat="rien" data-verifie="oui" hidden>
+              <div class="parc-tete">Je n'ai rien de tout ça</div>
+              <p>La pente est <b>la résistance</b>&nbsp;: <span class="nb"><span data-o8-valeur="D1.aTexte"></span> Ω</span>.</p>
+              <p>Pour interpoler, tape simplement la valeur de <span class="nb">x</span> dans l'expression de la droite, ou déplace un point sur la droite pour lire ses coordonnées.</p>
+              <p class="point-cle">💡 <b>GeoGebra est aussi le repli universel du parcours calculatrice</b>&nbsp;: si tu n'as ni tableur ni machine, il fait les deux.</p>
+
+            </div>
+            <p class="sans-choix" hidden><b>Choisis d'abord ton matériel</b> — le sélecteur est en haut de la page.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+
+  <!-- ===================== 2 — S'ENTRAÎNER ===================== -->
+  <section class="seance" id="s2" data-seance="2">
+    <div class="seance-head">
+      <h2><span class="s-num">2</span>S'entraîner</h2>
+      <span class="seance-time">3 études de cas</span>
+    </div>
+    <p class="seance-goal">Les mêmes jeux de données que dans l'outil 8 «&nbsp;à la main&nbsp;»&nbsp;: tu peux comparer ce que ton tableur te donne avec ce que tu avais trouvé au crayon.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- ---------- cas D1 ---------- -->
+      <div class="step" data-step data-gate data-valide-sur-interaction data-cle="pc-o8b-s2-ohm">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">CAS 1</div>
+            <h3 class="step-title">La loi d'Ohm — une proportionnalité</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> retrouver la résistance d'un conducteur ohmique à partir de sa caractéristique, avec son unité.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="exo">
+              <p class="exo-num">Étude de cas 1</p>
+              <p class="exo-enonce">Tu as mesuré la tension <span class="nb">U</span> aux bornes d'un conducteur ohmique pour différentes intensités <span class="nb">I</span>. Le composant est annoncé à <b>100 Ω</b> par son fabricant.</p>
+              <div data-o8-tableau="D1" data-brut></div>
+              <p class="exo-enonce"><b>1.</b> Convertis les intensités en <b>ampères</b>. <b>2.</b> Trace le nuage <span class="nb">U = f(I)</span> avec ton tableur. <b>3.</b> Le nuage est-il aligné&nbsp;? Passe-t-il par l'origine&nbsp;? <b>4.</b> Modélise-le par une droite et donne son équation <b>avec les grandeurs physiques et leurs unités</b>. <b>5.</b> Déduis-en <span class="nb">R</span>, avec son unité. <b>6.</b> Compare à la valeur annoncée.</p>
+              <p class="exo-consigne">✏️ Fais-le vraiment sur ton tableur avant d'ouvrir la correction.</p>
+              <details class="exo-corr"><summary>Afficher la correction</summary>
+                <div class="corps">
+                  <p><b>1. La conversion.</b> <span class="nb">20 mA = 0,020 A</span> — on divise par mille. Sans cette étape, la pente obtenue serait mille fois trop petite, et ne serait plus en ohms.</p>
+                  <p><b>3. Le nuage est aligné, et il passe par l'origine.</b> Le point (0 ; 0) n'est pas un hasard&nbsp;: <b>sans courant, il n'y a pas de tension</b> aux bornes du conducteur. C'est un argument <b>physique</b>, et c'est lui — pas l'allure du nuage — qui autorise à forcer l'origine.</p>
+                  <p><b>4. L'équation, sans forcer l'origine&nbsp;:</b></p>
+                  <p class="eq-attendue"><span data-o8-valeur="D1.equation"></span> &nbsp;<span class="uni">avec U en V et I en A</span></p>
+                  <p>avec <span class="nb">R² = <span data-o8-valeur="D1.r2Texte"></span></span>. L'ordonnée à l'origine vaut <span class="nb" data-o8-valeur="D1.bTexte"></span> V — <b>négligeable</b> devant des tensions qui montent à 12 V.</p>
+                  <p><b>En forçant l'origine</b> (modèle <span class="nb">U = R × I</span>), la pente devient <span class="nb"><span data-o8-valeur="D1.aTexte" data-origine-forcee></span> Ω</span>. Les deux valeurs sont à moins de 1 % l'une de l'autre&nbsp;: la proportionnalité est bien vérifiée.</p>
+                  <p><b>5. La résistance.</b> La pente d'un graphique <span class="nb">U = f(I)</span> est en <b>volts par ampère</b>, c'est-à-dire en <b>ohms</b>&nbsp;: <span class="nb">R ≈ <span data-o8-valeur="D1.aTexte" data-origine-forcee></span> Ω</span>.</p>
+                  <p><b>6. La comparaison.</b> L'écart à la valeur annoncée de 100 Ω est inférieur à 1 %&nbsp;: la mesure confirme l'indication du fabricant. <b>Écris la conclusion en toutes lettres</b> — un nombre seul ne conclut rien.</p>
+                  <p class="attn">⚠ <b>N'écris jamais «&nbsp;y = 100x&nbsp;».</b> L'équation attendue porte les grandeurs et leurs unités. C'est ce qui la rend relisible — et vérifiable.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exo">
+              <p class="exo-num">Étude de cas 1 bis</p>
+              <p class="exo-enonce">On recommence, avec une <b>lampe</b> cette fois.</p>
+              <div data-o8-tableau="D1bis" data-brut></div>
+              <p class="exo-enonce">Modélise par une droite, note le <span class="nb">R²</span>… puis <b>regarde le nuage</b>. Que conclus-tu&nbsp;?</p>
+              <p class="exo-consigne">✏️ C'est l'exercice le plus important de la page. Prends le temps de regarder.</p>
+              <details class="exo-corr"><summary>Afficher la correction</summary>
+                <div class="corps">
+                  <p>La droite des moindres carrés donne <span class="nb">R² = <span data-o8-valeur="D1bis.r2Texte"></span></span>. <b>C'est un bon R².</b> Beaucoup s'arrêteraient là.</p>
+                  <p><b>Et pourtant le modèle est faux.</b> Regarde comment les points se placent autour de la droite&nbsp;: les premiers sont <b>au-dessus</b>, ceux du milieu <b>en dessous</b>, les derniers <b>au-dessus</b> à nouveau. Ils ne sont pas dispersés au hasard&nbsp;: ils dessinent une <b>courbe</b>.</p>
+                  <p>C'est normal&nbsp;: le filament d'une lampe <b>chauffe</b> quand le courant augmente, et sa résistance augmente avec sa température. Ce n'est pas un conducteur ohmique, et <b>aucune droite ne peut en rendre compte</b>.</p>
+                  <div class="jamais">
+                    <span class="et">🔴 ce qu'il faut retenir de ce cas</span>
+                    <p><b>Un bon R² ne prouve pas que le modèle est le bon.</b> La machine calcule toujours une droite, même quand il n'y en a pas. Elle n'émet aucun jugement — c'est toi qui juges, en regardant le nuage.</p>
+                    <p>Le R² dit à quel point les points sont proches de <b>cette droite-là</b>. Il ne dit pas si une droite était le bon modèle.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- cas D2 ---------- -->
+      <div class="step" data-step data-gate data-valide-sur-interaction data-cle="pc-o8b-s2-etalonnage">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">CAS 2</div>
+            <h3 class="step-title">Une courbe d'étalonnage — et pourquoi forcer l'origine serait une faute</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> déterminer une concentration inconnue à partir d'une droite d'étalonnage affine.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="exo">
+              <p class="exo-num">Étude de cas 2</p>
+              <p class="exo-enonce">On prépare des solutions de <b>chlorure de sodium</b> de concentration en masse connue, et on mesure la <b>masse volumique</b> de chacune.</p>
+              <div data-o8-tableau="D2" data-decimales="3"></div>
+              <p class="exo-enonce"><b>1.</b> Trace <span class="nb">ρ = f(C<sub>m</sub>)</span> avec ton tableur. <b>2.</b> Modélise. L'origine doit-elle être forcée&nbsp;? <b>3.</b> Écris l'équation avec les grandeurs et leurs unités. <b>4.</b> Une solution inconnue a une masse volumique de <span class="nb">1,032 g/mL</span>&nbsp;: quelle est sa concentration en masse&nbsp;? <b>5.</b> Et pour <span class="nb">1,048 g/mL</span>&nbsp;?</p>
+              <p class="exo-consigne">✏️ La question 2 est la vraie question de cet exercice.</p>
+              <details class="exo-corr"><summary>Afficher la correction</summary>
+                <div class="corps">
+                  <p><b>2. Non, et ce serait même une faute.</b> À concentration nulle, il reste de l'<b>eau</b> — et l'eau a une masse volumique de 1,000 g/mL. Forcer le passage par (0 ; 0) reviendrait à écrire que <b>l'eau pure ne pèse rien</b>.</p>
+                  <p>La modélisation affine donne d'ailleurs une ordonnée à l'origine de <span class="nb" data-o8-valeur="D2.bTexte"></span> g/mL&nbsp;: on y reconnaît la masse volumique de l'eau. <b>Le modèle retrouve un résultat connu&nbsp;: c'est le meilleur contrôle qui soit.</b></p>
+                  <p>Si on forçait l'origine malgré tout, le R² tomberait à <span class="nb" data-o8-valeur="D2.r2Texte" data-origine-forcee></span>. <b>Un R² négatif</b>&nbsp;: la droite forcée décrit les mesures <i>plus mal</i> qu'une simple moyenne. La machine ne refuse pas le calcul — elle te laisse faire la faute.</p>
+                  <p><b>3. L'équation&nbsp;:</b></p>
+                  <p class="eq-attendue"><span data-o8-valeur="D2.equation"></span> &nbsp;<span class="uni">avec ρ en g/mL et C<sub>m</sub> en g/L</span></p>
+                  <p>avec <span class="nb">R² = <span data-o8-valeur="D2.r2Texte"></span></span>.</p>
+                  <p><b>4 et 5. Les concentrations inconnues.</b> On isole <span class="nb">C<sub>m</sub></span> — c'est l'outil 7&nbsp;: <span class="nb">C<sub>m</sub> = (ρ − b) ÷ a</span>.</p>
+                  <ul>
+                    <li>pour <span class="nb">ρ = 1,032 g/mL</span> &nbsp;→&nbsp; <span class="nb">C<sub>m</sub> ≈ <span data-o8-interpoler="D2:1.032"></span> g/L</span> ;</li>
+                    <li>pour <span class="nb">ρ = 1,048 g/mL</span> &nbsp;→&nbsp; <span class="nb">C<sub>m</sub> ≈ <span data-o8-interpoler="D2:1.048"></span> g/L</span>.</li>
+                  </ul>
+                  <p>Les deux valeurs tombent <b>à l'intérieur</b> du domaine mesuré (de 0 à 100 g/L)&nbsp;: c'est une <b>interpolation</b>, et elle est légitime. Au-delà de 100 g/L, on extrapolerait — et plus rien ne garantirait que la relation reste affine.</p>
+                  <p class="attn">⚠ <b>Trois chiffres significatifs suffisent</b> — renvoi à l'outil 2. Ta machine en affiche dix&nbsp;; tes mesures en portent trois ou quatre.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- cas D3, pour aller plus loin ---------- -->
+      <div class="step" data-step data-gate data-valide-sur-interaction data-cle="pc-o8b-s2-beer">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">POUR ALLER PLUS LOIN</div>
+            <h3 class="step-title">Une droite par l'origine, légitime celle-là</h3>
+            <div class="objective"><span>🎯</span><span>Programme de <b>première</b>. Rien n'est exigible ici&nbsp;: c'est le contraste avec le cas 2 qui est instructif.</span></div>
+          </div>
+          <div class="card-body">
+            <div class="exo">
+              <p class="exo-num">Ouverture — la loi de Beer-Lambert</p>
+              <p class="exo-enonce">On mesure l'<b>absorbance</b> de solutions colorées de concentration connue.</p>
+              <div data-o8-tableau="D3" data-decimales="2"></div>
+              <p class="exo-enonce">Modélise. Ici, faut-il forcer l'origine&nbsp;? Compare ton raisonnement avec celui du cas 2.</p>
+              <details class="exo-corr"><summary>Afficher la correction</summary>
+                <div class="corps">
+                  <p><b>Oui, et c'est légitime.</b> Une solution qui ne contient <b>aucune</b> espèce colorée n'absorbe <b>rien</b>&nbsp;: <span class="nb">A = 0</span> quand <span class="nb">C = 0</span>, par définition même de l'absorbance.</p>
+                  <p>Le modèle proportionnel donne <span class="nb">k ≈ <span data-o8-valeur="D3.aTexte" data-origine-forcee></span> L/mmol</span>, avec <span class="nb">R² = <span data-o8-valeur="D3.r2Texte" data-origine-forcee></span></span>.</p>
+                  <div class="point-cle">🔑 <b>Le contraste avec le cas 2.</b> Dans les deux cas le nuage est aligné, dans les deux cas le R² est excellent. Ce qui décide n'est <b>jamais</b> l'allure du nuage&nbsp;: c'est la réponse à une question de <b>physique</b> — «&nbsp;que vaut y quand x vaut zéro&nbsp;?&nbsp;». Ici, zéro. Là, la masse volumique de l'eau.</div>
+                  <p class="attn">⚠ <b>Et le domaine de validité&nbsp;?</b> La loi de Beer-Lambert ne vaut que pour des solutions <b>diluées</b>. Au-delà, la droite cesse d'être valable — même si la machine continue de la prolonger.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- /lockable -->
+  </section>
+
+
+  <div class="vers-soeur">
+    <a href="2nde-pc-o8-construire-un-graphique.html"><span class="q">le tronc commun</span><span class="t">Outil 8 — à la main</span><span class="d">Les axes, l'échelle, la droite moyenne, le coefficient directeur et son unité. C'est là qu'on apprend à lire un graphique.</span></a>
+    <a href="2nde-pc-o8c-graphique-calculatrice.html"><span class="q">l'autre machine</span><span class="t">Outil 8 — à la calculatrice</span><span class="d">NumWorks, TI, Casio — et un simulateur en ligne si tu n'as pas de calculatrice graphique.</span></a>
+  </div>
+
+  <footer class="note">
+    <b>Outil transversal — proposition V1 du 20/09/2026.</b> 5 parcours, les mêmes 6 étapes pour tous. Les jeux de données sont <b>partagés avec les deux autres pages de l'outil 8</b>&nbsp;: le même tableau se traite à la main, au tableur et à la calculatrice, et c'est la comparaison des trois résultats qui apprend quelque chose. Pente, ordonnée à l'origine et R² affichés ici sont <b>calculés à partir du tableau</b>, jamais recopiés.
+  </footer>
+</div>
+
+<script src="../assets/js/sequence-snt.js?v=47"></script>
+<!-- Les jeux de données, partagés par les trois pages de l'outil 8 -->
+<script src="../assets/js/o8-donnees.js?v=1"></script>
+
+<!-- ============================================================
+     JS propre à la page. Le moteur partagé n'est PAS touché
+     (CONSIGNES-outil-PC.md §5).
+
+     Un seul appoint : le sélecteur de matériel. Il masque tous les
+     parcours sauf un, et garde le choix en localStorage.
+
+     🔴 POURQUOI localStorage ET NON LA BASE : « j'ai une NumWorks »
+     est une préférence d'affichage, pas une réponse d'élève. Rien à
+     enregistrer sur un serveur, rien à montrer au professeur, donc
+     rien qui sorte du navigateur. Les accès sont sous try/catch :
+     en navigation privée, la page fonctionne, elle oublie le choix.
+     ============================================================ -->
+<script>
+(function(){
+  'use strict';
+
+  var CLE = 'pc-o8b-materiel';
+
+  function lire(){ try { return localStorage.getItem(CLE) || ''; } catch(e){ return ''; } }
+  function ecrire(v){ try { localStorage.setItem(CLE, v); } catch(e){} }
+
+  function appliquer(choix){
+    Array.prototype.forEach.call(document.querySelectorAll('.parc'), function(p){
+      var montrer = (p.dataset.mat === choix);
+      /* on n'écrit que si ça change : un MutationObserver du moteur
+         surveille le sous-arbre des étapes, et une écriture
+         inconditionnelle le réveille pour rien */
+      if (p.hidden === montrer) p.hidden = !montrer;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.sans-choix'), function(p){
+      var cacher = !!choix;
+      if (p.hidden !== cacher) p.hidden = cacher;
+    });
+  }
+
+  function demarrer(){
+    var boutons = document.querySelectorAll('#choix-materiel input[type=radio]');
+    var initial = lire();
+    Array.prototype.forEach.call(boutons, function(b){
+      if (b.value === initial) b.checked = true;
+      b.addEventListener('change', function(){
+        if (!b.checked) return;
+        ecrire(b.value);
+        appliquer(b.value);
+      });
+    });
+    appliquer(initial);
+
+    /* Les deux réglages d'affichage communs aux outils. */
+    Array.prototype.forEach.call(document.querySelectorAll('.btn.dl'), function(b){
+      if (b.parentNode) b.parentNode.removeChild(b);
+    });
+    var b4 = document.getElementById('prog4');
+    if (b4){
+      var menu = b4.querySelector('.p4-menu');
+      if (menu && menu.parentNode) menu.parentNode.removeChild(menu);
+      var ret = b4.querySelector('.p4-retour');
+      if (ret){
+        ret.setAttribute('title', "Revenir à l'outil 8");
+        ret.setAttribute('aria-label', "Revenir à l'outil 8");
+        var lab = ret.querySelector('.p4-lab');
+        if (lab) lab.textContent = 'Outil 8';
+      }
+    }
+    ['#glo-ouvrir', '.glo-back'].forEach(function(sel){
+      var n = document.querySelector(sel);
+      if (n && n.parentNode) n.parentNode.removeChild(n);
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
+  else demarrer();
+})();
+</script>
+
+<!-- Téléchargements des PDF suivis pour le professeur (assets/js/suivi-pc.js) -->
+<script src="../assets/js/suivi-pc.js?v=1"></script>
+</body></html>

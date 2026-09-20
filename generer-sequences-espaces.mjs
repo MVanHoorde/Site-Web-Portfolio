@@ -46,7 +46,14 @@ export const ESPACES = {
     ['pc-o5', 'pages/2nde-pc-o5-compte-rendu-tp.html'],
     ['pc-o6', 'pages/2nde-pc-o6-presenter-un-calcul.html'],
     ['pc-o7', 'pages/2nde-pc-o7-relation-algebrique.html'],
-    ['pc-o8', 'pages/2nde-pc-o8-construire-un-graphique.html']
+    ['pc-o8', 'pages/2nde-pc-o8-construire-un-graphique.html'],
+    /* Les deux pages soeurs de l'outil 8. Elles ne figurent pas sur le
+       hub -- on n'y entre que depuis l'outil 8 -- mais elles portent
+       leur propre data-sequence, donc leur propre espace : le tableau
+       de bord doit pouvoir dire qui a ouvert le parcours tableur ou le
+       parcours calculatrice. La numerotation des outils reste 1 -> 8. */
+    ['pc-o8b', 'pages/2nde-pc-o8b-graphique-tableur.html'],
+    ['pc-o8c', 'pages/2nde-pc-o8c-graphique-calculatrice.html']
   ],
   es1: [
     ['es1-t1-c1', 'pages/1re-es-t1-c1-nucleosynthese.html'],

@@ -54,7 +54,12 @@ import { pathToFileURL } from 'node:url';
  * Les outils ont en plus un plafond de consigne : deux pages
  * (CONSIGNES-outil-PC.md §7), sauf exception déclarée ici. */
 const MAXI_OUTIL = 2;
-const EXCEPTIONS = { o3: 4 };   // o3 : la planche des neuf pictogrammes de danger
+const EXCEPTIONS = {
+  o3: 4,   // o3 : la planche des neuf pictogrammes de danger
+  o8: 3,   // o8 : le cours a double le 20/09/2026 (modéliser, domaine de
+           //      validité, R²) et le §7 interdit qu'une partie du cours
+           //      vive seulement à l'écran. Dérogation à valider.
+};
 
 function parc() {
   return readdirSync('fiches')

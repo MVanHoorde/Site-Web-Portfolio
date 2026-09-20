@@ -113,6 +113,72 @@
     .saisie select{flex:1 1 100%;max-width:100%}
   }
 
+  /* ============================================================
+     AJOUTS DU 20/09/2026 — modélisation, validité, pages sœurs
+     ============================================================ */
+
+  /* ---------- Fraction empilée — règle globale du dépôt ---------- */
+  .fr{display:inline-grid;grid-template-rows:auto auto;justify-items:center;
+      vertical-align:middle;margin:0 3px;font-family:"IBM Plex Mono"}
+  .fr > .h{padding:0 6px 2px;border-bottom:1.6px solid currentColor;line-height:1.35}
+  .fr > .b{padding:2px 6px 0;line-height:1.35}
+
+  /* ---------- Tableau de valeurs posé par assets/js/o8-donnees ----------
+     🔴 UN TABLEAU, JAMAIS UNE IMAGE : l'élève doit pouvoir le
+     sélectionner pour le recopier dans son tableur, et un lecteur
+     d'écran doit pouvoir l'annoncer.
+     🔴 Ses valeurs ne sont pas écrites ici : elles viennent du fichier
+     partagé par les trois pages de l'outil 8. Une seule source. */
+  .tv-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:10px 0}
+  .tv{border-collapse:collapse;font-size:14px;min-width:100%}
+  .tv caption{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+              color:var(--ink-faint);text-align:left;padding-bottom:6px}
+  .tv th,.tv td{border:1px solid var(--line);padding:7px 11px;text-align:center;white-space:nowrap}
+  .tv th{background:var(--surface-2);font-family:"IBM Plex Mono";font-size:13px;
+         color:var(--ink);font-weight:600;text-align:left}
+  .tv td{font-family:"IBM Plex Mono"}
+
+  /* ---------- L'équation, écrite avec les grandeurs et leurs unités ----------
+     Mise en valeur parce que c'est CE QUI EST ATTENDU sur une copie —
+     et parce que « y = 98,7x » est ce qu'on lit à la place neuf fois
+     sur dix. */
+  .eq-attendue{font-family:"IBM Plex Mono";font-size:16px;text-align:center;
+               border:1.5px solid var(--ok);border-radius:10px;background:var(--ok-wash);
+               padding:11px 14px;margin:10px 0;line-height:1.9;overflow-x:auto}
+  .eq-attendue .uni{font-size:12.5px;color:var(--ink-soft);white-space:nowrap}
+
+  /* ---------- L'interdit, quand il mérite un bloc entier ---------- */
+  .jamais{border:1.5px solid var(--err);border-left:4px solid var(--err);background:var(--err-wash);
+          border-radius:0 10px 10px 0;padding:11px 14px;margin:12px 0}
+  .jamais .et{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+              color:var(--err);font-weight:600;display:block;margin-bottom:7px}
+  .jamais p{font-size:14.5px;margin:0 0 8px;line-height:1.6}
+  .jamais p:last-child{margin-bottom:0}
+
+  /* ---------- Deux modèles, ou deux gestes, en regard ---------- */
+  .deux-modeles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:12px 0}
+  .mod{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px}
+  .mod.rate{border-style:dashed;border-color:var(--activity)}
+  .mod .tt{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+           color:var(--link);font-weight:600;display:block;margin-bottom:6px}
+  .mod.rate .tt{color:var(--activity)}
+  .mod .eq{font-family:"IBM Plex Mono";font-size:17px;font-weight:600;text-align:center;
+           margin:6px 0 10px;color:var(--ink)}
+  .mod p{font-size:14px;margin:0 0 6px;line-height:1.55}
+  .mod p:last-child{margin-bottom:0}
+  .mod .ex{font-size:13px;color:var(--ink-soft)}
+
+  /* ---------- Renvoi vers les deux pages sœurs ---------- */
+  .vers-soeur{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0 4px}
+  .vers-soeur a{flex:1 1 260px;display:block;text-decoration:none;color:inherit;
+                border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--surface)}
+  .vers-soeur a:hover{border-color:var(--link)}
+  .vers-soeur a:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+  .vers-soeur .q{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.08em;
+                 text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:4px}
+  .vers-soeur .t{font-size:15.5px;font-weight:600;color:var(--link);display:block}
+  .vers-soeur .d{font-size:13.5px;color:var(--ink-soft);line-height:1.5;display:block;margin-top:4px}
+
   .vers-fiche{display:inline-flex;align-items:center;gap:8px;font-size:14px;text-decoration:none;
               color:var(--link);background:var(--link-wash);border:1px solid var(--line);
               border-radius:10px;padding:9px 14px;margin-top:16px;min-height:44px}
@@ -161,14 +227,15 @@
 <header class="masthead">
   <div class="wrap">
     <div class="eyebrow">Physique-Chimie · Outil transversal · Seconde</div>
-    <h1 class="title">Construire et exploiter un graphique <span class="tag" style="display:block;margin-top:8px">les axes · les échelles · le tracé · le coefficient directeur</span></h1>
+    <h1 class="title">Construire et exploiter un graphique <span class="tag" style="display:block;margin-top:8px">à la main · puis au tableur · ou à la calculatrice</span></h1>
     <p class="lede">Un graphique n'est pas un dessin&nbsp;: c'est une <b>mesure qu'on peut relire</b>. Bien construit, il se lit par n'importe qui et donne des valeurs qu'on n'a pas mesurées. Mal construit, il ne prouve rien — et le plus souvent, ce qui manque tient en trois mots&nbsp;: <b>une unité au bout d'un axe</b>.</p>
     <div class="themes">
       <span class="theme-chip">Outil 6 · Présenter un calcul</span><span class="theme-chip">Outil 7 · Relation algébrique</span><span class="theme-chip on">Outil 8 · Le graphique</span>
     </div>
     <div class="meta-row">
       <span class="m"><b>Deux parties</b></span>
-      <span class="m">Durée <b>≈ 1 h 15</b>, en deux fois</span>
+      <span class="m">Durée <b>≈ 1 h 30</b>, en deux fois</span>
+      <span class="m"><b>Deux pages sœurs</b> pour le tableur et la calculatrice</span>
     </div>
     <a class="vers-fiche" href="../assets/pdf/pc/fiches/fiche-2nde-o8-construire-un-graphique.pdf">🖨️ Fiche outil (PDF) — la méthode et une grille vierge</a>
   </div>
@@ -514,6 +581,246 @@
         </div>
       </div>
 
+      <!-- ---------- 1.5 — AJOUT du 20/09/2026 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o8-s1-modele">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.5</div>
+            <h3 class="step-title">Proportionnalité ou fonction affine&nbsp;?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir si ta droite doit passer par l'origine — et savoir que ce n'est <b>jamais</b> le nuage qui en décide.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Deux droites, deux situations<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Une droite tracée sur un graphique a toujours une équation de la forme <span class="nb">y = a × x + b</span>. Tout se joue sur <span class="nb">b</span>, l'<b>ordonnée à l'origine</b>&nbsp;: la valeur de <span class="nb">y</span> quand <span class="nb">x</span> vaut zéro.</p>
+
+            <div class="deux-modeles">
+              <div class="mod">
+                <span class="tt">proportionnalité</span>
+                <div class="eq">y = a × x</div>
+                <p>La droite <b>passe par l'origine</b>. Doubler <span class="nb">x</span>, c'est doubler <span class="nb">y</span>.</p>
+                <p class="ex"><b>Loi d'Ohm</b> — sans courant, pas de tension.</p>
+              </div>
+              <div class="mod">
+                <span class="tt">fonction affine</span>
+                <div class="eq">y = a × x + b</div>
+                <p>La droite coupe l'axe des ordonnées <b>ailleurs</b> qu'en zéro.</p>
+                <p class="ex"><b>Étalonnage d'une solution</b> — à concentration nulle, il reste de l'eau.</p>
+              </div>
+            </div>
+
+            <div class="point-cle">📐 <b>C'est exactement la fonction affine des maths.</b> Le <b>coefficient directeur</b> que tu as calculé à l'étape précédente <b>est</b> le <span class="nb">a</span> de <span class="nb">f(x) = ax + b</span>, et l'ordonnée à l'origine est son <span class="nb">b</span>. Même objet, deux matières.</div>
+
+            <div class="block-label">Les deux cas, côte à côte<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+
+            <p style="font-size:14.5px;margin:4px 0 6px"><b>① La caractéristique d'un conducteur ohmique.</b> On mesure la tension pour différentes intensités.</p>
+            <div data-o8-tableau="D1" data-brut></div>
+            <p style="font-size:14.5px;margin:6px 0 10px">Le nuage est aligné <b>et</b> passe par l'origine. Mais ce qui autorise à écrire <span class="nb">U = R × I</span> n'est pas le dessin&nbsp;: c'est qu'<b>un conducteur sans courant n'a aucune tension à ses bornes</b>. Le point (0 ; 0) est imposé par la physique.</p>
+            <p class="eq-attendue"><span data-o8-valeur="D1.aTexte" data-origine-forcee></span> × I &nbsp;=&nbsp; U &nbsp;<span class="uni">soit R ≈ <span data-o8-valeur="D1.aTexte" data-origine-forcee></span> Ω</span></p>
+
+            <p style="font-size:14.5px;margin:14px 0 6px"><b>② Une courbe d'étalonnage.</b> On mesure la masse volumique de solutions salées de concentration connue.</p>
+            <div data-o8-tableau="D2" data-decimales="3"></div>
+            <p style="font-size:14.5px;margin:6px 0 10px">Le nuage est tout aussi aligné. Mais il <b>ne passe pas</b> par l'origine, et c'est normal&nbsp;: à concentration nulle, il reste de l'eau — qui a une masse volumique de <span class="nb">1,000 g/mL</span>.</p>
+            <p class="eq-attendue"><span data-o8-valeur="D2.equation"></span> &nbsp;<span class="uni">avec ρ en g/mL et C<sub>m</sub> en g/L</span></p>
+            <p style="font-size:14.5px;margin:6px 0 10px">L'ordonnée à l'origine vaut <span class="nb" data-o8-valeur="D2.bTexte"></span> g/mL&nbsp;: <b>on y reconnaît la masse volumique de l'eau</b>. Le modèle retrouve tout seul un résultat connu — c'est le meilleur contrôle qui soit.</p>
+
+            <div class="block-label">A-t-on le droit de forcer l'origine&nbsp;?<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="jamais">
+              <span class="et">🔴 une seule raison valable : un argument physique</span>
+              <p>Les tableurs et les calculatrices proposent tous de <b>forcer le passage par l'origine</b>. C'est une décision de <b>physique</b>, jamais de confort&nbsp;: la question à se poser est <b>«&nbsp;que vaut y quand x vaut zéro&nbsp;?&nbsp;»</b>, et on y répond en pensant à l'expérience, pas en regardant le nuage.</p>
+              <p><b>Sur l'étalonnage ②, forcer l'origine serait une faute</b>&nbsp;: ce serait écrire que l'eau pure ne pèse rien. La machine ne refuse pas — elle te laisse faire.</p>
+              <p>Et le résultat se voit dans les chiffres&nbsp;: en forçant l'origine sur l'étalonnage ②, la pente passerait de <span class="nb" data-o8-valeur="D2.aTexte"></span> à <span class="nb" data-o8-valeur="D2.aTexte" data-origine-forcee></span>, et le <span class="nb">R²</span> tomberait à <span class="nb" data-o8-valeur="D2.r2Texte" data-origine-forcee></span>. <b>Un R² négatif</b>&nbsp;: la droite forcée décrit les mesures <i>plus mal</i> qu'une simple moyenne. C'est le seul cas de cet outil où tu verras ce nombre passer sous zéro — retiens à quoi il correspond.</p>
+            </div>
+
+            <div class="eviter">
+              <span class="et">⚠ Ce qu'on n'écrit jamais dans une conclusion</span>
+              <ul>
+                <li><b><span class="nb">y = 98,7x</span></b>. Une équation de physique porte des <b>grandeurs</b> et des <b>unités</b>&nbsp;: <span class="nb">U = 100 × I</span>, avec U en V et I en A. Sans cela, on ne sait pas de quoi on parle — et la pente n'a plus de sens.</li>
+                <li><b>Une pente sans unité.</b> Elle se lit sur les axes&nbsp;: des volts divisés par des ampères font des <b>ohms</b>. C'est cette unité qui prouve qu'on a bien calculé une résistance.</li>
+                <li><b>Dix chiffres significatifs.</b> Tes mesures en portent trois ou quatre&nbsp;: ton résultat aussi. Renvoi à l'<a href="2nde-pc-o2-chiffres-significatifs.html" style="color:var(--link)">outil 2</a>.</li>
+              </ul>
+            </div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">y = a x &nbsp;·&nbsp; proportionnalité<br>y = a x + b &nbsp;·&nbsp; fonction affine</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Se demander ce que vaut <span class="nb">y</span> quand <span class="nb">x</span> vaut <b>zéro</b>, dans l'<b>expérience</b> — et écrire l'équation avec les grandeurs et leurs unités.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">L'ordonnée à l'origine a-t-elle un <b>sens physique</b>&nbsp;? Sur un étalonnage, elle doit retrouver une valeur connue.</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Forcer l'origine <b>parce que le nuage en a l'air</b>. C'est la physique qui décide, jamais le dessin.</div></div>
+            </div>
+
+            <div class="block-label">À toi — quatre questions sur le modèle<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="qcmbox" data-code="O8-Q-modele">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Qu'est-ce qui autorise à forcer une droite à passer par l'origine ?",
+  "o": [
+   "Le nuage de points en a visiblement l'air",
+   "Un argument physique : y vaut zéro quand x vaut zéro",
+   "Le R² est meilleur avec l'origine forcée",
+   "C'est le réglage proposé par défaut par le logiciel"
+  ],
+  "r": 1,
+  "c": "<b>Un argument physique, et lui seul.</b> Sans courant, pas de tension : l'origine est imposée. Sur un étalonnage, à concentration nulle il reste de l'eau : la forcer serait une faute, quelle que soit l'allure du nuage."
+ },
+ {
+  "q": "Sur la courbe ρ = f(Cm), que représente l'ordonnée à l'origine ?",
+  "o": [
+   "Une erreur de mesure qu'il faut corriger",
+   "La concentration de la solution la plus diluée",
+   "La masse volumique de l'eau, à concentration nulle",
+   "Rien : elle n'a pas de signification physique"
+  ],
+  "r": 2,
+  "c": "<b>La masse volumique de l'eau.</b> À concentration nulle, il reste le solvant. Retrouver 1,000 g/mL est le meilleur contrôle possible du modèle."
+ },
+ {
+  "q": "Ton tableur affiche « y = 98,7x ». Que recopies-tu sur ta copie ?",
+  "o": [
+   "y = 98,7x, l'équation donnée par le logiciel",
+   "y = 98,7x + 0, pour montrer l'ordonnée",
+   "P = 98,7 × m, avec P en N et m en kg",
+   "98,7, puisque seul le coefficient compte"
+  ],
+  "r": 2,
+  "c": "<b>Les grandeurs, et leurs unités.</b> « x » et « y » ne disent rien ; P et m disent tout. Et c'est l'unité de la pente — ici des N/kg — qui prouve qu'on a bien calculé une intensité de pesanteur."
+ },
+ {
+  "q": "Le coefficient directeur d'un graphique, c'est aussi, en mathématiques :",
+  "o": [
+   "le b de la fonction affine f(x) = ax + b",
+   "le a de la fonction affine f(x) = ax + b",
+   "la valeur de f(0), l'image de zéro",
+   "une notion qui n'existe pas en mathématiques"
+  ],
+  "r": 1,
+  "c": "<b>C'est le a.</b> Même objet, même calcul, deux matières : le taux d'accroissement des maths est le coefficient directeur de la physique."
+ }
+]
+              </script>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 1.6 — AJOUT du 20/09/2026 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o8-s1-validite">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.6</div>
+            <h3 class="step-title">Jusqu'où peut-on lire&nbsp;? Et que vaut le R²&nbsp;?</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> savoir dans quel domaine ta droite est utilisable, et pourquoi un bon coefficient ne prouve rien.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="block-label">Interpoler, extrapoler<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="deux-modeles">
+              <div class="mod">
+                <span class="tt">interpoler</span>
+                <div class="eq">entre tes mesures</div>
+                <p>Lire une valeur <b>à l'intérieur</b> du domaine que tu as mesuré. <b>Légitime</b>&nbsp;: la droite y a été vérifiée par des points.</p>
+              </div>
+              <div class="mod rate">
+                <span class="tt">extrapoler</span>
+                <div class="eq">au-delà de tes mesures</div>
+                <p>Prolonger la droite <b>hors</b> du domaine mesuré. <b>Risqué</b>&nbsp;: rien n'y a été vérifié. À ne faire qu'en le disant.</p>
+              </div>
+            </div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Le <b>domaine de validité</b> d'un modèle, ce sont les valeurs entre lesquelles on l'a réellement éprouvé. Au-delà, la droite continue sur le papier — mais la physique, elle, peut s'arrêter&nbsp;: un ressort finit par se déformer, une solution par saturer, une lampe par fondre.</p>
+
+            <div class="exemple">
+              <div class="exemple-titre">Lire une concentration inconnue</div>
+              <div class="ex-etape"><span class="n">1</span><div><span class="ex-lab">La droite d'étalonnage</span>
+                <span class="nb" data-o8-valeur="D2.equation"></span>, établie entre <span class="nb">0</span> et <span class="nb">100 g/L</span>.</div></div>
+              <div class="ex-etape"><span class="n">2</span><div><span class="ex-lab">La mesure sur l'inconnue</span>
+                <span class="nb">ρ = 1,032 g/mL</span>. Cette valeur tombe entre celles du tableau&nbsp;: on <b>interpole</b>.</div></div>
+              <div class="ex-etape"><span class="n">3</span><div><span class="ex-lab">On isole Cm — c'est l'outil 7</span>
+                <div class="calcul">C<sub>m</sub> = <span class="fr"><span class="h">ρ − b</span><span class="b">a</span></span></div></div></div>
+              <div class="ex-etape"><span class="n">4</span><div><span class="ex-lab">Le résultat</span>
+                <span class="nb">C<sub>m</sub> ≈ <span data-o8-interpoler="D2:1.032"></span> g/L</span> — dans le domaine mesuré ✓</div></div>
+              <div class="ex-etape"><span class="n">5</span><div><span class="ex-lab">Le contrôle des chiffres significatifs</span>
+                Les masses volumiques sont données à quatre chiffres&nbsp;: on en garde <b>trois</b> au résultat. Renvoi à l'<a href="2nde-pc-o2-chiffres-significatifs.html" style="color:var(--link)">outil 2</a>.</div></div>
+            </div>
+
+            <div class="block-label">r et R², en deux phrases<span class="niv" style="margin-left:8px">○ <b>support</b></span></div>
+            <p style="font-size:14.5px;margin:4px 0 10px">Quand une machine modélise, elle affiche un <span class="nb">r</span> (coefficient de corrélation) et souvent son carré <span class="nb">R²</span>. Ces nombres mesurent <b>une seule chose</b>&nbsp;: à quel point tes points sont proches de <b>cette droite-là</b>. Plus ils sont proches de <span class="nb">1</span>, mieux les points s'alignent sur elle.</p>
+
+            <div class="jamais">
+              <span class="et">🔴 un bon R² ne prouve pas que le modèle est le bon</span>
+              <p>Voici la caractéristique d'une <b>lampe</b> — un dipôle dont la résistance augmente quand le filament chauffe&nbsp;:</p>
+              <div data-o8-tableau="D1bis" data-brut></div>
+              <p>La droite des moindres carrés donne <span class="nb">R² = <span data-o8-valeur="D1bis.r2Texte"></span></span>. C'est un <b>bon</b> R². Et pourtant la droite est <b>fausse</b>&nbsp;: les premiers points sont au-dessus, ceux du milieu en dessous, les derniers au-dessus. Ils ne sont pas dispersés au hasard — ils dessinent une <b>courbe</b>.</p>
+              <p><b>La machine n'émet aucun jugement.</b> Elle calcule la meilleure droite, même quand il n'y a pas de droite. Regarder comment les points se répartissent <b>autour</b> de la droite en dit plus que n'importe quel R².</p>
+            </div>
+
+            <div class="block-label">À retenir<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="retain">
+              <div class="ret-t"><span class="ret-e">la règle</span><div class="ret-c"><div class="ret-f">on lit entre ses mesures,<br>pas au-delà</div></div></div>
+              <div class="ret-t"><span class="ret-e">le geste</span><div class="ret-c">Vérifier que la valeur cherchée tombe <b>dans</b> le domaine mesuré. Sinon, le dire.</div></div>
+              <div class="ret-t"><span class="ret-e">le contrôle</span><div class="ret-c">Les points sont-ils répartis <b>de part et d'autre</b> de la droite, ou suivent-ils une <b>courbe</b>&nbsp;?</div></div>
+              <div class="ret-t piege"><span class="ret-e">le piège</span><div class="ret-c">Conclure sur le seul <span class="nb">R²</span>. Il dit si les points sont près de <b>cette</b> droite, jamais si une droite était le bon modèle.</div></div>
+            </div>
+
+            <div class="block-label">À toi — quatre questions sur la validité<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="qcmbox" data-code="O8-Q-validite">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Ton étalonnage va de 0 à 100 g/L. Tu veux lire une valeur à 140 g/L. C'est :",
+  "o": [
+   "une interpolation, parfaitement légitime",
+   "une extrapolation, à signaler comme incertaine",
+   "impossible : la droite s'arrête au dernier point",
+   "légitime, puisque le R² est excellent"
+  ],
+  "r": 1,
+  "c": "<b>Une extrapolation.</b> La droite se prolonge sur le papier, mais aucune mesure ne l'a vérifiée là-bas. On peut le faire — à condition de dire qu'on le fait."
+ },
+ {
+  "q": "Un R² de 0,97 sur une caractéristique de lampe permet de conclure :",
+  "o": [
+   "que la lampe est un conducteur ohmique",
+   "que les mesures sont de mauvaise qualité",
+   "rien à lui seul : il faut regarder le nuage",
+   "que la modélisation linéaire est la bonne"
+  ],
+  "r": 2,
+  "c": "<b>Rien à lui seul.</b> Le R² dit que les points sont proches de cette droite-là. Ici, ils dessinent une courbe : alternativement au-dessus puis en dessous. Le modèle est faux malgré le bon R²."
+ },
+ {
+  "q": "Que mesure exactement le R² d'une modélisation ?",
+  "o": [
+   "la proximité des points à la droite calculée",
+   "la précision des instruments de mesure",
+   "le nombre de points du nuage de mesures",
+   "la pertinence physique du modèle choisi"
+  ],
+  "r": 0,
+  "c": "<b>La proximité des points à la droite calculée.</b> Rien d'autre — ni la qualité des instruments, ni la justesse du modèle."
+ },
+ {
+  "q": "Qu'appelle-t-on le domaine de validité d'un modèle ?",
+  "o": [
+   "l'ensemble des valeurs possibles de la grandeur",
+   "l'intervalle sur lequel on a réellement mesuré",
+   "la partie du graphique où le R² dépasse 0,99",
+   "la zone comprise entre les axes du graphique"
+  ],
+  "r": 1,
+  "c": "<b>L'intervalle réellement mesuré.</b> C'est là, et seulement là, que le modèle a été éprouvé par des points."
+ }
+]
+              </script>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
     </div><!-- /lockable -->
   </section>
@@ -842,9 +1149,114 @@
         </div>
       </div>
 
+      <!-- ---------- 2.5 — AJOUT du 20/09/2026 : étude de cas D1 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o8-s2-ohm">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTUDE DE CAS 1</div>
+            <h3 class="step-title">La loi d'Ohm, du papier millimétré à la résistance</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> le parcours complet sur un cas du programme&nbsp;: convertir, tracer, modéliser, conclure avec une unité.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo">
+              <p class="exo-num">Exercice 5</p>
+              <p class="exo-enonce">Tu as mesuré la tension <span class="nb">U</span> aux bornes d'un conducteur ohmique pour différentes intensités <span class="nb">I</span>. Le composant est annoncé à <b>100 Ω</b> par son fabricant.</p>
+              <div data-o8-tableau="D1" data-brut></div>
+              <p class="exo-enonce"><b>1.</b> Convertis les intensités en <b>ampères</b>. <b>2.</b> Trace <span class="nb">U = f(I)</span> sur du papier millimétré, axes légendés avec leurs unités. <b>3.</b> Le nuage est-il aligné&nbsp;? Passe-t-il par l'origine&nbsp;? <b>4.</b> Trace la droite moyenne, et calcule son coefficient directeur avec <b>deux points de la droite</b>. <b>5.</b> Écris l'équation avec les grandeurs et leurs unités, et déduis-en <span class="nb">R</span>. <b>6.</b> Compare à la valeur annoncée.</p>
+              <p class="exo-consigne">✏️ Fais-le entièrement sur ta feuille avant d'ouvrir la correction.</p>
+              <details class="exo-corr"><summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>1. La conversion.</b> <span class="nb">20 mA = 0,020 A</span> — on divise par mille. <b>Cette étape n'est pas une formalité&nbsp;:</b> sans elle, la pente obtenue est mille fois trop petite, et elle n'est plus en ohms. Renvoi à l'<a href="2nde-pc-o1-ecriture-scientifique.html" style="color:var(--link)">outil 1</a>.</p>
+                  <p><b>2. Les axes.</b> <span class="nb">I (A)</span> en abscisse, <span class="nb">U (V)</span> en ordonnée — <b>grandeur et unité</b>, sur chacun. Titre&nbsp;: <span class="nb">U = f(I)</span>. Échelle régulière, qui étale les points sur toute la feuille.</p>
+                  <p><b>3. Oui, et oui.</b> Le nuage est aligné, et il passe par l'origine. Mais attention&nbsp;: ce qui autorise à écrire <span class="nb">U = R × I</span> n'est pas l'allure du dessin, c'est qu'<b>un conducteur sans courant n'a aucune tension à ses bornes</b>. L'argument est physique.</p>
+                  <p><b>4. Le coefficient directeur.</b> Avec deux points <b>de la droite</b> (pas deux points de mesure&nbsp;!), aussi éloignés que possible — par exemple l'origine et le point d'abscisse <span class="nb">0,120 A</span> sur la droite&nbsp;:</p>
+                  <div class="calcul">k = <span class="fr"><span class="h">y<sub>B</sub> − y<sub>A</sub></span><span class="b">x<sub>B</sub> − x<sub>A</sub></span></span> ≈ <span class="fr"><span class="h">12,0 − 0</span><span class="b">0,120 − 0</span></span> ≈ 100 &nbsp;&nbsp;<span class="encadre">100 V/A = 100 Ω</span></div>
+                  <p><b>5. L'équation, et la résistance.</b> La modélisation par les moindres carrés — ce que fera une machine — donne&nbsp;:</p>
+                  <p class="eq-attendue"><span data-o8-valeur="D1.equation"></span> &nbsp;<span class="uni">avec U en V et I en A</span></p>
+                  <p>L'ordonnée à l'origine vaut <span class="nb" data-o8-valeur="D1.bTexte"></span> V&nbsp;: <b>négligeable</b> devant des tensions qui montent à 12 V. En forçant le passage par l'origine, la pente devient <span class="nb"><span data-o8-valeur="D1.aTexte" data-origine-forcee></span> Ω</span> — moins de 1 % d'écart avec l'autre. <b>La proportionnalité est vérifiée.</b></p>
+                  <p><b>La pente est la résistance</b>&nbsp;: des volts divisés par des ampères font des <b>ohms</b>. <span class="nb">R ≈ <span data-o8-valeur="D1.aTexte" data-origine-forcee></span> Ω</span>.</p>
+                  <p><b>6. La comparaison.</b> L'écart à la valeur annoncée de 100 Ω est inférieur à 1 %&nbsp;: la mesure confirme l'indication du fabricant. <b>Écris-le en toutes lettres</b> — un nombre seul ne conclut rien. Renvoi à l'<a href="2nde-pc-o6-presenter-un-calcul.html" style="color:var(--link)">outil 6</a>.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exo">
+              <p class="exo-num">Exercice 6 — le même travail, sur une lampe</p>
+              <p class="exo-enonce">On recommence avec une <b>lampe</b>. Trace le nuage sur le même type de graphique, puis essaie d'y faire passer une droite.</p>
+              <div data-o8-tableau="D1bis" data-brut></div>
+              <p class="exo-enonce">Que constates-tu&nbsp;? Peux-tu parler de résistance&nbsp;?</p>
+              <p class="exo-consigne">✏️ L'exercice le plus important de la page. Trace vraiment, et regarde.</p>
+              <details class="exo-corr"><summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>Le nuage n'est pas aligné&nbsp;: il est incurvé.</b> Il part doucement, puis monte de plus en plus vite. Aucune droite ne passe par tous les points.</p>
+                  <p>Si tu forces malgré tout une droite moyenne, tu verras que <b>les premiers points sont au-dessus, ceux du milieu en dessous, les derniers au-dessus</b>. Ce n'est pas de la dispersion de mesure&nbsp;: c'est une <b>courbe</b>.</p>
+                  <p><b>Explication physique.</b> Le filament d'une lampe <b>chauffe</b> quand le courant augmente, et la résistance d'un métal croît avec sa température. La lampe n'est pas un conducteur ohmique&nbsp;: <b>on ne peut pas lui attribuer une résistance unique</b>.</p>
+                  <p><b>Ce que ça t'apprend pour la suite&nbsp;:</b> un tableur ou une calculatrice te rendrait ici un <span class="nb">R² = <span data-o8-valeur="D1bis.r2Texte"></span></span> — un bon R². Et le modèle serait faux quand même. <b>La machine ne regarde pas le nuage. Toi, si.</b></p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 2.6 — AJOUT du 20/09/2026 : étude de cas D2 ---------- -->
+      <div class="step" data-step data-gate data-cle="pc-o8-s2-etalonnage">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTUDE DE CAS 2</div>
+            <h3 class="step-title">Une courbe d'étalonnage, pour trouver une concentration inconnue</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> se servir d'une droite affine pour mesurer ce qu'on n'a pas mesuré.</span></div>
+          </div>
+          <div class="card-body">
+
+            <div class="exo">
+              <p class="exo-num">Exercice 7</p>
+              <p class="exo-enonce">On prépare des solutions de <b>chlorure de sodium</b> de concentration en masse connue, et on mesure la <b>masse volumique</b> de chacune. C'est une <b>courbe d'étalonnage</b>&nbsp;: elle servira ensuite à identifier une solution inconnue.</p>
+              <div data-o8-tableau="D2" data-decimales="3"></div>
+              <p class="exo-enonce"><b>1.</b> Trace <span class="nb">ρ = f(C<sub>m</sub>)</span>. Attention à l'échelle des ordonnées&nbsp;: toutes les valeurs sont entre 1,000 et 1,070. <b>2.</b> La droite doit-elle passer par l'origine&nbsp;? <b>3.</b> Que représente son ordonnée à l'origine&nbsp;? <b>4.</b> Une solution inconnue a une masse volumique de <span class="nb">1,032 g/mL</span>&nbsp;: quelle est sa concentration en masse&nbsp;? <b>5.</b> Et pour <span class="nb">1,048 g/mL</span>&nbsp;?</p>
+              <p class="exo-consigne">✏️ La question 2 est la vraie question de cet exercice.</p>
+              <details class="exo-corr"><summary>Voir le corrigé rédigé</summary>
+                <div class="corps">
+                  <p><b>1. L'échelle.</b> Si tu fais partir l'axe des ordonnées de zéro, tes six points se tassent en un trait plat et illisible. <b>Fais-le partir de 1,000</b> — et <b>signale-le</b> clairement sur le graphique&nbsp;: une origine décalée qu'on ne signale pas est trompeuse.</p>
+                  <p><b>2. Non — et ce serait une faute.</b> À concentration nulle, il reste de l'<b>eau</b>, et l'eau a une masse volumique de 1,000 g/mL. Forcer le passage par (0 ; 0) reviendrait à écrire que l'eau pure ne pèse rien.</p>
+                  <p><b>3. L'ordonnée à l'origine est la masse volumique de l'eau.</b> La modélisation donne <span class="nb" data-o8-valeur="D2.bTexte"></span> g/mL&nbsp;: on y reconnaît 1,000 g/mL. <b>Le modèle retrouve tout seul un résultat connu</b> — c'est le meilleur contrôle possible.</p>
+                  <p class="eq-attendue"><span data-o8-valeur="D2.equation"></span> &nbsp;<span class="uni">avec ρ en g/mL et C<sub>m</sub> en g/L</span></p>
+                  <p><b>4 et 5. Les concentrations inconnues.</b> Deux chemins, et ils doivent donner la même chose.</p>
+                  <p><b>Par lecture graphique&nbsp;:</b> on entre par l'axe des ordonnées à <span class="nb">1,032</span>, on va horizontalement jusqu'à la droite, puis verticalement jusqu'à l'axe des abscisses. <b>Trace ces deux traits sur ta copie</b> — ils font partie de la réponse.</p>
+                  <p><b>Par le calcul&nbsp;:</b> on isole <span class="nb">C<sub>m</sub></span> dans l'équation — c'est l'<a href="2nde-pc-o7-relation-algebrique.html" style="color:var(--link)">outil 7</a>&nbsp;:</p>
+                  <div class="calcul">C<sub>m</sub> = <span class="fr"><span class="h">ρ − b</span><span class="b">a</span></span></div>
+                  <ul>
+                    <li>pour <span class="nb">ρ = 1,032 g/mL</span> &nbsp;→&nbsp; <span class="nb">C<sub>m</sub> ≈ <span data-o8-interpoler="D2:1.032"></span> g/L</span> ;</li>
+                    <li>pour <span class="nb">ρ = 1,048 g/mL</span> &nbsp;→&nbsp; <span class="nb">C<sub>m</sub> ≈ <span data-o8-interpoler="D2:1.048"></span> g/L</span>.</li>
+                  </ul>
+                  <p>Les deux valeurs tombent <b>à l'intérieur</b> du domaine mesuré (0 à 100 g/L)&nbsp;: ce sont des <b>interpolations</b>, elles sont légitimes. Au-delà de 100 g/L, on extrapolerait, et plus rien ne garantirait que la relation reste affine.</p>
+                  <p><b>Les chiffres significatifs.</b> Les masses volumiques sont données à quatre chiffres&nbsp;: on en garde <b>trois</b> au résultat. Renvoi à l'<a href="2nde-pc-o2-chiffres-significatifs.html" style="color:var(--link)">outil 2</a>.</p>
+                </div>
+              </details>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
     </div><!-- /lockable -->
   </section>
+
+  <!-- 🔴 LES DEUX PAGES SŒURS. Elles ne figurent PAS sur le hub : la
+       numérotation des outils de physique-chimie reste 1 → 8, et on
+       n'entre dans ces deux pages que d'ici, une fois le tronc commun
+       lu. Le prérequis est rappelé en tête de chacune d'elles : on ne
+       laisse pas la machine calculer une pente que l'élève ne sait
+       pas définir. -->
+  <div class="vers-soeur">
+    <a href="2nde-pc-o8b-graphique-tableur.html"><span class="q">la suite, au tableur</span><span class="t">Faire le même travail avec un tableur</span><span class="d">Excel, Excel en ligne, LibreOffice, Google Sheets — ou GeoGebra si tu n'as rien d'installé. Les mêmes six étapes pour tous, et le piège qui fausse tout sans rien dire&nbsp;: choisir «&nbsp;Courbe&nbsp;» au lieu de «&nbsp;Nuage de points&nbsp;».</span></a>
+    <a href="2nde-pc-o8c-graphique-calculatrice.html"><span class="q">la suite, à la calculatrice</span><span class="t">Faire le même travail avec sa calculatrice</span><span class="d">NumWorks, TI, Casio — les mêmes sept étapes pour toutes. Et si tu n'as pas de calculatrice graphique, un simulateur officiel fonctionne dans ton navigateur, gratuitement.</span></a>
+  </div>
 
   <footer class="note">
     <b>Outil transversal — proposition V1 du 28/08/2026.</b> Cet outil sert dès qu'un TP produit un tableau de mesures. Les exercices se corrigent <b>en direct</b>, et chacun porte son <b>corrigé rédigé</b>, tracé compris. 🖨️ La <a href="../assets/pdf/pc/fiches/fiche-2nde-o8-construire-un-graphique.pdf" style="color:var(--link)">fiche outil (PDF)</a> porte la méthode au recto et une <b>grille vierge</b> au verso, prête pour ton tracé.
@@ -852,6 +1264,8 @@
 </div>
 
 <script src="../assets/js/sequence-snt.js?v=47"></script>
+<!-- Les jeux de donnees, partages par les trois pages de l'outil 8 -->
+<script src="../assets/js/o8-donnees.js?v=1"></script>
 
 <!-- ============================================================
      JS propre à l'outil : les deux appoints d'affichage communs aux

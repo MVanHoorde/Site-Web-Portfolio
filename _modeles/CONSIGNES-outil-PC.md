@@ -42,7 +42,9 @@ range les outils dans l'ordre où un élève de seconde les rencontre :
 | `o5` | Rédiger un compte rendu de TP | écrit, V1 |
 | `o6` | Présenter un calcul | écrit, V1 |
 | `o7` | Manipuler une relation algébrique | écrit, V1 |
-| `o8` | Construire et exploiter un graphique | écrit, V1 |
+| `o8` | Construire et exploiter un graphique | refondu 20/09 — **trois pages** |
+| `o8b` | … avec un tableur (page sœur, hors hub) | écrit 20/09 |
+| `o8c` | … avec sa calculatrice (page sœur, hors hub) | écrit 20/09 |
 
 **« Convertir » ne fait plus partie du catalogue.** `o1` en a absorbé tout le fond
 le 26/08 — les préfixes dans les deux sens, les unités composées, les volumes, les
@@ -385,8 +387,12 @@ directement** : on modifie le HTML et on relance le script.
 Dérive de `fiches/fiche-2nde-t1c4.html` : `@page size:A4; margin:0`, `.feuille`
 de 210 × 297 mm, la bande à trois repères, fond blanc forcé à l'impression.
 
-- **Exactement deux pages par outil** (recto-verso). Déborder est un bug. `o3`
-  peut aller à quatre : les pictogrammes prennent la place qu'ils prennent.
+- **Exactement deux pages par outil** (recto-verso). Déborder est un bug. Deux
+  exceptions, déclarées dans `EXCEPTIONS` de `exporter-fiches.mjs` — le script
+  refuse l'export au-delà, c'est donc un garde-fou, pas une politesse :
+  `o3` va à **quatre** (les pictogrammes prennent la place qu'ils prennent) et
+  `o8` à **trois** (son cours a doublé le 20/09, et le §7 interdit qu'une partie
+  du cours vive seulement à l'écran — **dérogation à valider**).
 - **Le cours est complet, les exemples résolus. Aucun trou.** Elle se distribue
   en classe et se colle ; on ne perd pas d'heure à la remplir. Le travail de
   l'élève est dans les exercices, à la maison.
@@ -470,8 +476,11 @@ on ne promet rien aux élèves.
 
 ## 9. Validation avant livraison
 
-- [ ] `node verifier.mjs` → **exactement 18 problèmes** (les 18 liens
-      `cfa/outil-*` vers des fiches non écrites). Tout écart est une régression.
+- [ ] `node verifier.mjs` → **exactement 19 problèmes** (les 18 liens
+      `cfa/outil-*` vers des fiches non écrites, **plus** un indice de niveau 1
+      qui livre la réponse dans `term-es-t2-c2`). Tout écart est une régression.
+      ⚠ `verifier.mjs` lit **aussi les commentaires HTML** : un chemin de fichier
+      écrit dans un commentaire, même en exemple, est compté comme lien cassé.
 - [ ] `node verifier.mjs --bilan` avant / après.
 - [ ] Chaque page charge `sequence-snt.css` et `sequence-snt.js` dans la **même
       version** que les autres pages de `pages/`. Contrôle **bloquant**.

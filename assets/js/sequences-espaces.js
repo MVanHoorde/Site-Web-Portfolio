@@ -144,6 +144,40 @@ window.SEQUENCES_ESPACES = {
           "nom": "S'entraîner"
         }
       ]
+    },
+    {
+      "cle": "pc-o8b",
+      "num": "pc-o8b",
+      "nom": "Construire un graphique avec un tableur",
+      "seances": [
+        {
+          "id": "s1",
+          "num": "1",
+          "nom": "La méthode"
+        },
+        {
+          "id": "s2",
+          "num": "2",
+          "nom": "S'entraîner"
+        }
+      ]
+    },
+    {
+      "cle": "pc-o8c",
+      "num": "pc-o8c",
+      "nom": "Construire un graphique avec sa calculatrice",
+      "seances": [
+        {
+          "id": "s1",
+          "num": "1",
+          "nom": "La méthode"
+        },
+        {
+          "id": "s2",
+          "num": "2",
+          "nom": "S'entraîner"
+        }
+      ]
     }
   ],
   "es1": [

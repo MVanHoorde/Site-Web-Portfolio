@@ -281,8 +281,8 @@ un QR code, ni un lien.
 | **o4** | La verrerie et le matériel de laboratoire | Verrerie + TP9 + ménisque | 🆕 20/09 — repris&nbsp;: photos, In/Ex, tolérances, schéma normalisé, 6 exercices, fiche enrichie (In/Ex, matériel, rinçage, tare). **2 figures manquent** (fiole, pipette) |
 | **o5** | Rédiger un compte rendu de TP | Fiche_guide | 🆕 20/09 — repris&nbsp;: protocole/expérience, tableau de mesures, valeur de référence, retour critique, 6 exercices, fiche enrichie. **2 figures manquent** |
 | **o6** | Présenter un calcul | Présenter un calcul + le cours en ligne | 🆕 20/09 — **10 exercices**, méthode complète, fiche enrichie (conversions). ✅ **ouvert au hub** le 20/09 |
-| **o7** | Manipuler une relation algébrique | Manipuler + sa correction | 🟠 |
-| **o8** | Construire et exploiter un graphique | Construire un graphique | 🟡 |
+| **o7** | Manipuler une relation algébrique | Manipuler + sa correction | 🆕 20/09 — **refondu**&nbsp;: une seule méthode (l’opération inverse), le triangle réduit à une mention, **71 relations** en 10 séries vérifiées par le calcul, fiche refaite. **3 figures manquent** |
+| **o8** | Construire et exploiter un graphique | Construire un graphique | 🆕 20/09 — **étendu**&nbsp;: modélisation, forçage de l’origine, domaine de validité, R² ; **deux pages sœurs** (tableur, calculatrice) ; fiche à 3 pages. **8 captures manquent**, 17 procédures à vérifier |
 
 **« Convertir » ne fait plus partie du catalogue.** `o1` en a absorbé tout le
 fond le 26/08 — les préfixes dans les deux sens, les unités composées, les
@@ -314,7 +314,7 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
 | O-23 | catalogue et numérotation | huit outils, ordre de rencontre | ⏳ |
 | O-24 | tri de la verrerie (`o4`) | tri fonctionnel principal + précision en seconde lecture | ⏳ |
 | O-25 | modèle de rédaction d'un calcul (`o6`) | les **cinq étiquettes du cours en ligne**, mot pour mot | ⏳ |
-| O-26 | niveaux de `o7` | les cinq niveaux, marquage d'évaluabilité décroissant | ⏳ |
+| ~~O-26~~ | ~~niveaux de `o7`~~ | **sans objet** depuis la refonte du 20/09 : une seule méthode, plus de niveaux | ~~remplacée~~ |
 | O-27 | conduite en cas d'incident (`o3`) | cinquième étape « Si ça tourne mal » | ✅ **tranché par Loïc le 28/08** |
 | O-28 | renvoi vidéo de `o5` | le lien reste, sur la page seulement | ⏳ |
 | O-29 | numérotation de `Fiche_guide` | huit rubriques renumérotées, renvoi final corrigé | ⏳ |
@@ -583,90 +583,140 @@ motifs : `_suivi/DECISIONS.md` **O-23 à O-29**.
   résolu ; verso : la copie annotée et une checklist de sept lignes à cocher avant
   de rendre une copie.
 
-### O7 — Manipuler une relation algébrique 🟠
+### O7 — Manipuler une relation algébrique 🆕
+- 🔴 **À reprendre → `_suivi/o7-o8-a-revoir.md`** (décisions en attente, figures, procédures à vérifier).
 - Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
-- **V1 produite le 28/08/2026.** 4 étapes, 5 exercices (un par niveau), 28 champs.
-  Le triangle en SVG, la table des opérations inverses, et **les fractions empilées**
-  partout — la distinction du niveau 2 en dépend. Fiche A4 en 2 pages.
-- ✅ **Les trois erreurs de la correction source sont corrigées et non reproduites**
-  (niveau 1 `c = b/c`, niveau 5 expression de `c` en fraction, niveau 5 signe de `e`).
-- Sources : `fiche_Manipuler une relation algébrique.pdf` et sa correction.
-- 🔴 **Le fond est de Loïc et se conserve intégralement** : les trois méthodes,
-  dans **son** ordre, avec **son** jugement (« ma pref » sur la troisième), et les
-  titres de niveaux de sa main, mot pour mot.
-- ⏳ **O-26 appliqué (tranché par défaut).** Le brief de juillet demandait trois
-  niveaux ; la fiche en compte **cinq**. Défaut retenu : **les cinq niveaux, avec
-  un marquage d'évaluabilité qui fait le tri** — niveaux 1 à 3 `★` à savoir faire ·
-  niveau 4 `○` support · niveau 5 `—` non évalué, présenté comme un défi, titre de
-  Loïc conservé tel quel. Rien n'est retiré de sa fiche, et rien d'inaccessible
-  n'est exigé. Le `log` est hors programme de seconde : le dire en une ligne, ne
-  pas l'enseigner.
-- **Méthode — quatre étapes** : le triangle, méthode de dépannage (à dire
-  explicitement, parce que la fiche ne le dit pas et que c'est la raison pour
-  laquelle la méthode 3 est la préférée : **il ne marche que pour une relation à
-  trois grandeurs de la forme `a = b × c`**) · les chiffres (`6 = 2 × 3`,
-  retrouver l'opération, revenir aux lettres) · l'opération inverse, la méthode à
-  comprendre (la table `+ ↔ −` · `× ↔ ÷` · `x² ↔ √x` · `log(x) ↔ 10ˣ`, et le
-  principe : **faire subir la même opération aux deux membres** ; les deux
-  exemples de la fiche résolus en entier) · les cinq niveaux.
-- 🔴 **Fractions en numérateur/dénominateur, jamais en notation slash** — règle
-  globale du dépôt, et ici elle décide de la lisibilité de toute la page.
-- **S'entraîner** — la fiche d'entraînement de Loïc, en ligne et corrigée : les dix
-  relations des cinq niveaux, chacune avec ses trois questions, **avec les
-  corrigés rédigés étape par étape**, pas seulement le résultat.
-- Portage adapté de `cfa/outil-07-isoler-une-inconnue.html` : **le geste, pas le
-  texte**. Tout le contexte d'atelier mécanique est à retirer — un élève de
-  seconde n'isole pas une inconnue pour calculer un jeu de soupape.
-- ⚠ **Trois erreurs du corrigé source**, à corriger et à ne pas reproduire : niveau
-  1 (`c = b/c` au lieu de `c = b/a`), niveau 5 expression de `c` (écrite en
-  fraction), niveau 5 expression de `e` (signe inversé). Voir
-  `_suivi/erreurs-sources-fiches-outils.md`.
-- **Fiche A4 : deux pages** — recto : les trois méthodes ; verso : la table des
-  opérations inverses, les deux exemples résolus, les niveaux 1 à 3 à faire.
+- **Refondu le 20/09/2026** depuis le brief « Refonte des outils O7 et O8 » et son
+  audit. 14 étapes (4 de méthode, 10 séries d'entraînement), **71 relations**,
+  71 corrigés rédigés, 4 QCM de vérification. Page à 209 ko. Fiche A4 en 2 pages.
+- 🔴 **Une seule méthode : l'opération inverse.** Le triangle est réduit à une
+  **mention de cinq lignes**, sans dessin ni mode d'emploi. La « méthode des
+  chiffres » et les « cinq niveaux » ont disparu. **La décision O-26 devient sans
+  objet.**
+- 🔴 **La mention du triangle n'est pas sur la fiche A4** : elle n'a d'intérêt
+  qu'une fois, en ligne. La fiche ne porte que la méthode.
+- **Section 1 — la méthode, en quatre étapes** : l'égalité est une balance (le
+  signe `=` n'annonce pas un résultat, il dit que les deux membres valent la même
+  chose) · le **tableau des opérations inverses**, neuf lignes, un vrai tableau
+  HTML · la méthode en trois temps (repérer la **dernière** opération subie, la
+  défaire en premier, recommencer et vérifier) et sa **rédaction attendue** — une
+  ligne par opération, l'opération **notée en marge** · les **cinq cas délicats**
+  (dénominateur, somme, parenthèse, carré, racine), chacun résolu puis **estompé**.
+- **Section 2 — 71 relations en 10 séries, classées par STRUCTURE**, pas par
+  difficulté croissante : (a) produit 8 · (b) quotient, inconnue en haut 7 ·
+  (c) quotient, inconnue en bas 8 · (d) somme et différence 7 · (e) produit et
+  parenthèse 7 · (f) carré et racine 7 · (g) enchaînements 7 · (h) deux relations
+  à combiner 7 · (i) **copies fautives** 8 · (j) défi 5. Motif : l'élève qui s'est
+  planté sur un dénominateur vient chercher **la série (c)**.
+- 🔴 **Format : l'élève travaille sur sa feuille.** Un bouton « Afficher la
+  correction » sous chaque item, corrigé ligne par ligne. **Aucun menu déroulant,
+  aucune saisie de formule.** Les séries (c), (e), (f) et (j) proposent un
+  **indice** avant la correction — deux temps, jamais plus. Seule la série (i)
+  demande un clic : y nommer l'erreur **est** l'exercice.
+- ✅ **Les 71 corrigés sont vérifiés par substitution numérique**, trois jeux de
+  valeurs chacun : on fixe les variables indépendantes, la relation de départ est
+  vraie par construction, et on contrôle que le corrigé redonne la grandeur isolée.
+  Les 8 copies fautives sont contrôlées **à l'envers** — leur formule doit échouer.
+  **71/71, aucun écart.**
+- **Auto-évaluation** après chaque correction (juste · à moitié · faux), codée
+  **en local** (le moteur partagé n'est pas touché) et persistée sur la clé
+  `autoeval-pc-o7`, distincte de celle du moteur.
+- 🔴 **Trois figures manquent** : **O7-01** la balance à deux plateaux (avec la
+  vignette du fléau qui penche quand on n'agit que d'un côté) · **O7-02** la
+  machine à opérations et son retour arrière · **O7-04** l'exemple annoté, écrit à
+  la main sur une page de cahier. La figure **O7-05** de l'audit (« le triangle et
+  ses limites ») est **abandonnée** : un triangle barré reste un triangle dessiné.
+- Sources : `fiche_Manipuler une relation algébrique.pdf` et sa correction ;
+  audit du 20/09/2026 (Southall 2016 ; Koenig et Wait, RSC ; Skemp 1976 ;
+  Kieran 1981 ; IREM Repères n°46 ; Roediger & Karpicke 2006 ; Butler &
+  Roediger 2008 ; Renkl).
+- ✅ **Les trois erreurs de la correction source restent corrigées et non
+  reproduites** (elles portaient sur les anciens niveaux 1 et 5, disparus avec eux).
+- État au hub : **🚧 en travaux** — mais l'ouverture d'`o6` le 20/09 rend cette
+  page **atteignable par le renvoi d'O6**. À trancher.
 
-### O8 — Construire et exploiter un graphique 🟡
+### O8 — Construire et exploiter un graphique 🆕
+- 🔴 **À reprendre → `_suivi/o7-o8-a-revoir.md`** (décisions en attente, figures, procédures à vérifier).
 - Jalons : 1 ✅ · 2 ✅ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜
-- **V1 produite le 28/08/2026.** 4 étapes, 4 exercices, 30 champs. Cinq graphiques en
-  SVG dont un **tracé fautif** à six défauts et une **grille vierge** au verso de la
-  fiche — la seule fiche d'outil sur laquelle l'élève écrit. Fiche A4 en 2 pages.
-- ⏳ **Deux ajouts en proposition**, absents de la source : l'**unité** du coefficient
-  directeur, et le sens d'une **droite passant par l'origine** (proportionnalité).
-- Source : `fiche_Construire un graphique.pdf`.
-- **Méthode — quatre étapes** : poser les axes (tout au crayon à papier ;
-  `P = f(m)` — **la première grandeur nommée va en ordonnée**, celle qui suit le
-  `f` en abscisse ; grandeur **et unité** au bout de chaque axe) · choisir les
-  échelles (régulières, étalement maximal, une échelle par axe) · placer les points
-  et tracer (croix `+` ; courbe à main levée, droite à la règle, **droite moyenne**
-  avec autant de points au-dessus qu'en dessous) · exploiter (le coefficient
-  directeur `k = (y_A − y_B)/(x_A − x_B)`, avec **A et B choisis sur la droite, pas
-  parmi les points de mesure** — la faute classique, que la fiche signale déjà).
+- **Étendu le 20/09/2026** en **trois pages**, et la numérotation des outils reste
+  **1 → 8** :
+  | Page | Rôle | Clé |
+  |---|---|---|
+  | `pages/2nde-pc-o8-construire-un-graphique.html` | tronc commun, **à la main** — URL inchangée | `pc-o8` |
+  | `pages/2nde-pc-o8b-graphique-tableur.html` | 5 parcours, 6 étapes identiques | `pc-o8b` |
+  | `pages/2nde-pc-o8c-graphique-calculatrice.html` | 7 parcours, 7 étapes identiques | `pc-o8c` |
+  🔴 **Les deux sœurs ne figurent pas au hub** : on n'y entre que depuis O8, qui
+  est leur **prérequis affiché**. Contrepartie acceptée : le tableau de bord
+  affiche **dix entrées pour huit outils**.
+- **Tronc commun — l'existant est conservé**, et deux étapes s'ajoutent :
+  **1.5 proportionnalité ou fonction affine** (loi d'Ohm et étalonnage en regard ;
+  quand a-t-on le droit de **forcer l'origine** — jamais sans argument physique ;
+  l'équation s'écrit **avec les grandeurs et leurs unités**, jamais `y = 98,7x` ;
+  le coefficient directeur **est** le `a` des maths) et **1.6 jusqu'où peut-on
+  lire** (interpoler contre extrapoler, **domaine de validité**, `r` et `R²` en
+  deux phrases, et la mise en garde). Deux **études de cas** s'ajoutent en
+  section 2 : la loi d'Ohm et l'étalonnage.
+- 🔴 **Le jeu de données vit à un seul endroit** : `assets/js/o8-donnees.js`,
+  chargé par les **trois** pages. Il ne contient que les **points bruts** et
+  **calcule** pente, ordonnée, R² et interpolations — rien n'est recopié, donc rien
+  ne peut diverger du tableau qu'a l'élève. 🔴 **Nouvel asset partagé** : le
+  modifier oblige à incrémenter `?v=N` dans les trois pages ; il n'est pas encore
+  couvert par le contrôle d'alignement de `verifier.mjs`.
+- **Les jeux de données ont tous été recalculés** (rien n'est repris de l'audit) :
+  | Cas | Modèle | Résultat |
+  |---|---|---|
+  | **D1** loi d'Ohm | proportionnel, origine **légitime** | R ≈ 100 Ω · R² = 0,9998 |
+  | **D1 bis** lampe | aucun — nuage incurvé | **R² = 0,9707** et le modèle est faux |
+  | **D2** étalonnage ρ = f(Cm) | affine, origine **interdite** | a = 7,00×10⁻⁴ · b = 0,999 g/mL · R² = 0,9996 |
+  | **D3** Beer-Lambert (1re) | proportionnel, origine légitime | k = 0,145 L/mmol |
+  | P = m·g · m = ρ·V · d = v·t · réfraction | proportionnels | g = 9,80 N/kg · ρ = 0,789 g/mL (éthanol) · v = 343 m/s · n = 1,49 |
+  Deux chiffres portent tout l'enseignement : **D1 bis donne un bon R² sur un
+  modèle faux**, et **forcer l'origine sur D2 fait tomber le R² à −554,6** — la
+  droite forcée décrit les mesures *plus mal* qu'une simple moyenne.
+- ⏳ **Les masses volumiques de D2 sont plausibles, pas sourcées.** À recaler sur
+  une table de référence avant de les présenter comme des valeurs mesurées.
+- **O8b — tableur, 5 parcours, 6 étapes identiques** (saisir · insérer un nuage ·
+  nommer les axes · ajouter la droite modèle · afficher équation et R² · exploiter) :
+  Excel bureau · **Excel en ligne ou tablette** · LibreOffice Calc · Google Sheets ·
+  « je n'ai rien » (GeoGebra). 🔴 **Excel pour le web ne permet pas de créer une
+  courbe de tendance sur un nuage de points** — son parcours l'annonce et enseigne
+  le contournement (`=PENTE`, `=ORDONNEE.ORIGINE`, `=COEFFICIENT.DETERMINATION`,
+  puis la droite modèle en seconde série de deux points). C'est le cas de la
+  majorité des élèves via l'ENT : ce parcours est aussi complet que celui du bureau.
+- **O8c — calculatrice, 7 parcours, 7 étapes identiques** (saisir les listes ·
+  afficher le nuage · lancer la régression · lire a, b, r, r² · tracer · prédire ·
+  effacer) : NumWorks · TI-83 Premium CE · TI-82 Advanced · Casio Graph 35+E II ·
+  Casio Graph 90+E · fx-92 Collège · **« je n'ai pas de calculatrice »** (simulateur
+  NumWorks en ligne, gratuit et officiel — c'est aussi le repli universel).
+  L'**activation du diagnostic** sur TI (`DiagnosticOn` / `CorrelAff`, sans quoi
+  `r` et `r²` ne s'affichent **jamais**) est une étape à part entière, pas un piège
+  en fin de page.
+- 🔴 **17 procédures ne sont pas vérifiées** et portent `data-verifie="non"` :
+  **TI-82 Advanced** (7 étapes, aucune source propre à ce modèle) · **fx-92
+  Collège** (7 étapes) · la **régression proportionnelle** sur TI et sur Casio ·
+  l'**interface de la Graph Math+**. Chacune le dit **à l'élève** et renvoie au
+  simulateur NumWorks. 65 étapes sont adossées à une source officielle, citée en
+  commentaire HTML au-dessus de chaque parcours.
+- 🔴 **8 captures d'écran manquent** : O8-10 et O8-11 (Excel bureau : menu
+  Insertion, menu Courbe de tendance — **non rognées, non annotées**, mention
+  « Used with permission from Microsoft. ») · O8-12 et O8-13 (LibreOffice : type
+  XY, boîte Courbe de tendance) · O8-14 (Google Sheets : volet Série) ·
+  O8-20 (NumWorks : écran Stats) · O8-21 (TI-83 : écran RégLin) · O8-22
+  (Casio 35+E II : écran LinearReg). Le repérage se fera par **pastilles HTML
+  au-dessus de l'image** (`.capture-annotee`), jamais dessinées dedans.
+- **Fiche A4 : 3 pages** (construire · **modéliser et jusqu'où lire** · grille
+  vierge). ⏳ **Dérogation à la règle des deux pages, à valider** — déclarée dans
+  `EXCEPTIONS` de `exporter-fiches.mjs`. Si elle est refusée, c'est la grille
+  vierge qui sortira, pas le cours.
+- Source : `fiche_Construire un graphique.pdf` ; audit du 20/09/2026 (programme
+  2019 ; Microsoft Learn ; help.libreoffice.org ; support.google.com ;
+  numworks.com/manuel ; education.ti.com solution 11918 ; casio-education.fr ;
+  Mayer 2010 ; Carroll ; van der Meij).
 - Nuance de Loïc à garder telle quelle sur le titre du graphique : *pour moi il
   n'est pas indispensable si les axes sont légendés, mais certains professeurs
   l'exigent*.
-- ⏳ **À ajouter, en proposition** : l'unité de `k`, et ce que signifie une droite
-  qui passe par l'origine (proportionnalité).
-- **S'entraîner** — 4 exercices : le tableau `P = f(m)` de la source à tracer
-  (grille SVG imprimable + corrigé tracé) · un graphique correct et un graphique
-  fautif à comparer, six défauts à trouver · un coefficient directeur à calculer
-  avec son unité · une lecture par interpolation.
-- 💡 **Passerelle repérée, hors périmètre** : le jeu `P = f(m)` est exactement
-  celui du poids en **T2-C2**, un chapitre qui manque d'exercices exigeants. Ne
-  **pas** modifier T2-C2 dans ce chantier.
-- **Fiche A4 : deux pages**, dont un demi-verso de grille vierge.
-
----
-
-## Seconde — SNT (Sciences numériques et technologie)
-
-> **Gabarit différent des chapitres de physique-chimie** : ce ne sont pas des
-> chapitres à sections, mais des **séquences élève** (séquence → séance → étape →
-> champ), avec verrouillage progressif et mode enseignant. Consignes dédiées :
-> `_modeles/CONSIGNES-sequence-SNT.md`. Les 7 thèmes du programme sont listés sur
-> `pages/2nde-snt.html`, avec les **modules transversaux** (préfixe `m`) dans une
-> famille à part : ce ne sont pas des thèmes du programme, mais des outils que
-> plusieurs thèmes mobilisent.
-> Jalons de PC non transposables : ici on suit **V0 → contenu → interactivité →
-> ressources définitives → validé** (voir `CONSIGNES-sequence-SNT.md` §12).
+- État au hub : **🚧 en travaux** — les trois pages sont hors d'atteinte depuis
+  l'accueil.
 
 ### SNT-T0 — Introduction · Les systèmes informatisés 🧭
 - État : **refondue le 23/08/2026, reprise les 24 et 25/08** — jalons 1 à 3 atteints,

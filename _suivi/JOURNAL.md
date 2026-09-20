@@ -4027,3 +4027,122 @@ Sur o4 et o5, **seule la forme du verso a changé ; aucun texte n'a été retir�
 **Reste à faire**&nbsp;: envoyer le mot aux collègues, trancher le cas de `o7`
 (devenu atteignable par le renvoi depuis O6 alors que le hub l'annonce en
 travaux), et fournir les quatre figures manquantes.
+
+## 20/09/2026 — Outils O7 et O8 refondus : une méthode, et trois pages pour le graphique
+
+Seconde session du 20/09, menée depuis le brief « Refonte des outils O7 et O8 » et
+son audit compagnon. Elle a tourné autour d'une idée simple et d'une contrainte
+dure : **une seule méthode pour isoler une grandeur**, et **rien d'inventé** sur les
+machines.
+
+### Ce que l'inventaire a changé au plan
+
+Le brief supposait deux choses qui se sont révélées fausses. D'abord qu'il existait
+une **barre de navigation entre outils** à mettre à jour : il n'y en a pas, le hub
+est le seul index — ce qui a rendu l'architecture de O8 beaucoup plus simple à
+trancher. Ensuite qu'il fallait **créer** le composant « Afficher la correction » :
+il existait déjà, validé, sous la forme du `<details class="exo-corr">` de
+`CONSIGNES-outil-PC.md` §6.
+
+En revanche, le composant qui manquait vraiment — l'**auto-évaluation** en trois
+boutons — ne pouvait pas aller dans le moteur partagé (§5 l'interdit, 22 pages le
+chargent). Il est donc codé en local, avec une clé de persistance à part : le
+moteur fusionne au premier niveau et relit avant d'écrire, deux composants sur la
+même clé finiraient par s'effacer l'un l'autre.
+
+Le dossier tampon était **vide pour ce chantier** : aucune image, aucune capture.
+Tout ce qui devait être illustré est donc un cadre de réservation.
+
+### O7 : ce qui est parti, et ce qui l'a remplacé
+
+Le triangle n'est plus une méthode. Il reste **cinq lignes**, sans dessin, qui
+disent qu'il existe, pourquoi il s'arrête, et que la suite est la même chose qu'en
+maths. La « méthode des chiffres » et les « cinq niveaux » ont disparu — ce qui
+rend la décision **O-26** sans objet.
+
+À la place : la balance, le tableau des opérations inverses **en neuf lignes** (un
+vrai tableau HTML, pas une image), la méthode en trois temps, la **rédaction
+attendue** — une ligne par opération, l'opération notée en marge — et **cinq cas
+délicats**, chacun entièrement résolu puis repris en version estompée.
+
+Puis **71 relations**, en dix séries **classées par structure algébrique**. C'est
+le point de conception le plus important de la page : l'élève qui s'est trompé sur
+un dénominateur vient chercher *la série des dénominateurs*, pas « le niveau 2 ».
+
+**Les corrigés ont été vérifiés par le calcul, pas relus.** Écrire soixante-dix
+corrigés à la main, c'est garantir qu'une erreur de signe passe. La vérification
+retenue est algébrique et ne demande aucune résolution numérique : on fixe les
+variables **indépendantes**, ce qui rend la relation de départ vraie par
+construction, puis on contrôle que la formule du corrigé redonne la grandeur
+isolée — sur trois jeux de valeurs. Les huit **copies fautives** de la série (i)
+passent le même contrôle **à l'envers** : leur formule doit échouer, sinon
+l'« erreur » n'en serait pas une. 71 sur 71 au vert du premier coup.
+
+### O8 : pourquoi trois pages, et un seul jeu de données
+
+L'audit recommandait de scinder. L'inventaire a confirmé : sans barre de
+navigation, créer deux pages sœurs ne casse rien, et `CONSIGNES-outil-PC.md` §2
+impose deux sections par outil — trois familles de procédures n'y entrent pas. La
+numérotation reste donc **1 → 8**, les sœurs ne figurent pas au hub, et le tronc
+commun est leur **prérequis affiché** : on ne laisse pas la machine calculer une
+pente que l'élève ne sait pas définir.
+
+Le brief demandait que le jeu de données vive à un seul endroit. Il va plus loin
+que prévu : `assets/js/o8-donnees.js` ne contient que les **points bruts**, et
+**calcule** pente, ordonnée, R² et interpolations. Aucune valeur affichée à l'élève
+n'est recopiée — elle ne peut donc pas diverger du tableau qu'il a sous les yeux.
+C'est aussi ce qui a permis de recalculer tous les jeux de l'audit : rien n'en a
+été repris tel quel.
+
+Deux résultats de ce recalcul méritent d'être notés. Le premier : la caractéristique
+de lampe donne **R² = 0,9707** — un bon R² — alors que le nuage est visiblement
+incurvé, les résidus alternant +0,507 / −0,354 / +0,425. C'est l'argument central
+de l'étape sur la validité, et il est **mesuré**, pas affirmé. Le second : forcer
+l'origine sur l'étalonnage fait tomber le R² à **−554,6** — la droite forcée décrit
+les mesures *plus mal* qu'une simple moyenne. Un élève qui voit ce nombre comprend
+d'un coup pourquoi on ne force pas l'origine sans argument physique.
+
+### Ce qu'on a refusé d'écrire
+
+Dix-sept procédures de calculatrice portent `data-verifie="non"`. La TI-82 Advanced
+et la fx-92 Collège n'ont **aucune source propre** : plutôt que d'y recopier les
+menus d'une TI-83 ou d'une Graph 35+E II, leurs parcours disent franchement qu'ils
+ne sont pas vérifiés, donnent la démarche générale, et **renvoient au simulateur
+NumWorks**. Même traitement pour la régression proportionnelle sur TI et Casio, et
+pour l'interface rénovée de la Graph Math+.
+
+Ce n'est pas de la prudence excessive. Une procédure fausse fait perdre vingt
+minutes à un élève seul chez lui un soir, sans personne pour le débloquer : c'est
+pire qu'une procédure absente, qui l'envoie au moins chercher ailleurs.
+
+Même logique pour **Excel pour le web** : la courbe de tendance sur nuage de points
+n'y existe pas, et c'est le cas de la majorité des élèves via l'ENT. Le parcours ne
+fait pas semblant — il l'annonce dès la première ligne, et enseigne le contournement
+par `=PENTE`, `=ORDONNEE.ORIGINE` et `=COEFFICIENT.DETERMINATION`, puis la droite
+modèle tracée comme seconde série de deux points. Ce parcours est **aussi soigné**
+que celui d'Excel de bureau.
+
+### Deux contrôles qui ont servi
+
+Un faux lien a failli passer : l'exemple de markup du composant `.capture-annotee`,
+**dans un commentaire CSS**, contenait `src="…/o8-excel-....png"`. `verifier.mjs`
+lit aussi les commentaires — il a compté deux liens cassés de plus. Le piège est
+déjà documenté pour `seances-snt` et `chapitre-commun` ; il vaut pour n'importe
+quel chemin écrit dans un commentaire.
+
+Le rendu a été mesuré au navigateur plutôt que relu : quatre pages, en 1280 px et
+en 360 px, sans erreur JavaScript, sans débordement horizontal, et tous les trous
+de données remplis. Puis les interactions elles-mêmes — le sélecteur qui n'affiche
+qu'un parcours et survit au rechargement, l'auto-évaluation qui s'annule au second
+clic, le QCM qui ne dévoile pas la bonne réponse au premier essai raté. Sur les
+polices, le contrôle CDP a tranché une inquiétude : les caractères servis par une
+police système dans la fiche O8 (Consolas pour `Ω`, `≈`, `ρ` ; Arial dans les
+étiquettes d'axes des SVG ; Segoe UI Symbol pour `✓` et `⚠`) sont **tous
+préexistants** — aucun ne vient des ajouts du jour.
+
+### Ce qui reste
+
+Huit captures d'écran et trois figures. Dix-sept procédures à confirmer sur les
+machines. Les masses volumiques de l'étalonnage à recaler sur une table. Et deux
+arbitrages : la fiche O8 à trois pages, et l'ouverture d'O7 et d'O8 au hub — sachant
+que l'ouverture d'O6 le matin même a déjà rendu O7 atteignable par son renvoi.

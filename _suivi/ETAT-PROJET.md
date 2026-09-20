@@ -5,7 +5,10 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **20/09/2026** (dernière passe : **les outils O4, O5 et O6
+> Dernière réécriture : **20/09/2026** (dernière passe : **les outils O7 et O8 sont
+> refondus — une seule méthode pour isoler une grandeur, 71 relations corrigées, et
+> deux pages sœurs pour le tableur et la calculatrice**, bloc ci-dessous).
+> Passe du même jour : **les outils O4, O5 et O6
 > sont repris — photos de matériel, méthode complétée, huit exercices de plus,
 > les trois fiches A4 enrichies, et O6 ouvert aux collègues**, bloc ci-dessous). Passe du **19/09/2026** (dernière passe : **les deux collègues sont
 > en base et rattachées, un guide par matière, et `verifier.mjs` rappelle
@@ -65,6 +68,80 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 Les outils O7 et O8 sont refondus — une méthode, et trois pages pour O8
+
+Chantier du 20/09/2026, mené depuis le brief « Refonte des outils O7 et O8 » et
+son audit compagnon. Décisions&nbsp;: `DECISIONS.md`, second bloc du 20/09.
+Récit&nbsp;: `JOURNAL.md`.
+
+🔴 **Pour reprendre&nbsp;: `_suivi/o7-o8-a-revoir.md`.** C’est **le** fichier à
+ouvrir — quatre décisions à trancher (dont deux qui décident si les élèves voient
+ces outils), trois figures et huit captures à produire, dix-sept procédures de
+calculatrice à confirmer, une donnée à recaler, et la liste de ce qu’il ne faut
+**pas** rouvrir. Le détail de ce qui a été fait vit dans
+`archives/livraisons/A-LIRE-OUTILS-O7-O8-2026-09-20.md`.
+
+**O7 — une seule méthode.** Le triangle n'est plus une méthode&nbsp;: il ne reste
+qu'un encadré de cinq lignes, **sans dessin et sans mode d'emploi**, qui dit qu'il
+existe, pourquoi il s'arrête (une somme, un carré, plus de trois lettres) et qu'on
+passe à autre chose. La « méthode des chiffres » et les « cinq niveaux » ont
+disparu. À la place&nbsp;: la balance, le tableau des opérations inverses en neuf
+lignes, la méthode en trois temps, sa **rédaction attendue** (une ligne par
+opération, l'opération notée en marge) et **cinq cas délicats**, chacun résolu puis
+estompé. Puis **71 relations** en 10 séries, classées **par structure algébrique**
+et non par difficulté&nbsp;: l'élève qui s'est planté sur un dénominateur vient
+chercher la série (c), pas « le niveau 2 ».
+
+**Les 71 corrigés sont vérifiés par le calcul.** Pour chacun&nbsp;: on fixe les
+variables indépendantes, la relation de départ est donc vraie par construction, et
+on contrôle que la formule du corrigé redonne la grandeur isolée — sur trois jeux
+de valeurs. Les huit **copies fautives** de la série (i) sont contrôlées à
+l'envers&nbsp;: leur formule doit NE PAS redonner la bonne valeur. Aucun écart.
+
+**O8 — trois pages, un seul jeu de données.** Le tronc commun garde tout
+l'existant et gagne deux étapes&nbsp;: **proportionnalité contre fonction affine**
+(avec la loi d'Ohm et un étalonnage en regard), **quand a-t-on le droit de forcer
+l'origine**, **interpolation contre extrapolation**, le **domaine de validité**, et
+**R² avec sa mise en garde**. Deux pages sœurs le prolongent&nbsp;:
+`2nde-pc-o8b-graphique-tableur.html` (5 parcours, 6 étapes identiques pour tous) et
+`2nde-pc-o8c-graphique-calculatrice.html` (7 parcours, 7 étapes identiques). La
+numérotation des outils **reste 1 → 8**&nbsp;: les deux sœurs ne figurent pas au
+hub, on n'y entre que depuis O8, qui est leur **prérequis affiché**.
+
+🔴 **Le jeu de données vit à un seul endroit** — `assets/js/o8-donnees.js`, chargé
+par les trois pages. **Pente, ordonnée à l'origine, R² et interpolations y sont
+calculés**, jamais recopiés&nbsp;: une valeur affichée ne peut pas diverger du
+tableau que l'élève a sous les yeux. 🔴 **Nouvel asset partagé**&nbsp;: le modifier
+oblige à incrémenter son `?v=N` dans les **trois** pages.
+
+🔴 **Ce qui bloque — les captures, et les machines.** **8 captures d'écran**
+manquent (Excel bureau ×2, LibreOffice ×2, Google Sheets, NumWorks, TI-83,
+Casio 35+E II) et **3 figures** pour O7 (balance, machine à opérations, exemple
+annoté). Surtout&nbsp;: **17 procédures de calculatrice ne sont pas vérifiées** —
+la TI-82 Advanced et la fx-92 Collège entièrement, plus la régression
+proportionnelle sur TI et Casio et l'interface de la Graph Math+. Elles portent
+`data-verifie="non"`, **l'élève le voit**, et chacune renvoie au simulateur
+NumWorks. Liste complète dans le rapport de livraison.
+
+🔴 **Les masses volumiques de l'étalonnage D2 sont plausibles, pas sourcées.**
+Elles donnent une droite affine cohérente et une ordonnée à l'origine égale à la
+masse volumique de l'eau — ce qui suffit à l'enseignement visé — mais elles sont à
+**recaler sur une table de référence** avant d'être présentées comme des valeurs
+mesurées. Marqué en commentaire dans `assets/js/o8-donnees.js`.
+
+⏳ **Deux arbitrages en attente.** (1) La **fiche O8 passe à trois pages** —
+dérogation à la règle des deux pages de `CONSIGNES-outil-PC.md` §7, déclarée dans
+`exporter-fiches.mjs`. Motif&nbsp;: le cours a doublé, et le §7 interdit qu'une
+partie du cours vive seulement à l'écran. Si la dérogation est refusée, c'est la
+**grille vierge** du verso qui sortira, pas le cours. (2) **O7 et O8 restent 🚧 au
+hub** — mais l'ouverture d'O6 le 20/09 rend `o7` **atteignable par son renvoi**, et
+la version que les élèves y trouvent est désormais la version refondue.
+
+**Ce qui n'a pas bougé.** Le moteur partagé n'est pas touché&nbsp;: l'auto-évaluation
+des 71 items et le sélecteur de matériel sont codés **en local dans les pages**
+(`CONSIGNES-outil-PC.md` §5). Le choix de matériel est gardé en **localStorage** —
+c'est une préférence d'affichage, pas du travail d'élève&nbsp;: rien ne part en base.
 
 ## 🆕 Les outils O4, O5 et O6 sont repris, fiches comprises — et O6 est ouvert
 
