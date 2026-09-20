@@ -30,6 +30,7 @@
 | **régénérer une fiche de chapitre** après retouche du cours 🆕 | `cd _outils/fiches && python fiche_<code>.py`, puis `node exporter-fiches.mjs` | 0 |
 | **concevoir le diaporama de projection d'un chapitre PC** 🆕 | `_modeles/CONSIGNES-diaporama-PC.md` | 3 500 |
 | l'état fin d'un chapitre / d'une séquence | `_suivi/chapitres.md` (section concernée) | 500 par section |
+| **reprendre les outils O4, O5, O6** 🆕 — figures manquantes, arbitrages, tri du tampon | `_suivi/outils-o4-o6.md` | 2 500 |
 | toucher au **moteur** d'une séquence SNT | `assets/js/sequence-snt.js` (+ `_modeles/spec-snt-t1-internet.md` §13-15) | 21 000 |
 | toucher à la **grammaire visuelle** SNT | `assets/css/sequence-snt.css` | 14 000 |
 | toucher à la **base de données** | `_suivi/BDD-cadrage.md` + `bdd/schema/006-rls-et-fonctions.sql` | 8 000 |
@@ -79,6 +80,10 @@ Détail dans `_suivi/ETAT-PROJET.md` § « Ce qui bloque ».
    Une à la fois, ouverte et testée. Priorité `t0` et `t2`.
 3. **La frise ES à brancher** — le modèle est écrit (`bdd/schema/007-frise-es.sql`),
    il attend la relecture de Loïc, puis les fonctions dans `progression.js`.
+4. 🆕 **Quatre figures manquent aux outils O4 et O5** — fiole jaugée, pipette à
+   deux traits, schéma bon/mauvais, copie annotée. Chacune est un cadre de
+   réservation visible sur la page. Et **le mot aux collègues reste à envoyer**
+   pour l'ouverture de l'outil 6. Tout est dans `_suivi/outils-o4-o6.md`.
 
 ---
 
