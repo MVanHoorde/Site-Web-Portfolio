@@ -4146,3 +4146,44 @@ Huit captures d'écran et trois figures. Dix-sept procédures à confirmer sur l
 machines. Les masses volumiques de l'étalonnage à recaler sur une table. Et deux
 arbitrages : la fiche O8 à trois pages, et l'ouverture d'O7 et d'O8 au hub — sachant
 que l'ouverture d'O6 le matin même a déjà rendu O7 atteignable par son renvoi.
+
+---
+
+## 20/09/2026 — Les TP sous leur chapitre, et quatre 🚧 de trop
+
+Loïc a redéposé « la version à jour des TP de seconde » en annonçant des
+changements de numéro, et a demandé de retirer le 🚧 « TP en chantier » des
+chapitres qui n'ont légitimement aucun TP — l'atome, par exemple, n'en attend pas.
+
+Le premier contrôle a pris la demande à l'envers de ce qu'elle annonçait : les
+quinze PDF déposés sont **identiques au bit** à ceux en ligne. Les numéros du
+05/09 étaient les bons, il n'y avait rien à remplacer. Le dire plutôt que
+re-copier quinze fichiers a évité un commit de 23 Mo sans contenu.
+
+Restait à chercher où les numéros pouvaient encore diverger. L'en-tête de chaque
+sujet porte son thème et son chapitre : en les lisant tous les quinze, trois
+rattachements du hub se sont révélés faux. Le TP3 était listé sous deux
+chapitres quand son en-tête n'en nomme qu'un ; le TP8 était sous le chapitre 2 du
+thème 2 quand il est écrit pour le chapitre 1 ; et le TP13, qui porte **deux**
+chapitres dans son en-tête, n'était lié qu'au premier. Ce dernier répondait
+directement à la demande : le 🚧 de « Réfraction et réflexion » ne signalait pas
+un TP manquant, mais un TP non lié.
+
+Les deux premiers sont des choix pédagogiques, pas des erreurs techniques : ils
+ont été posés à Loïc avant toute modification, avec les conséquences de chaque
+option. Il a tranché pour l'en-tête dans les deux cas. Le TP8 partant en T2-C1,
+« Modéliser une action » rejoint la liste des chapitres sans TP — trois devenaient
+quatre.
+
+Le nettoyage des 🚧 a été fait bloc par bloc, chaque carte identifiée par son
+titre plutôt que par un numéro de ligne, avec une assertion sur chaque ancrage :
+le compte `cours · 2 TP · 1 éval` apparaît à l'identique dans plusieurs cartes, un
+`sed` global en aurait touché deux. Le contrôle final ne relit pas le HTML mais
+mesure le rendu : pour chacune des 15 cartes, ce que le `.cp-compte` annonce
+contre ce que la carte contient réellement. Zéro écart — y compris sur les huit
+cartes que la session n'a pas touchées.
+
+Le dossier tampon contenait aussi les quinze **corrigés**, des programmes Python,
+des fichiers LatisPro et des tableurs. Rien n'est parti en ligne : la décision du
+26/08 veut que les corrections circulent par mail contre preuve de travail, et
+cette décision n'était pas l'objet de la demande.

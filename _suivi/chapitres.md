@@ -32,15 +32,33 @@
 > pas dans les jalons ci-dessus**, qui suivent le cours et la fiche. Aucune
 > correction n'est en ligne : elles partent par mail contre preuve de travail.
 >
-> 🆕 **Les quinze sujets de TP ont été remplacés et renumérotés le 05/09/2026.**
-> Le site porte désormais le numéro imprimé sur la feuille distribuée : TP1
-> *Analyse d'un son*, TP2 *Écholocation*, TP3 *Pourquoi saler…*, TP4
-> *Transformation chimique*, TP5 *Panique à la rentrée*, TP6 *Quantité de
-> matière*, TP9 *La verrerie au laboratoire*, TP10 *Dosage par étalonnage*,
-> TP11 *Échelle de teintes*, TP12 *Protection d'une LED*, TP13 *Réfraction /
-> Dispersion / Spectres*, TP14 *Formation d'une image* — TP7, TP8 et TP15 ne
-> bougent pas. ⚠ **Les dossiers de `_a-deposer/tp/` gardent l'ancienne
-> numérotation** : table de correspondance dans `DECISIONS.md` (D2).
+> 🆕 **Les quinze sujets de TP portent le numéro imprimé sur la feuille distribuée
+> en classe, et sont rattachés au chapitre inscrit dans leur en-tête** — les deux
+> contrôlés document par document (numéro le 05/09/2026, chapitre le 20/09/2026) :
+>
+> | TP | Titre au hub | Chapitre(s) |
+> |---|---|---|
+> | TP1 | Analyse d'un son | T3-C1 |
+> | TP2 | Écholocation | T3-C1 |
+> | TP3 | Pourquoi saler les routes enneigées | T1-C2 |
+> | TP4 | Transformation chimique | T1-C2 |
+> | TP5 | Panique à la rentrée | T1-C1 |
+> | TP6 | Quantité de matière | T1-C4 |
+> | TP7 | Trajectoire de la fusée Ariane | T2-C1 |
+> | TP8 | Un tir au canon | T2-C1 |
+> | TP9 | La verrerie au laboratoire | T1-C5 |
+> | TP10 | Dosage par étalonnage | T1-C5 |
+> | TP11 | Échelle de teintes | T1-C5 |
+> | TP12 | Protection d'une LED | T3-C2 |
+> | TP13 | Réfraction, dispersion, spectres | **T3-C3 et T3-C4** |
+> | TP14 | Formation d'une image | T3-C5 |
+> | TP15 | Molécules et modèle de Lewis | T1-C7 |
+>
+> **Quatre chapitres n'ont aucun TP, et c'est normal** : T1-C3 (atome), T1-C6
+> (cortège électronique), T2-C2 (modéliser une action), T2-C3 (principe
+> d'inertie). Leur carte ne porte plus de 🚧 « TP en travaux » — le hub n'en
+> compte plus aucun. Historique de la renumérotation et des trois recalages :
+> `DECISIONS.md`.
 >
 > ⚠ **RIEN n'est encore validé.** « Ébauche/fiche proposée » ≠ « validé ».
 > La validation est un acte explicite de Loïc, faite en régime B, cours d'abord.

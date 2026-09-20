@@ -5,7 +5,9 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **20/09/2026** (dernière passe : **les huit outils de
+> Dernière réécriture : **20/09/2026** (dernière passe : **chaque TP est sous son
+> chapitre, et le 🚧 « TP » a disparu du hub**, bloc ci-dessous). Passe du même
+> jour : **les huit outils de
 > 2nde PC sont ouverts — o6, puis o7 et o8**, bloc ci-dessous). Passe du même
 > jour : **les outils O7 et O8 sont
 > refondus — une seule méthode pour isoler une grandeur, 71 relations corrigées, et
@@ -70,6 +72,51 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## ✅ Chaque TP est sous son chapitre, et le 🚧 « TP » a disparu du hub
+
+**Appliqué le 20/09/2026.** Loïc a redéposé les quinze sujets de TP de seconde
+dans `_a-deposer/tp/TP/`. Premier constat, mesuré : les **quinze PDF sont
+identiques au bit** à ceux déjà en ligne (md5 égaux) — la renumérotation du 05/09
+était bien appliquée, **aucun fichier à remplacer**.
+
+**Ce que la relecture des en-têtes a trouvé.** Le contrôle du 05/09 avait vérifié
+le *numéro* imprimé sur chaque feuille, pas le *chapitre* inscrit dans son
+en-tête. En lisant les quinze en-têtes (THÈME + Chapitre, première page), trois
+rattachements du hub divergeaient du document distribué en classe :
+
+| TP | En-tête du document | Était au hub | Décision de Loïc |
+|---|---|---|---|
+| TP3 *Pourquoi saler…* | T1-C2 seul | T1-C1 **et** T1-C2 | retiré de T1-C1 |
+| TP8 *Un tir au canon* | T2-**C1** | T2-**C2** | déplacé en T2-C1 |
+| TP13 *Réfraction / Dispersion / Spectres* | T3-C3 **et C4** | T3-C3 seul | ajouté à T3-C4 |
+
+Le troisième expliquait le 🚧 de T3-C4 : ce n'était pas un TP manquant, c'était un
+TP non lié. Le renvoi 🧪 de T1-C1 vers le TP3 **reste** dans le fil du cours, partie
+« corps pur ou mélange » : un renvoi contextuel n'est pas un rattachement.
+
+**Le 🚧 « TP en travaux » disparaît du hub — les quatre.** T1-C3 (atome), T1-C6
+(cortège électronique), T2-C2 (modéliser une action, depuis le départ du TP8) et
+T2-C3 (principe d'inertie) n'ont aucun TP, et n'en attendent pas : la progression
+en compte quinze, tous en ligne. Le chantier annonçait un manque qui n'existe pas.
+Le hub ne porte plus **aucun** 🚧 de TP.
+
+**Fichiers touchés** — `2nde-physique-chimie.html` (7 cartes : liens et comptes),
+`2nde-pc-t2-c1-decrire-le-mouvement.html` et `…t2-c2-modeliser-une-action.html`
+(le renvoi 🧪 du TP8 suit le TP), `…t3-c4-refraction-reflexion.html` (renvoi 🧪 du
+TP13 en fin de partie 03), plus `chapitres.md` et `DECISIONS.md`.
+
+**Contrôlé, pas supposé.** Un audit Playwright du hub confronte le `.cp-compte`
+annoncé de chaque carte à ses liens réels : **15 cartes, 0 écart**. `node
+verifier.mjs` rend **exactement 19 problèmes**, le repère du jour — aucune
+régression, aucun lien de TP cassé.
+
+⚠ **Ce qui n'est pas fait, et attend un arbitrage.** Le dépôt contient les
+**quinze corrigés de TP** (`TPn [CORRECTION]…`), plus la grille d'évaluation et les
+coups de pouce du TP5, les programmes Python de TP7, TP9 et TP12, les fichiers
+LatisPro du TP2 et les tableurs du TP3. **Rien n'a été mis en ligne** : la
+décision D1 du 26/08 tient — les corrections partent par mail contre preuve de
+travail. Les publier serait une décision nouvelle.
 
 ## ✅ Les huit outils de 2nde PC sont ouverts
 
@@ -719,11 +766,10 @@ imprimé en première page correspond au numéro du fichier, quinze fois sur qui
 `node verifier.mjs` rend **exactement 18 problèmes** — les 18 liens `cfa/outil-*`
 du repère, aucun lien de TP cassé.
 
-⚠ **Deux effets à connaître.** ① Les anciennes URL de TP **cassent** : pas de
-copie de compatibilité (décision T2). Les liens partagés depuis le 26/08 sont
-morts. ② Les dossiers de `_a-deposer/tp/` **gardent l'ancienne numérotation** :
-`TP11 - La précision de la verrerie` y désigne le TP publié sous le n° 9 (T4, en
-attente).
+⚠ **Un effet à connaître.** Les anciennes URL de TP **cassent** : pas de copie de
+compatibilité (décision T2). Les liens partagés depuis le 26/08 sont morts. *(Le
+second effet — le dossier `_a-deposer/tp/` resté à l'ancienne numérotation — est
+sans objet depuis le redépôt du 20/09 : voir le bloc de tête.)*
 
 ## 🆕 Le plafond d'avance ouvrait le module, pas le cours — corrigé
 

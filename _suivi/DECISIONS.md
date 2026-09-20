@@ -15,6 +15,26 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 20/09/2026 — Rattachement des TP de seconde au chapitre de leur en-tête
+
+Le contrôle du 05/09 avait vérifié le **numéro** imprimé sur chaque feuille,
+pas le **chapitre** inscrit dans son en-tête. Relecture des quinze en-têtes le
+20/09 : trois rattachements du hub divergeaient du document distribué en classe.
+
+| Date | Décision | Statut |
+|---|---|---|
+| 20/09/2026 | **TP3 « Pourquoi saler les routes enneigées » n'est plus listé que sous T1-C2.** Son en-tête ne mentionne que ce chapitre ; le hub le proposait aussi sous T1-C1. Le **renvoi 🧪 dans le cours de T1-C1 est conservé** (partie « corps pur ou mélange ») : un renvoi contextuel dans le fil du cours n'est pas un rattachement. Arbitrage de Loïc | ✅ en vigueur |
+| 20/09/2026 | **TP8 « Un tir au canon » passe de T2-C2 à T2-C1**, comme son en-tête l'indique (Description d'un mouvement). T2-C1 affiche donc 2 TP, et **T2-C2 « Modéliser une action » n'a plus de TP**. Arbitrage de Loïc | ✅ en vigueur |
+| 20/09/2026 | **TP13 « Réfraction / Dispersion / Spectres » est rattaché à T3-C3 *et* T3-C4.** Son en-tête porte les deux chapitres ; le hub ne le liait qu'à T3-C3, et T3-C4 affichait un 🚧 « TP en travaux » alors que son TP existait. Renvoi 🧪 ajouté en fin de partie 03 « Phénomène de réfraction » | ✅ en vigueur |
+| 20/09/2026 | 🔴 **Le marqueur 🚧 « TP en travaux » disparaît des chapitres qui n'ont légitimement aucun TP** — T1-C3 (atome), T1-C6 (cortège électronique), T2-C2 (modéliser une action), T2-C3 (principe d'inertie). Motif : le chantier annonçait un manque qui n'existe pas. La progression compte quinze TP, tous en ligne ; ces quatre chapitres se traitent sans travaux pratiques. Le hub ne porte plus **aucun** 🚧 de TP. Arbitrage de Loïc | ✅ en vigueur |
+| 20/09/2026 | **Les libellés du site restent ceux du hub, pas les titres internes des PDF**, là où ils diffèrent : « Dosage par étalonnage » (TP10, titre interne « Détermination d'une concentration ») et « Quantité de matière » (TP6, titre interne « Quantités de matière des réactifs »). Motif : le nom de dossier que Loïc emploie lui-même est celui du hub | ✅ en vigueur |
+
+Contrôle rejouable : `python` + PyMuPDF sur `assets/pdf/pc/tp/*.pdf` rend l'en-tête
+(THÈME + Chapitre) de chaque sujet ; un audit Playwright du hub confronte le
+`.cp-compte` annoncé de chaque carte à ses liens réels — **15 cartes, 0 écart**.
+
+---
+
 ## 20/09/2026 — Refonte des outils O7 et O8
 
 | Date | Décision | Statut |
@@ -1464,7 +1484,7 @@ contenu modifié (TP7, TP8 et TP15 sont inchangés au bit près).
 | T1 | **Le site suit le numéro imprimé sur la feuille distribuée en classe.** Les fichiers, les pastilles de chapitre, les liens du hub et l'outil O4 sont renumérotés. Motif : un élève qui a la feuille en main doit retrouver le même numéro à l'écran ; c'est la seule référence commune au papier et au site | ✅ |
 | T2 | **Les anciennes URL ne sont pas conservées** — pas de copie de compatibilité. Les liens `tp01-pourquoi-saler…`, `tp05-analyse-d-un-son`… posés le 26/08 cassent. Motif : douze PDF en double pour dix jours de liens partagés ne valent pas la dette | ✅ |
 | T3 | **Le TP9 prend le titre du PDF** : « La verrerie au laboratoire », et non plus « La précision de la verrerie ». L'outil O4 le cite six fois, sa fiche A4 deux fois — toutes mises à jour, PDF de fiche ré-exporté | ✅ |
-| T4 | ⏳ **Les dossiers de `_a-deposer/tp/` gardent l'ancienne numérotation.** Ils sont la zone de dépôt des sources brutes, citée telle quelle par le journal et les archives. À renommer un jour, ou à laisser avec la table ci-dessous pour boussole | ⏳ |
+| T4 | ~~Les dossiers de `_a-deposer/tp/` gardent l'ancienne numérotation~~ | ~~⏳~~ **Sans objet depuis le 20/09/2026** : Loïc a redéposé `_a-deposer/tp/TP/` à la numérotation du site (`TP01`…`TP15`). Les quinze PDF de sujet y sont **identiques au bit** à ceux de `assets/pdf/pc/tp/` — la table ci-dessous ne sert plus qu'à relire les archives |
 
 **Table de correspondance** — ancien nom de fichier → nouveau :
 
