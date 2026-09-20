@@ -7,55 +7,99 @@
 <link rel="stylesheet" href="../assets/css/fonts.css">
 <link rel="stylesheet" href="../assets/css/chapitre-commun.css?v=9">
 <style>
-  :root {
-    --encre:#141a26; --papier:#fdfcf8; --grille:#e8e4d8;
-    --h-alpha:#d6402b; --h-beta:#1d9aaa; --h-gamma:#4a3f9e;
-    --gris:#6b6f7a; --carte:#ffffff;
-  }
-  p { margin-bottom:.9rem; max-width:70ch; }
-  ul.cours { max-width:70ch; margin:0 0 .9rem 1.2rem; }
-  .definition { border:1px solid var(--encre); border-left:4px solid var(--h-beta);
-    background:var(--papier); border-radius:0 10px 10px 0; padding:1rem 1.3rem; margin:1.2rem 0; max-width:70ch; }
-  .definition p:last-child { margin-bottom:0; }
-  .video-chip { font-family:'IBM Plex Mono',monospace; font-size:.78rem;
-    display:inline-flex; align-items:center; gap:.4em; border:1px solid var(--encre);
-    border-radius:999px; padding:.34rem .85rem; text-decoration:none; color:var(--encre);
-    background:var(--papier); transition:background .15s,color .15s; }
-  figcaption { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gris);
-    margin-top:.55rem; max-width:62ch; }
-  .fig-row figure { flex:1 1 240px; max-width:430px; }
+  /* ============================================================
+     T1-C1 — styles LOCAUX uniquement.
+     Refonte du 20/09/2026 : l'ancien bloc redéfinissait p, .definition,
+     .exercice, .formule et figcaption, et écrasait donc la feuille commune —
+     d'où une colonne plus étroite que celle des autres chapitres et des
+     légendes à deux typographies. Tout ce qui vit dans la feuille commune
+     a été retiré ; ne restent ici que les composants absents du socle,
+     repris à l'identique de T3-C1 pour que les deux pages se ressemblent.
+     ============================================================ */
+
+  /* Numéro de figure — même composant que T3-C1 : une seule graisse pour
+     TOUTES les légendes, y compris les titres de tableau (le grief « pourquoi
+     l'image 11 est en gras et pas l'image 12 » venait de là). */
+  figcaption .fig-num, table.tab caption .fig-num { font-family:'IBM Plex Mono',monospace;
+    font-weight:600; color:var(--encre); }
+
+  /* Accroche d'ouverture, hors numérotation (reprise de T3-C1) */
+  p.accroche-chap { font-size:1.04rem; line-height:1.62; }
+  p.accroche-chap:first-of-type::first-letter { font-family:'Spectral',Georgia,serif;
+    font-size:2.6em; line-height:.86; float:left; margin:.06em .1em 0 0; color:var(--sepia); }
+
+  h3 { font-family:'Space Grotesk',sans-serif; font-size:1.12rem; color:var(--h-beta);
+       margin:1.8rem 0 .6rem; font-weight:600; }
+  h3 .l { font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--gris); margin-right:.15rem; }
+
+  /* Mise en garde — le socle ne connaît que définition / propriété / exemple */
+  .encart.attention { border-left:4px solid var(--h-alpha); }
+  .encart.attention .etq { color:var(--h-alpha); }
+
+  .avec-frac { line-height:2.15; }
+  .avec-frac .frac { line-height:1.15; }
+
+  /* Un titre de tableau se lit comme une légende de figure : même typographie,
+     même couleur, même place — sous le document. Sans cela, « Image 10 » (caption,
+     Space Grotesk) et « Image 11 » (figcaption, mono) n'avaient pas la même allure. */
+  table.tab caption { caption-side:bottom; font-family:'IBM Plex Mono',monospace;
+    font-size:.75rem; font-weight:400; color:var(--gris); text-align:left;
+    padding:.55rem 0 0; line-height:1.55; }
+
   .pastille { display:inline-block; width:.85em; height:.85em; border-radius:50%;
     border:1px solid var(--encre); vertical-align:-.08em; margin-right:.35em; }
-  .exercice { border:1px solid var(--encre); border-left:4px solid var(--h-alpha);
-    border-radius:0 12px 12px 0; padding:1.1rem 1.4rem; margin:1.8rem 0; max-width:78ch;
-    background:#fdfdfb; }
-  .exercice .donnees { font-family:'IBM Plex Mono',monospace; font-size:.82rem; color:var(--gris); margin-top:.6rem; }
-  sub,sup { font-size:.72em; }
-  .formule { font-family:'Spectral',serif; font-style:italic; text-align:center; margin:1.2rem auto; font-size:1.12rem; }
-  /* ===== Verrou de fin de chapitre (v1 : porte à code) ===== */
-  body.verrouille #porte { display:block; text-align:center; padding:2.5rem 1rem 3rem; }
-  #porte input {
-    font-family:'IBM Plex Mono',monospace; font-size:1.25rem; letter-spacing:.45em;
-    text-transform:uppercase; text-align:center; flex:1 1 12ch; min-width:0;
-    padding:.55rem .2rem .55rem .65rem; border:1.5px solid var(--encre);
-    border-radius:10px; background:var(--papier); color:var(--encre);
-  }
+
+  /* ===== Figures pleine colonne (20/09/2026) =====
+     Les neuf schémas refaits sont au format 16:9. Posés en .fig-etroite (300 px)
+     ils devenaient illisibles ; ici ils prennent toute la largeur de la colonne
+     de lecture — c'est ce qui donne de l'ampleur à la page sans toucher à la
+     mesure du texte courant, qui reste celle des autres chapitres. */
+  .fig-large { max-width:none; margin:1.8rem 0; }
+  /* Format intermédiaire : un schéma qui se lit sans être déplié en entier
+     (audit du 20/09 — images 4, 5, 16 et 17 se voient très bien plus petites,
+     le clic reste là pour les agrandir). */
+  .fig-moyenne { max-width:620px; margin:1.8rem auto; }
+  /* Bordure DISCRETE : plusieurs schémas portent déjà leur propre cadre, et un
+     trait d'encre par-dessus faisait un double filet. */
+  .fig-large img, .fig-moyenne img { width:100%; border:1px solid var(--grille);
+    border-radius:8px; }
+  .fig-large img.zoomable, .fig-moyenne img.zoomable { cursor:zoom-in; }
+  .fig-large > svg, .fig-moyenne > svg { width:100%; height:auto; }
+  .fig-large figcaption, .fig-moyenne figcaption { max-width:80ch; }
+
+  /* Les blocs formule prennent la colonne : à 60ch, la colonne des grandeurs
+     tombait à 160 px et « ρ_eau = 1 g·cm⁻³ » se coupait en deux lignes. */
+  .partie-corps .formule-bloc { max-width:none; }
+
+  /* Notion à gauche, figure à droite : évite les pavés de texte suivis d'un
+     pavé d'images, et met l'illustration au contact de ce qu'elle illustre. */
+  .duo-notion { display:grid; grid-template-columns:minmax(0,1fr) minmax(260px,38%);
+    gap:2rem; align-items:start; margin:1.2rem 0; }
+  .duo-notion > figure { margin:0; }
+
+  /* Deux documents d'énoncé côte à côte : la courbe, plus dense, prend la moitié
+     la plus large ; le tableau se contente de sa mesure. */
+  .duo-doc { display:grid; grid-template-columns:minmax(230px,1fr) minmax(0,1.45fr);
+    gap:1.6rem; align-items:start; }
+  /* Même cadre pour les deux documents, quel que soit leur contenu : un tableau
+     portait ses bordures de cellules, la courbe n'avait rien du tout. */
+  .duo-doc > figure { margin:0; border:1px solid var(--grille); border-radius:8px;
+    background:#fff; padding:.9rem 1rem; }
+  .duo-doc > figure > svg { width:100%; height:auto; }
+  @media (max-width:960px) { .duo-doc { grid-template-columns:1fr; } }
+  .duo-notion p:last-child, .duo-notion ul:last-child { margin-bottom:0; }
+
+  /* Deux photos sous une seule légende (marmite + coupe micrographique) */
+  .fig-paire { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; }
+  .fig-paire img { width:100%; height:200px; object-fit:cover;
+    border:1px solid var(--encre); border-radius:6px; }
+
   @media (max-width:960px) {
-    .page { grid-template-columns:1fr; gap:1.2rem; padding:1.2rem .9rem 3rem; }
-    aside.sommaire { display:none; }
-    details.toc-mobile { display:block; font-family:'Space Grotesk',sans-serif;
-      background:var(--carte); border:1px solid var(--encre); border-radius:12px;
-      padding:.7rem 1rem; margin-bottom:1.2rem; }
-    details.toc-mobile summary { font-family:'IBM Plex Mono',monospace; font-size:.8rem;
-      letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
-    details.toc-mobile ol { list-style:none; margin-top:.6rem; }
-    details.toc-mobile a { display:block; padding:.4rem .2rem; color:var(--encre);
-      text-decoration:none; border-bottom:1px dashed var(--grille); }
-    details.toc-mobile a .n { font-family:'IBM Plex Mono',monospace; font-size:.72rem;
-      color:var(--h-beta); margin-right:.5rem; }
-    .duo { grid-template-columns:1fr; }
-    .checklist li { grid-template-columns:auto 1fr; }
-    .checklist .refs { grid-column:2; white-space:normal; }
+    .duo-notion { grid-template-columns:1fr; gap:1.2rem; }
+  }
+  @media (max-width:520px) {
+    .fig-paire { grid-template-columns:1fr; }
+    .fig-paire img { height:auto; }
   }
 </style>
 <style class="reliure-papier-etude">
@@ -143,37 +187,73 @@ footer{border-top:1px solid #d8cfba;}
 <p class="sous-titre">Thème 1 · Chapitre 1 — cours &amp; exercices corrigés</p>
 
 <!-- ============ 01 ============ -->
-<h2 id="entites"><span class="num">01</span> Entités chimiques</h2>
+<details class="partie" open>
+<summary><h2 id="entites"><span class="num">01</span> Entités chimiques</h2></summary>
+<div class="partie-corps">
 
-<p>La matière est constituée d'<strong>entités chimiques</strong>, terme générique
-désignant ses composants microscopiques : atomes, molécules, ions.</p>
-<ul class="cours">
-  <li>L'<strong>atome</strong> est une particule neutre d'un élément chimique qui forme
-    la plus petite quantité susceptible de se combiner (ex : C, Na, U…).</li>
-  <li>La <strong>molécule</strong> est un ensemble neutre d'atomes identiques ou non,
-    unis les uns aux autres par le biais de liaisons chimiques
-    (ex : H<sub>2</sub>O, H<sub>2</sub>, CH<sub>4</sub>…).</li>
-  <li>Un <strong>ion</strong> est une entité chimique chargée que l'on trouve en solution.
-    Les ions négatifs sont appelés <strong>anions</strong>
-    (ex : Cl<sup>−</sup>, SO<sub>4</sub><sup>2−</sup>, F<sup>−</sup>…) et les ions positifs
-    <strong>cations</strong> (ex : H<sup>+</sup>, Mg<sup>2+</sup>, H<sub>3</sub>O<sup>+</sup>…).</li>
-</ul>
+<!-- PROPOSITION À VALIDER (20/09/2026) — accroche de chapitre, hors numérotation. -->
+<p class="accroche-chap">Prends un verre d'eau du robinet, une pièce de monnaie, l'air que
+tu respires en lisant cette phrase. Trois objets ordinaires, et pourtant : l'un est un corps
+pur, l'autre un alliage, le troisième un mélange de gaz. À l'œil nu, rien ne les distingue —
+il faut savoir <strong>de quoi ils sont faits</strong>.</p>
+<p class="accroche-chap">Tout ce chapitre sert à ça : mettre des mots justes, puis des
+nombres, sur la composition de la matière. Combien de carbone dans une marmite en fonte ?
+Combien de sel peut-on encore dissoudre avant que ça ne parte au fond ? Et si on te tend un
+liquide inconnu, comment sais-tu ce que c'est ?</p>
+<p class="accroche-chap">Commençons par le plus petit : ce qui compose la matière.</p>
+
+<p>La matière est constituée d'<span class="terme">entités chimiques</span>, terme générique
+désignant ses composants microscopiques : atomes, molécules, ions. Ces trois mots ne sont
+pas interchangeables — chacun désigne quelque chose de précis, et le DS commence
+généralement par vérifier que tu les distingues.</p>
+
+<!-- Audit du 20/09/2026 — les trois entités prennent le formalisme des définitions. -->
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Atome</div>
+  <p>L'<span class="terme">atome</span> est une particule neutre d'un élément chimique qui
+  forme la plus petite quantité susceptible de se combiner
+  (ex : C, Na, U…).</p>
+</div>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Molécule</div>
+  <p>La <span class="terme">molécule</span> est un ensemble neutre d'atomes identiques ou
+  non, unis les uns aux autres par le biais de liaisons chimiques
+  (ex : H<sub>2</sub>O, H<sub>2</sub>, CH<sub>4</sub>…).</p>
+</div>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Ion</div>
+  <p>Un <span class="terme">ion</span> est une entité chimique chargée que l'on trouve en
+  solution. Les ions négatifs sont appelés <span class="terme">anions</span>
+  (ex : Cl<sup>−</sup>, SO<sub>4</sub><sup>2−</sup>, F<sup>−</sup>…) et les ions positifs
+  <span class="terme">cations</span>
+  (ex : H<sup>+</sup>, Mg<sup>2+</sup>, H<sub>3</sub>O<sup>+</sup>…).</p>
+</div>
+
+<figure class="fig-moyenne">
+  <img class="zoomable" tabindex="0" data-zoom="La molécule d'eau"
+       src="../assets/img/pc/2nde-pc-t1-c1/t1c1-molecule-eau.jpg"
+       alt="Modèle moléculaire de l'eau : un atome d'oxygène rouge lié à deux atomes d'hydrogène blancs, avec la formule développée H—O—H et la formule H2O" loading="lazy">
+  <figcaption><b class="fig-num">Image 1</b> — La molécule d'eau (H<sub>2</sub>O) est
+  composée de deux atomes d'hydrogène et d'un atome d'oxygène.</figcaption>
+</figure>
+
+<p class="aparte">Le vocabulaire est posé. Reste à l'appliquer — c'est tout l'objet de
+l'exercice qui suit, et le piège n'est pas là où on l'attend.</p>
 
 <div class="videos">
   <a class="video-chip" href="https://www.youtube.com/watch?v=qAPzmPiqiSU" target="_blank" rel="noopener">▶ Réviser en vidéo — Entités chimiques ↗</a>
 </div>
 
-<figure class="fig-etroite">
-  <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-molecule-eau.jpg" alt="Modèle moléculaire de l'eau : un atome d'oxygène rouge lié à deux atomes d'hydrogène blancs" loading="lazy">
-  <figcaption>Image 1 — La molécule d'eau (H<sub>2</sub>O) est composée de deux atomes
-  d'hydrogène et d'un atome d'oxygène.</figcaption>
-</figure>
-
 <div class="exercice">
   <div class="etiquette">Exercice 1</div>
-  <p><em>Classer ces entités chimiques selon qu'il s'agisse d'un atome, d'une molécule,
-  d'un anion ou d'un cation.</em></p>
-  <p style="font-family:'Spectral',serif; font-style:italic;">
+  <p><span class="question">Classer ces entités chimiques selon qu'il s'agisse d'un atome,
+  d'une molécule, d'un anion ou d'un cation.</span></p>
+  <p class="eq-exo">
     Cu | CU | Ag<sup>+</sup> | H | CO<sub>2</sub> | O<sup>2−</sup> | O<sub>2</sub> | Ca |
     NH<sub>4</sub><sup>+</sup> | NH<sub>3</sub> | N | Cu<sup>2+</sup> |
     CO | C | SiO<sub>3</sub> | K<sup>+</sup>
@@ -200,20 +280,120 @@ désignant ses composants microscopiques : atomes, molécules, ions.</p>
   </details>
 </div>
 
-<!-- ============ 02 ============ -->
-<h2 id="corps-purs"><span class="num">02</span> Corps purs</h2>
-
-<div class="definition">
-  <p>Une <strong>espèce chimique</strong> est un ensemble d'entités chimiques.<br>
-  Un <strong>corps pur</strong> est constitué d'une seule espèce chimique.</p>
+<div class="encart attention">
+  <div class="etq">Attention — la casse fait partie de la formule</div>
+  <p>En chimie, une majuscule ouvre toujours un symbole d'élément, et la minuscule qui
+  la suit appartient au même symbole. <strong>Co</strong> est le cobalt,
+  <strong>CO</strong> le monoxyde de carbone. Une lettre mal formée à la copie, et la
+  réponse change de sens : écris tes symboles chimiques lisiblement.</p>
 </div>
 
-<p>On distingue deux familles de corps purs :</p>
-<ul class="cours">
-  <li>Les <strong>corps purs simples</strong>, formés d'un seul type d'élément chimique [Image 2] ;</li>
-  <li>Les <strong>corps purs composés</strong> (ou <strong>composés chimiques</strong>),
-    formés d'au moins deux types d'éléments chimiques [Image 3].</li>
-</ul>
+</div>
+</details>
+
+<!-- ============ 02 ============ -->
+<details class="partie" open>
+<summary><h2 id="corps-purs"><span class="num">02</span> Corps purs</h2></summary>
+<div class="partie-corps">
+
+<p class="aparte">On sait nommer les briques. Assemblons-les : que se passe-t-il quand un
+échantillon ne contient qu'une seule sorte d'entité ?</p>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Espèce chimique &amp; corps pur</div>
+  <p>Une <span class="terme">espèce chimique</span> est un ensemble d'entités chimiques.<br>
+  Un <span class="terme">corps pur</span> est constitué d'une seule espèce chimique.</p>
+</div>
+
+<p>On distingue deux familles de corps purs : les <strong>corps purs simples</strong>,
+formés d'un seul type d'élément chimique, et les <strong>corps purs composés</strong>
+(ou <strong>composés chimiques</strong>), formés d'au moins deux types d'éléments chimiques.
+Les deux figures ci-dessous montrent la même chose à deux échelles : l'échantillon que l'on
+tient dans la main, et ce qu'on y verrait si l'on pouvait zoomer jusqu'aux entités.</p>
+
+<!-- PROPOSITION À VALIDER — figures composites (photo + zoom modélisé), sur le modèle
+     des béchers du §03 : la photo reste une photo, le zoom est un schéma de structure. -->
+<figure class="fig-large">
+  <svg viewBox="0 0 900 340" role="img" class="zoomable" tabindex="0"
+       data-zoom="Le cuivre métallique, corps pur simple : un seul type d'atome"
+       aria-labelledby="f2t f2d" font-family="'IBM Plex Mono',monospace">
+    <title id="f2t">Corps pur simple : le cuivre</title>
+    <desc id="f2d">À gauche, une photographie de fils de cuivre. Un trait de rappel conduit
+    à un cercle de modélisation où tous les atomes sont identiques et portent le symbole Cu.</desc>
+    <defs>
+      <clipPath id="c2"><rect x="24" y="40" width="216" height="264" rx="10"/></clipPath>
+    </defs>
+    <image href="../assets/img/pc/2nde-pc-t1-c1/t1c1-cuivre.jpg" x="24" y="40"
+           width="216" height="264" preserveAspectRatio="xMidYMid slice" clip-path="url(#c2)"/>
+    <rect x="24" y="40" width="216" height="264" rx="10" fill="none" stroke="#141a26" stroke-width="2"/>
+    <g stroke="#6b6f7a" stroke-width="1.2" fill="none">
+      <path d="M240 120 L532 98"/><path d="M240 224 L532 246"/>
+    </g>
+    <circle cx="660" cy="172" r="148" fill="#fff" stroke="#141a26" stroke-width="2.2"/>
+    <g stroke="#141a26" stroke-width="1.5" fill="#cf8050">
+      <circle cx="590" cy="88" r="27"/><circle cx="660" cy="70" r="27"/><circle cx="730" cy="88" r="27"/>
+      <circle cx="556" cy="150" r="27"/><circle cx="626" cy="132" r="27"/><circle cx="696" cy="132" r="27"/><circle cx="766" cy="150" r="27"/>
+      <circle cx="590" cy="196" r="27"/><circle cx="660" cy="194" r="27"/><circle cx="730" cy="196" r="27"/>
+      <circle cx="626" cy="254" r="27"/><circle cx="696" cy="254" r="27"/>
+    </g>
+    <g font-size="13" fill="#141a26" text-anchor="middle">
+      <text x="590" y="93">Cu</text><text x="660" y="75">Cu</text><text x="730" y="93">Cu</text>
+      <text x="556" y="155">Cu</text><text x="626" y="137">Cu</text><text x="696" y="137">Cu</text><text x="766" y="155">Cu</text>
+      <text x="590" y="201">Cu</text><text x="660" y="199">Cu</text><text x="730" y="201">Cu</text>
+      <text x="626" y="259">Cu</text><text x="696" y="259">Cu</text>
+    </g>
+    <text x="660" y="20" text-anchor="middle" font-size="13" font-weight="600" fill="#1d9aaa"
+          letter-spacing="1">UN SEUL TYPE D'ATOME</text>
+    <text x="132" y="326" text-anchor="middle" font-size="12" fill="#6b6f7a">cuivre métallique (Cu)</text>
+  </svg>
+  <figcaption><b class="fig-num">Image 2</b> — Le cuivre métallique n'est formé que
+  d'atomes de cuivre : un seul élément chimique, donc un <strong>corps pur simple</strong>.</figcaption>
+</figure>
+
+<figure class="fig-large">
+  <svg viewBox="0 0 900 340" role="img" class="zoomable" tabindex="0"
+       data-zoom="L'eau, corps pur composé : une seule espèce, deux éléments"
+       aria-labelledby="f3t f3d" font-family="'IBM Plex Mono',monospace">
+    <title id="f3t">Corps pur composé : l'eau</title>
+    <desc id="f3d">À gauche, le modèle moléculaire de l'eau. Un trait de rappel conduit à un
+    cercle de modélisation rempli de molécules identiques, chacune faite d'un atome
+    d'oxygène et de deux atomes d'hydrogène.</desc>
+    <defs>
+      <clipPath id="c3"><rect x="24" y="80" width="336" height="188" rx="10"/></clipPath>
+      <g id="h2o">
+        <circle cx="0" cy="0" r="19" fill="#d6402b" stroke="#141a26" stroke-width="1.5"/>
+        <circle cx="-20" cy="-15" r="11" fill="#fdfcf8" stroke="#141a26" stroke-width="1.4"/>
+        <circle cx="20" cy="-15" r="11" fill="#fdfcf8" stroke="#141a26" stroke-width="1.4"/>
+      </g>
+    </defs>
+    <image href="../assets/img/pc/2nde-pc-t1-c1/t1c1-molecule-eau.jpg" x="24" y="80"
+           width="336" height="188" preserveAspectRatio="xMidYMid slice" clip-path="url(#c3)"/>
+    <rect x="24" y="80" width="336" height="188" rx="10" fill="none" stroke="#141a26" stroke-width="2"/>
+    <g stroke="#6b6f7a" stroke-width="1.2" fill="none">
+      <path d="M360 130 L532 98"/><path d="M360 218 L532 246"/>
+    </g>
+    <circle cx="660" cy="172" r="148" fill="#fff" stroke="#141a26" stroke-width="2.2"/>
+    <g>
+      <use href="#h2o" x="594" y="96"/><use href="#h2o" x="672" y="82"/><use href="#h2o" x="742" y="118"/>
+      <use href="#h2o" x="566" y="166"/><use href="#h2o" x="644" y="160"/><use href="#h2o" x="722" y="184"/>
+      <use href="#h2o" x="600" y="232"/><use href="#h2o" x="678" y="238"/><use href="#h2o" x="748" y="248"/>
+    </g>
+    <text x="660" y="20" text-anchor="middle" font-size="13" font-weight="600" fill="#1d9aaa"
+          letter-spacing="1">UNE SEULE ESPÈCE, DEUX ÉLÉMENTS</text>
+    <text x="192" y="292" text-anchor="middle" font-size="12" fill="#6b6f7a">eau (H₂O)</text>
+  </svg>
+  <figcaption><b class="fig-num">Image 3</b> — L'eau n'est formée que de molécules
+  d'eau — une seule espèce chimique, donc un corps pur — mais chacune associe deux
+  éléments, l'hydrogène et l'oxygène : c'est un <strong>corps pur composé</strong>.</figcaption>
+</figure>
+
+<div class="encart attention">
+  <div class="etq">Attention — « pur » n'a pas le sens de tous les jours</div>
+  <p>Un jus « pur fruit » ou une eau « pure » du langage courant sont en réalité des
+  <strong>mélanges</strong>. En chimie, un corps pur ne contient <strong>qu'une seule
+  espèce chimique</strong> : l'eau minérale, qui contient des ions, n'est pas un corps pur.</p>
+</div>
 
 <div class="videos">
   <a class="video-chip" href="https://www.youtube.com/watch?v=Bome0C4fVLs" target="_blank" rel="noopener">▶ Réviser en vidéo — Corps purs ↗</a>
@@ -221,38 +401,11 @@ désignant ses composants microscopiques : atomes, molécules, ions.</p>
   <a class="video-chip" href="../assets/pdf/pc/tp/tp03-pourquoi-saler-les-routes-enneigees.pdf">🧪 TP3 — Pourquoi saler les routes enneigées →</a>
 </div>
 
-<div class="fig-row">
-  <figure class="fig-etroite">
-    <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-cuivre.jpg" alt="Fils de cuivre métallique enroulés" loading="lazy">
-    <figcaption>Image 2 — Le cuivre métallique (Cu) est un corps pur formé uniquement
-    d'atomes de cuivre. C'est un corps pur simple.</figcaption>
-  </figure>
-  <figure class="fig-etroite">
-    <svg viewBox="0 0 340 190" role="img" aria-label="Modélisation : empilement d'atomes de cuivre identiques" font-family="'IBM Plex Mono',monospace">
-      <g stroke="#141a26" stroke-width="1.6" fill="#cf8050">
-        <circle cx="60" cy="42" r="26"/><circle cx="115" cy="42" r="26"/><circle cx="170" cy="42" r="26"/><circle cx="225" cy="42" r="26"/><circle cx="280" cy="42" r="26"/>
-        <circle cx="87" cy="90" r="26"/><circle cx="142" cy="90" r="26"/><circle cx="197" cy="90" r="26"/><circle cx="252" cy="90" r="26"/>
-        <circle cx="60" cy="138" r="26"/><circle cx="115" cy="138" r="26"/><circle cx="170" cy="138" r="26"/><circle cx="225" cy="138" r="26"/><circle cx="280" cy="138" r="26"/>
-      </g>
-      <g font-size="13" fill="#141a26" text-anchor="middle">
-        <text x="60" y="47">Cu</text><text x="115" y="47">Cu</text><text x="170" y="47">Cu</text><text x="225" y="47">Cu</text><text x="280" y="47">Cu</text>
-        <text x="87" y="95">Cu</text><text x="142" y="95">Cu</text><text x="197" y="95">Cu</text><text x="252" y="95">Cu</text>
-        <text x="60" y="143">Cu</text><text x="115" y="143">Cu</text><text x="170" y="143">Cu</text><text x="225" y="143">Cu</text><text x="280" y="143">Cu</text>
-      </g>
-    </svg>
-    <figcaption>Modélisation : un seul type d'atome.</figcaption>
-  </figure>
-  <figure class="fig-etroite">
-    <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-molecule-eau.jpg" alt="Modèle moléculaire de l'eau" loading="lazy">
-    <figcaption>Image 3 — L'eau (H<sub>2</sub>O) est un corps pur formé d'atomes d'hydrogène
-    et d'oxygène. C'est un corps pur composé.</figcaption>
-  </figure>
-</div>
-
 <div class="exercice">
   <div class="etiquette">Exercice 2</div>
-  <p><em>Classer ces espèces chimiques selon qu'il s'agisse d'un corps pur simple ou composé.</em></p>
-  <p style="font-family:'Spectral',serif; font-style:italic;">
+  <p><span class="question">Classer ces espèces chimiques selon qu'il s'agisse d'un corps
+  pur simple ou composé.</span></p>
+  <p class="eq-exo">
     Cu | CU | Ag<sup>+</sup> | H | NH<sub>4</sub><sup>+</sup> | NH<sub>3</sub> | N | Cu<sup>2+</sup> |
     CO<sub>2</sub> | O<sup>2−</sup> | O<sub>2</sub> | Ca | CO | C | SiO<sub>3</sub> | K<sup>+</sup>
   </p>
@@ -270,170 +423,176 @@ désignant ses composants microscopiques : atomes, molécules, ions.</p>
   </details>
 </div>
 
-<!-- ============ 03 ============ -->
-<h2 id="melanges"><span class="num">03</span> Mélanges</h2>
+</div>
+</details>
 
-<div class="definition">
-  <p>Un <strong>mélange</strong> est constitué de plusieurs espèces chimiques.</p>
+<!-- ============ 03 ============ -->
+<details class="partie" open>
+<summary><h2 id="melanges"><span class="num">03</span> Mélanges</h2></summary>
+<div class="partie-corps">
+
+<p class="aparte">Une seule espèce chimique : corps pur. Dès qu'il y en a deux, on change
+de catégorie — et l'œil suffit souvent à trancher.</p>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Mélange</div>
+  <p>Un <span class="terme">mélange</span> est constitué de plusieurs espèces chimiques.</p>
 </div>
 
-<p>Il y en a de deux types :</p>
-<ul class="cours">
-  <li>Les <strong>mélanges hétérogènes</strong>, constitués de plusieurs phases,
-    c'est-à-dire plusieurs corps que l'on peut distinguer [Image 4] ;</li>
-  <li>Les <strong>mélanges homogènes</strong>, constitués d'une seule phase :
-    les espèces chimiques sont indiscernables [Image 5].</li>
-</ul>
-<p>Un mélange de <strong>liquides miscibles</strong> ne fait apparaître qu'une seule phase,
-c'est un mélange homogène. À l'inverse, un mélange de <strong>liquides non miscibles</strong>
-fait apparaître plusieurs phases, c'est donc un mélange hétérogène.</p>
+<p>Il y en a de deux types, et la distinction se fait sur ce que l'on <strong>voit</strong> :
+les <strong>mélanges hétérogènes</strong> sont constitués de plusieurs <strong>phases</strong>,
+c'est-à-dire plusieurs corps que l'on peut distinguer ; les <strong>mélanges homogènes</strong>
+ne présentent qu'une seule phase, les espèces chimiques y sont indiscernables.</p>
+
+<figure class="fig-moyenne">
+  <img class="zoomable" tabindex="0" data-zoom="Mélange hétérogène : eau et huile, deux phases"
+       src="../assets/img/pc/2nde-pc-t1-c1/t1c1-melange-heterogene.jpg"
+       alt="Bécher contenant de l'huile jaune au-dessus d'une couche d'eau bleue, deux phases nettement séparées ; un agrandissement montre les particules d'eau et d'huile regroupées chacune de leur côté" loading="lazy">
+  <figcaption><b class="fig-num">Image 4</b> — L'eau et l'huile forment
+  <strong>deux phases</strong> que l'on distingue à l'œil nu : c'est un
+  <strong>mélange hétérogène</strong>. À l'échelle des particules, chaque espèce reste
+  de son côté — la répartition n'est pas uniforme.</figcaption>
+</figure>
+
+<figure class="fig-moyenne">
+  <img class="zoomable" tabindex="0" data-zoom="Mélange homogène : eau et sucre, une seule phase"
+       src="../assets/img/pc/2nde-pc-t1-c1/t1c1-melange-homogene.jpg"
+       alt="Bécher contenant un liquide bleu uniforme d'eau sucrée, une seule phase ; un agrandissement montre les particules d'eau et de sucre mêlées uniformément" loading="lazy">
+  <figcaption><b class="fig-num">Image 5</b> — Le sucre dissous dans l'eau devient
+  indiscernable : <strong>une seule phase</strong>, c'est un <strong>mélange homogène</strong>.
+  À l'échelle des particules, les deux espèces sont mêlées uniformément.</figcaption>
+</figure>
+
+<p>Le cas des liquides porte un nom particulier. Un mélange de <span class="terme">liquides
+miscibles</span> ne fait apparaître qu'une seule phase : c'est un mélange homogène.
+À l'inverse, un mélange de <span class="terme">liquides non miscibles</span> fait apparaître
+plusieurs phases — donc un mélange hétérogène.</p>
+
+<p class="aparte">Quatre catégories en tout, deux pour les corps purs et deux pour les
+mélanges. Le schéma qui suit les tient ensemble : c'est celui à retenir.</p>
+
+<figure class="fig-large">
+  <img class="zoomable" tabindex="0" data-zoom="Classification de la matière : corps purs et mélanges"
+       src="../assets/img/pc/2nde-pc-t1-c1/t1c1-arbre-matiere.jpg"
+       alt="Arbre de classification : la matière se divise en corps purs (simples ou composés) et en mélanges (homogènes ou hétérogènes), chaque cas illustré par une modélisation des particules" loading="lazy">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <figcaption><b class="fig-num">Image 6</b> — Les quatre cas, et leur modélisation à
+  l'échelle des particules. Ce schéma résume tout le début du chapitre : retiens-le, il
+  répond à lui seul à la moitié des questions de cours.</figcaption>
+</figure>
 
 <div class="videos">
   <a class="video-chip" href="https://www.youtube.com/watch?v=c8iLLhbtHaM" target="_blank" rel="noopener">▶ Réviser en vidéo — Mélanges ↗</a>
 </div>
 
-<div class="fig-row">
-  <figure class="fig-etroite">
-    <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-huile-eau.jpg" alt="Verre contenant deux phases : huile au-dessus, eau en dessous" loading="lazy">
-    <figcaption>Image 4 — L'eau et l'huile sont des liquides non miscibles : deux phases
-    distinctes, c'est un mélange hétérogène.</figcaption>
-  </figure>
-  <figure>
-    <svg viewBox="0 0 560 300" role="img" aria-label="Schéma : verre eau et huile avec zoom montrant une répartition non uniforme des particules" font-family="'IBM Plex Mono',monospace">
-      <path d="M70 44 v198 q0 14 14 14 h104 q14 0 14 -14 v-198" fill="none" stroke="#141a26" stroke-width="2.4"/>
-      <rect x="74" y="116" width="124" height="46" fill="#f2d883" opacity=".78"/>
-      <rect x="74" y="162" width="124" height="88" fill="#bfe0f2" opacity=".85"/>
-      <line x1="74" y1="162" x2="198" y2="162" stroke="#c79b3b" stroke-width="1.6"/>
-      <text x="30" y="140" font-size="11" fill="#6b6f7a">huile</text>
-      <line x1="52" y1="136" x2="74" y2="136" stroke="#6b6f7a" stroke-width="1.1"/>
-      <text x="34" y="212" font-size="11" fill="#6b6f7a">eau</text>
-      <line x1="52" y1="208" x2="74" y2="208" stroke="#6b6f7a" stroke-width="1.1"/>
-      <line x1="198" y1="128" x2="332" y2="82" stroke="#6b6f7a" stroke-width="1.1"/>
-      <line x1="198" y1="176" x2="332" y2="158" stroke="#6b6f7a" stroke-width="1.1"/>
-      <circle cx="400" cy="120" r="72" fill="#fff" stroke="#141a26" stroke-width="2"/>
-      <g fill="#e3c05e"><circle cx="368" cy="82" r="7"/><circle cx="396" cy="70" r="7"/><circle cx="426" cy="80" r="7"/><circle cx="382" cy="104" r="7"/><circle cx="412" cy="100" r="7"/><circle cx="443" cy="102" r="7"/><circle cx="356" cy="104" r="7"/></g>
-      <g fill="#5aa7c9"><circle cx="366" cy="136" r="7"/><circle cx="394" cy="130" r="7"/><circle cx="422" cy="136" r="7"/><circle cx="448" cy="128" r="7"/><circle cx="378" cy="158" r="7"/><circle cx="408" cy="160" r="7"/><circle cx="436" cy="156" r="7"/></g>
-      <text x="400" y="30" font-size="10.5" fill="#6b6f7a" text-anchor="middle">répartition NON uniforme des particules</text>
-      <rect x="318" y="216" width="196" height="66" rx="8" fill="#fdfcf8" stroke="#141a26" stroke-width="1.4"/>
-      <circle cx="338" cy="238" r="6" fill="#e3c05e" stroke="#141a26" stroke-width="1"/>
-      <text x="352" y="242" font-size="11">particules d'huile</text>
-      <circle cx="338" cy="262" r="6" fill="#5aa7c9" stroke="#141a26" stroke-width="1"/>
-      <text x="352" y="266" font-size="11">particules d'eau</text>
-    </svg>
-    <figcaption>Deux phases, deux populations de particules séparées.</figcaption>
-  </figure>
+</div>
+</details>
+
+<!-- ============ 04 ============ -->
+<details class="partie" open>
+<summary><h2 id="composition"><span class="num">04</span> Composition d'un mélange</h2></summary>
+<div class="partie-corps">
+
+<p class="aparte">Dire « c'est un mélange » ne suffit pas à un chimiste : encore faut-il
+savoir en quelle proportion. Deux façons de compter, selon ce que l'on mesure.</p>
+
+<p>Lorsqu'on a un mélange, on peut donner par exemple sa <strong>composition massique</strong>,
+qui précise le pourcentage de la masse de chaque espèce par rapport à la masse totale, ou sa
+<strong>composition volumique</strong>, qui précise le pourcentage du volume qu'occupe chaque
+espèce par rapport au volume total.</p>
+
+<div class="formule-bloc"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq avec-frac"><span class="eq-corps">%m = <span class="frac"><span class="haut">m</span><span class="bas">m<sub>mélange</sub></span></span> × 100</span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>%m</b> <span class="nb">composition massique · %</span><br><b>m</b> <span class="nb">masse de l'espèce · g</span><br><b>m<sub>mélange</sub></b> <span class="nb">masse totale · g</span>
+  </div>
 </div>
 
-<div class="fig-row">
-  <figure class="fig-etroite">
-    <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-sirop-the.png" alt="Photos : lait, sirop de menthe et thé, trois mélanges homogènes" loading="lazy">
-    <figcaption>Image 5 — Lorsque l'on dissout du sucre dans de l'eau, celui-ci disparaît
-    et devient indiscernable : l'eau sucrée est un mélange homogène.</figcaption>
-  </figure>
-  <figure>
-    <svg viewBox="0 0 560 300" role="img" aria-label="Schéma : verre d'eau sucrée avec zoom montrant une répartition uniforme des particules d'eau et de sucre" font-family="'IBM Plex Mono',monospace">
-      <path d="M70 44 v198 q0 14 14 14 h104 q14 0 14 -14 v-198" fill="none" stroke="#141a26" stroke-width="2.4"/>
-      <rect x="74" y="116" width="124" height="134" fill="#bfe0f2" opacity=".85"/>
-      <line x1="74" y1="116" x2="198" y2="116" stroke="#1d9aaa" stroke-width="1.6"/>
-      <text x="136" y="284" font-size="10.5" fill="#6b6f7a" text-anchor="middle">mélange homogène</text>
-      <line x1="198" y1="150" x2="332" y2="92" stroke="#6b6f7a" stroke-width="1.1"/>
-      <line x1="198" y1="196" x2="332" y2="152" stroke="#6b6f7a" stroke-width="1.1"/>
-      <circle cx="400" cy="120" r="72" fill="#fff" stroke="#141a26" stroke-width="2"/>
-      <g fill="#5aa7c9"><circle cx="368" cy="82" r="7"/><circle cx="426" cy="80" r="7"/><circle cx="382" cy="112" r="7"/><circle cx="440" cy="110" r="7"/><circle cx="360" cy="140" r="7"/><circle cx="412" cy="136" r="7"/><circle cx="386" cy="162" r="7"/><circle cx="438" cy="158" r="7"/></g>
-      <g fill="#e3c05e"><circle cx="397" cy="72" r="6"/><circle cx="354" cy="108" r="6"/><circle cx="410" cy="104" r="6"/><circle cx="448" cy="134" r="6"/><circle cx="386" cy="136" r="6"/><circle cx="412" cy="164" r="6"/><circle cx="362" cy="164" r="6"/></g>
-      <text x="400" y="30" font-size="10.5" fill="#6b6f7a" text-anchor="middle">répartition uniforme des particules</text>
-      <rect x="318" y="216" width="196" height="66" rx="8" fill="#fdfcf8" stroke="#141a26" stroke-width="1.4"/>
-      <circle cx="338" cy="238" r="6" fill="#5aa7c9" stroke="#141a26" stroke-width="1"/>
-      <text x="352" y="242" font-size="11">particules d'eau</text>
-      <circle cx="338" cy="262" r="6" fill="#e3c05e" stroke="#141a26" stroke-width="1"/>
-      <text x="352" y="266" font-size="11">particules de sucre</text>
-    </svg>
-    <figcaption>Une seule phase : les particules sont mêlées uniformément.</figcaption>
-  </figure>
+<div class="formule-bloc"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq avec-frac"><span class="eq-corps">%V = <span class="frac"><span class="haut">V</span><span class="bas">V<sub>mélange</sub></span></span> × 100</span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>%V</b> <span class="nb">composition volumique · %</span><br><b>V</b> <span class="nb">volume de l'espèce · L</span><br><b>V<sub>mélange</sub></b> <span class="nb">volume total · L</span>
+  </div>
 </div>
 
-<figure>
-  <svg viewBox="0 0 880 340" role="img" aria-label="Schéma : la matière se divise en corps purs, simples ou composés, et mélanges, homogènes ou hétérogènes" font-family="'Space Grotesk',sans-serif">
-    <g fill="none" stroke="#141a26" stroke-width="1.8">
-      <path d="M495 42 v14 M285 66 H705 M285 66 v12 M705 66 v12"/>
-      <path d="M285 110 v18 M180 128 H390 M180 128 v18 M390 128 v18"/>
-      <path d="M705 110 v18 M600 128 H810 M600 128 v18 M810 128 v18"/>
-      <path d="M180 190 v14 M390 190 v14 M600 190 v14 M810 190 v14"/>
-    </g>
-    <g stroke="#141a26" stroke-width="2" fill="#fdfcf8">
-      <rect x="435" y="10" width="120" height="32" rx="6"/>
-      <rect x="215" y="78" width="140" height="32" rx="6"/>
-      <rect x="640" y="78" width="130" height="32" rx="6"/>
-      <rect x="105" y="146" width="150" height="44" rx="6"/>
-      <rect x="315" y="146" width="150" height="44" rx="6"/>
-      <rect x="525" y="146" width="150" height="44" rx="6"/>
-      <rect x="735" y="146" width="150" height="44" rx="6" transform="translate(-16 0)"/>
-    </g>
-    <g font-size="13.5" font-weight="700" fill="#141a26" text-anchor="middle" letter-spacing="1">
-      <text x="495" y="31">MATIÈRE</text>
-      <text x="285" y="99">CORPS PURS</text>
-      <text x="705" y="99">MÉLANGES</text>
-    </g>
-    <g font-size="12" font-weight="600" fill="#141a26" text-anchor="middle">
-      <text x="180" y="164">CORPS PUR</text><text x="180" y="180">SIMPLE</text>
-      <text x="390" y="164">CORPS PUR</text><text x="390" y="180">COMPOSÉ</text>
-      <text x="600" y="164">MÉLANGE</text><text x="600" y="180">HOMOGÈNE</text>
-      <text x="794" y="164">MÉLANGE</text><text x="794" y="180">HÉTÉROGÈNE</text>
-    </g>
-    <g stroke="#141a26" stroke-width="1.8" fill="#fff">
-      <circle cx="180" cy="252" r="46"/><circle cx="390" cy="252" r="46"/>
-      <circle cx="600" cy="252" r="46"/><circle cx="794" cy="252" r="46"/>
-    </g>
-    <g fill="#5aa7c9">
-      <circle cx="156" cy="234" r="5"/><circle cx="178" cy="224" r="5"/><circle cx="200" cy="234" r="5"/><circle cx="148" cy="256" r="5"/><circle cx="170" cy="248" r="5"/><circle cx="192" cy="252" r="5"/><circle cx="210" cy="262" r="5"/><circle cx="158" cy="276" r="5"/><circle cx="180" cy="268" r="5"/><circle cx="200" cy="280" r="5"/><circle cx="172" cy="288" r="5"/>
-    </g>
-    <g>
-      <g transform="translate(370,232)"><circle r="6" fill="#6fae7a"/><circle cx="8" cy="6" r="4.5" fill="#5aa7c9"/></g>
-      <g transform="translate(404,228)"><circle r="6" fill="#6fae7a"/><circle cx="8" cy="6" r="4.5" fill="#5aa7c9"/></g>
-      <g transform="translate(382,258)"><circle r="6" fill="#6fae7a"/><circle cx="8" cy="6" r="4.5" fill="#5aa7c9"/></g>
-      <g transform="translate(410,262)"><circle r="6" fill="#6fae7a"/><circle cx="8" cy="6" r="4.5" fill="#5aa7c9"/></g>
-      <g transform="translate(360,268)"><circle r="6" fill="#6fae7a"/><circle cx="8" cy="6" r="4.5" fill="#5aa7c9"/></g>
-    </g>
-    <g fill="#5aa7c9">
-      <circle cx="580" cy="228" r="5"/><circle cx="622" cy="230" r="5"/><circle cx="568" cy="252" r="5"/><circle cx="600" cy="246" r="5"/><circle cx="632" cy="256" r="5"/><circle cx="584" cy="276" r="5"/><circle cx="616" cy="278" r="5"/>
-    </g>
-    <g>
-      <g transform="translate(598,226)"><circle r="5.5" fill="#6fae7a"/><circle cx="7" cy="5" r="4" fill="#e3c05e"/></g>
-      <g transform="translate(572,264)"><circle r="5.5" fill="#6fae7a"/><circle cx="7" cy="5" r="4" fill="#e3c05e"/></g>
-      <g transform="translate(614,258)"><circle r="5.5" fill="#6fae7a"/><circle cx="7" cy="5" r="4" fill="#e3c05e"/></g>
-    </g>
-    <g fill="#d97a63">
-      <circle cx="772" cy="224" r="5"/><circle cx="794" cy="218" r="5"/><circle cx="816" cy="226" r="5"/><circle cx="762" cy="240" r="5"/><circle cx="784" cy="236" r="5"/><circle cx="806" cy="240" r="5"/><circle cx="826" cy="244" r="5"/>
-    </g>
-    <g fill="#5aa7c9">
-      <circle cx="766" cy="262" r="5"/><circle cx="788" cy="258" r="5"/><circle cx="810" cy="264" r="5"/><circle cx="774" cy="280" r="5"/><circle cx="796" cy="276" r="5"/><circle cx="816" cy="282" r="5"/>
-    </g>
-  </svg>
-  <figcaption>Image 6 — Vous pouvez retenir ce schéma pour vous aider à mémoriser le cours !</figcaption>
+<h3><span class="l">A ·</span> Un exemple de composition massique : la fonte</h3>
+
+<p>La <span class="terme">fonte</span> est un <strong>alliage</strong> — un mélange en phase
+solide. C'est un mélange de fer et de carbone, et c'est la proportion de carbone qui fait
+la différence entre une fonte et un acier.</p>
+
+<figure class="fig-large">
+  <div class="fig-paire">
+    <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-fonte-marmite.jpg" alt="Marmite en fonte noire" loading="lazy">
+    <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-fonte-zoom.jpg" alt="Vue au microscope d'une coupe de fonte : des inclusions sombres de carbone dispersées dans le fer" loading="lazy">
+  </div>
+  <figcaption><b class="fig-num">Image 7</b> — La fonte est composée d'au moins
+  <span class="nb">2,11 %</span> en masse de carbone ; le reste, <span class="nb">97,89 %</span>,
+  c'est du fer. À droite, vue au microscope : le carbone (points sombres) est dispersé
+  dans le fer — l'alliage est bien un mélange.</figcaption>
 </figure>
 
+<h3><span class="l">B ·</span> Un exemple de composition volumique : l'air</h3>
+
+<p>L'air que tu respires n'est pas une espèce chimique mais un <strong>mélange de
+gaz</strong>, et on le décrit habituellement par sa composition
+<strong>volumique</strong>. Sa composition figure au programme : elle s'apprend.</p>
+
+<!-- Audit du 20/09/2026 — la composition de l'air est une connaissance exigible :
+     elle prend le formalisme d'une définition. PROPOSITION À VALIDER : j'y ai joint
+     la masse volumique de l'air, que la checklist du DS demande dans la même ligne. -->
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Composition de l'air</div>
+  <p>L'<span class="terme">air</span> est un mélange de gaz. En volume, il contient environ
+  <span class="nb">78 %</span> de <strong>diazote</strong> (N<sub>2</sub>) et
+  <span class="nb">21 %</span> de <strong>dioxygène</strong> (O<sub>2</sub>) ; le dernier
+  pour cent réunit les autres gaz, dont l'argon (Ar) à <span class="nb">0,93 %</span> et le
+  dioxyde de carbone (CO<sub>2</sub>) à <span class="nb">0,04 %</span>.</p>
+  <p>Sa masse volumique vaut environ <span class="nb">ρ<sub>air</sub> = 1,2 g·L<sup>−1</sup></span>.</p>
+</div>
+
+<div class="duo-notion">
+  <div>
+    <p>Autrement dit : sur cinq bouffées d'air, quatre sont du diazote, qui ne sert à rien
+    à ta respiration — seule la cinquième, le dioxygène, est utilisée par ton organisme.</p>
+    <p>Les deux valeurs <span class="nb">78 %</span> et <span class="nb">21 %</span> sont
+    à connaître par cœur : elles tombent au DS.</p>
+  </div>
+  <figure>
+    <svg viewBox="0 0 300 300" role="img" aria-label="Diagramme circulaire de la composition volumique de l'air : diazote 78 pour cent, dioxygène 21 pour cent, autres gaz 1 pour cent" font-family="'IBM Plex Mono',monospace">
+      <path d="M150,150 L150,40 A110,110 0 1 1 41.9,129.4 Z" fill="#a9d6dd" stroke="#141a26" stroke-width="1.6"/>
+      <path d="M150,150 L41.9,129.4 A110,110 0 0 1 143.1,40.2 Z" fill="#eec2ba" stroke="#141a26" stroke-width="1.6"/>
+      <path d="M150,150 L143.1,40.2 A110,110 0 0 1 150,40 Z" fill="#d9d5c9" stroke="#141a26" stroke-width="1.6"/>
+      <text x="196" y="206" font-size="14" font-weight="600" fill="#141a26" text-anchor="middle">N₂ — 78 %</text>
+      <text x="98" y="102" font-size="13" font-weight="600" fill="#141a26" text-anchor="middle">O₂ — 21 %</text>
+      <line x1="147" y1="46" x2="196" y2="18" stroke="#6b6f7a" stroke-width="1.1"/>
+      <text x="200" y="16" font-size="10.5" fill="#6b6f7a">autres gaz — 1 %</text>
+    </svg>
+    <span class="a-noter" title="À compléter sur la fiche">✎</span>
+    <figcaption><b class="fig-num">Image 8</b> — Composition volumique de l'air sec.
+    Parmi les « autres gaz » : Ar, CO<sub>2</sub>, Ne, He, Kr, H<sub>2</sub>, Xe,
+    O<sub>3</sub>, Rn.</figcaption>
+  </figure>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="https://www.youtube.com/watch?v=26hHt2V8-_c" target="_blank" rel="noopener">▶ Réviser en vidéo — Composition d'un mélange ↗</a>
+</div>
+
+<!-- PROPOSITION À VALIDER — l'exercice sur l'air était en partie 03 avec SA PROPRE copie
+     du camembert : la même figure existait donc deux fois dans la page. Il rejoint ici
+     l'Image 8, qui lui sert de support. -->
 <div class="exercice">
   <div class="etiquette">Exercice 3 — Composition de l'air</div>
-  <div class="duo">
-    <figure style="margin:.4rem 0;">
-      <svg viewBox="0 0 300 300" role="img" aria-label="Diagramme circulaire de la composition volumique de l'air : diazote 78 pour cent, dioxygène 21 pour cent, autres gaz 1 pour cent" font-family="'IBM Plex Mono',monospace">
-        <path d="M150,150 L150,40 A110,110 0 1 1 41.9,129.4 Z" fill="#a9d6dd" stroke="#141a26" stroke-width="1.6"/>
-        <path d="M150,150 L41.9,129.4 A110,110 0 0 1 143.1,40.2 Z" fill="#eec2ba" stroke="#141a26" stroke-width="1.6"/>
-        <path d="M150,150 L143.1,40.2 A110,110 0 0 1 150,40 Z" fill="#d9d5c9" stroke="#141a26" stroke-width="1.6"/>
-        <text x="196" y="206" font-size="14" font-weight="600" fill="#141a26" text-anchor="middle">N₂ — 78 %</text>
-        <text x="98" y="102" font-size="13" font-weight="600" fill="#141a26" text-anchor="middle">O₂ — 21 %</text>
-        <line x1="147" y1="46" x2="196" y2="18" stroke="#6b6f7a" stroke-width="1.1"/>
-        <text x="200" y="16" font-size="10.5" fill="#6b6f7a">autres gaz — 1 %</text>
-      </svg>
-      <figcaption>Composition volumique de l'air sec. Parmi les « autres gaz » :
-      Ar, CO<sub>2</sub>, Ne, He, Kr, H<sub>2</sub>, Xe, O<sub>3</sub>, Rn.</figcaption>
-    </figure>
-    <div>
-      <p>1 — L'air est-il un mélange ou un corps pur ? Justifier en précisant votre réponse.</p>
-      <p>2 — Classer chaque espèce chimique composant l'air selon qu'il s'agisse d'un corps
-      pur simple ou composé.</p>
-    </div>
-  </div>
+  <p><span class="question">1 — L'air est-il un mélange ou un corps pur ? Justifier en
+  précisant votre réponse.</span></p>
+  <p><span class="question">2 — Classer chaque espèce chimique composant l'air selon qu'il
+  s'agisse d'un corps pur simple ou composé.</span></p>
+  <p class="donnees">La composition de l'air est donnée par l'<strong>Image 8</strong> ci-dessus.</p>
   <details class="correction">
     <summary>Voir la correction</summary>
     <p>1 — L'air est un <strong>mélange</strong> : il est composé de plusieurs espèces
@@ -450,271 +609,266 @@ fait apparaître plusieurs phases, c'est donc un mélange hétérogène.</p>
   </details>
 </div>
 
-<!-- ============ 04 ============ -->
-<h2 id="composition"><span class="num">04</span> Composition d'un mélange</h2>
-
-<p>Lorsqu'on a un mélange, on peut donner par exemple :</p>
-<ul class="cours">
-  <li>sa <strong>composition massique</strong>, précisant le pourcentage de la masse
-    de chaque espèce par rapport à la masse totale ;</li>
-  <li>sa <strong>composition volumique</strong>, précisant le pourcentage du volume
-    qu'occupe chaque espèce par rapport au volume total.</li>
-</ul>
-
-<div class="videos">
-  <a class="video-chip" href="https://www.youtube.com/watch?v=26hHt2V8-_c" target="_blank" rel="noopener">▶ Réviser en vidéo — Composition d'un mélange ↗</a>
-</div>
-
-<div class="fig-row">
-  <figure class="fig-etroite">
-    <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-fonte-marmite.jpg" alt="Marmite en fonte noire" loading="lazy">
-    <figcaption>Image 7 — La fonte est un alliage (mélange en phase solide) composé d'au
-    moins 2,11 % en masse de carbone ; le reste, 97,89 %, c'est du fer.</figcaption>
-  </figure>
-  <figure class="fig-etroite">
-    <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-fonte-zoom.jpg" alt="Vue microscopique : points de carbone dispersés dans le fer" loading="lazy">
-    <figcaption>Zoom : le carbone (points sombres) dispersé dans le fer.</figcaption>
-  </figure>
-  <figure class="fig-etroite">
-    <svg viewBox="0 0 300 300" role="img" aria-label="Diagramme circulaire : diazote 78 %, dioxygène 21 %, autres gaz 1 %" font-family="'IBM Plex Mono',monospace">
-      <path d="M150,150 L150,40 A110,110 0 1 1 41.9,129.4 Z" fill="#a9d6dd" stroke="#141a26" stroke-width="1.6"/>
-      <path d="M150,150 L41.9,129.4 A110,110 0 0 1 143.1,40.2 Z" fill="#eec2ba" stroke="#141a26" stroke-width="1.6"/>
-      <path d="M150,150 L143.1,40.2 A110,110 0 0 1 150,40 Z" fill="#d9d5c9" stroke="#141a26" stroke-width="1.6"/>
-      <text x="196" y="206" font-size="14" font-weight="600" fill="#141a26" text-anchor="middle">N₂ — 78 %</text>
-      <text x="98" y="102" font-size="13" font-weight="600" fill="#141a26" text-anchor="middle">O₂ — 21 %</text>
-      <line x1="147" y1="46" x2="196" y2="18" stroke="#6b6f7a" stroke-width="1.1"/>
-      <text x="200" y="16" font-size="10.5" fill="#6b6f7a">autres gaz — 1 %</text>
-    </svg>
-    <figcaption>Image 8 — Composition volumique de l'air sec. Parmi les autres gaz :
-    l'argon (Ar) à 0,93 % et le dioxyde de carbone (CO<sub>2</sub>) à 0,04 %.</figcaption>
-  </figure>
-</div>
-
 <div class="exercice">
   <div class="etiquette">Exercice 4 — Composition en masse</div>
-  <p>1 — Quelle masse de carbone y a-t-il dans une marmite en fonte de 2,5 kg composée
-  à 4 % de carbone ?</p>
-  <p>2 — Une alliance en or blanc de 5 g est composée de 1000 mg d'or, le reste étant de
-  l'argent. Donner la composition massique de cet alliage.</p>
-  <p class="donnees">Données : %m = <span class="frac"><span class="haut">m</span><span class="bas">m<sub>mélange</sub></span></span> × 100</p>
+  <div class="duo-x">
+    <div>
+      <p><span class="question">1 — Quelle masse de carbone y a-t-il dans une marmite en
+      fonte de <span class="nb">2,5 kg</span> composée à <span class="nb">4 %</span> de
+      carbone ?</span></p>
+      <p><span class="question">2 — Une alliance en or blanc de <span class="nb">5 g</span>
+      est composée de <span class="nb">1000 mg</span> d'or, le reste étant de l'argent.
+      Donner la composition massique de cet alliage.</span></p>
+      <p class="donnees">Donnée : %m = <span class="frac"><span class="haut">m</span><span class="bas">m<sub>mélange</sub></span></span> × 100</p>
+    </div>
+    <figure style="margin:0;">
+      <img src="../assets/img/pc/2nde-pc-t1-c1/t1c1-alliance.jpg" alt="Alliance en or blanc posée sur un fond clair" loading="lazy">
+      <figcaption>L'alliance de la question 2.</figcaption>
+    </figure>
+  </div>
   <details class="correction">
     <summary>Voir la correction</summary>
-    <p>1 — m<sub>C</sub> = m<sub>marmite</sub> × <span class="frac"><span class="haut">%C</span><span class="bas">100</span></span></p>
-    <p>A.N. : m<sub>C</sub> = 2,5 × <span class="frac"><span class="haut">4</span><span class="bas">100</span></span> = 0,1 kg = <strong>100 g</strong></p>
-    <p>2 — m<sub>or</sub> = 1000 mg = 1 g</p>
-    <p>%Or = <span class="frac"><span class="haut">m<sub>or</sub></span><span class="bas">m<sub>alliance</sub></span></span> × 100 &nbsp;et&nbsp; %Ar = 100 − %Or</p>
-    <p>A.N. : %Or = <span class="frac"><span class="haut">1</span><span class="bas">5</span></span> × 100 = <strong>20 %</strong>
-      &nbsp;et&nbsp; %Ar = 100 − 20 = <strong>80 %</strong></p>
-    <p>L'alliance est composée à 20 % en masse d'or et 80 % d'argent.</p>
+    <div class="etape">Question 1 — masse de carbone</div>
+    <p class="eq-exo avec-frac">m<sub>C</sub> = m<sub>marmite</sub> × <span class="frac"><span class="haut">%C</span><span class="bas">100</span></span></p>
+    <p class="eq-exo avec-frac">A.N. : m<sub>C</sub> = 2,5 × <span class="frac"><span class="haut">4</span><span class="bas">100</span></span> = 0,1 kg = <span class="resultat">100 g</span></p>
+    <div class="etape">Question 2 — composition de l'alliance</div>
+    <p>m<sub>or</sub> = <span class="nb">1000 mg</span> = <span class="nb">1 g</span></p>
+    <p class="eq-exo avec-frac">%Or = <span class="frac"><span class="haut">m<sub>or</sub></span><span class="bas">m<sub>alliance</sub></span></span> × 100 &nbsp;et&nbsp; %Ag = 100 − %Or</p>
+    <p class="eq-exo avec-frac">A.N. : %Or = <span class="frac"><span class="haut">1</span><span class="bas">5</span></span> × 100 = <span class="resultat">20 %</span>
+      &nbsp;et&nbsp; %Ag = 100 − 20 = <span class="resultat">80 %</span></p>
+    <p>L'alliance est composée à <span class="nb">20 %</span> en masse d'or et
+    <span class="nb">80 %</span> d'argent.</p>
   </details>
 </div>
 
 <div class="exercice">
   <div class="etiquette">Exercice 5 — Composition en volume</div>
-  <div class="duo">
-    <figure class="fig-etroite" style="margin:.4rem 0; max-width:190px;">
-      <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-alliance.jpg" alt="Alliance en or blanc" loading="lazy">
-      <figcaption>L'alliance de l'exercice 4.</figcaption>
-    </figure>
-    <div>
-      <p>Quel volume d'argon trouve-t-on dans 1000 m<sup>3</sup> d'air ?</p>
-      <p class="donnees">Données : %V = <span class="frac"><span class="haut">V</span><span class="bas">V<sub>mélange</sub></span></span> × 100</p>
-    </div>
-  </div>
+  <p><span class="question">Quel volume d'argon trouve-t-on dans
+  <span class="nb">1000 m<sup>3</sup></span> d'air ?</span></p>
+  <p class="donnees">Données : %V = <span class="frac"><span class="haut">V</span><span class="bas">V<sub>mélange</sub></span></span> × 100 &nbsp;·&nbsp; %Ar = 0,93 % (Image 8)</p>
   <details class="correction">
     <summary>Voir la correction</summary>
-    <p>V<sub>Ar</sub> = V<sub>air</sub> × <span class="frac"><span class="haut">%Ar</span><span class="bas">100</span></span></p>
-    <p>A.N. : V<sub>Ar</sub> = 1000 × <span class="frac"><span class="haut">0,93</span><span class="bas">100</span></span> = <strong>9,3 m<sup>3</sup></strong></p>
+    <p class="eq-exo avec-frac">V<sub>Ar</sub> = V<sub>air</sub> × <span class="frac"><span class="haut">%Ar</span><span class="bas">100</span></span></p>
+    <p class="eq-exo avec-frac">A.N. : V<sub>Ar</sub> = 1000 × <span class="frac"><span class="haut">0,93</span><span class="bas">100</span></span> = <span class="resultat">9,3 m<sup>3</sup></span></p>
   </details>
 </div>
 
-<!-- ============ 05 ============ -->
-<h2 id="solubilite"><span class="num">05</span> Solubilité</h2>
-
-<div class="definition">
-  <p>La <strong>solubilité</strong>, notée <em>s</em>, d'une espèce chimique est la masse
-  maximale de cette espèce que l'on peut dissoudre dans un volume donné d'une autre
-  espèce chimique liquide (ex : eau). Elle s'exprime le plus souvent en g·L<sup>−1</sup>.</p>
 </div>
+</details>
+
+<!-- ============ 05 ============ -->
+<details class="partie" open>
+<summary><h2 id="solubilite"><span class="num">05</span> Solubilité</h2></summary>
+<div class="partie-corps">
+
+<p class="aparte">On sait décrire un mélange homogène. Mais peut-on en dissoudre
+indéfiniment ? Non — et la limite porte un nom.</p>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Solubilité</div>
+  <p>La <span class="terme">solubilité</span>, notée <em>s</em>, d'une espèce chimique est
+  la masse maximale de cette espèce que l'on peut dissoudre dans un volume donné d'une autre
+  espèce chimique liquide (ex : eau). Elle s'exprime le plus souvent en
+  g·L<sup>−1</sup>.</p>
+</div>
+
+<div class="formule-bloc"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq avec-frac"><span class="eq-corps">s = <span class="frac"><span class="haut">m<sub>max</sub></span><span class="bas">V</span></span></span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>s</b> <span class="nb">solubilité · g·L<sup>−1</sup></span><br><b>m<sub>max</sub></b> <span class="nb">masse maximale dissoute · g</span><br><b>V</b> <span class="nb">volume de solvant · L</span>
+  </div>
+</div>
+
+<p>Tant que la masse dissoute reste inférieure à cette limite, tout disparaît et le mélange
+est homogène. Dès qu'on la dépasse, le surplus ne se dissout plus : il tombe au fond, et le
+mélange redevient <strong>hétérogène</strong>. On dit alors que la solution est
+<span class="terme">saturée</span>.</p>
+
+<figure class="fig-large">
+  <img class="zoomable" tabindex="0" data-zoom="De la dissolution à la saturation"
+       src="../assets/img/pc/2nde-pc-t1-c1/t1c1-dissolution-saturation.jpg"
+       alt="Trois tubes : état initial avec le solvant eau et le soluté sel, mélange homogène après dissolution, puis mélange hétérogène avec un dépôt de soluté non dissous au fond" loading="lazy">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <figcaption><b class="fig-num">Image 9</b> — Trois étapes : on ajoute du soluté, il se
+  dissout, la solution est homogène. On en ajoute encore : au-delà de la solubilité, la
+  dissolution n'est plus que partielle et un dépôt apparaît — la solution est
+  <strong>saturée</strong> et le mélange est redevenu hétérogène.</figcaption>
+</figure>
+
+<p class="aparte">La solubilité n'est pas une constante : elle dépend de l'espèce, du
+solvant, de la pression — et beaucoup de la température. C'est ce que vont montrer les
+deux documents de l'exercice suivant.</p>
 
 <div class="videos">
   <a class="video-chip" href="https://www.youtube.com/watch?v=8bkfkRu_mbg" target="_blank" rel="noopener">▶ Comprendre la solubilité ↗</a>
 </div>
 
-<figure>
-  <svg viewBox="0 0 830 330" role="img" aria-label="Schéma : ajout de soluté dans l'eau, dissolution, nouvel ajout puis saturation avec dépôt" font-family="'IBM Plex Mono',monospace">
-    <g>
-      <text x="120" y="24" text-anchor="middle" font-size="12" fill="#6b6f7a">ajout de soluté</text>
-      <path d="M120 32 l0 20 m-5 -8 l5 8 l5 -8" stroke="#141a26" stroke-width="1.8" fill="none"/>
-      <circle cx="113" cy="70" r="2.6" fill="#141a26"/><circle cx="124" cy="62" r="2.2" fill="#141a26"/><circle cx="119" cy="82" r="2.2" fill="#141a26"/>
-      <path d="M92 60 v172 a28 24 0 0 0 56 0 v-172" fill="none" stroke="#141a26" stroke-width="2.6"/>
-      <path d="M95 150 v82 a25 21 0 0 0 50 0 v-82 z" fill="rgba(29,154,170,0.16)"/>
-      <line x1="95" y1="150" x2="145" y2="150" stroke="#1d9aaa" stroke-width="2"/>
-      <text x="120" y="292" text-anchor="middle" font-size="11.5" font-weight="600" fill="#141a26" letter-spacing="1">ÉTAT INITIAL</text>
-      <text x="120" y="308" text-anchor="middle" font-size="10.5" fill="#6b6f7a">solvant (eau)</text>
-    </g>
-    <g>
-      <line x1="185" y1="165" x2="310" y2="165" stroke="#d6402b" stroke-width="2.6"/>
-      <path d="M310 165 l-12 -7 v14 z" fill="#d6402b"/>
-      <text x="247" y="150" text-anchor="middle" font-size="12" fill="#d6402b">dissolution</text>
-    </g>
-    <g>
-      <text x="390" y="24" text-anchor="middle" font-size="12" fill="#6b6f7a">ajout de soluté</text>
-      <path d="M390 32 l0 20 m-5 -8 l5 8 l5 -8" stroke="#141a26" stroke-width="1.8" fill="none"/>
-      <circle cx="383" cy="70" r="2.6" fill="#141a26"/><circle cx="394" cy="62" r="2.2" fill="#141a26"/><circle cx="389" cy="82" r="2.2" fill="#141a26"/>
-      <path d="M362 60 v172 a28 24 0 0 0 56 0 v-172" fill="none" stroke="#141a26" stroke-width="2.6"/>
-      <path d="M365 150 v82 a25 21 0 0 0 50 0 v-82 z" fill="rgba(29,154,170,0.30)"/>
-      <line x1="365" y1="150" x2="415" y2="150" stroke="#1d9aaa" stroke-width="2"/>
-      <text x="390" y="292" text-anchor="middle" font-size="11.5" font-weight="600" fill="#141a26" letter-spacing="1">MÉLANGE HOMOGÈNE</text>
-      <text x="390" y="308" text-anchor="middle" font-size="10.5" fill="#6b6f7a">solution · c &lt; s</text>
-    </g>
-    <g>
-      <line x1="455" y1="165" x2="580" y2="165" stroke="#d6402b" stroke-width="2.6"/>
-      <path d="M580 165 l-12 -7 v14 z" fill="#d6402b"/>
-      <text x="517" y="150" text-anchor="middle" font-size="12" fill="#d6402b">saturation</text>
-      <text x="517" y="184" text-anchor="middle" font-size="10.5" fill="#6b6f7a">dissolution partielle</text>
-    </g>
-    <g>
-      <path d="M632 60 v172 a28 24 0 0 0 56 0 v-172" fill="none" stroke="#141a26" stroke-width="2.6"/>
-      <path d="M635 150 v82 a25 21 0 0 0 50 0 v-82 z" fill="rgba(29,154,170,0.30)"/>
-      <line x1="635" y1="150" x2="685" y2="150" stroke="#1d9aaa" stroke-width="2"/>
-      <g fill="#141a26">
-        <circle cx="648" cy="245" r="2.8"/><circle cx="656" cy="250" r="2.8"/><circle cx="664" cy="246" r="2.8"/>
-        <circle cx="672" cy="250" r="2.8"/><circle cx="660" cy="254" r="2.8"/><circle cx="668" cy="255" r="2.4"/>
-      </g>
-      <line x1="688" y1="250" x2="716" y2="228" stroke="#6b6f7a" stroke-width="1.2"/>
-      <text x="719" y="212" font-size="10.5" fill="#6b6f7a">dépôt de soluté</text>
-      <text x="719" y="226" font-size="10.5" fill="#6b6f7a">non dissous</text>
-      <text x="660" y="292" text-anchor="middle" font-size="11.5" font-weight="600" fill="#141a26" letter-spacing="1">MÉLANGE HÉTÉROGÈNE</text>
-      <text x="660" y="308" text-anchor="middle" font-size="10.5" fill="#6b6f7a">solution saturée + dépôt · c = s</text>
-    </g>
-  </svg>
-  <figcaption>Image 10 — Lorsque la solubilité d'une espèce est dépassée, le mélange
-  devient hétérogène : on dit que la solution est <strong>saturée</strong>.
-  Tant que c &lt; s, tout le soluté se dissout ; au-delà, la dissolution n'est que partielle.</figcaption>
-</figure>
-
-<div class="duo">
-  <figure style="margin-top:.4rem;">
-    <div class="defile"><table class="tab" style="width:100%;">
-      <caption>Image 11 — Solubilité de quelques gaz dans l'eau à 10 °C</caption>
-      <thead><tr><th>Gaz</th><th>s (mg·L<sup>−1</sup>)</th></tr></thead>
-      <tbody>
-        <tr><td>N<sub>2</sub></td><td>23,2</td></tr>
-        <tr><td>O<sub>2</sub></td><td>54,3</td></tr>
-        <tr><td>CO<sub>2</sub></td><td>2 318</td></tr>
-        <tr><td>H<sub>2</sub>S</td><td>5 112</td></tr>
-        <tr><td>CH<sub>4</sub></td><td>32,5</td></tr>
-        <tr><td>H<sub>2</sub></td><td>1,6</td></tr>
-      </tbody>
-    </table></div>
-  </figure>
-  <figure style="margin-top:0;">
-    <svg viewBox="0 0 680 430" role="img" aria-label="Courbe : solubilité du diazote dans l'eau en fonction de la température ; lecture graphique à 35 degrés donnant 0,015" font-family="'IBM Plex Mono',monospace">
-      <g stroke="#e8e4d8" stroke-width="1">
-        <line x1="70" y1="40" x2="630" y2="40"/><line x1="70" y1="131" x2="630" y2="131"/>
-        <line x1="70" y1="223" x2="630" y2="223"/><line x1="70" y1="269" x2="630" y2="269"/>
-        <line x1="163" y1="40" x2="163" y2="360"/><line x1="257" y1="40" x2="257" y2="360"/>
-        <line x1="350" y1="40" x2="350" y2="360"/><line x1="443" y1="40" x2="443" y2="360"/>
-        <line x1="537" y1="40" x2="537" y2="360"/><line x1="630" y1="40" x2="630" y2="360"/>
-      </g>
-      <line x1="70" y1="40" x2="70" y2="360" stroke="#141a26" stroke-width="2"/>
-      <line x1="70" y1="360" x2="630" y2="360" stroke="#141a26" stroke-width="2"/>
-      <g font-size="12" fill="#141a26" text-anchor="middle">
-        <text x="70" y="380">0</text><text x="163" y="380">10</text><text x="257" y="380">20</text>
-        <text x="350" y="380">30</text><text x="443" y="380">40</text><text x="537" y="380">50</text><text x="630" y="380">60</text>
-      </g>
-      <g font-size="12" fill="#141a26" text-anchor="end">
-        <text x="62" y="365">0</text><text x="62" y="273">0,01</text>
-        <text x="62" y="227">0,015</text><text x="62" y="135">0,025</text><text x="62" y="44">0,035</text>
-      </g>
-      <g stroke="#d6402b" stroke-width="1.8" stroke-dasharray="6 5">
-        <line x1="397" y1="360" x2="397" y2="223"/>
-        <line x1="70" y1="223" x2="397" y2="223"/>
-      </g>
-      <text x="397" y="399" text-anchor="middle" font-size="13" fill="#d6402b" font-style="italic">35</text>
-      <circle cx="397" cy="223" r="5" fill="none" stroke="#d6402b" stroke-width="1.8"/>
-      <path d="M70 95 C 110 115, 135 133, 163 150 C 200 170, 225 178, 257 186
-               C 295 196, 320 205, 350 214 C 380 220, 415 228, 443 232
-               C 480 239, 505 244, 537 248 C 570 253, 600 257, 630 259"
-            fill="none" stroke="#4a3f9e" stroke-width="3"/>
-      <text x="560" y="235" font-size="13" fill="#4a3f9e" font-weight="600">N₂</text>
-      <text x="350" y="422" text-anchor="middle" font-size="13" fill="#141a26" font-family="'Space Grotesk',sans-serif">Température (°C)</text>
-      <text x="20" y="200" text-anchor="middle" font-size="13" fill="#141a26" font-family="'Space Grotesk',sans-serif" transform="rotate(-90 20 200)">Solubilité (g de gaz par kg d'eau)</text>
-    </svg>
-    <figcaption>Image 12 — La solubilité d'une espèce dépend de nombreux paramètres
-    (nature du solvant, pression, etc.) mais aussi de la température.</figcaption>
-  </figure>
-</div>
-
 <div class="exercice">
   <div class="etiquette">Exercice 6</div>
-  <p>À 0 °C, la solubilité du sel dans l'eau est s = 347 g·L<sup>−1</sup>.
-  Quelle masse de sel peut-on introduire dans une bouteille de 1,5 L avant d'atteindre
-  la saturation ?</p>
+  <p><span class="question">À <span class="nb">0 °C</span>, la solubilité du sel dans l'eau
+  est <span class="nb">s = 347 g·L<sup>−1</sup></span>. Quelle masse de sel peut-on
+  introduire dans une bouteille de <span class="nb">1,5 L</span> avant d'atteindre la
+  saturation ?</span></p>
   <details class="correction">
     <summary>Voir la correction</summary>
-    <p>s = <span class="frac"><span class="haut">m<sub>max</sub></span><span class="bas">V</span></span>
+    <p class="eq-exo avec-frac">s = <span class="frac"><span class="haut">m<sub>max</sub></span><span class="bas">V</span></span>
     &nbsp;⇔&nbsp; m<sub>max</sub> = s × V</p>
-    <p>A.N. : m<sub>max</sub> = 347 × 1,5 = <strong>520,5 g</strong></p>
+    <p class="eq-exo">A.N. : m<sub>max</sub> = 347 × 1,5 = <span class="resultat">520,5 g</span></p>
   </details>
 </div>
 
+<!-- PROPOSITION À VALIDER — les deux documents de solubilité (tableau des gaz, courbe du
+     diazote) étaient posés dans le cours, loin de l'exercice qui les exploite. Ils entrent
+     ici dans l'énoncé qui s'en sert. -->
 <div class="exercice">
-  <div class="etiquette">Exercice 7</div>
-  <p>Quelle masse de diazote (N<sub>2</sub>) peut-on introduire au maximum dans 500 mL
-  d'eau à 35 °C ?</p>
+  <div class="etiquette">Exercice 7 — Lire une solubilité dans un document</div>
+  <p><span class="question">Quelle masse de diazote (N<sub>2</sub>) peut-on introduire au
+  maximum dans <span class="nb">500 mL</span> d'eau à <span class="nb">35 °C</span> ?</span></p>
+  <div class="duo-doc">
+    <figure style="margin:.4rem 0 0;">
+      <div class="defile"><table class="tab" style="width:100%;">
+        <caption><b class="fig-num">Image 10</b> — Solubilité de quelques gaz dans l'eau à <span class="nb">10 °C</span></caption>
+        <thead><tr><th>Gaz</th><th>s (mg·L<sup>−1</sup>)</th></tr></thead>
+        <tbody>
+          <tr><td>N<sub>2</sub></td><td>23,2</td></tr>
+          <tr><td>O<sub>2</sub></td><td>54,3</td></tr>
+          <tr><td>CO<sub>2</sub></td><td>2 318</td></tr>
+          <tr><td>H<sub>2</sub>S</td><td>5 112</td></tr>
+          <tr><td>CH<sub>4</sub></td><td>32,5</td></tr>
+          <tr><td>H<sub>2</sub></td><td>1,6</td></tr>
+        </tbody>
+      </table></div>
+    </figure>
+    <figure style="margin:0;">
+      <svg viewBox="0 0 680 430" role="img" class="zoomable" tabindex="0"
+           data-zoom="Solubilité du diazote dans l'eau en fonction de la température"
+           aria-label="Courbe : solubilité du diazote dans l'eau en fonction de la température ; lecture graphique à 35 degrés donnant 0,015 gramme par litre" font-family="'IBM Plex Mono',monospace">
+        <g stroke="#e8e4d8" stroke-width="1">
+          <line x1="70" y1="40" x2="630" y2="40"/><line x1="70" y1="131" x2="630" y2="131"/>
+          <line x1="70" y1="223" x2="630" y2="223"/><line x1="70" y1="269" x2="630" y2="269"/>
+          <line x1="163" y1="40" x2="163" y2="360"/><line x1="257" y1="40" x2="257" y2="360"/>
+          <line x1="350" y1="40" x2="350" y2="360"/><line x1="443" y1="40" x2="443" y2="360"/>
+          <line x1="537" y1="40" x2="537" y2="360"/><line x1="630" y1="40" x2="630" y2="360"/>
+        </g>
+        <line x1="70" y1="40" x2="70" y2="360" stroke="#141a26" stroke-width="2"/>
+        <line x1="70" y1="360" x2="630" y2="360" stroke="#141a26" stroke-width="2"/>
+        <g font-size="12" fill="#141a26" text-anchor="middle">
+          <text x="70" y="380">0</text><text x="163" y="380">10</text><text x="257" y="380">20</text>
+          <text x="350" y="380">30</text><text x="443" y="380">40</text><text x="537" y="380">50</text><text x="630" y="380">60</text>
+        </g>
+        <g font-size="12" fill="#141a26" text-anchor="end">
+          <text x="62" y="365">0</text><text x="62" y="273">0,01</text>
+          <text x="62" y="227">0,015</text><text x="62" y="135">0,025</text><text x="62" y="44">0,035</text>
+        </g>
+        <g stroke="#d6402b" stroke-width="1.8" stroke-dasharray="6 5">
+          <line x1="397" y1="360" x2="397" y2="223"/>
+          <line x1="70" y1="223" x2="397" y2="223"/>
+        </g>
+        <text x="397" y="399" text-anchor="middle" font-size="13" fill="#d6402b" font-style="italic">35</text>
+        <circle cx="397" cy="223" r="5" fill="none" stroke="#d6402b" stroke-width="1.8"/>
+        <path d="M70 95 C 110 115, 135 133, 163 150 C 200 170, 225 178, 257 186
+                 C 295 196, 320 205, 350 214 C 380 220, 415 228, 443 232
+                 C 480 239, 505 244, 537 248 C 570 253, 600 257, 630 259"
+              fill="none" stroke="#4a3f9e" stroke-width="3"/>
+        <text x="560" y="235" font-size="13" fill="#4a3f9e" font-weight="600">N₂</text>
+        <text x="350" y="422" text-anchor="middle" font-size="13" fill="#141a26" font-family="'Space Grotesk',sans-serif">Température (°C)</text>
+        <text x="20" y="200" text-anchor="middle" font-size="13" fill="#141a26" font-family="'Space Grotesk',sans-serif" transform="rotate(-90 20 200)">Solubilité (g·L⁻¹)</text>
+      </svg>
+      <figcaption><b class="fig-num">Image 11</b> — Solubilité du diazote dans l'eau en
+      fonction de la température. La lecture graphique à <span class="nb">35 °C</span> est
+      tracée en rouge.</figcaption>
+    </figure>
+  </div>
   <details class="correction">
     <summary>Voir la correction</summary>
-    <p>Par lecture graphique sur l'image 12, on évalue que la solubilité du diazote à
-    35 °C est s<sub>N₂</sub> = 0,015 g·L<sup>−1</sup>. &nbsp;V = 500 mL = 0,5 L.</p>
-    <p>m<sub>max</sub>(N<sub>2</sub>) = s<sub>N₂</sub> × V</p>
-    <p>A.N. : m<sub>max</sub>(N<sub>2</sub>) = 0,015 × 0,5 = 7,5 × 10<sup>−3</sup> g =
-    <strong>7,5 mg</strong></p>
+    <div class="etape">Lecture graphique</div>
+    <p>Sur l'<strong>Image 11</strong>, à <span class="nb">35 °C</span>, on évalue
+    <span class="nb">s<sub>N₂</sub> = 0,015 g·L<sup>−1</sup></span>.
+    &nbsp;Et <span class="nb">V = 500 mL = 0,5 L</span>.</p>
+    <div class="etape">Calcul</div>
+    <p class="eq-exo">m<sub>max</sub>(N<sub>2</sub>) = s<sub>N₂</sub> × V</p>
+    <p class="eq-exo">A.N. : m<sub>max</sub>(N<sub>2</sub>) = 0,015 × 0,5 =
+    7,5 × 10<sup>−3</sup> g = <span class="resultat">7,5 mg</span></p>
+    <p class="aparte">Le tableau de l'<strong>Image 10</strong> donne la même grandeur à
+    <span class="nb">10 °C</span> : <span class="nb">23,2 mg·L<sup>−1</sup></span>, soit
+    <span class="nb">0,0232 g·L<sup>−1</sup></span> — plus élevée qu'à
+    <span class="nb">35 °C</span>. Pour un gaz, la solubilité <strong>diminue</strong>
+    quand la température augmente ; c'est l'inverse de ce que fait le sucre dans l'eau.</p>
   </details>
 </div>
+
+</div>
+</details>
 
 <!-- ============ 06 ============ -->
-<h2 id="masse-volumique"><span class="num">06</span> Masse volumique et densité</h2>
+<details class="partie" open>
+<summary><h2 id="masse-volumique"><span class="num">06</span> Masse volumique et densité</h2></summary>
+<div class="partie-corps">
 
-<p>La <strong>masse volumique</strong> ρ d'un corps est le rapport de la masse de ce corps
-sur le volume de ce corps.</p>
-<p class="formule">ρ = <span class="frac"><span class="haut">m</span><span class="bas">V</span></span>
-  <span class="unites">&nbsp;— ρ en g/cm<sup>3</sup> · m en g · V en cm<sup>3</sup></span></p>
+<p class="aparte">Deux échantillons de même volume n'ont pas la même masse. Cette
+différence-là se mesure, et elle permet d'identifier une espèce.</p>
 
-<p>La <strong>densité</strong> <em>d</em> d'une espèce chimique est le rapport de sa masse
-volumique par une masse volumique de référence :</p>
-<p class="formule">d = <span class="frac"><span class="haut">ρ</span><span class="bas">ρ<sub>ref</sub></span></span>
-  <span class="unites">&nbsp;— liquide/solide : ρ<sub>ref</sub> = ρ<sub>eau</sub> = 1 g·cm<sup>−3</sup> · gaz : ρ<sub>ref</sub> = ρ<sub>air</sub> ≈ 1,2 g·L<sup>−1</sup> · d sans unité</span></p>
-
-<div class="videos">
-  <a class="video-chip" href="https://youtu.be/45xmXjo8EvU" target="_blank" rel="noopener">▶ Réviser en vidéo — Masse volumique &amp; densité ↗</a>
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Masse volumique</div>
+  <p>La <span class="terme">masse volumique</span> ρ d'un corps est le rapport de la masse
+  de ce corps sur le volume de ce corps.</p>
 </div>
 
-<div class="fig-row">
-  <figure class="fig-etroite">
-    <svg viewBox="0 0 520 250" role="img" aria-label="Deux cubes d'un litre : eau 1 kilogramme, or 19,3 kilogrammes" font-family="'IBM Plex Mono',monospace">
-      <text x="260" y="26" text-anchor="middle" font-size="11.5" fill="#6b6f7a">même volume : 1 dm<tspan dy="-4" font-size="8">3</tspan><tspan dy="4"> = 1 L</tspan></text>
-      <g stroke="#141a26" stroke-width="2">
-        <path d="M60 70 L90 50 L200 50 L170 70 Z" fill="#d3ecf8"/>
-        <path d="M170 70 L200 50 L200 160 L170 180 Z" fill="#a5cfe6"/>
-        <rect x="60" y="70" width="110" height="110" fill="#bfe0f2"/>
-      </g>
-      <text x="115" y="132" text-anchor="middle" font-size="17" font-weight="700" fill="#141a26" font-family="'Space Grotesk',sans-serif">EAU</text>
-      <text x="115" y="205" text-anchor="middle" font-size="12" fill="#141a26">Eau : 1 kg</text>
-      <g stroke="#141a26" stroke-width="2">
-        <path d="M310 70 L340 50 L450 50 L420 70 Z" fill="#f7e19a"/>
-        <path d="M420 70 L450 50 L450 160 L420 180 Z" fill="#d9b04f"/>
-        <rect x="310" y="70" width="110" height="110" fill="#f0cf6e"/>
-      </g>
-      <text x="365" y="132" text-anchor="middle" font-size="17" font-weight="700" fill="#141a26" font-family="'Space Grotesk',sans-serif">OR</text>
-      <text x="365" y="205" text-anchor="middle" font-size="12" fill="#141a26">Or : 19,3 kg</text>
-    </svg>
-    <figcaption>Image 13 — L'or a une densité de 19,3 : pour un même volume, l'or a une
-    masse 19,3 fois plus élevée que l'eau.</figcaption>
+<div class="formule-bloc"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq avec-frac"><span class="eq-corps">ρ = <span class="frac"><span class="haut">m</span><span class="bas">V</span></span></span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>ρ</b> <span class="nb">masse volumique · g·cm<sup>−3</sup></span><br><b>m</b> <span class="nb">masse · g</span><br><b>V</b> <span class="nb">volume · cm<sup>3</sup></span>
+  </div>
+</div>
+
+<div class="encart definition">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Définition — Densité</div>
+  <p>La <span class="terme">densité</span> <em>d</em> d'une espèce chimique est le rapport
+  de sa masse volumique par une masse volumique de <strong>référence</strong>. La densité
+  est un nombre <strong>sans unité</strong>.</p>
+</div>
+
+<div class="formule-bloc"><span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="eq avec-frac"><span class="eq-corps">d = <span class="frac"><span class="haut">ρ</span><span class="bas">ρ<sub>réf</sub></span></span></span></div>
+  <div class="grandeurs">
+    <span class="titre">Grandeurs &amp; unités</span>
+    <b>d</b> densité · sans unité<br><b>ρ</b> masse volumique de l'espèce<br><b>ρ<sub>réf</sub></b> <span class="nb">liquide ou solide : ρ<sub>eau</sub> = 1 g·cm<sup>−3</sup></span><br><b>ρ<sub>réf</sub></b> <span class="nb">gaz : ρ<sub>air</sub> ≈ 1,2 g·L<sup>−1</sup></span>
+  </div>
+</div>
+
+<div class="duo-notion">
+  <div>
+    <p>La densité se lit comme un rapport direct : un corps de densité
+    <span class="nb">19,3</span> est <strong>19,3 fois plus lourd que le même volume
+    d'eau</strong>. C'est tout l'intérêt de la grandeur — elle compare sans avoir à
+    manipuler d'unité.</p>
+    <p>Un litre d'eau pèse <span class="nb">1 kg</span> : cette valeur est à connaître,
+    et elle sert de référence à toutes les autres.</p>
+  </div>
+  <figure>
+    <img class="photo zoomable" tabindex="0" data-zoom="Un litre d'eau et un litre d'or"
+         src="../assets/img/pc/2nde-pc-t1-c1/t1c1-cube-eau-or.jpg"
+         alt="Deux cubes de 10 cm de côté, soit un litre chacun : celui d'eau pèse 1 kg, celui d'or 19,3 kg" loading="lazy">
+    <figcaption><b class="fig-num">Image 12</b> — Même volume, masses très différentes :
+    l'or a une densité de <span class="nb">19,3</span>.</figcaption>
   </figure>
-  <figure class="fig-etroite">
-    <svg viewBox="0 0 660 400" role="img" aria-label="Courbes : masse volumique de l'eau pure et de l'eau de mer en fonction de la température, décroissantes" font-family="'IBM Plex Mono',monospace">
+</div>
+
+<p>Ni la masse volumique ni la densité ne sont figées : elles <strong>dépendent de la
+température</strong>. En général, la masse volumique diminue quand la température
+augmente — l'échantillon se dilate sans changer de masse. C'est vrai de l'eau pure comme
+de l'eau de mer, cette dernière étant toujours plus dense parce qu'elle contient du sel
+dissous.</p>
+
+<figure class="fig-large">
+    <svg viewBox="0 0 660 400" role="img" class="zoomable" tabindex="0"
+         data-zoom="Masse volumique de l'eau pure et de l'eau de mer selon la température"
+         aria-label="Courbes décroissantes : masse volumique de l'eau pure et de l'eau de mer en fonction de la température" font-family="'IBM Plex Mono',monospace">
       <g stroke="#e8e4d8" stroke-width="1">
         <line x1="80" y1="50" x2="600" y2="50"/><line x1="80" y1="150" x2="600" y2="150"/><line x1="80" y1="250" x2="600" y2="250"/>
         <line x1="114.7" y1="50" x2="114.7" y2="350"/><line x1="288" y1="50" x2="288" y2="350"/><line x1="461.3" y1="50" x2="461.3" y2="350"/>
@@ -747,191 +901,169 @@ volumique par une masse volumique de référence :</p>
       <text x="24" y="200" text-anchor="middle" font-size="11.5" fill="#1d9aaa" font-family="'Space Grotesk',sans-serif" transform="rotate(-90 24 200)">ρ eau pure (kg·m<tspan dy="-4" font-size="8">−3</tspan><tspan dy="4">)</tspan></text>
       <text x="646" y="200" text-anchor="middle" font-size="11.5" fill="#d6402b" font-family="'Space Grotesk',sans-serif" transform="rotate(90 646 200)">ρ eau de mer (kg·m<tspan dy="-4" font-size="8">−3</tspan><tspan dy="4">)</tspan></text>
     </svg>
-    <figcaption>Image 14 — La masse volumique, et donc la densité d'un corps, dépendent de
-    la température. Généralement, la densité diminue lorsque la température augmente.</figcaption>
-  </figure>
-  <figure class="fig-etroite">
-    <svg viewBox="0 0 400 340" role="img" aria-label="Éprouvette graduée contenant 200 millilitres d'huile posée sur une balance affichant 184 grammes" font-family="'IBM Plex Mono',monospace">
-      <rect x="185" y="60" width="50" height="212" fill="none" stroke="#141a26" stroke-width="2.4"/>
-      <rect x="188" y="116" width="44" height="153" fill="rgba(232,190,80,0.5)"/>
-      <line x1="188" y1="116" x2="232" y2="116" stroke="#c79b3b" stroke-width="2"/>
-      <g stroke="#141a26" stroke-width="1.2">
-        <line x1="185" y1="116" x2="200" y2="116"/><line x1="185" y1="154" x2="200" y2="154"/>
-        <line x1="185" y1="192" x2="200" y2="192"/><line x1="185" y1="230" x2="200" y2="230"/>
-      </g>
-      <g font-size="9" fill="#6b6f7a" text-anchor="end">
-        <text x="180" y="120">200</text><text x="180" y="158">150</text>
-        <text x="180" y="196">100</text><text x="180" y="234">50</text>
-      </g>
-      <line x1="240" y1="116" x2="300" y2="94" stroke="#6b6f7a" stroke-width="1.1"/>
-      <text x="304" y="90" font-size="11" fill="#6b6f7a">200 mL</text>
-      <text x="304" y="104" font-size="11" fill="#6b6f7a">d'huile d'olive</text>
-      <rect x="130" y="272" width="160" height="10" rx="3" fill="#e8e4d8" stroke="#141a26" stroke-width="1.6"/>
-      <rect x="100" y="282" width="220" height="42" rx="10" fill="#fff" stroke="#141a26" stroke-width="2"/>
-      <rect x="150" y="292" width="86" height="22" rx="4" fill="#141a26"/>
-      <text x="193" y="308" text-anchor="middle" font-size="13" fill="#fdfcf8">184 g</text>
-    </svg>
-    <figcaption>Image 15 — Mesure expérimentale de la masse volumique de l'huile.</figcaption>
-  </figure>
+    <figcaption><b class="fig-num">Image 13</b> — La masse volumique, et donc la densité,
+    dépendent de la température : elles diminuent généralement quand elle augmente.</figcaption>
+</figure>
+
+<div class="videos">
+  <a class="video-chip" href="https://youtu.be/45xmXjo8EvU" target="_blank" rel="noopener">▶ Réviser en vidéo — Masse volumique &amp; densité ↗</a>
 </div>
 
+<!-- PROPOSITION À VALIDER — le montage de mesure (éprouvette + balance) était une figure
+     de cours placée avant l'exercice qui l'exploite ; il en devient le document. -->
 <div class="exercice">
-  <div class="etiquette">Exercice 8</div>
-  <p>Calculer la masse volumique de l'huile à l'aide de l'image 15, en déduire sa densité.</p>
+  <div class="etiquette">Exercice 8 — Exploiter une mesure</div>
+  <div class="duo-x">
+    <div>
+      <p><span class="question">Calculer la masse volumique de l'huile à l'aide du montage
+      ci-contre, puis en déduire sa densité.</span></p>
+      <p class="donnees">Données : ρ = <span class="frac"><span class="haut">m</span><span class="bas">V</span></span>
+      &nbsp;·&nbsp; ρ<sub>eau</sub> = 1,00 g·cm<sup>−3</sup> &nbsp;·&nbsp; 1 mL = 1 cm<sup>3</sup></p>
+    </div>
+    <figure style="margin:0;">
+      <svg viewBox="0 0 400 340" role="img" class="zoomable" tabindex="0"
+           data-zoom="Mesure de la masse volumique de l'huile"
+           aria-label="Éprouvette graduée contenant 200 millilitres d'huile d'olive posée sur une balance affichant 184 grammes" font-family="'IBM Plex Mono',monospace">
+        <rect x="185" y="60" width="50" height="212" fill="none" stroke="#141a26" stroke-width="2.4"/>
+        <rect x="188" y="116" width="44" height="153" fill="rgba(232,190,80,0.5)"/>
+        <line x1="188" y1="116" x2="232" y2="116" stroke="#c79b3b" stroke-width="2"/>
+        <g stroke="#141a26" stroke-width="1.2">
+          <line x1="185" y1="116" x2="200" y2="116"/><line x1="185" y1="154" x2="200" y2="154"/>
+          <line x1="185" y1="192" x2="200" y2="192"/><line x1="185" y1="230" x2="200" y2="230"/>
+        </g>
+        <g font-size="9" fill="#6b6f7a" text-anchor="end">
+          <text x="180" y="120">200</text><text x="180" y="158">150</text>
+          <text x="180" y="196">100</text><text x="180" y="234">50</text>
+        </g>
+        <line x1="240" y1="116" x2="300" y2="94" stroke="#6b6f7a" stroke-width="1.1"/>
+        <text x="304" y="90" font-size="11" fill="#6b6f7a">200 mL</text>
+        <text x="304" y="104" font-size="11" fill="#6b6f7a">d'huile d'olive</text>
+        <rect x="130" y="272" width="160" height="10" rx="3" fill="#e8e4d8" stroke="#141a26" stroke-width="1.6"/>
+        <rect x="100" y="282" width="220" height="42" rx="10" fill="#fff" stroke="#141a26" stroke-width="2"/>
+        <rect x="150" y="292" width="86" height="22" rx="4" fill="#141a26"/>
+        <text x="193" y="308" text-anchor="middle" font-size="13" fill="#fdfcf8">184 g</text>
+      </svg>
+      <figcaption><b class="fig-num">Image 14</b> — Mesure de la masse volumique de
+      l'huile.</figcaption>
+    </figure>
+  </div>
   <details class="correction">
     <summary>Voir la correction</summary>
-    <p>D'après l'image 15, m = 184 g et V = 200 mL = 200 cm<sup>3</sup>.</p>
-    <p>ρ = <span class="frac"><span class="haut">m</span><span class="bas">V</span></span>
-    &nbsp;et&nbsp; d = <span class="frac"><span class="haut">ρ</span><span class="bas">ρ<sub>ref</sub></span></span>
-    = <span class="frac"><span class="haut">ρ</span><span class="bas">ρ<sub>eau</sub></span></span></p>
-    <p>A.N. : ρ = <span class="frac"><span class="haut">184</span><span class="bas">200</span></span>
-    = <strong>0,92 g·cm<sup>−3</sup></strong>
+    <div class="etape">Lecture du montage</div>
+    <p>D'après l'<strong>Image 14</strong> : <span class="nb">m = 184 g</span> et
+    <span class="nb">V = 200 mL = 200 cm<sup>3</sup></span>.</p>
+    <div class="etape">Masse volumique, puis densité</div>
+    <p class="eq-exo avec-frac">ρ = <span class="frac"><span class="haut">m</span><span class="bas">V</span></span>
+    &nbsp;et&nbsp; d = <span class="frac"><span class="haut">ρ</span><span class="bas">ρ<sub>eau</sub></span></span></p>
+    <p class="eq-exo avec-frac">A.N. : ρ = <span class="frac"><span class="haut">184</span><span class="bas">200</span></span>
+    = <span class="resultat">0,92 g·cm<sup>−3</sup></span>
     &nbsp;et&nbsp; d = <span class="frac"><span class="haut">0,92</span><span class="bas">1,00</span></span>
-    = <strong>0,92</strong></p>
+    = <span class="resultat">0,92</span></p>
+    <p class="aparte">d &lt; 1 : l'huile est moins dense que l'eau — c'est pourquoi elle
+    surnage dans le bécher de l'<strong>Image 4</strong>.</p>
   </details>
 </div>
 
 <div class="exercice">
   <div class="etiquette">Exercice 9</div>
-  <p>Quelle est la masse de 3 m<sup>3</sup> de béton ?</p>
-  <p class="donnees">Donnée : ρ<sub>béton</sub> = 2,4 g/cm<sup>3</sup></p>
+  <p><span class="question">Quelle est la masse de <span class="nb">3 m<sup>3</sup></span>
+  de béton ?</span></p>
+  <p class="donnees">Donnée : ρ<sub>béton</sub> = 2,4 g·cm<sup>−3</sup></p>
   <details class="correction">
     <summary>Voir la correction</summary>
-    <p>V = 3 m<sup>3</sup> = 3 × 10<sup>6</sup> cm<sup>3</sup></p>
-    <p>ρ = <span class="frac"><span class="haut">m</span><span class="bas">V</span></span>
+    <div class="etape">Convertir avant de calculer</div>
+    <p>V = <span class="nb">3 m<sup>3</sup></span> = <span class="nb">3 × 10<sup>6</sup> cm<sup>3</sup></span></p>
+    <div class="etape">Calcul</div>
+    <p class="eq-exo avec-frac">ρ = <span class="frac"><span class="haut">m</span><span class="bas">V</span></span>
     &nbsp;⇔&nbsp; m = ρ × V</p>
-    <p>A.N. : m = 2,4 × 3 × 10<sup>6</sup> = 7,2 × 10<sup>6</sup> g = 7 200 kg =
-    <strong>7,2 t</strong></p>
+    <p class="eq-exo">A.N. : m = 2,4 × 3 × 10<sup>6</sup> = 7,2 × 10<sup>6</sup> g = 7 200 kg =
+    <span class="resultat">7,2 t</span></p>
   </details>
 </div>
 
-<!-- ============ 07 ============ -->
-<h2 id="identifier"><span class="num">07</span> Identifier une espèce chimique</h2>
+</div>
+</details>
 
-<figure>
-  <svg viewBox="0 0 900 440" role="img" aria-label="Carte mentale : identification d'une espèce chimique par propriétés physiques, tests chimiques ou aspects physiques" font-family="'Space Grotesk',sans-serif">
-    <g stroke="#6b6f7a" stroke-width="1.4" fill="none">
-      <path d="M450 192 V94"/>
-      <path d="M355 76 H215 M215 42 v68 M215 42 h-0 M215 42 H215"/>
-      <path d="M355 70 L215 34 M355 84 L215 78"/>
-      <path d="M545 70 L620 30 M545 84 L610 74"/>
-      <path d="M750 72 H770"/>
-      <path d="M392 244 L200 320 M508 244 L700 320"/>
-      <path d="M170 354 L120 384 M230 354 L330 392"/>
-      <path d="M660 354 L605 392 M705 354 L708 392 M750 354 L820 384"/>
-    </g>
-    <rect x="330" y="192" width="240" height="52" rx="10" fill="#141a26"/>
-    <text x="450" y="214" text-anchor="middle" font-size="14" font-weight="700" fill="#fdfcf8">Identification</text>
-    <text x="450" y="232" text-anchor="middle" font-size="13" fill="#fdfcf8">d'une espèce chimique</text>
-    <g font-size="12.5" font-weight="600" text-anchor="middle">
-      <rect x="355" y="60" width="190" height="34" rx="8" fill="#fff" stroke="#1d9aaa" stroke-width="2.4"/>
-      <text x="450" y="82" fill="#141a26">Propriétés physiques</text>
-      <rect x="120" y="320" width="160" height="34" rx="8" fill="#fff" stroke="#4a3f9e" stroke-width="2.4"/>
-      <text x="200" y="342" fill="#141a26">Tests chimiques</text>
-      <rect x="620" y="320" width="170" height="34" rx="8" fill="#fff" stroke="#d6402b" stroke-width="2.4"/>
-      <text x="705" y="342" fill="#141a26">Aspects physiques</text>
-    </g>
-    <g font-size="11.5" text-anchor="middle">
-      <rect x="95" y="14" width="120" height="28" rx="7" fill="#fdfcf8" stroke="#141a26" stroke-width="1.5"/>
-      <text x="155" y="32" fill="#141a26">Solubilité</text>
-      <rect x="95" y="62" width="120" height="28" rx="7" fill="#fdfcf8" stroke="#141a26" stroke-width="1.5"/>
-      <text x="155" y="80" fill="#141a26">Miscibilité</text>
-      <rect x="596" y="14" width="212" height="28" rx="7" fill="#fdfcf8" stroke="#141a26" stroke-width="1.5"/>
-      <text x="702" y="32" fill="#141a26">Masse volumique / densité</text>
-      <rect x="590" y="60" width="160" height="28" rx="7" fill="#fdfcf8" stroke="#141a26" stroke-width="1.5"/>
-      <text x="670" y="78" fill="#141a26">Changement d'état</text>
-      <rect x="770" y="50" width="126" height="48" rx="7" fill="#fdfcf8" stroke="#6b6f7a" stroke-width="1.3"/>
-      <text x="833" y="70" fill="#141a26" font-size="10.5">T° d'ébullition</text>
-      <text x="833" y="86" fill="#141a26" font-size="10.5">T° de fusion</text>
-      <rect x="24" y="384" width="216" height="46" rx="7" fill="#fdfcf8" stroke="#141a26" stroke-width="1.5"/>
-      <text x="132" y="403" fill="#141a26" font-size="10.5">Test de quelques espèces</text>
-      <text x="132" y="419" fill="#141a26" font-size="10.5">(O₂, H₂, CO₂, eau)</text>
-      <rect x="272" y="392" width="120" height="28" rx="7" fill="#fdfcf8" stroke="#141a26" stroke-width="1.5"/>
-      <text x="332" y="410" fill="#141a26">Test des ions</text>
-      <rect x="558" y="392" width="94" height="28" rx="7" fill="#fdfcf8" stroke="#141a26" stroke-width="1.5"/>
-      <text x="605" y="410" fill="#141a26">Couleur</text>
-      <rect x="666" y="392" width="84" height="28" rx="7" fill="#fdfcf8" stroke="#141a26" stroke-width="1.5"/>
-      <text x="708" y="410" fill="#141a26">Odeur</text>
-      <rect x="764" y="384" width="132" height="46" rx="7" fill="#fdfcf8" stroke="#141a26" stroke-width="1.5"/>
-      <text x="830" y="403" fill="#141a26" font-size="10.5">État physique</text>
-      <text x="830" y="419" fill="#141a26" font-size="10.5">à T° ambiante</text>
-    </g>
-  </svg>
-  <figcaption>Les trois grandes voies d'identification d'une espèce chimique.</figcaption>
+<!-- ============ 07 ============ -->
+<details class="partie" open>
+<summary><h2 id="identifier"><span class="num">07</span> Identifier une espèce chimique</h2></summary>
+<div class="partie-corps">
+
+<p class="aparte">Tout ce qui précède converge ici : on te tend un flacon sans étiquette.
+Comment savoir ce qu'il contient ?</p>
+
+<p>Trois voies sont possibles, et elles se complètent. On peut <strong>comparer ses
+propriétés physiques</strong> (solubilité, masse volumique, températures de changement
+d'état) à des valeurs de référence ; on peut <strong>réaliser des tests chimiques</strong>
+(test des ions, eau de chaux…) ; on peut enfin s'appuyer sur ses <strong>aspects
+physiques</strong> — couleur, odeur, état à température ambiante. Aucune de ces voies ne
+suffit seule : c'est leur <strong>faisceau</strong> qui identifie l'espèce.</p>
+
+<figure class="fig-large">
+  <img class="zoomable" tabindex="0" data-zoom="Les trois voies d'identification d'une espèce chimique"
+       src="../assets/img/pc/2nde-pc-t1-c1/t1c1-identification-carte.jpg"
+       alt="Carte mentale : l'identification d'une espèce chimique passe par les propriétés physiques (solubilité, miscibilité, masse volumique, changements d'état), les tests chimiques (tests d'espèces, tests des ions) et les aspects physiques (couleur, odeur, état physique)" loading="lazy">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <figcaption><b class="fig-num">Image 15</b> — Les trois grandes voies d'identification
+  d'une espèce chimique.</figcaption>
 </figure>
 
-<p>Pour identifier une espèce chimique, on peut :</p>
-<ul class="cours">
-  <li><strong>comparer ses propriétés physiques</strong> (solubilité, masse volumique,
-    températures de changement d'état, etc.) à celles référencées ;</li>
-  <li><strong>réaliser des tests chimiques</strong> (test des ions, eau de chaux, etc.).</li>
-</ul>
+<h3><span class="l">A ·</span> Les tests d'espèces chimiques</h3>
 
-<div class="videos">
-  <a class="video-chip" href="https://youtu.be/h7-dFOZX_R0" target="_blank" rel="noopener">▶ Réviser en vidéo — Identifier une espèce ↗</a>
-  <a class="video-chip" href="https://youtu.be/bMHyNaUeT0g" target="_blank" rel="noopener">▶ Les tests chimiques ↗</a>
-  <a class="video-chip" href="../assets/pdf/pc/tp/tp05-panique-a-la-rentree.pdf">🧪 TP5 — Panique à la rentrée →</a>
-</div>
+<p>Quelques tests sont au programme et doivent être connus : ils identifient le
+dihydrogène, le dioxygène, le dioxyde de carbone et l'eau.</p>
 
-<div class="fig-row">
-  <figure class="fig-etroite">
-    <svg viewBox="0 0 620 260" role="img" aria-label="Test à la flamme : le dihydrogène au contact d'une flamme déclenche une détonation" font-family="'IBM Plex Mono',monospace">
-      <path d="M126 40 v138 a24 20 0 0 0 48 0 v-138" fill="none" stroke="#141a26" stroke-width="2.4"/>
-      <path d="M129 96 v82 a21 17 0 0 0 42 0 v-82 z" fill="rgba(29,154,170,0.16)"/>
-      <g fill="none" stroke="#141a26" stroke-width="1.3">
-        <circle cx="140" cy="150" r="3"/><circle cx="158" cy="132" r="3"/><circle cx="146" cy="112" r="3"/><circle cx="162" cy="164" r="3"/><circle cx="150" cy="86" r="3"/><circle cx="150" cy="62" r="3"/>
-      </g>
-      <path d="M150 6 C 159 15, 161 24, 150 33 C 139 24, 141 15, 150 6 Z" fill="#f0a72e" stroke="#d6402b" stroke-width="1.6"/>
-      <text x="64" y="20" font-size="11" fill="#6b6f7a">flamme</text>
-      <line x1="104" y1="17" x2="138" y2="17" stroke="#6b6f7a" stroke-width="1.1"/>
-      <text x="52" y="140" font-size="11" fill="#6b6f7a">gaz (H₂)</text>
-      <line x1="106" y1="136" x2="136" y2="136" stroke="#6b6f7a" stroke-width="1.1"/>
-      <line x1="210" y1="120" x2="360" y2="120" stroke="#141a26" stroke-width="2.2"/>
-      <path d="M360 120 l-12 -7 v14 z" fill="#141a26"/>
-      <text x="285" y="106" text-anchor="middle" font-size="10.5" fill="#6b6f7a">au contact de la flamme</text>
-      <path d="M426 40 v138 a24 20 0 0 0 48 0 v-138" fill="none" stroke="#141a26" stroke-width="2.4"/>
-      <path d="M429 96 v82 a21 17 0 0 0 42 0 v-82 z" fill="rgba(29,154,170,0.16)"/>
-      <path d="M450 -2 l7 16 17 -8 -6 17 18 3 -15 10 13 12 -18 1 5 17 -15 -10 -8 16 -6 -17 -15 9 6 -17 -18 -2 15 -11 -12 -12 18 0 -5 -17 14 10 z" transform="translate(0,10)" fill="#d6402b" opacity=".92"/>
-      <circle cx="450" cy="20" r="9" fill="#f0a72e"/>
-      <text x="548" y="24" font-size="11" fill="#d6402b" font-weight="600">détonation !</text>
-      <text x="310" y="238" text-anchor="middle" font-size="10.5" fill="#6b6f7a">Le dihydrogène est un gaz fortement inflammable.</text>
-    </svg>
-    <figcaption>Image 16 — Le test à la flamme : au contact d'une flamme, le dihydrogène
-    déclenche une détonation.</figcaption>
-  </figure>
-  <figure class="fig-etroite">
-    <svg viewBox="0 0 660 260" role="img" aria-label="Le sulfate de cuivre anhydre, poudre blanche, se teinte de bleu en présence d'eau" font-family="'IBM Plex Mono',monospace">
-      <path d="M85 168 Q170 214 255 168" fill="none" stroke="#141a26" stroke-width="2.2"/>
-      <line x1="85" y1="168" x2="255" y2="168" stroke="#141a26" stroke-width="1.6"/>
-      <path d="M125 168 Q170 136 215 168 Z" fill="#fdfcf8" stroke="#141a26" stroke-width="1.6"/>
-      <text x="170" y="228" text-anchor="middle" font-size="10.5" fill="#141a26">sulfate de cuivre anhydre :</text>
-      <text x="170" y="243" text-anchor="middle" font-size="10.5" fill="#6b6f7a">poudre blanche</text>
-      <path d="M385 168 Q470 214 555 168" fill="none" stroke="#141a26" stroke-width="2.2"/>
-      <line x1="385" y1="168" x2="555" y2="168" stroke="#141a26" stroke-width="1.6"/>
-      <path d="M425 168 Q470 136 515 168 Z" fill="#7ea8e0" stroke="#141a26" stroke-width="1.6"/>
-      <rect x="464" y="30" width="9" height="52" rx="3" fill="#fff" stroke="#141a26" stroke-width="1.6"/>
-      <path d="M464 82 l4.5 12 4.5 -12 z" fill="#141a26"/>
-      <path d="M468.5 104 C 474 112, 475 119, 468.5 125 C 462 119, 463 112, 468.5 104 Z" fill="#1d9aaa"/>
-      <line x1="486" y1="60" x2="540" y2="42" stroke="#6b6f7a" stroke-width="1.1"/>
-      <text x="544" y="36" font-size="10.5" fill="#6b6f7a">goutte du</text>
-      <text x="544" y="50" font-size="10.5" fill="#6b6f7a">liquide testé</text>
-      <text x="470" y="228" text-anchor="middle" font-size="10.5" fill="#141a26">sulfate de cuivre hydraté :</text>
-      <text x="470" y="243" text-anchor="middle" font-size="10.5" fill="#6b6f7a">poudre bleue</text>
-    </svg>
-    <figcaption>Image 17 — Le sulfate de cuivre anhydre s'hydrate et se teinte de bleu
-    lorsqu'il est mis en présence d'eau.</figcaption>
-  </figure>
-  <figure class="fig-etroite">
-    <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-eau-de-chaux.jpg" alt="Montage : le gaz d'une bouteille barbote dans un bécher d'eau de chaux qui se trouble" loading="lazy">
-    <figcaption>Image 18 — Test à l'eau de chaux : elle se trouble en présence de dioxyde
-    de carbone (CO<sub>2</sub>).</figcaption>
+<figure class="fig-moyenne">
+  <img class="zoomable" tabindex="0" data-zoom="Test du dihydrogène à la flamme"
+       src="../assets/img/pc/2nde-pc-t1-c1/t1c1-test-flamme.jpg"
+       alt="Un tube à essai contenant un gaz est approché d'une flamme ; au contact, une détonation se produit" loading="lazy">
+  <figcaption><b class="fig-num">Image 16</b> — <strong>Test du dihydrogène</strong> :
+  approché d'une flamme, H<sub>2</sub> produit une <strong>détonation</strong> — l'aboiement
+  caractéristique. C'est un gaz fortement inflammable.</figcaption>
+</figure>
+
+<figure class="fig-moyenne">
+  <img class="zoomable" tabindex="0" data-zoom="Test de l'eau au sulfate de cuivre anhydre"
+       src="../assets/img/pc/2nde-pc-t1-c1/t1c1-sulfate-cuivre.jpg"
+       alt="Deux coupelles de sulfate de cuivre anhydre, poudre blanche ; une goutte du liquide testé y est déposée et la poudre devient bleue" loading="lazy">
+  <figcaption><b class="fig-num">Image 17</b> — <strong>Test de l'eau</strong> : le sulfate
+  de cuivre anhydre, blanc, s'hydrate et <strong>bleuit</strong> en présence d'eau.</figcaption>
+</figure>
+
+<div class="duo-notion">
+  <div>
+    <p>Le <strong>test à l'eau de chaux</strong> identifie le dioxyde de carbone : on fait
+    barboter le gaz à tester dans de l'eau de chaux limpide. Si elle se
+    <strong>trouble</strong>, c'est du CO<sub>2</sub>.</p>
+    <p>Le <strong>test du dioxygène</strong>, lui, se fait à la bûchette incandescente :
+    elle se <strong>rallume</strong> en présence de O<sub>2</sub>.</p>
+  </div>
+  <figure>
+    <img class="photo" src="../assets/img/pc/2nde-pc-t1-c1/t1c1-eau-de-chaux.jpg" alt="Montage : le gaz d'une bouteille barbote dans un bécher d'eau de chaux, qui se trouble" loading="lazy">
+    <figcaption><b class="fig-num">Image 18</b> — Test à l'eau de chaux : elle se trouble
+    en présence de dioxyde de carbone.</figcaption>
   </figure>
 </div>
 
-<figure>
+<h3><span class="l">B ·</span> Les tests des ions</h3>
+
+<p>Pour les ions en solution, le principe est toujours le même : on ajoute un
+<strong>réactif</strong>, et l'ion cherché forme un <strong>précipité</strong> — un solide
+qui apparaît dans la solution — dont la <strong>couleur</strong> signe sa présence.</p>
+
+<figure class="fig-large">
+  <img class="zoomable" tabindex="0" data-zoom="Tableau des tests d'identification des ions"
+       src="../assets/img/pc/2nde-pc-t1-c1/t1c1-tests-ions.jpg"
+       alt="Tableau des tests de précipitation : pour chaque ion, son nom, la couleur de la solution, le réactif employé et la couleur du précipité obtenu" loading="lazy">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <figcaption><b class="fig-num">Image 19</b> — Principaux tests de précipitation pour
+  l'identification des ions en solution. <em>Touche l'image pour l'agrandir.</em></figcaption>
+</figure>
+
+<details class="correction">
+  <summary>Le même tableau en version texte (pour rechercher, agrandir ou imprimer)</summary>
   <div class="defile">
     <table class="tab" style="min-width:760px;">
-      <caption>Image 19 — Principaux tests de précipitation pour l'identification des ions en solution</caption>
       <thead>
         <tr>
           <th>Ion à tester</th><th>Cl⁻</th><th>SO₄²⁻</th><th>Cu²⁺</th><th>Fe²⁺</th><th>Fe³⁺</th><th>Zn²⁺</th><th>Mg²⁺</th><th>Ca²⁺</th>
@@ -970,20 +1102,35 @@ volumique par une masse volumique de référence :</p>
       </tbody>
     </table>
   </div>
-</figure>
+</details>
+
+<div class="videos">
+  <a class="video-chip" href="https://youtu.be/h7-dFOZX_R0" target="_blank" rel="noopener">▶ Réviser en vidéo — Identifier une espèce ↗</a>
+  <a class="video-chip" href="https://youtu.be/bMHyNaUeT0g" target="_blank" rel="noopener">▶ Les tests chimiques ↗</a>
+  <a class="video-chip" href="../assets/pdf/pc/tp/tp05-panique-a-la-rentree.pdf">🧪 TP5 — Panique à la rentrée →</a>
+</div>
+
+<p class="aparte">Un seul test ne conclut presque jamais. L'exercice qui ferme le chapitre
+demande de croiser quatre résultats.</p>
 
 <div class="exercice">
-  <div class="etiquette">Exercice 10</div>
-  <p>Vous avez fait subir à un liquide inconnu plusieurs tests. Le test à la flamme a été
-  négatif, les tests à l'eau de chaux et au sulfate de cuivre anhydre ont été positifs.
-  Enfin, le test au nitrate d'argent a donné un précipité blanc. Identifier ce liquide.</p>
+  <div class="etiquette">Exercice 10 — Identifier un liquide inconnu</div>
+  <p><span class="question">Vous avez fait subir à un liquide inconnu plusieurs tests.
+  Le test à la flamme a été négatif, les tests à l'eau de chaux et au sulfate de cuivre
+  anhydre ont été positifs. Enfin, le test au nitrate d'argent a donné un précipité blanc.
+  Identifier ce liquide.</span></p>
   <details class="correction">
     <summary>Voir la correction</summary>
+    <div class="etape">Ce que dit chaque test</div>
     <p>Le test à l'eau de chaux révèle la présence de CO<sub>2</sub>, le test au sulfate de
-    cuivre anhydre la présence d'eau, et le test au nitrate d'argent des ions chlorure.
-    Il peut s'agir d'<strong>eau gazeuse</strong> (eau + CO<sub>2</sub> + sel).</p>
+    cuivre anhydre la présence d'eau, et le test au nitrate d'argent des ions chlorure.</p>
+    <div class="etape">Conclusion</div>
+    <p>Il peut s'agir d'<span class="resultat">eau gazeuse</span> (eau + CO<sub>2</sub> + sel).</p>
   </details>
 </div>
+
+</div>
+</details>
 
 <!-- ============ CHECKLIST ============ -->
 <section class="checklist" id="pour-le-ds">
@@ -1037,7 +1184,7 @@ volumique par une masse volumique de référence :</p>
   function majToc(){
     var repere = window.scrollY + window.innerHeight * 0.25;
     var courant = null;
-    cibles.forEach(function(c){ if (c.offsetTop <= repere) courant = c; });
+    cibles.forEach(function(c){ if (c.getBoundingClientRect().top + window.scrollY <= repere) courant = c; });
     Object.keys(liens).forEach(function(k){ liens[k].classList.remove('actif'); });
     if (courant && liens[courant.id]) liens[courant.id].classList.add('actif');
   }
@@ -1055,6 +1202,66 @@ volumique par une masse volumique de référence :</p>
       etat[b.id] = b.checked;
       try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch(e) {}
     });
+  });
+})();
+</script>
+
+<script>
+/* Agrandissement au clic des figures marquées .zoomable — repris de T3-C1.
+   Vanilla, sans bibliothèque : fermeture au clic extérieur et à Échap, focus rendu
+   à l'élément d'origine. Utile sur tablette, où les schémas 16:9 se lisent mal
+   en pleine page. */
+(function () {
+  var cibles = document.querySelectorAll('.zoomable');
+  if (!cibles.length) return;
+
+  var voile = null, source = null;
+
+  function fermer() {
+    if (!voile) return;
+    voile.remove();
+    voile = null;
+    document.body.style.overflow = '';
+    if (source) { source.focus(); source = null; }
+  }
+
+  function ouvrir(el) {
+    fermer();
+    source = el;
+    voile = document.createElement('div');
+    voile.className = 'zoom-voile';
+    voile.setAttribute('role', 'dialog');
+    voile.setAttribute('aria-modal', 'true');
+    voile.setAttribute('aria-label', el.getAttribute('data-zoom') || 'Figure agrandie');
+
+    var cadre = document.createElement('div');
+    cadre.className = 'zoom-cadre';
+    cadre.appendChild(el.cloneNode(true));
+
+    var bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.className = 'zoom-fermer';
+    bouton.setAttribute('aria-label', 'Fermer la figure agrandie');
+    bouton.textContent = '×';
+    bouton.addEventListener('click', fermer);
+
+    voile.appendChild(cadre);
+    voile.appendChild(bouton);
+    voile.addEventListener('click', function (e) { if (e.target === voile) fermer(); });
+    document.body.appendChild(voile);
+    document.body.style.overflow = 'hidden';
+    bouton.focus();
+  }
+
+  cibles.forEach(function (el) {
+    el.addEventListener('click', function () { ouvrir(el); });
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ouvrir(el); }
+    });
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') fermer();
   });
 })();
 </script>
@@ -1096,6 +1303,8 @@ volumique par une masse volumique de référence :</p>
   var forme = document.getElementById('forme-code');
   var champ = document.getElementById('champ-code');
   var erreur = document.getElementById('erreur-code');
+  /* garde : sans la porte (copie de relecture, impression), on sort sans lever d'erreur */
+  if (!forme || !champ || !erreur) return;
 
   function empreinteHex(texte){
     var donnees = new TextEncoder().encode(texte);
