@@ -37,6 +37,15 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 20/09/2026 | **Les masses volumiques de l'étalonnage D2 sont plausibles, pas sourcées.** Elles donnent une droite affine cohérente et une ordonnée à l'origine égale à celle de l'eau, ce qui suffit à l'enseignement visé. À **recaler sur une table de référence** (Perry's Chemical Engineers' Handbook, 6ᵉ éd., ou équivalent) avant d'être présentées comme des valeurs mesurées. Marqué en commentaire dans le fichier de données. | ⏳ à recaler |
 | 20/09/2026 | **La figure O7-05 de l'audit est abandonnée.** L'audit proposait un encadré « le triangle et ses limites » avec un triangle barré&nbsp;: un triangle barré reste un triangle dessiné, et contredit la décision de n'en faire qu'une mention. Le cadre n'est pas créé. | ✅ en vigueur |
 
+## 20/09/2026 — Les huit outils de 2nde PC s'ouvrent
+
+| Date | Décision | Statut |
+|---|---|---|
+| 20/09/2026 | ✅ **Les outils 7 et 8 s'ouvrent à leur tour**, après `o6`. Les **huit** outils sont donc en ligne, et plus aucun ne figure parmi les contenus hors d'atteinte de `verifier.mjs`. Hub, `guide-ap.html` et PDF des guides faits dans la même livraison. | ✅ en vigueur |
+| 20/09/2026 | 🔴 **Une page incomplète se publie quand même, si ce qui manque est un visuel.** Critère de Loïc : *« les figures seront à compléter au fur et à mesure… je vais juste pas les lancer aux élèves pour que mes collègues puissent voir au moins »*. Quinze cadres de réservation sont donc visibles en ligne (4 sur o4-o5, 3 sur o7, 8 sur o8) : ils ne gênent pas la lecture et disent eux-mêmes ce qu'ils attendent. | ✅ en vigueur |
+| 20/09/2026 | 🔴 **Mais une procédure non vérifiée ne se publie que si elle le dit.** Les 17 procédures de `o8b`/`o8c` non confirmées sur machine portent `data-verifie="non"`, l'affichent à l'élève et renvoient au simulateur. **Ne pas retirer ces avertissements avant vérification** — c'est ce qui rend la publication honnête. | ✅ en vigueur |
+| 20/09/2026 | `o8b` et `o8c` **ne figurent pas au hub** : on n'y entre que depuis O8, leur prérequis affiché. Choix du chantier O7-O8, respecté à l'ouverture. | ✅ en vigueur |
+
 ## 20/09/2026 — Reprise des outils O4, O5, O6 (images, méthode, exercices)
 
 | Date | Décision | Statut |

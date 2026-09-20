@@ -82,8 +82,9 @@ Détail dans `_suivi/ETAT-PROJET.md` § « Ce qui bloque ».
    il attend la relecture de Loïc, puis les fonctions dans `progression.js`.
 4. 🆕 **Quatre figures manquent aux outils O4 et O5** — fiole jaugée, pipette à
    deux traits, schéma bon/mauvais, copie annotée. Chacune est un cadre de
-   réservation visible sur la page. Et **le mot aux collègues reste à envoyer**
-   pour l'ouverture de l'outil 6. Tout est dans `_suivi/outils-o4-o6.md`.
+   réservation visible sur la page ; elles ne bloquent pas la mise en ligne.
+   Et **le mot aux collègues reste à envoyer** — les **huit outils** sont
+   désormais ouverts. Tout est dans `_suivi/outils-o4-o6.md`.
 
 ---
 

@@ -5,7 +5,9 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **20/09/2026** (dernière passe : **les outils O7 et O8 sont
+> Dernière réécriture : **20/09/2026** (dernière passe : **les huit outils de
+> 2nde PC sont ouverts — o6, puis o7 et o8**, bloc ci-dessous). Passe du même
+> jour : **les outils O7 et O8 sont
 > refondus — une seule méthode pour isoler une grandeur, 71 relations corrigées, et
 > deux pages sœurs pour le tableur et la calculatrice**, bloc ci-dessous).
 > Passe du même jour : **les outils O4, O5 et O6
@@ -68,6 +70,37 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## ✅ Les huit outils de 2nde PC sont ouverts
+
+Décision de Loïc, **20/09/2026** : *« les figures seront à compléter au fur et à
+mesure… on peut les mettre en ligne pour le moment. Je vais juste pas les lancer
+aux élèves pour que mes collègues puissent voir au moins. »*
+
+`o6` a été ouvert par le chantier O4-O6, puis **`o7` et `o8`** dans la foulée,
+après leur refonte. `node verifier.mjs` ne liste **plus aucun outil** parmi les
+contenus hors d'atteinte — il n'en reste que six, tous en ES de 1re.
+
+**Ce qui a été fait dans la même livraison**, comme l'exige la règle du 19/09 :
+les cartes OUTIL 7 et OUTIL 8 du hub portent leurs deux entrées (cours + fiche
+PDF), `prof/guide-ap.html` annonce **les huit outils** avec les descriptions d'O7
+et d'O8 et sa date de révision au 20 septembre, et les quatre PDF de guides sont
+régénérés. 🔴 **Le mot aux collègues reste à envoyer** — il est rédigé dans
+`_suivi/outils-o4-o6.md` §1, et couvre les trois outils d'un coup.
+
+**Ce qui est publié en étant incomplet, et pourquoi c'est sans danger :**
+
+| | Ce qui manque | Pourquoi ça passe |
+|---|---|---|
+| `o4`, `o5` | 4 figures | cadres de réservation visibles, le texte se suffit |
+| `o7` | 3 figures | idem |
+| `o8` | 8 captures d'écran | idem |
+| `o8b`, `o8c` | **17 procédures non vérifiées** sur machines | elles portent `data-verifie="non"`, **le disent à l'élève** et renvoient au simulateur NumWorks. C'est la prudence qui est à l'écran — 🔴 ne pas retirer ces avertissements avant d'avoir vérifié sur machine |
+
+Les pages sœurs `o8b` (tableur) et `o8c` (calculatrice) **ne figurent pas au hub**,
+à dessein : on n'y entre que depuis O8, leur prérequis affiché.
+
+---
 
 ## 🆕 Les outils O7 et O8 sont refondus — une méthode, et trois pages pour O8
 

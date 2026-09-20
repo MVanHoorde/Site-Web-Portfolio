@@ -26,7 +26,7 @@ Ce qui reste n'est ni du contenu manquant ni du code à écrire — ce sont
 
 ---
 
-## 1 · Quatre décisions — rien à vérifier, seulement à trancher
+## 1 · Quatre décisions — deux tranchées le 20/09, deux en attente
 
 ### ① La fiche O8 fait trois pages. On garde ?
 
@@ -58,12 +58,13 @@ conception.
 **Ce qui plaide pour ouvrir :** la page est complète, ses 71 corrigés sont
 vérifiés, et la version que les élèves atteignent aujourd'hui est déjà celle-là.
 
-- [ ] **ouvrir** → rendre ses deux entrées à la liste `.docs` de la carte OUTIL 7
-      du hub (`pages/2nde-physique-chimie.html`), mettre à jour `guide-ap.html`
-      (« sept outils ouverts » + date de révision), régénérer les PDF des guides
-      (`node exporter-guides.mjs`), et **proposer le mot aux collègues**
-- [ ] **attendre les figures** → retirer ou neutraliser le renvoi d'O6 vers O7
-      en attendant
+- [x] **ouvrir** — ✅ **fait le 20/09**, décision de Loïc. Les deux entrées sont
+      rendues à la carte OUTIL 7 du hub, `guide-ap.html` annonce **les huit outils**
+      avec sa date de révision, et les quatre PDF de guides sont régénérés.
+      Le mot aux collègues est prêt dans `_suivi/outils-o4-o6.md` §1, **à envoyer**.
+- [ ] ~~attendre les figures~~ — écarté : *« les figures seront à compléter au fur
+      et à mesure, on peut les mettre en ligne pour le moment »*. Les trois cadres
+      de réservation restent visibles en attendant les images.
 
 ### ③ On ouvre O8 ?
 
@@ -71,9 +72,16 @@ Les **trois pages** sont hors d'atteinte depuis l'accueil (`node verifier.mjs` l
 liste en vigilance). Elles sont complètes et utilisables **sans les captures** —
 mais les 8 cadres de réservation sont visibles.
 
-- [ ] **ouvrir** → même procédure que ②, plus la mention des deux pages sœurs
-      dans le guide
-- [ ] **attendre les captures** (§3)
+- [x] **ouvrir** — ✅ **fait le 20/09**, même décision. La carte OUTIL 8 du hub
+      porte ses deux entrées, et le guide de l'AP mentionne les **deux pages
+      sœurs** (tableur, calculatrice) en précisant qu'on y entre depuis O8 et
+      qu'elles ne figurent pas au sommaire — conformément au choix de ce chantier.
+- [ ] ~~attendre les captures~~ — écarté, même motif. Les 8 cadres restent visibles.
+
+🔴 **Pourquoi publier malgré les 17 procédures non vérifiées (§4) est sans
+danger** : elles portent `data-verifie="non"`, **le disent à l'élève** et
+renvoient au simulateur NumWorks. C'est la prudence qui est à l'écran, pas une
+procédure présentée comme sûre. À ne pas retirer avant d'avoir vérifié sur machine.
 
 ### ④ Dix entrées pour huit outils au tableau de bord
 

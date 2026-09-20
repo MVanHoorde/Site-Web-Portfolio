@@ -12,9 +12,17 @@
 
 ## 0 · Où en sont les trois outils
 
-Les trois pages et les trois fiches A4 sont **en ligne et à jour**. L'outil 6 est
-**ouvert aux élèves et aux collègues** depuis le 20/09. Les fiches tiennent
-chacune en **deux pages exactement** — contrôle : `node exporter-fiches.mjs`.
+Les trois pages et les trois fiches A4 sont **en ligne et à jour**, et les fiches
+tiennent chacune en **deux pages exactement** — contrôle : `node exporter-fiches.mjs`.
+
+✅ **Les huit outils de 2nde PC sont ouverts** depuis le 20/09 : O6 par ce
+chantier, O7 et O8 par celui qui les a refondus le même jour. Plus aucun outil
+n'est hors d'atteinte depuis l'accueil.
+
+🔴 **Les quatre figures manquantes ne bloquent pas la mise en ligne** — choix de
+Loïc le 20/09 : les pages sont publiées pour que **les collègues puissent les
+voir**, les cadres de réservation restent visibles en attendant les images, et
+les élèves n'y sont pas envoyés pour l'instant.
 
 Ce qui suit est ce qui **manque encore**, par ordre de ce que ça coûte.
 
@@ -30,12 +38,22 @@ Pièce jointe : `assets/pdf/prof/guide-ap.pdf`.
 
 > Bonjour,
 >
-> Un troisième outil de méthode vient de s'ouvrir sur le site, pour l'AP de
-> seconde : **Présenter un calcul** (outil 6). Il reprend les cinq étapes qu'on
-> attend dans une rédaction — extraire et convertir, poser la formule en lettres,
-> l'isoler, l'appliquer, conclure par une phrase — avec **dix exercices corrigés**,
-> dont une série entière sur les conversions qui piègent et une copie d'élève à
-> corriger. Comme les autres, il a sa fiche A4 à imprimer.
+> **Les huit outils de méthode sont maintenant en ligne**, pour l'AP de seconde.
+> Les trois derniers viennent de s'ouvrir :
+>
+> - **6 — Présenter un calcul** : les cinq étapes qu'on attend dans une rédaction
+>   (extraire et convertir, poser la formule en lettres, l'isoler, l'appliquer,
+>   conclure par une phrase), avec **dix exercices corrigés** — dont une série
+>   entière sur les conversions qui piègent et une copie d'élève à corriger.
+> - **7 — Manipuler une relation algébrique** : isoler une grandeur avec une seule
+>   méthode, celle des maths, et **71 relations** classées par structure, toutes
+>   corrigées ligne par ligne.
+> - **8 — Construire et exploiter un graphique** : axes, droite moyenne,
+>   coefficient directeur avec son unité, origine forcée ou non, interpoler et
+>   extrapoler. Deux pages sœurs prolongent la méthode au **tableur** et à la
+>   **calculatrice**.
+>
+> Chacun a sa fiche A4 à imprimer.
 >
 > Les outils 4 (la verrerie) et 5 (le compte rendu de TP) ont aussi été
 > complétés : chaque pièce de verrerie y est maintenant en photo à côté de son
@@ -72,18 +90,14 @@ l'échelle avant tout le reste** : un pictogramme faux est une erreur de cours.
 
 ---
 
-## 3 · ⏳ Trois arbitrages en attente
+## 3 · ⏳ Les arbitrages en attente
 
-**a. `o7` est atteignable sans être ouvert.** L'outil 6 renvoie vers l'outil 7
-pour isoler une grandeur ; en ouvrant O6, ce renvoi rend `o7` accessible alors
-que le hub l'annonce encore « 🚧 en travaux ». Soit on l'ouvre, soit on retire le
-renvoi.
-
-Vérifié après le commit `ddfaee0` (« Outils O7 et O8 refondus », même journée,
-autre chantier) : `o7` **ne figure plus** dans la liste des contenus hors
-d'atteinte de `verifier.mjs` — preuve qu'il est bien atteint par le renvoi —
-alors que le hub le marque toujours 🚧. O7 venant d'être refondu, l'ouvrir est
-sans doute la bonne sortie.
+**a. ~~`o7` atteignable sans être ouvert~~ — réglé le 20/09.** Les outils **7 et 8
+sont ouverts** au hub, sur décision de Loïc, après la refonte menée par l'autre
+chantier du même jour (commit `ddfaee0`). Les **huit outils** sont donc en ligne,
+`guide-ap.html` le dit et ses PDF sont régénérés. Les pages sœurs `o8b` (tableur)
+et `o8c` (calculatrice) **ne figurent pas au hub** à dessein : on n'y entre que
+depuis O8, qui est leur prérequis affiché.
 
 **b. La frise des huit rubriques de O5.** Le brief demandait de scinder
 « protocole » et « expérience » en deux rubriques. La frise vient du document

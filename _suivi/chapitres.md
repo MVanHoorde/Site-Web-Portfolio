@@ -281,8 +281,8 @@ un QR code, ni un lien.
 | **o4** | La verrerie et le matériel de laboratoire | Verrerie + TP9 + ménisque | 🆕 20/09 — repris&nbsp;: photos, In/Ex, tolérances, schéma normalisé, 6 exercices, fiche enrichie (In/Ex, matériel, rinçage, tare). **2 figures manquent** (fiole, pipette) |
 | **o5** | Rédiger un compte rendu de TP | Fiche_guide | 🆕 20/09 — repris&nbsp;: protocole/expérience, tableau de mesures, valeur de référence, retour critique, 6 exercices, fiche enrichie. **2 figures manquent** |
 | **o6** | Présenter un calcul | Présenter un calcul + le cours en ligne | 🆕 20/09 — **10 exercices**, méthode complète, fiche enrichie (conversions). ✅ **ouvert au hub** le 20/09 |
-| **o7** | Manipuler une relation algébrique | Manipuler + sa correction | 🆕 20/09 — **refondu**&nbsp;: une seule méthode (l’opération inverse), le triangle réduit à une mention, **71 relations** en 10 séries vérifiées par le calcul, fiche refaite. **3 figures manquent** |
-| **o8** | Construire et exploiter un graphique | Construire un graphique | 🆕 20/09 — **étendu**&nbsp;: modélisation, forçage de l’origine, domaine de validité, R² ; **deux pages sœurs** (tableur, calculatrice) ; fiche à 3 pages. **8 captures manquent**, 17 procédures à vérifier |
+| **o7** | Manipuler une relation algébrique | Manipuler + sa correction | 🆕 20/09 — **refondu**&nbsp;: une seule méthode (l’opération inverse), le triangle réduit à une mention, **71 relations** en 10 séries vérifiées par le calcul, fiche refaite. ✅ **ouvert au hub** le 20/09 — **3 figures manquent**, en cadres de réservation |
+| **o8** | Construire et exploiter un graphique | Construire un graphique | 🆕 20/09 — **étendu**&nbsp;: modélisation, forçage de l’origine, domaine de validité, R² ; **deux pages sœurs** (tableur, calculatrice) ; fiche à 3 pages. ✅ **ouvert au hub** le 20/09 — **8 captures manquent**, et 17 procédures restent à vérifier sur machine (elles le disent à l'élève) |
 
 **« Convertir » ne fait plus partie du catalogue.** `o1` en a absorbé tout le
 fond le 26/08 — les préfixes dans les deux sens, les unités composées, les
