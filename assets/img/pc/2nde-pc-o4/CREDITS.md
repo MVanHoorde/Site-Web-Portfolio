@@ -11,8 +11,20 @@ XMP `DigitalSourceType = trainedAlgorithmicMedia`.
 
 🔴 **Ne jamais exécuter de traitement qui efface les métadonnées** sur ces
 fichiers (pas de `convert -strip`, pas d'`oxipng -strip all`) : le marqueur de
-provenance doit survivre. Le redimensionnement et la recompression sont
-autorisés s'ils préservent les blocs XMP.
+provenance doit survivre.
+
+⚠ **Précision du 20/09 au soir — le marqueur n’est pas dans le XMP.** C’est un
+manifeste **C2PA** (*Content Credentials*), en CBOR dans un segment JUMBF,
+**signé et lié au contenu par un hash**. Conséquence pratique&nbsp;:
+
+- une **copie à l’identique** le préserve — c’est le cas normal, à privilégier&nbsp;;
+- **aucune transformation** ne le préserve, pas même un recadrage&nbsp;: le hash ne
+  correspond plus. Le recopier sur une image modifiée serait **trompeur**,
+  puisqu’il attesterait d’un contenu qui a changé&nbsp;;
+- donc, quand une image **doit** être transformée (détourage, fond rendu
+  transparent), on garde **l’original intact dans ce dossier**, sous le même nom
+  suffixé `-source`, et les deux lignes figurent ci-dessous. La provenance
+  vérifiable ne se perd pas&nbsp;: elle change de fichier.
 
 **Mention de crédit à afficher**, pour chacune :
 
@@ -41,6 +53,9 @@ autorisés s'ils préservent les blocs XMP.
 | `o4-ballon-photo.jpg` | openai-ia | idem | idem | idem | O4-20 |
 | `o4-cristallisoir-photo.jpg` | openai-ia | idem | idem | idem | O4-21 |
 | `o4-coupelle-pesee-photo.jpg` | openai-ia | idem | idem | idem | O4-22 |
+| `o4-pipettes-jaugees-photo.jpg` | openai-ia | idem | idem | idem | O4-05 |
+| `o4-oeil-coupe.png` | openai-ia | idem | idem | idem | — (exercice 2) |
+| `o4-oeil-coupe-source.jpg` | openai-ia | idem | idem | idem | — (source intacte) |
 | `o4-entonnoir-photo.jpg` | openai-ia | idem | idem | idem | O4-23 |
 | `o4-refrigerant-photo.jpg` | openai-ia | idem | idem | idem | O4-24 |
 | `o4-propipette-photo.jpg` | openai-ia | idem | idem | idem | O4-25 |
@@ -76,3 +91,25 @@ Elles restent dans `_a-deposer/o4/` (hors Git). Ne pas les intégrer en l'état.
 | « AUTRE VERRERIE » (1) | doublon exact, à l'octet près, de la carte retenue. |
 | Thermomètre stylo | doublon du thermomètre à sonde retenu. |
 | Éprouvette « base hexagonale » | doublon de l'éprouvette retenue. |
+
+---
+
+## Ajouts du 20/09/2026, au soir
+
+| fichier | ce qu’il est | provenance C2PA |
+|---|---|---|
+| `o4-pipettes-jaugees-photo.jpg` | **copie à l’identique** de l’image déposée. Trois pipettes jaugées&nbsp;: deux à un trait, une à deux traits. Résout la figure **O4-05**. | ✅ intacte |
+| `o4-oeil-coupe.png` | œil en coupe **détouré** (fond blanc rendu transparent, recadré sur le tracé). Remplace le pictogramme en losange des trois schémas de l’exercice 2. | ❌ perdue à la transformation — voir ci-dessous |
+| `o4-oeil-coupe-source.jpg` | **l’original intact** de l’œil, conservé pour sa provenance. N’est affiché nulle part. | ✅ intacte |
+
+🔴 **La fiole jaugée déposée n’est toujours pas intégrée** (figure O4-04). Deux
+raisons, et la première suffit&nbsp;: son **col est entièrement gradué** de 30 à 100,
+alors que la page enseigne mot pour mot que la fiole jaugée porte **un trait
+unique** — la légende de la figure 3 le dit. Et « 70 » y figure **deux fois**.
+Le cadre de réservation reste en place.
+
+🔴 **Le verre à pied déposé n’est pas intégré non plus**, pour la même raison
+d’échelle&nbsp;: « 300 » y figure **deux fois**. Sa **forme**, elle, est juste&nbsp;: elle a
+servi de **modèle** pour corriger le schéma au trait de la page, qui dessinait
+jusqu’ici un verre à vin. Un schéma ne porte pas de graduations chiffrées&nbsp;:
+le défaut de l’image ne s’y transmet pas.

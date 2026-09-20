@@ -178,7 +178,9 @@
   .mn-liquide{fill:var(--link-wash);stroke:none}
   .mn-surface{fill:none;stroke:var(--link);stroke-width:2.2}
   .mn-trait{stroke:var(--err);stroke-width:2.4}
-  .mn-oeil{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round}
+  /* L oeil n est plus un pictogramme trace mais une image detouree : les
+     regles de trait n ont plus d objet, seule l opacite sert. */
+  .mn-oeil{opacity:.9}
   .mn-vue{stroke:var(--ink-faint);stroke-width:1.6;stroke-dasharray:4 3}
   .mn-lab{font-family:"IBM Plex Mono";font-size:9px;fill:var(--ink-faint);text-anchor:middle}
 
@@ -199,6 +201,70 @@
              background:var(--surface);padding:10px;overflow:hidden}
   figure.fig img{display:block;width:100%;height:auto;max-width:100%;border-radius:8px}
   figure.fig.objet img{width:auto;max-height:340px;margin:0 auto}
+  /* ---------- La planche de schémas (figure 3) ----------
+     Construite à partir des symboles de l'étape 1.1, pas importée :
+     les pièces gardent donc leurs tailles RELATIVES les unes aux autres,
+     et corriger un schéma le corrige aux deux endroits. */
+  .planche{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));
+           gap:10px 6px;align-items:start;padding:6px 2px}
+  .planche .pl{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+  .planche .pl svg{width:100%;max-width:74px;height:auto;aspect-ratio:60/100}
+  .planche .pl .n{font-size:12.5px;font-weight:600;text-align:center;line-height:1.25}
+  .planche .pl .q{font-size:11px;color:var(--ink-soft);text-align:center;line-height:1.3}
+  @media(max-width:420px){
+    .planche{grid-template-columns:repeat(auto-fit,minmax(74px,1fr))}
+    .planche .pl .q{display:none}
+  }
+
+  /* ---------- La planche des pipettes jaugées ----------
+     Grande à dessein : ce qu'il faut voir, ce sont les TRAITS, et on doit
+     pouvoir les compter. L'image est un portrait très étroit ; on la
+     borne en hauteur et le texte l'accompagne sur le côté. */
+  .pipettes{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;
+            border:1px solid var(--line);border-radius:12px;background:var(--surface);
+            padding:14px 16px;margin:14px 0}
+  /* L image est CARREE et non recadree : son marqueur de provenance C2PA
+     ne survivrait pas a un recadrage (voir le CREDITS.md du dossier). Le
+     blanc qui entoure les pipettes se fond dans le fond de la carte, et
+     on gagne en hauteur utile ce qu on perd en largeur. */
+  .pipettes img{height:330px;width:auto;object-fit:contain;display:block}
+  .pipettes .tt{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.08em;
+                text-transform:uppercase;color:var(--link);font-weight:600;margin-bottom:8px}
+  .pipettes p{font-size:14.5px;margin:0 0 8px;line-height:1.6}
+  .pipettes p:last-child{margin-bottom:0}
+  .pipettes .pt{font-size:13.5px;color:var(--ink-soft)}
+  @media(max-width:560px){
+    .pipettes{grid-template-columns:1fr;gap:12px;justify-items:center}
+    .pipettes img{height:250px;max-width:100%}
+    .pipettes .txt{width:100%}
+  }
+
+  /* ---------- Agrandir une image au clic ----------
+     Le curseur et la loupe le disent : on ne compte pas sur le survol
+     seul, qui n'existe pas au doigt. */
+  .zoomable{cursor:zoom-in}
+  .zoomable:focus-visible{outline:2px solid var(--link);outline-offset:3px;border-radius:4px}
+  .piece .duo .zoomable:hover{filter:brightness(1.04)}
+
+  .agr{position:fixed;inset:0;z-index:150;background:rgba(22,31,51,.88);
+       display:none;flex-direction:column;align-items:center;justify-content:center;
+       padding:24px 20px 20px;gap:14px}
+  .agr.on{display:flex}
+  .agr img{max-width:min(100%,1100px);max-height:78vh;width:auto;height:auto;
+           object-fit:contain;border-radius:10px;background:#fff;padding:8px}
+  .agr .lg{color:#dbe3f0;font-size:14px;line-height:1.55;text-align:center;
+           max-width:760px;max-height:16vh;overflow:auto}
+  .agr .fermer{position:absolute;top:14px;right:16px;font:inherit;font-size:14px;
+               color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);
+               border-radius:9px;padding:8px 14px;min-height:44px;cursor:pointer}
+  .agr .fermer:hover{background:rgba(255,255,255,.24)}
+  .agr .fermer:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  @media(max-width:520px){
+    .agr{padding:20px 12px 14px}
+    .agr .fermer{top:8px;right:8px;padding:8px 12px}
+    .agr .lg{font-size:13px}
+  }
+
   figure.fig figcaption{font-size:13px;color:var(--ink-soft);line-height:1.45;margin-top:8px}
   figure.fig .fig-num{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.06em;
                       color:var(--link);font-weight:600;text-transform:uppercase}
@@ -298,12 +364,20 @@
       <path d="M25,32 h10" class="jauge"/>
     </g>
   </symbol>
+  <!-- 🔴 VERRE À PIED DE LABORATOIRE, et non un verre à vin.
+       Ce qui le distingue, et qu'il faut voir sur le schéma : le cône est
+       LARGEMENT évasé (aussi large que haut), il porte des GRADUATIONS et
+       un BEC VERSEUR, et sa tige est COURTE sur un pied large. Le schéma
+       précédent dessinait un cône étroit sur longue tige : un verre à pied
+       de bistrot. Corrigé le 20/09/2026 d'après la photo déposée. -->
   <symbol id="v-verrepied" viewBox="0 0 60 100">
     <g class="vt">
-      <path d="M14,22 l10,34 v14 M46,22 l-10,34 v14"/>
-      <path d="M14,22 h32"/>
-      <path d="M24,70 h12 M22,88 h16"/>
-      <path d="M30,70 v18"/>
+      <path d="M5,32 L30,67 L55,32"/>
+      <path d="M5,32 h50"/>
+      <path d="M5,32 q-3,-2 -4,-5 q5,1 8,3"/>
+      <path d="M30,67 v12"/>
+      <path d="M13,80 q17,5 34,0"/>
+      <path d="M49,41 h-7 M45,49 h-7 M41,57 h-6"/>
     </g>
   </symbol>
   <symbol id="v-cristallisoir" viewBox="0 0 60 100">
@@ -312,11 +386,15 @@
       <path d="M8,52 h44"/>
     </g>
   </symbol>
+  <!-- ⚠ À L'ÉCHELLE. Une coupelle de pesée fait 5 à 6 cm ; le
+       cristallisoir voisin en fait 12 à 15. Le tracé précédent leur
+       donnait la même largeur (40 contre 44), ce qui trompait sur l'objet
+       qu'on aura en main. Ramenée à 24. Corrigé le 20/09/2026. -->
   <symbol id="v-coupelle" viewBox="0 0 60 100">
     <g class="vt">
-      <path d="M10,56 q20,26 40,0"/>
-      <path d="M10,56 q20,9 40,0"/>
-      <path d="M14,52 q16,7 32,0" class="leger"/>
+      <path d="M18,74 q12,16 24,0"/>
+      <path d="M18,74 q12,6 24,0"/>
+      <path d="M21,71 q9,4 18,0" class="leger"/>
     </g>
   </symbol>
   <symbol id="v-ballon" viewBox="0 0 60 100">
@@ -550,13 +628,29 @@
                 </div>
 
 
-                <!-- FIGURE O4-04 et O4-05 — photos attendues, pas encore disponibles -->
-                <div class="reserve" data-figure-id="O4-04 / O4-05">
-                  <div class="rf">o4-fiole-jaugee-photo.jpg &nbsp;·&nbsp; o4-pipette-jaugee-photo.jpg</div>
-                  <div class="rd"><b>Deux photos manquent ici.</b><br>
-                    La <b>fiole jaugée</b>&nbsp;: un <b>unique</b> trait de jauge sur le col — surtout pas une échelle graduée — et les inscriptions lisibles (volume, <span class="nb">20&nbsp;°C</span>, tolérance).<br>
-                    La <b>pipette jaugée à deux traits</b>&nbsp;: les <b>deux</b> traits visibles, l'un au-dessus du renflement, l'autre près de la pointe.</div>
-                  <div class="rr">fond blanc · pièce entière · ≥ 800 px de haut</div>
+                <!-- ✅ FIGURE O4-05 — résolue le 20/09 au soir.
+                     Volontairement grande : ce qu'il faut voir, ce sont les
+                     TRAITS, et on doit pouvoir les compter. -->
+                <div class="pipettes">
+                  <img src="../assets/img/pc/2nde-pc-o4/o4-pipettes-jaugees-photo.jpg"
+                       alt="Trois pipettes jaugées alignées. Les deux premières, 10 mL et 25 mL, portent un seul trait de jauge, au-dessus du renflement. La troisième, 25 mL, en porte deux : un au-dessus du renflement, un second près de la pointe."
+                       loading="lazy" width="1264" height="1264">
+                  <div class="txt">
+                    <div class="tt">À un trait, ou à deux traits&nbsp;?</div>
+                    <p><b>À un trait</b> (les deux premières)&nbsp;: on remplit jusqu'au trait, puis on <b>vide complètement</b>. La pointe garde une goutte&nbsp;: <b>elle ne se souffle pas</b>, le volume annoncé en tient compte.</p>
+                    <p><b>À deux traits</b> (la troisième)&nbsp;: on remplit jusqu'au trait du haut, et on s'arrête au trait du <b>bas</b>. Ce qui reste en dessous ne fait pas partie du volume.</p>
+                    <p class="pt">Chaque pipette annonce son volume, sa température de référence et sa tolérance&nbsp;: <span class="nb">10 mL &nbsp;20 °C &nbsp;±0,02</span>. C'est l'étape&nbsp;1.2.</p>
+                  </div>
+                </div>
+
+                <!-- FIGURE O4-04 — la photo déposée a été écartée (col entièrement
+                     gradué, et « 70 » deux fois) : une échelle fausse ne rentre pas,
+                     et un col gradué contredit ce que cette page enseigne. -->
+                <div class="reserve" data-figure-id="O4-04">
+                  <div class="rf">o4-fiole-jaugee-photo.jpg</div>
+                  <div class="rd"><b>Une photo manque ici.</b><br>
+                    La <b>fiole jaugée</b>&nbsp;: un <b>unique</b> trait de jauge sur le col — <b>surtout pas une échelle graduée</b>, c'est tout l'objet de la page — et les inscriptions lisibles (volume, <span class="nb">20&nbsp;°C</span>, tolérance).</div>
+                  <div class="rr">fond blanc · pièce entière · ≥ 800 px de haut · échelle sans répétition</div>
                 </div>
               </div>
 
@@ -616,7 +710,81 @@
               <div class="verdict"></div>
             </div>
 
-          </div>
+          
+            <div class="block-label">À toi — quatre questions sur les familles<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="qcmbox" data-code="O4-Q-nommer">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "En combien de familles cet outil range-t-il la verrerie ?",
+  "o": [
+   "Trois : contenir, mesurer, autre",
+   "Deux : le verre et le plastique",
+   "Quatre : une par précision",
+   "Cinq : une par volume courant"
+  ],
+  "r": 0,
+  "c": "<b>Contenir · mesurer · autre.</b> C'est le classement de toute l'étape : avant de prendre une pièce, on se demande ce qu'on lui demande."
+ },
+ {
+  "q": "Combien de pièces servent vraiment à mesurer un volume ?",
+  "o": [
+   "Trois seulement",
+   "Huit environ",
+   "Cinq seulement",
+   "Toutes celles qui sont graduées"
+  ],
+  "r": 2,
+  "c": "<b>Cinq.</b> Éprouvette, pipette graduée, pipette jaugée, fiole jaugée, burette. Toutes les autres contiennent, elles ne mesurent pas."
+ },
+ {
+  "q": "Dans quelle famille ranges-tu le bécher ?",
+  "o": [
+   "Il mesure : il porte des graduations",
+   "Il contient : ses graduations ne mesurent pas",
+   "Il transfère, comme l'entonnoir",
+   "Cela dépend de son volume total"
+  ],
+  "r": 1,
+  "c": "<b>Il contient.</b> Ses graduations servent à se situer, pas à mesurer : l'erreur y atteint facilement 5 %."
+ },
+ {
+  "q": "Qu'est-ce qui décide du choix d'une pièce de verrerie ?",
+  "o": [
+   "La matière dont elle est faite",
+   "Ce qu'on a sous la main sur la paillasse",
+   "Le volume total qu'elle peut contenir",
+   "Ce qu'on lui demande de faire"
+  ],
+  "r": 3,
+  "c": "<b>Ce qu'on lui demande.</b> C'est le geste de toute l'étape — et non ce qui traîne sur la paillasse."
+ },
+ {
+  "q": "À quoi sert un cristallisoir ?",
+  "o": [
+   "À tenir un bain-marie ou un bain de glace",
+   "À prélever un volume au choix",
+   "À mesurer un volume avec précision",
+   "À peser un solide après la tare"
+  ],
+  "r": 0,
+  "c": "<b>Un bain.</b> Large et bas, il contient de l'eau ou de la glace autour d'un autre récipient. Il ne mesure rien."
+ },
+ {
+  "q": "Pourquoi un ballon ne tient-il pas debout tout seul ?",
+  "o": [
+   "Il est trop léger à vide",
+   "Son col est trop étroit",
+   "Son fond est rond",
+   "Son verre est trop fin"
+  ],
+  "r": 2,
+  "c": "<b>Son fond est rond.</b> Il se pose sur un support élévateur ou dans un chauffe-ballon — jamais directement sur la paillasse."
+ }
+]
+              </script>
+            </div>
+</div>
         </div>
       </div>
 
@@ -890,7 +1058,81 @@
               <div class="verdict"></div>
             </div>
 
-          </div>
+          
+            <div class="block-label">À toi — six questions sur le geste<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="qcmbox" data-code="O4-Q-geste">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Quelle partie du ménisque doit se trouver sur le trait de jauge ?",
+  "o": [
+   "Le bas de la courbe",
+   "Le haut de la courbe",
+   "Le milieu entre les deux",
+   "Le bord qui touche le verre"
+  ],
+  "r": 0,
+  "c": "<b>Le bas du ménisque.</b> C'est la règle, et elle va avec la seconde : l'œil doit être au niveau du trait."
+ },
+ {
+  "q": "Où placer son œil au moment de lire ?",
+  "o": [
+   "Un peu au-dessus, pour mieux voir la courbe",
+   "Un peu en dessous, pour viser le trait",
+   "Exactement au niveau du trait",
+   "La position de l'œil ne change rien"
+  ],
+  "r": 2,
+  "c": "<b>Au niveau du trait.</b> Plus haut, on s'arrête trop tôt ; plus bas, on verse trop. C'est l'exercice 2."
+ },
+ {
+  "q": "Comment vérifier qu'on est bien au niveau du trait ?",
+  "o": [
+   "Le ménisque paraît parfaitement plat",
+   "Les deux traits, devant et derrière, se confondent",
+   "On ne voit plus qu'un seul bord de verre",
+   "Le liquide semble dépasser le trait"
+  ],
+  "r": 1,
+  "c": "<b>Les deux traits se confondent.</b> Le trait fait le tour du verre : vu de biais on en voit deux, vu au niveau un seul."
+ },
+ {
+  "q": "Avec quoi aspire-t-on dans une pipette ?",
+  "o": [
+   "Avec la bouche, doucement",
+   "Avec une pissette d'eau distillée",
+   "En la plongeant, par capillarité",
+   "Avec une propipette ou une poire"
+  ],
+  "r": 3,
+  "c": "<b>Une propipette.</b> Jamais à la bouche, sous aucun prétexte — c'est la règle de sécurité la plus stricte de la paillasse."
+ },
+ {
+  "q": "Sur une pipette jaugée à deux traits, où s'arrête-t-on de vider ?",
+  "o": [
+   "Au trait du bas",
+   "Quand elle est entièrement vide",
+   "Au trait du haut",
+   "Quand la pointe ne goutte plus"
+  ],
+  "r": 0,
+  "c": "<b>Au trait du bas.</b> Ce qui reste en dessous ne fait pas partie du volume annoncé."
+ },
+ {
+  "q": "Tu rinces une pipette à l'eau distillée juste avant de prélever. Que se passe-t-il ?",
+  "o": [
+   "Rien, c'est le geste recommandé",
+   "Elle fausse la lecture du ménisque",
+   "Elle dilue le prélèvement",
+   "Elle abîme le trait de jauge"
+  ],
+  "r": 2,
+  "c": "<b>Elle dilue.</b> L'eau restée dans la pipette s'ajoute au prélèvement. On rince avec la solution à prélever, pas avec de l'eau."
+ }
+]
+              </script>
+            </div>
+</div>
         </div>
       </div>
 
@@ -974,7 +1216,70 @@
               <div class="verdict"></div>
             </div>
 
-          </div>
+          
+            <div class="block-label">À toi — cinq questions sur le matériel<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="qcmbox" data-code="O4-Q-materiel">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Que fait la touche « Tare » d'une balance ?",
+  "o": [
+   "Elle remet l'affichage à zéro",
+   "Elle affiche la masse de la coupelle",
+   "Elle augmente la précision affichée",
+   "Elle bloque le dernier chiffre"
+  ],
+  "r": 0,
+  "c": "<b>Elle remet à zéro.</b> La balance oublie la coupelle, et ne pèse plus que ce qu'on ajoute ensuite."
+ },
+ {
+  "q": "Tu oublies de tarer. Que mesures-tu alors ?",
+  "o": [
+   "Le solide seul, mais moins précisément",
+   "La coupelle seule",
+   "Le solide et la coupelle ensemble",
+   "Rien : la balance refuse d'afficher"
+  ],
+  "r": 2,
+  "c": "<b>Les deux ensemble.</b> Et rien ne le signale à l'écran : toute la suite du calcul est fausse."
+ },
+ {
+  "q": "Avec quoi prélève-t-on un solide en poudre ?",
+  "o": [
+   "Avec une pipette",
+   "Avec une spatule",
+   "Avec un entonnoir",
+   "En versant depuis le flacon"
+  ],
+  "r": 1,
+  "c": "<b>Une spatule.</b> Petit à petit, jusqu'à la masse voulue — verser depuis le flacon fait toujours tomber trop."
+ },
+ {
+  "q": "À quoi sert la pissette ?",
+  "o": [
+   "À mesurer de petits volumes d'eau",
+   "À transporter une solution chaude",
+   "À rincer les mains après manipulation",
+   "À ajuster au trait avec de l'eau distillée"
+  ],
+  "r": 3,
+  "c": "<b>À ajuster au trait.</b> Son filet fin permet la goutte près du trait de jauge, ce qu'aucun bécher ne permet."
+ },
+ {
+  "q": "Quel est le bon ordre pour peser un solide ?",
+  "o": [
+   "Coupelle, puis tare, puis solide",
+   "Solide sur le plateau, puis coupelle, puis tare",
+   "Tare, puis coupelle, puis solide",
+   "Coupelle, puis solide, puis tare"
+  ],
+  "r": 0,
+  "c": "<b>Coupelle, tare, solide.</b> L'écran doit afficher <span class=\"nb\">0,00 g</span> avec la coupelle dessus, avant que le solide n'arrive."
+ }
+]
+              </script>
+            </div>
+</div>
         </div>
       </div>
 
@@ -1003,11 +1308,27 @@
             </ul>
 
             <!-- FIGURE O4-15 -->
+            <!-- 🔴 FIGURE 3 — PLANCHE CONSTRUITE, PLUS UNE IMAGE.
+                 Elle était une image générée qui portait deux erreurs de cours
+                 (un verre à vin à la place du verre à pied de laboratoire, une
+                 coupelle de pesée aussi large qu'un cristallisoir) et qu'on ne
+                 pouvait pas retoucher. Elle réutilise désormais les MÊMES
+                 symboles que les vignettes de l'étape 1.1 : une correction
+                 faite une fois vaut partout, la planche se reflow sur
+                 téléphone, elle suit le thème, et ses noms sont sélectionnables.
+                 Corrigé le 20/09/2026. -->
             <figure class="fig">
-              <img src="../assets/img/pc/2nde-pc-o4/o4-planche-schemas-trait.jpg"
-                   alt="Huit verreries dessinées au trait, alignées : bécher gradué à bec verseur, erlenmeyer, tube à essai, fiole jaugée à un seul trait portant 100 mL et 20 degrés, verre à pied, cristallisoir, verre de montre, ballon."
-                   loading="lazy" width="1680" height="944">
-              <figcaption><span class="fig-num">Figure 3</span> — les formes à connaître, telles qu'on les trace. Compare avec les photos de l'étape&nbsp;1.1&nbsp;: c'est le même objet, débarrassé de tout ce qui n'apprend rien. Remarque le <b>trait unique</b> de la fiole jaugée.</figcaption>
+              <div class="planche">
+                <div class="pl"><svg viewBox="0 0 60 100" role="img" aria-label="bécher"><use href="#v-becher"/></svg><span class="n">bécher</span><span class="q">gradué, mais approximatif</span></div>
+                <div class="pl"><svg viewBox="0 0 60 100" role="img" aria-label="erlenmeyer"><use href="#v-erlenmeyer"/></svg><span class="n">erlenmeyer</span><span class="q">col étroit, on agite sans perdre</span></div>
+                <div class="pl"><svg viewBox="0 0 60 100" role="img" aria-label="tube à essai"><use href="#v-tube"/></svg><span class="n">tube à essai</span><span class="q">petits volumes, on ne mesure pas</span></div>
+                <div class="pl"><svg viewBox="0 0 60 100" role="img" aria-label="fiole jaugée"><use href="#v-fiole"/></svg><span class="n">fiole jaugée</span><span class="q">un seul trait — un seul volume</span></div>
+                <div class="pl"><svg viewBox="0 0 60 100" role="img" aria-label="verre à pied"><use href="#v-verrepied"/></svg><span class="n">verre à pied</span><span class="q">cône évasé, bec verseur, pied</span></div>
+                <div class="pl"><svg viewBox="0 0 60 100" role="img" aria-label="cristallisoir"><use href="#v-cristallisoir"/></svg><span class="n">cristallisoir</span><span class="q">large et bas — ne mesure pas</span></div>
+                <div class="pl"><svg viewBox="0 0 60 100" role="img" aria-label="coupelle de pesée"><use href="#v-coupelle"/></svg><span class="n">coupelle de pesée</span><span class="q">à peine 5 cm de large</span></div>
+                <div class="pl"><svg viewBox="0 0 60 100" role="img" aria-label="ballon"><use href="#v-ballon"/></svg><span class="n">ballon</span><span class="q">fond rond — il ne tient pas seul</span></div>
+              </div>
+              <figcaption><span class="fig-num">Figure 3</span> &mdash; les formes à connaître, telles qu'on les trace. Compare avec les photos de l'étape&nbsp;1.1&nbsp;: c'est le même objet, débarrassé de tout ce qui n'apprend rien. Remarque le <b>trait unique</b> de la fiole jaugée, et le <b>bec verseur</b> du verre à pied — celui du laboratoire est un cône gradué, pas un verre à boire.</figcaption>
             </figure>
 
             <div class="point-cle"><b>Le test qui ne trompe pas&nbsp;:</b> si ton voisin peut <b>refaire ton expérience</b> avec ton seul schéma sous les yeux, il est bon. S'il doit te demander ce qu'il y a dans le bécher, il manque une légende.</div>
@@ -1083,7 +1404,70 @@
               <div class="verdict"></div>
             </div>
 
-          </div>
+          
+            <div class="block-label">À toi — cinq questions sur le schéma<span class="niv" style="margin-left:8px">★ <b>à savoir faire</b></span></div>
+            <div class="qcmbox" data-code="O4-Q-schema">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Avec quoi trace-t-on un schéma de montage ?",
+  "o": [
+   "Au crayon à papier et à la règle",
+   "Au stylo, pour que ce soit net",
+   "Au feutre fin, en couleurs",
+   "Peu importe, seul le contenu compte"
+  ],
+  "r": 0,
+  "c": "<b>Au crayon et à la règle.</b> Un schéma se corrige ; au stylo, il se refait entièrement."
+ },
+ {
+  "q": "Faut-il dessiner la verrerie en perspective, avec des ombres ?",
+  "o": [
+   "Oui, cela rend le montage plus clair",
+   "Oui, pour montrer l'épaisseur du verre",
+   "Non : en deux dimensions, sans relief",
+   "Seulement pour les pièces compliquées"
+  ],
+  "r": 2,
+  "c": "<b>En deux dimensions.</b> C'est plus joli en perspective, c'est moins lisible, et ça coûte des points."
+ },
+ {
+  "q": "Comment place-t-on les légendes ?",
+  "o": [
+   "Directement écrites sur chaque pièce",
+   "Horizontales, à côté, reliées sans se croiser",
+   "En liste numérotée sous le dessin",
+   "En diagonale, pour gagner de la place"
+  ],
+  "r": 1,
+  "c": "<b>Horizontales, sur le côté.</b> Reliées par des traits à la règle qui ne se croisent pas et ne touchent pas le dessin."
+ },
+ {
+  "q": "Quel test dit si ton schéma est bon ?",
+  "o": [
+   "Il ressemble à la photo du montage",
+   "Il tient sur une demi-page",
+   "Toutes les pièces y sont dessinées",
+   "Quelqu'un peut refaire l'expérience avec"
+  ],
+  "r": 3,
+  "c": "<b>Refaire l'expérience avec ce seul schéma.</b> S'il faut demander ce qu'il y a dans le bécher, il manque une légende."
+ },
+ {
+  "q": "Comment représente-t-on une fiole jaugée sur un schéma ?",
+  "o": [
+   "Une poire à long col, avec un trait",
+   "Une poire au col entièrement gradué",
+   "Un cylindre haut, gradué sur toute sa hauteur",
+   "Un trapèze surmonté d'un col étroit"
+  ],
+  "r": 0,
+  "c": "<b>Un trait unique.</b> C'est la forme conventionnelle, et c'est ce qui la distingue de l'éprouvette : elle ne connaît qu'un seul volume."
+ }
+]
+              </script>
+            </div>
+</div>
         </div>
       </div>
 
@@ -1183,9 +1567,9 @@
                     <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
                     <path class="mn-surface" d="M34,48 q17,12 34,0"/>
                     <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
-                    <line class="mn-vue" x1="70" y1="72" x2="102" y2="72"/>
-                    <path class="mn-oeil" d="M100,66 q10,6 0,12 q-10,-6 0,-12 z"/>
-                    <circle cx="105" cy="72" r="2" fill="var(--ink)"/>
+                    <line class="mn-vue" x1="70" y1="72" x2="90" y2="72"/>
+                    <image class="mn-oeil" href="../assets/img/pc/2nde-pc-o4/o4-oeil-coupe.png"
+                           x="88" y="60" width="31" height="23"/>
                     <text class="mn-lab" x="60" y="128">cas A</text>
                   </svg>
                   <div class="lg">Le bas du ménisque est <b>au-dessus</b> du trait.</div>
@@ -1196,9 +1580,9 @@
                     <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
                     <path class="mn-surface" d="M34,62 q17,12 34,0"/>
                     <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
-                    <line class="mn-vue" x1="70" y1="72" x2="102" y2="72"/>
-                    <path class="mn-oeil" d="M100,66 q10,6 0,12 q-10,-6 0,-12 z"/>
-                    <circle cx="105" cy="72" r="2" fill="var(--ink)"/>
+                    <line class="mn-vue" x1="70" y1="72" x2="90" y2="72"/>
+                    <image class="mn-oeil" href="../assets/img/pc/2nde-pc-o4/o4-oeil-coupe.png"
+                           x="88" y="60" width="31" height="23"/>
                     <text class="mn-lab" x="60" y="128">cas B</text>
                   </svg>
                   <div class="lg">Le bas du ménisque <b>affleure</b> le trait, œil au niveau.</div>
@@ -1209,9 +1593,9 @@
                     <path class="mn-surface" d="M34,72 q17,12 34,0"/>
                     <path class="mn-verre" d="M34,16 v102 h34 v-102"/>
                     <line class="mn-trait" x1="30" y1="72" x2="72" y2="72"/>
-                    <line class="mn-vue" x1="70" y1="72" x2="102" y2="72"/>
-                    <path class="mn-oeil" d="M100,66 q10,6 0,12 q-10,-6 0,-12 z"/>
-                    <circle cx="105" cy="72" r="2" fill="var(--ink)"/>
+                    <line class="mn-vue" x1="70" y1="72" x2="90" y2="72"/>
+                    <image class="mn-oeil" href="../assets/img/pc/2nde-pc-o4/o4-oeil-coupe.png"
+                           x="88" y="60" width="31" height="23"/>
                     <text class="mn-lab" x="60" y="128">cas C</text>
                   </svg>
                   <div class="lg">C'est le <b>haut</b> du ménisque qui a été mis sur le trait.</div>
@@ -1468,6 +1852,255 @@
         </div>
       </div>
 
+
+      <!-- ---------- 2.7 — LE BILAN, ajouté le 20/09 au soir ----------
+           Vingt questions qui brassent tout l'outil : les trois familles,
+           l'échelle de précision, le ménisque, les pipettes, la pesée et le
+           schéma. Elles reprennent délibérément les points déjà testés dans
+           les petits QCM de la méthode : un bilan n'a pas à être inédit, il
+           a à être complet. -->
+      <div class="step" data-step data-gate data-cle="pc-o4-s2-bilan">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.7</div>
+            <h3 class="step-title">Le bilan — vingt questions</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> vérifier, en une fois, que tout l'outil est en place&nbsp;: choisir la verrerie, lire un ménisque, se servir d'une pipette, peser, et dessiner.</span></div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:14.5px;margin:4px 0 10px">Vingt questions sur l'ensemble de l'outil. Rien de nouveau&nbsp;: tout a été vu dans les étapes précédentes. Si une réponse te manque, le QCM te dit où revenir.</p>
+            <div class="point-cle">💡 <b>Fais-le sans revenir en arrière</b>, une première fois. Ce que tu rates te dit exactement quelle étape relire — c'est plus utile qu'un sans-faute obtenu en cherchant.</div>
+
+            <div class="block-label">Le QCM bilan<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
+            <div class="qcmbox" data-code="O4-Q-bilan">
+              <script type="application/json" class="qcm-data">
+[
+ {
+  "q": "Un protocole demande « 25,0 mL de solution ». Que prends-tu ?",
+  "o": [
+   "Une pipette jaugée de 25 mL",
+   "Un bécher de 50 mL",
+   "Une éprouvette de 50 mL",
+   "Une fiole jaugée de 25 mL"
+  ],
+  "r": 0,
+  "c": "<b>La pipette jaugée.</b> La décimale impose de la verrerie jaugée, et il s'agit de <i>prélever</i> : la fiole, elle, sert à <i>préparer</i> une solution."
+ },
+ {
+  "q": "Un protocole demande « environ 50 mL d'eau ». Que prends-tu ?",
+  "o": [
+   "Une burette graduée",
+   "Une pipette jaugée de 50 mL",
+   "Un bécher",
+   "Une fiole jaugée de 50 mL"
+  ],
+  "r": 2,
+  "c": "<b>Un bécher.</b> « Environ » dit que la précision n'est pas en jeu : sortir une pipette jaugée serait perdre du temps pour rien."
+ },
+ {
+  "q": "Que signifient les chiffres du volume demandé ?",
+  "o": [
+   "Ils disent la taille de la verrerie",
+   "Ils disent la précision attendue",
+   "Ils disent la durée de la manipulation",
+   "Ils n'ont pas de signification particulière"
+  ],
+  "r": 1,
+  "c": "<b>Ils disent la précision.</b> Compter les chiffres du volume, c'est choisir la verrerie — c'est toute l'étape 1.2."
+ },
+ {
+  "q": "Les graduations d'un bécher servent à :",
+  "o": [
+   "mesurer un volume au millilitre près",
+   "connaître la masse du contenu",
+   "vérifier la mesure d'une éprouvette",
+   "se situer, à peu près"
+  ],
+  "r": 3,
+  "c": "<b>À se situer.</b> C'est le piège le plus courant de l'outil : un bécher ne mesure pas."
+ },
+ {
+  "q": "Quelle pièce verse goutte à goutte un volume variable ?",
+  "o": [
+   "La burette graduée",
+   "La fiole jaugée",
+   "La pipette jaugée",
+   "L'éprouvette graduée"
+  ],
+  "r": 0,
+  "c": "<b>La burette.</b> Son robinet permet la goutte : c'est l'instrument des dosages."
+ },
+ {
+  "q": "Quelle partie du ménisque se lit sur le trait ?",
+  "o": [
+   "Le milieu",
+   "Le haut",
+   "Le bas",
+   "Le bord au contact du verre"
+  ],
+  "r": 2,
+  "c": "<b>Le bas.</b> Et l'œil au niveau du trait : les deux règles vont ensemble."
+ },
+ {
+  "q": "Un élève lit en regardant d'en haut. Son volume sera :",
+  "o": [
+   "trop grand",
+   "trop petit",
+   "juste quand même",
+   "impossible à prévoir"
+  ],
+  "r": 1,
+  "c": "<b>Trop petit.</b> La visée plongeante fait croire qu'on a atteint le trait avant l'heure : on arrête trop tôt."
+ },
+ {
+  "q": "Un élève aligne le HAUT du ménisque sur le trait. Son volume sera :",
+  "o": [
+   "trop grand",
+   "variable selon le liquide",
+   "juste",
+   "trop petit"
+  ],
+  "r": 3,
+  "c": "<b>Trop petit.</b> Le bas du ménisque est alors sous le trait : il manque la hauteur de la courbe."
+ },
+ {
+  "q": "Comment aspire-t-on dans une pipette ?",
+  "o": [
+   "Avec une propipette",
+   "Avec la bouche, très doucement",
+   "Par capillarité, en la plongeant",
+   "En la remplissant à la pissette"
+  ],
+  "r": 0,
+  "c": "<b>Une propipette.</b> Jamais à la bouche : c'est la règle de sécurité la plus stricte de la paillasse."
+ },
+ {
+  "q": "Une pipette jaugée à un trait se vide :",
+  "o": [
+   "jusqu'au second trait",
+   "en soufflant la dernière goutte",
+   "complètement, sans souffler la goutte",
+   "à moitié seulement"
+  ],
+  "r": 2,
+  "c": "<b>Sans souffler.</b> La pointe garde une goutte, et le volume annoncé en tient déjà compte."
+ },
+ {
+  "q": "Avant de prélever, tu rinces ta pipette. Avec quoi ?",
+  "o": [
+   "Avec de l'eau distillée",
+   "Avec la solution à prélever",
+   "Avec du papier absorbant",
+   "On ne rince jamais une pipette"
+  ],
+  "r": 1,
+  "c": "<b>Avec la solution à prélever.</b> Rincée à l'eau, elle dilue ce qu'elle prélève ensuite."
+ },
+ {
+  "q": "La tare, c'est :",
+  "o": [
+   "fermer les parois vitrées",
+   "noter la masse de la coupelle",
+   "régler la précision de la balance",
+   "remettre l'affichage à zéro"
+  ],
+  "r": 3,
+  "c": "<b>Remettre à zéro.</b> Avec la coupelle vide sur le plateau, pour ne peser ensuite que le solide."
+ },
+ {
+  "q": "Pourquoi une balance de précision a-t-elle des parois vitrées ?",
+  "o": [
+   "Parce qu'un courant d'air fait bouger le dernier chiffre",
+   "Pour empêcher qu'on la déplace",
+   "Pour protéger le plateau des rayures",
+   "Pour garder les produits à l'abri de la lumière"
+  ],
+  "r": 0,
+  "c": "<b>Les courants d'air.</b> On les referme avant de lire, sinon le dernier chiffre danse."
+ },
+ {
+  "q": "Après avoir versé un solide dans la fiole, il en reste sur la coupelle. Que fais-tu ?",
+  "o": [
+   "Rien, la quantité est négligeable",
+   "Tu recommences la pesée depuis le début",
+   "Tu rinces la coupelle au-dessus de la fiole",
+   "Tu notes la perte dans ton compte rendu"
+  ],
+  "r": 2,
+  "c": "<b>Tu rinces au-dessus de la fiole.</b> Sans ce rinçage, une partie du solide pesé n'entre jamais dans la solution, et la concentration est fausse."
+ },
+ {
+  "q": "À quoi reconnaît-on une fiole jaugée sur un schéma ?",
+  "o": [
+   "À son col entièrement gradué",
+   "À son unique trait de jauge",
+   "À son bec verseur",
+   "À son fond parfaitement plat"
+  ],
+  "r": 1,
+  "c": "<b>Un trait unique.</b> Elle ne connaît qu'un seul volume — c'est exactement ce qui la distingue de l'éprouvette."
+ },
+ {
+  "q": "Un schéma de montage se trace :",
+  "o": [
+   "au feutre, en couleurs",
+   "au stylo, en perspective",
+   "au crayon, avec les ombres",
+   "au crayon, en deux dimensions"
+  ],
+  "r": 3,
+  "c": "<b>Au crayon, en 2D.</b> Pas d'ombre, pas de relief, pas d'épaisseur de verre : la verrerie se ramène à son contour."
+ },
+ {
+  "q": "Où écrit-on les légendes d'un schéma ?",
+  "o": [
+   "Horizontalement, sur le côté",
+   "Sur chaque pièce dessinée",
+   "En bas, dans une liste numérotée",
+   "En diagonale, le long des traits"
+  ],
+  "r": 0,
+  "c": "<b>Horizontalement, sur le côté.</b> Reliées par des traits à la règle, qui ne se croisent pas et ne touchent pas le dessin."
+ },
+ {
+  "q": "Quelle pièce ne mesure PAS un volume ?",
+  "o": [
+   "L'éprouvette graduée",
+   "La burette",
+   "L'erlenmeyer",
+   "La pipette graduée"
+  ],
+  "r": 2,
+  "c": "<b>L'erlenmeyer.</b> Il contient et permet d'agiter sans éclabousser, mais ses graduations ne mesurent pas."
+ },
+ {
+  "q": "Sur quoi pose-t-on un ballon à fond rond ?",
+  "o": [
+   "Directement sur la paillasse",
+   "Sur un support élévateur",
+   "Dans un cristallisoir vide",
+   "Sur une coupelle de pesée"
+  ],
+  "r": 1,
+  "c": "<b>Un support élévateur</b>, ou un chauffe-ballon. Posé sur la paillasse, il bascule."
+ },
+ {
+  "q": "Que vérifie-t-on en dernier, une fois le schéma terminé ?",
+  "o": [
+   "Que chaque pièce est à l'échelle",
+   "Que le dessin remplit bien la page",
+   "Que les couleurs correspondent aux solutions",
+   "Qu'un absent pourrait refaire l'expérience"
+  ],
+  "r": 3,
+  "c": "<b>Qu'un absent pourrait refaire l'expérience.</b> C'est le seul test qui compte — et il attrape toutes les légendes manquantes."
+ }
+]
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     </div><!-- /lockable -->
 
@@ -1590,10 +2223,91 @@
     });
   }
 
+  /* ----------------------------------------------------------
+   *  Agrandir une image au clic — appoint LOCAL.
+   *  Le moteur en a un, mais il ne vise que `figure.ill img` : aucune
+   *  image de cette page n'en est une. Et il n'est pas atteignable au
+   *  clavier. Le §5 des consignes interdisant d'y toucher, on le
+   *  complète ici, pour cette page seulement.
+   * ---------------------------------------------------------- */
+  var agr = null, revenirA = null;
+
+  function construireAgr(){
+    agr = document.createElement('div');
+    agr.className = 'agr';
+    agr.setAttribute('role', 'dialog');
+    agr.setAttribute('aria-modal', 'true');
+    agr.setAttribute('aria-label', 'Image agrandie');
+    agr.innerHTML = '<button type="button" class="fermer">Fermer \u2715</button>'
+                  + '<img alt=""><p class="lg"></p>';
+    document.body.appendChild(agr);
+
+    /* un clic sur le fond ferme ; un clic sur l'image elle-même, non —
+       sinon on referme en voulant regarder de près. */
+    agr.addEventListener('click', function(ev){
+      if (ev.target === agr || ev.target.classList.contains('fermer')) fermer();
+    });
+    return agr;
+  }
+
+  function ouvrir(img){
+    if (!agr) construireAgr();
+    revenirA = img;
+    var grande = agr.querySelector('img');
+    grande.src = img.currentSrc || img.src;
+    grande.alt = img.alt || '';
+    var fig = img.closest('figure');
+    var cap = fig ? fig.querySelector('figcaption') : null;
+    /* la légende, sinon le texte alternatif : sur cette page il décrit
+       déjà précisément chaque pièce, il ne se perd pas. */
+    agr.querySelector('.lg').textContent = cap ? cap.textContent.trim() : (img.alt || '');
+    agr.classList.add('on');
+    agr.querySelector('.fermer').focus();
+  }
+
+  function fermer(){
+    if (!agr || !agr.classList.contains('on')) return;
+    agr.classList.remove('on');
+    if (revenirA && revenirA.focus) revenirA.focus();
+    revenirA = null;
+  }
+
+  function initAgrandir(){
+    var cibles = document.querySelectorAll(
+      '.card-body img, figure.fig img, .pipettes img');
+    Array.prototype.forEach.call(cibles, function(img){
+      if (img.classList.contains('zoomable')) return;
+      img.classList.add('zoomable');
+      img.tabIndex = 0;
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-label',
+        'Agrandir\u00a0: ' + (img.alt ? img.alt.split('.')[0] : 'image'));
+      img.addEventListener('click', function(){ ouvrir(img); });
+      img.addEventListener('keydown', function(ev){
+        if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar'){
+          ev.preventDefault();
+          ouvrir(img);
+        }
+      });
+    });
+
+    document.addEventListener('keydown', function(ev){
+      if (!agr || !agr.classList.contains('on')) return;
+      if (ev.key === 'Escape'){ ev.stopPropagation(); fermer(); return; }
+      /* piege le focus : la fenêtre n'a qu'un seul élément focusable,
+         la tabulation y tourne en rond plutôt que de repartir derrière. */
+      if (ev.key === 'Tab'){
+        ev.preventDefault();
+        agr.querySelector('.fermer').focus();
+      }
+    }, true);
+  }
+
   function demarrer(){
     retirerFichePDF();
     allegerBarre();
     retirerGlossaire();
+    initAgrandir();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();

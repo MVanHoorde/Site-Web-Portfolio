@@ -67,7 +67,7 @@ Pièce jointe : `assets/pdf/prof/guide-ap.pdf`.
 
 ---
 
-## 2 · 🔴 Quatre figures manquent
+## 2 · 🔴 Trois figures manquent
 
 Chacune est un **cadre de réservation** visible sur la page : le nom de fichier
 attendu et ce qu'il faut y voir y sont écrits. L'intégration se réduira à
@@ -76,7 +76,6 @@ remplacer la balise.
 | ID | Fichier attendu | Ce qu'il faut y voir | Où |
 |---|---|---|---|
 | **O4-04** | `o4-fiole-jaugee-photo.jpg` | Une fiole jaugée avec un **unique trait de jauge** sur le col — surtout pas une échelle graduée — et les inscriptions lisibles (volume, `20 °C`, tolérance). | page O4, étape 1.1 |
-| **O4-05** | `o4-pipette-jaugee-photo.jpg` | Une pipette jaugée **à deux traits**, les deux visibles : l'un au-dessus du renflement, l'autre près de la pointe. | page O4, étape 1.1 |
 | **O5-02** | `o5-schema-bon-mauvais.png` | Deux schémas du **même** montage côte à côte. À gauche le bon : tracé à la règle, à plat, légendé horizontalement, avec un titre. À droite le mauvais : perspective, ombré, sans légende ni titre. | page O5, étape 1.2 |
 | **O5-04** | `o5-copie-annotee.png` | Un extrait de compte rendu manuscrit annoté en **trois couleurs** : observation, interprétation, conclusion, chacune étiquetée en marge. | page O5, étape 1.3 |
 
@@ -87,6 +86,37 @@ large pour O5. Déposer dans `_a-deposer/o4/` ou `o5/`.
 fiole jaugée et pour le verre à pied portaient des **échelles fausses** — « 70 »
 et « 300 » écrits deux fois. Sur une image d'instrument gradué, **vérifier
 l'échelle avant tout le reste** : un pictogramme faux est une erreur de cours.
+
+### Les deux prompts à rejouer
+
+🔴 **La cause des deux échecs est la même : on a laissé le modèle écrire une
+échelle.** Un modèle d'image ne compte pas ; il dessine ce qui *ressemble* à une
+graduation. Les deux prompts ci-dessous lui retirent ce travail : on énumère les
+chiffres un par un, ou on lui demande de n'en écrire aucun.
+
+**Fiole jaugée** — fichier attendu `o4-fiole-jaugee-photo.jpg` :
+
+> Fiole jaugée de laboratoire en verre transparent, fond blanc, style
+> photographique professionnel. Corps en forme de poire, long col étroit et
+> **parfaitement lisse**. ⚠ **Le col ne porte AUCUNE graduation, AUCUNE échelle,
+> AUCUN chiffre le long du col** — uniquement **un seul et unique trait de
+> jauge**, un fin anneau horizontal gravé à mi-hauteur du col. Bouchon rodé en
+> verre. Inscriptions gravées sur la panse, sur trois lignes seulement :
+> « 100 mL », « 20 °C », « ±0,10 mL ». Aucun autre texte, aucun autre chiffre.
+
+**Verre à pied gradué** — fichier attendu `o4-verre-a-pied-photo.jpg` :
+
+> Verre à pied de laboratoire en verre transparent, fond blanc, style
+> photographique professionnel. Cône largement évasé vers le haut — **l'ouverture
+> est plus large que le cône n'est haut** — bec verseur sur le bord, tige très
+> courte, large pied circulaire. ⚠ **Échelle graduée portant EXACTEMENT ces six
+> nombres, de bas en haut, chacun une seule fois : 50, 100, 200, 300, 400, 500.**
+> Aucun nombre répété, aucun autre chiffre. Mention « mL » en haut de l'échelle.
+> Ce n'est **pas** un verre à vin ni un verre à cocktail.
+
+💡 **Si l'échelle sort encore fausse :** la demander **sans aucun chiffre**, avec
+les seuls traits. Le schéma au trait de la page n'en porte pas et reste juste ;
+une photo sans chiffres vaut mieux qu'une photo qui en invente.
 
 ---
 
@@ -158,7 +188,6 @@ Le marqueur de provenance a été réinjecté et **vérifié fichier par fichier
 | Fiole jaugée | **erreur de cours** — col entièrement gradué (40 → 100) au lieu d'un trait unique, et « 70 » deux fois. À refaire, voir §2. |
 | Verre à pied gradué (dépôt de 10 h 53) | **erreur de cours** — l'échelle lit 50, 100, 200, 300, **300**, 400, 500. |
 | Verre à pied « conique inversée » | ce n'est pas un verre à pied de laboratoire mais un verre à cocktail. |
-| Trois pipettes jaugées | deux portent « 25 ml » ; le second trait n'est pas lisible. Les tolérances inscrites (± 0,02 et ± 0,03) sont en revanche exactes. |
 | Pipeteur_46418002 | pipeteur à molette — ce n'est pas la propipette à trois valves du cours. |
 | Réfrigérant à serpentin · « AUTRE VERRERIE » (1) · thermomètre stylo · éprouvette hexagonale | doublons. |
 
@@ -182,3 +211,53 @@ cette session. Le dossier doit pouvoir être vide entre deux chantiers.
 - 🔴 **Ne jamais effacer les métadonnées** des images de `2nde-pc-o4/` : elles
   portent le marqueur de provenance « image générée par IA ». Pas de
   `convert -strip`, pas d'`oxipng -strip all`. Le recadrage, lui, les préserve.
+
+---
+
+## 7 · La passe du 20/09 au soir — ce qui a changé sur O4
+
+Demandes de Loïc après relecture de la page.
+
+### Ce qui est fait
+
+| | |
+|---|---|
+| 🔴 **Le verre à pied n'en était pas un** | Le schéma dessinait un **verre à vin** : cône étroit, longue tige. Refait d'après la photo déposée — cône **1,4 fois plus large que haut**, bec verseur, graduations, tige courte, pied large. Le symbole étant partagé, la correction vaut **partout** dans la page. |
+| 🔴 **La coupelle avait la taille d'un cristallisoir** | 40 unités contre 44 : une soucoupe de 5 cm affichée comme un récipient de 15. Ramenée à 24, et reposée sur la ligne de base. |
+| 🔴 **La figure 3 était une image générée** | Elle portait les deux erreurs ci-dessus **sans qu'on puisse les corriger**. Remplacée par une **planche construite à partir des mêmes schémas que les vignettes de l'étape 1.1** : une correction faite une fois vaut partout, la planche se reflow sur téléphone, elle suit le thème, et ses noms sont sélectionnables. |
+| ✅ **Figure O4-05 résolue** | Les **trois pipettes jaugées** sont intégrées, en grand, avec le texte qui explique « à un trait / à deux traits ». |
+| ✅ **L'œil de l'exercice 2** | Le pictogramme en losange est remplacé par l'œil en coupe déposé à 15 h 09, détouré sur fond transparent. Il regarde déjà vers l'éprouvette : rien à retourner. |
+| ✅ **Agrandir les images au clic** | Les **34 images** de la page s'agrandissent au clic — et à la touche Entrée. Le moteur a bien un zoom, mais il ne vise que `figure.ill img` et n'est pas atteignable au clavier ; le §5 interdisant d'y toucher, l'appoint est **local à la page**. 16 contrôles au navigateur, tous passés. |
+| ✅ **Les QCM** | Quatre petits QCM dans la méthode (étapes 1.1, 1.3, 1.4, 1.5 — seule 1.2 en avait un) et un **QCM bilan de 20 questions** en étape 2.7. **48 questions** sur la page. Positions des bonnes réponses rééquilibrées (le bilan est à 5/5/5/5) et aucun biais de longueur. |
+
+### 🔴 Un désaccord à trancher — les pipettes jaugées
+
+La passe du matin avait **écarté** cette image, pour deux motifs : « deux portent
+25 ml » et « le second trait n'est pas lisible ». **Elle a été intégrée le
+soir**, et voici pourquoi :
+
+- les **deux « 25 ml » ne sont pas un défaut, c'est le sujet** : ce sont deux
+  pipettes de même volume, l'une **à un trait**, l'autre **à deux traits**. Les
+  mettre côte à côte est exactement ce que la page enseigne ;
+- le second trait est **fin mais présent**, et il devient lisible avec
+  l'**agrandissement au clic** — qui n'existait pas ce matin ;
+- les **tolérances inscrites sont justes** (± 0,02 à 10 mL, ± 0,03 à 25 mL, les
+  valeurs normalisées de classe A), et **aucune échelle** n'y figure — donc aucun
+  risque de l'erreur qui a fait écarter la fiole et le verre à pied.
+
+**À trancher :** on garde, ou on redemande une image où le second trait est plus
+marqué ?
+
+### 🔴 Ce que cette passe a appris sur les métadonnées
+
+Le marqueur de provenance de ces images **n'est pas dans le XMP**. C'est un
+manifeste **C2PA** (*Content Credentials*), en CBOR dans un segment JUMBF,
+**signé et lié au contenu par un hash**. Conséquence : **aucune transformation
+ne le préserve**, pas même un recadrage, et le recopier sur une image modifiée
+serait trompeur — il attesterait d'un contenu qui a changé.
+
+La règle est donc plus précise que « ne pas effacer les métadonnées » : une image
+qu'il faut transformer se transforme, et **l'original intact reste dans le
+dossier** à côté d'elle, suffixé `-source`. C'est ce qui a été fait pour l'œil
+(`o4-oeil-coupe-source.jpg`). Les pipettes, elles, sont une **copie à
+l'identique** : leur manifeste est intact. Détail dans le `CREDITS.md` du dossier.
