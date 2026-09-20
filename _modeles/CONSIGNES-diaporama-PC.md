@@ -1,35 +1,53 @@
 # Diaporamas de projection PC — standard de production
 
-**Établi le 29/08/2026** en construisant le diaporama de **T3-C1 · Émission et
-perception d'un son**, qui sert de référence.
-**Portée :** tous les chapitres de physique-chimie. Le chapitre T3-C1 est le
-gabarit ; les suivants se produisent en changeant le contenu, pas la méthode.
+**Établi le 29/08/2026** sur **T3-C1 · Émission et perception d'un son**,
+**réoutillé le 20/09/2026** sur **T1-C2 · Transformations physiques et
+chimiques**, qui est désormais la référence : c'est le premier diaporama sorti
+d'une chaîne versionnée, donc le premier régénérable.
+**Portée :** tous les chapitres de physique-chimie. Les suivants se produisent
+en changeant le contenu, pas la méthode.
 
 **Document jumeau :** `CONSIGNES-fiche-eleve-PC.md`. Les deux supports partagent
 la charte, les figures et plusieurs règles — fractions, indices, priorité aux
 figures du site — mais servent des usages opposés : le diaporama montre, la
 fiche fait écrire.
 
-🔴 **La chaîne de production n'existe pas.** `extract_svg.py`, `build.js` et
-`anime.py` ont vécu le temps d'une session, hors dépôt, et ne sont pas
-récupérables. **Ce document décrit donc une méthode, pas un outil rejouable** :
-les neuf règles, la mécanique d'animation et les pièges gardent leur valeur —
-ils diront quoi refaire — mais aucune commande de la §4 ne peut être lancée.
+🆕 **La chaîne de production existe et vit dans `_outils/diaporamas/`**
+(20/09/2026). Elle a été reconstruite en produisant T1-C2, en Python plutôt
+qu'en JavaScript — `python-pptx` est installé sur le poste, `pptxgenjs` ne
+l'est pas :
 
-**Le diaporama de T3-C1, lui, existe** : 12 diapositives, 53 étapes d'animation,
-34 médias. Il est **versionné** dans `assets/pptx/pc/diaporama-2nde-t3c1.pptx` —
-précisément parce qu'il n'est plus régénérable : le perdre, ce serait le perdre
-pour de bon.
+| Fichier | Rôle |
+|---|---|
+| `extraire_figures.mjs` | les SVG de la page de cours → PNG transparents à 3×, polices du site chargées, SVG de correction écartés |
+| `gabarit_diapo.py` | la charte, les composants, et le **relevé des étapes d'animation** — ne connaît aucun chapitre |
+| `diapo_<code>.py` | le contenu d'un chapitre, et lui seul |
+| `animer.py` | injecte le `<p:timing>` dans le XML des diapositives |
+| `controler.py` | contrôle géométrique : débordements, recouvrements, pied de page, décompte des ✎, absence de correction |
+| `mesurer_cadres.ps1` | demande à PowerPoint la hauteur **réelle** de chaque texte et la compare au cadre censé le contenir |
+
+🔴 **T3-C1, lui, n'est toujours pas régénérable** : il a été produit par
+l'ancienne chaîne, perdue. Il est **versionné** dans
+`assets/pptx/pc/diaporama-2nde-t3c1.pptx` précisément pour cette raison, et son
+tableau des célérités faux (§7) ne peut se corriger qu'à la main dans
+PowerPoint. Le porter sur la nouvelle chaîne le rendrait réparable — utile,
+non urgent.
 
 **Aucune page ne renvoie vers lui** : c'est un support de projection, pas un
 document d'élève. Le dépôt étant public, il reste néanmoins accessible par son
 URL — d'où le contrôle fait avant de le verser : aucune correction à l'écran
 (R1), aucune donnée d'élève ni de classe.
 
-🔴 **Il n'est pas régénérable.** Toute retouche se fait **à la main dans
-PowerPoint**, sur le fichier lui-même. C'est ce qui rend le point 1 de la §7
-bloquant : le tableau des célérités y est faux, et rien ne peut le corriger
-automatiquement.
+**Deux diaporamas au dépôt** : `diaporama-2nde-t3c1.pptx` (12 diapositives,
+53 étapes — non régénérable) et `diaporama-2nde-t1c2.pptx` (21 diapositives,
+74 étapes — régénérable par `python diapo_t1c2.py <figures>`).
+
+⚠ **Régénérable ne veut pas dire identique au bit près** : le contenu du
+`.pptx` est déterministe — deux générations donnent exactement les mêmes
+parties XML — mais les horodatages internes du zip changent, donc l'empreinte
+du fichier aussi. Un `git diff` signalera le fichier comme modifié même sans
+changement réel. Ne pas s'en alarmer, et ne pas le versionner par réflexe à
+chaque exécution.
 
 ---
 
@@ -111,6 +129,25 @@ techniques). Space Grotesk et IBM Plex du site ne sont **pas** installées
 d'office sur les postes de l'établissement — la substitution serait incontrôlée
 en projection.
 
+### R8bis · Un cadre se dimensionne sur son texte, police et taille comprises
+Une hauteur calculée « en moyenne » sort fausse dès qu'un paragraphe change de
+taille : les quatre équations de l'exercice 11 de T1-C2, écrites en 22 pt dans
+un cadre calculé pour du 15 pt, débordaient de 1,3 cm — la dernière flottait
+sur le fond. `hauteur_encart()` additionne les largeurs run par run, à
+l'avance réelle de chaque police : Calibri 0,48 em, Cambria 0,50, Courier New
+0,60.
+
+Et les blocs s'empilent **relativement** au précédent (`bas(forme)`), jamais à
+une ordonnée codée en dur : entre les exercices 11 et 12, l'écart avait atteint
+5 cm après un simple changement de phrase.
+
+### R8ter · Le sommaire d'un intercalaire s'affiche en un seul clic
+Une sous-partie par clic, c'était sept clics pour le seul sommaire de la
+partie III — on passe le temps de la projection à cliquer. Toutes les
+sous-parties portent le même rang d'animation. Le chiffre romain est posé
+**au-dessus** du titre, pas en filigrane derrière : derrière, il passait sous
+le titre et sous les premières lignes du sommaire.
+
 ### R9 · Logo en page de titre uniquement
 Sur fond sombre, il faut une **plaque claire derrière** : son texte bleu nuit
 disparaîtrait sinon.
@@ -149,35 +186,43 @@ T3-C1 : **53 étapes sur 11 diapositives** (la page de titre n'est pas animée).
 
 ---
 
-## 4. La chaîne de production, telle qu'elle a tourné une fois
-
-🔴 **Ces commandes ne peuvent plus être lancées** — les scripts n'existent pas
-(voir l'encadré de tête). Elles sont conservées parce qu'elles disent *ce qu'il
-faut refaire*, et dans quel ordre, le jour où l'on réoutille.
+## 4. La chaîne de production
 
 ```bash
-# 1 · extraire les figures refaites de la page du chapitre
-python3 extract_svg.py          # SVG inline → PNG transparents, préfixe « site- »
-                                # écarter à la main les SVG de correction
+cd _outils/diaporamas
 
-# 2 · construire le diaporama
-node build.js                   # → sortie.pptx + sequences.json
+# 1 · extraire les figures de la page du chapitre (SVG inline → PNG 3×)
+node extraire_figures.mjs ../../pages/2nde-pc-tX-cY-….html <dossier-figures>
+#     les SVG de correction sont écartés automatiquement
 
-# 3 · injecter les animations
-python3 anime.py                # → sortie-anime.pptx
+# 2 · construire le diaporama, animations comprises
+python3 diapo_<code>.py <dossier-figures>
+#     → assets/pptx/pc/diaporama-2nde-<code>.pptx
+#     le script contrôle au passage : identifiants de minutage uniques,
+#     aucune cible orpheline, autant de clics que d'étapes voulues
 
-# 4 · valider le fichier
-python3 .../office/validate.py sortie-anime.pptx
+# 3 · contrôle géométrique, puis mesure des cadres
+python3 controler.py ../../assets/pptx/pc/diaporama-2nde-<code>.pptx         ../../pages/2nde-pc-tX-cY-….html
+#     débordements, recouvrements, passage sous le pied, décompte des ✎
+#     comparé aux `a-noter` de la page, mots de correction
 
-# 5 · contrôle visuel, diapositive par diapositive
-python3 .../office/soffice.py --headless --convert-to pdf sortie-anime.pptx
-pdftoppm -jpeg -r 150 sortie-anime.pdf d
+powershell -File mesurer_cadres.ps1 -Pptx ../../assets/pptx/pc/diaporama-2nde-<code>.pptx
+#     🔴 INDISPENSABLE : le contrôle géométrique voit les FORMES, pas le
+#     TEXTE. Sur T1-C2 il était vert pendant que la quatrième équation de
+#     l'exercice 11 flottait 1,3 cm hors de son cadre.
+
+# 4 · contrôle visuel, diapositive par diapositive
+powershell -File apercu_pptx.ps1 -Pptx <…>.pptx -Sortie <dossier>
+#     PowerPoint est installé sur le poste : il exporte chaque diapositive en
+#     PNG, et refuse d'ouvrir un fichier corrompu — c'est donc AUSSI le test
+#     de validité du fichier. Ni LibreOffice ni pywin32 ne sont installés.
 ```
 
-**L'étape 5 n'est pas facultative.** Sur T3-C1, chaque passe a révélé des
-défauts réels : vignette débordant hors de la diapositive, légende passant sous
-le pied de page, cadre d'exercice laissé en double, figure trop petite pour
-être lue.
+**L'étape 4 n'est pas facultative.** Sur T1-C2, elle a révélé, après un
+contrôle géométrique pourtant vert : « SUR LA FICHE » coupé sur huit
+diapositives, le logo débordant de sa plaque, deux équations collées et
+alignées à gauche là où `PP_ALIGN(1)` valait LEFT et non CENTER. Le contrôle
+automatique et l'œil ne voient pas les mêmes choses.
 
 ---
 
@@ -214,7 +259,32 @@ le pied de page, cadre d'exercice laissé en double, figure trop petite pour
 
 ---
 
-## 7. État de T3-C1
+## 7. État de T1-C2 (référence)
+
+**Fait.** 21 diapositives, 74 étapes d'animation, structure I / II / III du
+PowerPoint de Loïc avec ses sous-parties A à G, checklist DS en dernier.
+7 figures reprises du site, aucune redessinée. 22 pictos ✎, exactement les
+22 `a-noter` de la page — contrôlé par `controler.py`, qui échoue si les deux
+comptes divergent. Cartouche et page de titre sur la charte, logo sur plaque
+claire, légende du ✎ dès la page de titre.
+
+**Points restés ouverts.**
+
+1. **Les animations n'ont pas été vues en mouvement.** PowerPoint exporte les
+   diapositives tout affiché ; seule la structure du minutage est validée
+   (identifiants uniques, aucune cible orpheline, un clic par étape). À
+   éprouver en mode diaporama devant la classe.
+2. **Aucun QR code** n'est repris sur les diapositives. Les liens vidéo du
+   cours vivent en ligne et sur la fiche ; à trancher si la projection doit
+   aussi les porter.
+3. **Le diaporama n'est lié depuis aucune page**, comme T3-C1 — c'est un
+   support de projection. Le dépôt étant public, il reste accessible par son
+   URL : contrôlé avant versement, aucune correction à l'écran, aucune donnée
+   d'élève ni de classe.
+
+---
+
+## 7bis. État de T3-C1
 
 **Fait.** 12 diapositives, structure du PowerPoint 2025/2026 conservée (I à IV,
 sous-parties A/B/C, checklist DS en dernier). Charte du site. Année 2026/2027.

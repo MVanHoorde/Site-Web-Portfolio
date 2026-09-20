@@ -15,6 +15,33 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 20/09/2026 — T1-C2 aligné sur T1-C3, et deux chaînes outillées
+
+Loïc désigne **T1-C3 comme sa référence** — esthétique, textes de transition,
+consignes — et demande d'y aligner T1-C2, puis d'en produire la fiche et le
+diaporama aux nouveaux standards.
+
+| Date | Décision | Statut |
+|---|---|---|
+| 20/09/2026 | 🔴 **T1-C3 remplace T1-C2 comme page de référence** des chapitres PC. Motif : c'est la seule page validée par Loïc (02/09), et la seule à porter des transitions `.aparte`. `CONSIGNES-chapitre-PC.md` §0 est réécrit en conséquence | ✅ en vigueur |
+| 20/09/2026 | **T1-C2 est aligné sur C3 en FORME seulement.** Le fond n'est pas rouvert : l'audit du contenu avait déjà été fait. 13 transitions, figures renumérotées 1 → 9, corrections séquencées, un gras d'insistance retiré | ✅ en vigueur |
+| 20/09/2026 | 🔴 **Les SVG inline portent `<title>`/`<desc>` + `aria-labelledby`.** Ce n'est pas qu'une question d'accessibilité : c'est la **clé d'extraction** du générateur de fiche et de l'extracteur de figures du diaporama. Sans elle, ni la fiche ni la projection ne peuvent puiser dans le cours. À poser sur tout chapitre qu'on outille | ✅ en vigueur |
+| 20/09/2026 | **L'exercice 2 de T1-C2 est restauré** (« associer une matière à sa structure microscopique », diapo 4 du PPTX source, perdu à l'extraction V1). Les pictogrammes de la source — bague en diamant, verre de jus, avion — **ne sont pas redessinés** : ce sont des objets du monde. Seules les trois structures microscopiques sont tracées, les matières sont nommées en texte | ✅ en vigueur |
+| 20/09/2026 | **La fiche de T1-C2 est régénérée par `fiche_t1c2.py`** et remplace la fiche v4 écrite à la main. 12 pages au lieu de 10, parce que le contenu est le même mais les règles du nouveau standard imposent des cadres à lignes plutôt que du texte tassé | ✅ en vigueur |
+| 20/09/2026 | 🆕 **`_outils/fiches/paginer.py` — la découpe en pages se calcule.** Chaque bloc est mesuré isolément au navigateur, une programmation dynamique propose les coupes. Creux de T1-C2 : **607 mm → 122 mm** sur 12 pages. L'outil **propose**, le PDF exporté tranche | ✅ en vigueur |
+| 20/09/2026 | 🆕 **La chaîne du diaporama est reconstruite et versionnée** dans `_outils/diaporamas/`, en Python (`python-pptx` est installé, `pptxgenjs` non). Motif : l'ancienne chaîne, perdue, laisse T3-C1 non régénérable et son tableau des célérités faux. Un diaporama se refait désormais en relançant un script | ✅ en vigueur |
+| 20/09/2026 | **Le contrôle visuel reste obligatoire malgré `controler.py`.** Le contrôle géométrique était vert alors que « SUR LA FICHE » était coupé sur huit diapositives et que le logo débordait de sa plaque. L'automatique et l'œil ne voient pas les mêmes défauts | ✅ en vigueur |
+| 20/09/2026 | 🔴 **Un cadre de diaporama se dimensionne sur le texte, police ET taille comprises.** L'estimation appliquait 15 pt à tout le cadre : les quatre équations de l'exercice 11, écrites en 22 pt, sortaient de 1,3 cm et la dernière flottait sur le fond. La largeur se calcule maintenant run par run, à partir de l'avance réelle des trois polices (Calibri 0,48 em · Cambria 0,50 · Courier New 0,60) | ✅ en vigueur |
+| 20/09/2026 | **Les blocs d'une diapositive s'empilent relativement, pas à une ordonnée codée en dur.** Une ordonnée fixe redevient fausse dès qu'on change une phrase : l'écart entre les exercices 11 et 12 avait atteint 5 cm. `bas(forme)` donne le bas du bloc précédent. Demande de Loïc (« revois les cadres des exercices ») | ✅ en vigueur |
+| 20/09/2026 | **Le sommaire d'un intercalaire s'affiche en UN clic.** Une sous-partie par clic faisait sept clics pour le seul sommaire de la partie III. Le chiffre romain passe aussi au-dessus du titre au lieu d'être en filigrane derrière lui. Demande de Loïc | ✅ en vigueur |
+| 20/09/2026 | 🆕 **`mesurer_cadres.ps1` — c'est PowerPoint qui mesure.** Une estimation ne se vérifie pas par une autre estimation : le script demande `TextRange.BoundHeight` pour chaque texte et le compare au cadre censé le contenir | ✅ en vigueur |
+| 20/09/2026 | **Les trois états de la matière passent en `.encart.propriete` marqué ✎.** La fiche en faisait un cadre à remplir alors que la page les laissait en texte courant : l'écran, la feuille et le cours ne disaient pas la même chose. 23 marqueurs désormais | ✅ en vigueur |
+| 20/09/2026 | ⏳ 🔴 **La fiche demande θ<sub>ébullition</sub>(eau), absente du cours.** Le cours donne le palier à 0 °C de l'eau pure dans la synthèse du TP3, jamais les 100 °C de l'ébullition. Ajouter les deux valeurs au cours, ou retirer le cadre « à connaître par cœur » de la fiche — c'est du fond, donc l'arbitrage de Loïc | ⏳ en attente d'arbitrage |
+| 20/09/2026 | ⏳ **La numérotation des exercices de T1-C2 n'est pas croissante dans la page** : l'exercice 6 précède les 4 et 5, comme dans le PPTX source. Garder la numérotation de Loïc ou renuméroter — son arbitrage | ⏳ en attente d'arbitrage |
+| 20/09/2026 | ⏳ **Aucune police auto-hébergée ne porte les lettres grecques.** Mesuré au navigateur : `θ` tombe en Times New Roman dans les six familles. **754 occurrences dans 48 fichiers**. À traiter par l'ajout d'une famille couvrant le grec, pas fichier par fichier | ⏳ en attente d'arbitrage |
+
+---
+
 ## 20/09/2026 — Rattachement des TP de seconde au chapitre de leur en-tête
 
 Le contrôle du 05/09 avait vérifié le **numéro** imprimé sur chaque feuille,

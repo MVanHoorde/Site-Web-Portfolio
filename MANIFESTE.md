@@ -28,7 +28,9 @@
 | **raffiner un chapitre PC** | `_modeles/CONSIGNES-chapitre-PC.md` + `_modeles/gabarit-chapitre.html` | 8 500 |
 | **concevoir la fiche élève d'un chapitre PC** 🆕 | `_modeles/CONSIGNES-fiche-eleve-PC.md` | 4 000 |
 | **régénérer une fiche de chapitre** après retouche du cours 🆕 | `cd _outils/fiches && python fiche_<code>.py`, puis `node exporter-fiches.mjs` | 0 |
-| **concevoir le diaporama de projection d'un chapitre PC** 🆕 | `_modeles/CONSIGNES-diaporama-PC.md` | 3 500 |
+| **concevoir le diaporama de projection d'un chapitre PC** 🆕 | `_modeles/CONSIGNES-diaporama-PC.md` | 4 000 |
+| **régénérer un diaporama** après retouche du cours 🆕 | `cd _outils/diaporamas && node extraire_figures.mjs …` puis `python diapo_<code>.py <figs>` | 0 |
+| **repaginer une fiche** sans tâtonner 🆕 | `python _outils/fiches/paginer.py <code> [pages]` — mesure chaque bloc, propose les coupes | 0 |
 | l'état fin d'un chapitre / d'une séquence | `_suivi/chapitres.md` (section concernée) | 500 par section |
 | **reprendre les outils O4, O5, O6** 🆕 — figures manquantes, arbitrages, tri du tampon | `_suivi/outils-o4-o6.md` | 2 500 |
 | toucher au **moteur** d'une séquence SNT | `assets/js/sequence-snt.js` (+ `_modeles/spec-snt-t1-internet.md` §13-15) | 21 000 |

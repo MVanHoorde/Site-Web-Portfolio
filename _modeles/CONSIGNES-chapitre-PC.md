@@ -58,8 +58,9 @@ la mise en ligne n'est pas un jalon.
 |---|---|
 | `_modeles/gabarit-chapitre.html` | Squelette de page de cours + **un exemplaire de chaque composant validé** (CSS/JS réels) |
 | `_modeles/gabarit-fiche.html` | Squelette de la fiche élève imprimable (style v4 aligné sur le site) |
-| `pages/2nde-pc-t1-c2-transformations-physiques-chimiques.html` | **Exemple complet de référence v2** (composants, exercices, SVG, verrou centré) |
-| `fiches/fiche-2nde-t1c2.html` | Exemple complet de fiche v2 |
+| `pages/2nde-pc-t1-c3-constitution-atome.html` | 🔴 **LA référence** — esthétique, textes de transition et consignes. Seule page validée par Loïc (02/09/2026) |
+| `pages/2nde-pc-t1-c2-transformations-physiques-chimiques.html` | Second exemple complet, aligné sur C3 le 20/09/2026 : c'est le chapitre le plus fourni (15 exercices, 9 figures) |
+| `fiches/fiche-2nde-t1c2.html` | Exemple de fiche **générée** — source `_outils/fiches/fiche_t1c2.py` |
 | `style.css`, `assets/css/fonts.css` | Charte du site (ne pas modifier) |
 
 En cas de doute sur un composant : ouvrir l'exemple de référence et copier
@@ -321,8 +322,8 @@ Trois points, dans l'ordre d'importance :
    remettent **de la main à la main**.
 3. **Pas de fiche ⇒ pas de bouton.** Un lien vers un fichier absent est un
    lien cassé (bloquant pour `verifier.mjs`) et une promesse non tenue.
-   Au 26/08/2026, **2 chapitres sur 14** portent le bouton — `t1c2` et `t1c4`,
-   les seuls dont la fiche est écrite.
+   Au 20/09/2026, **3 chapitres sur 14** portent le bouton — `t1c2`, `t1c3`
+   et `t1c4`, les seuls dont la fiche est écrite.
 
 ### 🔴 Le PDF est un export, le HTML est la source (28/08/2026)
 
@@ -379,8 +380,9 @@ c'est pourquoi `body.verrouille article.lecture` est passé en
   structurant — demander à Loïc.)
 - Seulement les **schémas essentiels**, identifiés chapitre par chapitre,
   repris **TELS QUELS du cours** (mêmes SVG, réduits, avec leur légende dans
-  `.schema .legende`). Pour T1-C2 : endo/exo, trois états, six changements
-  (triangle), hot-dog avec sa légende. Un schéma contraint à une taille
+  `.schema .legende`). Pour T1-C2 : endo/exo (Image 3), trois états
+  (Image 4), six changements (Image 5), hot-dog (Image 9) — les quatre
+  portent un `a-noter` sur la page, et c'est ce marqueur qui fait foi. Un schéma contraint à une taille
   arbitrairement petite (`max-width` trop serré) doit être agrandi — ça sert
   aussi à équilibrer le remplissage des pages (voir pagination ci-dessous).
 - Formule : cadre sobre `.formule-s`, formule en boîtes vides à gauche,

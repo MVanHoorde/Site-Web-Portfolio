@@ -4187,3 +4187,49 @@ Le dossier tampon contenait aussi les quinze **corrigés**, des programmes Pytho
 des fichiers LatisPro et des tableurs. Rien n'est parti en ligne : la décision du
 26/08 veut que les corrections circulent par mail contre preuve de travail, et
 cette décision n'était pas l'objet de la demande.
+
+---
+
+## 20/09/2026 — T1-C2 : page alignée sur C3, fiche générée, diaporama outillé
+
+Session en trois lots, sur demande de Loïc (« mon cours de référence, c'est
+Constitution de l'atome »).
+
+**Lot 1 — la page.** 13 transitions `.aparte` (il n'y en avait aucune, C3 en a
+10), 9 figures numérotées en `<b class="fig-num">`, `<title>`/`<desc>` +
+`aria-labelledby` sur les 7 SVG inline, 5 corrections d'exercice séquencées en
+`.etape`, un gras d'insistance retiré sur quatorze. L'**exercice 2**, absent
+depuis la V1, a été retrouvé diapo 4 du PPTX source et restauré avec un SVG
+maison des trois structures microscopiques. `verifier.mjs` reste à 19.
+
+**Lot 2 — la fiche.** `_outils/fiches/fiche_t1c2.py` remplace la fiche v4
+manuscrite. La première découpe laissait 607 mm de creux et une page qui
+débordait ; d'où l'écriture de `paginer.py`, qui mesure chaque bloc isolément
+et calcule les coupes. Résultat : 12 pages, 122 mm de creux, aucun
+débordement, 5 QR relus, A4 exact.
+
+**Lot 3 — le diaporama.** Chaîne reconstruite en Python dans
+`_outils/diaporamas/` : extraction des figures (Chrome, 3×, polices du site),
+gabarit, contenu, injection du minutage, contrôle géométrique. 21 diapositives,
+74 étapes, 22 pictos ✎ pour 22 `a-noter`. PowerPoint ouvre le fichier sans
+broncher — c'est aussi le test de validité.
+
+**Relevé au passage, hors périmètre :** aucune des six polices auto-hébergées
+ne porte les lettres grecques ; 754 occurrences dans 48 fichiers tombent en
+Times New Roman. Et le PPTX source de T1-C2 écrit « les **neuf** changements
+d'état » alors que sa propre figure en montre six — le site disait déjà six.
+
+**Reprise du même jour, sur retour de Loïc** — « revois les cadres des
+exercices » et « le sommaire à chaque partie, en un seul clic ». Trois
+correctifs : l'estimateur de hauteur tient compte de la police et de la taille
+de chaque run (quatre équations sortaient de leur cadre), les blocs s'empilent
+relativement au précédent (5 cm de trou entre deux exercices), et les
+sous-parties d'un intercalaire apparaissent ensemble — 74 étapes d'animation
+tombent à 64. `mesurer_cadres.ps1` fait désormais mesurer les textes par
+PowerPoint lui-même.
+
+Audit de la fiche : dix-huit points conformes, deux trouvailles. Les trois
+états de la matière étaient un cadre à remplir sur la fiche mais du texte
+courant sur la page — passés en encart marqué ✎, 23 marqueurs. Et la fiche
+demande θ(ébullition) de l'eau, que le cours ne donne nulle part : en attente
+d'arbitrage, c'est du fond.

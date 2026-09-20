@@ -76,10 +76,35 @@
 - Blocs 🚧 restants : _à recenser en régime B_.
 
 ### T1-C2 — Transformations physiques et chimiques
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- Fichiers : `pages/2nde-pc-t1-c2-transformations-physiques-chimiques.html` · `fiches/fiche-2nde-t1c2.html`
-- Sert de **référence de composants** (v2) — utile comme modèle, mais **non validé**.
-- Fiche : **proposée** (v4), pas validée. **10 pages A4** mesurées à l'export PDF.
+- Jalons : 1 ✅ · 2 ⬜ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichiers : `pages/2nde-pc-t1-c2-transformations-physiques-chimiques.html` ·
+  `fiches/fiche-2nde-t1c2.html` (généré) · `assets/pptx/pc/diaporama-2nde-t1c2.pptx`
+- Code de déblocage : **TR4NSF**. 15 exercices tous corrigés · 9 figures numérotées ·
+  7 SVG maison · 9 photos · 17 liens vidéo · TP3, TP4 et DS2 liés.
+- **Mis au standard de T1-C3 le 20/09/2026** (forme seule, le fond n'a pas été rouvert) :
+  13 transitions `.aparte` (il n'y en avait aucune), figures renumérotées 1 → 9 en
+  `<b class="fig-num">`, `<title>`/`<desc>` + `aria-labelledby` sur les 7 SVG inline,
+  5 corrections d'exercice passées en séquence `.etape`, un gras d'insistance retiré.
+- 🆕 **L'exercice 2 a été restauré** — « associer une matière à sa structure
+  microscopique », présent diapo 4 du PPTX source et perdu à l'extraction V1. Les
+  pictogrammes de la source (bague, verre, avion) **ne sont pas redessinés** : seules
+  les trois structures microscopiques le sont, les matières sont nommées en texte.
+- Fiche : **12 pages** A4, **générée** par `_outils/fiches/fiche_t1c2.py` — elle
+  remplace la fiche v4 écrite à la main (10 pages). Creux mesuré **122 mm** sur 12
+  pages, aucun débordement, 5 QR relus. Cartouche sur fond de comète délavée.
+  **Non validée.**
+- Diaporama : **21 diapositives, 64 étapes d'animation**, produit par
+  `_outils/diaporamas/diapo_t1c2.py`. Structure I/II/III du PPTX de Loïc, figures
+  reprises du site, 23 pictos ✎ pour les 23 `a-noter` de la page. **Non validé.**
+- 🆕 **Les trois états de la matière sont passés en `.encart.propriete`** (20/09) :
+  la fiche en fait un cadre à remplir, la notion devait donc porter le ✎. Même
+  geste que l'audit de T1-C3, qui avait sorti cinq notions du texte courant.
+- ⚠ Reste à la main de Loïc : (1) la **numérotation des exercices n'est pas
+  croissante dans la page** — l'exercice 6 vient avant les 4 et 5, comme dans le
+  PPTX source ; (2) 🔴 **la fiche demande θ<sub>ébullition</sub>(eau), que le cours
+  ne donne nulle part.** Le cours donne bien le palier à 0 °C de l'eau pure (TP3),
+  jamais les 100 °C. Soit on ajoute les deux valeurs au cours, soit on retire le
+  cadre « à connaître par cœur » de la fiche — c'est du fond.
 
 ### T1-C3 — Constitution de l'atome
 - Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜

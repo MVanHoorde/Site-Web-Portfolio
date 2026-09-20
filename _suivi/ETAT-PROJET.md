@@ -5,63 +5,19 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **20/09/2026** (dernière passe : **chaque TP est sous son
-> chapitre, et le 🚧 « TP » a disparu du hub**, bloc ci-dessous). Passe du même
-> jour : **les huit outils de
-> 2nde PC sont ouverts — o6, puis o7 et o8**, bloc ci-dessous). Passe du même
-> jour : **les outils O7 et O8 sont
-> refondus — une seule méthode pour isoler une grandeur, 71 relations corrigées, et
-> deux pages sœurs pour le tableur et la calculatrice**, bloc ci-dessous).
-> Passe du même jour : **les outils O4, O5 et O6
-> sont repris — photos de matériel, méthode complétée, huit exercices de plus,
-> les trois fiches A4 enrichies, et O6 ouvert aux collègues**, bloc ci-dessous). Passe du **19/09/2026** (dernière passe : **les deux collègues sont
-> en base et rattachées, un guide par matière, et `verifier.mjs` rappelle
-> désormais ce qui reste masqué**, bloc ci-dessous). Passe du **17/09/2026** :
-> **deux collègues entrent dans le tableau de bord — ES 1re et AP de
-> physique-chimie, quatre classes, deux guides de plus**, même bloc. Passe du **13/09/2026** : **les six fiches de séance
-> d'Internet sont auditées, et le générateur place enfin les tableaux remplis**, bloc
-> ci-dessous). Passe du même jour : **le tableau de bord passe
-> en espaces — les cinq lots sont livrés — base, tableau de bord, client élève et ES
-> branchée, suivi des chapitres PC, documentation ; reste à jouer le `019` dans Supabase**, bloc ci-dessous). Passe du même jour : **le tableau de bord corrige
-> classe par classe, avec la file des copies visible et rangée par nom ; le worker
-> passe sur un calendrier calé sur les séances de SNT**, bloc ci-dessous). Passe du
-> 12/09 : **le chapitre ES Term T2-C1
-> « Deux siècles d'énergie électrique » est refondu sur audit — « à retenir » en bas
-> de chaque partie, questions ouvertes corrigées en classe, séance Bilan à part,
-> les 5 liens manquants retrouvés dans le PPTX** ; détail `es-term-verification.md`
-> §8). Passe du même jour : **le chapitre ES T1-C1
-> « La nucléosynthèse » est refondu sur audit — 3 séances, 14 étapes, 8 schémas SVG
-> tracés, un glossaire progressif, et trois corrections descendues dans le moteur
-> partagé**, bloc ci-dessous). Passe du même jour : **l'outil 3 « Sécurité au
-> laboratoire » est relu contre la circulaire 2024-074 — deux contradictions
-> corrigées, quatre consignes officielles ajoutées, la vérification des neuf
-> pictogrammes passe en fenêtre**, bloc ci-dessous). Passe du même jour :
-> **l'enseignement scientifique de terminale passe sur le moteur — deux chapitres,
-> 5 séances, et le hub réduit à ce qui est traité**, bloc ci-dessous).
-> Passe du 06/09 : **l'enseignement
-> scientifique de 1re passe sur le moteur — six chapitres, 18 séances**, bloc
-> ci-dessous). Passe du 05/09 : **les quinze sujets de
-> TP de seconde sont remplacés et renumérotés**, bloc ci-dessous). Passe du même
-> jour : **le plafond d'avance
-> ouvrait le module `snt-m1` au lieu de la première séance du cours — les outils
-> transversaux sortent de la file**, bloc ci-dessous). Passe du même jour : **le
-> hub de 2nde PC — les
-> chapitres remontent en tête, six outils sur huit se referment**, bloc ci-dessous).
-> Passe du 04/09 : **la rentrée — les 14
-> groupes de SNT existent en base et chaque enseignant a son tableau de bord**,
-> bloc ci-dessous). Passe du 02/09 : **l'audit de T1-C3 et son lot
-> transverse sont appliqués** — bloc ci-dessous. Passe du même jour : **la fiche élève de T3-C1
-> est en ligne, et sa chaîne de production tourne depuis le dépôt** — bloc ci-dessous.
-> Passe du même jour : **les supports de classe entrent dans le dépôt, et la racine
-> est rangée**. Passe du 29/08 :
-> **les dessins figuratifs de
-> `o3` cèdent la place à de vraies images** — les 9 pictogrammes CLP vectorisés depuis
-> le PDF officiel, la tenue en illustration fournie, les 5 équipements en cadres de
-> réservation ; et la règle transverse qui en découle dans `CLAUDE.md`. Passe du
-> 28/08 : **les huit outils transversaux de PC sont écrits** — `o4` verrerie, `o5` compte rendu de TP, `o6` présenter un calcul,
-> `o7` relation algébrique et `o8` graphique produits d'affilée, page + fiche + carte au
-> hub pour chacun. Passes précédentes du même jour : l'ornement des encarts d'histoire,
-> et le passage des fiches de 2nde PC en PDF).
+> Dernière réécriture : **20/09/2026**.
+>
+> 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
+> soudées par des « Passe du même jour » — l'empilement que ce fichier est
+> précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
+> fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
+>
+> **Dernière passe — T1-C2 aligné sur T1-C3, fiche générée, diaporama outillé.**
+> La page reçoit ses 13 transitions, ses figures numérotées et ses SVG titrés ;
+> l'exercice 2, perdu à l'extraction V1, est restauré. La fiche passe au
+> générateur (12 pages, 122 mm de creux) et la **chaîne des diaporamas est
+> reconstruite et versionnée** dans `_outils/diaporamas/` — un diaporama se
+> régénère désormais en relançant un script. Détail : bloc ci-dessous.
 >
 > 🔴 **Ce qui demande une relecture de Loïc en priorité** : l'étape 1.5 « Si ça tourne
 > mal » de `o3` — seul contenu du dépôt qui engage la **sécurité d'élèves**. Elle est
@@ -1024,8 +980,10 @@ Vérifié à la mesure : symétrie au pixel, losange à 0,22px de la médiane de
 libellé sur deux lignes à 390px sans losange orphelin, et **survie à la photocopie**
 (niveaux de gris + seuil dur).
 
-**Les fiches de 2nde PC se distribuent maintenant en PDF.** Six fiches exportées dans
-`assets/pdf/pc/fiches/` — `t1c2` (10 p.), `t1c4` (6 p.), `o1`, `o2` et `o4` (2 p.),
+**Les fiches de 2nde PC se distribuent en PDF.** Douze fiches exportées dans
+`assets/pdf/pc/fiches/` — `t1c2` (**12 p.**, générée), `t1c3` (6 p.), `t1c4` (6 p.),
+`t3c1` (8 p.), et les huit fiches d'outil. À l'époque de ce bloc il y en avait six —
+`t1c2` (10 p.), `t1c4` (6 p.), `o1`, `o2` et `o4` (2 p.),
 `o3` (4 p.) — toutes en `209,9 × 297,0 mm`, polices incorporées. **Les dix-sept liens
 du dépôt ont basculé** (2 chapitres, 4 outils × 2, le hub × 4, les 2 gabarits × 3) ;
 aucun lien mort, `verifier.mjs` reste à **18**. L'export est scripté :

@@ -16,9 +16,24 @@ régénérer* relève du dépôt : `node exporter-fiches.mjs` (§4) et le tablea
 « Où est quoi » de `CLAUDE.md`.
 
 **La chaîne vit dans `_outils/fiches/`** : `gabarit_fiche.py` (la feuille, le CSS,
-les composants), `fiche_<code>.py` (le contenu d'un chapitre) et
-`mesurer_pages.py` (le contrôle du remplissage). Déposée le 02/09/2026 et
-vérifiée sur place : elle régénère la fiche de T3-C1 **octet pour octet**.
+les composants), `fiche_<code>.py` (le contenu d'un chapitre), `paginer.py` +
+`paginer.mjs` (la découpe en pages, proposée à la mesure) et `mesurer_pages.py`
+(le contrôle du remplissage sur le PDF). Elle régénère la fiche de T3-C1
+**octet pour octet**.
+
+🆕 **`paginer.py` (20/09/2026) — mesurer chaque bloc, puis couper.**
+`mesurer_pages.py` dit *après coup* où le contenu s'arrête ; il ne dit pas **où
+couper**. Tant qu'on déplaçait les appels `feuille()` à la main, chaque essai
+coûtait une génération, un export et une lecture : la première découpe de T1-C2
+laissait **607 mm de creux** et une page qui débordait. `paginer.py` rend chaque
+bloc isolément dans Chrome, mesure sa hauteur, et une programmation dynamique
+propose les coupes qui répartissent le vide. Creux ramené à **122 mm sur 12
+pages**. Il **propose**, il ne tranche pas : le PDF exporté reste l'arbitre.
+
+Pour en profiter, le fichier de chapitre expose `codes_qr()` et `blocs()`, et
+porte une constante `COUPES` — `fiche_t1c2.py` est le modèle. `fiche_t3c1.py`,
+antérieur, construit ses pages à la main : il marche toujours, il n'est
+simplement pas paginable par l'outil.
 
 **Ce qu'il faut installer, une fois :**
 
@@ -298,13 +313,12 @@ du chapitre. Contrôles au dépôt : cinq QR relus `✓`, A4 `209,9 × 297,0 mm`
    Mono** — les mentions « Donnée : … » des énoncés sortent donc dans un autre
    dessin. C'est aussi ce qui rend la fiche un peu plus haute que l'aperçu du
    29/08, produit sur une machine où les polices étaient complètes.
-5. **Le bloc de téléchargement** n'est pas posé sur la page du chapitre — il ne
-   peut pas l'être, faute de fiche à télécharger (point 6).
-6. 🔴 **La fiche n'existe pas dans le dépôt** : ni la source
-   `fiches/fiche-2nde-t3c1.html`, ni `assets/pdf/pc/fiches/fiche-2nde-t3c1.pdf`.
-   Seul un aperçu de contrôle en 8 pages subsiste, hors git
-   (`_a-deposer/fiches-t3c1/`). Le chapitre reste donc, pour le dépôt, sans
-   fiche — `_suivi/chapitres.md` dit vrai.
+5. **Aucune police auto-hébergée ne porte les lettres grecques.** Mesuré au
+   navigateur le 20/09/2026 : `θ` tombe en Times New Roman dans les **six**
+   familles. Le dépôt en compte **754 occurrences dans 48 fichiers** ; la fiche
+   de T1-C2 en porte 2, seul caractère de ses douze pages servi par une police
+   système. À traiter une fois pour toutes en ajoutant une famille qui couvre
+   le grec, pas fiche par fiche.
 
 ---
 
@@ -312,9 +326,10 @@ du chapitre. Contrôles au dépôt : cinq QR relus `✓`, A4 `209,9 × 297,0 mm`
 
 - **Les fiches outils** (`o1` à `o8`) suivent leurs propres consignes,
   `CONSIGNES-outil-PC.md`. Elles ne sont pas produites par ce générateur.
-- **T1-C2 et T1-C4**, écrites à la main avant le générateur, ne suivent pas
-  encore ce standard. Les y ramener supposerait de les réécrire en
-  `fiche_t1c2.py` et `fiche_t1c4.py` — utile, non urgent.
+- **T1-C4** est écrite à la main, avant le générateur, et ne suit pas encore ce
+  standard. L'y ramener suppose de la réécrire en `fiche_t1c4.py` — utile, non
+  urgent. **T1-C2 l'a été le 20/09/2026** : `fiche_t1c2.py`, 12 pages, la fiche
+  v4 manuscrite de 10 pages est remplacée.
 - **Le rendu navigateur** ne peut pas être vérifié depuis l'environnement de
   production : le CSS est écrit conservateur pour limiter l'écart, mais c'est
   l'impression Chrome qui fait foi.
