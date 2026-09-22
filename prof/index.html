@@ -560,10 +560,16 @@ table.grille thead th{white-space:nowrap}
       <div id="apercu-noms" class="encadre" style="display:none"></div>
 
       <div class="encadre">
-        <b>Format attendu</b> — une ligne par élève, l'identifiant puis le nom&nbsp;:<br>
+        <b>Format attendu</b> — le classeur <i>Table des noms</i> enregistré en
+        <b>CSV</b> se charge tel quel&nbsp;: les colonnes <code class="mono">Identifiant</code>,
+        <code class="mono">NOM</code> et <code class="mono">Prénom</code> sont reconnues par
+        leur titre, le reste (classe, date, remarque) est laissé de côté, et les lignes
+        encore vides aussi.<br>
+        Un fichier tapé à la main marche aussi, l'identifiant puis le nom&nbsp;:<br>
         <code class="mono">k3-loup-42;Martin Léa</code><br>
         <code class="mono">v8-cedre-07;Boccara Yanis</code><br>
-        Le point-virgule ou la virgule fonctionnent. Une ligne d'en-tête est ignorée.
+        Le point-virgule ou la virgule fonctionnent, les accents d'Excel comme ceux
+        d'un éditeur de texte.
       </div>
 
       <div class="encadre">
@@ -625,7 +631,7 @@ table.grille thead th{white-space:nowrap}
 <script src="../assets/js/verrou-snt.js?v=3"></script>
 <script src="../assets/js/questions-snt.js?v=3"></script>
 <script src="../assets/js/sequences-espaces.js?v=2"></script>
-<script src="../assets/js/prof-api.js"></script>
+<script src="../assets/js/prof-api.js?v=2"></script>
 <script>
 (function(){
   'use strict';
@@ -863,17 +869,26 @@ table.grille thead th{white-space:nowrap}
     if(!f) return;
     var lecteur = new FileReader();
     lecteur.onload = function(){
-      var r = ProfAPI.chargerNoms(lecteur.result, f.name);
+      var r = ProfAPI.chargerNoms(decoderFichier(lecteur.result), f.name);
       majEtatNoms();
       montrerApercu(r, f.name);
       rendreCorrection();   /* pseudonymes → vrais noms, et la file se re-trie */
       rendreSeance(); rendreGrille();
       if(!r.n) alert("Aucun nom lu. Vérifie le format : un identifiant, un séparateur, un nom.");
     };
-    /* Excel français enregistre en Windows-1252 ; on tente l'UTF-8 et
-       on se rabat sinon, sinon les accents partent en charabia. */
-    lecteur.readAsText(f, 'utf-8');
+    lecteur.readAsArrayBuffer(f);
   });
+
+  /* Excel français enregistre en Windows-1252 : « Prénom » y tient sur
+     un octet, que l'UTF-8 refuse. On décode donc en UTF-8 STRICT — la
+     moindre séquence invalide lève — et on se rabat sur le 1252, sinon
+     les accents partent en charabia. Le BOM d'Excel est retiré au
+     passage par TextDecoder. */
+  function decoderFichier(tampon){
+    var octets = new Uint8Array(tampon);
+    try { return new TextDecoder('utf-8', { fatal: true }).decode(octets); }
+    catch(e){ return new TextDecoder('windows-1252').decode(octets); }
+  }
 
   /* Aperçu : montrer CE QUI A ÉTÉ LU, pas seulement combien.
      Un compte seul ne dit pas qu'on s'est trompé de fichier ; trois
@@ -893,7 +908,12 @@ table.grille thead th{white-space:nowrap}
          + echapper(p[1]) + '<br>';
     });
     if(r.n > r.apercu.length) h += '<span class="tresmuet">…et ' + (r.n - r.apercu.length) + ' de plus.</span><br>';
-    if(r.ignorees) h += '<span class="tresmuet">' + r.ignorees + ' ligne(s) sans séparateur, ignorée(s).</span>';
+    if(r.ignorees) h += '<span class="tresmuet">' + r.ignorees + ' ligne(s) sans séparateur, ignorée(s).</span><br>';
+    /* Un identifiant dont le nom n'est pas encore rempli reste sous son
+       pseudonyme : le dire, sinon on cherche l'élève manquant. */
+    if(r.sansNom) h += '<span class="tresmuet">' + r.sansNom
+      + (r.sansNom > 1 ? ' identifiants sont sans nom' : ' identifiant est sans nom')
+      + ' dans le fichier : il reste affiché sous son pseudonyme.</span>';
     z.innerHTML = h;
     z.style.display = '';
   }

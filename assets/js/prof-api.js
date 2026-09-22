@@ -305,11 +305,64 @@
    *  est de le recharger à chaque session — deux touches, et c'est
    *  ce qui permet de projeter au tableau sans exposer personne.
    *
-   *  Format attendu, une ligne par élève :  identifiant;Nom Prénom
+   *  Deux formes de fichier sont lues :
+   *
+   *   — l'export CSV du classeur « Table des noms » : deux lignes de
+   *     titre, une ligne vide, puis l'en-tête
+   *     « Identifiant;NOM;Prénom;Classe;Inscrit le;Remarque » et les
+   *     lignes vides que tout tableau Excel traîne en bas. Les
+   *     colonnes sont repérées PAR LEUR NOM, jamais par leur rang ;
+   *   — un fichier tapé à la main :  identifiant;Nom Prénom
+   *
    *  Le point-virgule ou la virgule font l'affaire (Excel français
    *  produit le premier).
    * ---------------------------------------------------------- */
-  /* Renvoie { n, ignorees, apercu } plutôt qu'un simple compte.
+
+  /* Découpe une ligne CSV en respectant les guillemets d'Excel :
+     un nom composé qui contient le séparateur reste un seul champ. */
+  function champsCsv(ligne, sep) {
+    var out = [], cour = '', guill = false;
+    for (var i = 0; i < ligne.length; i++) {
+      var c = ligne.charAt(i);
+      if (guill) {
+        if (c !== '"') cour += c;
+        else if (ligne.charAt(i + 1) === '"') { cour += '"'; i++; }
+        else guill = false;
+      }
+      else if (c === '"') guill = true;
+      else if (c === sep) { out.push(cour); cour = ''; }
+      else cour += c;
+    }
+    out.push(cour);
+    return out;
+  }
+
+  /* « Prénom », « prenom » et « Pr?nom » (accents déjà abîmés par un
+     mauvais décodage) doivent se reconnaître pareil. */
+  function clefEntete(t) {
+    return String(t || '').replace(/^﻿/, '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .toLowerCase().replace(/[^a-z]/g, '');
+  }
+
+  /* L'en-tête n'est pas forcément la première ligne : le classeur
+     porte son titre et sa consigne au-dessus. On le cherche. */
+  function repererEntete(lignes, sep) {
+    for (var i = 0; i < lignes.length && i < 30; i++) {
+      var c = champsCsv(lignes[i], sep).map(clefEntete);
+      var iId = -1, iNom = -1, iPrenom = -1;
+      c.forEach(function (t, k) {
+        if (iId    < 0 && /^(identifiant|pseudo|pseudonyme|login|id)$/.test(t)) iId = k;
+        if (iNom   < 0 && /^(nom|nomdefamille)$/.test(t))                       iNom = k;
+        if (iPrenom < 0 && /^(prenom|prenoms)$/.test(t))                        iPrenom = k;
+      });
+      if (iId >= 0 && (iNom >= 0 || iPrenom >= 0))
+        return { ligne: i, id: iId, nom: iNom, prenom: iPrenom };
+    }
+    return null;
+  }
+
+  /* Renvoie { n, ignorees, sansNom, apercu } plutôt qu'un simple compte.
      Motif (31/07, découvert au premier essai) : un compte seul ment
      par omission. Un fichier de cours à deux colonnes se charge
      sans broncher et annonce « 2 noms chargés » — et l'écran
@@ -318,24 +371,51 @@
      seconde qu'on s'est trompé de fichier. */
   function chargerNoms(texte, fichier) {
     nomsFichier = fichier || '';
-    var table = {}, n = 0, ignorees = 0, apercu = [];
-    String(texte || '').split(/\r?\n/).forEach(function (ligne) {
-      if (!ligne.trim()) return;
-      var sep = ligne.indexOf(';') >= 0 ? ';' : ',';
-      var m = ligne.split(sep);
-      if (m.length < 2) { ignorees++; return; }
-      var id  = m[0].trim();
-      var nom = m.slice(1).join(sep).trim();
-      if (!id || !nom) { ignorees++; return; }
-      /* en-tête éventuel : on ne l'inscrit pas */
-      if (/^(identifiant|pseudo|login|id)$/i.test(id)) return;
+    var brut = String(texte || '').replace(/^﻿/, '');
+    var lignes = brut.split(/\r?\n/);
+    /* séparateur décidé sur TOUT le fichier : une ligne isolée
+       « Martin, Léa » ne doit pas faire basculer la lecture. */
+    var sep = (brut.split(';').length >= brut.split(',').length) ? ';' : ',';
+    var ent = repererEntete(lignes, sep);
+    var table = {}, n = 0, ignorees = 0, sansNom = 0, apercu = [];
+
+    function inscrire(id, nom) {
+      id  = String(id  || '').trim();
+      nom = String(nom || '').replace(/\s+/g, ' ').trim();
+      if (!id) return;
+      /* identifiant présent, nom pas encore rempli : on n'invente
+         rien, l'élève reste sous son pseudonyme. */
+      if (!nom) { sansNom++; return; }
       table[id.toLowerCase()] = nom;
       n++;
       if (apercu.length < 3) apercu.push([id, nom]);
+    }
+
+    lignes.forEach(function (ligne, i) {
+      if (ent && i <= ent.ligne) return;   /* titre, consigne, en-tête */
+      var m = champsCsv(ligne, sep).map(function (t) { return t.trim(); });
+      /* « ;;;;; » : une ligne du tableau restée vide, pas une erreur */
+      if (!m.some(function (t) { return t !== ''; })) return;
+
+      if (ent) {
+        var id = m[ent.id] || '';
+        if (!id) { ignorees++; return; }
+        inscrire(id, [
+          ent.nom    >= 0 ? m[ent.nom]    : '',
+          ent.prenom >= 0 ? m[ent.prenom] : ''
+        ].filter(Boolean).join(' '));
+        return;
+      }
+
+      /* pas d'en-tête : fichier tapé à la main, identifiant puis nom */
+      if (m.length < 2) { ignorees++; return; }
+      if (/^(identifiant|pseudo|login|id)$/i.test(m[0])) return;
+      inscrire(m[0], m.slice(1).filter(Boolean).join(' '));
     });
+
     noms = table;
     ecrireStocke(jeton);   /* suit la session, et meurt avec elle */
-    return { n: n, ignorees: ignorees, apercu: apercu };
+    return { n: n, ignorees: ignorees, sansNom: sansNom, apercu: apercu };
   }
 
   /* Renvoie le vrai nom si la table est chargée, le pseudonyme
