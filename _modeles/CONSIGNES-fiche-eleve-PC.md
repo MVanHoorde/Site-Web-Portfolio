@@ -30,6 +30,15 @@ bloc isolément dans Chrome, mesure sa hauteur, et une programmation dynamique
 propose les coupes qui répartissent le vide. Creux ramené à **122 mm sur 12
 pages**. Il **propose**, il ne tranche pas : le PDF exporté reste l'arbitre.
 
+🔴 **Une page ne finit jamais sur un titre** : `paginer.mjs` refuse toute coupe
+qui laisserait un « 03 … » ou un « C · … » seul en bas de page. La première
+découpe de la reprise du 22/09 en laissait deux.
+
+**Les énoncés suivent la structure du site** (22/09) : `exercice()` accepte
+`contexte=`, `equations=`, `donnees=` et `apres_contexte=` — la situation en
+romain, les équations centrées, les données en petit, la question seule en
+italique. Sans ces paramètres, l'ordre ancien est conservé.
+
 Pour en profiter, le fichier de chapitre expose `codes_qr()` et `blocs()`, et
 porte une constante `COUPES` — `fiche_t1c2.py` est le modèle. `fiche_t3c1.py`,
 antérieur, construit ses pages à la main : il marche toujours, il n'est

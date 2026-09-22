@@ -199,7 +199,8 @@ def formule(gauche, droite, nb_lignes=3):
             f'      </tr></table>\n')
 
 
-def exercice(num, titre, question="", fig=None, largeur=None, lignes=None):
+def exercice(num, titre, question="", fig=None, largeur=None, lignes=None,
+             contexte="", equations=(), donnees="", apres_contexte=""):
     """Énoncé d'exercice.
 
     RÈGLE : la figure d'un énoncé vit DANS le cadre de l'énoncé. Posée à
@@ -207,9 +208,37 @@ def exercice(num, titre, question="", fig=None, largeur=None, lignes=None):
     une donnée de l'exercice.
 
     `lignes` donne le nombre de lignes de rédaction. On ne pré-dessine ni
-    tableau ni cadre de réponse : l'élève trace ce dont il a besoin."""
+    tableau ni cadre de réponse : l'élève trace ce dont il a besoin.
+
+    STRUCTURE DU SITE (22/09/2026) — avec `contexte` ou `equations`, l'énoncé
+    suit l'ordre de la page en ligne : la situation en romain, les équations
+    centrées, la figure, les données en petit, et la QUESTION seule en
+    italique. Écrit d'un seul tenant en italique, l'énoncé faisait bloc : la
+    question ne se distinguait plus de ce qu'on donne. Sans eux, l'ordre
+    ancien est conservé et les fiches déjà produites ne bougent pas.
+    `apres_contexte` : un bloc HTML libre sous le contexte (une liste de
+    situations, des équations à compléter…)."""
     h = (f'      <div class="encart exercice-f">\n'
          f'        <div class="etq">Exercice {num} — {titre}</div>\n')
+    if contexte or equations or apres_contexte or donnees:
+        if contexte:
+            h += (f'        <p style="font-size:9.3pt;margin:0 0 1mm;">'
+                  f'{contexte}</p>\n')
+        h += apres_contexte
+        for e in equations:
+            h += (f'        <p style="text-align:center;font-size:10.5pt;'
+                  f'margin:1.2mm 0;white-space:nowrap;">{e}</p>\n')
+        if fig:
+            h += (f'        <div class="schema" style="max-width:{largeur};'
+                  f'margin:1.5mm auto;">{fig}</div>\n')
+        if donnees:
+            h += (f'        <p class="mini" style="margin:0 0 1mm;">'
+                  f'{donnees}</p>\n')
+        if question:
+            h += f'        <p class="question-f">{question}</p>\n'
+        if lignes:
+            h += calcul(lignes)
+        return h + "      </div>\n"
     if question:
         h += f'        <p class="question-f">{question}</p>\n'
     if fig:

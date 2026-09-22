@@ -28,6 +28,22 @@ Retours du premier test en classe de Loïc sur `t0` et sur le tableau de bord.
 | 22/09/2026 | 🔴 **Vidéos : projection depuis le poste de Loïc, par un lien DigiView ; aucune vidéo de tiers ré-hébergée.** Motif : le réseau du lycée demande une connexion Google pour lire YouTube, et télécharger une vidéo de créateur pour la redéposer (dépôt, OneDrive, cahier de textes) est interdit par les conditions de YouTube et n'est pas couvert par l'exception pédagogique. Les postes de visionnage des pages restent (notes, QCM, revisionnage) et passent au lecteur DigiView intégré : les 6 vidéos de t0, t1 et m1, le 22/09. Au passage, la vidéo de 49 min de t0 était attribuée à « Data LabCenter » : elle est de **Deus Ex Silicium**. Détail : `CONSIGNES-sequence-SNT.md`, règles techniques | ✅ |
 | 22/09/2026 | **`sequence-snt.css` intercale Inter après IBM Plex Sans** dans ses onze piles, comme prévu par CLAUDE.md : `.btn` n'avait aucun repli et tous les boutons des séquences tombaient en Times New Roman | ✅ |
 
+## 22/09/2026 — Audit du diaporama de T1-C2 par Loïc
+
+| Date | Décision | Statut |
+|---|---|---|
+| 22/09/2026 | **Les exercices du diaporama et de la fiche suivent la structure du site** : contexte en romain, équations centrées, figure dans le cadre, données en petit, question seule en italique. Motif (Loïc) : « les exercices font un peu bloc » | ✅ en vigueur |
+| 22/09/2026 | **Les encarts du diaporama s'allègent** : fond teinté pâle et filet, sans contour noir ; le terme défini est mis en évidence. Change aussi le rendu du diaporama de T1-C1, qui partage le gabarit | ✅ en vigueur |
+| 22/09/2026 | **La définition « réaction chimique et équation » est scindée**, sur le site, la fiche et le diaporama : une définition + une propriété « écriture d'une équation de réaction ». Demande de Loïc. Phrase d'amorce reformulée : proposition à valider | ✅ en vigueur |
+| 22/09/2026 | **Exercice 10 : l'équation n'est plus donnée**, seulement les notations des trois espèces — l'élève déroule la méthode entière. Demande de Loïc. Correction complétée (écrire, équilibrer) : proposition à valider | ✅ en vigueur |
+| 22/09/2026 | **Exercice 1 en trois colonnes** sur le site et la fiche | ✅ en vigueur |
+| 22/09/2026 | **Exercice 6 laissé sans courbes**, alors qu'il en faudrait pour le résoudre : le TP qui les produit vient beaucoup plus tard dans l'année. Décision de Loïc : « on le laisse tel quel » | ✅ en vigueur |
+| 22/09/2026 | **La photo cuivre + nitrate d'argent n'est plus « Image 9 » dans le diaporama**, et le hot-dog redevient l'Image 9 : la numérotation est celle du site (R6), où la photo vit dans un encart exemple, hors série | ✅ en vigueur |
+| 22/09/2026 | ✅ **La fiche et le diaporama de T1-C2 sont validés par Loïc** (« c'est parfait »), avec les deux reformulations du cours (définition scindée, exercice 10). Jalon 6 franchi. Le cours entier (jalon 5) n'est pas déclaré validé pour autant | ✅ en vigueur |
+| 22/09/2026 | ⏳ **Numéro du TP de la synthèse** : Loïc pense qu'il a changé. La feuille du dépôt porte « TP3 » dans son en-tête ; rien n'est modifié sans le nouveau numéro ou la nouvelle feuille | ⏳ en attente |
+
+---
+
 ## 20/09/2026 — T1-C2 aligné sur T1-C3, et deux chaînes outillées
 
 Loïc désigne **T1-C3 comme sa référence** — esthétique, textes de transition,

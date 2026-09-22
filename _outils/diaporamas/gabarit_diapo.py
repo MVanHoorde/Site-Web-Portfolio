@@ -63,6 +63,19 @@ def cm(x):
     return Emu(int(x * CM))
 
 
+# Fond pâle de chaque genre d'encart. Un contour noir sur chaque cadre
+# alourdissait la diapositive (audit du 22/09 : « le cadre de définition est
+# un peu lourd ») ; le fond teinté + le filet suffisent à délimiter.
+TEINTES = {
+    "definition": RGBColor(0xEA, 0xF5, 0xF6),
+    "propriete": RGBColor(0xEF, 0xED, 0xF8),
+    "notation": RGBColor(0xEF, 0xED, 0xF8),
+    "exercice": RGBColor(0xFF, 0xFF, 0xFF),     # blanc + contour clair
+    "methode": RGBColor(0xFB, 0xF5, 0xE3),
+    "piege": RGBColor(0xFD, 0xEE, 0xEB),
+    "exemple": RGBColor(0xEE, 0xF5, 0xEF),
+}
+
 GENRES = {
     "definition": (BETA, "DÉFINITION"),
     "propriete": (GAMMA, "PROPRIÉTÉ"),
@@ -134,6 +147,34 @@ def _sans_trait(shp):
     return shp
 
 
+class Par:
+    """Un paragraphe qui porte ses propres réglages : alignement, espace avant.
+
+    Sert surtout aux ÉQUATIONS, qu'on centre au milieu d'un texte aligné à
+    gauche — comme `.eq-ligne` sur le site. Le contenu est celui d'un
+    paragraphe ordinaire : chaîne, ou liste de morceaux riches."""
+
+    def __init__(self, contenu, align=None, avant=0.0, taille=None,
+                 police=None, italique=None, couleur=None):
+        self.contenu, self.align, self.avant = contenu, align, avant
+        self.taille, self.police = taille, police
+        self.italique, self.couleur = italique, couleur
+
+
+def eq(contenu, taille=19):
+    """Une équation centrée, en Cambria : la ligne `.eq-ligne` du site."""
+    return Par(contenu, align=PP_ALIGN.CENTER, taille=taille, police=TITRES,
+               avant=2)
+
+
+def terme(texte, couleur=BETA):
+    """Le mot DÉFINI, mis en évidence comme `.terme` sur le site.
+
+    Le gras seul ne suffisait pas : dans un cadre de six lignes, l'œil ne
+    trouvait pas « énergie massique » (audit du 22/09)."""
+    return (texte, {"gras": True, "couleur": couleur})
+
+
 def _texte(s, x, y, w, h, texte="", taille=16, police=CORPS, couleur=ENCRE,
            gras=False, italique=False, align=PP_ALIGN.LEFT,
            ancre=MSO_ANCHOR.TOP, interligne=1.0, espacement=0):
@@ -147,6 +188,17 @@ def _texte(s, x, y, w, h, texte="", taille=16, police=CORPS, couleur=ENCRE,
     lignes = texte if isinstance(texte, (list, tuple)) else [texte]
     for i, ligne in enumerate(lignes):
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        if isinstance(ligne, Par):
+            p.alignment = ligne.align if ligne.align is not None else align
+            if ligne.avant:
+                p.space_before = Pt(ligne.avant)
+            p.line_spacing = interligne
+            if espacement:
+                p.space_after = Pt(espacement)
+            _riche(p, ligne.contenu, ligne.taille or taille,
+                   ligne.police or police, ligne.couleur or couleur, gras,
+                   italique if ligne.italique is None else ligne.italique)
+            continue
         p.alignment = align
         p.line_spacing = interligne
         if espacement:
@@ -232,7 +284,7 @@ def pied(s, seq, i, chapitre, numero):
     seq.fige(i, z)
 
 
-def picto_fiche(s, seq, i, rang, x, y):
+def picto_fiche(s, seq, i, rang, x, y, libelle=True):
     """Pastille ocre ✎ + « SUR LA FICHE ». (x, y) = coin de la PASTILLE.
 
     🔴 Se pose UNIQUEMENT là où la page en ligne porte un `a-noter`.
@@ -240,9 +292,10 @@ def picto_fiche(s, seq, i, rang, x, y):
     Le libellé est posé à GAUCHE de la pastille et aligné à droite : placé à
     sa droite, il sortait du cadre de l'encart dès que la pastille était
     contre le bord — le texte était coupé sur les huit premières diapos."""
-    z = _texte(s, x - 4.15, y + 0.16, 4.0, 0.5, "SUR LA FICHE", taille=9,
-               police=MONO, couleur=OCRE, gras=True, align=PP_ALIGN.RIGHT)
-    seq.marque(i, rang, z)
+    if libelle:
+        z = _texte(s, x - 4.15, y + 0.16, 4.0, 0.5, "SUR LA FICHE", taille=9,
+                   police=MONO, couleur=OCRE, gras=True, align=PP_ALIGN.RIGHT)
+        seq.marque(i, rang, z)
     p = _cadre(s, x, y, 0.72, 0.72, MSO_SHAPE.OVAL)
     p.fill.solid()
     p.fill.fore_color.rgb = OCRE
@@ -295,24 +348,51 @@ def hauteur_encart(corps, w, taille=15, police=CORPS, etiquette_sur_2=False):
     Cette estimation ne se vérifie pas toute seule : `mesurer_cadres.ps1`
     demande à PowerPoint la hauteur réelle de chaque texte.
     """
-    utile = w - 1.05
+    tete = 1.35 if etiquette_sur_2 else 0.95
+    # 0,45 cm de garde : l'estimation reste une estimation, et un cadre un peu
+    # trop grand se voit moins qu'un texte qui en sort.
+    return round(tete + hauteur_texte(corps, w - 1.05, taille, police) + 0.45, 2)
+
+
+def hauteur_texte(corps, utile, taille=15, police=CORPS):
+    """Hauteur, en cm, d'une liste de paragraphes dans une colonne `utile`."""
     haut = 0.0
     for p in corps:
+        if isinstance(p, Par):
+            haut += p.avant * PT_CM
+            pt_par, pol_par = p.taille or taille, p.police or police
+            p = p.contenu
+        else:
+            pt_par, pol_par = taille, police
         morceaux = ([(p, {})] if isinstance(p, str)
                     else [m if isinstance(m, tuple) else (m, {}) for m in p])
         # largeur du paragraphe = somme des largeurs de ses runs, chacun à SA
         # police et SA taille : un « Données : … » en Courier 12 n'occupe pas
         # la même place que le même texte en Calibri 15.
-        largeur = sum(len(t) * _avance(o.get("police", police),
-                                       o.get("taille", taille))
+        # une espace ne pèse qu'une demi-lettre : les équations, aérées
+        # d'espaces multiples, étaient estimées sur deux lignes et laissaient
+        # un creux dans leur cadre
+        largeur = sum((len(t) - 0.5 * t.count(" "))
+                      * _avance(o.get("police", pol_par),
+                                o.get("taille", pt_par))
                       for t, o in morceaux)
-        pt = max(o.get("taille", taille) for _, o in morceaux)
+        pt = max(o.get("taille", pt_par) for _, o in morceaux)
         lignes = max(1, -(-largeur // utile))
         haut += lignes * PT_CM * pt * 1.22 + 0.21
-    tete = 1.35 if etiquette_sur_2 else 0.95
-    # 0,45 cm de garde : l'estimation reste une estimation, et un cadre un peu
-    # trop grand se voit moins qu'un texte qui en sort.
-    return round(tete + haut + 0.45, 2)
+    return haut
+
+
+def _habiller(cadre, genre):
+    """Fond pâle du genre ; contour clair pour l'exercice seul (fond blanc)."""
+    cadre.fill.solid()
+    cadre.fill.fore_color.rgb = TEINTES.get(genre, BLANC)
+    if genre == "exercice":
+        cadre.line.color.rgb = RGBColor(0xD8, 0xD3, 0xC4)
+        cadre.line.width = Pt(0.75)
+    else:
+        cadre.line.fill.background()
+    cadre.shadow.inherit = False
+    cadre.text_frame.text = ""
 
 
 def encart(s, seq, i, rang, genre, x, y, w, h, corps, etiquette=None,
@@ -325,11 +405,7 @@ def encart(s, seq, i, rang, genre, x, y, w, h, corps, etiquette=None,
     if h is None:                       # hauteur ajustée au texte
         h = hauteur_encart(corps, w)
     cadre = _cadre(s, x, y, w, h)
-    cadre.fill.solid()
-    cadre.fill.fore_color.rgb = BLANC
-    cadre.line.color.rgb = ENCRE
-    cadre.line.width = Pt(0.75)
-    cadre.text_frame.text = ""
+    _habiller(cadre, genre)
     seq.marque(i, rang, cadre)
 
     filet = _sans_trait(_cadre(s, x, y, 0.13, h))
@@ -347,7 +423,124 @@ def encart(s, seq, i, rang, genre, x, y, w, h, corps, etiquette=None,
     seq.marque(i, rang, z)
 
     if fiche:
-        picto_fiche(s, seq, i, rang, x + w - 1.05, y + 0.2)
+        # étiquette longue dans un cadre étroit : « SUR LA FICHE » la percutait
+        # (diapositive 9 de T1-C2). La pastille seule suffit alors — sa légende
+        # est posée dès la page de titre.
+        place = w - 1.0 - len(etiquette or defaut) * _avance(MONO, 10)
+        picto_fiche(s, seq, i, rang, x + w - 1.05, y + 0.2,
+                    libelle=place > 4.6)
+    return cadre
+
+
+def _mesures_exercice(w, contexte=(), equations=(), fig=None, donnees=None,
+                      question=None, colonnes=None):
+    """Les hauteurs de chaque partie d'un exercice, sans rien dessiner."""
+    # contexte : une chaîne, un Par, ou une LISTE de paragraphes (un
+    # paragraphe riche s'écrit donc [[(…), (…)]])
+    if not contexte:
+        contexte = []
+    elif isinstance(contexte, (str, Par)):
+        contexte = [contexte]
+    haut_ctx = list(contexte) + [eq(e) for e in equations]
+    utile = w - 1.05
+    m = {"haut_ctx": haut_ctx,
+         "h_ctx": hauteur_texte(haut_ctx, utile) if haut_ctx else 0.0,
+         "h_col": 0.0}
+    if colonnes:
+        ncol, items = colonnes
+        m["par_col"] = -(-len(items) // ncol)
+        m["largeur_col"] = (utile - 0.5 * (ncol - 1)) / ncol
+        m["h_col"] = max(hauteur_texte(items[k * m["par_col"]:(k + 1) * m["par_col"]],
+                                       m["largeur_col"], taille=14)
+                         for k in range(ncol)) + 0.1
+    m["h_fig"] = (fig[2] * fig[1] + 0.35) if fig else 0.0
+    bas_txt = ([Par(donnees, taille=12, police=MONO, couleur=GRIS)]
+               if donnees else [])
+    if question:
+        bas_txt.append(Par(question, italique=True))
+    m["bas_txt"] = bas_txt
+    m["h_bas"] = hauteur_texte(bas_txt, utile) if bas_txt else 0.0
+    # 0,25 cm entre ce qu'on DONNE et ce qu'on DEMANDE : sans lui, la
+    # question collait à la dernière équation
+    m["souffle"] = 0.25 if (bas_txt and (haut_ctx or colonnes or fig)) else 0.0
+    m["h"] = round(0.95 + m["h_ctx"] + m["h_col"] + m["h_fig"] + m["souffle"]
+                   + m["h_bas"] + 0.4, 2)
+    return m
+
+
+def hauteur_exercice(w, **k):
+    """Hauteur qu'occupera un exercice — pour aligner deux exercices posés
+    face à face sur la même hauteur (audit du 22/09 : exercices 4 et 5)."""
+    return _mesures_exercice(w, **k)["h"]
+
+
+def exercice(s, seq, i, rang, x, y, w, num, titre, contexte=(), equations=(),
+             fig=None, donnees=None, question=None, colonnes=None, h=None):
+    """Un exercice, structuré comme sur le site.
+
+    contexte   — paragraphe(s) en romain : la situation
+    colonnes   — liste d'items répartis en N colonnes (ex. 1, neuf situations)
+    equations  — équations CENTRÉES, en Cambria : la ligne `.eq-ligne`
+    fig        — (chemin, ratio h/w, largeur cm) : la figure vit DANS le
+                 cadre (R7) — posée à côté, elle se lisait comme une
+                 illustration du cours
+    donnees    — en Courier, gris : la ligne `.donnees`
+    question   — en italique : la ligne `.question`
+
+    POURQUOI — l'énoncé entier était écrit en un seul paragraphe italique :
+    contexte, équation et question se soudaient en un bloc (audit du 22/09).
+    Retourne le cadre, pour empiler le bloc suivant avec `bas()`."""
+    m = _mesures_exercice(w, contexte, equations, fig, donnees, question,
+                          colonnes)
+    haut_ctx, bas_txt = m["haut_ctx"], m["bas_txt"]
+    h_ctx, h_col, h_fig, h_bas = m["h_ctx"], m["h_col"], m["h_fig"], m["h_bas"]
+    if colonnes:
+        ncol, items = colonnes
+        par_col, largeur_col = m["par_col"], m["largeur_col"]
+    y_txt = y + 0.95
+    if h is None:
+        h = m["h"]
+
+    cadre = _cadre(s, x, y, w, h)
+    _habiller(cadre, "exercice")
+    seq.marque(i, rang, cadre)
+    filet = _sans_trait(_cadre(s, x, y, 0.13, h))
+    filet.fill.solid()
+    filet.fill.fore_color.rgb = ALPHA
+    seq.marque(i, rang, filet)
+    z = _texte(s, x + 0.45, y + 0.28, w - 1.0, 0.5,
+               f"EXERCICE {num} — {titre.upper()}", taille=10, police=MONO,
+               couleur=ALPHA, gras=True)
+    seq.marque(i, rang, z)
+
+    cur = y_txt
+    if haut_ctx:
+        z = _texte(s, x + 0.45, cur, w - 0.9, h_ctx, haut_ctx, taille=15,
+                   interligne=1.15, espacement=6)
+        seq.marque(i, rang, z)
+        cur += h_ctx
+    if colonnes:
+        for k in range(ncol):
+            bloc = items[k * par_col:(k + 1) * par_col]
+            if not bloc:
+                continue
+            z = _texte(s, x + 0.45 + k * (largeur_col + 0.5), cur,
+                       largeur_col, h_col, bloc, taille=14, interligne=1.1,
+                       espacement=5)
+            seq.marque(i, rang, z)
+        cur += h_col
+    if fig:
+        chemin, ratio, fw = fig
+        img = s.shapes.add_picture(str(chemin), cm(x + (w - fw) / 2),
+                                   cm(cur + 0.1), width=cm(fw),
+                                   height=cm(fw * ratio))
+        seq.marque(i, rang, img)
+        cur += h_fig
+    if bas_txt:
+        cur += m["souffle"]
+        z = _texte(s, x + 0.45, cur, w - 0.9, h_bas, bas_txt, taille=15,
+                   interligne=1.15, espacement=6)
+        seq.marque(i, rang, z)
     return cadre
 
 
@@ -370,24 +563,28 @@ def figure(s, seq, i, rang, chemin, x, y, w, legende_txt=None, h=None):
     return img
 
 
-def fraction(s, seq, i, rang, gauche, haut, bas, x, y, w=5.0):
+def fraction(s, seq, i, rang, gauche, haut, bas, x, y, w=5.0, couleur=ENCRE):
     """Fraction numérateur SUR dénominateur — jamais de barre oblique.
 
     Trois objets PowerPoint natifs : rien n'est aplati en image, on peut
     cliquer le numérateur et le changer. Le membre de gauche est aligné à
-    DROITE pour que le « = » bute contre la fraction."""
+    DROITE pour que le « = » bute contre la fraction.
+
+    `couleur` : PAPIER pour poser la fraction DANS le panneau sombre de
+    `formule()` — à l'encre, elle y était invisible (T1-C1, ρ = m/V)."""
     zg = _texte(s, x - 5.0, y + 0.55, 4.8, 0.9, gauche, taille=22,
-                police=TITRES, italique=True, align=PP_ALIGN.RIGHT)
+                police=TITRES, couleur=couleur, italique=True,
+                align=PP_ALIGN.RIGHT)
     seq.marque(i, rang, zg)
     zn = _texte(s, x, y, w, 0.85, haut, taille=20, police=TITRES,
-                italique=True, align=PP_ALIGN.CENTER)
+                couleur=couleur, italique=True, align=PP_ALIGN.CENTER)
     seq.marque(i, rang, zn)
     trait = _sans_trait(_cadre(s, x, y + 0.92, w, 0.05))
     trait.fill.solid()
-    trait.fill.fore_color.rgb = ENCRE
+    trait.fill.fore_color.rgb = couleur
     seq.marque(i, rang, trait)
     zd = _texte(s, x, y + 1.05, w, 0.85, bas, taille=20, police=TITRES,
-                italique=True, align=PP_ALIGN.CENTER)
+                couleur=couleur, italique=True, align=PP_ALIGN.CENTER)
     seq.marque(i, rang, zd)
 
 
@@ -447,14 +644,31 @@ def titre_partie(s, seq, i, romain, titre, sous_parties):
         seq.marque(i, 1, z)
 
 
-def checklist(s, seq, i, titre, items):
+def checklist(s, seq, i, titre, items, kahoots=()):
     """« Pour le DS, je sais » — les compétences se dévoilent une par une,
-    chacune cochée à l'oral avant d'apparaître."""
+    chacune cochée à l'oral avant d'apparaître.
+
+    `kahoots` : [(libellé, url), …] — le ou les Kahoot bilan du chapitre, ceux
+    de la checklist en ligne. 🔴 OBLIGATOIRES dès que la page en porte
+    (demande de Loïc, 22/09/2026) : `controler.py` échoue s'il en manque un.
+    Ils apparaissent au DERNIER clic, une fois toutes les compétences passées.
+    Le lien est posé sur le RUN, jamais sur la zone de texte : posé sur la
+    zone, il écrivait un r:id vide et PowerPoint déclarait le fichier corrompu."""
+    for k, (libelle, url) in enumerate(kahoots):
+        z = _texte(s, MARGE + 0.2 + k * 16.0, 2.6, 15.6, 0.8,
+                   [[("► KAHOOT — ", {"gras": True}), (libelle, {})]],
+                   taille=13, police=MONO, couleur=OCRE)
+        for r in z.text_frame.paragraphs[0].runs:
+            r.hyperlink.address = url
+        seq.marque(i, len(items) + 1, z)
     z = _texte(s, MARGE + 0.2, 2.6, 30.0, 1.0, titre, taille=24, police=TITRES,
                gras=True)
     seq.fige(i, z)
+    # le pas se resserre avec le nombre de compétences : à 1,55 cm fixe, la
+    # neuvième de T1-C1 tombait sous le pied de page (bas à 17,9 cm).
+    pas = min(1.55, 12.8 / max(1, len(items)))
     for k, it in enumerate(items):
-        y = 4.1 + k * 1.55
+        y = 4.1 + k * pas
         case = _cadre(s, MARGE + 0.4, y, 0.62, 0.62)
         case.fill.solid()
         case.fill.fore_color.rgb = BLANC

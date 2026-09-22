@@ -68,6 +68,9 @@ for (const b of B) console.log(`  ${String(b.i).padStart(3)}  ${String(b.h).padS
 const total = B.reduce((s, b) => s + b.h, 0);
 console.log(`\nsomme des blocs : ${total.toFixed(1)} mm`);
 
+// un titre de partie (h2) ou de sous-partie (« A · … ») ne finit pas une page
+const orphelin = b => b.titre !== '' || /^[A-H] · /.test(b.etq);
+
 // cout d'une page [i, j) : surcharge fixe selon la position
 function hauteur(i, j, n, N) {
   let h = B.slice(i, j).reduce((s, b) => s + b.h, 0);
@@ -89,6 +92,10 @@ function paginer(N) {
       for (let j = i + 1; j <= n; j++) {
         const h = hauteur(i, j, N - k, N);
         if (h > BUDGET) break;
+        // 🔴 une page ne se termine jamais sur un titre (h2 « 03 … » ou
+        // sous-partie « C · … ») : il serait seul en bas, séparé de ce qu'il
+        // annonce. La première découpe de T1-C2 en laissait deux.
+        if (j < n && orphelin(B[j - 1])) continue;
         const reste = dp[k - 1][j];
         if (reste >= INF) continue;
         const creux = BUDGET - h;

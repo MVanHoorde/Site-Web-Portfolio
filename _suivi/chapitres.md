@@ -76,7 +76,7 @@
 - Blocs 🚧 restants : _à recenser en régime B_.
 
 ### T1-C2 — Transformations physiques et chimiques
-- Jalons : 1 ✅ · 2 ⬜ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Jalons : 1 ✅ · 2 ⬜ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ✅ · 7 ⬜
 - Fichiers : `pages/2nde-pc-t1-c2-transformations-physiques-chimiques.html` ·
   `fiches/fiche-2nde-t1c2.html` (généré) · `assets/pptx/pc/diaporama-2nde-t1c2.pptx`
 - Code de déblocage : **TR4NSF**. 15 exercices tous corrigés · 9 figures numérotées ·
@@ -90,17 +90,29 @@
   pictogrammes de la source (bague, verre, avion) **ne sont pas redessinés** : seules
   les trois structures microscopiques le sont, les matières sont nommées en texte.
 - Fiche : **12 pages** A4, **générée** par `_outils/fiches/fiche_t1c2.py` — elle
-  remplace la fiche v4 écrite à la main (10 pages). Creux mesuré **122 mm** sur 12
-  pages, aucun débordement, 5 QR relus. Cartouche sur fond de comète délavée.
-  **Non validée.**
-- Diaporama : **21 diapositives, 64 étapes d'animation**, produit par
+  remplace la fiche v4 écrite à la main (10 pages). Creux mesuré **100 mm** sur 12
+  pages, aucun débordement, 6 QR relus. Cartouche sur fond de comète délavée.
+  Énoncés structurés comme sur le site (contexte, équations centrées, question en
+  italique). ✅ **Validée par Loïc le 22/09/2026** (« c'est parfait »).
+- Diaporama : **21 diapositives, 63 étapes d'animation**, produit par
   `_outils/diaporamas/diapo_t1c2.py`. Structure I/II/III du PPTX de Loïc, figures
-  reprises du site, 23 pictos ✎ pour les 23 `a-noter` de la page. **Non validé.**
+  reprises du site, 24 pictos ✎ pour les 24 `a-noter` de la page, les deux Kahoot
+  liés en dernière diapositive. **Audité par Loïc le 22/09**, reprise faite : cadres
+  allégés, termes définis mis en évidence, exercices structurés, exercice 2 dans
+  son cadre, sommaires en un clic. ✅ **Validé par Loïc le 22/09/2026.**
+- 🆕 **Reprise du 22/09 sur le cours en ligne**, à la demande de Loïc : la
+  définition « réaction chimique et équation » est scindée en une définition et une
+  propriété (écriture d'une équation) — **24 marqueurs** ; l'exercice 10 ne donne
+  plus l'équation mais les notations, et sa correction gagne les étapes « écrire » et
+  « équilibrer » ; l'exercice 1 passe en trois colonnes. Les deux reformulations
+  ont été validées avec la fiche et le diaporama.
 - 🆕 **Les trois états de la matière sont passés en `.encart.propriete`** (20/09) :
   la fiche en fait un cadre à remplir, la notion devait donc porter le ✎. Même
   geste que l'audit de T1-C3, qui avait sorti cinq notions du texte courant.
-- ⚠ Reste à la main de Loïc : (1) la **numérotation des exercices n'est pas
-  croissante dans la page** — l'exercice 6 vient avant les 4 et 5, comme dans le
+- ⚠ Reste à la main de Loïc : (0) le **numéro du TP de la synthèse** — Loïc pense
+  qu'il a changé ; la feuille du dépôt (`tp03-…pdf`) porte toujours « TP3 », rien
+  n'est modifié sans le nouveau numéro ou la nouvelle feuille ; (1) la
+  **numérotation des exercices n'est pas croissante dans la page** — l'exercice 6 vient avant les 4 et 5, comme dans le
   PPTX source ; (2) 🔴 **la fiche demande θ<sub>ébullition</sub>(eau), que le cours
   ne donne nulle part.** Le cours donne bien le palier à 0 °C de l'eau pure (TP3),
   jamais les 100 °C. Soit on ajoute les deux valeurs au cours, soit on retire le

@@ -148,6 +148,22 @@ sous-parties portent le même rang d'animation. Le chiffre romain est posé
 **au-dessus** du titre, pas en filigrane derrière : derrière, il passait sous
 le titre et sous les premières lignes du sommaire.
 
+### R8quater · Un exercice se structure comme sur le site
+`exercice()` pose, dans cet ordre : le **contexte** en romain, les
+**équations centrées** (`eq()`), la **figure DANS le cadre**, les **données** en
+Courier gris, et la **question seule en italique**. Écrit d'un seul tenant en
+italique, l'énoncé faisait bloc et la question ne se distinguait plus de ce qu'on
+donne (audit du 22/09). Deux exercices posés face à face prennent la même
+hauteur (`hauteur_exercice()`).
+
+### R8quinquies · Des cadres légers, et le terme défini en évidence
+Un encart est un **fond teinté pâle + le filet de couleur**, sans contour noir :
+le contour sur chaque cadre alourdissait la diapositive. Seul l'exercice garde un
+fond blanc et un contour clair. Dans une définition, le mot défini passe par
+`terme()` — gras et couleur, comme `.terme` sur le site : dans un cadre de six
+lignes, l'œil ne trouvait pas « énergie massique ». Dans un cadre étroit à
+étiquette longue, « SUR LA FICHE » s'efface au profit de la seule pastille.
+
 ### R9 · Logo en page de titre uniquement
 Sur fond sombre, il faut une **plaque claire derrière** : son texte bleu nuit
 disparaîtrait sinon.
@@ -261,11 +277,12 @@ automatique et l'œil ne voient pas les mêmes choses.
 
 ## 7. État de T1-C2 (référence)
 
-**Fait.** 21 diapositives, 74 étapes d'animation, structure I / II / III du
-PowerPoint de Loïc avec ses sous-parties A à G, checklist DS en dernier.
-7 figures reprises du site, aucune redessinée. 22 pictos ✎, exactement les
-22 `a-noter` de la page — contrôlé par `controler.py`, qui échoue si les deux
-comptes divergent. Cartouche et page de titre sur la charte, logo sur plaque
+**Fait.** 21 diapositives, 63 étapes d'animation, structure I / II / III du
+PowerPoint de Loïc avec ses sous-parties A à G, checklist DS en dernier avec
+les deux Kahoot liés. 7 figures reprises du site, aucune redessinée. 24 pictos
+✎, exactement les 24 `a-noter` de la page — contrôlé par `controler.py`, qui
+échoue si les deux comptes divergent. Repris le 22/09 après l'audit de Loïc
+(R8quater, R8quinquies). Cartouche et page de titre sur la charte, logo sur plaque
 claire, légende du ✎ dès la page de titre.
 
 **Points restés ouverts.**

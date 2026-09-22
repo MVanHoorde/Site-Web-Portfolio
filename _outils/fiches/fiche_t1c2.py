@@ -69,7 +69,7 @@ LIENS = {
 
 # Découpe en pages : index du PREMIER bloc de chaque page après la première.
 # Mesuré au navigateur avec les polices du site, jamais estimé à l'œil.
-COUPES = [4, 10, 14, 19, 25, 30, 34, 40, 43, 47, 52]
+COUPES = [4, 9, 14, 18, 25, 30, 34, 39, 44, 48, 53]
 
 
 def codes_qr(muet=False):
@@ -132,11 +132,31 @@ def blocs(src, qr):
             ))
         + '          </tbody>\n        </table>\n')
 
+    # la consigne AVANT les équations, comme sur le site
     ex11 = exercice(
         11, "Équilibrer des équations de réaction",
-        "Compléter les coefficients stœchiométriques manquants. Une case "
-        "peut rester vide lorsque le coefficient vaut 1."
-    ).replace("      </div>\n", eq11 + "      </div>\n")
+        contexte="<i>Compléter les coefficients stœchiométriques manquants. "
+                 "Une case peut rester vide lorsque le coefficient vaut 1.</i>",
+        apres_contexte=eq11)
+
+    # Exercice 1 : les neuf situations en trois colonnes, comme sur le site —
+    # en ligne continue, elles se soudaient en un bloc illisible
+    sit = ["obtention d'une flamme (briquet)", "formation de la rosée",
+           "dissolution de sucre dans du café",
+           "récolte de sel dans un marais salant", "infusion de thé dans l'eau",
+           "formation de vin à partir de jus de raisin",
+           "détartrage de la bouilloire", "obtention de neige avec un canon à neige",
+           "explosions de feux d'artifice"]
+    cel = [f'<b style="font-family:\'IBM Plex Mono\',monospace;color:#d6402b">'
+           f'{l})</b> {t}' for l, t in zip("abcdefghi", sit)]
+    situations = (
+        '        <table style="width:100%;border-collapse:collapse;'
+        'font-size:9pt;margin:0 0 1.2mm;">\n'
+        + "".join('          <tr>' + "".join(
+            f'<td style="width:33%;padding:.4mm 2mm .4mm 0;vertical-align:top;">'
+            f'{cel[r + 3 * c]}</td>' for c in range(3)) + '</tr>\n'
+            for r in range(3))
+        + '        </table>\n')
 
     # ---- le contenu, dans l'ordre du cours -----------------------------
     # Chaque entrée : (partie, html). `partie` sert aux en-têtes « suite »
@@ -144,24 +164,18 @@ def blocs(src, qr):
     return [
         # -- 01 ----------------------------------------------------------
         (("01", "Physique ou chimique ?"), None),
-        (None, encart("definition", "Définition — Transformation physique", 5)),
-        (None, encart("definition", "Définition — Transformation chimique", 5)),
+        (None, encart("definition", "Définition — Transformation physique", 4)),
+        (None, encart("definition", "Définition — Transformation chimique", 4)),
         (None, exercice(
             1, "Transformation physique ou chimique ?",
-            "Classer chacune des neuf situations suivantes. "
-            "<b>a)</b> obtention d'une flamme (briquet) · "
-            "<b>b)</b> formation de la rosée · "
-            "<b>c)</b> dissolution de sucre dans du café · "
-            "<b>d)</b> récolte de sel dans un marais salant · "
-            "<b>e)</b> infusion de thé · "
-            "<b>f)</b> formation de vin à partir de jus de raisin · "
-            "<b>g)</b> détartrage de la bouilloire · "
-            "<b>h)</b> obtention de neige avec un canon à neige · "
-            "<b>i)</b> explosions de feux d'artifice.", lignes=6)),
+            "Classer chaque situation : s'agit-il d'une transformation "
+            "physique ou d'une transformation chimique ?",
+            contexte="On considère les neuf situations suivantes :",
+            apres_contexte=situations, lignes=4)),
         # -- 02 ----------------------------------------------------------
         (("02", "Effet thermique des transformations"), None),
-        (None, encart("definition", "Définition — Réaction exothermique", 7)),
-        (None, encart("definition", "Définition — Réaction endothermique", 7)),
+        (None, encart("definition", "Définition — Réaction exothermique", 8)),
+        (None, encart("definition", "Définition — Réaction endothermique", 8)),
         (None, figure(svg(src, "t1c2f3"),
                       "Image 3 — Sens du transfert de chaleur entre le système "
                       "et le milieu extérieur.", "133mm")),
@@ -179,9 +193,11 @@ def blocs(src, qr):
                       "libres, en agitation permanente.", "133mm")),
         (None, exercice(
             2, "Associer une matière à sa structure microscopique",
-            "Le diamant · un verre de jus d'orange · l'air. Associer chaque "
-            "matière au schéma qui lui correspond, et préciser son état "
-            "physique.", svg(src, "t1c2ex2"), "126mm", lignes=5)),
+            "Associer chaque matière au schéma qui lui correspond, et "
+            "préciser son état physique.", svg(src, "t1c2ex2"), "112mm",
+            contexte="Trois matières : le diamant, un verre de jus d'orange, "
+                     "l'air. Chacun des trois schémas représente la structure "
+                     "de l'une d'elles, à l'échelle des entités.", lignes=5)),
         (None, ss("B · Les six changements d'état")),
         (None, encart("definition", "Définition — Changement d'état", 8)),
         (None, figure(svg(src, "t1c2f5"),
@@ -190,23 +206,24 @@ def blocs(src, qr):
                       "Rouge : exothermique (elle en libère).", "112mm")),
         (None, exercice(
             3, "Exemples de changement d'état",
-            "Donner un exemple pour chacun : vaporisation, solidification, "
-            "condensation.", lignes=6)),
+            "Donner un exemple pour chacun des changements d'état suivants : "
+            "vaporisation, solidification, condensation.", lignes=8)),
         (None, ss("C · Température de changement d'état")),
         (None, encart("definition",
-                      "Définition — Température de changement d'état", 7)),
+                      "Définition — Température de changement d'état", 6)),
         (None, '      <p class="a-connaitre">Sous la pression atmosphérique : '
                '&nbsp; θ<sub>fusion</sub>(eau) = <span class="trou"></span> '
                '&nbsp;·&nbsp; θ<sub>ébullition</sub>(eau) = '
                '<span class="trou"></span></p>\n'),
         (None, exercice(
             6, "Corps pur ou mélange ?",
-            "Deux courbes de refroidissement sont étudiées. La première "
-            "présente un palier de température vers 6 °C ; la seconde, le "
-            "refroidissement d'un cola, décroît régulièrement sans palier. "
-            "Déterminer, pour chacune, s'il s'agit d'un corps pur ou d'un "
-            "mélange, et préciser si possible la température de changement "
-            "d'état.", lignes=7)),
+            "Déterminer si chaque étude porte sur un corps pur ou sur un "
+            "mélange. Si possible, préciser la température de changement "
+            "d'état.",
+            contexte="On étudie deux courbes de refroidissement : la première "
+                     "présente un palier de température vers 6 °C ; la "
+                     "seconde (refroidissement d'un cola) décroît "
+                     "régulièrement, sans palier.", lignes=6)),
         (None, qr_renvoi(qr["video-etats"],
                          "Réviser en vidéo — les changements d'état",
                          "les six changements, le palier de température, corps "
@@ -221,37 +238,43 @@ def blocs(src, qr):
             "solidification du fer Fe.", lignes=5)),
         (None, exercice(
             5, "Identifier un changement d'état",
-            "Quels changements d'état décrivent les équations suivantes ? "
-            "&nbsp; H<sub>2</sub>O<sub>(g)</sub> → H<sub>2</sub>O<sub>(s)</sub> "
-            "&nbsp;·&nbsp; Cu<sub>(s)</sub> → Cu<sub>(g)</sub>", lignes=5)),
+            contexte="<i>Quels sont les changements d'état décrits par les "
+                     "équations suivantes ?</i>",
+            equations=["H<sub>2</sub>O<sub>(g)</sub> &nbsp;→&nbsp; "
+                       "H<sub>2</sub>O<sub>(s)</sub> &nbsp; &nbsp; &nbsp; "
+                       "Cu<sub>(s)</sub> &nbsp;→&nbsp; Cu<sub>(g)</sub>"],
+            lignes=5)),
         # -- 05 ----------------------------------------------------------
         (("05", "Énergie de changement d'état"), None),
         (None, encart("definition",
-                      "Définition — Énergie massique de changement d'état L", 8)),
+                      "Définition — Énergie massique de changement d'état L", 7)),
         (None, encart("propriete",
-                      "Propriété — Sens de l'échange et signe de L", 5)),
+                      "Propriété — Sens de l'échange et signe de L", 6)),
         (None, exercice(
             7, "Faire fondre 1 kg de glace",
             "Quelle quantité d'énergie faut-il pour faire fondre 1 kg de "
-            "glace ? <span class=\"mini\">Donnée : L<sub>fusion</sub> = "
-            "336 kJ·kg<sup>−1</sup></span>", lignes=5)),
+            "glace ?",
+            donnees="Donnée : L<sub>fusion</sub> = 336 kJ·kg<sup>−1</sup>",
+            lignes=4)),
         (None, formule("<i>Q</i>", f"{B} × {B}", 3)),
         (None, exercice(
             8, "Solidification du fer",
-            "On étudie la solidification de 200 g de fer pur en fusion. "
-            "Quelle énergie est transférée avec le milieu extérieur ? "
-            "Schématiser le transfert. <span class=\"mini\">Données : "
-            "L<sub>fusion</sub>(fer) = 270 kJ·kg<sup>−1</sup> · "
-            "L<sub>solidification</sub>(fer) = −270 kJ·kg<sup>−1</sup></span>",
-            lignes=7)),
+            "Quelle énergie est transférée avec le milieu extérieur lors de "
+            "cette solidification ? Schématiser le transfert d'énergie.",
+            contexte="On étudie la solidification de 200 g de fer pur en "
+                     "fusion.",
+            donnees="Données : L<sub>fusion</sub>(fer) = 270 kJ·kg<sup>−1</sup>"
+                    " · L<sub>solidification</sub>(fer) = −270 "
+                    "kJ·kg<sup>−1</sup>", lignes=6)),
         (None, exercice(
             9, "Énergie de la tsar bomba",
-            "La tsar bomba, l'arme la plus puissante jamais testée, a libéré "
-            "une énergie de 57 mégatonnes de TNT. Quelle masse d'eau "
-            "pourrait-on vaporiser avec cette énergie ? "
-            "<span class=\"mini\">Données : 1 Mt = 4,2 × 10<sup>15</sup> J · "
-            "L<sub>vaporisation</sub>(eau) = 2,3 × 10<sup>6</sup> "
-            "J·kg<sup>−1</sup></span>", lignes=7)),
+            "Quelle masse d'eau pourrait-on vaporiser avec l'énergie libérée "
+            "par la tsar bomba ?",
+            contexte="La tsar bomba, l'arme la plus puissante jamais testée, "
+                     "a libéré une énergie de 57 mégatonnes de TNT.",
+            donnees="Données : 1 Mt = 4,2 × 10<sup>15</sup> J · "
+                    "L<sub>vaporisation</sub>(eau) = 2,3 × 10<sup>6</sup> "
+                    "J·kg<sup>−1</sup>", lignes=6)),
         (None, qr_renvoi(qr["kahoot-physique"],
                          "Kahoot — transformations physiques",
                          "le bilan des parties 01 à 05, avant de passer à la "
@@ -263,26 +286,35 @@ def blocs(src, qr):
                             '(s) &nbsp;·&nbsp; (l) &nbsp;·&nbsp; (g) '
                             '&nbsp;·&nbsp; (aq) — et pourquoi (aq) n\'est pas '
                             'un quatrième état de la matière.</p>')),
-        (None, encart("definition", "Définition — Système chimique", 6)),
+        (None, encart("definition", "Définition — Système chimique", 7)),
         (None, encart("definition",
                       "Définitions — État initial et état final, réactifs, "
                       "produits, espèce spectatrice", 9)),
         # -- 07 ----------------------------------------------------------
         (("07", "Équation de réaction et stœchiométrie"), None),
+        # la définition d'origine est scindée, comme sur le site (22/09) :
+        # la définition d'un côté, ce que contient l'écriture de l'autre
         (None, encart("definition",
                       "Définition — Réaction chimique et équation de "
-                      "réaction", 13)),
+                      "réaction", 6)),
         (None, encart("propriete",
-                      "Propriété — Les deux lois de conservation", 8)),
+                      "Propriété — Écriture d'une équation de réaction", 8)),
+        (None, encart("propriete",
+                      "Propriété — Les deux lois de conservation", 6)),
         (None, methode),
         (None, exercice(
             10, "Test de reconnaissance des ions fer (II)",
-            "Les ions fer (II) réagissent avec les ions hydroxyde de la soude "
-            "pour former un précipité vert d'hydroxyde de fer (II) : &nbsp; "
-            "Fe<sup>2+</sup><sub>(aq)</sub> + 2 HO<sup>−</sup><sub>(aq)</sub> "
-            "→ Fe(OH)<sub>2 (s)</sub>. Identifier réactifs, produits et "
+            "En suivant la méthode, écrire et équilibrer l'équation de cette "
+            "réaction. Identifier ensuite les réactifs, les produits et les "
             "coefficients stœchiométriques, puis vérifier les deux lois de "
-            "conservation.", lignes=8)),
+            "conservation.",
+            contexte="Les ions fer (II) réagissent avec les ions hydroxyde de "
+                     "la soude pour former un précipité vert d'hydroxyde de "
+                     "fer (II).",
+            donnees="Notations : ion fer (II) Fe<sup>2+</sup><sub>(aq)</sub> "
+                    "· ion hydroxyde HO<sup>−</sup><sub>(aq)</sub> · "
+                    "hydroxyde de fer (II) Fe(OH)<sub>2 (s)</sub>",
+            lignes=7)),
         (None, ex11),
         (None, qr_renvoi(qr["video-equilibrer"],
                          "S'exercer en vidéo — équilibrer",
@@ -290,26 +322,31 @@ def blocs(src, qr):
                          "quatre ci-dessus")),
         (None, exercice(
             12, "Combustion du glucose",
-            "Lors d'un effort prolongé, le glucose "
-            "C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> est dégradé selon un "
-            "processus équivalant à sa combustion complète dans le dioxygène, "
-            "produisant de l'eau et du dioxyde de carbone. Écrire et "
-            "équilibrer cette équation de réaction.", lignes=6)),
+            "Écrire et équilibrer cette équation de réaction.",
+            contexte="Lors d'un effort physique prolongé, le glucose "
+                     "C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> est dégradé "
+                     "selon un processus équivalant à sa combustion complète "
+                     "dans le dioxygène, produisant de l'eau et du dioxyde de "
+                     "carbone.", lignes=5)),
         (None, encart("propriete",
                       "Propriété — Lire une équation en proportions", 6)),
         (None, exercice(
             13, "Lecture microscopique d'une équation",
-            "Soit la combustion du méthane : &nbsp; CH<sub>4</sub> + "
-            "2 O<sub>2</sub> → 2 H<sub>2</sub>O + CO<sub>2</sub>. Combien de "
-            "molécules de chaque réactif sont consommées, et combien de "
-            "chaque produit se forment ? Rédiger une phrase sur le modèle "
-            "« si … alors … ».", lignes=6)),
+            "Combien de molécules de chaque réactif sont consommées, et de "
+            "chaque produit formées ? Rédiger une phrase sur le modèle « si … "
+            "alors … ».",
+            contexte="On considère l'équation de combustion du méthane :",
+            equations=["CH<sub>4</sub> + 2 O<sub>2</sub> &nbsp;→&nbsp; "
+                       "2 H<sub>2</sub>O + CO<sub>2</sub>"], lignes=4)),
         (None, exercice(
             14, "Proportions",
-            "Soit &nbsp; Cu<sub>(s)</sub> + 2 Ag<sup>+</sup><sub>(aq)</sub> → "
-            "Cu<sup>2+</sup><sub>(aq)</sub> + 2 Ag<sub>(s)</sub>. Combien "
-            "d'atomes d'argent sont produits si 5 atomes de cuivre réagissent "
-            "avec 10 ions Ag<sup>+</sup> ?", lignes=4)),
+            "Combien d'atomes d'argent seront produits si 5 atomes de cuivre "
+            "réagissent avec 10 ions Ag<sup>+</sup> ?",
+            contexte="On reprend la réaction entre le cuivre et les ions "
+                     "argent :",
+            equations=["Cu<sub>(s)</sub> + 2 Ag<sup>+</sup><sub>(aq)</sub> "
+                       "&nbsp;→&nbsp; Cu<sup>2+</sup><sub>(aq)</sub> + "
+                       "2 Ag<sub>(s)</sub>"], lignes=3)),
         # -- 08 ----------------------------------------------------------
         (("08", "Réactif limitant"), None),
         (None, encart("definition", "Définition — Réactif limitant", 5)),
@@ -319,11 +356,12 @@ def blocs(src, qr):
                       "en excès.", "128mm")),
         (None, exercice(
             15, "Combustion du méthane",
-            "150 molécules de méthane réagissent avec 1000 molécules de "
-            "dioxygène, selon &nbsp; CH<sub>4</sub> + 2 O<sub>2</sub> → "
-            "2 H<sub>2</sub>O + CO<sub>2</sub>. Déterminer le réactif "
-            "limitant, puis le nombre de molécules présentes à la fin de la "
-            "réaction.", lignes=10)),
+            "Déterminer le réactif limitant, puis le nombre de molécules "
+            "présentes à la fin de la réaction.",
+            contexte="150 molécules de méthane réagissent avec 1000 molécules "
+                     "de dioxygène, selon l'équation :",
+            equations=["CH<sub>4</sub> + 2 O<sub>2</sub> &nbsp;→&nbsp; "
+                       "2 H<sub>2</sub>O + CO<sub>2</sub>"], lignes=7)),
         (None, essentiel(7)),
     ]
 

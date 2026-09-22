@@ -4264,3 +4264,23 @@ le défaut IBM Plex Sans connu ; corrigé dans `sequence-snt.css` au passage.
 `sequence-snt.js?v=48`, `sequence-snt.css?v=44` sur toutes les pages qui les
 chargent. `verifier.mjs` : 19 problèmes, le repère.
 
+---
+
+## 22/09/2026 — T1-C2 : reprise après l'audit du diaporama par Loïc
+
+Audit de Loïc sur la projection, une vingtaine de points de forme. Le gabarit du
+diaporama gagne un composant `exercice()` (contexte, équations centrées, figure
+dans le cadre, données, question en italique), des cadres allégés et le terme
+défini mis en évidence. Diapositives reprises : 7 (exercice 2 dans son cadre),
+10 (exercices 4 et 5 face à face), 14 (notations et exemple de l'Image 8), 15
+(chevauchement, états initial et final en colonnes), 17-18 (définition et
+propriété séparées, méthode, exercices 10 à 12), 19 (rééquilibrée). La
+numérotation d'image redevient celle du site.
+
+Sur le site : définition scindée, exercice 10 réécrit avec sa correction,
+exercice 1 en colonnes — 24 marqueurs. La fiche suit : 12 pages, 100 mm de creux ;
+`paginer.mjs` interdit désormais un titre seul en bas de page.
+
+Pendant ce temps, la session T1-C1 travaillait sur le même gabarit : elle a ajouté
+les Kahoot en fin de diaporama (règle du jour) et les a posés dans
+`diapo_t1c2.py`. Les deux jeux de modifications coexistent sans conflit.
