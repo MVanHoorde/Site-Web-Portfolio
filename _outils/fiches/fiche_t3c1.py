@@ -72,8 +72,8 @@ def construire(chemin_cours):
         '        <thead><tr><th>Milieu</th><th>Air</th><th>Eau</th>'
         '<th>Glace</th><th>Verre</th><th>Acier</th></tr></thead>\n'
         '        <tbody><tr><th style="font-family:inherit;font-weight:400;">'
-        'Vitesse du son</th><td>340 m·s⁻¹</td><td>1450 m·s⁻¹</td>'
-        '<td>3200 m·s⁻¹</td><td>5300 m·s⁻¹</td><td>5750 m·s⁻¹</td></tr></tbody>\n'
+        'Vitesse du son</th><td>340 m·s<sup>−1</sup></td><td>1450 m·s<sup>−1</sup></td>'
+        '<td>3200 m·s<sup>−1</sup></td><td>5300 m·s<sup>−1</sup></td><td>5750 m·s<sup>−1</sup></td></tr></tbody>\n'
         '      </table>\n'
         '      <p class="mini" style="margin:.8mm 0 2mm;">Tableau 1 — Quelques '
         'vitesses du son selon le milieu.</p>\n')
@@ -190,7 +190,7 @@ def construire(chemin_cours):
                    "Le chant d'une baleine bleue a pu être entendu à 1000 km du "
                    "cétacé, dans l'eau. Combien de temps met-il pour parcourir "
                    'cette distance ? <span class="mini">Donnée : '
-                   "<i>c</i><sub>son</sub>(eau) = 1450 m·s⁻¹</span>", lignes=5), PIED))
+                   "<i>c</i><sub>son</sub>(eau) = 1450 m·s<sup>−1</sup></span>", lignes=5), PIED))
 
     # --- 7 · fréquences audibles, hauteur et timbre -----------------------
     P.append(feuille(7, T,

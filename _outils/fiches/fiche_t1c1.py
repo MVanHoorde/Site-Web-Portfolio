@@ -70,7 +70,7 @@ LIENS = {
 
 # Découpe en pages : index du PREMIER bloc de chaque page après la première.
 # Proposée par `python paginer.py t1c1`, vérifiée à l'export.
-COUPES = [4, 10, 16, 21, 26, 29, 34, 36, 42, 44, 50]
+COUPES = [5, 11, 17, 22, 27, 30, 35, 37, 43, 45, 51]
 
 
 def codes_qr(muet=False):
@@ -154,14 +154,22 @@ def blocs(src, qr):
     return [
         # -- 01 ----------------------------------------------------------
         (("01", "Entités chimiques"), None),
-        (None, encart(D, "Définition — Atome", 5)),
-        (None, encart(D, "Définition — Molécule", 5)),
-        (None, encart(D, "Définition — Ion", 7)),
+        (None, encart(D, "Définition — Atome", 3)),
+        (None, encart(D, "Définition — Molécule", 3)),
+        # l'Image 1 illustre la molécule — et occupe la place que les trois
+        # définitions resserrées laissent sous le cartouche (22/09)
+        (None, figure(img("t1c1-molecule-eau.jpg", "La molécule d'eau"),
+                      "Image 1 — La molécule d'eau (H<sub>2</sub>O) est "
+                      "composée de deux atomes d'hydrogène et d'un atome "
+                      "d'oxygène.", "76mm").replace(
+                          'max-width:76mm"',
+                          'max-width:76mm;margin-left:auto;margin-right:auto"')),
+        (None, encart(D, "Définition — Ion", 4)),
         (None, exercice(
             1, "Atome, molécule ou ion ?",
             "Classer ces entités chimiques selon qu'il s'agisse d'un atome, "
             "d'une molécule, d'un anion ou d'un cation.",
-            equations=[entites_1, entites_1b], lignes=8)),
+            equations=[entites_1, entites_1b], tableau=62)),
         # -- 02 ----------------------------------------------------------
         (("02", "Corps purs"), None),
         (None, encart(D, "Définition — Espèce chimique", 2)),
@@ -172,7 +180,7 @@ def blocs(src, qr):
             2, "Corps pur simple ou composé ?",
             "Classer ces espèces chimiques selon qu'il s'agisse d'un corps "
             "pur simple ou composé.",
-            equations=[entites_2, entites_2b], lignes=8)),
+            equations=[entites_2, entites_2b], tableau=60)),
         (None, qr_renvoi(qr["video-corps-pur"],
                          "Réviser en vidéo — corps pur ou mélange ?",
                          "reconnaître un corps pur, simple ou composé, et un "
@@ -214,7 +222,7 @@ def blocs(src, qr):
             "composant l'air selon qu'il s'agisse d'un corps pur simple ou "
             "composé.",
             donnees="La composition de l'air est donnée par l'Image 8.",
-            lignes=8)),
+            lignes=3, tableau=36)),
         (None, exercice(
             5, "Composition en volume",
             "Quel volume d'argon trouve-t-on dans 1000 m<sup>3</sup> "

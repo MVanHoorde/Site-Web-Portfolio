@@ -30,6 +30,7 @@ le fond est reporté sur la page, sans quoi écran, fiche et page divergeraient.
 | 22/09/2026 | **Le mot défini est surligné** sur les diapositives (R12, `terme()`) | ✅ |
 | 22/09/2026 | **Grilles de réponse vides préconstruites** sur les diapositives des exercices 1 et 2 de T1-C1, pour la correction au tableau. Elles ne portent aucune réponse (R1) et **ne vont pas sur la fiche**, où l'élève trace lui-même son tableau (R6 de la fiche) | ✅ |
 | 22/09/2026 | **Fiche T1-C1 : les Images 15 et 19 figurent en entier, rien à compléter** ; les tests d'espèces (Images 16-18) y figurent aussi. **Aucun schéma n'est à faire compléter** : trop long en classe | ✅ |
+| 22/09/2026 | 🔴 **Fiches : quand un exercice fait tracer un tableau, une place vierge et non des lignes** — ni cadre ni tableau dessiné, la mention « place pour ton tableau » (`exercice(…, tableau=mm)`, R6 de la fiche). Appliqué à T1-C1 : exercices 1, 2 et 4. Et les définitions atome, molécule, ion reviennent à la taille des autres | ✅ |
 | 22/09/2026 | **Application sur l'or** ajoutée à la diapositive de la densité (d = 19,3) | ⏳ proposition |
 | 22/09/2026 | Accroche, transitions et mises en garde de la page T1-C1, sous-titre du diaporama, introduction du cartouche de la fiche | ⏳ proposition |
 

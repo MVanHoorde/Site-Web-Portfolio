@@ -84,7 +84,8 @@
   exercices 1 et 2, Kahoot en clôture.
 - Fiche : **écrite le 22/09/2026**, `_outils/fiches/fiche_t1c1.py` — 12 pages,
   16 cadres, 5 formules en boîtes, 10 exercices, 6 QR relus, creux cumulé
-  196 mm (24 mm au pire), aucun débordement. Consignes de Loïc appliquées :
+  180 mm (24 mm au pire), aucun débordement. Exercices 1, 2 et 4 : une **place
+  vierge** pour le tableau que l'élève trace. Image 1 en page 1. Consignes de Loïc appliquées :
   Images 15 et 19 **en entier, rien à compléter**, tests d'espèces (16-18)
   présents, aucun schéma à compléter. Cartouche sur fond de cuivre délavé
   (`t1c1-cuivre-bandeau.jpg`). **Non validée.**

@@ -199,8 +199,20 @@ def formule(gauche, droite, nb_lignes=3):
             f'      </tr></table>\n')
 
 
+def espace_tableau(mm):
+    """Place VIERGE pour un tableau que l'élève trace lui-même.
+
+    Décision de Loïc du 22/09/2026 : quand un exercice fait classer (atome,
+    molécule, ion…), on ne dessine PAS le tableau — un cadre imposé dit à
+    l'élève où s'arrêter —, mais des lignes d'écriture ne laissent pas la
+    place de le tracer. Une zone blanche, signalée par une mention discrète."""
+    return (f'        <div class="espace-tableau" style="height:{mm}mm">'
+            f'<span class="mini">place pour ton tableau</span></div>\n')
+
+
 def exercice(num, titre, question="", fig=None, largeur=None, lignes=None,
-             contexte="", equations=(), donnees="", apres_contexte=""):
+             contexte="", equations=(), donnees="", apres_contexte="",
+             tableau=None):
     """Énoncé d'exercice.
 
     RÈGLE : la figure d'un énoncé vit DANS le cadre de l'énoncé. Posée à
@@ -209,6 +221,8 @@ def exercice(num, titre, question="", fig=None, largeur=None, lignes=None,
 
     `lignes` donne le nombre de lignes de rédaction. On ne pré-dessine ni
     tableau ni cadre de réponse : l'élève trace ce dont il a besoin.
+    `tableau` (en mm) réserve, APRÈS les lignes, une place vierge pour le
+    tableau qu'il va tracer — voir `espace_tableau()`.
 
     STRUCTURE DU SITE (22/09/2026) — avec `contexte` ou `equations`, l'énoncé
     suit l'ordre de la page en ligne : la situation en romain, les équations
@@ -238,6 +252,8 @@ def exercice(num, titre, question="", fig=None, largeur=None, lignes=None,
             h += f'        <p class="question-f">{question}</p>\n'
         if lignes:
             h += calcul(lignes)
+        if tableau:
+            h += espace_tableau(tableau)
         return h + "      </div>\n"
     if question:
         h += f'        <p class="question-f">{question}</p>\n'
@@ -246,6 +262,8 @@ def exercice(num, titre, question="", fig=None, largeur=None, lignes=None,
               f'margin:1.5mm auto;">{fig}</div>\n')
     if lignes:
         h += calcul(lignes)
+    if tableau:
+        h += espace_tableau(tableau)
     return h + "      </div>\n"
 
 
@@ -505,6 +523,10 @@ CSS = """
 
   .mini { font-family:'IBM Plex Mono',monospace; font-size:7.3pt; color:var(--gris); }
   .question-f { font-style:italic; font-size:9.3pt; }
+  /* place vierge pour un tableau tracé par l'élève : ni cadre ni lignes,
+     la mention seule, en haut à gauche */
+  .espace-tableau { margin-top:2mm; }
+  .espace-tableau .mini { font-style:italic; opacity:.8; }
   svg { display:block; }
   .schema { border:1px solid var(--grille); border-radius:2mm; padding:2mm;
             margin:2.4mm 0 3mm; background:#fff; }

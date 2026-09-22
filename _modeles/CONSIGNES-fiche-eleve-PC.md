@@ -107,10 +107,17 @@ restée en ligne. Même arbitrage pour les compressions et dilatations de la
 propagation.
 
 ### R6 · Rien n'est pré-dessiné dans les exercices
-**Des lignes horizontales, point.** Pas de tableau de réponse, pas de cadre de
-calcul, pas de zone de schéma. Un cadre imposé dit à l'élève où s'arrêter ;
-il trace lui-même le tableau ou le croquis dont il a besoin.
-`exercice(..., lignes=n)` ne sait faire que ça, c'est volontaire.
+Pas de tableau de réponse, pas de cadre de calcul, pas de zone de schéma. Un
+cadre imposé dit à l'élève où s'arrêter ; il trace lui-même le tableau ou le
+croquis dont il a besoin. `exercice(..., lignes=n)` donne des lignes
+d'écriture.
+
+**Quand l'exercice fait tracer un tableau** (classer des entités, des corps
+purs…), des lignes ne laissent pas la place de le tracer :
+`exercice(..., tableau=mm)` réserve une **place vierge**, signalée par la
+seule mention « place pour ton tableau » — ni cadre, ni lignes. Décision de
+Loïc du 22/09/2026, sur T1-C1 (exercices 1, 2 et 4). Le diaporama, lui,
+peut porter la grille vide pour la correction au tableau.
 
 ### R7 · La figure d'un énoncé vit dans le cadre de l'énoncé
 Posée à côté, elle se lit comme une illustration du cours ; posée dedans,
