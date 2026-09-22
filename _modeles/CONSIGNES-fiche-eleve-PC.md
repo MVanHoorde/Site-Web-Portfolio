@@ -258,6 +258,8 @@ Chacun a coûté une passe. À relire avant de toucher au gabarit.
 | **La clôture poussée sous le pied** | La **marge de notes** (33 lignes × 7,6 mm) est plus haute que la colonne principale : c'est elle qui fixe la hauteur du corps de page. Sur la dernière page, elle poussait le bloc de clôture par-dessus le pied, qui écrasait les cases du code et les deux QR | Sur la page qui porte la clôture, passer `lignes_notes=30`. Le contenu de la colonne principale n'y change rien — l'ajuster ne sert à rien |
 | **Console Windows en cp1252** | Les `✓`, `✗` et `⚠` des messages lèvent `UnicodeEncodeError` : le script meurt **avant** d'écrire la fiche, et le message d'erreur masque la vraie cause | `sys.stdout.reconfigure(encoding="utf-8")` en tête du gabarit et de `mesurer_pages.py` |
 | **Fins de ligne** | Python écrit du CRLF sous Windows : la fiche diffère de sa version en dépôt à chaque génération | `write_text(..., newline="\n")` |
+| **Image non chargée dans la sonde du paginateur** | `paginer.py` mesure les blocs dans une page-sonde écrite HORS du dépôt : le chemin relatif d'un `<img>` n'y mène à rien, l'image mesure 0 mm et la découpe proposée est fausse. Les SVG, inline, ne sont pas touchés | Écrire les proportions en dur sur chaque `<img>` : `width`, `height` et `style="aspect-ratio:w/h"` — voir `img()` dans `fiche_t1c1.py` |
+| **Légende justifiée en colonne étroite** | Sous trois images côte à côte, la justification troue la légende de grands blancs | `style="text-align:left"` sur ces légendes |
 | **poppler absent** | `mesurer_pages.py` appelait `pdftoppm`, qui n'est pas installé sous Windows | Rendu par **PyMuPDF**, sans binaire externe ni fichier temporaire ; `pdftoppm` reste en repli |
 
 ---
@@ -338,7 +340,9 @@ du chapitre. Contrôles au dépôt : cinq QR relus `✓`, A4 `209,9 × 297,0 mm`
 - **T1-C4** est écrite à la main, avant le générateur, et ne suit pas encore ce
   standard. L'y ramener suppose de la réécrire en `fiche_t1c4.py` — utile, non
   urgent. **T1-C2 l'a été le 20/09/2026** : `fiche_t1c2.py`, 12 pages, la fiche
-  v4 manuscrite de 10 pages est remplacée.
+  v4 manuscrite de 10 pages est remplacée. **T1-C1 est né dans ce standard le
+  22/09/2026** : `fiche_t1c1.py`, 12 pages — premier chapitre dont les figures
+  sont surtout des images (schémas Canva) et non des SVG.
 - **Le rendu navigateur** ne peut pas être vérifié depuis l'environnement de
   production : le CSS est écrit conservateur pour limiter l'écart, mais c'est
   l'impression Chrome qui fait foi.

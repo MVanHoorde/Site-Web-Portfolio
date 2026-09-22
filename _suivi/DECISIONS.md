@@ -15,6 +15,26 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 22/09/2026 — T1-C1 : page, diaporama et fiche, sur l'audit de Loïc
+
+Audit du diaporama par Loïc ; diaporama **validé** le jour même. Ce qui touche
+le fond est reporté sur la page, sans quoi écran, fiche et page divergeraient.
+
+| Date | Décision | Statut |
+|---|---|---|
+| 22/09/2026 | **Nouvelles définitions sur la page T1-C1** : espèce chimique et corps pur séparés ; corps pur simple, corps pur composé, mélange hétérogène, mélange homogène, liquides miscibles et non miscibles deviennent des définitions. La composition de l'air devient une **propriété**. 19 → **26** marqueurs `a-noter` | ✅ |
+| 22/09/2026 | **Exercices de T1-C1 renumérotés dans l'ordre d'apparition** : l'exercice de la fonte (composition en masse) suit la fonte et prend le n° 3 ; celui de l'air prend le n° 4. Il était placé après l'air, et l'écran affichait le 4 avant le 3 | ✅ |
+| 22/09/2026 | 🔴 **Règle de tous les diaporamas : tous les exercices de la page sont projetés**, chacun avec son document dans son cadre (R11 de `CONSIGNES-diaporama-PC.md`) | ✅ |
+| 22/09/2026 | 🔴 **Règle de tous les diaporamas : le Kahoot du chapitre clôt la checklist** (R10). `controler.py` échoue s'il manque un Kahoot de la page. Appliqué à T1-C1 et à T1-C2 (ses deux Kahoot) | ✅ |
+| 22/09/2026 | **Une figure qui illustre une définition arrive juste après elle** à la projection ; les images-documents, qu'on commente avant d'institutionnaliser, restent en tête (§3 de la consigne) | ✅ |
+| 22/09/2026 | **Le mot défini est surligné** sur les diapositives (R12, `terme()`) | ✅ |
+| 22/09/2026 | **Grilles de réponse vides préconstruites** sur les diapositives des exercices 1 et 2 de T1-C1, pour la correction au tableau. Elles ne portent aucune réponse (R1) et **ne vont pas sur la fiche**, où l'élève trace lui-même son tableau (R6 de la fiche) | ✅ |
+| 22/09/2026 | **Fiche T1-C1 : les Images 15 et 19 figurent en entier, rien à compléter** ; les tests d'espèces (Images 16-18) y figurent aussi. **Aucun schéma n'est à faire compléter** : trop long en classe | ✅ |
+| 22/09/2026 | **Application sur l'or** ajoutée à la diapositive de la densité (d = 19,3) | ⏳ proposition |
+| 22/09/2026 | Accroche, transitions et mises en garde de la page T1-C1, sous-titre du diaporama, introduction du cartouche de la fiche | ⏳ proposition |
+
+---
+
 ## 22/09/2026 — SNT t0 : plus d'étape de lecture qui ne se valide pas, et l'élève est prévenu de sa correction
 
 Retours du premier test en classe de Loïc sur `t0` et sur le tableau de bord.

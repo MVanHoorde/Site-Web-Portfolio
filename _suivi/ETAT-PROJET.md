@@ -21,6 +21,11 @@
 > ⚠ **Effet à surveiller en classe** : un élève qui avait fini la séance 1 (ou 2,
 > ou 3) avant le 22/09 voit la séance suivante se refermer tant qu'il n'a pas
 > fait le nouveau QCM — une minute, ou le mode enseignant.
+> **Même jour — T1-C1 outillé de bout en bout.** Page reprise (26 crayons,
+> exercices dans l'ordre), diaporama **validé par Loïc** (19 diapositives,
+> tous les exercices, Kahoot en clôture), fiche de 12 pages écrite et liée
+> depuis la page. Deux règles valent désormais pour tous les diaporamas :
+> Kahoot en clôture et tous les exercices projetés. Détail : `chapitres.md`.
 > La passe précédente (T1-C2 aligné sur T1-C3, chaîne des diaporamas
 > versionnée) est au `JOURNAL.md` du 20/09.
 >

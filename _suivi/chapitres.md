@@ -10,8 +10,8 @@
 >
 > 🆕 **Fiche vierge téléchargeable depuis le cours (26/08/2026)** — bloc
 > `.fiche-vierge.hors-verrou` sous le sous-titre, visible **même page verrouillée**.
-> Posé sur les **2 chapitres dont la fiche existe** : `t1c2`, `t1c4`. Les 12 autres
-> l'auront quand leur fiche sera écrite. Règle : `CONSIGNES-chapitre-PC.md` §6.
+> Posé sur les **5 chapitres dont la fiche existe** : `t1c1`, `t1c2`, `t1c3`, `t1c4`,
+> `t3c1`. Les autres l'auront quand leur fiche sera écrite. Règle : `CONSIGNES-chapitre-PC.md` §6.
 >
 > 🆕 **Ce lien pointe vers un PDF depuis le 28/08/2026** — `assets/pdf/pc/fiches/`.
 > Le HTML de la fiche reste la source, le PDF est un export régénéré par
@@ -70,10 +70,31 @@
 ## Seconde — Thème 1 : Constitution et transformations de la matière
 
 ### T1-C1 — La matière à l'échelle macroscopique
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- Fichier : `pages/2nde-pc-t1-c1-matiere-macroscopique.html`
-- Fiche : aucune.
-- Blocs 🚧 restants : _à recenser en régime B_.
+- Jalons : 1 ✅ · 2 ⬜ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichiers : `pages/2nde-pc-t1-c1-matiere-macroscopique.html` ·
+  `fiches/fiche-2nde-t1c1.html` (généré) · `assets/pptx/pc/diaporama-2nde-t1c1.pptx`
+- Page refondue le 20/09/2026 (charte de T3-C1, 9 schémas refaits sous Canva),
+  puis reprise le 22/09 sur l'audit du diaporama : 15 définitions + 1 propriété,
+  **26 `a-noter`**, exercices 1 à 10 dans l'ordre d'apparition. Aucun bloc 🚧.
+  Texte **non validé** : accroche, transitions et mises en garde sont des
+  propositions (signalées dans le source).
+- Diaporama : **validé par Loïc le 22/09/2026**. Régénérable
+  (`_outils/diaporamas/diapo_t1c1.py`) — 19 diapositives, 65 étapes, les
+  10 exercices projetés avec leurs documents, grilles de réponse vides pour les
+  exercices 1 et 2, Kahoot en clôture.
+- Fiche : **écrite le 22/09/2026**, `_outils/fiches/fiche_t1c1.py` — 12 pages,
+  16 cadres, 5 formules en boîtes, 10 exercices, 6 QR relus, creux cumulé
+  196 mm (24 mm au pire), aucun débordement. Consignes de Loïc appliquées :
+  Images 15 et 19 **en entier, rien à compléter**, tests d'espèces (16-18)
+  présents, aucun schéma à compléter. Cartouche sur fond de cuivre délavé
+  (`t1c1-cuivre-bandeau.jpg`). **Non validée.**
+- ⚠ Le chapitre écrit **ρ** partout : sur la fiche, il tombe en Times (aucune
+  police auto-hébergée ne porte le grec — `CONSIGNES-fiche-eleve-PC.md` §8.5).
+- ⚠ Photos restant à refaire (basse définition ou droits non vérifiés) :
+  `t1c1-eau-de-chaux.jpg` (280×180), `t1c1-cuivre.jpg` — dont dérive aussi le
+  bandeau du cartouche — `t1c1-fonte-*`, `t1c1-alliance.jpg`. Trois images ne
+  sont plus appelées : `t1c1-huile-eau.jpg`, `t1c1-sirop-the.png`,
+  `t1c1-miel-cuilleres.jpg`.
 
 ### T1-C2 — Transformations physiques et chimiques
 - Jalons : 1 ✅ · 2 ⬜ · 3 ✅ · 4 ⬜ · 5 ⬜ · 6 ✅ · 7 ⬜

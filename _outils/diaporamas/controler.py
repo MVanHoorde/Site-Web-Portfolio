@@ -121,8 +121,18 @@ def controler(chemin, page_cours=None):
 
     attendus = None
     if page_cours and Path(page_cours).exists():
-        attendus = Path(page_cours).read_text(encoding="utf-8").count(
-            'class="a-noter"')
+        html = Path(page_cours).read_text(encoding="utf-8")
+        attendus = html.count('class="a-noter"')
+        # 🔴 chaque Kahoot de la page doit être lié depuis le diaporama
+        # (demande de Loïc, 22/09/2026 : « à la fin, un lien vers mon Kahoot »)
+        liens = {r.target_ref for s in prs.slides for r in s.part.rels.values()
+                 if r.reltype.endswith("/hyperlink")}
+        for url in sorted(set(re.findall(r'href="(https://create\.kahoot\.it/[^"]+)"',
+                                         html))):
+            if url not in liens:
+                soucis.append(f"🔴 Kahoot de la page absent du diaporama : {url}")
+            else:
+                print(f"   Kahoot lié ✓  {url.split('/share/')[1][:48]}")
 
     print(f"{len(prs.slides)} diapositives · {pictos} picto(s) ✎")
     if attendus is not None:

@@ -47,6 +47,16 @@ console.log(`${figures.length} figure(s) dans ${PAGE}`);
 // 🔴 fonts.css est OBLIGATOIRE : sans lui les textes des SVG tombent en
 // Times New Roman et la figure projetée ne ressemble plus à celle du site.
 const racine = resolve(dirname(resolve(PAGE)), '..');
+
+// 🔴 Une figure composite (photo + schéma, T1-C1 Images 2 et 3) embarque sa
+// photo par un <image href="../assets/…"> RELATIF À LA PAGE. La page de rendu
+// est écrite dans le dossier de sortie : le chemin n'y pointait plus sur rien,
+// et Chrome dessinait son icône d'image cassée à la place de la photo. On le
+// rend absolu avant le rendu. Les ancres internes (<use href="#…">) et les
+// URL déjà absolues ne sont pas touchées.
+const dossierPage = dirname(resolve(PAGE));
+const absolu = svg => svg.replace(/(\shref=")(?!#|data:|https?:|file:)([^"]+)"/g,
+  (_, debut, rel) => `${debut}${pathToFileURL(resolve(dossierPage, rel)).href}"`);
 const fonts = pathToFileURL(resolve(racine, 'assets/css/fonts.css')).href;
 const rendu = `${SORTIE}/_rendu.html`;
 writeFileSync(rendu, `<!DOCTYPE html><html><head><meta charset="UTF-8">
@@ -57,7 +67,7 @@ writeFileSync(rendu, `<!DOCTYPE html><html><head><meta charset="UTF-8">
 ${figures.map(f => {
   const [, , w, h] = f.viewBox.trim().split(/\s+/).map(Number);
   return `<div class="f" id="f-${f.cle}" style="width:${w * echelle}px;height:${h * echelle}px">`
-    + f.svg.replace('<svg ', `<svg width="${w * echelle}" height="${h * echelle}" `)
+    + absolu(f.svg).replace('<svg ', `<svg width="${w * echelle}" height="${h * echelle}" `)
     + '</div>';
 }).join('\n')}
 </body></html>`);

@@ -4284,3 +4284,37 @@ exercice 1 en colonnes — 24 marqueurs. La fiche suit : 12 pages, 100 mm de cre
 Pendant ce temps, la session T1-C1 travaillait sur le même gabarit : elle a ajouté
 les Kahoot en fin de diaporama (règle du jour) et les a posés dans
 `diapo_t1c2.py`. Les deux jeux de modifications coexistent sans conflit.
+
+---
+
+## 22/09/2026 — T1-C1 : le diaporama, son audit, puis la fiche
+
+Premier diaporama de T1-C1, produit sur la chaîne de T1-C2 : les dix exercices
+projetés, les dix-neuf figures du site, les schémas Canva posés par leur chemin.
+Trois outils ont dû suivre : `extraire_figures.mjs` ne résolvait pas les photos
+embarquées dans un SVG composite (icône d'image cassée à la place du cuivre) ;
+`fraction()` n'écrivait qu'à l'encre, invisible sur le panneau sombre d'une
+formule ; `checklist()` faisait tomber une neuvième compétence sous le pied de
+page. `apercu_pptx.ps1`, que la consigne exigeait à l'étape 4, n'existait pas :
+écrit.
+
+Audit de Loïc sur la V1. Le plus gros déborde du diaporama : sept notions
+deviennent des définitions, l'air une propriété, et les exercices 3 et 4 étaient
+dans le désordre — sur la page aussi. La page change donc avec l'écran (26
+crayons). Les autres points sont de forme : mot défini surligné, figure après
+sa définition, Image 6 presque en pleine page, exercice 7 sur sa propre
+diapositive pour que la courbe se lise, exercices 9 et 10 rapatriés là où leur
+notion est enseignée, application sur l'or pour la densité. Deux règles
+deviennent communes à tous les diaporamas : le Kahoot en clôture, contrôlé par
+`controler.py`, et tous les exercices projetés. Grilles de réponse vides pour
+les exercices 1 et 2 à la demande de Loïc. Diaporama validé.
+
+Fiche : 12 pages. Le chapitre ne descend pas sous 12 : les gros blocs (exercices
+7 et 8, 140 mm) laissent 40 à 70 mm perdus par page quoi qu'on resserre. Les
+creux sont comblés par des lignes d'écriture ; 196 mm au total, 24 au pire.
+Piège trouvé : `paginer.py` mesure les blocs hors du dépôt, où un `<img>`
+relatif ne charge pas et vaut 0 mm — proportions écrites en dur.
+
+Pendant la session, l'autre conversation (audit de T1-C2) modifiait le même
+gabarit de diaporama ; ses ajouts (`exercice()`, `terme()`, teintes) ont été
+réutilisés ici, et les miens sont partis dans son commit `465ca1c`.

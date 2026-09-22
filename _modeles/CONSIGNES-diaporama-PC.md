@@ -25,6 +25,7 @@ l'est pas :
 | `animer.py` | injecte le `<p:timing>` dans le XML des diapositives |
 | `controler.py` | contrôle géométrique : débordements, recouvrements, pied de page, décompte des ✎, absence de correction |
 | `mesurer_cadres.ps1` | demande à PowerPoint la hauteur **réelle** de chaque texte et la compare au cadre censé le contenir |
+| `apercu_pptx.ps1` | fait exporter chaque diapositive en PNG par PowerPoint — le contrôle visuel de l'étape 4, et le test de validité du fichier : PowerPoint refuse d'ouvrir un `.pptx` corrompu |
 
 🔴 **T3-C1, lui, n'est toujours pas régénérable** : il a été produit par
 l'ancienne chaîne, perdue. Il est **versionné** dans
@@ -38,9 +39,17 @@ document d'élève. Le dépôt étant public, il reste néanmoins accessible par
 URL — d'où le contrôle fait avant de le verser : aucune correction à l'écran
 (R1), aucune donnée d'élève ni de classe.
 
-**Deux diaporamas au dépôt** : `diaporama-2nde-t3c1.pptx` (12 diapositives,
-53 étapes — non régénérable) et `diaporama-2nde-t1c2.pptx` (21 diapositives,
-74 étapes — régénérable par `python diapo_t1c2.py <figures>`).
+**Trois diaporamas au dépôt** : `diaporama-2nde-t3c1.pptx` (12 diapositives,
+53 étapes — non régénérable), `diaporama-2nde-t1c2.pptx` (21 diapositives,
+63 étapes) et `diaporama-2nde-t1c1.pptx` (19 diapositives, 65 étapes), ces deux
+derniers régénérables par `python diapo_<code>.py <figures>`.
+
+**Figures qui ne sont pas des SVG.** Un schéma refait sous Canva ou une
+photographie se pose directement par son chemin (`figure()` accepte n'importe
+quelle image) : seuls les SVG passent par l'extraction. Un SVG **composite**
+qui embarque une photo (`<image href="../assets/…">`, T1-C1 Images 2 et 3) est
+extrait correctement : `extraire_figures.mjs` rend ses chemins absolus avant le
+rendu — sans quoi Chrome dessinait son icône d'image cassée.
 
 ⚠ **Régénérable ne veut pas dire identique au bit près** : le contenu du
 `.pptx` est déterministe — deux générations donnent exactement les mêmes
@@ -63,7 +72,7 @@ avant : il puise ses figures dans la page en ligne et suit sa numérotation.
 
 ---
 
-## 2. Les neuf règles permanentes
+## 2. Les règles permanentes
 
 ### R1 · Aucune correction à l'écran
 Les énoncés apparaissent, jamais les réponses. Sur T3-C1, les deux SVG de
@@ -168,6 +177,31 @@ lignes, l'œil ne trouvait pas « énergie massique ». Dans un cadre étroit à
 Sur fond sombre, il faut une **plaque claire derrière** : son texte bleu nuit
 disparaîtrait sinon.
 
+### R10 · Le Kahoot du chapitre clôt la checklist
+Décision de Loïc du 22/09/2026. La diapositive « Pour le DS, je sais » porte
+un lien vers **chaque** Kahoot de la checklist en ligne (T1-C2 en a deux),
+révélé au dernier clic : `checklist(…, kahoots=[(libellé, url), …])`. Le lien
+est posé sur le run, jamais sur la zone (§5).
+
+Règle **mécanique** : `controler.py` relève les liens `create.kahoot.it` de la
+page et **échoue** s'il en manque un dans le diaporama.
+
+### R11 · Tous les exercices de la page sont projetés, dans leur ordre
+Décision de Loïc du 22/09/2026. Chaque exercice a sa place à l'écran, avec
+son document dans son cadre (R7). Leur numérotation suit l'ordre
+d'apparition des notions — **en ligne comme à l'écran** : sur T1-C1,
+l'exercice de la fonte était numéroté 4 et placé après celui de l'air, la
+projection affichait donc le 4 avant le 3. On renumérote la page d'abord.
+
+### R12 · Le mot défini est surligné
+`terme()` met en évidence le mot qu'une définition définit, comme `.terme`
+sur le site. Le gras seul ne suffisait pas.
+
+### R13 · Une notion qui devient définition le devient aussi en ligne
+Quand l'audit d'un diaporama fait d'une phrase une définition ou une
+propriété, la page change dans la même livraison et reçoit son crayon
+`a-noter` : sinon le décompte des ✎ (R2) diverge et la fiche aussi.
+
 ---
 
 ## 3. La séquence d'animation
@@ -176,10 +210,16 @@ disparaîtrait sinon.
 À chaque clic, une étape apparaît en fondu (0,4 s). L'ordre est toujours le
 même :
 
-1. **les images d'abord** — on les commente avec la classe ;
+1. **les images-documents d'abord** — celles qu'on commente avec la classe
+   avant d'institutionnaliser ;
 2. **les définitions et propriétés** — on institutionnalise ;
 3. **la méthode ou la formule** ;
 4. **l'exercice en dernier**.
+
+🔴 **Une figure qui ILLUSTRE une définition arrive juste APRÈS elle**
+(décision de Loïc du 22/09/2026, sur T1-C1) : la définition du corps pur
+simple, puis le cuivre ; celle du mélange hétérogène, puis l'eau et l'huile.
+Projetée avant, l'illustration se lisait sans rien à illustrer.
 
 Le bandeau de tête et le pied de page restent affichés dès l'arrivée sur la
 diapositive.
