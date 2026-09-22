@@ -163,6 +163,30 @@ de `pages/2nde-snt-t1-internet.html`, seule séquence déjà portée.
   de structure** se dessinent en SVG maison ; une **illustration figurative** ne
   se dessine pas de mémoire — cadre de réservation `.reserve` et image fournie
   par Loïc. Voir `CLAUDE.md`, « Règles techniques communes ».
+- 🎬 **Vidéos — décision du 22/09/2026.**
+  - **En classe, Loïc projette depuis son poste**, par un lien **DigiView**
+    (`ladigitale.dev/digiview/#/v/…`) : sans publicité ni suggestion. Motif : le
+    réseau du lycée demande une connexion Google pour lire YouTube.
+  - **Dans la page, le poste de visionnage** passe par le **lecteur intégré de
+    DigiView**, toujours lancé au clic (`data-src` : rien ne part hors du site
+    avant le clic). Il reste là pour les notes, le QCM de l'étape et le
+    revisionnage à la maison. L'adresse se construit sans passer par le site
+    DigiView :
+    `https://ladigitale.dev/digiview/inc/video.php?videoId=<ID>&vignette=<URL encodée de i.ytimg.com/vi/<ID>/maxresdefault.jpg>&debut=0&fin=<durée en s + 1>&largeur=16&hauteur=9`
+    (`&` écrit `&amp;` dans l'attribut). Le moteur reconnaît `ladigitale.dev/digiview`
+    et adapte le texte de l'affiche. DigiView lit toujours la vidéo depuis
+    YouTube (`youtube-nocookie`) : il enlève les publicités, pas le passage
+    par Google, et affiche son propre écran d'accord — l'élève clique deux fois.
+  - 🔴 **Jamais de vidéo de tiers téléchargée ni ré-hébergée** (dépôt, OneDrive,
+    cahier de textes) sans l'accord écrit de son auteur : c'est interdit par les
+    conditions de YouTube et ce n'est pas couvert par l'exception pédagogique
+    (qui porte sur des extraits). Une vidéo dont Loïc a les droits (la sienne,
+    sous licence libre, ou avec accord) va sur le **Tube d'apps.education.fr**,
+    jamais dans le dépôt.
+  - **Chaque poste de visionnage nomme le créateur** dans sa consigne : c'est ce
+    qui permet de savoir à qui écrire.
+  - Une étape dont la ressource principale est une vidéo se **valide par un QCM**
+    sur son contenu (voir t0 2.2), jamais par sa seule lecture.
 - 🗂 **Une séquence SNT est autonome pour son code.** Tout le **CSS**, tout le **JS**
   et **tous les SVG** vivent **inline** dans `pages/2nde-snt-tN-….html`.
   ⚠️ **Modifié le 21/07/2026** : la règle « aucun fichier d'asset externe » s'est

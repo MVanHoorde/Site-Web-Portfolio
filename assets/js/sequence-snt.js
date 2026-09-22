@@ -2477,6 +2477,10 @@ function initVideos(){
     var src=f.getAttribute('data-src'); if(!src) return;
     var h=f.getAttribute('height')||'315';
     var son=/radiofrance/.test(src);
+    /* DigiView (22/09/2026) : le lecteur de La Digitale habille celui de
+       YouTube (youtube-nocookie) — sans publicité ni suggestion, mais la
+       vidéo vient toujours de chez YouTube. L'affiche le dit. */
+    var digiview=/ladigitale\.dev\/digiview/.test(src);
     var quoi=son?'l\'écoute':'la vidéo', chez=son?'Radio France':'YouTube';
     var aff=document.createElement('button');
     aff.type='button'; aff.className='video-affiche'+(son?' son':'');
@@ -2484,12 +2488,14 @@ function initVideos(){
     aff.setAttribute('aria-label','Lancer '+quoi+' — elle se charge chez '+chez+' au moment du clic');
     aff.innerHTML='<span class="va-play" aria-hidden="true">'+(son?'🎧':'▶')+'</span>'+
       '<span class="va-txt">'+(son?'Lancer l\'écoute':'Lire la vidéo')+'</span>'+
-      '<span class="va-note">Hébergée par '+chez+'&nbsp;: rien n\'est chargé chez eux tant que tu n\'as pas cliqué.</span>';
+      '<span class="va-note">'+(digiview
+        ? 'Sans publicité, via DigiView. La vidéo reste hébergée par YouTube&nbsp;: rien n\'est chargé chez eux tant que tu n\'as pas cliqué.'
+        : 'Hébergée par '+chez+'&nbsp;: rien n\'est chargé chez eux tant que tu n\'as pas cliqué.')+'</span>';
     aff.addEventListener('click',function(){
       var i=document.createElement('iframe');
       i.src=src; i.height=h; i.frameBorder='0'; i.allowFullscreen=true;
       i.title=f.getAttribute('title')||'Vidéo';
-      i.setAttribute('allow','accelerometer; clipboard-write; encrypted-media; picture-in-picture; fullscreen');
+      i.setAttribute('allow','accelerometer; clipboard-write; encrypted-media; picture-in-picture; fullscreen'+(digiview?'; autoplay':''));
       aff.parentNode.replaceChild(i,aff);
     });
     f.parentNode.replaceChild(aff,f);
