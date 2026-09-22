@@ -4233,3 +4233,34 @@ Audit de la fiche : dix-huit points conformes, deux trouvailles. Les trois
 courant sur la page — passés en encart marqué ✎, 23 marqueurs. Et la fiche
 demande θ(ébullition) de l'eau, que le cours ne donne nulle part : en attente
 d'arbitrage, c'est du fond.
+
+## 22/09/2026 — SNT t0 en classe : trois retours de Loïc
+
+**L'étape 1.5 ne se validait pas.** Pas de `data-gate`, pas d'exercice : rien ne
+pouvait la passer au vert. Effet de bord relevé en lisant `majBarreFiche()` : la
+barre de fiche se révèle avec la dernière étape *à valider* — la 1.4 —, et la
+séance se déclarait terminée dès la 1.4. La fenêtre « ouvre ta fiche » arrivait
+donc avant l'étape qui explique la fiche. Même défaut en 2.2 (vidéo seule) et en
+3.6 (QCM présent mais « facultatif »). Trois QCM de 3 questions, biais de
+longueur contrôlés par `verifier.mjs --qcm` (aucun signalement), positions de la
+bonne réponse réparties.
+
+**Le pop-up « Séance terminée » à chaque rechargement.** `refresh()` voyait la
+séance passer d'incomplète à complète quand la base rendait l'état. Il exige
+maintenant un geste récent.
+
+**Le code d'erreur des réponses types.** Sonde en lecture sur l'API avec la clé
+anonyme : `modeles_correction` et `modele_utilise` répondent `PGRST205`/`PGRST202`
+(introuvables), les tables de 009, 016 et 018 répondent `42501` (présentes,
+refusées à l'anonyme). La 011 n'était pas en base. Loïc l'a exécutée ; nouvelle
+sonde : `42501`.
+
+**Le pop-up de correction**, demandé dans le même message, testé au navigateur
+avec une base simulée : pas de fenêtre pour une copie en attente, fenêtre à la
+bascule en « corrigé », une seule écriture `corrections-vues`, rien au relevé
+suivant ni au rechargement. La capture a montré les boutons en Times New Roman —
+le défaut IBM Plex Sans connu ; corrigé dans `sequence-snt.css` au passage.
+
+`sequence-snt.js?v=48`, `sequence-snt.css?v=44` sur toutes les pages qui les
+chargent. `verifier.mjs` : 19 problèmes, le repère.
+

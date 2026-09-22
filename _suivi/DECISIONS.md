@@ -15,6 +15,18 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 22/09/2026 — SNT t0 : plus d'étape de lecture qui ne se valide pas, et l'élève est prévenu de sa correction
+
+Retours du premier test en classe de Loïc sur `t0` et sur le tableau de bord.
+
+| Date | Décision | Statut |
+|---|---|---|
+| 22/09/2026 | 🔴 **Une étape de contenu se valide toujours : pas d'étape « à lire » sans exercice.** Une étape sans `data-gate` et sans exercice ne passe jamais au vert, fait baisser l'anneau du hub (qui compte toutes les étapes) et, en fin de séance, laisse la fiche et « Séance terminée » arriver avant elle. Le geste de validation retenu est le **QCM de 3 questions**, pas un bouton « J'ai lu » (écarté pour l'instant : il n'existe pas dans le moteur et ne vérifie rien). Appliqué à `t0` 1.5 (le rituel de la fiche, SYS-Q8), 2.2 (la vidéo Codeur Pro, SYS-Q9) et 3.6 (mode enseignant : SYS-Q6 existait sans `data-gate`, il passe de 2 à 3 questions). Aucun autre cas dans `t1`, `t2` : leurs étapes sans marqueur sont des bonus, des « Et toi ? » ou des exercices qui se valident | ✅ |
+| 22/09/2026 | **« Séance terminée » ne s'ouvre qu'après un geste de l'élève.** Au rechargement, la restauration depuis la base faisait passer la séance d'incomplète à complète, et le pop-up revenait à chaque visite. Il exige désormais un clic ou une touche dans les 8 s | ✅ |
+| 22/09/2026 | 🆕 **« Ton professeur t'a répondu » : un pop-up annonce chaque retour, une fois.** Relevé toutes les 60 s page ouverte (onglet visible, jamais pendant l'écriture), et à l'ouverture pour les retours arrivés entre-temps. « Déjà annoncé » vit en base (`progression`, domaine `cours`, clé `corrections-vues`, signature statut + `corrige_le`) — aucun `localStorage`. La carte « Bon retour » ne recompte plus toutes les corrections : elle faisait doublon | ✅ |
+| 22/09/2026 | **La migration 011 (réponses types) n'avait jamais été appliquée en base** — constaté en sondant l'API : `PGRST205`, table introuvable, alors que 009, 016 et 018 y sont. Loïc l'a exécutée le 22/09. Le tableau de bord traduit désormais les codes d'erreur PostgREST connus au lieu d'afficher le JSON brut | ✅ |
+| 22/09/2026 | **`sequence-snt.css` intercale Inter après IBM Plex Sans** dans ses onze piles, comme prévu par CLAUDE.md : `.btn` n'avait aucun repli et tous les boutons des séquences tombaient en Times New Roman | ✅ |
+
 ## 20/09/2026 — T1-C2 aligné sur T1-C3, et deux chaînes outillées
 
 Loïc désigne **T1-C3 comme sa référence** — esthétique, textes de transition,

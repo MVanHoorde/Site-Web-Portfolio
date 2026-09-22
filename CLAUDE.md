@@ -229,9 +229,9 @@ navigateur le 04/09/2026 : **5 glyphes sur 69**, sur les quatre faces (400, 400i
 New Roman** là où aucun repli n'est déclaré. Les cinq autres familles sont
 saines. En attendant de vraies polices, intercaler `'Inter'` juste après
 `'IBM Plex Sans'` dans la pile : Inter est auto-hébergée, complète et du même
-genre, et Plex Sans reprendra la main d'elle-même une fois réparée. Concerne
-`assets/css/sequence-snt.css` (donc **toutes les séquences SNT et les 8 outils
-PC**), `prof/index.html` et 3 fiches.
+genre, et Plex Sans reprendra la main d'elle-même une fois réparée. **Fait dans
+`assets/css/sequence-snt.css`** (22/09/2026 — séquences SNT, outils PC, ES) ;
+restent `prof/index.html` et 3 fiches.
 
 🔴 **`_a-deposer/` — dossier tampon, hors Git.** Loïc y dépose les sources brutes
 d'un chantier, dans un **sous-dossier par chantier** (`es1/`, `tp/`, `ds/`…). Rien de

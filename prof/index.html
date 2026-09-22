@@ -1313,8 +1313,27 @@ table.grille thead th{white-space:nowrap}
   /* ---------- actions ---------- */
   function erreurAction(e){
     var z = $('#err-action');
-    z.textContent = (e && e.message) || 'Action impossible.';
+    z.textContent = messageLisible((e && e.message) || '');
     z.classList.add('show');
+  }
+  /* ProfAPI remonte le corps brut de PostgREST — un JSON du type
+     {"code":"PGRST205","message":"Could not find the table…"}. Affiché tel
+     quel, il ne dit rien d'utile (constaté le 22/09/2026 : la table des
+     réponses types n'existait pas en base). On traduit les cas connus, et
+     on garde le code d'origine entre parenthèses pour le diagnostic. */
+  function messageLisible(brut){
+    var d = null;
+    try { d = JSON.parse(brut); } catch (x) {}
+    if(!d || typeof d !== 'object') return brut || 'Action impossible.';
+    var code = d.code || '';
+    var txt =
+        code === '23505'    ? 'C’est déjà enregistré : cette phrase est dans ta bibliothèque.'
+      : code === 'PGRST205' ? 'La base ne connaît pas encore cette fonction du tableau de bord (table absente) — une migration SQL n’a pas été appliquée.'
+      : code === 'PGRST202' ? 'La base ne connaît pas encore cette fonction du tableau de bord — une migration SQL n’a pas été appliquée.'
+      : code === '42501'    ? 'La base a refusé l’action : droits insuffisants pour ce compte.'
+      : code === '23514'    ? 'Le texte ne respecte pas le format attendu (trop court ou trop long).'
+      : (d.message || 'Action impossible.');
+    return code ? txt + ' (' + code + ')' : txt;
   }
 
   /* Après une décision, la copie sort de la file et la suivante dans

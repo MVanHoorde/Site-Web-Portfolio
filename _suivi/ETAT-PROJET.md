@@ -5,19 +5,24 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **20/09/2026**.
+> Dernière réécriture : **22/09/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — T1-C2 aligné sur T1-C3, fiche générée, diaporama outillé.**
-> La page reçoit ses 13 transitions, ses figures numérotées et ses SVG titrés ;
-> l'exercice 2, perdu à l'extraction V1, est restauré. La fiche passe au
-> générateur (12 pages, 122 mm de creux) et la **chaîne des diaporamas est
-> reconstruite et versionnée** dans `_outils/diaporamas/` — un diaporama se
-> régénère désormais en relançant un script. Détail : bloc ci-dessous.
+> **Dernière passe — SNT t0 après le premier test en classe (22/09).** Les
+> étapes 1.5, 2.2 et 3.6 de `t0` se valident enfin, par un QCM de 3 questions ;
+> la fiche et « Séance terminée » n'arrivent plus avant l'étape qui les explique,
+> et ce pop-up ne revient plus à chaque rechargement. L'élève est prévenu par une
+> fenêtre quand Loïc valide ou renvoie sa copie. La table des réponses types
+> manquait en base : migration 011 exécutée par Loïc. Détail : `DECISIONS.md`.
+> ⚠ **Effet à surveiller en classe** : un élève qui avait fini la séance 1 (ou 2,
+> ou 3) avant le 22/09 voit la séance suivante se refermer tant qu'il n'a pas
+> fait le nouveau QCM — une minute, ou le mode enseignant.
+> La passe précédente (T1-C2 aligné sur T1-C3, chaîne des diaporamas
+> versionnée) est au `JOURNAL.md` du 20/09.
 >
 > 🔴 **Ce qui demande une relecture de Loïc en priorité** : l'étape 1.5 « Si ça tourne
 > mal » de `o3` — seul contenu du dépôt qui engage la **sécurité d'élèves**. Elle est

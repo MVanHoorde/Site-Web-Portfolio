@@ -263,6 +263,18 @@
     return Array.from(gates).every(function(g){return g.classList.contains('is-done');});
   }
   var seanceWasComplete={};
+  /* Le pop-up « Séance terminée » répond à un GESTE de l'élève, jamais à
+     un rechargement (test en classe du 22/09/2026). Au chargement, la page
+     part d'une séance incomplète, puis la restauration depuis la base
+     (restaurer(), rehydraterReponses()) marque les étapes faites : refresh()
+     y lisait une séance qui venait d'être finie, et rouvrait le pop-up à
+     chaque visite. Toute validation réelle suit un clic ou une touche de
+     près — la restauration, elle, arrive seule, au retour du réseau. */
+  var dernierGeste=0;
+  ['pointerdown','keydown'].forEach(function(t){
+    document.addEventListener(t,function(){ dernierGeste=Date.now(); },true);
+  });
+  function parLeGeste(){ return Date.now()-dernierGeste < 8000; }
   function refresh(){
     document.querySelectorAll('.seance').forEach(function(sec){
       var gates=sec.querySelectorAll('[data-gate]');
@@ -271,7 +283,7 @@
       if(bar) bar.style.width = gates.length ? (100*done/gates.length)+'%' : '0%';
       var id=sec.getAttribute('data-seance');
       var complete = gates.length>0 && done===gates.length;
-      if(complete && seanceWasComplete[id]===false){ onSeanceComplete(sec); }
+      if(complete && seanceWasComplete[id]===false && parLeGeste()){ onSeanceComplete(sec); }
       if(seanceWasComplete[id]===undefined) seanceWasComplete[id]=complete; else seanceWasComplete[id]=complete;
     });
     /* Cascade de déverrouillage — généralisée le 26/07/2026.
@@ -711,57 +723,197 @@
     if(!codes.length) return;
     BASE.mesReponses(codes).then(function(lignes){
       mesCopies = lignes || [];
-      (lignes || []).forEach(function(r){
-        var sel = (window.CSS && CSS.escape) ? CSS.escape(r.code_activite) : r.code_activite;
-        var champ = document.querySelector('[data-focus-code="' + sel + '"]');
-        if(!champ) return;
-        /* restaurer la réponse envoyée + les états, comme validerFocus */
-        var texte = r.texte || '';
-        memoireReponses[r.code_activite] = texte;
-        var echo = champ.querySelector('[data-focus-echo]');
-        if(echo){ echo.textContent = texte; echo.style.display = 'block'; }
-        var action = champ.querySelector('.gaction'); if(action) action.style.display = 'none';
-        champ.classList.add('rempli');
-        var mot = champ.dataset.glossaire || (champ.closest('[data-glossaire]') || {dataset:{}}).dataset.glossaire;
-        if(mot) glossaire[mot] = texte;
-        /* le retour, seulement s'il est validé */
-        if(r.statut === 'corrige'){
-          var verd = (r.correction_ia && r.correction_ia.analyse && r.correction_ia.analyse.verdict) || 'sans objet';
-          verdict(champ, classeVerdict(verd), rendreRetour(r));
-          markDone(champ);
-          var sc=stepOf(champ); if(sc) sc.classList.remove('attente-corr');
-        } else if(r.statut === 'signale'){
-          /* À refaire. La classe 'a-refaire' rouvre le bouton d'envoi :
-             sans elle, la règle CSS '.rempli .gaction{display:none}'
-             l'emporte sur tout style inline, et l'élève lit « reprends
-             ta réponse » sans pouvoir le faire (bug constaté en test
-             réel le 01/08/2026 — la boucle était rompue).
-             On garde l'écho : il doit relire ce qu'il avait écrit.
-             Pas de markDone : l'étape n'est pas acquise. */
-          champ.classList.add('a-refaire');
-          if(action) action.style.display = '';
-          verdict(champ, 'no', rendreRenvoi(r));
-        } else {
-          /* Copie envoyée, pas encore corrigée. markDone EST
-             indispensable ici : à l'envoi, validerFocus() marque
-             l'étape faite sans attendre le worker. Si le rechargement
-             ne le refaisait pas, rouvrir la page ferait RECULER la
-             progression et verrouillerait la séance jusqu'au passage
-             du worker — panne constatée le 01/08/2026 après un
-             redémarrage du PC, étape 1.5 restée bloquée.
-             Règle générale : un rechargement ne doit jamais faire
-             perdre une progression déjà acquise. */
-          verdict(champ, 'wait', '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
-          markDone(champ);
-          var sw=stepOf(champ); if(sw) sw.classList.add('attente-corr');
-        }
-      });
+      mesCopies.forEach(appliquerCopie);
+      suivreCorrections(codes, mesCopies);
     }).catch(function(){ /* pas de base / invité : on n'affiche rien */ });
+  }
+  /* Pose une copie à l'écran : écho, pastille, retour du professeur.
+     Sorti de rehydraterReponses le 22/09/2026 pour servir aussi au
+     suivi en direct ci-dessous — un seul rendu, donc aucune divergence
+     entre ce qu'on voit au chargement et ce qui arrive en cours d'heure. */
+  function appliquerCopie(r){
+    var sel = (window.CSS && CSS.escape) ? CSS.escape(r.code_activite) : r.code_activite;
+    var champ = document.querySelector('[data-focus-code="' + sel + '"]');
+    if(!champ) return;
+    /* restaurer la réponse envoyée + les états, comme validerFocus */
+    var texte = r.texte || '';
+    memoireReponses[r.code_activite] = texte;
+    var echo = champ.querySelector('[data-focus-echo]');
+    if(echo){ echo.textContent = texte; echo.style.display = 'block'; }
+    var action = champ.querySelector('.gaction'); if(action) action.style.display = 'none';
+    champ.classList.add('rempli');
+    var mot = champ.dataset.glossaire || (champ.closest('[data-glossaire]') || {dataset:{}}).dataset.glossaire;
+    if(mot) glossaire[mot] = texte;
+    /* le retour, seulement s'il est validé */
+    if(r.statut === 'corrige'){
+      champ.classList.toggle('a-refaire', false);
+      var verd = (r.correction_ia && r.correction_ia.analyse && r.correction_ia.analyse.verdict) || 'sans objet';
+      verdict(champ, classeVerdict(verd), rendreRetour(r));
+      markDone(champ);
+      var sc=stepOf(champ); if(sc) sc.classList.remove('attente-corr');
+    } else if(r.statut === 'signale'){
+      /* À refaire. La classe 'a-refaire' rouvre le bouton d'envoi :
+         sans elle, la règle CSS '.rempli .gaction{display:none}'
+         l'emporte sur tout style inline, et l'élève lit « reprends
+         ta réponse » sans pouvoir le faire (bug constaté en test
+         réel le 01/08/2026 — la boucle était rompue).
+         On garde l'écho : il doit relire ce qu'il avait écrit.
+         Pas de markDone : l'étape n'est pas acquise. */
+      champ.classList.add('a-refaire');
+      if(action) action.style.display = '';
+      verdict(champ, 'no', rendreRenvoi(r));
+    } else {
+      /* Copie envoyée, pas encore corrigée. markDone EST
+         indispensable ici : à l'envoi, validerFocus() marque
+         l'étape faite sans attendre le worker. Si le rechargement
+         ne le refaisait pas, rouvrir la page ferait RECULER la
+         progression et verrouillerait la séance jusqu'au passage
+         du worker — panne constatée le 01/08/2026 après un
+         redémarrage du PC, étape 1.5 restée bloquée.
+         Règle générale : un rechargement ne doit jamais faire
+         perdre une progression déjà acquise. */
+      verdict(champ, 'wait', '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
+      markDone(champ);
+      var sw=stepOf(champ); if(sw) sw.classList.add('attente-corr');
+    }
   }
   if(document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', rehydraterReponses);
   else
     rehydraterReponses();
+
+  /* ---------- « Ton professeur t'a répondu » (22/09/2026) ----------
+     Demandé par Loïc en test réel : quand il valide ou renvoie une réponse
+     rédigée, l'élève doit le SAVOIR — pas le découvrir en rechargeant la
+     page et en remontant jusqu'à la bonne étape.
+
+     Deux moments, un seul pop-up :
+      · à l'ouverture de la page, les retours arrivés depuis la dernière
+        visite ;
+      · page ouverte, un relevé discret toutes les 60 s (seulement onglet
+        visible, jamais pendant que l'élève écrit) : le retour tombe
+        pendant l'heure, le pop-up aussi.
+
+     « Déjà annoncé » vit EN BASE (progression, domaine 'cours', clé
+     'corrections-vues') : un retour ne s'annonce qu'une fois, sur
+     n'importe quel appareil. Jamais de localStorage (§15.3). La
+     signature est statut + corrige_le : une copie renvoyée, réécrite puis
+     validée s'annonce donc deux fois, et c'est voulu — ce sont deux
+     retours.
+
+     Coût : une requête par minute et par élève connecté, onglet visible.
+     Un invité ne déclenche rien (pas de session). */
+  var CLE_VUES = 'corrections-vues';
+  var SUIVI_MS = 60000;
+  window.SNTalerteCorrections = true;   /* lu par la carte « Bon retour » */
+  function signatureCopie(r){ return (r.statut||'') + '|' + (r.corrige_le||''); }
+  function estRetour(r){ return r.statut === 'corrige' || r.statut === 'signale'; }
+
+  function suivreCorrections(codes, lignes){
+    if(!BASE || !BASE.session || !BASE.lire) return;
+    var connu = {}, vues = null;
+    lignes.forEach(function(r){ connu[r.code_activite] = signatureCopie(r); });
+
+    BASE.session().then(function(moi){
+      if(!moi) return;
+      BASE.lire('cours', CLE_VUES).then(function(v){
+        vues = (v && v.vues) || {};
+        annoncer(lignes.filter(nouveau));
+      });
+      setInterval(releve, SUIVI_MS);
+      document.addEventListener('visibilitychange', function(){
+        if(document.visibilityState === 'visible') releve();
+      });
+    }).catch(function(){});
+
+    function nouveau(r){ return estRetour(r) && vues && vues[r.code_activite] !== signatureCopie(r); }
+
+    function occupe(){
+      var b = document.body.classList;
+      return b.contains('focus-on') || b.contains('qcm-on')
+          || mb.classList.contains('show') || !!document.querySelector('.hub-modale');
+    }
+
+    var enCours = false;
+    function releve(){
+      if(enCours || vues === null || document.visibilityState !== 'visible') return;
+      /* l'élève écrit : on ne touche pas au champ sous ses yeux */
+      if(document.body.classList.contains('focus-on')) return;
+      enCours = true;
+      BASE.mesReponses(codes).then(function(l){
+        var changes = (l || []).filter(function(r){
+          return connu[r.code_activite] !== signatureCopie(r);
+        });
+        if(!changes.length) return;
+        changes.forEach(function(r){
+          connu[r.code_activite] = signatureCopie(r);
+          appliquerCopie(r);
+          /* la fiche lit ce cache : on le garde au niveau de la page */
+          var k = -1;
+          mesCopies.forEach(function(x, n){ if(x.code_activite === r.code_activite) k = n; });
+          if(k < 0) mesCopies.push(r); else mesCopies[k] = r;
+        });
+        majPastilleCorr();
+        annoncer(changes.filter(nouveau));
+      }).catch(function(){}).then(function(){ enCours = false; });
+    }
+
+    var enAttente = [];
+    function annoncer(liste){
+      liste.forEach(function(r){
+        if(!enAttente.some(function(x){ return x.code_activite === r.code_activite; })) enAttente.push(r);
+      });
+      if(!enAttente.length) return;
+      /* une fenêtre à la fois : QCM, écriture, « Séance terminée »,
+         carte « Bon retour » passent d'abord */
+      if(occupe()){ setTimeout(function(){ annoncer([]); }, 3000); return; }
+      var a = enAttente; enAttente = [];
+      ouvrirAnnonce(a);
+      a.forEach(function(r){ vues[r.code_activite] = signatureCopie(r); });
+      /* ecrire() fusionne au premier niveau : on renvoie la carte entière */
+      BASE.ecrire('cours', CLE_VUES, { vues: vues }).catch(function(){});
+    }
+
+    function champDe(r){
+      var sel = (window.CSS && CSS.escape) ? CSS.escape(r.code_activite) : r.code_activite;
+      return document.querySelector('[data-focus-code="' + sel + '"]');
+    }
+    function allerA(champ){
+      var st = champ.closest('.step');
+      if(st) st.classList.remove('replie');
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        champ.scrollIntoView({behavior:'smooth', block:'start'});
+      }); });
+      champ.classList.add('surligne');
+      setTimeout(function(){ champ.classList.remove('surligne'); }, 2200);
+    }
+
+    function ouvrirAnnonce(a){
+      var refaire = a.filter(function(r){ return r.statut === 'signale'; }).length;
+      var items = a.map(function(r){
+        var champ = champDe(r), st = champ && champ.closest('.step');
+        var num = st ? /(\d+\.\d+)/.exec((st.querySelector('.step-kicker')||{}).textContent||'') : null;
+        var ix  = num ? 'Étape ' + num[1] : '';
+        var nom = st ? ((st.querySelector('.step-title')||{}).textContent||'').trim() : r.code_activite;
+        var mot = (r.commentaire_prof || '').trim();
+        if(mot.length > 220) mot = mot.slice(0, 217) + '…';
+        return '<div class="ri"><span>' + echapper((ix ? ix + ' · ' : '') + nom)
+             + (mot ? '<br><i style="color:var(--ink-soft)">« ' + echapper(mot) + ' »</i>' : '')
+             + '</span><b>' + (r.statut === 'signale' ? '✎ à reprendre' : '✓ validée') + '</b></div>';
+      }).join('');
+      var texte = refaire
+        ? '<p style="margin-top:2px">' + (refaire > 1 ? 'Certaines réponses sont' : 'Une réponse est')
+          + ' à reprendre : relis le retour, puis renvoie ta réponse.</p>'
+        : '<p style="margin-top:2px">Le retour complet t’attend sous ta réponse.</p>';
+      /* on emmène d'abord vers ce qui demande une action */
+      var cible = a.filter(function(r){ return r.statut === 'signale'; })[0] || a[0];
+      openModal('📬', a.length > 1 ? 'Ton professeur t’a répondu (' + a.length + ')' : 'Ton professeur t’a répondu',
+        '<div class="recap">' + items + '</div>' + texte,
+        [{label: refaire ? '✎ Aller reprendre' : 'Voir le retour', cls: refaire ? 'reset' : 'dl',
+          fn: function(){ var c = champDe(cible); if(c) allerA(c); }},
+         {label: 'Plus tard', cls: 'ghost'}]);
+    }
+  }
 
   /* ---------- §7.5 glossaire évolutif ---------- */
   var glossaire = {};
@@ -2698,7 +2850,11 @@ function hubReprise(){
      page. On l'annonce ici, et le bouton emmène directement dessus.
      Chargement APRÈS l'affichage de la carte : la modale ne doit
      jamais attendre le réseau pour apparaître. */
-  if(window.BASE && BASE.mesReponses){
+  /* Depuis le 22/09/2026, les retours NOUVEAUX s'annoncent dans leur propre
+     pop-up (« Ton professeur t'a répondu »), et les anciens restent à un clic
+     dans la pastille permanente. Les recompter tous ici, à chaque visite,
+     faisait doublon : la carte s'en abstient quand le pop-up est en place. */
+  if(window.BASE && BASE.mesReponses && !window.SNTalerteCorrections){
     var codes=[]; $$('[data-focus-code]').forEach(function(c){
       if(c.dataset.focusCode) codes.push(c.dataset.focusCode); });
     if(codes.length){
