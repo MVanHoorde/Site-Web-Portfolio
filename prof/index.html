@@ -872,6 +872,7 @@ table.grille thead th{white-space:nowrap}
       var r = ProfAPI.chargerNoms(decoderFichier(lecteur.result), f.name);
       majEtatNoms();
       montrerApercu(r, f.name);
+      trierEleves();        /* la grille passe dans l'ordre de la liste de classe */
       rendreCorrection();   /* pseudonymes → vrais noms, et la file se re-trie */
       rendreSeance(); rendreGrille();
       if(!r.n) alert("Aucun nom lu. Vérifie le format : un identifiant, un séparateur, un nom.");
@@ -888,6 +889,23 @@ table.grille thead th{white-space:nowrap}
     var octets = new Uint8Array(tampon);
     try { return new TextDecoder('utf-8', { fatal: true }).decode(octets); }
     catch(e){ return new TextDecoder('windows-1252').decode(octets); }
+  }
+
+  /* L'ORDRE DES ÉLÈVES — un seul comparateur pour tout le tableau de
+     bord (22/09/2026). Dès que la table des noms est chargée, les
+     listes se rangent par NOM Prénom : c'est l'ordre de la liste de
+     classe, donc celui dans lequel on saisit notes et observations
+     dans École Directe — on suit la grille du regard sans chercher.
+     Sans table, on range par pseudonyme, il n'y a rien d'autre.
+     Les élèves dont le nom n'est pas rempli dans le fichier passent
+     EN FIN de liste : un pseudonyme égaré entre deux noms se cherche,
+     et sa place en fin signale qu'il manque une ligne au fichier. */
+  var COLLATEUR = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
+  function comparerPseudos(pa, pb){
+    var na = ProfAPI.nomDe(pa), nb = ProfAPI.nomDe(pb);
+    var sansA = (na === pa) ? 1 : 0, sansB = (nb === pb) ? 1 : 0;
+    if(sansA !== sansB) return sansA - sansB;
+    return COLLATEUR.compare(na, nb);
   }
 
   /* Aperçu : montrer CE QUI A ÉTÉ LU, pas seulement combien.
@@ -923,6 +941,7 @@ table.grille thead th{white-space:nowrap}
     $('#fichier-noms').value = '';
     $('#apercu-noms').style.display = 'none';
     majEtatNoms();
+    trierEleves();        /* et l'ordre redevient celui des pseudonymes */
     rendreCorrection();   /* retour immédiat au mode projection */
     rendreSeance(); rendreGrille();
   });
@@ -1001,8 +1020,11 @@ table.grille thead th{white-space:nowrap}
     return t.toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'2-digit' }) + ' ' + heure;
   }
 
+  function pseudoCopie(c){
+    return (c.eleves && c.eleves.pseudo) || '—';
+  }
   function nomCopie(c){
-    return ProfAPI.nomDe((c.eleves && c.eleves.pseudo) || '—');
+    return ProfAPI.nomDe(pseudoCopie(c));
   }
 
   function chargerFile(){
@@ -1045,11 +1067,10 @@ table.grille thead th{white-space:nowrap}
      entrer une nouvelle copie ne doit pas changer celle qu'on lit. */
   function rendreCorrection(){
     var ouverte = file[rang] && file[rang].id;
-    var coll = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
     file = toutes.filter(function(c){
       return kClasse === null || kClasse === CLASSE_TOUTES || classeDe(c) === kClasse;
     }).sort(function(a, b){
-      var n = coll.compare(nomCopie(a), nomCopie(b));
+      var n = comparerPseudos(pseudoCopie(a), pseudoCopie(b));
       if(n) return n;
       return String(a.envoye_le).localeCompare(String(b.envoye_le));
     });
@@ -1579,6 +1600,13 @@ table.grille thead th{white-space:nowrap}
   var Eleves = [], Faites = [], Absences = [], Progs = [];
   var FaitesToutes = [];   /* toutes séquences : le plafond les franchit */
 
+  /* Range la classe affichée. Appelée au chargement des données ET
+     chaque fois que la table des noms change : l'ordre suit alors
+     immédiatement, sans avoir à recharger la page. */
+  function trierEleves(){
+    Eleves.sort(function(a, b){ return comparerPseudos(a.pseudo, b.pseudo); });
+  }
+
   /* Délai au bout duquel une séance manquée pour absence cesse d'être
      « à rattraper » et redevient un retard ordinaire. Décision du
      31/07 : elle ne reste pas indéfiniment excusée. Une constante,
@@ -1695,10 +1723,8 @@ table.grille thead th{white-space:nowrap}
          il lui faut donc tout ce que la classe a clôturé, partout. */
       avecSeances ? ProfAPI.lire('seances_faites?select=sequence,seance,faite_le&classe_id=eq.' + cl) : rien
     ]).then(function(r){
-      var coll = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
-      Eleves = (r[0] || []).map(function(x){ return x.eleves; })
-        .filter(Boolean)
-        .sort(function(a, b){ return coll.compare(a.pseudo, b.pseudo); });
+      Eleves = (r[0] || []).map(function(x){ return x.eleves; }).filter(Boolean);
+      trierEleves();
       Faites = r[1] || []; Absences = r[2] || []; Progs = r[3] || [];
       FaitesToutes = r[4] || [];
       /* les absences sont lues pour tout le monde : on ne garde que
