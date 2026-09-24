@@ -4401,3 +4401,18 @@ pages, contre 5 pour la version automatique) — à auditer.
 Une autre conversation a commité son essai iPad sur t0 pendant la session ;
 aucun fichier commun modifié par les deux, sinon `t0` (vidéos et versions ici,
 script de page là-bas), sans chevauchement.
+
+## 24/09/2026 — QCM : la bonne réponse toujours en A
+
+Loïc a remarqué en classe une étape dont la bonne réponse était toujours la
+première. Le relevé des 612 questions l'a confirmé et en a trouvé d'autres :
+14 A sur 15 au bilan de la séance 2 de t0, 7 sur 7 dans « Fusion ou fission »,
+28 B sur 42 dans t2, et le D deux fois trop rare partout. Le moteur ne mélange
+pas les options. Un script a réordonné 118 questions sur dix pages en déplaçant
+seulement la bonne réponse, les autres gardant leur ordre relatif ; un contrôle
+question par question a vérifié que les options, la bonne réponse et tout le
+reste du fichier étaient identiques. Ont été laissées en place les questions
+qu'un réordonnancement aurait faussées (« aucune des précédentes », valeurs
+rangées, lettre citée dans la correction). `verifier.mjs` porte un nouveau
+contrôle de position, qui a d'ailleurs trouvé deux pages de plus (forme de la
+Terre, J02) que le premier relevé ne mettait pas en avant.

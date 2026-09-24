@@ -558,6 +558,59 @@ try {
   notes.push("contrôle des QCM non effectué : " + e.message);
 }
 
+/* ---------- Biais de position dans les QCM (24/09/2026) ----------
+   Le moteur ne mélange pas les options : elles s'affichent dans l'ordre du
+   fichier. Or on écrit volontiers la bonne réponse en premier — relevé du
+   24/09 : 14 A sur 15 dans un bilan de t0, 7 sur 7 dans une étape de la
+   nucléosynthèse, et le D deux fois trop rare sur tout le dépôt. L'élève qui
+   « répond A » gagnait. Rééquilibré le même jour (100 questions réordonnées,
+   texte intact) ; ce contrôle empêche la dérive de revenir.
+   Deux signaux, non bloquants :
+     · dans un même QCM, 4 fois ou plus la même lettre d'affilée ;
+     · dans une page d'au moins 10 questions, une lettre qui porte plus de
+       45 % des bonnes réponses.
+   Une question à plusieurs bonnes réponses n'est pas comptée. Laisser une
+   option en place reste légitime — « aucune des précédentes », valeurs
+   rangées, correction qui cite une lettre : c'est un repère, pas une règle. */
+try {
+  const LETTRES = "ABCDEFGHIJ";
+  const signaux = [];
+  for (const f of html) {
+    const texte = lire(f);
+    const blocs = [];
+    for (const m of texte.matchAll(/<script[^>]*class="qcm-data"[^>]*>([\s\S]*?)<\/script>/g)) {
+      try { blocs.push(JSON.parse(m[1]).filter((q) => !Array.isArray(q.r)).map((q) => q.r)); } catch { /* déjà signalé plus haut */ }
+    }
+    const cahier = [...texte.matchAll(/opts\s*:\s*\[[^\]]*\]\s*,\s*bonne\s*:\s*(\d+)/g)].map((m) => Number(m[1]));
+    if (cahier.length) blocs.push(cahier);
+    if (!blocs.length) continue;
+    for (const b of blocs) {
+      let suite = 1;
+      for (let i = 1; i <= b.length; i++) {
+        if (i < b.length && b[i] === b[i - 1]) { suite++; continue; }
+        if (suite >= 4) signaux.push(`${f} — ${suite} fois ${LETTRES[b[i - 1]]} d'affilée dans un même QCM`);
+        suite = 1;
+      }
+    }
+    const tout = blocs.flat();
+    if (tout.length >= 10) {
+      const compte = {};
+      tout.forEach((p) => { compte[p] = (compte[p] || 0) + 1; });
+      for (const [p, n] of Object.entries(compte)) {
+        if (n / tout.length > 0.45) signaux.push(`${f} — ${LETTRES[p]} porte ${n} bonnes réponses sur ${tout.length} (${Math.round(100 * n / tout.length)} %)`);
+      }
+    }
+  }
+  if (signaux.length) {
+    notes.push(`biais de position dans les QCM — ${signaux.length} signal(aux) :`);
+    signaux.forEach((s) => notes.push("   · " + s));
+  } else {
+    notes.push("QCM — bonnes réponses bien réparties entre les lettres");
+  }
+} catch (e) {
+  notes.push("contrôle des positions de QCM non effectué : " + e.message);
+}
+
 /* ---------- Les scripts PowerShell sont-ils lisibles par Windows ? ----------
    Windows PowerShell 5.1 — celui livré avec Windows, celui que Loïc
    lance — décode un .ps1 SANS BOM comme de l'ANSI, pas comme de

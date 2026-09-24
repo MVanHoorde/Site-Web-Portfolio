@@ -66,6 +66,16 @@
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
 
+## ✅ QCM : la bonne réponse est répartie entre les lettres
+
+Le moteur affiche les options dans l'ordre du JSON, et la bonne réponse était
+souvent en A (14 fois sur 15 au bilan de la séance 2 de t0). **118 questions
+réordonnées** sur dix pages, sans toucher au texte ; sur les 612 questions du
+dépôt, plus aucun QCM n'aligne 4 fois la même lettre. `verifier.mjs` le
+contrôle désormais (« bonnes réponses bien réparties »), et la consigne est au
+§15.5 de `CONSIGNES-sequence-SNT.md`. Reste, sans rapport avec la position : le
+**biais de longueur** (61 questions, dont 28 marquées, surtout dans `t2`).
+
 ## 🧪 Essai iPad : la fiche de la séance 1 de t0 passe par Safari — à tester le 25/09
 
 **Le bug, vu en classe.** Ouvert depuis l'icône de l'écran d'accueil ou depuis le

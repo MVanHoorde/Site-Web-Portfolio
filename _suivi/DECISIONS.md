@@ -15,6 +15,18 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 24/09/2026 — QCM : la bonne réponse n'est plus toujours en A
+
+Signalé par Loïc en classe. Le moteur affiche les options dans l'ordre du JSON,
+et la bonne réponse avait été écrite en premier : 14 A sur 15 au bilan de la
+séance 2 de t0, 7 sur 7 dans l'étape « Fusion ou fission » de la nucléosynthèse,
+et le D deux fois trop rare sur les 612 questions du dépôt.
+
+| Date | Décision | Statut |
+|---|---|---|
+| 24/09/2026 | **Les options de 118 questions sont réordonnées**, texte intact, sur dix pages : t0, t2, nucléosynthèse, son à coder, forme de la Terre, ES de terminale T2-C1 et T2-C2, outil O1, diagnostics J02 et J09 du cahier. Chaque question garde ses options et sa bonne réponse, contrôlé une à une. Restent en place les questions à plusieurs bonnes réponses, celles qui ont une option renvoyant aux autres (« aucune », « les deux »…), celles dont la correction cite une lettre, et les valeurs rangées dans l'ordre | ✅ en vigueur |
+| 24/09/2026 | **Pas de mélange à l'affichage.** Mélanger dans le moteur aurait tout réglé d'un coup, mais aurait déplacé « aucune des précédentes » et désordonné les valeurs rangées. La répartition se fait donc dans le JSON, et `verifier.mjs` la contrôle (non bloquant) : 4 fois la même lettre d'affilée dans un QCM, ou une lettre au-delà de 45 % d'une page de 10 questions et plus | ✅ en vigueur |
+
 ## 24/09/2026 — Moteur des séquences : écrire, relire, corriger sa réponse
 
 Bugs remontés par Loïc après un cours de terminale ; corrigés dans le moteur

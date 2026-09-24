@@ -559,6 +559,13 @@ réponses** en sortie, sur la page **et** sur la fiche, avec compléments
 « hors programme, mais bon à savoir ». Données en JSON inline
 (`<script type="application/json" class="qcm-data">`).
 
+🔴 **Le moteur ne mélange pas les options** : elles s'affichent dans l'ordre du
+JSON. La bonne réponse se **répartit donc à la main** entre A, B, C et D — jamais
+plus de trois fois la même lettre d'affilée dans un QCM, aucune lettre au-delà de
+45 % d'une page. Restent à leur place : « aucune des précédentes » et consorts,
+les valeurs rangées dans l'ordre, et toute option qu'une correction cite par sa
+lettre. `verifier.mjs` le contrôle, à côté du biais de longueur.
+
 ### 15.6 Trous tolérants
 
 Normalisation (minuscules, accents, ponctuation, articles) · **variantes** par trou
