@@ -1485,3 +1485,40 @@ body.js-ok .acc-badge{ top:calc(var(--barre-h) + 8px); right:12px }
 body.teacher #corr-liste{display:none}
 @media print{#corr-liste{display:none}}
 @media (max-width:720px){#corr-liste{bottom:64px;right:12px}}
+
+/* ---------- Fenêtre d'écriture : réduire, modifier, symboles (24/09/2026) ----------
+   Voir le §7.6 du moteur. La fenêtre réduite reste dans la page, cachée :
+   l'attribut hidden doit l'emporter sur le display:flex de .focus-scene. */
+.focus-scene[hidden]{display:none}
+.focus-carte{position:relative;max-height:calc(100vh - 40px);overflow-y:auto}
+.focus-reduire{margin-left:auto;min-height:40px;min-width:44px;padding:0 12px;
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:10px;color:var(--ink-soft);
+  font-family:"IBM Plex Sans",'Inter',system-ui,sans-serif;font-size:13px;text-transform:none;letter-spacing:0;
+  font-weight:600;cursor:pointer}
+.focus-reduire:hover{border-color:var(--link);color:var(--link)}
+.focus-reduire:focus-visible,.fp-s:focus-visible,.fp-mode:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.focus-boutons{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.focus-symb.on{background:var(--link-wash)}
+.focus-palette{margin-top:10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:8px 10px}
+.fp-ligne{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:2px 0}
+.fp-nom{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);width:62px;flex:none}
+.fp-s,.fp-mode{min-width:44px;min-height:44px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  color:var(--ink);font-family:"IBM Plex Sans",'Inter',system-ui,sans-serif;font-size:16px;cursor:pointer}
+.fp-mode{font-size:13px}
+.fp-s:hover,.fp-mode:hover{border-color:var(--link);color:var(--link)}
+.fp-mode.on{background:var(--link);border-color:var(--link);color:#fff}
+.fp-aide{font-size:12px;color:var(--ink-soft);margin:6px 0 0;line-height:1.45}
+.focus-carte textarea.mode-sup,.focus-carte textarea.mode-sub{border-color:var(--link);box-shadow:0 0 0 3px var(--link-wash)}
+@media (max-width:560px){
+  .focus-reduire span,.focus-symb span{display:none}
+  .fp-nom{width:100%}
+}
+/* « Modifier ma réponse » : réponse envoyée, pas encore corrigée */
+.gmodif{display:none;margin-top:8px}
+.rempli:not(.corrige):not(.a-refaire) .gmodif{display:flex}
+.brouillon [data-focus-ouvrir],.brouillon [data-focus-modifier]{border-style:dashed}
+.verdict .v-reste{display:block;margin-top:4px}
+/* QCM réduit : le lanceur annonce la reprise */
+.qcm-lanceur.qcm-reduit button{border-style:dashed}
+.qcm-panel .qtop .qreduire:hover{border-color:var(--link);color:var(--link)}

@@ -12,7 +12,23 @@
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — l'ES de terminale est ouvert aux élèves (24/09).** Le `019`
+> **Dernière passe — le moteur des séquences, après le cours de terminale (24/09).**
+> Pour **toutes** les pages du moteur (`sequence-snt.js?v=50`, `.css?v=45`) :
+> une étape n'est validée qu'à sa **dernière** question rédigée (la 1ʳᵉ réponse
+> validait l'étape et ouvrait « Séance terminée » au `term-es-t2-c1` 1.5 ;
+> 32 étapes concernées, dont 8 en `t1`) ; la fenêtre d'écriture et le QCM
+> **se réduisent** pour relire l'énoncé ; « **Modifier ma réponse** » tant que
+> la copie n'est pas corrigée ; **palette de symboles** (grec, exposants,
+> indices). **DigiView abandonné** : les 6 vidéos de t0, t1, m1 reviennent en
+> `youtube-nocookie`, lancées d'un seul clic. La fiche lit sa matière dans la
+> page (elle se disait « SNT · Seconde » partout).
+> ⏳ **À auditer par Loïc** : les **5 fiches de l'ES de terminale** ont une
+> partie fixe **V1** au standard SNT (`t2-c1` S1-S2, `t2-c2` S1-S3), mesurées
+> remplies à 4, 4, 3, 3 et 3 pages — au-dessus des 2 visées ; points de fond
+> listés dans chaque commentaire `FICHE DE LA SÉANCE`. Et à observer en
+> classe : la vidéo « C'est pas sorcier » du `t2-c1`, irréprochable hors du lycée.
+>
+> **Même jour — l'ES de terminale est ouvert aux élèves.** Le `019`
 > a été exécuté dans Supabase : `EST303` et `EST606` sont **ouvertes aux
 > inscriptions** (vérifié à l'écran, `actif = true`), les élèves de T3 et T6
 > peuvent créer leur compte et leur travail est enregistré. Les **27 cadres de

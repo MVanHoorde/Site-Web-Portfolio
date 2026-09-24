@@ -100,6 +100,23 @@ de `pages/2nde-snt-t1-internet.html`, seule séquence déjà portée.
   (point d'histoire, biblio) — `data-reveal`.
 - La **réflexion perso ne juge jamais** : pas de bon/mauvais, on valorise.
   C'est un choix arrêté, ne pas y ajouter de correction.
+- **La fenêtre d'écriture** (`data-focus`) — tout est dans le moteur, rien à
+  écrire dans la page :
+  - **« — Réduire »** (ou Échap) la range pour relire l'énoncé, texte gardé ; le
+    bouton du champ devient « Reprendre mon brouillon ». « Annuler » demande
+    confirmation dès qu'il y a du texte. Le **QCM plein écran** se réduit de même
+    et se reprend à la même question ;
+  - **« ✏️ Modifier ma réponse »** après l'envoi, tant que le professeur ne l'a
+    pas corrigée ; le nouvel envoi remplace l'ancien, la base archive la version
+    précédente. Un champ `data-focus-prevenir="1"` (annoncé « définitif » à
+    l'élève) n'a pas ce bouton ;
+  - une **palette de symboles** (grec, opérateurs, flèches, unités, modes
+    exposant et indice) insère des caractères Unicode : la réponse reste du
+    texte. Une fraction s'écrit `(a)/(b)`.
+- 🔴 **Une étape portant plusieurs questions rédigées n'est validée qu'à la
+  dernière réponse.** Celles d'un `details` ou d'un `.bonus` ne comptent pas.
+  Une question rédigée **facultative** se pose donc dans un « pour aller plus
+  loin », jamais nue dans une étape `data-gate` : elle y bloquerait la séance.
 
 ### Éléments transverses
 
@@ -163,20 +180,18 @@ de `pages/2nde-snt-t1-internet.html`, seule séquence déjà portée.
   de structure** se dessinent en SVG maison ; une **illustration figurative** ne
   se dessine pas de mémoire — cadre de réservation `.reserve` et image fournie
   par Loïc. Voir `CLAUDE.md`, « Règles techniques communes ».
-- 🎬 **Vidéos — décision du 22/09/2026.**
-  - **En classe, Loïc projette depuis son poste**, par un lien **DigiView**
-    (`ladigitale.dev/digiview/#/v/…`) : sans publicité ni suggestion. Motif : le
-    réseau du lycée demande une connexion Google pour lire YouTube.
-  - **Dans la page, le poste de visionnage** passe par le **lecteur intégré de
-    DigiView**, toujours lancé au clic (`data-src` : rien ne part hors du site
-    avant le clic). Il reste là pour les notes, le QCM de l'étape et le
-    revisionnage à la maison. L'adresse se construit sans passer par le site
-    DigiView :
-    `https://ladigitale.dev/digiview/inc/video.php?videoId=<ID>&vignette=<URL encodée de i.ytimg.com/vi/<ID>/maxresdefault.jpg>&debut=0&fin=<durée en s + 1>&largeur=16&hauteur=9`
-    (`&` écrit `&amp;` dans l'attribut). Le moteur reconnaît `ladigitale.dev/digiview`
-    et adapte le texte de l'affiche. DigiView lit toujours la vidéo depuis
-    YouTube (`youtube-nocookie`) : il enlève les publicités, pas le passage
-    par Google, et affiche son propre écran d'accord — l'élève clique deux fois.
+- 🎬 **Vidéos — décision du 24/09/2026** (DigiView abandonné).
+  - **Dans la page, le poste de visionnage** passe par le **lecteur YouTube
+    intégré**, en `youtube-nocookie` : 
+    `<iframe height="315" data-src="https://www.youtube-nocookie.com/embed/<ID>" title="<titre> — <créateur>" allowfullscreen></iframe>`
+    (`?start=<s>` pour démarrer plus loin). Toujours en **`data-src`** : rien ne
+    part hors du site avant le clic. Le moteur (`initVideos`) ajoute au clic
+    `autoplay=1&rel=0` — le clic sur l'affiche lance la lecture, sans second clic
+    dans le lecteur — et déclare `referrerpolicy="strict-origin-when-cross-origin"`,
+    sans lequel YouTube refuse la lecture intégrée (« erreur 153 »). Ne rien
+    ajouter de tout cela dans la page.
+  - Le poste de visionnage sert aux notes, au QCM de l'étape et au revisionnage
+    à la maison ; la vidéo se lit **dans le site**, jamais par un lien sortant.
   - 🔴 **Jamais de vidéo de tiers téléchargée ni ré-hébergée** (dépôt, OneDrive,
     cahier de textes) sans l'accord écrit de son auteur : c'est interdit par les
     conditions de YouTube et ce n'est pas couvert par l'exception pédagogique

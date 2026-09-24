@@ -493,9 +493,50 @@
     }
   });
 
-  /* ---------- §7.6 mode focus (flou de page) ---------- */
+  /* ---------- §7.6 mode focus (flou de page) ----------
+     RÉDUIRE LA FENÊTRE (24/09/2026, demandé par Loïc après un cours de
+     terminale) : l'élève doit pouvoir relire les données de l'énoncé en
+     cours de rédaction. « Annuler » effaçait tout, et le coller étant
+     bloqué, recopier son texte ailleurs ne servait à rien.
+     Le bouton « — Réduire » cache la fenêtre SANS la détruire : elle reste
+     dans la page, masquée, rattachée au champ (champ._scene). Le bouton du
+     champ devient « Reprendre mon brouillon » et la rouvre telle quelle —
+     texte, curseur, palette. Échap fait la même chose.
+     Le brouillon vit en mémoire JS, comme le reste : jamais en localStorage. */
   var scene=null;
+  function libelleBouton(champ){
+    champ.querySelectorAll('[data-focus-ouvrir],[data-focus-modifier]').forEach(function(b){
+      if(!b.dataset.libelle) b.dataset.libelle=b.innerHTML;
+      b.innerHTML = champ._scene ? '✍️ Reprendre mon brouillon' : b.dataset.libelle;
+    });
+  }
+  function reduireFocus(){
+    if(!scene) return;
+    var champ=scene._champ;
+    scene.hidden=true;
+    scene=null;
+    document.body.classList.remove('focus-on');
+    focusStrictActif=null;
+    if(champ){
+      champ.classList.add('brouillon');
+      libelleBouton(champ);
+      var b=champ.querySelector(champ.classList.contains('rempli') && !champ.classList.contains('a-refaire')
+                               ? '[data-focus-modifier]' : '[data-focus-ouvrir]');
+      if(b) b.focus({preventScroll:true});
+    }
+  }
   function ouvrirFocus(champ){
+    /* un brouillon réduit : on le rouvre tel quel */
+    if(champ._scene){
+      if(scene && scene!==champ._scene) reduireFocus();
+      scene=champ._scene; scene.hidden=false;
+      document.body.classList.add('focus-on');
+      champ.classList.remove('brouillon');
+      if(champ.dataset.focusStrict==='1') focusStrictActif=scene;
+      var t=scene.querySelector('textarea'); if(t) t.focus();
+      return;
+    }
+    if(scene) reduireFocus();
     var titre = champ.dataset.focusTitre||'À toi d\'écrire';
     var question = champ.dataset.focusQuestion||'';
     var max = parseInt(champ.dataset.focusMax||'200',10);
@@ -504,16 +545,21 @@
     var compare = champ.dataset.focusCompare ? memoireReponses[champ.dataset.focusCompare] : null;
 
     scene=document.createElement('div'); scene.className='focus-scene';
+    scene._champ=champ; champ._scene=scene;
     scene.innerHTML =
-      '<div class="focus-carte">'+
-        '<div class="fk">✍️ '+titre+(strict?' <span style="color:var(--ink-faint)">· sans recherche</span>':'')+'</div>'+
+      '<div class="focus-carte" role="dialog" aria-modal="true" aria-label="'+titre+'">'+
+        '<div class="fk">✍️ '+titre+(strict?' <span style="color:var(--ink-faint)">· sans recherche</span>':'')+
+          '<button type="button" class="focus-reduire" data-reduire title="Réduire pour relire l\'énoncé — ton texte est gardé" '+
+          'aria-label="Réduire la fenêtre pour relire l\'énoncé. Ton texte est gardé.">—<span> Réduire</span></button></div>'+
         '<div class="fq">'+question+'</div>'+
         (compare?'<div style="font-size:13px;color:var(--ink-soft);background:var(--surface-2);border-left:3px solid var(--ink-faint);border-radius:0 9px 9px 0;padding:9px 12px;margin-bottom:10px"><b>Ta 1ʳᵉ tentative :</b> '+echapper(compare)+'</div>':'')+
         '<textarea aria-label="'+titre+'"></textarea>'+
+        '<div class="focus-palette" data-palette hidden></div>'+
         '<div class="focus-sortie" data-sortie></div>'+
         '<div class="focus-foot">'+
           '<span class="focus-jauge" data-jauge>0 / '+max+' caractères</span>'+
-          '<span><button class="btn ghost" data-annuler>Annuler</button> <button class="btn" data-valider disabled>Valider</button></span>'+
+          '<span class="focus-boutons"><button type="button" class="btn ghost focus-symb" data-symboles aria-expanded="false" title="Lettres grecques, exposants, indices, symboles">Ω √ x² <span>Symboles</span></button> '+
+          '<button class="btn ghost" data-annuler>Annuler</button> <button class="btn" data-valider disabled>Valider</button></span>'+
         '</div>'+
       '</div>';
     document.body.appendChild(scene);
@@ -535,14 +581,22 @@
        qui préfèrent recommencer.
        On NE pré-remplit PAS une première rédaction : sur l'étape 1.1
        (« ta définition, sans recherche »), il n'y a rien à reprendre. */
+    /* MODIFIER APRÈS ENVOI (24/09/2026) : même mécanique que la reprise
+       d'une copie renvoyée. Le texte envoyé revient pré-rempli ; le nouvel
+       envoi remplace l'ancien en base, qui archive la version précédente
+       (déclencheur reponses_archivage) — le professeur ne perd rien. */
     var precedent = memoireReponses[champ.dataset.focusCode||''] || '';
-    var reprise = precedent && champ.classList.contains('a-refaire');
+    var modif = champ.classList.contains('rempli') && !champ.classList.contains('a-refaire');
+    if(!precedent && modif){ var ec=champ.querySelector('[data-focus-echo]'); precedent = ec ? ec.textContent : ''; }
+    var reprise = precedent && (champ.classList.contains('a-refaire') || modif);
     if(reprise){
       ta.value = precedent;
       ta.classList.add('repris');
       var rap=document.createElement('div');
       rap.className='focus-reprise';
-      rap.innerHTML='<span>Ta réponse précédente est déjà là : complète-la ou modifie-la.</span>'+
+      rap.innerHTML='<span>'+(modif
+          ? 'Ta réponse envoyée est déjà là : modifie-la. Ton nouvel envoi <b>remplacera</b> le précédent.'
+          : 'Ta réponse précédente est déjà là : complète-la ou modifie-la.')+'</span>'+
         '<button type="button" class="btn ghost" data-vider>Repartir de zéro</button>';
       ta.parentNode.insertBefore(rap, ta);
       rap.querySelector('[data-vider]').addEventListener('click',function(){
@@ -567,7 +621,29 @@
       if(n<min) jauge.textContent=n+' / '+max+' caractères · encore '+(min-n)+' pour valider';
     }
     ta.addEventListener('input',compter); compter();
-    scene.querySelector('[data-annuler]').addEventListener('click',fermerFocus);
+    var sc=scene;
+    sc.querySelector('[data-reduire]').addEventListener('click',reduireFocus);
+    sc.addEventListener('keydown',function(e){
+      if(e.key==='Escape' && !sc.hidden){ e.preventDefault(); reduireFocus(); }
+    });
+    paletteSymboles(sc, ta);
+    /* « Annuler » efface : on le demande d'abord dès qu'il y a du texte
+       nouveau — l'élève qui veut seulement relire l'énoncé a « Réduire ». */
+    sc.querySelector('[data-annuler]').addEventListener('click',function(){
+      if(!ta.value.trim() || ta.value===precedent){ fermerFocus(); return; }
+      if(sc.querySelector('.focus-avert')) return;
+      var av=document.createElement('div');
+      av.className='focus-avert';
+      av.innerHTML='<b>Effacer ce que tu as écrit&nbsp;?</b>'+
+        '<p>Si tu veux seulement relire l\'énoncé, utilise plutôt <b>— Réduire</b>&nbsp;: ton texte reste de côté.</p>'+
+        '<div class="fa-actions"><button class="btn ghost" data-av-reduire>— Réduire</button> '+
+        '<button class="btn ghost" data-av-garder>Continuer à écrire</button> '+
+        '<button class="btn reset" data-av-effacer>Effacer et fermer</button></div>';
+      sc.querySelector('.focus-carte').appendChild(av);
+      av.querySelector('[data-av-effacer]').addEventListener('click',fermerFocus);
+      av.querySelector('[data-av-garder]').addEventListener('click',function(){ av.remove(); ta.focus(); });
+      av.querySelector('[data-av-reduire]').addEventListener('click',function(){ av.remove(); reduireFocus(); });
+    });
 
     /* Avertissement avant envoi (audit Loïc, étape 1.1) : la réponse part telle
        quelle et ne sera plus modifiable. Le message est rassurant : rien n'est noté.
@@ -595,9 +671,128 @@
     });
   }
   function fermerFocus(){
-    if(scene){scene.remove();scene=null;}
+    if(scene){
+      var champ=scene._champ;
+      scene.remove(); scene=null;
+      if(champ){ champ._scene=null; champ.classList.remove('brouillon'); libelleBouton(champ); }
+    }
     document.body.classList.remove('focus-on');
     focusStrictActif=null;
+  }
+
+  /* ---------- Palette de symboles (24/09/2026) ----------
+     Les élèves n'ont sur leur clavier ni η, ni Δ, ni 10⁻³, ni CO₂ : le
+     rendement de terminale ne s'écrivait pas. La palette INSÈRE DES
+     CARACTÈRES UNICODE ORDINAIRES — pas de LaTeX, pas de bibliothèque :
+     la réponse reste un texte lisible partout (tableau de bord, correction,
+     fiche PDF), et rien n'est chargé hors du site.
+     Exposant et indice sont des MODES : on les active, on tape « -3 » au
+     clavier, il s'écrit « ⁻³ ». Espace ou Entrée en sortent. Les fractions
+     s'écrivent (a)/(b) : c'est la seule limite, et elle est dite. */
+  var SYMB_GROUPES = [
+    ['Grec',       'α β γ δ Δ ε η θ λ μ ν π ρ σ τ φ ω Ω'],
+    ['Calcul',     '× ÷ · ± − ≈ ≠ ≤ ≥ √ ∞ ² ³ ⁻¹ %'],
+    ['Flèches',    '→ ← ⇌ ⇒ ⇔ ↑ ↓'],
+    ['Unités',     '° °C ‰ µ Ω kWh']
+  ];
+  var SUP = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹',
+             '+':'⁺','-':'⁻','−':'⁻','=':'⁼','(':'⁽',')':'⁾','n':'ⁿ','i':'ⁱ'};
+  var SUB = {'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉',
+             '+':'₊','-':'₋','−':'₋','=':'₌','(':'₍',')':'₎','a':'ₐ','e':'ₑ','o':'ₒ','x':'ₓ',
+             'h':'ₕ','k':'ₖ','l':'ₗ','m':'ₘ','n':'ₙ','p':'ₚ','s':'ₛ','t':'ₜ'};
+  var paletteOuverte = false;   /* d'une fenêtre à l'autre, pendant la séance */
+  function paletteSymboles(sc, ta){
+    var pal=sc.querySelector('[data-palette]'), bt=sc.querySelector('[data-symboles]');
+    if(!pal || !bt) return;
+    var mode=null;   /* null | 'sup' | 'sub' */
+    pal.innerHTML = SYMB_GROUPES.map(function(g){
+      return '<div class="fp-ligne"><span class="fp-nom">'+g[0]+'</span>'+
+        g[1].split(' ').map(function(s){
+          return '<button type="button" class="fp-s" data-s="'+s+'">'+s+'</button>';
+        }).join('')+'</div>';
+    }).join('') +
+      '<div class="fp-ligne"><span class="fp-nom">Écrire</span>'+
+        '<button type="button" class="fp-mode" data-mode="sup" aria-pressed="false">x² exposant</button>'+
+        '<button type="button" class="fp-mode" data-mode="sub" aria-pressed="false">x₂ indice</button>'+
+        '<button type="button" class="fp-s" data-s="×10" data-puis="sup">×10ⁿ</button>'+
+      '</div>'+
+      '<p class="fp-aide">Exposant&nbsp;: active <b>x²</b>, tape <b>-3</b> → ⁻³. Indice&nbsp;: CO₂, H₂O. '+
+      'Espace ou Entrée reviennent à l\'écriture normale. Une fraction s\'écrit <b>(a)/(b)</b>.</p>';
+
+    function inserer(txt){
+      var s=ta.selectionStart, e=ta.selectionEnd;
+      ta.value = ta.value.slice(0,s) + txt + ta.value.slice(e);
+      ta.setSelectionRange(s+txt.length, s+txt.length);
+      ta.dispatchEvent(new Event('input'));
+    }
+    function poserMode(m){
+      mode = (mode===m) ? null : m;
+      pal.querySelectorAll('.fp-mode').forEach(function(b){
+        var on = b.getAttribute('data-mode')===mode;
+        b.classList.toggle('on', on); b.setAttribute('aria-pressed', on?'true':'false');
+      });
+      ta.classList.toggle('mode-sup', mode==='sup');
+      ta.classList.toggle('mode-sub', mode==='sub');
+    }
+    function afficher(on){
+      paletteOuverte = on; pal.hidden = !on;
+      bt.setAttribute('aria-expanded', on?'true':'false');
+      bt.classList.toggle('on', on);
+      if(!on && mode) poserMode(mode);
+    }
+    afficher(paletteOuverte);
+    bt.addEventListener('click',function(){ afficher(pal.hidden); ta.focus(); });
+    /* mousedown : garder le curseur dans le texte au moment du clic */
+    pal.addEventListener('mousedown',function(e){ if(e.target.closest('button')) e.preventDefault(); });
+    pal.addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      if(b.hasAttribute('data-mode')) poserMode(b.getAttribute('data-mode'));
+      else {
+        inserer(b.getAttribute('data-s'));
+        if(b.getAttribute('data-puis') && mode!==b.getAttribute('data-puis')) poserMode(b.getAttribute('data-puis'));
+      }
+      ta.focus();
+    });
+    ta.addEventListener('beforeinput',function(e){
+      if(!mode) return;
+      if(e.inputType==='insertLineBreak' || e.inputType==='insertParagraph'){ poserMode(mode); return; }
+      if(e.inputType!=='insertText' || !e.data) return;
+      if(e.data===' '){ poserMode(mode); return; }
+      /* un caractère sans équivalent (une majuscule, un « b ») passe tel quel */
+      var table = mode==='sup' ? SUP : SUB, sortie='';
+      for(var k=0;k<e.data.length;k++) sortie += table[e.data[k]] || e.data[k];
+      if(sortie!==e.data){ e.preventDefault(); inserer(sortie); }
+    });
+  }
+
+  /* ---------- Fin d'étape : toutes les questions, pas la première ----------
+     Bug constaté en terminale le 24/09/2026 : l'étape 1.5 porte QUATRE
+     questions rédigées, et la première réponse envoyée la marquait faite.
+     C'était la dernière étape à valider de la séance : « Séance terminée »
+     et la fiche s'ouvraient dès la question 1. 32 étapes du site avaient
+     plusieurs questions rédigées, toutes touchées.
+     Une étape n'est faite que quand chacune de ses questions rédigées a sa
+     réponse. Celles d'un « pour aller plus loin » (details, .bonus) ne
+     comptent pas : facultatives, elles ne bloquent rien. */
+  function questionsRestantes(el){
+    var st=stepOf(el); if(!st) return 0;
+    return Array.prototype.filter.call(st.querySelectorAll('[data-focus]'), function(f){
+      return !f.classList.contains('rempli') && !f.closest('details, .bonus-wrap, .bonus, .plus-loin')
+          && stepOf(f)===st;
+    }).length;
+  }
+  function texteReste(n){
+    return ' <b>Encore '+n+' question'+(n>1?'s':'')+' dans cette étape</b> avant de passer à la suite.';
+  }
+  function resteAFaire(n){ return '<span class="v-reste">'+texteReste(n)+'</span>'; }
+  /* Les réponses sœurs portent chacune leur « encore N » : on les tient à
+     jour, et elles disparaissent quand l'étape est complète. */
+  function majReste(el){
+    var st=stepOf(el); if(!st) return;
+    var n=questionsRestantes(el);
+    st.querySelectorAll('.v-reste').forEach(function(s){
+      if(n) s.innerHTML=texteReste(n); else s.remove();
+    });
   }
   function echapper(t){return String(t).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];});}
 
@@ -621,33 +816,56 @@
        elle, arrive plus tard et s'affiche quand elle est là.
        (Sans cela, une séance resterait bloquée jusqu'au passage du
         worker : proposition à valider par Loïc.) */
+    /* L'étape n'est faite qu'à la DERNIÈRE question rédigée (voir
+       questionsRestantes) ; le message le dit tant qu'il en reste. */
+    var reste = questionsRestantes(champ);
+    function finir(){ showReveal(champ); majReste(champ); if(!reste) markDone(champ); }
     if(BASE && code){
       /* On quitte l'état « à refaire » dès le nouvel envoi : sans cela
          le bouton resterait visible et l'élève pourrait renvoyer en
          boucle la même copie. */
       champ.classList.remove('a-refaire');
       verdict(champ,'wait','⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
-      var s=stepOf(champ); if(s)s.classList.add('is-wait');
+      var s=stepOf(champ); if(s && !reste)s.classList.add('is-wait');
       BASE.envoyerReponse(code, texte).then(function(){
-        verdict(champ,'ok','✅ Réponse enregistrée. Tu peux passer à la suite — et aider un camarade bloqué.');
-        showReveal(champ); markDone(champ);
+        verdict(champ,'ok', reste
+          ? '✅ Réponse enregistrée. Tu peux encore la modifier tant que ton professeur ne l\'a pas corrigée.'+resteAFaire(reste)
+          : '✅ Réponse enregistrée. Tu peux passer à la suite — et aider un camarade bloqué. Tu peux encore la modifier tant que ton professeur ne l\'a pas corrigée.');
+        finir();
         /* rendu, mais pas encore relu : pastille creuse (voir CSS) */
-        var se=stepOf(champ); if(se) se.classList.add('attente-corr');
+        var se=stepOf(champ); if(se && !reste) se.classList.add('attente-corr');
       }).catch(function(e){
-        verdict(champ,'ok', document.body.getAttribute('data-fiche')==='non'
+        verdict(champ,'ok', (document.body.getAttribute('data-fiche')==='non'
           ? '✅ Réponse gardée pour cette séance. (Enregistrement indisponible : garde la page ouverte.)'
-          : '✅ Réponse gardée pour cette séance. (Enregistrement indisponible : pense à télécharger ta fiche.)');
-        showReveal(champ); markDone(champ);
+          : '✅ Réponse gardée pour cette séance. (Enregistrement indisponible : pense à télécharger ta fiche.)')
+          +(reste?resteAFaire(reste):''));
+        finir();
       });
     } else {
-      verdict(champ,'ok', document.body.getAttribute('data-fiche')==='non'
+      verdict(champ,'ok', (document.body.getAttribute('data-fiche')==='non'
         ? '✅ Réponse gardée pour cette séance.'
-        : '✅ Réponse gardée pour cette séance. Pense à <b>télécharger ta fiche</b> en fin de séance.');
-      showReveal(champ); markDone(champ);
+        : '✅ Réponse gardée pour cette séance. Pense à <b>télécharger ta fiche</b> en fin de séance.')
+        +(reste?resteAFaire(reste):''));
+      finir();
     }
   }
   document.querySelectorAll('[data-focus-ouvrir]').forEach(function(b){
     b.addEventListener('click',function(){ ouvrirFocus(b.closest('[data-focus]')); });
+  });
+  /* « Modifier ma réponse » (24/09/2026) : l'élève qui a envoyé trop vite
+     rouvre sa réponse, tant que le professeur ne l'a pas corrigée (classe
+     'corrige', posée par appliquerCopie). Visibilité : CSS, .gmodif.
+     Exception : un champ data-focus-prevenir a été annoncé « définitif »
+     à l'élève (t0, 1.1 — la définition comparée à celle de la fin) ; la
+     promesse tient, pas de bouton. */
+  document.querySelectorAll('[data-focus]').forEach(function(champ){
+    if(champ.dataset.focusPrevenir==='1' || !champ.querySelector('[data-focus-ouvrir]')) return;
+    var m=document.createElement('div'); m.className='gmodif';
+    m.innerHTML='<button type="button" class="btn ghost sm" data-focus-modifier>✏️ Modifier ma réponse</button>';
+    var echo=champ.querySelector('[data-focus-echo]');
+    if(echo && echo.nextSibling) echo.parentNode.insertBefore(m, echo.nextSibling);
+    else champ.appendChild(m);
+    m.querySelector('button').addEventListener('click',function(){ ouvrirFocus(champ); });
   });
 
   /* ---------- Ré-hydratation au chargement (retour de l'élève) ----------
@@ -745,11 +963,15 @@
     var mot = champ.dataset.glossaire || (champ.closest('[data-glossaire]') || {dataset:{}}).dataset.glossaire;
     if(mot) glossaire[mot] = texte;
     /* le retour, seulement s'il est validé */
+    /* 'corrige' ferme le bouton « Modifier ma réponse » (CSS .gmodif) :
+       une fois le retour du professeur posé, le texte ne bouge plus. */
+    champ.classList.toggle('corrige', r.statut === 'corrige');
     if(r.statut === 'corrige'){
       champ.classList.toggle('a-refaire', false);
       var verd = (r.correction_ia && r.correction_ia.analyse && r.correction_ia.analyse.verdict) || 'sans objet';
       verdict(champ, classeVerdict(verd), rendreRetour(r));
-      markDone(champ);
+      majReste(champ);
+      if(!questionsRestantes(champ)) markDone(champ);
       var sc=stepOf(champ); if(sc) sc.classList.remove('attente-corr');
     } else if(r.statut === 'signale'){
       /* À refaire. La classe 'a-refaire' rouvre le bouton d'envoi :
@@ -772,9 +994,13 @@
          redémarrage du PC, étape 1.5 restée bloquée.
          Règle générale : un rechargement ne doit jamais faire
          perdre une progression déjà acquise. */
-      verdict(champ, 'wait', '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
-      markDone(champ);
-      var sw=stepOf(champ); if(sw) sw.classList.add('attente-corr');
+      var reste = questionsRestantes(champ);
+      verdict(champ, 'wait', '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.'+(reste?resteAFaire(reste):''));
+      majReste(champ);
+      if(!reste){
+        markDone(champ);
+        var sw=stepOf(champ); if(sw) sw.classList.add('attente-corr');
+      }
     }
   }
   if(document.readyState === 'loading')
@@ -1575,6 +1801,17 @@
     return (document.title.split('—')[0] || 'SNT').replace(/^\s*SNT\s*·\s*/,'').trim();
   }
 
+  /* La matière et le niveau, lus dans le bandeau de la page (.eyebrow) —
+     24/09/2026. L'en-tête portait « SNT · Seconde » en dur : la fiche d'ES de
+     terminale se présentait comme une fiche de SNT. On garde ce qui précède
+     le premier « — » (« Enseignement scientifique · Terminale · Thème 2 »). */
+  function ficheEtiquette(){
+    var e = document.querySelector('header .eyebrow, .eyebrow');
+    var t = e ? e.textContent.replace(/\s+/g,' ').split(' — ')[0].trim() : '';
+    return t || 'SNT · Seconde';
+  }
+  function ficheMatiere(){ return ficheEtiquette().split(' · ')[0]; }
+
   function ficheSeance(sec){
     var h = sec.querySelector('.seance-head h2');
     if(!h) return { num:'', nom:'' };
@@ -2074,8 +2311,14 @@
          '</div>';
 
     var reste = [];
-    if(comp.manquent.length)
-      reste.push('il reste à envoyer&nbsp;: <b>' + comp.manquent.map(echapper).join('</b>, <b>') + '</b>');
+    if(comp.manquent.length){
+      /* une étape à quatre questions ne se nomme qu'une fois (24/09/2026) */
+      var parEtape = [], nb = {};
+      comp.manquent.forEach(function(t){ if(!nb[t]){ nb[t] = 0; parEtape.push(t); } nb[t]++; });
+      reste.push('il reste à envoyer&nbsp;: ' + parEtape.map(function(t){
+        return '<b>' + echapper(t) + '</b>' + (nb[t] > 1 ? ' (' + nb[t] + ' questions)' : '');
+      }).join(', '));
+    }
     if(comp.etapesT && comp.etapesF < comp.etapesT)
       reste.push('<b>' + (comp.etapesT - comp.etapesF) + '</b> étape(s) pas encore validée(s)');
     h += reste.length
@@ -2226,7 +2469,7 @@
       '<title>Fiche — ' + echapper(theme) + (seance.num ? ' — Séance ' + seance.num : '') + '</title>' +
       '<style>' + ficheCSS() + '</style></head><body><div class="page">' +
       '<header class="head">' +
-        '<div class="eyebrow">SNT · Seconde · Fiche de révision</div>' +
+        '<div class="eyebrow">' + echapper(ficheEtiquette()) + ' · Fiche de révision</div>' +
         '<h1>' + echapper(theme) + '</h1>' +
         '<p class="seance">' + (seance.num ? 'Séance ' + echapper(seance.num) + ' — ' : '') +
           '<b>' + echapper(seance.nom) + '</b></p>' +
@@ -2241,7 +2484,7 @@
         '<button class="g" onclick="window.close()">Fermer</button></div>' +
       '<p class="aide">Pour obtenir un PDF&nbsp;: clique sur le bouton, puis choisis ' +
       '«&nbsp;Enregistrer au format PDF&nbsp;» comme imprimante. ' +
-      'Dépose ensuite le fichier dans ton dossier OneDrive de SNT.</p>' +
+      'Dépose ensuite le fichier dans ton dossier OneDrive ' + echapper(ficheMatiere() === 'SNT' ? 'de SNT' : 'd’' + ficheMatiere().toLowerCase()) + '.</p>' +
       h + '</div></body></html>';
   }
 
@@ -2287,7 +2530,8 @@
     sec.querySelectorAll('.qcm-fait').forEach(function(c){c.remove();});
     sec.querySelectorAll('.qcm-consigne').forEach(function(c){c.style.display='';});
     sec.querySelectorAll('[data-focus]').forEach(function(f){
-      f.classList.remove('rempli');
+      f.classList.remove('rempli','corrige','brouillon');
+      if(f._scene){ if(scene===f._scene) fermerFocus(); else { f._scene.remove(); f._scene=null; libelleBouton(f); } }
       var e=f.querySelector('[data-focus-echo]'); if(e){e.textContent='';e.style.display='';}
       var a=f.querySelector('.gaction'); if(a)a.style.display='';
       var z=f.querySelector('[data-sortie]'); if(z){z.classList.remove('show');z.innerHTML='';}
@@ -2477,10 +2721,7 @@ function initVideos(){
     var src=f.getAttribute('data-src'); if(!src) return;
     var h=f.getAttribute('height')||'315';
     var son=/radiofrance/.test(src);
-    /* DigiView (22/09/2026) : le lecteur de La Digitale habille celui de
-       YouTube (youtube-nocookie) — sans publicité ni suggestion, mais la
-       vidéo vient toujours de chez YouTube. L'affiche le dit. */
-    var digiview=/ladigitale\.dev\/digiview/.test(src);
+    var yt=/youtube(-nocookie)?\.com\/embed\//.test(src);
     var quoi=son?'l\'écoute':'la vidéo', chez=son?'Radio France':'YouTube';
     var aff=document.createElement('button');
     aff.type='button'; aff.className='video-affiche'+(son?' son':'');
@@ -2488,14 +2729,23 @@ function initVideos(){
     aff.setAttribute('aria-label','Lancer '+quoi+' — elle se charge chez '+chez+' au moment du clic');
     aff.innerHTML='<span class="va-play" aria-hidden="true">'+(son?'🎧':'▶')+'</span>'+
       '<span class="va-txt">'+(son?'Lancer l\'écoute':'Lire la vidéo')+'</span>'+
-      '<span class="va-note">'+(digiview
-        ? 'Sans publicité, via DigiView. La vidéo reste hébergée par YouTube&nbsp;: rien n\'est chargé chez eux tant que tu n\'as pas cliqué.'
-        : 'Hébergée par '+chez+'&nbsp;: rien n\'est chargé chez eux tant que tu n\'as pas cliqué.')+'</span>';
+      '<span class="va-note">Hébergée par '+chez+'&nbsp;: rien n\'est chargé chez eux tant que tu n\'as pas cliqué.</span>';
     aff.addEventListener('click',function(){
       var i=document.createElement('iframe');
-      i.src=src; i.height=h; i.frameBorder='0'; i.allowFullscreen=true;
+      /* YouTube (24/09/2026, retour de DigiView au lecteur YouTube) :
+         · autoplay=1 — le clic sur l'affiche EST le geste de lecture ; sans
+           lui, l'élève devait cliquer une seconde fois dans le lecteur, où le
+           titre et « Regarder sur YouTube » l'envoient hors du site ;
+         · rel=0 — les suggestions de fin restent sur la même chaîne ;
+         · referrerpolicy déclaré — privé de referrer, YouTube refuse la
+           lecture intégrée (« erreur 153 ») et renvoie vers son site. Ce
+           réglage ne transmet que le DOMAINE du site, jamais l'URL de la
+           page (même correctif que la cloche à vide en PC, A2-5). */
+      i.src = yt ? src+(src.indexOf('?')<0?'?':'&')+'autoplay=1&rel=0' : src;
+      i.height=h; i.frameBorder='0'; i.allowFullscreen=true;
       i.title=f.getAttribute('title')||'Vidéo';
-      i.setAttribute('allow','accelerometer; clipboard-write; encrypted-media; picture-in-picture; fullscreen'+(digiview?'; autoplay':''));
+      i.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
+      i.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen');
       aff.parentNode.replaceChild(i,aff);
     });
     f.parentNode.replaceChild(aff,f);
@@ -3422,18 +3672,49 @@ function initQcm(){
     var recap=document.createElement('div'); recap.className='qcm-recap'; recap.style.display='none';
     box.appendChild(recap);
     lanceur.querySelector('button').addEventListener('click',function(){
+      if(lanceur._reprendre){ lanceur._reprendre(); return; }
       jouerQcm(data,box,recap,lanceur);
     });
   });
 }
+/* QCM RÉDUIT (24/09/2026) : comme la fenêtre d'écriture, le QCM se range
+   pour laisser relire l'énoncé, et se reprend à la même question, réponses
+   déjà données comprises. Le panneau n'est pas vidé : il est seulement
+   caché. Un seul QCM en cours à la fois — en lancer un autre abandonne
+   celui qui était réduit, comme « ✕ abandonner ». */
+var qcmReduit=null;
 function jouerQcm(data,box,recap,lanceur){
+  if(qcmReduit) qcmReduit();
   var i=0, resultats=[];
+  var bouton=lanceur.querySelector('button'), libelle=bouton.textContent;
   /* PAS focus-on ici : sa règle de flou visait aussi .qcm-back, qui devenait
      illisible et incliquable. Le panneau a déjà son propre voile
      (backdrop-filter). qcm-on ne sert qu'à masquer les éléments flottants. */
   document.body.classList.add('qcm-on');
   fondQcm.classList.add('on');
   var pan=$('.qcm-panel',fondQcm);
+  function reduire(){
+    fondQcm.classList.remove('on');
+    document.body.classList.remove('qcm-on');
+    bouton.textContent='▶ Reprendre le QCM (question '+(i+1)+' / '+data.length+')';
+    lanceur.classList.add('qcm-reduit');
+    lanceur._reprendre=function(){
+      document.body.classList.add('qcm-on');
+      fondQcm.classList.add('on');
+      lanceur.classList.remove('qcm-reduit');
+      bouton.textContent=libelle;
+      var r=$('.qreduire',pan); if(r) r.focus();
+    };
+    qcmReduit=abandonner;
+    bouton.focus({preventScroll:true});
+  }
+  fondQcm._reduire=reduire;
+  /* quitter le QCM pour de bon : le lanceur retrouve son état */
+  function oublier(){
+    lanceur._reprendre=null; lanceur.classList.remove('qcm-reduit');
+    if(qcmReduit===abandonner) qcmReduit=null;
+    if(fondQcm._reduire===reduire) fondQcm._reduire=null;
+  }
   function dessiner(){
     var q=data[i];
     var dots=data.map(function(_,k){
@@ -3442,10 +3723,13 @@ function jouerQcm(data,box,recap,lanceur){
     }).join('');
     pan.innerHTML='<div class="qtop"><span class="qn">Question '+(i+1)+' / '+data.length+
       '</span><span class="qdots">'+dots+'</span>'+
+      '<button type="button" class="qclose qreduire" aria-label="Réduire le QCM pour relire le cours : tu le reprendras à cette question">'+
+      '— <span>réduire</span></button>'+
       '<button type="button" class="qclose" aria-label="Abandonner le QCM : rien ne sera validé">'+
       '✕ <span>abandonner</span></button>'+
       '</div><h4>'+q.q+'</h4><div class="qzone"></div>';
-    $('.qclose',pan).addEventListener('click',abandonner);
+    $('.qreduire',pan).addEventListener('click',reduire);
+    $('.qclose:not(.qreduire)',pan).addEventListener('click',abandonner);
     var zone=$('.qzone',pan);
     /* CHOIX MULTIPLE (01/08/2026) : si q.r est un TABLEAU d'indices,
        on bascule en mode « coche tout ce qui convient ». Un entier
@@ -3562,11 +3846,12 @@ function jouerQcm(data,box,recap,lanceur){
     fondQcm.classList.remove('on');
     document.body.classList.remove('qcm-on');
     pan.innerHTML='';
+    oublier(); bouton.textContent=libelle;
   }
-  fondQcm._abandonner = abandonner;
   function terminer(){
     fondQcm.classList.remove('on');
     document.body.classList.remove('qcm-on');
+    oublier();
     var n=resultats.filter(function(r){return r.bon;}).length;
     var h='<div class="rh">Récapitulatif — '+n+' / '+data.length+' bonnes réponses</div>';
     data.forEach(function(q,k){
@@ -3578,6 +3863,16 @@ function jouerQcm(data,box,recap,lanceur){
        Sauf data-facultatif : un QCM de diagnostic ne valide pas l'étape,
        sinon l'élève l'aurait « faite » sans avoir rien produit. */
     var etape=box.hasAttribute('data-facultatif') ? null : box.closest('.step');
+    /* Même règle que les réponses rédigées (bloc du mode focus, 24/09/2026) :
+       une étape qui porte encore une question rédigée sans réponse n'est pas
+       faite. Elle le sera à l'envoi de cette réponse. Le sélecteur est
+       recopié ici : les deux blocs du fichier ne se voient pas. */
+    if(etape && Array.prototype.some.call(etape.querySelectorAll('[data-focus]:not(.rempli)'), function(f){
+      return !f.closest('details, .bonus-wrap, .bonus, .plus-loin') && f.closest('.step')===etape;
+    })){
+      etape.dataset.qcmScore=n+'/'+data.length;
+      etape=null;
+    }
     if(etape){
       etape.classList.add('is-done');
       etape.dataset.qcmScore=n+'/'+data.length;
@@ -4004,8 +4299,9 @@ function initZoom(){
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape'){
       fond.classList.remove('on');
-      if(fondQcm && fondQcm._abandonner) fondQcm._abandonner();
-      else if(fondQcm) fondQcm.classList.remove('on');
+      /* Échap RÉDUIT le QCM ouvert (24/09/2026) : il l'abandonnait, et
+         l'élève perdait ses réponses d'une touche. */
+      if(fondQcm && fondQcm.classList.contains('on') && fondQcm._reduire) fondQcm._reduire();
     }
   });
 }

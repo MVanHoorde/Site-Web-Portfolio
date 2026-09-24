@@ -133,39 +133,12 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
 
 ## Publicités sur les postes de visionnage
 
-- 💡 *(mise à jour du 24/08/2026 : les vidéos sont désormais derrière une
-  **affiche locale** — rien n'est chargé chez YouTube tant que l'élève n'a pas
-  cliqué. Cela règle la fuite d'adresse IP à l'ouverture de la page, **pas** les
-  publicités : la piste ci-dessous reste ouverte.)*
-- 💡 **Supprimer les publicités des deux postes de visionnage du thème 1**
-  (étapes 5.2, les couches, et 6.3, le DNS). `youtube-nocookie` supprime le
-  cookie publicitaire, **pas les publicités** — c'est le motif de Loïc.
-  Piste : **Digiview**, de La Digitale — lecteur épuré, sans publicité ni
-  suggestions, qui fournit un **lien iframe**. Ce serait donc un remplacement
-  direct des `<iframe src="https://www.youtube-nocookie.com/embed/…">`, sans
-  toucher à la structure du `.poste`.
-
-  Trois vérifications préalables, **à faire par Loïc** :
-  1. **RGPD** — ouvrir F12 → Réseau sur un Digiview et regarder si des requêtes
-     partent encore vers `googlevideo.com`. Si oui, on a gagné les publicités
-     mais pas l'IP des élèves.
-  2. **Dépendance externe** — `ladigitale.dev` deviendrait un point de panne
-     unique pour les deux postes de visionnage.
-  3. **Compatibilité** — certaines vidéos sont protégées par leurs auteurs et
-     l'outil échoue. À tester sur les deux vidéos Cookie connecté
-     (`26jazyc7VNk` et `qzWdzAvfBoo`).
-
-  Piste PeerTube du ministère (`tube-numerique-educatif.apps.education.fr`) :
-  suppose de réhéberger la vidéo, donc l'accord de l'auteur. Écartée pour la
-  rentrée. Voir aussi la ligne « Hébergement des vidéos SNT » en attente
-  d'arbitrage dans `DECISIONS.md` — PeerTube peut diffuser en pair-à-pair, ce
-  qui exposerait l'IP de l'élève à d'autres spectateurs.
-
-  🔴 **Repris à froid après la rentrée** : Loïc veut d'abord que le cours tourne.
-  Confirmé le 23/08/2026 à la clôture de `t1` : **cette piste ne conditionne pas
-  la validation du thème** — « ça fonctionne comme ça, c'est très bien ». Les
-  quatre `<iframe>` gardent leur chargement actuel, et la façade « clic pour
-  charger » n'est pas demandée.
+- 💡 `youtube-nocookie` retire le cookie publicitaire, **pas les publicités**.
+  La piste DigiView a été essayée puis abandonnée le 24/09/2026 (voir
+  `DECISIONS.md`). Reste ouverte, à froid : le PeerTube du ministère
+  (`tube-numerique-educatif.apps.education.fr`), qui suppose l'accord de
+  l'auteur pour réhéberger — et qui peut diffuser en pair-à-pair, donc exposer
+  l'IP de l'élève à d'autres spectateurs.
 
 ---
 

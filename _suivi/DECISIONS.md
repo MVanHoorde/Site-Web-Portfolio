@@ -15,6 +15,24 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 24/09/2026 — Moteur des séquences : écrire, relire, corriger sa réponse
+
+Bugs remontés par Loïc après un cours de terminale ; corrigés dans le moteur
+partagé (`sequence-snt.js?v=50`, `sequence-snt.css?v=45`), donc pour **toutes**
+les pages qui le chargent : SNT, outils PC, ES de 1re et de terminale.
+
+| Date | Décision | Statut |
+|---|---|---|
+| 24/09/2026 | 🔴 **Une étape n'est faite qu'à la dernière de ses questions rédigées.** La première réponse envoyée validait toute l'étape : au `term-es-t2-c1`, l'étape 1.5 (4 questions) était la dernière de la séance, et « Séance terminée » ouvrait la fiche dès la question 1. **32 étapes** du site avaient plusieurs questions rédigées. Les questions d'un « pour aller plus loin » (`details`, `.bonus`) ne comptent pas. Un QCM fini dans une étape où il reste une question rédigée ne la valide pas non plus. Aucune progression déjà acquise ne recule : l'état enregistré est restauré tel quel | ✅ en vigueur |
+| 24/09/2026 | **La fenêtre d'écriture se réduit** (bouton « — Réduire », ou Échap) pour relire l'énoncé : le texte est gardé, le bouton du champ devient « Reprendre mon brouillon ». « Annuler » demande confirmation dès qu'il y a du texte nouveau, et propose « Réduire » | ✅ en vigueur |
+| 24/09/2026 | **Le QCM plein écran se réduit aussi** et se reprend à la même question, réponses données comprises. **Échap réduit** au lieu d'abandonner (il effaçait le QCM d'une touche) | ✅ en vigueur |
+| 24/09/2026 | **« ✏️ Modifier ma réponse »** après l'envoi, **tant que le professeur ne l'a pas corrigée**. Le nouvel envoi remplace l'ancien ; la base archive la version précédente (`reponses_archivage`). Exception : un champ `data-focus-prevenir` (t0, 1.1) a été annoncé « définitif » à l'élève, il le reste | ✅ en vigueur |
+| 24/09/2026 | **Palette de symboles** dans la fenêtre d'écriture : lettres grecques, opérateurs, flèches, unités, et deux modes **exposant** / **indice** (10⁻³, CO₂). Caractères **Unicode ordinaires**, pas de LaTeX ni de bibliothèque : la réponse reste un texte lisible au tableau de bord, à la correction et sur la fiche. Les fractions s'écrivent (a)/(b) | ✅ en vigueur |
+| 24/09/2026 | 🔴 **DigiView abandonné : retour au lecteur YouTube intégré** (`youtube-nocookie`, toujours derrière l'affiche locale). Les 6 vidéos de t0, t1 et m1 reviennent en `youtube-nocookie`. Le moteur ajoute au clic `autoplay=1&rel=0` (un seul clic) et un `referrerpolicy` déclaré (sans lui : « erreur 153 », renvoi vers YouTube). Remplace la décision DigiView du 22/09 | ✅ en vigueur |
+| 24/09/2026 | **La vidéo « Électricité — C'est pas sorcier » (`term-es-t2-c1`) n'a pas pu être prise en défaut** hors du lycée : lecture intégrée autorisée, lecture réelle constatée au navigateur, jouable même en mode restreint strict. Si elle bloque encore en classe, la cause est côté réseau ou appareil — à observer (message exact affiché) | ⏳ à observer |
+
+---
+
 ## 24/09/2026 — L'ES de terminale s'ouvre aux élèves
 
 Contrôle demandé par Loïc avant la rentrée des terminales : « est-ce que tout est
@@ -63,7 +81,7 @@ Retours du premier test en classe de Loïc sur `t0` et sur le tableau de bord.
 | 22/09/2026 | **« Séance terminée » ne s'ouvre qu'après un geste de l'élève.** Au rechargement, la restauration depuis la base faisait passer la séance d'incomplète à complète, et le pop-up revenait à chaque visite. Il exige désormais un clic ou une touche dans les 8 s | ✅ |
 | 22/09/2026 | 🆕 **« Ton professeur t'a répondu » : un pop-up annonce chaque retour, une fois.** Relevé toutes les 60 s page ouverte (onglet visible, jamais pendant l'écriture), et à l'ouverture pour les retours arrivés entre-temps. « Déjà annoncé » vit en base (`progression`, domaine `cours`, clé `corrections-vues`, signature statut + `corrige_le`) — aucun `localStorage`. La carte « Bon retour » ne recompte plus toutes les corrections : elle faisait doublon | ✅ |
 | 22/09/2026 | **La migration 011 (réponses types) n'avait jamais été appliquée en base** — constaté en sondant l'API : `PGRST205`, table introuvable, alors que 009, 016 et 018 y sont. Loïc l'a exécutée le 22/09. Le tableau de bord traduit désormais les codes d'erreur PostgREST connus au lieu d'afficher le JSON brut | ✅ |
-| 22/09/2026 | 🔴 **Vidéos : projection depuis le poste de Loïc, par un lien DigiView ; aucune vidéo de tiers ré-hébergée.** Motif : le réseau du lycée demande une connexion Google pour lire YouTube, et télécharger une vidéo de créateur pour la redéposer (dépôt, OneDrive, cahier de textes) est interdit par les conditions de YouTube et n'est pas couvert par l'exception pédagogique. Les postes de visionnage des pages restent (notes, QCM, revisionnage) et passent au lecteur DigiView intégré : les 6 vidéos de t0, t1 et m1, le 22/09. Au passage, la vidéo de 49 min de t0 était attribuée à « Data LabCenter » : elle est de **Deus Ex Silicium**. Détail : `CONSIGNES-sequence-SNT.md`, règles techniques | ✅ |
+| 22/09/2026 | ~~🔴 **Vidéos : projection depuis le poste de Loïc, par un lien DigiView ; aucune vidéo de tiers ré-hébergée.** Motif : le réseau du lycée demande une connexion Google pour lire YouTube, et télécharger une vidéo de créateur pour la redéposer (dépôt, OneDrive, cahier de textes) est interdit par les conditions de YouTube et n'est pas couvert par l'exception pédagogique. Les postes de visionnage des pages restent (notes, QCM, revisionnage) et passent au lecteur DigiView intégré : les 6 vidéos de t0, t1 et m1, le 22/09. Au passage, la vidéo de 49 min de t0 était attribuée à « Data LabCenter » : elle est de **Deus Ex Silicium**. Détail : `CONSIGNES-sequence-SNT.md`, règles techniques~~ → DigiView remplacé le 24/09/2026 par le lecteur YouTube intégré ; l'interdiction de ré-héberger reste en vigueur (`CONSIGNES-sequence-SNT.md`) | ~~remplacée~~ |
 | 22/09/2026 | **`sequence-snt.css` intercale Inter après IBM Plex Sans** dans ses onze piles, comme prévu par CLAUDE.md : `.btn` n'avait aucun repli et tous les boutons des séquences tombaient en Times New Roman | ✅ |
 
 ## 22/09/2026 — Audit du diaporama de T1-C2 par Loïc

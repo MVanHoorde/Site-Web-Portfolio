@@ -4369,3 +4369,35 @@ apps, jamais depuis une app d'écran d'accueil. Essai posé dans un script de la
 page t0, séance 1 seule, pour le test du 25/09 ; le moteur, modifié au même
 moment par une autre conversation, n'est pas touché, et seul le bloc d'essai
 a été commité.
+
+## 24/09/2026 — Le moteur des séquences après le cours de terminale
+
+Remontées de Loïc après un cours de terminale, traitées dans le moteur partagé,
+donc pour toutes les séquences. La fiche qui s'ouvrait dès la question 1 de
+l'activité 2 n'était pas un défaut de la fiche : la première réponse rédigée
+validait l'étape entière, et 1.5 était la dernière étape de la séance. 32 étapes
+du site portaient plusieurs questions rédigées. Désormais seule la dernière
+valide l'étape ; ce qui était déjà acquis ne recule pas au rechargement.
+
+La fenêtre d'écriture se réduit (texte gardé, « Reprendre mon brouillon »), le
+QCM aussi, et Échap réduit au lieu d'abandonner. « Modifier ma réponse » rouvre
+le texte envoyé tant qu'il n'est pas corrigé ; la base le permettait déjà et
+archive la version remplacée. Une palette insère lettres grecques, opérateurs,
+exposants et indices en Unicode ordinaire — pas de LaTeX, la réponse reste du
+texte partout où elle est relue.
+
+Vidéos : DigiView abandonné, retour au lecteur YouTube derrière l'affiche. La
+vidéo de terminale signalée a été lue sans défaut au navigateur, hors lycée, et
+passe le mode restreint strict : pas de cause trouvée côté site. Le clic sur
+l'affiche lance maintenant la lecture (autoplay), ce qui supprime le second
+clic dans le lecteur, là où le titre renvoie vers YouTube ; le referrer est
+déclaré.
+
+Fiches de l'ES de terminale : le générateur écrivait « SNT · Seconde » en dur ;
+il lit désormais la matière dans la page. Les cinq séances ont reçu une partie
+fixe V1, rédigée par séance puis mesurée remplie au Chromium (4, 4, 3, 3, 3
+pages, contre 5 pour la version automatique) — à auditer.
+
+Une autre conversation a commité son essai iPad sur t0 pendant la session ;
+aucun fichier commun modifié par les deux, sinon `t0` (vidéos et versions ici,
+script de page là-bas), sans chevauchement.
