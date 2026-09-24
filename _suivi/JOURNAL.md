@@ -12,6 +12,45 @@
 
 ---
 
+## 24/09/2026 — L'ES de terminale s'ouvre : ce qui manquait n'était pas le cours
+
+Loïc part au travail et demande un verdict : « est-ce que tout est prêt pour les
+terminales, au moins sur le premier chapitre ? Ils peuvent créer leur compte ? ».
+
+**Le cours, lui, était prêt.** Vérifié au dépôt et au navigateur : chemin d'accès
+complet depuis l'accueil, `data-sequence="est-t2-c1"`, 16 étapes aux clés uniques,
+moteur à `css?v=44` / `js?v=49` — la page avait bien suivi les six versions du
+moteur parues depuis son portage du 12/09 — zéro erreur JS, aucune iframe chargée
+d'avance, toutes les images présentes, `verifier.mjs` à son repère de 19.
+
+**Ce qui manquait tenait à ce que l'élève voit.** Trois choses :
+
+1. Un **bandeau hachuré « décision attendue, rien n'est validé »** s'affichait avant
+   la première ligne du cours, et **affirmait que la progression n'était pas
+   enregistrée** — faux depuis le branchement en base du 13/09. Un élève qui le
+   lisait n'avait aucune raison de créer un compte. Avec lui, **27 cadres de
+   travail** sur les deux chapitres s'adressaient à l'enseignant et à personne
+   d'autre. Le moteur portait déjà le filet (`body.eleve .chantier{display:none}`),
+   jamais activé ; retenu plutôt : masquage par défaut et retour d'un clic sur
+   « mode enseignant », qui est le geste qu'on fait quand on retravaille la page.
+2. La **frise** était liée depuis le hub alors qu'elle demande `serveur-frise/`,
+   qui ne tourne qu'en local.
+3. L'accueil étiquetait encore le niveau « 🚧 chapitres en chantier ».
+
+**Et la question qui décidait de tout ne se lisait pas dans le dépôt.** Les classes
+`EST303` et `EST606` naissent `actif = false` (`018`) ; c'est le `019` qui les ouvre,
+dans l'éditeur SQL. Impossible de savoir depuis le dépôt s'il avait été joué : la
+table `classes` n'est lisible par personne sans compte — RGPD tenu — et
+`rejoindre_classe()` lève `AUCUNE_SESSION` avant même de regarder le code, donc
+aucun sondage anonyme ne renseigne. Loïc a exécuté la requête de contrôle et envoyé
+la capture : **deux lignes, `actif = true`**. Leçon pour les prochaines fois : l'état
+d'une classe ne se déduit pas des fichiers, il se demande.
+
+Aucun asset partagé n'a été touché — la règle de masquage est locale à chaque page,
+donc aucun `?v=` à incrémenter sur les 22 fichiers du moteur.
+
+---
+
 ## 19/09/2026 — Les collègues sont en base, et l'oubli devient mécaniquement visible
 
 Suite de la session du 17. Trois choses ont bougé, dont une qui dépasse le chantier.

@@ -15,6 +15,23 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 24/09/2026 — L'ES de terminale s'ouvre aux élèves
+
+Contrôle demandé par Loïc avant la rentrée des terminales : « est-ce que tout est
+prêt, au moins sur le premier chapitre ? ». La page, le branchement et le moteur
+l'étaient ; trois choses ne l'étaient pas.
+
+| Date | Décision | Statut |
+|---|---|---|
+| 24/09/2026 | 🔴 **Les cadres de travail ne sont pas pour les élèves.** `.chantier` et `.proposition` sont **masqués par défaut** et reviennent entiers d'un clic sur « mode enseignant » (`body.teacher`). Rien n'est supprimé du fichier. Appliqué aux 2 pages d'ES de terminale (12 cadres au `t2-c1`, 15 au `t2-c2`). Règle CSS **locale à chaque page** : `sequence-snt.css` n'est pas touché, donc aucun `?v=` à incrémenter. Motif : un élève lisait « décision attendue, rien n'est validé » avant la première ligne du cours | ✅ en vigueur |
+| 24/09/2026 | **Les 6 pages d'ES de 1re portent le même défaut** (40 cadres `.proposition`), mais elles sont masquées du hub : la règle y sera posée **au moment du démasquage**, avec le reste (`es1-verification.md` §0bis). Pas touché aujourd'hui, pour ne pas déclencher un démasquage non demandé | ✅ en vigueur |
+| 24/09/2026 | **Deux cadres affirmaient « la progression n'est pas enregistrée »** — faux depuis le branchement en base du 13/09, et de nature à décourager la création de compte. Réécrits dans les deux pages : la progression **est** enregistrée (`est-t2-c1`, `est-t2-c2`) | ✅ en vigueur |
+| 24/09/2026 | **La frise sort du hub de terminale**, en commentaire avec sa ligne d'ouverture, comme les chapitres non traités. Motif : elle demande `serveur-frise/`, qui ne tourne qu'en local — le lien ne mènerait à rien depuis le lycée ou la maison. Elle apparaît désormais dans les « contenus hors d'atteinte » de `verifier.mjs`, qui rappellera de la rétablir | ✅ en vigueur |
+| 24/09/2026 | **L'accueil ne dit plus « 🚧 chapitres en chantier »** pour l'ES de terminale : la ligne sort de `.a-venir`. La 1re et la spé PC la gardent | ✅ en vigueur |
+| 24/09/2026 | ✅ **D5 confirmée faite** : le `019` a bien été exécuté dans Supabase. `EST303` et `EST606` sont à `actif = true` — vérifié par Loïc à l'écran. Les élèves de T3 et T6 peuvent créer leur compte | ✅ en vigueur |
+
+---
+
 ## 22/09/2026 — T1-C1 : page, diaporama et fiche, sur l'audit de Loïc
 
 Audit du diaporama par Loïc ; diaporama **validé** le jour même. Ce qui touche

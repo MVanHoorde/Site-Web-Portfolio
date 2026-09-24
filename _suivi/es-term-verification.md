@@ -11,6 +11,28 @@
 
 ---
 
+## 0bis. Ouvert aux élèves le 24/09/2026 — ce que ça change pour ce fichier
+
+Les deux chapitres sont **en service** : `EST303` et `EST606` acceptent les
+inscriptions, la progression est enregistrée, l'accueil ne porte plus « 🚧 ».
+
+🔴 **Les cadres de travail ne sont plus visibles des élèves.** Les 27 cadres
+`.chantier` et `.proposition` (12 au `t2-c1`, 15 au `t2-c2`) sont masqués par une
+règle CSS locale à chaque page, et **reviennent d'un clic sur « mode enseignant »**.
+Ils sont donc toujours là pour travailler — rien n'a été supprimé. Conséquence
+pratique : **pour relire ce qui reste à trancher, ouvre la page en mode enseignant**,
+sans quoi tu ne verras plus les propositions.
+
+**La frise est sortie du hub** (elle demande `serveur-frise/`, local) ; elle figure
+maintenant dans les « contenus hors d'atteinte » de `node verifier.mjs`, qui
+rappellera de la rétablir le jour où le serveur sera en ligne.
+
+Les décisions de fond restent **entières** : D1, D2, D3, D4, D6, D7 sont toujours
+ouvertes (§4), et les points de la refonte sur audit (§8) attendent toujours ta
+relecture. Ouvrir aux élèves n'est pas valider.
+
+---
+
 ## 0. Ce qui a été fait, en une page
 
 **Les deux chapitres de terminale qui existaient en ligne passent sur le moteur des
@@ -227,7 +249,7 @@ réduira à remplacer une balise.
 | **D2** | T2-C2, étapes 3.2 et 3.3 | **Deux conclusions opposées dans la source** sur le coût des tours de béton : l'exercice 2 conclut « économiquement intéressant » (135 €/kWh contre 400 pour une batterie), l'exercice 3 « très élevé » (les STEP sont à 5-20 €/kWh). Les deux sont exactes, elles ne comparent pas à la même chose — mais l'élève qui enchaîne lira une contradiction. Ajouter une incise à l'exercice 2, ou **faire de cette tension une question** ? |
 | **D3** | T2-C2, étape 3.3 | **Exercice 3 : un champ ou neuf ?** Posé ici en une seule réponse rédigée, comme dans la source. En **neuf champs courts**, un par critère, on garantirait qu'aucun n'est oublié — ce que l'exercice sanctionne justement. Rédaction continue (format bac) contre méthode complète. |
 | **D4** | T2-C1, étape 1.7 | **La chaîne `@CogitoErgoSum1` est-elle la tienne ?** (voir §3.1) |
-| **D5** | les deux pages | ✅ **Fait le 13/09/2026, avec la 1re** : `data-sequence="est-t2-cN"`, réponses personnelles, `data-cle` passées en `est-`. Classes T3 et T6 créées (`018`). — Énoncé d'origine : **Le branchement en base.** Comme l'ES de 1re, ces pages n'ont ni client de progression ni `data-sequence` : rien n'est enregistré, et le moteur le dit honnêtement. Le branchement demande les six gestes listés au §4 de `es1-verification.md`. À faire **en même temps que la 1re**, ou séparément ? |
+| **D5** | les deux pages | ✅ **Clos le 24/09/2026.** Branchement fait le 13/09 avec la 1re (`data-sequence="est-t2-cN"`, réponses personnelles, `data-cle` en `est-`) ; le `019` a été exécuté dans Supabase et **`EST303` / `EST606` sont ouvertes aux inscriptions** (`actif = true`, vérifié à l'écran). Les élèves de T3 et T6 créent leur compte et leur travail arrive dans le tableau de bord. — Énoncé d'origine : **Le branchement en base.** Comme l'ES de 1re, ces pages n'ont ni client de progression ni `data-sequence` : rien n'est enregistré, et le moteur le dit honnêtement. Le branchement demande les six gestes listés au §4 de `es1-verification.md`. À faire **en même temps que la 1re**, ou séparément ? |
 | **D6** | hub terminale | **Les chapitres masqués.** Ils sont en commentaire, pas supprimés. Confirmer que c'est la bonne forme — et dire s'ils doivent **réapparaître un par un** au fil de l'année, ou tous ensemble. |
 | **D7** | T2-C1 et T2-C2 | **Les fiches élève.** Aucune n'existe. Faut-il en produire, et sur quel modèle — celui des chapitres PC (`CONSIGNES-fiche-eleve-PC.md`) ou autre chose, l'ES n'ayant pas la même économie de séance ? |
 

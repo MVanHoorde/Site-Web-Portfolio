@@ -5,14 +5,25 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **22/09/2026**.
+> Dernière réécriture : **24/09/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — SNT t0 après le premier test en classe (22/09).** Les
+> **Dernière passe — l'ES de terminale est ouvert aux élèves (24/09).** Le `019`
+> a été exécuté dans Supabase : `EST303` et `EST606` sont **ouvertes aux
+> inscriptions** (vérifié à l'écran, `actif = true`), les élèves de T3 et T6
+> peuvent créer leur compte et leur travail est enregistré. Les **27 cadres de
+> travail** des deux chapitres du thème 2 (12 au `t2-c1`, 15 au `t2-c2`) ne sont
+> plus visibles des élèves : ils reviennent d'un clic sur « mode enseignant ».
+> Deux cadres affirmaient encore que « la progression n'est pas enregistrée »,
+> faux depuis le branchement du 13/09 — réécrits. La **frise** est retirée du hub
+> de terminale (elle demande le serveur local) et l'accueil ne dit plus « 🚧
+> chapitres en chantier » pour l'ES de terminale. Détail : `DECISIONS.md`.
+>
+> **Passe précédente — SNT t0 après le premier test en classe (22/09).** Les
 > étapes 1.5, 2.2 et 3.6 de `t0` se valident enfin, par un QCM de 3 questions ;
 > la fiche et « Séance terminée » n'arrivent plus avant l'étape qui les explique,
 > et ce pop-up ne revient plus à chaque rechargement. L'élève est prévenu par une
@@ -412,10 +423,10 @@ sur place, élève SNT qui entre en 2nde 1 puis en AP, second groupe SNT refusé
 réponse d'ES en statut `partage`, ouverture et déblocage d'un chapitre, PDF
 enregistré puis ouvert, rien d'écrit sans compte).
 
-🔴 **Mise en service : un seul geste, dans Supabase.** Coller et exécuter
-`bdd/schema/019-mise-en-service-espaces.sql` dans l'éditeur SQL. Il rattache Loïc à
-ses sept classes hors SNT et ouvre les cinq nouvelles classes ; il répond
-« RATTACHEMENT FAIT : 7 classe(s) hors SNT ». Ensuite, **distribuer les codes** :
+✅ **Mise en service faite.** `bdd/schema/019-mise-en-service-espaces.sql` a été
+exécuté dans l'éditeur SQL : Loïc est rattaché à ses sept classes hors SNT, et les
+cinq nouvelles classes sont **ouvertes aux inscriptions** — `EST303` et `EST606`
+vérifiées à `actif = true` le 24/09/2026. Reste à **distribuer les codes** :
 `ES1R02` (1re 2), `EST303` (T3), `EST606` (T6), `PC2S01` (2nde 1), `AP2S26` (AP).
 Un élève de 2nde qui a déjà son compte SNT tape **son identifiant et son mot de passe
 habituels** avec le code, ou passe par « Mes classes » dans son badge.
@@ -1083,7 +1094,7 @@ fleuron, mais **sur du contenu** : rien n'a été modifié, c'est du fond.
 | **Cahier de vacances** | 14 pages, 2 blocs 🚧. La partie la plus finie du dépôt. |
 | **Coque — page d'accueil** 🆕 | 🔄 **Refondue le 27/08** après comparaison de onze maquettes (dix organisations, puis six fonds). Deux colonnes asymétriques : à gauche les trois classes en portes illustrées — PC, SNT, CFA en **une seule porte** pour les deux diplômes — les trois autres niveaux en lignes sobres marquées `.a-venir`, puis l'adresse professionnelle réelle ; à droite une colonne collante (gravure du jour, 4 fiches-outils, Animations 🚧, Mission Spectra). Nouvelle bande « Auteur & vidéo » en pied, **vide, trois entrées en chantier**. Le compte à rebours bascule sur l'état du projet passé le 1er septembre. `style.css` **non modifié** ; tout le CSS reste inline. Décisions ACC-1 à ACC-12. ⏳ **Deux formulations à valider** : la bascule d'après-rentrée (« En chantier · ouverture en cours d'année ») et le libellé des trois entrées « Auteur & vidéo ». La planche du jour reste un **cadre annoté** tant que `gravures/` est vide. |
 | **ES Première** 🆕 | **Ouvert le 06/09/2026.** Six chapitres, **18 séances**, sur le moteur de séquences — nucléosynthèse (qui porte aussi le **tutoriel du dispositif**, rôle de `t0` pour le SNT), radioactivité, cristaux, son et musique, son à coder, forme de la Terre. Tout est porté depuis les documents de Loïc ; **40 cadres `.proposition`** signalent ce que Claude a ajouté, **13 cadres de réservation** ce qui manque. ✅ **Branché en base le 13/09/2026** (`es1-tN-cN`, réponses personnelles). 🔴 **Seule la nucléosynthèse est ouverte aux élèves, fiches de séance coupées** — à démasquer dès qu'on y retravaille (`es1-verification.md` §0bis). 🔴 **Six images bloquent trois exercices** (ES-01 à ES-06). Le hub porte la numérotation de Loïc (C1, C2, C3) et une carte `.a-venir` pour **3.3 « La Terre dans l'Univers »**. `1re-pc-cristaux.html` reste en place jusqu'à validation. **Rien n'est validé** — relevé complet : `_suivi/es1-verification.md`. |
-| **ES Terminale** 🆕 | **Les deux chapitres du thème 2 tournent sur le moteur des séquences** : `t2-c2` « Production et stockage de l'électricité » (3 séances, tel que porté) et `t2-c1` « Deux siècles d'énergie électrique », **refondu sur audit le 12/09** (2 séances + une séance Bilan, 16 étapes, 5 QCM, 12 questions ouvertes **corrigées en classe** — corrigés hors Git dans `_corriges-es/`). Les **12 vidéos et 2 Kahoot** du `t2-c1` sont posées (QR + hyperliens du PPTX) ; les **15 liens du `t2-c2` restent introuvables** — son PPTX n'a pas encore été ouvert. ✅ **Branché en base le 13/09/2026**, comme la 1re (`est-tN-cN`). 🔴 **Le hub n'affiche que ce qui est traité** : thème 1, 2.3, 2.4 et thème 3 sont **en commentaire**. **Rien n'est validé** ; points à vérifier en priorité sur le `t2-c1` et décisions D1-D7 : `_suivi/es-term-verification.md` §4 et §8. À côté : frise fonctionnelle en local ; `serveur-frise/` et `ia-correction/` en chantier. |
+| **ES Terminale** 🆕 | **Les deux chapitres du thème 2 tournent sur le moteur des séquences** : `t2-c2` « Production et stockage de l'électricité » (3 séances, tel que porté) et `t2-c1` « Deux siècles d'énergie électrique », **refondu sur audit le 12/09** (2 séances + une séance Bilan, 16 étapes, 5 QCM, 12 questions ouvertes **corrigées en classe** — corrigés hors Git dans `_corriges-es/`). Les **12 vidéos et 2 Kahoot** du `t2-c1` sont posées (QR + hyperliens du PPTX) ; les **15 liens du `t2-c2` restent introuvables** — son PPTX n'a pas encore été ouvert. ✅ **Branché en base le 13/09/2026**, comme la 1re (`est-tN-cN`). 🆕 **Ouvert aux élèves le 24/09/2026** : `EST303` (T3) et `EST606` (T6) acceptent les inscriptions, l'accueil ne porte plus « 🚧 chantier » pour ce niveau, et les **27 cadres de travail** (12 au `t2-c1`, 15 au `t2-c2`) sont **masqués aux élèves** — ils reviennent d'un clic sur « mode enseignant » (`body.teacher`, règle CSS locale à chaque page, aucun asset partagé touché). 🔴 **Le hub n'affiche que ce qui est traité** : thème 1, 2.3, 2.4 et thème 3 sont **en commentaire**, et **la frise l'est depuis le 24/09** — elle demande `serveur-frise/`, qui ne tourne qu'en local. **Rien n'est validé côté fond** ; points à vérifier en priorité sur le `t2-c1` et décisions D1-D7 (D5 faite) : `_suivi/es-term-verification.md` §4 et §8. À côté : `serveur-frise/` et `ia-correction/` en chantier. |
 
 **Validation** : un seul contenu est validé à ce jour — **`t1` « Internet », sur
 le fond, le 23/08/2026**, et il n'est pas encore *clos* (il attend la vérification
