@@ -2695,6 +2695,141 @@
   };
 })();
 </script>
+<script>
+/* ESSAI iPad — fiche de la séance 1 seulement (24/09/2026, test en classe le 25).
+   Dans l'app de l'écran d'accueil et dans le lecteur de QR code, iOS ignore
+   window.print() sans rien dire : le bouton « Enregistrer en PDF » de la fiche
+   ne fait rien, et l'élève ne peut pas déposer son PDF sur OneDrive.
+   L'essai :
+   1. dans la fiche, repère l'échec (aucun signal d'impression dans les 1,5 s
+      qui suivent le clic) et propose de rouvrir la séance dans le vrai Safari,
+      par l'adresse x-safari-https:// ;
+   2. dans Safari, ?fiche=1 affiche un encadré : se connecter (le stockage de
+      l'app n'est pas celui de Safari), puis ouvrir la fiche. Ce second clic
+      est indispensable : Safari bloque un onglet qui s'ouvre sans geste.
+   Le moteur partagé n'est pas touché : window.open est enveloppé, et la fiche
+   se reconnaît à son titre. Selon le résultat, l'essai part dans le moteur
+   (toutes les séances, toutes les pages) ou disparaît. */
+(function(){
+  var SEANCE = '1';
+  var APPLI = window.navigator.standalone === true ||
+    !!(window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+  var ADRESSE = location.origin + location.pathname + '?fiche=' + SEANCE;
+  var SAFARI = location.protocol === 'https:' ? 'x-safari-' + ADRESSE : ADRESSE;
+
+  /* ---- 1. la fiche : repérer une impression qui ne s'ouvre pas ---- */
+  var ouvrir = window.open;
+  window.open = function(){
+    var w = ouvrir.apply(window, arguments);
+    if(w) setTimeout(function(){ try{ equiper(w); }catch(e){} }, 0);
+    return w;
+  };
+
+  function equiper(w){
+    var d = w.document;
+    if(!/Séance 1$/.test(d.title)) return;
+    var bouton = d.querySelector('.barre button');
+    if(!bouton) return;
+    var imprime = false;
+    function vu(){ imprime = true; }
+    w.addEventListener('beforeprint', vu);
+    w.addEventListener('blur', vu);
+    try{ w.matchMedia('print').addListener(function(m){ if(m.matches) vu(); }); }catch(e){}
+    /* en capture : passe AVANT le onclick="window.print()" du bouton, qui
+       bloque le fil sur ordinateur jusqu'à la fermeture de la fenêtre */
+    d.addEventListener('click', function(e){
+      if(!e.target.closest || e.target.closest('.barre button') !== bouton) return;
+      imprime = false;
+      setTimeout(function(){ if(!imprime) secours(d); }, 1500);
+    }, true);
+  }
+
+  function secours(d){
+    if(d.getElementById('essai-safari')) return;
+    var st = d.createElement('style');
+    st.textContent =
+      '#essai-safari{margin:0 0 18px;padding:14px 16px;border:2px solid #2445c7;border-radius:10px;background:#eef2ff;font-size:14px;line-height:1.45}' +
+      '#essai-safari p{margin:0 0 10px}#essai-safari p:last-child{margin:0}' +
+      '#essai-safari .go{display:inline-block;padding:10px 16px;border-radius:8px;background:#2445c7;color:#fff;font-weight:600;text-decoration:none}' +
+      '#essai-safari .petit{font-size:12.5px;color:#444}' +
+      '#essai-safari code{word-break:break-all}' +
+      '@media print{#essai-safari{display:none}}';
+    d.head.appendChild(st);
+    var box = d.createElement('div');
+    box.id = 'essai-safari';
+    box.innerHTML =
+      '<p><b>La fenêtre d’impression ne s’est pas ouverte&nbsp;?</b> Sur iPad, c’est le cas quand le cours est ouvert ' +
+      'depuis l’icône de l’écran d’accueil ou depuis le lecteur de QR code&nbsp;: l’enregistrement en PDF n’y est pas possible. ' +
+      'Il faut passer par Safari.</p>' +
+      '<p><a class="go" href="' + SAFARI + '">🧭 Ouvrir ma fiche dans Safari</a></p>' +
+      '<p class="petit">Dans Safari, reconnecte-toi avec ton identifiant et ton mot de passe&nbsp;: tes réponses t’y attendent, ' +
+      'et ta fiche s’ouvrira d’un clic.<br>Si le bouton ne fait rien, ouvre Safari toi-même et tape cette adresse&nbsp;: ' +
+      '<code>' + ADRESSE + '</code></p>' +
+      '<p class="petit">Essai — mode détecté&nbsp;: ' + (APPLI ? 'application de l’écran d’accueil' : 'navigateur') + '</p>';
+    var barre = d.querySelector('.barre');
+    barre.parentNode.insertBefore(box, barre.nextSibling);
+    try{ box.scrollIntoView({block:'center'}); }catch(e){}
+  }
+
+  /* ---- 2. dans Safari : se connecter, puis ouvrir la fiche ---- */
+  var params;
+  try{ params = new URLSearchParams(location.search); }catch(e){ return; }
+  if(params.get('fiche') !== SEANCE) return;
+
+  window.addEventListener('load', function(){
+    if(!window.Progression || !Progression.disponible()) return;
+    Progression.session().then(function(profil){
+      if(!profil){ panneau(false); return; }
+      var pret = (window.EtatSNT && EtatSNT.charge) ? EtatSNT.charge : Promise.resolve();
+      pret.then(function(){ setTimeout(function(){ panneau(true); }, 0); });
+    }).catch(function(){});
+  });
+
+  function panneau(connecte){
+    var p = document.createElement('div');
+    p.setAttribute('role', 'dialog');
+    p.setAttribute('aria-label', 'Enregistrer ta fiche');
+    p.style.cssText = 'position:fixed;left:16px;right:16px;bottom:16px;margin:0 auto;max-width:520px;z-index:9999;' +
+      'padding:16px 18px;background:var(--surface,#fff);border:2px solid #2445c7;border-radius:12px;' +
+      'box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:15px;line-height:1.45';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn dl';
+    b.style.marginTop = '10px';
+    if(connecte){
+      p.innerHTML = '<p style="margin:0"><b>Ta fiche de la séance 1 est prête.</b> Ouvre-la, touche «&nbsp;Enregistrer en PDF&nbsp;», ' +
+        'puis dépose le PDF sur ton OneDrive.</p>';
+      b.textContent = '📄 Ouvrir ma fiche';
+      b.addEventListener('click', function(){
+        var dl = document.querySelector('#s' + SEANCE + ' .seance-actions .dl');
+        if(!dl){ b.textContent = 'Fiche introuvable — préviens ton professeur'; return; }
+        dl.click();                 /* dans le geste de l'élève : l'onglet s'ouvre */
+        try{ history.replaceState(null, '', location.pathname + location.hash); }catch(e){}
+        p.remove();
+      });
+    } else {
+      p.innerHTML = '<p style="margin:0"><b>Tu arrives de l’application pour enregistrer ta fiche.</b> ' +
+        'Connecte-toi d’abord (onglet «&nbsp;Me connecter&nbsp;»)&nbsp;: tes réponses reviendront, puis ta fiche s’ouvrira d’un clic.</p>';
+      b.textContent = '👤 Me connecter';
+      b.addEventListener('click', function(){
+        Progression.monterAccueil();
+        /* l'accueil s'ouvre sur « Créer mon compte » : on bascule sur l'onglet de connexion */
+        var essais = 0;
+        (function basculer(){
+          var o = Array.prototype.filter.call(document.querySelectorAll('[data-onglet]'), function(x){
+            return /Me connecter/.test(x.textContent);
+          })[0];
+          if(o){ o.click(); return; }
+          if(++essais < 20) setTimeout(basculer, 100);
+        })();
+        p.remove();
+      });
+    }
+    p.appendChild(b);
+    document.body.appendChild(p);
+  }
+})();
+</script>
 <script src="../assets/js/carte-reseau.js?v=14"></script>
 <script src="../assets/js/sequence-snt.js?v=49"></script>
 </body>

@@ -4357,3 +4357,15 @@ relatif ne charge pas et vaut 0 mm — proportions écrites en dur.
 Pendant la session, l'autre conversation (audit de T1-C2) modifiait le même
 gabarit de diaporama ; ses ajouts (`exercice()`, `terme()`, teintes) ont été
 réutilisés ici, et les miens sont partis dans son commit `465ca1c`.
+
+## 24/09/2026 — Fiche PDF introuvable sur iPad hors Safari : un essai sur t0 séance 1
+
+Signalé par Loïc en classe : depuis l'icône de l'écran d'accueil ou le lecteur
+de QR code, le second bouton « Enregistrer en PDF » ne fait rien. Cause : iOS
+ignore `window.print()` hors du vrai Safari, et un lien ordinaire depuis l'app
+ouvre une vue Safari intégrée, qui ne l'imprime pas davantage. Seule issue
+trouvée : l'adresse `x-safari-https://`, confirmée sous iOS 26 depuis d'autres
+apps, jamais depuis une app d'écran d'accueil. Essai posé dans un script de la
+page t0, séance 1 seule, pour le test du 25/09 ; le moteur, modifié au même
+moment par une autre conversation, n'est pas touché, et seul le bloc d'essai
+a été commité.

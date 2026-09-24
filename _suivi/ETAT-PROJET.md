@@ -50,6 +50,27 @@
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
 
+## 🧪 Essai iPad : la fiche de la séance 1 de t0 passe par Safari — à tester le 25/09
+
+**Le bug, vu en classe.** Ouvert depuis l'icône de l'écran d'accueil ou depuis le
+lecteur de QR code, le cours n'est pas dans Safari : iOS y ignore `window.print()`
+sans rien dire. Le bouton « Enregistrer en PDF » de la fiche ne fait rien, et l'élève
+ne peut pas déposer son PDF sur OneDrive. Tout le moteur est concerné (SNT, outils PC,
+ES) ; dans Safari lui-même, tout marche.
+
+**L'essai, limité à la fiche de la séance 1 de `2nde-snt-t0`**, dans un script
+propre à la page (le moteur partagé n'est pas touché, aucun `?v=N` à incrémenter) :
+si l'impression ne s'ouvre pas dans les 1,5 s, la fiche propose « Ouvrir ma fiche
+dans Safari » par l'adresse `x-safari-https://…?fiche=1`. Dans Safari, un encadré
+fait se connecter l'élève (le stockage de l'app n'est pas celui de Safari), puis
+ouvre la fiche d'un clic. Rejoué au Chromium, impression neutralisée : les quatre
+cas passent. **Pas testable ici :** que `x-safari-https://` ouvre vraiment Safari
+depuis l'app et depuis le lecteur QR. C'est ce que dit le test en classe.
+
+**Après le test :** concluant → porter dans `sequence-snt.js` (toutes les séances,
+les 22 pages, guides élèves et enseignants) ; raté → retirer le bloc
+`ESSAI iPad` de la page et dire aux élèves d'ouvrir le cours dans Safari.
+
 ## ✅ Chaque TP est sous son chapitre, et le 🚧 « TP » a disparu du hub
 
 **Appliqué le 20/09/2026.** Loïc a redéposé les quinze sujets de TP de seconde
