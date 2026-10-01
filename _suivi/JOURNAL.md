@@ -4435,3 +4435,7 @@ corrigé de toute la séance 1, visible sans condition, et la fin du verrou entr
 séances sur toute l'ES — 1re et terminale —, les étapes restant révélées une à une.
 L'ES 1re a été démasquée dans la foulée — la règle du 13/09 disait de le proposer —
 puis remasquée à la demande de Loïc, qui veut relire chapitres et fiches d'abord.
+
+Le corrigé à lire, poussé dans la soirée, n'était pas ce que Loïc imaginait : il
+voulait un bouton qui remplisse les parties à compléter — graphiques et fusion /
+fission —, pas les QCM. Le bloc a été remplacé par deux boutons, un par étape.

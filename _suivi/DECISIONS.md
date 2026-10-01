@@ -24,7 +24,8 @@ de la page dévalidait l'étape 1.3 à la reconnexion, faute de légendes enregi
 | Date | Décision | Statut |
 |---|---|---|
 | 01/10/2026 | **Aucune séance verrouillée en enseignement scientifique** (6 chapitres de 1re, 2 de terminale) : `<body data-seances="ouvertes">`, nouvel interrupteur de `sequence-snt.js?v=51`. Les élèves se repèrent seuls ; un verrou qui se referme les fait tout refaire. **Les étapes restent révélées une à une** (choix de Loïc, contre l'ouverture complète des outils PC) | ✅ en vigueur |
-| 01/10/2026 | **Corrigé complet de la séance 1 de la nucléosynthèse**, replié en tête de séance et ouvert à tous sans condition (choix de Loïc). Toutes les activités, QCM compris | ✅ en vigueur · ⏳ texte à valider |
+| ~~01/10/2026~~ | ~~**Corrigé complet de la séance 1 de la nucléosynthèse**, replié en tête de séance~~ → remplacé le même jour par le bouton ci-dessous | ~~✅~~ |
+| 01/10/2026 | **Bouton « Remplir avec la correction »**, un par étape à compléter de la séance 1 de la nucléosynthèse (1.3 : trous, légendes, titres ; 1.4 : six choix), toujours disponible. Il remplit et passe par « Vérifier » et les clics de l'élève : correction, enregistrement et validation restent ceux du moteur. **Les QCM ne sont pas concernés** | ✅ en vigueur |
 | 01/10/2026 | **Les légendes des graphiques d'abondance sont enregistrées**, et une étape faite en base ne se dévalide plus à la reprise | ✅ en vigueur |
 | 01/10/2026 | **L'ES 1re reste masquée, fiches de séance coupées** : Loïc relit d'abord chapitres et fiches. Un démasquage fait dans la même session a été annulé. Proposer le démasquage, ne jamais l'exécuter sans son accord | ✅ en vigueur |
 

@@ -29,8 +29,8 @@ chemins, pas les fichiers.
 
 Indépendamment du masquage (01/10/2026) : **aucune séance ne se verrouille**
 (`<body data-seances="ouvertes">` sur les six pages) ; la séance 1 de la
-nucléosynthèse porte un **corrigé complet** replié en tête (`#corrige-s1`, texte à
-valider) ; les légendes des graphiques d'abondance (1.3) sont enregistrées
+nucléosynthèse a un bouton **« Remplir avec la correction »** dans les étapes 1.3
+(trous, légendes, titres) et 1.4 (six choix), QCM exclus ; les légendes des graphiques d'abondance (1.3) sont enregistrées
 (`es-t1c1-abondances/legende-N`). Le démasquage a été tenté puis annulé le même jour
 à la demande de Loïc : il relit d'abord chapitres et fiches.
 
