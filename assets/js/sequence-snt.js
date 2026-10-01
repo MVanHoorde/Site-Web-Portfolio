@@ -300,7 +300,11 @@
     /* Page à étapes ouvertes (outils transversaux de PC) : aucun verrou de
        séance. L'attribut se lit ici plutôt que par un appel à un autre bloc —
        le fichier est découpé en IIFE cloisonnées. */
-    var toutOuvert = document.body.getAttribute('data-etapes')==='ouvertes';
+    var toutOuvert = document.body.getAttribute('data-etapes')==='ouvertes'
+    /* Séances ouvertes, étapes encore révélées une à une (enseignement
+       scientifique, 01/10/2026) : les élèves se repèrent seuls, et un verrou
+       qui se referme sur une étape mal restaurée les fait tout refaire. */
+                  || document.body.getAttribute('data-seances')==='ouvertes';
     suite.forEach(function(sec,rang){
       /* Deux verrous, et ils s'additionnent (20/08/2026).
          · le MÉRITE, d'origine : la séance N+1 s'ouvre quand la N est finie ;

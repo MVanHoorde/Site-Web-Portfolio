@@ -27,6 +27,13 @@ tout porte le repère **`MASQUÉ-ES1`** (`grep -rn MASQUÉ-ES1 pages/`).
 Les pages restent **accessibles par leur URL** (dépôt public) : le masquage retire les
 chemins, pas les fichiers.
 
+Indépendamment du masquage (01/10/2026) : **aucune séance ne se verrouille**
+(`<body data-seances="ouvertes">` sur les six pages) ; la séance 1 de la
+nucléosynthèse porte un **corrigé complet** replié en tête (`#corrige-s1`, texte à
+valider) ; les légendes des graphiques d'abondance (1.3) sont enregistrées
+(`es-t1c1-abondances/legende-N`). Le démasquage a été tenté puis annulé le même jour
+à la demande de Loïc : il relit d'abord chapitres et fiches.
+
 ---
 
 ## 0. Ce qui a été fait, en une page

@@ -15,6 +15,19 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 01/10/2026 — Enseignement scientifique : séances sans verrou
+
+Signalé par Loïc : des élèves de 1re ont refait deux fois la fin de la séance 1 de
+la nucléosynthèse, et ne pouvaient plus passer à la séance 2. Cause : l'intercepteur
+de la page dévalidait l'étape 1.3 à la reconnexion, faute de légendes enregistrées.
+
+| Date | Décision | Statut |
+|---|---|---|
+| 01/10/2026 | **Aucune séance verrouillée en enseignement scientifique** (6 chapitres de 1re, 2 de terminale) : `<body data-seances="ouvertes">`, nouvel interrupteur de `sequence-snt.js?v=51`. Les élèves se repèrent seuls ; un verrou qui se referme les fait tout refaire. **Les étapes restent révélées une à une** (choix de Loïc, contre l'ouverture complète des outils PC) | ✅ en vigueur |
+| 01/10/2026 | **Corrigé complet de la séance 1 de la nucléosynthèse**, replié en tête de séance et ouvert à tous sans condition (choix de Loïc). Toutes les activités, QCM compris | ✅ en vigueur · ⏳ texte à valider |
+| 01/10/2026 | **Les légendes des graphiques d'abondance sont enregistrées**, et une étape faite en base ne se dévalide plus à la reprise | ✅ en vigueur |
+| 01/10/2026 | **L'ES 1re reste masquée, fiches de séance coupées** : Loïc relit d'abord chapitres et fiches. Un démasquage fait dans la même session a été annulé. Proposer le démasquage, ne jamais l'exécuter sans son accord | ✅ en vigueur |
+
 ## 24/09/2026 — QCM : la bonne réponse n'est plus toujours en A
 
 Signalé par Loïc en classe. Le moteur affiche les options dans l'ordre du JSON,
@@ -236,7 +249,7 @@ Contrôle rejouable : `python` + PyMuPDF sur `assets/pdf/pc/tp/*.pdf` rend l'en-
 |---|---|---|
 | 13/09/2026 | **Seul le chapitre T1-C1 « La nucléosynthèse » est ouvert aux élèves de 1re.** Les cinq autres, pas terminés, sont retirés du hub (liens en commentaire, repère `MASQUÉ-ES1`) ; les pages restent en ligne à leur URL. | ✅ en vigueur — **provisoire** |
 | 13/09/2026 | **Aucune fiche de séance en ES 1re** tant que Loïc ne les a pas relues. Mécanisme : `<body data-fiche="non">`, nouvel interrupteur du moteur partagé, qui retire bouton, fenêtres et messages liés à la fiche. | ✅ en vigueur — **provisoire** |
-| 13/09/2026 | 🔴 **Dès qu'on retravaille l'ES 1re, on démasque** : liste exacte dans `_suivi/es1-verification.md` §0bis. | ✅ en vigueur |
+| 13/09/2026 | 🔴 **Dès qu'on retravaille l'ES 1re, on démasque** : liste exacte dans `_suivi/es1-verification.md` §0bis. | ✅ en vigueur — 🔴 **sur accord explicite de Loïc** (01/10/2026) |
 
 ## 13/09/2026 — SNT : « à retenir » lisibles d'un regard, gras allégé partout
 

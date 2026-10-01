@@ -4416,3 +4416,22 @@ qu'un réordonnancement aurait faussées (« aucune des précédentes », valeur
 rangées, lettre citée dans la correction). `verifier.mjs` porte un nouveau
 contrôle de position, qui a d'ailleurs trouvé deux pages de plus (forme de la
 Terre, J02) que le premier relevé ne mettait pas en avant.
+
+## 01/10/2026 — La séance 1 de la nucléosynthèse qu'on refaisait deux fois
+
+Loïc soupçonnait la base : des élèves qui fermaient leur session perdaient la fin de
+la séance 1, les graphiques d'abondance, et restaient bloqués avant la séance 2. La
+base n'y était pour rien. Les légendes des trois graphiques n'avaient jamais été
+enregistrées — le cadre de chantier le disait — et l'intercepteur posé le 12/09
+(« une étape se valide quand tout y est fait ») les exigeait remplies. À la reprise,
+le moteur restaure l'étape 1.3, puis reclique les « Vérifier » pour recorriger les
+trous ; l'intercepteur voyait alors des légendes vides et retirait la validation. La
+séance 2 se reverrouillait. Rejoué au navigateur avec une base simulée : sans la
+garde ajoutée, l'étape retombe ; avec, elle tient.
+
+Réparé par deux gestes : les légendes partent dans l'état de l'étape, et une étape
+que la base connaît comme faite n'est plus dévalidée. Loïc a demandé en plus un
+corrigé de toute la séance 1, visible sans condition, et la fin du verrou entre
+séances sur toute l'ES — 1re et terminale —, les étapes restant révélées une à une.
+L'ES 1re a été démasquée dans la foulée — la règle du 13/09 disait de le proposer —
+puis remasquée à la demande de Loïc, qui veut relire chapitres et fiches d'abord.

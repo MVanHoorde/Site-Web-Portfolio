@@ -5,23 +5,24 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **24/09/2026**.
+> Dernière réécriture : **01/10/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — le moteur des séquences, après le cours de terminale (24/09).**
-> Pour **toutes** les pages du moteur (`sequence-snt.js?v=50`, `.css?v=45`) :
-> une étape n'est validée qu'à sa **dernière** question rédigée (la 1ʳᵉ réponse
-> validait l'étape et ouvrait « Séance terminée » au `term-es-t2-c1` 1.5 ;
-> 32 étapes concernées, dont 8 en `t1`) ; la fenêtre d'écriture et le QCM
-> **se réduisent** pour relire l'énoncé ; « **Modifier ma réponse** » tant que
-> la copie n'est pas corrigée ; **palette de symboles** (grec, exposants,
-> indices). **DigiView abandonné** : les 6 vidéos de t0, t1, m1 reviennent en
-> `youtube-nocookie`, lancées d'un seul clic. La fiche lit sa matière dans la
-> page (elle se disait « SNT · Seconde » partout).
+> **Dernière passe — l'enseignement scientifique sans verrou (01/10).**
+> **Bug de reprise réparé** en nucléosynthèse : à la reconnexion, l'étape 1.3 se
+> dévalidait (l'intercepteur « une étape se valide quand tout y est fait » voyait
+> les légendes des trois graphiques vides — elles n'étaient pas enregistrées), la
+> séance 2 se reverrouillait et les élèves refaisaient tout. Les légendes sont
+> désormais enregistrées, et une étape faite en base ne se dévalide plus. La
+> séance 1 porte un **corrigé complet** replié en tête. **Séances sans verrou** sur
+> les 6 chapitres de 1re et les 2 de terminale (`<body data-seances="ouvertes">`,
+> nouvel interrupteur de `sequence-snt.js?v=51` ; les étapes se révèlent encore une
+> à une). **L'ES 1re reste masquée**, fiches coupées : Loïc relit d'abord.
+>
 > ⏳ **À auditer par Loïc** : les **5 fiches de l'ES de terminale** ont une
 > partie fixe **V1** au standard SNT (`t2-c1` S1-S2, `t2-c2` S1-S3), mesurées
 > remplies à 4, 4, 3, 3 et 3 pages — au-dessus des 2 visées ; points de fond
@@ -309,13 +310,13 @@ il part d'`index.html` et suit les liens de proche en proche, **commentaires HTM
 retirés**. Ce que ce parcours n'atteint pas n'existe pas pour un élève — ni pour une
 collègue.
 
-**Neuf contenus au 19/09/2026** :
+**Sept contenus au 01/10/2026** :
 
 | Masqué | Depuis | Pour qui ça compte |
 |---|---|---|
 | `1re-es-t1-c2-radioactivite` · `t1-c3-cristaux` · `t2-c1-son-et-musique` · `t2-c2-son-a-coder` · `t3-c1-forme-terre` | 13/09 (`MASQUÉ-ES1`) | **CASTEL**, qui a deux classes d'ES et n'a donc qu'un chapitre à montrer |
 | `1re-pc-cristaux` (ancienne fiche) | 13/09 | idem |
-| `2nde-pc-o6` · `o7` · `o8` | 05/09 (🚧 au hub) | **CASTEL et HUSSON** en AP : cinq outils sur huit |
+| `term-es-s01-frise` | — | la grande frise, lien en commentaire sur le hub de terminale |
 
 🔴 **Le parcours, pas le lien entrant.** Un chapitre masqué garde un lien vers le
 suivant, masqué lui aussi : compter les liens entrants en déclarait deux accessibles
@@ -367,29 +368,28 @@ l'entre-deux, et il se répare en une ligne.
 
 **Ce qui n'a pas été changé, et qu'il faudra regarder**
 
-- **L'ES 1re reste masquée** (13/09) : CASTEL n'aura qu'une séquence — la
-  nucléosynthèse — et aucune fiche de séance. Son guide le dit franchement. C'est le
-  chantier à ouvrir en premier si elle veut s'en servir vraiment (`es1-verification.md`
-  §0bis).
-- **Trois outils de PC sur huit** restent marqués 🚧 sur le hub de 2nde (O6, O7, O8) :
-  l'AP dispose donc de cinq outils.
+- **L'ES 1re reste masquée** : CASTEL n'a qu'une séquence — la nucléosynthèse — et
+  aucune fiche de séance. Son guide le dit. Loïc relit chapitres et fiches avant
+  d'ouvrir (`es1-verification.md` §0bis).
 
-## 🆕 ES 1re : la nucléosynthèse seule, prête pour les élèves
+## 🆕 ES 1re et terminale : plus de verrou entre séances
 
-Décision de Loïc du 13/09/2026. Le hub de 1re n'ouvre plus que **T1-C1** ; les cinq
-autres chapitres et l'ancienne fiche des cristaux sont en commentaire (`MASQUÉ-ES1`).
-La **fiche de séance est coupée** sur les six pages par `<body data-fiche="non">`,
-nouvel interrupteur de `sequence-snt.js` (**`?v=47`, 21 fichiers**).
+Demande de Loïc du 01/10/2026. **L'ES 1re reste masquée** (seule la nucléosynthèse
+au hub, `data-fiche="non"` sur les six pages, repère `MASQUÉ-ES1`). Sur les **huit
+pages d'ES** (6 de 1re, 2 de terminale), `<body data-seances="ouvertes">` : aucune
+séance ne se verrouille, les étapes se révèlent encore une à une avec « Étape
+suivante ». Interrupteur ajouté à `sequence-snt.js` (**`?v=51`, 23 fichiers**) ; les
+outils PC gardent `data-etapes="ouvertes"`, qui ouvre aussi les étapes.
 
-Page nucléosynthèse remise en état pour les élèves : avertissement « progression pas
-encore enregistrée » retiré du pied de page (faux depuis le branchement), tutoriel 1.1
-au présent (ES-13), lien vers le chapitre 2 masqué, deux cadres de chantier périmés
-supprimés. **Défaut corrigé** : le glossaire du chapitre ne se rouvrait pas au retour
-d'un élève connecté (il relisait les étapes avant la reprise depuis la base).
+**Nucléosynthèse.** Les légendes des trois graphiques d'abondance (étape 1.3) sont
+enregistrées dans l'état de l'étape (`es-t1c1-abondances/legende-N`) ; l'intercepteur
+de fin de page ne dévalide plus une étape que la base connaît comme faite. **Corrigé
+de la séance 1** replié en tête de séance (`#corrige-s1`), classes propres pour
+rester hors de la fiche. Tutoriel 1.1 réécrit : séances ouvertes, corrigé.
+Joué au navigateur avec une base simulée : légendes restaurées, 1.3 reste faite même
+sans légendes en base (sans la garde, elle retombe — panne reproduite), 0 erreur JS.
 
-🔴 **Dès qu'on retravaille l'ES 1re, tout se démasque** : `_suivi/es1-verification.md`
-§0bis. `verifier.mjs` : 19 problèmes, les mêmes que sur HEAD (dont l'indice de niveau
-1 de `term-es-t2-c2`, préexistant).
+`verifier.mjs` : 19 problèmes, le repère.
 
 ## 🆕 Les fiches de séance d'Internet (t1) sont auditées
 
@@ -1140,7 +1140,7 @@ fleuron, mais **sur du contenu** : rien n'a été modifié, c'est du fond.
 | **Livret CFA** | 17 outils + index en ligne, tous à la structure `.contexte` / `.question` / `.reponse`. Mise en page reprise le 19/08 (une seule colonne, un seul bord d'attaque), puis **audit de contenu des dix-sept outils le même jour** : accroche recentrée sur l'atelier, « effort » → « force » partout, `ε` pour l'écart et `θ` pour les angles de rotation, paliers 1 dégonflés de leur guidage, sous-questions concaténées, vecteurs fléchés et racines couvrantes. Deux figures produites (bras de levage de l'Outil 5, composantes de l'Outil 14), une dizaine corrigées. Les **fiches A4 ne suivront qu'après validation des versions en ligne** — 15 des 17 liens « version à imprimer » sont donc morts. Rien de validé : **l'Outil 0 est le premier attendu en relecture**. Depuis le 19/08 le livret est **branché sur le dispositif de comptes** : connecté, le travail va en base et suit l'apprenti d'un appareil à l'autre ; sans compte, tout reste sur l'appareil comme avant, et la page le dit. Les deux codes de classe (`CFA26A`, `MVT26A`) sont ouverts : `bdd/schema/012-classes-cfa.sql` a été exécuté le 20/08. |
 | **Cahier de vacances** | 14 pages, 2 blocs 🚧. La partie la plus finie du dépôt. |
 | **Coque — page d'accueil** 🆕 | 🔄 **Refondue le 27/08** après comparaison de onze maquettes (dix organisations, puis six fonds). Deux colonnes asymétriques : à gauche les trois classes en portes illustrées — PC, SNT, CFA en **une seule porte** pour les deux diplômes — les trois autres niveaux en lignes sobres marquées `.a-venir`, puis l'adresse professionnelle réelle ; à droite une colonne collante (gravure du jour, 4 fiches-outils, Animations 🚧, Mission Spectra). Nouvelle bande « Auteur & vidéo » en pied, **vide, trois entrées en chantier**. Le compte à rebours bascule sur l'état du projet passé le 1er septembre. `style.css` **non modifié** ; tout le CSS reste inline. Décisions ACC-1 à ACC-12. ⏳ **Deux formulations à valider** : la bascule d'après-rentrée (« En chantier · ouverture en cours d'année ») et le libellé des trois entrées « Auteur & vidéo ». La planche du jour reste un **cadre annoté** tant que `gravures/` est vide. |
-| **ES Première** 🆕 | **Ouvert le 06/09/2026.** Six chapitres, **18 séances**, sur le moteur de séquences — nucléosynthèse (qui porte aussi le **tutoriel du dispositif**, rôle de `t0` pour le SNT), radioactivité, cristaux, son et musique, son à coder, forme de la Terre. Tout est porté depuis les documents de Loïc ; **40 cadres `.proposition`** signalent ce que Claude a ajouté, **13 cadres de réservation** ce qui manque. ✅ **Branché en base le 13/09/2026** (`es1-tN-cN`, réponses personnelles). 🔴 **Seule la nucléosynthèse est ouverte aux élèves, fiches de séance coupées** — à démasquer dès qu'on y retravaille (`es1-verification.md` §0bis). 🔴 **Six images bloquent trois exercices** (ES-01 à ES-06). Le hub porte la numérotation de Loïc (C1, C2, C3) et une carte `.a-venir` pour **3.3 « La Terre dans l'Univers »**. `1re-pc-cristaux.html` reste en place jusqu'à validation. **Rien n'est validé** — relevé complet : `_suivi/es1-verification.md`. |
+| **ES Première** 🆕 | **Ouvert le 06/09/2026.** Six chapitres, **18 séances**, sur le moteur de séquences — nucléosynthèse (qui porte aussi le **tutoriel du dispositif**, rôle de `t0` pour le SNT), radioactivité, cristaux, son et musique, son à coder, forme de la Terre. Tout est porté depuis les documents de Loïc ; **40 cadres `.proposition`** signalent ce que Claude a ajouté, **13 cadres de réservation** ce qui manque. ✅ **Branché en base le 13/09/2026** (`es1-tN-cN`, réponses personnelles). 🔴 **Seule la nucléosynthèse est ouverte aux élèves, fiches de séance coupées** — à démasquer sur accord de Loïc (`es1-verification.md` §0bis). **Séances sans verrou** (01/10/2026) ; la séance 1 de la nucléosynthèse porte un corrigé complet. 🔴 **Six images bloquent trois exercices** (ES-01 à ES-06). Le hub porte la numérotation de Loïc (C1, C2, C3) et une carte `.a-venir` pour **3.3 « La Terre dans l'Univers »**. `1re-pc-cristaux.html` reste en place jusqu'à validation. **Rien n'est validé** — relevé complet : `_suivi/es1-verification.md`. |
 | **ES Terminale** 🆕 | **Les deux chapitres du thème 2 tournent sur le moteur des séquences** : `t2-c2` « Production et stockage de l'électricité » (3 séances, tel que porté) et `t2-c1` « Deux siècles d'énergie électrique », **refondu sur audit le 12/09** (2 séances + une séance Bilan, 16 étapes, 5 QCM, 12 questions ouvertes **corrigées en classe** — corrigés hors Git dans `_corriges-es/`). Les **12 vidéos et 2 Kahoot** du `t2-c1` sont posées (QR + hyperliens du PPTX) ; les **15 liens du `t2-c2` restent introuvables** — son PPTX n'a pas encore été ouvert. ✅ **Branché en base le 13/09/2026**, comme la 1re (`est-tN-cN`). 🆕 **Ouvert aux élèves le 24/09/2026** : `EST303` (T3) et `EST606` (T6) acceptent les inscriptions, l'accueil ne porte plus « 🚧 chantier » pour ce niveau, et les **27 cadres de travail** (12 au `t2-c1`, 15 au `t2-c2`) sont **masqués aux élèves** — ils reviennent d'un clic sur « mode enseignant » (`body.teacher`, règle CSS locale à chaque page, aucun asset partagé touché). 🔴 **Le hub n'affiche que ce qui est traité** : thème 1, 2.3, 2.4 et thème 3 sont **en commentaire**, et **la frise l'est depuis le 24/09** — elle demande `serveur-frise/`, qui ne tourne qu'en local. **Rien n'est validé côté fond** ; points à vérifier en priorité sur le `t2-c1` et décisions D1-D7 (D5 faite) : `_suivi/es-term-verification.md` §4 et §8. À côté : `serveur-frise/` et `ia-correction/` en chantier. |
 
 **Validation** : un seul contenu est validé à ce jour — **`t1` « Internet », sur

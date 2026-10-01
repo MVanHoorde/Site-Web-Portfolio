@@ -668,6 +668,12 @@ garde le reste (« Recommencer » compris). Sert à une page dont la fiche n'est
 encore relue ; en usage sur les six chapitres d'ES 1re (voir
 `_suivi/es1-verification.md` §0bis).
 
+**Ouvrir toutes les séances** : `<body data-seances="ouvertes">`. Aucune séance ne
+se verrouille, quelle que soit l'avancée de l'élève ; les étapes se révèlent encore
+une à une (« Étape suivante »). En usage sur les huit pages d'enseignement
+scientifique, où les élèves se repèrent seuls. À ne pas confondre avec
+`data-etapes="ouvertes"` (outils PC), qui ouvre en plus toutes les étapes.
+
 ### 17.1 Qui décide de son contenu
 
 🔴 **Le générateur produit une V1, l'audit de Loïc fait foi.** Sans partie fixe
