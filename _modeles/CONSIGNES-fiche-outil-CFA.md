@@ -10,7 +10,8 @@
 |---|---|---|
 | Page écran | `cfa/outil-NN-<slug>.html` | `cfa/outil-02-unites-de-pression.html` |
 | Fiche A4 | `fiches/cfa/fiche-outil-NN.html` | `fiches/cfa/fiche-outil-02.html` |
-| Corrigé A4 | `_corriges-cfa/corrige-outil-NN.html` | hors dépôt |
+| Corrigé A4 | `_corriges-cfa/corrige-outil-NN.html` + `corrige.css` commune — corrige la **page en ligne**, quatre étapes | hors dépôt |
+| Corrigé PDF | `_corriges-cfa/pdf/corrige-outil-NN.pdf`, par `python _outils/exporter-corriges-cfa.py` | hors dépôt |
 | Identifiant interne | `cfa-oNN` | `cfa-o02` |
 | Images | `assets/img/cfa/outil-NN/` | — |
 
