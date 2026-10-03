@@ -22,6 +22,13 @@
 > comptées, leurs QCM enfin enregistrés. **Fiches d'ES 1re rétablies** (V1 de la
 > nucléosynthèse à auditer, pas de fiche pour la révision). Glossaire d'ES dévoilé
 > étape par étape. `sequence-snt.js?v=52`, `.css?v=46`. Détail : `DECISIONS.md`.
+> **Même jour, après l'audit de Loïc** : fiches de la nucléosynthèse en V2 (pourcentages,
+> équations décrites, processus r, liens des vidéos), **code couleur du cours sur
+> toutes les fiches**, activité 2.4 mélangée et sans numéro atomique, pastille des
+> « retours » réparée (elle comptait « réponse enregistrée »). 🔴 **Bouton « J'ai vu
+> un bug »** dans toutes les pages du moteur (élève connecté) et onglet
+> **Signalements** du tableau de bord — `bdd/schema/021` exécuté le 03/10 ; ⏳ reste à
+> l'inscrire au registre des migrations (`supabase migration repair`). `progression.js?v=18`, `sequence-snt.js?v=53`, `.css?v=47`.
 > ⏳ **Vidéos → MP4 sur le OneDrive du lycée** : 52 à télécharger,
 > `_suivi/videos-a-telecharger.md` ; **une seule en ligne (nucléo 1.3), à essayer
 > sur iPad dans Safari avant d'en faire d'autres**. Les trois épisodes de

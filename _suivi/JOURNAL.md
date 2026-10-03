@@ -4485,3 +4485,20 @@ en contrepartie le crédit de la chaîne sous chaque vidéo. Reste l'essai sur i
 Les fiches d'ES reviennent, avec une partie fixe pour la nucléosynthèse. Une passe
 de Python a converti `sequence-snt.js` en CRLF sans que `git diff` le montre :
 rattrapé, et noté en mémoire.
+
+Même jour, l'après-midi : Loïc audite les fiches et la page. Il veut des
+pourcentages à la place des graphiques d'abondance, des équations décrites à la
+place de l'image de fission, et le code couleur du cours sur la fiche (« ça n'a
+pas de sens qu'il y ait deux codes couleurs »). Pour la nucléosynthèse explosive,
+il propose le cycle CNO : il appartient au stellaire, d'où le processus r, tracé en
+schéma de principe. Il demande aussi pourquoi « 94 éléments naturels » et non
+92 : neptunium et plutonium en traces dans les minerais d'uranium, réponse donnée
+en séance avec l'état de la recherche (Pu-244 interstellaire, Wallner 2021).
+
+Les « 3 retours » qu'il voyait venaient de la livraison du matin : la pastille
+comptait tout message vert, « réponse enregistrée » compris. Le « 15 sur 15 » du
+glossaire, d'un « Recommencer » que le glossaire de chapitre ignorait. Les deux
+sont réparés. Nouveau : le bouton « J'ai vu un bug », élèves connectés et
+nominatif à sa demande, avec son onglet au tableau de bord. La migration `021`
+n'a pas pu être éprouvée sur un PostgreSQL local (lancement refusé) : elle attend
+d'être exécutée par Loïc.

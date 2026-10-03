@@ -1399,11 +1399,17 @@
        assigné à une var plus bas dans le fichier, donc encore
        indéfini quand la pastille se construit. Diagnostiqué au test
        le 01/08/2026 — la pastille n'apparaissait jamais. */
+    /* Un retour, c'est une copie CORRIGÉE ou RENVOYÉE par le professeur
+       (classes posées par appliquerCopie) — pas n'importe quel message
+       vert : « ✅ Réponse enregistrée » se comptait comme un retour
+       (03/10/2026, « 3 retours » affichés en ES sans aucune correction).
+       En ES (réponses personnelles), il n'y a jamais de retour en ligne. */
+    if(PERSO) return [];
     return Array.prototype.slice.call(
       document.querySelectorAll('[data-focus-code]')).filter(function(c){
       var v=c.querySelector('.verdict');
       return v && v.classList.contains('show')
-               && !v.classList.contains('wait');
+               && (c.classList.contains('corrige') || c.classList.contains('a-refaire'));
     });
   }
   /* Ce sur quoi la pastille NAVIGUE — pas la même chose que ce
@@ -2150,7 +2156,8 @@
     return [
       ':root{--ink:#161f33;--ink-soft:#4a566e;--ink-faint:#8b97ad;--line:#d3dae7;',
       '--surface-2:#f4f6fb;--link:#2445c7;--link-wash:#e7ebfb;--ok:#12805c;--ok-wash:#e0f2ea;',
-      '--activity:#c26a12;--activity-wash:#faeede;--hist:#6b4a9a;--hist-wash:#efe9f7}',
+      '--activity:#c26a12;--activity-wash:#faeede;--hist:#6b4a9a;--hist-wash:#efe9f7;',
+      '--retain:#1d3557;--retain-wash:#eef2f9;--cle:#b3122b}',
       '*{box-sizing:border-box}',
       'body{margin:0;background:#e9edf4;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;line-height:1.5}',
       '.page{max-width:830px;margin:22px auto;background:#fff;padding:26px 30px 34px;border-radius:6px;box-shadow:0 8px 28px rgba(22,31,51,.10)}',
@@ -2179,7 +2186,20 @@
       '.hh{font-weight:600;font-size:14.5px}',
       '.ob{font-size:13px;color:var(--ink-soft);margin-top:3px}',
       '.lbl{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:3px}',
-      '.r{margin-top:8px;padding:9px 11px;background:var(--surface-2);border-left:3px solid var(--ink);border-radius:0 8px 8px 0;font-size:13.5px}',
+      /* Le code couleur du cours (03/10/2026, Loïc : « ça n'a pas de sens
+         qu'il y ait deux codes couleurs ») : « à retenir » sous un bandeau
+         bleu nuit, mot-clé en rouge, comme dans la page. */
+      '.r{margin-top:8px;padding:0 12px 10px;background:var(--retain-wash);border:1px solid var(--retain);border-radius:10px;font-size:13.5px;overflow:hidden;page-break-inside:avoid}',
+      '.r>.lbl:first-child{margin:0 -12px 8px;padding:5px 12px;background:var(--retain);color:#fff;font-family:ui-monospace,monospace;letter-spacing:.07em;-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+      '.r>.lbl:first-child::before{content:"★ "}',
+      '.cle{color:var(--cle);font-weight:600}',
+      /* notation des noyaux (A en haut, Z en bas) et réactions, comme dans le cours */
+      '.noy{display:inline-flex;align-items:center;font-family:ui-monospace,monospace;font-size:14px;line-height:1;vertical-align:middle;margin:0 2px}',
+      '.noy .az{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:9.5px;line-height:1.15;margin-right:1px;color:var(--ink-soft)}',
+      '.noy .sym{font-weight:700;font-size:15px}',
+      '.reac{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;width:fit-content;max-width:100%;margin:8px auto 4px;padding:7px 16px;border:1px solid var(--line);border-radius:10px;background:#fff}',
+      '.reac .fl{color:var(--link);font-weight:700;margin:0 3px}',
+      '.reac-txt{font-size:13px;color:var(--ink-soft);text-align:center;margin:0 0 10px}',
       '.q-en{font-size:13.5px;color:var(--ink-soft);margin-top:4px}',
       '.a{margin-top:8px;padding:10px 12px;background:var(--link-wash);border-radius:8px;white-space:pre-wrap;font-size:14px}',
       '.corr{margin-top:9px;padding:10px 12px;border-radius:8px;background:var(--ok-wash);border-left:3px solid var(--ok);font-size:13.5px}',
@@ -2583,6 +2603,10 @@
       if(window.EtatSNT) EtatSNT.oublier(s);
     });
     refresh();
+    /* les pages qui tiennent un état dérivé des étapes faites (glossaire
+       du chapitre en ES) l'apprennent ici : sans cela, les mots de la
+       séance recommencée restaient ouverts (03/10/2026, « 15 sur 15 ») */
+    sec.dispatchEvent(new CustomEvent('seance-recommencee',{bubbles:true}));
   }
 
   /* barre d'actions (télécharger / recommencer) à la fin de chaque séance à valider.
@@ -4437,6 +4461,92 @@ function initGlossaire(){
   });
 }
 
+/* ---------- 6 bis. « J'ai vu un bug » (03/10/2026) ----------
+   Un élève CONNECTÉ signale ce qui ne marche pas ; le signalement part en
+   base (Progression.signaler, bdd/schema/021) avec la page, l'étape où il
+   se trouve et un résumé de l'appareil, et arrive dans l'onglet
+   « Signalements » du tableau de bord. Pas de compte, pas de bouton : un
+   formulaire ouvert sur un site public serait une boîte à spam. */
+function resumeAppareil(){
+  var ua=navigator.userAgent||'';
+  /* un iPad récent se déclare « Macintosh » : il se reconnaît au tactile */
+  var app = (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints>1)) ? 'iPad'
+          : /iPhone/.test(ua) ? 'iPhone' : /Android/.test(ua) ? 'Android'
+          : /Windows/.test(ua) ? 'Windows' : /CrOS/.test(ua) ? 'Chromebook'
+          : /Macintosh/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : 'appareil inconnu';
+  var nav = /Edg\//.test(ua) ? 'Edge' : /Firefox\//.test(ua) ? 'Firefox'
+          : /CriOS|Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'navigateur inconnu';
+  return app+' · '+nav+' · '+window.innerWidth+'×'+window.innerHeight;
+}
+function etapeVisible(){
+  var choix=null, mi=window.innerHeight/2;
+  $$('.step').forEach(function(st){
+    if(st.classList.contains('masque')) return;
+    var r=st.getBoundingClientRect();
+    if(r.height && r.top<mi) choix=st;
+  });
+  if(!choix){
+    /* en haut de page, aucune étape n'est encore à l'écran : l'étape en
+       cours, telle que le fil d'Ariane la nomme */
+    var ix=$('#prog4 .p4-ix'), et=$('#prog4 .p4-etape');
+    return ((ix?ix.textContent:'')+' '+(et?et.textContent:'')).trim().slice(0,120);
+  }
+  var k=$('.step-kicker',choix)||$('.bonus-head .ix',choix);
+  var t=$('.step-title',choix)||$('.bonus-head .bl',choix);
+  var num=k?((k.textContent.match(/\d+\.\d+/)||[k.textContent.trim()])[0]):'';
+  return (num+' '+(t?t.textContent.trim():'')).trim().slice(0,120);
+}
+function initSignalement(){
+  if(typeof Progression==='undefined' || !Progression.disponible() || !Progression.signaler) return;
+  Progression.session().then(function(moi){
+    if(!moi) return;
+    var b=document.createElement('button');
+    b.id='bug-ouvrir'; b.type='button';
+    b.innerHTML='<span aria-hidden="true">🐞</span> J\u2019ai vu un bug';
+    document.body.appendChild(b);
+    var fond=document.createElement('div');
+    fond.className='bug-back';
+    fond.innerHTML='<div class="bug-panel" role="dialog" aria-modal="true" aria-labelledby="bug-titre">'+
+      '<h3 id="bug-titre">🐞 Qu\u2019est-ce qui ne marche pas&nbsp;?</h3>'+
+      '<p class="bug-ou"></p>'+
+      '<textarea maxlength="1000" rows="5" aria-label="Décris le problème" placeholder="Ce que tu as fait, ce qui s\u2019est passé, ce que tu attendais. Pas de nom, pas d\u2019information personnelle."></textarea>'+
+      '<p class="bug-etat" aria-live="polite"></p>'+
+      '<div class="bug-actions"><button type="button" class="btn ghost" data-bug-annuler>Annuler</button>'+
+      '<button type="button" class="btn" data-bug-envoyer>Envoyer à mon professeur</button></div></div>';
+    document.body.appendChild(fond);
+    var ta=$('textarea',fond), etat=$('.bug-etat',fond), envoyer=$('[data-bug-envoyer]',fond), ou='';
+    function fermer(){ fond.classList.remove('on'); b.focus(); }
+    b.addEventListener('click',function(){
+      ou=etapeVisible();
+      $('.bug-ou',fond).textContent = 'Ton professeur saura où tu étais'+(ou?' : étape '+ou:'')+'. Il verra aussi ton pseudo et ton appareil.';
+      etat.textContent=''; envoyer.disabled=false;
+      fond.classList.add('on'); ta.focus();
+    });
+    $('[data-bug-annuler]',fond).addEventListener('click',fermer);
+    fond.addEventListener('click',function(e){ if(e.target===fond) fermer(); });
+    fond.addEventListener('keydown',function(e){ if(e.key==='Escape') fermer(); });
+    envoyer.addEventListener('click',function(){
+      var m=ta.value.trim();
+      if(m.length<3){ etat.textContent='Écris au moins quelques mots.'; ta.focus(); return; }
+      envoyer.disabled=true; etat.textContent='Envoi…';
+      Progression.signaler({
+        cle: document.body.getAttribute('data-sequence')||'',
+        page: (location.pathname.split('/').pop()||'').replace(/\.html$/,''),
+        etape: ou, message: m, appareil: resumeAppareil()
+      }).then(function(){
+        etat.textContent='✅ Merci, c\u2019est transmis à ton professeur.';
+        ta.value='';
+        setTimeout(fermer,1600);
+      }).catch(function(err){
+        envoyer.disabled=false;
+        etat.textContent = /PLAFOND/.test(String(err&&err.message))
+          ? 'Tu as déjà envoyé beaucoup de signalements aujourd\u2019hui : parles-en directement à ton professeur.'
+          : 'L\u2019envoi n\u2019a pas marché. Réessaie, ou dis-le à ton professeur.';
+      });
+    });
+  }).catch(function(){});
+}
+
 /* ---------- 7. Agrandissement des images ---------- */
 function initZoom(){
   var fond=document.createElement('div');
@@ -5206,6 +5316,7 @@ function demarrer(){
   initValideSurInteraction();
   initReleve();          /* après initCloze : la porte du rappel se pose sur un bloc déjà outillé */
   initGlossaire();
+  initSignalement();   /* élève connecté seulement */
   initZoom();
   initDepot();
   initElements();     /* les fiches d'élément du défi débranché */

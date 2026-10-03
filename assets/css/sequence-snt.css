@@ -1555,3 +1555,29 @@ body.teacher #corr-liste{display:none}
 .step.is-done .lu button{background:var(--ok);color:#fff;cursor:default}
 .step.is-done .lu .lu-a{display:none}
 .step.is-done .lu .lu-ok{display:inline}
+
+/* ---------- « J'ai vu un bug » (03/10/2026) ----------
+   Élève connecté seulement. En bas à gauche, discret : il ne doit pas
+   concurrencer le glossaire (en bas à droite) ni le travail en cours. */
+#bug-ouvrir{position:fixed;left:14px;bottom:14px;z-index:41;min-height:40px;padding:0 13px;
+  border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);
+  font:inherit;font-size:13px;cursor:pointer;box-shadow:0 2px 10px rgba(22,31,51,.10)}
+#bug-ouvrir:hover{color:var(--ink);border-color:var(--ink-faint)}
+#bug-ouvrir:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+/* grand écran : la barre latérale descend jusqu'en bas à gauche, le bouton
+   se pose à sa droite ; barre réduite ou feuille mobile : au bord */
+@media (min-width:1181px){ body:not(.prog-reduit) #bug-ouvrir{left:calc(var(--prog-w) + 26px)} }
+body.qcm-on #bug-ouvrir, body.focus-on #bug-ouvrir{display:none !important}
+.bug-back{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
+  background:rgba(14,21,38,.45);padding:16px}
+.bug-back.on{display:flex}
+.bug-panel{background:var(--surface);border-radius:14px;max-width:520px;width:100%;padding:18px 20px;
+  box-shadow:0 18px 50px rgba(14,21,38,.3)}
+.bug-panel h3{margin:0 0 6px;font-size:17px}
+.bug-ou{font-size:13px;color:var(--ink-soft);margin:0 0 10px}
+.bug-panel textarea{width:100%;box-sizing:border-box;font:inherit;font-size:15px;padding:10px 12px;
+  border:1px solid var(--line);border-radius:10px;resize:vertical}
+.bug-panel textarea:focus-visible{outline:2px solid var(--link);outline-offset:1px}
+.bug-etat{min-height:1.4em;font-size:13.5px;margin:8px 0 0}
+.bug-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;flex-wrap:wrap}
+@media print{#bug-ouvrir,.bug-back{display:none !important}}

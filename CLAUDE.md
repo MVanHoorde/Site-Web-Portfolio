@@ -186,8 +186,8 @@ version depuis leur cache :
 
 | Asset | Chargé par | À incrémenter dans |
 |---|---|---|
-| `assets/js/progression.js` | SNT (4 pages + hub), **livret CFA (18 pages)**, **ES (8 pages)**, **outils PC (8)**, **chapitres PC (14)** + `gabarit-outil-CFA.html` et `gabarit-outil-PC.html` | **55 fichiers** au 13/09/2026 |
-| `assets/js/sequence-snt.js` · `assets/css/sequence-snt.css` | les séquences SNT, le hub `2nde-snt.html`, **les 8 outils transversaux de PC**, **les 6 chapitres d'ES de 1re** et **les 2 de terminale** | **23 fichiers** au 01/10/2026 (contrôlé par `verifier.mjs`, bloquant : toute page qui reste sur l'ancienne version le fait échouer) |
+| `assets/js/progression.js` | SNT (4 pages + hub), **livret CFA (18 pages)**, **ES (8 pages)**, **outils PC (8)**, **chapitres PC (14)** + `gabarit-outil-CFA.html` et `gabarit-outil-PC.html` | **59 fichiers** au 03/10/2026 |
+| `assets/js/sequence-snt.js` · `assets/css/sequence-snt.css` | les séquences SNT, le hub `2nde-snt.html`, **les 8 outils transversaux de PC**, **les 6 chapitres d'ES de 1re** et **les 2 de terminale** | **23 fichiers** pour le JS, **24** pour la feuille (le hub ne charge que celle-ci), au 03/10/2026 (contrôlé par `verifier.mjs`, bloquant : toute page qui reste sur l'ancienne version le fait échouer) |
 | `assets/css/chapitre-commun.css` | les 14 chapitres PC **et** `_modeles/gabarit-chapitre.html` | **15 fichiers** — les 2 pages d'ES de terminale en sont sorties le 12/09 |
 
 Autrement dit : **une modification du client de progression faite pour le SNT

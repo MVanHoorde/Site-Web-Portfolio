@@ -8,8 +8,8 @@
 <!-- Client de base de données partagé — branché le 13/09/2026. Sans
      "defer" : le moteur, en fin de page, doit le trouver chargé. Sans
      compte, la page fonctionne et le dit (bandeau de connexion sur place). -->
-<script src="../assets/js/progression.js?v=17"></script>
-<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=46">
+<script src="../assets/js/progression.js?v=18"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=47">
 
 <!-- ============================================================
      ENSEIGNEMENT SCIENTIFIQUE Terminale — Thème 2, chapitre 1.
@@ -323,7 +323,6 @@
   <div class="legend">
     <span class="dot"><span class="pip"></span>À faire</span>
     <span class="dot"><span class="pip doing"></span>En cours</span>
-    <span class="dot"><span class="pip wait"></span>En attente de correction</span>
     <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
   </div>
 
@@ -2205,7 +2204,8 @@
     <div class="gh">
       <h3>Le glossaire du chapitre</h3>
       <span class="gc" data-gloss-compte></span>
-      <p class="sub">Chaque mot s'ouvre quand tu valides l'étape où il est défini&nbsp;: ce glossaire est la trace de ton avancée. Le bouton <b>📖 Glossaire</b>, en bas à droite de l'écran, ouvre le lexique de <b>toute l'année</b>.</p>
+      <!-- PROPOSITION 03/10/2026 : texte resserré à la demande de Loïc -->
+      <p class="sub">Les termes à connaître pour maîtriser le chapitre et être prêt pour l'évaluation.</p>
     </div>
     <div data-gloss-liste></div>
   </section>
@@ -2245,7 +2245,7 @@
   "def": "Cellule empilant plusieurs couches de semi-conducteurs, chacune efficace sur un domaine du spectre. Rendement de l'ordre de 30 %, mais fabrication complexe et coûteuse : réservée au spatial."}
 ]
 </script>
-<script src="../assets/js/sequence-snt.js?v=52"></script>
+<script src="../assets/js/sequence-snt.js?v=53"></script>
 
 <script>
 /* ---------- Glossaire du chapitre (repris de l'ES 1re, décision du 12/09/2026) ----------
@@ -2278,16 +2278,22 @@
     hote.querySelector('[data-gloss-compte]').textContent = n + ' mot' + (n > 1 ? 's' : '') +
       ' sur ' + entrees.length;
   }
+  /* Recalculé à partir des étapes réellement faites, jamais cumulé
+     (03/10/2026) : la reprise depuis la base, qui s'annonce sans étape,
+     n'ouvrait aucun mot, et « Recommencer » ne refermait rien. */
+  function relever(neuf){
+    ouvertes = {};
+    document.querySelectorAll('.step').forEach(function(s){
+      if(s.classList.contains('is-done')){ var num = numeroDe(s); if(num) ouvertes[num] = true; }
+    });
+    rendre(neuf);
+  }
   document.addEventListener('etape-validee', function(ev){
     var s = ev.target && ev.target.closest ? ev.target.closest('.step') : null;
-    var num = s ? numeroDe(s) : null;
-    if(num) ouvertes[num] = true;
-    rendre(num);
+    relever(s ? numeroDe(s) : null);
   });
-  document.querySelectorAll('.step').forEach(function(s){
-    if(s.classList.contains('is-done')){ var num = numeroDe(s); if(num) ouvertes[num] = true; }
-  });
-  rendre(null);
+  document.addEventListener('seance-recommencee', function(){ relever(null); });
+  relever(null);
 })();
 
 /* ---------- Fenêtre d'activité (audit du 12/09/2026, étape 1.2) ----------

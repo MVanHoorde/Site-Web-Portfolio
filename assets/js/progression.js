@@ -673,6 +673,35 @@
     });
   }
 
+  /* ----------------------------------------------------------
+   *  9 ter. signaler() — « J'ai vu un bug » (03/10/2026)
+   *
+   *  Élève connecté seulement (bdd/schema/021-signalements.sql). Le
+   *  signalement porte la séquence de la page : c'est elle qui décide
+   *  quel enseignant le lit (mon_eleve_pour, famille de la clé).
+   *  L'élève ne relit pas ses signalements : écriture seule.
+   * ---------------------------------------------------------- */
+  function signaler(infos) {
+    return session().then(function (moi) {
+      if (!moi) throw new Error('PAS_INSCRIT : se connecter pour signaler un problème.');
+      infos = infos || {};
+      var message = String(infos.message || '').trim();
+      if (message.length < 3)    throw new Error('MESSAGE_VIDE');
+      if (message.length > 1000) throw new Error('MESSAGE_TROP_LONG : 1000 caractères maximum.');
+      function court(t, n) { t = String(t || '').trim(); return t.length > n ? t.slice(0, n) : t; }
+      return api('signalements', {
+        method: 'POST',
+        prefer: 'return=minimal',
+        body  : [{ eleve_id: moi.eleveId,
+                   cle     : court(infos.cle, 60) || 'inconnue',
+                   page    : court(infos.page, 120) || 'inconnue',
+                   etape   : court(infos.etape, 120) || null,
+                   message : message,
+                   appareil: court(infos.appareil, 120) || null }]
+      }).then(function () { return true; });
+    });
+  }
+
   /* Mes copies, avec leur statut et la correction si elle est là.
    * codes : tableau de codes d'activité, ou rien pour tout prendre.
    *
@@ -1206,6 +1235,7 @@
     journal       : journal,
     envoyerReponse: envoyerReponse,
     partager      : partager,
+    signaler      : signaler,
     rejoindreAutreClasse: rejoindreAutreClasse,
     mesInscriptions     : mesInscriptions,
     mesReponses   : mesReponses,

@@ -135,6 +135,11 @@ de `pages/2nde-snt-t1-internet.html`, seule séquence déjà portée.
   partout (pastille, sommaire, jauges), avec une légende « c'est compté, tu peux
   avancer ». Elle compte dans la progression. Sur une page `data-reponses="personnelles"`
   (l'ES), personne ne relit en ligne : l'envoi valide l'étape en vert plein.
+- **« J'ai vu un bug »** : bouton posé par le moteur (`initSignalement`), en bas à
+  gauche, pour l'**élève connecté** seulement. Le signalement part en base avec la
+  séquence, la page, l'étape et l'appareil (`Progression.signaler`,
+  `bdd/schema/021`) et arrive dans l'onglet **Signalements** du tableau de bord.
+  Rien à poser dans la page ; la page doit seulement porter son `data-sequence`.
 - **Mode enseignant** : interrupteur qui déverrouille tout — télécommande de
   coordination, et sortie de secours quand un élève est coincé.
 - **Télécharger ma fiche** (récap HTML) + **Recommencer** + **pop-up de fin de
@@ -738,7 +743,10 @@ nouveau compteur) se **redemande** à Loïc avant d'être porté.
    d'élève** par séance. Les séances de t0 sont parmi les plus grosses (7 à 8
    étapes). Une fiche se **mesure** — Chromium headless, séance remplie de
    fausses réponses, pages comptées dans le PDF —, elle ne s'estime pas.
-6. **Typographie** : le vocabulaire nouveau, à sa première apparition, est balisé
+6. **Le code couleur est celui du cours** (03/10/2026) : « à retenir » sous un
+   bandeau bleu nuit (`--retain`), mot-clé `.cle` en rouge, noyaux en notation
+   A/Z (`.noy`, `.reac`). Une fiche n'invente pas de seconde palette.
+7. **Typographie** : le vocabulaire nouveau, à sa première apparition, est balisé
    `<dfn>` **dans la page** — rouge (`--err`) dans le cours comme sur la fiche. Le
    gras est réservé à ce qui doit ressortir ; une énumération ne se met pas en gras.
 

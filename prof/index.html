@@ -278,6 +278,17 @@ table.grille thead th{white-space:nowrap}
 .code-eleves code{display:inline-block;margin-left:4px;padding:2px 9px;border-radius:7px;
     background:var(--surface);border:1px solid var(--line);color:var(--ink);
     font-size:15px;font-weight:600;letter-spacing:.08em;user-select:all;-webkit-user-select:all}
+/* ---------- Signalements (03/10/2026) ---------- */
+.sig-n{display:inline-block;min-width:18px;padding:0 6px;margin-left:4px;border-radius:999px;
+  background:var(--err);color:#fff;font-size:11.5px;font-weight:600;line-height:18px;text-align:center}
+.sig{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.sig.traite{opacity:.6}
+.sig .sig-tete{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:13px;color:var(--ink-soft)}
+.sig .sig-tete b{color:var(--ink);font-size:14px}
+.sig .sig-msg{white-space:pre-wrap;margin:8px 0;font-size:14.5px}
+.sig .sig-act{display:flex;gap:8px;flex-wrap:wrap}
+.sig .sig-act a{display:inline-flex;align-items:center;padding:6px 12px;border:1px solid var(--line);
+  border-radius:var(--r);background:var(--surface);color:var(--link);text-decoration:none}
 </style>
 </head>
 <body>
@@ -330,6 +341,7 @@ table.grille thead th{white-space:nowrap}
     <button data-onglet="correction" class="actif">À corriger</button>
     <button data-onglet="seance">Séance</button>
     <button data-onglet="suivi">Suivi</button>
+    <button data-onglet="signalements">Signalements <span class="sig-n" id="sig-n" hidden></span></button>
     <button data-onglet="reglages">Réglages</button>
   </nav>
 
@@ -542,6 +554,21 @@ table.grille thead th{white-space:nowrap}
       <div id="e-contenu"></div>
     </section>
 
+    <!-- « J'ai vu un bug » (03/10/2026, bdd/schema/021) : ce que les élèves
+         signalent depuis une page de cours. La base ne rend que ceux des
+         élèves de MES classes, dans la famille de la page ; l'écran trie
+         ensuite par espace. -->
+    <section class="panneau" id="p-signalements">
+      <div class="rangee" style="margin-top:0">
+        <label style="margin:0"><input type="checkbox" id="sig-tout"> montrer aussi les signalements traités</label>
+        <button id="sig-recharger">Recharger</button>
+        <span id="sig-etat" class="muet"></span>
+      </div>
+      <p class="muet" style="margin:10px 0 14px">Envoyés par les élèves avec le bouton 🐞 «&nbsp;J'ai vu un bug&nbsp;» de chaque
+        page de cours (élèves connectés seulement). Chacun dit où l'élève était et sur quel appareil.</p>
+      <div id="sig-liste"></div>
+    </section>
+
     <section class="panneau" id="p-reglages">
       <h2 style="font-size:17px">La table des noms</h2>
       <p class="muet" style="margin:6px 0 0">
@@ -671,14 +698,14 @@ table.grille thead th{white-space:nowrap}
   var GUIDE_PAR_DEFAUT = 'guide-prise-en-main.html';
   var ESPACES_DEF = {
     snt: { nom: 'SNT',                            quoi: 'Seconde · sciences numériques et technologie',
-           onglets: ['correction', 'seance', 'suivi', 'reglages'], seances: true },
+           onglets: ['correction', 'seance', 'suivi', 'signalements', 'reglages'], seances: true },
     es1: { nom: 'Enseignement scientifique 1re',  quoi: 'Première · suivi du travail, corrigé en classe',
-           onglets: ['seance', 'suivi', 'reglages'], seances: true,
+           onglets: ['seance', 'suivi', 'signalements', 'reglages'], seances: true,
            guide: 'guide-es.html' },
     est: { nom: 'Enseignement scientifique Term.', quoi: 'Terminale · suivi du travail, corrigé en classe',
-           onglets: ['seance', 'suivi', 'reglages'], seances: true },
+           onglets: ['seance', 'suivi', 'signalements', 'reglages'], seances: true },
     pc2: { nom: 'Physique-chimie 2nde',           quoi: 'Seconde · les outils transversaux',
-           onglets: ['suivi', 'reglages'], seances: false,
+           onglets: ['suivi', 'signalements', 'reglages'], seances: false,
            guide: 'guide-ap.html' },
     cfa: { nom: 'Livret CFA',                     quoi: 'Apprentis · les dix-sept fiches-outils',
            onglets: ['suivi', 'reglages'], seances: false }
@@ -775,6 +802,8 @@ table.grille thead th{white-space:nowrap}
     $('#s-seance').value = '';
 
     if(premier) premier.click();
+    /* le compteur rouge de l'onglet, sans attendre qu'on l'ouvre */
+    if(def.onglets.indexOf('signalements') >= 0) chargerSignalements();
 
     /* La file de correction ne sert qu'en SNT. Lancée une fois, elle
        vit ensuite sa vie (rafraîchissement automatique). */
@@ -835,6 +864,79 @@ table.grille thead th{white-space:nowrap}
     montrerConnexion(null);
   });
 
+  /* ---------- signalements (03/10/2026) ---------- */
+  /* La famille de la page se lit sur sa séquence, comme en base
+     (famille_de_cle) ; l'espace affiné ici : es1- / est- / pc- / le reste. */
+  function espaceDeSignalement(cle){
+    cle = String(cle || '');
+    if(/^es1-/.test(cle)) return 'es1';
+    if(/^est-/.test(cle)) return 'est';
+    if(/^pc-/.test(cle))  return 'pc2';
+    if(/^cfa-/.test(cle)) return 'cfa';
+    return 'snt';
+  }
+  var SIGNALEMENTS = [];
+  function chargerSignalements(){
+    $('#sig-etat').textContent = 'Chargement…';
+    return ProfAPI.lire('signalements?select=id,cle,page,etape,message,appareil,traite,cree_le,eleves(pseudo)'
+                        + '&order=cree_le.desc&limit=300')
+      .then(function(l){ SIGNALEMENTS = l || []; rendreSignalements(); $('#sig-etat').textContent = ''; })
+      .catch(function(err){
+        SIGNALEMENTS = []; rendreSignalements();
+        $('#sig-etat').textContent = /signalements/.test(String(err && err.message))
+          ? 'La table des signalements n\u2019existe pas encore : exécuter bdd/schema/021-signalements.sql.'
+          : 'Lecture impossible : ' + (err.message || err);
+      });
+  }
+  function rendreSignalements(){
+    var tout = $('#sig-tout').checked;
+    var miens = SIGNALEMENTS.filter(function(x){ return espaceDeSignalement(x.cle) === ESPACE; });
+    var aTraiter = miens.filter(function(x){ return !x.traite; }).length;
+    var n = $('#sig-n');
+    n.hidden = !aTraiter; n.textContent = aTraiter;
+    var liste = tout ? miens : miens.filter(function(x){ return !x.traite; });
+    var z = $('#sig-liste');
+    if(!liste.length){
+      z.innerHTML = '<div class="vide"><div class="g">Aucun signalement' + (tout ? '' : ' à traiter') +
+        '.</div>Les élèves en envoient avec le bouton 🐞 de chaque page de cours.</div>';
+      return;
+    }
+    z.innerHTML = liste.map(function(x){
+      var pseudo = (x.eleves && x.eleves.pseudo) || '—';
+      return '<div class="sig' + (x.traite ? ' traite' : '') + '" data-id="' + echapper(x.id) + '">' +
+        '<div class="sig-tete"><b>' + echapper(ProfAPI.nomDe(pseudo)) + '</b>' +
+        '<span>' + echapper(quandCourt(x.cree_le)) + '</span>' +
+        '<span>' + echapper(nomSequence(x.cle) || x.cle) + (x.etape ? ' · étape ' + echapper(x.etape) : '') + '</span>' +
+        (x.appareil ? '<span>' + echapper(x.appareil) + '</span>' : '') + '</div>' +
+        '<div class="sig-msg">' + echapper(x.message) + '</div>' +
+        '<div class="sig-act">' +
+          '<a href="../pages/' + encodeURIComponent(x.page) + '.html" target="_blank" rel="noopener">Ouvrir la page</a>' +
+          '<button data-sig-traite="' + (x.traite ? '0' : '1') + '">' + (x.traite ? 'Remettre à traiter' : '✓ Traité') + '</button>' +
+          '<button data-sig-suppr>Supprimer</button>' +
+        '</div></div>';
+    }).join('');
+  }
+  $('#sig-liste').addEventListener('click', function(e){
+    var carte = e.target.closest('.sig'); if(!carte) return;
+    var id = carte.dataset.id;
+    var bt = e.target.closest('[data-sig-traite]');
+    if(bt){
+      bt.disabled = true;
+      ProfAPI.modifier('signalements?id=eq.' + encodeURIComponent(id), { traite: bt.dataset.sigTraite === '1' })
+        .then(chargerSignalements)
+        .catch(function(err){ bt.disabled = false; $('#sig-etat').textContent = 'Échec : ' + (err.message || err); });
+      return;
+    }
+    if(e.target.closest('[data-sig-suppr]')){
+      if(!confirm('Supprimer ce signalement ? Il ne pourra pas être récupéré.')) return;
+      ProfAPI.supprimer('signalements?id=eq.' + encodeURIComponent(id))
+        .then(chargerSignalements)
+        .catch(function(err){ $('#sig-etat').textContent = 'Échec : ' + (err.message || err); });
+    }
+  });
+  $('#sig-tout').addEventListener('change', rendreSignalements);
+  $('#sig-recharger').addEventListener('click', chargerSignalements);
+
   /* ---------- onglets ---------- */
   document.querySelectorAll('nav.onglets button').forEach(function(b){
     b.addEventListener('click', function(){
@@ -843,6 +945,7 @@ table.grille thead th{white-space:nowrap}
       document.querySelectorAll('.panneau').forEach(function(p){ p.classList.remove('actif'); });
       b.classList.add('actif');
       $('#p-' + b.dataset.onglet).classList.add('actif');
+      if(b.dataset.onglet === 'signalements') chargerSignalements();
     });
   });
 

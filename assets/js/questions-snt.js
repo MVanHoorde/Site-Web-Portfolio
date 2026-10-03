@@ -659,7 +659,21 @@ window.QUESTIONS_SNT = {
     "etape_titre": "Comment ce cours va fonctionner",
     "bonus": false,
     "rang": 1,
-    "sur": 1
+    "sur": 2
+  },
+  "NUC-mendeleiev-r": {
+    "sequence": "es1-t1-c1",
+    "titre": "Mendeleïev : scientifique, ou risqué ?",
+    "question": "Mendeleïev a fait confiance à une régularité au point d'affirmer l'existence de choses que personne n'avait vues. Cela te paraît-il scientifique, ou risqué ? Explique.",
+    "min": "10",
+    "max": "600",
+    "seance": "s1",
+    "seance_num": "1",
+    "etape": "1.5",
+    "etape_titre": "Pour aller plus loin",
+    "bonus": true,
+    "rang": 2,
+    "sur": 2
   },
   "NUC-1d": {
     "sequence": "es1-t1-c1",
@@ -670,7 +684,7 @@ window.QUESTIONS_SNT = {
     "seance": "s2",
     "seance_num": "2",
     "etape": "2.1",
-    "etape_titre": "A — La nucléosynthèse primordiale",
+    "etape_titre": "La nucléosynthèse primordiale",
     "bonus": false,
     "rang": 1,
     "sur": 3
@@ -684,7 +698,7 @@ window.QUESTIONS_SNT = {
     "seance": "s2",
     "seance_num": "2",
     "etape": "2.1",
-    "etape_titre": "A — La nucléosynthèse primordiale",
+    "etape_titre": "La nucléosynthèse primordiale",
     "bonus": false,
     "rang": 2,
     "sur": 3
