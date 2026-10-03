@@ -15,6 +15,37 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 03/10/2026 — Progression, vidéos en MP4, fiches d'ES
+
+Session de correction de bugs ouverte par Loïc sur la nucléosynthèse. Les
+propositions de contenu sont marquées `PROPOSITION 03/10/2026` dans les pages.
+
+| Date | Décision | Statut |
+|---|---|---|
+| 03/10/2026 | 🔴 **Vidéos : MP4 sur le OneDrive de l'établissement**, règle générale du projet, ES et SNT d'abord. Lien « toute personne disposant du lien », lu par le lecteur natif du navigateur (`<video data-src>`, chargé au clic). Loïc **accepte le risque de droit d'auteur** (usage non commercial, compte du lycée). Le lecteur SharePoint intégré est écarté : mesuré, il exige une connexion et refuse l'affichage hors de Microsoft. Liste : `_suivi/videos-a-telecharger.md` (52 vidéos) | ✅ en vigueur — ⏳ essai Safari/iPad à faire |
+| 03/10/2026 | 🔴 **Crédits sous chaque vidéo** : lien vers la vidéo YouTube d'origine et vers la chaîne de l'auteur. Posés par le moteur depuis `data-chaine` / `data-chaine-url` (et `data-yt`, `data-onedrive` pour un MP4) — 49 lecteurs crédités | ✅ en vigueur |
+| 03/10/2026 | 🔴 **Seule une étape à valider (`data-gate`) compte dans la progression** — pourcentage, jauges, anneaux du hub, résumé écrit en base et relu par le tableau de bord. Le moteur comptait aussi les « pour aller plus loin », « Et toi ? », encarts France et débranchés : un élève qui avait tout fait plafonnait sous 100 %. Aligne le code sur la décision du 22/08 | ✅ en vigueur |
+| 03/10/2026 | **SNT : une étape envoyée et pas encore relue est hachurée de vert** — pastille, sommaire, jauge de séance — et une légende le dit sous le pourcentage : « c'est compté, tu peux avancer ». Remplace le cercle creux pointillé du 01/08 | ✅ en vigueur |
+| 03/10/2026 | **ES (1re et terminale) : l'envoi d'une réponse valide l'étape**, en vert plein. Plus de « relecture en cours — ton professeur la verra » ni de pastille d'attente : Loïc ne valide rien en ligne en ES | ✅ en vigueur |
+| 03/10/2026 | **Bouton « ✓ J'ai lu » / « J'ai pris connaissance »** pour valider une étape de lecture (`.lu` + `data-valide-sur-interaction`). Posé sur les révisions 3.1/3.2 de la nucléosynthèse, 3.1/3.3 de la terminale t2-c1, et sur les étapes à valider qui n'avaient aucun moyen de l'être (radioactivité 3.1 et 3.3, son à coder 1.1, terminale t2-c2 3.1) ; et sur les 9 « pour aller plus loin » d'ES sans validation | ✅ en vigueur |
+| 03/10/2026 | **La révision compte** : séances 3 de la nucléosynthèse et de terminale t2-c1 passées en étapes à valider ; leurs grands QCM ne sont plus `data-facultatif` (ils ne s'enregistraient pas). Nucléosynthèse 3.2 refondue : plus la liste des vidéos du parcours (elles sont sur les fiches), un renvoi aux fiches des séances 1 et 2, vidéo de révision et Kahoot | ✅ en vigueur |
+| 03/10/2026 | **« Étape suivante » déplie un « pour aller plus loin »**, et la fenêtre « Séance terminée » nomme ceux qui restent, facultatifs. « Tu es ici » ne pointe plus sur une étape facultative ; le fil ne dit plus « Séquence terminée » quand la suite est seulement fermée | ✅ en vigueur |
+| 03/10/2026 | **Glossaire de l'ES : il se dévoile étape par étape**, dans le bouton 📖 comme en bas de page (`etape` du `#dico-source`). Les dictionnaires des postes vidéo **expliquent localement et n'entrent plus dans le glossaire** des pages qui tiennent ce glossaire par étape. Sortis du glossaire de la nucléosynthèse : Spallation, Ion, Lithosphère (infobulle conservée sur place) | ✅ en vigueur |
+| 03/10/2026 | **Fiches de séance d'ES 1re rétablies** (6 chapitres). Nucléosynthèse : partie fixe V1 en séances 1 et 2 — « à retenir », schémas, les trois épisodes de l'Observatoire à leur place, travail de l'élève, exemples de questions de QCM, Kahoot ; **aucune fiche pour la séance 3** (`<section data-fiche="non">`, nouvel interrupteur par séance). 3 pages chacune, mesurées remplies | ✅ en vigueur — ⏳ audit de Loïc |
+| 03/10/2026 | **Nucléosynthèse** : titres sans « A — / B — / C — » (repères du cours papier), note de visionnage ajoutée en 2.3 et sous la vidéo de Mendeleïev (1.5) | ✅ en vigueur |
+| 03/10/2026 | **CFA, outil 1** : infobulle sur « grave » (palier 3). ⏳ Signalé : « grave » est féminin en travaux publics (« la grave non traitée ») — la page dit « du grave non traité » | ✅ / ⏳ |
+
+## 01/10/2026 — Livret CFA : les corrigés en PDF, un par outil
+
+Demandé par Loïc : un PDF de toutes les corrections des outils du CFA, découpé
+outil par outil. Pilote sur les outils 1, 2 et 3.
+
+| Date | Décision | Statut |
+|---|---|---|
+| 01/10/2026 | **Un corrigé corrige la page en ligne**, pas une fiche A4 : les fiches CFA n'existent pas encore (2 sur 17). Énoncé modifié en ligne → corrigé repris | ✅ en vigueur |
+| 01/10/2026 | **Les corrigés suivent la règle des quatre étapes**, comme l'exemple résolu de chaque page, et portent un encart « Ce qu'on valorise » (erreurs attendues, variantes acceptées). Feuille de style commune `_corriges-cfa/corrige.css` | ✅ en vigueur |
+| 01/10/2026 | **Export par `python _outils/exporter-corriges-cfa.py`** → `_corriges-cfa/pdf/corrige-outil-NN.pdf` + recueil `corriges-livret-cfa.pdf`. Le script est versionné, les corrigés et les PDF jamais. Il refuse une feuille qui déborde, un format non A4 et tout caractère en police de repli, **sauf le grec** : aucune police auto-hébergée ne le porte (mesuré), il tombe sur le Garamond système | ✅ en vigueur |
+
 ## 01/10/2026 — Enseignement scientifique : séances sans verrou
 
 Signalé par Loïc : des élèves de 1re ont refait deux fois la fin de la séance 1 de
@@ -27,7 +58,7 @@ de la page dévalidait l'étape 1.3 à la reconnexion, faute de légendes enregi
 | ~~01/10/2026~~ | ~~**Corrigé complet de la séance 1 de la nucléosynthèse**, replié en tête de séance~~ → remplacé le même jour par le bouton ci-dessous | ~~✅~~ |
 | 01/10/2026 | **Bouton « Remplir avec la correction »**, un par étape à compléter de la séance 1 de la nucléosynthèse (1.3 : trous, légendes, titres ; 1.4 : six choix), toujours disponible. Il remplit et passe par « Vérifier » et les clics de l'élève : correction, enregistrement et validation restent ceux du moteur. **Les QCM ne sont pas concernés** | ✅ en vigueur |
 | 01/10/2026 | **Les légendes des graphiques d'abondance sont enregistrées**, et une étape faite en base ne se dévalide plus à la reprise | ✅ en vigueur |
-| 01/10/2026 | **L'ES 1re reste masquée, fiches de séance coupées** : Loïc relit d'abord chapitres et fiches. Un démasquage fait dans la même session a été annulé. Proposer le démasquage, ne jamais l'exécuter sans son accord | ✅ en vigueur |
+| 01/10/2026 | ~~**L'ES 1re reste masquée, fiches de séance coupées** : Loïc relit d'abord chapitres et fiches. Un démasquage fait dans la même session a été annulé. Proposer le démasquage, ne jamais l'exécuter sans son accord~~ → **fiches rétablies le 03/10** (chapitres toujours masqués) | ~~remplacée~~ |
 
 ## 24/09/2026 — QCM : la bonne réponse n'est plus toujours en A
 
@@ -54,7 +85,7 @@ les pages qui le chargent : SNT, outils PC, ES de 1re et de terminale.
 | 24/09/2026 | **Le QCM plein écran se réduit aussi** et se reprend à la même question, réponses données comprises. **Échap réduit** au lieu d'abandonner (il effaçait le QCM d'une touche) | ✅ en vigueur |
 | 24/09/2026 | **« ✏️ Modifier ma réponse »** après l'envoi, **tant que le professeur ne l'a pas corrigée**. Le nouvel envoi remplace l'ancien ; la base archive la version précédente (`reponses_archivage`). Exception : un champ `data-focus-prevenir` (t0, 1.1) a été annoncé « définitif » à l'élève, il le reste | ✅ en vigueur |
 | 24/09/2026 | **Palette de symboles** dans la fenêtre d'écriture : lettres grecques, opérateurs, flèches, unités, et deux modes **exposant** / **indice** (10⁻³, CO₂). Caractères **Unicode ordinaires**, pas de LaTeX ni de bibliothèque : la réponse reste un texte lisible au tableau de bord, à la correction et sur la fiche. Les fractions s'écrivent (a)/(b) | ✅ en vigueur |
-| 24/09/2026 | 🔴 **DigiView abandonné : retour au lecteur YouTube intégré** (`youtube-nocookie`, toujours derrière l'affiche locale). Les 6 vidéos de t0, t1 et m1 reviennent en `youtube-nocookie`. Le moteur ajoute au clic `autoplay=1&rel=0` (un seul clic) et un `referrerpolicy` déclaré (sans lui : « erreur 153 », renvoi vers YouTube). Remplace la décision DigiView du 22/09 | ✅ en vigueur |
+| 24/09/2026 | ~~🔴 **DigiView abandonné : retour au lecteur YouTube intégré** (`youtube-nocookie`, toujours derrière l'affiche locale). Les 6 vidéos de t0, t1 et m1 reviennent en `youtube-nocookie`. Le moteur ajoute au clic `autoplay=1&rel=0` (un seul clic) et un `referrerpolicy` déclaré (sans lui : « erreur 153 », renvoi vers YouTube). Remplace la décision DigiView du 22/09~~ → **MP4 sur le OneDrive du lycée, 03/10** (YouTube reste le temps que chaque MP4 arrive) | ~~remplacée~~ |
 | 24/09/2026 | **La vidéo « Électricité — C'est pas sorcier » (`term-es-t2-c1`) n'a pas pu être prise en défaut** hors du lycée : lecture intégrée autorisée, lecture réelle constatée au navigateur, jouable même en mode restreint strict. Si elle bloque encore en classe, la cause est côté réseau ou appareil — à observer (message exact affiché) | ⏳ à observer |
 
 ---
@@ -249,7 +280,7 @@ Contrôle rejouable : `python` + PyMuPDF sur `assets/pdf/pc/tp/*.pdf` rend l'en-
 | Date | Décision | Statut |
 |---|---|---|
 | 13/09/2026 | **Seul le chapitre T1-C1 « La nucléosynthèse » est ouvert aux élèves de 1re.** Les cinq autres, pas terminés, sont retirés du hub (liens en commentaire, repère `MASQUÉ-ES1`) ; les pages restent en ligne à leur URL. | ✅ en vigueur — **provisoire** |
-| 13/09/2026 | **Aucune fiche de séance en ES 1re** tant que Loïc ne les a pas relues. Mécanisme : `<body data-fiche="non">`, nouvel interrupteur du moteur partagé, qui retire bouton, fenêtres et messages liés à la fiche. | ✅ en vigueur — **provisoire** |
+| 13/09/2026 | ~~**Aucune fiche de séance en ES 1re** tant que Loïc ne les a pas relues. Mécanisme : `<body data-fiche="non">`, nouvel interrupteur du moteur partagé, qui retire bouton, fenêtres et messages liés à la fiche.~~ → **fiches rétablies le 03/10** | ~~remplacée~~ |
 | 13/09/2026 | 🔴 **Dès qu'on retravaille l'ES 1re, on démasque** : liste exacte dans `_suivi/es1-verification.md` §0bis. | ✅ en vigueur — 🔴 **sur accord explicite de Loïc** (01/10/2026) |
 
 ## 13/09/2026 — SNT : « à retenir » lisibles d'un regard, gras allégé partout
@@ -1132,7 +1163,7 @@ Loïc aura fait son dernier passage de vérification sur les fiches.
 | 01/08/2026 | **Biais de longueur des QCM : contrôle automatique dans `verifier.mjs`** (signalé, non bloquant). La bonne réponse est souvent la plus longue, parce qu'on y met la nuance — l'élève la repère sans lire. **52 questions concernées dans les QCM existants**, et 9 sur 11 de mes propositions initiales, y compris après relecture. Options courtes (dates, nombres) exclues du contrôle | ✅ |
 | 01/08/2026 | **Séance 1 enrichie** : 1.2 passe de 0 à 5 questions (dont la première en choix multiple), 1.4 de 4 à 8, 1.6 de 7 à 10. Gradient facile → difficile, jusqu'à 7 options. Longueurs homogénéisées et vérifiées | ✅ |
 | 01/08/2026 | **La frise ne valide plus son étape au premier clic sur « Vérifier ».** Elle se marquait faite même avec un seul élément bien placé, et le pop-up « Séance terminée » s'ouvrait pendant que l'élève replaçait ses dates. Sur un tri, **vérifier n'est pas rendre** : validation quand l'ordre est juste, ou au 3ᵉ essai | ✅ |
-| 01/08/2026 | **Troisième état de pastille : rendu mais pas encore relu** (`attente-corr`, cercle creux pointillé vert). L'étape compte comme faite — le travail EST rendu, la suite se débloque — mais le **vert plein reste réservé à ce que le professeur a relu**. Sans cette distinction, l'élève croit son travail validé alors que personne ne l'a lu | ✅ |
+| 01/08/2026 | ~~**Troisième état de pastille : rendu mais pas encore relu** (`attente-corr`, cercle creux pointillé vert). L'étape compte comme faite — le travail EST rendu, la suite se débloque — mais le **vert plein reste réservé à ce que le professeur a relu**. Sans cette distinction, l'élève croit son travail validé alors que personne ne l'a lu~~ → **hachure verte, 03/10** | ~~remplacée~~ |
 | 01/08/2026 | **Les étapes se replient en cliquant sur leur titre.** La classe `.replie` existait dans le CSS mais rien ne l'activait : on pouvait ouvrir une étape, jamais la refermer. On ne replie jamais l'étape en cours de travail. Titre accessible au clavier (`role=button`, Entrée/Espace) | ✅ |
 | 01/08/2026 | **Pastille flottante « mes retours »** (44 px, bas de page) + récapitulatif des corrections dans la carte de reprise. Sur une page de 26 étapes, un retour de professeur est enterré : l'élève ne savait pas qu'on lui avait répondu. Rouge quand une copie est à reprendre — le seul cas où il DOIT agir | ✅ |
 | 01/08/2026 | **Les options de QCM acceptent un balisage limité** (`code`, `b`, `i`, `sup`…). La question passait par `innerHTML`, l'option par `textContent` : `<code>192.168.1.226</code>` s'affichait en toutes lettres. On échappe tout puis on restaure une liste courte de balises — pas d'`innerHTML` en grand, et **une réponse d'élève ne passe jamais par ce chemin** | ✅ |

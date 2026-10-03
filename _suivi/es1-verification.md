@@ -13,15 +13,15 @@
 
 ## 0bis. 🔴 Masqué aux élèves — à rétablir dès qu'on retravaille l'ES 1re
 
-Décision de Loïc du 13/09/2026 : **seule la nucléosynthèse est ouverte aux élèves**,
-et **aucune fiche de séance** tant qu'elles ne sont pas relues. Rien n'est supprimé ;
-tout porte le repère **`MASQUÉ-ES1`** (`grep -rn MASQUÉ-ES1 pages/`).
+Décision de Loïc du 13/09/2026 : **seule la nucléosynthèse est ouverte aux élèves**.
+Rien n'est supprimé ; ce qui reste masqué porte le repère **`MASQUÉ-ES1`**
+(`grep -rn MASQUÉ-ES1 pages/`). Les **fiches de séance sont rétablies depuis le
+03/10/2026** (V1 à auditer) ; la séance 3 de la nucléosynthèse, de révision, n'en a
+pas (`<section data-fiche="non">`).
 
 | Quoi | Où | Pour rétablir |
 |---|---|---|
 | Liens des 5 autres chapitres + « Ancienne fiche de cours » | `pages/1re-enseignement-scientifique.html` | décommenter chaque lien, retirer la ligne « Séquence interactive 🚧 » posée à sa place |
-| Fiche de séance | `data-fiche="non"` sur `<body>` des **6** pages `1re-es-t*.html` | retirer l'attribut |
-| Phrases qui annoncent la fiche (tutoriel 1.1, encart QCM) | `1re-es-t1-c1-nucleosynthese.html` | décommenter ; la puce « Ta trace » est à **repasser au présent** |
 | Lien vers le chapitre 2 (étape 1.2) | idem | décommenter le lien |
 
 Les pages restent **accessibles par leur URL** (dépôt public) : le masquage retire les
@@ -478,7 +478,7 @@ les dix-sept images.
 | **Bandeau ExPop** | ✅ Posé à côté du questionnaire de l'ASNR (`t1-c2` 2.4) : l'élève n'est pas obligé de renseigner ses données et peut simuler quelqu'un d'autre. |
 | **Responsive** | ✅ Aucun débordement horizontal à 1280, 820 et 390 px sur les six pages. |
 | **Verrouillage progressif** | ✅ Testé au navigateur sur chaque page : séances suivantes verrouillées à l'arrivée, déverrouillées quand toutes les étapes `data-gate` de la précédente sont validées. |
-| **Fiche de révision** | 🔴 **Masquée aux élèves** (`data-fiche="non"`, §0bis). Se rabat sur les « à retenir » — **aucun `<template data-fiche-fixe>`** n'a été écrit : ils demandent ≈ 4 schémas SVG par séance, ce que le brief §4 interdit de produire. |
+| **Fiche de révision** | ✅ **Rétablie le 03/10/2026**, V1 à auditer. Nucléosynthèse : partie fixe en séances 1 et 2 (« à retenir », images du chapitre, les trois épisodes de l'Observatoire, travail de l'élève, exemples de QCM, Kahoot), 3 pages remplies chacune ; pas de fiche pour la séance 3. Les cinq autres chapitres se rabattent sur la V1 automatique (« à retenir » et images). |
 
 ### Le branchement en base — fait le 13/09/2026
 

@@ -123,6 +123,18 @@ de `pages/2nde-snt-t1-internet.html`, seule séquence déjà portée.
 - **Verrouillage progressif** : une séance se débloque quand la précédente est
   **entièrement validée** (étapes marquées `data-gate`). Barre de progression par
   séance (`data-progress`, `data-navlock`).
+- 🔴 **Seule une étape `data-gate` compte dans la progression** — pourcentage,
+  jauges, anneaux du hub, résumé écrit en base et relu par le tableau de bord.
+  Tout le reste (« pour aller plus loin », « Et toi ? », encart France,
+  débranché) est **hors 100 %**. Corollaire : **toute étape `data-gate` doit
+  avoir de quoi se valider** — QCM, trous, réponse rédigée, tri… ou, pour une
+  étape de lecture, le bouton **« J'ai lu »** :
+  `<div class="lu" data-valide-sur-interaction><button type="button"><span class="lu-a">✓ J'ai lu</span><span class="lu-ok">✓ C'est noté</span></button></div>`.
+  Un QCM `data-facultatif` ne valide rien et ne s'enregistre pas.
+- **Étape envoyée, pas encore relue** (`attente-corr`) : **hachurée de vert**
+  partout (pastille, sommaire, jauges), avec une légende « c'est compté, tu peux
+  avancer ». Elle compte dans la progression. Sur une page `data-reponses="personnelles"`
+  (l'ES), personne ne relit en ligne : l'envoi valide l'étape en vert plein.
 - **Mode enseignant** : interrupteur qui déverrouille tout — télécommande de
   coordination, et sortie de secours quand un élève est coincé.
 - **Télécharger ma fiche** (récap HTML) + **Recommencer** + **pop-up de fin de
@@ -176,30 +188,31 @@ de `pages/2nde-snt-t1-internet.html`, seule séquence déjà portée.
 - Pas de framework, pas de build : HTML/CSS/JS vanilla, lisible et modifiable.
 - Responsive (**cible iPad**), focus clavier visible, `prefers-reduced-motion`
   respecté.
-- Ressources externes chargées **par lien** (vidéos, CodeBetter…). Les **schémas
+- Ressources externes chargées **par lien** (CodeBetter…) ; les vidéos, voir
+  ci-dessous. Les **schémas
   de structure** se dessinent en SVG maison ; une **illustration figurative** ne
   se dessine pas de mémoire — cadre de réservation `.reserve` et image fournie
   par Loïc. Voir `CLAUDE.md`, « Règles techniques communes ».
-- 🎬 **Vidéos — décision du 24/09/2026** (DigiView abandonné).
-  - **Dans la page, le poste de visionnage** passe par le **lecteur YouTube
-    intégré**, en `youtube-nocookie` : 
-    `<iframe height="315" data-src="https://www.youtube-nocookie.com/embed/<ID>" title="<titre> — <créateur>" allowfullscreen></iframe>`
-    (`?start=<s>` pour démarrer plus loin). Toujours en **`data-src`** : rien ne
-    part hors du site avant le clic. Le moteur (`initVideos`) ajoute au clic
-    `autoplay=1&rel=0` — le clic sur l'affiche lance la lecture, sans second clic
-    dans le lecteur — et déclare `referrerpolicy="strict-origin-when-cross-origin"`,
-    sans lequel YouTube refuse la lecture intégrée (« erreur 153 »). Ne rien
-    ajouter de tout cela dans la page.
+- 🎬 **Vidéos — MP4 sur le OneDrive du lycée (décision du 03/10/2026).**
+  YouTube est bloqué au lycée. Chaque vidéo est téléchargée en MP4, déposée sur
+  le **OneDrive de l'établissement** et partagée « toute personne disposant du
+  lien » ; Loïc en a accepté le risque de droit d'auteur. Liste et suivi :
+  `_suivi/videos-a-telecharger.md`.
+  - **Patron du lecteur** — le moteur (`initVideos`) le remplace par une affiche
+    locale et ne charge rien avant le clic :
+    `<video height="315" title="<titre>" data-src="<LIEN-DE-PARTAGE>&amp;download=1" data-onedrive="<LIEN-DE-PARTAGE>" data-debut="<secondes>" data-yt="<ID YouTube>" data-chaine="<nom de la chaîne>" data-chaine-url="https://www.youtube.com/@…"></video>`
+    Lecteur natif du navigateur. Le lecteur SharePoint intégré (`embed.aspx`) est
+    écarté : il exige une connexion et refuse l'affichage hors de Microsoft.
+  - **Tant que le MP4 n'est pas là**, le lecteur YouTube intégré reste :
+    `<iframe height="315" data-src="https://www.youtube-nocookie.com/embed/<ID>" data-chaine="…" data-chaine-url="…" title="…" allowfullscreen></iframe>`
+    (`?start=<s>` pour démarrer plus loin ; le moteur ajoute `autoplay`, `rel=0`
+    et le `referrerpolicy` sans lequel YouTube refuse la lecture).
+  - 🔴 **Crédits sous chaque vidéo** : le moteur pose sous le lecteur une ligne
+    « Ouvrir sur OneDrive · Voir sur YouTube · Chaîne : … » à partir de ces
+    attributs. **Un lecteur sans `data-chaine` est un oubli** : le créateur doit
+    être nommé, et le lien YouTube sert de secours si OneDrive ne répond pas.
   - Le poste de visionnage sert aux notes, au QCM de l'étape et au revisionnage
-    à la maison ; la vidéo se lit **dans le site**, jamais par un lien sortant.
-  - 🔴 **Jamais de vidéo de tiers téléchargée ni ré-hébergée** (dépôt, OneDrive,
-    cahier de textes) sans l'accord écrit de son auteur : c'est interdit par les
-    conditions de YouTube et ce n'est pas couvert par l'exception pédagogique
-    (qui porte sur des extraits). Une vidéo dont Loïc a les droits (la sienne,
-    sous licence libre, ou avec accord) va sur le **Tube d'apps.education.fr**,
-    jamais dans le dépôt.
-  - **Chaque poste de visionnage nomme le créateur** dans sa consigne : c'est ce
-    qui permet de savoir à qui écrire.
+    à la maison ; la vidéo se lit **dans le site**.
   - Une étape dont la ressource principale est une vidéo se **valide par un QCM**
     sur son contenu (voir t0 2.2), jamais par sa seule lecture.
 - 🗂 **Une séquence SNT est autonome pour son code.** Tout le **CSS**, tout le **JS**
@@ -661,12 +674,14 @@ partir de la page et du travail de l'élève. Elle s'ouvre dans un onglet ; l'é
 l'enregistre en PDF et la dépose dans le **dossier OneDrive qui sert de classeur
 numérique**.
 
-**Couper la fiche d'une page** : `<body data-fiche="non">`. Le moteur retire alors
+**Couper la fiche d'une page** : `<body data-fiche="non">` ; **d'une seule séance** :
+`<section class="seance" data-fiche="non">` (la révision de la nucléosynthèse). Le moteur retire alors
 tout ce qui parle de la fiche — bouton de la barre de fin de séance, fenêtre « Séance
 terminée », fenêtre « Recommencer », messages « pense à télécharger ta fiche » — et
 garde le reste (« Recommencer » compris). Sert à une page dont la fiche n'est pas
-encore relue ; en usage sur les six chapitres d'ES 1re (voir
-`_suivi/es1-verification.md` §0bis).
+encore relue, ou à une séance qui n'en a pas besoin (une séance de révision). Les
+fiches d'ES 1re sont rétablies depuis le 03/10/2026 (`_suivi/es1-verification.md`
+§0bis).
 
 **Ouvrir toutes les séances** : `<body data-seances="ouvertes">`. Aucune séance ne
 se verrouille, quelle que soit l'avancée de l'élève ; les étapes se révèlent encore

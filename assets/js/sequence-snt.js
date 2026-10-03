@@ -118,8 +118,14 @@
   function resume(){
     var out = { seances:[], f:0, t:0 };
     Array.prototype.forEach.call(document.querySelectorAll('.seance'), function(sec){
-      var pas = sec.querySelectorAll('.step'), f = 0;
-      Array.prototype.forEach.call(pas, function(p){
+      /* Seule une étape À VALIDER (data-gate) compte — la même règle que
+         la fin de séance. « Pour aller plus loin », « Et toi ? », encart
+         France, débranché : facultatifs, « hors 100 % ». Avant le
+         03/10/2026 ils entraient dans le total et plafonnaient la
+         progression sous 100 % pour qui avait tout fait. */
+      var pas = Array.prototype.filter.call(sec.querySelectorAll('.step'), function(p){
+        return p.hasAttribute('data-gate'); }), f = 0;
+      pas.forEach(function(p){
         var k = cle(p);
         /* on compte depuis l'ÉTAT, pas depuis les classes du DOM :
            l'état est la source de vérité, le DOM peut être en retard */
@@ -280,7 +286,13 @@
       var gates=sec.querySelectorAll('[data-gate]');
       var done=Array.from(gates).filter(function(g){return g.classList.contains('is-done');}).length;
       var bar=sec.querySelector('[data-progress]');
-      if(bar) bar.style.width = gates.length ? (100*done/gates.length)+'%' : '0%';
+      if(bar){
+        bar.style.width = gates.length ? (100*done/gates.length)+'%' : '0%';
+        /* part relue en vert plein, part envoyée hachurée (03/10/2026) */
+        var att=Array.from(gates).filter(function(g){return g.classList.contains('is-done')&&g.classList.contains('attente-corr');}).length;
+        var plein=done?Math.round(100*(done-att)/done)+'%':'100%';
+        if(bar.style.getPropertyValue('--plein')!==plein) bar.style.setProperty('--plein',plein);
+      }
       var id=sec.getAttribute('data-seance');
       var complete = gates.length>0 && done===gates.length;
       if(complete && seanceWasComplete[id]===false && parLeGeste()){ onSeanceComplete(sec); }
@@ -407,6 +419,11 @@
   /* --- petit pont vers la base. Absente ? tout continue de
          fonctionner, sans enregistrement. (progression.js §2) --- */
   var BASE = (typeof Progression!=='undefined' && Progression.disponible()) ? Progression : null;
+  /* Réponses personnelles (<body data-reponses="personnelles"> : l'enseignement
+     scientifique) : personne ne les relit en ligne, elles se reprennent en
+     classe. L'envoi EST la fin de l'étape — vert plein, jamais « relecture
+     en cours » ni pastille d'attente (décision de Loïc du 03/10/2026). */
+  var PERSO = document.body.getAttribute('data-reponses')==='personnelles';
 
   /* ---------- §1 picto « à voir plus tard » ----------
      Au clic pour le tactile (le survol n'existe pas sur iPad), et
@@ -829,15 +846,17 @@
          le bouton resterait visible et l'élève pourrait renvoyer en
          boucle la même copie. */
       champ.classList.remove('a-refaire');
-      verdict(champ,'wait','⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
-      var s=stepOf(champ); if(s && !reste)s.classList.add('is-wait');
+      verdict(champ,'wait', PERSO ? '⏳ Envoi en cours…' : '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.');
+      var s=stepOf(champ); if(s && !reste && !PERSO)s.classList.add('is-wait');
       BASE.envoyerReponse(code, texte).then(function(){
-        verdict(champ,'ok', reste
+        verdict(champ,'ok', PERSO
+          ? '✅ Réponse enregistrée.'+(reste ? resteAFaire(reste) : ' Tu peux passer à la suite.')
+          : reste
           ? '✅ Réponse enregistrée. Tu peux encore la modifier tant que ton professeur ne l\'a pas corrigée.'+resteAFaire(reste)
           : '✅ Réponse enregistrée. Tu peux passer à la suite — et aider un camarade bloqué. Tu peux encore la modifier tant que ton professeur ne l\'a pas corrigée.');
         finir();
-        /* rendu, mais pas encore relu : pastille creuse (voir CSS) */
-        var se=stepOf(champ); if(se && !reste) se.classList.add('attente-corr');
+        /* rendu, mais pas encore relu : pastille hachurée (voir CSS) */
+        var se=stepOf(champ); if(se && !reste && !PERSO) se.classList.add('attente-corr');
       }).catch(function(e){
         verdict(champ,'ok', (document.body.getAttribute('data-fiche')==='non'
           ? '✅ Réponse gardée pour cette séance. (Enregistrement indisponible : garde la page ouverte.)'
@@ -999,11 +1018,12 @@
          Règle générale : un rechargement ne doit jamais faire
          perdre une progression déjà acquise. */
       var reste = questionsRestantes(champ);
-      verdict(champ, 'wait', '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.'+(reste?resteAFaire(reste):''));
+      verdict(champ, PERSO ? 'ok' : 'wait', (PERSO ? '✅ Réponse enregistrée.'
+        : '⏳ Réponse envoyée. Relecture en cours — ton professeur la verra.')+(reste?resteAFaire(reste):''));
       majReste(champ);
       if(!reste){
         markDone(champ);
-        var sw=stepOf(champ); if(sw) sw.classList.add('attente-corr');
+        var sw=stepOf(champ); if(sw && !PERSO) sw.classList.add('attente-corr');
       }
     }
   }
@@ -2570,8 +2590,12 @@
      messages — sans rien retirer d'autre : l'interrupteur d'une page dont la
      fiche n'est pas encore relue (ES 1re, 13/09/2026). */
   var SANS_FICHE = document.body.getAttribute('data-fiche')==='non';
+  /* …ou d'une seule séance : <section class="seance" data-fiche="non"> (la
+     séance de révision de la nucléosynthèse n'a pas de fiche, 03/10/2026) */
+  function sansFiche(sec){ return SANS_FICHE || sec.getAttribute('data-fiche')==='non'; }
   document.querySelectorAll('.seance').forEach(function(sec){
     if(!sec.querySelector('[data-gate]')) return;
+    var SANS_FICHE = sansFiche(sec);
     var host=sec.querySelector('.lockable'); if(!host) return;
     var bar=document.createElement('div'); bar.className='seance-actions';
     bar.innerHTML = SANS_FICHE
@@ -2601,7 +2625,13 @@
     var title=seanceTitle(sec);
     var rows=[]; sec.querySelectorAll('[data-step].is-done .step-title').forEach(function(t){rows.push(t.textContent.trim());});
     var recap='<div class="recap">'+rows.map(function(t){return '<div class="ri"><span>'+t+'</span><b>✓</b></div>';}).join('')+'</div>';
-    if(SANS_FICHE){
+    /* Les « pour aller plus loin » restants sont nommés : facultatifs, ils
+       n'empêchent pas la séance d'être finie — l'élève doit le lire ici. */
+    var plus=[]; sec.querySelectorAll('[data-step]:not(.is-done) .bonus-wrap .ix').forEach(function(x){plus.push(x.textContent.trim());});
+    if(plus.length) recap+='<p style="margin:8px 0 0;font-size:14px;color:var(--ink-soft)">🔭 Il reste '+
+      (plus.length>1?'les « pour aller plus loin » '+plus.join(' et '):'le « pour aller plus loin » '+plus[0])+
+      ' : facultatif, il ne compte pas dans ta progression. Ouvre-le si tu as envie d’en savoir plus.</p>';
+    if(sansFiche(sec)){
       openModal('🎉','Séance terminée — bravo !',
         recap+'<p style="margin-top:2px">Tu as validé toute la séance.</p>',
         [{label:'Continuer',cls:'ghost'}]);
@@ -2753,7 +2783,76 @@ function initVideos(){
       aff.parentNode.replaceChild(i,aff);
     });
     f.parentNode.replaceChild(aff,f);
+    if(yt){
+      var m=src.match(/embed\/([\w-]{11})(?:\?.*start=(\d+))?/);
+      if(m) poserCredit(aff,f,m[1],m[2],'');
+    }
   });
+
+  /* --- Vidéos téléchargées en MP4 sur le OneDrive du lycée (03/10/2026) ---
+     YouTube est bloqué au lycée : Loïc dépose les vidéos sur le OneDrive de
+     l'établissement et en partage le lien « toute personne disposant du
+     lien ». Patron dans la page :
+       <video data-src="LIEN-DE-PARTAGE&download=1" data-debut="171"
+              data-yt="6j-pY_QjYRU" data-chaine="…" data-chaine-url="…"
+              data-onedrive="LIEN-DE-PARTAGE" title="…" height="315"></video>
+     Lecteur natif du navigateur. Même règle que pour l'iframe : rien ne part
+     chez Microsoft avant le clic. Le lecteur SharePoint intégré (embed.aspx)
+     a été écarté : mesuré le 03/10, il exige une connexion et refuse
+     l'affichage dans une page extérieure (X-Frame-Options, frame-ancestors). */
+  $$('video[data-src]').forEach(function(v){
+    var src=v.getAttribute('data-src'); if(!src) return;
+    var h=v.getAttribute('height')||'315';
+    var debut=parseInt(v.getAttribute('data-debut')||'0',10)||0;
+    var aff=document.createElement('button');
+    aff.type='button'; aff.className='video-affiche';
+    aff.style.height=(parseInt(h,10)||315)+'px';
+    aff.setAttribute('aria-label','Lancer la vidéo — elle se charge depuis le OneDrive du lycée au moment du clic');
+    aff.innerHTML='<span class="va-play" aria-hidden="true">▶</span>'+
+      '<span class="va-txt">Lire la vidéo</span>'+
+      '<span class="va-note">Hébergée sur le OneDrive du lycée&nbsp;: rien n\'est chargé tant que tu n\'as pas cliqué.</span>';
+    aff.addEventListener('click',function(){
+      var l=document.createElement('video');
+      l.controls=true; l.setAttribute('playsinline',''); l.preload='auto';
+      l.className='video-od'; l.title=v.getAttribute('title')||'Vidéo';
+      l.src=src+(debut?'#t='+debut:'');
+      l.addEventListener('error',function(){
+        var p=document.createElement('p');
+        p.className='video-panne';
+        p.textContent='La vidéo ne se charge pas ici. Ouvre-la avec un des liens juste en dessous.';
+        if(l.parentNode) l.parentNode.insertBefore(p,l.nextSibling);
+      },{once:true});
+      aff.parentNode.replaceChild(l,aff);
+      var pr=l.play&&l.play(); if(pr&&pr.catch) pr.catch(function(){});
+    });
+    v.parentNode.replaceChild(aff,v);
+    poserCredit(aff,v,v.getAttribute('data-yt'),debut,v.getAttribute('data-onedrive'));
+  });
+}
+
+/* Crédit sous chaque vidéo (règle du 03/10/2026) : le lien vers la vidéo
+   d'origine et vers la chaîne de son auteur — le créateur est nommé, et le
+   lien YouTube sert de secours. Les attributs vivent sur le lecteur ; une
+   page qui pose déjà son .video-credit à la main n'en reçoit pas un second. */
+function poserCredit(apres,src,yt,debut,onedrive){
+  var nx=apres.nextElementSibling;
+  if(!apres.parentNode || (nx && nx.classList.contains('video-credit'))) return;
+  var chaine=src.getAttribute('data-chaine'), url=src.getAttribute('data-chaine-url');
+  var morceaux=[];
+  function lien(href,txt){
+    var a=document.createElement('a'); a.href=href; a.textContent=txt;
+    a.target='_blank'; a.rel='noopener noreferrer'; return a;
+  }
+  if(onedrive) morceaux.push(lien(onedrive,'Ouvrir sur OneDrive'));
+  if(yt) morceaux.push(lien('https://www.youtube.com/watch?v='+yt+(debut?'&t='+debut+'s':''),'Voir sur YouTube'));
+  if(chaine) morceaux.push(url ? lien(url,'Chaîne : '+chaine) : document.createTextNode('Chaîne : '+chaine));
+  if(!morceaux.length) return;
+  var p=document.createElement('p'); p.className='video-credit';
+  morceaux.forEach(function(m,i){
+    if(i) p.appendChild(document.createTextNode(' · '));
+    p.appendChild(m);
+  });
+  apres.parentNode.insertBefore(p,apres.nextSibling);
 }
 
 /* ---------- 1. Révélation séquentielle des étapes ----------
@@ -2782,6 +2881,10 @@ function initReveal(){
       if(!cache.length) return;
       replierFaites(sec);          /* on passe à la suite : le fait se replie */
       cache[0].classList.remove('masque');
+      /* un « pour aller plus loin » arrive déplié : le bouton promettait
+         l'étape suivante et ne montrait qu'un bandeau fermé (03/10/2026) */
+      var bw=$('[data-bonus]',cache[0]), bh=bw&&$('[data-bonus-toggle]',bw);
+      if(bh && !bw.classList.contains('open')) bh.click();
       defilerVers(cache[0]);
       placerBoutonSuivant(sec);
       majBarre();
@@ -3147,7 +3250,8 @@ function hubReprise(){
 function etatsSeances(){
   var prof=document.body.classList.contains('teacher');
   var secCourante=null;
-  $$('.step').some(function(p){
+  /* seules les étapes à valider comptent (même règle que majBarre) */
+  $$('.step[data-gate]').some(function(p){
     if(p.classList.contains('is-done')) return false;
     var s=p.closest('.seance');
     if(s&&s.classList.contains('locked')&&!prof) return false;
@@ -3155,7 +3259,7 @@ function etatsSeances(){
   });
   var etats={};
   $$('.seance').forEach(function(sec){
-    var dedans=$$('.step',sec);
+    var dedans=$$('.step[data-gate]',sec);
     var f=dedans.filter(function(p){ return p.classList.contains('is-done'); }).length;
     var verrou=sec.classList.contains('locked')&&!prof;
     etats[sec.id]={
@@ -3347,7 +3451,8 @@ function construireBarre(){
   var box=document.createElement('nav');
   box.id='prog'; box.setAttribute('aria-label','Ma progression');
   var h='<div class="ph"><span class="t">Ma progression</span><span class="pct">0 %</span>'+
-        '<button class="reduire" type="button" title="Réduire">⇤</button></div>';
+        '<button class="reduire" type="button" title="Réduire">⇤</button></div>'+
+        '<p class="ph-leg" hidden><i aria-hidden="true"></i><span></span></p>';
   function esc(x){ return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function propre(n){ return n?n.textContent.replace(/\s+/g,' ').trim():''; }
   $$('.seance').forEach(function(sec){
@@ -3483,7 +3588,7 @@ function majBarre(){
     else if(p.classList.contains('is-done')){ lien.classList.add('done'); pip.textContent='✓'; faits++; }
     else if(p.classList.contains('is-wait')){ lien.classList.add('wait'); pip.textContent='…'; }
     else if(p.classList.contains('masque')){ lien.classList.add('locked'); pip.textContent=''; }
-    else { if(!courant){ lien.classList.add('cur'); courant=p; } pip.textContent=''; }
+    else { if(!courant && p.hasAttribute('data-gate')){ lien.classList.add('cur'); courant=p; } pip.textContent=''; }
     /* Une étape pas encore révélée n'est PAS cliquable, et doit le
        montrer. Avant : le href pointait vers une étape masquée — le
        clic partait, il ne se passait rien, et le survol allumait
@@ -3497,7 +3602,12 @@ function majBarre(){
       lien.setAttribute('href','#'+p.id); lien.removeAttribute('aria-disabled');
     }
   });
-  var pc=pas.length?Math.round(faits*100/pas.length):0;
+  /* hors 100 % : seules les étapes à valider (data-gate) comptent — même
+     règle que EtatSNT.resume() et la fin de séance. Le pip d'une étape
+     facultative se colore quand même si elle est faite. */
+  var comptees=pas.filter(function(p){ return p.hasAttribute('data-gate'); });
+  faits=comptees.filter(function(p){ return p.classList.contains('is-done'); }).length;
+  var pc=comptees.length?Math.round(faits*100/comptees.length):0;
 
   /* Le fil d'Ariane ne suit PAS le même pointeur que le sommaire.
      Le sommaire surligne l'étape ouverte ; le fil doit dire « ce qui
@@ -3511,17 +3621,29 @@ function majBarre(){
   courant=null;
   pas.some(function(p){
     if(p.classList.contains('is-done')) return false;
+    if(!p.hasAttribute('data-gate')) return false;   /* facultatif : jamais « tu es ici » */
     var sec=p.closest('.seance');
     if(sec && sec.classList.contains('locked') && !prof) return false;
     courant=p; return true;
   });
   $$('#prog .pct').forEach(function(e){ e.textContent=pc+' %'; });
+  /* Légende de la hachure, seulement quand une étape attend sa correction :
+     l'élève lit que c'est compté, et n'a pas à venir le demander. Écriture
+     gardée : #prog n'est pas observé, mais la règle de majLignes vaut ici. */
+  var nAtt=pas.filter(function(p){ return p.classList.contains('is-done')&&p.classList.contains('attente-corr'); }).length;
+  $$('#prog .ph-leg').forEach(function(e){
+    var cache=!nAtt;
+    if(e.hidden!==cache) e.hidden=cache;
+    var t=nAtt+(nAtt>1?' étapes envoyées attendent':' étape envoyée attend')+' la correction de ton professeur : c’est compté, tu peux avancer.';
+    var sp=e.querySelector('span');
+    if(sp && sp.textContent!==t) sp.textContent=t;
+  });
   document.body.classList.toggle('a-commence', faits>0);
 
   /* --- Barre « tu es ici » : le fil d'Ariane dit la séance ET l'étape,
          la jauge segmentée dit où on en est dans l'ensemble. --- */
   var compte=$('#prog4 .p4-compte');
-  if(compte) compte.textContent=faits+' / '+pas.length;
+  if(compte) compte.textContent=faits+' / '+comptees.length;
 
   var secCourante=courant?courant.closest('.seance'):null;
   var elS=$('#prog4 .p4-s'), elSeance=$('#prog4 .p4-seance'),
@@ -3551,8 +3673,10 @@ function majBarre(){
       elEtape.textContent=libelle;
       if(elSep) elSep.style.display=libelle?'':'none';
     } else {
-      /* tout est fait : le fil ne montre plus d'étape en cours */
-      elS.style.display='none'; elSeance.textContent='Séquence terminée';
+      /* plus d'étape accessible : tout est fait — ou la séance suivante
+         n'est pas encore ouverte, et il ne faut pas dire « terminée » */
+      elS.style.display='none';
+      elSeance.textContent = faits<comptees.length ? 'La suite s’ouvre à la prochaine séance' : 'Séquence terminée';
       elIx.textContent=''; elEtape.textContent='';
       if(elSep) elSep.style.display='none';
     }
@@ -3563,7 +3687,7 @@ function majBarre(){
 
   $$('#prog .grp-bloc').forEach(function(bloc){
     var sec=document.getElementById(bloc.dataset.grp); if(!sec) return;
-    var dedans=$$('.step',sec);
+    var dedans=$$('.step',sec).filter(function(x){ return x.hasAttribute('data-gate'); });
     var f=dedans.filter(function(x){ return x.classList.contains('is-done'); }).length;
     /* Au niveau de la séance aussi : S2 et S3 avaient l'air de simples
        titres inertes. Elles sont pliables (c'est utile), mais rien ne
@@ -3581,10 +3705,16 @@ function majBarre(){
 
   $$('#prog4 .p4-seg').forEach(function(seg){
     var sec=document.getElementById(seg.dataset.seg); if(!sec) return;
-    var dedans=$$('.step',sec);
+    var dedans=$$('.step',sec).filter(function(p){ return p.hasAttribute('data-gate'); });
     var f=dedans.filter(function(p){ return p.classList.contains('is-done'); }).length;
     var jauge=seg.querySelector('b');
-    if(jauge) jauge.style.width=(dedans.length?Math.round(100*f/dedans.length):0)+'%';
+    if(jauge){
+      jauge.style.width=(dedans.length?Math.round(100*f/dedans.length):0)+'%';
+      /* hachure : ce qui est envoyé et attend la correction (03/10/2026) */
+      var att=dedans.filter(function(p){ return p.classList.contains('is-done')&&p.classList.contains('attente-corr'); }).length;
+      var plein=f?Math.round(100*(f-att)/f)+'%':'100%';
+      if(jauge.style.getPropertyValue('--plein')!==plein) jauge.style.setProperty('--plein',plein);
+    }
     var verrou=sec.classList.contains('locked') && !document.body.classList.contains('teacher');
     seg.classList.toggle('verrou',verrou);
     seg.classList.toggle('ici',sec===secCourante);
@@ -4233,7 +4363,11 @@ function initGlossaire(){
       });
     });
   }
-  moissonnerDictionnaire();
+  /* Sauf sur une page qui tient son glossaire étape par étape (#dico-source
+     avec « etape » : l'ES) : là, le dictionnaire d'un poste explique
+     localement, pour comprendre la vidéo ; il n'est pas à réviser et n'entre
+     pas dans le glossaire (Loïc, 03/10/2026). */
+  if(!DICO.some(function(e){ return e.etape; })) moissonnerDictionnaire();
   var b=document.createElement('button');
   b.id='glo-ouvrir'; b.type='button'; b.textContent='📖 Glossaire';
   document.body.appendChild(b);
@@ -4244,13 +4378,32 @@ function initGlossaire(){
     '<input class="rech" type="search" placeholder="Chercher un mot…" aria-label="Chercher un mot">'+
     '<div class="glo-liste"></div></div>';
   document.body.appendChild(fond);
+  /* Un mot du #dico-source qui déclare son « etape » (ES, audit A4) ne se
+     dévoile qu'une fois cette étape validée, comme le glossaire du chapitre
+     en bas de page : ouvert d'emblée, le glossaire donnait tout le cours
+     avant qu'on l'ait fait (retour de Loïc du 03/10/2026). L'étape se lit
+     dans son kicker (« ÉTAPE 1.2 », « RÉVISION 3.1 »). */
+  function etapesFaites(){
+    var ok={};
+    $$('.step.is-done').forEach(function(st){
+      var k=$('.step-kicker',st), m=k && k.textContent.match(/(\d+\.\d+)/);
+      if(m) ok[m[1]]=true;
+    });
+    return ok;
+  }
   function rendre(f){
     var q=normaliser(f||'');
+    var faites=etapesFaites();
+    function cache(e){ return !!e.etape && !e.eleve && !faites[e.etape]; }
     var liste=DICO.filter(function(e){
       if(!q) return true;
-      return normaliser(e.mot).indexOf(q)>=0 || normaliser(e.def||'').indexOf(q)>=0;
+      return normaliser(e.mot).indexOf(q)>=0 || (!cache(e) && normaliser(e.def||'').indexOf(q)>=0);
     });
     var h=liste.map(function(e){
+      if(cache(e))
+        return '<div class="glo-entree vide"><div class="m">'+e.mot+'</div>'+
+          '<div class="o">'+(e.origine||'cette séquence')+'</div>'+
+          '<div class="d">À découvrir — étape '+e.etape+'.</div></div>';
       var perso=e.eleve||'';
       /* pointillé seulement si le mot n'a AUCUNE définition — ni celle de
          l'élève, ni celle de référence ; sinon l'entrée est pleine. */

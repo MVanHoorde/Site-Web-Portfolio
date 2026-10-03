@@ -44,6 +44,22 @@ et `data-renvoi-texte`. Les `data-cle` d'étape de terminale commencent par `est
 Pas de plafond d'avance. Un nouveau chapitre s'ajoute à `generer-questions.mjs` et
 `generer-sequences-espaces.mjs`.
 
+🔴 **Progression en ES (03/10/2026)** : Loïc ne valide rien en ligne — **l'envoi
+d'une réponse valide l'étape**, en vert plein, sans « relecture en cours ». Toute
+étape `data-gate` a de quoi se valider (QCM, trous, réponse, ou bouton « J'ai lu »
+pour une étape de lecture, patron dans `CONSIGNES-sequence-SNT.md` §3) ; seules
+les étapes `data-gate` comptent, les « pour aller plus loin » sont hors 100 %.
+Une séance de révision compte comme les autres, et n'a pas de fiche
+(`<section data-fiche="non">`).
+
+🔴 **Glossaire d'ES** : chaque mot du `#dico-source` déclare l'`etape` qui le
+définit, et ne se dévoile qu'une fois cette étape validée — en bas de page comme
+dans le bouton 📖. **N'y entre que l'évaluable.** Un mot de contexte (spallation,
+lithosphère…) s'explique sur place, dans une infobulle `.plustard def` sans
+`data-glossaire`, ou dans le dictionnaire d'un poste vidéo, qui reste local. Fait
+en nucléosynthèse et en terminale t2-c1 ; à faire dans les cinq autres chapitres,
+dont le glossaire flottant montre encore tout dès l'arrivée.
+
 ## Conventions de mise en forme (audit du 12/09/2026)
 
 Motif : le gras employé partout donne un rendu « généré par IA », et l'œil n'a plus
@@ -53,7 +69,7 @@ aucun repère pour distinguer ce qui compte. Trois niveaux, **jamais cumulés** 
 |---|---|---|
 | `<b>` | structure du texte : terme de programme, à sa **première** occurrence dans l'étape | 2 par paragraphe, 1 par puce, 1 par correction de QCM, **0 dans une légende de figure** |
 | `<b class="cle">` | rouge — **le mot que l'élève doit pouvoir restituer** en évaluation | 1 par bloc « à retenir », 1 par puce de bilan |
-| `.plustard def` | mot dont la définition s'ouvre au survol (et alimente le glossaire) | à volonté |
+| `.plustard def` | mot dont la définition s'ouvre au survol (et alimente le glossaire s'il porte `data-glossaire`) | à volonté |
 
 Le rouge de mise en évidence (`--cle: #b3122b`) n'est **pas** le rouge des verdicts
 (`--err`) : celui-là veut dire « faux », et un mot important ne doit jamais porter

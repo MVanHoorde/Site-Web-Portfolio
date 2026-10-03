@@ -79,7 +79,8 @@
   .seance-time{font-family:"IBM Plex Mono";font-size:13px;color:var(--ink-faint);white-space:nowrap}
   .seance-goal{color:var(--ink-soft);font-size:14.5px;margin:0 0 8px;max-width:70ch}
   .progress-line{height:5px;background:var(--line);border-radius:100px;overflow:hidden;margin:12px 0 4px}
-  .progress-line i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+  .progress-line i{display:block;height:100%;width:0;transition:width .4s;
+    background:linear-gradient(90deg,var(--ok) 0 var(--plein,100%),transparent 0),var(--hachure)}
 
   /* verrouillage */
   .lock-banner{display:none;align-items:center;gap:12px;background:var(--surface);border:1px dashed var(--france);border-radius:var(--radius);padding:14px 16px;margin-top:14px;color:var(--france);font-size:14px}
@@ -138,8 +139,13 @@
      le vert plein est réservé à ce qui a été relu par le professeur.
      Sans cette distinction, un élève croit son travail validé alors
      que personne ne l'a encore lu. */
+  /* Hachure verte (03/10/2026, décision de Loïc) : « envoyé, en attente de
+     correction » se lit partout du même dessin — pastille, sommaire, jauges.
+     Compté dans la progression, distinct du vert plein de ce qui est relu. */
+  :root{--hachure:repeating-linear-gradient(-45deg,var(--ok) 0 2.5px,
+        color-mix(in srgb,var(--ok) 22%,var(--bg)) 2.5px 5px)}
   .step.is-done.attente-corr .step-pip{
-    background:var(--bg);border-color:var(--ok);border-style:dashed}
+    background:var(--hachure);border-color:var(--ok)}
   .step.is-done.attente-corr .rail{background:linear-gradient(var(--ok),var(--line));opacity:.45}
 
   /* Titre d'étape repliable. La classe .replie existait déjà (voir
@@ -571,6 +577,14 @@
   .video-affiche .va-txt{font-size:15px;font-weight:600;color:#fff}
   .video-affiche .va-note{font-size:12px;color:#9fb0d6;max-width:44ch;line-height:1.45}
   @media print{.video-affiche{display:none}}
+  /* Lecteur MP4 (OneDrive du lycée) et crédit sous chaque vidéo — 03/10/2026 */
+  .poste-media video.video-od{width:100%;max-height:70vh;display:block;border-radius:8px;background:#000}
+  .video-credit{font-size:12px;line-height:1.5;margin:8px 0 0;color:#9fb0d6}
+  .video-credit a{color:#c9d4ee;text-underline-offset:2px}
+  .video-credit a:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:3px}
+  :not(.poste-media) > .video-credit{color:var(--ink-soft)}
+  :not(.poste-media) > .video-credit a{color:var(--link)}
+  .video-panne{font-size:13px;color:#ffd7a8;margin:8px 0 0}
   .poste-media .consigne{color:#c9d4ee;font-size:12.5px;margin:0 0 9px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .poste-corps{display:flex;gap:0;flex-wrap:wrap}
   .poste-notes{flex:1;min-width:260px;padding:14px 16px}
@@ -775,7 +789,10 @@ body[data-sequence^="snt-"] .retain li + li{margin-top:6px}
 /* Rendu, pas encore relu (24/08/2026) — même dessin que dans le fil :
    coche verte sur fond creux, bordure verte pointillée. Le vert plein
    reste réservé à ce que le professeur a lu. */
-#prog .pip2.en-attente{background:var(--bg);color:var(--ok);border-color:var(--ok);border-style:dashed}
+#prog .pip2.en-attente{background:var(--hachure);color:transparent;border-color:var(--ok)}
+#prog .ph-leg{font-size:11px;line-height:1.35;color:var(--ink-soft);margin:-4px 0 8px;display:flex;gap:6px;align-items:flex-start}
+#prog .ph-leg[hidden]{display:none}
+#prog .ph-leg i{flex:none;width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ok);background:var(--hachure);margin-top:1px}
 #prog a.it.cur{background:var(--activity-wash)}
 #prog a.it.cur .pip2{border-color:var(--activity);border-style:dashed}
 /* Verrouillé = visiblement verrouillé. Le href est déjà retiré côté
@@ -842,7 +859,8 @@ body.js-ok nav.seances{display:none}
 #prog4 .p4-jauge{display:flex;gap:6px;margin-top:7px}
 #prog4 .p4-seg{flex:1;text-decoration:none;color:inherit;display:block;min-width:0}
 #prog4 .p4-seg i{display:block;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
-#prog4 .p4-seg i b{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+#prog4 .p4-seg i b{display:block;height:100%;width:0;transition:width .4s;
+     background:linear-gradient(90deg,var(--ok) 0 var(--plein,100%),transparent 0),var(--hachure)}
 #prog4 .p4-seg s{display:block;text-decoration:none;font-family:"IBM Plex Mono",monospace;
      font-size:10.5px;color:var(--ink-faint);margin-top:5px;overflow:hidden;
      text-overflow:ellipsis;white-space:nowrap}
@@ -1522,3 +1540,18 @@ body.teacher #corr-liste{display:none}
 /* QCM réduit : le lanceur annonce la reprise */
 .qcm-lanceur.qcm-reduit button{border-style:dashed}
 .qcm-panel .qtop .qreduire:hover{border-color:var(--link);color:var(--link)}
+
+/* ---------- « J'ai lu » : valider une étape de lecture (03/10/2026) ----------
+   Patron : <div class="lu" data-valide-sur-interaction><button type="button">
+   <span class="lu-a">✓ J'ai lu</span><span class="lu-ok">✓ C'est noté</span>
+   </button></div>. Le clic valide l'étape (initValideSurInteraction) ; l'état
+   revient de la base au rechargement par la classe is-done de l'étape. */
+.lu{margin:16px 0 4px;display:flex;justify-content:flex-end}
+.lu button{font:inherit;font-size:14.5px;font-weight:600;min-height:44px;padding:9px 18px;border-radius:10px;
+  cursor:pointer;border:1.5px solid var(--ok);background:var(--surface);color:var(--ok)}
+.lu button:hover{background:var(--ok-wash)}
+.lu button:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.lu .lu-ok{display:none}
+.step.is-done .lu button{background:var(--ok);color:#fff;cursor:default}
+.step.is-done .lu .lu-a{display:none}
+.step.is-done .lu .lu-ok{display:inline}

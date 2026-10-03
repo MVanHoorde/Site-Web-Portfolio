@@ -12,7 +12,7 @@
 <script src="../assets/js/progression.js?v=17"></script>
 <script src="../assets/js/seances-snt.js?v=16"></script>
 <script src="../assets/js/verrou-snt.js?v=3"></script>
-<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=45">
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=46">
 
 <style>
   /* Démonstration des pastilles pour l'étape 1.1 (24/08/2026). Elles sont
@@ -23,13 +23,15 @@
   .pip-demo{display:inline-block;width:16px;height:16px;border-radius:50%;vertical-align:-3px;
     margin-right:6px;border:2px solid var(--france);background:var(--bg)}
   .pip-demo.wait{background:var(--wait-wash);border-color:var(--wait)}
-  .pip-demo.attente{background:var(--bg);border-color:var(--ok);border-style:dashed}
+  .pip-demo.attente{background:var(--hachure);border-color:var(--ok)}
   .pip-demo.done{background:var(--ok);border-color:var(--ok)}
   .pip2-demo{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;
     border-radius:50%;vertical-align:-3px;margin-right:6px;font-size:10px;color:#fff;
     border:1.5px solid var(--line);background:var(--surface)}
   .pip2-demo.done{background:var(--ok);border-color:var(--ok)}
-  .pip2-demo.attente{background:var(--bg);color:var(--ok);border-color:var(--ok);border-style:dashed}
+  .pip2-demo.attente{background:var(--hachure);color:transparent;border-color:var(--ok)}
+  .jauge-demo{display:inline-block;width:46px;height:6px;border-radius:3px;vertical-align:2px;
+    background:linear-gradient(90deg,var(--ok) 0 60%,transparent 0),var(--hachure)}
   .pip2-demo.wait{background:var(--wait);border-color:var(--wait)}
   .pip2-demo.cur{border-color:var(--activity);border-style:dashed;background:var(--activity-wash)}
   .pip2-demo.locked{border-style:dashed;background:var(--surface-2)}
@@ -158,13 +160,14 @@
               <tr><th>Dans le fil du cours</th><th>Ce que ça veut dire</th></tr>
               <tr><td><span class="pip-demo"></span> vide, cerclée de la couleur de la séance</td><td>Étape à faire. Bleu en séance 1, vert en séance 2, violet en séance 3</td></tr>
               <tr><td><span class="pip-demo wait"></span> jaune pleine</td><td>Réponse envoyée, en attente de correction</td></tr>
-              <tr><td><span class="pip-demo attente"></span> verte, creuse, en pointillés</td><td>Ton travail est rendu — personne ne l'a encore relu</td></tr>
+              <tr><td><span class="pip-demo attente"></span> hachurée de vert</td><td>Ton travail est rendu — personne ne l'a encore relu. <b>L'étape compte déjà</b> : tu peux avancer</td></tr>
               <tr><td><span class="pip-demo done"></span> verte pleine</td><td>Validé par ton professeur</td></tr>
             </table>
             <table class="doc-table" style="margin-top:10px">
               <tr><th>Dans la barre de progression</th><th>Ce que ça veut dire</th></tr>
               <tr><td><span class="pip2-demo done">✓</span> verte avec une coche</td><td>Validé</td></tr>
-              <tr><td><span class="pip2-demo attente">✓</span> verte creuse, en pointillés</td><td>Rendu, pas encore relu</td></tr>
+              <tr><td><span class="pip2-demo attente">✓</span> hachurée de vert</td><td>Rendu, pas encore relu — déjà compté</td></tr>
+              <tr><td><span class="jauge-demo"></span> jauge verte, puis hachurée</td><td>En haut de page : le vert plein est ce qui a été relu, les hachures ce qui attend sa correction</td></tr>
               <tr><td><span class="pip2-demo wait">…</span> jaune avec trois points</td><td>Envoyé, en attente</td></tr>
               <tr><td><span class="pip2-demo cur"></span> cerclée d'orange en pointillés</td><td>L'étape où tu es en ce moment</td></tr>
               <tr><td><span class="pip2-demo locked"></span> grise en pointillés, suivie de 🔒</td><td>Pas encore ouverte</td></tr>
@@ -172,7 +175,7 @@
 
             <figure class="ill" style="max-width:330px;margin:12px auto">
               <img src="../assets/img/snt/2nde-snt-t0-systemes-informatises/t0-ui-barre-progression.png" alt="Barre de progression : pourcentage en haut, étapes validée, rendue en attente, envoyée, en cours et verrouillées, séances suivantes repliées" loading="lazy">
-              <figcaption><b>La barre de gauche, avec les cinq états.</b> De haut en bas&nbsp;: validée, rendue mais pas encore relue, envoyée en attente, l'étape où tu es (surlignée), puis celles qui t'attendent. Le pourcentage en haut compte toute la séquence.</figcaption>
+              <figcaption><b>La barre de gauche, avec les cinq états.</b> De haut en bas&nbsp;: validée, rendue mais pas encore relue, envoyée en attente, l'étape où tu es (surlignée), puis celles qui t'attendent. Le pourcentage en haut compte toutes les étapes <b>à valider</b> de la séquence&nbsp;; les « pour aller plus loin » et les « Et toi&nbsp;? » n'y entrent pas, ils sont hors 100&nbsp;%. Une étape envoyée et pas encore relue y compte déjà.</figcaption>
             </figure>
 
             <div class="block-label">Doc — les étapes arrivent une par une</div>
@@ -897,7 +900,7 @@
             <div class="poste">
               <div class="poste-media">
                 <p class="consigne">🎬 <span>Une vidéo de <b>Codeur Pro</b> — dix minutes. Casque recommandé&nbsp;; mets en pause autant que tu veux pour prendre des notes.</span></p>
-                <iframe data-src="https://www.youtube-nocookie.com/embed/85XUJXHbjBo" height="315" frameborder="0" allowfullscreen title="Codeur Pro — comment fonctionne un ordinateur"></iframe>
+                <iframe data-chaine="codeur-pro" data-chaine-url="https://www.youtube.com/@codeurpro" data-src="https://www.youtube-nocookie.com/embed/85XUJXHbjBo" height="315" frameborder="0" allowfullscreen title="Codeur Pro — comment fonctionne un ordinateur"></iframe>
               </div>
               <div class="poste-corps">
                 <div class="poste-notes">
@@ -1567,7 +1570,7 @@
             <div class="poste">
               <div class="poste-media">
                 <p class="consigne">🎬 <span><b>Anatomie détaillée des principaux composants d'un PC</b> · Deus Ex Silicium · 49 min — hors programme, pour le plaisir.</span></p>
-                <iframe data-src="https://www.youtube-nocookie.com/embed/geBcfKn3B1g" height="315" frameborder="0" allowfullscreen title="Anatomie détaillée des composants d'un PC"></iframe>
+                <iframe data-chaine="Deus Ex Silicium" data-chaine-url="https://www.youtube.com/@dexsilicium" data-src="https://www.youtube-nocookie.com/embed/geBcfKn3B1g" height="315" frameborder="0" allowfullscreen title="Anatomie détaillée des composants d'un PC"></iframe>
               </div>
             </div>
           </div>
@@ -2846,6 +2849,6 @@
 })();
 </script>
 <script src="../assets/js/carte-reseau.js?v=14"></script>
-<script src="../assets/js/sequence-snt.js?v=51"></script>
+<script src="../assets/js/sequence-snt.js?v=52"></script>
 </body>
 </html>

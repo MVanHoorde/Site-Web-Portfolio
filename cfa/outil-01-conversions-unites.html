@@ -64,6 +64,19 @@
   .gammes td.depart, .gammes td.arrivee { text-align: right; white-space: nowrap; }
   .gammes td.fleche { text-align: center; color: var(--sepia); width: 2rem; }
   .gammes input.trou { width: 5rem; }
+  /* Infobulle de vocabulaire de chantier (03/10/2026) : un mot que
+     l'apprenti peut ne pas connaître porte sa définition au survol, au
+     focus clavier et au toucher (sur iPad, le toucher déclenche :hover). */
+  .glose { font: inherit; color: inherit; background: none; border: 0; padding: 0;
+           border-bottom: 1.5px dotted var(--h-beta); cursor: help; position: relative; }
+  .glose:focus-visible { outline: 2px solid var(--h-beta); outline-offset: 2px; }
+  .glose .glose-bulle { display: none; position: absolute; left: 0; top: calc(100% + 6px);
+           z-index: 20; width: max-content; max-width: 17rem; padding: .5rem .7rem;
+           background: var(--papier-clair); color: var(--encre); border: 1px solid var(--filet-fonce);
+           border-radius: 6px; box-shadow: 0 4px 14px rgba(43,33,24,.15);
+           font-size: .85rem; line-height: 1.4; text-align: left; font-weight: 400; }
+  .glose:hover .glose-bulle, .glose:focus .glose-bulle { display: block; }
+  @media print { .glose { border-bottom: 0; } .glose .glose-bulle { display: none !important; } }
 </style>
 </head>
 <body data-accueil-url="index.html"
@@ -399,7 +412,7 @@
 
     <div class="enonce">
       <span class="situation">Mise en situation — chargement d'un tombereau</span>
-      <p>Un tombereau de chantier transporte du grave non traité. Le conducteur
+      <p>Un tombereau de chantier transporte du <button type="button" class="glose" aria-describedby="glose-grave">grave<span class="glose-bulle" role="tooltip" id="glose-grave">Mélange de graviers et de sable employé en travaux publics, pour les remblais et les couches de chaussée. «&nbsp;Non traité&nbsp;»&nbsp;: sans liant — ni ciment, ni bitume.</span></button> non traité. Le conducteur
       remplit la benne à ras bord et le pont arrière rend l'âme au bout de trois
       semaines. On cherche à savoir si la benne pleine respecte la charge utile
       autorisée par le constructeur.</p>

@@ -4439,3 +4439,49 @@ puis remasquée à la demande de Loïc, qui veut relire chapitres et fiches d'ab
 Le corrigé à lire, poussé dans la soirée, n'était pas ce que Loïc imaginait : il
 voulait un bouton qui remplisse les parties à compléter — graphiques et fusion /
 fission —, pas les QCM. Le bloc a été remplacé par deux boutons, un par étape.
+
+## 01/10/2026 — Les corrigés du livret CFA passent en PDF
+
+Loïc voulait un PDF de toutes les corrections du CFA, un document par outil. État
+des lieux : les pages en ligne ne portent aucun corrigé (c'est voulu), et
+`_corriges-cfa/` n'en contenait que deux, 00 et 02. Celui de l'outil 2 était périmé
+— il corrigeait le cric de 50 mm et les vérins de 86,6 cm², remplacés depuis par le
+vérin de benne 50/28 et la chargeuse 2 × 80/45 — et comptait encore cinq étapes.
+Pilote demandé sur les outils 1, 2, 3 : corrigés écrits (le 2 réécrit), résultats
+recalculés indépendamment, export outillé. L'export a révélé que nos polices
+auto-hébergées n'ont ni grec, ni ℓ, ni exposants Unicode, et qu'EB Garamond n'a pas
+la flèche → : flèche passée en Plex Mono, exposants en `<sup>`, grec laissé au
+Garamond système et toléré par le contrôle. Les pages en ligne ont le même repli
+pour le grec, sans conséquence visible jusqu'ici.
+
+## 03/10/2026 — Ce qui faisait mentir les barres de progression
+
+Loïc ouvre une journée de bugs par la nucléosynthèse : le grand QCM de la séance 3
+semble faire avancer la page mais disparaît au rechargement, et rien ne permet de
+valider 3.1 et 3.2. Cause simple : la séance de révision n'avait aucune étape « à
+valider » et son QCM était `data-facultatif`, donc jamais enregistré.
+
+En cherchant pourquoi « les progressions ne se complètent pas », un défaut plus
+large : le pourcentage, les jauges et le résumé écrit en base comptaient **toutes**
+les étapes, « pour aller plus loin », « Et toi ? » et débranchés compris — alors
+que la décision du 22/08 dit l'inverse et que les pages affichent « hors 100 % ».
+Un élève qui avait tout fait plafonnait. L'audit au navigateur des 17 pages d'ES et
+de SNT a aussi trouvé quatre étapes à valider sans aucun moyen de l'être
+(radioactivité 3.1 et 3.3, son à coder 1.1, terminale t2-c2 3.1) : bouton « J'ai
+lu ». Les SNT t3 à t7, en chantier, ont des étapes sans activité : relevé laissé tel
+quel.
+
+Deux demandes de fond en cours de route : en SNT, l'étape envoyée en attente de
+correction se hachure de vert, pour que les élèves cessent de demander pourquoi
+elle n'est pas à 100 % ; en ES, Loïc ne valide rien en ligne, l'envoi suffit.
+
+YouTube étant inaccessible aux élèves, Loïc passe toutes les vidéos en MP4 sur le
+OneDrive du lycée. Mesuré : le lecteur SharePoint intégré refuse d'être affiché hors
+de Microsoft sans connexion ; le lien de partage « toute personne » se lit en
+revanche dans le lecteur natif de Chromium. Le risque de droit d'auteur lui a été
+exposé (compte du lycée, demande de retrait plausible) ; il l'accepte, et demande
+en contrepartie le crédit de la chaîne sous chaque vidéo. Reste l'essai sur iPad.
+
+Les fiches d'ES reviennent, avec une partie fixe pour la nucléosynthèse. Une passe
+de Python a converti `sequence-snt.js` en CRLF sans que `git diff` le montre :
+rattrapé, et noté en mémoire.
