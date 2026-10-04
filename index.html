@@ -78,15 +78,6 @@
     font-size:1.28rem;line-height:1.22;margin:0}
   .porte p{font-size:.92rem;color:var(--sepia);font-style:italic;margin:.25rem 0 0;max-width:58ch}
 
-  /* ---- Les niveaux dont le hub est ouvert mais les chapitres à venir ---- */
-  .liste-sobre{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
-  .liste-sobre li{display:flex;align-items:baseline;gap:.7rem;font-size:1.05rem}
-  .liste-sobre a{color:var(--encre);text-decoration:none;border-bottom:1px dotted var(--pointille)}
-  .liste-sobre a:hover{color:var(--h-alpha);border-color:var(--h-alpha)}
-  .liste-sobre a:focus-visible{outline:2px solid var(--h-alpha);outline-offset:3px}
-  .liste-sobre .etiq{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.7rem;
-    letter-spacing:.1em;color:var(--sepia);white-space:nowrap}
-
   /* ---- Écrire. L'adresse tient en colonne large : 38 caractères en
          monospace ne rentrent pas dans la colonne de l'atelier. ---- */
   .adresse{margin-top:.2rem}
@@ -127,28 +118,60 @@
   .compte{margin-top:.8rem;font-size:.88rem;color:var(--sepia)}
   .compte strong{color:var(--h-alpha);font-weight:400}
 
-  /* ---- Bande « auteur & vidéo » : l'activité hors du lycée, en attente ---- */
-  .auteur{border-top:1px solid var(--filet);padding:2.4rem 0 3rem}
-  .auteur-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);
-    gap:3.4rem;align-items:start}
-  .auteur h2{font-size:1.75rem;font-weight:500;margin:.45rem 0 0}
-  .auteur p{color:var(--encre-douce);margin-top:.7rem;max-width:60ch}
-  .chantier{display:grid;gap:.5rem;margin-top:.4rem}
-  .chantier li{display:flex;align-items:baseline;gap:.8rem;
-    border:1px dashed var(--pointille);padding:.7rem 1rem;list-style:none}
-  .chantier b{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;
-    text-transform:uppercase;color:var(--sepia);font-weight:400}
-  .chantier span{font-style:italic;color:var(--encre-douce)}
-  .chantier em{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.66rem;
-    letter-spacing:.1em;text-transform:uppercase;color:var(--sepia);font-style:normal;
-    white-space:nowrap}
+  /* ---- Bande auteur : l'activité hors de la classe. Trois vitrines
+         reprennent la grammaire des portes (bandeau illustré, voile,
+         nom en blanc) en format vertical. Zéro arrondi, zéro ombre. ---- */
+  .auteur{border-top:3px double var(--encre);padding:2.8rem 0 3.4rem;
+    background:linear-gradient(to bottom,var(--papier-clair),transparent 70%)}
+  .auteur-tete{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);
+    gap:3.4rem;align-items:end}
+  .auteur h2{font-size:clamp(1.6rem,3vw,2.1rem);font-weight:500;line-height:1.15;margin:.45rem 0 0}
+  .auteur-tete p{color:var(--encre-douce);max-width:62ch}
+  .auteur-tete b{color:var(--encre);font-weight:600}
+  .suite{display:inline-block;margin-top:.5rem;font-family:'IBM Plex Mono',monospace;
+    font-size:.82rem;color:var(--encre);text-decoration:none;
+    border-bottom:1px solid var(--h-alpha);padding-bottom:2px}
+  .suite:hover,.suite:focus-visible{color:var(--h-alpha)}
+  .suite:focus-visible{outline:2px solid var(--h-alpha);outline-offset:3px}
+
+  .vitrines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}
+  .vitrine{display:block;background:var(--papier-clair);border:1px solid var(--filet-fonce);
+    text-decoration:none;color:var(--encre);transition:border-color .18s}
+  .vitrine:hover,.vitrine:focus-visible{border-color:var(--h-alpha)}
+  .vitrine:focus-visible{outline:2px solid var(--h-alpha);outline-offset:-3px}
+  .vitrine-vis{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:var(--encre)}
+  .vitrine-vis img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .5s}
+  .vitrine:hover .vitrine-vis img{transform:scale(1.035)}
+  /* Une miniature pleine, les deux autres en médaillons dans l'angle :
+     découpées en lames, elles perdaient leurs titres. */
+  .vitrine-medaillons img+img{position:absolute;right:.6rem;width:34%;height:auto;
+    aspect-ratio:16/9;outline:2px solid var(--papier-clair);z-index:1}
+  .vitrine-medaillons img:nth-of-type(2){top:.6rem}
+  .vitrine-medaillons img:nth-of-type(3){top:calc(.6rem + 34% + .4rem)}
+  /* Le portrait Kahoot est carré : posé à droite sur l'aplat prune */
+  .vitrine-portrait{background:var(--h-gamma)}
+  .vitrine-portrait img{width:auto;height:100%;margin-left:auto;aspect-ratio:1}
+  .vitrine-nom{position:absolute;left:.85rem;bottom:.35rem;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.75rem;
+    color:#fff;letter-spacing:-.02em;line-height:1}
+  .vitrine-txt{display:block;padding:.8rem 1rem .95rem}
+  .vitrine-titre{display:block;font-weight:600;font-size:1.12rem;line-height:1.25}
+
+  .principes{list-style:none;margin:2rem 0 0;padding:0;display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));gap:1.4rem;
+    border-top:1px solid var(--filet);padding-top:1.3rem}
+  .principes li{font-size:.94rem;color:var(--encre-douce);line-height:1.45}
+  .principes b{display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;
+    font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--h-alpha);
+    margin-bottom:.3rem}
 
   /* iPad en portrait : une seule colonne, et l'atelier cesse de coller —
      collant sur une page déjà empilée, il resterait figé sous le pouce. */
   @media(max-width:900px){
     .deux-col{grid-template-columns:1fr;gap:2.6rem}
     .collant{position:static}
-    .auteur-inner{grid-template-columns:1fr;gap:1.6rem}
+    .auteur-tete{grid-template-columns:1fr;gap:1rem}
+    .principes{grid-template-columns:repeat(2,minmax(0,1fr))}
     /* En une colonne, la planche s'étirerait sur toute la mesure : un cadre
        de 185 px de haut sur 800 px de large, avec la gravure perdue au milieu. */
     .planchette{max-width:420px}
@@ -158,6 +181,7 @@
     .porte{grid-template-columns:1fr}
     .porte-vis{height:120px}
     .porte-txt{padding:.85rem 1.2rem}
+    .vitrines,.principes{grid-template-columns:minmax(0,1fr)}
   }
 </style>
 </head>
@@ -172,7 +196,7 @@
       <li><a class="actif" href="index.html">Accueil</a></li>
       <li><a href="#classes">Mes classes</a></li>
       <li><a href="#atelier">L'atelier</a></li>
-      <li><a href="#auteur">Auteur &amp; vidéo</a></li>
+      <li><a href="#auteur">Auteur</a></li>
       <li><a href="#contact"><em>Contact</em></a></li>
     </ul>
   </div>
@@ -229,14 +253,33 @@
             <p>BTS MMCM et Bac pro MVTR — du calcul rédigé aux vecteurs.</p>
           </span>
         </a>
+        <!-- Enseignement scientifique : une porte par niveau (04/10/2026).
+             Le décompte dit ce qui est OUVERT aux élèves, pas ce qui est
+             écrit : en 1re, seule la nucléosynthèse l'est (repère MASQUÉ-ES1
+             dans le hub). Le mettre à jour à chaque démasquage. -->
+        <a class="porte" href="pages/1re-enseignement-scientifique.html" style="--img:url('assets/img/es/1re-es-t1-c1/t1c1-supernova-kepler.jpg');--focus:50% 30%">
+          <span class="porte-vis">
+            <span class="porte-voile"></span>
+            <span class="porte-gros">1<sup>re</sup><small>ES</small></span>
+          </span>
+          <span class="porte-txt">
+            <span class="porte-num">1 chapitre ouvert · 5 en préparation</span>
+            <h3>Enseignement scientifique</h3>
+            <p>Une longue histoire de la matière · le son et la musique · la forme de la Terre.</p>
+          </span>
+        </a>
+        <a class="porte" href="pages/term-enseignement-scientifique.html" style="--img:url('assets/img/es/term-es-t2-c2/t2c2-centrale-solaire-shouhang.jpg');--focus:50% 60%">
+          <span class="porte-vis">
+            <span class="porte-voile"></span>
+            <span class="porte-gros">T<sup>le</sup><small>ES</small></span>
+          </span>
+          <span class="porte-txt">
+            <span class="porte-num">2 chapitres</span>
+            <h3>Enseignement scientifique</h3>
+            <p>Deux siècles d'énergie électrique · produire et stocker l'électricité.</p>
+          </span>
+        </a>
       </div>
-
-      <p class="rubrique">Autres niveaux</p>
-      <ul class="liste-sobre">
-        <li><a href="pages/1re-enseignement-scientifique.html">Enseignement scientifique</a><span class="etiq a-venir">1<sup>re</sup> · ES<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — chapitres en chantier</span></span></li>
-        <li><a href="pages/term-enseignement-scientifique.html">Enseignement scientifique</a><span class="etiq">T<sup>le</sup> · ES</span></li>
-        <li><a href="pages/term-spe-physique-chimie.html">Spécialité Physique-Chimie</a><span class="etiq a-venir">T<sup>le</sup> · SPÉ PC<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — chapitres en chantier</span></span></li>
-      </ul>
 
       <p class="rubrique" id="contact">Écrire</p>
       <p class="adresse"><a href="mailto:l.vanhoorde@enseignant.isaac-etoile.fr">l.vanhoorde@enseignant.isaac-etoile.fr</a></p>
@@ -263,8 +306,12 @@
           <ul class="outils">
             <li><b>o1</b><a href="pages/2nde-pc-o1-ecriture-scientifique.html">Écriture scientifique</a></li>
             <li><b>o2</b><a href="pages/2nde-pc-o2-chiffres-significatifs.html">Chiffres significatifs</a></li>
-            <li><b>o3</b><span class="a-venir">Sécurité au laboratoire<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — en chantier</span></span></li>
-            <li><b>o4</b><span class="a-venir">Verrerie et matériel<span class="tv" aria-hidden="true">🚧</span><span class="sr"> — en chantier</span></span></li>
+            <li><b>o3</b><a href="pages/2nde-pc-o3-securite-laboratoire.html">Sécurité au laboratoire</a></li>
+            <li><b>o4</b><a href="pages/2nde-pc-o4-verrerie-materiel.html">Verrerie et matériel</a></li>
+            <li><b>o5</b><a href="pages/2nde-pc-o5-compte-rendu-tp.html">Compte rendu de TP</a></li>
+            <li><b>o6</b><a href="pages/2nde-pc-o6-presenter-un-calcul.html">Présenter un calcul</a></li>
+            <li><b>o7</b><a href="pages/2nde-pc-o7-relation-algebrique.html">Relation algébrique</a></li>
+            <li><b>o8</b><a href="pages/2nde-pc-o8-construire-un-graphique.html">Construire un graphique</a></li>
           </ul>
         </div>
 
@@ -287,18 +334,67 @@
   </div>
 </div>
 
+<!-- Bande auteur (04/10/2026). Les trois vitrines renvoient à la page
+     pages/auteur.html, qui porte les liens sortants. Toutes les images
+     sont hébergées ici : une miniature chargée depuis YouTube ou Kahoot
+     enverrait l'adresse IP du visiteur à leurs serveurs dès l'ouverture. -->
 <section class="auteur" id="auteur">
-  <div class="zone auteur-inner">
-    <div>
-      <p class="surtitre">Hors du lycée</p>
-      <h2>Auteur &amp; vidéo</h2>
-      <p>Une seconde activité, en auto-entreprise : écrire des ressources de
-        physique-chimie pour d'autres enseignants, et les mettre en vidéo.</p>
+  <div class="zone">
+    <div class="auteur-tete">
+      <div>
+        <p class="surtitre">Hors de la classe</p>
+        <h2>Auteur, vulgarisateur, créateur</h2>
+      </div>
+      <p>J'écris des cours pour d'autres que mes élèves : la spécialité
+        physique-chimie de terminale sur <b>Quizéo</b>, l'histoire des sciences
+        sur <b>YouTube</b>, des quiz sur <b>Kahoot</b>. Ce site en est
+        l'atelier — la version 2026 de mes essais, en test cette année.
+        <a class="suite" href="pages/auteur.html">Le parcours et la démarche&nbsp;→</a></p>
     </div>
-    <ul class="chantier">
-      <li><b>Auteur</b><span>Ressources et manuels</span><em>en chantier</em></li>
-      <li><b>Vidéo</b><span>La chaîne</span><em>en chantier</em></li>
-      <li><b>Prestations</b><span>Formation et relecture</span><em>en chantier</em></li>
+
+    <div class="vitrines">
+      <a class="vitrine" href="pages/auteur.html#quizeo">
+        <span class="vitrine-vis">
+          <img src="assets/img/auteur/quizeo-vitrine.jpg" alt="">
+          <span class="porte-voile"></span>
+          <span class="vitrine-nom">Quizéo</span>
+        </span>
+        <span class="vitrine-txt">
+          <span class="porte-num">Auteur · Terminale spécialité</span>
+          <span class="vitrine-titre">Plus de vingt chapitres de physique-chimie</span>
+        </span>
+      </a>
+      <a class="vitrine" href="pages/auteur.html#youtube">
+        <span class="vitrine-vis vitrine-medaillons">
+          <img src="assets/img/auteur/yt-lavoisier.jpg" alt="">
+          <img src="assets/img/auteur/yt-zero.jpg" alt="">
+          <img src="assets/img/auteur/yt-archimede.jpg" alt="">
+          <span class="porte-voile"></span>
+          <span class="vitrine-nom">YouTube</span>
+        </span>
+        <span class="vitrine-txt">
+          <span class="porte-num">Vulgarisation · Cogito Ergo Sum</span>
+          <span class="vitrine-titre">L'histoire des sciences, avec ses sources</span>
+        </span>
+      </a>
+      <a class="vitrine" href="pages/auteur.html#kahoot">
+        <span class="vitrine-vis vitrine-portrait">
+          <img src="assets/img/auteur/kahoot-chaine.jpg" alt="">
+          <span class="porte-voile"></span>
+          <span class="vitrine-nom">Kahoot!</span>
+        </span>
+        <span class="vitrine-txt">
+          <span class="porte-num">Créateur · enseignant vérifié</span>
+          <span class="vitrine-titre">Des quiz du programme, de la 2<sup>de</sup> à la T<sup>le</sup></span>
+        </span>
+      </a>
+    </div>
+
+    <ul class="principes">
+      <li><b>RGPD d'abord</b>Élèves sous pseudonyme, aucune collecte cachée, rien de chargé chez un tiers.</li>
+      <li><b>Interactif</b>Des cours qu'on manipule, qui répondent et se corrigent.</li>
+      <li><b>Vivant</b>Chaque cours naît en V1 ; les élèves y trouvent les bugs, on corrige en classe.</li>
+      <li><b>Sourcé</b>Schémas maison, IA avec parcimonie, chaque source citée.</li>
     </ul>
   </div>
 </section>

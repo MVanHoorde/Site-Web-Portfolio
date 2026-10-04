@@ -15,6 +15,16 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 04/10/2026 — L'accueil refait : ES en portes, page auteur
+
+| Date | Décision | Statut |
+|---|---|---|
+| 04/10/2026 | **L'enseignement scientifique entre dans « Mes classes »** : une porte par niveau (1re, terminale), même grammaire que les trois autres. Le décompte affiché dit ce qui est **ouvert**, pas ce qui est écrit (1re : « 1 chapitre ouvert · 5 en préparation ») — à mettre à jour à chaque démasquage. Le bloc « Autres niveaux » disparaît | ✅ en vigueur |
+| 04/10/2026 | **La spécialité PC de terminale sort de l'accueil** : le hub est vide. `pages/term-spe-physique-chimie.html` reste dans le dépôt et figure donc parmi les contenus « hors d'atteinte » de `verifier.mjs`, volontairement | ✅ en vigueur |
+| 04/10/2026 | Les **fiches-outils de l'accueil** listent les huit outils, tous liés (ils l'étaient déjà au hub de 2nde) | ✅ en vigueur |
+| 04/10/2026 | **Bande « Hors de la classe »** à l'accueil et **page `pages/auteur.html`** : parcours, démarche (RGPD d'abord · interactif · vivant · sourcé), Quizéo, YouTube (Cogito Ergo Sum, trois vidéos choisies par Loïc), Kahoot. La ligne « Prestations » est retirée. Un seul contact : l'adresse d'Isaac de l'Étoile | ✅ en vigueur |
+| 04/10/2026 | 🔴 **Aucune ressource tierce sur ces pages** : miniatures YouTube, portrait Kahoot et captures Quizéo copiés dans `assets/img/auteur/` (crédits dans `CREDITS.md`) ; pas de lecteur YouTube intégré, les vidéos s'ouvrent au clic. Motif : une image ou un lecteur tiers envoie l'IP du visiteur dès l'ouverture — et YouTube est bloqué au lycée | ✅ en vigueur |
+
 ## 03/10/2026 — Progression, vidéos en MP4, fiches d'ES
 
 Session de correction de bugs ouverte par Loïc sur la nucléosynthèse. Les

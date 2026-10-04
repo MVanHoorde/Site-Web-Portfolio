@@ -4502,3 +4502,28 @@ sont réparés. Nouveau : le bouton « J'ai vu un bug », élèves connectés et
 nominatif à sa demande, avec son onglet au tableau de bord. La migration `021`
 n'a pas pu être éprouvée sur un PostgreSQL local (lancement refusé) : elle attend
 d'être exécutée par Loïc.
+
+## 04/10/2026 — L'accueil refait, et une page auteur
+
+Demande de Loïc : faire entrer l'enseignement scientifique dans « Mes classes »,
+sortir la spécialité vide, remplacer les « en chantier » de la bande auteur par
+son activité réelle (Quizéo, YouTube, Kahoot) et une bio.
+
+**Ce que la recherche a corrigé.** Quizéo est édité par Tamarin Education
+(Bondues). Tabuléo en est un **distributeur**, pas l'éditeur : la page dit
+« diffusée par Tabuléo et le GAR ». Le lien de leçon Quizéo fourni affiche une
+erreur aux visiteurs sans compte ; on renvoie donc à la bibliothèque publique
+filtrée sur l'auteur, qui s'ouvre sans compte, et à quizeo.com. Le master est
+« Sciences de la matière, parcours Physique des matériaux », intitulé confirmé
+par Loïc.
+
+**Visuels.** Il y a eu deux essais pour la vitrine YouTube. Le triptyque en lames
+coupait les titres des miniatures : on a gardé une miniature pleine et deux
+médaillons. La vitrine Quizéo, faite à partir du sommaire, était délavée par le
+blanc : elle est remplacée par un montage (couverture, figure, définition), sans
+les icônes d'édition. Le premier rendu sur téléphone débordait de 11 px : en une
+colonne, la grille des vitrines prenait la largeur minimale des images. Corrigé
+par `minmax(0,1fr)`.
+
+Vérifié : captures ordinateur, iPad et téléphone, aucun débordement, aucune
+requête externe. `verifier.mjs` donne 19 problèmes, le repère.

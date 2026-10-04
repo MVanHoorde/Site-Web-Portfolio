@@ -81,6 +81,23 @@
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
 
+## 🆕 L'accueil refait : ES en portes, page auteur
+
+**Mes classes** compte cinq portes : 2nde PC, 2nde SNT, CFA, **ES 1re**, **ES
+terminale**. La spécialité de terminale n'est plus à l'accueil (hub vide). La
+porte d'ES 1re affiche « 1 chapitre ouvert · 5 en préparation » : 🔴 **à mettre
+à jour à chaque démasquage** d'un chapitre de 1re. Les fiches-outils de la
+colonne de droite listent **o1 à o8**, tous liés.
+
+La bande du bas, **« Hors de la classe »**, a trois vitrines (Quizéo, YouTube,
+Kahoot), qui mènent à **`pages/auteur.html`**. Cette page porte la bio, la démarche
+et les liens sortants. Toutes les images vivent dans `assets/img/auteur/` : aucune
+requête tierce, contrôlé au navigateur. Les textes de la bio, de la démarche et
+des résumés de vidéos sont une **V1 proposée**, que Loïc doit relire.
+
+Restent inchangées : la gravure du jour (`gravures/` est toujours vide, donc le
+cadre de repli s'affiche) et Mission Spectra.
+
 ## ✅ QCM : la bonne réponse est répartie entre les lettres
 
 Le moteur affiche les options dans l'ordre du JSON, et la bonne réponse était
