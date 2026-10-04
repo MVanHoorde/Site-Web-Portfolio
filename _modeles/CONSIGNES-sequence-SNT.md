@@ -404,8 +404,8 @@ Code.
   □ mode enseignant : déverrouille tout, et le rétablit à l'extinction
   □ chaque type de champ : QCM (bon/mauvais), trous, schéma à légender,
     texte libre (en attente → validé), réflexion perso (jamais de verdict)
-  □ « Ouvrir ma fiche » : elle se génère, porte la trace de l'élève et tient
-    dans la longueur visée (§17.2, mesurée en PDF)
+  □ « Ma fiche (PDF) » : le PDF se prépare, porte la trace de l'élève, tient
+    dans la longueur visée (§17.2) et s'enregistre (partage iOS ou téléchargement)
   □ « Recommencer » : remet tout à zéro
   □ captures bureau (1280px) + iPad (820px) + mobile (390px)
 □ Contrôle visuel des captures AVANT livraison
@@ -584,6 +584,18 @@ plus de trois fois la même lettre d'affilée dans un QCM, aucune lettre au-del�
 les valeurs rangées dans l'ordre, et toute option qu'une correction cite par sa
 lettre. `verifier.mjs` le contrôle, à côté du biais de longueur.
 
+🔴 **Jamais de bonne réponse devinable à sa place.** Les **listes déroulantes**
+(trous, tableaux d'association) et la **réserve d'étiquettes**, elles, sont
+mélangées par le moteur à l'affichage (`MÉLANGE DES CHOIX`, en tête de
+`sequence-snt.js`) : ordre stable, commun aux listes qui partagent les mêmes
+choix, et retiré tant que les bonnes réponses s'y suivent en escalier. Motif :
+relevé du 04/10/2026, la bonne réponse était la première dans 23 listes sur 27
+en t2, 30 sur 30 en O8, en diagonale en t0, t6 et t7 — et les élèves l'avaient
+repéré. L'ordre de la source n'a donc plus d'importance, sauf dans une page qui
+ne charge pas le moteur (t6, t7 : contrôlée sur sa source par `verifier.mjs`,
+bloquant). Une liste qui doit garder son ordre (échelle, mois) se pose sous
+`data-ordre-fixe`.
+
 ### 15.6 Trous tolérants
 
 Normalisation (minuscules, accents, ponctuation, articles) · **variantes** par trou
@@ -627,8 +639,17 @@ navigateur enverrait l'**IP de chaque élève** à Wikimedia.
 
 ### 15.10 Impression et PDF
 
-Une **feuille de style `@media print`** par séquence. Le PDF se fait par
-« Imprimer → Enregistrer en PDF » du navigateur. **Aucune bibliothèque, aucun CDN.**
+🔴 **La fiche de séance est un vrai PDF, fabriqué par la page** (04/10/2026) —
+plus par « Imprimer → Enregistrer en PDF » du navigateur, qu'iOS ignore depuis
+l'icône de l'écran d'accueil et le lecteur de QR code. Le moteur met la fiche en
+page hors écran, la découpe en pages A4 sans couper une ligne, une image ni un
+encadré, photographie chaque page (`html2canvas-pro`) et l'assemble (`jsPDF`) ;
+les liens restent cliquables. L'élève l'enregistre par la **feuille de partage
+d'iOS** (« Enregistrer dans Fichiers » → OneDrive) ou la **télécharge**. Les deux
+bibliothèques sont **hébergées dans le dépôt** (`assets/js/vendor/`, licence MIT)
+et chargées au premier clic seulement : **aucun CDN**. La fiche à l'écran,
+imprimable, reste en lien de secours. Le texte du PDF est une image (pas
+sélectionnable) : c'est le prix de l'indépendance vis-à-vis du navigateur.
 
 ### 15.11 QR codes
 
@@ -675,9 +696,9 @@ est un défaut, pas un détail.
 ## 17. La fiche de séance
 
 La fiche est produite par `ficheHTML()` dans `assets/js/sequence-snt.js`, à
-partir de la page et du travail de l'élève. Elle s'ouvre dans un onglet ; l'élève
-l'enregistre en PDF et la dépose dans le **dossier OneDrive qui sert de classeur
-numérique**.
+partir de la page et du travail de l'élève, puis transformée en PDF par la page
+elle-même (§15.10) ; l'élève l'enregistre dans le **dossier OneDrive qui sert de
+classeur numérique**, sous le nom proposé (`fiche-<thème>-seance-N.pdf`).
 
 **Couper la fiche d'une page** : `<body data-fiche="non">` ; **d'une seule séance** :
 `<section class="seance" data-fiche="non">` (la révision de la nucléosynthèse). Le moteur retire alors

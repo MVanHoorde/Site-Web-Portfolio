@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Décroissance en direct — tableau de bord</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/decroissance.html — la courbe de la classe, en direct
+     ------------------------------------------------------------
+     Pour l'étape 3.1 de « La radioactivité » (ES 1re, es1-t1-c2) :
+     chaque élève lance des dés pour ses noyaux (5 à 100, 10 par défaut), et sa série part
+     dans l'état de l'étape, sous la clé « es-t1c2-des/des »
+     (valeur : [heure de départ ISO, "10,8,7,…"]). Cet écran relit ces
+     états — la même table « progression » que l'onglet Suivi, avec les
+     mêmes droits (RLS, mon_eleve_pour) — et additionne les séries de la
+     classe, lancer par lancer. Rien n'est écrit en base.
+
+     PROJETABLE : aucun nom, aucun pseudonyme à l'écran. Seulement des
+     nombres de noyaux et un nombre d'élèves.
+
+     Connexion : celle du tableau de bord (prof/index.html), reprise
+     depuis le même stockage. Sans session, l'écran renvoie s'y connecter.
+
+     Un élève avance à son rythme. Pour chaque lancer p, on compte :
+       · les élèves qui ont joué ce lancer : leur nombre de noyaux restants ;
+       · les élèves qui ont fini à zéro avant p : zéro ;
+       · les autres (pas encore arrivés) ne sont pas comptés, et l'écran
+         dit combien d'élèves portent chaque point.
+
+     Décrit dans prof/guide-es.html et prof/guide-dispositif.html.
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+  --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+  --link:#2445c7; --link-wash:#e7ebfb;
+  --act:#c4610f; --act-wash:#fdf0e3;
+  --ok:#12805c; --err:#c33a2f;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151d; --surface:#1a202b; --surface-2:#222a37;
+    --ink:#e8ecf3; --ink-soft:#b3bccb; --ink-faint:#7f8a9c; --line:#2f3847;
+    --link:#8ea6ff; --link-wash:#24305a; --act:#f0a259; --act-wash:#3a2a19;
+    --ok:#4fc79b; --err:#f07a6f;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+     font-family:'IBM Plex Sans','Inter',system-ui,sans-serif;font-size:15.5px;line-height:1.55}
+h1,h2{font-family:'Space Grotesk','Inter',sans-serif;font-weight:600;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:14px}
+header h1{font-size:22px}
+header .retour{margin-left:auto;font-size:14px;color:var(--link)}
+.barre{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-bottom:14px}
+.barre label{font-size:14px;color:var(--ink-soft);display:flex;gap:8px;align-items:center}
+select,button{font:inherit;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);
+  color:var(--ink);padding:8px 12px;min-height:44px;cursor:pointer}
+button:hover{border-color:var(--ink-faint)}
+button.actif{background:var(--link);border-color:var(--link);color:#fff}
+.carte{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.chiffres{display:flex;flex-wrap:wrap;gap:10px 28px;margin:0 0 8px;font-size:15px}
+.chiffres b{font-family:'Space Grotesk','Inter',sans-serif;font-size:26px;display:block;line-height:1.1}
+.chiffres span{color:var(--ink-soft);font-size:13px}
+svg.courbe{display:block;width:100%;height:auto}
+.courbe .axe{stroke:var(--ink-soft);stroke-width:1.4}
+.courbe .grille{stroke:var(--line);stroke-width:1}
+.courbe .graduation{font:12px 'IBM Plex Mono',monospace;fill:var(--ink-soft)}
+.courbe .titre-axe{font:13px 'IBM Plex Sans','Inter',sans-serif;fill:var(--ink-soft)}
+.courbe .barre-n{fill:var(--act-wash);stroke:none}
+.courbe .ligne{fill:none;stroke:var(--act);stroke-width:2.6;stroke-linejoin:round}
+.courbe .point{fill:var(--act);stroke:var(--surface);stroke-width:1.5}
+.courbe .val{font:12px 'IBM Plex Mono',monospace;fill:var(--ink);text-anchor:middle}
+.courbe .eff{font:10.5px 'IBM Plex Mono',monospace;fill:var(--ink-faint);text-anchor:middle}
+.courbe .moitie{stroke:var(--link);stroke-width:1.6;stroke-dasharray:6 5}
+.courbe .moitie-t{font:12.5px 'IBM Plex Sans','Inter',sans-serif;fill:var(--link)}
+.note{font-size:13px;color:var(--ink-soft);margin:10px 0 0}
+.vide{padding:40px 10px;text-align:center;color:var(--ink-soft)}
+.msg{font-size:14px;color:var(--ink-soft)}
+.msg.ko{color:var(--err)}
+@media (max-width:620px){ .chiffres b{font-size:22px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>☢ Décroissance en direct</h1>
+    <span class="msg" id="etat">Connexion…</span>
+    <a class="retour" href="index.html">← Tableau de bord</a>
+  </header>
+
+  <div class="barre" id="barre" hidden>
+    <label>Classe <select id="classe"></select></label>
+    <button type="button" id="partie" title="Ne compter que les séries commencées à partir de maintenant">▶ Nouvelle partie</button>
+    <button type="button" id="moitie" aria-pressed="false">Montrer la moitié</button>
+    <span class="msg" id="depuis"></span>
+  </div>
+
+  <div class="carte" id="carte" hidden>
+    <div class="chiffres" id="chiffres"></div>
+    <div id="graphe"></div>
+    <p class="note">Chaque point additionne les noyaux encore radioactifs de toute la classe après ce lancer. Sous chaque point, le nombre d'élèves qu'il compte&nbsp;: un élève qui n'est pas encore arrivé à ce lancer n'y figure pas. Mise à jour toutes les 5&nbsp;secondes.</p>
+  </div>
+</div>
+
+<script src="../assets/js/prof-api.js?v=2"></script>
+<script>
+(function(){
+  var CLE_SEQ = 'es1-t1-c2', CLE_CHAMP = 'es-t1c2-des/des';
+  var $ = function(s){ return document.querySelector(s); };
+  var classes = [], membres = {}, classeId = null;
+  var depuis = debutDuJour(), montrerMoitie = false, minuteur = null;
+
+  function debutDuJour(){ var d = new Date(); d.setHours(0,0,0,0); return d.getTime(); }
+  function dire(t, ko){ var e = $('#etat'); e.textContent = t; e.className = 'msg' + (ko ? ' ko' : ''); }
+
+  ProfAPI.reprendre().then(demarrer).catch(function(){
+    dire('Pas de session : connecte-toi d’abord au tableau de bord, puis reviens ici.', true);
+  });
+
+  function demarrer(){
+    dire('');
+    ProfAPI.lire('classes?select=id,code,libelle,espace&order=code.asc').then(function(l){
+      classes = (l || []).filter(function(c){ return c.espace === 'es1'; });
+      var sel = $('#classe');
+      if(!classes.length){ dire('Aucune classe d’enseignement scientifique de 1re sur ce compte.', true); return; }
+      classes.forEach(function(c){
+        var o = document.createElement('option'); o.value = c.id; o.textContent = c.libelle || c.code; sel.appendChild(o);
+      });
+      sel.addEventListener('change', function(){ choisir(sel.value); });
+      $('#barre').hidden = false; $('#carte').hidden = false;
+      choisir(classes[0].id);
+    }).catch(function(e){ dire('Lecture des classes impossible : ' + e.message, true); });
+  }
+
+  function choisir(id){
+    classeId = id;
+    ProfAPI.lire('eleves_classes?select=eleve_id&classe_id=eq.' + encodeURIComponent(id)).then(function(l){
+      membres = {}; (l || []).forEach(function(x){ membres[x.eleve_id] = true; });
+      rafraichir();
+    }).catch(function(e){ dire('Lecture de la classe impossible : ' + e.message, true); });
+  }
+
+  function series(lignes){
+    var out = [];
+    (lignes || []).forEach(function(r){
+      if(!membres[r.eleve_id]) return;
+      var v = r.valeur && r.valeur.champs && r.valeur.champs[CLE_CHAMP];
+      if(!v || !v[0] || !v[1]) return;
+      var t = Date.parse(v[0]);
+      if(!isFinite(t) || t < depuis) return;
+      var h = String(v[1]).split(',').map(function(x){ return parseInt(x, 10); }).filter(isFinite);
+      if(h.length) out.push(h);
+    });
+    return out;
+  }
+
+  function agreger(liste){
+    var max = 0; liste.forEach(function(h){ max = Math.max(max, h.length - 1); });
+    var pts = [];
+    for(var p = 0; p <= max; p++){
+      var n = 0, eleves = 0;
+      liste.forEach(function(h){
+        if(p < h.length){ n += h[p]; eleves++; }
+        else if(h[h.length-1] === 0){ eleves++; }      /* fini à zéro : il compte pour zéro */
+      });
+      if(eleves) pts.push({p:p, n:n, e:eleves});
+    }
+    return pts;
+  }
+
+  function rafraichir(){
+    if(!classeId) return;
+    ProfAPI.lire('progression?select=eleve_id,valeur&domaine=eq.cours&cle=eq.' + CLE_SEQ).then(function(l){
+      var s = series(l), pts = agreger(s);
+      dessiner(pts, s.length);
+      dire('');
+    }).catch(function(e){ dire('Lecture impossible : ' + e.message, true); });
+  }
+
+  function dessiner(pts, nbEleves){
+    var n0 = pts.length ? pts[0].n : 0;
+    var dernier = pts.length ? pts[pts.length-1] : null;
+    $('#chiffres').innerHTML =
+      '<div><b>' + nbEleves + '</b><span>élèves ont lancé les dés</span></div>' +
+      '<div><b>' + n0 + '</b><span>noyaux au départ</span></div>' +
+      (dernier && dernier.p ? '<div><b>' + dernier.n + '</b><span>noyaux restants au lancer ' + dernier.p + '</span></div>' : '');
+    var g = $('#graphe');
+    if(pts.length < 1 || !n0){ g.innerHTML = '<div class="vide">En attente des premiers lancers…</div>'; return; }
+
+    var L = 960, H = 480, mg = 62, md = 20, mh = 24, mb = 66;
+    var pmax = Math.max(10, pts[pts.length-1].p);
+    var x = function(p){ return mg + (L - mg - md) * p / pmax; };
+    var y = function(n){ return mh + (H - mh - mb) * (1 - n / n0); };
+    var s = '<svg class="courbe" viewBox="0 0 ' + L + ' ' + H + '" role="img" aria-label="Nombre de noyaux radioactifs de la classe en fonction du nombre de lancers">';
+    /* une graduation « ronde » (1, 2 ou 5 × 10ⁿ) pour 5 à 10 lignes, de 50 à plus de 3 000 noyaux */
+    var brut = n0 / 8, puiss = Math.pow(10, Math.floor(Math.log10(brut))), r = brut / puiss;
+    var pasY = (r < 1.5 ? 1 : r < 3.5 ? 2 : r < 7.5 ? 5 : 10) * puiss;
+    for(var v = 0; v <= n0; v += pasY){
+      s += '<line class="grille" x1="' + mg + '" x2="' + (L - md) + '" y1="' + y(v) + '" y2="' + y(v) + '"/>' +
+           '<text class="graduation" x="' + (mg - 8) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + '</text>';
+    }
+    for(var p = 0; p <= pmax; p++){
+      s += '<text class="graduation" x="' + x(p) + '" y="' + (H - mb + 18) + '" text-anchor="middle">' + p + '</text>';
+    }
+    s += '<line class="axe" x1="' + mg + '" x2="' + (L - md) + '" y1="' + (H - mb) + '" y2="' + (H - mb) + '"/>';
+    s += '<line class="axe" x1="' + mg + '" x2="' + mg + '" y1="' + mh + '" y2="' + (H - mb) + '"/>';
+    s += '<text class="titre-axe" x="' + ((mg + L - md) / 2) + '" y="' + (H - 12) + '" text-anchor="middle">nombre de lancers (un lancer = une durée Δt)</text>';
+    s += '<text class="titre-axe" x="16" y="' + ((mh + H - mb) / 2) + '" text-anchor="middle" transform="rotate(-90 16 ' + ((mh + H - mb) / 2) + ')">noyaux encore radioactifs</text>';
+    if(montrerMoitie){
+      s += '<line class="moitie" x1="' + mg + '" x2="' + (L - md) + '" y1="' + y(n0/2) + '" y2="' + y(n0/2) + '"/>' +
+           '<text class="moitie-t" x="' + (L - md - 4) + '" y="' + (y(n0/2) - 7) + '" text-anchor="end">la moitié : ' + (n0/2) + ' noyaux</text>';
+    }
+    s += '<polyline class="ligne" points="' + pts.map(function(q){ return x(q.p) + ',' + y(q.n); }).join(' ') + '"/>';
+    pts.forEach(function(q){
+      s += '<circle class="point" r="5.5" cx="' + x(q.p) + '" cy="' + y(q.n) + '"/>' +
+           '<text class="val" x="' + x(q.p) + '" y="' + (y(q.n) - 11) + '">' + q.n + '</text>' +
+           '<text class="eff" x="' + x(q.p) + '" y="' + (H - mb + 34) + '">' + q.e + ' él.</text>';
+    });
+    g.innerHTML = s + '</svg>';
+  }
+
+  $('#partie').addEventListener('click', function(){
+    if(!confirm('Nouvelle partie : seules les séries commencées à partir de maintenant seront comptées. Les élèves doivent donc lancer (ou recommencer) leur série après ce clic.')) return;
+    depuis = Date.now() - 5000;
+    $('#depuis').textContent = 'Partie commencée à ' + new Date(depuis).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+    rafraichir();
+  });
+  $('#moitie').addEventListener('click', function(){
+    montrerMoitie = !montrerMoitie;
+    this.classList.toggle('actif', montrerMoitie);
+    this.setAttribute('aria-pressed', montrerMoitie ? 'true' : 'false');
+    rafraichir();
+  });
+  $('#depuis').textContent = 'Séries d’aujourd’hui';
+
+  /* 5 s : le temps qu'un élève marque ses noyaux. Rien quand l'onglet est caché. */
+  minuteur = setInterval(function(){ if(!document.hidden && ProfAPI.connecte()) rafraichir(); }, 5000);
+})();
+</script>
+</body>
+</html>

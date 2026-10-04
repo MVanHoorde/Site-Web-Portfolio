@@ -611,6 +611,47 @@ try {
   notes.push("contrôle des positions de QCM non effectué : " + e.message);
 }
 
+/* ---------- Listes déroulantes et étiquettes : mélangées par le moteur (04/10/2026) ----------
+   Relevé du 04/10 : dans les listes à corriger, la bonne réponse était
+   presque toujours la première (t2 : 23 sur 27, O8 : 30 sur 30) ou suivait
+   une diagonale (t0, t6, t7, O4) ; la réserve d'étiquettes de t0 était
+   rangée dans l'ordre des emplacements. Plutôt que de réordonner la source
+   à la main — et de recommencer à chaque nouvelle liste —, sequence-snt.js
+   mélange ces choix à l'affichage. Le contrôle vérifie donc que le
+   mélange est bien là. Une page qui porte des listes à corriger SANS
+   charger ce moteur (t6, t7 : moteur encore inline) est contrôlée sur
+   l'ordre de sa source : bonne réponse en tête dans plus de la moitié des
+   listes, ou trois listes de suite en diagonale. BLOQUANT. */
+try {
+  const moteur = lire("assets/js/sequence-snt.js");
+  if (!moteur.includes("MÉLANGE DES CHOIX")) {
+    ko("Choix non mélangés", "assets/js/sequence-snt.js — le bloc « MÉLANGE DES CHOIX » a disparu");
+  }
+  let horsMoteur = 0;
+  for (const f of html) {
+    const texte = lire(f);
+    if (/sequence-snt\.js/.test(texte)) continue;
+    if (/data-etiq-bac/.test(texte)) ko("Choix non mélangés", `${f} — réserve d'étiquettes sans sequence-snt.js pour la mélanger`);
+    const idx = [];
+    for (const m of texte.matchAll(/<select([^>]*)>([\s\S]*?)<\/select>/g)) {
+      const bon = (m[1].match(/data-(?:correct|answer)="([^"]*)"/) || [])[1];
+      if (bon === undefined) continue;
+      const vals = [...m[2].matchAll(/<option[^>]*value="([^"]*)"/g)].map((x) => x[1]).filter((v) => v !== "");
+      if (vals.length >= 2) idx.push(vals.indexOf(bon));
+    }
+    if (!idx.length) continue;
+    horsMoteur++;
+    const tete = idx.filter((i) => i === 0).length;
+    if (idx.length >= 3 && tete / idx.length > 0.5) ko("Choix non mélangés", `${f} — bonne réponse en tête dans ${tete} listes sur ${idx.length}`);
+    for (let i = 2; i < idx.length; i++) {
+      if (idx[i - 2] === 0 && idx[i - 1] === 1 && idx[i] === 2) { ko("Choix non mélangés", `${f} — trois listes de suite en diagonale (1re, 2e, 3e position)`); break; }
+    }
+  }
+  notes.push(`listes déroulantes et étiquettes — mélangées par le moteur ; ${horsMoteur} page(s) hors moteur contrôlée(s) sur leur source`);
+} catch (e) {
+  notes.push("contrôle du mélange des choix non effectué : " + e.message);
+}
+
 /* ---------- Les scripts PowerShell sont-ils lisibles par Windows ? ----------
    Windows PowerShell 5.1 — celui livré avec Windows, celui que Loïc
    lance — décode un .ps1 SANS BOM comme de l'ANSI, pas comme de

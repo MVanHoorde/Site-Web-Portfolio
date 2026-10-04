@@ -324,6 +324,8 @@ table.grille thead th{white-space:nowrap}
     <span class="titre" id="titre-appli">Tableau de bord SNT</span>
     <button id="btn-espaces" type="button" style="display:none;padding:5px 11px;font-size:13.5px;margin-left:0">⌂ Mes espaces</button>
     <span class="qui"><span id="qui-nom"></span></span>
+    <!-- espace ES 1re seulement : la courbe des dés de « La radioactivité », étape 3.1 -->
+    <a class="lien-aide" id="lien-decroissance" href="decroissance.html" target="_blank" rel="noopener" style="display:none">☢ Décroissance en direct</a>
     <a class="lien-aide" href="guide-prise-en-main.html" target="_blank" rel="noopener">Aide</a>
     <button id="lien-quitter" style="padding:5px 11px;font-size:13.5px">Quitter</button>
   </header>
@@ -656,7 +658,7 @@ table.grille thead th{white-space:nowrap}
 
 <script src="../assets/js/seances-snt.js?v=16"></script>
 <script src="../assets/js/verrou-snt.js?v=3"></script>
-<script src="../assets/js/questions-snt.js?v=3"></script>
+<script src="../assets/js/questions-snt.js?v=4"></script>
 <script src="../assets/js/sequences-espaces.js?v=2"></script>
 <script src="../assets/js/prof-api.js?v=2"></script>
 <script>
@@ -773,7 +775,8 @@ table.grille thead th{white-space:nowrap}
     document.querySelector('nav.onglets').style.display = '';
     document.querySelector('main').style.display = '';
     $('#titre-appli').textContent = ESPACE === 'snt' ? 'Tableau de bord SNT' : 'Tableau de bord — ' + def.nom;
-    $('.lien-aide').setAttribute('href', def.guide || GUIDE_PAR_DEFAUT);
+    $('.lien-aide:not(#lien-decroissance)').setAttribute('href', def.guide || GUIDE_PAR_DEFAUT);
+    $('#lien-decroissance').style.display = ESPACE === 'es1' ? '' : 'none';
 
     /* les onglets de l'espace, le premier ouvert */
     var premier = null;

@@ -4503,6 +4503,37 @@ nominatif à sa demande, avec son onglet au tableau de bord. La migration `021`
 n'a pas pu être éprouvée sur un PostgreSQL local (lancement refusé) : elle attend
 d'être exécutée par Loïc.
 
+## 04/10/2026 — Bugs du SNT remontés de la classe
+
+Loïc arrive avec une liste de bugs vus en classe sur t0. Le plus lourd : les fiches
+ne s'enregistrent toujours pas sur iPad, et le renvoi vers Safari de l'essai du
+24/09 perd les élèves. Il demande d'étudier toutes les autres voies. Retenue : la
+page fabrique elle-même un vrai PDF, par deux bibliothèques hébergées dans le dépôt
+(aucun CDN), et le remet par la feuille de partage d'iOS ou par un téléchargement.
+Loïc la veut partout : elle est dans le moteur, donc dans toutes les séquences qui
+l'utilisent. Il rappelle que t0 est le tutoriel du dispositif : l'étape 1.5 est
+réécrite, ses captures refaites depuis la vraie interface, et l'essai Safari retiré.
+
+Les QCM « dont seules les premières réponses sont les bonnes » : l'audit montre
+que les 516 questions à boutons sont équilibrées. Le biais était dans les listes
+déroulantes (bonne réponse en tête dans 23 listes sur 27 en t2, 30 sur 30 en O8,
+diagonales ailleurs) et dans la réserve d'étiquettes de t0. Le moteur les mélange
+désormais. Un premier mélange avait changé une diagonale 1-2-3-4-5 en 5-4-3-2-1 :
+le mélange tient compte du groupe de listes et refuse les escaliers.
+
+Le cadre gris qui « présélectionne » une réponse au QCM de la fin de la séance 2 :
+le survol collant d'iPad, qui reste sur l'option tombée sous le doigt. Réservé aux
+souris, et le focus va à l'énoncé. Le PS/2, évalué en 3.3 sans image avant : photo
+ajoutée en 3.1 (fournie par Loïc), et la règle « rien n'est évalué sans avoir été
+présenté » est écrite dans `CLAUDE.md`. Le même audit trouve le symbole DEEE dans
+le même cas : à trancher par Loïc.
+
+L'élève « introuvable » de 2nde 5 : un seul compte, bien rattaché à la 2nde 5 et à
+l'AP, progression de SNT en base, visible avec les droits de Loïc (rejoué en
+lecture seule, transaction annulée). Rien à réparer en base : sans ligne dans la
+table des noms, elle est rangée en fin de grille sous son identifiant. Une ligne
+de dépannage le dit désormais dans les trois guides.
+
 ## 04/10/2026 — L'accueil refait, et une page auteur
 
 Demande de Loïc : faire entrer l'enseignement scientifique dans « Mes classes »,
@@ -4527,3 +4558,68 @@ par `minmax(0,1fr)`.
 
 Vérifié : captures ordinateur, iPad et téléphone, aucun débordement, aucune
 requête externe. `verifier.mjs` donne 19 problèmes, le repère.
+
+## 04/10/2026 — La radioactivité refondue sur l'audit de Loïc
+
+Loïc a audité la page séance par séance (relevé fidèle :
+`_suivi/t1c2-audit-loic-2026-10-04.md`), puis a dit « fais tout ». Refonte de S1
+à S3 : transitions en tête d'étape, « à retenir » par étape, couleurs de la
+nucléosynthèse, titres sans « Activité N », QCM diagnostique en 1.1, équations
+α / β⁻ / β⁺ en 1.3 avec le QCM des étiquettes devenu QCM à image, fusion de 1.4
+et 1.5, textes à trous de bilan en fenêtre, aide repliée pour la conversion,
+QCM unique de 2.3 à 2.5, reprise de la définition en fin de séance, glossaire
+progressif, et l'activité des dés en 3.1 avec son écran au tableau de bord.
+
+**Ce que la recherche a changé.** L'ASNR a publié le 28/09 un nouveau bilan :
+7,1 mSv/an et non plus 4,5 — le radon pèse désormais 55 %. Les balises de
+l'ASNR donnent ≈ 80 nSv/h à Poitiers (médiane sur un an), 105 à Limoges, 40 à
+60 à Paris. La carte REMon passe par un CAPTCHA et ses données ne sont pas
+réutilisables : les repères de la page viennent de mesure-radioactivite.fr.
+Ionisos n'a aucun site en Nouvelle-Aquitaine (Pouzauges, Vendée, à 93 km).
+
+**Les vidéos.** Dix MP4 téléchargés dans `Téléchargements\es1-t1c2-videos`. La
+vidéo de 2.1 (Andra) est en ligne, mais `yt-dlp` ne peut plus la télécharger
+(jeton anti-robots) : son texte a été récupéré, le MP4 se prendra à la main.
+Celle de 3.4 (« Méthode graphique ») n'a pas de voix : ses sous-titres
+automatiques sont du texte inventé. Le client par défaut de `yt-dlp` cachait les
+sous-titres de plusieurs vidéos ; un second essai avec un autre client les donne.
+
+Vérifié au navigateur (Playwright) : fenêtre opaque au-dessus du cours, trous
+corrigés et enregistrés, dés jusqu'à épuisement avec refus d'un mauvais noyau,
+aucune erreur de console, aucun débordement en 768 et 390 px ; l'écran de
+décroissance avec une classe fictive de 28 élèves. `verifier.mjs` : 19
+problèmes, le repère. Aucun commit.
+
+Suite, même jour. Loïc : les dés sont **physiques**. La page ne lance plus rien
+et ne vérifie plus rien. L'élève touche autant de noyaux qu'il a fait de 1, puis
+valide le lancer. Un lanceur animé, replié dans l'étape, sert à qui manque de
+dés : des faces dessinées en points, qui roulent un instant, sauf si l'élève a
+réduit les animations. Les « flashcards » étaient les six cartes de bilan de la
+terminale t2-c1 ; elles sont reprises en sept cartes à l'étape 4.4, suivies du
+grand QCM (20 questions) en 4.5. Testé au navigateur, aucune erreur ;
+`verifier.mjs` : 19.
+
+Deuxième audit de Loïc, même jour, QCM par QCM. Corrigé :
+- la notation A/Z des noyaux, empilée (`.noy`) dans les énoncés ;
+- des pièges plus précis dans le QCM diagnostique ;
+- les lois de Soddy, formulées sans « nombre de charges » ;
+- l'exponentielle, écrite en exposant, avec un encart qui l'explique ;
+- l'unité d'abord dans le QCM de 2.3 à 2.5 ;
+- de l'air sous chaque QCM ;
+- la réflexion des Radium Girls, passée en fenêtre d'écriture ;
+- les encarts de droits, retirés au profit d'une liste dans le suivi.
+
+Le modèle GeoGebra est remplacé par une courbe tracée dans la page. Les dés vont
+de 5 à 100 noyaux, et le lanceur passe en bouton flottant. Deux infographies de
+l'AFCN sont ajoutées, en 1.3 et 2.4.
+
+Un bug trouvé au test : en touchant le premier noyau, le champ « nombre de
+noyaux » perdait le focus et son « change » remettait la série à zéro.
+Garde-fou posé.
+
+Les cases à cocher du QCM multiple sont redessinées dans la feuille partagée
+(`?v=49`, 24 pages).
+
+Le bug « QCM réduit, il faut recliquer » n'est pas reproduit : la réduction ne
+vide pas le panneau, la réponse reste affichée à la reprise (Chromium, Échap
+compris). En attente du cas précis de Loïc. `verifier.mjs` : 19.

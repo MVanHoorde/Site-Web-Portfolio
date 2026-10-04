@@ -5,14 +5,32 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **03/10/2026**.
+> Dernière réécriture : **04/10/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — progression, vidéos, fiches d'ES (03/10).**
+> **Dernière passe — bugs du SNT remontés de la classe (04/10).**
+> 🔴 **La fiche de séance est un vrai PDF fabriqué par la page** (toutes les pages
+> du moteur : SNT, ES 1re et terminale) — fini l'impression du navigateur, qu'iOS
+> ignore dans l'app d'écran d'accueil. « Ma fiche (PDF) » → « Enregistrer ma
+> fiche » (partage iOS → Fichiers / OneDrive) ou « Télécharger le PDF ». Liens
+> cliquables, coupures propres, bibliothèques hébergées (`assets/js/vendor/`).
+> ⏳ **À essayer sur un iPad de la classe**, dans l'app d'écran d'accueil : le
+> bouton « Enregistrer ma fiche » doit ouvrir la feuille de partage. t0 1.5
+> réécrite (captures refaites), essai Safari du 24/09 retiré.
+> 🔴 **Listes déroulantes et étiquettes mélangées par le moteur** (bonne réponse
+> en tête dans 23 listes sur 27 en t2, 30 sur 30 en O8), `verifier.mjs` bloquant.
+> t0 : plus de cadre « présélectionné » au QCM sur iPad ; photo PS/2 en 3.1 ;
+> SSD à 400 caractères ; exercice des étiquettes refait (légende numérotée à
+> côté de la photo, ✕ pour retirer, photo recadrée) ; en 3.4 la photo déposée
+> s'affiche à côté de la fenêtre d'écriture. `sequence-snt.js?v=54`, `.css?v=48`.
+> ⏳ **Le DEEE est évalué en t0 3.3 sans avoir été montré** — Loïc tranche :
+> image en amont, ou emplacement retiré. Les **vidéos OneDrive** attendent ses liens.
+>
+> **Passe du 03/10 — progression, vidéos, fiches d'ES.**
 > 🔴 **Seule une étape à valider compte dans la progression** : le moteur comptait
 > aussi les « pour aller plus loin » et les « Et toi ? », et plafonnait sous 100 %
 > un élève qui avait tout fait (pourcentage, jauges, résumé en base, tableau de
@@ -81,6 +99,39 @@
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
 
+## 🆕 ES 1re « La radioactivité » refondue sur l'audit de Loïc — à relire
+
+Page `pages/1re-es-t1-c2-radioactivite.html`, **toujours masquée**. Séances 1 à 3
+réécrites d'après l'audit dicté le 04/10 (`_suivi/t1c2-audit-loic-2026-10-04.md`),
+séance 4 en attente. Ce qui est nouveau :
+
+- **QCM d'écoute** après chaque vidéo de cours, écrits d'après les transcriptions.
+  Celles-ci vivent dans `_transcriptions/` (exclu de Git). L'outil est
+  `_outils/videos/extraire-video.ps1`, qui donne le MP4 et le texte.
+- **Textes à trous de bilan en fenêtre**, cours masqué. C'est un composant de la
+  page ; il n'est pas encore dans le moteur.
+- **Activité des dés** en 3.1. La courbe de la classe s'affiche dans
+  **`prof/decroissance.html`** (lien dans l'espace ES 1re), décrit dans
+  `guide-es` et `guide-dispositif`. Ni table ni migration.
+- **Exposition moyenne en France : 7,1 mSv/an** (ASNR, 28/09/2026), au lieu
+  de 4,5.
+
+⏳ **Ce que Loïc relit** :
+- deux choix pour les dés (rythme libre, non-connecté hors courbe) — dés physiques, 5 à 100 noyaux, lanceur animé en bouton flottant ;
+- l'américium 241 de l'exercice 1, dont la courbe est maintenant tracée dans la page ;
+- les QCM écrits par Claude ;
+- γ « souvent » au lieu de « toujours » ;
+- le chiffre 7,1.
+
+⏳ **Ce qu'il fournit** :
+- l'infographie des origines de la radioactivité ;
+- le cas précis du bug « QCM réduit » (non reproduit) ;
+- le MP4 de 2.1, à télécharger à la main ;
+- les dix MP4 déjà téléchargés, à déposer sur OneDrive.
+
+La séance 4 se termine par sept cartes de rappel (patron de la terminale t2-c1)
+et le grand QCM de vingt questions.
+
 ## 🆕 L'accueil refait : ES en portes, page auteur
 
 **Mes classes** compte cinq portes : 2nde PC, 2nde SNT, CFA, **ES 1re**, **ES
@@ -98,36 +149,32 @@ des résumés de vidéos sont une **V1 proposée**, que Loïc doit relire.
 Restent inchangées : la gravure du jour (`gravures/` est toujours vide, donc le
 cadre de repli s'affiche) et Mission Spectra.
 
-## ✅ QCM : la bonne réponse est répartie entre les lettres
+## ✅ Aucune bonne réponse devinable à sa place
 
-Le moteur affiche les options dans l'ordre du JSON, et la bonne réponse était
-souvent en A (14 fois sur 15 au bilan de la séance 2 de t0). **118 questions
-réordonnées** sur dix pages, sans toucher au texte ; sur les 612 questions du
-dépôt, plus aucun QCM n'aligne 4 fois la même lettre. `verifier.mjs` le
-contrôle désormais (« bonnes réponses bien réparties »), et la consigne est au
-§15.5 de `CONSIGNES-sequence-SNT.md`. Reste, sans rapport avec la position : le
-**biais de longueur** (61 questions, dont 28 marquées, surtout dans `t2`).
+**QCM à boutons** : le moteur affiche les options dans l'ordre du JSON ; la
+bonne réponse y est répartie à la main entre A-D (118 questions réordonnées le
+24/09), contrôlé par `verifier.mjs`. **Listes déroulantes et réserves
+d'étiquettes** : mélangées par le moteur à l'affichage depuis le 04/10 (ordre
+stable, sans escalier) ; t6 et t7, hors moteur, réordonnés dans leur source et
+contrôlés. Consigne : §15.5 de `CONSIGNES-sequence-SNT.md`. Reste, sans rapport
+avec la position : le **biais de longueur** (61 questions, dont 28 marquées,
+surtout dans `t2`).
 
-## 🧪 Essai iPad : la fiche de la séance 1 de t0 passe par Safari — à tester le 25/09
+## 🧪 La fiche de séance en vrai PDF — à essayer sur iPad
 
-**Le bug, vu en classe.** Ouvert depuis l'icône de l'écran d'accueil ou depuis le
-lecteur de QR code, le cours n'est pas dans Safari : iOS y ignore `window.print()`
-sans rien dire. Le bouton « Enregistrer en PDF » de la fiche ne fait rien, et l'élève
-ne peut pas déposer son PDF sur OneDrive. Tout le moteur est concerné (SNT, outils PC,
-ES) ; dans Safari lui-même, tout marche.
+**Le bug, vu en classe.** Depuis l'icône de l'écran d'accueil ou le lecteur de QR
+code, iOS ignore `window.print()` : l'ancien « Enregistrer en PDF » ne faisait rien,
+et le renvoi vers Safari essayé le 24/09 perdait les élèves.
 
-**L'essai, limité à la fiche de la séance 1 de `2nde-snt-t0`**, dans un script
-propre à la page (le moteur partagé n'est pas touché, aucun `?v=N` à incrémenter) :
-si l'impression ne s'ouvre pas dans les 1,5 s, la fiche propose « Ouvrir ma fiche
-dans Safari » par l'adresse `x-safari-https://…?fiche=1`. Dans Safari, un encadré
-fait se connecter l'élève (le stockage de l'app n'est pas celui de Safari), puis
-ouvre la fiche d'un clic. Rejoué au Chromium, impression neutralisée : les quatre
-cas passent. **Pas testable ici :** que `x-safari-https://` ouvre vraiment Safari
-depuis l'app et depuis le lecteur QR. C'est ce que dit le test en classe.
-
-**Après le test :** concluant → porter dans `sequence-snt.js` (toutes les séances,
-les 22 pages, guides élèves et enseignants) ; raté → retirer le bloc
-`ESSAI iPad` de la page et dire aux élèves d'ouvrir le cours dans Safari.
+**Depuis le 04/10**, la page fabrique le PDF (`html2canvas-pro` + `jsPDF`, hébergés
+dans `assets/js/vendor/`, chargés au premier clic) et le remet par la feuille de
+partage d'iOS ou par un téléchargement. Mesuré au Chromium sur t0 (S1 à S3), t1,
+M1, nucléosynthèse et terminale t2-c1 : 2 à 4 pages, 0,5 à 1,2 Mo, aucune ligne
+coupée, liens cliquables. **Pas testable ici :** la feuille de partage d'un vrai
+iPad, dans l'app d'écran d'accueil. C'est le test en classe qui le dira ; en cas
+d'échec, « Télécharger le PDF » et « Voir la fiche à l'écran » restent dans la
+même fenêtre. Hors du moteur : t3 à t7 (ancienne fiche HTML, à porter avec leur
+passage sur le moteur) et le bilan j11 du cahier de vacances.
 
 ## ✅ Chaque TP est sous son chapitre, et le 🚧 « TP » a disparu du hub
 

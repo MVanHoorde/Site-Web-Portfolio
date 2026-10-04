@@ -15,6 +15,29 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 04/10/2026 — La radioactivité (ES 1re) refondue sur l'audit de Loïc
+
+| Date | Décision | Statut |
+|---|---|---|
+| 04/10/2026 | **QCM d'écoute juste après chaque vidéo de cours**, écrit d'après la transcription (règle du 20/08), chaque correction citant sa minute. Une vidéo sans voix (animation) n'en a pas | ✅ en vigueur — ⏳ relecture de Loïc |
+| 04/10/2026 | 🔴 **Les transcriptions vivent dans `_transcriptions/<page>/`, exclu de Git** : texte d'auteur, jamais sur GitHub Pages. Extraites par `yt-dlp` (sous-titres, en réessayant avec le client `tv_simply,web_embedded`) ou, faute de sous-titres, par Whisper en local (`faster-whisper`, modèle *small*) | ✅ en vigueur |
+| 04/10/2026 | **Texte à trous de bilan en fenêtre, cours masqué** (`.field[data-trous-fenetre]`, composant de la page) : le champ reste dans son étape en `position:fixed` au-dessus d'un voile opaque. Composant **page**, pas moteur : à porter dans `sequence-snt.js` (et à présenter en nucléosynthèse) si Loïc le veut ailleurs | ✅ en vigueur — ⏳ généralisation |
+| 04/10/2026 | **Chaque séance reste dans son périmètre** : S1 = l'imprévisible d'un noyau ; la prévision pour une population n'arrive qu'en S3. Bilans, QCM et « à retenir » de S1 réécrits en conséquence | ✅ en vigueur |
+| 04/10/2026 | **La définition du début se reprend à la fin des séances 1, 2 et 3** (`RAD-1f`, `RAD-2h`, `RAD-3i`), plus au bilan final (`RAD-4f` retirée) | ✅ en vigueur |
+| 04/10/2026 | **Activité des dés** (S3, étape 3.1, demande de Loïc) : **dés physiques** (décision de Loïc), l'élève marque lui-même ses noyaux désintégrés et valide chaque lancer, la page ne vérifie rien ; un **lanceur animé** de secours est replié dans l'étape. Chacun à son rythme. La série part dans l'état de l'étape (`es-t1c2-des/des`) ; **`prof/decroissance.html`** additionne la classe et trace la courbe, sans table ni migration. Élève non connecté : joue, ne compte pas | ✅ en vigueur — ⏳ deux choix à confirmer (rythme libre, non-connecté hors courbe) |
+| 04/10/2026 | **Séance 4 terminée par la révision** : 4.4 « Tout le chapitre, en sept cartes » (patron des cartes de bilan de la terminale t2-c1), 4.5 le **grand QCM** (20 questions reprises des séances 1 à 3, une par notion, chaque correction renvoie à son étape) puis le Kahoot | ✅ en vigueur — ⏳ relecture |
+| 04/10/2026 | **Exposition moyenne en France : 7,1 mSv/an** (bilan EXPOP 2020-2024 de l'ASNR, publié le 28/09/2026) au lieu de 4,5. La hausse vient du nouveau coefficient de dose du radon. Remplacé dans tout le chapitre, QCM compris | ✅ en vigueur — ⏳ confirmation de Loïc |
+| 04/10/2026 | Le rayonnement γ est émis « **souvent** », plus « toujours » (le carbone 14 ou le strontium 90 n'en émettent pas) | ⏳ confirmation de Loïc |
+| 04/10/2026 | **Images numérotées** dans le chapitre (`.img-n`), mention « reprise du cours de M. Van Hoorde » retirée sans autre provenance pour l'instant | ✅ en vigueur |
+| 04/10/2026 | **Dés : de 5 à 100 noyaux par élève** (10 par défaut), choisis avant le premier lancer ; le premier nombre du relevé est le nombre choisi. Le **lanceur de secours** passe en bouton flottant « 🎲 Dés », au-dessus du glossaire (patron du panneau « Classification » de la nucléosynthèse) | ✅ en vigueur |
+| 04/10/2026 | **Exercice 1 de la séance 4 : courbe tracée dans la page** (SVG, point A déplaçable au doigt, à la souris, au clavier) au lieu du modèle GeoGebra de Quizéo — ni compte, ni installation, ni cadre tiers qui fuiterait l'IP des élèves. Américium 241, N₀ = 8 000. ES-02 levé | ✅ en vigueur — ⏳ noyau à confirmer |
+| 04/10/2026 | 🔴 **Notation d'un noyau : A au-dessus de Z, alignés** (`.noy`), jamais en caractères exposant/indice Unicode, qui ne s'empilent pas. Dans un QCM, seulement dans l'énoncé : le libellé des options ne laisse passer que quelques balises (`baliserSobre`). Restent en Unicode : nucléosynthèse (1), chapitres PC t1-c1, c2, c4, c7, terminale t2-c2, fiche t1c4 | ✅ en vigueur — ⏳ autres pages |
+| 04/10/2026 | **Exponentielle** : e<sup>x</sup> en exposant, jamais `e^(…)` ; un encart explique la fonction (touche de calculatrice, étudiée en spécialité mathématiques) | ✅ en vigueur |
+| 04/10/2026 | **Lois de Soddy sans « nombre de charges Z »** (confusion avec le numéro atomique) : « le total des A, en haut, et celui des Z, en bas » | ✅ en vigueur |
+| 04/10/2026 | **Cases du QCM à réponses multiples redessinées** (`sequence-snt.css?v=49`, 24 pages) : coche tracée en CSS au lieu du caractère « ✓ », case teintée à la sélection, couleur du verdict après correction | ✅ en vigueur |
+| 04/10/2026 | **Droits d'images : une liste dans le suivi, plus d'encart dans les pages** (demande de Loïc). Voir `_suivi/es1-verification.md`, C2 | ✅ en vigueur |
+| 04/10/2026 | En mode enseignant, les « à retenir » de séance s'affichent d'office (radioactivité) : Loïc relit sans tout refaire | ✅ en vigueur |
+
 ## 04/10/2026 — L'accueil refait : ES en portes, page auteur
 
 | Date | Décision | Statut |
@@ -24,6 +47,19 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 04/10/2026 | Les **fiches-outils de l'accueil** listent les huit outils, tous liés (ils l'étaient déjà au hub de 2nde) | ✅ en vigueur |
 | 04/10/2026 | **Bande « Hors de la classe »** à l'accueil et **page `pages/auteur.html`** : parcours, démarche (RGPD d'abord · interactif · vivant · sourcé), Quizéo, YouTube (Cogito Ergo Sum, trois vidéos choisies par Loïc), Kahoot. La ligne « Prestations » est retirée. Un seul contact : l'adresse d'Isaac de l'Étoile | ✅ en vigueur |
 | 04/10/2026 | 🔴 **Aucune ressource tierce sur ces pages** : miniatures YouTube, portrait Kahoot et captures Quizéo copiés dans `assets/img/auteur/` (crédits dans `CREDITS.md`) ; pas de lecteur YouTube intégré, les vidéos s'ouvrent au clic. Motif : une image ou un lecteur tiers envoie l'IP du visiteur dès l'ouverture — et YouTube est bloqué au lycée | ✅ en vigueur |
+
+## 04/10/2026 — Bugs du SNT remontés de la classe
+
+| Date | Décision | Statut |
+|---|---|---|
+| 04/10/2026 | 🔴 **Listes déroulantes et réserves d'étiquettes mélangées par le moteur** (`MÉLANGE DES CHOIX`, tête de `sequence-snt.js`) : ordre stable, commun aux listes qui partagent leurs choix, retiré tant que les bonnes réponses s'y suivent en escalier. Remplace le rangement à la main pour ces deux composants (les QCM à boutons restent répartis à la main, déjà contrôlés). t6 et t7, hors moteur, réordonnés dans la source. `verifier.mjs` bloquant. Motif : bonne réponse en tête dans 23 listes sur 27 en t2, 58 sur 61 en O6, 30 sur 30 en O8, diagonales en t0, t6, t7, O4 | ✅ en vigueur |
+| 04/10/2026 | **Plus de survol sur écran tactile** (`@media (hover:hover)`) pour les options de QCM et les étiquettes ; à chaque question suivante, le focus va à l'énoncé. Motif : sur iPad, un cadre restait sur l'option tombée sous le doigt — une fausse présélection | ✅ en vigueur |
+| 04/10/2026 | 🔴 **Rien n'est évalué qui n'ait été présenté avant** — règle de `CLAUDE.md`. Photo des prises PS/2 ajoutée en t0 3.1 (Wikimedia Commons) | ✅ en vigueur |
+| 04/10/2026 | Définition du SSD (t0 2.6) : **400 caractères** au plus, au lieu de 220 | ✅ en vigueur |
+| 04/10/2026 | 🔴 **La fiche de séance est un vrai PDF fabriqué par la page** (`sequence-snt.js`, toutes les pages du moteur) : mise en page hors écran, découpe A4 sans couper une ligne ni un encadré, chaque page photographiée (`html2canvas-pro` 2.5.1) et assemblée (`jsPDF` 4.2.1), liens recréés cliquables. Remise par la feuille de partage d'iOS (« Enregistrer ma fiche ») ou par téléchargement ; la fiche à l'écran reste en secours. Bibliothèques **hébergées** (`assets/js/vendor/`, MIT), chargées au premier clic : aucun CDN. Remplace « Imprimer → Enregistrer en PDF, aucune bibliothèque » (§15.10) et l'essai Safari du 24/09, retiré. Motif : iOS ignore `window.print()` dans l'app d'écran d'accueil ; le renvoi vers Safari perdait les élèves | ✅ en vigueur — ⏳ à confirmer sur iPad |
+| 04/10/2026 | **Étiquettes à poser, variante légende** (`data-legende`, `data-recadrage`) : le nom posé s'inscrit dans une légende numérotée à côté de la photo, plus sur elle ; ✕ par ligne ; réserve et légende collantes ; photo recadrée sur la zone utile. Appliquée à t0 3.3 (emplacements ≈ 2,5 fois plus grands) ; les étiquettes d'ES gardent l'ancienne présentation | ✅ en vigueur |
+| 04/10/2026 | **Photo à côté de la fenêtre d'écriture** (`data-focus-photo="<code de dépôt>"`) : côte à côte en paysage, l'une sur l'autre en portrait. t0 3.4 | ✅ en vigueur |
+| 04/10/2026 | ⏳ **Le symbole DEEE** est évalué en t0 3.3 sans avoir été montré avant (il n'apparaît qu'au « à retenir » de l'étape) : image en amont, ou emplacement retiré — à Loïc | ⏳ en attente |
 
 ## 03/10/2026 — Progression, vidéos en MP4, fiches d'ES
 

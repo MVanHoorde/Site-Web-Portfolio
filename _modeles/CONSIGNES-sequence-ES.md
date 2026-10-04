@@ -60,6 +60,10 @@ lithosphère…) s'explique sur place, dans une infobulle `.plustard def` sans
 en nucléosynthèse et en terminale t2-c1 ; à faire dans les cinq autres chapitres,
 dont le glossaire flottant montre encore tout dès l'arrivée.
 
+🔴 **Aucune bonne réponse devinable à sa place** — même règle que le SNT
+(`CONSIGNES-sequence-SNT.md` §15.5) : QCM répartis à la main entre A-D, listes
+déroulantes et étiquettes mélangées par le moteur.
+
 ## Conventions de mise en forme (audit du 12/09/2026)
 
 Motif : le gras employé partout donne un rendu « généré par IA », et l'œil n'a plus

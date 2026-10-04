@@ -36,6 +36,16 @@ dans `_suivi/DECISIONS.md`, le récit dans `_suivi/JOURNAL.md`. Motif : l'audit 
 23/07/2026 a trouvé six contradictions dans les fichiers de référence, dont cinq
 dans un seul paragraphe — de quoi produire une session entière de travail faux.
 
+🔴 **RÈGLE ABSOLUE — rien n'est évalué qui n'ait été présenté avant.** Tout ce
+qu'un exercice, un QCM ou une étiquette demande de reconnaître (un mot, un
+objet, un connecteur, un symbole) a été **montré dans le cours en amont** — en
+image quand on le reconnaît à l'œil. Avant de poser une évaluation, relire ce
+qui la précède. Motif : 04/10/2026, le PS/2 et le symbole DEEE évalués en t0
+3.3 sans avoir été montrés.
+
+🔴 **Aucune bonne réponse devinable à sa place** (QCM, listes, étiquettes) —
+détail : `CONSIGNES-sequence-SNT.md` §15.5.
+
 La **validation** est un acte explicite de ma part (« oui, ce cours me convient,
 je peux l'utiliser l'an prochain »), jamais présumée. La mise en ligne n'est pas
 un jalon : tout est / sera en ligne.

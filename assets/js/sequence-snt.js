@@ -25,6 +25,85 @@
  * ============================================================ */
 
 /* ============================================================
+   MÉLANGE DES CHOIX (04/10/2026)
+   ------------------------------------------------------------
+   Signalé par Loïc en classe : dans les listes déroulantes, la
+   bonne réponse était presque toujours la première (t2 : 23 sur
+   27, O6 : 58 sur 61, O8 : 30 sur 30), ou suivait une diagonale
+   (la k-ième liste a sa réponse en k-ième position : t0, t6, t7,
+   O4). Les élèves le repèrent vite. Même biais dans la réserve
+   des étiquettes à poser, rangée dans l'ordre des emplacements.
+
+   On mélange donc à l'affichage, ici, avant tout autre module :
+   une source mal ordonnée ne peut plus rien trahir. Le mélange
+   est STABLE — la graine est la liste elle-même — : une même
+   liste sort toujours dans le même ordre, d'une visite à l'autre
+   et d'une ligne à l'autre d'un tableau d'association, qui reste
+   lisible. La correction compare des valeurs, jamais des
+   positions : rien d'autre n'est touché.
+
+   Échappe au mélange : l'option vide (« — », « choisis… »), et
+   toute liste sous [data-ordre-fixe] — une échelle, des mois…
+   ============================================================ */
+(function(){
+  function graine(txt){
+    var h=2166136261;
+    for(var i=0;i<txt.length;i++){ h^=txt.charCodeAt(i); h=Math.imul(h,16777619); }
+    return h>>>0;
+  }
+  function melanger(liste, cle){
+    var s=graine(cle)||1;
+    function alea(){ s^=s<<13; s>>>=0; s^=s>>>17; s^=s<<5; s>>>=0; return s/4294967296; }
+    for(var i=liste.length-1;i>0;i--){
+      var j=Math.floor(alea()*(i+1)), t=liste[i]; liste[i]=liste[j]; liste[j]=t;
+    }
+    return liste;
+  }
+  /* Les listes qui partagent les mêmes choix forment un groupe (les lignes
+     d'un tableau d'association) : un même ordre pour toutes, et on le
+     retire tant que les bonnes réponses s'y suivent en escalier — trois
+     positions consécutives, montantes ou descendantes. Le premier essai
+     sur t0 avait changé une diagonale 1-2-3-4-5 en 5-4-3-2-1. */
+  var groupes={}, ordre=[];
+  Array.prototype.forEach.call(
+    document.querySelectorAll('select[data-correct],select[data-answer],.cloze select'),
+    function(sel){
+      if(sel.closest('[data-ordre-fixe]')) return;
+      var choix=Array.prototype.filter.call(sel.options,function(o){ return o.value!==''; });
+      if(choix.length<2) return;
+      var cle=choix.map(function(o){ return o.value; }).join('\u0001');
+      if(!groupes[cle]){ groupes[cle]=[]; ordre.push(cle); }
+      groupes[cle].push(sel);
+    });
+  function escalier(pos){
+    for(var i=2;i<pos.length;i++){
+      var a=pos[i-1]-pos[i-2], b=pos[i]-pos[i-1];
+      if(a===b && (a===1||a===-1)) return true;
+    }
+    return false;
+  }
+  ordre.forEach(function(cle){
+    var sels=groupes[cle], valeurs=cle.split('\u0001'), rang=valeurs.slice();
+    for(var essai=0;essai<12;essai++){
+      rang=melanger(valeurs.slice(), essai ? cle+'#'+essai : cle);
+      var pos=sels.map(function(s){ return rang.indexOf(s.getAttribute('data-correct')||s.getAttribute('data-answer')||''); });
+      if(sels.length<3 || !escalier(pos)) break;
+    }
+    sels.forEach(function(sel){
+      var parValeur={};
+      Array.prototype.forEach.call(sel.options,function(o){ if(o.value!=='') parValeur[o.value]=o; });
+      rang.forEach(function(v){ if(parValeur[v]) sel.appendChild(parValeur[v]); });
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-etiq-bac]'),function(bac){
+    if(bac.closest('[data-ordre-fixe]')) return;
+    var etiq=Array.prototype.slice.call(bac.querySelectorAll('[data-etiq]'));
+    var cle=etiq.map(function(e){ return e.getAttribute('data-etiq'); }).join('\u0001');
+    melanger(etiq,cle).forEach(function(e){ bac.appendChild(e); });
+  });
+})();
+
+/* ============================================================
    ÉTAT DES ÉTAPES — lot 1A (24/07/2026)
    ------------------------------------------------------------
    Ce module ENREGISTRE seulement. Il ne révèle rien, ne restaure
@@ -551,6 +630,7 @@
     if(champ._scene){
       if(scene && scene!==champ._scene) reduireFocus();
       scene=champ._scene; scene.hidden=false;
+      photoFocus(champ, scene);
       document.body.classList.add('focus-on');
       champ.classList.remove('brouillon');
       if(champ.dataset.focusStrict==='1') focusStrictActif=scene;
@@ -584,6 +664,7 @@
         '</div>'+
       '</div>';
     document.body.appendChild(scene);
+    photoFocus(champ, scene);
     document.body.classList.add('focus-on');
     if(strict){ focusStrictActif=champ; champ.dataset.focusCode=champ.dataset.focusCode||''; }
 
@@ -690,6 +771,30 @@
         av.remove(); ok.disabled = false; ta.focus();
       });
     });
+  }
+  /* PHOTO À CÔTÉ DE LA FENÊTRE D'ÉCRITURE (04/10/2026)
+     data-focus-photo="<code de dépôt>" : la fenêtre se partage entre la photo
+     déposée par l'élève (le [data-depot-code] du même code) et sa réponse.
+     Motif : en t0 3.4, décrire sa façade arrière obligeait à réduire la
+     fenêtre pour revoir sa photo, puis à la rouvrir, à chaque connecteur.
+     La photo est relue à chaque ouverture : un dépôt fait pendant que le
+     brouillon était réduit apparaît. Sans photo, un mot dit où la déposer. */
+  function photoFocus(champ, sc){
+    var code = champ.dataset.focusPhoto;
+    if(!code) return;
+    var fig = sc.querySelector('.focus-photo');
+    if(!fig){
+      fig = document.createElement('figure');
+      fig.className = 'focus-photo';
+      sc.insertBefore(fig, sc.firstChild);
+      sc.classList.add('avec-photo');
+    }
+    var depot = document.querySelector('[data-depot-code="'+code+'"]');
+    var img = depot && depot.querySelector('[data-depot-apercu] img');
+    fig.innerHTML = img
+      ? '<img alt="Ta photo déposée"><figcaption>Ta photo</figcaption>'
+      : '<p class="fp-vide">📷 Ta photo n’est pas encore déposée.<br>Réduis cette fenêtre et dépose-la juste au-dessus&nbsp;: elle s’affichera ici, à côté de ta réponse.</p>';
+    if(img) fig.querySelector('img').src = img.src;
   }
   function fermerFocus(){
     if(scene){
@@ -1605,10 +1710,9 @@
          pas un bulletin ;
        · elle emporte L'ESSENTIEL DU COURS (objectifs, à retenir, repères de
          dates, frise corrigée, vocabulaire) et pas seulement les réponses ;
-       · elle s'ouvre dans un onglet avec un bouton « Imprimer / PDF » :
-         le PDF sort par « Enregistrer en PDF » du navigateur (spec §13.11),
-         sans aucune bibliothèque ni CDN. Repli en téléchargement si l'onglet
-         est bloqué par le navigateur. */
+       · elle sort en vrai PDF, fabriqué par la page (voir « LA FICHE EN
+         VRAI PDF », 04/10/2026) ; la version à l'écran, imprimable, reste
+         en secours (ouvrirFicheEcran). */
   function seanceTitle(sec){var h=sec.querySelector('.seance-head h2');return h?h.textContent.replace(/\s+/g,' ').trim():'Séance';}
   function echapper(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -2532,7 +2636,244 @@
       h + '</div></body></html>';
   }
 
+  /* ---------- LA FICHE EN VRAI PDF (04/10/2026) ----------
+     L'ancien chemin — la fiche dans un onglet, puis « Enregistrer en PDF »
+     par l'impression du navigateur — échouait sur iPad : depuis l'icône de
+     l'écran d'accueil ou le lecteur de QR code, iOS ignore window.print()
+     sans rien dire. Le renvoi vers Safari (essai du 24/09) demandait deux
+     applications, une reconnexion et deux clics : les élèves s'y perdaient.
+     Désormais la page FABRIQUE le PDF elle-même, puis le remet :
+       · par la feuille de partage d'iOS (« Enregistrer dans Fichiers »,
+         OneDrive) quand l'appareil sait partager un fichier ;
+       · par un téléchargement, partout.
+     Comment : la fiche (le même HTML qu'avant) est mise en page dans une
+     iframe hors écran, à la largeur utile d'une page A4 ; on la découpe en
+     pages SANS couper une ligne, une image ou un encadré (voir coupures()),
+     chaque page est photographiée (html2canvas-pro) et posée dans un PDF A4
+     (jsPDF). Le texte du PDF est donc une image : lisible, imprimable,
+     annotable, pas sélectionnable — c'est le prix de l'indépendance vis-à-vis
+     du navigateur.
+     Les deux bibliothèques sont HÉBERGÉES dans le dépôt (assets/js/vendor,
+     licence MIT) et chargées au premier clic seulement : rien ne part vers
+     un CDN, rien ne pèse sur les pages tant qu'on ne demande pas sa fiche.
+     Deux gestes, pas un : « Préparer » puis « Enregistrer ». Safari refuse
+     une feuille de partage ouverte plusieurs secondes après le toucher. */
+  var MM_PX = 96/25.4;                       /* 1 mm en px CSS */
+  var PDF_MARGE_X = 11, PDF_MARGE_Y = 12;    /* mm, comme l'ancien @page */
+  var PDF_L = 210 - 2*PDF_MARGE_X, PDF_H = 297 - 2*PDF_MARGE_Y - 6;  /* 6 mm pour le pied */
+  var LARGEUR_PX = Math.round(PDF_L*MM_PX);
+  var HAUTEUR_PX = Math.floor(PDF_H*MM_PX);
+  var libsPdf = null;
+  function chargerScript(src){
+    return new Promise(function(ok, ko){
+      var s=document.createElement('script'); s.src=src; s.async=true;
+      s.onload=ok; s.onerror=function(){ ko(new Error('chargement impossible : '+src)); };
+      document.head.appendChild(s);
+    });
+  }
+  function bibliothequesPdf(){
+    if(!libsPdf){
+      var moi=document.querySelector('script[src*="sequence-snt.js"]');
+      var base=moi ? moi.src.replace(/sequence-snt\.js.*$/,'') : '../assets/js/';
+      libsPdf=Promise.all([
+        window.html2canvas ? 0 : chargerScript(base+'vendor/html2canvas-pro-2.5.1.min.js'),
+        (window.jspdf && window.jspdf.jsPDF) ? 0 : chargerScript(base+'vendor/jspdf-4.2.1.umd.min.js')
+      ]).catch(function(e){ libsPdf=null; throw e; });
+    }
+    return libsPdf;
+  }
+
+  /* Où couper : jamais au milieu d'une ligne de texte, d'une image, d'un
+     schéma, d'une ligne de tableau ni d'un encadré qui tient sur une page.
+     Les candidats sont les bas d'éléments et de lignes ; on garde le plus
+     bas qui ne tombe dans aucun intervalle interdit. Un titre de section
+     resté seul en bas de page part avec ce qui le suit. */
+  function coupures(doc, racine){
+    var org=racine.getBoundingClientRect().top, total=racine.scrollHeight;
+    var interdits=[], candidats=[total];
+    function bloc(r, insecable){
+      var h=r.bottom-r.top; if(h<=0) return;
+      var t=r.top-org, b=r.bottom-org;
+      candidats.push(Math.ceil(b));
+      if(insecable && h<HAUTEUR_PX*0.9) interdits.push([t,b]);
+    }
+    var INSECABLE='img,svg,figure,tr,.e,.r,.fx-fig,.fx-cote,.fx-imgs,.fx-cadre,.fx-train li,.bc,.reac,.depot,.el,h1,h2,h3';
+    Array.prototype.forEach.call(racine.querySelectorAll('*'),function(el){
+      if(el.closest('svg') && el.tagName.toLowerCase()!=='svg') return;
+      bloc(el.getBoundingClientRect(), el.matches(INSECABLE));
+    });
+    /* les lignes de texte, une à une */
+    var w=doc.createTreeWalker(racine, 4 /* NodeFilter.SHOW_TEXT */), n, rg=doc.createRange();
+    while((n=w.nextNode())){
+      if(!n.nodeValue.trim()) continue;
+      rg.selectNodeContents(n);
+      Array.prototype.forEach.call(rg.getClientRects(),function(r){ bloc(r, true); });
+    }
+    var titres=Array.prototype.map.call(racine.querySelectorAll('h2'),function(h){
+      var r=h.getBoundingClientRect(); return [r.top-org, r.bottom-org];
+    });
+    candidats.sort(function(a,b){ return a-b; });
+    function libre(y){ return !interdits.some(function(i){ return i[0]<y-0.5 && y+0.5<i[1]; }); }
+    var cuts=[], debut=0;
+    while(total-debut>HAUTEUR_PX){
+      var lim=debut+HAUTEUR_PX, y=0;
+      for(var k=candidats.length-1;k>=0;k--){
+        var c=candidats[k];
+        if(c>lim) continue;
+        if(c<=debut+HAUTEUR_PX*0.35) break;
+        if(libre(c)){ y=c; break; }
+      }
+      if(!y) y=lim;                         /* rien de propre : on coupe net */
+      /* un titre orphelin en bas de page descend sur la suivante */
+      titres.forEach(function(t){ if(t[1]<=y && y-t[1]<40 && t[0]>debut+HAUTEUR_PX*0.35) y=Math.floor(t[0])-2; });
+      cuts.push([debut, y]); debut=y;
+    }
+    cuts.push([debut, total]);
+    return cuts;
+  }
+
+  function fichePdf(sec, avancer){
+    var html=ficheHTML(sec);
+    /* la mise en page « impression » de la fiche, sans marges : jsPDF les pose */
+    html=html.replace('</head>','<style>body{background:#fff!important}'+
+      '.page{box-shadow:none!important;margin:0!important;max-width:none!important;width:'+LARGEUR_PX+'px;padding:0!important;border-radius:0!important}'+
+      '.barre,.aide{display:none!important}'+
+      /* html2canvas colle la puce au texte : on la dessine nous-mêmes */
+      '.page ul{list-style:none}.page ul>li{position:relative}'+
+      '.page ul>li::before{content:"•";position:absolute;left:-13px;top:0}</style></head>');
+    var ifr=document.createElement('iframe');
+    ifr.setAttribute('aria-hidden','true'); ifr.tabIndex=-1;
+    ifr.style.cssText='position:fixed;left:-12000px;top:0;width:'+(LARGEUR_PX+40)+'px;height:'+HAUTEUR_PX+'px;border:0;visibility:hidden';
+    document.body.appendChild(ifr);
+    function nettoyer(){ if(ifr.parentNode) ifr.parentNode.removeChild(ifr); }
+    return bibliothequesPdf().then(function(){
+      return new Promise(function(ok){
+        ifr.onload=ok;
+        ifr.srcdoc=html;
+      });
+    }).then(function(){
+      var doc=ifr.contentDocument;
+      var imgs=Array.prototype.filter.call(doc.images,function(i){ return !i.complete; });
+      return Promise.all(imgs.map(function(i){ return new Promise(function(ok){ i.onload=i.onerror=ok; }); }))
+        .then(function(){ return doc.fonts && doc.fonts.ready; });
+    }).then(function(){
+      var doc=ifr.contentDocument, page=doc.querySelector('.page');
+      var tranches=coupures(doc, page);
+      /* les liens (vidéos, documents) : la page est une image, on repose
+         par-dessus des zones cliquables aux mêmes endroits */
+      var org=page.getBoundingClientRect();
+      var liens=[];
+      Array.prototype.forEach.call(page.querySelectorAll('a[href^="http"]'),function(a){
+        Array.prototype.forEach.call(a.getClientRects(),function(r){
+          liens.push({url:a.href, x:r.left-org.left, y:r.top-org.top, l:r.width, h:r.height});
+        });
+      });
+      var jsPDF=window.jspdf.jsPDF;
+      var pdf=new jsPDF({unit:'mm', format:'a4', compress:true});
+      pdf.setProperties({title: doc.title || 'Fiche', creator: 'Site de M. Van Hoorde'});
+      /* une fenêtre de la hauteur d'une tranche, qui fait glisser la page */
+      var fen=doc.createElement('div');
+      fen.style.cssText='position:relative;overflow:hidden;background:#fff;width:'+LARGEUR_PX+'px';
+      page.parentNode.insertBefore(fen, page); fen.appendChild(page);
+      page.style.position='relative';
+      var i=0;
+      function suivante(){
+        if(i>=tranches.length) return Promise.resolve();
+        var t=tranches[i];
+        if(avancer) avancer(i+1, tranches.length);
+        fen.style.height=(t[1]-t[0])+'px';
+        page.style.top=(-t[0])+'px';
+        return window.html2canvas(fen,{scale:2, backgroundColor:'#ffffff', useCORS:true, logging:false,
+                                       windowWidth:LARGEUR_PX+40, windowHeight:Math.max(HAUTEUR_PX, t[1]-t[0])})
+          .then(function(cv){
+            if(i>0) pdf.addPage();
+            pdf.addImage(cv.toDataURL('image/jpeg',0.86),'JPEG',PDF_MARGE_X,PDF_MARGE_Y,PDF_L,(t[1]-t[0])/MM_PX,undefined,'FAST');
+            pdf.setFontSize(8); pdf.setTextColor(139,151,173);
+            pdf.text((i+1)+' / '+tranches.length, 210-PDF_MARGE_X, 297-7, {align:'right'});
+            liens.forEach(function(L){
+              if(L.y<t[0] || L.y+L.h>t[1]) return;
+              pdf.link(PDF_MARGE_X+L.x/MM_PX, PDF_MARGE_Y+(L.y-t[0])/MM_PX, L.l/MM_PX, L.h/MM_PX, {url:L.url});
+            });
+            i++;
+            return suivante();
+          });
+      }
+      return suivante().then(function(){ return pdf.output('blob'); });
+    }).then(function(b){ nettoyer(); return b; }, function(e){ nettoyer(); throw e; });
+  }
+
+  function nomFichePdf(sec){
+    var bout=function(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'')
+      .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); };
+    var num=sec.getAttribute('data-seance') || (sec.querySelector('.seance-head .s-num')||{}).textContent || '';
+    return ('fiche-'+bout(ficheTheme()).slice(0,40)+(num?'-seance-'+bout(num):'')).replace(/-+/g,'-')+'.pdf';
+  }
+
+  /* La fenêtre « Ta fiche » : préparation, puis les façons de l'enregistrer */
   function downloadFiche(sec){
+    var nom=nomFichePdf(sec);
+    openModal('📄','Ta fiche de séance',
+      '<div class="fpdf"><p class="fpdf-etat" data-fpdf-etat>Préparation de ta fiche…</p>'+
+      '<div class="fpdf-jauge" aria-hidden="true"><i data-fpdf-jauge></i></div>'+
+      '<div class="fpdf-actions" data-fpdf-actions hidden></div></div>',
+      [{label:'Fermer',cls:'ghost'}]);
+    var etat=document.querySelector('[data-fpdf-etat]'), jauge=document.querySelector('[data-fpdf-jauge]');
+    var zone=document.querySelector('[data-fpdf-actions]');
+    function avancer(k,n){
+      if(etat) etat.textContent='Préparation de ta fiche… page '+k+' sur '+n;
+      if(jauge) jauge.style.width=Math.round(100*(k-0.5)/n)+'%';
+    }
+    function ecran(){
+      var b=document.createElement('button'); b.type='button'; b.className='fpdf-ecran';
+      b.textContent='Voir la fiche à l’écran, pour l’imprimer depuis un ordinateur';
+      b.addEventListener('click',function(){ ouvrirFicheEcran(sec); });
+      return b;
+    }
+    fichePdf(sec, avancer).then(function(blob){
+      if(!zone || !zone.isConnected) return;
+      var fichier=null;
+      try{ fichier=new File([blob], nom, {type:'application/pdf'}); }catch(e){}
+      var partage = !!(fichier && navigator.canShare && navigator.share && navigator.canShare({files:[fichier]}));
+      var url=URL.createObjectURL(blob);
+      var pages=(etat.textContent.match(/sur (\d+)/)||[])[1];
+      etat.innerHTML='✅ Ta fiche est prête'+(pages?' — '+pages+(pages>1?' pages':' page'):'')+'.';
+      if(jauge) jauge.parentNode.hidden=true;
+      zone.hidden=false;
+      if(partage){
+        var p=document.createElement('button'); p.type='button'; p.className='btn dl';
+        p.textContent='📤 Enregistrer ma fiche';
+        p.addEventListener('click',function(){
+          navigator.share({files:[fichier], title:nom}).catch(function(e){
+            if(e && e.name==='AbortError') return;      /* l'élève a fermé la feuille */
+            aide.innerHTML='Le partage n’a pas marché. Utilise plutôt «&nbsp;Télécharger le PDF&nbsp;».';
+          });
+        });
+        zone.appendChild(p);
+      }
+      var a=document.createElement('a'); a.className='btn'+(partage?' ghost':' dl');
+      a.href=url; a.download=nom; a.textContent='📥 Télécharger le PDF';
+      zone.appendChild(a);
+      var aide=document.createElement('p'); aide.className='fpdf-aide';
+      aide.innerHTML = partage
+        ? 'Touche <b>Enregistrer ma fiche</b>, puis <b>«&nbsp;Enregistrer dans Fichiers&nbsp;»</b> et choisis ton dossier <b>OneDrive</b>. Tu peux aussi l’ouvrir directement dans l’app OneDrive.'
+        : 'Le PDF arrive dans tes <b>Téléchargements</b>&nbsp;: dépose-le ensuite dans ton dossier <b>OneDrive</b>.';
+      zone.appendChild(aide);
+      zone.appendChild(ecran());
+    }).catch(function(e){
+      if(!zone || !zone.isConnected) return;
+      if(etat) etat.innerHTML='⚠️ Ta fiche n’a pas pu être préparée en PDF sur cet appareil.';
+      if(jauge) jauge.parentNode.hidden=true;
+      zone.hidden=false;
+      var p=document.createElement('p'); p.className='fpdf-aide';
+      p.textContent='Ouvre-la à l’écran à la place, et préviens ton professeur avec le bouton « J’ai vu un bug ».';
+      zone.appendChild(p); zone.appendChild(ecran());
+      try{ console.warn('fiche PDF :', e); }catch(_){}
+    });
+  }
+
+  /* l'ancienne fiche, dans un onglet, avec son bouton d'impression : le
+     secours, et le chemin d'un ordinateur relié à une imprimante */
+  function ouvrirFicheEcran(sec){
     var html=ficheHTML(sec);
     var w=null;
     try{ w=window.open('','_blank'); }catch(e){ w=null; }
@@ -2624,8 +2965,8 @@
     var bar=document.createElement('div'); bar.className='seance-actions';
     bar.innerHTML = SANS_FICHE
       ? '<span class="sa-label">Besoin de reprendre cette séance depuis le début&nbsp;?</span>'
-      : '<span class="sa-label">💾 Ta fiche s\'ouvre dans un onglet : imprime-la, ou enregistre-la en PDF, puis dépose-la sur ton OneDrive.</span>';
-    var dl=document.createElement('button'); dl.className='btn dl sm'; dl.textContent='📄 Ouvrir ma fiche (PDF)';
+      : '<span class="sa-label">💾 Ta fiche de séance en PDF, à enregistrer sur ton OneDrive.</span>';
+    var dl=document.createElement('button'); dl.className='btn dl sm'; dl.textContent='📄 Ma fiche (PDF)';
     dl.addEventListener('click',function(){downloadFiche(sec);});
     var rs=document.createElement('button'); rs.className='btn reset sm'; rs.textContent='🔁 Recommencer';
     rs.addEventListener('click',function(){
@@ -2634,8 +2975,8 @@
         [{label:'Annuler',cls:'ghost'},
          {label:'Recommencer',cls:'reset',fn:function(){resetSeance(sec);}}]);
       else openModal('🔁','Recommencer cette séance ?',
-        '<p>Tu vas repartir d\'une fiche vierge pour cette séance. Tes réponses actuelles seront effacées de l\'écran.<br><b>Ouvre et enregistre d\'abord ta fiche</b> si tu veux garder tes réponses et tes corrections.</p>',
-        [{label:'📄 Ouvrir ma fiche d\'abord',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
+        '<p>Tu vas repartir d\'une fiche vierge pour cette séance. Tes réponses actuelles seront effacées de l\'écran.<br><b>Enregistre d\'abord ta fiche</b> si tu veux garder tes réponses et tes corrections.</p>',
+        [{label:'📄 Ma fiche d\'abord',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
          {label:'Recommencer',cls:'reset',fn:function(){resetSeance(sec);}}]);
     });
     if(!SANS_FICHE) bar.appendChild(dl);
@@ -2662,8 +3003,8 @@
       return;
     }
     openModal('🎉','Séance terminée — bravo !',
-      recap+'<p style="margin-top:2px">Tu as validé toute la séance. Ouvre ta fiche, enregistre-la en PDF, puis dépose-la sur ton OneDrive.</p>',
-      [{label:'📄 Ouvrir ma fiche (PDF)',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
+      recap+'<p style="margin-top:2px">Tu as validé toute la séance. Enregistre ta fiche PDF sur ton OneDrive.</p>',
+      [{label:'📄 Ma fiche (PDF)',cls:'dl',close:false,fn:function(){downloadFiche(sec);}},
        {label:'Continuer',cls:'ghost'}]);
   }
 
@@ -3885,7 +4226,7 @@ function jouerQcm(data,box,recap,lanceur){
       '— <span>réduire</span></button>'+
       '<button type="button" class="qclose" aria-label="Abandonner le QCM : rien ne sera validé">'+
       '✕ <span>abandonner</span></button>'+
-      '</div><h4>'+q.q+'</h4><div class="qzone"></div>';
+      '</div><h4 tabindex="-1">'+q.q+'</h4><div class="qzone"></div>';
     $('.qreduire',pan).addEventListener('click',reduire);
     $('.qclose:not(.qreduire)',pan).addEventListener('click',abandonner);
     var zone=$('.qzone',pan);
@@ -3995,7 +4336,12 @@ function jouerQcm(data,box,recap,lanceur){
     act.innerHTML='<button type="button">'+(i<data.length-1?'Question suivante →':'Terminer')+'</button>';
     pan.appendChild(act);
     act.querySelector('button').addEventListener('click',function(){
-      if(i<data.length-1){ i++; dessiner(); }
+      if(i<data.length-1){
+        i++; dessiner();
+        /* le focus va à l'énoncé, jamais à une option : aucune ne doit
+           paraître présélectionnée (04/10/2026) */
+        var h=$('h4',pan); if(h) h.focus({preventScroll:true});
+      }
       else terminer();
     });
   }
@@ -4624,13 +4970,82 @@ function initDepot(){
    temps — je touche l'étiquette, je touche l'endroit —, qui marche à la souris,
    au doigt et au clavier (les étiquettes et les zones sont des <button>).
    Une zone déjà servie renvoie son étiquette au bac si on la retouche. */
+/* VARIANTE LÉGENDE (04/10/2026) — <div class="etiq-jeu" data-etiquettes data-legende>
+   Signalé en classe sur la vieille tour de t0 : dix noms posés SUR la photo se
+   chevauchaient, et retirer une étiquette mal placée n'avait rien d'évident.
+   Ici, le nom posé ne va plus sur la photo : il s'inscrit dans une légende
+   numérotée, à côté, et l'emplacement devient une pastille pleine. Chaque
+   ligne a son ✕ ; toucher une ligne y pose l'étiquette choisie, comme
+   l'emplacement. Réserve et légende restent à l'écran pendant qu'on fait
+   défiler la photo (colonne collante).
+   data-recadrage="x1 x2 y1 y2" (en % de l'image) n'affiche que la partie
+   utile, à la largeur de sa colonne : les emplacements grandissent d'autant.
+   Les zones restent posées en % de l'image ENTIÈRE — rien à recalculer. */
+function legendeEtiquettes(jeu){
+  var image=$('.etiq-image',jeu), bac=$('[data-etiq-bac]',jeu);
+  var cote=document.createElement('div'); cote.className='etiq-cote';
+  var titre=document.createElement('p'); titre.className='etiq-cote-t';
+  titre.textContent='Les étiquettes à poser';
+  var ol=document.createElement('ol'); ol.className='etiq-legende';
+  $$('[data-zone]',jeu).forEach(function(z,k){
+    var n=(z.querySelector('.ez-n')||{}).textContent||String(k+1);
+    var li=document.createElement('li');
+    li.innerHTML='<span class="el-n">'+n+'</span><span class="el-nom" data-el-slot>'+
+      '<span class="el-vide">—</span></span>'+
+      '<button type="button" class="el-retirer" hidden aria-label="Retirer l’étiquette de l’emplacement '+n+'">✕</button>';
+    li._zone=z; z._ligne=li;
+    ol.appendChild(li);
+  });
+  bac.parentNode.insertBefore(cote, bac);
+  cote.appendChild(titre); cote.appendChild(bac);
+  var t2=document.createElement('p'); t2.className='etiq-cote-t'; t2.textContent='Ce que tu as posé';
+  cote.appendChild(t2); cote.appendChild(ol);
+  image.parentNode.insertBefore(cote, image.nextSibling);
+
+  var r=(jeu.getAttribute('data-recadrage')||'').split(/\s+/).map(parseFloat);
+  if(r.length===4 && r.every(function(x){ return !isNaN(x); })){
+    var img=$('img',image), cadre=document.createElement('div');
+    cadre.className='etiq-cadre';
+    while(image.firstChild) cadre.appendChild(image.firstChild);
+    image.appendChild(cadre);
+    image.classList.add('recadree');
+    var lx=r[1]-r[0], ly=r[3]-r[2];
+    cadre.style.width=(10000/lx)+'%';
+    cadre.style.left=(-100*r[0]/lx)+'%';
+    cadre.style.height=(10000/ly)+'%';
+    cadre.style.top=(-100*r[2]/ly)+'%';
+    /* ratio provisoire jusqu'au chargement : un cadre de hauteur nulle
+       ne serait jamais « visible », et l'image paresseuse jamais chargée */
+    image.style.aspectRatio=lx+' / '+(ly*1.33);
+    img.loading='eager';
+    function ratio(){
+      if(img.naturalWidth) image.style.aspectRatio=(img.naturalWidth*lx)+' / '+(img.naturalHeight*ly);
+    }
+    if(img.complete) ratio(); else img.addEventListener('load',ratio);
+  }
+}
+
 function initEtiquettes(){
   $$('[data-etiquettes]').forEach(function(jeu){
     var bac=$('[data-etiq-bac]',jeu), verdictBoite=$('.verdict',jeu);
     var choisie=null;
+    var LEGENDE=jeu.hasAttribute('data-legende');
+    if(LEGENDE) legendeEtiquettes(jeu);
+    /* où vit l'étiquette posée sur cette zone : la zone, ou sa ligne de légende */
+    function place(z){ return LEGENDE ? $('[data-el-slot]',z._ligne) : z; }
+    function majZones(){
+      if(!LEGENDE) return;
+      $$('[data-zone]',jeu).forEach(function(z){
+        var e=$('[data-etiq]',place(z));
+        z.classList.toggle('servie',!!e);
+        $('.el-retirer',z._ligne).hidden=!e;
+        $('.el-vide',z._ligne).hidden=!!e;
+        z.classList.remove('z-juste','z-faux'); z._ligne.classList.remove('l-juste','l-faux');
+      });
+    }
 
     function choisir(e){
-      if(choisie===e){ choisie.classList.remove('choisie'); choisie=null; return; }
+      if(choisie===e){ choisie.classList.remove('choisie'); choisie=null; jeu.classList.remove('en-cours'); return; }
       if(choisie) choisie.classList.remove('choisie');
       choisie=e; e.classList.add('choisie');
       jeu.classList.add('en-cours');
@@ -4639,31 +5054,46 @@ function initEtiquettes(){
       if(!etiq) return;
       etiq.classList.remove('posee','juste','faux');
       bac.appendChild(etiq);
+      majZones();
     }
     $$('[data-etiq]',jeu).forEach(function(e){
-      e.addEventListener('click',function(){ choisir(e); });
+      e.addEventListener('click',function(ev){ ev.stopPropagation(); choisir(e); });
     });
+    function poser(z){
+      var cible=place(z), deja=$('[data-etiq]',cible);
+      if(!choisie){ if(deja) rendre(deja); return; }
+      if(deja===choisie){ choisir(choisie); return; }
+      if(deja) rendre(deja);
+      choisie.classList.add('posee');
+      choisie.classList.remove('choisie','juste','faux');
+      cible.appendChild(choisie);
+      choisie=null;
+      jeu.classList.remove('en-cours');
+      majZones();
+    }
     $$('[data-zone]',jeu).forEach(function(z){
-      z.addEventListener('click',function(){
-        var deja=$('[data-etiq]',z);
-        if(!choisie){ if(deja) rendre(deja); return; }
-        if(deja) rendre(deja);
-        choisie.classList.add('posee');
-        choisie.classList.remove('choisie');
-        z.appendChild(choisie);
-        choisie=null;
-        jeu.classList.remove('en-cours');
-      });
+      z.addEventListener('click',function(){ poser(z); });
+      if(LEGENDE){
+        z._ligne.addEventListener('click',function(){ if(choisie) poser(z); });
+        $('.el-retirer',z._ligne).addEventListener('click',function(ev){
+          ev.stopPropagation(); rendre($('[data-etiq]',place(z)));
+        });
+      }
     });
+    majZones();
 
     var bouton=$('[data-etiq-verifier]',jeu);
     if(bouton) bouton.addEventListener('click',function(){
       var zones=$$('[data-zone]',jeu), justes=0, posees=0;
       zones.forEach(function(z){
-        var e=$('[data-etiq]',z); if(!e) return;
+        var e=$('[data-etiq]',place(z)); if(!e) return;
         posees++;
         var ok = e.getAttribute('data-etiq')===z.getAttribute('data-zone');
         e.classList.toggle('juste',ok); e.classList.toggle('faux',!ok);
+        if(LEGENDE){
+          z.classList.toggle('z-juste',ok); z.classList.toggle('z-faux',!ok);
+          z._ligne.classList.toggle('l-juste',ok); z._ligne.classList.toggle('l-faux',!ok);
+        }
         if(ok) justes++;
       });
       if(verdictBoite){
@@ -4671,7 +5101,9 @@ function initEtiquettes(){
         verdictBoite.innerHTML = justes===zones.length
           ? '✅ Tout est à sa place — tu sais lire une façade arrière.'
           : (posees===0 ? 'Commence par toucher une étiquette, puis l’endroit qui lui correspond sur la photo.'
-                        : '<b>'+justes+' sur '+zones.length+'</b> à la bonne place. Les étiquettes en rouge sont à déplacer&nbsp;: touche-les, puis touche le bon endroit.');
+                        : '<b>'+justes+' sur '+zones.length+'</b> à la bonne place. '+(LEGENDE
+                            ? 'Les noms en rouge sont mal placés&nbsp;: touche le ✕ de leur ligne, ou touche le nom puis le bon emplacement.'
+                            : 'Les étiquettes en rouge sont à déplacer&nbsp;: touche-les, puis touche le bon endroit.'));
       }
       var etape=jeu.closest('[data-step]');
       if(justes===zones.length && etape && !etape.classList.contains('is-done')){

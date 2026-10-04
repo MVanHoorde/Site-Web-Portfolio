@@ -28,7 +28,7 @@ window.QUESTIONS_SNT = {
     "titre": "Glossaire — SSD",
     "question": "Un SSD : qu'est-ce qui le distingue d'un disque dur, et pourquoi est-il plus rapide ?",
     "min": "20",
-    "max": "220",
+    "max": "400",
     "seance": "s2",
     "seance_num": "2",
     "etape": "2.6",
@@ -726,10 +726,10 @@ window.QUESTIONS_SNT = {
     "seance": "s1",
     "seance_num": "1",
     "etape": "1.1",
-    "etape_titre": "Avant le cours : ce que le mot évoque",
+    "etape_titre": "Avant le cours : ce que tu sais déjà",
     "bonus": false,
     "rang": 1,
-    "sur": 3
+    "sur": 4
   },
   "RAD-1d": {
     "sequence": "es1-t1-c2",
@@ -740,24 +740,38 @@ window.QUESTIONS_SNT = {
     "seance": "s1",
     "seance_num": "1",
     "etape": "1.4",
-    "etape_titre": "Activité 1 — voir une désintégration α, et son horloge folle",
+    "etape_titre": "Quand un noyau va-t-il se désintégrer ?",
     "bonus": false,
     "rang": 2,
-    "sur": 3
+    "sur": 4
   },
   "RAD-1e": {
     "sequence": "es1-t1-c2",
     "titre": "Mes six temps de désintégration",
-    "question": "Donne tes résultats (les six temps relevés) puis analyse-les : sont-ils proches ? peux-tu prédire le suivant ?",
+    "question": "Donne tes résultats (les six temps relevés) puis analyse-les : sont-ils proches ? Peux-tu prédire le suivant ?",
     "min": "20",
     "max": "600",
     "seance": "s1",
     "seance_num": "1",
     "etape": "1.4",
-    "etape_titre": "Activité 1 — voir une désintégration α, et son horloge folle",
+    "etape_titre": "Quand un noyau va-t-il se désintégrer ?",
     "bonus": false,
     "rang": 3,
-    "sur": 3
+    "sur": 4
+  },
+  "RAD-1f": {
+    "sequence": "es1-t1-c2",
+    "titre": "Ma première idée, revue après la séance 1",
+    "question": "Relis ce que tu as écrit au tout début (étape 1.1). Qu'est-ce que tu gardes ? Qu'est-ce que tu corriges ou complètes, maintenant ? Écris ta nouvelle version.",
+    "min": "30",
+    "max": "600",
+    "seance": "s1",
+    "seance_num": "1",
+    "etape": "1.4",
+    "etape_titre": "Quand un noyau va-t-il se désintégrer ?",
+    "bonus": false,
+    "rang": 4,
+    "sur": 4
   },
   "RAD-2b": {
     "sequence": "es1-t1-c2",
@@ -768,24 +782,24 @@ window.QUESTIONS_SNT = {
     "seance": "s2",
     "seance_num": "2",
     "etape": "2.3",
-    "etape_titre": "Activité 2 — la radioactivité au-dessus de ta ville",
+    "etape_titre": "La radioactivité au-dessus de Poitiers",
     "bonus": false,
     "rang": 1,
-    "sur": 5
+    "sur": 6
   },
   "RAD-2c": {
     "sequence": "es1-t1-c2",
     "titre": "Analyse de ma dose",
-    "question": "Analyse ton résultat précédent en t'appuyant sur le diagramme des seuils réglementaires : ta dose est-elle grande ? petite ? à quoi la compares-tu ?",
+    "question": "Analyse ton résultat précédent en t'appuyant sur l'image 5 : ta dose est-elle grande ? petite ? À quoi la compares-tu ?",
     "min": "20",
     "max": "600",
     "seance": "s2",
     "seance_num": "2",
     "etape": "2.3",
-    "etape_titre": "Activité 2 — la radioactivité au-dessus de ta ville",
+    "etape_titre": "La radioactivité au-dessus de Poitiers",
     "bonus": false,
     "rang": 2,
-    "sur": 5
+    "sur": 6
   },
   "RAD-2d": {
     "sequence": "es1-t1-c2",
@@ -799,7 +813,7 @@ window.QUESTIONS_SNT = {
     "etape_titre": "Ton exposition personnelle",
     "bonus": false,
     "rang": 3,
-    "sur": 5
+    "sur": 6
   },
   "RAD-2e": {
     "sequence": "es1-t1-c2",
@@ -813,12 +827,12 @@ window.QUESTIONS_SNT = {
     "etape_titre": "Ton exposition personnelle",
     "bonus": false,
     "rang": 4,
-    "sur": 5
+    "sur": 6
   },
   "RAD-2f": {
     "sequence": "es1-t1-c2",
     "titre": "Analyse de mon exposition",
-    "question": "Analyse ce résultat : où te situes-tu par rapport à la moyenne française (≈ 4,5 mSv/an) ? Qu'est-ce qui, dans ton profil, pèse le plus lourd ?",
+    "question": "Analyse ce résultat : où te situes-tu par rapport à la moyenne française (≈ 7,1 mSv/an) ? Qu'est-ce qui, dans ton profil, pèse le plus lourd ?",
     "min": "20",
     "max": "600",
     "seance": "s2",
@@ -827,7 +841,49 @@ window.QUESTIONS_SNT = {
     "etape_titre": "Ton exposition personnelle",
     "bonus": false,
     "rang": 5,
-    "sur": 5
+    "sur": 6
+  },
+  "RAD-2h": {
+    "sequence": "es1-t1-c2",
+    "titre": "La radioactivité est-elle dangereuse ?",
+    "question": "Relis ta définition de la séance 1. Puis réponds à cette question en quelques phrases : la radioactivité est-elle dangereuse ? Appuie-toi sur ce que tu as appris aujourd'hui (dose, durée, intérieur ou extérieur du corps).",
+    "min": "40",
+    "max": "700",
+    "seance": "s2",
+    "seance_num": "2",
+    "etape": "2.5",
+    "etape_titre": "Les effets sur la santé, et comment on s'en protège",
+    "bonus": false,
+    "rang": 6,
+    "sur": 6
+  },
+  "RAD-3g": {
+    "sequence": "es1-t1-c2",
+    "titre": "Ma série et celle de la classe",
+    "question": "Compare ta propre série (tes noyaux) à la courbe de toute la classe projetée au tableau. Laquelle permettrait de prévoir ce qui va se passer au lancer suivant ? Pourquoi ?",
+    "min": "30",
+    "max": "600",
+    "seance": "s3",
+    "seance_num": "3",
+    "etape": "3.1",
+    "etape_titre": "Toute la classe lance les dés",
+    "bonus": false,
+    "rang": 1,
+    "sur": 7
+  },
+  "RAD-3h": {
+    "sequence": "es1-t1-c2",
+    "titre": "La moitié de la classe",
+    "question": "Sur la courbe de la classe, au bout de combien de lancers environ la moitié des noyaux de départ s'est-elle désintégrée ? Et la moitié de ce qui restait ? Que remarques-tu ?",
+    "min": "20",
+    "max": "600",
+    "seance": "s3",
+    "seance_num": "3",
+    "etape": "3.1",
+    "etape_titre": "Toute la classe lance les dés",
+    "bonus": false,
+    "rang": 2,
+    "sur": 7
   },
   "RAD-3b": {
     "sequence": "es1-t1-c2",
@@ -837,11 +893,11 @@ window.QUESTIONS_SNT = {
     "max": "500",
     "seance": "s3",
     "seance_num": "3",
-    "etape": "3.4",
-    "etape_titre": "Activité 3 — la demi-vie ne dépend pas du nombre de noyaux",
+    "etape": "3.5",
+    "etape_titre": "La demi-vie dépend-elle du nombre de noyaux ?",
     "bonus": false,
-    "rang": 1,
-    "sur": 3
+    "rang": 3,
+    "sur": 7
   },
   "RAD-3c": {
     "sequence": "es1-t1-c2",
@@ -851,25 +907,53 @@ window.QUESTIONS_SNT = {
     "max": "600",
     "seance": "s3",
     "seance_num": "3",
-    "etape": "3.4",
-    "etape_titre": "Activité 3 — la demi-vie ne dépend pas du nombre de noyaux",
+    "etape": "3.5",
+    "etape_titre": "La demi-vie dépend-elle du nombre de noyaux ?",
     "bonus": false,
-    "rang": 2,
-    "sur": 3
+    "rang": 4,
+    "sur": 7
+  },
+  "RAD-3i": {
+    "sequence": "es1-t1-c2",
+    "titre": "Imprévisible ou prévisible ?",
+    "question": "Relis tes réponses de fin de séance 1 et de fin de séance 2. Puis explique, en quelques phrases, comment la radioactivité peut être à la fois imprévisible et prévisible.",
+    "min": "40",
+    "max": "700",
+    "seance": "s3",
+    "seance_num": "3",
+    "etape": "3.5",
+    "etape_titre": "La demi-vie dépend-elle du nombre de noyaux ?",
+    "bonus": false,
+    "rang": 5,
+    "sur": 7
   },
   "RAD-3e": {
     "sequence": "es1-t1-c2",
     "titre": "Lire la courbe du radium",
-    "question": "À l'aide de la courbe : en quelle année environ ne restera-t-il plus que la moitié du radium peint en 1915 ? Et le quart ? Explique ta lecture.",
+    "question": "À l'aide de l'image 15 : en quelle année environ ne restera-t-il plus que la moitié du radium peint en 1915 ? Et le quart ? Explique ta lecture.",
     "min": "20",
     "max": "500",
     "seance": "s3",
     "seance_num": "3",
-    "etape": "3.5",
+    "etape": "3.6",
     "etape_titre": "Un exemple : le radium 226 et son horloge de 1 600 ans",
     "bonus": false,
-    "rang": 3,
-    "sur": 3
+    "rang": 6,
+    "sur": 7
+  },
+  "RAD-3j": {
+    "sequence": "es1-t1-c2",
+    "titre": "Les Radium Girls ne savaient pas",
+    "question": "Les Radium Girls ne savaient pas. Aujourd'hui, quels produits utilisons-nous en nous fiant à ce qu'on nous en dit ? Qu'est-ce qui te ferait douter ?",
+    "min": "20",
+    "max": "700",
+    "seance": "s3",
+    "seance_num": "3",
+    "etape": "3.7",
+    "etape_titre": "Pour aller plus loin",
+    "bonus": true,
+    "rang": 7,
+    "sur": 7
   },
   "RAD-4a": {
     "sequence": "es1-t1-c2",
@@ -883,7 +967,7 @@ window.QUESTIONS_SNT = {
     "etape_titre": "Exercice 1 — reconnaître un noyau radioactif",
     "bonus": false,
     "rang": 1,
-    "sur": 5
+    "sur": 4
   },
   "RAD-4b": {
     "sequence": "es1-t1-c2",
@@ -897,7 +981,7 @@ window.QUESTIONS_SNT = {
     "etape_titre": "Exercice 2 — le radium 226, à rebours",
     "bonus": false,
     "rang": 2,
-    "sur": 5
+    "sur": 4
   },
   "RAD-4c": {
     "sequence": "es1-t1-c2",
@@ -911,7 +995,7 @@ window.QUESTIONS_SNT = {
     "etape_titre": "Exercice 3 — l'héritage de Tchernobyl",
     "bonus": false,
     "rang": 3,
-    "sur": 5
+    "sur": 4
   },
   "RAD-4d": {
     "sequence": "es1-t1-c2",
@@ -925,21 +1009,7 @@ window.QUESTIONS_SNT = {
     "etape_titre": "Exercice 3 — l'héritage de Tchernobyl",
     "bonus": false,
     "rang": 4,
-    "sur": 5
-  },
-  "RAD-4f": {
-    "sequence": "es1-t1-c2",
-    "titre": "Ce que je sais maintenant",
-    "question": "Relis ta toute première réponse, en séance 1 : « qu'est-ce que la radioactivité, selon toi ? ». Qu'est-ce que tu répondrais aujourd'hui ? Qu'est-ce qui a changé ?",
-    "min": "20",
-    "max": "700",
-    "seance": "s4",
-    "seance_num": "4",
-    "etape": "4.4",
-    "etape_titre": "Bilan du chapitre",
-    "bonus": false,
-    "rang": 5,
-    "sur": 5
+    "sur": 4
   },
   "CRI-3a": {
     "sequence": "es1-t1-c3",

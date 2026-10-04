@@ -197,68 +197,36 @@ ouverte ici**), ES-12, ES-15.
 
 ### C2 — La radioactivité · `1re-es-t1-c2-radioactivite.html`
 
-**Ce qui est en ligne** — 4 séances · 22 étapes (20 à valider) · 7 QCM (28 questions) ·
-5 textes à trous (18 champs) · 16 réponses rédigées · 1 jeu d'étiquettes ·
-1 réflexion perso · 11 vidéos en façade · 15 images · 17 entrées de glossaire.
+**V1 refondue le 04/10/2026 sur l'audit de Loïc.** Le relevé de l'audit, point par
+point, est dans `_suivi/t1c2-audit-loic-2026-10-04.md` ; les décisions, dans
+`DECISIONS.md` (04/10). Rien n'est validé ; la page reste masquée.
 
-- **S1 — Les désintégrations** : 1.1 diagnostic · 1.2 définition + cascade U-238 ·
-  1.3 α, β⁻, γ + étiquettes · 1.4 activité 1 (PhET) · 1.5 aléatoire/prévisible ·
-  1.6 bonus.
-- **S2 — L'exposition** : 2.1 naturelle/artificielle · 2.2 pénétration · 2.3 activité 2
-  (REMon) · 2.4 ExPop ASNR · 2.5 santé et protection · 2.6 bonus.
-- **S3 — Décroissance et demi-vie** : 3.1 la loi · 3.2 λ · 3.3 la demi-vie ·
-  3.4 activité 3 · 3.5 le radium 226 · 3.6 bonus.
-- **S4 — S'exercer** : 4.1 exercice 1 · 4.2 exercice 2 · 4.3 exercice 3 (Tchernobyl) ·
-  4.4 bilan + Kahoot.
+- **S1 — Les désintégrations** : 1.1 première idée + QCM diagnostique (sans enjeu) ·
+  1.2 un noyau instable (vidéo + QCM d'écoute, cascade U-238 lue père/fils) ·
+  1.3 les radioactivités α, β⁻, β⁺ (trois équations, QCM à image) · 1.4 quand ?
+  (PhET, bilan en fenêtre, reprise de la définition) · 1.5 plus loin.
+- **S2 — L'exposition** : 2.1 naturelle/artificielle (vidéo + QCM d'écoute,
+  infographie des origines **à fournir**) · 2.2 pénétration (bilan en fenêtre) ·
+  2.3 Poitiers (REMon, aide repliée, repères des balises ASNR) · 2.4 ExPop (vidéo
+  + QCM d'écoute) · 2.5 santé, QCM de 2.3 à 2.5, reprise de la définition · 2.6 plus
+  loin (mesure-radioactivite.fr, sites autour de Poitiers).
+- **S3 — Décroissance et demi-vie** : 3.1 **les dés** (écran `prof/decroissance.html`) ·
+  3.2 la loi · 3.3 λ · 3.4 la demi-vie · 3.5 N₀ ne change rien (bilan en fenêtre,
+  reprise de la définition) · 3.6 le radium · 3.7 plus loin.
+- **S4 — S'exercer** : inchangée, sauf la reprise de la définition retirée du bilan.
+  4.4 tout le chapitre en sept cartes (patron de la terminale t2-c1) · 4.5 grand
+  QCM de vingt questions, puis le Kahoot.
 
-**Cadres de réservation d'image**
+**Droits à vérifier avant une diffusion large** (plus d'encart dans la page, décision du 04/10) :
+l'infographie **AFP** de Tchernobyl (4.3) ; les deux infographies **AFCN** (1.3 et 2.4, source
+UNSCEAR) ; les images reprises du cours sans provenance établie (ES-09).
+**Ce qui bloque encore** : ES-02 levé le 04/10 (courbe tracée dans la page, américium 241, à confirmer),
+l'infographie des origines (cadre en 2.1), les MP4 sur OneDrive (dix téléchargés,
+celui de 2.1 à prendre à la main). Le lien EDF/Cattenom n'est pas repris.
 
-| Où | Ce qu'il faut y voir | Nom de fichier attendu | Format |
-|---|---|---|---|
-| Étape 4.1 | La **courbe de décroissance de l'exercice 1** (celle du modèle GeoGebra), axes lisibles : nombre de noyaux et temps en années | `t1c2-courbe-exercice-1.png` | paysage, ≥ 900 px |
-
-**Cadres `.proposition`**
-
-| Étape | Type | Ce qui est proposé |
-|---|---|---|
-| 1.1 | Programme | **Entrée diagnostique ajoutée** (l'élève écrit sa définition avant le cours, la relit à la fin). |
-| 1.3 | Programme | **Tableau de synthèse α/β/γ** ajouté : l'information était dispersée entre les parties I et II. |
-| 1.4 | Programme | La fiche IRSN sur le polonium 210 est **déplacée en bonus** de fin de séance. |
-| 2.3 | Difficulté | **Piste chiffrée** ajoutée pour la conversion nSv/h → mSv/an (facteur 10⁻⁶ et 8 760 h). À retirer si tu veux les laisser buter. |
-| 3.1 | Programme | **Légende corrigée** : le cours disait « les noyaux stables sont en jaune et noir », c'est l'inverse — voir §7. |
-| 3.4 | Difficulté | « N₀ = 1001 » de l'énoncé est **ambigu** (100 ? 1000 ?) : écrit **1000** — voir §7. |
-| 3.5 | Programme | **Question de lecture de courbe ajoutée** sur le radium, qui prépare l'exercice Tchernobyl. |
-| 4.3 | Difficulté | L'année 1986 est **rappelée** (l'énoncé ne la donnait pas) ; le seuil de 5 % tombe entre deux demi-vies — voir ES-16. |
-| 4.4 | Programme | **QCM de bilan** écrit pour cette version, absent des sources. |
-
-**QCM** — 7 QCM, 28 questions, **dont 3 repris tels quels de Quizéo** (activité 1
-question 2, activité 3 questions 2 et 3, ce dernier en réponses multiples). Les 25
-autres sont écrits par Claude. Notions couvertes : nature d'un noyau radioactif ·
-devenir du noyau père · cause de l'instabilité · terminus de la cascade U-238 ·
-identité de la particule α · émission systématique du γ · rôle père/fils ·
-matière vs rayonnement · radioactivité naturelle vs artificielle · fabrication et
-usages des radionucléides artificiels · unité de dose (Sv vs Bq) · seuils
-réglementaires (1 / 20 / 50 mSv) · dose et durée · protection collective et
-individuelle · signification de N₀ et de λ · ce qu'il faut savoir de la loi
-exponentielle · forme de la courbe · proportion désintégrée après t₁/₂ · les quatre
-erreurs classiques sur la demi-vie · calcul à deux demi-vies · classement des
-rayonnements par pénétration · grandeurs propres au radionucléide · exposition
-annuelle moyenne en France · proportion après trois demi-vies · principe de la
-datation.
-
-**Contenu repris tel quel de Loïc** : l'intégralité des définitions et des
-« à retenir » du cours Quizéo (partie I à IV) · les remarques sur les radionucléides
-artificiels, la réglementation française et le corps humain à 8 000 Bq · les énoncés
-des trois activités et de leurs questions · le texte à trous de l'activité 3 · les
-deux QCM de l'activité 3 · les trois exercices du « S'exercer » et leurs données ·
-les treize images du cours · les onze liens (vidéos, IRSN, ASNR, REMon, ExPop,
-PhET, ensciences, ac-normandie, Kahoot).
-
-**Ce qui bloque** — ES-02 (courbe GeoGebra), ES-07 (AFP), ES-10 (PhET et REMon à
-tester). Le lien vers le rapport EDF/Cattenom du cours n'a **pas** été repris :
-l'URL pointe vers un chemin daté qui bouge souvent (note de chantier en 2.6).
-
----
+**À confirmer par Loïc** : deux choix de l'activité des dés (chacun à son rythme,
+non-connecté hors courbe ; les dés sont physiques, lanceur animé en secours) ; 7,1 mSv/an au lieu de 4,5 ; γ « souvent »
+et non « toujours » ; les QCM écrits par Claude (diagnostic, écoute, 1.3, 2.3-2.5).
 
 ### C3 — Les cristaux · `1re-es-t1-c3-cristaux.html`
 

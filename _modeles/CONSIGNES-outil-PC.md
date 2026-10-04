@@ -484,6 +484,10 @@ on ne promet rien aux élèves.
 - [ ] `node verifier.mjs --bilan` avant / après.
 - [ ] Chaque page charge `sequence-snt.css` et `sequence-snt.js` dans la **même
       version** que les autres pages de `pages/`. Contrôle **bloquant**.
+- [ ] 🔴 Aucune bonne réponse devinable à sa place : QCM répartis à la main
+      entre A-D ; listes déroulantes et étiquettes mélangées par le moteur
+      (`CONSIGNES-sequence-SNT.md` §15.5 — O8 avait 30 bonnes réponses sur 30
+      en tête).
 - [ ] Aucun asset partagé modifié.
 - [ ] **Aucune collision de classe CSS** entre le style inline de la page et
       `sequence-snt.css`. Le comparatif se fait par script, pas à l'œil :
