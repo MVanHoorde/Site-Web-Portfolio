@@ -12,6 +12,7 @@ serveurs dès l'ouverture de la page.
 | `yt-archimede.jpg` | Miniature YouTube, *Archimède de Syracuse*, chaîne Cogito Ergo Sum (`_sjOBN2VCGM`), réduite à 960 px | 04/10/2026 |
 | `yt-zero.jpg` | Miniature YouTube, *Les origines du zéro*, chaîne Cogito Ergo Sum (`L3AKFfuAZTs`), réduite à 960 px | 04/10/2026 |
 | `kahoot-chaine.jpg` | Image de la chaîne Kahoot « Le Prof de Physique-Chimie » (`images-cdn.kahoot.it/068f72c2-…`), réduite à 360 px | 04/10/2026 |
+| `kahoot-logo.png` | Logo officiel Kahoot!, fourni par L. Van Hoorde (ambassadeur Kahoot!), réduit à 192 px. Marque de Kahoot! ASA | 04/10/2026 |
 | `quizeo-sommaire.jpg` | Capture d'écran de L. Van Hoorde : son cours de spécialité de terminale sur Quizéo (couverture, sommaire), recadrée sans le bandeau de la plateforme | 04/10/2026 |
 | `quizeo-figure.jpg` | Même source : figure « L'énergie qui passe », © L. Van Hoorde, CC BY-NC 4.0 | 04/10/2026 |
 | `quizeo-definition.jpg` | Même source : encadré « Loi de Stefan-Boltzmann » | 04/10/2026 |
