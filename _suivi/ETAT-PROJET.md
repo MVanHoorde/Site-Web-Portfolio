@@ -85,7 +85,7 @@
 
 **Mes classes** compte cinq portes : 2nde PC, 2nde SNT, CFA, **ES 1re**, **ES
 terminale**. La spécialité de terminale n'est plus à l'accueil (hub vide). La
-porte d'ES 1re affiche « 1 chapitre ouvert · 5 en préparation » : 🔴 **à mettre
+porte d'ES 1re affiche « 1 chapitre ouvert · 4 en préparation » : 🔴 **à mettre
 à jour à chaque démasquage** d'un chapitre de 1re. Les fiches-outils de la
 colonne de droite listent **o1 à o8**, tous liés.
 

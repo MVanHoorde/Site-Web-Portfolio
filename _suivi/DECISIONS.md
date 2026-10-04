@@ -19,7 +19,7 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 | Date | Décision | Statut |
 |---|---|---|
-| 04/10/2026 | **L'enseignement scientifique entre dans « Mes classes »** : une porte par niveau (1re, terminale), même grammaire que les trois autres. Le décompte affiché dit ce qui est **ouvert**, pas ce qui est écrit (1re : « 1 chapitre ouvert · 5 en préparation ») — à mettre à jour à chaque démasquage. Le bloc « Autres niveaux » disparaît | ✅ en vigueur |
+| 04/10/2026 | **L'enseignement scientifique entre dans « Mes classes »** : une porte par niveau (1re, terminale), même grammaire que les trois autres. Le décompte affiché dit ce qui est **ouvert**, pas ce qui est écrit (1re : « 1 chapitre ouvert · 4 en préparation ») — à mettre à jour à chaque démasquage. Le bloc « Autres niveaux » disparaît | ✅ en vigueur |
 | 04/10/2026 | **La spécialité PC de terminale sort de l'accueil** : le hub est vide. `pages/term-spe-physique-chimie.html` reste dans le dépôt et figure donc parmi les contenus « hors d'atteinte » de `verifier.mjs`, volontairement | ✅ en vigueur |
 | 04/10/2026 | Les **fiches-outils de l'accueil** listent les huit outils, tous liés (ils l'étaient déjà au hub de 2nde) | ✅ en vigueur |
 | 04/10/2026 | **Bande « Hors de la classe »** à l'accueil et **page `pages/auteur.html`** : parcours, démarche (RGPD d'abord · interactif · vivant · sourcé), Quizéo, YouTube (Cogito Ergo Sum, trois vidéos choisies par Loïc), Kahoot. La ligne « Prestations » est retirée. Un seul contact : l'adresse d'Isaac de l'Étoile | ✅ en vigueur |
