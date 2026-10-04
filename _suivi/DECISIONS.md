@@ -37,6 +37,7 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 04/10/2026 | **Cases du QCM à réponses multiples redessinées** (`sequence-snt.css?v=49`, 24 pages) : coche tracée en CSS au lieu du caractère « ✓ », case teintée à la sélection, couleur du verdict après correction | ✅ en vigueur |
 | 04/10/2026 | **Droits d'images : une liste dans le suivi, plus d'encart dans les pages** (demande de Loïc). Voir `_suivi/es1-verification.md`, C2 | ✅ en vigueur |
 | 04/10/2026 | En mode enseignant, les « à retenir » de séance s'affichent d'office (radioactivité) : Loïc relit sans tout refaire | ✅ en vigueur |
+| 04/10/2026 | **« La radioactivité » ouverte aux élèves** (demande de Loïc) : lien rétabli sur la page de première et en nucléosynthèse 1.2, accueil « 2 chapitres ouverts · 3 en préparation », guide d'ES à jour. Les lignes « Exercices 🚧 » et « Évaluations 🚧 » de la page de première sont retirées : ces documents n'existent pas | ✅ en vigueur |
 
 ## 04/10/2026 — L'accueil refait : ES en portes, page auteur
 

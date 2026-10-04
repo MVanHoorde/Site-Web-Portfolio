@@ -13,7 +13,7 @@
 
 ## 0bis. 🔴 Masqué aux élèves — à rétablir dès qu'on retravaille l'ES 1re
 
-Décision de Loïc du 13/09/2026 : **seule la nucléosynthèse est ouverte aux élèves**.
+**Ouverts aux élèves : la nucléosynthèse et la radioactivité** (radioactivité ouverte le 04/10/2026, après deux audits de Loïc).
 Rien n'est supprimé ; ce qui reste masqué porte le repère **`MASQUÉ-ES1`**
 (`grep -rn MASQUÉ-ES1 pages/`). Les **fiches de séance sont rétablies depuis le
 03/10/2026** (V1 à auditer) ; la séance 3 de la nucléosynthèse, de révision, n'en a
@@ -21,8 +21,7 @@ pas (`<section data-fiche="non">`).
 
 | Quoi | Où | Pour rétablir |
 |---|---|---|
-| Liens des 5 autres chapitres + « Ancienne fiche de cours » | `pages/1re-enseignement-scientifique.html` | décommenter chaque lien, retirer la ligne « Séquence interactive 🚧 » posée à sa place |
-| Lien vers le chapitre 2 (étape 1.2) | idem | décommenter le lien |
+| Liens des 4 autres chapitres + « Ancienne fiche de cours » | `pages/1re-enseignement-scientifique.html` | décommenter chaque lien, retirer la ligne « Séquence interactive 🚧 » posée à sa place, et mettre à jour le décompte de la porte d'accueil (`index.html`) |
 
 Les pages restent **accessibles par leur URL** (dépôt public) : le masquage retire les
 chemins, pas les fichiers.

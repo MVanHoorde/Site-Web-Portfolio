@@ -388,11 +388,11 @@ il part d'`index.html` et suit les liens de proche en proche, **commentaires HTM
 retirés**. Ce que ce parcours n'atteint pas n'existe pas pour un élève — ni pour une
 collègue.
 
-**Sept contenus au 01/10/2026** :
+**Six contenus au 04/10/2026** (la radioactivité est ouverte) :
 
 | Masqué | Depuis | Pour qui ça compte |
 |---|---|---|
-| `1re-es-t1-c2-radioactivite` · `t1-c3-cristaux` · `t2-c1-son-et-musique` · `t2-c2-son-a-coder` · `t3-c1-forme-terre` | 13/09 (`MASQUÉ-ES1`) | **CASTEL**, qui a deux classes d'ES et n'a donc qu'un chapitre à montrer |
+| `1re-es-t1-c3-cristaux` · `t2-c1-son-et-musique` · `t2-c2-son-a-coder` · `t3-c1-forme-terre` | 13/09 (`MASQUÉ-ES1`) | **CASTEL**, qui a deux classes d'ES et n'a donc qu'un chapitre à montrer |
 | `1re-pc-cristaux` (ancienne fiche) | 13/09 | idem |
 | `term-es-s01-frise` | — | la grande frise, lien en commentaire sur le hub de terminale |
 
