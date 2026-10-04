@@ -234,7 +234,7 @@ nucléaire » (étape 1.3), absente du PDF.
 
 | Page | Fichier attendu | Ce qu'il faut y voir |
 |---|---|---|
-| T2-C2, étape 1.2 | `t2c2-turbines-francis-kaplan-pelton.jpg` | Les **trois photos de turbines** du tableau de l'activité 1. Elles sont dans le PDF, mais en **vignettes de 120 px** : inutilisables. Une copie d'écran de la diapositive suffit. |
+| T2-C2, étape 1.2 | `t2c2-turbines-francis-kaplan-pelton.jpg` | Les **trois photos de turbines** du tableau de l'activité 1. Elles sont dans le PDF, mais en **vignettes de 120 px** : inutilisables. Une copie d'écran de la diapositive suffit. — cadre retiré le 04/10/2026 (page ouverte aux élèves), emplacement marqué en commentaire |
 
 Un **cadre de réservation** est posé à cet endroit dans la page : l'intégration se
 réduira à remplacer une balise.

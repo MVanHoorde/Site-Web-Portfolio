@@ -124,7 +124,7 @@ séance 4 en attente. Ce qui est nouveau :
 - le chiffre 7,1.
 
 ⏳ **Ce qu'il fournit** :
-- l'infographie des origines de la radioactivité ;
+- l'infographie des origines de la radioactivité, s'il la trouve (plus de cadre de réservation dans la page) ;
 - le cas précis du bug « QCM réduit » (non reproduit) ;
 - le MP4 de 2.1, à télécharger à la main ;
 - les dix MP4 déjà téléchargés, à déposer sur OneDrive.

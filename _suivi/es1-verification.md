@@ -205,7 +205,7 @@ point, est dans `_suivi/t1c2-audit-loic-2026-10-04.md` ; les décisions, dans
   1.3 les radioactivités α, β⁻, β⁺ (trois équations, QCM à image) · 1.4 quand ?
   (PhET, bilan en fenêtre, reprise de la définition) · 1.5 plus loin.
 - **S2 — L'exposition** : 2.1 naturelle/artificielle (vidéo + QCM d'écoute,
-  infographie des origines **à fournir**) · 2.2 pénétration (bilan en fenêtre) ·
+  infographie des origines à poser si Loïc la trouve — plus de cadre de réservation depuis l'ouverture) · 2.2 pénétration (bilan en fenêtre) ·
   2.3 Poitiers (REMon, aide repliée, repères des balises ASNR) · 2.4 ExPop (vidéo
   + QCM d'écoute) · 2.5 santé, QCM de 2.3 à 2.5, reprise de la définition · 2.6 plus
   loin (mesure-radioactivite.fr, sites autour de Poitiers).
@@ -220,7 +220,7 @@ point, est dans `_suivi/t1c2-audit-loic-2026-10-04.md` ; les décisions, dans
 l'infographie **AFP** de Tchernobyl (4.3) ; les deux infographies **AFCN** (1.3 et 2.4, source
 UNSCEAR) ; les images reprises du cours sans provenance établie (ES-09).
 **Ce qui bloque encore** : ES-02 levé le 04/10 (courbe tracée dans la page, américium 241, à confirmer),
-l'infographie des origines (cadre en 2.1), les MP4 sur OneDrive (dix téléchargés,
+l'infographie des origines (facultative, sans cadre dans la page), les MP4 sur OneDrive (dix téléchargés,
 celui de 2.1 à prendre à la main). Le lien EDF/Cattenom n'est pas repris.
 
 **À confirmer par Loïc** : deux choix de l'activité des dés (chacun à son rythme,

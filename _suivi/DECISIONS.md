@@ -38,6 +38,7 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 04/10/2026 | **Droits d'images : une liste dans le suivi, plus d'encart dans les pages** (demande de Loïc). Voir `_suivi/es1-verification.md`, C2 | ✅ en vigueur |
 | 04/10/2026 | En mode enseignant, les « à retenir » de séance s'affichent d'office (radioactivité) : Loïc relit sans tout refaire | ✅ en vigueur |
 | 04/10/2026 | **« La radioactivité » ouverte aux élèves** (demande de Loïc) : lien rétabli sur la page de première et en nucléosynthèse 1.2, accueil « 2 chapitres ouverts · 3 en préparation », guide d'ES à jour. Les lignes « Exercices 🚧 » et « Évaluations 🚧 » de la page de première sont retirées : ces documents n'existent pas | ✅ en vigueur |
+| 04/10/2026 | 🔴 **Une page ouverte aux élèves ne montre aucun cadre de réservation** : celui de la radioactivité 2.1 (infographie des origines) et celui de la terminale t2-c2 (turbines) sont retirés ; l'emplacement attendu est noté dans le suivi ou en commentaire HTML. Images de la radioactivité renumérotées 1 à 16 | ✅ en vigueur |
 
 ## 04/10/2026 — L'accueil refait : ES en portes, page auteur
 
