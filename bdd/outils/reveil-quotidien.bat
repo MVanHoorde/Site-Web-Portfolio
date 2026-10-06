@@ -59,5 +59,26 @@ if errorlevel 1 (
 )
 
 echo %HORODATE%  OK>> "%SUPA_DEST%\reveil.log"
+
+
+rem ------------------------------------------------------------
+rem  3. L'occupation des quotas (06/10/2026)
+rem ------------------------------------------------------------
+rem  Les photos deposees par les eleves (stockage  depots ) et les
+rem  collegues qui utilisent la meme base font monter l'occupation.
+rem  Une ligne par jour dans  occupation.log  ; au-dela de 70 % d'un
+rem  quota, un fichier ALERTE-QUOTA-SUPABASE.txt apparait sur le
+rem  Bureau, et  node verifier.mjs  le signale aussi.
+rem  Quoi faire : bdd\outils\occupation.sql (detail et purge).
+rem  Une mesure qui echoue ne fait pas echouer le reveil.
+set "MESURE="
+for /f "delims=" %%m in ('psql "%SUPA_URL%" -t -A -f "%~dp0occupation-ligne.sql" 2^>nul') do set "MESURE=%%m"
+if not defined MESURE goto :fin
+echo %MESURE%>> "%SUPA_DEST%\occupation.log"
+echo %MESURE% | findstr /c:"etat=ALERTE" >nul
+if errorlevel 1 goto :fin
+powershell -NoProfile -Command "Set-Content -Encoding UTF8 -Path ([Environment]::GetFolderPath('Desktop') + '\ALERTE-QUOTA-SUPABASE.txt') -Value ('La base Supabase du site approche de sa limite (plus de 70 %% d''un quota).', '%MESURE%', '', 'Quoi faire : ouvrir Claude Code dans le depot et lui demander d''examiner l''occupation (bdd/outils/occupation.sql).', 'Une purge des photos deposees libere de la place sans toucher aux reponses ni a la progression.', '', 'Ce fichier peut etre supprime : il reviendra tant que le seuil est depasse.')"
+
+:fin
 endlocal
 exit /b 0

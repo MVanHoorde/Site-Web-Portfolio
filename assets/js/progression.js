@@ -765,6 +765,105 @@
   }
 
   /* ----------------------------------------------------------
+   *  9 quater. Les photos déposées — stockage privé « depots »
+   *            (06/10/2026, bdd/schema/025-depots-photos.sql)
+   *
+   *  Signalé en classe : les photos et copies d'écran déposées dans
+   *  les séquences ne partaient nulle part, et disparaissaient au
+   *  rechargement. Elles vont désormais dans un stockage de FICHIERS,
+   *  pas dans la table progression : une photo dans une ligne JSON
+   *  serait relue et réécrite à chaque sauvegarde de la séquence.
+   *
+   *  Chemin : <compte>/<séquence>/<code>.jpg. Le premier dossier EST
+   *  le propriétaire (règles d'accès du 025) ; le deuxième dit la
+   *  famille, qui ouvre la lecture à l'enseignant de la classe — et à
+   *  lui seul, comme pour la progression (018).
+   *  Un nouveau dépôt REMPLACE l'ancien (x-upsert) : une photo par
+   *  emplacement, jamais d'accumulation.
+   *
+   *  Le fichier arrive déjà réduit (sequence-snt.js, 1000 px, JPEG).
+   * ---------------------------------------------------------- */
+  var STOCKAGE_DEPOTS = 'depots';
+
+  /* L'identifiant du compte, lu dans le jeton lui-même (champ « sub »).
+     Aucun appel réseau : la base relira ce même jeton pour vérifier. */
+  function compteDuJeton() {
+    try {
+      var p = jeton.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      while (p.length % 4) p += '=';
+      return JSON.parse(global.atob(p)).sub || null;
+    } catch (e) { return null; }
+  }
+
+  function cheminDepot(sequence, code) {
+    if (!/^[a-z0-9-]{1,40}$/.test(sequence || '') || !/^[A-Za-z0-9_-]{1,60}$/.test(code || '')) {
+      throw new Error('DEPOT_CHEMIN : séquence ou code de dépôt invalide.');
+    }
+    var compte = compteDuJeton();
+    if (!compte) throw new Error('PAS_DE_SESSION');
+    return compte + '/' + sequence + '/' + code + '.jpg';
+  }
+
+  function stockage(methode, chemin, corps, enTetes) {
+    var e = enteteCommune();
+    delete e['Content-Type'];
+    e.Authorization = 'Bearer ' + jeton.access_token;
+    Object.keys(enTetes || {}).forEach(function (k) { e[k] = enTetes[k]; });
+    return fetch(URL_PROJET + '/storage/v1/object/' + chemin, {
+      method: methode, headers: e, body: corps
+    });
+  }
+
+  /* Rejette si l'élève n'est pas inscrit (PAS_INSCRIT) ou si l'envoi
+     échoue : l'appelant DOIT le dire à l'élève — c'est le silence
+     sur ces deux cas qui a coûté du travail le 06/10/2026. */
+  function deposerImage(sequence, code, blob) {
+    return session().then(function (moi) {
+      if (!moi) throw new Error('PAS_INSCRIT : rejoindre une classe avant d\'enregistrer.');
+      return assurerSession();
+    }).then(function () {
+      var chemin = cheminDepot(sequence, code);
+      return stockage('POST', STOCKAGE_DEPOTS + '/' + chemin, blob,
+                      { 'Content-Type': 'image/jpeg', 'x-upsert': 'true', 'cache-control': '0' })
+        .then(lireReponse)
+        .then(function () { return chemin; });
+    });
+  }
+
+  /* La photo sous forme d'URL data:, ou null s'il n'y en a pas (ou
+     pas de session). Une URL data: plutôt qu'un blob: — la fiche de
+     séance la recopie telle quelle dans le fichier qu'elle produit. */
+  function lireImage(sequence, code) {
+    return session().then(function (moi) {
+      if (!moi) return null;
+      return assurerSession().then(function () {
+        return stockage('GET', 'authenticated/' + STOCKAGE_DEPOTS + '/' + cheminDepot(sequence, code));
+      }).then(function (r) {
+        if (!r.ok) return null;                 /* pas de photo : 400 ou 404 selon la version */
+        return r.blob().then(function (b) {
+          return new Promise(function (ok) {
+            var fr = new global.FileReader();
+            fr.onload = function () { ok(fr.result); };
+            fr.onerror = function () { ok(null); };
+            fr.readAsDataURL(b);
+          });
+        });
+      });
+    }).catch(function () { return null; });
+  }
+
+  /* « Recommencer la séance » efface aussi la photo : sinon elle
+     ressusciterait au rechargement suivant. */
+  function supprimerImage(sequence, code) {
+    return session().then(function (moi) {
+      if (!moi) return false;
+      return assurerSession().then(function () {
+        return stockage('DELETE', STOCKAGE_DEPOTS + '/' + cheminDepot(sequence, code));
+      }).then(function (r) { return r.ok; });
+    }).catch(function () { return false; });
+  }
+
+  /* ----------------------------------------------------------
    *  10. Accueil — la modale « créer / se connecter / invité »
    *
    *  Injectée ici, pas dans chaque page : même raison que tout le
@@ -1236,6 +1335,9 @@
     envoyerReponse: envoyerReponse,
     partager      : partager,
     signaler      : signaler,
+    deposerImage  : deposerImage,
+    lireImage     : lireImage,
+    supprimerImage: supprimerImage,
     rejoindreAutreClasse: rejoindreAutreClasse,
     mesInscriptions     : mesInscriptions,
     mesReponses   : mesReponses,

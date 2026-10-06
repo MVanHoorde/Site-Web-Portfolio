@@ -476,10 +476,33 @@
      comparait en toLowerCase() et ne validait que le sans-faute, contraire
      à la validation à l'envoi (CONSIGNES §15.7). Un seul moteur par mécanisme. */
 
-  /* ---------- schéma / association ---------- */
+  /* ---------- schéma / association ----------
+     Les choix partent dans l'état de la séquence (ETAT.champs), comme les
+     textes à trous : à chaque menu changé, et au clic sur « Vérifier ».
+     Signalé en classe le 06/10/2026 (t0 2.4) : l'étape restait validée au
+     retour, mais les menus revenaient vides — seule la validation était
+     enregistrée. Clé = clé de l'étape + '/menus-N' (rang du bloc dans
+     l'étape). La reprise les remet en place : restaurer(), bloc MOTEURS V2. */
+  function menusCle(field){
+    if(!window.EtatSNT || !EtatSNT.actif()) return null;
+    var step=field.closest('.step'); if(!step) return null;
+    var k=EtatSNT.cle(step); if(!k) return null;
+    var blocs=Array.prototype.slice.call(step.querySelectorAll('[data-check-diagram]'))
+      .map(function(b){ return b.closest('.field'); });
+    return k+'/menus-'+blocs.indexOf(field);
+  }
+  function menusNoter(field){
+    var k=menusCle(field); if(!k) return;
+    EtatSNT.noterChamps(k, Array.prototype.map.call(field.querySelectorAll('select'),
+      function(s){ return s.value; }));
+  }
   document.querySelectorAll('[data-check-diagram]').forEach(function(btn){
+    var champ=btn.closest('.field'); if(!champ) return;
+    champ.querySelectorAll('select').forEach(function(s){
+      s.addEventListener('change',function(){ menusNoter(champ); });
+    });
     btn.addEventListener('click',function(){
-      var field=btn.closest('.field');var sels=Array.from(field.querySelectorAll('select'));var all=true;
+      var field=btn.closest('.field');menusNoter(field);var sels=Array.from(field.querySelectorAll('select'));var all=true;
       sels.forEach(function(s){var ok=s.value===s.dataset.correct;s.classList.toggle('ok',ok);s.classList.toggle('no',!ok);if(!ok)all=false;});
       if(all){verdict(field,'ok','✅ Tout est juste — étape validée.');markDone(btn);}
       else{verdict(field,'no','Pas tout à fait : les menus en rouge sont à revoir.');}
@@ -4940,22 +4963,84 @@ function depotValide(zone){
   s.classList.remove('is-wait'); s.classList.add('is-done');
   s.dispatchEvent(new CustomEvent('etape-validee',{bubbles:true}));
 }
+/* ---------- Photos déposées : en base, et l'élève le sait (06/10/2026) -------
+   Signalé en classe : les photos déposées disparaissaient au rechargement.
+   Elles ne partaient nulle part — la remontée n'avait jamais été écrite. Elles
+   vont désormais dans le stockage privé « depots » (progression.js §9 quater,
+   bdd/schema/025), réduites à 1000 px en JPEG, sous <compte>/<séquence>/<code>.
+
+   🔴 La page DIT toujours si la photo est gardée. C'est le silence qui a coûté
+   le travail des élèves : ils croyaient avoir enregistré. Trois issues, trois
+   messages — enregistrée · pas connecté à sa classe · envoi échoué.
+
+   Partagé par les dépôts ([data-depot]) et les fiches d'élément ([data-elem]). */
+var DEPOT_COTE=1000;
+function depotBase(){
+  var seq=document.body ? (document.body.dataset.sequence||'') : '';
+  return (seq && typeof Progression!=='undefined' && Progression.disponible() && Progression.deposerImage)
+    ? { P:Progression, seq:seq } : null;
+}
+function depotBlob(url){
+  var m=/^data:([^;,]+);base64,(.*)$/.exec(url||''); if(!m) return null;
+  var bin=atob(m[2]), t=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) t[i]=bin.charCodeAt(i);
+  return new Blob([t],{type:m[1]});
+}
+/* envoie, puis rappelle fin('ok' | 'invite' | 'echec' | 'local') */
+function depotEnvoyer(code, url, fin){
+  var B=depotBase();
+  if(!B || !code){ fin('local'); return; }
+  var blob=depotBlob(url);
+  if(!blob || blob.type!=='image/jpeg'){ fin('echec'); return; }
+  B.P.deposerImage(B.seq, code, blob).then(function(){ fin('ok'); }, function(e){
+    fin(/PAS_INSCRIT|PAS_DE_SESSION/.test((e&&e.message)||'') ? 'invite' : 'echec');
+  });
+}
+function depotRelire(code, faire){
+  var B=depotBase(); if(!B || !code) return;
+  B.P.lireImage(B.seq, code).then(function(url){ if(url) faire(url); });
+}
+function depotOublier(code){
+  var B=depotBase(); if(!B || !code) return;
+  B.P.supprimerImage(B.seq, code);
+}
+var DEPOT_MSG={
+  envoi : '⏳ Enregistrement de ta photo…',
+  ok    : '✅ Photo déposée et enregistrée — étape validée.',
+  invite: '✅ Étape validée. ⚠ <b>Cette photo n’est pas enregistrée</b> : tu n’es pas connecté à ta classe. Connecte-toi, puis dépose-la de nouveau.',
+  echec : '✅ Étape validée. ⚠ <b>Cette photo n’a pas pu être enregistrée</b> (connexion ?). Dépose-la de nouveau dans un instant.',
+  local : '✅ Photo déposée — étape validée.',
+  relue : '✅ Ta photo enregistrée. Tu peux la remplacer en en déposant une autre.'
+};
+
 function initDepot(){
   $$('[data-depot]').forEach(function(zone){
     var input=$('input[type=file]',zone), apercu=$('[data-depot-apercu]',zone);
     if(!input||!apercu) return;
+    var code=zone.getAttribute('data-depot-code')||'';
+    function montrer(url){
+      apercu.innerHTML='';
+      var img=document.createElement('img'); img.src=url; img.alt='Ta photo déposée';
+      apercu.appendChild(img);
+    }
     input.addEventListener('change',function(){
       var f=input.files&&input.files[0]; if(!f) return;
-      if(!/^image\//.test(f.type)){ depotVerdict(zone,'no','Choisis un fichier image (une copie d\'écran).'); return; }
-      var r=new FileReader();
-      r.onload=function(){
-        apercu.innerHTML='';
-        var img=document.createElement('img'); img.src=r.result; img.alt='Ta copie d\'écran déposée';
-        apercu.appendChild(img);
-        depotVerdict(zone,'ok','✅ Copie d\'écran déposée — étape validée.');
+      if(!/^image\//.test(f.type)){ depotVerdict(zone,'no','Choisis un fichier image (une copie d\'écran ou une photo).'); return; }
+      elemRedimensionne(f,DEPOT_COTE,function(url){
+        montrer(url);
         depotValide(zone);
-      };
-      r.readAsDataURL(f);
+        depotVerdict(zone,'ok',DEPOT_MSG.envoi);
+        depotEnvoyer(code,url,function(issue){
+          depotVerdict(zone, issue==='ok'||issue==='local' ? 'ok' : 'presque', DEPOT_MSG[issue]);
+        });
+        input.value='';          /* redéposer le même fichier relance l'envoi */
+      });
+    });
+    /* retour sur la page : la photo revient de la base */
+    depotRelire(code,function(url){
+      if($('img',apercu)) return;          /* l'élève a déjà redéposé entre-temps */
+      montrer(url);
+      depotVerdict(zone,'ok',DEPOT_MSG.relue);
     });
   });
 }
@@ -5050,11 +5135,27 @@ function initEtiquettes(){
       choisie=e; e.classList.add('choisie');
       jeu.classList.add('en-cours');
     }
+    /* Ce qui est posé part dans l'état de la séquence, à chaque geste : une
+       valeur par emplacement, le nom de l'étiquette ou ''. Clé = étape +
+       '/etiq-N'. Sans cela, tout repartait au bac au rechargement (06/10/2026). */
+    function etiqCle(){
+      if(!window.EtatSNT || !EtatSNT.actif()) return null;
+      var st=jeu.closest('.step'); if(!st) return null;
+      var k=EtatSNT.cle(st); if(!k) return null;
+      return k+'/etiq-'+Array.prototype.indexOf.call(st.querySelectorAll('[data-etiquettes]'),jeu);
+    }
+    function noterEtiq(){
+      var k=etiqCle(); if(!k) return;
+      EtatSNT.noterChamps(k, $$('[data-zone]',jeu).map(function(z){
+        var e=$('[data-etiq]',place(z)); return e ? e.getAttribute('data-etiq') : '';
+      }));
+    }
     function rendre(etiq){
       if(!etiq) return;
       etiq.classList.remove('posee','juste','faux');
       bac.appendChild(etiq);
       majZones();
+      noterEtiq();
     }
     $$('[data-etiq]',jeu).forEach(function(e){
       e.addEventListener('click',function(ev){ ev.stopPropagation(); choisir(e); });
@@ -5070,6 +5171,7 @@ function initEtiquettes(){
       choisie=null;
       jeu.classList.remove('en-cours');
       majZones();
+      noterEtiq();
     }
     $$('[data-zone]',jeu).forEach(function(z){
       z.addEventListener('click',function(){ poser(z); });
@@ -5081,6 +5183,20 @@ function initEtiquettes(){
       }
     });
     majZones();
+
+    /* La reprise (restaurer()) remet chaque étiquette à sa place, sans
+       passer par les gestes : rien n'est réécrit en base pendant ce temps. */
+    jeu._etiqCle=etiqCle;
+    jeu._etiqRemettre=function(vals){
+      $$('[data-zone]',jeu).forEach(function(z,i){
+        var nom=vals[i]; if(!nom) return;
+        var e=$$('[data-etiq]',bac).filter(function(x){ return x.getAttribute('data-etiq')===nom; })[0];
+        if(!e || $('[data-etiq]',place(z))) return;
+        e.classList.add('posee');
+        place(z).appendChild(e);
+      });
+      majZones();
+    };
 
     var bouton=$('[data-etiq-verifier]',jeu);
     if(bouton) bouton.addEventListener('click',function(){
@@ -5124,8 +5240,8 @@ function initEtiquettes(){
      l'onglet, et rendraient impossible l'envoi au tableau de bord qui viendra.
    · le nom et la description partent en base au fil de la frappe (canal
      'cours', comme les notes de visionnage), et reviennent à la visite
-     suivante. La photo, elle, reste dans la page tant que la remontée n'est
-     pas écrite : on ne prétend pas la conserver.
+     suivante. La photo part dans le stockage « depots » (depotEnvoyer, plus
+     haut) et revient de même ; une ligne sous la photo dit si elle est gardée.
    · l'étape se valide au nombre de fiches VRAIMENT remplies — photo et nom —,
      pas au simple fait d'avoir cliqué quelque part. */
 function elemBase(){
@@ -5139,7 +5255,9 @@ function elemRedimensionne(fichier, cote, faire){
       var e=Math.min(1, cote/Math.max(im.width,im.height));
       var c=document.createElement('canvas');
       c.width=Math.round(im.width*e); c.height=Math.round(im.height*e);
-      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      var g=c.getContext('2d');
+      g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height);  /* un PNG transparent devient noir en JPEG */
+      g.drawImage(im,0,0,c.width,c.height);
       try{ faire(c.toDataURL('image/jpeg',0.82)); }
       catch(err){ faire(r.result); }      /* image exotique : on garde l'original */
     };
@@ -5189,16 +5307,55 @@ function initElements(){
           var fi=input.files&&input.files[0]; if(!fi) return;
           if(!/^image\//.test(fi.type)){ f.classList.add('erreur'); return; }
           f.classList.remove('erreur');
-          elemRedimensionne(fi,1200,function(url){
-            var vide=$('.elem-vide',zone); if(vide) vide.hidden=true;
-            var img=$('img',zone);
-            if(!img){ img=document.createElement('img'); zone.appendChild(img); }
-            img.src=url; img.alt='Photo de l’élément '+(titre&&titre.value?titre.value:code);
-            f.classList.add('avec-photo');
+          elemRedimensionne(fi,DEPOT_COTE,function(url){
+            poserPhoto(url);
             majEtat();
+            etatPhoto('⏳ enregistrement…','var(--ink-soft)');
+            depotEnvoyer(code,url,function(issue){
+              if(issue==='ok') etatPhoto('✓ photo enregistrée','var(--ok)');
+              else if(issue==='invite') etatPhoto('⚠ pas enregistrée : connecte-toi, puis redépose-la','var(--err)');
+              else if(issue==='echec') etatPhoto('⚠ pas enregistrée : redépose-la dans un instant','var(--err)');
+              else etatPhoto('','');
+            });
+            input.value='';
           });
         });
       }
+      function poserPhoto(url){
+        var vide=$('.elem-vide',zone); if(vide) vide.hidden=true;
+        var img=$('img',zone);
+        if(!img){ img=document.createElement('img'); zone.appendChild(img); }
+        img.src=url; img.alt='Photo de l’élément '+(titre&&titre.value?titre.value:code);
+        f.classList.add('avec-photo');
+      }
+      /* une ligne sous la photo, créée au premier besoin : style en ligne pour
+         ne pas toucher la feuille partagée (24 pages à revaloriser) */
+      function etatPhoto(txt,coul){
+        var l=$('[data-elem-etat]',f);
+        if(!l){
+          if(!txt) return;
+          l=document.createElement('div'); l.setAttribute('data-elem-etat','');
+          l.style.cssText='font-size:12.5px;line-height:1.3;margin:4px 0 2px';
+          (zone && zone.parentNode ? zone.parentNode.insertBefore(l, zone.nextSibling) : f.appendChild(l));
+        }
+        l.textContent=txt; l.style.color=coul; l.hidden=!txt;
+      }
+      f._oublierPhoto=function(){
+        var img=zone?$('img',zone):null; if(img) img.remove();
+        var vide=zone?$('.elem-vide',zone):null; if(vide) vide.hidden=false;
+        f.classList.remove('avec-photo');
+        etatPhoto('','');
+        if(titre) titre.value='';
+        if(desc) desc.value='';
+        depotOublier(code);
+        if(BASE&&code){ try{ var q=BASE.ecrire('cours','elem-'+code,{titre:'',desc:''}); if(q&&q.catch) q.catch(function(){}); }catch(e){} }
+      };
+      if(zone) depotRelire(code,function(url){
+        if($('img',zone)) return;
+        poserPhoto(url);
+        etatPhoto('✓ photo enregistrée','var(--ok)');
+        majEtat();
+      });
       /* nom et description : écriture différée, comme les notes de visionnage */
       var t=null;
       function enregistre(){
@@ -5503,6 +5660,31 @@ function restaurer(){
       }
     });
 
+    /* 2 bis. les menus à « Vérifier » et les étiquettes à poser (06/10/2026).
+          Même principe que les trous : on remet la saisie, et si l'étape
+          était validée on reclique, pour que le correcteur la recolore.
+          Une étape pas encore validée garde ses choix sans verdict : le
+          clic, c'est à l'élève de le faire. */
+    $$('[data-check-diagram]').forEach(function(btn){
+      var field=btn.closest('.field'), step=btn.closest('.step');
+      if(!field || !step) return;
+      var ks=EtatSNT.cle(step); if(!ks) return;
+      var blocs=$$('[data-check-diagram]',step).map(function(b){ return b.closest('.field'); });
+      var v=champs[ks+'/menus-'+blocs.indexOf(field)]; if(!v) return;
+      $$('select',field).forEach(function(s,i){ if(i<v.length && v[i]) s.value=v[i]; });
+      quelqueChose=true;
+      if(etapes[ks] && etapes[ks].fait) btn.click();
+    });
+    $$('[data-etiquettes]').forEach(function(jeu){
+      if(!jeu._etiqCle) return;
+      var k=jeu._etiqCle(); if(!k || !champs[k]) return;
+      jeu._etiqRemettre(champs[k]);
+      quelqueChose=true;
+      var step=jeu.closest('.step'), ks=step?EtatSNT.cle(step):null;
+      var b=$('[data-etiq-verifier]',jeu);
+      if(b && ks && etapes[ks] && etapes[ks].fait) b.click();
+    });
+
     /* 3. les QCM déjà passés */
     $$('.qcmbox').forEach(function(box){
       var step=box.closest('.step'); if(!step) return;
@@ -5757,6 +5939,13 @@ function demarrer(){
   initBilan();
   var obs=new MutationObserver(function(){ majBarre(); bqMaj(); });
   $$('.steps').forEach(function(s){ obs.observe(s,{attributes:true,subtree:true,attributeFilter:['class']}); });
+  /* « Recommencer la séance » (bloc précédent) efface aussi les photos en
+     base : sans cela, elles reviendraient au rechargement suivant. */
+  document.addEventListener('seance-recommencee',function(e){
+    var sec=e.target; if(!sec || !sec.querySelectorAll) return;
+    $$('[data-depot]',sec).forEach(function(z){ depotOublier(z.getAttribute('data-depot-code')||''); });
+    $$('[data-elem]',sec).forEach(function(f){ if(f._oublierPhoto) f._oublierPhoto(); });
+  });
   restaurer();
   document.body.classList.add('js-ok');   /* la nav ne se masque qu'ici */
   /* le nom du thème vient de la page : ce moteur sert les huit séquences */

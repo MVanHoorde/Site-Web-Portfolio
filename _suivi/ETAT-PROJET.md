@@ -12,7 +12,20 @@
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — bugs du SNT remontés de la classe (04/10).**
+> **Dernière passe — le travail des élèves revient au rechargement (06/10).**
+> 🔴 Les **photos déposées** (t0, t1, ES 1re son et musique) partent dans le
+> stockage privé `depots` (`bdd/schema/025`) et reviennent sur tout appareil ;
+> l'enseignant de la matière peut les lire. Les **menus à « Vérifier »** (20
+> exercices, 8 séquences) et les **étiquettes à poser** sont enregistrés et
+> rétablis. La page **dit** quand une photo n'est pas gardée.
+> `progression.js?v=19`, `sequence-snt.js?v=55`.
+> ⏳ **Montrer les photos dans le tableau de bord** (la base le permet déjà).
+> 🔔 **Quotas** (base 500 Mo, fichiers 1 Go, partagés avec les collègues) :
+> mesure quotidienne, **alerte sur le Bureau au-delà de 70 %**, et
+> `verifier.mjs` qui rappelle la **purge des photos de juin à août** —
+> `bdd/outils/README.md`.
+>
+> **Passe du 04/10 — bugs du SNT remontés de la classe.**
 > 🔴 **La fiche de séance est un vrai PDF fabriqué par la page** (toutes les pages
 > du moteur : SNT, ES 1re et terminale) — fini l'impression du navigateur, qu'iOS
 > ignore dans l'app d'écran d'accueil. « Ma fiche (PDF) » → « Enregistrer ma

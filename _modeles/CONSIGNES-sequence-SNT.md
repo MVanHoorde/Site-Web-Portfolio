@@ -95,6 +95,18 @@ de `pages/2nde-snt-t1-internet.html`, seule séquence déjà portée.
 | **Schéma à légender** (SVG + menus déroulants) | en direct | `data-diagram`, `data-check-diagram` |
 | **Définition / texte libre** | copier-coller **bloqué**, envoi « pour correction », statut *en attente* → *validé* | `data-free`, `data-send-free` |
 | **Réflexion perso** | **non notée**, bouton « Partager avec la classe » | `data-share`, `data-share-note` |
+| **Dépôt de photo / copie d'écran** | valide l'étape au dépôt | `data-depot`, `data-depot-code` |
+
+🔴 **Tout ce que l'élève a saisi revient au rechargement, sur tout appareil.**
+Une étape « validée » dont le contenu a disparu, c'est un élève qui refait son
+travail en boucle (signalé en classe le 06/10/2026 : t0 2.4 et les photos de la
+séance 4). Ce que le moteur rétablit : trous, menus à « Vérifier » et étiquettes
+posées (état de la séquence, `champs`) · réponses rédigées et partagées · notes
+de visionnage · **photos déposées** (stockage privé `depots`, `<compte>/<séquence>/<code>.jpg`
+— d'où le `data-depot-code` obligatoire). La page **dit** si une photo n'est pas
+enregistrée (élève non connecté, envoi échoué) : jamais de silence. Un **nouveau
+type de champ** n'est pas fini tant que sa reprise n'est pas écrite et éprouvée
+en rechargeant la page. Le QCM fait exception, par choix : il se refait.
 
 - Une réponse de texte libre validée peut **révéler un encadré de contexte**
   (point d'histoire, biblio) — `data-reveal`.

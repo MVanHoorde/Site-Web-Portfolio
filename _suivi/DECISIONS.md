@@ -15,6 +15,16 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 06/10/2026 — Le travail des élèves revient au rechargement : menus, étiquettes, photos
+
+| Date | Décision | Statut |
+|---|---|---|
+| 06/10/2026 | 🔴 **Tout ce que l'élève a saisi revient au rechargement, sur tout appareil.** Signalé en classe (t0 2.4, photos de la séance 4) : l'étape restait validée, son contenu disparaissait. Les **menus à « Vérifier »** (20 exercices, 8 séquences) et les **étiquettes à poser** partent désormais dans l'état de la séquence comme les trous ; la reprise les remet et les recorrige. Règle inscrite dans `CONSIGNES-sequence-SNT.md` (types de champs) | ✅ en vigueur |
+| 06/10/2026 | 🔴 **Les photos déposées vont dans un stockage de fichiers privé** (`depots`, `bdd/schema/025`), **pas dans la table `progression`** : une photo dans une ligne JSON serait relue et réécrite à chaque sauvegarde, et pèserait sur les 500 Mo de la base au lieu du 1 Go de fichiers. Réduites à 1000 px en JPEG avant l'envoi ; un nouveau dépôt remplace l'ancien | ✅ en vigueur |
+| 06/10/2026 | **L'enseignant de la classe voit les photos de ses élèves**, dans la famille de sa classe seulement (cloisonnement du 018 reconduit). Les montrer dans le tableau de bord **reste à faire** | ✅ en vigueur |
+| 06/10/2026 | 🔴 **La page dit toujours si une photo est gardée** — enregistrée · pas connecté à sa classe · envoi échoué. C'est le silence qui a coûté le travail des élèves | ✅ en vigueur |
+| 06/10/2026 | **Conservation des photos : l'année scolaire**, purge en fin d'année. Rappels mécaniques : mesure quotidienne par `reveil-quotidien.bat`, **alerte sur le Bureau au-delà de 70 %** d'un quota, `verifier.mjs` qui relaie l'occupation et rappelle la purge de juin à août. Prévenir les collègues avant une purge | ✅ en vigueur |
+
 ## 06/10/2026 — Tableau de bord : gérer un compte élève, corriger en rafale
 
 | Date | Décision | Statut |

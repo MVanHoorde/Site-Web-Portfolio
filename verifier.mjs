@@ -237,6 +237,37 @@ if (inertes) info(`liens inertes href="#" visibles des élèves : ${inertes}`);
   }
 }
 
+/* ---------- 7ter. Occupation des quotas Supabase (06/10/2026) ----------
+   Demande de Loïc : « des rappels en fin d'année, voire en cours d'année,
+   d'un nettoyage du stockage si on s'approche du blocage — surtout que mes
+   collègues utilisent ma base ». Les photos déposées par les élèves vivent
+   depuis le 06/10/2026 dans le stockage « depots » (bdd/schema/025).
+
+   La mesure n'est PAS faite ici (ce fichier ne parle pas au réseau) : la
+   tâche planifiée bdd/outils/reveil-quotidien.bat l'écrit chaque jour dans
+   occupation.log. On relit la dernière ligne. Hors du PC de Loïc (pas de
+   journal), rien n'est dit. NON BLOQUANT. */
+{
+  const journalOcc = join(process.env.SUPA_DEST || "C:/Sauvegardes-SNT", "occupation.log");
+  if (existsSync(dirname(journalOcc))) {
+    const lignes = existsSync(journalOcc) ? readFileSync(journalOcc, "utf8").trim().split(/\r?\n/) : [];
+    const der = lignes.length ? lignes[lignes.length - 1] : "";
+    const m = /^(\d{4})-(\d{2})-(\d{2}) base=(\d+)Mo\/(\d+) fichiers=(\d+)Mo\/(\d+) depots=(\d+)Mo etat=(\w+)/.exec(der);
+    if (!m) {
+      info("occupation Supabase : aucune mesure — la tâche « reveil-quotidien » tourne-t-elle ? (bdd/outils/README.md)");
+    } else {
+      const [, a, mo, j, base, qb, fich, qf, depots, etat] = m;
+      const age = (Date.now() - new Date(`${a}-${mo}-${j}T12:00:00`)) / 864e5;
+      info(`occupation Supabase au ${j}/${mo} : base ${base}/${qb} Mo · fichiers ${fich}/${qf} Mo (dont photos déposées ${depots} Mo)`);
+      if (etat === "ALERTE") info("   🔴 ALERTE : plus de 70 % d'un quota. Détail et purge : bdd/outils/occupation.sql — et le dire à Loïc.");
+      if (age > 4) info(`   ⚠ dernière mesure vieille de ${Math.floor(age)} jours : la tâche « reveil-quotidien » ne tourne plus ? (elle évite aussi la mise en pause de la base)`);
+      const mois = new Date().getMonth() + 1;
+      if (mois >= 6 && mois <= 8 && Number(depots) > 0)
+        info("   🔔 FIN D'ANNÉE : purger les photos déposées (bdd/outils/occupation.sql, voie B) — après avoir prévenu les collègues.");
+    }
+  }
+}
+
 /* ---------- 8. Versionnage du CSS commun (piège du cache navigateur) ---------- */
 const versions = new Set();
 for (const f of html) for (const m of lire(f).matchAll(/chapitre-commun\.css(\?v=(\d+))?/g))

@@ -4647,3 +4647,46 @@ Côté écran : les phrases ne donnent plus le focus au champ (c'était lui qui
 ouvrait le clavier). Testé sous Playwright, base simulée, format iPad : aucune
 erreur JS. `verifier.mjs` : 19. Les symboles ✓ ↺ retirés du guide SNT : ils
 tombaient en police de repli à l'export PDF.
+
+## 06/10/2026 — Le travail des élèves perdu au rechargement
+
+Signalé par Loïc après la classe : en t0, les photos de la séance 4 ne
+revenaient pas, et l'exercice 2.4 (menus déroulants) se vidait alors que
+l'étape restait validée. Diagnostic : deux trous du moteur, pas deux pannes.
+La remontée des photos n'avait jamais été écrite — le code le disait en
+commentaire (« on ne prétend pas la conserver ») —, et le correcteur des menus
+`data-check-diagram` validait l'étape sans rien noter de son contenu. Le même
+défaut touchait les étiquettes à poser (t0 3.3, ES de terminale). Étendue :
+20 exercices à menus sur les 8 séquences, 21 emplacements de photo (t0, t1,
+ES 1re son et musique).
+
+Avant de coder, Loïc a demandé la différence entre stockage de fichiers et
+stockage en base, et ses risques : réponse dans `DECISIONS.md`. L'occupation
+mesurée ce jour : base 17 Mo sur 500, fichiers 2 Mo sur 1 Go.
+
+`bdd/schema/025` suit le patron de la Boîte à cartes (022) mais reconduit le
+cloisonnement par famille du 018 : le chemin `<compte>/<séquence>/<code>.jpg`
+porte la famille dans son deuxième dossier. Banc PostgreSQL 18 (Auth et Storage
+simulés) : 27 contrôles d'intrusion passés, migration rejouée deux fois. Une
+première version révoquait à `authenticated` le compteur appelé par la règle
+de dépôt : la règle aurait échoué pour tout le monde ; le compteur ne prend
+plus de paramètre et ne compte que son propre dossier.
+
+Côté pages : banc Playwright avec un faux Supabase (rechargement compris) —
+23 contrôles passés, aucune erreur JS : envoi en JPEG 1000 px, PNG transparent
+rendu blanc, menus vérifiés recolorés au retour, menus non vérifiés remis sans
+verdict, étiquette remise à sa place, messages « pas connecté » et « échec »,
+« Recommencer la séance » qui efface la photo en base.
+
+Trouvé en route : Supabase **interdit** d'effacer une photo en SQL
+(`storage.protect_delete`) — la purge passe par l'API Storage, et les photos
+d'un compte supprimé par `supprimer_eleve()` (024) restent jusqu'à la purge.
+Les photos ne sont pas non plus dans la sauvegarde hebdomadaire.
+
+Rappels de quota : `reveil-quotidien.bat` écrit une ligne par jour dans
+`occupation.log` et pose `ALERTE-QUOTA-SUPABASE.txt` sur le Bureau au-delà de
+70 % (essayé sur une copie : le fichier apparaît ; la ligne de test partie par
+erreur dans le vrai journal a été retirée). `verifier.mjs` relit la ligne.
+`progression.js?v=19` (59 pages), `sequence-snt.js?v=55` (23). `verifier.mjs` : 19.
+Mené en parallèle d'une autre conversation (024, feuille CSS `?v=50`) : seuls
+les changements de ce chantier ont été commités.
