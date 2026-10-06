@@ -1451,7 +1451,7 @@ pre.code-bloc code{font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-h
    un lien en haut serait inatteignable au milieu. 44 px de haut au
    minimum — c'est la cible tactile plancher du projet.
    Masquée en vue enseignant : elle ne concerne que l'élève. */
-#corr-pastille{position:fixed;right:16px;bottom:16px;z-index:60;
+#corr-pastille{position:fixed;right:14px;bottom:var(--corr-bas);z-index:60;
   min-height:44px;padding:0 16px;border-radius:999px;cursor:pointer;
   border:1px solid var(--ok);background:var(--surface);color:var(--ok);
   font:inherit;font-size:14px;font-weight:600;
@@ -1461,6 +1461,15 @@ pre.code-bloc code{font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-h
 #corr-pastille.urgent:hover{background:var(--err-wash)}
 #corr-pastille[hidden]{display:none}
 body.teacher #corr-pastille{display:none}
+/* Le coin bas-droit est une pile (06/10/2026 — la pastille recouvrait le
+   glossaire) : le glossaire en bas, au-dessus le bouton propre à la page
+   s'il y en a un (« Classification », « 🎲 Dés »), puis la pastille.
+   --corr-bas règle la hauteur de la pastille ; la liste s'ouvre 54 px
+   au-dessus. Panneau de la page ouvert : la pastille s'efface. */
+body{--corr-bas:66px}
+body:has(#tp-ouvrir), body:has(#des-ouvrir){--corr-bas:118px}
+body:has(#tp-ouvrir[aria-expanded="true"]) #corr-pastille,
+body:has(#des-ouvrir[aria-expanded="true"]) #corr-pastille{display:none}
 @media print{#corr-pastille{display:none}}
 
 /* Surlignage bref du champ atteint : sans lui, on arrive au milieu
@@ -1523,7 +1532,12 @@ body.js-ok .acc-badge{ top:calc(var(--barre-h) + 8px); right:12px }
   body.js-ok .acc-badge{ top:auto; bottom:70px; right:12px }
 }
 /* et la pastille de retours ne doit pas non plus lui rentrer dedans */
-@media (max-width:720px){ #corr-pastille{ bottom:12px; right:12px } }
+/* sur téléphone, le badge descend à 70 px : la pastille monte au-dessus */
+@media (max-width:720px){
+  body{--corr-bas:122px}
+  body:has(#tp-ouvrir), body:has(#des-ouvrir){--corr-bas:174px}
+  #corr-pastille{ right:12px }
+}
 
 
 /* ---------- Reprise d'une réponse renvoyée (01/08/2026) ----------
@@ -1541,7 +1555,7 @@ body.js-ok .acc-badge{ top:calc(var(--barre-h) + 8px); right:12px }
 /* ---------- Liste des retours (01/08/2026) ----------
    S'ouvre au-dessus de la pastille. Chaque ligne dit OÙ : séance,
    numéro d'étape, titre — et si c'est à reprendre. */
-#corr-liste{position:fixed;right:16px;bottom:70px;z-index:61;width:min(320px,calc(100vw - 32px));
+#corr-liste{position:fixed;right:14px;bottom:calc(var(--corr-bas) + 54px);z-index:61;width:min(320px,calc(100vw - 32px));
   background:var(--surface);border:1px solid var(--line);border-radius:12px;
   box-shadow:0 6px 22px rgba(22,31,51,.18);overflow:hidden;max-height:60vh;overflow-y:auto}
 #corr-liste[hidden]{display:none}
@@ -1556,7 +1570,7 @@ body.js-ok .acc-badge{ top:calc(var(--barre-h) + 8px); right:12px }
 .cl-refaire .cl-etat{background:var(--err-wash);color:var(--err)}
 body.teacher #corr-liste{display:none}
 @media print{#corr-liste{display:none}}
-@media (max-width:720px){#corr-liste{bottom:64px;right:12px}}
+@media (max-width:720px){#corr-liste{right:12px}}
 
 /* ---------- Fenêtre d'écriture : réduire, modifier, symboles (24/09/2026) ----------
    Voir le §7.6 du moteur. La fenêtre réduite reste dans la page, cachée :
