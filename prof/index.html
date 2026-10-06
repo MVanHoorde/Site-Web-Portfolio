@@ -80,6 +80,9 @@ label{display:block;font-size:13.5px;color:var(--ink-soft);margin:0 0 5px}
 .alerte{margin-top:14px;padding:10px 12px;border-radius:var(--r);font-size:14px;display:none}
 .alerte.show{display:block}
 .alerte.err{background:var(--err-wash);color:#8f2a22;border:1px solid var(--err)}
+.alerte.ok{background:var(--ok-wash);color:#0c5c42;border:1px solid var(--ok)}
+.mdp-provisoire{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:22px;font-weight:600;
+    letter-spacing:.04em;display:block;margin:4px 0}
 
 /* --- coquille --- */
 #ecran-appli{display:none;min-height:100dvh;flex-direction:column}
@@ -130,6 +133,13 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
     border-radius:var(--r);font-size:14.5px}
 .enonce .t{display:block;font-weight:600;margin-bottom:3px}
 .phrase{font-size:13px;padding:5px 11px;border-radius:999px;background:var(--surface-2)}
+/* la décision portée par une phrase : ✓ valide, ↺ renvoie à refaire */
+.dec{display:inline-block;min-width:1.5em;padding:0 5px;border-radius:999px;font-weight:700;
+    font-size:12px;text-align:center;line-height:1.6}
+.dec.v{background:var(--ok-wash);color:#0c5c42}
+.dec.r{background:#fdecdf;color:#8a4b16}
+button.dec{border:0;cursor:pointer;flex:0 0 auto}
+.phrase .dec{margin-right:5px}
 .modele{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border:1px solid var(--line);
     border-radius:var(--r);background:var(--surface-2);margin-bottom:5px;font-size:13.5px}
 .modele .txt{flex:1;text-align:left;background:none;border:0;font:inherit;color:var(--ink);
@@ -415,11 +425,16 @@ table.grille thead th{white-space:nowrap}
         <h3 class="sous">Ta décision</h3>
         <label for="c-mot">Ton message (facultatif pour valider, obligatoire pour renvoyer)</label>
         <textarea id="c-mot" rows="3" placeholder="Si tu écris ici, l'élève ne lira que ton mot."></textarea>
+        <p class="tresmuet" style="margin:8px 0 0">Toucher une phrase <b>envoie aussitôt</b> :
+          <span class="dec v">✓</span> valide, <span class="dec r">↺</span> renvoie à refaire. Ce que tu as
+          tapé passe devant la phrase. Une erreur se rattrape avec «&nbsp;Annuler&nbsp;».</p>
         <div class="rangee" id="phrases" style="gap:7px;margin:9px 0 0"></div>
 
         <div id="biblio" style="margin-top:12px"></div>
-        <div class="rangee" style="margin-top:6px">
-          <button id="btn-memoriser" style="font-size:13px">+ Mémoriser ce message pour cette question</button>
+        <div class="rangee" style="margin-top:6px;gap:7px">
+          <span class="tresmuet">Mémoriser ce message pour cette question&nbsp;:</span>
+          <button id="btn-memoriser-v" style="font-size:13px"><span class="dec v">✓</span> qui valide</button>
+          <button id="btn-memoriser-r" style="font-size:13px"><span class="dec r">↺</span> qui renvoie à refaire</button>
         </div>
 
         <div class="rangee">
@@ -552,6 +567,23 @@ table.grille thead th{white-space:nowrap}
       <div class="rangee" style="margin-top:0">
         <button id="e-retour">← Retour au suivi</button>
         <span class="qui-copie" id="e-qui"></span>
+        <button id="e-compte-btn" aria-expanded="false" aria-controls="e-compte" style="margin-left:auto">⋯ Compte</button>
+      </div>
+      <!-- Gérer le compte (04/10/2026, bdd/schema/024). Replié par défaut :
+           ce sont des gestes rares, ils ne doivent pas encombrer la fiche. -->
+      <p id="e-note-vue" class="bandeau" style="display:none;margin:0 0 12px"></p>
+      <div id="e-compte" class="encadre" style="display:none;margin:0 0 16px">
+        <label for="e-note" style="margin-top:0">Ma note sur cet élève <span class="tresmuet">— lue par toi seul·e, 200 caractères. Rien de sensible : ni santé, ni famille.</span></label>
+        <textarea id="e-note" rows="2" maxlength="200"></textarea>
+        <div class="rangee" style="margin:8px 0 0">
+          <button id="e-note-ok">Enregistrer la note</button>
+          <span id="e-note-etat" class="tresmuet"></span>
+        </div>
+        <div class="rangee" style="margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line)">
+          <button id="e-mdp">Réinitialiser le mot de passe</button>
+          <button id="e-suppr" style="color:var(--err)">Supprimer ce compte…</button>
+        </div>
+        <div id="e-compte-res" class="alerte" style="margin-top:10px"></div>
       </div>
       <div id="e-contenu"></div>
     </section>
@@ -1071,16 +1103,15 @@ table.grille thead th{white-space:nowrap}
      dans le navigateur, la base ne saurait pas trier dessus.
      ============================================================ */
   /* PHRASES TOUTES FAITES — proposition V1, à réécrire dans TON ton.
-     Une ligne = un bouton. Cliquer insère le texte dans la zone de
-     saisie (il reste modifiable), il n'envoie rien tout seul : c'est
-     toujours Valider ou Renvoyer qui décide.
-     Les trois premières servent surtout à renvoyer, la dernière à
-     valider en ajoutant un mot personnel. */
+     Une ligne = un bouton, qui porte sa décision : le toucher ENVOIE
+     (04/10/2026, demande de Loïc — corriger en rafale, un geste par
+     copie). Ce qui est déjà tapé passe devant la phrase ; « Annuler »
+     rattrape une erreur. */
   var PHRASES = [
-    "Trop court : développe, on veut voir ton raisonnement.",
-    "Reprends ta réponse : il manque l'essentiel de la question.",
-    "Tu réponds à côté — relis la question posée.",
-    "C'est juste, et bien formulé. Continue comme ça."
+    { t: "Trop court : développe, on veut voir ton raisonnement.",       d: 'refaire' },
+    { t: "Reprends ta réponse : il manque l'essentiel de la question.",  d: 'refaire' },
+    { t: "Tu réponds à côté — relis la question posée.",                 d: 'refaire' },
+    { t: "C'est juste, et bien formulé. Continue comme ça.",             d: 'valider' }
   ];
 
   /* toutes = tout ce que la base renvoie, toutes classes confondues.
@@ -1495,9 +1526,24 @@ table.grille thead th{white-space:nowrap}
     remonterSurCopie();
   }
 
+  var enCours = false;   /* un envoi à la fois : deux touchers rapides
+                            ne doivent pas décider deux copies */
+
+  /* Une phrase qui porte sa décision : on l'ajoute derrière ce qui est
+     tapé, puis on décide. Pas de focus — le clavier de l'iPad ne doit
+     pas s'ouvrir entre deux copies. */
+  function deciderAvec(texte, decision){
+    if(enCours || !file[rang]) return;
+    var t = $('#c-mot');
+    t.value = t.value.trim() ? (t.value.trim() + ' ' + texte) : texte;
+    if(decision === 'valider') agir('valider_copie', 'validée');
+    else agir('signaler_copie', 'renvoyée à refaire');
+  }
+
   function agir(fonction, libelle){
     var c = file[rang];
-    if(!c) return;
+    if(!c || enCours) return;
+    enCours = true;
     var mot = $('#c-mot').value;
     var boutons = ['#btn-valider','#btn-signaler','#btn-precedente','#btn-suivante'];
     boutons.forEach(function(s){ $(s).disabled = true; });
@@ -1510,6 +1556,7 @@ table.grille thead th{white-space:nowrap}
       })
       .catch(erreurAction)
       .then(function(){
+        enCours = false;
         $('#btn-valider').disabled = false; $('#btn-signaler').disabled = false;
         /* pas afficher() : en cas d'échec, il effacerait le message tapé */
         $('#btn-precedente').disabled = rang === 0;
@@ -1684,14 +1731,9 @@ table.grille thead th{white-space:nowrap}
       var b = document.createElement('button');
       b.className = 'phrase';
       b.type = 'button';
-      b.textContent = p;
-      b.addEventListener('click', function(){
-        var t = $('#c-mot');
-        /* on ajoute plutôt qu'on remplace : deux phrases peuvent se
-           combiner, et on n'efface jamais ce qui est déjà écrit */
-        t.value = t.value.trim() ? (t.value.trim() + ' ' + p) : p;
-        t.focus();
-      });
+      b.appendChild(pastilleDecision(p.d, 'span'));
+      b.appendChild(document.createTextNode(p.t));
+      b.addEventListener('click', function(){ deciderAvec(p.t, p.d); });
       z.appendChild(b);
     });
   })();
@@ -2604,6 +2646,7 @@ table.grille thead th{white-space:nowrap}
     document.querySelectorAll('.panneau').forEach(function(p){ p.classList.remove('actif'); });
     $('#p-eleve').classList.add('actif');
     $('#e-qui').textContent = ProfAPI.nomDe(e.pseudo);
+    ouvrirCompte(e);
     var z = $('#e-contenu');
     z.innerHTML = '<p class="muet">Chargement…</p>';
 
@@ -2709,6 +2752,111 @@ table.grille thead th{white-space:nowrap}
   $('#e-retour').addEventListener('click', function(){
     $('#p-eleve').classList.remove('actif');
     document.querySelector('nav.onglets button[data-onglet="suivi"]').click();
+  });
+
+  /* ============================================================
+     LE COMPTE D'UN ÉLÈVE (04/10/2026, bdd/schema/024)
+     ------------------------------------------------------------
+     Trois gestes rares, repliés derrière « ⋯ Compte » : une note,
+     un mot de passe provisoire, la suppression. La base vérifie
+     tout (mon élève ? partagé avec une collègue ?) : l'écran ne fait
+     que traduire ses refus.
+     La note, elle, reste visible en bandeau dès qu'elle existe —
+     c'est un pense-bête, il doit se voir sans rien déplier.
+     ============================================================ */
+  var eleveCompte = null;
+
+  function resCompte(html, ok){
+    var z = $('#e-compte-res');
+    z.className = 'alerte show ' + (ok ? 'ok' : 'err');
+    z.innerHTML = html;
+  }
+  function refusCompte(err){
+    var m = (err && err.message) || '';
+    resCompte(
+        m.indexOf('ELEVE_PARTAGE') >= 0 ? 'Impossible : cet élève est aussi inscrit dans la classe d’un ou d’une collègue. Supprimer son compte effacerait son travail chez elle ou chez lui.'
+      : m.indexOf('PAS_MON_ELEVE') >= 0 ? 'La base a refusé : cet élève n’est dans aucune de tes classes.'
+      : messageLisible(m), false);
+  }
+  function montrerNote(texte){
+    var v = $('#e-note-vue');
+    v.textContent = texte ? '📝 ' + texte : '';
+    v.style.display = texte ? '' : 'none';
+  }
+
+  function ouvrirCompte(e){
+    eleveCompte = e;
+    $('#e-compte').style.display = 'none';
+    $('#e-compte-btn').setAttribute('aria-expanded', 'false');
+    $('#e-compte-res').className = 'alerte';
+    $('#e-note').value = ''; $('#e-note-etat').textContent = '';
+    montrerNote('');
+    ProfAPI.lire('notes_eleves?select=texte&eleve_id=eq.' + encodeURIComponent(e.id))
+      .then(function(l){
+        if(eleveCompte !== e) return;
+        var t = (l && l[0] && l[0].texte) || '';
+        $('#e-note').value = t; montrerNote(t);
+      }).catch(function(){});
+  }
+
+  $('#e-compte-btn').addEventListener('click', function(){
+    var z = $('#e-compte'), ouvert = z.style.display !== 'none';
+    z.style.display = ouvert ? 'none' : '';
+    this.setAttribute('aria-expanded', ouvert ? 'false' : 'true');
+  });
+
+  $('#e-note-ok').addEventListener('click', function(){
+    var e = eleveCompte, b = this, t = $('#e-note').value.trim();
+    var moi = ProfAPI.monId();
+    if(!e || !moi) return;
+    b.disabled = true;
+    /* note vide = on l'efface ; sinon on écrase (une seule note par élève) */
+    (t
+      ? ProfAPI.ecrire('notes_eleves', { auth_id: moi, eleve_id: e.id, texte: t, maj_le: new Date().toISOString() }, true)
+      : ProfAPI.supprimer('notes_eleves?eleve_id=eq.' + encodeURIComponent(e.id) + '&auth_id=eq.' + encodeURIComponent(moi)))
+      .then(function(){
+        montrerNote(t);
+        $('#e-note-etat').textContent = t ? 'Note enregistrée.' : 'Note effacée.';
+      })
+      .catch(refusCompte)
+      .then(function(){ b.disabled = false; });
+  });
+
+  $('#e-mdp').addEventListener('click', function(){
+    var e = eleveCompte, b = this;
+    if(!e) return;
+    if(!window.confirm('Donner un nouveau mot de passe à ' + ProfAPI.nomDe(e.pseudo)
+        + ' ?\nL’ancien cessera de fonctionner.')) return;
+    b.disabled = true;
+    ProfAPI.appeler('reinitialiser_mdp_eleve', { p_eleve: e.id })
+      .then(function(mdp){
+        /* les deux valeurs passent par textContent, jamais par innerHTML */
+        resCompte('Identifiant&nbsp;: <b class="mono"></b><span class="mdp-provisoire"></span>'
+          + 'À dicter à l’élève maintenant : il ne s’affichera plus. Il peut le garder.', true);
+        $('#e-compte-res b').textContent = e.pseudo;
+        $('#e-compte-res .mdp-provisoire').textContent = String(mdp);
+      })
+      .catch(refusCompte)
+      .then(function(){ b.disabled = false; });
+  });
+
+  $('#e-suppr').addEventListener('click', function(){
+    var e = eleveCompte, b = this;
+    if(!e) return;
+    var qui = ProfAPI.nomDe(e.pseudo);
+    if(!window.confirm('Supprimer définitivement le compte « ' + e.pseudo + ' »'
+        + (qui !== e.pseudo ? ' (' + qui + ')' : '') + ' ?\n\n'
+        + 'Tout son travail part avec : réponses, progression, absences. '
+        + 'C’est irréversible.')) return;
+    b.disabled = true;
+    ProfAPI.appeler('supprimer_eleve', { p_eleve: e.id })
+      .then(function(){
+        eleveCompte = null;
+        $('#e-retour').click();
+        return chargerContexte().then(function(){ rendreSeance(); rendreGrille(); });
+      })
+      .catch(refusCompte)
+      .then(function(){ b.disabled = false; });
   });
 
   /* ---------- réactions aux sélecteurs ---------- */
@@ -2931,7 +3079,7 @@ table.grille thead th{white-space:nowrap}
 
   function chargerModeles(code){
     if(!code){ modeles = []; rendreBiblio(); return Promise.resolve(); }
-    return ProfAPI.lire('modeles_correction?select=id,texte,usages'
+    return ProfAPI.lire('modeles_correction?select=id,texte,usages,decision'
       + '&code_activite=eq.' + encodeURIComponent(code)
       + '&order=usages.desc,cree_le.desc')
       .then(function(l){ modeles = l || []; rendreBiblio(); })
@@ -2951,17 +3099,27 @@ table.grille thead th{white-space:nowrap}
       var d = document.createElement('div');
       d.className = 'modele';
 
+      /* la pastille inverse la décision : un modèle mal classé se
+         corrige d'un toucher, sans le retaper */
+      var p = pastilleDecision(m.decision, 'button');
+      p.title = 'Changer : ' + (m.decision === 'valider' ? 'renvoyer à refaire' : 'valider');
+      p.addEventListener('click', function(){
+        var autre = m.decision === 'valider' ? 'refaire' : 'valider';
+        ProfAPI.modifier('modeles_correction?id=eq.' + encodeURIComponent(m.id), { decision: autre })
+          .then(function(){ m.decision = autre; rendreBiblio(); })
+          .catch(erreurAction);
+      });
+
       var b = document.createElement('button');
       b.className = 'txt'; b.type = 'button';
       b.textContent = m.texte;
-      b.title = 'Insérer dans mon message';
+      b.title = m.decision === 'valider' ? 'Valider avec ce message' : 'Renvoyer à refaire avec ce message';
       b.addEventListener('click', function(){
-        var t = $('#c-mot');
-        t.value = t.value.trim() ? (t.value.trim() + ' ' + m.texte) : m.texte;
-        t.focus();
+        if(enCours) return;
         /* compteur d'usage : sert à faire remonter les modèles utiles
            en tête. L'échec est sans conséquence, on ne le signale pas. */
         ProfAPI.appeler('modele_utilise', { p_modele: m.id }).catch(function(){});
+        deciderAvec(m.texte, m.decision);
       });
 
       var c = document.createElement('span');
@@ -2979,14 +3137,25 @@ table.grille thead th{white-space:nowrap}
           .catch(function(e){ erreurAction(e); });
       });
 
-      d.appendChild(b); d.appendChild(c); d.appendChild(s);
+      d.appendChild(p); d.appendChild(b); d.appendChild(c); d.appendChild(s);
       z.appendChild(d);
     });
   }
 
+  function pastilleDecision(decision, balise){
+    var p = document.createElement(balise);
+    if(balise === 'button') p.type = 'button';
+    p.className = 'dec ' + (decision === 'valider' ? 'v' : 'r');
+    p.textContent = decision === 'valider' ? '✓' : '↺';
+    p.setAttribute('aria-label', decision === 'valider' ? 'valide' : 'renvoie à refaire');
+    return p;
+  }
+
   function courant(){ return file[rang]; }
 
-  $('#btn-memoriser').addEventListener('click', function(){
+  /* Mémoriser, c'est choisir en même temps ce que la phrase décidera.
+     Mémoriser n'envoie rien : la copie reste ouverte. */
+  function memoriser(decision, b){
     var c = courant();
     var t = ($('#c-mot').value || '').trim();
     if(!c) return;
@@ -2994,7 +3163,7 @@ table.grille thead th{white-space:nowrap}
       erreurAction(new Error('Écris d\u2019abord le message à mémoriser.'));
       return;
     }
-    var b = $('#btn-memoriser'); b.disabled = true;
+    b.disabled = true;
     var moi = ProfAPI.monId();
     if(!moi){ erreurAction(new Error('Session illisible, reconnecte-toi.')); b.disabled = false; return; }
     /* auth_id doit être posé explicitement : PostgREST ne le déduit
@@ -3002,12 +3171,15 @@ table.grille thead th{white-space:nowrap}
     ProfAPI.ecrire('modeles_correction', {
       auth_id: moi,
       code_activite: c.code_activite,
-      texte: t
+      texte: t,
+      decision: decision
     }, false)
       .then(function(){ return chargerModeles(c.code_activite); })
       .catch(erreurAction)
       .then(function(){ b.disabled = false; });
-  });
+  }
+  $('#btn-memoriser-v').addEventListener('click', function(){ memoriser('valider', this); });
+  $('#btn-memoriser-r').addEventListener('click', function(){ memoriser('refaire', this); });
 
   /* ---------- démarrage ---------- */
   majEtatNoms();

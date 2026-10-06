@@ -4623,3 +4623,27 @@ Les cases à cocher du QCM multiple sont redessinées dans la feuille partagée
 Le bug « QCM réduit, il faut recliquer » n'est pas reproduit : la réduction ne
 vide pas le panneau, la réponse reste affichée à la reprise (Chromium, Échap
 compris). En attente du cas précis de Loïc. `verifier.mjs` : 19.
+
+## 04-06/10/2026 — Comptes élèves et correction en rafale
+
+Trois comptes perdus supprimés à la demande de Loïc (04/10), par la CLI, après
+diagnostic : `paulsauvage` (ES 1re, remplacé par `paulsauvage1`), `alicebour`
+(SNT B, remplacé par `alicbour`) et `genyarmin` (SNT B, aucun remplaçant
+trouvé). Une réponse chacun pour le premier et le dernier, perdues avec eux.
+
+D'où la demande : faire ces gestes depuis la tablette. `bdd/schema/024`
+ajoute `notes_eleves`, `reinitialiser_mdp_eleve()`, `supprimer_eleve()` et la
+colonne `decision` des réponses types. Le numéro 022 avait été pris entre-temps
+par la Boîte à cartes, dans une autre conversation.
+
+Le piège trouvé en écrivant : un élève peut être inscrit chez une collègue
+(018), et supprimer son compte effacerait son travail chez elle. La fonction
+refuse ce cas ; le test l'a vérifié en inscrivant un élève de Loïc dans une
+classe d'une collègue, dans une transaction annulée. Le premier jeu de tests
+était trompeur : la classe de collègue choisie (`ES1R05`) était vide, et le
+refus passait sur un identifiant nul.
+
+Côté écran : les phrases ne donnent plus le focus au champ (c'était lui qui
+ouvrait le clavier). Testé sous Playwright, base simulée, format iPad : aucune
+erreur JS. `verifier.mjs` : 19. Les symboles ✓ ↺ retirés du guide SNT : ils
+tombaient en police de repli à l'export PDF.

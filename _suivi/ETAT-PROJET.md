@@ -5,7 +5,7 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **04/10/2026**.
+> Dernière réécriture : **06/10/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
@@ -98,6 +98,25 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 Tableau de bord : comptes élèves et correction en rafale
+
+`bdd/schema/024` + `prof/index.html`, quatre guides et leurs PDF à jour.
+- **Fiche d'un élève → « ⋯ Compte »** (replié) : une **note** (200 car., lue par
+  l'enseignant seul, en bandeau sur la fiche), **réinitialiser le mot de passe**
+  (provisoire généré par la base, du genre `Rubis-1035`, affiché une fois),
+  **supprimer le compte** (tout part en cascade ; 🔴 **refusé** si l'élève est
+  aussi inscrit chez un ou une collègue).
+- **Correction** : chaque phrase (toute faite ou mémorisée) porte sa décision,
+  ✓ valide ou ↺ renvoie à refaire ; **la toucher envoie** la décision, sans
+  ouvrir le clavier. « Mémoriser » devient deux boutons. Toucher la pastille
+  inverse une phrase mal classée.
+- Éprouvé : SQL sur la base réelle dans une transaction annulée (13 contrôles,
+  élève partagé compris) ; écran au navigateur sur une base simulée, format iPad.
+- ⏳ **Loïc relit le classement des 18 phrases déjà mémorisées** (proposé
+  le 06/10) ; deux étaient ambiguës.
+- ⏳ **La réinitialisation n'est pas encore essayée sur un vrai compte** : le
+  premier usage dira si Supabase Auth relit bien le hachage de `pgcrypto`.
 
 ## 🆕 ES 1re « La radioactivité » refondue sur l'audit de Loïc — à relire
 

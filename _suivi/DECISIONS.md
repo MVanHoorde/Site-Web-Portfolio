@@ -15,6 +15,16 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 06/10/2026 — Tableau de bord : gérer un compte élève, corriger en rafale
+
+| Date | Décision | Statut |
+|---|---|---|
+| 06/10/2026 | **Une phrase de correction porte sa décision** (valider / refaire) et **la toucher envoie** : un geste par copie, le bandeau « Annuler » rattrape. Ce qui est tapé passe devant la phrase. Pas de focus : le clavier de l'iPad reste fermé. Défaut en base : `refaire` (une erreur de ce côté se voit) | ✅ en vigueur |
+| 06/10/2026 | **Mémoriser = choisir la décision** : deux boutons, « qui valide » / « qui renvoie à refaire » | ✅ en vigueur |
+| 06/10/2026 | **Note sur un élève en base** (`notes_eleves`), lue par l'enseignant qui l'écrit et lui seul, 200 caractères, rien de sensible | ✅ en vigueur |
+| 06/10/2026 | **Mot de passe provisoire généré par la base** (mot + 4 chiffres), conforme à la politique du projet, affiché une seule fois | ✅ en vigueur |
+| 06/10/2026 | 🔴 **Supprimer un compte élève est refusé s'il est inscrit chez un autre enseignant** : la suppression effacerait aussi son travail chez lui | ✅ en vigueur |
+
 ## 04/10/2026 — La radioactivité (ES 1re) refondue sur l'audit de Loïc
 
 | Date | Décision | Statut |

@@ -211,7 +211,11 @@ td code{white-space:nowrap}
     </tr>
     <tr>
       <td><b>Mot de passe</b></td>
-      <td colspan="2">Haché par Supabase. On <b>réinitialise</b>, on ne lit jamais.</td>
+      <td colspan="2">Haché par Supabase. On <b>réinitialise</b>, on ne lit jamais —
+        depuis la fiche de l'élève (<i>⋯ Compte</i>), par
+        <code>reinitialiser_mdp_eleve()</code>, qui pose un mot de passe provisoire
+        (bcrypt par <code>pgcrypto</code>, le format que relit Supabase Auth) et le
+        rend en clair une seule fois.</td>
     </tr>
   </table>
   </div>
@@ -247,7 +251,8 @@ td code{white-space:nowrap}
     <tr><td><code>seances_faites</code></td><td>Le cahier de textes : séance, date réelle, notes, travail donné.</td></tr>
     <tr><td><code>absences</code> · <code>jalons</code></td><td>Note de travail sur les absents ; dates cibles par thème.</td></tr>
     <tr><td><code>enseignants</code> · <code>enseignants_classes</code></td><td>Qui est professeur, et qui enseigne où.</td></tr>
-    <tr><td><code>modeles_correction</code></td><td>La bibliothèque de phrases, cloisonnée par compte depuis l'origine.</td></tr>
+    <tr><td><code>modeles_correction</code></td><td>La bibliothèque de phrases, cloisonnée par compte depuis l'origine. Chaque phrase porte sa <code>decision</code> (<code>valider</code> ou <code>refaire</code>, défaut <code>refaire</code>) : la toucher décide la copie. <code>bdd/schema/024</code>.</td></tr>
+    <tr><td><code>notes_eleves</code></td><td>Le pense-bête d'un enseignant sur un élève de ses classes, 200 caractères, une ligne par couple. Lu par cet enseignant <b>seul</b>, emporté par la suppression de l'élève. <code>bdd/schema/024</code>.</td></tr>
     <tr><td><code>signalements</code></td><td>Les bugs signalés par les élèves connectés (bouton « J'ai vu un bug » du moteur) : page, étape, message, appareil résumé, traité ou non. Lus par les enseignants de l'élève <b>dans la famille de la page</b> (<code>mon_eleve_pour</code>), vingt par élève et par jour au plus. <code>bdd/schema/021</code>.</td></tr>
   </table>
   </div>
@@ -537,11 +542,15 @@ order by c.code;</pre>
 from public.eleves el join public.classes c on c.id = el.classe_id
 where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <div class="encadre attention">
-    <span class="etiq">À faire dans l'interface, pas en SQL</span>
+    <span class="etiq">Supprimer le compte, pas la fiche</span>
     <p>Supprimer la ligne de <code>eleves</code> laisserait le compte
-    d'authentification orphelin. C'est le compte qu'il faut supprimer, dans
-    <i>Authentication → Users</i> : la fiche élève, sa progression et ses copies
-    partent avec lui, en cascade. Le sens inverse ne marche pas.</p>
+    d'authentification orphelin. C'est le compte qu'il faut supprimer : la fiche
+    élève, sa progression et ses copies partent avec lui, en cascade. Le sens
+    inverse ne marche pas. Deux chemins le font correctement : le bouton
+    <i>⋯ Compte → Supprimer ce compte</i> de la fiche de l'élève
+    (<code>supprimer_eleve()</code>, qui <b>refuse</b> un élève inscrit aussi chez
+    un collègue), ou <i>Authentication → Users</i> dans Supabase, qui ne vérifie
+    rien.</p>
   </div>
 
   <h2 id="worker">7. La correction assistée</h2>
@@ -702,7 +711,10 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <p class="revision">
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
-    Dernière révision : <b>4 octobre 2026</b> — écran <code>prof/decroissance.html</code>,
+    Dernière révision : <b>6 octobre 2026</b> — <code>bdd/schema/024</code> : une
+    phrase mémorisée porte sa décision et s'envoie d'un toucher ; la fiche d'un
+    élève note (<code>notes_eleves</code>), réinitialise le mot de passe et supprime
+    le compte. Passe du 4 octobre : écran <code>prof/decroissance.html</code>,
     la courbe des dés de la classe, lue dans l'état des étapes sans rien ajouter à la
     base. Passe du 3 octobre : table <code>signalements</code> et
     onglet du même nom (<code>bdd/schema/021</code>, exécuté le 03/10) ; la progression
