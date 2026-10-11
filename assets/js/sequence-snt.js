@@ -5342,14 +5342,14 @@ function initGlossaire(){
     var h=liste.map(function(e){
       if(cache(e))
         return '<div class="glo-entree vide"><div class="m">'+e.mot+'</div>'+
-          '<div class="o">'+(e.origine||'cette séquence')+'</div>'+
+          '<div class="o">'+(e.origine||'cette séquence')+(e.hp?' · hors programme':'')+'</div>'+
           '<div class="d">À découvrir — étape '+e.etape+'.</div></div>';
       var perso=e.eleve||'';
       /* pointillé seulement si le mot n'a AUCUNE définition — ni celle de
          l'élève, ni celle de référence ; sinon l'entrée est pleine. */
       var etat = perso ? '' : (e.def ? ' ref' : ' vide');
       return '<div class="glo-entree'+etat+'"><div class="m">'+e.mot+'</div>'+
-        '<div class="o">'+(e.origine||'cette séquence')+'</div>'+
+        '<div class="o">'+(e.origine||'cette séquence')+(e.hp?' · hors programme':'')+'</div>'+
         '<div class="d">'+(perso||e.def||'À définir — tu le rencontreras plus loin.')+'</div></div>';
     }).join('');
     if(!h) h='<p style="font-size:13.5px;color:var(--ink-faint)">Aucun mot ne correspond. Essaie avec moins de lettres.</p>';

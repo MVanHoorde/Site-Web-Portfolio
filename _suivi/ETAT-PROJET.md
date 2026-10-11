@@ -18,13 +18,16 @@
 > session sur un raté réseau. 🔴 **Une étape n'est faite que quand tous ses
 > exercices le sont**, et dit ce qui reste. Sommaire partout, pastilles de thème
 > cliquables, fil d'Ariane, thème suivant ; la barre du haut suit la séance à
-> l'écran. `progression.js?v=22` (58 fichiers), `sequence-snt.js?v=57` (23),
+> l'écran. `progression.js?v=22` (58 fichiers), `sequence-snt.js?v=58` (23),
 > `sequence-snt.css?v=51` (24). Scan complet au banc d'essai : 12 pages, aucune
 > perte au rechargement. Guides SNT / ES / dispositif et PDF à jour.
 > ⏳ **À présenter dans t0** (référentiel vivant, §8) : la phrase « il te
 > reste… », le bandeau d'enregistrement et les passerelles — tuto à rédiger par
 > Loïc. ⏳ **Choix de nucléosynthèse 1.4** : pas gardés tant que l'étape n'est
 > pas finie (six clics à refaire au pire).
+> ⏳ **Glossaire de terminale c1** : 20 mots ajoutés et 10 marqués « hors
+> programme » (`"hp": true`) — **proposition à valider**. Même traitement possible
+> pour c2 (pas de glossaire de chapitre) et les chapitres de 1re.
 >
 > **Passe du 11/10 — le +0,5 des signalements retenus.** Un bouton
 > **+0,5** sur chaque carte de l'onglet Signalements, traités compris : il marque
