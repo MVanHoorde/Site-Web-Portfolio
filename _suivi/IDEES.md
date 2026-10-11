@@ -160,6 +160,10 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
   de séquence. Une mention discrète (« Classe SNTTEA ») près du badge de compte
   suffirait. Vaut aussi pour un élève qui se tromperait de code à l'inscription :
   aujourd'hui il travaillerait des semaines dans la mauvaise classe sans le voir.
+- 💡 **Liste « bonus à reporter » par classe** (posé le 11/10/2026, avec le
+  bouton +0,5 des signalements). Au moment de saisir les notes d'un contrôle,
+  voir d'un coup d'œil qui a des +0,5 en attente, et les marquer « reportés ».
+  Aujourd'hui le report se fait à la main, carte par carte.
 - 💡 _(ex. moteur de recherche, index des notions, mode révision…)_
 
 - 💡 **QR codes Kahoot sur les fiches de révision** (différé le 23/08/2026).

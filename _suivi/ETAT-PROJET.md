@@ -12,7 +12,16 @@
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — un bouton « Voir » sur les mots de passe (11/10).** Demande
+> **Dernière passe — le +0,5 des signalements retenus (11/10).** Un bouton
+> **+0,5** sur chaque carte de l'onglet Signalements, traités compris : il marque
+> traité, et l'élève voit « 🎁 +0,5 au prochain contrôle » en ouvrant sa prochaine
+> page de cours (une fois, tous appareils) ; la carte dit ensuite « vu par
+> l'élève ». `bdd/schema/026` **appliqué le 11/10** par la CLI, inscrit au
+> registre. `progression.js?v=21` (58 fichiers), `sequence-snt.js?v=56` (23).
+> Guides SNT / ES / AP / dispositif et PDF à jour. Le report sur la note du
+> contrôle reste manuel (idée d'une liste « bonus à reporter » : `IDEES.md`).
+>
+> **Passe du 11/10 — un bouton « Voir » sur les mots de passe.** Demande
 > des élèves : relire ce qu'on a tapé. Fenêtre élève (`progression.js?v=20`,
 > 58 fichiers), connexion du tableau de bord, guides SNT / ES / AP et leurs PDF.
 > Même bouton dans Résonance (tutorat) ; la Boîte à cartes l'avait déjà.
@@ -63,8 +72,8 @@
 > toutes les fiches**, activité 2.4 mélangée et sans numéro atomique, pastille des
 > « retours » réparée (elle comptait « réponse enregistrée »). 🔴 **Bouton « J'ai vu
 > un bug »** dans toutes les pages du moteur (élève connecté) et onglet
-> **Signalements** du tableau de bord — `bdd/schema/021` exécuté le 03/10 ; ⏳ reste à
-> l'inscrire au registre des migrations (`supabase migration repair`). `progression.js?v=18`, `sequence-snt.js?v=53`, `.css?v=47`.
+> **Signalements** du tableau de bord — `bdd/schema/021` exécuté le 03/10, inscrit au
+> registre des migrations. `progression.js?v=18`, `sequence-snt.js?v=53`, `.css?v=47`.
 > ⏳ **Vidéos → MP4 sur le OneDrive du lycée** : 52 à télécharger,
 > `_suivi/videos-a-telecharger.md` ; **une seule en ligne (nucléo 1.3), à essayer
 > sur iPad dans Safari avant d'en faire d'autres**. Les trois épisodes de

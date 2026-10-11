@@ -228,16 +228,43 @@
     if (jetonValide()) return Promise.resolve(jeton);
     if (sessionEnCours) return sessionEnCours;
 
-    if (!jeton) jeton = lireJetonStocke();
+    /* Le jeton STOCKÉ fait foi, pas celui gardé en mémoire : un autre onglet
+       (le hub, un autre chapitre) a pu le renouveler entre-temps. Supabase
+       fait tourner les jetons de renouvellement — l'ancien, rejoué par cet
+       onglet, serait refusé, et le refus effaçait la session pour TOUS les
+       onglets. Avant le 11/10/2026, on ne relisait le stockage que si la
+       mémoire était vide. */
+    var stocke = lireJetonStocke();
+    if (stocke && stocke.access_token && (!jeton || stocke.access_token !== jeton.access_token)) jeton = stocke;
     if (jetonValide()) return Promise.resolve(jeton);
 
     // Jeton expiré mais rafraîchissable : on le renouvelle sans
     // redemander le mot de passe à l'élève.
     if (jeton && jeton.refresh_token) {
-      sessionEnCours = auth('token?grant_type=refresh_token', { refresh_token: jeton.refresh_token })
+      var renouvele = jeton.refresh_token;
+      sessionEnCours = auth('token?grant_type=refresh_token', { refresh_token: renouvele })
         .then(memoriser)
         .then(function (j) { sessionEnCours = null; return j; })
-        .catch(function (e) { sessionEnCours = null; jeton = null; ecrireJetonStocke(null); throw e; });
+        .catch(function (e) {
+          sessionEnCours = null;
+          /* On n'oublie le jeton que si le serveur l'a REFUSÉ (400, 401,
+             403 : jeton révoqué ou périmé). Un raté du réseau — wifi du
+             lycée, iPad qui sort de veille — n'a pas cette réponse : e.statut
+             est vide. Avant le 11/10/2026, ce raté effaçait la session sans
+             rien dire. L'élève continuait de travailler, déconnecté, et plus
+             rien ne s'enregistrait (signalé en terminale le 08/10). */
+          if (e && e.statut >= 400 && e.statut < 500) {
+            /* refusé parce qu'un autre onglet l'a déjà renouvelé : on prend
+               le sien plutôt que de tout effacer */
+            var autre = lireJetonStocke();
+            if (autre && autre.refresh_token && autre.refresh_token !== renouvele) {
+              jeton = autre;
+              return assurerSession();
+            }
+            jeton = null; ecrireJetonStocke(null);
+          }
+          throw e;
+        });
       return sessionEnCours;
     }
 
@@ -525,14 +552,18 @@
    *  supprimer. D'où la fusion dans ecrire() : l'appelant n'a pas à
    *  connaître les champs posés par les autres composants.
    * ---------------------------------------------------------- */
-  function lire(domaine, cle) {
-    return api('progression?select=valeur'
+  /* options.strict : une erreur (réseau, session) REMONTE au lieu de rendre
+   * {}. Sans lui, « rien en base » et « base injoignable » se confondent —
+   * et une page qui croit n'avoir rien en base finit par écraser ce qui y
+   * est (sequence-snt.js, module EtatSNT, 11/10/2026). */
+  function lire(domaine, cle, options) {
+    var q = api('progression?select=valeur'
              + '&domaine=eq.' + encodeURIComponent(domaine)
              + '&cle=eq.'     + encodeURIComponent(cle))
       .then(function (lignes) {
         return (lignes && lignes.length) ? lignes[0].valeur : {};
-      })
-      .catch(function () { return {}; });
+      });
+    return (options && options.strict) ? q : q.catch(function () { return {}; });
   }
 
   /* Tout un domaine d'un coup.
@@ -560,7 +591,9 @@
   function ecrire(domaine, cle, valeur) {
     return session().then(function (moi) {
       if (!moi) throw new Error('PAS_INSCRIT : rejoindre une classe avant d\'enregistrer.');
-      return lire(domaine, cle).then(function (existant) {
+      /* lecture stricte : si elle échoue, on n'écrit pas. Fusionner avec un
+         {} de repli effacerait les champs posés par les autres composants. */
+      return lire(domaine, cle, { strict: true }).then(function (existant) {
         var fusion = Object.assign({ v: 1 }, existant, valeur);
         return api('progression?on_conflict=eleve_id,domaine,cle', {
           method: 'POST',
@@ -700,6 +733,22 @@
                    appareil: court(infos.appareil, 120) || null }]
       }).then(function () { return true; });
     });
+  }
+
+  /* Le +0,5 d'un signalement retenu (11/10/2026, bdd/schema/026).
+   * L'élève ne relit toujours pas ses signalements : la base ne lui
+   * rend que SES bonus pas encore vus, et les marque vus à sa demande.
+   * Rien pour un invité. */
+  function mesBonus() {
+    return session().then(function (moi) {
+      if (!moi) return [];
+      return rpc('mes_bonus_signalement').then(function (l) { return l || []; });
+    });
+  }
+
+  function bonusVus(ids) {
+    if (!ids || !ids.length) return Promise.resolve(0);
+    return rpc('bonus_signalement_vus', { p_ids: ids });
   }
 
   /* Mes copies, avec leur statut et la correction si elle est là.
@@ -1363,6 +1412,8 @@
     envoyerReponse: envoyerReponse,
     partager      : partager,
     signaler      : signaler,
+    mesBonus      : mesBonus,
+    bonusVus      : bonusVus,
     deposerImage  : deposerImage,
     lireImage     : lireImage,
     supprimerImage: supprimerImage,

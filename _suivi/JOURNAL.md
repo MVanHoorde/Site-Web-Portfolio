@@ -4714,3 +4714,31 @@ erreur JS. `verifier.mjs` : 19.
 
 La Boîte à cartes n'a pas été commitée : une autre conversation y avait des
 modifications en cours au même moment.
+
+## 11/10/2026 — Le +0,5 des signalements retenus
+
+Demande de Loïc : un élève qui signale une erreur ou propose une amélioration
+intéressante gagne 0,5 au prochain contrôle. Il voulait l'accorder d'un bouton,
+y compris pour les signalements déjà traités, et que l'élève l'apprenne à sa
+prochaine connexion.
+
+Base (`bdd/schema/026`) : `bonus_le` et `bonus_vu_le` sur `signalements`, un
+déclencheur (date serveur, première date gardée, traité, « vu » remis à zéro
+quand le bonus change), deux fonctions côté élève. Éprouvé sur la base réelle
+dans une transaction annulée (15 contrôles, fin par exception pour que rien ne
+reste), puis appliqué par `supabase db push`.
+
+Tableau de bord : bouton +0,5 / Retirer le +0,5, ligne « accordé · vu par
+l'élève ». Deux défauts vus sur la capture et corrigés au passage : la pastille
+de l'onglet affichait « 0 » (le `display:inline-block` écrasait `hidden`), et
+une carte traitée pâlissait ses boutons, si bien que +0,5 semblait désactivé.
+
+Élève : fenêtre « 🎁 +0,5 au prochain contrôle » (`+1` pour deux), dans le bloc
+du moteur qui porte déjà « Ton professeur t'a répondu », avec la même règle
+d'attente. Banc Playwright, base simulée : fenêtre, marquage vu, bouton,
+retrait — aucune erreur JS. `progression.js?v=21` (58), `sequence-snt.js?v=56`
+(23). Guides et PDF. `verifier.mjs` : 19.
+
+Commit limité à ce chantier : quatre pages (t0, t1, m1, term-es-t2-c1) avaient
+des modifications d'une autre conversation ; seul le numéro de version y est
+parti.

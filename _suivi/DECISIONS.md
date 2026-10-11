@@ -15,6 +15,14 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 11/10/2026 — Le +0,5 des signalements retenus
+
+| Date | Décision | Statut |
+|---|---|---|
+| 11/10/2026 | 🔴 **Un signalement retenu (erreur trouvée, amélioration intéressante) rapporte +0,5 au prochain contrôle, accordé d'un bouton** sur sa carte, dans l'onglet Signalements — **y compris sur les signalements déjà traités**. Accorder marque traité ; la date est celle du serveur ; *Retirer le +0,5* rattrape un clic de trop. `bdd/schema/026` | ✅ en vigueur |
+| 11/10/2026 | **L'élève en est prévenu une fois**, par une fenêtre « 🎁 +0,5 au prochain contrôle » à l'ouverture de n'importe quelle page du moteur, jamais par-dessus ce qu'il est en train de faire. « Vu » vit **en base** (tous appareils) et s'affiche sur la carte de l'enseignant. L'élève ne relit toujours pas ses signalements : la base ne lui rend que ses bonus non vus | ✅ en vigueur |
+| 11/10/2026 | **Le report sur la note du contrôle reste manuel.** Une liste « bonus à reporter » par classe est une idée, pas une décision (`IDEES.md`) | ✅ en vigueur |
+
 ## 06/10/2026 — Le travail des élèves revient au rechargement : menus, étiquettes, photos
 
 | Date | Décision | Statut |

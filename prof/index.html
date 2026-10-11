@@ -296,13 +296,18 @@ table.grille thead th{white-space:nowrap}
 .sig-n{display:inline-block;min-width:18px;padding:0 6px;margin-left:4px;border-radius:999px;
   background:var(--err);color:#fff;font-size:11.5px;font-weight:600;line-height:18px;text-align:center}
 .sig{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
-.sig.traite{opacity:.6}
+.sig-n[hidden]{display:none}
+/* traité : on pâlit le texte, pas les boutons (le +0,5 se donne aussi après coup) */
+.sig.traite .sig-tete,.sig.traite .sig-msg{opacity:.6}
 .sig .sig-tete{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:13px;color:var(--ink-soft)}
 .sig .sig-tete b{color:var(--ink);font-size:14px}
 .sig .sig-msg{white-space:pre-wrap;margin:8px 0;font-size:14.5px}
 .sig .sig-act{display:flex;gap:8px;flex-wrap:wrap}
 .sig .sig-act a{display:inline-flex;align-items:center;padding:6px 12px;border:1px solid var(--line);
   border-radius:var(--r);background:var(--surface);color:var(--link);text-decoration:none}
+/* +0,5 au prochain contrôle (11/10/2026, bdd/schema/026) */
+.sig .sig-bonus{font-size:13px;color:var(--ink-soft);margin:0 0 8px}
+.sig .sig-bonus b{color:var(--ok)}
 </style>
 </head>
 <body>
@@ -930,7 +935,7 @@ table.grille thead th{white-space:nowrap}
   var SIGNALEMENTS = [];
   function chargerSignalements(){
     $('#sig-etat').textContent = 'Chargement…';
-    return ProfAPI.lire('signalements?select=id,cle,page,etape,message,appareil,traite,cree_le,eleves(pseudo)'
+    return ProfAPI.lire('signalements?select=id,cle,page,etape,message,appareil,traite,cree_le,bonus_le,bonus_vu_le,eleves(pseudo)'
                         + '&order=cree_le.desc&limit=300')
       .then(function(l){ SIGNALEMENTS = l || []; rendreSignalements(); $('#sig-etat').textContent = ''; })
       .catch(function(err){
@@ -955,15 +960,20 @@ table.grille thead th{white-space:nowrap}
     }
     z.innerHTML = liste.map(function(x){
       var pseudo = (x.eleves && x.eleves.pseudo) || '—';
-      return '<div class="sig' + (x.traite ? ' traite' : '') + '" data-id="' + echapper(x.id) + '">' +
+      return '<div class="sig' + (x.traite ? ' traite' : '') + (x.bonus_le ? ' bonus' : '') + '" data-id="' + echapper(x.id) + '">' +
         '<div class="sig-tete"><b>' + echapper(ProfAPI.nomDe(pseudo)) + '</b>' +
         '<span>' + echapper(quandCourt(x.cree_le)) + '</span>' +
         '<span>' + echapper(nomSequence(x.cle) || x.cle) + (x.etape ? ' · étape ' + echapper(x.etape) : '') + '</span>' +
         (x.appareil ? '<span>' + echapper(x.appareil) + '</span>' : '') + '</div>' +
         '<div class="sig-msg">' + echapper(x.message) + '</div>' +
+        (x.bonus_le ? '<div class="sig-bonus"><b>+0,5 accordé</b> ' + echapper(quandCourt(x.bonus_le)) +
+          ' · ' + (x.bonus_vu_le ? '✓ vu par l’élève ' + echapper(quandCourt(x.bonus_vu_le))
+                                 : 'l’élève le verra à sa prochaine connexion') + '</div>' : '') +
         '<div class="sig-act">' +
           '<a href="../pages/' + encodeURIComponent(x.page) + '.html" target="_blank" rel="noopener">Ouvrir la page</a>' +
           '<button data-sig-traite="' + (x.traite ? '0' : '1') + '">' + (x.traite ? 'Remettre à traiter' : '✓ Traité') + '</button>' +
+          (x.bonus_le ? '<button data-sig-bonus="0">Retirer le +0,5</button>'
+                      : '<button data-sig-bonus="1" class="primaire" title="Signalement retenu : +0,5 au prochain contrôle. Le signalement passe en traité ; l’élève est prévenu à sa prochaine connexion.">+0,5</button>') +
           '<button data-sig-suppr>Supprimer</button>' +
         '</div></div>';
     }).join('');
@@ -979,8 +989,22 @@ table.grille thead th{white-space:nowrap}
         .catch(function(err){ bt.disabled = false; $('#sig-etat').textContent = 'Échec : ' + (err.message || err); });
       return;
     }
+    /* +0,5 : la base date le bonus et marque traité (026) */
+    var bb = e.target.closest('[data-sig-bonus]');
+    if(bb){
+      var donner = bb.dataset.sigBonus === '1';
+      if(!donner && !confirm('Retirer le +0,5 de ce signalement ?')) return;
+      bb.disabled = true;
+      ProfAPI.modifier('signalements?id=eq.' + encodeURIComponent(id), { bonus_le: donner ? new Date().toISOString() : null })
+        .then(chargerSignalements)
+        .then(function(){ if(donner) $('#sig-etat').textContent = '+0,5 enregistré — le signalement est passé dans les traités.'; })
+        .catch(function(err){ bb.disabled = false; $('#sig-etat').textContent = 'Échec : ' + (err.message || err); });
+      return;
+    }
     if(e.target.closest('[data-sig-suppr]')){
-      if(!confirm('Supprimer ce signalement ? Il ne pourra pas être récupéré.')) return;
+      var avecBonus = carte.classList.contains('bonus');
+      if(!confirm('Supprimer ce signalement ? Il ne pourra pas être récupéré.'
+                  + (avecBonus ? '\nSon +0,5 disparaît avec lui (l’élève n’en sera pas prévenu s’il ne l’a pas encore vu).' : ''))) return;
       ProfAPI.supprimer('signalements?id=eq.' + encodeURIComponent(id))
         .then(chargerSignalements)
         .catch(function(err){ $('#sig-etat').textContent = 'Échec : ' + (err.message || err); });

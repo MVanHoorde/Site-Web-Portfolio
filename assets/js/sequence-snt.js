@@ -1159,6 +1159,7 @@
     document.addEventListener('DOMContentLoaded', rehydraterReponses);
   else
     rehydraterReponses();
+  annoncerBonus();   /* la réponse arrive du réseau : la modale existe alors */
 
   /* ---------- « Ton professeur t'a répondu » (22/09/2026) ----------
      Demandé par Loïc en test réel : quand il valide ou renvoie une réponse
@@ -1290,6 +1291,51 @@
         [{label: refaire ? '✎ Aller reprendre' : 'Voir le retour', cls: refaire ? 'reset' : 'dl',
           fn: function(){ var c = champDe(cible); if(c) allerA(c); }},
          {label: 'Plus tard', cls: 'ghost'}]);
+    }
+  }
+
+  /* ---------- « +0,5 au prochain contrôle » (11/10/2026) ----------
+     Un signalement retenu (erreur trouvée, amélioration intéressante)
+     rapporte 0,5 point au prochain contrôle. Le professeur l'accorde
+     depuis le tableau de bord ; l'élève l'apprend ici, une fois, à
+     l'ouverture de n'importe quelle page de cours — pour savoir que
+     c'est enregistré. « Déjà vu » vit EN BASE (bdd/schema/026), donc
+     une fois pour tous ses appareils, et le professeur voit qu'il l'a lu.
+     Même discipline que « Ton professeur t'a répondu » : une fenêtre à
+     la fois, jamais par-dessus ce que l'élève est en train de faire. */
+  function annoncerBonus(){
+    if(!BASE || !BASE.mesBonus) return;
+    BASE.mesBonus().then(function(l){
+      if(l && l.length) montrer(l);
+    }).catch(function(){});
+
+    function occupe(){
+      var b = document.body.classList;
+      return b.contains('focus-on') || b.contains('qcm-on')
+          || mb.classList.contains('show') || !!document.querySelector('.hub-modale');
+    }
+    function jour(iso){
+      var d = new Date(iso);
+      return isNaN(d) ? '' : d.toLocaleDateString('fr-FR', { day:'numeric', month:'long' });
+    }
+    function montrer(l){
+      if(occupe() || document.visibilityState !== 'visible'){
+        setTimeout(function(){ montrer(l); }, 3000); return;
+      }
+      var items = l.map(function(x){
+        var ex = String(x.extrait || '').trim();
+        if(ex.length > 100) ex = ex.slice(0, 97) + '…';
+        return '<div class="ri"><span>Ton signalement du ' + echapper(jour(x.cree_le))
+             + (ex ? '<br><i style="color:var(--ink-soft)">« ' + echapper(ex) + ' »</i>' : '')
+             + '</span><b>+0,5</b></div>';
+      }).join('');
+      var n = l.length;
+      openModal('🎁', '+' + String(n * 0.5).replace('.', ',') + ' au prochain contrôle',
+        '<div class="recap">' + items + '</div>'
+        + '<p style="margin-top:2px">' + (n > 1 ? 'Tes signalements ont été retenus' : 'Ton signalement a été retenu')
+        + '. Merci : ton professeur l’a enregistré.</p>',
+        [{label: 'Super !', cls: 'dl'}]);
+      BASE.bonusVus(l.map(function(x){ return x.id; })).catch(function(){});
     }
   }
 
@@ -1764,6 +1810,18 @@
     return rows;
   }
 
+  /* Un clone garde le texte tapé dans un <input>, PAS le choix fait dans un
+     <select> : la sélection posée en script ne vit que dans la page. Signalé
+     par une élève de terminale le 08/10/2026 — le tableau « ce qui entraîne le
+     rotor », validé dans l'activité, sortait vide sur la fiche. On recopie
+     donc les choix, menu par menu, avant que ficheFiger() ne les lise. */
+  function clonerAvecSaisie(el){
+    var c = el.cloneNode(true);
+    var o = el.querySelectorAll('select'), k = c.querySelectorAll('select');
+    for(var i=0; i<o.length && i<k.length; i++) k[i].value = o[i].value;
+    return c;
+  }
+
   /* les tableaux de repères et la frise corrigée, recopiés tels quels */
   function collectReperes(sec){
     var out=[];
@@ -1774,7 +1832,7 @@
       if(t.closest('.tri-suite,.reveal,.bonus-wrap')) return;
       var etape=t.closest('[data-step]');
       var ti=etape?etape.querySelector('.step-title'):null;
-      var c=t.cloneNode(true);
+      var c=clonerAvecSaisie(t);
       c.querySelectorAll('.plustard').forEach(function(b){ b.remove(); });
       /* depuis le 23/08/2026 un doc-table peut porter de VRAIS champs (le
          tableau des combinaisons de m1 1.4). On y fige la saisie de l'élève :
@@ -2239,7 +2297,7 @@
       if(t.closest('.tri-suite,.reveal,.bonus-wrap')) return;
       if(!t.querySelector('input,select')) return;
       places.tables.push(t);
-      var c = t.cloneNode(true);
+      var c = clonerAvecSaisie(t);
       c.querySelectorAll('.plustard').forEach(function(b){ b.remove(); });
       ficheFiger(c);
       var rempli = Array.prototype.some.call(c.querySelectorAll('.saisi'), function(s){ return s.textContent !== '…'; });

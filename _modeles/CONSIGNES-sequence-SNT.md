@@ -152,6 +152,10 @@ en rechargeant la page. Le QCM fait exception, par choix : il se refait.
   séquence, la page, l'étape et l'appareil (`Progression.signaler`,
   `bdd/schema/021`) et arrive dans l'onglet **Signalements** du tableau de bord.
   Rien à poser dans la page ; la page doit seulement porter son `data-sequence`.
+  Un signalement retenu rapporte **+0,5 au prochain contrôle** : l'enseignant
+  l'accorde depuis le tableau de bord, et le moteur l'annonce à l'élève par une
+  fenêtre, une fois, à l'ouverture de sa prochaine page (`annoncerBonus`,
+  `bdd/schema/026`).
 - **Mode enseignant** : interrupteur qui déverrouille tout — télécommande de
   coordination, et sortie de secours quand un élève est coincé.
 - **Télécharger ma fiche** (récap HTML) + **Recommencer** + **pop-up de fin de
