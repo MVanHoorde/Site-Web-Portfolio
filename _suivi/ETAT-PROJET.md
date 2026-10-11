@@ -12,7 +12,21 @@
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — le +0,5 des signalements retenus (11/10).** Un bouton
+> **Dernière passe — signalements des élèves (11/10).** 🔴 Le moteur des
+> séquences **n'écrase plus la base** après une lecture ratée (fusion avant
+> chaque écriture), retente une écriture ratée et **le dit** (bandeau), garde la
+> session sur un raté réseau. 🔴 **Une étape n'est faite que quand tous ses
+> exercices le sont**, et dit ce qui reste. Sommaire partout, pastilles de thème
+> cliquables, fil d'Ariane, thème suivant ; la barre du haut suit la séance à
+> l'écran. `progression.js?v=22` (58 fichiers), `sequence-snt.js?v=57` (23),
+> `sequence-snt.css?v=51` (24). Scan complet au banc d'essai : 12 pages, aucune
+> perte au rechargement. Guides SNT / ES / dispositif et PDF à jour.
+> ⏳ **À présenter dans t0** (référentiel vivant, §8) : la phrase « il te
+> reste… », le bandeau d'enregistrement et les passerelles — tuto à rédiger par
+> Loïc. ⏳ **Choix de nucléosynthèse 1.4** : pas gardés tant que l'étape n'est
+> pas finie (six clics à refaire au pire).
+>
+> **Passe du 11/10 — le +0,5 des signalements retenus.** Un bouton
 > **+0,5** sur chaque carte de l'onglet Signalements, traités compris : il marque
 > traité, et l'élève voit « 🎁 +0,5 au prochain contrôle » en ouvrant sa prochaine
 > page de cours (une fois, tous appareils) ; la carte dit ensuite « vu par

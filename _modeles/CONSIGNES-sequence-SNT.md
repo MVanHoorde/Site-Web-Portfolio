@@ -103,10 +103,23 @@ travail en boucle (signalé en classe le 06/10/2026 : t0 2.4 et les photos de la
 séance 4). Ce que le moteur rétablit : trous, menus à « Vérifier » et étiquettes
 posées (état de la séquence, `champs`) · réponses rédigées et partagées · notes
 de visionnage · **photos déposées** (stockage privé `depots`, `<compte>/<séquence>/<code>.jpg`
-— d'où le `data-depot-code` obligatoire). La page **dit** si une photo n'est pas
-enregistrée (élève non connecté, envoi échoué) : jamais de silence. Un **nouveau
-type de champ** n'est pas fini tant que sa reprise n'est pas écrite et éprouvée
-en rechargeant la page. Le QCM fait exception, par choix : il se refait.
+— d'où le `data-depot-code` obligatoire) · **QCM finis** (`…/qcm-N`, même dans
+une étape pas encore validée) · réponses rédigées **sans code** (`…/redac-N`).
+La page **dit** si une photo n'est pas enregistrée (élève non connecté, envoi
+échoué) : jamais de silence. Un **nouveau type de champ** n'est pas fini tant que
+sa reprise n'est pas écrite et éprouvée en rechargeant la page — le banc d'essai
+à fausse base (11/10/2026) le fait pour toutes les pages branchées.
+
+🔴 **L'enregistrement ne doit jamais écraser la base** (module `EtatSNT`, tête de
+`sequence-snt.js`). Une lecture ratée au chargement n'est pas « rien en base » :
+avant chaque écriture, le moteur relit la base et y **fusionne** ce qui lui
+manque ; une lecture qui échoue **bloque** l'écriture. Une écriture ratée se
+**retente** (5 s, 15 s, 30 s, puis chaque minute) et un **bandeau** le dit dès le
+deuxième échec ; une session perdue propose « Me reconnecter », et ce qui était en
+mémoire part en base **avant** le rechargement — seulement si c'est le même
+élève qui revient. Côté `progression.js` : un raté réseau au renouvellement du
+jeton ne déconnecte plus, et le jeton stocké (renouvelé par un autre onglet) fait
+foi sur celui gardé en mémoire.
 
 - Une réponse de texte libre validée peut **révéler un encadré de contexte**
   (point d'histoire, biblio) — `data-reveal`.
@@ -125,10 +138,19 @@ en rechargeant la page. Le QCM fait exception, par choix : il se refait.
   - une **palette de symboles** (grec, opérateurs, flèches, unités, modes
     exposant et indice) insère des caractères Unicode : la réponse reste du
     texte. Une fraction s'écrit `(a)/(b)`.
-- 🔴 **Une étape portant plusieurs questions rédigées n'est validée qu'à la
-  dernière réponse.** Celles d'un `details` ou d'un `.bonus` ne comptent pas.
-  Une question rédigée **facultative** se pose donc dans un « pour aller plus
-  loin », jamais nue dans une étape `data-gate` : elle y bloquerait la séance.
+- 🔴 **Une étape n'est faite que quand TOUS ses exercices le sont** — la *garde
+  de fin d'étape* du moteur (11/10/2026), qui écoute `etape-validee` en capture.
+  Comptent : réponses rédigées (`.rempli`), textes à trous avec leur propre
+  « Vérifier » (`data-verifie`), QCM non `data-facultatif` (`data-fait`), menus à
+  « Vérifier » (tous sur leur bonne réponse), étiquettes (toutes `.juste`). Tant
+  qu'il manque quelque chose, l'étape le dit : « Pour finir cette étape, il te
+  reste : … ». Tout autre composant garde sa validation propre ; rien de ce qui
+  vit dans un `details`, `.bonus-wrap`, `.bonus` ou `.plus-loin` ne compte ; une
+  étape déjà enregistrée comme faite n'est jamais défaite. Une question
+  **facultative** se pose donc dans un « pour aller plus loin », jamais nue dans
+  une étape `data-gate` : elle y bloquerait la séance. Et une étape `data-gate`
+  doit avoir **au moins un geste** qui la valide (terminale c2, bilan : un
+  tableau sans case à remplir ne se validait jamais — un bouton `.lu` suffit).
 
 ### Éléments transverses
 
@@ -577,6 +599,19 @@ bloc conservé en plein (variable `--retain`). Drapeau tricolore réduit à un
 Sommaire des **étapes groupées par séance**, à gauche, cliquable, états fait /
 en attente / en cours / à venir. Repli en **bandeau horizontal**, réouverture par
 **languette**. Repli d'office sous 1180 px et en **mode focus**.
+La barre « tu es ici » suit la **séance à l'écran** : elle montre sa première
+étape à faire, ou « séance terminée » — jamais une séance que l'élève a quittée
+(11/10/2026). Le bouton **Sommaire** ouvre la carte en réseau là où
+`carte-reseau.js` est chargé (t0, t1), ailleurs la **liste des séances** avec leur
+état ; dans les deux cas suivent les **autres thèmes ouverts**.
+
+**Passerelles entre thèmes** (11/10/2026), toutes construites par le moteur :
+fil d'Ariane en tête (Accueil › matière › thème), **pastilles de thème
+cliquables**, carte « Thème suivant » après la dernière séance. Chaque pastille
+porte sa page (`data-page`). 🔴 **Ce qui est ouvert se lit sur la page d'accueil de
+la matière** (le lien `a.retour` de la barre des séances) : un thème est ouvert
+si elle y mène — un lien en commentaire n'existe pas. Ouvrir un thème ne demande
+donc rien de plus que rétablir son lien sur l'accueil de la matière.
 🔴 **Aucun `localStorage`** — l'état vit en mémoire et en base. Ne jamais recopier
 la barre du cahier de vacances, qui lit `localStorage`.
 Attribut `data-echeance` prévu par étape, **laissé vide** par décision.

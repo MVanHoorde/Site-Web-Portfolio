@@ -242,6 +242,32 @@
     });
   }
 
+  /* Les photos déposées par les élèves (stockage privé « depots »,
+     bdd/schema/025). La base ne rend que celles des élèves de MES
+     classes, dans la famille de la séquence : rien à filtrer ici.
+     Chemins : <compte de l'élève>/<séquence>/<code>.jpg */
+  function listerDepots(dossier) {
+    return assure().then(function () {
+      return fetch(URL_PROJET + '/storage/v1/object/list/depots', {
+        method: 'POST', headers: entetes(true),
+        body: JSON.stringify({ prefix: dossier, limit: 200, offset: 0 })
+      });
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(t || ('HTTP ' + r.status)); });
+      return r.json();
+    }).then(function (l) {
+      return (l || []).map(function (o) { return o.name; }).filter(Boolean);
+    });
+  }
+
+  /* Le fichier lui-même, en Blob — null s'il n'existe pas. */
+  function lireDepot(chemin) {
+    return assure().then(function () {
+      var h = entetes(true); delete h['Content-Type'];
+      return fetch(URL_PROJET + '/storage/v1/object/authenticated/depots/' + chemin, { headers: h });
+    }).then(function (r) { return r.ok ? r.blob() : null; });
+  }
+
   /* ----------------------------------------------------------
    *  4. Connexion, rôle, déconnexion
    * ---------------------------------------------------------- */
@@ -442,6 +468,8 @@
     supprimer    : supprimer,
     modifier     : modifier,
     appeler      : appeler,
+    listerDepots : listerDepots,
+    lireDepot    : lireDepot,
     chargerNoms  : chargerNoms,
     nomDe        : nomDe,
     nomsCharges  : nomsCharges,

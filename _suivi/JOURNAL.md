@@ -4768,3 +4768,70 @@ avait embarqué, en ajoutant `progression.js` et `sequence-snt.js` entiers, une
 partie du travail en cours de cette autre conversation (lecture stricte,
 renouvellement de jeton, `clonerAvecSaisie`) : cohérent et sans danger en ligne,
 mais à éviter — dans un fichier partagé, ne commiter que ses propres morceaux.
+
+## 11/10/2026 — Radioactivité (ES 1re) : S4 retouchée, courbe des dés qui attend
+
+Audit de Loïc, séance 4 « S'exercer » : les titres perdent « Exercice N — »
+(les renvois au « tableau de l'exercice 1 » deviennent « de l'étape 4.1 ») ;
+l'étape 4.1 demande de conclure sur le noyau, et reçoit un encadré « ☢ La
+méthode » (lecture de t½ ≈ 430 ans → américium 241), proposition à valider.
+
+Essai de Loïc avec deux tablettes sur `prof/decroissance.html` : la courbe
+« allait trop vite ». Diagnostic : à chaque lancer, l'écran n'additionnait
+que les élèves déjà arrivés — un élève en avance faisait disparaître les autres
+du total. Désormais l'écran attend la classe (voir DECISIONS du jour) : élève
+en jeu dès le lancer 0, lancer tracé quand tous l'ont joué, bandeau des
+réponses attendues, « Ne plus attendre ». Vérifié au navigateur avec un
+`ProfAPI` simulé (4 scénarios) et sur la page élève hors connexion ; l'entrée
+au lancer 0 d'un élève connecté reste à éprouver en classe. Guides d'ES et du
+dispositif mis à jour, PDF régénérés. Une autre conversation travaillait en
+même temps sur `prof/` (onglet Défi S4) : modifications faites par remplacements
+ciblés, sans réécrire ses fichiers.
+
+## 11/10/2026 — Signalements des élèves : ce qui se perdait, ce qui se validait trop tôt
+
+Seize signalements lus en base (lecture seule). Contenu corrigé : M1 2010 → 2011,
+ARPANET (capitales, casse libre), QCM t0 3.6, USB-A 3.x, définition du courant
+alternatif (terminale c1, page et glossaire).
+
+« Ma séance 1 ne s'est pas enregistrée » : trois causes dans le moteur. Une lecture
+ratée au chargement laissait la page sur un état vide, que la validation suivante
+écrivait par-dessus la base ; une écriture ratée ne se retentait jamais ; un raté
+réseau au renouvellement du jeton effaçait la session (et deux onglets se
+déconnectaient l'un l'autre). Corrigé : fusion avant écriture, nouveaux essais,
+bandeau, reconnexion sans perte (`progression.js?v=22`, `sequence-snt.js?v=57`).
+
+« Séance validée alors que je n'avais pas fini » : chaque exercice validait
+l'étape de son côté (une centaine d'étapes à plusieurs exercices). Garde de fin
+d'étape dans le moteur — les pages de nucléosynthèse et de radioactivité avaient
+déjà la leur, cohérente. Barre du haut qui suit la séance à l'écran ; Sommaire qui
+ne faisait rien hors de t0/t1 ; pastilles de thème, fil d'Ariane, thème suivant.
+Fiche de séance : les menus d'un tableau sortaient vides (un clone ne garde pas la
+sélection d'un `<select>`) — tableau du rotor, terminale c1.
+
+Scan complet au banc d'essai (Playwright, fausse base Supabase en mémoire) : les
+12 pages branchées, chaque étape faite puis la page rechargée. Aucune perte au
+rechargement. Trouvé et corrigé au passage : terminale c2 — étape bilan
+impossible à valider (tableau sans case) → bouton « J'ai fait le point » ;
+réflexion perso de l'étape « contraintes » mal balisée (erreur à chaque toucher,
+rien partagé) ; un champ à 3 000 caractères face à une base qui en accepte 2 000.
+Réponses rédigées sans code (t0 « la carte son que j'ai trouvée ») désormais
+gardées.
+
+Incident : un script d'une autre conversation a vidé `sequence-snt.js` (open('w')
+avant un assert). Restauré depuis l'instantané Claude Code de 11:15:03 de cette
+conversation, mes modifications postérieures rejouées depuis leurs scripts.
+
+## 11/10/2026 — Défi de la séance 4 (t0) et son onglet du tableau de bord
+
+Travail d'une autre conversation, consigné au moment du commit groupé du jour.
+Page t0, séance 4 : photos de la machine avant (4.1) et après remontage (nouvelle
+étape 4.3, `t0-defi-remontage`), jusqu'à 30 fiches d'élément, règle de récompense
+affichée aux seuls groupes de Loïc (`data-classes`, à mettre à jour à la rentrée).
+Tableau de bord : onglet « Défi S4 » (`assets/js/prof-defi.js`) — vote à
+l'aveugle en trois temps, numéros tirés au hasard, vote gardé dans le navigateur,
+export anonyme pour comparaison. Guide SNT et guide du dispositif à jour.
+Au contrôle avant commit : le bouton « ➕ Ajouter un élément » n'avait pas de
+gestionnaire (fiches 11 à 30 inaccessibles). Ajouté dans `initElements` du moteur :
+il ouvre la fiche suivante, disparaît à trente, et une fiche qui revient de la base
+avec un contenu se rouvre d'elle-même. Éprouvé au banc d'essai.

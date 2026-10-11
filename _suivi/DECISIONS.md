@@ -15,6 +15,26 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 11/10/2026 — Signalements des élèves : enregistrement, validation, passerelles
+
+| Date | Décision | Statut |
+|---|---|---|
+| 11/10/2026 | 🔴 **L'enregistrement de l'état d'une séquence relit la base avant d'écrire et y fusionne ce qui manque ; une lecture ratée bloque l'écriture.** Avant, une lecture ratée au chargement laissait la page partir d'un état vide, et la validation suivante écrasait tout le travail en base. Écriture ratée : nouvel essai (5 s, 15 s, 30 s, puis chaque minute) et bandeau dès le 2ᵉ échec ; session perdue : « Me reconnecter », et la mémoire part en base avant le rechargement — si c'est le même élève | ✅ en vigueur |
+| 11/10/2026 | **Un raté réseau au renouvellement du jeton ne déconnecte plus** ; seul un refus du serveur (4xx) efface la session, et le jeton stocké par un autre onglet fait foi | ✅ en vigueur |
+| 11/10/2026 | 🔴 **Une étape n'est faite que quand TOUS ses exercices obligatoires le sont** (garde de fin d'étape du moteur) : réponses rédigées, trous avec leur « Vérifier », QCM non facultatifs, menus, étiquettes. L'étape dit ce qui reste. Une étape déjà enregistrée comme faite n'est jamais défaite | ✅ en vigueur |
+| 11/10/2026 | **Un QCM fini et une réponse rédigée sans code sont gardés en base** (`…/qcm-N`, `…/redac-N`), même dans une étape pas encore validée | ✅ en vigueur |
+| 11/10/2026 | **La barre « tu es ici » suit la séance à l'écran**, plus la première étape non faite de la page | ✅ en vigueur |
+| 11/10/2026 | **Passerelles entre thèmes** (validées par Loïc) : Sommaire partout (liste des séances hors t0/t1), pastilles de thème cliquables, fil d'Ariane, carte « Thème suivant ». **Ce qui est ouvert se lit sur la page d'accueil de la matière**, seule source : pas de liste à tenir à part | ✅ en vigueur |
+| 11/10/2026 | **M1 1.3 : 2011 au lieu de 2010** (année de naissance de la plupart des élèves) · **ARPANET** en capitales, la casse restant libre à la saisie · QCM t0 3.6 : « la séquence d'introduction » au lieu de « t0 » · USB-A 3.x : « même prise que l'USB-A 2.0, beaucoup plus rapide » · courant alternatif : « 50 cycles complets d'alternance par seconde » (pas « 100 changements de sens ») — formulations validées par Loïc | ✅ en vigueur |
+
+## 11/10/2026 — Décroissance en direct : l'écran attend la classe
+
+| Date | Décision | Statut |
+|---|---|---|
+| 11/10/2026 | 🔴 **`prof/decroissance.html` ne trace un lancer que lorsque tous les élèves en jeu l'ont joué** (ou ont fini avant). Constaté par Loïc avec deux tablettes : l'écran additionnait à chaque lancer les seuls élèves déjà arrivés, et la courbe plongeait dès qu'un élève prenait de l'avance. Un bandeau projetable dit « Lancer p : k réponses attendues, sur n élèves encore en jeu » ; toute la courbe se recalcule à chaque relecture | ✅ en vigueur |
+| 11/10/2026 | **Un élève entre dans la partie au lancer 0, dès que le jeu de dés paraît à son écran** (page élève, connecté), avant tout lancer. Tant qu'il n'a pas lancé, l'heure de sa série se rafraîchit : il entre dans une « nouvelle partie » ouverte après lui. Resté au lancer 0 sans activité 20 min (`maj_le`) : plus attendu | ✅ en vigueur |
+| 11/10/2026 | **« Ne plus attendre »** écarte les élèves en retard sur le lancer en cours (tablette éteinte) — ils ne comptent plus du tout, jusqu'à « Réintégrer » ou une nouvelle série. Mémoire de l'écran seulement, rien en base | ✅ en vigueur — à éprouver en classe |
+
 ## 11/10/2026 — Le +0,5 des signalements retenus
 
 | Date | Décision | Statut |
@@ -54,7 +74,7 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 04/10/2026 | **Texte à trous de bilan en fenêtre, cours masqué** (`.field[data-trous-fenetre]`, composant de la page) : le champ reste dans son étape en `position:fixed` au-dessus d'un voile opaque. Composant **page**, pas moteur : à porter dans `sequence-snt.js` (et à présenter en nucléosynthèse) si Loïc le veut ailleurs | ✅ en vigueur — ⏳ généralisation |
 | 04/10/2026 | **Chaque séance reste dans son périmètre** : S1 = l'imprévisible d'un noyau ; la prévision pour une population n'arrive qu'en S3. Bilans, QCM et « à retenir » de S1 réécrits en conséquence | ✅ en vigueur |
 | 04/10/2026 | **La définition du début se reprend à la fin des séances 1, 2 et 3** (`RAD-1f`, `RAD-2h`, `RAD-3i`), plus au bilan final (`RAD-4f` retirée) | ✅ en vigueur |
-| 04/10/2026 | **Activité des dés** (S3, étape 3.1, demande de Loïc) : **dés physiques** (décision de Loïc), l'élève marque lui-même ses noyaux désintégrés et valide chaque lancer, la page ne vérifie rien ; un **lanceur animé** de secours est replié dans l'étape. Chacun à son rythme. La série part dans l'état de l'étape (`es-t1c2-des/des`) ; **`prof/decroissance.html`** additionne la classe et trace la courbe, sans table ni migration. Élève non connecté : joue, ne compte pas | ✅ en vigueur — ⏳ deux choix à confirmer (rythme libre, non-connecté hors courbe) |
+| 04/10/2026 | **Activité des dés** (S3, étape 3.1, demande de Loïc) : **dés physiques** (décision de Loïc), l'élève marque lui-même ses noyaux désintégrés et valide chaque lancer, la page ne vérifie rien ; un **lanceur animé** de secours est replié dans l'étape. Chacun à son rythme. La série part dans l'état de l'étape (`es-t1c2-des/des`) ; **`prof/decroissance.html`** additionne la classe et trace la courbe, sans table ni migration. Élève non connecté : joue, ne compte pas | ✅ en vigueur — rythme : l'élève lance à son rythme, mais **la courbe attend la classe** depuis le 11/10 (ci-dessus) · ⏳ non-connecté hors courbe, à confirmer |
 | 04/10/2026 | **Séance 4 terminée par la révision** : 4.4 « Tout le chapitre, en sept cartes » (patron des cartes de bilan de la terminale t2-c1), 4.5 le **grand QCM** (20 questions reprises des séances 1 à 3, une par notion, chaque correction renvoie à son étape) puis le Kahoot | ✅ en vigueur — ⏳ relecture |
 | 04/10/2026 | **Exposition moyenne en France : 7,1 mSv/an** (bilan EXPOP 2020-2024 de l'ASNR, publié le 28/09/2026) au lieu de 4,5. La hausse vient du nouveau coefficient de dose du radon. Remplacé dans tout le chapitre, QCM compris | ✅ en vigueur — ⏳ confirmation de Loïc |
 | 04/10/2026 | Le rayonnement γ est émis « **souvent** », plus « toujours » (le carbone 14 ou le strontium 90 n'en émettent pas) | ⏳ confirmation de Loïc |

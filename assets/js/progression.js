@@ -525,6 +525,22 @@
   /* Quitter : on oublie le jeton local. Le compte reste en base ;
    * l'élève se reconnecte avec son identifiant + mot de passe, depuis
    * n'importe quel appareil, et retrouve toute sa progression. */
+  /* Avant de recharger la page après une (re)connexion, on laisse la page
+   * finir d'enregistrer ce qu'elle garde en mémoire : sans cela, le travail
+   * fait pendant une session perdue disparaissait au rechargement même qui
+   * devait le sauver. Chaque page inscrit sa fonction ; c'est à elle de
+   * vérifier que le compte qui revient est bien le sien (11/10/2026).
+   * Plafond de 4 s : un réseau muet ne doit pas bloquer la connexion. */
+  var avantRecharge = [];
+  function surRechargement(fn) { if (typeof fn === 'function') avantRecharge.push(fn); }
+  function recharger() {
+    var envois = avantRecharge.map(function (fn) {
+      try { return Promise.resolve(fn()).catch(function () {}); } catch (e) { return null; }
+    });
+    var delai = new Promise(function (ok) { setTimeout(ok, 4000); });
+    Promise.race([Promise.all(envois), delai]).then(function () { global.location.reload(); });
+  }
+
   function quitter() {
     jeton = null; profil = null;
     ecrireJetonStocke(null);
@@ -1142,7 +1158,7 @@
       if (!code.trim()) return;
       bouton.disabled = true; bouton.textContent = 'Un instant…';
       rejoindreAutreClasse(code).then(function () {
-        global.location.reload();
+        recharger();
       }).catch(function (e) {
         erreur.textContent = messageErreur(e);
         erreur.hidden = false;
@@ -1271,7 +1287,7 @@
       promesse.then(function () {
         // Session ouverte : on recharge pour repartir proprement (les
         // notes et la progression se rechargent avec la session).
-        global.location.reload();
+        recharger();
       }).catch(function (e) {
         erreur.textContent = messageErreur(e);
         erreur.hidden = false;
@@ -1405,6 +1421,10 @@
     seConnecter   : seConnecter,
     quitter       : quitter,
     monterAccueil : monterAccueil,
+    /* Session perdue en cours de travail : la page rouvre le formulaire de
+       connexion à la demande de l'élève (bouton du bandeau d'enregistrement). */
+    reconnecter   : function () { afficherPortes('connecter'); },
+    surRechargement: surRechargement,
     lire          : lire,
     lireTout      : lireTout,
     ecrire        : ecrire,

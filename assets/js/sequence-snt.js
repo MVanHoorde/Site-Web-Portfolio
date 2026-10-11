@@ -217,16 +217,153 @@
     return out;
   }
 
+  /* ----------------------------------------------------------
+     ENREGISTREMENT SÛR (11/10/2026)
+     Signalé en terminale le 08/10 : « ma séance 1 ne s'est pas
+     enregistrée ». Trois défauts, corrigés ensemble :
+       1. Une lecture ratée au chargement (wifi du lycée) laissait la
+          page partir d'un état VIDE. La première validation suivante
+          écrivait cet état vide par-dessus la base : tout le travail
+          déjà enregistré disparaissait. Désormais on relit la base
+          avant chaque écriture et on y FUSIONNE ce qui manque ici ; une
+          lecture qui échoue bloque l'écriture au lieu de l'autoriser.
+       2. Une écriture ratée ne se retentait jamais, et rien ne le
+          disait. Elle se retente maintenant (5 s, 15 s, 30 s, puis
+          chaque minute), et un bandeau le dit à l'élève dès le
+          deuxième échec — avec un bouton pour se reconnecter si la
+          session est perdue.
+       3. Le rechargement qui suit une reconnexion jetait ce qui était
+          en mémoire. On l'enregistre d'abord — seulement si c'est le
+          même élève qui revient (iPad partagé : jamais le travail d'un
+          élève dans le compte d'un autre).
+     ---------------------------------------------------------- */
+  var charge   = 'attente';   /* 'ok' dès qu'une lecture de la base a réussi */
+  var PROPRIO  = null;        /* l'élève à qui appartient l'état en mémoire */
+  var oublies  = {};          /* clés effacées ici depuis la dernière écriture */
+  var sale     = false, enCours = null, echecs = 0;
+  var RELANCES = [5000, 15000, 30000, 60000];
+
+  function oublie(c){
+    for(var k in oublies) if(c === k || c.indexOf(k + '/') === 0) return true;
+    return false;
+  }
+  /* On ne prend dans la base QUE ce qui manque ici : la page a priorité,
+     c'est elle qui a vu l'élève travailler. Rend vrai si quelque chose est
+     arrivé — la page devra alors le remettre à l'écran. */
+  function fusionner(v){
+    var neuf = false;
+    if(v && v.etapes && typeof v.etapes === 'object')
+      Object.keys(v.etapes).forEach(function(k){
+        if(!(k in ETAT.etapes) && !oublie(k)){ ETAT.etapes[k] = v.etapes[k]; neuf = true; }
+      });
+    if(v && v.champs && typeof v.champs === 'object')
+      Object.keys(v.champs).forEach(function(k){
+        if(!(k in ETAT.champs) && !oublie(k)){ ETAT.champs[k] = v.champs[k]; neuf = true; }
+      });
+    if(v && v.vu_le && !ETAT.vu_le) ETAT.vu_le = v.vu_le;
+    return neuf;
+  }
+  function premiereLecture(v){
+    var neuf = fusionner(v);
+    var avant = charge;
+    charge = 'ok';
+    /* la page a été dessinée sans la base : on lui dit de se remettre à jour */
+    if(avant === 'echec' && neuf) document.dispatchEvent(new CustomEvent('etat-recharge'));
+  }
+
+  function ecrireMaintenant(){
+    var B = base();
+    if(!B || !SEQ) return Promise.resolve(false);
+    sale = false;
+    return B.session().then(function(moi){
+      if(!moi){ var e1 = new Error('PAS_DE_SESSION'); e1.session = true; throw e1; }
+      if(PROPRIO && moi.eleveId !== PROPRIO){ var e2 = new Error('AUTRE_COMPTE'); e2.autre = true; throw e2; }
+      PROPRIO = moi.eleveId;
+      return B.lire('cours', SEQ, { strict:true });
+    }).then(function(v){
+      premiereLecture(v);
+      ETAT.vu_le = new Date().toISOString();
+      return B.ecrire('cours', SEQ, { etapes: ETAT.etapes, champs: ETAT.champs,
+                                      vu_le: ETAT.vu_le, resume: resume() });
+    }).then(function(){
+      oublies = {};
+      if(echecs >= 2) bandeau('ok');
+      echecs = 0;
+      return true;
+    }).catch(function(e){
+      sale = true;
+      var msg = String((e && e.message) || '');
+      var sessionPerdue = !!(e && e.session) || /PAS_DE_SESSION|PAS_INSCRIT/.test(msg);
+      /* invité depuis le début : le bandeau « Connecte-toi » de
+         progression.js le dit déjà, on n'insiste pas */
+      if(sessionPerdue && !PROPRIO) return false;
+      if(e && e.autre){ bandeau('autre'); return false; }      /* on n'écrit JAMAIS chez un autre */
+      echecs++;
+      if(sessionPerdue) bandeau('session');
+      else if(echecs >= 2) bandeau('reseau');
+      clearTimeout(minuteur);
+      minuteur = setTimeout(lancer, RELANCES[Math.min(echecs - 1, RELANCES.length - 1)]);
+      return false;
+    });
+  }
+  function lancer(){
+    if(enCours || !sale) return enCours || Promise.resolve(true);
+    enCours = ecrireMaintenant().then(function(ok){
+      enCours = null;
+      if(ok && sale){ clearTimeout(minuteur); minuteur = setTimeout(lancer, 1500); }
+      return ok;
+    });
+    return enCours;
+  }
   function sauver(){
     var B = base();
     if(!B || !SEQ) return;
+    sale = true;
     clearTimeout(minuteur);
-    minuteur = setTimeout(function(){
-      ETAT.vu_le = new Date().toISOString();
-      B.ecrire('cours', SEQ, { etapes: ETAT.etapes, champs: ETAT.champs,
-                               vu_le: ETAT.vu_le, resume: resume() })
-       .catch(function(){ /* invité, hors ligne : on n'insiste pas */ });
-    }, 1500);           /* on n'écrit pas à chaque validation */
+    minuteur = setTimeout(lancer, 1500);   /* on n'écrit pas à chaque validation */
+  }
+  /* L'iPad change d'appli, l'onglet passe derrière : on n'attend pas. */
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden && sale && !enCours){ clearTimeout(minuteur); lancer(); }
+  });
+  /* Reconnexion : on enregistre AVANT le rechargement (voir progression.js,
+     recharger). ecrireMaintenant() refuse d'elle-même un autre compte. */
+  if(typeof Progression !== 'undefined' && Progression.surRechargement){
+    Progression.surRechargement(function(){
+      if(!sale && charge === 'ok') return true;
+      sale = true;
+      return enCours ? enCours.then(lancer) : lancer();
+    });
+  }
+
+  /* Le bandeau d'enregistrement : il ne parle que quand quelque chose ne va
+     pas, et une fois quand c'est réparé. Texte écrit ici, jamais d'élève. */
+  function bandeau(etat){
+    var b = document.getElementById('etat-enreg');
+    if(!b){
+      if(!document.body) return;
+      b = document.createElement('div');
+      b.id = 'etat-enreg'; b.setAttribute('role', 'status');
+      document.body.appendChild(b);
+    }
+    clearTimeout(b._minuteur);
+    b.className = etat;
+    if(etat === 'ok'){
+      b.innerHTML = '<span>✓ Ton travail est de nouveau enregistré.</span>';
+      b._minuteur = setTimeout(function(){ b.className = 'cache'; }, 3500);
+      return;
+    }
+    var txt = {
+      reseau : '⚠ Ton travail n’est <b>pas encore enregistré</b> (connexion&nbsp;?). Garde la page ouverte : on réessaie tout seul.',
+      session: '⚠ Tu as été <b>déconnecté</b> : ton travail n’est plus enregistré. Reconnecte-toi — rien de ce que tu as fait ici ne sera perdu.',
+      autre  : '⚠ Un <b>autre compte</b> s’est connecté sur cet appareil. Ton travail n’est plus enregistré : recharge la page.'
+    }[etat] || '';
+    b.innerHTML = '<span>' + txt + '</span>' + (etat === 'session'
+      ? '<button type="button" data-reco>Me reconnecter</button>' : '');
+    var r = b.querySelector('[data-reco]');
+    if(r) r.addEventListener('click', function(){
+      if(typeof Progression !== 'undefined' && Progression.reconnecter) Progression.reconnecter();
+    });
   }
 
   function noter(step, juste, score){
@@ -260,6 +397,9 @@
     if(!SEQ || !step) return;
     var k = cle(step); if(!k) return;
     var change = false;
+    /* retenu jusqu'à la prochaine écriture : sinon la fusion avec la base
+       ressusciterait ce que l'élève vient d'effacer */
+    oublies[k] = true;
     if(k in ETAT.etapes){ delete ETAT.etapes[k]; change = true; }
     Object.keys(ETAT.champs).forEach(function(c){
       if(c === k || c.indexOf(k + '/') === 0){ delete ETAT.champs[c]; change = true; }
@@ -270,17 +410,29 @@
   /* Chargement : on FUSIONNE, l'état local ayant priorité — sinon
      une réponse validée pendant que la requête voyage serait
      écrasée par la version d'avant. */
+  /* Une lecture ratée n'est plus prise pour « rien en base » : on le note
+     (charge = 'echec'), on relit un peu plus tard, et l'écriture, elle,
+     relira de toute façon avant d'écrire. */
+  function relire(n){
+    var B = base();
+    if(!B || charge === 'ok') return;
+    B.lire('cours', SEQ, { strict:true }).then(premiereLecture).catch(function(){
+      if(n < 5) setTimeout(function(){ relire(n + 1); }, [3000, 8000, 20000, 45000, 90000][n]);
+    });
+  }
   var chargement = (function(){
     var B = base();
     if(!B || !SEQ) return Promise.resolve(ETAT);
-    return B.lire('cours', SEQ).then(function(v){
-      if(v && v.etapes && typeof v.etapes === 'object')
-        ETAT.etapes = Object.assign({}, v.etapes, ETAT.etapes);
-      if(v && v.champs && typeof v.champs === 'object')
-        ETAT.champs = Object.assign({}, v.champs, ETAT.champs);
-      if(v && v.vu_le && !ETAT.vu_le) ETAT.vu_le = v.vu_le;
+    /* le propriétaire de l'état : le compte connecté au chargement */
+    B.session().then(function(moi){ if(moi && !PROPRIO) PROPRIO = moi.eleveId; }).catch(function(){});
+    return B.lire('cours', SEQ, { strict:true }).then(function(v){
+      premiereLecture(v);
       return ETAT;
-    }).catch(function(){ return ETAT; });
+    }).catch(function(){
+      charge = 'echec';
+      setTimeout(function(){ relire(0); }, 3000);
+      return ETAT;
+    });
   })();
 
   /* Les moteurs annoncent 'etape-validee' sur l'étape : l'événement
@@ -288,6 +440,120 @@
   document.addEventListener('etape-validee', function(e){
     var s = (e.target && e.target.closest) ? e.target.closest('.step') : null;
     if(s) noter(s);
+  });
+
+  /* ----------------------------------------------------------
+     GARDE DE FIN D'ÉTAPE (11/10/2026)
+     Chaque exercice validait l'étape de son côté : des trous vérifiés
+     suffisaient à « finir » une étape qui portait encore trois réponses
+     rédigées. Signalé en terminale le 08/10 (« la séance est marquée
+     validée alors que je n'avais pas fini ») ; une centaine d'étapes du
+     site portent plusieurs exercices.
+     Une étape n'est faite que quand TOUS ses exercices obligatoires le
+     sont. La garde écoute en capture : elle passe avant l'enregistrement,
+     le déblocage et la barre, et arrête la validation si quelque chose
+     manque — en le disant dans l'étape.
+     Ce qui compte comme obligatoire, et à quoi on le reconnaît fini :
+       · réponse rédigée [data-focus]   → .rempli
+       · trous avec leur « Vérifier »    → data-verifie (posé au clic)
+       · QCM (sauf data-facultatif)      → data-fait (posé à la fin)
+       · menus à « Vérifier »            → chaque menu sur sa bonne réponse
+       · étiquettes à poser              → chaque étiquette .juste
+     Tout autre composant garde son ancien comportement : un type oublié
+     ici ne peut donc bloquer personne. Rien de ce qui vit dans un « pour
+     aller plus loin » ne compte. Et une étape déjà enregistrée comme faite
+     n'est jamais défaite. */
+  var HORS = 'details, .bonus-wrap, .bonus, .plus-loin';
+  function restant(step){
+    /* n : le nombre d'exercices jugés, finis ou non */
+    var r = { redac:0, trous:0, qcm:0, menus:0, etiq:0, n:0 };
+    function compte(el){ return el.closest('[data-step]') === step && !el.closest(HORS); }
+    Array.prototype.forEach.call(step.querySelectorAll('[data-focus]'), function(f){
+      if(!compte(f)) return; r.n++;
+      if(!f.classList.contains('rempli')) r.redac++;
+    });
+    Array.prototype.forEach.call(step.querySelectorAll('.cloze'), function(b){
+      /* seul un bloc dont le bouton « Vérifier » est bien le sien compte */
+      if(!compte(b) || !b._verifier || !b._verifier.isConnected) return; r.n++;
+      if(b.dataset.verifie !== '1') r.trous++;
+    });
+    Array.prototype.forEach.call(step.querySelectorAll('.qcmbox'), function(q){
+      if(!compte(q) || q.hasAttribute('data-facultatif')) return; r.n++;
+      if(q.dataset.fait !== '1') r.qcm++;
+    });
+    Array.prototype.forEach.call(step.querySelectorAll('[data-check-diagram]'), function(btn){
+      var f = btn.closest('.field'); if(!f || !compte(btn)) return;
+      var sels = f.querySelectorAll('select[data-correct]'); if(!sels.length) return; r.n++;
+      if(Array.prototype.some.call(sels, function(s){ return s.value !== s.dataset.correct; })) r.menus++;
+    });
+    Array.prototype.forEach.call(step.querySelectorAll('[data-etiquettes]'), function(j){
+      if(!compte(j)) return;
+      var n = j.querySelectorAll('[data-zone]').length; if(!n) return; r.n++;
+      if(j.querySelectorAll('[data-etiq].juste').length < n) r.etiq++;
+    });
+    return r;
+  }
+  function phraseReste(r){
+    var p = [];
+    function m(n, un, plus){ if(n) p.push(n + ' ' + (n > 1 ? plus : un)); }
+    m(r.redac, 'réponse à rédiger', 'réponses à rédiger');
+    m(r.trous, 'texte à trous à vérifier', 'textes à trous à vérifier');
+    m(r.qcm,   'QCM à faire', 'QCM à faire');
+    m(r.menus, 'tableau de menus à compléter juste', 'tableaux de menus à compléter juste');
+    m(r.etiq,  'jeu d’étiquettes à placer juste', 'jeux d’étiquettes à placer juste');
+    return p.join(', ');
+  }
+  function total(r){ return r.redac + r.trous + r.qcm + r.menus + r.etiq; }
+  function majReste(step, r){
+    var z = step.querySelector(':scope > .etape-reste');
+    var n = total(r);
+    if(!n){ if(z) z.remove(); return; }
+    if(!z){
+      z = document.createElement('p');
+      z.className = 'etape-reste'; z.setAttribute('role', 'status');
+      step.appendChild(z);
+    }
+    var t = 'Pour finir cette étape, il te reste : ' + phraseReste(r) + '.';
+    if(z.textContent !== t) z.textContent = t;
+  }
+  function dejaFaite(step){
+    var k = cle(step);
+    return !!(k && ETAT.etapes[k] && ETAT.etapes[k].fait);
+  }
+  document.addEventListener('etape-validee', function(e){
+    var st = e.target;
+    if(!st || !st.matches || !st.matches('[data-step]')) return;
+    if(dejaFaite(st)) return;
+    var r = restant(st);
+    majReste(st, r);
+    if(!total(r)) return;
+    e.stopImmediatePropagation();
+    /* toggle et non remove : rien n'est écrit si la classe est absente
+       (le MutationObserver des .steps se réveille à chaque écriture) */
+    st.classList.toggle('is-done', false);
+  }, true);
+
+  /* Après une restauration, une étape peut se retrouver complète sans
+     qu'aucun exercice ne l'annonce (les réponses rédigées reviennent de la
+     base après les trous, par exemple). On la valide alors — seulement si
+     elle ne contient QUE des exercices que la garde sait juger. */
+  var AUTRES = '[data-tri],[data-tri-correction],[data-depot],[data-choix],[data-elem],.perso,'
+             + '[data-valide-sur-interaction],[data-jesais],[data-des],[data-pot-go],[data-sous-go],'
+             + '[data-echeck],[data-poids-set],[data-share],[data-trap],[data-releve-champ],[data-rappel-champ]';
+  function reevaluer(){
+    Array.prototype.forEach.call(document.querySelectorAll('[data-step]'), function(st){
+      if(st.classList.contains('is-done') || st.classList.contains('masque')) return;
+      var gene = Array.prototype.some.call(st.querySelectorAll(AUTRES), function(x){
+        return x.closest('[data-step]') === st && !x.closest(HORS); });
+      if(gene) return;
+      var r = restant(st);
+      if(total(r) || !r.n) return;
+      st.classList.add('is-done');
+      st.dispatchEvent(new CustomEvent('etape-validee', { bubbles:true }));
+    });
+  }
+  ['etat-restaure','reponses-rehydratees'].forEach(function(ev){
+    document.addEventListener(ev, function(){ setTimeout(reevaluer, 0); });
   });
 
   global.EtatSNT = {
@@ -374,7 +640,9 @@
       }
       var id=sec.getAttribute('data-seance');
       var complete = gates.length>0 && done===gates.length;
-      if(complete && seanceWasComplete[id]===false && parLeGeste()){ onSeanceComplete(sec); }
+      /* SNT_RESTAURATION : la base vient de répondre en retard (module EtatSNT) —
+         ce n'est pas l'élève qui finit la séance à l'instant */
+      if(complete && seanceWasComplete[id]===false && parLeGeste() && !window.SNT_RESTAURATION){ onSeanceComplete(sec); }
       if(seanceWasComplete[id]===undefined) seanceWasComplete[id]=complete; else seanceWasComplete[id]=complete;
     });
     /* Cascade de déverrouillage — généralisée le 26/07/2026.
@@ -947,6 +1215,37 @@
 
   var memoireReponses = {};   /* en mémoire JS uniquement — jamais en localStorage */
 
+  /* Clé d'une réponse rédigée SANS code (réponse courte, « pour aller plus
+     loin ») : la clé de son étape + '/redac-N', N son rang parmi ces champs. */
+  function cleSansCode(champ){
+    if(!window.EtatSNT || !EtatSNT.actif()) return null;
+    var st = stepOf(champ); if(!st) return null;
+    var k = EtatSNT.cle(st); if(!k) return null;
+    var freres = Array.prototype.filter.call(st.querySelectorAll('[data-focus]'), function(f){ return !f.dataset.focusCode; });
+    return k + '/redac-' + freres.indexOf(champ);
+  }
+  function restaurerSansCode(){
+    if(!window.EtatSNT || !EtatSNT.actif() || !EtatSNT.charge) return;
+    EtatSNT.charge.then(function(){
+      var champs = EtatSNT.champs(), n = 0;
+      document.querySelectorAll('[data-focus]').forEach(function(champ){
+        if(champ.dataset.focusCode || champ.classList.contains('rempli')) return;
+        var kr = cleSansCode(champ), v = kr && champs[kr];
+        if(!v || !v[0]) return;
+        var echo = champ.querySelector('[data-focus-echo]');
+        if(echo){ echo.textContent = v[0]; echo.style.display = 'block'; }
+        var action = champ.querySelector('.gaction'); if(action) action.style.display = 'none';
+        champ.classList.add('rempli');
+        var mot = champ.dataset.glossaire || (champ.closest('[data-glossaire]')||{dataset:{}}).dataset.glossaire;
+        if(mot) glossaire[mot] = v[0];
+        n++;
+      });
+      if(n) document.dispatchEvent(new CustomEvent('reponses-rehydratees'));
+    });
+  }
+  restaurerSansCode();
+  document.addEventListener('etat-recharge', restaurerSansCode);
+
   function validerFocus(champ, texte){
     var code = champ.dataset.focusCode || '';
     memoireReponses[code] = texte;
@@ -956,6 +1255,10 @@
     if(echo){ echo.textContent = texte; echo.style.display='block'; }
     var action = champ.querySelector('.gaction'); if(action) action.style.display='none';
     champ.classList.add('rempli');
+    /* Sans code, la réponse ne part pas en correction : on la garde avec
+       l'état de l'étape, sinon elle disparaissait au rechargement (scan du
+       11/10/2026 : « la carte son que j'ai trouvée », t0). */
+    if(!code){ var kr = cleSansCode(champ); if(kr) EtatSNT.noterChamps(kr, [texte]); }
 
     var mot = champ.dataset.glossaire || (champ.closest('[data-glossaire]')||{dataset:{}}).dataset.glossaire;
     if(mot) glossaire[mot] = texte;
@@ -1093,6 +1396,8 @@
     BASE.mesReponses(codes).then(function(lignes){
       mesCopies = lignes || [];
       mesCopies.forEach(appliquerCopie);
+      /* la garde de fin d'étape réexamine les étapes que ces réponses complètent */
+      document.dispatchEvent(new CustomEvent('reponses-rehydratees'));
       suivreCorrections(codes, mesCopies);
     }).catch(function(){ /* pas de base / invité : on n'affiche rien */ });
   }
@@ -3007,6 +3312,8 @@
     /* scores gardés en dataset pour la vue enseignant : ils repartent aussi */
     sec.querySelectorAll('[data-step]').forEach(function(s){delete s.dataset.qcmScore;delete s.dataset.clozeScore;});
     sec.querySelectorAll('.cloze').forEach(function(c){delete c.dataset.verifie;});
+    sec.querySelectorAll('.qcmbox').forEach(function(q){delete q.dataset.fait;});
+    sec.querySelectorAll('.etape-reste').forEach(function(z){z.remove();});
     sec.querySelectorAll('.label-selects select').forEach(function(s){s.value='';s.classList.remove('ok','no');});
     sec.querySelectorAll('.verdict').forEach(function(v){v.className='verdict';v.textContent='';});
     sec.querySelectorAll('[data-reveal],[data-reveal-juste]').forEach(function(r){r.classList.remove('show');});
@@ -3522,21 +3829,26 @@ function initHub(){
   if(document.getElementById('hub')) return;
   var anc=wrapContenu(); if(!anc) return;
   var liste=hubSeances(); if(liste.length<2) return;
-  var hub=document.createElement('section');
-  hub.className='hub'; hub.id='hub';
-  /* la carte de reprise n'est plus un encart dans la page : c'est une
-     modale bloquante (hubReprise). Plus de conteneur à réserver ici. */
-  hub.innerHTML=hubCarte(liste);
-  anc.insertBefore(hub,anc.firstChild);
-  /* Le retour au sommaire du thème n'est proposé QUE si le hub existe :
-     on ne promet pas une destination qu'on n'a pas construite. */
+  /* La carte en réseau n'existe que là où carte-reseau.js est chargé (t0,
+     t1). Ailleurs on n'insère PLUS de section vide — et le bouton Sommaire,
+     lui, reste : il ouvre alors la liste des séances (11/10/2026). Avant,
+     il était posé partout mais ne faisait rien hors de t0 et t1 : « un
+     bouton vide… snif » (signalé en terminale le 08/10). */
+  if(window.CarteReseau){
+    var hub=document.createElement('section');
+    hub.className='hub'; hub.id='hub';
+    /* la carte de reprise n'est plus un encart dans la page : c'est une
+       modale bloquante (hubReprise). Plus de conteneur à réserver ici. */
+    hub.innerHTML=hubCarte(liste);
+    anc.insertBefore(hub,anc.firstChild);
+  }
   var nav=$('#prog4 .p4-nav');
   if(nav && !$('.p4-sommaire',nav)){
     var a=document.createElement('a');
     a.className='p4-sommaire';
-    a.href='#hub';
-    a.title='Revenir au sommaire du thème';
-    a.setAttribute('aria-label','Revenir au sommaire du thème');
+    a.href=window.CarteReseau?'#hub':'#';
+    a.title='Le plan : les séances, et les autres thèmes';
+    a.setAttribute('aria-label','Ouvrir le plan : les séances, et les autres thèmes');
     a.innerHTML='<span aria-hidden="true">\u2302</span><span class="p4-lab">Sommaire</span>';
     /* Le href reste : sans JS, le lien saute à l'ancre du hub. Avec JS,
        on ouvre la carte en grand plutôt que de faire défiler jusqu'en
@@ -3565,26 +3877,150 @@ function fermerSommaire(){
   document.body.classList.remove('modale-ouverte');
   if(SOMMAIRE_OUVREUR){ SOMMAIRE_OUVREUR.focus(); SOMMAIRE_OUVREUR=null; }
 }
+/* ---------- Passerelles entre thèmes (11/10/2026) ----------
+   Demandé par Loïc : « plus de passerelles entre les thèmes ». Trois gestes,
+   tous construits ici, à partir de ce que la page porte déjà :
+     · un fil d'Ariane en tête — Accueil › la matière › ce thème, chaque
+       niveau cliquable ;
+     · les pastilles de thème du bandeau deviennent des liens ;
+     · une carte « Thème suivant » après la dernière séance.
+   QUI EST OUVERT ? Une seule source : la page d'accueil de la matière (le
+   lien « ← … » de la barre des séances). Un thème est ouvert si cette page
+   y mène — un lien en commentaire n'existe pas pour DOMParser, et c'est
+   exactement ainsi que les chapitres masqués le sont. Ouvrir un thème ne
+   demande donc rien de plus qu'aujourd'hui : rétablir son lien sur la page
+   d'accueil. La page de chaque pastille est écrite sur la pastille
+   (data-page) ; une pastille sans data-page reste un simple repère.
+   Sans réseau (fichier ouvert en local), rien ne change : les pastilles
+   restent grises, le fil d'Ariane est là quand même. */
+var THEMES=[];
+var NOMS_HUB={
+  '2nde-snt.html':'SNT',
+  '1re-enseignement-scientifique.html':'Enseignement scientifique 1re',
+  'term-enseignement-scientifique.html':'Enseignement scientifique Terminale',
+  '2nde-physique-chimie.html':'Physique-chimie 2nde'
+};
+function fichierDe(href){ return String(href||'').split('#')[0].split('?')[0].split('/').pop(); }
+function hubDeLaPage(){ var r=$('nav.seances a.retour'); return r?r.getAttribute('href'):null; }
+function nomDuHub(){
+  var h=hubDeLaPage(); if(!h) return '';
+  if(NOMS_HUB[fichierDe(h)]) return NOMS_HUB[fichierDe(h)];
+  return propreTxt($('nav.seances a.retour')).replace(/^←\s*/,'');
+}
+function titreDeLaPage(){
+  var on=$('.themes .theme-chip.on'); if(on) return propreTxt(on);
+  var h=$('.masthead h1'); if(!h) return document.title;
+  var c=h.cloneNode(true); $$('.tag',c).forEach(function(t){ t.remove(); });
+  return propreTxt(c);
+}
+function initThemes(){
+  THEMES=$$('.themes .theme-chip').map(function(p){
+    return { el:p, titre:propreTxt(p), page:p.getAttribute('data-page')||'',
+             ici:p.classList.contains('on'), ouvert:false };
+  });
+  var on=$('.themes .theme-chip.on'); if(on) on.setAttribute('aria-current','page');
+  initAriane();
+  var hub=hubDeLaPage();
+  if(!hub || !window.fetch || !window.DOMParser) return;
+  if(!THEMES.some(function(t){ return t.page && !t.ici; })) return;
+  fetch(hub,{cache:'no-cache'}).then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.text();
+  }).then(function(html){
+    var doc=new DOMParser().parseFromString(html,'text/html'), liens={};
+    Array.prototype.forEach.call(doc.querySelectorAll('a[href]'),function(a){ liens[fichierDe(a.getAttribute('href'))]=1; });
+    THEMES.forEach(function(t){ t.ouvert=!!(t.page && !t.ici && liens[t.page]); });
+    poserPuces();
+    poserSuivant();
+  }).catch(function(){ /* hors ligne, fichier local : les pastilles restent des repères */ });
+}
+function initAriane(){
+  var tete=$('.masthead .wrap'), hub=hubDeLaPage();
+  if(!tete || !hub || $('.ariane',tete)) return;
+  var n=document.createElement('nav');
+  n.className='ariane'; n.setAttribute('aria-label','Où tu es');
+  n.innerHTML='<a href="../index.html">Accueil</a><span aria-hidden="true">›</span>'+
+    '<a href="'+hubEsc(hub)+'">'+hubEsc(nomDuHub())+'</a><span aria-hidden="true">›</span>'+
+    '<span aria-current="page">'+hubEsc(titreDeLaPage())+'</span>';
+  tete.insertBefore(n,tete.firstChild);
+}
+function poserPuces(){
+  THEMES.forEach(function(t){
+    if(t.ici || !t.page) return;
+    if(!t.ouvert){
+      t.el.classList.add('a-venir');
+      t.el.title='Pas encore ouvert';
+      return;
+    }
+    var a=document.createElement('a');
+    a.className=t.el.className+' lien';
+    a.href=t.page;
+    a.textContent=t.titre;
+    a.title='Aller au thème « '+t.titre+' »';
+    t.el.parentNode.replaceChild(a,t.el);
+    t.el=a;
+  });
+}
+function poserSuivant(){
+  if($('.theme-suivant')) return;
+  var i=-1; THEMES.forEach(function(t,k){ if(t.ici) i=k; });
+  if(i<0) return;
+  var suiv=null;
+  for(var k=i+1;k<THEMES.length;k++){ if(THEMES[k].ouvert){ suiv=THEMES[k]; break; } }
+  var secs=$$('.seance'); if(!secs.length) return;
+  var der=secs[secs.length-1];
+  var box=document.createElement('nav');
+  box.className='theme-suivant'; box.setAttribute('aria-label','Et après ?');
+  box.innerHTML=(suiv
+      ? '<a class="ts-suite" href="'+hubEsc(suiv.page)+'"><span class="ts-k">Thème suivant</span>'+
+        '<span class="ts-t">'+hubEsc(suiv.titre)+' <span aria-hidden="true">→</span></span></a>'
+      : '')+
+    '<a class="ts-hub" href="'+hubEsc(hubDeLaPage())+'">Tous les thèmes — '+hubEsc(nomDuHub())+'</a>';
+  der.parentNode.insertBefore(box,der.nextSibling);
+}
+/* Dans le sommaire : les autres thèmes ouverts, et le retour à la matière. */
+function themesHTML(){
+  var hub=hubDeLaPage(); if(!hub) return '';
+  var autres=THEMES.filter(function(t){ return t.ouvert; });
+  return '<div class="hm-themes"><div class="hm-titre">Les autres thèmes</div>'+
+    (autres.length ? '<ul>'+autres.map(function(t){
+        return '<li><a href="'+hubEsc(t.page)+'">'+hubEsc(t.titre)+'</a></li>'; }).join('')+'</ul>' : '')+
+    '<a class="hm-hub" href="'+hubEsc(hub)+'">← Tous les thèmes — '+hubEsc(nomDuHub())+'</a></div>';
+}
+
+/* Le sommaire sans carte réseau : une liste des séances, avec leur état. */
+function sommaireListe(liste, etats){
+  return '<ol class="hm-liste">'+liste.map(function(s){
+    var e=etats[s.id]||{};
+    var cls='sc'+s.n+(e.verrou?' verrou':'')+(e.ici?' ici':'')+(e.etat==='terminée'?' fini':'');
+    var dedans='<span class="hm-num">'+hubEsc(s.num)+'</span><span class="hm-nom">'+hubEsc(s.nom)+'</span>'+
+               '<span class="hm-etat">'+hubEsc(e.verrou?'🔒 pas encore ouverte':(e.etat==='terminée'?'✓ terminée':(e.etat||'')))+'</span>';
+    return '<li class="'+cls+'">'+(e.verrou
+      ? '<span class="hm-a" aria-disabled="true">'+dedans+'</span>'
+      : '<a class="hm-a" href="#'+hubEsc(s.id)+'">'+dedans+'</a>')+'</li>';
+  }).join('')+'</ol>';
+}
 function ouvrirSommaire(){
   if($('.hub-modale')) { fermerSommaire(); return; }
-  if(!window.CarteReseau) return;
   var liste=hubSeances(); if(!liste.length) return;
   SOMMAIRE_OUVREUR=document.activeElement;
+  var carte=!!window.CarteReseau, etats=etatsSeances();
 
   var m=document.createElement('div');
   m.className='hub-modale';
-  m.innerHTML='<div class="hm-carte" role="dialog" aria-modal="true" aria-label="Sommaire du thème">'+
-      '<div class="hm-tete"><span class="hm-titre">Sommaire du thème</span>'+
+  m.innerHTML='<div class="hm-carte" role="dialog" aria-modal="true" aria-label="Sommaire du chapitre">'+
+      '<div class="hm-tete"><span class="hm-titre">Les séances</span>'+
       '<button class="hm-fermer" type="button" aria-label="Fermer le sommaire">\u00d7</button></div>'+
-      '<div class="hub hub-hote">'+hubCarte(liste)+'</div>'+
+      (carte ? '<div class="hub hub-hote">'+hubCarte(liste)+'</div>' : sommaireListe(liste, etats))+
       '<div class="hm-pied">Choisis une séance pour t\u2019y rendre.</div>'+
+      themesHTML()+
     '</div>';
   document.body.appendChild(m);
   document.body.classList.add('modale-ouverte');
-  CarteReseau.majNoeuds($('.hub-hote',m),etatsSeances());
+  if(carte) CarteReseau.majNoeuds($('.hub-hote',m),etats);
 
   /* un clic sur un nœud : on ferme, PUIS on laisse le lien agir */
-  $$('.hub-n a',m).forEach(function(a){
+  $$('.hub-n a, .hm-liste a, .hm-themes a',m).forEach(function(a){
     a.addEventListener('click',function(){ if(a.getAttribute('href')) fermerSommaire(); });
   });
   $('.hm-fermer',m).addEventListener('click',fermerSommaire);
@@ -4011,6 +4447,28 @@ function construireBarre(){
   if(window.matchMedia('(max-width:1180px)').matches) document.body.classList.add('prog-reduit');
   majBarre();
 }
+/* La séance à l'écran : la dernière dont le haut a passé le tiers supérieur
+   de la fenêtre. null au-dessus de la première (bandeau de titre, carte). */
+var DERNIERE_VUE=null;
+function seanceVue(){
+  var ligne=window.innerHeight*0.35, vue=null;
+  $$('.seance').forEach(function(sec){
+    var r=sec.getBoundingClientRect();
+    if(r.height && r.top<=ligne && r.bottom>0) vue=sec;
+  });
+  return vue;
+}
+(function suivreLaVue(){
+  var attente=false;
+  window.addEventListener('scroll',function(){
+    if(attente) return; attente=true;
+    requestAnimationFrame(function(){
+      attente=false;
+      /* majBarre ne se rejoue qu'au passage d'une séance à l'autre */
+      if(BARRE && seanceVue()!==DERNIERE_VUE) majBarre();
+    });
+  },{passive:true});
+})();
 function majBarre(){
   if(!BARRE) return;
   var pas=$$('.step'), faits=0, courant=null;
@@ -4072,6 +4530,24 @@ function majBarre(){
     if(sec && sec.classList.contains('locked') && !prof) return false;
     courant=p; return true;
   });
+  /* … mais il suit la séance QU'ON REGARDE (11/10/2026). Signalé en
+     terminale le 08/10 : en S2, la barre affichait encore S1, parce qu'une
+     étape de S1 restait à faire. Pointer « la première étape non faite de
+     toute la page » ne marche que si l'on avance strictement dans l'ordre ;
+     les séances ouvertes de l'ES, la relecture d'une séance passée ou un
+     saut depuis le sommaire le démentent. Dans la séance à l'écran, le fil
+     montre sa première étape à faire — ou dit qu'elle est terminée. */
+  var vue=seanceVue(), finieVue=null;
+  if(vue && !(vue.classList.contains('locked') && !prof)){
+    var dansVue=null;
+    pas.some(function(p){
+      if(p.closest('.seance')!==vue || !p.hasAttribute('data-gate') || p.classList.contains('is-done')) return false;
+      dansVue=p; return true;
+    });
+    if(dansVue) courant=dansVue;
+    else if($$('.step[data-gate]',vue).length) finieVue=vue;
+  }
+  DERNIERE_VUE=vue;
   $$('#prog .pct').forEach(function(e){ e.textContent=pc+' %'; });
   /* Légende de la hachure, seulement quand une étape attend sa correction :
      l'élève lit que c'est compté, et n'a pas à venir le demander. Écriture
@@ -4091,7 +4567,7 @@ function majBarre(){
   var compte=$('#prog4 .p4-compte');
   if(compte) compte.textContent=faits+' / '+comptees.length;
 
-  var secCourante=courant?courant.closest('.seance'):null;
+  var secCourante=finieVue||(courant?courant.closest('.seance'):null);
   var elS=$('#prog4 .p4-s'), elSeance=$('#prog4 .p4-seance'),
       elIx=$('#prog4 .p4-ix'), elEtape=$('#prog4 .p4-etape'), elSep=$('#prog4 .p4-sep');
   if(elS){
@@ -4108,13 +4584,14 @@ function majBarre(){
       if(b4) b4.dataset.sc=secCourante.getAttribute('data-seance')||'';
       elSeance.textContent=nom;
       /* l'index et le nom de l'étape sont repris du sommaire déjà construit */
-      var lien=BARRE.querySelector('[data-cible="'+courant.id+'"] .txt');
+      var lien=finieVue?null:BARRE.querySelector('[data-cible="'+courant.id+'"] .txt');
       var ix='', libelle='';
       if(lien){
         var c3=lien.cloneNode(true), ixe=c3.querySelector('.ix'), dte=c3.querySelector('.date');
         ix=ixe?ixe.textContent.trim():''; if(ixe) ixe.remove(); if(dte) dte.remove();
         libelle=c3.textContent.replace(/\s+/g,' ').trim();
       }
+      if(finieVue){ ix='✓'; libelle='séance terminée'; }
       elIx.textContent=ix;
       elEtape.textContent=libelle;
       if(elSep) elSep.style.display=libelle?'':'none';
@@ -4444,6 +4921,15 @@ function jouerQcm(data,box,recap,lanceur){
     });
     recap.innerHTML=h; recap.style.display='block';
     lanceur.querySelector('button').textContent='Refaire le QCM';
+    /* QCM fini, quelle que soit l'étape : la garde de fin d'étape le lit, et
+       on le garde en base pour qu'il le reste après un rechargement — même
+       si l'étape, elle, attend encore une réponse rédigée (11/10/2026). */
+    box.dataset.fait='1';
+    var etQ=box.closest('.step');
+    if(etQ && window.EtatSNT && EtatSNT.actif() && !box.hasAttribute('data-facultatif')){
+      var kQ=EtatSNT.cle(etQ);
+      if(kQ) EtatSNT.noterChamps(kQ+'/qcm-'+$$('.qcmbox',etQ).indexOf(box), [n+'/'+data.length]);
+    }
     /* validation À L'ENVOI : le QCM fait est le QCM validé, juste ou faux.
        Sauf data-facultatif : un QCM de diagnostic ne valide pas l'étape,
        sinon l'élève l'aurait « faite » sans avoir rien produit. */
@@ -4532,6 +5018,9 @@ function initCloze(){
     var conteneur = bloc.closest('.field') || bloc.parentElement;
     var btn = conteneur ? conteneur.querySelector('[data-check-cloze]') : null;
     if(btn){ var neuf=btn.cloneNode(true); btn.parentNode.replaceChild(neuf,btn); btn=neuf; }
+    /* la garde de fin d'étape (module EtatSNT) n'exige ce bloc que si son
+       bouton est bien le sien et toujours dans la page */
+    bloc._verifier=btn;
     var msg=document.createElement('div'); msg.className='cloze-msg'; bloc.appendChild(msg);
 
     /* Variante « étiquette compacte » (25/07/2026) : le texte des indices ne
@@ -5341,6 +5830,23 @@ function initElements(){
     var etapeGrille=grille.closest('[data-step]')||document;
     var compteur=$('[data-elements-compte]',etapeGrille);
     var BASE=elemBase();
+    /* Fiches en réserve (hidden dans la page, 11/10/2026 : t0 4.2, fiches 11
+       à 30). « ➕ Ajouter un élément » ouvre la suivante ; une fiche qui revient
+       de la base avec une photo ou un texte se rouvre d'elle-même. */
+    var ajout=$('[data-elements-ajout]',etapeGrille);
+    function majAjout(){
+      if(!ajout) return;
+      var reste=fiches.some(function(f){ return f.hidden; });
+      if(ajout.hidden===reste) ajout.hidden=!reste;
+    }
+    function ouvrir(f){ if(f.hidden){ f.hidden=false; majAjout(); } }
+    if(ajout) ajout.addEventListener('click',function(){
+      var f=fiches.filter(function(x){ return x.hidden; })[0]; if(!f) return;
+      ouvrir(f);
+      var t=$('[data-elem-titre]',f); if(t) t.focus();
+      majEtat();
+    });
+    majAjout();
 
     function remplies(){
       return fiches.filter(function(f){
@@ -5353,7 +5859,7 @@ function initElements(){
       if(compteur){
         compteur.textContent = n===0
           ? 'Aucun élément identifié pour l’instant — il en faut '+mini+' pour valider l’étape.'
-          : n+' élément'+(n>1?'s':'')+' sur '+fiches.length+' identifié'+(n>1?'s':'')+
+          : n+' élément'+(n>1?'s':'')+' sur '+fiches.filter(function(f){ return !f.hidden; }).length+' identifié'+(n>1?'s':'')+
             (n<mini ? ' — encore '+(mini-n)+' pour valider l’étape.' : ' — étape validée. Continue si tu veux marquer plus de points.');
       }
       var etape=grille.closest('[data-step]');
@@ -5418,6 +5924,7 @@ function initElements(){
       };
       if(zone) depotRelire(code,function(url){
         if($('img',zone)) return;
+        ouvrir(f);
         poserPhoto(url);
         etatPhoto('✓ photo enregistrée','var(--ok)');
         majEtat();
@@ -5443,6 +5950,7 @@ function initElements(){
       if(BASE&&code){
         BASE.lire('cours','elem-'+code).then(function(v){
           if(!v) return;
+          if(v.titre||v.desc) ouvrir(f);
           if(titre&&v.titre&&!titre.value) titre.value=v.titre;
           if(desc&&v.desc&&!desc.value) desc.value=v.desc;
           majEtat();
@@ -5751,15 +6259,23 @@ function restaurer(){
       if(b && ks && etapes[ks] && etapes[ks].fait) b.click();
     });
 
-    /* 3. les QCM déjà passés */
+    /* 3. les QCM déjà passés. Depuis le 11/10/2026, chaque QCM fini garde sa
+          trace (…/qcm-N), même dans une étape pas encore validée : la garde
+          de fin d'étape le compte, et l'élève ne le refait pas pour rien. */
     $$('.qcmbox').forEach(function(box){
       var step=box.closest('.step'); if(!step) return;
-      var k=EtatSNT.cle(step); if(!k || !etapes[k] || !etapes[k].fait) return;
+      var k=EtatSNT.cle(step); if(!k) return;
+      var trace=champs[k+'/qcm-'+$$('.qcmbox',step).indexOf(box)];
+      if(trace){ box.dataset.fait='1'; cocheQcm(box,trace[0]); quelqueChose=true; return; }
+      if(!etapes[k] || !etapes[k].fait) return;
+      box.dataset.fait='1';
       cocheQcm(box,etapes[k].score);
     });
 
     replierFaites();          /* retour sur la page : le couloir se raccourcit */
 
+    /* la garde de fin d'étape réexamine les étapes restées ouvertes */
+    document.dispatchEvent(new CustomEvent('etat-restaure'));
     if(!quelqueChose) return;
 
     /* 4. déverrouillage des séances et sommaire à jour. L'écouteur
@@ -5990,6 +6506,7 @@ function demarrer(){
   construireBarre();
   initLignes();
   initHub();
+  initThemes();          /* fil d'Ariane, pastilles de thème, thème suivant */
   initEnseignant();
   initQcm();
   initCloze();
@@ -6013,6 +6530,13 @@ function demarrer(){
     $$('[data-elem]',sec).forEach(function(f){ if(f._oublierPhoto) f._oublierPhoto(); });
   });
   restaurer();
+  /* La base n'a répondu qu'après coup (lecture ratée au chargement, puis
+     réussie) : on remet son contenu à l'écran. La fusion ne rapporte que ce
+     qui manquait ici — rien de ce que l'élève a fait entre-temps ne bouge. */
+  document.addEventListener('etat-recharge', function(){
+    window.SNT_RESTAURATION=true;
+    try{ restaurer(); } finally { setTimeout(function(){ window.SNT_RESTAURATION=false; }, 1500); }
+  });
   document.body.classList.add('js-ok');   /* la nav ne se masque qu'ici */
   /* le nom du thème vient de la page : ce moteur sert les huit séquences */
   console.log('%c'+(document.title.split('—')[0].trim()||'SNT')+

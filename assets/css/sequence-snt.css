@@ -1680,3 +1680,76 @@ body.qcm-on #bug-ouvrir, body.focus-on #bug-ouvrir{display:none !important}
 .fpdf-aide{margin:2px 0 4px;font-size:13.5px;color:var(--ink-soft);line-height:1.5}
 .fpdf-ecran{align-self:center;font:inherit;font-size:13px;color:var(--link);background:none;border:0;padding:6px 4px;text-decoration:underline;cursor:pointer}
 .fpdf-ecran:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:4px}
+
+/* ============================================================
+   11/10/2026 — signalements d'élèves (SNT, ES de terminale)
+   ============================================================ */
+
+/* Fenêtre d'écriture : la page derrière ne défile plus. Sur iPad, la page
+   qui défilait sous la fenêtre fixe déplaçait le curseur dans la zone de
+   texte (« le curseur bouge un peu aléatoirement », 08/10). */
+html:has(> body.focus-on), body.focus-on{overflow:hidden}
+.focus-scene, .focus-carte{overscroll-behavior:contain}
+
+/* Fil d'Ariane, en tête du bandeau de titre */
+.ariane{display:flex;flex-wrap:wrap;align-items:center;gap:4px 7px;margin:-14px 0 14px;
+  font-size:13px;color:var(--ink-faint)}
+.ariane a{color:var(--link);text-decoration:none;padding:6px 2px;min-height:32px;display:inline-flex;align-items:center}
+.ariane a:hover{text-decoration:underline}
+.ariane a:focus-visible{outline:2px solid var(--link);outline-offset:1px;border-radius:4px}
+.ariane [aria-current]{color:var(--ink-soft)}
+
+/* Pastilles de thème : un thème ouvert est un lien, un thème fermé le dit */
+a.theme-chip{text-decoration:none;color:var(--link);border-color:var(--link-wash);background:var(--surface);
+  display:inline-flex;align-items:center;min-height:32px}
+a.theme-chip:hover{border-color:var(--link);background:var(--link-wash)}
+a.theme-chip:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.theme-chip.a-venir{opacity:.6}
+
+/* Thème suivant, après la dernière séance */
+.theme-suivant{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:26px 0 40px}
+.theme-suivant a{text-decoration:none;border-radius:var(--radius);border:1px solid var(--line);
+  background:var(--surface);display:flex;flex-direction:column;justify-content:center;padding:14px 18px;min-height:44px}
+.theme-suivant .ts-suite{flex:1 1 260px;border-color:var(--link);box-shadow:var(--shadow)}
+.theme-suivant .ts-k{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.theme-suivant .ts-t{font-family:"Space Grotesk","Inter",system-ui,sans-serif;font-size:19px;font-weight:600;color:var(--link);margin-top:3px}
+.theme-suivant .ts-hub{flex:0 1 auto;color:var(--ink-soft);font-size:14px}
+.theme-suivant a:hover{border-color:var(--link)}
+.theme-suivant a:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+/* Sommaire sans carte réseau : la liste des séances */
+.hm-carte:has(.hm-liste){max-width:560px}
+.hm-liste{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
+.hm-liste .hm-a{display:flex;align-items:center;gap:11px;padding:11px 13px;min-height:48px;border:1px solid var(--line);
+  border-radius:11px;text-decoration:none;color:var(--ink);background:var(--surface)}
+.hm-liste a.hm-a:hover{border-color:var(--link);background:var(--link-wash)}
+.hm-liste a.hm-a:focus-visible{outline:2px solid var(--link);outline-offset:1px}
+.hm-liste .hm-num{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--link);min-width:28px}
+.hm-liste .hm-nom{flex:1;font-weight:500;line-height:1.35}
+.hm-liste .hm-etat{font-size:12.5px;color:var(--ink-faint);white-space:nowrap}
+.hm-liste .ici .hm-a{border-color:var(--link);box-shadow:inset 3px 0 0 var(--link)}
+.hm-liste .fini .hm-etat{color:var(--ok)}
+.hm-liste .verrou .hm-a{opacity:.6}
+.hm-themes{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.hm-themes ul{list-style:none;margin:8px 0;padding:0;display:flex;flex-wrap:wrap;gap:7px}
+.hm-themes ul a{display:inline-flex;align-items:center;min-height:40px;padding:4px 12px;border-radius:100px;
+  border:1px solid var(--line);text-decoration:none;color:var(--link);font-size:13.5px}
+.hm-themes ul a:hover{border-color:var(--link)}
+.hm-themes .hm-hub{display:inline-flex;align-items:center;min-height:40px;color:var(--ink-soft);font-size:13.5px}
+.hm-themes a:focus-visible{outline:2px solid var(--link);outline-offset:1px}
+
+/* « Pour finir cette étape, il te reste… » — la garde de fin d'étape */
+.etape-reste{margin:12px 0 0;padding:9px 13px;border-radius:10px;border:1px dashed var(--wait);
+  background:var(--wait-wash);color:var(--ink);font-size:14px;line-height:1.5}
+
+/* Bandeau d'enregistrement : ne parle que si quelque chose ne va pas */
+#etat-enreg{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9995;
+  width:max-content;max-width:calc(100vw - 32px);display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.18);
+  background:var(--wait-wash);border:1px solid var(--wait);color:var(--ink)}
+#etat-enreg.cache{display:none}
+#etat-enreg.ok{background:var(--ok-wash);border-color:var(--ok)}
+#etat-enreg.session,#etat-enreg.autre{background:var(--err-wash);border-color:var(--err)}
+#etat-enreg button{font:inherit;font-weight:600;min-height:40px;padding:0 14px;border-radius:9px;
+  border:1px solid var(--err);background:var(--surface);color:var(--err);cursor:pointer}
+#etat-enreg button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}

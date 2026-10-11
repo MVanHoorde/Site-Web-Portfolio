@@ -395,11 +395,11 @@ td code{white-space:nowrap}
   <div class="enveloppe">
   <table>
     <tr><th>Espace</th><th>Onglets</th><th>La grille de suivi</th></tr>
-    <tr><td>SNT</td><td>À corriger · Séance · Suivi · Réglages</td>
+    <tr><td>SNT</td><td>À corriger · Séance · Suivi · Signalements · Défi S4 · Réglages</td>
       <td>Séance par séance, avec retard du jour, dette et absents.</td></tr>
-    <tr><td>ES 1re · ES terminale</td><td>Séance · Suivi · Réglages</td>
+    <tr><td>ES 1re · ES terminale</td><td>Séance · Suivi · Signalements · Réglages</td>
       <td>Comme en SNT : cahier de textes, absents, retards. Chapitre au lieu de thème.</td></tr>
-    <tr><td>PC 2nde</td><td>Suivi · Réglages</td>
+    <tr><td>PC 2nde</td><td>Suivi · Signalements · Réglages</td>
       <td>Vue d'ensemble : une colonne par outil (étapes validées), la dernière
         activité, le nombre d'outils finis. Un clic sur O1…O8 ouvre le détail par
         séance. Hors progression : ni retard ni curseur.<br>
@@ -669,8 +669,9 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <table>
     <tr><th>Chemin</th><th>Rôle</th></tr>
     <tr><td><code>prof/index.html</code></td><td>Le tableau de bord.</td></tr>
-    <tr><td><code>prof/decroissance.html</code></td><td>La courbe des dés de « La radioactivité » (ES 1re, étape 3.1), projetable. Lit dans <code>progression</code> le champ <code>es-t1c2-des/des</code> de l'état de l'étape&nbsp;: aucune table ni migration. Lien affiché dans l'espace ES 1re seulement.</td></tr>
-    <tr><td><code>assets/js/prof-api.js</code></td><td>Son client : connexion, lecture, écriture.</td></tr>
+    <tr><td><code>prof/decroissance.html</code></td><td>La courbe des dés de « La radioactivité » (ES 1re, étape 3.1), projetable. Lit dans <code>progression</code> le champ <code>es-t1c2-des/des</code> de l'état de l'étape&nbsp;: aucune table ni migration. Un élève entre dans la partie au lancer 0, dès que le jeu paraît à son écran&nbsp;; un lancer n'est tracé que lorsque tous les élèves en jeu l'ont joué (au lancer 0 sans activité depuis 20&nbsp;min d'après <code>maj_le</code>&nbsp;: plus attendu&nbsp;; <i>Ne plus attendre</i> écarte les retardataires, en mémoire de l'écran seulement). Lien affiché dans l'espace ES 1re seulement.</td></tr>
+    <tr><td><code>assets/js/prof-api.js</code></td><td>Son client : connexion, lecture, écriture, photos déposées.</td></tr>
+    <tr><td><code>assets/js/prof-defi.js</code></td><td>L'onglet <i>Défi S4</i> (SNT, séance 4 de l'introduction) : les travaux de la classe sous un numéro tiré au hasard, le vote en trois temps — écrémage, premier tri, duels — et le podium. Le vote vit dans le <code>localStorage</code> de l'appareil (<code>snt.prof.defi.&lt;classe&gt;</code>), pas en base. <i>Exporter pour Claude</i> télécharge un HTML autonome, photos réduites à 640&nbsp;px, sans nom ni identifiant, avec les mêmes numéros&nbsp;: à déposer dans <code>_a-deposer/defi-s4/</code> pour un classement indépendant.</td></tr>
     <tr><td><code>assets/js/sequences-espaces.js</code></td><td>Les noms des outils, chapitres, fiches et séances hors SNT. <b>Généré</b> par <code>node generer-sequences-espaces.mjs</code>.</td></tr>
     <tr><td><code>assets/js/progression.js</code></td><td>Le client des élèves. <b>Partagé</b> avec le livret CFA : le toucher pour la SNT touche le CFA.</td></tr>
     <tr><td><code>bdd/schema/*.sql</code></td><td>Le schéma, numéroté, commenté, rejouable dans l'ordre.</td></tr>
@@ -703,8 +704,9 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
       l'élève les retrouve sur tout appareil, et seul l'enseignant de la matière
       peut les lire. Conservation : l'année scolaire, puis purge (rappel par
       <code>node verifier.mjs</code> de juin à août, alerte sur le Bureau au-delà
-      de 70 % d'un quota). <b>Reste à faire</b> : les montrer dans le tableau de
-      bord.</li>
+      de 70 % d'un quota). Le tableau de bord montre celles du défi de la séance 4
+      de l'introduction (onglet <i>Défi S4</i>)&nbsp;; <b>reste à faire</b> : montrer
+      les autres.</li>
     <li><b>Le bouton « voir mes versions »</b> côté élève n'existe pas encore,
       alors que l'archivage des versions fonctionne depuis le début.</li>
     <li><b>La cible souveraine</b> reste un hébergeur français, à proposer à
@@ -715,7 +717,15 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <p class="revision">
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
-    Dernière révision : <b>11 octobre 2026</b> — <code>bdd/schema/026</code> : le
+    Dernière révision : <b>11 octobre 2026</b> — moteur des séquences&nbsp;:
+    l'enregistrement relit la base avant d'écrire et ne l'écrase plus après une
+    lecture ratée, se retente et le dit (bandeau)&nbsp;; une étape n'est faite que
+    quand tous ses exercices le sont (garde de fin d'étape)&nbsp;; Sommaire partout,
+    pastilles de thème cliquables (ce qui est ouvert se lit sur l'accueil de la
+    matière). Détail&nbsp;: <code>CONSIGNES-sequence-SNT.md</code>. La courbe des dés
+    (<code>prof/decroissance.html</code>) attend toute la classe&nbsp;; l'onglet <i>Défi S4</i>
+    (<code>assets/js/prof-defi.js</code>) et la lecture des photos déposées par le
+    tableau de bord ; <code>bdd/schema/026</code> : le
     +0,5 des signalements retenus, et sa notification côté élève ; le nom et le
     prénom de l'élève en tête de chaque signalement, et sa classe sur la carte.
     Passe du 6 octobre — <code>bdd/schema/024</code> : une
