@@ -4690,3 +4690,27 @@ erreur dans le vrai journal a été retirée). `verifier.mjs` relit la ligne.
 `progression.js?v=19` (59 pages), `sequence-snt.js?v=55` (23). `verifier.mjs` : 19.
 Mené en parallèle d'une autre conversation (024, feuille CSS `?v=50`) : seuls
 les changements de ce chantier ont été commités.
+
+## 11/10/2026 — Un bouton « Voir » sur les mots de passe
+
+Demande des élèves, relayée par Loïc : pouvoir relire le mot de passe qu'on
+tape, à la création du compte comme à la connexion, sur tous ses projets.
+
+Inventaire des trois dépôts : le site (fenêtre élève de `progression.js`,
+connexion de `prof/index.html`), Résonance (fenêtre de connexion de
+`index.html`), la Boîte à cartes (déjà équipée depuis le 04/10 ; son aria-label
+restait figé sur « Afficher »). `Appli_part_spe` n'a pas de mot de passe.
+
+Même comportement partout : un bouton « Voir » dans le champ, qui devient
+« Cacher » ; l'étiquette lue par les lecteurs d'écran suit ; le champ revient
+masqué à l'envoi. Piège évité sur le tableau de bord : le style ne visait que
+`input[type=password]`, le champ l'aurait perdu en passant en texte.
+
+Guides SNT, ES et AP : une puce côté élève, la ligne « mot de passe incorrect »
+du dépannage, la date de révision ; PDF régénérés. `progression.js?v=20`
+(58 fichiers). Banc Playwright, Supabase bloqué : 33 contrôles passés
+(création, connexion, tableau de bord, Résonance ; clavier compris), aucune
+erreur JS. `verifier.mjs` : 19.
+
+La Boîte à cartes n'a pas été commitée : une autre conversation y avait des
+modifications en cours au même moment.

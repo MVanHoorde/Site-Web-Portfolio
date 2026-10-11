@@ -64,8 +64,12 @@ button:hover{border-color:var(--ink-faint)}
 button.primaire{background:var(--link);border-color:var(--link);color:#fff}
 button.primaire:hover{filter:brightness(1.08)}
 button[disabled]{opacity:.45;cursor:not-allowed}
-input[type=email],input[type=password]{font:inherit;width:100%;padding:10px 12px;
+input[type=email],input[type=password],#mdp{font:inherit;width:100%;padding:10px 12px;
        border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--ink)}
+.mdp-bloc{position:relative}
+.mdp-bloc #mdp{padding-right:84px}
+.mdp-bloc #voir-mdp{position:absolute;top:5px;right:5px;bottom:5px;min-width:70px;padding:0 10px;
+       font-size:13px;font-weight:600;color:var(--link);background:var(--bg)}
 input:focus{outline:2px solid var(--link);outline-offset:1px}
 label{display:block;font-size:13.5px;color:var(--ink-soft);margin:0 0 5px}
 .carte{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
@@ -315,7 +319,10 @@ table.grille thead th{white-space:nowrap}
     </div>
     <div class="champ">
       <label for="mdp">Mot de passe</label>
-      <input id="mdp" type="password" autocomplete="current-password">
+      <div class="mdp-bloc">
+        <input id="mdp" type="password" autocomplete="current-password">
+        <button id="voir-mdp" type="button" aria-controls="mdp" aria-label="Afficher le mot de passe">Voir</button>
+      </div>
     </div>
 
     <button id="btn-connexion" class="primaire" style="width:100%">Se connecter</button>
@@ -859,7 +866,16 @@ table.grille thead th{white-space:nowrap}
     if(message){ z.textContent = message; z.classList.add('show'); }
     else { z.classList.remove('show'); }
     $('#mdp').value = '';
+    montrerMdp(false);
   }
+
+  /* Bouton « Voir » : relire le mot de passe tapé. Masqué de nouveau à l'envoi. */
+  function montrerMdp(visible){
+    $('#mdp').type = visible ? 'text' : 'password';
+    $('#voir-mdp').textContent = visible ? 'Cacher' : 'Voir';
+    $('#voir-mdp').setAttribute('aria-label', visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+  }
+  $('#voir-mdp').addEventListener('click', function(){ montrerMdp($('#mdp').type === 'password'); });
 
   /* ---------- messages d'erreur, en français ----------
      On distingue le refus de rôle du mauvais mot de passe : dire
@@ -882,6 +898,7 @@ table.grille thead th{white-space:nowrap}
   /* ---------- connexion ---------- */
   function tenter(){
     var b = $('#btn-connexion');
+    montrerMdp(false);
     b.disabled = true; b.textContent = 'Connexion…';
     ProfAPI.connexion($('#mail').value, $('#mdp').value)
       .then(function(){ montrerAppli(); })

@@ -895,6 +895,10 @@
    '.acc-label{display:block;font-size:13px;margin:0 0 4px}'+
    '.acc-carte input{width:100%;box-sizing:border-box;min-height:44px;border:1px solid var(--line,#d3dae7);border-radius:10px;padding:0 12px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink,#161f33)}'+
    '.acc-carte input:focus{outline:2px solid var(--link,#2445c7);outline-offset:1px;border-color:var(--link,#2445c7)}'+
+   '.acc-mdp{position:relative}'+
+   '.acc-carte .acc-mdp input{padding-right:84px}'+
+   '.acc-voir{position:absolute;top:6px;right:6px;bottom:6px;min-width:70px;padding:0 10px;border:1px solid var(--line,#d3dae7);border-radius:7px;background:var(--bg,#e9edf4);color:var(--link,#2445c7);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}'+
+   '.acc-voir:focus-visible{outline:2px solid var(--link,#2445c7);outline-offset:1px}'+
    '.acc-aide{font-size:12px;color:var(--ink-faint,#8b97ad);margin:4px 0 12px}'+
    '.acc-primaire{width:100%;min-height:46px;background:var(--link,#2445c7);color:#fff;border:0;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:4px}'+
    '.acc-primaire:disabled{opacity:.6;cursor:default}'+
@@ -1128,6 +1132,28 @@
     fond.querySelector('[data-continuer]').focus();
   }
 
+  /* Champ mot de passe et son bouton « Voir » : les élèves veulent relire
+   * ce qu'ils ont tapé avant d'envoyer. Le champ revient masqué à l'envoi. */
+  function champMdp(autocomplete, placeholder) {
+    return '<div class="acc-mdp">'
+      +   '<input id="acc-mdp" type="password" autocomplete="' + autocomplete + '" placeholder="' + placeholder + '">'
+      +   '<button type="button" class="acc-voir" data-voir aria-controls="acc-mdp" aria-label="Afficher le mot de passe">Voir</button>'
+      + '</div>';
+  }
+
+  function brancherVoir(fond) {
+    var voir  = fond.querySelector('[data-voir]');
+    var champ = fond.querySelector('#acc-mdp');
+    if (!voir || !champ) return function () {};
+    function montrer(visible) {
+      champ.type = visible ? 'text' : 'password';
+      voir.textContent = visible ? 'Cacher' : 'Voir';
+      voir.setAttribute('aria-label', visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+    }
+    voir.addEventListener('click', function () { montrer(champ.type === 'password'); });
+    return function () { montrer(false); };
+  }
+
   /* Première visite (ou déconnexion) : les trois portes.
    * onglet = 'creer' | 'connecter'. */
   function afficherPortes(onglet) {
@@ -1140,7 +1166,7 @@
         + '<input id="acc-id" type="text" autocomplete="username" placeholder="dede-33">'
         + '<p class="acc-aide">Minuscules, chiffres et tirets. C\'est le nom que ton professeur verra.</p>'
         + '<label class="acc-label" for="acc-mdp">Mot de passe</label>'
-        + '<input id="acc-mdp" type="password" autocomplete="new-password" placeholder="Atelier7">'
+        + champMdp('new-password', 'Atelier7')
         + '<p class="acc-aide">' + REGLE_MDP + '</p>'
         + '<div style="height:12px"></div>'
         + '<label class="acc-label" for="acc-code">Code de la classe</label>'
@@ -1150,7 +1176,7 @@
         + '<input id="acc-id" type="text" autocomplete="username" placeholder="dede-33">'
         + '<div style="height:12px"></div>'
         + '<label class="acc-label" for="acc-mdp">Mot de passe</label>'
-        + '<input id="acc-mdp" type="password" autocomplete="current-password" placeholder="ton mot de passe">';
+        + champMdp('current-password', 'ton mot de passe');
 
     var fond = global.document.createElement('div');
     fond.className = 'acc-fond';
@@ -1183,8 +1209,10 @@
     var form   = fond.querySelector('[data-form]');
     var erreur = fond.querySelector('.acc-err');
     var bouton = fond.querySelector('.acc-primaire');
+    var masquer = brancherVoir(fond);
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
+      masquer();
       erreur.hidden = true;
       var id  = (fond.querySelector('#acc-id')  || {}).value || '';
       var mdp = (fond.querySelector('#acc-mdp') || {}).value || '';

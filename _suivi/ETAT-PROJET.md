@@ -5,20 +5,25 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **06/10/2026**.
+> Dernière réécriture : **11/10/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — le travail des élèves revient au rechargement (06/10).**
+> **Dernière passe — un bouton « Voir » sur les mots de passe (11/10).** Demande
+> des élèves : relire ce qu'on a tapé. Fenêtre élève (`progression.js?v=20`,
+> 58 fichiers), connexion du tableau de bord, guides SNT / ES / AP et leurs PDF.
+> Même bouton dans Résonance (tutorat) ; la Boîte à cartes l'avait déjà.
+>
+> **Passe du 06/10 — le travail des élèves revient au rechargement.**
 > 🔴 Les **photos déposées** (t0, t1, ES 1re son et musique) partent dans le
 > stockage privé `depots` (`bdd/schema/025`) et reviennent sur tout appareil ;
 > l'enseignant de la matière peut les lire. Les **menus à « Vérifier »** (20
 > exercices, 8 séquences) et les **étiquettes à poser** sont enregistrés et
 > rétablis. La page **dit** quand une photo n'est pas gardée.
-> `progression.js?v=19`, `sequence-snt.js?v=55`.
+> `sequence-snt.js?v=55`.
 > ⏳ **Montrer les photos dans le tableau de bord** (la base le permet déjà).
 > 🔔 **Quotas** (base 500 Mo, fichiers 1 Go, partagés avec les collègues) :
 > mesure quotidienne, **alerte sur le Bureau au-delà de 70 %**, et
