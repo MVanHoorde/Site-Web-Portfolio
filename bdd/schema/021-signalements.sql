@@ -9,16 +9,19 @@
 --  ARBITRAGES DE LOÏC
 --  · Élèves CONNECTÉS seulement : un formulaire ouvert à tout
 --    visiteur d'un site public, c'est une boîte à spam.
---  · NOMINATIF : le signalement porte l'élève (eleve_id). Ce n'est
---    qu'un pseudonyme en base ; l'association au vrai nom ne se fait
---    que sur la tablette de l'enseignant (table des noms, en session).
+--  · NOMINATIF : le signalement porte l'élève (eleve_id, pseudonyme).
+--    Depuis le 11/10/2026, le formulaire demande aussi le nom et le
+--    prénom, écrits en tête du message (décision de Loïc : retrouver
+--    l'élève pour le +0,5 sans dépendre de la table des noms). C'est
+--    le seul endroit de la base où figure un nom réel.
 --  · Il arrive aux enseignants des classes de l'élève, DANS LA
 --    FAMILLE de la page (SNT, ES, outils de PC) : même cloisonnement
 --    que la progression, par mon_eleve_pour() (018). Un collègue de
 --    SNT ne lit pas un signalement posé dans un outil de PC.
 --
 --  RGPD : données minimales. Le message est écrit par l'élève — la
---  page le prévient de ne rien y mettre de personnel. L'« appareil »
+--  page lui demande son nom et son prénom, et rien d'autre de
+--  personnel. L'« appareil »
 --  est un résumé court (iPad · Safari), jamais l'empreinte complète
 --  du navigateur. Un signalement traité peut être supprimé par
 --  l'enseignant ; la suppression d'un élève emporte les siens.

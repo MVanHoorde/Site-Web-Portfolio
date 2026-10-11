@@ -149,7 +149,8 @@ en rechargeant la page. Le QCM fait exception, par choix : il se refait.
   (l'ES), personne ne relit en ligne : l'envoi valide l'étape en vert plein.
 - **« J'ai vu un bug »** : bouton posé par le moteur (`initSignalement`), en bas à
   gauche, pour l'**élève connecté** seulement. Le signalement part en base avec la
-  séquence, la page, l'étape et l'appareil (`Progression.signaler`,
+  séquence, la page, l'étape et l'appareil, et le **nom et prénom** que l'élève
+  saisit en tête du message (`Progression.signaler`,
   `bdd/schema/021`) et arrive dans l'onglet **Signalements** du tableau de bord.
   Rien à poser dans la page ; la page doit seulement porter son `data-sequence`.
   Un signalement retenu rapporte **+0,5 au prochain contrôle** : l'enseignant

@@ -4742,3 +4742,29 @@ retrait — aucune erreur JS. `progression.js?v=21` (58), `sequence-snt.js?v=56`
 Commit limité à ce chantier : quatre pages (t0, t1, m1, term-es-t2-c1) avaient
 des modifications d'une autre conversation ; seul le numéro de version y est
 parti.
+
+## 11/10/2026 — Signalements : nom et prénom, classe ; la séance 1 d'Elise
+
+Deux demandes de Loïc après le +0,5. Le formulaire « J'ai vu un bug » demande
+le nom et le prénom (champ obligatoire, en tête du message) — alerte RGPD
+donnée, Loïc a choisi de les demander : ce sont les premiers noms réels en
+base. La carte du tableau de bord affiche la classe (celles de l'enseignant
+dans l'espace ouvert, via `eleves_classes`, comme pour les copies).
+
+Compte `elise19` (Terminale 6, `est-t2-c1`) : sa sauvegarde du 08/10 (séance
+2) avait écrasé celle du 24/09 — ses six réponses rédigées étaient en base,
+pas l'état des étapes. Rétabli à la demande de Loïc (« je lui accorde ») :
+étapes 1.1, 1.2, 1.3 et 1.6 faites, textes à trous de 1.2 et 1.3 remplis avec
+les réponses attendues, résumé S1 6/6. Rien d'autre touché. La cause
+(lecture ratée au chargement puis état vide écrit par-dessus la base) est
+corrigée par une autre conversation le même jour.
+
+Incident : un script de cette conversation a vidé `sequence-snt.js` (le
+piège `open('w')` déjà noté en mémoire, sur un fichier qu'une autre
+conversation modifiait). Restauré par l'autre conversation depuis
+l'instantané Claude Code de 11:15:03, ses modifications postérieures
+rejouées par elle, celles du formulaire rejouées ici. Et le commit f92b411 (le +0,5)
+avait embarqué, en ajoutant `progression.js` et `sequence-snt.js` entiers, une
+partie du travail en cours de cette autre conversation (lecture stricte,
+renouvellement de jeton, `clonerAvecSaisie`) : cohérent et sans danger en ligne,
+mais à éviter — dans un fichier partagé, ne commiter que ses propres morceaux.

@@ -20,6 +20,8 @@
 > registre. `progression.js?v=21` (58 fichiers), `sequence-snt.js?v=56` (23).
 > Guides SNT / ES / AP / dispositif et PDF à jour. Le report sur la note du
 > contrôle reste manuel (idée d'une liste « bonus à reporter » : `IDEES.md`).
+> 🔴 Le formulaire de signalement **demande le nom et le prénom** (noms réels en
+> base, choix de Loïc) et la carte affiche la **classe**.
 >
 > **Passe du 11/10 — un bouton « Voir » sur les mots de passe.** Demande
 > des élèves : relire ce qu'on a tapé. Fenêtre élève (`progression.js?v=20`,

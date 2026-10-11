@@ -301,6 +301,7 @@ table.grille thead th{white-space:nowrap}
 .sig.traite .sig-tete,.sig.traite .sig-msg{opacity:.6}
 .sig .sig-tete{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:13px;color:var(--ink-soft)}
 .sig .sig-tete b{color:var(--ink);font-size:14px}
+.sig .sig-classe{padding:1px 8px;border-radius:999px;background:var(--bg);color:var(--ink);font-weight:600}
 .sig .sig-msg{white-space:pre-wrap;margin:8px 0;font-size:14.5px}
 .sig .sig-act{display:flex;gap:8px;flex-wrap:wrap}
 .sig .sig-act a{display:inline-flex;align-items:center;padding:6px 12px;border:1px solid var(--line);
@@ -935,7 +936,7 @@ table.grille thead th{white-space:nowrap}
   var SIGNALEMENTS = [];
   function chargerSignalements(){
     $('#sig-etat').textContent = 'Chargement…';
-    return ProfAPI.lire('signalements?select=id,cle,page,etape,message,appareil,traite,cree_le,bonus_le,bonus_vu_le,eleves(pseudo)'
+    return ProfAPI.lire('signalements?select=id,cle,page,etape,message,appareil,traite,cree_le,bonus_le,bonus_vu_le,eleves(pseudo,classe_id,eleves_classes(classe_id))'
                         + '&order=cree_le.desc&limit=300')
       .then(function(l){ SIGNALEMENTS = l || []; rendreSignalements(); $('#sig-etat').textContent = ''; })
       .catch(function(err){
@@ -944,6 +945,15 @@ table.grille thead th{white-space:nowrap}
           ? 'La table des signalements n\u2019existe pas encore : exécuter bdd/schema/021-signalements.sql.'
           : 'Lecture impossible : ' + (err.message || err);
       });
+  }
+  /* La classe de l'élève (11/10/2026) : parmi ses appartenances, celles de
+     MES classes dans cet espace — c'est là que le +0,5 sera reporté. */
+  function classesSig(x){
+    var e = x.eleves; if(!e) return '';
+    var ids = (e.eleves_classes || []).map(function(c){ return c.classe_id; });
+    if(e.classe_id) ids.push(e.classe_id);
+    return TOUTES_CLASSES.filter(function(c){ return ids.indexOf(c.id) >= 0 && espaceDe(c) === ESPACE; })
+      .map(function(c){ return c.libelle || c.code; }).join(' · ');
   }
   function rendreSignalements(){
     var tout = $('#sig-tout').checked;
@@ -962,6 +972,7 @@ table.grille thead th{white-space:nowrap}
       var pseudo = (x.eleves && x.eleves.pseudo) || '—';
       return '<div class="sig' + (x.traite ? ' traite' : '') + (x.bonus_le ? ' bonus' : '') + '" data-id="' + echapper(x.id) + '">' +
         '<div class="sig-tete"><b>' + echapper(ProfAPI.nomDe(pseudo)) + '</b>' +
+        (classesSig(x) ? '<span class="sig-classe">' + echapper(classesSig(x)) + '</span>' : '') +
         '<span>' + echapper(quandCourt(x.cree_le)) + '</span>' +
         '<span>' + echapper(nomSequence(x.cle) || x.cle) + (x.etape ? ' · étape ' + echapper(x.etape) : '') + '</span>' +
         (x.appareil ? '<span>' + echapper(x.appareil) + '</span>' : '') + '</div>' +

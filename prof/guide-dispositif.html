@@ -253,7 +253,7 @@ td code{white-space:nowrap}
     <tr><td><code>enseignants</code> · <code>enseignants_classes</code></td><td>Qui est professeur, et qui enseigne où.</td></tr>
     <tr><td><code>modeles_correction</code></td><td>La bibliothèque de phrases, cloisonnée par compte depuis l'origine. Chaque phrase porte sa <code>decision</code> (<code>valider</code> ou <code>refaire</code>, défaut <code>refaire</code>) : la toucher décide la copie. <code>bdd/schema/024</code>.</td></tr>
     <tr><td><code>notes_eleves</code></td><td>Le pense-bête d'un enseignant sur un élève de ses classes, 200 caractères, une ligne par couple. Lu par cet enseignant <b>seul</b>, emporté par la suppression de l'élève. <code>bdd/schema/024</code>.</td></tr>
-    <tr><td><code>signalements</code></td><td>Les bugs signalés par les élèves connectés (bouton « J'ai vu un bug » du moteur) : page, étape, message, appareil résumé, traité ou non, et le <b>+0,5 au prochain contrôle</b> (<code>bonus_le</code>, date serveur posée par un déclencheur, qui marque aussi traité ; <code>bonus_vu_le</code>, quand l'élève a vu la notification — <code>bdd/schema/026</code>). L'élève ne relit toujours pas ses signalements : <code>mes_bonus_signalement()</code> lui rend ses seuls bonus non vus, <code>bonus_signalement_vus()</code> les marque vus ; le moteur l'annonce à l'ouverture de n'importe quelle page de cours. Lus par les enseignants de l'élève <b>dans la famille de la page</b> (<code>mon_eleve_pour</code>), vingt par élève et par jour au plus. <code>bdd/schema/021</code>.</td></tr>
+    <tr><td><code>signalements</code></td><td>Les bugs signalés par les élèves connectés (bouton « J'ai vu un bug » du moteur) : page, étape, message, appareil résumé, traité ou non. 🔴 Le message commence par le <b>nom et le prénom</b> que l'élève saisit (champ obligatoire du formulaire, choix de Loïc du 11/10/2026) : c'est le seul endroit de la base où figurent des noms réels — ils partent avec la suppression du signalement ou de l'élève. Le tableau de bord affiche aussi la classe, lue dans <code>eleves_classes</code>. S'y ajoute le <b>+0,5 au prochain contrôle</b> (<code>bonus_le</code>, date serveur posée par un déclencheur, qui marque aussi traité ; <code>bonus_vu_le</code>, quand l'élève a vu la notification — <code>bdd/schema/026</code>). L'élève ne relit toujours pas ses signalements : <code>mes_bonus_signalement()</code> lui rend ses seuls bonus non vus, <code>bonus_signalement_vus()</code> les marque vus ; le moteur l'annonce à l'ouverture de n'importe quelle page de cours. Lus par les enseignants de l'élève <b>dans la famille de la page</b> (<code>mon_eleve_pour</code>), vingt par élève et par jour au plus. <code>bdd/schema/021</code>.</td></tr>
   </table>
   </div>
 
@@ -716,7 +716,8 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
     Dernière révision : <b>11 octobre 2026</b> — <code>bdd/schema/026</code> : le
-    +0,5 des signalements retenus, et sa notification côté élève.
+    +0,5 des signalements retenus, et sa notification côté élève ; le nom et le
+    prénom de l'élève en tête de chaque signalement, et sa classe sur la carte.
     Passe du 6 octobre — <code>bdd/schema/024</code> : une
     phrase mémorisée porte sa décision et s'envoie d'un toucher ; la fiche d'un
     élève note (<code>notes_eleves</code>), réinitialise le mot de passe et supprime

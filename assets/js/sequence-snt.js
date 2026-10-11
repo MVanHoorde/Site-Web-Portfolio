@@ -4936,25 +4936,33 @@ function initSignalement(){
     fond.innerHTML='<div class="bug-panel" role="dialog" aria-modal="true" aria-labelledby="bug-titre">'+
       '<h3 id="bug-titre">🐞 Qu\u2019est-ce qui ne marche pas&nbsp;?</h3>'+
       '<p class="bug-ou"></p>'+
-      '<textarea maxlength="1000" rows="5" aria-label="Décris le problème" placeholder="Ce que tu as fait, ce qui s\u2019est passé, ce que tu attendais. Pas de nom, pas d\u2019information personnelle."></textarea>'+
+      /* Nom et prénom demandés (Loïc, 11/10/2026) : retrouver l'élève pour
+         le +0,5 sans dépendre de la table des noms. Ils partent en tête du
+         message — seul nom réel de la base (bdd/schema/021). */
+      '<label class="bug-label" for="bug-nom">Ton nom et ton prénom</label>'+
+      '<input id="bug-nom" type="text" maxlength="80" autocomplete="name" placeholder="Nom Prénom">'+
+      '<label class="bug-label" for="bug-msg">Le problème</label>'+
+      '<textarea id="bug-msg" maxlength="900" rows="5" placeholder="Ce que tu as fait, ce qui s\u2019est passé, ce que tu attendais. Pas d\u2019information personnelle."></textarea>'+
       '<p class="bug-etat" aria-live="polite"></p>'+
       '<div class="bug-actions"><button type="button" class="btn ghost" data-bug-annuler>Annuler</button>'+
       '<button type="button" class="btn" data-bug-envoyer>Envoyer à mon professeur</button></div></div>';
     document.body.appendChild(fond);
-    var ta=$('textarea',fond), etat=$('.bug-etat',fond), envoyer=$('[data-bug-envoyer]',fond), ou='';
+    var ta=$('textarea',fond), nom=$('#bug-nom',fond), etat=$('.bug-etat',fond), envoyer=$('[data-bug-envoyer]',fond), ou='';
     function fermer(){ fond.classList.remove('on'); b.focus(); }
     b.addEventListener('click',function(){
       ou=etapeVisible();
       $('.bug-ou',fond).textContent = 'Ton professeur saura où tu étais'+(ou?' : étape '+ou:'')+'. Il verra aussi ton pseudo et ton appareil.';
       etat.textContent=''; envoyer.disabled=false;
-      fond.classList.add('on'); ta.focus();
+      fond.classList.add('on'); (nom.value.trim()?ta:nom).focus();
     });
     $('[data-bug-annuler]',fond).addEventListener('click',fermer);
     fond.addEventListener('click',function(e){ if(e.target===fond) fermer(); });
     fond.addEventListener('keydown',function(e){ if(e.key==='Escape') fermer(); });
     envoyer.addEventListener('click',function(){
-      var m=ta.value.trim();
+      var m=ta.value.trim(), n=nom.value.trim().replace(/\s+/g,' ');
+      if(n.length<3){ etat.textContent='Écris ton nom et ton prénom.'; nom.focus(); return; }
       if(m.length<3){ etat.textContent='Écris au moins quelques mots.'; ta.focus(); return; }
+      m='👤 '+n+'\n'+m;
       envoyer.disabled=true; etat.textContent='Envoi…';
       Progression.signaler({
         cle: document.body.getAttribute('data-sequence')||'',
