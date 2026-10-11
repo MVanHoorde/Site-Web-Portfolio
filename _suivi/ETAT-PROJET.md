@@ -25,9 +25,16 @@
 > reste… », le bandeau d'enregistrement et les passerelles — tuto à rédiger par
 > Loïc. ⏳ **Choix de nucléosynthèse 1.4** : pas gardés tant que l'étape n'est
 > pas finie (six clics à refaire au pire).
-> ⏳ **Glossaire de terminale c1** : 20 mots ajoutés et 10 marqués « hors
-> programme » (`"hp": true`) — **proposition à valider**. Même traitement possible
-> pour c2 (pas de glossaire de chapitre) et les chapitres de 1re.
+> ⏳ **Glossaires d'ES** (6 chapitres de 1re, 2 de terminale) : 141 mots ajoutés,
+> ce qui est hors programme marqué (`"hp": true`) — **proposition à valider**.
+> Points de fond relevés en passant, à trancher par Loïc : forme de la Terre — le
+> bilan dit que le géoïde « s'écarte de la sphère d'environ 200 m » (l'écart de
+> cet ordre se mesure par rapport à l'ellipsoïde ; par rapport à la sphère,
+> l'aplatissement fait ~20 km) ; son à coder — « quantification » et critère de
+> Shannon, au programme, absents du cours ; son et musique — cycle des quintes et
+> gamme de Pythagore n'apparaissent que comme réponses de textes à trous, donc
+> pas au glossaire ; radioactivité — le cours dit les types α, β, γ « non
+> exigibles » mais évalue leur pouvoir de pénétration.
 >
 > **Passe du 11/10 — le +0,5 des signalements retenus.** Un bouton
 > **+0,5** sur chaque carte de l'onglet Signalements, traités compris : il marque
