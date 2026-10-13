@@ -31,6 +31,17 @@ function lireEnv() {
 }
 
 const env      = lireEnv();
+
+/* EN SOMMEIL depuis le 13/10/2026 : la SNT ne passe plus que par Loïc,
+   et le tableau de bord ne lit plus correction_ia. Ce verrou arrête une
+   tâche planifiée oubliée avant qu'elle n'écrive en base. Pour relancer
+   le worker, mettre IA_SNT_ACTIF=1 dans .env. process.exit() est sans
+   risque ici : aucun fetch n'a encore eu lieu (voir plus bas). */
+if (env.IA_SNT_ACTIF !== "1") {
+  console.log("Pré-correction SNT en sommeil (IA_SNT_ACTIF absent de .env) : rien n'est lu ni écrit.");
+  process.exit(0);
+}
+
 const URL_BASE = env.SUPABASE_URL;
 const SERVICE  = env.SUPABASE_SERVICE_ROLE;
 if (!URL_BASE || !SERVICE)

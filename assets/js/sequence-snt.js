@@ -1361,16 +1361,21 @@
     var a  = (r.correction_ia && r.correction_ia.analyse) || {};
     var v  = a.verdict || 'sans objet';
     var fe = a.feedback_eleve || {};
-    var past = v==='accepté' ? '✓ Accepté' : v==='à compléter' ? '✎ À compléter' : '💭 Bien reçu';
+    /* Sans pré-correction (13/10/2026 : la SNT ne passe plus que par le
+       professeur), il n'y a pas de verdict : la validation EST le verdict. */
+    var past = !r.correction_ia ? '✓ Validée'
+             : v==='accepté' ? '✓ Accepté' : v==='à compléter' ? '✎ À compléter' : '💭 Bien reçu';
     var html = '<span class="vd-pastille">'+past+'</span>';
     /* Politique : le mot du professeur PRIME. S'il a écrit un commentaire,
        l'élève ne lit que ça (pas de texte IA, pas de ligne de transparence).
-       Sinon : le message IA qu'il a validé + la ligne de transparence.
+       Sinon : le message IA qu'il a validé + la ligne de transparence —
+       seulement s'il existe : une copie validée sans mot ni IA n'affiche
+       que la pastille, jamais une ligne de transparence fausse.
        (Pour montrer les deux à la fois, il suffira d'assouplir ce bloc.) */
     if(r.commentaire_prof && r.commentaire_prof.trim()){
       html += '<p class="vd-msg">'+ echapper(r.commentaire_prof) +'</p>';
-    } else {
-      html += '<p class="vd-msg">'+ echapper(fe.message || '') +'</p>';
+    } else if(fe.message){
+      html += '<p class="vd-msg">'+ echapper(fe.message) +'</p>';
       html += '<p class="vd-ia">✎ Ce retour a d\u2019abord été préparé par une intelligence artificielle '+
               'qui tourne seulement sur l\u2019ordinateur de ton professeur \u2014 c\u2019est ça, «\u00a0locale\u00a0» : '+
               'ta réponse ne part pas sur Internet, elle reste dans la classe. '+
@@ -1424,7 +1429,8 @@
     champ.classList.toggle('corrige', r.statut === 'corrige');
     if(r.statut === 'corrige'){
       champ.classList.toggle('a-refaire', false);
-      var verd = (r.correction_ia && r.correction_ia.analyse && r.correction_ia.analyse.verdict) || 'sans objet';
+      var verd = !r.correction_ia ? 'accepté'
+               : (r.correction_ia.analyse && r.correction_ia.analyse.verdict) || 'sans objet';
       verdict(champ, classeVerdict(verd), rendreRetour(r));
       majReste(champ);
       if(!questionsRestantes(champ)) markDone(champ);

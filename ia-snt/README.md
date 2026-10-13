@@ -1,5 +1,13 @@
 # Worker de pré-correction SNT
 
+> 🔴 **EN SOMMEIL depuis le 13/10/2026.** La correction par Mistral Nemo n'était
+> pas satisfaisante : la SNT ne passe plus que par Loïc. Le tableau de bord ne
+> lit plus `correction_ia`, les tâches planifiées sont à retirer
+> (`.\planifier-worker.ps1 -Retirer`, PowerShell administrateur), et le worker
+> s'arrête de lui-même tant que `.env` ne contient pas `IA_SNT_ACTIF=1`.
+> Piste à l'étude : anonymiser en local, puis passer par l'API Claude. Le
+> reste de ce fichier décrit le worker tel qu'il était.
+
 Programme **local** (PC de Loïc) qui prépare la correction des **questions
 libres** de la SNT. Il **ne note jamais** : il rédige un travail préparatoire
 que Loïc valide.

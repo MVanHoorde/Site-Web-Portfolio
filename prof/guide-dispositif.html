@@ -153,7 +153,7 @@ td code{white-space:nowrap}
       <li><a href="#cloison">Le cloisonnement — qui voit quoi</a></li>
       <li><a href="#classes">Le parc de classes</a></li>
       <li><a href="#gestes">Les gestes d'administration</a></li>
-      <li><a href="#worker">La correction assistée</a></li>
+      <li><a href="#worker">La correction des copies</a></li>
       <li><a href="#entretien">Entretien : sauvegardes et mise en pause</a></li>
       <li><a href="#depot">Où vit quoi dans le dépôt</a></li>
       <li><a href="#ouvert">Ce qui reste ouvert</a></li>
@@ -170,15 +170,11 @@ td code{white-space:nowrap}
           |        - comptes et jetons de session
           |        - API générée, filtrée ligne par ligne (RLS)
           ^
-          |  se sert et repose son résultat
-   Worker de correction  (le PC de Loïc, tâches planifiées)
-          +--  Ollama, modèle local (mistral-nemo) sur la carte graphique</pre>
+          |  même API, compte professeur
+   Tableau de bord  (prof/index.html — correction, suivi, séances)</pre>
 
-  <p>Trois propriétés à garder en tête :</p>
+  <p>Deux propriétés à garder en tête :</p>
   <ul>
-    <li><b>Le worker n'est pas dans la chaîne du site.</b> Il se réveille, prend
-      les copies en attente, fait analyser, réécrit le résultat. Si le PC est
-      éteint, le cours continue de fonctionner — les copies attendent.</li>
     <li><b>La serrure est côté base, jamais côté page.</b> Le tableau de bord est
       une page publique sans secret : elle n'affiche rien sans compte professeur.
       C'est PostgreSQL qui refuse, pas le JavaScript qui masque.</li>
@@ -436,8 +432,8 @@ td code{white-space:nowrap}
     <tr><th>Pages</th><th>Ce qui part en base (élève connecté)</th></tr>
     <tr><td>Séquences SNT</td><td>Étapes, champs, copies à corriger, réponses personnelles.</td></tr>
     <tr><td>Chapitres d'ES</td><td>Étapes et champs ; les réponses rédigées partent en <b>réponses
-      personnelles</b> (<code>data-reponses="personnelles"</code>) — jamais dans la file, jamais
-      chez le worker : elles se corrigent en classe.</td></tr>
+      personnelles</b> (<code>data-reponses="personnelles"</code>) — jamais dans la file :
+      elles se corrigent en classe.</td></tr>
     <tr><td>Outils de PC</td><td>Étapes et champs ; les PDF ouverts depuis la page.</td></tr>
     <tr><td>Chapitres de PC</td><td>Par <code>assets/js/suivi-pc.js</code> : l'ouverture (dates,
       visites espacées de 30 minutes), le déblocage par le code, les PDF ouverts. <b>Pas</b> de
@@ -553,69 +549,25 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
     rien.</p>
   </div>
 
-  <h2 id="worker">7. La correction assistée</h2>
+  <h2 id="worker">7. La correction des copies</h2>
 
-  <p>Le worker tourne sur le PC de Loïc, avec un modèle local servi par Ollama.
-  À chaque passe, il prend les vingt plus anciennes copies en attente <b>de toute
-  la base</b>, sans distinction de classe, les fait analyser, et réécrit le
-  résultat. Une passe sans copie n'appelle pas le modèle.</p>
-
-  <h3>Quand il passe</h3>
-  <p>Le calendrier vit dans <code>ia-snt/horaires-worker.psd1</code>, seul fichier
-  à retoucher quand l'emploi du temps change. <code>planifier-worker.ps1</code>,
-  lancé dans un PowerShell <b>administrateur</b>, en tire deux tâches planifiées :</p>
-
-  <div class="enveloppe">
-  <table>
-    <tr><th>Tâche</th><th>Quand</th><th>Réveille le PC</th></tr>
-    <tr>
-      <td><code>SNT - precorrection IA</code></td>
-      <td>Une passe à l'ouverture de session, une à 18 h si le PC est allumé.</td>
-      <td>Non</td>
-    </tr>
-    <tr>
-      <td><code>SNT - precorrection IA (seances)</code></td>
-      <td>Mardi 11 h 05 – 12 h 20 · jeudi 8 h 15 – 9 h 55 · jeudi 13 h 10 – 14 h 25
-        · vendredi 10 h 15 – 11 h 30. Une passe toutes les 5 minutes, jusqu'à
-        15 minutes après la fin.</td>
-      <td>Oui, 10 minutes avant le début</td>
-    </tr>
-  </table>
-  </div>
+  <p>Chaque copie rédigée de SNT est lue et décidée par le professeur, sans
+  travail préparatoire : la file de <i>À corriger</i> montre <b>toutes</b> les
+  copies en attente de la classe choisie.</p>
 
   <div class="encadre attention">
-    <span class="etiq">Veille, pas extinction</span>
-    <p>Le réveil sort le PC de <b>veille</b>. Il ne l'allume pas s'il est éteint :
-    seul le BIOS le peut, et le PC resterait de toute façon à l'écran de connexion,
-    alors qu'Ollama a besoin d'une session ouverte pour accéder à la carte
-    graphique. <b>Les soirs qui précèdent une séance, mettre en veille.</b> Pendant
-    un créneau, le script empêche le PC de se rendormir : sans cela, Windows
-    rendort une machine réveillée par minuterie au bout de deux minutes environ.</p>
+    <span class="etiq">Pré-correction IA en sommeil (13/10/2026)</span>
+    <p>Le worker de pré-correction (<code>ia-snt/</code>, Mistral Nemo servi par
+    Ollama sur le PC de Loïc) ne donnait pas satisfaction : il est arrêté, en
+    attendant une autre piste. Son code reste dans le dépôt ; ses deux tâches
+    planifiées sont retirées (<code>.\planifier-worker.ps1 -Retirer</code>, en
+    PowerShell administrateur) ; la colonne <code>correction_ia</code> reste en
+    base, inutilisée, et les pré-corrections des copies encore en attente ont été
+    effacées. Les copies validées avant cette date gardent, côté élève, le
+    message préparé par l'IA et sa ligne de transparence. Le tableau de bord ne
+    lit plus cette colonne : un worker relancé par erreur n'aurait aucun
+    effet visible.</p>
   </div>
-
-  <p>Les créneaux sont ceux de Loïc. Les copies des groupes des collègues qui
-  arrivent en dehors attendent la passe suivante — le matin ou 18 h. Le bouton
-  <i>Corriger sans l'IA</i> du tableau de bord permet de ne pas attendre.
-  Vérifier : <code>.\planifier-worker.ps1 -Etat</code> ; journal dans
-  <code>ia-snt/worker.log</code>.</p>
-
-  <h3>Ce qu'il produit</h3>
-
-  <p><b>Il ne tranche rien.</b> Le statut reste « en attente » : il attend une
-  validation humaine. Ce qu'il produit est une proposition, affichée dans la file
-  du professeur concerné.</p>
-
-  <div class="encadre utile">
-    <span class="etiq">Pourquoi il n'a pas besoin de filtre</span>
-    <p>Il écrit globalement, mais le tri se fait à la <b>lecture</b> : une copie
-    corrigée n'apparaît que dans la file de l'enseignant de l'élève, par le jeu
-    des règles du §4. Aucune ligne de code de tri n'existe — et c'est
-    précisément pour ça qu'elle ne peut pas se tromper.</p>
-  </div>
-
-  <p>Conséquence assumée : les copies d'élèves fictifs sont analysées comme les
-  autres et occupent la carte graphique le temps de leur passe. Le modèle étant
-  local, cela ne coûte rien et aucune copie ne quitte le PC de Loïc.</p>
 
   <h3>Côté tableau de bord</h3>
   <p>La file se lit <b>classe par classe</b>, et seulement dans l'espace SNT : une
@@ -623,8 +575,7 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   chaque élève — sa classe SNT n'est pas forcément sa classe d'inscription —, et
   le filtrage, le tri par
   nom et les compteurs du sélecteur se font dans la page. Le tri ne peut pas se
-  faire en SQL : les noms ne vivent que dans le navigateur. La validation en lot
-  ne porte que sur la classe affichée. Les seuils de couleur d'attente (10 et
+  faire en SQL : les noms ne vivent que dans le navigateur. Les seuils de couleur d'attente (10 et
   40 minutes, puis la veille) sont des constantes en tête du bloc « file de
   correction » de <code>prof/index.html</code>.</p>
 
@@ -676,7 +627,7 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
     <tr><td><code>assets/js/progression.js</code></td><td>Le client des élèves. <b>Partagé</b> avec le livret CFA : le toucher pour la SNT touche le CFA.</td></tr>
     <tr><td><code>bdd/schema/*.sql</code></td><td>Le schéma, numéroté, commenté, rejouable dans l'ordre.</td></tr>
     <tr><td><code>supabase/migrations/</code></td><td>La même chose, horodatée, appliquée automatiquement au push.</td></tr>
-    <tr><td><code>ia-snt/</code></td><td>Le worker et ses grilles d'analyse.</td></tr>
+    <tr><td><code>ia-snt/</code></td><td>Le worker de pré-correction et ses grilles d'analyse — en sommeil depuis le 13/10/2026 (§7).</td></tr>
     <tr><td><code>prof/guide-*.html</code></td><td>Les quatre guides, <b>un par matière</b> : SNT, ES de 1re, AP de physique-chimie, et celui-ci. Le lien <i>Aide</i> ouvre celui de l'espace ouvert.</td></tr>
   </table>
   </div>
@@ -717,7 +668,11 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <p class="revision">
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
-    Dernière révision : <b>11 octobre 2026</b> — moteur des séquences&nbsp;:
+    Dernière révision : <b>13 octobre 2026</b> — la pré-correction IA de la SNT
+    est mise en sommeil (§7) : la file montre toutes les copies en attente, la
+    validation en lot et l'état du worker quittent le tableau de bord, et une
+    copie validée sans mot ni IA affiche seulement « Validée » côté élève. Passe du
+    11 octobre — moteur des séquences&nbsp;:
     l'enregistrement relit la base avant d'écrire et ne l'écrase plus après une
     lecture ratée, se retente et le dit (bandeau)&nbsp;; une étape n'est faite que
     quand tous ses exercices le sont (garde de fin d'étape)&nbsp;; Sommaire partout,

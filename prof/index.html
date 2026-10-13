@@ -155,17 +155,6 @@ button.dec{border:0;cursor:pointer;flex:0 0 auto}
 .biblio-titre{font-size:12px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;margin:0 0 5px}
 .copie-texte{margin:0;padding:13px 15px;background:var(--surface-2);
     border-left:3px solid var(--link);border-radius:0 var(--r) var(--r) 0;white-space:pre-wrap}
-.crit{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px}
-.crit:last-child{border-bottom:0}
-.crit .marque{flex:0 0 22px;font-weight:700}
-.crit.obs .marque{color:var(--ok)}
-.crit.part .marque{color:var(--wait)}
-.crit.non .marque{color:var(--ink-faint)}
-.crit .quoi{flex:1}
-.crit .niv{flex:0 0 auto;font-size:11.5px;color:var(--ink-faint);text-transform:uppercase}
-.propose{padding:12px 14px;background:var(--ok-wash);border:1px solid var(--ok);
-    border-radius:var(--r);white-space:pre-wrap}
-.propose.plusloin{background:var(--link-wash);border-color:#b9c4ef;margin-top:9px}
 .pl-frise{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
 .pl-case{border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:12.5px;line-height:1.25;
          background:var(--surface);min-width:52px;text-align:center}
@@ -203,7 +192,6 @@ button.dec{border:0;cursor:pointer;flex:0 0 auto}
 .k-age{grid-row:1 / span 2;align-self:stretch;border-radius:3px}
 .k-nom{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .k-sous{grid-column:2;font-size:12px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.k-drapeau{grid-row:1 / span 2;grid-column:3;font-size:13px;color:#8a4b16}
 .k-legende{padding:8px 12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-soft);
     display:flex;flex-wrap:wrap;gap:4px 10px}
 .k-legende i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:0}
@@ -378,17 +366,12 @@ table.grille thead th{white-space:nowrap}
         <select id="k-classe"></select>
         <span class="code-eleves" id="k-code"></span>
         <button id="btn-recharger">Recharger la file</button>
-        <button id="btn-lot" style="display:none"></button>
-        <button id="btn-sans-ia" style="display:none"></button>
         <span id="etat-file" class="muet"></span>
       </div>
 
-      <div id="etat-worker" class="bandeau" style="display:none"></div>
-
       <div id="file-vide" class="vide" style="display:none">
         <div class="g" id="file-vide-titre">Rien à corriger</div>
-        <span id="file-vide-txt">Aucune copie pré-corrigée en attente. Si tes élèves ont répondu,
-        lance le worker&nbsp;: <code class="mono">node precorrection-snt.mjs</code></span>
+        <span id="file-vide-txt">Aucune copie en attente&nbsp;: tes élèves n’ont rien envoyé de nouveau.</span>
       </div>
 
       <div class="k-grille" id="k-grille" style="display:none">
@@ -407,14 +390,11 @@ table.grille thead th{white-space:nowrap}
       </aside>
 
       <article id="copie" style="display:none">
-        <div id="alerte-tri" class="bandeau" style="display:none"></div>
-
         <div class="entete-copie">
           <div>
             <span class="qui-copie" id="c-qui"></span>
             <span class="tresmuet" id="c-meta"></span>
           </div>
-          <span class="pastille" id="c-verdict"></span>
           <div class="k-nav">
             <button id="btn-precedente" type="button" title="Copie précédente (flèche gauche)">← Précédente</button>
             <span id="jauge-file" class="pastille att"></span>
@@ -428,17 +408,9 @@ table.grille thead th{white-space:nowrap}
         <h3 class="sous">Ce qu'a écrit l'élève</h3>
         <blockquote class="copie-texte" id="c-texte"></blockquote>
 
-        <h3 class="sous">Ce que l'IA a observé</h3>
-        <div id="c-criteres"></div>
-        <p class="tresmuet" id="c-notes"></p>
-
-        <h3 class="sous">Message proposé à l'élève</h3>
-        <div class="propose" id="c-message"></div>
-        <div class="propose plusloin" id="c-plusloin" style="display:none"></div>
-
         <h3 class="sous">Ta décision</h3>
         <label for="c-mot">Ton message (facultatif pour valider, obligatoire pour renvoyer)</label>
-        <textarea id="c-mot" rows="3" placeholder="Si tu écris ici, l'élève ne lira que ton mot."></textarea>
+        <textarea id="c-mot" rows="3" placeholder="L'élève le lira sous sa réponse."></textarea>
         <p class="tresmuet" style="margin:8px 0 0">Toucher une phrase <b>envoie aussitôt</b> :
           <span class="dec v">✓</span> valide, <span class="dec r">↺</span> renvoie à refaire. Ce que tu as
           tapé passe devant la phrase. Une erreur se rattrape avec «&nbsp;Annuler&nbsp;».</p>
@@ -864,7 +836,7 @@ table.grille thead th{white-space:nowrap}
     if(ESPACE === 'snt' && !suiviSNTDemarre){
       suiviSNTDemarre = true;
       if(kClasse === null) kClasse = ctx.classe;
-      chargerFile(); etatWorker(); compterSansIA();
+      chargerFile();
     }
     $('#g-etat').textContent = 'Chargement…';
     chargerContexte()
@@ -1145,17 +1117,16 @@ table.grille thead th{white-space:nowrap}
   /* ============================================================
      LA FILE DE CORRECTION (lot B)
      ------------------------------------------------------------
-     Le worker écrit  correction_ia  et laisse  statut = 'en_attente'.
-     La file, c'est donc exactement : les copies en attente DÉJÀ
-     pré-corrigées. Celles que le worker n'a pas encore vues ne s'y
-     affichent pas — inutile de corriger sans son travail préparatoire,
-     et leur présence donnerait une fausse impression de retard.
+     La file, c'est toutes les copies en attente. Depuis le 13/10/2026,
+     la SNT ne passe plus par une pré-correction IA : chaque copie
+     est lue et décidée par le professeur, sans travail préparatoire.
+     (La colonne correction_ia reste en base, inutilisée ; le worker
+     d'ia-snt/ est mis en sommeil — voir DECISIONS.md.)
 
      CLASSE ET ORDRE (13/09/2026, demande des collègues) — on corrige
      une classe à la fois, choisie en haut de l'onglet. La file est
      VISIBLE en colonne et rangée par NOM d'élève (le vrai nom si la
-     table est chargée, le pseudonyme sinon) ; les copies signalées par
-     tri.a_verifier portent un ⚠ mais ne passent plus devant. Une barre
+     table est chargée, le pseudonyme sinon). Une barre
      de couleur dit depuis combien de temps chaque copie attend.
      Filtre et tri se font ici et non en SQL : les noms ne vivent que
      dans le navigateur, la base ne saurait pas trier dessus.
@@ -1174,15 +1145,10 @@ table.grille thead th{white-space:nowrap}
 
   /* toutes = tout ce que la base renvoie, toutes classes confondues.
      file  = la vue : la classe choisie, rangée par nom. C'est sur elle
-     que travaillent rang, Précédente/Suivante et la validation en lot —
-     un lot ne déborde donc jamais sur une autre classe. */
+     que travaillent rang et Précédente/Suivante. */
   var toutes = [], file = [], rang = 0, derniere = null;
   var CLASSE_TOUTES = '*';
   var kClasse = null;   /* null tant que les classes ne sont pas lues */
-
-  function analyseDe(c){
-    return (c && c.correction_ia && c.correction_ia.analyse) || {};
-  }
 
   /* ---------- l'âge d'une copie ----------
      PROPOSITION V1, à ajuster : les séances durent 1 h 15.
@@ -1230,9 +1196,8 @@ table.grille thead th{white-space:nowrap}
        groupe SNT (018), sa classe d'inscription n'est alors pas la
        bonne. La RLS ne rend que les appartenances à MES classes. */
     var chemin = 'reponses_libres'
-      + '?select=id,code_activite,texte,statut,version,envoye_le,correction_ia,eleves(pseudo,classe_id,eleves_classes(classe_id))'
+      + '?select=id,code_activite,texte,statut,version,envoye_le,eleves(pseudo,classe_id,eleves_classes(classe_id))'
       + '&statut=eq.en_attente'
-      + (sansIA ? '&correction_ia=is.null' : '&correction_ia=not.is.null')
       + '&order=envoye_le.asc';
     return ProfAPI.lire(chemin).then(function(l){
       toutes = l || [];
@@ -1348,7 +1313,6 @@ table.grille thead th{white-space:nowrap}
     var ol = $('#k-liste');
     ol.innerHTML = '';
     file.forEach(function(c, i){
-      var a = analyseDe(c);
       var li = document.createElement('li');
       var b = document.createElement('button');
       b.type = 'button';
@@ -1360,11 +1324,6 @@ table.grille thead th{white-space:nowrap}
       sous.textContent = rep.court + (c.version > 1 ? ' · réécr. ' + c.version : '')
         + ' · ' + quandCourt(c.envoye_le);
       b.appendChild(age); b.appendChild(nom);
-      if(a.tri && a.tri.a_verifier){
-        var d = document.createElement('span'); d.className = 'k-drapeau';
-        d.textContent = '⚠'; d.title = 'À vérifier';
-        b.appendChild(d);
-      }
       b.appendChild(sous);
       b.title = nomCopie(c) + '\n' + rep.long;
       b.addEventListener('click', function(){ ouvrir(i); if(estEtroit()) replierFile(true); });
@@ -1422,7 +1381,6 @@ table.grille thead th{white-space:nowrap}
   function afficher(){
     var c = file[rang];
     $('#err-action').classList.remove('show');
-    majBoutonLot();
     if(!c){
       $('#k-grille').style.display = 'none';
       $('#copie').style.display = 'none';
@@ -1435,8 +1393,7 @@ table.grille thead th{white-space:nowrap}
         $('#file-vide-txt').textContent = ailleurs + ' copie(s) attendent dans tes autres classes — change de classe en haut.';
       } else {
         $('#file-vide-titre').textContent = 'Rien à corriger';
-        $('#file-vide-txt').innerHTML = 'Aucune copie pré-corrigée en attente. Si tes élèves ont répondu, '
-          + 'lance le worker&nbsp;: <code class="mono">node precorrection-snt.mjs</code>';
+        $('#file-vide-txt').textContent = 'Aucune copie en attente\u00a0: tes élèves n\u2019ont rien envoyé de nouveau.';
       }
       return;
     }
@@ -1448,7 +1405,6 @@ table.grille thead th{white-space:nowrap}
     $('#btn-suivante').disabled = rang >= file.length - 1;
     rendreListe();
 
-    var a = analyseDe(c);
     var pseudo = (c.eleves && c.eleves.pseudo) || '—';
 
     /* nomDe() rend le vrai nom si la table est chargée, le pseudonyme
@@ -1460,11 +1416,6 @@ table.grille thead th{white-space:nowrap}
       + (c.version > 1 ? ' · réécriture n°' + c.version : '')
       + ' · ' + new Date(c.envoye_le).toLocaleDateString('fr-FR',
           { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
-
-    var v = a.verdict || 'sans objet';
-    var pv = $('#c-verdict');
-    pv.textContent = v;
-    pv.className = 'pastille ' + (v === 'accepté' ? 'acc' : v === 'à compléter' ? 'comp' : 'neutre');
 
     /* La question posée, depuis le répertoire généré à partir des pages.
        Corriger sans relire l'énoncé, c'est corriger de mémoire : au bout
@@ -1495,52 +1446,6 @@ table.grille thead th{white-space:nowrap}
     /* Le texte de l'élève passe par textContent, jamais par innerHTML :
        une réponse peut contenir n'importe quoi, y compris du balisage. */
     $('#c-texte').textContent = c.texte || '';
-
-    /* Bandeau de tri : ce que le worker a jugé douteux. C'est le seul
-       endroit où il te dit « regarde celle-là de plus près ». */
-    var b = $('#alerte-tri');
-    if(a.tri && a.tri.a_verifier){
-      b.textContent = '⚠ À vérifier — ' + (a.tri.raisons || []).join(' ; ');
-      b.style.display = '';
-    } else b.style.display = 'none';
-
-    /* Critères */
-    var z = $('#c-criteres');
-    z.innerHTML = '';
-    (a.criteres || []).forEach(function(cr){
-      var cls = cr.constat === 'observé' ? 'obs'
-              : cr.constat === 'partiellement' ? 'part' : 'non';
-      var marque = cr.constat === 'observé' ? '✓'
-                 : cr.constat === 'partiellement' ? '~' : '·';
-      var d = document.createElement('div');
-      d.className = 'crit ' + cls;
-      var m = document.createElement('span'); m.className = 'marque'; m.textContent = marque;
-      var q = document.createElement('span'); q.className = 'quoi';
-      q.textContent = cr.id + ' — ' + (cr.justification || cr.constat);
-      var n = document.createElement('span'); n.className = 'niv';
-      n.textContent = cr.niveau === 'socle' ? 'socle' : (cr.niveau || '');
-      d.appendChild(m); d.appendChild(q); d.appendChild(n);
-      z.appendChild(d);
-    });
-    if(!(a.criteres || []).length){
-      z.innerHTML = '<p class="tresmuet">Aucun critère renvoyé (activité diagnostic, ou analyse illisible).</p>';
-    }
-
-    var notes = [];
-    if(a.a_verifier_par_le_prof) notes.push(a.a_verifier_par_le_prof);
-    if(a.note_orthographe) notes.push('Orthographe : ' + a.note_orthographe);
-    if(a.aide_camarades && a.aide_camarades.suggestion
-       && a.aide_camarades.suggestion !== 'sans objet')
-      notes.push('Aide aux camarades : ' + a.aide_camarades.suggestion);
-    $('#c-notes').textContent = notes.join(' · ');
-
-    var fe = a.feedback_eleve || {};
-    $('#c-message').textContent = fe.message || '(aucun message)';
-    var pl = $('#c-plusloin');
-    if(fe.pour_aller_plus_loin && fe.pour_aller_plus_loin.trim()){
-      pl.textContent = '🔭 ' + fe.pour_aller_plus_loin;
-      pl.style.display = '';
-    } else pl.style.display = 'none';
 
     $('#c-mot').value = '';
     chargerModeles(c.code_activite);
@@ -1664,8 +1569,7 @@ table.grille thead th{white-space:nowrap}
     if(!document.hidden && file.length && $('#p-correction').classList.contains('actif')) rendreListe();
   }, 60000);
 
-  /* Annuler : rouvrir_copie remet la copie dans la file, en gardant le
-     travail du worker. C'est le filet du clic malheureux — il n'est
+  /* Annuler : rouvrir_copie remet la copie dans la file. C'est le filet du clic malheureux — il n'est
      proposé que pour la DERNIÈRE action, pas comme un historique. */
   $('#btn-annuler').addEventListener('click', function(){
     if(!derniere) return;
@@ -1683,103 +1587,7 @@ table.grille thead th{white-space:nowrap}
   $('#btn-recharger').addEventListener('click', function(){
     $('#annuler-zone').style.display = 'none';
     derniere = null;
-    chargerFile(); etatWorker();
-  });
-
-  /* ============================================================
-     VALIDATION EN LOT
-     ------------------------------------------------------------
-     Corriger trente copies une par une n'est pas tenable. Mais
-     automatiser la validation côté worker ne l'est pas non plus :
-     le tri repère les copies douteuses, il n'attrape PAS un
-     « accepté » confiant mais faux — l'élève recevrait alors un
-     message que personne n'a lu.
-
-     Le compromis retenu (31/07) : un bouton que TU cliques. Tu ne
-     corriges plus une par une, et la décision reste humaine — le
-     cadre AI Act ne bouge pas.
-
-     SONDAGE : une copie sur cinq est retenue au hasard et reste
-     dans la file. Sans lui, tu ne verrais plus jamais ce que l'IA
-     valide en ton nom, et une grille qui dérive passerait inaperçue
-     pendant des semaines. C'est le seul garde-fou contre ça.
-     ============================================================ */
-  var PART_SONDAGE = 5;   /* 1 copie sur 5 */
-
-  function sansAlerte(){
-    return file.filter(function(c){
-      var a = analyseDe(c);
-      return !(a.tri && a.tri.a_verifier);
-    });
-  }
-
-  function majBoutonLot(){
-    var b = $('#btn-lot');
-    var n = sansAlerte().length;
-    if(n < 2){ b.style.display = 'none'; return; }
-    var garde = Math.round(n / PART_SONDAGE);
-    b.style.display = '';
-    b.textContent = 'Valider ' + (n - garde) + ' copies sans alerte';
-    b.title = garde
-      ? garde + ' copie(s) tirée(s) au hasard resteront dans la file, pour que tu gardes un œil sur ce que l\u2019IA valide.'
-      : 'Toutes les copies sans alerte seront validées.';
-  }
-
-  /* Tirage sans remise — Fisher-Yates sur une copie du tableau, pour
-     ne pas biaiser vers le début de file (donc vers les plus
-     anciennes, donc toujours les mêmes élèves). */
-  function tirer(tab, combien){
-    var t = tab.slice();
-    for(var i = t.length - 1; i > 0; i--){
-      var j = Math.floor(Math.random() * (i + 1));
-      var x = t[i]; t[i] = t[j]; t[j] = x;
-    }
-    return t.slice(0, combien);
-  }
-
-  $('#btn-lot').addEventListener('click', function(){
-    var candidates = sansAlerte();
-    if(candidates.length < 2) return;
-    var garde   = Math.round(candidates.length / PART_SONDAGE);
-    var gardees = tirer(candidates, garde);
-    var idsGardes = {};
-    gardees.forEach(function(c){ idsGardes[c.id] = true; });
-    var aValider = candidates.filter(function(c){ return !idsGardes[c.id]; });
-
-    var texte = 'Valider ' + aValider.length + ' copie(s) ?\n\n'
-      + 'Chaque élève recevra le message préparé par l\u2019IA, tel que tu le vois dans la file.\n'
-      + (garde ? garde + ' copie(s) tirée(s) au hasard resteront à corriger à la main, pour contrôle.\n' : '')
-      + '\nLes copies signalées ne sont jamais concernées.';
-    if(!window.confirm(texte)) return;
-
-    var b = $('#btn-lot');
-    b.disabled = true;
-    var faits = 0, rates = [];
-
-    /* En série, pas en parallèle : trente requêtes simultanées se
-       feraient limiter, et l'ordre des messages d'erreur deviendrait
-       illisible. Trente appels d'affilée prennent quelques secondes. */
-    var suite = Promise.resolve();
-    aValider.forEach(function(c){
-      suite = suite.then(function(){
-        b.textContent = 'Validation… ' + (faits + rates.length + 1) + ' / ' + aValider.length;
-        return ProfAPI.appeler('valider_copie', { p_copie: c.id, p_commentaire: null })
-          .then(function(){ faits++; })
-          .catch(function(e){ rates.push(c.code_activite + ' : ' + (e.message || e)); });
-      });
-    });
-
-    suite.then(function(){
-      derniere = null;
-      $('#annuler-zone').style.display = 'none';
-      if(rates.length){
-        var z = $('#err-action');
-        z.textContent = faits + ' validée(s), ' + rates.length + ' en échec — ' + rates.slice(0, 3).join(' ; ');
-        z.classList.add('show');
-      }
-      b.disabled = false;
-      return chargerFile();
-    });
+    chargerFile();
   });
 
   /* ---------- phrases toutes faites ---------- */
@@ -2955,59 +2763,6 @@ table.grille thead th{white-space:nowrap}
   });
 
   /* ============================================================
-     L'ÉTAT DU WORKER
-     ------------------------------------------------------------
-     Le tableau de bord ne peut PAS lancer le worker : c'est une page
-     web servie par GitHub Pages, elle n'a aucun moyen d'exécuter un
-     programme sur le PC de Loïc — et c'est tant mieux, une page
-     publique qui le pourrait serait une faille.
-
-     Ce qu'elle peut faire, et qui est le vrai besoin : dire si le
-     worker a tourné. Sans ça, une file vide est ambiguë — soit les
-     élèves n'ont rien envoyé, soit le worker dort depuis trois jours,
-     et ces deux situations demandent des gestes opposés.
-
-     Deux chiffres suffisent :
-      · combien de copies attendent que le worker les voie
-      · quand remonte sa dernière passe
-     ============================================================ */
-  var SEUIL_WORKER_H = 24;   /* au-delà, on considère qu'il dort */
-
-  function etatWorker(){
-    return Promise.all([
-      ProfAPI.lire('reponses_libres?select=id&statut=eq.en_attente&correction_ia=is.null'),
-      ProfAPI.lire('reponses_libres?select=correction_ia&correction_ia=not.is.null'
-                   + '&order=envoye_le.desc&limit=100')
-    ]).then(function(r){
-      var enAttente = (r[0] || []).length;
-      var dernier = null;
-      (r[1] || []).forEach(function(c){
-        var g = c.correction_ia && c.correction_ia.genere_le;
-        if(g && (!dernier || g > dernier)) dernier = g;
-      });
-
-      var b = $('#etat-worker');
-      if(!enAttente){
-        /* rien n'attend : inutile d'encombrer l'écran */
-        b.style.display = 'none';
-        return;
-      }
-      var heures = dernier ? (Date.now() - new Date(dernier).getTime()) / 3600000 : null;
-      var quand = dernier
-        ? new Date(dernier).toLocaleString('fr-FR',
-            { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
-        : 'jamais';
-      b.textContent = enAttente + ' copie(s) attendent la pré-correction — '
-        + 'dernière passe du worker : ' + quand + '.'
-        + ((heures === null || heures > SEUIL_WORKER_H)
-            ? ' Il n\u2019a pas tourné récemment : vérifie qu\u2019Ollama est lancé, '
-              + 'ou lance « node precorrection-snt.mjs » dans ia-snt.'
-            : ' Elles apparaîtront ici à sa prochaine passe.');
-      b.style.display = '';
-    }).catch(function(){ $('#etat-worker').style.display = 'none'; });
-  }
-
-  /* ============================================================
      RAFRAÎCHISSEMENT AUTOMATIQUE
      ------------------------------------------------------------
      Pendant une séance, les copies arrivent au fil de l'eau. Recharger
@@ -3028,11 +2783,10 @@ table.grille thead th{white-space:nowrap}
   setInterval(function(){
     if(!autoActif || !ProfAPI.connecte()) return;
     if(document.hidden) return;
-    if(!$('#p-correction').classList.contains('actif')) { etatWorker(); return; }
+    if(!$('#p-correction').classList.contains('actif')) return;
     if(enTrainDeDecider()) return;
     var avant = file.length;
     chargerFile().then(function(){
-      etatWorker();
       if(file.length > avant){
         $('#etat-file').textContent = (file.length - avant) + ' nouvelle(s) copie(s).';
         setTimeout(function(){ $('#etat-file').textContent = ''; }, 6000);
@@ -3088,38 +2842,6 @@ table.grille thead th{white-space:nowrap}
     b.appendChild(t); b.appendChild(bt);
     b.style.display = '';
   }
-
-  /* ============================================================
-     CORRIGER SANS ATTENDRE L'IA
-     ------------------------------------------------------------
-     Le tableau de bord ne peut PAS lancer Ollama : il tourne sur le
-     PC de Loïc, injoignable depuis l'iPad. « Court-circuiter le
-     worker » veut donc dire : faire entrer dans la file les copies
-     qu'il n'a pas encore vues, pour les corriger à la main.
-     Utile en séance, quand une copie vient d'arriver et qu'on veut
-     répondre tout de suite plutôt que d'attendre la prochaine passe.
-     Ces copies s'affichent sans critères ni message proposé — il n'y
-     a rien à afficher, et c'est normal.
-     ============================================================ */
-  var sansIA = false;
-
-  function compterSansIA(){
-    return ProfAPI.lire('reponses_libres?select=id&statut=eq.en_attente&correction_ia=is.null')
-      .then(function(l){
-        var n = (l || []).length;
-        var b = $('#btn-sans-ia');
-        if(!n && !sansIA){ b.style.display = 'none'; return; }
-        b.style.display = '';
-        b.textContent = sansIA
-          ? 'Revenir aux copies pré-corrigées'
-          : 'Corriger sans l\u2019IA (' + n + ')';
-      }).catch(function(){});
-  }
-
-  $('#btn-sans-ia').addEventListener('click', function(){
-    sansIA = !sansIA;
-    chargerFile().then(compterSansIA);
-  });
 
   /* ============================================================
      LA BIBLIOTHÈQUE DE RÉPONSES TYPES

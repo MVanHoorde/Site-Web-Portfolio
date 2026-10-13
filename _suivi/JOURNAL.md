@@ -4835,3 +4835,27 @@ Au contrôle avant commit : le bouton « ➕ Ajouter un élément » n'avait pas
 gestionnaire (fiches 11 à 30 inaccessibles). Ajouté dans `initElements` du moteur :
 il ouvre la fiche suivante, disparaît à trente, et une fiche qui revient de la base
 avec un contenu se rouvre d'elle-même. Éprouvé au banc d'essai.
+
+## 13/10/2026 — La SNT se corrige sans IA ; « CHON » en nucléosynthèse
+
+Demande de Loïc : la pré-correction par Mistral Nemo n'est pas satisfaisante, on
+l'annule pour l'instant et tout passe par lui. Compté avant d'agir : 86 copies en
+attente pré-corrigées (74 SYS, 6 NET, 6 WEB), 50 en attente sans IA, 13 validées
+et 28 renvoyées avec une pré-correction (laissées telles quelles, à sa demande).
+
+Tableau de bord : la file lit toutes les copies en attente ; retirés l'affichage
+de l'analyse (critères, notes, verdict, message proposé, ⚠ de tri), la validation
+en lot et son sondage, l'état du worker, « Corriger sans l'IA » (−308 lignes).
+Trouvé en chemin : côté élève, une copie validée sans mot ni IA aurait affiché
+une pastille « Bien reçu », un message vide et la ligne « Ce retour a d'abord été
+préparé par une intelligence artificielle » — fausse. `rendreRetour` n'affiche
+plus cette ligne qu'avec un vrai message IA, et la pastille devient « ✓ Validée »
+(`sequence-snt.js?v=59`). Worker verrouillé (`IA_SNT_ACTIF`) parce que les deux
+tâches planifiées étaient encore actives et Ollama lancé : sans ce verrou, elles
+auraient re-pré-corrigé les copies remises dans la file. Guides SNT et dispositif
+réécrits, PDF régénérés. `verifier.mjs` : 19, le repère.
+
+Nucléosynthèse : les deux encadrés « À retenir » des abondances disaient
+« l'hydrogène, l'oxygène et le carbone » alors que le QCM et le tableau
+périodique disaient déjà CHON ; l'azote est ajouté, avec « CHON ».
+
