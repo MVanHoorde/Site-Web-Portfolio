@@ -114,8 +114,14 @@ if ($Retirer) {
   if (Test-Path $raccourci) { Remove-Item $raccourci -Force; Bien "Lancement au demarrage supprime." }
   foreach ($n in $Taches) {
     if (Get-ScheduledTask -TaskName $n -ErrorAction SilentlyContinue) {
-      Unregister-ScheduledTask -TaskName $n -Confirm:$false
-      Bien "Tache supprimee : $n"
+      # -ErrorAction Stop : sans lui, un refus d'acces s'affichait en rouge
+      # puis le script annoncait quand meme OK (constate le 13/10/2026).
+      try {
+        Unregister-ScheduledTask -TaskName $n -Confirm:$false -ErrorAction Stop
+        Bien "Tache supprimee : $n"
+      } catch {
+        Mal "Tache NON supprimee : $n - relancer dans un PowerShell administrateur."
+      }
     } else {
       Mou "Pas de tache : $n"
     }
