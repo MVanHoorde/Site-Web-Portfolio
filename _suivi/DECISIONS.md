@@ -15,6 +15,14 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 16/10/2026 — Réponses types partagées ; correction SNT en lot par Claude
+
+| Date | Décision | Statut |
+|---|---|---|
+| 16/10/2026 | **Les réponses types se partagent entre enseignants, dans les deux sens**, question par question : bouton discret 👥 dans le titre de la bibliothèque. Lecture seule — on **garde** d'abord la phrase d'un collègue dans sa bibliothèque (avec sa décision) avant de s'en servir. `bdd/schema/027`, fonction `modeles_collegues()` | ✅ en vigueur (demande de Loïc) |
+| 16/10/2026 | **Correction des copies SNT en lot par Claude, sur demande de Loïc et dans le périmètre qu'il fixe** (ce jour : jusqu'à la séance 1 d'Internet). Calée sur ses seules décisions et réponses types passées ; les cas litigieux lui sont laissés. Loïc donne le feu vert avant l'écriture | ✅ en vigueur |
+| 16/10/2026 | **Trous d'années : les deux derniers chiffres acceptés pour les années 1900** (1969 → « 69 », 1945, 1960) ; les années 2000 et 1831 gardent la saisie complète | ✅ en vigueur (demande de Loïc) |
+
 ## 13/10/2026 — La correction SNT ne passe plus que par Loïc
 
 | Date | Décision | Statut |

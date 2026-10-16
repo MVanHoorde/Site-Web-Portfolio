@@ -4859,3 +4859,26 @@ Nucléosynthèse : les deux encadrés « À retenir » des abondances disaient
 « l'hydrogène, l'oxygène et le carbone » alors que le QCM et le tableau
 périodique disaient déjà CHON ; l'azote est ajouté, avec « CHON ».
 
+## 16/10/2026 — Années sur deux chiffres, séance 1 d'une élève, correction en lot, réponses partagées
+
+Signalements d'élèves : en t1 étape 1.3, « 69 » était refusé pour 1969 ; même
+tolérance posée sur 1945 et 1960 (ES term c2), pas sur les années 2000 (demande
+de Loïc). mri8624 n'avait qu'une étape sur cinq de la séance 1 de t0 en base
+(rien d'un autre compte : ari8624 est une autre élève) : séance 1 validée à la
+main, QCM au score plein, réponse rédigée laissée vide ; la 3.4 reste à faire,
+donc la séance 4 reste fermée — choix de Loïc.
+
+Correction en lot : 196 copies SNT en attente, dont 195 dans ses groupes E et N
+(une chez MARTIN, laissée). Périmètre fixé par Loïc : jusqu'à la séance 1
+d'Internet (NET-R1, séance 2, laissé). Calibrage sur ses seules décisions — son
+historique brut mêlait celles de MARTIN, dont la phrase « Pourquoi est il plus
+rapide? ». 125 validées, 57 renvoyées, 9 laissées à Loïc ; écrit par
+`valider_copie`/`signaler_copie` sous son JWT, seulement si la copie était encore
+en attente dans la version lue. Compteurs d'usage de 19 réponses types mis à jour.
+
+Réponses types partagées : `027` (`modeles_collegues`), éprouvé dans une
+transaction annulée (Loïc voit MARTIN, MARTIN voit Loïc, un élève refusé 42501,
+doublon « disque dur ? » / « disque dur? » écarté), appliqué par la CLI, inscrit
+au registre. Tableau de bord : bouton 👥 et « + Garder ». Guides SNT et dispositif
++ PDF ; ES et AP non concernés (pas de correction de copies). Rendu du bouton non
+vérifié au navigateur (page derrière connexion).

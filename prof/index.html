@@ -153,6 +153,14 @@ button.dec{border:0;cursor:pointer;flex:0 0 auto}
 .modele .sup{background:none;border:0;color:var(--ink-faint);cursor:pointer;padding:0 2px;font-size:15px}
 .modele .sup:hover{color:var(--err)}
 .biblio-titre{font-size:12px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;margin:0 0 5px}
+/* réponses types des collègues (027) : bouton discret dans le titre, volet en lecture seule */
+.btn-coll{margin-left:8px;padding:0 7px;border:1px solid var(--line);border-radius:999px;background:none;
+    color:var(--ink-faint);font-size:11.5px;line-height:1.6;cursor:pointer;text-transform:none;letter-spacing:0;vertical-align:1px}
+.btn-coll:hover,.btn-coll[aria-expanded="true"]{color:var(--link);border-color:var(--link)}
+.modele.coll{background:none;border-style:dashed}
+.modele.coll .txt{cursor:default;color:var(--ink-soft)}
+.modele .garder{background:none;border:0;color:var(--link);cursor:pointer;padding:0 2px;font-size:12.5px;white-space:nowrap}
+.modele .garder:disabled{opacity:.5;cursor:default}
 .copie-texte{margin:0;padding:13px 15px;background:var(--surface-2);
     border-left:3px solid var(--link);border-radius:0 var(--r) var(--r) 0;white-space:pre-wrap}
 .pl-frise{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
@@ -2856,23 +2864,44 @@ table.grille thead th{white-space:nowrap}
      tout seul, sinon la bibliothèque se remplit de brouillons.
      ============================================================ */
   var modeles = [];
+  /* Les réponses types des collègues pour la même question (027,
+     partage dans les deux sens). Lecture seule : on en GARDE une chez
+     soi avant de s'en servir — décision de Loïc du 16/10/2026. Le
+     volet reste ouvert ou fermé d'une copie à l'autre. */
+  var collegues = [], voirCollegues = false;
 
   function chargerModeles(code){
-    if(!code){ modeles = []; rendreBiblio(); return Promise.resolve(); }
-    return ProfAPI.lire('modeles_correction?select=id,texte,usages,decision'
-      + '&code_activite=eq.' + encodeURIComponent(code)
-      + '&order=usages.desc,cree_le.desc')
-      .then(function(l){ modeles = l || []; rendreBiblio(); })
-      .catch(function(){ modeles = []; rendreBiblio(); });
+    if(!code){ modeles = []; collegues = []; rendreBiblio(); return Promise.resolve(); }
+    return Promise.all([
+      ProfAPI.lire('modeles_correction?select=id,texte,usages,decision'
+        + '&code_activite=eq.' + encodeURIComponent(code)
+        + '&order=usages.desc,cree_le.desc').catch(function(){ return []; }),
+      ProfAPI.appeler('modeles_collegues', { p_code: code }).catch(function(){ return []; })
+    ]).then(function(r){
+      modeles = r[0] || [];
+      collegues = Array.isArray(r[1]) ? r[1] : [];
+      rendreBiblio();
+    });
   }
 
   function rendreBiblio(){
     var z = $('#biblio');
     z.innerHTML = '';
-    if(!modeles.length) return;
+    if(!modeles.length && !collegues.length) return;
     var t = document.createElement('p');
     t.className = 'biblio-titre';
-    t.textContent = 'Mes réponses gardées pour cette question';
+    t.textContent = modeles.length ? 'Mes réponses gardées pour cette question'
+                                   : 'Aucune réponse gardée pour cette question';
+    if(collegues.length){
+      var bc = document.createElement('button');
+      bc.type = 'button'; bc.className = 'btn-coll';
+      bc.setAttribute('aria-expanded', voirCollegues ? 'true' : 'false');
+      bc.title = voirCollegues ? 'Masquer les réponses des collègues'
+                               : 'Voir les réponses gardées par les collègues';
+      bc.textContent = '👥 ' + collegues.length;
+      bc.addEventListener('click', function(){ voirCollegues = !voirCollegues; rendreBiblio(); });
+      t.appendChild(bc);
+    }
     z.appendChild(t);
 
     modeles.forEach(function(m){
@@ -2920,6 +2949,49 @@ table.grille thead th{white-space:nowrap}
       d.appendChild(p); d.appendChild(b); d.appendChild(c); d.appendChild(s);
       z.appendChild(d);
     });
+
+    if(!voirCollegues || !collegues.length) return;
+    var tc = document.createElement('p');
+    tc.className = 'biblio-titre';
+    tc.style.marginTop = '10px';
+    tc.textContent = 'Gardées par les collègues — « Garder » la copie dans ta bibliothèque';
+    z.appendChild(tc);
+    collegues.forEach(function(m){
+      var d = document.createElement('div');
+      d.className = 'modele coll';
+      var p = pastilleDecision(m.decision, 'span');
+      var x = document.createElement('span');
+      x.className = 'txt';
+      x.textContent = m.texte;
+      var a = document.createElement('span');
+      a.className = 'cpt';
+      a.textContent = m.auteur;
+      var g = document.createElement('button');
+      g.type = 'button'; g.className = 'garder';
+      g.textContent = '+ Garder';
+      g.title = 'Ajouter à ta bibliothèque, avec sa décision';
+      g.addEventListener('click', function(){ garderCollegue(m, g); });
+      d.appendChild(p); d.appendChild(x); d.appendChild(a); d.appendChild(g);
+      z.appendChild(d);
+    });
+  }
+
+  /* Reprendre la phrase d'un collègue : même chemin que memoriser(),
+     la décision suit la phrase. Elle quitte alors la liste des
+     collègues (027 ne repropose pas ce qu'on a déjà). */
+  function garderCollegue(m, b){
+    var c = courant(), moi = ProfAPI.monId();
+    if(!c) return;
+    if(!moi){ erreurAction(new Error('Session illisible, reconnecte-toi.')); return; }
+    b.disabled = true;
+    ProfAPI.ecrire('modeles_correction', {
+      auth_id: moi,
+      code_activite: c.code_activite,
+      texte: m.texte,
+      decision: m.decision === 'valider' ? 'valider' : 'refaire'
+    }, false)
+      .then(function(){ return chargerModeles(c.code_activite); })
+      .catch(function(e){ erreurAction(e); b.disabled = false; });
   }
 
   function pastilleDecision(decision, balise){
