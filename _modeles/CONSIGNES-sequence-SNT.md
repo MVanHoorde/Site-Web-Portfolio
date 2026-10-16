@@ -104,7 +104,8 @@ séance 4). Ce que le moteur rétablit : trous, menus à « Vérifier » et éti
 posées (état de la séquence, `champs`) · réponses rédigées et partagées · notes
 de visionnage · **photos déposées** (stockage privé `depots`, `<compte>/<séquence>/<code>.jpg`
 — d'où le `data-depot-code` obligatoire) · **QCM finis** (`…/qcm-N`, même dans
-une étape pas encore validée) · réponses rédigées **sans code** (`…/redac-N`).
+une étape pas encore validée, diagnostic compris) · **QCM en cours** (`…/qcm-N-encours`,
+les choix déjà faits : le QCM reprend à la question suivante) · réponses rédigées **sans code** (`…/redac-N`).
 La page **dit** si une photo n'est pas enregistrée (élève non connecté, envoi
 échoué) : jamais de silence. Un **nouveau type de champ** n'est pas fini tant que
 sa reprise n'est pas écrite et éprouvée en rechargeant la page — le banc d'essai
@@ -164,7 +165,7 @@ foi sur celui gardé en mémoire.
   avoir de quoi se valider** — QCM, trous, réponse rédigée, tri… ou, pour une
   étape de lecture, le bouton **« J'ai lu »** :
   `<div class="lu" data-valide-sur-interaction><button type="button"><span class="lu-a">✓ J'ai lu</span><span class="lu-ok">✓ C'est noté</span></button></div>`.
-  Un QCM `data-facultatif` ne valide rien et ne s'enregistre pas.
+  Un QCM `data-facultatif` ne valide rien ; il garde seulement sa trace « déjà fait ».
 - **Étape envoyée, pas encore relue** (`attente-corr`) : **hachurée de vert**
   partout (pastille, sommaire, jauges), avec une légende « c'est compté, tu peux
   avancer ». Elle compte dans la progression. Sur une page `data-reponses="personnelles"`

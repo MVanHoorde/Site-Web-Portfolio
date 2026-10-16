@@ -188,6 +188,9 @@
   .des{margin:12px 0}
   .des-noyaux{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;max-width:560px;margin:12px auto}
   @media (max-width:420px){.des-noyaux{gap:6px}}
+  /* téléphone : « radioactif » débordait des pastilles ; le symbole et le
+     pointillé disent déjà l'état (le libellé reste lu dans aria-label) */
+  @media (max-width:480px){.des-noyaux .dn-et{display:none}.des-n .dn-sym{font-size:20px}}
   .des-n{position:relative;aspect-ratio:1;border-radius:50%;border:2.5px solid var(--activity);
     background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;display:flex;flex-direction:column;
     align-items:center;justify-content:center;gap:2px;min-height:44px;padding:0}
@@ -276,6 +279,26 @@
   .dp-tete h2{font:600 15px/1.3 "Space Grotesk","Inter",system-ui,sans-serif;margin:0}
   .dp-fermer{min-width:44px;min-height:44px;border:0;background:none;font-size:18px;color:var(--ink-soft);cursor:pointer;border-radius:9px}
   @media print{#des-ouvrir,#des-panneau{display:none!important}}
+  /* Lanceur ouvert : il se range À CÔTÉ des noyaux au lieu de les couvrir
+     (essai en classe du 12/10). En colonne à droite dès que la largeur le
+     permet, la page se décalant d'autant ; en bas de l'écran sur téléphone.
+     État porté par body[data-des-ouvert], pas par une classe. */
+  .des-n:disabled{cursor:default}
+  .des[data-pret="0"] .des-noyaux{opacity:.45}
+  @media (min-width:760px){
+    body[data-des-ouvert]{--des-l:min(380px,36vw);padding-right:var(--des-l)}
+    body[data-des-ouvert] #des-panneau{top:0;bottom:0;right:0;width:var(--des-l);max-height:none;
+      border-radius:0;border-width:0 0 0 1px}
+    body[data-des-ouvert] #des-ouvrir{right:calc(var(--des-l) + 14px)}
+  }
+  @media (max-width:759.98px){
+    body[data-des-ouvert]{--des-h:44vh;padding-bottom:var(--des-h)}
+    body[data-des-ouvert] #des-panneau{left:0;right:0;bottom:0;width:auto;height:var(--des-h);max-height:none;
+      border-radius:14px 14px 0 0;border-width:1px 0 0}
+    body[data-des-ouvert] #des-ouvrir{bottom:calc(var(--des-h) + 10px)}
+    body[data-des-ouvert] .de{width:44px;height:44px;padding:6px;border-radius:9px}
+    body[data-des-ouvert] .piste{gap:7px}
+  }
 
   /* ---------- La courbe de l'exercice 1 ----------
      Un graphique est une structure : il se trace (SVG, script de fin de page). */
@@ -1782,6 +1805,7 @@
             <div class="block-label">La règle du jeu</div>
             <ul class="txt">
               <li>Tu as des <b>noyaux radioactifs</b> fictifs, tous du même type&nbsp;: 10 par défaut, ou le nombre que ton professeur indique, entre 5 et 100. Prends autant de dés.</li>
+              <li>Tes dés en main, concentré&nbsp;? Touche <b>✋ Je suis prêt</b>&nbsp;: c'est à ce moment que tu entres dans la courbe de la classe, et que ton professeur t'attend à chaque lancer.</li>
               <li>Un <b>lancer</b> représente un intervalle de temps Δt. Lance un dé <b>par noyau encore radioactif</b>.</li>
               <li>Chaque dé qui fait <b>1</b>, c'est un noyau qui se désintègre pendant ce Δt. Touche autant de noyaux que tu as de 1, puis <b>valide le lancer</b>.</li>
               <li>Mets de côté les dés de tes noyaux désintégrés, et relance les autres. Continue jusqu'à ce qu'il ne te reste plus de noyau, ou jusqu'au 20<sup>e</sup> lancer.</li>
@@ -1796,6 +1820,7 @@
                 </div>
                 <div class="des-noyaux" data-des-noyaux></div>
                 <div class="des-barre">
+                  <button type="button" class="btn" data-des-pret>✋ Je suis prêt</button>
                   <button type="button" class="btn" data-des-valider>✓ Valider le lancer</button>
                 </div>
                 <p class="des-etat" data-des-etat aria-live="polite"></p>
@@ -2843,7 +2868,7 @@
   "def": "La détermination de l'âge d'un objet ancien grâce à la décroissance d'un radionucléide. Elle est possible parce que chaque radionucléide a un temps de demi-vie qui lui est propre."}
 ]
 </script>
-<script src="../assets/js/sequence-snt.js?v=59"></script>
+<script src="../assets/js/sequence-snt.js?v=60"></script>
 
 <script>
 /* ---------- Glossaire du chapitre (patron de la nucléosynthèse) ----------
@@ -2993,12 +3018,12 @@
    s'en sert, et le tableau de bord n'a rien d'autre à savoir.
    La série est l'heure de départ (ISO) : le tableau de bord ne garde que
    les séries du jour, ou celles parties après son « nouvelle partie ».
-   Rejoindre la partie (11/10/2026) : dès que le jeu paraît à l'écran d'un
-   élève connecté, sa série part au lancer 0 ([heure, '10']) — le tableau
-   de bord le compte alors « en jeu » et l'attend. Tant qu'aucun lancer
-   n'est joué, l'heure se remet à jour (au retour à l'écran, au changement
-   du nombre de noyaux, au premier lancer) : un élève qui rejoint avant la
-   « nouvelle partie » du professeur y entre quand même.
+   « Je suis prêt » (essai en classe du 12/10/2026) : l'élève entre dans la
+   partie en touchant ce bouton, plus en faisant seulement défiler la page
+   jusqu'au jeu — le tableau de bord n'attend que ceux qui ont dit être
+   concentrés. Sa série part alors au lancer 0 ([heure, '10']). Tant
+   qu'aucun lancer n'est joué, un changement du nombre de noyaux la
+   remet à l'heure. Avant « prêt », ni noyau ni lancer ne se touchent.
    Aucune donnée personnelle : des nombres de noyaux. */
 (function(){
   var jeu = document.querySelector('[data-des]');
@@ -3008,6 +3033,7 @@
   var PAS_MAX = parseInt(jeu.dataset.pasMax, 10) || 20;
   var zone = jeu.querySelector('[data-des-noyaux]');
   var bValider = jeu.querySelector('[data-des-valider]');
+  var bPret = jeu.querySelector('[data-des-pret]');
   var etat = jeu.querySelector('[data-des-etat]');
   var releve = jeu.querySelector('[data-des-releve]');
   var reco = jeu.querySelector('[data-des-reco]');
@@ -3027,6 +3053,7 @@
   function compter(){ return restants.filter(Boolean).length; }
   function nbMarques(){ return marques.filter(Boolean).length; }
   function joue(){ return historique.length > 1; }
+  function pret(){ return historique.length > 0; }
   function fini(){ return historique.length > 0 && (historique[historique.length-1] === 0 || historique.length - 1 >= PAS_MAX); }
   function s(n, mot, pl){ return n + ' ' + mot + (n > 1 ? (pl || 's') : ''); }
 
@@ -3046,7 +3073,7 @@
       b.innerHTML = '<span class="dn-num">' + (beaucoup ? '' : 'n°') + (i+1) + '</span><span class="dn-sym" aria-hidden="true">'
         + (restants[i] ? (marques[i] ? '✕' : '☢') : '·') + '</span><span class="dn-et">' + et + '</span>';
       b.setAttribute('aria-label', 'Noyau ' + (i+1) + ' : ' + et);
-      if(!restants[i] || fini()) b.disabled = true;
+      if(!restants[i] || fini() || !pret()) b.disabled = true;
       b.addEventListener('click', toucher);
       zone.appendChild(b);
     }
@@ -3057,20 +3084,28 @@
     var p = Math.max(1, historique.length), m = nbMarques();
     bValider.textContent = '✓ Valider le lancer ' + p + ' — ' + (m ? s(m, 'noyau', 'x') + ' désintégré' + (m > 1 ? 's' : '') : 'aucun 1');
     bValider.disabled = fini();
+    bValider.hidden = !pret(); bPret.hidden = pret();
+    var p0 = pret() ? '1' : '0';
+    if(jeu.dataset.pret !== p0) jeu.dataset.pret = p0;
     choix.value = String(N);
     choix.disabled = joue();
-    /* pour le lanceur : autant de dés que de noyaux encore radioactifs */
-    jeu.dataset.restants = String(Math.max(1, compter()));
+    /* pour le lanceur : autant de dés que de noyaux encore radioactifs —
+       annoncé, pour que le lanceur ouvert se mette à jour de lui-même */
+    var r0 = String(Math.max(1, compter()));
+    if(jeu.dataset.restants !== r0){
+      jeu.dataset.restants = r0;
+      document.dispatchEvent(new CustomEvent('des-restants', {detail: {n: +r0}}));
+    }
   }
   function toucher(ev){
     var i = parseInt(ev.currentTarget.dataset.i, 10);
-    if(!restants[i] || fini()) return;
+    if(!restants[i] || fini() || !pret()) return;
     marques[i] = !marques[i];
     dessiner();
     etat.textContent = nbMarques() ? 'Vérifie que tu as touché autant de noyaux que de dés tombés sur 1, puis valide.' : '';
   }
   function valider(){
-    if(fini()) return;
+    if(fini() || !pret()) return;
     if(!joue()){ serie = new Date().toISOString(); historique = [compter()]; }
     var m = nbMarques();
     for(var i = 0; i < N; i++) if(marques[i]){ restants[i] = false; marques[i] = false; }
@@ -3097,9 +3132,7 @@
     restants = []; marques = [];
     for(var i = 0; i < N; i++){ restants.push(true); marques.push(false); }
     delete jeu.dataset.fait;
-    var connecte = window.EtatSNT && EtatSNT.actif() && typeof Progression !== 'undefined' && Progression.disponible();
-    etat.textContent = 'Prêt. Lance un dé par noyau, soit ' + s(N, 'dé') + '. '
-      + (connecte ? 'Chaque lancer validé rejoint la courbe de la classe.' : 'Connecte-toi pour que tes résultats rejoignent la courbe de la classe.');
+    etat.textContent = 'Prépare ' + s(N, 'dé') + ', un par noyau. Quand tu es prêt à jouer, touche « Je suis prêt ».';
     dessiner();
   }
   choix.addEventListener('change', function(){
@@ -3108,22 +3141,27 @@
     /* « change » repart quand le champ perd le focus — au premier toucher
        d'un noyau : sans ce garde-fou, la marque posée était effacée */
     if(n === N){ choix.value = String(N); return; }
+    var etaitPret = pret();
     remettre(n);
-    rejoindre();
+    if(etaitPret) rejoindre();
   });
   bValider.addEventListener('click', valider);
+  bPret.addEventListener('click', rejoindre);
   jeu.querySelector('[data-des-recommencer]').addEventListener('click', function(){
     if(!confirm('Recommencer une nouvelle série ? La série en cours ne comptera plus.')) return;
-    remettre(); enregistrer(); rejoindre();
+    remettre(); enregistrer();
   });
   remettre();
 
   /* Le lancer 0 : l'élève entre dans la partie avant d'avoir lancé. */
-  var aLEcran = false;
   function rejoindre(){
-    if(!aLEcran || joue() || !cle()) return;
+    if(joue()) return;
     serie = new Date().toISOString(); historique = [N];
     enregistrer();
+    var connecte = !!cle() && typeof Progression !== 'undefined' && Progression.disponible();
+    etat.textContent = 'C\'est parti : lance ' + s(N, 'dé') + ', puis touche autant de noyaux que de dés tombés sur 1. '
+      + (connecte ? 'Chaque lancer validé rejoint la courbe de la classe.' : 'Connecte-toi pour que tes résultats rejoignent la courbe de la classe.');
+    dessiner();
   }
 
   /* Reprise : la série enregistrée se rétablit, noyau par noyau. */
@@ -3139,13 +3177,8 @@
     for(var i = 0; i < N; i++){ restants.push(i < r); marques.push(false); }
     if(fini()){ jeu.dataset.fait = '1'; etat.textContent = 'Ta série est terminée et envoyée (' + (h.length - 1) + ' lancers).'; }
     else if(h.length > 1) etat.textContent = 'Ta série reprend au lancer ' + h.length + ' : il te reste ' + s(r, 'noyau', 'x') + '.';
+    else etat.textContent = 'Tu es prêt : lance ' + s(N, 'dé') + '.';
     dessiner();
-  }).then(function(){
-    if(!('IntersectionObserver' in window)){ aLEcran = true; rejoindre(); return; }
-    new IntersectionObserver(function(es){
-      aLEcran = es.some(function(e){ return e.isIntersecting; });
-      rejoindre();
-    }).observe(jeu);
   });
 })();
 
@@ -3186,9 +3219,30 @@
   function ouvrir(){
     champ.value = jeu.dataset.restants || '10';
     pan.hidden = false; bouton.setAttribute('aria-expanded', 'true');
-    pan.querySelector('#dp-titre').focus();
+    document.body.setAttribute('data-des-ouvert', '');
+    pan.querySelector('#dp-titre').focus({preventScroll:true});
+    /* les noyaux à côté des dés : la page vient de rétrécir, on les centre
+       dans ce qui reste visible — sous la barre du haut, au-dessus du
+       lanceur quand il occupe le bas de l'écran. Deux frames : la mise en
+       page doit d'abord intégrer la place prise par le lanceur. */
+    var z = jeu.querySelector('[data-des-noyaux]') || jeu;
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      var r = z.getBoundingClientRect(), p = pan.getBoundingClientRect();
+      var bas = p.top > 10 ? p.top : window.innerHeight, haut = 72;
+      var cible = haut + Math.max(0, (bas - haut - r.height) / 2);
+      window.scrollBy({top: r.top - cible, behavior: calme ? 'instant' : 'smooth'});
+    }); });
   }
-  function fermer(rendre){ pan.hidden = true; bouton.setAttribute('aria-expanded', 'false'); if(rendre) bouton.focus(); }
+  function fermer(rendre){
+    pan.hidden = true; bouton.setAttribute('aria-expanded', 'false');
+    document.body.removeAttribute('data-des-ouvert');
+    if(rendre) bouton.focus();
+  }
+  /* un lancer validé pendant que le lanceur est ouvert : le nombre de dés suit
+     (signalé le 12/10 : il fallait fermer et rouvrir le lanceur) */
+  document.addEventListener('des-restants', function(e){
+    champ.value = String(e.detail && e.detail.n || jeu.dataset.restants || 10);
+  });
   bouton.addEventListener('click', function(){ pan.hidden ? ouvrir() : fermer(false); });
   pan.querySelector('.dp-fermer').addEventListener('click', function(){ fermer(true); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !pan.hidden) fermer(true); });

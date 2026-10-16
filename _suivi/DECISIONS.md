@@ -2251,3 +2251,21 @@ La séance 2 passe à quatre exercices, renumérotés à l'affichage ; les `data
 restent ceux d'origine, pour ne pas effacer de progression enregistrée. Le pied de
 page ne garde que ce qui sert à l'élève : la source officielle et l'avertissement sur
 le règlement de l'établissement.
+
+## 16/10/2026 — Signalements de 1re : QCM et jeu de dés
+
+### M-QCM-01 · Un QCM interrompu se reprend, le diagnostic garde sa trace ✅
+
+**16/10/2026, demande de Loïc.** Un QCM quitté en cours (sortie, rafraîchissement)
+reprend à la question suivante, réponses déjà données comprises
+(`…/qcm-N-encours`). Le QCM `data-facultatif` enregistre sa fin (`…/qcm-N`) et
+s'affiche « déjà fait » ; il ne compte toujours pas pour valider l'étape. Sa
+consigne devient « ça ne compte pas dans ta progression » (au lieu de « rien
+n'est retenu »).
+
+### ES1-RAD-01 · Le jeu de dés : on entre dans la partie par « Je suis prêt » ✅
+
+**16/10/2026, essai en classe.** L'élève n'est plus compté « en jeu » à
+l'affichage du jeu, mais quand il touche « Je suis prêt » ; avant, noyaux et
+lancer sont inactifs. L'écran enseignant superpose plusieurs courbes (« Nouvelle
+courbe », « Tout effacer ») et trace sur demande N₀/2 et t½ de chacune.

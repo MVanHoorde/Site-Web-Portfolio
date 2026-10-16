@@ -4728,17 +4728,47 @@ function initQcm(){
     var obligatoire=!sansEnjeu && !!(etapeDuQcm && etapeDuQcm.hasAttribute('data-gate'));
     lanceur.innerHTML='<span class="ql">✍️ QCM · '+data.length+(data.length>1?' questions':' question')+'</span>'+
                       '<span class="qcm-consigne" style="font-size:13.5px;color:'+(obligatoire?'#8a4c0c':'var(--ink-soft)')+'">'+
-                      (sansEnjeu?"Sans enjeu&nbsp;: tu te testes, rien n'est retenu."
+                      (sansEnjeu?"Sans enjeu&nbsp;: tu te testes, ça ne compte pas dans ta progression."
                        :obligatoire?"Obligatoire pour valider l'étape.":"Facultatif : ne compte pas dans ta progression.")+'</span>'+
                       '<button type="button">Commencer</button>';
     box.appendChild(lanceur);
     var recap=document.createElement('div'); recap.className='qcm-recap'; recap.style.display='none';
     box.appendChild(recap);
+    box._qcmN=data.length;
     lanceur.querySelector('button').addEventListener('click',function(){
       if(lanceur._reprendre){ lanceur._reprendre(); return; }
-      jouerQcm(data,box,recap,lanceur);
+      /* relu dans l'état au moment du clic : « Recommencer la séance » a pu l'effacer */
+      var reprise=lanceur._reprise && window.EtatSNT ? qcmLireEnCours(box,EtatSNT.champs()) : null;
+      lanceur._reprise=null;
+      jouerQcm(data,box,recap,lanceur,reprise);
     });
   });
+}
+/* QCM REPRIS APRÈS UNE SORTIE (signalé le 12/10/2026 en 1re : « quand tu
+   sors de la page ou que tu la rafraîchis, les questions auxquelles tu as
+   répondu disparaissent »). Chaque réponse part dans …/qcm-N-encours ; la
+   restauration propose de reprendre à la question suivante. Fini ou
+   abandonné, le relevé est vidé — on écrit [''] au lieu de supprimer la
+   clé : la fusion avec la base la ressusciterait. */
+function qcmCle(box){
+  var et=box.closest('.step');
+  if(!et || !window.EtatSNT || !EtatSNT.actif()) return null;
+  var k=EtatSNT.cle(et);
+  return k ? k+'/qcm-'+$$('.qcmbox',et).indexOf(box) : null;
+}
+function qcmJuste(q,k){
+  if(!Array.isArray(q.r)) return k===q.r;
+  var a=q.r.slice().sort(function(x,y){return x-y;}), b=(k||[]).slice().sort(function(x,y){return x-y;});
+  return a.length===b.length && b.every(function(v,n){ return v===a[n]; });
+}
+function qcmEnCours(box,choix){
+  var k=qcmCle(box); if(!k) return;
+  EtatSNT.noterChamps(k+'-encours', [choix && choix.length ? JSON.stringify(choix) : '']);
+}
+function qcmLireEnCours(box,champs){
+  var k=qcmCle(box), v=k && champs[k+'-encours'];
+  if(!v || !v[0]) return null;
+  try{ var l=JSON.parse(v[0]); return Array.isArray(l) && l.length ? l : null; }catch(e){ return null; }
 }
 /* QCM RÉDUIT (24/09/2026) : comme la fenêtre d'écriture, le QCM se range
    pour laisser relire l'énoncé, et se reprend à la même question, réponses
@@ -4746,10 +4776,15 @@ function initQcm(){
    caché. Un seul QCM en cours à la fois — en lancer un autre abandonne
    celui qui était réduit, comme « ✕ abandonner ». */
 var qcmReduit=null;
-function jouerQcm(data,box,recap,lanceur){
+function jouerQcm(data,box,recap,lanceur,reprise){
   if(qcmReduit) qcmReduit();
   var i=0, resultats=[];
   var bouton=lanceur.querySelector('button'), libelle=bouton.textContent;
+  if(reprise){
+    resultats=reprise.slice(0,data.length).map(function(choix,k){ return {bon:qcmJuste(data[k],choix),choix:choix}; });
+    i=Math.min(resultats.length,data.length-1);
+    libelle=box.dataset.fait==='1'?'Refaire le QCM':'Commencer';
+  }
   /* PAS focus-on ici : sa règle de flou visait aussi .qcm-back, qui devenait
      illisible et incliquable. Le panneau a déjà son propre voile
      (backdrop-filter). qcm-on ne sert qu'à masquer les éléments flottants. */
@@ -4873,12 +4908,9 @@ function jouerQcm(data,box,recap,lanceur){
     /* En multiple, k est un tableau d'indices. Juste = exactement le
        bon ensemble : ni oubli, ni case en trop. Cocher tout ne doit
        pas donner le point. */
-    var attendus = multi ? q.r.slice().sort(function(a,b){return a-b;}) : null;
-    var bon = multi
-      ? (k.length===attendus.length && k.slice().sort(function(a,b){return a-b;})
-           .every(function(v,n){ return v===attendus[n]; }))
-      : (k===q.r);
+    var bon = qcmJuste(q,k);
     resultats[i]={bon:bon,choix:k};
+    qcmEnCours(box, resultats.map(function(r){ return r.choix; }));
     var estBonne = function(n){ return multi ? q.r.indexOf(n)>=0 : n===q.r; };
     var aChoisi  = function(n){ return multi ? k.indexOf(n)>=0 : n===k; };
     $$('.qopt',pan).forEach(function(b,n){
@@ -4911,6 +4943,7 @@ function jouerQcm(data,box,recap,lanceur){
   }
   function abandonner(){
     /* sortie sans validation : rien n'est enregistré, l'étape reste à faire */
+    qcmEnCours(box, null);
     fondQcm.classList.remove('on');
     document.body.classList.remove('qcm-on');
     pan.innerHTML='';
@@ -4931,11 +4964,11 @@ function jouerQcm(data,box,recap,lanceur){
        on le garde en base pour qu'il le reste après un rechargement — même
        si l'étape, elle, attend encore une réponse rédigée (11/10/2026). */
     box.dataset.fait='1';
-    var etQ=box.closest('.step');
-    if(etQ && window.EtatSNT && EtatSNT.actif() && !box.hasAttribute('data-facultatif')){
-      var kQ=EtatSNT.cle(etQ);
-      if(kQ) EtatSNT.noterChamps(kQ+'/qcm-'+$$('.qcmbox',etQ).indexOf(box), [n+'/'+data.length]);
-    }
+    /* le QCM diagnostic (data-facultatif) garde aussi sa trace depuis le
+       16/10/2026 : il ne compte toujours pas pour l'étape (la garde l'ignore),
+       mais l'élève qui l'a fait ne se le voit plus proposer comme neuf. */
+    var kQ=qcmCle(box);
+    if(kQ){ qcmEnCours(box, null); EtatSNT.noterChamps(kQ, [n+'/'+data.length]); }
     /* validation À L'ENVOI : le QCM fait est le QCM validé, juste ou faux.
        Sauf data-facultatif : un QCM de diagnostic ne valide pas l'étape,
        sinon l'élève l'aurait « faite » sans avoir rien produit. */
@@ -4957,6 +4990,9 @@ function jouerQcm(data,box,recap,lanceur){
     }
     majBarre();
   }
+  /* repris alors que toutes les questions avaient leur réponse : il ne
+     manquait que « Terminer » */
+  if(reprise && resultats.length>=data.length){ terminer(); return; }
   dessiner();
 }
 
@@ -6272,10 +6308,18 @@ function restaurer(){
       var step=box.closest('.step'); if(!step) return;
       var k=EtatSNT.cle(step); if(!k) return;
       var trace=champs[k+'/qcm-'+$$('.qcmbox',step).indexOf(box)];
-      if(trace){ box.dataset.fait='1'; cocheQcm(box,trace[0]); quelqueChose=true; return; }
-      if(!etapes[k] || !etapes[k].fait) return;
-      box.dataset.fait='1';
-      cocheQcm(box,etapes[k].score);
+      if(trace){ box.dataset.fait='1'; cocheQcm(box,trace[0]); quelqueChose=true; }
+      else if(etapes[k] && etapes[k].fait && !box.hasAttribute('data-facultatif')){
+        box.dataset.fait='1';
+        cocheQcm(box,etapes[k].score);
+      }
+      /* un QCM laissé en route : on propose de le reprendre où il en était */
+      var enCours=qcmLireEnCours(box,champs), lanceur=box.querySelector('.qcm-lanceur');
+      if(enCours && lanceur){
+        lanceur._reprise=enCours;
+        var b=lanceur.querySelector('button');
+        if(b) b.textContent='▶ Reprendre le QCM (question '+Math.min(enCours.length+1,box._qcmN||99)+' / '+(box._qcmN||'?')+')';
+      }
     });
 
     replierFaites();          /* retour sur la page : le couloir se raccourcit */

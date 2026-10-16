@@ -4882,3 +4882,32 @@ doublon « disque dur ? » / « disque dur? » écarté), appliqué par la CLI, 
 au registre. Tableau de bord : bouton 👥 et « + Garder ». Guides SNT et dispositif
 + PDF ; ES et AP non concernés (pas de correction de copies). Rendu du bouton non
 vérifié au navigateur (page derrière connexion).
+
+## 16/10/2026 — Signalements de 1re : QCM repris, dés « prêt », plusieurs courbes, fractions Leitner
+
+Audit des signalements ES 1re du 12/10 (1re 2), base lue en lecture seule.
+mathis-29 : le « QCM sur 7 à refaire » était le diagnostic `RAD-1diag`, jamais
+enregistré par conception. leacoudercturq : un QCM interrompu repartait de zéro
+(elle n'avait aucune ligne en radioactivité). harold-5386 : « stable » sans
+espace n'a pas été reproduit — accepté avec ou sans espace, étape 1.4 à 7/7 en
+base ; piste : le clavier de l'iPad. paulsauvage1 : le lanceur ne suivait pas le
+nombre de noyaux. morganeriquet (Leitner) : la carte rendait le texte sans la
+classe `formule`, qui porte le CSS des fractions. Bonus posés par Loïc pendant
+l'enquête.
+
+Moteur (`sequence-snt.js` v60, 23 pages) : chaque réponse de QCM part dans
+`…/qcm-N-encours` ; la restauration propose « ▶ Reprendre le QCM (question n / N) » ;
+fin ou abandon écrivent `['']` (une clé supprimée renaîtrait de la fusion). Le
+diagnostic garde sa trace `…/qcm-N` sans compter pour l'étape. Éprouvé au
+navigateur avec un faux `Progression` (interruption, rechargement, reprise, fin,
+abandon).
+
+Radioactivité 3.1 : bouton « ✋ Je suis prêt » (plus d'entrée automatique à
+l'affichage) ; lanceur rangé à côté des noyaux (colonne à droite ≥ 760 px, bas
+d'écran en dessous), nombre de dés mis à jour à chaque lancer. Mesuré sur
+1180×820, 820×1180 et 390×844 : aucun chevauchement. Décroissance en direct :
+« Nouvelle courbe », « Tout effacer », « N₀/2 » avec t½ par courbe. Guides ES et
+dispositif + PDF. Leitner : `formuleChimique` pose toujours `formule`, rebuild
+local non poussé (le dépôt porte aussi le travail CSV d'une autre conversation).
+Diana (aucune progression en ES 1re) : séances 1-3 de nucléosynthèse et S1 de
+radioactivité marquées faites en base, sans score, sur accord de Loïc.

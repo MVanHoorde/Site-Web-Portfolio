@@ -23,8 +23,8 @@
      Connexion : celle du tableau de bord (prof/index.html), reprise
      depuis le même stockage. Sans session, l'écran renvoie s'y connecter.
 
-     L'ÉCRAN ATTEND LA CLASSE. Un élève est « en jeu » dès que le jeu
-     paraît sur son écran : sa série part au lancer 0. Le lancer p n'est
+     L'ÉCRAN ATTEND LA CLASSE. Un élève est « en jeu » dès qu'il a touché
+     « Je suis prêt » : sa série part au lancer 0. Le lancer p n'est
      tracé que lorsque TOUS les élèves en jeu l'ont joué (ou ont fini
      avant : à zéro, ou au bout des vingt lancers) ; chaque point
      additionne alors les noyaux de toute la classe. Compter à chaque
@@ -37,6 +37,13 @@
        · « Ne plus attendre » écarte les élèves en retard à cet instant
          (tablette éteinte…) ; ils ne comptent plus du tout, jusqu'à
          « réintégrer » ou jusqu'à ce qu'ils recommencent une série.
+
+     PLUSIEURS COURBES (demande du 16/10/2026) : « Nouvelle courbe » fige
+     la courbe affichée (en couleur, sans valeurs) et en démarre une autre,
+     typiquement avec un autre nombre de noyaux par élève ; « Tout effacer »
+     repart de zéro. « N₀/2 » trace pour chaque courbe sa moitié et le
+     lancer où elle l'atteint — les demi-vies se comparent d'un coup d'œil.
+     Les courbes gardées ne vivent que dans l'onglet : rien n'est écrit.
 
      Décrit dans prof/guide-es.html et prof/guide-dispositif.html.
      ============================================================ -->
@@ -85,8 +92,15 @@ svg.courbe{display:block;width:100%;height:auto}
 .courbe .ligne{fill:none;stroke:var(--act);stroke-width:2.6;stroke-linejoin:round}
 .courbe .point{fill:var(--act);stroke:var(--surface);stroke-width:1.5}
 .courbe .val{font:12px 'IBM Plex Mono',monospace;fill:var(--ink);text-anchor:middle}
-.courbe .moitie{stroke:var(--link);stroke-width:1.6;stroke-dasharray:6 5}
-.courbe .moitie-t{font:12.5px 'IBM Plex Sans','Inter',sans-serif;fill:var(--link)}
+.courbe .moitie{stroke-width:1.6;stroke-dasharray:6 5}
+.courbe .moitie-t{font:12.5px 'IBM Plex Sans','Inter',sans-serif}
+/* courbes gardées : une couleur chacune, la courbe en cours reste orange */
+:root{--k1:#2445c7;--k2:#12805c;--k3:#7a3fc2;--k4:#c33a2f}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--k1:#8ea6ff;--k2:#4fc79b;--k3:#c39bf5;--k4:#f07a6f} }
+.legende{display:flex;flex-wrap:wrap;gap:6px 18px;margin:4px 0 6px;font-size:14px;color:var(--ink-soft)}
+.legende span{display:inline-flex;align-items:center;gap:7px}
+.legende i{display:inline-block;width:22px;height:4px;border-radius:2px}
+.barre .sep{flex:1}
 .note{font-size:13px;color:var(--ink-soft);margin:10px 0 0}
 .vide{padding:40px 10px;text-align:center;color:var(--ink-soft)}
 .msg{font-size:14px;color:var(--ink-soft)}
@@ -109,16 +123,19 @@ svg.courbe{display:block;width:100%;height:auto}
 
   <div class="barre" id="barre" hidden>
     <label>Classe <select id="classe"></select></label>
-    <button type="button" id="partie" title="Ne compter que les séries commencées à partir de maintenant">▶ Nouvelle partie</button>
-    <button type="button" id="moitie" aria-pressed="false">Montrer la moitié</button>
+    <button type="button" id="partie" title="Garder la courbe affichée, et en tracer une nouvelle avec les séries commencées à partir de maintenant">➕ Nouvelle courbe</button>
+    <button type="button" id="moitie" aria-pressed="false" title="Tracer, pour chaque courbe, la moitié de ses noyaux de départ et le lancer où elle l'atteint">N₀/2</button>
     <span class="msg" id="depuis"></span>
+    <span class="sep"></span>
+    <button type="button" id="effacer" title="Effacer toutes les courbes et repartir de zéro">↺ Tout effacer</button>
   </div>
 
   <div class="carte" id="carte" hidden>
     <div class="chiffres" id="chiffres"></div>
     <div class="attente" id="attente" aria-live="polite" hidden></div>
+    <div class="legende" id="legende"></div>
     <div id="graphe"></div>
-    <p class="note">Chaque point additionne les noyaux encore radioactifs de toute la classe après ce lancer. Un lancer n'apparaît que lorsque tous les élèves en jeu l'ont validé&nbsp;: la courbe attend la classe. Un élève est en jeu dès que le jeu s'affiche sur sa tablette. Mise à jour toutes les 5&nbsp;secondes.</p>
+    <p class="note">Chaque point additionne les noyaux encore radioactifs de toute la classe après ce lancer. Un lancer n'apparaît que lorsque tous les élèves en jeu l'ont validé&nbsp;: la courbe attend la classe. Un élève est en jeu dès qu'il a touché «&nbsp;Je suis prêt&nbsp;». Pour une deuxième courbe, avec un autre nombre de noyaux&nbsp;: «&nbsp;Nouvelle courbe&nbsp;», puis chaque élève touche «&nbsp;Recommencer une série&nbsp;», choisit son nombre de noyaux et se déclare prêt. Mise à jour toutes les 5&nbsp;secondes.</p>
   </div>
 </div>
 
@@ -232,6 +249,21 @@ svg.courbe{display:block;width:100%;height:auto}
     a.hidden = false;
   }
 
+  /* Le lancer où la courbe passe sous la moitié de son départ, interpolé
+     entre les deux points qui l'encadrent ; null si elle n'y est pas encore. */
+  function demiVie(pts){
+    if(pts.length < 2) return null;
+    var h = pts[0].n / 2;
+    for(var k = 1; k < pts.length; k++){
+      if(pts[k].n <= h){
+        var a = pts[k-1], b = pts[k];
+        return a.n === b.n ? b.p : a.p + (a.n - h) / (a.n - b.n) * (b.p - a.p);
+      }
+    }
+    return null;
+  }
+  function virgule(v){ return (Math.round(v * 10) / 10).toLocaleString('fr-FR'); }
+
   function dessiner(ag, liste){
     var pts = ag.pts, nbEleves = liste.length;
     var n0 = pts.length ? pts[0].n : 0;
@@ -242,12 +274,20 @@ svg.courbe{display:block;width:100%;height:auto}
       (dernier && dernier.p ? '<div><b>' + dernier.n + '</b><span>noyaux restants au lancer ' + dernier.p + '</span></div>' : '');
     bandeau(liste, ag.complet);
     var g = $('#graphe');
-    if(pts.length < 1 || !n0){ g.innerHTML = '<div class="vide">En attente des élèves : le jeu de dés doit être affiché sur leur tablette…</div>'; return; }
+    /* toutes les courbes à tracer : les gardées, puis celle en cours */
+    var toutes = gardees.slice();
+    if(pts.length && n0) toutes.push({pts: pts, couleur: 'var(--act)', nom: gardees.length ? 'Courbe en cours' : 'La classe', enCours: true});
+    $('#legende').innerHTML = gardees.length ? toutes.map(function(c){
+      return '<span><i style="background:' + c.couleur + '"></i>' + c.nom + ' · N₀ = ' + c.pts[0].n + '</span>';
+    }).join('') : '';
+    if(!toutes.length){ g.innerHTML = '<div class="vide">En attente des élèves : chacun touche « Je suis prêt » dans son jeu de dés…</div>'; return; }
 
     var L = 960, H = 480, mg = 62, md = 20, mh = 24, mb = 66;
-    var pmax = Math.max(10, pts[pts.length-1].p);
+    var pmax = Math.max.apply(null, [10].concat(toutes.map(function(c){ return c.pts[c.pts.length-1].p; })));
+    var nmax = Math.max.apply(null, toutes.map(function(c){ return c.pts[0].n; }));
     var x = function(p){ return mg + (L - mg - md) * p / pmax; };
-    var y = function(n){ return mh + (H - mh - mb) * (1 - n / n0); };
+    var y = function(n){ return mh + (H - mh - mb) * (1 - n / nmax); };
+    n0 = nmax;
     var s = '<svg class="courbe" viewBox="0 0 ' + L + ' ' + H + '" role="img" aria-label="Nombre de noyaux radioactifs de la classe en fonction du nombre de lancers">';
     /* une graduation « ronde » (1, 2 ou 5 × 10ⁿ) pour 5 à 10 lignes, de 50 à plus de 3 000 noyaux */
     var brut = n0 / 8, puiss = Math.pow(10, Math.floor(Math.log10(brut))), r = brut / puiss;
@@ -263,23 +303,51 @@ svg.courbe{display:block;width:100%;height:auto}
     s += '<line class="axe" x1="' + mg + '" x2="' + mg + '" y1="' + mh + '" y2="' + (H - mb) + '"/>';
     s += '<text class="titre-axe" x="' + ((mg + L - md) / 2) + '" y="' + (H - 12) + '" text-anchor="middle">nombre de lancers (un lancer = une durée Δt)</text>';
     s += '<text class="titre-axe" x="16" y="' + ((mh + H - mb) / 2) + '" text-anchor="middle" transform="rotate(-90 16 ' + ((mh + H - mb) / 2) + ')">noyaux encore radioactifs</text>';
-    if(montrerMoitie){
-      s += '<line class="moitie" x1="' + mg + '" x2="' + (L - md) + '" y1="' + y(n0/2) + '" y2="' + y(n0/2) + '"/>' +
-           '<text class="moitie-t" x="' + (L - md - 4) + '" y="' + (y(n0/2) - 7) + '" text-anchor="end">la moitié : ' + (n0/2) + ' noyaux</text>';
-    }
-    s += '<polyline class="ligne" points="' + pts.map(function(q){ return x(q.p) + ',' + y(q.n); }).join(' ') + '"/>';
-    pts.forEach(function(q){
-      s += '<circle class="point" r="5.5" cx="' + x(q.p) + '" cy="' + y(q.n) + '"/>' +
-           '<text class="val" x="' + x(q.p) + '" y="' + (y(q.n) - 11) + '">' + q.n + '</text>';
+    /* N₀/2 : pour chaque courbe, sa moitié et le lancer où elle l'atteint */
+    if(montrerMoitie) toutes.forEach(function(c, k){
+      var h = c.pts[0].n / 2, t = demiVie(c.pts), coul = c.couleur;
+      s += '<line class="moitie" style="stroke:' + coul + '" x1="' + mg + '" x2="' + (L - md) + '" y1="' + y(h) + '" y2="' + y(h) + '"/>' +
+           '<text class="moitie-t" style="fill:' + coul + '" x="' + (L - md - 4) + '" y="' + (y(h) - 7) + '" text-anchor="end">N₀/2 = ' + virgule(h) + ' noyaux</text>';
+      if(t != null){
+        s += '<line class="moitie" style="stroke:' + coul + '" x1="' + x(t) + '" x2="' + x(t) + '" y1="' + y(h) + '" y2="' + (H - mb) + '"/>' +
+             '<text class="moitie-t" style="fill:' + coul + '" x="' + (x(t) + 6) + '" y="' + (H - mb - 8 - 16 * k) + '">t½ ≈ ' + virgule(t) + ' lancers</text>';
+      }
+    });
+    toutes.forEach(function(c){
+      var coul = c.couleur;
+      s += '<polyline class="ligne" style="stroke:' + coul + (c.enCours ? '' : ';stroke-width:2.2') + '" points="' + c.pts.map(function(q){ return x(q.p) + ',' + y(q.n); }).join(' ') + '"/>';
+      c.pts.forEach(function(q){
+        s += '<circle class="point" style="fill:' + coul + '" r="' + (c.enCours ? 5.5 : 4.5) + '" cx="' + x(q.p) + '" cy="' + y(q.n) + '"/>';
+        if(c.enCours) s += '<text class="val" x="' + x(q.p) + '" y="' + (y(q.n) - 11) + '">' + q.n + '</text>';
+      });
     });
     g.innerHTML = s + '</svg>';
   }
 
-  $('#partie').addEventListener('click', function(){
-    if(!confirm('Nouvelle partie : seules les séries commencées à partir de maintenant seront comptées. Les élèves doivent donc lancer (ou recommencer) leur série après ce clic.')) return;
+  /* Les courbes gardées vivent dans cet onglet seulement : rien n'est écrit,
+     ni en base ni sur l'appareil. Recharger la page les efface. */
+  var gardees = [], COULEURS = ['var(--k1)', 'var(--k2)', 'var(--k3)', 'var(--k4)'];
+  function debuterCourbe(){
     depuis = Date.now() - 5000; ecartes = {};
-    $('#depuis').textContent = 'Partie commencée à ' + new Date(depuis).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+    $('#depuis').textContent = 'Courbe ' + (gardees.length + 1) + ' commencée à ' + new Date(depuis).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
     rafraichir();
+  }
+
+  $('#partie').addEventListener('click', function(){
+    var pts = agreger(derniereLecture).pts;
+    var garde = pts.length > 1 && pts[0].n;
+    if(!confirm((garde ? 'La courbe affichée est gardée à l’écran. ' : '')
+      + 'Une nouvelle courbe démarre : seules les séries commencées à partir de maintenant y comptent. Chaque élève touche « Recommencer une série », choisit son nombre de noyaux, puis « Je suis prêt ».')) return;
+    if(garde){
+      var k = gardees.length;
+      gardees.push({pts: pts, couleur: COULEURS[k % COULEURS.length], nom: 'Courbe ' + (k + 1)});
+    }
+    debuterCourbe();
+  });
+  $('#effacer').addEventListener('click', function(){
+    if(!confirm('Tout effacer : les courbes gardées disparaissent, et une nouvelle courbe démarre avec les séries commencées à partir de maintenant.')) return;
+    gardees = [];
+    debuterCourbe();
   });
   $('#attente').addEventListener('click', function(e){
     if(e.target.closest('[data-plus-attendre]')){
