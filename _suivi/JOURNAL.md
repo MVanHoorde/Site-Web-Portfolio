@@ -4911,3 +4911,18 @@ dispositif + PDF. Leitner : `formuleChimique` pose toujours `formule`, rebuild
 local non poussé (le dépôt porte aussi le travail CSV d'une autre conversation).
 Diana (aucune progression en ES 1re) : séances 1-3 de nucléosynthèse et S1 de
 radioactivité marquées faites en base, sans score, sur accord de Loïc.
+
+## 17/10/2026 — « J'ai perdu mon mot de passe »
+
+Une élève de 2nde 1 croyait avoir un compte de SNT : elle n'avait que celui de
+physique (`tastycrousty67`). Mot de passe réinitialisé par Loïc au tableau de
+bord ; compte rattaché en base au groupe SNT26B (une ligne `eleves_classes`,
+même garde que `rejoindre_autre_classe`), sur sa demande.
+
+`progression.js` v23 (58 pages) : l'onglet « Me connecter » porte un lien
+« J'ai perdu mon mot de passe » qui déplie la marche à suivre (demander au
+professeur, mot de passe provisoire, ne pas recréer de compte) ; il s'ouvre seul
+après « Identifiant ou mot de passe incorrect ». Pas de pop-up après
+réinitialisation (option B, écartée : elle demandait une migration). Éprouvé
+au navigateur à 820 et 390 px, connexion refusée simulée. Guides SNT, ES, AP +
+PDF.

@@ -970,6 +970,10 @@
    '.acc-rassure{font-size:12px;color:var(--ink-faint,#8b97ad);line-height:1.5;margin:14px 0 0;display:flex;gap:6px}'+
    '.acc-pied{text-align:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line,#d3dae7);font-size:13px;color:var(--ink-soft,#4a566e)}'+
    '.acc-lien{background:none;border:0;color:var(--link,#2445c7);cursor:pointer;font-family:inherit;font-size:13px;padding:0;text-decoration:underline}'+
+   '.acc-perdu{text-align:center;margin:12px 0 0}'+
+   '.acc-perdu .acc-lien{min-height:44px}'+
+   '.acc-info{font-size:13px;line-height:1.55;color:var(--ink,#161f33);background:var(--link-wash,#e7ebfb);border-radius:8px;padding:10px 12px;margin:4px 0 0}'+
+   '.acc-info p{margin:0 0 6px}.acc-info p:last-child{margin:0}'+
    '.acc-err{font-size:13px;color:#a3271f;background:#fbeceb;border:1px solid #f0c9c6;border-radius:8px;padding:8px 10px;margin:0 0 12px}'+
    '.acc-bandeau{position:fixed;left:0;right:0;bottom:0;z-index:9998;background:#fdf1dd;border-top:1px solid #f0d9a8;color:#8a5a0c;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:13px;display:flex;align-items:center;gap:8px;padding:9px 14px}'+
    '.acc-bandeau button,.acc-bandeau a{margin-left:auto;background:none;border:0;color:#8a5a0c;font-weight:700;text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13px;display:inline-flex;align-items:center;min-height:44px;padding:0 4px}'+
@@ -1258,7 +1262,16 @@
       +   '<form data-form>' + champs
       +     '<button type="submit" class="acc-primaire">' + (estCreer ? 'Créer mon compte' : 'Me connecter') + '</button>'
       +   '</form>'
-      +   (estCreer ? '<p class="acc-rassure"><span aria-hidden="true">🔒</span><span>Ton mot de passe est chiffré&nbsp;: personne ne peut le lire, pas même ton professeur — il peut seulement le réinitialiser si tu l\'oublies.</span></p>' : '')
+      +   (estCreer ? '<p class="acc-rassure"><span aria-hidden="true">🔒</span><span>Ton mot de passe est chiffré&nbsp;: personne ne peut le lire, pas même ton professeur — il peut seulement le réinitialiser si tu l\'oublies.</span></p>'
+          /* « J'ai perdu mon mot de passe » (17/10/2026) : pas d'adresse
+             mail, donc pas de lien de récupération — c'est le professeur
+             qui réinitialise (tableau de bord, fiche élève, ⋯ Compte). */
+          : '<p class="acc-perdu"><button type="button" class="acc-lien" data-perdu aria-expanded="false" aria-controls="acc-perdu-txt">J\'ai perdu mon mot de passe</button></p>'
+          + '<div id="acc-perdu-txt" class="acc-info" hidden>'
+          +   '<p>Demande à ton professeur de le réinitialiser&nbsp;: il te donnera un mot de passe provisoire, du genre <b>Rubis-1035</b>.</p>'
+          +   '<p>Tape-le ici avec ton identifiant habituel. Ton travail est conservé&nbsp;: rien n\'est perdu.</p>'
+          +   '<p>Identifiant oublié aussi&nbsp;? Ton professeur le retrouve dans sa liste. <b>Ne crée pas un nouveau compte</b>&nbsp;: ton travail resterait sur l\'ancien.</p>'
+          + '</div>')
       +   '<div class="acc-pied">Juste regarder&nbsp;? '
       +     '<button class="acc-lien" data-invite>Continuer sans compte →</button></div>'
       + '</div>';
@@ -1275,6 +1288,14 @@
     var erreur = fond.querySelector('.acc-err');
     var bouton = fond.querySelector('.acc-primaire');
     var masquer = brancherVoir(fond);
+    var perdu    = fond.querySelector('[data-perdu]');
+    var perduTxt = fond.querySelector('#acc-perdu-txt');
+    function montrerPerdu(ouvert) {
+      if (!perdu) return;
+      perduTxt.hidden = !ouvert;
+      perdu.setAttribute('aria-expanded', String(ouvert));
+    }
+    if (perdu) perdu.addEventListener('click', function () { montrerPerdu(perduTxt.hidden); });
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
       masquer();
@@ -1291,6 +1312,8 @@
       }).catch(function (e) {
         erreur.textContent = messageErreur(e);
         erreur.hidden = false;
+        // Un mot de passe refusé : la marche à suivre s'ouvre d'elle-même.
+        if (e && e.code === 'IDENTIFIANTS_INCORRECTS') montrerPerdu(true);
         bouton.disabled = false;
         bouton.textContent = estCreer ? 'Créer mon compte' : 'Me connecter';
       });
