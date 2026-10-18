@@ -287,7 +287,7 @@ td code{white-space:nowrap}
   <h3>Un élève, plusieurs classes, plusieurs enseignants</h3>
   <p>Depuis le 13 septembre 2026 (<code>bdd/schema/018</code>), un élève garde un
   seul compte et rejoint d'autres classes avec leur code — un seul groupe SNT au
-  plus. Le même élève peut donc être dans le groupe SNT d'un collègue et dans la
+  plus, qu'il peut échanger contre un autre (<code>028</code>). Le même élève peut donc être dans le groupe SNT d'un collègue et dans la
   2nde 1 de Loïc. Chacun doit voir sa part, et rien d'autre :</p>
   <ul>
     <li><b>La progression et les absences</b> se lisent par <b>famille</b>, sur le
@@ -423,7 +423,14 @@ td code{white-space:nowrap}
     <li><b>Compte existant</b> (l'élève de SNT qui entre en 2nde 1) : il tape son
       identifiant et son mot de passe <b>habituels</b> avec le nouveau code — la classe
       s'ajoute —, ou passe par <i>Mes classes</i> dans le menu de son badge.</li>
-    <li>Un second groupe SNT est refusé, avec un message qui renvoie vers le professeur.</li>
+    <li>Un second groupe SNT n'est pas ajouté&nbsp;: <i>Mes classes</i> propose
+      à la place de <b>changer de groupe</b> (« Oui, je change de groupe »), par
+      <code>changer_groupe_snt()</code> (<code>bdd/schema/028</code>). L'ancienne
+      appartenance SNT est remplacée — ou la classe d'inscription, si c'était
+      elle, et le déclencheur suit —&nbsp;; progression, copies et absences
+      restent à l'élève, donc passent au nouvel enseignant. Le code tapé dans
+      « Créer mon compte » avec un compte existant mène au même écran. Né du
+      remplacement d'octobre 2026 (groupes B et E vers A et F).</li>
   </ul>
 
   <h3>Ce qui est enregistré, famille par famille</h3>
@@ -668,7 +675,9 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <p class="revision">
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
-    Dernière révision : <b>16 octobre 2026</b> — les réponses gardées se lisent
+    Dernière révision : <b>17 octobre 2026</b> — un élève change lui-même de
+    groupe de SNT (<code>changer_groupe_snt()</code>, <code>bdd/schema/028</code>)&nbsp;;
+    lien « J'ai perdu mon mot de passe » à la connexion. Passe du 16 octobre&nbsp;: les réponses gardées se lisent
     entre collègues (bouton 👥 de la bibliothèque, <code>bdd/schema/027</code>). Un QCM interrompu reprend à la question où l'élève l'avait laissé (<code>…/qcm-N-encours</code>), et le QCM diagnostic garde sa trace&nbsp;; la courbe des dés n'attend que les élèves « prêts », garde plusieurs courbes et trace leurs demi-vies.
     Passe du 13 octobre : la pré-correction IA de la SNT
     est mise en sommeil (§7) : la file montre toutes les copies en attente, la

@@ -15,6 +15,13 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 17/10/2026 — Un seul espace de travail pour les quatre dépôts
+
+| Date | Décision | Statut |
+|---|---|---|
+| 17/10/2026 | **Les quatre dépôts (portfolio, Leitner, participation A01, Résonance) sont rangés côte à côte dans `Desktop/Clone Git/`**, et Claude Code s'ouvre depuis ce dossier pour parler de tout le travail dans une seule conversation. Chaque dépôt garde son Git, ses consignes et son adresse en ligne ; le `CLAUDE.md` de `Clone Git/` relie l'ensemble | ✅ en vigueur (demande de Loïc) |
+| 17/10/2026 | **Pas de fusion en un seul dépôt Git pour l'instant** : elle changerait les adresses de Leitner et de Résonance (icônes d'écran d'accueil, coupons, notifications) | ⏳ à reconsidérer plus tard |
+
 ## 16/10/2026 — Réponses types partagées ; correction SNT en lot par Claude
 
 | Date | Décision | Statut |

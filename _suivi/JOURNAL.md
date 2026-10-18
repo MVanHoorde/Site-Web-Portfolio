@@ -4926,3 +4926,23 @@ après « Identifiant ou mot de passe incorrect ». Pas de pop-up après
 réinitialisation (option B, écartée : elle demandait une migration). Éprouvé
 au navigateur à 820 et 390 px, connexion refusée simulée. Guides SNT, ES, AP +
 PDF.
+
+## 17/10/2026 — Changer de groupe de SNT ; reprise par Karl
+
+Un collègue (Karl) reprend les groupes de M. Couvra : A (2.1, vendredi), F (2.6,
+jeudi), K (2.7 · 2.9, jamais démarré). Les 2.1 et 2.6 sont encore dans B et E,
+les groupes de Loïc (55 et 49 élèves) ; les dates de création ne permettent pas
+de les trier (45 comptes de E créés le même jeudi à 13 h).
+
+`bdd/schema/028` : `changer_groupe_snt(code)`, éprouvée sur la base réelle dans
+une transaction annulée (6 contrôles). `progression.js` v24 : « Mes classes »
+propose « Oui, je change de groupe » au lieu de refuser un second groupe SNT,
+y compris depuis « Créer mon compte » ; menu renommé « Mes classes · rejoindre,
+changer de groupe ». Éprouvé au navigateur (base simulée). `029` recopie le
+cahier de textes B → A, E → F, à lancer par Loïc (écriture refusée en session
+par le garde-fou). Guide SNT (section 6, « Si ça coince ») et guide dispositif
++ PDF. Le texte « identifiant oublié » de la connexion ne promet plus que le
+professeur le retrouve à coup sûr.
+
+Dossier pour Karl hors dépôt (Téléchargements/Reprise-SNT-Karl) : mail, feuille
+de route, diapos élèves par groupe, guide SNT.

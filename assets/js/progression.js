@@ -487,6 +487,23 @@
     });
   }
 
+  /* Quitter son groupe de SNT pour un autre (bdd/schema/028, 17/10/2026).
+   * Le cas type : un enseignant en remplace un autre, ses élèves passent
+   * dans le groupe du nouveau. Le travail suit l'élève ; ses classes hors
+   * SNT ne bougent pas. Renvoie { de, vers, change }.
+   * Erreurs : CODE_CLASSE_INCONNU · PAS_UN_GROUPE_SNT · AUCUN_GROUPE_SNT */
+  function changerGroupeSnt(code) {
+    return Promise.resolve().then(function () {
+      exigeConfiguration();
+      return assurerSession();
+    }).then(function () {
+      return rpc('changer_groupe_snt', { p_code: String(code || '').trim().toUpperCase() });
+    }).then(function (r) {
+      journal('groupe_snt_change', {});
+      return r || {};
+    });
+  }
+
   /* Toutes les classes du compte : [{ classe_libelle, espace, inscription }].
    * La classe d'inscription vient en premier. */
   function mesInscriptions() {
@@ -1004,7 +1021,9 @@
     TROP_DE_TENTATIVES     : 'Trop d\'essais en peu de temps. Attends une minute et recommence.',
     CODE_CLASSE_INCONNU    : 'Code de classe inconnu, ou inscriptions fermées.',
     PSEUDO_DEJA_PRIS       : 'Cet identifiant est déjà utilisé dans cette classe.',
-    DEJA_UNE_CLASSE_SNT    : 'Tu es déjà dans un groupe de SNT : on ne peut pas en rejoindre un second. Demande à ton professeur si tu as changé de groupe.',
+    DEJA_UNE_CLASSE_SNT    : 'Tu es déjà dans un groupe de SNT : on ne peut pas en rejoindre un second. Pour changer de groupe : menu de ton identifiant, en haut à droite → « Mes classes ».',
+    PAS_UN_GROUPE_SNT      : 'Ce code n\'est pas celui d\'un groupe de SNT.',
+    AUCUN_GROUPE_SNT       : 'Tu n\'as pas encore de groupe de SNT : tape simplement le code pour le rejoindre.',
     PAS_ENCORE_INSCRIT     : 'Ton compte n\'a pas encore de classe : crée-le avec le code de ta classe.'
   };
   function messageErreur(e) {
@@ -1074,7 +1093,7 @@
       +   '<span aria-hidden="true">▾</span>'
       + '</button>'
       + '<div class="acc-menu" hidden>'
-      +   '<button type="button" data-classes>Mes classes · en rejoindre une</button>'
+      +   '<button type="button" data-classes>Mes classes · rejoindre, changer de groupe</button>'
       +   '<button type="button" data-changer>Changer de compte</button>'
       +   '<button type="button" data-deco>Se déconnecter</button>'
       + '</div>';
@@ -1125,8 +1144,11 @@
 
   /* « Mes classes » : la liste de ses classes, et un champ pour en
    * rejoindre une de plus avec son code (018). Demandée par l'élève,
-   * donc jamais subie — même exception que « Changer de compte ». */
-  function afficherRejoindre() {
+   * donc jamais subie — même exception que « Changer de compte ».
+   * Un code d'un autre groupe de SNT ne se refuse plus : on propose de
+   * CHANGER de groupe (028). codeInitial : le code déjà tapé dans
+   * « Créer mon compte », qui a buté sur le groupe de SNT existant. */
+  function afficherRejoindre(codeInitial) {
     injecterStyleAccueil();
     retirerFond();
     var fond = global.document.createElement('div');
@@ -1140,13 +1162,21 @@
       +   '<form data-form>'
       +     '<label class="acc-label" for="acc-code2">Rejoindre une autre classe</label>'
       +     '<input id="acc-code2" type="text" autocomplete="off" placeholder="code donné par ton professeur">'
-      +     '<p class="acc-aide">Tu gardes ton identifiant et ton mot de passe&nbsp;: la classe s\'ajoute à ton compte.</p>'
+      +     '<p class="acc-aide">Tu gardes ton identifiant et ton mot de passe&nbsp;: la classe s\'ajoute à ton compte. Tu changes de groupe de SNT&nbsp;? Tape le code du nouveau groupe&nbsp;: ton travail te suit.</p>'
       +     '<button type="submit" class="acc-primaire">Rejoindre</button>'
       +   '</form>'
+      +   '<div class="acc-info" data-changer-groupe hidden>'
+      +     '<p data-changer-texte></p>'
+      +     '<p>Ton travail te suit&nbsp;: rien n\'est perdu. Ton nouveau professeur le verra, l\'ancien ne le verra plus. Tes autres classes ne bougent pas.</p>'
+      +     '<button type="button" class="acc-primaire" data-changer-oui>Oui, je change de groupe</button>'
+      +     '<p class="acc-perdu"><button type="button" class="acc-lien" data-changer-non>Non, je reste dans mon groupe</button></p>'
+      +   '</div>'
       +   '<div class="acc-pied"><button class="acc-lien" data-fermer>Fermer</button></div>'
       + '</div>';
     var liste = fond.querySelector('[data-liste]');
+    var groupeSnt = '';
     mesInscriptions().then(function (l) {
+      l.forEach(function (x) { if (x.espace === 'snt') groupeSnt = x.classe_libelle; });
       liste.innerHTML = l.length
         ? 'Ton compte est inscrit en&nbsp;: <b>' + l.map(function (x) { return esc(x.classe_libelle); }).join('</b>, <b>') + '</b>.'
         : 'Ton compte n\'a pas encore de classe.';
@@ -1155,22 +1185,60 @@
     var form = fond.querySelector('[data-form]');
     var erreur = fond.querySelector('.acc-err');
     var bouton = fond.querySelector('.acc-primaire');
+    var changer = fond.querySelector('[data-changer-groupe]');
+    var oui = fond.querySelector('[data-changer-oui]');
+    var codeEnAttente = '';
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
       erreur.hidden = true;
+      changer.hidden = true;
       var code = (fond.querySelector('#acc-code2') || {}).value || '';
       if (!code.trim()) return;
       bouton.disabled = true; bouton.textContent = 'Un instant…';
       rejoindreAutreClasse(code).then(function () {
         recharger();
       }).catch(function (e) {
+        bouton.disabled = false; bouton.textContent = 'Rejoindre';
+        if (e && e.code === 'DEJA_UNE_CLASSE_SNT') {
+          // Un seul groupe de SNT par élève : on propose d'en changer.
+          codeEnAttente = code;
+          fond.querySelector('[data-changer-texte]').innerHTML =
+            'Tu es déjà dans un groupe de SNT'
+            + (groupeSnt ? '&nbsp;: <b>' + esc(groupeSnt) + '</b>' : '')
+            + '. Ce code est celui d\'un autre groupe. <b>Veux-tu changer de groupe&nbsp;?</b>';
+          form.hidden = true;
+          changer.hidden = false;
+          oui.focus();
+          return;
+        }
         erreur.textContent = messageErreur(e);
         erreur.hidden = false;
-        bouton.disabled = false; bouton.textContent = 'Rejoindre';
+      });
+    });
+    fond.querySelector('[data-changer-non]').addEventListener('click', function () {
+      changer.hidden = true;
+      form.hidden = false;
+      fond.querySelector('#acc-code2').focus();
+    });
+    oui.addEventListener('click', function () {
+      erreur.hidden = true;
+      oui.disabled = true; oui.textContent = 'Un instant…';
+      changerGroupeSnt(codeEnAttente).then(function () {
+        recharger();
+      }).catch(function (e) {
+        erreur.textContent = messageErreur(e);
+        erreur.hidden = false;
+        oui.disabled = false; oui.textContent = 'Oui, je change de groupe';
       });
     });
     global.document.body.appendChild(fond);
-    fond.querySelector('#acc-code2').focus();
+    var champ = fond.querySelector('#acc-code2');
+    if (codeInitial) {
+      champ.value = codeInitial;
+      if (form.requestSubmit) form.requestSubmit(); else bouton.click();
+    } else {
+      champ.focus();
+    }
   }
 
   /* Compte reconnu : on ne redemande pas le mot de passe, on
@@ -1270,7 +1338,7 @@
           + '<div id="acc-perdu-txt" class="acc-info" hidden>'
           +   '<p>Demande à ton professeur de le réinitialiser&nbsp;: il te donnera un mot de passe provisoire, du genre <b>Rubis-1035</b>.</p>'
           +   '<p>Tape-le ici avec ton identifiant habituel. Ton travail est conservé&nbsp;: rien n\'est perdu.</p>'
-          +   '<p>Identifiant oublié aussi&nbsp;? Ton professeur le retrouve dans sa liste. <b>Ne crée pas un nouveau compte</b>&nbsp;: ton travail resterait sur l\'ancien.</p>'
+          +   '<p>Identifiant oublié aussi&nbsp;? Ton professeur peut le retrouver s\'il l\'a dans sa liste de classe. <b>Ne crée pas un nouveau compte</b>&nbsp;: ton travail resterait sur l\'ancien.</p>'
           + '</div>')
       +   '<div class="acc-pied">Juste regarder&nbsp;? '
       +     '<button class="acc-lien" data-invite>Continuer sans compte →</button></div>'
@@ -1314,6 +1382,9 @@
         erreur.hidden = false;
         // Un mot de passe refusé : la marche à suivre s'ouvre d'elle-même.
         if (e && e.code === 'IDENTIFIANTS_INCORRECTS') montrerPerdu(true);
+        /* Compte existant + code d'un autre groupe de SNT : la session est
+           ouverte, il ne reste qu'à proposer le changement de groupe. */
+        if (e && e.code === 'DEJA_UNE_CLASSE_SNT' && estCreer) { afficherRejoindre(code); return; }
         bouton.disabled = false;
         bouton.textContent = estCreer ? 'Créer mon compte' : 'Me connecter';
       });
@@ -1461,6 +1532,7 @@
     lireImage     : lireImage,
     supprimerImage: supprimerImage,
     rejoindreAutreClasse: rejoindreAutreClasse,
+    changerGroupeSnt    : changerGroupeSnt,
     mesInscriptions     : mesInscriptions,
     mesReponses   : mesReponses,
     versions      : versions
