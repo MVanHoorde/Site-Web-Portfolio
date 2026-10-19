@@ -4946,3 +4946,17 @@ professeur le retrouve à coup sûr.
 
 Dossier pour Karl hors dépôt (Téléchargements/Reprise-SNT-Karl) : mail, feuille
 de route, diapos élèves par groupe, guide SNT.
+
+## 19/10/2026 — Pont Résonance → Boîte à cartes
+
+Audit demandé par Loïc : Leitner n'était relié à Résonance nulle part, et les deux
+vivent sur des projets Supabase différents (comptes `PC-…` d'un côté, comptes du
+site de l'autre). Choix du pont « à la Google » plutôt qu'un code de classe.
+
+`supabase/functions/pont-resonance/` (`pont.ts` + `index.ts`), `config.toml`
+(`verify_jwt = false`), `_outils/tests/pont-resonance.test.ts` (14 cas). Banc de bout
+en bout sur Postgres + GoTrue v2.193 en Docker, avec un relais Deno pour la
+passerelle : confirme que `verify` accepte `type: "email"` avec le `token_hash`
+d'un lien magique, que le ticket est à usage unique, et que `/signup` ne peut pas
+écrire `app_metadata` (d'où le refus d'un compte préparé par un tiers). Côté
+Leitner et Résonance : voir leurs dépôts. Pas de migration.

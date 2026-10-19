@@ -161,6 +161,28 @@
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
 
+## 🆕 Pont Résonance → Boîte à cartes — fonction à déployer par Loïc
+
+Un élève de terminale connecté à Résonance entre dans Leitner sans second compte :
+`supabase/functions/pont-resonance/` (logique dans `pont.ts`) vérifie sa session
+**auprès de Résonance**, crée ou retrouve un compte de ce projet-ci
+(`<uuid Résonance>@resonance.local`, aucun nom, mot de passe jeté, marqué dans
+`app_metadata`), et rend un ticket à usage unique que Leitner échange contre sa
+session. **Aucune migration** : le compte n'est inscrit dans aucune classe, les
+tables `leitner_*` ne demandent que le compte — il n'apparaît donc pas dans le
+tableau de bord, et Loïc ne voit pas ces élèves dans le suivi enseignant de
+Leitner (possible plus tard en les inscrivant dans une classe). `config.toml` :
+`[functions.pont-resonance] verify_jwt = false`.
+
+Éprouvé : `deno test --allow-env _outils/tests/pont-resonance.test.ts` (14 cas,
+faux réseau) ; banc de bout en bout sur un **vrai GoTrue v2.193** (ticket échangé,
+rejoué refusé, même compte au second passage, compte préparé par un tiers refusé) ;
+Chromium sur les trois dépôts (13 contrôles).
+
+⏳ **Reste à Loïc**, dans l'ordre : `supabase functions deploy pont-resonance
+--no-verify-jwt` depuis ce dépôt ; publier **Leitner**, puis **Résonance** ;
+essai avec `PC-TEST1`.
+
 ## 🆕 Tableau de bord : comptes élèves et correction en rafale
 
 `bdd/schema/024` + `prof/index.html`, quatre guides et leurs PDF à jour.

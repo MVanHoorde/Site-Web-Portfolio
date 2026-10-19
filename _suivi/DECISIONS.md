@@ -15,6 +15,13 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 19/10/2026 — Les terminales entrent dans la Boîte à cartes par Résonance
+
+| Date | Décision | Statut |
+|---|---|---|
+| 19/10/2026 | **Pont Résonance → Leitner** : un élève de terminale (règle `classeTerminale` de Résonance) entre dans la Boîte à cartes avec sa session Résonance, sans second compte ni mot de passe, sur le modèle « Se connecter avec Google ». La fonction `pont-resonance` de ce projet vérifie la session **auprès de Résonance**, crée un compte sans nom marqué dans `app_metadata`, et rend un ticket à usage unique. Leitner ouvert directement renvoie vers Résonance (`#vers-leitner`). Écartés : un code de classe Leitner (second mot de passe), la création de compte sans code (ouverte à n'importe qui) | ✅ en vigueur (demande de Loïc) |
+| 19/10/2026 | **Les comptes du pont ne sont inscrits dans aucune classe** : rien de Résonance n'apparaît dans le tableau de bord du site | ✅ en vigueur — ⏳ à revoir si Loïc veut suivre ces élèves dans Leitner |
+
 ## 17/10/2026 — Un seul espace de travail pour les quatre dépôts
 
 | Date | Décision | Statut |
