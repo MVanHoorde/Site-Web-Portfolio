@@ -4960,3 +4960,25 @@ passerelle : confirme que `verify` accepte `type: "email"` avec le `token_hash`
 d'un lien magique, que le ticket est à usage unique, et que `/signup` ne peut pas
 écrire `app_metadata` (d'où le refus d'un compte préparé par un tiers). Côté
 Leitner et Résonance : voir leurs dépôts. Pas de migration.
+
+## 31/10/2026 — Padago, les pads à serrures
+
+Demande de Loïc, sur un cahier des charges écrit avec une collègue (Digipad
+ludifié : cadenas, coffres, médailles). Loïc part sur la v1 mais veut que la
+collègue ait un **compte** pour créer et partager : les pads passent en base
+(`bdd/schema/030`, purement additif — `padago_invitations`, `padago_auteurs`,
+`padago_pads`, fonctions `padago_*`), l'élève reste sans compte et sans rien en
+base. Tablettes attitrées chez la collègue : code de reprise discret (vitrine).
+Construit : `outils/padago/` (éditeur, mode élève, aide avec captures, pad tuto),
+bloc « Outils pédagogiques » sur l'accueil, bouton dans la barre du tableau de
+bord, guides des quatre publics, contrôle de configuration dans `verifier.mjs`.
+Bibliothèque ajoutée : `qrcode-generator` 1.4.4 (MIT, servie en local).
+Banc PGlite : 29 contrôles d'intrusion. Chromium : parcours élève complet et
+éditeur contre une base simulée. Deux corrections en cours de route : l'aperçu
+passait par `sessionStorage`, que Chrome ne copie pas dans un onglet `noopener`
+(→ `localStorage`) ; un code d'invitation faux à la création laissait un compte
+créé et renvoyait sur « créer » (→ écran « code d'invitation »). La copie de
+`030` dans `supabase/migrations/` a été retirée avant livraison (piège du push :
+exécution à la main d'abord). Les PDF des guides n'ont pas été régénérés dans le
+conteneur (polices de repli) : à refaire sur le PC.
+

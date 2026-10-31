@@ -5,14 +5,17 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **13/10/2026**.
+> Dernière réécriture : **31/10/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — correction SNT sans IA (13/10).** 🔴 La pré-correction par
+> **Dernière passe — Padago, les pads à serrures (31/10).** Nouvel outil
+> `outils/padago/` : section détaillée ci-dessous.
+>
+> **Passe du 13/10 — correction SNT sans IA.** 🔴 La pré-correction par
 > Mistral Nemo est **en sommeil** : la file du tableau de bord montre toutes les
 > copies en attente, sans rien de l'IA ; les 86 pré-corrections en attente sont
 > effacées. `sequence-snt.js?v=59` (23) — une copie validée sans mot ni IA
@@ -160,6 +163,57 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 Padago, les pads à serrures — à mettre en service par Loïc
+
+Le « Digipad ludifié » demandé avec une collègue (cahier des charges du
+31/10/2026) : des colonnes de cartes comme Digipad, un **cadenas** au bout de
+chacune (libre, code, dépôt, validation prof par code maître sur la tablette de
+l'élève), des **coffres** à molettes dont le code est semé en **chiffres
+cachés**, des **médailles** et une vitrine, et les extras (indices à coût, salle
+secrète, carte du parcours, ressentis). Vit dans `outils/padago/` :
+`index.html` (l'espace des autrices : compte, pads, éditeur), `pad.html` (le mode
+élève), `aide.html` (une page, captures réelles), `pads/tuto.json` (le pad tuto —
+**textes : proposition à valider**). Liens : accueil (bloc « Outils
+pédagogiques »), barre du tableau de bord (🗝 Padago), guides des quatre publics.
+
+**Écart au cahier des charges, voulu par Loïc** : la collègue a un **compte** et
+ses pads sont **en base** (`bdd/schema/030`), pour les retrouver sur tout
+appareil et les partager par lien. Côté élève rien ne change : pas de compte,
+prénom + initiale, progression, dépôts (photos comprises) et médailles **sur la
+tablette** (localStorage, IndexedDB), **code de reprise** pour changer d'appareil.
+La base ne reçoit **aucune donnée d'élève**. Les codes ne partent chez l'élève
+qu'en empreinte salée (SHA-256).
+
+**Compte de la collègue** : elle le crée elle-même sur la page Padago avec un
+**code d'invitation à usage unique** (P. Rouffaud, 31/10). Le code n'est écrit
+nulle part dans le dépôt (public) : la base n'en garde que l'empreinte. Ce compte
+n'ouvre **que** Padago. Tout compte enseignant est autrice d'office.
+
+Éprouvé : `_outils/tests/padago-schema.test.mjs` (PGlite, 030 rejoué deux fois,
+29 contrôles d'intrusion) ; Chromium de bout en bout — mode élève (quatre
+cadenas, indice payant, « à reprendre », coffres, coffre final, salle secrète,
+rechargement, code de reprise sur un second appareil, téléphone) et éditeur
+contre une base simulée (invitation, tuto, échappement du HTML, sauvegarde sans
+aucun code en clair dans la version élève, QR code, aperçu, copie entre
+collègues). `verifier.mjs` : 19 problèmes, le repère.
+
+⏳ **Reste à Loïc**, dans l'ordre :
+1. SQL Editor → coller `bdd/schema/030-padago.sql` → Run → lire **six « ok »**
+   (piège du push : **pas** de copie dans `supabase/migrations/` avant).
+2. Puis seulement : copie horodatée dans `supabase/migrations/` et inscription au
+   registre, comme pour le `021`.
+3. Supabase → Authentication → URL Configuration : ajouter
+   `https://mvanhoorde.github.io/Site-Web-Portfolio/outils/padago/index.html`
+   aux *Redirect URLs* (sinon le lien « mot de passe perdu » retombe sur l'accueil).
+4. `node exporter-guides.mjs` **sur le PC** : les guides HTML sont à jour, pas
+   leurs PDF (l'export depuis le conteneur remplaçait Segoe UI Emoji, Arial et
+   Cambria Math par des polices de repli — écarté).
+5. Envoyer le mail à la collègue (texte proposé en session, avec son code).
+
+⏳ **À trancher** : le **nom** (Padago est provisoire — à demander à la
+collègue ; il vit dans une seule constante, `NOM`, de `padago-commun.js`) ; les
+**visages** des ressentis, repris au jugé faute d'avoir ceux de Quiz Balmer.
 
 ## 🆕 Pont Résonance → Boîte à cartes — fonction à déployer par Loïc
 

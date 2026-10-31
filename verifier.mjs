@@ -746,6 +746,24 @@ try {
 } catch (e) {
   notes.push("assets/js/prof-api.js absent — contrôle de configuration non effectué");
 }
+/* Padago (outils/padago/) porte la même duplication, pour la même
+   raison : son client n'a pas d'interface élève à injecter. */
+try {
+  const ex = (src) => ({
+    url: (src.match(/URL_PROJET\s*=\s*'([^']+)'/) || [])[1] || null,
+    cle: (src.match(/CLE_ANON\s*=\s*'([^']+)'/) || [])[1] || null
+  });
+  const a = ex(lire("assets/js/progression.js"));
+  const c = ex(lire("outils/padago/padago-commun.js"));
+  if (a.url !== c.url || a.cle !== c.cle) {
+    ko("configuration Supabase divergente",
+       "URL_PROJET ou CLE_ANON diffère entre progression.js et outils/padago/padago-commun.js");
+  } else {
+    notes.push("configuration Supabase — identique dans outils/padago/padago-commun.js");
+  }
+} catch (e) {
+  notes.push("outils/padago/padago-commun.js absent — contrôle de configuration Padago non effectué");
+}
 
 /* ---------- Sortie ---------- */
 if (BILAN) { console.log(bilan()); process.exit(0); }

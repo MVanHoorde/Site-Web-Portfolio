@@ -15,6 +15,18 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 31/10/2026 — Padago, les pads à serrures
+
+| Date | Décision | Statut |
+|---|---|---|
+| 31/10/2026 | **Padago vit sur le site** (`outils/padago/`), pas dans le tableau de bord : les élèves y arrivent par lien ou QR code sans rien traverser ; le tableau de bord n'a qu'un bouton qui l'ouvre | ✅ en vigueur (demande de Loïc) |
+| 31/10/2026 | **Les pads des autrices sont en base** (`bdd/schema/030`), contrairement à la v1 « 100 % statique » du cahier des charges : la collègue a un compte, retrouve ses pads partout et les partage par lien. Deux versions par pad : le brouillon (codes en clair, lu par l'autrice seule) et la version élève (empreintes SHA-256 salées) | ✅ en vigueur (demande de Loïc) |
+| 31/10/2026 | **Côté élève : aucun compte, rien en base.** Prénom + initiale ; progression, dépôts et médailles sur la tablette (localStorage + IndexedDB, déroge pour cet outil seul à la règle SNT « rien que le jeton en local ») ; code de reprise pour changer d'appareil, discret puisque les tablettes sont attitrées | ✅ en vigueur |
+| 31/10/2026 | **Un compte d'autrice naît par code d'invitation à usage unique**, dont la base ne garde que l'empreinte — pas par liste d'adresses : les comptes du projet naissent sans confirmation de mail, n'importe qui pourrait prendre l'adresse invitée avant la collègue. Ce compte n'ouvre que Padago (`padago_suis_auteur()`), jamais classes ni copies. Le code n'est jamais écrit dans le dépôt | ✅ en vigueur |
+| 31/10/2026 | **Vidéos : MP4 sur OneDrive** lus par le lecteur natif ; YouTube et PeerTube en simple lien (YouTube bloqué au lycée, IP des élèves) — écart au cahier des charges, qui prévoyait l'intégration | ✅ en vigueur |
+| 31/10/2026 | **Images par lien seulement** (pas d'envoi de fichier) : le quota de 500 Mo est partagé avec les élèves et les collègues | ✅ en vigueur |
+| 31/10/2026 | **Nom « Padago »** | ⏳ provisoire — à demander à la collègue |
+
 ## 19/10/2026 — Les terminales entrent dans la Boîte à cartes par Résonance
 
 | Date | Décision | Statut |

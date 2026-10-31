@@ -232,6 +232,19 @@ td code{white-space:nowrap}
     identifiants sans nom passent en fin de liste.</p>
   </div>
 
+  <div class="encadre">
+    <span class="etiq">Un troisième accès : les autrices Padago</span>
+    <p><b>Padago</b> (<code>outils/padago/</code>, <code>bdd/schema/030</code>) laisse
+    une collègue <b>créer son compte elle-même</b> — vraie adresse, mot de passe —
+    avec un <b>code d'invitation</b> à usage unique que Loïc lui envoie. Ce compte
+    n'ouvre <b>que</b> Padago (<code>padago_suis_auteur()</code>)&nbsp;: aucune classe,
+    aucune copie, aucun accès au tableau de bord. Tout compte enseignant est autrice
+    d'office. La base ne garde que l'<b>empreinte</b> du code&nbsp;; la recette pour en
+    créer un autre est au §11 du <code>030</code>. Les élèves n'ont pas de compte et
+    n'écrivent rien en base&nbsp;: leur progression, leurs dépôts et leurs médailles
+    restent sur leur tablette.</p>
+  </div>
+
   <h2 id="tables">3. Ce que contient la base</h2>
 
   <div class="enveloppe">
@@ -628,6 +641,7 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
     <tr><th>Chemin</th><th>Rôle</th></tr>
     <tr><td><code>prof/index.html</code></td><td>Le tableau de bord.</td></tr>
     <tr><td><code>prof/decroissance.html</code></td><td>La courbe des dés de « La radioactivité » (ES 1re, étape 3.1), projetable. Lit dans <code>progression</code> le champ <code>es-t1c2-des/des</code> de l'état de l'étape&nbsp;: aucune table ni migration. Un élève entre dans la partie au lancer 0 en touchant <i>Je suis prêt</i>&nbsp;; <i>Nouvelle courbe</i> fige la courbe affichée et en démarre une autre, <i>N₀/2</i> trace la moitié et la demi-vie de chacune (courbes gardées en mémoire de l'écran seulement)&nbsp;; un lancer n'est tracé que lorsque tous les élèves en jeu l'ont joué (au lancer 0 sans activité depuis 20&nbsp;min d'après <code>maj_le</code>&nbsp;: plus attendu&nbsp;; <i>Ne plus attendre</i> écarte les retardataires, en mémoire de l'écran seulement). Lien affiché dans l'espace ES 1re seulement.</td></tr>
+    <tr><td><code>outils/padago/</code></td><td><b>Padago</b>, les pads à serrures&nbsp;: <code>index.html</code> (l'espace des autrices&nbsp;: comptes, pads, éditeur), <code>pad.html</code> (le mode élève, sans compte), <code>aide.html</code>, <code>pads/tuto.json</code> (le pad tuto). Son client Supabase est dans <code>padago-commun.js</code>, qui duplique l'URL et la clé de <code>progression.js</code> — <code>verifier.mjs</code> compare. Lien depuis la barre du tableau de bord et depuis l'accueil.</td></tr>
     <tr><td><code>assets/js/prof-api.js</code></td><td>Son client : connexion, lecture, écriture, photos déposées.</td></tr>
     <tr><td><code>assets/js/prof-defi.js</code></td><td>L'onglet <i>Défi S4</i> (SNT, séance 4 de l'introduction) : les travaux de la classe sous un numéro tiré au hasard, le vote en trois temps — écrémage, premier tri, duels — et le podium. Le vote vit dans le <code>localStorage</code> de l'appareil (<code>snt.prof.defi.&lt;classe&gt;</code>), pas en base. <i>Exporter pour Claude</i> télécharge un HTML autonome, photos réduites à 640&nbsp;px, sans nom ni identifiant, avec les mêmes numéros&nbsp;: à déposer dans <code>_a-deposer/defi-s4/</code> pour un classement indépendant.</td></tr>
     <tr><td><code>assets/js/sequences-espaces.js</code></td><td>Les noms des outils, chapitres, fiches et séances hors SNT. <b>Généré</b> par <code>node generer-sequences-espaces.mjs</code>.</td></tr>
@@ -675,7 +689,7 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <p class="revision">
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
-    Dernière révision : <b>17 octobre 2026</b> — un élève change lui-même de
+    Dernière révision : <b>31 octobre 2026</b> — Padago, les pads à serrures (<code>outils/padago/</code>, <code>bdd/schema/030</code>)&nbsp;: un compte d'autrice par code d'invitation, qui n'ouvre que Padago (§2, §9). Passe du 17 octobre&nbsp;: un élève change lui-même de
     groupe de SNT (<code>changer_groupe_snt()</code>, <code>bdd/schema/028</code>)&nbsp;;
     lien « J'ai perdu mon mot de passe » à la connexion. Passe du 16 octobre&nbsp;: les réponses gardées se lisent
     entre collègues (bouton 👥 de la bibliothèque, <code>bdd/schema/027</code>). Un QCM interrompu reprend à la question où l'élève l'avait laissé (<code>…/qcm-N-encours</code>), et le QCM diagnostic garde sa trace&nbsp;; la courbe des dés n'attend que les élèves « prêts », garde plusieurs courbes et trace leurs demi-vies.
