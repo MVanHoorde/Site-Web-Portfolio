@@ -198,18 +198,17 @@ contre une base simulée (invitation, tuto, échappement du HTML, sauvegarde san
 aucun code en clair dans la version élève, QR code, aperçu, copie entre
 collègues). `verifier.mjs` : 19 problèmes, le repère.
 
+✅ `030` exécuté par Loïc le 31/10 (six vérifications vraies), copié dans
+`supabase/migrations/20261031120000_padago.sql` ; branche fusionnée dans `main`.
+
 ⏳ **Reste à Loïc**, dans l'ordre :
-1. SQL Editor → coller `bdd/schema/030-padago.sql` → Run → lire **six « ok »**
-   (piège du push : **pas** de copie dans `supabase/migrations/` avant).
-2. Puis seulement : copie horodatée dans `supabase/migrations/` et inscription au
-   registre, comme pour le `021`.
-3. Supabase → Authentication → URL Configuration : ajouter
+1. Supabase → Authentication → URL Configuration : ajouter
    `https://mvanhoorde.github.io/Site-Web-Portfolio/outils/padago/index.html`
    aux *Redirect URLs* (sinon le lien « mot de passe perdu » retombe sur l'accueil).
-4. `node exporter-guides.mjs` **sur le PC** : les guides HTML sont à jour, pas
+2. `node exporter-guides.mjs` **sur le PC** : les guides HTML sont à jour, pas
    leurs PDF (l'export depuis le conteneur remplaçait Segoe UI Emoji, Arial et
    Cambria Math par des polices de repli — écarté).
-5. Envoyer le mail à la collègue (texte proposé en session, avec son code).
+3. Envoyer le mail à la collègue (texte proposé en session, avec son code).
 
 ⏳ **À trancher** : le **nom** (Padago est provisoire — à demander à la
 collègue ; il vit dans une seule constante, `NOM`, de `padago-commun.js`) ; les
