@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>EMC — Feuille de correspondance identifiant ↔ nom</title>
+<!--
+  Feuille papier qui circule à chaque créneau EMC (décision du
+  07/11/2026) : la base ne connaît que des identifiants, cette feuille
+  fait le lien avec les noms. Elle reste à l'enseignant : on ne la
+  photographie pas, on ne la saisit pas en ligne. Pour voir les noms
+  dans le pilotage, on peut la recopier dans un fichier CSV local
+  (identifiant;nom;prénom) chargé dans Réglages → table des noms du
+  tableau de bord : il ne quitte pas la tablette.
+  Deux pages de 20 lignes : 40 élèves.
+  PDF : assets/pdf/emc/feuille-correspondance.pdf
+-->
+<style>
+  @import url('../../assets/css/fonts.css');
+  @page { size: A4; margin: 0; }
+  :root { --ink: #161f33; --soft: #4a566e; --line: #b9c3d3; --marine: #173d6b; --orange: #e8743b; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--ink); font: 10.5pt/1.4 'Inter', 'IBM Plex Sans', sans-serif; background: #fff; }
+  .feuille { width: 210mm; height: 297mm; padding: 13mm 13mm 11mm; display: flex; flex-direction: column; page-break-after: always; }
+  .feuille:last-child { page-break-after: auto; }
+  header { border-bottom: 2px solid var(--marine); padding-bottom: 2.5mm; margin-bottom: 3mm; }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 15pt; margin: 0 0 1.5mm; }
+  .champs { display: flex; gap: 8mm; font-size: 10.5pt; }
+  .consigne { font-size: 10pt; margin: 0 0 3mm; padding: 2mm 3mm; border-left: 4px solid var(--orange); background: #fbf3ee; }
+  table { width: 100%; border-collapse: collapse; flex: 1; }
+  th { font-family: 'Space Grotesk', sans-serif; font-size: 9.5pt; text-align: left; border-bottom: 1.5px solid var(--ink); padding: 1.5mm 2mm; }
+  td { border-bottom: 1px solid var(--line); height: 10.6mm; padding: 0 2mm; }
+  td.n { width: 9mm; color: var(--soft); text-align: right; }
+  th.ident, td.ident { width: 52mm; border-left: 1.5px solid var(--ink); }
+  th.table, td.table { width: 16mm; text-align: center; }
+  footer { font-size: 8pt; color: var(--soft); margin-top: 2.5mm; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+<div class="feuille" data-page="1"></div>
+<div class="feuille" data-page="2"></div>
+<script>
+/* Deux pages de 20 lignes, construites ici pour ne pas recopier
+   quarante fois la même ligne. */
+document.querySelectorAll('.feuille').forEach(function (f) {
+  var p = +f.dataset.page, lignes = '';
+  for (var i = 1; i <= 20; i++) {
+    lignes += '<tr><td class="n">' + ((p - 1) * 20 + i) + '</td><td></td><td></td><td></td>'
+            + '<td class="ident"></td><td class="table"></td></tr>';
+  }
+  f.innerHTML =
+      '<header><h1>EMC · Le Labyrinthe de Nina · Qui est qui</h1>'
+    + '<div class="champs"><span>Créneau : ……</span><span>Date : ……………</span><span>Code de la séance : ………………</span><span>Page ' + p + ' / 2</span></div></header>'
+    + (p === 1 ? '<p class="consigne">Écris ton nom, ton prénom et ta classe, puis l\'<b>identifiant</b> que tu viens de créer (ou celui de ton compte) et ton <b>numéro de table</b>. '
+      + 'Ton mot de passe, lui, <b>ne s\'écrit nulle part</b>. Cette feuille reste aux professeurs : elle ne va pas en ligne.</p>' : '')
+    + '<table><thead><tr><th></th><th>Nom</th><th>Prénom</th><th>Classe</th><th class="ident">Identifiant</th><th class="table">Table</th></tr></thead>'
+    + '<tbody>' + lignes + '</tbody></table>'
+    + '<footer><span>Feuille enseignant — ne pas photographier, ne pas saisir en ligne.</span><span>M. Van Hoorde · Mme Castel</span></footer>';
+});
+</script>
+</body>
+</html>

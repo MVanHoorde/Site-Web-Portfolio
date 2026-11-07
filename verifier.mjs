@@ -765,6 +765,24 @@ try {
   notes.push("outils/padago/padago-commun.js absent — contrôle de configuration Padago non effectué");
 }
 
+/* La même chose pour le socle EMC (assets/js/emc-commun.js, 07/11/2026). */
+try {
+  const ex = (src) => ({
+    url: (src.match(/URL_PROJET\s*=\s*'([^']+)'/) || [])[1] || null,
+    cle: (src.match(/CLE_ANON\s*=\s*'([^']+)'/) || [])[1] || null
+  });
+  const a = ex(lire("assets/js/progression.js"));
+  const c = ex(lire("assets/js/emc-commun.js"));
+  if (a.url !== c.url || a.cle !== c.cle) {
+    ko("configuration Supabase divergente",
+       "URL_PROJET ou CLE_ANON diffère entre progression.js et assets/js/emc-commun.js");
+  } else {
+    notes.push("configuration Supabase — identique dans assets/js/emc-commun.js");
+  }
+} catch (e) {
+  notes.push("assets/js/emc-commun.js absent — contrôle de configuration EMC non effectué");
+}
+
 /* ---------- Sortie ---------- */
 if (BILAN) { console.log(bilan()); process.exit(0); }
 

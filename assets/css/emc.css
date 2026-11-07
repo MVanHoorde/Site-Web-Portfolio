@@ -1,0 +1,158 @@
+/* ============================================================
+ *  emc.css — pages EMC (élève, pilotage, projection, contenus)
+ *  Charte du site : marine, orange, cyan. Polices auto-hébergées.
+ *  Cible : iPad en paysage comme en portrait, et vidéoprojecteur.
+ * ============================================================ */
+@import url('fonts.css');
+
+:root {
+  --bg: #eef3f8;
+  --surface: #fff;
+  --surface-2: #f4f6fb;
+  --ink: #161f33;          /* marine */
+  --ink-soft: #4a566e;
+  --ink-faint: #8b97ad;
+  --line: #d3dae7;
+  --marine: #173d6b;
+  --marine-nuit: #0b1d39;
+  --orange: #e8743b;
+  --orange-fonce: #c4610f;
+  --cyan: #3fa7d6;
+  --cyan-wash: #e3f2fa;
+  --ok: #12805c;   --ok-wash: #e2f3ec;
+  --err: #c33a2f;  --err-wash: #fbe9e7;
+  --wait: #9a6a00; --wait-wash: #fbf1dc;
+  --link: #2445c7;
+  --r: 12px;
+  --ombre: 0 2px 10px rgba(22, 31, 51, .08);
+  /* couleurs de la légende de la carte (annexe D) — les mêmes que
+     emc_contenus.carte.couleurs, qui font foi */
+  --c-bleu: #2563c9; --c-orange: #e8743b; --c-rouge: #d6402b;
+  --c-violet: #7a3e8f; --c-vert: #2fae6a; --c-noir: #161f33;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 'Inter', 'IBM Plex Sans', system-ui, sans-serif;
+}
+h1, h2, h3 { font-family: 'Space Grotesk', 'Inter', sans-serif; line-height: 1.2; margin: 0 0 .5em; }
+h1 { font-size: 1.6rem; } h2 { font-size: 1.3rem; } h3 { font-size: 1.1rem; }
+a { color: var(--link); }
+:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* --- barre du haut --- */
+.emc-barre {
+  display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+  padding: .6rem 1rem; background: var(--marine-nuit); color: #fff;
+  position: sticky; top: 0; z-index: 20;
+}
+.emc-barre .titre { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1.05rem; }
+.emc-barre .espace { flex: 1; }
+.emc-barre a, .emc-barre button.lien { color: #fff; }
+
+/* --- pastilles et badges --- */
+.pastille {
+  display: inline-flex; align-items: center; gap: .3em;
+  padding: .15em .65em; border-radius: 999px; font-size: .85rem; font-weight: 600;
+  background: var(--surface-2); color: var(--ink-soft); border: 1px solid var(--line);
+}
+.pastille.ok { background: var(--ok-wash); color: var(--ok); border-color: transparent; }
+.pastille.err { background: var(--err-wash); color: var(--err); border-color: transparent; }
+.pastille.att { background: var(--wait-wash); color: var(--wait); border-color: transparent; }
+.pastille.cyan { background: var(--cyan-wash); color: #1d6f96; border-color: transparent; }
+.pastille.table { background: var(--orange); color: #fff; border-color: transparent; }
+.direct-etat::before { content: ''; width: .55em; height: .55em; border-radius: 50%; background: currentColor; display: inline-block; }
+
+/* --- conteneurs --- */
+.emc-page { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+.carte-blanche { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 1rem 1.1rem; box-shadow: var(--ombre); margin-bottom: 1rem; }
+.encadre { background: var(--surface-2); border-left: 4px solid var(--cyan); border-radius: 8px; padding: .7rem .9rem; margin: .7rem 0; }
+.encadre.orange { border-left-color: var(--orange); }
+.encadre.err { border-left-color: var(--err); background: var(--err-wash); }
+.muet { color: var(--ink-soft); }
+.tresmuet { color: var(--ink-faint); font-size: .9rem; }
+.rangee { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; }
+.grille2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+
+/* --- boutons et champs --- */
+button, .bouton {
+  font: inherit; font-weight: 600; cursor: pointer;
+  min-height: 44px; padding: .5rem 1rem;
+  border-radius: var(--r); border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center; gap: .4em;
+  text-decoration: none;
+}
+button:hover { border-color: var(--ink-faint); }
+button.primaire, .bouton.primaire { background: var(--marine); border-color: var(--marine); color: #fff; }
+button.orange { background: var(--orange); border-color: var(--orange); color: #fff; }
+button.cyan { background: var(--cyan); border-color: var(--cyan); color: #fff; }
+button.danger { color: var(--err); border-color: var(--err); }
+button.actif { background: var(--marine); color: #fff; border-color: var(--marine); }
+button[disabled] { opacity: .5; cursor: not-allowed; }
+input[type=text], input[type=password], input[type=number], textarea, select {
+  font: inherit; width: 100%; padding: .55rem .7rem; min-height: 44px;
+  border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink);
+}
+textarea { min-height: 7rem; resize: vertical; }
+label { font-weight: 600; display: block; margin: .6rem 0 .25rem; }
+.alerte { padding: .6rem .8rem; border-radius: 10px; margin: .6rem 0; display: none; }
+.alerte.show { display: block; }
+.alerte.ok { background: var(--ok-wash); color: var(--ok); }
+.alerte.err { background: var(--err-wash); color: var(--err); }
+
+/* --- numéros d'urgence (encart permanent) --- */
+.numeros { display: flex; flex-wrap: wrap; gap: .4rem .9rem; font-size: .92rem; }
+.numeros b { font-family: 'Space Grotesk', sans-serif; font-size: 1.05rem; color: var(--marine); }
+
+/* --- « J'ai besoin d'en parler » (bas d'écran élève) --- */
+.aide-bandeau {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: var(--surface); border-top: 2px solid var(--cyan);
+  padding: .5rem 1rem calc(.5rem + env(safe-area-inset-bottom));
+  display: flex; gap: .8rem; align-items: center; flex-wrap: wrap;
+  box-shadow: 0 -2px 10px rgba(22, 31, 51, .08);
+}
+.aide-bandeau .numeros { flex: 1; }
+body.avec-aide { padding-bottom: 6.5rem; }
+
+/* --- fenêtre modale simple --- */
+.modale-fond { position: fixed; inset: 0; background: rgba(11, 29, 57, .55); z-index: 50; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.modale { background: var(--surface); border-radius: 16px; max-width: 560px; width: 100%; max-height: 90vh; overflow: auto; padding: 1.2rem 1.3rem; box-shadow: 0 10px 40px rgba(0, 0, 0, .25); }
+
+/* --- onglets (pilotage) --- */
+.onglets { display: flex; gap: .4rem; flex-wrap: wrap; margin: .8rem 0; }
+.panneau { display: none; }
+.panneau.actif { display: block; }
+
+/* --- frise des étapes --- */
+.etapes { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: .35rem; }
+.etapes button { flex-direction: column; font-size: .8rem; padding: .4rem .3rem; min-height: 64px; line-height: 1.2; }
+.etapes button .n { font-size: 1.1rem; }
+.etapes button.courante { background: var(--orange); border-color: var(--orange); color: #fff; }
+.etapes button.faite { background: var(--surface-2); color: var(--ink-soft); }
+@media (max-width: 700px) { .etapes { grid-template-columns: repeat(4, 1fr); } }
+
+/* --- carte mentale --- */
+.carte-cadre { position: relative; background: #fbfcfe; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; touch-action: none; }
+.carte-outils { display: flex; gap: .35rem; flex-wrap: wrap; align-items: center; padding: .45rem; background: var(--surface); border-bottom: 1px solid var(--line); }
+.carte-outils button { min-height: 40px; padding: .3rem .6rem; }
+.legende { display: flex; flex-wrap: wrap; gap: .3rem; }
+.legende button { font-weight: 500; font-size: .85rem; gap: .35em; }
+.legende .pastille-couleur { width: 1.1em; height: 1.1em; border-radius: 4px; display: inline-block; }
+.legende button.actif { outline: 3px solid var(--cyan); background: var(--surface); color: var(--ink); }
+
+/* --- projection --- */
+body.projection { background: var(--marine-nuit); color: #fff; font-size: 20px; }
+body.projection .carte-blanche { background: #11284a; border-color: #23426e; color: #fff; box-shadow: none; }
+body.projection .muet, body.projection .tresmuet { color: #b7c6dd; }
+
+@media print {
+  .emc-barre, .aide-bandeau, .onglets, .carte-outils, button { display: none !important; }
+  body { background: #fff; }
+}

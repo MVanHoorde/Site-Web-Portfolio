@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Contenus EMC — Le Labyrinthe de Nina</title>
+<!--
+  Éditeur des contenus de la séance d'EMC (table emc_contenus, 031 §10) :
+  étapes, nuage de mots et émojis, missions et sous-zones de la carte,
+  légende des couleurs, situations du harcèlomètre, enquête, cadre
+  « J'ai besoin d'en parler », numéros d'urgence, vidéos.
+  Une section = une clé. Communs aux quatre créneaux, et appliqués EN
+  DIRECT aux tablettes et à la projection dès l'enregistrement.
+  Les deux enseignants EMC ont les mêmes droits.
+-->
+<link rel="stylesheet" href="../assets/css/emc.css?v=1">
+<style>
+  .sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin:0 0 1rem;box-shadow:var(--ombre)}
+  .sec>summary{list-style:none;cursor:pointer;padding:.9rem 1.1rem;display:flex;gap:.6rem;align-items:center;font:600 1.15rem 'Space Grotesk',sans-serif}
+  .sec>summary::-webkit-details-marker{display:none}
+  .sec>summary::before{content:'▸';transition:transform .15s}
+  .sec[open]>summary::before{transform:rotate(90deg)}
+  .sec .corps{padding:0 1.1rem 1rem}
+  .sec .barre-sec{position:sticky;bottom:0;background:var(--surface);padding:.6rem 0;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:.8rem}
+  .modifie{color:var(--wait);font-weight:700}
+  .item{border:1px solid var(--line);border-radius:10px;padding:.6rem .8rem;margin:.5rem 0;background:var(--surface-2)}
+  .item.inactif{opacity:.6}
+  .item-tete{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-bottom:.3rem}
+  .item-tete .resume{flex:1;font-weight:600}
+  .item-tete button,.liste-ch button{min-height:34px;padding:.15rem .55rem;font-size:.85rem}
+  .champs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 .9rem}
+  .champs .large{grid-column:1/-1}
+  .liste-ch .ligne{display:flex;gap:.3rem;align-items:center;margin:.25rem 0}
+  .liste-ch .ligne input{flex:1}
+  .erreurs{color:var(--err);font-weight:600}
+  .couleur-ex{width:1.6rem;height:1.6rem;border-radius:6px;border:1px solid var(--line);display:inline-block;vertical-align:middle}
+  input[type=checkbox]{width:auto;min-height:0}
+  label.case{display:flex;gap:.4rem;align-items:center;font-weight:500}
+</style>
+</head>
+<body>
+<header class="emc-barre">
+  <span class="titre">Contenus de la séance EMC</span>
+  <span class="pastille direct-etat" id="direct" style="background:rgba(255,255,255,.12);color:#fff;border-color:transparent">…</span>
+  <span class="espace"></span>
+  <a class="bouton" href="emc.html" style="min-height:38px;padding:.3rem .8rem;background:transparent;color:#fff;border-color:rgba(255,255,255,.35)">Pilotage</a>
+  <a class="bouton" href="index.html" style="min-height:38px;padding:.3rem .8rem;background:transparent;color:#fff;border-color:rgba(255,255,255,.35)">← Tableau de bord</a>
+</header>
+<div class="emc-page">
+  <div id="message" class="encadre" hidden></div>
+  <div class="encadre orange">⚠️ Ces contenus sont <b>communs aux quatre créneaux</b> et s'appliquent <b>en direct</b> : un enregistrement change aussitôt les tablettes et la projection. Chaque section s'enregistre à part.</div>
+  <div id="sections"></div>
+</div>
+
+<script src="../assets/js/prof-api.js?v=3"></script>
+<script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
+<script src="../assets/js/emc-commun.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var el = EMC.el;
+  var $ = function (s) { return document.querySelector(s); };
+  function message(t) { var m = $('#message'); m.hidden = !t; m.textContent = t || ''; }
+  function copie(v) { return JSON.parse(JSON.stringify(v)); }
+
+  /* ------------------------------------------------------------
+   *  Le schéma de chaque clé. Types :
+   *    texte · zone (plusieurs lignes) · nombre · case
+   *    liste    : liste de chaînes (ajouter / retirer / déplacer)
+   *    objets   : liste d'objets (champs) ; fixe = pas d'ajout ni de retrait
+   *    objet    : un objet (champs)
+   * ------------------------------------------------------------ */
+  var SECTIONS = [
+    { cle: 'etapes', titre: 'Étapes de la séance', aide: 'Les 8 étapes sont fixes (0 à 7) : on règle leur titre et leur durée indicative.',
+      def: { t: 'objets', fixe: true, resume: function (x) { return x.n + ' · ' + x.titre; },
+             champs: [{ k: 'titre', t: 'texte', lib: 'Titre', requis: true }, { k: 'duree', t: 'nombre', lib: 'Durée (min)' }] } },
+    { cle: 'mots', titre: 'Étape 1 — nuage de mots et météo des émotions',
+      def: { t: 'objet', champs: [
+        { k: 'question_mots', t: 'texte', lib: 'Question (mots)', large: true, requis: true },
+        { k: 'aide_mots', t: 'texte', lib: 'Consigne (mots)' },
+        { k: 'question_emojis', t: 'texte', lib: 'Question (émojis)', large: true, requis: true },
+        { k: 'aide_emojis', t: 'texte', lib: 'Consigne (émojis)' },
+        { k: 'emojis', t: 'objets', lib: 'Émojis proposés', large: true, resume: function (x) { return x.e + ' ' + x.l; },
+          nouveau: function () { return { e: '🙂', l: 'nouvelle émotion' }; },
+          champs: [{ k: 'e', t: 'texte', lib: 'Émoji', requis: true }, { k: 'l', t: 'texte', lib: 'Sens', requis: true }] }] } },
+    { cle: 'missions', titre: 'Missions par table, et sous-zones de la carte',
+      aide: 'Une mission par table (la table N écrit dans la zone N de la carte). Les sous-zones sont les cadres dessinés dans la zone : autant que listées.',
+      def: { t: 'objets', fixe: true, resume: function (x) { return 'Table ' + x.table + ' · ' + x.verbe; },
+             champs: [
+               { k: 'verbe', t: 'texte', lib: 'Verbe (infinitif)', requis: true },
+               { k: 'zone', t: 'texte', lib: 'Nom de la zone' },
+               { k: 'texte', t: 'zone', lib: 'Mission (suite du verbe)', large: true, requis: true },
+               { k: 'questions', t: 'liste', lib: 'Questions connexes', large: true },
+               { k: 'sous_zones', t: 'liste', lib: 'Sous-zones (titres des cadres, dans le sens des aiguilles d\'une montre)', large: true, min: 1 },
+               { k: 'attendu', t: 'zone', lib: 'Contenu attendu (enseignants seulement)', large: true }] } },
+    { cle: 'carte', titre: 'Carte mentale — titres et légende des couleurs',
+      def: { t: 'objet', champs: [
+        { k: 'titre', t: 'texte', lib: 'Titre', large: true, requis: true },
+        { k: 'centre', t: 'zone', lib: 'Centre', large: true, requis: true },
+        { k: 'centre_source', t: 'texte', lib: 'Source du centre', large: true },
+        { k: 'nord', t: 'texte', lib: 'Nord' }, { k: 'sud', t: 'texte', lib: 'Sud' },
+        { k: 'est', t: 'texte', lib: 'Est' }, { k: 'ouest', t: 'texte', lib: 'Ouest' },
+        { k: 'quadrants', t: 'objet', lib: 'Quadrants', large: true, champs: [
+          { k: 'NE', t: 'texte', lib: 'NE' }, { k: 'NO', t: 'texte', lib: 'NO' }, { k: 'SO', t: 'texte', lib: 'SO' }, { k: 'SE', t: 'texte', lib: 'SE' }] },
+        { k: 'anneau_interieur', t: 'texte', lib: 'Anneau intérieur' },
+        { k: 'anneau_exterieur', t: 'texte', lib: 'Anneau extérieur' },
+        { k: 'couleurs', t: 'objets', lib: 'Légende des couleurs (palette des élèves)', large: true,
+          resume: function (x) { return x.cle + ' — ' + x.sens; }, apercu: function (x) { return el('span', { class: 'couleur-ex', style: 'background:' + x.hex }); },
+          nouveau: function () { return { cle: 'gris', hex: '#8b97ad', sens: 'nouveau sens' }; },
+          champs: [{ k: 'cle', t: 'texte', lib: 'Nom (minuscules, sans accent)', motif: /^[a-z]{2,12}$/, requis: true },
+                   { k: 'hex', t: 'texte', lib: 'Couleur (#rrggbb)', motif: /^#[0-9a-fA-F]{6}$/, requis: true },
+                   { k: 'sens', t: 'texte', lib: 'Sens', requis: true }] }] } },
+    { cle: 'harcelometre', titre: 'Étape 6 — harcèlomètre',
+      aide: 'Les situations ACTIVES passent dans l\'ordre de la liste. Une situation inactive reste en réserve.',
+      def: { t: 'objet', champs: [
+        { k: 'situations', t: 'objets', lib: 'Situations', large: true, ids: 's',
+          resume: function (x) { return (x.actif ? '' : '⏸ ') + x.texte; }, inactif: function (x) { return !x.actif; },
+          nouveau: function () { return { id: '', texte: 'Nouvelle situation', lien: '', attendu: '', actif: true }; },
+          champs: [{ k: 'texte', t: 'zone', lib: 'Situation', large: true, requis: true },
+                   { k: 'attendu', t: 'texte', lib: 'Zone attendue' }, { k: 'lien', t: 'texte', lib: 'Lien avec Nina' },
+                   { k: 'actif', t: 'case', lib: 'Active (passe en séance)' },
+                   { k: 'id', t: 'texte', lib: 'Identifiant (ne pas changer en séance)', motif: /^[a-z0-9_-]{1,20}$/, requis: true }] },
+        { k: 'criteres', t: 'liste', lib: 'Critères révélés', large: true },
+        { k: 'echelle', t: 'objets', fixe: true, lib: 'Échelle (4 zones)', large: true, resume: function (x) { return x.de + '–' + x.a + ' · ' + x.titre; },
+          champs: [{ k: 'de', t: 'nombre', lib: 'De' }, { k: 'a', t: 'nombre', lib: 'À' }, { k: 'titre', t: 'texte', lib: 'Sens', large: true, requis: true }] }] } },
+    { cle: 'enquete', titre: 'Étape 7 — enquête anonyme',
+      def: { t: 'objet', champs: [
+        { k: 'questions', t: 'objets', lib: 'Questions', large: true, ids: 'q', resume: function (x) { return x.texte; },
+          nouveau: function () { return { id: '', texte: 'Nouvelle question', choix: ['oui', 'non', 'je préfère ne pas répondre'] }; },
+          champs: [{ k: 'texte', t: 'zone', lib: 'Question', large: true, requis: true },
+                   { k: 'choix', t: 'liste', lib: 'Choix', large: true, min: 2 },
+                   { k: 'id', t: 'texte', lib: 'Identifiant', motif: /^[a-z0-9_-]{1,20}$/, requis: true }] },
+        { k: 'temoignage', t: 'texte', lib: 'Consigne du témoignage', large: true },
+        { k: 'mention', t: 'zone', lib: 'Mention sous l\'enquête', large: true }] } },
+    { cle: 'aide', titre: '« J\'ai besoin d\'en parler »',
+      def: { t: 'objet', champs: [
+        { k: 'titre', t: 'texte', lib: 'Titre du cadre', large: true, requis: true },
+        { k: 'avertissement', t: 'zone', lib: 'Avertissement (non anonyme)', large: true, requis: true },
+        { k: 'cases', t: 'liste', lib: 'Cases proposées (3 au plus)', large: true, max: 3 }] } },
+    { cle: 'numeros', titre: 'Numéros d\'urgence',
+      def: { t: 'objets', resume: function (x) { return x.numero + ' — ' + x.sens; },
+             nouveau: function () { return { numero: '', sens: '' }; },
+             champs: [{ k: 'numero', t: 'texte', lib: 'Numéro', requis: true }, { k: 'sens', t: 'texte', lib: 'Pour quoi', requis: true }] } },
+    { cle: 'videos', titre: 'Étape 5 — vidéos',
+      aide: 'MP4 : le lien de partage OneDrive (« toute personne disposant du lien »), comme dans les séquences SNT. Le lien d\'origine sert de secours.',
+      def: { t: 'objets', resume: function (x) { return x.titre || '(sans titre)'; },
+             nouveau: function () { return { titre: '', mp4: '', lien: '', credits: '' }; },
+             champs: [{ k: 'titre', t: 'texte', lib: 'Titre', large: true, requis: true },
+                      { k: 'mp4', t: 'texte', lib: 'Lien de partage OneDrive (MP4)', large: true },
+                      { k: 'lien', t: 'texte', lib: 'Lien d\'origine (YouTube…)', large: true },
+                      { k: 'credits', t: 'texte', lib: 'Crédits (chaîne, auteur)', large: true }] } }
+  ];
+
+  /* ------------------------------------------------------------
+   *  Construction des champs
+   * ------------------------------------------------------------ */
+  function idLibre(liste, prefixe) {
+    var max = 0;
+    liste.forEach(function (x) { var m = new RegExp('^' + prefixe + '(\\d+)$').exec(x.id || ''); if (m) max = Math.max(max, +m[1]); });
+    return prefixe + (max + 1);
+  }
+
+  function bouton(txt, titre, f) { return el('button', { type: 'button', title: titre, onclick: f }, txt); }
+
+  function deplacer(l, i, d, refaire, change) {
+    var j = i + d; if (j < 0 || j >= l.length) return;
+    var x = l[i]; l[i] = l[j]; l[j] = x; change(); refaire();
+  }
+
+  function champ(obj, def, change) {
+    var v = obj[def.k];
+    var lab = el('label', null, def.lib + (def.requis ? ' *' : ''));
+    var bloc = el('div', { class: def.large ? 'large' : '' });
+    if (def.t === 'texte' || def.t === 'nombre') {
+      var i = el('input', { type: def.t === 'nombre' ? 'number' : 'text', value: v == null ? '' : v });
+      i.addEventListener('input', function () { obj[def.k] = def.t === 'nombre' ? (i.value === '' ? null : +i.value) : i.value; change(); });
+      bloc.appendChild(lab); bloc.appendChild(i);
+    } else if (def.t === 'zone') {
+      var t = el('textarea', { rows: 2, style: 'min-height:3.2rem' }); t.value = v || '';
+      t.addEventListener('input', function () { obj[def.k] = t.value; change(); });
+      bloc.appendChild(lab); bloc.appendChild(t);
+    } else if (def.t === 'case') {
+      var c = el('input', { type: 'checkbox', checked: !!v });
+      c.addEventListener('change', function () { obj[def.k] = c.checked; change(true); });
+      bloc.appendChild(el('label', { class: 'case' }, c, def.lib));
+    } else if (def.t === 'liste') {
+      if (!Array.isArray(v)) v = obj[def.k] = [];
+      bloc.appendChild(lab);
+      var z = el('div', { class: 'liste-ch' }); bloc.appendChild(z);
+      (function refaire() {
+        z.innerHTML = '';
+        v.forEach(function (s, k) {
+          var inp = el('input', { type: 'text', value: s });
+          inp.addEventListener('input', function () { v[k] = inp.value; change(); });
+          z.appendChild(el('div', { class: 'ligne' }, inp,
+            bouton('↑', 'Monter', function () { deplacer(v, k, -1, refaire, change); }),
+            bouton('↓', 'Descendre', function () { deplacer(v, k, 1, refaire, change); }),
+            bouton('✕', 'Retirer', function () { v.splice(k, 1); change(); refaire(); })));
+        });
+        if (!def.max || v.length < def.max) z.appendChild(bouton('+ Ajouter', 'Ajouter une ligne', function () { v.push(''); change(); refaire(); }));
+      })();
+    } else if (def.t === 'objet') {
+      if (!v || typeof v !== 'object') v = obj[def.k] = {};
+      if (def.lib) bloc.appendChild(el('label', null, def.lib));
+      bloc.appendChild(champsDe(v, def.champs, change));
+    } else if (def.t === 'objets') {
+      if (!Array.isArray(v)) v = obj[def.k] = [];
+      if (def.lib) bloc.appendChild(lab);
+      bloc.appendChild(listeObjets(v, def, change));
+    }
+    return bloc;
+  }
+
+  function champsDe(obj, champs, change) {
+    var g = el('div', { class: 'champs' });
+    champs.forEach(function (d) { g.appendChild(champ(obj, d, change)); });
+    return g;
+  }
+
+  function listeObjets(l, def, change) {
+    var z = el('div');
+    function refaire() {
+      z.innerHTML = '';
+      l.forEach(function (x, i) {
+        var res = el('span', { class: 'resume' }, def.resume ? def.resume(x) : '#' + (i + 1));
+        var item = el('div', { class: 'item' + (def.inactif && def.inactif(x) ? ' inactif' : '') });
+        var corps = el('div', { hidden: l.length > 4 });
+        var tete = el('div', { class: 'item-tete' }, el('b', { class: 'tresmuet' }, String(i + 1)), def.apercu ? def.apercu(x) : null, res,
+          bouton(corps.hidden ? 'Modifier' : 'Replier', 'Ouvrir ou replier', function (e) { corps.hidden = !corps.hidden; e.target.textContent = corps.hidden ? 'Modifier' : 'Replier'; }),
+          def.fixe ? null : bouton('↑', 'Monter', function () { deplacer(l, i, -1, refaire, change); }),
+          def.fixe ? null : bouton('↓', 'Descendre', function () { deplacer(l, i, 1, refaire, change); }),
+          def.fixe ? null : bouton('✕', 'Retirer', function () {
+            if (!confirm('Retirer « ' + (def.resume ? def.resume(x) : '#' + (i + 1)) + ' » ?')) return;
+            l.splice(i, 1); change(); refaire();
+          }));
+        corps.appendChild(champsDe(x, def.champs, function (fort) {
+          res.textContent = def.resume ? def.resume(x) : '#' + (i + 1);
+          item.classList.toggle('inactif', !!(def.inactif && def.inactif(x)));
+          change(fort);
+        }));
+        item.appendChild(tete); item.appendChild(corps);
+        z.appendChild(item);
+      });
+      if (!def.fixe) z.appendChild(bouton('+ Ajouter', 'Ajouter un élément', function () {
+        var n = def.nouveau ? def.nouveau() : {};
+        if (def.ids) n.id = idLibre(l, def.ids);
+        l.push(n); change(); refaire();
+        var dernier = z.querySelectorAll('.item'); var d = dernier[dernier.length - 1];
+        if (d) { var c = d.querySelector('[hidden]'); if (c) c.hidden = false; d.scrollIntoView({ block: 'center' }); }
+      }));
+    }
+    refaire();
+    return z;
+  }
+
+  /* ------------------------------------------------------------
+   *  Validation : ce dont la page élève a besoin pour s'afficher.
+   * ------------------------------------------------------------ */
+  function verifier(v, def, chemin, err) {
+    if (def.t === 'objet') def.champs.forEach(function (d) { verifier(v ? v[d.k] : undefined, d, chemin + (d.lib || d.k) + ' › ', err); });
+    else if (def.t === 'objets') {
+      var vus = {};
+      (v || []).forEach(function (x, i) {
+        def.champs.forEach(function (d) { verifier(x[d.k], d, chemin + (def.resume ? def.resume(x) : '#' + (i + 1)) + ' › ' + d.lib, err); });
+        if (x.id != null) { if (vus[x.id]) err.push(chemin + 'identifiant en double : ' + x.id); vus[x.id] = true; }
+      });
+    } else if (def.t === 'liste') {
+      var l = (v || []).filter(function (s) { return String(s).trim(); });
+      if (def.min && l.length < def.min) err.push(chemin + ' : au moins ' + def.min);
+      if (def.max && l.length > def.max) err.push(chemin + ' : au plus ' + def.max);
+    } else {
+      if (def.requis && (v == null || String(v).trim() === '')) err.push(chemin + ' : à remplir');
+      if (def.motif && v != null && v !== '' && !def.motif.test(String(v))) err.push(chemin + ' : format incorrect (' + v + ')');
+    }
+    return err;
+  }
+  /* Les lignes vides des listes partent à l'enregistrement. */
+  function nettoyer(v, def) {
+    if (def.t === 'objet') def.champs.forEach(function (d) { if (v) v[d.k] = nettoyer(v[d.k], d); });
+    else if (def.t === 'objets') (v || []).forEach(function (x) { def.champs.forEach(function (d) { x[d.k] = nettoyer(x[d.k], d); }); });
+    else if (def.t === 'liste') return (v || []).map(function (s) { return String(s).trim(); }).filter(Boolean);
+    else if (def.t === 'texte' && typeof v === 'string') return v.trim();
+    return v;
+  }
+
+  /* ------------------------------------------------------------
+   *  Les sections
+   * ------------------------------------------------------------ */
+  var etats = {};
+  function monter(contenus) {
+    var z = $('#sections'); z.innerHTML = '';
+    SECTIONS.forEach(function (s) {
+      var st = etats[s.cle] = { valeur: copie(contenus[s.cle] != null ? contenus[s.cle] : (s.def.t === 'objet' ? {} : [])), modifie: false };
+      var marque = el('span', { class: 'modifie', hidden: true }, '● modifié, non enregistré');
+      var conflit = el('div', { class: 'encadre err', hidden: true }, 'Cette section vient d\'être modifiée par l\'autre enseignant·e. ',
+        bouton('Recharger sa version', 'Abandonner mes changements', function () { recharger(s); }));
+      var erreurs = el('div', { class: 'erreurs' });
+      var res = el('span', { class: 'tresmuet' });
+      var corps = el('div', { class: 'corps' });
+      var details = el('details', { class: 'sec', 'data-cle': s.cle }, el('summary', null, s.titre, marque), corps);
+      st.marque = marque; st.conflit = conflit; st.corps = corps;
+      function change() { st.modifie = true; marque.hidden = false; res.textContent = ''; }
+      function dessiner() {
+        corps.innerHTML = '';
+        if (s.aide) corps.appendChild(el('p', { class: 'muet' }, s.aide));
+        corps.appendChild(conflit);
+        var racine = { v: st.valeur };
+        corps.appendChild(champ(racine, Object.assign({ k: 'v' }, s.def), change));
+        corps.appendChild(el('div', { class: 'barre-sec' },
+          el('button', { type: 'button', class: 'primaire', 'data-enregistrer': s.cle, onclick: function () { enregistrer(s, erreurs, res); } }, 'Enregistrer cette section'),
+          bouton('Annuler mes changements', 'Revenir à la version enregistrée', function () { if (!st.modifie || confirm('Abandonner les changements de cette section ?')) recharger(s); }),
+          res, erreurs));
+      }
+      st.dessiner = dessiner;
+      dessiner();
+      z.appendChild(details);
+    });
+  }
+
+  function recharger(s) {
+    var st = etats[s.cle];
+    return EMC.lire('emc_contenus?select=valeur&cle=eq.' + s.cle).then(function (l) {
+      st.valeur = copie(l[0] ? l[0].valeur : st.valeur);
+      st.modifie = false; st.marque.hidden = true; st.conflit.hidden = true;
+      st.dessiner();
+    });
+  }
+
+  function enregistrer(s, zoneErr, res) {
+    var st = etats[s.cle];
+    var v = nettoyer(copie(st.valeur), s.def);
+    var err = verifier(v, s.def, '', []);
+    zoneErr.textContent = err.length ? err.slice(0, 6).join(' · ') + (err.length > 6 ? ' · …' : '') : '';
+    if (err.length) return;
+    res.textContent = 'Enregistrement…';
+    EMC.ecrire('emc_contenus?on_conflict=cle', { cle: s.cle, valeur: v }, { fusion: true }).then(function () {
+      EMC.poserContenu(s.cle, v);
+      st.valeur = v; st.modifie = false; st.marque.hidden = true; st.conflit.hidden = true; st.ignorer = Date.now();
+      res.textContent = '✅ Enregistré à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' — appliqué en direct.';
+      st.dessiner();
+    }, function (e) { res.textContent = ''; zoneErr.textContent = 'Enregistrement impossible : ' + EMC.message(e); });
+  }
+
+  /* ------------------------------------------------------------
+   *  Démarrage
+   * ------------------------------------------------------------ */
+  ProfAPI.reprendre().then(function () {
+    EMC.demarrer('prof');
+    return EMC.contenus().then(function (c) {
+      monter(c);
+      /* l'autre enseignant·e enregistre : on suit, sauf si j'ai des
+         changements en cours dans cette section */
+      document.addEventListener('emc:contenus', function (e) {
+        var st = etats[e.detail]; if (!st) return;
+        if (st.ignorer && Date.now() - st.ignorer < 4000) return;
+        var s = SECTIONS.filter(function (x) { return x.cle === e.detail; })[0];
+        if (st.modifie) st.conflit.hidden = false; else recharger(s);
+      });
+      var maj = function () { var d = EMC.etatDirect(); $('#direct').textContent = d === 'direct' ? 'en direct' : d === 'hors-ligne' ? 'hors ligne' : 'relecture'; };
+      document.addEventListener('emc:direct', maj); maj();
+      window.addEventListener('beforeunload', function (e) {
+        if (Object.keys(etats).some(function (k) { return etats[k].modifie; })) { e.preventDefault(); e.returnValue = ''; }
+      });
+    });
+  }).catch(function (e) {
+    message(e && e.message === 'SESSION_EXPIREE' || !ProfAPI.connecte()
+      ? 'Pas de session : connecte-toi d\'abord au tableau de bord, puis reviens ici.'
+      : 'Lecture impossible : ' + EMC.message(e));
+  });
+})();
+</script>
+</body>
+</html>

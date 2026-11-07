@@ -15,6 +15,22 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 07/11/2026 — EMC seconde, la séance pilotée autour du « Labyrinthe de Nina »
+
+| Date | Décision | Statut |
+|---|---|---|
+| 07/11/2026 | **Identifiants seulement, aucun nom réel en base** — y compris dans « J'ai besoin d'en parler », qui reste nominatif par le pseudonyme. La correspondance identifiant ↔ nom passe par une **feuille papier** qui circule à chaque créneau (`fiches/emc/feuille-correspondance.html`), pour tous les élèves, comptes existants compris | ✅ en vigueur (Loïc) |
+| 07/11/2026 | **Pas de mode invité** : l'élève sans compte en crée un vrai, avec le code EMC (mécanisme existant de `progression.js`). Les comptes créés pour l'EMC sont **supprimés après la séance** par `emc_supprimer_comptes()` (031), qui épargne tout compte ayant une classe hors EMC | ✅ en vigueur (Loïc) |
+| 07/11/2026 | **Une classe EMC par créneau** (4 codes `NINA27`, `NINA48`, `NINA63`, `NINA91`, espace `emc`), Loïc et Mme Castel rattachés à chacune, mêmes droits | ✅ en vigueur |
+| 07/11/2026 | **Realtime** (supabase-js 2.45.4 **auto-hébergé**, seulement pour le direct), sur l'offre gratuite. Chaque écoute a une relecture de secours ; les iPad ne reçoivent en direct que **leur zone** de la carte (budget de 2 M de messages par mois) | ✅ en vigueur |
+| 07/11/2026 | **Carte mentale complète, sans repli** : Konva 9.3.6 auto-hébergé (tldraw et Excalidraw exigent React et une construction). 8 zones, **sous-zones** de guidage réglables, zoom large. L'écriture hors de sa zone est refusée **par la base** (`emc_dans_zone`, chaque point contrôlé). Pas d'import d'image | ✅ en vigueur (Loïc) |
+| 07/11/2026 | **Tout contenu se règle au tableau de bord** (`emc_contenus`, commun aux 4 créneaux), pré-rempli avec les annexes du plan, validées avec Mme Castel | ✅ en vigueur (Loïc) |
+| 07/11/2026 | **Messages d'aide limités à la séance** : lus des seuls enseignants de la classe, jamais projetés ni exportés, effacés à la clôture (`emc_cloturer`). La CPE et l'infirmière sont prévenues par mail personnel de Loïc, sans compte sur le site | ✅ en vigueur (Loïc) |
+| 07/11/2026 | **L'enquête ne garde ni l'élève, ni l'heure, ni « a déjà répondu »** : plafond par le nombre de participants, mémoire de l'iPad pour ne pas répondre deux fois | ✅ en vigueur |
+| 07/11/2026 | **Podium et bonbons sur papier**, hors du site · notes de mission individuelles, lues par la table · pas de mini-enquête pendant l'activité | ✅ en vigueur (Loïc) |
+| 07/11/2026 | **Exports** (nuage et émojis, harcèlomètre, carte mentale, enquête agrégée) par la mécanique des fiches SNT (html2canvas-pro + jsPDF, partage iOS puis téléchargement). Jamais l'aide, jamais un nom | ✅ en vigueur (Loïc) |
+| 07/11/2026 | **Vidéo : MP4 sur le OneDrive, avec en plus le lien d'origine** | ✅ en vigueur (Loïc) |
+
 ## 31/10/2026 — Padago, les pads à serrures
 
 | Date | Décision | Statut |

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EMC — Le Labyrinthe de Nina</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../assets/css/emc.css?v=1">
+<style>
+  /* Page élève : ce qui ne sert qu'ici. Le reste est dans emc.css. */
+  .entete-eleve { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+  .entete-eleve .seance { font-weight: 600; }
+  .entete-eleve .qui { font-size: .9rem; opacity: .85; }
+  .grande-table { font-family: 'Space Grotesk', sans-serif; font-size: 1.05rem; padding: .25em .8em; }
+  .emc-barre .pastille { border: 0; }
+  .emc-barre button { min-height: 40px; padding: .3rem .8rem; }
+  .emc-barre button.pret-oui { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .emc-barre button.pret-non { background: #fff; color: var(--marine-nuit); }
+  .emc-barre button.lien { background: transparent; border-color: rgba(255, 255, 255, .35); }
+
+  #scene { animation: apparaitre .35s ease-out; }
+  @keyframes apparaitre { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .etape-titre { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; margin: .2rem 0 1rem; }
+  .etape-titre .num { font-family: 'Space Grotesk', sans-serif; color: var(--orange-fonce); font-weight: 700; }
+
+  /* porte d'entrée */
+  .porte { max-width: 520px; margin: 1.5rem auto; }
+  .porte .choix { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .6rem; }
+  .porte .choix button.actif { background: var(--marine); color: #fff; border-color: var(--marine); }
+  .porte input.code { text-transform: uppercase; letter-spacing: .25em; font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; }
+  .regle { font-size: .85rem; color: var(--ink-soft); margin: .2rem 0 0; }
+
+  /* table en très gros (étapes 0 et 2) */
+  .table-geante { text-align: center; padding: 1rem; }
+  .table-geante .n { font-family: 'Space Grotesk', sans-serif; font-size: 4.5rem; line-height: 1; color: var(--orange); font-weight: 700; }
+  .verbe { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2.4rem, 7vw, 4rem); color: var(--marine); line-height: 1.05; margin: .2rem 0 .4rem; }
+  .mission-texte { font-size: 1.25rem; }
+  .questions li { margin: .35rem 0; font-size: 1.05rem; }
+
+  /* mots et émojis */
+  .mots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+  @media (max-width: 600px) { .mots { grid-template-columns: 1fr; } }
+  .emojis { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: .45rem; margin-top: .4rem; }
+  .emojis button { flex-direction: column; font-weight: 500; font-size: .85rem; min-height: 84px; line-height: 1.15; gap: .15rem; text-align: center; }
+  .emojis button .e { font-size: 2rem; }
+  .emojis button[aria-pressed="true"] { border: 3px solid var(--cyan); background: var(--cyan-wash); }
+  .etat-envoi { font-weight: 600; }
+  .etat-envoi.ok { color: var(--ok); } .etat-envoi.att { color: var(--wait); } .etat-envoi.err { color: var(--err); }
+
+  /* notes */
+  textarea.notes { min-height: 12rem; font-size: 1.02rem; }
+  .note-camarade { background: var(--surface-2); border-radius: 10px; padding: .55rem .75rem; margin: .45rem 0; white-space: pre-wrap; }
+  .note-camarade b { display: block; font-size: .85rem; color: var(--ink-soft); }
+
+  /* carte */
+  .carte-zone { display: grid; grid-template-columns: minmax(0, 1fr); gap: .6rem; }
+  #carte-hote { height: calc(100vh - 13rem); min-height: 520px; }
+  /* plein écran : la carte prend tout, SAUF le bandeau d'aide, qui reste
+     visible et cliquable à toutes les étapes */
+  body.carte-plein .carte-plein-cadre { position: fixed; inset: 0; z-index: 45; background: var(--bg);
+    padding: .4rem .4rem 5.4rem; display: flex; flex-direction: column; }
+  body.carte-plein .aide-bandeau { z-index: 46; }
+  body.carte-plein .carte-plein-cadre #carte-hote { flex: 1; height: auto; min-height: 0; }
+  details.panneau-notes { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: .5rem .8rem; }
+  details.panneau-notes summary { cursor: pointer; font-weight: 600; min-height: 32px; }
+
+  /* harcèlomètre */
+  .situation { font-size: 1.35rem; font-weight: 600; line-height: 1.35; margin: .3rem 0 1rem; }
+  .curseur-cadre { padding: .5rem .2rem 0; }
+  input[type=range].harcelo { width: 100%; height: 56px; -webkit-appearance: none; appearance: none; background: transparent; }
+  input[type=range].harcelo::-webkit-slider-runnable-track { height: 22px; border-radius: 11px; background: var(--piste); }
+  input[type=range].harcelo::-moz-range-track { height: 22px; border-radius: 11px; background: var(--piste); }
+  input[type=range].harcelo::-webkit-slider-thumb { -webkit-appearance: none; width: 46px; height: 46px; margin-top: -12px; border-radius: 50%; background: #fff; border: 4px solid var(--marine); box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+  input[type=range].harcelo::-moz-range-thumb { width: 38px; height: 38px; border-radius: 50%; background: #fff; border: 4px solid var(--marine); }
+  input[type=range].harcelo:disabled { opacity: .6; }
+  .graduations { display: flex; justify-content: space-between; font-size: .85rem; color: var(--ink-soft); padding: 0 14px; }
+  .echelle { display: grid; grid-template-columns: 2.5fr 3fr 3fr 1.5fr; gap: .3rem; margin-top: .4rem; font-size: .82rem; }
+  .echelle div { border-radius: 8px; padding: .35rem .45rem; color: #fff; line-height: 1.2; }
+  .valeur-vote { font-family: 'Space Grotesk', sans-serif; font-size: 2.6rem; font-weight: 700; color: var(--marine); }
+
+  /* enquête */
+  fieldset.q { border: 1px solid var(--line); border-radius: var(--r); padding: .6rem .9rem; margin: .7rem 0; }
+  fieldset.q legend { font-weight: 600; padding: 0 .3rem; }
+  fieldset.q label { font-weight: 400; display: flex; gap: .6rem; align-items: center; min-height: 44px; margin: 0; cursor: pointer; }
+  fieldset.q input { width: 1.4rem; height: 1.4rem; min-height: 0; }
+
+  /* aide */
+  .aide-bandeau .numeros span { white-space: nowrap; }
+  .aide-bandeau button { white-space: nowrap; }
+  .modale label.case { font-weight: 400; display: flex; gap: .6rem; align-items: center; min-height: 44px; margin: .2rem 0; cursor: pointer; }
+  .modale label.case input { width: 1.4rem; height: 1.4rem; min-height: 0; flex: none; }
+
+  .numeros-grands { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .6rem; }
+  .numeros-grands div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: .7rem .9rem; }
+  .numeros-grands b { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; color: var(--marine); display: block; line-height: 1.1; }
+  video { width: 100%; border-radius: var(--r); background: #000; }
+</style>
+</head>
+<body class="avec-aide">
+
+<header class="emc-barre" id="barre">
+  <span class="titre">EMC · Le Labyrinthe de Nina</span>
+  <span class="espace"></span>
+</header>
+
+<main class="emc-page" id="principal" tabindex="-1">
+  <p class="muet" id="chargement">Chargement…</p>
+</main>
+
+<footer class="aide-bandeau" id="bandeau-aide" aria-label="Aide et numéros d'urgence">
+  <div class="numeros" id="numeros"></div>
+  <button type="button" class="cyan" id="btn-aide" hidden>💬 J'ai besoin d'en parler</button>
+</footer>
+
+<noscript><p class="emc-page">Cette page a besoin de JavaScript.</p></noscript>
+
+<script>
+  /* La page fait sa propre porte d'entrée : la modale de progression.js
+     propose « continuer sans compte », exclu pour l'EMC. */
+  window.SNT_SANS_ACCUEIL = true;
+</script>
+<script src="../assets/js/progression.js?v=24"></script>
+<script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
+<script src="../assets/js/emc-commun.js?v=1"></script>
+<script src="../assets/js/vendor/konva-9.3.6.min.js"></script>
+<script src="../assets/js/emc-carte.js?v=1"></script>
+<script src="../assets/js/emc-eleve.js?v=1"></script>
+</body>
+</html>

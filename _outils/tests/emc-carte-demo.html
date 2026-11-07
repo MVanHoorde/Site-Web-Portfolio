@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banc de la carte EMC</title>
+<link rel="stylesheet" href="../../assets/css/emc.css">
+<style>
+  .demo { display: grid; gap: 1rem; padding: 1rem; }
+  .demo h2 { font-size: 1rem; margin: 0 0 .3rem; }
+  #c-eleve, #c-prof, #c-projection { height: 640px; }
+</style>
+</head>
+<body>
+<!--
+  Banc d'essai de assets/js/emc-carte.js, hors base : trois cartes
+  (élève de la table 3, enseignant, projection) reliées par une
+  fausse base en mémoire qui imite le serveur (masquer vide le
+  contenu, maj_le posé par la « base »). Les contenus sont lus dans
+  bdd/schema/031-emc.sql : ce sont ceux qui partiront en ligne.
+  Servir la racine du dépôt (python -m http.server) puis ouvrir
+  /_outils/tests/emc-carte-demo.html. Piloté par le banc Playwright.
+-->
+<div class="demo">
+  <section><h2>Élève — table 3</h2><div id="c-eleve"></div></section>
+  <section><h2>Enseignant</h2><div id="c-prof"></div></section>
+  <section><h2>Projection</h2><div id="c-projection"></div></section>
+</div>
+<script src="../../assets/js/vendor/konva-9.3.6.min.js"></script>
+<script src="../../assets/js/emc-commun.js"></script>
+<script src="../../assets/js/emc-carte.js"></script>
+<script>
+(function () {
+  'use strict';
+  var demo = window.__demo = { base: {}, masques: {}, persistes: [], modifs: [], refus: 0, pret: false, cartes: {} };
+  var horloge = 0;
+  function maintenant() { horloge++; return new Date(Date.UTC(2026, 10, 12, 8, 0, 0) + horloge).toISOString(); }
+  function diffuser(id) {
+    var l = JSON.parse(JSON.stringify(demo.base[id]));
+    Object.keys(demo.cartes).forEach(function (k) { demo.cartes[k].appliquer(l); });
+    if (l.masque && demo.masques[id]) demo.cartes.prof.contenuMasque(id, demo.masques[id]);
+  }
+  function persisterPour(eleve, zoneAutorisee) {
+    return function (ligne) {
+      demo.persistes.push(ligne);
+      /* le serveur : la zone, et emc_dans_zone */
+      if ((zoneAutorisee != null && ligne.zone !== zoneAutorisee) || !EMC.dansZone(ligne.zone, ligne.type, ligne.donnees)) {
+        demo.refus++; return Promise.reject(new Error('new row violates row-level security policy'));
+      }
+      demo.base[ligne.id] = Object.assign({ classe_id: 'c', eleve_id: eleve, masque: false, supprime: false, maj_le: maintenant() }, ligne);
+      setTimeout(function () { diffuser(ligne.id); }, 0);
+      return Promise.resolve();
+    };
+  }
+  function modifier(id, champs) {
+    demo.modifs.push({ id: id, champs: champs });
+    var l = demo.base[id];
+    if (!l) return Promise.reject(new Error('inconnu'));
+    if (champs.masque === true && !l.masque) { demo.masques[id] = l.donnees; l.donnees = {}; }
+    if (champs.masque === false && l.masque) { l.donnees = demo.masques[id] || {}; delete demo.masques[id]; }
+    Object.keys(champs).forEach(function (k) { if (k !== 'donnees' || !l.masque) l[k] = champs[k]; });
+    l.maj_le = maintenant();
+    setTimeout(function () { diffuser(id); }, 0);
+    return Promise.resolve();
+  }
+  function bloc(sql, cle) {
+    var m = new RegExp("\\('" + cle + "', \\$j\\$([\\s\\S]*?)\\$j\\$::jsonb\\)").exec(sql);
+    return JSON.parse(m[1]);
+  }
+  fetch('../../bdd/schema/031-emc.sql').then(function (r) { return r.text(); }).then(function (sql) {
+    var contenus = { carte: bloc(sql, 'carte'), missions: bloc(sql, 'missions') };
+    demo.contenus = contenus;
+    demo.cartes.eleve = EMC.Carte.monter(document.getElementById('c-eleve'),
+      { mode: 'eleve', zone: 3, eleveId: 'e3', contenus: contenus, persister: persisterPour('e3', 3), modifier: modifier });
+    demo.cartes.prof = EMC.Carte.monter(document.getElementById('c-prof'),
+      { mode: 'prof', contenus: contenus, persister: persisterPour(null, null), modifier: modifier });
+    demo.cartes.projection = EMC.Carte.monter(document.getElementById('c-projection'),
+      { mode: 'projection', contenus: contenus });
+    demo.cartes.eleve.etat({ ouverte: true, figee: false, zonesVerrouillees: [] });
+    demo.pret = true;
+  }).catch(function (e) { demo.erreur = String(e); });
+})();
+</script>
+</body>
+</html>

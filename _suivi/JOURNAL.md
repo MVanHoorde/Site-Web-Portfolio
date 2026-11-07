@@ -12,6 +12,28 @@
 
 ---
 
+## 07/11/2026 — EMC seconde : la séance pilotée autour du « Labyrinthe de Nina »
+
+Loïc apporte un plan validé avec Mme Castel (séance de 2 h, 4 créneaux les 12 et
+13/11) et demande un plan de travail, puis « au travail ». Audit d'abord
+(`_suivi/AUDIT-EMC.md`) : le « Je suis prêt » de la radioactivité n'était pas un
+composant, le mode invité n'enregistrait rien par choix, `supprimer_eleve`
+refuserait toute classe à deux enseignants, et le site n'avait pas de Realtime.
+Arbitrages de Loïc dans la foulée : identifiants seulement, feuille papier pour
+les noms, comptes créés puis supprimés, une classe par créneau, carte complète
+avec sous-zones, tout réglable au tableau de bord.
+
+Construit le même jour : la migration `031` et son banc PGlite (217 contrôles,
+qui échouent quand on casse le contrôle de zone, l'aide ou le plafond de
+l'enquête) ; le socle `emc-commun.js` (géométrie miroir du SQL, Realtime avec
+relecture de secours, file hors ligne) ; puis trois chantiers en parallèle — la
+carte (Konva), la page élève, les pages enseignant — chacun avec son banc
+Playwright sur fausse base, tous versionnés dans `_outils/tests/`. Repris après
+les captures : la carte d'une table de coin montrait le vide au-delà du bord,
+la barre d'outils mangeait la moitié de la hauteur sur iPad, et le bouton d'aide
+ne disait rien avant la connexion. `verifier.mjs` reste à son repère de 19.
+
+
 ## 24/09/2026 — L'ES de terminale s'ouvre : ce qui manquait n'était pas le cours
 
 Loïc part au travail et demande un verdict : « est-ce que tout est prêt pour les

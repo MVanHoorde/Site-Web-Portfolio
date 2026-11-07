@@ -40,6 +40,7 @@ const GUIDES = [
   { cle: 'es',            html: 'prof/guide-es.html',            pdf: 'guide-es.pdf'            },
   { cle: 'ap',            html: 'prof/guide-ap.html',            pdf: 'guide-ap.pdf'            },
   { cle: 'dispositif',    html: 'prof/guide-dispositif.html',    pdf: 'guide-dispositif.pdf'    },
+  { cle: 'emc',           html: 'prof/guide-emc.html',           pdf: 'guide-emc.pdf'           },
 ];
 
 /* A4 en points PostScript, tel que Chrome le produit quand il

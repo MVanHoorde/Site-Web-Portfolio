@@ -5,14 +5,17 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **31/10/2026**.
+> Dernière réécriture : **07/11/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — Padago, les pads à serrures (31/10).** Nouvel outil
+> **Dernière passe — EMC seconde, « Le Labyrinthe de Nina » (07/11).** Séance
+> pilotée des 12-13/11 : section détaillée ci-dessous.
+>
+> **Passe du 31/10 — Padago, les pads à serrures.** Nouvel outil
 > `outils/padago/` : section détaillée ci-dessous.
 >
 > **Passe du 13/10 — correction SNT sans IA.** 🔴 La pré-correction par
@@ -163,6 +166,33 @@
 > sans lesquelles trois exercices n'ont pas d'énoncé complet — toutes sont des copies
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
+
+## 🆕 EMC seconde, « Le Labyrinthe de Nina » — à mettre en base par Loïc
+
+Séance de 2 h, **4 créneaux les 12 et 13/11/2026**, 30 à 40 élèves de seconde,
+Loïc et Mme Castel. Le site pilote la séance autour du jeu (application
+externe). Audit et architecture : `_suivi/AUDIT-EMC.md` · décisions :
+`DECISIONS.md` (07/11) · guide : `prof/guide-emc.html`.
+
+| Partie | Fichiers |
+|---|---|
+| Base | `bdd/schema/031-emc.sql` (✅ exécuté le 07/11/2026, copié dans `supabase/migrations/20261107120000_emc.sql`) |
+| Élève | `emc/index.html` + `assets/js/emc-eleve.js` |
+| Pilotage, projection, contenus | `prof/emc.html`, `prof/emc-projection.html`, `prof/emc-contenus.html` |
+| Tableau de bord | espace `emc` dans `prof/index.html` + `assets/js/prof-emc.js` |
+| Communs | `assets/js/emc-commun.js` (REST, Realtime, géométrie, file hors ligne), `emc-carte.js` (Konva), `emc-vues.js`, `emc-export.js`, `assets/css/emc.css` |
+| Bibliothèques auto-hébergées | `assets/js/vendor/` : `konva-9.3.6`, `supabase-js-2.45.4`, `qrcode-generator-1.4.4` |
+| Papier | `fiches/emc/` → `assets/pdf/emc/` (`python _outils/fiches/emc_fiches_pdf.py`) |
+| Bancs | `_outils/tests/emc-schema.test.mjs` (217), `emc-geometrie.test.mjs` (80), `emc-carte.test.py` (36), `emc-eleve.test.py` (81), `emc-prof.test.py` (98) |
+
+**Ce qui reste, dans l'ordre :**
+1. ✅ `031` exécuté le 07/11/2026, §11 compris : quatre classes à deux
+   enseignants, sept tables en temps réel.
+2. ⏳ **Recette sur la vraie base** : Realtime réel, 40 clients, mesure des
+   messages. Les bancs n'ont éprouvé que la relecture de secours.
+3. ⏳ **Répétition** avec Mme Castel sur de vrais iPad (pincement, partage iOS,
+   émojis en couleur : non éprouvés au banc).
+4. Après les quatre créneaux : exports, clôture, suppression des comptes EMC.
 
 ## 🆕 Padago, les pads à serrures — à mettre en service par Loïc
 

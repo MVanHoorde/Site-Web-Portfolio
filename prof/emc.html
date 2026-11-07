@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pilotage EMC — Le Labyrinthe de Nina</title>
+<!--
+  Pilotage d'une séance d'EMC de seconde (07/11/2026). Architecture :
+  _suivi/AUDIT-EMC.md · base : bdd/schema/031-emc.sql.
+  Reprend la session du tableau de bord (prof-api.js) : pas de
+  formulaire de connexion ici. Les deux enseignants rattachés à la
+  classe ont les mêmes droits.
+  Les NOMS ne viennent que de la table des noms locale (ProfAPI.nomDe),
+  chargée dans Réglages du tableau de bord : jamais de la base. Ils
+  n'apparaissent qu'ici, jamais dans la projection ni dans les exports.
+-->
+<link rel="stylesheet" href="../assets/css/emc.css?v=1">
+<style>
+  .code-geant{font:700 2rem/1 'IBM Plex Mono',monospace;letter-spacing:.08em;background:#fff;color:var(--ink);padding:.2em .45em;border-radius:10px;border:0;cursor:pointer;min-height:0}
+  .emc-barre .pastille{background:rgba(255,255,255,.12);color:#fff;border-color:transparent}
+  .emc-barre .pastille.ok{background:#1f8f63}
+  .emc-barre .pastille.att{background:#9a6a00}
+  .emc-barre a.bouton{min-height:38px;padding:.3rem .8rem;background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+
+  #alerte-aide{background:var(--err);color:#fff;padding:.7rem 1rem;position:sticky;top:56px;z-index:19}
+  #alerte-aide h2{margin:0 0 .4rem;font-size:1.15rem}
+  #alerte-aide.clignote{animation:clig 1s steps(2) 6}
+  #alerte-aide.calme{background:var(--surface-2);color:var(--ink);border-bottom:1px solid var(--line);padding:.4rem 1rem}
+  #alerte-aide.calme h2{font-size:.95rem;margin:0;cursor:pointer}
+  #alerte-aide.calme .aide-item{border:1px solid var(--line)}
+  @keyframes clig{50%{background:#7e1c14}}
+  .aide-item{background:#fff;color:var(--ink);border-radius:10px;padding:.6rem .8rem;margin:.4rem 0;display:grid;grid-template-columns:1fr auto;gap:.3rem .8rem;align-items:center}
+  .aide-item.pris{opacity:.65}
+  .aide-item .qui{font-weight:700;font-size:1.05rem}
+  .aide-item .table{background:var(--orange);color:#fff;border-radius:6px;padding:.05em .45em;margin-left:.3em}
+  .aide-item .msg{white-space:pre-wrap}
+  .aide-item .actions{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
+
+  .gros-chiffre{font:700 3.2rem/1 'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
+  .gros-chiffre small{font-size:1.2rem;color:var(--ink-soft);font-weight:600}
+  .chrono{font:600 1.4rem 'IBM Plex Mono',monospace}
+  .chrono.depasse{color:var(--err)}
+  .repartition{display:grid;grid-template-columns:repeat(8,1fr);gap:.3rem;text-align:center}
+  .repartition div{background:var(--surface-2);border-radius:8px;padding:.3rem 0}
+  .repartition b{display:block;font-size:1.3rem}
+  .rappel{background:var(--wait-wash);border-left:4px solid var(--wait);padding:.6rem .8rem;border-radius:8px;margin:.6rem 0;font-weight:600}
+
+  table.liste{width:100%;border-collapse:collapse;font-size:.95rem}
+  table.liste th,table.liste td{padding:.45rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+  table.liste th{font-size:.82rem;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft)}
+  table.liste select{width:auto;min-height:36px;padding:.2rem .4rem}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:.9em}
+
+  .mission{border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;background:var(--surface)}
+  .mission h3{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+  .note{background:var(--surface-2);border-radius:8px;padding:.4rem .6rem;margin:.3rem 0;white-space:pre-wrap;font-size:.93rem}
+  .note b{display:block;font-size:.82rem;color:var(--ink-soft)}
+
+  #carte-zone{height:68vh;min-height:420px}
+  .verrous{display:flex;gap:.3rem;flex-wrap:wrap}
+  .verrous button{min-height:36px;padding:.2rem .55rem;font-size:.85rem}
+  .verrous button.ferme{background:var(--err-wash);color:var(--err);border-color:var(--err)}
+
+  .situations{list-style:none;padding:0;margin:0}
+  .situations li{display:grid;grid-template-columns:2rem 1fr auto;gap:.5rem;align-items:center;padding:.45rem .3rem;border-bottom:1px solid var(--line)}
+  .situations li.courante{background:var(--cyan-wash);border-radius:8px}
+  .situations li.passee{color:var(--ink-soft)}
+  .situation-texte{font:600 1.35rem/1.3 'Space Grotesk',sans-serif;margin:.3rem 0 .8rem}
+  .tous-votes{background:var(--ok-wash);color:var(--ok);padding:.5rem .8rem;border-radius:8px;font-weight:700}
+  .temoignage{background:var(--surface-2);border-radius:8px;padding:.6rem .8rem;margin:.4rem 0;white-space:pre-wrap}
+  #choix .emc-creneaux{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.8rem}
+  .panneau h2{margin-top:.4rem}
+  details summary{cursor:pointer;font-weight:600}
+</style>
+</head>
+<body>
+
+<header class="emc-barre">
+  <span class="titre" id="titre">Pilotage EMC</span>
+  <button type="button" class="code-geant" id="code" title="Afficher le QR code" hidden></button>
+  <span class="pastille direct-etat" id="direct">…</span>
+  <span class="espace"></span>
+  <button type="button" class="lien bouton" id="btn-son" title="Son des alertes" style="min-height:38px;padding:.3rem .7rem;background:transparent;color:#fff;border-color:rgba(255,255,255,.35)">🔔 son</button>
+  <a class="bouton" id="lien-projection" target="_blank" hidden>Projection ↗</a>
+  <a class="bouton" href="emc-contenus.html">Contenus</a>
+  <a class="bouton" href="index.html">← Tableau de bord</a>
+</header>
+
+<!-- 🔴 Les demandes « J'ai besoin d'en parler » : en tête, tant qu'il en reste à traiter. -->
+<section id="alerte-aide" hidden aria-live="assertive"></section>
+
+<div class="emc-page">
+  <div id="message" class="encadre" hidden></div>
+
+  <section id="choix" hidden>
+    <h1>Pilotage EMC</h1>
+    <p class="muet">Choisis le créneau à piloter.</p>
+    <div class="emc-creneaux" id="liste-classes"></div>
+  </section>
+
+  <div id="appli" hidden>
+    <nav class="onglets" role="tablist" id="onglets">
+      <button data-onglet="seance" class="actif">Séance</button>
+      <button data-onglet="participants">Participants <span id="n-presents" class="tresmuet"></span></button>
+      <button data-onglet="mots">Mots & émotions</button>
+      <button data-onglet="missions">Missions & notes</button>
+      <button data-onglet="carte">Carte mentale</button>
+      <button data-onglet="harcelometre">Harcèlomètre</button>
+      <button data-onglet="enquete">Enquête</button>
+      <button data-onglet="exports">Exports</button>
+      <button data-onglet="cloture">Clôture</button>
+    </nav>
+
+    <!-- SÉANCE -->
+    <section class="panneau actif" id="p-seance">
+      <div class="carte-blanche">
+        <div class="rangee" style="justify-content:space-between">
+          <h2 style="margin:0">Étape en cours : <span id="etape-titre">—</span></h2>
+          <div class="rangee">
+            <button type="button" id="btn-revenir">◀ Revenir</button>
+            <button type="button" class="orange" id="btn-avancer">Avancer ▶</button>
+          </div>
+        </div>
+        <div class="etapes" id="frise" style="margin-top:.8rem"></div>
+        <div class="rangee" style="margin-top:.8rem;gap:1.5rem">
+          <span>Chrono de l'étape : <span class="chrono" id="chrono">0:00</span> <span class="tresmuet" id="duree"></span></span>
+          <span class="tresmuet" id="etape-resume"></span>
+        </div>
+        <div id="rappels"></div>
+      </div>
+      <div class="grille2">
+        <div class="carte-blanche">
+          <h3>Prêts / présents</h3>
+          <div class="gros-chiffre"><span id="n-prets">0</span> <small>/ <span id="n-tous">0</span> présents</small></div>
+          <p class="tresmuet">On compte les élèves qui ont touché « Je suis prêt », pas les appareils.</p>
+        </div>
+        <div class="carte-blanche">
+          <h3>Élèves par table</h3>
+          <div class="repartition" id="repartition-seance"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PARTICIPANTS -->
+    <section class="panneau" id="p-participants">
+      <div class="carte-blanche">
+        <h2>Participants</h2>
+        <div id="etat-noms" class="encadre"></div>
+        <div class="repartition" id="repartition" style="margin:.6rem 0"></div>
+        <div id="signaux"></div>
+        <div style="overflow-x:auto">
+          <table class="liste">
+            <thead><tr><th>Élève</th><th>Compte</th><th>Table</th><th>Prêt</th><th>Entré à</th></tr></thead>
+            <tbody id="t-participants"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- MOTS -->
+    <section class="panneau" id="p-mots">
+      <div class="carte-blanche">
+        <h2 id="q-mots">Mots</h2>
+        <p class="tresmuet"><span id="n-mots">0</span> répondant(s). Touche un mot pour le masquer (il disparaît de la projection) ou le démasquer.</p>
+        <div id="nuage" style="font-size:1.1rem"></div>
+      </div>
+      <div class="grille2">
+        <div class="carte-blanche">
+          <h3 id="q-emojis">Émotions</h3>
+          <div id="emojis"></div>
+        </div>
+        <div class="carte-blanche">
+          <h3>Tous les mots</h3>
+          <div style="max-height:420px;overflow:auto"><table class="liste"><tbody id="t-mots"></tbody></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MISSIONS -->
+    <section class="panneau" id="p-missions">
+      <p class="muet">Les notes de chaque table, relues toutes les 8 secondes. Les noms ne viennent que de la table des noms chargée sur cet appareil.</p>
+      <div class="grille2" id="missions"></div>
+    </section>
+
+    <!-- CARTE -->
+    <section class="panneau" id="p-carte">
+      <div class="carte-blanche" id="carte-bloc" style="padding:0;overflow:hidden">
+        <!-- Réglages de séance. Les outils de dessin, la sélection
+             (masquer, supprimer), le zoom et le plein écran sont dans
+             la barre de la carte elle-même, juste dessous. -->
+        <div class="carte-outils">
+          <button type="button" id="c-figer">❄️ Figer la carte</button>
+          <span class="tresmuet">Verrous :</span>
+          <div class="verrous" id="verrous"></div>
+          <span class="tresmuet">Aller à :</span>
+          <div class="verrous" id="aller"></div>
+          <span style="flex:1"></span>
+          <button type="button" id="c-png">🖼 PNG HD</button>
+          <button type="button" id="c-pdf">📄 PDF</button>
+        </div>
+        <div id="carte-zone"></div>
+      </div>
+      <div class="grille2">
+        <div class="carte-blanche">
+          <h3>Éléments masqués</h3>
+          <div id="masques"><p class="tresmuet">Aucun.</p></div>
+        </div>
+        <div class="carte-blanche">
+          <h3>Contenu attendu, par table</h3>
+          <div id="attendus"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HARCÈLOMÈTRE -->
+    <section class="panneau" id="p-harcelometre">
+      <div class="grille2" style="grid-template-columns:minmax(260px,1fr) minmax(320px,2fr)">
+        <div class="carte-blanche">
+          <h3>Situations (ordre de passage)</h3>
+          <ul class="situations" id="situations"></ul>
+          <p class="tresmuet">L'ordre, les situations actives et leurs textes se règlent dans « Contenus ».</p>
+        </div>
+        <div class="carte-blanche">
+          <div id="hm-hors-etape" class="encadre orange" hidden>L'étape 6 n'est pas ouverte : « Ouvrir » une situation y passe la séance.</div>
+          <div class="tresmuet" id="hm-rang">—</div>
+          <div class="situation-texte" id="hm-texte">Aucune situation ouverte.</div>
+          <div class="rangee">
+            <button type="button" class="cyan" id="hm-reveler">Révéler la zone attendue</button>
+            <button type="button" class="orange" id="hm-suivante">Situation suivante ▶</button>
+            <label style="display:flex;gap:.4rem;align-items:center;font-weight:500;margin:0"><input type="checkbox" id="hm-auto"> Révéler automatiquement quand tous les prêts ont voté</label>
+          </div>
+          <div id="hm-tous" class="tous-votes" hidden style="margin-top:.6rem">✅ Tous les élèves prêts ont voté.</div>
+          <div id="hm-viz" style="margin-top:1rem"></div>
+          <div id="hm-revele" class="encadre" hidden></div>
+        </div>
+      </div>
+      <div class="carte-blanche">
+        <h3>Historique de la séance</h3>
+        <table class="liste"><thead><tr><th>Situation</th><th>Votants</th><th>Moyenne</th><th>Médiane</th><th>Écart-type</th><th>Attendu</th></tr></thead><tbody id="hm-historique"></tbody></table>
+      </div>
+    </section>
+
+    <!-- ENQUÊTE -->
+    <section class="panneau" id="p-enquete">
+      <div class="carte-blanche">
+        <h2>Enquête anonyme</h2>
+        <p class="muet"><b id="n-enquete">0</b> réponse(s) pour <b id="n-enquete-p">0</b> participant(s). Rien ne relie une réponse à un élève.</p>
+        <div id="enquete"></div>
+      </div>
+      <div class="carte-blanche">
+        <h3>Témoignages</h3>
+        <div id="temoignages"><p class="tresmuet">Aucun.</p></div>
+      </div>
+    </section>
+
+    <!-- EXPORTS -->
+    <section class="panneau" id="p-exports">
+      <div class="carte-blanche">
+        <h2>Télécharger, imprimer, partager</h2>
+        <p class="muet">Des PDF en A4 paysage, sans aucun nom ni identifiant. Les demandes d'aide ne s'exportent jamais.</p>
+        <div class="rangee">
+          <button type="button" id="x-mots">☁️ Nuage & émotions</button>
+          <button type="button" id="x-hm">🌡 Harcèlomètre</button>
+          <button type="button" id="x-carte">🗺 Carte mentale (PDF)</button>
+          <button type="button" id="x-carte-png">🖼 Carte mentale (PNG HD)</button>
+          <button type="button" id="x-enquete">📊 Enquête</button>
+          <button type="button" class="primaire" id="x-tout">📚 Tout en un PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLÔTURE -->
+    <section class="panneau" id="p-cloture">
+      <div class="carte-blanche">
+        <h2>Clôturer la séance</h2>
+        <p>Efface <b>toutes les demandes « J'ai besoin d'en parler »</b> de ce créneau et ferme la séance : plus rien ne s'écrit (carte, notes, votes, enquête). Les résultats restent lisibles et exportables.</p>
+        <button type="button" class="danger" id="btn-cloturer">Clôturer ce créneau…</button>
+        <div id="res-cloture" class="alerte"></div>
+      </div>
+      <div class="carte-blanche">
+        <h2>Comptes créés pour l'EMC</h2>
+        <p>Les comptes ouverts avec le code de ce créneau, et qui n'ont <b>aucune autre classe</b> (un élève de SNT entré avec son compte n'en fait jamais partie). 🔴 <b>Leur travail part avec eux</b> : à faire <b>après les exports</b>.</p>
+        <div class="rangee">
+          <button type="button" id="btn-compter">Compter</button>
+          <button type="button" class="danger" id="btn-supprimer" disabled>Supprimer ces comptes…</button>
+        </div>
+        <div id="res-comptes" class="alerte"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="../assets/js/prof-api.js?v=3"></script>
+<script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
+<script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
+<script src="../assets/js/vendor/konva-9.3.6.min.js"></script>
+<script src="../assets/js/emc-commun.js?v=1"></script>
+<script src="../assets/js/emc-vues.js?v=1"></script>
+<script src="../assets/js/emc-carte.js?v=1"></script>
+<script src="../assets/js/emc-export.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var el = EMC.el, V = EMC.Vues;
+
+  var C = {
+    classe: null, seance: null, contenus: null,
+    participants: {},           /* eleve_id → { pseudo, table_num, pret, entre_le, nouveau } */
+    mots: {}, masques: [], notes: {}, votes: [], enquete: [], aide: {},
+    carte: null, carteLignes: {}, carteMaj: null, selection: null, masquesCarte: []
+  };
+
+  function message(t) { var m = $('#message'); m.hidden = !t; m.textContent = t || ''; }
+  function nom(p) { return p ? ProfAPI.nomDe(p) : '?'; }
+  function aNom(p) { return !!(p && ProfAPI.nomsCharges() && ProfAPI.nomDe(p) !== p); }
+  function heure(t) { return t ? new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ''; }
+  function erreur(e) { alert(EMC.message(e)); }
+  var collator = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
+
+  /* ---------- démarrage ---------- */
+  ProfAPI.reprendre().then(demarrer).catch(function () {
+    message('Pas de session : connecte-toi d\'abord au tableau de bord, puis reviens ici.');
+  });
+
+  function demarrer() {
+    EMC.demarrer('prof');
+    var code = (EMC.parametre('classe') || '').toUpperCase();
+    if (!code) return choisir();
+    EMC.lire('classes?select=id,code,libelle,espace&espace=eq.emc&code=eq.' + encodeURIComponent(code)).then(function (l) {
+      if (!l.length) { message('Le créneau ' + code + ' n\'existe pas ou n\'est pas rattaché à ton compte.'); return choisir(); }
+      C.classe = l[0];
+      return EMC.contenus().then(lancer);
+    }).catch(function (e) { message('Lecture impossible : ' + EMC.message(e)); });
+  }
+
+  function choisir() {
+    $('#choix').hidden = false;
+    EMC.lire('classes?select=id,code,libelle&espace=eq.emc&order=code').then(function (l) {
+      var z = $('#liste-classes'); z.innerHTML = '';
+      if (!l.length) z.appendChild(el('p', { class: 'muet' }, 'Aucune classe EMC rattachée à ton compte.'));
+      l.forEach(function (c) {
+        z.appendChild(el('a', { class: 'carte-blanche', href: '?classe=' + encodeURIComponent(c.code), style: 'text-decoration:none;color:inherit' },
+          el('div', { class: 'mono', style: 'font-size:1.8rem;font-weight:700' }, c.code), el('div', { class: 'muet' }, c.libelle)));
+      });
+    });
+  }
+
+  function lancer(contenus) {
+    C.contenus = contenus;
+    var id = C.classe.id, filtre = 'classe_id=eq.' + id;
+    document.title = 'Pilotage EMC — ' + C.classe.code;
+    $('#titre').textContent = C.classe.libelle;
+    $('#code').hidden = false; $('#code').textContent = C.classe.code;
+    $('#lien-projection').hidden = false;
+    $('#lien-projection').href = 'emc-projection.html?classe=' + encodeURIComponent(C.classe.code);
+    $('#appli').hidden = false;
+
+    EMC.ecouter('emc_seances', filtre, function (s) { if (s && s.classe_id) { C.seance = s; toutRendre(); } }, relireSeance);
+    EMC.ecouter('emc_participants', filtre, function (p, ev) {
+      if (!p || !p.eleve_id) return;
+      var x = C.participants[p.eleve_id];
+      if (ev === 'DELETE') { delete C.participants[p.eleve_id]; rendreParticipants(); return; }
+      if (!x) return relireParticipants();
+      x.table_num = p.table_num; x.pret = p.pret; x.pret_le = p.pret_le;
+      rendreParticipants(); rendreSeance();
+    }, relireParticipants);
+    EMC.ecouter('emc_mots', filtre, function (m) { if (m && m.eleve_id) { C.mots[m.eleve_id] = m; rendreMots(); } }, relireMots);
+    EMC.ecouter('emc_mots_masques', null, null, relireMasques, { sansDirect: true, periode: 6 });
+    EMC.ecouter('emc_notes', null, null, relireNotes, { sansDirect: true, periode: 8 });
+    EMC.ecouter('emc_votes', filtre, function (v) { if (v && v.eleve_id) { majVote(v); rendreHm(); } }, relireVotes);
+    EMC.ecouter('emc_enquete', null, null, relireEnquete, { sansDirect: true, periode: 10 });
+    EMC.ecouter('emc_aide', filtre, function (a, ev) {
+      if (!a || !a.id) return;
+      if (ev === 'DELETE') delete C.aide[a.id]; else C.aide[a.id] = a;
+      rendreAide();
+    }, relireAide, { periode: 2 });
+    EMC.ecouter('emc_carte', filtre, function (l) { if (l && l.id) recevoirCarte(l); }, relireCarte, { periode: 4 });
+    EMC.ecouter('emc_carte_masques', null, null, relireMasquesCarte, { sansDirect: true, periode: 10 });
+
+    document.addEventListener('emc:contenus', function () { toutRendre(); });
+    document.addEventListener('emc:direct', majDirect); majDirect();
+    setInterval(majChrono, 1000);
+  }
+
+  function majDirect() {
+    var d = EMC.etatDirect(), p = $('#direct');
+    p.className = 'pastille direct-etat ' + (d === 'direct' ? 'ok' : 'att');
+    p.textContent = d === 'direct' ? 'en direct' : d === 'hors-ligne' ? 'hors ligne' : 'relecture';
+    p.title = d === 'direct' ? 'Les changements arrivent instantanément.' : 'Le direct ne passe pas : la page relit la base toutes les quelques secondes.';
+  }
+
+  /* ---------- relectures ---------- */
+  var id = function () { return C.classe.id; };
+  function relireSeance() {
+    return EMC.lire('emc_seances?select=*&classe_id=eq.' + id()).then(function (l) { if (l[0]) { C.seance = l[0]; toutRendre(); } });
+  }
+  function relireParticipants() {
+    return EMC.lire('emc_participants?select=eleve_id,table_num,pret,pret_le,entre_le,eleves(pseudo,classe_id)&classe_id=eq.' + id())
+      .then(function (l) {
+        var m = {};
+        l.forEach(function (p) {
+          m[p.eleve_id] = { eleve_id: p.eleve_id, table_num: p.table_num, pret: p.pret, pret_le: p.pret_le, entre_le: p.entre_le,
+                            pseudo: p.eleves && p.eleves.pseudo, nouveau: !!(p.eleves && p.eleves.classe_id === id()) };
+        });
+        C.participants = m; rendreParticipants(); rendreSeance(); rendreMissions(); rendreAide();
+      });
+  }
+  function relireMots() {
+    return EMC.lire('emc_mots?select=eleve_id,mots,emojis,maj_le&classe_id=eq.' + id()).then(function (l) {
+      var m = {}; l.forEach(function (x) { m[x.eleve_id] = x; }); C.mots = m; rendreMots();
+    });
+  }
+  function relireMasques() {
+    return EMC.lire('emc_mots_masques?select=mot&classe_id=eq.' + id()).then(function (l) {
+      var avant = C.masques.join('|');
+      C.masques = l.map(function (x) { return x.mot; });
+      if (avant !== C.masques.join('|')) rendreMots();
+    });
+  }
+  function relireNotes() {
+    return EMC.lire('emc_notes?select=eleve_id,texte,maj_le&classe_id=eq.' + id()).then(function (l) {
+      var m = {}; l.forEach(function (x) { m[x.eleve_id] = x; }); C.notes = m; rendreMissions();
+    });
+  }
+  function majVote(v) {
+    C.votes = C.votes.filter(function (x) { return !(x.eleve_id === v.eleve_id && x.situation === v.situation); });
+    C.votes.push(v);
+  }
+  function relireVotes() {
+    return EMC.lire('emc_votes?select=situation,eleve_id,valeur&classe_id=eq.' + id()).then(function (l) { C.votes = l; rendreHm(); });
+  }
+  function relireEnquete() {
+    return EMC.lire('emc_enquete?select=id,reponses,temoignage&classe_id=eq.' + id()).then(function (l) {
+      if (l.length === C.enquete.length) return;
+      C.enquete = l; rendreEnquete();
+    });
+  }
+  function relireAide() {
+    return EMC.lire('emc_aide?select=*&classe_id=eq.' + id() + '&order=cree_le').then(function (l) {
+      var m = {}; l.forEach(function (a) { m[a.id] = a; }); C.aide = m; rendreAide();
+    });
+  }
+  function relireCarte() {
+    /* incrémental : ce qui a bougé depuis le dernier maj_le vu, avec
+       5 s de recouvrement (une transaction peut valider en retard) */
+    var depuis = C.carteMaj ? '&maj_le=gte.' + encodeURIComponent(new Date(new Date(C.carteMaj).getTime() - 5000).toISOString()) : '';
+    return EMC.lire('emc_carte?select=*&classe_id=eq.' + id() + depuis + '&order=maj_le').then(function (l) { l.forEach(recevoirCarte); });
+  }
+  function relireMasquesCarte() {
+    var ids = Object.keys(C.carteLignes).filter(function (k) { return C.carteLignes[k].masque; });
+    if (!ids.length) { C.masquesCarte = []; rendreMasquesCarte(); return Promise.resolve(); }
+    return EMC.lire('emc_carte_masques?select=id,donnees&id=in.(' + ids.join(',') + ')').then(function (l) {
+      C.masquesCarte = l; rendreMasquesCarte();
+      /* l'enseignant voit, en fantôme, ce qui a été masqué */
+      if (C.carte && C.carte.contenuMasque) l.forEach(function (m) { C.carte.contenuMasque(m.id, m.donnees); });
+    });
+  }
+
+  function toutRendre() {
+    rendreSeance(); rendreMots(); rendreMissions(); rendreCarteEtat(); rendreHm(); rendreEnquete(); rendreParticipants();
+  }
+
+  /* ---------- onglets ---------- */
+  document.querySelectorAll('#onglets button').forEach(function (b) {
+    b.addEventListener('click', function () { ouvrir(b.dataset.onglet); });
+  });
+  function ouvrir(o) {
+    document.querySelectorAll('#onglets button').forEach(function (b) { b.classList.toggle('actif', b.dataset.onglet === o); });
+    document.querySelectorAll('.panneau').forEach(function (p) { p.classList.toggle('actif', p.id === 'p-' + o); });
+    if (o === 'carte') assurerCarte();
+  }
+
+  /* ---------- QR code ---------- */
+  $('#code').addEventListener('click', function () {
+    var url = V.urlEleve(C.classe.code), q = el('div', { style: 'max-width:360px;margin:0 auto' });
+    var fond = el('div', { class: 'modale-fond', onclick: function (e) { if (e.target === fond) fond.remove(); } },
+      el('div', { class: 'modale', style: 'text-align:center' },
+        el('div', { class: 'mono', style: 'font-size:3rem;font-weight:700;letter-spacing:.1em' }, C.classe.code),
+        q, el('p', { class: 'tresmuet' }, url),
+        el('button', { type: 'button', onclick: function () { fond.remove(); } }, 'Fermer')));
+    document.body.appendChild(fond);
+    V.qr(q, url);
+  });
+
+  /* ---------- son des alertes ---------- */
+  var son = true;
+  try { son = localStorage.getItem('emc.prof.son') !== 'non'; } catch (e) {}
+  function majSon() { $('#btn-son').textContent = son ? '🔔 son' : '🔕 muet'; }
+  majSon();
+  $('#btn-son').addEventListener('click', function () {
+    son = !son; majSon();
+    try { localStorage.setItem('emc.prof.son', son ? 'oui' : 'non'); } catch (e) {}
+    if (son) bip();
+  });
+  var audio = null;
+  function bip() {
+    if (!son) return;
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      [0, 0.25].forEach(function (t) {
+        var o = audio.createOscillator(), g = audio.createGain();
+        o.frequency.value = 880; o.connect(g); g.connect(audio.destination);
+        g.gain.setValueAtTime(0.0001, audio.currentTime + t);
+        g.gain.exponentialRampToValueAtTime(0.25, audio.currentTime + t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + t + 0.2);
+        o.start(audio.currentTime + t); o.stop(audio.currentTime + t + 0.22);
+      });
+    } catch (e) {}
+  }
+
+  /* ---------- AIDE ---------- */
+  var vues = null, titreBase = null, clignotant = null, aideDepliee = false;
+  function rendreAide() {
+    var l = Object.keys(C.aide).map(function (k) { return C.aide[k]; })
+      .sort(function (a, b) { return (a.statut === 'a_traiter' ? 0 : 1) - (b.statut === 'a_traiter' ? 0 : 1) || String(a.cree_le).localeCompare(String(b.cree_le)); });
+    var aTraiter = l.filter(function (a) { return a.statut === 'a_traiter'; });
+    var z = $('#alerte-aide');
+    var nouveaux = vues ? aTraiter.filter(function (a) { return !vues[a.id]; }) : [];
+    vues = vues || {};
+    aTraiter.forEach(function (a) { vues[a.id] = true; });
+    if (nouveaux.length) { bip(); z.classList.remove('clignote'); void z.offsetWidth; z.classList.add('clignote'); clignoter(); }
+    if (!aTraiter.length) stopClignoter();
+    z.hidden = !l.length;
+    z.innerHTML = '';
+    if (!l.length) return;
+    /* tout est pris en charge : un bandeau discret, déplié à la demande */
+    z.classList.toggle('calme', !aTraiter.length);
+    if (!aTraiter.length) z.classList.remove('clignote');
+    var replie = !aTraiter.length && !aideDepliee;
+    z.appendChild(el('h2', { onclick: aTraiter.length ? null : function () { aideDepliee = !aideDepliee; rendreAide(); } }, aTraiter.length
+      ? '🔔 ' + aTraiter.length + ' demande' + (aTraiter.length > 1 ? 's' : '') + ' « J\'ai besoin d\'en parler » à traiter'
+      : '✔ « J\'ai besoin d\'en parler » : ' + l.length + ' demande(s), toutes prises en charge ' + (replie ? '▸ voir' : '▾ replier')));
+    if (replie) return;
+    l.forEach(function (a) {
+      var p = C.participants[a.eleve_id] || {};
+      var qui = el('div', { class: 'qui' }, p.pseudo ? nom(p.pseudo) : 'Élève', p.pseudo && aNom(p.pseudo) ? el('span', { class: 'tresmuet mono' }, ' (' + p.pseudo + ')') : null,
+        p.table_num ? el('span', { class: 'table' }, 'TABLE ' + p.table_num) : null);
+      var corps = el('div', null, qui,
+        a.cases && a.cases.length ? el('div', null, a.cases.map(function (c) { return el('span', { class: 'pastille', style: 'margin:.15rem .2rem .15rem 0' }, '☑ ' + c); })) : null,
+        a.message ? el('div', { class: 'msg' }, a.message) : null,
+        el('div', { class: 'tresmuet' }, 'à ' + heure(a.cree_le) + (a.statut === 'pris_en_charge' ? ' · pris en charge' : '')));
+      var actions = el('div', { class: 'actions' },
+        a.statut === 'a_traiter'
+          ? el('button', { type: 'button', class: 'primaire', onclick: function () { statutAide(a, 'pris_en_charge'); } }, '✔ Pris en charge')
+          : el('button', { type: 'button', onclick: function () { statutAide(a, 'a_traiter'); } }, '↺ À traiter'),
+        el('button', { type: 'button', class: 'danger', onclick: function () { effacerAide(a); } }, 'Effacer'));
+      z.appendChild(el('div', { class: 'aide-item' + (a.statut === 'a_traiter' ? '' : ' pris') }, corps, actions));
+    });
+  }
+  function clignoter() {
+    if (clignotant) return;
+    titreBase = titreBase || document.title;
+    var k = 0;
+    clignotant = setInterval(function () { document.title = (k++ % 2) ? '🔔 AIDE — ' + titreBase : titreBase; }, 900);
+  }
+  function stopClignoter() { if (clignotant) { clearInterval(clignotant); clignotant = null; document.title = titreBase || document.title; } }
+  function statutAide(a, s) {
+    EMC.modifier('emc_aide?id=eq.' + a.id, { statut: s }).then(function () { a.statut = s; rendreAide(); }, erreur);
+  }
+  function effacerAide(a) {
+    if (!confirm('Effacer cette demande ? Elle disparaît pour les deux enseignants.')) return;
+    EMC.supprimer('emc_aide?id=eq.' + a.id).then(function () { delete C.aide[a.id]; rendreAide(); }, erreur);
+  }
+
+  /* ---------- SÉANCE ---------- */
+  function etapes() { return (C.contenus && C.contenus.etapes) || []; }
+  function etapeCourante() { return C.seance ? C.seance.etape : 0; }
+  function poserSeance(champs) {
+    return EMC.modifier('emc_seances?classe_id=eq.' + id(), champs).then(function () {
+      Object.keys(champs).forEach(function (k) { C.seance[k] = champs[k]; });
+      toutRendre();
+    }, erreur);
+  }
+  function allerEtape(n) {
+    if (C.seance && C.seance.cloturee_le) return alert('La séance est clôturée.');
+    if (n < 0 || n > 7) return;
+    poserSeance({ etape: n });
+  }
+  $('#btn-avancer').addEventListener('click', function () { allerEtape(etapeCourante() + 1); });
+  $('#btn-revenir').addEventListener('click', function () { allerEtape(etapeCourante() - 1); });
+
+  /* Le chrono part quand CETTE page voit l'étape changer (gardé pour
+     la session de l'onglet : un rechargement ne le remet pas à zéro). */
+  function chrono() {
+    var cle = 'emc.chrono.' + id(), v = null;
+    try { v = JSON.parse(sessionStorage.getItem(cle)); } catch (e) {}
+    if (!v || v.etape !== etapeCourante()) {
+      v = { etape: etapeCourante(), depuis: Date.now() };
+      try { sessionStorage.setItem(cle, JSON.stringify(v)); } catch (e) {}
+    }
+    return v;
+  }
+  function majChrono() {
+    if (!C.seance) return;
+    var v = chrono(), s = Math.floor((Date.now() - v.depuis) / 1000);
+    var e = etapes()[etapeCourante()] || {}, d = (e.duree || 0) * 60;
+    $('#chrono').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    $('#chrono').classList.toggle('depasse', d && s > d);
+    $('#duree').textContent = e.duree ? '/ ' + e.duree + ' min prévues' : '';
+  }
+
+  function liste() { return Object.keys(C.participants).map(function (k) { return C.participants[k]; }); }
+
+  function rendreSeance() {
+    if (!C.seance) return;
+    var n = etapeCourante(), es = etapes();
+    $('#etape-titre').textContent = C.seance.cloturee_le ? 'séance clôturée' : (n + ' · ' + ((es[n] || {}).titre || ''));
+    var f = $('#frise'); f.innerHTML = '';
+    for (var i = 0; i <= 7; i++) (function (i) {
+      var e = es[i] || { titre: 'Étape ' + i };
+      f.appendChild(el('button', { type: 'button', class: i === n ? 'courante' : (i < n ? 'faite' : ''), onclick: function () { allerEtape(i); },
+        'aria-current': i === n ? 'step' : null },
+        el('span', { class: 'n' }, String(i)), el('span', null, e.titre), e.duree ? el('span', { class: 'tresmuet' }, e.duree + ' min') : null));
+    })(i);
+    $('#btn-revenir').disabled = n <= 0; $('#btn-avancer').disabled = n >= 7;
+    var l = liste(), prets = l.filter(function (p) { return p.pret; }).length;
+    $('#n-prets').textContent = prets; $('#n-tous').textContent = l.length;
+    $('#n-presents').textContent = '(' + l.length + ')';
+    repartition($('#repartition-seance'));
+    var r = $('#rappels'); r.innerHTML = '';
+    if (n === 3) r.appendChild(el('div', { class: 'rappel' }, '📄 Distribuer la fiche papier d\'association personnages ↔ rôles, vers le milieu ou la fin du jeu, selon l\'avancée.'));
+    if (n >= 6) r.appendChild(el('div', { class: 'rappel' }, '🍬 Le podium et les bonbons se font sur papier.'));
+    if (n === 7) r.appendChild(el('div', { class: 'rappel' }, '🔒 En fin de séance : exports, puis « Clôture » (efface les demandes d\'aide).'));
+    var res = '';
+    if (n === 1) res = Object.keys(C.mots).length + ' réponse(s) au nuage';
+    if (n === 6) res = C.seance.situation_courante ? 'Situation ouverte : ' + C.seance.situation_courante : 'Aucune situation ouverte';
+    if (n === 7) res = C.enquete.length + ' réponse(s) à l\'enquête';
+    $('#etape-resume').textContent = res;
+    majChrono();
+  }
+
+  function repartition(z) {
+    var n = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    liste().forEach(function (p) { n[p.table_num] = (n[p.table_num] || 0) + 1; });
+    z.innerHTML = '';
+    for (var t = 1; t <= 8; t++) z.appendChild(el('div', null, el('b', null, String(n[t])), 'T' + t));
+  }
+
+  /* ---------- PARTICIPANTS ---------- */
+  function rendreParticipants() {
+    var l = liste(), charge = ProfAPI.nomsCharges();
+    $('#etat-noms').innerHTML = charge
+      ? '✅ Table des noms chargée sur cet appareil : les noms s\'affichent ici (et seulement ici).'
+      : '📋 Aucune table des noms sur cet appareil : on voit les identifiants. Pour voir les noms, charge la feuille de correspondance dans <a href="index.html">Tableau de bord</a> → Réglages → table des noms.';
+    repartition($('#repartition'));
+    l.sort(function (a, b) {
+      var na = aNom(a.pseudo), nb = aNom(b.pseudo);
+      if (na !== nb) return na ? -1 : 1;
+      return collator.compare(nom(a.pseudo), nom(b.pseudo));
+    });
+    var pasPrets = l.filter(function (p) { return !p.pret; });
+    var sansNom = charge ? l.filter(function (p) { return !aNom(p.pseudo); }) : [];
+    var s = $('#signaux'); s.innerHTML = '';
+    if (pasPrets.length) s.appendChild(el('div', { class: 'encadre orange' }, '⏳ ' + pasPrets.length + ' élève(s) pas encore prêt(s) : ' + pasPrets.map(function (p) { return nom(p.pseudo); }).join(', ')));
+    if (sansNom.length) s.appendChild(el('div', { class: 'encadre orange' }, '❓ ' + sansNom.length + ' identifiant(s) absent(s) de la table des noms : ' + sansNom.map(function (p) { return p.pseudo; }).join(', ') + '. À compléter sur la feuille.'));
+    var tb = $('#t-participants'); tb.innerHTML = '';
+    l.forEach(function (p) {
+      var sel = el('select', { 'aria-label': 'Table de ' + (p.pseudo || '') });
+      for (var t = 1; t <= 8; t++) sel.appendChild(el('option', { value: t, selected: t === p.table_num }, 'Table ' + t));
+      sel.addEventListener('change', function () {
+        var t = +sel.value;
+        EMC.modifier('emc_participants?classe_id=eq.' + id() + '&eleve_id=eq.' + p.eleve_id, { table_num: t })
+          .then(function () { p.table_num = t; rendreParticipants(); rendreMissions(); }, function (e) { sel.value = p.table_num; erreur(e); });
+      });
+      tb.appendChild(el('tr', null,
+        el('td', null, el('b', null, nom(p.pseudo)), aNom(p.pseudo) ? el('div', { class: 'tresmuet mono' }, p.pseudo) : null),
+        el('td', null, el('span', { class: 'pastille ' + (p.nouveau ? 'cyan' : '') }, p.nouveau ? 'créé pour l\'EMC' : 'compte existant')),
+        el('td', null, sel),
+        el('td', null, el('span', { class: 'pastille ' + (p.pret ? 'ok' : 'att') }, p.pret ? 'prêt' : 'pas prêt')),
+        el('td', { class: 'tresmuet' }, heure(p.entre_le))));
+    });
+    if (!l.length) tb.appendChild(el('tr', null, el('td', { colspan: 5, class: 'tresmuet' }, 'Personne n\'est encore entré dans la séance.')));
+  }
+
+  /* ---------- MOTS ---------- */
+  function lignesMots() { return Object.keys(C.mots).map(function (k) { return C.mots[k]; }); }
+  function basculerMasque(x) {
+    var p = x.masque
+      ? EMC.supprimer('emc_mots_masques?classe_id=eq.' + id() + '&mot=eq.' + encodeURIComponent(x.forme))
+      : EMC.ecrire('emc_mots_masques', { classe_id: id(), mot: x.forme }, { ignorer: true });
+    p.then(relireMasques, erreur);
+  }
+  function rendreMots() {
+    var m = (C.contenus && C.contenus.mots) || {};
+    $('#q-mots').textContent = m.question_mots || 'Mots';
+    $('#q-emojis').textContent = m.question_emojis || 'Émotions';
+    var l = lignesMots(), ag = V.agregerMots(l, C.masques);
+    $('#n-mots').textContent = l.length;
+    V.nuage($('#nuage'), ag, { avecMasques: true, surClic: basculerMasque });
+    V.emojis($('#emojis'), l, m.emojis);
+    var tb = $('#t-mots'); tb.innerHTML = '';
+    ag.forEach(function (x) {
+      tb.appendChild(el('tr', null, el('td', { style: x.masque ? 'text-decoration:line-through;opacity:.5' : '' }, x.mot),
+        el('td', { class: 'mono' }, String(x.n)),
+        el('td', null, el('button', { type: 'button', onclick: function () { basculerMasque(x); }, style: 'min-height:34px;padding:.1rem .6rem' }, x.masque ? 'Démasquer' : 'Masquer'))));
+    });
+  }
+
+  /* ---------- MISSIONS ---------- */
+  function rendreMissions() {
+    var z = $('#missions'); if (!z || !C.contenus) return;
+    z.innerHTML = '';
+    var ms = C.contenus.missions || [];
+    for (var t = 1; t <= 8; t++) {
+      var m = ms[t - 1] || {}, eleves = liste().filter(function (p) { return p.table_num === t; })
+        .sort(function (a, b) { return collator.compare(nom(a.pseudo), nom(b.pseudo)); });
+      var bloc = el('div', { class: 'mission' },
+        el('h3', null, el('span', { class: 'pastille table' }, 'Table ' + t), el('span', { class: 'tresmuet' }, m.zone || EMC.NOMS_ZONES[t])),
+        el('p', null, el('b', null, m.verbe || ''), ' ' + (m.texte || '')),
+        (m.questions || []).length ? el('ul', { class: 'muet', style: 'margin:.2rem 0 .5rem' }, m.questions.map(function (q) { return el('li', null, q); })) : null,
+        el('div', { class: 'tresmuet' }, eleves.length + ' élève(s) : ' + (eleves.map(function (p) { return nom(p.pseudo); }).join(', ') || '—')));
+      eleves.forEach(function (p) {
+        var n = C.notes[p.eleve_id];
+        if (n && n.texte) bloc.appendChild(el('div', { class: 'note' }, el('b', null, nom(p.pseudo) + ' · ' + heure(n.maj_le)), n.texte));
+      });
+      if (m.attendu) bloc.appendChild(el('details', null, el('summary', null, 'Contenu attendu'), el('p', { class: 'muet' }, m.attendu)));
+      z.appendChild(bloc);
+    }
+  }
+
+  /* ---------- CARTE ---------- */
+  var CHAMPS_INSERT = ['id', 'zone', 'type', 'couleur', 'donnees'];
+  var CHAMPS_MODIF = ['donnees', 'couleur', 'supprime', 'masque'];
+  function garder(o, champs) { var r = {}; champs.forEach(function (k) { if (o[k] !== undefined) r[k] = o[k]; }); return r; }
+
+  function recevoirCarte(l) {
+    var avant = C.carteLignes[l.id];
+    if (avant && avant.maj_le && l.maj_le && avant.maj_le > l.maj_le) return;
+    C.carteLignes[l.id] = l;
+    if (!C.carteMaj || (l.maj_le && l.maj_le > C.carteMaj)) C.carteMaj = l.maj_le;
+    if (C.carte) C.carte.appliquer(l);
+    if ((avant && avant.masque) !== l.masque) relireMasquesCarte();
+  }
+
+  function assurerCarte() {
+    if (C.carte || !EMC.Carte) {
+      if (!EMC.Carte && !$('#carte-zone').textContent) $('#carte-zone').appendChild(el('p', { class: 'encadre err', style: 'margin:1rem' }, 'La carte n\'a pas pu se charger (assets/js/emc-carte.js).'));
+      return C.carte;
+    }
+    C.carte = EMC.Carte.monter($('#carte-zone'), {
+      mode: 'prof',
+      contenus: { carte: C.contenus.carte, missions: C.contenus.missions },
+      persister: function (ligne) {
+        var corps = garder(ligne, CHAMPS_INSERT); corps.classe_id = id();
+        return EMC.ecrire('emc_carte', corps);
+      },
+      modifier: function (eid, champs) { return EMC.modifier('emc_carte?id=eq.' + eid, garder(champs, CHAMPS_MODIF)); }
+    });
+    C.carte.charger(Object.keys(C.carteLignes).map(function (k) { return C.carteLignes[k]; }));
+    rendreCarteEtat();
+    relireMasquesCarte();
+    return C.carte;
+  }
+  /* la carte annonce sa sélection sur son conteneur (sans remonter) ;
+     masquer et supprimer se font dans le panneau de la carte */
+  $('#carte-zone').addEventListener('emc:selection', function (e) { C.selection = e.detail || null; });
+  $('#c-figer').addEventListener('click', function () { poserSeance({ carte_figee: !C.seance.carte_figee }); });
+  $('#c-png').addEventListener('click', exporterCartePng);
+  $('#c-pdf').addEventListener('click', exporterCartePdf);
+
+  function rendreCarteEtat() {
+    if (!C.seance) return;
+    var v = C.seance.zones_verrouillees || [];
+    $('#c-figer').textContent = C.seance.carte_figee ? '🔥 Défiger la carte' : '❄️ Figer la carte';
+    var z = $('#verrous'); z.innerHTML = '';
+    var a = $('#aller'); a.innerHTML = '';
+    for (var t = 1; t <= 8; t++) (function (t) {
+      var ferme = v.indexOf(t) >= 0;
+      z.appendChild(el('button', { type: 'button', class: ferme ? 'ferme' : '', title: EMC.NOMS_ZONES[t], onclick: function () {
+        var n = ferme ? v.filter(function (x) { return x !== t; }) : v.concat([t]);
+        poserSeance({ zones_verrouillees: n });
+      } }, (ferme ? '🔒 ' : '🔓 ') + 'T' + t));
+      a.appendChild(el('button', { type: 'button', onclick: function () { assurerCarte(); if (C.carte) C.carte.centrerSur(t); } }, 'T' + t));
+    })(t);
+    if (C.carte) C.carte.etat({ ouverte: C.seance.etape === 4 && !C.seance.cloturee_le, figee: C.seance.carte_figee, zonesVerrouillees: v });
+    var att = $('#attendus'); att.innerHTML = '';
+    (C.contenus.missions || []).forEach(function (m) {
+      att.appendChild(el('details', null, el('summary', null, 'Table ' + m.table + ' · ' + m.verbe), el('p', { class: 'muet' }, m.attendu || '—')));
+    });
+  }
+  function rendreMasquesCarte() {
+    var z = $('#masques'); z.innerHTML = '';
+    if (!C.masquesCarte.length) { z.appendChild(el('p', { class: 'tresmuet' }, 'Aucun.')); return; }
+    C.masquesCarte.forEach(function (m) {
+      var l = C.carteLignes[m.id] || {};
+      var quoi = m.donnees && m.donnees.texte ? '« ' + m.donnees.texte + ' »' : (l.type || 'élément');
+      z.appendChild(el('div', { class: 'rangee', style: 'justify-content:space-between;border-bottom:1px solid var(--line);padding:.3rem 0' },
+        el('span', null, el('b', null, 'T' + l.zone), ' ' + quoi),
+        el('button', { type: 'button', onclick: function () { EMC.modifier('emc_carte?id=eq.' + m.id, { masque: false }).then(relireCarte, erreur); } }, 'Démasquer')));
+    });
+  }
+
+  /* ---------- HARCÈLOMÈTRE ---------- */
+  function hm() { return (C.contenus && C.contenus.harcelometre) || { situations: [], echelle: [], criteres: [] }; }
+  function actives() { return (hm().situations || []).filter(function (s) { return s.actif; }); }
+  function situation(sid) { return (hm().situations || []).filter(function (s) { return s.id === sid; })[0]; }
+  function votesDe(sid) { return C.votes.filter(function (v) { return v.situation === sid; }); }
+  function nbPrets() { return liste().filter(function (p) { return p.pret; }).length; }
+  function ouvrirSituation(s) { poserSeance({ etape: 6, situation_courante: s.id, situation_revelee: false }); }
+  $('#hm-reveler').addEventListener('click', function () { if (C.seance.situation_courante) poserSeance({ situation_revelee: true }); });
+  $('#hm-suivante').addEventListener('click', function () {
+    var a = actives(), i = a.map(function (s) { return s.id; }).indexOf(C.seance.situation_courante);
+    if (i + 1 < a.length) ouvrirSituation(a[i + 1]); else alert('C\'était la dernière situation active.');
+  });
+  var autoReveler = false;
+  try { autoReveler = sessionStorage.getItem('emc.hm.auto') === 'oui'; } catch (e) {}
+  $('#hm-auto').checked = autoReveler;
+  $('#hm-auto').addEventListener('change', function () {
+    autoReveler = this.checked;
+    try { sessionStorage.setItem('emc.hm.auto', autoReveler ? 'oui' : 'non'); } catch (e) {}
+    rendreHm();
+  });
+
+  function rendreHm() {
+    if (!C.seance || !C.contenus) return;
+    var a = actives(), cour = C.seance.situation_courante, ids = a.map(function (s) { return s.id; }), ic = ids.indexOf(cour);
+    var ul = $('#situations'); ul.innerHTML = '';
+    a.forEach(function (s, i) {
+      var n = votesDe(s.id).length;
+      ul.appendChild(el('li', { class: s.id === cour ? 'courante' : (ic >= 0 && i < ic ? 'passee' : '') },
+        el('b', null, String(i + 1)), el('span', null, s.texte, n ? el('span', { class: 'tresmuet' }, ' · ' + n + ' vote(s)') : null),
+        el('button', { type: 'button', style: 'min-height:36px;padding:.2rem .6rem', onclick: function () { ouvrirSituation(s); } }, s.id === cour ? 'Rouvrir' : 'Ouvrir')));
+    });
+    $('#hm-hors-etape').hidden = C.seance.etape === 6;
+    var s = situation(cour);
+    $('#hm-rang').textContent = s ? 'Situation ' + (ic + 1) + ' sur ' + a.length + (C.seance.etape !== 6 ? ' (étape 6 fermée)' : '') : '—';
+    $('#hm-texte').textContent = s ? s.texte : 'Aucune situation ouverte.';
+    var v = s ? votesDe(s.id).map(function (x) { return x.valeur; }) : [];
+    var st = V.statsVotes(v), prets = nbPrets();
+    V.harcelometre($('#hm-viz'), st, hm().echelle, { prets: prets });
+    var tous = s && prets > 0 && st.n >= prets;
+    $('#hm-tous').hidden = !tous || C.seance.situation_revelee;
+    $('#hm-reveler').disabled = !s || C.seance.situation_revelee;
+    if (tous && autoReveler && !C.seance.situation_revelee && C.seance.etape === 6) poserSeance({ situation_revelee: true });
+    var r = $('#hm-revele');
+    r.hidden = !(s && C.seance.situation_revelee);
+    if (!r.hidden) {
+      r.innerHTML = '';
+      r.appendChild(el('p', null, el('b', null, 'Zone attendue : '), s.attendu || '—', s.lien ? el('span', { class: 'tresmuet' }, ' · lien avec Nina : ' + s.lien) : null));
+      r.appendChild(el('p', { style: 'margin:.3rem 0 0' }, el('b', null, 'Critères : ')));
+      r.appendChild(el('ul', null, (hm().criteres || []).map(function (c) { return el('li', null, c); })));
+    }
+    var tb = $('#hm-historique'); tb.innerHTML = '';
+    var vus = {};
+    C.votes.forEach(function (x) { vus[x.situation] = true; });
+    (hm().situations || []).filter(function (x) { return vus[x.id]; }).forEach(function (x) {
+      var t = V.statsVotes(votesDe(x.id).map(function (y) { return y.valeur; }));
+      tb.appendChild(el('tr', { style: x.id === cour ? 'background:var(--cyan-wash)' : '' }, el('td', null, x.texte), el('td', { class: 'mono' }, String(t.n)),
+        el('td', { class: 'mono' }, V.fmt(t.moyenne)), el('td', { class: 'mono' }, V.fmt(t.mediane)), el('td', { class: 'mono' }, V.fmt(t.ecart)),
+        el('td', { class: 'tresmuet' }, x.attendu || '')));
+    });
+    if (!tb.children.length) tb.appendChild(el('tr', null, el('td', { colspan: 6, class: 'tresmuet' }, 'Pas encore de vote.')));
+  }
+
+  /* ---------- ENQUÊTE ---------- */
+  function rendreEnquete() {
+    if (!C.contenus) return;
+    $('#n-enquete').textContent = C.enquete.length;
+    $('#n-enquete-p').textContent = liste().length;
+    V.enquete($('#enquete'), C.enquete, (C.contenus.enquete || {}).questions);
+    var t = $('#temoignages'); t.innerHTML = '';
+    var tem = C.enquete.filter(function (x) { return x.temoignage; });
+    if (!tem.length) t.appendChild(el('p', { class: 'tresmuet' }, 'Aucun.'));
+    tem.forEach(function (x) { t.appendChild(el('div', { class: 'temoignage' }, x.temoignage)); });
+  }
+
+  /* ---------- EXPORTS ---------- */
+  /* Chaque feuille est montée hors écran à la taille d'impression,
+     photographiée, puis retirée. Aucune ne passe par nomDe. */
+  function feuilleMots() {
+    var f = EMC.Export.feuille(1400), m = C.contenus.mots || {}, l = lignesMots();
+    f.appendChild(el('h2', null, m.question_mots || 'Mots'));
+    f.appendChild(el('p', { class: 'tresmuet' }, l.length + ' répondant(s) · ' + C.classe.libelle));
+    var n = el('div', { style: 'font-size:22px;min-height:300px' }); f.appendChild(n);
+    V.nuage(n, V.agregerMots(l, C.masques), { max: 80 });
+    f.appendChild(el('h2', { style: 'margin-top:20px' }, m.question_emojis || 'Émotions'));
+    var e = el('div', { style: 'columns:2;column-gap:40px' }); f.appendChild(e);
+    V.emojis(e, l, m.emojis, { seulementUtilises: true });
+    return f;
+  }
+  function feuillesHm() {
+    var vus = {}; C.votes.forEach(function (x) { vus[x.situation] = true; });
+    var sits = (hm().situations || []).filter(function (x) { return vus[x.id]; });
+    var feuilles = [];
+    for (var i = 0; i < sits.length; i += 3) {
+      var f = EMC.Export.feuille(1400);
+      sits.slice(i, i + 3).forEach(function (x) {
+        var b = el('div', { style: 'margin-bottom:26px' }, el('h3', { style: 'font-size:22px' }, x.texte),
+          el('p', { class: 'tresmuet' }, 'Zone attendue : ' + (x.attendu || '—')));
+        var z = el('div', { style: 'font-size:16px' }); b.appendChild(z);
+        V.harcelometre(z, V.statsVotes(votesDe(x.id).map(function (y) { return y.valeur; })), hm().echelle, {});
+        f.appendChild(b);
+      });
+      feuilles.push(f);
+    }
+    if (!feuilles.length) { var v = EMC.Export.feuille(1400); v.appendChild(el('p', null, 'Pas encore de vote.')); feuilles.push(v); }
+    return feuilles;
+  }
+  function feuilleEnquete() {
+    var f = EMC.Export.feuille(1400);
+    f.appendChild(el('p', { class: 'tresmuet' }, C.enquete.length + ' réponse(s) · enquête anonyme'));
+    var z = el('div', { style: 'columns:2;column-gap:40px' }); f.appendChild(z);
+    V.enquete(z, C.enquete, (C.contenus.enquete || {}).questions);
+    var tem = C.enquete.filter(function (x) { return x.temoignage; });
+    if (tem.length) {
+      f.appendChild(el('h3', null, 'Témoignages'));
+      tem.forEach(function (x) { f.appendChild(el('div', { class: 'temoignage' }, x.temoignage)); });
+    }
+    return f;
+  }
+  /* PNG HD : la plus grande image que l'appareil supporte (10000 px,
+     4096 sur iPad) ; dans un PDF, 4000 px suffisent (≈ 500 dpi en A4)
+     et épargnent la mémoire. */
+  function pngCarte(plafond) {
+    if (!assurerCarte()) return Promise.reject(new Error('carte indisponible'));
+    return C.carte.exporterPNG(plafond ? { ratio: 3, plafond: plafond } : { ratio: 3 });
+  }
+  var ATTENTE_CARTE = 'Préparation de la carte en haute définition… cela peut prendre plusieurs secondes.';
+  function retirer(fs) { fs.forEach(function (f) { if (f && f.remove) f.remove(); }); }
+  function exporter(nomF, fabriquePages, attente) {
+    var sous = C.classe.libelle;
+    EMC.Export.proposer(function () {
+      return Promise.resolve(fabriquePages()).then(function (r) {
+        return EMC.Export.pdf({ titre: 'EMC seconde — Le Labyrinthe de Nina', sousTitre: sous, pages: r.pages, paysage: true })
+          .then(function (b) { retirer(r.feuilles); return b; }, function (e) { retirer(r.feuilles); throw e; });
+      });
+    }, nomF, { titre: 'Exporter', attente: attente });
+  }
+  var base = function () { return 'EMC-' + C.classe.code + '-'; };
+  $('#x-mots').addEventListener('click', function () {
+    exporter(base() + 'nuage-emotions.pdf', function () { var f = feuilleMots(); return { feuilles: [f], pages: [{ titre: 'Nuage de mots et météo des émotions', element: f }] }; });
+  });
+  $('#x-hm').addEventListener('click', function () {
+    exporter(base() + 'harcelometre.pdf', function () { var fs = feuillesHm(); return { feuilles: fs, pages: fs.map(function (f) { return { titre: 'Harcèlomètre', element: f }; }) }; });
+  });
+  $('#x-enquete').addEventListener('click', function () {
+    exporter(base() + 'enquete.pdf', function () { var f = feuilleEnquete(); return { feuilles: [f], pages: [{ titre: 'Enquête anonyme', element: f }] }; });
+  });
+  function exporterCartePdf() {
+    exporter(base() + 'carte-mentale.pdf', function () {
+      return pngCarte(4000).then(function (b) { return { feuilles: [], pages: [{ titre: (C.contenus.carte || {}).titre || 'Carte mentale', blob: b }] }; });
+    }, ATTENTE_CARTE);
+  }
+  function exporterCartePng() { EMC.Export.proposer(function () { return pngCarte(); }, base() + 'carte-mentale.png', { titre: 'Carte mentale en image', attente: ATTENTE_CARTE }); }
+  $('#x-carte').addEventListener('click', exporterCartePdf);
+  $('#x-carte-png').addEventListener('click', exporterCartePng);
+  $('#x-tout').addEventListener('click', function () {
+    exporter(base() + 'resultats.pdf', function () {
+      var fm = feuilleMots(), fh = feuillesHm(), fe = feuilleEnquete();
+      var pages = [{ titre: 'Nuage de mots et météo des émotions', element: fm }];
+      return pngCarte(4000).then(function (b) { pages.push({ titre: (C.contenus.carte || {}).titre || 'Carte mentale', blob: b }); }, function () {})
+        .then(function () {
+          fh.forEach(function (f) { pages.push({ titre: 'Harcèlomètre', element: f }); });
+          pages.push({ titre: 'Enquête anonyme', element: fe });
+          return { feuilles: [fm, fe].concat(fh), pages: pages };
+        });
+    }, ATTENTE_CARTE);
+  });
+
+  /* ---------- CLÔTURE ---------- */
+  function resultat(z, ok, t) { z.className = 'alerte show ' + (ok ? 'ok' : 'err'); z.textContent = t; }
+  $('#btn-cloturer').addEventListener('click', function () {
+    if (!confirm('Clôturer ' + C.classe.libelle + ' ?\n\nToutes les demandes « J\'ai besoin d\'en parler » de ce créneau seront EFFACÉES, et plus rien ne pourra s\'écrire.')) return;
+    if (!confirm('Dernière confirmation : les exports sont faits ?')) return;
+    EMC.rpc('emc_cloturer', { p_classe: id() }).then(function (n) {
+      resultat($('#res-cloture'), true, 'Séance clôturée. ' + n + ' demande(s) d\'aide effacée(s).');
+      C.aide = {}; rendreAide(); relireSeance();
+    }, function (e) { resultat($('#res-cloture'), false, EMC.message(e)); });
+  });
+  var aSupprimer = null;
+  $('#btn-compter').addEventListener('click', function () {
+    EMC.rpc('emc_supprimer_comptes', { p_classe: id(), p_confirmer: false }).then(function (n) {
+      aSupprimer = n;
+      resultat($('#res-comptes'), true, n + ' compte(s) créé(s) pour l\'EMC dans ce créneau, sans autre classe.');
+      $('#btn-supprimer').disabled = !n;
+    }, function (e) { resultat($('#res-comptes'), false, EMC.message(e)); });
+  });
+  $('#btn-supprimer').addEventListener('click', function () {
+    if (!confirm('Supprimer ' + aSupprimer + ' compte(s) ?\n\nLeur travail (mots, notes, carte, votes) part avec eux. C\'est définitif.')) return;
+    if (!confirm('Vraiment ? Les exports de ce créneau sont faits ?')) return;
+    EMC.rpc('emc_supprimer_comptes', { p_classe: id(), p_confirmer: true }).then(function (n) {
+      resultat($('#res-comptes'), true, n + ' compte(s) supprimé(s).');
+      $('#btn-supprimer').disabled = true;
+      relireParticipants(); relireMots(); relireVotes(); relireCarte();
+    }, function (e) { resultat($('#res-comptes'), false, EMC.message(e)); });
+  });
+})();
+</script>
+</body>
+</html>

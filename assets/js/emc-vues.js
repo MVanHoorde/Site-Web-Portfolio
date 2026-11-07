@@ -1,0 +1,273 @@
+/* ============================================================
+ *  emc-vues.js — les résultats agrégés de la séance EMC, dessinés
+ *  de la même façon au pilotage, à la projection et dans les
+ *  exports : nuage de mots, émojis, harcèlomètre, enquête, QR code,
+ *  numéros d'urgence.
+ *
+ *  🔴 Rien ici ne reçoit ni n'affiche de pseudo ou de nom : les
+ *  fonctions prennent des lignes déjà réduites à leurs valeurs
+ *  (mots, émojis, votes, réponses). C'est ce qui permet à la
+ *  projection et aux exports de les utiliser sans risque.
+ *
+ *  Dépend de emc-commun.js (EMC.el, EMC.normaliserMot).
+ * ============================================================ */
+(function (global) {
+  'use strict';
+  var EMC = global.EMC, el = EMC.el;
+
+  /* Le style des vues, injecté une fois : il vaut pour les trois
+     pages enseignant et pour les feuilles d'export. */
+  var css =
+    '.v-nuage{display:flex;flex-wrap:wrap;gap:.2em .7em;align-items:center;justify-content:center;line-height:1.1;padding:.5em}' +
+    '.v-nuage span{font-family:"Space Grotesk","Inter",sans-serif;font-weight:600;white-space:nowrap}' +
+    '.v-nuage button{font-size:inherit;font-family:inherit;font-weight:inherit;min-height:0;padding:.05em .3em;border:1px dashed transparent;background:none;color:inherit}' +
+    '.v-nuage button:hover{border-color:var(--ink-faint)}' +
+    '.v-nuage .masque{opacity:.35;text-decoration:line-through}' +
+    '.v-barres{display:grid;grid-template-columns:auto 1fr auto;gap:.3em .6em;align-items:center}' +
+    '.v-barres .lib{white-space:nowrap}' +
+    '.v-barres .jauge{height:1.1em;background:var(--surface-2);border-radius:6px;overflow:hidden}' +
+    '.v-barres .jauge i{display:block;height:100%;background:var(--cyan);border-radius:6px}' +
+    '.v-barres .n{font-variant-numeric:tabular-nums;font-weight:600;min-width:2ch;text-align:right}' +
+    '.v-hm{position:relative;padding:1.6em 0 .4em}' +
+    '.v-hm .bande{display:flex;height:2.2em;border-radius:10px;overflow:hidden}' +
+    '.v-hm .bande div{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.85em;text-align:center;padding:0 .3em;line-height:1.05}' +
+    '.v-hm .graduation{display:flex;justify-content:space-between;font-size:.8em;margin-top:.2em;font-variant-numeric:tabular-nums}' +
+    '.v-hm .curseur{position:absolute;top:0;transform:translateX(-50%);transition:left .6s ease;text-align:center;font-weight:700}' +
+    '.v-hm .curseur::after{content:"";display:block;width:4px;height:3.1em;margin:0 auto;background:var(--ink);border-radius:2px}' +
+    '.v-hm .disp{position:absolute;top:1.6em;height:2.2em;border:3px solid var(--ink);border-radius:10px;opacity:.55;pointer-events:none}' +
+    '.v-histo{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;align-items:end;height:6em;margin-top:.6em}' +
+    '.v-histo div{background:var(--marine);border-radius:4px 4px 0 0;min-height:2px;position:relative}' +
+    '.v-histo div span{position:absolute;top:-1.3em;left:0;right:0;text-align:center;font-size:.75em}' +
+    '.v-histo-x{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;font-size:.75em;text-align:center}' +
+    '.v-stats{display:flex;gap:1.2em;flex-wrap:wrap;margin-top:.5em;font-variant-numeric:tabular-nums}' +
+    '.v-stats b{font-size:1.25em}' +
+    '.v-qr svg{display:block;width:100%;height:auto;background:#fff;border-radius:8px}' +
+    'body.projection .v-barres .jauge{background:#23426e}' +
+    'body.projection .v-hm .curseur::after{background:#fff}' +
+    'body.projection .v-hm .disp{border-color:#fff}' +
+    'body.projection .v-histo div{background:var(--cyan)}';
+  var s = document.createElement('style'); s.textContent = css; document.head.appendChild(s);
+
+  var Vues = {};
+
+  /* ---------- nuage de mots ---------- */
+
+  /* lignes : [{ mots: [...] }] · masques : ['forme normalisée', …]
+   * → [{ forme, mot (la graphie la plus fréquente), n, masque }] */
+  Vues.agregerMots = function (lignes, masques) {
+    var m = {}, cache = {};
+    (masques || []).forEach(function (x) { cache[x] = true; });
+    (lignes || []).forEach(function (l) {
+      (l.mots || []).forEach(function (brut) {
+        var f = EMC.normaliserMot(brut);
+        if (!f) return;
+        var g = m[f] || (m[f] = { forme: f, n: 0, graphies: {} });
+        g.n++;
+        var aff = String(brut).trim().toLowerCase();
+        g.graphies[aff] = (g.graphies[aff] || 0) + 1;
+      });
+    });
+    return Object.keys(m).map(function (f) {
+      var g = m[f], best = Object.keys(g.graphies).sort(function (a, b) { return g.graphies[b] - g.graphies[a]; })[0];
+      return { forme: f, mot: best, n: g.n, masque: !!cache[f] };
+    }).sort(function (a, b) { return b.n - a.n || a.mot.localeCompare(b.mot, 'fr'); });
+  };
+
+  var TEINTES = ['var(--marine)', 'var(--orange-fonce)', '#1d6f96', 'var(--ink)', '#7a3e8f', '#12805c'];
+  /* au vidéoprojecteur, sur le fond marine */
+  var TEINTES_SOMBRE = ['#ffd28a', '#7fd0f5', '#ffffff', '#f3a37a', '#c7b3ff', '#8fe3b5'];
+
+  /* opts.surClic(mot) : le pilotage masque / démasque d'un clic.
+   * opts.avecMasques : montrer les mots masqués (barrés). */
+  Vues.nuage = function (conteneur, agreg, opts) {
+    opts = opts || {};
+    conteneur.innerHTML = '';
+    var liste = agreg.filter(function (x) { return opts.avecMasques || !x.masque; }).slice(0, opts.max || 60);
+    if (!liste.length) { conteneur.appendChild(el('p', { class: 'tresmuet' }, opts.vide || 'Pas encore de mots.')); return; }
+    var max = liste[0].n || 1, base = opts.taille || 1;
+    var z = el('div', { class: 'v-nuage' });
+    /* l'ordre alterne grands et petits : un nuage, pas un classement */
+    var ordre = [];
+    liste.forEach(function (x, i) { if (i % 2) ordre.push(x); else ordre.unshift(x); });
+    ordre.forEach(function (x, i) {
+      var t = (0.85 + 2.4 * Math.sqrt(x.n / max)) * base;
+      var lib = x.mot + (opts.compte ? ' ·' + x.n : '');
+      var noeud = opts.surClic
+        ? el('button', { type: 'button', title: x.masque ? 'Démasquer' : 'Masquer', onclick: function () { opts.surClic(x); } }, lib)
+        : el('span', null, lib);
+      noeud.style.fontSize = t.toFixed(2) + 'em';
+      var teintes = opts.teintes || (document.body.classList.contains('projection') ? TEINTES_SOMBRE : TEINTES);
+      noeud.style.color = teintes[i % teintes.length];
+      if (x.masque) noeud.classList.add('masque');
+      z.appendChild(noeud);
+    });
+    conteneur.appendChild(z);
+  };
+
+  /* ---------- barres (émojis, enquête) ---------- */
+  Vues.barres = function (conteneur, items, opts) {
+    opts = opts || {};
+    conteneur.innerHTML = '';
+    var max = Math.max.apply(null, items.map(function (x) { return x.n; }).concat([1]));
+    var g = el('div', { class: 'v-barres' });
+    items.forEach(function (x) {
+      var j = el('i'); j.style.width = (100 * x.n / max) + '%';
+      if (x.couleur) j.style.background = x.couleur;
+      g.appendChild(el('span', { class: 'lib' }, x.lib));
+      g.appendChild(el('span', { class: 'jauge' }, j));
+      g.appendChild(el('span', { class: 'n' }, String(x.n)));
+    });
+    conteneur.appendChild(g);
+  };
+
+  /* lignes : [{ emojis: [...] }] · catalogue : contenus.mots.emojis */
+  Vues.compterEmojis = function (lignes, catalogue) {
+    var n = {};
+    (lignes || []).forEach(function (l) { (l.emojis || []).forEach(function (e) { n[e] = (n[e] || 0) + 1; }); });
+    var items = (catalogue || []).map(function (c) { return { lib: c.e + ' ' + c.l, n: n[c.e] || 0, e: c.e }; });
+    /* un émoji retiré du catalogue en cours de séance reste compté */
+    Object.keys(n).forEach(function (e) {
+      if (!(catalogue || []).some(function (c) { return c.e === e; })) items.push({ lib: e, n: n[e], e: e });
+    });
+    return items.sort(function (a, b) { return b.n - a.n; });
+  };
+  Vues.emojis = function (conteneur, lignes, catalogue, opts) {
+    var items = Vues.compterEmojis(lignes, catalogue);
+    if (opts && opts.seulementUtilises) items = items.filter(function (x) { return x.n > 0; });
+    Vues.barres(conteneur, items, opts);
+  };
+
+  /* ---------- harcèlomètre ---------- */
+  Vues.statsVotes = function (valeurs) {
+    var v = valeurs.filter(function (x) { return typeof x === 'number'; }).slice().sort(function (a, b) { return a - b; });
+    var n = v.length, histo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    v.forEach(function (x) { histo[Math.max(0, Math.min(10, Math.round(x)))]++; });
+    if (!n) return { n: 0, histo: histo };
+    var moy = v.reduce(function (a, b) { return a + b; }, 0) / n;
+    var med = n % 2 ? v[(n - 1) / 2] : (v[n / 2 - 1] + v[n / 2]) / 2;
+    var et = Math.sqrt(v.reduce(function (a, b) { return a + (b - moy) * (b - moy); }, 0) / n);
+    return { n: n, moyenne: moy, mediane: med, ecart: et, min: v[0], max: v[n - 1], histo: histo };
+  };
+
+  var COULEURS_ECHELLE = ['#2fae6a', '#e0a21b', '#e8743b', '#c33a2f'];
+  function fmt(x) { return x == null || isNaN(x) ? '—' : (Math.round(x * 10) / 10).toString().replace('.', ','); }
+  Vues.fmt = fmt;
+
+  /* La zone de l'échelle où tombe une valeur. */
+  Vues.zoneEchelle = function (echelle, v) {
+    for (var i = 0; i < (echelle || []).length; i++) if (v >= echelle[i].de - 0.5 && v <= echelle[i].a + 0.5) return i;
+    return -1;
+  };
+
+  /* stats (statsVotes) · echelle : contenus.harcelometre.echelle
+   * opts : { histo, stats, votants, prets } */
+  Vues.harcelometre = function (conteneur, stats, echelle, opts) {
+    opts = opts || {};
+    conteneur.innerHTML = '';
+    var w = el('div', { class: 'v-hm' });
+    var bande = el('div', { class: 'bande' });
+    (echelle || []).forEach(function (z, i) {
+      var d = el('div', null, z.de + '–' + z.a);
+      d.style.flex = String(z.a - z.de + 1);
+      d.style.background = COULEURS_ECHELLE[i % 4];
+      d.title = z.titre;
+      bande.appendChild(d);
+    });
+    w.appendChild(bande);
+    var grad = el('div', { class: 'graduation' });
+    for (var k = 0; k <= 10; k++) grad.appendChild(el('span', null, String(k)));
+    w.appendChild(grad);
+    if (stats && stats.n) {
+      var pos = function (v) { return ((v + 0.5) / 11 * 100) + '%'; };
+      var disp = el('div', { class: 'disp' });
+      var a = Math.max(0, stats.moyenne - stats.ecart), b = Math.min(10, stats.moyenne + stats.ecart);
+      disp.style.left = pos(a); disp.style.width = 'calc(' + pos(b) + ' - ' + pos(a) + ')';
+      disp.title = 'moyenne ± écart-type';
+      w.appendChild(disp);
+      var c = el('div', { class: 'curseur' }, fmt(stats.moyenne));
+      c.style.left = pos(stats.moyenne);
+      w.appendChild(c);
+    }
+    conteneur.appendChild(w);
+    if (opts.histo !== false && stats) {
+      var max = Math.max.apply(null, stats.histo.concat([1]));
+      var h = el('div', { class: 'v-histo' }), x = el('div', { class: 'v-histo-x' });
+      stats.histo.forEach(function (n, i) {
+        var barre = el('div', null, n ? el('span', null, String(n)) : null);
+        barre.style.height = (100 * n / max) + '%';
+        h.appendChild(barre); x.appendChild(el('span', null, String(i)));
+      });
+      conteneur.appendChild(h); conteneur.appendChild(x);
+    }
+    if (opts.stats !== false && stats) {
+      conteneur.appendChild(el('div', { class: 'v-stats' },
+        el('span', null, 'Moyenne ', el('b', null, fmt(stats.moyenne))),
+        el('span', null, 'Médiane ', el('b', null, fmt(stats.mediane))),
+        el('span', null, 'Écart-type ', el('b', null, fmt(stats.ecart))),
+        el('span', null, 'Votants ', el('b', null, String(stats.n || 0) + (opts.prets != null ? ' / ' + opts.prets : '')))));
+    }
+  };
+
+  /* ---------- enquête ---------- */
+  /* reponses : [{ reponses: { q1: 'oui', … } }] · questions : contenus.enquete.questions */
+  Vues.enquete = function (conteneur, lignes, questions) {
+    conteneur.innerHTML = '';
+    (questions || []).forEach(function (q) {
+      var n = {};
+      (lignes || []).forEach(function (l) { var r = l.reponses && l.reponses[q.id]; if (r) n[r] = (n[r] || 0) + 1; });
+      var bloc = el('div', { style: 'margin-bottom:1em' }, el('h3', null, q.texte));
+      var b = el('div'); bloc.appendChild(b);
+      var sans = (lignes || []).filter(function (l) { return !(l.reponses && l.reponses[q.id]); }).length;
+      Vues.barres(b, (q.choix || []).map(function (c) { return { lib: c, n: n[c] || 0 }; })
+        .concat(sans ? [{ lib: 'sans réponse', n: sans, couleur: 'var(--ink-faint)' }] : []));
+      conteneur.appendChild(bloc);
+    });
+  };
+
+  /* ---------- QR code et numéros ---------- */
+  Vues.qr = function (conteneur, url) {
+    conteneur.innerHTML = '';
+    if (!global.qrcode) { conteneur.appendChild(el('code', null, url)); return; }
+    var q = global.qrcode(0, 'M'); q.addData(url); q.make();
+    var d = el('div', { class: 'v-qr', title: url, html: q.createSvgTag({ cellSize: 6, margin: 2, scalable: true }) });
+    conteneur.appendChild(d);
+  };
+
+  /* L'adresse de la page élève, à partir de celle de la page enseignant :
+     …/Site-Web-Portfolio/prof/emc.html → …/Site-Web-Portfolio/emc/ */
+  Vues.urlEleve = function (code) {
+    var chemin = location.pathname.replace(/prof\/[^\/]*$/, 'emc/');
+    return location.origin + chemin + (code ? '?code=' + encodeURIComponent(code) : '');
+  };
+
+  Vues.numeros = function (conteneur, numeros, opts) {
+    conteneur.innerHTML = '';
+    var z = el('div', { class: 'numeros' + (opts && opts.grand ? ' grand' : '') });
+    (numeros || []).forEach(function (n) { z.appendChild(el('span', null, el('b', null, n.numero), ' ' + n.sens)); });
+    conteneur.appendChild(z);
+  };
+
+  /* Le lecteur d'une vidéo OneDrive, comme dans les séquences SNT :
+     lien de partage + « download=1 » dans le lecteur natif, crédits
+     et liens de secours dessous. */
+  Vues.video = function (conteneur, v) {
+    conteneur.innerHTML = '';
+    if (v.mp4) {
+      var src = v.mp4 + (v.mp4.indexOf('?') >= 0 ? '&' : '?') + 'download=1';
+      var vid = el('video', { controls: true, preload: 'metadata', playsinline: true, title: v.titre || '' });
+      vid.src = src;
+      vid.style.width = '100%'; vid.style.maxHeight = '70vh'; vid.style.background = '#000'; vid.style.borderRadius = '12px';
+      conteneur.appendChild(vid);
+    } else {
+      conteneur.appendChild(el('div', { class: 'encadre orange' },
+        'Pas encore de fichier MP4 pour cette vidéo : ajoute le lien de partage OneDrive dans « Contenus de la séance ».'));
+    }
+    var pied = el('p', { class: 'tresmuet' }, v.titre ? el('b', null, v.titre) : null);
+    if (v.credits) pied.appendChild(document.createTextNode(' · ' + v.credits));
+    if (v.mp4) { pied.appendChild(document.createTextNode(' · ')); pied.appendChild(el('a', { href: v.mp4, target: '_blank', rel: 'noopener' }, 'Ouvrir sur OneDrive')); }
+    if (v.lien) { pied.appendChild(document.createTextNode(' · ')); pied.appendChild(el('a', { href: v.lien, target: '_blank', rel: 'noopener' }, 'Lien d\'origine')); }
+    conteneur.appendChild(pied);
+  };
+
+  EMC.Vues = Vues;
+})(window);
