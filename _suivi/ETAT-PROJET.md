@@ -188,8 +188,8 @@ externe). Audit et architecture : `_suivi/AUDIT-EMC.md` · décisions :
 **Ce qui reste, dans l'ordre :**
 1. ✅ `031` exécuté le 07/11/2026, §11 compris : quatre classes à deux
    enseignants, sept tables en temps réel.
-1 bis. ⏳ **Loïc** exécute le `032` (mots, notes et votes refusés sans lui) puis le
-   `033` (contenus enrichis), puis copie des deux dans `supabase/migrations/`.
+1 bis. ✅ `032` (mots, notes, votes) et `033` (contenus) exécutés le 07/11/2026,
+   copiés dans `supabase/migrations/`.
 2. ⏳ **Recette sur la vraie base** : premier test de Loïc le 07/11 (temps réel
    et alerte d'aide quasi instantanés) ; reste 40 clients et la mesure des
    messages. Les bancs n'ont éprouvé que la relecture de secours.
