@@ -12,6 +12,12 @@
 
 ---
 
+## 07/11/2026 (soir) — EMC : le premier test réel, et ce qu'il a appris
+
+Loïc a déroulé la séance sur la vraie base. Le temps réel tient : l'alerte « J'ai besoin d'en parler » arrive presque instantanément. Mais **seule la carte s'enregistrait** : mots, notes et votes étaient refusés (« pas possible maintenant »). Cause : ces trois écritures sont des upsert, et PostgREST réécrit alors *toutes* les colonnes envoyées, clé comprise ; le `031` n'accordait l'update que sur les colonnes de contenu. Le banc PGlite écrivait ses upserts à la main, sans la clé : il ne pouvait pas le voir. Il écrit désormais comme PostgREST (`032`).
+
+Le reste vient du test : la porte d'entrée propose toujours de créer un compte ou de se connecter (une tablette déjà connectée imposait son compte), bouton « prêt » bien plus visible, numéros plus grands avec icône et, à l'étape 5, qui répond et quand appeler ; projection des missions complètes (questions, icônes) ; traits beaucoup plus fins (5 épaisseurs) ; vidéos YouTube intégrées à la projection seulement (youtube-nocookie, rien sur les tablettes) ; 32 émojis ; brouillon des mots gardé sur la tablette. Contenus : `033`, qui n'écrase rien de réglé au tableau de bord.
+
 ## 07/11/2026 — EMC seconde : la séance pilotée autour du « Labyrinthe de Nina »
 
 Loïc apporte un plan validé avec Mme Castel (séance de 2 h, 4 créneaux les 12 et

@@ -28,13 +28,8 @@
   };
 
   /* Les numéros, tant que les contenus ne sont pas lus (avant la
-     connexion). Les mêmes que emc_contenus.numeros (031 §10). */
-  var NUMEROS_DEFAUT = [
-    { numero: '3018', sens: 'Harcèlement et cyberharcèlement' },
-    { numero: '3114', sens: 'Prévention du suicide' },
-    { numero: '119', sens: 'Enfance en danger' },
-    { numero: '17', sens: 'Danger immédiat' }
-  ];
+     connexion) : emc-commun.js. */
+  var NUMEROS_DEFAUT = EMC.NUMEROS_DEFAUT;
 
   /* Messages de progression.js (MSG_ERREUR), plus ceux de l'EMC. */
   var MESSAGES_COMPTE = {
@@ -82,7 +77,7 @@
   function rendreNumeros() {
     var l = contenu('numeros') || NUMEROS_DEFAUT, box = $('#numeros');
     box.innerHTML = '';
-    l.forEach(function (n) { box.appendChild(el('span', null, el('b', null, n.numero), ' ' + n.sens)); });
+    l.forEach(function (n) { box.appendChild(el('span', null, n.icone ? el('span', { 'aria-hidden': 'true' }, n.icone + ' ') : null, el('b', null, n.numero), ' ' + n.sens)); });
   }
 
   /* L'envoi d'aide en cours, en mémoire seulement. */
@@ -193,14 +188,19 @@
   /* ----------------------------------------------------------
    *  2. Porte d'entrée
    * ---------------------------------------------------------- */
+  /* dejaConnecte : le pseudo du compte déjà ouvert sur la tablette
+     (ou null). La porte propose TOUJOURS de créer un compte ou de se
+     connecter ; un compte déjà ouvert est proposé en plus, jamais
+     imposé : une tablette peut garder le compte d'un autre. */
   function porte(dejaConnecte, messageDepart) {
     var main = $('#principal');
     main.innerHTML = '';
     $('#btn-aide').hidden = true;
-    var mode = dejaConnecte ? 'code' : 'creer';
+    var mode = 'creer';
     var alerte = el('div', { class: 'alerte err', role: 'alert' });
     var cadre = el('div', { class: 'carte-blanche porte' });
     main.appendChild(cadre);
+    var codeDepart = (EMC.parametre('code') || relire('emc.code') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
 
     function montrerErreur(t) { alerte.textContent = t; alerte.classList.add('show'); }
 
@@ -211,25 +211,21 @@
       cadre.appendChild(el('p', { class: 'muet' }, 'Séance d\'EMC autour du jeu ', el('i', null, 'Le Labyrinthe de Nina'), '.'));
 
       var code = el('input', { type: 'text', id: 'p-code', class: 'code', maxlength: '6', autocomplete: 'off',
-        autocapitalize: 'characters', spellcheck: 'false', inputmode: 'text', value: relire('emc.code') || '' });
-      code.addEventListener('input', function () { code.value = code.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
+        autocapitalize: 'characters', spellcheck: 'false', inputmode: 'text', value: codeDepart });
+      code.addEventListener('input', function () { code.value = code.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); codeDepart = code.value; });
 
-      if (mode === 'code') {
-        cadre.appendChild(el('p', null, 'Tu es connecté·e. Entre le code écrit au tableau pour rejoindre la séance.'));
-        cadre.appendChild(el('label', { for: 'p-code' }, 'Code de la séance'));
-        cadre.appendChild(code);
-        var go = el('button', { type: 'button', class: 'primaire', style: 'margin-top:.8rem;width:100%' }, 'Rejoindre la séance');
-        var autre = el('button', { type: 'button', class: 'lien', style: 'margin-top:.4rem;width:100%' }, 'Changer de compte');
-        cadre.appendChild(alerte); cadre.appendChild(go); cadre.appendChild(autre);
+      if (dejaConnecte) {
+        var go = el('button', { type: 'button', class: 'primaire', style: 'width:100%;margin-top:.5rem' }, 'Continuer avec ce compte');
+        cadre.appendChild(el('div', { class: 'encadre deja' },
+          el('p', { style: 'margin:0' }, 'Cette tablette est déjà connectée au compte ', el('b', null, dejaConnecte), '.'),
+          el('p', { class: 'tresmuet', style: 'margin:.2rem 0 0' }, 'Si ce n\'est pas le tien, choisis plus bas « Je crée mon compte » ou « J\'ai déjà un compte ».'),
+          go));
         go.addEventListener('click', function () {
           var c = code.value.trim();
-          if (c.length !== 6) { montrerErreur('Le code fait 6 caractères : regarde au tableau.'); return; }
+          if (c.length !== 6) { montrerErreur('Écris d\'abord le code de la séance (6 caractères, au tableau).'); code.focus(); return; }
           go.disabled = true;
           entrer(c).catch(function (e) { go.disabled = false; montrerErreur(messageCompte(e)); });
         });
-        autre.addEventListener('click', function () { Progression.quitter().then(function () { mode = 'creer'; rendre(); }); });
-        if (messageDepart) montrerErreur(messageDepart);
-        return;
       }
 
       var bCreer = el('button', { type: 'button', class: mode === 'creer' ? 'actif' : '' }, 'Je crée mon compte');
@@ -272,10 +268,13 @@
         if (mode === 'creer' && mdp.value !== mdp2.value) { montrerErreur('Les deux mots de passe ne sont pas identiques.'); mdp2.focus(); return; }
         if (c.length !== 6) { montrerErreur('Le code fait 6 caractères : regarde au tableau.'); code.focus(); return; }
         valider.disabled = true; valider.textContent = 'Un instant…';
-        var p = mode === 'creer'
-          ? Progression.creerCompte(ident.value, mdp.value, c)
-          : Progression.seConnecter(ident.value, mdp.value);
-        p.then(function () { return entrer(c); }).catch(function (e) {
+        /* un autre compte était ouvert : on le ferme d'abord */
+        var p = (dejaConnecte ? Progression.quitter() : Promise.resolve()).then(function () {
+          return mode === 'creer'
+            ? Progression.creerCompte(ident.value, mdp.value, c)
+            : Progression.seConnecter(ident.value, mdp.value);
+        });
+        p.then(function () { dejaConnecte = null; return entrer(c); }).catch(function (e) {
           valider.disabled = false;
           valider.textContent = mode === 'creer' ? 'Créer mon compte et rejoindre' : 'Me connecter et rejoindre';
           montrerErreur(messageCompte(e));
@@ -353,9 +352,7 @@
     b.innerHTML = '';
     var d = etatDirect[EMC.etatDirect()] || etatDirect.relecture;
     var attente = S.file ? S.file.enAttente() : 0;
-    var pret = el('button', { type: 'button', class: S.pret ? 'pret-oui' : 'pret-non', 'aria-pressed': S.pret ? 'true' : 'false' },
-      S.pret ? '✅ Prêt·e' : '✋ Je suis prêt·e');
-    pret.addEventListener('click', basculerPret);
+    var pret = boutonPret();
     var sortir = el('button', { type: 'button', class: 'lien' }, 'Se déconnecter');
     sortir.addEventListener('click', function () {
       if (S.file && S.file.enAttente() && !confirm('Des envois attendent encore le réseau. Se déconnecter quand même ? Ils seront envoyés à ta prochaine connexion sur cette tablette.')) return;
@@ -363,12 +360,18 @@
     });
     b.appendChild(el('div', { class: 'entete-eleve' },
       el('span', { class: 'pastille table grande-table' }, 'TABLE ' + S.table),
+      pret,
       el('span', null, el('span', { class: 'seance' }, S.libelle), el('br'), el('span', { class: 'qui' }, S.pseudo))));
     b.appendChild(el('span', { class: 'espace' }));
     b.appendChild(el('span', { class: 'pastille direct-etat ' + d[0], id: 'etat-direct', title: 'Liaison avec la classe' }, d[1]));
     if (attente) b.appendChild(el('span', { class: 'pastille att', id: 'etat-file' }, '⏳ ' + attente + ' envoi' + (attente > 1 ? 's' : '') + ' en attente'));
-    b.appendChild(pret);
     b.appendChild(sortir);
+  }
+  function boutonPret(geant) {
+    var p = el('button', { type: 'button', class: (S.pret ? 'pret-oui' : 'pret-non') + (geant ? ' pret-geant' : ' pret-grand'),
+      'aria-pressed': S.pret ? 'true' : 'false' }, S.pret ? '✅ Je suis prêt·e' : '✋ Je suis prêt·e');
+    p.addEventListener('click', basculerPret);
+    return p;
   }
   document.addEventListener('emc:direct', function () { if (S.classe) rendreBarre(); });
   document.addEventListener('emc:file', function () { if (S.classe) rendreBarre(); });
@@ -377,6 +380,7 @@
     var voulu = !S.pret;
     EMC.rpc('emc_pret', { p_classe: S.classe, p_pret: voulu }).then(function () {
       S.pret = voulu; rendreBarre();
+      if (S.seance && S.seance.etape === 0) { S.etapeAffichee = null; rendreEtape(); }
     }, function (e) { toast(EMC.message(e), 'err'); });
   }
 
@@ -444,7 +448,8 @@
     c.appendChild(el('ol', null,
       el('li', null, 'Installe le jeu ', el('b', null, el('i', null, 'Le Labyrinthe de Nina')), ' (application de la MAE et d\'e-Enfance / 3018) sur ta tablette, si ce n\'est pas déjà fait. Ne le lance pas encore.'),
       el('li', null, 'Garde cette page ouverte : c\'est elle qui te guidera pendant la séance.'),
-      el('li', null, 'Quand tout est prêt, touche ', el('b', null, '✋ Je suis prêt·e'), ' en haut de l\'écran.')));
+      el('li', null, 'Quand tout est prêt, touche ', el('b', null, '✋ Je suis prêt·e'), ' ci-dessous (ou en haut, à côté de ta table).')));
+    c.appendChild(boutonPret(true));
     c.appendChild(el('p', { class: 'etat-envoi ' + (S.pret ? 'ok' : 'att') }, S.pret ? '✅ Tu es prêt·e. Attends la suite.' : 'Pas encore prêt·e.'));
     s.appendChild(c);
   }
@@ -482,9 +487,24 @@
     b.appendChild(envoyer); b.appendChild(etat);
     s.appendChild(b);
 
-    /* ce que j'ai déjà envoyé */
+    /* Le brouillon de la tablette (rien n'est perdu si l'étape change
+       avant l'envoi), puis ce qui a déjà été envoyé. */
+    var cleBrouillon = 'emc.mots.' + S.classe;
+    function garderBrouillon() {
+      stocker(cleBrouillon, JSON.stringify({ mots: champs.map(function (x) { return x.value; }), emojis: choisis }));
+    }
+    try {
+      var br = JSON.parse(relire(cleBrouillon) || 'null');
+      if (br) {
+        (br.mots || []).forEach(function (m, i) { if (champs[i]) champs[i].value = m || ''; });
+        choisis = (br.emojis || []).slice(0, 2); majBoutons();
+      }
+    } catch (e) {}
+    champs.forEach(function (x) { x.addEventListener('input', garderBrouillon); });
+    grille.addEventListener('click', function () { setTimeout(garderBrouillon, 0); });
     EMC.lire('emc_mots?select=mots,emojis&classe_id=eq.' + S.classe).then(function (l) {
       if (!l || !l[0]) return;
+      if (relire(cleBrouillon)) { etat.className = 'etat-envoi ok'; etat.textContent = '✓ Déjà envoyé. Tu peux encore modifier.'; return; }
       (l[0].mots || []).forEach(function (m, i) { if (champs[i] && !champs[i].value) champs[i].value = m; });
       choisis = (l[0].emojis || []).slice(0, 2); majBoutons();
       etat.className = 'etat-envoi ok'; etat.textContent = '✓ Déjà envoyé. Tu peux encore modifier.';
@@ -518,7 +538,7 @@
     var m = mission(), b = bloc();
     if (!m) { b.appendChild(el('p', null, 'Ta mission arrive…')); return b; }
     b.appendChild(el('div', { class: 'tresmuet' }, 'Ta mission — table ' + S.table + ' · zone ' + (EMC.NOMS_ZONES[S.table] || '') + ' de la carte'));
-    b.appendChild(el(grand ? 'div' : 'h2', { class: grand ? 'verbe' : '' }, m.verbe));
+    b.appendChild(el(grand ? 'div' : 'h2', { class: grand ? 'verbe' : '' }, el('span', { 'aria-hidden': 'true' }, EMC.iconeMission(m) + ' '), m.verbe));
     b.appendChild(el('p', { class: 'mission-texte' }, m.texte));
     if (m.questions && m.questions.length) {
       b.appendChild(el('ul', { class: 'questions' }, m.questions.map(function (q) { return el('li', null, q); })));
@@ -660,26 +680,28 @@
   }
 
   /* 5 — Vidéo et numéros d'urgence */
+  /* 🔴 Rien de YouTube ne se charge sur la tablette : la vidéo passe
+     à la projection ; ici, un MP4 (OneDrive) ou le lien seulement. */
   function etape5(s) {
+    var n = bloc();
+    n.appendChild(el('h2', null, '📞 Les numéros à connaître'));
+    var nz = el('div'); n.appendChild(nz);
+    EMC.Vues.numerosDetailles(nz, contenu('numeros') || NUMEROS_DEFAUT);
+    n.appendChild(el('p', { class: 'muet', style: 'margin-top:.8rem' }, 'Tu peux aussi parler à la CPE, à l\'infirmière, à un professeur, à un adulte de confiance.'));
+    s.appendChild(n);
     (contenu('videos') || []).forEach(function (v) {
       var b = bloc();
-      b.appendChild(el('h2', null, v.titre || 'Vidéo'));
+      b.appendChild(el('h2', null, '🎬 ' + (v.titre || 'Vidéo')));
       if (v.mp4) {
-        b.appendChild(el('video', { controls: true, playsinline: true, preload: 'metadata', src: v.mp4 }));
+        b.appendChild(el('video', { controls: true, playsinline: true, preload: 'metadata', src: v.mp4 + (v.mp4.indexOf('?') >= 0 ? '&' : '?') + 'download=1' }));
         if (v.credits) b.appendChild(el('p', { class: 'tresmuet' }, v.credits));
       } else {
         b.appendChild(el('p', { class: 'muet' }, 'La vidéo est projetée au tableau.'));
       }
-      if (v.lien) b.appendChild(el('p', null, el('a', { href: v.lien, target: '_blank', rel: 'noopener' }, 'Revoir la vidéo (lien d\'origine)')));
+      if (v.note) b.appendChild(el('div', { class: 'encadre orange' }, v.note));
+      if (v.lien) b.appendChild(el('p', null, el('a', { href: v.lien, target: '_blank', rel: 'noopener' }, 'Revoir la vidéo plus tard (lien d\'origine)')));
       s.appendChild(b);
     });
-    var n = bloc();
-    n.appendChild(el('h2', null, 'Les numéros à connaître'));
-    n.appendChild(el('div', { class: 'numeros-grands' }, (contenu('numeros') || NUMEROS_DEFAUT).map(function (x) {
-      return el('div', null, el('b', null, x.numero), x.sens);
-    })));
-    n.appendChild(el('p', { class: 'muet', style: 'margin-top:.8rem' }, 'Gratuits et anonymes (sauf le 17). Tu peux aussi parler à la CPE, à l\'infirmière, à un professeur.'));
-    s.appendChild(n);
   }
 
   /* 6 — Harcèlomètre */
@@ -810,9 +832,8 @@
     var b = bloc();
     b.appendChild(el('h1', null, 'La séance est terminée. Merci ! 🙏'));
     b.appendChild(el('p', null, 'Si tu as besoin d\'en parler plus tard, tu peux aller voir la CPE, l\'infirmière, ou un professeur.'));
-    b.appendChild(el('div', { class: 'numeros-grands' }, (contenu('numeros') || NUMEROS_DEFAUT).map(function (x) {
-      return el('div', null, el('b', null, x.numero), x.sens);
-    })));
+    var nz = el('div'); b.appendChild(nz);
+    EMC.Vues.numerosDetailles(nz, contenu('numeros') || NUMEROS_DEFAUT);
     s.appendChild(b);
     $('#btn-aide').hidden = true;
   }
@@ -830,13 +851,16 @@
     return;
   }
   Progression.session().then(function (profil) {
-    if (!profil) { porte(false); return; }
-    /* déjà connecté : la dernière séance EMC, ou le code retenu */
-    entrer(relire('emc.code')).catch(function (e) {
+    if (!profil) { porte(null); return; }
+    /* Déjà entré dans CETTE séance sur cette tablette (rechargement,
+       coupure) : on y retourne directement. Sinon, la porte. */
+    var retenu = relire('emc.code'), demande = (EMC.parametre('code') || '').toUpperCase();
+    if (!retenu || (demande && demande !== retenu)) { porte(profil.pseudo || 'inconnu'); return; }
+    entrer(retenu).catch(function (e) {
       var m = (e && e.message) || '';
-      if (/PAS_DE_CLASSE_EMC|CODE_EMC_INCONNU/.test(m)) porte(true);
-      else if (/PAS_ENCORE_INSCRIT|AUCUNE_SESSION|PAS_DE_SESSION/.test(m)) porte(false);
-      else porte(true, EMC.message(e));
+      if (/PAS_ENCORE_INSCRIT|AUCUNE_SESSION|PAS_DE_SESSION/.test(m)) porte(null);
+      else if (/PAS_DE_CLASSE_EMC|CODE_EMC_INCONNU/.test(m)) porte(profil.pseudo || 'inconnu');
+      else porte(profil.pseudo || 'inconnu', EMC.message(e));
     });
   });
 })();

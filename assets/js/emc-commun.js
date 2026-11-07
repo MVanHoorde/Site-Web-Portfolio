@@ -228,6 +228,19 @@
   EMC.NOMS_ZONES = { 0: 'Centre', 1: 'NE intérieur', 2: 'NE extérieur', 3: 'NO intérieur', 4: 'NO extérieur',
                      5: 'SO intérieur', 6: 'SO extérieur', 7: 'SE intérieur', 8: 'SE extérieur' };
 
+  /* L'icône d'une mission : celle des contenus, sinon une par table. */
+  var ICONES_MISSIONS = { 1: '🔎', 2: '💭', 3: '🎯', 4: '⚖️', 5: '👀', 6: '💡', 7: '🧭', 8: '🤝' };
+  EMC.iconeMission = function (m) { return (m && m.icone) || (m && ICONES_MISSIONS[m.table]) || '📌'; };
+
+  /* Les numéros tant que les contenus ne sont pas lus (avant la
+     connexion). Les mêmes que emc_contenus.numeros (031, 033). */
+  EMC.NUMEROS_DEFAUT = [
+    { icone: '💬', numero: '3018', sens: 'Harcèlement et cyberharcèlement' },
+    { icone: '💙', numero: '3114', sens: 'Prévention du suicide' },
+    { icone: '🧒', numero: '119', sens: 'Enfance en danger' },
+    { icone: '🚨', numero: '17', sens: 'Danger immédiat' }
+  ];
+
   /* ----------------------------------------------------------
    *  4. Temps réel
    *

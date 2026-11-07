@@ -39,6 +39,9 @@
   var DEMI = EMC.DEMI, R0 = EMC.R_CENTRE, R1 = EMC.R_ANNEAU;
   var RAD = Math.PI / 180;
   var POLICE = "'Inter', 'IBM Plex Sans', system-ui, sans-serif";
+  /* Les émojis d'abord dans une police d'émojis : sur certains postes, la
+     police du texte en fournit une version sans couleur, ou rien. */
+  var POLICE_EMOJI = "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'IBM Plex Sans', sans-serif";
   var POLICE_TITRE = "'Space Grotesk', 'Inter', sans-serif";
   var MARINE = '#173d6b', ENCRE = '#161f33', CYAN = '#3fa7d6';
 
@@ -64,7 +67,10 @@
   ];
   function estPastille(s) { return /[A-Za-z0-9#]/.test(s); }
 
-  var EPAISSEURS = [{ cle: 'fin', v: 5, t: 'Fin' }, { cle: 'moyen', v: 10, t: 'Moyen' }, { cle: 'epais', v: 20, t: 'Épais' }];
+  /* En unités de la carte (4000 de côté) : 4 est déjà un trait net à
+     l'écran d'une table ; les deux derniers servent aux titres. */
+  var EPAISSEURS = [{ cle: 'tresfin', v: 1.5, t: 'Très fin' }, { cle: 'fin', v: 2.5, t: 'Fin' }, { cle: 'moyen', v: 4, t: 'Moyen' },
+                    { cle: 'epais', v: 7, t: 'Épais' }, { cle: 'tresepais', v: 12, t: 'Très épais' }];
   var TAILLES = [{ v: 30, t: 'Petit' }, { v: 44, t: 'Moyen' }, { v: 70, t: 'Grand' }];
   var MARGE = 4;                 // un point gardé est à 4 unités du bord de sa zone
   var ECHELLE_MAX = 8;
@@ -131,7 +137,7 @@
 
     var etat = { ouverte: mode !== 'eleve', figee: false, zonesVerrouillees: [] };
     var outil = mode === 'eleve' ? 'crayon' : (mode === 'prof' ? 'selection' : 'main');
-    var couleur = 'bleu', epaisseur = 10, tailleTexte = 44, forme = 'rect', autocollant = '👍';
+    var couleur = 'bleu', epaisseur = 4, tailleTexte = 44, forme = 'rect', autocollant = '👍';
     var elements = {};       // id → { ligne, noeud, local: champs en attente, attente: bool }
     var mesIds = {};         // élève : les éléments que j'ai posés
     var masques = {};        // prof : id → donnees cachées
@@ -290,8 +296,8 @@
           perfectDrawEnabled: false, shadowForStrokeEnabled: false });
       } else if (l.type === 'fleche' && Array.isArray(d.points)) {
         var e = d.epaisseur || 10;
-        n = new Konva.Arrow({ points: d.points, stroke: hex, fill: hex, strokeWidth: e, pointerLength: 18 + e * 2,
-          pointerWidth: 16 + e * 2, lineCap: 'round', hitStrokeWidth: 28, perfectDrawEnabled: false });
+        n = new Konva.Arrow({ points: d.points, stroke: hex, fill: hex, strokeWidth: e, pointerLength: 12 + e * 3,
+          pointerWidth: 10 + e * 3, lineCap: 'round', hitStrokeWidth: 28, perfectDrawEnabled: false });
       } else if ((l.type === 'texte' || l.type === 'autocollant' || l.type === 'forme') && typeof d.x === 'number') {
         n = new Konva.Group({ x: d.x, y: d.y });
         var L = d.l || 100, H = d.h || 60;
@@ -306,7 +312,7 @@
               fontSize: H * 0.5, fontStyle: 'bold', fontFamily: POLICE, fill: '#fff', perfectDrawEnabled: false }));
           } else {
             n.add(new Konva.Text({ text: sym, width: L, height: H, align: 'center', verticalAlign: 'middle',
-              fontSize: Math.min(L, H) * 0.85, fontFamily: POLICE, perfectDrawEnabled: false }));
+              fontSize: Math.min(L, H) * 0.85, fontFamily: POLICE_EMOJI, perfectDrawEnabled: false }));
           }
         } else {
           var trait = { stroke: hex, strokeWidth: 6, fill: hex + '14', perfectDrawEnabled: false };
@@ -543,7 +549,7 @@
       var z = zoneEcriture(p.x, p.y);
       if (z == null) return;
       fleche = { zone: z, a: p, b: p, noeud: new Konva.Arrow({ points: [p.x, p.y, p.x, p.y], stroke: couleurHex(couleur),
-        fill: couleurHex(couleur), strokeWidth: epaisseur, pointerLength: 18 + epaisseur * 2, pointerWidth: 16 + epaisseur * 2 }) };
+        fill: couleurHex(couleur), strokeWidth: epaisseur, pointerLength: 12 + epaisseur * 3, pointerWidth: 10 + epaisseur * 3 }) };
       calqueBrouillon.add(fleche.noeud);
     }
     function suiteFleche(p) {
@@ -895,7 +901,7 @@
         EPAISSEURS.forEach(function (e) {
           sousBarre.appendChild(EMC.el('button', { type: 'button', class: e.v === epaisseur ? 'actif' : '', 'aria-pressed': String(e.v === epaisseur),
             'aria-label': 'Épaisseur ' + e.t, style: COMPACT + 'flex:none;', onclick: function () { epaisseur = e.v; dessinerSousBarre(); } },
-            EMC.el('span', { style: 'display:inline-block;width:22px;height:' + Math.max(2, e.v / 3) + 'px;background:currentColor;border-radius:4px;' }), e.t));
+            EMC.el('span', { style: 'display:inline-block;width:22px;height:' + Math.max(1, Math.round(e.v / 1.6)) + 'px;background:currentColor;border-radius:4px;' }), e.t));
         });
       } else if (outil === 'forme') {
         [['rect', '▭ Cadre'], ['ellipse', '◯ Ellipse'], ['bulle', '💬 Bulle de SMS']].forEach(function (f) {

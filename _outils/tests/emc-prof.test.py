@@ -158,9 +158,13 @@ window.supabase = { createClient: function () {
 } };
 """
 
+YOUTUBE = []
+
 def contexte(nav, larg, haut, noms=True):
     ctx = nav.new_context(viewport={'width': larg, 'height': haut}, accept_downloads=True)
     ctx.route(SUPA + '/**', gerer)
+    # la vidéo de l'étape 5 : servie vide, rien ne part chez YouTube
+    ctx.route('https://www.youtube-nocookie.com/**', lambda r, q: (YOUTUBE.append(q.url), r.fulfill(status=200, body='<!doctype html><title>yt</title>', headers={'Content-Type': 'text/html'})))
     ctx.route('**/vendor/supabase-js-2.45.4.min.js', lambda r, q: r.fulfill(status=200, body=BOUCHON_SUPABASE, headers={'Content-Type': 'application/javascript'}))
     stocke = {'access_token': jwt(MOI), 'refresh_token': 'r1', 'expires_at': int(time.time() * 1000) + 3600_000,
               'ouverte': int(time.time() * 1000), 'noms': ({p: 'Élève%s TEST' % chr(65 + i) for i, p in enumerate(PSEUDOS[:8])} if noms else {}), 'nomsFichier': 'test.csv'}
@@ -285,6 +289,12 @@ with sync_playwright() as pw:
             fuite = [p for p in PSEUDOS if p in dom] + [x for x in ['TEST', 'SECRET-AIDE'] if x in dom]
             verif('projection étape %d : aucun pseudo, nom ni aide' % n + suff, not fuite, fuite)
             capture(page, '08-projection-etape%d' % n + suff)
+            if n == 5:
+                src = page.get_attribute('.video-yt iframe', 'src') or ''
+                verif('projection étape 5 : vidéo YouTube par youtube-nocookie' + suff, src.startswith('https://www.youtube-nocookie.com/embed/'), src)
+                verif('projection étape 5 : numéros détaillés' + suff, page.locator('.numeros-details > div').count() >= 4)
+            if n in (2, 3):
+                verif('projection étape %d : missions complètes, questions comprises' % n + suff, page.locator('.missions-proj .m li').count() >= 8)
         verif('projection : étape 0 code + QR' + suff, True)
         req = [j for j in JOURNAL[n0:] if '/emc_aide' in j[1] or j[1].endswith('/eleves') or 'eleves(' in unquote(j[2] or '')]
         verif('projection : aucune requête vers emc_aide ni eleves' + suff, not req, req[:3])

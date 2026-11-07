@@ -243,16 +243,47 @@
   Vues.numeros = function (conteneur, numeros, opts) {
     conteneur.innerHTML = '';
     var z = el('div', { class: 'numeros' + (opts && opts.grand ? ' grand' : '') });
-    (numeros || []).forEach(function (n) { z.appendChild(el('span', null, el('b', null, n.numero), ' ' + n.sens)); });
+    (numeros || []).forEach(function (n) { z.appendChild(el('span', null, n.icone ? n.icone + ' ' : '', el('b', null, n.numero), ' ' + n.sens)); });
     conteneur.appendChild(z);
+  };
+
+  /* Les numéros en cartes : qui répond, quand appeler (étape 5, fin). */
+  Vues.numerosDetailles = function (conteneur, numeros) {
+    conteneur.innerHTML = '';
+    var g = el('div', { class: 'numeros-details' });
+    (numeros || []).forEach(function (n) {
+      g.appendChild(el('div', null,
+        el('div', { class: 'nd-tete' }, n.icone ? el('span', { class: 'nd-ic', 'aria-hidden': 'true' }, n.icone) : null, el('b', null, n.numero)),
+        el('div', { class: 'nd-sens' }, n.sens),
+        n.qui ? el('p', null, n.qui) : null,
+        n.quand ? el('p', { class: 'nd-quand' }, el('b', null, 'Quand ? '), n.quand) : null));
+    });
+    conteneur.appendChild(g);
+  };
+
+  /* L'identifiant d'une vidéo YouTube (watch?v=, youtu.be/, embed/,
+     shorts/), ou null. */
+  Vues.youtubeId = function (url) {
+    var m = /(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/.exec(url || '');
+    return m ? m[1] : null;
   };
 
   /* Le lecteur d'une vidéo OneDrive, comme dans les séquences SNT :
      lien de partage + « download=1 » dans le lecteur natif, crédits
-     et liens de secours dessous. */
+     et liens de secours dessous. Sans MP4, une vidéo YouTube est
+     intégrée par youtube-nocookie.com — 🔴 sur les pages enseignant
+     seulement (projection, pilotage) : la tablette d'un élève ne
+     charge rien de YouTube, elle n'a que le lien. */
   Vues.video = function (conteneur, v) {
     conteneur.innerHTML = '';
-    if (v.mp4) {
+    var yt = Vues.youtubeId(v.lien);
+    if (!v.mp4 && yt) {
+      var cadre = el('div', { class: 'video-yt' });
+      cadre.appendChild(el('iframe', { src: 'https://www.youtube-nocookie.com/embed/' + yt + '?rel=0',
+        title: v.titre || 'Vidéo', allow: 'autoplay; encrypted-media; picture-in-picture; fullscreen',
+        allowfullscreen: 'true', referrerpolicy: 'strict-origin-when-cross-origin', loading: 'lazy' }));
+      conteneur.appendChild(cadre);
+    } else if (v.mp4) {
       var src = v.mp4 + (v.mp4.indexOf('?') >= 0 ? '&' : '?') + 'download=1';
       var vid = el('video', { controls: true, preload: 'metadata', playsinline: true, title: v.titre || '' });
       vid.src = src;
@@ -267,6 +298,7 @@
     if (v.mp4) { pied.appendChild(document.createTextNode(' · ')); pied.appendChild(el('a', { href: v.mp4, target: '_blank', rel: 'noopener' }, 'Ouvrir sur OneDrive')); }
     if (v.lien) { pied.appendChild(document.createTextNode(' · ')); pied.appendChild(el('a', { href: v.lien, target: '_blank', rel: 'noopener' }, 'Lien d\'origine')); }
     conteneur.appendChild(pied);
+    if (v.note) conteneur.appendChild(el('div', { class: 'encadre orange video-note' }, v.note));
   };
 
   EMC.Vues = Vues;

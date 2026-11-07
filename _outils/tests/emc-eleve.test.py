@@ -356,6 +356,19 @@ def main():
         page.reload()
         verif('rechargement : on retrouve la séance sans rien retaper', attendre_etape(0))
 
+        # --- tablette déjà connectée, arrivée par le QR (test de Loïc, 07/11) :
+        #     la porte propose créer / se connecter, et le compte ouvert en plus
+        page.evaluate("localStorage.removeItem('emc.code')")
+        page.goto('http://127.0.0.1:%d/emc/index.html?code=NINA27' % PORT)
+        page.wait_for_selector('.porte')
+        verif('déjà connecté : la porte propose « Je crée mon compte »', page.locator('.porte .choix button', has_text='Je crée mon compte').count() == 1)
+        verif('déjà connecté : et « J\'ai déjà un compte »', page.locator('.porte .choix button', has_text='J\'ai déjà un compte').count() == 1)
+        verif('déjà connecté : le compte ouvert est nommé', 'renard-bleu-27' in page.inner_text('.porte .deja'))
+        verif('code du QR prérempli', page.input_value('#p-code') == 'NINA27')
+        capture('00-porte-deja-connecte')
+        page.click('text=Continuer avec ce compte')
+        verif('continuer avec ce compte : même table', attendre_etape(0) and 'TABLE 8' in page.inner_text('#barre'))
+
         # --- étape 1
         base.poser_etape(1)
         verif('la page suit l\'étape 1 (relecture)', attendre_etape(1))

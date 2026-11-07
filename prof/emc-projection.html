@@ -19,7 +19,7 @@
   La projection se construit étape par étape : l'étape en cours en
   grand, les résultats des étapes passées restent en vignettes.
 -->
-<link rel="stylesheet" href="../assets/css/emc.css?v=1">
+<link rel="stylesheet" href="../assets/css/emc.css?v=2">
 <style>
   body.projection{min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
   .p-tete{display:flex;align-items:center;gap:1rem;padding:.6rem 1.2rem;background:#081630}
@@ -44,10 +44,23 @@
   .accueil{display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:center;flex:1}
   .accueil .qr{width:min(42vh,360px)}
   .accueil .code{font:700 5.5rem/1 'IBM Plex Mono',monospace;letter-spacing:.1em}
-  .missions-proj{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;flex:1}
-  .missions-proj div{background:#183766;border-radius:12px;padding:.7rem .8rem}
-  .missions-proj b{display:block;font-size:1.5rem;color:#ffd28a}
-  .missions-proj .z{font-size:.85rem;color:#b7c6dd}
+  .missions-proj{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr;gap:.7rem;flex:1;min-height:0}
+  .missions-proj .m{background:#183766;border-radius:12px;padding:.6rem .8rem;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .missions-proj .m-tete{display:flex;align-items:center;gap:.5rem}
+  .missions-proj .ic{font-size:1.9rem;line-height:1}
+  .missions-proj b{display:block;font-size:1.45rem;color:#ffd28a;line-height:1.1}
+  .missions-proj .z{font-size:.8rem;color:#b7c6dd}
+  .missions-proj .t{font-size:.95rem;line-height:1.3;margin:.35rem 0 .25rem}
+  .missions-proj ul{margin:0;padding-left:1.1rem;font-size:.85rem;line-height:1.3;color:#dce6f4}
+  .missions-proj li{margin:.15rem 0}
+  .p-video{flex:1;display:grid;grid-template-columns:3fr 2fr;gap:1.2rem;min-height:0}
+  .p-video .vids,.p-video > div:last-child{min-height:0;overflow:auto}
+  .p-video .p-autres{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem}
+  .p-video .p-autres button{background:#183766;color:#fff;border-color:#23426e;font-size:.85rem}
+  .p-video .numeros-details{grid-template-columns:1fr 1fr;gap:.5rem}
+  .p-video .numeros-details > div{padding:.5rem .7rem}
+  .p-video .numeros-details p{font-size:.78rem}
+  .p-video .numeros-details .nd-tete b{font-size:1.8rem}
   .nuage-proj{flex:1;display:grid;grid-template-columns:3fr 2fr;gap:1.5rem;min-height:0}
   #p-carte{flex:1;min-height:0;border-radius:12px;overflow:hidden;background:#fff}
   .hm-proj .situation{font:600 2rem/1.25 'Space Grotesk',sans-serif;margin:.4rem 0 1.4rem}
@@ -82,9 +95,9 @@
 <script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
 <script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="../assets/js/vendor/konva-9.3.6.min.js"></script>
-<script src="../assets/js/emc-commun.js?v=1"></script>
-<script src="../assets/js/emc-vues.js?v=1"></script>
-<script src="../assets/js/emc-carte.js?v=1"></script>
+<script src="../assets/js/emc-commun.js?v=2"></script>
+<script src="../assets/js/emc-vues.js?v=2"></script>
+<script src="../assets/js/emc-carte.js?v=2"></script>
 <script>
 (function () {
   'use strict';
@@ -231,9 +244,14 @@
     } else if (n === 2 || n === 3) {
       h(n === 2 ? 'Vos missions' : 'Le Labyrinthe de Nina — en cours',
         n === 2 ? 'Chaque table a la sienne : regarde ta tablette.' : 'Joue, et prends des notes pour ta mission sur ta tablette.');
+      /* la mission complète de chaque table, questions comprises */
       var g = el('div', { class: 'missions-proj' });
       (P.contenus.missions || []).forEach(function (mi) {
-        g.appendChild(el('div', null, el('span', { class: 'z' }, 'Table ' + mi.table + ' · ' + (mi.zone || '')), el('b', null, mi.verbe), n === 2 ? el('span', null, mi.texte) : null));
+        g.appendChild(el('div', { class: 'm' },
+          el('div', { class: 'm-tete' }, el('span', { class: 'ic', 'aria-hidden': 'true' }, EMC.iconeMission(mi)),
+            el('div', null, el('span', { class: 'z' }, 'Table ' + mi.table + ' · ' + (mi.zone || '')), el('b', null, mi.verbe))),
+          el('div', { class: 't' }, mi.texte),
+          (mi.questions || []).length ? el('ul', null, mi.questions.map(function (q) { return el('li', null, q); })) : null));
       });
       z.appendChild(g);
     } else if (n === 4) {
@@ -247,13 +265,21 @@
         P.carte.vueEnsemble();
       } else cz.appendChild(el('p', { class: 'vide-proj', style: 'color:var(--ink);padding:1rem' }, 'La carte n\'a pas pu se charger.'));
     } else if (n === 5) {
+      /* La première vidéo est mise en avant ; les autres se choisissent
+         sous elle. À droite, les numéros : qui répond, quand appeler. */
       h('À retenir : à qui en parler');
       var vids = P.contenus.videos || [];
-      var vz = el('div', { style: 'flex:1;min-height:0' }); z.appendChild(vz);
-      if (vids.length) V.video(vz, vids[0]);
-      vids.slice(1).forEach(function (v) { var d = el('div', { style: 'margin-top:.6rem' }); z.appendChild(d); V.video(d, v); });
-      var nz = el('div', { style: 'margin-top:1rem' }); z.appendChild(nz);
-      V.numeros(nz, P.contenus.numeros, { grand: true });
+      var vz = el('div'), autres = el('div', { class: 'p-autres' }), nz = el('div');
+      z.appendChild(el('div', { class: 'p-video' }, el('div', { class: 'vids' }, vz, autres), nz));
+      var montrer = function (i) {
+        V.video(vz, vids[i]);
+        autres.innerHTML = '';
+        vids.forEach(function (v, j) {
+          if (j !== i) autres.appendChild(el('button', { type: 'button', onclick: function () { montrer(j); } }, '▶ ' + (v.titre || 'Vidéo ' + (j + 1))));
+        });
+      };
+      if (vids.length) montrer(0);
+      V.numerosDetailles(nz, P.contenus.numeros);
     } else if (n === 6) {
       var hm = P.contenus.harcelometre || {}, s = situation(P.seance.situation_courante);
       var actives = (hm.situations || []).filter(function (x) { return x.actif; });

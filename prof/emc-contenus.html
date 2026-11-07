@@ -14,7 +14,7 @@
   DIRECT aux tablettes et à la projection dès l'enregistrement.
   Les deux enseignants EMC ont les mêmes droits.
 -->
-<link rel="stylesheet" href="../assets/css/emc.css?v=1">
+<link rel="stylesheet" href="../assets/css/emc.css?v=2">
 <style>
   .sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin:0 0 1rem;box-shadow:var(--ombre)}
   .sec>summary{list-style:none;cursor:pointer;padding:.9rem 1.1rem;display:flex;gap:.6rem;align-items:center;font:600 1.15rem 'Space Grotesk',sans-serif}
@@ -55,7 +55,7 @@
 
 <script src="../assets/js/prof-api.js?v=3"></script>
 <script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
-<script src="../assets/js/emc-commun.js?v=1"></script>
+<script src="../assets/js/emc-commun.js?v=2"></script>
 <script>
 (function () {
   'use strict';
@@ -75,7 +75,7 @@
     { cle: 'etapes', titre: 'Étapes de la séance', aide: 'Les 8 étapes sont fixes (0 à 7) : on règle leur titre et leur durée indicative.',
       def: { t: 'objets', fixe: true, resume: function (x) { return x.n + ' · ' + x.titre; },
              champs: [{ k: 'titre', t: 'texte', lib: 'Titre', requis: true }, { k: 'duree', t: 'nombre', lib: 'Durée (min)' }] } },
-    { cle: 'mots', titre: 'Étape 1 — nuage de mots et météo des émotions',
+    { cle: 'mots', titre: 'Étape 1 — les mots et les émotions',
       def: { t: 'objet', champs: [
         { k: 'question_mots', t: 'texte', lib: 'Question (mots)', large: true, requis: true },
         { k: 'aide_mots', t: 'texte', lib: 'Consigne (mots)' },
@@ -89,6 +89,7 @@
       def: { t: 'objets', fixe: true, resume: function (x) { return 'Table ' + x.table + ' · ' + x.verbe; },
              champs: [
                { k: 'verbe', t: 'texte', lib: 'Verbe (infinitif)', requis: true },
+               { k: 'icone', t: 'texte', lib: 'Icône (un émoji)' },
                { k: 'zone', t: 'texte', lib: 'Nom de la zone' },
                { k: 'texte', t: 'zone', lib: 'Mission (suite du verbe)', large: true, requis: true },
                { k: 'questions', t: 'liste', lib: 'Questions connexes', large: true },
@@ -139,17 +140,22 @@
         { k: 'avertissement', t: 'zone', lib: 'Avertissement (non anonyme)', large: true, requis: true },
         { k: 'cases', t: 'liste', lib: 'Cases proposées (3 au plus)', large: true, max: 3 }] } },
     { cle: 'numeros', titre: 'Numéros d\'urgence',
-      def: { t: 'objets', resume: function (x) { return x.numero + ' — ' + x.sens; },
-             nouveau: function () { return { numero: '', sens: '' }; },
-             champs: [{ k: 'numero', t: 'texte', lib: 'Numéro', requis: true }, { k: 'sens', t: 'texte', lib: 'Pour quoi', requis: true }] } },
+      aide: 'Le bandeau du bas montre l\'icône, le numéro et « pour quoi ». « Qui répond » et « quand appeler » s\'affichent à l\'étape 5 et à la fin.',
+      def: { t: 'objets', resume: function (x) { return (x.icone ? x.icone + ' ' : '') + x.numero + ' — ' + x.sens; },
+             nouveau: function () { return { icone: '📞', numero: '', sens: '', qui: '', quand: '' }; },
+             champs: [{ k: 'icone', t: 'texte', lib: 'Icône (un émoji)' },
+                      { k: 'numero', t: 'texte', lib: 'Numéro', requis: true }, { k: 'sens', t: 'texte', lib: 'Pour quoi', requis: true },
+                      { k: 'qui', t: 'zone', lib: 'Qui répond (horaires, gratuit…)', large: true },
+                      { k: 'quand', t: 'zone', lib: 'Quand appeler', large: true }] } },
     { cle: 'videos', titre: 'Étape 5 — vidéos',
-      aide: 'MP4 : le lien de partage OneDrive (« toute personne disposant du lien »), comme dans les séquences SNT. Le lien d\'origine sert de secours.',
+      aide: 'Sans MP4, une vidéo YouTube est intégrée à la projection (youtube-nocookie.com), et seulement là : les tablettes n\'ont que le lien. Avec un MP4 (lien de partage OneDrive, comme en SNT), c\'est lui qui passe. La première vidéo est mise en avant.',
       def: { t: 'objets', resume: function (x) { return x.titre || '(sans titre)'; },
-             nouveau: function () { return { titre: '', mp4: '', lien: '', credits: '' }; },
+             nouveau: function () { return { titre: '', mp4: '', lien: '', credits: '', note: '' }; },
              champs: [{ k: 'titre', t: 'texte', lib: 'Titre', large: true, requis: true },
                       { k: 'mp4', t: 'texte', lib: 'Lien de partage OneDrive (MP4)', large: true },
                       { k: 'lien', t: 'texte', lib: 'Lien d\'origine (YouTube…)', large: true },
-                      { k: 'credits', t: 'texte', lib: 'Crédits (chaîne, auteur)', large: true }] } }
+                      { k: 'credits', t: 'texte', lib: 'Crédits (chaîne, auteur)', large: true },
+                      { k: 'note', t: 'zone', lib: 'À dire avant ou après (affiché sous la vidéo)', large: true }] } }
   ];
 
   /* ------------------------------------------------------------

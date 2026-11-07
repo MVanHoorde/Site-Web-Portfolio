@@ -21,7 +21,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const depot = process.argv[2] || '.';
-const sql = readFileSync(join(depot, 'bdd/schema/031-emc.sql'), 'utf8');
+const sql = readFileSync(join(depot, 'bdd/schema/031-emc.sql'), 'utf8')
+  + (process.env.SANS_032 ? '' : '\n' + readFileSync(join(depot, 'bdd/schema/032-emc-fusion.sql'), 'utf8'))
+  + '\n' + readFileSync(join(depot, 'bdd/schema/033-emc-contenus.sql'), 'utf8');
 const { points } = JSON.parse(readFileSync(join(depot, '_outils/tests/emc-points.json'), 'utf8'));
 
 const db = new PGlite();
@@ -132,6 +134,24 @@ verif('harcèlomètre : 10 situations actives, 13 en réserve',
   h.situations.filter((s) => s.actif).length === 10 && h.situations.filter((s) => !s.actif).length === 13);
 const m = (await db.query(`select valeur from public.emc_contenus where cle = 'missions'`)).rows[0].valeur;
 verif('8 missions, 3 sous-zones chacune', m.length === 8 && m.every((x, i) => x.table === i + 1 && x.sous_zones.length === 3));
+/* 033, passé deux fois : ajoute sans doublon, et n'écrase pas un réglage */
+const val = async (cle) => (await db.query(`select valeur from public.emc_contenus where cle = $1`, [cle])).rows[0].valeur;
+const em = (await val('mots')).emojis;
+verif('033 : 32 émojis, sans doublon', em.length === 32 && new Set(em.map((x) => x.e)).size === 32, em.length);
+verif('033 : titre de l\'étape 1', (await val('etapes'))[1].titre === 'Premiers mots, premières émotions');
+const nums = await val('numeros');
+verif('033 : 4 numéros avec icône, qui, quand', nums.length === 4 && nums.every((x) => x.icone && x.qui && x.quand));
+const vids = await val('videos');
+verif('033 : 2 vidéos, la campagne 2022-2023 d\'abord', vids.length === 2 && /gFWq2W0Jly8/.test(vids[0].lien) && /3018/.test(vids[1].note));
+verif('033 : une icône par mission', m.length === 8 && (await val('missions')).every((x) => x.icone));
+await db.query(`update public.emc_contenus set valeur = '[{"numero":"3018","sens":"réglé à la main"}]' where cle = 'numeros'`);
+await db.query(`update public.emc_contenus set valeur = '[{"titre":"ma vidéo","mp4":"","lien":"","credits":""}]' where cle = 'videos'`);
+await db.exec(readFileSync(join(depot, 'bdd/schema/033-emc-contenus.sql'), 'utf8'));
+verif('033 rejoué : un numéro réglé à la main reçoit les détails, garde son texte',
+  (await val('numeros'))[0].sens === 'réglé à la main' && !!(await val('numeros'))[0].qui);
+verif('033 rejoué : une vidéo réglée à la main n\'est pas remplacée', (await val('videos'))[0].titre === 'ma vidéo');
+await db.query(`update public.emc_contenus set valeur = $1 where cle = 'numeros'`, [JSON.stringify(nums)]);
+await db.query(`update public.emc_contenus set valeur = $1 where cle = 'videos'`, [JSON.stringify(vids)]);
 
 /* ---------- 2. géométrie ---------- */
 for (const [x, y, z] of points) {
@@ -187,6 +207,17 @@ const mot = (e) => en(e.uid, `insert into public.emc_mots (classe_id, eleve_id, 
 verif('mots refusés avant l\'étape 1', !!(await mot(eleves[0])).e);
 await etape(1);
 verif('mots acceptés à l\'étape 1', !(await mot(eleves[0])).e);
+/* Ce qu'envoie vraiment la page (merge-duplicates) : PostgREST
+   réécrit TOUTES les colonnes envoyées, clé comprise (032). */
+const motPgrst = (e) => en(e.uid, `insert into public.emc_mots (classe_id, eleve_id, mots, emojis) values ($1, $2, $3, $4)
+  on conflict (classe_id, eleve_id) do update set classe_id = excluded.classe_id, eleve_id = excluded.eleve_id,
+  mots = excluded.mots, emojis = excluded.emojis`, [C1, e.id, ['respect'], ['🤝']]);
+verif('mots : upsert PostgREST, premier envoi', !(await motPgrst(eleves[4])).e);
+const renvoi = await motPgrst(eleves[0]);
+verif('mots : upsert PostgREST, renvoi qui corrige', !renvoi.e, renvoi.e);
+verif('mots : on ne déplace pas sa ligne vers une autre séance', nb(await en(eleves[0].uid,
+  `update public.emc_mots set classe_id = $1 where eleve_id = $2`, [C2, eleves[0].id])) <= 0);
+await db.query(`delete from public.emc_mots where eleve_id = $1`, [eleves[4].id]);
 verif('mots au nom d\'un autre refusés', !!(await en(eleves[1].uid, `insert into public.emc_mots (classe_id, eleve_id, mots) values ($1, $2, '{a}')`, [C1, eleves[2].id])).e);
 verif('4 mots refusés', !!(await en(eleves[3].uid, `insert into public.emc_mots (classe_id, eleve_id, mots) values ($1, $2, '{a,b,c,d}')`, [C1, eleves[3].id])).e);
 verif('l\'élève ne lit pas les mots des autres', lignes(await en(eleves[1].uid, `select * from public.emc_mots`)).length === 0);
@@ -198,6 +229,10 @@ verif('un élève ne masque pas', !!(await en(eleves[1].uid, `insert into public
 await etape(3);
 for (const e of eleves) await en(e.uid, `insert into public.emc_notes (classe_id, eleve_id, texte) values ($1, $2, $3)`, [C1, e.id, 'note de ' + e.id]);
 const e0 = eleves[0];
+const notePgrst = await en(e0.uid, `insert into public.emc_notes (classe_id, eleve_id, texte) values ($1, $2, $3)
+  on conflict (classe_id, eleve_id) do update set classe_id = excluded.classe_id, eleve_id = excluded.eleve_id,
+  texte = excluded.texte`, [C1, e0.id, 'note de ' + e0.id]);
+verif('notes : upsert PostgREST', !notePgrst.e, notePgrst.e);
 const notes = lignes(await en(e0.uid, `select eleve_id from public.emc_notes`));
 verif('je lis les 5 notes de ma table, pas les autres', notes.length === 5 && notes.every((n) => eleves.find((x) => x.id === n.eleve_id).table === e0.table), notes.length);
 verif('je ne modifie pas la note d\'un autre', nb(await en(e0.uid, `update public.emc_notes set texte = 'x' where eleve_id <> $1`, [e0.id])) <= 0);
@@ -261,6 +296,10 @@ await etape(6, `, situation_courante = 's10', situation_revelee = false`);
 let somme = 0;
 for (const [i, e] of eleves.entries()) { const v = i % 11; somme += v; await voter(e, 's10', v); }
 verif('vote modifiable tant que la situation est ouverte', !(await voter(e0, 's10', 10)).e);
+const votePgrst = await en(e0.uid, `insert into public.emc_votes (classe_id, situation, eleve_id, valeur) values ($1, 's10', $2, 10)
+  on conflict (classe_id, situation, eleve_id) do update set classe_id = excluded.classe_id, situation = excluded.situation,
+  eleve_id = excluded.eleve_id, valeur = excluded.valeur`, [C1, e0.id]);
+verif('votes : upsert PostgREST', !votePgrst.e, votePgrst.e);
 somme += 10;
 const moy = lignes(await en(CASTEL, `select avg(valeur)::float m, count(*)::int n from public.emc_votes where classe_id = $1 and situation = 's10'`, [C1]))[0];
 verif('moyenne exacte sur 40 votes', moy && moy.n === 40 && Math.abs(moy.m - somme / 40) < 1e-9, moy);
