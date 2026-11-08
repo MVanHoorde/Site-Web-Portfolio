@@ -85,6 +85,7 @@
   <a class="bouton" id="lien-projection" target="_blank" hidden>Projection ↗</a>
   <a class="bouton" href="emc-contenus.html">Contenus</a>
   <a class="bouton" href="index.html">← Tableau de bord</a>
+  <a class="bouton" href="../assets/pdf/emc/memo-4-restitution.pdf" target="_blank" rel="noopener" title="Le déroulé minuté, sur une page">📋 Mémo minuté</a>
 </header>
 <section id="alerte-aide" hidden aria-live="assertive"></section>
 
@@ -133,7 +134,7 @@
       </div>
       <div class="carte-blanche">
         <h2>Les groupes</h2>
-        <p class="muet">« Proposer » forme un groupe par atelier partagé, en équilibrant (chaque élève va dans un atelier qu'il a fait). Retouche ensuite les titres et les affectations, puis <b>« Envoyer aux tablettes »</b>.</p>
+        <p class="muet">« Proposer » forme un groupe par atelier partagé, en équilibrant (chaque élève va dans un atelier qu'il a fait). Les élèves ont classé leurs ateliers : à taille égale, chacun va dans celui qu'il a le mieux classé — l'équilibre passe avant. Retouche ensuite les titres et les affectations, puis <b>« Envoyer aux tablettes »</b>.</p>
         <div class="rangee">
           <button type="button" class="orange" id="g-proposer">🧩 Proposer les groupes</button>
           <button type="button" id="g-ajouter">➕ Un groupe</button>
@@ -309,14 +310,21 @@
     var ags = ateliersAgreges().filter(function (a) { return a.eleves.length >= 2; }).slice(0, 11);
     var gs = ags.map(function (a, i) { return { n: i + 1, titre: a.titre, symbole: symboles()[i % symboles().length], forme: a.forme, taille: 0 }; });
     var aff = {};
-    /* les élèves qui ont le moins de choix d'abord */
+    /* les élèves qui ont le moins de choix d'abord. L'ordre du parcours
+       est un classement (1 = l'atelier le plus aimé) : on place l'élève
+       dans son atelier le mieux classé qui n'a pas atteint la taille
+       équilibrée ; sinon dans le moins rempli des siens. L'équilibre
+       passe avant le classement (Mme Castel, 08/11). */
     var el2 = liste().map(function (p) {
       var f = ((C.restit[p.eleve_id] || {}).parcours || []).map(cleAtelier);
-      return { id: p.eleve_id, options: gs.filter(function (g) { return f.indexOf(g.forme) >= 0; }) };
+      return { id: p.eleve_id, rang: f, options: gs.filter(function (g) { return f.indexOf(g.forme) >= 0; }) };
     }).sort(function (a, b) { return a.options.length - b.options.length || Math.random() - 0.5; });
+    var plafond = Math.ceil(el2.length / Math.max(1, gs.length));
     var autres = null;
     el2.forEach(function (x) {
-      var g = x.options.sort(function (a, b) { return a.taille - b.taille; })[0];
+      var libres = x.options.filter(function (g) { return g.taille < plafond; })
+        .sort(function (a, b) { return x.rang.indexOf(a.forme) - x.rang.indexOf(b.forme); });
+      var g = libres[0] || x.options.sort(function (a, b) { return a.taille - b.taille; })[0];
       if (!g) {
         if (!autres) { autres = { n: gs.length + 1, titre: 'Autres ateliers', symbole: symboles()[gs.length % symboles().length], taille: 0 }; gs.push(autres); }
         g = autres;

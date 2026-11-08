@@ -85,6 +85,7 @@
   <a class="bouton" id="lien-projection" target="_blank" hidden>Projection ↗</a>
   <a class="bouton" href="emc-contenus.html">Contenus</a>
   <a class="bouton" href="index.html">← Tableau de bord</a>
+  <a class="bouton" href="../assets/pdf/emc/memo-3-labyrinthe.pdf" target="_blank" rel="noopener" title="Le déroulé minuté, sur une page">📋 Mémo minuté</a>
 </header>
 
 <!-- 🔴 Les demandes « J'ai besoin d'en parler » : en tête, tant qu'il en reste à traiter. -->
@@ -293,6 +294,13 @@
   'use strict';
   var $ = function (s) { return document.querySelector(s); };
   var el = EMC.el, V = EMC.Vues;
+  /* Un <details> reconstruit à chaque mise à jour en direct se refermait
+     (retour de Mme Castel, 08/11) : on retient ceux que l'enseignant a ouverts. */
+  var ouverts = {};
+  function detailsGarde(cle, resume, contenu) {
+    var d = el('details', { open: !!ouverts[cle], ontoggle: function () { ouverts[cle] = d.open; } }, el('summary', null, resume), contenu);
+    return d;
+  }
 
   var C = {
     classe: null, seance: null, contenus: null,
@@ -719,12 +727,12 @@
         el('h3', null, el('span', { class: 'pastille table' }, 'Table ' + t), el('span', { class: 'tresmuet' }, m.zone || EMC.NOMS_ZONES[t])),
         el('p', null, el('b', null, m.verbe || ''), ' ' + (m.texte || '')),
         (m.questions || []).length ? el('ul', { class: 'muet', style: 'margin:.2rem 0 .5rem' }, m.questions.map(function (q) { return el('li', null, q); })) : null,
-        el('div', { class: 'tresmuet' }, eleves.length + ' élève(s) : ' + (eleves.map(function (p) { return nom(p.pseudo); }).join(', ') || '—')));
+        el('div', { class: 'tresmuet' }, eleves.length + (m.places ? ' / ' + m.places : '') + ' élève(s) : ' + (eleves.map(function (p) { return nom(p.pseudo); }).join(', ') || '—')));
       eleves.forEach(function (p) {
         var n = C.notes[p.eleve_id];
         if (n && n.texte) bloc.appendChild(el('div', { class: 'note' }, el('b', null, nom(p.pseudo) + ' · ' + heure(n.maj_le)), n.texte));
       });
-      if (m.attendu) bloc.appendChild(el('details', null, el('summary', null, 'Contenu attendu'), el('p', { class: 'muet' }, m.attendu)));
+      if (m.attendu) bloc.appendChild(detailsGarde('mission-' + t, 'Contenu attendu', el('p', { class: 'muet' }, m.attendu)));
       z.appendChild(bloc);
     }
   }
@@ -786,7 +794,7 @@
     if (C.carte) C.carte.etat({ ouverte: C.seance.etape === 4 && !C.seance.cloturee_le, figee: C.seance.carte_figee, zonesVerrouillees: v });
     var att = $('#attendus'); att.innerHTML = '';
     (C.contenus.missions || []).forEach(function (m) {
-      att.appendChild(el('details', null, el('summary', null, 'Table ' + m.table + ' · ' + m.verbe), el('p', { class: 'muet' }, m.attendu || '—')));
+      att.appendChild(detailsGarde('carte-' + m.table, 'Table ' + m.table + ' · ' + m.verbe, el('p', { class: 'muet' }, m.attendu || '—')));
     });
   }
   function rendreMasquesCarte() {

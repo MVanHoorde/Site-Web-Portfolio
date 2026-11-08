@@ -93,6 +93,7 @@
     var r = rc(cx), max = r.parcours_max || 6, liste = r.ateliers || [];
     s.appendChild(encadre(r.parcours_consigne || ''));
     var b = cx.bloc(); s.appendChild(b);
+    b.appendChild(el('p', { class: 'tresmuet', style: 'margin:0 0 .3rem' }, 'Range tes ateliers du plus aimé (1) au moins aimé : ▲ pour en remonter un. Ce classement nous sert à faire remonter vos avis.'));
     var lignes = el('div', { class: 'parcours' }); b.appendChild(lignes);
     b.appendChild(el('datalist', { id: 'libertes' }, (r.libertes || []).map(function (x) { return el('option', { value: x }); })));
     var ajout = el('button', { type: 'button' }, '➕ Un autre atelier');
@@ -105,7 +106,11 @@
     function rendre() {
       lignes.innerHTML = '';
       donnees.forEach(function (d, i) {
-        var champs = [el('span', { class: 'num-atelier' }, String(i + 1))];
+        /* l'ordre est un classement : du plus aimé au moins aimé (retour de
+           Mme Castel, 08/11). Il aide à former les groupes, sans promesse. */
+        var champs = [el('div', { class: 'num-atelier' }, el('span', null, String(i + 1)),
+          i > 0 ? el('button', { type: 'button', class: 'monter', 'aria-label': 'Remonter l’atelier ' + (i + 1), title: 'Remonter',
+            onclick: function () { var x = donnees[i]; donnees[i] = donnees[i - 1]; donnees[i - 1] = x; rendre(); } }, '▲') : null)];
         var libre = el('input', { type: 'text', maxlength: '60', value: d.ref ? '' : (d.atelier || ''), 'aria-label': 'Atelier ' + (i + 1) + ', écrit',
           placeholder: liste.length ? 'Ou écris son nom' : 'L\'atelier (ex. débat sur les réseaux)' });
         libre.addEventListener('input', function () { d.ref = null; d.atelier = libre.value; if (sel) sel.value = ''; });

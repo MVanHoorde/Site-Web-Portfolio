@@ -199,6 +199,7 @@ restitution avec la 2nde 1 (vendredi 14 h). Tous les élèves entrent par une
    émojis en couleur : non éprouvés au banc).
 4. ✅ `034` exécuté, fonction `emc-cartes` déployée, site publié (08/11/2026).
 5. ✅ **035** et liste des ateliers exécutés, site publié (08/11/2026, soir).
+6. ✅ **036** (retours de Mme Castel) et **037** (jeu de rôle en 100 min) exécutés le 08/11/2026, copiés dans `supabase/migrations/` ; mémos et documents au tableau de bord ; publié.
 6. ⏳ **Relire** : l'exemple de Pierre Marchand et la liste des libertés de la
    restitution (Contenus).
 7. Après chaque séance : exports, clôture, suppression des comptes de ses cartes.

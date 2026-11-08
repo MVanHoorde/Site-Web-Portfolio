@@ -165,6 +165,7 @@ Liste tenue à jour par Claude. La demander avec « le bilan EMC ».
 - ✅ Format de la séance 6 choisi le 08/11 : ateliers écrits librement, mur de post-it.
 - ⏳ Relire la liste des libertés proposées (Contenus → Restitution).
 - ✅ 035 et liste des ateliers exécutés, site publié (08/11/2026, soir).
+- ✅ 036 (retours de Mme Castel : places par table, missions 3, 5, 8, durées du jeu de rôle) exécuté le 08/11/2026, puis 037 (jeu de rôle en 100 min) ; mémos et documents au tableau de bord ; publié le 08/11/2026.
 - ⏳ Préparer la fiche papier « La liberté, pour moi » (jeu de rôle, étape 8), une par élève, et la ramasser.
 - Générer et imprimer les cartes de chaque séance (pilotage → 🎟 Cartes), avec leur feuille de correspondance ; quelques cartes d'avance.
 - Imprimer quelques fiches-guides du jeu de rôle (document de l'équipe EMC), en secours.

@@ -30,7 +30,9 @@ const sql = readFileSync(join(depot, 'bdd/schema/031-emc.sql'), 'utf8')
   + (process.env.SANS_032 ? '' : '\n' + readFileSync(join(depot, 'bdd/schema/032-emc-fusion.sql'), 'utf8'))
   + '\n' + readFileSync(join(depot, 'bdd/schema/033-emc-contenus.sql'), 'utf8')
   + '\n' + readFileSync(join(depot, 'bdd/schema/034-emc-six-seances.sql'), 'utf8')
-  + '\n' + readFileSync(join(depot, 'bdd/schema/035-emc-jdr-retours.sql'), 'utf8');
+  + '\n' + readFileSync(join(depot, 'bdd/schema/035-emc-jdr-retours.sql'), 'utf8')
+  + '\n' + readFileSync(join(depot, 'bdd/schema/036-emc-retours-castel.sql'), 'utf8')
+  + '\n' + readFileSync(join(depot, 'bdd/schema/037-emc-jdr-100-minutes.sql'), 'utf8');
 const { points } = JSON.parse(readFileSync(join(depot, '_outils/tests/emc-points.json'), 'utf8'));
 
 const db = new PGlite();
@@ -187,8 +189,11 @@ for (const [i, e] of eleves.entries()) {
   const j = x.r && x.r.rows[0].j;
   verif('entrer élève ' + (i + 1), j && j.classe_id === C1, x.e);
   if (j) { e.table = j.table_num; tables[j.table_num] = (tables[j.table_num] || 0) + 1; verif('nouveau = compte EMC (' + (i + 1) + ')', j.nouveau === e.emc); }
+  /* 036 : places 5,4,5,5,5,4,3,3 — les petites tables d'abord */
+  if (i === 25) verif('036 : 26 élèves → tables de 3 et de 4 pleines, tables de 5 à 3', JSON.stringify([1,2,3,4,5,6,7,8].map((t) => tables[t] || 0)) === '[3,4,3,3,3,4,3,3]', tables);
+  if (i === 33) verif('036 : 34 élèves → les places exactes', JSON.stringify([1,2,3,4,5,6,7,8].map((t) => tables[t] || 0)) === '[5,4,5,5,5,4,3,3]', tables);
 }
-verif('40 élèves → 5 par table', Object.keys(tables).length === 8 && Object.values(tables).every((n) => n === 5), tables);
+verif('036 : 40 élèves → les surnuméraires aux grandes tables', JSON.stringify([1,2,3,4,5,6,7,8].map((t) => tables[t] || 0)) === '[6,5,6,6,6,5,3,3]', tables);
 const re = await en(eleves[0].uid, `select public.emc_entrer(null) j`);
 verif('se reconnecter redonne la même table', re.r && re.r.rows[0].j.table_num === eleves[0].table);
 const re2 = await en(eleves[35].uid, `select public.emc_entrer('NINA27') j`);
@@ -245,7 +250,7 @@ const notePgrst = await en(e0.uid, `insert into public.emc_notes (classe_id, ele
   texte = excluded.texte`, [C1, e0.id, 'note de ' + e0.id]);
 verif('notes : upsert PostgREST', !notePgrst.e, notePgrst.e);
 const notes = lignes(await en(e0.uid, `select eleve_id from public.emc_notes`));
-verif('je lis les 5 notes de ma table, pas les autres', notes.length === 5 && notes.every((n) => eleves.find((x) => x.id === n.eleve_id).table === e0.table), notes.length);
+verif('je lis les notes de ma table (036 : autant que de places), pas les autres', notes.length === eleves.filter((x) => x.table === e0.table).length && notes.every((n) => eleves.find((x) => x.id === n.eleve_id).table === e0.table), notes.length);
 verif('je ne modifie pas la note d\'un autre', nb(await en(e0.uid, `update public.emc_notes set texte = 'x' where eleve_id <> $1`, [e0.id])) <= 0);
 
 /* ---------- 8. carte ---------- */
@@ -396,8 +401,8 @@ verif('fiche-guide : 5 thèmes, 30 questions, ids 1 à 30', jdrC.themes.length =
   && JSON.stringify(jdrC.themes.flatMap((t) => t.questions.map((q) => q.id))) === JSON.stringify([...Array(30)].map((_, i) => i + 1)));
 verif('fiche-guide : l\'exemple reprend 6 questions existantes', jdrC.exemple.questions.length === 6);
 verif('24 symboles distincts', new Set(jdrC.symboles).size === 24);
-verif('étapes du jeu de rôle : 10 (035 : la fiche « la liberté, pour moi »), 100 min', (await val('etapes_accueil')).length === 10
-  && (await val('etapes_accueil')).reduce((s, e) => s + e.duree, 0) === 100);
+verif('étapes du jeu de rôle : 10 (035 : la fiche « la liberté, pour moi »), 110 min, 100 sans le portrait mystère (037)', (await val('etapes_accueil')).length === 10
+  && (await val('etapes_accueil')).reduce((s, e) => s + e.duree, 0) === 110);
 verif('Labyrinthe : 8 étapes, 120 min (créneaux de 2 h)', (await val('etapes')).reduce((s, e) => s + e.duree, 0) === 120);
 
 /* --- les cartes --- */
@@ -627,9 +632,11 @@ verif('remise à zéro : parcours et post-it effacés', (await db.query(`select 
 
 /* ---------- 17. 035 : les notes, montrées au binôme seulement ---------- */
 await db.exec(readFileSync(join(depot, 'bdd/schema/035-emc-jdr-retours.sql'), 'utf8'));   // le §15 a rejoué le 034 seul
+await db.exec(readFileSync(join(depot, 'bdd/schema/036-emc-retours-castel.sql'), 'utf8'));
+await db.exec(readFileSync(join(depot, 'bdd/schema/037-emc-jdr-100-minutes.sql'), 'utf8'));
 const ea = await val('etapes_accueil');
-verif('035 : durées accueil 10, consignes 5, questions 10, échange 15, total 100',
-  ea[0].duree === 10 && ea[1].duree === 5 && ea[3].duree === 10 && ea[4].duree === 15 && ea.reduce((s, e) => s + e.duree, 0) === 100, ea.map((e) => e.duree));
+verif('035, 036 puis 037 : échange 20, présentations 35, 100 min sans le portrait mystère',
+  ea[0].duree === 10 && ea[1].duree === 5 && ea[3].duree === 10 && ea[4].duree === 20 && ea[6].duree === 35 && ea.reduce((s, e) => s + e.duree, 0) - ea[7].duree === 100, ea.map((e) => e.duree));
 const j35 = await val('jdr');
 verif('035 : l\'exemple a ses 6 réponses notées', (j35.exemple.reponses || []).length === 6);
 const er = await val('etapes_restitution');
@@ -670,6 +677,19 @@ await en(LOIC, `update public.emc_seances set etape = 6 where classe_id = $1`, [
 await noter(n2, 'piano');
 await en(LOIC, `select public.emc_cloturer($1)`, [JDR]);
 verif('notes : la clôture efface ce qui reste', (await db.query(`select count(*)::int n from public.emc_jdr_notes`)).rows[0].n === 0);
+
+/* ---------- 18. 036 : les retours de Mme Castel ---------- */
+const ms36 = await val('missions');
+verif('036 : places 5,4,5,5,5,4,3,3 (34)', JSON.stringify(ms36.map((x) => x.places)) === '[5,4,5,5,5,4,3,3]', ms36.map((x) => x.places));
+verif('036 : table 3, indice du 3 novembre', /3 novembre/.test(ms36[2].questions[0]) && /meilleure note en français/.test(ms36[2].attendu));
+verif('036 : table 5, adultes et camarades', ms36[4].questions.length === 3 && /^Les adultes/.test(ms36[4].questions[0]) && /^Les adultes/.test(ms36[4].sous_zones[0]));
+verif('036 : table 8 sans exemples', JSON.stringify(ms36[7].questions) === '["Que lui diriez-vous ?","Qui contacter ?"]');
+verif('036 : échange 20 min', (await val('jdr')).echange_minutes === 20);
+ms36[1].places = 6; ms36[2].questions = ['réglée à la main'];
+await db.query(`update public.emc_contenus set valeur = $1 where cle = 'missions'`, [JSON.stringify(ms36)]);
+await db.exec(readFileSync(join(depot, 'bdd/schema/036-emc-retours-castel.sql'), 'utf8'));
+const ms36b = await val('missions');
+verif('036 rejoué : places et questions réglées gardées', ms36b[1].places === 6 && ms36b[2].questions[0] === 'réglée à la main' && ms36b.length === 8);
 
 console.log(`\n${ok} contrôles réussis, ${ko} en échec.`);
 process.exit(ko ? 1 : 0);

@@ -12,6 +12,14 @@
 
 ---
 
+## 08/11/2026 (nuit, suite) — EMC : les mémos, et la 037
+
+Loïc veut tout le papier au tableau de bord et des rappels pour faire les choses dans l'ordre et à l'heure. Quatre mémos d'une page (les deux jours ; jeu de rôle, Labyrinthe et restitution minutés à l'heure près), la fiche « La liberté, pour moi » qui n'existait pas encore, un bloc « Documents à imprimer et mémos » dans l'onglet EMC, un bouton « Mémo minuté » dans chaque pilotage. En minutant le jeu de rôle, une erreur du 036 est apparue : 115 min pour un créneau de 100. La 037 ramène les présentations à 35 min et fait du portrait mystère un bonus.
+
+## 08/11/2026 (nuit) — EMC : les retours de Mme Castel, et la 036
+
+Mme Castel a rejoué trois fois le Labyrinthe en décortiquant chaque piste, et testé le jeu de rôle. Ce qu'elle a vu et que nous n'avions pas vu : le « contenu attendu » du pilotage se refermait tout seul (chaque note qui arrive en direct reconstruisait le panneau) ; le déclencheur de la table 3 ne se trouve qu'en recoupant les dates (le 3 novembre, la note de français), d'où un indice ; à la table 5, les trois adultes ont fini par agir, ce qui contredisait « l'adulte qui ne voit pas » — la mission sépare désormais adultes (ont-ils eu la bonne réaction ?) et camarades ; les tables n'ont pas toutes autant à chercher, d'où des tables de 5, 4 et 3 (34 places), les petites remplies d'abord. Le jeu de rôle passe à 115 min (échange 20, présentations 40, portrait mystère si le temps le permet). À la restitution, les élèves rangent leurs ateliers du plus aimé au moins aimé : la proposition de groupes en tient compte, l'équilibre d'abord, sans rien promettre. Son relevé des personnages a complété la fiche d'association.
+
 ## 08/11/2026 (soir) — EMC : l'essai de Loïc, et la 035
 
 Loïc a joué le jeu de rôle et la restitution de bout en bout, en pilote et en projection. Ses retours ont changé une règle de confidentialité : les notes de l'échange vont désormais au binôme à l'étape 5 (et à lui seul : la base refuse aux enseignants), pour que les feux se donnent en connaissance de cause. Le reste : « reconnu·e » jamais affiché par personne (bilan anonyme à la fin), une étape « la liberté, pour moi » sur papier qui fait boucle avec la définition de vendredi, des consignes en couleur, l'exemple en trois temps, « Valider » grisé plutôt qu'une case qui refuse de se cocher ; à la restitution, les ateliers choisis dans la liste des collègues (en base seulement : dépôt public), un mur en trois colonnes, une analyse du mur en classe entière, une expression libre en nuage. Les écarts d'icônes entre tablette et projection viennent du dessin des émojis selon l'appareil (Apple, Windows), pas du code.

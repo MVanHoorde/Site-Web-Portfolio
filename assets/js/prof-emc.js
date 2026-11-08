@@ -44,7 +44,12 @@
     '.emc-actions{display:flex;gap:8px;flex-wrap:wrap}' +
     '.emc-actions a{display:inline-flex;align-items:center;min-height:40px;padding:6px 14px;border-radius:var(--r);' +
       'border:1px solid var(--line);text-decoration:none;font-weight:600;color:var(--ink);background:var(--surface)}' +
-    '.emc-actions a.primaire{background:var(--link);border-color:var(--link);color:#fff}';
+    '.emc-actions a.primaire{background:var(--link);border-color:var(--link);color:#fff}' +
+    '.emc-docs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px 18px;margin:8px 0 4px}' +
+    '.emc-docs h3{font-size:14px;margin:0 0 4px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em}' +
+    '.emc-docs a{display:flex;align-items:center;gap:8px;min-height:40px;padding:4px 0;color:var(--link);font-weight:600;text-decoration:none}' +
+    '.emc-docs a span{font-weight:400;color:var(--ink-soft);font-size:13px}' +
+    '.emc-docs-boite{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--surface)}';
   document.head.appendChild(style);
 
   var etat = el('p', 'muet', 'Chargement…');
@@ -64,6 +69,36 @@
   panneau.appendChild(el('h2', null, 'EMC seconde'));
   panneau.appendChild(intro);
   panneau.appendChild(liens);
+
+  /* 08/11/2026 — tout le papier et les mémos au même endroit, dans
+     l'ordre où on s'en sert (sources : fiches/emc/, guide-emc.html). */
+  var PDF = '../assets/pdf/';
+  var DOCS = [
+    { titre: '📋 Les mémos (une page chacun)', liens: [
+      ['emc/memo-1-deux-jours.pdf', '1 · Les deux jours dans l’ordre', 'la veille, chaque séance, la fin'],
+      ['emc/memo-2-jeu-de-role.pdf', '2 · Le jeu de rôle, minuté', 'jeudi 8 h 30, groupe D'],
+      ['emc/memo-3-labyrinthe.pdf', '3 · Le Labyrinthe, minuté', 'les 4 créneaux'],
+      ['emc/memo-4-restitution.pdf', '4 · La restitution, minutée', 'vendredi 14 h, 2nde 1'],
+      ['prof/guide-emc.pdf', 'Le guide complet', 'il fait foi']] },
+    { titre: '🖨 À imprimer pour les élèves', liens: [
+      ['emc/fiche-liberte-pour-moi.pdf', '« La liberté, pour moi »', 'jeu de rôle, étape 8 · 2 par A4'],
+      ['emc/fiche-association-nina.pdf', 'Fiche d’association personnages ↔ rôles', 'Labyrinthe, pendant le jeu'],
+      ['emc/feuille-correspondance.pdf', 'Feuille de correspondance (vierge)', 'en secours : la planche de cartes donne la pré-remplie']] }
+  ];
+  var boite = el('div', 'emc-docs-boite');
+  boite.appendChild(el('b', null, 'Documents à imprimer et mémos'));
+  boite.appendChild(el('p', 'muet', 'Les cartes des élèves, elles, se génèrent dans chaque séance : « Piloter » → 🎟 Cartes.'));
+  var docs = el('div', 'emc-docs');
+  DOCS.forEach(function (g) {
+    var col = el('div'); col.appendChild(el('h3', null, g.titre));
+    g.liens.forEach(function (d) {
+      var a = el('a', null, '📄 ' + d[1]); a.href = PDF + d[0]; a.target = '_blank'; a.rel = 'noopener';
+      a.appendChild(el('span', null, '· ' + d[2])); col.appendChild(a);
+    });
+    docs.appendChild(col);
+  });
+  boite.appendChild(docs);
+  panneau.appendChild(boite);
   panneau.appendChild(liste);
   panneau.appendChild(etat);
 
