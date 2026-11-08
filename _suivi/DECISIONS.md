@@ -15,6 +15,12 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 08/11/2026 — SNT : réponses rédigées jusqu'à 1000 caractères
+
+| Date | Décision | Statut |
+|---|---|---|
+| 08/11/2026 | **Plafond des réponses rédigées SNT porté à 1000 caractères** (`data-focus-max`, 46 champs de `t0`, `t1`, `t2` et `m1`, qui allaient de 200 à 600). Motif : signalement d'un élève (« une limite de 400 lettres empêche de développer la réponse ») ; les élèves écrivent rarement autant, ceux qui aiment rédiger ne sont plus bridés. L'argument du budget de jetons (22/08) ne tient plus : la pré-correction IA est en sommeil depuis le 13/10. **Seule exception : `NET-1a`** reste à 180 — sa consigne est « deux phrases maximum ». La base accepte jusqu'à 2000 (`003`), rien à migrer. ES et outils PC non touchés | ✅ en vigueur (Loïc) |
+
 ## 08/11/2026 (soir) — EMC : retours de Loïc après son essai (035)
 
 | Date | Décision | Statut |
@@ -1183,7 +1189,7 @@ Loïc aura fait son dernier passage de vérification sur les fiches.
 | 22/08/2026 | **La séance 1 de `t1` est coupée en deux.** Sept étapes pour une heure, c'était trop, d'autant que les élèves qui terminent partent sur France IOI. S1 garde la définition et les origines (1.1→1.3) ; la nouvelle S2 « D'ARPANET à Internet » prend ARPANET, Pouzin, le réseau mondial et la frise. Le thème passe de 5 à **6 séances** | ✅ |
 | 22/08/2026 | **Les `data-cle` se posent avant tout renumérotage**, jamais après : une fois les clés sémantiques en place, déplacer une étape n'a plus d'effet sur la progression enregistrée. Dans l'autre ordre on casse deux fois. Remplace la décision en attente du 25/07 | ✅ |
 | 22/08/2026 | **Convention de clé `t1-<slug>`, sans numéro de séance.** Divergence assumée avec `m1` (`rep-s1-…`) : `t1` est la page qu'on renumérote, une clé contenant « s1 » y deviendrait mensongère au premier déplacement. Les clés de `m1` ne sont **pas** renommées — les renommer orphelinerait ses données de test pour rien | ✅ |
-| 22/08/2026 | **Seuil minimum de rédaction : 20 caractères partout.** « Les élèves doivent avoir la possibilité d'envoyer peu de choses. » Les `data-focus-max`, eux, ne bougent pas : leur dispersion protège le budget de jetons du worker de pré-correction | ✅ |
+| 22/08/2026 | **Seuil minimum de rédaction : 20 caractères partout.** « Les élèves doivent avoir la possibilité d'envoyer peu de choses. » ~~Les `data-focus-max`, eux, ne bougent pas : leur dispersion protège le budget de jetons du worker de pré-correction~~ → plafond SNT à 1000, 08/11/2026 | ✅ (seuil) · ~~remplacée~~ (plafond) |
 | 22/08/2026 | **Les infobulles passent en `position:fixed`, placées en JS.** Le diagnostic de départ — « elles débordent du bord de la page » — était faux : ce sont les `overflow:hidden` de `.card`, `.retain`, `.france-box`, `.poste` et `.glosmot` qui coupaient. Ils portent l'arrondi de ces blocs et restent | ✅ |
 | 22/08/2026 | **L'étiquette de champ perd son `float:right`** et prend sa propre ligne. Les libellés à rallonge se réduisent à leur tête, le détail passant dans une bulle tactile | ✅ |
 | 22/08/2026 | **La frise se valide au 6ᵉ essai**, plus au 3ᵉ, et « voir la correction » la valide aussi — elle ne le faisait pas. À la validation, toutes les dates sortent en bout de ligne | ✅ |
