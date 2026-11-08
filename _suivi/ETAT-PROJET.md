@@ -12,8 +12,8 @@
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — EMC seconde, « Le Labyrinthe de Nina » (07/11).** Séance
-> pilotée des 12-13/11 : section détaillée ci-dessous.
+> **Dernière passe — EMC seconde, six séances (08/11).** Cartes éphémères,
+> jeu de rôle d'accueil, `034` en base : section détaillée ci-dessous.
 >
 > **Passe du 31/10 — Padago, les pads à serrures.** Nouvel outil
 > `outils/padago/` : section détaillée ci-dessous.
@@ -167,23 +167,25 @@
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
 
-## 🆕 EMC seconde, « Le Labyrinthe de Nina » — à mettre en base par Loïc
+## 🆕 EMC seconde, six séances des 12 et 13/11 — en ligne, à répéter
 
-Séance de 2 h, **4 créneaux les 12 et 13/11/2026**, 30 à 40 élèves de seconde,
-Loïc et Mme Castel. Le site pilote la séance autour du jeu (application
-externe). Audit et architecture : `_suivi/AUDIT-EMC.md` · décisions :
-`DECISIONS.md` (07/11) · guide : `prof/guide-emc.html`.
+**Six séances**, Loïc et Mme Castel : accueil du groupe D par un jeu de rôle
+(jeudi 8 h 30), quatre créneaux du *Labyrinthe de Nina* (groupes A, B, J, G),
+restitution avec la 2nde 1 (vendredi 14 h). Tous les élèves entrent par une
+**carte éphémère**. Audit et architecture : `_suivi/AUDIT-EMC.md` · décisions :
+`DECISIONS.md` (07 et 08/11) · guide : `prof/guide-emc.html`.
 
 | Partie | Fichiers |
 |---|---|
-| Base | `bdd/schema/031-emc.sql` (✅ exécuté le 07/11/2026, copié dans `supabase/migrations/20261107120000_emc.sql`) |
-| Élève | `emc/index.html` + `assets/js/emc-eleve.js` |
-| Pilotage, projection, contenus | `prof/emc.html`, `prof/emc-projection.html`, `prof/emc-contenus.html` |
+| Base | `bdd/schema/031` à `033` (✅ exécutés le 07/11/2026) · `034-emc-six-seances.sql` (✅ exécuté le 08/11/2026, copié dans `supabase/migrations/`) |
+| Fonction Edge | `supabase/functions/emc-cartes/` (✅ déployée le 08/11/2026 : `supabase functions deploy emc-cartes --no-verify-jwt`) |
+| Élève | `emc/index.html` + `assets/js/emc-eleve.js` (porte par carte, Labyrinthe) + `assets/js/emc-accueil.js` (jeu de rôle) + `assets/js/emc-restitution.js` (restitution) |
+| Pilotage, projection, contenus | Labyrinthe : `prof/emc.html`, `prof/emc-projection.html` · jeu de rôle : `prof/emc-accueil.html` · restitution : `prof/emc-restitution.html` (les deux : pilotage, et projection avec `?vue=projection`) · `prof/emc-contenus.html` · cartes : `prof/emc-cartes.html` (planche) · `assets/js/prof-emc-outils.js` (cartes, clôture, remise à zéro, communs) |
 | Tableau de bord | espace `emc` dans `prof/index.html` + `assets/js/prof-emc.js` |
 | Communs | `assets/js/emc-commun.js` (REST, Realtime, géométrie, file hors ligne), `emc-carte.js` (Konva), `emc-vues.js`, `emc-export.js`, `assets/css/emc.css` |
 | Bibliothèques auto-hébergées | `assets/js/vendor/` : `konva-9.3.6`, `supabase-js-2.45.4`, `qrcode-generator-1.4.4` |
 | Papier | `fiches/emc/` → `assets/pdf/emc/` (`python _outils/fiches/emc_fiches_pdf.py`) |
-| Bancs | `_outils/tests/emc-schema.test.mjs` (217), `emc-geometrie.test.mjs` (80), `emc-carte.test.py` (36), `emc-eleve.test.py` (81), `emc-prof.test.py` (98) |
+| Bancs | `_outils/tests/emc-schema.test.mjs` (334), `emc-restitution.test.py` (39), `emc-geometrie.test.mjs` (80), `emc-carte.test.py` (36), `emc-eleve.test.py` (86), `emc-prof.test.py` (124), `emc-accueil.test.py` (58) · `supabase/functions/emc-cartes/cartes_test.ts` (10) |
 
 **Ce qui reste, dans l'ordre :**
 1. ✅ `031` exécuté le 07/11/2026, §11 compris : quatre classes à deux
@@ -195,7 +197,10 @@ externe). Audit et architecture : `_suivi/AUDIT-EMC.md` · décisions :
    messages. Les bancs n'ont éprouvé que la relecture de secours.
 3. ⏳ **Répétition** avec Mme Castel sur de vrais iPad (pincement, partage iOS,
    émojis en couleur : non éprouvés au banc).
-4. Après les quatre créneaux : exports, clôture, suppression des comptes EMC.
+4. ✅ `034` exécuté, fonction `emc-cartes` déployée, site publié (08/11/2026).
+5. ⏳ **Relire** : l'exemple de Pierre Marchand et la liste des libertés de la
+   restitution (Contenus).
+6. Après chaque séance : exports, clôture, suppression des comptes de ses cartes.
 
 ## 🆕 Padago, les pads à serrures — à mettre en service par Loïc
 

@@ -4,6 +4,9 @@ emc-eleve.test.py — banc d'essai de la page élève EMC (emc/index.html)
 
 La vraie page, servie depuis la racine du dépôt, contre une FAUSSE base
 Supabase en mémoire (auth, rpc, REST), interceptée par Playwright.
+L'élève entre par sa CARTE (034) : identifiant + code à 4 chiffres, saisis
+ou lus dans le QR code ; la session habituelle du site (snt.session) ne
+doit jamais être touchée.
 supabase-js est remplacé par un bouchon dont le direct échoue : la page
 doit tout faire en relecture. EMC.Carte est remplacée par un bouchon qui
 expose ses options (window.__carte) pour tester persister / modifier.
@@ -55,7 +58,12 @@ class FausseBase:
         self.t['emc_contenus'] = [{'cle': k, 'valeur': v} for k, v in contenus_du_sql().items()]
         self.t['emc_seances'].append({'classe_id': 'c-emc-1', 'etape': 0, 'situation_courante': None,
             'situation_revelee': False, 'carte_figee': False, 'zones_verrouillees': [], 'cloturee_le': None,
-            'maj_le': maintenant()})
+            'module': 'nina', 'prefixe': 'a', 'etat': {}, 'maj_le': maintenant()})
+        # la carte préparée par le prof (fonction Edge emc-cartes) : compte + fiche élève
+        self.refresh = {}     # refresh_token -> uid
+        self.carte_uid = str(uuid.uuid4())
+        self.users['a-renard-08@emc.local'] = {'id': self.carte_uid, 'mdp': 'Emc-4821'}
+        self.eleves[self.carte_uid] = {'id': 'e-carte-08', 'pseudo': 'a-renard-08', 'classe_id': 'c-emc-1', 'classes': {'c-emc-1'}}
         # 7 camarades déjà là, un par table de 1 à 7 → le nouveau tombe à la table 8
         for n in range(1, 8):
             e = {'id': 'e-camarade-%d' % n}
@@ -70,8 +78,11 @@ class FausseBase:
         payload = base64.urlsafe_b64encode(json.dumps({'sub': uid, 'role': 'authenticated'}).encode()).decode().rstrip('=')
         t = 'eyJhbGciOiJIUzI1NiJ9.' + payload + '.sig' + uuid.uuid4().hex[:8]
         self.jetons[t] = uid
-        return {'access_token': t, 'refresh_token': 'r-' + uuid.uuid4().hex, 'token_type': 'bearer',
-                'expires_in': 3600, 'expires_at': int(time.time()) + 3600, 'user': {'id': uid}}
+        r = 'r-' + uuid.uuid4().hex
+        self.refresh[r] = uid
+        email = next((k for k, v in self.users.items() if v['id'] == uid), None)
+        return {'access_token': t, 'refresh_token': r, 'token_type': 'bearer',
+                'expires_in': 3600, 'expires_at': int(time.time()) + 3600, 'user': {'id': uid, 'email': email}}
     def uid_de(self, entetes):
         a = entetes.get('authorization', '')
         return self.jetons.get(a[7:]) if a.startswith('Bearer ') else None
@@ -123,7 +134,11 @@ class FausseBase:
                     return self.rep(route, 400, {'error': 'invalid_grant', 'error_code': 'invalid_credentials', 'error_description': 'Invalid login credentials'})
                 return self.rep(route, 200, self.jeton(us['id']))
             if g == 'refresh_token':
-                return self.rep(route, 400, {'error_code': 'refresh_token_not_found'})
+                uid = self.refresh.pop(c.get('refresh_token'), None)
+                if not uid: return self.rep(route, 400, {'error_code': 'refresh_token_not_found'})
+                return self.rep(route, 200, self.jeton(uid))
+        if chemin == 'logout':
+            return self.rep(route, 204)
         self.rep(route, 404, {})
 
     def rpc(self, route, nom, c, uid):
@@ -307,28 +322,38 @@ def main():
         page.wait_for_selector('.porte')
         capture('00-porte')
 
-        # --- erreurs de saisie
-        page.fill('#p-id', 'Renard Bleu')
-        page.fill('#p-mdp', 'Atelier7'); page.fill('#p-mdp2', 'Atelier7'); page.fill('#p-code', 'nina27')
-        verif('le code passe en majuscules', page.input_value('#p-code') == 'NINA27')
-        page.click('text=Créer mon compte et rejoindre')
-        page.wait_for_selector('.alerte.err.show')
-        verif('identifiant invalide refusé avec le message de progression.js', 'minuscules' in page.inner_text('.alerte.err'))
-        page.fill('#p-id', 'renard-bleu-27'); page.fill('#p-mdp2', 'Atelier8')
-        page.click('text=Créer mon compte et rejoindre')
-        verif('mots de passe différents refusés', 'identiques' in page.inner_text('.alerte.err'))
-        page.fill('#p-mdp2', 'Atelier7'); page.fill('#p-code', 'NINA2')
-        page.click('text=Créer mon compte et rejoindre')
-        verif('code trop court refusé', '6 caractères' in page.inner_text('.alerte.err'))
+        # --- la session habituelle du site, sur la même tablette : jamais touchée
+        SNT = json.dumps({'access_token': 'jeton-du-compte-habituel', 'refresh_token': 'r-habituel', 'expires_at': 9999999999999})
+        page.evaluate("s => localStorage.setItem('snt.session', s)", SNT)
+        page.reload(); page.wait_for_selector('.porte')
+        verif('compte habituel ouvert sur la tablette : la page EMC ne s\'y connecte pas', page.query_selector('.porte') is not None
+              and not [r for r in base.requetes if r[1].startswith('/rest/')])
+        verif('une seule porte : la carte (plus de création de compte)', page.locator('text=Je crée mon compte').count() == 0
+              and page.locator('text=J\'ai déjà un compte').count() == 0)
         verif('aucun champ nom/prénom', page.query_selector('input[name*=nom], #p-nom, #p-prenom') is None)
 
-        # --- création
-        page.fill('#p-code', 'NINA27')
-        page.click('text=Créer mon compte et rejoindre')
-        verif('étape 0 affichée après création', attendre_etape(0))
+        # --- erreurs de saisie
+        page.fill('#p-id', 'renard'); page.fill('#p-code', '48')
+        page.click('text=Entrer')
+        page.wait_for_selector('.alerte.err.show')
+        verif('carte incomplète : message clair', 'Recopie' in page.inner_text('.alerte.err'))
+        page.fill('#p-code', '48a21')
+        verif('le code ne garde que 4 chiffres', page.input_value('#p-code') == '4821')
+        page.fill('#p-id', 'a-renard-08'); page.fill('#p-code', '1111')
+        page.click('text=Entrer')
+        page.wait_for_function('document.querySelector(".alerte.err").textContent.indexOf("incorrect") >= 0', timeout=5000)
+        verif('mauvais code : message clair', 'incorrect' in page.inner_text('.alerte.err'))
+
+        # --- entrée par la carte
+        page.fill('#p-id', ' A-Renard-08 '); page.fill('#p-code', '4821')
+        page.click('text=Entrer')
+        verif('étape 0 affichée après la carte (majuscules et espaces tolérés)', attendre_etape(0))
         verif('table 8 attribuée (la moins remplie)', 'TABLE 8' in page.inner_text('#barre'))
-        verif('identifiant dans l\'en-tête', 'renard-bleu-27' in page.inner_text('#barre'))
-        verif('code retenu', json.loads(stockage()).get('emc.code') == 'NINA27')
+        verif('identifiant dans l\'en-tête', 'a-renard-08' in page.inner_text('#barre'))
+        st = json.loads(stockage())
+        verif('session de la carte à part (emc.session)', 'access_token' in json.loads(st.get('emc.session', '{}')))
+        verif('la session habituelle du site est intacte', st.get('snt.session') == SNT)
+        verif('le mot de passe envoyé est dérivé du code', base.users['a-renard-08@emc.local']['mdp'] == 'Emc-4821')
         page.wait_for_timeout(400)
         verif('état du direct : relecture (bouchon)', 'relecture' in page.inner_text('#etat-direct'))
         capture('01-etape0')
@@ -339,35 +364,24 @@ def main():
         moi = next(p for p in base.t['emc_participants'] if p['table_num'] == 8)
         verif('prêt enregistré en base', moi['pret'] is True)
 
-        # --- reconnexion : même table
+        # --- se déconnecter, puis revenir par le QR code : même table
         page.click('text=Se déconnecter')
         page.wait_for_selector('.porte')
-        page.click('text=J\'ai déjà un compte')
-        page.fill('#p-id', 'renard-bleu-27'); page.fill('#p-mdp', 'Mauvais1')
-        page.click('text=Me connecter et rejoindre')
-        page.wait_for_selector('.alerte.err.show')
-        verif('mauvais mot de passe : message clair', 'incorrect' in page.inner_text('.alerte.err'))
-        page.fill('#p-mdp', 'Atelier7')
-        verif('code prérempli à la reconnexion', page.input_value('#p-code') == 'NINA27')
-        page.click('text=Me connecter et rejoindre')
-        verif('reconnecté', attendre_etape(0))
+        st = json.loads(stockage())
+        verif('déconnexion : la carte est oubliée', 'emc.session' not in st)
+        verif('déconnexion : le compte habituel reste ouvert', st.get('snt.session') == SNT)
+        page.goto('http://127.0.0.1:%d/emc/index.html?carte=a-renard-08&k=4821' % PORT)
+        verif('QR code : on entre sans rien taper', attendre_etape(0))
+        verif('QR code : le code est effacé de l\'adresse', 'k=' not in page.url and 'carte=' not in page.url, page.url)
         verif('même table après reconnexion', 'TABLE 8' in page.inner_text('#barre'))
         verif('pas de doublon de participant', len([p for p in base.t['emc_participants'] if p['eleve_id'] == moi['eleve_id']]) == 1)
         page.reload()
         verif('rechargement : on retrouve la séance sans rien retaper', attendre_etape(0))
-
-        # --- tablette déjà connectée, arrivée par le QR (test de Loïc, 07/11) :
-        #     la porte propose créer / se connecter, et le compte ouvert en plus
-        page.evaluate("localStorage.removeItem('emc.code')")
-        page.goto('http://127.0.0.1:%d/emc/index.html?code=NINA27' % PORT)
-        page.wait_for_selector('.porte')
-        verif('déjà connecté : la porte propose « Je crée mon compte »', page.locator('.porte .choix button', has_text='Je crée mon compte').count() == 1)
-        verif('déjà connecté : et « J\'ai déjà un compte »', page.locator('.porte .choix button', has_text='J\'ai déjà un compte').count() == 1)
-        verif('déjà connecté : le compte ouvert est nommé', 'renard-bleu-27' in page.inner_text('.porte .deja'))
-        verif('code du QR prérempli', page.input_value('#p-code') == 'NINA27')
-        capture('00-porte-deja-connecte')
-        page.click('text=Continuer avec ce compte')
-        verif('continuer avec ce compte : même table', attendre_etape(0) and 'TABLE 8' in page.inner_text('#barre'))
+        # le jeton expire : la page le renouvelle seule
+        page.evaluate("(() => { var v = JSON.parse(localStorage.getItem('emc.session')); v.expires_at = Date.now() - 1000; localStorage.setItem('emc.session', JSON.stringify(v)); })()")
+        page.reload()
+        verif('jeton expiré : renouvelé sans repasser par la porte', attendre_etape(0))
+        capture('00-porte-qr')
 
         # --- étape 1
         base.poser_etape(1)
@@ -548,7 +562,7 @@ def main():
         # --- la vraie carte, si le chantier A l'a livrée : la page tient-elle ?
         if os.path.exists(os.path.join(DEPOT, 'assets/js/emc-carte.js')):
             ctx2 = nav.new_context(viewport={'width': 1024, 'height': 768}, has_touch=True)
-            base2 = FausseBase(); base2.users = base.users; base2.eleves = base.eleves; base2.jetons = base.jetons
+            base2 = FausseBase(); base2.users = base.users; base2.eleves = base.eleves; base2.jetons = base.jetons; base2.refresh = base.refresh
             base2.t['emc_participants'] += [p for p in base.t['emc_participants'] if p['eleve_id'] == moi['eleve_id']]
             base2.poser_etape(4)
             ctx2.route(SUPA + '/**', base2.gerer)
@@ -557,9 +571,8 @@ def main():
             p2.on('pageerror', lambda e: err2.append(str(e)))
             p2.goto('http://127.0.0.1:%d/emc/index.html' % PORT)
             p2.wait_for_selector('.porte')
-            p2.click('text=J\'ai déjà un compte')
-            p2.fill('#p-id', 'renard-bleu-27'); p2.fill('#p-mdp', 'Atelier7'); p2.fill('#p-code', 'NINA27')
-            p2.click('text=Me connecter et rejoindre')
+            p2.fill('#p-id', 'a-renard-08'); p2.fill('#p-code', '4821')
+            p2.click('text=Entrer')
             p2.wait_for_timeout(3000)
             p2.screenshot(path=os.path.join(CAPTURES, '14-vraie-carte.png'))
             p2.click('text=Plein écran'); p2.wait_for_timeout(800)

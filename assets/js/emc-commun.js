@@ -4,6 +4,8 @@
  *
  *  Expose window.EMC :
  *    EMC.demarrer('eleve' | 'prof')    choisit d'où vient le jeton
+ *    EMC.connecterCarte(id, code)      ouvre la session d'une carte
+ *    EMC.carte() · EMC.quitterCarte()  la carte ouverte, la fermer
  *    EMC.lire(chemin)                  GET  /rest/v1/…
  *    EMC.ecrire(chemin, corps, opts)   POST (opts.fusion : upsert)
  *    EMC.modifier(chemin, corps)       PATCH (chemin filtré obligatoire)
@@ -17,13 +19,16 @@
  *    EMC.zoneDe, EMC.dansZone, EMC.geometrie, EMC.sousZones
  *    EMC.normaliserMot, EMC.uuid, EMC.echapper, EMC.el, EMC.message
  *
- *  Jetons : on NE réécrit PAS la gestion des sessions.
- *    · élève : la session de progression.js (localStorage
- *      'snt.session'). Pour la renouveler, on passe par une de ses
- *      fonctions publiques (mesInscriptions) : c'est elle qui fait
- *      tourner le jeton, et elle seule.
- *    · prof : la session de prof-api.js ('snt.prof'), renouvelée de
- *      la même façon par ProfAPI.lire.
+ *  Jetons :
+ *    · élève : la session de sa CARTE, à part ('emc.session'), qui
+ *      n'est PAS celle du site ('snt.session', progression.js). Une
+ *      carte ne déconnecte donc jamais l'élève de son compte habituel
+ *      sur son iPad, et la page EMC ne s'ouvre jamais d'elle-même
+ *      sur ce compte-là (034, décision du 08/11/2026). Connexion,
+ *      renouvellement et sortie : §1b.
+ *    · prof : la session de prof-api.js ('snt.prof'), renouvelée par
+ *      une de ses fonctions publiques (ProfAPI.lire) : c'est elle qui
+ *      fait tourner le jeton, et elle seule.
  *
  *  🔴 URL_PROJET et CLE_ANON sont ceux de progression.js
  *  (contrôlé par verifier.mjs). La clé anonyme n'est pas un secret.
@@ -46,13 +51,14 @@
     try { var b = global.localStorage.getItem(cle); return b ? JSON.parse(b) : null; }
     catch (e) { return null; }
   }
+  var CLE_CARTE = 'emc.session';
   function jetonStocke() {
-    var v = lireStocke(mode === 'prof' ? 'snt.prof' : 'snt.session');
+    var v = lireStocke(mode === 'prof' ? 'snt.prof' : CLE_CARTE);
     return v && v.access_token ? v : null;
   }
   function frais(v) { return v && v.expires_at && v.expires_at > Date.now() + 20000; }
 
-  /* Un jeton valide, renouvelé au besoin par le client officiel. */
+  /* Un jeton valide, renouvelé au besoin. */
   var renouvellement = null;
   function jeton() {
     var v = jetonStocke();
@@ -63,8 +69,14 @@
       if (!global.ProfAPI) return Promise.reject(new Error('PAS_DE_SESSION'));
       p = global.ProfAPI.lire('emc_contenus?select=cle&limit=1');
     } else {
-      if (!global.Progression) return Promise.reject(new Error('PAS_DE_SESSION'));
-      p = global.Progression.mesInscriptions();
+      if (!v || !v.refresh_token) return Promise.reject(new Error('PAS_DE_SESSION'));
+      p = authCarte('token?grant_type=refresh_token', { refresh_token: v.refresh_token })
+        .then(garderCarte, function (e) {
+          /* jeton refusé (compte supprimé, session révoquée) : on oublie
+             la carte ; une panne de réseau, elle, ne fait rien oublier */
+          if (e && e.statut >= 400 && e.statut < 500) oublierCarte();
+          throw e;
+        });
     }
     renouvellement = p.then(function () {
       renouvellement = null;
@@ -74,6 +86,77 @@
       return w.access_token;
     }, function (e) { renouvellement = null; throw e; });
     return renouvellement;
+  }
+
+  /* ----------------------------------------------------------
+   *  1b. La session de la carte
+   *
+   *  Identifiant + code à 4 chiffres. Le compte est
+   *  <identifiant>@emc.local, son mot de passe Emc-<code> : la
+   *  politique du projet exige majuscule, minuscule et chiffre, on
+   *  ajoute donc « Emc- » ici. 🔴 Le même calcul vit dans
+   *  supabase/functions/emc-cartes/cartes.ts (motDePasse).
+   * ---------------------------------------------------------- */
+  function authCarte(chemin, corps) {
+    return fetch(URL_PROJET + '/auth/v1/' + chemin, {
+      method: 'POST',
+      headers: { apikey: CLE_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify(corps)
+    }).then(function (r) {
+      return r.text().then(function (t) {
+        var j = null; try { j = t ? JSON.parse(t) : null; } catch (e) {}
+        if (!r.ok) {
+          var err = new Error((j && (j.error_code || j.code || j.error)) || ('HTTP ' + r.status));
+          err.statut = r.status;
+          throw err;
+        }
+        return j;
+      });
+    });
+  }
+  function garderCarte(j) {
+    var v = { access_token: j.access_token, refresh_token: j.refresh_token,
+              expires_at: Date.now() + (j.expires_in || 3600) * 1000,
+              identifiant: String((j.user && j.user.email) || '').split('@')[0],
+              sub: j.user && j.user.id };
+    try { global.localStorage.setItem(CLE_CARTE, JSON.stringify(v)); } catch (e) {}
+    if (temps.client) temps.client.realtime.setAuth(v.access_token);
+    return v;
+  }
+  function oublierCarte() {
+    try { global.localStorage.removeItem(CLE_CARTE); } catch (e) {}
+  }
+  function normaliserCarte(ident, code) {
+    return { identifiant: String(ident || '').trim().toLowerCase().replace(/\s+/g, '-'),
+             code: String(code || '').replace(/\D/g, '') };
+  }
+  function motDePasseCarte(code) { return 'Emc-' + code; }
+  /* Erreurs : CARTE_INCOMPLETE · CARTE_INCONNUE (identifiant ou code
+     faux) · TROP_DE_TENTATIVES · réseau (sans statut). */
+  function connecterCarte(ident, code) {
+    var c = normaliserCarte(ident, code);
+    if (!/^[a-z]-[a-z]{3,12}-[0-9]{2}$/.test(c.identifiant) || !/^[0-9]{4}$/.test(c.code)) {
+      return Promise.reject(new Error('CARTE_INCOMPLETE'));
+    }
+    return authCarte('token?grant_type=password', { email: c.identifiant + '@emc.local', password: motDePasseCarte(c.code) })
+      .then(garderCarte, function (e) {
+        if (e.statut === 429) throw new Error('TROP_DE_TENTATIVES');
+        if (e.statut === 400 || e.statut === 401 || e.statut === 422) throw new Error('CARTE_INCONNUE');
+        throw e;
+      });
+  }
+  /* La carte ouverte sur cette tablette : { identifiant, sub } ou null. */
+  function carte() {
+    var v = lireStocke(CLE_CARTE);
+    return v && v.refresh_token ? { identifiant: v.identifiant, sub: v.sub } : null;
+  }
+  function quitterCarte() {
+    var v = lireStocke(CLE_CARTE);
+    oublierCarte();
+    if (v && v.access_token) {
+      fetch(URL_PROJET + '/auth/v1/logout', { method: 'POST', headers: { apikey: CLE_ANON, Authorization: 'Bearer ' + v.access_token } })
+        .catch(function () {});
+    }
   }
 
   /* ----------------------------------------------------------
@@ -124,7 +207,13 @@
     },
     modifier: function (chemin, corps) { garde(chemin); return appel('PATCH', chemin, corps, 'return=minimal'); },
     supprimer: function (chemin) { garde(chemin); return appel('DELETE', chemin, undefined, 'return=minimal'); },
-    rpc: function (nom, params) { return appel('POST', 'rpc/' + nom, params || {}); }
+    rpc: function (nom, params) { return appel('POST', 'rpc/' + nom, params || {}); },
+    /* la carte (§1b) */
+    connecterCarte: connecterCarte,
+    carte: carte,
+    quitterCarte: quitterCarte,
+    normaliserCarte: normaliserCarte,
+    motDePasseCarte: motDePasseCarte
   };
 
   /* Les erreurs de la base, dites à un élève de seconde. */
@@ -139,7 +228,10 @@
     ENQUETE_COMPLETE: 'L\'enquête a déjà reçu toutes les réponses de la séance.',
     PLAFOND_AIDE: 'Tu as déjà envoyé beaucoup de messages : un adulte va venir te voir.',
     PLAFOND_CARTE: 'Tu as atteint le maximum d\'éléments sur la carte.',
-    PAS_MA_CLASSE: 'Cette séance n\'est pas rattachée à ton compte.'
+    PAS_MA_CLASSE: 'Cette séance n\'est pas rattachée à ton compte.',
+    CARTE_INCOMPLETE: 'Recopie l\'identifiant (comme d-renard-07) et le code à 4 chiffres de ta carte.',
+    CARTE_INCONNUE: 'Identifiant ou code incorrect. Vérifie ta carte, ou lève la main.',
+    TROP_DE_TENTATIVES: 'Trop d\'essais en même temps dans la salle. Attends une minute et recommence.'
   };
   EMC.message = function (e) {
     var m = (e && e.message) || String(e || '');

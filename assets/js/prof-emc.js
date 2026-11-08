@@ -51,8 +51,9 @@
   var liste = el('div', 'emc-liste');
   var intro = el('div', 'encadre');
   intro.innerHTML =
-    '<b>EMC seconde — Le Labyrinthe de Nina.</b> Un créneau = une classe = un code à écrire au tableau. ' +
-    'Les élèves ouvrent la page EMC, créent leur compte (ou se connectent) avec ce code. ' +
+    '<b>EMC seconde, 12 et 13/11.</b> Une séance = une classe : l\'accueil du groupe D (jeu de rôle), ' +
+    'les quatre créneaux du Labyrinthe de Nina, la restitution avec la 2nde 1. ' +
+    'Les élèves entrent avec une <b>carte</b> (identifiant + code à 4 chiffres) : à générer et imprimer dans le pilotage, onglet 🎟 Cartes. ' +
     '<br>📋 <b>Feuille de correspondance</b> : relevez sur papier identifiant ↔ nom, prénom, classe. ' +
     'Pour voir les noms dans le pilotage, chargez-la comme fichier dans <b>Réglages → table des noms</b> ' +
     '(elle ne quitte pas cet appareil).';
@@ -79,7 +80,7 @@
       var ids = classes.map(function (c) { return c.id; }).join(',');
       return Promise.all([
         ProfAPI.lire('emc_participants?select=classe_id,pret&classe_id=in.(' + ids + ')'),
-        ProfAPI.lire('emc_seances?select=classe_id,etape,cloturee_le&classe_id=in.(' + ids + ')'),
+        ProfAPI.lire('emc_seances?select=classe_id,etape,cloturee_le,module&classe_id=in.(' + ids + ')'),
         ProfAPI.lire('emc_aide?select=classe_id&statut=eq.a_traiter&classe_id=in.(' + ids + ')')
       ]).then(function (r) {
         var presents = compter(r[0], 'classe_id');
@@ -98,13 +99,15 @@
           ch.appendChild(f(prets[c.id] || 0, 'prêts'));
           var et = el('span');
           et.appendChild(el('b', null, s.cloturee_le ? 'Close' : (s.etape != null ? 'Étape ' + s.etape : '—')));
-          et.appendChild(document.createTextNode(s.cloturee_le ? 'séance clôturée' : (s.etape != null ? NOMS_ETAPES[s.etape] : 'pas commencée')));
+          et.appendChild(document.createTextNode(s.cloturee_le ? 'séance clôturée' : (s.etape != null ? (s.module && s.module !== 'nina' ? '' : NOMS_ETAPES[s.etape]) : 'pas commencée')));
           ch.appendChild(et);
           b.appendChild(ch);
           if (a) b.appendChild(el('p', 'emc-alerte', '🔔 ' + a + ' demande' + (a > 1 ? 's' : '') + ' « J\'ai besoin d\'en parler » à traiter'));
           var act = el('div', 'emc-actions');
           var p = el('a', 'primaire', 'Piloter'); p.href = 'emc.html?classe=' + encodeURIComponent(c.code);
-          var q = el('a', null, 'Projeter ↗'); q.href = 'emc-projection.html?classe=' + encodeURIComponent(c.code); q.target = '_blank';
+          var q = el('a', null, 'Projeter ↗'); q.href = s.module === 'accueil' ? 'emc-accueil.html?vue=projection&classe=' + encodeURIComponent(c.code)
+            : s.module === 'restitution' ? 'emc-restitution.html?vue=projection&classe=' + encodeURIComponent(c.code)
+            : 'emc-projection.html?classe=' + encodeURIComponent(c.code); q.target = '_blank';
           act.appendChild(p); act.appendChild(q);
           b.appendChild(act);
           liste.appendChild(b);

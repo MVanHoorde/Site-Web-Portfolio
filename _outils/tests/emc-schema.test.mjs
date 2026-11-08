@@ -11,6 +11,11 @@
  *  qui ne l'est pas. Puis les intrusions : écrire hors de sa zone,
  *  voter hors de la situation ouverte, lire l'aide, l'enquête…
  *
+ *  034 (§15) : les six séances, 35 cartes éphémères d'un coup, le
+ *  tirage des binômes du jeu de rôle (31 élèves de 10 classes
+ *  d'origine, puis des retardataires), le mur modéré, la remise à
+ *  zéro d'une séance, la suppression des cartes.
+ *
  *  Lancer (PGlite n'est pas une dépendance du dépôt) :
  *    mkdir <banc> && cd <banc> && npm i @electric-sql/pglite@0.3
  *    cp <dépôt>/_outils/tests/emc-schema.test.mjs <banc>/
@@ -23,7 +28,8 @@ import { join } from 'node:path';
 const depot = process.argv[2] || '.';
 const sql = readFileSync(join(depot, 'bdd/schema/031-emc.sql'), 'utf8')
   + (process.env.SANS_032 ? '' : '\n' + readFileSync(join(depot, 'bdd/schema/032-emc-fusion.sql'), 'utf8'))
-  + '\n' + readFileSync(join(depot, 'bdd/schema/033-emc-contenus.sql'), 'utf8');
+  + '\n' + readFileSync(join(depot, 'bdd/schema/033-emc-contenus.sql'), 'utf8')
+  + '\n' + readFileSync(join(depot, 'bdd/schema/034-emc-six-seances.sql'), 'utf8');
 const { points } = JSON.parse(readFileSync(join(depot, '_outils/tests/emc-points.json'), 'utf8'));
 
 const db = new PGlite();
@@ -35,7 +41,7 @@ const verif = (nom, cond, detail) => {
 
 /* ---------- socle : ce que le 031 trouve en ligne ---------- */
 await db.exec(`
-create role anon nologin; create role authenticated nologin;
+create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
 create schema auth;
 create table auth.users (id uuid primary key, email text);
 create function auth.uid() returns uuid language sql stable as
@@ -74,6 +80,10 @@ create function public.est_enseignant() returns boolean language sql stable secu
 create function public.mes_classes() returns setof uuid language sql stable security definer set search_path = '' as
   $$ select ec.classe_id from public.enseignants_classes ec where ec.auth_id = (select auth.uid()) $$;
 grant execute on function public.eleve_courant(), public.est_enseignant(), public.mes_classes() to authenticated;
+-- le déclencheur de 018 : la classe d'inscription entre dans eleves_classes
+create function public.tenir_classe_inscription() returns trigger language plpgsql security definer set search_path = '' as
+  $$ begin insert into public.eleves_classes (eleve_id, classe_id) values (new.id, new.classe_id) on conflict do nothing; return new; end $$;
+create trigger eleves_tenir_classe after insert on public.eleves for each row execute function public.tenir_classe_inscription();
 grant select on public.classes, public.eleves, public.eleves_classes to authenticated;
 
 insert into public.classes (code, libelle, annee_scolaire, espace) values ('SNT26A', 'SNT A', '2026-2027', 'snt');
@@ -105,13 +115,13 @@ for (let i = 1; i <= 40; i++) {
   const uid = U(i), insc = i <= 30 ? C1 : SNT;
   await db.query(`insert into auth.users values ($1, $2)`, [uid, `e${i}@snt.local`]);
   const r = await db.query(`insert into public.eleves (auth_id, pseudo, classe_id) values ($1, $2, $3) returning id`, [uid, 'e' + i, insc]);
-  await db.query(`insert into public.eleves_classes (eleve_id, classe_id) values ($1, $2)`, [r.rows[0].id, insc]);
+  await db.query(`insert into public.eleves_classes (eleve_id, classe_id) values ($1, $2) on conflict do nothing`, [r.rows[0].id, insc]);
   eleves.push({ uid, id: r.rows[0].id, emc: i <= 30 });
 }
 const intrus = U(99);
 await db.query(`insert into auth.users values ($1, 'intrus@snt.local')`, [intrus]);
 const ri = await db.query(`insert into public.eleves (auth_id, pseudo, classe_id) values ($1, 'intrus', $2) returning id`, [intrus, SNT]);
-await db.query(`insert into public.eleves_classes values ($1, $2)`, [ri.rows[0].id, SNT]);
+await db.query(`insert into public.eleves_classes values ($1, $2) on conflict do nothing`, [ri.rows[0].id, SNT]);
 
 /* exécuter en tant que… */
 async function en(uid, q, params) {
@@ -125,10 +135,10 @@ const lignes = (x) => (x.r ? x.r.rows : []);
 const nb = (x) => (x.r ? (x.r.affectedRows ?? x.r.rows.length) : -1);
 
 /* ---------- 1. structure ---------- */
-verif('4 classes EMC', (await db.query(`select count(*)::int n from public.classes where espace = 'emc'`)).rows[0].n === 4);
-verif('4 séances ouvertes d\'office', (await db.query(`select count(*)::int n from public.emc_seances`)).rows[0].n === 4);
+verif('6 classes EMC (034)', (await db.query(`select count(*)::int n from public.classes where espace = 'emc'`)).rows[0].n === 6);
+verif('6 séances ouvertes d\'office', (await db.query(`select count(*)::int n from public.emc_seances`)).rows[0].n === 6);
 const cles = (await db.query(`select cle from public.emc_contenus order by cle`)).rows.map((r) => r.cle);
-verif('9 contenus initiaux', cles.length === 9, cles);
+verif('13 contenus initiaux (jeu de rôle, restitution)', cles.length === 13, cles);
 const h = (await db.query(`select valeur from public.emc_contenus where cle = 'harcelometre'`)).rows[0].valeur;
 verif('harcèlomètre : 10 situations actives, 13 en réserve',
   h.situations.filter((s) => s.actif).length === 10 && h.situations.filter((s) => !s.actif).length === 13);
@@ -339,7 +349,7 @@ verif('plafond : 11e message refusé', /PLAFOND_AIDE/.test((await aide(eleves[2]
 verif('Mme Castel modifie un contenu', nb(await en(CASTEL, `update public.emc_contenus set valeur = valeur where cle = 'mots'`)) === 1);
 verif('un élève ne modifie pas les contenus', nb(await en(e0.uid, `update public.emc_contenus set valeur = '{}' where cle = 'mots'`)) <= 0);
 verif('le collègue extérieur ne modifie pas les contenus', nb(await en(AUTRE, `update public.emc_contenus set valeur = '{}' where cle = 'mots'`)) <= 0);
-verif('un élève lit les contenus', lignes(await en(e0.uid, `select cle from public.emc_contenus`)).length === 9);
+verif('un élève lit les contenus', lignes(await en(e0.uid, `select cle from public.emc_contenus`)).length === 13);
 
 /* ---------- 13. réattribution de table ---------- */
 verif('Loïc réattribue une table', nb(await en(LOIC, `update public.emc_participants set table_num = 8 where eleve_id = $1`, [eleves[5].id])) === 1);
@@ -362,6 +372,257 @@ const supp = lignes(await en(CASTEL, `select public.emc_supprimer_comptes($1, tr
 verif('suppression : 29 comptes', supp && supp.n === 29, supp);
 verif('restent : 3 enseignants, 10 élèves de SNT, le compte EMC aussi en SNT, l\'intrus', (await db.query(`select count(*)::int n from auth.users`)).rows[0].n === 15);
 verif('les participations des comptes supprimés partent avec eux', (await db.query(`select count(*)::int n from public.emc_participants`)).rows[0].n === 11);
+
+/* ---------- 15. 034 : six séances, cartes, jeu de rôle, mur ---------- */
+const JDR = await classe('JDRD12'), C2b = await classe('NINA48');
+const mods = (await db.query(`select c.code, s.module, s.prefixe from public.emc_seances s
+  join public.classes c on c.id = s.classe_id order by c.code`)).rows.map((r) => r.code + ':' + r.module + ':' + r.prefixe);
+verif('034 : modules et préfixes des 6 séances', JSON.stringify(mods) === JSON.stringify(
+  ['JDRD12:accueil:d', 'NINA27:nina:a', 'NINA48:nina:b', 'NINA63:nina:j', 'NINA91:nina:g', 'REST21:restitution:s']), mods);
+const lib = async (code) => (await db.query(`select libelle from public.classes where code = $1`, [code])).rows[0].libelle;
+verif('034 : libellés datés', /^Groupe A · jeudi 12\/11, 10 h 30/.test(await lib('NINA27')) && /^Groupe D/.test(await lib('JDRD12')), await lib('NINA27'));
+const sql034 = readFileSync(join(depot, 'bdd/schema/034-emc-six-seances.sql'), 'utf8');
+await db.query(`delete from public.enseignants_classes where classe_id = $1`, [JDR]);
+await db.query(`update public.classes set libelle = 'mon libellé' where code = 'NINA63'`);
+await db.query(`update public.emc_contenus set valeur = jsonb_set(valeur, '{titre}', '"réglé"') where cle = 'jdr'`);
+await db.exec(sql034);
+verif('034 rejoué : les enseignants du créneau 1 rattachés aux nouvelles classes',
+  (await db.query(`select count(*)::int n from public.enseignants_classes where classe_id = $1`, [JDR])).rows[0].n === 2);
+verif('034 rejoué : un libellé retouché est gardé', (await lib('NINA63')) === 'mon libellé');
+verif('034 rejoué : un contenu réglé est gardé', (await val('jdr')).titre === 'réglé');
+const jdrC = await val('jdr');
+verif('fiche-guide : 5 thèmes, 30 questions, ids 1 à 30', jdrC.themes.length === 5
+  && JSON.stringify(jdrC.themes.flatMap((t) => t.questions.map((q) => q.id))) === JSON.stringify([...Array(30)].map((_, i) => i + 1)));
+verif('fiche-guide : l\'exemple reprend 6 questions existantes', jdrC.exemple.questions.length === 6);
+verif('24 symboles distincts', new Set(jdrC.symboles).size === 24);
+verif('étapes du jeu de rôle : 9, 100 min', (await val('etapes_accueil')).length === 9
+  && (await val('etapes_accueil')).reduce((s, e) => s + e.duree, 0) === 100);
+verif('Labyrinthe : 8 étapes, 120 min (créneaux de 2 h)', (await val('etapes')).reduce((s, e) => s + e.duree, 0) === 120);
+
+/* --- les cartes --- */
+async function service(q, params) {
+  await db.exec('set role service_role');
+  try { return { r: await db.query(q, params) }; }
+  catch (e) { return { e: e.message }; }
+  finally { await db.exec('reset role'); }
+}
+const auto = lignes(await en(LOIC, `select public.emc_cartes_autoriser($1) v`, [JDR]))[0];
+verif('autoriser : Loïc, préfixe d', auto && auto.v.prefixe === 'd' && auto.v.cartes === 0, auto);
+verif('autoriser : collègue extérieur refusé', /PAS_MA_CLASSE/.test((await en(AUTRE, `select public.emc_cartes_autoriser($1)`, [JDR])).e || ''));
+verif('autoriser : élève refusé', !!(await en(e0.uid, `select public.emc_cartes_autoriser($1)`, [JDR])).e);
+verif('autoriser : classe SNT refusée', !!(await en(LOIC, `select public.emc_cartes_autoriser($1)`, [SNT])).e);
+const U2 = (n) => U(5000 + n);
+await db.query(`insert into auth.users values ($1, 'x@emc.local')`, [U2(99)]);
+verif('inscrire : refusé à un enseignant', !!(await en(LOIC, `select public.emc_carte_inscrire($1, $2, 'd-renard-99', '1234')`, [JDR, U2(99)])).e);
+verif('inscrire : refusé à un élève', !!(await en(e0.uid, `select public.emc_carte_inscrire($1, $2, 'd-renard-99', '1234')`, [JDR, U2(99)])).e);
+verif('inscrire : identifiant mal formé refusé', !!(await service(`select public.emc_carte_inscrire($1, $2, 'Renard 1', '1234')`, [JDR, U2(99)])).e);
+verif('inscrire : code mal formé refusé', !!(await service(`select public.emc_carte_inscrire($1, $2, 'd-renard-99', '12a4')`, [JDR, U2(99)])).e);
+verif('inscrire : hors classe EMC refusé', !!(await service(`select public.emc_carte_inscrire($1, $2, 'd-renard-99', '1234')`, [SNT, U2(99)])).e);
+const ANIMAUX = ['renard', 'loutre', 'castor', 'hibou', 'lynx', 'koala', 'panda'];
+const cartes = [];
+for (let i = 1; i <= 35; i++) {
+  const uid = U2(i), ident = 'd-' + ANIMAUX[i % 7] + '-' + String(i).padStart(2, '0');
+  await db.query(`insert into auth.users values ($1, $2)`, [uid, ident + '@emc.local']);
+  const x = await service(`select public.emc_carte_inscrire($1, $2, $3, $4) id`, [JDR, uid, ident, String(1000 + i * 7)]);
+  if (x.r) cartes.push({ uid, id: x.r.rows[0].id, ident, origine: ((i - 1) % 10) + 1 });
+}
+verif('35 cartes inscrites d\'un coup', cartes.length === 35);
+verif('Mme Castel lit les 35 cartes (pour réimprimer)', lignes(await en(CASTEL, `select * from public.emc_cartes where classe_id = $1`, [JDR])).length === 35);
+verif('un élève ne lit aucune carte', lignes(await en(cartes[0].uid, `select * from public.emc_cartes`)).length === 0);
+verif('le collègue extérieur ne lit aucune carte', lignes(await en(AUTRE, `select * from public.emc_cartes`)).length === 0);
+verif('la fiche élève d\'une carte : pseudo = identifiant, inscrite dans sa seule classe EMC',
+  (await db.query(`select count(*)::int n from public.eleves e join public.eleves_classes ec on ec.eleve_id = e.id
+    where e.classe_id = $1 and ec.classe_id = $1 and e.pseudo like 'd-%'`, [JDR])).rows[0].n === 35);
+
+/* 31 cartes entrent tout de suite, 4 plus tard */
+const arrivees = cartes.slice(0, 31), retard = cartes.slice(31);
+let entrees = 0;
+for (const c of arrivees) {
+  const x = await en(c.uid, `select public.emc_entrer(null) j`);
+  if (x.r && x.r.rows[0].j.classe_id === JDR && x.r.rows[0].j.nouveau === true) entrees++;
+}
+verif('carte : entre dans sa séance sans taper de code', entrees === 31, entrees);
+const c0 = arrivees[0];
+verif('carte : ne lit pas la séance d\'un autre créneau', lignes(await en(c0.uid, `select * from public.emc_seances where classe_id <> $1`, [JDR])).length === 0);
+verif('carte : ne lit ni mots, ni notes, ni votes, ni carte', lignes(await en(c0.uid,
+  `select (select count(*) from public.emc_mots) + (select count(*) from public.emc_notes) + (select count(*) from public.emc_votes) + (select count(*) from public.emc_carte) n`))[0].n == 0);
+verif('carte : ne rejoint pas une classe SNT', /CODE_EMC_INCONNU/.test((await en(c0.uid, `select public.emc_entrer('SNT26A')`)).e || ''));
+
+/* --- le jeu de rôle --- */
+const jdr = (c, champs) => en(c.uid, `insert into public.emc_jdr (classe_id, eleve_id, origine, questions, feux)
+  values ($1, $2, $3, $4, $5)
+  on conflict (classe_id, eleve_id) do update set classe_id = excluded.classe_id, eleve_id = excluded.eleve_id,
+  origine = excluded.origine, questions = excluded.questions, feux = excluded.feux`,
+  [JDR, c.id, champs.origine ?? c.origine, champs.questions || [], JSON.stringify(champs.feux || {})]);
+let origines = 0;
+for (const c of arrivees) if (!(await jdr(c, {})).e) origines++;
+verif('31 classes d\'origine enregistrées (upsert PostgREST)', origines === 31, origines);
+verif('jdr : renvoi qui corrige (upsert)', !(await jdr(c0, { questions: [1, 7, 13, 19, 25, 30] })).e);
+verif('jdr : 9 questions refusées', !!(await jdr(c0, { questions: [1, 2, 3, 7, 13, 19, 25, 26, 30] })).e);
+verif('jdr : question 0 refusée', !!(await jdr(c0, { questions: [0, 1] })).e);
+verif('jdr : classe d\'origine 11 refusée', !!(await jdr(c0, { origine: 11 })).e);
+verif('jdr : au nom d\'un autre refusé', !!(await en(c0.uid, `insert into public.emc_jdr (classe_id, eleve_id) values ($1, $2)`, [JDR, arrivees[1].id])).e);
+await en(intrus.uid ?? intrus, `select public.emc_entrer('NINA48')`);
+verif('jdr : refusé dans une séance du Labyrinthe', !!(await en(intrus, `insert into public.emc_jdr (classe_id, eleve_id) values ($1, $2)`, [C2b, ri.rows[0].id])).e);
+verif('tirage : refusé à un élève', !!(await en(c0.uid, `select public.emc_jdr_tirer($1)`, [JDR])).e);
+verif('tirage : refusé au collègue extérieur', /PAS_MA_CLASSE/.test((await en(AUTRE, `select public.emc_jdr_tirer($1)`, [JDR])).e || ''));
+const tire = lignes(await en(LOIC, `select public.emc_jdr_tirer($1) n`, [JDR]))[0];
+verif('tirage : 31 élèves placés', tire && tire.n === 31, tire);
+async function binomes() {
+  const l = (await db.query(`select b.binome, b.symbole, b.eleve_id, j.origine from public.emc_binomes b
+    left join public.emc_jdr j on j.classe_id = b.classe_id and j.eleve_id = b.eleve_id where b.classe_id = $1`, [JDR])).rows;
+  const g = {};
+  l.forEach((x) => { (g[x.binome] = g[x.binome] || []).push(x); });
+  return Object.values(g);
+}
+let bs = await binomes();
+verif('tirage : 14 binômes et 1 trinôme', bs.filter((b) => b.length === 2).length === 14 && bs.filter((b) => b.length === 3).length === 1,
+  bs.map((b) => b.length));
+verif('tirage : jamais deux élèves de la même seconde dans un binôme',
+  bs.every((b) => new Set(b.map((x) => x.origine)).size === b.length), bs.map((b) => b.map((x) => x.origine)));
+verif('tirage : un symbole par binôme, les mêmes symboles par paire',
+  bs.every((b) => new Set(b.map((x) => x.symbole)).size === 1) && new Set(bs.map((b) => b[0].symbole)).size === bs.length);
+/* sur 30 tirages, aucune paire de même origine (le tirage est au hasard) */
+let collisions = 0;
+for (let k = 0; k < 30; k++) {
+  await en(LOIC, `select public.emc_jdr_tirer($1, true)`, [JDR]);
+  (await binomes()).forEach((b) => { if (new Set(b.map((x) => x.origine)).size < b.length) collisions++; });
+}
+verif('30 tirages de plus : jamais deux élèves de la même seconde', collisions === 0, collisions);
+const monBinome = async (c) => lignes(await en(c.uid, `select public.emc_mon_binome($1) b`, [JDR]))[0].b;
+const avant = await monBinome(c0);
+await en(c0.uid, `select public.emc_entrer(null)`);
+verif('après une reconnexion : le même binôme', (await monBinome(c0)) === avant && avant !== null);
+verif('retirer sans « tout » : personne à placer', lignes(await en(LOIC, `select public.emc_jdr_tirer($1) n`, [JDR]))[0].n === 0);
+/* je lis mon binôme et sa ligne, pas les autres */
+const taille = (await binomes()).find((b) => b.some((x) => x.eleve_id === c0.id)).length;
+verif('je lis les lignes de mon binôme (et la mienne)', lignes(await en(c0.uid, `select * from public.emc_binomes`)).length === taille
+  && lignes(await en(c0.uid, `select * from public.emc_jdr`)).length === taille);
+verif('un élève ne modifie pas le tirage', nb(await en(c0.uid, `update public.emc_binomes set binome = 1`)) <= 0);
+/* les retardataires : 3, puis 1 */
+for (const c of retard) { await en(c.uid, `select public.emc_entrer(null)`); await jdr(c, {}); }
+await db.query(`delete from public.emc_participants where eleve_id = $1`, [retard[3].id]);
+verif('3 retardataires placés', lignes(await en(LOIC, `select public.emc_jdr_tirer($1) n`, [JDR]))[0].n === 3);
+await en(retard[3].uid, `select public.emc_entrer(null)`);
+verif('1 retardataire seul placé', lignes(await en(LOIC, `select public.emc_jdr_tirer($1) n`, [JDR]))[0].n === 1);
+bs = await binomes();
+verif('35 élèves : 16 binômes de deux, 1 de trois… ou des trinômes, tous placés',
+  bs.reduce((s, b) => s + b.length, 0) === 35 && bs.every((b) => b.length === 2 || b.length === 3), bs.map((b) => b.length));
+verif('retardataires : toujours pas deux élèves de la même seconde',
+  bs.every((b) => new Set(b.map((x) => x.origine)).size === b.length), bs.map((b) => b.map((x) => x.origine)));
+/* échanger */
+const [b1, b2] = bs;
+const ech = await en(CASTEL, `select public.emc_jdr_echanger($1, $2, $3)`, [JDR, b1[0].eleve_id, b2[0].eleve_id]);
+const apres = await binomes();
+verif('Mme Castel échange deux élèves', !ech.e && apres.find((b) => b.some((x) => x.eleve_id === b1[0].eleve_id))[0].binome === b2[0].binome, ech.e);
+/* feux et « reconnu » */
+const partenaire = (await binomes()).find((b) => b.some((x) => x.eleve_id === c0.id)).find((x) => x.eleve_id !== c0.id);
+verif('feux : je réponds pour moi', nb(await en(c0.uid, `update public.emc_jdr set feux = '{"1": true, "22": false}' where eleve_id = $1`, [c0.id])) === 1);
+verif('feux : pas pour mon binôme', nb(await en(c0.uid, `update public.emc_jdr set feux = '{}' where eleve_id = $1`, [partenaire.eleve_id])) <= 0);
+verif('reconnu : 1 à 4', nb(await en(c0.uid, `update public.emc_jdr set reconnu = 4 where eleve_id = $1`, [c0.id])) === 1
+  && !!(await en(c0.uid, `update public.emc_jdr set reconnu = 5 where eleve_id = $1`, [c0.id])).e);
+const colJdr = (await db.query(`select column_name from information_schema.columns where table_name = 'emc_jdr'`)).rows.map((r) => r.column_name).sort();
+verif('emc_jdr ne porte aucune réponse (pas de texte libre)', JSON.stringify(colJdr) === JSON.stringify(
+  ['classe_id', 'eleve_id', 'feux', 'maj_le', 'origine', 'questions', 'reconnu']), colJdr);
+
+/* --- le mur modéré --- */
+const mur = (c, sorte, texte, statut = null) => en(c.uid, `insert into public.emc_mur (classe_id, eleve_id, sorte, question, texte${statut ? ', statut' : ''})
+  values ($1, $2, $3, 22, $4${statut ? ', $5' : ''})
+  on conflict (classe_id, eleve_id, sorte) do update set classe_id = excluded.classe_id, eleve_id = excluded.eleve_id,
+  sorte = excluded.sorte, question = excluded.question, texte = excluded.texte`,
+  statut ? [JDR, c.id, sorte, texte, statut] : [JDR, c.id, sorte, texte]);
+verif('portrait proposé', !(await mur(c0, 'portrait', 'J\'ai peur des araignées')).e);
+verif('portrait corrigé tant qu\'il n\'est pas modéré', !(await mur(c0, 'portrait', 'J\'ai peur des toutes petites araignées')).e);
+verif('un élève ne se valide pas lui-même (insert)', !!(await mur(arrivees[1], 'portrait', 'x', 'valide')).e);
+verif('un élève ne se valide pas lui-même (update)', !!(await en(c0.uid, `update public.emc_mur set statut = 'valide' where eleve_id = $1`, [c0.id])).e);
+verif('texte vide refusé', !!(await mur(arrivees[2], 'retiens', '   ')).e);
+verif('l\'élève ne lit pas le mur des autres', lignes(await en(arrivees[1].uid, `select * from public.emc_mur`)).length === 0);
+verif('Loïc valide', nb(await en(LOIC, `update public.emc_mur set statut = 'valide' where eleve_id = $1`, [c0.id])) === 1);
+verif('validé : l\'élève ne peut plus le changer', !!(await mur(c0, 'portrait', 'autre chose')).e
+  || lignes(await en(LOIC, `select texte from public.emc_mur where eleve_id = $1`, [c0.id]))[0].texte === 'J\'ai peur des toutes petites araignées');
+await mur(arrivees[1], 'retiens', 'Elle fait du handball');
+await mur(arrivees[2], 'definition', 'Pouvoir choisir');
+verif('étape 8 acceptée (le jeu de rôle en a 9)', !(await en(LOIC, `update public.emc_seances set etape = 8 where classe_id = $1`, [JDR])).e);
+verif('étape 10 refusée', !!(await en(LOIC, `update public.emc_seances set etape = 10 where classe_id = $1`, [JDR])).e);
+verif('le prof pose l\'état du module (ordre de passage)', nb(await en(LOIC, `update public.emc_seances set etat = '{"ordre":[3,1,2],"courant":0}' where classe_id = $1`, [JDR])) === 1);
+verif('un élève ne pose pas l\'état du module', nb(await en(c0.uid, `update public.emc_seances set etat = '{}' where classe_id = $1`, [JDR])) <= 0);
+await en(LOIC, `select public.emc_cloturer($1)`, [JDR]);
+const resteMur = (await db.query(`select sorte from public.emc_mur where classe_id = $1 order by sorte`, [JDR])).rows.map((r) => r.sorte);
+verif('clôture : portrait et « je retiens » effacés, la définition reste', JSON.stringify(resteMur) === JSON.stringify(['definition']), resteMur);
+verif('après clôture : plus d\'écriture au jeu de rôle', nb(await en(c0.uid, `update public.emc_jdr set reconnu = 1 where eleve_id = $1`, [c0.id])) <= 0);
+
+/* --- remise à zéro, puis suppression --- */
+verif('remise à zéro : refusée au collègue extérieur', /PAS_MA_CLASSE/.test((await en(AUTRE, `select public.emc_reinitialiser($1)`, [JDR])).e || ''));
+verif('remise à zéro : refusée à un élève', !!(await en(c0.uid, `select public.emc_reinitialiser($1)`, [JDR])).e);
+verif('remise à zéro', !(await en(CASTEL, `select public.emc_reinitialiser($1)`, [JDR])).e);
+const s0 = (await db.query(`select etape, cloturee_le, etat from public.emc_seances where classe_id = $1`, [JDR])).rows[0];
+verif('remise à zéro : étape 0, rouverte, état vide', s0.etape === 0 && s0.cloturee_le === null && Object.keys(s0.etat).length === 0, s0);
+verif('remise à zéro : plus de participants, binômes, jeu, mur', (await db.query(`select
+  (select count(*) from public.emc_participants where classe_id = $1) + (select count(*) from public.emc_binomes where classe_id = $1)
+  + (select count(*) from public.emc_jdr where classe_id = $1) + (select count(*) from public.emc_mur where classe_id = $1) n`, [JDR])).rows[0].n == 0);
+verif('remise à zéro : les cartes restent valables', (await db.query(`select count(*)::int n from public.emc_cartes where classe_id = $1`, [JDR])).rows[0].n === 35
+  && !!lignes(await en(c0.uid, `select public.emc_entrer(null) j`))[0]);
+const supCartes = lignes(await en(LOIC, `select public.emc_supprimer_comptes($1, true) n`, [JDR]))[0];
+verif('suppression : les 35 cartes et leurs comptes', supCartes && supCartes.n === 35
+  && (await db.query(`select count(*)::int n from auth.users where email like '%@emc.local'`)).rows[0].n === 1
+  && (await db.query(`select count(*)::int n from public.emc_cartes`)).rows[0].n === 0, supCartes);
+
+/* ---------- 16. 034 §5b : la restitution (ateliers libres, mur de post-it) ---------- */
+const REST = await classe('REST21');
+const rs = [];
+for (let i = 1; i <= 6; i++) {
+  const uid = U(6000 + i), ident = 's-castor-' + String(i).padStart(2, '0');
+  await db.query(`insert into auth.users values ($1, $2)`, [uid, ident + '@emc.local']);
+  const x = await service(`select public.emc_carte_inscrire($1, $2, $3, '1234') id`, [REST, uid, ident]);
+  rs.push({ uid, id: x.r.rows[0].id });
+  await en(uid, `select public.emc_entrer(null)`);
+}
+const [r1, r2, r3] = rs;
+const restit = (r, parcours, mot = null) => en(r.uid, `insert into public.emc_restit (classe_id, eleve_id, parcours, mot) values ($1, $2, $3, $4)
+  on conflict (classe_id, eleve_id) do update set classe_id = excluded.classe_id, eleve_id = excluded.eleve_id,
+  parcours = excluded.parcours, mot = excluded.mot`, [REST, r.id, JSON.stringify(parcours), mot]);
+verif('restitution : parcours écrit librement (upsert)', !(await restit(r1, [{ atelier: 'Labyrinthe de Nina', mot: 'harcèlement', liberte: 'Sûreté' }])).e);
+verif('restitution : corriger son parcours', !(await restit(r1, [{ atelier: 'Nina', mot: 'harcèlement', liberte: 'Sûreté' }, { atelier: 'Débat', mot: 'parole', liberte: 'Expression' }], 'choisir')).e);
+verif('restitution : 7 ateliers refusés', !!(await restit(r2, Array(7).fill({ atelier: 'x' }))).e);
+verif('restitution : mot de 31 lettres refusé', !!(await restit(r2, [], 'x'.repeat(31))).e);
+verif('restitution : pas dans une séance du jeu de rôle', !!(await en(r1.uid, `insert into public.emc_restit (classe_id, eleve_id) values ($1, $2)`, [JDR, r1.id])).e);
+verif('restitution : l\'élève ne lit pas le parcours des autres', lignes(await en(r2.uid, `select * from public.emc_restit`)).length === 0);
+/* les groupes : posés par le prof dans l'état de la séance */
+const aff = { [r1.id]: 1, [r2.id]: 1, [r3.id]: 2 };
+verif('un élève ne pose pas les groupes', nb(await en(r1.uid, `update public.emc_seances set etat = $2 where classe_id = $1`, [REST, JSON.stringify({ affectations: { [r1.id]: 2 } })])) <= 0);
+verif('le prof pose les groupes', nb(await en(LOIC, `update public.emc_seances set etat = $2 where classe_id = $1`, [REST, JSON.stringify({ affectations: aff })])) === 1);
+verif('mon groupe', lignes(await en(r1.uid, `select public.emc_mon_groupe($1) g`, [REST]))[0].g === 1
+  && lignes(await en(rs[5].uid, `select public.emc_mon_groupe($1) g`, [REST]))[0].g === null);
+let pid = 0;
+const postit = (r, groupe, sorte = 'fait', texte = 'On a débattu', masque = false) =>
+  en(r.uid, `insert into public.emc_postits (id, classe_id, eleve_id, groupe, sorte, texte, masque) values ($1, $2, $3, $4, $5, $6, $7)`,
+    ['20000000-0000-4000-8000-' + String(++pid).padStart(12, '0'), REST, r.id, groupe, sorte, texte, masque]);
+verif('post-it refusé avant l\'étape 4', !!(await postit(r1, 1)).e);
+await en(LOIC, `update public.emc_seances set etape = 4 where classe_id = $1`, [REST]);
+verif('post-it dans son groupe', !(await postit(r1, 1)).e && !(await postit(r2, 1, 'liberte', 'Liberté d\'expression')).e && !(await postit(r3, 2, 'appris', 'Le 3018')).e);
+verif('post-it dans le groupe d\'un autre : refusé', !!(await postit(r1, 2)).e);
+verif('post-it sans groupe : refusé', !!(await postit(rs[5], 1)).e);
+verif('post-it déjà masqué : refusé', !!(await postit(r1, 1, 'fait', 'x', true)).e);
+verif('sorte inconnue refusée', !!(await postit(r1, 1, 'autre')).e);
+verif('141 caractères refusés', !!(await postit(r1, 1, 'fait', 'x'.repeat(141))).e);
+verif('toute la séance lit le mur', lignes(await en(r3.uid, `select * from public.emc_postits`)).length === 3);
+verif('un élève d\'une autre séance ne lit pas le mur', lignes(await en(cartes[0].uid, `select * from public.emc_postits`)).length === 0);
+verif('un élève ne masque pas', nb(await en(r3.uid, `update public.emc_postits set masque = true where eleve_id = $1`, [r1.id])) <= 0
+  && nb(await en(r1.uid, `update public.emc_postits set masque = true where eleve_id = $1`, [r1.id])) <= 0);
+verif('Mme Castel masque un post-it', nb(await en(CASTEL, `update public.emc_postits set masque = true where eleve_id = $1`, [r2.id])) === 1);
+verif('masqué : invisible des autres', lignes(await en(r3.uid, `select * from public.emc_postits`)).length === 2);
+verif('masqué : son auteur le voit encore', lignes(await en(r2.uid, `select * from public.emc_postits where eleve_id = $1`, [r2.id])).length === 1);
+verif('retirer son post-it', nb(await en(r1.uid, `delete from public.emc_postits where eleve_id = $1`, [r1.id])) === 1);
+verif('pas celui d\'un autre', nb(await en(r1.uid, `delete from public.emc_postits where eleve_id = $1`, [r3.id])) <= 0);
+await en(LOIC, `update public.emc_seances set etape = 5 where classe_id = $1`, [REST]);
+verif('post-it refusé après l\'étape 4', !!(await postit(r1, 1)).e);
+verif('étape 5 : le mot', !(await restit(r1, [], 'choisir')).e);
+verif('étape 5 : la définition (mur modéré)', !(await en(r1.uid, `insert into public.emc_mur (classe_id, eleve_id, sorte, texte) values ($1, $2, 'definition', 'Pouvoir choisir sans nuire')`, [REST, r1.id])).e);
+await en(LOIC, `select public.emc_cloturer($1)`, [REST]);
+verif('clôture : le mur et les définitions restent (production commune)',
+  (await db.query(`select (select count(*) from public.emc_postits where classe_id = $1) + (select count(*) from public.emc_mur where classe_id = $1 and sorte = 'definition') n`, [REST])).rows[0].n == 3);
+await en(LOIC, `select public.emc_reinitialiser($1)`, [REST]);
+verif('remise à zéro : parcours et post-it effacés', (await db.query(`select (select count(*) from public.emc_restit where classe_id = $1) + (select count(*) from public.emc_postits where classe_id = $1) n`, [REST])).rows[0].n == 0);
 
 console.log(`\n${ok} contrôles réussis, ${ko} en échec.`);
 process.exit(ko ? 1 : 0);

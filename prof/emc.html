@@ -102,6 +102,7 @@
   <div id="appli" hidden>
     <nav class="onglets" role="tablist" id="onglets">
       <button data-onglet="seance" class="actif">Séance</button>
+      <button data-onglet="cartes">🎟 Cartes</button>
       <button data-onglet="participants">Participants <span id="n-presents" class="tresmuet"></span></button>
       <button data-onglet="mots">Mots & émotions</button>
       <button data-onglet="missions">Missions & notes</button>
@@ -141,6 +142,9 @@
         </div>
       </div>
     </section>
+
+    <!-- CARTES (prof-emc-outils.js) -->
+    <section class="panneau" id="p-cartes"></section>
 
     <!-- PARTICIPANTS -->
     <section class="panneau" id="p-participants">
@@ -270,24 +274,8 @@
       </div>
     </section>
 
-    <!-- CLÔTURE -->
-    <section class="panneau" id="p-cloture">
-      <div class="carte-blanche">
-        <h2>Clôturer la séance</h2>
-        <p>Efface <b>toutes les demandes « J'ai besoin d'en parler »</b> de ce créneau et ferme la séance : plus rien ne s'écrit (carte, notes, votes, enquête). Les résultats restent lisibles et exportables.</p>
-        <button type="button" class="danger" id="btn-cloturer">Clôturer ce créneau…</button>
-        <div id="res-cloture" class="alerte"></div>
-      </div>
-      <div class="carte-blanche">
-        <h2>Comptes créés pour l'EMC</h2>
-        <p>Les comptes ouverts avec le code de ce créneau, et qui n'ont <b>aucune autre classe</b> (un élève de SNT entré avec son compte n'en fait jamais partie). 🔴 <b>Leur travail part avec eux</b> : à faire <b>après les exports</b>.</p>
-        <div class="rangee">
-          <button type="button" id="btn-compter">Compter</button>
-          <button type="button" class="danger" id="btn-supprimer" disabled>Supprimer ces comptes…</button>
-        </div>
-        <div id="res-comptes" class="alerte"></div>
-      </div>
-    </section>
+    <!-- CLÔTURE (prof-emc-outils.js) -->
+    <section class="panneau" id="p-cloture"></section>
   </div>
 </div>
 
@@ -295,10 +283,11 @@
 <script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
 <script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="../assets/js/vendor/konva-9.3.6.min.js"></script>
-<script src="../assets/js/emc-commun.js?v=2"></script>
+<script src="../assets/js/emc-commun.js?v=3"></script>
 <script src="../assets/js/emc-vues.js?v=2"></script>
 <script src="../assets/js/emc-carte.js?v=2"></script>
 <script src="../assets/js/emc-export.js?v=1"></script>
+<script src="../assets/js/prof-emc-outils.js?v=1"></script>
 <script>
 (function () {
   'use strict';
@@ -331,7 +320,12 @@
     EMC.lire('classes?select=id,code,libelle,espace&espace=eq.emc&code=eq.' + encodeURIComponent(code)).then(function (l) {
       if (!l.length) { message('Le créneau ' + code + ' n\'existe pas ou n\'est pas rattaché à ton compte.'); return choisir(); }
       C.classe = l[0];
-      return EMC.contenus().then(lancer);
+      /* chaque module a son pilotage : celui-ci est celui du Labyrinthe */
+      return EMC.lire('emc_seances?select=module&classe_id=eq.' + C.classe.id).then(function (s) {
+        var autre = { accueil: 'emc-accueil.html', restitution: 'emc-restitution.html' }[s[0] && s[0].module];
+        if (autre) { location.replace(autre + '?classe=' + encodeURIComponent(code)); return; }
+        return EMC.contenus().then(lancer);
+      });
     }).catch(function (e) { message('Lecture impossible : ' + EMC.message(e)); });
   }
 
@@ -382,6 +376,21 @@
     document.addEventListener('emc:contenus', function () { toutRendre(); });
     document.addEventListener('emc:direct', majDirect); majDirect();
     setInterval(majChrono, 1000);
+
+    /* cartes et clôture : communs aux pilotages (prof-emc-outils.js) */
+    var cartes = EMC.Outils.cartes($('#p-cartes'), C.classe);
+    EMC.Outils.cloture($('#p-cloture'), C.classe, {
+      texteCloture: ' de ce créneau',
+      apres: function (quoi) {
+        if (quoi === 'cloture') { C.aide = {}; rendreAide(); relireSeance(); }
+        if (quoi === 'zero' || quoi === 'suppression') {
+          C.mots = {}; C.votes = []; C.enquete = []; C.notes = {}; C.aide = {};
+          C.carteLignes = {}; C.carteMaj = null; if (C.carte) { C.carte.detruire && C.carte.detruire(); C.carte = null; $('#carte-zone').innerHTML = ''; }
+          relireSeance(); relireParticipants(); relireMots(); relireVotes(); relireCarte(); relireAide(); relireEnquete();
+          cartes.relire();
+        }
+      }
+    });
   }
 
   function majDirect() {
@@ -474,7 +483,7 @@
 
   /* ---------- QR code ---------- */
   $('#code').addEventListener('click', function () {
-    var url = V.urlEleve(C.classe.code), q = el('div', { style: 'max-width:360px;margin:0 auto' });
+    var url = V.urlEleve(), q = el('div', { style: 'max-width:360px;margin:0 auto' });
     var fond = el('div', { class: 'modale-fond', onclick: function (e) { if (e.target === fond) fond.remove(); } },
       el('div', { class: 'modale', style: 'text-align:center' },
         el('div', { class: 'mono', style: 'font-size:3rem;font-weight:700;letter-spacing:.1em' }, C.classe.code),
@@ -666,7 +675,7 @@
       });
       tb.appendChild(el('tr', null,
         el('td', null, el('b', null, nom(p.pseudo)), aNom(p.pseudo) ? el('div', { class: 'tresmuet mono' }, p.pseudo) : null),
-        el('td', null, el('span', { class: 'pastille ' + (p.nouveau ? 'cyan' : '') }, p.nouveau ? 'créé pour l\'EMC' : 'compte existant')),
+        el('td', null, el('span', { class: 'pastille ' + (p.nouveau ? 'cyan' : '') }, p.nouveau ? '🎟 carte' : 'compte du site')),
         el('td', null, sel),
         el('td', null, el('span', { class: 'pastille ' + (p.pret ? 'ok' : 'att') }, p.pret ? 'prêt' : 'pas prêt')),
         el('td', { class: 'tresmuet' }, heure(p.entre_le))));
@@ -959,33 +968,6 @@
     }, ATTENTE_CARTE);
   });
 
-  /* ---------- CLÔTURE ---------- */
-  function resultat(z, ok, t) { z.className = 'alerte show ' + (ok ? 'ok' : 'err'); z.textContent = t; }
-  $('#btn-cloturer').addEventListener('click', function () {
-    if (!confirm('Clôturer ' + C.classe.libelle + ' ?\n\nToutes les demandes « J\'ai besoin d\'en parler » de ce créneau seront EFFACÉES, et plus rien ne pourra s\'écrire.')) return;
-    if (!confirm('Dernière confirmation : les exports sont faits ?')) return;
-    EMC.rpc('emc_cloturer', { p_classe: id() }).then(function (n) {
-      resultat($('#res-cloture'), true, 'Séance clôturée. ' + n + ' demande(s) d\'aide effacée(s).');
-      C.aide = {}; rendreAide(); relireSeance();
-    }, function (e) { resultat($('#res-cloture'), false, EMC.message(e)); });
-  });
-  var aSupprimer = null;
-  $('#btn-compter').addEventListener('click', function () {
-    EMC.rpc('emc_supprimer_comptes', { p_classe: id(), p_confirmer: false }).then(function (n) {
-      aSupprimer = n;
-      resultat($('#res-comptes'), true, n + ' compte(s) créé(s) pour l\'EMC dans ce créneau, sans autre classe.');
-      $('#btn-supprimer').disabled = !n;
-    }, function (e) { resultat($('#res-comptes'), false, EMC.message(e)); });
-  });
-  $('#btn-supprimer').addEventListener('click', function () {
-    if (!confirm('Supprimer ' + aSupprimer + ' compte(s) ?\n\nLeur travail (mots, notes, carte, votes) part avec eux. C\'est définitif.')) return;
-    if (!confirm('Vraiment ? Les exports de ce créneau sont faits ?')) return;
-    EMC.rpc('emc_supprimer_comptes', { p_classe: id(), p_confirmer: true }).then(function (n) {
-      resultat($('#res-comptes'), true, n + ' compte(s) supprimé(s).');
-      $('#btn-supprimer').disabled = true;
-      relireParticipants(); relireMots(); relireVotes(); relireCarte();
-    }, function (e) { resultat($('#res-comptes'), false, EMC.message(e)); });
-  });
 })();
 </script>
 </body>

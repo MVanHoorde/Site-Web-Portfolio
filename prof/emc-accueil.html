@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pilotage EMC — Je m'appelle…</title>
+<!--
+  Pilotage et projection du jeu de rôle d'accueil (module 'accueil',
+  034, brief du 08/11/2026). Une seule page, deux vues :
+    ?classe=JDRD12                  le pilotage (session du tableau de bord)
+    ?classe=JDRD12&vue=projection   la projection
+  🔴 La projection n'affiche JAMAIS un identifiant ni un nom, ne lit
+  jamais emc_aide, et ne montre du mur que ce que le prof a validé.
+  Les noms ne viennent que de la table des noms locale (ProfAPI.nomDe),
+  et seulement dans le pilotage.
+-->
+<link rel="stylesheet" href="../assets/css/emc.css?v=2">
+<style>
+  .emc-barre .pastille{background:rgba(255,255,255,.12);color:#fff;border-color:transparent}
+  .emc-barre .pastille.ok{background:#1f8f63}
+  .emc-barre .pastille.att{background:#9a6a00}
+  .emc-barre a.bouton,.emc-barre button.lien{min-height:38px;padding:.3rem .8rem;background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+  #alerte-aide{background:var(--err);color:#fff;padding:.7rem 1rem;position:sticky;top:56px;z-index:19}
+  #alerte-aide h2{margin:0 0 .4rem;font-size:1.15rem}
+  #alerte-aide.calme{background:var(--surface-2);color:var(--ink);padding:.4rem 1rem}
+  .aide-item{background:#fff;color:var(--ink);border-radius:10px;padding:.6rem .8rem;margin:.4rem 0;display:grid;grid-template-columns:1fr auto;gap:.3rem .8rem;align-items:center}
+  .aide-item.pris{opacity:.65}
+  .gros-chiffre{font:700 3.2rem/1 'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
+  .gros-chiffre small{font-size:1.2rem;color:var(--ink-soft);font-weight:600}
+  .chrono{font:600 1.4rem 'IBM Plex Mono',monospace}
+  .chrono.depasse{color:var(--err)}
+  .origines-rep{display:grid;grid-template-columns:repeat(10,1fr);gap:.3rem;text-align:center}
+  .origines-rep div{background:var(--surface-2);border-radius:8px;padding:.3rem 0;font-size:.8rem}
+  .origines-rep b{display:block;font-size:1.3rem}
+  .binomes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.6rem}
+  .binome{border:1px solid var(--line);border-radius:12px;padding:.5rem .7rem;background:var(--surface)}
+  .binome.alerte-meme{border-color:var(--err);background:var(--err-wash)}
+  .binome .sym{font-size:2rem;line-height:1}
+  .binome button.membre{display:flex;width:100%;justify-content:space-between;min-height:38px;margin:.25rem 0;padding:.2rem .5rem;font-weight:500}
+  .binome button.membre.choisi{border:3px solid var(--orange);background:var(--wait-wash)}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:.85em}
+  .mur-item{display:grid;grid-template-columns:1fr auto;gap:.4rem .8rem;border-bottom:1px solid var(--line);padding:.5rem 0;align-items:center}
+  .mur-item .texte{font-size:1.05rem}
+  .mur-item.masque .texte{text-decoration:line-through;opacity:.5}
+  .mur-item.projete{background:var(--cyan-wash);border-radius:8px;padding:.5rem}
+  .ordre{display:flex;flex-wrap:wrap;gap:.3rem}
+  .ordre span{font-size:1.6rem;padding:.1rem .35rem;border-radius:8px;border:2px solid transparent}
+  .ordre span.fait{opacity:.35}
+  .ordre span.cour{border-color:var(--orange);background:var(--wait-wash)}
+  /* ---------- projection ---------- */
+  body.projection{background:#0f1a2e;color:#fff;overflow:hidden}
+  body.projection .emc-page{max-width:none;padding:2vh 3vw}
+  #proj{min-height:92vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:2vh}
+  #proj h1{font:700 clamp(2rem,5vw,4.5rem)/1.1 'Space Grotesk',sans-serif;margin:0;color:#fff}
+  #proj h2{font:600 clamp(1.4rem,3vw,2.6rem)/1.2 'Space Grotesk',sans-serif;margin:0;color:#ffd6b8}
+  #proj .p-grand{font:700 clamp(4rem,14vw,13rem)/1 'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
+  #proj .p-grand.moitie{color:#ffc24d} #proj .p-grand.fini{color:#ff7a66}
+  #proj .p-sym{font-size:clamp(6rem,24vh,16rem);line-height:1}
+  #proj .p-syms{display:flex;flex-wrap:wrap;gap:2vh 2vw;justify-content:center;font-size:clamp(3rem,9vh,6rem);max-width:90vw}
+  #proj .p-texte{font:600 clamp(1.6rem,3.6vw,3.2rem)/1.35 'Inter',sans-serif;max-width:80vw}
+  #proj ol{text-align:left;font-size:clamp(1.1rem,2.2vw,1.9rem);line-height:1.45;max-width:85vw}
+  #proj .p-ex{font:italic 400 clamp(1rem,1.8vw,1.6rem)/1.5 'Inter',sans-serif;max-width:80vw;background:rgba(255,255,255,.08);border-radius:16px;padding:1.5vh 2vw;text-align:left}
+  #proj .p-mur{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5vh 1.5vw;width:90vw}
+  #proj .p-mur div{background:rgba(255,255,255,.1);border-radius:14px;padding:1.4vh 1.2vw;font-size:clamp(1rem,1.8vw,1.6rem)}
+  #proj .p-petit{font-size:clamp(1rem,1.8vw,1.5rem);opacity:.85}
+  #proj .p-reconnu{font-size:clamp(2rem,6vh,4rem)}
+  #proj .p-qr{background:#fff;padding:12px;border-radius:12px;width:min(28vh,260px)}
+  #proj .p-qr svg{width:100%;height:auto;display:block}
+  .barre-proj{position:fixed;right:1rem;bottom:1rem;display:flex;gap:.4rem;opacity:.25}
+  .barre-proj:hover{opacity:1}
+  .barre-proj button{background:rgba(255,255,255,.15);color:#fff;border-color:transparent}
+</style>
+</head>
+<body>
+
+<header class="emc-barre" id="barre">
+  <span class="titre" id="titre">Pilotage EMC — Je m'appelle…</span>
+  <span class="pastille direct-etat" id="direct">…</span>
+  <span class="espace"></span>
+  <button type="button" class="lien" id="btn-son">🔔 son</button>
+  <a class="bouton" id="lien-projection" target="_blank" hidden>Projection ↗</a>
+  <a class="bouton" href="emc-contenus.html">Contenus</a>
+  <a class="bouton" href="index.html">← Tableau de bord</a>
+</header>
+
+<section id="alerte-aide" hidden aria-live="assertive"></section>
+
+<div class="emc-page">
+  <div id="message" class="encadre" hidden></div>
+
+  <div id="appli" hidden>
+    <nav class="onglets" role="tablist" id="onglets">
+      <button data-onglet="seance" class="actif">Séance</button>
+      <button data-onglet="cartes">🎟 Cartes</button>
+      <button data-onglet="binomes">Binômes <span id="n-binomes" class="tresmuet"></span></button>
+      <button data-onglet="presentations">Présentations</button>
+      <button data-onglet="mur">Portraits & phrases <span id="n-mur" class="tresmuet"></span></button>
+      <button data-onglet="cloture">Clôture</button>
+    </nav>
+
+    <section class="panneau actif" id="p-seance">
+      <div class="carte-blanche">
+        <div class="rangee" style="justify-content:space-between">
+          <h2 style="margin:0">Étape en cours : <span id="etape-titre">—</span></h2>
+          <div class="rangee">
+            <button type="button" id="btn-revenir">◀ Revenir</button>
+            <button type="button" class="orange" id="btn-avancer">Avancer ▶</button>
+          </div>
+        </div>
+        <div class="etapes" id="frise" style="margin-top:.8rem"></div>
+        <div class="rangee" style="margin-top:.8rem;gap:1.5rem">
+          <span>Chrono de l'étape : <span class="chrono" id="chrono">0:00</span> <span class="tresmuet" id="duree"></span></span>
+          <span id="etape-resume" style="font-weight:600"></span>
+        </div>
+        <div id="actions-etape" class="rangee" style="margin-top:.6rem"></div>
+      </div>
+      <div class="grille2">
+        <div class="carte-blanche">
+          <h3>Prêts / présents</h3>
+          <div class="gros-chiffre"><span id="n-prets">0</span> <small>/ <span id="n-tous">0</span> présents</small></div>
+          <p class="tresmuet" id="sans-origine"></p>
+        </div>
+        <div class="carte-blanche">
+          <h3>Classes d'origine</h3>
+          <div class="origines-rep" id="origines"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panneau" id="p-cartes"></section>
+
+    <section class="panneau" id="p-binomes">
+      <div class="carte-blanche">
+        <h2>Les binômes</h2>
+        <p class="muet">Tirage croisé : jamais deux élèves de la même seconde, un trinôme si le nombre est impair. Un tirage est <b>figé</b> : un élève qui se reconnecte retrouve son binôme. Pour échanger deux élèves : touche l'un, puis l'autre.</p>
+        <div class="rangee">
+          <button type="button" class="orange" id="b-tirer">🎲 Tirer les binômes</button>
+          <button type="button" id="b-retard">➕ Placer les retardataires</button>
+          <span class="tresmuet" id="b-info"></span>
+        </div>
+        <div id="sans-binome" style="margin-top:.6rem"></div>
+      </div>
+      <div class="binomes" id="binomes"></div>
+    </section>
+
+    <section class="panneau" id="p-presentations">
+      <div class="carte-blanche">
+        <h2>Ordre de passage</h2>
+        <div class="rangee">
+          <button type="button" class="orange" id="o-tirer">🎲 Tirer l'ordre au sort</button>
+          <button type="button" id="o-prec">◀ Précédent</button>
+          <button type="button" class="primaire" id="o-suiv">Suivant ▶</button>
+          <button type="button" id="o-chrono">⏱ Relancer la minute</button>
+        </div>
+        <div class="ordre" id="ordre" style="margin-top:.8rem"></div>
+      </div>
+      <div class="grille2">
+        <div class="carte-blanche">
+          <h3>En ce moment</h3>
+          <div id="o-cour"></div>
+        </div>
+        <div class="carte-blanche">
+          <h3>« Je me suis reconnu·e »</h3>
+          <div id="o-reconnu"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panneau" id="p-mur">
+      <div class="carte-blanche">
+        <h2>🕵️ Portraits mystère</h2>
+        <p class="muet">Rien n'est projeté sans ta validation. « Projeter » l'affiche seul, sans nom ; « Révéler » montre le symbole du binôme. Effacés à la clôture.</p>
+        <div id="mur-portraits"></div>
+      </div>
+      <div class="carte-blanche">
+        <h2>💬 Ce que je retiens de mon binôme</h2>
+        <p class="muet">Les phrases validées s'affichent en mur à la projection de l'étape 8, sans nom. Effacées à la clôture.</p>
+        <div id="mur-retiens"></div>
+      </div>
+    </section>
+
+    <section class="panneau" id="p-cloture"></section>
+  </div>
+
+  <div id="proj" hidden></div>
+</div>
+<div class="barre-proj" id="barre-proj" hidden>
+  <button type="button" id="p-son">🔔</button>
+  <button type="button" id="p-plein">⛶</button>
+</div>
+
+<script src="../assets/js/prof-api.js?v=3"></script>
+<script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
+<script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
+<script src="../assets/js/emc-commun.js?v=3"></script>
+<script src="../assets/js/emc-vues.js?v=2"></script>
+<script src="../assets/js/prof-emc-outils.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var el = EMC.el;
+  var PROJ = EMC.parametre('vue') === 'projection';
+  var C = { classe: null, seance: null, contenus: null, participants: {}, jdr: {}, binomes: {}, mur: [], aide: {} };
+  function message(t) { var m = $('#message'); m.hidden = !t; m.textContent = t || ''; }
+  function erreur(e) { alert(EMC.message(e)); }
+  function nom(p) { return p ? ProfAPI.nomDe(p) : '?'; }
+  function aNom(p) { return !!(p && ProfAPI.nomsCharges() && ProfAPI.nomDe(p) !== p); }
+  function id() { return C.classe.id; }
+  function jdr() { return (C.contenus && C.contenus.jdr) || { themes: [], consignes: [], reconnu: [] }; }
+  function etapes() { return (C.contenus && C.contenus.etapes_accueil) || []; }
+  function etape() { return C.seance ? C.seance.etape : 0; }
+  function etat() { return (C.seance && C.seance.etat) || {}; }
+  function liste() { return Object.keys(C.participants).map(function (k) { return C.participants[k]; }); }
+  function mmss(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  var collator = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
+
+  /* ---------- son ---------- */
+  var son = true; try { son = localStorage.getItem('emc.prof.son') !== 'non'; } catch (e) {}
+  function majSon() { $('#btn-son').textContent = son ? '🔔 son' : '🔕 muet'; $('#p-son').textContent = son ? '🔔' : '🔕'; }
+  function basculerSon() { son = !son; majSon(); try { localStorage.setItem('emc.prof.son', son ? 'oui' : 'non'); } catch (e) {} if (son) bip(660); }
+  $('#btn-son').addEventListener('click', basculerSon); $('#p-son').addEventListener('click', basculerSon); majSon();
+  var audio = null;
+  function bip(f, n) {
+    if (!son) return;
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      for (var k = 0; k < (n || 1); k++) {
+        var o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime + k * 0.28;
+        o.frequency.value = f || 880; o.connect(g); g.connect(audio.destination);
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+        o.start(t); o.stop(t + 0.25);
+      }
+    } catch (e) {}
+  }
+  $('#p-plein').addEventListener('click', function () { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); });
+
+  /* ---------- démarrage ---------- */
+  ProfAPI.reprendre().then(function () {
+    EMC.demarrer('prof');
+    var code = (EMC.parametre('classe') || '').toUpperCase();
+    if (!code) throw new Error('Ouvre cette page depuis le tableau de bord (espace EMC).');
+    return EMC.lire('classes?select=id,code,libelle&espace=eq.emc&code=eq.' + encodeURIComponent(code));
+  }).then(function (l) {
+    if (!l.length) throw new Error('Cette séance n\'existe pas ou n\'est pas rattachée à ton compte.');
+    C.classe = l[0];
+    return EMC.contenus();
+  }).then(function (c) { C.contenus = c; lancer(); })
+    .catch(function (e) { message(/session/i.test(String(e && e.message)) ? 'Pas de session : connecte-toi d\'abord au tableau de bord, puis reviens ici.' : EMC.message(e)); });
+
+  function lancer() {
+    var f = 'classe_id=eq.' + id();
+    if (PROJ) {
+      document.body.classList.add('projection');
+      $('#barre').style.display = 'none'; $('#proj').hidden = false; $('#barre-proj').hidden = false;
+      document.title = 'Projection — Je m\'appelle…';
+    } else {
+      $('#appli').hidden = false;
+      $('#titre').textContent = C.classe.libelle;
+      document.title = 'Pilotage — ' + C.classe.code;
+      $('#lien-projection').hidden = false;
+      $('#lien-projection').href = '?classe=' + encodeURIComponent(C.classe.code) + '&vue=projection';
+      /* 🔴 l'aide : jamais dans la projection */
+      EMC.ecouter('emc_aide', f, function (a, ev) { if (!a || !a.id) return; if (ev === 'DELETE') delete C.aide[a.id]; else C.aide[a.id] = a; rendreAide(); }, relireAide, { periode: 2 });
+      EMC.Outils.cartes($('#p-cartes'), C.classe);
+      EMC.Outils.cloture($('#p-cloture'), C.classe, { texteCloture: ', les portraits mystère et les phrases « je retiens »', apres: function () { toutRelire(); } });
+    }
+    EMC.ecouter('emc_seances', f, function (s) { if (s && s.classe_id) { recevoirSeance(s); } }, relireSeance);
+    EMC.ecouter('emc_participants', f, function () { relireParticipants(); }, relireParticipants, { periode: 4 });
+    EMC.ecouter('emc_jdr', f, function (r) { if (r && r.eleve_id) { C.jdr[r.eleve_id] = r; rendre(); } }, relireJdr, { periode: 4 });
+    EMC.ecouter('emc_binomes', f, function () { relireBinomes(); }, relireBinomes, { periode: 5 });
+    EMC.ecouter('emc_mur', f, function () { relireMur(); }, relireMur, { periode: 4 });
+    document.addEventListener('emc:contenus', rendre);
+    document.addEventListener('emc:direct', majDirect); majDirect();
+    setInterval(tic, 500);
+  }
+  function majDirect() {
+    var d = EMC.etatDirect(), p = $('#direct');
+    p.className = 'pastille direct-etat ' + (d === 'direct' ? 'ok' : 'att');
+    p.textContent = d === 'direct' ? 'en direct' : d === 'hors-ligne' ? 'hors ligne' : 'relecture';
+  }
+  function toutRelire() { relireSeance(); relireParticipants(); relireJdr(); relireBinomes(); relireMur(); if (!PROJ) relireAide(); }
+  function recevoirSeance(s) { C.seance = s; rendre(); }
+  function relireSeance() { return EMC.lire('emc_seances?select=*&classe_id=eq.' + id()).then(function (l) { if (l[0]) recevoirSeance(l[0]); }); }
+  function relireParticipants() {
+    /* la projection ne lit pas les pseudos : elle n'en a pas besoin */
+    var sel = PROJ ? 'eleve_id,pret' : 'eleve_id,pret,entre_le,eleves(pseudo)';
+    return EMC.lire('emc_participants?select=' + sel + '&classe_id=eq.' + id()).then(function (l) {
+      var m = {}; l.forEach(function (p) { m[p.eleve_id] = { eleve_id: p.eleve_id, pret: p.pret, pseudo: p.eleves && p.eleves.pseudo }; });
+      C.participants = m; rendre();
+    });
+  }
+  function relireJdr() { return EMC.lire('emc_jdr?select=eleve_id,origine,questions,feux,reconnu&classe_id=eq.' + id()).then(function (l) { var m = {}; l.forEach(function (r) { m[r.eleve_id] = r; }); C.jdr = m; rendre(); }); }
+  function relireBinomes() { return EMC.lire('emc_binomes?select=eleve_id,binome,symbole&classe_id=eq.' + id()).then(function (l) { var m = {}; l.forEach(function (r) { m[r.eleve_id] = r; }); C.binomes = m; rendre(); }); }
+  function relireMur() {
+    var q = PROJ ? '&statut=eq.valide' : '';
+    return EMC.lire('emc_mur?select=eleve_id,sorte,question,texte,statut,maj_le&classe_id=eq.' + id() + q + '&order=maj_le').then(function (l) { C.mur = l; rendre(); });
+  }
+  function relireAide() { return EMC.lire('emc_aide?select=*&classe_id=eq.' + id() + '&order=cree_le').then(function (l) { var m = {}; l.forEach(function (a) { m[a.id] = a; }); C.aide = m; rendreAide(); }); }
+
+  /* ---------- écrire l'état ---------- */
+  function poserSeance(champs) {
+    return EMC.modifier('emc_seances?classe_id=eq.' + id(), champs).then(function () {
+      Object.keys(champs).forEach(function (k) { C.seance[k] = champs[k]; }); rendre();
+    }, erreur);
+  }
+  function poserEtat(maj) { return poserSeance({ etat: Object.assign({}, etat(), maj) }); }
+  function allerEtape(n) {
+    if (C.seance && C.seance.cloturee_le) return alert('La séance est clôturée.');
+    if (n < 0 || n > 8) return;
+    var champs = { etape: n };
+    /* l'échange démarre son chrono en ouvrant l'étape 4 */
+    if (n === 4 && !etat().echange_depuis) champs.etat = Object.assign({}, etat(), { echange_depuis: Date.now() });
+    poserSeance(champs);
+  }
+  if (!PROJ) {
+    document.querySelectorAll('#onglets button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('#onglets button').forEach(function (x) { x.classList.toggle('actif', x === b); });
+        document.querySelectorAll('.panneau').forEach(function (p) { p.classList.toggle('actif', p.id === 'p-' + b.dataset.onglet); });
+      });
+    });
+    $('#btn-avancer').addEventListener('click', function () { allerEtape(etape() + 1); });
+    $('#btn-revenir').addEventListener('click', function () { allerEtape(etape() - 1); });
+    $('#b-tirer').addEventListener('click', function () {
+      if (Object.keys(C.binomes).length && !confirm('Refaire TOUT le tirage ? Les élèves déjà assis ensemble devront changer.')) return;
+      EMC.rpc('emc_jdr_tirer', { p_classe: id(), p_tout: true }).then(function (n) { $('#b-info').textContent = n + ' élève(s) placé(s).'; relireBinomes(); }, erreur);
+    });
+    $('#b-retard').addEventListener('click', function () {
+      EMC.rpc('emc_jdr_tirer', { p_classe: id(), p_tout: false }).then(function (n) { $('#b-info').textContent = n ? n + ' retardataire(s) placé(s).' : 'Personne à placer.'; relireBinomes(); }, erreur);
+    });
+    $('#o-tirer').addEventListener('click', function () {
+      var nums = numeros();
+      if (!nums.length) return alert('Tire d\'abord les binômes.');
+      if (etat().ordre && !confirm('Tirer un nouvel ordre de passage ?')) return;
+      for (var i = nums.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = nums[i]; nums[i] = nums[j]; nums[j] = t; }
+      poserEtat({ ordre: nums, courant: 0, depuis: Date.now() });
+    });
+    $('#o-suiv').addEventListener('click', function () { var o = etat().ordre || []; if ((etat().courant || 0) + 1 < o.length) poserEtat({ courant: (etat().courant || 0) + 1, depuis: Date.now() }); });
+    $('#o-prec').addEventListener('click', function () { if ((etat().courant || 0) > 0) poserEtat({ courant: etat().courant - 1, depuis: Date.now() }); });
+    $('#o-chrono').addEventListener('click', function () { poserEtat({ depuis: Date.now() }); });
+  }
+
+  /* ---------- binômes ---------- */
+  function groupes() {
+    var g = {};
+    Object.keys(C.binomes).forEach(function (k) { var b = C.binomes[k]; (g[b.binome] = g[b.binome] || { num: b.binome, symbole: b.symbole, membres: [] }).membres.push(k); });
+    return Object.keys(g).map(function (k) { return g[k]; }).sort(function (a, b) { return a.num - b.num; });
+  }
+  function numeros() { return groupes().map(function (g) { return g.num; }); }
+  function groupe(num) { return groupes().filter(function (g) { return g.num === num; })[0]; }
+
+  /* ============================================================
+   *  Rendu
+   * ============================================================ */
+  function rendre() { if (!C.seance) return; if (PROJ) rendreProjection(); else rendrePilotage(); }
+
+  var choisi = null;
+  function rendrePilotage() {
+    var n = etape(), es = etapes(), l = liste();
+    $('#etape-titre').textContent = C.seance.cloturee_le ? 'séance clôturée' : n + ' · ' + ((es[n] || {}).titre || '');
+    var f = $('#frise'); f.innerHTML = '';
+    for (var i = 0; i <= 8; i++) (function (i) {
+      var e = es[i] || { titre: 'Étape ' + i };
+      f.appendChild(el('button', { type: 'button', class: i === n ? 'courante' : (i < n ? 'faite' : ''), onclick: function () { allerEtape(i); }, 'aria-current': i === n ? 'step' : null },
+        el('span', { class: 'n' }, String(i)), el('span', null, e.titre), e.duree ? el('span', { class: 'tresmuet' }, e.duree + ' min') : null));
+    })(i);
+    $('#btn-revenir').disabled = n <= 0; $('#btn-avancer').disabled = n >= 8;
+    var prets = l.filter(function (p) { return p.pret; }).length;
+    $('#n-prets').textContent = prets; $('#n-tous').textContent = l.length;
+    var rep = {}, sans = 0;
+    l.forEach(function (p) { var o = (C.jdr[p.eleve_id] || {}).origine; if (o) rep[o] = (rep[o] || 0) + 1; else sans++; });
+    var z = $('#origines'); z.innerHTML = '';
+    for (var o = 1; o <= (jdr().origines || 10); o++) z.appendChild(el('div', null, el('b', null, String(rep[o] || 0)), '2nde ' + o));
+    $('#sans-origine').textContent = sans ? sans + ' élève(s) n\'ont pas encore choisi leur classe.' : '';
+    /* ce qui compte à chaque étape */
+    var res = '', act = $('#actions-etape'); act.innerHTML = '';
+    var gs = groupes();
+    if (n === 2) res = gs.length ? gs.length + ' binôme(s) tirés' : '⚠️ Binômes pas encore tirés (onglet Binômes)';
+    if (n === 3) res = l.filter(function (p) { return ((C.jdr[p.eleve_id] || {}).questions || []).length; }).length + ' / ' + l.length + ' ont validé leurs questions';
+    if (n === 5) res = l.filter(function (p) { return Object.keys((C.jdr[p.eleve_id] || {}).feux || {}).length; }).length + ' / ' + l.length + ' ont donné leurs feux';
+    if (n === 6) res = etat().ordre ? 'Binôme ' + ((etat().courant || 0) + 1) + ' / ' + etat().ordre.length : '⚠️ Ordre de passage pas encore tiré';
+    if (n === 7) res = C.mur.filter(function (m) { return m.sorte === 'portrait'; }).length + ' portrait(s) reçu(s)';
+    if (n === 4) {
+      act.appendChild(el('button', { type: 'button', onclick: function () { poserEtat({ echange_depuis: Date.now() }); } }, '⏱ Relancer les 10 minutes'));
+    }
+    if (n === 6 || n === 7) act.appendChild(el('button', { type: 'button', onclick: function () { ouvrirOnglet(n === 6 ? 'presentations' : 'mur'); } }, n === 6 ? 'Aller aux présentations' : 'Aller aux portraits'));
+    $('#etape-resume').textContent = res;
+    $('#n-binomes').textContent = gs.length ? '(' + gs.length + ')' : '';
+    $('#n-mur').textContent = C.mur.length ? '(' + C.mur.filter(function (m) { return m.statut === 'propose'; }).length + ' à relire)' : '';
+    rendreBinomes(gs); rendreOrdre(); rendreMur();
+  }
+  function ouvrirOnglet(o) { document.querySelector('#onglets button[data-onglet=' + o + ']').click(); }
+
+  function rendreBinomes(gs) {
+    var z = $('#binomes'); z.innerHTML = '';
+    gs.forEach(function (g) {
+      var orig = g.membres.map(function (e) { return (C.jdr[e] || {}).origine; }).filter(Boolean);
+      var meme = new Set(orig).size < orig.length;
+      var b = el('div', { class: 'binome' + (meme ? ' alerte-meme' : '') },
+        el('div', { class: 'rangee', style: 'justify-content:space-between' }, el('span', { class: 'sym' }, g.symbole), el('span', { class: 'tresmuet' }, 'n° ' + g.num + (g.membres.length === 3 ? ' · trinôme' : '') + (meme ? ' · ⚠️ même classe' : ''))));
+      g.membres.forEach(function (e) {
+        var p = C.participants[e] || {}, j = C.jdr[e] || {};
+        b.appendChild(el('button', { type: 'button', class: 'membre' + (choisi === e ? ' choisi' : ''), onclick: function () { echanger(e); } },
+          el('span', null, el('b', null, nom(p.pseudo)), aNom(p.pseudo) ? el('span', { class: 'mono tresmuet' }, ' ' + p.pseudo) : null),
+          el('span', { class: 'tresmuet' }, j.origine ? '2nde ' + j.origine : '?')));
+      });
+      z.appendChild(b);
+    });
+    var sans = liste().filter(function (p) { return !C.binomes[p.eleve_id]; });
+    $('#sans-binome').innerHTML = '';
+    if (gs.length && sans.length) $('#sans-binome').appendChild(el('div', { class: 'encadre orange' }, '⏳ ' + sans.length + ' élève(s) sans binôme : ' + sans.map(function (p) { return nom(p.pseudo); }).join(', ') + '. « Placer les retardataires ».'));
+  }
+  function echanger(e) {
+    if (!choisi) { choisi = e; rendre(); return; }
+    if (choisi === e) { choisi = null; rendre(); return; }
+    var a = choisi; choisi = null;
+    if (C.binomes[a].binome === C.binomes[e].binome) { rendre(); return; }
+    EMC.rpc('emc_jdr_echanger', { p_classe: id(), p_a: a, p_b: e }).then(relireBinomes, erreur);
+  }
+
+  function rendreOrdre() {
+    var o = etat().ordre || [], c = etat().courant || 0, z = $('#ordre'); z.innerHTML = '';
+    if (!o.length) { z.appendChild(el('p', { class: 'tresmuet' }, 'Pas encore tiré.')); }
+    o.forEach(function (num, i) { var g = groupe(num); z.appendChild(el('span', { class: i < c ? 'fait' : i === c ? 'cour' : '', title: 'n° ' + num }, g ? g.symbole : '?')); });
+    var cour = $('#o-cour'); cour.innerHTML = '';
+    var r = $('#o-reconnu'); r.innerHTML = '';
+    var g = o.length ? groupe(o[c]) : null;
+    if (g) {
+      cour.appendChild(el('div', { style: 'font-size:3rem' }, g.symbole));
+      g.membres.forEach(function (e) { cour.appendChild(el('div', null, el('b', null, nom((C.participants[e] || {}).pseudo)))); });
+      var echelle = jdr().reconnu || [];
+      g.membres.forEach(function (e) {
+        var v = (C.jdr[e] || {}).reconnu, x = echelle.filter(function (k) { return k.v === v; })[0];
+        r.appendChild(el('div', null, nom((C.participants[e] || {}).pseudo) + ' : ', x ? x.e + ' ' + x.l : '—'));
+      });
+    }
+    var tous = liste().map(function (p) { return (C.jdr[p.eleve_id] || {}).reconnu; }).filter(Boolean);
+    if (tous.length) r.appendChild(el('p', { class: 'tresmuet' }, 'Moyenne de la séance : ' + (tous.reduce(function (a, b) { return a + b; }, 0) / tous.length).toFixed(1) + ' / 4 (' + tous.length + ' réponses)'));
+  }
+
+  function rendreMur() {
+    ['portrait', 'retiens'].forEach(function (sorte) {
+      var z = $('#mur-' + (sorte === 'portrait' ? 'portraits' : 'retiens')); z.innerHTML = '';
+      var l = C.mur.filter(function (m) { return m.sorte === sorte; });
+      if (!l.length) z.appendChild(el('p', { class: 'tresmuet' }, 'Rien pour l\'instant.'));
+      l.forEach(function (m) {
+        var p = C.participants[m.eleve_id] || {}, b = C.binomes[m.eleve_id];
+        var projete = sorte === 'portrait' && etat().portrait === m.eleve_id;
+        var actions = el('div', { class: 'rangee' },
+          m.statut !== 'valide' ? el('button', { type: 'button', class: 'primaire', onclick: function () { statut(m, 'valide'); } }, '✔ Valider') : null,
+          m.statut !== 'masque' ? el('button', { type: 'button', class: 'danger', onclick: function () { statut(m, 'masque'); } }, 'Écarter') : null,
+          sorte === 'portrait' && m.statut === 'valide' ? el('button', { type: 'button', class: projete ? 'cyan' : 'orange', onclick: function () { poserEtat({ portrait: m.eleve_id, revele: false }); } }, projete ? '📽 Projeté' : '📽 Projeter') : null,
+          projete ? el('button', { type: 'button', onclick: function () { poserEtat({ revele: !etat().revele }); } }, etat().revele ? 'Cacher' : '🎉 Révéler') : null);
+        z.appendChild(el('div', { class: 'mur-item' + (m.statut === 'masque' ? ' masque' : '') + (projete ? ' projete' : '') },
+          el('div', null, el('div', { class: 'texte' }, '« ' + m.texte + ' »'),
+            el('div', { class: 'tresmuet' }, (b ? b.symbole + ' ' : '') + 'par ' + nom(p.pseudo) + (m.statut === 'valide' ? ' · ✔ validé' : m.statut === 'masque' ? ' · écarté' : ' · à relire'))),
+          actions));
+      });
+    });
+  }
+  function statut(m, s) {
+    EMC.modifier('emc_mur?classe_id=eq.' + id() + '&eleve_id=eq.' + m.eleve_id + '&sorte=eq.' + m.sorte, { statut: s }).then(relireMur, erreur);
+  }
+
+  /* ---------- aide (pilotage seulement) ---------- */
+  var vues = null;
+  function rendreAide() {
+    var l = Object.keys(C.aide).map(function (k) { return C.aide[k]; });
+    var a = l.filter(function (x) { return x.statut === 'a_traiter'; }), z = $('#alerte-aide');
+    var neufs = vues ? a.filter(function (x) { return !vues[x.id]; }) : [];
+    vues = vues || {}; a.forEach(function (x) { vues[x.id] = true; });
+    if (neufs.length) bip(880, 2);
+    z.hidden = !l.length; z.innerHTML = ''; z.classList.toggle('calme', !a.length);
+    if (!l.length) return;
+    z.appendChild(el('h2', null, a.length ? '🔔 ' + a.length + ' demande(s) « J\'ai besoin d\'en parler » à traiter' : '✔ Demandes d\'aide : toutes prises en charge'));
+    l.forEach(function (x) {
+      var p = C.participants[x.eleve_id] || {};
+      z.appendChild(el('div', { class: 'aide-item' + (x.statut === 'a_traiter' ? '' : ' pris') },
+        el('div', null, el('b', null, nom(p.pseudo)), aNom(p.pseudo) ? el('span', { class: 'mono tresmuet' }, ' (' + p.pseudo + ')') : null,
+          (x.cases || []).length ? el('div', null, x.cases.map(function (c) { return el('span', { class: 'pastille', style: 'margin:.1rem .2rem .1rem 0' }, '☑ ' + c); })) : null,
+          x.message ? el('div', { style: 'white-space:pre-wrap' }, x.message) : null),
+        el('div', { class: 'rangee' },
+          x.statut === 'a_traiter'
+            ? el('button', { type: 'button', class: 'primaire', onclick: function () { EMC.modifier('emc_aide?id=eq.' + x.id, { statut: 'pris_en_charge' }).then(relireAide, erreur); } }, '✔ Pris en charge')
+            : el('button', { type: 'button', onclick: function () { EMC.modifier('emc_aide?id=eq.' + x.id, { statut: 'a_traiter' }).then(relireAide, erreur); } }, '↺ À traiter'))));
+    });
+  }
+
+  /* ============================================================
+   *  Projection — jamais un identifiant, jamais l'aide
+   * ============================================================ */
+  var clePrecedente = null, sonne = {};
+  function rendreProjection() {
+    var n = etape(), es = etapes(), j = jdr(), z = $('#proj'), l = liste(), gs = groupes();
+    var cle = JSON.stringify([n, C.seance.cloturee_le, etat(), l.length, l.filter(function (p) { return p.pret; }).length, gs.length,
+      Object.keys(C.jdr).map(function (k) { var r = C.jdr[k]; return [r.questions.length, Object.keys(r.feux || {}).length, r.reconnu]; }), C.mur.length]);
+    if (cle === clePrecedente) return;
+    clePrecedente = cle;
+    z.innerHTML = '';
+    if (C.seance.cloturee_le) { z.appendChild(el('h1', null, 'Merci à toutes et à tous ! 🙏')); return; }
+    var titre = (es[n] || {}).titre || '';
+    if (n === 0) {
+      z.appendChild(el('h1', null, '👋 ' + (j.titre || 'Je m\'appelle…')));
+      z.appendChild(el('h2', null, 'Prends ta carte, scanne-la, choisis ta classe… et touche « Je suis prêt·e »'));
+      var q = el('div', { class: 'p-qr' }); z.appendChild(q); EMC.Vues.qr(q, EMC.Vues.urlEleve());
+      z.appendChild(el('div', { class: 'p-grand', style: 'font-size:clamp(3rem,10vw,8rem)' }, l.filter(function (p) { return p.pret; }).length + ' / ' + l.length));
+      z.appendChild(el('div', { class: 'p-petit' }, 'prêts / présents'));
+    } else if (n === 1) {
+      z.appendChild(el('h1', null, j.titre || 'Je m\'appelle…'));
+      z.appendChild(el('ol', null, (j.consignes || []).map(function (t) { return el('li', null, t); })));
+      if (j.exemple) z.appendChild(el('div', { class: 'p-ex' }, el('b', { style: 'font-style:normal' }, '🎭 ' + j.exemple.titre), el('br'), j.exemple.texte));
+    } else if (n === 2) {
+      z.appendChild(el('h1', null, gs.length ? 'Trouve ton binôme !' : '🎲 Tirage au sort…'));
+      if (gs.length) {
+        z.appendChild(el('h2', null, 'Même symbole = même binôme. Jamais deux élèves de la même classe.'));
+        z.appendChild(el('div', { class: 'p-syms' }, gs.map(function (g) { return el('span', { title: g.membres.length === 3 ? 'trinôme' : '' }, g.symbole + (g.membres.length === 3 ? '³' : '')); })));
+      }
+    } else if (n === 3) {
+      var faits = l.filter(function (p) { return ((C.jdr[p.eleve_id] || {}).questions || []).length; }).length;
+      z.appendChild(el('h1', null, titre));
+      z.appendChild(el('h2', null, (j.min || 6) + ' à ' + (j.max || 8) + ' questions, au moins une par thème'));
+      z.appendChild(el('div', { class: 'p-syms', style: 'font-size:clamp(2rem,6vh,4rem)' }, (j.themes || []).map(function (t) { return el('span', { title: t.titre }, t.icone || ''); })));
+      z.appendChild(el('div', { class: 'p-grand', style: 'font-size:clamp(3rem,10vw,8rem)' }, faits + ' / ' + l.length));
+      z.appendChild(el('div', { class: 'p-petit' }, 'ont choisi leurs questions'));
+    } else if (n === 4) {
+      z.appendChild(el('h1', null, 'L\'échange'));
+      z.appendChild(el('div', { class: 'p-grand', id: 'p-chrono' }, '10:00'));
+      z.appendChild(el('h2', { id: 'p-sous' }, ''));
+      z.appendChild(el('div', { class: 'p-petit' }, '🔒 Les notes restent sur les tablettes.'));
+    } else if (n === 5) {
+      var feux = l.filter(function (p) { return Object.keys((C.jdr[p.eleve_id] || {}).feux || {}).length; }).length;
+      z.appendChild(el('h1', null, '🟢 Feu vert · 🔴 Feu rouge'));
+      z.appendChild(el('div', { class: 'p-texte' }, j.feux || ''));
+      z.appendChild(el('div', { class: 'p-grand', style: 'font-size:clamp(3rem,9vw,7rem)' }, feux + ' / ' + l.length));
+    } else if (n === 6) {
+      var o = etat().ordre || [], c = etat().courant || 0, g = o.length ? groupe(o[c]) : null;
+      if (!g) { z.appendChild(el('h1', null, '🎲 L\'ordre de passage…')); }
+      else {
+        z.appendChild(el('div', { class: 'p-petit' }, 'Présentation ' + (c + 1) + ' sur ' + o.length));
+        z.appendChild(el('div', { class: 'p-sym' }, g.symbole));
+        z.appendChild(el('div', { class: 'p-grand', id: 'p-chrono', style: 'font-size:clamp(3rem,10vw,8rem)' }, '1:00'));
+        z.appendChild(el('h2', null, '« Je m\'appelle… »'));
+        var echelle = j.reconnu || [], votes = g.membres.map(function (e) { return (C.jdr[e] || {}).reconnu; }).filter(Boolean);
+        if (votes.length) z.appendChild(el('div', { class: 'p-reconnu' }, votes.map(function (v) { var x = echelle.filter(function (k) { return k.v === v; })[0]; return x ? x.e : ''; }).join(' ')));
+        var suite = o.slice(c + 1, c + 6).map(function (num) { var h = groupe(num); return h ? h.symbole : ''; });
+        if (suite.length) z.appendChild(el('div', { class: 'p-petit' }, 'Ensuite : ' + suite.join('  ')));
+      }
+    } else if (n === 7) {
+      var m = C.mur.filter(function (x) { return x.sorte === 'portrait' && x.eleve_id === etat().portrait && x.statut === 'valide'; })[0];
+      z.appendChild(el('h1', null, '🕵️ Portrait mystère'));
+      if (!m) z.appendChild(el('h2', null, 'Qui est-ce ? Le premier portrait arrive…'));
+      else {
+        z.appendChild(el('div', { class: 'p-texte' }, '« ' + m.texte + ' »'));
+        var b = C.binomes[m.eleve_id];
+        z.appendChild(etat().revele && b ? el('div', { class: 'p-sym' }, b.symbole) : el('h2', null, 'Qui est-ce ?'));
+      }
+    } else if (n === 8) {
+      z.appendChild(el('h1', null, 'Merci ! 🙏'));
+      var ph = C.mur.filter(function (x) { return x.sorte === 'retiens' && x.statut === 'valide'; });
+      if (ph.length) z.appendChild(el('div', { class: 'p-mur' }, ph.map(function (x) { return el('div', null, x.texte); })));
+      else z.appendChild(el('h2', null, 'Ce que je retiens de mon binôme…'));
+    }
+  }
+
+  /* ---------- chronos (pilotage et projection) ---------- */
+  function tic() {
+    if (!C.seance) return;
+    var n = etape();
+    if (!PROJ) {
+      var cle = 'emc.chrono.' + id(), v = null;
+      try { v = JSON.parse(sessionStorage.getItem(cle)); } catch (e) {}
+      if (!v || v.etape !== n) { v = { etape: n, depuis: Date.now() }; try { sessionStorage.setItem(cle, JSON.stringify(v)); } catch (e) {} }
+      var s = Math.floor((Date.now() - v.depuis) / 1000), d = ((etapes()[n] || {}).duree || 0) * 60;
+      $('#chrono').textContent = mmss(s); $('#chrono').classList.toggle('depasse', !!d && s > d);
+      $('#duree').textContent = d ? '/ ' + (d / 60) + ' min prévues' : '';
+      return;
+    }
+    var pc = document.getElementById('p-chrono'); if (!pc) return;
+    if (n === 4) {
+      var total = (jdr().echange_minutes || 10) * 60, dep = etat().echange_depuis;
+      if (!dep) { pc.textContent = mmss(total); return; }
+      var ec = (Date.now() - dep) / 1000, reste = total - ec;
+      pc.textContent = reste > 0 ? mmss(reste) : '0:00';
+      pc.className = 'p-grand' + (reste <= 0 ? ' fini' : ec >= total / 2 ? ' moitie' : '');
+      $('#p-sous').textContent = reste <= 0 ? '⏰ Terminé !' : ec >= total / 2 ? '🔄 Changez de rôle !' : 'L\'un interroge, l\'autre répond';
+      if (ec >= total / 2 && !sonne['m' + dep]) { sonne['m' + dep] = 1; if (ec < total / 2 + 3) bip(880, 3); }
+      if (reste <= 0 && !sonne['f' + dep]) { sonne['f' + dep] = 1; if (reste > -3) bip(520, 3); }
+    }
+    if (n === 6) {
+      var t = (jdr().presentation_secondes || 60), dp = etat().depuis;
+      if (!dp) return;
+      var r = t - (Date.now() - dp) / 1000;
+      pc.textContent = r > 0 ? mmss(r) : '0:00';
+      pc.className = 'p-grand' + (r <= 0 ? ' fini' : r <= 15 ? ' moitie' : '');
+      if (r <= 0 && !sonne['p' + dp]) { sonne['p' + dp] = 1; if (r > -3) bip(520, 2); }
+    }
+  }
+})();
+</script>
+</body>
+</html>

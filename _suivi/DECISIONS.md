@@ -15,13 +15,29 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 08/11/2026 — EMC seconde : six séances, cartes éphémères, jeu de rôle d'accueil
+
+| Date | Décision | Statut |
+|---|---|---|
+| 08/11/2026 | **Six séances, trois modules** (`emc_seances.module`, 034) : accueil du **groupe D** par le jeu de rôle « Je m'appelle… » (jeudi 8 h 30 – 10 h 10, classe `JDRD12`) ; **Labyrinthe de Nina** pour les groupes **A, B, J, G** (les 4 classes du 031, libellés datés) ; **restitution avec la 2nde 1** (vendredi 14 h – 15 h 15, `REST21`). Le groupe D n'est **pas** le groupe A | ✅ en vigueur (Loïc) |
+| 08/11/2026 | **Tous les élèves entrent par une carte éphémère**, à toutes les séances, y compris ceux qui ont un compte sur le site : identifiant lisible (`d-renard-07`) + code à 4 chiffres, ou QR code. **Plus de création de compte par l'élève, plus de porte « j'ai déjà un compte ».** Cartes générées en un clic par le prof (fonction Edge `emc-cartes`), imprimées en planche A4 avec la feuille de correspondance pré-remplie, supprimées en un clic (`emc_supprimer_comptes`, inchangée) | ✅ en vigueur (Loïc) |
+| 08/11/2026 | **Mot de passe dérivé du code** : 4821 → `Emc-4821`, pour respecter la politique du projet sans l'assouplir pour tout le site. 10 000 combinaisons par carte : accepté (comptes de deux jours, rien de sensible en base) | ✅ en vigueur (Loïc) |
+| 08/11/2026 | **La page EMC a sa propre session** (`emc.session`), à part de `snt.session` : une carte ne déconnecte jamais un élève de son compte habituel sur son iPad, et la page EMC ne s'ouvre jamais d'elle-même sur ce compte (crainte de Loïc). `progression.js` n'est plus chargé par `emc/index.html` | ✅ en vigueur |
+| 08/11/2026 | **Création des comptes par une fonction Edge** (`supabase/functions/emc-cartes`), pas par le navigateur : la limite d'Auth par adresse IP et le remplacement de la session du prof l'interdisaient. Le droit est décidé **par la base** (`emc_cartes_autoriser`, appelée avec le jeton du prof) ; la clé de service ne sert qu'à créer et inscrire | ✅ en vigueur |
+| 08/11/2026 | **Limite d'Auth « sign-ups and sign-ins » relevée** dans le tableau de bord Supabase (30 par 5 min et par IP par défaut : la salle entière sort par une seule adresse) | ✅ fait (Loïc) |
+| 08/11/2026 | **Jeu de rôle : les notes de l'échange ne quittent jamais la tablette** (localStorage seul, hors file d'envoi), effacées à l'étape 8, à la fin et à la déconnexion. En base : classe d'origine, numéros de questions, feux oui/non, vote « reconnu·e » (`emc_jdr`). Portrait mystère et « ce que je retiens » passent par un **mur modéré** (`emc_mur`), projetés seulement validés, sans nom, **effacés à la clôture** | ✅ en vigueur |
+| 08/11/2026 | **Tirage des binômes en base** (`emc_jdr_tirer`), figé (une reconnexion retrouve le même binôme), classes d'origine croisées, trinôme si impair, retardataires placés sans défaire le tirage | ✅ en vigueur |
+| 08/11/2026 | **Exemple « Pierre Marchand » écrit par Claude** (questions 2, 9, 15, 17, 22, 27), réglable au tableau de bord | ⏳ à relire (Loïc) |
+| 08/11/2026 | **Remise à zéro d'une séance** (`emc_reinitialiser`) après une répétition : le travail des élèves part, les cartes restent valables | ✅ en vigueur |
+| 08/11/2026 | **Séance 6 (restitution)** : pas de liste des ateliers des collègues, **chaque élève écrit les ateliers qu'il a faits** (avec un mot-clé et la liberté en jeu) ; le prof forme les groupes par atelier (proposition automatique, retouchable). Production commune : **un mur de post-it** (fait · appris · liberté), une colonne par groupe, tour de parole d'une minute. Liste des libertés proposée par Claude, à relire | ✅ en vigueur (Loïc) |
+
 ## 07/11/2026 — EMC seconde, la séance pilotée autour du « Labyrinthe de Nina »
 
 | Date | Décision | Statut |
 |---|---|---|
 | 07/11/2026 | **Identifiants seulement, aucun nom réel en base** — y compris dans « J'ai besoin d'en parler », qui reste nominatif par le pseudonyme. La correspondance identifiant ↔ nom passe par une **feuille papier** qui circule à chaque créneau (`fiches/emc/feuille-correspondance.html`), pour tous les élèves, comptes existants compris | ✅ en vigueur (Loïc) |
-| 07/11/2026 | **Pas de mode invité** : l'élève sans compte en crée un vrai, avec le code EMC (mécanisme existant de `progression.js`). Les comptes créés pour l'EMC sont **supprimés après la séance** par `emc_supprimer_comptes()` (031), qui épargne tout compte ayant une classe hors EMC | ✅ en vigueur (Loïc) |
-| 07/11/2026 | **Une classe EMC par créneau** (4 codes `NINA27`, `NINA48`, `NINA63`, `NINA91`, espace `emc`), Loïc et Mme Castel rattachés à chacune, mêmes droits | ✅ en vigueur |
+| 07/11/2026 | ~~**Pas de mode invité** : l'élève sans compte en crée un vrai, avec le code EMC (mécanisme existant de `progression.js`).~~ Remplacé le 08/11 par les cartes éphémères. Reste en vigueur : les comptes de l'EMC sont **supprimés après la séance** par `emc_supprimer_comptes()` (031), qui épargne tout compte ayant une classe hors EMC | ~~remplacée~~ (08/11) |
+| 07/11/2026 | **Une classe EMC par créneau**, Loïc et Mme Castel rattachés à chacune, mêmes droits. ~~4 codes écrits au tableau~~ : depuis le 08/11, six séances, et les codes ne se dictent plus (la carte porte sa séance) | ✅ en vigueur, élargie le 08/11 |
 | 07/11/2026 | **Realtime** (supabase-js 2.45.4 **auto-hébergé**, seulement pour le direct), sur l'offre gratuite. Chaque écoute a une relecture de secours ; les iPad ne reçoivent en direct que **leur zone** de la carte (budget de 2 M de messages par mois) | ✅ en vigueur |
 | 07/11/2026 | **Carte mentale complète, sans repli** : Konva 9.3.6 auto-hébergé (tldraw et Excalidraw exigent React et une construction). 8 zones, **sous-zones** de guidage réglables, zoom large. L'écriture hors de sa zone est refusée **par la base** (`emc_dans_zone`, chaque point contrôlé). Pas d'import d'image | ✅ en vigueur (Loïc) |
 | 07/11/2026 | **Tout contenu se règle au tableau de bord** (`emc_contenus`, commun aux 4 créneaux), pré-rempli avec les annexes du plan, validées avec Mme Castel | ✅ en vigueur (Loïc) |

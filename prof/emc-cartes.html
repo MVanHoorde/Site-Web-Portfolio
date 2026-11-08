@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Cartes EMC à imprimer</title>
+<!--
+  Les cartes éphémères d'une séance d'EMC, à imprimer et découper
+  (034, décision du 08/11/2026) : 10 cartes par feuille A4, chacune
+  avec son identifiant, son code à 4 chiffres et un QR code qui
+  connecte directement. Puis la feuille de correspondance, avec les
+  identifiants DÉJÀ ÉCRITS : l'élève n'ajoute que son nom, son prénom
+  et sa classe à côté de l'identifiant de sa carte.
+  Reprend la session du tableau de bord (prof-api.js). Les codes ne
+  sont lisibles que des enseignants de la classe (emc_cartes).
+  ?classe=JDRD12
+-->
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+  @page { size: A4; margin: 0; }
+  :root { --ink: #161f33; --soft: #4a566e; --line: #b9c3d3; --marine: #173d6b; --orange: #e8743b; --cyan: #3fa7d6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--ink); font: 10.5pt/1.4 'Inter', 'IBM Plex Sans', sans-serif; background: #e9edf3; }
+  .outils { position: sticky; top: 0; z-index: 2; background: var(--marine); color: #fff; padding: .7rem 1rem;
+            display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; font-family: 'Inter', sans-serif; }
+  .outils button, .outils a { font: 600 1rem 'Inter', sans-serif; padding: .5rem 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,.4);
+            background: transparent; color: #fff; text-decoration: none; cursor: pointer; min-height: 44px; }
+  .outils button.primaire { background: var(--orange); border-color: var(--orange); }
+  .outils .info { opacity: .85; }
+  #message { max-width: 700px; margin: 2rem auto; background: #fff; padding: 1rem 1.2rem; border-radius: 12px; }
+  .feuille { width: 210mm; height: 297mm; margin: 8mm auto; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.12);
+             page-break-after: always; overflow: hidden; }
+  .feuille:last-child { page-break-after: auto; }
+  /* 10 cartes : 2 colonnes × 5 rangées, traits de coupe en pointillés */
+  .planche { display: grid; grid-template-columns: 105mm 105mm; grid-template-rows: repeat(5, 59.4mm); }
+  .carte { border: 0.3mm dashed #9aa6b8; padding: 4mm 5mm; display: grid; grid-template-columns: 1fr 31mm; gap: 1mm 3mm; align-content: start; }
+  .carte .tete { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline;
+                 font: 600 8.5pt 'Space Grotesk', sans-serif; color: var(--marine); border-bottom: 0.4mm solid var(--orange); padding-bottom: 1mm; }
+  .carte .tete span:last-child { color: var(--soft); font-weight: 500; }
+  .carte .champ { font-size: 7.5pt; color: var(--soft); text-transform: uppercase; letter-spacing: .04em; margin-top: 1.5mm; }
+  .carte .ident { font: 600 14pt 'IBM Plex Mono', monospace; line-height: 1.1; }
+  .carte .code { font: 700 22pt 'Space Grotesk', sans-serif; letter-spacing: .25em; line-height: 1.05; }
+  .carte .qr { grid-row: 2 / span 5; grid-column: 2; align-self: center; }
+  .carte .qr svg { width: 31mm; height: 31mm; display: block; }
+  .carte .pied { grid-column: 1 / -1; font-size: 7pt; color: var(--soft); margin-top: 1mm; line-height: 1.25; }
+  .carte .pied b { color: var(--ink); }
+  .carte.vide { border-color: transparent; }
+  /* la feuille de correspondance */
+  .corresp { padding: 13mm 13mm 11mm; display: flex; flex-direction: column; }
+  .corresp header { border-bottom: 2px solid var(--marine); padding-bottom: 2.5mm; margin-bottom: 3mm; }
+  .corresp h1 { font-family: 'Space Grotesk', sans-serif; font-size: 15pt; margin: 0 0 1.5mm; }
+  .corresp .consigne { font-size: 10pt; margin: 0 0 3mm; padding: 2mm 3mm; border-left: 4px solid var(--orange); background: #fbf3ee; }
+  .corresp table { width: 100%; border-collapse: collapse; }
+  .corresp th { font-family: 'Space Grotesk', sans-serif; font-size: 9.5pt; text-align: left; border-bottom: 1.5px solid var(--ink); padding: 1.5mm 2mm; }
+  .corresp td { border-bottom: 1px solid var(--line); height: 10.6mm; padding: 0 2mm; }
+  .corresp td.n { width: 9mm; color: var(--soft); text-align: right; }
+  .corresp td.ident { width: 46mm; font: 600 10.5pt 'IBM Plex Mono', monospace; border-right: 1.5px solid var(--ink); }
+  .corresp td.classe { width: 24mm; }
+  .corresp footer { font-size: 8pt; color: var(--soft); margin-top: auto; padding-top: 2.5mm; display: flex; justify-content: space-between; }
+  @media print {
+    body { background: #fff; }
+    .outils, #message { display: none !important; }
+    .feuille { margin: 0; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="outils">
+  <a href="emc.html" id="retour">← Pilotage</a>
+  <button type="button" class="primaire" id="imprimer" disabled>🖨 Imprimer</button>
+  <span class="info" id="info">Chargement…</span>
+</div>
+<div id="message" hidden></div>
+<div id="feuilles"></div>
+
+<script src="../assets/js/prof-api.js?v=3"></script>
+<script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
+<script src="../assets/js/emc-commun.js?v=3"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = EMC.echapper;
+  function message(t) { var m = $('#message'); m.hidden = !t; m.textContent = t || ''; $('#info').textContent = ''; }
+
+  var code = (EMC.parametre('classe') || '').toUpperCase();
+  $('#retour').href = 'emc.html' + (code ? '?classe=' + encodeURIComponent(code) : '');
+  $('#imprimer').addEventListener('click', function () { window.print(); });
+
+  /* …/Site-Web-Portfolio/prof/emc-cartes.html → …/Site-Web-Portfolio/emc/ */
+  var page = location.origin + location.pathname.replace(/prof\/[^\/]*$/, 'emc/');
+  function urlCarte(c) { return page + '?carte=' + encodeURIComponent(c.identifiant) + '&k=' + c.code; }
+  function qr(url) {
+    var q = qrcode(0, 'M'); q.addData(url); q.make();
+    return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+  }
+
+  ProfAPI.reprendre().then(function () {
+    EMC.demarrer('prof');
+    if (!code) throw new Error('Ouvre cette page depuis le pilotage d\'une séance (onglet Cartes).');
+    return EMC.lire('classes?select=id,code,libelle&espace=eq.emc&code=eq.' + encodeURIComponent(code));
+  }).then(function (l) {
+    if (!l || !l.length) throw new Error('La séance ' + code + ' n\'existe pas ou n\'est pas rattachée à ton compte.');
+    var classe = l[0];
+    return EMC.lire('emc_cartes?select=identifiant,code&classe_id=eq.' + classe.id + '&order=identifiant').then(function (cartes) {
+      rendre(classe, cartes);
+    });
+  }).catch(function (e) {
+    message(/PAS_DE_SESSION|session/i.test(String(e && e.message)) || !window.ProfAPI
+      ? 'Pas de session : connecte-toi d\'abord au tableau de bord, puis reviens ici.'
+      : EMC.message(e));
+  });
+
+  function rendre(classe, cartes) {
+    var groupe = String(classe.libelle).split(' · ')[0];
+    var quand = String(classe.libelle).split(' · ')[1] || '';
+    document.title = 'Cartes EMC — ' + groupe;
+    if (!cartes.length) { message('Aucune carte pour cette séance : génère-les depuis le pilotage (onglet Cartes).'); return; }
+    var html = '';
+    for (var i = 0; i < cartes.length; i += 10) {
+      html += '<div class="feuille"><div class="planche">';
+      for (var j = i; j < i + 10; j++) {
+        var c = cartes[j];
+        if (!c) { html += '<div class="carte vide"></div>'; continue; }
+        html += '<div class="carte">'
+          + '<div class="tete"><span>EMC seconde · ' + esc(groupe) + '</span><span>' + esc(quand) + '</span></div>'
+          + '<div class="champ">Identifiant</div><div class="ident">' + esc(c.identifiant) + '</div>'
+          + '<div class="champ">Code</div><div class="code">' + esc(c.code) + '</div>'
+          + '<div class="qr" aria-hidden="true">' + qr(urlCarte(c)) + '</div>'
+          + '<div class="pied">📷 Scanne le QR code, ou tape l\'identifiant et le code sur '
+          + '<b>' + esc(page.replace(/^https?:\/\//, '').replace(/\/$/, '')) + '</b>. '
+          + 'Carte personnelle, pour cette séance seulement : <b>garde-la jusqu\'à la fin</b>.</div>'
+          + '</div>';
+      }
+      html += '</div></div>';
+    }
+    /* la feuille de correspondance : 20 lignes par page */
+    for (var k = 0, p = 1, nbp = Math.ceil(cartes.length / 20); k < cartes.length; k += 20, p++) {
+      var lignes = '';
+      cartes.slice(k, k + 20).forEach(function (c, n) {
+        lignes += '<tr><td class="n">' + (k + n + 1) + '</td><td class="ident">' + esc(c.identifiant) + '</td><td></td><td></td><td class="classe"></td></tr>';
+      });
+      html += '<div class="feuille corresp"><header><h1>EMC seconde · ' + esc(groupe) + ' · Qui est qui</h1>'
+        + '<div>' + esc(quand) + ' · page ' + p + ' / ' + nbp + '</div></header>'
+        + (p === 1 ? '<p class="consigne">Trouve l\'<b>identifiant de ta carte</b> dans la liste et écris à côté ton nom, ton prénom et ta classe. '
+          + 'Ton code, lui, <b>ne s\'écrit nulle part</b>. Cette feuille reste aux professeurs : elle ne va pas en ligne.</p>' : '')
+        + '<table><thead><tr><th></th><th>Identifiant</th><th>Nom</th><th>Prénom</th><th>Classe</th></tr></thead><tbody>' + lignes + '</tbody></table>'
+        + '<footer><span>Feuille enseignant — ne pas photographier, ne pas saisir en ligne.</span><span>M. Van Hoorde · Mme Castel</span></footer></div>';
+    }
+    $('#feuilles').innerHTML = html;
+    $('#info').textContent = cartes.length + ' carte(s) · ' + Math.ceil(cartes.length / 10) + ' planche(s) à découper, puis la feuille de correspondance.';
+    $('#imprimer').disabled = false;
+  }
+})();
+</script>
+</body>
+</html>

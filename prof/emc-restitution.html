@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pilotage EMC — Nos libertés</title>
+<!--
+  Pilotage et projection de la restitution avec la 2nde 1 (module
+  'restitution', 034 §5b, décisions de Loïc du 08/11 : ateliers
+  écrits librement, mur de post-it). Une page, deux vues :
+    ?classe=REST21                  le pilotage
+    ?classe=REST21&vue=projection   la projection
+  🔴 La projection n'affiche jamais un identifiant ni un nom, ne lit
+  jamais emc_aide, ne montre que les post-it non masqués, les mots non
+  masqués et les définitions validées.
+-->
+<link rel="stylesheet" href="../assets/css/emc.css?v=2">
+<style>
+  .emc-barre .pastille{background:rgba(255,255,255,.12);color:#fff;border-color:transparent}
+  .emc-barre .pastille.ok{background:#1f8f63}
+  .emc-barre .pastille.att{background:#9a6a00}
+  .emc-barre a.bouton,.emc-barre button.lien{min-height:38px;padding:.3rem .8rem;background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+  #alerte-aide{background:var(--err);color:#fff;padding:.7rem 1rem;position:sticky;top:56px;z-index:19}
+  #alerte-aide h2{margin:0 0 .4rem;font-size:1.15rem}
+  #alerte-aide.calme{background:var(--surface-2);color:var(--ink);padding:.4rem 1rem}
+  .aide-item{background:#fff;color:var(--ink);border-radius:10px;padding:.6rem .8rem;margin:.4rem 0;display:grid;grid-template-columns:1fr auto;gap:.3rem .8rem;align-items:center}
+  .aide-item.pris{opacity:.65}
+  .gros-chiffre{font:700 3.2rem/1 'Space Grotesk',sans-serif}
+  .gros-chiffre small{font-size:1.2rem;color:var(--ink-soft);font-weight:600}
+  .chrono{font:600 1.4rem 'IBM Plex Mono',monospace}
+  .chrono.depasse{color:var(--err)}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:.85em}
+  table.liste{width:100%;border-collapse:collapse;font-size:.95rem}
+  table.liste th,table.liste td{padding:.4rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  table.liste select{width:auto;min-height:36px}
+  .ateliers span{display:inline-block;margin:.15rem .25rem .15rem 0}
+  .groupes-ed{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.6rem}
+  .groupe-ed{border:1px solid var(--line);border-radius:12px;padding:.5rem .7rem;background:var(--surface)}
+  .groupe-ed input{min-height:36px}
+  .mur{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem;align-items:start}
+  .colonne{background:var(--surface-2);border-radius:12px;padding:.5rem;min-height:120px}
+  .colonne.oral{outline:4px solid var(--orange)}
+  .colonne h3{margin:.1rem .2rem .5rem;display:flex;gap:.4rem;align-items:center;justify-content:space-between}
+  .postit{position:relative;padding:.55rem .65rem .9rem;margin:.45rem 0;border-radius:4px;box-shadow:0 3px 8px rgba(0,0,0,.15);font-size:1rem;line-height:1.3}
+  .postit.masque{opacity:.4;text-decoration:line-through}
+  .postit .act{display:flex;gap:.3rem;margin-top:.35rem}
+  .postit .act button{min-height:30px;padding:.05rem .5rem;font-size:.8rem;background:rgba(255,255,255,.6)}
+  .def-item{display:grid;grid-template-columns:1fr auto;gap:.4rem;border-bottom:1px solid var(--line);padding:.45rem 0;align-items:center}
+  .def-item.masque{opacity:.5;text-decoration:line-through}
+  /* projection */
+  body.projection{background:#0f1a2e;color:#fff;overflow:hidden}
+  body.projection .emc-page{max-width:none;padding:2vh 2vw}
+  #proj{min-height:92vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:2vh}
+  #proj h1{font:700 clamp(2rem,5vw,4.5rem)/1.1 'Space Grotesk',sans-serif;margin:0;color:#fff}
+  #proj h2{font:600 clamp(1.3rem,2.8vw,2.4rem)/1.2 'Space Grotesk',sans-serif;margin:0;color:#ffd6b8}
+  #proj .p-grand{font:700 clamp(3rem,10vw,8rem)/1 'Space Grotesk',sans-serif}
+  #proj .p-petit{font-size:clamp(1rem,1.8vw,1.5rem);opacity:.85}
+  #proj .p-texte{font:600 clamp(1.4rem,3vw,2.6rem)/1.35 'Inter',sans-serif;max-width:85vw}
+  #proj .p-qr{background:#fff;padding:12px;border-radius:12px;width:min(28vh,260px)}
+  #proj .p-qr svg{width:100%;height:auto;display:block}
+  #proj .v-nuage{font-size:clamp(1.2rem,2.4vw,2.2rem)}
+  #proj .v-barres{width:min(80vw,900px);font-size:clamp(1rem,1.8vw,1.5rem);text-align:left}
+  #proj .mur{width:96vw;text-align:left}
+  #proj .colonne{background:rgba(255,255,255,.08)}
+  #proj .colonne h3{color:#fff;font-size:clamp(1rem,1.6vw,1.5rem)}
+  #proj .postit{color:#161f33;font-size:clamp(.9rem,1.3vw,1.25rem)}
+  #proj .p-groupes{display:flex;flex-wrap:wrap;gap:2vh 3vw;justify-content:center}
+  #proj .p-groupes div{font-size:clamp(1.2rem,2.2vw,2rem)}
+  #proj .p-groupes b{display:block;font-size:clamp(3rem,8vh,5rem)}
+  #proj .p-def{font:italic 500 clamp(1.4rem,3vw,2.6rem)/1.4 'Inter',sans-serif;max-width:80vw;min-height:20vh;transition:opacity .6s}
+  .barre-proj{position:fixed;right:1rem;bottom:1rem;display:flex;gap:.4rem;opacity:.25}
+  .barre-proj:hover{opacity:1}
+  .barre-proj button{background:rgba(255,255,255,.15);color:#fff;border-color:transparent}
+</style>
+</head>
+<body>
+
+<header class="emc-barre" id="barre">
+  <span class="titre" id="titre">Pilotage EMC — Nos libertés</span>
+  <span class="pastille direct-etat" id="direct">…</span>
+  <span class="espace"></span>
+  <a class="bouton" id="lien-projection" target="_blank" hidden>Projection ↗</a>
+  <a class="bouton" href="emc-contenus.html">Contenus</a>
+  <a class="bouton" href="index.html">← Tableau de bord</a>
+</header>
+<section id="alerte-aide" hidden aria-live="assertive"></section>
+
+<div class="emc-page">
+  <div id="message" class="encadre" hidden></div>
+  <div id="appli" hidden>
+    <nav class="onglets" role="tablist" id="onglets">
+      <button data-onglet="seance" class="actif">Séance</button>
+      <button data-onglet="cartes">🎟 Cartes</button>
+      <button data-onglet="groupes">Parcours & groupes</button>
+      <button data-onglet="mur">Le mur <span id="n-postits" class="tresmuet"></span></button>
+      <button data-onglet="definitions">Définitions <span id="n-defs" class="tresmuet"></span></button>
+      <button data-onglet="exports">Exports</button>
+      <button data-onglet="cloture">Clôture</button>
+    </nav>
+
+    <section class="panneau actif" id="p-seance">
+      <div class="carte-blanche">
+        <div class="rangee" style="justify-content:space-between">
+          <h2 style="margin:0">Étape en cours : <span id="etape-titre">—</span></h2>
+          <div class="rangee">
+            <button type="button" id="btn-revenir">◀ Revenir</button>
+            <button type="button" class="orange" id="btn-avancer">Avancer ▶</button>
+          </div>
+        </div>
+        <div class="etapes" id="frise" style="margin-top:.8rem"></div>
+        <div class="rangee" style="margin-top:.8rem;gap:1.5rem">
+          <span>Chrono de l'étape : <span class="chrono" id="chrono">0:00</span> <span class="tresmuet" id="duree"></span></span>
+          <span id="etape-resume" style="font-weight:600"></span>
+        </div>
+        <p class="tresmuet">Fin à 15 h 15 au plus tard : exports et clôture se font aussi plus tard, depuis le tableau de bord.</p>
+      </div>
+      <div class="carte-blanche">
+        <h3>Prêts / présents</h3>
+        <div class="gros-chiffre"><span id="n-prets">0</span> <small>/ <span id="n-tous">0</span> présents</small></div>
+      </div>
+    </section>
+
+    <section class="panneau" id="p-cartes"></section>
+
+    <section class="panneau" id="p-groupes">
+      <div class="carte-blanche">
+        <h2>Les ateliers écrits par les élèves</h2>
+        <p class="muet">Regroupés par nom (sans accents ni majuscules). Un élève a pu en écrire plusieurs.</p>
+        <div class="ateliers" id="ateliers"></div>
+      </div>
+      <div class="carte-blanche">
+        <h2>Les groupes</h2>
+        <p class="muet">« Proposer » forme un groupe par atelier partagé, en équilibrant (chaque élève va dans un atelier qu'il a fait). Retouche ensuite les titres et les affectations, puis <b>« Envoyer aux tablettes »</b>.</p>
+        <div class="rangee">
+          <button type="button" class="orange" id="g-proposer">🧩 Proposer les groupes</button>
+          <button type="button" id="g-ajouter">➕ Un groupe</button>
+          <button type="button" class="primaire" id="g-envoyer">📤 Envoyer aux tablettes</button>
+          <span class="tresmuet" id="g-info"></span>
+        </div>
+        <div class="groupes-ed" id="groupes-ed" style="margin-top:.8rem"></div>
+      </div>
+      <div class="carte-blanche">
+        <h3>Élèves</h3>
+        <div style="overflow-x:auto"><table class="liste"><thead><tr><th>Élève</th><th>Ses ateliers</th><th>Groupe</th></tr></thead><tbody id="t-eleves"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="panneau" id="p-mur">
+      <div class="carte-blanche">
+        <h2>Le mur « Nos libertés »</h2>
+        <p class="muet">« Au tour de ce groupe » le met en avant à la projection, avec la minute de présentation. « Masquer » retire un post-it des écrans.</p>
+        <div class="rangee"><button type="button" id="oral-fin">Fin des présentations</button></div>
+      </div>
+      <div class="mur" id="mur"></div>
+    </section>
+
+    <section class="panneau" id="p-definitions">
+      <div class="grille2">
+        <div class="carte-blanche">
+          <h2>Le nuage : « la liberté, en un mot »</h2>
+          <p class="tresmuet">Touche un mot pour le masquer ou le démasquer.</p>
+          <div id="nuage-prof"></div>
+        </div>
+        <div class="carte-blanche">
+          <h2>Les définitions</h2>
+          <p class="tresmuet">Seules les définitions validées défilent à la projection, sans nom.</p>
+          <div id="defs"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panneau" id="p-exports">
+      <div class="carte-blanche">
+        <h2>Télécharger, imprimer, partager</h2>
+        <p class="muet">PDF en A4 paysage, sans aucun nom ni identifiant.</p>
+        <div class="rangee">
+          <button type="button" id="x-mur">📌 Le mur</button>
+          <button type="button" id="x-defs">☁️ Nuage et définitions</button>
+          <button type="button" class="primaire" id="x-tout">📚 Tout en un PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panneau" id="p-cloture"></section>
+  </div>
+  <div id="proj" hidden></div>
+</div>
+<div class="barre-proj" id="barre-proj" hidden><button type="button" id="p-plein">⛶</button></div>
+
+<script src="../assets/js/prof-api.js?v=3"></script>
+<script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
+<script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
+<script src="../assets/js/emc-commun.js?v=3"></script>
+<script src="../assets/js/emc-vues.js?v=2"></script>
+<script src="../assets/js/emc-export.js?v=1"></script>
+<script src="../assets/js/prof-emc-outils.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var el = EMC.el, V = EMC.Vues;
+  var PROJ = EMC.parametre('vue') === 'projection';
+  var C = { classe: null, seance: null, contenus: null, participants: {}, restit: {}, mots: [], postits: [], mur: [], masques: [], aide: {} };
+  var brouillon = null;     /* les groupes en cours d'édition, avant « Envoyer » */
+  function message(t) { var m = $('#message'); m.hidden = !t; m.textContent = t || ''; }
+  function erreur(e) { alert(EMC.message(e)); }
+  function nom(p) { return p ? ProfAPI.nomDe(p) : '?'; }
+  function id() { return C.classe.id; }
+  function rc() { return (C.contenus && C.contenus.restitution) || { postits: [], libertes: [] }; }
+  function etapes() { return (C.contenus && C.contenus.etapes_restitution) || []; }
+  function etape() { return C.seance ? C.seance.etape : 0; }
+  function etat() { return (C.seance && C.seance.etat) || {}; }
+  function liste() { return Object.keys(C.participants).map(function (k) { return C.participants[k]; }); }
+  function mmss(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  function symboles() { return ((C.contenus && C.contenus.jdr) || {}).symboles || ['🦊', '🚀', '🌵', '🐙', '🎸', '🍕', '🦄', '🐢', '⚡', '🌈', '🎈', '🍩']; }
+  function couleur(so) { var p = (rc().postits || []).filter(function (x) { return x.sorte === so; })[0]; return p ? p.couleur : '#fff'; }
+  function groupes() { return etat().groupes || []; }
+  function groupeDe(eid) { return (etat().affectations || {})[eid] || null; }
+
+  ProfAPI.reprendre().then(function () {
+    EMC.demarrer('prof');
+    var code = (EMC.parametre('classe') || '').toUpperCase();
+    if (!code) throw new Error('Ouvre cette page depuis le tableau de bord (espace EMC).');
+    return EMC.lire('classes?select=id,code,libelle&espace=eq.emc&code=eq.' + encodeURIComponent(code));
+  }).then(function (l) {
+    if (!l.length) throw new Error('Cette séance n\'existe pas ou n\'est pas rattachée à ton compte.');
+    C.classe = l[0];
+    return EMC.contenus();
+  }).then(function (c) { C.contenus = c; lancer(); })
+    .catch(function (e) { message(/session/i.test(String(e && e.message)) ? 'Pas de session : connecte-toi d\'abord au tableau de bord, puis reviens ici.' : EMC.message(e)); });
+
+  function lancer() {
+    var f = 'classe_id=eq.' + id();
+    if (PROJ) {
+      document.body.classList.add('projection');
+      $('#barre').style.display = 'none'; $('#proj').hidden = false; $('#barre-proj').hidden = false;
+      document.title = 'Projection — Nos libertés';
+    } else {
+      $('#appli').hidden = false; $('#titre').textContent = C.classe.libelle; document.title = 'Pilotage — ' + C.classe.code;
+      $('#lien-projection').hidden = false; $('#lien-projection').href = '?classe=' + encodeURIComponent(C.classe.code) + '&vue=projection';
+      EMC.ecouter('emc_aide', f, function () { relireAide(); }, relireAide, { periode: 2 });
+      EMC.Outils.cartes($('#p-cartes'), C.classe);
+      EMC.Outils.cloture($('#p-cloture'), C.classe, { apres: function () { brouillon = null; toutRelire(); } });
+    }
+    EMC.ecouter('emc_seances', f, function (s) { if (s && s.classe_id) { C.seance = s; rendre(); } }, relireSeance);
+    EMC.ecouter('emc_participants', f, function () { relireParticipants(); }, relireParticipants, { periode: 4 });
+    EMC.ecouter('emc_restit', f, function () { relireRestit(); }, relireRestit, { periode: 4 });
+    EMC.ecouter('emc_mots', f, function () { relireMots(); }, relireMots, { periode: 4 });
+    EMC.ecouter('emc_postits', f, function () { relirePostits(); }, relirePostits, { periode: 3 });
+    EMC.ecouter('emc_mur', f, function () { relireMur(); }, relireMur, { periode: 4 });
+    EMC.ecouter('emc_mots_masques', null, null, relireMasques, { sansDirect: true, periode: 6 });
+    document.addEventListener('emc:contenus', rendre);
+    document.addEventListener('emc:direct', majDirect); majDirect();
+    setInterval(tic, 500);
+  }
+  function majDirect() { var d = EMC.etatDirect(), p = $('#direct'); p.className = 'pastille direct-etat ' + (d === 'direct' ? 'ok' : 'att'); p.textContent = d === 'direct' ? 'en direct' : d === 'hors-ligne' ? 'hors ligne' : 'relecture'; }
+  function toutRelire() { relireSeance(); relireParticipants(); relireRestit(); relireMots(); relirePostits(); relireMur(); relireMasques(); }
+  function relireSeance() { return EMC.lire('emc_seances?select=*&classe_id=eq.' + id()).then(function (l) { if (l[0]) { C.seance = l[0]; rendre(); } }); }
+  function relireParticipants() {
+    var sel = PROJ ? 'eleve_id,pret' : 'eleve_id,pret,eleves(pseudo)';
+    return EMC.lire('emc_participants?select=' + sel + '&classe_id=eq.' + id()).then(function (l) {
+      var m = {}; l.forEach(function (p) { m[p.eleve_id] = { eleve_id: p.eleve_id, pret: p.pret, pseudo: p.eleves && p.eleves.pseudo }; }); C.participants = m; rendre();
+    });
+  }
+  function relireRestit() { return EMC.lire('emc_restit?select=eleve_id,parcours,mot&classe_id=eq.' + id()).then(function (l) { var m = {}; l.forEach(function (r) { m[r.eleve_id] = r; }); C.restit = m; rendre(); }); }
+  function relireMots() { return EMC.lire('emc_mots?select=eleve_id,emojis&classe_id=eq.' + id()).then(function (l) { C.mots = l; rendre(); }); }
+  function relirePostits() { return EMC.lire('emc_postits?select=id,eleve_id,groupe,sorte,texte,masque,cree_le&classe_id=eq.' + id() + (PROJ ? '&masque=eq.false' : '') + '&order=cree_le').then(function (l) { C.postits = l; rendre(); }); }
+  function relireMur() { return EMC.lire('emc_mur?select=eleve_id,sorte,texte,statut&sorte=eq.definition&classe_id=eq.' + id() + (PROJ ? '&statut=eq.valide' : '') + '&order=maj_le').then(function (l) { C.mur = l; rendre(); }); }
+  function relireMasques() { return EMC.lire('emc_mots_masques?select=mot&classe_id=eq.' + id()).then(function (l) { var a = C.masques.join('|'); C.masques = l.map(function (x) { return x.mot; }); if (a !== C.masques.join('|')) rendre(); }); }
+  function relireAide() { return EMC.lire('emc_aide?select=*&classe_id=eq.' + id() + '&order=cree_le').then(function (l) { var m = {}; l.forEach(function (a) { m[a.id] = a; }); C.aide = m; rendreAide(); }); }
+
+  function poserSeance(champs) {
+    return EMC.modifier('emc_seances?classe_id=eq.' + id(), champs).then(function () { Object.keys(champs).forEach(function (k) { C.seance[k] = champs[k]; }); rendre(); }, erreur);
+  }
+  function poserEtat(maj) { return poserSeance({ etat: Object.assign({}, etat(), maj) }); }
+  function allerEtape(n) { if (C.seance && C.seance.cloturee_le) return alert('La séance est clôturée.'); if (n >= 0 && n <= 6) poserSeance({ etape: n }); }
+
+  /* ---------- les groupes : proposition automatique ---------- */
+  function ateliersAgreges() {
+    var m = {};
+    liste().forEach(function (p) {
+      ((C.restit[p.eleve_id] || {}).parcours || []).forEach(function (a) {
+        var f = EMC.normaliserMot(a.atelier); if (!f) return;
+        var g = m[f] || (m[f] = { forme: f, graphies: {}, eleves: [] });
+        g.graphies[a.atelier.trim()] = (g.graphies[a.atelier.trim()] || 0) + 1;
+        if (g.eleves.indexOf(p.eleve_id) < 0) g.eleves.push(p.eleve_id);
+      });
+    });
+    return Object.keys(m).map(function (f) {
+      var g = m[f]; g.titre = Object.keys(g.graphies).sort(function (a, b) { return g.graphies[b] - g.graphies[a]; })[0]; return g;
+    }).sort(function (a, b) { return b.eleves.length - a.eleves.length; });
+  }
+  function proposer() {
+    var ags = ateliersAgreges().filter(function (a) { return a.eleves.length >= 2; }).slice(0, 11);
+    var gs = ags.map(function (a, i) { return { n: i + 1, titre: a.titre, symbole: symboles()[i % symboles().length], forme: a.forme, taille: 0 }; });
+    var aff = {};
+    /* les élèves qui ont le moins de choix d'abord */
+    var el2 = liste().map(function (p) {
+      var f = ((C.restit[p.eleve_id] || {}).parcours || []).map(function (a) { return EMC.normaliserMot(a.atelier); });
+      return { id: p.eleve_id, options: gs.filter(function (g) { return f.indexOf(g.forme) >= 0; }) };
+    }).sort(function (a, b) { return a.options.length - b.options.length || Math.random() - 0.5; });
+    var autres = null;
+    el2.forEach(function (x) {
+      var g = x.options.sort(function (a, b) { return a.taille - b.taille; })[0];
+      if (!g) {
+        if (!autres) { autres = { n: gs.length + 1, titre: 'Autres ateliers', symbole: symboles()[gs.length % symboles().length], taille: 0 }; gs.push(autres); }
+        g = autres;
+      }
+      g.taille++; aff[x.id] = g.n;
+    });
+    brouillon = { groupes: gs.map(function (g) { return { n: g.n, titre: g.titre, symbole: g.symbole }; }), affectations: aff };
+    $('#g-info').textContent = gs.length + ' groupe(s) proposés : pas encore envoyés.';
+    rendre();
+  }
+
+  if (!PROJ) {
+    document.querySelectorAll('#onglets button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('#onglets button').forEach(function (x) { x.classList.toggle('actif', x === b); });
+        document.querySelectorAll('.panneau').forEach(function (p) { p.classList.toggle('actif', p.id === 'p-' + b.dataset.onglet); });
+      });
+    });
+    $('#btn-avancer').addEventListener('click', function () { allerEtape(etape() + 1); });
+    $('#btn-revenir').addEventListener('click', function () { allerEtape(etape() - 1); });
+    $('#g-proposer').addEventListener('click', function () {
+      if ((groupes().length || brouillon) && !confirm('Remplacer les groupes actuels par une nouvelle proposition ?')) return;
+      proposer();
+    });
+    $('#g-ajouter').addEventListener('click', function () {
+      var b = edition(), n = b.groupes.reduce(function (m, g) { return Math.max(m, g.n); }, 0) + 1;
+      if (n > 12) return alert('12 groupes au plus.');
+      b.groupes.push({ n: n, titre: 'Groupe ' + n, symbole: symboles()[(n - 1) % symboles().length] }); rendre();
+    });
+    $('#g-envoyer').addEventListener('click', function () {
+      var b = edition();
+      poserEtat({ groupes: b.groupes, affectations: b.affectations }).then(function () { brouillon = null; $('#g-info').textContent = '✓ Envoyé aux tablettes.'; });
+    });
+    $('#oral-fin').addEventListener('click', function () { poserEtat({ oral: null, oral_depuis: null }); });
+  }
+  function edition() {
+    if (!brouillon) brouillon = { groupes: JSON.parse(JSON.stringify(groupes())), affectations: Object.assign({}, etat().affectations || {}) };
+    return brouillon;
+  }
+
+  /* ============================================================ */
+  function rendre() { if (!C.seance) return; if (PROJ) rendreProjection(); else rendrePilotage(); }
+
+  function rendrePilotage() {
+    var n = etape(), es = etapes(), l = liste();
+    $('#etape-titre').textContent = C.seance.cloturee_le ? 'séance clôturée' : n + ' · ' + ((es[n] || {}).titre || '');
+    var f = $('#frise'); f.innerHTML = '';
+    for (var i = 0; i <= 6; i++) (function (i) {
+      var e = es[i] || { titre: 'Étape ' + i };
+      f.appendChild(el('button', { type: 'button', class: i === n ? 'courante' : (i < n ? 'faite' : ''), onclick: function () { allerEtape(i); } },
+        el('span', { class: 'n' }, String(i)), el('span', null, e.titre), e.duree ? el('span', { class: 'tresmuet' }, e.duree + ' min') : null));
+    })(i);
+    $('#btn-revenir').disabled = n <= 0; $('#btn-avancer').disabled = n >= 6;
+    $('#n-prets').textContent = l.filter(function (p) { return p.pret; }).length; $('#n-tous').textContent = l.length;
+    var res = '';
+    if (n === 1) res = C.mots.length + ' / ' + l.length + ' ont donné leur météo';
+    if (n === 2) res = l.filter(function (p) { return ((C.restit[p.eleve_id] || {}).parcours || []).length; }).length + ' / ' + l.length + ' ont écrit leur parcours';
+    if (n === 3) res = groupes().length ? groupes().length + ' groupe(s) envoyé(s)' : '⚠️ Groupes pas encore envoyés (onglet Parcours & groupes)';
+    if (n === 4) res = C.postits.length + ' post-it';
+    if (n === 5) res = l.filter(function (p) { return (C.restit[p.eleve_id] || {}).mot; }).length + ' mot(s), ' + C.mur.length + ' définition(s)';
+    $('#etape-resume').textContent = res;
+    $('#n-postits').textContent = C.postits.length ? '(' + C.postits.length + ')' : '';
+    var aRelire = C.mur.filter(function (m) { return m.statut === 'propose'; }).length;
+    $('#n-defs').textContent = aRelire ? '(' + aRelire + ' à relire)' : '';
+    rendreGroupes(); rendreMur($('#mur'), true); rendreDefs();
+  }
+
+  function rendreGroupes() {
+    var z = $('#ateliers'); z.innerHTML = '';
+    var ags = ateliersAgreges();
+    if (!ags.length) z.appendChild(el('p', { class: 'tresmuet' }, 'Pas encore de parcours.'));
+    ags.forEach(function (a) { z.appendChild(el('span', { class: 'pastille ' + (a.eleves.length >= 2 ? 'cyan' : '') }, a.titre + ' · ' + a.eleves.length)); });
+    var b = brouillon || { groupes: groupes(), affectations: etat().affectations || {} };
+    var ed = $('#groupes-ed'); ed.innerHTML = '';
+    b.groupes.forEach(function (g) {
+      var t = el('input', { type: 'text', value: g.titre, maxlength: '60', 'aria-label': 'Titre du groupe ' + g.n });
+      t.addEventListener('change', function () { edition().groupes.filter(function (x) { return x.n === g.n; })[0].titre = t.value.trim() || 'Groupe ' + g.n; });
+      var membres = liste().filter(function (p) { return b.affectations[p.eleve_id] === g.n; });
+      ed.appendChild(el('div', { class: 'groupe-ed' }, el('div', { class: 'rangee' }, el('span', { style: 'font-size:1.8rem' }, g.symbole), t),
+        el('div', { class: 'tresmuet' }, membres.length + ' élève(s) : ' + (membres.map(function (p) { return nom(p.pseudo); }).join(', ') || '—'))));
+    });
+    var tb = $('#t-eleves'); tb.innerHTML = '';
+    liste().sort(function (a, c) { return String(nom(a.pseudo)).localeCompare(String(nom(c.pseudo)), 'fr'); }).forEach(function (p) {
+      var sel = el('select', { 'aria-label': 'Groupe de ' + (p.pseudo || '') });
+      sel.appendChild(el('option', { value: '' }, '—'));
+      b.groupes.forEach(function (g) { sel.appendChild(el('option', { value: g.n, selected: b.affectations[p.eleve_id] === g.n }, g.symbole + ' ' + g.titre)); });
+      sel.addEventListener('change', function () { var e = edition(); if (sel.value) e.affectations[p.eleve_id] = +sel.value; else delete e.affectations[p.eleve_id]; $('#g-info').textContent = 'Modifié : pas encore envoyé.'; rendre(); });
+      tb.appendChild(el('tr', null, el('td', null, el('b', null, nom(p.pseudo))),
+        el('td', null, ((C.restit[p.eleve_id] || {}).parcours || []).map(function (a) { return a.atelier + (a.liberte ? ' (' + a.liberte + ')' : ''); }).join(' · ') || el('span', { class: 'tresmuet' }, '—')),
+        el('td', null, sel)));
+    });
+    if (!liste().length) tb.appendChild(el('tr', null, el('td', { colspan: 3, class: 'tresmuet' }, 'Personne n\'est encore entré.')));
+  }
+
+  function rendreMur(z, prof) {
+    z.innerHTML = '';
+    var gs = groupes();
+    if (!gs.length) { z.appendChild(el('p', { class: prof ? 'tresmuet' : 'p-petit' }, 'Les groupes ne sont pas encore formés.')); return; }
+    gs.forEach(function (g) {
+      var col = el('div', { class: 'colonne' + (etat().oral === g.n ? ' oral' : '') });
+      col.appendChild(el('h3', null, el('span', null, g.symbole + ' ' + g.titre),
+        prof ? el('button', { type: 'button', class: etat().oral === g.n ? 'cyan' : '', style: 'min-height:32px;padding:.1rem .5rem;font-size:.8rem',
+          onclick: function () { poserEtat({ oral: g.n, oral_depuis: Date.now() }); } }, etat().oral === g.n ? '🎤 en cours' : '🎤 Au tour') : null));
+      C.postits.filter(function (p) { return p.groupe === g.n; }).forEach(function (p) {
+        col.appendChild(el('div', { class: 'postit' + (p.masque ? ' masque' : ''), style: 'background:' + couleur(p.sorte) }, p.texte,
+          prof ? el('div', { class: 'act' },
+            el('button', { type: 'button', onclick: function () { EMC.modifier('emc_postits?id=eq.' + p.id, { masque: !p.masque }).then(relirePostits, erreur); } }, p.masque ? 'Démasquer' : 'Masquer')) : null));
+      });
+      z.appendChild(col);
+    });
+  }
+
+  function motsAgreg() {
+    return V.agregerMots(liste().map(function (p) { var m = (C.restit[p.eleve_id] || {}).mot; return { mots: m ? [m] : [] }; }), C.masques);
+  }
+  function rendreDefs() {
+    V.nuage($('#nuage-prof'), motsAgreg(), { avecMasques: true, surClic: function (x) {
+      var p = x.masque ? EMC.supprimer('emc_mots_masques?classe_id=eq.' + id() + '&mot=eq.' + encodeURIComponent(x.forme))
+                       : EMC.ecrire('emc_mots_masques', { classe_id: id(), mot: x.forme }, { ignorer: true });
+      p.then(relireMasques, erreur);
+    } });
+    var z = $('#defs'); z.innerHTML = '';
+    if (!C.mur.length) z.appendChild(el('p', { class: 'tresmuet' }, 'Pas encore de définition.'));
+    C.mur.forEach(function (m) {
+      var p = C.participants[m.eleve_id] || {};
+      z.appendChild(el('div', { class: 'def-item' + (m.statut === 'masque' ? ' masque' : '') },
+        el('div', null, '« ' + m.texte + ' »', el('div', { class: 'tresmuet' }, nom(p.pseudo) + (m.statut === 'valide' ? ' · ✔ validée' : m.statut === 'masque' ? ' · écartée' : ' · à relire'))),
+        el('div', { class: 'rangee' },
+          m.statut !== 'valide' ? el('button', { type: 'button', class: 'primaire', onclick: function () { statut(m, 'valide'); } }, '✔ Valider') : null,
+          m.statut !== 'masque' ? el('button', { type: 'button', class: 'danger', onclick: function () { statut(m, 'masque'); } }, 'Écarter') : null)));
+    });
+  }
+  function statut(m, s) { EMC.modifier('emc_mur?classe_id=eq.' + id() + '&eleve_id=eq.' + m.eleve_id + '&sorte=eq.definition', { statut: s }).then(relireMur, erreur); }
+
+  var vues = null;
+  function rendreAide() {
+    var l = Object.keys(C.aide).map(function (k) { return C.aide[k]; }), a = l.filter(function (x) { return x.statut === 'a_traiter'; }), z = $('#alerte-aide');
+    var neufs = vues ? a.filter(function (x) { return !vues[x.id]; }) : []; vues = vues || {}; a.forEach(function (x) { vues[x.id] = true; });
+    if (neufs.length) try { var ac = new (window.AudioContext || window.webkitAudioContext)(), o = ac.createOscillator(); o.frequency.value = 880; o.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.25); } catch (e) {}
+    z.hidden = !l.length; z.innerHTML = ''; z.classList.toggle('calme', !a.length);
+    if (!l.length) return;
+    z.appendChild(el('h2', null, a.length ? '🔔 ' + a.length + ' demande(s) « J\'ai besoin d\'en parler » à traiter' : '✔ Demandes d\'aide : toutes prises en charge'));
+    l.forEach(function (x) {
+      var p = C.participants[x.eleve_id] || {};
+      z.appendChild(el('div', { class: 'aide-item' + (x.statut === 'a_traiter' ? '' : ' pris') },
+        el('div', null, el('b', null, nom(p.pseudo)), (x.cases || []).length ? el('div', null, x.cases.join(' · ')) : null, x.message ? el('div', { style: 'white-space:pre-wrap' }, x.message) : null),
+        x.statut === 'a_traiter' ? el('button', { type: 'button', class: 'primaire', onclick: function () { EMC.modifier('emc_aide?id=eq.' + x.id, { statut: 'pris_en_charge' }).then(relireAide, erreur); } }, '✔ Pris en charge') : el('span')));
+    });
+  }
+
+  /* ---------- exports ---------- */
+  function feuilleMur() {
+    var f = EMC.Export.feuille(1600), z = el('div', { class: 'mur' }); f.appendChild(z);
+    rendreMur(z, false); return f;
+  }
+  function feuilleDefs() {
+    var f = EMC.Export.feuille(1400);
+    f.appendChild(el('h2', null, rc().mot_question || 'La liberté, en un mot'));
+    var n = el('div', { style: 'font-size:24px;min-height:200px' }); f.appendChild(n); V.nuage(n, motsAgreg(), { max: 80 });
+    f.appendChild(el('h2', { style: 'margin-top:24px' }, rc().definition_question || 'Pour moi, la liberté, c\'est…'));
+    C.mur.filter(function (m) { return m.statut === 'valide'; }).forEach(function (m) { f.appendChild(el('p', { style: 'font-size:20px;font-style:italic' }, '« ' + m.texte + ' »')); });
+    var em = el('div', { style: 'margin-top:24px;columns:2' }); f.appendChild(el('h2', null, rc().meteo_question || 'Météo')); f.appendChild(em);
+    V.emojis(em, C.mots, (C.contenus.mots || {}).emojis, { seulementUtilises: true });
+    return f;
+  }
+  function exporter(nomF, pages) {
+    EMC.Export.proposer(function () {
+      var fs = pages();
+      return EMC.Export.pdf({ titre: 'EMC seconde — Nos libertés', sousTitre: C.classe.libelle, paysage: true, pages: fs.map(function (x) { return { titre: x.t, element: x.f }; }) })
+        .then(function (b) { fs.forEach(function (x) { x.f.remove(); }); return b; }, function (e) { fs.forEach(function (x) { x.f.remove(); }); throw e; });
+    }, nomF, { titre: 'Exporter' });
+  }
+  if (!PROJ) {
+    $('#x-mur').addEventListener('click', function () { exporter('EMC-restitution-mur.pdf', function () { return [{ t: 'Le mur « Nos libertés »', f: feuilleMur() }]; }); });
+    $('#x-defs').addEventListener('click', function () { exporter('EMC-restitution-definitions.pdf', function () { return [{ t: 'La liberté, pour nous', f: feuilleDefs() }]; }); });
+    $('#x-tout').addEventListener('click', function () { exporter('EMC-restitution.pdf', function () { return [{ t: 'Le mur « Nos libertés »', f: feuilleMur() }, { t: 'La liberté, pour nous', f: feuilleDefs() }]; }); });
+  }
+
+  /* ============================================================
+   *  Projection
+   * ============================================================ */
+  var cle0 = null, iDef = 0;
+  function rendreProjection() {
+    var n = etape(), r = rc(), z = $('#proj'), l = liste();
+    var cle = JSON.stringify([n, C.seance.cloturee_le, etat(), l.length, l.filter(function (p) { return p.pret; }).length, C.mots, C.restit, C.postits, C.mur, C.masques]);
+    if (cle === cle0) return; cle0 = cle;
+    z.innerHTML = '';
+    if (C.seance.cloturee_le) { z.appendChild(el('h1', null, (r.merci || 'Merci !') + ' 🙏')); return; }
+    if (n === 0) {
+      z.appendChild(el('h1', null, '🗽 ' + (r.titre || 'Nos libertés')));
+      z.appendChild(el('div', { class: 'p-texte' }, r.accroche || ''));
+      var q = el('div', { class: 'p-qr' }); z.appendChild(q); V.qr(q, V.urlEleve());
+      z.appendChild(el('div', { class: 'p-grand' }, l.filter(function (p) { return p.pret; }).length + ' / ' + l.length));
+    } else if (n === 1) {
+      z.appendChild(el('h1', null, r.meteo_question || 'Comment je ressors de ces deux jours ?'));
+      var b = el('div'); z.appendChild(b); V.emojis(b, C.mots, (C.contenus.mots || {}).emojis, { seulementUtilises: true });
+      z.appendChild(el('div', { class: 'p-petit' }, C.mots.length + ' / ' + l.length));
+    } else if (n === 2) {
+      z.appendChild(el('h1', null, 'Mon parcours'));
+      var ags = ateliersAgreges();
+      var nu = el('div', { style: 'width:85vw' }); z.appendChild(nu);
+      V.nuage(nu, ags.map(function (a) { return { forme: a.forme, mot: a.titre, n: a.eleves.length }; }), { vide: 'Les ateliers arrivent…' });
+      z.appendChild(el('div', { class: 'p-petit' }, l.filter(function (p) { return ((C.restit[p.eleve_id] || {}).parcours || []).length; }).length + ' / ' + l.length + ' parcours'));
+    } else if (n === 3) {
+      z.appendChild(el('h1', null, 'Par atelier'));
+      z.appendChild(el('h2', null, r.groupe_consigne || ''));
+      z.appendChild(el('div', { class: 'p-groupes' }, groupes().map(function (g) { return el('div', null, el('b', null, g.symbole), g.titre); })));
+    } else if (n === 4) {
+      z.style.justifyContent = 'flex-start';
+      var g = groupes().filter(function (x) { return x.n === etat().oral; })[0];
+      z.appendChild(el('h1', { style: 'font-size:clamp(1.6rem,3vw,2.6rem)' }, g ? '🎤 ' + g.symbole + ' ' + g.titre + ' · ' : '📌 ', el('span', { id: 'p-chrono' }, g ? '1:00' : 'Nos libertés')));
+      var m = el('div', { class: 'mur' }); z.appendChild(m); rendreMur(m, false);
+      return;
+    } else if (n === 5) {
+      z.appendChild(el('h1', null, r.mot_question || 'La liberté, en un mot ?'));
+      var nn = el('div', { style: 'width:85vw' }); z.appendChild(nn); V.nuage(nn, motsAgreg(), { vide: 'Les mots arrivent…' });
+      z.appendChild(el('div', { class: 'p-def', id: 'p-def' }, ''));
+      defilement();
+    } else if (n === 6) {
+      z.appendChild(el('h1', null, (r.merci || 'Merci !') + ' 🙏'));
+      var n6 = el('div', { style: 'width:85vw' }); z.appendChild(n6); V.nuage(n6, motsAgreg(), {});
+    }
+    z.style.justifyContent = '';
+  }
+  function defilement() {
+    var d = document.getElementById('p-def'); if (!d) return;
+    var v = C.mur.filter(function (m) { return m.statut === 'valide'; });
+    d.textContent = v.length ? '« ' + v[iDef % v.length].texte + ' »' : '';
+  }
+  setInterval(function () { if (PROJ && etape() === 5) { iDef++; defilement(); } }, 7000);
+
+  function tic() {
+    if (!C.seance) return;
+    var n = etape();
+    if (!PROJ) {
+      var cle = 'emc.chrono.' + id(), v = null;
+      try { v = JSON.parse(sessionStorage.getItem(cle)); } catch (e) {}
+      if (!v || v.etape !== n) { v = { etape: n, depuis: Date.now() }; try { sessionStorage.setItem(cle, JSON.stringify(v)); } catch (e) {} }
+      var s = Math.floor((Date.now() - v.depuis) / 1000), d = ((etapes()[n] || {}).duree || 0) * 60;
+      $('#chrono').textContent = mmss(s); $('#chrono').classList.toggle('depasse', !!d && s > d);
+      $('#duree').textContent = d ? '/ ' + (d / 60) + ' min prévues' : '';
+      return;
+    }
+    var pc = document.getElementById('p-chrono');
+    if (pc && n === 4 && etat().oral && etat().oral_depuis) {
+      var r = (rc().presentation_secondes || 60) - (Date.now() - etat().oral_depuis) / 1000;
+      pc.textContent = r > 0 ? mmss(r) : '⏰';
+    }
+  }
+  $('#p-plein').addEventListener('click', function () { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); });
+})();
+</script>
+</body>
+</html>

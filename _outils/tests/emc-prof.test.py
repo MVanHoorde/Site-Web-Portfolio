@@ -63,6 +63,7 @@ DB = {
     'emc_carte': carte, 'emc_carte_masques': [], 'emc_votes': votes,
     'emc_enquete': [{'id': str(uuid.uuid4()), 'classe_id': C1, 'reponses': {'q1': 'non', 'q2': 'oui', 'q4': 'oui'}, 'temoignage': 'Un témoignage de test' if i == 0 else None} for i in range(5)],
     'emc_aide': [],
+    'emc_cartes': [],
 }
 PK = {'emc_contenus': ['cle'], 'emc_mots_masques': ['classe_id', 'mot'], 'emc_seances': ['classe_id'],
       'emc_participants': ['classe_id', 'eleve_id'], 'emc_mots': ['classe_id', 'eleve_id'], 'emc_notes': ['classe_id', 'eleve_id'],
@@ -108,6 +109,18 @@ def gerer(route, request):
     cors = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': '*', 'Content-Type': 'application/json'}
     if meth == 'OPTIONS': return route.fulfill(status=204, headers=cors)
     rep = lambda corps, st=200: route.fulfill(status=st, headers=cors, body=json.dumps(corps))
+    if u.path.startswith('/functions/v1/emc-cartes'):
+        # la fonction Edge (034) : n cartes, préfixe a, jeton du prof exigé
+        corps = json.loads(request.post_data or '{}')
+        if not (request.headers.get('authorization') or '').startswith('Bearer '): return rep({'erreur': 'JETON_ABSENT'}, 401)
+        faites = []
+        for i in range(int(corps['nombre'])):
+            ident = 'a-loutre-%02d' % (len(DB['emc_cartes']) + 1)
+            e = str(uuid.uuid4())
+            DB['eleves'].append({'id': e, 'pseudo': ident, 'classe_id': corps['classe_id']})
+            DB['emc_cartes'].append({'identifiant': ident, 'classe_id': corps['classe_id'], 'eleve_id': e, 'code': '%04d' % (1234 + i)})
+            faites.append({'identifiant': ident, 'code': '%04d' % (1234 + i)})
+        return rep({'cartes': faites, 'ratees': 0, 'libelle': 'x'})
     if u.path.startswith('/auth/v1/token'):
         return rep({'access_token': jwt(MOI), 'refresh_token': 'r2', 'expires_at': int(time.time()) + 3600, 'expires_in': 3600})
     if u.path.startswith('/rest/v1/rpc/'):
@@ -121,6 +134,10 @@ def gerer(route, request):
                 if s['classe_id'] == corps['p_classe']: s['cloturee_le'] = iso()
             return rep(n)
         if f == 'emc_supprimer_comptes': return rep(9)
+        if f == 'emc_reinitialiser':
+            for s in DB['emc_seances']:
+                if s['classe_id'] == corps['p_classe']: s.update({'etape': 0, 'cloturee_le': None})
+            return route.fulfill(status=204, headers=cors, body='')
         return rep(None)
     t = u.path.replace('/rest/v1/', '')
     if t == 'enseignants': return rep([{'libelle': 'VAN HOORDE'}])
@@ -229,12 +246,12 @@ with sync_playwright() as pw:
         page.click('#alerte-aide .aide-item button.primaire'); page.wait_for_timeout(400)
         p = [j for j in JOURNAL[n0:] if j[0] == 'PATCH' and j[1].endswith('/emc_aide')]
         verif('pris en charge → PATCH statut' + suff, p and json.loads(p[-1][3]) == {'statut': 'pris_en_charge'}, p)
-        for o in ['participants', 'mots', 'missions', 'carte', 'harcelometre', 'enquete', 'exports', 'cloture']:
+        for o in ['cartes', 'participants', 'mots', 'missions', 'carte', 'harcelometre', 'enquete', 'exports', 'cloture']:
             page.click('#onglets button[data-onglet=%s]' % o); page.wait_for_timeout(700 if o == 'carte' else 300)
             capture(page, '05-pilotage-%s' % o + suff)
         page.click('#onglets button[data-onglet=participants]'); page.wait_for_timeout(200)
         verif('participants : 12 lignes' + suff, page.locator('#t-participants tr').count() == 12)
-        verif('participants : badge créé pour l\'EMC' + suff, page.locator('#t-participants', has_text="créé pour l'EMC").count() == 1)
+        verif('participants : badge carte' + suff, page.locator('#t-participants', has_text='🎟 carte').count() == 1)
         verif('participants : signal sans nom' + suff, 'absent(s) de la table des noms' in page.inner_text('#signaux'))
         n0 = len(JOURNAL)
         page.locator('#t-participants select').first.select_option('8'); page.wait_for_timeout(400)
@@ -267,12 +284,38 @@ with sync_playwright() as pw:
             if nomf == 'resultats.pdf': capture(page, '07-pilotage-export' + suff)
             page.locator('.modale button', has_text='Fermer').click(); page.wait_for_timeout(200)
         # clôture
-        page.click('#onglets button[data-onglet=cloture]')
         page.on('dialog', lambda d: d.accept())
-        page.click('#btn-compter'); page.wait_for_timeout(400)
-        verif('compter les comptes EMC' + suff, '9 compte' in page.inner_text('#res-comptes'))
-        page.click('#btn-cloturer'); page.wait_for_timeout(600)
-        verif('clôture : messages effacés' + suff, 'clôturée' in page.inner_text('#res-cloture'), page.inner_text('#res-cloture'))
+        # cartes (034) : générer, puis la planche à imprimer
+        page.click('#onglets button[data-onglet=cartes]'); page.wait_for_timeout(300)
+        DB['emc_cartes'] = [c for c in DB['emc_cartes'] if c['classe_id'] != C1]
+        page.fill('#p-cartes input[type=number]', '12')
+        n0 = len(JOURNAL)
+        page.locator('#p-cartes button', has_text='Générer').click(); page.wait_for_timeout(900)
+        appel = [j for j in JOURNAL[n0:] if j[1].startswith('/functions/v1/emc-cartes')]
+        verif('cartes : la fonction Edge est appelée avec la classe et le nombre' + suff, appel and json.loads(appel[-1][3]) == {'classe_id': C1, 'nombre': 12}, appel)
+        verif('cartes : 12 créées, listées' + suff, '12 carte(s) créée(s)' in page.inner_text('#p-cartes') and page.locator('#p-cartes .liste-cartes .pastille').count() == 12,
+              page.inner_text('#p-cartes')[:300])
+        capture(page, '05-pilotage-cartes-generees' + suff)
+        p2 = ctx.new_page(); e2 = suivre(p2, 'cartes')
+        p2.goto(BASE + '/prof/emc-cartes.html?classe=NINA27'); p2.wait_for_timeout(1500)
+        verif('planche : 12 cartes, 2 feuilles de 10' + suff, p2.locator('.carte:not(.vide)').count() == 12 and p2.locator('.planche').count() == 2)
+        verif('planche : un QR code par carte' + suff, p2.locator('.carte .qr svg').count() == 12)
+        verif('planche : identifiant et code sur la carte' + suff, 'a-loutre-01' in p2.inner_text('.carte >> nth=0') and '1234' in p2.inner_text('.carte >> nth=0'))
+        verif('correspondance : identifiants déjà écrits' + suff, p2.locator('.corresp td.ident').count() == 12)
+        qr = p2.evaluate("(() => { var s = document.querySelector('.carte .qr svg'); return s ? s.outerHTML.length : 0; })()")
+        verif('planche : QR code non vide' + suff, qr > 500, qr)
+        p2.screenshot(path=os.path.join(CAPT, '05b-planche-cartes' + suff + '.png'), full_page=True)
+        verif('planche sans erreur JS' + suff, not e2, e2[:3])
+        p2.close()
+        # clôture, remise à zéro, comptes
+        page.click('#onglets button[data-onglet=cloture]')
+        page.locator('#p-cloture button', has_text='Compter').click(); page.wait_for_timeout(400)
+        verif('compter les comptes EMC' + suff, '9 compte' in page.inner_text('#p-cloture'))
+        page.locator('#p-cloture button', has_text='Clôturer cette séance').click(); page.wait_for_timeout(600)
+        verif('clôture : messages effacés' + suff, 'clôturée' in page.inner_text('#p-cloture'), page.inner_text('#p-cloture')[:200])
+        n0 = len(JOURNAL)
+        page.locator('#p-cloture button', has_text='Remettre à zéro').click(); page.wait_for_timeout(600)
+        verif('remise à zéro → emc_reinitialiser' + suff, any(j[1].endswith('/rpc/emc_reinitialiser') for j in JOURNAL[n0:]) and 'remise à zéro' in page.inner_text('#p-cloture'))
         verif('pilotage sans erreur JS' + suff, not errs, errs[:3])
         ctx.close()
         for s in DB['emc_seances']: s['cloturee_le'] = None
@@ -304,7 +347,7 @@ with sync_playwright() as pw:
         # ---------- 4. contenus ----------
         ctx = contexte(nav, larg, haut); page = ctx.new_page(); errs = suivre(page, 'contenus')
         page.goto(BASE + '/prof/emc-contenus.html'); page.wait_for_timeout(1500)
-        verif('contenus : 9 sections' + suff, page.locator('details.sec').count() == 9)
+        verif('contenus : 13 sections (Labyrinthe, jeu de rôle, restitution)' + suff, page.locator('details.sec').count() == 13)
         capture(page, '09-contenus' + suff)
         sec = page.locator('details.sec[data-cle=harcelometre]')
         sec.locator('summary').click()

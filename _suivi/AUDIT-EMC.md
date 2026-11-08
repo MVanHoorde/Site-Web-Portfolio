@@ -1,9 +1,22 @@
-# EMC seconde, *Le Labyrinthe de Nina* : audit et architecture
+# EMC seconde, les six séances des 12 et 13/11 : audit et architecture
 
-> Phase 0 du plan `PLAN-EMC-seconde-labyrinthe-nina.md` (v1, 07/11/2026).
-> Séances des jeudi 12 et vendredi 13/11/2026 : **4 créneaux de 2 h**, 30 à 40
-> élèves de seconde, M. Van Hoorde et Mme Castel présents à chaque fois, iPad
+> Phase 0 du plan `PLAN-EMC-seconde-labyrinthe-nina.md` (v1, 07/11/2026),
+> étendue par le brief v2 du 08/11/2026 (six séances, cartes éphémères).
+> Jeudi 12 et vendredi 13/11/2026, groupes mélangés de ~30 élèves de seconde
+> (3 par classe), M. Van Hoorde et Mme Castel présents à chaque fois, iPad
 > personnel fourni par l'établissement.
+
+| Séance | Quand | Public | Module | Classe |
+|---|---|---|---|---|
+| 1 | jeudi 8 h 30 – 10 h 10, salle 136 | groupe **D** | `accueil` : jeu de rôle « Je m'appelle… » | `JDRD12` |
+| 2 | jeudi 10 h 30 – 12 h 30 | groupe **A** | `nina` | `NINA27` |
+| 3 | jeudi 14 h – 16 h | groupe **B** | `nina` | `NINA48` |
+| 4 | vendredi 8 h 15 – 10 h 15 | groupe **J** | `nina` | `NINA63` |
+| 5 | vendredi 10 h 35 – 12 h 35 | groupe **G** | `nina` | `NINA91` |
+| 6 | vendredi 14 h – 15 h 15 | **2nde 1** reconstituée | `restitution` | `REST21` |
+
+Les 8 étapes du Labyrinthe font déjà 120 min : rien à recaler pour des créneaux
+de 2 h pile.
 > Ce fichier décrit l'état courant. Les décisions datées partent dans
 > `DECISIONS.md`.
 
@@ -12,8 +25,8 @@
 | Sujet | Décision |
 |---|---|
 | Identité | **Identifiants seulement**, aucun nom réel en base, y compris dans « J'ai besoin d'en parler ». La correspondance identifiant ↔ nom se fait sur une **feuille papier** qui circule, pour tous les élèves, y compris ceux qui ont déjà un compte. |
-| Invités | **Pas d'invité.** L'élève sans compte en crée un vrai, par le mécanisme existant. Les comptes créés pour l'EMC sont **supprimés après**. |
-| Classes | **Une classe EMC par créneau** (4 codes de 6 caractères, écrits au tableau). Vous êtes rattachés tous les deux à chacune. |
+| Comptes | **Une carte éphémère pour chaque élève, à chaque séance** (08/11), y compris ceux qui ont un compte sur le site : identifiant + code à 4 chiffres, ou QR code. Pas de création de compte par l'élève. Mot de passe réel dérivé : `Emc-<code>`. Les comptes sont **supprimés après** la séance. |
+| Classes | **Une classe EMC par séance** (six). Vous êtes rattachés tous les deux à chacune. Les codes ne se dictent plus : la carte porte sa séance. |
 | Temps réel | Realtime, testé à 40 élèves. Supabase reste sur l'**offre gratuite**. |
 | Carte mentale | Complète, **sans solution de repli**, avec **sous-zones** et zoom. Pas d'import d'image. |
 | Contenus | Ceux du plan (annexes A à F) sont **validés avec Mme Castel**. **Tout est modifiable depuis le tableau de bord**, avec la possibilité d'ajouter et de retirer des éléments. |
@@ -29,7 +42,8 @@
 
 | Besoin du plan | Constat | Conséquence |
 |---|---|---|
-| Comptes élèves | Identifiant et mot de passe, email synthétique `identifiant@snt.local` (`progression.js:374-472`). `creerCompte(id, mdp, code)` crée le compte et rejoint la classe ; `rejoindreAutreClasse(code)` ajoute une classe à un compte existant (018). | Réutilisé tel quel. Un compte créé avec un code EMC a sa classe EMC comme **classe d'inscription** : c'est ce qui permet de les retrouver pour les supprimer. |
+| Comptes élèves | Identifiant et mot de passe, email synthétique `identifiant@snt.local` (`progression.js`), politique : 6 caractères, majuscule, minuscule, chiffre. | **Cartes** (034) : comptes `<identifiant>@emc.local` créés par la fonction Edge `emc-cartes` (API d'administration : ni limite par IP ni session du prof écrasée), fiche élève inscrite dans la classe EMC (**classe d'inscription** : c'est ce qui permet de les supprimer). Session à part dans la page élève (`emc.session`, `emc-commun.js` §1b) : `progression.js` n'y est plus chargé. |
+| Limite d'Auth | 30 connexions ou inscriptions par 5 min et par IP (défaut) : toute la salle sort par la même adresse. | ✅ Relevée par Loïc le 08/11. |
 | Connexion anonyme Supabase | Désactivée le 22/07/2026. | Pas utilisée. |
 | Mme Castel | Les classes collègues existent (020). Son rattachement s'est fait par `rattacher_enseignant()`, à confirmer en base. | ⏳ Loïc vérifie que son compte se connecte au tableau de bord. |
 | Cloisonnement | Un enseignant ne voit que les classes de `enseignants_classes` (016, 018). Il voit le travail d'un élève **par famille** (`mon_eleve_pour`). | Tables `emc_*` dédiées, autorisées par la classe EMC. Un de tes élèves de SNT qui rejoint une classe EMC n'ouvre pas son SNT à Mme Castel. |
@@ -47,8 +61,12 @@
 
 | Fichier | Vue | Connexion |
 |---|---|---|
-| `emc/index.html` | **Élève** : se connecter ou créer un compte avec le code EMC, numéro de table, étape en cours, « Je suis prêt », encart des numéros d'urgence, « J'ai besoin d'en parler » | Session élève de `progression.js` (`snt.session`) |
-| `prof/emc.html` | **Pilotage** : choix du créneau, étapes, compteurs, participants, alertes d'aide, modération, carte (outils prof), exports, clôture | Session du tableau de bord (`prof-api.js`) |
+| `emc/index.html` | **Élève** : porte par la carte (saisie ou QR code `?carte=…&k=…`, effacé de l'adresse), puis l'étape ouverte selon le module, « Je suis prêt », encart des numéros d'urgence, « J'ai besoin d'en parler ». Les étapes du Labyrinthe sont dans `emc-eleve.js`, celles du jeu de rôle dans `emc-accueil.js` (`EMC.Modules.accueil`) | Session de la carte (`emc.session`), à part de `snt.session` |
+| `prof/emc-accueil.html` | **Pilotage du jeu de rôle** (étapes 0-8, binômes, présentations, portraits et phrases, cartes, clôture) ; avec `?vue=projection`, **sa projection** (jamais un identifiant, jamais l'aide, seulement le mur validé) | Session du tableau de bord |
+| `prof/emc-restitution.html` | **Pilotage de la restitution** (étapes 0-6, parcours et groupes par atelier, mur de post-it, nuage et définitions, exports, cartes, clôture) ; avec `?vue=projection`, **sa projection**. Élève : `assets/js/emc-restitution.js` (`EMC.Modules.restitution`) | Session du tableau de bord |
+| `prof/emc-cartes.html` | **Planche de cartes** à imprimer (10 par A4, QR code) et feuille de correspondance pré-remplie | Session du tableau de bord |
+| `assets/js/prof-emc-outils.js` | Panneaux communs aux pilotages : 🎟 Cartes (générer, réimprimer), Clôture (clôturer, remettre à zéro, supprimer les comptes) | — |
+| `prof/emc.html` | **Pilotage du Labyrinthe** (renvoie vers celui du module pour les autres séances) : choix du créneau, étapes, compteurs, participants, alertes d'aide, modération, carte (outils prof), exports, clôture | Session du tableau de bord (`prof-api.js`) |
 | `prof/emc-projection.html` | **Projection** : résultats agrégés qui s'accumulent étape par étape. **Ne lit jamais** `emc_aide`, et n'affiche ni identifiant ni nom (contrôle automatique) | Session du tableau de bord |
 | `prof/emc-contenus.html` | **Contenus** : questions, émojis, missions et sous-zones, légende des couleurs, situations du harcèlomètre (ordre, activation, ajout, retrait), enquête, vidéos, numéros | Session du tableau de bord |
 | `prof/index.html` (espace `emc`) | Les 4 créneaux avec leur code, le nombre de participants, des liens vers Piloter, Projeter et Contenus | — |
@@ -69,6 +87,16 @@
 - `emc_enquete (id aléatoire, classe_id, reponses, temoignage)` : **sans identité ni horodatage**. On n'y écrit que par une fonction, qui coche `enquete_faite` à part (on sait *qui* a répondu, jamais *quoi*).
 - `emc_aide (classe_id, eleve_id, cases, message, statut)` : lisible des seuls enseignants de la classe, et effacée par `emc_cloturer()`.
 - `emc_supprimer_comptes(classe)` : supprime les comptes dont toutes les classes sont des classes EMC. Un aperçu permet de les compter avant.
+
+### 3.2 bis Ce qu'ajoute le 034
+
+- `emc_seances.module` (`nina` · `accueil` · `restitution`), `prefixe` (lettre des cartes), `etat` (jsonb piloté : chrono de l'échange, ordre de passage, binôme en cours, portrait projeté) ; étapes 0-9.
+- `emc_cartes (identifiant, classe_id, eleve_id, code)` : lisible des seuls enseignants de la classe (réimpression). `emc_cartes_autoriser` (jeton du prof), `emc_carte_inscrire` (clé de service).
+- `emc_reinitialiser(classe)` : efface le travail des élèves et rouvre à l'étape 0 ; les comptes restent.
+- `emc_jdr (classe_id, eleve_id, origine, questions[], feux, reconnu)` : **aucune réponse** ; lisible par soi et son binôme. `emc_binomes (classe_id, eleve_id, binome, symbole)`, tirés par `emc_jdr_tirer` (rangement par classe d'origine, i-ème avec (i + n/2)-ème : jamais deux de la même seconde tant qu'aucune classe ne dépasse la moitié du groupe ; trinôme si impair), `emc_jdr_echanger`.
+- `emc_mur (classe_id, eleve_id, sorte, question, texte, statut)` : portrait, je retiens, définition. L'élève propose et corrige tant que ce n'est pas modéré ; il ne touche jamais au statut. `emc_cloturer` efface portraits et « je retiens ».
+- Restitution : `emc_restit (classe_id, eleve_id, parcours jsonb, mot)` — ateliers **écrits par l'élève** (pas de liste des collègues, 08/11) ; `emc_postits (id, classe_id, eleve_id, groupe, sorte, texte, masque)` — le mur, lisible de toute la séance, écrit à l'étape 4 dans **son** groupe seulement (`emc_mon_groupe`), masquable par le prof. Les groupes vivent dans `emc_seances.etat` (`groupes`, `affectations`) : l'élève les lit, ne les change pas. Météo : `emc_mots` (émojis seuls, étape 1). Définitions : `emc_mur` (sorte `definition`).
+- 🔴 Les **notes du jeu de rôle** ne sont dans aucune table : localStorage de l'iPad, hors file d'envoi, effacées à l'étape 8 (banc : `emc-accueil.test.py` inspecte chaque requête).
 
 ### 3.3 La carte : géométrie, zones et sous-zones
 
@@ -129,11 +157,19 @@ Liste tenue à jour par Claude. La demander avec « le bilan EMC ».
 
 - Vérifier que Mme Castel se connecte au tableau de bord.
 - ✅ Migration 031 exécutée le 07/11/2026 dans le SQL Editor, §11 compris (vos deux comptes rattachés aux 4 classes EMC).
-- Donner les 4 créneaux (jour, heure) pour les libellés des classes.
+- ✅ Créneaux donnés le 08/11 (libellés datés par le 034).
+- ✅ Limite d'Auth relevée le 08/11.
+- ✅ 034 exécuté, fonction `emc-cartes` déployée, site publié (08/11/2026).
+- ⏳ Relire l'exemple de Pierre Marchand (Contenus → jeu de rôle).
+- ✅ Format de la séance 6 choisi le 08/11 : ateliers écrits librement, mur de post-it.
+- ⏳ Relire la liste des libertés proposées (Contenus → Restitution).
+- Générer et imprimer les cartes de chaque séance (pilotage → 🎟 Cartes), avec leur feuille de correspondance ; quelques cartes d'avance.
+- Imprimer quelques fiches-guides du jeu de rôle (document de l'équipe EMC), en secours.
+- Après la répétition : « Remettre à zéro » chaque séance testée (les cartes restent valables).
 - Déposer la ou les vidéos en MP4 sur le OneDrive et donner leurs liens.
 - Prévenir la CPE et l'infirmière par mail, avec les passages sensibles du jeu (annexe G3).
 - Faire installer le jeu sur les iPad et vérifier le wifi (WebSocket vers `*.supabase.co`).
-- Imprimer la feuille de correspondance et la fiche d'association.
+- Imprimer la fiche d'association (Labyrinthe).
 - Faire la répétition avec Mme Castel avant le premier créneau.
-- À chaque créneau : écrire le code au tableau et faire circuler la feuille.
-- Après : clôturer chaque créneau (les messages d'aide sont effacés), puis supprimer les comptes EMC.
+- À chaque séance : distribuer les cartes et faire circuler la feuille de correspondance.
+- Après chaque séance : exports, clôture (aide, portraits et phrases effacés), puis suppression des comptes de ses cartes.
