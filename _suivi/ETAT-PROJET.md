@@ -198,9 +198,10 @@ restitution avec la 2nde 1 (vendredi 14 h). Tous les élèves entrent par une
 3. ⏳ **Répétition** avec Mme Castel sur de vrais iPad (pincement, partage iOS,
    émojis en couleur : non éprouvés au banc).
 4. ✅ `034` exécuté, fonction `emc-cartes` déployée, site publié (08/11/2026).
-5. ⏳ **Relire** : l'exemple de Pierre Marchand et la liste des libertés de la
+5. ✅ **035** et liste des ateliers exécutés, site publié (08/11/2026, soir).
+6. ⏳ **Relire** : l'exemple de Pierre Marchand et la liste des libertés de la
    restitution (Contenus).
-6. Après chaque séance : exports, clôture, suppression des comptes de ses cartes.
+7. Après chaque séance : exports, clôture, suppression des comptes de ses cartes.
 
 ## 🆕 Padago, les pads à serrures — à mettre en service par Loïc
 

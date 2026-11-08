@@ -67,6 +67,31 @@
   #proj .p-reconnu{font-size:clamp(2rem,6vh,4rem)}
   #proj .p-qr{background:#fff;padding:12px;border-radius:12px;width:min(28vh,260px)}
   #proj .p-qr svg{width:100%;height:auto;display:block}
+  .ordre span small{display:block;font-size:.72rem;color:var(--ink-soft);max-width:9rem;line-height:1.2}
+  .ordre span{text-align:center}
+  .bilan-chiffres{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;text-align:center}
+  .bilan-chiffres div{background:var(--surface-2);border-radius:10px;padding:.4rem}
+  .bilan-chiffres b{display:block;font:700 1.8rem 'Space Grotesk',sans-serif}
+  .bilan-reconnu{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;text-align:center}
+  .bilan-reconnu .e{display:block;font-size:2rem}
+  .bilan-reconnu b{display:block;font-size:1.4rem}
+  .bilan-reconnu span:last-child{font-size:.8rem;color:var(--ink-soft)}
+  #proj .p-consignes{display:grid;gap:1.2vh;width:min(92vw,1300px);text-align:left}
+  #proj .p-consignes div{display:grid;grid-template-columns:4vw 1fr;align-items:center;gap:1vw;border-radius:14px;padding:1vh 1.4vw;color:#161f33}
+  #proj .p-consignes .p-cn{font-size:clamp(1.6rem,3vw,2.8rem);text-align:center}
+  #proj .p-consignes p{margin:0;font-size:clamp(1rem,1.9vw,1.7rem);line-height:1.35}
+  #proj .p-consignes b{color:#173d6b}
+  #proj .p-ex{width:min(92vw,1300px);font-style:normal}
+  #proj .p-ex-temps{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:1.5vw;margin-top:1vh}
+  #proj .p-ex-temps h3{color:#ffd6b8;margin:0 0 .5vh;font-size:clamp(1rem,1.5vw,1.4rem)}
+  #proj .p-ex-temps ol,#proj .p-ex-temps ul{margin:0;padding-left:1.2em;font-size:clamp(.85rem,1.2vw,1.15rem)}
+  #proj .p-ex-temps p{margin:0;font-style:italic;font-size:clamp(.9rem,1.3vw,1.25rem)}
+  #proj .p-bilan{width:min(90vw,1100px)}
+  #proj .p-bilan .bilan-chiffres div,#proj .p-bilan .bilan-reconnu div{background:rgba(255,255,255,.1)}
+  #proj .p-bilan .bilan-chiffres b{font-size:clamp(2rem,5vw,4rem)}
+  #proj .p-bilan .bilan-reconnu .e{font-size:clamp(2rem,5vw,4rem)}
+  #proj .p-bilan .bilan-reconnu span:last-child{color:#ffd6b8;font-size:1rem}
+  #proj .p-bilan ol{text-align:left;font-size:clamp(1rem,1.6vw,1.5rem);max-width:80vw;margin:1vh auto}
   .barre-proj{position:fixed;right:1rem;bottom:1rem;display:flex;gap:.4rem;opacity:.25}
   .barre-proj:hover{opacity:1}
   .barre-proj button{background:rgba(255,255,255,.15);color:#fff;border-color:transparent}
@@ -161,7 +186,7 @@
           <div id="o-cour"></div>
         </div>
         <div class="carte-blanche">
-          <h3>« Je me suis reconnu·e »</h3>
+          <h3>Bilan anonyme</h3>
           <div id="o-reconnu"></div>
         </div>
       </div>
@@ -193,9 +218,9 @@
 <script src="../assets/js/prof-api.js?v=3"></script>
 <script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
 <script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
-<script src="../assets/js/emc-commun.js?v=3"></script>
+<script src="../assets/js/emc-commun.js?v=4"></script>
 <script src="../assets/js/emc-vues.js?v=2"></script>
-<script src="../assets/js/prof-emc-outils.js?v=1"></script>
+<script src="../assets/js/prof-emc-outils.js?v=2"></script>
 <script>
 (function () {
   'use strict';
@@ -215,6 +240,7 @@
   function liste() { return Object.keys(C.participants).map(function (k) { return C.participants[k]; }); }
   function mmss(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
   var collator = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
+  var TEINTES = ['#fde8d7', '#dff1fb', '#e3f6ea', '#fff3c4', '#efe4fb', '#fde2e7'];
 
   /* ---------- son ---------- */
   var son = true; try { son = localStorage.getItem('emc.prof.son') !== 'non'; } catch (e) {}
@@ -308,7 +334,7 @@
   function poserEtat(maj) { return poserSeance({ etat: Object.assign({}, etat(), maj) }); }
   function allerEtape(n) {
     if (C.seance && C.seance.cloturee_le) return alert('La séance est clôturée.');
-    if (n < 0 || n > 8) return;
+    if (n < 0 || n > 9) return;
     var champs = { etape: n };
     /* l'échange démarre son chrono en ouvrant l'étape 4 */
     if (n === 4 && !etat().echange_depuis) champs.etat = Object.assign({}, etat(), { echange_depuis: Date.now() });
@@ -361,12 +387,12 @@
     var n = etape(), es = etapes(), l = liste();
     $('#etape-titre').textContent = C.seance.cloturee_le ? 'séance clôturée' : n + ' · ' + ((es[n] || {}).titre || '');
     var f = $('#frise'); f.innerHTML = '';
-    for (var i = 0; i <= 8; i++) (function (i) {
+    for (var i = 0; i <= 9; i++) (function (i) {
       var e = es[i] || { titre: 'Étape ' + i };
       f.appendChild(el('button', { type: 'button', class: i === n ? 'courante' : (i < n ? 'faite' : ''), onclick: function () { allerEtape(i); }, 'aria-current': i === n ? 'step' : null },
         el('span', { class: 'n' }, String(i)), el('span', null, e.titre), e.duree ? el('span', { class: 'tresmuet' }, e.duree + ' min') : null));
     })(i);
-    $('#btn-revenir').disabled = n <= 0; $('#btn-avancer').disabled = n >= 8;
+    $('#btn-revenir').disabled = n <= 0; $('#btn-avancer').disabled = n >= 9;
     var prets = l.filter(function (p) { return p.pret; }).length;
     $('#n-prets').textContent = prets; $('#n-tous').textContent = l.length;
     var rep = {}, sans = 0;
@@ -378,12 +404,21 @@
     var res = '', act = $('#actions-etape'); act.innerHTML = '';
     var gs = groupes();
     if (n === 2) res = gs.length ? gs.length + ' binôme(s) tirés' : '⚠️ Binômes pas encore tirés (onglet Binômes)';
-    if (n === 3) res = l.filter(function (p) { return ((C.jdr[p.eleve_id] || {}).questions || []).length; }).length + ' / ' + l.length + ' ont validé leurs questions';
-    if (n === 5) res = l.filter(function (p) { return Object.keys((C.jdr[p.eleve_id] || {}).feux || {}).length; }).length + ' / ' + l.length + ' ont donné leurs feux';
+    /* qui n'a pas encore fini : par nom (table des noms) ou pseudo */
+    function enRetard(pas, quoi) {
+      var r = l.filter(pas);
+      act.appendChild(el('div', { class: 'tresmuet', style: 'flex-basis:100%' }, r.length
+        ? '⏳ Pas encore ' + quoi + ' : ' + r.map(function (p) { return nom(p.pseudo); }).sort(collator.compare).join(', ')
+        : '✅ Tout le monde a ' + quoi + '.'));
+      return l.length - r.length;
+    }
+    if (n === 3) res = enRetard(function (p) { return !((C.jdr[p.eleve_id] || {}).questions || []).length; }, 'validé ses questions') + ' / ' + l.length + ' ont validé leurs questions';
+    if (n === 5) res = enRetard(function (p) { return !Object.keys((C.jdr[p.eleve_id] || {}).feux || {}).length; }, 'donné ses feux') + ' / ' + l.length + ' ont donné leurs feux';
     if (n === 6) res = etat().ordre ? 'Binôme ' + ((etat().courant || 0) + 1) + ' / ' + etat().ordre.length : '⚠️ Ordre de passage pas encore tiré';
     if (n === 7) res = C.mur.filter(function (m) { return m.sorte === 'portrait'; }).length + ' portrait(s) reçu(s)';
+    if (n === 8) res = '📄 Distribuer la fiche « La liberté, pour moi » (et la ramasser : elle resservira vendredi)';
     if (n === 4) {
-      act.appendChild(el('button', { type: 'button', onclick: function () { poserEtat({ echange_depuis: Date.now() }); } }, '⏱ Relancer les 10 minutes'));
+      act.appendChild(el('button', { type: 'button', onclick: function () { poserEtat({ echange_depuis: Date.now() }); } }, '⏱ Relancer les ' + (jdr().echange_minutes || 15) + ' minutes'));
     }
     if (n === 6 || n === 7) act.appendChild(el('button', { type: 'button', onclick: function () { ouvrirOnglet(n === 6 ? 'presentations' : 'mur'); } }, n === 6 ? 'Aller aux présentations' : 'Aller aux portraits'));
     $('#etape-resume').textContent = res;
@@ -423,21 +458,48 @@
   function rendreOrdre() {
     var o = etat().ordre || [], c = etat().courant || 0, z = $('#ordre'); z.innerHTML = '';
     if (!o.length) { z.appendChild(el('p', { class: 'tresmuet' }, 'Pas encore tiré.')); }
-    o.forEach(function (num, i) { var g = groupe(num); z.appendChild(el('span', { class: i < c ? 'fait' : i === c ? 'cour' : '', title: 'n° ' + num }, g ? g.symbole : '?')); });
+    /* chaque symbole avec ses pseudos : on sait de quel 🦊 il s'agit */
+    o.forEach(function (num, i) {
+      var g = groupe(num);
+      z.appendChild(el('span', { class: (i < c ? 'fait' : i === c ? 'cour' : ''), title: 'n° ' + num },
+        g ? g.symbole : '?', g ? el('small', null, g.membres.map(function (e) { return nom((C.participants[e] || {}).pseudo); }).join(' · ')) : null));
+    });
     var cour = $('#o-cour'); cour.innerHTML = '';
-    var r = $('#o-reconnu'); r.innerHTML = '';
     var g = o.length ? groupe(o[c]) : null;
     if (g) {
       cour.appendChild(el('div', { style: 'font-size:3rem' }, g.symbole));
-      g.membres.forEach(function (e) { cour.appendChild(el('div', null, el('b', null, nom((C.participants[e] || {}).pseudo)))); });
-      var echelle = jdr().reconnu || [];
-      g.membres.forEach(function (e) {
-        var v = (C.jdr[e] || {}).reconnu, x = echelle.filter(function (k) { return k.v === v; })[0];
-        r.appendChild(el('div', null, nom((C.participants[e] || {}).pseudo) + ' : ', x ? x.e + ' ' + x.l : '—'));
-      });
+      g.membres.forEach(function (e) { var p = C.participants[e] || {}; cour.appendChild(el('div', null, el('b', null, nom(p.pseudo)), aNom(p.pseudo) ? el('span', { class: 'mono tresmuet' }, ' ' + p.pseudo) : null)); });
     }
-    var tous = liste().map(function (p) { return (C.jdr[p.eleve_id] || {}).reconnu; }).filter(Boolean);
-    if (tous.length) r.appendChild(el('p', { class: 'tresmuet' }, 'Moyenne de la séance : ' + (tous.reduce(function (a, b) { return a + b; }, 0) / tous.length).toFixed(1) + ' / 4 (' + tous.length + ' réponses)'));
+    bilan($('#o-reconnu'), false);
+  }
+
+  /* Le bilan, toujours anonyme : jamais le vote d'une personne. */
+  function bilan(z, projection) {
+    z.innerHTML = '';
+    var l = liste(), j = jdr(), echelle = j.reconnu || [];
+    var votes = l.map(function (p) { return (C.jdr[p.eleve_id] || {}).reconnu; }).filter(Boolean);
+    var o = etat().ordre || [], faites = o.length ? Math.min(o.length, (etat().courant || 0) + 1) : 0;
+    var compte = {};
+    l.forEach(function (p) { ((C.jdr[p.eleve_id] || {}).questions || []).forEach(function (q) { compte[q] = (compte[q] || 0) + 1; }); });
+    var top = Object.keys(compte).sort(function (a, b) { return compte[b] - compte[a]; }).slice(0, 3);
+    var tq = {}; (j.themes || []).forEach(function (t) { (t.questions || []).forEach(function (q) { tq[q.id] = q.texte; }); });
+    var chiffres = el('div', { class: 'bilan-chiffres' },
+      el('div', null, el('b', null, String(l.length)), 'élèves'),
+      el('div', null, el('b', null, String(groupes().length)), 'binômes'),
+      el('div', null, el('b', null, String(faites)), 'présentations'),
+      el('div', null, el('b', null, String(C.mur.filter(function (m) { return m.sorte === 'portrait' && m.statut === 'valide'; }).length)), 'portraits mystère'));
+    z.appendChild(chiffres);
+    if (votes.length) {
+      z.appendChild(el(projection ? 'h2' : 'p', projection ? null : { class: 'muet', style: 'margin:.6rem 0 .2rem' }, '« Je me suis reconnu·e » — ' + votes.length + ' réponse(s)'));
+      z.appendChild(el('div', { class: 'bilan-reconnu' }, echelle.map(function (x) {
+        var n = votes.filter(function (v) { return v === x.v; }).length;
+        return el('div', null, el('span', { class: 'e' }, x.e), el('b', null, String(n)), el('span', null, x.l));
+      })));
+    } else z.appendChild(el('p', { class: projection ? 'p-petit' : 'tresmuet' }, 'Pas encore de réponse à « Je me suis reconnu·e ». Chaque élève y répond (s\'il le veut) après avoir été présenté : seul ce bilan, anonyme, s\'affiche.'));
+    if (top.length) {
+      z.appendChild(el(projection ? 'h2' : 'p', projection ? null : { class: 'muet', style: 'margin:.6rem 0 .2rem' }, 'Les questions les plus choisies'));
+      z.appendChild(el('ol', { class: 'bilan-top' }, top.map(function (q) { return el('li', null, (tq[q] || 'Question ' + q) + ' (' + compte[q] + ')'); })));
+    }
   }
 
   function rendreMur() {
@@ -455,10 +517,18 @@
           projete ? el('button', { type: 'button', onclick: function () { poserEtat({ revele: !etat().revele }); } }, etat().revele ? 'Cacher' : '🎉 Révéler') : null);
         z.appendChild(el('div', { class: 'mur-item' + (m.statut === 'masque' ? ' masque' : '') + (projete ? ' projete' : '') },
           el('div', null, el('div', { class: 'texte' }, '« ' + m.texte + ' »'),
-            el('div', { class: 'tresmuet' }, (b ? b.symbole + ' ' : '') + 'par ' + nom(p.pseudo) + (m.statut === 'valide' ? ' · ✔ validé' : m.statut === 'masque' ? ' · écarté' : ' · à relire'))),
+            el('div', { class: 'tresmuet' }, (b ? b.symbole + ' ' : '') + 'par ' + nom(p.pseudo)
+              + (sorte === 'portrait' ? ' · sur ' + (decrits(m.eleve_id).map(function (e) { return nom((C.participants[e] || {}).pseudo); }).join(' ou ') || '?') : '')
+              + (m.statut === 'valide' ? ' · ✔ validé' : m.statut === 'masque' ? ' · écarté' : ' · à relire'))),
           actions));
       });
     });
+  }
+  /* la ou les personnes que décrit un portrait : le binôme de son auteur */
+  function decrits(auteur) {
+    var b = C.binomes[auteur];
+    if (!b) return [];
+    return Object.keys(C.binomes).filter(function (e) { return e !== auteur && C.binomes[e].binome === b.binome; });
   }
   function statut(m, s) {
     EMC.modifier('emc_mur?classe_id=eq.' + id() + '&eleve_id=eq.' + m.eleve_id + '&sorte=eq.' + m.sorte, { statut: s }).then(relireMur, erreur);
@@ -509,8 +579,19 @@
       z.appendChild(el('div', { class: 'p-petit' }, 'prêts / présents'));
     } else if (n === 1) {
       z.appendChild(el('h1', null, j.titre || 'Je m\'appelle…'));
-      z.appendChild(el('ol', null, (j.consignes || []).map(function (t) { return el('li', null, t); })));
-      if (j.exemple) z.appendChild(el('div', { class: 'p-ex' }, el('b', { style: 'font-style:normal' }, '🎭 ' + j.exemple.titre), el('br'), j.exemple.texte));
+      z.appendChild(el('div', { class: 'p-consignes' }, (j.consignes || []).map(function (t, i) {
+        var mm = /^(\S+)\s+(.*)$/.exec(t), emo = mm && /\p{Extended_Pictographic}/u.test(mm[1]) ? mm[1] : null;
+        return el('div', { style: 'background:' + TEINTES[i % TEINTES.length] }, el('span', { class: 'p-cn' }, emo || String(i + 1)), el('p', null, EMC.riche(emo ? mm[2] : t)));
+      })));
+      if (j.exemple) {
+        var rep = {}; (j.exemple.reponses || []).forEach(function (r) { rep[r.q] = r.r; });
+        var tq = {}; (j.themes || []).forEach(function (t) { (t.questions || []).forEach(function (q) { tq[q.id] = q.texte; }); });
+        z.appendChild(el('div', { class: 'p-ex' }, el('b', null, '🎭 ' + j.exemple.titre),
+          el('div', { class: 'p-ex-temps' },
+            el('div', null, el('h3', null, '① Les questions'), el('ol', null, (j.exemple.questions || []).map(function (id) { return el('li', null, tq[id] || String(id)); }))),
+            el('div', null, el('h3', null, '② Les réponses notées'), el('ul', null, (j.exemple.questions || []).filter(function (id) { return rep[id]; }).map(function (id) { return el('li', null, '✏️ ' + rep[id]); }))),
+            el('div', null, el('h3', null, '③ Le portrait'), el('p', null, j.exemple.texte)))));
+      }
     } else if (n === 2) {
       z.appendChild(el('h1', null, gs.length ? 'Trouve ton binôme !' : '🎲 Tirage au sort…'));
       if (gs.length) {
@@ -526,9 +607,9 @@
       z.appendChild(el('div', { class: 'p-petit' }, 'ont choisi leurs questions'));
     } else if (n === 4) {
       z.appendChild(el('h1', null, 'L\'échange'));
-      z.appendChild(el('div', { class: 'p-grand', id: 'p-chrono' }, '10:00'));
+      z.appendChild(el('div', { class: 'p-grand', id: 'p-chrono' }, (j.echange_minutes || 15) + ':00'));
       z.appendChild(el('h2', { id: 'p-sous' }, ''));
-      z.appendChild(el('div', { class: 'p-petit' }, '🔒 Les notes restent sur les tablettes.'));
+      z.appendChild(el('div', { class: 'p-petit' }, '🔒 Les notes ne seront montrées qu\'au binôme, pour les feux vert et rouge.'));
     } else if (n === 5) {
       var feux = l.filter(function (p) { return Object.keys((C.jdr[p.eleve_id] || {}).feux || {}).length; }).length;
       z.appendChild(el('h1', null, '🟢 Feu vert · 🔴 Feu rouge'));
@@ -542,8 +623,6 @@
         z.appendChild(el('div', { class: 'p-sym' }, g.symbole));
         z.appendChild(el('div', { class: 'p-grand', id: 'p-chrono', style: 'font-size:clamp(3rem,10vw,8rem)' }, '1:00'));
         z.appendChild(el('h2', null, '« Je m\'appelle… »'));
-        var echelle = j.reconnu || [], votes = g.membres.map(function (e) { return (C.jdr[e] || {}).reconnu; }).filter(Boolean);
-        if (votes.length) z.appendChild(el('div', { class: 'p-reconnu' }, votes.map(function (v) { var x = echelle.filter(function (k) { return k.v === v; })[0]; return x ? x.e : ''; }).join(' ')));
         var suite = o.slice(c + 1, c + 6).map(function (num) { var h = groupe(num); return h ? h.symbole : ''; });
         if (suite.length) z.appendChild(el('div', { class: 'p-petit' }, 'Ensuite : ' + suite.join('  ')));
       }
@@ -557,10 +636,14 @@
         z.appendChild(etat().revele && b ? el('div', { class: 'p-sym' }, b.symbole) : el('h2', null, 'Qui est-ce ?'));
       }
     } else if (n === 8) {
+      z.appendChild(el('div', { class: 'p-sym' }, '📝'));
+      z.appendChild(el('h1', null, 'Pour moi, la liberté, c’est…'));
+      z.appendChild(el('h2', null, 'Sur la fiche papier : un mot, une phrase, un exemple. Vendredi, on y reviendra.'));
+    } else if (n === 9) {
       z.appendChild(el('h1', null, 'Merci ! 🙏'));
+      var bz = el('div', { class: 'p-bilan' }); z.appendChild(bz); bilan(bz, true);
       var ph = C.mur.filter(function (x) { return x.sorte === 'retiens' && x.statut === 'valide'; });
-      if (ph.length) z.appendChild(el('div', { class: 'p-mur' }, ph.map(function (x) { return el('div', null, x.texte); })));
-      else z.appendChild(el('h2', null, 'Ce que je retiens de mon binôme…'));
+      if (ph.length) { z.appendChild(el('h2', null, 'Ce que je retiens de mon binôme')); z.appendChild(el('div', { class: 'p-mur' }, ph.map(function (x) { return el('div', null, x.texte); }))); }
     }
   }
 
@@ -579,7 +662,7 @@
     }
     var pc = document.getElementById('p-chrono'); if (!pc) return;
     if (n === 4) {
-      var total = (jdr().echange_minutes || 10) * 60, dep = etat().echange_depuis;
+      var total = (jdr().echange_minutes || 15) * 60, dep = etat().echange_depuis;
       if (!dep) { pc.textContent = mmss(total); return; }
       var ec = (Date.now() - dep) / 1000, reste = total - ec;
       pc.textContent = reste > 0 ? mmss(reste) : '0:00';

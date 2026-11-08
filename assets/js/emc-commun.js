@@ -541,6 +541,20 @@
     }
     return n;
   };
+  /* Un texte des contenus avec du **gras** : des nœuds sûrs (jamais
+     de HTML interprété). */
+  EMC.riche = function (texte) {
+    var f = document.createDocumentFragment();
+    String(texte == null ? '' : texte).split(/(\*\*[^*]+\*\*)/).forEach(function (bout) {
+      if (!bout) return;
+      if (/^\*\*[^*]+\*\*$/.test(bout)) f.appendChild(EMC.el('b', null, bout.slice(2, -2)));
+      else f.appendChild(document.createTextNode(bout));
+    });
+    return f;
+  };
+  /* sans les ** (titres, exports) */
+  EMC.sansGras = function (texte) { return String(texte == null ? '' : texte).replace(/\*\*([^*]+)\*\*/g, '$1'); };
+
   /* ?classe=NINA27 */
   EMC.parametre = function (nom) {
     var m = new RegExp('[?&]' + nom + '=([^&#]*)').exec(global.location.search);

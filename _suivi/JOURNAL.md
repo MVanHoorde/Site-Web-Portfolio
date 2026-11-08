@@ -12,6 +12,10 @@
 
 ---
 
+## 08/11/2026 (soir) — EMC : l'essai de Loïc, et la 035
+
+Loïc a joué le jeu de rôle et la restitution de bout en bout, en pilote et en projection. Ses retours ont changé une règle de confidentialité : les notes de l'échange vont désormais au binôme à l'étape 5 (et à lui seul : la base refuse aux enseignants), pour que les feux se donnent en connaissance de cause. Le reste : « reconnu·e » jamais affiché par personne (bilan anonyme à la fin), une étape « la liberté, pour moi » sur papier qui fait boucle avec la définition de vendredi, des consignes en couleur, l'exemple en trois temps, « Valider » grisé plutôt qu'une case qui refuse de se cocher ; à la restitution, les ateliers choisis dans la liste des collègues (en base seulement : dépôt public), un mur en trois colonnes, une analyse du mur en classe entière, une expression libre en nuage. Les écarts d'icônes entre tablette et projection viennent du dessin des émojis selon l'appareil (Apple, Windows), pas du code.
+
 ## 08/11/2026 — EMC : six séances, des cartes pour tout le monde, le jeu de rôle
 
 Loïc apporte un brief v2 : le Labyrinthe n'est qu'une partie de deux jours en groupes mélangés (accueil d'un groupe par un jeu de rôle, quatre créneaux du Labyrinthe, restitution avec sa 2nde 1). Le plan soumis relève trois pièges que le brief ne voyait pas : un code à 4 chiffres ne peut pas être un mot de passe Supabase (politique du projet), la limite d'Auth de 30 connexions par 5 min et par IP aurait bloqué la salle entière à 8 h 30, et un navigateur ne peut pas créer 35 comptes d'affilée. Arbitrages : cartes pour tous (même ceux qui ont un compte), mot de passe dérivé `Emc-<code>`, groupe D ≠ groupe A, limite relevée par Loïc, migration exécutée à la fin.

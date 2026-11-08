@@ -15,6 +15,16 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 08/11/2026 (soir) — EMC : retours de Loïc après son essai (035)
+
+| Date | Décision | Statut |
+|---|---|---|
+| 08/11/2026 | **Les notes de l'échange sont montrées au binôme** à l'étape 5, pour qu'il donne ses feux en lisant ce qu'on a noté de lui. Elles ne partent qu'à l'étape 5, vers `emc_jdr_notes`, que **seuls l'auteur et son binôme** lisent (pas les enseignants : aucune policy), et sont effacées à l'étape 8, à la fin, à la déconnexion et à la clôture. Remplace « les notes ne quittent jamais l'iPad » | ✅ en vigueur (Loïc) |
+| 08/11/2026 | **« Je me suis reconnu·e » facultatif et jamais affiché par personne** (ni projeté, ni par élève au pilotage) : un bilan anonyme seulement, à la fin | ✅ en vigueur (Loïc) |
+| 08/11/2026 | **Pas de bandeau des numéros d'urgence** à l'accueil ni à la restitution (seulement au Labyrinthe) ; « J'ai besoin d'en parler » reste, dans la barre du haut | ✅ en vigueur (Loïc ; bouton gardé par Claude, à confirmer) |
+| 08/11/2026 | **Jeu de rôle** : accueil 10, consignes 5, questions 10, échange 15, présentations 30 ; une étape « **La liberté, pour moi** » sur fiche papier avant la clôture (l'aller d'une boucle dont le retour est la définition de vendredi) ; « Valider » grisé au lieu d'interdire de cocher ; consignes en cartes de couleur ; exemple en trois temps ; pseudos sous les symboles au pilotage ; « C'est toi ! » sur la tablette de l'élève décrit par le portrait révélé. La projection reste sans identifiant | ✅ en vigueur (Loïc) |
+| 08/11/2026 | **Restitution** : ateliers **choisis dans une liste** (enseignants, salle), réglée au tableau de bord — 🔴 les noms des collègues ne vont jamais dans le dépôt public ; mur en **trois colonnes** de saisie ; **analyse du mur** en classe entière (nouvelle étape) ; **expression libre** et son nuage à la clôture ; déroulé 5-5-5-5-30-10-10-5 | ✅ en vigueur (Loïc) |
+
 ## 08/11/2026 — EMC seconde : six séances, cartes éphémères, jeu de rôle d'accueil
 
 | Date | Décision | Statut |
@@ -25,7 +35,7 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 08/11/2026 | **La page EMC a sa propre session** (`emc.session`), à part de `snt.session` : une carte ne déconnecte jamais un élève de son compte habituel sur son iPad, et la page EMC ne s'ouvre jamais d'elle-même sur ce compte (crainte de Loïc). `progression.js` n'est plus chargé par `emc/index.html` | ✅ en vigueur |
 | 08/11/2026 | **Création des comptes par une fonction Edge** (`supabase/functions/emc-cartes`), pas par le navigateur : la limite d'Auth par adresse IP et le remplacement de la session du prof l'interdisaient. Le droit est décidé **par la base** (`emc_cartes_autoriser`, appelée avec le jeton du prof) ; la clé de service ne sert qu'à créer et inscrire | ✅ en vigueur |
 | 08/11/2026 | **Limite d'Auth « sign-ups and sign-ins » relevée** dans le tableau de bord Supabase (30 par 5 min et par IP par défaut : la salle entière sort par une seule adresse) | ✅ fait (Loïc) |
-| 08/11/2026 | **Jeu de rôle : les notes de l'échange ne quittent jamais la tablette** (localStorage seul, hors file d'envoi), effacées à l'étape 8, à la fin et à la déconnexion. En base : classe d'origine, numéros de questions, feux oui/non, vote « reconnu·e » (`emc_jdr`). Portrait mystère et « ce que je retiens » passent par un **mur modéré** (`emc_mur`), projetés seulement validés, sans nom, **effacés à la clôture** | ✅ en vigueur |
+| 08/11/2026 | ~~**Jeu de rôle : les notes de l'échange ne quittent jamais la tablette**~~ (remplacé le soir même : montrées au binôme seul à l'étape 5) (localStorage seul, hors file d'envoi), effacées à l'étape 8, à la fin et à la déconnexion. En base : classe d'origine, numéros de questions, feux oui/non, vote « reconnu·e » (`emc_jdr`). Portrait mystère et « ce que je retiens » passent par un **mur modéré** (`emc_mur`), projetés seulement validés, sans nom, **effacés à la clôture** | ✅ en vigueur |
 | 08/11/2026 | **Tirage des binômes en base** (`emc_jdr_tirer`), figé (une reconnexion retrouve le même binôme), classes d'origine croisées, trinôme si impair, retardataires placés sans défaire le tirage | ✅ en vigueur |
 | 08/11/2026 | **Exemple « Pierre Marchand » écrit par Claude** (questions 2, 9, 15, 17, 22, 27), réglable au tableau de bord | ⏳ à relire (Loïc) |
 | 08/11/2026 | **Remise à zéro d'une séance** (`emc_reinitialiser`) après une répétition : le travail des élèves part, les cartes restent valables | ✅ en vigueur |

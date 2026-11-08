@@ -64,7 +64,7 @@
 
     function relire() {
       return Promise.all([
-        EMC.lire('emc_cartes?select=identifiant,eleve_id&classe_id=eq.' + classe.id + '&order=identifiant'),
+        EMC.lire('emc_cartes?select=identifiant,code,eleve_id&classe_id=eq.' + classe.id + '&order=identifiant'),
         EMC.lire('emc_participants?select=eleve_id&classe_id=eq.' + classe.id)
       ]).then(function (r) {
         var entres = {}; r[1].forEach(function (p) { entres[p.eleve_id] = true; });
@@ -74,7 +74,8 @@
         liste.innerHTML = '';
         if (!r[0].length) { liste.appendChild(el('p', { class: 'tresmuet' }, 'Génère-les avant la séance, puis imprime la planche.')); return; }
         liste.appendChild(el('div', { style: 'display:flex;flex-wrap:wrap;gap:.35rem' }, r[0].map(function (c) {
-          return el('span', { class: 'pastille mono ' + (entres[c.eleve_id] ? 'ok' : ''), title: entres[c.eleve_id] ? 'entrée dans la séance' : 'pas encore utilisée' }, c.identifiant);
+          return el('span', { class: 'pastille mono ' + (entres[c.eleve_id] ? 'ok' : ''), title: entres[c.eleve_id] ? 'entrée dans la séance' : 'pas encore utilisée' },
+            c.identifiant, el('b', { style: 'margin-left:.5em;letter-spacing:.12em' }, c.code));
         })));
       }, function (e) { etat.textContent = EMC.message(e); });
     }

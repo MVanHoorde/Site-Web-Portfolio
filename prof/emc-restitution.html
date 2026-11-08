@@ -64,6 +64,8 @@
   #proj .mur{width:96vw;text-align:left}
   #proj .colonne{background:rgba(255,255,255,.08)}
   #proj .colonne h3{color:#fff;font-size:clamp(1rem,1.6vw,1.5rem)}
+  #proj .mur-analyse{grid-template-columns:repeat(3,1fr)}
+  #proj .mur-analyse .postit{font-size:clamp(.85rem,1.15vw,1.15rem);margin:.35rem 0}
   #proj .postit{color:#161f33;font-size:clamp(.9rem,1.3vw,1.25rem)}
   #proj .p-groupes{display:flex;flex-wrap:wrap;gap:2vh 3vw;justify-content:center}
   #proj .p-groupes div{font-size:clamp(1.2rem,2.2vw,2rem)}
@@ -168,6 +170,11 @@
           <div id="defs"></div>
         </div>
       </div>
+      <div class="carte-blanche">
+        <h2>💬 L'expression libre (étape 7)</h2>
+        <p class="tresmuet">Un mot ou une phrase par élève, en nuage à la projection. Touche une expression pour la masquer.</p>
+        <div id="nuage-expr"></div>
+      </div>
     </section>
 
     <section class="panneau" id="p-exports">
@@ -191,10 +198,10 @@
 <script src="../assets/js/prof-api.js?v=3"></script>
 <script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
 <script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
-<script src="../assets/js/emc-commun.js?v=3"></script>
+<script src="../assets/js/emc-commun.js?v=4"></script>
 <script src="../assets/js/emc-vues.js?v=2"></script>
 <script src="../assets/js/emc-export.js?v=1"></script>
-<script src="../assets/js/prof-emc-outils.js?v=1"></script>
+<script src="../assets/js/prof-emc-outils.js?v=2"></script>
 <script>
 (function () {
   'use strict';
@@ -263,7 +270,7 @@
       var m = {}; l.forEach(function (p) { m[p.eleve_id] = { eleve_id: p.eleve_id, pret: p.pret, pseudo: p.eleves && p.eleves.pseudo }; }); C.participants = m; rendre();
     });
   }
-  function relireRestit() { return EMC.lire('emc_restit?select=eleve_id,parcours,mot&classe_id=eq.' + id()).then(function (l) { var m = {}; l.forEach(function (r) { m[r.eleve_id] = r; }); C.restit = m; rendre(); }); }
+  function relireRestit() { return EMC.lire('emc_restit?select=eleve_id,parcours,mot,expression&classe_id=eq.' + id()).then(function (l) { var m = {}; l.forEach(function (r) { m[r.eleve_id] = r; }); C.restit = m; rendre(); }); }
   function relireMots() { return EMC.lire('emc_mots?select=eleve_id,emojis&classe_id=eq.' + id()).then(function (l) { C.mots = l; rendre(); }); }
   function relirePostits() { return EMC.lire('emc_postits?select=id,eleve_id,groupe,sorte,texte,masque,cree_le&classe_id=eq.' + id() + (PROJ ? '&masque=eq.false' : '') + '&order=cree_le').then(function (l) { C.postits = l; rendre(); }); }
   function relireMur() { return EMC.lire('emc_mur?select=eleve_id,sorte,texte,statut&sorte=eq.definition&classe_id=eq.' + id() + (PROJ ? '&statut=eq.valide' : '') + '&order=maj_le').then(function (l) { C.mur = l; rendre(); }); }
@@ -274,21 +281,28 @@
     return EMC.modifier('emc_seances?classe_id=eq.' + id(), champs).then(function () { Object.keys(champs).forEach(function (k) { C.seance[k] = champs[k]; }); rendre(); }, erreur);
   }
   function poserEtat(maj) { return poserSeance({ etat: Object.assign({}, etat(), maj) }); }
-  function allerEtape(n) { if (C.seance && C.seance.cloturee_le) return alert('La séance est clôturée.'); if (n >= 0 && n <= 6) poserSeance({ etape: n }); }
+  function allerEtape(n) { if (C.seance && C.seance.cloturee_le) return alert('La séance est clôturée.'); if (n >= 0 && n <= 7) poserSeance({ etape: n }); }
 
   /* ---------- les groupes : proposition automatique ---------- */
+  /* Un atelier choisi dans la liste (ref) se range sous sa référence ;
+     un atelier écrit, sous son nom normalisé. */
+  function cleAtelier(a) { return a.ref ? 'ref:' + a.ref : EMC.normaliserMot(a.atelier); }
+  function atelierDeListe(ref) { return (rc().ateliers || []).filter(function (x) { return x.n === ref; })[0]; }
   function ateliersAgreges() {
     var m = {};
     liste().forEach(function (p) {
       ((C.restit[p.eleve_id] || {}).parcours || []).forEach(function (a) {
-        var f = EMC.normaliserMot(a.atelier); if (!f) return;
-        var g = m[f] || (m[f] = { forme: f, graphies: {}, eleves: [] });
+        var f = cleAtelier(a); if (!f) return;
+        var g = m[f] || (m[f] = { forme: f, graphies: {}, eleves: [], ref: a.ref || null });
         g.graphies[a.atelier.trim()] = (g.graphies[a.atelier.trim()] || 0) + 1;
         if (g.eleves.indexOf(p.eleve_id) < 0) g.eleves.push(p.eleve_id);
       });
     });
     return Object.keys(m).map(function (f) {
-      var g = m[f]; g.titre = Object.keys(g.graphies).sort(function (a, b) { return g.graphies[b] - g.graphies[a]; })[0]; return g;
+      var g = m[f], at = g.ref ? atelierDeListe(g.ref) : null;
+      g.titre = at ? (at.nom || at.enseignants) : Object.keys(g.graphies).sort(function (a, b) { return g.graphies[b] - g.graphies[a]; })[0];
+      g.detail = at ? [at.nom ? at.enseignants : '', at.salle].filter(Boolean).join(' · ') : '';
+      return g;
     }).sort(function (a, b) { return b.eleves.length - a.eleves.length; });
   }
   function proposer() {
@@ -297,7 +311,7 @@
     var aff = {};
     /* les élèves qui ont le moins de choix d'abord */
     var el2 = liste().map(function (p) {
-      var f = ((C.restit[p.eleve_id] || {}).parcours || []).map(function (a) { return EMC.normaliserMot(a.atelier); });
+      var f = ((C.restit[p.eleve_id] || {}).parcours || []).map(cleAtelier);
       return { id: p.eleve_id, options: gs.filter(function (g) { return f.indexOf(g.forme) >= 0; }) };
     }).sort(function (a, b) { return a.options.length - b.options.length || Math.random() - 0.5; });
     var autres = null;
@@ -350,19 +364,21 @@
     var n = etape(), es = etapes(), l = liste();
     $('#etape-titre').textContent = C.seance.cloturee_le ? 'séance clôturée' : n + ' · ' + ((es[n] || {}).titre || '');
     var f = $('#frise'); f.innerHTML = '';
-    for (var i = 0; i <= 6; i++) (function (i) {
+    for (var i = 0; i <= 7; i++) (function (i) {
       var e = es[i] || { titre: 'Étape ' + i };
       f.appendChild(el('button', { type: 'button', class: i === n ? 'courante' : (i < n ? 'faite' : ''), onclick: function () { allerEtape(i); } },
         el('span', { class: 'n' }, String(i)), el('span', null, e.titre), e.duree ? el('span', { class: 'tresmuet' }, e.duree + ' min') : null));
     })(i);
-    $('#btn-revenir').disabled = n <= 0; $('#btn-avancer').disabled = n >= 6;
+    $('#btn-revenir').disabled = n <= 0; $('#btn-avancer').disabled = n >= 7;
     $('#n-prets').textContent = l.filter(function (p) { return p.pret; }).length; $('#n-tous').textContent = l.length;
     var res = '';
     if (n === 1) res = C.mots.length + ' / ' + l.length + ' ont donné leur météo';
     if (n === 2) res = l.filter(function (p) { return ((C.restit[p.eleve_id] || {}).parcours || []).length; }).length + ' / ' + l.length + ' ont écrit leur parcours';
     if (n === 3) res = groupes().length ? groupes().length + ' groupe(s) envoyé(s)' : '⚠️ Groupes pas encore envoyés (onglet Parcours & groupes)';
     if (n === 4) res = C.postits.length + ' post-it';
-    if (n === 5) res = l.filter(function (p) { return (C.restit[p.eleve_id] || {}).mot; }).length + ' mot(s), ' + C.mur.length + ' définition(s)';
+    if (n === 5) res = 'Analyse du mur : ' + C.postits.filter(function (p) { return !p.masque; }).length + ' post-it visibles, rangés par colonne';
+    if (n === 6) res = l.filter(function (p) { return (C.restit[p.eleve_id] || {}).mot; }).length + ' mot(s), ' + C.mur.length + ' définition(s)';
+    if (n === 7) res = l.filter(function (p) { return (C.restit[p.eleve_id] || {}).expression; }).length + ' expression(s) libre(s)';
     $('#etape-resume').textContent = res;
     $('#n-postits').textContent = C.postits.length ? '(' + C.postits.length + ')' : '';
     var aRelire = C.mur.filter(function (m) { return m.statut === 'propose'; }).length;
@@ -374,7 +390,7 @@
     var z = $('#ateliers'); z.innerHTML = '';
     var ags = ateliersAgreges();
     if (!ags.length) z.appendChild(el('p', { class: 'tresmuet' }, 'Pas encore de parcours.'));
-    ags.forEach(function (a) { z.appendChild(el('span', { class: 'pastille ' + (a.eleves.length >= 2 ? 'cyan' : '') }, a.titre + ' · ' + a.eleves.length)); });
+    ags.forEach(function (a) { z.appendChild(el('span', { class: 'pastille ' + (a.eleves.length >= 2 ? 'cyan' : ''), title: a.detail || '' }, a.titre + ' · ' + a.eleves.length)); });
     var b = brouillon || { groupes: groupes(), affectations: etat().affectations || {} };
     var ed = $('#groupes-ed'); ed.innerHTML = '';
     b.groupes.forEach(function (g) {
@@ -418,7 +434,18 @@
   function motsAgreg() {
     return V.agregerMots(liste().map(function (p) { var m = (C.restit[p.eleve_id] || {}).mot; return { mots: m ? [m] : [] }; }), C.masques);
   }
+  /* l'expression libre de la clôture : un mot ou une phrase, en nuage */
+  function exprAgreg() {
+    /* un masque ne garde que 40 caractères : on compare sur 40 */
+    return V.agregerMots(liste().map(function (p) { var x = (C.restit[p.eleve_id] || {}).expression; return { mots: x ? [x] : [] }; }), [])
+      .map(function (x) { x.masque = C.masques.indexOf(x.forme.slice(0, 40)) >= 0; return x; });
+  }
   function rendreDefs() {
+    V.nuage($('#nuage-expr'), exprAgreg(), { avecMasques: true, vide: 'Pas encore d\'expression libre (étape 7).', surClic: function (x) {
+      var p = x.masque ? EMC.supprimer('emc_mots_masques?classe_id=eq.' + id() + '&mot=eq.' + encodeURIComponent(x.forme.slice(0, 40)))
+                       : EMC.ecrire('emc_mots_masques', { classe_id: id(), mot: x.forme.slice(0, 40) }, { ignorer: true });
+      p.then(relireMasques, erreur);
+    } });
     V.nuage($('#nuage-prof'), motsAgreg(), { avecMasques: true, surClic: function (x) {
       var p = x.masque ? EMC.supprimer('emc_mots_masques?classe_id=eq.' + id() + '&mot=eq.' + encodeURIComponent(x.forme))
                        : EMC.ecrire('emc_mots_masques', { classe_id: id(), mot: x.forme }, { ignorer: true });
@@ -517,13 +544,27 @@
       var m = el('div', { class: 'mur' }); z.appendChild(m); rendreMur(m, false);
       return;
     } else if (n === 5) {
+      /* l'analyse : tous les post-it, rangés par colonne, le symbole du groupe sur chacun */
+      z.style.justifyContent = 'flex-start';
+      z.appendChild(el('h1', { style: 'font-size:clamp(1.6rem,3vw,2.6rem)' }, '🔎 Nos libertés, tous ensemble'));
+      z.appendChild(el('div', { class: 'p-petit' }, EMC.riche(r.analyse_consigne || '')));
+      var gx = {}; groupes().forEach(function (g) { gx[g.n] = g; });
+      z.appendChild(el('div', { class: 'mur mur-analyse' }, (r.postits || []).map(function (so) {
+        return el('div', { class: 'colonne' }, el('h3', null, so.titre),
+          C.postits.filter(function (p) { return p.sorte === so.sorte && !p.masque; }).map(function (p) {
+            return el('div', { class: 'postit', style: 'background:' + so.couleur }, gx[p.groupe] ? gx[p.groupe].symbole + ' ' : '', p.texte);
+          }));
+      })));
+      return;
+    } else if (n === 6) {
       z.appendChild(el('h1', null, r.mot_question || 'La liberté, en un mot ?'));
       var nn = el('div', { style: 'width:85vw' }); z.appendChild(nn); V.nuage(nn, motsAgreg(), { vide: 'Les mots arrivent…' });
       z.appendChild(el('div', { class: 'p-def', id: 'p-def' }, ''));
       defilement();
-    } else if (n === 6) {
-      z.appendChild(el('h1', null, (r.merci || 'Merci !') + ' 🙏'));
-      var n6 = el('div', { style: 'width:85vw' }); z.appendChild(n6); V.nuage(n6, motsAgreg(), {});
+    } else if (n === 7) {
+      z.appendChild(el('h1', null, '💬 ' + (r.merci || 'Merci !')));
+      z.appendChild(el('h2', null, r.expression_question || 'Ces deux jours, en un mot ou une phrase'));
+      var n6 = el('div', { style: 'width:88vw' }); z.appendChild(n6); V.nuage(n6, exprAgreg(), { vide: 'Les mots arrivent…' });
     }
     z.style.justifyContent = '';
   }
@@ -532,7 +573,7 @@
     var v = C.mur.filter(function (m) { return m.statut === 'valide'; });
     d.textContent = v.length ? '« ' + v[iDef % v.length].texte + ' »' : '';
   }
-  setInterval(function () { if (PROJ && etape() === 5) { iDef++; defilement(); } }, 7000);
+  setInterval(function () { if (PROJ && etape() === 6) { iDef++; defilement(); } }, 7000);
 
   function tic() {
     if (!C.seance) return;

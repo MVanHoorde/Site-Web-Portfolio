@@ -55,7 +55,7 @@
 
 <script src="../assets/js/prof-api.js?v=3"></script>
 <script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
-<script src="../assets/js/emc-commun.js?v=3"></script>
+<script src="../assets/js/emc-commun.js?v=4"></script>
 <script>
 (function () {
   'use strict';
@@ -87,7 +87,11 @@
                      champs: [{ k: 'texte', t: 'zone', lib: 'Question', large: true, requis: true },
                               { k: 'id', t: 'nombre', lib: 'Numéro (unique, de 1 à 99)', requis: true }] }] },
         { k: 'exemple', t: 'objet', lib: 'Exemple projeté', large: true, champs: [
-          { k: 'titre', t: 'texte', lib: 'Titre', large: true }, { k: 'texte', t: 'zone', lib: 'Le portrait, à la première personne', large: true }] },
+          { k: 'titre', t: 'texte', lib: 'Titre', large: true },
+          { k: 'reponses', t: 'objets', lib: '② Les réponses notées (une par question choisie)', large: true, resume: function (x) { return 'Q' + x.q + ' — ' + x.r; },
+            nouveau: function () { return { q: 1, r: '' }; },
+            champs: [{ k: 'q', t: 'nombre', lib: 'Numéro de la question', requis: true }, { k: 'r', t: 'zone', lib: 'Réponse notée (mots-clés)', large: true, requis: true }] },
+          { k: 'texte', t: 'zone', lib: '③ Le portrait, à la première personne', large: true }] },
         { k: 'echange_minutes', t: 'nombre', lib: 'Échange (minutes)' },
         { k: 'presentation_secondes', t: 'nombre', lib: 'Présentation (secondes)' },
         { k: 'feux', t: 'zone', lib: 'Feu vert / feu rouge : le consentement (étape 5)', large: true },
@@ -95,6 +99,7 @@
         { k: 'reconnu_question', t: 'texte', lib: 'Question « reconnu·e »', large: true },
         { k: 'portrait_consigne', t: 'zone', lib: 'Consigne du portrait mystère', large: true },
         { k: 'portrait_exemple', t: 'texte', lib: 'Exemple de portrait mystère', large: true },
+        { k: 'liberte_fiche', t: 'zone', lib: 'Étape 8 : la liberté, pour moi (fiche papier)', large: true },
         { k: 'retiens_question', t: 'texte', lib: 'Question de clôture', large: true },
         { k: 'symboles', t: 'liste', lib: 'Symboles des binômes (et des groupes de la restitution)', large: true, min: 2 }] } },
     { cle: 'etapes_accueil', titre: 'Jeu de rôle — étapes', aide: 'Les 9 étapes sont fixes (0 à 8) : on règle leur titre et leur durée indicative.',
@@ -107,15 +112,22 @@
         { k: 'accroche', t: 'zone', lib: 'Accroche (étape 0)', large: true },
         { k: 'meteo_question', t: 'texte', lib: 'Météo : question', large: true },
         { k: 'parcours_consigne', t: 'zone', lib: 'Mon parcours : consigne', large: true },
+        { k: 'ateliers', t: 'objets', lib: 'Les ateliers des deux jours (proposés aux élèves à l\'étape 2)', large: true,
+          resume: function (x) { return x.n + ' · ' + (x.nom ? x.nom + ' — ' : '') + (x.enseignants || '') + (x.salle ? ' · ' + x.salle : ''); },
+          nouveau: function () { return { n: 0, nom: '', enseignants: '', salle: '' }; },
+          champs: [{ k: 'nom', t: 'texte', lib: 'Nom de l\'atelier', large: true }, { k: 'enseignants', t: 'texte', lib: 'Enseignants', large: true, requis: true },
+                   { k: 'salle', t: 'texte', lib: 'Salle' }, { k: 'n', t: 'nombre', lib: 'Numéro (unique, ne pas changer en séance)', requis: true }] },
         { k: 'libertes', t: 'liste', lib: 'Libertés proposées', large: true },
         { k: 'groupe_consigne', t: 'zone', lib: 'Par atelier : consigne', large: true },
         { k: 'mur_consigne', t: 'zone', lib: 'Le mur : consigne', large: true },
+        { k: 'analyse_consigne', t: 'zone', lib: 'Analyse du mur (tous ensemble) : la question', large: true },
         { k: 'postits', t: 'objets', fixe: true, lib: 'Sortes de post-it', large: true, resume: function (x) { return x.titre; },
           apercu: function (x) { return el('span', { class: 'couleur-ex', style: 'background:' + x.couleur }); },
           champs: [{ k: 'titre', t: 'texte', lib: 'Titre', requis: true }, { k: 'couleur', t: 'texte', lib: 'Couleur (#rrggbb)', motif: /^#[0-9a-fA-F]{6}$/, requis: true }] },
         { k: 'presentation_secondes', t: 'nombre', lib: 'Présentation d\'un groupe (secondes)' },
         { k: 'mot_question', t: 'texte', lib: 'Ma définition : le mot', large: true },
         { k: 'definition_question', t: 'texte', lib: 'Ma définition : la phrase', large: true },
+        { k: 'expression_question', t: 'texte', lib: 'Expression libre : la question (étape 7)', large: true },
         { k: 'merci', t: 'texte', lib: 'Mot de la fin', large: true }] } },
     { cle: 'etapes_restitution', titre: 'Restitution — étapes', aide: 'Les 7 étapes sont fixes (0 à 6) : on règle leur titre et leur durée indicative.',
       def: { t: 'objets', fixe: true, resume: function (x) { return x.n + ' · ' + x.titre; },

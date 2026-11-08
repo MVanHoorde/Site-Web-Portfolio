@@ -247,12 +247,17 @@
   }
 
   function demarrerSeance() {
+    var m = module();
+    /* Le bandeau des numéros d'urgence n'a sa place qu'au Labyrinthe
+       (Loïc, 08/11) ; ailleurs, « J'ai besoin d'en parler » passe dans
+       la barre du haut. */
+    document.body.classList.toggle('avec-aide', !(m && m.sansBandeau));
+    $('#bandeau-aide').hidden = !!(m && m.sansBandeau);
     rendreBarre();
     rendreNumeros();
     $('#btn-aide').hidden = false;
     $('#principal').innerHTML = '';
     $('#principal').appendChild(el('div', { id: 'scene' }));
-    var m = module();
     document.title = m && m.titre ? 'EMC — ' + m.titre : 'EMC — Le Labyrinthe de Nina';
     if (m && m.demarrer) m.demarrer(ctx);
     if (S.seance) rendreEtape();
@@ -311,6 +316,7 @@
     b.appendChild(el('span', { class: 'espace' }));
     b.appendChild(el('span', { class: 'pastille direct-etat ' + d[0], id: 'etat-direct', title: 'Liaison avec la classe' }, d[1]));
     if (attente) b.appendChild(el('span', { class: 'pastille att', id: 'etat-file' }, '⏳ ' + attente + ' envoi' + (attente > 1 ? 's' : '') + ' en attente'));
+    if (m && m.sansBandeau) b.appendChild(el('button', { type: 'button', class: 'lien', id: 'btn-aide-barre', onclick: ouvrirAide }, '💬 Besoin d\'en parler'));
     b.appendChild(sortir);
   }
   function boutonPret(geant) {
@@ -797,8 +803,11 @@
     var b = bloc();
     b.appendChild(el('h1', null, 'La séance est terminée. Merci ! 🙏'));
     b.appendChild(el('p', null, 'Si tu as besoin d\'en parler plus tard, tu peux aller voir la CPE, l\'infirmière, ou un professeur.'));
-    var nz = el('div'); b.appendChild(nz);
-    EMC.Vues.numerosDetailles(nz, contenu('numeros') || NUMEROS_DEFAUT);
+    var m = module();
+    if (!(m && m.sansBandeau)) {
+      var nz = el('div'); b.appendChild(nz);
+      EMC.Vues.numerosDetailles(nz, contenu('numeros') || NUMEROS_DEFAUT);
+    }
     s.appendChild(b);
     $('#btn-aide').hidden = true;
   }

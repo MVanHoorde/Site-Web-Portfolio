@@ -44,6 +44,12 @@ for f in ['031-emc.sql', '033-emc-contenus.sql', '034-emc-six-seances.sql']:
     for cle, js in re.findall(r"\('([a-z_]+)', \$j\$(.*?)\$j\$::jsonb\)", s, re.S):
         CONTENUS[cle] = json.loads(js)
 assert 'jdr' in CONTENUS and 'etapes_accueil' in CONTENUS
+# les mises à jour du 035 (des update, pas des insert) : consignes, réponses de l'exemple, durées
+_s35 = open(os.path.join(DEPOT, 'bdd/schema/035-emc-jdr-retours.sql'), encoding='utf-8').read()
+CONTENUS['jdr']['consignes'] = json.loads(re.search(r"'\{consignes\}', \$j\$(.*?)\$j\$", _s35, re.S).group(1))
+CONTENUS['jdr']['exemple']['reponses'] = json.loads(re.search(r"'\{exemple,reponses\}', \$j\$(.*?)\$j\$", _s35, re.S).group(1))
+CONTENUS['jdr']['echange_minutes'] = 15
+CONTENUS['etapes_accueil'] = json.loads(re.search(r"set valeur = \$j\$(.*?)\$j\$", _s35, re.S).group(1))
 
 # ---------------------------------------------------------------- fausse base
 CL = 'c-jdr'
@@ -63,7 +69,7 @@ class Base:
         self.t = {'emc_contenus': [{'cle': k, 'valeur': v} for k, v in CONTENUS.items()],
                   'emc_seances': [{'classe_id': CL, 'etape': 0, 'module': 'accueil', 'prefixe': 'd', 'etat': {}, 'cloturee_le': None,
                                    'situation_courante': None, 'situation_revelee': False, 'carte_figee': False, 'zones_verrouillees': [], 'maj_le': iso()}],
-                  'emc_participants': [], 'emc_jdr': [], 'emc_binomes': [], 'emc_mur': [], 'emc_aide': [],
+                  'emc_participants': [], 'emc_jdr': [], 'emc_binomes': [], 'emc_mur': [], 'emc_aide': [], 'emc_jdr_notes': [],
                   'classes': [{'id': CL, 'code': 'JDRD12', 'libelle': 'Groupe D · jeudi 12/11, 8 h 30 – 10 h 10 · Accueil', 'espace': 'emc'}]}
         self.requetes = []   # (méthode, url, corps)
         # deux cartes jouées par deux tablettes
@@ -157,6 +163,8 @@ class Base:
                 if op == 'in' and str(r.get(k)) not in val.strip('()').split(','): return False
             return True
         def visible(r):
+            if t == 'emc_jdr_notes':     # 035 : l'auteur et son binôme, JAMAIS les enseignants
+                return bool(e) and (r['eleve_id'] == e['id'] or (self.binome_de(e['id']) is not None and self.binome_de(r['eleve_id']) == self.binome_de(e['id'])))
             if prof or t in ('emc_contenus', 'emc_seances', 'classes'): return True
             if not e: return False
             if t in ('emc_participants', 'emc_mur'): return r['eleve_id'] == e['id']
@@ -181,6 +189,7 @@ class Base:
                 if not prof and (not e or it.get('eleve_id') != e['id']) and t != 'emc_aide':
                     return rep({'code': '42501', 'message': 'row-level security'}, 403)
                 if t == 'emc_mur' and 'statut' in it: return rep({'code': '42501', 'message': 'permission denied'}, 403)
+                if t == 'emc_jdr_notes' and not (5 <= self.seance()['etape'] <= 7): return rep({'code': '42501', 'message': 'row-level security'}, 403)
                 it = dict(it); it['maj_le'] = iso()
                 if t == 'emc_mur': it.setdefault('statut', 'propose')
                 if t == 'emc_aide': it.update({'id': str(uuid.uuid4()), 'statut': 'a_traiter', 'cree_le': iso()})
@@ -190,6 +199,10 @@ class Base:
                     ancien.update(it)
                 else: self.t[t].append(it)
             return rep(None, 201)
+        if req.method == 'POST' and False: pass
+        if req.method == 'DELETE':
+            self.t[t] = [r for r in self.t[t] if not (garde(r) and (prof or (e and r.get('eleve_id') == e['id'])))]
+            return rep(None, 204)
         if req.method == 'PATCH':
             for r in self.t[t]:
                 if garde(r) and (prof or (e and r.get('eleve_id') == e['id'])):
@@ -235,6 +248,9 @@ def main():
             try:
                 page.wait_for_function('n => { var t = document.querySelector(".etape-titre .num"); return t && t.textContent === "Étape " + n; }', arg=n, timeout=delai)
                 return True
+            except Exception: return False
+        def attendre_p(texte):
+            try: P.wait_for_function('t => document.querySelector("#etape-resume").textContent.indexOf(t) >= 0', arg=texte, timeout=9000); return True
             except Exception: return False
         def poser(n, **etat):
             s = base.seance(); s['etape'] = n
@@ -305,17 +321,19 @@ def main():
         P.click('#onglets button[data-onglet=seance]'); P.click('#btn-avancer'); etape(A, 3)
         def cocher(page, ids):
             for i in ids: page.check('fieldset.theme input[value="%d"]' % i)
+        valider = A.locator('button', has_text='Valider mes questions')
         cocher(A, [1, 7, 13])
-        A.click('text=Valider mes questions')
-        verif('3 questions : refusé', 'entre 6 et 8' in A.inner_text('#scene'))
+        verif('3 questions : « Valider » grisé, « encore 3 »', valider.is_disabled() and 'Encore 3' in A.inner_text('#scene'))
         cocher(A, [2, 3, 4])
-        A.click('text=Valider mes questions')
-        verif('6 questions sans les thèmes 4 et 5 : refusé', 'Il manque' in A.inner_text('#scene') and 'Mes rêves' in A.inner_text('#scene'))
+        verif('6 questions sans les thèmes 4 et 5 : grisé, il manque', valider.is_disabled() and 'Il manque' in A.inner_text('#scene') and 'Mes rêves' in A.inner_text('#scene'))
         A.uncheck('fieldset.theme input[value="3"]'); A.uncheck('fieldset.theme input[value="4"]')
         cocher(A, [22, 27])
         for i in [9, 15]: A.check('fieldset.theme input[value="%d"]' % i)
-        A.click('fieldset.theme input[value="30"]')
-        verif('9e question refusée (max 8)', A.eval_on_selector_all('fieldset.theme input:checked', 'l => l.length') == 8 and 'Déjà 8' in A.inner_text('#scene'))
+        A.check('fieldset.theme input[value="30"]')
+        verif('9e question : on peut cocher, « Valider » grisé, « décoche-en 1 »', A.eval_on_selector_all('fieldset.theme input:checked', 'l => l.length') == 9
+              and valider.is_disabled() and 'décoche-en 1' in A.inner_text('#scene'))
+        A.uncheck('fieldset.theme input[value="30"]')
+        verif('8 questions, tous les thèmes : « Valider » actif', not valider.is_disabled())
         A.click('text=Valider mes questions'); A.wait_for_timeout(1000)
         ja = next(j for j in base.t['emc_jdr'] if j['eleve_id'] == 'e-d-renard-01')
         verif('questions de A enregistrées (8, triées)', ja['questions'] == [1, 2, 7, 9, 13, 15, 22, 27], ja['questions'])
@@ -335,22 +353,30 @@ def main():
         A.locator('textarea.note-q').nth(2).fill('Sa sœur lui fait confiance')
         A.wait_for_timeout(6500)                               # plus d'un cycle de file (5 s)
         fuite = [r for r in base.requetes if SECRET in r[1] or SECRET in r[2] or 'Loutre Deux' in r[2]]
-        verif('🔴 aucune note n\'est partie sur le réseau', not fuite, fuite[:2])
+        verif('🔴 étape 4 : aucune note n\'est partie sur le réseau', not fuite, fuite[:2])
         st = A.evaluate('JSON.stringify(Object.assign({}, localStorage))')
         verif('les notes sont sur la tablette', SECRET in st)
         verif('aucune note dans la file d\'envoi', not any(SECRET in v for k, v in json.loads(st).items() if k.startswith('emc.file')))
         J.wait_for_timeout(1500); verif('projection : chrono géant', ':' in J.inner_text('#p-chrono')); sans_ident('étape 4')
         cap(A, 'a04-echange'); cap(J, 'j04-chrono')
         # mi-temps
-        poser(4, echange_depuis=int(time.time() * 1000) - 301_000)
+        poser(4, echange_depuis=int(time.time() * 1000) - 451_000)   # mi-temps de 15 min
         A.wait_for_function('document.body.innerText.indexOf("Changez de rôle") >= 0', timeout=9000)
-        verif('à 5 min : « Changez de rôle » sur la tablette', True)
+        verif('à mi-temps : « Changez de rôle » sur la tablette', True)
         J.wait_for_function('document.body.innerText.indexOf("Changez de rôle") >= 0', timeout=9000)
-        verif('à 5 min : « Changez de rôle » à la projection', True)
+        verif('à mi-temps : « Changez de rôle » à la projection', True)
         cap(J, 'j04-mi-temps')
 
         # étape 5 : feux (B répond sur les questions de A)
-        poser(5); etape(B, 5); B.wait_for_selector('.feu-ligne', timeout=9000)
+        poser(5); etape(A, 5); etape(B, 5); B.wait_for_selector('.feu-ligne', timeout=9000)
+        A.wait_for_timeout(800)
+        na = [x for x in base.t['emc_jdr_notes'] if x['eleve_id'] == 'e-d-renard-01']
+        verif('étape 5 : les notes de A partent vers emc_jdr_notes', len(na) == 1 and SECRET in json.dumps(na[0]['notes'], ensure_ascii=False), na)
+        envois = [r for r in base.requetes if SECRET in r[2]]
+        verif('🔴 les notes ne partent QUE vers emc_jdr_notes', envois and all('/emc_jdr_notes' in r[1] for r in envois), [r[1] for r in envois][:3])
+        try: B.wait_for_function("document.querySelector('#scene').innerText.indexOf('Les araignées') >= 0", timeout=12000); vu = True
+        except Exception: vu = False
+        verif('B lit, sous chaque question, ce que A a noté de lui', vu)
         verif('B voit les 8 questions que A lui a posées', B.locator('.feu-ligne').count() == 8, B.locator('.feu-ligne').count())
         verif('le texte dit le consentement', 'consentement' in B.inner_text('#scene'))
         for k in range(8):
@@ -378,9 +404,13 @@ def main():
         verif('« reconnu·e » enregistré (4)', next(j for j in base.t['emc_jdr'] if j['eleve_id'] == 'e-d-loutre-02')['reconnu'] == 4)
         J.wait_for_timeout(1800)
         verif('projection : symbole du binôme en cours', sa.strip() in J.inner_text('#proj'))
-        try: J.wait_for_function("document.querySelector('#proj').innerText.indexOf('🤩') >= 0", timeout=9000); vu = True
-        except Exception: vu = False
-        verif('projection : 🤩 du vote', vu)
+        J.wait_for_timeout(4500)
+        verif('« reconnu·e » jamais affiché à la projection pendant les présentations', '🤩' not in J.inner_text('#proj'))
+        P.wait_for_timeout(1500)
+        verif('pilotage : pas de vote par personne, un bilan anonyme', 'Bilan anonyme' in P.inner_text('#p-presentations')
+              and 'Élève LOUTRE :' not in P.inner_text('#p-presentations'))
+        verif('pilotage : le pseudo sous chaque symbole de l\'ordre', 'Élève RENARD' in P.inner_text('#ordre'))
+        verif('tablette de A : la minute s\'affiche', '⏱' in A.inner_text('#scene'))
         sans_ident('étape 6')
         cap(A, 'a06-presentation'); cap(J, 'j06-presentation'); cap(P, 'p06-presentations')
 
@@ -400,12 +430,22 @@ def main():
         P.locator('#mur-portraits button', has_text='Révéler').first.click()
         J.wait_for_function('s => document.body.innerText.indexOf(s) >= 0', arg=sa.strip(), timeout=9000)
         verif('révéler : le symbole s\'affiche', True); sans_ident('étape 7')
+        etape(B, 7)
+        try: B.wait_for_function("document.querySelector('#scene').innerText.indexOf('C\\'est toi') >= 0", timeout=9000); vu = True
+        except Exception: vu = False
+        verif('révéler : la tablette de B (le portrait le décrit) affiche « C\'est toi ! »', vu)
+        verif('révéler : pas sur la tablette de A (l\'auteur)', 'C\'est toi' not in A.inner_text('#scene'))
+        verif('pilotage : le portrait dit sur qui', 'sur Élève LOUTRE' in P.inner_text('#mur-portraits'), P.inner_text('#mur-portraits')[:200])
         A.wait_for_timeout(500); A.reload(); etape(A, 7); A.wait_for_timeout(1200)
         verif('validé : l\'élève ne peut plus le modifier', A.is_disabled('#pm-t'))
         cap(J, 'j07-portrait'); cap(P, 'p07-mur')
 
         # étape 8 : clôture, notes effacées
         poser(8); etape(A, 8); A.wait_for_timeout(400)
+        verif('étape 8 : la fiche papier « la liberté, pour moi »', 'Pour moi, la liberté' in A.inner_text('#scene') and 'fiche' in A.inner_text('#scene'))
+        J.wait_for_timeout(1500); verif('projection étape 8 : la fiche', 'la liberté' in J.inner_text('#proj'))
+        verif('pilotage étape 8 : rappel de distribuer la fiche', attendre_p('Distribuer la fiche'))
+        poser(9); etape(A, 9); A.wait_for_timeout(400)
         st = A.evaluate('JSON.stringify(Object.assign({}, localStorage))')
         verif('🔴 étape 8 : les notes sont effacées de la tablette', SECRET not in st and 'emc.jdr.notes' not in st)
         verif('étape 8 : l\'élève le lit', 'effacées' in A.inner_text('#scene'))
@@ -413,12 +453,20 @@ def main():
         verif('« je retiens » proposé', any(x['sorte'] == 'retiens' for x in base.t['emc_mur']))
         cap(A, 'a08-cloture')
         # B se déconnecte : ses notes partent aussi
-        etape(B, 8)
+        etape(B, 9)
         verif('B : notes effacées aussi', SECRET not in B.evaluate('JSON.stringify(Object.assign({}, localStorage))'))
+        A.wait_for_timeout(800)
+        verif('🔴 étape 8 : les notes de A sont effacées de la base', not [x for x in base.t['emc_jdr_notes'] if x['eleve_id'] == 'e-d-renard-01'])
+        J.wait_for_timeout(2500)
+        verif('projection étape 9 : le bilan anonyme (🤩 compté)', 'Bilan' not in '' and '🤩' in J.inner_text('#proj') and 'présentations' in J.inner_text('#proj'))
+        sans_ident('étape 9'); cap(J, 'j09-bilan')
+        verif('pas de bandeau des numéros en accueil', A.is_hidden('#bandeau-aide') and A.locator('#btn-aide-barre').count() == 1)
 
         verif('aucune erreur JS', not erreurs, erreurs[:6])
-        fuite = [r for r in base.requetes if SECRET in r[1] or SECRET in r[2]]
-        verif('🔴 bilan : aucune note dans aucune requête de la séance', not fuite, fuite[:2])
+        fuite = [r for r in base.requetes if (SECRET in r[1] or SECRET in r[2]) and '/emc_jdr_notes' not in r[1]]
+        verif('🔴 bilan : les notes ne sont jamais allées ailleurs que dans emc_jdr_notes', not fuite, fuite[:2])
+        lus_prof = [r for r in base.requetes if '/emc_jdr_notes' in r[1] and r[0] == 'GET' and 'u-prof' in r[2]]
+        verif('🔴 le pilotage ne lit jamais les notes', not [r for r in base.requetes if '/emc_jdr_notes' in r[1] and r[0] == 'GET' and 'Projection' in r[2]])
         nav.close()
     srv.shutdown()
     print('\n%d contrôles réussis, %d en échec. Captures : %s' % (ok, ko, CAPT))

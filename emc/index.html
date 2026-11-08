@@ -110,19 +110,34 @@
   @media (max-width: 600px) { .origines { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .origines button { min-height: 56px; font-size: 1.1rem; font-weight: 700; }
   .origines button[aria-pressed="true"], .reconnu button[aria-pressed="true"] { border: 3px solid var(--cyan); background: var(--cyan-wash); }
-  ol.consignes li { margin: .5rem 0; font-size: 1.12rem; line-height: 1.45; }
+  .aide-bandeau[hidden] { display: none; }
+  .consignes-cartes { display: grid; gap: .6rem; margin-bottom: 1rem; }
+  .consigne { display: grid; grid-template-columns: 3rem 1fr; gap: .6rem; align-items: center; border-radius: 14px; padding: .7rem 1rem;
+              box-shadow: 0 1px 3px rgba(22, 31, 51, .08); }
+  .consigne-n { font-size: 2rem; text-align: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--marine); }
+  .consigne p { margin: 0; font-size: 1.15rem; line-height: 1.45; color: var(--ink); }
+  .consigne b { color: var(--marine); }
   details.exemple summary { font-weight: 700; font-size: 1.05rem; min-height: 40px; cursor: pointer; }
-  .exemple-texte { font-size: 1.12rem; line-height: 1.55; font-style: italic; background: var(--surface-2); border-radius: 10px; padding: .8rem 1rem; }
+  .exemple-temps { display: grid; gap: .8rem; margin-top: .6rem; }
+  .exemple-etape h3 { margin: 0 0 .3rem; font-size: 1rem; color: var(--orange-fonce); }
+  .exemple-etape ol, .exemple-notes { margin: 0; padding-left: 1.3rem; }
+  .exemple-notes li { margin: .35rem 0; }
+  .exemple-texte { font-size: 1.12rem; line-height: 1.55; font-style: italic; background: var(--surface-2); border-radius: 10px; padding: .8rem 1rem; margin: 0; }
+  .note-binome { font-size: .95rem; margin-top: .25rem; background: var(--cyan-wash); border-radius: 8px; padding: .3rem .55rem; }
+  .note-binome.vide { background: transparent; color: var(--ink-soft); padding-left: 0; }
+  .q-texte { font-weight: 600; }
+  .c-est-toi { text-align: center; border: 3px solid var(--orange); }
+  .emc-barre #btn-aide-barre { background: var(--cyan); border-color: var(--cyan); color: #fff; }
   .symbole-geant { font-size: min(42vw, 13rem); line-height: 1.1; text-align: center; animation: rebond 1.2s ease-in-out infinite; }
   .symbole-geant.petit { font-size: 6rem; }
   @keyframes rebond { 50% { transform: scale(1.08) rotate(-4deg); } }
   @media (prefers-reduced-motion: reduce) { .symbole-geant { animation: none; } }
   .consigne-geante { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.6rem, 5vw, 2.4rem); text-align: center; color: var(--marine); margin: .3rem 0; font-weight: 700; }
   .symbole-badge { font-size: 1.6rem; padding: 0 .5em; }
-  .barre-choix { position: sticky; bottom: 5.6rem; z-index: 5; background: var(--bg); padding: .5rem 0; display: grid; gap: .4rem;
+  .barre-choix { position: sticky; bottom: 0; z-index: 5; background: var(--bg); padding: .5rem 0 calc(.5rem + env(safe-area-inset-bottom)); display: grid; gap: .4rem;
                  border-top: 1px solid var(--line); box-shadow: 0 -6px 12px -8px rgba(0,0,0,.15); }
   .barre-choix .etat-envoi { margin: 0; }
-  @media (max-width: 820px) { .barre-choix { bottom: 7.4rem; } }
+  .barre-choix button:disabled { opacity: .45; }
   .compteur-themes { display: flex; gap: .35rem; flex-wrap: wrap; }
   .compteur-themes .pastille { font-size: 1rem; }
   fieldset.theme label { align-items: flex-start; padding: .35rem 0; }
@@ -152,6 +167,12 @@
   /* ---- restitution (emc-restitution.js) ---- */
   .parcours-ligne { display: grid; grid-template-columns: 1.6rem 2fr 1fr 2fr; gap: .4rem; align-items: center; margin: .45rem 0; }
   @media (max-width: 820px) { .parcours-ligne { grid-template-columns: 1.6rem 1fr; } .parcours-ligne input:not(:first-of-type) { grid-column: 2; } }
+  /* avec la liste des ateliers : le choix sur toute la ligne, puis nom libre, mot-clé, liberté */
+  .parcours-ligne.avec-liste { grid-template-columns: 1.6rem 1fr 1fr 1.4fr; border-bottom: 1px solid var(--line); padding-bottom: .6rem; }
+  .parcours-ligne.avec-liste select { grid-column: 2 / -1; min-height: 48px; font-size: 1rem; }
+  .parcours-ligne.avec-liste input { grid-column: auto; }
+  .parcours-ligne.avec-liste input:first-of-type { grid-column: 2; }
+  @media (max-width: 820px) { .parcours-ligne.avec-liste { grid-template-columns: 1.6rem 1fr; } .parcours-ligne.avec-liste input { grid-column: 2; } }
   .num-atelier { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--orange-fonce); }
   .sortes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; margin: .4rem 0 .6rem; }
   .sortes button { min-height: 52px; font-weight: 700; color: var(--ink); border: 2px solid transparent; }
@@ -162,9 +183,29 @@
   .postit:nth-child(2n) { transform: rotate(1.2deg); }
   .postit.masque { opacity: .45; text-decoration: line-through; }
   .postit .retirer { position: absolute; top: .2rem; right: .2rem; min-height: 0; padding: 0 .4rem; background: transparent; border: 0; font-size: .9rem; }
+  /* le mur en trois colonnes (saisie, et lecture) */
+  .mur-titre { font-size: 1.4rem; margin: .6rem 0 .4rem; }
+  .mur-saisie { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+  .mur-case { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: .6rem .7rem; display: grid; gap: .4rem; align-content: start; }
+  .mur-case h3 { margin: 0; font-size: 1.05rem; }
+  .mur-case textarea { min-height: 5rem; }
+  .mur-case .etat-envoi { margin: 0; min-height: 1.2em; }
+  .mur-colonnes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; align-items: start; }
+  .mur-colonne h3 { margin: 0 0 .3rem; padding: .35rem .6rem; border-radius: 8px; font-size: 1rem; color: var(--ink); }
+  .mur-colonne .postit { transform: none; margin: .4rem 0; min-height: 0; }
+  .postit-groupe { font-size: 1.1rem; }
+  @media (max-width: 700px) { .mur-saisie, .mur-colonnes { grid-template-columns: 1fr; } }
+  /* « C'est à votre groupe ! » : impossible à manquer */
+  .a-vous { display: flex; gap: 1rem; align-items: center; background: var(--orange); color: #fff; border-radius: 16px; padding: 1rem 1.3rem; margin-bottom: 1rem;
+            box-shadow: 0 4px 14px rgba(232, 116, 59, .35); animation: pulsation 1.6s ease-in-out infinite; }
+  @keyframes pulsation { 50% { box-shadow: 0 4px 26px rgba(232, 116, 59, .75); transform: scale(1.015); } }
+  .a-vous-icone { font-size: 3.4rem; line-height: 1; }
+  .a-vous b { display: block; font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.5rem, 4.4vw, 2.3rem); line-height: 1.1; }
+  .a-vous span { font-size: 1.05rem; opacity: .95; }
+  @media (prefers-reduced-motion: reduce) { .a-vous { animation: none; } }
 </style>
 </head>
-<body class="avec-aide">
+<body>
 
 <header class="emc-barre" id="barre">
   <span class="titre">EMC seconde</span>
@@ -175,7 +216,7 @@
   <p class="muet" id="chargement">Chargement…</p>
 </main>
 
-<footer class="aide-bandeau" id="bandeau-aide" aria-label="Aide et numéros d'urgence">
+<footer class="aide-bandeau" id="bandeau-aide" aria-label="Aide et numéros d'urgence" hidden>
   <div class="numeros" id="numeros"></div>
   <button type="button" class="cyan" id="btn-aide" hidden>💬 J'ai besoin d'en parler</button>
 </footer>
@@ -185,12 +226,12 @@
 <!-- Pas de progression.js ici : la carte a sa propre session
      (emc-commun.js §1b), à part de celle du site. -->
 <script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
-<script src="../assets/js/emc-commun.js?v=3"></script>
+<script src="../assets/js/emc-commun.js?v=4"></script>
 <script src="../assets/js/emc-vues.js?v=2"></script>
 <script src="../assets/js/vendor/konva-9.3.6.min.js"></script>
 <script src="../assets/js/emc-carte.js?v=2"></script>
-<script src="../assets/js/emc-accueil.js?v=1"></script>
-<script src="../assets/js/emc-restitution.js?v=1"></script>
-<script src="../assets/js/emc-eleve.js?v=3"></script>
+<script src="../assets/js/emc-accueil.js?v=2"></script>
+<script src="../assets/js/emc-restitution.js?v=2"></script>
+<script src="../assets/js/emc-eleve.js?v=4"></script>
 </body>
 </html>

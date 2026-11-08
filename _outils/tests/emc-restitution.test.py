@@ -38,6 +38,17 @@ for f in ['031-emc.sql', '033-emc-contenus.sql', '034-emc-six-seances.sql']:
         CONTENUS[cle] = json.loads(js)
 # 033 ajoute des émojis par un update : le catalogue de 031 suffit au banc
 assert 'restitution' in CONTENUS
+# la liste des ateliers (035) : FICTIVE dans le banc — la vraie, avec les
+# noms des collègues, ne vit qu'en base (dépôt public)
+CONTENUS['restitution']['ateliers'] = [
+    {'n': 1, 'nom': 'Labyrinthe de Nina', 'enseignants': 'M Prof et Mme Prof', 'salle': 'S 100'},
+    {'n': 2, 'nom': 'Débat sur les réseaux', 'enseignants': 'Mme Une et M Deux', 'salle': 'S 101'},
+    {'n': 3, 'nom': 'Théâtre forum', 'enseignants': 'M Trois et Mme Quatre', 'salle': 'S 102'}]
+CONTENUS['restitution']['expression_question'] = 'Ces deux jours, en un mot ou une phrase.'
+# le déroulé du 035 (8 étapes, analyse du mur) et la question d'analyse
+_s35 = open(os.path.join(DEPOT, 'bdd/schema/035-emc-jdr-retours.sql'), encoding='utf-8').read()
+CONTENUS['etapes_restitution'] = next(json.loads(x) for x in re.findall(r"set valeur = \$j\$(.*?)\$j\$", _s35, re.S) if 'Analyse' in x)
+CONTENUS['restitution']['analyse_consigne'] = 'Quelles libertés reviennent ?' 
 
 CL = 'c-rest'; PROF = 'u-prof'
 def jwt(sub):
@@ -60,7 +71,7 @@ class Base:
             self.eleves['u-cam-%02d' % i] = {'id': e, 'pseudo': 's-cam-%02d' % i}
             self.t['emc_participants'].append({'classe_id': CL, 'eleve_id': e, 'table_num': 1, 'pret': True})
             self.t['emc_restit'].append({'classe_id': CL, 'eleve_id': e, 'mot': ['choisir', 'respect', 'Choisir'][i % 3],
-                                         'parcours': [{'atelier': ATELIERS[i % 3], 'mot': 'x', 'liberte': 'Liberté d\'expression'}], 'maj_le': iso()})
+                                         'parcours': [{'atelier': ATELIERS[i % 3], 'ref': i % 3 + 1, 'mot': 'x', 'liberte': 'Liberté d\'expression'}], 'maj_le': iso()})
     def jeton(self, uid):
         t = jwt(uid); r = 'r-' + uuid.uuid4().hex; self.jetons[t] = uid; self.refresh[r] = uid
         email = next((k for k, v in self.users.items() if v[0] == uid), None)
@@ -209,7 +220,8 @@ def main():
 
         # 2 — parcours écrit librement
         P.click('#btn-avancer'); etape(A, 2)
-        A.locator('.parcours-ligne >> nth=0 >> input >> nth=0').fill('Labyrinthe de nina')
+        verif('la liste des ateliers est proposée (enseignants, salle)', 'M Prof et Mme Prof · S 100' in A.inner_text('.parcours-ligne >> nth=0 >> select'))
+        A.locator('.parcours-ligne >> nth=0 >> select').select_option('1')
         A.locator('.parcours-ligne >> nth=0 >> input >> nth=1').fill('harcèlement')
         A.locator('.parcours-ligne >> nth=0 >> input >> nth=2').fill('Sûreté : ne pas subir de violence')
         A.locator('.parcours-ligne >> nth=1 >> input >> nth=0').fill('Théâtre-forum')
@@ -217,15 +229,16 @@ def main():
         verif('ajouter une ligne', A.locator('.parcours-ligne').count() == 3)
         A.click('text=Enregistrer mon parcours'); A.wait_for_timeout(1200)
         r = next((x for x in base.t['emc_restit'] if x['eleve_id'] == 'e-s-castor-01'), None)
-        verif('parcours enregistré (lignes vides ignorées)', r and len(r['parcours']) == 2 and r['parcours'][0]['liberte'].startswith('Sûreté'), r)
+        verif('parcours enregistré (lignes vides ignorées), atelier choisi dans la liste', r and len(r['parcours']) == 2 and r['parcours'][0]['liberte'].startswith('Sûreté')
+              and r['parcours'][0].get('ref') == 1 and not r['parcours'][1].get('ref'), r)
         verif('la liste des libertés est proposée', A.locator('datalist#libertes option').count() >= 8)
-        B.locator('.parcours-ligne >> nth=0 >> input >> nth=0').fill('Débat sur les réseaux'); B.click('text=Enregistrer mon parcours'); B.wait_for_timeout(1200)
+        B.locator('.parcours-ligne >> nth=0 >> select').select_option('2'); B.click('text=Enregistrer mon parcours'); B.wait_for_timeout(1200)
         cap(A, 'a2-parcours'); cap(B, 'b2-parcours-portrait')
         J.wait_for_timeout(1500); verif('projection : nuage des ateliers', 'Labyrinthe' in J.inner_text('#proj')); sans_ident('étape 2'); cap(J, 'j2')
 
         # 3 — groupes
         P.click('#onglets button[data-onglet=groupes]'); P.wait_for_timeout(1500)
-        verif('pilotage : ateliers regroupés malgré la casse', 'Labyrinthe de Nina · 5' in P.inner_text('#ateliers'), P.inner_text('#ateliers'))
+        verif('pilotage : ateliers regroupés par l\'atelier choisi', 'Labyrinthe de Nina · 5' in P.inner_text('#ateliers') and 'Débat sur les réseaux · 4' in P.inner_text('#ateliers'), P.inner_text('#ateliers'))
         P.click('#g-proposer'); P.wait_for_timeout(300)
         verif('proposition : 3 groupes, pas encore envoyée', P.locator('.groupe-ed').count() == 3 and 'pas encore' in P.inner_text('#g-info'))
         verif('rien n\'est envoyé avant « Envoyer »', not base.seance()['etat'].get('groupes'))
@@ -241,15 +254,17 @@ def main():
 
         # 4 — le mur
         P.click('#onglets button[data-onglet=seance]'); P.click('#btn-avancer'); etape(A, 4)
-        A.locator('.sortes button', has_text='appris').click()
-        A.fill('#scene textarea', 'Le 3018 répond aussi la nuit'); A.click('text=Poster'); A.wait_for_timeout(800)
+        verif('le mur : trois colonnes de saisie, chacune son « Poster »', A.locator('.mur-case').count() == 3 and A.locator('.mur-case button', has_text='Poster').count() == 3)
+        A.locator('.mur-case', has_text='appris').locator('textarea').fill('Le 3018 répond aussi la nuit')
+        A.locator('.mur-case', has_text='appris').locator('button').click(); A.wait_for_timeout(800)
         pa = [x for x in base.t['emc_postits'] if x['eleve_id'] == 'e-s-castor-01']
         verif('post-it posté dans son groupe, sorte « appris »', len(pa) == 1 and pa[0]['groupe'] == g_a['n'] and pa[0]['sorte'] == 'appris', pa)
-        A.fill('#scene textarea', 'Insulte'); A.click('text=Poster'); A.wait_for_timeout(800)
-        verif('post-it affiché dans la colonne', A.locator('.mur-groupe .postit').count() == 2)
-        A.locator('.mur-groupe .postit >> nth=1 >> button.retirer').click(); A.wait_for_timeout(800)
+        A.locator('.mur-case', has_text='fait').locator('textarea').fill('Insulte'); A.locator('.mur-case', has_text='fait').locator('button').click(); A.wait_for_timeout(800)
+        verif('post-it rangés dans leurs colonnes', A.locator('.mur-colonne .postit').count() == 2
+              and 'Insulte' in A.inner_text('.mur-colonne >> nth=0') and '3018' in A.inner_text('.mur-colonne >> nth=1'))
+        A.locator('.mur-colonne .postit', has_text='Insulte').locator('button.retirer').click(); A.wait_for_timeout(800)
         verif('retirer son post-it', len([x for x in base.t['emc_postits'] if x['eleve_id'] == 'e-s-castor-01']) == 1)
-        B.locator('.sortes button', has_text='liberté').click(); B.fill('#scene textarea', 'MOT-A-MASQUER'); B.click('text=Poster'); B.wait_for_timeout(800)
+        B.locator('.mur-case', has_text='liberté').locator('textarea').fill('MOT-A-MASQUER'); B.locator('.mur-case', has_text='liberté').locator('button').click(); B.wait_for_timeout(800)
         J.wait_for_timeout(3500)
         verif('projection : le mur', '3018' in J.inner_text('#proj') and 'MOT-A-MASQUER' in J.inner_text('#proj'))
         P.click('#onglets button[data-onglet=mur]'); P.wait_for_timeout(1200)
@@ -259,12 +274,19 @@ def main():
         verif('masqué : disparu de la projection', 'MOT-A-MASQUER' not in J.inner_text('#proj'))
         P.locator('.colonne', has_text=g_a['titre']).locator('button', has_text='Au tour').click(); P.wait_for_timeout(600)
         verif('tour de parole posé', base.seance()['etat'].get('oral') == g_a['n'])
-        verif('A : « C\'est à votre groupe »', attendre(A, 'votre groupe de présenter', '#scene'))
+        verif('A : « C\'est à votre groupe », en très grand', attendre(A, 'votre groupe de présenter', '#scene') and A.locator('.a-vous').count() == 1)
         verif('projection : le groupe en avant, chrono', attendre(J, '🎤', '#proj'))
         sans_ident('étape 4'); cap(J, 'j4-mur'); cap(P, 'p4-mur'); cap(A, 'a4-mur')
 
-        # 5 — définition
+        # 5 — analyse du mur, tous ensemble
         P.click('#onglets button[data-onglet=seance]'); P.click('#btn-avancer'); etape(A, 5)
+        verif('analyse : la tablette montre tous les post-it, par colonne', attendre(A, '3018', '#scene') and A.locator('.mur-colonne').count() == 3)
+        verif('analyse : la projection range par colonne', attendre(J, 'Nos libertés, tous ensemble', '#proj') and J.locator('#proj .mur-analyse .colonne').count() == 3
+              and 'MOT-A-MASQUER' not in J.inner_text('#proj'))
+        sans_ident('étape 5 (analyse)'); cap(J, 'j5-analyse'); cap(A, 'a5-analyse')
+
+        # 6 — définition
+        P.click('#btn-avancer'); etape(A, 6)
         A.fill('#r-mot', 'Choisir'); A.click('text=Envoyer mon mot'); A.wait_for_timeout(800)
         A.fill('#r-def', 'Pouvoir choisir sans écraser les autres'); A.click('text=Envoyer ma définition'); A.wait_for_timeout(800)
         verif('mot enregistré avec le parcours', next(x for x in base.t['emc_restit'] if x['eleve_id'] == 'e-s-castor-01')['mot'] == 'Choisir'
@@ -276,7 +298,7 @@ def main():
         P.click('#onglets button[data-onglet=definitions]'); P.wait_for_timeout(1200)
         P.locator('#defs button', has_text='Valider').first.click(); P.wait_for_timeout(600)
         verif('définition validée → projetée', attendre(J, 'écraser', '#proj'))
-        sans_ident('étape 5'); cap(J, 'j5')
+        sans_ident('étape 6'); cap(J, 'j6')
 
         # exports
         P.click('#onglets button[data-onglet=exports]')
@@ -287,7 +309,12 @@ def main():
             verif('export tout en un PDF (%d Ko)' % (taille // 1024), taille > 5000, taille)
         except Exception:
             verif('export tout en un PDF', False, P.inner_text('.modale')[:200])
-        poser(6); verif('étape 6', etape(A, 6) and 'Merci' in A.inner_text('#scene'))
+        poser(7); verif('étape 7', etape(A, 7) and 'Merci' in A.inner_text('#scene'))
+        A.fill('#r-expr', 'Deux jours intenses'); A.locator('#scene button.primaire').first.click(); A.wait_for_timeout(1200)
+        verif('expression libre enregistrée', next(x for x in base.t['emc_restit'] if x['eleve_id'] == 'e-s-castor-01').get('expression') == 'Deux jours intenses')
+        verif('projection : le nuage de l\'expression libre', attendre(J, 'deux jours intenses', '#proj'))
+        verif('pas de bandeau des numéros en restitution', A.is_hidden('#bandeau-aide') and A.locator('#btn-aide-barre').count() == 1)
+        sans_ident('étape 7'); cap(J, 'j7-expression')
         verif('aucune erreur JS', not erreurs, erreurs[:6])
         nav.close()
     srv.shutdown()

@@ -29,7 +29,8 @@ const depot = process.argv[2] || '.';
 const sql = readFileSync(join(depot, 'bdd/schema/031-emc.sql'), 'utf8')
   + (process.env.SANS_032 ? '' : '\n' + readFileSync(join(depot, 'bdd/schema/032-emc-fusion.sql'), 'utf8'))
   + '\n' + readFileSync(join(depot, 'bdd/schema/033-emc-contenus.sql'), 'utf8')
-  + '\n' + readFileSync(join(depot, 'bdd/schema/034-emc-six-seances.sql'), 'utf8');
+  + '\n' + readFileSync(join(depot, 'bdd/schema/034-emc-six-seances.sql'), 'utf8')
+  + '\n' + readFileSync(join(depot, 'bdd/schema/035-emc-jdr-retours.sql'), 'utf8');
 const { points } = JSON.parse(readFileSync(join(depot, '_outils/tests/emc-points.json'), 'utf8'));
 
 const db = new PGlite();
@@ -395,7 +396,7 @@ verif('fiche-guide : 5 thèmes, 30 questions, ids 1 à 30', jdrC.themes.length =
   && JSON.stringify(jdrC.themes.flatMap((t) => t.questions.map((q) => q.id))) === JSON.stringify([...Array(30)].map((_, i) => i + 1)));
 verif('fiche-guide : l\'exemple reprend 6 questions existantes', jdrC.exemple.questions.length === 6);
 verif('24 symboles distincts', new Set(jdrC.symboles).size === 24);
-verif('étapes du jeu de rôle : 9, 100 min', (await val('etapes_accueil')).length === 9
+verif('étapes du jeu de rôle : 10 (035 : la fiche « la liberté, pour moi »), 100 min', (await val('etapes_accueil')).length === 10
   && (await val('etapes_accueil')).reduce((s, e) => s + e.duree, 0) === 100);
 verif('Labyrinthe : 8 étapes, 120 min (créneaux de 2 h)', (await val('etapes')).reduce((s, e) => s + e.duree, 0) === 120);
 
@@ -623,6 +624,52 @@ verif('clôture : le mur et les définitions restent (production commune)',
   (await db.query(`select (select count(*) from public.emc_postits where classe_id = $1) + (select count(*) from public.emc_mur where classe_id = $1 and sorte = 'definition') n`, [REST])).rows[0].n == 3);
 await en(LOIC, `select public.emc_reinitialiser($1)`, [REST]);
 verif('remise à zéro : parcours et post-it effacés', (await db.query(`select (select count(*) from public.emc_restit where classe_id = $1) + (select count(*) from public.emc_postits where classe_id = $1) n`, [REST])).rows[0].n == 0);
+
+/* ---------- 17. 035 : les notes, montrées au binôme seulement ---------- */
+await db.exec(readFileSync(join(depot, 'bdd/schema/035-emc-jdr-retours.sql'), 'utf8'));   // le §15 a rejoué le 034 seul
+const ea = await val('etapes_accueil');
+verif('035 : durées accueil 10, consignes 5, questions 10, échange 15, total 100',
+  ea[0].duree === 10 && ea[1].duree === 5 && ea[3].duree === 10 && ea[4].duree === 15 && ea.reduce((s, e) => s + e.duree, 0) === 100, ea.map((e) => e.duree));
+const j35 = await val('jdr');
+verif('035 : l\'exemple a ses 6 réponses notées', (j35.exemple.reponses || []).length === 6);
+const er = await val('etapes_restitution');
+verif('035 : restitution en 8 étapes, analyse du mur, 75 min', er.length === 8 && er[5].titre.startsWith('Analyse') && er[4].duree === 30
+  && er.reduce((s, e) => s + e.duree, 0) === 75, er.map((e) => e.titre + ' ' + e.duree));
+verif('035 : la restitution reçoit sa liste d\'ateliers (vide : elle se règle au tableau de bord)', Array.isArray((await val('restitution')).ateliers));
+verif('035 : un contenu réglé à la main n\'est pas touché (titre « réglé » gardé)', j35.titre === 'réglé');
+const nt = [];
+for (let i = 1; i <= 4; i++) {
+  const uid = U(7000 + i), ident = 'd-panda-' + String(i).padStart(2, '0');
+  await db.query(`insert into auth.users values ($1, $2)`, [uid, ident + '@emc.local']);
+  const x = await service(`select public.emc_carte_inscrire($1, $2, $3, '1234') id`, [JDR, uid, ident]);
+  nt.push({ uid, id: x.r.rows[0].id });
+  await en(uid, `select public.emc_entrer(null)`);
+  await en(uid, `insert into public.emc_jdr (classe_id, eleve_id, origine) values ($1, $2, $3)`, [JDR, x.r.rows[0].id, i]);
+}
+await en(LOIC, `select public.emc_jdr_tirer($1, true)`, [JDR]);
+const bn = (await binomes());
+const [n1] = nt, part = bn.find((b) => b.some((x) => x.eleve_id === n1.id)).find((x) => x.eleve_id !== n1.id);
+const n2 = nt.find((x) => x.id === part.eleve_id), n3 = nt.find((x) => x !== n1 && x !== n2);
+const noter = (n, texte) => en(n.uid, `insert into public.emc_jdr_notes (classe_id, eleve_id, notes) values ($1, $2, $3)
+  on conflict (classe_id, eleve_id) do update set classe_id = excluded.classe_id, eleve_id = excluded.eleve_id, notes = excluded.notes`,
+  [JDR, n.id, JSON.stringify({ 22: texte })]);
+await en(LOIC, `update public.emc_seances set etape = 4 where classe_id = $1`, [JDR]);
+verif('notes : refusées à l\'étape 4 (elles restent sur la tablette)', !!(await noter(n1, 'araignées')).e);
+await en(LOIC, `update public.emc_seances set etape = 5 where classe_id = $1`, [JDR]);
+verif('notes : envoyées à l\'étape 5 (upsert)', !(await noter(n1, 'araignées')).e && !(await noter(n1, 'les araignées')).e);
+verif('notes : mon binôme les lit', lignes(await en(n2.uid, `select notes from public.emc_jdr_notes where eleve_id = $1`, [n1.id]))[0]?.notes['22'] === 'les araignées');
+verif('notes : un autre élève de la séance ne les lit pas', lignes(await en(n3.uid, `select * from public.emc_jdr_notes where eleve_id = $1`, [n1.id])).length === 0);
+verif('🔴 notes : les enseignants ne les lisent pas', lignes(await en(LOIC, `select * from public.emc_jdr_notes`)).length === 0
+  && lignes(await en(CASTEL, `select * from public.emc_jdr_notes`)).length === 0);
+verif('notes : on n\'écrit pas celles d\'un autre', !!(await en(n2.uid, `insert into public.emc_jdr_notes (classe_id, eleve_id) values ($1, $2)`, [JDR, n3.id])).e);
+verif('notes : mon binôme ne les modifie pas', nb(await en(n2.uid, `update public.emc_jdr_notes set notes = '{}' where eleve_id = $1`, [n1.id])) <= 0);
+verif('notes : refusées en Labyrinthe', !!(await en(intrus, `insert into public.emc_jdr_notes (classe_id, eleve_id) values ($1, $2)`, [C2b, ri.rows[0].id])).e);
+await en(LOIC, `update public.emc_seances set etape = 8 where classe_id = $1`, [JDR]);
+verif('notes : l\'élève efface les siennes à l\'étape 8', nb(await en(n1.uid, `delete from public.emc_jdr_notes where eleve_id = $1`, [n1.id])) === 1);
+await en(LOIC, `update public.emc_seances set etape = 6 where classe_id = $1`, [JDR]);
+await noter(n2, 'piano');
+await en(LOIC, `select public.emc_cloturer($1)`, [JDR]);
+verif('notes : la clôture efface ce qui reste', (await db.query(`select count(*)::int n from public.emc_jdr_notes`)).rows[0].n === 0);
 
 console.log(`\n${ok} contrôles réussis, ${ko} en échec.`);
 process.exit(ko ? 1 : 0);

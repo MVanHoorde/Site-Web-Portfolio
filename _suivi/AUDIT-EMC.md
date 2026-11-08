@@ -96,7 +96,8 @@ de 2 h pile.
 - `emc_jdr (classe_id, eleve_id, origine, questions[], feux, reconnu)` : **aucune réponse** ; lisible par soi et son binôme. `emc_binomes (classe_id, eleve_id, binome, symbole)`, tirés par `emc_jdr_tirer` (rangement par classe d'origine, i-ème avec (i + n/2)-ème : jamais deux de la même seconde tant qu'aucune classe ne dépasse la moitié du groupe ; trinôme si impair), `emc_jdr_echanger`.
 - `emc_mur (classe_id, eleve_id, sorte, question, texte, statut)` : portrait, je retiens, définition. L'élève propose et corrige tant que ce n'est pas modéré ; il ne touche jamais au statut. `emc_cloturer` efface portraits et « je retiens ».
 - Restitution : `emc_restit (classe_id, eleve_id, parcours jsonb, mot)` — ateliers **écrits par l'élève** (pas de liste des collègues, 08/11) ; `emc_postits (id, classe_id, eleve_id, groupe, sorte, texte, masque)` — le mur, lisible de toute la séance, écrit à l'étape 4 dans **son** groupe seulement (`emc_mon_groupe`), masquable par le prof. Les groupes vivent dans `emc_seances.etat` (`groupes`, `affectations`) : l'élève les lit, ne les change pas. Météo : `emc_mots` (émojis seuls, étape 1). Définitions : `emc_mur` (sorte `definition`).
-- 🔴 Les **notes du jeu de rôle** ne sont dans aucune table : localStorage de l'iPad, hors file d'envoi, effacées à l'étape 8 (banc : `emc-accueil.test.py` inspecte chaque requête).
+- 🔴 Les **notes du jeu de rôle** (035) : sur l'iPad seulement pendant l'échange ; à partir de l'étape 5, dans `emc_jdr_notes`, lisibles de l'auteur et de son binôme **seulement** (pas des enseignants) ; effacées à l'étape 8, à la déconnexion et à la clôture (banc : `emc-accueil.test.py` inspecte chaque requête, `emc-schema.test.mjs` §17 les droits).
+- Restitution (035) : `emc_restit.expression` (expression libre et son nuage) ; la liste des ateliers vit dans `emc_contenus.restitution.ateliers`, **réglée au tableau de bord** (noms des collègues : jamais dans le dépôt).
 
 ### 3.3 La carte : géométrie, zones et sous-zones
 
@@ -163,6 +164,8 @@ Liste tenue à jour par Claude. La demander avec « le bilan EMC ».
 - ⏳ Relire l'exemple de Pierre Marchand (Contenus → jeu de rôle).
 - ✅ Format de la séance 6 choisi le 08/11 : ateliers écrits librement, mur de post-it.
 - ⏳ Relire la liste des libertés proposées (Contenus → Restitution).
+- ✅ 035 et liste des ateliers exécutés, site publié (08/11/2026, soir).
+- ⏳ Préparer la fiche papier « La liberté, pour moi » (jeu de rôle, étape 8), une par élève, et la ramasser.
 - Générer et imprimer les cartes de chaque séance (pilotage → 🎟 Cartes), avec leur feuille de correspondance ; quelques cartes d'avance.
 - Imprimer quelques fiches-guides du jeu de rôle (document de l'équipe EMC), en secours.
 - Après la répétition : « Remettre à zéro » chaque séance testée (les cartes restent valables).
