@@ -144,6 +144,8 @@ textarea:focus{outline:2px solid var(--link);outline-offset:1px}
 .dec.r{background:#fdecdf;color:#8a4b16}
 button.dec{border:0;cursor:pointer;flex:0 0 auto}
 .phrase .dec{margin-right:5px}
+.dec.o{background:var(--link-wash);color:var(--ink,#1d2433)}
+.phrase.complement{border:1px dashed var(--line)}
 .modele{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border:1px solid var(--line);
     border-radius:var(--r);background:var(--surface-2);margin-bottom:5px;font-size:13.5px}
 .modele .txt{flex:1;text-align:left;background:none;border:0;font:inherit;color:var(--ink);
@@ -1152,17 +1154,26 @@ table.grille thead th{white-space:nowrap}
      Filtre et tri se font ici et non en SQL : les noms ne vivent que
      dans le navigateur, la base ne saurait pas trier dessus.
      ============================================================ */
-  /* PHRASES TOUTES FAITES — proposition V1, à réécrire dans TON ton.
-     Une ligne = un bouton, qui porte sa décision : le toucher ENVOIE
-     (04/10/2026, demande de Loïc — corriger en rafale, un geste par
-     copie). Ce qui est déjà tapé passe devant la phrase ; « Annuler »
-     rattrape une erreur. */
+  /* PHRASES TOUTES FAITES — transversales, dans le ton de Loïc
+     (08/11/2026 : reprises de ses propres corrections, deux écrites
+     dans son ton et validées par lui). Une ligne = un bouton : l'étiquette
+     courte s'affiche, la phrase part à l'élève. Le toucher ENVOIE
+     (04/10/2026 — corriger en rafale, un geste par copie). Ce qui est
+     déjà tapé passe devant la phrase ; « Annuler » rattrape une erreur.
+     ORTHOGRAPHE : un complément, qui n'envoie rien — il s'ajoute au
+     message, puis on touche la phrase qui décide. */
   var PHRASES = [
-    { t: "Trop court : développe, on veut voir ton raisonnement.",       d: 'refaire' },
-    { t: "Reprends ta réponse : il manque l'essentiel de la question.",  d: 'refaire' },
-    { t: "Tu réponds à côté — relis la question posée.",                 d: 'refaire' },
-    { t: "C'est juste, et bien formulé. Continue comme ça.",             d: 'valider' }
+    { e: "Très bien",                       t: "Très bien.",                                                                              d: 'valider' },
+    { e: "Juste, à enrichir",               t: "Bonne réponse. Tu pourrais ajouter d’autres détails néanmoins.",                         d: 'valider' },
+    { e: "Juste, rédaction difficile",      t: "C’est correct mais attention à l’expression écrite, il est difficile de te comprendre.", d: 'valider' },
+    { e: "Trop peu développé",              t: "Peux-tu ajouter des précisions ? Prends le temps de rédiger tes réponses.",              d: 'refaire' },
+    { e: "Une partie manque",               t: "Une partie de la question n’a pas été traitée.",                                         d: 'refaire' },
+    { e: "Bon début, il manque la fin",     t: "Très bien. Il manque simplement la fin de la question.",                                 d: 'refaire' },
+    { e: "Une erreur à corriger",           t: "Il y a de bons éléments, mais une partie est fausse. Reprends le cours sur ce point.",   d: 'refaire' },
+    { e: "À côté de la question",           t: "Je ne vois pas bien le lien avec la question posée. Peux-tu la reprendre ?",             d: 'refaire' },
+    { e: "Incompréhensible",                t: "Je ne comprends pas ta réponse. Prends le temps d’une rédaction soignée.",               d: 'refaire' }
   ];
+  var ORTHOGRAPHE = "Attention à l’orthographe.";
 
   /* toutes = tout ce que la base renvoie, toutes classes confondues.
      file  = la vue : la classe choisie, rangée par nom. C'est sur elle
@@ -1618,11 +1629,26 @@ table.grille thead th{white-space:nowrap}
       var b = document.createElement('button');
       b.className = 'phrase';
       b.type = 'button';
+      b.title = p.t;   /* la phrase exacte qui partira */
+      b.setAttribute('aria-label', p.e + ' — envoie : ' + p.t);
       b.appendChild(pastilleDecision(p.d, 'span'));
-      b.appendChild(document.createTextNode(p.t));
+      b.appendChild(document.createTextNode(p.e));
       b.addEventListener('click', function(){ deciderAvec(p.t, p.d); });
       z.appendChild(b);
     });
+    /* Le complément : ajouté une seule fois, sans envoyer, sans focus
+       (le clavier de l'iPad ne doit pas s'ouvrir). */
+    var o = document.createElement('button');
+    o.className = 'phrase complement';
+    o.type = 'button';
+    o.title = ORTHOGRAPHE + ' (s’ajoute au message, n’envoie rien)';
+    o.setAttribute('aria-label', 'Ajouter au message : ' + ORTHOGRAPHE + ' N’envoie rien.');
+    o.innerHTML = '<span class="dec o">+</span>Orthographe';
+    o.addEventListener('click', function(){
+      var t = $('#c-mot'), v = t.value.trim();
+      if(v.indexOf(ORTHOGRAPHE) === -1) t.value = v ? (v + ' ' + ORTHOGRAPHE) : ORTHOGRAPHE;
+    });
+    z.appendChild(o);
   })();
 
   /* ============================================================

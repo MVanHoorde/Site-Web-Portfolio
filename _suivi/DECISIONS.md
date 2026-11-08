@@ -20,6 +20,7 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | Date | Décision | Statut |
 |---|---|---|
 | 08/11/2026 | **Plafond des réponses rédigées SNT porté à 1000 caractères** (`data-focus-max`, 46 champs de `t0`, `t1`, `t2` et `m1`, qui allaient de 200 à 600). Motif : signalement d'un élève (« une limite de 400 lettres empêche de développer la réponse ») ; les élèves écrivent rarement autant, ceux qui aiment rédiger ne sont plus bridés. L'argument du budget de jetons (22/08) ne tient plus : la pré-correction IA est en sommeil depuis le 13/10. **Seule exception : `NET-1a`** reste à 180 — sa consigne est « deux phrases maximum ». La base accepte jusqu'à 2000 (`003`), rien à migrer. ES et outils PC non touchés | ✅ en vigueur (Loïc) |
+| 08/11/2026 | **Phrases communes de la correction réécrites dans le ton de Loïc** : les 4 phrases V1 (« Trop court : développe… », « Tu réponds à côté — relis la question ») jugées trop sèches, remplacées par 9 phrases tirées de ses propres corrections (7 telles quelles, 2 écrites dans son ton). Étiquette courte sur le bouton, phrase complète à l'élève. **+ Orthographe** ajoute sa phrase sans envoyer. Les collègues voient les mêmes boutons | ✅ en vigueur (Loïc) |
 
 ## 08/11/2026 (soir) — EMC : retours de Loïc après son essai (035)
 
