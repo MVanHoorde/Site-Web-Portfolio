@@ -15,6 +15,15 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 11/11/2026 — La gestion entre collègues (038)
+
+| Date | Décision | Statut |
+|---|---|---|
+| 11/11/2026 | **Un collègue coche « À supprimer », Loïc efface.** Né de comptes en double chez une collègue, qu'elle ne pouvait pas supprimer (élève partagé : `supprimer_eleve` refuse, `024`). La suppression directe reste aux collègues pour leurs élèves non partagés ; la coche (Suivi → « Gérer les élèves de la classe ») et le bouton « Lui demander la suppression » de la fiche passent par Loïc, qui efface **même un élève partagé** (`effacer_eleve_demande`, jamais un compte enseignant) | ✅ en vigueur (Loïc) |
+| 11/11/2026 | **Chaque enseignant masque des élèves et des onglets, sur son seul écran**, réglage en base (suit l'enseignant d'un appareil à l'autre). Un élève masqué sort du Suivi et des absents ; ses copies restent dans « À corriger » (une action y attend). Réglages ne se masque pas | ✅ en vigueur (Loïc) |
+| 11/11/2026 | **Bouton ✉️ « Écrire à M. Van Hoorde »** dans le tableau de bord et dans Leitner (même base, même boîte : onglet Gestion de Loïc), au lieu des mots papier dans les casiers. Réponse de Loïc lue au même endroit. Aucun nom d'élève : le pseudonyme. Résonance a la sienne (autre base, gardée séparée) | ✅ en vigueur (Loïc) |
+| 11/11/2026 | 🔴 **Toute évolution qui touche les collègues s'accompagne d'une fenêtre « ✨ Nouveautés »** à leur connexion, peu de mots et de petits visuels, **proposée d'office par Claude** : une édition dans `assets/js/prof-nouveautes.js` (tableau de bord) ou en tête de `Appli_Leitner/src/js/90-gestion.js`. Vue une fois par enseignant (`reglages_enseignant.nouveautes_vues`, par application), revue par le bouton ✨ | ✅ en vigueur (Loïc) |
+
 ## 08/11/2026 — SNT : réponses rédigées jusqu'à 1000 caractères
 
 | Date | Décision | Statut |

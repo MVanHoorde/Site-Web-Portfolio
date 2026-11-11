@@ -263,6 +263,7 @@ td code{white-space:nowrap}
     <tr><td><code>modeles_correction</code></td><td>La bibliothèque de phrases : chacun écrit, modifie et supprime les siennes seulement (policy de <code>011</code>). Chaque phrase porte sa <code>decision</code> (<code>valider</code> ou <code>refaire</code>, défaut <code>refaire</code>) : la toucher décide la copie (<code>024</code>). Les collègues se lisent entre eux, question par question, par <code>modeles_collegues(code)</code> : texte, décision et nom du collègue, jamais <code>auth_id</code>, réservé à <code>est_enseignant()</code>, sans reproposer une phrase déjà gardée à la casse et aux espaces près ; « + Garder » la recopie chez soi (<code>bdd/schema/027</code>).</td></tr>
     <tr><td><code>notes_eleves</code></td><td>Le pense-bête d'un enseignant sur un élève de ses classes, 200 caractères, une ligne par couple. Lu par cet enseignant <b>seul</b>, emporté par la suppression de l'élève. <code>bdd/schema/024</code>.</td></tr>
     <tr><td><code>signalements</code></td><td>Les bugs signalés par les élèves connectés (bouton « J'ai vu un bug » du moteur) : page, étape, message, appareil résumé, traité ou non. 🔴 Le message commence par le <b>nom et le prénom</b> que l'élève saisit (champ obligatoire du formulaire, choix de Loïc du 11/10/2026) : c'est le seul endroit de la base où figurent des noms réels — ils partent avec la suppression du signalement ou de l'élève. Le tableau de bord affiche aussi la classe, lue dans <code>eleves_classes</code>. S'y ajoute le <b>+0,5 au prochain contrôle</b> (<code>bonus_le</code>, date serveur posée par un déclencheur, qui marque aussi traité ; <code>bonus_vu_le</code>, quand l'élève a vu la notification — <code>bdd/schema/026</code>). L'élève ne relit toujours pas ses signalements : <code>mes_bonus_signalement()</code> lui rend ses seuls bonus non vus, <code>bonus_signalement_vus()</code> les marque vus ; le moteur l'annonce à l'ouverture de n'importe quelle page de cours. Lus par les enseignants de l'élève <b>dans la famille de la page</b> (<code>mon_eleve_pour</code>), vingt par élève et par jour au plus. <code>bdd/schema/021</code>.</td></tr>
+    <tr><td><code>gestionnaires</code> · <code>reglages_enseignant</code> · <code>demandes_suppression</code> · <code>messages_gestion</code></td><td>La gestion entre collègues (<code>bdd/schema/038</code>). <code>gestionnaires</code> : le compte de Loïc, lu par personne, interrogé par <code>est_gestionnaire()</code>. <code>reglages_enseignant</code> : par enseignant, ses élèves masqués, ses onglets masqués, la dernière nouveauté vue par application (<code>{"cours": n, "leitner": n}</code>). <code>demandes_suppression</code> : un élève (pseudonyme) et un motif court, posés par un de ses enseignants (<code>mon_eleve</code>). <code>messages_gestion</code> : les messages des enseignants à Loïc et ses réponses, datées par le serveur, trente par jour au plus. Loïc lit tout par <code>gestion_suppressions()</code> et <code>gestion_messages()</code>, efface par <code>effacer_eleve_demande()</code> (élève partagé compris, jamais un compte enseignant).</td></tr>
   </table>
   </div>
 
@@ -552,6 +553,26 @@ where not exists (select 1 from public.enseignants_classes ec
                   where ec.classe_id = c.id)
 order by c.code;</pre>
 
+  <h3>Les demandes des collègues : l'onglet Gestion</h3>
+  <p>Pas de SQL ici&nbsp;: tout se fait dans le tableau de bord, onglet
+  <b>Gestion</b>, visible du seul gestionnaire (table <code>gestionnaires</code>,
+  remplie par <code>038</code> d'après le libellé, à la main sinon). On y trouve
+  les <b>comptes à supprimer</b> — cochés par un enseignant dans <i>Suivi → Gérer
+  les élèves de la classe</i>, ou demandés depuis la fiche d'un élève partagé —
+  avec ses classes, tous ses enseignants et sa dernière connexion&nbsp;:
+  <i>Effacer définitivement</i> supprime le compte et tout son travail, chez
+  tous ses enseignants&nbsp;; <i>Écarter la demande</i> la retire. Puis les
+  <b>messages des collègues</b> (bouton ✉️ du tableau de bord et de Leitner)&nbsp;:
+  <i>Lu</i>, <i>Répondre</i>, <i>Supprimer</i>. Le bouton ✉️ de Loïc porte le
+  nombre de messages non lus et ouvre cet onglet.</p>
+  <p>Fin d'année, avec le reste&nbsp;:</p>
+<pre>delete from public.messages_gestion;
+delete from public.demandes_suppression;</pre>
+  <p>Les <b>nouveautés</b> annoncées aux collègues vivent dans
+  <code>assets/js/prof-nouveautes.js</code> (tableau de bord) et en tête de
+  <code>src/js/90-gestion.js</code> (Leitner)&nbsp;: une édition par évolution qui
+  les touche, consigne de Loïc du 11/11/2026.</p>
+
   <h3>Effacer les élèves fictifs en fin d'année</h3>
   <p>D'où la convention de préfixe. On les recense d'abord :</p>
 <pre>select el.pseudo, c.code
@@ -689,7 +710,7 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <p class="revision">
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
-    Dernière révision : <b>31 octobre 2026</b> — Padago, les pads à serrures (<code>outils/padago/</code>, <code>bdd/schema/030</code>)&nbsp;: un compte d'autrice par code d'invitation, qui n'ouvre que Padago (§2, §9). Passe du 17 octobre&nbsp;: un élève change lui-même de
+    Dernière révision : <b>11 novembre 2026</b> — la gestion entre collègues (<code>bdd/schema/038</code>, <code>assets/js/prof-gestion.js</code>)&nbsp;: élèves masqués, demandes de suppression, onglets choisis, messages à Loïc, nouveautés&nbsp;; onglet <i>Gestion</i> du gestionnaire (§3, §6). Passe du 31 octobre&nbsp;: Padago, les pads à serrures (<code>outils/padago/</code>, <code>bdd/schema/030</code>)&nbsp;: un compte d'autrice par code d'invitation, qui n'ouvre que Padago (§2, §9). Passe du 17 octobre&nbsp;: un élève change lui-même de
     groupe de SNT (<code>changer_groupe_snt()</code>, <code>bdd/schema/028</code>)&nbsp;;
     lien « J'ai perdu mon mot de passe » à la connexion. Passe du 16 octobre&nbsp;: les réponses gardées se lisent
     entre collègues (bouton 👥 de la bibliothèque, <code>bdd/schema/027</code>). Un QCM interrompu reprend à la question où l'élève l'avait laissé (<code>…/qcm-N-encours</code>), et le QCM diagnostic garde sa trace&nbsp;; la courbe des dés n'attend que les élèves « prêts », garde plusieurs courbes et trace leurs demi-vies.

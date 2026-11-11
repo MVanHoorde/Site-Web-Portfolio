@@ -5028,3 +5028,24 @@ créé et renvoyait sur « créer » (→ écran « code d'invitation »). La co
 exécution à la main d'abord). Les PDF des guides n'ont pas été régénérés dans le
 conteneur (polices de repli) : à refaire sur le PC.
 
+### GEST-01 · La gestion entre collègues ⏳
+
+**11/11/2026.** Demande de Loïc : des comptes en double chez une collègue, les
+mots papier dans les casiers, et des annonces à chaque nouveauté. `bdd/schema/038`
+(gestionnaire, réglages par enseignant, demandes de suppression, messages) ;
+`assets/js/prof-gestion.js` branché dans `prof/index.html` : Suivi → « 👥 Gérer
+les élèves de la classe » (Masquer / À supprimer, doublons repérés au nom),
+Réglages → « Les onglets affichés », bouton ✉️ et ✨ dans la barre, onglet
+Gestion du gestionnaire, et « Lui demander la suppression » quand la fiche d'un
+élève partagé refuse. `assets/js/prof-nouveautes.js`, première édition. Même
+chose côté Leitner (`src/js/90-gestion.js` : bouton ✉️ et nouveautés) et côté
+Résonance (autre base : `Tutorat/supabase/migrations/008_gestion.sql`). Bancs :
+`gestion-schema.test.mjs` (29 contrôles, PGlite) ; tableau de bord dans Chromium
+sur base simulée (31 contrôles : collègue, gestionnaire, fiche partagée, base
+sans 038) ; Leitner construit (8 contrôles). Quatre guides et PDF à jour ;
+`verifier.mjs` : les 19 problèmes de référence, rien de plus. Une correction en
+route : un enseignant ne lit que sa ligne d'`enseignants` (`008`), d'où
+`gestion_messages()` pour donner à Loïc le nom de l'auteur.
+
+**11/11/2026, suite.** `038` exécuté par Loïc (SQL Editor), constaté en base
+(fonctions présentes, refusées à la clé publique). GEST-01 ✅ une fois publié.

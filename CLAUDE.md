@@ -189,7 +189,7 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 | **Outils pédagogiques** 🆕 | `outils/padago/` — **Padago**, les pads à serrures : `index.html` (autrices), `pad.html` (élèves, sans compte), `aide.html` | `outils/padago/` (CSS, JS, `vendor/`, `img/`, `pads/`) · base : `bdd/schema/030` · 🔴 l'élève n'écrit **rien** en base : tout reste sur sa tablette · compte d'autrice par **code d'invitation** (jamais écrit dans le dépôt) |
 | **EMC seconde** 🆕 | `emc/index.html` (élève, entrée par **carte éphémère**) · Labyrinthe : `prof/emc.html`, `prof/emc-projection.html` · jeu de rôle : `prof/emc-accueil.html` · restitution : `prof/emc-restitution.html` · `prof/emc-cartes.html` (planche) · `prof/emc-contenus.html` · espace `emc` du tableau de bord | `assets/js/emc-*.js`, `assets/js/prof-emc*.js`, `assets/css/emc.css` · `assets/js/vendor/` (Konva, supabase-js, QR) · papier et mémos : `fiches/emc/` → `assets/pdf/emc/` (tous listés dans l’onglet EMC) · base : `bdd/schema/031` à `037` · fonction Edge `supabase/functions/emc-cartes` · guide : `prof/guide-emc.html` · 🔴 **aucun nom en base** (feuille papier), la carte a **sa propre session** (`emc.session`, jamais `snt.session`), aide jamais projetée, enquête sans identité, notes du jeu de rôle jamais hors de l'iPad · état : `_suivi/AUDIT-EMC.md` |
 | **Base de données** 🆕 | *(pas de page)* | `bdd/schema/NNN-….sql` (schéma, numéroté, rejouable) · `bdd/README.md` · `supabase/migrations/` (horodaté par la CLI, **contenu recopié de `bdd/schema/`**) · client partagé `assets/js/progression.js` |
-| **Tableau de bord enseignant** 🆕 | `prof/index.html` · `prof/guide-prise-en-main.html` · `prof/guide-dispositif.html` | `assets/js/prof-api.js` · PDF des guides dans `assets/pdf/prof/`, régénérés par `node exporter-guides.mjs` |
+| **Tableau de bord enseignant** 🆕 | `prof/index.html` · `prof/guide-prise-en-main.html` · `prof/guide-dispositif.html` | `assets/js/prof-api.js` · `assets/js/prof-gestion.js` (élèves et onglets masqués, demandes de suppression, ✉️ messages à Loïc, onglet Gestion — `bdd/schema/038`) · `assets/js/prof-nouveautes.js` (la fenêtre ✨) · PDF des guides dans `assets/pdf/prof/`, régénérés par `node exporter-guides.mjs` |
 
 🔴 **Trois assets sont PARTAGÉS entre plusieurs parties.** Les toucher déborde du
 périmètre où l'on croit travailler, et impose d'incrémenter le `?v=N` **partout
@@ -223,6 +223,13 @@ d'atteinte depuis l'accueil** (parcours réel des liens, commentaires retirés).
 Cette liste **est** celle de ce que les collègues ne voient pas. La parcourir fait
 partie de toute session qui touche un cours partagé — et **le dire à Loïc** quand
 l'un d'eux est devenu utilisable.
+
+🔴 **Toute évolution qui touche les collègues s'accompagne d'une fenêtre
+« ✨ Nouveautés »** (consigne du 11/11/2026), que Claude **propose d'office** :
+une édition en tête de `assets/js/prof-nouveautes.js` — peu de mots, un petit
+visuel par point, les espaces concernés. Elle s'affiche une fois à chaque
+enseignant concerné, à sa connexion. Même règle pour Leitner
+(`Appli_Leitner/src/js/90-gestion.js`) et Résonance (`Tutorat/nouveautes.js`).
 
 🔴 **Le tableau de bord se livre avec ses quatre guides** — un par public :
 `prof/guide-prise-en-main.html` (SNT), `prof/guide-es.html` (ens. scientifique

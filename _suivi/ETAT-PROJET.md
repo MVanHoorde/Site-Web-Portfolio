@@ -5,14 +5,22 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **07/11/2026**.
+> Dernière réécriture : **11/11/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — EMC seconde, six séances (08/11).** Cartes éphémères,
+> **Dernière passe — la gestion entre collègues (11/11).** Suivi → « 👥 Gérer
+> les élèves de la classe » (Masquer / À supprimer), onglets au choix dans
+> Réglages, bouton ✉️ « Écrire à M. Van Hoorde » et ✨ Nouveautés dans la barre,
+> onglet **Gestion** pour Loïc ; même bouton dans Leitner. ✅ `038` exécuté le
+> 11/11, constaté en base ; Résonance (`008`) aussi. Guides et PDF à jour.
+> ⏳ **Reste à Loïc** : publier ce dépôt, Leitner et Résonance ; demander à la
+> collègue de cocher ses doublons.
+>
+> **Passe du 08/11 — EMC seconde, six séances.** Cartes éphémères,
 > jeu de rôle d'accueil, `034` en base : section détaillée ci-dessous.
 >
 > **Passe du 31/10 — Padago, les pads à serrures.** Nouvel outil
@@ -241,14 +249,14 @@ collègues). `verifier.mjs` : 19 problèmes, le repère.
 ✅ `030` exécuté par Loïc le 31/10 (six vérifications vraies), copié dans
 `supabase/migrations/20261031120000_padago.sql` ; branche fusionnée dans `main`.
 
-⏳ **Reste à Loïc**, dans l'ordre :
-1. Supabase → Authentication → URL Configuration : ajouter
-   `https://mvanhoorde.github.io/Site-Web-Portfolio/outils/padago/index.html`
-   aux *Redirect URLs* (sinon le lien « mot de passe perdu » retombe sur l'accueil).
+✅ Adresse ajoutée aux *Redirect URLs* de Supabase, essayée (11/11/2026).
+
+⏳ **Reste à Loïc** :
+1. Envoyer le mail à la collègue (texte proposé en session, avec son code) — en
+   cours le 11/11 ; elle doit lui envoyer ses contenus.
 2. `node exporter-guides.mjs` **sur le PC** : les guides HTML sont à jour, pas
    leurs PDF (l'export depuis le conteneur remplaçait Segoe UI Emoji, Arial et
    Cambria Math par des polices de repli — écarté).
-3. Envoyer le mail à la collègue (texte proposé en session, avec son code).
 
 ⏳ **À trancher** : le **nom** (Padago est provisoire — à demander à la
 collègue ; il vit dans une seule constante, `NOM`, de `padago-commun.js`) ; les

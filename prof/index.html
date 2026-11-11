@@ -350,6 +350,9 @@ table.grille thead th{white-space:nowrap}
     <!-- Padago (31/10/2026) : l'outil des pads à serrures, ouvert à
          tout compte enseignant sans démarche (bdd/schema/030). -->
     <a class="lien-aide" href="../outils/padago/" target="_blank" rel="noopener" title="Créer des pads à serrures">🗝 Padago</a>
+    <!-- Gestion entre collègues (11/11/2026, bdd/schema/038, assets/js/prof-gestion.js) -->
+    <button id="btn-nouveautes" type="button" title="Les nouveautés du tableau de bord" aria-label="Nouveautés" style="display:none;padding:5px 9px;font-size:13.5px">✨</button>
+    <button id="btn-ecrire" type="button" style="display:none;padding:5px 11px;font-size:13.5px">✉️ Écrire à M. Van Hoorde</button>
     <a class="lien-aide" href="guide-prise-en-main.html" target="_blank" rel="noopener">Aide</a>
     <button id="lien-quitter" style="padding:5px 11px;font-size:13.5px">Quitter</button>
   </header>
@@ -371,6 +374,8 @@ table.grille thead th{white-space:nowrap}
     <button data-onglet="defi">Défi S4</button>
     <button data-onglet="emc">EMC</button>
     <button data-onglet="reglages">Réglages</button>
+    <!-- gestionnaire du site seulement (bdd/schema/038) -->
+    <button data-onglet="gestion" style="display:none">Gestion <span class="sig-n" id="gst-n" hidden></span></button>
   </nav>
 
   <main>
@@ -561,6 +566,20 @@ table.grille thead th{white-space:nowrap}
         </div>
         <div id="g-perso-liste"></div>
       </details>
+
+      <!-- Masquer un élève, demander sa suppression (11/11/2026,
+           bdd/schema/038, assets/js/prof-gestion.js). -->
+      <details id="g-gerer" style="margin-top:22px">
+        <summary style="cursor:pointer;font-size:15px;font-weight:600">👥 Gérer les élèves de la classe <span class="tresmuet" id="g-gerer-compte" style="font-weight:400"></span></summary>
+        <p class="muet" style="margin:10px 0 0"><b>Masquer</b> retire l’élève de ton suivi et de la liste des absents, sur ton
+          écran seulement (élève parti, compte de test). <b>À supprimer</b> prévient M. Van Hoorde, qui efface le compte
+          (un doublon, par exemple), même si l’élève est aussi chez un collègue&nbsp;; il est masqué en attendant.</p>
+        <div class="rangee">
+          <label style="margin:0;font-weight:400"><input type="checkbox" id="g-gerer-tous"> montrer les élèves masqués</label>
+          <span id="g-gerer-etat" class="muet"></span>
+        </div>
+        <div id="g-gerer-liste"></div>
+      </details>
     </section>
 
     <section class="panneau" id="p-eleve">
@@ -611,7 +630,29 @@ table.grille thead th{white-space:nowrap}
     <!-- Onglet EMC (espace 'emc') : construit par assets/js/prof-emc.js. -->
     <section class="panneau" id="p-emc"></section>
 
+    <!-- Gestion du site (11/11/2026, bdd/schema/038) : le gestionnaire
+         seul. Rempli par assets/js/prof-gestion.js. -->
+    <section class="panneau" id="p-gestion">
+      <div class="rangee" style="margin-top:0">
+        <h2 style="font-size:17px;margin:0">Comptes à supprimer</h2>
+        <button id="gst-recharger" style="margin-left:auto">Recharger</button>
+      </div>
+      <p class="muet" style="margin:0 0 12px">Cochés par les enseignants dans Suivi → « Gérer les élèves de la classe »,
+        ou demandés depuis la fiche d’un élève partagé. L’effacement est définitif&nbsp;: le compte et tout son travail,
+        chez tous ses enseignants.</p>
+      <div id="gst-suppr"><p class="muet">Chargement…</p></div>
+      <h2 style="font-size:17px;margin:26px 0 6px">Messages des collègues</h2>
+      <label style="margin:0 0 12px;display:block;font-weight:400"><input type="checkbox" id="gst-msgs-tout"> montrer aussi les messages déjà lus</label>
+      <div id="gst-msgs"><p class="muet">Chargement…</p></div>
+    </section>
+
     <section class="panneau" id="p-reglages">
+      <h2 style="font-size:17px">Les onglets affichés</h2>
+      <p class="muet" style="margin:6px 0 10px">Décoche ceux qui ne te servent pas&nbsp;: ils disparaissent de ton écran,
+        et de tes autres appareils. Rien n’est effacé. Réglages reste toujours là.</p>
+      <div id="r-onglets"></div>
+      <p id="r-onglets-etat" class="tresmuet" style="margin:4px 0 22px"></p>
+
       <h2 style="font-size:17px">La table des noms</h2>
       <p class="muet" style="margin:6px 0 0">
         La base ne connaît que des identifiants. Charge ton fichier pour voir les vrais
@@ -701,6 +742,8 @@ table.grille thead th{white-space:nowrap}
 <script src="../assets/js/questions-snt.js?v=5"></script>
 <script src="../assets/js/sequences-espaces.js?v=2"></script>
 <script src="../assets/js/prof-api.js?v=3"></script>
+<script src="../assets/js/prof-nouveautes.js?v=1"></script>
+<script src="../assets/js/prof-gestion.js?v=1"></script>
 <script>
 (function(){
   'use strict';
@@ -712,8 +755,11 @@ table.grille thead th{white-space:nowrap}
     $('#ecran-appli').style.display = 'flex';
     var m = ProfAPI.moi();
     $('#qui-nom').textContent = (m && m.libelle) || '';
-    chargerClasses()
+    /* les réglages de l'enseignant (onglets, élèves masqués) avant le
+       choix de l'espace ; les nouveautés une fois tout affiché */
+    Promise.all([chargerClasses(), ProfGestion.entrer()])
       .then(entrer)
+      .then(function(){ ProfGestion.annoncer(); })
       .catch(function(e){ $('#g-etat').textContent = 'Lecture impossible : ' + (e.message || e); });
   }
 
@@ -825,12 +871,7 @@ table.grille thead th{white-space:nowrap}
     $('#lien-decroissance').style.display = ESPACE === 'es1' ? '' : 'none';
 
     /* les onglets de l'espace, le premier ouvert */
-    var premier = null;
-    document.querySelectorAll('nav.onglets button').forEach(function(b){
-      var montre = def.onglets.indexOf(b.dataset.onglet) >= 0;
-      b.style.display = montre ? '' : 'none';
-      if(montre && !premier) premier = b;
-    });
+    var premier = appliquerOnglets();
     document.querySelectorAll('[data-avec-seances]').forEach(function(x){
       x.style.display = def.seances ? '' : 'none';
     });
@@ -865,6 +906,23 @@ table.grille thead th{white-space:nowrap}
     chargerContexte()
       .then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); $('#g-etat').textContent = ''; })
       .catch(function(err){ $('#g-etat').textContent = 'Lecture impossible : ' + (err.message || err); });
+  }
+  /* Les onglets montrés : ceux de l'espace, moins ceux que l'enseignant
+     a masqués (Réglages, bdd/schema/038), plus « Gestion » pour le
+     gestionnaire. Rend le premier visible ; si l'onglet ouvert vient
+     d'être masqué, on ouvre ce premier. */
+  function appliquerOnglets(){
+    var def = ESPACES_DEF[ESPACE], premier = null, actifCache = false;
+    document.querySelectorAll('nav.onglets button').forEach(function(b){
+      var k = b.dataset.onglet;
+      var montre = k === 'gestion' ? ProfGestion.estGestionnaire()
+                 : def.onglets.indexOf(k) >= 0 && !ProfGestion.ongletMasque(k);
+      b.style.display = montre ? '' : 'none';
+      if(montre && !premier) premier = b;
+      if(!montre && b.classList.contains('actif')) actifCache = true;
+    });
+    if(actifCache && premier) premier.click();
+    return premier;
   }
   function montrerConnexion(message){
     $('#ecran-appli').style.display = 'none';
@@ -919,6 +977,7 @@ table.grille thead th{white-space:nowrap}
 
   $('#lien-quitter').addEventListener('click', function(){
     ProfAPI.deconnexion();
+    ProfGestion.quitter();
     majEtatNoms();
     montrerConnexion(null);
   });
@@ -1034,6 +1093,7 @@ table.grille thead th{white-space:nowrap}
       b.classList.add('actif');
       $('#p-' + b.dataset.onglet).classList.add('actif');
       if(b.dataset.onglet === 'signalements') chargerSignalements();
+      if(b.dataset.onglet === 'gestion') ProfGestion.chargerGestion();
     });
   });
 
@@ -1659,6 +1719,13 @@ table.grille thead th{white-space:nowrap}
      menus des onglets Séance et Suivi. */
   var TOUTES_CLASSES = [], CLASSES = [], ctx = { classe: null, theme: 'snt-t1' };
   var Eleves = [], Faites = [], Absences = [], Progs = [];
+  /* toute la classe ; Eleves n'en garde que les élèves non masqués
+     (Suivi → « Gérer les élèves de la classe », bdd/schema/038) */
+  var ElevesClasse = [];
+  function filtrerMasques(){
+    Eleves = ElevesClasse.filter(function(e){ return !ProfGestion.masque(e.id); });
+    trierEleves();
+  }
   var FaitesToutes = [];   /* toutes séquences : le plafond les franchit */
 
   /* Range la classe affichée. Appelée au chargement des données ET
@@ -1760,7 +1827,7 @@ table.grille thead th{white-space:nowrap}
      et  eleves.classe_id  ne le rangerait pas en 2nde 1. */
   function chargerContexte(){
     if(!ctx.classe || !ctx.theme) {
-      Eleves = []; Faites = []; Absences = []; Progs = []; FaitesToutes = [];
+      Eleves = []; ElevesClasse = []; Faites = []; Absences = []; Progs = []; FaitesToutes = [];
       return Promise.resolve();
     }
     var cl = encodeURIComponent(ctx.classe), th = encodeURIComponent(ctx.theme);
@@ -1784,13 +1851,13 @@ table.grille thead th{white-space:nowrap}
          il lui faut donc tout ce que la classe a clôturé, partout. */
       avecSeances ? ProfAPI.lire('seances_faites?select=sequence,seance,faite_le&classe_id=eq.' + cl) : rien
     ]).then(function(r){
-      Eleves = (r[0] || []).map(function(x){ return x.eleves; }).filter(Boolean);
-      trierEleves();
+      ElevesClasse = (r[0] || []).map(function(x){ return x.eleves; }).filter(Boolean);
+      filtrerMasques();
       Faites = r[1] || []; Absences = r[2] || []; Progs = r[3] || [];
       FaitesToutes = r[4] || [];
       /* les absences sont lues pour tout le monde : on ne garde que
          les élèves de la classe affichée */
-      var dedans = {}; Eleves.forEach(function(e){ dedans[e.id] = true; });
+      var dedans = {}; ElevesClasse.forEach(function(e){ dedans[e.id] = true; });
       Absences = Absences.filter(function(a){ return dedans[a.eleve_id]; });
     });
   }
@@ -2201,6 +2268,7 @@ table.grille thead th{white-space:nowrap}
      LOT D — la grille de suivi
      ============================================================ */
   function rendreGrille(){
+    ProfGestion.rendreEleves(ElevesClasse);
     $('#leg-ok').textContent = ESPACE === 'cfa' ? 'fiche terminée'
                              : ctx.theme === VUE_CHAPITRES ? 'débloqué (code saisi)' : 'terminée';
     $('#leg-enc').textContent = ctx.theme === VUE_CHAPITRES ? 'ouvert, pas débloqué' : 'en cours';
@@ -2687,9 +2755,20 @@ table.grille thead th{white-space:nowrap}
   function refusCompte(err){
     var m = (err && err.message) || '';
     resCompte(
-        m.indexOf('ELEVE_PARTAGE') >= 0 ? 'Impossible : cet élève est aussi inscrit dans la classe d’un ou d’une collègue. Supprimer son compte effacerait son travail chez elle ou chez lui.'
+        m.indexOf('ELEVE_PARTAGE') >= 0 ? 'Impossible ici : cet élève est aussi inscrit dans la classe d’un ou d’une collègue. Supprimer son compte effacerait son travail chez elle ou chez lui. '
+          + 'M. Van Hoorde peut le faire après vérification&nbsp;: <button type="button" id="e-demander">Lui demander la suppression</button>'
       : m.indexOf('PAS_MON_ELEVE') >= 0 ? 'La base a refusé : cet élève n’est dans aucune de tes classes.'
       : messageLisible(m), false);
+    var b = $('#e-demander'), e = eleveCompte;
+    if(b && e) b.addEventListener('click', function(){
+      b.disabled = true;
+      ProfGestion.demanderSuppression(e)
+        .then(function(fait){
+          if(fait) resCompte('Demande envoyée à M. Van Hoorde. L’élève est masqué de ton suivi en attendant.', true);
+          else b.disabled = false;
+        })
+        .catch(function(err2){ b.disabled = false; resCompte(messageLisible((err2 && err2.message) || ''), false); });
+    });
   }
   function montrerNote(texte){
     var v = $('#e-note-vue');
@@ -3071,6 +3150,24 @@ table.grille thead th{white-space:nowrap}
   }
   $('#btn-memoriser-v').addEventListener('click', function(){ memoriser('valider', this); });
   $('#btn-memoriser-r').addEventListener('click', function(){ memoriser('refaire', this); });
+
+  /* ---------- gestion entre collègues (bdd/schema/038) ---------- */
+  ProfGestion.brancher({
+    rafraichirSuivi: function(){ filtrerMasques(); rendreSeance(); rendreGrille(); },
+    rafraichirTout: function(){
+      chargerContexte().then(function(){ rendreSeance(); rendreGrille(); });
+    },
+    appliquerOnglets: function(){ if(ESPACE) appliquerOnglets(); },
+    ouvrirGestion: function(){
+      var b = document.querySelector('nav.onglets button[data-onglet="gestion"]');
+      if(b && b.style.display !== 'none') b.click();
+    },
+    espaces: espacesDisponibles,
+    contexte: function(){
+      var b = document.querySelector('nav.onglets button.actif');
+      return $('#titre-appli').textContent + (b && b.style.display !== 'none' ? ' · ' + b.firstChild.textContent.trim() : '');
+    }
+  });
 
   /* ---------- démarrage ---------- */
   majEtatNoms();
