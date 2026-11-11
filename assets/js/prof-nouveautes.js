@@ -23,6 +23,21 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 3,
+    date: '2026-11-11',
+    titre: 'La table des noms se charge directement depuis Excel',
+    points: [
+      {
+        titre: 'Plus besoin d’enregistrer en CSV',
+        texte: 'Dans Réglages → La table des noms, choisissez le classeur .xlsx tel qu’il est sur le OneDrive de l’établissement. Il est lu sur votre appareil et n’est jamais envoyé.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-bouton">📄 Table des noms.xlsx</span><span class="nv-puce">✓ 28 noms chargés</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 2,
     date: '2026-11-11',
     espaces: ['emc'],

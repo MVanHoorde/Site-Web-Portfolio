@@ -662,7 +662,7 @@ table.grille thead th{white-space:nowrap}
       </p>
 
       <div class="rangee">
-        <input type="file" id="fichier-noms" accept=".csv,.txt" style="max-width:100%">
+        <input type="file" id="fichier-noms" accept=".xlsx,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/plain" style="max-width:100%">
         <span id="etat-noms" class="pastille att">aucun nom chargé</span>
         <button id="btn-oublier" style="display:none">Oublier</button>
       </div>
@@ -670,8 +670,8 @@ table.grille thead th{white-space:nowrap}
       <div id="apercu-noms" class="encadre" style="display:none"></div>
 
       <div class="encadre">
-        <b>Format attendu</b> — le classeur <i>Table des noms</i> enregistré en
-        <b>CSV</b> se charge tel quel&nbsp;: les colonnes <code class="mono">Identifiant</code>,
+        <b>Format attendu</b> — le classeur <i>Table des noms</i> se charge tel quel,
+        en <b>Excel (.xlsx)</b> comme en <b>CSV</b>&nbsp;: les colonnes <code class="mono">Identifiant</code>,
         <code class="mono">NOM</code> et <code class="mono">Prénom</code> sont reconnues par
         leur titre, le reste (classe, date, remarque) est laissé de côté, et les lignes
         encore vides aussi.<br>
@@ -742,7 +742,8 @@ table.grille thead th{white-space:nowrap}
 <script src="../assets/js/questions-snt.js?v=5"></script>
 <script src="../assets/js/sequences-espaces.js?v=2"></script>
 <script src="../assets/js/prof-api.js?v=3"></script>
-<script src="../assets/js/prof-nouveautes.js?v=1"></script>
+<script src="../assets/js/lire-xlsx.js?v=1"></script>
+<script src="../assets/js/prof-nouveautes.js?v=2"></script>
 <script src="../assets/js/prof-gestion.js?v=1"></script>
 <script>
 (function(){
@@ -1120,14 +1121,32 @@ table.grille thead th{white-space:nowrap}
     if(!f) return;
     var lecteur = new FileReader();
     lecteur.onload = function(){
-      var r = ProfAPI.chargerNoms(decoderFichier(lecteur.result), f.name);
+      var tampon = lecteur.result;
+      /* .xlsx tel qu'il est sur OneDrive : lu ici, converti en CSV, jamais envoyé */
+      if(LireXlsx.estXlsAncien(tampon)){
+        alert("Ce fichier est au vieux format Excel (.xls). Ouvre-le dans Excel et enregistre-le en .xlsx ou en CSV.");
+        ev.target.value = ''; return;
+      }
+      if(LireXlsx.estXlsx(tampon)){
+        LireXlsx.enTexte(tampon)
+          .then(function(texte){ appliquer(texte); })
+          .catch(function(err){
+            alert("Ce classeur n'a pas pu être lu (" + (err && err.message || err) + "). Enregistre-le en CSV et recharge-le.");
+            ev.target.value = '';
+          });
+        return;
+      }
+      appliquer(decoderFichier(tampon));
+    };
+    function appliquer(texte){
+      var r = ProfAPI.chargerNoms(texte, f.name);
       majEtatNoms();
       montrerApercu(r, f.name);
       trierEleves();        /* la grille passe dans l'ordre de la liste de classe */
       rendreCorrection();   /* pseudonymes → vrais noms, et la file se re-trie */
       rendreSeance(); rendreGrille();
       if(!r.n) alert("Aucun nom lu. Vérifie le format : un identifiant, un séparateur, un nom.");
-    };
+    }
     lecteur.readAsArrayBuffer(f);
   });
 
