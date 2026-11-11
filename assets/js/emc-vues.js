@@ -23,6 +23,11 @@
     '.v-nuage button{font-size:inherit;font-family:inherit;font-weight:inherit;min-height:0;padding:.05em .3em;border:1px dashed transparent;background:none;color:inherit}' +
     '.v-nuage button:hover{border-color:var(--ink-faint)}' +
     '.v-nuage .masque{opacity:.35;text-decoration:line-through}' +
+    '.v-nuage-spirale{position:relative;width:100%;height:100%;min-height:8em;overflow:hidden}' +
+    '.v-nuage-spirale .plan{position:absolute;left:0;top:0;transform-origin:0 0}' +
+    '.v-nuage-spirale .plan>*{position:absolute;white-space:nowrap;line-height:1.05;font-family:"Space Grotesk","Inter",sans-serif;font-weight:600}' +
+    '.v-nuage-spirale .plan>button{font-size:inherit;min-height:0;padding:0 .1em;border:1px dashed transparent;background:none}' +
+    '.v-nuage-spirale .masque{opacity:.35;text-decoration:line-through}' +
     '.v-barres{display:grid;grid-template-columns:auto 1fr auto;gap:.3em .6em;align-items:center}' +
     '.v-barres .lib{white-space:nowrap}' +
     '.v-barres .jauge{height:1.1em;background:var(--surface-2);border-radius:6px;overflow:hidden}' +
@@ -78,12 +83,17 @@
   var TEINTES_SOMBRE = ['#ffd28a', '#7fd0f5', '#ffffff', '#f3a37a', '#c7b3ff', '#8fe3b5'];
 
   /* opts.surClic(mot) : le pilotage masque / démasque d'un clic.
-   * opts.avecMasques : montrer les mots masqués (barrés). */
+   * opts.avecMasques : montrer les mots masqués (barrés).
+   * opts.spirale : un vrai nuage (projection) — les mots se posent en
+   *   spirale autour du plus fréquent, puis l'ensemble se met à
+   *   l'échelle du cadre : il tient toujours dans l'écran, même avec
+   *   de longs noms d'ateliers. Le conteneur doit avoir une hauteur. */
   Vues.nuage = function (conteneur, agreg, opts) {
     opts = opts || {};
     conteneur.innerHTML = '';
     var liste = agreg.filter(function (x) { return opts.avecMasques || !x.masque; }).slice(0, opts.max || 60);
     if (!liste.length) { conteneur.appendChild(el('p', { class: 'tresmuet' }, opts.vide || 'Pas encore de mots.')); return; }
+    if (opts.spirale) return nuageSpirale(conteneur, liste, opts);
     var max = liste[0].n || 1, base = opts.taille || 1;
     var z = el('div', { class: 'v-nuage' });
     /* l'ordre alterne grands et petits : un nuage, pas un classement */
@@ -103,6 +113,75 @@
     });
     conteneur.appendChild(z);
   };
+
+  /* Un hachage stable : un mot garde son angle de départ d'une mise à
+     jour à l'autre, le nuage ne se rebat pas à chaque nouveau mot. */
+  function hache(t) { var h = 2166136261; for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
+
+  function nuageSpirale(conteneur, liste, opts) {
+    var max = liste[0].n || 1, base = opts.taille || 1;
+    var teintes = opts.teintes || (document.body.classList.contains('projection') ? TEINTES_SOMBRE : TEINTES);
+    var cadre = el('div', { class: 'v-nuage-spirale' });
+    var plan = el('div', { class: 'plan' });
+    cadre.appendChild(plan);
+    conteneur.appendChild(cadre);
+    var W = cadre.clientWidth || conteneur.clientWidth || 600;
+    var H = cadre.clientHeight || Math.round(W * 0.55);
+    if (!cadre.clientHeight) cadre.style.height = H + 'px';
+    var noeuds = liste.map(function (x, i) {
+      var lib = x.mot + (opts.compte ? ' ·' + x.n : '');
+      var n = opts.surClic
+        ? el('button', { type: 'button', title: x.masque ? 'Démasquer' : 'Masquer', onclick: function () { opts.surClic(x); } }, lib)
+        : el('span', null, lib);
+      n.style.fontSize = ((0.85 + 2.4 * Math.sqrt(x.n / max)) * base).toFixed(2) + 'em';
+      n.style.color = teintes[i % teintes.length];
+      if (x.masque) n.classList.add('masque');
+      plan.appendChild(n);
+      return { n: n, x: x, l: n.offsetWidth, h: n.offsetHeight };
+    });
+    /* la spirale est étirée comme le cadre : un nuage large, pas un rond */
+    var etire = Math.max(1, Math.min(2.6, W / H)), pose = [], marge = 7;
+    var pas = Math.max(2, noeuds.reduce(function (s, o) { return s + o.h; }, 0) / noeuds.length * 0.3);
+    function chevauche(r) {
+      for (var k = 0; k < pose.length; k++) {
+        var p = pose[k];
+        if (r.x < p.x + p.l + marge && r.x + r.l + marge > p.x && r.y < p.y + p.h + marge && r.y + r.h + marge > p.y) return true;
+      }
+      return false;
+    }
+    noeuds.forEach(function (o, i) {
+      var a0 = hache(o.x.forme || o.x.mot) * Math.PI * 2, r = { l: o.l, h: o.h, x: -o.l / 2, y: -o.h / 2 };
+      if (i) {
+        for (var t = 1; t < 20000; t++) {
+          var ang = a0 + Math.sqrt(t) * 1.3, ray = pas * Math.sqrt(t);
+          r.x = Math.cos(ang) * ray * etire - o.l / 2;
+          r.y = Math.sin(ang) * ray - o.h / 2;
+          if (!chevauche(r)) break;
+        }
+      }
+      pose.push({ x: r.x, y: r.y, l: r.l, h: r.h });
+      o.n.style.left = r.x + 'px'; o.n.style.top = r.y + 'px';
+    });
+    var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    pose.forEach(function (p) { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x + p.l); y1 = Math.max(y1, p.y + p.h); });
+    var ech = Math.min((W - 16) / (x1 - x0), (H - 16) / (y1 - y0), opts.agrandirMax || 1.25);
+    plan.style.transform = 'translate(' + (W / 2) + 'px,' + (H / 2) + 'px) scale(' + ech.toFixed(3) + ') translate(' + (-(x0 + x1) / 2) + 'px,' + (-(y0 + y1) / 2) + 'px)';
+    /* le cadre change de taille (plein écran, mode de projection) : on refait */
+    if (global.ResizeObserver && !conteneur._nuageObs) {
+      var avant = W + 'x' + H;
+      conteneur._nuageObs = new ResizeObserver(function () {
+        var c = conteneur.querySelector('.v-nuage-spirale');
+        if (!c || !conteneur._nuageArgs) return;
+        var maintenant = c.clientWidth + 'x' + c.clientHeight;
+        if (maintenant === avant || !c.clientWidth) return;
+        avant = maintenant;
+        clearTimeout(conteneur._nuageT);
+        conteneur._nuageT = setTimeout(function () { var a = conteneur._nuageArgs; Vues.nuage(conteneur, a[0], a[1]); }, 120);
+      });
+      conteneur._nuageObs.observe(conteneur);
+    }
+    conteneur._nuageArgs = [liste, opts];
+  }
 
   /* ---------- barres (émojis, enquête) ---------- */
   Vues.barres = function (conteneur, items, opts) {
@@ -300,6 +379,52 @@
     conteneur.appendChild(pied);
     if (v.note) conteneur.appendChild(el('div', { class: 'encadre orange video-note' }, v.note));
   };
+
+  /* ---------- plein écran (les trois projections) ----------
+   * La vraie API d'abord (préfixée pour Safari). Si le navigateur la
+   * refuse — Chrome sur iPad, Safari ancien, page dans un cadre — on
+   * passe en mode « immersif » : la page cache sa barre et occupe
+   * toute la fenêtre (classe body.immersif, à styler par la page).
+   * Essai du 11/11 : le bouton ne faisait rien depuis les tablettes. */
+  function enPleinEcran() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  Vues.pleinEcran = function () {
+    var d = document, e = d.documentElement, b = d.body;
+    if (enPleinEcran() || b.classList.contains('immersif')) {
+      b.classList.remove('immersif');
+      if (enPleinEcran()) { var x = d.exitFullscreen || d.webkitExitFullscreen; if (x) try { x.call(d); } catch (er) {} }
+      setTimeout(function () { global.dispatchEvent(new Event('resize')); }, 80);
+      return;
+    }
+    var repli = function () {
+      if (enPleinEcran()) return;
+      b.classList.add('immersif');
+      global.scrollTo(0, 0);
+      global.dispatchEvent(new Event('resize'));
+      var t = el('div', { class: 'toast-immersif', role: 'status' },
+        'Cette tablette refuse le vrai plein écran : la page occupe toute la fenêtre. Sur iPad, dans Safari : « aA » → « Masquer la barre d\'outils ». Touche ⛶ pour revenir.');
+      b.appendChild(t); setTimeout(function () { t.remove(); }, 7000);
+    };
+    var demande = e.requestFullscreen || e.webkitRequestFullscreen || e.webkitRequestFullScreen;
+    if (!demande) return repli();
+    try {
+      var p = demande.call(e);
+      if (p && p.then) p.then(null, repli);
+    } catch (er) { return repli(); }
+    setTimeout(repli, 700);         /* rien ne s'est passé : repli */
+  };
+  /* À brancher sur chaque bouton ⛶ ; Échap ou geste système = sortie. */
+  Vues.boutonPleinEcran = function (bouton) {
+    if (!bouton) return;
+    bouton.addEventListener('click', Vues.pleinEcran);
+    var maj = function () { bouton.setAttribute('aria-pressed', enPleinEcran() || document.body.classList.contains('immersif') ? 'true' : 'false'); setTimeout(function () { global.dispatchEvent(new Event('resize')); }, 80); };
+    document.addEventListener('fullscreenchange', maj);
+    document.addEventListener('webkitfullscreenchange', maj);
+  };
+  (function () {
+    var s2 = document.createElement('style');
+    s2.textContent = '.toast-immersif{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:90;max-width:min(90vw,640px);background:#fff;color:#161f33;border-radius:12px;padding:.7rem 1rem;font-size:1rem;box-shadow:0 6px 24px rgba(0,0,0,.35)}';
+    document.head.appendChild(s2);
+  })();
 
   EMC.Vues = Vues;
 })(window);

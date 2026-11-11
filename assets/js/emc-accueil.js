@@ -191,10 +191,23 @@
     var choisies = (maLigne(cx).questions || []).slice();
     var etat = el('p', { class: 'etat-envoi', role: 'status', 'aria-live': 'polite' });
     var compteur = el('div', { class: 'compteur-themes' });
-    var valider = el('button', { type: 'button', class: 'primaire', style: 'width:100%' }, 'Valider mes questions');
+    /* Deux boutons « Valider » qui font la même chose : l'un dans la
+       barre collée EN HAUT (sous la barre de l'élève), l'autre en bas,
+       après la dernière question. En bas d'écran, Safari sur iPad
+       recalait mal la barre pendant un défilement rapide et cachait
+       la question 30 (essai du 11/11). */
+    var valider = el('button', { type: 'button', class: 'primaire' }, '✔ Valider');
+    var validerBas = el('button', { type: 'button', class: 'primaire', style: 'width:100%;margin-top:.8rem' }, 'Valider mes questions');
     s.appendChild(encadre(el('span', null, 'Choisis ', el('b', null, min + ' à ' + max + ' questions'), ', avec ', el('b', null, 'au moins une par thème'),
       '. Obligatoire en plus : « ' + (j.obligatoire || 'Prénom, nom') + ' »')));
-    var sticky = el('div', { class: 'barre-choix' }, compteur, valider);
+    var sticky = el('div', { class: 'barre-choix' }, el('div', { class: 'barre-choix-ligne' }, compteur, valider));
+    var etatBas = el('p', { class: 'etat-envoi', 'aria-hidden': 'true' });
+    function caler() {
+      var b = document.getElementById('barre');
+      sticky.style.top = (b ? b.getBoundingClientRect().height : 0) + 'px';
+    }
+    global.addEventListener('resize', caler);
+    cx.enQuittant(function () { global.removeEventListener('resize', caler); });
     var valide = false;
     function probleme() {
       var manque = (j.themes || []).filter(function (t) { return !t.questions.some(function (q) { return choisies.indexOf(q.id) >= 0; }); });
@@ -211,10 +224,12 @@
         compteur.appendChild(el('span', { class: 'pastille ' + (k ? 'ok' : 'att'), title: t.titre }, (t.icone || '') + ' ' + k));
       });
       var p = probleme();
-      valider.disabled = !!p;
+      valider.disabled = !!p; validerBas.disabled = !!p;
       if (p) { etat.className = 'etat-envoi ' + (choisies.length > max ? 'err' : 'att'); etat.textContent = p; }
       else if (!valide) { etat.className = 'etat-envoi'; etat.textContent = '👍 C\'est bon : valide !'; }
+      copierEtat();
     }
+    function copierEtat() { etatBas.className = etat.className; etatBas.textContent = etat.textContent; }
     (j.themes || []).forEach(function (t) {
       var f = el('fieldset', { class: 'q theme' }, el('legend', null, (t.icone ? t.icone + ' ' : '') + 'Thème ' + t.n + ' : ' + t.titre));
       t.questions.forEach(function (q) {
@@ -230,35 +245,67 @@
       s.appendChild(f);
     });
     sticky.appendChild(etat);
-    s.appendChild(sticky);
+    /* la barre se place juste après la consigne, avant les thèmes */
+    s.insertBefore(sticky, s.querySelector('fieldset.theme'));
+    s.appendChild(validerBas);
+    s.appendChild(etatBas);
+    caler(); setTimeout(caler, 300);
     if ((maLigne(cx).questions || []).length) valide = true;
     maj();
-    if (valide && !probleme()) { etat.className = 'etat-envoi ok'; etat.textContent = '✓ Questions validées. Tu peux encore changer.'; }
-    valider.addEventListener('click', function () {
+    if (valide && !probleme()) { etat.className = 'etat-envoi ok'; etat.textContent = '✓ Questions validées. Tu peux encore changer.'; copierEtat(); }
+    function envoyerChoix() {
       if (probleme()) return;
       var ordre = toutes(cx).map(function (q) { return q.id; });
       choisies.sort(function (a, b) { return ordre.indexOf(a) - ordre.indexOf(b); });
       envoyer(cx, { questions: choisies.slice() });
       valide = true;
       cx.majEtatEnvoi(etat, '✓ Questions validées. Tu peux encore changer tant que l\'étape est ouverte.');
-    });
+      copierEtat(); setTimeout(copierEtat, 1500); setTimeout(copierEtat, 5000);
+    }
+    valider.addEventListener('click', envoyerChoix);
+    validerBas.addEventListener('click', envoyerChoix);
   }
 
   /* 4 — L'échange : chrono, et les notes (sur la tablette) */
+  /* L'échange en deux tours (Loïc, 11/11) : on lance les 20 minutes,
+     mais on voit le tour en cours (10 min chacun). À la bascule, un
+     grand bandeau « On change ! » pendant 20 s, avec un son — même
+     signal qu'au tableau. Un trinôme se répartit les deux tours. */
+  function bandeauBascule(texte, sous) {
+    var vieux = document.getElementById('emc-bascule'); if (vieux) vieux.remove();
+    var b = el('div', { id: 'emc-bascule', class: 'bascule', role: 'alert' },
+      el('div', { class: 'bascule-ic', 'aria-hidden': 'true' }, '🔄'), el('b', null, texte), sous ? el('span', null, sous) : null,
+      el('span', { class: 'tresmuet' }, 'Touche pour fermer'));
+    b.addEventListener('click', function () { b.remove(); });
+    document.body.appendChild(b);
+    setTimeout(function () { b.remove(); }, 20000);
+    return b;
+  }
   function chronoEchange(cx, zone) {
-    var j = jdr(cx), total = (j.echange_minutes || 15) * 60, depuis = (cx.S.seance.etat || {}).echange_depuis;
-    var alerte = false;
+    var j = jdr(cx), total = (j.echange_minutes || 20) * 60, depuis = (cx.S.seance.etat || {}).echange_depuis;
+    var tour = total / 2, alerte = false, fin = false;
     function tic() {
       if (!document.body.contains(zone)) return clearInterval(iv);
       if (!depuis) { zone.innerHTML = ''; zone.appendChild(el('div', { class: 'chrono-eleve att' }, '⏳ Le chrono démarre au signal')); return; }
-      var ecoule = (Date.now() - depuis) / 1000, reste = total - ecoule, mi = ecoule >= total / 2;
-      if (mi && !alerte) { alerte = true; if (ecoule < total / 2 + 3) { bip(880); setTimeout(function () { bip(880); }, 300); } }
+      var ecoule = (Date.now() - depuis) / 1000, reste = total - ecoule, mi = ecoule >= tour;
+      if (mi && !alerte) {
+        alerte = true;
+        /* la bascule vient de passer (ou passe pendant qu'on regarde) */
+        if (ecoule < tour + 20) {
+          bip(880); setTimeout(function () { bip(880); }, 300); setTimeout(function () { bip(990); }, 600);
+          bandeauBascule('On change !', 'Celui ou celle qui répondait pose maintenant ses questions.');
+        }
+      }
+      if (reste <= 0 && !fin) { fin = true; if (reste > -3) bip(520); }
+      var resteTour = mi ? reste : tour - ecoule;
       zone.innerHTML = '';
       zone.appendChild(el('div', { class: 'chrono-eleve' + (reste <= 0 ? ' fini' : mi ? ' moitie' : '') },
-        reste > 0 ? '⏱ ' + mmss(reste) : '⏰ Temps écoulé', el('span', null, reste <= 0 ? '' : mi ? ' 🔄 Changez de rôle !' : ' — l\'un interroge, l\'autre répond')));
+        reste > 0 ? el('span', { class: 'tour' }, 'Tour ' + (mi ? 2 : 1) + ' sur 2') : null,
+        el('div', null, reste > 0 ? '⏱ ' + mmss(resteTour) : '⏰ Temps écoulé'),
+        el('span', null, reste <= 0 ? '' : mi ? '🔄 Vous avez changé de rôle' : 'L\'un interroge, l\'autre répond. On change dans ' + mmss(resteTour) + '.')));
     }
     var iv = setInterval(tic, 500); tic();
-    cx.enQuittant(function () { clearInterval(iv); });
+    cx.enQuittant(function () { clearInterval(iv); var b = document.getElementById('emc-bascule'); if (b) b.remove(); });
   }
   function e4(s, cx) {
     var z = el('div'); s.appendChild(z); chronoEchange(cx, z);
@@ -398,14 +445,26 @@
   }
 
   /* 7 — Portrait mystère : un détail surprenant, en feu vert */
-  function e7(s, cx) {
-    var j = jdr(cx), et = cx.S.seance.etat || {};
-    /* le portrait projeté et révélé me décrit : ma tablette s'allume */
+  /* Le bandeau « C'est toi ! » se met à jour SEUL quand le prof
+     projette ou révèle un portrait : avant le 11/11, toute l'étape se
+     redessinait sur chaque tablette (texte en cours de saisie perdu,
+     deux lectures en base par tablette et par clic du prof — la
+     lenteur constatée à l'essai). */
+  function majCestToi(cx) {
+    var z = document.getElementById('c-est-toi-zone');
+    if (!z) return;
+    var et = (cx.S.seance && cx.S.seance.etat) || {};
     var auteur = et.portrait, surMoi = auteur && auteur !== cx.S.eleveId && J.binome.some(function (b) { return b.eleve_id === auteur; });
+    z.innerHTML = '';
     if (et.revele && surMoi) {
-      s.appendChild(el('div', { class: 'carte-blanche c-est-toi' }, el('div', { class: 'symbole-geant petit' }, '🎉'),
+      z.appendChild(el('div', { class: 'carte-blanche c-est-toi' }, el('div', { class: 'symbole-geant petit' }, '🎉'),
         el('p', { class: 'consigne-geante' }, 'C\'est toi ! Lève la main 🙋')));
     }
+  }
+  function e7(s, cx) {
+    var j = jdr(cx);
+    s.appendChild(el('div', { id: 'c-est-toi-zone' }));
+    majCestToi(cx);
     s.appendChild(encadre(j.portrait_consigne || ''));
     var b = cx.bloc(); s.appendChild(b);
     var etat = el('p', { class: 'etat-envoi', role: 'status', 'aria-live': 'polite' });
@@ -422,8 +481,12 @@
       if (!vertes.length) sel.appendChild(el('option', { value: '' }, 'Aucune question en feu vert : choisis un détail que ton binôme accepte'));
       vertes.forEach(function (id) { sel.appendChild(el('option', { value: id }, texteQ(cx, id))); });
     }, function () {});
+    /* le brouillon survit à un rafraîchissement de l'étape */
+    if (J.brouillonPortrait) t.value = J.brouillonPortrait;
+    t.addEventListener('input', function () { J.brouillonPortrait = t.value; });
     EMC.lire('emc_mur?select=question,texte,statut&sorte=eq.portrait&classe_id=eq.' + cx.S.classe).then(function (l) {
       if (!l || !l[0]) return;
+      if (l[0].statut === 'propose' && J.brouillonPortrait && J.brouillonPortrait !== l[0].texte) { etat.className = 'etat-envoi att'; etat.textContent = 'Modifié : touche « Envoyer » pour garder ta correction.'; return; }
       t.value = l[0].texte;
       if (l[0].statut !== 'propose') { t.disabled = true; env.disabled = true; etat.className = 'etat-envoi ok'; etat.textContent = l[0].statut === 'valide' ? '✓ Retenu par le professeur. Surprise à la projection !' : 'Le professeur ne l\'a pas retenu.'; }
       else { etat.className = 'etat-envoi ok'; etat.textContent = '✓ Envoyé. Tu peux encore le corriger.'; }
@@ -434,6 +497,7 @@
       env.disabled = true;
       EMC.ecrire('emc_mur?on_conflict=classe_id,eleve_id,sorte', { classe_id: cx.S.classe, eleve_id: cx.S.eleveId, sorte: 'portrait',
         question: sel.value ? +sel.value : null, texte: x.slice(0, 300) }, { fusion: true }).then(function () {
+        J.brouillonPortrait = null;
         env.disabled = false; etat.className = 'etat-envoi ok'; etat.textContent = '✓ Envoyé. Le professeur le relit avant de le projeter.';
       }, function (e) { env.disabled = false; etat.className = 'etat-envoi err'; etat.textContent = EMC.horsLigne(e) ? 'Pas de réseau : réessaie.' : 'Déjà relu par le professeur : il ne se modifie plus.'; });
     });
@@ -490,7 +554,7 @@
       var a = avant.etat || {}, b = ligne.etat || {};
       if (JSON.stringify(a) === JSON.stringify(b)) return;
       if (ligne.etape === 4 || ligne.etape === 6) cx.rafraichir();
-      if (ligne.etape === 7 && (a.portrait !== b.portrait || a.revele !== b.revele)) cx.rafraichir();
+      if (ligne.etape === 7 && (a.portrait !== b.portrait || a.revele !== b.revele)) majCestToi(cx);
     },
     fin: function (cx) { effacerNotes(cx); },
     quitter: function (cx) { effacerNotes(cx); try { localStorage.removeItem('emc.jdr.moi.' + cx.S.classe); } catch (e) {} }
@@ -502,7 +566,8 @@
       J.binome = l || [];
       if (avant !== JSON.stringify(J.binome)) {
         cx.rendreBarre();
-        if (cx.S.seance && [2, 6, 7].indexOf(cx.S.seance.etape) >= 0) cx.rafraichir();
+        if (cx.S.seance && [2, 6].indexOf(cx.S.seance.etape) >= 0) cx.rafraichir();
+        if (cx.S.seance && cx.S.seance.etape === 7) majCestToi(cx);
       }
     }, function () {});
   }

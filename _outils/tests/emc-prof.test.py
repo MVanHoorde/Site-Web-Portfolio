@@ -337,7 +337,13 @@ with sync_playwright() as pw:
                 verif('projection étape 5 : vidéo YouTube par youtube-nocookie' + suff, src.startswith('https://www.youtube-nocookie.com/embed/'), src)
                 verif('projection étape 5 : numéros détaillés' + suff, page.locator('.numeros-details > div').count() >= 4)
             if n in (2, 3):
-                verif('projection étape %d : missions complètes, questions comprises' % n + suff, page.locator('.missions-proj .m li').count() >= 8)
+                # sobres (11/11) : 8 cartes, verbe + mission ; les questions au toucher seulement
+                verif('projection étape %d : 8 missions, sans leurs questions' % n + suff, page.locator('.missions-proj .m').count() == 8 and page.locator('.missions-proj li').count() == 0)
+                page.locator('.missions-proj .m').first.click(); page.wait_for_timeout(200)
+                verif('projection étape %d : questions au toucher' % n + suff, page.locator('.modale-mission li').count() >= 1)
+                page.keyboard.press('Escape')
+                deb = page.evaluate("(() => { var s = document.getElementById('scene'); return s.scrollHeight - s.clientHeight + document.documentElement.scrollHeight - innerHeight; })()")
+                verif("projection étape %d : tient dans l'écran" % n + suff, deb <= 2, deb)
         verif('projection : étape 0 code + QR' + suff, True)
         req = [j for j in JOURNAL[n0:] if '/emc_aide' in j[1] or j[1].endswith('/eleves') or 'eleves(' in unquote(j[2] or '')]
         verif('projection : aucune requête vers emc_aide ni eleves' + suff, not req, req[:3])

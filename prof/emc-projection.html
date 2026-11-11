@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Projection EMC — Le Labyrinthe de Nina</title>
 <!--
@@ -16,59 +16,130 @@
      · elle ne montre que des résultats agrégés.
   Un banc d'essai vérifie ces trois points (requêtes et DOM).
 
-  La projection se construit étape par étape : l'étape en cours en
-  grand, les résultats des étapes passées restent en vignettes.
+  L'affichage (11/11/2026, retours de l'essai) : la page est faite de
+  BLOCS — accueil, nuage, émotions, missions, carte, vidéo,
+  harcèlomètre, enquête. Ceux de l'étape en cours sont « principaux »,
+  ceux des étapes passées sont des « rappels ». Trois dispositions :
+    · Rappel      l'étape en grand, les rappels en colonne à droite ;
+    · Étape seule l'étape, rien d'autre ;
+    · Mosaïque    tous les blocs, en tuiles égales.
+  Chaque bloc porte ⤢ (agrandir : seul, sur tout l'écran) et 🙈
+  (masquer ; « 🙈 n » dans la barre les rend). Disposition et blocs
+  masqués sont retenus sur cet ordinateur (localStorage).
+  Tout tient dans l'écran : rien ne défile.
 -->
 <link rel="stylesheet" href="../assets/css/emc.css?v=2">
 <style>
-  body.projection{min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
-  .p-tete{display:flex;align-items:center;gap:1rem;padding:.6rem 1.2rem;background:#081630}
-  .p-tete .titre{font:600 1.1rem 'Space Grotesk',sans-serif}
+  html,body{height:100%}
+  body.projection{height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+  .p-tete{display:flex;align-items:center;gap:.8rem;padding:.45rem 1rem;background:#081630;flex:none;flex-wrap:wrap}
+  .p-tete .titre{font:600 1.05rem 'Space Grotesk',sans-serif}
   .p-tete .espace{flex:1}
-  .p-tete button{min-height:36px;padding:.2rem .7rem;background:transparent;color:#fff;border-color:#3a5784;font-size:.85rem}
-  .p-code{font:700 1.4rem 'IBM Plex Mono',monospace;letter-spacing:.08em;background:#fff;color:var(--ink);padding:.05em .4em;border-radius:8px}
-  .p-scene{flex:1;display:grid;grid-template-columns:1fr 300px;gap:1rem;padding:1rem 1.2rem;min-height:0}
-  .p-scene.sans-vignettes{grid-template-columns:1fr}
-  .p-principal{background:#11284a;border-radius:16px;padding:1.2rem 1.5rem;min-height:0;overflow:hidden;display:flex;flex-direction:column}
-  .p-principal h1{font-size:2.1rem;margin:0 0 .6rem}
-  .p-principal .sous{color:#b7c6dd;margin:-.3rem 0 .8rem;font-size:1.05rem}
-  .p-vignettes{display:flex;flex-direction:column;gap:.7rem;overflow:auto;min-height:0}
-  .vignette{background:#11284a;border-radius:12px;padding:.6rem .8rem;font-size:.7rem}
-  .vignette h3{font-size:.85rem;margin:0 0 .3rem;color:#b7c6dd;text-transform:uppercase;letter-spacing:.04em}
-  .vignette img{width:100%;border-radius:8px;background:#fff}
-  .p-pied{padding:.4rem 1.2rem;background:#081630;font-size:.95rem}
-  .p-pied .numeros{gap:.3rem 1.6rem}
-  .p-pied .numeros b{color:#ffd28a}
-  .grand-chiffre{font:700 7rem/1 'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
-  .grand-chiffre small{font-size:2rem;color:#b7c6dd}
-  .accueil{display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:center;flex:1}
-  .accueil .qr{width:min(42vh,360px)}
-  .accueil .code{font:700 5.5rem/1 'IBM Plex Mono',monospace;letter-spacing:.1em}
-  .missions-proj{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr;gap:.7rem;flex:1;min-height:0}
-  .missions-proj .m{background:#183766;border-radius:12px;padding:.6rem .8rem;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .p-tete button{min-height:36px;padding:.2rem .65rem;background:transparent;color:#fff;border-color:#3a5784;font-size:.85rem}
+  .p-tete button[aria-pressed="true"]{background:#ffd28a;color:#081630;border-color:#ffd28a}
+  .p-commandes{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+  .modes{display:flex;gap:0}
+  .modes button{border-radius:0}
+  .modes button:first-child{border-radius:10px 0 0 10px}
+  .modes button:last-child{border-radius:0 10px 10px 0}
+  .p-code{font:700 1.3rem 'IBM Plex Mono',monospace;letter-spacing:.08em;background:#fff;color:var(--ink);padding:.05em .4em;border-radius:8px}
+  /* sans vrai plein écran : la barre devient une petite commande flottante */
+  body.immersif .p-tete{position:fixed;right:.6rem;bottom:.6rem;z-index:40;background:rgba(8,22,48,.85);border-radius:12px;padding:.3rem;opacity:.35}
+  body.immersif .p-tete:hover,body.immersif .p-tete:focus-within{opacity:1}
+  body.immersif .p-tete > :not(.p-commandes){display:none}
+  body.immersif .p-pied{display:none}
+
+  .p-scene{flex:1;min-height:0;display:grid;gap:.8rem;padding:.8rem 1rem}
+  .p-scene.rappel{grid-template-columns:minmax(0,1fr) minmax(240px,28%)}
+  .p-scene.seul,.p-scene.focus{grid-template-columns:minmax(0,1fr)}
+  .p-zone{min-height:0;display:grid;gap:.8rem}
+  .p-zone.principal{grid-auto-rows:minmax(0,1fr)}
+  .p-zone.principal.deux{grid-template-columns:3fr 2fr}
+  .p-zone.rappels{grid-auto-rows:minmax(0,1fr)}
+  .p-scene.mosaique{grid-auto-rows:minmax(0,1fr)}
+
+  .tuile{background:#11284a;border-radius:16px;min-height:0;min-width:0;display:flex;flex-direction:column;overflow:hidden;position:relative}
+  .tuile-tete{display:flex;align-items:center;gap:.5rem;padding:.55rem .9rem .2rem;flex:none}
+  .tuile-tete h2{margin:0;font-size:1.45rem;line-height:1.2;flex:1;min-width:0;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .tuile.petite .tuile-tete h2{white-space:nowrap;text-overflow:ellipsis;display:block}
+  .tuile-tete .sous{color:#b7c6dd;font-size:.95rem;margin:0}
+  .tuile.petite .tuile-tete{padding:.4rem .6rem 0}
+  .tuile.petite .tuile-tete h2{font-size:.85rem;color:#b7c6dd;text-transform:uppercase;letter-spacing:.04em}
+  .tuile-act{display:flex;gap:.25rem;opacity:.35;transition:opacity .2s}
+  .tuile:hover .tuile-act,.tuile:focus-within .tuile-act{opacity:1}
+  @media (hover:none){.tuile-act{opacity:.7}}
+  .tuile-act button{min-height:34px;min-width:34px;padding:0 .4rem;background:rgba(255,255,255,.1);color:#fff;border-color:transparent;font-size:1rem}
+  .tuile-sous{color:#b7c6dd;margin:0 .9rem .3rem;font-size:1rem;flex:none}
+  .tuile-corps{flex:1;min-height:0;padding:.3rem .9rem .8rem;display:flex;flex-direction:column;overflow:hidden}
+  .tuile.petite .tuile-corps{padding:.25rem .6rem .5rem;font-size:.75rem}
+  .tuile-masquee{display:flex;align-items:center;justify-content:center;color:#b7c6dd;font-size:1.2rem;border:2px dashed #23426e;border-radius:16px}
+
+  .grand-chiffre{font:700 clamp(3rem,12vh,7rem)/1 'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
+  .grand-chiffre small{font-size:.3em;color:#b7c6dd}
+  .accueil{display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:center;flex:1;min-height:0}
+  .accueil .qr{width:min(48vh,360px)}
+  .accueil .code{font:700 clamp(3rem,10vh,5.5rem)/1 'IBM Plex Mono',monospace;letter-spacing:.1em}
+  .nuage-corps{flex:1;min-height:0;font-size:1.6rem}
+  .tuile.petite .nuage-corps{font-size:.95rem}
+  .emo-corps{flex:1;min-height:0;overflow:hidden;font-size:1.15rem;display:flex;align-items:center}
+  .emo-corps .v-barres{width:100%}
+  .tuile.petite .emo-corps{font-size:.8rem}
+
+  /* missions : sobres, toutes sur l'écran ; le détail au toucher */
+  .missions-proj{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:.6rem;flex:1;min-height:0}
+  .missions-proj .m{background:#183766;border-radius:12px;padding:.55rem .75rem;display:flex;flex-direction:column;gap:.3rem;min-height:0;overflow:hidden;
+                    text-align:left;justify-content:flex-start;align-items:stretch;border:2px solid transparent;color:#fff;font-weight:400}
+  .missions-proj .m:hover,.missions-proj .m:focus-visible{border-color:#ffd28a}
   .missions-proj .m-tete{display:flex;align-items:center;gap:.5rem}
-  .missions-proj .ic{font-size:1.9rem;line-height:1}
-  .missions-proj b{display:block;font-size:1.45rem;color:#ffd28a;line-height:1.1}
-  .missions-proj .z{font-size:.8rem;color:#b7c6dd}
-  .missions-proj .t{font-size:.95rem;line-height:1.3;margin:.35rem 0 .25rem}
-  .missions-proj ul{margin:0;padding-left:1.1rem;font-size:.85rem;line-height:1.3;color:#dce6f4}
-  .missions-proj li{margin:.15rem 0}
+  .missions-proj .ic{font-size:clamp(1.4rem,4vh,2.2rem);line-height:1}
+  .missions-proj .z{font:700 clamp(.9rem,2.2vh,1.15rem) 'Space Grotesk',sans-serif;color:#b7c6dd;letter-spacing:.04em;text-transform:uppercase}
+  .missions-proj .t{font-size:clamp(.95rem,2.4vh,1.4rem);line-height:1.28;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:9;overflow:hidden;flex:1 1 auto;min-height:0}
+  .missions-proj .t b{color:#ffd28a}
+  .missions-proj .plus{margin-top:auto;font-size:.8rem;color:#b7c6dd}
+  .missions-liste{display:grid;grid-template-columns:1fr 1fr;gap:.15rem .6rem}
+  .missions-liste b{color:#ffd28a}
+  .modale-mission{position:fixed;inset:0;z-index:60;background:rgba(5,14,32,.82);display:flex;align-items:center;justify-content:center;padding:4vh 4vw}
+  .modale-mission > div{background:#183766;border-radius:20px;padding:2rem 2.4rem;max-width:min(1100px,92vw);max-height:92vh;overflow:auto;color:#fff}
+  .modale-mission .ic{font-size:3.5rem;line-height:1}
+  .modale-mission .z{font:700 1.3rem 'Space Grotesk',sans-serif;color:#b7c6dd;text-transform:uppercase;letter-spacing:.05em}
+  .modale-mission .t{font-size:clamp(1.4rem,3.4vh,2.2rem);line-height:1.35;margin:.6rem 0 1rem}
+  .modale-mission .t b{color:#ffd28a}
+  .modale-mission ul{font-size:clamp(1.2rem,3vh,1.9rem);line-height:1.4;margin:0;padding-left:1.4rem}
+  .modale-mission li{margin:.4rem 0}
+  .modale-mission .fermer{margin-top:1.2rem;background:transparent;color:#fff;border-color:#3a5784}
+
+  #p-carte{flex:1;min-height:0;border-radius:12px;overflow:hidden;background:#fff}
+  .carte-img{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+  .carte-img img{max-width:100%;max-height:100%;border-radius:8px;background:#fff}
   .p-video{flex:1;display:grid;grid-template-columns:3fr 2fr;gap:1.2rem;min-height:0}
-  .p-video .vids,.p-video > div:last-child{min-height:0;overflow:auto}
-  .p-video .p-autres{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem}
+  .p-video .vids{min-height:0;overflow:hidden;display:flex;flex-direction:column}
+  .p-video .vids video{max-height:calc(100% - 4.5rem) !important}
+  .p-video > div:last-child{min-height:0;overflow:hidden}
+  .p-video .p-autres{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
   .p-video .p-autres button{background:#183766;color:#fff;border-color:#23426e;font-size:.85rem}
   .p-video .numeros-details{grid-template-columns:1fr 1fr;gap:.5rem}
-  .p-video .numeros-details > div{padding:.5rem .7rem}
-  .p-video .numeros-details p{font-size:.78rem}
-  .p-video .numeros-details .nd-tete b{font-size:1.8rem}
-  .nuage-proj{flex:1;display:grid;grid-template-columns:3fr 2fr;gap:1.5rem;min-height:0}
-  #p-carte{flex:1;min-height:0;border-radius:12px;overflow:hidden;background:#fff}
-  .hm-proj .situation{font:600 2rem/1.25 'Space Grotesk',sans-serif;margin:.4rem 0 1.4rem}
-  .hm-proj .v-hm{font-size:1.4rem}
-  .revele{background:#183766;border-radius:12px;padding:.8rem 1rem;margin-top:1rem;font-size:1.15rem}
-  .numeros.grand{font-size:1.6rem;gap:.8rem 2.5rem}
-  .numeros.grand b{font-size:3rem;color:#ffd28a;display:block}
-  .vide-proj{color:#b7c6dd;font-size:1.3rem}
+  .p-video .numeros-details > div{padding:.45rem .65rem}
+  .p-video .numeros-details p{font-size:.75rem}
+  .p-video .numeros-details .nd-tete b{font-size:1.7rem}
+  .hm-proj{flex:1;min-height:0;overflow:hidden}
+  .hm-proj .situation{font:600 clamp(1.4rem,4vh,2rem)/1.25 'Space Grotesk',sans-serif;margin:.2rem 0 1rem}
+  .hm-proj .v-hm{font-size:1.3rem}
+  .hm-bilan div{display:flex;justify-content:space-between;gap:.6rem;border-bottom:1px solid #23426e;padding:.2rem 0}
+  .tuile:not(.petite) .hm-bilan{font-size:1.3rem}
+  .revele{background:#183766;border-radius:12px;padding:.7rem 1rem;margin-top:.8rem;font-size:1.1rem}
+  .numeros.grand{font-size:1.5rem;gap:.8rem 2.5rem}
+  .numeros.grand b{font-size:2.6rem;color:#ffd28a;display:block}
+  .vide-proj{color:#b7c6dd;font-size:1.2rem}
+  .p-pied{padding:.35rem 1rem;background:#081630;font-size:.95rem;flex:none}
+  .p-pied .numeros{gap:.3rem 1.6rem}
+  .p-pied .numeros b{color:#ffd28a}
+  .menu-masques{position:fixed;right:1rem;top:3.4rem;z-index:50;background:#fff;color:var(--ink);border-radius:12px;padding:.6rem;box-shadow:0 8px 30px rgba(0,0,0,.4);display:grid;gap:.3rem;min-width:230px}
+  .menu-masques button{justify-content:flex-start}
+  body.immersif .menu-masques{top:auto;bottom:4rem}
+  /* mosaïque : un peu plus serré */
+  .p-scene.mosaique .tuile-tete h2{font-size:1.15rem}
+  .p-scene.mosaique .missions-proj{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .p-scene.mosaique .missions-proj .t{-webkit-line-clamp:2;font-size:.95rem}
 </style>
 </head>
 <body class="projection">
@@ -78,16 +149,20 @@
   <span class="p-code" id="code" hidden></span>
   <span class="pastille direct-etat" id="direct" style="background:rgba(255,255,255,.1);color:#fff;border-color:transparent">…</span>
   <span class="espace"></span>
-  <button type="button" id="btn-vignettes">Vignettes</button>
-  <button type="button" id="btn-plein">⛶ Plein écran</button>
+  <div class="p-commandes">
+    <div class="modes" role="group" aria-label="Disposition de la projection">
+      <button type="button" data-mode="rappel" title="L'étape en grand, les étapes passées à droite">▥ Rappel</button>
+      <button type="button" data-mode="seul" title="L'étape en cours, seule">▢ Étape seule</button>
+      <button type="button" data-mode="mosaique" title="Tous les blocs, en tuiles égales">▦ Mosaïque</button>
+    </div>
+    <button type="button" id="btn-masques" hidden title="Les blocs masqués">🙈 0</button>
+    <button type="button" id="btn-plein" title="Plein écran">⛶ Plein écran</button>
+  </div>
 </header>
 
 <div id="message" class="encadre" hidden style="margin:1rem;color:var(--ink)"></div>
 
-<main class="p-scene" id="scene" hidden>
-  <section class="p-principal" id="principal"></section>
-  <aside class="p-vignettes" id="vignettes" aria-label="Étapes précédentes"></aside>
-</main>
+<main class="p-scene rappel" id="scene" hidden></main>
 
 <footer class="p-pied" id="pied"></footer>
 
@@ -96,7 +171,7 @@
 <script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="../assets/js/vendor/konva-9.3.6.min.js"></script>
 <script src="../assets/js/emc-commun.js?v=4"></script>
-<script src="../assets/js/emc-vues.js?v=2"></script>
+<script src="../assets/js/emc-vues.js?v=3"></script>
 <script src="../assets/js/emc-carte.js?v=2"></script>
 <script>
 (function () {
@@ -107,7 +182,16 @@
   /* 🔴 Rien dans cet état ne porte d'identité : participants réduits
      à (table, prêt), mots à (mots, émojis), votes à (situation, valeur). */
   var P = { classe: null, seance: null, contenus: null, participants: [], mots: [], masques: [], votes: [],
-            nEnquete: 0, carte: null, carteLignes: {}, carteMaj: null, vignetteCarte: null, etapeRendue: null };
+            nEnquete: 0, carte: null, carteLignes: {}, carteMaj: null, vignetteCarte: null,
+            cleRendue: null, montes: {}, focus: null };
+
+  /* ---------- réglages retenus sur cet ordinateur ---------- */
+  function lireReglage(k, d) { try { var v = JSON.parse(localStorage.getItem('emc.proj.' + k)); return v == null ? d : v; } catch (e) { return d; } }
+  function poserReglage(k, v) { try { localStorage.setItem('emc.proj.' + k, JSON.stringify(v)); } catch (e) {} }
+  var MODE = lireReglage('mode', 'rappel');
+  if (['rappel', 'seul', 'mosaique'].indexOf(MODE) < 0) MODE = 'rappel';
+  var CACHES = lireReglage('masques', []);
+  if (!Array.isArray(CACHES)) CACHES = [];
 
   function message(t) { var m = $('#message'); m.hidden = !t; m.textContent = t || ''; }
 
@@ -164,7 +248,7 @@
         .then(function (l) { l.forEach(recevoirCarte); });
     }, { periode: 4 });
 
-    document.addEventListener('emc:contenus', function () { P.etapeRendue = null; rendre(); });
+    document.addEventListener('emc:contenus', function () { P.cleRendue = null; rendre(); });
     document.addEventListener('emc:direct', majDirect); majDirect();
     V.numeros($('#pied'), c.numeros);
   }
@@ -184,203 +268,346 @@
     P.carteLignes[l.id] = propre;
     if (!P.carteMaj || (l.maj_le && l.maj_le > P.carteMaj)) P.carteMaj = l.maj_le;
     if (P.carte) P.carte.appliquer(propre);
-    else { clearTimeout(P.tVignettes); P.tVignettes = setTimeout(rendreVignettes, 300); }
+    else if (etape() > 4) { clearTimeout(P.tCarte); P.tCarte = setTimeout(function () { P.vignetteCarteVieille = true; instantaneCarte(); }, 1500); }
   }
 
-  /* ---------- plein écran, vignettes ---------- */
-  $('#btn-plein').addEventListener('click', function () {
-    var d = document.documentElement;
-    if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-    else (d.requestFullscreen || d.webkitRequestFullscreen || function () {}).call(d);
+  /* ---------- commandes ---------- */
+  V.boutonPleinEcran($('#btn-plein'));
+  document.querySelectorAll('.modes button').forEach(function (b) {
+    b.addEventListener('click', function () { MODE = b.dataset.mode; poserReglage('mode', MODE); P.focus = null; rendre(true); });
   });
-  $('#btn-vignettes').addEventListener('click', function () {
-    $('#scene').classList.toggle('sans-vignettes');
-    $('#vignettes').hidden = $('#scene').classList.contains('sans-vignettes');
-    if (P.carte) setTimeout(function () { window.dispatchEvent(new Event('resize')); P.carte.vueEnsemble(); }, 60);
+  function majCommandes() {
+    document.querySelectorAll('.modes button').forEach(function (b) { b.setAttribute('aria-pressed', !P.focus && b.dataset.mode === MODE ? 'true' : 'false'); });
+    var bm = $('#btn-masques'), presents = blocsDispo().filter(function (id) { return CACHES.indexOf(id) >= 0; });
+    bm.hidden = !presents.length; bm.textContent = '🙈 ' + presents.length;
+  }
+  $('#btn-masques').addEventListener('click', function (ev) {
+    ev.stopPropagation();
+    var vieux = $('.menu-masques'); if (vieux) { vieux.remove(); return; }
+    var m = el('div', { class: 'menu-masques', role: 'menu' }, el('b', null, 'Blocs masqués'));
+    blocsDispo().filter(function (id) { return CACHES.indexOf(id) >= 0; }).forEach(function (id) {
+      m.appendChild(el('button', { type: 'button', role: 'menuitem', onclick: function () { montrer(id); m.remove(); } }, '👁 ' + BLOCS[id].titre()));
+    });
+    m.appendChild(el('button', { type: 'button', onclick: function () { CACHES = []; poserReglage('masques', CACHES); m.remove(); rendre(true); } }, 'Tout réafficher'));
+    document.body.appendChild(m);
   });
+  document.addEventListener('click', function (e) { var m = $('.menu-masques'); if (m && !m.contains(e.target)) m.remove(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var mo = $('.modale-mission'); if (mo) { mo.remove(); return; }
+    if (P.focus) { P.focus = null; rendre(true); }
+  });
+  function masquer(id) { if (CACHES.indexOf(id) < 0) CACHES.push(id); poserReglage('masques', CACHES); if (P.focus === id) P.focus = null; rendre(true); }
+  function montrer(id) { CACHES = CACHES.filter(function (x) { return x !== id; }); poserReglage('masques', CACHES); rendre(true); }
+  function agrandir(id) { P.focus = P.focus === id ? null : id; rendre(true); }
 
-  /* ---------- rendu ---------- */
+  /* ---------- état ---------- */
   function etape() { return P.seance ? P.seance.etape : 0; }
   function titreEtape(n) { var e = (P.contenus.etapes || [])[n]; return e ? e.titre : 'Étape ' + n; }
   function prets() { return P.participants.filter(function (p) { return p.pret; }).length; }
-
-  /* Le squelette de l'étape ne se refait qu'au changement d'étape ;
-     les données vivantes se redessinent dedans (rendreVivant). */
-  function rendre() {
-    if (!P.seance || !P.contenus) return;
+  function situation(sid) { return ((P.contenus.harcelometre || {}).situations || []).filter(function (s) { return s.id === sid; })[0]; }
+  function votesAutres() {
+    var vus = {}; P.votes.forEach(function (x) { vus[x.situation] = true; });
     var n = etape();
-    var cle = n + ':' + (P.seance.situation_courante || '') + ':' + P.seance.situation_revelee + ':' + (P.seance.cloturee_le || '');
-    if (P.etapeRendue !== cle) {
-      var changeEtape = !P.etapeRendue || +P.etapeRendue.split(':')[0] !== n;
-      if (changeEtape && P.carte && n !== 4) quitterCarte();
-      P.etapeRendue = cle;
-      construire(n, changeEtape);
-    }
-    rendreVivant();
-    rendreVignettes();
+    return ((P.contenus.harcelometre || {}).situations || []).filter(function (s) { return vus[s.id] && (n > 6 || s.id !== P.seance.situation_courante); });
   }
 
-  function construire(n, changeEtape) {
-    var z = $('#principal');
-    if (n === 4 && !changeEtape && P.carte) return;      /* la carte ne se reconstruit pas */
-    z.innerHTML = '';
-    var h = function (t, s) { z.appendChild(el('h1', null, t)); if (s) z.appendChild(el('p', { class: 'sous' }, s)); };
-    if (P.seance.cloturee_le) { h('Merci pour cette séance'); z.appendChild(el('div', { class: 'numeros grand', id: 'v-num' })); V.numeros($('#v-num'), P.contenus.numeros, { grand: true }); $('#v-num').classList.add('grand'); return; }
-    if (n === 0) {
-      h('Installe le jeu, connecte-toi, puis « Je suis prêt »');
-      var qr = el('div', { class: 'qr' });
-      z.appendChild(el('div', { class: 'accueil' }, qr,
-        el('div', null, el('div', { class: 'muet', style: 'color:#b7c6dd;font-size:1.3rem' }, 'Code de la séance'),
-          el('div', { class: 'code' }, P.classe.code),
-          el('p', { style: 'font-size:1.2rem;color:#b7c6dd' }, V.urlEleve()),
-          el('div', { class: 'grand-chiffre', id: 'v-prets' }))));
-      V.qr(qr, V.urlEleve(P.classe.code));
-    } else if (n === 1) {
-      var m = P.contenus.mots || {};
-      h(m.question_mots || 'Nuage de mots', (m.aide_mots || '') + ' · et ' + (m.question_emojis || '').toLowerCase());
-      z.appendChild(el('div', { class: 'nuage-proj' }, el('div', { id: 'v-nuage', style: 'font-size:1.6rem;display:flex;align-items:center;justify-content:center' }),
-        el('div', null, el('h3', null, m.question_emojis || 'Émotions'), el('div', { id: 'v-emojis', style: 'font-size:1.05rem' }))));
-      z.appendChild(el('p', { class: 'sous', id: 'v-n-mots' }));
-    } else if (n === 2 || n === 3) {
-      h(n === 2 ? 'Vos missions' : 'Le Labyrinthe de Nina — en cours',
-        n === 2 ? 'Chaque table a la sienne : regarde ta tablette.' : 'Joue, et prends des notes pour ta mission sur ta tablette.');
-      /* la mission complète de chaque table, questions comprises */
-      var g = el('div', { class: 'missions-proj' });
-      (P.contenus.missions || []).forEach(function (mi) {
-        g.appendChild(el('div', { class: 'm' },
-          el('div', { class: 'm-tete' }, el('span', { class: 'ic', 'aria-hidden': 'true' }, EMC.iconeMission(mi)),
-            el('div', null, el('span', { class: 'z' }, 'Table ' + mi.table + ' · ' + (mi.zone || '')), el('b', null, mi.verbe))),
-          el('div', { class: 't' }, mi.texte),
-          (mi.questions || []).length ? el('ul', null, mi.questions.map(function (q) { return el('li', null, q); })) : null));
-      });
-      z.appendChild(g);
-    } else if (n === 4) {
-      var c = P.contenus.carte || {};
-      h(c.titre || 'Carte mentale');
-      var cz = el('div', { id: 'p-carte' }); z.appendChild(cz);
-      if (EMC.Carte) {
+  /* ============================================================
+   *  Les blocs. rendre(corps, petit) dessine ; vivant : redessiné à
+   *  chaque nouvelle donnée (mots, votes, prêts).
+   * ============================================================ */
+  var BLOCS = {
+    accueil: {
+      titre: function () { return 'Installe le jeu, connecte-toi, puis « Je suis prêt »'; }, vivant: true,
+      rendre: function (z) {
+        var qr = el('div', { class: 'qr' });
+        z.appendChild(el('div', { class: 'accueil' }, qr,
+          el('div', null, el('div', { style: 'color:#b7c6dd;font-size:1.3rem' }, 'Code de la séance'),
+            el('div', { class: 'code' }, P.classe.code),
+            el('p', { style: 'font-size:1.1rem;color:#b7c6dd' }, V.urlEleve()),
+            el('div', { class: 'grand-chiffre' }, String(prets()), el('small', null, ' / ' + P.participants.length + ' prêts')))));
+        V.qr(qr, V.urlEleve(P.classe.code));
+      }
+    },
+    nuage: {
+      titre: function () { return (P.contenus.mots || {}).question_mots || 'Nuage de mots'; }, vivant: true,
+      sous: function () { return P.mots.length + ' réponse(s)'; },
+      rendre: function (z, petit) {
+        var c = el('div', { class: 'nuage-corps' }); z.appendChild(c);
+        V.nuage(c, V.agregerMots(P.mots, P.masques), { max: petit ? 20 : 50, vide: 'Les mots arrivent…', spirale: true, agrandirMax: 1.25 });
+      }
+    },
+    emotions: {
+      titre: function () { return (P.contenus.mots || {}).question_emojis || 'Émotions'; }, vivant: true,
+      rendre: function (z, petit) {
+        var c = el('div', { class: 'emo-corps' }), b = el('div', { style: 'width:100%' }); c.appendChild(b); z.appendChild(c);
+        var items = V.compterEmojis(P.mots, (P.contenus.mots || {}).emojis).filter(function (x) { return x.n > 0; });
+        if (petit) items = items.slice(0, 5);
+        if (!items.length) { b.appendChild(el('p', { class: 'vide-proj' }, 'Les émotions arrivent…')); return; }
+        V.barres(b, items);
+      }
+    },
+    missions: {
+      titre: function () { return 'Les missions'; },
+      sous: function () { return etape() === 2 ? 'Chaque table a la sienne : regarde ta tablette. Touche une mission pour ses questions.' : etape() === 3 ? 'Joue, et prends des notes pour ta mission sur ta tablette.' : ''; },
+      rendre: function (z, petit) {
+        var ms = P.contenus.missions || [];
+        if (petit) {
+          z.appendChild(el('div', { class: 'missions-liste' }, ms.map(function (m) { return el('div', null, EMC.iconeMission(m) + ' T' + m.table + ' · ', el('b', null, m.verbe)); })));
+          return;
+        }
+        /* sobre (Loïc, 11/11) : la table, le verbe et la mission ; les
+           questions seulement au toucher */
+        var g = el('div', { class: 'missions-proj' });
+        ms.forEach(function (mi) {
+          g.appendChild(el('button', { type: 'button', class: 'm', onclick: function () { detailMission(mi); }, title: 'Voir les questions de la table ' + mi.table },
+            el('div', { class: 'm-tete' }, el('span', { class: 'ic', 'aria-hidden': 'true' }, EMC.iconeMission(mi)), el('span', { class: 'z' }, 'Table ' + mi.table)),
+            el('div', { class: 't' }, el('b', null, mi.verbe), ' ' + (mi.texte || '')),
+            (mi.questions || []).length ? el('span', { class: 'plus' }, '＋ ' + mi.questions.length + ' question' + (mi.questions.length > 1 ? 's' : '')) : null));
+        });
+        z.appendChild(g);
+      }
+    },
+    carte: {
+      titre: function () { return ((P.contenus.carte || {}).titre) || 'Carte mentale'; },
+      rendre: function (z, petit) {
+        if (petit) {
+          var ci = el('div', { class: 'carte-img', id: 'carte-petite' }); z.appendChild(ci);
+          remplirCartePetite();
+          if (!P.vignetteCarte) instantaneCarte();
+          return;
+        }
+        var cz = el('div', { id: 'p-carte' }); z.appendChild(cz);
+        if (!EMC.Carte) { cz.appendChild(el('p', { class: 'vide-proj', style: 'color:var(--ink);padding:1rem' }, 'La carte n\'a pas pu se charger.')); return; }
         P.carte = EMC.Carte.monter(cz, { mode: 'projection', contenus: { carte: P.contenus.carte, missions: P.contenus.missions } });
         P.carte.charger(Object.keys(P.carteLignes).map(function (k) { return P.carteLignes[k]; }));
         P.carte.etat({ ouverte: false, figee: true, zonesVerrouillees: [] });
         P.carte.vueEnsemble();
-      } else cz.appendChild(el('p', { class: 'vide-proj', style: 'color:var(--ink);padding:1rem' }, 'La carte n\'a pas pu se charger.'));
-    } else if (n === 5) {
-      /* La première vidéo est mise en avant ; les autres se choisissent
-         sous elle. À droite, les numéros : qui répond, quand appeler. */
-      h('À retenir : à qui en parler');
-      var vids = P.contenus.videos || [];
-      var vz = el('div'), autres = el('div', { class: 'p-autres' }), nz = el('div');
-      z.appendChild(el('div', { class: 'p-video' }, el('div', { class: 'vids' }, vz, autres), nz));
-      var montrer = function (i) {
-        V.video(vz, vids[i]);
-        autres.innerHTML = '';
-        vids.forEach(function (v, j) {
-          if (j !== i) autres.appendChild(el('button', { type: 'button', onclick: function () { montrer(j); } }, '▶ ' + (v.titre || 'Vidéo ' + (j + 1))));
+        setTimeout(function () { if (P.carte) P.carte.vueEnsemble(); }, 120);
+      }
+    },
+    video: {
+      titre: function () { return 'À retenir : à qui en parler'; },
+      rendre: function (z) {
+        /* la première vidéo en avant, les autres dessous ; à droite, les numéros */
+        var vids = P.contenus.videos || [];
+        var vz = el('div'), autres = el('div', { class: 'p-autres' }), nz = el('div');
+        z.appendChild(el('div', { class: 'p-video' }, el('div', { class: 'vids' }, vz, autres), nz));
+        var montrerV = function (i) {
+          V.video(vz, vids[i]);
+          autres.innerHTML = '';
+          vids.forEach(function (v, j) {
+            if (j !== i) autres.appendChild(el('button', { type: 'button', onclick: function () { montrerV(j); } }, '▶ ' + (v.titre || 'Vidéo ' + (j + 1))));
+          });
+        };
+        if (vids.length) montrerV(0);
+        V.numerosDetailles(nz, P.contenus.numeros);
+      }
+    },
+    harcelometre: {
+      titre: function () { return 'Harcèlomètre'; }, vivant: true,
+      sous: function () {
+        var hm = P.contenus.harcelometre || {}, s = situation(P.seance.situation_courante);
+        var actives = (hm.situations || []).filter(function (x) { return x.actif; });
+        var rang = s ? actives.map(function (x) { return x.id; }).indexOf(s.id) : -1;
+        return s ? 'Situation ' + (rang + 1) + ' sur ' + actives.length + ' · place ton curseur de 0 à 10' : 'La première situation arrive…';
+      },
+      rendre: function (z) {
+        var sid = P.seance.situation_courante, s = situation(sid), hm = P.contenus.harcelometre || {};
+        var b = el('div', { class: 'hm-proj' }, el('div', { class: 'situation' }, s ? s.texte : '')); z.appendChild(b);
+        if (!s) return;
+        var t = el('div'); b.appendChild(t);
+        var st = V.statsVotes(P.votes.filter(function (v) { return v.situation === sid; }).map(function (v) { return v.valeur; }));
+        V.harcelometre(t, st, hm.echelle, { prets: prets() });
+        if (P.seance.situation_revelee) {
+          b.appendChild(el('div', { class: 'revele' }, el('b', null, 'Zone attendue : '), s.attendu || '—',
+            el('ul', { style: 'margin:.4rem 0 0' }, (hm.criteres || []).map(function (c) { return el('li', null, c); }))));
+        }
+      }
+    },
+    'hm-bilan': {
+      titre: function () { return 'Harcèlomètre : les moyennes'; }, vivant: true,
+      rendre: function (z, petit) {
+        var w = el('div', { class: 'hm-bilan' }); z.appendChild(w);
+        votesAutres().forEach(function (s) {
+          var st = V.statsVotes(P.votes.filter(function (v) { return v.situation === s.id; }).map(function (v) { return v.valeur; }));
+          var lim = petit ? 46 : 120;
+          w.appendChild(el('div', null, el('span', null, s.texte.length > lim ? s.texte.slice(0, lim - 2) + '…' : s.texte), el('b', null, V.fmt(st.moyenne))));
         });
-      };
-      if (vids.length) montrer(0);
-      V.numerosDetailles(nz, P.contenus.numeros);
-    } else if (n === 6) {
-      var hm = P.contenus.harcelometre || {}, s = situation(P.seance.situation_courante);
-      var actives = (hm.situations || []).filter(function (x) { return x.actif; });
-      var rang = s ? actives.map(function (x) { return x.id; }).indexOf(s.id) : -1;
-      h('Harcèlomètre', s ? 'Situation ' + (rang + 1) + ' sur ' + actives.length + ' · place ton curseur de 0 à 10' : 'La première situation arrive…');
-      var b = el('div', { class: 'hm-proj' }, el('div', { class: 'situation' }, s ? s.texte : ''), el('div', { id: 'v-hm' }), el('div', { id: 'v-revele' }));
-      z.appendChild(b);
-    } else if (n === 7) {
-      h('Enquête anonyme', 'Réponds sur ta tablette. Personne ne saura ce que tu as répondu.');
-      z.appendChild(el('div', { class: 'grand-chiffre', id: 'v-enquete' }));
-      z.appendChild(el('div', { class: 'encadre', style: 'background:#183766;color:#fff;font-size:1.2rem;margin-top:1rem' },
-        'Si tu veux qu\'un adulte vienne te voir, utilise le cadre « J\'ai besoin d\'en parler », en bas de ta tablette : ce message-là n\'est pas anonyme.'));
-      var nz2 = el('div', { style: 'margin-top:1.4rem' }); z.appendChild(nz2);
-      V.numeros(nz2, P.contenus.numeros, { grand: true });
+      }
+    },
+    enquete: {
+      titre: function () { return 'Enquête anonyme'; }, vivant: true,
+      sous: function () { return 'Réponds sur ta tablette. Personne ne saura ce que tu as répondu.'; },
+      rendre: function (z) {
+        z.appendChild(el('div', { class: 'grand-chiffre' }, String(P.nEnquete), el('small', null, ' / ' + P.participants.length + ' réponses')));
+        z.appendChild(el('div', { class: 'encadre', style: 'background:#183766;color:#fff;font-size:1.15rem;margin-top:1rem' },
+          'Si tu veux qu\'un adulte vienne te voir, utilise le cadre « J\'ai besoin d\'en parler », en bas de ta tablette : ce message-là n\'est pas anonyme.'));
+        var nz = el('div', { style: 'margin-top:1.2rem' }); z.appendChild(nz);
+        V.numeros(nz, P.contenus.numeros, { grand: true });
+      }
+    },
+    fin: {
+      titre: function () { return 'Merci pour cette séance'; },
+      rendre: function (z) { var n = el('div'); z.appendChild(n); V.numeros(n, P.contenus.numeros, { grand: true }); }
     }
+  };
+
+  /* Ce qui est au programme de l'étape n, et ce qui reste en rappel. */
+  function principaux(n) {
+    if (P.seance.cloturee_le) return ['fin'];
+    return [['accueil'], ['nuage', 'emotions'], ['missions'], ['missions'], ['carte'], ['video'], ['harcelometre'], ['enquete']][n] || [];
+  }
+  function rappels(n) {
+    var r = [];
+    if (n > 1 || P.seance.cloturee_le) { if (P.mots.length) r.push('nuage', 'emotions'); }
+    if (n > 3 || P.seance.cloturee_le) r.push('missions');
+    if (n > 4 || P.seance.cloturee_le) { if (Object.keys(P.carteLignes).length || P.vignetteCarte) r.push('carte'); }
+    if (n > 6 || P.seance.cloturee_le || (n === 6 && votesAutres().length)) r.push('hm-bilan');
+    var pr = principaux(n);
+    return r.filter(function (id) { return pr.indexOf(id) < 0; });
+  }
+  function blocsDispo() { if (!P.seance) return []; var n = etape(); return principaux(n).concat(rappels(n)); }
+
+  /* ---------- la mise en page ---------- */
+  function rendre(force) {
+    if (!P.seance || !P.contenus) return;
+    var n = etape();
+    $('#titre').textContent = P.seance.cloturee_le ? 'EMC seconde — séance terminée' : 'Étape ' + n + ' · ' + titreEtape(n);
+    var cle = [n, MODE, P.focus, CACHES.join(','), P.seance.situation_courante, P.seance.situation_revelee, P.seance.cloturee_le, rappels(n).join(',')].join(';');
+    if (!force && cle === P.cleRendue) { rendreVivant(); return; }
+    if (P.cleRendue && +P.cleRendue.split(';')[0] !== n) P.focus = null;
+    P.cleRendue = cle;
+    construire();
+    majCommandes();
   }
 
-  function situation(sid) { return ((P.contenus.harcelometre || {}).situations || []).filter(function (s) { return s.id === sid; })[0]; }
+  function liberer() {
+    if (P.carte) quitterCarte();
+    P.montes = {};
+  }
 
-  function rendreVivant() {
-    if (!P.seance || !P.contenus) return;
-    var t;
-    if ((t = $('#v-prets'))) { t.innerHTML = ''; t.appendChild(document.createTextNode(String(prets()))); t.appendChild(el('small', null, ' / ' + P.participants.length + ' prêts')); }
-    if ((t = $('#v-nuage'))) V.nuage(t, V.agregerMots(P.mots, P.masques), { max: 50, vide: 'Les mots arrivent…' });
-    if ((t = $('#v-emojis'))) V.emojis(t, P.mots, (P.contenus.mots || {}).emojis, { seulementUtilises: true });
-    if ((t = $('#v-n-mots'))) t.textContent = P.mots.length + ' réponse(s)';
-    if ((t = $('#v-hm'))) {
-      var sid = P.seance.situation_courante, s = situation(sid);
-      var st = V.statsVotes(P.votes.filter(function (v) { return v.situation === sid; }).map(function (v) { return v.valeur; }));
-      if (s) V.harcelometre(t, st, (P.contenus.harcelometre || {}).echelle, { prets: prets() });
-      var r = $('#v-revele'); r.innerHTML = '';
-      if (s && P.seance.situation_revelee) {
-        r.appendChild(el('div', { class: 'revele' }, el('b', null, 'Zone attendue : '), s.attendu || '—',
-          el('ul', { style: 'margin:.5rem 0 0' }, ((P.contenus.harcelometre || {}).criteres || []).map(function (c) { return el('li', null, c); }))));
+  function tuile(id, petit) {
+    var b = BLOCS[id], corps = el('div', { class: 'tuile-corps' });
+    var t = el('section', { class: 'tuile' + (petit ? ' petite' : ''), 'data-bloc': id, 'aria-label': b.titre() },
+      el('div', { class: 'tuile-tete' }, el('h2', null, b.titre()),
+        el('div', { class: 'tuile-act' },
+          id === 'fin' ? null : el('button', { type: 'button', title: P.focus === id ? 'Revenir' : 'Agrandir', 'aria-label': (P.focus === id ? 'Revenir : ' : 'Agrandir : ') + b.titre(), onclick: function () { agrandir(id); } }, P.focus === id ? '✕' : '⤢'),
+          id === 'fin' ? null : el('button', { type: 'button', title: 'Masquer', 'aria-label': 'Masquer : ' + b.titre(), onclick: function () { masquer(id); } }, '🙈'))));
+    var sous = !petit && b.sous ? el('p', { class: 'tuile-sous' }) : null;
+    if (sous) t.appendChild(sous);
+    t.appendChild(corps);
+    P.montes[id] = { corps: corps, petit: !!petit, sous: sous };
+    return t;
+  }
+  function dessiner(id) {
+    var m = P.montes[id], b = BLOCS[id];
+    if (!m) return;
+    if (m.sous) m.sous.textContent = b.sous() || '';
+    if (m.sous) m.sous.hidden = !m.sous.textContent;
+    m.corps.innerHTML = '';
+    try { b.rendre(m.corps, m.petit); } catch (e) { m.corps.appendChild(el('p', { class: 'vide-proj' }, 'Ce bloc n\'a pas pu s\'afficher.')); if (window.console) console.error(e); }
+  }
+
+  function construire() {
+    liberer();
+    var z = $('#scene'), n = etape();
+    z.innerHTML = '';
+    var vis = function (l) { return l.filter(function (id) { return CACHES.indexOf(id) < 0; }); };
+    var pr = principaux(n), ra = rappels(n);
+    var aDessiner = [];
+    if (P.focus && blocsDispo().indexOf(P.focus) < 0) P.focus = null;
+    if (P.focus) {
+      z.className = 'p-scene focus';
+      z.appendChild(tuile(P.focus, false)); aDessiner.push(P.focus);
+    } else if (MODE === 'mosaique') {
+      var tous = vis(pr.concat(ra));
+      var k = Math.max(1, tous.length), cols = k <= 1 ? 1 : k <= 4 ? 2 : 3;
+      z.className = 'p-scene mosaique';
+      z.style.gridTemplateColumns = 'repeat(' + cols + ',minmax(0,1fr))';
+      tous.forEach(function (id) { z.appendChild(tuile(id, false)); aDessiner.push(id); });
+      if (!tous.length) z.appendChild(el('div', { class: 'tuile-masquee' }, 'Tous les blocs sont masqués : « 🙈 » en haut pour les rendre.'));
+    } else {
+      z.className = 'p-scene ' + (MODE === 'seul' || !vis(ra).length ? 'seul' : 'rappel');
+      z.style.gridTemplateColumns = '';
+      var zp = el('div', { class: 'p-zone principal' + (vis(pr).length === 2 ? ' deux' : '') });
+      vis(pr).forEach(function (id) { zp.appendChild(tuile(id, false)); aDessiner.push(id); });
+      if (!vis(pr).length) zp.appendChild(el('div', { class: 'tuile-masquee' }, 'Le bloc de l\'étape est masqué : « 🙈 » en haut pour le rendre.'));
+      z.appendChild(zp);
+      if (MODE === 'rappel' && vis(ra).length) {
+        var zr = el('aside', { class: 'p-zone rappels', 'aria-label': 'Étapes précédentes' });
+        vis(ra).forEach(function (id) { zr.appendChild(tuile(id, true)); aDessiner.push(id); });
+        z.appendChild(zr);
       }
     }
-    if ((t = $('#v-enquete'))) { t.innerHTML = ''; t.appendChild(document.createTextNode(String(P.nEnquete))); t.appendChild(el('small', null, ' / ' + P.participants.length + ' réponses')); }
-    rendreVignettes();
+    /* les blocs se dessinent une fois en place : le nuage et la carte
+       mesurent leur cadre */
+    aDessiner.forEach(dessiner);
   }
 
-  /* ---------- vignettes : les étapes passées restent visibles ---------- */
+  var tVivant = null;
+  function rendreVivant() {
+    if (!P.seance || !P.contenus) return;
+    /* un nouveau rappel peut apparaître (premiers mots, premiers votes) */
+    var cle = [etape(), MODE, P.focus, CACHES.join(','), P.seance.situation_courante, P.seance.situation_revelee, P.seance.cloturee_le, rappels(etape()).join(',')].join(';');
+    if (cle !== P.cleRendue) return rendre();
+    clearTimeout(tVivant);
+    tVivant = setTimeout(function () {
+      Object.keys(P.montes).forEach(function (id) { if (BLOCS[id].vivant) dessiner(id); });
+    }, 150);
+  }
+
+  /* ---------- le détail d'une mission, au toucher ---------- */
+  function detailMission(mi) {
+    var f = el('div', { class: 'modale-mission', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Table ' + mi.table });
+    var fermer = el('button', { type: 'button', class: 'fermer' }, 'Fermer');
+    f.appendChild(el('div', null,
+      el('div', { style: 'display:flex;gap:1rem;align-items:center' }, el('span', { class: 'ic', 'aria-hidden': 'true' }, EMC.iconeMission(mi)),
+        el('span', { class: 'z' }, 'Table ' + mi.table + (mi.zone ? ' · ' + mi.zone : ''))),
+      el('div', { class: 't' }, el('b', null, mi.verbe), ' ' + (mi.texte || '')),
+      (mi.questions || []).length ? el('ul', null, mi.questions.map(function (q) { return el('li', null, q); })) : null,
+      fermer));
+    var clore = function () { f.remove(); };
+    fermer.addEventListener('click', clore);
+    f.addEventListener('click', function (e) { if (e.target === f) clore(); });
+    document.body.appendChild(f); fermer.focus();
+  }
+
+  /* ---------- la carte, en petit : un instantané ---------- */
+  function remplirCartePetite() {
+    var ci = document.getElementById('carte-petite'); if (!ci) return;
+    ci.innerHTML = '';
+    if (P.vignetteCarte) ci.appendChild(el('img', { src: P.vignetteCarte, alt: 'La carte mentale de la classe' }));
+    else ci.appendChild(el('p', null, Object.keys(P.carteLignes).length + ' élément(s)'));
+  }
   function quitterCarte() {
-    /* un instantané de la carte pour sa vignette, puis on libère le canevas */
+    /* un instantané de la carte pour son rappel, puis on libère le canevas */
     var c = P.carte; P.carte = null;
     if (!c) return;
-    c.exporterPNG({ ratio: 0.35 }).then(function (b) {
+    c.exporterPNG({ ratio: 0.5 }).then(function (b) {
       if (P.vignetteCarte) URL.revokeObjectURL(P.vignetteCarte);
-      P.vignetteCarte = URL.createObjectURL(b); rendreVignettes();
+      P.vignetteCarte = URL.createObjectURL(b); remplirCartePetite();
+      if (rappels(etape()).indexOf('carte') >= 0 && P.cleRendue && P.cleRendue.indexOf('carte') < 0) rendre();
     }, function () {}).then(function () { if (c.detruire) c.detruire(); });
   }
   /* Projection rouverte après l'étape 4 : pas d'instantané en mémoire.
-     On monte une carte hors écran le temps d'une photo, une seule fois,
-     dès que les éléments sont lus. */
+     On monte une carte hors écran le temps d'une photo. */
   var instantaneEnCours = false;
   function instantaneCarte() {
-    if (instantaneEnCours || !EMC.Carte || !Object.keys(P.carteLignes).length) return;
-    instantaneEnCours = true;
-    var z = el('div', { style: 'position:absolute;left:-12000px;top:0;width:600px;height:600px' });
+    if (instantaneEnCours || P.carte || !EMC.Carte || !Object.keys(P.carteLignes).length) return;
+    if (P.vignetteCarte && !P.vignetteCarteVieille) return;
+    instantaneEnCours = true; P.vignetteCarteVieille = false;
+    var z = el('div', { style: 'position:absolute;left:-12000px;top:0;width:800px;height:800px' });
     document.body.appendChild(z);
     var c = EMC.Carte.monter(z, { mode: 'projection', contenus: { carte: P.contenus.carte, missions: P.contenus.missions } });
     c.charger(Object.keys(P.carteLignes).map(function (k) { return P.carteLignes[k]; }));
     c.vueEnsemble();
-    c.exporterPNG({ ratio: 0.35 }).then(function (b) { P.vignetteCarte = URL.createObjectURL(b); rendreVignettes(); }, function () {})
-      .then(function () { if (c.detruire) c.detruire(); z.remove(); });
-  }
-  var signatureVignettes = '';
-  function rendreVignettes() {
-    var n = etape(), z = $('#vignettes');
-    var sig = [n, P.mots.length, P.masques.join('|'), P.votes.length, P.vignetteCarte, Object.keys(P.carteLignes).length, P.seance && P.seance.situation_courante].join(';');
-    if (n > 4 && !P.vignetteCarte) instantaneCarte();
-    if (sig === signatureVignettes) return;
-    signatureVignettes = sig;
-    z.innerHTML = '';
-    if (n > 1 && P.mots.length) {
-      var v1 = el('div', { class: 'vignette' }, el('h3', null, titreEtape(1)));
-      var nz = el('div'); v1.appendChild(nz);
-      V.nuage(nz, V.agregerMots(P.mots, P.masques), { max: 14 });
-      z.appendChild(v1);
-    }
-    if (n > 3) {
-      var v2 = el('div', { class: 'vignette' }, el('h3', null, 'Missions'));
-      v2.appendChild(el('div', null, (P.contenus.missions || []).map(function (m) { return el('div', null, 'T' + m.table + ' · ' + m.verbe); })));
-      z.appendChild(v2);
-    }
-    if (n > 4) {
-      var v3 = el('div', { class: 'vignette' }, el('h3', null, titreEtape(4)));
-      if (P.vignetteCarte) v3.appendChild(el('img', { src: P.vignetteCarte, alt: 'La carte mentale de la classe' }));
-      else v3.appendChild(el('p', null, Object.keys(P.carteLignes).length + ' élément(s)'));
-      z.appendChild(v3);
-    }
-    if (n > 6 || (n === 6 && P.votes.length)) {
-      var v4 = el('div', { class: 'vignette' }, el('h3', null, titreEtape(6)));
-      var vus = {}; P.votes.forEach(function (x) { vus[x.situation] = true; });
-      ((P.contenus.harcelometre || {}).situations || []).filter(function (s) { return vus[s.id] && (n > 6 || s.id !== P.seance.situation_courante); }).forEach(function (s) {
-        var st = V.statsVotes(P.votes.filter(function (v) { return v.situation === s.id; }).map(function (v) { return v.valeur; }));
-        v4.appendChild(el('div', { style: 'display:flex;justify-content:space-between;gap:.5rem;border-bottom:1px solid #23426e;padding:.15rem 0' },
-          el('span', null, s.texte.length > 46 ? s.texte.slice(0, 44) + '…' : s.texte), el('b', null, V.fmt(st.moyenne))));
-      });
-      if (v4.children.length > 1) z.appendChild(v4);
-    }
-    $('#scene').classList.toggle('sans-vignettes', !z.children.length || z.hidden);
+    c.exporterPNG({ ratio: 0.5 }).then(function (b) {
+      if (P.vignetteCarte) URL.revokeObjectURL(P.vignetteCarte);
+      P.vignetteCarte = URL.createObjectURL(b); remplirCartePetite();
+      if (rappels(etape()).indexOf('carte') >= 0 && !P.montes.carte) rendre();
+    }, function () {})
+      .then(function () { if (c.detruire) c.detruire(); z.remove(); instantaneEnCours = false; });
   }
 })();
 </script>

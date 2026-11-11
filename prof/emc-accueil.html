@@ -92,6 +92,14 @@
   #proj .p-bilan .bilan-reconnu .e{font-size:clamp(2rem,5vw,4rem)}
   #proj .p-bilan .bilan-reconnu span:last-child{color:#ffd6b8;font-size:1rem}
   #proj .p-bilan ol{text-align:left;font-size:clamp(1rem,1.6vw,1.5rem);max-width:80vw;margin:1vh auto}
+  #proj .p-tour{text-transform:uppercase;letter-spacing:.08em;color:#ffd6b8}
+  .p-bascule{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;
+             background:rgba(232,116,59,.96);color:#fff;text-align:center;cursor:pointer;animation:p-puls 1.6s ease-in-out infinite}
+  .p-bascule-ic{font-size:clamp(5rem,18vh,12rem);line-height:1}
+  .p-bascule b{font:700 clamp(3rem,10vw,9rem)/1 'Space Grotesk',sans-serif}
+  .p-bascule span{font-size:clamp(1.3rem,3vw,2.6rem);max-width:80vw}
+  @keyframes p-puls{50%{filter:brightness(1.12)}}
+  @media (prefers-reduced-motion: reduce){.p-bascule{animation:none}}
   .barre-proj{position:fixed;right:1rem;bottom:1rem;display:flex;gap:.4rem;opacity:.25}
   .barre-proj:hover{opacity:1}
   .barre-proj button{background:rgba(255,255,255,.15);color:#fff;border-color:transparent}
@@ -220,7 +228,7 @@
 <script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
 <script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="../assets/js/emc-commun.js?v=4"></script>
-<script src="../assets/js/emc-vues.js?v=2"></script>
+<script src="../assets/js/emc-vues.js?v=3"></script>
 <script src="../assets/js/prof-emc-outils.js?v=2"></script>
 <script>
 (function () {
@@ -261,7 +269,7 @@
       }
     } catch (e) {}
   }
-  $('#p-plein').addEventListener('click', function () { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); });
+  EMC.Vues.boutonPleinEcran($('#p-plein'));
 
   /* ---------- démarrage ---------- */
   ProfAPI.reprendre().then(function () {
@@ -608,8 +616,10 @@
       z.appendChild(el('div', { class: 'p-petit' }, 'ont choisi leurs questions'));
     } else if (n === 4) {
       z.appendChild(el('h1', null, 'L\'échange'));
-      z.appendChild(el('div', { class: 'p-grand', id: 'p-chrono' }, (j.echange_minutes || 15) + ':00'));
+      z.appendChild(el('div', { class: 'p-petit p-tour', id: 'p-tour' }, 'Tour 1 sur 2'));
+      z.appendChild(el('div', { class: 'p-grand', id: 'p-chrono' }, ((j.echange_minutes || 20) / 2) + ':00'));
       z.appendChild(el('h2', { id: 'p-sous' }, ''));
+      z.appendChild(el('div', { class: 'p-petit', id: 'p-total' }, ''));
       z.appendChild(el('div', { class: 'p-petit' }, '🔒 Les notes ne seront montrées qu\'au binôme, pour les feux vert et rouge.'));
     } else if (n === 5) {
       var feux = l.filter(function (p) { return Object.keys((C.jdr[p.eleve_id] || {}).feux || {}).length; }).length;
@@ -648,11 +658,30 @@
     }
   }
 
+  /* « On change ! » en grand, 20 s, comme sur les tablettes */
+  function bascule() {
+    var vieux = document.getElementById('p-bascule'); if (vieux) vieux.remove();
+    var b = el('div', { id: 'p-bascule', class: 'p-bascule', role: 'alert' },
+      el('div', { class: 'p-bascule-ic', 'aria-hidden': 'true' }, '🔄'), el('b', null, 'On change !'),
+      el('span', null, 'Celui ou celle qui répondait pose maintenant ses questions.'));
+    b.addEventListener('click', function () { b.remove(); });
+    document.body.appendChild(b);
+    setTimeout(function () { b.remove(); }, 20000);
+  }
+
   /* ---------- chronos (pilotage et projection) ---------- */
   function tic() {
     if (!C.seance) return;
     var n = etape();
     if (!PROJ) {
+      /* l'échange : le tour en cours, comme au tableau */
+      var te = document.getElementById('tour-echange');
+      if (n === 4 && etat().echange_depuis) {
+        var tt = (jdr().echange_minutes || 20) * 60, ee = (Date.now() - etat().echange_depuis) / 1000;
+        var txt = ee >= tt ? '⏰ échange terminé' : ee >= tt / 2 ? 'Tour 2 sur 2 · reste ' + mmss(tt - ee) : 'Tour 1 sur 2 · bascule dans ' + mmss(tt / 2 - ee);
+        if (!te) { te = el('span', { id: 'tour-echange', class: 'pastille cyan', style: 'font-size:1rem' }); $('#actions-etape').appendChild(te); }
+        te.textContent = txt;
+      } else if (te) te.remove();
       var cle = 'emc.chrono.' + id(), v = null;
       try { v = JSON.parse(sessionStorage.getItem(cle)); } catch (e) {}
       if (!v || v.etape !== n) { v = { etape: n, depuis: Date.now() }; try { sessionStorage.setItem(cle, JSON.stringify(v)); } catch (e) {} }
@@ -663,13 +692,19 @@
     }
     var pc = document.getElementById('p-chrono'); if (!pc) return;
     if (n === 4) {
-      var total = (jdr().echange_minutes || 15) * 60, dep = etat().echange_depuis;
-      if (!dep) { pc.textContent = mmss(total); return; }
-      var ec = (Date.now() - dep) / 1000, reste = total - ec;
-      pc.textContent = reste > 0 ? mmss(reste) : '0:00';
-      pc.className = 'p-grand' + (reste <= 0 ? ' fini' : ec >= total / 2 ? ' moitie' : '');
-      $('#p-sous').textContent = reste <= 0 ? '⏰ Terminé !' : ec >= total / 2 ? '🔄 Changez de rôle !' : 'L\'un interroge, l\'autre répond';
-      if (ec >= total / 2 && !sonne['m' + dep]) { sonne['m' + dep] = 1; if (ec < total / 2 + 3) bip(880, 3); }
+      /* deux tours de la moitié du temps : on voit le tour en cours */
+      var total = (jdr().echange_minutes || 20) * 60, tour = total / 2, dep = etat().echange_depuis;
+      if (!dep) { pc.textContent = mmss(tour); $('#p-tour').textContent = 'Tour 1 sur 2'; $('#p-total').textContent = mmss(total) + ' en tout'; return; }
+      var ec = (Date.now() - dep) / 1000, reste = total - ec, mi = ec >= tour;
+      pc.textContent = reste > 0 ? mmss(mi ? reste : tour - ec) : '0:00';
+      pc.className = 'p-grand' + (reste <= 0 ? ' fini' : mi ? ' moitie' : '');
+      $('#p-tour').textContent = reste <= 0 ? '' : 'Tour ' + (mi ? 2 : 1) + ' sur 2';
+      $('#p-total').textContent = reste > 0 ? 'Il reste ' + mmss(reste) + ' en tout' : '';
+      $('#p-sous').textContent = reste <= 0 ? '⏰ Terminé !' : mi ? '🔄 On a changé de rôle' : 'L\'un interroge, l\'autre répond';
+      if (mi && !sonne['m' + dep]) {
+        sonne['m' + dep] = 1;
+        if (ec < tour + 20) { bip(880, 3); bascule(); }
+      }
       if (reste <= 0 && !sonne['f' + dep]) { sonne['f' + dep] = 1; if (reste > -3) bip(520, 3); }
     }
     if (n === 6) {

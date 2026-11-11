@@ -319,21 +319,24 @@
     if (m && m.sansBandeau) b.appendChild(el('button', { type: 'button', class: 'lien', id: 'btn-aide-barre', onclick: ouvrirAide }, '💬 Besoin d\'en parler'));
     b.appendChild(sortir);
   }
+  /* « Prêt » est à sens unique (Loïc, 11/11) : une fois touché, le
+     bouton reste vert et ne fait plus rien — on ne se « dé-prépare »
+     pas d'un doigt qui glisse. */
   function boutonPret(geant) {
     var p = el('button', { type: 'button', class: (S.pret ? 'pret-oui' : 'pret-non') + (geant ? ' pret-geant' : ' pret-grand'),
-      'aria-pressed': S.pret ? 'true' : 'false' }, S.pret ? '✅ Je suis prêt·e' : '✋ Je suis prêt·e');
-    p.addEventListener('click', basculerPret);
+      'aria-pressed': S.pret ? 'true' : 'false', 'aria-disabled': S.pret ? 'true' : null }, S.pret ? '✅ Je suis prêt·e' : '✋ Je suis prêt·e');
+    if (!S.pret) p.addEventListener('click', function () { p.disabled = true; mettrePret(); });
     return p;
   }
   document.addEventListener('emc:direct', function () { if (S.classe) rendreBarre(); });
   document.addEventListener('emc:file', function () { if (S.classe) rendreBarre(); });
 
-  function basculerPret() {
-    var voulu = !S.pret;
-    EMC.rpc('emc_pret', { p_classe: S.classe, p_pret: voulu }).then(function () {
-      S.pret = voulu; rendreBarre();
+  function mettrePret() {
+    if (S.pret) return;
+    EMC.rpc('emc_pret', { p_classe: S.classe, p_pret: true }).then(function () {
+      S.pret = true; rendreBarre();
       if (S.seance && S.seance.etape === 0) { S.etapeAffichee = null; rendreEtape(); }
-    }, function (e) { toast(EMC.message(e), 'err'); });
+    }, function (e) { toast(EMC.message(e), 'err'); rendreBarre(); if (S.seance && S.seance.etape === 0) { S.etapeAffichee = null; rendreEtape(); } });
   }
 
   /* Ce qu'un module (EMC.Modules.<nom>) reçoit de la page. */

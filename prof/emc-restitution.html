@@ -51,7 +51,10 @@
   /* projection */
   body.projection{background:#0f1a2e;color:#fff;overflow:hidden}
   body.projection .emc-page{max-width:none;padding:2vh 2vw}
-  #proj{min-height:92vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:2vh}
+  /* la projection tient dans l'écran : hauteur fixée, le nuage prend la place qui reste (11/11) */
+  #proj{height:96vh;height:96dvh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:2vh}
+  #proj.defile{overflow:auto}
+  #proj .p-nuage{flex:1 1 auto;min-height:0;width:94vw;font-size:clamp(1.2rem,2.4vw,2.2rem)}
   #proj h1{font:700 clamp(2rem,5vw,4.5rem)/1.1 'Space Grotesk',sans-serif;margin:0;color:#fff}
   #proj h2{font:600 clamp(1.3rem,2.8vw,2.4rem)/1.2 'Space Grotesk',sans-serif;margin:0;color:#ffd6b8}
   #proj .p-grand{font:700 clamp(3rem,10vw,8rem)/1 'Space Grotesk',sans-serif}
@@ -70,7 +73,7 @@
   #proj .p-groupes{display:flex;flex-wrap:wrap;gap:2vh 3vw;justify-content:center}
   #proj .p-groupes div{font-size:clamp(1.2rem,2.2vw,2rem)}
   #proj .p-groupes b{display:block;font-size:clamp(3rem,8vh,5rem)}
-  #proj .p-def{font:italic 500 clamp(1.4rem,3vw,2.6rem)/1.4 'Inter',sans-serif;max-width:80vw;min-height:20vh;transition:opacity .6s}
+  #proj .p-def{font:italic 500 clamp(1.3rem,2.6vw,2.4rem)/1.35 'Inter',sans-serif;max-width:80vw;min-height:12vh;flex:none;transition:opacity .6s}
   .barre-proj{position:fixed;right:1rem;bottom:1rem;display:flex;gap:.4rem;opacity:.25}
   .barre-proj:hover{opacity:1}
   .barre-proj button{background:rgba(255,255,255,.15);color:#fff;border-color:transparent}
@@ -200,7 +203,7 @@
 <script src="../assets/js/vendor/supabase-js-2.45.4.min.js"></script>
 <script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="../assets/js/emc-commun.js?v=4"></script>
-<script src="../assets/js/emc-vues.js?v=2"></script>
+<script src="../assets/js/emc-vues.js?v=3"></script>
 <script src="../assets/js/emc-export.js?v=1"></script>
 <script src="../assets/js/prof-emc-outils.js?v=2"></script>
 <script>
@@ -525,6 +528,8 @@
     var cle = JSON.stringify([n, C.seance.cloturee_le, etat(), l.length, l.filter(function (p) { return p.pret; }).length, C.mots, C.restit, C.postits, C.mur, C.masques]);
     if (cle === cle0) return; cle0 = cle;
     z.innerHTML = '';
+    /* le mur (4, 5) peut dépasser : il défile au doigt, le reste tient dans l'écran */
+    z.classList.toggle('defile', n === 4 || n === 5);
     if (C.seance.cloturee_le) { z.appendChild(el('h1', null, (r.merci || 'Merci !') + ' 🙏')); return; }
     if (n === 0) {
       z.appendChild(el('h1', null, '🗽 ' + (r.titre || 'Nos libertés')));
@@ -538,8 +543,8 @@
     } else if (n === 2) {
       z.appendChild(el('h1', null, 'Mon parcours'));
       var ags = ateliersAgreges();
-      var nu = el('div', { style: 'width:85vw' }); z.appendChild(nu);
-      V.nuage(nu, ags.map(function (a) { return { forme: a.forme, mot: a.titre, n: a.eleves.length }; }), { vide: 'Les ateliers arrivent…' });
+      var nu = el('div', { class: 'p-nuage' }); z.appendChild(nu);
+      V.nuage(nu, ags.map(function (a) { return { forme: a.forme, mot: a.titre, n: a.eleves.length }; }), { vide: 'Les ateliers arrivent…', spirale: true });
       z.appendChild(el('div', { class: 'p-petit' }, l.filter(function (p) { return ((C.restit[p.eleve_id] || {}).parcours || []).length; }).length + ' / ' + l.length + ' parcours'));
     } else if (n === 3) {
       z.appendChild(el('h1', null, 'Par atelier'));
@@ -566,13 +571,13 @@
       return;
     } else if (n === 6) {
       z.appendChild(el('h1', null, r.mot_question || 'La liberté, en un mot ?'));
-      var nn = el('div', { style: 'width:85vw' }); z.appendChild(nn); V.nuage(nn, motsAgreg(), { vide: 'Les mots arrivent…' });
+      var nn = el('div', { class: 'p-nuage' }); z.appendChild(nn); V.nuage(nn, motsAgreg(), { vide: 'Les mots arrivent…', spirale: true });
       z.appendChild(el('div', { class: 'p-def', id: 'p-def' }, ''));
       defilement();
     } else if (n === 7) {
       z.appendChild(el('h1', null, '💬 ' + (r.merci || 'Merci !')));
       z.appendChild(el('h2', null, r.expression_question || 'Ces deux jours, en un mot ou une phrase'));
-      var n6 = el('div', { style: 'width:88vw' }); z.appendChild(n6); V.nuage(n6, exprAgreg(), { vide: 'Les mots arrivent…' });
+      var n6 = el('div', { class: 'p-nuage' }); z.appendChild(n6); V.nuage(n6, exprAgreg(), { vide: 'Les mots arrivent…', spirale: true });
     }
     z.style.justifyContent = '';
   }
@@ -601,7 +606,7 @@
       pc.textContent = r > 0 ? mmss(r) : '⏰';
     }
   }
-  $('#p-plein').addEventListener('click', function () { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); });
+  EMC.Vues.boutonPleinEcran($('#p-plein'));
 })();
 </script>
 </body>

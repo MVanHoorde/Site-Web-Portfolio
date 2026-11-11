@@ -691,5 +691,19 @@ await db.exec(readFileSync(join(depot, 'bdd/schema/036-emc-retours-castel.sql'),
 const ms36b = await val('missions');
 verif('036 rejoué : places et questions réglées gardées', ms36b[1].places === 6 && ms36b[2].questions[0] === 'réglée à la main' && ms36b.length === 8);
 
+/* ---------- 19. 039 : les retours de l'essai (11/11) ---------- */
+const v39 = await val('videos');
+const sql039 = readFileSync(join(depot, 'bdd/schema/039-emc-retours-essai.sql'), 'utf8');
+await db.exec(sql039);
+const j39 = await val('jdr'), vid39 = await val('videos');
+verif('039 : consigne de l\'échange à 20 min, 10 chacun', j39.consignes.some((t) => /\*\*20 minutes\*\*.*\*\*10 minutes chacun\*\*/.test(t)) && !j39.consignes.some((t) => /15 minutes/.test(t)), j39.consignes);
+verif('039 : autant de consignes qu\'avant', j39.consignes.length === 6);
+verif('039 : la vidéo de la MAE en premier, avec son MP4', /WoVTJcw6tkE/.test(vid39[0].lien) && /sharepoint\.com/.test(vid39[0].mp4) && vid39.length === v39.length, vid39.map((v) => v.titre));
+vid39[0].mp4 = 'https://exemple/reglé-à-la-main';
+await db.query(`update public.emc_contenus set valeur = $1 where cle = 'videos'`, [JSON.stringify(vid39)]);
+await db.exec(sql039);
+const vid39b = await val('videos');
+verif('039 rejoué : MP4 réglé à la main gardé, ordre stable', vid39b[0].mp4 === 'https://exemple/reglé-à-la-main' && JSON.stringify(vid39b.map((v) => v.lien)) === JSON.stringify(vid39.map((v) => v.lien)));
+
 console.log(`\n${ok} contrôles réussis, ${ko} en échec.`);
 process.exit(ko ? 1 : 0);

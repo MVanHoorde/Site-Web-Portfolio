@@ -360,12 +360,15 @@ def main():
         J.wait_for_timeout(1500); verif('projection : chrono géant', ':' in J.inner_text('#p-chrono')); sans_ident('étape 4')
         cap(A, 'a04-echange'); cap(J, 'j04-chrono')
         # mi-temps
-        poser(4, echange_depuis=int(time.time() * 1000) - 451_000)   # mi-temps de 15 min
-        A.wait_for_function('document.body.innerText.indexOf("Changez de rôle") >= 0', timeout=9000)
-        verif('à mi-temps : « Changez de rôle » sur la tablette', True)
-        J.wait_for_function('document.body.innerText.indexOf("Changez de rôle") >= 0', timeout=9000)
-        verif('à mi-temps : « Changez de rôle » à la projection', True)
-        cap(J, 'j04-mi-temps')
+        verif('avant la bascule : « Tour 1 sur 2 » sur la tablette et au tableau', 'tour 1 sur 2' in A.inner_text('#scene').lower() and 'tour 1 sur 2' in J.inner_text('#proj').lower())
+        poser(4, echange_depuis=int(time.time() * 1000) - 451_000)   # mi-temps de 15 min : la bascule vient de passer
+        A.wait_for_selector('#emc-bascule', timeout=9000)
+        verif('à mi-temps : grand « On change ! » sur la tablette', 'On change' in A.inner_text('#emc-bascule'))
+        J.wait_for_selector('#p-bascule', timeout=9000)
+        verif('à mi-temps : grand « On change ! » à la projection', 'On change' in J.inner_text('#p-bascule'))
+        verif('à mi-temps : « Tour 2 sur 2 »', 'tour 2 sur 2' in A.inner_text('#scene').lower() and 'tour 2 sur 2' in J.inner_text('#proj').lower())
+        cap(A, 'a04-on-change'); cap(J, 'j04-mi-temps')
+        A.click('#emc-bascule', force=True); J.click('#p-bascule', force=True)
 
         # étape 5 : feux (B répond sur les questions de A)
         poser(5); etape(A, 5); etape(B, 5); B.wait_for_selector('.feu-ligne', timeout=9000)
