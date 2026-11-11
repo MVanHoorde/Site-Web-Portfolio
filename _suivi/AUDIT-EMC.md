@@ -172,7 +172,7 @@ Liste tenue à jour par Claude. La demander avec « le bilan EMC ».
 - Après la répétition : « Remettre à zéro » chaque séance testée (les cartes restent valables).
 - ✅ **039** exécutée le 11/11/2026 dans le SQL Editor (consigne de l'échange à 20 min, 10 chacun ; vidéo de la MAE en premier, avec son MP4).
 - ✅ MP4 de la vidéo de la MAE déposé sur le OneDrive (11/11), lien posé par la 039.
-- ⏳ MP4 de « Et si l'autre c'était toi ? » : YouTube refuse le téléchargement sans compte connecté ; à télécharger soi-même, déposer sur le OneDrive, puis coller le lien dans Contenus → Vidéos.
+- ✅ MP4 de « Et si l'autre c'était toi ? » déposé sur le OneDrive (11/11), lien posé dans Contenus → Vidéos (en second, après la MAE).
 - Prévenir la CPE et l'infirmière par mail, avec les passages sensibles du jeu (annexe G3).
 - Faire installer le jeu sur les iPad et vérifier le wifi (WebSocket vers `*.supabase.co`).
 - Imprimer la fiche d'association (Labyrinthe).
