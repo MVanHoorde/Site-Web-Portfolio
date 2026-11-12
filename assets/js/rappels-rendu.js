@@ -29,6 +29,16 @@
 
    Écriture d'un noyau : {{nuc:A:Z:X}} → A au-dessus de Z, alignés à
    droite, devant le symbole (ex. {{nuc:226:88:Ra}}).
+   🔴 Fraction : {{frac:numérateur:dénominateur}} → une vraie fraction,
+   le numérateur AU-DESSUS du dénominateur (règle de Loïc du 12/11/2026 :
+   jamais « 1/8 » ni « m / V » avec une barre oblique dans une formule).
+   La barre oblique ne reste que dans les unités (nSv/h, mSv/an).
+   Images (12/11/2026) : image:{src, alt, legende} sous l'énoncé ; dans
+   une association, une case peut porter img:'chemin' (photo de la
+   case). src = chemin depuis la racine du site (assets/img/…).
+   Une association dont une étiquette porte une fraction ou une image
+   s'affiche en pastilles à toucher (une liste déroulante n'affiche que
+   du texte brut) ; sinon, en liste déroulante.
    ============================================================ */
 (function(global){
   'use strict';
@@ -40,13 +50,31 @@
   function fmt(s){
     return String(s == null ? '' : s).replace(/\{\{nuc:([^:}]*):([^:}]*):([^}]*)\}\}/g, function(_, a, z, x){
       return '<span class="nuc"><span class="nuc-az"><span>' + esc(a) + '</span><span>' + esc(z) + '</span></span>' + esc(x) + '</span>';
+    }).replace(/\{\{frac:([^:}]*):([^}]*)\}\}/g, function(_, n, d){
+      return '<span class="frac" role="math" aria-label="' + esc(n) + ' sur ' + esc(d) + '"><span class="frac-n">' + n + '</span><span class="frac-d">' + d + '</span></span>';
     });
+  }
+  /* chemin d'une image : les pages et le tableau de bord sont tous à un niveau sous la racine */
+  function chemin(src){ return /^(https?:|\.\.\/|\/)/.test(src) ? src : '../' + src; }
+  function image(im){
+    if(!im || !im.src) return '';
+    return '<figure class="rr-img"><img src="' + esc(chemin(im.src)) + '" alt="' + esc(im.alt || '') + '" loading="lazy">'
+      + (im.legende ? '<figcaption>' + fmt(im.legende) + '</figcaption>' : '') + '</figure>';
   }
   function texte(s){ var d = document.createElement('div'); d.innerHTML = fmt(s); return d.textContent; }
 
   var CSS =
     '.nuc{display:inline-flex;align-items:center;white-space:nowrap}' +
     '.nuc-az{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:.72em;line-height:1;margin-right:.1em;font-variant-numeric:tabular-nums;font-weight:500}' +
+    '.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .12em;font-size:.92em;line-height:1.12;text-align:center}' +
+    '.frac-n{padding:0 .2em}.frac-d{padding:0 .2em;border-top:1.4px solid currentColor}' +
+    '.rr-img{margin:0 0 12px;max-width:420px}.rr-img img{display:block;max-width:100%;max-height:220px;border-radius:10px;border:1px solid var(--line,#d3dae7)}' +
+    '.rr-img figcaption{font-size:12.5px;color:var(--ink-soft,#4a566e);margin-top:4px}' +
+    '.rr-case img{display:block;width:150px;height:110px;object-fit:cover;border-radius:8px;border:1px solid var(--line,#d3dae7)}' +
+    '.rr-pastilles{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}' +
+    '.rr-pastilles button{font:inherit;font-size:14px;min-height:40px;padding:4px 10px;border:1px solid var(--line,#d3dae7);border-radius:999px;background:var(--surface-2,#f4f6fb);color:inherit;cursor:pointer}' +
+    '.rr-pastilles button[aria-checked="true"]{background:var(--link,#2445c7);border-color:var(--link,#2445c7);color:#fff}' +
+    '.rr-pastilles button[disabled]{cursor:default}' +
     '.rr-choix{display:grid;gap:8px}' +
     '.rr-choix button,.rr-btn{font:inherit;text-align:left;border:1px solid var(--line,#d3dae7);background:var(--surface-2,#f4f6fb);color:inherit;border-radius:10px;padding:10px 12px;min-height:44px;cursor:pointer}' +
     '.rr-choix button:hover:not([disabled]){border-color:var(--link,#2445c7)}' +
@@ -136,7 +164,7 @@
 
   /* Le corps interactif d'une question : la figure éventuelle, puis les gestes. */
   function corps(q){
-    return figure(q.figure) + corpsSeul(q);
+    return image(q.image) + figure(q.figure) + corpsSeul(q);
   }
   function corpsSeul(q){
     if(q.type === 'flash'){
@@ -144,13 +172,20 @@
     }
     if(q.type === 'assoc'){
       var et = melanger(q.etiquettes || q.cases.map(function(c){ return c.r; }));
-      var h = '<div class="rr-schema">';
+      var riche = et.some(function(e){ return /\{\{frac|<|\{\{nuc/.test(e); });
+      var h = '<div class="rr-schema" data-rr-et="' + esc(JSON.stringify(et)) + '">';
       q.cases.forEach(function(c, i){
         if(i) h += '<span class="rr-lien" aria-hidden="true">' + fmt((q.liens || [])[i - 1] || '') + '</span>';
-        h += '<div class="rr-case" data-rr-case="' + i + '"><div class="rr-t">' + fmt(c.t) + '</div>'
-          + '<select aria-label="Étiquette de la case ' + (i + 1) + '"><option value="">— choisis —</option>'
-          + et.map(function(e){ return '<option value="' + esc(e) + '">' + esc(texte(e)) + '</option>'; }).join('') + '</select></div>';
+        h += '<div class="rr-case" data-rr-case="' + i + '">' + (c.img ? '<img src="' + esc(chemin(c.img)) + '" alt="' + esc(c.alt || texte(c.t)) + '" loading="lazy">' : '')
+          + '<div class="rr-t">' + fmt(c.t) + '</div>'
+          + (riche
+              ? '<div class="rr-pastilles" role="radiogroup" aria-label="Étiquette de la case ' + (i + 1) + '">'
+                + et.map(function(e, k){ return '<button type="button" role="radio" aria-checked="false" data-rr-v="' + k + '">' + fmt(e) + '</button>'; }).join('') + '</div>'
+              : '<select aria-label="Étiquette de la case ' + (i + 1) + '"><option value="">— choisis —</option>'
+                + et.map(function(e, k){ return '<option value="' + k + '">' + esc(texte(e)) + '</option>'; }).join('') + '</select>')
+          + '</div>';
       });
+
       return h + '</div><div class="rr-flash"><button type="button" class="rr-btn p" data-rr-valider disabled>Valider</button></div><div data-rr-zone></div>';
     }
     if(q.type === 'curseur'){
@@ -198,15 +233,25 @@
       return;
     }
     if(q.type === 'assoc'){
-      var selects = el.querySelectorAll('.rr-case select'), bv = el.querySelector('[data-rr-valider]');
-      selects.forEach(function(s){ s.addEventListener('change', function(){
-        bv.disabled = Array.prototype.some.call(selects, function(x){ return !x.value; });
-      }); });
+      var et = JSON.parse(el.querySelector('.rr-schema').getAttribute('data-rr-et') || '[]'), cases = el.querySelectorAll('.rr-case'), bv = el.querySelector('[data-rr-valider]');
+      /* la valeur d'une case : l'indice de l'étiquette choisie (liste ou pastille), '' sinon */
+      function valeur(cs){ var s = cs.querySelector('select'); return s ? s.value : (cs.dataset.v || ''); }
+      function maj(){ bv.disabled = Array.prototype.some.call(cases, function(cs){ return valeur(cs) === ''; }); }
+      el.querySelectorAll('.rr-case select').forEach(function(s){ s.addEventListener('change', maj); });
+      el.querySelectorAll('.rr-pastilles button').forEach(function(b){
+        b.addEventListener('click', function(){
+          if(b.disabled) return;
+          var cs = b.closest('.rr-case');
+          cs.querySelectorAll('.rr-pastilles button').forEach(function(x){ x.setAttribute('aria-checked', String(x === b)); });
+          cs.dataset.v = b.getAttribute('data-rr-v'); maj();
+        });
+      });
       bv.addEventListener('click', function(){
         var toutes = true;
-        Array.prototype.forEach.call(selects, function(s, i){
-          var c = q.cases[i], bon = s.value === c.r, cs = s.closest('.rr-case');
-          s.disabled = true; cs.classList.add(bon ? 'bon' : 'faux');
+        Array.prototype.forEach.call(cases, function(cs, i){
+          var c = q.cases[i], v = valeur(cs), bon = v !== '' && et[+v] === c.r;
+          cs.querySelectorAll('select,button').forEach(function(x){ x.disabled = true; });
+          cs.classList.add(bon ? 'bon' : 'faux');
           if(!bon){ toutes = false; var a = document.createElement('div'); a.className = 'rr-attendu'; a.innerHTML = '→ ' + fmt(c.r); cs.appendChild(a); }
         });
         bv.parentNode.remove();

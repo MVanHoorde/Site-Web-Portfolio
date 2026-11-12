@@ -1,6 +1,6 @@
 /* Banque de rappels — ES 1re, T1-C2 La radioactivité.
    Réécrite le 12/11/2026 d'après l'audit de Loïc sur les questions 1 à 22, puis reprise question par question
-   au 2e audit du 12/11/2026 (règles ci-dessous). Proposition de Claude : rien n'est validé, chaque question
+   au 2e audit du 12/11/2026 (règles ci-dessous), puis 3e passage du 12/11/2026 : fractions et images. Proposition de Claude : rien n'est validé, chaque question
    attend l'audit de Loïc.
    etape = data-cle de l'étape dont la question dépend (la question n'est posée qu'à un élève qui a validé cette étape).
    forme : '=' reprise du cours telle quelle · '≈' même notion, autre tournure ou autre contexte.
@@ -17,11 +17,17 @@
      · assoc : liens simples ('→', '+', '') ; figure 'nz' (portion de la carte des noyaux) quand elle aide à lire.
    Formes (rendu : assets/js/rappels-rendu.js) :
      qcm     choix (2 à 6), r = indice de la bonne réponse, expl = correction courte ;
-     assoc   schéma en cases, un menu déroulant sous chaque case ; étiquettes en texte simple (pas de {{nuc}}) ;
+     assoc   schéma en cases, un menu déroulant sous chaque case ; étiquettes en texte simple (pas de {{nuc}}),
+             ou fractions {{frac}} (le rendu passe alors en pastilles) ;
      curseur juste si |valeur − r| ≤ tol, ou si la valeur tombe dans entre:[bas, haut] ;
      flash   seulement « pense à N éléments précis, puis révèle » ; rep = la réponse attendue.
    groupe : variantes d'une même question, une seule par série.
-   Noyaux : toujours {{nuc:A:Z:X}} ; t<sub>1/2</sub>, N<sub>0</sub> en HTML (pas d'indices Unicode). */
+   Noyaux : toujours {{nuc:A:Z:X}} ; N<sub>0</sub> en HTML (pas d'indices Unicode).
+   Fractions (règle de Loïc, 12/11/2026) : jamais de barre oblique, toujours {{frac:numérateur:dénominateur}}
+     (demi-vie : t<sub>{{frac:1:2}}</sub>) ; la barre oblique ne reste que dans les unités (nSv/h, mSv/an).
+     Les mots « la moitié », « le quart » restent des mots. unite d'un curseur : texte brut, sans {{frac}}.
+   Images (12/11/2026) : image:{src, alt, legende} sous l'énoncé, seulement une image montrée par la page du
+     cours à l'étape de la question ou avant ; jamais une image où se lit la réponse d'une question de mémoire. */
 (window.RAPPELS = window.RAPPELS || {})['es1-t1-c2'] = [
 
   /* ---------- 1.1 Avant le cours ---------- */
@@ -55,6 +61,7 @@
     expl: "Un noyau radioactif est instable : il se transforme spontanément en un autre noyau. Les électrons n'y sont pour rien, c'est une affaire de noyau ; et beaucoup de noyaux radioactifs sont naturels." },
   { id: 'rad-105', etape: 'es-t1c2-definition', forme: '≈', type: 'qcm',
     q: "Dans la cascade de l'uranium 238, chaque flèche est une désintégration. Que devient un noyau radioactif quand il se désintègre ?",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-cascade-uranium-238-plomb-206.jpg', alt: "La cascade de désintégrations de l'uranium 238 : des noyaux reliés par des flèches marquées α ou β, de l'uranium 238 en haut à gauche jusqu'au plomb 206 en bas à droite.", legende: "La cascade de l'uranium 238 (image 1 du cours)." },
     choix: ["Il disparaît sans rien laisser derrière lui", "Il redevient un noyau d'hydrogène", "Il se change entièrement en électrons", "Il se coupe en deux noyaux identiques", "Il se transforme en un autre noyau", "Il perd sa charge et devient neutre"], r: 4,
     expl: "Rien ne disparaît : le noyau père devient un noyau fils, en émettant une particule et souvent un rayonnement." },
   { id: 'rad-005', etape: 'es-t1c2-definition', forme: '≈', type: 'qcm',
@@ -72,12 +79,14 @@
     expl: "L'uranium 238 se désintègre : c'est le père. Le thorium 234 est son fils, plus stable mais encore radioactif : il devient père à son tour. La cascade s'arrête au plomb 206, enfin stable." },
   { id: 'rad-007', etape: 'es-t1c2-definition', forme: '≈', type: 'qcm',
     q: "Dans la cascade de désintégrations de l'uranium 238, le thorium 234 naît de l'uranium 238 et il est lui-même radioactif. Il est donc…",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-cascade-uranium-238-plomb-206.jpg', alt: "La cascade de désintégrations de l'uranium 238 : une flèche α mène de l'uranium 238 au thorium 234, puis une flèche β du thorium 234 au noyau suivant, et ainsi de suite jusqu'au plomb 206.", legende: "La cascade de l'uranium 238 (image 1 du cours)." },
     choix: ["le père de l'uranium 238, puis son fils", "le noyau stable qui clôt la cascade", "une particule émise par l'uranium 238", "un isotope stable de l'uranium 238", "le père direct du plomb 206", "le fils de l'uranium et le père du suivant"], r: 5,
     expl: "Il apparaît quand l'uranium 238 se désintègre : c'est son fils. Comme il est encore instable, il se désintègre à son tour et devient le père du noyau suivant ; le plomb 206 n'arrive que bien plus loin dans la cascade." },
 
   /* ---------- 1.3 Ce qu'émet le noyau (α et γ seulement) ---------- */
   { id: 'rad-006', etape: 'es-t1c2-alpha-beta-gamma', forme: '=', type: 'assoc',
     q: "Le radium 226 se désintègre en radon 222 en émettant une particule α. Place le bon nom sous chaque noyau.",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-desintegration-alpha-radium.jpg', alt: "Un gros noyau de radium 226, à gauche, d'où partent deux flèches : l'une vers un noyau de radon 222, en haut à droite, l'autre vers un petit noyau d'hélium 4, en bas à droite." },
     cases: [{ t: "{{nuc:226:88:Ra}}", r: "noyau père" }, { t: "{{nuc:222:86:Rn}}", r: "noyau fils" }, { t: "{{nuc:4:2:He}}", r: "particule α" }],
     liens: ['→', '+'],
     etiquettes: ["noyau père", "noyau fils", "particule α", "noyau stable"],
@@ -169,6 +178,7 @@
     expl: "Les γ sont les plus pénétrants : ils traversent le papier, le carton et l'aluminium. Il faut des écrans épais, du béton ou du plomb." },
   { id: 'rad-020', etape: 'es-t1c2-penetration', forme: '≈', type: 'qcm',
     q: "Un émetteur α est arrêté par une simple feuille de papier. Pourquoi devient-il redoutable une fois avalé ou respiré ?",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-penetration-rayonnements.jpg', alt: "Pénétration des rayonnements ionisants : issus d'un noyau radioactif, le rayonnement α s'arrête sur une feuille de papier, le β sur une plaque d'aluminium, le γ traverse les deux et n'est arrêté que par du béton.", legende: "Pénétration des trois types de rayonnement (image 3 du cours)." },
     choix: ["Il se change en rayonnement γ dans le corps", "Il traverse alors le corps de part en part", "Il se multiplie dans le sang et les organes", "Il rend le corps entier radioactif à son tour", "Il cède toute son énergie à peu de cellules", "Il devient plus pénétrant une fois chauffé"], r: 4,
     expl: "À l'intérieur du corps, rien ne le sépare des cellules : il dépose toute son énergie sur quelques-unes d'entre elles. « Peu pénétrant » ne veut pas dire « inoffensif »." },
 
@@ -221,6 +231,7 @@
   /* ---------- 2.5 Effets sur la santé et protection ---------- */
   { id: 'rad-029', etape: 'es-t1c2-sante', forme: '≈', type: 'qcm', groupe: 'protection',
     q: "En radiologie, une manipulatrice porte un dosimètre sur elle, et la salle du scanner a des écrans de protection et un accès signalé. Ces deux mesures sont, dans l'ordre, une protection…",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-radiologie-medicale.jpg', alt: "Un soignant, devant un écran d'imagerie, surveille à travers une vitre la salle du scanner où un patient est allongé." },
     choix: ["collective, puis individuelle", "individuelle, puis individuelle", "individuelle, puis collective", "collective, puis collective"], r: 2,
     expl: "Le dosimètre porté sur soi est une protection individuelle ; les écrans et les zones délimitées protègent tout le monde : c'est la protection collective." },
   { id: 'rad-118', etape: 'es-t1c2-sante', forme: '≈', type: 'assoc', groupe: 'protection',
@@ -280,6 +291,7 @@
     expl: "Leur nombre diminue de façon prévisible, selon la loi de décroissance radioactive. Chaque noyau, lui, reste imprévisible." },
   { id: 'rad-122', etape: 'es-t1c2-loi-decroissance', forme: '≈', type: 'qcm',
     q: "Sur l'image de la loi de décroissance du cours, des noyaux jaune et noir sont dessinés sous une courbe rouge, et des noyaux verts à côté. Au fil du temps, quels noyaux deviennent de plus en plus nombreux ?",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-loi-decroissance-proportion.jpg', alt: "Cinq colonnes, du début à quatre demi-vies : dans chacune, des noyaux jaune et noir sous une courbe rouge qui descend, et des points verts au-dessus.", legende: "La loi de décroissance radioactive (image 11 du cours)." },
     choix: ["les jaune et noir, encore radioactifs", "aucun : leur nombre total diminue", "les verts, stables, déjà produits", "les deux sortes, au même rythme"], r: 2,
     expl: "Les noyaux jaune et noir, radioactifs, diminuent sous la courbe ; chaque désintégration produit un noyau vert, stable. Le nombre total, lui, ne change pas." },
 
@@ -303,15 +315,16 @@
     etiquettes: ["la courbe plonge vite", "la courbe descend doucement", "la courbe remonte"],
     expl: "λ fixe la vitesse de la décroissance : grand, les noyaux se désintègrent vite ; petit, lentement. La courbe ne remonte jamais : on ne recrée pas de noyaux radioactifs." },
   { id: 'rad-040', etape: 'es-t1c2-lambda', forme: '≈', type: 'qcm',
-    q: "La courbe des dés et celle de la simulation ont la même forme. Quelle est l'allure d'une courbe de décroissance radioactive ?",
+    q: "Voici trois courbes de décroissance, tracées pour trois valeurs de λ ; la courbe des dés et celle de la simulation ont la même forme. Quelle est l'allure d'une courbe de décroissance radioactive ?",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-effet-de-lambda.jpg', alt: "Trois courbes du nombre de noyaux restants en fonction du temps, toutes parties de 100, pour λ = 0,1, λ = 0,5 et λ = 1,0.", legende: "L'effet de λ sur la décroissance (image 12 du cours)." },
     choix: ["une droite qui atteint vite zéro", "lente puis rapide, jusqu'à zéro", "un palier, puis une chute brutale", "lente puis rapide, sans toucher zéro", "une descente qui finit par remonter", "rapide puis lente, sans toucher zéro"], r: 5,
     expl: "Elle descend vite au début, puis de plus en plus lentement : elle s'approche de zéro sans jamais l'atteindre tout à fait. Elle ne remonte jamais." },
 
   /* ---------- 3.4 Le temps de demi-vie ---------- */
   { id: 'rad-044', etape: 'es-t1c2-demi-vie', forme: '=', type: 'qcm',
-    q: "Le temps de demi-vie t<sub>1/2</sub> d'un radionucléide est la durée au bout de laquelle…",
+    q: "Le temps de demi-vie t<sub>{{frac:1:2}}</sub> d'un radionucléide est la durée au bout de laquelle…",
     choix: ["chaque noyau s'est désintégré à moitié", "la dose reçue a diminué de moitié", "tous les noyaux de départ ont disparu", "la moitié des noyaux de départ a disparu", "chaque noyau a perdu la moitié de ses protons"], r: 3,
-    expl: "C'est la durée au bout de laquelle la moitié des noyaux radioactifs présents au départ se sont désintégrés : N(t<sub>1/2</sub>) = N<sub>0</sub> / 2. Un noyau ne se désintègre jamais « à moitié »." },
+    expl: "C'est la durée au bout de laquelle la moitié des noyaux radioactifs présents au départ se sont désintégrés : N(t<sub>{{frac:1:2}}</sub>) = {{frac:N<sub>0</sub>:2}}. Un noyau ne se désintègre jamais « à moitié »." },
   { id: 'rad-041', etape: 'es-t1c2-demi-vie', forme: '≈', type: 'curseur', groupe: 'demi-vie-calcul',
     q: "Un échantillon contient 1 200 noyaux radioactifs. Combien en reste-t-il au bout de deux demi-vies ?",
     min: 0, max: 1200, pas: 50, unite: 'noyaux', r: 300, tol: 0,
@@ -326,18 +339,19 @@
     expl: "1 600 → 800 → 400 → 200 → 100 : il reste le seizième (400, ce serait diviser par 4 une seule fois). Un nombre moyen : sur un vrai échantillon, le hasard fait varier le compte autour de cette valeur." },
   { id: 'rad-042', etape: 'es-t1c2-demi-vie', forme: '≈', type: 'qcm',
     q: "Une courbe de décroissance part de N<sub>0</sub> = 100 noyaux. Pour y lire le temps de demi-vie, on cherche…",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-demi-vie-sur-courbe.jpg', alt: "Une courbe de décroissance N(t) partant de N0 ; des pointillés relient la moitié de N0 au temps de demi-vie, et le quart de N0 à deux temps de demi-vie.", legende: "Le temps de demi-vie lu sur une courbe (image 13 du cours)." },
     choix: ["le temps où la courbe atteint 0", "la valeur de N au temps t = 50", "le temps où la courbe passe par 50", "la moitié de la durée du graphique", "le temps où la courbe passe par 25"], r: 2,
-    expl: "La moitié de N<sub>0</sub> est 50 : on part de 50 sur l'axe vertical, on rejoint la courbe, puis on descend lire le temps. C'est t<sub>1/2</sub> ; à 25, on lirait deux demi-vies." },
+    expl: "La moitié de N<sub>0</sub> est 50 : on part de 50 sur l'axe vertical, on rejoint la courbe, puis on descend lire le temps. C'est t<sub>{{frac:1:2}}</sub> ; à 25, on lirait deux demi-vies." },
   { id: 'rad-043', etape: 'es-t1c2-demi-vie', forme: '≈', type: 'qcm',
     q: "Un noyau radioactif a un temps de demi-vie de 10 minutes. Que peut-on dire de lui au bout de 10 minutes ?",
     choix: ["Il a une chance sur deux de l'avoir fait", "Il s'est forcément désintégré entre-temps", "Il est désintégré à moitié, pas plus", "Il ne peut pas encore s'être désintégré", "Il est devenu stable sans se désintégrer"], r: 0,
-    expl: "On ne sait toujours pas quand un noyau donné se désintégrera, mais au bout de t<sub>1/2</sub> il a une chance sur deux de l'avoir fait. Un noyau ne se désintègre jamais « à moitié »." },
+    expl: "On ne sait toujours pas quand un noyau donné se désintégrera, mais au bout de t<sub>{{frac:1:2}}</sub> il a une chance sur deux de l'avoir fait. Un noyau ne se désintègre jamais « à moitié »." },
   { id: 'rad-128', etape: 'es-t1c2-demi-vie', forme: '≈', type: 'assoc',
-    q: "L'image du cours le montre : à 2 t<sub>1/2</sub>, il ne reste que le quart des noyaux. Quelle part des noyaux de départ reste-t-il après chacune de ces durées ?",
-    cases: [{ t: "1 demi-vie", r: "1/2" }, { t: "2 demi-vies", r: "1/4" }, { t: "3 demi-vies", r: "1/8" }, { t: "4 demi-vies", r: "1/16" }],
+    q: "L'image du cours le montre : à 2 t<sub>{{frac:1:2}}</sub>, il ne reste que le quart des noyaux. Quelle part des noyaux de départ reste-t-il après chacune de ces durées ?",
+    cases: [{ t: "1 demi-vie", r: "{{frac:1:2}}" }, { t: "2 demi-vies", r: "{{frac:1:4}}" }, { t: "3 demi-vies", r: "{{frac:1:8}}" }, { t: "4 demi-vies", r: "{{frac:1:16}}" }],
     liens: ['→', '→', '→'],
-    etiquettes: ["1/2", "1/4", "1/8", "1/16", "1/6", "1/3"],
-    expl: "À chaque demi-vie, on divise encore par deux : 1/2, puis 1/4, 1/8, 1/16. Jamais zéro." },
+    etiquettes: ["{{frac:1:2}}", "{{frac:1:4}}", "{{frac:1:8}}", "{{frac:1:16}}", "{{frac:1:6}}", "{{frac:1:3}}"],
+    expl: "À chaque demi-vie, on divise encore par deux : {{frac:1:2}}, puis {{frac:1:4}}, {{frac:1:8}}, {{frac:1:16}}. Jamais zéro." },
 
   /* ---------- 3.5 La demi-vie dépend-elle du nombre de noyaux ? ---------- */
   { id: 'rad-045', etape: 'es-t1c2-activite-demi-vie', forme: '≈', type: 'qcm', groupe: 'demi-vie-N0',
@@ -355,7 +369,7 @@
   { id: 'rad-130', etape: 'es-t1c2-activite-demi-vie', forme: '≈', type: 'curseur', groupe: 'duree-proportion',
     q: "Un radionucléide utilisé en imagerie médicale a une demi-vie de 6 heures. Au bout de combien d'heures ne reste-t-il que le huitième des noyaux injectés ?",
     min: 0, max: 54, pas: 1, unite: 'h', r: 18, tol: 0,
-    expl: "Le huitième, c'est trois demi-vies (1/2, 1/4, 1/8) : 3 × 6 = 18 heures. Pas 8 × 6 = 48 : on compte les divisions par deux, pas le dénominateur." },
+    expl: "Le huitième, c'est trois demi-vies ({{frac:1:2}}, {{frac:1:4}}, {{frac:1:8}}) : 3 × 6 = 18 heures. Pas 8 × 6 = 48 : on compte les divisions par deux, pas le dénominateur." },
   { id: 'rad-047', etape: 'es-t1c2-activite-demi-vie', forme: '≈', type: 'qcm',
     q: "La conclusion de l'animation : le temps de demi-vie est comme une « carte d'identité » du radionucléide. Pourquoi ?",
     choix: ["Il est propre au noyau, quel que soit N<sub>0</sub>", "Il est le même pour tous les noyaux", "Il donne le nombre de protons du noyau", "Il change avec la taille de l'échantillon", "Il donne l'âge exact de chaque noyau"], r: 0,
@@ -364,6 +378,7 @@
   /* ---------- 3.6 Le radium 226 ---------- */
   { id: 'rad-048', etape: 'es-t1c2-radium', forme: '≈', type: 'qcm', groupe: 'radium-annee',
     q: "Le radium 226, découvert par Marie et Pierre Curie, a une demi-vie de 1 600 ans. Un cadran de montre a été peint au radium en 1915. En quelle année n'en contiendra-t-il plus que la moitié ?",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-decroissance-radium-226.jpg', alt: "Courbe de décroissance du radium 226 : quantité de noyaux en pourcentage en fonction du temps écoulé depuis 1915, en années ; un repère marque 50 % à une demi-vie, 1 600 ans.", legende: "La décroissance du radium 226 depuis 1915 (image 14 du cours)." },
     choix: ["1995", "2715", "5115", "6715", "3515"], r: 4,
     expl: "Une demi-vie après 1915 : 1915 + 1 600 = 3515. 5115 correspond à deux demi-vies (le quart), 6715 à trois (le huitième)." },
   { id: 'rad-050', etape: 'es-t1c2-radium', forme: '≈', type: 'curseur', groupe: 'radium-annee',
@@ -376,6 +391,7 @@
     expl: "110 ans, c'est très peu à côté de 1 600 ans : on est loin d'une demi-vie (50 %). La courbe du cours le montre : il reste près de 95 % du radium. Le noyau suit sa propre horloge." },
   { id: 'rad-131', etape: 'es-t1c2-radium', forme: '≈', type: 'assoc',
     q: "Un cadran a été peint au radium 226 (demi-vie 1 600 ans) en 1915. Quelle part du radium de départ y restera-t-il à chacune de ces dates ?",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-decroissance-radium-226.jpg', alt: "Courbe de décroissance du radium 226 : quantité de noyaux en pourcentage en fonction du temps écoulé depuis 1915, de 0 à 10 000 ans.", legende: "La décroissance du radium 226 depuis 1915 (image 14 du cours)." },
     cases: [{ t: "en 3515", r: "la moitié" }, { t: "en 5115", r: "le quart" }, { t: "en 6715", r: "le huitième" }],
     liens: ['→', '→'],
     etiquettes: ["la moitié", "le quart", "le huitième", "le tiers", "le sixième"],
@@ -397,7 +413,7 @@
   { id: 'rad-133', etape: 'es-t1c2-ex1', forme: '≈', type: 'qcm', groupe: 'datation-c14',
     q: "Un être vivant garde la même part de carbone 14 tant qu'il vit ; après sa mort, ce carbone 14 se désintègre sans être remplacé. Un os n'en contient plus que le huitième. Quel est son âge environ ? (carbone 14 : 5 730 ans, soit environ 5 700 ans)",
     choix: ["environ 700 ans", "environ 5 700 ans", "environ 11 500 ans", "environ 17 000 ans", "environ 23 000 ans", "environ 46 000 ans"], r: 3,
-    expl: "Le huitième, c'est trois demi-vies (1/2, 1/4, 1/8) : 3 × 5 730 = 17 190 ans, environ 17 000 ans. 46 000 ans, ce serait 8 demi-vies : on compte les divisions par deux, pas le dénominateur." },
+    expl: "Le huitième, c'est trois demi-vies ({{frac:1:2}}, {{frac:1:4}}, {{frac:1:8}}) : 3 × 5 730 = 17 190 ans, environ 17 000 ans. 46 000 ans, ce serait 8 demi-vies : on compte les divisions par deux, pas le dénominateur." },
   { id: 'rad-134', etape: 'es-t1c2-ex1', forme: '≈', type: 'curseur', groupe: 'datation-c14',
     q: "Un charbon de bois trouvé dans un foyer préhistorique contient encore la moitié du carbone 14 que contenait le bois vivant (après la mort du bois, le carbone 14 n'est plus renouvelé). Depuis combien d'années ce bois est-il mort ? (tableau : carbone 14, 5 730 ans)",
     min: 0, max: 24000, pas: 10, unite: 'ans', r: 5730, entre: [5500, 6000],
@@ -434,10 +450,12 @@
   /* ---------- 4.3 L'héritage de Tchernobyl ---------- */
   { id: 'rad-057', etape: 'es-t1c2-ex3', forme: '≈', type: 'qcm', groupe: 'tchernobyl-part',
     q: "L'accident de Tchernobyl, en 1986, a déposé du césium 137, dont la demi-vie est de 30 ans. Quelle part du césium déposé en 1986 restera-t-il en 2046 ?",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-cycle-radioactivite-afp.jpg', alt: "Infographie : un échantillon de 16 noyaux de césium 137 déposé en 1986 ; une flèche descend par blocs de 30 ans, 2016, 2046, 2076, 2106, et le nombre de noyaux est divisé par deux à chaque bloc.", legende: "Le cycle de la radioactivité, appliqué au césium 137 de Tchernobyl (image 16 du cours)." },
     choix: ["75 %", "50 %", "12,5 %", "6,25 %", "0 %", "25 %"], r: 5,
     expl: "De 1986 à 2046, il s'écoule 60 ans, soit deux demi-vies : 100 % → 50 % → 25 %." },
   { id: 'rad-137', etape: 'es-t1c2-ex3', forme: '≈', type: 'curseur', groupe: 'tchernobyl-part',
     q: "Le césium 137 déposé par l'accident de Tchernobyl, en 1986, a une demi-vie de 30 ans. Quel pourcentage du césium de départ restera-t-il en 2076 ?",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-cycle-radioactivite-afp.jpg', alt: "Infographie : un échantillon de 16 noyaux de césium 137 déposé en 1986 ; une flèche descend par blocs de 30 ans, 2016, 2046, 2076, 2106, et le nombre de noyaux est divisé par deux à chaque bloc.", legende: "Le cycle de la radioactivité, appliqué au césium 137 de Tchernobyl (image 16 du cours)." },
     min: 0, max: 100, pas: 2.5, unite: '%', r: 12.5, tol: 0,
     expl: "De 1986 à 2076, il s'écoule 90 ans, soit trois demi-vies : 100 % → 50 % → 25 % → 12,5 %. Pas 33 % : on divise par deux trois fois, pas par trois." },
   { id: 'rad-058', etape: 'es-t1c2-ex3', forme: '≈', type: 'qcm',
@@ -464,25 +482,26 @@
     expl: "Le fils est plus stable que le père, mais pas forcément stable : dans la cascade de l'uranium 238, chaque fils se désintègre à son tour jusqu'au plomb 206." },
   { id: 'rad-062', etape: 'es-t1c2-cartes', forme: '≈', type: 'qcm',
     q: "La limite réglementaire pour la population est de 1 mSv par an, et pourtant chacun reçoit en moyenne environ 7 mSv par an en France. Est-ce contradictoire ?",
+    image: { src: 'assets/img/es/1re-es-t1-c2/t1c2-seuils-reglementaires-exposition.jpg', alt: "Diagramme en barres, en mSv : des expositions (rejets d'une centrale sur un an, radiographie, vol Paris – New York, radioactivité naturelle en France sur un an, scanner, radioactivité naturelle au Kerala) comparées aux limites de dose de 1 mSv pour la population et de 20 mSv pour les travailleurs.", legende: "L'exposition comparée aux seuils réglementaires (image 4 du cours)." },
     choix: ["Non : la limite exclut naturel et médecine", "Oui : tout le monde dépasse la limite", "Non : 7 mSv est la dose d'une vie entière", "Oui : la limite ne vaut que pour les travailleurs", "Oui : la moyenne de 7 mSv est mal calculée"], r: 0,
     expl: "Les 7 mSv comptent tout, surtout le radon et les examens médicaux. La limite de 1 mSv ne porte que sur les activités humaines, hors radioactivité naturelle et hors médecine." },
   { id: 'rad-139', etape: 'es-t1c2-cartes', forme: '≈', type: 'flash',
     q: "Les cartes du chapitre opposent ce qui dépend du noyau et ce qui dépend de l'échantillon. Pense à deux grandeurs propres au radionucléide, puis à une grandeur qui dépend seulement de l'échantillon. Puis révèle.",
-    rep: "Propres au radionucléide : le temps de demi-vie t<sub>1/2</sub> et la constante radioactive λ. Propre à l'échantillon : le nombre de noyaux au départ, N<sub>0</sub>." },
+    rep: "Propres au radionucléide : le temps de demi-vie t<sub>{{frac:1:2}}</sub> et la constante radioactive λ. Propre à l'échantillon : le nombre de noyaux au départ, N<sub>0</sub>." },
 
   /* ---------- 4.5 Le grand QCM du chapitre ---------- */
   { id: 'rad-063', etape: 'es-t1c2-bilan', forme: '≈', type: 'qcm',
     q: "Au bout de trois demi-vies, quelle fraction des noyaux radioactifs de départ reste-t-il ?",
     choix: ["la moitié", "un tiers", "un quart", "un sixième", "un huitième", "un seizième"], r: 4,
-    expl: "On divise trois fois par deux : 1 → 1/2 → 1/4 → 1/8. Il reste un huitième, soit 12,5 %." },
+    expl: "On divise trois fois par deux : 1 → {{frac:1:2}} → {{frac:1:4}} → {{frac:1:8}}. Il reste un huitième, soit 12,5 %." },
   { id: 'rad-140', etape: 'es-t1c2-bilan', forme: '≈', type: 'curseur',
     q: "Un échantillon ne contient plus que le seizième de ses noyaux radioactifs de départ. Combien de demi-vies se sont écoulées ?",
     min: 0, max: 16, pas: 1, unite: 'demi-vies', r: 4, tol: 0,
-    expl: "1/2, 1/4, 1/8, 1/16 : quatre divisions par deux, donc quatre demi-vies — pas seize, ni huit." },
+    expl: "{{frac:1:2}}, {{frac:1:4}}, {{frac:1:8}}, {{frac:1:16}} : quatre divisions par deux, donc quatre demi-vies — pas seize, ni huit." },
   { id: 'rad-064', etape: 'es-t1c2-bilan', forme: '≈', type: 'qcm',
     q: "Laquelle de ces grandeurs dépend de l'échantillon que l'on a sous la main, et non de la nature du noyau ?",
-    choix: ["le temps de demi-vie t<sub>1/2</sub>", "la constante radioactive λ", "le type de particule émise", "la nature du noyau fils", "le nombre de noyaux N<sub>0</sub>", "le nombre de protons Z"], r: 4,
-    expl: "N<sub>0</sub> dépend de la taille de l'échantillon. t<sub>1/2</sub>, λ, la particule émise, le noyau fils et Z sont propres au radionucléide." },
+    choix: ["le temps de demi-vie t<sub>{{frac:1:2}}</sub>", "la constante radioactive λ", "le type de particule émise", "la nature du noyau fils", "le nombre de noyaux N<sub>0</sub>", "le nombre de protons Z"], r: 4,
+    expl: "N<sub>0</sub> dépend de la taille de l'échantillon. t<sub>{{frac:1:2}}</sub>, λ, la particule émise, le noyau fils et Z sont propres au radionucléide." },
   { id: 'rad-065', etape: 'es-t1c2-bilan', forme: '≈', type: 'qcm',
     q: "Pourquoi peut-on dater un objet ancien grâce à la radioactivité, comme avec le carbone 14 ?",
     choix: ["Ses noyaux se désintègrent tous à une date fixe", "Sa radioactivité augmente avec son âge", "Un objet ancien n'émet plus aucun rayonnement", "Sa demi-vie est fixe : la part restante dit la durée", "Sa demi-vie s'allonge au fil des siècles"], r: 3,

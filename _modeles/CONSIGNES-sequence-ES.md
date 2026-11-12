@@ -85,6 +85,11 @@ reprend, on n'en invente pas une autre. Deux formes : `.card.activite` (+ badge
 `.badge.act`) quand l'étape entière est une activité, `.activite` quand elle n'en
 occupe qu'une partie.
 
+🔴 **Une fraction s'écrit en vraie fraction** (règle permanente de Loïc, 12/11/2026) : numérateur
+au-dessus du dénominateur, jamais `1/8`, `N₀/2` ni `ρ = m / V` avec une barre oblique — dans le cours,
+les QCM, les corrections, les questions de rappel (`{{frac:num:den}}`, `assets/js/rappels-rendu.js`).
+La barre oblique ne reste que dans les unités (nSv/h, mSv/an).
+
 **Le mot « exercice » ne s'écrit nulle part.** Il n'y a que des **activités**. Pour
 une liste d'illustrations, on parle d'**exemples**, jamais de « a / b / c ».
 
