@@ -752,6 +752,14 @@
         r.appendChild(el('ul', null, h.criteres.map(function (c) { return el('li', null, c); })));
       }
       s.appendChild(r);
+      /* 042 : ce que dit la loi, puis les repères et les chiffres */
+      var loi = el('div', { class: 'carte-blanche' });
+      if (EMC.Vues.loi(loi, sit, h)) s.appendChild(loi);
+      var rep = el('div');
+      if (EMC.Vues.reperesLoi(rep, h)) {
+        s.appendChild(el('details', { class: 'carte-blanche' },
+          el('summary', null, el('b', null, '📚 La loi en bref, et les chiffres en France')), rep));
+      }
     }
   }
 

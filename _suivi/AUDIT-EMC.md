@@ -180,4 +180,5 @@ Liste tenue à jour par Claude. La demander avec « le bilan EMC ».
 - Faire la répétition avec Mme Castel avant le premier créneau.
 - À chaque séance : distribuer les cartes et faire circuler la feuille de correspondance.
 - ⏳ **040** à exécuter dans le SQL Editor **avant** de publier le site (restitution en 7 étapes, retour anonyme à l'étape 6), puis relire dans Contenus → Restitution les textes proposés (consigne de la définition, questions du retour) et vérifier que **les ateliers sont numérotés 1 à 10 comme les tables**.
+- ✅ **042** exécuté (12/11). ⏳ Relire dans Contenus → Étape 6 les textes proposés (une situation par une, les repères, les chiffres) — à faire valider aussi par Mme Castel.
 - Après chaque séance : exports, clôture (aide, portraits et phrases effacés), puis suppression des comptes de ses cartes.

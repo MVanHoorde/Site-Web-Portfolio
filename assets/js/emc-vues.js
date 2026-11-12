@@ -56,7 +56,27 @@
     'body.projection .v-barres .jauge{background:#23426e}' +
     'body.projection .v-hm .curseur::after{background:#fff}' +
     'body.projection .v-hm .disp{border-color:#fff}' +
-    'body.projection .v-histo div{background:var(--cyan)}';
+    'body.projection .v-histo div{background:var(--cyan)}' +
+    /* le volet « loi » du harcèlomètre (042) */
+    '.v-loi h3{margin:0 0 .35em;font-size:1.1em}' +
+    '.v-loi>p{margin:.3em 0}' +
+    '.v-loi-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(15em,1fr));gap:.6em;margin:.6em 0}' +
+    '.v-loi-grille>div{background:var(--surface-2);border-radius:10px;padding:.55em .75em;border-left:4px solid var(--err)}' +
+    '.v-loi-grille>div.faire{border-left-color:var(--ok)}' +
+    '.v-loi-grille b{display:block;margin-bottom:.15em}' +
+    '.v-loi .chiffre{background:var(--cyan-wash);border-radius:10px;padding:.5em .75em;margin:.5em 0}' +
+    '.v-loi .src,.v-reperes .src{font-size:.82em;color:var(--ink-soft);margin:.3em 0 0}' +
+    '.v-chiffres{display:grid;grid-template-columns:repeat(auto-fit,minmax(12em,1fr));gap:.6em;margin:.4em 0 .6em}' +
+    '.v-chiffres>div{background:var(--surface-2);border-radius:10px;padding:.55em .75em}' +
+    '.v-chiffres .val{display:block;font:700 1.8em/1.1 "Space Grotesk","Inter",sans-serif;color:var(--marine)}' +
+    '.v-reperes-liste{display:grid;grid-template-columns:repeat(auto-fit,minmax(16em,1fr));gap:.6em}' +
+    '.v-reperes-liste>div{border:1px solid var(--line);border-radius:10px;padding:.55em .75em}' +
+    '.v-reperes-liste b{display:block;margin-bottom:.15em}' +
+    'body.projection .v-loi-grille>div,body.projection .v-chiffres>div{background:#183766}' +
+    'body.projection .v-loi .chiffre{background:#183766}' +
+    'body.projection .v-chiffres .val{color:var(--cyan)}' +
+    'body.projection .v-reperes-liste>div{border-color:#23426e}' +
+    'body.projection .v-loi .src,body.projection .v-reperes .src{color:#b7c6dd}';
   var s = document.createElement('style'); s.textContent = css; document.head.appendChild(s);
 
   var Vues = {};
@@ -358,6 +378,54 @@
         el('span', null, 'Écart-type ', el('b', null, fmt(stats.ecart))),
         el('span', null, 'Votants ', el('b', null, String(stats.n || 0) + (opts.prets != null ? ' / ' + opts.prets : '')))));
     }
+  };
+
+  /* ---------- harcèlomètre : ce que dit la loi (042) ----------
+   * sit : la situation (sit.loi : titre, texte, risque, demarches,
+   * source, chiffre) · hm : contenus.harcelometre (loi_note).
+   * Rend false si la situation n'a pas de volet « loi ». */
+  Vues.aLoi = function (sit) { var l = sit && sit.loi; return !!(l && (l.texte || l.risque || l.demarches)); };
+  Vues.loi = function (conteneur, sit, hm, opts) {
+    opts = opts || {};
+    conteneur.innerHTML = '';
+    if (!Vues.aLoi(sit)) return false;
+    var l = sit.loi, w = el('div', { class: 'v-loi' });
+    if (opts.titre !== false) w.appendChild(el('h3', null, '⚖️ ' + (l.titre || 'Ce que dit la loi')));
+    if (l.texte) w.appendChild(el('p', null, l.texte));
+    var g = el('div', { class: 'v-loi-grille' });
+    if (l.risque) g.appendChild(el('div', null, el('b', null, 'Ce qu\'on risque'), l.risque));
+    if (l.demarches) g.appendChild(el('div', { class: 'faire' }, el('b', null, 'Que faire ?'), l.demarches));
+    if (g.children.length) w.appendChild(g);
+    if (l.chiffre) w.appendChild(el('div', { class: 'chiffre' }, '📊 ' + l.chiffre));
+    var pied = [l.source, (hm && hm.loi_note) || ''].filter(Boolean).join(' · ');
+    if (pied) w.appendChild(el('p', { class: 'src' }, pied));
+    conteneur.appendChild(w);
+    return true;
+  };
+
+  /* Les repères généraux et les chiffres en France.
+   * opts : { chiffresSeuls } (le petit rappel de la projection) */
+  Vues.reperesLoi = function (conteneur, hm, opts) {
+    opts = opts || {};
+    conteneur.innerHTML = '';
+    hm = hm || {};
+    var w = el('div', { class: 'v-reperes' });
+    var ch = hm.chiffres || [];
+    if (ch.length) {
+      w.appendChild(el('div', { class: 'v-chiffres' }, ch.map(function (c) {
+        return el('div', null, el('span', { class: 'val' }, c.valeur || ''), c.texte || '',
+          c.source && !opts.chiffresSeuls ? el('p', { class: 'src' }, c.source) : null);
+      })));
+      if (hm.chiffres_question && !opts.chiffresSeuls) w.appendChild(el('p', null, el('b', null, '🤔 '), hm.chiffres_question));
+    }
+    if (!opts.chiffresSeuls && (hm.loi_reperes || []).length) {
+      w.appendChild(el('div', { class: 'v-reperes-liste' }, hm.loi_reperes.map(function (r) {
+        return el('div', null, el('b', null, r.titre || ''), r.texte || '');
+      })));
+    }
+    if (!w.children.length) return false;
+    conteneur.appendChild(w);
+    return true;
   };
 
   /* ---------- enquête ---------- */

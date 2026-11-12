@@ -285,7 +285,7 @@
 <script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="../assets/js/vendor/konva-9.3.6.min.js"></script>
 <script src="../assets/js/emc-commun.js?v=4"></script>
-<script src="../assets/js/emc-vues.js?v=4"></script>
+<script src="../assets/js/emc-vues.js?v=5"></script>
 <script src="../assets/js/emc-carte.js?v=2"></script>
 <script src="../assets/js/emc-export.js?v=1"></script>
 <script src="../assets/js/prof-emc-outils.js?v=2"></script>
@@ -858,6 +858,10 @@
       r.appendChild(el('p', null, el('b', null, 'Zone attendue : '), s.attendu || '—', s.lien ? el('span', { class: 'tresmuet' }, ' · lien avec Nina : ' + s.lien) : null));
       r.appendChild(el('p', { style: 'margin:.3rem 0 0' }, el('b', null, 'Critères : ')));
       r.appendChild(el('ul', null, (hm().criteres || []).map(function (c) { return el('li', null, c); })));
+      var loi = el('div', { style: 'margin-top:.8rem' });
+      if (V.loi(loi, s, hm())) r.appendChild(loi);
+      var rep = el('div');
+      if (V.reperesLoi(rep, hm())) r.appendChild(el('details', { style: 'margin-top:.6rem' }, el('summary', null, el('b', null, '📚 La loi en bref, et les chiffres en France')), rep));
     }
     var tb = $('#hm-historique'); tb.innerHTML = '';
     var vus = {};

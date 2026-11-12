@@ -23,6 +23,30 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 6,
+    date: '2026-11-12',
+    espaces: ['emc'],
+    titre: 'EMC : le harcèlomètre dit ce que dit la loi',
+    points: [
+      {
+        titre: 'Après « Révéler », la loi',
+        texte: 'Pour chaque situation : ce que dit la loi, ce qu’on risque, que faire, et les articles. Sur les tablettes et, au tableau, dans une tuile à côté du harcèlomètre.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">⚖️ Ce qu’on risque</span><span class="nv-puce">Que faire ?</span></div>' +
+          '</div>'
+      },
+      {
+        titre: 'La loi en bref, et des chiffres',
+        texte: 'Une tuile en rappel pour discuter : délit de 2022, mineurs, réseaux, démarches, et trois chiffres pour la France. Tout se retouche dans Contenus → Étape 6.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">2 %</span><span class="nv-puce">37 %</span><span class="nv-puce">124 500</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 5,
     date: '2026-11-12',
     espaces: ['emc'],

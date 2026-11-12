@@ -126,6 +126,8 @@
   .hm-proj .v-hm{font-size:1.3rem}
   .hm-bilan div{display:flex;justify-content:space-between;gap:.6rem;border-bottom:1px solid #23426e;padding:.2rem 0}
   .tuile:not(.petite) .hm-bilan{font-size:1.3rem}
+  .hm-loi{flex:1;min-height:0;overflow:auto;font-size:1.15rem}
+  .tuile:not(.petite) .hm-loi .v-loi>p{font-size:1.3rem}
   .revele{background:#183766;border-radius:12px;padding:.7rem 1rem;margin-top:.8rem;font-size:1.1rem}
   .numeros.grand{font-size:1.5rem;gap:.8rem 2.5rem}
   .numeros.grand b{font-size:2.6rem;color:#ffd28a;display:block}
@@ -171,7 +173,7 @@
 <script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="../assets/js/vendor/konva-9.3.6.min.js"></script>
 <script src="../assets/js/emc-commun.js?v=4"></script>
-<script src="../assets/js/emc-vues.js?v=4"></script>
+<script src="../assets/js/emc-vues.js?v=5"></script>
 <script src="../assets/js/emc-carte.js?v=2"></script>
 <script>
 (function () {
@@ -426,6 +428,21 @@
         }
       }
     },
+    /* 042 : après la révélation, ce que dit la loi sur la situation */
+    'hm-loi': {
+      titre: function () { var s = situation(P.seance.situation_courante); return s && s.loi && s.loi.titre ? '⚖️ ' + s.loi.titre : '⚖️ Ce que dit la loi'; },
+      rendre: function (z) {
+        var s = situation(P.seance.situation_courante), d = el('div', { class: 'hm-loi' }); z.appendChild(d);
+        V.loi(d, s, P.contenus.harcelometre || {}, { titre: false });
+      }
+    },
+    'hm-reperes': {
+      titre: function () { return '📚 La loi en bref, et les chiffres en France'; },
+      rendre: function (z, petit) {
+        var d = el('div', { class: 'hm-loi' }); z.appendChild(d);
+        V.reperesLoi(d, P.contenus.harcelometre || {}, { chiffresSeuls: !!petit });
+      }
+    },
     'hm-bilan': {
       titre: function () { return 'Harcèlomètre : les moyennes'; }, vivant: true,
       rendre: function (z, petit) {
@@ -457,6 +474,7 @@
   /* Ce qui est au programme de l'étape n, et ce qui reste en rappel. */
   function principaux(n) {
     if (P.seance.cloturee_le) return ['fin'];
+    if (n === 6 && P.seance.situation_revelee && V.aLoi(situation(P.seance.situation_courante))) return ['harcelometre', 'hm-loi'];
     return [['accueil'], ['nuage', 'emotions'], ['missions'], ['missions'], ['carte'], ['video'], ['harcelometre'], ['enquete']][n] || [];
   }
   function rappels(n) {
@@ -465,6 +483,8 @@
     if (n > 3 || P.seance.cloturee_le) r.push('missions');
     if (n > 4 || P.seance.cloturee_le) { if (Object.keys(P.carteLignes).length || P.vignetteCarte) r.push('carte'); }
     if (n > 6 || P.seance.cloturee_le || (n === 6 && votesAutres().length)) r.push('hm-bilan');
+    var hmc = P.contenus.harcelometre || {};
+    if (((hmc.chiffres || []).length || (hmc.loi_reperes || []).length) && (n > 6 || P.seance.cloturee_le || (n === 6 && (P.seance.situation_revelee || votesAutres().length)))) r.push('hm-reperes');
     var pr = principaux(n);
     return r.filter(function (id) { return pr.indexOf(id) < 0; });
   }

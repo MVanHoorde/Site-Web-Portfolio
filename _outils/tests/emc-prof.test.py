@@ -32,6 +32,16 @@ sql = open(os.path.join(RACINE, 'bdd/schema/031-emc.sql'), encoding='utf-8').rea
 contenus = [{'cle': m.group(1), 'valeur': json.loads(m.group(2))}
             for m in re.finditer(r"\('(\w+)', \$j\$(.*?)\$j\$::jsonb\)", sql, re.S)]
 assert len(contenus) == 9, len(contenus)
+# ce que le 042 ajoute au harcèlomètre (volet loi, repères, chiffres)
+_s42 = open(os.path.join(RACINE, 'bdd/schema/042-emc-harcelometre-loi.sql'), encoding='utf-8').read()
+_hm = next(c['valeur'] for c in contenus if c['cle'] == 'harcelometre')
+_lois = {k: json.loads(v) for k, v in re.findall(r"\('(s\d+)', \$j\$(.*?)\$j\$::jsonb\)", _s42, re.S)}
+for _x in _hm['situations']:
+    if _x['id'] in _lois: _x['loi'] = _lois[_x['id']]
+for _c in ('loi_reperes', 'chiffres'):
+    _hm[_c] = json.loads(re.search(r"'%s', \$j\$(.*?)\$j\$::jsonb" % _c, _s42, re.S).group(1))
+for _c in ('loi_note', 'chiffres_question'):
+    _hm[_c] = re.search(r"'%s',\s*'((?:[^']|'')*)'" % _c, _s42).group(1).replace("''", "'")
 CONTENUS0 = json.dumps(contenus)
 MOI = '00000000-0000-0000-0000-000000009001'
 CL = {c: str(uuid.uuid4()) for c in ['NINA27', 'NINA48', 'NINA63', 'NINA91', 'SNT26A']}
@@ -202,7 +212,9 @@ with sync_playwright() as pw:
         # ---------- 1. tableau de bord ----------
         ctx = contexte(nav, larg, haut); page = ctx.new_page(); errs = suivre(page, 'bord')
         page.goto(BASE + '/prof/index.html'); page.wait_for_timeout(1500)
-        cartes = page.locator('#liste-espaces .espace')
+        # la fenêtre « ✨ Nouveautés » (038) s'ouvre à la connexion : on la ferme
+        page.evaluate("document.querySelectorAll('dialog[open]').forEach(function (d) { d.close(); })")
+        cartes =page.locator('#liste-espaces .espace')
         verif('accueil : 2 espaces (SNT, EMC)' + suff, cartes.count() == 2, cartes.count())
         verif('accueil : carte EMC' + suff, page.locator('#liste-espaces .espace', has_text='EMC seconde').count() == 1)
         capture(page, '01-bord-accueil' + suff)
@@ -270,6 +282,7 @@ with sync_playwright() as pw:
         verif('harcèlomètre : tous les prêts ont voté' + suff, page.is_visible('#hm-tous'))
         page.click('#hm-reveler'); page.wait_for_timeout(400)
         verif('révéler : zone attendue affichée' + suff, 'Zone attendue' in page.inner_text('#hm-revele'))
+        verif('révéler (042) : la loi au pilotage' + suff, 'Ce qu\'on risque' in page.inner_text('#hm-revele') and page.locator('#hm-revele details .v-reperes').count() == 1)
         capture(page, '06-pilotage-hm-revele' + suff)
         # exports
         page.click('#onglets button[data-onglet=exports]')
@@ -332,6 +345,13 @@ with sync_playwright() as pw:
             fuite = [p for p in PSEUDOS if p in dom] + [x for x in ['TEST', 'SECRET-AIDE'] if x in dom]
             verif('projection étape %d : aucun pseudo, nom ni aide' % n + suff, not fuite, fuite)
             capture(page, '08-projection-etape%d' % n + suff)
+            if n == 6:
+                verif('projection étape 6 révélée (042) : tuile de la loi à côté du harcèlomètre' + suff,
+                      page.locator('.p-zone.principal [data-bloc=hm-loi] .v-loi').count() == 1 and page.locator('[data-bloc=harcelometre]').count() == 1)
+                verif('projection étape 6 révélée (042) : repères en rappel' + suff, page.locator('[data-bloc=hm-reperes]').count() == 1)
+            if n == 7:
+                verif('projection étape 7 (042) : plus de tuile loi, repères en rappel' + suff,
+                      page.locator('[data-bloc=hm-loi]').count() == 0 and page.locator('[data-bloc=hm-reperes]').count() == 1)
             if n == 5:
                 src = page.get_attribute('.video-yt iframe', 'src') or ''
                 verif('projection étape 5 : vidéo YouTube par youtube-nocookie' + suff, src.startswith('https://www.youtube-nocookie.com/embed/'), src)

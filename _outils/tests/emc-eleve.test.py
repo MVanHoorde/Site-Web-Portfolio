@@ -42,7 +42,20 @@ def contenus_du_sql():
     out = {}
     for cle, js in re.findall(r"\('([a-z_]+)', \$j\$(.*?)\$j\$::jsonb\)", s, re.S):
         out[cle] = json.loads(js)
+    avec_loi_042(out['harcelometre'], DEPOT)
     return out
+
+def avec_loi_042(hm, depot):
+    """Ce que le 042 ajoute au harcèlomètre : le volet loi de chaque
+    situation, les repères, les chiffres, la note et la question."""
+    s = open(os.path.join(depot, 'bdd/schema/042-emc-harcelometre-loi.sql'), encoding='utf-8').read()
+    lois = {k: json.loads(v) for k, v in re.findall(r"\('(s\d+)', \$j\$(.*?)\$j\$::jsonb\)", s, re.S)}
+    for x in hm['situations']:
+        if x['id'] in lois: x['loi'] = lois[x['id']]
+    for cle in ('loi_reperes', 'chiffres'):
+        hm[cle] = json.loads(re.search(r"'%s', \$j\$(.*?)\$j\$::jsonb" % cle, s, re.S).group(1))
+    for cle in ('loi_note', 'chiffres_question'):
+        hm[cle] = re.search(r"'%s',\s*'((?:[^']|'')*)'" % cle, s).group(1).replace("''", "'")
 
 # ---------------------------------------------------------------- fausse base
 class FausseBase:
@@ -506,10 +519,16 @@ def main():
         verif('révélé : zone attendue affichée', 'Zone attendue' in page.inner_text('#scene'))
         verif('révélé : curseur figé', page.eval_on_selector('input.harcelo', 'c => c.disabled'))
         verif('révélé : mon vote rappelé', 'Ton vote : 7' in page.inner_text('#scene'))
+        sc = page.inner_text('#scene')
+        verif('révélé (042) : ce que dit la loi, risque, démarches, textes', 'liberté d\'expression' in sc and 'Ce qu\'on risque' in sc and 'Que faire' in sc and '222-33-2-2' in sc and 'majeur' in sc)
+        verif('révélé (042) : repères et chiffres repliés', page.locator('#scene details .v-chiffres').count() == 1 and not page.is_visible('#scene details .v-chiffres'))
+        page.click('#scene details summary'); page.wait_for_timeout(200)
+        verif('révélé (042) : repères dépliés', page.is_visible('#scene details .v-chiffres') and page.locator('#scene .v-reperes-liste > div').count() == 6)
         capture('09-etape6-revele')
         base.poser_etape(6, situation_courante='s1', situation_revelee=False)
         page.wait_for_timeout(3800)
         verif('situation suivante affichée', 'like la personne' in page.inner_text('#scene'))
+        verif('non révélé (042) : la loi n\'est pas montrée', 'Ce qu\'on risque' not in page.inner_text('#scene'))
 
         # --- aide (avant l'enquête), y compris hors ligne
         page.click('#btn-aide')

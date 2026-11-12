@@ -740,5 +740,28 @@ await db.exec(sql040);
 const r40b = await val('restitution');
 verif('040 rejoué : réglages gardés', r40b.mur_consigne === 'retouché à la main' && r40b.parcours_max === 5 && (await val('etapes_restitution')).length === 7);
 
+/* ---------- 21. 042 : le harcèlomètre dit ce que dit la loi ---------- */
+const sql042 = readFileSync(join(depot, 'bdd/schema/042-emc-harcelometre-loi.sql'), 'utf8');
+const h41 = await val('harcelometre');
+/* une situation ajoutée à la main, sans volet « loi », et un volet déjà retouché */
+h41.situations.push({ id: 's99', texte: 'ajoutée à la main', actif: true });
+h41.situations.find((s) => s.id === 's3').loi = { titre: 'retouché à la main', texte: 'x' };
+await db.query(`update public.emc_contenus set valeur = $1 where cle = 'harcelometre'`, [JSON.stringify(h41)]);
+const r42 = await db.exec(sql042);
+const h42 = await val('harcelometre');
+const sansLoi = h42.situations.filter((s) => !s.loi).map((s) => s.id);
+verif('042 : toutes les situations d\'origine ont leur volet loi', JSON.stringify(sansLoi) === '["s99"]', sansLoi);
+verif('042 : chaque volet a titre, texte, risque, démarches', h42.situations.filter((s) => s.loi && s.id !== 's3').every((s) => s.loi.titre && s.loi.texte && s.loi.risque && s.loi.demarches));
+verif('042 : volet retouché gardé', h42.situations.find((s) => s.id === 's3').loi.titre === 'retouché à la main');
+verif('042 : ordre, nombre et réglages des situations inchangés', JSON.stringify(h42.situations.map((s) => [s.id, s.actif, s.texte])) === JSON.stringify(h41.situations.map((s) => [s.id, s.actif, s.texte])));
+verif('042 : échelle et critères intacts', JSON.stringify(h42.echelle) === JSON.stringify(h41.echelle) && JSON.stringify(h42.criteres) === JSON.stringify(h41.criteres));
+verif('042 : 6 repères, 3 chiffres, note et question', h42.loi_reperes.length === 6 && h42.chiffres.length === 3 && /majeur/.test(h42.loi_note) && /37 %/.test(h42.chiffres_question));
+verif('042 : la vérification finale rend vrai partout', Object.values(r42[r42.length - 1].rows[0]).every((x) => x === true), r42[r42.length - 1].rows[0]);
+h42.chiffres[0].valeur = 'réglé'; h42.loi_note = 'note réglée';
+await db.query(`update public.emc_contenus set valeur = $1 where cle = 'harcelometre'`, [JSON.stringify(h42)]);
+await db.exec(sql042);
+const h42b = await val('harcelometre');
+verif('042 rejoué : chiffres et note réglés gardés, rien en double', h42b.chiffres[0].valeur === 'réglé' && h42b.loi_note === 'note réglée' && h42b.situations.length === h42.situations.length);
+
 console.log(`\n${ok} contrôles réussis, ${ko} en échec.`);
 process.exit(ko ? 1 : 0);

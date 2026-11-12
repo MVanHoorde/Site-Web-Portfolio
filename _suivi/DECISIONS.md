@@ -15,6 +15,12 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 12/11/2026 — EMC : le harcèlomètre et la loi (042)
+
+| Date | Décision | Statut |
+|---|---|---|
+| 12/11/2026 | **EMC, harcèlomètre : un volet « loi » après la révélation** (042) — par situation : ce que dit la loi, ce qu'on risque (maxima pour un majeur, note sur les mineurs), que faire, articles ; plus 6 repères généraux et 3 chiffres France (DEPP 2025, baromètre e-Enfance 2025, 3018 2025). Montré seulement une fois la zone révélée (tablette, pilotage, tuile de projection) ; textes retouchables dans Contenus | ⏳ proposé par Claude, contenu à valider (Loïc) — 042 exécuté le 12/11 |
+
 ## 12/11/2026 — EMC : la restitution après les séances du jeudi (040)
 
 | Date | Décision | Statut |
