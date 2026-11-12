@@ -33,6 +33,12 @@
     '.v-barres .jauge{height:1.1em;background:var(--surface-2);border-radius:6px;overflow:hidden}' +
     '.v-barres .jauge i{display:block;height:100%;background:var(--cyan);border-radius:6px}' +
     '.v-barres .n{font-variant-numeric:tabular-nums;font-weight:600;min-width:2ch;text-align:right}' +
+    /* la version qui s'ajuste au cadre : jamais coupée, au pire elle défile */
+    '.v-barres-cadre{overflow:auto;display:flex;flex-direction:column;justify-content:safe center;min-height:0}' +
+    '.v-barres-multi{display:flex;gap:1.6em;align-items:flex-start;width:100%}' +
+    '.v-barres-multi>.v-barres{flex:1 1 0;min-width:0}' +
+    '.v-barres.sans-jauge{grid-template-columns:minmax(0,1fr) auto}' +
+    '.v-barres.sans-jauge .jauge{display:none}' +
     '.v-hm{position:relative;padding:1.6em 0 .4em}' +
     '.v-hm .bande{display:flex;height:2.2em;border-radius:10px;overflow:hidden}' +
     '.v-hm .bande div{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.85em;text-align:center;padding:0 .3em;line-height:1.05}' +
@@ -184,10 +190,7 @@
   }
 
   /* ---------- barres (émojis, enquête) ---------- */
-  Vues.barres = function (conteneur, items, opts) {
-    opts = opts || {};
-    conteneur.innerHTML = '';
-    var max = Math.max.apply(null, items.map(function (x) { return x.n; }).concat([1]));
+  function grilleBarres(items, max) {
     var g = el('div', { class: 'v-barres' });
     items.forEach(function (x) {
       var j = el('i'); j.style.width = (100 * x.n / max) + '%';
@@ -196,7 +199,77 @@
       g.appendChild(el('span', { class: 'jauge' }, j));
       g.appendChild(el('span', { class: 'n' }, String(x.n)));
     });
-    conteneur.appendChild(g);
+    return g;
+  }
+  /* opts.ajuster : la liste TIENT dans le conteneur (qui doit avoir une
+     hauteur). On essaie 1, 2 puis 3 colonnes (la 1re colonne garde les
+     plus choisis), et pour chacune la plus grande police qui tient ; on
+     garde la combinaison la plus lisible. Avant (12/11), une liste trop
+     haute était centrée puis coupée : on perdait le HAUT, c'est-à-dire
+     les émotions les plus choisies. */
+  Vues.barres = function (conteneur, items, opts) {
+    opts = opts || {};
+    conteneur.innerHTML = '';
+    var max = Math.max.apply(null, items.map(function (x) { return x.n; }).concat([1]));
+    if (!opts.ajuster) { conteneur.appendChild(grilleBarres(items, max)); return; }
+    conteneur.classList.add('v-barres-cadre');
+    function poser() {
+      var H = conteneur.clientHeight, W = conteneur.clientWidth;
+      conteneur.innerHTML = '';
+      var multi = el('div', { class: 'v-barres-multi' });
+      conteneur.appendChild(multi);
+      /* sj : sans les jauges (libellé et nombre seuls) ; enHauteur : la
+         hauteur compte (sinon on n'exige que la largeur, et le cadre défile) */
+      function essayer(k, s, sj, enHauteur) {
+        multi.innerHTML = ''; multi.style.fontSize = s + 'em';
+        var par = Math.ceil(items.length / k);
+        for (var i = 0; i < k; i++) {
+          var tr = items.slice(i * par, (i + 1) * par);
+          if (tr.length) { var g = grilleBarres(tr, max); if (sj) g.classList.add('sans-jauge'); multi.appendChild(g); }
+        }
+        if ((enHauteur !== false && multi.scrollHeight > H + 1) || multi.scrollWidth > W + 1) return false;
+        /* chaque colonne garde ses libellés ET une jauge lisible : sinon
+           un libellé long déborde sur la colonne voisine */
+        for (var c = 0; c < multi.children.length; c++) {
+          var col = multi.children[c];
+          if (col.scrollWidth > col.clientWidth + 1) return false;
+          var j = sj ? null : col.querySelector('.jauge');
+          if (j && j.clientWidth < 24) return false;
+        }
+        return true;
+      }
+      if (!H || !W) { essayer(1, 1); return; }
+      /* le plus lisible : la plus grande police, les jauges en bonus */
+      var mieux = null, nk = Math.min(3, Math.max(1, items.length));
+      [false, true].forEach(function (sj) {
+        for (var k = 1; k <= nk; k++) {
+          for (var s = 1; s >= 0.6; s -= 0.05) {
+            if (essayer(k, s, sj)) { var sc = s + (sj ? 0 : 0.15); if (!mieux || sc > mieux.sc + 0.001) mieux = { k: k, s: s, sj: sj, sc: sc }; break; }
+          }
+        }
+      });
+      /* rien ne tient : une colonne lisible, sans jauge, et le cadre défile
+         (on ne coupe ni ne chevauche jamais) */
+      if (!mieux) {
+        mieux = { k: 1, s: 0.6, sj: true, h: false };
+        for (var s2 = 1; s2 >= 0.6; s2 -= 0.05) if (essayer(1, s2, true, false)) { mieux.s = s2; break; }
+      }
+      essayer(mieux.k, mieux.s, mieux.sj, mieux.h);
+      conteneur.dataset.colonnes = mieux.k;
+    }
+    poser();
+    conteneur._barresArgs = poser;
+    if (global.ResizeObserver && !conteneur._barresObs) {
+      var avant = conteneur.clientWidth + 'x' + conteneur.clientHeight;
+      conteneur._barresObs = new ResizeObserver(function () {
+        var m = conteneur.clientWidth + 'x' + conteneur.clientHeight;
+        if (m === avant || !conteneur.clientWidth) return;
+        avant = m;
+        clearTimeout(conteneur._barresT);
+        conteneur._barresT = setTimeout(function () { if (conteneur._barresArgs) conteneur._barresArgs(); }, 100);
+      });
+      conteneur._barresObs.observe(conteneur);
+    }
   };
 
   /* lignes : [{ emojis: [...] }] · catalogue : contenus.mots.emojis */

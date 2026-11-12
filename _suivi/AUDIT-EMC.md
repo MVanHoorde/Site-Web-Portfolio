@@ -63,7 +63,7 @@ de 2 h pile.
 |---|---|---|
 | `emc/index.html` | **Élève** : porte par la carte (saisie ou QR code `?carte=…&k=…`, effacé de l'adresse), puis l'étape ouverte selon le module, « Je suis prêt », encart des numéros d'urgence, « J'ai besoin d'en parler ». Les étapes du Labyrinthe sont dans `emc-eleve.js`, celles du jeu de rôle dans `emc-accueil.js` (`EMC.Modules.accueil`) | Session de la carte (`emc.session`), à part de `snt.session` |
 | `prof/emc-accueil.html` | **Pilotage du jeu de rôle** (étapes 0-8, binômes, présentations, portraits et phrases, cartes, clôture) ; avec `?vue=projection`, **sa projection** (jamais un identifiant, jamais l'aide, seulement le mur validé) | Session du tableau de bord |
-| `prof/emc-restitution.html` | **Pilotage de la restitution** (étapes 0-6, parcours et groupes par atelier, mur de post-it, nuage et définitions, exports, cartes, clôture) ; avec `?vue=projection`, **sa projection**. Élève : `assets/js/emc-restitution.js` (`EMC.Modules.restitution`) | Session du tableau de bord |
+| `prof/emc-restitution.html` | **Pilotage de la restitution** (étapes 0-6, 040 : parcours de 3 ou 4 ateliers et groupes = tables, mur de post-it en tuiles et passage en plein écran tiré au sort, nuage et définitions, retour anonyme et classement des ateliers, exports, cartes, clôture) ; avec `?vue=projection`, **sa projection**. Élève : `assets/js/emc-restitution.js` (`EMC.Modules.restitution`) | Session du tableau de bord |
 | `prof/emc-cartes.html` | **Planche de cartes** à imprimer (10 par A4, QR code) et feuille de correspondance pré-remplie | Session du tableau de bord |
 | `assets/js/prof-emc-outils.js` | Panneaux communs aux pilotages : 🎟 Cartes (générer, réimprimer), Clôture (clôturer, remettre à zéro, supprimer les comptes) | — |
 | `prof/emc.html` | **Pilotage du Labyrinthe** (renvoie vers celui du module pour les autres séances) : choix du créneau, étapes, compteurs, participants, alertes d'aide, modération, carte (outils prof), exports, clôture | Session du tableau de bord (`prof-api.js`) |
@@ -98,6 +98,7 @@ de 2 h pile.
 - Restitution : `emc_restit (classe_id, eleve_id, parcours jsonb, mot)` — ateliers **écrits par l'élève** (pas de liste des collègues, 08/11) ; `emc_postits (id, classe_id, eleve_id, groupe, sorte, texte, masque)` — le mur, lisible de toute la séance, écrit à l'étape 4 dans **son** groupe seulement (`emc_mon_groupe`), masquable par le prof. Les groupes vivent dans `emc_seances.etat` (`groupes`, `affectations`) : l'élève les lit, ne les change pas. Météo : `emc_mots` (émojis seuls, étape 1). Définitions : `emc_mur` (sorte `definition`).
 - 🔴 Les **notes du jeu de rôle** (035) : sur l'iPad seulement pendant l'échange ; à partir de l'étape 5, dans `emc_jdr_notes`, lisibles de l'auteur et de son binôme **seulement** (pas des enseignants) ; effacées à l'étape 8, à la déconnexion et à la clôture (banc : `emc-accueil.test.py` inspecte chaque requête, `emc-schema.test.mjs` §17 les droits).
 - Restitution (035) : `emc_restit.expression` (expression libre et son nuage) ; la liste des ateliers vit dans `emc_contenus.restitution.ateliers`, **réglée au tableau de bord** (noms des collègues : jamais dans le dépôt).
+- Restitution (040) : 7 étapes. Les groupes portent le **numéro de table** (`n` = numéro de l'atelier) ; l'état piloté garde aussi `oral`, `oral_revele` (couleurs dévoilées), `passes` (groupes passés). Le **retour** passe par `emc_repondre_enquete`, ouverte à la **dernière étape du module** (7 Labyrinthe, 6 restitution ; 16 Ko pour la restitution) : sans identité, comme l'enquête. Banc : `emc-restitution.test.py` (35 élèves, limites, émotions du Labyrinthe).
 
 ### 3.3 La carte : géométrie, zones et sous-zones
 
@@ -178,4 +179,5 @@ Liste tenue à jour par Claude. La demander avec « le bilan EMC ».
 - Imprimer la fiche d'association (Labyrinthe).
 - Faire la répétition avec Mme Castel avant le premier créneau.
 - À chaque séance : distribuer les cartes et faire circuler la feuille de correspondance.
+- ⏳ **040** à exécuter dans le SQL Editor **avant** de publier le site (restitution en 7 étapes, retour anonyme à l'étape 6), puis relire dans Contenus → Restitution les textes proposés (consigne de la définition, questions du retour) et vérifier que **les ateliers sont numérotés 1 à 10 comme les tables**.
 - Après chaque séance : exports, clôture (aide, portraits et phrases effacés), puis suppression des comptes de ses cartes.

@@ -23,6 +23,38 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 5,
+    date: '2026-11-12',
+    espaces: ['emc'],
+    titre: 'EMC : la restitution de vendredi, revue après jeudi',
+    points: [
+      {
+        titre: 'Une table par atelier, selon les préférences',
+        texte: 'Les élèves classent leurs 3 ou 4 ateliers. « Proposer les groupes » place chacun à la table de son atelier (atelier 3 → table 3), le 1er choix d’abord, tirage au sort s’il y a trop de monde.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">Table 1 · 🦊</span><span class="nv-puce">Table 2 · 🚀</span><span class="nv-puce">Table 3 · 🌵</span></div>' +
+          '</div>'
+      },
+      {
+        titre: 'Le mur : chaque groupe en plein écran',
+        texte: 'Au tableau, une tuile par table, qu’on touche pour la déplier. Puis « 🎲 Tirer au sort » met un groupe en plein écran, et « Couleur suivante » dévoile ses post-it couleur par couleur.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-bouton">🎲 Tirer au sort</span><span class="nv-bouton">Couleur suivante ▶</span></div>' +
+          '</div>'
+      },
+      {
+        titre: 'Un retour anonyme, et le classement des ateliers',
+        texte: 'À la fin, les élèves donnent leur avis sur les deux jours, sur chaque atelier fait, le jeu de rôle et la restitution. Onglet « 📊 Retours » : le classement des ateliers. La définition, elle, s’écrit sur le livret.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-bouton">📊 Retours</span><span class="nv-puce">1. Atelier A · 4,2 / 5</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 3,
     date: '2026-11-11',
     titre: 'La table des noms se charge directement depuis Excel',

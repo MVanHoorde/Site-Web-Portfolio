@@ -705,5 +705,40 @@ await db.exec(sql039);
 const vid39b = await val('videos');
 verif('039 rejoué : MP4 réglé à la main gardé, ordre stable', vid39b[0].mp4 === 'https://exemple/reglé-à-la-main' && JSON.stringify(vid39b.map((v) => v.lien)) === JSON.stringify(vid39.map((v) => v.lien)));
 
+/* ---------- 20. 040 : la restitution après le jeudi 12/11 ---------- */
+const sql040 = readFileSync(join(depot, 'bdd/schema/040-emc-restitution-retours.sql'), 'utf8');
+await db.exec(sql040);
+const et40 = await val('etapes_restitution'), r40 = await val('restitution');
+verif('040 : 7 étapes, 75 min, plus d\'analyse du mur', et40.length === 7 && et40.reduce((s, e) => s + e.duree, 0) === 75
+  && et40.every((e, i) => e.n === i) && !et40.some((e) => /Analyse/.test(e.titre)) && et40[4].duree === 35 && /Retour/.test(et40[6].titre), et40);
+verif('040 : parcours de 3 à 4 ateliers', r40.parcours_min === 3 && r40.parcours_max === 4);
+verif('040 : consignes du parcours pour la projection', Array.isArray(r40.parcours_projection) && r40.parcours_projection.length === 4 && /tirage au sort/.test(r40.parcours_projection[3]));
+verif('040 : consignes réécrites (parcours, groupe, mur), définition, retour', /3 ou 4 ateliers/.test(r40.parcours_consigne) && /table/.test(r40.groupe_consigne)
+  && /couleur par couleur/.test(r40.mur_consigne) && /Ne recopie pas/.test(r40.definition_consigne) && r40.retour && r40.retour.atelier_sert && !('analyse_consigne' in r40), Object.keys(r40));
+/* l'enquête : à l'étape 6 pour la restitution, toujours 7 pour le Labyrinthe */
+for (const r of rs) await en(r.uid, `select public.emc_entrer(null)`);
+const retour = (r, rep) => en(r.uid, `select public.emc_repondre_enquete($1, $2, null)`, [REST, JSON.stringify(rep)]);
+await en(LOIC, `update public.emc_seances set etape = 5 where classe_id = $1`, [REST]);
+verif('040 : retour fermé à l\'étape 5', /ENQUETE_FERMEE/.test((await retour(r1, { v: 1 })).e || ''));
+await en(LOIC, `update public.emc_seances set etape = 6 where classe_id = $1`, [REST]);
+const gros = { v: 1, ateliers: [1, 2, 3, 4].map((n) => ({ ref: n, note: 4, sert: 'oui', compris: 'oui', texte: 'é'.repeat(300) })),
+  global: { ressenti: 4, appris: 'beaucoup', proposition: 'x'.repeat(500) }, jdr: { note: 5, texte: 'y'.repeat(300) }, restit: { note: 3, texte: 'z'.repeat(300) } };
+{ const x = await retour(r1, gros); verif('040 : retour complet accepté à l\'étape 6 (4 ateliers, textes longs)', !x.e, x.e); }
+verif('040 : retour de plus de 16 Ko refusé', /REPONSES_ILLISIBLES/.test((await retour(r2, { v: 1, t: 'w'.repeat(20000) })).e || ''));
+verif('040 : retour sans identité, lu des enseignants', lignes(await en(CASTEL, `select reponses from public.emc_enquete where classe_id = $1`, [REST])).length === 1
+  && lignes(await en(r1.uid, `select * from public.emc_enquete`)).length === 0);
+/* un participant encore inscrit au Labyrinthe (des comptes ont été supprimés plus haut) */
+const pn = { uid: (await db.query(`select e.auth_id uid from public.emc_participants p join public.eleves e on e.id = p.eleve_id where p.classe_id = $1 limit 1`, [C1])).rows[0].uid };
+await db.query(`update public.emc_seances set etape = 6, cloturee_le = null where classe_id = $1`, [C1]);
+verif('040 : Labyrinthe, enquête toujours fermée à l\'étape 6', /ENQUETE_FERMEE/.test((await repondre(pn)).e || ''));
+await db.query(`update public.emc_seances set etape = 7, cloturee_le = null where classe_id = $1`, [C1]);
+verif('040 : Labyrinthe, toujours 4 Ko au plus', /REPONSES_ILLISIBLES/.test((await en(pn.uid, `select public.emc_repondre_enquete($1, $2, null)`, [C1, JSON.stringify({ t: Array.from({ length: 200 }, () => crypto.randomUUID()) })])).e || ''));
+/* rejoué : un texte retouché au tableau de bord est gardé */
+r40.mur_consigne = 'retouché à la main'; r40.parcours_max = 5;
+await db.query(`update public.emc_contenus set valeur = $1 where cle = 'restitution'`, [JSON.stringify(r40)]);
+await db.exec(sql040);
+const r40b = await val('restitution');
+verif('040 rejoué : réglages gardés', r40b.mur_consigne === 'retouché à la main' && r40b.parcours_max === 5 && (await val('etapes_restitution')).length === 7);
+
 console.log(`\n${ok} contrôles réussis, ${ko} en échec.`);
 process.exit(ko ? 1 : 0);

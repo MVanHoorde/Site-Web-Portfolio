@@ -15,6 +15,17 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 12/11/2026 — EMC : la restitution après les séances du jeudi (040)
+
+| Date | Décision | Statut |
+|---|---|---|
+| 12/11/2026 | **L'analyse du mur « tous ensemble » disparaît** ; son temps va au mur (35 min : réflexion, écriture, passage au tableau). La restitution passe de 8 à **7 étapes**, toujours 75 min | ✅ en vigueur (Loïc) |
+| 12/11/2026 | **Mon parcours : 3 ou 4 ateliers, chacun une fois, du préféré au moins aimé.** La projection montre **les consignes**, plus le nuage des ateliers ; les préférences restent au pilotage (données) | ✅ en vigueur (Loïc) |
+| 12/11/2026 | **Un groupe = une table**, au numéro de l'atelier (1 à 10). Formation par tours de préférence, **tirage au sort** quand un atelier a trop de demandes, jamais hors de sa liste ni seul ; taille visée élèves ÷ ateliers, au moins 3 | ✅ en vigueur (Loïc ; détails de l'algorithme proposés par Claude) |
+| 12/11/2026 | **Le mur projeté : une tuile par table, qu'on déplie**, et la légende des trois couleurs. Le passage d'un groupe : **plein écran, couleur par couleur**, groupe **tiré au sort** | ✅ en vigueur (Loïc) |
+| 12/11/2026 | **Ma définition s'écrit sur le livret papier, pas sur le site** : une nouvelle, nourrie des ateliers, sans recopier celle du début. Au tableau et sur la tablette, la consigne seule (plus de mot ni de phrase en ligne à l'étape 5) | ✅ en vigueur (Loïc) |
+| 12/11/2026 | **La fin devient un retour complet et anonyme** (`emc_enquete`, ouverte à l'étape 6 pour la restitution) : les deux jours, chaque atelier du parcours, le jeu de rôle, la restitution, puis l'expression libre. Un **classement des ateliers** au pilotage (onglet 📊 Retours), exportable | ✅ en vigueur (Loïc ; questions proposées par Claude, à relire) |
+
 ## 11/11/2026 — La gestion entre collègues (038)
 
 | Date | Décision | Statut |

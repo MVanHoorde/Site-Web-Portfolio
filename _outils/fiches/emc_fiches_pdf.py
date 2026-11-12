@@ -1,7 +1,9 @@
 """Exporte les fiches papier de l'EMC (fiches/emc/*.html) en PDF A4
 dans assets/pdf/emc/. Le HTML est la source, le PDF un export.
-Lancer depuis la racine du dépôt :  python _outils/fiches/emc_fiches_pdf.py
+Lancer depuis la racine du dépôt :  python _outils/fiches/emc_fiches_pdf.py [nom …]
+(sans nom : toutes ; avec des noms, ex. memo-4-restitution : seulement celles-là)
 (Playwright Python et son Chromium, déjà installés sur le PC de Loïc.)"""
+import sys
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -13,6 +15,7 @@ with sync_playwright() as p:
     nav = p.chromium.launch()
     page = nav.new_page()
     for src in sorted((RACINE / 'fiches' / 'emc').glob('*.html')):
+        if sys.argv[1:] and src.stem not in sys.argv[1:]: continue
         page.goto(src.as_uri())
         page.evaluate('document.fonts.ready')
         cible = SORTIE / (src.stem + '.pdf')

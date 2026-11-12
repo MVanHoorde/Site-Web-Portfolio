@@ -81,7 +81,7 @@
   .accueil .code{font:700 clamp(3rem,10vh,5.5rem)/1 'IBM Plex Mono',monospace;letter-spacing:.1em}
   .nuage-corps{flex:1;min-height:0;font-size:1.6rem}
   .tuile.petite .nuage-corps{font-size:.95rem}
-  .emo-corps{flex:1;min-height:0;overflow:hidden;font-size:1.15rem;display:flex;align-items:center}
+  .emo-corps{flex:1;min-height:0;overflow:hidden;font-size:1.15rem;display:flex;align-items:stretch}
   .emo-corps .v-barres{width:100%}
   .tuile.petite .emo-corps{font-size:.8rem}
 
@@ -171,7 +171,7 @@
 <script src="../assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="../assets/js/vendor/konva-9.3.6.min.js"></script>
 <script src="../assets/js/emc-commun.js?v=4"></script>
-<script src="../assets/js/emc-vues.js?v=3"></script>
+<script src="../assets/js/emc-vues.js?v=4"></script>
 <script src="../assets/js/emc-carte.js?v=2"></script>
 <script>
 (function () {
@@ -340,11 +340,12 @@
     emotions: {
       titre: function () { return (P.contenus.mots || {}).question_emojis || 'Émotions'; }, vivant: true,
       rendre: function (z, petit) {
-        var c = el('div', { class: 'emo-corps' }), b = el('div', { style: 'width:100%' }); c.appendChild(b); z.appendChild(c);
+        /* la liste tient dans la tuile (12/11 : trop haute, elle perdait son haut) */
+        var c = el('div', { class: 'emo-corps' }), b = el('div', { style: 'width:100%;height:100%' }); c.appendChild(b); z.appendChild(c);
         var items = V.compterEmojis(P.mots, (P.contenus.mots || {}).emojis).filter(function (x) { return x.n > 0; });
         if (petit) items = items.slice(0, 5);
         if (!items.length) { b.appendChild(el('p', { class: 'vide-proj' }, 'Les émotions arrivent…')); return; }
-        V.barres(b, items);
+        V.barres(b, items, { ajuster: true });
       }
     },
     missions: {
