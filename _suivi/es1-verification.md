@@ -74,22 +74,22 @@ nucléosynthèse a un bouton **« Remplir avec la correction »** dans les étap
 
 | | C1 nucléo. | C2 radio. | C3 cristaux | C1 son&musique | C2 son à coder | C1 forme Terre | **Total** |
 |---|---|---|---|---|---|---|---|
-| **Séances** | 2 | 4 | 3 | 3 | 3 | 3 | **18** |
-| Étapes | 11 | 22 | 8 | 9 | 12 | 10 | **72** |
-| dont à valider | 9 | 20 | 7 | 8 | 11 | 9 | **64** |
-| **QCM** | 5 | 7 | 2 | 1 | 4 | 3 | **22** |
-| dont questions | 17 | 28 | 7 | 4 | 14 | 11 | **81** |
+| **Séances** | 2 | 4 | 4 | 3 | 3 | 3 | **19** |
+| Étapes | 11 | 22 | 12 | 9 | 12 | 10 | **76** |
+| dont à valider | 9 | 20 | 10 | 8 | 11 | 9 | **67** |
+| **QCM** | 5 | 7 | 6 | 1 | 4 | 3 | **26** |
+| dont questions | 17 | 28 | 43 | 4 | 14 | 11 | **117** |
 | Blocs de texte à trous | 4 | 5 | 5 | 9 | 11 | 11 | **45** |
-| dont champs à remplir | 16 | 18 | 22 | 41 | 44 | 38 | **179** |
-| Réponses rédigées | 6 | 16 | 2 | 12 | 8 | 5 | **49** |
+| dont champs à remplir | 16 | 18 | 16 | 41 | 44 | 38 | **173** |
+| Réponses rédigées | 6 | 16 | 14 | 12 | 8 | 5 | **61** |
 | Dépôts de copie d'écran | 0 | 0 | 0 | 2 | 0 | 0 | **2** |
 | Réflexions perso (non notées) | 1 | 1 | 1 | 1 | 1 | 1 | **6** |
 | Étiquettes à poser | 0 | 1 | 0 | 0 | 0 | 0 | **1** |
 | **Cadres `.proposition`** | 8 | 9 | 6 | 4 | 6 | 7 | **40** |
-| **Cadres de réservation** | 0 | 1 | 3 | 1 | 3 | 5 | **13** |
-| Notes de chantier | 5 | 7 | 3 | 3 | 1 | 1 | **20** |
+| **Cadres de réservation** | 0 | 1 | 0 | 1 | 3 | 5 | **10** |
+| Notes de chantier | 5 | 7 | 4 | 3 | 1 | 1 | **21** |
 | Vidéos en façade | 7 | 11 | 7 | 6 | 0 | 0 | **31** |
-| Images intégrées | 14 | 15 | 9 | 13 | 12 | 18 | **81** |
+| Images intégrées | 14 | 15 | 35 | 13 | 12 | 18 | **107** |
 | Entrées de glossaire | 14 | 17 | 12 | 15 | 14 | 13 | **85** |
 
 **Poids** : 525 ko de HTML pour les six pages · 81 images pour 3,9 Mo
@@ -103,7 +103,7 @@ nucléosynthèse a un bouton **« Remplir avec la correction »** dans les étap
 
 | # | Où | Décision |
 |---|---|---|
-| **ES-01** | `t1-c3` étapes 3.1, 3.2, 3.3 | **Trois figures manquent au chapitre des cristaux** : paramètre de maille, rayon dans la CS, rayon dans la CFC, maille CC du fer. Sans elles, les relations `a = 2r` et `4R = a√2` **tombent du ciel** et les deux calculs de compacité ne se justifient plus. Ce sont des images vectorielles du PPTX : une **copie d'écran de chaque diapositive** suffit. |
+| **ES-01** | `t1-c3` | ✅ **Réglé le 12/11/2026** : les quatre figures manquantes sont recréées par `_outils/es/mailles.py` (paramètre a, maille CC du fer cotée) et en SVG dans la page (faces CS et CFC). |
 | **ES-02** | `t1-c2` étape 4.1 | **La courbe de l'exercice 1 de la radioactivité.** L'énoncé demande de lire une demi-vie sur un modèle GeoGebra hébergé sur le **S3 de Quizéo** — qui disparaîtra avec le compte. À **rapatrier tant qu'il existe** : soit le `.ggb`, soit (plus simple) une image de la courbe. Sans ça, l'exercice n'a pas d'énoncé. |
 | **ES-03** | `t2-c1` étape 1.3 | **Trois notions du programme 4.1 ne sont nulle part** : production/propagation du son, **célérité** (340 m·s⁻¹), **niveau sonore** en dB. Elles sont **déjà écrites** dans le chapitre de seconde `T3-C1`. Les rehausser et les insérer ici, ou les considérer acquises de seconde ? Rien n'a été recopié. |
 | **ES-04** | `t2-c1` étape 2.2 | **Le graphique L = f(√m) de la corde de Melde** (avec sa courbe de tendance) est dans la correction mais vectoriel : non extractible. C'est lui qui porte toute la démonstration de la question 4. Copie d'écran du tableur. |
@@ -229,51 +229,67 @@ et non « toujours » ; les QCM écrits par Claude (diagnostic, écoute, 1.3, 2.
 
 ### C3 — Les cristaux · `1re-es-t1-c3-cristaux.html`
 
-**Ce qui est en ligne** — 3 séances · 8 étapes (7 à valider) · 2 QCM (7 questions) ·
-5 textes à trous (22 champs) · 2 réponses rédigées · 1 réflexion perso ·
-7 vidéos en façade · 9 images · 12 entrées de glossaire.
+**Repris le 12/11/2026 après deux audits de Loïc** — toujours masqué aux élèves.
+3 séances + 1 de révision · 12 étapes (10 à valider, 2 « plus loin ») · 6 QCM
+(43 questions) · 4 associations · 5 textes à trous · 14 réponses rédigées + 1
+réflexion perso · 16 figures numérotées · animation d'ouverture.
 
-- **S1 — Cristal et maille** : 1.1 solide cristallin, mono/poly, allotropie ·
-  1.2 la maille élémentaire et les trois mailles cubiques.
-- **S2 — Compter les atomes** : 2.1 la contribution selon la position · 2.2 CS puis
-  exercice 1 (CFC).
-- **S3 — Compacité et masse volumique** : 3.1 compacité de la CS · 3.2 exercice 2
-  (CFC) · 3.3 exercice 3 (masse volumique du fer) · 3.4 bonus.
+- **S1 — Cristal et maille** : 1.1 vidéo Bobroff, **Figure 1 animée en trois
+  échelles** (microscopique : la vraie structure du quartz α en 3D, vue dans l'axe
+  puis de côté ; mésoscopique : des milliers de mailles, les faces apparaissent ;
+  macroscopique : le cristal de la vidéo), définitions, **solide amorphe** (demande
+  du 12/11), QCM avec les deux pyrites · 1.2 Figure 4 avec ses **loupes** (cercle +
+  traits vers l'image suivante, tracés par script), tableau CS/CC/CFC en « à
+  retenir », association de mémoire, cours caché · 1.3 bonus MinUSc, réflexion
+  perso au format habituel.
+- **S2 — La multiplicité** : 2.1 tableau des contributions en colonnes (une par
+  position), exemple du fer · 2.2 exemple CS, puis la CFC en **trois réponses
+  rédigées** (« attendu en évaluation »), QCM de 10 questions · 2.3 bonus : les
+  mailles non cubiques.
+- **S3 — Compacité et masse volumique** : formules en **MathML** (vraies fractions,
+  parenthèses à la bonne taille), rayon noté R partout · 3.1 exemple CS pas à pas
+  avec la maille CS en 3D, QCM de 9 questions · 3.2 maille CFC en 3D, face cotée
+  (R, 2R, R le long de la diagonale), **rappel de Pythagore**, quatre questions
+  guidées ; le « à retenir » porte **la méthode en quatre temps** et la discussion,
+  plus le 74 % · 3.3 masse volumique du fer en **trois questions qui se suivent**,
+  chacune affiche son résultat une fois envoyée ; confrontation au réel ; bilan.
+- **S4 — Réviser** (`data-fiche="non"`) : par séance, une liste de **savoir-faire à
+  refaire sans le cours** et un cadre où l'écrire (CRI-4d/e/f), puis vérification
+  sur les étapes · applications numériques **sans étapes** (cuivre, polonium, et un
+  défi inverse : l'aluminium) · vidéos en grille · QCM. **La liste de vidéos de
+  Loïc reste à y ajouter.**
 
-**Cadres de réservation d'image**
+**Les figures** — toutes les figures géométriques (mailles éclatées et compactes,
+réseau, contributions, paramètre a, maille CC cotée, hexagonale) et les planches
+`fiche-fig*.png` des fiches sortent de `_outils/es/mailles.py` : **relancer le
+script, ne jamais les retoucher**. Les photos (or, pyrite, fer, granite, quartz,
+réseau et maille du quartz) sont détourées de leurs légendes pixelisées
+(`t1c3-photo-*`, `t1c3-quartz-*`). Les faces CS et CFC (Figures 14 et 15) et le
+triangle de Pythagore sont en SVG dans la page. Code couleur de position partout :
+sommet bleu · face vert · arête violet · centre orange. Les anciennes images
+`t1c3-*.jpg` remplacées ne sont plus utilisées : à supprimer à la validation.
 
-| Où | Ce qu'il faut y voir | Nom de fichier attendu | Format |
-|---|---|---|---|
-| Étape 3.1 | Le **paramètre de maille a** sur un cube (image 9 du cours) | `t1c3-parametre-de-maille.png` | paysage ou carré, ≥ 500 px |
-| Étape 3.1 | Le **rayon d'une sphère dans une maille CS** — les sphères se touchent le long d'une **arête** (image 10) | `t1c3-rayon-dans-maille-cs.png` | paysage ou carré, ≥ 500 px |
-| Étape 3.2 | Le **rayon dans une maille CFC** — les sphères se touchent le long de la **diagonale d'une face** (image 11) | `t1c3-rayon-dans-maille-cfc.png` | carré, ≥ 500 px |
-| Étape 3.3 | La **maille CC du fer avec son paramètre coté** (image 13) | `t1c3-maille-cc-fer.png` | carré, ≥ 500 px |
+**Formules** — dans la page, MathML. Dans les options de QCM, le moteur n'accepte
+pas de balisage mathématique : fractions typographiques (½ ¼ ⅛) ; la question et la
+correction, elles, acceptent le MathML. Dans les fiches, **jamais de MathML** :
+le PDF est photographié par html2canvas, qui n'en dessine pas les barres de
+fraction ; les `.frac` des gabarits reçoivent leur style par un script de la page.
 
-**Cadres `.proposition`**
+**Fiches de séance** — dessinées à la main (`<template data-fiche-fixe>` dans
+chaque séance) : S1 2 pages · S2 2 · S3 2, mesurées le 12/11/2026. Les réponses
+rédigées s'y placent dans leurs cadres (`data-fiche-travail`).
 
-| Étape | Type | Ce qui est proposé |
-|---|---|---|
-| 1.2 | Programme | **Texte à trous et QCM ajoutés** pour la séance 1 : le cours source n'y comporte aucun exercice, la séance n'aurait rien eu à valider. |
-| 3.1 | Programme | **Question ouverte ajoutée** sur les 52 % de vide — respiration au milieu d'une séance calculatoire. À retirer si le temps manque. |
-| 3.2 | Programme | Phrase ajoutée : **74 % = empilement le plus compact possible**, et les métaux qui l'adoptent. Donne du sens à un nombre. |
-| 3.3 | Difficulté | **Formule rétablie** : le cours écrit « ρ = Z × m » sans le dénominateur a³ — voir §7. |
-| 3.3 | Difficulté | **Donnée corrigée** : m(atome de fer) = 9,35 × 10⁻²⁶ kg et non 10⁻² — voir §7. |
-| 3.3 | Programme | **Confrontation ajoutée** à la valeur mesurée (7,87 × 10³ kg·m⁻³) : l'exercice devient une validation de modèle. |
+**Mode enseignant** : tous les « à retenir » et toutes les corrections s'y
+affichent (règle CSS dans la page). Le moteur, lui, laisse le bouton du bilan
+désactivé même en mode enseignant — bug à corriger dans `sequence-snt.js` hors
+d'un chantier parallèle.
 
-**QCM** — 2 QCM, 7 questions, tous écrits par Claude. Notions : ce qui caractérise
-un solide cristallin · mono vs polycristallin · variétés allotropiques · le cas du
-fer usiné · le partage d'un atome de sommet · les trois multiplicités · la
-contribution d'une arête.
-
-**Contenu repris tel quel de Loïc** : toutes les définitions (solide cristallin,
-mono/polycristallin, allotropie, maille, multiplicité, compacité, masse volumique) ·
-la description des trois mailles cubiques · le principe du partage et le tableau des
-contributions · les calculs de Z(CS), Z(CFC), C(CS), C(CFC) et ρ(Fe) · les énoncés
-des trois exercices · les neuf images · les sept liens vidéo (par QR code).
-
-**Ce qui bloque** — **ES-01** : les quatre figures manquantes. C'est le chapitre le
-plus touché : sans elles, les deux calculs de compacité perdent leur justification
-géométrique.
+**Cadres `.proposition`** — 1.1 l'animation (liberté : cristal mésoscopique de
+quinze mailles ; mot « mésoscopique » hors programme) · 1.1 le solide amorphe ·
+3.1 retrait de la question ouverte · 3.2 la méthode, les métaux CFC, les questions
+guidées · 3.3 formule rétablie (a³), le découpage en trois questions, la
+confrontation au réel. L'exposant 10⁻²⁶ est **confirmé** par Loïc (12/11) : il
+reste seulement à corriger dans le PDF source.
 
 ---
 

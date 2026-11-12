@@ -39,10 +39,23 @@ document d'élève. Le dépôt étant public, il reste néanmoins accessible par
 URL — d'où le contrôle fait avant de le verser : aucune correction à l'écran
 (R1), aucune donnée d'élève ni de classe.
 
-**Trois diaporamas au dépôt** : `diaporama-2nde-t3c1.pptx` (12 diapositives,
+**Quatre diaporamas au dépôt** : `diaporama-2nde-t3c1.pptx` (12 diapositives,
 53 étapes — non régénérable), `diaporama-2nde-t1c2.pptx` (21 diapositives,
-63 étapes) et `diaporama-2nde-t1c1.pptx` (19 diapositives, 65 étapes), ces deux
-derniers régénérables par `python diapo_<code>.py <figures>`.
+63 étapes), `diaporama-2nde-t1c1.pptx` (19 diapositives, 65 étapes) et
+`diaporama-2nde-t1c4.pptx` (22 diapositives, 56 étapes), ces trois derniers
+régénérables par `python diapo_<code>.py <figures>`.
+
+**SVG en ligne sans `aria-labelledby`.** `extraire_figures.mjs` ne retient que
+les SVG qui en portent un : sur T1-C4, il n'en trouvait aucun. `diapo_t1c4.py`
+extrait donc lui-même ses figures, par la même méthode (SVG isolé, polices du
+site, fond transparent, 3×), en les repérant par leur `viewBox`, et convertit
+au passage les SVG de fichier, que python-pptx ne sait pas poser. Même chose
+à prévoir pour toute page dont les SVG n'ont pas d'identifiant.
+
+**Faux positif connu de `controler.py`** : sa recherche de correction projetée
+(`d'où <x> =`) se déclenche sur la donnée de l'exercice 8 de T1-C4, « d'où
+M = m × N_A », qui est un énoncé, recopié du site. Le contrôle sort donc
+« 1 point à reprendre » sur ce chapitre ; c'est le seul attendu.
 
 **Figures qui ne sont pas des SVG.** Un schéma refait sous Canva ou une
 photographie se pose directement par son chemin (`figure()` accepte n'importe

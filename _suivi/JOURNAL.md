@@ -5050,6 +5050,21 @@ route : un enseignant ne lit que sa ligne d'`enseignants` (`008`), d'où
 **11/11/2026, suite.** `038` exécuté par Loïc (SQL Editor), constaté en base
 (fonctions présentes, refusées à la clé publique). GEST-01 ✅ une fois publié.
 
+**12/11/2026, T1-C4.** Audit de Loïc sur « Dénombrer les entités ». Cristal de NaCl
+passé en 3D (bloc 4×4×4, autant de Na⁺ que de Cl⁻ — l'ancien plan 3×3 en montrait
+5 contre 4). Les modèles de l'eau, du sulfate, de l'éthanol et du cyclohexane étaient des
+PNG transparents aplatis sur fond noir : refaits en SVG depuis de vraies géométries par
+`_outils/figures/figures_t1c4.py`. Le rappel 02 A reprend la figure de Bohr et le
+tableau des masses de T1-C3 : l'ancien schéma montrait des orbites elliptiques,
+contraires au modèle adopté en T1-C3. Exercice 2 : photos du néon (Alchemist-hp,
+CC BY-NC-ND 3.0, donc sans recadrage) et de l'ADN animé (Zephyris, CC BY-SA 3.0, avec
+une image fixe si les animations sont réduites), et retrait des étiquettes « structure
+atomique / ionique » qui donnaient la réponse. Pastille de L'Antisèche décollée du bouton
+(il manquait le conteneur `.videos`). Section 03 : fil rouge du panier de pommes
+(proposition), la propriété de proportionnalité placée après n = N/N_A, et la propriété
+de 03 D corrigée (« masse d'une entité » → masse de l'échantillon). `verifier.mjs` : les
+19 de référence.
+
 ## 12/11/2026 — ES 1re : audit des séances 2-3 de la radioactivité, vidéos en base (041), rappels d'entrée de séance
 
 Audit pour le cours du 13/11 (séances 2 et 3). Banc d'essai Playwright sur fausse base Supabase : six élèves et un
@@ -5063,3 +5078,13 @@ Rappels : `assets/js/rappels-es.js` + `rappels-rendu.js` (QCM 2-6 choix, associa
 carte N-Z), banques radioactivité (99) et cristaux (46) réécrites deux fois sur l'audit de Loïc, `prof/rappels.html`
 (audit jouable, statistiques). Éteints côté élèves jusqu'à la fin de l'audit. Au passage : le lien « Aide » du tableau
 de bord visait Padago depuis le 31/10.
+
+**12/11/2026, T1-C4 (suite).** Deuxième retour de Loïc. Bâtons des modèles moléculaires :
+ils partaient du centre de chaque boule et la barraient d'un trait cerné de noir ; chaque
+demi-bâton part désormais du bord de sa boule. Un premier essai par masques en fondu faisait
+rastériser le cristal à l'impression (PDF de la fiche 400 Ko → 3,2 Mo) : remplacé par une coupe
+géométrique. Ascenseur vertical d'un millimètre sur 13 lignes d'équation (T1-C4, T2-C1, T2-C2) :
+« overflow-x:auto » de « .eq-ligne » faisait passer le vertical en auto ; coupé dans
+chapitre-commun.css, passé en ?v=11 sur les 15 fichiers. Fiche élève remise sur le cours audité :
+cristal 3D, propriétés de 03 B et 03 D ajoutées, zones de calcul agrandies (creux 186 → 40 mm) ;
+version PAP refaite hors dépôt.

@@ -249,6 +249,11 @@ window.SEQUENCES_ESPACES = {
           "id": "s3",
           "num": "S3",
           "nom": "Compacité et masse volumique"
+        },
+        {
+          "id": "s4",
+          "num": "S4",
+          "nom": "Réviser le chapitre"
         }
       ]
     },

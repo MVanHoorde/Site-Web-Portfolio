@@ -161,8 +161,27 @@
 ### T1-C4 — Dénombrer les entités
 - Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichiers : `pages/2nde-pc-t1-c4-denombrer-les-entites.html` · `fiches/fiche-2nde-t1c4.html`
-- Code : AV0G4D · 4 SVG (cristal NaCl, atome, mole, case).
-- Fiche : **6 pages A4** mesurées à l'export PDF.
+- Code : AV0G4D · SVG inline : cristal NaCl **en 3D** (bloc 4×4×4, 32 Na⁺ / 32 Cl⁻), mole, case.
+  Modèles moléculaires eau, sulfate, éthanol, cyclohexane en fichiers SVG — **générés** par
+  `python _outils/figures/figures_t1c4.py` (vraies géométries ; le cristal sort dans
+  `_outils/figures/sortie/` et se recolle **dans la page et dans la fiche**). Chaque demi-bâton
+  part du bord de sa boule (coupe géométrique, pas de masque : un masque fait rastériser la
+  figure à l'impression). Rappel 02 A : figure de Bohr et tableau des masses repris de T1-C3.
+- Audit du 12/11/2026 (Loïc) : fil rouge « panier de pommes » proposé pour les trois formules
+  (N = m/m_ent, n = N/N_A, n = m/M) — **à valider** ; exercice 2 purgé de ses étiquettes qui
+  donnaient la réponse. Photos néon (CC BY-NC-ND, publiée sans recadrage) et ADN animé
+  (CC BY-SA, image fixe si mouvements réduits).
+- Fiche : **6 pages A4**, alignée sur le cours audité — cristal 3D, et les deux propriétés ✎
+  qui lui manquaient (proportionnalité n/N en 03 B, relation m-n-M en 03 D) ; creux cumulé
+  40 mm. Toujours **écrite à la main** (pas de `fiche_t1c4.py`). Version PAP hors dépôt
+  (`Téléchargements/Fiches PAP/`).
+- Diaporama (12/11/2026) : `assets/pptx/pc/diaporama-2nde-t1c4.pptx`, **22 diapositives,
+  56 étapes**, 14 ✎ = les 14 `a-noter` de la page, 12 exercices dans l'ordre, Kahoot lié.
+  Régénérer : `python _outils/diaporamas/diapo_t1c4.py <dossier>` (il extrait lui-même ses
+  figures). La remarque sur l'unité de masse atomique y est projetée **sans** ✎. Non vu en
+  mode diaporama.
+- La remarque « ✎ Remarque — unité de masse atomique » porte un ✎ dans son titre mais pas
+  la classe `a-noter` : la fiche ne la reprend pas, le diaporama la projette sans ✎ — à trancher.
 - **Le plus abouti en production** (cours + fiche proposés, erreurs source corrigées),
   mais **non validé** par Loïc. Sert de repère de ce qu'un chapitre fini peut être.
 - Différé : réintégration du tableau périodique complet.
