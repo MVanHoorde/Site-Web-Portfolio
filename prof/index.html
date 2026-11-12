@@ -538,6 +538,16 @@ table.grille thead th{white-space:nowrap}
         <button id="g-rafraichir">Rafraîchir</button>
         <span id="g-etat" class="muet"></span>
       </div>
+      <!-- Export des résumés (11/11/2026) : la classe, tous les thèmes de
+           l'espace, étapes validées séance par séance. Fabriqué sur
+           l'appareil. Sans noms par défaut : le fichier doit pouvoir
+           circuler (pseudonymes seuls) ; les noms de la table ne s'y
+           ajoutent que si on coche. -->
+      <div class="rangee" style="margin-top:6px">
+        <button class="ghost" id="g-exporter">⬇ Exporter les résumés</button>
+        <label id="g-exporter-noms-lbl" style="margin:0;font-weight:400;display:none"><input type="checkbox" id="g-exporter-noms"> avec les noms</label>
+        <span id="g-exporter-etat" class="muet"></span>
+      </div>
 
       <div class="legende">
         <span><i class="p ok"></i><span id="leg-ok">terminée</span></span>
@@ -910,7 +920,8 @@ table.grille thead th{white-space:nowrap}
       chargerFile();
     }
     $('#g-etat').textContent = 'Chargement…';
-    chargerContexte()
+    placerSurThemeEnCours()
+      .then(chargerContexte)
       .then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); $('#g-etat').textContent = ''; })
       .catch(function(err){ $('#g-etat').textContent = 'Lecture impossible : ' + (err.message || err); });
   }
@@ -1887,6 +1898,44 @@ table.grille thead th{white-space:nowrap}
     });
   }
 
+  /* Le thème que la classe travaille (11/11/2026, demande de Loïc) :
+     Séance et Suivi s'ouvrent dessus, à l'ouverture de l'espace et à
+     chaque changement de classe. On prend la dernière séance clôturée,
+     dans l'ordre de la progression (pas par date) : s'il reste des
+     séances dans son thème, c'est ce thème ; si c'était la dernière,
+     le suivant. Rien de clôturé : le premier thème, comme avant.
+     Les modules SNT hors progression (snt-m…) ne sont jamais choisis.
+     Espaces sans séances (outils PC, livret CFA) : inchangés. */
+  function placerSurThemeEnCours(){
+    var def = ESPACES_DEF[ESPACE];
+    if(!def || !def.seances || !ctx.classe) return Promise.resolve();
+    return ProfAPI.lire('seances_faites?select=sequence,seance&classe_id=eq.' + encodeURIComponent(ctx.classe))
+      .then(function(faites){
+        var th = themeEnCours(faites || []);
+        if(!th) return;
+        ctx.theme = th;
+        $('#s-theme').value = th; $('#g-theme').value = th;
+        $('#s-seance').value = '';
+      })
+      .catch(function(err){ console.warn('Thème en cours non déterminé :', err); });
+  }
+  function themeEnCours(faites){
+    var themes = themesDeLEspace().map(function(t){ return t.v; }).filter(function(v){
+      return v !== VUE_ENSEMBLE && v !== VUE_CHAPITRES && !/^snt-m/.test(v);
+    });
+    var mieux = null;
+    faites.forEach(function(f){
+      var ti = themes.indexOf(f.sequence);
+      if(ti < 0) return;
+      var si = seancesDu(f.sequence).findIndex(function(s){ return s.id === f.seance; });
+      if(si < 0) return;
+      if(!mieux || ti > mieux.ti || (ti === mieux.ti && si > mieux.si)) mieux = { ti: ti, si: si };
+    });
+    if(!mieux) return null;
+    var fini = mieux.si >= seancesDu(themes[mieux.ti]).length - 1;
+    return themes[fini && mieux.ti < themes.length - 1 ? mieux.ti + 1 : mieux.ti];
+  }
+
   /* Le curseur n'est pas stocké : c'est la séance de rang le plus
      élevé qui possède une ligne dans seances_faites. */
   function rangCurseur(){
@@ -2294,6 +2343,7 @@ table.grille thead th{white-space:nowrap}
      ============================================================ */
   function rendreGrille(){
     ProfGestion.rendreEleves(ElevesClasse);
+    majExportNoms();
     $('#leg-ok').textContent = ESPACE === 'cfa' ? 'fiche terminée'
                              : ctx.theme === VUE_CHAPITRES ? 'débloqué (code saisi)' : 'terminée';
     $('#leg-enc').textContent = ctx.theme === VUE_CHAPITRES ? 'ouvert, pas débloqué' : 'en cours';
@@ -2382,6 +2432,102 @@ table.grille thead th{white-space:nowrap}
     var n = Math.ceil((j - t) / 86400000);
     return n === 1 ? 'hier' : 'il y a ' + n + ' j';
   }
+
+  /* ============================================================
+     EXPORT DES RÉSUMÉS (11/11/2026)
+     ------------------------------------------------------------
+     La classe affichée, TOUS les thèmes de l'espace : une ligne par
+     élève (masqués exclus), une colonne par séance (« 4 sur 6 » —
+     jamais « 4/6 », qu'Excel lirait comme le 4 juin), un % par thème,
+     un total. Les étapes comptées sont celles « à valider », comme la
+     grille (EtatSNT.resume). Livret CFA : faite, ou n champs remplis.
+     CSV point-virgule + BOM : Excel français l'ouvre tel quel.
+     Pseudonymes seuls par défaut : le fichier peut circuler, ou passer
+     à Claude pour la note. « avec les noms » ajoute la colonne Nom
+     depuis la table chargée — le fichier devient alors nominatif.
+     ============================================================ */
+  function majExportNoms(){
+    var n = ProfAPI.nomsCharges && ProfAPI.nomsCharges();
+    $('#g-exporter-noms-lbl').style.display = n ? '' : 'none';
+    if(!n) $('#g-exporter-noms').checked = false;
+  }
+  function exporterResumes(){
+    var etat = $('#g-exporter-etat'), b = $('#g-exporter');
+    var cl = classeCourante();
+    if(!cl || !Eleves.length){ etat.textContent = 'Aucun élève à exporter.'; return; }
+    var avecNoms = $('#g-exporter-noms').checked;
+    var seqs = ESPACE === 'snt'
+      ? Object.keys(window.SEANCES_SNT || {}).map(function(k){ return { cle: k, seances: seancesDu(k) }; })
+      : sequencesDe(ESPACE).map(function(s){ return { cle: s.cle, seances: s.seances || [] }; });
+    var motif = { snt: 'snt-*', es1: 'es1-*', est: 'est-*', pc2: 'pc-o*', cfa: 'cfa-o*' }[ESPACE];
+    if(!motif || !seqs.length){ etat.textContent = 'Rien à exporter dans cet espace.'; return; }
+    var ids = Eleves.map(function(e){ return e.id; });
+    b.disabled = true; etat.textContent = 'Préparation…';
+    ProfAPI.lire('progression?select=eleve_id,cle,valeur,maj_le&domaine=eq.cours&cle=like.' + motif
+                 + '&eleve_id=in.(' + ids.map(encodeURIComponent).join(',') + ')')
+      .then(function(progs){
+        progs = progs || [];
+        function prog(id, cle){ return progs.find(function(p){ return p.eleve_id === id && p.cle === cle; }) || null; }
+        var tete = ['Pseudo'].concat(avecNoms ? ['Nom'] : []);
+        seqs.forEach(function(q){
+          var court = nomSequence(q.cle, true);
+          if(ESPACE === 'cfa'){ tete.push(court); return; }
+          q.seances.forEach(function(s){ tete.push(court + ' · ' + (s.num || s.id)); });
+          tete.push(court + ' · %');
+        });
+        /* Un thème jamais ouvert par l'élève n'a pas de total connu (la
+           page l'écrit à la première ouverture) : il ne pèse pas dans le
+           total. Les en-têtes le disent, pour qu'on ne lise pas 100 %. */
+        if(ESPACE !== 'cfa') tete.push('Total étapes (thèmes ouverts)', 'Total % (thèmes ouverts)');
+        tete.push('Dernière activité');
+
+        var lignes = [tete];
+        Eleves.forEach(function(e){
+          var l = [e.pseudo].concat(avecNoms ? [ProfAPI.nomDe(e.pseudo) === e.pseudo ? '' : ProfAPI.nomDe(e.pseudo)] : []);
+          var F = 0, T = 0, dernier = null;
+          seqs.forEach(function(q){
+            var p = prog(e.id, q.cle);
+            var iso = p && ((p.valeur && p.valeur.vu_le) || p.maj_le);
+            if(iso && (!dernier || iso > dernier)) dernier = iso;
+            if(ESPACE === 'cfa'){
+              var et = etatFiche(p);
+              l.push(et.cls === 'ok' ? 'faite' : et.cls === 'enc' ? et.txt + ' champs' : '');
+              return;
+            }
+            var r = (p && p.valeur && p.valeur.resume) || null;
+            var f = 0, t = 0;
+            q.seances.forEach(function(s){
+              var x = r && r.seances ? r.seances.find(function(y){ return y.id === s.id; }) : null;
+              if(x && x.t){ l.push(x.f + ' sur ' + x.t); f += x.f; t += x.t; }
+              else l.push(x ? '—' : '');
+            });
+            l.push(t ? Math.round(100 * f / t) : '');
+            F += f; T += t;
+          });
+          if(ESPACE !== 'cfa') l.push(T ? F + ' sur ' + T : '', T ? Math.round(100 * F / T) : '');
+          l.push(dernier ? new Date(dernier).toLocaleDateString('fr-FR') : '');
+          lignes.push(l);
+        });
+
+        var csv = '﻿' + lignes.map(function(l){
+          return l.map(function(v){
+            v = String(v == null ? '' : v);
+            return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+          }).join(';');
+        }).join('\r\n');
+        var nom = 'resumes-' + String(cl.code || cl.libelle || 'classe').replace(/[^\w-]+/g, '_')
+                + '-' + aujourdhui() + (avecNoms ? '-NOMINATIF' : '') + '.csv';
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+        a.download = nom;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+        etat.textContent = Eleves.length + ' élèves exportés' + (avecNoms ? ', avec les noms.' : ', sans les noms.');
+      })
+      .catch(function(err){ etat.textContent = 'Export impossible : ' + (err.message || err); })
+      .then(function(){ b.disabled = false; });
+  }
+  $('#g-exporter').addEventListener('click', exporterResumes);
 
   /* ============================================================
      VUE D'ENSEMBLE — outils de PC, livret CFA
@@ -2879,6 +3025,7 @@ table.grille thead th{white-space:nowrap}
   /* ---------- réactions aux sélecteurs ---------- */
   function surChangement(quel){
     return function(){
+      var classeAvant = ctx.classe;
       ctx.classe = $(quel === 's' ? '#s-classe' : '#g-classe').value;
       ctx.theme  = $(quel === 's' ? '#s-theme'  : '#g-theme').value;
       $('#s-classe').value = ctx.classe; $('#g-classe').value = ctx.classe;
@@ -2890,7 +3037,10 @@ table.grille thead th{white-space:nowrap}
         kClasse = ctx.classe; rang = 0; file = []; rendreCorrection();
       }
       majCodes();
-      chargerContexte().then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); });
+      /* une autre classe n'en est pas forcément au même thème */
+      (ctx.classe !== classeAvant ? placerSurThemeEnCours() : Promise.resolve())
+        .then(chargerContexte)
+        .then(function(){ rendreSeance(); rendreGrille(); majSuggestion(); });
     };
   }
   ['#s-classe','#s-theme'].forEach(function(s){ $(s).addEventListener('change', surChangement('s')); });

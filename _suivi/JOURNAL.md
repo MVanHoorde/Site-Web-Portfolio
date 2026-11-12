@@ -5050,6 +5050,17 @@ route : un enseignant ne lit que sa ligne d'`enseignants` (`008`), d'où
 **11/11/2026, suite.** `038` exécuté par Loïc (SQL Editor), constaté en base
 (fonctions présentes, refusées à la clé publique). GEST-01 ✅ une fois publié.
 
+**11/11/2026, Suivi.** Demande de Loïc : Séance et Suivi s'ouvrent sur le thème
+que la classe travaille (dernière séance clôturée dans l'ordre de la progression ;
+thème suivant si elle terminait le sien ; modules `snt-m…` jamais choisis ; recalculé
+à chaque changement de classe), et « ⬇ Exporter les résumés » : CSV de la classe,
+tous les thèmes de l'espace, « f sur t » par séance (jamais « f/t », lu comme une
+date par Excel), % par thème, total sur les thèmes ouverts. Pseudonymes seuls par
+défaut — le fichier doit pouvoir passer à Claude pour la note — ; « avec les
+noms » ajoute la table chargée et marque le fichier `-NOMINATIF`. Nouveauté n° 4,
+trois guides et dispositif à jour, PDF régénérés. Banc Chromium sur base simulée
+(15 contrôles, hors dépôt) ; `verifier.mjs` : les 19 de référence.
+
 **12/11/2026, T1-C4.** Audit de Loïc sur « Dénombrer les entités ». Cristal de NaCl
 passé en 3D (bloc 4×4×4, autant de Na⁺ que de Cl⁻ — l'ancien plan 3×3 en montrait
 5 contre 4). Les modèles de l'eau, du sulfate, de l'éthanol et du cyclohexane étaient des

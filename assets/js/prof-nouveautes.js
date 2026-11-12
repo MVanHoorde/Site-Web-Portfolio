@@ -23,6 +23,30 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 7,
+    date: '2026-11-11',
+    espaces: ['snt', 'es1', 'est', 'pc2', 'cfa'],
+    titre: 'Suivi : le thème en cours, et un export pour Excel',
+    points: [
+      {
+        titre: 'Le Suivi s’ouvre là où en est la classe',
+        texte: 'Plus besoin de chercher le thème ou le chapitre : c’est celui de la dernière séance clôturée, ou le suivant s’il est terminé. Le menu reste là pour en changer.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-bouton">2nde 3 ▾</span><span class="nv-bouton">Thème 2 ▾</span><span class="nv-puce">en cours</span></div>' +
+          '</div>'
+      },
+      {
+        titre: 'Les résumés de la classe dans un fichier',
+        texte: '« ⬇ Exporter les résumés », sous la classe : un élève par ligne, les étapes validées de chaque séance, un % par thème. Sans les noms, sauf si vous cochez « avec les noms ».',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-bouton">⬇ Exporter les résumés</span><span>☐ avec les noms</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 6,
     date: '2026-11-12',
     espaces: ['emc'],
