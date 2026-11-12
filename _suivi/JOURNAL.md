@@ -5049,3 +5049,17 @@ route : un enseignant ne lit que sa ligne d'`enseignants` (`008`), d'où
 
 **11/11/2026, suite.** `038` exécuté par Loïc (SQL Editor), constaté en base
 (fonctions présentes, refusées à la clé publique). GEST-01 ✅ une fois publié.
+
+## 12/11/2026 — ES 1re : audit des séances 2-3 de la radioactivité, vidéos en base (041), rappels d'entrée de séance
+
+Audit pour le cours du 13/11 (séances 2 et 3). Banc d'essai Playwright sur fausse base Supabase : six élèves et un
+invité aux dés de l'étape 3.1, l'écran « Décroissance en direct » et le tableau de bord — 47 contrôles. Trouvé et
+corrigé : un élève non connecté lisait « chaque lancer rejoint la courbe ». Relecture de fond (agent) : 21 corrections
+(radiographie sans radionucléide, limite de 1 mSv hors naturel, limites d'organe du public, QCM devinable, « exercice »…).
+« Et ta première idée ? » (1.4, 2.5, 3.5) : la réponse antérieure de l'élève s'affiche (`data-focus-rappel`).
+Vidéos : table `videos` (041, exécutée par Loïc), `Progression.lienVideo()`, `<video data-video>` dans le moteur
+(sequence-snt.js v61, progression.js v25), `prof/videos.html` ; 25 liens en base, plus aucun lien OneDrive dans les pages.
+Rappels : `assets/js/rappels-es.js` + `rappels-rendu.js` (QCM 2-6 choix, association, curseur à encadrement, « révèle »,
+carte N-Z), banques radioactivité (99) et cristaux (46) réécrites deux fois sur l'audit de Loïc, `prof/rappels.html`
+(audit jouable, statistiques). Éteints côté élèves jusqu'à la fin de l'audit. Au passage : le lien « Aide » du tableau
+de bord visait Padago depuis le 31/10.

@@ -347,13 +347,15 @@ table.grille thead th{white-space:nowrap}
     <span class="qui"><span id="qui-nom"></span></span>
     <!-- espace ES 1re seulement : la courbe des dés de « La radioactivité », étape 3.1 -->
     <a class="lien-aide" id="lien-decroissance" href="decroissance.html" target="_blank" rel="noopener" style="display:none">☢ Décroissance en direct</a>
+    <a class="lien-aide" id="lien-rappels" href="rappels.html" target="_blank" rel="noopener" style="display:none">⟲ Rappels</a>
+    <a class="lien-aide" id="lien-videos" href="videos.html" target="_blank" rel="noopener" style="display:none" title="Les liens OneDrive des vidéos des cours (gestionnaire)">🎬 Vidéos</a>
     <!-- Padago (31/10/2026) : l'outil des pads à serrures, ouvert à
          tout compte enseignant sans démarche (bdd/schema/030). -->
     <a class="lien-aide" href="../outils/padago/" target="_blank" rel="noopener" title="Créer des pads à serrures">🗝 Padago</a>
     <!-- Gestion entre collègues (11/11/2026, bdd/schema/038, assets/js/prof-gestion.js) -->
     <button id="btn-nouveautes" type="button" title="Les nouveautés du tableau de bord" aria-label="Nouveautés" style="display:none;padding:5px 9px;font-size:13.5px">✨</button>
     <button id="btn-ecrire" type="button" style="display:none;padding:5px 11px;font-size:13.5px">✉️ Écrire à M. Van Hoorde</button>
-    <a class="lien-aide" href="guide-prise-en-main.html" target="_blank" rel="noopener">Aide</a>
+    <a class="lien-aide" id="lien-guide" href="guide-prise-en-main.html" target="_blank" rel="noopener">Aide</a>
     <button id="lien-quitter" style="padding:5px 11px;font-size:13.5px">Quitter</button>
   </header>
 
@@ -868,8 +870,12 @@ table.grille thead th{white-space:nowrap}
     document.querySelector('nav.onglets').style.display = '';
     document.querySelector('main').style.display = '';
     $('#titre-appli').textContent = ESPACE === 'snt' ? 'Tableau de bord SNT' : 'Tableau de bord — ' + def.nom;
-    $('.lien-aide:not(#lien-decroissance)').setAttribute('href', def.guide || GUIDE_PAR_DEFAUT);
+    /* le lien « Aide » par son id : le premier .lien-aide du bandeau est devenu Padago (31/10), qui recevait l'adresse du guide */
+    $('#lien-guide').setAttribute('href', def.guide || GUIDE_PAR_DEFAUT);
     $('#lien-decroissance').style.display = ESPACE === 'es1' ? '' : 'none';
+    $('#lien-rappels').style.display = ESPACE === 'es1' ? '' : 'none';
+    /* les liens des vidéos (041) : seul le gestionnaire les écrit */
+    ProfAPI.appeler('est_gestionnaire').then(function(v){ $('#lien-videos').style.display = v === true ? '' : 'none'; }).catch(function(){});
 
     /* les onglets de l'espace, le premier ouvert */
     var premier = appliquerOnglets();

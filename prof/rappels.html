@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Rappels — tableau de bord</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/rappels.html — les questions de rappel (12/11/2026)
+     ------------------------------------------------------------
+     Deux onglets :
+       · AUDIT — chaque question de la banque d'un chapitre
+         (assets/js/rappels/<séquence>.js), groupée par étape, JOUABLE
+         telle que l'élève la voit (rappels-rendu.js, rien n'est
+         enregistré), la bonne réponse repliée en dessous. Loïc marque ✓ / ✎ / ✗ et écrit une note ; ses
+         marques restent dans CE navigateur (localStorage, aucune donnée
+         d'élève), et « Copier mes remarques » les met en texte pour
+         Claude. Ne demande pas de connexion.
+       · STATISTIQUES — ce que les élèves de la classe ont répondu.
+         Lu dans progression (même droits que le Suivi), champs
+         'rappels/<id>', 'rappels/_series' — voir assets/js/rappels-es.js.
+         Pseudos, remplacés par les noms si la table des noms est
+         chargée dans le tableau de bord (jamais écrits ailleurs).
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+  --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+  --link:#2445c7; --link-wash:#e7ebfb; --ok:#12805c; --ok-wash:#e0f2ea; --err:#c33a2f; --err-wash:#fbe6e3;
+  --wait:#9a6a00; --wait-wash:#fbf1d8; --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151d; --surface:#1a202b; --surface-2:#222a37;
+    --ink:#e8ecf3; --ink-soft:#b3bccb; --ink-faint:#7f8a9c; --line:#2f3847;
+    --link:#8ea6ff; --link-wash:#24305a; --ok:#4fc79b; --ok-wash:#173528; --err:#f07a6f; --err-wash:#3d1f1c;
+    --wait:#e6b84a; --wait-wash:#3a2f12;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans','Inter',system-ui,sans-serif;font-size:15px;line-height:1.5}
+h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;font-weight:600;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:12px}
+header h1{font-size:22px}
+header .retour{margin-left:auto;font-size:14px;color:var(--link)}
+.barre{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-bottom:14px}
+.barre label{font-size:14px;color:var(--ink-soft);display:flex;gap:8px;align-items:center}
+select,button,textarea{font:inherit;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+select,button{padding:8px 12px;min-height:44px;cursor:pointer}
+button.actif{background:var(--link);border-color:var(--link);color:#fff}
+.msg{font-size:14px;color:var(--ink-soft)} .msg.ko{color:var(--err)}
+.sep{flex:1}
+.compteurs{font-size:14px;color:var(--ink-soft)}
+.compteurs b{color:var(--ink)}
+h2.etape{font-size:16px;margin:20px 0 8px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+h2.etape small{font:12px 'IBM Plex Mono',monospace;color:var(--ink-faint);font-weight:400}
+.q{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:10px}
+.q[data-marque="ok"]{border-left-color:var(--ok)} .q[data-marque="revoir"]{border-left-color:var(--wait)} .q[data-marque="retirer"]{border-left-color:var(--err);opacity:.75}
+.q .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font:12px 'IBM Plex Mono',monospace;color:var(--ink-faint);margin-bottom:4px}
+.pill{border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.q .enonce{font-weight:600;margin:2px 0 8px}
+.q ol{margin:0 0 8px;padding-left:24px} .q li{margin:2px 0}
+.q li.bon{color:var(--ok);font-weight:600} .q li.bon::after{content:' ✓'}
+.q .expl{font-size:14px;color:var(--ink-soft);background:var(--surface-2);border-radius:8px;padding:7px 10px}
+.q .audit{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start;margin-top:10px}
+.q .audit button{min-height:38px;padding:5px 10px;font-size:14px}
+.q .audit button[aria-pressed="true"][data-m="ok"]{background:var(--ok-wash);border-color:var(--ok)}
+.q .audit button[aria-pressed="true"][data-m="revoir"]{background:var(--wait-wash);border-color:var(--wait)}
+.q .audit button[aria-pressed="true"][data-m="retirer"]{background:var(--err-wash);border-color:var(--err)}
+.q textarea{flex:1 1 280px;min-height:38px;padding:7px 10px;font-size:14px;resize:vertical}
+.q .essai{background:var(--surface-2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin:4px 0 8px}
+.q .rejouer{margin-left:auto;min-height:32px;padding:3px 10px;font-size:13px}
+.q details.corrige summary{cursor:pointer;font-size:13.5px;color:var(--ink-soft);margin:4px 0}
+.alerte{background:var(--err-wash);color:var(--err);border-radius:8px;padding:6px 10px;font-size:13.5px;margin:4px 0}
+/* statistiques */
+.tuiles{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.tuile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:140px}
+.tuile b{display:block;font:600 24px 'Space Grotesk','Inter',sans-serif}
+.tuile span{font-size:13px;color:var(--ink-soft)}
+.carte{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;overflow-x:auto}
+.carte h3{font-size:15px;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--ink-soft);font-size:13px}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.barre-taux{display:inline-block;height:8px;border-radius:4px;background:var(--line);width:90px;vertical-align:middle;margin-right:6px;overflow:hidden}
+.barre-taux i{display:block;height:100%;background:var(--ok)}
+.barre-taux.bas i{background:var(--err)} .barre-taux.moyen i{background:var(--wait)}
+.vide{color:var(--ink-soft);padding:16px 4px}
+@media (max-width:620px){ .tuile{min-width:calc(50% - 5px)} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>⟲ Questions de rappel</h1>
+    <span class="msg" id="etat"></span>
+    <a class="retour" href="index.html">← Tableau de bord</a>
+  </header>
+  <div class="barre">
+    <button type="button" data-onglet="audit" class="actif">Audit</button>
+    <button type="button" data-onglet="stats">Statistiques</button>
+    <label>Chapitre <select id="chapitre"></select></label>
+    <span class="sep"></span>
+    <span class="compteurs" id="compteurs"></span>
+  </div>
+  <section id="p-audit"></section>
+  <section id="p-stats" hidden></section>
+</div>
+<script src="../assets/js/prof-api.js?v=3"></script>
+<script src="../assets/js/rappels-rendu.js?v=1"></script>
+<script src="../assets/js/rappels/es1-t1-c2.js?v=2"></script>
+<script src="../assets/js/rappels/es1-t1-c3.js?v=2"></script>
+<script>
+(function(){
+  var CHAPITRES = [
+    {seq: 'es1-t1-c2', nom: 'ES 1re · La radioactivité', page: '1re-es-t1-c2-radioactivite.html', espace: 'es1'},
+    {seq: 'es1-t1-c3', nom: 'ES 1re · Les cristaux', page: '1re-es-t1-c3-cristaux.html', espace: 'es1'}
+  ];
+  var $ = function(s){ return document.querySelector(s); };
+  var CLE_AUDIT = 'rappels.audit';
+  var ch = CHAPITRES[0], etapesPage = [], onglet = 'audit';
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function brut(h){ var d = document.createElement('div'); d.innerHTML = h; return d.textContent; }
+  function dire(t, ko){ var e = $('#etat'); e.textContent = t || ''; e.className = 'msg' + (ko ? ' ko' : ''); }
+  function banque(){ return (window.RAPPELS || {})[ch.seq] || []; }
+  function lireAudit(){ try { return JSON.parse(localStorage.getItem(CLE_AUDIT) || '{}') || {}; } catch(e){ return {}; } }
+  function ecrireAudit(a){ try { localStorage.setItem(CLE_AUDIT, JSON.stringify(a)); } catch(e){} }
+
+  CHAPITRES.forEach(function(c, i){ var o = document.createElement('option'); o.value = i; o.textContent = c.nom; $('#chapitre').appendChild(o); });
+  $('#chapitre').addEventListener('change', function(){ ch = CHAPITRES[+this.value]; charger(); });
+  document.querySelectorAll('[data-onglet]').forEach(function(b){
+    b.addEventListener('click', function(){
+      onglet = b.dataset.onglet;
+      document.querySelectorAll('[data-onglet]').forEach(function(x){ x.classList.toggle('actif', x === b); });
+      $('#p-audit').hidden = onglet !== 'audit'; $('#p-stats').hidden = onglet !== 'stats';
+      charger();
+    });
+  });
+
+  /* les étapes du chapitre, lues dans la page elle-même : numéro, titre, ordre */
+  function lireEtapes(){
+    return fetch('../pages/' + ch.page, {cache: 'no-store'}).then(function(r){ return r.text(); }).then(function(h){
+      var d = new DOMParser().parseFromString(h, 'text/html');
+      etapesPage = Array.prototype.map.call(d.querySelectorAll('.step[data-gate][data-cle]'), function(s){
+        var k = s.querySelector('.step-kicker'), m = k && /(\d+\.\d+)/.exec(k.textContent), t = s.querySelector('.step-title');
+        return {cle: s.getAttribute('data-cle'), num: m ? m[1] : '?', titre: t ? t.textContent.trim() : ''};
+      });
+    }).catch(function(){ etapesPage = []; });
+  }
+  function etapeDe(cle){ for(var i = 0; i < etapesPage.length; i++) if(etapesPage[i].cle === cle) return etapesPage[i]; return null; }
+
+  function charger(){
+    dire('');
+    lireEtapes().then(function(){ if(onglet === 'audit') audit(); else stats(); });
+  }
+
+  var R = window.RappelsRendu; R.poserCss();
+  var FORMES = {qcm: 'QCM', assoc: 'association', curseur: 'curseur', flash: 'réfléchis puis révèle'};
+  var parGroupe = {};
+  function questionDe(id){ var b = banque(); for(var i = 0; i < b.length; i++) if(b[i].id === id) return b[i]; return null; }
+  /* la bonne réponse, en HTML court (les {{nuc}} restent pour fmt) */
+  function attenduHTML(q){
+    if(q.type === 'flash') return q.rep;
+    if(q.type === 'assoc') return q.cases.map(function(c){ return c.t + ' → ' + c.r; }).join(' · ');
+    if(q.type === 'curseur') return R.attendu(q);
+    return String.fromCharCode(65 + q.r) + '. ' + q.choix[q.r];
+  }
+  /* la question telle que l'élève la voit, jouable (rien n'est enregistré) */
+  function essayer(bloc){
+    var q = questionDe(bloc.dataset.id), z = bloc.querySelector('[data-essai]');
+    if(!q || !z) return;
+    z.innerHTML = R.corps(q);
+    R.brancher(z, q, function(){}, '');
+  }
+
+  /* ======================= AUDIT ======================= */
+  function audit(){
+    var b = banque(), a = lireAudit(), h = '';
+    parGroupe = {}; b.forEach(function(q){ if(q.groupe) parGroupe[q.groupe] = (parGroupe[q.groupe] || 0) + 1; });
+    if(!b.length){ $('#p-audit').innerHTML = '<p class="vide">Pas de banque pour ce chapitre.</p>'; return; }
+    var parEtape = {};
+    b.forEach(function(q){ (parEtape[q.etape] = parEtape[q.etape] || []).push(q); });
+    var ordre = etapesPage.map(function(e){ return e.cle; });
+    Object.keys(parEtape).forEach(function(k){ if(ordre.indexOf(k) < 0) ordre.push(k); });
+    ordre.forEach(function(k){
+      var qs = parEtape[k]; if(!qs) return;
+      var e = etapeDe(k);
+      h += '<h2 class="etape">' + (e ? 'Étape ' + esc(e.num) + ' — ' + esc(e.titre) : esc(k)) + ' <small>' + esc(k) + ' · ' + qs.length + ' question' + (qs.length > 1 ? 's' : '') + '</small></h2>';
+      if(!e) h += '<div class="alerte">Cette clé d\'étape n\'existe plus dans la page : ces questions ne seraient jamais posées.</div>';
+      qs.forEach(function(q){
+        var m = a[q.id] || {};
+        h += '<div class="q" data-id="' + esc(q.id) + '" data-marque="' + esc(m.m || '') + '">'
+          + '<div class="meta"><span>' + esc(q.id) + '</span><span class="pill">' + esc(FORMES[q.type] || 'QCM') + '</span>'
+          + '<span class="pill" title="= reprise du cours · ≈ reformulée">' + esc(q.forme || '') + '</span>'
+          + (q.groupe ? '<span class="pill" title="Variantes d\'une même question : une seule tombe par série">variantes · ' + esc(q.groupe) + ' (' + parGroupe[q.groupe] + ')</span>' : '')
+          + '<button type="button" class="rejouer" data-rejouer title="Remettre la question à zéro">↻ Rejouer</button></div>'
+          + '<div class="enonce">' + R.fmt(q.q) + '</div>'
+          + '<div class="essai" data-essai></div>'
+          + '<details class="corrige"><summary>Réponse attendue</summary><div class="expl"><b>' + R.fmt(attenduHTML(q)) + '</b>'
+          + (q.type === 'flash' ? '' : '<br>' + R.fmt(q.expl || '')) + '</div></details>'
+          + '<div class="audit">'
+          + '<button type="button" data-m="ok" aria-pressed="' + (m.m === 'ok') + '">✓ Garder</button>'
+          + '<button type="button" data-m="revoir" aria-pressed="' + (m.m === 'revoir') + '">✎ À revoir</button>'
+          + '<button type="button" data-m="retirer" aria-pressed="' + (m.m === 'retirer') + '">✗ Retirer</button>'
+          + '<textarea placeholder="Ta remarque (facultatif)" aria-label="Remarque sur ' + esc(q.id) + '">' + esc(m.note || '') + '</textarea>'
+          + '</div></div>';
+      });
+    });
+    h += '<div class="barre" style="margin-top:18px"><button type="button" id="copier" class="actif">📋 Copier mes remarques</button>'
+      + '<span class="msg">Tes marques restent dans ce navigateur. Colle le texte dans la conversation avec Claude.</span>'
+      + '<span class="sep"></span><button type="button" id="raz">Effacer mes marques de ce chapitre</button></div>'
+      + '<textarea id="export" readonly hidden style="width:100%;min-height:160px;padding:10px;font:13px \'IBM Plex Mono\',monospace"></textarea>';
+    $('#p-audit').innerHTML = h;
+    $('#p-audit').querySelectorAll('.q').forEach(function(bloc){ essayer(bloc); });
+    compter();
+  }
+  function compter(){
+    var b = banque(), a = lireAudit(), n = {ok: 0, revoir: 0, retirer: 0};
+    b.forEach(function(q){ var m = a[q.id] && a[q.id].m; if(n[m] != null) n[m]++; });
+    var reste = b.length - n.ok - n.revoir - n.retirer;
+    $('#compteurs').innerHTML = onglet !== 'audit' ? '' : '<b>' + b.length + '</b> questions · ✓ ' + n.ok + ' · ✎ ' + n.revoir + ' · ✗ ' + n.retirer + ' · <b>' + reste + '</b> à voir';
+  }
+  $('#p-audit').addEventListener('click', function(ev){
+    var bt = ev.target.closest('button'); if(!bt) return;
+    if(bt.hasAttribute('data-rejouer')){ essayer(bt.closest('.q')); return; }
+    if(bt.closest('[data-essai]')) return;
+    if(bt.id === 'copier'){
+      var a = lireAudit(), lignes = ['Audit des rappels — ' + ch.nom + ' (' + new Date().toLocaleDateString('fr-FR') + ')'];
+      banque().forEach(function(q){
+        var m = a[q.id]; if(!m || (!m.m && !m.note)) return;
+        lignes.push(q.id + ' ' + ({ok: '✓', revoir: '✎', retirer: '✗'}[m.m] || '·') + ' [' + (FORMES[q.type] || 'QCM') + '] ' + R.texte(q.q).slice(0, 70) + (m.note ? ' — ' + m.note.replace(/\s+/g, ' ') : ''));
+      });
+      var ex = $('#export'); ex.hidden = false; ex.value = lignes.join('\n'); ex.select();
+      var repli = function(){ dire('Le texte est sélectionné : copie-le avec Ctrl+C.'); };
+      try { navigator.clipboard.writeText(ex.value).then(function(){ dire('Copié dans le presse-papiers.'); }, repli); } catch(e){ repli(); }
+      return;
+    }
+    if(bt.id === 'raz'){
+      if(!confirm('Effacer toutes tes marques de ce chapitre ?')) return;
+      var a2 = lireAudit(); banque().forEach(function(q){ delete a2[q.id]; }); ecrireAudit(a2); audit(); return;
+    }
+    var bloc = bt.closest('.q'); if(!bloc || !bt.dataset.m) return;
+    var a3 = lireAudit(), id = bloc.dataset.id, m = a3[id] || {};
+    m.m = m.m === bt.dataset.m ? '' : bt.dataset.m; a3[id] = m; ecrireAudit(a3);
+    bloc.dataset.marque = m.m;
+    bloc.querySelectorAll('[data-m]').forEach(function(x){ x.setAttribute('aria-pressed', String(x.dataset.m === m.m)); });
+    compter();
+  });
+  $('#p-audit').addEventListener('input', function(ev){
+    if(ev.target.tagName !== 'TEXTAREA' || ev.target.id === 'export') return;
+    var id = ev.target.closest('.q').dataset.id, a = lireAudit();
+    a[id] = a[id] || {}; a[id].note = ev.target.value; ecrireAudit(a);
+  });
+
+  /* ======================= STATISTIQUES ======================= */
+  var classes = null, classeId = null;
+  function stats(){
+    $('#compteurs').innerHTML = '';
+    var p = $('#p-stats');
+    p.innerHTML = '<p class="vide">Lecture…</p>';
+    ProfAPI.reprendre().then(function(){
+      return classes ? classes : ProfAPI.lire('classes?select=id,code,libelle,espace&order=code.asc').then(function(l){
+        classes = (l || []).filter(function(c){ return c.espace === ch.espace; }); return classes;
+      });
+    }).then(function(cl){
+      if(!cl.length){ p.innerHTML = '<p class="vide">Aucune classe de cet espace sur ton compte.</p>'; return; }
+      if(!classeId || !cl.some(function(c){ return c.id === classeId; })) classeId = cl[0].id;
+      return Promise.all([
+        ProfAPI.lire('eleves_classes?select=eleves(id,pseudo)&classe_id=eq.' + encodeURIComponent(classeId)),
+        ProfAPI.lire('progression?select=eleve_id,valeur,maj_le&domaine=eq.cours&cle=eq.' + encodeURIComponent(ch.seq))
+      ]).then(function(r){ rendreStats(cl, (r[0] || []).map(function(x){ return x.eleves; }).filter(Boolean), r[1] || []); });
+    }).catch(function(e){
+      p.innerHTML = '<p class="vide">' + (/SESSION|AUCUNE/.test(e.message) ? 'Pas de session : connecte-toi d’abord au <a href="index.html">tableau de bord</a>, puis reviens ici.' : esc(e.message)) + '</p>';
+    });
+  }
+  function taux(b, n){ return n ? Math.round(100 * b / n) : null; }
+  function barre(t){
+    if(t == null) return '<span class="msg">—</span>';
+    return '<span class="barre-taux' + (t < 50 ? ' bas' : t < 75 ? ' moyen' : '') + '"><i style="width:' + t + '%"></i></span>' + t + '&nbsp;%';
+  }
+  function rendreStats(cl, eleves, lignes){
+    var dedans = {}; eleves.forEach(function(e){ dedans[e.id] = e; });
+    var b = banque(), parId = {}; b.forEach(function(q){ parId[q.id] = q; });
+    var Q = {}, E = {}, S = {}, tot = {n: 0, b: 0, premiers: 0, premiersB: 0, series: 0, passees: 0, eleves: 0};
+    lignes.forEach(function(l){
+      if(!dedans[l.eleve_id]) return;
+      var c = (l.valeur && l.valeur.champs) || {}, e = {series: 0, passees: 0, n: 0, b: 0, dernier: ''};
+      Object.keys(c).forEach(function(k){
+        if(k.indexOf('rappels/') !== 0) return;
+        var id = k.slice(8), v = c[k] || [];
+        if(id === '_series'){
+          v.forEach(function(s){ var p = String(s).split('|'); e.series++; if(p[3] === '1') e.passees++; if(p[0] > e.dernier) e.dernier = p[0]; });
+          return;
+        }
+        if(id.charAt(0) === '_' || !parId[id]) return;
+        var q = Q[id] = Q[id] || {n: 0, b: 0, eleves: 0, premiers: 0, premiersB: 0, faux: 0};
+        q.eleves++; q.premiers++; if(v[0] === '1') q.premiersB++;
+        if(v[v.length - 1] === '0') q.faux++;
+        v.forEach(function(x){ q.n++; e.n++; if(x === '1'){ q.b++; e.b++; } });
+      });
+      if(e.n || e.series){ E[l.eleve_id] = e; tot.eleves++; tot.series += e.series; tot.passees += e.passees; }
+    });
+    Object.keys(Q).forEach(function(id){
+      var q = Q[id], et = parId[id].etape;
+      tot.n += q.n; tot.b += q.b; tot.premiers += q.premiers; tot.premiersB += q.premiersB;
+      var s = S[et] = S[et] || {n: 0, b: 0, questions: 0};
+      s.n += q.n; s.b += q.b; s.questions++;
+    });
+
+    var sel = '<label>Classe <select id="classe">' + cl.map(function(c){ return '<option value="' + esc(c.id) + '"' + (c.id === classeId ? ' selected' : '') + '>' + esc(c.libelle || c.code) + '</option>'; }).join('') + '</select></label>';
+    var h = '<div class="barre">' + sel + '<span class="msg">' + eleves.length + ' élèves dans la classe · relu à ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}) + '</span><span class="sep"></span><button type="button" id="relire">Rafraîchir</button></div>';
+    if(!tot.eleves){
+      $('#p-stats').innerHTML = h + '<p class="vide">Aucun rappel encore posé dans cette classe. Ils s\'allument quand la banque est auditée (et s\'essaient avec <code>?rappels=essai</code> dans l\'adresse du cours).</p>';
+      $('#classe').addEventListener('change', function(){ classeId = this.value; stats(); });
+      $('#relire').addEventListener('click', stats);
+      return;
+    }
+    h += '<div class="tuiles">'
+      + '<div class="tuile"><b>' + tot.eleves + '</b><span>élèves ont eu au moins un rappel</span></div>'
+      + '<div class="tuile"><b>' + tot.series + '</b><span>séries de rappel ouvertes</span></div>'
+      + '<div class="tuile"><b>' + tot.passees + '</b><span>passées ou arrêtées avant la fin</span></div>'
+      + '<div class="tuile"><b>' + tot.n + '</b><span>réponses données</span></div>'
+      + '<div class="tuile"><b>' + (taux(tot.b, tot.n) == null ? '—' : taux(tot.b, tot.n) + ' %') + '</b><span>de bonnes réponses</span></div>'
+      + '<div class="tuile"><b>' + (taux(tot.premiersB, tot.premiers) == null ? '—' : taux(tot.premiersB, tot.premiers) + ' %') + '</b><span>justes du premier coup</span></div>'
+      + '</div>';
+
+    /* par étape, dans l'ordre du cours */
+    h += '<div class="carte"><h3>Par étape</h3><table><tr><th>Étape</th><th class="n">Réponses</th><th>Réussite</th></tr>';
+    etapesPage.forEach(function(e){
+      var s = S[e.cle]; if(!s) return;
+      h += '<tr><td>' + esc(e.num) + ' · ' + esc(e.titre) + '</td><td class="n">' + s.n + '</td><td>' + barre(taux(s.b, s.n)) + '</td></tr>';
+    });
+    h += '</table></div>';
+
+    /* par question, les plus difficiles d'abord */
+    var ids = Object.keys(Q).sort(function(x, y){ return (taux(Q[x].premiersB, Q[x].premiers) - taux(Q[y].premiersB, Q[y].premiers)) || (Q[y].n - Q[x].n); });
+    h += '<div class="carte"><h3>Par question — les plus difficiles d\'abord</h3><table><tr><th>Question</th><th>Étape</th><th class="n">Élèves</th><th>Juste du 1<sup>er</sup> coup</th><th>Toutes réponses</th><th class="n">Encore à revoir</th></tr>';
+    ids.forEach(function(id){
+      var q = Q[id], b0 = parId[id], e = etapeDe(b0.etape), t = R.texte(b0.q);
+      h += '<tr><td><span class="msg">' + esc(id) + '</span> ' + esc(t.length > 110 ? t.slice(0, 108) + '…' : t) + '</td><td>' + esc(e ? e.num : '') + '</td><td class="n">' + q.eleves + '</td><td>' + barre(taux(q.premiersB, q.premiers)) + '</td><td>' + barre(taux(q.b, q.n)) + '</td><td class="n">' + q.faux + '</td></tr>';
+    });
+    h += '</table></div>';
+
+    /* par élève */
+    var ens = Object.keys(E).sort(function(x, y){ return (taux(E[x].b, E[x].n) || 0) - (taux(E[y].b, E[y].n) || 0); });
+    h += '<div class="carte"><h3>Par élève</h3><table><tr><th>Élève</th><th class="n">Séries</th><th class="n">Passées</th><th class="n">Réponses</th><th>Réussite</th><th>Dernier rappel</th></tr>';
+    ens.forEach(function(id){
+      var e = E[id], d = e.dernier ? new Date(e.dernier) : null;
+      h += '<tr><td>' + esc(ProfAPI.nomDe(dedans[id].pseudo)) + '</td><td class="n">' + e.series + '</td><td class="n">' + e.passees + '</td><td class="n">' + e.n + '</td><td>' + barre(taux(e.b, e.n)) + '</td><td>' + (d ? d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}) : '—') + '</td></tr>';
+    });
+    h += '</table></div>';
+    $('#p-stats').innerHTML = h;
+    $('#classe').addEventListener('change', function(){ classeId = this.value; stats(); });
+    $('#relire').addEventListener('click', stats);
+  }
+
+  charger();
+})();
+</script>
+</body>
+</html>

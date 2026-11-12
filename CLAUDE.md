@@ -118,8 +118,10 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
 - Ressources externes chargées par lien (CodeBetter…).
 - 🔴 **Vidéos : MP4 sur le OneDrive du lycée** (03/10/2026 — YouTube est bloqué
   au lycée), lues dans le cours par le lecteur natif, **crédits de la chaîne sous
-  chaque vidéo**. Patron : `CONSIGNES-sequence-SNT.md` §5 · liste :
-  `_suivi/videos-a-telecharger.md`.
+  chaque vidéo**. 🔴 Le lien OneDrive **n'est jamais écrit dans une page**
+  (12/11/2026) : la page porte `data-video="<clé>"`, le lien est en base
+  (`bdd/schema/041`, saisi dans `prof/videos.html`). Patron :
+  `CONSIGNES-sequence-SNT.md` §5 · liste : `_suivi/videos-a-telecharger.md`.
 - 🔴 **Pas d'illustration figurative dessinée de mémoire.** Un schéma SVG maison
   est légitime quand il représente une **structure** : axes, flèches, graphes,
   montages, arbres de décision, schémas de principe — là, le tracé est le

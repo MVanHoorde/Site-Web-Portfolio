@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Vidéos des cours — tableau de bord</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/videos.html — les liens OneDrive des vidéos, en base
+     ------------------------------------------------------------
+     12/11/2026, bdd/schema/041. Les pages ne portent plus le lien
+     OneDrive d'une vidéo (le dépôt est public) : seulement sa clé,
+     <video data-video="es1-t1c2-asnr-sources">. Le lien vit dans la
+     table videos, lue par tout compte connecté au moment du clic.
+
+     Cet écran parcourt les cours (même origine, simple lecture des
+     fichiers HTML), relève chaque <video data-video>, et met en face
+     le lien enregistré — ou une case pour le coller. Réservé au
+     gestionnaire (est_gestionnaire, 038) : la base refuse toute
+     écriture aux autres, l'écran le dit au lieu de faire semblant.
+
+     Le lien à coller : « Partager » → « Toute personne disposant du
+     lien » → « Copier le lien ». Le lecteur ajoute lui-même
+     « download=1 ».
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+  --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+  --link:#2445c7; --link-wash:#e7ebfb; --ok:#12805c; --ok-wash:#e3f4ec; --err:#c33a2f; --err-wash:#fbe9e7;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151d; --surface:#1a202b; --surface-2:#222a37;
+    --ink:#e8ecf3; --ink-soft:#b3bccb; --ink-faint:#7f8a9c; --line:#2f3847;
+    --link:#8ea6ff; --link-wash:#24305a; --ok:#4fc79b; --ok-wash:#173528; --err:#f07a6f; --err-wash:#3d1f1c;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans','Inter',system-ui,sans-serif;font-size:15px;line-height:1.5}
+h1,h2{font-family:'Space Grotesk','Inter',sans-serif;font-weight:600;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:14px}
+header h1{font-size:22px}
+header .retour{margin-left:auto;font-size:14px;color:var(--link)}
+.msg{font-size:14px;color:var(--ink-soft)} .msg.ko{color:var(--err)}
+.aide{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:14px;color:var(--ink-soft)}
+h2{font-size:16px;margin:18px 0 8px}
+.v{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin-bottom:8px;
+   display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center}
+.v .t{font-weight:600}
+.v code{font:12.5px 'IBM Plex Mono',monospace;color:var(--ink-soft)}
+.v .etat{font-size:13px;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.v .etat.ok{background:var(--ok-wash);color:var(--ok)} .v .etat.ko{background:var(--err-wash);color:var(--err)}
+.v form{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.v input{flex:1 1 320px;min-width:0;font:13.5px 'IBM Plex Mono',monospace;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);color:var(--ink);min-height:44px}
+button{font:inherit;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 12px;min-height:44px;cursor:pointer}
+button.p{background:var(--link);border-color:var(--link);color:#fff}
+.v .r{grid-column:1/-1;font-size:13px;min-height:0}
+.r.ok{color:var(--ok)} .r.ko{color:var(--err)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🎬 Vidéos des cours</h1>
+    <span class="msg" id="etat">Connexion…</span>
+    <a class="retour" href="index.html">← Tableau de bord</a>
+  </header>
+  <p class="aide">Chaque vidéo des cours a une <b>clé</b>&nbsp;; son lien OneDrive se range ici, en base, et non plus dans le dépôt public. Pour obtenir le lien&nbsp;: dans OneDrive, <b>Partager</b> → «&nbsp;Toute personne disposant du lien&nbsp;» → <b>Copier le lien</b>, puis colle-le en face de la vidéo et <b>Enregistrer</b>. Les élèves connectés la voient aussitôt&nbsp;; les autres gardent le lien YouTube.</p>
+  <div id="liste"></div>
+</div>
+<script src="../assets/js/prof-api.js?v=3"></script>
+<script>
+(function(){
+  /* les cours qui peuvent porter des vidéos à clé — à compléter quand un cours en reçoit */
+  var PAGES = [
+    '1re-es-t1-c1-nucleosynthese.html', '1re-es-t1-c2-radioactivite.html', '1re-es-t1-c3-cristaux.html',
+    '1re-es-t2-c1-son-et-musique.html', '1re-es-t2-c2-son-a-coder.html', '1re-es-t3-c1-forme-terre.html',
+    'term-es-t2-c1-climat-passe.html', 'term-es-t2-c2-climat-futur.html',
+    '2nde-snt-t0-systemes-informatises.html', '2nde-snt-t1-internet.html', '2nde-snt-t2-le-web.html',
+    '2nde-snt-m1-representer-information.html'
+  ];
+  var $ = function(s){ return document.querySelector(s); };
+  var enBase = {}, gest = false;
+  function dire(t, ko){ var e = $('#etat'); e.textContent = t; e.className = 'msg' + (ko ? ' ko' : ''); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  ProfAPI.reprendre().then(function(){
+    return Promise.all([
+      ProfAPI.appeler('est_gestionnaire').catch(function(){ return false; }),
+      ProfAPI.lire('videos?select=cle,url,titre,maj_le').catch(function(e){ throw new Error('table videos absente ? (bdd/schema/041) — ' + e.message); }),
+      lirePages()
+    ]);
+  }).then(function(r){
+    gest = r[0] === true;
+    (r[1] || []).forEach(function(x){ enBase[x.cle] = x; });
+    dire(gest ? '' : 'Lecture seule : seul le gestionnaire du site enregistre les liens.', !gest);
+    dessiner(r[2]);
+  }).catch(function(e){
+    dire(/SESSION|AUCUNE/.test(e.message) ? 'Pas de session : connecte-toi d’abord au tableau de bord, puis reviens ici.' : e.message, true);
+  });
+
+  /* relève les <video data-video> de chaque cours, avec le titre de la balise */
+  function lirePages(){
+    return Promise.all(PAGES.map(function(p){
+      return fetch('../pages/' + p, {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; }).catch(function(){ return ''; })
+        .then(function(h){
+          var out = [], re = /<video\b[^>]*>/g, m;
+          while((m = re.exec(h))){
+            var b = m[0], c = /data-video="([^"]+)"/.exec(b);
+            if(!c) continue;
+            var t = /title="([^"]*)"/.exec(b);
+            out.push({page: p, cle: c[1], titre: t ? t[1].replace(/&#39;|&apos;/g, "'").replace(/&amp;/g, '&') : c[1]});
+          }
+          return out;
+        });
+    }));
+  }
+
+  function dessiner(parPage){
+    var h = '', vues = {};
+    parPage.forEach(function(liste, i){
+      if(!liste.length) return;
+      h += '<h2>' + esc(PAGES[i].replace('.html', '')) + '</h2>';
+      liste.forEach(function(v){ vues[v.cle] = true; h += bloc(v); });
+    });
+    /* en base mais plus dans aucun cours */
+    var orph = Object.keys(enBase).filter(function(k){ return !vues[k]; });
+    if(orph.length){
+      h += '<h2>En base, mais dans aucun cours</h2>';
+      orph.forEach(function(k){ h += bloc({cle: k, titre: enBase[k].titre || k, page: ''}); });
+    }
+    $('#liste').innerHTML = h || '<p class="aide">Aucune vidéo à clé dans les cours pour l’instant.</p>';
+    $('#liste').querySelectorAll('form').forEach(function(f){ f.addEventListener('submit', enregistrer); });
+  }
+  function bloc(v){
+    var b = enBase[v.cle];
+    return '<div class="v" data-cle="' + esc(v.cle) + '"><div><div class="t">' + esc(v.titre) + '</div><code>' + esc(v.cle) + '</code></div>'
+      + '<span class="etat ' + (b ? 'ok">✓ lien en base' : 'ko">sans lien') + '</span>'
+      + '<form><input type="url" name="url" placeholder="https://isaacetoile-my.sharepoint.com/:v:/g/personal/…" value="' + esc(b ? b.url : '') + '"' + (gest ? '' : ' disabled') + ' aria-label="Lien OneDrive de ' + esc(v.titre) + '">'
+      + '<input type="hidden" name="titre" value="' + esc(v.titre) + '">'
+      + (gest ? '<button class="p" type="submit">Enregistrer</button>' : '') + '</form><div class="r" aria-live="polite"></div></div>';
+  }
+  function enregistrer(ev){
+    ev.preventDefault();
+    var f = ev.target, bloc = f.closest('.v'), cle = bloc.dataset.cle, r = bloc.querySelector('.r');
+    var url = f.url.value.trim().replace(/[?&]download=1\b/, '').replace(/[?&]nav=[^&]*/, '');
+    if(!/^https:\/\/[a-z0-9-]+\.sharepoint\.com\//.test(url)){ r.className = 'r ko'; r.textContent = 'Ce n’est pas un lien OneDrive du lycée (il commence par https://…sharepoint.com/).'; return; }
+    r.className = 'r'; r.textContent = 'Enregistrement…';
+    ProfAPI.ecrire('videos?on_conflict=cle', [{cle: cle, url: url, titre: f.titre.value || null}], true).then(function(){
+      enBase[cle] = {cle: cle, url: url};
+      bloc.querySelector('.etat').className = 'etat ok'; bloc.querySelector('.etat').textContent = '✓ lien en base';
+      f.url.value = url;
+      r.className = 'r ok'; r.textContent = 'Enregistré. Les élèves connectés la voient dès maintenant.';
+    }).catch(function(e){ r.className = 'r ko'; r.textContent = 'Refusé : ' + e.message; });
+  }
+})();
+</script>
+</body>
+</html>

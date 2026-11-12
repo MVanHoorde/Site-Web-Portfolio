@@ -1505,6 +1505,29 @@
   }
 
   /* ----------------------------------------------------------
+   *  10 ter. Le lien d'une vidéo (bdd/schema/041, 12/11/2026)
+   *
+   *  Les liens OneDrive ne s'écrivent plus dans les pages (dépôt
+   *  public) : la page porte une clé, le lien se lit ici au clic,
+   *  réservé aux comptes connectés. Sans élève connecté, on essaie la
+   *  session du tableau de bord ouverte sur le même appareil — c'est
+   *  le cas de l'enseignant qui projette. Rend null si rien ne va :
+   *  le lecteur renvoie alors au lien YouTube du crédit.
+   * ---------------------------------------------------------- */
+  function lienVideo(cle) {
+    var chemin = 'videos?select=url&cle=eq.' + encodeURIComponent(cle);
+    function premier(l) { return (l && l[0] && l[0].url) || null; }
+    return api(chemin).then(premier).catch(function () {
+      var p = null;
+      try { p = JSON.parse(global.localStorage.getItem('snt.prof') || 'null'); } catch (e) { p = null; }
+      if (!p || !p.access_token || !(Date.now() < p.expires_at)) return null;
+      var h = enteteCommune(); h.Authorization = 'Bearer ' + p.access_token;
+      return fetch(URL_PROJET + '/rest/v1/' + chemin, { headers: h })
+        .then(lireReponse).then(premier).catch(function () { return null; });
+    });
+  }
+
+  /* ----------------------------------------------------------
    *  11. Surface publique
    * ---------------------------------------------------------- */
   global.Progression = {
@@ -1535,7 +1558,8 @@
     changerGroupeSnt    : changerGroupeSnt,
     mesInscriptions     : mesInscriptions,
     mesReponses   : mesReponses,
-    versions      : versions
+    versions      : versions,
+    lienVideo     : lienVideo
   };
 
   if (!disponible() && global.console) {

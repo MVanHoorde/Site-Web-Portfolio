@@ -21,6 +21,16 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 |---|---|---|
 | 12/11/2026 | **EMC, harcèlomètre : un volet « loi » après la révélation** (042) — par situation : ce que dit la loi, ce qu'on risque (maxima pour un majeur, note sur les mineurs), que faire, articles ; plus 6 repères généraux et 3 chiffres France (DEPP 2025, baromètre e-Enfance 2025, 3018 2025). Montré seulement une fois la zone révélée (tablette, pilotage, tuile de projection) ; textes retouchables dans Contenus | ⏳ proposé par Claude, contenu à valider (Loïc) — 042 exécuté le 12/11 |
 
+## 12/11/2026 — ES 1re : vidéos en base (041), rappels d'entrée de séance
+
+| Date | Décision | Statut |
+|---|---|---|
+| 12/11/2026 | **Les liens OneDrive des vidéos quittent le dépôt public** : la page porte une clé (`data-video`), le lien vit dans la table `videos` (041), lisible des seuls comptes connectés, écrit par le gestionnaire depuis `prof/videos.html`. Sans compte : renvoi au lien YouTube du crédit | ✅ en vigueur (Loïc) — 041 exécuté, 24 liens en base le 12/11 |
+| 12/11/2026 | **Restreindre le partage OneDrive aux comptes de l'établissement : écarté** — Safari sur iPad refuse les cookies d'un site tiers, la lecture risquerait de tomber en classe | ✅ en vigueur (proposé par Claude, accepté) |
+| 12/11/2026 | **Rappels d'entrée de séance (ES)** : à l'ouverture d'un chapitre après plus de 2 h d'absence, **4 questions** pour l'élève connecté — 3 sur ses 3 dernières étapes validées, 1 plus ancienne ; tirage au hasard ; une question réussie ne revient plus, une manquée revient en priorité ; on peut passer ; « ça te servira pour les évaluations ». Après la carte « Bon retour ». Statistiques dans `prof/rappels.html` ; état : `_suivi/rappels-es1.md` | ✅ en vigueur (Loïc) |
+| 12/11/2026 | **Rappels éteints tant que Loïc n'a pas audité la banque** (`<body data-rappels="actif">` à poser ensuite ; essai : `?rappels=essai`). Banques proposées par Claude : radioactivité (65), cristaux (44) | ⏳ audit de Loïc |
+| 12/11/2026 | **Étapes « Et ta première idée ? »** (1.4, 2.5, 3.5 de la radioactivité) : la réponse antérieure de l'élève s'affiche au-dessus du bouton et dans la fenêtre d'écriture (`data-focus-rappel`) | ✅ en vigueur (Loïc) |
+
 ## 12/11/2026 — EMC : la restitution après les séances du jeudi (040)
 
 | Date | Décision | Statut |

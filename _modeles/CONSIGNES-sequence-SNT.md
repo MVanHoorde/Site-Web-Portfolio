@@ -243,9 +243,18 @@ foi sur celui gardé en mémoire.
   le **OneDrive de l'établissement** et partagée « toute personne disposant du
   lien » ; Loïc en a accepté le risque de droit d'auteur. Liste et suivi :
   `_suivi/videos-a-telecharger.md`.
+  - 🔴 **Le lien OneDrive ne s'écrit pas dans la page** (12/11/2026) : le dépôt
+    est public. La page porte une **clé**, le lien vit dans la table `videos`
+    (`bdd/schema/041`), lue au clic par les seuls comptes connectés. Loïc colle
+    les liens dans `prof/videos.html` (lien « 🎬 Vidéos » du tableau de bord,
+    gestionnaire seul) ; l'écran relève lui-même les clés des cours. Clé :
+    `<séquence>-<sujet>` en minuscules, ex. `es1-t1c2-asnr-sources`.
   - **Patron du lecteur** — le moteur (`initVideos`) le remplace par une affiche
     locale et ne charge rien avant le clic :
-    `<video height="315" title="<titre>" data-src="<LIEN-DE-PARTAGE>&amp;download=1" data-onedrive="<LIEN-DE-PARTAGE>" data-debut="<secondes>" data-yt="<ID YouTube>" data-chaine="<nom de la chaîne>" data-chaine-url="https://www.youtube.com/@…"></video>`
+    `<video height="315" title="<titre>" data-video="<clé>" data-debut="<secondes>" data-yt="<ID YouTube>" data-chaine="<nom de la chaîne>" data-chaine-url="https://www.youtube.com/@…"></video>`
+    Sans compte, ou sans lien en base : un message renvoie au lien YouTube du
+    crédit. L'ancien patron `data-src="<LIEN>&amp;download=1"` marche encore
+    (six vidéos de nucléosynthèse et de SNT), à migrer vers `data-video`.
     Lecteur natif du navigateur. Le lecteur SharePoint intégré (`embed.aspx`) est
     écarté : il exige une connexion et refuse l'affichage hors de Microsoft.
   - **Tant que le MP4 n'est pas là**, le lecteur YouTube intégré reste :

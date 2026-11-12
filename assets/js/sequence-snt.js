@@ -3559,8 +3559,13 @@ function initVideos(){
      chez Microsoft avant le clic. Le lecteur SharePoint intégré (embed.aspx)
      a été écarté : mesuré le 03/10, il exige une connexion et refuse
      l'affichage dans une page extérieure (X-Frame-Options, frame-ancestors). */
-  $$('video[data-src]').forEach(function(v){
-    var src=v.getAttribute('data-src'); if(!src) return;
+  /* LIEN EN BASE (12/11/2026, bdd/schema/041) : <video data-video="clé">
+     ne porte plus le lien OneDrive — le dépôt est public. Au clic, le
+     lien se lit dans la table videos (comptes connectés seulement) ;
+     sans lui, on renvoie au lien YouTube du crédit. */
+  $$('video[data-src],video[data-video]').forEach(function(v){
+    var src=v.getAttribute('data-src'), cleV=v.getAttribute('data-video');
+    if(!src && !cleV) return;
     var h=v.getAttribute('height')||'315';
     var debut=parseInt(v.getAttribute('data-debut')||'0',10)||0;
     var aff=document.createElement('button');
@@ -3570,11 +3575,35 @@ function initVideos(){
     aff.innerHTML='<span class="va-play" aria-hidden="true">▶</span>'+
       '<span class="va-txt">Lire la vidéo</span>'+
       '<span class="va-note">Hébergée sur le OneDrive du lycée&nbsp;: rien n\'est chargé tant que tu n\'as pas cliqué.</span>';
+    function panne(apres, txt){
+      var p=document.createElement('p');
+      p.className='video-panne'; p.textContent=txt;
+      if(apres.parentNode) apres.parentNode.insertBefore(p,apres.nextSibling);
+    }
     aff.addEventListener('click',function(){
+      if(src) return lire(src);
+      if(aff.dataset.attente) return;
+      aff.dataset.attente='1';
+      var txtV=aff.querySelector('.va-txt'); if(txtV) txtV.textContent='Chargement…';
+      var B=window.Progression;
+      var demande=(B && B.lienVideo) ? B.lienVideo(cleV) : Promise.resolve(null);
+      demande.then(function(url){
+        delete aff.dataset.attente;
+        if(txtV) txtV.textContent='Lire la vidéo';
+        if(!url){
+          if(!aff.nextElementSibling || !aff.nextElementSibling.classList.contains('video-panne'))
+            panne(aff,'La vidéo du lycée s’ouvre aux élèves connectés. Connecte-toi, ou ouvre-la avec le lien juste en dessous.');
+          return;
+        }
+        var nx=aff.nextElementSibling; if(nx && nx.classList.contains('video-panne')) nx.remove();
+        lire(url+(/[?&]download=1/.test(url)?'':(url.indexOf('?')<0?'?':'&')+'download=1'));
+      }).catch(function(){ delete aff.dataset.attente; if(txtV) txtV.textContent='Lire la vidéo'; });
+    });
+    function lire(adresse){
       var l=document.createElement('video');
       l.controls=true; l.setAttribute('playsinline',''); l.preload='auto';
       l.className='video-od'; l.title=v.getAttribute('title')||'Vidéo';
-      l.src=src+(debut?'#t='+debut:'');
+      l.src=adresse+(debut?'#t='+debut:'');
       l.addEventListener('error',function(){
         var p=document.createElement('p');
         p.className='video-panne';
@@ -3583,7 +3612,7 @@ function initVideos(){
       },{once:true});
       aff.parentNode.replaceChild(l,aff);
       var pr=l.play&&l.play(); if(pr&&pr.catch) pr.catch(function(){});
-    });
+    }
     v.parentNode.replaceChild(aff,v);
     poserCredit(aff,v,v.getAttribute('data-yt'),debut,v.getAttribute('data-onedrive'));
   });
