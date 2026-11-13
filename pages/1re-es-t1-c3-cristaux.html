@@ -205,6 +205,52 @@
   figure.anim .anim-bas p{flex:1;margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.5;min-height:3em}
   figure.anim figcaption{font-size:13px;color:var(--ink-soft);margin-top:8px;line-height:1.5}
 
+  /* ---------- Modèles 3D à tourner (assets/js/cristaux-3d.js) ----------
+     Sans WebGL 2 ou sans JS, l'image PNG reste affichée. */
+  /* les figures 3D gardent un fond papier dans les deux thèmes, comme les PNG */
+  :root{--v3d-papier:#fff;--v3d-doux:#4a566e;--v3d-bord:#d5d8e0;--v3d-encre:#1b2b55;--v3d-trait:#c9ccd6;--v3d-accent:#2445c7;--v3d-voile:rgba(255,255,255,.9);--v3d-ombre:rgba(10,16,30,.55);--poste-fond:#0e1526}
+  .v3d{position:relative;width:100%}
+  .v3d-cv{display:block;width:100%;height:100%;background:var(--v3d-papier);border-radius:8px;cursor:grab;touch-action:pan-y;outline-offset:2px}
+  .v3d-cv:active{cursor:grabbing}
+  .v3d-cv:focus{outline:none}
+  .v3d-cv:focus-visible{outline:2px solid var(--v3d-accent)}
+  .si-3d{display:none}
+  .avec-3d .si-3d{display:inline}
+  .v3d-actif > img.v3d-repli{display:none}
+  .v3d > img{display:block;width:100%;height:100%;object-fit:contain;background:var(--v3d-papier);border-radius:8px}
+  .v3d-outils{position:absolute;right:5px;bottom:5px;display:flex;gap:5px;align-items:center;pointer-events:none}
+  .v3d-outils > *{pointer-events:auto}
+  .v3d-aide{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--v3d-doux);background:var(--v3d-voile);
+    border:1px solid var(--v3d-bord);border-radius:20px;padding:2px 8px;transition:opacity .4s;white-space:nowrap}
+  .v3d-aide.vu{opacity:0}
+  .v3d-btn{font:600 12px "IBM Plex Mono",monospace;color:var(--v3d-encre);background:var(--v3d-voile);border:1px solid var(--v3d-trait);
+    border-radius:7px;padding:3px 8px;cursor:pointer;line-height:1.3}
+  .v3d-btn:hover{border-color:var(--v3d-accent)}
+  .v3d-btn:focus-visible{outline:2px solid var(--v3d-accent);outline-offset:1px}
+  .fig-grille .sf .v3d{height:200px}
+  .fig-grille .sf .v3d > img{height:100%}
+  .fig-grille .sf .v3d .v3d-aide{display:none}
+  @media(max-width:720px){.fig-grille .sf .v3d{height:150px}}
+  /* Figure 3 : photo et structure, côte à côte */
+  .dg-grille{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .dg{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .dg-tete{font-size:15px;color:var(--ink)}
+  .dg-photo{height:120px;width:auto;max-width:100%;border-radius:8px;object-fit:contain}
+  .dg .v3d{height:300px;border:1px solid var(--line);border-radius:9px}
+  .dg .sl{font-size:13px;color:var(--ink-soft);text-align:center;line-height:1.4}
+  @media(max-width:620px){.dg-grille{grid-template-columns:1fr}}
+  /* Figure 12 : l'animation */
+  .v3d-hc{height:380px;border:1px solid var(--line);border-radius:9px;background:var(--v3d-papier)}
+  .v3d-legende{position:absolute;left:10px;top:8px;right:10px;margin:0;font-size:13.5px;line-height:1.45;color:var(--v3d-encre);pointer-events:none;
+    background:var(--v3d-voile);border-radius:6px;padding:2px 6px;width:fit-content;max-width:calc(100% - 20px)}
+  .v3d-legende:empty{display:none}
+  /* la vue agrandie */
+  .v3d-dlg{border:none;border-radius:14px;padding:12px 14px 14px;background:var(--surface,var(--v3d-papier));color:var(--ink);max-width:96vw}
+  .v3d-dlg::backdrop{background:var(--v3d-ombre)}
+  .v3d-dlg-tete{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:8px;font-weight:600}
+  .v3d-grande{width:min(88vw,820px);height:min(74vh,640px)}
+  .v3d-grande .v3d-cv{touch-action:none}
+
   /* ---------- Images dans une question de QCM ---------- */
   .qimgs{display:flex;gap:12px;justify-content:center;margin:10px 0 2px}
   .qimgs .qi{display:flex;flex-direction:column;align-items:center;gap:3px;font-family:"IBM Plex Mono",monospace;font-weight:700}
@@ -252,6 +298,15 @@
   .videos-grille .poste{margin:0;display:block}
   .videos-grille .poste-media{width:100%}
   .videos-grille video,.videos-grille iframe{width:100%;height:auto;aspect-ratio:16/9}
+  /* le moteur pose une affiche de 315 px de haut (faite pour une pleine
+     largeur) et un badge de niveau en coin, sur le fond blanc du poste :
+     dans une demi-colonne, cartes décalées et bande blanche (13/11/2026) */
+  .videos-grille .poste{display:flex;flex-direction:column;background:var(--poste-fond)}
+  .videos-grille .poste-media{flex:1;display:flex;flex-direction:column}
+  .videos-grille .poste-media .consigne{flex-wrap:nowrap;align-items:flex-start;min-height:3.1em;line-height:1.5}
+  .videos-grille .video-affiche{height:auto!important;aspect-ratio:16/9;width:100%}
+  .videos-grille .video-credit{margin-top:auto;padding-top:8px}
+  .videos-grille .niv-coin{display:none}
   @media(max-width:720px){.an-grille,.videos-grille{grid-template-columns:1fr}}
 
   /* ---------- Bonus longs ---------- */
@@ -313,15 +368,6 @@
     <span class="dot"><span class="pip done"></span>Validé — tu peux aider un camarade</span>
   </div>
 
-  <!-- CHANTIER -->
-  <aside class="chantier decision">
-    <div class="cl">📌 Décision attendue — état de cette page, et l'ancienne page statique</div>
-    Reprise du 12/11/2026 après ton audit des séances 1 à 3 : figures refaites, activités
-    réécrites, séance 4 de révision ajoutée. Tout ce qui est ajouté au cours reste une
-    <b>proposition à valider</b>. La page statique <code>pages/1re-pc-cristaux.html</code>
-    existe toujours&nbsp;: <b>à supprimer une fois cette page validée.</b>
-  </aside>
-  <!-- /CHANTIER -->
 
   <!-- ===================== SÉANCE 1 ===================== -->
   <section class="seance" id="s1" data-seance="1">
@@ -414,10 +460,6 @@
               <figcaption id="anim-cap"><span class="fig-n">Figure 1</span> Du quartz à trois échelles. <b>Microscopique</b>&nbsp;: les atomes, à leurs vraies positions — chaque silicium lié à quatre oxygènes&nbsp;; en pointillés, une maille. <b>Mésoscopique</b>&nbsp;: des milliers de mailles identiques, empilées&nbsp;; les faces planes du cristal apparaissent déjà. <b>Macroscopique</b>&nbsp;: le cristal de la vidéo, reconstitué d'après sa géométrie (un prisme à six faces terminé par une pointe à six faces).</figcaption>
             </figure>
 
-            <div class="proposition">
-              <div class="pl">⬖ Proposition — Animation</div>
-              Le cristal que tient Julien Bobroff est un <b>cristal de roche, c'est-à-dire du quartz</b> (SiO₂) — le même minéral que la Figure 4. L'échelle microscopique montre la <b>vraie structure du quartz α</b> (positions publiées&nbsp;: Si–O = 1,61 Å). Deux libertés&nbsp;: le cristal mésoscopique ne compte qu'une quinzaine de mailles de large (un vrai cristal en compte des millions), et le mot <b>«&nbsp;mésoscopique&nbsp;»</b>, hors programme, est ajouté au dictionnaire. <b>À valider.</b>
-            </div>
 
             <div class="block-label">Définition<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">Les <b class="cle">solides cristallins</b> (cristaux) sont composés de la <b>répétition ordonnée et périodique</b> d'entités de base — atomes, molécules ou ions.</div>
@@ -437,16 +479,25 @@
 
             <div class="block-label">Et sans aucun ordre&nbsp;?<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div class="retain">Un solide dont les entités sont empilées <b>sans ordre à grande échelle</b> n'est pas un cristal&nbsp;: c'est un <b class="cle">solide amorphe</b>. C'est le cas du <b>verre</b>, ou des roches volcaniques refroidies trop vite pour que leurs atomes aient eu le temps de se ranger (l'obsidienne, par exemple).</div>
-            <div class="proposition">
-              <div class="pl">⬖ Proposition — Programme</div>
-              Les solides amorphes sont au programme (thème 1, 1.2) mais absents du cours source&nbsp;: plutôt traités en SVT, ils sont mentionnés ici par un «&nbsp;à retenir&nbsp;» court, et une question du QCM ci-dessous. <b>À valider.</b>
-            </div>
 
             <div class="block-label">Variétés allotropiques</div>
             <p style="font-size:14.5px;margin:4px 0 10px">Un solide cristallin peut exister sous différentes <b>formes cristallines</b>, c'est-à-dire avec une géométrie différente de répétition de ses entités élémentaires. On parle de <b>variétés allotropiques</b>.</p>
 
-            <figure class="ill"><span class="loupe">⤢ agrandir</span>
-              <img src="../assets/img/es/1re-es-t1-c3/t1c3-diamant-et-graphite.jpg" alt="En haut des diamants taillés et un morceau de graphite ; en dessous, leurs structures : réseau tridimensionnel pour le diamant, feuillets empilés pour le graphite" loading="lazy">
+            <figure class="illm">
+              <div class="dg-grille">
+                <div class="dg">
+                  <div class="dg-tete"><b>Diamant</b></div>
+                  <img class="dg-photo" src="../assets/img/es/1re-es-t1-c3/t1c3-photo-diamant.jpg" alt="Des diamants taillés, transparents et brillants" loading="lazy">
+                  <div class="v3d v3d-dg" data-3d="diamant" data-3d-titre="Le diamant"><img src="../assets/img/es/1re-es-t1-c3/t1c3-diamant-et-graphite.jpg" alt="Structure du diamant : un réseau en trois dimensions, chaque atome de carbone lié à quatre voisins" loading="lazy"></div>
+                  <span class="sl">un réseau dans les trois directions&nbsp;: chaque atome est lié à <b>quatre</b> voisins</span>
+                </div>
+                <div class="dg">
+                  <div class="dg-tete"><b>Graphite</b></div>
+                  <img class="dg-photo" src="../assets/img/es/1re-es-t1-c3/t1c3-photo-graphite.jpg" alt="Un morceau de graphite gris sombre, à l'éclat métallique" loading="lazy">
+                  <div class="v3d v3d-dg" data-3d="graphite" data-3d-titre="Le graphite"><img src="../assets/img/es/1re-es-t1-c3/t1c3-diamant-et-graphite.jpg" alt="Structure du graphite : des feuillets d'hexagones empilés les uns sur les autres" loading="lazy"></div>
+                  <span class="sl">des <b>feuillets</b> d'hexagones, empilés les uns sur les autres</span>
+                </div>
+              </div>
               <figcaption><span class="fig-n">Figure 3</span> Le diamant et le graphite sont deux variétés allotropiques du carbone solide C<sub>(s)</sub> : leurs structures cristallographiques sont différentes, et par conséquent leurs propriétés macroscopiques également. Même atome — et pourtant l'un raye tout, l'autre s'effrite sur une feuille de papier.</figcaption>
             </figure>
 
@@ -582,16 +633,16 @@
                 <div class="fig-grille garde" style="--n:4;grid-template-columns:auto 1fr 1fr 1fr;align-items:center">
                   <span></span><span class="tete">cubique simple</span><span class="tete">cubique centrée</span><span class="tete">cubique faces centrées</span>
                   <span class="ligne-t">éclatée</span>
-                  <div class="sf"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cs-eclatee.png" alt="Maille cubique simple en représentation éclatée : huit petites sphères bleues aux sommets d'un cube" loading="lazy"></div>
-                  <div class="sf"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cc-eclatee.png" alt="Maille cubique centrée en représentation éclatée : huit sphères bleues aux sommets et une orange au centre, reliée aux sommets par les grandes diagonales" loading="lazy"></div>
-                  <div class="sf"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cfc-eclatee.png" alt="Maille cubique faces centrées en représentation éclatée : huit sphères bleues aux sommets et six vertes au centre des faces" loading="lazy"></div>
+                  <div class="sf"><div class="v3d" data-3d="cs-eclatee" data-3d-groupe="fig6" data-3d-titre="Maille cubique simple — représentation éclatée"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cs-eclatee.png" alt="Maille cubique simple en représentation éclatée : huit petites sphères bleues aux sommets d'un cube" loading="lazy"></div></div>
+                  <div class="sf"><div class="v3d" data-3d="cc-eclatee" data-3d-groupe="fig6" data-3d-titre="Maille cubique centrée — représentation éclatée"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cc-eclatee.png" alt="Maille cubique centrée en représentation éclatée : huit sphères bleues aux sommets et une orange au centre, reliée aux sommets par les grandes diagonales" loading="lazy"></div></div>
+                  <div class="sf"><div class="v3d" data-3d="cfc-eclatee" data-3d-groupe="fig6" data-3d-titre="Maille cubique faces centrées — représentation éclatée"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cfc-eclatee.png" alt="Maille cubique faces centrées en représentation éclatée : huit sphères bleues aux sommets et six vertes au centre des faces" loading="lazy"></div></div>
                   <span class="ligne-t">compacte</span>
-                  <div class="sf"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cs-compacte.png" alt="Maille cubique simple en représentation compacte : huit huitièmes de sphère bleus dans les coins du cube, qui se touchent le long des arêtes" loading="lazy"></div>
-                  <div class="sf"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cc-compacte.png" alt="Maille cubique centrée en représentation compacte : une grosse sphère orange au centre, touchée par les huitièmes de sphère bleus des coins" loading="lazy"></div>
-                  <div class="sf"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cfc-compacte.png" alt="Maille cubique faces centrées en représentation compacte : des demi-sphères vertes sur chaque face et des huitièmes bleus dans les coins" loading="lazy"></div>
+                  <div class="sf"><div class="v3d" data-3d="cs-compacte" data-3d-groupe="fig6" data-3d-titre="Maille cubique simple — représentation compacte"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cs-compacte.png" alt="Maille cubique simple en représentation compacte : huit huitièmes de sphère bleus dans les coins du cube, qui se touchent le long des arêtes" loading="lazy"></div></div>
+                  <div class="sf"><div class="v3d" data-3d="cc-compacte" data-3d-groupe="fig6" data-3d-titre="Maille cubique centrée — représentation compacte"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cc-compacte.png" alt="Maille cubique centrée en représentation compacte : une grosse sphère orange au centre, touchée par les huitièmes de sphère bleus des coins" loading="lazy"></div></div>
+                  <div class="sf"><div class="v3d" data-3d="cfc-compacte" data-3d-groupe="fig6" data-3d-titre="Maille cubique faces centrées — représentation compacte"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-cfc-compacte.png" alt="Maille cubique faces centrées en représentation compacte : des demi-sphères vertes sur chaque face et des huitièmes bleus dans les coins" loading="lazy"></div></div>
                 </div>
                 <div class="code-pos"><span class="pos-sommet"><span class="pastille"></span>sur un sommet</span><span class="pos-face"><span class="pastille"></span>au centre d'une face</span><span class="pos-centre"><span class="pastille"></span>au centre du cube</span></div>
-                <figcaption><span class="fig-n">Figure 6</span> Les trois mailles, en représentation éclatée (en haut : les sphères sont réduites pour qu'on voie leurs positions) et en représentation compacte (en bas : les sphères ont leur taille réelle, se touchent, et on ne dessine que la part de chacune qui est dans le cube). Ce sont les mêmes mailles, dessinées de deux façons.</figcaption>
+                <figcaption><span class="fig-n">Figure 6</span> Les trois mailles, en représentation éclatée (en haut : les sphères sont réduites pour qu'on voie leurs positions) et en représentation compacte (en bas : les sphères ont leur taille réelle, se touchent, et on ne dessine que la part de chacune qui est dans le cube). Ce sont les mêmes mailles, dessinées de deux façons. <span class="si-3d"><b>Fais-les tourner</b>&nbsp;: les six tournent ensemble (⤢ pour agrandir).</span></figcaption>
               </figure>
             </div>
             <div class="cours-voile">🙈 Le cours est caché pendant l'activité. <button type="button" class="btn ghost" data-revoir-cours="cours-mailles">👀 Le revoir</button></div>
@@ -738,7 +789,7 @@
 
             <div data-cache-cours id="cours-contrib">
               <div class="block-label">Le principe<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
-              <div class="retain">Les atomes appartenant à <b>plusieurs mailles simultanément</b> comptent pour une <b>fraction</b> correspondant au nombre de mailles qui se les partagent. Un atome situé sur une <b>face</b> est partagé par deux mailles&nbsp;: il participe donc à hauteur de ½. La <b class="cle">multiplicité</b> de la maille est la <b>somme</b> de la participation de chaque atome ou ion.</div>
+              <div class="retain">Les atomes appartenant à <b>plusieurs mailles simultanément</b> comptent pour une <b>fraction</b> correspondant au nombre de mailles qui se les partagent. Un atome situé sur une <b>face</b> est partagé par deux mailles&nbsp;: il participe donc à hauteur de <span class="frac"><span>1</span><span>2</span></span>. La <b class="cle">multiplicité</b> de la maille est la <b>somme</b> de la participation de chaque atome ou ion.</div>
 
               <figure class="illm">
                 <table class="contrib">
@@ -799,7 +850,7 @@
                     <span class="op">+</span>
                     <span class="dc pos-centre"><span class="pastille"></span>1 <span class="qui">centre</span> × 1 = 1</span>
                   </div>
-                  <div class="decompte"><span class="dc total">Z<sub>Fe</sub> = 1 + 1 = 2</span></div>
+                  <div class="decompte"><span class="dc total"><span>Z<sub>Fe</sub> = 1 + 1 = 2</span></span></div>
                   <p style="font-size:14px;margin:6px 0 0;color:var(--ink-soft)">Les huit huitièmes des coins, mis bout à bout, reconstituent <b>une seule</b> sphère&nbsp;: neuf sphères dessinées, deux atomes de fer.</p>
                 </div>
               </div>
@@ -834,7 +885,7 @@
               <div class="decompte">
                 <span class="dc pos-sommet"><span class="pastille"></span>8 <span class="qui">sommets</span> × <span class="frac"><span>1</span><span>8</span></span> = 1</span>
                 <span class="op">⟹</span>
-                <span class="dc total">Z<sub>CS</sub> = 1</span>
+                <span class="dc total"><span>Z<sub>CS</sub> = 1</span></span>
               </div>
               <p style="font-size:14px;margin:4px 0 0;color:var(--ink-soft)">Il n'y a que des sommets&nbsp;: la maille CS contient <b>un</b> atome ou ion.</p>
             </div>
@@ -906,7 +957,7 @@
   "c": "Une face sépare <b>deux</b> mailles voisines : chacune n'en revendique que la moitié."
  },
  {
-  "q": "Pourquoi un atome situé au sommet d'une maille ne compte-t-il que pour ⅛ ?",
+  "q": "Pourquoi un atome situé au sommet d'une maille ne compte-t-il que pour <span class=\"frac\"><span>1</span><span>8</span></span> ?",
   "o": [
    "Parce qu'il est huit fois plus petit que les autres atomes de la maille",
    "Parce qu'il est partagé entre les huit mailles qui se rejoignent en ce sommet",
@@ -920,13 +971,13 @@
   "q": "Un atome situé au milieu d'une arête compte pour…",
   "o": ["¼", "½", "⅛", "1"],
   "r": 0,
-  "c": "<b>¼</b> : quatre mailles se rejoignent le long d'une arête. Retiens la logique : <b>centre 1, face ½, arête ¼, sommet ⅛</b>."
+  "c": "<b><span class=\"frac\"><span>1</span><span>4</span></span></b> : quatre mailles se rejoignent le long d'une arête. Retiens la logique : <b>centre 1, face <span class=\"frac\"><span>1</span><span>2</span></span>, arête <span class=\"frac\"><span>1</span><span>4</span></span>, sommet <span class=\"frac\"><span>1</span><span>8</span></span></b>."
  },
  {
   "q": "Combien de mailles se partagent un atome placé sur une arête ?",
   "o": ["2", "8", "6", "4"],
   "r": 3,
-  "c": "<b>Quatre</b> cubes se touchent le long d'une même arête — d'où la contribution ¼."
+  "c": "<b>Quatre</b> cubes se touchent le long d'une même arête — d'où la contribution <span class=\"frac\"><span>1</span><span>4</span></span>."
  },
  {
   "q": "Quelles sont les multiplicités des trois mailles au programme ? Coche tout ce qui est juste.",
@@ -943,13 +994,13 @@
   "q": "Une maille cubique porte un atome à chaque sommet et un au centre de chaque face. Sa multiplicité vaut…",
   "o": ["14", "4", "7", "2"],
   "r": 1,
-  "c": "8 × ⅛ + 6 × ½ = 1 + 3 = <b>4</b>. C'est la maille CFC : 14 sphères dessinées, 4 entités en propre."
+  "c": "8 × <span class=\"frac\"><span>1</span><span>8</span></span> + 6 × <span class=\"frac\"><span>1</span><span>2</span></span> = 1 + 3 = <b>4</b>. C'est la maille CFC : 14 sphères dessinées, 4 entités en propre."
  },
  {
   "q": "Le chlorure de césium : un ion Cl⁻ sur chacun des 8 sommets, un ion Cs⁺ au centre du cube. Combien d'ions de chaque sorte la maille contient-elle ?",
   "o": ["8 Cl⁻ et 1 Cs⁺", "1 Cl⁻ et 8 Cs⁺", "1 Cl⁻ et 1 Cs⁺", "2 Cl⁻ et 1 Cs⁺"],
   "r": 2,
-  "c": "8 × ⅛ = <b>1 ion Cl⁻</b>, et <b>1 ion Cs⁺</b> entier au centre. Autant de l'un que de l'autre : c'est bien la formule CsCl."
+  "c": "8 × <span class=\"frac\"><span>1</span><span>8</span></span> = <b>1 ion Cl⁻</b>, et <b>1 ion Cs⁺</b> entier au centre. Autant de l'un que de l'autre : c'est bien la formule CsCl."
  },
  {
   "q": "Dans la maille CC du fer, on voit neuf sphères. Pourquoi Z ne vaut-il que 2 ?",
@@ -960,7 +1011,7 @@
    "Parce que huit des neuf sphères sont partagées avec les mailles voisines"
   ],
   "r": 3,
-  "c": "Les huit sphères des sommets ne comptent que pour ⅛ chacune : 8 × ⅛ = 1. Plus la sphère centrale, entière : <b>Z = 2</b>."
+  "c": "Les huit sphères des sommets ne comptent que pour <span class=\"frac\"><span>1</span><span>8</span></span> chacune : 8 × <span class=\"frac\"><span>1</span><span>8</span></span> = 1. Plus la sphère centrale, entière : <b>Z = 2</b>."
  },
  {
   "q": "Que compte la multiplicité Z d'une maille ?",
@@ -977,7 +1028,7 @@
   "q": "Une maille cubique porte un atome à chaque sommet et un au milieu de chacune de ses 12 arêtes. Sa multiplicité vaut…",
   "o": ["13", "20", "4", "3"],
   "r": 2,
-  "c": "8 × ⅛ + 12 × ¼ = 1 + 3 = <b>4</b>."
+  "c": "8 × <span class=\"frac\"><span>1</span><span>8</span></span> + 12 × <span class=\"frac\"><span>1</span><span>4</span></span> = 1 + 3 = <b>4</b>."
  }
 ]
               </script>
@@ -998,9 +1049,9 @@
         </div>
         <div class="bonus-body">
           <p style="font-size:14.5px;margin-top:0">Une maille est un <b>parallélépipède</b>&nbsp;: le cube n'en est qu'un cas particulier, celui où les trois côtés sont égaux et les angles tous droits. Les cristallographes rangent tous les cristaux en <b>sept familles</b> selon la forme de leur maille&nbsp;: cubique, quadratique, orthorhombique, hexagonale, rhomboédrique, monoclinique, triclinique.</p>
-          <figure class="ill"><span class="loupe">⤢ agrandir</span>
-            <img src="../assets/img/es/1re-es-t1-c3/fig-maille-hexagonale.png" alt="Un prisme à base hexagonale : sphères bleues aux douze sommets, vertes au centre des deux bases, et trois oranges à mi-hauteur à l'intérieur" loading="lazy" style="max-height:260px">
-            <figcaption><span class="fig-n">Figure 12</span> L'empilement hexagonal compact, dessiné sur un prisme à base hexagonale. C'est celui du magnésium, du zinc et du titane. Sa compacité vaut 74&nbsp;%, exactement comme la CFC&nbsp;: ce sont deux façons différentes d'empiler des sphères aussi serré que possible.</figcaption>
+          <figure class="illm">
+            <div class="v3d v3d-hc" data-3d="hexagonal" data-3d-titre="L'empilement hexagonal compact"><img src="../assets/img/es/1re-es-t1-c3/fig-maille-hexagonale.png" alt="Un prisme à base hexagonale : sphères bleues aux douze sommets, vertes au centre des deux bases, et trois oranges à mi-hauteur à l'intérieur" loading="lazy"><p class="v3d-legende" aria-live="polite"></p></div>
+            <figcaption><span class="fig-n">Figure 12</span> L'empilement hexagonal compact&nbsp;: des couches de sphères empilées A, B, A, B… — chaque couche posée dans les creux de la précédente —, puis dessiné sur un prisme à base hexagonale. C'est celui du magnésium, du zinc et du titane. Sa compacité vaut 74&nbsp;%, exactement comme la CFC&nbsp;: ce sont deux façons différentes d'empiler des sphères aussi serré que possible.</figcaption>
           </figure>
           <ul class="minusc-liste">
             <li>Le <b>quartz</b> (Figure 4) appartient à la famille hexagonale&nbsp;: sa maille est un prisme à base losange, et c'est pour cela que le cristal de la vidéo a <b>six faces</b>.</li>
@@ -1149,10 +1200,6 @@
 
             <div class="retain">Ces 52&nbsp;% supposent des <b>sphères dures</b> qui se touchent. En réalité, un atome est lui-même presque entièrement vide&nbsp;: son noyau n'en occupe qu'une fraction infime. La matière solide, celle qui paraît la plus pleine du monde, est essentiellement du <b>vide organisé</b>.</div>
 
-            <div class="proposition">
-              <div class="pl">⬖ Proposition — Programme</div>
-              La question ouverte «&nbsp;52&nbsp;% de matière&nbsp;» est retirée, comme demandé&nbsp;: sa réponse est passée dans le cours, juste au-dessus. Le QCM ci-dessous la remplace pour valider l'étape. <b>À valider.</b>
-            </div>
 
             <div class="block-label">Vérifie ta compréhension</div>
             <div class="qcmbox" data-code="CRI-3c">
@@ -1367,20 +1414,7 @@
               <b>Ce que disent les résultats.</b> La compacité ne dépend pas de la taille des atomes, seulement de <b>la façon de les ranger</b>. La CFC est bien plus compacte que la CS&nbsp;: c'est l'empilement le plus serré possible de sphères identiques — celui de nombreux métaux (l'or, l'argent, l'aluminium, le cuivre).
             </div>
 
-            <div class="proposition">
-              <div class="pl">⬖ Proposition — Programme</div>
-              Le «&nbsp;à retenir&nbsp;» porte désormais la <b>méthode</b> et la discussion, plus la valeur de 74&nbsp;%, comme demandé. La phrase sur l'empilement le plus compact et la liste des métaux CFC ne figurent pas dans le cours source. Les quatre questions guidées remplacent le texte à trous&nbsp;; seule la dernière affiche la valeur attendue, pour que l'élève puisse se vérifier. <b>À valider.</b>
-            </div>
 
-            <!-- CHANTIER -->
-            <aside class="chantier">
-              <div class="cl">🔍 Légende à corriger dans le PDF</div>
-              Dans le cours source, l'image&nbsp;11 est légendée «&nbsp;Le rayon d'une sphère dans une
-              maille <b>cubique simple</b>&nbsp;» — la même légende que l'image&nbsp;10, alors qu'elle
-              illustre la maille <b>CFC</b>. À corriger dans le PDF si tu le rediffuses. La Figure&nbsp;15
-              ci-dessus la remplace dans la page.
-            </aside>
-            <!-- /CHANTIER -->
           </div>
         </div>
       </div>
@@ -1404,13 +1438,6 @@
               </div>
             </div>
 
-            <div class="proposition">
-              <div class="pl">⬖ Proposition — Difficulté</div>
-              Le cours source écrit à cet endroit «&nbsp;ρ = Z × m<sub>entité</sub>&nbsp;», <b>sans le
-              dénominateur a³</b> — une ligne manifestement tronquée à la mise en page, puisque la
-              correction de l'exercice, elle, divise bien par a³. La formule est rétablie ci-dessus.
-              <b>À confirmer</b>, et à corriger dans le PDF.
-            </div>
 
             <div class="exemple">
               <div class="el">Exemple guidé — la masse volumique du fer</div>
@@ -1478,14 +1505,6 @@
               </div>
             </div>
 
-            <!-- CHANTIER -->
-            <aside class="chantier">
-              <div class="cl">🔍 Donnée à corriger dans le PDF</div>
-              Le cours source imprime «&nbsp;m = 9,35 × 10<sup>−2</sup> kg&nbsp;» — impossible pour un atome.
-              L'exposant <b>10<sup>−26</sup></b>, confirmé le 12/11/2026, est celui de la page&nbsp;; il redonne les
-              7,91 × 10³ kg·m⁻³ de la correction. À corriger dans le PDF si tu le rediffuses.
-            </aside>
-            <!-- /CHANTIER -->
 
             <div class="field" data-focus
                  data-focus-titre="Confronter au réel"
@@ -1502,10 +1521,6 @@
               </div>
             </div>
 
-            <div class="proposition">
-              <div class="pl">⬖ Proposition — Programme</div>
-              Le calcul est découpé en trois questions qui se suivent (multiplicité, volume, masse volumique)&nbsp;; chacune affiche son résultat une fois envoyée, pour que l'erreur d'une étape ne se propage pas à la suivante. La confrontation à la valeur mesurée (7,87 × 10³ kg·m⁻³) est <b>ajoutée</b> : le cours source s'arrête au résultat du calcul. <b>À valider.</b>
-            </div>
 
             <div class="block-label">Le bilan du chapitre<span class="niv" style="margin-left:8px">★★ <b>à savoir</b></span></div>
             <div style="margin:2px 0 4px"><button class="btn" data-reveal-bilan>🎯 Afficher le « à retenir »</button></div>
@@ -1513,7 +1528,7 @@
               <ul style="margin:0;padding-left:18px">
                 <li>Un <b>solide cristallin</b> est la répétition ordonnée et périodique d'entités de base. Il est <b class="cle">monocristallin</b> ou polycristallin. Sans ordre à grande échelle, le solide est <b>amorphe</b> (le verre).</li>
                 <li>La <b>maille élémentaire</b> est le volume minimal qui, répété, pave tout l'espace. Trois mailles cubiques au programme&nbsp;: <b class="cle">CS, CC, CFC</b>.</li>
-                <li>La <b>multiplicité Z</b> compte les entités de la maille, en tenant compte du partage&nbsp;: centre 1, face ½, arête ¼, sommet ⅛. <b class="cle">Z<sub>CS</sub> = 1 · Z<sub>CC</sub> = 2 · Z<sub>CFC</sub> = 4</b>.</li>
+                <li>La <b>multiplicité Z</b> compte les entités de la maille, en tenant compte du partage&nbsp;: centre 1, face <span class="frac"><span>1</span><span>2</span></span>, arête <span class="frac"><span>1</span><span>4</span></span>, sommet <span class="frac"><span>1</span><span>8</span></span>. <b class="cle">Z<sub>CS</sub> = 1 · Z<sub>CC</sub> = 2 · Z<sub>CFC</sub> = 4</b>.</li>
                 <li>La <b>compacité</b> <math><mi>C</mi><mo>=</mo><mfrac><msub><mi>V</mi><mtext>occupé</mtext></msub><msub><mi>V</mi><mtext>maille</mtext></msub></mfrac></math> se calcule en quatre temps (où les sphères se touchent, Z, volume occupé, rapport)&nbsp;: <b class="cle">52 %</b> pour la CS, <b>74 %</b> pour la CFC.</li>
                 <li>La <b>masse volumique</b> se déduit de la maille&nbsp;: <b class="cle"><math><mi>ρ</mi><mo>=</mo><mfrac><mrow><mi>Z</mi><mo>×</mo><msub><mi>m</mi><mtext>entité</mtext></msub></mrow><msup><mi>a</mi><mn>3</mn></msup></mfrac></math></b>.</li>
               </ul>
@@ -1776,7 +1791,7 @@
   "q": "Une maille cubique porte un atome au centre de chaque face, et aucun ailleurs. Sa multiplicité vaut…",
   "o": ["6", "1", "3", "12"],
   "r": 2,
-  "c": "6 faces à <math><mfrac><mn>1</mn><mn>2</mn></mfrac></math> : <b>6 × ½ = 3</b>."
+  "c": "6 faces à <math><mfrac><mn>1</mn><mn>2</mn></mfrac></math> : <b>6 × <span class=\"frac\"><span>1</span><span>2</span></span> = 3</b>."
  },
  {
   "q": "Une élève écrit : « Z<sub>CC</sub> = 9, car je vois 9 sphères ». Quelle est son erreur ?",
@@ -1787,7 +1802,7 @@
    "Il n'y a pas d'erreur : Z compte les sphères dessinées"
   ],
   "r": 1,
-  "c": "Chaque sommet ne compte que pour <math><mfrac><mn>1</mn><mn>8</mn></mfrac></math> : 8 × ⅛ + 1 = <b>2</b>."
+  "c": "Chaque sommet ne compte que pour <math><mfrac><mn>1</mn><mn>8</mn></mfrac></math> : 8 × <span class=\"frac\"><span>1</span><span>8</span></span> + 1 = <b>2</b>."
  }
 ]
               </script>
@@ -1894,15 +1909,6 @@
             </div>
             </div>
 
-            <!-- CHANTIER -->
-            <aside class="chantier">
-              <div class="cl">🔍 Vidéos de révision — à compléter</div>
-              Titres et durées relevés sur YouTube le 12/11/2026. Ce sont les six vidéos que portait
-              le cours (QR codes)&nbsp;: les deux de «&nbsp;Réussir&nbsp;!&nbsp;» sont rangées d'après leur
-              numéro (1 → séance 1, 2 → séance 3), sans avoir été regardées. <b>Ta liste de vidéos
-              viendra s'ajouter ici</b>, séance par séance.
-            </aside>
-            <!-- /CHANTIER -->
 
             <div class="block-label">QCM de révision</div>
             <div class="qcmbox" data-code="CRI-4c">
@@ -2017,7 +2023,7 @@
  {"mot": "Sphères dures", "origine": "ES · Les cristaux",
   "def": "Le modèle utilisé dans ce chapitre : les atomes ou ions d'un cristal sont représentés par des sphères indéformables, placées à différentes positions de la maille."},
  {"mot": "Contribution à la maille", "origine": "ES · Les cristaux",
-  "def": "La fraction d'un atome ou d'un ion qui compte pour une maille, selon le nombre de mailles qui se le partagent : centre 1, face ½, arête ¼, sommet ⅛. La multiplicité est la somme de ces contributions."},
+  "def": "La fraction d'un atome ou d'un ion qui compte pour une maille, selon le nombre de mailles qui se le partagent : centre 1, face <span class=\"frac\"><span>1</span><span>2</span></span>, arête <span class=\"frac\"><span>1</span><span>4</span></span>, sommet <span class=\"frac\"><span>1</span><span>8</span></span>. La multiplicité est la somme de ces contributions."},
  {"mot": "Arête", "origine": "ES · Les cristaux",
   "def": "Le segment qui joint deux sommets voisins du cube. Sa longueur est le paramètre de maille a ; dans une maille CS, les sphères se touchent le long d'une arête."},
  {"mot": "Diagonale de face", "origine": "ES · Les cristaux",
@@ -2045,6 +2051,8 @@
 <script src="../assets/js/rappels-rendu.js?v=2"></script>
 <script src="../assets/js/rappels/es1-t1-c3.js?v=3"></script>
 <script src="../assets/js/rappels-es.js?v=2"></script>
+<!-- Figures 3, 6 et 12 en 3D, à tourner (13/11/2026) — les exercices gardent les PNG -->
+<script src="../assets/js/cristaux-3d.js?v=1"></script>
 
 <script>
 /* ============================================================
@@ -2167,9 +2175,15 @@
       après maille ; ses faces planes apparaissent. Chaque maille est la même
       image (projection orthographique, pose fixe) : seules les mailles du
       bord sont dessinées ;
-   3. MACROSCOPIQUE — fondu vers le cristal de la vidéo de J. Bobroff :
-      prisme hexagonal, pointe à six faces inclinées de 38,2° sur l'axe,
-      stries horizontales, base laiteuse. Il tourne, puis s'arrête.
+   3. MACROSCOPIQUE — zoom arrière continu (reprise du 13/11/2026 : le
+      fondu d'avant posait le cristal de 7 nm et celui de 5 cm à la même
+      taille, on ne voyait pas le changement d'échelle) : le cristal méso
+      est au cœur du vrai cristal, il rapetisse jusqu'au point pendant que
+      la barre d'échelle passe des nm aux cm et que les arêtes du quartz
+      arrivent du bord du cadre. Le bandeau change de nom vers 0,1 mm.
+      Le cristal de la vidéo de J. Bobroff : prisme hexagonal, pointe à
+      six faces inclinées de 38,2° sur l'axe, stries horizontales, base
+      laiteuse. Il tourne, puis s'arrête.
    Le prisme est orienté comme le réseau (faces du prisme parallèles aux
    rangées de mailles) : le cristal mésoscopique a déjà sa forme finale.
    Démarre quand la figure entre à l'écran. prefers-reduced-motion :
@@ -2411,10 +2425,24 @@
     ctx.font='12px "IBM Plex Mono", monospace'; ctx.textAlign='right'; ctx.fillText(txt,W-24,H-22);
     ctx.restore();
   }
-  function barreNm(s,alpha){
-    var L=[1,2,5,10,20], px=0, l=1;
-    for(var n=0;n<L.length;n++){ l=L[n]; px=l*10*s; if(px>=60) break; }
-    echelle(l+' nm',px,alpha);
+  /* la barre d'échelle, pour n'importe quel grossissement (s en px par Å) :
+     la plus courte longueur « ronde » (1, 2 ou 5 × 10ⁿ) qui fasse 60 px */
+  function barre(s,alpha){
+    var L=1;   /* en Å */
+    while(L*s<55){ var m=String(L).charAt(0); L*=(m==='2'?2.5:2); }
+    var txt;
+    function f(v){ return String(Math.round(v*10)/10).replace('.',','); }
+    if(L<1e4) txt=f(L/10)+' nm'; else if(L<1e7) txt=f(L/1e4)+' µm'; else if(L<1e8) txt=f(L/1e7)+' mm'; else txt='≈ '+f(L/1e8)+' cm';
+    echelle(txt,L*s,alpha);
+  }
+  /* passage d'un bandeau à l'autre : l'un s'efface, PUIS l'autre apparaît —
+     jamais les deux textes l'un sur l'autre */
+  function bandeauX(n0,n1,u){
+    if(u<0.5) bandeau(n0,1-lisse(u*2)); else bandeau(n1,lisse(u*2-1));
+  }
+  function grandeur(x){
+    var n=Math.round(Math.log(x)/Math.LN10), v=Math.pow(10,n), s=String(v);
+    return '× '+s.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
   }
 
   /* ---------- 3. le quartz macroscopique ---------- */
@@ -2430,9 +2458,13 @@
     faces.push({p:hb.slice().reverse(),type:'base'});
     return faces;
   })();
-  function scenequartz(theta,alpha){
+  function scenequartz(theta,alpha,S){
     if(alpha<=0) return;
-    var S=S_MACRO, CX=ANCRE_MACRO[0], CY=ANCRE_MACRO[1];
+    S=S||S_MACRO;
+    var CX=ANCRE_MACRO[0], CY=ANCRE_MACRO[1];
+    /* vu de très près (début du zoom arrière), le cadre est tout entier à
+       l'intérieur du cristal : un voile uni, les arêtes sont loin dehors */
+    if(S>3000*S_MACRO){ ctx.fillStyle='rgba(214,229,240,'+0.42*alpha+')'; ctx.fillRect(0,0,W,H); return; }
     var CAMV=[0,-CE,SE];
     function pr(p){ var q=proj(p); return [CX+q[0]*S, CY+q[1]*S, q[2]]; }
     var L=nrm([-0.5,-0.7,0.6]);
@@ -2485,7 +2517,11 @@
   }
 
   /* ---------- la ligne de temps ---------- */
-  var DT=0.021, T1=ATOMES.length*DT+1.4, T2=T1+6.0, T3=T2+1.8, FIN=T3+9;
+  /* le zoom arrière méso → macro : le cristal méso (rayon RP ≈ 34 Å) est posé
+     au cœur du vrai cristal, dont le rayon vaut ≈ 2,4 cm (la barre « 2 cm »
+     fait 0,84 rayon). On s'éloigne d'un facteur K0 ≈ 7 millions. */
+  var R_VRAI=2/(2*0.42)*1e8, K0=R_VRAI/RP, TZ=5.0;
+  var DT=0.021, T1=ATOMES.length*DT+1.4, T2=T1+6.0, T3=T2+TZ, FIN=T3+8;
   var TOUR=1.5;   /* ce que le germe tourne avant de s'arrêter, en radians */
   function image(t){
     fond();
@@ -2496,7 +2532,7 @@
       dessinerAtomes(ATOMES,th,mx,ANCRE_MICRO,S_MICRO,function(n){ return Math.max(0,Math.min(1,(t-n*DT)/0.32)); });
       maille(th,mx,ANCRE_MICRO,S_MICRO,lisse((u-0.55)/0.25));
       hauteur(EL);
-      bandeau(0,1); barreNm(S_MICRO,1);
+      bandeau(0,1); barre(S_MICRO,1);
     }else if(t<T2){
       dire(1);
       var e=lisse((t-T1)/(T2-T1));
@@ -2506,18 +2542,37 @@
       var g=Math.exp(lerp(Math.log(G0),0,Math.min(1,e*1.12)));
       dessinerMailles(g,cen,an,s,1);
       maille(THF,cen,an,s,1-lisse((t-T1)/1.2));
-      var b=Math.min(1,(t-T1)/0.8); bandeau(0,1-b); bandeau(1,b); barreNm(s,1);
+      bandeauX(0,1,Math.min(1,(t-T1)/1.0)); barre(s,1);
     }else if(t<T3){
-      var a=lisse((t-T2)/(T3-T2));
-      dire(a<0.5?1:2);
-      dessinerMailles(1,[0,0,0],ANCRE_MACRO,S_MESO_FIN,1-a);
-      scenequartz(THF,a);
-      bandeau(1,1-a); bandeau(2,a);
-      barreNm(S_MESO_FIN,1-a); echelle('≈ 2 cm',2*S_MACRO*0.42,a);
+      /* zoom arrière continu, à vitesse constante en puissances de dix : le
+         cristal méso rapetisse jusqu'à n'être plus qu'un point, au cœur du
+         vrai cristal dont les arêtes arrivent du bord du cadre */
+      var z=(t-T2)/TZ, u=z<0.12?0:lisse((z-0.12)/0.88);
+      var K=Math.exp(lerp(Math.log(K0),0,u));        /* grossissement du macro, 1 à la fin */
+      var sm=S_MESO_FIN*K/K0, rayon=RP*sm;           /* px par Å · rayon du méso, en px */
+      var w=Math.max(0,Math.min(1,(Math.log(rayon)-Math.log(1.2))/Math.log(10)));   /* 1 : méso bien visible, 0 : un point */
+      scenequartz(THF,Math.min(1,0.55+0.45*u),S_MACRO*K);
+      if(w>0) dessinerMailles(1,[0,0,0],ANCRE_MACRO,sm,w);
+      if(w>0 && rayon<14){   /* le point où il était : un repère qui s'efface */
+        ctx.save(); ctx.strokeStyle='rgba(36,69,199,'+0.8*w+')'; ctx.lineWidth=1.5;
+        ctx.beginPath(); ctx.arc(ANCRE_MACRO[0],ANCRE_MACRO[1],16,0,6.2832); ctx.stroke(); ctx.restore();
+      }
+      /* l'échelle change de nom quand ce qu'on voit devient visible à l'œil :
+         vers 0,1 mm sur la barre (55 px pour 10⁶ Å) */
+      var vm=Math.max(0,Math.min(1,(Math.log(55e-6/sm)/Math.LN10)/0.9+0.5));
+      dire(vm<0.5?1:2);
+      bandeauX(1,2,vm);
+      barre(sm,1);
+      var zf=K0/K;
+      if(zf>3){
+        ctx.save(); ctx.globalAlpha=Math.min(1,(1-u)*6);
+        ctx.fillStyle='#2445c7'; ctx.font='700 13px "IBM Plex Mono", ui-monospace, monospace'; ctx.textAlign='left';
+        ctx.fillText('zoom arrière  '+grandeur(zf),18,H-18); ctx.restore();
+      }
     }else{
       dire(2);
       var v=Math.min(1,(t-T3)/(FIN-T3)), th=THF+0.35*(FIN-T3)*(v-Math.sin(2*Math.PI*v)/(2*Math.PI));
-      scenequartz(th,1); bandeau(2,1); echelle('≈ 2 cm',2*S_MACRO*0.42,1);
+      scenequartz(th,1); bandeau(2,1); barre(S_MESO_FIN/K0,1);
     }
   }
   var t0=null, raf=null;

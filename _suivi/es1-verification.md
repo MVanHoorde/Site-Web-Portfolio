@@ -229,7 +229,8 @@ et non « toujours » ; les QCM écrits par Claude (diagnostic, écoute, 1.3, 2.
 
 ### C3 — Les cristaux · `1re-es-t1-c3-cristaux.html`
 
-**Repris le 12/11/2026 après deux audits de Loïc** — toujours masqué aux élèves.
+**Repris le 12/11/2026 après deux audits de Loïc**, ouvert aux élèves le 13/11. Le 13/11 aussi :
+Figures 3, 6 et 12 en 3D, Figure 1 en zoom arrière, vidéos de 4.3 et indices de Z (troisième retour de Loïc).
 3 séances + 1 de révision · 12 étapes (10 à valider, 2 « plus loin ») · 6 QCM
 (43 questions) · 4 associations · 5 textes à trous · 14 réponses rédigées + 1
 réflexion perso · 16 figures numérotées · animation d'ouverture.
@@ -237,15 +238,18 @@ réflexion perso · 16 figures numérotées · animation d'ouverture.
 - **S1 — Cristal et maille** : 1.1 vidéo Bobroff, **Figure 1 animée en trois
   échelles** (microscopique : la vraie structure du quartz α en 3D, vue dans l'axe
   puis de côté ; mésoscopique : des milliers de mailles, les faces apparaissent ;
-  macroscopique : le cristal de la vidéo), définitions, **solide amorphe** (demande
+  macroscopique : le cristal de la vidéo, atteint par un **zoom arrière continu**
+  de ×7 millions, barre d'échelle des nm aux cm), définitions, **Figure 3 en 3D**
+  (photo + structure à tourner, pour le diamant et le graphite), **solide amorphe** (demande
   du 12/11), QCM avec les deux pyrites · 1.2 Figure 4 avec ses **loupes** (cercle +
   traits vers l'image suivante, tracés par script), tableau CS/CC/CFC en « à
-  retenir », association de mémoire, cours caché · 1.3 bonus MinUSc, réflexion
+  retenir », **Figure 6 en 3D** (les six mailles tournent ensemble), association de
+  mémoire (PNG fixes), cours caché · 1.3 bonus MinUSc, réflexion
   perso au format habituel.
 - **S2 — La multiplicité** : 2.1 tableau des contributions en colonnes (une par
   position), exemple du fer · 2.2 exemple CS, puis la CFC en **trois réponses
   rédigées** (« attendu en évaluation »), QCM de 10 questions · 2.3 bonus : les
-  mailles non cubiques.
+  mailles non cubiques, **Figure 12 animée** (couches A, B, A, puis la maille).
 - **S3 — Compacité et masse volumique** : formules en **MathML** (vraies fractions,
   parenthèses à la bonne taille), rayon noté R partout · 3.1 exemple CS pas à pas
   avec la maille CS en 3D, QCM de 9 questions · 3.2 maille CFC en 3D, face cotée
@@ -256,7 +260,8 @@ réflexion perso · 16 figures numérotées · animation d'ouverture.
 - **S4 — Réviser** (`data-fiche="non"`) : par séance, une liste de **savoir-faire à
   refaire sans le cours** et un cadre où l'écrire (CRI-4d/e/f), puis vérification
   sur les étapes · applications numériques **sans étapes** (cuivre, polonium, et un
-  défi inverse : l'aluminium) · vidéos en grille · QCM. **La liste de vidéos de
+  défi inverse : l'aluminium) · vidéos en grille (affiches en 16/9 et titres
+  alignés par la page : l'affiche du moteur fait 315 px de haut) · QCM. **La liste de vidéos de
   Loïc reste à y ajouter.**
 
 **Les figures** — toutes les figures géométriques (mailles éclatées et compactes,
@@ -265,13 +270,23 @@ réseau, contributions, paramètre a, maille CC cotée, hexagonale) et les planc
 script, ne jamais les retoucher**. Les photos (or, pyrite, fer, granite, quartz,
 réseau et maille du quartz) sont détourées de leurs légendes pixelisées
 (`t1c3-photo-*`, `t1c3-quartz-*`). Les faces CS et CFC (Figures 14 et 15) et le
-triangle de Pythagore sont en SVG dans la page. Code couleur de position partout :
+triangle de Pythagore sont en SVG dans la page. **Figures 3, 6 et 12 en 3D** :
+`assets/js/cristaux-3d.js`, lancer de rayons WebGL 2 qui reprend exactement
+`mailles.py` (mêmes sphères, coupes, lumière, couleurs) ; un seul contexte WebGL
+pour la page ; le PNG reste en repli (pas de WebGL 2, fiche, impression). Les
+exercices, la fiche et la banque de rappels gardent les **PNG fixes** (décision du
+13/11). Photos de la Figure 3 découpées de l'ancienne planche
+(`t1c3-photo-diamant.jpg`, `t1c3-photo-graphite.jpg`) : petite définition, à
+remplacer par de meilleures. Code couleur de position partout :
 sommet bleu · face vert · arête violet · centre orange. Les anciennes images
 `t1c3-*.jpg` remplacées ne sont plus utilisées : à supprimer à la validation.
 
 **Formules** — dans la page, MathML. Dans les options de QCM, le moteur n'accepte
-pas de balisage mathématique : fractions typographiques (½ ¼ ⅛) ; la question et la
-correction, elles, acceptent le MathML. Dans les fiches, **jamais de MathML** :
+pas de balisage mathématique : **les seules fractions encore obliques de la page**
+(½ ¼ ⅛) sont dans six options de QCM et dans les indices des textes à trous (affichés
+en texte brut). Les rendre empilées demande de toucher `sequence-snt.js`. Partout
+ailleurs, fraction empilée (`.frac` ou MathML). Indices : un `<sub>` dans une boîte
+`display:flex` (les `.dc` des décomptes) perd sa descente, d'où l'enveloppe `<span>`. Dans les fiches, **jamais de MathML** :
 le PDF est photographié par html2canvas, qui n'en dessine pas les barres de
 fraction ; les `.frac` des gabarits reçoivent leur style par un script de la page.
 
@@ -284,12 +299,23 @@ affichent (règle CSS dans la page). Le moteur, lui, laisse le bouton du bilan
 désactivé même en mode enseignant — bug à corriger dans `sequence-snt.js` hors
 d'un chantier parallèle.
 
-**Cadres `.proposition`** — 1.1 l'animation (liberté : cristal mésoscopique de
-quinze mailles ; mot « mésoscopique » hors programme) · 1.1 le solide amorphe ·
-3.1 retrait de la question ouverte · 3.2 la méthode, les métaux CFC, les questions
-guidées · 3.3 formule rétablie (a³), le découpage en trois questions, la
-confrontation au réel. L'exposant 10⁻²⁶ est **confirmé** par Loïc (12/11) : il
-reste seulement à corriger dans le PDF source.
+**À valider — retiré de la page le 13/11/2026** (demande de Loïc : les élèves n'ont pas à
+voir les cadres destinés à l'enseignant ; la page n'a plus aucun `.proposition` ni
+`.chantier`, tout ce qu'ils disaient est ici) :
+
+| Étape | Type | Ce qui attend Loïc |
+|---|---|---|
+| 1.1 | Animation | Figure 1 : le cristal de J. Bobroff est du quartz (même minéral que la Figure 4), structure réelle du quartz α (Si–O = 1,61 Å). Libertés : cristal mésoscopique d'une quinzaine de mailles (un vrai en compte des millions) ; le mot « mésoscopique », hors programme, ajouté au dictionnaire ; zoom arrière continu jusqu'au cristal de ≈ 5 cm. |
+| 1.1 | Programme | Solides amorphes : au programme (1.2), absents du cours source (plutôt SVT) — un « à retenir » court et une question de QCM. |
+| 1.1 | Figures 3D | Figure 3 : diamant (C–C = 1,54 Å) et graphite (1,42 Å dans un feuillet, 3,35 Å entre feuillets) à tourner ; les deux phrases sous les modèles sont ajoutées au cours. Photos en petite définition, issues du diaporama : remplaçables (`t1c3-photo-diamant.jpg`, `t1c3-photo-graphite.jpg`). |
+| 2.3 | Animation | Figure 12 : l'empilement A, B, A et le mot « creux » sont ajoutés au cours (le bonus ne montrait que la maille). |
+| 3.1 | Programme | La question ouverte « 52 % de matière » est retirée (sa réponse est dans le cours) ; un QCM la remplace pour valider l'étape. |
+| 3.2 | Programme | Le « à retenir » porte la méthode, la discussion et les 74 % ; la phrase sur l'empilement le plus compact et la liste des métaux CFC ne sont pas dans le cours source ; quatre questions guidées remplacent le texte à trous (seule la dernière affiche la valeur attendue). |
+| 3.2 | PDF source | L'image 11 est légendée « Le rayon d'une sphère dans une maille cubique simple » (légende de l'image 10) alors qu'elle montre la CFC : à corriger si le PDF est rediffusé. La Figure 15 la remplace dans la page. |
+| 3.3 | PDF source | « ρ = Z × m<sub>entité</sub> » sans a³ : ligne tronquée, la formule est rétablie dans la page ; à corriger dans le PDF. Et « m = 9,35 × 10⁻² kg » : l'exposant 10⁻²⁶ est **confirmé** par Loïc (12/11), à corriger dans le PDF. |
+| 3.3 | Programme | Calcul en trois questions qui se suivent (multiplicité, volume, masse volumique), chacune affiche son résultat une fois envoyée ; confrontation à la valeur mesurée (7,87 × 10³ kg·m⁻³) ajoutée. |
+| 4.3 | Vidéos | Les six vidéos du cours (QR codes), titres et durées relevés le 12/11 ; les deux « Réussir ! » rangées d'après leur numéro, sans avoir été regardées. **La liste de vidéos de Loïc reste à ajouter**, séance par séance. |
+| page | Ancienne fiche | `pages/1re-pc-cristaux.html` existe toujours : à supprimer une fois la page validée (ES-14). |
 
 ---
 

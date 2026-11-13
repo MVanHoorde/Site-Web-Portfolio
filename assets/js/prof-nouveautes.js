@@ -23,6 +23,30 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 9,
+    date: '2026-11-13',
+    espaces: ['es1'],
+    titre: 'Les cristaux : des figures en 3D',
+    points: [
+      {
+        titre: 'Des mailles à faire tourner',
+        texte: 'Les trois mailles (éclatées et compactes), le diamant et le graphite se tournent au doigt ; les six mailles tournent ensemble. ⤢ les agrandit, pratique au tableau.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">CS</span><span class="nv-puce">CC</span><span class="nv-puce">CFC</span><span>↻ fais-moi tourner</span><span class="nv-bouton">⤢</span></div>' +
+          '</div>'
+      },
+      {
+        titre: 'Deux animations revues',
+        texte: 'Figure 1 : un vrai zoom arrière, des nanomètres au centimètre. Figure 12 : les couches A, B, A s’empilent, puis la maille hexagonale apparaît.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">5 nm</span><span>→</span><span class="nv-puce">10 µm</span><span>→</span><span class="nv-puce">2 cm</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 8,
     date: '2026-11-13',
     espaces: ['es1'],
