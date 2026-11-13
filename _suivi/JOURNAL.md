@@ -5103,3 +5103,10 @@ géométrique. Ascenseur vertical d'un millimètre sur 13 lignes d'équation (T1
 chapitre-commun.css, passé en ?v=11 sur les 15 fichiers. Fiche élève remise sur le cours audité :
 cristal 3D, propriétés de 03 B et 03 D ajoutées, zones de calcul agrandies (creux 186 → 40 mm) ;
 version PAP refaite hors dépôt.
+
+**13/11/2026, terminale ES : frise de l'IA et débat.** Quatre audits de Loïc
+sur une maquette cliquable (élève, projection, tableau de bord), puis mise en
+ligne en bêta, non liée, avec un mode d'emploi pour son collègue d'ES :
+`pages/term-es-frise-debat-maquette.html` et `pages/term-es-frise-debat-tuto.html`.
+Polices passées sur `assets/css/fonts.css` (la maquette d'artefact chargeait
+Google Fonts). Rien en base. Questions laissées pour plus tard : EST-FRISE-01.

@@ -2382,3 +2382,23 @@ n'est retenu »).
 l'affichage du jeu, mais quand il touche « Je suis prêt » ; avant, noyaux et
 lancer sont inactifs. L'écran enseignant superpose plusieurs courbes (« Nouvelle
 courbe », « Tout effacer ») et trace sur demande N₀/2 et t½ de chacune.
+
+### EST-FRISE-01 · Frise de l'IA et débat en classe : cadrage, maquette bêta montrée aux collègues ⏳
+
+**13/11/2026, quatre audits de Loïc sur maquette.** Séquence d'ouverture de
+terminale ES : fiche de recherche (1 h à la maison, 6 questions guidées, 1 à 3
+images légendées et sourcées, 2 sources), retour **formatif** pré-corrigé par
+Claude sur export PDF à codes (plus de modèle local), V2, frise construite par
+vote en classe, débat IA **en classe** (le débat énergie part en amphi), camp
+opposé à son avis sans le dire, rôles classés puis attribués, mur de réactions
+projeté. Branché, à la construction, sur l'espace `est` et `reponses_libres`
+(pas sur `bdd/schema/007`). Maquette bêta, données fictives, sans base :
+`pages/term-es-frise-debat-maquette.html`, mode d'emploi pour le collègue :
+`pages/term-es-frise-debat-tuto.html` (non liées). La règle « aucun champ note »
+de `_modeles/CONSIGNES-sequence-ES.md` sera réécrite à la construction.
+
+En attente (Loïc, plus tard) : barème de la note de complétion ; jeu du débat
+dans les 20 points ou en bonus ; note individuelle de débat par rôle ; groupes
+autorisés à présenter ; sens du « vote supplémentaire » du présentateur ;
+libellé exact du BO 3.5 ; avis du délégué à la protection des données sur la
+pré-correction par Claude ; écrans de rôle du jour J à retravailler.
