@@ -102,6 +102,16 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 07/11/2026 | **Exports** (nuage et émojis, harcèlomètre, carte mentale, enquête agrégée) par la mécanique des fiches SNT (html2canvas-pro + jsPDF, partage iOS puis téléchargement). Jamais l'aide, jamais un nom | ✅ en vigueur (Loïc) |
 | 07/11/2026 | **Vidéo : MP4 sur le OneDrive, avec en plus le lien d'origine** | ✅ en vigueur (Loïc) |
 
+## 13/11/2026 — Padago : les autrices déposent leurs fichiers
+
+| Date | Décision | Statut |
+|---|---|---|
+| 13/11/2026 | **Les autrices déposent leurs fichiers** depuis leur ordinateur (PDF, Word, Excel, PowerPoint, LibreOffice, images, son) : stockage `padago` (`bdd/schema/043`), lu par **adresse publique** — les élèves n'ont pas de compte — sans annuaire. Carte « 📎 Fichier » (Ouvrir / Télécharger), image depuis l'ordinateur, ou fichier lâché sur une colonne. Demande de la collègue autrice | ✅ en vigueur (Loïc) |
+| 13/11/2026 | **Plafonds : 10 Mo par fichier, 300 Mo par compte**, imposés par la base ; jauge dans l'éditeur et sur Mes pads ; alerte quotidienne dès qu'une autrice passe 210 Mo (`occupation-ligne.sql`, `compte_max`) | ✅ en vigueur (Loïc) |
+| 13/11/2026 | **Les vidéos ne s'hébergent jamais dans Padago** : lien OneDrive, YouTube ou autre plateforme. Une vidéo vue par quatre classes épuiserait les 5 Go de téléchargement mensuels de l'offre gratuite, et tout le site serait bridé. Le changement d'échelle passera par l'établissement | ✅ en vigueur (Loïc) |
+| 13/11/2026 | **Seules les autrices déposent** ; l'élève n'envoie toujours rien (ses dépôts restent sur la tablette). La question est posée à la collègue | ⏳ à trancher selon sa réponse |
+| 13/11/2026 | **Une carte garde le chemin du fichier, jamais son adresse** : migrer vers un stockage de l'établissement = recopier les fichiers et changer `URL_FICHIERS` dans `padago-commun.js`. Dupliquer ou copier un pad recopie ses fichiers dans le dossier du nouveau pad ; supprimer une carte ou un pad les efface | ✅ en vigueur |
+
 ## 31/10/2026 — Padago, les pads à serrures
 
 | Date | Décision | Statut |
@@ -110,8 +120,8 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 31/10/2026 | **Les pads des autrices sont en base** (`bdd/schema/030`), contrairement à la v1 « 100 % statique » du cahier des charges : la collègue a un compte, retrouve ses pads partout et les partage par lien. Deux versions par pad : le brouillon (codes en clair, lu par l'autrice seule) et la version élève (empreintes SHA-256 salées) | ✅ en vigueur (demande de Loïc) |
 | 31/10/2026 | **Côté élève : aucun compte, rien en base.** Prénom + initiale ; progression, dépôts et médailles sur la tablette (localStorage + IndexedDB, déroge pour cet outil seul à la règle SNT « rien que le jeton en local ») ; code de reprise pour changer d'appareil, discret puisque les tablettes sont attitrées | ✅ en vigueur |
 | 31/10/2026 | **Un compte d'autrice naît par code d'invitation à usage unique**, dont la base ne garde que l'empreinte — pas par liste d'adresses : les comptes du projet naissent sans confirmation de mail, n'importe qui pourrait prendre l'adresse invitée avant la collègue. Ce compte n'ouvre que Padago (`padago_suis_auteur()`), jamais classes ni copies. Le code n'est jamais écrit dans le dépôt | ✅ en vigueur |
-| 31/10/2026 | **Vidéos : MP4 sur OneDrive** lus par le lecteur natif ; YouTube et PeerTube en simple lien (YouTube bloqué au lycée, IP des élèves) — écart au cahier des charges, qui prévoyait l'intégration | ✅ en vigueur |
-| 31/10/2026 | **Images par lien seulement** (pas d'envoi de fichier) : le quota de 500 Mo est partagé avec les élèves et les collègues | ✅ en vigueur |
+| 31/10/2026 | **Vidéos : MP4 sur OneDrive** lus par le lecteur natif ; YouTube et PeerTube en simple lien (YouTube bloqué au lycée, IP des élèves) — écart au cahier des charges, qui prévoyait l'intégration | ✅ en vigueur, confirmée le 13/11 : jamais hébergées dans Padago |
+| 31/10/2026 | ~~**Images par lien seulement** (pas d'envoi de fichier) : le quota de 500 Mo est partagé avec les élèves et les collègues~~ | ~~remplacée~~ le 13/11 (les autrices déposent leurs fichiers, 043) |
 | 31/10/2026 | **Nom « Padago »** | ⏳ provisoire — à demander à la collègue |
 
 ## 19/10/2026 — Les terminales entrent dans la Boîte à cartes par Résonance

@@ -14,7 +14,10 @@
   var app = document.getElementById('app');
   var BASE = location.href.replace(/[#?].*$/, '').replace(/[^/]*$/, '');
 
-  var etat = { pad: null, modifie: false, minuteur: null, enCours: false };
+  /* occ : la jauge (padago_occupation, 043) — null tant qu'elle n'est pas lue.
+     enAttente : fichiers envoyés dont la carte n'est pas encore enregistrée
+     (le ménage n'y touche pas). aMenager : un fichier a pu devenir orphelin. */
+  var etat = { pad: null, modifie: false, minuteur: null, enCours: false, occ: null, enAttente: {}, aMenager: false };
 
   /* ---------- petits outils d'interface ---------- */
   function $(sel, racine) { return (racine || document).querySelector(sel); }
@@ -69,6 +72,119 @@
     if (auDepart) auDepart(d);
     d.showModal();
     return d;
+  }
+
+  /* ============================================================
+   *  FICHIERS DÉPOSÉS (bdd/schema/043)
+   *  Chemin : <compte>/<id du pad>/<tirage>-<nom>. Une carte « fichier »
+   *  ou « image » garde { chemin, nom, taille, mime }.
+   * ============================================================ */
+  function cheminsDe(B) {
+    var l = [];
+    (B.colonnes || []).forEach(function (c) { (c.cartes || []).forEach(function (k) { if (P.cheminSur(k.chemin)) l.push(k); }); });
+    return l;
+  }
+  function chargerJauge() {
+    return Api.occupation().then(function (o) {
+      etat.occ = { total: +o.total || 0, pads: o.pads || {} }; majJauge();
+    }).catch(function () { etat.occ = null; majJauge(); });
+  }
+  function majJauge() {
+    var o = etat.occ, z;
+    if ((z = $('#jauge'))) {
+      if (!o) { z.hidden = true; return; }
+      var ici = (etat.pad && o.pads[etat.pad.id]) || 0;
+      z.hidden = false;
+      z.textContent = '📎 ' + P.tailleLisible(ici) + ' · ' + Math.round(o.total / 1048576) + ' / ' + Math.round(P.PLAFOND / 1048576) + ' Mo';
+      z.title = 'Fichiers de ce pad : ' + P.tailleLisible(ici) + '. Ton espace : ' + P.tailleLisible(o.total) + ' sur 300 Mo.';
+      z.classList.toggle('haute', o.total > 0.8 * P.PLAFOND);
+    }
+    if ((z = $('#jauge-liste'))) {
+      if (!o) { z.hidden = true; return; }
+      var pc = Math.min(100, Math.round(100 * o.total / P.PLAFOND));
+      z.hidden = false;
+      z.innerHTML = '<span>📎 Tes fichiers déposés&nbsp;: <b>' + esc(P.tailleLisible(o.total)) + '</b> sur 300 Mo</span>'
+        + '<span class="jauge-barre' + (pc > 80 ? ' haute' : '') + '"><i style="width:' + pc + '%"></i></span>';
+    }
+  }
+
+  /* Une grande photo n'a pas besoin de 12 mégapixels : 1600 px, JPEG.
+     On garde l'original s'il est déjà léger, ou si la réduction ne
+     fait pas gagner de place. */
+  function reduireImage(fichier, f) {
+    if (fichier.size < 800 * 1024) return Promise.resolve({ blob: fichier, nom: fichier.name, mime: f.mime });
+    return new Promise(function (ok) {
+      var url = URL.createObjectURL(fichier), img = new Image();
+      img.onload = function () {
+        var r = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+        var c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * r); c.height = Math.round(img.naturalHeight * r);
+        var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+        g.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+        c.toBlob(function (b) {
+          if (!b || b.size >= fichier.size) return ok({ blob: fichier, nom: fichier.name, mime: f.mime });
+          ok({ blob: b, nom: fichier.name.replace(/\.[^.]*$/, '') + '.jpg', mime: 'image/jpeg' });
+        }, 'image/jpeg', 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); ok({ blob: fichier, nom: fichier.name, mime: f.mime }); };
+      img.src = url;
+    });
+  }
+
+  /* Envoie un fichier dans le dossier du pad ouvert. Rend
+     { chemin, nom, taille, mime }. Les refus (vidéo, format, poids,
+     espace plein) se décident ici, avant tout envoi. */
+  function deposer(fichier, progres) {
+    if (P.VIDEOS.test(fichier.name)) return Promise.reject(new Error('VIDEO'));
+    var f = P.formatDe(fichier.name);
+    if (!f) return Promise.reject(new Error('FORMAT'));
+    var prep = /^image\/(jpeg|png|webp)$/.test(f.mime) ? reduireImage(fichier, f)
+      : Promise.resolve({ blob: fichier, nom: fichier.name, mime: f.mime });
+    return prep.then(function (x) {
+      if (x.blob.size > P.FICHIER_MAX) throw new Error('TROP_LOURD');
+      if (etat.occ && etat.occ.total + x.blob.size > P.PLAFOND) throw new Error('PLEIN');
+      var padId = etat.pad.id;
+      var chemin = Api.monUid() + '/' + padId + '/' + P.aleatoire(8) + '-' + P.nomPropre(x.nom);
+      etat.enAttente[chemin] = true;
+      return Api.envoyerFichier(chemin, x.blob, x.mime, progres).then(function () {
+        if (etat.occ) { etat.occ.total += x.blob.size; etat.occ.pads[padId] = (etat.occ.pads[padId] || 0) + x.blob.size; majJauge(); }
+        return { chemin: chemin, nom: x.nom, taille: x.blob.size, mime: x.mime };
+      }, function (e) { delete etat.enAttente[chemin]; throw e; });
+    });
+  }
+
+  /* Efface du dossier du pad ce qu'aucune carte n'utilise plus : une
+     carte supprimée, un fichier remplacé, une fenêtre fermée en cours
+     d'envoi. Ne touche ni aux envois en attente, ni aux autres pads. */
+  function menage() {
+    var pad = etat.pad; if (!pad) return;
+    etat.aMenager = false;
+    var refs = {}; cheminsDe(pad.b).forEach(function (k) { refs[k.chemin] = true; });
+    var base = Api.monUid() + '/' + pad.id + '/';
+    Api.fichiersDuPad(pad.id).then(function (l) {
+      var morts = l.map(function (f) { return base + f.name; })
+        .filter(function (c) { return P.cheminSur(c) && !refs[c] && !etat.enAttente[c]; });
+      if (morts.length) return Api.effacerFichiers(morts).then(chargerJauge);
+    }).catch(function () { etat.aMenager = true; });
+  }
+
+  /* Un pad créé à partir d'un autre (dupliquer, copier une collègue,
+     importer) : ses fichiers sont recopiés dans SON dossier, côté
+     serveur. Sans cela, effacer le pad d'origine casserait la copie. */
+  function rattacher(ligne, br) {
+    var base = Api.monUid() + '/' + ligne.id + '/', rates = 0;
+    var cartes = cheminsDe(br).filter(function (k) { return k.chemin.indexOf(base) !== 0; });
+    if (!cartes.length) return Promise.resolve();
+    return cartes.reduce(function (p, k) {
+      return p.then(function () {
+        var vers = base + k.chemin.split('/')[2];
+        return Api.copierFichier(k.chemin, vers).then(function () { k.chemin = vers; }, function () { rates++; });
+      });
+    }, Promise.resolve()).then(function () {
+      return P.publier(br).then(function (pub) { return Api.enregistrerPad(ligne.id, { brouillon: br, publie: pub }); });
+    }).then(function () {
+      if (rates) toast(rates + ' fichier(s) n\'ont pas pu être recopiés : ils restent liés au pad d\'origine.');
+    });
   }
 
   /* ============================================================
@@ -209,6 +325,19 @@
   /* ============================================================
    *  MES PADS
    * ============================================================ */
+
+  /* « ✨ Nouveau » : Padago a ses propres autrices (compte par
+     invitation), qui ne voient pas la fenêtre Nouveautés du tableau
+     de bord. Un bandeau, jusqu'à « J'ai compris » (sur cet appareil).
+     Nouvelle annonce : changer NOUVEAUTE et le texte. */
+  var NOUVEAUTE = '2026-11-13-fichiers';
+  function nouveaute() {
+    try { if (localStorage.getItem('padago.nouveaute') === NOUVEAUTE) return ''; } catch (e) { /* on montre */ }
+    return '<div class="info nv-padago" id="nv-padago"><p style="margin:0 0 .3rem"><b>✨ Nouveau&nbsp;: dépose tes fichiers</b></p>'
+      + '<p style="margin:0 0 .3rem">Fais glisser un <b>PDF, Word, Excel, PowerPoint</b> ou une <b>photo</b> depuis ton ordinateur jusque sur une colonne&nbsp;: la carte se crée toute seule. Les élèves l\'ouvrent ou le téléchargent.</p>'
+      + '<p style="margin:0 0 .5rem"><small>10 Mo par fichier, 300 Mo en tout · les vidéos restent des liens (OneDrive, YouTube…) · pas de noms d\'élèves ni de notes.</small></p>'
+      + '<button class="btn petit" type="button" id="nv-fermer">J\'ai compris</button></div>';
+  }
   function vueListe() {
     etat.pad = null;
     app.innerHTML = '<div class="page"><div class="entete-liste"><h1>Mes pads</h1>'
@@ -216,7 +345,13 @@
       + '<button class="btn" id="tuto" type="button">🎓 Partir du pad tuto</button>'
       + '<button class="btn" id="copier" type="button">👥 Copier le pad d\'une collègue</button>'
       + '<label class="btn" style="cursor:pointer">⬆ Importer un fichier<input type="file" id="importer" accept=".json,application/json" hidden></label>'
-      + '</div><div id="liste"><p class="muet">Chargement…</p></div></div>';
+      + '</div>' + nouveaute() + '<p class="jauge-liste" id="jauge-liste" hidden></p><div id="liste"><p class="muet">Chargement…</p></div></div>';
+    chargerJauge();
+    var nv = $('#nv-fermer');
+    if (nv) nv.addEventListener('click', function () {
+      try { localStorage.setItem('padago.nouveaute', NOUVEAUTE); } catch (e) { /* rien */ }
+      $('#nv-padago').remove();
+    });
     $('#nouveau').addEventListener('click', function () { creer(P.padVierge()); });
     $('#tuto').addEventListener('click', partirDuTuto);
     $('#copier').addEventListener('click', demanderLienCollegue);
@@ -246,8 +381,14 @@
       });
       $$('[data-sup]').forEach(function (b) {
         b.addEventListener('click', function () {
-          if (!confirm('Supprimer définitivement « ' + b.getAttribute('data-titre') + ' » ?\nLe lien donné aux élèves ne marchera plus.')) return;
-          Api.supprimerPad(b.getAttribute('data-sup')).then(vueListe).catch(function (e) { toast(P.messageErreur(e)); });
+          if (!confirm('Supprimer définitivement « ' + b.getAttribute('data-titre') + ' » et ses fichiers ?\nLe lien donné aux élèves ne marchera plus.')) return;
+          var id = b.getAttribute('data-sup'), base = Api.monUid() + '/' + id + '/';
+          // ses fichiers d'abord : un fichier sans pad occuperait l'espace pour rien
+          Api.fichiersDuPad(id).then(function (l) {
+            return Api.effacerFichiers(l.map(function (f) { return base + f.name; }).filter(P.cheminSur));
+          }).catch(function () { /* l'outil occupation.sql repère les orphelins */ })
+            .then(function () { return Api.supprimerPad(id); })
+            .then(vueListe).catch(function (e) { toast(P.messageErreur(e)); });
         });
       });
     }).catch(function (e) { $('#liste').innerHTML = '<p class="erreur">' + esc(P.messageErreur(e)) + '</p>'; });
@@ -259,8 +400,12 @@
     return P.publier(brouillon).then(function (publie) {
       return Api.creerPad({ slug: slug, titre: (brouillon.titre || 'Pad sans titre').slice(0, 200), brouillon: brouillon, publie: publie });
     }).then(function (ligne) {
-      if (resterSurListe) { toast('Copie créée.'); vueListe(); }
-      else location.hash = '#pad=' + ligne.id;
+      return rattacher(ligne, brouillon).catch(function () {
+        toast('Pad créé, mais ses fichiers n\'ont pas pu être recopiés.');
+      }).then(function () {
+        if (resterSurListe) { toast('Copie créée.'); vueListe(); }
+        else location.hash = '#pad=' + ligne.id;
+      });
     }).catch(function (e) { toast(P.messageErreur(e)); });
   }
 
@@ -323,6 +468,8 @@
       etat.pad = { id: l.id, slug: l.slug, copiable: l.copiable, b: b };
       etat.modifie = false;
       dessiner();
+      // la jauge, puis le ménage des fichiers que plus aucune carte n'utilise
+      chargerJauge().then(menage);
     }).catch(function (e) { app.innerHTML = '<p class="page erreur">' + esc(P.messageErreur(e)) + '</p>'; });
   }
 
@@ -342,6 +489,7 @@
     }).then(function () {
       etat.enCours = false;
       afficherEtat(etat.modifie ? 'Modifications en cours…' : 'Enregistré ✓');
+      if (etat.aMenager && !etat.modifie) menage();
     }).catch(function (e) {
       etat.enCours = false; etat.modifie = true;
       afficherEtat('⚠ Pas enregistré — ' + P.messageErreur(e), true);
@@ -402,6 +550,7 @@
       + '<button class="btn petit" type="button" id="b-medailles">🏅 Médailles</button>'
       + '<button class="btn petit" type="button" id="b-tester">👁 Tester comme un élève</button>'
       + '<button class="btn petit bleu" type="button" id="b-partager">🔗 Partager</button>'
+      + '<span class="jauge" id="jauge" hidden></span>'
       + '</div><div class="tableau" id="tableau">'
       + B.colonnes.map(function (c, i) { return dessinerColonne(c, i, ctx); }).join('')
       + '<button class="ajout-col" type="button" id="ajout-col">＋ Colonne</button></div>';
@@ -455,7 +604,7 @@
       $('[data-coffre]', el).addEventListener('click', function () { dlgCoffre(c); });
       $('[data-menu-col]', el).addEventListener('click', function () { dlgColonne(c); });
       $$('.kcarte', el).forEach(function (k) {
-        function ouvrir(ev) { if (ev.target.closest('a,button,video')) return; dlgCarte(c, trouverCarte(k.getAttribute('data-k')).carte); }
+        function ouvrir(ev) { if (ev.target.closest('a,button,video,audio')) return; dlgCarte(c, trouverCarte(k.getAttribute('data-k')).carte); }
         k.addEventListener('click', ouvrir);
         k.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') ouvrir(ev); });
       });
@@ -471,9 +620,10 @@
         glisse = { carte: k.getAttribute('data-k') }; k.classList.add('glisse');
         ev.dataTransfer.effectAllowed = 'move'; ev.dataTransfer.setData('text/plain', 'carte');
       });
-      k.addEventListener('dragend', function () { k.classList.remove('glisse'); });
+      k.addEventListener('dragend', function () { k.classList.remove('glisse'); glisse = null; });
     });
     $$('.poignee').forEach(function (p) {
+      p.addEventListener('dragend', function () { glisse = null; });
       p.addEventListener('dragstart', function (ev) {
         var col = p.closest('.colonne');
         glisse = { col: col.getAttribute('data-col') };
@@ -482,12 +632,19 @@
       });
     });
     $$('.colonne').forEach(function (col) {
-      col.addEventListener('dragover', function (ev) { if (glisse) { ev.preventDefault(); col.classList.add('glisse-sur'); } });
+      col.addEventListener('dragover', function (ev) {
+        // une carte, une colonne… ou des fichiers venus de l'ordinateur
+        var fichiers = !glisse && ev.dataTransfer && Array.prototype.indexOf.call(ev.dataTransfer.types || [], 'Files') >= 0;
+        if (glisse || fichiers) { ev.preventDefault(); col.classList.add('glisse-sur'); }
+      });
       col.addEventListener('dragleave', function () { col.classList.remove('glisse-sur'); });
       col.addEventListener('drop', function (ev) {
         ev.preventDefault(); col.classList.remove('glisse-sur');
-        if (!glisse) return;
         var cible = colonne(col.getAttribute('data-col'));
+        if (!glisse) {
+          if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files.length) deposerDansColonne(cible, ev.dataTransfer.files);
+          return;
+        }
         if (glisse.carte) {
           var src = trouverCarte(glisse.carte); if (!src) return;
           var index = cible.cartes.length;
@@ -507,12 +664,30 @@
     });
   }
 
+  /* Fichiers lâchés sur une colonne : une carte chacun, dans l'ordre.
+     Une image devient une carte « image », le reste une carte « fichier ». */
+  function deposerDansColonne(c, liste) {
+    var fichiers = Array.prototype.slice.call(liste), faits = 0;
+    fichiers.reduce(function (p, f) {
+      return p.then(function () {
+        toast('Envoi de « ' + f.name + ' »…');
+        return deposer(f).then(function (r) {
+          var image = /^image\//.test(r.mime);
+          c.cartes.push({ id: P.nouvelId('k'), type: image ? 'image' : 'fichier', chemin: r.chemin, nom: r.nom, taille: r.taille, mime: r.mime });
+          delete etat.enAttente[r.chemin]; faits++;
+          modifie(); var sl = $('#tableau').scrollLeft; dessiner(); $('#tableau').scrollLeft = sl;
+        }, function (e) { toast('« ' + f.name + ' » : ' + P.messageErreur(e)); });
+      });
+    }, Promise.resolve()).then(function () { if (faits) toast(faits + ' fichier(s) ajouté(s).'); });
+  }
+
   /* --- les cartes --- */
   var TYPES = {
     texte:   { ico: '📝', nom: 'Texte',          expl: 'Consigne, document, question' },
-    image:   { ico: '🖼', nom: 'Image',          expl: 'Par un lien vers l\'image' },
+    fichier: { ico: '📎', nom: 'Fichier',        expl: 'PDF, Word, Excel… depuis ton ordinateur' },
+    image:   { ico: '🖼', nom: 'Image',          expl: 'Depuis ton ordinateur, ou un lien' },
     lien:    { ico: '🔗', nom: 'Lien',           expl: 'Document Drive/ENT, PDF, site' },
-    video:   { ico: '🎬', nom: 'Vidéo',          expl: 'MP4 sur OneDrive, ou lien' },
+    video:   { ico: '🎬', nom: 'Vidéo',          expl: 'Un lien OneDrive, YouTube…' },
     chiffre: { ico: '🗝', nom: 'Chiffre caché',  expl: 'Un morceau du code d\'un coffre' }
   };
   var EMOJIS = ['🏅', '🥇', '⭐', '🌟', '🏆', '👑', '💎', '🔍', '🧪', '⚗️', '🔬', '🧲', '⚡', '🔥', '🌍', '🪐', '🚀', '🧠', '📚', '✏️', '🎯', '🧩', '🦉', '🐉', '🗝', '🛡', '⚖️', '🌱'];
@@ -531,15 +706,20 @@
           + '<button type="button" class="btn petit" data-md="- ">• Liste</button><button type="button" class="btn petit" data-md="lien">🔗 Lien</button></div>'
           + '<textarea data-f="contenu" rows="7">' + esc(brouillon.contenu || '') + '</textarea>'
           + '<small class="muet">**gras** · *italique* · une ligne qui commence par « - » fait une liste · [texte](https://…) fait un lien</small></div>';
+      } else if (t === 'fichier') {
+        h += zoneFichier('fichier')
+          + '<label class="champ"><span>Une phrase pour dire ce que c\'est <small>facultatif</small></span><input type="text" data-f="contenu" value="' + esc(brouillon.contenu || '') + '"></label>';
       } else if (t === 'image') {
-        h += '<label class="champ"><span>Lien de l\'image ' + aide('Clic droit sur une image en ligne → « Copier l\'adresse de l\'image ». Une image de ton OneDrive : partage-la en « tout le monde avec le lien ». Les images ne sont pas stockées dans le pad, ce qui le garde léger.') + '</span><input type="url" data-f="src" value="' + esc(brouillon.src || '') + '" placeholder="https://…"></label>'
+        h += zoneFichier('image')
+          + (brouillon.chemin ? '' : '<label class="champ"><span>…ou le lien d\'une image en ligne ' + aide('Clic droit sur une image en ligne → « Copier l\'adresse de l\'image ».') + '</span><input type="url" data-f="src" value="' + esc(brouillon.src || '') + '" placeholder="https://…"></label>')
           + '<label class="champ"><span>Légende <small>facultatif</small></span><input type="text" data-f="legende" value="' + esc(brouillon.legende || '') + '"></label>'
           + '<label class="champ"><span>Description pour un lecteur d\'écran <small>facultatif</small></span><input type="text" data-f="alt" value="' + esc(brouillon.alt || '') + '"></label>';
       } else if (t === 'lien') {
         h += '<label class="champ"><span>Adresse</span><input type="url" data-f="url" value="' + esc(brouillon.url || '') + '" placeholder="https://…"></label>'
           + '<label class="champ"><span>Une phrase pour dire ce que c\'est <small>facultatif</small></span><input type="text" data-f="contenu" value="' + esc(brouillon.contenu || '') + '"></label>';
       } else if (t === 'video') {
-        h += '<label class="champ"><span>Lien de la vidéo ' + aide('Le mieux : un fichier MP4 dans ton OneDrive, partagé en « tout le monde avec le lien » — la vidéo se lit dans le pad, même au lycée. Un lien YouTube s\'ouvre dans un autre onglet (YouTube est bloqué au lycée).') + '</span><input type="url" data-f="url" value="' + esc(brouillon.url || '') + '" placeholder="https://…sharepoint.com/…"></label>'
+        h += '<p class="info">🎬 Les vidéos ne se déposent pas dans ' + esc(P.NOM) + '&nbsp;: elles sont trop lourdes pour notre hébergement gratuit. Colle ici le <b>lien de partage</b> de ta vidéo&nbsp;: OneDrive, YouTube, ou la plateforme où elle se trouve.</p>'
+          + '<label class="champ"><span>Lien de la vidéo ' + aide('OneDrive : clic droit sur la vidéo → « Partager » → « Copier le lien » (réglage « Toute personne disposant du lien »). La vidéo se lit alors dans le pad, même au lycée. Un lien YouTube s\'ouvre dans un autre onglet (YouTube est bloqué au lycée).') + '</span><input type="url" data-f="url" value="' + esc(brouillon.url || '') + '" placeholder="https://…"></label>'
           + '<label class="champ"><span>Crédit <small>la chaîne ou l\'auteur de la vidéo</small></span><input type="text" data-f="credit" value="' + esc(brouillon.credit || '') + '"></label>';
       } else if (t === 'chiffre') {
         if (!lesCoffres.length) h += '<p class="info">Ajoute d\'abord un coffre au bas d\'une colonne (🧰). Un chiffre caché est un morceau de son code.</p>';
@@ -567,6 +747,52 @@
       return h;
     }
 
+    /* La zone de dépôt (cartes « fichier » et « image »). */
+    function zoneFichier(sorte) {
+      var img = sorte === 'image', h = '';
+      if (brouillon.chemin) {
+        var ff = P.formatDe(brouillon.nom || brouillon.chemin) || { ico: '📎' };
+        h += '<p class="depot-actuel"><span aria-hidden="true">' + ff.ico + '</span> <b>' + esc(brouillon.nom || 'fichier') + '</b> <small class="muet">'
+          + esc(P.tailleLisible(brouillon.taille)) + '</small> <button type="button" class="btn petit" data-retirer>Retirer</button></p>';
+      }
+      h += '<div class="depot-zone" data-zone>'
+        + '<p><b>' + (brouillon.chemin ? 'Pour le remplacer, glisse ' : 'Glisse ') + (img ? 'une image' : 'un fichier') + ' ici</b><br><small class="muet">ou</small></p>'
+        + '<label class="btn">📂 Choisir sur mon ordinateur<input type="file" data-choisir hidden accept="'
+        + (img ? '.jpg,.jpeg,.png,.webp,.gif' : '.pdf,.doc,.docx,.odt,.xls,.xlsx,.ods,.ppt,.pptx,.odp,.jpg,.jpeg,.png,.webp,.gif,.mp3,.m4a') + '"></label>'
+        + '<progress data-progres max="1" value="0" hidden></progress><p class="erreur" data-err-depot hidden></p>'
+        + '<small class="muet">' + (img ? 'JPEG, PNG, WebP ou GIF. Les grandes photos sont réduites toutes seules.'
+            : 'PDF, Word, Excel, PowerPoint, LibreOffice, image ou son · 10 Mo au plus · pas de vidéo') + '</small></div>';
+      if (!img) h += '<p class="info" style="font-size:.88rem">🔒 Tout élève qui a le lien du pad peut ouvrir ce fichier&nbsp;: pas de document avec des noms d\'élèves ou des notes.</p>';
+      return h;
+    }
+    var envoyes = [], garde = false;   // fichiers envoyés depuis l'ouverture de cette fenêtre
+    function brancherZone(d) {
+      var zone = $('[data-zone]', d);
+      var ret = $('[data-retirer]', d);
+      if (ret) ret.addEventListener('click', function () {
+        lire(d); ['chemin', 'nom', 'taille', 'mime'].forEach(function (x) { delete brouillon[x]; }); remplir(d);
+      });
+      if (!zone) return;
+      function prendre(fichier) {
+        lire(d);
+        var err = $('[data-err-depot]', d), pr = $('[data-progres]', d);
+        err.hidden = true; pr.hidden = false; pr.value = 0;
+        deposer(fichier, function (x) { pr.value = x; }).then(function (r) {
+          envoyes.push(r.chemin);
+          brouillon.chemin = r.chemin; brouillon.nom = r.nom; brouillon.taille = r.taille; brouillon.mime = r.mime;
+          delete brouillon.src;
+          remplir(d);
+        }).catch(function (e) { pr.hidden = true; err.hidden = false; err.textContent = P.messageErreur(e); });
+      }
+      $('[data-choisir]', d).addEventListener('change', function (e) { if (e.target.files[0]) prendre(e.target.files[0]); });
+      zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('survol'); });
+      zone.addEventListener('dragleave', function () { zone.classList.remove('survol'); });
+      zone.addEventListener('drop', function (e) {
+        e.preventDefault(); zone.classList.remove('survol');
+        var f = e.dataTransfer && e.dataTransfer.files[0]; if (f) prendre(f);
+      });
+    }
+
     var corps = '<div class="choix" data-types>' + Object.keys(TYPES).map(function (t) {
       return '<button type="button" data-type="' + t + '"' + (brouillon.type === t ? ' class="actif"' : '') + '><span class="ico">' + TYPES[t].ico + '</span>' + TYPES[t].nom + '<small>' + TYPES[t].expl + '</small></button>';
     }).join('') + '</div><div data-champs></div>';
@@ -580,7 +806,7 @@
       }
     }
     function remplir(d) {
-      $('[data-champs]', d).innerHTML = champs(); brancherAides(d);
+      $('[data-champs]', d).innerHTML = champs(); brancherAides(d); brancherZone(d);
       $$('[data-md]', d).forEach(function (bt) {
         bt.addEventListener('click', function () {
           var ta = $('textarea[data-f="contenu"]', d), m = bt.getAttribute('data-md');
@@ -595,12 +821,20 @@
     var boutons = [];
     if (!neuve) boutons.push({ txt: 'Supprimer', classe: 'danger', gauche: true, action: function () {
       if (!confirm('Supprimer cette carte ?')) return false;
-      var r = trouverCarte(k.id); r.col.cartes.splice(r.ik, 1); modifie(); dessiner();
+      var r = trouverCarte(k.id); r.col.cartes.splice(r.ik, 1);
+      if (k.chemin) etat.aMenager = true;
+      modifie(); dessiner();
     } });
     boutons.push({ txt: 'Annuler' });
     boutons.push({ txt: neuve ? 'Ajouter la carte' : 'Enregistrer', classe: 'primaire', action: function (d) {
       lire(d);
       if (brouillon.type === 'chiffre' && !brouillon.coffre) { toast('Choisis un coffre.'); return false; }
+      if (brouillon.type === 'fichier' && !brouillon.chemin) { toast('Dépose d\'abord un fichier.'); return false; }
+      if (brouillon.type !== 'fichier' && brouillon.type !== 'image') ['chemin', 'nom', 'taille', 'mime'].forEach(function (x) { delete brouillon[x]; });
+      if (brouillon.chemin) delete brouillon.src;
+      // un fichier remplacé, retiré ou envoyé pour rien : le ménage suivra l'enregistrement
+      if (envoyes.length || (k && k.chemin && k.chemin !== brouillon.chemin)) etat.aMenager = true;
+      garde = true;
       ['src', 'url'].forEach(function (f) { if (brouillon[f] && !P.urlSure(brouillon[f])) brouillon[f] = ''; else if (brouillon[f]) brouillon[f] = P.urlSure(brouillon[f]); });
       var dest = $('[data-deplacer]', d) ? colonne($('[data-deplacer]', d).value) : c;
       if (neuve) dest.cartes.push(brouillon);
@@ -613,6 +847,13 @@
     } });
     dialogue(neuve ? 'Nouvelle carte' : 'Modifier la carte', corps, boutons, function (d) {
       remplir(d);
+      /* Fenêtre fermée sans enregistrer : ce qui a été envoyé repart.
+         Enregistrée : les envois redeviennent des fichiers ordinaires,
+         que le ménage efface s'ils ne servent pas. */
+      d.addEventListener('close', function () {
+        envoyes.forEach(function (ch) { delete etat.enAttente[ch]; });
+        if (!garde && envoyes.length) Api.effacerFichiers(envoyes).then(chargerJauge).catch(function () { etat.aMenager = true; });
+      });
       $$('[data-type]', d).forEach(function (bt) {
         bt.addEventListener('click', function () {
           lire(d); brouillon.type = bt.getAttribute('data-type');
@@ -812,7 +1053,7 @@
       { txt: 'Supprimer la colonne', classe: 'danger', gauche: true, action: function () {
         if (c.cartes.length && !confirm('Supprimer cette colonne et ses ' + c.cartes.length + ' carte(s) ?')) return false;
         if (c.coffre) b().colonnes.forEach(function (cc) { cc.cartes = cc.cartes.filter(function (k) { return !(k.type === 'chiffre' && k.coffre === c.coffre.id); }); });
-        L.splice(L.indexOf(c), 1); modifie(); dessiner();
+        L.splice(L.indexOf(c), 1); etat.aMenager = true; modifie(); dessiner();
       } },
       { txt: 'Fermer', classe: 'primaire', action: function (d) { c.secrete = $('#col-sec', d).checked; modifie(); dessiner(); } }
     ], function (d) {

@@ -252,13 +252,14 @@ if (inertes) info(`liens inertes href="#" visibles des élèves : ${inertes}`);
   if (existsSync(dirname(journalOcc))) {
     const lignes = existsSync(journalOcc) ? readFileSync(journalOcc, "utf8").trim().split(/\r?\n/) : [];
     const der = lignes.length ? lignes[lignes.length - 1] : "";
-    const m = /^(\d{4})-(\d{2})-(\d{2}) base=(\d+)Mo\/(\d+) fichiers=(\d+)Mo\/(\d+) depots=(\d+)Mo etat=(\w+)/.exec(der);
+    const m = /^(\d{4})-(\d{2})-(\d{2}) base=(\d+)Mo\/(\d+) fichiers=(\d+)Mo\/(\d+) depots=(\d+)Mo(?: padago=(\d+)Mo compte_max=(\d+)Mo\/300)? etat=(\w+)/.exec(der);
     if (!m) {
       info("occupation Supabase : aucune mesure — la tâche « reveil-quotidien » tourne-t-elle ? (bdd/outils/README.md)");
     } else {
-      const [, a, mo, j, base, qb, fich, qf, depots, etat] = m;
+      const [, a, mo, j, base, qb, fich, qf, depots, padago, compteMax, etat] = m;
       const age = (Date.now() - new Date(`${a}-${mo}-${j}T12:00:00`)) / 864e5;
-      info(`occupation Supabase au ${j}/${mo} : base ${base}/${qb} Mo · fichiers ${fich}/${qf} Mo (dont photos déposées ${depots} Mo)`);
+      info(`occupation Supabase au ${j}/${mo} : base ${base}/${qb} Mo · fichiers ${fich}/${qf} Mo (dont photos déposées ${depots} Mo${padago !== undefined ? `, Padago ${padago} Mo` : ''})`);
+      if (compteMax !== undefined && Number(compteMax) > 210) info(`   ⚠ Padago : une autrice a déposé ${compteMax} Mo sur ses 300 — bientôt bloquée. Détail : bdd/outils/occupation.sql (rubrique 4).`);
       if (etat === "ALERTE") info("   🔴 ALERTE : plus de 70 % d'un quota. Détail et purge : bdd/outils/occupation.sql — et le dire à Loïc.");
       if (age > 4) info(`   ⚠ dernière mesure vieille de ${Math.floor(age)} jours : la tâche « reveil-quotidien » ne tourne plus ? (elle évite aussi la mise en pause de la base)`);
       const mois = new Date().getMonth() + 1;

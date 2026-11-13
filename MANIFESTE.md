@@ -38,7 +38,7 @@
 | toucher à la **base de données** | `_suivi/BDD-cadrage.md` + `bdd/schema/006-rls-et-fonctions.sql` | 8 000 |
 | toucher au **client** de progression | `assets/js/progression.js` — 🔴 **partagé SNT, CFA, ES, outils et chapitres PC** : `?v=` à incrémenter dans **55 fichiers** | 9 500 |
 | **produire un outil du livret CFA** | `_modeles/gabarit-outil-CFA.html` + un `cfa/outil-NN-….html` existant | 6 000 |
-| toucher à **Padago** (pads à serrures) 🆕 | `outils/padago/padago-commun.js` puis l'éditeur ou le mode élève · base : `bdd/schema/030-padago.sql` | 12 000 |
+| toucher à **Padago** (pads à serrures) 🆕 | `outils/padago/padago-commun.js` puis l'éditeur ou le mode élève · base : `bdd/schema/030-padago.sql`, fichiers des autrices `043` | 12 000 |
 | toucher à l'**EMC seconde** (Labyrinthe de Nina) 🆕 | `_suivi/AUDIT-EMC.md` puis `assets/js/emc-commun.js` · base : `bdd/schema/031-emc.sql` · bancs `_outils/tests/emc-*` | 10 000 |
 | toucher à la **pré-correction IA** | `ia-snt/README.md` + `ia-snt/moteur.mjs` | 4 000 |
 | **regénérer les fiches PDF** de 2nde PC 🆕 | `node exporter-fiches.mjs` — après toute retouche d'une fiche de `fiches/` | 0 |

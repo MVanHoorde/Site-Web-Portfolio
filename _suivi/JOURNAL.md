@@ -5110,3 +5110,17 @@ ligne en bêta, non liée, avec un mode d'emploi pour son collègue d'ES :
 `pages/term-es-frise-debat-maquette.html` et `pages/term-es-frise-debat-tuto.html`.
 Polices passées sur `assets/css/fonts.css` (la maquette d'artefact chargeait
 Google Fonts). Rien en base. Questions laissées pour plus tard : EST-FRISE-01.
+
+## 13/11/2026 — Padago : les autrices déposent leurs fichiers (043)
+
+Demande de la collègue autrice, relayée par Loïc : déposer ses propres fichiers comme sur Padlet ou Digipad.
+Bilan des coûts fait d'abord : offre gratuite, 1 Go de fichiers (déjà 321 Mo, dont 318 Mo de photos SNT) et
+5 Go de téléchargement par mois pour tout le site ; une vidéo vue par quatre classes suffit à dépasser ce
+dernier — d'où, arbitré par Loïc : 10 Mo par fichier, 300 Mo par compte, vidéos toujours en lien. Stockage
+`padago` (043) public en lecture, écriture cloisonnée par compte et par pad, jauge `padago_occupation()`.
+Éditeur : carte « 📎 Fichier », image depuis l'ordinateur, fichiers lâchés sur une colonne, jauges, ménage des
+fichiers orphelins après enregistrement, fichiers recopiés à la duplication et à la copie entre collègues,
+bandeau « ✨ Nouveau » (l'autrice invitée ne voit pas la fenêtre du tableau de bord). Alerte quotidienne
+étendue (`compte_max`), `verifier.mjs` la relit. Bancs : PGlite 26 contrôles, Chromium 14. Incident : un
+`git stash` d'une conversation parallèle (cristaux) a emporté puis rendu les fichiers Padago en cours — rien
+perdu, vérifié des deux côtés.

@@ -40,6 +40,36 @@
      de bord. Le bouton « Me déconnecter » reste en vue. */
   var PEREMPTION = 14 * 24 * 3600000;
 
+  /* Fichiers déposés par les autrices (bdd/schema/043) : stockage
+     « padago », lu par son adresse publique — les élèves n'ont pas de
+     compte. Une carte garde le CHEMIN, jamais l'adresse complète :
+     changer de serveur (stockage de l'établissement) ne demandera que
+     de changer URL_FICHIERS et de recopier les fichiers.
+     🔴 Les plafonds sont aussi imposés par la base : les changer ici
+     sans changer le 043 ne servirait à rien. */
+  var STOCKAGE = 'padago';
+  var URL_FICHIERS = URL_PROJET + '/storage/v1/object/public/' + STOCKAGE + '/';
+  var FICHIER_MAX = 10 * 1048576;     // 10 Mo par fichier
+  var PLAFOND = 300 * 1048576;        // 300 Mo par compte
+  /* extension → [type MIME, icône, nom lisible]. Ni vidéo (trop lourde
+     pour l'offre gratuite : lien OneDrive ou YouTube), ni HTML, ni SVG. */
+  var FORMATS = {
+    pdf:  ['application/pdf', '📄', 'PDF'],
+    doc:  ['application/msword', '📝', 'Word'],
+    docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', '📝', 'Word'],
+    odt:  ['application/vnd.oasis.opendocument.text', '📝', 'Texte'],
+    xls:  ['application/vnd.ms-excel', '📊', 'Excel'],
+    xlsx: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', '📊', 'Excel'],
+    ods:  ['application/vnd.oasis.opendocument.spreadsheet', '📊', 'Tableur'],
+    ppt:  ['application/vnd.ms-powerpoint', '📽', 'PowerPoint'],
+    pptx: ['application/vnd.openxmlformats-officedocument.presentationml.presentation', '📽', 'PowerPoint'],
+    odp:  ['application/vnd.oasis.opendocument.presentation', '📽', 'Présentation'],
+    jpg:  ['image/jpeg', '🖼', 'Image'], jpeg: ['image/jpeg', '🖼', 'Image'],
+    png:  ['image/png', '🖼', 'Image'], webp: ['image/webp', '🖼', 'Image'], gif: ['image/gif', '🖼', 'Image'],
+    mp3:  ['audio/mpeg', '🎧', 'Son'], m4a: ['audio/mp4', '🎧', 'Son']
+  };
+  var VIDEOS = /\.(mp4|m4v|mov|avi|wmv|webm|mkv|mpe?g|3gp)$/i;
+
   /* ----------------------------------------------------------
    *  2. Petits outils
    * ---------------------------------------------------------- */
@@ -76,6 +106,31 @@
     }
     try { var x = new URL(u); return (x.protocol === 'https:' || x.protocol === 'http:') ? x.href : ''; }
     catch (e) { return ''; }
+  }
+
+  /* --- fichiers --- */
+  function formatDe(nom) {
+    var m = /\.([a-z0-9]{2,5})$/i.exec(String(nom || '')), ext = m && m[1].toLowerCase(), f = ext && FORMATS[ext];
+    return f ? { ext: ext, mime: f[0], ico: f[1], nom: f[2] } : null;
+  }
+  /* Un chemin de fichier n'a qu'une forme : <compte>/<pad>/<nom>. */
+  var RE_CHEMIN = /^[0-9a-f-]{36}\/[0-9a-f-]{36}\/[a-z0-9][a-z0-9._-]{0,119}$/;
+  function cheminSur(c) { return RE_CHEMIN.test(String(c || '')) ? c : ''; }
+  function urlFichier(chemin, telecharger) {
+    if (!cheminSur(chemin)) return '';
+    return URL_FICHIERS + chemin + (telecharger ? '?download=' + encodeURIComponent(telecharger) : '');
+  }
+  /* « Fiche d'ondes (v2).PDF » → « fiche-d-ondes-v2.pdf » */
+  function nomPropre(nom) {
+    var f = formatDe(nom), base = String(nom || '').replace(/\.[^.]*$/, '');
+    base = base.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'fichier';
+    return base + '.' + (f ? f.ext : 'bin');
+  }
+  function tailleLisible(o) {
+    o = +o || 0;
+    if (o < 1048576) return Math.max(1, Math.round(o / 1024)) + ' ko';
+    return (o / 1048576).toFixed(o < 10485760 ? 1 : 0).replace('.', ',') + ' Mo';
   }
 
   /* ----------------------------------------------------------
@@ -222,6 +277,46 @@
     }
   }
 
+  /* --- stockage des fichiers (043) --- */
+  function monUid() {
+    try {
+      var p = jeton.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(p + '==='.slice((p.length + 3) % 4))).sub || '';
+    } catch (e) { return ''; }
+  }
+  function stockage(chemin, corps, methode) {
+    return assure().then(function () {
+      return fetch(URL_PROJET + '/storage/v1/' + chemin, {
+        method: methode || 'POST', headers: entetes(true), body: JSON.stringify(corps || {})
+      });
+    }).then(lireReponse);
+  }
+  /* L'envoi passe par XMLHttpRequest pour suivre la progression :
+     10 Mo sur le wifi du lycée, ça se voit. */
+  function envoyerFichier(chemin, fichier, mime, progres) {
+    return assure().then(function () {
+      return new Promise(function (ok, ko) {
+        var x = new XMLHttpRequest();
+        x.open('POST', URL_PROJET + '/storage/v1/object/' + STOCKAGE + '/' + chemin);
+        x.setRequestHeader('apikey', CLE_ANON);
+        x.setRequestHeader('Authorization', 'Bearer ' + jeton.access_token);
+        x.setRequestHeader('Content-Type', mime);
+        x.setRequestHeader('x-upsert', 'false');
+        // un nom neuf par dépôt : le navigateur peut garder le fichier
+        // un an, ce qui épargne le quota de téléchargement
+        x.setRequestHeader('cache-control', 'max-age=31536000');
+        if (progres && x.upload) x.upload.onprogress = function (e) { if (e.lengthComputable) progres(e.loaded / e.total); };
+        x.onload = function () {
+          if (x.status >= 200 && x.status < 300) return ok(chemin);
+          var d = null; try { d = JSON.parse(x.responseText); } catch (e) { /* rien */ }
+          var err = new Error((d && (d.message || d.error)) || ('HTTP ' + x.status)); err.statut = x.status; ko(err);
+        };
+        x.onerror = function () { ko(new Error('Failed to fetch')); };
+        x.send(fichier);
+      });
+    });
+  }
+
   /* Messages lisibles pour les erreurs les plus probables. */
   function messageErreur(e) {
     var m = String((e && e.message) || e || '');
@@ -231,7 +326,13 @@
     if (/PADAGO_CODE_INVALIDE/.test(m)) return 'Ce code d\'invitation n\'est pas reconnu (ou il a déjà servi).';
     if (/PADAGO_PAS_AUTEUR/.test(m)) return 'Ce compte n\'a pas encore le droit de créer des pads : entre ton code d\'invitation.';
     if (/PADAGO_TROP_DE_PADS/.test(m)) return 'Limite de 200 pads atteinte : supprime d\'anciens pads.';
-    if (/padago_pads_taille/.test(m)) return 'Ce pad est trop lourd. Les images doivent passer par un lien, pas être collées.';
+    if (/padago_pads_taille/.test(m)) return 'Ce pad est trop lourd : son texte dépasse 400 ko.';
+    if (/^VIDEO$/.test(m)) return 'Les vidéos ne se déposent pas dans ' + NOM + ' : elles sont trop lourdes pour notre hébergement gratuit. Mets ta vidéo sur ton OneDrive (ou sur YouTube), puis colle son lien dans une carte « 🎬 Vidéo ».';
+    if (/^TROP_LOURD$/.test(m)) return 'Ce fichier dépasse 10 Mo. Un PDF se réenregistre en « taille minimale » ; sinon, mets le fichier sur ton OneDrive et colle son lien dans une carte « 🔗 Lien ».';
+    if (/^PLEIN$/.test(m)) return 'Ton espace de 300 Mo est plein : supprime des fichiers dans d\'anciens pads, ou écris à Loïc.';
+    if (/exceeded the maximum allowed size|Payload too large|HTTP 413/i.test(m)) return 'Fichier trop lourd : 10 Mo au plus.';
+    if (/^FORMAT$|mime type|invalid_mime_type/i.test(m)) return 'Ce type de fichier n\'est pas accepté (PDF, Word, Excel, PowerPoint, images, son).';
+    if (/row-level security|HTTP 403|Unauthorized/i.test(m)) return 'Dépôt refusé : ton espace de 300 Mo est peut-être plein. Supprime d\'anciens fichiers, ou écris à Loïc.';
     if (/SESSION_EXPIREE/.test(m)) return 'Ta session a expiré : reconnecte-toi.';
     if (/Failed to fetch|NetworkError|Load failed/i.test(m)) return 'Pas de connexion à Internet pour l\'instant.';
     if (/rate limit|over_email_send_rate_limit/i.test(m)) return 'Trop de mails envoyés en peu de temps : réessaie dans une heure.';
@@ -285,7 +386,24 @@
       return rest('padago_pads?id=eq.' + encodeURIComponent(id), { methode: 'DELETE', prefer: 'return=minimal' });
     },
     copierPad: function (slug) { return rpc('padago_copier', { p_slug: slug }); },
-    lirePublie: function (slug) { return rpc('padago_lire', { p_slug: slug }, true); }
+    lirePublie: function (slug) { return rpc('padago_lire', { p_slug: slug }, true); },
+
+    /* fichiers */
+    monUid: function () { if (!jeton) jeton = lireJeton(); return jeton ? monUid() : ''; },
+    occupation: function () { return rpc('padago_occupation'); },
+    envoyerFichier: envoyerFichier,
+    /* Les fichiers d'un pad : [{ name, created_at, metadata: { size } }] */
+    fichiersDuPad: function (padId) {
+      return stockage('object/list/' + STOCKAGE, { prefix: monUid() + '/' + padId, limit: 1000, offset: 0 })
+        .then(function (l) { return (l || []).filter(function (f) { return f.id; }); });
+    },
+    effacerFichiers: function (chemins) {
+      if (!chemins || !chemins.length) return Promise.resolve([]);
+      return stockage('object/' + STOCKAGE, { prefixes: chemins }, 'DELETE');
+    },
+    copierFichier: function (de, vers) {
+      return stockage('object/copy', { bucketId: STOCKAGE, sourceKey: de, destinationKey: vers });
+    }
   };
 
   /* ----------------------------------------------------------
@@ -352,7 +470,7 @@
         h += '<div class="k-texte">' + texteRiche(k.contenu) + '</div>';
         break;
       case 'image':
-        var src = urlSure(k.src);
+        var src = k.chemin ? urlFichier(k.chemin) : urlSure(k.src);
         h += src ? '<figure class="k-image"><img src="' + esc(src) + '" alt="' + esc(k.alt || k.legende || '') + '" loading="lazy">'
                  + (k.legende ? '<figcaption>' + enLigne(k.legende) + '</figcaption>' : '') + '</figure>'
                  : '<p class="k-vide">🖼 Image : lien à renseigner</p>';
@@ -374,6 +492,17 @@
              + '<span><b>Ouvrir la vidéo</b><small class="k-site">' + esc(nomDuSite(v.page)) + '</small></span></a>';
         }
         if (k.credit) h += '<p class="k-credit">Vidéo : ' + esc(k.credit) + '</p>';
+        break;
+      case 'fichier':
+        var fu = urlFichier(k.chemin), ff = formatDe(k.nom || k.chemin) || { ico: '📎', nom: 'Fichier', mime: '' };
+        if (!fu) { h += '<p class="k-vide">📎 Fichier à déposer</p>'; break; }
+        if (/^image\//.test(ff.mime)) h += '<img class="k-fichier-img" src="' + esc(fu) + '" alt="' + esc(k.titre || k.nom || '') + '" loading="lazy">';
+        if (/^audio\//.test(ff.mime)) h += '<audio class="k-fichier-son" controls preload="none" src="' + esc(fu) + '"></audio>';
+        h += '<div class="k-fichier"><span class="k-lien-ico" aria-hidden="true">' + ff.ico + '</span><span class="k-fichier-nom"><b>'
+           + esc(k.nom || 'Fichier') + '</b><small>' + esc(ff.nom) + (k.taille ? ' · ' + esc(tailleLisible(k.taille)) : '') + '</small>'
+           + (k.contenu ? '<small>' + esc(k.contenu) + '</small>' : '') + '</span>'
+           + '<span class="k-fichier-act"><a class="btn petit" href="' + esc(fu) + '" target="_blank" rel="noopener">Ouvrir</a>'
+           + '<a class="btn petit" href="' + esc(urlFichier(k.chemin, k.nom || 'fichier')) + '" download>⬇ Télécharger</a></span></div>';
         break;
       case 'chiffre':
         var nomCoffre = (ctx.coffres && ctx.coffres[k.coffre]) || 'le coffre';
@@ -405,7 +534,9 @@
     esc: esc, aleatoire: aleatoire, nouvelId: nouvelId, normaliser: normaliser, urlSure: urlSure,
     empreinte: empreinte, publier: publier, padVierge: padVierge,
     texteRiche: texteRiche, enLigne: enLigne, rendreCarte: rendreCarte, sourceVideo: sourceVideo,
-    teinte: teinte, RANG: RANG, Api: Api, messageErreur: messageErreur
+    teinte: teinte, RANG: RANG, Api: Api, messageErreur: messageErreur,
+    FICHIER_MAX: FICHIER_MAX, PLAFOND: PLAFOND, VIDEOS: VIDEOS,
+    formatDe: formatDe, cheminSur: cheminSur, urlFichier: urlFichier, nomPropre: nomPropre, tailleLisible: tailleLisible
   };
 
   /* Le nom de l'outil dans la page : tout élément [data-nom] et le titre. */

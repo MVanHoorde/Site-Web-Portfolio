@@ -251,7 +251,29 @@ collègues). `verifier.mjs` : 19 problèmes, le repère.
 
 ✅ Adresse ajoutée aux *Redirect URLs* de Supabase, essayée (11/11/2026).
 
+**Fichiers des autrices** (13/11, demande de la collègue) : elles déposent depuis
+leur ordinateur PDF, Word, Excel, PowerPoint, LibreOffice, images et son — carte
+« 📎 Fichier » (l'élève ouvre ou télécharge), image depuis l'ordinateur, ou
+fichier **lâché sur une colonne**. Stockage `padago` (`bdd/schema/043`), lu par
+adresse publique. **10 Mo par fichier, 300 Mo par compte**, jauge dans l'éditeur
+et sur Mes pads ; supprimer une carte ou un pad efface ses fichiers ; dupliquer
+ou copier un pad les recopie. **Les vidéos restent des liens** (OneDrive,
+YouTube…) : l'offre gratuite n'a que 5 Go de téléchargement par mois pour tout
+le site. Alerte : `occupation-ligne.sql` lève ALERTE dès qu'une autrice passe
+210 Mo ; `occupation.sql` détaille par autrice et liste les orphelins. Les
+téléchargements du mois ne se lisent pas en SQL : tableau de bord Supabase →
+*Usage → Egress*, une fois par mois. Au 13/11, le stockage est à 321 Mo sur
+1 024 (318 Mo de photos SNT) : deux autrices pleines le porteraient au-delà du
+seuil d'alerte de 70 %. Éprouvé : `_outils/tests/padago-fichiers.test.mjs`
+(PGlite, 26 contrôles) et `_outils/tests/padago-fichiers-editeur.test.py`
+(Chromium, fausse base, 14 contrôles : PDF, vidéo et 10 Mo refusés, annulation,
+glisser sur une colonne, ménage, rendu élève).
+
 ⏳ **Reste à Loïc** :
+0. ✅ `043` exécuté et site publié le 13/11. Envoyer à la
+   collègue le mail « c'est fait » (proposé en session, avec la question des
+   dépôts d'élèves) ; ajouter l'édition ✨ n° 10 dans `prof-nouveautes.js` une
+   fois celle des cristaux (n° 9) publiée.
 1. Envoyer le mail à la collègue (texte proposé en session, avec son code) — en
    cours le 11/11 ; elle doit lui envoyer ses contenus.
 2. `node exporter-guides.mjs` **sur le PC** : les guides HTML sont à jour, pas
