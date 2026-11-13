@@ -23,6 +23,22 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 8,
+    date: '2026-11-13',
+    espaces: ['es1'],
+    titre: 'ES 1re : « Les cristaux » est ouvert',
+    points: [
+      {
+        titre: 'Un troisième chapitre pour vos élèves',
+        texte: 'Quatre séances, dont une de révision : du cristal à la maille, la compacité, la masse volumique. Lien sur la page de première, fiche de séance en PDF, rappels d’entrée de séance.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">C1 Nucléosynthèse</span><span class="nv-puce">C2 Radioactivité</span><span class="nv-puce">C3 Cristaux ✨</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 7,
     date: '2026-11-11',
     espaces: ['snt', 'es1', 'est', 'pc2', 'cfa'],

@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Projet expérimental — maquette</title>
+<!--
+  MAQUETTE du projet expérimental et numérique (ES 1re), 13/11/2026.
+  Données FICTIVES, rien n'est envoyé nulle part : l'état vit dans le
+  localStorage de ce navigateur. Sert à montrer le fonctionnement à Loïc
+  et aux collègues avant de brancher la base. Cadrage :
+  _suivi/PEN-1re-conception.md
+-->
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<style>
+:root{
+  --encre:#2b2118; --encre-douce:#5a4c3a; --papier:#f3f1ea; --papier-clair:#faf9f3;
+  --filet:#d8cfba; --filet-fonce:#cdc2a8; --sepia:#8a7c62;
+  --pc:#2f6b70; --pc-pale:#e3eeee; --svt:#4f7a3a; --svt-pale:#e8f0e1;
+  --alerte:#8f2d2b; --alerte-pale:#f6e4e1; --prune:#5f4b73; --prune-pale:#ece6f2; --ok:#3d7a4a; --ok-pale:#e2f0e4;
+  --orange:#a8621c; --orange-pale:#f7ead9;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--encre);font:16px/1.5 'Inter',system-ui,sans-serif}
+h1,h2,h3{font-family:'Spectral',Georgia,serif;font-weight:600;line-height:1.2}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--prune);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* barre de la maquette */
+.maq{position:sticky;top:0;z-index:20;background:var(--encre);color:#f3f1ea;padding:8px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:14px}
+.maq b{color:#f0c987}
+.maq label{display:flex;gap:6px;align-items:center}
+.maq select,.maq button{background:#3d3226;color:#f3f1ea;border:1px solid #6b5b45;border-radius:6px;padding:4px 8px}
+.maq .bascule button[aria-pressed=true]{background:#f0c987;color:var(--encre);border-color:#f0c987}
+.maq .espace{flex:1}
+
+.page{max-width:1180px;margin:0 auto;padding:16px}
+.carte{background:var(--papier-clair);border:1px solid var(--filet);border-radius:10px;padding:16px;margin:12px 0}
+.petit{font-size:14px;color:var(--encre-douce)}
+.puce{display:inline-block;border-radius:999px;padding:1px 10px;font-size:13px;font-weight:600;white-space:nowrap}
+.p-pc{background:var(--pc-pale);color:var(--pc)} .p-svt{background:var(--svt-pale);color:var(--svt)}
+.p-ok{background:var(--ok-pale);color:var(--ok)} .p-alerte{background:var(--alerte-pale);color:var(--alerte)}
+.p-orange{background:var(--orange-pale);color:var(--orange)} .p-neutre{background:#ece7da;color:var(--encre-douce)}
+.p-prune{background:var(--prune-pale);color:var(--prune)}
+.btn{border:1px solid var(--filet-fonce);background:#fff;border-radius:8px;padding:6px 14px}
+.btn:hover{border-color:var(--encre-douce)}
+.btn-plein{background:var(--pc);color:#fff;border-color:var(--pc)}
+.btn-plein:hover{background:#255458}
+.btn-alerte{color:var(--alerte);border-color:#d9b2ad}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.ia{display:flex;gap:10px;align-items:center;background:var(--prune-pale);border:1px solid #cfc2dd;border-left:5px solid var(--prune);border-radius:8px;padding:10px 14px;margin:10px 0;font-size:15px}
+.ia .ico{font-size:22px}
+
+/* écran élève */
+.entete{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.entete h1{margin:0;font-size:26px;flex:1}
+.fiole{position:relative;border:1px solid var(--filet-fonce);background:#fff;border-radius:999px;padding:6px 14px;font-weight:600}
+.fiole .nb{position:absolute;top:-7px;right:-7px;background:var(--alerte);color:#fff;border-radius:999px;font-size:12px;min-width:20px;height:20px;display:grid;place-items:center;padding:0 5px}
+.rubrique{font-family:'Spectral',serif;font-size:20px;margin:22px 0 8px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.tuiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.tuile{text-align:left;background:var(--papier-clair);border:1px solid var(--filet);border-radius:10px;padding:14px;min-height:110px;position:relative}
+.tuile .num{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--sepia)}
+.tuile h3{margin:4px 0;font-size:18px}
+.tuile.projet{background:linear-gradient(135deg,#eef4f1,#f7f1e4);border:2px solid var(--pc);width:100%;min-height:96px}
+.tuile .nb{position:absolute;top:10px;right:10px}
+.onglets{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--filet);margin-top:8px}
+.onglets button{border:0;background:none;padding:8px 14px;border-bottom:3px solid transparent;margin-bottom:-2px;font-weight:500;color:var(--encre-douce)}
+.onglets button[aria-selected=true]{border-color:var(--pc);color:var(--encre);font-weight:700}
+.retour{border:0;background:none;color:var(--pc);padding:0;font-weight:600}
+
+/* groupes */
+.grille-groupes{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.groupe{background:#fff;border:1px solid var(--filet);border-top:5px solid var(--pc);border-radius:10px;padding:12px}
+.groupe.svt{border-top-color:var(--svt)}
+.groupe.moi{box-shadow:0 0 0 3px #f0c987}
+.groupe h3{margin:0 0 2px;font-size:18px}
+.places{list-style:none;padding:0;margin:8px 0}
+.places li{padding:5px 8px;border:1px dashed var(--filet-fonce);border-radius:6px;margin:4px 0;display:flex;justify-content:space-between;gap:6px;align-items:center;font-size:15px}
+.places li.pris{border-style:solid;background:var(--papier-clair)}
+.places li.libre{color:var(--sepia)}
+.t{font-size:12px;color:var(--sepia);font-family:'IBM Plex Mono',monospace}
+select.mini{font-size:13px;padding:2px 4px;border:1px solid var(--filet-fonce);border-radius:6px;background:#fff;max-width:96px}
+.x{border:0;background:none;color:var(--alerte);font-size:16px;padding:0 4px}
+
+/* formulaires */
+label.ch,.ch{display:block;font-weight:600;margin:12px 0 4px}
+textarea,input[type=text],input[type=number],input[type=date],select.champ{width:100%;border:1px solid var(--filet-fonce);border-radius:8px;padding:8px;background:#fff}
+textarea{min-height:70px;resize:vertical}
+textarea[readonly],input[readonly]{background:#f6f3ea}
+.exp{border:1px solid var(--filet);border-radius:8px;padding:10px;margin:8px 0;background:#fff}
+.exp-ligne{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.lieux{display:flex;gap:6px;flex-wrap:wrap}
+.lieux label{border:1px solid var(--filet-fonce);border-radius:999px;padding:3px 10px;font-size:14px;cursor:pointer;background:#fff}
+.lieux input{margin-right:4px}
+.msg{margin:8px 0;padding:8px 10px;border-radius:8px;background:#fff;border:1px solid var(--filet)}
+.msg.prof{background:var(--orange-pale);border-color:#e8cfae}
+.msg .t{display:block}
+.entree{border-left:4px solid var(--pc);background:#fff;border-radius:0 8px 8px 0;padding:8px 12px;margin:8px 0}
+.entree .t{display:block;margin-bottom:2px}
+.fichier{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#fff;border:1px solid var(--filet);border-radius:8px;padding:8px 12px;margin:6px 0}
+.apercu{font-size:13px;margin-top:6px}
+.apercu td,.apercu th{padding:3px 8px}
+
+/* rappels */
+.voile{position:fixed;inset:0;background:rgba(43,33,24,.45);display:grid;place-items:center;z-index:30;padding:16px}
+.modale{background:var(--papier-clair);border-radius:12px;max-width:520px;width:100%;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.modale h2{margin-top:0}
+.rappel{display:flex;gap:10px;padding:10px;border-radius:8px;margin:8px 0;background:#fff;border:1px solid var(--filet)}
+.rappel.urgent{border-color:#d9b2ad;background:var(--alerte-pale)}
+.rappel .ico{font-size:22px}
+.coche{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--filet);border-radius:8px;margin:6px 0;background:#fff}
+.coche input{width:22px;height:22px;margin-top:2px}
+.coche.fait{background:var(--ok-pale);border-color:#b9d8bf}
+
+/* enseignant */
+table{border-collapse:collapse;width:100%;font-size:14px;background:#fff}
+th,td{border-bottom:1px solid var(--filet);padding:7px 8px;text-align:left;vertical-align:top}
+th{background:#ece7da;font-weight:600;position:sticky;top:0}
+.tableau{overflow-x:auto;border:1px solid var(--filet);border-radius:8px;max-height:520px}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:#fff;border:1px solid var(--filet);border-radius:8px;padding:8px 12px;min-width:120px}
+.stat b{display:block;font-size:22px;font-family:'Spectral',serif}
+.interrupteur{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:2px solid var(--ok);background:var(--ok-pale);font-weight:600;flex-wrap:wrap}
+.interrupteur.ferme{border-color:var(--alerte);background:var(--alerte-pale)}
+.crit{display:grid;grid-template-columns:1fr 74px;gap:6px 10px;align-items:center;padding:5px 0;border-bottom:1px dotted var(--filet)}
+.crit input{width:70px;text-align:right;padding:4px 6px}
+.max{font-size:13px;color:var(--sepia)}
+.bloc-titre{font-family:'Spectral',serif;font-weight:600;margin:14px 0 4px;color:var(--prune);display:flex;justify-content:space-between;gap:8px}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.copie-grille{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(330px,1fr);gap:16px;align-items:start}
+.colle{position:sticky;top:96px;max-height:calc(100vh - 110px);overflow:auto}
+.niveaux{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0}
+.niveaux button{border:1px solid var(--filet-fonce);background:#fff;border-radius:6px;padding:3px 9px;font-size:13px;font-weight:600}
+.niveaux button[aria-pressed=true]{background:var(--prune);color:#fff;border-color:var(--prune)}
+.oral-crit{padding:8px 0;border-bottom:1px dotted var(--filet)}
+.oral-crit .desc{font-size:13px;color:var(--encre-douce);min-height:1.2em}
+.chrono{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:600}
+.chrono.depasse{color:var(--alerte)}
+.total{font-family:'Spectral',serif;font-size:20px}
+@media (max-width:860px){.deux,.exp-ligne,.copie-grille{grid-template-columns:1fr}.colle{position:static;max-height:none}}
+.cal{list-style:none;padding:0;margin:0}
+.cal li{display:grid;grid-template-columns:150px 1fr;gap:10px;padding:8px 0;border-bottom:1px dotted var(--filet)}
+.cal .d{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--pc)}
+.lieux-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.lieu{background:#fff;border:1px solid var(--filet);border-radius:10px;padding:12px}
+.lieu .ico{font-size:26px}
+.a-preciser{font-style:italic;color:var(--orange)}
+.reglage{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px dotted var(--filet)}
+.reglage input{width:20px;height:20px;margin-top:3px}
+</style>
+</head>
+<body>
+
+<div class="maq" role="region" aria-label="Commandes de la maquette">
+  <span>🧪 <b>MAQUETTE</b> — données fictives, rien n'est enregistré ailleurs que dans ce navigateur</span>
+  <span class="bascule" role="group" aria-label="Vue">
+    <button id="v-eleve" aria-pressed="true">Vue élève</button>
+    <button id="v-prof" aria-pressed="false">Vue enseignant</button>
+  </span>
+  <label id="l-qui">Je suis <select id="qui"></select></label>
+  <label>Nous sommes le <select id="date"></select></label>
+  <span class="espace"></span>
+  <button id="raz" title="Remet les données fictives de départ">Réinitialiser</button>
+</div>
+
+<div class="page" id="app"></div>
+
+<script>
+'use strict';
+/* =============================================================
+   Données fixes
+   ============================================================= */
+const PSEUDOS = ['Quartz','Halite','Pyrite','Galène','Opale','Jaspe','Onyx','Béryl','Rubis','Grenat','Jade','Ambre',
+  'Basalte','Krypton','Fluorine','Gypse','Talc','Soufre','Calcite','Mica','Topaze','Granite','Agate','Saphir',
+  'Obsidienne','Cobalt','Corail','Nacre','Silex','Zinc','Nickel','Argon','Néon'];
+
+const DATES = [
+  ['2026-11-23','lun. 23/11 — présentation du projet'],
+  ['2026-12-10','jeu. 10/12 — les groupes se forment'],
+  ['2027-01-04','lun. 04/01 — retour : pré-projet dû'],
+  ['2027-01-25','lun. 25/01 — retours et corrections'],
+  ['2027-03-01','lun. 01/03 — début du projet'],
+  ['2027-03-08','lun. 08/03'],
+  ['2027-03-12','ven. 12/03 — manip 1'],
+  ['2027-03-15','lun. 15/03'],
+  ['2027-04-02','ven. 02/04'],
+  ['2027-04-09','ven. 09/04 — oraux'],
+];
+const SEANCES = [['2027-03-01','lun. 01/03'],['2027-03-05','ven. 05/03'],['2027-03-12','ven. 12/03 · labo'],['2027-03-15','lun. 15/03'],
+  ['2027-03-19','ven. 19/03 · labo'],['2027-04-02','ven. 02/04'],['2027-04-09','ven. 09/04 · oral']];
+const DEBUT_PROJET = '2027-03-01';
+
+const ECHEANCES = {
+  groupes:    {d:'2026-12-18', txt:'ven. 18/12'},
+  preprojet:  {d:'2027-01-04', txt:'lun. 04/01'},
+  validation: {d:'2027-02-05', txt:'avant les vacances de février'},
+  rendu:      {d:'2027-04-09', txt:'ven. 09/04'},
+};
+const MANIPS = [
+  {id:'m1', d:'2027-03-12', txt:'ven. 12/03', limite:'2027-03-05', limiteTxt:'ven. 05/03'},
+  {id:'m2', d:'2027-03-19', txt:'ven. 19/03', limite:'2027-03-12', limiteTxt:'ven. 12/03'},
+];
+const LIEUX = [['labo','🔬 Au labo'],['maison','🏠 À la maison'],['exterieur','🌳 En extérieur'],['donnees','💾 Données en ligne'],['classe','🏫 En classe']];
+const CAT = {donnees:'📊 Données', cahier:'📓 Cahier de laboratoire', oral:'🎤 Support d’oral'};
+
+/* ---- La notation (proposition à valider) ----
+   ÉCRIT et AUTRES : une note de groupe (grille 2025-2026, inchangée).
+   ORAL : une partie commune au groupe (le support, les 5 étapes, le temps
+   de parole) et une partie INDIVIDUELLE, sur les cinq critères du Grand
+   oral, avec leurs points de 2025-2026. « Qualité de la prise de parole /5 »
+   de l'ancienne composante individuelle y est absorbée ; reste
+   « Investissement personnel /5 ». Total 58 → /20. */
+const ECRIT = [
+  {bloc:'Forme', crit:[['Page de garde',0.5],['Table des matières complète',1],['Respect du calendrier (dates des séances)',1],['Figures légendées et utilisées',1],['Propreté',1]]},
+  {bloc:'Phase 1 — Problématisation', crit:[['Problématique énoncée et contextualisée',1],['Qualité de la problématique',2],['Faisabilité étudiée, échanges avec l’enseignant',1]]},
+  {bloc:'Phase 2 — Hypothèses', crit:[['Hypothèses formulées',0.5],['Hypothèses cohérentes et vérifiables',1],['Proposition d’une démarche expérimentale',1],['Pertinence de la démarche',0.5]]},
+  {bloc:'Phase 3 — Expérimentation / données', crit:[['Élaboration d’un protocole',3],['Liste de matériel',1],['Mise en œuvre du protocole',3]]},
+  {bloc:'Phase 4 — Interprétation', crit:[['Représentation des données',3],['Qualité de l’analyse',1]]},
+  {bloc:'Phase 5 — Conclusion', crit:[['Réponse explicite à la problématique',2],['Élargissement, ouverture',1]]},
+  {bloc:'Bibliographie', crit:[['Bibliographie fournie',0.5],['Diversité, qualité, fiabilité',1]]},
+];
+const AUTRES = [{bloc:'Travail du groupe', crit:[['Implication du groupe en classe',3],['Répartition efficace du travail',1],['Prise en compte des conseils',1],
+  ['Esprit d’initiative et autonomie',3],['Respect des délais',1],['Respect du travail des personnels du labo',2]]}];
+const ORAL_GROUPE = [{bloc:'Oral — commun au groupe', crit:[['Présentation des 5 étapes de la démarche',2],['Qualité du support',2],['Répartition du temps de parole',1]]}];
+const NIV = ['TI','I','S','TS'], NIV_LONG = ['très insuffisant','insuffisant','satisfaisant','très satisfaisant'], NIV_F = [0,.25,.75,1];
+/* D'après la grille d'évaluation du Grand oral — résumés, à confronter au texte officiel. */
+const ORAL_INDIV = [
+  ['Qualité orale',3,['Difficilement audible, ne capte pas l’attention.','Audible mais monocorde ; vocabulaire limité ou approximatif.','Voix posée, lexique adapté ; suscite l’intérêt.','La voix sert le discours ; vocabulaire riche et précis ; pleinement engagé.']],
+  ['Prise de parole en continu',1,['Énoncés courts, nombreuses pauses.','Discours assez clair mais vite interrompu ; très dépendant des notes.','Discours fluide ; se détache de ses notes.','Discours fluide et efficace ; notes à peine utilisées.']],
+  ['Qualité des connaissances',3,['Connaissances imprécises ; ne répond pas aux questions.','Connaissances réduites ; réponses approximatives.','Connaissances précises ; réponses qui les mobilisent.','Connaissances maîtrisées ; réponses pertinentes et nuancées.']],
+  ['Qualité de l’interaction',2,['Réponses courtes ou absentes, n’entre pas dans l’échange.','Réponses prudentes ; échange limité.','Répond, entre dans l’échange.','S’empare des questions, enrichit l’échange.']],
+  ['Argumentation',1,['Pas de raisonnement perceptible.','Début de démonstration, arguments peu reliés.','Démonstration construite, arguments cohérents.','Démonstration maîtrisée, argumentation convaincante.']],
+];
+const PERSO = [['Investissement personnel',5]];
+const somme = blocs => blocs.reduce((n,b)=>n+b.crit.reduce((m,c)=>m+c[1],0),0);
+const MAX = {ecrit:somme(ECRIT), autres:somme(AUTRES), og:somme(ORAL_GROUPE), oi:ORAL_INDIV.reduce((n,c)=>n+c[1],0), perso:5};
+MAX.total = MAX.ecrit+MAX.autres+MAX.og+MAX.oi+MAX.perso;
+
+/* =============================================================
+   Données fictives de départ (instantané à la mi-mars)
+   ============================================================= */
+function etatDeDepart(){
+  const t = (j,h) => j+'T'+(h||'12:00')+':00';
+  const S = {vue:'eleve', qui:'Quartz', date:'2027-03-15', groupesFermes:true,
+    reglages:{joannesSurSite:true, notesRendues:false},
+    groupes:[], depots:{}, journal:{}, fichiers:{}, labo:{}, notes:{g:{}, e:{}}, log:[]};
+  const compo = {pc1:['Quartz','Halite','Pyrite','Galène'], pc2:['Opale','Jaspe','Onyx','Béryl'], pc3:['Rubis','Grenat','Jade','Ambre'],
+    pc4:['Basalte','Krypton','Fluorine'], pc5:['Gypse','Talc','Soufre'], svt1:['Calcite','Mica','Topaze','Granite'],
+    svt2:['Agate','Saphir','Obsidienne','Cobalt'], svt3:['Corail','Nacre','Silex','Zinc'], svt4:['Nickel','Argon','Néon']};
+  let minute = 0;
+  const jours = ['2026-11-23','2026-11-24','2026-11-25','2026-11-27','2026-12-01','2026-12-03','2026-12-08','2026-12-11','2026-12-15'];
+  Object.entries(compo).forEach(([id,mm],gi) => {
+    const disc = id.startsWith('pc')?'pc':'svt';
+    S.groupes.push({id, nom:(disc==='pc'?'PC ':'SVT ')+id.replace(/\D/g,''), disc, prof:disc==='pc'?'M. Van Hoorde':'Mme Joannes',
+      membres: mm.map((p,i)=>{ minute+=7; const q = t(jours[gi], String(17+Math.floor(i/2)).padStart(2,'0')+':'+String((minute)%60).padStart(2,'0'));
+        S.log.push({t:q, qui:p, g:id, a:'rejoint', d:''}); return {p, depuis:q}; })});
+  });
+  S.log.push({t:t('2026-11-25','17:02'), qui:'Béryl', g:'pc3', a:'quitte', d:''});
+  S.log.push({t:t('2026-12-18','18:00'), qui:'M. Van Hoorde', g:'', a:'ferme les groupes', d:''});
+
+  const pp = (id, statut, prob, hyp, exps, mat, versions, fil) => {
+    S.depots[id] = {statut, brouillon:{prob,hyp,exps,mat}, versions, fil};
+    versions.forEach((v,i)=>S.log.push({t:v.t, qui:v.par, g:id, a:'envoie', d:'pré-projet v'+(i+1)}));
+    fil.filter(m=>m.prof).forEach(m=>S.log.push({t:m.t, qui:m.par, g:id, a:'commente', d:'pré-projet'}));
+  };
+  const env = (t0,par,n) => ({t:t0, par, prof:false, txt:'Pré-projet envoyé (version '+n+').'});
+  pp('pc1','valide','Le sucre se dissout-il plus vite dans l’eau chaude ? De combien ?',
+    'Plus l’eau est chaude, plus le sucre se dissout vite. On pense que la durée est divisée par deux tous les 20 °C.',
+    [{desc:'Chronométrer la dissolution d’un morceau de sucre pesé, sans agiter, à 20, 40, 60 et 80 °C. Critère : plus aucun cristal visible au fond.',lieux:['maison','labo'],nb:'10 essais par température',duree:'2 h à la maison + 1 séance labo'},
+     {desc:'Même chose en agitant à vitesse constante (agitateur magnétique du labo) pour comparer.',lieux:['labo'],nb:'5 essais par température',duree:'1 séance labo'}],
+    'Maison : bouilloire, thermomètre de cuisine, balance de cuisine, sucre en morceaux, verres doseurs. Labo : bain thermostaté, thermomètre électronique, agitateur magnétique, béchers 250 mL.',
+    [{t:t('2026-12-28','15:12'),par:'Galène',mots:41},{t:t('2027-01-10','18:30'),par:'Galène',mots:96}],
+    [env(t('2026-12-28','15:12'),'Galène',1),
+     {t:t('2027-01-05','20:40'),par:'M. Van Hoorde',prof:true,txt:'↩ À revoir. Bonne idée, faisable à la maison. Mais 3 essais par température, c’est peu : combien en faut-il pour que la moyenne ne bouge plus ? Et comment savez-vous que le sucre est « dissous » ? Précisez le critère.'},
+     {t:t('2027-01-06','17:15'),par:'Quartz',prof:false,txt:'Est-ce qu’on peut faire une partie à la maison et une partie au labo ? On n’a pas de thermomètre précis chez nous.'},
+     {t:t('2027-01-06','21:02'),par:'M. Van Hoorde',prof:true,txt:'Oui, c’est même l’idée : dégrossir chez vous, affiner au labo. Notez bien d’où vient chaque mesure.'},
+     env(t('2027-01-10','18:30'),'Galène',2),
+     {t:t('2027-01-14','19:20'),par:'M. Van Hoorde',prof:true,txt:'✅ Validé. Pensez à noter la température au début ET à la fin de chaque essai.'}]);
+  pp('pc2','a-revoir','Une balle rebondit-elle moins haut quand elle est froide ?','Une balle froide est plus dure, elle rebondit moins.',
+    [{desc:'Lâcher une balle de tennis d’1 m, filmer le rebond, après 0, 30 et 60 min au congélateur.',lieux:['maison'],nb:'5 lâchers',duree:'1 h'}],
+    'Balles de tennis, congélateur, mètre ruban, téléphone',
+    [{t:t('2027-01-07','22:41'),par:'Onyx',mots:39}],
+    [env(t('2027-01-07','22:41'),'Onyx',1),{t:t('2027-01-12','20:05'),par:'M. Van Hoorde',prof:true,txt:'↩ À revoir. Envoyé après la date. Sur le fond : comment lisez-vous la hauteur sur la vidéo (règle dans le champ ?) Et 5 lâchers, est-ce assez ?'}]);
+  pp('pc3','valide','Un téléphone mesure-t-il le bruit de la cantine aussi bien qu’un sonomètre ?','Le téléphone sous-estime les niveaux élevés.',
+    [{desc:'Mesures simultanées téléphone (phyphox) et sonomètre du labo à plusieurs distances d’une enceinte.',lieux:['labo','exterieur'],nb:'10 mesures par point, 6 distances',duree:'2 × 30 min'},
+     {desc:'Relevés à la cantine à trois heures différentes.',lieux:['classe'],nb:'3 relevés de 5 min',duree:'3 midis'}],
+    'Sonomètre (labo), 4 téléphones avec phyphox, mètre ruban, enceinte',
+    [{t:t('2027-01-02','09:30'),par:'Rubis',mots:52}],
+    [env(t('2027-01-02','09:30'),'Rubis',1),{t:t('2027-01-09','10:12'),par:'M. Van Hoorde',prof:true,txt:'✅ Validé. Demandez l’autorisation pour la cantine avant d’y aller.'}]);
+  pp('pc4','envoye','La couleur d’un t-shirt change-t-elle sa température au soleil ?','Un t-shirt noir chauffe plus qu’un blanc.',
+    [{desc:'Thermomètre sous des t-shirts de couleurs différentes, au soleil, toutes les 2 minutes.',lieux:['exterieur','maison'],nb:'5 couleurs, 15 relevés chacune',duree:'30 min par essai'}],
+    'T-shirts, thermomètres, chronomètre',[{t:t('2027-01-04','07:55'),par:'Krypton',mots:31}],[env(t('2027-01-04','07:55'),'Krypton',1)]);
+  pp('svt1','valide','La lumière de couleur modifie-t-elle la croissance des lentilles ?','Les lentilles poussent moins sous lumière verte.',
+    [{desc:'Faire germer des lentilles sous trois filtres colorés, mesurer la tige chaque jour.',lieux:['maison','labo'],nb:'20 graines par couleur',duree:'10 jours'}],
+    'Lentilles, coton, filtres colorés, règle, lampe',[{t:t('2027-01-03','11:02'),par:'Mica',mots:38}],
+    [env(t('2027-01-03','11:02'),'Mica',1),{t:t('2027-01-11','18:00'),par:'Mme Joannes',prof:true,txt:'✅ Validé.'}]);
+  pp('svt2','valide','Le rythme cardiaque revient-il plus vite au repos chez les sportifs ?','Plus on s’entraîne, plus le cœur récupère vite.',
+    [{desc:'Mesurer la fréquence cardiaque toutes les 30 s après 30 flexions, chez des volontaires sportifs et non sportifs.',lieux:['classe','maison'],nb:'12 volontaires',duree:'3 séances'}],
+    'Montres ou téléphones (capteur), chronomètre',[{t:t('2027-01-04','18:20'),par:'Agate',mots:44}],
+    [env(t('2027-01-04','18:20'),'Agate',1),{t:t('2027-01-13','17:40'),par:'Mme Joannes',prof:true,txt:'✅ Validé.'}]);
+  pp('svt3','envoye','Les vers de terre préfèrent-ils un sol humide ?','Oui.',
+    [{desc:'Boîte à deux compartiments, sec et humide, compter les vers de chaque côté.',lieux:['labo'],nb:'?',duree:'?'}],
+    'Boîte, terre, vers',[{t:t('2027-01-05','12:10'),par:'Silex',mots:18}],[env(t('2027-01-05','12:10'),'Silex',1)]);
+  pp('svt4','a-revoir','Le réchauffement climatique','Il fait plus chaud.',[{desc:'',lieux:[],nb:'',duree:''}],'',
+    [{t:t('2027-01-04','23:58'),par:'Argon',mots:6}],
+    [env(t('2027-01-04','23:58'),'Argon',1),{t:t('2027-01-12','18:30'),par:'Mme Joannes',prof:true,txt:'↩ À revoir. Ce n’est pas une question qu’on peut mesurer en deux séances : resserrez sur une grandeur que vous pouvez relever vous-mêmes.'}]);
+
+  const jr = (id, l) => { S.journal[id] = l.map(([seance,par,lieu,txt,h])=>({t:t(seance,h||'18:00'), seance, par, lieu, txt}));
+    S.journal[id].forEach(e=>S.log.push({t:e.t, qui:e.par, g:id, a:'journal', d:e.seance})); };
+  jr('pc1', [
+    ['2027-03-01','Quartz','classe','Relu le pré-projet validé. Répartition : Halite et Pyrite font les mesures à la maison, Quartz prépare le tableur, Galène écrit le protocole final.','09:05'],
+    ['2027-03-03','Halite','maison','Premiers essais à 20 °C et 40 °C, 10 essais chacun. Les morceaux de sucre n’ont pas tous la même masse (5,4 à 6,1 g) : on pèse chaque morceau et on le note.','19:40'],
+    ['2027-03-05','Galène','classe','Protocole final rédigé. Demande envoyée à Coralie sur EcoleDirecte pour le 12/03 : bain thermostaté, thermomètre électronique, agitateur.','16:40'],
+    ['2027-03-12','Pyrite','labo','Mesures à 60 et 80 °C au bain thermostaté. À 80 °C la dissolution dure 6 à 8 s : le chronomètre à la main est trop imprécis. On filmera au ralenti avec le téléphone le 19/03.','16:50'],
+    ['2027-03-15','Quartz','classe','Toutes les données dans le tableur : moyenne et écart-type par température. La courbe n’est pas une droite : la durée diminue de moins en moins vite.','09:10'],
+  ]);
+  jr('pc3', [
+    ['2027-03-01','Rubis','classe','Choix des 6 distances (0,5 à 5 m). Autorisation demandée à la vie scolaire pour la cantine.','09:00'],
+    ['2027-03-05','Jade','exterieur','Premiers relevés dans la cour avec 4 téléphones : écarts de 3 à 6 dB entre téléphones.','16:30'],
+  ]);
+  jr('svt1', [
+    ['2027-03-01','Calcite','classe','Semis lancés à la maison le 26/02 : 20 graines × 3 couleurs.'],
+    ['2027-03-05','Topaze','maison','Mesures J+7 : tiges vertes 2,1 cm en moyenne, rouges 3,4 cm.'],
+    ['2027-03-12','Mica','labo','Photos sous loupe binoculaire des plantules.'],
+  ]);
+  jr('svt2', [['2027-03-05','Saphir','classe','Mesures en EPS avec 6 volontaires, 6 autres la semaine prochaine.']]);
+
+  const fi = (id, l) => { S.fichiers[id] = l.map(([cat,nom,taille,par,j,apercu])=>({cat,nom,taille,par,t:t(j,'19:00'),apercu}));
+    S.fichiers[id].forEach(f=>S.log.push({t:f.t, qui:f.par, g:id, a:'dépose', d:f.nom})); };
+  fi('pc1', [
+    ['donnees','mesures-dissolution.csv','3 Ko','Quartz','2027-03-15',[['T (°C)','durée moyenne (s)','écart-type (s)','essais'],['20','94','8','10'],['40','41','5','10'],['60','19','3','10'],['80','7','1,5','10']]],
+    ['donnees','photo-montage-labo.jpg','1,8 Mo','Pyrite','2027-03-12'],
+    ['cahier','cahier-de-labo-PC1.pdf','2,4 Mo','Galène','2027-03-15'],
+  ]);
+  fi('pc3', [['donnees','releves-cour.csv','2 Ko','Jade','2027-03-05',[['distance (m)','sonomètre (dB)','téléphone moyen (dB)'],['0,5','86','81'],['1','80','76'],['2','74','71'],['5','66','64']]]]);
+  fi('svt1', [['donnees','mesures-tiges-J7.csv','1 Ko','Topaze','2027-03-05'],['donnees','plantules-loupe.jpg','2,2 Mo','Mica','2027-03-12']]);
+
+  const lb = (id, m, cle, j, par) => { S.labo[id] = S.labo[id]||{}; (S.labo[id][m] = S.labo[id][m]||{})[cle] = {t:t(j,'18:00'), par}; S.log.push({t:t(j,'18:00'), qui:par, g:id, a:'coche', d:'labo '+m+' '+cle}); };
+  lb('pc1','m1','envoyee','2027-03-04','Galène'); lb('pc1','m1','reponse','2027-03-06','Galène'); lb('pc1','m1','pret','2027-03-11','Halite');
+  lb('pc1','m2','envoyee','2027-03-12','Pyrite');
+  lb('pc3','m1','envoyee','2027-03-02','Rubis'); lb('pc3','m1','reponse','2027-03-03','Rubis'); lb('pc3','m1','pret','2027-03-10','Jade');
+  lb('pc2','m1','envoyee','2027-03-08','Opale');
+  lb('svt1','m1','envoyee','2027-03-04','Mica'); lb('svt1','m1','reponse','2027-03-05','Mica');
+
+  // un début de correction, pour voir le calcul
+  S.notes.g.pc1 = {'E-0-0':0.5,'E-0-1':1,'E-0-2':1,'E-0-3':0.5,'E-1-0':1,'E-1-1':1.5,'E-1-2':1,'E-2-0':0.5,'E-2-1':1,'E-2-2':1,'E-2-3':0.5};
+  S.notes.e.Quartz = {niv:{0:2,1:3,2:2,3:2,4:2}, perso:{0:4}, rq:'Très à l’aise, a repris la question de Jade avec précision.'};
+  S.notes.e.Halite = {niv:{0:1,1:1,2:2}, perso:{}, rq:''};
+  return S;
+}
+
+/* =============================================================
+   État, persistance (le navigateur seulement)
+   ============================================================= */
+const CLE = 'pen-maquette-v2';
+let S;
+try { S = JSON.parse(localStorage.getItem(CLE)) || etatDeDepart(); } catch(e) { S = etatDeDepart(); }
+let ui = {ecran:'accueil', onglet:'projet', ongletProf:'groupes', groupeOuvert:null, corrG:'pc1', oralG:'pc1', rappelsOuverts:false,
+  chrono:{marche:false, debut:0, cumul:0}};
+function sauver(){ try { localStorage.setItem(CLE, JSON.stringify(S)); } catch(e) {} }
+
+/* =============================================================
+   Outils
+   ============================================================= */
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const virg = n => String(Math.round(n*100)/100).replace('.',',');
+function maintenant(){ const h = new Date(); return S.date+'T'+String(h.getHours()).padStart(2,'0')+':'+String(h.getMinutes()).padStart(2,'0')+':00'; }
+function fmt(t){ if(!t) return '—'; const [d,h]=t.split('T'); const [y,m,j]=d.split('-'); return j+'/'+m+(h?' '+h.slice(0,5):''); }
+const fmtJ = d => d ? d.slice(8,10)+'/'+d.slice(5,7) : '—';
+function joursEntre(a,b){ return Math.round((new Date(b)-new Date(a))/864e5); }
+function groupeDe(p){ return S.groupes.find(g => g.membres.some(m => m.p===p)); }
+const gid = id => S.groupes.find(g=>g.id===id);
+function depot(id){ return S.depots[id] || (S.depots[id] = {statut:'vide', brouillon:{prob:'',hyp:'',exps:[{desc:'',lieux:[],nb:'',duree:''}],mat:''}, versions:[], fil:[]}); }
+function labo(id,mid){ S.labo[id] = S.labo[id] || {}; return S.labo[id][mid] || (S.labo[id][mid] = {}); }
+const journalDe = id => S.journal[id] || (S.journal[id] = []);
+const fichiersDe = id => S.fichiers[id] || (S.fichiers[id] = []);
+function journal(qui,g,a,d){ S.log.push({t:maintenant(), qui, g, a, d:d||''}); }
+const STATUT = {vide:['pas encore envoyé','p-neutre'], envoye:['envoyé, en attente de lecture','p-orange'], 'a-revoir':['à revoir','p-alerte'], valide:['validé','p-ok']};
+function pastille(st){ const [t,c]=STATUT[st]||STATUT.vide; return `<span class="puce ${c}">${t}</span>`; }
+function compteMots(b){ return [b.prob,b.hyp,b.mat,...(b.exps||[]).map(e=>e.desc)].join(' ').split(/\s+/).filter(Boolean).length; }
+const lieuTxt = k => (LIEUX.find(l=>l[0]===k)||['',k])[1];
+const enPhaseProjet = () => S.date >= DEBUT_PROJET && !S.reglages.notesRendues;
+const suiviAilleurs = g => g && g.disc==='svt' && !S.reglages.joannesSurSite;
+const BANDEAU_IA = `<div class="ia" role="note"><span class="ico">🤖</span><span><b>L’IA générative n’est pas autorisée</b> dans ce projet (ChatGPT, Gemini, Copilot, Mistral…) : ni pour écrire, ni pour inventer des données, ni pour faire les graphiques. Tout ce que vous déposez vient de vous.</span></div>`;
+
+/* Les notes, à partir de ce qui est saisi */
+function noteGroupe(id, blocs, pref){ const N = S.notes.g[id] || {}; let s=0, vides=0;
+  blocs.forEach((b,bi)=>b.crit.forEach((c,ci)=>{ const v = N[pref+'-'+bi+'-'+ci]; if (v===undefined||v==='') vides++; else s+=+v; })); return {s, vides}; }
+function noteEleve(p){ const E = S.notes.e[p] || {niv:{}, perso:{}, pts:{}}; let s=0, vides=0;
+  ORAL_INDIV.forEach(([t,max],i)=>{ const pts = E.pts && E.pts[i]!==undefined && E.pts[i]!=='' ? +E.pts[i] : (E.niv && E.niv[i]!==undefined ? max*NIV_F[E.niv[i]] : null);
+    if (pts===null) vides++; else s+=pts; });
+  let pe=0, pv=0; PERSO.forEach((c,i)=>{ const v=E.perso&&E.perso[i]; if(v===undefined||v==='') pv++; else pe+=+v; });
+  return {oi:s, perso:pe, vides:vides+pv}; }
+function bilan(p){ const g = groupeDe(p); if(!g) return null;
+  const e = noteGroupe(g.id,ECRIT,'E'), a = noteGroupe(g.id,AUTRES,'A'), og = noteGroupe(g.id,ORAL_GROUPE,'O'), i = noteEleve(p);
+  const total = e.s+a.s+og.s+i.oi+i.perso;
+  return {g, ecrit:e.s, autres:a.s, og:og.s, oi:i.oi, perso:i.perso, total, sur20: total/MAX.total*20, complet: !(e.vides+a.vides+og.vides+i.vides)}; }
+
+/* Les rappels de l'élève, selon la date simulée */
+function rappels(p){
+  const r = [], g = groupeDe(p), d = S.date;
+  if (!g && d < '2027-01-01') r.push({ico:'👥', urgent: joursEntre(d, ECHEANCES.groupes.d) <= 7, txt:`Rejoins un groupe avant le <b>${ECHEANCES.groupes.txt}</b>.`, aller:'groupe'});
+  if (!g && d >= '2027-01-01') r.push({ico:'👥', urgent:true, txt:'Tu n’es dans aucun groupe : vois ton professeur.', aller:'groupe'});
+  if (!g || suiviAilleurs(g)) return r;
+  if (g.membres.length === 1) r.push({ico:'⚠️', urgent:true, txt:'Tu es seul dans ton groupe : on ne travaille jamais seul.', aller:'groupe'});
+  const dp = depot(g.id);
+  if (dp.statut==='vide' && d >= '2026-12-01' && d < '2027-03-01') r.push({ico:'📝', urgent: joursEntre(d, ECHEANCES.preprojet.d) <= 7, txt:`Pré-projet à envoyer pour le <b>${ECHEANCES.preprojet.txt}</b>.`, aller:'preprojet'});
+  if (dp.statut==='a-revoir') r.push({ico:'💬', urgent:true, txt:`Ton professeur a commenté le pré-projet : à corriger <b>${ECHEANCES.validation.txt}</b>.`, aller:'preprojet'});
+  for (const m of MANIPS) {
+    const l = labo(g.id, m.id), j = joursEntre(d, m.limite);
+    if (!l.envoyee && j <= 21 && d < m.d) r.push({ico:'🧪', labo:true, urgent: j <= 3, txt:`Demande au labo pour la manip du <b>${m.txt}</b> : à envoyer avant le <b>${m.limiteTxt}</b>${j<0?' — <b>en retard</b>':''}.`, aller:'labo'});
+    else if (l.envoyee && !l.reponse && d < m.d) r.push({ico:'🧪', labo:true, txt:`As-tu reçu la réponse du labo pour le <b>${m.txt}</b> ? Coche-le quand c’est le cas.`, aller:'labo'});
+  }
+  const seance = SEANCES.find(s=>s[0]===d);
+  if (seance && !journalDe(g.id).some(e=>e.seance===d)) r.push({ico:'📓', txt:'Séance du jour : notez dans le <b>journal de bord</b> ce que vous avez fait.', aller:'journal'});
+  if (d >= '2027-04-02' && d <= ECHEANCES.rendu.d && !fichiersDe(g.id).some(f=>f.cat==='oral')) r.push({ico:'🎤', urgent: d >= '2027-04-07', txt:`Support d’oral et cahier de laboratoire à déposer pour le <b>${ECHEANCES.rendu.txt}</b>.`, aller:'depots'});
+  return r;
+}
+
+/* =============================================================
+   Rendu — élève
+   ============================================================= */
+function rendreEleve(){
+  const p = S.qui, g = groupeDe(p), r = p ? rappels(p) : [], nbLabo = r.filter(x=>x.labo).length;
+  const fiole = `<button class="fiole" id="b-labo" title="Mes démarches au labo">🧪 Labo${nbLabo?`<span class="nb">${nbLabo}</span>`:''}</button>`;
+  if (ui.ecran === 'accueil') {
+    const cours = `<div class="rubrique">Mes cours</div><div class="tuiles">
+      <div class="tuile"><span class="num">T1 · C1</span><h3>La nucléosynthèse</h3><span class="petit">3 séances</span></div>
+      <div class="tuile"><span class="num">T1 · C2</span><h3>La radioactivité</h3><span class="petit">4 séances</span></div>
+      <div class="tuile"><span class="num">T1 · C3</span><h3>Les cristaux</h3><span class="petit">4 séances</span></div></div>`;
+    const projet = `<div class="rubrique">Projet expérimental et numérique ${enPhaseProjet()?'<span class="puce p-pc">en cours</span>':''}</div>
+      <button class="tuile projet" data-ouvrir="projet"><span class="num">PEN · ${enPhaseProjet()?'du 01/03 au 09/04':'toute l’année'}</span>
+        <h3>${enPhaseProjet()?'Votre projet':'Projet expérimental et numérique'}</h3>
+        <span class="petit">${g?`Ton groupe : <b>${esc(g.nom)}</b> · ${esc(g.prof)}`:'Pas encore de groupe'}</span>
+        ${r.length?`<span class="puce p-alerte nb">${r.length} à faire</span>`:''}</button>`;
+    return `
+    <div class="entete"><h1>Enseignement scientifique — 1<sup>re</sup></h1>${p?fiole:''}
+      ${p?`<span class="petit">connecté : <b>${esc(p)}</b></span>`:'<span class="petit">non connecté</span>'}</div>
+    <p class="petit">${enPhaseProjet()?'Pendant le projet, il passe <b>au-dessus</b> des cours ; il repasse dessous quand les notes sont rendues.':'Hors de la période du projet, il se range <b>sous</b> les cours.'}</p>
+    ${enPhaseProjet() ? projet + cours : cours + projet}`;
+  }
+  const ong = [['projet','Le projet'],['groupe','Mon groupe'],['preprojet','Pré-projet'],['labo','Labo'],['journal','Journal de bord'],['depots','Données et oral']];
+  let corps = '';
+  if (ui.onglet==='projet') corps = rendreProjetPublic();
+  else if (ui.onglet==='groupe') corps = rendreGroupesEleve();
+  else if (suiviAilleurs(g)) corps = `<div class="carte"><b>Groupes de SVT :</b> la suite du projet se fait avec <b>Mme Joannes</b>, qui vous donne ses consignes. Le site garde la partie « Le projet » et votre groupe.</div>`;
+  else if (ui.onglet==='preprojet') corps = rendrePreprojet(g);
+  else if (ui.onglet==='labo') corps = rendreLabo(g);
+  else if (ui.onglet==='journal') corps = rendreJournal(g);
+  else if (ui.onglet==='depots') corps = rendreDepotsEleve(g);
+  return `
+    <button class="retour" data-ouvrir="accueil">← Mon écran</button>
+    <div class="entete"><h1>Projet expérimental et numérique</h1>${p?fiole:''}</div>
+    ${BANDEAU_IA}
+    ${r.length ? `<div class="carte" style="padding:8px 14px">${r.map(x=>`<div class="rappel ${x.urgent?'urgent':''}"><span class="ico">${x.ico}</span><span>${x.txt}</span></div>`).join('')}</div>`:''}
+    <div class="onglets" role="tablist">${ong.map(([k,t])=>`<button role="tab" data-onglet="${k}" aria-selected="${ui.onglet===k}">${t}</button>`).join('')}</div>
+    ${corps}`;
+}
+/* Écrire demande d'être connecté et dans un groupe ; regarder, jamais bloqué. */
+function peutEcrire(g){ return !!(S.qui && g); }
+function avisLecture(g){ return peutEcrire(g) ? '' : `<p class="puce p-orange" style="white-space:normal">${S.qui?'Rejoins un groupe pour écrire ici. Tu peux regarder.':'Connecte-toi pour écrire ici. Tu peux regarder.'}</p>`; }
+
+function rendreProjetPublic(){
+  return `
+  <div class="carte"><p class="petit" style="margin:0">Cette partie est <b>ouverte à tous</b>, même sans être connecté. <span class="a-preciser">Textes : proposition à valider.</span></p>
+    <h2>De quoi s'agit-il ?</h2>
+    <p>Par groupes de <b>2 à 4</b>, vous menez une vraie démarche scientifique sur <b>le sujet de votre choix</b> : une question, des hypothèses, des mesures, leur traitement numérique, une conclusion. Le cœur du projet, ce sont <b>les données</b> : les produire, en avoir assez, les représenter, les faire parler.</p>
+    <p>Vous le menez en <b>physique-chimie</b> (M. Van Hoorde) ou en <b>SVT</b> (Mme Joannes) : <b>9 groupes</b> vous attendent, 5 en physique-chimie et 4 en SVT, <b>premiers inscrits, premiers servis</b>.</p>
+  </div>
+  <div class="carte"><h2>Où mesurer ?</h2>
+    <p><b>Il n'y a que deux séances au labo.</b> Un projet bien préparé les complète par des mesures faites ailleurs : prévoyez-le dès le pré-projet.</p>
+    <div class="lieux-grille">
+      <div class="lieu"><div class="ico">🔬</div><b>Au labo</b><p class="petit">Deux séances en demi-groupe. Le matériel se demande <b>une semaine avant</b>, sur EcoleDirecte.</p></div>
+      <div class="lieu"><div class="ico">🏠</div><b>À la maison</b><p class="petit">Beaucoup de mesures se font avec un téléphone, une cuisine, un chronomètre.</p></div>
+      <div class="lieu"><div class="ico">🌳</div><b>En extérieur</b><p class="petit">Possible pendant les séances en classe entière : son, lumière, température…</p></div>
+      <div class="lieu"><div class="ico">💾</div><b>Données en ligne</b><p class="petit">Des mesures publiées par des scientifiques : vous décrivez alors leur démarche comme la vôtre.</p></div>
+    </div>
+  </div>
+  <div class="carte"><h2>Le calendrier</h2>
+    <ul class="cal">
+      <li><span class="d">lun. 23/11</span><span>Présentation du projet.</span></li>
+      <li><span class="d">${ECHEANCES.groupes.txt}</span><span>Les groupes sont formés <b>sur le site</b>.</span></li>
+      <li><span class="d">${ECHEANCES.preprojet.txt}</span><span>Pré-projet envoyé <b>sur le site</b> : problématique, hypothèses, expériences prévues, matériel.</span></li>
+      <li><span class="d">janvier</span><span>Retours de votre professeur, corrections, jusqu'à la validation <b>${ECHEANCES.validation.txt}</b>.</span></li>
+      <li><span class="d">01/03 → 02/04</span><span>Le projet : séances en classe entière et en demi-groupe, <b>dont deux au labo (12/03 et 19/03)</b>. Le journal de bord se tient à chaque séance. <span class="a-preciser">Répartition exacte à préciser.</span></span></li>
+      <li><span class="d">ven. 09/04</span><span>Oral : 10 min de présentation, 5 min de questions. Le cahier de laboratoire et le support sont déposés.</span></li>
+    </ul>
+  </div>
+  <div class="carte"><h2>Comment c'est noté</h2>
+    <p>Le <b>cahier de laboratoire</b> et le travail du groupe : une note de groupe. L'<b>oral</b> : une partie commune (le support, les cinq étapes) et une partie <b>individuelle</b>, sur les critères du Grand oral. La grille complète est donnée en classe.</p></div>
+  <div class="carte"><h2>Les pièges</h2>
+    <ul>
+      <li><b>Une seule mesure</b> ne prouve rien : répétez, et dites combien de fois.</li>
+      <li>Un sujet <b>trop grand</b> : « le réchauffement climatique » n'est pas une question qu'on mesure en deux séances.</li>
+      <li>Le matériel <b>demandé trop tard</b> : une semaine avant, sinon il n'y sera pas.</li>
+      <li>Des axes <b>sans unité</b>, des points reliés au hasard, une conclusion qui dit plus que les données.</li>
+    </ul>
+  </div>
+  <div class="carte"><h2>Pour s'entraîner</h2><p class="petit">Défis de mesure à la maison, fiches « combien de mesures ? », classeurs tout prêts pour traiter ses données : <i>à venir</i>.</p></div>`;
+}
+
+function rendreGroupesEleve(){
+  const p = S.qui, mien = groupeDe(p);
+  const regles = `<div class="carte"><b>Les règles</b> — 4 élèves au plus par groupe, 2 au moins (on ne travaille jamais seul ; les groupes de 2 se discutent en classe). ${S.groupesFermes?'<span class="puce p-alerte">Les groupes sont fermés</span> : pour changer, parle à ton professeur.':`Tu peux changer de groupe librement jusqu'au <b>${ECHEANCES.groupes.txt}</b>.`}</div>`;
+  const carte = g => {
+    const plein = g.membres.length >= 4, moi = mien && mien.id===g.id;
+    const places = [0,1,2,3].map(i => { const m = g.membres[i];
+      return m ? `<li class="pris"><span>${esc(m.p)}${m.p===p?' (toi)':''}</span><span class="t">${fmt(m.depuis)}</span></li>` : '<li class="libre">place libre</li>'; }).join('');
+    let b = '';
+    if (!p) b = '';
+    else if (moi) b = `<button class="btn btn-alerte" data-quitter="${g.id}" ${S.groupesFermes?'disabled':''}>Quitter le groupe</button>`;
+    else b = `<button class="btn btn-plein" data-rejoindre="${g.id}" ${S.groupesFermes||plein?'disabled':''}>${plein?'Complet':mien?'Changer pour ce groupe':'Rejoindre'}</button>`;
+    return `<div class="groupe ${g.disc} ${moi?'moi':''}"><h3>${esc(g.nom)}</h3>
+      <span class="puce ${g.disc==='pc'?'p-pc':'p-svt'}">${g.disc==='pc'?'Physique-chimie':'SVT'}</span> <span class="petit">${esc(g.prof)}</span>
+      <ul class="places">${places}</ul>${b}</div>`;
+  };
+  const pc = S.groupes.filter(g=>g.disc==='pc'), svt = S.groupes.filter(g=>g.disc==='svt');
+  const libres = l => l.reduce((n,g)=>n+4-g.membres.length,0);
+  return regles + `
+    <h2>Physique-chimie <span class="petit">— ${libres(pc)} places libres</span></h2><div class="grille-groupes">${pc.map(carte).join('')}</div>
+    <h2>SVT <span class="petit">— ${libres(svt)} places libres</span></h2><div class="grille-groupes">${svt.map(carte).join('')}</div>`;
+}
+
+function rendrePreprojet(g){
+  const dp = g ? depot(g.id) : {statut:'vide', brouillon:{prob:'',hyp:'',exps:[{desc:'',lieux:[],nb:'',duree:''}],mat:''}, versions:[], fil:[]};
+  const b = dp.brouillon, fige = dp.statut==='valide' || !peutEcrire(g), ro = fige?'readonly':'', dis = fige?'disabled':'';
+  const exps = (b.exps||[]).map((e,i)=>`
+    <div class="exp" data-exp="${i}">
+      <label class="ch" for="e-desc-${i}">Expérience ${i+1} — que mesurez-vous, comment ?</label>
+      <textarea id="e-desc-${i}" data-champ="desc" ${ro}>${esc(e.desc)}</textarea>
+      <div class="ch">Où ?</div>
+      <div class="lieux">${LIEUX.map(([k,t])=>`<label><input type="checkbox" data-lieu="${k}" ${e.lieux.includes(k)?'checked':''} ${dis}>${t}</label>`).join('')}</div>
+      <div class="exp-ligne">
+        <div><label class="ch" for="e-nb-${i}">Combien de mesures ?</label><input type="text" id="e-nb-${i}" data-champ="nb" value="${esc(e.nb)}" ${ro}></div>
+        <div><label class="ch" for="e-du-${i}">Combien de temps ?</label><input type="text" id="e-du-${i}" data-champ="duree" value="${esc(e.duree)}" ${ro}></div>
+        <div style="align-self:end">${!fige && b.exps.length>1?`<button class="btn btn-alerte" data-suppr-exp="${i}">Retirer</button>`:''}</div>
+      </div>
+    </div>`).join('');
+  return `
+  <div class="carte">
+    <div class="entete"><h2 style="margin:0;flex:1">Pré-projet${g?' du groupe '+esc(g.nom):''}</h2>${pastille(dp.statut)}</div>
+    <p class="petit">À envoyer pour le <b>${ECHEANCES.preprojet.txt}</b>, validé <b>${ECHEANCES.validation.txt}</b>. Tout le groupe écrit dans la même fiche ; chaque envoi est daté et garde une trace.${dp.statut==='valide'?' <b>Validé : la fiche reste consultable, elle ne se modifie plus.</b>':''}</p>
+    ${avisLecture(g)}
+    <label class="ch" for="f-prob">Problématique</label>
+    <textarea id="f-prob" data-f="prob" ${ro} placeholder="Une question précise, à laquelle on peut répondre en mesurant.">${esc(b.prob)}</textarea>
+    <label class="ch" for="f-hyp">Hypothèses</label>
+    <textarea id="f-hyp" data-f="hyp" ${ro}>${esc(b.hyp)}</textarea>
+    <div class="ch">Expériences envisagées</div>
+    ${exps}
+    ${fige?'':'<button class="btn" id="b-ajout-exp">+ une expérience</button>'}
+    <label class="ch" for="f-mat">Matériel nécessaire <span class="petit">(ce que le labo fournit, ce que vous apportez)</span></label>
+    <textarea id="f-mat" data-f="mat" ${ro}>${esc(b.mat)}</textarea>
+    <p>${fige?'':'<button class="btn btn-plein" id="b-envoyer">Envoyer au professeur</button> <span class="petit">Le brouillon est enregistré au fil de la frappe.</span>'}</p>
+    ${dp.versions.length?`<p class="petit">Versions envoyées : ${dp.versions.map((v,i)=>`v${i+1} le ${fmt(v.t)} par ${esc(v.par)}`).join(' · ')}</p>`:''}
+  </div>
+  <div class="carte"><h3 style="margin-top:0">Échanges avec le professeur</h3>
+    ${dp.fil.length?dp.fil.map(m=>`<div class="msg ${m.prof?'prof':''}"><span class="t">${esc(m.par)} · ${fmt(m.t)}</span>${esc(m.txt)}</div>`).join(''):'<p class="petit">Rien pour l’instant.</p>'}
+    ${peutEcrire(g)?`<label class="ch" for="f-msg">Poser une question</label><textarea id="f-msg" placeholder="Une question sur la faisabilité, le matériel…"></textarea><p><button class="btn" id="b-msg">Envoyer la question</button></p>`:''}
+  </div>`;
+}
+
+function rendreLabo(g){
+  const coche = (m, cle, txt, aide) => { const l = g ? labo(g.id, m.id) : {}, v = l[cle];
+    return `<label class="coche ${v?'fait':''}"><input type="checkbox" data-labo="${m.id}" data-cle="${cle}" ${v?'checked':''} ${peutEcrire(g)?'':'disabled'}>
+      <span><b>${txt}</b>${aide?`<br><span class="petit">${aide}</span>`:''}${v?`<br><span class="petit">coché par ${esc(v.par)} le ${fmt(v.t)}</span>`:''}</span></label>`; };
+  return `
+  <div class="carte"><h2 style="margin-top:0">Mes démarches au labo</h2>
+    <p>Vous écrivez vous-mêmes à <b>Coralie</b>, au labo, sur <b>EcoleDirecte</b>, <b>au moins une semaine avant</b>. Le site ne fait que vous le rappeler : cochez au fur et à mesure, tout le groupe le voit.</p>
+    ${avisLecture(g)}
+    <details><summary><b>Ce que doit contenir votre message</b></summary>
+      <ul><li>vos noms, prénoms, classe ;</li><li>la date et l'heure de la séance ;</li><li>votre <b>protocole</b>, pour qu'elle prévoie les quantités ;</li><li>la liste du matériel. Le matériel spécifique (bulbes, confiture…) est à apporter par vous.</li></ul></details>
+  </div>
+  ${MANIPS.map(m=>`<div class="carte"><h3 style="margin-top:0">Manip du ${m.txt} <span class="puce p-neutre">demande avant le ${m.limiteTxt}</span></h3>
+    ${coche(m,'envoyee','Demande envoyée à Coralie','Sur EcoleDirecte, avec le protocole.')}
+    ${coche(m,'reponse','Réponse reçue')}
+    ${coche(m,'pret','On a ce qu’il faut','Matériel du labo confirmé, matériel spécifique prêt.')}
+  </div>`).join('')}`;
+}
+
+function rendreJournal(g){
+  const l = g ? [...journalDe(g.id)].sort((a,b)=>a.seance<b.seance?1:-1) : [];
+  return `
+  <div class="carte"><h2 style="margin-top:0">Journal de bord${g?' — '+esc(g.nom):''}</h2>
+    <p class="petit">Une entrée par séance <b>et</b> par séance de travail chez vous : ce que vous avez fait, où, ce qui a coincé. Il sert à écrire le cahier de laboratoire et au critère « respect du calendrier ».</p>
+    ${avisLecture(g)}
+    ${peutEcrire(g)?`<div class="deux">
+      <div><label class="ch" for="j-seance">Séance</label><select class="champ" id="j-seance">${SEANCES.map(([d,t])=>`<option value="${d}" ${d===S.date?'selected':''}>${t}</option>`).join('')}<option value="autre">travail en dehors des séances (date du jour)</option></select></div>
+      <div><label class="ch" for="j-lieu">Où ?</label><select class="champ" id="j-lieu">${LIEUX.map(([k,t])=>`<option value="${k}">${t}</option>`).join('')}</select></div></div>
+      <label class="ch" for="j-txt">Ce que nous avons fait</label><textarea id="j-txt"></textarea>
+      <p><button class="btn btn-plein" id="b-journal">Ajouter au journal</button></p>`:''}
+  </div>
+  ${l.length ? l.map(e=>`<div class="entree"><span class="t">${fmtJ(e.seance)} · ${lieuTxt(e.lieu)} · écrit par ${esc(e.par)} le ${fmt(e.t)}</span>${esc(e.txt)}</div>`).join('') : '<p class="petit">Aucune entrée pour l’instant.</p>'}`;
+}
+
+function listeFichiers(id, cats, prof){
+  const l = fichiersDe(id).filter(f=>cats.includes(f.cat));
+  if (!l.length) return '<p class="petit">Rien de déposé.</p>';
+  return l.map((f)=>`<div class="fichier"><span>${CAT[f.cat].split(' ')[0]} <b>${esc(f.nom)}</b> <span class="t">${esc(f.taille)} · ${esc(f.par)} · ${fmt(f.t)}</span></span>
+    <span class="petit">${prof?'ouvrir ↗':''}</span>
+    ${f.apercu?`<div class="apercu" style="flex-basis:100%"><table>${f.apercu.map((r,i)=>`<tr>${r.map(c=>i?`<td>${esc(c)}</td>`:`<th>${esc(c)}</th>`).join('')}</tr>`).join('')}</table></div>`:''}</div>`).join('');
+}
+function rendreDepotsEleve(g){
+  const bloc = (cat, titre, aide) => `<div class="carte"><h3 style="margin-top:0">${CAT[cat]} <span class="petit">${titre}</span></h3>
+    <p class="petit">${aide}</p>${g?listeFichiers(g.id,[cat]):''}
+    ${peutEcrire(g)?`<label class="btn" style="display:inline-block">Déposer un fichier<input type="file" data-deposer="${cat}" hidden></label>`:''}</div>`;
+  return `${avisLecture(g)}
+    <div class="carte"><b>Rendu le ${ECHEANCES.rendu.txt}</b> — l'oral dure 10 min, suivi de 5 min de questions. Chacun parle : une partie de la note d'oral est <b>individuelle</b>.</div>
+    ${bloc('donnees','au fil du projet','Vos fichiers de mesures (tableur, CSV), photos de montage, captures. Déposez-les dès qu’ils existent : votre professeur les voit.')}
+    ${bloc('cahier','pour le 09/04','Le cahier de laboratoire, en PDF (scanné s’il est sur papier).')}
+    ${bloc('oral','pour le 09/04','Le support de votre présentation, en PDF.')}`;
+}
+
+/* =============================================================
+   Rendu — enseignant
+   ============================================================= */
+function rendreProf(){
+  const ong = [['groupes','Groupes'],['depots','Suivi des dépôts'],['labo','Labo'],['correction','Correction de l’écrit'],['oral','Oral'],['notes','Notes'],['activite','Activité et export'],['reglages','Réglages']];
+  const f = {groupes:rendreProfGroupes, depots:rendreProfDepots, labo:rendreProfLabo, correction:rendreProfCorrection, oral:rendreProfOral, notes:rendreProfNotes, activite:rendreProfActivite, reglages:rendreProfReglages}[ui.ongletProf];
+  return `<div class="entete"><h1>Tableau de bord — Projet expérimental</h1>
+      <select aria-label="Classe"><option>1re (M. Van Hoorde) — 33 élèves</option><option disabled>1re 5 (Mme Castel)</option><option disabled>1re 6 (Mme Castel)</option></select></div>
+    <p class="petit">Pseudonymes seulement : les noms viennent de votre table des noms, chargée sur votre appareil, comme dans le Suivi.</p>
+    <div class="onglets" role="tablist">${ong.map(([k,t])=>`<button role="tab" data-onglet-prof="${k}" aria-selected="${ui.ongletProf===k}">${t}</button>`).join('')}</div>${f()}`;
+}
+const choixGroupe = (id, cle) => `<label>Groupe <select data-choix-groupe="${cle}" class="mini" style="max-width:none;font-size:15px">${S.groupes.map(x=>`<option value="${x.id}" ${x.id===id?'selected':''}>${esc(x.nom)} — ${x.membres.map(m=>esc(m.p)).join(', ')}</option>`).join('')}</select></label>`;
+
+function rendreProfGroupes(){
+  const places = S.groupes.reduce((n,g)=>n+g.membres.length,0);
+  const sans = PSEUDOS.filter(p=>!groupeDe(p));
+  const seuls = S.groupes.filter(g=>g.membres.length===1), deux = S.groupes.filter(g=>g.membres.length===2);
+  const npc = S.groupes.filter(g=>g.disc==='pc').reduce((n,g)=>n+g.membres.length,0);
+  const opts = id => S.groupes.filter(x=>x.id!==id).map(x=>`<option value="${x.id}">${esc(x.nom)}</option>`).join('');
+  return `
+  <div class="carte" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+    <div class="interrupteur ${S.groupesFermes?'ferme':''}">${S.groupesFermes?'🔒 Groupes fermés : plus d’arrivée ni de départ':'🔓 Groupes ouverts : les élèves entrent et sortent librement'}
+      <button class="btn" id="b-fermer">${S.groupesFermes?'Rouvrir':'Fermer les groupes'}</button></div>
+    <div class="stats">
+      <div class="stat"><b>${places}/33</b>placés</div>
+      <div class="stat"><b>${sans.length}</b>sans groupe</div>
+      <div class="stat"><b>${npc} · ${places-npc}</b>PC · SVT</div>
+      <div class="stat" style="${seuls.length?'border-color:var(--alerte)':''}"><b>${seuls.length}</b>seul(s) ⚠</div>
+      <div class="stat"><b>${deux.length}</b>groupe(s) de 2</div>
+    </div>
+  </div>
+  <div class="grille-groupes">${S.groupes.map(g=>`
+    <div class="groupe ${g.disc}"><h3>${esc(g.nom)} ${g.membres.length===1?'<span class="puce p-alerte">seul</span>':g.membres.length===2?'<span class="puce p-orange">à 2</span>':''}</h3>
+      <span class="petit">${esc(g.prof)} · ${g.membres.length}/4</span>
+      <ul class="places">${g.membres.map((m,i)=>`<li class="pris"><span><span class="t">${i+1}.</span> <b>${esc(m.p)}</b><br><span class="t">arrivé le ${fmt(m.depuis)}</span></span>
+        <span style="white-space:nowrap"><select class="mini" aria-label="Déplacer ${esc(m.p)}" data-deplacer="${esc(m.p)}"><option value="">déplacer…</option>${opts(g.id)}</select>
+        <button class="x" title="Retirer du groupe" data-retirer="${esc(m.p)}">×</button></span></li>`).join('') || '<li class="libre">vide</li>'}</ul>
+    </div>`).join('')}</div>
+  <div class="carte"><b>Sans groupe (${sans.length})</b> : ${sans.map(esc).join(' · ') || '—'}
+    <p class="petit">Les numéros donnent l'ordre d'arrivée dans chaque groupe. Un élève déplacé ici est prévenu à sa connexion.</p></div>`;
+}
+
+/* Tout ce que le groupe a produit, dans l'ordre du projet : sert au suivi et à la correction. */
+function rendreCopie(g){
+  const dp = depot(g.id), b = dp.brouillon, j = [...journalDe(g.id)].sort((a,b)=>a.seance<b.seance?-1:1);
+  return `
+    <div class="bloc-titre">Pré-projet ${pastille(dp.statut)}</div>
+    <p><b>Problématique.</b> ${esc(b.prob)||'<i>vide</i>'}</p>
+    <p><b>Hypothèses.</b> ${esc(b.hyp)||'<i>vide</i>'}</p>
+    ${(b.exps||[]).map((e,i)=>`<p><b>Expérience ${i+1}.</b> ${esc(e.desc)||'<i>vide</i>'}<br><span class="petit">${e.lieux.map(lieuTxt).join(' · ')||'lieu non précisé'} — ${esc(e.nb)||'?'} — ${esc(e.duree)||'?'}</span></p>`).join('')}
+    <p><b>Matériel.</b> ${esc(b.mat)||'<i>vide</i>'}</p>
+    <p class="petit">${dp.versions.map((v,i)=>`v${i+1} : ${fmt(v.t)}, ${esc(v.par)}, ${v.mots} mots`).join(' · ')||'aucune version envoyée'}</p>
+    <div class="bloc-titre">Journal de bord <span class="petit">${j.length} entrée(s)</span></div>
+    ${j.map(e=>`<div class="entree"><span class="t">${fmtJ(e.seance)} · ${lieuTxt(e.lieu)} · ${esc(e.par)}</span>${esc(e.txt)}</div>`).join('')||'<p class="petit">Vide.</p>'}
+    <div class="bloc-titre">Fichiers déposés</div>
+    ${listeFichiers(g.id, ['donnees','cahier','oral'], true)}
+    <div class="bloc-titre">Labo</div>
+    <p class="petit">${MANIPS.map(m=>{ const l=(S.labo[g.id]||{})[m.id]||{}; return `${m.txt} : demande ${l.envoyee?'✅ '+fmt(l.envoyee.t):'·'} · réponse ${l.reponse?'✅':'·'} · prêt ${l.pret?'✅':'·'}`; }).join('<br>')}</p>`;
+}
+
+function rendreProfDepots(){
+  const lignes = S.groupes.map(g => { const dp = depot(g.id); return {g, dp, prem: dp.versions[0]?.t || null}; });
+  const ordre = lignes.filter(l=>l.prem).sort((a,b)=>a.prem<b.prem?-1:1).map(l=>l.g.id);
+  const ouvert = ui.groupeOuvert && gid(ui.groupeOuvert);
+  let panneau = '';
+  if (ouvert) {
+    const dp = depot(ouvert.id);
+    panneau = `<div class="carte"><div class="entete"><h2 style="margin:0;flex:1">${esc(ouvert.nom)}</h2><button class="btn" data-fermer-panneau>Fermer</button></div>
+      <p class="petit">${ouvert.membres.map(m=>esc(m.p)).join(' · ')} · ${esc(ouvert.prof)}</p>
+      <div class="deux"><div>${rendreCopie(ouvert)}</div><div>
+        <div class="bloc-titre">Échanges sur le pré-projet</div>
+        ${dp.fil.map(m=>`<div class="msg ${m.prof?'prof':''}"><span class="t">${esc(m.par)} · ${fmt(m.t)}</span>${esc(m.txt)}</div>`).join('')||'<p class="petit">Aucun.</p>'}
+        <label class="ch" for="p-com">Votre retour au groupe</label><textarea id="p-com"></textarea>
+        <p><button class="btn btn-alerte" data-decider="a-revoir">Envoyer : à revoir</button>
+           <button class="btn btn-plein" data-decider="valide">Envoyer : validé</button>
+           <button class="btn" data-decider="">Commentaire seul</button></p>
+      </div></div></div>`;
+  }
+  return panneau + `
+  <div class="tableau"><table>
+    <thead><tr><th>Ordre d'envoi</th><th>Groupe</th><th>Élèves</th><th>Pré-projet</th><th>1<sup>er</sup> envoi</th><th>Versions</th><th>Échanges</th><th>Journal</th><th>Fichiers</th><th>Dernière activité</th><th></th></tr></thead>
+    <tbody>${lignes.map(({g,dp,prem})=>{ const j = journalDe(g.id), der = S.log.filter(l=>l.g===g.id).map(l=>l.t).sort().pop();
+      return `<tr>
+      <td>${prem?ordre.indexOf(g.id)+1:'—'}</td><td><span class="puce ${g.disc==='pc'?'p-pc':'p-svt'}">${esc(g.nom)}</span></td>
+      <td>${g.membres.length}</td><td>${pastille(dp.statut)}</td><td>${fmt(prem)}</td><td>${dp.versions.length}</td>
+      <td>${dp.fil.length}</td><td>${j.length}</td><td>${fichiersDe(g.id).length}</td><td>${fmt(der)}</td>
+      <td><button class="btn" data-ouvrir-groupe="${g.id}">Tout voir</button></td></tr>`; }).join('')}</tbody></table></div>`;
+}
+
+function rendreProfLabo(){
+  const c = (g,m,k) => { const v = (S.labo[g.id]||{})[m.id]?.[k]; return v ? `✅ <span class="t">${fmt(v.t)}</span>` : (k==='envoyee' && S.date > m.limite ? '<span class="puce p-alerte">en retard</span>' : '·'); };
+  return `<p class="petit">Les élèves gèrent seuls leurs demandes ; vous voyez où ils en sont.</p>
+  <div class="tableau"><table><thead><tr><th>Groupe</th>${MANIPS.map(m=>`<th>${m.txt} · demande</th><th>réponse</th><th>prêt</th>`).join('')}</tr></thead>
+  <tbody>${S.groupes.map(g=>`<tr><td><span class="puce ${g.disc==='pc'?'p-pc':'p-svt'}">${esc(g.nom)}</span></td>${MANIPS.map(m=>`<td>${c(g,m,'envoyee')}</td><td>${c(g,m,'reponse')}</td><td>${c(g,m,'pret')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+
+function grilleSaisie(id, blocs, pref){
+  const N = S.notes.g[id] || {};
+  return blocs.map((b,bi)=>{ let s=0, m=0;
+    const lignes = b.crit.map(([t,max],ci)=>{ const k=pref+'-'+bi+'-'+ci, v=N[k]; m+=max; if(v!==undefined&&v!=='') s+=+v;
+      return `<div class="crit"><span>${t} <span class="max">/${virg(max)}</span></span><input type="number" min="0" max="${max}" step="0.25" data-note-g="${k}" data-focus="g-${id}-${k}" value="${v??''}" aria-label="${t}"></div>`; }).join('');
+    return `<div class="bloc-titre"><span>${b.bloc}</span><span class="max">${virg(s)}/${virg(m)}</span></div>${lignes}`; }).join('');
+}
+
+function rendreProfCorrection(){
+  const g = gid(ui.corrG) || S.groupes[0], e = noteGroupe(g.id,ECRIT,'E'), a = noteGroupe(g.id,AUTRES,'A');
+  return `<p>${choixGroupe(g.id,'corrG')}</p>
+  <div class="copie-grille">
+    <div class="carte"><h2 style="margin-top:0">La copie — ${esc(g.nom)}</h2>${rendreCopie(g)}</div>
+    <div class="carte colle"><h2 style="margin-top:0">Grille — écrit et travail du groupe</h2>
+      <p class="total">Écrit ${virg(e.s)}/${MAX.ecrit} · Groupe ${virg(a.s)}/${MAX.autres}</p>
+      <p class="petit">Une note de groupe : chaque membre la reçoit. ${e.vides+a.vides?e.vides+a.vides+' critère(s) restent à noter.':'Complet.'}</p>
+      ${grilleSaisie(g.id, ECRIT, 'E')}${grilleSaisie(g.id, AUTRES, 'A')}</div>
+  </div>`;
+}
+
+function rendreProfOral(){
+  const g = gid(ui.oralG) || S.groupes[0], og = noteGroupe(g.id,ORAL_GROUPE,'O');
+  const eleve = m => { const E = S.notes.e[m.p] || {}, n = noteEleve(m.p);
+    const crits = ORAL_INDIV.map(([t,max,desc],i)=>{ const niv = E.niv?.[i], pts = E.pts?.[i];
+      const val = pts!==undefined && pts!=='' ? +pts : (niv!==undefined ? max*NIV_F[niv] : '');
+      return `<div class="oral-crit"><div style="display:flex;justify-content:space-between;gap:8px"><b>${t}</b><span><input type="number" min="0" max="${max}" step="0.25" style="width:64px;text-align:right;padding:2px 4px" data-pts="${esc(m.p)}" data-i="${i}" data-focus="p-${esc(m.p)}-${i}" value="${val===''?'':val}" aria-label="${t} — points"> <span class="max">/${max}</span></span></div>
+        <div class="niveaux" role="group" aria-label="${t}">${NIV.map((n,k)=>`<button data-niv="${esc(m.p)}" data-i="${i}" data-k="${k}" aria-pressed="${niv===k}" title="${NIV_LONG[k]} : ${esc(desc[k])}">${n}</button>`).join('')}</div>
+        <div class="desc">${niv!==undefined?esc(desc[niv]):''}</div></div>`; }).join('');
+    const perso = PERSO.map(([t,max],i)=>`<div class="crit"><span>${t} <span class="max">/${max}</span></span><input type="number" min="0" max="${max}" step="0.5" data-perso="${esc(m.p)}" data-i="${i}" data-focus="q-${esc(m.p)}-${i}" value="${E.perso?.[i]??''}" aria-label="${t} — ${esc(m.p)}"></div>`).join('');
+    return `<div class="carte"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h3 style="margin:0">${esc(m.p)}</h3><span class="total">${virg(n.oi)}/${MAX.oi} · ${virg(n.perso)}/5</span></div>
+      <div class="bloc-titre"><span>Oral individuel — critères du Grand oral</span></div>${crits}
+      <div class="bloc-titre"><span>En plus, individuel</span></div>${perso}
+      <label class="ch" for="rq-${esc(m.p)}">Remarques</label><textarea id="rq-${esc(m.p)}" data-rq="${esc(m.p)}" style="min-height:48px">${esc(E.rq||'')}</textarea></div>`; };
+  return `<p>${choixGroupe(g.id,'oralG')}</p>
+  <div class="deux">
+    <div>
+      <div class="carte colle" style="position:static">
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span class="chrono" id="chrono">00:00</span>
+          <button class="btn" id="c-go">${ui.chrono.marche?'Pause':'Démarrer'}</button><button class="btn" id="c-raz">Remettre à zéro</button></div>
+        <p class="petit" id="chrono-phase">Présentation : 10 min, puis questions : 5 min.</p>
+      </div>
+      <div class="carte"><h3 style="margin-top:0">Commun au groupe — ${esc(g.nom)}</h3><p class="total">${virg(og.s)}/${MAX.og}</p>${grilleSaisie(g.id, ORAL_GROUPE, 'O')}
+        <p class="petit">Le support d'oral déposé :</p>${listeFichiers(g.id,['oral'],true)}</div>
+    </div>
+    <div>${g.membres.map(eleve).join('') || '<div class="carte">Groupe vide.</div>'}
+      <p class="petit">Niveaux : TI très insuffisant · I insuffisant · S satisfaisant · TS très satisfaisant (survol : le descriptif). Un niveau donne des points ; on peut les corriger à la main.</p></div>
+  </div>`;
+}
+
+function rendreProfNotes(){
+  const lignes = S.groupes.flatMap(g=>g.membres.map(m=>bilan(m.p)).map((b,i)=>({...b, p:g.membres[i].p})));
+  const moy = lignes.length ? lignes.reduce((n,l)=>n+l.sur20,0)/lignes.length : 0;
+  return `<div class="carte"><b>Les notes se construisent à partir de vos saisies</b> (correction de l’écrit, oral). Écrit ${MAX.ecrit} + groupe ${MAX.autres} + oral commun ${MAX.og} + oral individuel ${MAX.oi} + investissement ${MAX.perso} = <b>${MAX.total}</b> → /20.
+    <p class="a-preciser" style="margin:6px 0 0">Proposition : la ligne « Qualité de la prise de parole /5 » de la grille 2025-2026 est remplacée par l’oral individuel du Grand oral. À valider.</p>
+    <p><button class="btn btn-plein" id="x-notes">⬇ Notes (CSV)</button> <span class="petit">Moyenne provisoire : ${virg(Math.round(moy*10)/10)}/20</span></p></div>
+  <div class="tableau"><table><thead><tr><th>Élève</th><th>Groupe</th><th>Écrit /${MAX.ecrit}</th><th>Groupe /${MAX.autres}</th><th>Oral commun /${MAX.og}</th><th>Oral indiv. /${MAX.oi}</th><th>Invest. /5</th><th>Total /${MAX.total}</th><th>/20</th><th></th></tr></thead>
+    <tbody>${lignes.map(l=>`<tr><td><b>${esc(l.p)}</b></td><td>${esc(l.g.nom)}</td><td>${virg(l.ecrit)}</td><td>${virg(l.autres)}</td><td>${virg(l.og)}</td><td>${virg(l.oi)}</td><td>${virg(l.perso)}</td><td>${virg(l.total)}</td><td><b>${virg(Math.round(l.sur20*10)/10)}</b></td><td>${l.complet?'<span class="puce p-ok">complet</span>':'<span class="puce p-neutre">en cours</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+function rendreProfActivite(){
+  const parG = S.groupes.map(g=>{ const ev = S.log.filter(l=>l.g===g.id), dp = depot(g.id);
+    const auteurs = new Set(ev.filter(e=>!['rejoint','quitte'].includes(e.a) && PSEUDOS.includes(e.qui)).map(e=>e.qui));
+    return {g, ev:ev.length, versions:dp.versions.length, fil:dp.fil.length, journal:journalDe(g.id).length, fichiers:fichiersDe(g.id).length, actifs:auteurs.size, dernier: ev.map(e=>e.t).sort().pop()}; });
+  const parE = PSEUDOS.map(p=>({p, n:S.log.filter(l=>l.qui===p && !['rejoint','quitte'].includes(l.a)).length, g:groupeDe(p)}));
+  const log = [...S.log].sort((a,b)=>a.t<b.t?1:-1).slice(0,60);
+  return `<div class="carte"><b>Tout exporter, à tout moment</b> — pour évaluer l’investissement, les échanges, la qualité des dépôts.
+    <p><button class="btn btn-plein" id="x-journal">⬇ Journal complet (CSV)</button> <button class="btn" id="x-synthese">⬇ Synthèse par groupe (CSV)</button> <button class="btn" id="x-json">⬇ Tout (JSON)</button></p>
+    <p class="petit">Pseudonymes par défaut ; une case « avec les noms » viendra comme dans l’export du Suivi.</p></div>
+  <div class="tableau"><table><thead><tr><th>Groupe</th><th>Actions</th><th>Élèves qui ont écrit</th><th>Versions</th><th>Messages</th><th>Journal</th><th>Fichiers</th><th>Dernière activité</th></tr></thead>
+    <tbody>${parG.map(x=>`<tr><td>${esc(x.g.nom)}</td><td>${x.ev}</td><td>${x.actifs}/${x.g.membres.length}</td><td>${x.versions}</td><td>${x.fil}</td><td>${x.journal}</td><td>${x.fichiers}</td><td>${fmt(x.dernier)}</td></tr>`).join('')}</tbody></table></div>
+  <h3>Par élève</h3><p class="petit">Actions personnelles (envois, journal, dépôts, cases du labo, questions) : un indice d’investissement, pas une note.</p>
+  <div class="tableau" style="max-height:260px"><table><thead><tr><th>Élève</th><th>Groupe</th><th>Actions</th></tr></thead><tbody>${parE.sort((a,b)=>b.n-a.n).map(x=>`<tr><td>${esc(x.p)}</td><td>${esc(x.g?.nom||'—')}</td><td>${x.n}</td></tr>`).join('')}</tbody></table></div>
+  <h3>Les 60 derniers événements</h3>
+  <div class="tableau"><table><thead><tr><th>Quand</th><th>Qui</th><th>Groupe</th><th>Quoi</th></tr></thead>
+    <tbody>${log.map(l=>`<tr><td>${fmt(l.t)}</td><td>${esc(l.qui)}</td><td>${esc((gid(l.g)||{}).nom||'')}</td><td>${esc(l.a)} ${esc(l.d)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+function rendreProfReglages(){
+  return `<div class="deux"><div class="carte"><h3 style="margin-top:0">Échéances</h3><ul class="cal">
+    <li><span class="d">${ECHEANCES.groupes.txt}</span><span>Groupes formés (puis fermeture à la main)</span></li>
+    <li><span class="d">${ECHEANCES.preprojet.txt}</span><span>Pré-projet</span></li>
+    <li><span class="d">février</span><span class="a-preciser">Validation ${ECHEANCES.validation.txt} — date à fixer</span></li>
+    ${MANIPS.map(m=>`<li><span class="d">${m.txt}</span><span>Manip au labo · demande avant le ${m.limiteTxt}</span></li>`).join('')}
+    <li><span class="d">ven. 09/04</span><span>Oraux, dépôt du cahier et du support</span></li>
+    <li><span class="d">01/03 → 02/04</span><span class="a-preciser">Classes entières ou moitiés : selon l’arrangement avec Mme Joannes</span></li></ul></div>
+  <div class="carte"><h3 style="margin-top:0">Fonctionnement</h3>
+    <label class="reglage"><input type="checkbox" data-reglage="joannesSurSite" ${S.reglages.joannesSurSite?'checked':''}><span><b>Mme Joannes suit ses groupes sur le site</b><br><span class="petit">Décoché : les groupes de SVT se forment ici, puis voient « la suite se fait avec Mme Joannes ».</span></span></label>
+    <label class="reglage"><input type="checkbox" data-reglage="notesRendues" ${S.reglages.notesRendues?'checked':''}><span><b>Notes rendues</b><br><span class="petit">Le projet repasse sous les cours sur l’écran des élèves. Du 01/03 jusque-là, il est au-dessus.</span></span></label>
+    <p><b>Groupes</b> : 9 groupes de 4 places, 5 en physique-chimie, 4 en SVT (36 places pour 33 élèves).</p>
+    <p><b>Mme Joannes</b> — <span class="puce p-orange">compte à créer si elle le souhaite</span> : elle verrait ses groupes, leurs dépôts, la correction et l’oral.</p>
+    <p class="petit">Mme Castel (1re 5, 1re 6) : le projet apparaîtra dans son tableau de bord. Les autres collègues d’ES : sur demande.</p></div></div>`;
+}
+
+/* =============================================================
+   Rendu général, rappels à la connexion, chronomètre
+   ============================================================= */
+function rendre(){
+  const actif = document.activeElement, cleFocus = actif && actif.dataset ? actif.dataset.focus : null;
+  document.getElementById('v-eleve').setAttribute('aria-pressed', S.vue==='eleve');
+  document.getElementById('v-prof').setAttribute('aria-pressed', S.vue==='prof');
+  document.getElementById('l-qui').style.display = S.vue==='eleve' ? '' : 'none';
+  let h = S.vue==='eleve' ? rendreEleve() : rendreProf();
+  if (S.vue==='eleve' && S.qui && ui.rappelsOuverts) {
+    const r = rappels(S.qui);
+    if (r.length) h += `<div class="voile"><div class="modale" role="dialog" aria-modal="true" aria-labelledby="t-rap"><h2 id="t-rap">Projet : à faire</h2>
+      ${r.map(x=>`<div class="rappel ${x.urgent?'urgent':''}"><span class="ico">${x.ico}</span><span>${x.txt}</span></div>`).join('')}
+      <p><button class="btn btn-plein" data-aller="${r[0].aller}">J’y vais</button> <button class="btn" id="b-plus-tard">Plus tard</button></p></div></div>`;
+    else ui.rappelsOuverts = false;
+  }
+  $('#app').innerHTML = h;
+  if (cleFocus) { const el = document.querySelector(`[data-focus="${CSS.escape(cleFocus)}"]`); if (el) el.focus(); }
+  majChrono();
+  sauver();
+}
+function connexion(){ ui.rappelsOuverts = true; ui.ecran = 'accueil'; }
+function tempsChrono(){ return ui.chrono.cumul + (ui.chrono.marche ? Date.now()-ui.chrono.debut : 0); }
+function majChrono(){ const el = $('#chrono'); if (!el) return; const s = Math.floor(tempsChrono()/1000);
+  el.textContent = String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  el.classList.toggle('depasse', s >= 900);
+  const ph = $('#chrono-phase'); if (ph) ph.textContent = s < 600 ? `Présentation : encore ${Math.ceil((600-s)/60)} min.` : s < 900 ? `Questions : encore ${Math.ceil((900-s)/60)} min.` : 'Temps écoulé (15 min).'; }
+setInterval(majChrono, 500);
+
+/* =============================================================
+   Événements
+   ============================================================= */
+function remplirBarre(){
+  $('#qui').innerHTML = '<option value="">— pas connecté —</option>' + PSEUDOS.map(p=>`<option ${p===S.qui?'selected':''}>${p}</option>`).join('');
+  $('#date').innerHTML = DATES.map(([d,t])=>`<option value="${d}" ${d===S.date?'selected':''}>${t}</option>`).join('');
+}
+$('#qui').onchange = e => { S.qui = e.target.value; connexion(); rendre(); };
+$('#date').onchange = e => { S.date = e.target.value; connexion(); rendre(); };
+$('#v-eleve').onclick = () => { S.vue='eleve'; rendre(); };
+$('#v-prof').onclick = () => { S.vue='prof'; rendre(); };
+$('#raz').onclick = () => { if (confirm('Remettre les données fictives de départ ?')) { S = etatDeDepart(); ui.ecran='accueil'; remplirBarre(); rendre(); } };
+
+function telecharger(nom, texte, type){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿'+texte],{type})); a.download = nom; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000); }
+const csv = rows => rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+const noteE = p => (S.notes.e[p] = S.notes.e[p] || {niv:{}, pts:{}, perso:{}, rq:''});
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  const d = t.dataset, p = S.qui;
+  if (d.ouvrir) { ui.ecran = d.ouvrir==='projet'?'projet':'accueil'; ui.onglet='projet'; }
+  else if (d.onglet) ui.onglet = d.onglet;
+  else if (t.id==='b-labo') { ui.ecran='projet'; ui.onglet='labo'; }
+  else if (d.aller) { ui.rappelsOuverts=false; ui.ecran='projet'; ui.onglet=d.aller; }
+  else if (t.id==='b-plus-tard') ui.rappelsOuverts=false;
+  else if (d.rejoindre) {
+    const g = gid(d.rejoindre), ancien = groupeDe(p);
+    if (S.groupesFermes || g.membres.length>=4) return;
+    if (ancien) { ancien.membres = ancien.membres.filter(m=>m.p!==p); journal(p, ancien.id, 'quitte'); }
+    g.membres.push({p, depuis:maintenant()}); journal(p, g.id, 'rejoint');
+  }
+  else if (d.quitter) { const g = gid(d.quitter); g.membres = g.membres.filter(m=>m.p!==p); journal(p, g.id, 'quitte'); }
+  else if (t.id==='b-ajout-exp') { depot(groupeDe(p).id).brouillon.exps.push({desc:'',lieux:[],nb:'',duree:''}); }
+  else if (d.supprExp !== undefined) { depot(groupeDe(p).id).brouillon.exps.splice(+d.supprExp,1); }
+  else if (t.id==='b-envoyer') { const g=groupeDe(p), dp=depot(g.id);
+    if (!dp.brouillon.prob.trim()) { alert('Il manque la problématique.'); return; }
+    dp.versions.push({t:maintenant(), par:p, mots:compteMots(dp.brouillon)}); dp.statut='envoye';
+    dp.fil.push({t:maintenant(), par:p, prof:false, txt:`Pré-projet envoyé (version ${dp.versions.length}).`}); journal(p, g.id, 'envoie', 'pré-projet v'+dp.versions.length); }
+  else if (t.id==='b-msg') { const g=groupeDe(p), v=$('#f-msg').value.trim(); if(!v) return; depot(g.id).fil.push({t:maintenant(), par:p, prof:false, txt:v}); journal(p, g.id, 'question', ''); }
+  else if (t.id==='b-journal') { const g=groupeDe(p), v=$('#j-txt').value.trim(); if(!v) return; const s=$('#j-seance').value;
+    journalDe(g.id).push({t:maintenant(), seance: s==='autre'?S.date:s, par:p, lieu:$('#j-lieu').value, txt:v}); journal(p, g.id, 'journal', s); }
+  // enseignant
+  else if (d.ongletProf) { ui.ongletProf = d.ongletProf; }
+  else if (t.id==='b-fermer') { S.groupesFermes = !S.groupesFermes; journal('M. Van Hoorde', '', S.groupesFermes?'ferme les groupes':'rouvre les groupes'); }
+  else if (d.retirer) { const g=groupeDe(d.retirer); g.membres=g.membres.filter(m=>m.p!==d.retirer); journal('M. Van Hoorde', g.id, 'retire', d.retirer); }
+  else if (d.ouvrirGroupe) ui.groupeOuvert = d.ouvrirGroupe;
+  else if (d.fermerPanneau !== undefined) ui.groupeOuvert = null;
+  else if (d.decider !== undefined) { const g=gid(ui.groupeOuvert), dp=depot(g.id), v=$('#p-com').value.trim();
+    if (!v && !d.decider) return;
+    if (d.decider) dp.statut = d.decider;
+    dp.fil.push({t:maintenant(), par:g.prof, prof:true, txt:(d.decider==='valide'?'✅ Validé. ':d.decider==='a-revoir'?'↩ À revoir. ':'')+v});
+    journal(g.prof, g.id, 'commente', d.decider?'pré-projet → '+STATUT[d.decider][0]:''); }
+  else if (d.niv) { const E = noteE(d.niv); E.niv[d.i] = (E.niv[d.i]===+d.k) ? undefined : +d.k; if (E.pts) delete E.pts[d.i]; }
+  else if (t.id==='c-go') { const c=ui.chrono; if (c.marche) { c.cumul += Date.now()-c.debut; c.marche=false; } else { c.debut=Date.now(); c.marche=true; } }
+  else if (t.id==='c-raz') ui.chrono = {marche:false, debut:0, cumul:0};
+  else if (t.id==='x-journal') telecharger('projet-journal.csv', csv([['date','qui','groupe','action','détail'],...[...S.log].sort((a,b)=>a.t<b.t?-1:1).map(l=>[l.t.replace('T',' '),l.qui,(gid(l.g)||{}).nom||'',l.a,l.d])]), 'text/csv');
+  else if (t.id==='x-synthese') telecharger('projet-synthese.csv', csv([['groupe','discipline','élèves','statut pré-projet','1er envoi','versions','messages','entrées de journal','fichiers'],...S.groupes.map(g=>{const dp=depot(g.id);return [g.nom,g.disc,g.membres.map(m=>m.p).join(' '),STATUT[dp.statut][0],dp.versions[0]?.t||'',dp.versions.length,dp.fil.length,journalDe(g.id).length,fichiersDe(g.id).length];})]), 'text/csv');
+  else if (t.id==='x-json') telecharger('projet-complet.json', JSON.stringify({groupes:S.groupes,depots:S.depots,journal:S.journal,fichiers:S.fichiers,labo:S.labo,notes:S.notes,evenements:S.log},null,2), 'application/json');
+  else if (t.id==='x-notes') telecharger('projet-notes.csv', csv([['élève','groupe','écrit /'+MAX.ecrit,'groupe /'+MAX.autres,'oral commun /'+MAX.og,'oral individuel /'+MAX.oi,'investissement /5','total /'+MAX.total,'/20','remarques'],
+      ...S.groupes.flatMap(g=>g.membres.map(m=>{ const b=bilan(m.p); return [m.p,g.nom,virg(b.ecrit),virg(b.autres),virg(b.og),virg(b.oi),virg(b.perso),virg(b.total),virg(Math.round(b.sur20*10)/10),(S.notes.e[m.p]||{}).rq||'']; }))]), 'text/csv');
+  else return;
+  rendre();
+});
+
+document.addEventListener('change', e => {
+  const t = e.target, d = t.dataset, p = S.qui;
+  if (d.labo) { const g=groupeDe(p), l=labo(g.id,d.labo); l[d.cle] = t.checked ? {t:maintenant(), par:p} : null; journal(p, g.id, t.checked?'coche':'décoche', 'labo '+d.labo+' '+d.cle); rendre(); }
+  else if (d.lieu) { const g=groupeDe(p), i=+t.closest('[data-exp]').dataset.exp, e2=depot(g.id).brouillon.exps[i];
+    e2.lieux = t.checked ? [...e2.lieux, d.lieu] : e2.lieux.filter(x=>x!==d.lieu); sauver(); }
+  else if (d.deposer) { const f = t.files[0]; if (!f) return; const g=groupeDe(p);
+    const taille = f.size > 1e6 ? virg(Math.round(f.size/1e5)/10)+' Mo' : Math.max(1,Math.round(f.size/1e3))+' Ko';
+    fichiersDe(g.id).push({cat:d.deposer, nom:f.name, taille, par:p, t:maintenant()}); journal(p, g.id, 'dépose', f.name); rendre(); }
+  else if (d.deplacer && t.value) { const g=groupeDe(d.deplacer), cible=gid(t.value);
+    if (cible.membres.length>=4) { alert(cible.nom+' est complet.'); t.value=''; return; }
+    g.membres=g.membres.filter(m=>m.p!==d.deplacer); cible.membres.push({p:d.deplacer, depuis:maintenant()}); journal('M. Van Hoorde', cible.id, 'déplace', d.deplacer+' depuis '+g.nom); rendre(); }
+  else if (d.choixGroupe) { ui[d.choixGroupe] = t.value; rendre(); }
+  else if (d.reglage) { S.reglages[d.reglage] = t.checked; rendre(); }
+  /* setTimeout : on redessine une fois le focus passé à la case suivante (Tab), pour l'y remettre. */
+  else if (d.noteG) { const id = ui.ongletProf==='oral' ? ui.oralG : ui.corrG; (S.notes.g[id] = S.notes.g[id]||{})[d.noteG] = t.value; setTimeout(rendre); }
+  else if (d.pts) { const E = noteE(d.pts); E.pts = E.pts||{}; E.pts[d.i] = t.value; setTimeout(rendre); }
+  else if (d.perso) { noteE(d.perso).perso[d.i] = t.value; setTimeout(rendre); }
+  else if (d.rq) { noteE(d.rq).rq = t.value; sauver(); }
+});
+
+document.addEventListener('input', e => {
+  const t = e.target, p = S.qui, g = p && groupeDe(p); if (!g) return;
+  const b = depot(g.id).brouillon;
+  if (t.dataset.f) { b[t.dataset.f] = t.value; sauver(); }
+  else if (t.dataset.champ) { b.exps[+t.closest('[data-exp]').dataset.exp][t.dataset.champ] = t.value; sauver(); }
+});
+
+remplirBarre(); connexion(); rendre();
+</script>
+</body>
+</html>

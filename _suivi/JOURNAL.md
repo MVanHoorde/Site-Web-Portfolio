@@ -12,6 +12,10 @@
 
 ---
 
+## 13/11/2026 — ES 1re : les cristaux ouverts aux élèves
+
+Loïc valide la séquence après ses deux audits du 12/11 (« globalement, on est bon ») et l'ouvre pour sa prochaine séance. Lien rétabli sur le hub (4 séances), porte d'accueil à « 3 chapitres ouverts », guide d'ES §5 et son PDF, nouveauté n° 8 pour les collègues d'ES. L'ancienne fiche `1re-pc-cristaux.html` n'est pas reliée (ES-14) ; elle reste à son URL.
+
 ## 08/11/2026 (nuit, suite) — EMC : les mémos, et la 037
 
 Loïc veut tout le papier au tableau de bord et des rappels pour faire les choses dans l'ordre et à l'heure. Quatre mémos d'une page (les deux jours ; jeu de rôle, Labyrinthe et restitution minutés à l'heure près), la fiche « La liberté, pour moi » qui n'existait pas encore, un bloc « Documents à imprimer et mémos » dans l'onglet EMC, un bouton « Mémo minuté » dans chaque pilotage. En minutant le jeu de rôle, une erreur du 036 est apparue : 115 min pour un créneau de 100. La 037 ramène les présentations à 35 min et fait du portrait mystère un bonus.
