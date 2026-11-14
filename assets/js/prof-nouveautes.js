@@ -23,6 +23,33 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 10,
+    date: '2026-11-14',
+    espaces: ['es1', 'est'],
+    titre: 'La correction des exercices, à distance',
+    points: [
+      {
+        titre: '📗 Corrigés, en haut du tableau de bord',
+        texte: 'Chaque exercice a sa correction, que vous voyez d’abord telle que l’élève la verra. Ouvrez-la à une classe : par séance, par question ou tout le chapitre. Refermable à tout moment.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<p class="nv-titre">Séance 3</p>' +
+            '<div class="nv-choix"><span>1G3 · fermé</span><span class="nv-bouton">Ouvrir</span></div>' +
+            '<div class="nv-choix"><span>1G4 · ouvert</span><span class="nv-bouton">Fermer</span></div>' +
+          '</div>'
+      },
+      {
+        titre: 'À côté de leur réponse, jamais à sa place',
+        texte: 'L’élève garde ce qu’il a écrit et compare. S’il n’a pas répondu, la correction reste repliée : il peut encore chercher.',
+        visuel:
+          '<div class="nv-ecran" style="display:grid;grid-template-columns:1fr 1fr;gap:6px">' +
+            '<div class="nv-bulle" style="max-width:none">✍️ Ta réponse</div>' +
+            '<div class="nv-bulle" style="max-width:none;background:#e0f2ea;border-color:#12805c;color:#0c5c42">📗 La correction</div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 9,
     date: '2026-11-13',
     espaces: ['es1'],

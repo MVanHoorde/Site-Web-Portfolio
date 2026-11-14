@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Corrigés à distance — tableau de bord</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/corriges.html — les corrigés collectifs d'ES (14/11/2026)
+     ------------------------------------------------------------
+     bdd/schema/044. Pour chaque chapitre d'enseignement scientifique
+     (1re et terminale), l'écran montre, séance par séance, chaque
+     question avec la correction TELLE QUE L'ÉLÈVE LA VERRA — c'est
+     l'aperçu avant envoi demandé par Loïc. Rien n'est visible des
+     élèves tant que l'enseignant n'a pas ouvert la question à une de
+     ses classes.
+
+     · Ouvrir / fermer : par séance (un clic), par question, ou tout le
+       chapitre — pour SES classes seulement (la base refuse le reste).
+       L'activation est rangée par question (codes stables), l'écran
+       regroupe par séance.
+     · Modifier un texte : le gestionnaire seul (est_gestionnaire,
+       038). L'élève voit la nouvelle version au prochain chargement.
+     · Côté élève : la correction se pose À CÔTÉ de sa réponse, jamais
+       à sa place (fin de assets/js/sequence-snt.js).
+
+     Les textes ne sont pas dans le dépôt public : leurs sources
+     vivent hors Git, dans _corriges-es/.
+     🔴 Le rendu (fractions, racines) est le même que côté élève :
+     toute retouche de rendre() se reporte dans sequence-snt.js.
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+  --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+  --link:#2445c7; --link-wash:#e7ebfb; --ok:#12805c; --ok-wash:#e0f2ea; --err:#c33a2f; --err-wash:#fbe9e7;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151d; --surface:#1a202b; --surface-2:#222a37;
+    --ink:#e8ecf3; --ink-soft:#b3bccb; --ink-faint:#7f8a9c; --line:#2f3847;
+    --link:#8ea6ff; --link-wash:#24305a; --ok:#4fc79b; --ok-wash:#173528; --err:#f07a6f; --err-wash:#3d1f1c;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans','Inter',system-ui,sans-serif;font-size:15px;line-height:1.5}
+h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;font-weight:600;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 60px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:14px}
+header h1{font-size:22px}
+header .retour{margin-left:auto;font-size:14px;color:var(--link)}
+.msg{font-size:14px;color:var(--ink-soft)} .msg.ko{color:var(--err)}
+.aide{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:14px;color:var(--ink-soft)}
+.aide b{color:var(--ink)}
+button{font:inherit;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;min-height:44px;cursor:pointer}
+button:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+button.p{background:var(--link);border-color:var(--link);color:#fff}
+button:disabled{opacity:.55;cursor:default}
+.chapitres{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.chapitres button{min-height:40px;font-size:14px}
+.chapitres button[aria-pressed="true"]{background:var(--link);border-color:var(--link);color:#fff}
+.chapitres .n{font-size:12px;opacity:.8;margin-left:4px}
+.bloc-chap{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bloc-chap .lib{font-weight:600;margin-right:6px}
+.seance{margin:22px 0 8px}
+.seance-tete{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 0;border-bottom:2px solid var(--line);margin-bottom:10px}
+.seance-tete h2{font-size:17px;margin-right:auto}
+.interr{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:3px 4px 3px 12px;background:var(--surface);font-size:14px}
+.interr button{min-height:36px;border-radius:999px;padding:4px 12px;font-size:13.5px}
+.interr.tout{border-color:var(--ok);background:var(--ok-wash)}
+.interr.part{border-color:var(--ok);border-style:dashed}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:10px}
+.q-tete{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;font-size:13px;color:var(--ink-soft);margin-bottom:4px}
+.q-tete code{font:12px 'IBM Plex Mono',monospace}
+.q-titre{font-weight:600}
+.q-enonce{font-size:14px;color:var(--ink-soft);margin:2px 0 10px}
+.duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+@media (max-width:760px){.duo{grid-template-columns:minmax(0,1fr)}}
+.eleve{border:1px dashed var(--line);border-radius:9px;padding:10px 12px;font-size:14px;color:var(--ink-faint);font-style:italic}
+.eleve b{display:block;font-style:normal;color:var(--ink-soft);font-size:13px;margin-bottom:4px}
+.corr{border:1px solid var(--ok);border-left-width:4px;background:var(--ok-wash);border-radius:9px;padding:10px 12px;font-size:14.5px;line-height:1.55}
+.corr .t{font-weight:600;color:var(--ok);font-size:13px;margin-bottom:4px}
+.puces{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center;font-size:13px;color:var(--ink-soft)}
+.puce{min-height:34px;border-radius:999px;padding:3px 12px;font-size:13px}
+.puce[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.edit{margin-top:10px}
+.edit textarea{width:100%;min-height:150px;font:13.5px/1.45 'IBM Plex Mono',monospace;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--surface-2);color:var(--ink)}
+.edit .lg{font-size:12.5px;color:var(--ink-soft)}
+.r{font-size:13px;min-height:1em} .r.ok{color:var(--ok)} .r.ko{color:var(--err)}
+.vide{color:var(--ink-faint);font-style:italic}
+/* rendu identique à la page élève (sequence-snt.css) */
+.cp-frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .12em;font-size:.92em;line-height:1.12;text-align:center}
+.cp-frac>.cp-n{padding:0 .2em}
+.cp-frac>.cp-d{padding:0 .2em;border-top:1.4px solid currentColor}
+.cp-rac{white-space:nowrap;display:inline-flex;align-items:stretch}
+.cp-rac::before{content:"√";line-height:1;font-size:1.15em;margin-right:-.05em;align-self:flex-end}
+.cp-rac>.cp-r{border-top:1.3px solid currentColor;padding:.08em .12em 0;line-height:1.05;align-self:flex-end}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📗 Corrigés à distance</h1>
+    <span class="msg" id="etat">Connexion…</span>
+    <a class="retour" href="index.html">← Tableau de bord</a>
+  </header>
+  <p class="aide">Chaque question rédigée qui se résout avec le cours ou un petit calcul a sa <b>correction</b>. Tu la vois ici <b>telle que l'élève la verra</b>. Rien n'est envoyé tant que tu n'as pas <b>ouvert</b> la question à une classe : par séance, par question, ou tout le chapitre. L'élève la lit <b>à côté de sa réponse</b>, qui n'est jamais modifiée ; s'il n'a pas répondu, elle reste repliée derrière « Voir la correction ». Tu peux refermer à tout moment.</p>
+  <nav class="chapitres" id="chapitres" aria-label="Chapitres"></nav>
+  <div id="contenu"></div>
+</div>
+<script src="../assets/js/questions-snt.js?v=5"></script>
+<script src="../assets/js/prof-api.js?v=3"></script>
+<script>
+(function(){
+  var CHAPITRES = [
+    ['es1-t1-c1', '1re · La nucléosynthèse'],
+    ['es1-t1-c2', '1re · La radioactivité'],
+    ['es1-t1-c3', '1re · Les cristaux'],
+    ['es1-t2-c1', '1re · Son et musique'],
+    ['es1-t2-c2', '1re · Le son à coder'],
+    ['es1-t3-c1', '1re · La forme de la Terre'],
+    ['est-t2-c1', 'Terminale · L’énergie électrique'],
+    ['est-t2-c2', 'Terminale · Production et stockage']
+  ];
+  var Q = window.QUESTIONS_SNT || {};
+  var $ = function(s){ return document.querySelector(s); };
+  var gest = false, classes = [], corriges = {}, ouverts = {}, chap = null;
+  /* ouverts['<classe>|<code>'] = true */
+
+  function dire(t, ko){ var e = $('#etat'); e.textContent = t; e.className = 'msg' + (ko ? ' ko' : ''); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  /* 🔴 même rendu que la page élève (fin de assets/js/sequence-snt.js) */
+  function rendre(t){
+    var s = esc(t);
+    s = s.replace(/&lt;span class=&quot;rac&quot;&gt;([\s\S]*?)&lt;\/span&gt;/g, '<span class="cp-rac"><span class="cp-r">$1</span></span>');
+    s = s.replace(/&lt;(\/?)(b|i|sub|sup)&gt;/g, '<$1$2>').replace(/&lt;br\s*\/?&gt;/g, '<br>');
+    s = s.replace(/\{\{rac:([^}]*)\}\}/g, '<span class="cp-rac"><span class="cp-r">$1</span></span>');
+    s = s.replace(/\{\{frac:([^:}]*):([^}]*)\}\}/g, '<span class="cp-frac"><span class="cp-n">$1</span><span class="cp-d">$2</span></span>');
+    return s.replace(/\n/g, '<br>');
+  }
+  function espaceDe(seq){ return seq.split('-')[0]; }
+  function mesClassesDe(seq){ var e = espaceDe(seq); return classes.filter(function(c){ return c.espace === e; }); }
+  function codesDe(seq){
+    return Object.keys(corriges).filter(function(k){ return corriges[k].sequence === seq; }).sort(function(a, b){
+      var qa = Q[a] || {}, qb = Q[b] || {};
+      var ea = String(qa.etape || '99').split('.').map(Number), eb = String(qb.etape || '99').split('.').map(Number);
+      return (ea[0] - eb[0]) || ((ea[1] || 0) - (eb[1] || 0)) || ((qa.rang || 0) - (qb.rang || 0)) || (a < b ? -1 : 1);
+    });
+  }
+  function seanceDe(code){ var q = Q[code]; return q && q.seance_num ? String(q.seance_num) : '?'; }
+
+  ProfAPI.reprendre().then(function(){
+    return Promise.all([
+      ProfAPI.appeler('est_gestionnaire').catch(function(){ return false; }),
+      ProfAPI.lire('classes?select=id,code,libelle,espace,actif&espace=in.(es1,est)&order=code.asc'),
+      ProfAPI.lire('corriges?select=code,sequence,texte,maj_le').catch(function(e){ throw new Error('table corriges absente ? (bdd/schema/044) — ' + e.message); }),
+      ProfAPI.lire('corriges_actives?select=classe_id,code')
+    ]);
+  }).then(function(r){
+    gest = r[0] === true;
+    classes = (r[1] || []).filter(function(c){ return c.actif !== false; });
+    (r[2] || []).forEach(function(c){ corriges[c.code] = c; });
+    (r[3] || []).forEach(function(a){ ouverts[a.classe_id + '|' + a.code] = true; });
+    dire(Object.keys(corriges).length + ' corrigés en base' + (classes.length ? '' : ' — tu n’as pas de classe d’ES : aperçu seulement.'));
+    var dispo = CHAPITRES.filter(function(c){ return codesDe(c[0]).length && (gest || mesClassesDe(c[0]).length); });
+    if(!dispo.length){ $('#contenu').innerHTML = '<p class="aide">Aucun corrigé pour tes classes pour l’instant.</p>'; return; }
+    var memo = null; try { memo = sessionStorage.getItem('corriges.chap'); } catch(e){}
+    chap = dispo.some(function(c){ return c[0] === memo; }) ? memo : dispo[0][0];
+    $('#chapitres').innerHTML = dispo.map(function(c){
+      return '<button type="button" data-chap="' + c[0] + '">' + esc(c[1]) + '<span class="n">' + codesDe(c[0]).length + '</span></button>';
+    }).join('');
+    $('#chapitres').addEventListener('click', function(ev){
+      var b = ev.target.closest('[data-chap]'); if(!b) return;
+      chap = b.dataset.chap; try { sessionStorage.setItem('corriges.chap', chap); } catch(e){}
+      dessiner();
+    });
+    dessiner();
+  }).catch(function(e){
+    dire(/SESSION|AUCUNE/.test(e.message) ? 'Pas de session : connecte-toi d’abord au tableau de bord, puis reviens ici.' : e.message, true);
+  });
+
+  /* état d'un ensemble de codes pour une classe : 'tout' | 'part' | 'rien' */
+  function etat(cl, codes){
+    var n = codes.filter(function(k){ return ouverts[cl + '|' + k]; }).length;
+    return n === 0 ? 'rien' : (n === codes.length ? 'tout' : 'part');
+  }
+  function interrupteur(cl, codes, portee){
+    var e = etat(cl.id, codes);
+    var lib = e === 'tout' ? 'ouvert' : (e === 'part' ? 'en partie' : 'fermé');
+    return '<span class="interr ' + e + '"><span>' + esc(cl.libelle) + ' · ' + lib + '</span>' +
+      '<button type="button" data-basc="' + (e === 'tout' ? 'fermer' : 'ouvrir') + '" data-classe="' + cl.id + '" data-portee="' + portee + '">' +
+      (e === 'tout' ? 'Fermer' : 'Ouvrir') + '</button></span>';
+  }
+
+  function dessiner(){
+    document.querySelectorAll('#chapitres [data-chap]').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.chap === chap ? 'true' : 'false'); });
+    var codes = codesDe(chap), mes = mesClassesDe(chap);
+    var parSeance = {}, ordre = [];
+    codes.forEach(function(k){ var s = seanceDe(k); if(!parSeance[s]){ parSeance[s] = []; ordre.push(s); } parSeance[s].push(k); });
+    var h = '';
+    if(mes.length) h += '<div class="bloc-chap"><span class="lib">Tout le chapitre</span>' + mes.map(function(cl){ return interrupteur(cl, codes, 'chap'); }).join('') + '</div>';
+    ordre.forEach(function(s){
+      var l = parSeance[s], q0 = Q[l[0]] || {};
+      h += '<section class="seance"><div class="seance-tete"><h2>Séance ' + esc(s) + '</h2>' +
+        mes.map(function(cl){ return interrupteur(cl, l, 's' + s); }).join('') + '</div>';
+      l.forEach(function(k){
+        var q = Q[k] || {}, c = corriges[k];
+        h += '<article class="q" data-code="' + esc(k) + '">' +
+          '<div class="q-tete"><span>Étape ' + esc(q.etape || '?') + '</span><code>' + esc(k) + '</code></div>' +
+          '<div class="q-titre">' + esc(q.titre || '') + '</div>' +
+          '<div class="q-enonce">' + esc(q.question || '') + '</div>' +
+          '<div class="duo"><div class="eleve"><b>✍️ Ta réponse</b>Ici, la réponse de l’élève — elle reste telle qu’il l’a écrite.</div>' +
+          '<div class="corr"><div class="t">📗 La correction</div><div class="x">' + rendre(c.texte) + '</div></div></div>' +
+          '<div class="puces">' + (mes.length ? 'Ouvert à :' : '') + mes.map(function(cl){
+            var on = !!ouverts[cl.id + '|' + k];
+            return '<button type="button" class="puce" aria-pressed="' + on + '" data-puce="' + cl.id + '" title="' + (on ? 'Fermer' : 'Ouvrir') + ' pour ' + esc(cl.libelle) + '">' + (on ? '✓ ' : '') + esc(cl.libelle) + '</button>';
+          }).join('') + (gest ? '<button type="button" data-modif style="margin-left:auto">✎ Modifier le texte</button>' : '') + '</div>' +
+          '<div class="r" aria-live="polite"></div></article>';
+      });
+      h += '</section>';
+    });
+    $('#contenu').innerHTML = h;
+  }
+
+  function basculer(cl, codes, ouvrir){
+    var a = codes.filter(function(k){ return !!ouverts[cl + '|' + k] !== ouvrir; });
+    if(!a.length) return Promise.resolve();
+    var p = ouvrir
+      ? ProfAPI.ecrire('corriges_actives?on_conflict=classe_id,code', a.map(function(k){ return {classe_id: cl, code: k}; }), true)
+      : ProfAPI.supprimer('corriges_actives?classe_id=eq.' + encodeURIComponent(cl) + '&code=in.(' + a.map(encodeURIComponent).join(',') + ')');
+    return p.then(function(){ a.forEach(function(k){ if(ouvrir) ouverts[cl + '|' + k] = true; else delete ouverts[cl + '|' + k]; }); });
+  }
+
+  $('#contenu').addEventListener('click', function(ev){
+    var b = ev.target.closest('button'); if(!b || b.disabled) return;
+    if(b.dataset.basc){
+      var portee = b.dataset.portee, codes = codesDe(chap);
+      if(portee !== 'chap') codes = codes.filter(function(k){ return 's' + seanceDe(k) === portee; });
+      b.disabled = true;
+      basculer(b.dataset.classe, codes, b.dataset.basc === 'ouvrir').then(dessiner).catch(function(e){ b.disabled = false; dire('Refusé : ' + e.message, true); });
+    } else if(b.dataset.puce){
+      var art = b.closest('[data-code]'), k = art.dataset.code;
+      b.disabled = true;
+      basculer(b.dataset.puce, [k], !ouverts[b.dataset.puce + '|' + k]).then(dessiner).catch(function(e){ b.disabled = false; var r = art.querySelector('.r'); r.className = 'r ko'; r.textContent = 'Refusé : ' + e.message; });
+    } else if(b.hasAttribute('data-modif')){
+      ouvrirEdition(b.closest('[data-code]'));
+    }
+  });
+
+  function ouvrirEdition(art){
+    if(art.querySelector('.edit')) return;
+    var k = art.dataset.code, d = document.createElement('div');
+    d.className = 'edit';
+    d.innerHTML = '<textarea aria-label="Texte du corrigé"></textarea>' +
+      '<div class="lg">Mise en forme : &lt;b&gt;gras&lt;/b&gt;, &lt;i&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;br&gt; · fraction {{frac:numérateur:dénominateur}} · racine {{rac:2}}, et dans une fraction &lt;span class="rac"&gt;2&lt;/span&gt;. L’aperçu au-dessus suit la frappe.</div>' +
+      '<div class="puces"><button type="button" class="p" data-enr>Enregistrer</button><button type="button" data-ann>Annuler</button></div>';
+    art.appendChild(d);
+    var ta = d.querySelector('textarea'), x = art.querySelector('.corr .x'), r = art.querySelector('.r');
+    ta.value = corriges[k].texte; ta.focus();
+    ta.addEventListener('input', function(){ x.innerHTML = rendre(ta.value); });
+    d.querySelector('[data-ann]').addEventListener('click', function(){ x.innerHTML = rendre(corriges[k].texte); d.remove(); });
+    d.querySelector('[data-enr]').addEventListener('click', function(){
+      var t = ta.value.trim();
+      if(t.length < 3){ r.className = 'r ko'; r.textContent = 'Texte trop court.'; return; }
+      r.className = 'r'; r.textContent = 'Enregistrement…';
+      ProfAPI.modifier('corriges?code=eq.' + encodeURIComponent(k), {texte: t}).then(function(){
+        corriges[k].texte = t; d.remove(); x.innerHTML = rendre(t);
+        r.className = 'r ok'; r.textContent = 'Enregistré. Les élèves des classes ouvertes voient cette version au prochain chargement.';
+      }).catch(function(e){ r.className = 'r ko'; r.textContent = 'Refusé : ' + e.message; });
+    });
+  }
+})();
+</script>
+</body>
+</html>

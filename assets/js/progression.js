@@ -1527,6 +1527,17 @@
     });
   }
 
+  /* Les corrigés collectifs (bdd/schema/044) : ceux de cette séquence que
+     le professeur a ouverts à une classe de l'élève. [{code, texte}]. La
+     base ne rend rien d'autre — un corrigé non activé ne quitte pas le
+     serveur. Invité ou base absente : liste vide, la page n'affiche rien. */
+  function mesCorriges(sequence) {
+    /* par api() et non rpc() : api() rafraîchit d'abord un jeton expiré */
+    return api('rpc/mes_corriges', { method: 'POST', body: { p_sequence: String(sequence || '') } })
+      .then(function (l) { return Array.isArray(l) ? l : []; })
+      .catch(function () { return []; });
+  }
+
   /* ----------------------------------------------------------
    *  11. Surface publique
    * ---------------------------------------------------------- */
@@ -1559,7 +1570,8 @@
     mesInscriptions     : mesInscriptions,
     mesReponses   : mesReponses,
     versions      : versions,
-    lienVideo     : lienVideo
+    lienVideo     : lienVideo,
+    mesCorriges   : mesCorriges
   };
 
   if (!disponible() && global.console) {

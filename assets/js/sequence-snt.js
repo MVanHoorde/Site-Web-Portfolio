@@ -6775,3 +6775,93 @@ document.querySelectorAll('[data-tri-correction]').forEach(function(btn){
   });
 });
 })();
+
+/* ============================================================
+   CORRIGÉS COLLECTIFS (14/11/2026 — bdd/schema/044)
+   ------------------------------------------------------------
+   Le professeur ouvre, depuis prof/corriges.html, la correction
+   d'une question à toute une classe. Elle se pose À CÔTÉ de la
+   réponse de l'élève — jamais à sa place : l'écho, l'état du champ,
+   la progression et la copie en base ne sont pas touchés. L'idée de
+   Loïc : que l'élève constate l'écart, pas qu'on corrige sa copie.
+
+   · Répondu : deux colonnes, « Ta réponse » | « La correction »
+     (empilées sur écran étroit) — en CSS (:has), sans déplacer ni
+     reclasser aucun nœud du champ : le moteur et ses observateurs
+     ne voient rien changer.
+   · Pas répondu : la correction est REPLIÉE derrière « Voir la
+     correction » — chercher d'abord reste possible.
+   Bloc autonome : il ne parle au reste du moteur que par des
+   événements (les blocs de ce fichier sont cloisonnés).
+   ============================================================ */
+(function(){
+  if(!document.body) return;
+  var SEQ = document.body.dataset.sequence || '';
+  if(!/^(es1|est)-/.test(SEQ)) return;
+  if(typeof Progression === 'undefined' || !Progression.disponible || !Progression.disponible() || !Progression.mesCorriges) return;
+
+  var corriges = {};          /* code → texte */
+  var poses = {};             /* code → 'ouvert' | 'replie' */
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  /* Même grammaire que l'écran du professeur (prof/corriges.html) :
+     <b> <i> <sub> <sup> <br>, {{frac:n:d}}, {{rac:x}}, <span class="rac">x</span>.
+     Tout le reste est échappé. */
+  function rendre(t){
+    var s = esc(t);
+    s = s.replace(/&lt;span class=&quot;rac&quot;&gt;([\s\S]*?)&lt;\/span&gt;/g, '<span class="cp-rac"><span class="cp-r">$1</span></span>');
+    s = s.replace(/&lt;(\/?)(b|i|sub|sup)&gt;/g, '<$1$2>').replace(/&lt;br\s*\/?&gt;/g, '<br>');
+    s = s.replace(/\{\{rac:([^}]*)\}\}/g, '<span class="cp-rac"><span class="cp-r">$1</span></span>');
+    s = s.replace(/\{\{frac:([^:}]*):([^}]*)\}\}/g, '<span class="cp-frac"><span class="cp-n">$1</span><span class="cp-d">$2</span></span>');
+    return s.replace(/\n/g, '<br>');
+  }
+  function repondu(champ){
+    var e = champ.querySelector('[data-focus-echo]');
+    return !!(e && e.textContent.trim());
+  }
+  function poser(){
+    Object.keys(corriges).forEach(function(code){
+      var sel = (window.CSS && CSS.escape) ? CSS.escape(code) : code;
+      var champ = document.querySelector('[data-focus-code="' + sel + '"]');
+      if(!champ) return;
+      var etat = repondu(champ) ? 'ouvert' : 'replie';
+      if(poses[code] === etat) return;
+      var ancien = champ.querySelector(':scope > .corrige-prof');
+      if(ancien) ancien.remove();
+      var bloc;
+      if(etat === 'ouvert'){
+        bloc = document.createElement('div');
+        bloc.className = 'corrige-prof duo';
+        bloc.innerHTML = '<div class="cp-t">📗 La correction</div><div class="cp-x">' + rendre(corriges[code]) +
+          '</div><div class="cp-aide">Compare avec ta réponse&nbsp;: ce qui manque, ce qui diffère. Ta réponse, elle, ne change pas.</div>';
+      } else {
+        bloc = document.createElement('details');
+        bloc.className = 'corrige-prof';
+        bloc.innerHTML = '<summary>📗 Voir la correction</summary><div class="cp-x">' + rendre(corriges[code]) + '</div>';
+      }
+      /* juste après l'écho de la réponse : avant le retour du professeur */
+      var echo = champ.querySelector(':scope > [data-focus-echo]');
+      if(echo && echo.nextSibling) champ.insertBefore(bloc, echo.nextSibling);
+      else champ.appendChild(bloc);
+      poses[code] = etat;
+    });
+  }
+  function charger(){
+    var p;
+    try { p = Progression.mesCorriges(SEQ); } catch(e){ return; }
+    p.then(function(l){
+      (l || []).forEach(function(r){ if(r && r.code && r.texte) corriges[r.code] = r.texte; });
+      poser();
+    });
+  }
+  /* une réponse envoyée en cours d'heure déplie la correction repliée */
+  ['reponses-rehydratees','etape-validee','etat-restaure'].forEach(function(ev){
+    document.addEventListener(ev, function(){ setTimeout(poser, 0); });
+  });
+  document.addEventListener('click', function(ev){
+    if(!Object.keys(corriges).length) return;
+    if(ev.target.closest && ev.target.closest('button')) setTimeout(poser, 400);
+  });
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', charger);
+  else charger();
+})();

@@ -175,6 +175,20 @@
 > d'écran de diapositives que Loïc a déjà. Tout est listé dans
 > `_suivi/es1-verification.md`, qui est **le fichier à ouvrir** pour ce chantier.
 
+## 🆕 ES 1re et terminale : les corrigés à distance — à mettre en service par Loïc
+
+Écran `prof/corriges.html` (lien 📗 Corrigés du tableau de bord, espaces es1 et est) :
+aperçu de chaque correction telle que l'élève la verra, ouverture par séance, par
+question ou par chapitre, pour ses classes ; texte modifiable par le gestionnaire.
+Côté élève (fin de `sequence-snt.js`), la correction se pose à côté de la réponse,
+repliée si l'élève n'a pas répondu. 61 corrigés audités (sources : `_corriges-es/`,
+hors Git) : cristaux 14, radioactivité 13, terminale 16, son à coder 8, son et
+musique 6, forme de la Terre 4 ; rien pour la nucléosynthèse (vidéos, réflexions).
+Assets partagés montés : `progression.js?v=26` (58 fichiers),
+`sequence-snt.js?v=62`, `sequence-snt.css?v=52`.
+⏳ **Reste à Loïc** : exécuter `044`, puis `_corriges-es/corriges-es.sql` ; publier ;
+relire les corrigés au fil de l'eau depuis l'écran. Le TP son (8 corrigés) attend.
+
 ## 🆕 EMC seconde, six séances des 12 et 13/11 — en ligne, à répéter
 
 **Six séances**, Loïc et Mme Castel : accueil du groupe D par un jeu de rôle

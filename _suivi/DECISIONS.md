@@ -15,6 +15,16 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 14/11/2026 — ES : les corrigés à distance (044)
+
+| Date | Décision | Statut |
+|---|---|---|
+| 14/11/2026 | **Corrigé collectif affiché À CÔTÉ de la réponse de l'élève, jamais à sa place** : ni l'écho, ni la copie, ni la progression ne bougent. But : constater l'écart, pas corriger la copie. Non répondu : correction repliée (« Voir la correction ») | ✅ en vigueur |
+| 14/11/2026 | **Un corrigé seulement pour les exercices qui se résolvent avec le cours ou un petit calcul** — ni prise de notes de vidéo, ni réflexion personnelle, ni question d'avis, ni schéma à dessiner (règle de Loïc). 61 corrigés sur 99 rédigés ; le TP son attend | ✅ en vigueur |
+| 14/11/2026 | **Textes en base (`corriges`), sources hors Git (`_corriges-es/`)** : un corrigé non activé ne quitte pas le serveur. Écrits par le gestionnaire, lus par les enseignants (aperçu), par l'élève via `mes_corriges()` seulement s'ils sont ouverts à sa classe | ✅ en vigueur |
+| 14/11/2026 | **Activation rangée par question, pas par séance** : les codes sont stables, les numéros de séance bougent quand un cours se réorganise (la page son passait sa séance 2 en 3 le même jour). L'écran `prof/corriges.html` regroupe par séance pour le clic ; chaque enseignant ouvre pour SES classes | ✅ en vigueur |
+| 14/11/2026 | **Racines carrées : `{{rac:x}}`, et `<span class="rac">x</span>` dans une fraction** — jamais un « √ » nu, dont la barre ne couvre rien. `_outils/corriges/generer-sql.mjs` refuse un √ nu et une fraction en barre oblique | ✅ en vigueur |
+
 ## 12/11/2026 — EMC : le harcèlomètre et la loi (042)
 
 | Date | Décision | Statut |
