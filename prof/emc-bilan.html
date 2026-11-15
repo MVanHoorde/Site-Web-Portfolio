@@ -79,9 +79,14 @@ iframe{flex:1;width:100%;border:0;background:#fff}
     if (r[0] === true) $('#depot').hidden = false;
     remplir(r[1]);
   }).catch(function(e){
-    dire(/SESSION|AUCUNE/.test(e.message)
-      ? 'Pas de session : connectez-vous d’abord au tableau de bord, puis revenez ici.'
-      : (/not found|Bucket/i.test(e.message) ? 'Le stockage des bilans n’existe pas encore (bdd/schema/046).' : e.message), 'ko');
+    /* pas de session (lien ouvert depuis un mail) : on passe par la
+       connexion du tableau de bord, qui ramène ici */
+    if (/SESSION|AUCUNE|PAS_ENSEIGNANT/.test(e.message)) {
+      dire('Connexion nécessaire…');
+      location.replace('index.html?retour=emc-bilan.html');
+      return;
+    }
+    dire(/not found|Bucket/i.test(e.message) ? 'Le stockage des bilans n’existe pas encore (bdd/schema/046).' : e.message, 'ko');
     $('#vide').textContent = '';
   });
 

@@ -989,7 +989,7 @@ table.grille thead th{white-space:nowrap}
     montrerMdp(false);
     b.disabled = true; b.textContent = 'Connexion…';
     ProfAPI.connexion($('#mail').value, $('#mdp').value)
-      .then(function(){ montrerAppli(); })
+      .then(function(){ if(!allerAuRetour()) montrerAppli(); })
       .catch(function(e){ montrerConnexion(messageErreur(e)); })
       .then(function(){ b.disabled = false; b.textContent = 'Se connecter'; });
   }
@@ -3349,10 +3349,23 @@ table.grille thead th{white-space:nowrap}
     }
   });
 
+  /* ---------- retour après connexion (15/11/2026) ----------
+     Une page du dossier prof/ ouverte sans session (le bilan EMC, par
+     le lien d'un mail) renvoie ici avec ?retour=<page>.html : une fois
+     connecté, on y retourne. Seule une page de ce dossier est permise
+     (jamais une adresse extérieure). */
+  function allerAuRetour(){
+    var r = null;
+    try { r = new URLSearchParams(location.search).get('retour'); } catch(e){}
+    if(!r || !/^[a-z0-9-]+\.html$/.test(r) || r === 'index.html') return false;
+    location.replace(r);
+    return true;
+  }
+
   /* ---------- démarrage ---------- */
   majEtatNoms();
   ProfAPI.reprendre()
-    .then(function(){ montrerAppli(); })
+    .then(function(){ if(!allerAuRetour()) montrerAppli(); })
     .catch(function(){ montrerConnexion(null); });
 })();
 </script>
