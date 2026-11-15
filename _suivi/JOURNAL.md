@@ -12,6 +12,12 @@
 
 ---
 
+## 15/11/2026 — EMC : le bilan des deux jours, et la direction en observatrice
+
+Loïc demande un bilan de l'EMC sur tous les groupes. Les productions étaient intactes en base (comptes pas encore supprimés) : extraction anonymisée hors dépôt, sans lire ni l'aide, ni les notes du jeu de rôle, ni les portraits, ni les 86 témoignages. Une page autonome hors Git : nuage de mots (« répétition » en tête avant même le jeu), émotions, carte mentale commune reconstituée à partir des quatre groupes, grille mission × groupe, harcèlomètre (gravité du vote Instalike et des violences en EPS sous-estimée, « liker c'est participer » à moitié), enquête, restitution. Aucune table 3 n'a trouvé le déclencheur. Puis des exports par partie (copier pour le mail, PNG, PDF) et un brouillon de mail pour Mme Castel.
+
+Ensuite, l'accès de la direction. Le piège : toutes les écritures tiennent à « est enseignant » + « mes classes », donc un collègue rattaché « pour voir » aurait tout pu modifier — et 31 fonctions security definer écrivent sans RLS. D'où un déclencheur par instruction sur chaque table (il joue aussi dans ces fonctions), plutôt que de reprendre les fonctions une à une. Le banc rejoue la 046 sur la vraie base dans une transaction annulée : suppression et modification tentées sur les 48 tables, 115 contrôles. Au passage : `supprimer_eleve` aurait refusé toute suppression à Loïc dès le premier observateur rattaché (« élève partagé ») ; `emc_cartes_autoriser`, seule garde avant que la fonction Edge crée des comptes avec la clé de service, laissait passer un observateur ; et le cadre isolé du bilan cassait html2canvas (même origine nécessaire).
+
 ## 13/11/2026 — ES 1re : les cristaux ouverts aux élèves
 
 Loïc valide la séquence après ses deux audits du 12/11 (« globalement, on est bon ») et l'ouvre pour sa prochaine séance. Lien rétabli sur le hub (4 séances), porte d'accueil à « 3 chapitres ouverts », guide d'ES §5 et son PDF, nouveauté n° 8 pour les collègues d'ES. L'ancienne fiche `1re-pc-cristaux.html` n'est pas reliée (ES-14) ; elle reste à son URL.

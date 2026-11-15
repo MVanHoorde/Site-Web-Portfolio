@@ -174,6 +174,8 @@
      qui permet de re-clôturer une séance déjà enregistrée pour
      corriger une note, sans se demander si elle existe déjà. */
   function ecrire(chemin, corps, fusion) {
+    var refus = refuseSiObservateur(chemin);
+    if (refus) return refus;
     return assure().then(function () {
       var h = entetes(true);
       h.Prefer = fusion ? 'resolution=merge-duplicates,return=minimal'
@@ -192,6 +194,8 @@
      erreur de code ne doit pas pouvoir vider une table. */
   function supprimer(chemin) {
     if (chemin.indexOf('?') < 0) return Promise.reject(new Error('suppression sans filtre refusée'));
+    var refus = refuseSiObservateur(chemin);
+    if (refus) return refus;
     return assure().then(function () {
       return fetch(URL_PROJET + '/rest/v1/' + chemin, {
         method: 'DELETE', headers: entetes(true)
@@ -209,6 +213,8 @@
      les classes d'un coup, sans un mot d'avertissement. */
   function modifier(chemin, corps) {
     if (chemin.indexOf('?') < 0) return Promise.reject(new Error('modification sans filtre refusée'));
+    var refus = refuseSiObservateur(chemin);
+    if (refus) return refus;
     return assure().then(function () {
       return fetch(URL_PROJET + '/rest/v1/' + chemin, {
         method: 'PATCH', headers: entetes(true),
@@ -235,6 +241,9 @@
              français dans les fonctions. */
           var m = t;
           try { m = (JSON.parse(t).message) || t; } catch (e) {}
+          /* une fonction qui écrit, appelée par un observateur : la
+             base a refusé (046), on le dit avec les mots de l'écran */
+          if (/LECTURE_SEULE/.test(m)) { signalerLectureSeule(); m = MSG_LECTURE_SEULE; }
           throw new Error(m);
         }
         try { return JSON.parse(t); } catch (e) { return t; }
@@ -268,6 +277,51 @@
     }).then(function (r) { return r.ok ? r.blob() : null; });
   }
 
+  /* Un stockage privé quelconque (046 : « bilans »). La base décide
+     qui lit (bilans : les enseignants d'une classe EMC) et qui dépose
+     (le gestionnaire). Chemins sans « / » initial : 'emc/bilan.html'. */
+  function listerFichiers(bucket, dossier) {
+    return assure().then(function () {
+      return fetch(URL_PROJET + '/storage/v1/object/list/' + bucket, {
+        method: 'POST', headers: entetes(true),
+        body: JSON.stringify({ prefix: dossier, limit: 100, offset: 0,
+                               sortBy: { column: 'updated_at', order: 'desc' } })
+      });
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(t || ('HTTP ' + r.status)); });
+      return r.json();
+    }).then(function (l) {
+      return (l || []).filter(function (o) { return o && o.id; });
+    });
+  }
+
+  function lireFichier(bucket, chemin) {
+    return assure().then(function () {
+      var h = entetes(true); delete h['Content-Type'];
+      return fetch(URL_PROJET + '/storage/v1/object/authenticated/' + bucket + '/' + chemin, { headers: h });
+    }).then(function (r) { return r.ok ? r.blob() : null; });
+  }
+
+  /* Dépose (ou remplace) un fichier. */
+  function deposerFichier(bucket, chemin, blob, type) {
+    var refus = refuseSiObservateur('storage:' + bucket);
+    if (refus) return refus;
+    return assure().then(function () {
+      var h = entetes(true);
+      h['Content-Type'] = type || blob.type || 'application/octet-stream';
+      h['x-upsert'] = 'true';
+      return fetch(URL_PROJET + '/storage/v1/object/' + bucket + '/' + chemin, {
+        method: 'POST', headers: h, body: blob
+      });
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) {
+        var m = t; try { m = JSON.parse(t).message || t; } catch (e) {}
+        throw new Error(m || ('HTTP ' + r.status));
+      });
+      return true;
+    });
+  }
+
   /* ----------------------------------------------------------
    *  4. Connexion, rôle, déconnexion
    * ---------------------------------------------------------- */
@@ -298,11 +352,83 @@
   function verifierRole() {
     return appeler('est_enseignant').then(function (oui) {
       if (oui !== true) { deconnexion(); throw new Error('PAS_ENSEIGNANT'); }
-      return lire('enseignants?select=libelle&limit=1').then(function (l) {
-        moi = { libelle: (l && l[0] && l[0].libelle) || 'Professeur' };
+      return Promise.all([
+        lire('enseignants?select=libelle&limit=1'),
+        /* 046 : un observateur (direction) voit tout, ne change rien.
+           Avant la 046, la fonction n'existe pas : personne ne l'est. */
+        appeler('est_observateur').catch(function () { return false; })
+      ]).then(function (r) {
+        var l = r[0];
+        moi = { libelle: (l && l[0] && l[0].libelle) || 'Professeur', observateur: r[1] === true };
+        if (moi.observateur) bandeauObservateur();
         return moi;
       });
     });
+  }
+
+  /* ----------------------------------------------------------
+   *  4 bis. Le compte observateur (046)
+   *
+   *  La base refuse déjà toute écriture d'un observateur (un
+   *  déclencheur sur chaque table, des règles restrictives sur le
+   *  stockage) : ce qui suit n'est PAS la sécurité, c'est la
+   *  politesse. On arrête l'écriture avant qu'elle parte, avec un
+   *  message lisible plutôt qu'une erreur technique, et un bandeau
+   *  dit en permanence pourquoi rien ne se modifie.
+   *  Seule entorse au « client sans interface » de ce fichier : le
+   *  bandeau doit paraître sur TOUTES les pages qui chargent ce
+   *  client (tableau de bord, pilotages EMC, corrigés, vidéos…).
+   *  Ce qu'un observateur écrit quand même : ses propres réglages
+   *  (nouveautés vues, élèves masqués chez lui) et un message à Loïc.
+   * ---------------------------------------------------------- */
+  var ECRITURES_PERMISES = /^(reglages_enseignant|messages_gestion)(\?|$)/;
+  var MSG_LECTURE_SEULE = 'Accès observateur : lecture seule, rien n’a été modifié.';
+
+  function observateur() { return !!(moi && moi.observateur); }
+
+  function refuseSiObservateur(chemin) {
+    if (observateur() && !ECRITURES_PERMISES.test(String(chemin || ''))) {
+      signalerLectureSeule();
+      return Promise.reject(new Error(MSG_LECTURE_SEULE));
+    }
+    return null;
+  }
+
+  function bandeauObservateur() {
+    var doc = global.document;
+    if (!doc || doc.getElementById('bandeau-observateur')) return;
+    var poser = function () {
+      if (doc.getElementById('bandeau-observateur')) return;
+      doc.documentElement.classList.add('observateur');
+      var b = doc.createElement('div');
+      b.id = 'bandeau-observateur';
+      b.setAttribute('role', 'status');
+      b.style.cssText = 'position:sticky;top:0;z-index:9999;background:#161f33;color:#fff;'
+        + 'font:600 14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;padding:8px 16px;text-align:center';
+      b.textContent = '👁 Accès observateur — vous voyez tout, en lecture seule : aucun bouton ne modifie rien.';
+      doc.body.insertBefore(b, doc.body.firstChild);
+    };
+    if (doc.body) poser(); else doc.addEventListener('DOMContentLoaded', poser);
+  }
+
+  var minuteur = null;
+  function signalerLectureSeule() {
+    var doc = global.document;
+    if (!doc || !doc.body) return;
+    var t = doc.getElementById('toast-observateur');
+    if (!t) {
+      t = doc.createElement('div');
+      t.id = 'toast-observateur';
+      t.setAttribute('role', 'alert');
+      t.style.cssText = 'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:10000;'
+        + 'background:#c26a12;color:#fff;font:600 14px/1.4 system-ui,sans-serif;padding:10px 18px;'
+        + 'border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.25);max-width:calc(100% - 32px)';
+      doc.body.appendChild(t);
+    }
+    t.textContent = '👁 ' + MSG_LECTURE_SEULE;
+    t.style.display = 'block';
+    clearTimeout(minuteur);
+    minuteur = setTimeout(function () { t.style.display = 'none'; }, 3500);
   }
 
   function deconnexion() {
@@ -462,6 +588,7 @@
     deconnexion  : deconnexion,
     connecte     : function () { return !!moi; },
     moi          : function () { return moi; },
+    observateur  : observateur,
     monId        : monId,
     lire         : lire,
     ecrire       : ecrire,
@@ -470,6 +597,9 @@
     appeler      : appeler,
     listerDepots : listerDepots,
     lireDepot    : lireDepot,
+    listerFichiers : listerFichiers,
+    lireFichier    : lireFichier,
+    deposerFichier : deposerFichier,
     chargerNoms  : chargerNoms,
     nomDe        : nomDe,
     nomsCharges  : nomsCharges,

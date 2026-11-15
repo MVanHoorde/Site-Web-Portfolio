@@ -13,6 +13,11 @@ Elle ne contient **aucune donnée d'élève** et ne doit jamais en contenir.
   à partir de zéro, dans l'ordre, sans surprise.
 - Chaque fichier est **idempotent quand c'est possible** (`if not exists`) :
   le rejouer ne doit pas tout casser.
+- 🔴 **Toute migration qui crée une table se termine par
+  `select public.verrouiller_observateurs();`** (046) : sinon les comptes
+  observateurs (direction, lecture seule) pourraient écrire dans la nouvelle
+  table. La vérification de la 046 compte les tables restées ouvertes ; le banc
+  `_outils/tests/observateurs-base.py` rejoue tout sur la vraie base, sans trace.
 
 ## Comment exécuter un fichier
 

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Bilan EMC — tableau de bord</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/emc-bilan.html — le bilan des deux jours d'EMC
+     ------------------------------------------------------------
+     15/11/2026, bdd/schema/046. Le bilan contient des phrases
+     d'élèves (anonymes) : il n'est PAS dans le dépôt public. Il vit
+     dans le stockage privé « bilans » (dossier emc/), lisible par les
+     enseignants et observateurs rattachés à une classe EMC.
+     Le gestionnaire y dépose le fichier HTML produit hors du dépôt
+     (Téléchargements/Bilan EMC/scripts/generer.py) ; il s'affiche
+     ici dans un cadre, avec ses propres boutons d'export (PNG, PDF,
+     brouillon de mail). Le cadre garde la même origine que le site :
+     les exports en ont besoin, et le fichier est de confiance (seul le
+     gestionnaire en dépose, la base l'impose).
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --ink:#161f33; --ink-soft:#4a566e; --line:#d3dae7;
+  --link:#2445c7; --ok:#12805c; --err:#c33a2f; --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151d; --surface:#1a202b; --ink:#e8ecf3; --ink-soft:#b3bccb; --line:#2f3847;
+    --link:#8ea6ff; --ok:#4fc79b; --err:#f07a6f;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans','Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;display:flex;flex-direction:column}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+header h1{font-family:'Space Grotesk','Inter',sans-serif;font-weight:600;font-size:20px;margin:0}
+.msg{font-size:14px;color:var(--ink-soft)} .msg.ko{color:var(--err)} .msg.ok{color:var(--ok)}
+.outils{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:auto}
+a.retour{font-size:14px;color:var(--link)}
+button,select,label.depot{font:inherit;font-size:14px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 12px;min-height:40px;cursor:pointer}
+label.depot{display:inline-flex;align-items:center;background:var(--link);border-color:var(--link);color:#fff}
+label.depot input{display:none}
+main{flex:1;display:flex;min-height:0}
+iframe{flex:1;width:100%;border:0;background:#fff}
+.vide{margin:40px auto;max-width:560px;padding:0 16px;color:var(--ink-soft);text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 Bilan EMC</h1>
+  <span class="msg" id="etat" aria-live="polite">Connexion…</span>
+  <div class="outils">
+    <select id="choix" hidden aria-label="Choisir un bilan"></select>
+    <button type="button" id="onglet" hidden>Ouvrir dans un onglet ↗</button>
+    <button type="button" id="telecharger" hidden>⬇ Le fichier</button>
+    <label class="depot" id="depot" hidden>⬆ Déposer un bilan (.html)<input type="file" accept=".html,text/html"></label>
+    <a class="retour" href="index.html">← Tableau de bord</a>
+  </div>
+</header>
+<main id="zone"><p class="vide" id="vide">Chargement du bilan…</p></main>
+<script src="../assets/js/prof-api.js?v=4"></script>
+<script>
+(function(){
+  var BUCKET = 'bilans', DOSSIER = 'emc/';
+  var $ = function(s){ return document.querySelector(s); };
+  var courant = null, url = null;
+  function dire(t, cl){ var e = $('#etat'); e.textContent = t; e.className = 'msg' + (cl ? ' ' + cl : ''); }
+  function nomLisible(n){ return n.replace(/\.html$/, '').replace(/[-_]+/g, ' '); }
+
+  ProfAPI.reprendre().then(function(){
+    return Promise.all([
+      ProfAPI.appeler('est_gestionnaire').catch(function(){ return false; }),
+      ProfAPI.listerFichiers(BUCKET, DOSSIER)
+    ]);
+  }).then(function(r){
+    if (r[0] === true) $('#depot').hidden = false;
+    remplir(r[1]);
+  }).catch(function(e){
+    dire(/SESSION|AUCUNE/.test(e.message)
+      ? 'Pas de session : connectez-vous d’abord au tableau de bord, puis revenez ici.'
+      : (/not found|Bucket/i.test(e.message) ? 'Le stockage des bilans n’existe pas encore (bdd/schema/046).' : e.message), 'ko');
+    $('#vide').textContent = '';
+  });
+
+  function remplir(liste){
+    var s = $('#choix');
+    s.innerHTML = '';
+    liste.forEach(function(o){
+      var op = document.createElement('option');
+      op.value = o.name; op.textContent = nomLisible(o.name);
+      s.appendChild(op);
+    });
+    s.hidden = liste.length < 2;
+    if (!liste.length) {
+      dire('');
+      $('#vide').textContent = 'Aucun bilan pour l’instant.';
+      return;
+    }
+    ouvrir(liste[0].name);
+  }
+  $('#choix').addEventListener('change', function(){ ouvrir(this.value); });
+
+  function ouvrir(nom){
+    $('#choix').value = nom;
+    dire('Chargement…');
+    ProfAPI.lireFichier(BUCKET, DOSSIER + nom).then(function(b){
+      if (!b) throw new Error('Ce bilan n’est pas lisible avec ce compte.');
+      if (url) URL.revokeObjectURL(url);
+      url = URL.createObjectURL(new Blob([b], { type: 'text/html' }));
+      courant = { nom: nom, blob: b };
+      var z = $('#zone'); z.innerHTML = '';
+      var f = document.createElement('iframe');
+      f.title = 'Bilan : ' + nomLisible(nom);
+      /* Les exports du bilan (html2canvas) clonent la page dans un cadre
+         et ont besoin de la même origine. Le fichier est de confiance :
+         seul le gestionnaire peut en déposer un (règle bilans_deposer, 046). */
+      f.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-downloads allow-modals allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation');
+      f.setAttribute('allow', 'clipboard-write');
+      f.src = url;
+      z.appendChild(f);
+      $('#onglet').hidden = false; $('#telecharger').hidden = false;
+      dire('');
+    }).catch(function(e){ dire(e.message, 'ko'); });
+  }
+
+  $('#onglet').addEventListener('click', function(){ if (url) window.open(url, '_blank', 'noopener'); });
+  $('#telecharger').addEventListener('click', function(){
+    if (!courant) return;
+    var a = document.createElement('a'); a.href = url; a.download = courant.nom;
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+
+  $('#depot input').addEventListener('change', function(){
+    var f = this.files && this.files[0]; this.value = '';
+    if (!f) return;
+    if (!/\.html?$/i.test(f.name)) { dire('Un fichier .html seulement.', 'ko'); return; }
+    if (f.size > 5 * 1024 * 1024) { dire('Fichier trop lourd (5 Mo au plus).', 'ko'); return; }
+    var nom = f.name.toLowerCase().replace(/[^a-z0-9._-]+/g, '-');
+    dire('Dépôt…');
+    ProfAPI.deposerFichier(BUCKET, DOSSIER + nom, f, 'text/html').then(function(){
+      dire('Déposé : ' + nom, 'ok');
+      return ProfAPI.listerFichiers(BUCKET, DOSSIER).then(function(l){ remplir(l); ouvrir(nom); });
+    }).catch(function(e){ dire('Refusé : ' + e.message, 'ko'); });
+  });
+})();
+</script>
+</body>
+</html>

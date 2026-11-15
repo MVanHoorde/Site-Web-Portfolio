@@ -23,6 +23,30 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 13,
+    date: '2026-11-15',
+    espaces: ['emc'],
+    titre: 'Le bilan des deux jours d’EMC',
+    points: [
+      {
+        titre: '📊 Tout ce que les élèves ont produit, en une page',
+        texte: 'Nuage de mots, émotions, carte mentale commune des quatre groupes, harcèlomètre, enquête, restitution. Onglet EMC → « Bilan des deux jours ».',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">Répétition</span><span class="nv-puce">Violence</span><span class="nv-puce">Moqueries</span></div>' +
+          '</div>'
+      },
+      {
+        titre: '✉️ Chaque partie s’exporte',
+        texte: 'Au-dessus de chaque partie : « Copier » pour la coller dans un mail, une image, ou un PDF. Et le PDF complet en haut.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-bouton">📋 Copier</span><span class="nv-bouton">⬇ Image PNG</span><span class="nv-bouton">⬇ PDF</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 12,
     date: '2026-11-15',
     espaces: ['es1', 'snt', 'est'],

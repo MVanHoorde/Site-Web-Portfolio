@@ -15,6 +15,14 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 15/11/2026 — La direction observe, en lecture seule
+
+| Date | Décision | Statut |
+|---|---|---|
+| 15/11/2026 | **Comptes observateurs** pour la direction (directrice adjointe, chef d'établissement, directions de pôle et du CFA) : tout le tableau de bord, **sur les classes de Loïc seulement** (celles des collègues restent fermées sans leur accord), rien de modifiable. Verrou en base, table par table (`046`) — l'écran n'est que la politesse. | ✅ |
+| 15/11/2026 | Un observateur **ne lit pas** les demandes « J'ai besoin d'en parler » de l'EMC ; il écrit ses propres réglages et peut écrire à Loïc (✉️). Il ne reçoit pas l'historique des ✨ Nouveautés à la connexion. | ✅ |
+| 15/11/2026 | **Le bilan EMC n'entre pas dans le dépôt public** (phrases d'élèves) : stockage privé `bilans`, page `prof/emc-bilan.html`, dépôt par le gestionnaire seul. Préféré à une page claude.ai et à un simple PDF joint. | ✅ |
+
 ## 15/11/2026 — Signalements : vidéos, simulation 3.5, séance non bloquante
 
 | Date | Décision | Statut |
@@ -26,6 +34,13 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 15/11/2026 | **Le professeur peut répondre à un signalement** : la réponse s'affiche une fois à l'élève, fenêtre 📬, par le canal du +0,5 (`045`). Pas encore d'écran pour l'écrire : Claude l'écrit en base à la demande | ✅ en vigueur (Loïc) |
 | 15/11/2026 | **Une séance peut être non bloquante** (`data-non-bloquante` sur la `<section class="seance">`) : elle s'ouvre comme les autres mais ne ferme pas les suivantes. Posé sur **Internet S3** (« Internet et moi »), que Loïc ne fait pas forcément avant S4 et S5. Le plafond de classe (`verrou-snt.js`) ne change pas | ✅ en vigueur |
 
+## 15/11/2026 — SNT : rappels d'entrée de séance
+
+| Date | Décision | Statut |
+|---|---|---|
+| 15/11/2026 | **Rappels d'entrée de séance étendus au SNT**, mêmes conditions qu'en ES (4 questions, après 2 h d'absence, élève connecté), sur ce qui est audité jusqu'à la fin d'Internet : `t0`, `m1`, `t1`. Questions **reprises des QCM validés des pages** ; reformulées seulement quand elles renvoyaient à « la vidéo » ou au « doc 1 ». Écartés : les QCM du mode d'emploi du dispositif (pastilles, rituel, mode enseignant). Plus des **questions d'images** (Louis Pouzin, composants, connecteurs…), à auditer. Allumés d'emblée. État : `_suivi/rappels-snt.md` | ✅ en vigueur (Loïc) — 🔴 audit des questions ≈ à faire |
+| 15/11/2026 | **La banque de rappels est la dernière étape du travail sur une séquence** : une fois la séquence auditée, on écrit sa banque, et on la fait systématiquement | ✅ en vigueur (Loïc) |
+
 ## 14/11/2026 — ES : les corrigés à distance (044)
 
 | Date | Décision | Statut |
@@ -35,6 +50,17 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 | 14/11/2026 | **Textes en base (`corriges`), sources hors Git (`_corriges-es/`)** : un corrigé non activé ne quitte pas le serveur. Écrits par le gestionnaire, lus par les enseignants (aperçu), par l'élève via `mes_corriges()` seulement s'ils sont ouverts à sa classe | ✅ en vigueur |
 | 14/11/2026 | **Activation rangée par question, pas par séance** : les codes sont stables, les numéros de séance bougent quand un cours se réorganise (la page son passait sa séance 2 en 3 le même jour). L'écran `prof/corriges.html` regroupe par séance pour le clic ; chaque enseignant ouvre pour SES classes | ✅ en vigueur |
 | 14/11/2026 | **Racines carrées : `{{rac:x}}`, et `<span class="rac">x</span>` dans une fraction** — jamais un « √ » nu, dont la barre ne couvre rien. `_outils/corriges/generer-sql.mjs` refuse un √ nu et une fraction en barre oblique | ✅ en vigueur |
+
+## 13/11/2026 — PC 2nde : cadrage de la pré-construction des chapitres manquants
+
+| Date | Décision | Statut |
+|---|---|---|
+| 13/11/2026 | **Ordre de travail d'un chapitre : page V1 intégrale → audit de Loïc → diaporama + fiche + version PAP → audit des supports**, reporté sur la page. Rien d'autre que la page avant le premier audit. Remplace « la fiche après validation complète du cours » (`CONSIGNES-chapitre-PC.md` §1bis) | ✅ en vigueur |
+| 13/11/2026 | **Les schémas de structure se refont en SVG à la charte dès la V1**, avec `aria-labelledby` ; les cliparts et objets restent en image `-source` ou en cadre de réservation. Remplace le « `-source` d'abord, SVG en régime B » (`CONSIGNES-V1-integrale-PC.md` §4) | ✅ en vigueur |
+| 13/11/2026 | **Grec et symboles mathématiques servis par des faces Noto** (OFL, 20 fichiers, 538 Ko) déclarées sous les noms des six familles du site, limitées par `unicode-range`, **avant** les faces du site. Mesuré par CDP : grec, ≈, √, ∝ et indices viennent de Noto, chaque famille garde ses glyphes. `fonts.css` n'est pas versionné : rien à incrémenter. Clôt l'arbitrage du 20/09 sur les lettres grecques | ✅ en vigueur |
+| 13/11/2026 | **Composant `.vec`** dans `chapitre-commun.css` (`?v=12`, 15 fichiers) : la flèche couvre le nom entier, indice compris. La flèche combinante U+20D7 (160 occurrences en T2) est remplacée chapitre par chapitre, à la V1 | ✅ en vigueur |
+| 13/11/2026 | **Le §6 « fiche v4 » de `CONSIGNES-chapitre-PC.md` est retiré** : il contredisait `CONSIGNES-fiche-eleve-PC.md` (champ date, aucune image, cadres de calcul) | ✅ en vigueur |
+| 13/11/2026 | **Défauts appliqués sans arbitrage contraire** : la fiche reprend **tous** les exercices ; pas de QR sur les diapositives ; pas de citation d'ouverture au cartouche ; pour T1-C6, T1-C7 et T3-C2, checklist « Pour le DS » tirée du programme, marquée proposition, sans Kahoot ; diaporamas T1-C3 et T3-C1 à porter sur la chaîne actuelle | ✅ en vigueur |
 
 ## 12/11/2026 — EMC : le harcèlomètre et la loi (042)
 

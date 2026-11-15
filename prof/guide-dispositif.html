@@ -520,6 +520,19 @@ td code{white-space:nowrap}
   de SNT, <code>020</code> pour les deux collègues d'ES et d'AP. On décommente la
   sienne, on y remet l'adresse, et on l'exécute seule.</p>
 
+  <h3>Ouvrir un accès observateur (direction)</h3>
+  <p>Un observateur voit le tableau de bord comme vous, sur <b>vos classes
+  seulement</b>, et ne peut rien modifier : la base refuse toute écriture de
+  son compte, table par table (<code>bdd/schema/046</code>), et chaque page
+  affiche le bandeau « 👁 Accès observateur ». Seules exceptions : ses propres
+  réglages, et le bouton ✉️ pour vous écrire. Les demandes « J'ai besoin d'en
+  parler » de l'EMC lui restent fermées. Créer d'abord son compte dans
+  Authentication → Users (« Auto confirm user »), puis :</p>
+<pre>select public.rattacher_observateur('adresse@exemple.fr', 'NOM');</pre>
+  <p>Rejouable : relancée, elle ajoute les classes ouvertes depuis. Les adresses
+  ne s'écrivent pas dans le dépôt, qui est public. Pour retirer l'accès :
+  supprimer le compte dans Authentication → Users.</p>
+
   <h3>Retirer un groupe à un enseignant</h3>
 <pre>delete from public.enseignants_classes ec
  using public.classes c, public.enseignants e
@@ -712,7 +725,7 @@ where el.pseudo like 'zz-%' order by c.code, el.pseudo;</pre>
   <p class="revision">
     Guide technique du dispositif SNT — Ensemble scolaire Isaac de l'Étoile,
     année 2026-2027.<br>
-    Dernière révision : <b>11 novembre 2026</b> — <i>Suivi</i> s'ouvre sur le thème en cours (dernière séance clôturée de la classe, <code>seances_faites</code>) et exporte un CSV des résumés, pseudonymes seuls par défaut, fabriqué sur l'appareil&nbsp;; la table des noms lit le <code>.xlsx</code> de OneDrive (<code>assets/js/lire-xlsx.js</code>, §2)&nbsp;; la gestion entre collègues (<code>bdd/schema/038</code>, <code>assets/js/prof-gestion.js</code>)&nbsp;: élèves masqués, demandes de suppression, onglets choisis, messages à Loïc, nouveautés&nbsp;; onglet <i>Gestion</i> du gestionnaire (§3, §6). Passe du 31 octobre&nbsp;: Padago, les pads à serrures (<code>outils/padago/</code>, <code>bdd/schema/030</code>)&nbsp;: un compte d'autrice par code d'invitation, qui n'ouvre que Padago (§2, §9). Passe du 17 octobre&nbsp;: un élève change lui-même de
+    Dernière révision : <b>15 novembre 2026</b> — les comptes <b>observateurs</b> pour la direction&nbsp;: tout voir sur les classes du gestionnaire, rien modifier (<code>bdd/schema/046</code>, un déclencheur par table, bandeau dans <code>prof-api.js</code>, §6)&nbsp;; le bilan EMC dans un stockage privé (<code>prof/emc-bilan.html</code>). Passe du 11 novembre&nbsp;: <i>Suivi</i> s'ouvre sur le thème en cours (dernière séance clôturée de la classe, <code>seances_faites</code>) et exporte un CSV des résumés, pseudonymes seuls par défaut, fabriqué sur l'appareil&nbsp;; la table des noms lit le <code>.xlsx</code> de OneDrive (<code>assets/js/lire-xlsx.js</code>, §2)&nbsp;; la gestion entre collègues (<code>bdd/schema/038</code>, <code>assets/js/prof-gestion.js</code>)&nbsp;: élèves masqués, demandes de suppression, onglets choisis, messages à Loïc, nouveautés&nbsp;; onglet <i>Gestion</i> du gestionnaire (§3, §6). Passe du 31 octobre&nbsp;: Padago, les pads à serrures (<code>outils/padago/</code>, <code>bdd/schema/030</code>)&nbsp;: un compte d'autrice par code d'invitation, qui n'ouvre que Padago (§2, §9). Passe du 17 octobre&nbsp;: un élève change lui-même de
     groupe de SNT (<code>changer_groupe_snt()</code>, <code>bdd/schema/028</code>)&nbsp;;
     lien « J'ai perdu mon mot de passe » à la connexion. Passe du 16 octobre&nbsp;: les réponses gardées se lisent
     entre collègues (bouton 👥 de la bibliothèque, <code>bdd/schema/027</code>). Un QCM interrompu reprend à la question où l'élève l'avait laissé (<code>…/qcm-N-encours</code>), et le QCM diagnostic garde sa trace&nbsp;; la courbe des dés n'attend que les élèves « prêts », garde plusieurs courbes et trace leurs demi-vies.

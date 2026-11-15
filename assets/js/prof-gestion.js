@@ -379,6 +379,9 @@
   }
   function annoncer(toutes) {
     var vue = +REG.vues[APPLI] || 0;
+    /* Un observateur (046) ne reçoit pas à sa connexion l'historique
+       des annonces faites aux collègues : seulement par le bouton ✨. */
+    if (!toutes && global.ProfAPI && ProfAPI.observateur && ProfAPI.observateur()) return;
     var liste = toutes ? editions().slice(0, 4) : editions().filter(function (x) { return x.n > vue; });
     if (!liste.length) { if (toutes) global.alert('Aucune nouveauté pour l’instant.'); return; }
     if (!toutes && document.querySelector('dialog[open]')) return;

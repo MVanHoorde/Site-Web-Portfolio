@@ -66,6 +66,10 @@
   var aContenus = el('a', null, '✏️ Contenus de la séance (questions, missions, situations…)');
   aContenus.href = 'emc-contenus.html';
   liens.appendChild(aContenus);
+  /* 15/11/2026 (046) — le bilan, rangé dans le stockage privé « bilans » */
+  var aBilan = el('a', 'primaire', '📊 Bilan des deux jours (12-13/11)');
+  aBilan.href = 'emc-bilan.html';
+  liens.appendChild(aBilan);
   panneau.appendChild(el('h2', null, 'EMC seconde'));
   panneau.appendChild(intro);
   panneau.appendChild(liens);
