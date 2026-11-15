@@ -165,6 +165,72 @@
     });
   }
 
+  /* LireXlsx.lireClasseur(ArrayBuffer) → Promise<{ lignes, graphiques }>
+     (13/11/2026, import du TP de Melde, ES 1re « Son et musique »)
+     lignes      : la PREMIÈRE feuille, en tableau de tableaux de textes ;
+     graphiques  : un objet par graphique du classeur — son titre, le titre
+                   de chaque axe, et ses séries telles qu'Excel les a mises en
+                   cache (x, y, et la courbe de tendance si l'élève en a posé
+                   une). Ce n'est pas une lecture complète du format : juste ce
+                   qu'il faut pour redessiner le graphique d'un élève. */
+  function texteDe(n) {
+    return n ? tous(n, 't').map(function (t) { return t.textContent; }).join('').trim() : '';
+  }
+  function nombres(n) {
+    if (!n) return [];
+    var t = [];
+    tous(n, 'pt').forEach(function (p) {
+      var v = enfant(p, 'v'), i = parseInt(p.getAttribute('idx'), 10);
+      if (v && !isNaN(i)) t[i] = parseFloat(v.textContent);
+    });
+    return t;
+  }
+  function valeurDe(n, tag) { var e = n && enfant(n, tag); return e ? e.getAttribute('val') : null; }
+  function graphique(doc) {
+    var chart = tous(doc, 'chart')[0] || doc.documentElement;
+    var t = enfant(chart, 'title');
+    /* L'ordre des <c:axId> du tracé dit qui est qui : l'abscisse d'abord,
+       l'ordonnée ensuite. axPos ne le dit pas sûrement (certains logiciels
+       l'écrivent faux). */
+    var lesAxes = tous(doc, 'valAx').concat(tous(doc, 'catAx'));
+    var trace = tous(doc, 'plotArea')[0], ordre = [];
+    if (trace) for (var c = trace.firstElementChild; c; c = c.nextElementSibling) {
+      if (/Chart$/.test(c.localName)) { ordre = tous(c, 'axId').filter(function (a) { return a.parentNode === c; })
+        .map(function (a) { return a.getAttribute('val'); }); break; }
+    }
+    var axes = lesAxes.map(function (ax) {
+      var i = ordre.indexOf(valeurDe(ax, 'axId'));
+      return { role: i === 0 ? 'x' : i === 1 ? 'y' : null, position: valeurDe(ax, 'axPos'), titre: texteDe(enfant(ax, 'title')) };
+    });
+    var series = tous(doc, 'ser').map(function (s) {
+      var tr = enfant(s, 'trendline');
+      return {
+        nom: texteDe(enfant(s, 'tx')),
+        x: nombres(enfant(s, 'xVal') || enfant(s, 'cat')),
+        y: nombres(enfant(s, 'yVal') || enfant(s, 'val')),
+        tendance: tr ? { type: valeurDe(tr, 'trendlineType'), equation: valeurDe(tr, 'dispEq') === '1',
+                         r2: valeurDe(tr, 'dispRSqr') === '1' } : null
+      };
+    });
+    return { titre: t ? (texteDe(t) || '(titre automatique)') : '', axes: axes, series: series };
+  }
+  function lireClasseur(tampon) {
+    var o = new Uint8Array(tampon), entrees;
+    try { entrees = lireZip(o); } catch (e) { return Promise.reject(e); }
+    var noms = Object.keys(entrees);
+    var feuilles = noms.filter(function (n) { return /^xl\/worksheets\/[^/]+\.xml$/.test(n); }).sort();
+    var graphs = noms.filter(function (n) { return /^xl\/charts\/chart[^/]*\.xml$/.test(n); }).sort();
+    if (!feuilles.length) return Promise.reject(new Error('pas un classeur .xlsx'));
+    return Promise.all([extraire(o, entrees, 'xl/sharedStrings.xml'), extraire(o, entrees, feuilles[0])]
+      .concat(graphs.map(function (g) { return extraire(o, entrees, g); }))).then(function (r) {
+      var partagees = r[0] ? tous(xml(r[0]), 'si').map(texteRiche) : [];
+      return {
+        lignes: r[1] ? lignesFeuille(xml(r[1]), partagees) : [],
+        graphiques: r.slice(2).filter(Boolean).map(function (t) { return graphique(xml(t)); })
+      };
+    });
+  }
+
   /* Un .xlsx commence par « PK » (zip), un CSV jamais. */
   function estXlsx(tampon) {
     var o = new Uint8Array(tampon, 0, Math.min(4, tampon.byteLength));
@@ -176,5 +242,5 @@
     return o.length >= 4 && o[0] === 0xd0 && o[1] === 0xcf && o[2] === 0x11 && o[3] === 0xe0;
   }
 
-  global.LireXlsx = { enTexte: enTexte, estXlsx: estXlsx, estXlsAncien: estXlsAncien };
+  global.LireXlsx = { enTexte: enTexte, lireClasseur: lireClasseur, estXlsx: estXlsx, estXlsAncien: estXlsAncien };
 })(window);
