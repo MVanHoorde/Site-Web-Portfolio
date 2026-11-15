@@ -1,6 +1,6 @@
 # Tableau de bord détaillé — par chapitre
 
-> Mise à jour : 26/08/2026 · Flags : ⬜ à faire · 🔄 en cours · ✅ fait · ⚠ attention
+> Mise à jour : 13/11/2026 · Flags : ⬜ à faire · 🔄 en cours · ✅ fait · ⚠ attention
 > Jalons (dans l'ordre — la fiche est TOUJOURS le dernier) :
 > 1 **V1 intégrale en ligne** (cours entier, figures comprises —
 > `_modeles/CONSIGNES-V1-integrale-PC.md`) · 2 Texte&exos validés ·
@@ -19,12 +19,14 @@
 > de chapitre est **imprimée et distribuée par Loïc** ; une fiche d'outil est
 > imprimée **par l'élève**.
 >
-> 🔴 **3 chapitres PC sur 14 sont en V1 intégrale : T3-C1, T3-C3 et T3-C4.** Le jalon 1
-> a changé de définition le 25/08/2026 : il exige désormais le cours **entier**, figures
-> et légendes comprises. Les 11 autres pages restent des ébauches — fidèles dans le
-> texte, mais trouées de blocs `.a-faire` à la place des images, d'où leur `🔄`.
-> **Le thème 3 est le plus avancé** : seul T3-C2 y reste en ébauche.
-> Relevés à lire : `_suivi/t3c1-releve.md`, `t3c3-releve.md`, `t3c4-releve.md`.
+> ✅ **Les 14 chapitres PC sont en V1 intégrale depuis le 13/11/2026.** Plus aucun
+> bloc `.a-faire` hors liens de DS manquants ; schémas refaits en SVG à la charte
+> (avec `aria-labelledby`), vecteurs en `.vec`. Ordre de travail en vigueur
+> (`CONSIGNES-chapitre-PC.md` §1bis) : page → **audit de Loïc** → diaporama + fiche
+> + version PAP → audit des supports.
+> **En attente de l'audit de Loïc (page seule)** : T1-C5, T1-C6, T1-C7, T2-C1,
+> T2-C2, T2-C3, T3-C2, T3-C3, T3-C4 — un relevé par chapitre, `_suivi/tXcY-releve.md`.
+> **Supports complets** (page + diaporama + fiche + PAP) : T1-C1, T1-C2, T1-C3, T1-C4, T3-C1.
 >
 > 🆕 **Les sujets de DS et de TP sont en ligne depuis le 26/08** — 6 DS et 15 TP
 > dans `assets/pdf/pc/`, liés depuis la carte du hub et depuis la page du chapitre
@@ -155,6 +157,10 @@
   les 12 exercices. La **frise historique y figure en lecture**, explicitement marquée
   « à lire, rien à compléter » — c'est le seul bloc de la fiche qui ne se complète pas.
   Le bouton de téléchargement `hors-verrou` est posé sur la page. **Non validée.**
+- Diaporama (13/11/2026) : `assets/pptx/pc/diaporama-2nde-t1c3.pptx`, **18 diapositives,
+  54 étapes**, 19 ✎, 12 exercices, Kahoot — régénérable (`diapo_t1c3.py`). Remplace la
+  version pptxgenjs du 04/09 qui ne vivait que sur le OneDrive de Loïc. **Non audité.**
+- Version PAP de la fiche : faite le 12/11 (hors dépôt).
 - ⚠ Reste à la main de Loïc : l'origine des treize photographies du chapitre
   (portraits et Atomium), inventoriée dans `_suivi/t1c3-releve.md` §2.
 
@@ -187,27 +193,38 @@
 - Différé : réintégration du tableau périodique complet.
 
 ### T1-C5 — Les solutions aqueuses
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- Fichier : `pages/2nde-pc-t1-c5-solutions-aqueuses.html`
-- Fiche : aucune. Code de déblocage : **S0LUTE** (choisi par Claude, à transmettre via le cahier de textes — Loïc peut le changer à tout moment).
-- 7 exercices rédigés en entier (énoncés + corrections), 3 encarts formule (concentration en masse, conservation de la masse de soluté, facteur de dilution), 12 liens vidéo décodés (QR) + Kahoot activé.
-- Blocs 🚧 restants : 10 — uniquement des schémas/illustrations à redessiner (dissolution microscopique, protocoles dissolution/dilution, échelle de teinte, courbes d'étalonnage) et 2 photos décoratives. Lien DS volontairement laissé en attente (voir ETAT-PROJET.md).
+- Jalons : 1 ✅ · 2 ⬜ · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t1-c5-solutions-aqueuses.html` · relevé : `_suivi/t1c5-releve.md`
+- **V1 intégrale le 13/11/2026.** 8 SVG à la charte (dissolution microscopique, protocoles
+  de dissolution et de dilution avec la verrerie au trait de O4, courbe d'étalonnage
+  retracée depuis ses points, figures des ex. 6 et 7), 3 photos source. 7 exercices
+  corrigés, 15 `a-noter`, 10 vidéos + 1 animation + Kahoot. Code **S0LUTE**.
+- 3 retouches de fond tracées (solution « dans un liquide », masse volumique ≠ densité, arrondi).
+- ⏳ **Audit de Loïc** : masse volumique et concentration maximale demandées au DS sans
+  être définies ; dilution en 3 étapes dessinée en 4 vignettes ; 6 licences.
 
 ### T1-C6 — Le cortège électronique
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- Fichier : `pages/2nde-pc-t1-c6-cortege-electronique.html`
-- Fiche : aucune. Code de déblocage : **C0UCHE** (choisi par Claude, à transmettre via le cahier de textes).
-- 7 exercices rédigés en entier (couches, sous-couches, configurations électroniques, classification, blocs s/p), 8 liens vidéo décodés (hyperliens texte du PPTX, pas de QR sur ce chapitre).
-- Blocs 🚧 restants : 10 — schémas (Bohr, couches, sous-couches, diagrammes d'états) et grands tableaux périodiques illustrés (rejoint l'idée différée « tableau périodique complet » de T1-C4, voir IDEES.md) + portrait de Mendeleïev (licence à vérifier).
-- ⚠ Toujours pas de diapositive « Pour le DS » ni de Kahoot dans la source — compétences et lien à fournir par Loïc.
+- Jalons : 1 ✅ · 2 ⬜ · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t1-c6-cortege-electronique.html` · relevé : `_suivi/t1c6-releve.md`
+- **V1 intégrale le 13/11/2026.** 6 SVG (Bohr repris de T1-C3, couches, sous-couches,
+  remplissage, états occupés), 3 tableaux périodiques en grille HTML (118 éléments),
+  2 photos, 1 `-source` (orbitales). 7 exercices corrigés, 10 `a-noter`, 8 vidéos.
+  Code **C0UCHE**. Checklist DS **proposée** (la source n'en a pas), pas de Kahoot.
+- 3 retouches de fond tracées (Seaborg chimiste, configuration de l'uranium, symboles Nh…Og).
+- ⏳ **Audit de Loïc** : deux exercices évaluent avant présentation ; la réponse de l'ex. 3
+  se lit sur l'Image 6 ; « 1869 » et Ga/Sc/Ge ; lien DS ; 4 licences.
 
 ### T1-C7 — Stabilité des entités chimiques
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- Fichier : `pages/2nde-pc-t1-c7-stabilite-entites-chimiques.html`
-- Fiche : aucune. Code de déblocage : **ST4BLE** (choisi par Claude, à transmettre via le cahier de textes).
-- 6 exercices rédigés en entier (configurations des gaz nobles, formation d'ions, liaisons covalentes, modèles de Lewis), table de données (charge de l'ion selon la colonne) transcrite en `table.tab`, 7 liens vidéo décodés (hyperliens texte).
-- Blocs 🚧 restants : 7 — uniquement des schémas (cortèges électroniques, diagrammes ioniques, molécule d'eau, modèles de Lewis complets — à soigner particulièrement, cœur graphique du chapitre) et un tableau périodique réduit.
-- ⚠ Toujours pas de diapositive « Pour le DS » ni de Kahoot dans la source.
+- Jalons : 1 ✅ · 2 ⬜ · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t1-c7-stabilite-entites-chimiques.html` · relevé : `_suivi/t1c7-releve.md`
+- **V1 intégrale le 13/11/2026.** 19 SVG (cortèges, formation d'ions, eau, **modèles de
+  Lewis** en traits), 3 tableaux HTML, 1 `-source` (modèle moléculaire de l'eau).
+  6 exercices corrigés, 9 `a-noter`, 7 vidéos, TP15. Code **ST4BLE**. Checklist DS
+  **proposée**, pas de Kahoot ; aucun DS ne couvre ce chapitre.
+- 4 retouches tracées (Z ≤ 18 ; configurations du magnésium et du fluor ; corrigé de l'ex. 6
+  tout en traits, CH₄ ajouté — convention à valider).
+- ⏳ **Audit de Loïc** : liaisons doubles/triples évaluées sans être montrées ; octet et duet
+  jamais énoncés ; « récupèrent » un électron (Image 6) ; nommer les ions (programme).
 
 ---
 
@@ -219,38 +236,40 @@
 > (lisible mais à raffiner en régime B — voir ETAT-PROJET.md).
 
 ### T2-C1 — Décrire le mouvement
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- Fichier : `pages/2nde-pc-t2-c1-decrire-le-mouvement.html`
-- Fiche : aucune. Code de déblocage : **REP3RE** (choisi par Claude, à transmettre via le cahier de textes — modifiable à tout moment).
-- 3 sections (système & référentiel · trajectoire & vecteur déplacement · vitesse).
-- 5 exercices : Ex4 et Ex5 rédigés + **corrigés en entier** (calculs de vitesse re-vérifiés) ; Ex1/Ex2/Ex3 = énoncés rédigés, tracés graphiques laissés en 🚧. **Ex1 : la case de correction est vide dans la source** (signalé, à rédiger en régime B).
-- 4 propriétés/formules vectorielles reconstituées (vecteur déplacement, vitesse moyenne, vitesse instantanée, nature du mouvement).
-- Liens décodés : 8 vidéos (hyperliens de formes, aucun QR) + Kahoot activé.
-- 🆕 **Les exercices 2 et 3 ont enfin leur correction** (25/08) — ils étaient les deux seuls exercices sans corrigé du chapitre. Ce sont des exercices **graphiques**, que la source laisse vierges *même dans sa version « correction »* : la chronophotographie du skieur est posée en support, et deux **SVG maison** montrent le tracé attendu (repère, points, vecteurs position, vecteur déplacement fermant le triangle). Les positions M₄, M₇, M₁₃ et M₂₁ ont été obtenues en **relevant les 34 croix de la chronophotographie** et en les numérotant depuis M₁, la croix la plus à droite — celle que la source étiquette. Corrections **rédigées par Claude, à valider**.
-- Blocs 🚧 restants : **15** — schémas (repère, types de trajectoire, vecteurs vitesse, mouvement circulaire) et photos à extraire ; fiche mémo P. Olivier (licence à vérifier). Lien DS volontairement laissé en attente.
+- Jalons : 1 ✅ · 2 ⬜ · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t2-c1-decrire-le-mouvement.html` · relevé : `_suivi/t2c1-releve.md`
+- **V1 intégrale le 13/11/2026.** 16 SVG tracés depuis des points relevés (repère,
+  trajectoires, vecteurs, chronophotographie du skieur et corrections), 4 photos,
+  4 `-source` (objets), fiche mémo de P. Olivier retranscrite. 73 vecteurs `.vec`.
+  5 exercices corrigés (ex. 1 rédigé par Claude), 13 `a-noter`, 9 vidéos (une retrouvée),
+  Kahoot, TP7, TP8, DS5. Code **REP3RE**. Aucun `.a-faire`.
+- 2 retouches tracées (longueurs des vecteurs vitesse de l'Image 12, M₁₂ mal placé).
+- ⏳ **Audit de Loïc** : vecteur accélération non défini ; sens du mouvement de l'ex. 4 ;
+  tableau v₁…v₅ de l'ex. 5 ajouté ; licences.
 
 ### T2-C2 — Modéliser une action sur un système
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- Fichier : `pages/2nde-pc-t2-c2-modeliser-une-action.html`
-- Fiche : aucune. Code de déblocage : **F0RCES**.
-- 3 sections (actions & force · principe des actions réciproques · exemples de forces : gravitation, poids, réaction du support, tension). Chapitre le plus dense.
-- **11 exercices** rédigés en entier ; Ex1, Ex4, Ex6, Ex7, Ex8, Ex9, Ex11 corrigés (A.N. re-vérifiées) ; corrections « schéma » laissées en 🚧 mais réponses données en texte.
-- 2 formules-blocs reconstituées (gravitation universelle, poids P = m·g) + 2 relations d'action-réaction.
-- ⚠ Erreurs source corrigées / signalées : (1) **Ex6, unité corrigée** « kg » → **N** (valeur 1,98×10²⁰ exacte) ; (2) **Ex8, deux réserves** : inversion de g Paris/équateur vs Image 13 (physiquement g plus grand à Paris), et écart réel ≈ 0,8 % (et non « 8 % ») — transcrit fidèlement + aparté ; (3) **renumérotation** : le 2ᵉ « Exercice 10 » (plan incliné, diapo 13) devient **Ex11** (doublon de numéro dans la source).
-- Liens décodés : 8 vidéos (hyperliens de formes) + Kahoot activé. Portrait de Newton (1689) en 🚧 (encart histoire, licence à confirmer).
-- 🆕 **L'exercice 10 a enfin sa correction** (25/08) — le seul du chapitre qui n'en avait pas. L'Image 14 est posée en support et un **SVG maison** montre le poids ajouté sur les deux situations. La correction insiste sur le piège : sur le plan incliné, **le poids reste vertical** alors que la réaction reste perpendiculaire au plan — les deux ne se compensent plus, et sans frottements le solide glisserait. Rédigée par Claude, **à valider**.
-- 🔧 Corrigé au passage : à **390 px**, les longues lignes d'équation (indices « Terre–Lune ») faisaient déborder la page entière ; elles défilent désormais dans leur propre cadre.
-- Blocs 🚧 restants : **20** — schémas de forces (avion, pot de fleur, fusée, gravitation, poids, réaction, tension, plan incliné), diagrammes objets-interactions, 2 tableaux-images (astres, table de g), photos. Lien DS en attente.
+- Jalons : 1 ✅ · 2 ⬜ · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t2-c2-modeliser-une-action.html` · relevé : `_suivi/t2c2-releve.md`
+- **V1 intégrale le 13/11/2026.** 19 SVG (diagrammes objets-interactions, forces, vecteurs
+  posés sur les images source), 6 photos, 7 `-source`, 2 tableaux-images retranscrits.
+  36 vecteurs `.vec`. 11 exercices corrigés, 16 `a-noter`, 10 vidéos + Kahoot. Code **F0RCES**.
+- 9 retouches tracées, dont 🔴 **la légende de l'Image 8** : poids et réaction du sol
+  présentés comme paire action-réaction — faux, réécrit. Jupiter, G, ex. 8 (g Paris/équateur, 0,8 %).
+- ⏳ **Audit de Loïc** : portance/traînée/poussée évaluées sans être montrées (ex. 3) ;
+  joueur de tennis reconnaissable ; filigrane youphysics ; lien DS.
 
 ### T2-C3 — Le principe d'inertie
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- Fichier : `pages/2nde-pc-t2-c3-principe-d-inertie.html`
-- Fiche : aucune. Code de déblocage : **IN3RTE**.
-- 4 sections (définitions : repos, inertie, résultante · principe d'inertie & réciproque · contraposée · chute libre).
-- 5 exercices rédigés + **corrigés** (relations vectorielles de résultante) ; corrections « schéma » en 🚧 mais raisonnement donné en texte.
-- ⚠ Coquille source corrigée : « le masse » → « la masse » (définition de l'inertie).
-- Liens décodés : 5 vidéos + 2 animations (ostralo, GeoGebra) + Kahoot activé. Mapping label↔lien du bloc chute libre (diapo 6) : meilleur effort (3 liens, labels approchés).
-- Blocs 🚧 restants : ~8 — schémas (addition de vecteurs, skieur, chat, bilans repos/mouvement, chronophotographies) et photos (chat, bobsleigh/camion, planètes). Lien DS en attente.
+- Jalons : 1 ✅ · 2 ⬜ · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t2-c3-principe-d-inertie.html` · relevé : `_suivi/t2c3-releve.md`
+- **V1 intégrale le 13/11/2026.** 10 SVG (addition de vecteurs, bilans, exercices),
+  3 photos, 5 `-source`, GIF BBC passé en WebP animé (236 Ko, image fixe si mouvements
+  réduits). 42 vecteurs `.vec`. 5 exercices corrigés, 7 `a-noter`, liens de la diapo 6
+  refaits depuis le PPTX. Code **IN3RTE**.
+- 2 retouches tracées. 🔴 **À trancher : l'ex. 2 (skieur)** — avec P = 700 N et R = 500 N,
+  seule une pente de 44° est cohérente (dessin source ≈ 29°) ; page refaite à 44°.
+  Garder, ou garder 29° et R ≈ 610 N.
+- ⏳ **Audit de Loïc** : légende de l'Image 4 = réponse de l'ex. 3 ; « contraposée » au
+  lieu de réciproque (ex. 5) ; référentiel absent de l'énoncé du principe ; lien DS.
 
 ---
 
@@ -275,7 +294,7 @@
 - 🔎 **Audit 3 appliqué en entier le 27/08/2026** (lots A à F, plus H). Le lot G — la fiche élève — n'a **pas** démarré : il est verrouillé par le jalon 5. Le compte rendu détaillé est dans `_suivi/JOURNAL.md`, les aperçus mesurés dans `_apercus-audit3-t3c1/`.
 - Fichier : `pages/2nde-pc-t3-c1-emission-perception-son.html`
 - Fiche : ✅ **`fiches/fiche-2nde-t3c1.html`** — 8 pages, 18 cadres à lignes, 3 formules en fraction, 5 QR relus, cartouche à fond micro délavé. **Fichier généré** par `_outils/fiches/fiche_t3c1.py` : ne pas l'éditer à la main. PDF dans `assets/pdf/pc/fiches/`, bouton « Télécharger la fiche (vierge) » posé en `hors-verrou` sur la page. Intégrée le 02/09/2026, creux cumulé 44 mm, aucun débordement. ⚠ Le **jalon 5** (« cours VALIDÉ », acte explicite de Loïc) n'a jamais été posé : la fiche est en avance sur la validation du cours. Code de déblocage : **S0NORE**.
-- 🎞 **Diaporama de projection** : `assets/pptx/pc/diaporama-2nde-t3c1.pptx` — 12 diapositives, 53 étapes d'animation, 34 médias, structure du PowerPoint 2025/2026 conservée. Versionné le 02/09/2026 parce qu'il **n'est plus régénérable** : la chaîne qui l'a produit n'existe pas, toute retouche se fait à la main dans PowerPoint. 🔴 **Son tableau des célérités est faux** — Eau 1 500 · Bois 3 300 · Acier 5 000, quand le cours donne cinq milieux (Eau 1450 · Glace 3200 · Verre 5300 · Acier 5750). À corriger avant projection : l'écran contredirait la fiche.
+- 🎞 **Diaporama de projection** (refait le 13/11/2026) : `assets/pptx/pc/diaporama-2nde-t3c1.pptx` — **28 diapositives, 61 étapes**, 16 ✎, **les 10 exercices** (l'ancien s'arrêtait au 6), Kahoot. **Régénérable** (`diapo_t3c1.py`), **tableau des célérités juste** (cinq milieux). Non audité ; points ouverts : `CONSIGNES-diaporama-PC.md` §7bis.
 - 🥇 **Premier chapitre en V1 intégrale** (25/08/2026) — les 17 images de la source posées avec leurs légendes, aucun `.a-faire` sauf le lien de DS. 🔎 **Audit 1 appliqué le 25/08** : figures recalibrées, fractions sur deux lignes, quatre mises en regard texte/figure, cours étoffé (bloc Méthode, amplitude, seuils de danger). Les textes ajoutés sont des **propositions à valider**. 🔎 **Audit 2 appliqué EN ENTIER le 26/08 (lots A à E)** : méthode « Mesurer une période » **en deux colonnes** avec une **figure d'étapes SVG** produite pour elle (4 vignettes, signal composé, T = 4,0 ms sur 4 motifs) ; images 6-7 portées à 200 px et 16-17 à 375 px (plafond du casque, mesuré) ; l'exercice 2 redonne le résultat de l'exercice 1 en toutes lettres ; **12 gras d'insistance retirés** (64 → 50) ; **plus aucun `.a-faire`**. 🎨 **Lot C** : **12 figures** refaites en **SVG maison** — les 6 du lot 4 plus les **5 graphes d'exercice** (énoncés 1 et 3, leurs corrections annotées, le rappel de l'ex. 2), dont le motif composé de l'ex. 1 **reconstruit par ajustement de Fourier** (écart 0,019 V) ; **614 Ko d'images → 538 Ko économisés au chargement** (fréquence, extrema, timbre, diapason+son pur fusionnés, amplitude, échelle des décibels) sur un **code couleur commun**  ; + 2 icônes d'exercice (orage, baleine). ✍ **Lot D** : l'ouverture ne répète plus la définition qui suit, **8 transitions** (classe `.passage`) et **4 encarts `.histoire`** — le hertz, la cloche à vide, le la 440, le décibel. ⏳ **Le fond du lot D est une proposition, non validée.**
 - 4 sections (caractéristiques d'un signal périodique · les ondes · émission & propagation d'un son · perception des sons).
 - **10 exercices** rédigés + **corrigés en entier** — les 6 d'origine, plus **4 posés à l'audit 3** : l'écho de la falaise (aller-retour, partie 3), et trois en partie 4, qui n'en portait aucun alors qu'elle tient la moitié de la checklist du DS — audibilité d'un clic de dauphin, comparaison qualitative de trois signaux sans calcul, lecture de l'échelle en dB. ⏳ **Ces quatre exercices sont des propositions, non validées.** ; les graphes d'énoncé viennent de la source, les **corrections portent le graphe annoté** (T, 3T, 4T, extrema) découpé du rendu — ces annotations sont des formes PowerPoint, invisibles pour `pdfimages`.
@@ -287,45 +306,39 @@
 - 📄 **À lire et à trancher : `_suivi/t3c1-releve.md`** — 1 erreur de physique, 4 incohérences de calcul, 7 contenus récupérés, 6 remarques pédagogiques.
 
 ### T3-C2 — Signaux et capteurs
-- Jalons : 1 🔄 · 2 ⬜ · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- Fichier : `pages/2nde-pc-t3-c2-signaux-et-capteurs.html`
-- Fiche : aucune. Code de déblocage : **S1GNAL**.
-- 6 sections (rappels d'électricité · loi des nœuds · loi des mailles · caractéristique tension-courant · loi d'Ohm · capteurs électriques).
-- **7 exercices** rédigés + **corrigés en entier** ; 1 encart formule (U = R × I) ; 1 table (dipôles générateur/récepteur) transcrite.
-- ⚠ **Erreur source corrigée** : Ex2 nœud B — le corrigé d'origine écrivait « I₃ + I₅ + I₆ = 0, tous entrants », incohérent avec les flèches (I₅ **sortant**) ; rétabli en **I₃ + I₆ = I₅**, avec aparté sur la page.
-- ⚠ **Pas de diapositive « Pour le DS » ni de Kahoot** dans la source (comme T1-C6/C7) → bloc 🚧 « compétences à fournir » posé à la place de la checklist ; pas de Kahoot activé.
-- ⚠ **Hyperliens vidéo dupliqués/mal appariés** dans la source (`8_TFftdCO6E` et `N-Johiwk-To` réutilisés diapos 7/10/11 ; `_BEr9CPHnAc` diapos 3/12) → posés au mieux, sans répéter inutilement.
-- Liens décodés : ~11 vidéos utiles (hyperliens de formes ; sources d'images Google ignorées).
-- Blocs 🚧 restants : ~8 — schémas (circuit à légender, nœuds A/B avec sens de I₅, mailles, caractéristiques U=f(I), grandeur d'entrée→capteur→sortie, courbe d'étalonnage) et photos (multimètre, oscilloscope, interface, micro:bit, Arduino). Lien DS en attente.
+- Jalons : 1 ✅ · 2 ⬜ · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t3-c2-signaux-et-capteurs.html` · relevé : `_suivi/t3c2-releve.md`
+- **V1 intégrale le 13/11/2026**, texte remis mot pour mot sur la source. 32 SVG
+  (symboles normalisés, circuits, caractéristiques tracées depuis leurs points),
+  15 photos, 1 cadre `.reserve` (Image 19 : filigrane Alamy dans la source). 7 exercices
+  corrigés, 23 `a-noter`, 13 vidéos, TP12. Code **S1GNAL**. Checklist DS **proposée**, pas de Kahoot.
+- 1 retouche tracée (nœud B : I₃ + I₆ = I₅).
+- ⏳ **Audit de Loïc** : **2 URL de vidéo à fournir** (Paul Olivier « loi d'Ohm, exercice
+  facile », Florence Raffin « capteurs et microcontrôleurs ») ; photo libre pour l'Image 19 ;
+  capteurs sans exercice ; lien DS ; licences.
 
 ### T3-C3 — Dispersion de la lumière et spectres lumineux
-- Jalons : 1 ✅ · 2 🔄 · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- 🥇 **V1 intégrale le 25/08/2026** — les 18 images de la source posées, **34 figures**, plus aucun `.a-faire` sauf le lien de DS. Images : `assets/img/pc/2nde-pc-t3-c3/` (34 fichiers, 920 ko).
-- **Aucune erreur dans la source** — la seule correction de fond porte sur la **correction de l'exercice 1 rédigée à l'ébauche**, qui inversait monochromatique et polychromatique (`grep "ÉBAUCHE → CORRIGÉ"`).
-- Récupérés : les **valeurs de l'exercice 2** (l'énoncé n'en donnait aucune, l'exercice était inutilisable), les longueurs d'onde des sept couleurs, les bornes du visible, les trois températures des spectres continus, les 25 000 raies du spectre solaire, les trois spectres de raies, les cinq sources de lumière, les trois captures d'animations.
-- 📄 **À lire et à trancher : `_suivi/t3c3-releve.md`** — 1 correction d'ébauche, 9 contenus récupérés, 6 remarques (dont le doublon « Image 9 » de la source et la borne λ_R = 800 nm).
-- Fichier : `pages/2nde-pc-t3-c3-dispersion-spectres.html`
-- Fiche : aucune. Code de déblocage : **PR1SME**.
-- 2 sections (dispersion de la lumière · les spectres lumineux), sous-parties A–D.
-- **6 exercices** rédigés + **corrigés en entier** (mono/polychromatique, domaines de radiations, spectre EM, corps noir/QCM, feu d'artifice → lithium, acier du forgeron).
-- Le QCM du corps noir (Ex4) était **piégé dans une table d'image** : extrait et retranscrit (4 affirmations V/F + 3 questions). 1 table Li/Na (raies) transcrite.
-- 1 encart histoire des sciences (Newton, 1666, « expérience cruciale ») — illustré par la gravure de la source.
-- Liens décodés : ~11 vidéos + 3 animations (PhET déviation, PhET corps noir, LaboSims) + Kahoot activé.
-- Blocs 🚧 restants : **1**, le lien de DS.
+- Jalons : 1 ✅ · 2 🔄 · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t3-c3-dispersion-spectres.html` · relevé : `_suivi/t3c3-releve.md`
+  (sections du 25/08 et du 13/11). Code **PR1SME**.
+- **13/11/2026 : 16 `-source` sur 23 refaits en SVG** — spectres de raies posés à leurs
+  longueurs d'onde de référence, spectres continus par la loi de Planck, prismes par la
+  loi de Descartes. Restent en image : gravure de Newton, photos, spectre solaire réel.
+- Ex. 3 : l'énoncé montrait la frise complétée (la réponse) ; frise vierge à l'énoncé,
+  complétée à la correction — à valider.
+- ⏳ **Audit de Loïc** : doublon « Image 9 », borne λ_R = 800 nm (25/08) ; méthode de
+  l'ex. 5 fondée sur une échelle imprimée ; 3ᵉ bande de l'Image 13 ; licences ; lien DS.
 
 ### T3-C4 — Réfraction et réflexion de la lumière
-- Jalons : 1 ✅ · 2 🔄 · 3 ⬜ · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
-- 🥇 **V1 intégrale le 25/08/2026** — les 15 images de la source posées, **20 figures**, plus aucun `.a-faire` sauf le lien de DS. Images : `assets/img/pc/2nde-pc-t3-c4/` (20 fichiers, 652 ko).
-- ⚠ **Deux corrections d'ébauche** : ① la lecture graphique de l'exercice 3 répondait « 20 °C », or la courbe **mesurée point par point** donne n = 1,333 vers **10 °C** ; ② les cinq corrections portaient la mention « rédigée par M. Van Hoorde » — **elles sont de Claude**, la mention est rectifiée.
-- Récupérés : la nomenclature I / i₁ / i₂ / r, le cas n₂ > n₁ (la moitié manquante de la règle), la question 1 de l'exercice 5 (« à l'aide de la simulation »), L = 8,6 km de Fizeau, les données du JWST, les deux renvois internes de la source.
-- 📄 **À lire et à trancher : `_suivi/t3c4-releve.md`** — **relecture prioritaire** : la source est la version élève, les cinq corrections sont de Claude (calculs refaits et justes).
-- Fichier : `pages/2nde-pc-t3-c4-refraction-reflexion.html`
-- Fiche : aucune. Code de déblocage : **M1RAGE**.
-- 4 sections (propriétés de la lumière · dioptre & réflexion · phénomène de réfraction · la réfraction au quotidien), sous-parties A–E.
-- ⚠ **Source = version ÉLÈVE, sans corrigés.** Les **5 corrections** (temps Soleil→Terre ; indice de l'eau ; indice→température ; réfraction eau→plexiglas ; angle limite eau→air) ont été **rédigées par Claude**, refaites à la main le 25/08 et justes — la page le dit désormais explicitement. **À valider en priorité.**
-- 2 encarts formule reconstitués (n = c/v · n₁·sin i₁ = n₂·sin i₂) ; 1 table (indices de réfraction, 16 milieux) transcrite.
-- Liens décodés : ~11 vidéos + 1 animation PhET + 3 liens ressources (Institut d'Optique, physiqueludique, Ingenium) + Kahoot activé.
-- Blocs 🚧 restants : **1**, le lien de DS.
+- Jalons : 1 ✅ · 2 🔄 · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
+- Fichier : `pages/2nde-pc-t3-c4-refraction-reflexion.html` · relevé : `_suivi/t3c4-releve.md`
+  (sections du 25/08 et du 13/11). Code **M1RAGE**.
+- **13/11/2026 : les 10 `-source` refaits en SVG**, angles calculés par Snell-Descartes ;
+  courbe n = f(T) retracée point par point. Le schéma source « eau → air » était faux.
+  Objets (palmier, œil, bâtiments) non dessinés : flèche et point — à valider.
+- Les 5 corrections (rédigées par Claude, source élève) **recontrôlées** : 4 justes ;
+  ex. 3 → θ ≈ 9 °C au lieu de 10 °C, « eau surfondue » au lieu de « glace ».
+- ⏳ **Audit de Loïc** : points P1-P6 du relevé du 25/08 ; licences ; lien DS.
 
 ### T3-C5 — Formation d'une image
 - Jalons : **sans objet** — ce chapitre n'a pas de page de cours et n'en attend pas.

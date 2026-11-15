@@ -187,7 +187,7 @@ Chaque partie du projet porte son nom ; **rien ne se dépose à la racine** (ell
 | **Outils transversaux PC** 🆕 | `pages/2nde-pc-oN-…html` (8 écrits, **5 ouverts** au hub : O6-O8 en relecture) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · fiche A4 **complétée** : source `fiches/fiche-2nde-oN-…html`, **PDF** `assets/pdf/pc/fiches/` 🆕 · SVG inline |
 | **SNT** | `pages/2nde-snt-tN-…html` | `assets/css/sequence-snt.css?v=N` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/snt/<slug>/` pour les photos · SVG et CSS de contenu **inline** |
 | **Cahier de vacances** | `cahier/…html` | `assets/img/cahier/` · `assets/pdf/cahier/` |
-| **Diaporamas de projection PC** 🆕 | *(pas de page)* | `assets/pptx/pc/diaporama-2nde-<code>.pptx`. **`t1c1` et `t1c2` se régénèrent** (`_outils/diaporamas/`) ; **`t3c1` non** — produit par une chaîne perdue, il est versionné pour cette raison et son tableau des célérités faux ne se corrige qu'à la main. 🔴 Aucune page n'y renvoie : c'est un support de projection, pas un document d'élève — mais le dépôt étant public, le fichier reste accessible par son URL. Consignes : `_modeles/CONSIGNES-diaporama-PC.md` |
+| **Diaporamas de projection PC** 🆕 | *(pas de page)* | `assets/pptx/pc/diaporama-2nde-<code>.pptx`. **Tous se régénèrent** (`_outils/diaporamas/diapo_<code>.py`) : `t1c1`, `t1c2`, `t1c3`, `t1c4`, `t3c1` (porté sur la chaîne actuelle le 13/11/2026, célérités corrigées). 🔴 Aucune page n'y renvoie : c'est un support de projection, pas un document d'élève — mais le dépôt étant public, le fichier reste accessible par son URL. Consignes : `_modeles/CONSIGNES-diaporama-PC.md` |
 | **Outillage** 🆕 | *(pas de page)* | `_outils/fiches/` **le générateur des fiches élève PC** — `gabarit_fiche.py` (commun aux 14 fiches, 🔴 ne pas y résoudre un problème de chapitre) + `fiche_<code>.py` + `paginer.py`/`paginer.mjs` (la découpe en pages, calculée à la mesure) + `mesurer_pages.py` · 🆕 `_outils/diaporamas/` **le générateur des diaporamas de projection** — `extraire_figures.mjs` + `gabarit_diapo.py` + `diapo_<code>.py` + `animer.py` + `controler.py` (échoue si un ✎ ou un Kahoot de la page manque) + `mesurer_cadres.ps1` + `apercu_pptx.ps1` (export PNG par PowerPoint, et test de validité) · `_outils/tests/` scripts de contrôle, à lancer depuis la racine |
 | **Livret CFA** 🆕 | `cfa/index.html` · `cfa/outil-NN-…html` (17 outils) | `_modeles/gabarit-outil-CFA.html` · fiches à imprimer dans `fiches/cfa/` (**2 écrites sur 17** — les liens manquants forment le repère de 18 problèmes de `verifier.mjs`) · corrigés dans `_corriges-cfa/` · **client partagé** `assets/js/progression.js` |
 | **Enseignement scientifique 1re** 🆕 | `pages/1re-es-tN-cN-…html` (6 chapitres, 18 séances) | `assets/css/sequence-snt.css` + `assets/js/sequence-snt.js` (moteur partagé) · `assets/img/es/1re-es-tN-cN/` · **branché en base** (13/09) : `data-sequence="es1-tN-cN"`, réponses rédigées en réponses personnelles — voir `_suivi/es1-verification.md` · 🔴 **seules la nucléosynthèse, la radioactivité et les cristaux (13/11) sont ouvertes aux élèves** (repère `MASQUÉ-ES1`) : **dès qu'on retravaille l'ES 1re, proposer de démasquer les autres chapitres** (§0bis) · fiches de séance **rétablies** le 03/10 (V1 à auditer) · **séances sans verrou** (`<body data-seances="ouvertes">`, comme la terminale) |
@@ -252,6 +252,11 @@ même livraison**, leur date de révision est remise à jour, et
 `node exporter-guides.mjs` régénère les PDF. Motif : un guide faux envoie
 chercher le problème au mauvais endroit — il coûte plus cher que pas de guide du
 tout.
+
+🔴 **Grec et symboles mathématiques** (θ ρ λ Δ ≈ √ ∝, indices) : servis par des
+faces Noto déclarées dans `assets/css/fonts.css` sous les noms des six familles,
+limitées par `unicode-range` (13/11/2026). Les écrire tels quels ; ne jamais
+ajouter une face sans `unicode-range` avant celles du site.
 
 🔴 **`assets/fonts/IBMPlexSans-*.woff2` sont inutilisables** — mesuré au
 navigateur le 04/09/2026 : **5 glyphes sur 69**, sur les quatre faces (400, 400i,

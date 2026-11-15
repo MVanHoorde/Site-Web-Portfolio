@@ -285,10 +285,10 @@ Chacun a coûté une passe. À relire avant de toucher au gabarit.
       diverger en silence.**
 - [ ] Le PDF vient de `node exporter-fiches.mjs` (Chrome), pas de WeasyPrint,
       et le script n'a signalé aucun écart de mesure.
-- [ ] Aucun caractère hors des six familles auto-hébergées — `⁻¹`, `₆`, `⩽`,
-      `≈`, `π`, `Δ`, `✓`, `⚠`. Le moteur les sert en **Arial** : ils sortent du
-      PDF dans un autre dessin que le reste de la feuille. Les six fiches
-      existantes en portent toutes ; T3-C1 écrit `m·s⁻¹` en page 6.
+- [ ] Aucun caractère servi par une police système : `exporter-fiches.mjs` le
+      signale. Grec, ≈, √, ≤ et indices sont couverts par les faces Noto de
+      `fonts.css` depuis le 13/11/2026 ; restent hors couverture les pictogrammes
+      (`✓`, `⚠`, `✎`), à éviter sur la feuille.
 
 ---
 
@@ -331,12 +331,11 @@ du chapitre. Contrôles au dépôt : cinq QR relus `✓`, A4 `209,9 × 297,0 mm`
    Mono** — les mentions « Donnée : … » des énoncés sortent donc dans un autre
    dessin. C'est aussi ce qui rend la fiche un peu plus haute que l'aperçu du
    29/08, produit sur une machine où les polices étaient complètes.
-5. **Aucune police auto-hébergée ne porte les lettres grecques.** Mesuré au
-   navigateur le 20/09/2026 : `θ` tombe en Times New Roman dans les **six**
-   familles. Le dépôt en compte **754 occurrences dans 48 fichiers** ; la fiche
-   de T1-C2 en porte 2, seul caractère de ses douze pages servi par une police
-   système. À traiter une fois pour toutes en ajoutant une famille qui couvre
-   le grec, pas fiche par fiche.
+5. ✅ **Le grec et les symboles mathématiques ont leur police** (13/11/2026) :
+   `fonts.css` déclare des faces Noto (OFL) sous les noms des six familles,
+   limitées par `unicode-range` — mesuré par CDP, θ, ρ, ≈, √ et ∝ sont servis
+   par Noto, et chaque famille garde ses propres glyphes (− ≤ → restent en
+   Spectral). Les exposants Unicode (`⁻`) aussi ; continuer d'écrire `<sup>`.
 
 ---
 

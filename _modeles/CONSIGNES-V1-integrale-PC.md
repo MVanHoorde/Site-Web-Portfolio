@@ -47,6 +47,12 @@ vérifie.
 
 ## 3. Extraction — le pipeline complet
 
+> 🪟 **Sur le poste Windows de Loïc**, poppler et zbar sont absents : PyMuPDF remplace les
+> passes 2 et 3 (`page.get_pixmap(dpi=200)`, `doc.extract_image(xref)`, et
+> `page.get_image_rects(xref)` qui donne l'emplacement de chaque image) ; les URL des QR
+> se lisent dans le PPTX (`click_action` des formes et `.rels` des diapositives). Le
+> pipeline ci-dessous reste la référence sous Linux.
+
 Les trois passes se font **toutes les trois**, systématiquement. Chacune attrape
 ce que les autres manquent.
 
@@ -126,13 +132,23 @@ relevé plutôt que de deviner.
 | Exercice + correction | **Intégralement** rédigés, énoncé et étapes, avec le graphique support à côté de l'énoncé |
 | Formule rendue en image par PowerPoint | Retypée en `.formule-bloc` |
 | **Photo réelle** (guitare, portrait, cristal, sonomètre) | **Extraite, optimisée** (≤ 900 px, JPEG q82), nommée parlant, déposée dans `assets/img/pc/<slug-de-page>/` |
-| **Schéma, clipart, graphique, frise** | **Extrait tel quel** et posé sur la page, suffixé `-source` (ex. `t3c1-echelle-db-source.png`). Le SVG à la charte viendra en régime B et **remplacera** le fichier ; en attendant, le cours est complet |
+| **Schéma de structure** (axes, graphe, vecteurs, circuit, montage, modèle de Lewis, cortège, frise) | 🔴 **Refait en SVG à la charte dès la V1** (décision du 13/11/2026), mêmes valeurs que la source, inline, avec `<title>`, `<desc>` et `aria-labelledby` — la clé dont la fiche et le diaporama ont besoin. Un graphique de mesures se retrace depuis ses points relevés, jamais à l'œil |
+| **Clipart, dessin d'objet, pictogramme** | Jamais redessiné (règle du dessin figuratif, `CLAUDE.md`). Extrait tel quel, suffixé `-source` ; à défaut d'image exploitable, **cadre de réservation** `.reserve` (nom de fichier attendu, ce qu'on doit y voir, format) |
 | **Légende « Image N — … »** | **Reprise intégralement** en `<figcaption>`. Une figure sans sa légende est une figure à moitié récupérée |
 | Tableau composé en image | Retranscrit en `table.tab`. L'image d'origine n'est pas conservée |
 | **Donnée chiffrée prisonnière d'une image** (bornes d'un axe, valeurs d'un spectre, sous-domaines d'une frise) | **Extraite et écrite en toutes lettres** dans le texte ou dans un `table.tab`. C'est le point le plus souvent manqué |
 | QR code / lien vidéo / Kahoot | Décodé, posé en `.video-chip` réel (`target="_blank" rel="noopener"`, `?si=` retiré) à l'endroit exact du QR |
 | Lien vers un **DS** | **Seul `.a-faire` autorisé.** Le DS change chaque année, Loïc seul décide lequel lier |
 | Erreur de physique évidente | Corrigée **et** marquée (§6) |
+
+### Écriture scientifique (règles permanentes)
+
+- **Fractions empilées**, jamais de barre oblique hors unités (composant de fraction de la page).
+- **Indices et exposants en `<sub>`/`<sup>`**, jamais en caractères Unicode (`⁻`, `₂`).
+- **Vecteurs : `<span class="vec">F<sub>A/B</sub></span>`** (`chapitre-commun.css` ≥ v12) — la flèche
+  couvre le nom entier, indice compris. Jamais la flèche combinante U+20D7.
+- Le grec (θ, ρ, λ, Δ) et les symboles (≈, √, ∝, ≤) s'écrivent tels quels : `fonts.css` les sert
+  en Noto depuis le 13/11/2026.
 
 ## 5. Droits d'usage — décision de Loïc, 25/08/2026
 
@@ -185,7 +201,7 @@ relevé ; Loïc juge.
 ## 7. Ce qu'on ne fait PAS en V1
 
 - ❌ pas de fiche élève, pas de PDF, pas de pagination ;
-- ❌ pas de SVG à la charte pour les schémas (l'image source suffit à ce stade) ;
+- ❌ pas de diaporama, de fiche ni de version PAP : ils attendent l'audit de la page ;
 - ❌ pas de maquette PNG soumise à validation — c'est le régime B ;
 - ❌ pas de reformulation du cours ;
 - ❌ pas de captures d'écran de la page.
@@ -246,8 +262,8 @@ La V1 n'est pas un chapitre fini. Une fois qu'elle est en ligne :
 |---|---|
 | 1. `V1 intégrale en ligne` | Loïc lit son cours entier à l'écran |
 | 2. `Texte & exercices validés` | il annote, on corrige — conversation par chapitre |
-| 3. `Images retravaillées` | les `-source` deviennent des SVG à la charte (régime B) |
+| 3. `Images retravaillées` | photos au propre, licences, cadres de réservation remplis (les schémas sont déjà en SVG depuis le 13/11) |
 | 4. `Ajouts & approfondissements` | ce qu'il veut en plus |
 | 5. `Cours VALIDÉ` | « je peux l'utiliser l'an prochain » |
-| 6. `Fiche élève faite` | **seulement ici**, cours figé — §6 de `CONSIGNES-chapitre-PC.md` |
+| 6. `Fiche élève faite` | après l'audit de la page, avec le diaporama et la version PAP — `CONSIGNES-chapitre-PC.md` §1bis |
 | 7. `CHAPITRE CLOS` | |

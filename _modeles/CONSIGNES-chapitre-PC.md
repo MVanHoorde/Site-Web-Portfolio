@@ -119,11 +119,18 @@ La production d'un chapitre se fait en **deux temps**, à ne pas confondre :
   en SVG à la charte, intégrer les ajouts, puis produire la fiche élève. C'est
   le mode qui a produit T1-C2 et T1-C4.
 
-> ⚠ Les 14 chapitres actuellement en ligne datent d'avant la V1 intégrale : ils
-> sont fidèles dans le texte mais **troués de blocs `.a-faire` à la place des
-> images**. Ils repassent tous par une V1 avant tout raffinage.
+### 🔴 L'ordre de travail réel (décision de Loïc du 13/11/2026)
 
-Par défaut, si Loïc ne précise rien : demander lequel des deux temps.
+1. **Page en V1 intégrale**, schémas déjà en SVG à la charte (voir
+   `CONSIGNES-V1-integrale-PC.md` §4) + relevé ;
+2. **audit de la page par Loïc** — rien d'autre ne se fait sur le chapitre avant ;
+3. **diaporama, fiche élève et version PAP**, produits ensemble sur la page auditée ;
+4. **audit des supports** (en pratique, sur le diaporama) ; ce qui touche le fond
+   est **reporté sur la page** dans la même livraison (R13 du diaporama) ;
+5. validation (« je peux l'utiliser l'an prochain »).
+
+Les jalons du §10 restent la grille de suivi ; la fiche n'attend plus la
+validation complète du cours, mais elle attend toujours l'audit de la page.
 
 ## 2. Régime B — Raffinage : workflow imposé (maquettes AVANT implémentation)
 
@@ -322,8 +329,8 @@ Trois points, dans l'ordre d'importance :
    remettent **de la main à la main**.
 3. **Pas de fiche ⇒ pas de bouton.** Un lien vers un fichier absent est un
    lien cassé (bloquant pour `verifier.mjs`) et une promesse non tenue.
-   Au 20/09/2026, **3 chapitres sur 14** portent le bouton — `t1c2`, `t1c3`
-   et `t1c4`, les seuls dont la fiche est écrite.
+   Au 13/11/2026, **5 chapitres sur 14** portent le bouton — `t1c1`, `t1c2`,
+   `t1c3`, `t1c4` et `t3c1`, les seuls dont la fiche est écrite.
 
 ### 🔴 Le PDF est un export, le HTML est la source (28/08/2026)
 
@@ -356,57 +363,13 @@ c'est l'élève qui l'imprime (`CONSIGNES-outil-PC.md` §7).
 c'est pourquoi `body.verrouille article.lecture` est passé en
 `flex-direction:column`. Ne pas le remettre en ligne.
 
----
+### 🔴 La conception de la fiche : `CONSIGNES-fiche-eleve-PC.md` fait foi
 
-- Style aligné sur le site : mêmes encarts (`.definition`, `.propriete`,
-  `.methode-f`, `.exercice-f`), **AUCUN pictogramme crayon** sur la fiche
-  (le crayon ✎ n'existe que dans le cours en ligne).
-- Chaque partie du chapitre est nettement délimitée : h2 avec numéro + champ
-  **« date : ...... »** à droite (autonomie de gestion du temps des élèves) ;
-  pages de continuation marquées par `<p class="suite">` discret.
-- **TOUTES les définitions**, à rédiger **en entier** : cadre titré
-  « Définition — [terme] » + lignes `.ligne` vides (les élèves écrivent les
-  phrases complètes). Définition à plusieurs parties → sous-titres
-  `.partie-def` pour chaque partie, dans le même cadre.
-- **TOUTES les propriétés**, à compléter (trous `.trou` sur les notions clés).
-- **Méthode (`.methode-f`) : PAS de texte à trous.** Une méthode se lit et se
-  suit, elle ne se mémorise pas par cœur comme une définition : les étapes
-  sont rédigées **en clair**, sans blancs à compléter.
-- **TOUS les exercices du chapitre**, systématiquement : énoncé abrégé fidèle
-  + zone de réponse adaptée (`.ligne` pour du rédigé, `.calc.lignes` pour du
-  calcul, boîtes `.boite.pt` pour des coefficients à trouver).
-- **PAS d'images, PAS d'exemples** : les élèves notent leurs propres exemples
-  dans la colonne de notes. (Exception possible si un exemple est vraiment
-  structurant — demander à Loïc.)
-- Seulement les **schémas essentiels**, identifiés chapitre par chapitre,
-  repris **TELS QUELS du cours** (mêmes SVG, réduits, avec leur légende dans
-  `.schema .legende`). Pour T1-C2 : endo/exo (Image 3), trois états
-  (Image 4), six changements (Image 5), hot-dog (Image 9) — les quatre
-  portent un `a-noter` sur la page, et c'est ce marqueur qui fait foi. Un schéma contraint à une taille
-  arbitrairement petite (`max-width` trop serré) doit être agrandi — ça sert
-  aussi à équilibrer le remplissage des pages (voir pagination ci-dessous).
-- Formule : cadre sobre `.formule-s`, formule en boîtes vides à gauche,
-  « Grandeurs & unités » en lignes vides à droite, **rien de pré-rempli**,
-  pas de panneau sombre.
-- Structure Cornell : colonne de notes latérale qui s'étire jusqu'au pied de
-  page (`.feuille` en flex, `.corps { flex:1 }`).
-- Dernière page : « L'essentiel du chapitre, avec mes mots » + encadré code
-  de déblocage (6 cases) ; signature dans le pied de la dernière page.
-- Nombre de pages **pair** (recto-verso) ; ~250 mm utiles par page. Si le
-  compte tombe impair une fois le contenu réparti, **replier la clôture**
-  (« l'essentiel » + déblocage) sur la dernière page de contenu plutôt que
-  de lui dédier une page à part entière.
-- **Impression — fond blanc.** En `@media print`, le fond de `.feuille` est
-  blanc pur (`#fff`), jamais le papier crème `--papier` (réservé à l'écran) :
-  ça économise l'encre sur les tirages classe entière.
-- **Aération.** Marge haute de 8mm au-dessus de chaque `h2` (pas 4mm), pour
-  ne pas tasser les pages qui contiennent plusieurs grandes parties.
-- **Pagination — mesurer, ne jamais estimer à l'œil.** Écrire un script
-  Playwright qui mesure la hauteur réelle de chaque bloc de contenu
-  (`getBoundingClientRect`), avec les polices du site installées localement
-  (paquets `@fontsource/*` via npm — jamais de CDN) pour un rendu fidèle aux
-  vraies métriques. Cible ~75-98 % de remplissage par page ; aucun titre de
-  section (`h2`) seul en bas de page (le repousser à la page suivante).
+Cadres à lignes, figures reprises du cours, exercices sans rien de pré-dessiné,
+pas de champ date, cartouche, QR, pagination mesurée, **version PAP** : tout est
+dans `CONSIGNES-fiche-eleve-PC.md`. L'ancien standard « v4 » qui vivait ici
+(champ « date : … », aucune image, cadres de calcul `.calc`) est **abandonné**
+depuis le générateur du 29/08/2026 ; il contredisait la consigne en vigueur.
 
 ## 7. Validation OBLIGATOIRE avant livraison
 

@@ -93,3 +93,75 @@ Trois cas méritent d'être distingués le jour d'un assainissement :
 | 4. Ajouts & approfondissements | ⬜ |
 | 5. Cours VALIDÉ | ⬜ |
 | 6. Fiche élève | ⬜ **seulement une fois le cours figé** |
+
+---
+
+## 13/11/2026 — Schémas de structure refaits en SVG à la charte
+
+> Règle du 13/11/2026 (`CONSIGNES-V1-integrale-PC.md` §4) : un schéma de structure
+> se refait en SVG inline dès la V1. La page passe de **0 à 17 SVG**, tous avec
+> `<title>`, `<desc>` et `aria-labelledby` (aucun SVG n'existait avant : rien à
+> rattraper de ce côté). Aucun texte de cours modifié ; aucune erreur de physique
+> trouvée dans les figures, donc aucun `SOURCE → CORRIGÉ` ajouté.
+
+### Ce qui a été remplacé — 16 fichiers `-source`, 17 SVG
+
+| Figure | Ce qui fait foi dans le SVG |
+|---|---|
+| Image 2 — prisme | Rayons tracés par la loi de Descartes, prisme équilatéral au minimum de déviation. **Écart d'indice entre couleurs exagéré** (n = 1,62 à 400 nm, 1,50 à 700 nm, loi de Cauchy), sinon l'éventail ferait 1,5° ; c'est dit dans le `<desc>`. Éventail continu, couleur calculée depuis λ. |
+| Image 3 — recomposition | Même tracé pour le premier prisme ; lentille convergente qui rabat l'éventail sur la face du second prisme, retourné ; faisceau blanc de sortie tracé à l'indice du vert. Schéma de principe (dit dans le `<desc>`). |
+| Ex. 1 — prisme, fente, prisme | Même tracé ; la fente est posée à la hauteur exacte du rayon vert (530 nm), le second prisme sur sa trajectoire. Étiquettes : premier prisme, fente, second prisme. L'étiquette « lumière blanche » du fichier extrait **n'est pas reprise** : c'est l'un des trois termes que l'élève doit placer (le recadrage du PPTX la masquait déjà). |
+| Image 6 — longueurs d'onde | Sept sinusoïdes dont la période est **proportionnelle à λ** : 400, 425, 470, 550, 600, 630, 665 nm. La source ne l'était pas (violet 53 px, rouge 132 px : rapport 2,5 au lieu de 1,66). Cote posée entre deux maxima successifs, comme la définition. |
+| Image 7 — domaine visible | Axe **linéaire** 400 → 800 nm, graduations de la source (400, 420, 500, 575, 620, 800) à leur vraie place (la source les espaçait irrégulièrement). Dégradé calculé depuis λ ; au-delà de 700 nm le rouge s'assombrit (sensibilité de l'œil), ce qui rejoint P2 sans la trancher. Zones UV et IR hachurées de part et d'autre. |
+| Ex. 3 — spectre électromagnétique | Frise **schématique, non proportionnelle, comme la source** : cases de domaines côte à côte, repères 10<sup>6</sup>, 10<sup>8</sup>, 10<sup>10</sup>, 10<sup>12</sup>, 10<sup>14</sup>, 10<sup>15</sup>, 10<sup>19</sup>, 10<sup>21</sup> Hz posés dans leur domaine, **sans graduation** qui ferait croire à une échelle régulière. Les pictogrammes (pylône, téléviseur, radar…) ne sont pas redessinés (règle du dessin figuratif) ; les usages sont dans la liste de l'énoncé. Voir E1 ci-dessous. |
+| Image 8 — goutte d'eau | Rayon entrant au paramètre d'impact 0,86 R (arc primaire), réfraction, réflexion sur le fond, réfraction de sortie, tous calculés ; il ressort vers l'arrière et vers le bas. Indices de l'eau 1,344 (400 nm) et 1,331 (700 nm), écart **multiplié par 4** pour la lisibilité (dit dans le `<desc>`). |
+| Montage « spectre du Soleil » | Vue de côté : lumière solaire, fente, lentille, prisme, écran ; éventail tracé de 400 à 800 nm, spectre sur l'écran en dégradé. |
+| Image 13 — trois spectres | Raies **mesurées sur l'image source**, calibrées sur les quatre raies de Balmer de la première bande (410,17 · 434,05 · 486,13 · 656,28 nm ; résidu 0,1 nm). La deuxième bande est l'**hélium** à 0,3 nm près (402,6 · 412,1 · 414,4 · 438,8 · 443,8 · 447,1 · 471,3 · 492,2 · 501,6 · 504,8 · 587,6 · 667,8), plus une raie à 687 nm que l'hélium n'explique pas ; la troisième n'est pas identifiée (deux raies bleues à 423 et 437 nm, une série de 533 à 666 nm, en partie celles du néon). Positions conservées telles que mesurées ; aucun nom d'élément ajouté sur la page (la source n'en donne pas). |
+| Image 15 — corps chaud | Trois bandes **calculées par la loi de Planck** à 3 000, 1 500 et 800 °C : luminance rapportée à celle de 700 nm, rendue sur 1,5 décade (ce qui est 30 fois plus faible que le rouge devient noir), couleur depuis λ. Le rendu suit la légende : rouge sombre seul à 800 °C, jaune et vert à 1 500 °C, tout le visible à 3 000 °C. |
+| Image 16 — mercure | Une quarantaine de raies **mesurées sur l'image source**, calibrées sur huit raies du mercure (404,66 · 407,78 · 435,83 · 491,61 · 546,07 · 576,96 · 579,07 · 690,75 nm ; résidu ≤ 0,8 nm), éclat de chaque raie repris de la source. |
+| Image 17 — sodium | Doublet 588,995 et 589,592 nm. À l'échelle du spectre, les deux raies se confondent (0,6 nm, moins d'un pixel) : un **agrandissement** les sépare, avec leurs valeurs. |
+| Image 18 — hydrogène | Les quatre raies de Balmer : 410,17 · 434,05 · 486,13 · 656,28 nm. |
+| Ex. 5 — feu d'artifice | Raies mesurées sur l'image source contre ses propres graduations : 459,9 · 497,0 · 610,1 · 670,2 nm, soit **exactement les raies du lithium du tableau** (460 · 497 · 610 · 670) — c'est là qu'elles sont posées. Axe 450 → 700 nm gradué tous les 50 nm, comme la source. |
+| Ex. 6 — spectres a, b, c, d | a et c : raies mesurées sur la source, posées sur une plage 400 → 750 nm (la source n'a pas d'axe ; c'est la plage pour laquelle les couleurs des raies concordent). b et d : spectres continus calculés par la loi de Planck, à 1 000 °C pour b et 1 500 °C pour d (températures choisies pour reproduire l'allure de la source, **non affichées**). |
+| Ex. 6 — correction | La photo `t3c3-ex6-acier-chauffe.jpg` en fond (`<image>` dans le SVG), les deux spectres b et d calculés comme ci-dessus, trois repères rouges : extrémités → b, partie jaune → d. Le `data-origine` de la figure signale la photo de fond. |
+
+Les 16 fichiers remplacés ne sont plus appelés nulle part (vérifié dans tout le
+dépôt) et ont été retirés du dossier ; ils restent dans l'historique Git.
+`assets/img/pc/2nde-pc-t3-c3/CREDITS.md` est créé : il inventorie les 19 images
+restantes et liste les 16 retirées avec le SVG qui les remplace.
+
+### Ce qui est gardé en image — 7 fichiers `-source`
+
+| Fichier | Pourquoi |
+|---|---|
+| `t3c3-newton-experience-source.jpg` (Image 1) | gravure ancienne : document historique |
+| `t3c3-laser-monochromatique-source.jpg` (Image 4) | photo réelle |
+| `t3c3-prisme-polychromatique-source.jpg` (Image 5) | image de synthèse photoréaliste, pas un schéma |
+| `t3c3-prismes-systeme-dispersif-source.jpg` (Image 10) | photo d'objet |
+| `t3c3-spectroscope-source.jpg` (Image 11) | photo d'objet |
+| `t3c3-reseau-diffraction-source.jpg` (Image 9, II-A) | photo d'objet |
+| `t3c3-spectre-soleil-source.jpg` (Image 12) | photographie d'un spectre réel à haute résolution : ses milliers de raies sont une mesure, pas un schéma |
+
+Les captures d'animations, les photos d'arc-en-ciel, les vignettes de sources
+lumineuses et la photo de l'acier n'étaient pas suffixées `-source` : inchangées.
+
+### Ce qui a changé sur la page, hors figures
+
+| # | Où | Quoi |
+|---|---|---|
+| **E1** | Exercice 3 | **L'énoncé montre désormais la frise vierge**, comme la version élève du PPTX : la figure complétée de la version corrigée était posée sous la question et livrait les réponses (règle « aucune bonne réponse devinable »). La **frise complétée** est ajoutée dans la correction. Commentaire HTML posé sur place. **À valider.** |
+| **E2** | Exercice 5, correction | « 250 × 4 ⁄ 88 » écrit en **fraction empilée** (règle d'écriture permanente). Typographie, pas physique. |
+
+### Restes ouverts — à toi
+
+- **P1** (doublon « Image 9 ») et **P2** (borne λ<sub>R</sub> = 800 nm) : inchangés, non tranchés.
+- **Ex. 5** : la correction raisonne sur l'échelle imprimée (« 88 mm ↔ 250 nm », « 4 mm de 450 nm »). À l'écran, le spectre n'a plus ces dimensions ; les raies sont à 460 · 497 · 610 · 670 nm et se lisent sur l'axe gradué. Les résultats de la correction (461 · 498 · 612 · 672 nm) restent dans l'incertitude de lecture ; tu voudras peut-être reformuler la méthode pour l'écran.
+- **Image 13** : la troisième bande n'est pas identifiée (voir plus haut) ; nommer les trois éléments demanderait une source qui les donne.
+- **Licences** : 19 images restent « licence non identifiée » (voir `CREDITS.md`) ; les deux captures PhET sont en CC-BY et appellent juste une attribution. La vignette du hub `t3c3-prisme-dispersion.jpg` n'a pas d'origine tracée.
+
+### Contrôles
+
+- Playwright (Chromium, serveur local) : **aucune erreur JS** ni requête en échec ; verrou fonctionnel (mauvais code refusé, `PR1SME` débloque) ; **18 images** chargées une à une, plus la photo de fond du SVG de l'ex. 6 ; **17 SVG**, tous avec un `aria-labelledby` qui pointe sur leur `<title>` et leur `<desc>` ; aucun texte hors du `viewBox`.
+- Iframe de 390 px : `scrollWidth` = `clientWidth` = 390, aucun élément qui déborde.
+- Chaque SVG regardé à côté de son image source, puis capturé dans la page.
+- `node verifier.mjs` : **19 problèmes**, le repère — aucun ajouté ; « crédits d'images — toutes citées ».

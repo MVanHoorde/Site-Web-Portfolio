@@ -88,3 +88,75 @@ Quelques cas se distinguent :
 | 4. Ajouts & approfondissements | ⬜ l'explication du crayon brisé (P3) y a sa place |
 | 5. Cours VALIDÉ | ⬜ |
 | 6. Fiche élève | ⬜ **seulement une fois le cours figé** |
+
+---
+
+## Reprise du 13/11/2026 — schémas en SVG à la charte, corrigés revérifiés
+
+> Règle du 13/11/2026 (`CONSIGNES-V1-integrale-PC.md` §4) : les schémas de structure
+> passent en SVG à la charte dès la V1. Périmètre de cette reprise : la page, son
+> dossier d'images, ce relevé. Texte du cours non touché, hors écriture scientifique
+> (fractions, indices) et les deux points de l'exercice 3 ci-dessous.
+
+### A. Les dix images `-source` : toutes remplacées, toutes retirées du dossier
+
+Chaque SVG est inline, porte `<title>`, `<desc>` et `aria-labelledby` (10 SVG sur la
+page, 10 `aria-labelledby` résolus, contrôlés au navigateur). Les angles sont
+**calculés**, pas relevés à l'œil, avec les indices de la page :
+
+| Figure | Remplace | Géométrie |
+|---|---|---|
+| Image 1 — Fizeau | `t3c4-fizeau-source.jpg` | Schéma de principe redessiné (lentilles, lame semi-réfléchissante, roue dentée vue de profil, miroir, L = 8,6 km, mention « non à l'échelle »). Le faisceau source → lame → roue est construit par réflexion exacte sur la lame à 45°. **La photographie du montage d'époque est gardée** : découpée dans l'image composite → `t3c4-fizeau-montage.jpg`, ses légendes imprimées (« oculaire, roue dentée et son système d'entraînement », « collection École polytechnique ») passées dans la `figcaption`. |
+| Image 2 — réflexion | `t3c4-reflexion-schema-source.jpg` | r = i = 30°. |
+| Trois rayons et leurs angles | `t3c4-rayons-angles-source.jpg` | n₁ = 1,00 (air), n₂ = 1,50 (verre), i₁ = 45° → sin i₂ = 0,4714, **i₂ = 28,1°** ; r = i₁. La source était dessinée avec un rapport sin i₁ / sin i₂ ≈ 1,67, sans indice précisé. |
+| Image 8 — plan d'incidence | `t3c4-plan-incidence-source.jpg` | Perspective cavalière ; n₁ = 1,00, n₂ = 1,50, i₁ = r₁ = 40° → **i₂ = 25,4°**. Couleurs de la légende conservées (rayons verts, normale en pointillés rouges). |
+| Cas n₂ > n₁ | `t3c4-cas-n2-superieur-source.jpg` | air → verre, i₁ = 35° → **i₂ = 22,5°**, prolongement du rayon incident en pointillés fins pour voir le sens de la déviation. |
+| Cas n₂ < n₁ | `t3c4-cas-n2-inferieur-source.jpg` | eau → air, i₁ = 35° → **i₂ = 49,7°** (35° reste sous l'angle limite de 48,8°). ⚠ Le schéma source était **faux à l'œil** : le rayon y passait quasiment sans déviation (38° → 38°). |
+| Image 7 — n = f(T) | `t3c4-indice-temperature-source.jpg` | Courbe **retracée depuis un relevé pixel calibré** (240 K → x 169,1 ; 360 K → x 729,7 ; 1,334 → y 118,5 ; 1,320 → y 593,3), régression locale sur les colonnes que les marqueurs ne masquent pas ; 16 carrés pleins, 10 carrés vides et 6 cercles relevés un à un. Axes traduits (« temperature / K » → « température (K) », « index of refraction » → « indice de réfraction n »), quadrillage fin ajouté pour la lecture (5 K, 0,0005). |
+| Image 10 — atmosphère | `t3c4-atmosphere-source.jpg` | Schéma de principe sans échelle : Soleil réel sous l'horizon, rayons rectilignes hors de l'atmosphère puis courbés, directions apparentes = tangentes aux rayons à l'arrivée ; le Soleil vu est au-dessus de l'horizon et aplati. Continents non redessinés. |
+| Image 12 — mirage chaud | `t3c4-mirage-chaud-source.jpg` | Rayon venu du ciel, courbé dans l'air chauffé, direction apparente prolongée jusqu'au sol (« image du ciel : on croit voir de l'eau »). |
+| Image 13 — mirage froid | `t3c4-mirage-froid-source.jpg` | Parcours réels bombés vers le haut, parcours imaginaires = tangentes à l'arrivée ; libellés de la source repris (« Parcours réel / imaginaire du rayon lumineux », « Air chaud », « Air froid »). |
+
+**Choix à valider (Loïc)** — règle du dessin figuratif : le palmier et le soleil du
+mirage chaud, les immeubles, la plage et le promeneur du mirage froid, l'œil et le
+soleil du schéma de Fizeau **ne sont pas redessinés**. L'objet du mirage froid est une
+flèche « bâtiments », l'observateur un point. Les photos réelles du chapitre (mirages,
+coucher de Soleil, JWST, labyrinthe, crayons, pièce, ballon) et la capture PhET restent
+des images.
+
+`assets/img/pc/2nde-pc-t3-c4/CREDITS.md` est créé (12 fichiers, tous cités ;
+`verifier.mjs` le contrôle). Licences inchangées : §4 ci-dessus.
+
+### B. Les cinq corrections, refaites à la main
+
+| Exercice | Calcul refait | Verdict |
+|---|---|---|
+| **1** | 1,50 × 10¹¹ / 3,00 × 10⁸ = 500 s = 8 min 20 s | ✅ juste |
+| **2** | 3,00 × 10⁸ / 2,25564 × 10⁸ = 1,3300 | ✅ juste |
+| **3** | lecture sur la courbe retracée | ⚠ deux corrections, É3 et É4 |
+| **4** | 1,33 × 0,70711 / 1,50 = 0,62697 → i₂ = 38,83° | ✅ juste |
+| **5** | 1,00 / 1,33 = 0,75188 → i_lim = 48,75° | ✅ juste |
+
+| # | Ce que disait la page | Ce qu'elle dit maintenant | Pourquoi |
+|---|---|---|---|
+| **É3** | θ ≈ **10 °C** (283 K), plage 5 à 13 °C, autre solution vers −10 °C | θ ≈ **9 °C** (282 K), plage **4 à 12 °C**, autre solution vers **−9 °C** ; maximum « entre 271 et 277 K » au lieu de « vers 277 K » | La courbe retracée donne n = 1,3330 à **281,8 K** (8,7 °C) et à 264,5 K ; n = 1,3332 à 277,3 K et 1,3328 à 285,0 K. Le commentaire de l'ébauche lisait déjà « 282 K, soit environ 9 °C » : la réponse affichée le contredisait. Écart d'arrondi, pas de physique — P2 reste entier. |
+| **É4** | la seconde solution est « de la **glace** surfondue » | « de l'**eau** surfondue (restée liquide sous 0 °C) » | Erreur de physique de l'ébauche : c'est le liquide qui se surfond. |
+
+Les deux sont tracées dans la page par `<!-- ÉBAUCHE → CORRIGÉ … -->`.
+
+**Écriture** : les neuf quotients des corrections et la formule n = c/v sont en
+fractions empilées (`.frac`, plus de barre « ⁄ ») ; les indices Unicode des lignes
+« Données » et des étapes des exercices 4 et 5 sont passés en `<sub>`.
+
+### C. Contrôles du 13/11/2026
+
+- Playwright : zéro erreur JS ; verrou → mauvais code refusé, `M1RAGE` déverrouille ;
+  11 images chargées une à une ; 10 SVG, `aria-labelledby` résolus ; à 390 px (iframe)
+  aucun débordement (scrollWidth = 390) ; chaque SVG capturé et regardé.
+- `node verifier.mjs` : **19 problèmes**, le repère, aucun ajouté.
+
+### D. Restes ouverts
+
+- P1 à P6 ci-dessus, inchangés (dont P2 : le graphe ne donne pas 20 °C).
+- Licences des photos (§4) : rien de neuf.
+- Validation des schémas refaits (forme, couleurs, choix de ne pas dessiner les objets).

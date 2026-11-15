@@ -27,23 +27,22 @@ l'est pas :
 | `mesurer_cadres.ps1` | demande à PowerPoint la hauteur **réelle** de chaque texte et la compare au cadre censé le contenir |
 | `apercu_pptx.ps1` | fait exporter chaque diapositive en PNG par PowerPoint — le contrôle visuel de l'étape 4, et le test de validité du fichier : PowerPoint refuse d'ouvrir un `.pptx` corrompu |
 
-🔴 **T3-C1, lui, n'est toujours pas régénérable** : il a été produit par
-l'ancienne chaîne, perdue. Il est **versionné** dans
-`assets/pptx/pc/diaporama-2nde-t3c1.pptx` précisément pour cette raison, et son
-tableau des célérités faux (§7) ne peut se corriger qu'à la main dans
-PowerPoint. Le porter sur la nouvelle chaîne le rendrait réparable — utile,
-non urgent.
+✅ **Tous les diaporamas se régénèrent depuis le 13/11/2026** : T3-C1, produit
+par l'ancienne chaîne perdue, est porté sur la chaîne actuelle
+(`diapo_t3c1.py`) — tableau des célérités corrigé au passage ; T1-C3, qui
+n'existait que sur le OneDrive de Loïc, aussi (`diapo_t1c3.py`). Leurs
+assistants de mise en page (`frac`, `formule_frac`, `tableau`, `exercice_q`,
+extraction) sont **dupliqués** dans ces deux scripts : candidats pour
+`gabarit_diapo.py`.
 
 **Aucune page ne renvoie vers lui** : c'est un support de projection, pas un
 document d'élève. Le dépôt étant public, il reste néanmoins accessible par son
 URL — d'où le contrôle fait avant de le verser : aucune correction à l'écran
 (R1), aucune donnée d'élève ni de classe.
 
-**Quatre diaporamas au dépôt** : `diaporama-2nde-t3c1.pptx` (12 diapositives,
-53 étapes — non régénérable), `diaporama-2nde-t1c2.pptx` (21 diapositives,
-63 étapes), `diaporama-2nde-t1c1.pptx` (19 diapositives, 65 étapes) et
-`diaporama-2nde-t1c4.pptx` (22 diapositives, 56 étapes), ces trois derniers
-régénérables par `python diapo_<code>.py <figures>`.
+**Six diaporamas au dépôt, tous régénérables** par `python diapo_<code>.py
+<figures>` : `t1c1` (19 diapositives, 65 étapes), `t1c2` (21, 63), `t1c3`
+(18, 54), `t1c4` (22, 56), `t3c1` (28, 61).
 
 **SVG en ligne sans `aria-labelledby`.** `extraire_figures.mjs` ne retient que
 les SVG qui en portent un : sur T1-C4, il n'en trouvait aucun. `diapo_t1c4.py`
@@ -354,46 +353,25 @@ claire, légende du ✎ dès la page de titre.
 
 ---
 
-## 7bis. État de T3-C1
+## 7bis. État de T3-C1 (refait le 13/11/2026)
 
-**Fait.** 12 diapositives, structure du PowerPoint 2025/2026 conservée (I à IV,
-sous-parties A/B/C, checklist DS en dernier). Charte du site. Année 2026/2027.
-Micro en filigrane sur la page de titre. 12 figures refaites reprises du site
-sur 13 extraites. 3 formules en fraction. 53 étapes d'animation. Vidéo de la
-cloche à vide cliquable.
-
-**Corrigé au passage.** Le PowerPoint d'origine disait, en Image 14, que « la
-hauteur du signal sur le graphique s'appelle l'amplitude ». C'est l'erreur
-relevée à l'audit 3 : l'amplitude vaut la **moitié** de l'écart entre les
-extrema. La formule A = (U_max − U_min)/2 du site a été reprise telle quelle.
+**Fait.** 28 diapositives, 61 étapes, structure I à IV du site, sommaires en un
+clic. 16 ✎ = 16 `a-noter`. Les **10 exercices** projetés (l'ancien s'arrêtait
+au 6), Kahoot en clôture. Images 1 à 18 du site. **Tableau des célérités
+juste** : Air 340 · Eau 1450 · Glace 3200 · Verre 5300 · Acier 5750.
 
 **Points restés ouverts.**
 
-1. 🔴 **Le tableau des célérités est FAUX dans le fichier** — vérifié le
-   02/09/2026 dans le `.pptx` lui-même : il porte toujours Air 340 · Eau **1 500**
-   · **Bois 3 300** · Acier **5 000**, les quatre valeurs saisies de mémoire. Le
-   cours en ligne et la fiche élève donnent Air 340 · Eau **1450** · Glace
-   **3200** · Verre **5300** · Acier **5750** — **cinq milieux**. Projeté tel
-   quel, l'écran contredit la feuille que l'élève complète.
-   **À corriger à la main dans PowerPoint** : rien ne peut régénérer ce fichier,
-   et passer de quatre à cinq colonnes touche la mise en page du tableau.
-   Un avertissement rouge le signale sur la diapositive : le retirer une fois la
-   correction faite.
-2. **Les QR codes** du PowerPoint d'origine ne sont pas repris : leurs URL n'ont
-   pas pu être décodées. À recoller depuis l'ancien fichier, ou à régénérer.
-3. **La figure de méthode** affiche en bas son calcul d'exemple
-   (T = 16,0 / 4 = 4,0 ms). C'est la méthode générique du site, pas la
-   correction de l'exercice 1 — à trancher.
-4. **« Danger de l'exposition sonore »** est affiché « C (suite) » et non « D » :
-   le cours en ligne n'a que A, B, C dans la partie IV, le danger fait partie
-   du C. Rien à corriger sur le site. Si un vrai D est souhaité, c'est la page
-   en ligne qu'il faut modifier d'abord.
-5. **`site-t3c1ex9-t.png`** (les trois signaux de l'exercice 9) a été extrait
-   mais n'est utilisé nulle part : l'exercice 9 n'a pas de diapositive.
-6. **Les animations n'ont pas pu être vues en mouvement** : LibreOffice rend le
-   PDF avec tout affiché. Seule la structure du XML est validée. À tester en
-   mode diaporama ; quelques regroupements demanderont sans doute un
-   ajustement au vu de la classe.
+1. La donnée de l'exercice 2 rappelle le résultat de l'exercice 1
+   (T ≈ 2,6 ms) — c'est le texte du site, il apparaît donc à l'écran.
+2. La figure de méthode du site affiche « T = 16,0 / 4 = 4,0 ms » avec une
+   barre oblique : à corriger sur la page si la règle des fractions vaut aussi
+   dans les figures.
+3. Seul l'encart d'histoire sur Hertz est projeté (faute de place).
+4. La cloche à vide est montrée par son affiche, sans lien vidéo.
+5. Le sous-titre de l'intercalaire II (« Propagation d'une perturbation ») n'est
+   pas sur la page — à valider.
+6. Animations non vues en mouvement.
 
 ---
 
