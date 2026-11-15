@@ -836,6 +836,11 @@ table.grille thead th{white-space:nowrap}
   }
 
   function entrer(){
+    /* Diapason : visible dès l'accueil des espaces, sans entrer dans
+       l'un d'eux — pour le gestionnaire seul pour l'instant (15/11/2026) */
+    ProfAPI.appeler('est_gestionnaire').then(function(v){
+      $('#lien-diapason').style.display = v === true ? '' : 'none';
+    }).catch(function(){});
     var dispo = espacesDisponibles();
     $('#btn-espaces').style.display = dispo.length > 1 ? '' : 'none';
     if(dispo.length <= 1){ choisirEspace(dispo[0] || 'snt'); return; }
