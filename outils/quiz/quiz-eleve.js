@@ -93,6 +93,42 @@
     if (S.salle) ecranSalle(''); else ecranEntree('');
   }
 
+  /* « Ce n'est pas mon nom » : on change le pseudo du MÊME joueur
+     (quiz_renommer, 048). Sortir puis revenir ajoutait un concurrent :
+     l'ancien nom restait inscrit (signalé par Loïc le 15/11). */
+  function renommer() {
+    S.renommage = true;
+    app.innerHTML =
+      '<div class="entree">' +
+        '<h1 class="titre-affiche">Ton nom</h1>' +
+        '<form id="f-nom" novalidate>' +
+          '<div class="champ"><label for="r-pseudo">Ton prénom et l’initiale de ton nom</label>' +
+            '<input id="r-pseudo" autocomplete="off" maxlength="24" value="' + esc(S.joueur.pseudo) + '"></div>' +
+          '<p class="erreur" id="err"></p>' +
+          '<button class="bouton rouge" type="submit">Changer mon nom</button>' +
+          '<button class="lien-bouton" type="button" id="b-annuler">Annuler</button>' +
+        '</form>' +
+      '</div>';
+    var champ = $('#r-pseudo'); champ.focus(); champ.select();
+    var fin = function () { S.renommage = false; S.cle = ''; relire(); };
+    $('#b-annuler').onclick = fin;
+    $('#f-nom').addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var nom = champ.value.trim();
+      if (nom.length < 2) { $('#err').textContent = 'Écris ton prénom et l’initiale de ton nom.'; return; }
+      var b = this.querySelector('button[type=submit]'); b.disabled = true;
+      Q.rpc('quiz_renommer', { p_jeton: S.joueur.jeton, p_pseudo: nom }, true).then(function (r) {
+        S.joueur.pseudo = r.pseudo; ecrire(CLE, S.joueur); ecrire(CLE_PSEUDO, r.pseudo);
+        $('#qui').textContent = r.pseudo;
+        fin();
+      }).catch(function (err) {
+        // base pas encore à jour (048 non passé) : l'ancien comportement
+        if (/quiz_renommer|Could not find|PGRST202|does not exist/i.test(String(err && err.message))) { S.renommage = false; return quitter(); }
+        b.disabled = false; $('#err').textContent = Q.messageErreur(err);
+      });
+    });
+  }
+
   /* ---------------- la salle (QR code fixe) ---------------- */
   function salleDeLAdresse() {
     var m = /[?&#]salle=([A-Za-z0-9]{6})\b/.exec(location.search + location.hash);
@@ -246,6 +282,7 @@
 
   /* ---------------- affichage ---------------- */
   function afficher(e) {
+    if (S.renommage) { S.etat = e; return; }   // le formulaire du nom reste à l'écran
     var precedent = S.etat;
     S.etat = e;
     if (e.phase === 'exclu') { ecrire(CLE, null); return ecranMessage('Tu n\'es plus dans cette partie', 'Le professeur t\'a retiré de la partie, ou elle a été supprimée.'); }
@@ -290,7 +327,7 @@
           '<button class="lien-bouton" type="button" id="b-quitter">Ce n\'est pas mon nom</button>' +
         '</div>';
       $('#b-go').onclick = function () { avancer('suivante', this); };
-      $('#b-quitter').onclick = quitter;
+      $('#b-quitter').onclick = renommer;
       return;
     }
     app.innerHTML =
@@ -302,7 +339,7 @@
         '<p class="note">' + e.joueurs + ' joueur' + (e.joueurs > 1 ? 's' : '') + ' dans la partie.</p>' +
         '<button class="lien-bouton" type="button" id="b-quitter">Ce n\'est pas mon nom</button>' +
       '</div>';
-    $('#b-quitter').onclick = quitter;
+    $('#b-quitter').onclick = renommer;
   }
 
   function teteQuestion(e) {

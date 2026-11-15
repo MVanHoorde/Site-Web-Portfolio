@@ -106,6 +106,7 @@ class Base:
         self.c = psycopg.connect(f'host=127.0.0.1 port={self.port} user=postgres dbname=postgres', autocommit=True)
         self.c.execute(qb.DOUBLURES)
         self.c.execute((RACINE / 'bdd' / 'schema' / '047-quiz.sql').read_text(encoding='utf-8'))
+        self.c.execute((RACINE / 'bdd' / 'schema' / '048-quiz-renommer.sql').read_text(encoding='utf-8'))
         self.c.execute('insert into auth.users values (%s)', (PROF,))
         self.c.execute('insert into public.enseignants values (%s)', (PROF,))
         self.c.autocommit = False
@@ -425,6 +426,14 @@ def salle_permanente(nav, base, relais, stats, site, prof):
     verifier(attendre(pages, lambda: 'bienvenue dans la partie' in c.inner_text('main').lower(), limite=15),
              'le retardataire n\'entre pas directement')
     verifier(attendre(pages, lambda: prof.locator('#inscrits button').count() == 3), 'les 3 joueurs de la salle n\'apparaissent pas')
+    # « Ce n'est pas mon nom » : le même joueur change de nom (048), pas de concurrent en plus
+    a.click('#b-quitter'); a.wait_for_selector('#r-pseudo')
+    a.fill('#r-pseudo', 'Avant Z.'); a.click('#f-nom button[type=submit]')
+    verifier(attendre(pages, lambda: 'avant z.' in a.inner_text('main').lower()), 'le nouveau nom n\'apparaît pas sur le téléphone')
+    verifier(attendre(pages, lambda: 'Avant Z.' in prof.inner_text('#inscrits'), limite=15), 'le nouveau nom n\'apparaît pas au tableau')
+    verifier(prof.locator('#inscrits button').count() == 3 and 'Avant A.' not in prof.inner_text('#inscrits'),
+             'changer de nom a ajouté un concurrent : ' + prof.inner_text('#inscrits'))
+    capture(a, 'phone-15-nom-change')
     capture(prof, '11-salle-accueil')
     prof.keyboard.press('Space')
     prof.wait_for_selector('.q-enonce')

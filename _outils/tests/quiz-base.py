@@ -23,6 +23,7 @@ from pathlib import Path
 
 RACINE = Path(__file__).resolve().parents[2]
 SCHEMA = RACINE / 'bdd' / 'schema' / '047-quiz.sql'
+SCHEMA_048 = RACINE / 'bdd' / 'schema' / '048-quiz-renommer.sql'
 ESSAIS = Path(__file__).with_name('quiz-base.test.sql')
 
 DOUBLURES = r"""
@@ -108,6 +109,8 @@ def main():
         etapes = [('doublures Supabase', ['-c', DOUBLURES]),
                   ('047, premier passage', ['-f', str(SCHEMA)]),
                   ('047, rejoué', ['-f', str(SCHEMA)]),
+                  ('048, renommer', ['-f', str(SCHEMA_048)]),
+                  ('048, rejoué', ['-f', str(SCHEMA_048)]),
                   ('essais', ['-f', str(ESSAIS)])]
         for nom, args in etapes:
             r = psql(*args)

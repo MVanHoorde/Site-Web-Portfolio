@@ -391,11 +391,12 @@
     var vus = {};
     P.suivi.joueurs.forEach(function (j) {
       vus[j.id] = 1;
-      if (deja[j.id]) return;
+      // un élève qui change de nom (048) reste le même inscrit : on met le nom à jour
+      if (deja[j.id]) { if (deja[j.id].textContent !== j.pseudo) { deja[j.id].textContent = j.pseudo; deja[j.id].title = 'Retirer ' + j.pseudo; } return; }
       var b = document.createElement('button'); b.type = 'button'; b.dataset.id = j.id; b.textContent = j.pseudo;
       b.title = 'Retirer ' + j.pseudo;
       b.onclick = function () {
-        if (!confirm('Retirer « ' + j.pseudo + ' » de la partie ?')) return;
+        if (!confirm('Retirer « ' + b.textContent + ' » de la partie ?')) return;
         Q.rpc('quiz_exclure', { p_partie: P.partie.id, p_joueur: j.id }).then(function () {
           if (P.rt) P.rt.envoyer(-1); rafraichir();
         }, erreurGlobale);

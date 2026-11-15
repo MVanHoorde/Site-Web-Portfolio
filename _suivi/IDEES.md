@@ -11,6 +11,16 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
 
 ## Transverses (tout le site)
 
+**Diapason** (`outils/quiz/`)
+
+- 💡 **Les couleurs du tableau aussi sur le téléphone** (Loïc, 15/11/2026) :
+  quand l'écran projeté montre des réponses en couleur (QCM, vrai/faux), le
+  téléphone doit reprendre les mêmes couleurs, comme sur Kahoot — l'élève fait
+  le lien d'un coup d'œil. Le reste du téléphone reste sobre.
+- 💡 **Des catégories, des bibliothèques de quiz** (Loïc, 15/11/2026) : ranger
+  les quiz par niveau, matière, chapitre (BTS MS2, SNT…), au lieu d'une seule
+  liste.
+
 **Accessibilité**
 
 - 💡 **Une option pour les élèves dyslexiques** (Loïc, 15/11/2026) : l'élève peut

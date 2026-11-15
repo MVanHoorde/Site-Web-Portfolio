@@ -441,6 +441,24 @@ select string_agg(x.categorie || '/' || (x.points > 0), ',' order by j.pseudo) =
  where x.partie_id = :'partie_t' and x.idx = 2 \gset
 \if :ok \else \echo 'ÉCHEC : jugement du curseur' \quit \endif
 
+-- ---------- 13. Changer de nom sans devenir un autre joueur (048) ----------
+:prof
+select r->>'pin' as pin_n, r->>'id' as partie_n from (select public.quiz_lancer(:'quiz') r) t \gset
+:eleve
+select public.quiz_rejoindre(:'pin_n', 'Tomm B.')->>'jeton' as jn \gset
+select public.quiz_rejoindre(:'pin_n', 'Lea C.')->>'jeton' as jl \gset
+select public.quiz_renommer(:'jn', '  Tom   B. ')->>'pseudo' = 'Tom B.' as ok \gset
+\if :ok \else \echo 'ÉCHEC : renommer' \quit \endif
+select public.quiz_etat(:'jn')->>'pseudo' = 'Tom B.' as ok \gset
+\if :ok \else \echo 'ÉCHEC : le nouveau nom n apparaît pas' \quit \endif
+select essai.attendre_erreur(format('select public.quiz_renommer(%L, %L)', :'jn', 'lea c.'), 'QUIZ_PSEUDO_PRIS') \gset
+select essai.attendre_erreur(format('select public.quiz_renommer(%L, %L)', :'jn', 'x'), 'QUIZ_PSEUDO_LONGUEUR') \gset
+select essai.attendre_erreur(format('select public.quiz_renommer(%L, %L)', '00000000-0000-0000-0000-000000000000', 'Qui Q.'), 'QUIZ_EXCLU') \gset
+:prof
+select count(*) = 2 and bool_or(pseudo = 'Tom B.') and not bool_or(pseudo = 'Tomm B.') as ok
+  from public.quiz_joueurs where partie_id = :'partie_n' \gset
+\if :ok \else \echo 'ÉCHEC : renommer a ajouté un concurrent' \quit \endif
+
 -- ---------- 9. Rejouer le 047 ne casse rien ----------
 reset role;
 \echo 'TOUS LES ESSAIS PASSENT'

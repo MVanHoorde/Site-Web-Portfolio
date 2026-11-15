@@ -42,9 +42,10 @@ Comptes enseignants : ceux du tableau de bord (`enseignants`). Aucun compte neuf
   question : l'élève reçoit l'énoncé et les choix, la base juge et compte les
   points avec **son** horloge (1 000 points au plus, la moitié perdue au fil du
   chrono). Un élève qui ouvre l'inspecteur n'y lit rien.
-- Un élève ne touche aucune table : six fonctions seulement
-  (`quiz_rejoindre`, `quiz_etat`, `quiz_repondre`, et pour le QR code fixe
-  `quiz_salle`, `quiz_entrainer`, `quiz_solo`).
+- Un élève ne touche aucune table : sept fonctions seulement
+  (`quiz_rejoindre`, `quiz_etat`, `quiz_repondre`, `quiz_renommer` — « Ce
+  n'est pas mon nom » change le pseudo du même joueur, 048 —, et pour le QR
+  code fixe `quiz_salle`, `quiz_entrainer`, `quiz_solo`).
 - Un enseignant ne voit que **ses** parties ; les quiz sont partagés entre
   collègues (`partage`), modifiables par leur seul auteur.
 - RGPD : pseudonyme seulement (« prénom + initiale »), retirable par
