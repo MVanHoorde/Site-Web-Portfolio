@@ -11,6 +11,15 @@ Statuts : 💡 à trier · 👍 retenu · 🔄 en cours · ✅ fait · ❌ aband
 
 ## Transverses (tout le site)
 
+**Accessibilité**
+
+- 💡 **Une option pour les élèves dyslexiques** (Loïc, 15/11/2026) : l'élève peut
+  modifier l'affichage — police **sans empattement**, et sans doute taille,
+  interligne, espacement. À penser d'abord pour **Diapason** (`outils/quiz/` : la
+  page élève est en Old Standard / Abril Fatface, des polices à empattement),
+  puis pour tout le site. Réglage gardé sur l'appareil, sans compte ; polices
+  auto-hébergées (jamais de CDN).
+
 **Dispositifs pédagogiques réutilisables** (nés d'une séquence, valables ailleurs)
 
 - 👍 **Faire échouer la mémorisation pour justifier l'outil.** L'élève relève des
