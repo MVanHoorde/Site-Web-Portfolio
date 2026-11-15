@@ -17,9 +17,10 @@
 > (PIN, ou QR code fixe d'un quiz : attente du lancement en classe,
 > entraînement seul à la maison), huit types de questions, la base juge.
 > Mode d'emploi : `outils/quiz/LISEZMOI.md`. Premiers quiz : BTS MS2 partie A
-> (sources hors Git, `_quiz/bts-ms2/`). ⏳ **Reste à Loïc** : recoller `047`
-> en entier (la première version seule est en base), importer les six quiz.
-> Aucun lien depuis l'accueil ni le tableau de bord pour l'instant.
+> (sources hors Git, `_quiz/bts-ms2/`). ✅ `047` complet en base, six quiz
+> importés le 15/11 (constaté en base).
+> Lien « 🎵 Diapason » dans la barre du tableau de bord, visible de Loïc
+> seul (gestionnaire) ; l'ouvrir aux collègues demandera Nouveautés + guides.
 >
 > **Passe du 11/11 — la gestion entre collègues.** Suivi → « 👥 Gérer
 > les élèves de la classe » (Masquer / À supprimer), onglets au choix dans
