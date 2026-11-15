@@ -681,7 +681,10 @@
          n'écrit rien, et n'éveille donc pas le MutationObserver des .steps. */
       if(toutOuvert)              sec.classList.toggle('locked', false);
       else if(rang>0 || plafonne) sec.classList.toggle('locked', !precedentesOk || plafonne);
-      precedentesOk = precedentesOk && seanceComplete(sec);
+      /* data-non-bloquante (15/11/2026, SNT Internet S3) : une séance que le
+         professeur ne fait pas forcément dans l'ordre. Elle s'ouvre comme les
+         autres, mais ne ferme pas les suivantes tant qu'elle n'est pas finie. */
+      precedentesOk = precedentesOk && (sec.hasAttribute('data-non-bloquante') || seanceComplete(sec));
     });
     document.querySelectorAll('[data-navlock]').forEach(function(a){
       var n=a.getAttribute('data-navlock');
@@ -1633,19 +1636,32 @@
       if(occupe() || document.visibilityState !== 'visible'){
         setTimeout(function(){ montrer(l); }, 3000); return;
       }
+      /* 15/11/2026 (bdd/schema/045) : la même liste porte aussi les
+         RÉPONSES du professeur à un signalement. Une ligne peut avoir
+         un +0,5, une réponse, ou les deux. */
+      function extrait(x){
+        /* la 1re ligne du message est « 👤 nom prénom » : on ne la remontre pas */
+        var ex = String(x.extrait || '').replace(/^👤[^\n]*\n?/, '').trim();
+        return ex.length > 100 ? ex.slice(0, 97) + '…' : ex;
+      }
+      var bonus = l.filter(function(x){ return x.bonus_le; });
+      var reps  = l.filter(function(x){ return x.reponse; });
       var items = l.map(function(x){
-        var ex = String(x.extrait || '').trim();
-        if(ex.length > 100) ex = ex.slice(0, 97) + '…';
+        var ex = extrait(x);
         return '<div class="ri"><span>Ton signalement du ' + echapper(jour(x.cree_le))
+             + (x.etape ? ' · ' + echapper(x.etape) : '')
              + (ex ? '<br><i style="color:var(--ink-soft)">« ' + echapper(ex) + ' »</i>' : '')
-             + '</span><b>+0,5</b></div>';
+             + (x.reponse ? '<br><span style="display:block;margin-top:6px;white-space:pre-line">📬 ' + echapper(x.reponse) + '</span>' : '')
+             + '</span>' + (x.bonus_le ? '<b>+0,5</b>' : '') + '</div>';
       }).join('');
-      var n = l.length;
-      openModal('🎁', '+' + String(n * 0.5).replace('.', ',') + ' au prochain contrôle',
+      var n = bonus.length;
+      var titre = n ? '+' + String(n * 0.5).replace('.', ',') + ' au prochain contrôle'
+                    : (reps.length > 1 ? 'Ton professeur a répondu à tes signalements' : 'Ton professeur a répondu à ton signalement');
+      openModal(n ? '🎁' : '📬', titre,
         '<div class="recap">' + items + '</div>'
-        + '<p style="margin-top:2px">' + (n > 1 ? 'Tes signalements ont été retenus' : 'Ton signalement a été retenu')
-        + '. Merci : ton professeur l’a enregistré.</p>',
-        [{label: 'Super !', cls: 'dl'}]);
+        + (n ? '<p style="margin-top:2px">' + (n > 1 ? 'Tes signalements ont été retenus' : 'Ton signalement a été retenu')
+             + '. Merci : ton professeur l’a enregistré.</p>' : ''),
+        [{label: n ? 'Super !' : 'J’ai lu', cls: 'dl'}]);
       BASE.bonusVus(l.map(function(x){ return x.id; })).catch(function(){});
     }
   }
@@ -3506,7 +3522,30 @@ function placerBoutonSuivant(sec){
    polices auto-hébergées interdit ailleurs sur le site.
    On garde donc l'iframe en attente dans un data-src, derrière une affiche
    locale. Un clic, et seulement un clic, charge la vidéo. */
+/* RETOUR PROVISOIRE À YOUTUBE (15/11/2026). Mesuré ce jour : les 25 liens
+   OneDrive de la table videos (041) renvoient vers la connexion Microsoft
+   (403 sans compte) — le OneDrive du lycée n'accorde pas les liens
+   « toute personne », et Loïc ne veut pas les ouvrir. Tant que le service
+   informatique n'a pas proposé d'hébergement, un <video data-video> qui
+   porte un data-yt se lit chez YouTube (lecteur nocookie, au clic). Remettre
+   false ici rebranche OneDrive sans toucher aux pages. */
+var VIDEOS_PAR_YOUTUBE=true;
+function videosVersYoutube(){
+  if(!VIDEOS_PAR_YOUTUBE) return;
+  $$('video[data-video][data-yt]').forEach(function(v){
+    var id=v.getAttribute('data-yt'); if(!/^[\w-]{11}$/.test(id)) return;
+    var debut=parseInt(v.getAttribute('data-debut')||'0',10)||0;
+    var f=document.createElement('iframe');
+    f.setAttribute('data-src','https://www.youtube-nocookie.com/embed/'+id+(debut?'?start='+debut:''));
+    ['title','height','data-chaine','data-chaine-url'].forEach(function(a){
+      if(v.hasAttribute(a)) f.setAttribute(a,v.getAttribute(a));
+    });
+    f.setAttribute('allowfullscreen','');
+    v.parentNode.replaceChild(f,v);
+  });
+}
 function initVideos(){
+  videosVersYoutube();
   /* Le src est déclaré en data-src dans les pages : sans cela le navigateur
      lance la requête avant même que ce code ne s'exécute, et la fuite a lieu
      quand même. */
@@ -6777,7 +6816,7 @@ document.querySelectorAll('[data-tri-correction]').forEach(function(btn){
 })();
 
 /* ============================================================
-   CORRIGÉS COLLECTIFS (14/11/2026 — bdd/schema/044)
+   CORRIGÉS COLLECTIFS (14/11/2026 — bdd/schema/044 ; textes sur le site, 045)
    ------------------------------------------------------------
    Le professeur ouvre, depuis prof/corriges.html, la correction
    d'une question à toute une classe. Elle se pose À CÔTÉ de la
@@ -6846,13 +6885,28 @@ document.querySelectorAll('[data-tri-correction]').forEach(function(btn){
       poses[code] = etat;
     });
   }
+  /* 15/11/2026 (bdd/schema/045) : la base ne dit plus que QUELS codes
+     sont ouverts à la classe ; le texte vient du site,
+     assets/data/corriges/<séquence>.json (généré par
+     _outils/corriges/generer-json.mjs). no-cache : le navigateur
+     revalide, une retouche publiée arrive au chargement suivant. */
+  function fichierCorriges(){
+    var s = document.querySelector('script[src*="sequence-snt.js"]');
+    var base = s ? s.src.replace(/js\/sequence-snt\.js.*$/, '') : '../assets/';
+    return base + 'data/corriges/' + SEQ + '.json';
+  }
   function charger(){
     var p;
     try { p = Progression.mesCorriges(SEQ); } catch(e){ return; }
     p.then(function(l){
-      (l || []).forEach(function(r){ if(r && r.code && r.texte) corriges[r.code] = r.texte; });
-      poser();
-    });
+      var codes = (l || []).map(function(r){ return r && r.code; }).filter(Boolean);
+      if(!codes.length || !window.fetch) return;
+      return fetch(fichierCorriges(), { cache: 'no-cache' }).then(function(r){ return r.ok ? r.json() : {}; })
+        .then(function(textes){
+          codes.forEach(function(c){ if(textes && textes[c]) corriges[c] = textes[c]; });
+          poser();
+        });
+    }).catch(function(){});
   }
   /* une réponse envoyée en cours d'heure déplie la correction repliée */
   ['reponses-rehydratees','etape-validee','etat-restaure'].forEach(function(ev){

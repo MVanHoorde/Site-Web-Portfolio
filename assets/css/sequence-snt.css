@@ -955,6 +955,14 @@ body.focus-on #prog, body.focus-on #prog4{display:none !important}
 /* Le QCM plein écran n'utilise PAS body.focus-on : sa règle de flou visait
    aussi .qcm-back. qcm-on se contente d'écarter les éléments flottants. */
 body.qcm-on #prog, body.qcm-on #prog4, body.qcm-on #glo-ouvrir{display:none !important}
+/* QCM ouvert : la page derrière ne défile plus (signalement du 13/11/2026,
+   iPad : « il descend en même temps la page en dessous »). Le panneau garde
+   son propre défilement, sans le transmettre à la page en butée.
+   Même règle pour la carte « Pour se remettre en route » (rappels-es.js) :
+   son voile n'est dans la page que pendant qu'il est ouvert. */
+html:has(body.qcm-on), body.qcm-on, html:has(.rap-voile), body:has(.rap-voile){overflow:hidden}
+.qcm-back, .rap-voile{overscroll-behavior:contain;touch-action:none}
+.qcm-panel, .rap-carte{overscroll-behavior:contain;touch-action:pan-y}
 .qcm-panel .qtop .qclose{margin-left:10px;min-height:44px;min-width:44px;padding:0 12px;
      display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);
      border:1px solid var(--line);border-radius:10px;color:var(--ink-soft);

@@ -1,9 +1,10 @@
-# Banc des corrigés collectifs d'ES (bdd/schema/044) — fausse base PostgREST interceptée.
+# Banc des corrigés collectifs d'ES (bdd/schema/044, textes sur le site depuis 045) — fausse base PostgREST
+# et faux fichiers assets/data/corriges/*.json interceptés.
 #   python -I _outils/tests/corriges.test.py <racine du dépôt> [dossier des captures]
 # Côté élève : la correction se pose À CÔTÉ de la réponse (deux colonnes, empilées
 # sur écran étroit), repliée si l'élève n'a pas répondu, et la réponse n'est jamais
 # touchée. Côté professeur (prof/corriges.html) : aperçu, ouvrir/fermer par séance
-# et par question, modification du texte par le gestionnaire.
+# et par question, la séquence enregistrée avec chaque ouverture.
 # Les corrigés sont FICTIFS : aucun vrai corrigé n'entre dans le dépôt.
 import base64, json, os, sys, threading, time, uuid, functools, tempfile
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
@@ -33,13 +34,17 @@ SEQ = 'es1-t1-c3'
 DB = {
     'classes': [{'id': C1, 'code': 'ES1G3A', 'libelle': '1G3', 'espace': 'es1', 'actif': True},
                 {'id': C2, 'code': 'ES1G4A', 'libelle': '1G4', 'espace': 'es1', 'actif': True}],
-    'corriges': [
-        {'code': 'CRI-3d', 'sequence': SEQ, 'texte': 'd = a{{rac:2}} et R = {{frac:a<span class="rac">2</span>:4}}.<br><b>Fictif</b> pour le banc.', 'maj_le': '2026-11-14'},
-        {'code': 'CRI-3g', 'sequence': SEQ, 'texte': 'C = {{frac:π<span class="rac">2</span>:6}} ≈ 0,74 (fictif).', 'maj_le': '2026-11-14'},
-        {'code': 'CRI-2b', 'sequence': SEQ, 'texte': 'Corrigé fictif de 2.2 <script>alert(1)</script>', 'maj_le': '2026-11-14'},
-    ],
     'corriges_actives': [],
 }
+# les textes, tels que le site les sert (assets/data/corriges/<séquence>.json) — FICTIFS
+TEXTES = {
+    'CRI-3d': 'd = a{{rac:2}} et R = {{frac:a<span class="rac">2</span>:4}}.<br><b>Fictif</b> pour le banc.',
+    'CRI-3g': 'C = {{frac:π<span class="rac">2</span>:6}} ≈ 0,74 (fictif).',
+    'CRI-2b': 'Corrigé fictif de 2.2 <script>alert(1)</script>',
+}
+def fichiers(route, request):
+    seq = urlparse(request.url).path.rsplit('/', 1)[1][:-5]
+    route.fulfill(status=200, body=json.dumps(TEXTES if seq == SEQ else {}), headers={'Content-Type': 'application/json'})
 REQ = []
 verrou = threading.RLock()
 
@@ -76,8 +81,7 @@ def gerer(route, request):
             if f == 'ma_session': return rep([{'eleve_id': 'e1', 'pseudo': 'pingouin-07', 'classe_libelle': '1G3', 'annee_scolaire': '2026-2027'}] if sub == ELEVE else [])
             if f == 'mes_corriges':
                 seq = json.loads(corps or '{}').get('p_sequence')
-                ouverts = {a['code'] for a in DB['corriges_actives'] if a['classe_id'] == C1}
-                return rep([{'code': c['code'], 'texte': c['texte']} for c in DB['corriges'] if c['sequence'] == seq and c['code'] in ouverts])
+                return rep([{'code': a['code'], 'texte': None} for a in DB['corriges_actives'] if a['classe_id'] == C1 and a.get('sequence') == seq])
             if f == 'mon_plafond': return rep([])
             return rep([])
         if u.path.startswith('/rest/v1/'):
@@ -112,7 +116,7 @@ with sync_playwright() as p:
 
     # ================= côté PROFESSEUR =================
     ctx = nav.new_context(viewport={'width': 1100, 'height': 1000})
-    ctx.route(SUPA + '/**', gerer)
+    ctx.route(SUPA + '/**', gerer); ctx.route(BASE + '/assets/data/corriges/*.json', fichiers)
     st = {'access_token': jwt(PROF), 'refresh_token': 'r1', 'expires_at': int(time.time() * 1000) + 3600_000,
           'ouverte': int(time.time() * 1000), 'noms': {}, 'nomsFichier': ''}
     ctx.add_init_script("try{localStorage.setItem('snt.prof', %s)}catch(e){}" % json.dumps(json.dumps(st)))
@@ -122,7 +126,7 @@ with sync_playwright() as p:
     verif('prof : trois questions affichées', page.locator('article.q').count() == 3)
     verif('prof : le script du texte est échappé', page.locator('article.q script').count() == 0 and '<script>' in page.inner_text('body'))
     verif('prof : racine et fraction rendues', page.locator('.corr .cp-rac .cp-r').count() >= 2 and page.locator('.corr .cp-frac').count() >= 2)
-    verif('prof : bouton Modifier (gestionnaire)', page.locator('[data-modif]').count() == 3)
+    verif('prof : plus de bouton Modifier (les textes sont sur le site)', page.locator('[data-modif]').count() == 0)
     page.screenshot(path=os.path.join(CAPT, 'prof-1-apercu.png'), full_page=True)
     # ouvrir la séance de CRI-3d pour 1G3
     sec = page.locator('section.seance', has=page.locator('[data-code="CRI-3d"]'))
@@ -130,16 +134,11 @@ with sync_playwright() as p:
     page.wait_for_timeout(300)
     ouverts = {a['code'] for a in DB['corriges_actives'] if a['classe_id'] == C1}
     verif('prof : ouvrir une séance ouvre ses questions pour 1G3 seulement', {'CRI-3d', 'CRI-3g'} <= ouverts and not [a for a in DB['corriges_actives'] if a['classe_id'] == C2], str(DB['corriges_actives']))
+    verif('prof : la séquence part avec chaque ouverture', all(a.get('sequence') == SEQ for a in DB['corriges_actives']), str(DB['corriges_actives']))
     verif('prof : le bandeau de séance passe à « ouvert »', 'ouvert' in sec.locator('.seance-tete .interr', has_text='1G3').inner_text())
     # fermer une question à la puce
     page.locator('[data-code="CRI-3g"] .puce', has_text='1G3').click(); page.wait_for_timeout(300)
     verif('prof : la puce ferme une seule question', 'CRI-3g' not in {a['code'] for a in DB['corriges_actives']} and 'CRI-3d' in {a['code'] for a in DB['corriges_actives']})
-    # modifier un texte
-    page.locator('[data-code="CRI-2b"] [data-modif]').click()
-    page.locator('[data-code="CRI-2b"] textarea').fill('Nouveau texte {{frac:1:2}}')
-    verif('prof : l’aperçu suit la frappe', page.locator('[data-code="CRI-2b"] .corr .cp-frac').count() == 1)
-    page.locator('[data-code="CRI-2b"] [data-enr]').click(); page.wait_for_timeout(300)
-    verif('prof : le texte est enregistré', next(c for c in DB['corriges'] if c['code'] == 'CRI-2b')['texte'] == 'Nouveau texte {{frac:1:2}}')
     page.screenshot(path=os.path.join(CAPT, 'prof-2-ouvert.png'), full_page=True)
     # étroit (iPad portrait)
     page.set_viewport_size({'width': 700, 'height': 1000}); page.wait_for_timeout(200)
@@ -150,7 +149,7 @@ with sync_playwright() as p:
     # ================= côté ÉLÈVE =================
     for larg in (1100, 700):
         ctx = nav.new_context(viewport={'width': larg, 'height': 1000})
-        ctx.route(SUPA + '/**', gerer)
+        ctx.route(SUPA + '/**', gerer); ctx.route(BASE + '/assets/data/corriges/*.json', fichiers)
         ctx.add_init_script("try{localStorage.setItem('snt.session', %s)}catch(e){}" % json.dumps(json.dumps(
             {'access_token': jwt(ELEVE), 'refresh_token': 'r', 'expires_at': int(time.time() * 1000) + 3600_000})))
         page = ctx.new_page(); err = []
@@ -177,9 +176,9 @@ with sync_playwright() as p:
         ctx.close()
 
     # non répondu : on ouvre CRI-3g à 1G3, l'élève n'y a pas répondu
-    DB['corriges_actives'].append({'classe_id': C1, 'code': 'CRI-3g'})
+    DB['corriges_actives'].append({'classe_id': C1, 'code': 'CRI-3g', 'sequence': SEQ})
     ctx = nav.new_context(viewport={'width': 1100, 'height': 1000})
-    ctx.route(SUPA + '/**', gerer)
+    ctx.route(SUPA + '/**', gerer); ctx.route(BASE + '/assets/data/corriges/*.json', fichiers)
     ctx.add_init_script("try{localStorage.setItem('snt.session', %s)}catch(e){}" % json.dumps(json.dumps(
         {'access_token': jwt(ELEVE), 'refresh_token': 'r', 'expires_at': int(time.time() * 1000) + 3600_000})))
     page = ctx.new_page()
@@ -195,7 +194,7 @@ with sync_playwright() as p:
 
     # invité (aucune session) : aucun appel à mes_corriges
     n0 = len([r for r in REQ if r[1].endswith('/mes_corriges')])
-    ctx = nav.new_context(); ctx.route(SUPA + '/**', gerer); page = ctx.new_page()
+    ctx = nav.new_context(); ctx.route(SUPA + '/**', gerer); ctx.route(BASE + '/assets/data/corriges/*.json', fichiers); page = ctx.new_page()
     page.goto(BASE + '/pages/1re-es-t1-c3-cristaux.html'); page.wait_for_timeout(1200)
     verif('invité : aucune correction', page.locator('.corrige-prof').count() == 0)
     ctx.close()

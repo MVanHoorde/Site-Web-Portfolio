@@ -20,13 +20,14 @@
        chapitre — pour SES classes seulement (la base refuse le reste).
        L'activation est rangée par question (codes stables), l'écran
        regroupe par séance.
-     · Modifier un texte : le gestionnaire seul (est_gestionnaire,
-       038). L'élève voit la nouvelle version au prochain chargement.
+     · Les TEXTES sont sur le site depuis le 15/11/2026 (045) :
+       assets/data/corriges/<séquence>.json, générés depuis les sources
+       hors Git (_corriges-es/) par _outils/corriges/generer-json.mjs.
+       Retoucher = modifier la source, régénérer, publier. La base ne
+       garde que les ouvertures (corriges_actives, avec la séquence).
      · Côté élève : la correction se pose À CÔTÉ de sa réponse, jamais
        à sa place (fin de assets/js/sequence-snt.js).
 
-     Les textes ne sont pas dans le dépôt public : leurs sources
-     vivent hors Git, dans _corriges-es/.
      🔴 Le rendu (fractions, racines) est le même que côté élève :
      toute retouche de rendre() se reporte dans sequence-snt.js.
      ============================================================ -->
@@ -85,9 +86,6 @@ button:disabled{opacity:.55;cursor:default}
 .puces{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center;font-size:13px;color:var(--ink-soft)}
 .puce{min-height:34px;border-radius:999px;padding:3px 12px;font-size:13px}
 .puce[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
-.edit{margin-top:10px}
-.edit textarea{width:100%;min-height:150px;font:13.5px/1.45 'IBM Plex Mono',monospace;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--surface-2);color:var(--ink)}
-.edit .lg{font-size:12.5px;color:var(--ink-soft)}
 .r{font-size:13px;min-height:1em} .r.ok{color:var(--ok)} .r.ko{color:var(--err)}
 .vide{color:var(--ink-faint);font-style:italic}
 /* rendu identique à la page élève (sequence-snt.css) */
@@ -151,19 +149,30 @@ button:disabled{opacity:.55;cursor:default}
   }
   function seanceDe(code){ var q = Q[code]; return q && q.seance_num ? String(q.seance_num) : '?'; }
 
+  /* les textes : un fichier par chapitre, sur le site (045) */
+  function chargerTextes(){
+    return Promise.all(CHAPITRES.map(function(c){
+      return fetch('../assets/data/corriges/' + c[0] + '.json', {cache: 'no-cache'})
+        .then(function(r){ return r.ok ? r.json() : {}; }).catch(function(){ return {}; });
+    }));
+  }
+
   ProfAPI.reprendre().then(function(){
     return Promise.all([
       ProfAPI.appeler('est_gestionnaire').catch(function(){ return false; }),
       ProfAPI.lire('classes?select=id,code,libelle,espace,actif&espace=in.(es1,est)&order=code.asc'),
-      ProfAPI.lire('corriges?select=code,sequence,texte,maj_le').catch(function(e){ throw new Error('table corriges absente ? (bdd/schema/044) — ' + e.message); }),
+      chargerTextes(),
       ProfAPI.lire('corriges_actives?select=classe_id,code')
     ]);
   }).then(function(r){
     gest = r[0] === true;
     classes = (r[1] || []).filter(function(c){ return c.actif !== false; });
-    (r[2] || []).forEach(function(c){ corriges[c.code] = c; });
+    r[2].forEach(function(t, i){
+      var seq = CHAPITRES[i][0];
+      Object.keys(t || {}).forEach(function(k){ corriges[k] = {sequence: seq, texte: t[k]}; });
+    });
     (r[3] || []).forEach(function(a){ ouverts[a.classe_id + '|' + a.code] = true; });
-    dire(Object.keys(corriges).length + ' corrigés en base' + (classes.length ? '' : ' — tu n’as pas de classe d’ES : aperçu seulement.'));
+    dire(Object.keys(corriges).length + ' corrigés' + (classes.length ? '' : ' — tu n’as pas de classe d’ES : aperçu seulement.'));
     var dispo = CHAPITRES.filter(function(c){ return codesDe(c[0]).length && (gest || mesClassesDe(c[0]).length); });
     if(!dispo.length){ $('#contenu').innerHTML = '<p class="aide">Aucun corrigé pour tes classes pour l’instant.</p>'; return; }
     var memo = null; try { memo = sessionStorage.getItem('corriges.chap'); } catch(e){}
@@ -216,7 +225,7 @@ button:disabled{opacity:.55;cursor:default}
           '<div class="puces">' + (mes.length ? 'Ouvert à :' : '') + mes.map(function(cl){
             var on = !!ouverts[cl.id + '|' + k];
             return '<button type="button" class="puce" aria-pressed="' + on + '" data-puce="' + cl.id + '" title="' + (on ? 'Fermer' : 'Ouvrir') + ' pour ' + esc(cl.libelle) + '">' + (on ? '✓ ' : '') + esc(cl.libelle) + '</button>';
-          }).join('') + (gest ? '<button type="button" data-modif style="margin-left:auto">✎ Modifier le texte</button>' : '') + '</div>' +
+          }).join('') + '</div>' +
           '<div class="r" aria-live="polite"></div></article>';
       });
       h += '</section>';
@@ -228,7 +237,7 @@ button:disabled{opacity:.55;cursor:default}
     var a = codes.filter(function(k){ return !!ouverts[cl + '|' + k] !== ouvrir; });
     if(!a.length) return Promise.resolve();
     var p = ouvrir
-      ? ProfAPI.ecrire('corriges_actives?on_conflict=classe_id,code', a.map(function(k){ return {classe_id: cl, code: k}; }), true)
+      ? ProfAPI.ecrire('corriges_actives?on_conflict=classe_id,code', a.map(function(k){ return {classe_id: cl, code: k, sequence: corriges[k].sequence}; }), true)
       : ProfAPI.supprimer('corriges_actives?classe_id=eq.' + encodeURIComponent(cl) + '&code=in.(' + a.map(encodeURIComponent).join(',') + ')');
     return p.then(function(){ a.forEach(function(k){ if(ouvrir) ouverts[cl + '|' + k] = true; else delete ouverts[cl + '|' + k]; }); });
   }
@@ -244,33 +253,9 @@ button:disabled{opacity:.55;cursor:default}
       var art = b.closest('[data-code]'), k = art.dataset.code;
       b.disabled = true;
       basculer(b.dataset.puce, [k], !ouverts[b.dataset.puce + '|' + k]).then(dessiner).catch(function(e){ b.disabled = false; var r = art.querySelector('.r'); r.className = 'r ko'; r.textContent = 'Refusé : ' + e.message; });
-    } else if(b.hasAttribute('data-modif')){
-      ouvrirEdition(b.closest('[data-code]'));
     }
   });
 
-  function ouvrirEdition(art){
-    if(art.querySelector('.edit')) return;
-    var k = art.dataset.code, d = document.createElement('div');
-    d.className = 'edit';
-    d.innerHTML = '<textarea aria-label="Texte du corrigé"></textarea>' +
-      '<div class="lg">Mise en forme : &lt;b&gt;gras&lt;/b&gt;, &lt;i&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;br&gt; · fraction {{frac:numérateur:dénominateur}} · racine {{rac:2}}, et dans une fraction &lt;span class="rac"&gt;2&lt;/span&gt;. L’aperçu au-dessus suit la frappe.</div>' +
-      '<div class="puces"><button type="button" class="p" data-enr>Enregistrer</button><button type="button" data-ann>Annuler</button></div>';
-    art.appendChild(d);
-    var ta = d.querySelector('textarea'), x = art.querySelector('.corr .x'), r = art.querySelector('.r');
-    ta.value = corriges[k].texte; ta.focus();
-    ta.addEventListener('input', function(){ x.innerHTML = rendre(ta.value); });
-    d.querySelector('[data-ann]').addEventListener('click', function(){ x.innerHTML = rendre(corriges[k].texte); d.remove(); });
-    d.querySelector('[data-enr]').addEventListener('click', function(){
-      var t = ta.value.trim();
-      if(t.length < 3){ r.className = 'r ko'; r.textContent = 'Texte trop court.'; return; }
-      r.className = 'r'; r.textContent = 'Enregistrement…';
-      ProfAPI.modifier('corriges?code=eq.' + encodeURIComponent(k), {texte: t}).then(function(){
-        corriges[k].texte = t; d.remove(); x.innerHTML = rendre(t);
-        r.className = 'r ok'; r.textContent = 'Enregistré. Les élèves des classes ouvertes voient cette version au prochain chargement.';
-      }).catch(function(e){ r.className = 'r ko'; r.textContent = 'Refusé : ' + e.message; });
-    });
-  }
 })();
 </script>
 </body>

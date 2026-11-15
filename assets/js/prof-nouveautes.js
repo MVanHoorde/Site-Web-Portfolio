@@ -23,6 +23,46 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 12,
+    date: '2026-11-15',
+    espaces: ['es1', 'snt', 'est'],
+    titre: 'Corrections après vos signalements',
+    points: [
+      {
+        titre: '🔬 Radioactivité 3.5 : la simulation dans la page',
+        texte: 'L’animation externe ne tournait plus sur iPad. Elle est refaite dans le cours : N₀ et λ se règlent au doigt, et on lit t et N en touchant la courbe.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">N₀ = 1000</span><span class="nv-puce">λ = 0,50 s⁻¹</span><span class="nv-bouton">▶ Lancer</span></div>' +
+          '</div>'
+      },
+      {
+        titre: '🎬 Les vidéos repassent par YouTube',
+        texte: 'Les liens OneDrive du lycée demandent une connexion Microsoft : les élèves ne pouvaient pas les lire. En attendant une solution avec le service informatique, les vidéos se lisent chez YouTube (au clic).',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-bouton">▶ Lire la vidéo</span><span>Hébergée par YouTube</span></div>' +
+          '</div>'
+      },
+      {
+        titre: '🔓 Internet : la séance 3 ne bloque plus la suite',
+        texte: 'SNT : la séance 4 s’ouvre dès la séance 2 finie ; la séance 3 peut se faire plus tard.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">S2 ✓</span><span class="nv-puce">S3 …</span><span class="nv-puce">S4 ouverte</span></div>' +
+          '</div>'
+      },
+      {
+        titre: 'Petits correctifs iPad',
+        texte: 'Les QCM plein écran et la carte « se remettre en route » ne font plus défiler la page derrière. Les dés de la radioactivité (3.1) ne zooment plus au double tap.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">QCM</span><span>la page derrière reste fixe</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 11,
     date: '2026-11-15',
     espaces: ['snt'],

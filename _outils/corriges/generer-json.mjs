@@ -1,22 +1,24 @@
 /* ============================================================
- *  generer-sql.mjs — les corrigés collectifs d'ES vers la base
+ *  generer-json.mjs — les corrigés collectifs d'ES vers le site
  *  ------------------------------------------------------------
- *  Lit _corriges-es/*.json (HORS GIT : le dépôt est public et un
- *  corrigé non activé ne doit pas être lisible) et écrit
- *  _corriges-es/corriges-es.sql, à coller dans Supabase (SQL Editor)
- *  APRÈS bdd/schema/044-corriges-collectifs.sql.
+ *  Lit les sources _corriges-es/<séquence>.json (hors Git : elles
+ *  portent aussi les remarques, motifs et notes d'audit) et écrit,
+ *  pour chaque chapitre, assets/data/corriges/<séquence>.json :
+ *  un objet { code: texte } que lisent la page élève et l'écran
+ *  prof/corriges.html.
  *
- *  Ne part en base que ce qui est « retenu » (règle de Loïc du
+ *  Depuis le 15/11/2026 (bdd/schema/045), les TEXTES sont sur le
+ *  site — publics, choix de Loïc : « c'est pour réviser, ce n'est
+ *  pas évalué ». La base ne garde que ce qui est ouvert à quelle
+ *  classe. Retoucher un corrigé = modifier la source, relancer ce
+ *  script, publier. Plus rien à coller dans Supabase.
+ *
+ *  Ne part sur le site que ce qui est « retenu » (règle de Loïc du
  *  14/11/2026) : les exercices qui se résolvent avec le cours ou un
  *  petit calcul — ni prise de notes, ni réflexion personnelle, ni
  *  question d'avis. Le TP son attend son tour (retenu: false).
  *
- *  Rejouable : un code déjà en base est remplacé par le texte du
- *  JSON. ⚠ Une retouche faite depuis prof/corriges.html serait donc
- *  ÉCRASÉE : `--nouveaux` n'insère que les codes absents.
- *
- *      node _outils/corriges/generer-sql.mjs            (tout, remplace)
- *      node _outils/corriges/generer-sql.mjs --nouveaux (ajoute seulement)
+ *      node _outils/corriges/generer-json.mjs
  *
  *  Contrôles bloquants : code connu d'une page, pas de « √ » nu, pas
  *  de fraction en barre oblique hors unités évidentes, balises de la
@@ -26,8 +28,7 @@ import fs from 'fs';
 import path from 'path';
 
 const DOSSIER = '_corriges-es';
-const SORTIE = path.join(DOSSIER, 'corriges-es.sql');
-const NOUVEAUX = process.argv.includes('--nouveaux');
+const SORTIE = path.join('assets', 'data', 'corriges');
 const PAGES = {
   'es1-t1-c1': 'pages/1re-es-t1-c1-nucleosynthese.html',
   'es1-t1-c2': 'pages/1re-es-t1-c2-radioactivite.html',
@@ -39,11 +40,12 @@ const PAGES = {
   'est-t2-c2': 'pages/term-es-t2-c2-production-stockage-electricite.html',
 };
 
-const lignes = [], erreurs = [];
+const parSeq = {}, erreurs = [];
 for (const [seq, page] of Object.entries(PAGES)) {
   const f = path.join(DOSSIER, seq + '.json');
   if (!fs.existsSync(f)) continue;
   const html = fs.readFileSync(page, 'utf8');
+  const sortie = {};
   for (const i of JSON.parse(fs.readFileSync(f, 'utf8'))) {
     if (!i.retenu) continue;
     const t = String(i.corrige || '').trim();
@@ -54,24 +56,18 @@ for (const [seq, page] of Object.entries(PAGES)) {
     const barres = (sansBalises.replace(/\{\{[^}]*\}\}/g, '').match(/\S*\d\s*\/\s*\d\S*/g) || []);
     if (barres.length) erreurs.push(i.code + ' : fraction en barre oblique ? ' + barres.join(' '));
     if (t.length < 3) erreurs.push(i.code + ' : texte vide');
-    lignes.push({ code: i.code, sequence: seq, texte: t });
+    if (sortie[i.code]) erreurs.push(i.code + ' : en double');
+    sortie[i.code] = t;
   }
+  if (Object.keys(sortie).length) parSeq[seq] = sortie;
 }
 if (erreurs.length) { console.error('✗ ' + erreurs.length + ' problème(s) :\n  ' + erreurs.join('\n  ')); process.exit(1); }
 
-const q = s => "'" + s.replace(/'/g, "''") + "'";
-const sql = [
-  '-- Corrigés collectifs d\'ES — généré par _outils/corriges/generer-sql.mjs le ' + new Date().toISOString().slice(0, 16).replace('T', ' '),
-  '-- HORS GIT. À coller dans Supabase (SQL Editor) après bdd/schema/044. ' + lignes.length + ' corrigés.',
-  '-- ' + (NOUVEAUX ? 'Mode --nouveaux : les codes déjà en base ne sont pas touchés.' : '⚠ Remplace le texte des codes déjà en base (retouches faites dans prof/corriges.html comprises).'),
-  'insert into public.corriges (code, sequence, texte) values',
-  lignes.map(l => '  (' + q(l.code) + ', ' + q(l.sequence) + ', ' + q(l.texte) + ')').join(',\n'),
-  NOUVEAUX ? 'on conflict (code) do nothing;'
-           : 'on conflict (code) do update set sequence = excluded.sequence, texte = excluded.texte;',
-  '',
-  'select sequence, count(*) from public.corriges group by sequence order by sequence;',
-  '',
-].join('\n');
-fs.writeFileSync(SORTIE, sql, 'utf8');
-const parSeq = {}; lignes.forEach(l => { parSeq[l.sequence] = (parSeq[l.sequence] || 0) + 1; });
-console.log('✓ ' + SORTIE + ' — ' + lignes.length + ' corrigés', parSeq);
+fs.mkdirSync(SORTIE, { recursive: true });
+let total = 0;
+for (const [seq, sortie] of Object.entries(parSeq)) {
+  fs.writeFileSync(path.join(SORTIE, seq + '.json'), JSON.stringify(sortie, null, 1) + '\n', 'utf8');
+  total += Object.keys(sortie).length;
+  console.log('  ' + seq + '  ' + Object.keys(sortie).length + ' corrigé(s)');
+}
+console.log('✓ ' + SORTIE + ' — ' + total + ' corrigés');

@@ -9,7 +9,7 @@
      "defer" : le moteur, en fin de page, doit le trouver chargé. Sans
      compte, la page fonctionne et le dit (bandeau de connexion sur place). -->
 <script src="../assets/js/progression.js?v=26"></script>
-<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=52">
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=53">
 
 <!-- ============================================================
      ENSEIGNEMENT SCIENTIFIQUE 1re — Thème 1, chapitre 2.
@@ -185,7 +185,10 @@
   /* ---------- LA DÉCROISSANCE AUX DÉS (séance 3) ----------
      De VRAIS dés (décision de Loïc du 04/10) : la page ne lance rien, elle
      tient le compte. L'élève marque ses noyaux, puis valide le lancer. */
-  .des{margin:12px 0}
+  /* touch-action : pas de zoom au double tap sur iPad quand on touche vite
+     plusieurs noyaux (signalement du 13/11/2026) ; le pincement reste permis */
+  .des{margin:12px 0;touch-action:manipulation}
+  .des-noyaux{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   .des-noyaux{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;max-width:560px;margin:12px auto}
   @media (max-width:420px){.des-noyaux{gap:6px}}
   /* téléphone : « radioactif » débordait des pastilles ; le symbole et le
@@ -366,6 +369,30 @@
   .rappel-ecrit .re-x{white-space:pre-wrap;color:var(--ink)}
   .rappel-ecrit.vide .re-x{font-style:italic;color:var(--ink-soft)}
   .focus-carte .rappel-ecrit{max-height:9.5em;overflow:auto}
+  /* ---------- 3.5 — LA SIMULATION DE DÉSINTÉGRATION (15/11/2026) ----------
+     Remplace le lien vers l'animation d'ensciences.fr, qui ne tournait plus
+     sur les iPad des élèves (bibliothèque ZIM/CreateJS, curseur λ figé au
+     doigt). Même principe, recodé ici : à chaque pas Δt, chaque noyau encore
+     radioactif se désintègre avec la probabilité 1 − e^(−λΔt). Rien ne part
+     chez un tiers. */
+  .simu{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0 4px}
+  .simu-reglages{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 22px}
+  .simu-reglages label{display:block;font-size:14px;color:var(--ink-soft)}
+  .simu-reglages .sv{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .simu-reglages output{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--ink)}
+  .simu-reglages input[type=range]{width:100%;height:36px;accent-color:var(--activity);cursor:pointer;touch-action:pan-y}
+  .simu-reglages input[type=range]:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:4px}
+  .simu-barre{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 6px}
+  .simu-barre .btn{min-height:44px}
+  .simu-compteurs{display:flex;flex-wrap:wrap;gap:4px 22px;font-size:14px;color:var(--ink-soft);margin:4px 0 8px}
+  .simu-compteurs b{font-family:"IBM Plex Mono",monospace;color:var(--ink)}
+  .simu canvas{display:block;width:100%;border-radius:8px;background:var(--surface-2)}
+  .simu canvas[data-s-ech]{height:150px;margin-bottom:10px}
+  .simu canvas[data-s-gr]{height:280px;touch-action:pan-y;cursor:crosshair}
+  @media (max-width:560px){.simu canvas[data-s-ech]{height:120px}.simu canvas[data-s-gr]{height:230px}}
+  .simu-lecture{font-size:13.5px;color:var(--ink-soft);margin:8px 0 0;min-height:1.5em}
+  .simu-lecture b{font-family:"IBM Plex Mono",monospace;color:var(--ink)}
+  .simu-credit{font-size:12px;color:var(--ink-faint);margin:6px 0 0}
 </style>
 
 </head><body data-rappels="actif" data-seances="ouvertes" data-sequence="es1-t1-c2" data-reponses="personnelles" data-accueil="sur-place" data-renvoi-texte="Connecte-toi pour garder ton travail d'une séance à l'autre, au lycée comme à la maison.">
@@ -1987,9 +2014,29 @@
           <div class="card-body">
             <p class="transi">Tu sais lire une demi-vie. Si la classe avait eu deux fois plus de noyaux, la moitié serait-elle partie plus vite, ou plus lentement&nbsp;? Une simulation va trancher.</p>
             <div class="activite">
-              <div class="al">🔬 Animation « désintégration radioactive »</div>
-              <p class="txt">Rejoins l'animation, puis fixe la constante radioactive à <b>λ = 0,5 s⁻¹</b>. <i>Sur tablette, cette valeur ne se modifie pas&nbsp;: ce n'est pas grave, continue.</i></p>
-              <p><a class="btn ghost" href="https://www.ensciences.fr/animations/desintegration/index.html" target="_blank" rel="noopener noreferrer">▶ Ouvrir l'animation (ensciences.fr)</a></p>
+              <div class="al">🔬 Simulation « désintégration radioactive »</div>
+              <p class="txt">Règle la constante radioactive sur <b>λ = 0,5 s⁻¹</b>, choisis la taille de l'échantillon N₀, puis lance la simulation. Chaque point rouge est un noyau radioactif&nbsp;; il pâlit quand il se désintègre.</p>
+              <div class="simu" data-simu-desint>
+                <div class="simu-reglages">
+                  <label><span class="sv">Taille de l'échantillon N₀ <output data-o-n>1000</output></span>
+                    <input type="range" min="50" max="1000" step="50" value="1000" data-r-n aria-label="Taille de l'échantillon N zéro, de 50 à 1000 noyaux"></label>
+                  <label><span class="sv">Constante radioactive λ <output data-o-l>0,25 s⁻¹</output></span>
+                    <input type="range" min="0.05" max="1" step="0.05" value="0.25" data-r-l aria-label="Constante radioactive lambda, de 0,05 à 1 par seconde"></label>
+                </div>
+                <div class="simu-barre">
+                  <button type="button" class="btn" data-s-go>▶ Lancer</button>
+                  <button type="button" class="btn ghost" data-s-raz>↺ Remettre à zéro</button>
+                  <button type="button" class="btn ghost" data-s-eff>Effacer les anciennes courbes</button>
+                </div>
+                <div class="simu-compteurs" aria-live="off">
+                  <span>Temps écoulé&nbsp;: <b data-c-t>0,00 s</b></span>
+                  <span>Noyaux restants&nbsp;: <b data-c-n>1000</b></span>
+                </div>
+                <canvas data-s-ech role="img" aria-label="L'échantillon : un point par noyau, rouge s'il est encore radioactif, pâle s'il s'est désintégré"></canvas>
+                <canvas data-s-gr role="img" aria-label="Le graphique du nombre de noyaux restants N en fonction du temps t"></canvas>
+                <p class="simu-lecture" data-s-lect aria-live="polite">Une fois la courbe tracée, touche-la (ou fais glisser ton doigt) pour lire t et N.</p>
+                <p class="simu-credit">D'après le principe de l'animation de Th.&nbsp;G. (ensciences.fr, 2021). Les courbes des simulations précédentes restent en gris pour comparer.</p>
+              </div>
 
               <div class="block-label">1 · Une première mesure</div>
               <div class="field" data-focus
@@ -2749,7 +2796,7 @@
   "def": "La détermination de l'âge d'un objet ancien grâce à la décroissance d'un radionucléide. Elle est possible parce que chaque radionucléide a un temps de demi-vie qui lui est propre."}
 ]
 </script>
-<script src="../assets/js/sequence-snt.js?v=62"></script>
+<script src="../assets/js/sequence-snt.js?v=63"></script>
 <!-- Rappels d'entrée de séance : allumés le 12/11/2026 (data-rappels="actif" sur <body>), banque encore à auditer par Loïc -->
 <script src="../assets/js/rappels-rendu.js?v=2"></script>
 <script src="../assets/js/rappels/es1-t1-c2.js?v=3"></script>
@@ -3381,6 +3428,190 @@
     var step = ev.target.closest && ev.target.closest('.step[data-gate]');
     if(step) setTimeout(function(){ tenter(step); }, 80);
   });
+})();
+</script>
+
+<script>
+/* ---------- 3.5 — Simulation de désintégration (15/11/2026) ----------
+   Le modèle : pas de temps DT ; à chaque pas, chaque noyau encore
+   radioactif se désintègre avec la probabilité p = 1 − e^(−λ·DT). Le
+   temps simulé avance au rythme du temps réel (20 s au plus). Aucune
+   donnée n'est enregistrée : ce sont les réponses rédigées qui valident
+   l'étape. */
+(function(){
+  var box = document.querySelector('[data-simu-desint]');
+  if(!box) return;
+  var DT = 0.025, TMAX = 20, HIST = 6;
+  var rN = box.querySelector('[data-r-n]'), rL = box.querySelector('[data-r-l]');
+  var oN = box.querySelector('[data-o-n]'), oL = box.querySelector('[data-o-l]');
+  var bGo = box.querySelector('[data-s-go]'), bRaz = box.querySelector('[data-s-raz]'), bEff = box.querySelector('[data-s-eff]');
+  var cT = box.querySelector('[data-c-t]'), cN = box.querySelector('[data-c-n]');
+  var cvE = box.querySelector('[data-s-ech]'), cvG = box.querySelector('[data-s-gr]');
+  var lect = box.querySelector('[data-s-lect]');
+  var css = getComputedStyle(document.documentElement);
+  function c(v, d){ return (css.getPropertyValue(v) || '').trim() || d; }
+  var COUL = { vif: c('--err', '#c33a2f'), pale: '#f2c4bf', courbe: c('--activity', '#c26a12'),
+               ancien: '#9aa5b8', grille: c('--line', '#d3dae7'), encre: c('--ink-soft', '#4a566e'),
+               fond: c('--surface-2', '#f4f6fb'), lien: c('--link', '#2445c7') };
+
+  var n0, lambda, vivants, restants, t, pts, enCours = false, fini = false, dernier = 0, acc = 0;
+  var anciens = [], curseur = null;
+
+  function virgule(x, d){ return x.toFixed(d).replace('.', ','); }
+  function lireReglages(){
+    n0 = parseInt(rN.value, 10); lambda = parseFloat(rL.value);
+    oN.textContent = n0; oL.textContent = virgule(lambda, 2) + ' s⁻¹';
+  }
+  function nouvelleSerie(){
+    lireReglages();
+    vivants = new Uint8Array(n0); vivants.fill(1);
+    restants = n0; t = 0; pts = [[0, n0]]; fini = false; acc = 0; curseur = null;
+    majCompteurs(); dessiner();
+    lect.textContent = 'Une fois la courbe tracée, touche-la (ou fais glisser ton doigt) pour lire t et N.';
+  }
+  function majCompteurs(){
+    cT.textContent = virgule(t, 2) + ' s';
+    cN.textContent = restants;
+  }
+  function boutonGo(){
+    bGo.textContent = enCours ? '⏸ Pause' : (fini ? '▶ Relancer' : (t > 0 ? '▶ Reprendre' : '▶ Lancer'));
+  }
+
+  /* --- un pas de simulation --- */
+  function pas(){
+    var p = 1 - Math.exp(-lambda * DT);
+    for(var i = 0; i < n0; i++){
+      if(vivants[i] && Math.random() < p){ vivants[i] = 0; restants--; }
+    }
+    t = Math.round((t + DT) * 1000) / 1000;
+    pts.push([t, restants]);
+    if(restants === 0 || t >= TMAX - 1e-9) terminer();
+  }
+  function terminer(){
+    enCours = false; fini = true;
+    anciens.unshift({ n0: n0, lambda: lambda, pts: pts });
+    if(anciens.length > HIST) anciens.length = HIST;
+    boutonGo();
+  }
+  function boucle(maintenant){
+    if(!enCours) return;
+    var ecart = Math.min(0.1, (maintenant - dernier) / 1000);
+    dernier = maintenant; acc += ecart;
+    while(acc >= DT && enCours){ pas(); acc -= DT; }
+    majCompteurs(); dessiner();
+    if(enCours) requestAnimationFrame(boucle);
+  }
+
+  /* --- dessin --- */
+  function preparer(cv){
+    var r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    var w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+    if(cv.width !== w * dpr || cv.height !== h * dpr){ cv.width = w * dpr; cv.height = h * dpr; }
+    var ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: h };
+  }
+  function dessinerEchantillon(){
+    var d = preparer(cvE), ctx = d.ctx;
+    ctx.clearRect(0, 0, d.w, d.h);
+    var cols = Math.max(1, Math.ceil(Math.sqrt(n0 * d.w / d.h))), lignes = Math.ceil(n0 / cols);
+    var pasX = d.w / cols, pasY = d.h / lignes, ray = Math.max(1.2, Math.min(pasX, pasY) * 0.36);
+    for(var i = 0; i < n0; i++){
+      var x = (i % cols + 0.5) * pasX, y = (Math.floor(i / cols) + 0.5) * pasY;
+      ctx.beginPath(); ctx.arc(x, y, ray, 0, 2 * Math.PI);
+      ctx.fillStyle = vivants[i] ? COUL.vif : COUL.pale; ctx.fill();
+    }
+  }
+  var M = { g: 52, d: 14, h: 14, b: 34 };
+  function echelle(d){
+    /* l'axe suit la série en cours, pour qu'elle reste lisible même petite ;
+       une ancienne série plus grande sort par le haut (coupée au cadre) */
+    var yMax = n0;
+    var L = d.w - M.g - M.d, H = d.h - M.h - M.b;
+    return { yMax: yMax, L: L, H: H,
+      x: function(tt){ return M.g + tt / TMAX * L; },
+      y: function(nn){ return M.h + H - nn / yMax * H; },
+      t: function(px){ return Math.min(TMAX, Math.max(0, (px - M.g) / L * TMAX)); } };
+  }
+  function trace(ctx, e, serie, coul, ep){
+    ctx.beginPath();
+    serie.forEach(function(p, k){ var X = e.x(p[0]), Y = e.y(p[1]); if(k) ctx.lineTo(X, Y); else ctx.moveTo(X, Y); });
+    ctx.strokeStyle = coul; ctx.lineWidth = ep; ctx.lineJoin = 'round'; ctx.stroke();
+  }
+  function dessinerGraphique(){
+    var d = preparer(cvG), ctx = d.ctx, e = echelle(d);
+    ctx.clearRect(0, 0, d.w, d.h);
+    ctx.font = '12px "IBM Plex Mono", monospace'; ctx.fillStyle = COUL.encre;
+    /* grille : 1 s en abscisse, un dixième de l'échelle en ordonnée */
+    ctx.lineWidth = 1; ctx.strokeStyle = COUL.grille;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    for(var s = 0; s <= TMAX; s++){
+      var X = Math.round(e.x(s)) + 0.5;
+      ctx.beginPath(); ctx.moveTo(X, M.h); ctx.lineTo(X, M.h + e.H); ctx.stroke();
+      if(s % 2 === 0 && (d.w > 420 || s % 4 === 0)) ctx.fillText(String(s), X, M.h + e.H + 5);
+    }
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    for(var k = 0; k <= 10; k++){
+      var v = e.yMax * k / 10, Y = Math.round(e.y(v)) + 0.5;
+      ctx.beginPath(); ctx.moveTo(M.g, Y); ctx.lineTo(M.g + e.L, Y); ctx.stroke();
+      if(k % 2 === 0) ctx.fillText(String(Math.round(v)), M.g - 6, Y);
+    }
+    ctx.strokeStyle = COUL.encre; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(M.g, M.h); ctx.lineTo(M.g, M.h + e.H); ctx.lineTo(M.g + e.L, M.h + e.H); ctx.stroke();
+    ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+    ctx.fillText('t (s)', M.g + e.L, d.h - 1);
+    ctx.save(); ctx.translate(12, M.h + e.H / 2); ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('N', 0, 0); ctx.restore();
+    /* les séries précédentes en gris, la série en cours en couleur */
+    ctx.save(); ctx.beginPath(); ctx.rect(M.g, M.h - 2, e.L + 2, e.H + 2); ctx.clip();
+    anciens.forEach(function(a){ if(a.pts !== pts) trace(ctx, e, a.pts, COUL.ancien, 1.5); });
+    ctx.restore();
+    if(pts.length > 1) trace(ctx, e, pts, COUL.courbe, 2.5);
+    /* le curseur de lecture */
+    if(curseur){
+      var cx = e.x(curseur[0]), cy = e.y(curseur[1]);
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = COUL.lien; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(cx, M.h + e.H); ctx.lineTo(cx, cy); ctx.lineTo(M.g, cy); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(cx, cy, 4.5, 0, 2 * Math.PI); ctx.fillStyle = COUL.lien; ctx.fill();
+    }
+  }
+  function dessiner(){ dessinerEchantillon(); dessinerGraphique(); }
+
+  /* --- lecture au doigt : le point de la série en cours le plus proche en t --- */
+  function lire(ev){
+    if(pts.length < 2) return;
+    var r = cvG.getBoundingClientRect(), d = { w: r.width, h: r.height }, e = echelle(d);
+    var tt = e.t(ev.clientX - r.left);
+    var k = Math.min(pts.length - 1, Math.max(0, Math.round(tt / DT)));
+    curseur = pts[k];
+    lect.innerHTML = 'Lecture&nbsp;: t = <b>' + virgule(curseur[0], 2) + ' s</b> · N = <b>' + curseur[1] + '</b> noyaux restants';
+    dessinerGraphique();
+  }
+  var appui = false;
+  cvG.addEventListener('pointerdown', function(ev){ appui = true; lire(ev); });
+  cvG.addEventListener('pointermove', function(ev){ if(appui || ev.pointerType === 'mouse') lire(ev); });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(function(n){ cvG.addEventListener(n, function(){ appui = false; }); });
+
+  /* --- commandes --- */
+  function regler(){ enCours = false; nouvelleSerie(); boutonGo(); }
+  rN.addEventListener('input', regler);
+  rL.addEventListener('input', regler);
+  bGo.addEventListener('click', function(){
+    if(enCours){ enCours = false; boutonGo(); return; }
+    if(fini) nouvelleSerie();
+    enCours = true; dernier = performance.now(); boutonGo();
+    requestAnimationFrame(boucle);
+  });
+  bRaz.addEventListener('click', regler);
+  bEff.addEventListener('click', function(){
+    anciens = anciens.filter(function(a){ return a.pts === pts; });
+    dessiner();
+  });
+  /* la carte est masquée tant que l'étape n'est pas révélée : on redessine
+     quand elle prend sa taille (et à chaque rotation de la tablette) */
+  if(window.ResizeObserver) new ResizeObserver(function(){ dessiner(); }).observe(cvG);
+  else window.addEventListener('resize', dessiner);
+  nouvelleSerie(); boutonGo();
 })();
 </script>
 </body>

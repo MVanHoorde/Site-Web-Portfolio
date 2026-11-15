@@ -15,6 +15,17 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 15/11/2026 — Signalements : vidéos, simulation 3.5, séance non bloquante
+
+| Date | Décision | Statut |
+|---|---|---|
+| 15/11/2026 | **Les vidéos repassent par YouTube** (lecteur nocookie, au clic) : les liens OneDrive du lycée ne se lisent pas sans compte Microsoft (25/25 refusés, mesuré), et Loïc **refuse les liens « toute personne disposant du lien »** puisque le site est public. Interrupteur `VIDEOS_PAR_YOUTUBE` dans `sequence-snt.js`. Remplace la lecture OneDrive du 03/10 (les liens restent en base, table `videos`) | ✅ en vigueur — provisoire |
+| 15/11/2026 | **Hébergement des vidéos : problème principal à régler avec le service informatique du lycée** (YouTube y est bloqué). Pistes : un serveur de l'établissement, Tube d'apps.education.fr, un hébergeur européen à liens signés (≈ 1 €/mois). Jamais dans Supabase | ⏳ Loïc, plus tard |
+| 15/11/2026 | **Radioactivité 3.5 : la simulation est recodée dans la page** (même principe que l'animation d'ensciences.fr, qui ne tournait plus sur iPad) : N₀ et λ au doigt, lecture de t et N en touchant la courbe, anciennes courbes en gris. « Le principe, pas la reproduction » (Loïc) | ✅ en vigueur |
+| 15/11/2026 | **Les textes des corrigés d'ES passent sur le site** (`assets/data/corriges/<séquence>.json`, `generer-json.mjs`) : recoller du SQL à chaque retouche était trop lourd. Ils deviennent publics, choix assumé (« c'est pour réviser, pas évalué »). L'ouverture par classe reste en base (`045`). Remplace « textes en base, sources hors Git » du 14/11 | ✅ en vigueur (Loïc) |
+| 15/11/2026 | **Le professeur peut répondre à un signalement** : la réponse s'affiche une fois à l'élève, fenêtre 📬, par le canal du +0,5 (`045`). Pas encore d'écran pour l'écrire : Claude l'écrit en base à la demande | ✅ en vigueur (Loïc) |
+| 15/11/2026 | **Une séance peut être non bloquante** (`data-non-bloquante` sur la `<section class="seance">`) : elle s'ouvre comme les autres mais ne ferme pas les suivantes. Posé sur **Internet S3** (« Internet et moi »), que Loïc ne fait pas forcément avant S4 et S5. Le plafond de classe (`verrou-snt.js`) ne change pas | ✅ en vigueur |
+
 ## 14/11/2026 — ES : les corrigés à distance (044)
 
 | Date | Décision | Statut |

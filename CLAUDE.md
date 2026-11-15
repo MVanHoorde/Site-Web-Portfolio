@@ -116,11 +116,16 @@ détailler dans `CONSIGNES-sequence-SNT.md`.
   jamais de `fonts.googleapis.com` ni d'autre CDN qui exposerait l'IP des élèves.
 - Pas de framework, pas de build : HTML/CSS/JS vanilla, lisible et modifiable.
 - Ressources externes chargées par lien (CodeBetter…).
-- 🔴 **Vidéos : MP4 sur le OneDrive du lycée** (03/10/2026 — YouTube est bloqué
-  au lycée), lues dans le cours par le lecteur natif, **crédits de la chaîne sous
-  chaque vidéo**. 🔴 Le lien OneDrive **n'est jamais écrit dans une page**
-  (12/11/2026) : la page porte `data-video="<clé>"`, le lien est en base
-  (`bdd/schema/041`, saisi dans `prof/videos.html`). Patron :
+- 🔴 **Vidéos : lues chez YouTube pour l'instant** (15/11/2026), lecteur
+  nocookie chargé **au clic seulement**, **crédits de la chaîne sous chaque
+  vidéo**. La page porte `<video data-video="<clé>" data-yt="<id>">` ; le
+  moteur (`VIDEOS_PAR_YOUTUBE` dans `sequence-snt.js`) en fait un lecteur
+  YouTube. Les MP4 du OneDrive du lycée (`bdd/schema/041`, `prof/videos.html`)
+  restent en base mais **ne se lisent pas sans compte Microsoft** (mesuré le
+  15/11 : 25 liens sur 25 refusés) ; Loïc ne veut pas de liens « toute
+  personne ». ⏳ **L'hébergement des vidéos est à régler avec le service
+  informatique du lycée** (YouTube y est bloqué) — passer `VIDEOS_PAR_YOUTUBE`
+  à `false` rebranchera OneDrive ou son remplaçant. Patron :
   `CONSIGNES-sequence-SNT.md` §5 · liste : `_suivi/videos-a-telecharger.md`.
 - 🔴 **Pas d'illustration figurative dessinée de mémoire.** Un schéma SVG maison
   est légitime quand il représente une **structure** : axes, flèches, graphes,
