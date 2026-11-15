@@ -350,6 +350,10 @@ table.grille thead th{white-space:nowrap}
     <a class="lien-aide" id="lien-rappels" href="rappels.html" target="_blank" rel="noopener" style="display:none">⟲ Rappels</a>
     <a class="lien-aide" id="lien-corriges" href="corriges.html" target="_blank" rel="noopener" style="display:none" title="Afficher la correction des exercices à côté des réponses des élèves (044)">📗 Corrigés</a>
     <a class="lien-aide" id="lien-videos" href="videos.html" target="_blank" rel="noopener" style="display:none" title="Les liens OneDrive des vidéos des cours (gestionnaire)">🎬 Vidéos</a>
+    <!-- Diapason, le quiz en classe (15/11/2026, bdd/schema/047) : pour
+         le gestionnaire seul tant que l'outil n'est pas ouvert aux
+         collègues (à ce moment : Nouveautés + guides). -->
+    <a class="lien-aide" id="lien-diapason" href="../outils/quiz/animer.html" target="_blank" rel="noopener" style="display:none" title="Diapason : lancer un quiz en classe, voir les statistiques">🎵 Diapason</a>
     <!-- Padago (31/10/2026) : l'outil des pads à serrures, ouvert à
          tout compte enseignant sans démarche (bdd/schema/030). -->
     <a class="lien-aide" href="../outils/padago/" target="_blank" rel="noopener" title="Créer des pads à serrures">🗝 Padago</a>
@@ -890,7 +894,10 @@ table.grille thead th{white-space:nowrap}
     /* les corrigés collectifs d'ES (044) : 1re et terminale */
     $('#lien-corriges').style.display = (ESPACE === 'es1' || ESPACE === 'est') ? '' : 'none';
     /* les liens des vidéos (041) : seul le gestionnaire les écrit */
-    ProfAPI.appeler('est_gestionnaire').then(function(v){ $('#lien-videos').style.display = v === true ? '' : 'none'; }).catch(function(){});
+    ProfAPI.appeler('est_gestionnaire').then(function(v){
+      $('#lien-videos').style.display = v === true ? '' : 'none';
+      $('#lien-diapason').style.display = v === true ? '' : 'none';   // Diapason : Loïc seul pour l'instant
+    }).catch(function(){});
 
     /* les onglets de l'espace, le premier ouvert */
     var premier = appliquerOnglets();
