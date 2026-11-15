@@ -113,12 +113,21 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 <script src="../assets/js/rappels-rendu.js?v=2"></script>
 <script src="../assets/js/rappels/es1-t1-c2.js?v=3"></script>
 <script src="../assets/js/rappels/es1-t1-c3.js?v=3"></script>
+<script src="../assets/js/rappels/snt-t0.js?v=1"></script>
+<script src="../assets/js/rappels/snt-m1.js?v=1"></script>
+<script src="../assets/js/rappels/snt-t1.js?v=1"></script>
 <script>
 (function(){
   var CHAPITRES = [
     {seq: 'es1-t1-c2', nom: 'ES 1re · La radioactivité', page: '1re-es-t1-c2-radioactivite.html', espace: 'es1'},
-    {seq: 'es1-t1-c3', nom: 'ES 1re · Les cristaux', page: '1re-es-t1-c3-cristaux.html', espace: 'es1'}
+    {seq: 'es1-t1-c3', nom: 'ES 1re · Les cristaux', page: '1re-es-t1-c3-cristaux.html', espace: 'es1'},
+    {seq: 'snt-t0', nom: 'SNT · Introduction, systèmes informatisés', page: '2nde-snt-t0-systemes-informatises.html', espace: 'snt'},
+    {seq: 'snt-m1', nom: 'SNT · Représenter l\'information', page: '2nde-snt-m1-representer-information.html', espace: 'snt'},
+    {seq: 'snt-t1', nom: 'SNT · Internet', page: '2nde-snt-t1-internet.html', espace: 'snt'}
   ];
+  /* ?espace=snt (lien du tableau de bord) : la liste ne montre que les chapitres de cet espace */
+  var ESP = (/[?&]espace=([a-z0-9]+)/.exec(location.search) || [])[1];
+  if(ESP && CHAPITRES.some(function(c){ return c.espace === ESP; })) CHAPITRES = CHAPITRES.filter(function(c){ return c.espace === ESP; });
   var $ = function(s){ return document.querySelector(s); };
   var CLE_AUDIT = 'rappels.audit';
   var ch = CHAPITRES[0], etapesPage = [], onglet = 'audit';
@@ -145,7 +154,8 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
     return fetch('../pages/' + ch.page, {cache: 'no-store'}).then(function(r){ return r.text(); }).then(function(h){
       var d = new DOMParser().parseFromString(h, 'text/html');
       etapesPage = Array.prototype.map.call(d.querySelectorAll('.step[data-gate][data-cle]'), function(s){
-        var k = s.querySelector('.step-kicker'), m = k && /(\d+\.\d+)/.exec(k.textContent), t = s.querySelector('.step-title');
+        /* .ix et h4 : les encarts sans kicker (SNT t1, « Fierté française » 2.2) */
+        var k = s.querySelector('.step-kicker') || s.querySelector('.ix'), m = k && /(\d+\.\d+)/.exec(k.textContent), t = s.querySelector('.step-title') || s.querySelector('h4');
         return {cle: s.getAttribute('data-cle'), num: m ? m[1] : '?', titre: t ? t.textContent.trim() : ''};
       });
     }).catch(function(){ etapesPage = []; });

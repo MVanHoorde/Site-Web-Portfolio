@@ -2,7 +2,8 @@
    assets/js/rappels-es.js — « Pour se remettre en route »
    ------------------------------------------------------------
    Demande de Loïc du 12/11/2026 (enseignement scientifique : les
-   séances sont éloignées). À l'ouverture d'un chapitre, après plus
+   séances sont éloignées), étendue au SNT le 15/11/2026 (t0, m1,
+   t1 : banques snt-*.js). À l'ouverture d'un chapitre, après plus
    de 2 h d'absence, l'élève connecté reçoit QUATRE questions sur ce
    qu'il a fait en dernier : trois tirées des trois dernières étapes
    qu'il a validées (dans l'ordre du cours), une plus ancienne.
@@ -47,7 +48,8 @@
 
   /* les étapes à valider de la page, dans l'ordre du cours */
   var etapes = Array.prototype.map.call(document.querySelectorAll('.step[data-gate][data-cle]'), function(s){
-    var k = s.querySelector('.step-kicker'), m = k && /(\d+\.\d+)/.exec(k.textContent);
+    /* .ix : le numéro des encarts sans kicker (SNT t1, « Fierté française » 2.2) */
+    var k = s.querySelector('.step-kicker') || s.querySelector('.ix'), m = k && /(\d+\.\d+)/.exec(k.textContent);
     return {cle: s.getAttribute('data-cle'), el: s, num: m ? m[1] : ''};
   });
   function etapeDe(cle){ for(var i = 0; i < etapes.length; i++) if(etapes[i].cle === cle) return etapes[i]; return null; }
@@ -144,7 +146,7 @@
   }
   function revoir(q){
     var e = etapeDe(q.etape);
-    return e ? ' <a href="#" data-revoir="' + esc(q.etape) + '">Revoir l\'étape ' + esc(e.num) + '</a>' : '';
+    return e ? ' <a href="#" data-revoir="' + esc(q.etape) + '">Revoir l\'étape' + (e.num ? ' ' + esc(e.num) : '') + '</a>' : '';
   }
   function pied(apres){
     return '<div class="rap-pied"><button type="button" class="discret" data-passer>' + (apres ? 'Arrêter là' : 'Passer ces questions') + '</button>'
@@ -153,7 +155,7 @@
   function question(){
     var q = file[rang], e = etapeDe(q.etape);
     carte.setAttribute('data-id', q.id);   /* la question affichée (statistiques, banc d'essai) */
-    carte.innerHTML = tete() + (e ? '<p class="rap-de">Étape ' + esc(e.num) + '</p>' : '')
+    carte.innerHTML = tete() + (e && e.num ? '<p class="rap-de">Étape ' + esc(e.num) + '</p>' : '')
       + '<p class="rap-q">' + R.fmt(q.q) + '</p><div class="rap-corps">' + R.corps(q) + '</div>' + pied(false);
     R.brancher(carte.querySelector('.rap-corps'), q, function(juste){
       noterReponse(q, juste);

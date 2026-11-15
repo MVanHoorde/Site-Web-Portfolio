@@ -23,6 +23,31 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 11,
+    date: '2026-11-15',
+    espaces: ['snt'],
+    titre: 'SNT : quatre questions pour se remettre en route',
+    points: [
+      {
+        titre: '⟲ À l’ouverture de la séquence',
+        texte: 'Après plus de deux heures d’absence, l’élève reçoit quatre questions sur ce qu’il a fait : trois sur ses dernières étapes, une plus ancienne. Rien n’est noté ; une question manquée revient. Introduction, Représenter l’information, Internet.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<p class="nv-titre">⟲ Pour se remettre en route <span style="float:right">2 / 4</span></p>' +
+            '<div class="nv-ligne"><span class="nv-puce">Louis Pouzin</span><span class="nv-puce">Vint Cerf</span><span class="nv-puce">Bob Kahn</span></div>' +
+          '</div>'
+      },
+      {
+        titre: 'Les questions et les résultats',
+        texte: 'Le lien ⟲ Rappels, en haut du tableau de bord : chaque question telle que l’élève la voit, et la réussite de vos groupes.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-bouton">⟲ Rappels</span><span>Audit · Statistiques</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 10,
     date: '2026-11-14',
     espaces: ['es1', 'est'],
