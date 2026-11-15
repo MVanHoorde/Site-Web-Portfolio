@@ -5,14 +5,23 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **11/11/2026**.
+> Dernière réécriture : **15/11/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — la gestion entre collègues (11/11).** Suivi → « 👥 Gérer
+> **Dernière passe — Diapason, le quiz en classe (15/11).** Nouvel outil
+> `outils/quiz/` qui remplace Kahoot : écran projeté, élèves **sans compte**
+> (PIN, ou QR code fixe d'un quiz : attente du lancement en classe,
+> entraînement seul à la maison), huit types de questions, la base juge.
+> Mode d'emploi : `outils/quiz/LISEZMOI.md`. Premiers quiz : BTS MS2 partie A
+> (sources hors Git, `_quiz/bts-ms2/`). ⏳ **Reste à Loïc** : recoller `047`
+> en entier (la première version seule est en base), importer les six quiz.
+> Aucun lien depuis l'accueil ni le tableau de bord pour l'instant.
+>
+> **Passe du 11/11 — la gestion entre collègues.** Suivi → « 👥 Gérer
 > les élèves de la classe » (Masquer / À supprimer), onglets au choix dans
 > Réglages, bouton ✉️ « Écrire à M. Van Hoorde » et ✨ Nouveautés dans la barre,
 > onglet **Gestion** pour Loïc ; même bouton dans Leitner. ✅ `038` exécuté le

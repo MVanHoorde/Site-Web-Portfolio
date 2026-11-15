@@ -15,6 +15,18 @@ Statuts : ✅ en vigueur · ~~barré~~ remplacée · ⏳ en attente d'arbitrage
 
 ---
 
+## 15/11/2026 — Le quiz en classe remplace Kahoot (047)
+
+| Date | Décision | Statut |
+|---|---|---|
+| 15/11/2026 | **Un outil de quiz du site** (`outils/quiz/`, base `047`) remplace Kahoot : écran projeté au style « affiche », élèves **sans compte** (PIN ou QR code + pseudonyme), quiz stockés en ligne, statistiques pour l'enseignant seul. Nom : **Diapason** (une constante, `NOM` de `quiz-commun.js`). | ✅ |
+| 15/11/2026 | **La base juge**, avec son horloge : aucune bonne réponse n'arrive sur un téléphone avant la correction de la question. | ✅ |
+| 15/11/2026 | **Les sources des quiz restent hors du dépôt public** (`_quiz/`, ignoré par Git) : elles portent les corrigés. Elles entrent en base par l'import de `animer.html`. | ✅ |
+| 15/11/2026 | Pseudonymes des élèves remplacés par #1, #2… **30 jours** après la partie — durée proposée par Claude, à confirmer par Loïc. | ⏳ |
+| 15/11/2026 | **Un QR code fixe par quiz** (code de salle permanent), à poser sur les diapositives et les fiches : en classe, les élèves attendent et entrent tous au lancement par l'auteur ; sans partie ouverte, ils **s'entraînent seuls**. Choix de Loïc : l'entraînement **laisse une trace** dans ses statistiques (rangée à part) et la **bonne réponse s'affiche** après chaque question. | ✅ |
+| 15/11/2026 | **Trois nouveaux types de questions** dans Diapason : association (points partiels), mot à taper (réponses acceptées, pièges), curseur (points partiels selon l'écart). Le code de salle peut être fixé dans le fichier du quiz. Le type « classement » n'envoie plus que des positions mélangées (l'ancien identifiant livrait l'ordre juste). | ✅ |
+| 15/11/2026 | **Six quiz pour la partie A de MS2** (combustions), placés par Loïc : diagnostic avant les rappels, diagnostic « collège » à l'entrée de la partie, après le §4, fin du §5, après le §6, grand quiz final. Sources dans `_quiz/bts-ms2/` (hors Git). | ⏳ à auditer |
+
 ## 15/11/2026 — La direction observe, en lecture seule
 
 | Date | Décision | Statut |
