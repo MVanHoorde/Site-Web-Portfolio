@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ES Terminale · La frise de l'IA — Séquence élève</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<script src="../assets/js/progression.js?v=27"></script>
+<link rel="stylesheet" href="../assets/css/sequence-snt.css?v=53">
+
+<!-- ============================================================
+     ENSEIGNEMENT SCIENTIFIQUE Terminale — 3.5, séquence d'ouverture :
+     la frise de l'IA, puis le débat. Décision EST-FRISE-01
+     (_suivi/DECISIONS.md), maquette : term-es-frise-debat-maquette.
+
+     TEMPS 1 SEUL EN LIGNE (18/11/2026) : S1 le questionnaire et le
+     tirage du sujet (bdd/schema/049, Progression.friseIa), S2 la fiche
+     de recherche (réponses rédigées, dépôts d'images). Les temps
+     suivants (retour sur la v1, frise par vote, camps et rôles, débat)
+     s'ajouteront ici, chacun dans sa propre séance, avec sa date.
+
+     OUVERTURE À DATE : toute section ou tout lien portant
+     data-ouvre-le="AAAA-MM-JJ" est retiré de la page avant cette date
+     (script avant le moteur). Aperçu d'une date : ?le=AAAA-MM-JJ.
+     Le dépôt est public : ce qui est retiré reste lisible dans la
+     source — rien de secret ne s'y met.
+
+     BRANCHÉE EN BASE comme les autres chapitres de terminale :
+     data-sequence="est-t3-c5", réponses personnelles, connexion sur
+     place. Liste des sujets : assets/js/frise-ia-sujets.js.
+     ============================================================ -->
+<style>
+  .chantier,.proposition{display:none}
+  body.teacher .chantier,body.teacher .proposition{display:block}
+  .proposition{border:2px dashed var(--hist);border-radius:12px;background:var(--hist-wash);
+    padding:12px 15px;margin:14px 0;font-size:13.5px;line-height:1.55;color:var(--ink)}
+  .proposition .pl{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;
+    text-transform:uppercase;font-weight:700;color:var(--hist);margin-bottom:5px}
+
+  .transi{font-size:14px;color:var(--ink-soft);margin:2px 0 10px}
+
+  /* bandeau « IA interdite » */
+  .sans-ia{display:flex;gap:12px;align-items:center;background:var(--ink);color:var(--bg);
+    border-radius:12px;padding:10px 14px;margin:14px 0;font-size:14.5px;line-height:1.45}
+  .sans-ia .pastille{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+    background:var(--surface);color:var(--err);border:2px solid var(--err);
+    font:700 11px "IBM Plex Mono",monospace}
+  .sans-ia b{font-family:"Space Grotesk",sans-serif}
+
+  /* questionnaire */
+  .axe{margin:12px 0}
+  .axe .aq{font-weight:600;font-size:14.5px;margin-bottom:6px}
+  .pastilles{display:flex;flex-wrap:wrap;gap:6px}
+  .pastilles button{font:inherit;font-size:14px;min-height:40px;padding:6px 12px;border-radius:999px;
+    border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+  .pastilles button[aria-pressed="true"]{background:var(--activity);border-color:var(--activity);color:#fff}
+  .pastilles button:disabled{cursor:default;opacity:.75}
+  .tirage-msg{font-size:14px;margin:8px 0;min-height:1.2em}
+  .tirage-msg.ko{color:var(--err)}
+  .deux-sujets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px;margin:12px 0}
+  .deux-sujets button{font:inherit;text-align:left;border:2px solid var(--line);border-radius:12px;
+    background:var(--surface);color:var(--ink);padding:12px 14px;cursor:pointer;display:grid;gap:4px}
+  .deux-sujets button:hover{border-color:var(--activity)}
+  .deux-sujets .croise{font:600 11px "IBM Plex Mono",monospace;letter-spacing:.06em;color:var(--activity);text-transform:uppercase}
+  .deux-sujets b{font-family:"Space Grotesk",sans-serif;font-size:17px}
+  .deux-sujets small{color:var(--ink-soft)}
+  .mon-sujet{border:2px solid var(--ok);background:var(--ok-wash);border-radius:12px;padding:12px 14px;margin:10px 0}
+  .mon-sujet .t{font:600 11px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--ok)}
+  .mon-sujet b{display:block;font-family:"Space Grotesk",sans-serif;font-size:19px;margin-top:2px}
+  .mon-sujet small{color:var(--ink-soft)}
+  .rappel-sujet{border:1.5px dashed var(--line);border-radius:10px;padding:8px 12px;margin:8px 0 14px;font-size:14px;color:var(--ink-soft)}
+  .rappel-sujet b{color:var(--ink)}
+
+  /* aide pour écrire une source */
+  details.aide-src{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:10px 0;background:var(--surface)}
+  details.aide-src summary{cursor:pointer;font-weight:600}
+  details.aide-src dt{font-weight:600;margin-top:8px}
+  details.aide-src dd{margin:2px 0 0 0;font-size:14px;color:var(--ink-soft)}
+  details.aide-src code{font-size:12px;word-break:break-word}
+  details.autre-image{margin:12px 0;border:1px dashed var(--line);border-radius:10px;padding:8px 12px}
+  details.autre-image summary{cursor:pointer;font-weight:600}
+</style>
+</head><body data-seances="ouvertes" data-sequence="est-t3-c5" data-reponses="personnelles" data-accueil="sur-place" data-renvoi-texte="Connecte-toi pour tirer ton sujet et garder ta fiche, au lycée comme à la maison.">
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Enseignement scientifique · Terminale · Séquence d'ouverture</div>
+    <h1 class="title">La frise de l'IA <span class="tag">et le débat</span></h1>
+    <p class="lede">D'une machine grecque à engrenages jusqu'à ChatGPT : chacun de vous enquête sur un moment de l'histoire du calcul et de l'intelligence artificielle. Mises bout à bout, vos fiches feront la frise de la classe — et le point de départ du débat.</p>
+    <div class="meta-row">
+      <span class="m"><b>Temps 1</b> · Je cherche</span>
+      <span class="m">Fiche <b>≈ 1 h</b> à la maison</span>
+    </div>
+    <div class="ens-zone">
+      <button class="ens-btn" type="button" title="Réservé à l'enseignant">🔒 mode enseignant</button>
+      <span class="ens-actif">🔓 Mode enseignant actif — toutes les séances sont ouvertes.
+        <span class="chrono">30:00</span>
+        <button class="stop ens-btn" type="button">couper</button></span>
+    </div>
+  </div>
+</header>
+<nav class="seances">
+  <div class="wrap">
+    <a class="retour" href="term-enseignement-scientifique.html">← Enseignement scientifique</a>
+    <a href="#s1" data-ouvre-le="2026-11-19"><span class="n">S1</span>Ton sujet</a>
+    <a href="#s2" data-ouvre-le="2026-11-19"><span class="n">S2</span>Ta fiche de recherche</a>
+    <span class="spacer"></span>
+    <input type="checkbox" id="teacherMode" hidden>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="legend">
+    <span class="dot"><span class="pip"></span>À faire</span>
+    <span class="dot"><span class="pip doing"></span>En cours</span>
+    <span class="dot"><span class="pip done"></span>Validé</span>
+  </div>
+
+  <div class="sans-ia" role="note"><span class="pastille">IA</span>
+    <span><b>Ici, l'IA est interdite pour écrire.</b> On veut tes mots, tes recherches, tes sources. Le copier-coller est bloqué.</span></div>
+
+  <p class="seance-goal" data-pas-encore hidden>La séquence s'ouvre le <b>jeudi 19 novembre</b>.</p>
+
+  <!-- ===================== SÉANCE 1 — TON SUJET ===================== -->
+  <section class="seance" id="s1" data-seance="1" data-fiche="non" data-ouvre-le="2026-11-19">
+    <div class="seance-head">
+      <h2><span class="s-num">S1</span>Ton sujet</h2>
+      <span class="seance-time">≈ 10 min</span>
+    </div>
+    <p class="seance-goal">Dis ce qui t'attire : deux sujets sont tirés pour toi parmi les 36 de la frise, tu en gardes un.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 1.1 -->
+      <div class="step" data-step data-gate data-cle="est-t3c5-sujet" id="etape-sujet">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card activite">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 1.1 <span class="badge act">activité</span></div>
+            <h3 class="step-title">Ce qui t'intéresse, puis le tirage</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> repartir avec <b>ton sujet de recherche</b> pour les semaines qui viennent.</span></div>
+          </div>
+          <div class="card-body">
+            <p class="transi">La frise de la classe a 36 cases, de l'Antiquité à aujourd'hui. Pour que chacun enquête sur un sujet qui lui parle, commence par dire ce qui t'attire.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Choisis <b>autant de réponses que tu veux</b> sur chaque ligne. Les sujets qui croisent le plus tes choix passent devant — en gardant une répartition équitable : un sujet ne revient à un deuxième élève que quand tous les autres ont été tirés.</p>
+            <div id="frise-gouts"></div>
+            <div class="gaction" style="margin-top:12px"><button class="btn" type="button" id="frise-tirer">🎲 Tirer mes deux sujets</button></div>
+            <div class="tirage-msg" id="frise-msg" aria-live="polite"></div>
+            <div id="frise-choix" hidden>
+              <p style="font-size:14.5px;margin:10px 0 0"><b>Deux sujets sont tirés pour toi.</b> Garde celui qui te donne le plus envie de chercher. <b>C'est définitif</b> : pas de nouveau tirage.</p>
+              <div class="deux-sujets" id="frise-deux"></div>
+            </div>
+            <div id="frise-garde" hidden></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div>
+  </section>
+
+  <!-- ===================== SÉANCE 2 — TA FICHE ===================== -->
+  <section class="seance" id="s2" data-seance="2" data-fiche="non" data-ouvre-le="2026-11-19">
+    <div class="seance-head">
+      <h2><span class="s-num">S2</span>Ta fiche de recherche</h2>
+      <span class="seance-time">≈ 1 h, à la maison</span>
+    </div>
+    <p class="seance-goal">Ta fiche a deux étages : trois lignes pour la frise, que tout le monde verra en premier, puis le détail, qui s'ouvre quand on touche ta fiche. Les questions sont les mêmes pour tous les sujets.</p>
+    <div class="progress-line"><i data-progress></i></div>
+
+    <div class="rappel-sujet" data-rappel-sujet>Ton sujet apparaîtra ici dès que tu l'auras tiré (séance 1).</div>
+
+    <div class="lockable">
+    <div class="steps">
+
+      <!-- 2.1 -->
+      <div class="step" data-step data-gate data-cle="est-t3c5-pour-la-frise">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.1 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Pour la frise</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> présenter ton sujet en <b>trois lignes</b> : ce qu'on lira sur la frise avant d'ouvrir ta fiche.</span></div>
+          </div>
+          <div class="card-body">
+            <p class="transi">Tu as ton sujet. Avant le détail, sa carte d'identité : un titre qui donne envie, une date, une phrase qui résume.</p>
+
+            <div class="field" data-focus data-focus-titre="Le titre de ta fiche"
+                 data-focus-question="Un titre court qui donne envie d'en savoir plus. Pas seulement le nom du sujet : dis ce qu'il a de marquant. Exemple : « Un calculateur astronomique vieux de 2 000 ans »."
+                 data-focus-max="90" data-focus-min="8" data-focus-code="FRIA-TITRE">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">1 · Le <b>titre</b> de ta fiche.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus data-focus-titre="La date ou la période"
+                 data-focus-question="L'année, ou la période si elle s'étale. Exemples : « 1950 », « 1206 → 1739 », « IIᵉ – Iᵉʳ siècle av. J.-C. »."
+                 data-focus-max="50" data-focus-min="4" data-focus-code="FRIA-DATE">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">2 · La <b>date</b> ou la période.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus data-focus-titre="Le résumé pour la frise"
+                 data-focus-question="Une ou deux phrases, 30 mots au plus : ce que quelqu'un doit retenir de ton sujet s'il ne lit que ça."
+                 data-focus-max="240" data-focus-min="40" data-focus-code="FRIA-RESUME">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">3 · Le <b>résumé</b> pour la frise — une ou deux phrases, 30 mots au plus.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 -->
+      <div class="step" data-step data-gate data-cle="est-t3c5-six-questions">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.2 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Le détail : six questions</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> raconter ton sujet à quelqu'un qui n'en a <b>jamais entendu parler</b>, avec tes mots.</span></div>
+          </div>
+          <div class="card-body">
+            <p class="transi">Les trois lignes sont posées. Le détail, maintenant : les six mêmes questions pour tout le monde, environ <b>1 000 mots au plus</b> en tout.</p>
+
+            <div class="field" data-focus data-focus-titre="De quoi s'agit-il ?"
+                 data-focus-question="Présente le sujet à quelqu'un qui n'en a jamais entendu parler. 40 à 120 mots."
+                 data-focus-max="850" data-focus-min="200" data-focus-code="FRIA-Q1">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">1 · <b>De quoi s'agit-il ?</b> <span style="color:var(--ink-soft)">40 à 120 mots</span></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus data-focus-titre="Quand, où, dans quel contexte ?"
+                 data-focus-question="Situe-le dans son époque : qu'est-ce qui se passait autour ? 40 à 120 mots."
+                 data-focus-max="850" data-focus-min="200" data-focus-code="FRIA-Q2">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">2 · <b>Quand, où, dans quel contexte ?</b> <span style="color:var(--ink-soft)">40 à 120 mots</span></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus data-focus-titre="Qui ?"
+                 data-focus-question="Les personnes, les équipes ou les entreprises derrière. Si on ne sait pas, dis-le et dis pourquoi. 40 à 120 mots."
+                 data-focus-max="850" data-focus-min="200" data-focus-code="FRIA-Q3">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">3 · <b>Qui ?</b> <span style="color:var(--ink-soft)">40 à 120 mots</span></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus data-focus-titre="Comment ça marche ?"
+                 data-focus-question="Le principe, avec tes mots. Tout terme technique est expliqué. 60 à 200 mots."
+                 data-focus-max="1400" data-focus-min="300" data-focus-code="FRIA-Q4">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">4 · <b>Comment ça marche ?</b> <span style="color:var(--ink-soft)">60 à 200 mots</span></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus data-focus-titre="Qu'est-ce que ça a changé ? Quel lien avec l'IA d'aujourd'hui ?"
+                 data-focus-question="Ce que le sujet a rendu possible, et ce qui le sépare encore d'une IA. 60 à 200 mots."
+                 data-focus-max="1400" data-focus-min="300" data-focus-code="FRIA-Q5">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">5 · <b>Qu'est-ce que ça a changé ? Quel lien avec l'IA d'aujourd'hui ?</b> <span style="color:var(--ink-soft)">60 à 200 mots</span></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <div class="field" data-focus data-focus-titre="Ce qui t'a surpris"
+                 data-focus-question="Une anecdote, un chiffre, une controverse. 20 à 100 mots."
+                 data-focus-max="700" data-focus-min="100" data-focus-code="FRIA-Q6">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">6 · <b>Ce qui t'a surpris</b> <span style="color:var(--ink-soft)">20 à 100 mots</span></div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 -->
+      <div class="step" data-step data-gate data-cle="est-t3c5-images">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.3 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Tes images</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> montrer ton sujet : <b>1 à 3 images</b>, chacune <b>légendée et sourcée</b>.</span></div>
+          </div>
+          <div class="card-body">
+            <p class="transi">Ton texte est écrit. Une image bien choisie le rend lisible d'un coup d'œil sur la frise.</p>
+            <p style="font-size:14.5px;margin:4px 0 10px">Une photo, un document d'époque, un schéma que tu annotes toi-même… La légende dit <b>ce qu'on voit</b>, la source dit <b>d'où vient l'image</b>. Un montage, un schéma annoté ou un objet que tu photographies et décris peuvent valoir un <b>bonus d'originalité</b>. <b>Jamais de photo de toi ni d'un camarade.</b></p>
+
+            <div class="block-label">Image 1</div>
+            <div class="field" data-depot data-depot-code="FRIA-IMG1">
+              <span class="field-type">Dépôt d'image</span>
+              <div class="field-q">Dépose ta première image.</div>
+              <div class="depot-zone">
+                <label class="btn ghost depot-btn">🖼️ Choisir mon image<input type="file" accept="image/*" hidden aria-label="Déposer la première image de ta fiche"></label>
+                <div class="depot-apercu" data-depot-apercu></div>
+                <div class="verdict"></div>
+              </div>
+            </div>
+            <div class="field" data-focus data-focus-titre="Légende et source de l'image 1"
+                 data-focus-question="Légende : ce qu'on voit sur l'image. Puis la source : auteur ou organisme, site où tu l'as trouvée, licence s'il y en a une (aide en bas de l'étape)."
+                 data-focus-max="500" data-focus-min="30" data-focus-code="FRIA-IMG1L">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">Légende et source de l'image 1.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <details class="autre-image plus-loin">
+              <summary>➕ Ajouter une deuxième image (facultatif)</summary>
+              <div class="field" data-depot data-depot-code="FRIA-IMG2">
+                <span class="field-type">Dépôt d'image</span>
+                <div class="field-q">Ta deuxième image.</div>
+                <div class="depot-zone">
+                  <label class="btn ghost depot-btn">🖼️ Choisir mon image<input type="file" accept="image/*" hidden aria-label="Déposer la deuxième image de ta fiche"></label>
+                  <div class="depot-apercu" data-depot-apercu></div>
+                  <div class="verdict"></div>
+                </div>
+              </div>
+              <div class="field" data-focus data-focus-titre="Légende et source de l'image 2"
+                   data-focus-question="Légende : ce qu'on voit sur l'image. Puis la source."
+                   data-focus-max="500" data-focus-min="30" data-focus-code="FRIA-IMG2L">
+                <span class="field-type">Réponse rédigée</span>
+                <div class="field-q">Légende et source de l'image 2.</div>
+                <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+                <div class="gtexte" data-focus-echo></div>
+                <div class="verdict"></div>
+              </div>
+            </details>
+
+            <details class="autre-image plus-loin">
+              <summary>➕ Ajouter une troisième image (facultatif)</summary>
+              <div class="field" data-depot data-depot-code="FRIA-IMG3">
+                <span class="field-type">Dépôt d'image</span>
+                <div class="field-q">Ta troisième image.</div>
+                <div class="depot-zone">
+                  <label class="btn ghost depot-btn">🖼️ Choisir mon image<input type="file" accept="image/*" hidden aria-label="Déposer la troisième image de ta fiche"></label>
+                  <div class="depot-apercu" data-depot-apercu></div>
+                  <div class="verdict"></div>
+                </div>
+              </div>
+              <div class="field" data-focus data-focus-titre="Légende et source de l'image 3"
+                   data-focus-question="Légende : ce qu'on voit sur l'image. Puis la source."
+                   data-focus-max="500" data-focus-min="30" data-focus-code="FRIA-IMG3L">
+                <span class="field-type">Réponse rédigée</span>
+                <div class="field-q">Légende et source de l'image 3.</div>
+                <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+                <div class="gtexte" data-focus-echo></div>
+                <div class="verdict"></div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.4 -->
+      <div class="step" data-step data-gate data-cle="est-t3c5-sources">
+        <div class="rail"></div><div class="step-pip"></div>
+        <div class="card">
+          <div class="card-top">
+            <div class="step-kicker">ÉTAPE 2.4 <span class="badge gate">à valider</span></div>
+            <h3 class="step-title">Tes deux sources</h3>
+            <div class="objective"><span>🎯</span><span><b>Objectif —</b> dire <b>d'où vient</b> ce que tu as écrit : deux sites ou documents différents.</span></div>
+          </div>
+          <div class="card-body">
+            <p class="transi">Dernière étape : une fiche sans source ne peut pas aller sur la frise. Deux sources, différentes, écrites comme dans l'aide ci-dessous.</p>
+
+            <details class="aide-src">
+              <summary>❓ Comment écrire une source</summary>
+              <dl>
+                <dt>Site web</dt><dd>Auteur ou organisme, « Titre de la page », <i>nom du site</i>, date de mise en ligne, adresse, consulté le jour/mois/année.<br><code>CNRS, « Le mécanisme d'Anticythère enfin compris ? », CNRS Le journal, 12/03/2021, https://…, consulté le 18/09/2026</code></dd>
+                <dt>Article de presse</dt><dd>Auteur, « Titre de l'article », <i>nom du journal</i>, date, page ou adresse.</dd>
+                <dt>Livre</dt><dd>NOM Prénom, <i>Titre</i>, éditeur, année, page.</dd>
+                <dt>Manuel scolaire</dt><dd><i>Titre du manuel</i>, niveau, éditeur, année, page.</dd>
+                <dt>Vidéo en ligne</dt><dd>Auteur ou chaîne, « Titre », plateforme, date de mise en ligne, minute citée.</dd>
+                <dt>Film ou documentaire</dt><dd><i>Titre</i>, réalisateur ou réalisatrice, année, diffuseur.</dd>
+                <dt>Podcast ou émission de radio</dt><dd>Nom de l'émission, « Titre de l'épisode », station ou plateforme, date.</dd>
+                <dt>Image</dt><dd>Auteur ou organisme, description, lieu de conservation s'il y en a un, site où tu l'as trouvée, licence (par exemple CC BY).</dd>
+                <dt>Refusées</dt><dd>Les encyclopédies collaboratives et les assistants IA ne sont pas des sources : cite la source que cite l'encyclopédie.</dd>
+              </dl>
+            </details>
+
+            <div class="field" data-focus data-focus-titre="Source 1"
+                 data-focus-question="Ta première source, écrite comme dans l'aide « Comment écrire une source »."
+                 data-focus-max="400" data-focus-min="25" data-focus-code="FRIA-SRC1">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">Source 1.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+            <div class="field" data-focus data-focus-titre="Source 2"
+                 data-focus-question="Ta deuxième source, différente de la première (un autre site ou un autre document)."
+                 data-focus-max="400" data-focus-min="25" data-focus-code="FRIA-SRC2">
+              <span class="field-type">Réponse rédigée</span>
+              <div class="field-q">Source 2.</div>
+              <div class="gaction"><button class="btn" data-focus-ouvrir>✍️ Répondre</button></div>
+              <div class="gtexte" data-focus-echo></div>
+              <div class="verdict"></div>
+            </div>
+
+            <aside class="proposition">
+              <div class="pl">Proposition — à valider</div>
+              Les fourchettes de mots, l'échéance de la version 1 et les étiquettes des 36 sujets
+              (assets/js/frise-ia-sujets.js) sont des propositions du 18/11/2026. La suite (retour sur
+              la v1, version 2, frise par vote, camps, débat) s'ajoutera à cette page, chaque temps
+              avec sa date d'ouverture.
+            </aside>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Ouverture à date : AVANT le moteur, qui ne doit jamais voir ce qui n'est pas ouvert. -->
+<script>
+(function(){
+  var m = /[?&]le=(\d{4}-\d{2}-\d{2})/.exec(location.search);
+  var d = new Date(), j = m ? m[1] :
+    d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  var retires = 0;
+  document.querySelectorAll('[data-ouvre-le]').forEach(function(el){
+    if(el.getAttribute('data-ouvre-le') > j){ el.parentNode.removeChild(el); retires++; }
+  });
+  if(!document.querySelector('section.seance')){
+    var p = document.querySelector('[data-pas-encore]'); if(p) p.hidden = false;
+  }
+})();
+</script>
+<script src="../assets/js/sequence-snt.js?v=63"></script>
+<script src="../assets/js/frise-ia-sujets.js?v=1"></script>
+<script>
+/* ---------- Le questionnaire et le tirage (bdd/schema/049) ---------- */
+(function(){
+  var F = window.FRISE_IA, P = window.Progression;
+  var zone = document.getElementById('frise-gouts');
+  if(!F || !zone) return;
+  var $ = function(id){ return document.getElementById(id); };
+  var gouts = {};
+  var etat = null;   // {propositions, sujet}
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function dire(t, ko){ var e = $('frise-msg'); e.textContent = t; e.className = 'tirage-msg' + (ko ? ' ko' : ''); }
+
+  zone.innerHTML = F.AXES.map(function(a){
+    return '<div class="axe"><div class="aq">' + esc(a.q) + '</div><div class="pastilles" data-axe="' + a.id + '">' +
+      a.r.map(function(r, i){ return '<button type="button" aria-pressed="false" data-i="' + i + '">' + esc(r) + '</button>'; }).join('') +
+      '</div></div>';
+  }).join('');
+  zone.addEventListener('click', function(ev){
+    var b = ev.target.closest('button[data-i]'); if(!b || b.disabled) return;
+    var on = b.getAttribute('aria-pressed') !== 'true';
+    b.setAttribute('aria-pressed', String(on));
+    var axe = b.parentNode.getAttribute('data-axe'), i = +b.getAttribute('data-i');
+    var l = gouts[axe] || (gouts[axe] = []);
+    if(on){ if(l.indexOf(i) < 0) l.push(i); } else { gouts[axe] = l.filter(function(x){ return x !== i; }); }
+  });
+
+  function figer(g){
+    zone.querySelectorAll('button[data-i]').forEach(function(b){
+      var axe = b.parentNode.getAttribute('data-axe');
+      if(g) b.setAttribute('aria-pressed', String(((g[axe] || []).indexOf(+b.getAttribute('data-i'))) >= 0));
+      b.disabled = true;
+    });
+    $('frise-tirer').hidden = true;
+  }
+
+  function carte(id){
+    var s = F.PAR_ID[id] || { titre: id, date: '' };
+    return '<b>' + esc(s.titre) + '</b><small>' + esc(s.date) + (s.tags ? ' · ' + esc(F.etiquette(s)) : '') + '</small>';
+  }
+
+  function valider(){
+    var st = document.getElementById('etape-sujet');
+    if(st && !st.classList.contains('is-done')){
+      st.classList.add('is-done');
+      st.dispatchEvent(new CustomEvent('etape-validee', { bubbles: true }));
+    }
+  }
+
+  function afficher(){
+    if(!etat) return;
+    figer(etat.gouts);
+    if(etat.sujet){
+      $('frise-choix').hidden = true;
+      var g = $('frise-garde'); g.hidden = false;
+      g.innerHTML = '<div class="mon-sujet"><div class="t">Ton sujet</div>' + carte(etat.sujet) + '</div>' +
+        '<p style="font-size:14px;margin:6px 0 0">Ta fiche t’attend en <a href="#s2">séance 2</a> : environ une heure de recherche, à la maison.</p>';
+      dire('');
+      document.querySelectorAll('[data-rappel-sujet]').forEach(function(r){
+        var s = F.PAR_ID[etat.sujet];
+        r.innerHTML = 'Ton sujet : <b>' + esc(s ? s.titre : etat.sujet) + '</b>' + (s ? ' · ' + esc(s.date) : '');
+      });
+      valider();
+    } else {
+      $('frise-choix').hidden = false;
+      $('frise-deux').innerHTML = etat.propositions.map(function(id){
+        var s = F.PAR_ID[id], n = s ? F.score(s, etat.gouts || gouts) : 0;
+        return '<button type="button" data-garder="' + esc(id) + '"><span class="croise">' +
+          (n ? 'croise ' + n + ' de tes choix' : 'sujet libre') + '</span>' + carte(id) + '</button>';
+      }).join('');
+      dire('');
+    }
+  }
+
+  function erreur(e){
+    var c = (e && (e.code || e.message)) || '';
+    if(/PAS_DE_CLASSE_EST/.test(c)) return 'Ton compte n’est pas inscrit dans une classe de terminale d’enseignement scientifique. Demande le code de classe à ton professeur.';
+    if(/SESSION|JWT|401|403/.test(c)) return 'Connecte-toi d’abord (en haut de la page) : le tirage est rattaché à ton compte.';
+    return 'Le tirage n’a pas pu se faire (' + c + '). Réessaie dans un instant.';
+  }
+
+  $('frise-tirer').addEventListener('click', function(){
+    var b = this;
+    if(!P || !P.friseIa){ dire('Connecte-toi d’abord : le tirage est rattaché à ton compte.', true); return; }
+    var nb = Object.keys(gouts).filter(function(k){ return gouts[k].length; }).length;
+    if(nb < 2){ dire('Coche au moins une réponse sur deux lignes : sinon, le tirage se fait au hasard.', true); return; }
+    b.disabled = true; dire('Tirage en cours…');
+    P.session().then(function(moi){
+      if(!moi) throw { code: 'SESSION' };
+      return P.friseIa('tirer', { p_ordre: F.ordre(gouts), p_gouts: gouts });
+    }).then(function(r){
+      var l = Array.isArray(r) ? r[0] : r;
+      etat = { propositions: l.propositions, sujet: l.sujet, gouts: gouts };
+      afficher();
+    }).catch(function(e){ b.disabled = false; dire(erreur(e), true); });
+  });
+
+  $('frise-deux').addEventListener('click', function(ev){
+    var b = ev.target.closest('[data-garder]'); if(!b) return;
+    var id = b.getAttribute('data-garder'), s = F.PAR_ID[id];
+    if(!window.confirm('Garder « ' + (s ? s.titre : id) + ' » ? C’est définitif.')) return;
+    $('frise-deux').querySelectorAll('button').forEach(function(x){ x.disabled = true; });
+    P.friseIa('choisir', { p_sujet: id }).then(function(r){
+      etat.sujet = typeof r === 'string' ? r : id;
+      afficher();
+    }).catch(function(e){
+      $('frise-deux').querySelectorAll('button').forEach(function(x){ x.disabled = false; });
+      dire(erreur(e), true);
+    });
+  });
+
+  /* À l'ouverture : ce qui a déjà été tiré revient. */
+  if(P && P.friseIa && P.disponible && P.disponible()){
+    P.session().then(function(moi){
+      if(!moi) return null;
+      return P.friseIa('relire');
+    }).then(function(r){
+      var l = Array.isArray(r) ? r[0] : r;
+      if(l && l.propositions){ gouts = l.gouts || {}; etat = { propositions: l.propositions, sujet: l.sujet, gouts: gouts }; afficher(); }
+    }).catch(function(){ /* hors ligne : le questionnaire reste disponible */ });
+  }
+})();
+</script>
+
+</body>
+</html>

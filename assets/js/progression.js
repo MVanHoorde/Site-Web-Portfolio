@@ -1538,6 +1538,15 @@
       .catch(function () { return []; });
   }
 
+  /* La frise de l'IA (bdd/schema/049) : tirage des deux sujets, choix
+     d'un sujet, relecture. Les erreurs remontent à la page (pas de
+     session, pas de classe de terminale ES) : elle les dit à l'élève. */
+  function friseIa(action, args) {
+    var noms = { tirer: 'frise_ia_tirer', choisir: 'frise_ia_choisir', relire: 'frise_ia_mon_tirage' };
+    if (!noms[action]) return Promise.reject(new Error('ACTION_INCONNUE'));
+    return api('rpc/' + noms[action], { method: 'POST', body: args || {} });
+  }
+
   /* ----------------------------------------------------------
    *  11. Surface publique
    * ---------------------------------------------------------- */
@@ -1571,7 +1580,8 @@
     mesReponses   : mesReponses,
     versions      : versions,
     lienVideo     : lienVideo,
-    mesCorriges   : mesCorriges
+    mesCorriges   : mesCorriges,
+    friseIa       : friseIa
   };
 
   if (!disponible() && global.console) {

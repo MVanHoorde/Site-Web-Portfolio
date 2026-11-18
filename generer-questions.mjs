@@ -62,7 +62,8 @@ const THEMES = [
   ['es1-t2-c2', '1re-es-t2-c2-son-a-coder.html'],
   ['es1-t3-c1', '1re-es-t3-c1-forme-terre.html'],
   ['est-t2-c1', 'term-es-t2-c1-deux-siecles-energie-electrique.html'],
-  ['est-t2-c2', 'term-es-t2-c2-production-stockage-electricite.html']
+  ['est-t2-c2', 'term-es-t2-c2-production-stockage-electricite.html'],
+  ['est-t3-c5', 'term-es-t3-c5-frise-ia.html']
 ];
 
 /* Même liste courte d'entités que generer-seances.mjs : mieux vaut

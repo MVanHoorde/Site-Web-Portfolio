@@ -2466,6 +2466,26 @@ projeté. Branché, à la construction, sur l'espace `est` et `reponses_libres`
 `pages/term-es-frise-debat-tuto.html` (non liées). La règle « aucun champ note »
 de `_modeles/CONSIGNES-sequence-ES.md` sera réécrite à la construction.
 
+**18/11/2026, le temps 1 en ligne pour le 19/11.** Page élève
+`pages/term-es-t3-c5-frise-ia.html` (clé `est-t3-c5`, programme 3.5, lien au
+hub de terminale) : S1 questionnaire de goûts + tirage (2 sujets proposés,
+1 gardé, pas de retirage), S2 fiche de recherche (titre, date, résumé,
+6 questions, 1 à 3 images déposées dans `depots` avec légende et source,
+2 sources). Tirage **équitable par la base** (`bdd/schema/049`, choix de
+Loïc) : sujet gardé = 1, proposé = ½, l'élève reçoit les deux moins occupés
+dans son ordre de préférence. Liste et étiquettes des 36 sujets :
+`assets/js/frise-ia-sujets.js` (étiquettes = proposition). Écran enseignant
+`prof/frise-ia.html` (lien « 🧭 Frise de l'IA », espace `est`) : calendrier,
+sujets, avancement, attribuer / effacer un tirage. **Ouverture à date** :
+`data-ouvre-le` sur une séance (aperçu `?le=AAAA-MM-JJ`) ; Loïc a choisi
+l'ouverture automatique — elle ne vaut que pour un temps construit, et le
+calendrier du tableau de bord passe en rouge 7 jours avant la date d'un temps
+non construit. Calendrier : 19/11 temps 1 · 26/11 v1, enquête et vote des
+sujets de débat (date proposée) · 03/12 et 10/12 demi-groupes · 17/12 classe
+entière, pôles · 14/01 et 21/01 préparation · 28/01 débat (peut bouger).
+Les demi-groupes restent à saisir. Diaporama de présentation hors dépôt
+(Téléchargements).
+
 En attente (Loïc, plus tard) : barème de la note de complétion ; jeu du débat
 dans les 20 points ou en bonus ; note individuelle de débat par rôle ; groupes
 autorisés à présenter ; sens du « vote supplémentaire » du présentateur ;

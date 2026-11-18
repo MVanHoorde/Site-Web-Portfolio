@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Frise de l'IA — tableau de bord</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/frise-ia.html — la frise de l'IA, terminale ES (18/11/2026)
+     ------------------------------------------------------------
+     bdd/schema/049 · page élève pages/term-es-t3-c5-frise-ia.html.
+     · Le calendrier de la séquence : chaque temps, sa date d'ouverture,
+       et s'il est construit. Un temps non construit dont la date
+       approche (7 jours) est signalé en rouge : la page élève ne peut
+       ouvrir à sa date que ce qui existe.
+     · Par classe : le sujet de chaque élève (ou ses deux sujets en
+       attente de choix), l'avancement de sa fiche (réponses rédigées
+       FRIA-*), et deux gestes : effacer un tirage (l'élève retire) ou
+       attribuer un sujet à la main.
+     · La répartition des 36 sujets dans la classe.
+     Noms : ceux de la table chargée au tableau de bord (ProfAPI.nomDe),
+     jamais en base.
+     ============================================================ -->
+<style>
+:root{
+  --bg:#e9edf4; --surface:#fff; --surface-2:#f4f6fb;
+  --ink:#161f33; --ink-soft:#4a566e; --ink-faint:#8b97ad; --line:#d3dae7;
+  --link:#2445c7; --ok:#12805c; --ok-wash:#e0f2ea; --err:#c33a2f; --err-wash:#fbe9e7; --att:#a8710b; --att-wash:#fbf1dc;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151d; --surface:#1a202b; --surface-2:#222a37;
+    --ink:#e8ecf3; --ink-soft:#b3bccb; --ink-faint:#7f8a9c; --line:#2f3847;
+    --link:#8ea6ff; --ok:#4fc79b; --ok-wash:#173528; --err:#f07a6f; --err-wash:#3d1f1c; --att:#e7b54f; --att-wash:#3a2e14;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans','Inter',system-ui,sans-serif;font-size:15px;line-height:1.5}
+h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;font-weight:600;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 60px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:14px}
+header h1{font-size:22px}
+header .retour{margin-left:auto;font-size:14px;color:var(--link)}
+.msg{font-size:14px;color:var(--ink-soft)} .msg.ko{color:var(--err)}
+.carte{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
+.carte h2{font-size:17px;margin-bottom:8px}
+.aide{font-size:14px;color:var(--ink-soft)}
+button,select{font:inherit;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:4px 10px;min-height:36px;cursor:pointer}
+button:focus-visible,select:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+button:disabled{opacity:.55;cursor:default}
+.cal{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cal li{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px dashed var(--line)}
+.cal .d{font:600 13px 'IBM Plex Mono',monospace}
+.chip{font:12px 'IBM Plex Mono',monospace;border:1px solid var(--line);border-radius:999px;padding:1px 9px;white-space:nowrap}
+.chip.ok{color:var(--ok);border-color:var(--ok);background:var(--ok-wash)}
+.chip.att{color:var(--att);border-color:var(--att);background:var(--att-wash)}
+.chip.ko{color:var(--err);border-color:var(--err);background:var(--err-wash)}
+.onglets{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.onglets button[aria-pressed="true"]{background:var(--link);border-color:var(--link);color:#fff}
+.defile{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12.5px;color:var(--ink-soft);font-weight:600}
+td small{color:var(--ink-faint)}
+.barre{display:inline-block;width:80px;height:8px;border-radius:4px;background:var(--surface-2);border:1px solid var(--line);vertical-align:middle;overflow:hidden}
+.barre i{display:block;height:100%;background:var(--ok)}
+.repart{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px 14px;font-size:13.5px}
+.repart span.n{font:600 12px 'IBM Plex Mono',monospace;display:inline-block;min-width:2.2em}
+.repart .zero{color:var(--ink-faint)}
+@media (max-width:640px){.cal li{grid-template-columns:1fr;gap:2px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🧭 Frise de l'IA</h1>
+    <span class="msg" id="etat">Connexion…</span>
+    <a class="retour" href="index.html">← Tableau de bord</a>
+  </header>
+
+  <section class="carte">
+    <h2>Le calendrier</h2>
+    <p class="aide">Chaque temps s'ouvre <b>de lui-même</b> chez les élèves à sa date — à condition d'être construit. Un temps encore à construire dont la date approche passe en rouge. Page élève : <a href="../pages/term-es-t3-c5-frise-ia.html" target="_blank" rel="noopener">la frise de l'IA</a> (aperçu d'une date : ajouter <code>?le=2026-12-03</code> à l'adresse).</p>
+    <ul class="cal" id="cal"></ul>
+  </section>
+
+  <section class="carte">
+    <h2>Les sujets et les fiches</h2>
+    <nav class="onglets" id="classes" aria-label="Classes"></nav>
+    <div id="eleves"><p class="aide">Chargement…</p></div>
+  </section>
+
+  <section class="carte">
+    <h2>La répartition des 36 sujets</h2>
+    <p class="aide">Sujet gardé = 1, proposé et pas encore choisi = ½. Un sujet ne revient à un deuxième élève que quand tous les autres sont pris.</p>
+    <div class="repart" id="repart"></div>
+  </section>
+</div>
+<script src="../assets/js/frise-ia-sujets.js?v=1"></script>
+<script src="../assets/js/prof-api.js?v=4"></script>
+<script>
+(function(){
+  var F = window.FRISE_IA;
+  var $ = function(s){ return document.querySelector(s); };
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function dire(t, ko){ var e = $('#etat'); e.textContent = t; e.className = 'msg' + (ko ? ' ko' : ''); }
+
+  /* Le calendrier de la séquence (cadrage du 18/11/2026). construit = la
+     page élève porte ce temps. 🔴 À tenir à jour à chaque temps ajouté. */
+  var CALENDRIER = [
+    { d: '2026-11-19', quoi: 'Temps 1 — questionnaire, tirage du sujet, fiche de recherche', construit: true },
+    { d: '2026-11-26', quoi: 'Fiche v1 déposée · retour formatif · enquête de positionnement et vote des sujets de débat', construit: false, note: 'date proposée' },
+    { d: '2026-12-03', quoi: 'Demi-groupe 1 — restitution partielle, début du travail sur le débat (sujet de débat déjà connu)', construit: false },
+    { d: '2026-12-10', quoi: 'Demi-groupe 2 — restitution partielle, début du travail sur le débat', construit: false },
+    { d: '2026-12-17', quoi: 'Classe entière — frise complète, pôles de débat, recherche par pôle', construit: false },
+    { d: '2027-01-14', quoi: 'Préparation du débat (1)', construit: false },
+    { d: '2027-01-21', quoi: 'Préparation du débat (2)', construit: false },
+    { d: '2027-01-28', quoi: 'Le débat', construit: false, note: 'peut se décaler' }
+  ];
+  var REQUIS = ['FRIA-TITRE','FRIA-DATE','FRIA-RESUME','FRIA-Q1','FRIA-Q2','FRIA-Q3','FRIA-Q4','FRIA-Q5','FRIA-Q6','FRIA-IMG1L','FRIA-SRC1','FRIA-SRC2'];
+
+  function aujourdhui(){ var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function jours(a, b){ return Math.round((new Date(b) - new Date(a)) / 864e5); }
+  function dateFr(d){ var p = d.split('-'); return p[2] + '/' + p[1] + '/' + p[0].slice(2); }
+
+  (function calendrier(){
+    var auj = aujourdhui();
+    $('#cal').innerHTML = CALENDRIER.map(function(c){
+      var dans = jours(auj, c.d), chip;
+      if(c.construit) chip = dans <= 0 ? '<span class="chip ok">ouvert</span>' : '<span class="chip ok">prêt · s’ouvre dans ' + dans + ' j</span>';
+      else if(dans <= 7) chip = '<span class="chip ko">' + (dans < 0 ? 'date passée' : 'dans ' + dans + ' j') + ' — à construire</span>';
+      else chip = '<span class="chip att">à construire</span>';
+      return '<li><span class="d">' + dateFr(c.d) + '</span><span>' + esc(c.quoi) + (c.note ? ' <small>(' + esc(c.note) + ')</small>' : '') + '</span>' + chip + '</li>';
+    }).join('');
+  })();
+
+  var classes = [], classe = null, tirages = [], eleves = [], reponses = {};
+
+  ProfAPI.reprendre().then(function(){
+    return ProfAPI.lire('classes?select=id,code,libelle,espace,actif&espace=eq.est&order=code.asc');
+  }).then(function(l){
+    var mes = [];
+    return ProfAPI.appeler('mes_classes').then(function(ids){
+      var ok = {}; (ids || []).forEach(function(x){ ok[typeof x === 'string' ? x : (x.mes_classes || x.id)] = true; });
+      classes = (l || []).filter(function(c){ return c.actif !== false && (!ids || ok[c.id]); });
+    }).catch(function(){ classes = (l || []).filter(function(c){ return c.actif !== false; }); });
+  }).then(function(){
+    if(!classes.length){ dire('Aucune classe de terminale ES rattachée à ton compte.'); $('#eleves').innerHTML = ''; return; }
+    var memo = null; try { memo = sessionStorage.getItem('frise-ia.classe'); } catch(e){}
+    classe = classes.some(function(c){ return c.id === memo; }) ? memo : classes[0].id;
+    $('#classes').innerHTML = classes.map(function(c){ return '<button type="button" data-classe="' + c.id + '">' + esc(c.libelle || c.code) + '</button>'; }).join('');
+    $('#classes').addEventListener('click', function(ev){
+      var b = ev.target.closest('[data-classe]'); if(!b) return;
+      classe = b.dataset.classe; try { sessionStorage.setItem('frise-ia.classe', classe); } catch(e){}
+      charger();
+    });
+    dire(ProfAPI.nomsCharges() ? 'Noms chargés depuis le tableau de bord.' : 'Pseudonymes affichés — charge ta table des noms au tableau de bord pour voir les noms.');
+    charger();
+  }).catch(function(e){
+    dire(/SESSION|AUCUNE/.test(e.message) ? 'Pas de session : connecte-toi d’abord au tableau de bord, puis reviens ici.' : e.message, true);
+  });
+
+  function charger(){
+    document.querySelectorAll('#classes [data-classe]').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.classe === classe ? 'true' : 'false'); });
+    $('#eleves').innerHTML = '<p class="aide">Chargement…</p>';
+    Promise.all([
+      ProfAPI.lire('eleves_classes?select=eleves(id,pseudo)&classe_id=eq.' + encodeURIComponent(classe)),
+      ProfAPI.lire('frise_ia_tirages?select=eleve_id,propositions,sujet,tire_le,choisi_le&classe_id=eq.' + encodeURIComponent(classe)).catch(function(e){
+        if(/frise_ia_tirages|does not exist|42P01|PGRST2/.test(e.message)) throw new Error('La table frise_ia_tirages n’existe pas encore : passer bdd/schema/049-frise-ia.sql dans Supabase.');
+        throw e;
+      }),
+      ProfAPI.lire('reponses_libres?select=eleve_id,code_activite&code_activite=like.FRIA-*')
+    ]).then(function(r){
+      eleves = (r[0] || []).map(function(x){ return x.eleves; }).filter(Boolean)
+        .sort(function(a, b){ return ProfAPI.nomDe(a.pseudo).localeCompare(ProfAPI.nomDe(b.pseudo), 'fr'); });
+      tirages = r[1] || [];
+      reponses = {};
+      (r[2] || []).forEach(function(x){ (reponses[x.eleve_id] = reponses[x.eleve_id] || {})[x.code_activite] = true; });
+      dessiner();
+    }).catch(function(e){ $('#eleves').innerHTML = '<p class="aide" style="color:var(--err)">' + esc(e.message) + '</p>'; });
+  }
+
+  function titre(id){ var s = F.PAR_ID[id]; return s ? s.titre : id; }
+
+  function dessiner(){
+    var parEleve = {}; tirages.forEach(function(t){ parEleve[t.eleve_id] = t; });
+    var options = F.SUJETS.map(function(s){ return '<option value="' + s.id + '">' + esc(s.titre) + '</option>'; }).join('');
+    var nbSujet = 0, nbAttente = 0;
+    var lignes = eleves.map(function(e){
+      var t = parEleve[e.id], sujet;
+      if(t && t.sujet){ nbSujet++; sujet = '<b>' + esc(titre(t.sujet)) + '</b>'; }
+      else if(t){ nbAttente++; sujet = '<span class="chip att">à choisir</span> <small>' + t.propositions.map(function(p){ return esc(titre(p)); }).join(' / ') + '</small>'; }
+      else sujet = '<small>pas encore tiré</small>';
+      var rep = reponses[e.id] || {}, n = REQUIS.filter(function(c){ return rep[c]; }).length;
+      return '<tr><td>' + esc(ProfAPI.nomDe(e.pseudo)) + '</td><td>' + sujet + '</td>' +
+        '<td><span class="barre"><i style="width:' + Math.round(100 * n / REQUIS.length) + '%"></i></span> <small>' + n + '/' + REQUIS.length + '</small></td>' +
+        '<td><select data-attribuer="' + e.id + '" aria-label="Attribuer un sujet"><option value="">Attribuer…</option>' + options + '</select> ' +
+        (t ? '<button type="button" data-effacer="' + e.id + '" title="L’élève pourra refaire le questionnaire et retirer">Effacer le tirage</button>' : '') + '</td></tr>';
+    }).join('');
+    $('#eleves').innerHTML =
+      '<p class="aide">' + eleves.length + ' élèves · <b>' + nbSujet + '</b> ont leur sujet · ' + nbAttente + ' doivent encore choisir · ' + (eleves.length - nbSujet - nbAttente) + ' n’ont pas tiré. Fiche : les 12 réponses attendues (3 pour la frise, 6 questions, la légende de l’image 1, 2 sources).</p>' +
+      '<div class="defile"><table><thead><tr><th>Élève</th><th>Sujet</th><th>Fiche</th><th>Gestes</th></tr></thead><tbody>' + lignes + '</tbody></table></div>';
+
+    var occ = {}; tirages.forEach(function(t){
+      if(t.sujet) occ[t.sujet] = (occ[t.sujet] || 0) + 1;
+      else t.propositions.forEach(function(p){ occ[p] = (occ[p] || 0) + 0.5; });
+    });
+    $('#repart').innerHTML = F.SUJETS.map(function(s){
+      var n = occ[s.id] || 0;
+      return '<div class="' + (n ? '' : 'zero') + '"><span class="n">' + String(n).replace('.', ',') + '</span> ' + esc(s.titre) + '</div>';
+    }).join('');
+  }
+
+  $('#eleves').addEventListener('click', function(ev){
+    var b = ev.target.closest('[data-effacer]'); if(!b) return;
+    if(!confirm('Effacer ce tirage ? L’élève refera le questionnaire et tirera deux nouveaux sujets.')) return;
+    b.disabled = true;
+    ProfAPI.supprimer('frise_ia_tirages?eleve_id=eq.' + encodeURIComponent(b.dataset.effacer)).then(charger).catch(function(e){ b.disabled = false; dire('Refusé : ' + e.message, true); });
+  });
+  $('#eleves').addEventListener('change', function(ev){
+    var s = ev.target.closest('[data-attribuer]'); if(!s || !s.value) return;
+    var id = s.dataset.attribuer, sujet = s.value, t = tirages.some(function(x){ return x.eleve_id === id; });
+    if(!t){ dire('Cet élève n’a pas encore tiré : il doit d’abord ouvrir la page et répondre au questionnaire.', true); s.value = ''; return; }
+    s.disabled = true;
+    ProfAPI.modifier('frise_ia_tirages?eleve_id=eq.' + encodeURIComponent(id), { sujet: sujet, choisi_le: new Date().toISOString() })
+      .then(charger).catch(function(e){ s.disabled = false; dire('Refusé : ' + e.message, true); });
+  });
+})();
+</script>
+</body>
+</html>

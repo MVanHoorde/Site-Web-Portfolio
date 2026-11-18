@@ -23,6 +23,30 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 14,
+    date: '2026-11-18',
+    espaces: ['est'],
+    titre: 'La frise de l’IA s’ouvre aux terminales',
+    points: [
+      {
+        titre: '🎲 Chaque élève tire son sujet',
+        texte: 'Un court questionnaire de goûts, deux sujets tirés parmi 36, l’élève en garde un. La répartition reste équitable dans la classe. Puis sa fiche de recherche : 6 questions, 1 à 3 images, 2 sources.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">l’Antiquité</span><span class="nv-puce">jeux et compétitions</span><span class="nv-bouton">🎲 Tirer mes deux sujets</span></div>' +
+          '</div>'
+      },
+      {
+        titre: '🧭 Suivre depuis le tableau de bord',
+        texte: 'Espace Terminale → « 🧭 Frise de l’IA » : le sujet de chaque élève, l’avancement de sa fiche, la répartition des sujets et le calendrier de la séquence.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-bouton">🧭 Frise de l’IA</span><span class="nv-puce">19/11 · Temps 1 ouvert</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 13,
     date: '2026-11-15',
     espaces: ['emc'],

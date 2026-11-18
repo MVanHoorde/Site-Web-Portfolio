@@ -270,11 +270,16 @@ window.SEQUENCES_ESPACES = {
         {
           "id": "s2",
           "num": "S2",
-          "nom": "TP tournant — comment on produit un son"
+          "nom": "TP tournant — trois façons de produire un son"
         },
         {
           "id": "s3",
           "num": "S3",
+          "nom": "La résonance — pourquoi un instrument sonne"
+        },
+        {
+          "id": "s4",
+          "num": "S4",
           "nom": "Les mathématiques et la musique"
         }
       ]
@@ -366,6 +371,23 @@ window.SEQUENCES_ESPACES = {
           "id": "s3",
           "num": "S3",
           "nom": "Impacts écologiques et autres contraintes"
+        }
+      ]
+    },
+    {
+      "cle": "est-t3-c5",
+      "num": "T3-C5",
+      "nom": "La frise de l'IA",
+      "seances": [
+        {
+          "id": "s1",
+          "num": "S1",
+          "nom": "Ton sujet"
+        },
+        {
+          "id": "s2",
+          "num": "S2",
+          "nom": "Ta fiche de recherche"
         }
       ]
     }

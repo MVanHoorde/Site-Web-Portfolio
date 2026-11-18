@@ -65,7 +65,8 @@ export const ESPACES = {
   ],
   est: [
     ['est-t2-c1', 'pages/term-es-t2-c1-deux-siecles-energie-electrique.html'],
-    ['est-t2-c2', 'pages/term-es-t2-c2-production-stockage-electricite.html']
+    ['est-t2-c2', 'pages/term-es-t2-c2-production-stockage-electricite.html'],
+    ['est-t3-c5', 'pages/term-es-t3-c5-frise-ia.html']
   ],
   /* Les chapitres de 2nde : pas de séances, une ligne de consultation
      par chapitre (assets/js/suivi-pc.js). Clé pc-tN-cN, famille PC. */
