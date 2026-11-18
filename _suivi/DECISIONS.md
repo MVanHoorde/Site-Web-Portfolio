@@ -2486,6 +2486,20 @@ entière, pôles · 14/01 et 21/01 préparation · 28/01 débat (peut bouger).
 Les demi-groupes restent à saisir. Diaporama de présentation hors dépôt
 (Téléchargements).
 
+**18/11/2026 (soir), tirage refait (`bdd/schema/050`, demandes de Loïc).**
+49 sujets dont 25 **essentiels** rattachés au programme 3.5 (repères
+historiques cités, bogues et failles, apprentissage, données et biais,
+Bayes, applications citées, éthique) et 24 de secours. Décompte de 60 s
+pour choisir ; sans choix, les sujets repartent et l'élève repasse dans la
+file, où ses deux mêmes sujets lui reviennent en premier s'ils sont libres
+(pas de retirage déguisé). File d'attente quand rien de libre ne croise ses
+goûts mais qu'un sujet qui lui irait est réservé chez un camarade (3 min au
+plus). Essentiels garantis : plus que des essentiels dès qu'il ne reste pas
+plus d'élèves sans sujet que d'essentiels libres. Fiches de secours (texte
+court, image libre si trouvée) pour les sujets non pris : en préparation.
+Évaluation (individualisée sur sa fiche + 2 fiches choisies, ou commune) :
+**question posée aux élèves, rien n'est construit**.
+
 En attente (Loïc, plus tard) : barème de la note de complétion ; jeu du débat
 dans les 20 points ou en bonus ; note individuelle de débat par rôle ; groupes
 autorisés à présenter ; sens du « vote supplémentaire » du présentateur ;

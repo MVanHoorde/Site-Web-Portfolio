@@ -18,6 +18,8 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parents[2]
 SCHEMA = RACINE / 'bdd' / 'schema' / '049-frise-ia.sql'
 ESSAIS = Path(__file__).with_name('frise-ia-base.test.sql')
+SCHEMA_050 = RACINE / 'bdd' / 'schema' / '050-frise-ia-file-attente.sql'
+ESSAIS_050 = Path(__file__).with_name('frise-ia-050.test.sql')
 
 DOUBLURES = r"""
 create role anon nologin;
@@ -89,7 +91,10 @@ def main():
         etapes = [('doublures', ['-c', DOUBLURES]),
                   ('049, premier passage', ['-f', str(SCHEMA)]),
                   ('049, rejoué', ['-f', str(SCHEMA)]),
-                  ('essais', ['-f', str(ESSAIS)])]
+                  ('essais', ['-f', str(ESSAIS)]),
+                  ('050, premier passage', ['-f', str(SCHEMA_050)]),
+                  ('050, rejoué', ['-f', str(SCHEMA_050)]),
+                  ('essais 050', ['-f', str(ESSAIS_050)])]
         for nom, args in etapes:
             r = psql(*args)
             sortie = (r.stdout + r.stderr).strip()

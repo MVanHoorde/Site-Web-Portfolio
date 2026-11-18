@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ES Terminale · La frise de l'IA — Séquence élève</title>
 <link rel="stylesheet" href="../assets/css/fonts.css">
-<script src="../assets/js/progression.js?v=27"></script>
+<script src="../assets/js/progression.js?v=28"></script>
 <link rel="stylesheet" href="../assets/css/sequence-snt.css?v=53">
 
 <!-- ============================================================
@@ -248,7 +248,7 @@
       <h2><span class="s-num">S1</span>Ton sujet</h2>
       <span class="seance-time">≈ 10 min</span>
     </div>
-    <p class="seance-goal">Dis ce qui t'attire : deux sujets sont tirés pour toi parmi les 36 de la frise, tu en gardes un.</p>
+    <p class="seance-goal">Dis ce qui t'attire : deux sujets sont tirés pour toi parmi les 49 de la frise, tu en gardes un.</p>
     <div class="progress-line"><i data-progress></i></div>
 
     <div class="lockable">
@@ -264,13 +264,13 @@
             <div class="objective"><span>🎯</span><span><b>Objectif —</b> repartir avec <b>ton sujet de recherche</b> pour les semaines qui viennent.</span></div>
           </div>
           <div class="card-body">
-            <p class="transi">La frise de la classe a 36 cases, de l'Antiquité à aujourd'hui. Pour que chacun enquête sur un sujet qui lui parle, commence par dire ce qui t'attire.</p>
+            <p class="transi">49 sujets attendent sur la frise, de l'Antiquité à aujourd'hui. Pour que chacun enquête sur un sujet qui lui parle, commence par dire ce qui t'attire.</p>
             <p style="font-size:14.5px;margin:4px 0 10px">Choisis <b>autant de réponses que tu veux</b> sur chaque ligne. Les sujets qui croisent le plus tes choix passent devant — en gardant une répartition équitable : un sujet ne revient à un deuxième élève que quand tous les autres ont été tirés.</p>
             <div id="frise-gouts"></div>
             <div class="gaction" style="margin-top:12px"><button class="btn" type="button" id="frise-tirer">🎲 Tirer mes deux sujets</button></div>
             <div class="tirage-msg" id="frise-msg" aria-live="polite"></div>
             <div id="frise-choix" hidden>
-              <p style="font-size:14.5px;margin:10px 0 0"><b>Deux sujets sont tirés pour toi.</b> Garde celui qui te donne le plus envie de chercher. <b>C'est définitif</b> : pas de nouveau tirage.</p>
+              <p style="font-size:14.5px;margin:10px 0 0"><b>Deux sujets sont tirés pour toi.</b> Garde celui qui te donne le plus envie de chercher. <b>Tu as 60 secondes</b> : sans choix, ils repartent pour les autres. Une fois choisi, c'est définitif.</p>
               <div class="deux-sujets" id="frise-deux"></div>
             </div>
             <div id="frise-garde" hidden></div>
@@ -544,7 +544,7 @@
 
             <aside class="proposition">
               <div class="pl">Proposition — à valider</div>
-              Les fourchettes de mots, l'échéance de la version 1 et les étiquettes des 36 sujets
+              Les fourchettes de mots, l'échéance de la version 1 et les étiquettes des 49 sujets
               (assets/js/frise-ia-sujets.js) sont des propositions du 18/11/2026. La suite (retour sur
               la v1, version 2, frise par vote, camps, débat) s'ajoutera à cette page, chaque temps
               avec sa date d'ouverture.
@@ -575,9 +575,9 @@
 })();
 </script>
 <script src="../assets/js/sequence-snt.js?v=63"></script>
-<script src="../assets/js/frise-ia-sujets.js?v=1"></script>
+<script src="../assets/js/frise-ia-sujets.js?v=2"></script>
 <script>
-/* ---------- Le questionnaire et le tirage (bdd/schema/049) ---------- */
+/* ---------- Le questionnaire et le tirage (bdd/schema/049 et 050) ---------- */
 (function(){
   var F = window.FRISE_IA, P = window.Progression;
   var zone = document.getElementById('frise-gouts');
@@ -625,29 +625,60 @@
     }
   }
 
-  function afficher(){
-    if(!etat) return;
+  var minuteur = null;
+  function arreter(){ if(minuteur){ clearInterval(minuteur); clearTimeout(minuteur); minuteur = null; } }
+
+  function afficherChoisi(){
+    arreter();
     figer(etat.gouts);
-    if(etat.sujet){
-      $('frise-choix').hidden = true;
-      var g = $('frise-garde'); g.hidden = false;
-      g.innerHTML = '<div class="mon-sujet"><div class="t">Ton sujet</div>' + carte(etat.sujet) + '</div>' +
-        '<p style="font-size:14px;margin:6px 0 0">Ta fiche t’attend en <a href="#s2">séance 2</a> : environ une heure de recherche, à la maison.</p>';
-      dire('');
-      document.querySelectorAll('[data-rappel-sujet]').forEach(function(r){
-        var s = F.PAR_ID[etat.sujet];
-        r.innerHTML = 'Ton sujet : <b>' + esc(s ? s.titre : etat.sujet) + '</b>' + (s ? ' · ' + esc(s.date) : '');
-      });
-      valider();
-    } else {
-      $('frise-choix').hidden = false;
-      $('frise-deux').innerHTML = etat.propositions.map(function(id){
-        var s = F.PAR_ID[id], n = s ? F.score(s, etat.gouts || gouts) : 0;
-        return '<button type="button" data-garder="' + esc(id) + '"><span class="croise">' +
-          (n ? 'croise ' + n + ' de tes choix' : 'sujet libre') + '</span>' + carte(id) + '</button>';
-      }).join('');
-      dire('');
+    $('frise-choix').hidden = true;
+    var g = $('frise-garde'); g.hidden = false;
+    g.innerHTML = '<div class="mon-sujet"><div class="t">Ton sujet</div>' + carte(etat.sujet) + '</div>' +
+      '<p style="font-size:14px;margin:6px 0 0">Ta fiche t’attend en <a href="#s2">séance 2</a> : environ une heure de recherche, à la maison.</p>';
+    dire('');
+    document.querySelectorAll('[data-rappel-sujet]').forEach(function(r){
+      var s = F.PAR_ID[etat.sujet];
+      r.innerHTML = 'Ton sujet : <b>' + esc(s ? s.titre : etat.sujet) + '</b>' + (s ? ' · ' + esc(s.date) : '');
+    });
+    valider();
+  }
+
+  /* Deux sujets réservés pour toi pendant le décompte (050). */
+  function afficherPropositions(reste){
+    arreter();
+    figer(etat.gouts);
+    $('frise-choix').hidden = false;
+    $('frise-deux').innerHTML = etat.propositions.map(function(id){
+      var s = F.PAR_ID[id], n = s ? F.score(s, etat.gouts || gouts) : 0;
+      return '<button type="button" data-garder="' + esc(id) + '"><span class="croise">' +
+        (n ? 'croise ' + n + ' de tes choix' : 'sujet libre') + '</span>' + carte(id) + '</button>';
+    }).join('');
+    var fin = Date.now() + reste * 1000;
+    function tic(){
+      var r = Math.max(0, Math.ceil((fin - Date.now()) / 1000));
+      dire('⏳ Ces sujets te sont réservés encore ' + r + ' s. Sans choix, ils repartent pour les autres et tu repasses dans la file.');
+      if(r <= 0){ arreter(); dire('Temps écoulé : tu repasses dans la file…'); setTimeout(tirer, 1500); }
     }
+    tic(); minuteur = setInterval(tic, 1000);
+  }
+
+  /* File d'attente : la page réessaie toute seule (050). */
+  function afficherAttente(reste){
+    arreter();
+    figer(etat.gouts);
+    $('frise-choix').hidden = true;
+    dire('⏳ Les sujets qui te correspondent sont réservés en ce moment par des camarades. Reste sur la page : s’ils les laissent, ils sont pour toi. '
+      + (reste > 0 ? '(au plus ' + Math.ceil(reste / 60) + ' min)' : ''));
+    minuteur = setTimeout(tirer, 15000);
+  }
+
+  function traiter(l){
+    if(!l) return;
+    etat = { propositions: l.propositions || [], sujet: l.sujet, gouts: l.gouts || gouts };
+    if(l.sujet) return afficherChoisi();
+    if(l.etat === 'propose' && etat.propositions.length) return afficherPropositions(l.reste || 60);
+    if(l.etat === 'attente') return afficherAttente(l.reste || 0);
+    tirer();            // a_relancer : décompte écoulé pendant l'absence de l'élève
   }
 
   function erreur(e){
@@ -657,20 +688,25 @@
     return 'Le tirage n’a pas pu se faire (' + c + '). Réessaie dans un instant.';
   }
 
+  function tirer(){
+    arreter();
+    return P.session().then(function(moi){
+      if(!moi) throw { code: 'SESSION' };
+      return P.friseIa('tirage', { p_ordre: F.ordre(gouts), p_corresp: F.correspondants(gouts),
+                                   p_essentiels: F.ESSENTIELS, p_gouts: gouts });
+    }).then(function(r){
+      var l = Array.isArray(r) ? r[0] : r;
+      l.gouts = gouts;
+      traiter(l);
+    }).catch(function(e){ $('frise-tirer').disabled = false; dire(erreur(e), true); });
+  }
+
   $('frise-tirer').addEventListener('click', function(){
-    var b = this;
     if(!P || !P.friseIa){ dire('Connecte-toi d’abord : le tirage est rattaché à ton compte.', true); return; }
     var nb = Object.keys(gouts).filter(function(k){ return gouts[k].length; }).length;
     if(nb < 2){ dire('Coche au moins une réponse sur deux lignes : sinon, le tirage se fait au hasard.', true); return; }
-    b.disabled = true; dire('Tirage en cours…');
-    P.session().then(function(moi){
-      if(!moi) throw { code: 'SESSION' };
-      return P.friseIa('tirer', { p_ordre: F.ordre(gouts), p_gouts: gouts });
-    }).then(function(r){
-      var l = Array.isArray(r) ? r[0] : r;
-      etat = { propositions: l.propositions, sujet: l.sujet, gouts: gouts };
-      afficher();
-    }).catch(function(e){ b.disabled = false; dire(erreur(e), true); });
+    this.disabled = true; dire('Tirage en cours…');
+    tirer();
   });
 
   $('frise-deux').addEventListener('click', function(ev){
@@ -680,21 +716,23 @@
     $('frise-deux').querySelectorAll('button').forEach(function(x){ x.disabled = true; });
     P.friseIa('choisir', { p_sujet: id }).then(function(r){
       etat.sujet = typeof r === 'string' ? r : id;
-      afficher();
+      afficherChoisi();
     }).catch(function(e){
+      var c = (e && (e.code || e.message)) || '';
+      if(/DECOMPTE_ECOULE/.test(c)){ dire('Trop tard, le décompte était fini : tu repasses dans la file…'); setTimeout(tirer, 1500); return; }
       $('frise-deux').querySelectorAll('button').forEach(function(x){ x.disabled = false; });
       dire(erreur(e), true);
     });
   });
 
-  /* À l'ouverture : ce qui a déjà été tiré revient. */
+  /* À l'ouverture : ce qui a déjà été tiré revient (avec le temps qui reste). */
   if(P && P.friseIa && P.disponible && P.disponible()){
     P.session().then(function(moi){
       if(!moi) return null;
       return P.friseIa('relire');
     }).then(function(r){
       var l = Array.isArray(r) ? r[0] : r;
-      if(l && l.propositions){ gouts = l.gouts || {}; etat = { propositions: l.propositions, sujet: l.sujet, gouts: gouts }; afficher(); }
+      if(l){ gouts = l.gouts || {}; traiter(l); }
     }).catch(function(){ /* hors ligne : le questionnaire reste disponible */ });
   }
 })();

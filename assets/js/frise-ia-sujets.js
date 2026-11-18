@@ -1,10 +1,16 @@
 /* ============================================================
- *  frise-ia-sujets.js — les 36 sujets de la frise de l'IA
+ *  frise-ia-sujets.js — les 49 sujets de la frise de l'IA
  *  (terminale ES, 3.5 · pages/term-es-t3-c5-frise-ia.html)
  *
  *  Lu par la page élève (questionnaire, tirage) ET par le tableau
  *  de bord (prof/frise-ia.html). La base ne connaît que les
- *  identifiants (bdd/schema/049) : un titre se retouche ici, sans SQL.
+ *  identifiants (bdd/schema/049-050) : un titre se retouche ici, sans SQL.
+ *
+ *  ESSENTIELS (18/11/2026) : les 25 sujets rattachés au programme
+ *  3.5 (repères historiques cités, bogues et failles, apprentissage,
+ *  données et biais, Bayes, applications citées, éthique). Le tirage
+ *  les fait tous tomber avant de puiser dans les 24 sujets de SECOURS
+ *  quand il ne reste plus assez d'élèves (bdd/schema/050).
  *  🔴 Ne jamais changer un identifiant une fois des sujets tirés :
  *  l'élève perdrait le sien. Ajouter un sujet = une ligne de plus.
  *
@@ -67,11 +73,30 @@
     ['mistral',            'Mistral AI',                              '2023',                2023,   [6],   [6, 3],[3],   [1], [0]],
     ['hallucinations',     'Les « hallucinations »',                  '2023',                2023.5, [6],   [3, 7],[2],   [1], [4]],
     ['cout-energetique',   'Le coût énergétique des modèles',         '2023-2025',           2024.2, [6],   [5, 6],[2],   [2], [4]],
-    ['ai-act',             'L’AI Act européen',                       '2024',                2024.6, [6],   [7],   [5],   [2], [1]]
+    ['ai-act',             'L’AI Act européen',                       '2024',                2024.6, [6],   [7],   [5],   [2], [1]],
+    /* ajoutés le 18/11/2026, d'après le programme 3.5 */
+    ['bogues-celebres',    'Les bogues célèbres : Ariane 5',          '1996',                1996,   [4],   [0],   [4],   [1], [0, 1]],
+    ['ver-morris',         'Les failles de sécurité : le ver Morris', '1988',                1988,   [4],   [4, 7],[4],   [1], [2]],
+    ['voiture-autonome',   'La voiture autonome',                     '2005',                2005,   [5, 6],[1, 6],[1, 4],[2], [2]],
+    ['traduction-automatique', 'La traduction automatique',           '1954 → 2016',         1954,   [4, 5, 6], [3], [2], [1], [2, 4]],
+    ['bayes-anti-spam',    'Bayes et le filtre anti-spam',            '1763 → 2002',         2002,   [1, 5],[0, 7],[2],   [1], [1, 2]],
+    ['biais-algorithmes',  'Les biais des algorithmes',               '2018',                2018,   [6],   [7],   [2],   [1], [2, 4]],
+    ['leibniz-binaire',    'Leibniz et le binaire',                   '1703',                1703,   [1],   [0],   [0, 2],[1], [1]],
+    ['boole-logique',      'Boole et l’algèbre de la logique',        '1854',                1854,   [2],   [0],   [0, 2],[1], [1]],
+    ['shannon-bit',        'Shannon et le bit',                       '1948',                1948,   [3, 4],[0, 4],[0, 2],[2], [2]],
+    ['transistor',         'Le transistor',                           '1947',                1947,   [4],   [6],   [1],   [0], [2]],
+    ['watson-jeopardy',    'Watson à Jeopardy!',                      '2011',                2011,   [5],   [1, 3],[4, 1],[1], [2]],
+    ['assistants-vocaux',  'Les assistants vocaux',                   '2011',                2011.5, [5, 6],[3, 6],[1],   [2], [2]],
+    ['alphafold',          'AlphaFold et les protéines',              '2020',                2020,   [6],   [5],   [4],   [1], [1]]
   ];
 
+  var ESSENTIELS = ['jacquard', 'babbage', 'ada-lovelace', 'hollerith', 'turing-1936', 'eniac', 'von-neumann',
+    'grace-hopper', 'bogues-celebres', 'ver-morris', 'test-turing', 'dartmouth', 'perceptron', 'donnees-massives',
+    'lecun-convolutifs', 'imagenet-alexnet', 'alphago', 'voiture-autonome', 'traduction-automatique', 'chatgpt',
+    'bayes-anti-spam', 'biais-algorithmes', 'hallucinations', 'ai-act', 'cout-energetique'];
+
   var SUJETS = L.map(function (l) {
-    return { id: l[0], titre: l[1], date: l[2], annee: l[3],
+    return { id: l[0], titre: l[1], date: l[2], annee: l[3], essentiel: ESSENTIELS.indexOf(l[0]) >= 0,
              tags: { epoque: l[4], theme: l[5], genre: l[6], matiere: l[7], lieu: l[8] } };
   });
   var PAR_ID = {};
@@ -108,5 +133,15 @@
     return [AXES[0].r[s.tags.epoque[0]], AXES[2].r[s.tags.genre[0]], AXES[3].r[s.tags.matiere[0]].replace(/ \(.*\)/, '')].join(' · ');
   }
 
-  global.FRISE_IA = { AXES: AXES, SUJETS: SUJETS, PAR_ID: PAR_ID, score: score, ordre: ordre, etiquette: etiquette };
+  /* Les sujets qui « correspondent » : ceux qui croisent au moins deux
+     des lignes remplies (une seule si l'élève n'en a rempli qu'une). */
+  function correspondants(gouts) {
+    var remplies = AXES.filter(function (a) { return gouts && gouts[a.id] && gouts[a.id].length; }).length;
+    var seuil = Math.min(2, Math.max(1, remplies));
+    return SUJETS.filter(function (s) { return score(s, gouts) >= seuil; }).map(function (s) { return s.id; });
+  }
+
+  global.FRISE_IA = { AXES: AXES, SUJETS: SUJETS, PAR_ID: PAR_ID, ESSENTIELS: ESSENTIELS, score: score, ordre: ordre,
+                      correspondants: correspondants, etiquette: etiquette,
+                      DECOMPTE: 60, ATTENTE_MAX: 180 };
 })(window);

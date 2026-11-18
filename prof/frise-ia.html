@@ -18,7 +18,8 @@
        attente de choix), l'avancement de sa fiche (réponses rédigées
        FRIA-*), et deux gestes : effacer un tirage (l'élève retire) ou
        attribuer un sujet à la main.
-     · La répartition des 36 sujets dans la classe.
+     · La répartition des 49 sujets dans la classe (25 essentiels,
+       24 de secours ; décompte et file d'attente : bdd/schema/050).
      Noms : ceux de la table chargée au tableau de bord (ProfAPI.nomDe),
      jamais en base.
      ============================================================ -->
@@ -93,12 +94,12 @@ td small{color:var(--ink-faint)}
   </section>
 
   <section class="carte">
-    <h2>La répartition des 36 sujets</h2>
-    <p class="aide">Sujet gardé = 1, proposé et pas encore choisi = ½. Un sujet ne revient à un deuxième élève que quand tous les autres sont pris.</p>
+    <h2>La répartition des 49 sujets</h2>
+    <p class="aide">Sujet gardé = 1, réservé pendant un décompte de 60 s = ½. <b>★</b> = essentiel (programme 3.5) : les 25 essentiels tombent tous avant que les derniers élèves puisent dans les sujets de secours. Un sujet ne revient à un deuxième élève que quand tous les autres sont pris.</p>
     <div class="repart" id="repart"></div>
   </section>
 </div>
-<script src="../assets/js/frise-ia-sujets.js?v=1"></script>
+<script src="../assets/js/frise-ia-sujets.js?v=2"></script>
 <script src="../assets/js/prof-api.js?v=4"></script>
 <script>
 (function(){
@@ -167,7 +168,7 @@ td small{color:var(--ink-faint)}
     $('#eleves').innerHTML = '<p class="aide">Chargement…</p>';
     Promise.all([
       ProfAPI.lire('eleves_classes?select=eleves(id,pseudo)&classe_id=eq.' + encodeURIComponent(classe)),
-      ProfAPI.lire('frise_ia_tirages?select=eleve_id,propositions,sujet,tire_le,choisi_le&classe_id=eq.' + encodeURIComponent(classe)).catch(function(e){
+      ProfAPI.lire('frise_ia_tirages?select=eleve_id,propositions,sujet,tire_le,choisi_le,propose_le,attente_depuis&classe_id=eq.' + encodeURIComponent(classe)).catch(function(e){
         if(/frise_ia_tirages|does not exist|42P01|PGRST2/.test(e.message)) throw new Error('La table frise_ia_tirages n’existe pas encore : passer bdd/schema/049-frise-ia.sql dans Supabase.');
         throw e;
       }),
@@ -184,6 +185,9 @@ td small{color:var(--ink-faint)}
 
   function titre(id){ var s = F.PAR_ID[id]; return s ? s.titre : id; }
 
+  /* une réservation ne vaut que pendant le décompte de 60 s (050) */
+  function enCours(t){ return !t.sujet && t.propose_le && (Date.now() - new Date(t.propose_le).getTime()) < 60000; }
+
   function dessiner(){
     var parEleve = {}; tirages.forEach(function(t){ parEleve[t.eleve_id] = t; });
     var options = F.SUJETS.map(function(s){ return '<option value="' + s.id + '">' + esc(s.titre) + '</option>'; }).join('');
@@ -191,7 +195,8 @@ td small{color:var(--ink-faint)}
     var lignes = eleves.map(function(e){
       var t = parEleve[e.id], sujet;
       if(t && t.sujet){ nbSujet++; sujet = '<b>' + esc(titre(t.sujet)) + '</b>'; }
-      else if(t){ nbAttente++; sujet = '<span class="chip att">à choisir</span> <small>' + t.propositions.map(function(p){ return esc(titre(p)); }).join(' / ') + '</small>'; }
+      else if(t && t.propositions.length && enCours(t)){ nbAttente++; sujet = '<span class="chip att">décompte en cours</span> <small>' + t.propositions.map(function(p){ return esc(titre(p)); }).join(' / ') + '</small>'; }
+      else if(t){ nbAttente++; sujet = '<span class="chip att">' + (t.attente_depuis ? 'en file d’attente' : 'à relancer') + '</span>'; }
       else sujet = '<small>pas encore tiré</small>';
       var rep = reponses[e.id] || {}, n = REQUIS.filter(function(c){ return rep[c]; }).length;
       return '<tr><td>' + esc(ProfAPI.nomDe(e.pseudo)) + '</td><td>' + sujet + '</td>' +
@@ -200,16 +205,16 @@ td small{color:var(--ink-faint)}
         (t ? '<button type="button" data-effacer="' + e.id + '" title="L’élève pourra refaire le questionnaire et retirer">Effacer le tirage</button>' : '') + '</td></tr>';
     }).join('');
     $('#eleves').innerHTML =
-      '<p class="aide">' + eleves.length + ' élèves · <b>' + nbSujet + '</b> ont leur sujet · ' + nbAttente + ' doivent encore choisir · ' + (eleves.length - nbSujet - nbAttente) + ' n’ont pas tiré. Fiche : les 12 réponses attendues (3 pour la frise, 6 questions, la légende de l’image 1, 2 sources).</p>' +
+      '<p class="aide">' + eleves.length + ' élèves · <b>' + nbSujet + '</b> ont leur sujet · ' + nbAttente + ' sont en cours de tirage · ' + (eleves.length - nbSujet - nbAttente) + ' n’ont pas tiré. Fiche : les 12 réponses attendues (3 pour la frise, 6 questions, la légende de l’image 1, 2 sources).</p>' +
       '<div class="defile"><table><thead><tr><th>Élève</th><th>Sujet</th><th>Fiche</th><th>Gestes</th></tr></thead><tbody>' + lignes + '</tbody></table></div>';
 
     var occ = {}; tirages.forEach(function(t){
       if(t.sujet) occ[t.sujet] = (occ[t.sujet] || 0) + 1;
-      else t.propositions.forEach(function(p){ occ[p] = (occ[p] || 0) + 0.5; });
+      else if(enCours(t)) t.propositions.forEach(function(p){ occ[p] = (occ[p] || 0) + 0.5; });
     });
     $('#repart').innerHTML = F.SUJETS.map(function(s){
       var n = occ[s.id] || 0;
-      return '<div class="' + (n ? '' : 'zero') + '"><span class="n">' + String(n).replace('.', ',') + '</span> ' + esc(s.titre) + '</div>';
+      return '<div class="' + (n ? '' : 'zero') + '"><span class="n">' + String(n).replace('.', ',') + '</span> ' + (s.essentiel ? '★ ' : '') + esc(s.titre) + '</div>';
     }).join('');
   }
 
