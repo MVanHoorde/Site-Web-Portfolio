@@ -79,6 +79,128 @@
   details.aide-src code{font-size:12px;word-break:break-word}
   details.autre-image{margin:12px 0;border:1px dashed var(--line);border-radius:10px;padding:8px 12px}
   details.autre-image summary{cursor:pointer;font-weight:600}
+  /* =================================================================
+     IDENTITÉ DE LA MAQUETTE (term-es-frise-debat-maquette, 13/11/2026),
+     reprise À L'IDENTIQUE à la demande de Loïc (18/11). Ces règles
+     viennent EN DERNIER et habillent les composants du moteur
+     (sequence-snt.css) sans rien changer à leur fonctionnement.
+     ================================================================= */
+  :root{
+    --papier:#f3f1ea; --carte:#fffdf8; --encre:#141a26; --gris:#5f6472; --trait:#d8d1bf;
+    --alpha:#c63a27; --beta:#17808d; --gamma:#4a3f9e; --or:#b28a1d; --vert:#3f7f4c; --act:#d9741c;
+    --grille:#e4dfd0; --voile:rgba(20,26,38,.06);
+    --f-titre:'Space Grotesk',system-ui,sans-serif; --f-texte:'Spectral',Georgia,serif; --f-mono:'IBM Plex Mono',ui-monospace,monospace;
+    --bg:var(--papier); --surface:var(--carte); --surface-2:var(--papier);
+    --ink:var(--encre); --ink-soft:var(--gris); --ink-faint:#8a8d96; --line:var(--trait);
+    --link:var(--beta); --link-wash:var(--voile);
+    --activity:var(--act); --activity-wash:#fbeee0;
+    --ok:var(--vert); --ok-wash:#e4efe5; --err:var(--alpha); --err-wash:#fbe8e4;
+    --wait:var(--or); --wait-wash:#f8f0da; --hist:var(--gamma); --hist-wash:#ecebf7;
+    --shadow:none; --radius:14px;
+  }
+  body{background:var(--papier);color:var(--encre);font-family:var(--f-texte);font-size:16px;line-height:1.6;
+    background-image:linear-gradient(var(--grille) 1px,transparent 1px),linear-gradient(90deg,var(--grille) 1px,transparent 1px);
+    background-size:28px 28px}
+
+  /* en-tête : .tete */
+  header.masthead{background:transparent;border:0;padding:1.2rem 0 .4rem}
+  .eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--alpha);font-weight:400}
+  h1.title{font-family:var(--f-titre);font-size:clamp(1.5rem,4vw,2.1rem);line-height:1.2;letter-spacing:0;font-weight:700}
+  h1.title .tag{font-family:var(--f-titre);color:var(--beta);font-size:.7em;font-weight:600}
+  .lede{color:var(--gris);font-size:1rem}
+  .meta-row .m{font-family:var(--f-mono);font-size:.72rem;color:var(--gris)}
+  .meta-row .m b{color:var(--encre)}
+
+  /* séances : les onglets des temps */
+  nav.seances{background:rgba(243,241,234,.94);border:0;backdrop-filter:none}
+  nav.seances .wrap{gap:.4rem;padding:.6rem 16px}
+  nav.seances a{flex:none;background:var(--carte);border:1.5px solid var(--trait);border-radius:10px;padding:.5rem .8rem;
+    color:var(--encre);font-family:var(--f-titre);font-size:.9rem;line-height:1.2;display:block;font-weight:500}
+  nav.seances a .n{display:block;font-family:var(--f-mono);font-size:.66rem;color:var(--gris);letter-spacing:.05em}
+  nav.seances a:hover{border-color:var(--encre);box-shadow:3px 3px 0 var(--encre);background:var(--carte)}
+  nav.seances a.retour{background:transparent;border:0;font-family:var(--f-mono);font-size:.78rem;color:var(--gris);align-self:center}
+  #prog4{background:rgba(243,241,234,.94) !important;border-color:var(--trait) !important}
+  .legend{display:none}
+
+  /* bandeau IA : .bandeau-ia */
+  .sans-ia{gap:.7rem;background:var(--encre);color:var(--papier);border-radius:10px;padding:.6rem .9rem;font-size:.9rem;margin:1rem 0}
+  .sans-ia b{font-family:var(--f-titre)}
+  .sans-ia .pastille{width:30px;height:30px;border:2px solid var(--alpha);color:var(--alpha);background:var(--carte);font-family:var(--f-mono);font-size:.7rem;font-weight:400}
+
+  /* séance */
+  section.seance{padding:1.6rem 0 .4rem;counter-reset:etape}
+  .seance-head h2{font-family:var(--f-titre);font-size:1.25rem;font-weight:700}
+  .seance-head h2 .s-num{font-family:var(--f-mono);color:var(--alpha);font-size:.72em}
+  .seance-time{font-family:var(--f-mono);font-size:.72rem;color:var(--gris)}
+  .seance-goal{color:var(--gris);font-size:.95rem}
+
+  /* étapes : .etape, numéro rond, ouverte = encre + ombre */
+  .steps{display:grid;gap:.6rem}
+  .step{padding:0;counter-increment:etape}
+  .step .rail,.step .step-pip{display:none}
+  .card{background:var(--carte);border:1.5px solid var(--trait);border-radius:14px;box-shadow:none}
+  .step:not(.is-done) .card{border-color:var(--encre);box-shadow:3px 3px 0 var(--encre)}
+  .card-top{padding:.7rem 1rem .2rem}
+  .step-kicker{display:none}
+  .step-title{display:flex;gap:.7rem;align-items:center;font-family:var(--f-titre);font-size:1rem;font-weight:600;margin:0 0 .5rem}
+  .step-title::before{content:counter(etape);flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+    font-family:var(--f-titre);background:var(--act);border:1.5px solid var(--act);color:#fff}
+  .step.is-done .step-title{color:var(--gris)}
+  .step.is-done .step-title::before{content:"\2713";background:var(--vert);border-color:var(--vert)}
+  .card-body{padding:0 1rem 1rem}
+  .objective{background:transparent;padding:0;margin:0 0 .6rem;color:var(--gris);font-size:.92rem;border-radius:0}
+  .objective b{color:var(--encre)}
+  .transi{font-style:normal;color:var(--gris);font-size:.95rem}
+
+  /* champs : .bloc-fiche */
+  .field{background:transparent;border:1.5px solid var(--trait);border-radius:12px;padding:.9rem}
+  .field + .field{margin-top:.6rem}
+  .field-type{border:0;padding:0;font-family:var(--f-mono);font-size:.68rem;color:var(--gris);letter-spacing:.04em}
+  .field-q{font-family:var(--f-titre);font-size:.92rem;font-weight:500}
+  .gtexte:not(:empty){background:var(--papier);border:1.5px solid var(--trait);border-radius:8px;padding:.5rem .65rem;font-family:var(--f-texte)}
+  .block-label{font-family:var(--f-mono);font-size:.7rem;color:var(--gris)}
+
+  /* boutons */
+  .btn{background:var(--encre);color:var(--papier);border:0;border-radius:8px;padding:.55rem 1rem;font-family:var(--f-titre);font-size:.92rem;font-weight:500}
+  .btn:hover{filter:none;box-shadow:2px 2px 0 var(--act)}
+  .btn.ghost{background:transparent;color:var(--encre);border:1.5px solid var(--encre)}
+
+  /* questionnaire : .axe-choix et .pastilles */
+  .axe{display:grid;gap:.4rem;margin:.8rem 0}
+  .axe .aq{font-family:var(--f-titre);font-size:.92rem;margin:0}
+  .pastilles{gap:.4rem}
+  .pastilles button{border:1.5px solid var(--trait);border-radius:999px;background:transparent;color:var(--encre);padding:.35rem .8rem;font-size:.9rem;min-height:38px;font-family:var(--f-texte)}
+  .pastilles button[aria-pressed="true"]{border-color:var(--act);background:var(--act);color:#fff}
+
+  /* tirage : .choix */
+  .deux-sujets{gap:.5rem}
+  .deux-sujets button{border:1.5px solid var(--trait);border-radius:10px;background:transparent;padding:.7rem;gap:.2rem}
+  .deux-sujets button:hover{border-color:var(--act);box-shadow:inset 0 0 0 2px var(--act)}
+  .deux-sujets .croise{font-family:var(--f-mono);font-size:.7rem;color:var(--gris);letter-spacing:0;text-transform:none;font-weight:400}
+  .deux-sujets b{font-family:var(--f-titre);font-size:1rem}
+  .deux-sujets small{color:var(--gris);font-size:.82rem;line-height:1.35}
+  .mon-sujet{border:1.5px solid var(--vert);background:var(--carte);border-radius:12px;box-shadow:3px 3px 0 var(--vert)}
+  .mon-sujet .t{font-family:var(--f-mono);font-size:.7rem;color:var(--vert);font-weight:400}
+  .mon-sujet b{font-family:var(--f-titre)}
+  .rappel-sujet{border:1px dashed var(--trait);border-radius:10px;font-family:var(--f-mono);font-size:.78rem;color:var(--gris);text-align:center}
+  .rappel-sujet b{font-family:var(--f-titre);font-size:.95rem}
+
+  /* aide « Comment écrire une source » : .aide */
+  details.aide-src{border:1.5px solid var(--beta);border-radius:10px;background:var(--voile);padding:0}
+  details.aide-src summary{padding:.55rem .8rem;font-family:var(--f-titre);font-size:.9rem;color:var(--beta);font-weight:500}
+  details.aide-src dl{margin:0;padding:0 .8rem .8rem}
+  details.aide-src dt{font-family:var(--f-titre);font-size:.85rem}
+  details.aide-src dd{font-size:.88rem;color:var(--encre)}
+  details.aide-src code{font-family:var(--f-mono);font-size:.74rem;background:var(--carte);padding:.1rem .3rem;border-radius:4px;display:inline-block}
+
+  /* images : .vignette */
+  details.autre-image{border:2px dashed var(--trait);border-radius:10px;padding:.6rem}
+  details.autre-image summary{font-family:var(--f-mono);font-size:.78rem;color:var(--gris);font-weight:400}
+
+  /* fenêtre d'écriture du moteur */
+  .focus-carte{background:var(--carte);border:1.5px solid var(--encre);border-radius:14px;box-shadow:4px 4px 0 var(--encre)}
+  .focus-carte .fk{font-family:var(--f-titre)}
+  .focus-carte textarea{font-family:var(--f-texte);background:var(--papier);border:1.5px solid var(--trait);border-radius:8px}
 </style>
 </head><body data-seances="ouvertes" data-sequence="est-t3-c5" data-reponses="personnelles" data-accueil="sur-place" data-renvoi-texte="Connecte-toi pour tirer ton sujet et garder ta fiche, au lycée comme à la maison.">
 
