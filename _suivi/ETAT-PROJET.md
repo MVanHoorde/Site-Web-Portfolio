@@ -20,11 +20,15 @@
 > une **image en filigrane** (page, vignettes, écran projeté). Les élèves
 > s'entraînent depuis l'**accueil du site** (bloc *Outils pédagogiques* →
 > `outils/quiz/entrainement.html`). Mode d'emploi : `outils/quiz/LISEZMOI.md`.
-> ✅ `047` en base, six quiz BTS MS2 importés le 15/11.
-> ⏳ **Reste à Loïc** : pousser `051` et `052` (et `048` s'il ne l'est pas), puis
-> importer les **36 quiz** (`_quiz/kahoot/diapason/`, `_quiz/snt-internet/`,
-> `_quiz/snt-codage/`, hors Git : 675 questions, dont les Kahoot corrigés et les
-> nouveaux quiz Internet et codage) et les **auditer** — journaux d'audit dans
+> ✅ `047` à `052` en base. **42 quiz** en ligne, rangés en 18 chapitres : les
+> six de BTS MS2 et les **36** sources de `_quiz/kahoot/diapason/`,
+> `_quiz/snt-internet/` et `_quiz/snt-codage/` (hors Git, importés le 21/11).
+> Leur description ne dit à l'élève que *quand* faire le quiz ; la provenance
+> est dans les journaux. **Masqués aux élèves** (visibles du prof) : les quatre
+> chapitres sans cours ouvert — *Son et musique*, *Le son à coder* (1re ES),
+> *Choix énergétiques*, *Transport de l'électricité* (Tle ES) ; à rouvrir
+> avec leur cours (✏️ du dossier → « Visible des élèves »).
+> ⏳ **Reste à Loïc** : **auditer** les 36 quiz — journaux dans
 > `_quiz/kahoot/journal-modifs/`. Éditeur de quiz : `outils/quiz/editer.html`.
 > Liens « Revoir » : une erreur renvoie à l'étape du cours (`#etape-<clé>`).
 > Lien « 🎵 Diapason » du tableau de bord : Loïc seul (gestionnaire). La page
