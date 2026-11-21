@@ -5,22 +5,31 @@
 > Historique → `JOURNAL.md` · décisions → `DECISIONS.md` · détail par chapitre →
 > `chapitres.md` · contexte et règles → `CLAUDE.md` · index → `MANIFESTE.md`.
 >
-> Dernière réécriture : **15/11/2026**.
+> Dernière réécriture : **21/11/2026**.
 >
 > 🔴 **Ce paragraphe ne liste plus les passes.** Il en accumulait trente-deux,
 > soudées par des « Passe du même jour » — l'empilement que ce fichier est
 > précisément censé éviter. La suite des passes vit dans `JOURNAL.md`, qui est
 > fait pour ça ; ici ne restent que l'état courant et ce qui bloque.
 >
-> **Dernière passe — Diapason, le quiz en classe (15/11).** Nouvel outil
-> `outils/quiz/` qui remplace Kahoot : écran projeté, élèves **sans compte**
-> (PIN, ou QR code fixe d'un quiz : attente du lancement en classe,
-> entraînement seul à la maison), huit types de questions, la base juge.
-> Mode d'emploi : `outils/quiz/LISEZMOI.md`. Premiers quiz : BTS MS2 partie A
-> (sources hors Git, `_quiz/bts-ms2/`). ✅ `047` complet en base, six quiz
-> importés le 15/11 (constaté en base).
-> Lien « 🎵 Diapason » dans la barre du tableau de bord, visible de Loïc
-> seul (gestionnaire) ; l'ouvrir aux collègues demandera Nouveautés + guides.
+> **Dernière passe — Diapason en dossiers, ouvert aux élèves (21/11).**
+> `outils/quiz/` remplace Kahoot : écran projeté, élèves **sans compte**
+> (PIN, ou QR code fixe d'un quiz), huit types de questions, la base juge.
+> La bibliothèque se range en **sections par classe** (visuels de l'accueil ;
+> BTS MS : tourbillons de Kármán, NASA) puis **dossiers par chapitre**, avec
+> une **image en filigrane** (page, vignettes, écran projeté). Les élèves
+> s'entraînent depuis l'**accueil du site** (bloc *Outils pédagogiques* →
+> `outils/quiz/entrainement.html`). Mode d'emploi : `outils/quiz/LISEZMOI.md`.
+> ✅ `047` en base, six quiz BTS MS2 importés le 15/11.
+> ⏳ **Reste à Loïc** : pousser `051` et `052` (et `048` s'il ne l'est pas), puis
+> importer les **36 quiz** (`_quiz/kahoot/diapason/`, `_quiz/snt-internet/`,
+> `_quiz/snt-codage/`, hors Git : 675 questions, dont les Kahoot corrigés et les
+> nouveaux quiz Internet et codage) et les **auditer** — journaux d'audit dans
+> `_quiz/kahoot/journal-modifs/`. Éditeur de quiz : `outils/quiz/editer.html`.
+> Liens « Revoir » : une erreur renvoie à l'étape du cours (`#etape-<clé>`).
+> Lien « 🎵 Diapason » du tableau de bord : Loïc seul (gestionnaire). La page
+> enseignant est désormais atteignable depuis la page d'entraînement : l'ouvrir
+> officiellement aux collègues demandera Nouveautés + guides.
 >
 > **Passe du 11/11 — la gestion entre collègues.** Suivi → « 👥 Gérer
 > les élèves de la classe » (Masquer / À supprimer), onglets au choix dans

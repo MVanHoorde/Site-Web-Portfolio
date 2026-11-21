@@ -24,6 +24,10 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parents[2]
 SCHEMA = RACINE / 'bdd' / 'schema' / '047-quiz.sql'
 SCHEMA_048 = RACINE / 'bdd' / 'schema' / '048-quiz-renommer.sql'
+SCHEMA_051 = RACINE / 'bdd' / 'schema' / '051-quiz-dossiers.sql'
+ESSAIS_051 = Path(__file__).with_name('quiz-dossiers.test.sql')
+SCHEMA_052 = RACINE / 'bdd' / 'schema' / '052-quiz-revoir.sql'
+ESSAIS_052 = Path(__file__).with_name('quiz-revoir.test.sql')
 ESSAIS = Path(__file__).with_name('quiz-base.test.sql')
 
 DOUBLURES = r"""
@@ -43,6 +47,21 @@ create function public.est_enseignant() returns boolean language sql stable secu
   select exists (select 1 from public.enseignants e where e.auth_id = (select auth.uid()))
 $$;
 create function public.verrouiller_observateurs() returns integer language sql as 'select 0';
+create table public.gestionnaires (auth_id uuid primary key, ajoute_le timestamptz not null default now());
+create function public.est_gestionnaire() returns boolean language sql stable security definer
+  set search_path = '' as $$
+  select exists (select 1 from public.gestionnaires g where g.auth_id = (select auth.uid()))
+$$;
+grant execute on function public.est_gestionnaire() to authenticated;
+"""
+
+# Avant de rejouer 051 : un gestionnaire (les sections se posent à son
+# nom) et un quiz MS2 sans dossier (il doit être rangé dans le sien).
+PREPA_051 = r"""
+insert into public.gestionnaires (auth_id) values ('00000000-0000-0000-0000-0000000000a1');
+set role authenticated;
+set request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}';
+select public.quiz_importer('{"slug":"ms2-a9-essai","titre":"MS2 essai","questions":[{"type":"vf","enonce":"Essai","correct":[0]}]}'::jsonb);
 """
 
 
@@ -111,14 +130,23 @@ def main():
                   ('047, rejoué', ['-f', str(SCHEMA)]),
                   ('048, renommer', ['-f', str(SCHEMA_048)]),
                   ('048, rejoué', ['-f', str(SCHEMA_048)]),
-                  ('essais', ['-f', str(ESSAIS)])]
+                  ('051, dossiers', ['-f', str(SCHEMA_051)]),
+                  ('051, rejoué', ['-f', str(SCHEMA_051)]),
+                  ('052, à revoir', ['-f', str(SCHEMA_052)]),
+                  ('052, rejoué', ['-f', str(SCHEMA_052)]),
+                  ('essais', ['-f', str(ESSAIS)]),
+                  ('051, gestionnaire et un quiz MS2', ['-c', PREPA_051]),
+                  ('051, rejoué avec gestionnaire', ['-f', str(SCHEMA_051)]),
+                  ('051, rejoué encore', ['-f', str(SCHEMA_051)]),
+                  ('essais des dossiers', ['-f', str(ESSAIS_051)]),
+                  ('essais à revoir', ['-f', str(ESSAIS_052)])]
         for nom, args in etapes:
             r = psql(*args)
             sortie = (r.stdout + r.stderr).strip()
             if r.returncode != 0 or 'ÉCHEC' in sortie:
                 print(f'✗ {nom}\n{sortie}')
                 sys.exit(1)
-            print(f'✓ {nom}' + (f'\n{sortie}' if nom == 'essais' else ''))
+            print(f'✓ {nom}' + (f'\n{sortie}' if nom.startswith('essais') else ''))
 
         # Fichiers de quiz passés en argument : chaque question au validateur
         # de la base, puis un essai de jugement de sa bonne réponse.

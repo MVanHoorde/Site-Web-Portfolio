@@ -5130,3 +5130,41 @@ bandeau « ✨ Nouveau » (l'autrice invitée ne voit pas la fenêtre du tableau
 étendue (`compte_max`), `verifier.mjs` la relit. Bancs : PGlite 26 contrôles, Chromium 14. Incident : un
 `git stash` d'une conversation parallèle (cristaux) a emporté puis rendu les fichiers Padago en cours — rien
 perdu, vérifié des deux côtés.
+
+## 21/11/2026 — Diapason : dossiers, filigrane, entraînement depuis l'accueil
+
+Demande de Loïc : une catégorie par classe avec les visuels du site, des dossiers par chapitre, une
+image en filigrane, et Diapason ouvert aux élèves depuis l'accueil — avant de transcrire ses Kahoot de
+SNT et d'ES. Base `051` (`quiz_categories`, `quiz_catalogue`, `quiz_importer` réécrit avec `dossier`),
+bibliothèque refaite dans `quiz-animer.js`, nouvelle page `entrainement.html` (+ `quiz-catalogue.js`),
+mode `?seul=1` dans `quiz-eleve.js`, porte sur `index.html`. Bancs : `quiz-base.py` (051 rejoué trois
+fois, essais du 047 au vert avec l'import réécrit), `quiz-dossiers-parcours.py` (navigateur, nouveau),
+`quiz-parcours.py` (au vert sans 051 : la page retombe sur la liste à plat). Trouvé en route et corrigé :
+le PIN de l'affiche sortait du cadre en 1280 × 720 dès qu'un titre tenait sur deux lignes ; la zone
+« Importer » se chevauchait (label resté en ligne).
+
+## 21/11/2026 (soir) — Les Kahoot de Loïc dans Diapason, et l'éditeur de quiz
+
+29 exports PDF « Détails - Kahoot! » (Téléchargements → `_a-deposer/kahoot/pdf/`, hors Git). Chaîne dans
+`_outils/kahoot/` : `extraire_kahoot.py` (texte positionné ; bonnes réponses lues à la couleur des coches
+tracées ; vue réduite lue dans les miniatures), `trous_formules.py` et `a_transcrire.py` (captures des
+questions que le texte ne livre pas : le LaTeX de Kahoot s'imprime en glyphes sans texte, certaines
+réponses sont des images), `convertir_kahoot.py` (fusion des relectures → `_quiz/kahoot/diapason/`, hors
+Git). 102 + 45 questions relues à l'œil par des agents. Résultat : **28 quiz, 537 questions**, toutes
+passées au validateur de la base locale, bonne réponse jugée juste. Écartés : les 12 questions de
+« Thème 2 - Chapitre 4 » (réponses absentes du PDF : à réexporter en vue détaillée) et deux questions
+« réponse par pin's » (non lues). Images gardées : seulement celles dont la question a besoin
+(92, 1,3 Mo, `assets/img/quiz/kahoot/`). Éditeur de quiz : `outils/quiz/editer.html` (les huit types),
+banc `_outils/tests/quiz-editeur-parcours.py`.
+
+## 21/11/2026 (nuit) — Quiz corrigés, nouveaux quiz SNT, « à revoir » relié au cours
+
+Sur demande de Loïc (« corrige les erreurs, améliore, extrapole ; je vais auditer ») : les 28 quiz repris
+de Kahoot corrigés et enrichis (notion, à retenir, pourquoi, temps, niveau, lien « à revoir ») par des
+agents, chacun avec un journal d'audit `_quiz/kahoot/journal-modifs/<slug>.md` ; « Thème 2 - Chapitre 4 »
+reconstitué (réponses extrapolées) ; nouveaux quiz SNT : Internet après S2, S4, S5, S6 et bilan
+(`_quiz/snt-internet/`), codage de l'information S1 et S2 (`_quiz/snt-codage/`). Total : 36 quiz,
+675 questions, 200 portant un point « à vérifier ». Base `052` : `revoir` rendu à la correction et dans
+le bilan par notion ; moteur des séquences : ancre `#etape-<clé>` (sequence-snt.js v64, css v54).
+Fuites corrigées : trois images dont le nom de fichier livrait la réponse (mailles cs/cfc, son pur).
+

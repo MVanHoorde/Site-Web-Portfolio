@@ -95,6 +95,27 @@
     if (/^[a-z0-9][a-z0-9/._-]*\.(png|jpe?g|webp|gif|svg)$/i.test(src) && src.indexOf('..') < 0) return RACINE_SITE + src;
     return '';
   }
+  /* « À revoir » (052) : une page de cours du site, avec son ancre
+     (#sN : une séance, #etape-<clé> : une étape), ou une adresse https. */
+  function urlCours(lien) {
+    lien = String(lien || '').trim();
+    if (/^https:\/\/[^\s"'<>]+$/i.test(lien)) return lien;
+    if (/^[a-z0-9][a-z0-9\/._-]*\.html(#[A-Za-z0-9_-]+)?$/i.test(lien) && lien.indexOf('..') < 0) return RACINE_SITE + lien;
+    return '';
+  }
+  /* Le lien affiché : « Revoir : <texte> → » ; rien si le lien est refusé. */
+  function revoirHtml(r, classe) {
+    var u = r && urlCours(r.lien);
+    if (!u) return '';
+    return '<a class="' + (classe || 'revoir') + '" href="' + esc(u) + '" target="_blank" rel="noopener">Revoir : ' + esc(r.texte || 'la partie du cours') + ' →</a>';
+  }
+  /* Le filigrane d'un dossier (051) : les mêmes adresses, plus une petite
+     image déposée depuis l'ordinateur (data:image/…;base64), rangée en base. */
+  function urlFiligrane(src) {
+    src = String(src || '').trim();
+    if (/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(src)) return src;
+    return urlImage(src);
+  }
 
   /* ----------------------------------------------------------
    *  3. Rendu du texte
@@ -315,6 +336,10 @@
     if (/QUIZ_SALLE_INVALIDE/.test(m)) return 'Code de salle invalide dans le fichier : 6 caractères parmi A-Z et 2-9, sans I, L ni O.';
     if (/QUIZ_SALLE_PRISE/.test(m)) return 'Ce code de salle est déjà pris par un autre quiz : changez-le dans le fichier.';
     if (/QUIZ_TROP_D_ESSAIS/.test(m)) return 'Beaucoup d\'entraînements sur ce quiz en ce moment : réessaie dans un moment.';
+    if (/QUIZ_DOSSIER_BOUCLE/.test(m)) return 'Un dossier ne se range pas dans un de ses propres sous-dossiers.';
+    if (/QUIZ_DOSSIER_TROP_PROFOND/.test(m)) return 'Trop de dossiers emboîtés.';
+    if (/quiz_categories_nom_unique/.test(m)) return 'Un dossier porte déjà ce nom à cet endroit.';
+    if (/quiz_categories_image/.test(m)) return 'Image refusée : un chemin du site, une adresse https, ou une image de l\'ordinateur.';
     if (/QUIZ_PAS_MAINTENANT|QUIZ_PAS_DE_QUESTION/.test(m)) return 'Un instant…';
     if (/Failed to fetch|NetworkError|Load failed/i.test(m)) return 'Pas de connexion au serveur. Vérifie le wifi.';
     return m;
@@ -329,7 +354,7 @@
   global.Quiz = {
     NOM: NOM, LETTRES: LETTRES, FORMES: FORMES,
     esc: esc, $: $, $$: $$, rendre: rendre, lireNombre: lireNombre, ecrireNombre: ecrireNombre,
-    urlImage: urlImage, urlEleve: urlEleve, urlSalle: urlSalle,
+    urlImage: urlImage, urlFiligrane: urlFiligrane, urlCours: urlCours, revoirHtml: revoirHtml, urlEleve: urlEleve, urlSalle: urlSalle,
     rpc: rpc, rest: rest, connecter: connecter, deconnecter: deconnecter, session: session,
     monUid: monUid, exigerConnexion: exigerConnexion,
     canal: canal, messageErreur: messageErreur, poserNom: poserNom

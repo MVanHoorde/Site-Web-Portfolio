@@ -288,7 +288,9 @@ def brancher_contexte(ctx, base, relais, stats):
             for m in (corps or {}).get('messages', []):
                 relais.diffuser('realtime:' + m['topic'], {'type': 'broadcast', 'event': m['event'], 'payload': m['payload']})
             statut, r = 202, None
-        if statut == 400 and not re.match(r'QUIZ_', str(r.get('message'))):
+        # sans le 051 en base, la bibliothèque sonde quiz_categories et retombe sur la liste à plat
+        sans_051 = statut == 400 and r.get('code') == '42P01' and u.path.endswith('/quiz_categories')
+        if statut == 400 and not sans_051 and not re.match(r'QUIZ_', str(r.get('message'))):
             FAUTES.append(f'erreur SQL inattendue sur {u.path} : {r}')
         route.fulfill(status=statut, content_type='application/json',
                       body='' if r is None else json.dumps(r),

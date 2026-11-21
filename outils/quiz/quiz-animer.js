@@ -14,23 +14,34 @@
  * ============================================================ */
 (function () {
   'use strict';
-  var Q = window.Quiz, $ = Q.$, esc = Q.esc;
+  var Q = window.Quiz, $ = Q.$, $$ = Q.$$, esc = Q.esc;
   var app = $('#app');
   var CLE_ANIM = 'quiz.animation';
   var mesQuiz = [];
 
   /* ============================================================
-   *  1. Bibliothèque
+   *  1. Bibliothèque — rangée en dossiers (051)
+   *  Racine : une vignette par section (classe), illustrée par un
+   *  visuel du site. Dans un dossier : ses sous-dossiers (chapitres),
+   *  puis ses quiz, l'image du dossier en filigrane derrière.
+   *  Sans 051 en base, la bibliothèque reste une liste à plat.
    * ============================================================ */
+  var cats = null;          // null : 051 absent ; sinon la liste des dossiers
+  var courant = null;       // id du dossier ouvert ; null = racine ; 'sans' = sans dossier
+  var gestionnaire = false;
+  var CLE_DOSSIER = 'quiz.dossier';
+
   function bibliotheque() {
     sortirScene();
+    try { courant = localStorage.getItem(CLE_DOSSIER) || null; } catch (e) { /* rien */ }
     app.innerHTML =
+      '<div class="filigrane" id="filigrane" aria-hidden="true"></div>' +
       '<div class="page">' +
         '<section id="ouvertes" hidden><h2>Parties ouvertes</h2><div class="defile"><table class="tableau" id="t-ouvertes"></table></div></section>' +
-        '<section><h2>Les quiz</h2><p class="note" id="n-quiz">Chargement…</p><div class="liste-quiz" id="liste"></div></section>' +
+        '<section id="biblio"><p class="note">Chargement…</p></section>' +
         '<section><h2>Importer</h2>' +
           '<label class="depot" id="depot"><input type="file" id="f-import" accept=".json,application/json" multiple hidden>' +
-            '<b>Déposer ici un ou plusieurs fichiers de quiz (.json)</b><br><span class="note">ou cliquer pour les choisir. Un quiz déjà présent (même identifiant) est mis à jour ; ses parties passées gardent leurs questions d\'origine.</span></label>' +
+            '<b>Déposer ici un ou plusieurs fichiers de quiz (.json)</b><br><span class="note" id="depot-note">ou cliquer pour les choisir. Un quiz déjà présent (même identifiant) est mis à jour ; ses parties passées gardent leurs questions d\'origine.</span></label>' +
           '<ul class="journal" id="journal"></ul>' +
         '</section>' +
       '</div>';
@@ -39,41 +50,281 @@
     ['dragenter', 'dragover'].forEach(function (t) { depot.addEventListener(t, function (e) { e.preventDefault(); depot.classList.add('survol'); }); });
     ['dragleave', 'drop'].forEach(function (t) { depot.addEventListener(t, function (e) { e.preventDefault(); depot.classList.remove('survol'); }); });
     depot.addEventListener('drop', function (e) { importer(e.dataTransfer.files); });
+    Q.rpc('est_gestionnaire', {}).then(function (g) { gestionnaire = !!g; }, function () {});
     chargerQuiz();
     chargerOuvertes();
   }
 
   function chargerQuiz() {
-    return Q.rest('quiz_quiz?select=id,slug,titre,niveau,matiere,description,auteur,partage,modifie_le,questions,salle&order=modifie_le.desc')
-      .then(function (l) {
-        mesQuiz = l || [];
-        var moi = Q.monUid();
-        $('#n-quiz').textContent = mesQuiz.length ? mesQuiz.length + ' quiz' : 'Aucun quiz pour l\'instant : importe un fichier ci-dessous.';
-        $('#liste').innerHTML = mesQuiz.map(function (z) {
-          var aMoi = z.auteur === moi, n = (z.questions || []).length;
-          var aVerifier = (z.questions || []).filter(function (q) { return q.a_verifier; }).length;
-          return '<article class="carte-quiz">' +
-            '<h3>' + esc(z.titre) + '</h3>' +
-            '<div class="meta">' + esc([z.niveau, z.matiere].filter(Boolean).join(' · ')) + '</div>' +
-            '<div class="meta">' + n + ' question' + (n > 1 ? 's' : '') + ' · ' + (aMoi ? 'à moi' : 'd\'un collègue') + ' · modifié le ' + new Date(z.modifie_le).toLocaleDateString('fr-FR') +
-              (aVerifier ? ' · <b style="color:var(--rouge)">' + aVerifier + ' à vérifier</b>' : '') + '</div>' +
-            '<div class="actions">' +
-              '<button class="bouton rouge petit" type="button" data-lancer="' + z.id + '">Lancer</button>' +
-              '<button class="bouton creux petit" type="button" data-apercu="' + z.id + '">Aperçu</button>' +
-              (aMoi ? '<button class="bouton creux petit" type="button" data-salle="' + z.id + '" title="Le QR code à poser sur une diapositive ou une fiche">QR code fixe</button>' : '') +
-              '<button class="bouton creux petit" type="button" data-export="' + z.id + '">Exporter</button>' +
-              (aMoi ? '<button class="lien-bouton" type="button" data-suppr="' + z.id + '">Supprimer</button>' : '') +
-            '</div></article>';
-        }).join('');
-        app.querySelectorAll('[data-lancer]').forEach(function (b) { b.onclick = function () { dialogueLancer(trouver(b.dataset.lancer)); }; });
-        app.querySelectorAll('[data-apercu]').forEach(function (b) { b.onclick = function () { apercu(trouver(b.dataset.apercu)); }; });
-        app.querySelectorAll('[data-salle]').forEach(function (b) { b.onclick = function () { qrFixe(trouver(b.dataset.salle)); }; });
-        app.querySelectorAll('[data-export]').forEach(function (b) { b.onclick = function () { exporter(trouver(b.dataset.export)); }; });
-        app.querySelectorAll('[data-suppr]').forEach(function (b) { b.onclick = function () { supprimer(trouver(b.dataset.suppr)); }; });
-      })
-      .catch(erreurGlobale);
+    var lireQuiz = Q.rest('quiz_quiz?select=*&order=slug.asc');
+    var lireCats = Q.rest('quiz_categories?select=id,parent,nom,sigle,image,focus,ordre,visible_eleves,auteur&order=ordre.asc,nom.asc')
+      .catch(function (e) {
+        // 051 pas encore en base : la liste à plat, comme avant
+        if (/quiz_categories|PGRST205|42P01|does not exist|schema cache/i.test(String(e.message) + ' ' + String(e.code))) return null;
+        throw e;
+      });
+    return Promise.all([lireQuiz, lireCats]).then(function (r) {
+      mesQuiz = r[0] || [];
+      cats = r[1];
+      if (cats && courant && courant !== 'sans' && !cat(courant)) courant = null;
+      dessinerBiblio();
+    }).catch(erreurGlobale);
   }
   function trouver(id) { return mesQuiz.filter(function (z) { return z.id === id; })[0]; }
+
+  /* ---------- l'arbre ---------- */
+  function cat(id) { return (cats || []).filter(function (c) { return c.id === id; })[0]; }
+  function enfants(id) { return (cats || []).filter(function (c) { return (c.parent || null) === (id || null); }); }
+  function chemin(id) { var l = [], c = cat(id); while (c) { l.unshift(c); c = cat(c.parent); } return l; }
+  function quizDe(id) {
+    if (id === 'sans') return mesQuiz.filter(function (z) { return !z.categorie || !cat(z.categorie); });
+    return mesQuiz.filter(function (z) { return z.categorie === id; });
+  }
+  /* tout ce qu'un dossier contient, sous-dossiers compris */
+  function compte(id) {
+    return quizDe(id).length + enfants(id).reduce(function (n, c) { return n + compte(c.id); }, 0);
+  }
+  /* l'image d'un dossier, ou à défaut celle du plus proche parent qui en a une */
+  function imageDe(id) {
+    var c = cat(id);
+    while (c) { if (c.image) return { src: c.image, focus: c.focus }; c = cat(c.parent); }
+    return null;
+  }
+  function peutModifier(c) { return c && (c.auteur === Q.monUid() || gestionnaire); }
+  /* « 2de SNT » → 2<sup>de</sup> SNT, comme les portes de l'accueil du site */
+  function sigleHtml(s) {
+    return esc(s || '').replace(/^(\d|T)(de|re|le|e)\b/, '$1<sup>$2</sup>');
+  }
+
+  function poserFiligrane(id) {
+    var f = $('#filigrane'); if (!f) return;
+    var im = id && id !== 'sans' ? imageDe(id) : null, u = im && Q.urlFiligrane(im.src);
+    f.style.backgroundImage = u ? 'url("' + u.replace(/"/g, '%22') + '")' : '';
+    f.style.backgroundPosition = (im && im.focus) || '50% 50%';
+    f.hidden = !u;
+  }
+
+  function vignette(c) {
+    var im = imageDe(c.id), u = im && Q.urlFiligrane(im.src), n = compte(c.id), racine = !c.parent;
+    var style = u ? ' style="--img:url(&quot;' + esc(u) + '&quot;);--focus:' + esc((im && im.focus) || '50% 50%') + '"' : '';
+    return '<button type="button" class="vignette' + (racine ? ' section' : ' chapitre') + (u ? '' : ' sans-image') + '" data-ouvrir="' + c.id + '"' + style + '>' +
+      (racine
+        ? '<span class="vis"><span class="voile"></span><span class="gros">' + sigleHtml(c.sigle || c.nom) + '</span></span>'
+        : '') +
+      '<span class="txt"><span class="nom">' + esc(c.nom) + '</span>' +
+        '<span class="meta">' + n + ' quiz' + (enfants(c.id).length ? ' · ' + enfants(c.id).length + ' dossier' + (enfants(c.id).length > 1 ? 's' : '') : '') +
+        (c.visible_eleves ? '' : ' · <b>masqué aux élèves</b>') + '</span></span>' +
+    '</button>';
+  }
+
+  function carteQuiz(z) {
+    var moi = Q.monUid(), aMoi = z.auteur === moi, n = (z.questions || []).length;
+    var aVerifier = (z.questions || []).filter(function (q) { return q.a_verifier; }).length;
+    return '<article class="carte-quiz">' +
+      '<h3>' + esc(z.titre) + '</h3>' +
+      '<div class="meta">' + esc([z.niveau, z.matiere].filter(Boolean).join(' · ')) + '</div>' +
+      '<div class="meta">' + n + ' question' + (n > 1 ? 's' : '') + ' · ' + (aMoi ? 'à moi' : 'd\'un collègue') + ' · modifié le ' + new Date(z.modifie_le).toLocaleDateString('fr-FR') +
+        (aVerifier ? ' · <b style="color:var(--rouge)">' + aVerifier + ' à vérifier</b>' : '') +
+        (cats && z.catalogue === false ? ' · <b>hors entraînement</b>' : '') + '</div>' +
+      '<div class="actions">' +
+        '<button class="bouton rouge petit" type="button" data-lancer="' + z.id + '">Lancer</button>' +
+        '<button class="bouton creux petit" type="button" data-apercu="' + z.id + '">Aperçu</button>' +
+        (aMoi ? '<button class="bouton creux petit" type="button" data-salle="' + z.id + '" title="Le QR code à poser sur une diapositive ou une fiche">QR code fixe</button>' : '') +
+        (aMoi ? '<a class="bouton creux petit" href="editer.html?quiz=' + z.id + '">Modifier</a>' : '') +
+        (aMoi && cats ? '<button class="bouton creux petit" type="button" data-ranger="' + z.id + '">Ranger</button>' : '') +
+        '<button class="bouton creux petit" type="button" data-export="' + z.id + '">Exporter</button>' +
+        (aMoi ? '<button class="lien-bouton" type="button" data-suppr="' + z.id + '">Supprimer</button>' : '') +
+      '</div></article>';
+  }
+
+  function dessinerBiblio() {
+    var box = $('#biblio'); if (!box) return;
+    if (courant === 'sans' && !quizDe('sans').length) courant = null;   // tout est rangé
+    try { if (courant) localStorage.setItem(CLE_DOSSIER, courant); else localStorage.removeItem(CLE_DOSSIER); } catch (e) { /* rien */ }
+    var h = '';
+    if (!cats) {
+      // 051 absent
+      h = '<div class="titre-biblio"><h2>Les quiz</h2><span class="pousse"></span><a class="bouton rouge petit" href="editer.html">+ Quiz</a></div><p class="note">' + (mesQuiz.length ? mesQuiz.length + ' quiz' : 'Aucun quiz pour l\'instant : importe un fichier ci-dessous.') +
+        ' — Les dossiers arrivent avec le fichier SQL 051.</p><div class="liste-quiz">' + mesQuiz.map(carteQuiz).join('') + '</div>';
+      courant = null;
+    } else if (!courant) {
+      var sans = quizDe('sans').length;
+      h = '<div class="titre-biblio"><h2>Les sections</h2><span class="pousse"></span>' +
+          '<button class="bouton creux petit" type="button" id="b-nouveau">+ Nouvelle section</button>' +
+          '<a class="bouton rouge petit" href="editer.html">+ Quiz</a></div>' +
+        '<p class="note">' + mesQuiz.length + ' quiz en tout. Une section par classe ; dedans, un dossier par chapitre.</p>' +
+        '<div class="vignettes sections">' + enfants(null).map(vignette).join('') +
+          (sans ? '<button type="button" class="vignette chapitre sans-image" data-ouvrir="sans"><span class="txt"><span class="nom">Sans dossier</span><span class="meta">' + sans + ' quiz à ranger</span></span></button>' : '') +
+        '</div>';
+    } else {
+      var c = cat(courant), ch = courant === 'sans' ? [] : chemin(courant);
+      var fil = '<nav class="fil" aria-label="Où suis-je"><button type="button" class="lien-bouton" data-ouvrir="">Toutes les sections</button>' +
+        ch.map(function (x, i) {
+          return ' <span aria-hidden="true">›</span> ' + (i < ch.length - 1 ? '<button type="button" class="lien-bouton" data-ouvrir="' + x.id + '">' + esc(x.nom) + '</button>' : '<b>' + esc(x.nom) + '</b>');
+        }).join('') + (courant === 'sans' ? ' <span aria-hidden="true">›</span> <b>Sans dossier</b>' : '') + '</nav>';
+      var sous = courant === 'sans' ? [] : enfants(courant), liste = quizDe(courant);
+      h = fil +
+        '<div class="titre-biblio">' + (c && !c.parent ? '<span class="sigle">' + sigleHtml(c.sigle || '') + '</span>' : '') +
+          '<h2>' + esc(c ? c.nom : 'Sans dossier') + '</h2><span class="pousse"></span>' +
+          (c ? '<button class="bouton creux petit" type="button" id="b-nouveau">+ Dossier</button>' : '') +
+          '<a class="bouton rouge petit" href="editer.html' + (c ? '?dossier=' + c.id : '') + '">+ Quiz</a>' +
+          (peutModifier(c) ? '<button class="bouton creux petit" type="button" id="b-modifier">Modifier</button>' : '') + '</div>' +
+        (c && !c.visible_eleves ? '<p class="note"><b>Masqué aux élèves</b> : ce dossier et tout ce qu\'il contient sont absents de la page d\'entraînement.</p>' : '') +
+        (sous.length ? '<div class="vignettes">' + sous.map(vignette).join('') + '</div>' : '') +
+        (liste.length ? '<div class="liste-quiz">' + liste.map(carteQuiz).join('') + '</div>'
+          : (sous.length ? '' : '<p class="note">Dossier vide. Crée un sous-dossier, range un quiz ici (bouton « Ranger »), ou importe un fichier : déposé pendant que ce dossier est ouvert, il y est rangé.</p>'));
+    }
+    box.innerHTML = h;
+    poserFiligrane(courant);
+    var note = $('#depot-note');
+    if (note && cats) note.textContent = courant && courant !== 'sans'
+      ? 'ou cliquer pour les choisir. Un fichier sans « dossier » est rangé dans « ' + cat(courant).nom + ' ». Un quiz déjà présent (même identifiant) est mis à jour.'
+      : 'ou cliquer pour les choisir. Un fichier peut porter son chemin : "dossier": ["2de SNT", "Le Web"]. Un quiz déjà présent (même identifiant) est mis à jour.';
+    box.querySelectorAll('[data-ouvrir]').forEach(function (b) {
+      b.onclick = function () { courant = b.dataset.ouvrir || null; dessinerBiblio(); window.scrollTo(0, 0); };
+    });
+    var bn = $('#b-nouveau'); if (bn) bn.onclick = function () { editerDossier(null, courant); };
+    var bm = $('#b-modifier'); if (bm) bm.onclick = function () { editerDossier(cat(courant)); };
+    box.querySelectorAll('[data-lancer]').forEach(function (b) { b.onclick = function () { dialogueLancer(trouver(b.dataset.lancer)); }; });
+    box.querySelectorAll('[data-apercu]').forEach(function (b) { b.onclick = function () { apercu(trouver(b.dataset.apercu)); }; });
+    box.querySelectorAll('[data-salle]').forEach(function (b) { b.onclick = function () { qrFixe(trouver(b.dataset.salle)); }; });
+    box.querySelectorAll('[data-ranger]').forEach(function (b) { b.onclick = function () { ranger(trouver(b.dataset.ranger)); }; });
+    box.querySelectorAll('[data-export]').forEach(function (b) { b.onclick = function () { exporter(trouver(b.dataset.export)); }; });
+    box.querySelectorAll('[data-suppr]').forEach(function (b) { b.onclick = function () { supprimer(trouver(b.dataset.suppr)); }; });
+  }
+
+  /* ---------- créer ou modifier un dossier ---------- */
+  /* Les visuels du site, proposés d'un clic (ceux des portes de l'accueil). */
+  var VISUELS = [
+    ['assets/img/pc/2nde-pc-t1-c2/t1c2-fer-fusion-coulee.jpg', 'Fonte en fusion (2de PC)'],
+    ['assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-mere.jpg', 'Carte mère (SNT)'],
+    ['assets/img/es/1re-es-t1-c1/t1c1-supernova-kepler-accueil.jpg', 'Supernova de Kepler (1re ES)'],
+    ['assets/img/es/term-es-t2-c1/t2c1-turboalternateur-paluel-accueil.jpg', 'Turboalternateur (Tle ES)'],
+    ['assets/img/pc/2nde-pc-t2-c2/t2c2-pommes-branche.jpg', 'Pommes (CFA)'],
+    ['assets/img/quiz/sections/bts-ms-karman-nasa.jpg', 'Tourbillons de Kármán (BTS MS)']
+  ];
+  /* Une image de l'ordinateur : réduite à 720 px et recompressée, pour
+     tenir en base sous 120 000 caractères (le filigrane n'a pas besoin
+     de détail). */
+  function reduireImage(fichier) {
+    return new Promise(function (ok, ko) {
+      var img = new Image(), u = URL.createObjectURL(fichier);
+      img.onload = function () {
+        URL.revokeObjectURL(u);
+        var l = 720, k = Math.min(1, l / Math.max(img.width, img.height));
+        var c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+        var q = 0.72, d = c.toDataURL('image/jpeg', q);
+        while (d.length > 110000 && q > 0.3) { q -= 0.1; d = c.toDataURL('image/jpeg', q); }
+        if (d.length > 110000) { c.width = Math.round(c.width / 2); c.height = Math.round(c.height / 2); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); d = c.toDataURL('image/jpeg', 0.6); }
+        ok(d);
+      };
+      img.onerror = function () { URL.revokeObjectURL(u); ko(new Error('Image illisible.')); };
+      img.src = u;
+    });
+  }
+
+  function editerDossier(c, parent) {
+    var neuf = !c, racine = neuf ? !parent || parent === 'sans' : !c.parent;
+    var etat = { image: c ? c.image || '' : '', focus: c ? c.focus || '50% 50%' : '50% 50%' };
+    var d = $('#d-dossier');
+    $('#dossier-corps').innerHTML =
+      '<h2>' + (neuf ? (racine ? 'Nouvelle section' : 'Nouveau dossier') : 'Modifier « ' + esc(c.nom) + ' »') + '</h2>' +
+      (!neuf || !racine ? '' : '<p class="note">Une section par classe ; les chapitres se rangent dedans.</p>') +
+      '<div class="champ"><label for="dos-nom">Nom</label><input id="dos-nom" maxlength="80" required value="' + esc(c ? c.nom : '') + '" placeholder="' + (racine ? 'ex. SNT — seconde' : 'ex. Le Web') + '"></div>' +
+      (racine ? '<div class="champ"><label for="dos-sigle">Sigle sur la vignette</label><input id="dos-sigle" maxlength="16" value="' + esc(c ? c.sigle || '' : '') + '" placeholder="ex. 2de SNT"></div>' : '') +
+      '<div class="champ"><label>Image en filigrane</label>' +
+        '<div class="apercu-filigrane" id="dos-apercu"><span>' + esc(c ? c.nom : 'Aperçu') + '</span></div>' +
+        '<div class="visuels" id="dos-visuels">' + VISUELS.map(function (v) {
+          return '<button type="button" data-v="' + esc(v[0]) + '" title="' + esc(v[1]) + '" style="background-image:url(&quot;' + esc(Q.urlImage(v[0])) + '&quot;)"><span class="sr">' + esc(v[1]) + '</span></button>';
+        }).join('') + '</div>' +
+        '<div class="ligne-boutons"><label class="bouton creux petit"><input type="file" id="dos-fichier" accept="image/*" hidden>Image de l\'ordinateur…</label>' +
+          '<button class="lien-bouton" type="button" id="dos-sans">' + (racine ? 'Sans image' : 'Celle du dossier parent') + '</button></div>' +
+        '<input id="dos-chemin" placeholder="ou un chemin du site (assets/img/…) / une adresse https" value="' + esc(/^data:/.test(etat.image) ? '' : etat.image) + '" style="font-size:.95rem">' +
+        '<label for="dos-focus" class="note">Cadrage vertical de l\'image</label><input type="range" id="dos-focus" min="0" max="100" value="' + parseInt(String(etat.focus).split(' ')[1] || '50', 10) + '">' +
+      '</div>' +
+      '<label class="case"><input type="checkbox" id="dos-visible"' + (!c || c.visible_eleves ? ' checked' : '') + '><span><b>Visible des élèves</b> — ses quiz sont proposés sur la page d\'entraînement du site. Décoché, le dossier et tout ce qu\'il contient restent entre enseignants.</span></label>' +
+      '<p class="erreur" id="dos-err"></p>' +
+      '<div class="boutons">' +
+        (!neuf && peutModifier(c) ? '<button class="lien-bouton" type="button" id="dos-suppr" style="margin-right:auto">Supprimer le dossier</button>' : '') +
+        '<button class="bouton creux petit" type="button" id="dos-annuler">Annuler</button>' +
+        '<button class="bouton rouge petit" type="button" id="dos-ok">' + (neuf ? 'Créer' : 'Enregistrer') + '</button></div>';
+    var maj = function () {
+      var src = etat.image || (!neuf && c.parent ? (imageDe(c.parent) || {}).src : (!racine && parent ? (imageDe(parent) || {}).src : '')) || '';
+      var u = Q.urlFiligrane(src), a = $('#dos-apercu');
+      a.style.backgroundImage = u ? 'url("' + u.replace(/"/g, '%22') + '")' : '';
+      a.style.backgroundPosition = etat.focus;
+      a.querySelector('span').textContent = $('#dos-nom').value || 'Aperçu';
+      $$('#dos-visuels button').forEach(function (b) { b.classList.toggle('choisi', b.dataset.v === etat.image); });
+    };
+    $$('#dos-visuels button').forEach(function (b) { b.onclick = function () { etat.image = b.dataset.v; $('#dos-chemin').value = b.dataset.v; maj(); }; });
+    $('#dos-sans').onclick = function () { etat.image = ''; $('#dos-chemin').value = ''; maj(); };
+    $('#dos-chemin').oninput = function () { etat.image = this.value.trim(); maj(); };
+    $('#dos-nom').oninput = maj;
+    $('#dos-focus').oninput = function () { etat.focus = '50% ' + this.value + '%'; maj(); };
+    $('#dos-fichier').onchange = function () {
+      var f = this.files[0]; if (!f) return;
+      reduireImage(f).then(function (data) { etat.image = data; $('#dos-chemin').value = ''; maj(); },
+                           function (e) { $('#dos-err').textContent = e.message; });
+    };
+    $('#dos-annuler').onclick = function () { d.close(); };
+    var bs = $('#dos-suppr');
+    if (bs) bs.onclick = function () {
+      if (enfants(c.id).length) { $('#dos-err').textContent = 'Ce dossier contient des sous-dossiers : déplace-les ou supprime-les d\'abord.'; return; }
+      var n = quizDe(c.id).length;
+      if (!confirm('Supprimer le dossier « ' + c.nom + ' » ?' + (n ? ' Ses ' + n + ' quiz ne sont pas supprimés : ils reviennent « sans dossier ».' : ''))) return;
+      Q.rest('quiz_categories?id=eq.' + c.id, { methode: 'DELETE' }).then(function () {
+        d.close(); courant = c.parent || null; chargerQuiz();
+      }, function (e) { $('#dos-err').textContent = Q.messageErreur(e); });
+    };
+    $('#dos-ok').onclick = function () {
+      var nom = $('#dos-nom').value.trim();
+      if (!nom) { $('#dos-err').textContent = 'Donne un nom au dossier.'; return; }
+      if (etat.image && !Q.urlFiligrane(etat.image)) { $('#dos-err').textContent = 'Chemin d\'image non reconnu : assets/img/…/x.jpg ou une adresse https.'; return; }
+      var corps = { nom: nom, image: etat.image || null, focus: etat.focus, visible_eleves: $('#dos-visible').checked };
+      if (racine) corps.sigle = ($('#dos-sigle').value || '').trim() || null;
+      var req;
+      if (neuf) {
+        corps.parent = racine ? null : parent;
+        corps.ordre = enfants(corps.parent).length + 1;
+        req = Q.rest('quiz_categories', { methode: 'POST', corps: corps, prefer: 'return=representation' });
+      } else req = Q.rest('quiz_categories?id=eq.' + c.id, { methode: 'PATCH', corps: corps, prefer: 'return=representation' });
+      this.disabled = true;
+      var b = this;
+      req.then(function (r) {
+        d.close();
+        if (neuf && r && r[0]) courant = r[0].id;
+        chargerQuiz();
+      }, function (e) { b.disabled = false; $('#dos-err').textContent = Q.messageErreur(e); });
+    };
+    d.showModal(); maj(); $('#dos-nom').focus();
+  }
+
+  /* ---------- ranger un quiz ---------- */
+  function ranger(z) {
+    var d = $('#d-dossier');
+    var options = [];
+    (function parcourir(id, prof) {
+      enfants(id).forEach(function (c) { options.push([c.id, prof, c.nom]); parcourir(c.id, prof + 1); });
+    })(null, 0);
+    $('#dossier-corps').innerHTML = '<h2>Ranger « ' + esc(z.titre) + ' »</h2>' +
+      '<div class="champ"><label for="r-dossier">Dossier</label><select id="r-dossier"><option value="">— sans dossier —</option>' +
+        options.map(function (o) {
+          return '<option value="' + o[0] + '"' + (o[0] === z.categorie ? ' selected' : '') + '>' + '   '.repeat(o[1]) + (o[1] ? '└ ' : '') + esc(o[2]) + '</option>';
+        }).join('') + '</select></div>' +
+      '<label class="case"><input type="checkbox" id="r-catalogue"' + (z.catalogue !== false ? ' checked' : '') + '><span><b>Proposé à l\'entraînement</b> — les élèves le trouvent sur la page d\'entraînement du site (si son dossier est visible).</span></label>' +
+      '<p class="erreur" id="dos-err"></p>' +
+      '<div class="boutons"><button class="bouton creux petit" type="button" id="dos-annuler">Annuler</button>' +
+        '<button class="bouton rouge petit" type="button" id="dos-ok">Ranger</button></div>';
+    $('#dos-annuler').onclick = function () { d.close(); };
+    $('#dos-ok').onclick = function () {
+      var v = $('#r-dossier').value || null;
+      Q.rest('quiz_quiz?id=eq.' + z.id, { methode: 'PATCH', corps: { categorie: v, catalogue: $('#r-catalogue').checked } })
+        .then(function () { d.close(); chargerQuiz(); }, function (e) { $('#dos-err').textContent = Q.messageErreur(e); });
+    };
+    d.showModal();
+  }
 
   function chargerOuvertes() {
     var depuis = new Date(Date.now() - 12 * 3600000).toISOString();
@@ -88,8 +339,8 @@
               '<td>' + p.pin + '</td><td>' + ou + '</td><td><button class="bouton petit" data-reprendre="' + p.id + '">Reprendre</button> ' +
               '<button class="lien-bouton" data-terminer="' + p.id + '">Terminer</button></td></tr>';
           }).join('');
-        app.querySelectorAll('[data-reprendre]').forEach(function (b) { b.onclick = function () { ouvrirScene(b.dataset.reprendre); }; });
-        app.querySelectorAll('[data-terminer]').forEach(function (b) {
+        $('#ouvertes').querySelectorAll('[data-reprendre]').forEach(function (b) { b.onclick = function () { ouvrirScene(b.dataset.reprendre); }; });
+        $('#ouvertes').querySelectorAll('[data-terminer]').forEach(function (b) {
           b.onclick = function () { Q.rpc('quiz_piloter', { p_partie: b.dataset.terminer, p_action: 'fin' }).then(bibliotheque, erreurGlobale); };
         });
       }).catch(function () { /* pas bloquant */ });
@@ -110,8 +361,13 @@
           return p.then(function () {
             if (!z.slug && z.id) z.slug = String(z.id);
             if (!z.slug || !z.titre) throw new Error('il manque « slug » ou « titre »');
-            return Q.rpc('quiz_importer', { p_quiz: z }).then(function () {
-              journal('✓ ' + f.name + ' — « ' + z.titre + ' » (' + (z.questions || []).length + ' questions)');
+            // déposé dans un dossier ouvert, un fichier sans « dossier » y est rangé
+            var ici = cats && courant && courant !== 'sans' && !z.dossier ? cat(courant) : null;
+            return Q.rpc('quiz_importer', { p_quiz: z }).then(function (id) {
+              return ici ? Q.rest('quiz_quiz?id=eq.' + id, { methode: 'PATCH', corps: { categorie: ici.id } }) : null;
+            }).then(function () {
+              journal('✓ ' + f.name + ' — « ' + z.titre + ' » (' + (z.questions || []).length + ' questions)' +
+                (ici ? ' → ' + ici.nom : z.dossier ? ' → ' + [].concat(z.dossier).join(' › ') : ''));
             }, function (e) { journal('✗ ' + f.name + ' — « ' + z.titre + ' » : ' + Q.messageErreur(e), true); });
           });
         }, Promise.resolve());
@@ -121,7 +377,10 @@
     });
   }
   function exporter(z) {
-    var d = { slug: z.slug, titre: z.titre, niveau: z.niveau, matiere: z.matiere, description: z.description, partage: z.partage, questions: z.questions };
+    var d = { slug: z.slug, titre: z.titre, niveau: z.niveau, matiere: z.matiere, description: z.description, partage: z.partage, salle: z.salle };
+    if (cats && z.categorie && cat(z.categorie)) d.dossier = chemin(z.categorie).map(function (c) { return c.nom; });
+    if (z.catalogue === false) d.catalogue = false;
+    d.questions = z.questions;
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' }));
     a.download = z.slug + '.json'; document.body.appendChild(a); a.click(); a.remove();
@@ -169,6 +428,7 @@
           (q.image_attendue ? '<div class="reserve-img">Image à fournir : ' + esc(q.image_attendue) + '</div>' : '') +
           corrigeTexte(q) +
           (q.cours ? '<p class="note"><b>À retenir</b> — ' + Q.rendre(q.cours) + '</p>' : '') +
+          (q.revoir ? '<p class="note">' + Q.revoirHtml(q.revoir) + '</p>' : '') +
           '</section>';
       }).join('');
     $('#d-apercu').showModal();
@@ -323,6 +583,9 @@
     var p = P.partie, s = P.suivi;
     var scene = $('.scene') || document.body.appendChild(document.createElement('div'));
     scene.className = 'scene';
+    var z = p.quiz_id && trouver(p.quiz_id), im = z && cats && z.categorie ? imageDe(z.categorie) : null, u = im && Q.urlFiligrane(im.src);
+    if (u) { scene.style.setProperty('--filigrane', 'url("' + u.replace(/"/g, '%22') + '")'); scene.style.setProperty('--filigrane-pos', im.focus || '50% 50%'); }
+    else scene.style.removeProperty('--filigrane');
     scene.innerHTML = '<div class="cadre">' +
       '<div class="tete"><span class="marque">' + esc(Q.NOM) + '</span><span>' + esc(p.titre) + '</span><span class="pousse"></span>' +
         (P.vue !== 'accueil' && P.vue !== 'fin' && !s.ferme ? '<span>Code <b>' + pinLisible(p.pin) + '</b></span>' : '') +
@@ -370,7 +633,8 @@
     cadre('<div class="accueil">' +
       '<div class="gauche">' +
         '<div class="capitales">★ ' + esc(p.groupe || 'Grande séance') + ' ★</div>' +
-        '<div><div class="titre-affiche">' + esc(p.titre) + '</div>' +
+        // un titre long (deux lignes) poussait le PIN hors de l'affiche en 1280 × 720
+        '<div><div class="titre-affiche' + (p.titre.length > 16 ? ' long' : '') + '">' + esc(p.titre) + '</div>' +
           '<div class="sous filet" style="margin-top:14px">' + n + ' question' + (n > 1 ? 's' : '') + (p.options && p.options.pari ? ' · pari de confiance' : '') + '</div></div>' +
         '<div class="rejoindre">' +
           '<div style="text-align:center"><div class="qr">' + qr + '</div><div class="capitales" style="margin-top:6px">Scannez</div></div>' +
@@ -549,7 +813,8 @@
       }).join('') + '</div>';
     }
     var sansRep = total - rep.length;
-    var droite = (q.cours ? '<div class="panneau"><h3>À retenir</h3><p>' + Q.rendre(q.cours) + '</p></div>' : '') +
+    var droite = (q.cours ? '<div class="panneau"><h3>À retenir</h3><p>' + Q.rendre(q.cours) + '</p>' +
+        (q.revoir && q.revoir.texte ? '<p class="note">Dans le cours : ' + esc(q.revoir.texte) + '</p>' : '') + '</div>' : '') +
       (erreurs.length ? '<div class="panneau piege"><h3>Erreur la plus fréquente · ' + cats[erreurs[0]] + ' élève' + (cats[erreurs[0]] > 1 ? 's' : '') + '</h3><p>' + Q.rendre(messageCategorie(q, erreurs[0])) + '</p></div>' : '');
     var bilan = '<div class="correction"><div class="panneau"><h3>Réponses de la classe</h3>' +
         '<div class="grand">' + (rep.length ? Math.round(justes / rep.length * 100) : 0) + ' % de réussite</div>' +

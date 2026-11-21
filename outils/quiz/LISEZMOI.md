@@ -12,9 +12,67 @@ de `quiz-commun.js` : la changer suffit (titres de page compris).
 
 | Page | Pour qui | Ce qu'elle fait |
 |---|---|---|
+| `entrainement.html` | élèves | **La porte de l'accueil du site** (« 🎵 Diapason », bloc *Outils pédagogiques*). Les sections, puis les chapitres, puis les quiz : un clic mène à la salle du quiz en mode seul (`?salle=…&seul=1`), sans salle d'attente. Lit `quiz_catalogue` (051) : titres et codes de salle, jamais une question. |
 | `index.html` | élèves | Entrer le code (ou arriver par le QR code de la partie, `?pin=…`) et un pseudonyme, puis jouer. Par le **QR code fixe** d'un quiz (`?salle=…`) : attendre le lancement, ou s'entraîner seul. Le jeton reste sur l'appareil : recharger la page ne fait pas perdre la partie. |
-| `animer.html` | enseignant | Bibliothèque (import, aperçu avec corrigés, **QR code fixe**, export, suppression), lancement d'une partie, **écran projeté**. Clavier : Espace / → pour avancer, F plein écran. |
+| `animer.html` | enseignant | Bibliothèque **en dossiers** (voir plus bas ; « + Quiz » et « Modifier » ouvrent l'éditeur ; import, aperçu avec corrigés, **QR code fixe**, rangement, export, suppression), lancement d'une partie, **écran projeté**. Clavier : Espace / → pour avancer, F plein écran. |
+| `editer.html` | enseignant | **L'éditeur** : créer ou modifier un quiz à l'écran, les huit types de questions (voir plus bas). `?quiz=<id>` modifie, `?dossier=<id>` crée dans ce dossier. |
 | `stats.html` | enseignant | Par partie : réussite par question (répartition, temps moyen), par notion, par élève, export CSV. Par quiz : chaque question d'une partie à l'autre. **Entraînement hors classe** à part : qui a refait quel quiz, avec quel résultat. |
+
+## Les dossiers et le filigrane (051)
+
+À la racine, **une section par classe** (2de PC, 2de SNT, 1re ES, Tle ES, CFA,
+BTS MS), illustrée par le visuel de sa porte sur l'accueil du site — pour le
+BTS MS, des tourbillons de Kármán photographiés par la NASA (domaine public,
+`assets/img/quiz/sections/CREDITS.txt`). Dans chaque section, **un dossier par
+chapitre** ; on peut emboîter plus loin.
+
+- **Créer** : « + Nouvelle section » (racine) ou « + Dossier » (dans un dossier).
+  Tout enseignant crée ; seul l'auteur d'un dossier — ou le gestionnaire — le
+  modifie ou le supprime. Un dossier qui a des sous-dossiers ne se supprime pas ;
+  ses quiz reviennent « sans dossier ».
+- **Image en filigrane** : un visuel du site d'un clic, un chemin
+  (`assets/img/…`), une adresse https, ou une image de l'ordinateur (réduite à
+  720 px et ~40 Ko par la page, rangée en base). Elle se pose d'elle-même,
+  pâle et désaturée, derrière le dossier ouvert, dans les vignettes de ses
+  chapitres, derrière l'**écran projeté** du quiz et sur la page d'entraînement.
+  Un dossier sans image prend celle de son parent.
+- **Visible des élèves** (case du dossier) : décochée, le dossier et tout ce
+  qu'il contient sortent de la page d'entraînement. Un quiz seul se retire par
+  « Ranger » → « Proposé à l'entraînement ».
+- **Ranger** un quiz : bouton de sa carte. Un fichier **déposé pendant qu'un
+  dossier est ouvert** y est rangé, s'il ne porte pas son propre chemin.
+
+## L'éditeur (`editer.html`)
+
+Crée et modifie un quiz sans passer par un fichier. Ce qu'il enregistre est
+exactement le format de fichier décrit plus bas (il passe par `quiz_importer`),
+donc un quiz écrit à l'écran s'exporte, et un fichier importé se retouche ici.
+
+- **En haut**, le quiz : titre, description, niveau, matière, dossier,
+  « Proposé à l'entraînement », « Partagé avec les collègues ». L'identifiant
+  (`slug`) se tire du titre à la création, puis ne change plus.
+- **À gauche**, les questions : ouvrir, monter / descendre (ou glisser),
+  dupliquer, supprimer ; « + Question » propose les huit types. Un ⚠ signale
+  une question à corriger ou « à vérifier ».
+- **À droite**, la question ouverte : énoncé (`$…$` pour les formules,
+  `**gras**`), temps, et les champs propres au type — bonnes réponses cochées
+  et « pourquoi » de chaque réponse fausse (QCM, vrai/faux), valeur, tolérance
+  en %, unités, autres écritures et pièges (valeur), éléments dans le bon
+  ordre (remise en ordre), paires (association), réponses acceptées, indice et
+  pièges (mot), échelle, tolérance et marge (curseur), **zones justes tracées
+  au doigt ou à la souris sur l'image** (zone). Le volet « Correction, image,
+  repères » porte le point de cours, la notion, le niveau, le BO, l'image, l'image
+  à fournir et le point à vérifier. Changer de type garde l'énoncé et ce qui se
+  transpose (QCM ↔ vrai/faux, valeur ↔ curseur…).
+- **Sous la question**, l'aperçu : l'écran projeté, correction affichée,
+  à chaque frappe. « Tester » montre tout le quiz ainsi.
+- **Enregistrer** (ou Ctrl + S) fait d'abord juger chaque question par la base
+  (`quiz_question_invalide`) ; une question refusée s'ouvre avec son erreur, et
+  rien n'est écrit. L'éditeur refuse en plus une réponse de QCM ou un élément à
+  ordonner laissé vide. Un brouillon reste sur l'appareil tant que rien n'est
+  enregistré ; fermer l'onglet avec des modifications demande confirmation.
+- Le quiz d'un collègue s'ouvre en **lecture seule** : « Dupliquer pour moi »
+  en fait une copie à soi.
 
 ## Le QR code fixe d'un quiz (salle permanente)
 
@@ -79,9 +137,16 @@ Avant d'importer, relire un fichier hors ligne :
   "description": "Après la séance 3",
   "partage": true,
   "salle": "MS2AQM",
+  "dossier": ["BTS MS", "Énergie"],
   "questions": [ … ]
 }
 ```
+
+`dossier` (facultatif, 051) range le quiz : un chemin de noms depuis la
+section, `["2de SNT", "Le Web"]`. Chaque nom se cherche par le nom **ou le
+sigle** du dossier (casse ignorée) ; ce qui manque est créé. Sans `dossier`, un
+quiz réimporté reste où on l'a rangé. `catalogue` (facultatif, vrai par défaut)
+le propose à l'entraînement des élèves.
 
 `salle` (facultatif) fixe le code du QR code fixe : 6 caractères parmi A-Z et
 2-9, sans I, L ni O. Le QR code se prépare ainsi avant l'import, et reste
@@ -98,6 +163,7 @@ Champs communs à toutes les questions :
 | `bo` | Ligne du référentiel (capacité exigible) |
 | `niveau` | 1 restitution, 2 application, 3 raisonnement |
 | `cours` | Le point de cours affiché à la correction |
+| `revoir` | `{ "texte": "S5 · Le routage", "lien": "pages/2nde-snt-t1-internet.html#etape-t1-routage" }` — la partie du cours qui réexplique (052). Montrée à l'élève qui se trompe, à la correction, et dans son **bilan de fin**, sous chaque notion ratée (« Revoir : … → », sans doublon). `#sN` vise une séance, `#etape-<clé>` une étape (`data-cle` de la page : le moteur des séquences la déplie et la surligne ; une étape encore verrouillée renvoie à sa séance). Plan des clés : `python -I -X utf8 _outils/kahoot/plan_cours.py`. Contrôle des liens : `_outils/kahoot/verifier_revoir.py`. |
 | `image` | `{ "src": "assets/img/quiz/…/x.jpg", "alt": "…" }` — chemin depuis la racine du site, ou adresse `https` |
 | `image_attendue` | Description d'une image à fournir : affichée en cadre de réservation dans l'aperçu, **jamais** aux élèves |
 | `a_verifier` | Point à relire : signalé dans la bibliothèque et l'aperçu |
@@ -135,6 +201,17 @@ Selon le type :
 - `python _outils/tests/quiz-base.py` — le 047 sur un Postgres local jetable,
   rejoué deux fois, puis tous les contrôles (fuites de correction, chrono, pari,
   unités, pièges, ordre, zone, exclusion, anonymisation, cloisonnement).
+- `python -X utf8 _outils/tests/quiz-editeur-parcours.py [dossier_captures]` —
+  l'éditeur au navigateur : un quiz créé avec une question de chaque type
+  (zone tracée à la souris), un enregistrement refusé tant qu'une question est
+  incomplète, réouverture, modification, réordonnancement, lecture seule et
+  copie d'un quiz de collègue ; en base, les huit questions passent le
+  validateur et leur bonne réponse est jugée juste.
+- `python _outils/tests/quiz-dossiers-parcours.py [dossier_captures]` — les
+  dossiers (051) au navigateur : sections, import rangé par chemin, filigrane
+  (page et écran projeté), création et rangement, section masquée, page
+  d'entraînement sur téléphone jusqu'à l'entraînement seul, porte de l'accueil.
+  Mesure aussi que le PIN tient dans l'affiche en 1280 × 720.
 - `python _outils/tests/quiz-parcours.py [dossier_captures]` — un écran
   enseignant et une classe de téléphones jouent un quiz complet au navigateur,
   **sur la vraie logique SQL** (Postgres local), temps réel compris. Aucune
@@ -142,6 +219,8 @@ Selon le type :
 
 ## Pas encore là
 
-Atelier de construction pour les collègues (création à l'écran), ressentis, « garder pour réviser », carnet perso,
+Ordre des dossiers à la main (ils suivent leur ordre de création), déplacer
+un dossier ailleurs depuis l'écran. Déposer une image depuis l'ordinateur dans
+l'éditeur (aujourd'hui : un chemin du site ou une adresse https). Ressentis, « garder pour réviser », carnet perso,
 comptes élèves et suivi d'une séance à l'autre. Cahier des charges complet :
 archive `quiz-appli-export` (Téléchargements).

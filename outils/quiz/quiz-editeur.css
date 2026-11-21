@@ -1,0 +1,128 @@
+/* ============================================================
+ *  quiz-editeur.css — l'éditeur de quiz (editer.html)
+ *  Chargé après quiz.css : mêmes encres, mêmes papiers, même
+ *  affiche. Cible : ordinateur et iPad (paysage comme portrait).
+ * ============================================================ */
+.editeur #app { max-width: 1320px; margin: 0 auto; padding: 16px 16px 60px; }
+
+/* la barre d'actions reste en haut pendant qu'on écrit */
+.ed-barre { position: sticky; top: 0; z-index: 4; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px;
+  padding: 10px 0; background: var(--papier); border-bottom: 2px solid var(--encre); }
+.ed-barre .pousse { flex: 1; }
+.ed-titre { display: flex; flex-direction: column; min-width: 0; }
+.ed-titre .capitales { font-size: .7rem; color: var(--encre-2); }
+.ed-titre h1 { font-family: var(--affiche); font-weight: 400; font-size: clamp(1.4rem, 2.4vw, 2rem); margin: 0; line-height: 1.05; overflow-wrap: anywhere; }
+.ed-etat { font-family: var(--sans); font-size: .88rem; color: var(--encre-2); }
+.ed-etat.sale { color: var(--r2); font-weight: 600; }
+.ed-etat.ko { color: var(--rouge-fonce); font-weight: 600; }
+.ed-etat.fait { color: var(--juste); font-weight: 600; }
+.ed-alerte { margin: 12px 0 0; padding: 10px 14px; border: 2px solid var(--rouge); background: var(--papier-3); font-family: var(--sans); }
+
+/* métadonnées */
+.ed-meta { margin-top: 14px; border: 2px solid var(--encre); background: var(--papier-3); }
+.ed-meta > summary { cursor: pointer; padding: 10px 14px; font-family: var(--affiche); font-size: 1.15rem; }
+.ed-meta[open] > summary { border-bottom: 1px solid var(--encre-2); }
+.ed-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px 16px; padding: 14px; }
+.ed-grille .large { grid-column: 1 / -1; }
+.ed-meta .ed-grille { padding: 14px; }
+.ed-form .ed-grille, .ed-plus .ed-grille { padding: 10px 0; }
+.champ .aide { font-family: var(--sans); font-size: .78rem; color: var(--encre-2); }
+.champ textarea { resize: vertical; min-height: 2.6em; font-family: var(--sans); }
+.champ input[readonly] { background: var(--papier-2); color: var(--encre-2); }
+input.invalide, .petit-champ.invalide { border-color: var(--rouge) !important; background: #f7e2dc !important; }
+
+/* deux colonnes : la liste, la question */
+.ed-corps { display: grid; grid-template-columns: minmax(230px, 300px) minmax(0, 1fr); gap: 18px; margin-top: 16px; align-items: start; }
+.ed-liste { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow: auto; border: 2px solid var(--encre); background: var(--papier-3); }
+.ed-liste-tete { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-bottom: 2px solid var(--encre);
+  position: sticky; top: 0; background: var(--papier-3); z-index: 1; font-family: var(--sans); }
+#ed-vignettes { list-style: none; margin: 0; padding: 0; }
+.ed-vig { display: flex; align-items: stretch; border-bottom: 1px solid var(--encre-2); }
+.ed-vig.choisie { background: var(--encre); color: var(--papier); }
+.ed-vig.ko .num { background: var(--rouge); color: #fff; }
+.ed-vig.tenue { opacity: .4; }
+.ed-vig.survol { box-shadow: inset 0 3px 0 var(--rouge); }
+.ed-vig-ouvrir { flex: 1; min-width: 0; display: flex; gap: 10px; align-items: flex-start; padding: 8px 8px 8px 10px; border: 0; background: none; color: inherit; text-align: left; font: inherit; }
+.ed-vig .num { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border: 2px solid currentColor; font-family: var(--affiche); font-size: 1rem; }
+.ed-vig .txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ed-vig .type { font-family: var(--sans); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; opacity: .8; }
+.ed-vig .type b { color: var(--rouge); }
+.ed-vig.choisie .type b { color: #ffb3a6; }
+.ed-vig .enonce { font-family: var(--sans); font-size: .86rem; line-height: 1.3; overflow-wrap: anywhere; }
+.ed-vig-actions { display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 2px; padding: 4px; }
+.ed-vig-actions button { width: 28px; height: 26px; padding: 0; border: 1px solid currentColor; background: none; color: inherit; font-size: .85rem; }
+.ed-vig-actions button:disabled { opacity: .25; cursor: default; }
+
+.ed-question { border: 2px solid var(--encre); background: var(--papier-3); padding: 14px 18px 18px; min-width: 0; }
+.ed-vide { padding: 30px 0; text-align: center; }
+.ed-q-tete { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; border-bottom: 2px solid var(--encre); padding-bottom: 10px; margin-bottom: 12px; }
+.ed-q-tete h2 { font-family: var(--affiche); font-weight: 400; font-size: 1.6rem; margin: 0; }
+.ed-type { display: flex; align-items: center; gap: 8px; font-family: var(--sans); font-size: .9rem; }
+.ed-type select, .ed-type input { padding: 6px 8px; border: 2px solid var(--encre); background: var(--papier); font-family: var(--sans); font-size: 1rem; }
+.ed-type input { width: 4.2em; text-align: center; }
+.ed-err { margin: 0 0 10px; }
+.ed-form { display: flex; flex-direction: column; gap: 10px; }
+.ed-form h3 { margin: 12px 0 2px; font-family: var(--serif); font-size: .85rem; text-transform: uppercase; letter-spacing: .16em; }
+.ed-form h3 .note { text-transform: none; letter-spacing: 0; font-size: .85rem; }
+
+.petit-champ { min-width: 0; width: 7em; padding: 8px 10px; border: 2px solid var(--encre); background: var(--papier); font-family: var(--sans); font-size: 1rem; }
+.petit-champ.large { flex: 1; width: auto; }
+.ed-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0 0 6px; font-family: var(--sans); }
+.ed-ligne .rang { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border: 2px solid var(--encre); font-family: var(--affiche); }
+.ed-items, .ed-cibles { list-style: none; margin: 0; padding: 0; }
+.ed-mini { min-height: 34px; padding: 0 10px; border: 2px solid var(--encre); background: var(--papier); font-family: var(--sans); font-size: .9rem; }
+.ed-mini:hover:not(:disabled) { background: var(--encre); color: var(--papier); }
+.ed-mini:disabled { opacity: .3; cursor: default; }
+.ed-mini[data-act="ajout"] { align-self: flex-start; border-style: dashed; }
+
+/* QCM / vrai-faux : une ligne par réponse, sa couleur d'écran projeté */
+.ed-options { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ed-option { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 8px; border: 2px solid var(--encre-2); background: var(--papier); }
+.ed-option.juste { border-color: var(--juste); box-shadow: inset 5px 0 0 var(--juste); }
+.ed-option .pastille { flex: none; min-width: 52px; padding: 4px 6px; color: #fff; font-family: var(--affiche); text-align: center; }
+.ed-option .pastille.c0 { background: var(--r0); } .ed-option .pastille.c1 { background: var(--r1); } .ed-option .pastille.c2 { background: var(--r2); }
+.ed-option .pastille.c3 { background: var(--r3); } .ed-option .pastille.c4 { background: var(--r4); } .ed-option .pastille.c5 { background: var(--r5); }
+.ed-juste { display: flex; align-items: center; gap: 4px; font-family: var(--sans); font-size: .85rem; }
+.ed-juste input { width: 20px; height: 20px; accent-color: var(--juste); }
+.ed-vf { font-family: var(--sans); flex: 1; }
+.ed-pourquoi { flex-basis: 100%; display: flex; padding-left: 62px; }
+
+/* zone : l'image où l'on trace */
+.ed-zone { position: relative; display: inline-block; max-width: 100%; line-height: 0; border: 2px solid var(--encre); cursor: crosshair; touch-action: none; user-select: none; }
+.ed-zone img { max-width: 100%; max-height: 60vh; display: block; -webkit-user-drag: none; }
+.ed-zone .cible { position: absolute; border: 3px solid var(--juste); background: rgba(46, 107, 63, .22); pointer-events: none; }
+.ed-zone .cible b { position: absolute; top: 2px; left: 4px; font: 700 .85rem/1 var(--sans); color: #fff; background: var(--juste); padding: 2px 5px; }
+.ed-zone .cible.trace { border-style: dashed; border-color: var(--rouge); background: rgba(168, 50, 31, .15); }
+.ed-cibles .petit-champ { width: 5em; }
+
+.ed-plus { border-top: 2px solid var(--encre); margin-top: 8px; padding-top: 4px; }
+.ed-plus > summary { cursor: pointer; padding: 8px 0; font-family: var(--affiche); font-size: 1.05rem; }
+
+/* l'aperçu : l'écran projeté en réduction (tailles fixes, pas de vw) */
+.ed-apercu { margin-top: 16px; }
+.ed-apercu > .capitales { color: var(--encre-2); margin: 0 0 6px; }
+.mini-scene { border: 6px double var(--encre); background: var(--papier); padding: 16px; display: flex; flex-direction: column; gap: 12px; font-size: 16px; }
+.mini-scene .q-enonce { font-size: 1.35rem; }
+.mini-scene .q-image img { max-height: 200px; max-width: 100%; border: 2px solid var(--encre); background: #fff; }
+.mini-scene .grille-proj .rep { min-height: 52px; padding: 8px 14px; font-size: 1.05rem; }
+.mini-scene .grille-proj .rep.eteinte { opacity: .3; }
+.mini-scene .bandeau-saisie, .mini-scene .ordre-proj, .mini-scene .assoc-proj, .mini-scene .curseur-proj, .mini-scene .curseur-juste, .mini-scene .panneau p { font-size: 1.05rem; }
+.mini-scene .bandeau-saisie.juste { border-style: solid; border-color: var(--juste); }
+.mini-scene .zone-proj img { max-height: 260px; }
+.ed-test { margin-top: 12px; }
+
+/* nouvelle question : choisir le type */
+.choix-types { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.choix-type { display: flex; flex-direction: column; gap: 2px; padding: 12px; border: 2px solid var(--encre); background: var(--papier-3); text-align: left; font: inherit; color: var(--encre); }
+.choix-type b { font-family: var(--affiche); font-weight: 400; font-size: 1.2rem; }
+.choix-type span { font-family: var(--sans); font-size: .85rem; color: var(--encre-2); }
+.choix-type:hover, .choix-type:focus-visible { background: var(--encre); color: var(--papier); }
+.choix-type:hover span, .choix-type:focus-visible span { color: var(--papier-2); }
+
+/* iPad portrait et moins : la liste passe au-dessus */
+@media (max-width: 860px) {
+  .ed-corps { grid-template-columns: minmax(0, 1fr); }
+  .ed-liste { position: static; max-height: 300px; }
+  .ed-pourquoi { padding-left: 0; }
+}
+@media (max-width: 520px) { .choix-types { grid-template-columns: minmax(0, 1fr); } }

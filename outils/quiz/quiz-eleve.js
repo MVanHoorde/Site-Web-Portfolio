@@ -63,6 +63,7 @@
           '<button class="bouton rouge" type="submit">Entrer</button>' +
           '<p class="note">Pas de compte, pas de mot de passe. Ton nom ne sert qu\'au classement de la séance ; il est effacé au bout de 30 jours.</p>' +
         '</form>' +
+        '<p><a href="entrainement.html">Pas de partie en cours ? S\'entraîner seul →</a></p>' +
       '</div>';
     var champPin = $('#pin');
     champPin.addEventListener('input', function () {
@@ -135,6 +136,9 @@
     return m ? m[1].toUpperCase() : '';
   }
 
+  /* &seul=1 : venu de la page d'entraînement — pas de salle d'attente */
+  function seulDeLAdresse() { return /[?&#]seul=1\b/.test(location.search + location.hash); }
+
   function ecranSalle(message) {
     arreter(); clearTimeout(S.salleTimer);
     S.cle = 'salle';
@@ -147,8 +151,9 @@
           '<div class="champ"><label for="pseudo">Ton prénom et l\'initiale de ton nom</label>' +
             '<input id="pseudo" autocomplete="off" maxlength="24" placeholder="Inès B." value="' + esc(lire(CLE_PSEUDO) || '') + '"></div>' +
           '<p class="erreur" id="err">' + esc(message || '') + '</p>' +
-          '<button class="bouton rouge" type="submit">Entrer</button>' +
+          '<button class="bouton rouge" type="submit">' + (seulDeLAdresse() ? 'Commencer l\'entraînement' : 'Entrer') + '</button>' +
           '<p class="note">Pas de compte, pas de mot de passe. Ton nom ne sert qu\'au classement de la séance ; il est effacé au bout de 30 jours.</p>' +
+          (seulDeLAdresse() ? '<p><a href="entrainement.html">← Choisir un autre quiz</a></p>' : '') +
         '</form>' +
       '</div>';
     Q.rpc('quiz_salle', { p_code: S.salle }, true).then(function (r) {
@@ -160,6 +165,7 @@
       var nom = $('#pseudo').value.trim();
       if (nom.length < 2) { $('#err').textContent = 'Écris ton prénom et l\'initiale de ton nom.'; return; }
       ecrire(CLE_PSEUDO, nom);
+      if (seulDeLAdresse()) { entrainer(nom, this.querySelector('button')); return; }
       this.querySelector('button').disabled = true;
       attendreSalle(nom);
     });
@@ -618,7 +624,9 @@
       '<div class="verdict ' + v[0] + '"><div class="titre-affiche">' + v[1] + '</div><p>' + esc(v[2]) + '</p></div>' +
       (c.pourquoi && !c.juste ? '<div class="encart rouge"><h3>Pourquoi ce n\'est pas ça</h3><p>' + Q.rendre(c.pourquoi) + '</p></div>' : '') +
       (c.juste ? '' : '<div class="encart"><h3>La bonne réponse</h3>' + bonneReponseHtml(e) + '</div>') +
-      (c.cours ? '<div class="encart"><h3>À retenir</h3><p>' + Q.rendre(c.cours) + '</p></div>' : '') +
+      (c.cours || (c.revoir && !c.juste) ? '<div class="encart"><h3>À retenir</h3>' + (c.cours ? '<p>' + Q.rendre(c.cours) + '</p>' : '') +
+        // 052 : l'erreur renvoie à la partie du cours qui la réexplique
+        (!c.juste ? Q.revoirHtml(c.revoir) : '') + '</div>' : '') +
       (e.mode === 'solo'
         ? '<div class="score-ligne"><span>Ton score<br><b>' + e.score + '</b></span><span style="text-align:right">Question<br><b>' + (e.idx + 1) + '</b> / ' + e.total + '</span></div>' +
           '<p class="erreur" id="err"></p>' +
@@ -639,17 +647,22 @@
       '<div class="score-ligne"><span>Score<br><b>' + e.score + '</b></span><span style="text-align:center">Réussite<br><b>' + b.justes + '</b> / ' + e.total + '</span><span style="text-align:right">Rang<br><b>' + e.rang + '</b> / ' + e.joueurs + '</span></div>' +
       (b.notions.length
         ? '<div class="encart"><h3>À revoir en priorité</h3><ul class="bilan-notions">' + b.notions.map(function (n) {
-            return '<li><span>' + esc(n.notion) + '</span><span>' + n.ratees + ' / ' + n.sur + ' ratée' + (n.ratees > 1 ? 's' : '') + '</span></li>';
+            return '<li><span>' + esc(n.notion) + '</span><span>' + n.ratees + ' / ' + n.sur + ' ratée' + (n.ratees > 1 ? 's' : '') + '</span>' +
+            // 052 : où c'est réexpliqué dans le cours
+            (n.revoir || []).map(function (r) { return Q.revoirHtml(r); }).join('') + '</li>';
           }).join('') + '</ul></div>'
         : '<div class="encart"><h3>Bilan</h3><p>Tout est juste : rien à revoir sur ce quiz.</p></div>') +
-      '<button class="bouton creux" type="button" id="b-fin">Quitter</button>';
+      '<button class="bouton creux" type="button" id="b-fin">Quitter</button>' +
+      '<p style="text-align:center"><a href="entrainement.html">D\'autres quiz pour s\'entraîner →</a></p>';
     $('#b-fin').onclick = quitter;
   }
 
   function notionsHtml(b) {
     return b.notions.length
       ? '<div class="encart"><h3>À revoir en priorité</h3><ul class="bilan-notions">' + b.notions.map(function (n) {
-          return '<li><span>' + esc(n.notion) + '</span><span>' + n.ratees + ' / ' + n.sur + ' ratée' + (n.ratees > 1 ? 's' : '') + '</span></li>';
+          return '<li><span>' + esc(n.notion) + '</span><span>' + n.ratees + ' / ' + n.sur + ' ratée' + (n.ratees > 1 ? 's' : '') + '</span>' +
+            // 052 : où c'est réexpliqué dans le cours
+            (n.revoir || []).map(function (r) { return Q.revoirHtml(r); }).join('') + '</li>';
         }).join('') + '</ul></div>'
       : '<div class="encart"><h3>Bilan</h3><p>Tout est juste : rien à revoir sur ce quiz.</p></div>';
   }

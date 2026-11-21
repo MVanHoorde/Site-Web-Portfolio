@@ -6919,3 +6919,45 @@ document.querySelectorAll('[data-tri-correction]').forEach(function(btn){
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', charger);
   else charger();
 })();
+
+/* ============================================================
+   Ancre d'étape (21/11/2026) — « #etape-<clé> » dans l'adresse
+   ------------------------------------------------------------
+   Les quiz Diapason renvoient l'élève qui s'est trompé vers la partie
+   du cours qui réexplique (« Revoir : … »). Le lien vise une étape par
+   sa clé : pages/2nde-snt-t1-internet.html#etape-t1-routage.
+   À l'arrivée, l'étape est dépliée, amenée en haut et surlignée un
+   instant. Une étape encore verrouillée (séance non ouverte) : on vise
+   sa séance. Bloc autonome, n'appelle aucun autre bloc du moteur. Le
+   moteur, lui, ne replace pas la page quand l'adresse porte une ancre.
+   ============================================================ */
+(function(){
+  'use strict';
+  function cible(){
+    var m = /^#etape-([A-Za-z0-9_-]+)$/.exec(location.hash || '');
+    if(!m) return null;
+    return document.querySelector('.step[data-cle="' + m[1] + '"]');
+  }
+  function aller(){
+    var st = cible();
+    if(!st) return;
+    var seance = st.closest('.seance');
+    var el = (seance && seance.classList.contains('locked')) ? seance : st;
+    if(el === st) st.classList.remove('replie');
+    var lent = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var go = function(){ el.scrollIntoView({behavior: lent ? 'auto' : 'smooth', block: 'start'}); };
+    if(window.requestAnimationFrame) requestAnimationFrame(function(){ requestAnimationFrame(go); }); else setTimeout(go, 60);
+    el.classList.add('ancre-visee');
+    setTimeout(function(){ el.classList.remove('ancre-visee'); }, 2600);
+  }
+  function lancer(){
+    if(!cible()) return;
+    /* deux passages : l'état de l'élève (étapes faites, séances ouvertes)
+       arrive après le chargement, et change la hauteur de la page */
+    setTimeout(aller, 350);
+    document.addEventListener('etat-restaure', function(){ setTimeout(aller, 50); }, {once: true});
+  }
+  window.addEventListener('hashchange', aller);
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', lancer);
+  else lancer();
+})();
