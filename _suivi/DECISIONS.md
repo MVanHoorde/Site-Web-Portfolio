@@ -2503,8 +2503,34 @@ court, image libre si trouvée) pour les sujets non pris : en préparation.
 Évaluation (individualisée sur sa fiche + 2 fiches choisies, ou commune) :
 **question posée aux élèves, rien n'est construit**.
 
-En attente (Loïc, plus tard) : barème de la note de complétion ; jeu du débat
-dans les 20 points ou en bonus ; note individuelle de débat par rôle ; groupes
-autorisés à présenter ; sens du « vote supplémentaire » du présentateur ;
+**22/11/2026, l'envoi de la fiche, l'audit et l'évaluation (en ligne le soir
+même).** Évaluation choisie par les élèves : **deux notes individuelles**, la
+fiche et l'oral du 17/12. Grille de la fiche : complète, avec ses mots,
+images légendées et sourcées, sources fiables et vérifiées, dans le sujet.
+Grille de l'oral (esprit Grand oral) : **entre 1 min et 1 min 30 par élève**,
+ne pas lire (notes sur la tablette), vulgariser, s'adresser à la classe. Tout
+est dans la rubrique « Comment tu es évalué », ouverte en permanence. Circuit
+sans migration : l'élève envoie (copie `FRIA-RENDU`, statut `partage`), Loïc
+audite dans `prof/frise-ia.html` (`assets/js/prof-frise-audit.js`) et renvoie
+une réponse ou la fiche (`signaler_copie`, mot obligatoire) ou valide
+(`valider_copie`) ; renvoyer la fiche corrigée la remet en `partage`
+(archivage de 014). Échéances : fiche terminée pour la séance de son
+demi-groupe (A le 03/12, B le 10/12), sans date anticipée ; on dit seulement
+qu'un envoi tardif donne un retour tardif. Pas de séance le 26/11.
+Calendrier : 03/12 A et 10/12 B, retours et sélection des thématiques de
+débat · 10/12 publication des thématiques de présentation pour tous · 17/12
+présentations par thématique, **ordre tiré au sort, projection pilotée par
+Loïc depuis le site** (rien d'extérieur), **mode oral sur la tablette** de
+l'élève, chronos de 1 min à 1 min 30 par élève · 14/01 A et 21/01 B,
+préparation des débats · 28/01 débat en T6 · T3 vers le 11/02 (bac blanc).
+**Thématiques de présentation validées par type** (non publiées avant le
+10/12) : les machines à calculer · les pionniers et les idées · la machine
+contre l'humain · apprendre comme un cerveau · l'IA au quotidien · quand ça
+déraille. À construire pour le 17/12 : écran de projection avec tirage et
+chronos, mode oral, grille d'oral.
+
+En attente (Loïc, plus tard) : jeu du débat
+dans les 20 points ou en bonus ; note individuelle de débat par rôle ; sens
+du « vote supplémentaire » du présentateur ;
 libellé exact du BO 3.5 ; avis du délégué à la protection des données sur la
 pré-correction par Claude ; écrans de rôle du jour J à retravailler.
