@@ -377,16 +377,25 @@
     c.onchange = function () { S.sur = c.checked; $('#pari').classList.toggle('actif', c.checked); };
   }
 
+  // Le bouton d'envoi, posé APRÈS la case du pari : on coche d'abord, on
+  // envoie ensuite. Il s'appelle « Envoyer » pour tous les types de question.
+  var BT_ENVOYER = '<button class="bouton" type="button" id="b-valider" disabled>Envoyer</button>';
+
   function ecranQuestion(e) {
-    var q = e.question, h = teteQuestion(e) + chronoHtml() + '<div id="saisie">';
+    var q = e.question, h = teteQuestion(e) + chronoHtml() + '<div id="saisie">', bouton = '';
+    // Avec le pari, une réponse unique se CHOISIT puis s'envoie : l'élève a le
+    // temps de cocher « Je suis sûr de moi » (retour des BTS MS, 22/11/2026).
+    // Sans pari, elle part dès qu'on la touche, comme avant.
+    var choisir = q.multiple || !!e.pari;
     if (q.type === 'qcm' || q.type === 'vf') {
       var une = q.options.some(function (o) { return String(o).length > 38; });
       h += '<div class="grille-rep' + (une || q.options.length > 4 ? ' une-colonne' : '') + '" id="grille">' +
         q.options.map(function (o, i) {
-          return '<button type="button" class="rep c' + i + '" data-i="' + i + '"' + (q.multiple ? ' aria-pressed="false"' : '') + '>' +
+          return '<button type="button" class="rep c' + i + '" data-i="' + i + '"' + (choisir ? ' aria-pressed="false"' : '') + '>' +
             '<span class="lettre">' + Q.LETTRES[i] + '</span><span class="texte">' + Q.rendre(o) + '</span></button>';
         }).join('') + '</div>';
-      if (q.multiple) h += '<p class="note">Plusieurs réponses sont justes : coche-les toutes, puis valide.</p><button class="bouton" type="button" id="b-valider" disabled>Valider</button>';
+      if (q.multiple) { h += '<p class="note">Plusieurs réponses sont justes : coche-les toutes, puis envoie.</p>'; bouton = BT_ENVOYER; }
+      else if (e.pari) { h += '<p class="note">Touche ta réponse, coche le pari si tu es sûr de toi, puis envoie.</p>'; bouton = BT_ENVOYER; }
     } else if (q.type === 'num') {
       var unites = q.unites || [];
       h += '<div class="saisie-num' + (unites.length ? '' : ' sans-unite') + '">' +
@@ -394,35 +403,37 @@
         // une seule unité proposée : elle est imposée (conversion demandée)
         (unites.length ? '<div class="champ"><label for="n-unite">Unité' + (unites.length === 1 ? ' imposée' : '') + '</label><select id="n-unite"' + (unites.length === 1 ? ' disabled' : '') + '>' + (unites.length === 1 ? '' : '<option value="">—</option>') +
           unites.map(function (u) { return '<option>' + esc(u) + '</option>'; }).join('') + '</select></div>' : '') +
-        '</div><p class="apercu-num" id="n-apercu"></p><button class="bouton" type="button" id="b-valider" disabled>Valider</button>';
+        '</div><p class="apercu-num" id="n-apercu"></p>';
     } else if (q.type === 'ordre') {
       h += '<p class="note">Touche les éléments dans le bon ordre. Touche à nouveau pour retirer.</p><ul class="ordre-liste" id="ordre">' +
         q.items.map(function (it) {
           return '<li><button type="button" data-id="' + it.id + '"><span class="rang"></span><span>' + Q.rendre(it.texte) + '</span></button></li>';
-        }).join('') + '</ul><button class="bouton" type="button" id="b-valider" disabled>Valider</button>';
+        }).join('') + '</ul>';
     } else if (q.type === 'zone') {
-      h += '<p class="note">Touche l\'endroit sur l\'image, puis valide.</p><div class="zone-cadre" id="zone"><img src="' + esc(Q.urlImage(q.zone.src)) + '" alt="' + esc(q.zone.alt || '') + '"></div>' +
-        '<button class="bouton" type="button" id="b-valider" disabled>Valider</button>';
+      h += '<p class="note">Touche l\'endroit sur l\'image, puis envoie.</p><div class="zone-cadre" id="zone"><img src="' + esc(Q.urlImage(q.zone.src)) + '" alt="' + esc(q.zone.alt || '') + '"></div>' +
+        '';
     } else if (q.type === 'assoc') {
       h += '<p class="note">Touche un élément à gauche, puis son partenaire à droite. Touche une paire pour la défaire.</p>' +
         '<div class="assoc" id="assoc"><div class="col"><h4>À relier</h4>' +
           q.gauche.map(function (t, i) { return '<button type="button" data-g="' + i + '"><span class="pastille"></span><span>' + Q.rendre(t) + '</span></button>'; }).join('') +
         '</div><div class="col"><h4>Avec</h4>' +
           q.droite.map(function (t, i) { return '<button type="button" data-d="' + i + '"><span class="pastille"></span><span>' + Q.rendre(t) + '</span></button>'; }).join('') +
-        '</div></div><button class="bouton" type="button" id="b-valider" disabled>Valider</button>';
+        '</div></div>';
     } else if (q.type === 'mot') {
       h += '<div class="champ saisie-mot"><label for="m-val">Ta réponse' + (q.indice ? ' <span class="note">(' + esc(q.indice) + ')</span>' : '') + '</label>' +
         '<input id="m-val" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="60"></div>' +
-        '<button class="bouton" type="button" id="b-valider" disabled>Valider</button>';
+        '';
     } else if (q.type === 'curseur') {
       var cu = q.curseur, pas = cu.pas || 1;
       var milieu = cu.min + Math.round((cu.max - cu.min) / 2 / pas) * pas;
       h += '<div class="curseur"><div class="valeur" aria-live="polite"><span id="c-aff"></span><small>' + esc(cu.unite || '') + '</small></div>' +
         '<input type="range" id="c-val" min="' + cu.min + '" max="' + cu.max + '" step="' + pas + '" value="' + milieu + '" aria-label="Ta réponse">' +
         '<div class="bornes"><span>' + Q.ecrireNombre(cu.min) + '</span><span>' + Q.ecrireNombre(cu.max) + '</span></div></div>' +
-        '<button class="bouton" type="button" id="b-valider">Valider</button>';
+        '';
     }
-    h += pariHtml(e) + '<p class="erreur" id="err"></p></div>';
+    // les autres types ont toujours leur bouton ; le curseur l'a actif d'emblée
+    if (q.type !== 'qcm' && q.type !== 'vf') bouton = q.type === 'curseur' ? BT_ENVOYER.replace(' disabled', '') : BT_ENVOYER;
+    h += pariHtml(e) + bouton + '<p class="erreur" id="err"></p></div>';
     app.innerHTML = h;
     brancherPari();
     brancherSaisie(e);
@@ -435,10 +446,19 @@
       app.querySelectorAll('#grille .rep').forEach(function (b) {
         b.onclick = function () {
           var i = +b.dataset.i;
-          if (!q.multiple) return envoyer({ choix: [i] }, b);
+          // sans pari : la réponse unique part au toucher
+          if (!q.multiple && !e.pari) return envoyer({ choix: [i] }, b);
           var c = S.brouillon.choix = S.brouillon.choix || [];
-          var k = c.indexOf(i); if (k < 0) c.push(i); else c.splice(k, 1);
-          b.setAttribute('aria-pressed', k < 0 ? 'true' : 'false');
+          if (!q.multiple) {
+            // avec pari : un seul choix, qui remplace le précédent ; on envoie ensuite
+            c.length = 0; c.push(i);
+            app.querySelectorAll('#grille .rep').forEach(function (x) {
+              x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+            });
+          } else {
+            var k = c.indexOf(i); if (k < 0) c.push(i); else c.splice(k, 1);
+            b.setAttribute('aria-pressed', k < 0 ? 'true' : 'false');
+          }
           valider.disabled = c.length === 0;
         };
       });

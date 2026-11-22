@@ -589,6 +589,9 @@ def main():
                     elif t in ('qcm', 'vf') and len(q['correct']) == 1:
                         cible = q['correct'][0] if bon else (q['correct'][0] + 1) % len(q.get('options', [0, 1]))
                         e.click(f'#grille .rep[data-i="{cible}"]')
+                        # partie avec pari : la réponse unique se choisit, puis s'envoie
+                        if e.locator('#b-valider').count():
+                            e.click('#b-valider')
                     elif t == 'qcm':
                         for c in (q['correct'] if bon else [0]):
                             e.click(f'#grille .rep[data-i="{c}"]')

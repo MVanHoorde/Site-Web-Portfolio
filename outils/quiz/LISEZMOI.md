@@ -74,6 +74,16 @@ donc un quiz écrit à l'écran s'exporte, et un fichier importé se retouche ic
 - Le quiz d'un collègue s'ouvre en **lecture seule** : « Dupliquer pour moi »
   en fait une copie à soi.
 
+## Le pari de confiance
+
+Option du lancement (« pari de confiance ») : l'élève coche « Je suis sûr de
+moi » — bonus de 25 % si c'est juste, 200 points perdus sinon. **Avec le pari,
+une réponse unique se choisit puis s'envoie** : toucher une réponse la
+sélectionne (un autre toucher la remplace), l'élève coche ou non le pari, puis
+touche **Envoyer** (demande des BTS MS, 22/11/2026). **Sans pari**, une réponse
+unique part dès qu'on la touche. Les autres types de question ont toujours leur
+bouton « Envoyer », posé sous la case du pari.
+
 ## Le QR code fixe d'un quiz (salle permanente)
 
 Chaque quiz a un **code de salle** de 6 caractères qui ne change jamais
