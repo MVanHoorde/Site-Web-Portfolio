@@ -72,6 +72,20 @@ td small{color:var(--ink-faint)}
 .repart .zero{color:var(--ink-faint)}
 @media (max-width:640px){.cal li{grid-template-columns:1fr;gap:2px}}
 
+/* le dossier de la séquence (22/11/2026) */
+[data-dp][hidden]{display:none}
+.dossier-grilles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px}
+.dossier-grilles table{font-size:13.5px}
+.dossier-grilles td:nth-child(2){font:600 13px 'IBM Plex Mono',monospace;white-space:nowrap}
+.dossier-grilles h3{font-size:15px;margin:4px 0 6px}
+.d-theme{border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;background:var(--surface-2)}
+.d-theme b{display:block;margin-bottom:3px}
+.d-theme li{font-size:13.5px}
+.d-theme ul{margin:0;padding-left:18px}
+.d-theme small{color:var(--ink-faint)}
+.d-liste{margin:0;padding-left:20px;font-size:14px}
+.d-liste li{margin:4px 0}
+
 /* l'audit des fiches (assets/js/prof-frise-audit.js, 22/11/2026) */
 .au-liste{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px}
 .au-liste button{width:100%;text-align:left;display:grid;gap:1px;padding:8px 10px}
@@ -100,6 +114,8 @@ td small{color:var(--ink-faint)}
 .au-fin h3{font-size:16px;margin-bottom:6px}
 button.ko{color:var(--err);border-color:var(--err)} button.ok{color:var(--ok);border-color:var(--ok)}
 .au-msg{font-size:14px;color:var(--ok);min-height:1.2em} .au-msg.ko{color:var(--err)}
+.au-exports{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px;font-size:13.5px;color:var(--ink-soft)}
+.au-liste b small,.au-code{font:400 12px 'IBM Plex Mono',monospace;color:var(--ink-faint)}
 </style>
 </head>
 <body>
@@ -110,10 +126,24 @@ button.ko{color:var(--err);border-color:var(--err)} button.ok{color:var(--ok);bo
     <a class="retour" href="index.html">← Tableau de bord</a>
   </header>
 
-  <section class="carte">
-    <h2>Le calendrier</h2>
-    <p class="aide">Chaque temps s'ouvre <b>de lui-même</b> chez les élèves à sa date — à condition d'être construit. Un temps encore à construire dont la date approche passe en rouge. Page élève : <a href="../pages/term-es-t3-c5-frise-ia.html" target="_blank" rel="noopener">la frise de l'IA</a> (aperçu d'une date : ajouter <code>?le=2026-12-03</code> à l'adresse).</p>
-    <ul class="cal" id="cal"></ul>
+  <section class="carte" id="dossier">
+    <h2>📒 Le dossier de la séquence</h2>
+    <p class="aide">Tout ce qui est décidé, au même endroit : les dates, les grilles, les thématiques, les écrans construits et à venir. Page élève : <a href="../pages/term-es-t3-c5-frise-ia.html" target="_blank" rel="noopener">la frise de l'IA</a> (aperçu d'une date : <code>?le=2026-12-03</code>) · <a href="frise-ia-jourj.html" target="_blank" rel="noopener"><b>🎤 l'outil du jour J</b></a>.</p>
+    <nav class="onglets" id="dossier-onglets" aria-label="Le dossier">
+      <button type="button" data-d="cal" aria-pressed="true">📅 Calendrier</button>
+      <button type="button" data-d="grilles" aria-pressed="false">📋 Grilles</button>
+      <button type="button" data-d="themes" aria-pressed="false">👥 Thématiques</button>
+      <button type="button" data-d="ecrans" aria-pressed="false">🖥️ Écrans</button>
+      <button type="button" data-d="trancher" aria-pressed="false">⏳ À trancher</button>
+    </nav>
+    <div data-dp="cal"><ul class="cal" id="cal"></ul></div>
+    <div data-dp="grilles" hidden><div class="dossier-grilles" id="d-grilles"></div></div>
+    <div data-dp="themes" hidden>
+      <p class="aide">Validées le 22/11, <b>par type</b>. <b>Pas encore visibles des élèves</b> : publication le 10/12. Les groupes se forment seuls à partir des sujets ; un groupe peut mélanger les groupes A et B. Temps : 1 min à 1 min 30 par élève.</p>
+      <div class="repart" id="d-themes"></div>
+    </div>
+    <div data-dp="ecrans" hidden><ul class="cal" id="d-ecrans"></ul></div>
+    <div data-dp="trancher" hidden><ul class="d-liste" id="d-trancher"></ul></div>
   </section>
 
   <section class="carte" id="audit">
@@ -139,8 +169,10 @@ button.ko{color:var(--err);border-color:var(--err)} button.ok{color:var(--ok);bo
   </section>
 </div>
 <script src="../assets/js/frise-ia-sujets.js?v=2"></script>
+<script src="../assets/js/frise-ia-grilles.js?v=1"></script>
+<script src="../assets/js/frise-ia-thematiques.js?v=1"></script>
 <script src="../assets/js/prof-api.js?v=4"></script>
-<script src="../assets/js/prof-frise-audit.js?v=1"></script>
+<script src="../assets/js/prof-frise-audit.js?v=3"></script>
 <script>
 (function(){
   var F = window.FRISE_IA;
@@ -148,19 +180,9 @@ button.ko{color:var(--err);border-color:var(--err)} button.ok{color:var(--ok);bo
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function dire(t, ko){ var e = $('#etat'); e.textContent = t; e.className = 'msg' + (ko ? ' ko' : ''); }
 
-  /* Le calendrier de la séquence (cadrage du 18/11/2026). construit = la
-     page élève porte ce temps. 🔴 À tenir à jour à chaque temps ajouté. */
-  var CALENDRIER = [
-    { d: '2026-11-18', quoi: 'Temps 1 — questionnaire, tirage du sujet, fiche de recherche', construit: true },
-    { d: '2026-11-22', quoi: 'Envoi de la fiche par l’élève, audit et retour (ci-dessous) · rubrique « Comment tu es évalué »', construit: true },
-    { d: '2026-12-03', quoi: 'Groupe A — fiche terminée · premiers retours · sélection des thématiques de débat', construit: false },
-    { d: '2026-12-10', quoi: 'Groupe B — fiche terminée · premiers retours · sélection des thématiques de débat · thématiques et groupes de présentation publiés pour tous', construit: false },
-    { d: '2026-12-17', quoi: 'Classe entière — présentations par thématique : ordre tiré au sort, projection depuis le site, mode oral sur tablette', construit: false },
-    { d: '2027-01-14', quoi: 'Groupe A — préparation des débats', construit: false },
-    { d: '2027-01-21', quoi: 'Groupe B — préparation des débats', construit: false },
-    { d: '2027-01-28', quoi: 'Débat — Terminale 6', construit: false },
-    { d: '2027-02-11', quoi: 'Débat — Terminale 3 (bac blanc le 28/01)', construit: false, note: 'probable' }
-  ];
+  /* Le calendrier, les grilles : assets/js/frise-ia-grilles.js (source unique). */
+  var G = window.FRISE_GRILLES, TH = window.FRISE_THEMES;
+  var CALENDRIER = G.CALENDRIER;
   var REQUIS = ['FRIA-TITRE','FRIA-DATE','FRIA-RESUME','FRIA-Q1','FRIA-Q2','FRIA-Q3','FRIA-Q4','FRIA-Q5','FRIA-Q6','FRIA-IMG1L','FRIA-SRC1','FRIA-SRC2'];
 
   function aujourdhui(){ var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
@@ -174,9 +196,57 @@ button.ko{color:var(--err);border-color:var(--err)} button.ok{color:var(--ok);bo
       if(c.construit) chip = dans <= 0 ? '<span class="chip ok">ouvert</span>' : '<span class="chip ok">prêt · s’ouvre dans ' + dans + ' j</span>';
       else if(dans <= 7) chip = '<span class="chip ko">' + (dans < 0 ? 'date passée' : 'dans ' + dans + ' j') + ' — à construire</span>';
       else chip = '<span class="chip att">à construire</span>';
-      return '<li><span class="d">' + dateFr(c.d) + '</span><span>' + esc(c.quoi) + (c.note ? ' <small>(' + esc(c.note) + ')</small>' : '') + '</span>' + chip + '</li>';
+      return '<li><span class="d">' + dateFr(c.d) + '</span><span><b>' + esc(c.qui || '') + '</b> — ' + esc(c.quoi) + (c.note ? ' <small>(' + esc(c.note) + ')</small>' : '') + '</span>' + chip + '</li>';
     }).join('');
   })();
+
+  /* ---------- le dossier : grilles, écrans, points à trancher ---------- */
+  function tableGrille(titre, g){
+    return '<div><h3>' + esc(titre) + ' — /' + G.total(g) + '</h3><table><thead><tr><th>Critère</th><th>Points</th><th>Ce que lit l’élève</th><th>Comment je compte</th></tr></thead><tbody>' +
+      g.map(function(c){ return '<tr><td><b>' + esc(c[0]) + '</b></td><td>' + c[1] + '</td><td>' + esc(c[2]) + '</td><td><small>' + esc(c[3] || '') + '</small></td></tr>'; }).join('') + '</tbody></table></div>';
+  }
+  $('#d-grilles').innerHTML = tableGrille('La fiche', G.FICHE) + tableGrille('L’oral du 17/12', G.ORAL) +
+    '<div><h3>Seuils « tous les points »</h3><p class="aide">Questions 1 à 5 : <b>400 caractères</b> · question 6 : <b>200</b>. Sous le seuil : −0,5 par question. (Minimum bloquant de la page, à part : 200, 300 et 100.) L’audit et les exports signalent chaque réponse sous son seuil.</p>' +
+    '<h3>Durée de l’oral</h3><p class="aide">Entre <b>1 min et 1 min 30</b> par élève : 4 points · jusqu’à 15 s en dessous ou au-dessus : 2 · au-delà : 0. Mesurée par le chrono de l’outil du jour J ; notation <b>sur papier</b> (grilles imprimables depuis l’outil).</p></div>';
+  var ECRANS = [
+    ['en ligne', 'Page élève : questionnaire, tirage, fiche de recherche', '../pages/term-es-t3-c5-frise-ia.html'],
+    ['en ligne', 'Envoi de la fiche et retour du professeur (élève)', '../pages/term-es-t3-c5-frise-ia.html#envoi-fiche'],
+    ['en ligne', 'Rubrique « Comment tu es évalué » (élève, toujours ouverte)', '../pages/term-es-t3-c5-frise-ia.html#evaluation'],
+    ['en ligne', 'Audit des fiches : renvoyer une réponse, la fiche, valider (ci-dessous)', '#audit'],
+    ['en ligne', 'Exports pour la correction par IA, avec consigne et grille (ci-dessous)', '#audit'],
+    ['aperçu', 'Outil du jour J : tirage des thématiques, mosaïque d’images, loupe, chrono, grilles papier', 'frise-ia-jourj.html'],
+    ['à construire · 10/12', 'Publication des thématiques et des groupes aux élèves', ''],
+    ['à construire · 17/12', 'Mode oral sur la tablette de l’élève : sa fiche en lecture seule', ''],
+    ['à construire · 3/12', 'Sélection des thématiques de débat', ''],
+    ['à construire · janvier', 'Préparation des débats, puis le débat (rôles, mur de réactions, pilotage)', '']
+  ];
+  $('#d-ecrans').innerHTML = ECRANS.map(function(e){
+    var chip = e[0] === 'en ligne' ? 'ok' : e[0] === 'aperçu' ? 'att' : '';
+    return '<li><span class="d"><span class="chip ' + chip + '">' + esc(e[0]) + '</span></span><span>' + (e[2] ? '<a href="' + e[2] + '"' + (/^#/.test(e[2]) ? '' : ' target="_blank" rel="noopener"') + '>' + esc(e[1]) + '</a>' : esc(e[1])) + '</span><span></span></li>';
+  }).join('');
+  $('#d-trancher').innerHTML = [
+    'Les barèmes chiffrés visibles des élèves, ou seulement les critères ?',
+    'Le jeu du débat : dans les 20 points ou en bonus ? Une note individuelle par rôle ?',
+    'Le sens du « vote supplémentaire » du présentateur (débat).',
+    'L’avis du délégué à la protection des données sur la pré-correction par IA.',
+    'Les écrans de rôle du jour du débat, à retravailler.',
+    'La date du débat des Terminale 3 (11/02 probable).'
+  ].map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('');
+  $('#dossier-onglets').addEventListener('click', function(ev){
+    var b = ev.target.closest('[data-d]'); if(!b) return;
+    document.querySelectorAll('#dossier-onglets [data-d]').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); });
+    document.querySelectorAll('[data-dp]').forEach(function(z){ z.hidden = z.getAttribute('data-dp') !== b.dataset.d; });
+  });
+  function dessinerThemes(){
+    var c = classes.filter(function(x){ return x.id === classe; })[0] || {};
+    var g = TH.groupes(eleves, tirages.filter(function(t){ return t.sujet; }), c.code);
+    var parId = {}; g.groupes.forEach(function(x){ parId[x.theme.id] = x; });
+    $('#d-themes').innerHTML = TH.THEMES.map(function(t){
+      var x = parId[t.id], n = x ? x.eleves.length : 0;
+      return '<div class="d-theme"><b>' + t.icone + ' ' + esc(t.titre) + ' <small>· ' + n + ' élève' + (n > 1 ? 's' : '') + (n ? ' · ' + Math.round(n) + ' à ' + Math.round(n * 1.5) + ' min' : '') + '</small></b>' +
+        (n ? '<ul>' + x.eleves.map(function(y){ return '<li>' + esc(ProfAPI.nomDe(y.eleve.pseudo)) + ' <small>· ' + esc((F.PAR_ID[y.sujet] || {}).titre || y.sujet) + '</small></li>'; }).join('') + '</ul>' : '<small>personne pour l’instant</small>') + '</div>';
+    }).join('') + (g.sansSujet.length ? '<div class="d-theme"><b>Sans sujet <small>· ' + g.sansSujet.length + '</small></b><small>Ils rejoindront une thématique en tirant leur sujet.</small></div>' : '');
+  }
 
   var classes = [], classe = null, tirages = [], eleves = [], reponses = {};
 
@@ -223,6 +293,7 @@ button.ko{color:var(--err);border-color:var(--err)} button.ok{color:var(--ok);bo
       (r[2] || []).forEach(function(x){ (reponses[x.eleve_id] = reponses[x.eleve_id] || {})[x.code_activite] = x; });
       dessiner();
       if(window.FriseAudit) window.FriseAudit.dessiner(eleves, tirages, reponses);
+      dessinerThemes();
     }).catch(function(e){ $('#eleves').innerHTML = '<p class="aide" style="color:var(--err)">' + esc(e.message) + '</p>'; });
   }
 

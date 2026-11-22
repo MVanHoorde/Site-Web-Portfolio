@@ -2529,7 +2529,24 @@ contre l'humain · apprendre comme un cerveau · l'IA au quotidien · quand ça
 déraille. À construire pour le 17/12 : écran de projection avec tirage et
 chronos, mode oral, grille d'oral.
 
-En attente (Loïc, plus tard) : jeu du débat
+**22/11/2026 (suite), grilles chiffrées, dossier et outil du jour J.**
+Grilles validées par Loïc, source unique `assets/js/frise-ia-grilles.js`
+(page élève, dossier, audit, exports, jour J). Fiche /20 : complète 3 ·
+assez développée 3 (seuils « tous les points » : 400 caractères pour les
+questions 1 à 5, 200 pour la 6, −0,5 par question sous le seuil) · avec ses
+mots 4 · images 2 · sources 3 · sujet bien traité 5 (appréciation
+d'ensemble). Oral /20 : durée 4 (1 min – 1 min 30 : 4 ; ±15 s : 2) · ne lit
+pas 5 · vulgarise 5 · s'appuie sur ses images 3 · s'adresse à la classe 3.
+Points affichés aux élèves (à confirmer). Exports pour l'IA (codes E-xxxxx,
+consigne et grille jointes, jamais de note produite par l'IA). Dossier de
+la séquence dans `prof/frise-ia.html`. Jour J (`prof/frise-ia-jourj.html`) :
+la tablette de Loïc EST l'écran projeté — tirage de la thématique, mosaïque
+de toutes les images du groupe (loupe, masquer), chrono par élève, **notation
+sur papier** (grilles A4 imprimables), aucun nom à l'écran ; durées sur
+l'appareil. Thématiques : `assets/js/frise-ia-thematiques.js`, chargé par le
+tableau de bord seulement.
+
+En attente (Loïc, plus tard) : barèmes visibles des élèves ou non ; jeu du débat
 dans les 20 points ou en bonus ; note individuelle de débat par rôle ; sens
 du « vote supplémentaire » du présentateur ;
 libellé exact du BO 3.5 ; avis du délégué à la protection des données sur la

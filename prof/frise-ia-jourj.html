@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Frise de l'IA — présentations</title>
+<link rel="stylesheet" href="../assets/css/fonts.css">
+<!-- ============================================================
+     prof/frise-ia-jourj.html — le 17/12 : présentations par thématique
+     (décision EST-FRISE-01, 22/11/2026).
+     L'ÉCRAN EST PROJETÉ : la tablette de Loïc est branchée au tableau.
+     · Tirage au sort de la thématique suivante (« plus tard » pour un
+       groupe pas prêt). Groupes = élèves rangés par la thématique de
+       leur sujet (assets/js/frise-ia-thematiques.js).
+     · Mosaïque : TOUTES les images des élèves de la thématique, avec
+       leur sujet et leur légende ; toucher une image l'agrandit, 🙈 la
+       masque (et la fait revenir).
+     · Chrono discret par élève (1 min – 1 min 30) ; les durées restent
+       sur cet appareil (localStorage), exportables en CSV.
+     · La NOTATION SE FAIT SUR PAPIER : « 🖨️ Grilles papier » imprime
+       une page par thématique (élèves, sujets, critères de
+       assets/js/frise-ia-grilles.js).
+     · Aucun nom d'élève à l'écran projeté : des sujets et des images.
+       Les noms n'apparaissent que sur les grilles imprimées et le CSV.
+     ============================================================ -->
+<style>
+:root{--papier:#f3f1ea;--carte:#fffdf8;--encre:#141a26;--gris:#5f6472;--trait:#d8d1bf;--alpha:#c63a27;--beta:#17808d;
+  --act:#d9741c;--vert:#3f7f4c;--or:#b28a1d;--grille:#e4dfd0}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--papier);color:var(--encre);font-family:'Spectral',Georgia,serif;font-size:16px;line-height:1.45;min-height:100vh;
+  background-image:linear-gradient(var(--grille) 1px,transparent 1px),linear-gradient(90deg,var(--grille) 1px,transparent 1px);background-size:30px 30px}
+button,select{font:inherit;color:var(--encre)}
+button{font-family:'Space Grotesk',sans-serif;font-size:15px;border:1.5px solid var(--encre);background:var(--carte);border-radius:9px;padding:6px 12px;min-height:40px;cursor:pointer}
+button:focus-visible{outline:3px solid var(--beta);outline-offset:2px}
+button:disabled{opacity:.45;cursor:default}
+button.fort{background:var(--encre);color:var(--papier)}
+.barre{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 14px;background:rgba(243,241,234,.96);border-bottom:1.5px solid var(--trait)}
+.barre .marque{font:600 12px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--alpha)}
+.barre .esp{flex:1}
+.barre select{border:1.5px solid var(--trait);border-radius:9px;background:var(--carte);padding:6px 8px;min-height:40px}
+details.menu{position:relative}
+details.menu summary{list-style:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;border:1.5px solid var(--encre);background:var(--carte);border-radius:9px;padding:8px 12px}
+details.menu summary::-webkit-details-marker{display:none}
+details.menu .pan{position:absolute;right:0;top:calc(100% + 6px);width:min(92vw,380px);background:var(--carte);border:1.5px solid var(--encre);border-radius:12px;box-shadow:4px 4px 0 var(--encre);padding:10px;z-index:20}
+.pan ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.pan li{border:1px solid var(--trait);border-radius:9px;padding:6px 8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.pan li .t{flex:1;min-width:150px;font-family:'Space Grotesk',sans-serif}
+.pan li small{display:block;font:12px 'IBM Plex Mono',monospace;color:var(--gris)}
+.pan li button{min-height:32px;padding:2px 8px;font-size:13px}
+.pan li.passe{opacity:.55}
+.pan .note{font-size:13px;color:var(--gris);margin:8px 0 0}
+.chrono{display:flex;align-items:center;gap:6px;border:1.5px solid var(--trait);border-radius:10px;padding:3px 6px 3px 10px;background:var(--carte)}
+.chrono .temps{font:700 22px 'IBM Plex Mono',monospace;min-width:3.2em;text-align:right}
+.chrono.court .temps{color:var(--or)} .chrono.ok{border-color:var(--vert)} .chrono.ok .temps{color:var(--vert)}
+.chrono.long{border-color:var(--alpha)} .chrono.long .temps{color:var(--alpha)}
+.chrono .qui{font:12px 'IBM Plex Mono',monospace;color:var(--gris);max-width:12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chrono button{min-height:34px;padding:2px 9px}
+.chrono.cache .temps{visibility:hidden}
+main{padding:14px 16px 40px;max-width:1500px;margin:0 auto}
+.accueil{text-align:center;padding:12vh 10px}
+.accueil h1{font:700 clamp(2rem,5vw,3.6rem)/1.1 'Space Grotesk',sans-serif;margin:.3em 0}
+.accueil .s{font:500 14px 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--alpha)}
+.accueil p{color:var(--gris);font-size:1.1rem}
+.theme{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin:4px 0 12px}
+.theme h1{font:700 clamp(1.6rem,3.4vw,2.6rem)/1.1 'Space Grotesk',sans-serif;margin:0}
+.theme .icone{font-size:clamp(1.6rem,3.4vw,2.6rem)}
+.sujets{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.sujets button{display:grid;text-align:left;gap:0;border-color:var(--trait);padding:4px 10px}
+.sujets button small{font:12px 'IBM Plex Mono',monospace;color:var(--gris)}
+.sujets button[aria-pressed="true"]{border-color:var(--act);box-shadow:inset 0 -3px 0 var(--act)}
+.sujets button.fait b::after{content:" ✓";color:var(--vert)}
+.mosaique{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:12px}
+.tuile{position:relative;background:var(--carte);border:1.5px solid var(--encre);border-radius:12px;box-shadow:3px 3px 0 var(--encre);overflow:hidden;display:flex;flex-direction:column}
+.tuile.actif{box-shadow:3px 3px 0 var(--act);border-color:var(--act)}
+.tuile .zoom{all:unset;cursor:zoom-in;display:block;background:#ebe7dc}
+.tuile img{display:block;width:100%;height:230px;object-fit:contain}
+.tuile .cap{padding:7px 10px 9px}
+.tuile .cap b{display:block;font:600 15px 'Space Grotesk',sans-serif}
+.tuile .cap span{display:block;font-size:13px;color:var(--gris);line-height:1.35;max-height:3.9em;overflow:hidden}
+.tuile .masquer{position:absolute;top:6px;right:6px;min-height:32px;padding:0 8px;font-size:14px;background:rgba(255,253,248,.92);border-color:var(--trait)}
+.tuile.cachee{box-shadow:none;border-style:dashed;border-color:var(--trait);background:transparent;min-height:0}
+.tuile.cachee .zoom,.tuile.cachee .cap span{display:none}
+.tuile.cachee .cap{padding:10px 90px 10px 10px;color:var(--gris)}
+.tuile.sans .zoom{cursor:default}
+.tuile.sans img{display:none}
+.tuile.sans .zoom::before{content:"pas d’image déposée";display:grid;place-items:center;height:110px;font:13px 'IBM Plex Mono',monospace;color:var(--gris)}
+.loupe{position:fixed;inset:0;z-index:50;background:rgba(20,26,38,.94);display:none;flex-direction:column;align-items:center;justify-content:center;padding:2vh 2vw}
+.loupe.ouverte{display:flex}
+.loupe img{max-width:96vw;max-height:80vh;object-fit:contain;border-radius:8px;background:var(--carte)}
+.loupe .leg{color:#f3f1ea;margin-top:1.2vh;max-width:90vw;text-align:center;font-size:clamp(14px,1.5vw,20px)}
+.loupe .leg b{display:block;font:600 clamp(18px,2vw,28px) 'Space Grotesk',sans-serif}
+.loupe .nav{position:absolute;top:50%;transform:translateY(-50%);font-size:28px;min-height:64px;min-width:52px;background:rgba(255,253,248,.15);color:#fff;border-color:rgba(255,255,255,.4)}
+.loupe .prec{left:1vw} .loupe .suiv{right:1vw}
+.loupe .fermer{position:absolute;top:1.5vh;right:1.5vw;color:#fff;background:transparent;border-color:rgba(255,255,255,.5)}
+.msg{font:13px 'IBM Plex Mono',monospace;color:var(--gris)} .msg.ko{color:var(--alpha)}
+</style>
+</head>
+<body>
+<div class="barre">
+  <span class="marque">Frise de l'IA · présentations</span>
+  <select id="classe" aria-label="Classe"></select>
+  <button type="button" class="fort" id="tirer">🎲 Tirer une thématique</button>
+  <details class="menu" id="menu-groupes"><summary>👥 Groupes ▾</summary><div class="pan">
+    <ul id="groupes"></ul>
+    <p class="note" id="sans-sujet"></p>
+    <p class="note"><button type="button" id="csv">⬇ Durées (CSV)</button> <button type="button" id="effacer">Effacer les durées</button></p>
+  </div></details>
+  <button type="button" id="grilles">🖨️ Grilles papier</button>
+  <span class="esp"></span>
+  <span class="chrono" id="chrono"><span class="qui" id="ch-qui">—</span><span class="temps" id="ch-temps">0:00</span>
+    <button type="button" id="ch-go" title="Démarrer / arrêter">▶</button>
+    <button type="button" id="ch-suiv" title="Élève suivant (enregistre la durée)">⏭</button>
+    <button type="button" id="ch-voir" title="Cacher le temps aux élèves">👁</button></span>
+  <a href="frise-ia.html"><button type="button" title="Retour au tableau de bord de la frise">←</button></a>
+</div>
+<main id="scene">
+  <div class="accueil"><div class="s">Enseignement scientifique · la frise de l'IA</div><h1>Présentations</h1><p id="etat" class="msg">Connexion…</p></div>
+</main>
+<div class="loupe" id="loupe" role="dialog" aria-modal="true" aria-label="Image agrandie">
+  <button type="button" class="fermer" id="l-fermer">✕ Fermer</button>
+  <button type="button" class="nav prec" id="l-prec" aria-label="Image précédente">‹</button>
+  <img id="l-img" alt="">
+  <div class="leg" id="l-leg"></div>
+  <button type="button" class="nav suiv" id="l-suiv" aria-label="Image suivante">›</button>
+</div>
+<script src="../assets/js/frise-ia-sujets.js?v=2"></script>
+<script src="../assets/js/frise-ia-grilles.js?v=1"></script>
+<script src="../assets/js/frise-ia-thematiques.js?v=1"></script>
+<script src="../assets/js/prof-api.js?v=4"></script>
+<script>
+(function(){
+  var F = window.FRISE_IA, G = window.FRISE_GRILLES, T = window.FRISE_THEMES, SEQ = 'est-t3-c5';
+  var $ = function(s){ return document.querySelector(s); };
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function dire(t, ko){ var e = $('#etat'); if(e){ e.textContent = t; e.className = 'msg' + (ko ? ' ko' : ''); } }
+  function mmss(s){ s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  function sujet(id){ return (F && F.PAR_ID[id]) || { titre: id || '—', date: '', annee: 0 }; }
+
+  var classes = [], classe = null, eleves = [], rep = {}, groupes = [], sansSujet = [];
+  var etat = { passes: {}, durees: {}, cachees: {} };   // sur cet appareil
+  var courant = null;      // { theme, i }
+  var tuiles = [];         // [{x, n, cle}] de la thématique en cours
+  var urls = {};
+  var ch = { debut: 0, cumul: 0, marche: false };
+
+  /* ---------- mémoire de l'appareil (par classe) ---------- */
+  function cle(){ return 'frise-ia.jourj.' + classe; }
+  function lire(){ try { etat = JSON.parse(localStorage.getItem(cle()) || 'null') || {}; } catch(e){ etat = {}; } etat.passes = etat.passes || {}; etat.durees = etat.durees || {}; etat.cachees = etat.cachees || {}; }
+  function garder(){ try { localStorage.setItem(cle(), JSON.stringify(etat)); } catch(e){} }
+
+  /* ---------- connexion ---------- */
+  ProfAPI.reprendre().then(function(){
+    return ProfAPI.lire('classes?select=id,code,libelle,espace,actif&espace=eq.est&order=code.asc');
+  }).then(function(l){
+    return ProfAPI.appeler('mes_classes').then(function(ids){
+      var ok = {}; (ids || []).forEach(function(x){ ok[typeof x === 'string' ? x : (x.mes_classes || x.id)] = true; });
+      classes = (l || []).filter(function(c){ return c.actif !== false && (!ids || ok[c.id]); });
+    }).catch(function(){ classes = (l || []).filter(function(c){ return c.actif !== false; }); });
+  }).then(function(){
+    if(!classes.length){ dire('Aucune classe de terminale ES rattachée à ton compte.'); return; }
+    var memo = null; try { memo = sessionStorage.getItem('frise-ia.classe'); } catch(e){}
+    classe = classes.some(function(c){ return c.id === memo; }) ? memo : classes[0].id;
+    $('#classe').innerHTML = classes.map(function(c){ return '<option value="' + c.id + '"' + (c.id === classe ? ' selected' : '') + '>' + esc(c.libelle || c.code) + '</option>'; }).join('');
+    charger();
+  }).catch(function(e){
+    dire(/SESSION|AUCUNE/.test(e.message) ? 'Pas de session : connecte-toi d’abord au tableau de bord, puis reviens ici.' : e.message, true);
+  });
+  $('#classe').addEventListener('change', function(){
+    pause(); classe = this.value; courant = null;
+    try { sessionStorage.setItem('frise-ia.classe', classe); } catch(e){}
+    charger();
+  });
+
+  function codeClasse(){ var c = classes.filter(function(x){ return x.id === classe; })[0]; return c ? c.code : ''; }
+  function libClasse(){ var c = classes.filter(function(x){ return x.id === classe; })[0]; return c ? (c.libelle || c.code) : ''; }
+
+  function charger(){
+    lire();
+    Promise.all([
+      ProfAPI.lire('eleves_classes?select=eleves(id,pseudo,auth_id)&classe_id=eq.' + encodeURIComponent(classe)),
+      ProfAPI.lire('frise_ia_tirages?select=eleve_id,sujet&classe_id=eq.' + encodeURIComponent(classe)),
+      ProfAPI.lire('reponses_libres?select=eleve_id,code_activite,texte&code_activite=like.FRIA-IMG*')
+    ]).then(function(r){
+      eleves = (r[0] || []).map(function(x){ return x.eleves; }).filter(Boolean);
+      rep = {}; (r[2] || []).forEach(function(x){ (rep[x.eleve_id] = rep[x.eleve_id] || {})[x.code_activite] = x.texte; });
+      var g = T.groupes(eleves, r[1] || [], codeClasse());
+      groupes = g.groupes; sansSujet = g.sansSujet;
+      groupes.forEach(function(x){ x.eleves.sort(function(a, b){ return sujet(a.sujet).annee - sujet(b.sujet).annee; }); });
+      dessinerGroupes(); dessiner();
+    }).catch(function(e){ dire(e.message, true); });
+  }
+
+  /* ---------- les groupes ---------- */
+  function dessinerGroupes(){
+    $('#groupes').innerHTML = groupes.map(function(g){
+      var st = etat.passes[g.theme.id], n = g.eleves.length;
+      return '<li class="' + (st === 'passe' ? 'passe' : '') + '"><span class="t">' + g.theme.icone + ' ' + esc(g.theme.titre) +
+        '<small>' + n + ' élève' + (n > 1 ? 's' : '') + ' · ' + mmss(n * G.DUREE.min) + ' à ' + mmss(n * G.DUREE.max) +
+        (st === 'passe' ? ' · passé' : st === 'plus-tard' ? ' · plus tard' : '') + '</small></span>' +
+        '<button type="button" data-prendre="' + g.theme.id + '">Prendre</button>' +
+        (st === 'passe' ? '<button type="button" data-rouvrir="' + g.theme.id + '">Rouvrir</button>' : '<button type="button" data-plus-tard="' + g.theme.id + '">Plus tard</button>') + '</li>';
+    }).join('');
+    var reste = groupes.filter(function(g){ return etat.passes[g.theme.id] !== 'passe'; }).length;
+    $('#tirer').disabled = !reste;
+    $('#tirer').textContent = reste ? '🎲 Tirer une thématique (' + reste + ')' : '✓ Tout le monde est passé';
+    $('#sans-sujet').textContent = sansSujet.length ? sansSujet.length + ' élève' + (sansSujet.length > 1 ? 's' : '') + ' sans sujet, donc sans thématique.' : '';
+  }
+  $('#tirer').addEventListener('click', function(){
+    if(courant && etat.passes[courant.theme] !== 'passe' && !confirm('Passer à une autre thématique ? La thématique en cours sera marquée « passée ».')) return;
+    if(courant) { etat.passes[courant.theme] = 'passe'; }
+    var dispo = groupes.filter(function(g){ return !etat.passes[g.theme.id]; });
+    if(!dispo.length) dispo = groupes.filter(function(g){ return etat.passes[g.theme.id] === 'plus-tard'; });
+    if(!dispo.length){ garder(); courant = null; dessinerGroupes(); dessiner(); return; }
+    prendre(dispo[Math.floor(Math.random() * dispo.length)].theme.id);
+  });
+  $('#groupes').addEventListener('click', function(ev){
+    var b = ev.target.closest('button'); if(!b) return;
+    if(b.dataset.prendre){ prendre(b.dataset.prendre); $('#menu-groupes').open = false; }
+    if(b.dataset.plusTard){ etat.passes[b.dataset.plusTard] = 'plus-tard'; garder(); if(courant && courant.theme === b.dataset.plusTard){ pause(); courant = null; dessiner(); } dessinerGroupes(); }
+    if(b.dataset.rouvrir){ delete etat.passes[b.dataset.rouvrir]; garder(); dessinerGroupes(); }
+  });
+  function groupe(){ return courant && groupes.filter(function(g){ return g.theme.id === courant.theme; })[0]; }
+  function prendre(id){
+    pause();
+    if(etat.passes[id] === 'plus-tard') delete etat.passes[id];
+    garder();
+    courant = { theme: id, i: 0 };
+    ch = { debut: 0, cumul: 0, marche: false };
+    dessinerGroupes(); dessiner();
+  }
+
+  /* ---------- la mosaïque ---------- */
+  function image(e, c){
+    var chemin = e.auth_id + '/' + SEQ + '/' + c + '.jpg';
+    if(!urls[chemin]) urls[chemin] = ProfAPI.lireDepot(chemin).then(function(b){ return b ? URL.createObjectURL(b) : null; }).catch(function(){ return null; });
+    return urls[chemin];
+  }
+  function dessiner(){
+    var g = groupe(), sc = $('#scene');
+    if(!g){
+      sc.innerHTML = '<div class="accueil"><div class="s">Enseignement scientifique · la frise de l’IA</div><h1>Présentations</h1>' +
+        '<p>' + (groupes.length ? groupes.length + ' thématiques · l’ordre de passage est tiré au sort' : 'Chargement…') + '</p></div>';
+      peindreChrono(); return;
+    }
+    tuiles = [];
+    g.eleves.forEach(function(x){
+      var r = rep[x.eleve.id] || {}, n = 0;
+      [1, 2, 3].forEach(function(k){ if(k === 1 || r['FRIA-IMG' + k + 'L']){ n++; tuiles.push({ x: x, k: k, cle: x.eleve.id + '|' + k }); } });
+    });
+    sc.innerHTML =
+      '<div class="theme"><span class="icone">' + g.theme.icone + '</span><h1>' + esc(g.theme.titre) + '</h1></div>' +
+      '<div class="sujets" id="sujets">' + g.eleves.map(function(x, i){
+          var s = sujet(x.sujet);
+          return '<button type="button" data-eleve="' + i + '" aria-pressed="' + (i === courant.i) + '" class="' + (etat.durees[x.eleve.id] != null ? 'fait' : '') + '"><b>' + esc(s.titre) + '</b><small>' + esc(s.date) + '</small></button>';
+        }).join('') + '</div>' +
+      '<div class="mosaique" id="mosaique">' + tuiles.map(function(t, j){
+          var s = sujet(t.x.sujet), leg = (rep[t.x.eleve.id] || {})['FRIA-IMG' + t.k + 'L'] || '', cachee = etat.cachees[t.cle];
+          return '<figure class="tuile' + (cachee ? ' cachee' : '') + (t.x === g.eleves[courant.i] ? ' actif' : '') + '" data-t="' + j + '" style="margin:0">' +
+            '<button type="button" class="zoom" data-zoom="' + j + '" aria-label="Agrandir"><img alt="" data-img="' + j + '"></button>' +
+            '<figcaption class="cap"><b>' + esc(s.titre) + '</b><span>' + esc(leg) + '</span></figcaption>' +
+            '<button type="button" class="masquer" data-masquer="' + j + '">' + (cachee ? '👁 Montrer' : '🙈') + '</button></figure>';
+        }).join('') + '</div>';
+    sc.querySelectorAll('[data-img]').forEach(function(im){
+      var t = tuiles[+im.getAttribute('data-img')];
+      image(t.x.eleve, 'FRIA-IMG' + t.k).then(function(u){ if(u) im.src = u; else im.closest('.tuile').classList.add('sans'); });
+    });
+    peindreChrono();
+  }
+  $('#scene').addEventListener('click', function(ev){
+    var b = ev.target.closest('button'); if(!b) return;
+    if(b.dataset.eleve){ choisirEleve(+b.dataset.eleve); return; }
+    if(b.dataset.masquer){ var t = tuiles[+b.dataset.masquer]; if(etat.cachees[t.cle]) delete etat.cachees[t.cle]; else etat.cachees[t.cle] = 1; garder(); dessiner(); return; }
+    if(b.dataset.zoom){ var tz = tuiles[+b.dataset.zoom]; if(b.closest('.tuile').classList.contains('sans')) return; ouvrirLoupe(+b.dataset.zoom); }
+  });
+  function choisirEleve(i){
+    var g = groupe(); if(!g) return;
+    pause(); courant.i = i;
+    var d = etat.durees[g.eleves[i].eleve.id];
+    ch = { debut: 0, cumul: d || 0, marche: false };
+    dessiner();
+  }
+
+  /* ---------- la loupe ---------- */
+  var enLoupe = -1;
+  function visibles(){ return tuiles.map(function(t, j){ return j; }).filter(function(j){ return !etat.cachees[tuiles[j].cle] && !document.querySelector('.tuile[data-t="' + j + '"].sans'); }); }
+  function ouvrirLoupe(j){
+    var t = tuiles[j]; if(!t) return;
+    enLoupe = j;
+    var s = sujet(t.x.sujet), leg = (rep[t.x.eleve.id] || {})['FRIA-IMG' + t.k + 'L'] || '';
+    image(t.x.eleve, 'FRIA-IMG' + t.k).then(function(u){ $('#l-img').src = u || ''; });
+    $('#l-leg').innerHTML = '<b>' + esc(s.titre) + ' · ' + esc(s.date) + '</b>' + esc(leg);
+    $('#loupe').classList.add('ouverte');
+  }
+  function fermerLoupe(){ $('#loupe').classList.remove('ouverte'); enLoupe = -1; }
+  function pas(d){ var v = visibles(); if(!v.length) return; var k = v.indexOf(enLoupe); ouvrirLoupe(v[(k + d + v.length) % v.length]); }
+  $('#l-fermer').addEventListener('click', fermerLoupe);
+  $('#l-prec').addEventListener('click', function(){ pas(-1); });
+  $('#l-suiv').addEventListener('click', function(){ pas(1); });
+  $('#loupe').addEventListener('click', function(ev){ if(ev.target === this) fermerLoupe(); });
+  document.addEventListener('keydown', function(ev){
+    if(enLoupe < 0) return;
+    if(ev.key === 'Escape') fermerLoupe();
+    if(ev.key === 'ArrowLeft') pas(-1);
+    if(ev.key === 'ArrowRight') pas(1);
+  });
+
+  /* ---------- le chrono ---------- */
+  function ecoule(){ return ch.cumul + (ch.marche ? (Date.now() - ch.debut) / 1000 : 0); }
+  function pause(){
+    if(!ch.marche) return;
+    ch.cumul = ecoule(); ch.marche = false;
+    var g = groupe(); if(g){ etat.durees[g.eleves[courant.i].eleve.id] = Math.round(ch.cumul); garder(); }
+  }
+  function peindreChrono(){
+    var g = groupe(), s = ecoule(), z = $('#chrono');
+    z.classList.remove('court', 'ok', 'long');
+    if(g) z.classList.add(s < G.DUREE.min ? 'court' : s <= G.DUREE.max ? 'ok' : 'long');
+    $('#ch-temps').textContent = mmss(s);
+    $('#ch-qui').textContent = g ? sujet(g.eleves[courant.i].sujet).titre : '—';
+    $('#ch-go').textContent = ch.marche ? '⏸' : '▶';
+    $('#ch-go').disabled = $('#ch-suiv').disabled = !g;
+  }
+  setInterval(function(){ if(ch.marche) peindreChrono(); }, 250);
+  $('#ch-go').addEventListener('click', function(){
+    if(!groupe()) return;
+    if(ch.marche) pause(); else { ch.marche = true; ch.debut = Date.now(); }
+    peindreChrono();
+    if(!ch.marche) dessiner();
+  });
+  $('#ch-suiv').addEventListener('click', function(){
+    var g = groupe(); if(!g) return;
+    pause();
+    if(courant.i < g.eleves.length - 1){ choisirEleve(courant.i + 1); }
+    else { dessiner(); }
+  });
+  $('#ch-voir').addEventListener('click', function(){ $('#chrono').classList.toggle('cache'); this.textContent = $('#chrono').classList.contains('cache') ? '🙈' : '👁'; });
+
+  /* ---------- export des durées ---------- */
+  $('#csv').addEventListener('click', function(){
+    var l = [['Élève', 'Sujet', 'Thématique', 'Durée', 'Points de durée /' + G.ORAL[0][1]]];
+    groupes.forEach(function(g){ g.eleves.forEach(function(x){
+      var d = etat.durees[x.eleve.id];
+      l.push([ProfAPI.nomDe(x.eleve.pseudo), sujet(x.sujet).titre, g.theme.titre, d != null ? mmss(d) : '', d != null ? String(G.pointsDuree(d)) : '']);
+    }); });
+    var csv = '﻿' + l.map(function(r){ return r.map(function(v){ return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    a.download = 'frise-ia-durees-' + codeClasse() + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+  $('#effacer').addEventListener('click', function(){
+    if(!confirm('Effacer les durées, les images masquées et les groupes passés de cette classe, sur cet appareil ?')) return;
+    etat = { passes: {}, durees: {}, cachees: {} }; garder(); pause(); courant = null; dessinerGroupes(); dessiner();
+  });
+
+  /* ---------- les grilles papier : une page A4 par thématique ---------- */
+  $('#grilles').addEventListener('click', function(){
+    var w = window.open('', '_blank');
+    if(!w){ alert('La fenêtre a été bloquée : autorise les fenêtres pour ce site.'); return; }
+    var crit = G.ORAL, tot = G.total(crit);
+    var entete = '<th class="nom">Élève</th><th>Sujet</th>' + crit.map(function(c){ return '<th>' + esc(c[0]) + '<small>/' + c[1] + '</small></th>'; }).join('') + '<th>Total<small>/' + tot + '</small></th><th class="rq">Remarques</th>';
+    var pages = groupes.map(function(g){
+      var lignes = g.eleves.map(function(x){
+        var s = sujet(x.sujet);
+        return '<tr><td class="nom">' + esc(ProfAPI.nomDe(x.eleve.pseudo)) + '</td><td>' + esc(s.titre) + '<small>' + esc(s.date) + '</small></td>' +
+          crit.map(function(c, k){ return '<td class="case">' + (k === 0 ? '<span class="dur">__ : __</span>' : '') + '</td>'; }).join('') + '<td class="case"></td><td class="rq"></td></tr>';
+      }).join('') + '<tr class="vierge"><td class="nom"></td><td></td>' + crit.map(function(){ return '<td class="case"></td>'; }).join('') + '<td class="case"></td><td class="rq"></td></tr>';
+      return '<section class="page"><header><div><b>' + g.theme.icone + ' ' + esc(g.theme.titre) + '</b><span>' + esc(libClasse()) + ' · présentations du 17/12 · ' + g.eleves.length + ' élèves · ' +
+        mmss(g.eleves.length * G.DUREE.min) + ' à ' + mmss(g.eleves.length * G.DUREE.max) + '</span></div><div class="ordre">Ordre de passage : ____</div></header>' +
+        '<table><thead><tr>' + entete + '</tr></thead><tbody>' + lignes + '</tbody></table>' +
+        '<ol class="aide">' + crit.map(function(c){ return '<li><b>' + esc(c[0]) + ' (/' + c[1] + ')</b> — ' + esc(c[3] || c[2]) + '</li>'; }).join('') + '</ol></section>';
+    }).join('');
+    w.document.write('<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>Grilles d’oral — ' + esc(libClasse()) + '</title><style>' +
+      'body{font:12px/1.35 system-ui,sans-serif;color:#141a26;margin:0;padding:16px}' +
+      '.barre{margin-bottom:12px}.barre button{font:600 14px system-ui;background:#141a26;color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer}' +
+      '.page{margin-bottom:28px}header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #141a26;padding-bottom:4px;margin-bottom:6px}' +
+      'header b{display:block;font-size:17px}header span{color:#5f6472}.ordre{font-size:13px}' +
+      'table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #8a8d96;padding:4px 5px;vertical-align:top;text-align:left}' +
+      'th{font-size:10.5px;background:#f3f1ea}th small{display:block;font-weight:400;color:#5f6472}td small{display:block;color:#5f6472;font-size:10px}' +
+      'th.nom,td.nom{width:17%}td{height:62px}td.case{width:8.5%}th.rq,td.rq{width:22%}.dur{display:block;color:#8a8d96;font-size:11px;margin-top:20px}' +
+      '.aide{margin:8px 0 0;padding-left:18px;font-size:10.5px;color:#3a3f4a}.aide li{margin:1px 0}' +
+      '@media print{.barre{display:none}body{padding:0}.page{break-after:page;margin:0}@page{size:A4 landscape;margin:10mm}}' +
+      '</style></head><body><div class="barre"><button onclick="print()">🖨️ Imprimer / enregistrer en PDF</button></div>' + pages + '</body></html>');
+    w.document.close();
+  });
+})();
+</script>
+</body>
+</html>
