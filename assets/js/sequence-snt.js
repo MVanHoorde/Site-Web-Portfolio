@@ -4448,6 +4448,18 @@ function construireBarre(){
   poignee.setAttribute('aria-label','Fermer le sommaire');
   poignee.addEventListener('click',function(){ document.body.classList.add('prog-reduit'); });
   box.insertBefore(poignee,box.firstChild);
+  /* voile de la feuille (23/11/2026) : sur tablette, toucher à côté
+     ferme, comme partout ailleurs. Invisible au-dessus de 1180 px (CSS). */
+  var voile=document.createElement('div');
+  voile.className='prog-voile'; voile.setAttribute('aria-hidden','true');
+  voile.addEventListener('click',function(){ document.body.classList.add('prog-reduit'); });
+  document.body.appendChild(voile);
+  /* une étape choisie dans la feuille : on y va, la feuille s'efface
+     (la page est figée tant qu'elle est ouverte). */
+  box.addEventListener('click',function(e){
+    if(e.target.closest('a.it') && window.matchMedia('(max-width:1180px)').matches)
+      document.body.classList.add('prog-reduit');
+  });
   /* une séance se plie : avec 26 étapes, une liste plate déborde de
      l'écran d'un téléphone et redit exactement le problème qu'on
      cherche à résoudre. */

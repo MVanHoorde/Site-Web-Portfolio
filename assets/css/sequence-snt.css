@@ -1300,6 +1300,20 @@ body.teacher .ens-actif{display:flex}
         border-radius:16px 16px 0 0;border-bottom:0;padding:10px 14px 18px;
         transform:translateY(101%);transition:transform .25s ease}
   body:not(.prog-reduit) #prog{transform:none}
+  /* Voile, défilement bloqué, double-toucher neutralisé (23/11/2026).
+     Signalé par un élève sur iPad : la feuille ne se fermait pas en
+     touchant à côté, et un double-toucher sur la page dessous la
+     faisait défiler — la barre de Safari se repliait, la fenêtre
+     grandissait, et le bas de la feuille n'était pas redessiné (la
+     page passait par-dessus). Le voile ferme la feuille au toucher ;
+     la page ne bouge plus tant qu'elle est ouverte ; pan-y retire le
+     zoom au double-toucher dans la feuille ; dvh suit la vraie
+     hauteur visible. */
+  #prog{max-height:72dvh;overscroll-behavior:contain;touch-action:pan-y}
+  .prog-voile{display:block;position:fixed;inset:0;z-index:59;background:rgba(22,31,51,.35);
+        opacity:0;pointer-events:none;transition:opacity .25s ease;touch-action:none}
+  body:not(.prog-reduit) .prog-voile{opacity:1;pointer-events:auto}
+  html:has(body:not(.prog-reduit)), body:not(.prog-reduit){overflow:hidden}
   .prog-poignee{display:block}
   #prog .ph .reduire{display:none}          /* la poignée et le ☰ suffisent */
   #prog a.it{min-height:44px;align-items:center;padding:6px 7px}
@@ -1307,8 +1321,10 @@ body.teacher .ens-actif{display:flex}
   #prog .txt{font-size:13.5px}
   #prog .pip2{width:18px;height:18px;font-size:11px}
 }
-@media (prefers-reduced-motion:reduce){#prog{transition:none}}
-@media print{#prog,.prog-poignee{display:none !important}}
+.prog-voile{display:none}
+@media (max-width:1180px){ .prog-voile{display:block} }
+@media (prefers-reduced-motion:reduce){#prog,.prog-voile{transition:none}}
+@media print{#prog,.prog-poignee,.prog-voile{display:none !important}}
 
 /* ============================================================
    HUB DE THÈME — carte-réseau (lot 6, 24/07/2026)
