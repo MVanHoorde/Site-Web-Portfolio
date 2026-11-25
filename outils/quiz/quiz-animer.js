@@ -427,6 +427,11 @@
           (img ? '<img src="' + esc(img) + '" alt="' + esc(q.image.alt || '') + '" style="max-width:280px;border:1px solid var(--encre)">' : '') +
           (q.image_attendue ? '<div class="reserve-img">Image à fournir : ' + esc(q.image_attendue) + '</div>' : '') +
           corrigeTexte(q) +
+          // 053 : ce que le téléphone propose, et l'image de la correction
+          (q.type === 'ordre' && q.echelle ? '<p class="note">Échelle : ' + Q.rendre(q.echelle[0] || '…') + ' ↓ ' + Q.rendre(q.echelle[1] || '…') + '</p>' : '') +
+          (q.indice ? '<p class="note">💡 <b>Indice payant</b> (moitié des points) — ' + Q.rendre(q.indice) + '</p>' : '') +
+          (q.calculatrice ? '<p class="note">🧮 Calculatrice proposée sur le téléphone</p>' : '') +
+          (q.image_correction && Q.urlImage(q.image_correction.src) ? '<p class="note"><b>Image de la correction</b></p><img src="' + esc(Q.urlImage(q.image_correction.src)) + '" alt="' + esc(q.image_correction.alt || '') + '" style="max-width:280px;border:1px solid var(--encre)">' : '') +
           (q.cours ? '<p class="note"><b>À retenir</b> — ' + Q.rendre(q.cours) + '</p>' : '') +
           (q.revoir ? '<p class="note">' + Q.revoirHtml(q.revoir) + '</p>' : '') +
           '</section>';
@@ -617,6 +622,7 @@
     if (P.vue === 'question') {
       var c = $('#nb-rep'); if (c) c.textContent = P.suivi.reponses.length;
       var t = $('#sur-rep'); if (t) t.textContent = P.suivi.joueurs.length;
+      var ni = $('#nb-ind'); if (ni) ni.textContent = P.suivi.indices || 0;
     }
     majNbJoueurs();
   }
@@ -722,11 +728,22 @@
     return h + '</div><span>' + Q.ecrireNombre(c.max) + ' ' + esc(c.unite || '') + '</span></div>' +
       (correction ? '<p class="curseur-juste">✓ <b>' + Q.ecrireNombre(c.valeur) + ' ' + esc(c.unite || '') + '</b>' + (t ? ' (± ' + Q.ecrireNombre(t) + ' accepté)' : '') + ' · un point rouge par réponse</p>' : '<p class="note">Curseur à placer sur le téléphone.</p>');
   }
+  /* 053 — ce que la question offre sur le téléphone. Le TEXTE de l'indice
+     n'est jamais projeté pendant la question : seulement qu'il existe. */
+  function badgesHtml(q) {
+    var b = (q.indice ? '<span class="badge-q"><span aria-hidden="true">💡</span> Indice payant sur le téléphone · <b id="nb-ind">' + (P.suivi.indices || 0) + '</b> pris</span>' : '') +
+            (q.calculatrice ? '<span class="badge-q calc-b"><span aria-hidden="true">🧮</span> Calculatrice sur le téléphone</span>' : '');
+    return b ? '<div class="badges-q">' + b + '</div>' : '';
+  }
+  function echelleProj(q) {
+    var e = q.echelle || [];
+    return e[0] || e[1] ? '<div class="echelle-proj"><span>' + Q.rendre(e[0] || '') + '</span><span class="axe-h" aria-hidden="true"></span><span>' + Q.rendre(e[1] || '') + '</span></div>' : '';
+  }
   function vueQuestion() {
     var s = P.suivi, q = P.partie.questions[s.idx], corps;
     if (q.type === 'qcm' || q.type === 'vf') corps = grilleOptions(q, null, false);
     else if (q.type === 'num') corps = '<div class="bandeau-saisie">Réponse à taper sur le téléphone' + (q.num.unites && q.num.unites.length > 1 ? ', unité à choisir' : q.num.unites && q.num.unites.length === 1 ? ', en ' + esc(q.num.unites[0]) : '') + '.</div>';
-    else if (q.type === 'ordre') corps = '<ol class="ordre-proj">' + q.melange.map(function (k, i) { return '<li><b>' + Q.LETTRES[i] + '</b><span>' + Q.rendre(q.items[k]) + '</span></li>'; }).join('') + '</ol><p class="note">À remettre dans l\'ordre sur le téléphone.</p>';
+    else if (q.type === 'ordre') corps = echelleProj(q) + '<ol class="ordre-proj">' + q.melange.map(function (k, i) { return '<li><b>' + Q.LETTRES[i] + '</b><span>' + Q.rendre(q.items[k]) + '</span></li>'; }).join('') + '</ol><p class="note">À remettre dans l\'ordre sur le téléphone.</p>';
     else if (q.type === 'assoc') corps = assocProj(q) + '<p class="note">À relier sur le téléphone.</p>';
     else if (q.type === 'mot') corps = '<div class="bandeau-saisie">Réponse à taper sur le téléphone' + (q.mot.indice ? ' · ' + esc(q.mot.indice) : '') + '.</div>';
     else if (q.type === 'curseur') corps = curseurProj(q, null, false);
@@ -735,7 +752,7 @@
     cadre('<div class="corps">' +
       '<div class="q-entete"><span class="q-num">Question ' + (s.idx + 1) + ' / ' + P.partie.questions.length + '</span>' + (q.notion ? '<span class="q-notion">' + esc(q.notion) + '</span>' : '') + '</div>' +
       '<div class="q-milieu"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">' +
-        '<p class="q-enonce">' + Q.rendre(q.enonce) + '</p>' +
+        '<p class="q-enonce">' + Q.rendre(q.enonce) + '</p>' + badgesHtml(q) +
         (img ? '<div class="q-image"><img src="' + esc(img) + '" alt="' + esc(q.image.alt || '') + '"></div>' : '') + '</div>' +
         '<div class="compte"><div class="rond" id="rond"><span id="sec"></span></div><div class="nb-rep"><b id="nb-rep">' + s.reponses.length + '</b>réponses sur <span id="sur-rep">' + s.joueurs.length + '</span></div></div>' +
       '</div>' + corps + '</div>', piedAvec('Arrêter le chrono'));
@@ -789,7 +806,7 @@
     } else if (q.type === 'zone') {
       haut = zoneHtml(q, rep, true);
     } else if (q.type === 'ordre') {
-      haut = '<ol class="ordre-proj">' + q.items.map(function (t, i) { return '<li><b>' + (i + 1) + '</b><span>' + Q.rendre(t) + '</span></li>'; }).join('') + '</ol>';
+      haut = echelleProj(q) + '<ol class="ordre-proj">' + q.items.map(function (t, i) { return '<li><b>' + (i + 1) + '</b><span>' + Q.rendre(t) + '</span></li>'; }).join('') + '</ol>';
     } else if (q.type === 'num') {
       var n = q.num;
       haut = '<div class="bandeau-saisie" style="border-style:solid;border-color:var(--juste)">✓ <b>' + Q.ecrireNombre(n.valeur) + (n.unite ? ' ' + esc(n.unite) : '') + '</b>' +
@@ -813,9 +830,13 @@
       }).join('') + '</div>';
     }
     var sansRep = total - rep.length;
+    var imc = q.image_correction && Q.urlImage(q.image_correction.src);
     var droite = (q.cours ? '<div class="panneau"><h3>À retenir</h3><p>' + Q.rendre(q.cours) + '</p>' +
         (q.revoir && q.revoir.texte ? '<p class="note">Dans le cours : ' + esc(q.revoir.texte) + '</p>' : '') + '</div>' : '') +
-      (erreurs.length ? '<div class="panneau piege"><h3>Erreur la plus fréquente · ' + cats[erreurs[0]] + ' élève' + (cats[erreurs[0]] > 1 ? 's' : '') + '</h3><p>' + Q.rendre(messageCategorie(q, erreurs[0])) + '</p></div>' : '');
+      (erreurs.length ? '<div class="panneau piege"><h3>Erreur la plus fréquente · ' + cats[erreurs[0]] + ' élève' + (cats[erreurs[0]] > 1 ? 's' : '') + '</h3><p>' + Q.rendre(messageCategorie(q, erreurs[0])) + '</p></div>' : '') +
+      // 053 : l'indice, montré maintenant que la question est close, et combien l'ont pris
+      (q.indice ? '<div class="panneau indice"><h3>💡 L\'indice · pris par ' + (s.indices || 0) + ' élève' + ((s.indices || 0) > 1 ? 's' : '') + '</h3><p>' + Q.rendre(q.indice) + '</p></div>' : '') +
+      (imc ? '<div class="panneau"><h3>La correction en image</h3><img class="img-corr" src="' + esc(imc) + '" alt="' + esc(q.image_correction.alt || '') + '"></div>' : '');
     var bilan = '<div class="correction"><div class="panneau"><h3>Réponses de la classe</h3>' +
         '<div class="grand">' + (rep.length ? Math.round(justes / rep.length * 100) : 0) + ' % de réussite</div>' +
         '<p>' + justes + ' juste' + (justes > 1 ? 's' : '') + ' sur ' + rep.length + ' réponse' + (rep.length > 1 ? 's' : '') + (sansRep > 0 ? ' · ' + sansRep + ' sans réponse' : '') + '</p>' + repart + '</div>' +

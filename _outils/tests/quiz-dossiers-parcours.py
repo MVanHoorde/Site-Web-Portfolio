@@ -39,7 +39,8 @@ class Base(qp.Base):
         self.c.autocommit = True
         self.c.execute('insert into public.gestionnaires (auth_id) values (%s)', (PROF,))
         self.c.execute((RACINE / 'bdd' / 'schema' / '051-quiz-dossiers.sql').read_text(encoding='utf-8'))
-        self.c.execute((RACINE / 'bdd' / 'schema' / '052-quiz-revoir.sql').read_text(encoding='utf-8'))
+        # 052 et 053 sont déjà posés par quiz-parcours.Base : rejouer 052 ici
+        # écraserait le quiz_etat du 053
         self.c.autocommit = False
         self.fonctions = {}
         for nom, noms, types, ret in self.c.execute(

@@ -61,8 +61,10 @@ donc un quiz écrit à l'écran s'exporte, et un fichier importé se retouche ic
   ordre (remise en ordre), paires (association), réponses acceptées, indice et
   pièges (mot), échelle, tolérance et marge (curseur), **zones justes tracées
   au doigt ou à la souris sur l'image** (zone). Le volet « Correction, image,
-  repères » porte le point de cours, la notion, le niveau, le BO, l'image, l'image
-  à fournir et le point à vérifier. Changer de type garde l'énoncé et ce qui se
+  repères » (« Correction, indice, image, repères ») porte l'indice payant, la
+  case « Calculatrice », le point de cours, la notion, le niveau, le BO, l'image
+  de l'énoncé, l'image de la correction, l'image à fournir et le point à
+  vérifier. Une remise en ordre a en plus les deux libellés de son échelle. Changer de type garde l'énoncé et ce qui se
   transpose (QCM ↔ vrai/faux, valeur ↔ curseur…).
 - **Sous la question**, l'aperçu : l'écran projeté, correction affichée,
   à chaque frappe. « Tester » montre tout le quiz ainsi.
@@ -83,6 +85,21 @@ sélectionne (un autre toucher la remplace), l'élève coche ou non le pari, pui
 touche **Envoyer** (demande des BTS MS, 22/11/2026). **Sans pari**, une réponse
 unique part dès qu'on la touche. Les autres types de question ont toujours leur
 bouton « Envoyer », posé sous la case du pari.
+
+## L'indice payant (053)
+
+Une question qui porte `indice` affiche sur le téléphone une case « 💡 Indice ».
+Cochée, la base **enregistre la prise** (table `quiz_indices`) puis rend le
+texte (`quiz_indice`) : avant, le téléphone ne sait qu'une chose, qu'il existe
+un indice — l'inspecteur du navigateur n'en livre rien. Un indice pris ne se
+rend pas, et ne se prend plus une fois la réponse envoyée.
+
+Les **gains** de la question sont divisés par deux : chrono, bonus du pari
+(+25 %) et points partiels compris. Un pari perdu coûte toujours 200 points :
+l'indice n'achète pas l'assurance. Même règle en entraînement seul. L'écran
+projeté annonce l'indice pendant la question **sans jamais le projeter**, compte
+ceux qui l'ont pris, et le montre à la correction ; les statistiques d'une
+partie ont une colonne « 💡 Indice pris ».
 
 ## Le QR code fixe d'un quiz (salle permanente)
 
@@ -110,10 +127,13 @@ Comptes enseignants : ceux du tableau de bord (`enseignants`). Aucun compte neuf
   question : l'élève reçoit l'énoncé et les choix, la base juge et compte les
   points avec **son** horloge (1 000 points au plus, la moitié perdue au fil du
   chrono). Un élève qui ouvre l'inspecteur n'y lit rien.
-- Un élève ne touche aucune table : sept fonctions seulement
+- Un élève ne touche aucune table : huit fonctions seulement
   (`quiz_rejoindre`, `quiz_etat`, `quiz_repondre`, `quiz_renommer` — « Ce
-  n'est pas mon nom » change le pseudo du même joueur, 048 —, et pour le QR
-  code fixe `quiz_salle`, `quiz_entrainer`, `quiz_solo`).
+  n'est pas mon nom » change le pseudo du même joueur, 048 —, `quiz_indice`
+  — l'indice payant, 053 —, et pour le QR code fixe `quiz_salle`,
+  `quiz_entrainer`, `quiz_solo`).
+- L'indice et l'image de correction ne sortent pas pendant la question : le
+  premier seulement pour l'élève qui l'a payé, la seconde à la correction.
 - Un enseignant ne voit que **ses** parties ; les quiz sont partagés entre
   collègues (`partage`), modifiables par leur seul auteur.
 - RGPD : pseudonyme seulement (« prénom + initiale »), retirable par
@@ -175,6 +195,9 @@ Champs communs à toutes les questions :
 | `cours` | Le point de cours affiché à la correction |
 | `revoir` | `{ "texte": "S5 · Le routage", "lien": "pages/2nde-snt-t1-internet.html#etape-t1-routage" }` — la partie du cours qui réexplique (052). Montrée à l'élève qui se trompe, à la correction, et dans son **bilan de fin**, sous chaque notion ratée (« Revoir : … → », sans doublon). `#sN` vise une séance, `#etape-<clé>` une étape (`data-cle` de la page : le moteur des séquences la déplie et la surligne ; une étape encore verrouillée renvoie à sa séance). Plan des clés : `python -I -X utf8 _outils/kahoot/plan_cours.py`. Contrôle des liens : `_outils/kahoot/verifier_revoir.py`. |
 | `image` | `{ "src": "assets/img/quiz/…/x.jpg", "alt": "…" }` — chemin depuis la racine du site, ou adresse `https` |
+| `image_correction` | `{ "src": "…", "alt": "…" }` — un schéma qui accompagne la solution, montré **à la correction seulement** (téléphone, écran projeté, aperçu de l'éditeur) (053) |
+| `indice` | **Indice payant** (053) : un texte, formules `$…$` comprises (800 caractères au plus). Sur le téléphone, une case « 💡 Indice — la question ne rapportera que la moitié des points » ; cochée, l'indice s'affiche et les gains de la question sont **divisés par deux** (voir plus bas). Ne pas confondre avec `mot.indice`, le petit texte gratuit sous le champ d'une question « mot ». |
+| `calculatrice` | `true` (053) : un bouton « 🧮 Calculatrice » sur le téléphone — calculatrice de collège (fraction à vraie barre, x², × 10ⁿ, parenthèses), qui tourne sur l'appareil sans rien envoyer ; « Utiliser ce résultat » le recopie dans le champ d'une question `num`. |
 | `image_attendue` | Description d'une image à fournir : affichée en cadre de réservation dans l'aperçu, **jamais** aux élèves |
 | `a_verifier` | Point à relire : signalé dans la bibliothèque et l'aperçu |
 
@@ -188,10 +211,18 @@ Selon le type :
   `unites` (les choix proposés, distracteurs compris), `autres`
   (`[{ "valeur": 70.6, "unite": "km/h" }]` : une écriture juste dans une autre
   unité), `pieges` (`[{ "valeur": 9.81, "message": "…" }]` : une erreur attendue
-  et son explication), `message_unite` (bonne valeur, mauvaise unité).
+  et son explication), `message_unite` (bonne valeur, mauvaise unité). Sur le
+  téléphone, la valeur se tape avec une virgule ; le bouton « × 10ⁿ » ouvre
+  un petit champ d'exposant écrit en exposant, et deux boutons ± donnent le
+  signe (le clavier numérique de l'iPhone n'a pas de moins). La page envoie
+  toujours un nombre : la base juge comme avant.
 - **`ordre`** — `items` : 2 à 8 textes **dans le bon ordre** ; la base les
   mélange à chaque partie. Le téléphone ne reçoit que des positions mélangées :
-  l'inspecteur du navigateur ne livre pas l'ordre juste.
+  l'inspecteur du navigateur ne livre pas l'ordre juste. L'élève range les
+  étiquettes **en les faisant glisser** (doigt ou souris), ou par ▲ ▼ et les
+  flèches du clavier. `echelle` (facultatif, 053) : `["la plus petite", "la
+  plus grande"]`, les libellés du haut et du bas de l'échelle dessinée à côté
+  de la liste ; sans elle, « en premier » / « en dernier ».
 - **`zone`** — `zone` : `src`, `alt`, `cibles` : rectangles en % de l'image
   (`{ "x": 10, "y": 20, "l": 15, "h": 10 }`).
 - **`assoc`** — `paires` : 3 à 6 paires `["gauche", "droite"]`. La colonne de
@@ -208,9 +239,12 @@ Selon le type :
 
 ## Bancs d'essai
 
-- `python _outils/tests/quiz-base.py` — le 047 sur un Postgres local jetable,
-  rejoué deux fois, puis tous les contrôles (fuites de correction, chrono, pari,
-  unités, pièges, ordre, zone, exclusion, anonymisation, cloisonnement).
+- `python -X utf8 _outils/tests/quiz-base.py` — 047, 048, 051, 052 et 053 sur
+  un Postgres local jetable, chacun rejoué deux fois, puis tous les contrôles
+  (fuites de correction, chrono, pari, unités, pièges, ordre, zone, exclusion,
+  anonymisation, cloisonnement ; `quiz-indice.test.sql` : indice non divulgué
+  avant demande, gains divisés par deux avec et sans pari, en solo, champs 053
+  au validateur).
 - `python -X utf8 _outils/tests/quiz-editeur-parcours.py [dossier_captures]` —
   l'éditeur au navigateur : un quiz créé avec une question de chaque type
   (zone tracée à la souris), un enregistrement refusé tant qu'une question est
@@ -224,8 +258,10 @@ Selon le type :
   Mesure aussi que le PIN tient dans l'affiche en 1280 × 720.
 - `python _outils/tests/quiz-parcours.py [dossier_captures]` — un écran
   enseignant et une classe de téléphones jouent un quiz complet au navigateur,
-  **sur la vraie logique SQL** (Postgres local), temps réel compris. Aucune
-  requête ne sort de la machine. Demande `psycopg` (voir l'en-tête du script).
+  **sur la vraie logique SQL** (Postgres local), temps réel compris : indice
+  pris avec pari, calculatrice avec une fraction, saisie en × 10ⁿ, ordre glissé
+  au doigt, à la souris et au clavier, images de l'énoncé et de la correction.
+  Aucune requête ne sort de la machine. Demande `psycopg` (voir l'en-tête du script).
 
 ## Pas encore là
 

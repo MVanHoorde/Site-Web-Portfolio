@@ -79,7 +79,8 @@
 
   /* Changer de type : on garde l'énoncé, le point de cours, l'image…
      et ce qui se transpose d'un type à l'autre. */
-  var COMMUNS = ['enonce', 'temps', 'notion', 'bo', 'niveau', 'cours', 'revoir', 'image', 'image_attendue', 'a_verifier'];
+  var COMMUNS = ['enonce', 'temps', 'notion', 'bo', 'niveau', 'cours', 'revoir', 'image', 'image_attendue', 'a_verifier',
+                 'indice', 'calculatrice', 'image_correction', 'echelle'];
   function convertir(a, type) {
     var b = nouvelle(type);
     COMMUNS.forEach(function (k) { if (a[k] !== undefined) b[k] = copie(a[k]); });
@@ -119,6 +120,17 @@
     if (a.temps == null || isNaN(a.temps)) delete a.temps;
     if (a.revoir) { if (vide(a.revoir.lien)) delete a.revoir; else { a.revoir.lien = a.revoir.lien.trim(); a.revoir.texte = String(a.revoir.texte || '').trim() || 'la partie du cours'; } }
     if (a.image) { if (vide(a.image.src)) delete a.image; else { a.image.src = a.image.src.trim(); if (vide(a.image.alt)) a.image.alt = ''; } }
+    // 053 : indice payant, calculatrice, image de correction, échelle d'une remise en ordre
+    if (vide(a.indice)) delete a.indice; else a.indice = String(a.indice).trim();
+    if (a.calculatrice) a.calculatrice = true; else delete a.calculatrice;
+    if (a.image_correction) {
+      if (vide(a.image_correction.src)) delete a.image_correction;
+      else { a.image_correction.src = a.image_correction.src.trim(); a.image_correction.alt = String(a.image_correction.alt || '').trim(); }
+    }
+    if (a.echelle) {
+      if (a.type !== 'ordre' || (vide(a.echelle[0]) && vide(a.echelle[1]))) delete a.echelle;
+      else a.echelle = [String(a.echelle[0] || '').trim(), String(a.echelle[1] || '').trim()];
+    }
     if (a.type === 'qcm' || a.type === 'vf') {
       var n = a.type === 'vf' && !a.options ? 2 : (a.options || []).length;
       if (a.options) a.options = a.options.map(function (o) { return String(o || '').trim(); });
@@ -268,7 +280,7 @@
     // un seul écouteur de saisie, posé une fois : le formulaire se redessine dedans
     var qb = $('#ed-question');
     qb.addEventListener('input', surSaisie);
-    qb.addEventListener('change', function (e) { if (e.target.tagName === 'SELECT' && e.target.dataset.f) surSaisie(e); });
+    qb.addEventListener('change', function (e) { if ((e.target.tagName === 'SELECT' || e.target.type === 'checkbox') && e.target.dataset.f) surSaisie(e); });
     dessinerListe();
     dessinerQuestion();
     majEtat();
@@ -431,7 +443,9 @@
             bouton('haut', '↑', ' data-liste="items" data-i="' + i + '"' + (i ? '' : ' disabled')) +
             bouton('bas', '↓', ' data-liste="items" data-i="' + i + '"' + (i < l.length - 1 ? '' : ' disabled')) +
             (l.length > 2 ? bouton('suppr', '✕', ' data-liste="items" data-i="' + i + '"') : '') + '</li>';
-        }).join('') + '</ol>' + ((x.items || []).length < 8 ? bouton('ajout', '+ Élément', ' data-liste="items"') : '');
+        }).join('') + '</ol>' + ((x.items || []).length < 8 ? bouton('ajout', '+ Élément', ' data-liste="items"') : '') +
+        '<h3>L\'échelle sur le côté <span class="note">— facultatif : ce qu\'on trouve en haut et en bas de la liste</span></h3><div class="ed-grille">' +
+          champ('En haut', 'echelle.0', { ph: 'ex. la plus petite' }) + champ('En bas', 'echelle.1', { ph: 'ex. la plus grande' }) + '</div>';
     }
     if (x.type === 'assoc') {
       h += '<h3>Les paires <span class="note">— la colonne de droite sera mélangée ; points partiels</span></h3>' +
@@ -500,7 +514,12 @@
       '<form class="ed-form" id="ed-form" onsubmit="return false">' +
         champ('Énoncé', 'enonce', { zone: true, rows: 3, large: true, ph: 'La question. Formules entre $…$ (ex. $E = mc^2$, $\\ce{H2O}$), **gras**.' }) +
         formType(x) +
-        '<details class="ed-plus" id="ed-plus"' + (E.plusOuvert || x.cours || x.revoir || x.notion || x.image || x.a_verifier ? ' open' : '') + '><summary>Correction, image, repères</summary><div class="ed-grille">' +
+        '<details class="ed-plus" id="ed-plus"' + (E.plusOuvert || x.cours || x.revoir || x.notion || x.image || x.a_verifier || x.indice || x.calculatrice || x.image_correction ? ' open' : '') + '><summary>Correction, indice, image, repères</summary><div class="ed-grille">' +
+          // 053 : l'indice payant (ne pas confondre avec l'indice gratuit d'une question « mot »)
+          champ('Indice payant', 'indice', { zone: true, rows: 2, large: true, ph: 'ex. Pense à $P = U \\times I$.',
+                aide: 'L\'élève le demande d\'une case à cocher : la question ne lui rapporte alors que la moitié des points. Formules $…$ comprises. Il n\'est jamais projeté pendant la question.' }) +
+          '<label class="case large"><input type="checkbox" data-f="calculatrice" data-t="bool"' + (x.calculatrice ? ' checked' : '') + '>' +
+            '<span><b>Calculatrice</b> — un bouton « Calculatrice » à côté de la question, sur le téléphone (fractions, puissances de 10, x²). Rien n\'est envoyé.</span></label>' +
           champ('À retenir (montré à la correction)', 'cours', { zone: true, rows: 2, large: true }) +
           champ('À revoir : texte du lien', 'revoir.texte', { ph: 'ex. S5 · Le routage : l\'aiguillage des paquets', aide: 'Montré à l\'élève qui se trompe, et dans son bilan.' }) +
           champ('À revoir : adresse', 'revoir.lien', { ph: 'pages/2nde-snt-t1-internet.html#etape-t1-routage', aide: 'Une page du site ; #sN vise une séance, #etape-<clé> une étape.' }) +
@@ -510,6 +529,8 @@
           champ('Ligne du programme (BO)', 'bo', { large: true }) +
           champ('Image de l\'énoncé', 'image.src', { ph: 'assets/img/quiz/… ou https://…', aide: 'Chemin depuis la racine du site, ou adresse https.' }) +
           champ('Description de l\'image', 'image.alt') +
+          champ('Image de la correction', 'image_correction.src', { ph: 'assets/img/quiz/… ou https://…', aide: 'Montrée à la correction seulement (téléphone, écran projeté) : un schéma qui accompagne la solution.' }) +
+          champ('Description de l\'image de la correction', 'image_correction.alt') +
           champ('Image à fournir (vue des enseignants seulement)', 'image_attendue', { large: true }) +
           champ('Point à vérifier', 'a_verifier', { large: true, aide: 'Signalé dans la bibliothèque et l\'aperçu.' }) +
         '</div></details>' +
@@ -541,6 +562,7 @@
     else if (t === 'liste') v = v.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
     else if (t === 'lignes') v = v.split('\n');
     else if (t === 'niv') v = v ? +v : undefined;
+    else if (t === 'bool') v = el.checked ? true : undefined;
     if (chemin.indexOf('image.') === 0 && !x.image) x.image = { src: '', alt: '' };
     if (chemin.indexOf('revoir.') === 0 && !x.revoir) x.revoir = { texte: '', lien: '' };
     poserPath(x, chemin, v);
@@ -652,7 +674,9 @@
         (n.autres || []).filter(function (a) { return a && a.valeur != null; }).map(function (a) { return ' ou ' + Q.ecrireNombre(a.valeur) + ' ' + esc(a.unite || ''); }).join('') +
         (n.unites && n.unites.length ? '<div class="note">Unités proposées : ' + esc(n.unites.join(' · ')) + '</div>' : '') + '</div>';
     } else if (x.type === 'ordre') {
-      h += '<ol class="ordre-proj">' + (x.items || []).map(function (t, i) { return '<li><b>' + (i + 1) + '</b><span>' + Q.rendre(t || '…') + '</span></li>'; }).join('') + '</ol>';
+      var ech = x.echelle || [];
+      h += (ech[0] || ech[1] ? '<div class="echelle-proj"><span>' + Q.rendre(ech[0] || '') + '</span><span class="axe-h" aria-hidden="true"></span><span>' + Q.rendre(ech[1] || '') + '</span></div>' : '') +
+        '<ol class="ordre-proj">' + (x.items || []).map(function (t, i) { return '<li><b>' + (i + 1) + '</b><span>' + Q.rendre(t || '…') + '</span></li>'; }).join('') + '</ol>';
     } else if (x.type === 'assoc') {
       h += '<div class="assoc-proj">' + (x.paires || []).map(function (p) {
         return '<div><b>•</b><span>' + Q.rendre(p[0] || '…') + '</span></div><div><b>→</b><span>' + Q.rendre(p[1] || '…') + '</span></div>';
@@ -673,6 +697,12 @@
         (z.cibles || []).map(function (cc) { return '<span class="cible" style="left:' + cc.x + '%;top:' + cc.y + '%;width:' + cc.l + '%;height:' + cc.h + '%"></span>'; }).join('') + '</div></div>'
         : '<div class="reserve-img">Image de la zone à indiquer.</div>';
     }
+    // 053 : ce que le téléphone propose ; l'indice et l'image de correction tels qu'à la correction
+    if (x.indice || x.calculatrice) h += '<div class="badges-q">' + (x.indice ? '<span class="badge-q">💡 Indice payant</span>' : '') +
+      (x.calculatrice ? '<span class="badge-q calc-b">🧮 Calculatrice</span>' : '') + '</div>';
+    if (x.indice && String(x.indice).trim()) h += '<div class="panneau indice"><h3>💡 L\'indice — projeté à la correction seulement</h3><p>' + Q.rendre(x.indice) + '</p></div>';
+    var ic = x.image_correction && Q.urlImage(x.image_correction.src);
+    if (ic) h += '<div class="panneau"><h3>La correction en image</h3><img class="img-corr" src="' + esc(ic) + '" alt="' + esc(x.image_correction.alt || '') + '"></div>';
     if (x.cours || (x.revoir && x.revoir.lien)) h += '<div class="panneau"><h3>À retenir</h3>' + (x.cours ? '<p>' + Q.rendre(x.cours) + '</p>' : '') +
       (x.revoir && x.revoir.lien ? '<p>' + Q.revoirHtml(x.revoir) + '</p>' : '') + '</div>';
     return h;

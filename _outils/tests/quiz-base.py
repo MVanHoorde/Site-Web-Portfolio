@@ -6,7 +6,8 @@
 Crée un cluster Postgres temporaire (initdb), pose les doublures de ce
 que Supabase fournit (rôles anon/authenticated, auth.uid(), enseignants,
 est_enseignant, verrouiller_observateurs), rejoue bdd/schema/047-quiz.sql
-DEUX fois (il doit être rejouable), puis _outils/tests/quiz-base.test.sql.
+DEUX fois (il doit être rejouable), de même 048, 051, 052 et 053, puis
+_outils/tests/quiz-base.test.sql et les essais propres à chaque fichier.
 Rien ne touche la base de production.
 
 Prérequis : PostgreSQL installé (scoop install postgresql), binaires
@@ -28,6 +29,8 @@ SCHEMA_051 = RACINE / 'bdd' / 'schema' / '051-quiz-dossiers.sql'
 ESSAIS_051 = Path(__file__).with_name('quiz-dossiers.test.sql')
 SCHEMA_052 = RACINE / 'bdd' / 'schema' / '052-quiz-revoir.sql'
 ESSAIS_052 = Path(__file__).with_name('quiz-revoir.test.sql')
+SCHEMA_053 = RACINE / 'bdd' / 'schema' / '053-quiz-indice-calculatrice.sql'
+ESSAIS_053 = Path(__file__).with_name('quiz-indice.test.sql')
 ESSAIS = Path(__file__).with_name('quiz-base.test.sql')
 
 DOUBLURES = r"""
@@ -134,12 +137,15 @@ def main():
                   ('051, rejoué', ['-f', str(SCHEMA_051)]),
                   ('052, à revoir', ['-f', str(SCHEMA_052)]),
                   ('052, rejoué', ['-f', str(SCHEMA_052)]),
+                  ('053, indice et calculatrice', ['-f', str(SCHEMA_053)]),
+                  ('053, rejoué', ['-f', str(SCHEMA_053)]),
                   ('essais', ['-f', str(ESSAIS)]),
                   ('051, gestionnaire et un quiz MS2', ['-c', PREPA_051]),
                   ('051, rejoué avec gestionnaire', ['-f', str(SCHEMA_051)]),
                   ('051, rejoué encore', ['-f', str(SCHEMA_051)]),
                   ('essais des dossiers', ['-f', str(ESSAIS_051)]),
-                  ('essais à revoir', ['-f', str(ESSAIS_052)])]
+                  ('essais à revoir', ['-f', str(ESSAIS_052)]),
+                  ('essais indice et calculatrice', ['-f', str(ESSAIS_053)])]
         for nom, args in etapes:
             r = psql(*args)
             sortie = (r.stdout + r.stderr).strip()

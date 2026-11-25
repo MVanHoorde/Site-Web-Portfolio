@@ -53,6 +53,7 @@ PROF = '00000000-0000-0000-0000-0000000000a1'
 CAPTURES = Path(sys.argv[1]) if len(sys.argv) > 1 else None
 FAUTES = []
 
+INDICE = 'Multiplie $g$ par la durée : $v = g\\,t$ (INDICE-DU-BANC).'
 QUIZ = {
     'slug': 'banc-parcours', 'titre': 'Banc — puissance et unités', 'niveau': 'BTS MS 1',
     'questions': [
@@ -61,15 +62,20 @@ QUIZ = {
          'pourquoi': ['L\'énergie se mesure en joules.', 'La force se mesure en newtons.', None, 'La pression se mesure en pascals.'],
          'cours': '$P = \\dfrac{E}{\\Delta t}$ : un watt, c\'est un joule par seconde.'},
         {'type': 'vf', 'enonce': 'Un kilowattheure est une unité de puissance.', 'notion': 'Énergie', 'temps': 6,
-         'correct': [1], 'pourquoi': ['Le kWh est une énergie : une puissance multipliée par une durée.', None]},
+         'correct': [1], 'pourquoi': ['Le kWh est une énergie : une puissance multipliée par une durée.', None],
+         # l'image de l'énoncé : sur le téléphone, à la question ET à la correction
+         'image': {'src': 'assets/img/auteur/quizeo-figure.jpg', 'alt': 'une figure'}},
         {'type': 'num', 'enonce': 'Vitesse après $t = 2{,}0$ s de chute libre ($g = 9{,}81\\ \\text{m·s}^{-2}$) ?',
-         'notion': 'Mécanique', 'temps': 30,
+         'notion': 'Mécanique', 'temps': 40,
          'num': {'valeur': 19.6, 'tolerance': 0.03, 'unite': 'm/s', 'unites': ['m/s', 'km/h', 'm/s²'],
                  'autres': [{'valeur': 70.6, 'unite': 'km/h'}],
                  'pieges': [{'valeur': 9.81, 'message': '9,81, c\'est $g$ : il faut multiplier par la durée.'}]},
-         'cours': '$v = g\\,t$'},
+         'cours': '$v = g\\,t$',
+         # 053 : indice payant, calculatrice, image de correction
+         'indice': INDICE, 'calculatrice': True,
+         'image_correction': {'src': 'assets/img/auteur/quizeo-figure.jpg', 'alt': 'le schéma de la correction'}},
         {'type': 'ordre', 'enonce': 'Range du plus petit au plus grand.', 'notion': 'Unités', 'temps': 30,
-         'items': ['1 mm', '1 cm', '1 m', '1 km']},
+         'items': ['1 mm', '1 cm', '1 m', '1 km'], 'echelle': ['le plus petit', 'le plus grand']},
         {'type': 'zone', 'enonce': 'Touche le quart haut gauche de l\'image.', 'notion': 'Lecture d\'image', 'temps': 30,
          'zone': {'src': 'assets/img/auteur/quizeo-figure.jpg', 'alt': 'figure', 'cibles': [{'x': 0, 'y': 0, 'l': 50, 'h': 50}]}},
         {'type': 'qcm', 'enonce': 'Lesquelles sont des unités d\'énergie ?', 'notion': 'Énergie', 'temps': 30,
@@ -107,6 +113,8 @@ class Base:
         self.c.execute(qb.DOUBLURES)
         self.c.execute((RACINE / 'bdd' / 'schema' / '047-quiz.sql').read_text(encoding='utf-8'))
         self.c.execute((RACINE / 'bdd' / 'schema' / '048-quiz-renommer.sql').read_text(encoding='utf-8'))
+        self.c.execute((RACINE / 'bdd' / 'schema' / '052-quiz-revoir.sql').read_text(encoding='utf-8'))
+        self.c.execute((RACINE / 'bdd' / 'schema' / '053-quiz-indice-calculatrice.sql').read_text(encoding='utf-8'))
         self.c.execute('insert into auth.users values (%s)', (PROF,))
         self.c.execute('insert into public.enseignants values (%s)', (PROF,))
         self.c.autocommit = False
@@ -282,6 +290,10 @@ def brancher_contexte(ctx, base, relais, stats):
                     or 'cibles' in json.dumps(qpub) or '"valeur"' in json.dumps(qpub)
                 if fuite:
                     FAUTES.append('fuite de correction pendant la question : ' + json.dumps(r)[:300])
+                # 053 : le texte de l'indice ne sort qu'à qui l'a payé (mon_indice)
+                if 'INDICE-DU-BANC' in json.dumps(qpub) or ('INDICE-DU-BANC' in json.dumps(r) and 'mon_indice' not in r) \
+                        or 'image_correction' in json.dumps(r):
+                    FAUTES.append('fuite de l\'indice ou de l\'image de correction pendant la question : ' + json.dumps(r)[:300])
         elif u.path.startswith('/rest/v1/'):
             statut, r = base.rest(role, sub, req.method, u.path.rsplit('/', 1)[1], q)
         elif u.path == '/realtime/v1/api/broadcast':
@@ -326,6 +338,51 @@ def attendre(pages, predicat, limite=40, pas=150):
     return False
 
 
+def textes_ordre(e):
+    return e.eval_on_selector_all('#ordre li .texte', 'l => l.map(x => x.textContent.trim())')
+
+
+def glisser_doigt(e, x0, y0, x1, y1, capture_milieu=None):
+    """Un vrai glisser AU DOIGT (événements tactiles, donc pointerType « touch »)."""
+    cdp = e.context.new_cdp_session(e)
+    cdp.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': x0, 'y': y0}]})
+    for k in range(1, 11):
+        cdp.send('Input.dispatchTouchEvent', {'type': 'touchMove', 'touchPoints': [{'x': x0 + (x1 - x0) * k / 10, 'y': y0 + (y1 - y0) * k / 10}]})
+        e.wait_for_timeout(16)
+        if k == 7 and capture_milieu:
+            capture(e, capture_milieu)
+    cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []})
+    cdp.detach()
+
+
+def ranger(e, cible, doigt=False, capture_milieu=None):
+    """Range la liste #ordre dans l'ordre `cible` (des textes) par glisser-déposer :
+    chaque étiquette est tirée jusqu'au haut de la place qu'elle doit prendre."""
+    for pos, txt in enumerate(cible):
+        k = textes_ordre(e).index(txt)
+        if k == pos:
+            continue
+        lis = e.locator('#ordre li.glisse')
+        sb, db = lis.nth(k).bounding_box(), lis.nth(pos).bounding_box()
+        x0, y0, y1 = sb['x'] + sb['width'] * .4, sb['y'] + sb['height'] / 2, db['y'] + 6
+        if doigt:
+            glisser_doigt(e, x0, y0, x0, y1, capture_milieu)
+            capture_milieu = None
+        else:
+            e.mouse.move(x0, y0); e.mouse.down(); e.mouse.move(x0, y1, steps=8); e.mouse.up()
+        e.wait_for_timeout(60)
+    verifier(textes_ordre(e) == list(cible), f'le glisser-déposer n\'a pas rangé la liste : {textes_ordre(e)} au lieu de {list(cible)}')
+
+
+def prendre_indice(e):
+    """Coche la case de l'indice payant ; l'indice doit s'afficher, rendu (KaTeX)."""
+    verifier(e.locator('#c-indice').count() == 1, 'pas de case « Indice » sur le téléphone')
+    e.check('#c-indice')
+    ok = attendre([e], lambda: e.locator('.indice-pris .indice-texte').count() > 0, limite=10)
+    verifier(ok and 'INDICE-DU-BANC' in e.inner_text('.indice-pris'), 'l\'indice ne s\'affiche pas une fois la case cochée')
+    verifier(e.locator('.indice-pris .katex').count() > 0, 'les formules de l\'indice ne sont pas rendues')
+
+
 def repondre_nouveaux(e, q, bon, part=False):
     """Association, mot, curseur : juste, faux, ou (part) à moitié."""
     t = q['type']
@@ -360,12 +417,12 @@ def repondre(e, q, bon):
             e.click(f'#grille .rep[data-i="{c}"]')
         e.click('#b-valider')
     elif t == 'num':
+        if bon and q.get('indice'):
+            prendre_indice(e)            # 053 : en solo aussi, l'indice coûte la moitié
         e.fill('#n-val', '19,6' if bon else '9,81'); e.select_option('#n-unite', 'm/s')
         e.click('#b-valider')
     elif t == 'ordre':
-        ordre = q['items'] if bon else [q['items'][1], q['items'][0]] + q['items'][2:]
-        for txt in ordre:
-            e.locator('#ordre button', has_text=re.compile('^\\s*' + re.escape(txt) + '\\s*$')).click()
+        ranger(e, q['items'] if bon else [q['items'][1], q['items'][0]] + q['items'][2:])
         e.click('#b-valider')
     elif t == 'zone':
         img = e.locator('#zone img'); img.wait_for()
@@ -461,7 +518,17 @@ def salle_permanente(nav, base, relais, stats, site, prof):
                  f'solo, question {i + 1} : la correction ne suit pas la réponse')
         classe = s.locator('.verdict').get_attribute('class') or ''
         verifier(('juste' if bon else 'faux') in classe, f'solo, question {i + 1} : verdict « {classe} »')
-        verifier('Rang' not in s.inner_text('main'), 'solo : un rang est affiché')
+        if q.get('indice') and bon:
+            verifier('indice pris' in s.inner_text('main').lower(), 'solo : la correction ne dit pas que l’indice a coûté')
+            verifier(s.locator('.image-corr img').count() == 1, 'solo : pas d’image de correction')
+            capture(s, 'phone-13b-solo-correction-indice')
+            with base.verrou:
+                x = base.c.execute("select r.points, public.quiz_points(true, r.temps_ms, 40000, false), r.indice "
+                                   "from public.quiz_reponses r join public.quiz_joueurs j on j.id = r.joueur_id "
+                                   "where j.pseudo = 'Solo S.' and r.idx = %s", (i,)).fetchone()
+                base.c.commit()
+            verifier(x and x[2] and x[0] == int(x[1] / 2 + .5), f'solo, indice : points {x}')
+        verifier('Rang' not in s.inner_text('.score-ligne'), 'solo : un rang est affiché')
         if i == 1:
             capture(s, 'phone-13-solo-correction')
         s.click('#b-suite')
@@ -563,8 +630,11 @@ def main():
                 verifier(ok, f'question {i + 1} : un téléphone ne l\'affiche pas')
                 if i == 0:
                     capture(prof, '03-question-qcm'); capture(eleves[0], 'phone-01-question')
-                if q['type'] in ('assoc', 'mot', 'curseur', 'zone', 'ordre'):
+                if q['type'] in ('assoc', 'mot', 'curseur', 'zone', 'ordre', 'num'):
                     capture(prof, f'03-question-{q["type"]}')
+                if q.get('indice'):
+                    verifier('Indice payant' in prof.inner_text('.scene') and 'INDICE-DU-BANC' not in prof.inner_text('.scene'),
+                             'écran projeté : l’indice est projeté pendant la question, ou n’est pas annoncé')
                 attendus = {}
                 for k, e in enumerate(eleves):
                     if i == 1 and k == 7:
@@ -598,16 +668,49 @@ def main():
                         e.click('#b-valider')
                     elif t == 'num':
                         val, unite = [('19,6', 'm/s'), ('70,6', 'km/h')][k % 2] if bon else [('9,81', 'm/s'), ('19,6', 'km/h')][k % 2]
-                        e.fill('#n-val', val); e.select_option('#n-unite', unite)
                         if k == 0:
+                            # 053 : l'indice payant, puis la calculatrice avec une fraction : 981/100 × 2
+                            capture(e, 'phone-02a-question-indice-calculatrice')
+                            prendre_indice(e)
+                            capture(e, 'phone-02b-indice-pris')
+                            e.click('#b-calc')
+                            e.wait_for_selector('.calc:not([hidden])')
+                            for touche in ['frac', '9', '8', '1', 'droite', '1', '0', '0', 'droite', '×', '2']:
+                                e.click(f'.calc [data-k="{touche}"]')
+                            verifier(e.locator('.calc-expr .mfrac, .calc-expr .frac-line').count() > 0, 'calculatrice : pas de vraie barre de fraction')
+                            e.click('.calc [data-k="="]')
+                            res = e.inner_text('#calc-res')
+                            verifier('19,62' in res, 'calculatrice : 981/100 × 2 ne donne pas 19,62 : ' + res)
+                            capture(e, 'phone-02c-calculatrice-fraction')
+                            e.click('#calc-utiliser')
+                            verifier(e.locator('.calc').is_hidden(), 'calculatrice : « Utiliser ce résultat » ne la ferme pas')
+                            verifier(e.input_value('#n-val') == '19,62', 'calculatrice : le résultat n\'est pas recopié : ' + e.input_value('#n-val'))
+                            e.select_option('#n-unite', unite)
                             capture(e, 'phone-02-numerique')
+                        elif k == 2:
+                            # la puissance de 10 écrite proprement : 1,96 × 10¹
+                            e.fill('#n-val', '1,96'); e.click('#b-p10'); e.fill('#n-exp', '1'); e.select_option('#n-unite', unite)
+                            verifier('19,6' in e.inner_text('#n-apercu'), 'puissance de 10 : la valeur lue est fausse : ' + e.inner_text('#n-apercu'))
+                            capture(e, 'phone-02d-puissance-de-10')
+                        else:
+                            e.fill('#n-val', val); e.select_option('#n-unite', unite)
                         e.click('#b-valider')
                     elif t == 'ordre':
                         ordre = q['items'] if bon else [q['items'][1], q['items'][0]] + q['items'][2:]
-                        for txt in ordre:
-                            e.locator('#ordre button', has_text=re.compile('^\\s*' + re.escape(txt) + '\\s*$')).click()
                         if k == 0:
+                            capture(e, 'phone-03a-ordre-avant')
+                            ranger(e, ordre, doigt=True, capture_milieu='phone-03b-ordre-au-doigt')
                             capture(e, 'phone-03-ordre')
+                        elif k == 4:
+                            # au clavier : chaque étiquette remonte à sa place par la flèche ↑
+                            for pos, txt in enumerate(ordre):
+                                kk = textes_ordre(e).index(txt)
+                                e.locator('#ordre li.glisse').nth(kk).focus()
+                                for _ in range(kk - pos):
+                                    e.keyboard.press('ArrowUp')
+                            verifier(textes_ordre(e) == ordre, 'ordre au clavier raté : %s' % textes_ordre(e))
+                        else:
+                            ranger(e, ordre)
                         e.click('#b-valider')
                     elif t == 'zone':
                         img = e.locator('#zone img'); img.wait_for()
@@ -627,10 +730,20 @@ def main():
                 capture(prof, f'04-correction-q{i + 1}-{q["type"]}')
                 if i == 2:
                     capture(eleves[1], 'phone-04-correction-faux')
+                    capture(eleves[0], 'phone-04b-correction-indice')
+                    v0 = eleves[0].inner_text('main')
+                    verifier('indice pris' in v0.lower(), 'téléphone : la correction ne dit pas que l’indice a coûté')
+                    verifier(eleves[0].locator('.image-corr img').count() == 1, 'téléphone : pas d’image de correction')
+                    verifier('INDICE-DU-BANC' in prof.inner_text('.scene') and 'pris par 1 élève' in prof.inner_text('.scene').lower(),
+                             'écran projeté : l’indice n’est pas montré à la correction, ou le compte est faux')
+                    verifier(prof.locator('.scene .img-corr').count() == 1, 'écran projeté : pas d’image de correction')
                     # 2 erreurs d'unité (élèves 1 et 7), 1 piège 9,81 (élève 4) : l'unité l'emporte
                     piege = prof.inner_text('.panneau.piege') if prof.locator('.panneau.piege').count() else ''
                     verifier('2 élèves' in piege.lower().replace('élèves', 'élèves') and 'unité' in piege,
                              'erreur la plus fréquente mal projetée : ' + piege)
+                if i == 1:
+                    verifier(eleves[2].locator('.q-img').count() == 1, 'téléphone : l’image de l’énoncé manque à la correction')
+                    capture(eleves[2], 'phone-04c-correction-image')
                 if i == 0:
                     capture(eleves[2], 'phone-04-correction-juste')
                 if q['type'] in ('assoc', 'mot', 'curseur'):
@@ -667,6 +780,14 @@ def main():
                 n_pari = base.c.execute('select count(*) from public.quiz_reponses where sur').fetchone()[0]
                 base.c.commit()
             print(f'· {n_rep} réponses en base, dont {n_pari} pariées')
+            # 053 : l'élève 0 a pris l'indice et parié à la question 3, juste : la moitié des gains
+            with base.verrou:
+                x = base.c.execute("select r.points, r.temps_ms, r.indice, public.quiz_points(true, r.temps_ms, 40000, true) "
+                                   "from public.quiz_reponses r join public.quiz_joueurs j on j.id = r.joueur_id "
+                                   "where j.pseudo = %s and r.idx = 2", (ELEVES[0],)).fetchone()
+                base.c.commit()
+            verifier(x and x[2] and x[0] == int(x[3] / 2 + .5), f'indice : points {x} — attendu la moitié de {x and x[3]}')
+            print(f'· indice + pari : {x[0]} points (la moitié de {x[3]})')
             verifier(n_pari == len(QUIZ['questions']), f'pari : {n_pari} réponses pariées au lieu de {len(QUIZ["questions"])}')
             print(f'· temps réel : {relais.abonnements} abonnements, {relais.diffusions} réveils diffusés')
             verifier(relais.abonnements >= len(eleves) and relais.diffusions >= len(QUIZ['questions']), 'le temps réel n\'a pas servi')

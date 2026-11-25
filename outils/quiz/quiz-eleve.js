@@ -31,7 +31,8 @@
     rt: null, rtOk: false,
     minuteur: null, chronoTimer: null, echecs: 0,
     salle: '',         // code de salle venu du QR code fixe
-    salleTimer: null
+    salleTimer: null,
+    indices: {}        // idx → texte de l'indice payé (053), rendu par la base
   };
   function solo() { return !!(S.etat && S.etat.mode === 'solo') || !!(S.joueur && S.joueur.mode === 'solo'); }
 
@@ -242,6 +243,7 @@
   }
   function demarrer() {
     $('#qui').textContent = S.joueur.pseudo;
+    S.indices = {};      // ceux d'une autre partie ne valent rien ici ; la base rend les siens
     clearTimeout(S.salleTimer);
     // en solo, personne ne sonne le réveil : la page relit après chaque geste
     if (!S.rt && S.joueur.mode !== 'solo') {
@@ -307,6 +309,8 @@
     if (cle === S.cle) { majChrono(); return; }
     S.cle = cle;
     clearInterval(S.chronoTimer);
+    // l'écran change : la calculatrice se ferme (et s'efface à la question suivante)
+    if (Q.calculatrice) Q.calculatrice.fermer(!precedent || precedent.idx !== e.idx);
     if (e.phase === 'accueil') ecranAttente(e);
     else if (e.phase === 'question') repondu ? ecranEnvoye(e) : ecranQuestion(e);
     else if (e.phase === 'correction') ecranCorrection(e);
@@ -351,9 +355,105 @@
   function teteQuestion(e) {
     var q = e.question;
     return '<div class="tete-q"><span>Question ' + (e.idx + 1) + ' / ' + e.total + '</span><span>' + esc(q.notion || '') + '</span></div>' +
-      '<p class="enonce">' + Q.rendre(q.enonce) + '</p>' +
-      (q.image && Q.urlImage(q.image.src) && q.type !== 'zone'
-        ? '<img src="' + esc(Q.urlImage(q.image.src)) + '" alt="' + esc(q.image.alt || '') + '" style="max-width:100%;border:2px solid var(--encre)">' : '');
+      '<p class="enonce">' + Q.rendre(q.enonce) + '</p>' + imageQuestion(q);
+  }
+  /* L'image de l'énoncé (pas pour la zone : l'image EST la question) */
+  function imageQuestion(q) {
+    var u = q.image && q.type !== 'zone' && Q.urlImage(q.image.src);
+    return u ? '<img class="q-img" src="' + esc(u) + '" alt="' + esc(q.image.alt || '') + '">' : '';
+  }
+
+  /* 053 — l'indice payant. La page ne connaît que « a_indice » : le texte
+     ne vient de la base qu'une fois la case cochée (quiz_indice), et la
+     prise est enregistrée avant. Un indice pris ne se rend pas. */
+  function indiceHtml(e) {
+    var q = e.question; if (!q.a_indice) return '';
+    var t = S.indices[e.idx] || e.mon_indice;
+    if (t) {
+      S.indices[e.idx] = t;
+      return '<div class="indice-pris" id="indice"><p class="indice-tete"><span aria-hidden="true">💡</span> Indice ' +
+        '<span>· la question ne rapportera que la moitié des points</span></p><p class="indice-texte">' + Q.rendre(t) + '</p></div>';
+    }
+    return '<label class="indice-case" id="indice"><input type="checkbox" id="c-indice">' +
+      '<span><b><span aria-hidden="true">💡</span> Indice</b> — la question ne rapportera que la moitié des points.</span></label>';
+  }
+  function brancherIndice(e) {
+    var c = $('#c-indice'); if (!c) return;
+    c.onchange = function () {
+      if (!c.checked) return;
+      c.disabled = true;
+      var idx = e.idx;
+      Q.rpc('quiz_indice', { p_jeton: S.joueur.jeton, p_idx: idx }, true).then(function (r) {
+        S.indices[idx] = r.indice;
+        var box = $('#indice');
+        if (box && S.etat && S.etat.idx === idx && S.etat.phase === 'question') box.outerHTML = indiceHtml(S.etat);
+      }).catch(function (err) {
+        c.checked = false; c.disabled = false;
+        var x = $('#err'); if (x) x.textContent = Q.messageErreur(err);
+      });
+    };
+  }
+
+  /* La calculatrice (quiz-calculatrice.js), si la question la propose */
+  function calcHtml(q) {
+    return q.calculatrice && Q.calculatrice
+      ? '<button type="button" class="outil" id="b-calc"><span aria-hidden="true">🧮</span> Calculatrice</button>' : '';
+  }
+
+  /* L'échelle d'une remise en ordre : le haut et le bas de la liste.
+     Sans « echelle », un libellé neutre. */
+  function echelleHtml(ech) {
+    ech = ech || [];
+    return '<div class="echelle" aria-hidden="true"><span class="bout">' + Q.rendre(ech[0] || 'en premier') + '</span>' +
+      '<span class="axe"></span><span class="bout">' + Q.rendre(ech[1] || 'en dernier') + '</span></div>';
+  }
+
+  /* Glisser-déposer au doigt ou à la souris (pointer events). Le pointeur
+     est capturé par la LISTE, qui ne bouge pas : l'étiquette tenue change
+     de place dans le DOM au passage du milieu de ses voisines, et suit le
+     doigt par une translation. Près des bords, la page défile. */
+  function brancherGlisser(liste, apres) {
+    var tenu = null;
+    function suivre() {
+      var li = tenu.li, haut = tenu.y - tenu.dy, milieu = haut + li.offsetHeight / 2, avant = null;
+      var freres = [].filter.call(liste.children, function (x) { return x !== li; });
+      for (var k = 0; k < freres.length; k++) {
+        var r = freres[k].getBoundingClientRect();
+        if (milieu < r.top + r.height / 2) { avant = freres[k]; break; }
+      }
+      var deja = avant ? li.nextElementSibling === avant : liste.lastElementChild === li;
+      if (!deja) liste.insertBefore(li, avant);
+      li.style.transform = '';
+      li.style.transform = 'translateY(' + Math.round(haut - li.getBoundingClientRect().top) + 'px)';
+    }
+    function fin() {
+      if (!tenu) return;
+      var li = tenu.li;
+      try { liste.releasePointerCapture(tenu.id); } catch (x) { /* déjà relâché */ }
+      tenu = null;
+      li.style.transform = ''; li.classList.remove('tenu'); liste.classList.remove('en-cours');
+      apres(li);
+    }
+    liste.addEventListener('pointerdown', function (ev) {
+      var li = ev.target.closest('li.glisse');
+      if (!li || ev.target.closest('button') || liste.classList.contains('fige') || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+      ev.preventDefault();
+      tenu = { li: li, id: ev.pointerId, dy: ev.clientY - li.getBoundingClientRect().top, y: ev.clientY };
+      try { liste.setPointerCapture(ev.pointerId); } catch (x) { /* rien */ }
+      li.classList.add('tenu'); liste.classList.add('en-cours');
+      try { li.focus({ preventScroll: true }); } catch (x) { /* rien */ }
+    });
+    liste.addEventListener('pointermove', function (ev) {
+      if (!tenu || ev.pointerId !== tenu.id) return;
+      ev.preventDefault();
+      tenu.y = ev.clientY;
+      if (ev.clientY < 70) window.scrollBy(0, -14);
+      else if (ev.clientY > window.innerHeight - 70) window.scrollBy(0, 14);
+      suivre();
+    });
+    liste.addEventListener('pointerup', fin);
+    liste.addEventListener('pointercancel', fin);
+    liste.addEventListener('lostpointercapture', fin);
   }
 
   function chronoHtml() { return '<div class="chrono" aria-hidden="true"><i id="barre"></i></div>'; }
@@ -382,7 +482,8 @@
   var BT_ENVOYER = '<button class="bouton" type="button" id="b-valider" disabled>Envoyer</button>';
 
   function ecranQuestion(e) {
-    var q = e.question, h = teteQuestion(e) + chronoHtml() + '<div id="saisie">', bouton = '';
+    var q = e.question, h = teteQuestion(e) + chronoHtml() + '<div id="saisie">' + indiceHtml(e), bouton = '';
+    var outils = calcHtml(q);   // la calculatrice : près du champ pour une valeur, sous la saisie sinon
     // Avec le pari, une réponse unique se CHOISIT puis s'envoie : l'élève a le
     // temps de cocher « Je suis sûr de moi » (retour des BTS MS, 22/11/2026).
     // Sans pari, elle part dès qu'on la touche, comme avant.
@@ -398,17 +499,36 @@
       else if (e.pari) { h += '<p class="note">Touche ta réponse, coche le pari si tu es sûr de toi, puis envoie.</p>'; bouton = BT_ENVOYER; }
     } else if (q.type === 'num') {
       var unites = q.unites || [];
+      // La valeur, et sa puissance de 10 écrite en exposant : « 2,4 × 10³ »
+      // (l'ancienne écriture tapée « 2,4×10^3 » reste comprise). Les deux ±
+      // pallient le clavier numérique de l'iPhone, qui n'a pas de signe moins.
       h += '<div class="saisie-num' + (unites.length ? '' : ' sans-unite') + '">' +
-        '<div class="champ"><label for="n-val">Valeur</label><input id="n-val" inputmode="decimal" autocomplete="off" placeholder="ex. 1,5 ou 2,4×10^3"></div>' +
+        '<div class="champ"><label for="n-val">Valeur</label>' +
+          '<div class="nombre">' +
+            '<button type="button" class="signe" id="n-signe" aria-label="Changer le signe de la valeur" title="Changer le signe">±</button>' +
+            '<input id="n-val" inputmode="decimal" autocomplete="off" placeholder="ex. 1,5">' +
+            '<span class="fois10" id="n-fois10" hidden><span class="dix" aria-hidden="true">× 10</span>' +
+              '<input id="n-exp" class="exposant" inputmode="numeric" autocomplete="off" maxlength="4" aria-label="Exposant de la puissance de 10">' +
+              '<button type="button" class="signe petit" id="n-exp-signe" aria-label="Changer le signe de l’exposant" title="Exposant négatif">±</button></span>' +
+          '</div></div>' +
         // une seule unité proposée : elle est imposée (conversion demandée)
         (unites.length ? '<div class="champ"><label for="n-unite">Unité' + (unites.length === 1 ? ' imposée' : '') + '</label><select id="n-unite"' + (unites.length === 1 ? ' disabled' : '') + '>' + (unites.length === 1 ? '' : '<option value="">—</option>') +
           unites.map(function (u) { return '<option>' + esc(u) + '</option>'; }).join('') + '</select></div>' : '') +
-        '</div><p class="apercu-num" id="n-apercu"></p>';
+        '</div>' +
+        '<div class="outils"><button type="button" class="outil" id="b-p10" aria-pressed="false"><span class="p10-lib">×&nbsp;10<sup>n</sup></span> <span class="fin">puissance de 10</span></button>' + outils + '</div>' +
+        '<p class="apercu-num" id="n-apercu"></p>';
+      outils = '';
     } else if (q.type === 'ordre') {
-      h += '<p class="note">Touche les éléments dans le bon ordre. Touche à nouveau pour retirer.</p><ul class="ordre-liste" id="ordre">' +
+      var ech = q.echelle || [];
+      h += '<p class="note">Fais glisser les étiquettes pour les ranger, ou touche ▲ ▼.</p>' +
+        '<div class="ordre-bloc">' + echelleHtml(ech) +
+        '<ol class="ordre-glisser" id="ordre" aria-label="' + esc('Liste à ranger, du haut (' + (ech[0] || 'en premier') + ') vers le bas (' + (ech[1] || 'en dernier') + '). Flèches haut et bas pour déplacer une étiquette.') + '">' +
         q.items.map(function (it) {
-          return '<li><button type="button" data-id="' + it.id + '"><span class="rang"></span><span>' + Q.rendre(it.texte) + '</span></button></li>';
-        }).join('') + '</ul>';
+          return '<li class="glisse" data-id="' + it.id + '" tabindex="0" aria-roledescription="étiquette à déplacer">' +
+            '<span class="poignee" aria-hidden="true"></span><span class="texte">' + Q.rendre(it.texte) + '</span>' +
+            '<span class="fleches"><button type="button" data-dir="-1" aria-label="Monter" tabindex="-1">▲</button>' +
+            '<button type="button" data-dir="1" aria-label="Descendre" tabindex="-1">▼</button></span></li>';
+        }).join('') + '</ol></div><p class="sr" id="ordre-annonce" aria-live="assertive"></p>';
     } else if (q.type === 'zone') {
       h += '<p class="note">Touche l\'endroit sur l\'image, puis envoie.</p><div class="zone-cadre" id="zone"><img src="' + esc(Q.urlImage(q.zone.src)) + '" alt="' + esc(q.zone.alt || '') + '"></div>' +
         '';
@@ -432,16 +552,21 @@
         '';
     }
     // les autres types ont toujours leur bouton ; le curseur l'a actif d'emblée
-    if (q.type !== 'qcm' && q.type !== 'vf') bouton = q.type === 'curseur' ? BT_ENVOYER.replace(' disabled', '') : BT_ENVOYER;
-    h += pariHtml(e) + bouton + '<p class="erreur" id="err"></p></div>';
+    // le curseur et la remise en ordre l'ont actif d'emblée : toute position est une réponse
+    if (q.type !== 'qcm' && q.type !== 'vf') bouton = q.type === 'curseur' || q.type === 'ordre' ? BT_ENVOYER.replace(' disabled', '') : BT_ENVOYER;
+    h += (outils ? '<div class="outils">' + outils + '</div>' : '') + pariHtml(e) + bouton + '<p class="erreur" id="err"></p></div>';
     app.innerHTML = h;
     brancherPari();
+    brancherIndice(e);
     brancherSaisie(e);
+    var bc = $('#b-calc');
+    if (bc) bc.onclick = function () { Q.calculatrice.ouvrir({ surResultat: S.surResultat || null }); };
     lancerChrono();
   }
 
   function brancherSaisie(e) {
     var q = e.question, valider = $('#b-valider');
+    S.surResultat = null;
     if (q.type === 'qcm' || q.type === 'vf') {
       app.querySelectorAll('#grille .rep').forEach(function (b) {
         b.onclick = function () {
@@ -465,35 +590,90 @@
       if (valider) valider.onclick = function () { envoyer({ choix: S.brouillon.choix.slice().sort() }); };
     } else if (q.type === 'num') {
       var champ = $('#n-val'), unite = $('#n-unite'), apercu = $('#n-apercu');
+      var fois = $('#n-fois10'), exp = $('#n-exp'), bp = $('#b-p10');
+      // la valeur envoyée reste un nombre : la base juge comme avant
+      var valeur = function () {
+        var m = champ.value.trim();
+        if (fois.hidden) return Q.lireNombre(m);
+        var x = exp.value.trim().replace(/[−–]/g, '-');
+        if (!/^[+-]?\d{1,3}$/.test(x)) return NaN;
+        var v = m === '' ? 1 : Q.lireNombre(m);
+        if (isNaN(v)) return NaN;
+        // par l'écriture scientifique : 2,4 × 10³ donne 2400 tout rond
+        var s = v.toExponential().split('e');
+        return parseFloat(s[0] + 'e' + (+s[1] + +x));
+      };
       var maj = function () {
-        var v = Q.lireNombre(champ.value);
-        apercu.textContent = champ.value.trim() === '' ? '' : isNaN(v) ? 'Je ne lis pas ce nombre.' : 'Lu : ' + Q.ecrireNombre(v) + (unite && unite.value ? ' ' + unite.value : '');
+        var v = valeur(), vide = champ.value.trim() === '' && (fois.hidden || exp.value.trim() === '');
+        apercu.textContent = vide ? '' : !fois.hidden && exp.value.trim() === '' ? 'Écris l’exposant de 10.'
+          : isNaN(v) ? 'Je ne lis pas ce nombre.' : 'Lu : ' + Q.ecrireNombre(v) + (unite && unite.value ? ' ' + unite.value : '');
         valider.disabled = isNaN(v) || (unite && !unite.value);
       };
+      var poserP10 = function (oui) {
+        fois.hidden = !oui; bp.setAttribute('aria-pressed', oui ? 'true' : 'false');
+        bp.querySelector('.fin').textContent = oui ? 'retirer la puissance' : 'puissance de 10';
+        if (!oui) exp.value = '';
+      };
+      var basculerSigne = function (el) {
+        var t = el.value.trim();
+        el.value = /^[-−–]/.test(t) ? t.replace(/^[-−–]\s*/, '') : '−' + t;
+        maj(); el.focus();
+      };
+      bp.onclick = function () { poserP10(fois.hidden); maj(); (fois.hidden ? champ : exp).focus(); };
+      $('#n-signe').onclick = function () { basculerSigne(champ); };
+      $('#n-exp-signe').onclick = function () { basculerSigne(exp); };
+      exp.oninput = function () { exp.value = exp.value.replace(/[^0-9+\-−–]/g, ''); maj(); };
       champ.oninput = maj; if (unite) unite.onchange = maj;
-      champ.onkeydown = function (ev) { if (ev.key === 'Enter' && !valider.disabled) valider.click(); };
+      champ.onkeydown = exp.onkeydown = function (ev) { if (ev.key === 'Enter' && !valider.disabled) valider.click(); };
+      // « Utiliser ce résultat » de la calculatrice : 2,4 × 10⁸ se range en mantisse et exposant
+      S.surResultat = function (r) {
+        var d = Q.calculatrice.decomposer(r);
+        champ.value = d.m.replace('.', ',').replace('-', '−');
+        poserP10(d.e !== 0);
+        if (d.e) exp.value = String(d.e).replace('-', '−');
+        maj(); champ.focus();
+      };
       valider.onclick = function () {
-        var r = { valeur: Q.lireNombre(champ.value) };
+        var r = { valeur: valeur() };
         if (unite) r.unite = unite.value;
         envoyer(r);
       };
     } else if (q.type === 'ordre') {
-      var ordre = S.brouillon.ordre = [];
+      // l'ordre affiché EST la réponse : des positions (q.items[k].id), jamais l'ordre juste
+      var liste = $('#ordre'), annonce = $('#ordre-annonce');
       var peindre = function () {
-        app.querySelectorAll('#ordre button').forEach(function (b) {
-          var k = ordre.indexOf(+b.dataset.id);
-          b.classList.toggle('pris', k >= 0); b.querySelector('.rang').textContent = k >= 0 ? k + 1 : '';
+        [].forEach.call(liste.children, function (li, k, tous) {
+          li.querySelector('[data-dir="-1"]').disabled = k === 0;
+          li.querySelector('[data-dir="1"]').disabled = k === tous.length - 1;
         });
-        valider.disabled = ordre.length !== q.items.length;
       };
-      app.querySelectorAll('#ordre button').forEach(function (b) {
-        b.onclick = function () {
-          var id = +b.dataset.id, k = ordre.indexOf(id);
-          if (k >= 0) ordre.splice(k, 1); else ordre.push(id);
-          peindre();
-        };
+      var dire = function (li) {
+        var k = [].indexOf.call(liste.children, li);
+        annonce.textContent = '« ' + li.querySelector('.texte').textContent.trim() + ' » : place ' + (k + 1) + ' sur ' + liste.children.length + '.';
+        peindre();
+      };
+      var deplacer = function (li, dir) {
+        if (liste.classList.contains('fige')) return;
+        if (dir < 0 && li.previousElementSibling) liste.insertBefore(li, li.previousElementSibling);
+        else if (dir > 0 && li.nextElementSibling) liste.insertBefore(li.nextElementSibling, li);
+        else return;
+        li.classList.add('deplace'); setTimeout(function () { li.classList.remove('deplace'); }, 350);
+        dire(li);
+      };
+      liste.addEventListener('click', function (ev) {
+        var b = ev.target.closest('[data-dir]'); if (!b) return;
+        var li = b.closest('li'); deplacer(li, +b.dataset.dir);
+        (b.disabled ? li : b).focus();
       });
-      valider.onclick = function () { envoyer({ ordre: ordre.slice() }); };
+      liste.addEventListener('keydown', function (ev) {
+        var li = ev.target.closest('li.glisse'); if (!li || ev.target !== li) return;
+        if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') { ev.preventDefault(); deplacer(li, ev.key === 'ArrowUp' ? -1 : 1); li.focus(); }
+      });
+      brancherGlisser(liste, dire);
+      peindre();
+      valider.onclick = function () {
+        envoyer({ ordre: [].map.call(liste.children, function (li) { return +li.dataset.id; }) });
+      };
     } else if (q.type === 'zone') {
       var cadre = $('#zone'), img = cadre.querySelector('img');
       cadre.onclick = function (ev) {
@@ -560,6 +740,8 @@
     var idx = S.etat.idx;
     var grille = $('#grille');
     if (grille && bouton) { bouton.classList.add('choisi'); grille.classList.add('envoye'); }
+    var liste = $('#ordre'); if (liste) liste.classList.add('fige');
+    if (Q.calculatrice) Q.calculatrice.fermer(false);
     app.querySelectorAll('#saisie button, #saisie input, #saisie select').forEach(function (b) { b.disabled = true; });
     Q.rpc('quiz_repondre', { p_jeton: S.joueur.jeton, p_idx: idx, p_reponse: reponse, p_sur: !!S.sur }, true).then(function () {
       S.envoye[idx] = true; S.envoi = false;
@@ -573,7 +755,10 @@
       // erreur réseau : on laisse réessayer
       if (grille) grille.classList.remove('envoye');
       if (bouton) bouton.classList.remove('choisi');
+      if (liste) liste.classList.remove('fige');
       app.querySelectorAll('#saisie button, #saisie input, #saisie select').forEach(function (b) { b.disabled = false; });
+      // un indice déjà pris reste pris : sa case reste cochée et figée
+      var ci = $('#c-indice'); if (ci && ci.checked) ci.disabled = true;
       var e = $('#err'); if (e) e.textContent = Q.messageErreur(err) + ' Réessaie.';
     });
   }
@@ -588,6 +773,7 @@
   function ecranEnvoye(e) {
     app.innerHTML = teteQuestion(e) + chronoHtml() +
       '<div class="envoye-msg"><b>Réponse envoyée' + (e.sur || S.sur ? ' — tu as parié' : '') + '.</b><br>' +
+      (S.indices[e.idx] || e.mon_indice ? '<span class="note">Indice pris : la moitié des points.</span><br>' : '') +
       '<span class="point-attente" aria-hidden="true"></span> Attends la correction au tableau.</div>';
     lancerChrono();
   }
@@ -606,7 +792,8 @@
       return '<p><b>' + t + '</b></p>' + (m && typeof m.valeur === 'number' ? '<p class="note">Ta réponse : ' + Q.ecrireNombre(m.valeur) + ' ' + esc(m.unite || '') + '</p>' : '');
     }
     if (q.type === 'ordre') {
-      return '<ol style="margin:0;padding-left:1.4em">' + (c.items || []).map(function (t) { return '<li>' + Q.rendre(t) + '</li>'; }).join('') + '</ol>';
+      return '<div class="ordre-bloc corrige">' + echelleHtml(q.echelle) + '<ol class="ordre-corr">' +
+        (c.items || []).map(function (t) { return '<li>' + Q.rendre(t) + '</li>'; }).join('') + '</ol></div>';
     }
     if (q.type === 'zone') {
       var h = '<div class="zone-cadre" style="cursor:default"><img src="' + esc(Q.urlImage(q.zone.src)) + '" alt="' + esc(q.zone.alt || '') + '">';
@@ -639,11 +826,18 @@
           : c.juste ? ['juste', 'Juste !', '+ ' + c.points + ' points']
           : c.points > 0 ? ['partiel', 'Presque !', (part ? part[1] + ' paire' + (+part[1] > 1 ? 's' : '') + ' juste' + (+part[1] > 1 ? 's' : '') + ' sur ' + e.question.gauche.length + ' · ' : '') + '+ ' + c.points + ' points']
           : ['faux', 'Raté', c.points < 0 ? c.points + ' points (pari perdu)' : 'Pas de point cette fois'];
+    // 053 : l'indice pris a coûté la moitié des points
+    if (c.indice && c.repondu) v[2] += ' · indice pris : moitié des points';
+    var ic = c.image_correction && Q.urlImage(c.image_correction.src);
     app.innerHTML =
       '<div class="tete-q"><span>Question ' + (e.idx + 1) + ' / ' + e.total + '</span><span>' + esc(e.question.notion || '') + '</span></div>' +
       '<div class="verdict ' + v[0] + '"><div class="titre-affiche">' + v[1] + '</div><p>' + esc(v[2]) + '</p></div>' +
+      // l'énoncé et son image restent sous les yeux pendant la correction
+      '<p class="enonce rappel">' + Q.rendre(e.question.enonce) + '</p>' + imageQuestion(e.question).replace('class="q-img"', 'class="q-img petite"') +
       (c.pourquoi && !c.juste ? '<div class="encart rouge"><h3>Pourquoi ce n\'est pas ça</h3><p>' + Q.rendre(c.pourquoi) + '</p></div>' : '') +
       (c.juste ? '' : '<div class="encart"><h3>La bonne réponse</h3>' + bonneReponseHtml(e) + '</div>') +
+      // 053 : un schéma qui accompagne la solution
+      (ic ? '<figure class="encart image-corr"><h3>La correction en image</h3><img src="' + esc(ic) + '" alt="' + esc(c.image_correction.alt || '') + '"></figure>' : '') +
       (c.cours || (c.revoir && !c.juste) ? '<div class="encart"><h3>À retenir</h3>' + (c.cours ? '<p>' + Q.rendre(c.cours) + '</p>' : '') +
         // 052 : l'erreur renvoie à la partie du cours qui la réexplique
         (!c.juste ? Q.revoirHtml(c.revoir) : '') + '</div>' : '') +

@@ -88,10 +88,15 @@
     Promise.all([
       Q.rest('quiz_parties?id=eq.' + id + '&select=*'),
       Q.rest('quiz_joueurs?partie_id=eq.' + id + '&select=id,pseudo,rejoint_le&order=rejoint_le'),
-      Q.rest('quiz_reponses?partie_id=eq.' + id + '&select=joueur_id,idx,reponse,juste,categorie,points,temps_ms,sur')
+      Q.rest('quiz_reponses?partie_id=eq.' + id + '&select=joueur_id,idx,reponse,juste,categorie,points,temps_ms,sur'),
+      // 053 : les indices payants pris (sans le 053 en base : pas de colonne)
+      Q.rest('quiz_indices?partie_id=eq.' + id + '&select=idx').catch(function () { return null; })
     ]).then(function (r) {
       var p = r[0][0]; if (!p) throw new Error('QUIZ_PARTIE_INCONNUE');
       var joueurs = r[1], reps = r[2], qs = p.questions;
+      var parIndice = qs.map(function () { return 0; });
+      (r[3] || []).forEach(function (x) { if (parIndice[x.idx] != null) parIndice[x.idx]++; });
+      var avecIndice = r[3] !== null && qs.some(function (q) { return q.indice; });
       var parQ = qs.map(function () { return []; });
       reps.forEach(function (x) { if (parQ[x.idx]) parQ[x.idx].push(x); });
       var jouees = qs.map(function (_, i) { return parQ[i].length > 0 || (p.phase === 'fin') || i < p.idx || (i === p.idx && p.phase !== 'question'); });
@@ -101,13 +106,15 @@
       var lignesQ = qs.map(function (q, i) {
         var l = parQ[i], j = l.filter(function (x) { return x.juste; }).length;
         var t = l.length ? l.reduce(function (a, x) { return a + x.temps_ms; }, 0) / l.length : 0;
-        return { i: i, q: q, n: l.length, justes: j, p: pct(j, l.length), t: t, joue: jouees[i] };
+        return { i: i, q: q, n: l.length, justes: j, p: pct(j, l.length), t: t, joue: jouees[i], ind: parIndice[i] };
       });
-      var tq = '<tr><th>N°</th><th>Question</th><th>Notion</th><th>Réussite</th><th>Répartition</th><th>Temps moyen</th><th>Sans réponse</th></tr>' +
+      var tq = '<tr><th>N°</th><th>Question</th><th>Notion</th><th>Réussite</th><th>Répartition</th><th>Temps moyen</th><th>Sans réponse</th>' +
+          (avecIndice ? '<th title="Élèves qui ont pris l’indice payant">💡 Indice pris</th>' : '') + '</tr>' +
         lignesQ.map(function (L) {
-          if (!L.joue) return '<tr><td>' + (L.i + 1) + '</td><td colspan="6" class="note">' + '<span class="enonce-court">' + Q.rendre(L.q.enonce) + '</span>' + ' — pas jouée</td></tr>';
+          if (!L.joue) return '<tr><td>' + (L.i + 1) + '</td><td colspan="' + (avecIndice ? 7 : 6) + '" class="note">' + '<span class="enonce-court">' + Q.rendre(L.q.enonce) + '</span>' + ' — pas jouée</td></tr>';
           return '<tr><td>' + (L.i + 1) + '</td><td>' + '<span class="enonce-court">' + Q.rendre(L.q.enonce) + '</span>' + '</td><td>' + esc(L.q.notion || '') + '</td><td>' + jauge(L.p) + '</td>' +
-            '<td>' + repartition(L.q, parQ[L.i]) + '</td><td>' + seconde(L.t) + '</td><td>' + Math.max(0, joueurs.length - L.n) + '</td></tr>';
+            '<td>' + repartition(L.q, parQ[L.i]) + '</td><td>' + seconde(L.t) + '</td><td>' + Math.max(0, joueurs.length - L.n) + '</td>' +
+            (avecIndice ? '<td>' + (L.q.indice ? L.ind + ' / ' + joueurs.length : '—') + '</td>' : '') + '</tr>';
         }).join('');
 
       /* par notion */
@@ -162,8 +169,8 @@
         };
       });
       $('#b-csv-q').onclick = function () {
-        telecharger('quiz-' + p.ouverte_le.slice(0, 10) + '-questions.csv', [['N°', 'Énoncé', 'Notion', 'BO', 'Réponses', 'Justes', 'Réussite %', 'Temps moyen (s)']].concat(
-          lignesQ.map(function (L) { return [L.i + 1, L.q.enonce, L.q.notion || '', L.q.bo || '', L.n, L.justes, L.p, (L.t / 1000).toFixed(1).replace('.', ',')]; })));
+        telecharger('quiz-' + p.ouverte_le.slice(0, 10) + '-questions.csv', [['N°', 'Énoncé', 'Notion', 'BO', 'Réponses', 'Justes', 'Réussite %', 'Temps moyen (s)', 'Indice pris']].concat(
+          lignesQ.map(function (L) { return [L.i + 1, L.q.enonce, L.q.notion || '', L.q.bo || '', L.n, L.justes, L.p, (L.t / 1000).toFixed(1).replace('.', ','), L.q.indice ? L.ind : '']; })));
       };
       $('#b-csv-e').onclick = function () {
         telecharger('quiz-' + p.ouverte_le.slice(0, 10) + '-eleves.csv', [['Rang', 'Élève', 'Score', 'Justes', 'Répondu', 'Notions à revoir']].concat(

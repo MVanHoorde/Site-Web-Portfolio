@@ -327,6 +327,7 @@
     if (/QUIZ_COMPLET/.test(m)) return 'La partie est complète.';
     if (/QUIZ_TROP_TARD/.test(m)) return 'Trop tard : le temps de cette question est écoulé.';
     if (/QUIZ_DEJA_REPONDU/.test(m)) return 'Ta réponse est déjà enregistrée.';
+    if (/QUIZ_PAS_D_INDICE/.test(m)) return 'Cette question n’a pas d’indice.';
     if (/QUIZ_EXCLU/.test(m)) return 'Tu as été retiré de la partie par le professeur.';
     if (/QUIZ_SLUG_PRIS/.test(m)) return 'Un collègue a déjà un quiz avec cet identifiant (slug) : change-le dans le fichier.';
     if (/QUIZ_QUESTION_INVALIDE: (.*)/.test(m)) return 'Quiz refusé — ' + /QUIZ_QUESTION_INVALIDE: (.*)/.exec(m)[1];

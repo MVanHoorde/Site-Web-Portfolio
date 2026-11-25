@@ -451,3 +451,121 @@ sup { font-size: .55em; vertical-align: super; line-height: 0; }
 .revoir { display: inline-block; margin-top: 6px; font-family: var(--sans); font-size: .92rem; font-weight: 600; color: var(--rouge); }
 .bilan-notions li { flex-wrap: wrap; }
 .bilan-notions li .revoir { flex-basis: 100%; margin-top: 2px; font-weight: 500; }
+
+/* ============================================================
+ *  INDICE PAYANT, CALCULATRICE, PUISSANCE DE 10, ORDRE À GLISSER,
+ *  IMAGE DE CORRECTION (053, 25/11/2026)
+ * ============================================================ */
+/* l'image de l'énoncé, sur le téléphone : entière, sans dévorer l'écran */
+.eleve .q-img { display: block; max-width: 100%; max-height: 38vh; width: auto; margin: 0 auto; object-fit: contain; border: 2px solid var(--encre); background: #fff; }
+.eleve .q-img.petite { max-height: 24vh; }
+.eleve .enonce.rappel { font-size: 1.02rem; color: var(--encre-2); }
+.image-corr { margin: 0; }
+.image-corr img { display: block; max-width: 100%; max-height: 52vh; margin: 4px auto 0; object-fit: contain; background: #fff; border: 1px solid var(--encre); }
+
+/* l'indice : une case qui coûte, puis le texte payé */
+.indice-case { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 2px dashed var(--r2); background: var(--papier-3);
+  font-family: var(--sans); font-size: .95rem; cursor: pointer; }
+.indice-case input { width: 22px; height: 22px; accent-color: var(--r2); flex: none; }
+.indice-case b { color: var(--r2); }
+.indice-pris { border: 2px solid var(--r2); background: #f8eed6; padding: 10px 12px; font-family: var(--sans); }
+.indice-pris .indice-tete { margin: 0 0 4px; font-weight: 600; color: var(--r2); font-size: .95rem; }
+.indice-pris .indice-tete span:last-child { font-weight: 400; font-size: .85rem; color: var(--encre-2); }
+.indice-pris .indice-texte { margin: 0; font-size: 1.08rem; overflow-wrap: anywhere; }
+.indice-pris .katex-display, .indice-pris .katex { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+
+/* la valeur numérique : ± · mantisse · × 10^exposant ; l'unité dessous */
+.eleve .saisie-num { grid-template-columns: minmax(0, 1fr); }
+.nombre { display: flex; align-items: stretch; border: 2px solid var(--encre); background: var(--papier-3); }
+.nombre input { border: 0 !important; background: transparent !important; width: auto; min-width: 0; flex: 1; padding: 10px 8px !important; }
+.nombre input:focus-visible { outline: 3px solid var(--rouge); outline-offset: -3px; }
+.nombre .signe { flex: none; width: 46px; border: 0; border-right: 2px solid var(--encre); background: var(--papier-2); font-family: var(--sans); font-size: 1.35rem; font-weight: 600; }
+.nombre .fois10 { flex: none; display: flex; align-items: flex-start; gap: 2px; padding: 0 4px 0 2px; border-left: 2px dotted var(--encre-2); }
+.nombre .fois10[hidden] { display: none; }
+.nombre .fois10 .dix { align-self: center; font-family: var(--sans); font-size: 1.45rem; white-space: nowrap; padding-left: 6px; }
+.nombre .fois10 .exposant { flex: none; width: 3.1em; margin-top: 2px; padding: 4px 4px !important; font-size: 1.05rem !important; text-align: center;
+  border: 2px solid var(--encre) !important; background: #fff !important; }
+.nombre .fois10 .signe.petit { width: 34px; height: 32px; margin-top: 2px; border: 2px solid var(--encre); font-size: 1.05rem; }
+.eleve .outils { display: flex; flex-wrap: wrap; gap: 8px; }
+.outil { display: inline-flex; align-items: center; gap: 6px; min-height: 46px; padding: 0 14px; border: 2px solid var(--encre);
+  background: var(--papier-3); color: var(--encre); font-family: var(--sans); font-size: 1rem; font-weight: 600; }
+.outil .fin { font-weight: 400; font-size: .85rem; color: var(--encre-2); }
+.outil[aria-pressed="true"] { background: var(--encre); color: var(--papier); }
+.outil[aria-pressed="true"] .fin { color: var(--papier-2); }
+.outil sup { font-size: .7em; vertical-align: .55em; line-height: 0; }
+.outil .p10-lib { white-space: nowrap; }
+/* les éléments de la saisie, espacés comme ceux de la page */
+.eleve #saisie { display: flex; flex-direction: column; gap: 10px; }
+.eleve #saisie .apercu-num:empty { display: none; }
+
+/* la remise en ordre : l'échelle à gauche, les étiquettes à glisser */
+.ordre-bloc { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; align-items: stretch; }
+.echelle { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; font-family: var(--sans);
+  font-size: .78rem; line-height: 1.15; color: var(--encre-2); font-style: italic; }
+.echelle .bout { overflow-wrap: anywhere; }
+.echelle .axe { position: relative; flex: 1; width: 4px; min-height: 40px; background: var(--encre); margin: 2px 0 10px; }
+.echelle .axe::after { content: ''; position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%);
+  border: 8px solid transparent; border-top: 11px solid var(--encre); border-bottom: 0; }
+.ordre-glisser { position: relative; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.ordre-glisser li.glisse { display: flex; align-items: center; gap: 10px; min-height: 58px; padding: 6px 6px 6px 8px;
+  border: 2px solid var(--encre); background: var(--papier-3); font-family: var(--sans); font-size: 1.04rem;
+  touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; position: relative; }
+.ordre-glisser li.glisse:focus-visible { outline: 3px solid var(--rouge); outline-offset: 2px; }
+.ordre-glisser li .texte { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ordre-glisser li .poignee { flex: none; width: 14px; height: 26px; opacity: .55;
+  background: radial-gradient(circle, var(--encre) 1.6px, transparent 1.9px) 0 0 / 7px 6.5px; }
+.ordre-glisser li .fleches { flex: none; display: flex; flex-direction: column; gap: 3px; }
+.ordre-glisser li .fleches button { width: 38px; height: 24px; padding: 0; border: 1px solid var(--encre); background: var(--papier); font-size: .72rem; line-height: 1; color: var(--encre); }
+.ordre-glisser li .fleches button:disabled { opacity: .25; }
+.ordre-glisser li.tenu { z-index: 3; cursor: grabbing; background: #fff; box-shadow: 0 10px 24px rgba(28, 24, 19, .28); border-color: var(--rouge); transition: box-shadow .15s; }
+.ordre-glisser li.deplace { background: var(--papier-2); transition: background .35s; }
+.ordre-glisser.fige li.glisse { cursor: default; opacity: .7; }
+.ordre-bloc.corrige { grid-template-columns: 56px minmax(0, 1fr); }
+.ordre-corr { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.ordre-corr li { border: 2px solid var(--juste); background: var(--papier); padding: 6px 10px; }
+/* l'échelle à l'écran projeté et dans l'aperçu */
+.echelle-proj { display: flex; align-items: center; gap: 10px; font-family: var(--sans); font-style: italic; color: var(--encre-2); font-size: clamp(.9rem, 1.3vw, 1.2rem); }
+.echelle-proj .axe-h { flex: none; width: 46px; height: 3px; background: var(--encre); position: relative; }
+.echelle-proj .axe-h::after { content: ''; position: absolute; right: -8px; top: 50%; transform: translateY(-50%); border: 7px solid transparent; border-left: 10px solid var(--encre); border-right: 0; }
+
+/* la calculatrice : un panneau en bas de l'écran, la question reste au-dessus */
+.calc { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin: 0 auto; width: min(440px, 100%);
+  display: flex; flex-direction: column; gap: 8px; padding: 8px 10px max(10px, env(safe-area-inset-bottom));
+  background: var(--papier); border: 2px solid var(--encre); border-bottom: 0; border-top: 6px double var(--encre);
+  box-shadow: 0 -8px 30px rgba(28, 24, 19, .25); font-family: var(--sans); }
+.calc[hidden] { display: none; }
+@media (min-width: 900px) { .calc { left: auto; right: 24px; } }
+body.calc-ouverte .eleve { padding-bottom: 470px; }
+.calc-tete { display: flex; align-items: baseline; gap: 10px; }
+.calc-tete b { font-family: var(--affiche); font-weight: 400; font-size: 1.3rem; }
+.calc-note { flex: 1; font-size: .78rem; color: var(--encre-2); font-style: italic; }
+.calc-fermer { width: 40px; height: 36px; border: 2px solid var(--encre); background: var(--papier-3); font-size: 1rem; }
+.calc-ecran { border: 2px solid var(--encre); background: #fbf7ee; padding: 4px 10px; min-height: 92px; display: flex; flex-direction: column; justify-content: center; }
+.calc-expr { overflow-x: auto; overflow-y: hidden; font-size: 1.2rem; }
+.calc-expr .katex-display, .calc-res .katex-display { margin: 2px 0; }
+.calc-expr .katex-display > .katex { text-align: left; }
+.calc-res { text-align: right; min-height: 1.6em; font-size: 1.15rem; overflow-x: auto; }
+.calc-res .katex-display > .katex { text-align: right; }
+.calc-erreur { color: var(--rouge-fonce); font-size: .92rem; }
+.calc-touches { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.calc-k { min-height: 50px; border: 2px solid var(--encre); background: var(--papier-2); color: var(--encre);
+  font-family: var(--sans); font-size: 1.25rem; font-weight: 600; padding: 0; touch-action: manipulation; }
+.calc-k.chiffre { background: #fffdf8; }
+.calc-k.efface { background: var(--encre-2); color: #fff; border-color: var(--encre-2); }
+.calc-k.egal { background: var(--rouge); color: #fff; border-color: var(--rouge); font-size: 1.5rem; }
+.calc-k:active { transform: translateY(1px); }
+.calc-k sup { font-size: .62em; }
+.k-frac { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; vertical-align: middle; }
+.k-frac i { display: block; width: 12px; height: 10px; border: 1.6px solid currentColor; }
+.k-frac b { display: block; width: 20px; height: 2px; background: currentColor; }
+.calc-utiliser { width: 100%; min-height: 50px; }
+.calc-utiliser[hidden] { display: none; }
+
+/* indice et calculatrice annoncés à l'écran projeté (le texte de l'indice n'y est jamais projeté pendant la question) */
+.badges-q { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+.badge-q { display: inline-flex; align-items: center; gap: 6px; border: 2px solid var(--r2); color: var(--r2); background: var(--papier-3);
+  padding: 3px 12px; font-family: var(--sans); font-size: clamp(.85rem, 1.2vw, 1.1rem); font-weight: 600; }
+.badge-q.calc-b { border-color: var(--encre-2); color: var(--encre-2); }
+.panneau.indice { border-color: var(--r2); }
+.panneau.indice h3 { color: var(--r2); }
+.panneau .img-corr { display: block; max-width: 100%; max-height: 34vh; object-fit: contain; background: #fff; border: 1px solid var(--encre); margin: 0 auto; }

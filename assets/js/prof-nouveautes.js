@@ -23,6 +23,37 @@
  * ============================================================ */
 window.PROF_NOUVEAUTES = [
   {
+    n: 15,
+    date: '2026-11-25',
+    titre: 'Diapason : indice, calculatrice, étiquettes à glisser',
+    points: [
+      {
+        titre: '💡 Un indice qui se paie',
+        texte: 'Une question peut porter un indice. L’élève le demande d’une case à cocher : la question ne lui rapporte plus que la moitié des points. L’écran projeté compte qui l’a pris.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-case nv-oui">✓</span><span>💡 <b>Indice</b> — moitié des points</span></div>' +
+          '</div>'
+      },
+      {
+        titre: '🧮 Une calculatrice à côté des calculs',
+        texte: 'Sur le téléphone : fractions à vraie barre, x², × 10ⁿ. « Utiliser ce résultat » le recopie dans la réponse. Rien ne part sur Internet.',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce"><span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1"><span style="border-bottom:1.5px solid currentColor;padding:0 .15em">981</span><span>100</span></span> × 2</span><span class="nv-bouton">= 19,62</span></div>' +
+          '</div>'
+      },
+      {
+        titre: '× 10ⁿ et ordre à glisser',
+        texte: 'Les puissances de 10 s’écrivent en exposant, sans « ^ ». Les remises en ordre se rangent au doigt, avec une échelle sur le côté (« la plus petite » → « la plus grande »).',
+        visuel:
+          '<div class="nv-ecran">' +
+            '<div class="nv-ligne"><span class="nv-puce">2,4 × 10<sup>3</sup></span><span class="nv-puce">⠿ 1 cm</span><span class="nv-puce">⠿ 1 m</span></div>' +
+          '</div>'
+      }
+    ]
+  },
+  {
     n: 14,
     date: '2026-11-18',
     espaces: ['est'],

@@ -114,10 +114,20 @@ def main():
             f('enonce', 'Combien de bits dans un octet ?')
             f('num.valeur', '8'); f('num.unite', 'bits'); f('num.unites', 'bits, octets')
             ajout('num.pieges'); f('num.pieges.0.valeur', '1'); f('num.pieges.0.message', 'Un octet vaut 8 bits.')
+            # 053 : indice payant, calculatrice, image de correction (volet commun)
+            f('indice', 'Un octet, c\'est $2^3$ bits.')
+            pg.check('#ed-question [data-f="calculatrice"]')
+            f('image_correction.src', 'assets/img/snt/2nde-snt-t0-systemes-informatises/t0-carte-mere.jpg')
+            f('image_correction.alt', 'Une carte mère')
+            pg.wait_for_timeout(300)
+            qp.verifier(pg.locator('#ed-apercu .panneau.indice').count() == 1 and pg.locator('#ed-apercu .img-corr').count() == 1,
+                        'aperçu : l’indice ou l’image de correction manque')
+            if qp.CAPTURES: pg.locator('#ed-question').screenshot(path=str(qp.CAPTURES / '02b-indice-calculatrice.png'))
 
             ajouter('ordre')
             f('enonce', 'Range les étapes d\'une requête.')
             f('items.0', 'Résolution DNS'); f('items.1', 'Requête HTTP'); f('items.2', 'Réponse du serveur')
+            f('echelle.0', 'en premier'); f('echelle.1', 'en dernier')
 
             ajouter('zone')
             f('enonce', 'Touche le processeur.')
@@ -125,6 +135,8 @@ def main():
             f('zone.alt', 'Une carte mère')
             pg.wait_for_selector('#ed-zone img')
             pg.wait_for_function("document.querySelector('#ed-zone img').naturalWidth > 0")
+            # la souris ne trace que dans la fenêtre : l'image d'abord à l'écran
+            pg.locator('#ed-zone').scroll_into_view_if_needed()
             bb = pg.locator('#ed-zone').bounding_box()
             pg.mouse.move(bb['x'] + bb['width'] * .45, bb['y'] + bb['height'] * .2)
             pg.mouse.down(); pg.mouse.move(bb['x'] + bb['width'] * .62, bb['y'] + bb['height'] * .45, steps=6); pg.mouse.up()
@@ -201,6 +213,13 @@ def main():
         qp.verifier(types == ['qcm', 'vf', 'num', 'ordre', 'zone', 'assoc', 'curseur', 'mot'], 'ordre des types en base : %s' % types)
         qp.verifier(qs and '(modifié)' in qs[0]['enonce'], 'la modification de la question 1 n\'est pas en base')
         qp.verifier(qs and qs[0]['correct'] == [1] and qs[0].get('pourquoi', [None])[0], 'QCM : bonne réponse ou pourquoi perdus : %s' % (qs[0] if qs else None))
+        n = qs[2] if qs else {}
+        qp.verifier(n.get('indice') == 'Un octet, c\'est $2^3$ bits.' and n.get('calculatrice') is True
+                    and (n.get('image_correction') or {}).get('alt') == 'Une carte mère',
+                    '053 : indice, calculatrice ou image de correction perdus : %s' % n)
+        qp.verifier(qs and qs[3].get('echelle') == ['en premier', 'en dernier'], '053 : échelle perdue : %s' % (qs[3] if qs else None))
+        qp.verifier(all('indice' not in x and 'calculatrice' not in x and 'echelle' not in x for i, x in enumerate(qs or []) if i not in (2, 3)),
+                    '053 : un champ vide est parti en base')
         for i, x in enumerate(qs or []):
             m = sql1(base, 'select public.quiz_question_invalide(%s::jsonb)', json.dumps(x))
             qp.verifier(m is None, f'question {i + 1} ({x["type"]}) invalide : {m}')
