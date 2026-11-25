@@ -2551,3 +2551,16 @@ dans les 20 points ou en bonus ; note individuelle de débat par rôle ; sens
 du « vote supplémentaire » du présentateur ;
 libellé exact du BO 3.5 ; avis du délégué à la protection des données sur la
 pré-correction par Claude ; écrans de rôle du jour J à retravailler.
+
+## 25/11/2026 — T2-C1 « Décrire le mouvement » : audit de la page et fiche élève
+
+| Date | Décision | Statut |
+|---|---|---|
+| 25/11/2026 | **Vitesse instantanée : la position en cours et la suivante**, vᵢ = MᵢMᵢ₊₁ / (tᵢ₊₁ − tᵢ), comme le programme (« MM′, positions successives »). Ligne tenue toute l'année. Une remarque dans le cours signale l'autre méthode (précédente et suivante), employée par des manuels et des collègues. L'Image 13, qui traçait la méthode centrée, est retracée. | ✅ |
+| 25/11/2026 | **Caractéristiques des vecteurs vitesse (direction, sens, norme) passées en propriétés**, à faire écrire. | ✅ |
+| 25/11/2026 | **Fiche élève T2-C1 — écart assumé à la règle R1** : huit éléments seulement à écrire (définitions du système et de la trajectoire, expression du vecteur déplacement, formules et caractéristiques des deux vecteurs vitesse, tableau des variations de la vitesse) ; tout le reste est imprimé. Toutes les figures de la page y figurent, dans le même ordre. | ✅ |
+| 25/11/2026 | **Relativité du mouvement : texte seul** (train, bateau de Galilée). L'image du bateau viendra plus tard, de la main de Loïc. | ⏳ image |
+| 25/11/2026 | **Histoire des sciences limitée à deux encarts** : Marey (fusil photographique, pélican — images fournies par Loïc) et le bateau de Galilée. Écartés : Copernic / Ptolémée, Chasles, la seconde, Bolt. | ✅ |
+| 25/11/2026 | **Transitions franches** (`.transition`, locale à la page T2-C1) à la place des apartés discrets, et une ouverture de chapitre (« ton premier chapitre de mécanique »). À propager aux autres chapitres si Loïc le souhaite. | ✅ |
+| 25/11/2026 | **Image 14 : le vecteur accélération est retiré** (non défini en seconde), de la page comme de la fiche et du diaporama, qui la relisent. | ✅ |
+| 25/11/2026 | **Cinq quiz Diapason pour T2-C1**, repris des Kahoot de Loïc (diagnostic du thème, trajectoire et mouvement, vecteurs, unités et conversions, bilan) : 76 questions, dossier « 2de PC › Décrire le mouvement ». Salles fixes **MVTDG2, MVTTR4, MVTVC5, MVTUN3, MVTBN6**, les mêmes sur la page, la fiche et le diaporama ; le Kahoot du bilan disparaît de la page. Kahoot « [NOTION] La chronophotographie » (11 q.) pas encore transmis. | ⏳ audit |

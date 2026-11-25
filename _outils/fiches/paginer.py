@@ -84,7 +84,10 @@ def sonde(code):
         # flow-root : la div contient les marges de ses enfants, donc sa
         # hauteur est bien celle qu'occupera le bloc dans la colonne.
         '  .sonde { display:flow-root; }\n'
-        '</style></head><body>\n<div class="feuille"><div class="corps">'
+        # Style propre à un chapitre (ex. la notation vecteur de T2-C1),
+        # passé par le fichier de chapitre : sans lui, la sonde mesure faux.
+        f'</style>{getattr(mod, "CSS_LOCAL", "")}</head><body>\n'
+        '<div class="feuille"><div class="corps">'
         f'<div class="principal">\n{"".join(morceaux)}\n'
         '</div></div></div>\n</body></html>\n')
 

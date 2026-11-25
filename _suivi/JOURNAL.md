@@ -5168,3 +5168,33 @@ reconstitué (réponses extrapolées) ; nouveaux quiz SNT : Internet après S2, 
 le bilan par notion ; moteur des séquences : ancre `#etape-<clé>` (sequence-snt.js v64, css v54).
 Fuites corrigées : trois images dont le nom de fichier livrait la réponse (mailles cs/cfc, son pur).
 
+
+## 25/11/2026 — T2-C1 : audit de Loïc, page reprise et fiche élève
+
+Audit de la page par Loïc, propositions de Claude validées point par point. Page : ouverture du
+chapitre, transitions franches (`.transition`, styles locaux, `chapitre-commun.css` intact), perte
+d'informations et échelles (programme), repères d'espace et de temps côte à côte, encart « ne pas
+confondre trajectoire et mouvement », trajectoires reformulées, encart Marey (gravure *La Nature* 1882
+et pélican, domaine public), rappel de maths sur les vecteurs (point de départ, opposé, Chasles, schéma
+SVG), démonstration de MᵢMⱼ = OMⱼ − OMᵢ, caractéristiques des vitesses passées en propriétés, remarque
+« autre méthode », Image 13 retracée (la flèche suivait la tangente, soit la méthode centrée ; elle suit
+maintenant M₃M₄), exemple de relativité (train) et bateau de Galilée en texte. Les ✎ suivent la liste
+de Loïc (8). Rendu contrôlé au navigateur, ordinateur et téléphone, sans débordement.
+
+Fiche : `_outils/fiches/fiche_t2c1.py`, 13 pages, 5 QR relus, moto des exercices 4-5 imprimée à
+102,5 mm (M₁M₂ mesuré à 18,98 mm sur le PDF). 12 pages hors de portée (grands blocs de la partie 02).
+Creux cumulé 309 mm, max 41 mm, aucun débordement, aucun titre en bas de page (coupes retouchées à
+la main). `paginer.py` lit désormais `CSS_LOCAL` d'un chapitre s'il existe (aucun effet sur les autres
+fiches). Diaporama pas encore fait.
+
+## 25/11/2026 (soir) — T2-C1 : vecteur a retiré, quiz Diapason, diaporama
+
+Image 14 sans le vecteur accélération. Cinq Kahoot de mécanique (PDF « Détails ») convertis par
+`_quiz/kahoot/quiz_mvt_t2c1.py` (hors Git) : 76 questions, validateur de base sans ✗, 0 lien faux.
+Corrigés au passage : Kahoot TRAJ q3 (« mouvement curviligne » accepté pour rectiligne) et q6
+(« Courbe » donné comme mouvement) ; BILAN q14 (vitesse instantanée centrée → en cours/suivante) ;
+DIAG q13 (« constante gravitationnelle g »). Images Getty retirées : photos du cours ou SVG
+(`assets/img/quiz/kahoot/kh-pc2-mvt-*`). Importés en base par Claude (quiz_importer, au nom du
+gestionnaire). Liens posés : page (5 liens, Kahoot retiré), fiche (5 QR, la clôture porte le bilan).
+`verifier_revoir.py` accepte désormais `#ancre-N` (parties des chapitres PC). Journaux d'audit :
+`_quiz/kahoot/journal-modifs/kh-pc2-mvt-*.md`.

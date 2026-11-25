@@ -80,6 +80,13 @@ Seules les **figures** sont fournies : les faire recopier à la main coûterait
 la séance. Tout le reste est vide. Sur T3-C1 : dix-huit cadres à lignes, trois
 formules en boîtes, aucun texte de cours pré-rempli.
 
+**Ce qui est à écrire, Loïc le fixe chapitre par chapitre.** Sur **T2-C1**
+(25/11/2026), seuls huit éléments sont à écrire (un par crayon `a-noter` de la
+page) et tout le reste est **imprimé** dans des cadres (`imprime()` de
+`fiche_t2c1.py`). Dans tous les cas : **toutes les figures de la page sont sur
+la fiche, dans le même ordre que la page et le diaporama** — l'ordre se
+contrôle figure par figure avant de livrer.
+
 ### R2 · Aucune correction
 Les corrections vivent en ligne, derrière le code de déblocage de la dernière
 page. Les SVG de correction du site sont écartés à l'extraction — sur T3-C1,

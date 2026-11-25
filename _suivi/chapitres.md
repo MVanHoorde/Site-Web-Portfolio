@@ -238,14 +238,26 @@
 ### T2-C1 — Décrire le mouvement
 - Jalons : 1 ✅ · 2 ⬜ · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜
 - Fichier : `pages/2nde-pc-t2-c1-decrire-le-mouvement.html` · relevé : `_suivi/t2c1-releve.md`
-- **V1 intégrale le 13/11/2026.** 16 SVG tracés depuis des points relevés (repère,
-  trajectoires, vecteurs, chronophotographie du skieur et corrections), 4 photos,
-  4 `-source` (objets), fiche mémo de P. Olivier retranscrite. 73 vecteurs `.vec`.
-  5 exercices corrigés (ex. 1 rédigé par Claude), 13 `a-noter`, 9 vidéos (une retrouvée),
-  Kahoot, TP7, TP8, DS5. Code **REP3RE**. Aucun `.a-faire`.
-- 2 retouches tracées (longueurs des vecteurs vitesse de l'Image 12, M₁₂ mal placé).
-- ⏳ **Audit de Loïc** : vecteur accélération non défini ; sens du mouvement de l'ex. 4 ;
-  tableau v₁…v₅ de l'ex. 5 ajouté ; licences.
+- **V1 intégrale le 13/11/2026, reprise sur audit de Loïc le 25/11/2026.** 17 SVG (dont le
+  rappel vecteurs / Chasles), 4 photos, 4 `-source`, 2 images de Marey (domaine public),
+  fiche mémo de P. Olivier retranscrite. 5 exercices corrigés (ex. 1 à 3 rédigés par
+  Claude, à valider), **8 `a-noter`** = les 8 éléments à écrire sur la fiche. Code **REP3RE**.
+- Ajouts du 25/11 : ouverture, transitions franches, perte d'informations, échelles,
+  « ne pas confondre trajectoire et mouvement », Marey, rappel de maths, démonstration,
+  remarque « autre méthode », exemple de relativité, bateau de Galilée. Image 13 retracée
+  (méthode « en cours → suivante », celle du programme). Décisions : `DECISIONS.md` du 25/11.
+- **Fiche élève** : `_outils/fiches/fiche_t2c1.py` → `fiches/fiche-2nde-t2c1.html` →
+  PDF de 13 pages, lien `hors-verrou` posé. Moto des ex. 4-5 à l'échelle (102,5 mm).
+- **Diaporama** : `_outils/diaporamas/diapo_t2c1.py` → `assets/pptx/pc/diaporama-2nde-t2c1.pptx`,
+  30 diapositives, même ordre que la page et la fiche, `controler.py` vert. Image 14 sans
+  vecteur accélération (retiré partout le 25/11).
+- **Quiz Diapason** (25/11, repris des Kahoot) : diagnostic MVTDG2, trajectoire MVTTR4,
+  vecteurs MVTVC5, unités MVTUN3, bilan MVTBN6 — en base, liens sur la page, QR sur la fiche
+  et le diaporama. Journaux : `_quiz/kahoot/journal-modifs/kh-pc2-mvt-*.md`.
+- Diaporama ouvert et exporté par PowerPoint le 25/11 (30 diapositives) ; `mesurer_cadres.ps1` pas lancé.
+- ⏳ **Restent** : Kahoot « La chronophotographie » à transmettre ; audit des quiz ;
+  image du bateau de Galilée (Loïc) ; sens du mouvement de l'ex. 4 ; licences des images
+  de la source PPTX.
 
 ### T2-C2 — Modéliser une action sur un système
 - Jalons : 1 ✅ · 2 ⬜ · 3 🔄 · 4 ⬜ · 5 ⬜ · 6 ⬜ · 7 ⬜

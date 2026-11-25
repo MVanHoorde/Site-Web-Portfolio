@@ -29,9 +29,10 @@ def page(chemin):
 
 
 def lien_ok(lien):
-    m = re.match(r'^(pages/[a-z0-9._-]+\.html)(?:#(s\d+|etape-[A-Za-z0-9_-]+))?$', lien or '')
+    # #ancre-N : les parties des chapitres de physique-chimie (25/11/2026)
+    m = re.match(r'^(pages/[a-z0-9._-]+\.html)(?:#(s\d+|etape-[A-Za-z0-9_-]+|ancre-\d+))?$', lien or '')
     if not m:
-        return 'forme inattendue (pages/<page>.html#sN ou #etape-<clé>)'
+        return 'forme inattendue (pages/<page>.html#sN, #etape-<clé> ou #ancre-N)'
     t = page(m.group(1))
     if t is None:
         return 'page absente : ' + m.group(1)
@@ -40,6 +41,8 @@ def lien_ok(lien):
         return 'séance absente : #' + a
     if a and a.startswith('etape-') and f'data-cle="{a[6:]}"' not in t:
         return 'étape absente : ' + a[6:]
+    if a and a.startswith('ancre-') and f'id="{a}"' not in t:
+        return 'partie absente : #' + a
     return None
 
 

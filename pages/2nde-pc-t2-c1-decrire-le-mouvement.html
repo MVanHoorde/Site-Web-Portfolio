@@ -33,6 +33,40 @@
     .memo .memo-ligne { grid-template-columns:minmax(0,1fr); gap:.3rem; }
     .memo svg.memo-svg { max-width:220px; }
   }
+  .memo { position:relative; }
+  /* ===== Ajouts de l'audit du 25/11/2026 — locaux à ce chapitre (pas de ?v à incrémenter) ===== */
+  /* Ouverture du chapitre : premier chapitre de mécanique du lycée */
+  .ouverture { border-top:2px solid var(--encre); border-bottom:1px solid var(--grille);
+    padding:1rem 0 .9rem; margin:1.4rem 0 2rem; max-width:70ch; }
+  .ouverture .etq { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--h-beta); margin-bottom:.45rem; }
+  .ouverture p { font-family:'Spectral',Georgia,serif; font-size:1.08rem; line-height:1.6; margin:0; }
+  /* Transition franche entre deux parties : remplace .aparte, trop discret ici */
+  .transition { font-family:'Spectral',Georgia,serif; font-style:italic; font-size:1.12rem; line-height:1.5;
+    color:var(--encre); border-left:3px solid var(--h-beta); padding:.35rem 0 .35rem 1rem;
+    margin:2rem 0 .6rem; max-width:62ch; }
+  .transition::before { content:"→ "; font-style:normal; color:var(--h-beta); font-weight:600; }
+  /* Repère d'espace et repère de temps, côte à côte */
+  .duo-reperes { display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; align-items:start; margin:1.2rem 0; }
+  .duo-reperes figure { margin:0; }
+  .duo-reperes .titre-repere { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--h-beta); text-align:center; margin-bottom:.4rem; }
+  .duo-reperes svg.fig-svg { max-width:250px; }
+  .duo-reperes img.photo { max-width:185px; display:block; margin:0 auto; }
+  @media (max-width:560px) { .duo-reperes { grid-template-columns:1fr; } }
+  /* Mise en garde (trajectoire ≠ mouvement) */
+  .encart.attention { border-left:4px solid var(--h-alpha); }
+  .encart.attention .etq { color:var(--h-alpha); }
+  /* Rappel de mathématiques (vecteurs) et démonstration */
+  .encart.rappel { border:1px dashed var(--gris); border-left:4px solid var(--gris); background:#fff; }
+  .encart.rappel .etq { color:var(--gris); }
+  .encart.rappel ul { margin:.3rem 0 .6rem 1.1rem; }
+  .encart.rappel li { margin-bottom:.35rem; }
+  .encart.demo { border-left:4px solid var(--or); }
+  .encart.demo .etq { color:var(--or-fonce); }
+  /* Encart d'histoire à image large (chronophotographie de Marey) */
+  .histoire img { height:auto; }
+  .histoire .image-large img { border:1px solid var(--sepia); padding:3px; background:#fff; }
 </style>
 <style class="reliure-papier-etude">
 /* ============================================================
@@ -110,6 +144,22 @@ footer{border-top:1px solid #d8cfba;}
 <h1>Décrire le mouvement</h1>
 <p class="sous-titre">Thème 2 · Chapitre 1 — cours &amp; exercices corrigés</p>
 
+<div class="fiche-vierge hors-verrou">
+  <a href="../assets/pdf/pc/fiches/fiche-2nde-t2c1.pdf"><span aria-hidden="true">📄</span> Télécharger la fiche de cours (PDF, vierge)</a>
+  <span class="quoi">la feuille distribuée en classe, à compléter — disponible en permanence, code ou pas</span>
+</div>
+
+<!-- Quiz Diapason du chapitre (25/11/2026), repris des Kahoot de Loïc : salles fixes MVTDG2,
+     MVTTR4, MVTVC5, MVTUN3, MVTBN6 — les mêmes QR codes sur la fiche et le diaporama. -->
+<div class="fiche-vierge hors-verrou">
+  <a href="../outils/quiz/index.html?salle=MVTDG2"><span aria-hidden="true">🎵</span> Diagnostic du thème « Mouvement et interactions » (Diapason)</a>
+  <span class="quoi">avant de commencer : ce que tu sais déjà du collège</span>
+</div>
+
+<div class="ouverture">
+  <div class="etq">Ton premier chapitre de mécanique</div>
+  <p>Avant de comprendre <em>pourquoi</em> les objets bougent, il faut savoir dire <em>comment</em> ils bougent. Cette année : décrire le mouvement, modéliser les actions qui s'exercent sur un système, puis le principe d'inertie. Si tu continues la physique-chimie, en première tu relieras la variation de la vitesse aux forces et à l'énergie ; en terminale, avec la deuxième loi de Newton, tu calculeras la trajectoire d'un ballon ou l'orbite d'un satellite. Ici, tout commence par trois mots : <strong>système</strong>, <strong>référentiel</strong>, <strong>trajectoire</strong>.</p>
+</div>
 
 <!-- ================= SECTION 01 ================= -->
 <details class="partie" open>
@@ -138,18 +188,25 @@ footer{border-top:1px solid #d8cfba;}
   <figcaption><b class="fig-num">Image 2</b> — La mécanique du point ne permet pas d'étudier les rotations et déformations d'un système, importantes en sciences de l'ingénieur. Dans ce cas il faut prendre en compte la forme de l'objet, on parle de mécanique du solide. Sur cet exemple, on perd beaucoup d'informations sur les postures prises par le perchiste.</figcaption>
 </figure>
 
-<p class="aparte">Un système, réduit à un point. Reste à dire par rapport à quoi il bouge.</p>
+<!-- Audit du 25/11/2026 : programme — « caractériser cette modélisation en termes de perte
+     d'informations » et « identifier les échelles temporelles et spatiales pertinentes ». -->
+<p><strong>Ce modèle a un prix : la perte d'informations.</strong> Réduit à un point, le système ne tourne plus sur lui-même et ne se déforme plus : tout ce qui concerne ses <strong>rotations</strong> et ses <strong>déformations</strong> disparaît de la description (Image 2).</p>
+
+<p><strong>Tout est une question d'échelle.</strong> On choisit les échelles d'espace et de temps adaptées au mouvement étudié. La Terre, de 12 700 km de diamètre, tourne autour du Soleil à 150 millions de kilomètres, en un an : à cette échelle, elle n'est qu'un point. Pour décrire la course d'un joueur sur un terrain de football, sur quelques dizaines de mètres et en quelques secondes, la Terre n'est plus du tout un point : c'est le sol sur lequel il court.</p>
+
+<p class="transition">Un système, réduit à un point. Reste à dire <em>par rapport à quoi</em> il bouge.</p>
 
 <h3 class="sous-partie">B — Le référentiel</h3>
 
 <div class="encart definition">
-  <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Définition</div>
-  <p>Pour étudier le mouvement d'un système, il faut préciser le <span class="terme">référentiel</span>, c'est-à-dire la référence choisie (solide, point, système, …).</p>
+  <p>Pour étudier le mouvement d'un système, il faut préciser le <span class="terme">référentiel</span>, c'est-à-dire l'objet de référence par rapport auquel on décrit le mouvement.</p>
   <p>On associe à un référentiel un <strong>repère d'espace</strong> et un <strong>repère de temps</strong>.</p>
 </div>
 
-<figure class="fig-etroite" style="max-width:230px; margin-left:auto; margin-right:auto;">
+<div class="duo-reperes">
+<figure>
+  <div class="titre-repere">Repère d'espace</div>
   <svg viewBox="0 0 230 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t2c1-rep-t t2c1-rep-d" class="fig-svg">
   <title id="t2c1-rep-t">Repère d'espace</title>
   <desc id="t2c1-rep-d">Un point d'origine O, d'où partent deux flèches perpendiculaires de même longueur : le vecteur i vers la droite, le vecteur j vers le haut.</desc>
@@ -163,30 +220,26 @@ footer{border-top:1px solid #d8cfba;}
 </svg>
   <figcaption><b class="fig-num">Image 3</b> — Le repère d'espace, c'est un point d'origine O et des axes, ici <span class="vec">i</span> et <span class="vec">j</span>.</figcaption>
 </figure>
-
-<div class="duo">
-  <figure style="margin:0;" data-origine="source PPTX — licence non identifiée">
-    <img class="photo" src="../assets/img/pc/2nde-pc-t2-c1/t2c1-chronometre.jpg" width="520" height="520" alt="Un chronomètre numérique tenu dans la main, affichant 12:47:28" loading="lazy">
-    <figcaption><b class="fig-num">Image 4</b> — Pour repérer un événement dans le temps, il faut choisir une horloge et une <strong>origine des temps</strong>.</figcaption>
-  </figure>
-  <div>
-    <!-- Diapo 3 : coquille de la source « l'origine des dates et le moment » → « est le moment ». -->
-    <p>Pour un athlète, l'horloge est le chronomètre qui décompte le temps et l'origine des dates est le moment du tir du pistolet, c'est-à-dire le moment où on démarre le chronomètre.</p>
-    <p>L'unité du Système International du temps est la <strong>seconde</strong> (<span class="nb"><i>s</i></span>).</p>
-  </div>
+<figure data-origine="source PPTX — licence non identifiée">
+  <div class="titre-repere">Repère de temps</div>
+  <img class="photo" src="../assets/img/pc/2nde-pc-t2-c1/t2c1-chronometre.jpg" width="520" height="520" alt="Un chronomètre numérique tenu dans la main, affichant 12:47:28" loading="lazy">
+  <figcaption><b class="fig-num">Image 4</b> — Pour repérer un événement dans le temps, il faut choisir une horloge et une <strong>origine des temps</strong>.</figcaption>
+</figure>
 </div>
 
+<!-- Diapo 3 : coquille de la source « l'origine des dates et le moment » → « est le moment ». -->
+<p>Pour un athlète, l'horloge est le chronomètre qui décompte le temps et l'origine des dates est le moment du tir du pistolet, c'est-à-dire le moment où on démarre le chronomètre. L'unité du Système International du temps est la <strong>seconde</strong> (<span class="nb"><i>s</i></span>).</p>
+
 <div class="encart propriete">
-  <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Propriété</div>
-  <p>La description du mouvement d'un système dépend en premier lieu du choix du référentiel.</p>
+  <p>La description du mouvement d'un système dépend en premier lieu du choix du référentiel <em>(un exemple en partie 03 C)</em>.</p>
 </div>
 
 <div class="videos">
   <a class="video-chip" href="https://www.youtube.com/watch?v=EJ4iGS5G5Ec" target="_blank" rel="noopener">▶ Rappels du collège ↗</a><span class="video-chaine">chaîne <a href="https://www.youtube.com/@ProfPaulOlivier" target="_blank" rel="noopener">Paul Olivier</a></span>
 </div>
 
-<p class="aparte">Trois référentiels reviennent sans cesse : à chacun son repère d'espace.</p>
+<p class="transition">Trois référentiels reviennent sans cesse : à chacun son repère d'espace.</p>
 
 <h3 class="sous-partie">C — Exemples de référentiels</h3>
 
@@ -229,7 +282,7 @@ footer{border-top:1px solid #d8cfba;}
 <summary><h2 id="ancre-2"><span class="num">02</span> Trajectoire et vecteur déplacement</h2></summary>
 <div class="partie-corps">
 
-<p class="aparte">Le référentiel choisi, on peut suivre les positions du point, l'une après l'autre.</p>
+<p class="transition">Le référentiel choisi, on peut suivre les positions du point, l'une après l'autre.</p>
 
 <h3 class="sous-partie">A — Trajectoire et mouvement d'un système</h3>
 
@@ -239,11 +292,11 @@ footer{border-top:1px solid #d8cfba;}
   <p>La <span class="terme">trajectoire</span> d'un point matériel est la courbe formée par l'ensemble de ses positions successives dans un référentiel donné.</p>
 </div>
 
-<p>3 types de trajectoire et de mouvement associé sont au programme en Seconde :</p>
+<p>Trois formes de trajectoire sont au programme de seconde ; elles donnent leur nom au mouvement :</p>
 <ul class="cours">
-  <li>(à gauche) Lorsque la figure décrite est une droite, le mouvement est dit <span class="terme">rectiligne</span>.</li>
-  <li>(au centre) Lorsque la figure décrite est un cercle, le mouvement est dit <span class="terme">circulaire</span>.</li>
-  <li>(à droite) Lorsque la figure décrite est une courbe, le mouvement est dit <span class="terme">curviligne</span>.</li>
+  <li>(à gauche) Lorsque la trajectoire est une portion de droite, le mouvement est dit <span class="terme">rectiligne</span>.</li>
+  <li>(au centre) Lorsque la trajectoire est un cercle ou un arc de cercle, le mouvement est dit <span class="terme">circulaire</span>.</li>
+  <li>(à droite) Lorsque la trajectoire est une courbe quelconque (ni une droite, ni un cercle), le mouvement est dit <span class="terme">curviligne</span>.</li>
 </ul>
 
 <figure style="max-width:640px; margin-left:auto; margin-right:auto;">
@@ -272,15 +325,41 @@ footer{border-top:1px solid #d8cfba;}
   <text x="576.6" y="262" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#d6402b" text-anchor="middle" font-weight="600"><tspan font-size="22" dy="0">circulaire</tspan></text>
   <text x="980" y="262" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#b28a1d" text-anchor="middle" font-weight="600"><tspan font-size="22" dy="0">curviligne</tspan></text>
 </svg></div></div>
-  <figcaption><b class="fig-num">Image 8</b> — 3 types de trajectoire et de mouvement associé : rectiligne (à gauche), circulaire (au centre), curviligne (à droite).</figcaption>
+  <figcaption><b class="fig-num">Image 8</b> — Trois formes de trajectoire, qui donnent leur nom au mouvement : rectiligne (à gauche), circulaire (au centre), curviligne (à droite).</figcaption>
 </figure>
 
+<div class="encart attention">
+  <div class="etq">Attention — ne pas confondre trajectoire et mouvement</div>
+  <p><strong>La trajectoire, c'est le tracé</strong> : la ligne qui passe par <em>toutes</em> les positions du point, et il y en a une infinité. Une chronophotographie n'en montre que quelques-unes, prises à intervalles réguliers : la trajectoire est la ligne qui les relie.</p>
+  <p><strong>Le mouvement, c'est la trajectoire <em>et</em> la façon dont la vitesse évolue le long de ce tracé.</strong></p>
+  <p><em>Rectiligne, circulaire, curviligne</em> décrivent la forme de la trajectoire. <em>Uniforme, accéléré, ralenti</em> décriront la vitesse (partie 03). Décrire complètement un mouvement, c'est donner les deux : «&nbsp;rectiligne uniforme&nbsp;», «&nbsp;circulaire ralenti&nbsp;»…</p>
+  <p>Exemple : sur une même ligne droite, une voiture peut rouler à vitesse constante ou freiner. Même trajectoire, deux mouvements différents.</p>
+</div>
+
 <div class="encart definition">
-  <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Définition</div>
   <!-- Diapo 4 : « et permettant ainsi repérer […] d'en tracer sa trajectoire et d'en calculer sa
        vitesse » — remis en français (« de repérer », « la trajectoire », « la vitesse »). -->
   <p>Une <span class="terme">chronophotographie</span> est la superposition de clichés pris à intervalles de temps réguliers et permettant ainsi de repérer l'évolution de la position d'un objet au cours du temps, d'en tracer la trajectoire et d'en calculer la vitesse.</p>
+</div>
+
+<div class="histoire">
+  <div class="etq">Histoire des sciences</div>
+  <div class="duo-h">
+    <div>
+      <img src="../assets/img/pc/2nde-pc-t2-c1/t2c1-marey-fusil-photographique.jpg" width="428" height="708" alt="Gravure ancienne : un homme en chapeau melon, debout sur une plage, vise le ciel avec un long fusil ; un boîtier rond pend à sa ceinture" loading="lazy">
+      <div class="credit">« Mode d'emploi du fusil photographique », gravure parue dans La Nature n° 464, 22 avril 1882 — domaine public.</div>
+    </div>
+    <div>
+      <h4>Étienne-Jules Marey (1830 – 1904), le mouvement photographié</h4>
+      <p>En 1882, le physiologiste français Étienne-Jules Marey veut comprendre le vol des oiseaux, trop rapide pour l'œil. Il invente un <strong>fusil photographique</strong> : on vise l'oiseau, on appuie sur la détente, et l'appareil prend <strong>12 images par seconde</strong>.</p>
+      <p>Il enregistre ensuite toutes les positions successives sur une seule plaque : c'est la <strong>chronophotographie</strong>. Sur son pélican, ci-dessous, on lit la trajectoire de l'oiseau… mais aussi ses battements d'ailes, que le modèle du point matériel effacerait.</p>
+    </div>
+  </div>
+  <figure class="image-large" style="margin:.9rem 0 0;">
+    <img src="../assets/img/pc/2nde-pc-t2-c1/t2c1-marey-pelican.jpg" width="1200" height="595" alt="Photographie ancienne en noir et blanc : six positions successives d'un pélican blanc qui vole de gauche à droite, superposées sur un fond noir" loading="lazy">
+    <div class="credit">Étienne-Jules Marey, pélican en vol, chronophotographie sur plaque fixe, années 1880 — domaine public.</div>
+  </figure>
 </div>
 
 <div class="exercice">
@@ -298,21 +377,77 @@ footer{border-top:1px solid #d8cfba;}
     <div class="etape">Trajectoire</div>
     <p>Les positions successives du perchiste ne sont pas alignées : elles dessinent une courbe. Dans le référentiel terrestre, le mouvement du perchiste est <span class="resultat">curviligne</span>.</p>
     <p>Le perchiste se déplace de la droite vers la gauche : il court, s'élève au-dessus de la barre, puis redescend vers la zone de réception. Seule la course d'élan, à droite, est presque rectiligne.</p>
+    <p><em>Pour décrire entièrement ce mouvement, il faudra aussi dire comment évolue la vitesse : on y reviendra en partie 03.</em></p>
   </details>
 </div>
 
 <div class="videos">
+  <a class="video-chip" href="../outils/quiz/index.html?salle=MVTTR4">🎵 Trajectoire et mouvement — Diapason →</a>
   <a class="video-chip" href="https://www.youtube.com/watch?v=t5Kd9PELu18" target="_blank" rel="noopener">▶ Réviser en vidéo ↗</a><span class="video-chaine">chaîne <a href="https://www.youtube.com/@eprofs" target="_blank" rel="noopener">e-profs - Physique Chimie</a></span>
 </div>
 
-<p class="aparte">Pour aller plus loin que la forme de la trajectoire, il faut repérer chaque position par une flèche.</p>
+<p class="transition">Pour aller plus loin que la forme de la trajectoire, il faut repérer chaque position par une flèche.</p>
 
 <h3 class="sous-partie">B — Vecteur position</h3>
 
-<p>Le <strong>vecteur position</strong> d'un système en mouvement dépend de l'origine du référentiel d'étude choisi.</p>
+<!-- Audit du 25/11/2026 : rappels de maths demandés par Loïc, placés AVANT le premier vecteur —
+     direction, sens, norme et colinéaire sont exigés en partie 03. -->
+<div class="encart rappel">
+  <div class="etq">Rappel de mathématiques — les vecteurs</div>
+  <ul>
+    <li>Le vecteur <span class="vec">AB</span> part du <strong>point de départ</strong> A et arrive au <strong>point d'arrivée</strong> B. La flèche se dessine à l'arrivée.</li>
+    <li>Il a trois caractéristiques : sa <strong>direction</strong> (la droite qui le porte), son <strong>sens</strong> (de A vers B) et sa <strong>norme</strong> (sa longueur, notée AB, sans flèche).</li>
+    <li>Deux vecteurs sont <strong>colinéaires</strong> lorsqu'ils ont la même direction : ils sont parallèles.</li>
+    <li><strong>Vecteur opposé</strong> : <span class="vec">BA</span> = −<span class="vec">AB</span>. Même direction, même norme, sens contraire. Par exemple, <span class="vec">M<sub>13</sub>M<sub>7</sub></span> = −<span class="vec">M<sub>7</sub>M<sub>13</sub></span>.</li>
+    <li><strong>Relation de Chasles</strong> : <span class="vec">AB</span> + <span class="vec">BC</span> = <span class="vec">AC</span>. Aller de A à B, puis de B à C, revient à aller directement de A à C.</li>
+  </ul>
+  <figure style="max-width:440px; margin:.6rem auto .4rem;">
+    <svg viewBox="0 0 480 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t2c1-rv-t t2c1-rv-d" class="fig-svg">
+    <title id="t2c1-rv-t">Un vecteur, et la relation de Chasles</title>
+    <desc id="t2c1-rv-d">À gauche, le vecteur AB, du point de départ A au point d'arrivée B. À droite, un triangle A, B, C : les vecteurs AB puis BC, mis bout à bout, mènent au même point que le vecteur AC.</desc>
+    <defs>
+      <marker id="t2c1-rv-encre" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#141a26"/></marker>
+      <marker id="t2c1-rv-bleu" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#1d9aaa"/></marker>
+      <marker id="t2c1-rv-rouge" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#d6402b"/></marker>
+    </defs>
+    <rect x="0" y="0" width="480" height="170" rx="8" fill="#fff" stroke="#e8e4d8"/>
+    <line x1="225" y1="15" x2="225" y2="155" stroke="#e8e4d8" stroke-width="1"/>
+    <!-- Panneau 1 : le vecteur AB -->
+    <line x1="40" y1="125" x2="188" y2="56" stroke="#141a26" stroke-width="2.2" marker-end="url(#t2c1-rv-encre)"/>
+    <circle cx="40" cy="125" r="3.5" fill="#141a26"/><circle cx="190" cy="55" r="3.5" fill="#141a26"/>
+    <text x="40" y="146" font-family="'Spectral',Georgia,serif" font-size="17" font-style="italic" fill="#141a26" text-anchor="middle">A</text>
+    <text x="14" y="163" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#6b6f7a">point de départ</text>
+    <text x="200" y="60" font-family="'Spectral',Georgia,serif" font-size="17" font-style="italic" fill="#141a26">B</text>
+    <text x="214" y="34" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#6b6f7a" text-anchor="end">point d'arrivée</text>
+    <text x="92" y="80" font-family="'IBM Plex Mono',monospace" font-size="15" fill="#141a26">AB</text>
+    <line x1="92" y1="66" x2="109" y2="66" stroke="#141a26" stroke-width="1.3"/><path d="M104 63 L110 66 L104 69" fill="none" stroke="#141a26" stroke-width="1.3" stroke-linejoin="round"/>
+    <!-- Panneau 2 : relation de Chasles -->
+    <line x1="260" y1="140" x2="329" y2="42" stroke="#1d9aaa" stroke-width="2.2" marker-end="url(#t2c1-rv-bleu)"/>
+    <line x1="330" y1="40" x2="438" y2="119" stroke="#1d9aaa" stroke-width="2.2" marker-end="url(#t2c1-rv-bleu)"/>
+    <line x1="260" y1="140" x2="438" y2="120" stroke="#d6402b" stroke-width="2.2" marker-end="url(#t2c1-rv-rouge)"/>
+    <circle cx="260" cy="140" r="3.5" fill="#141a26"/><circle cx="330" cy="40" r="3.5" fill="#141a26"/><circle cx="440" cy="120" r="3.5" fill="#141a26"/>
+    <text x="248" y="158" font-family="'Spectral',Georgia,serif" font-size="17" font-style="italic" fill="#141a26" text-anchor="middle">A</text>
+    <text x="330" y="29" font-family="'Spectral',Georgia,serif" font-size="17" font-style="italic" fill="#141a26" text-anchor="middle">B</text>
+    <text x="452" y="126" font-family="'Spectral',Georgia,serif" font-size="17" font-style="italic" fill="#141a26" text-anchor="middle">C</text>
+    <text x="262" y="84" font-family="'IBM Plex Mono',monospace" font-size="15" fill="#1d9aaa">AB</text>
+    <line x1="262" y1="70" x2="279" y2="70" stroke="#1d9aaa" stroke-width="1.3"/><path d="M274 67 L280 70 L274 73" fill="none" stroke="#1d9aaa" stroke-width="1.3" stroke-linejoin="round"/>
+    <text x="392" y="72" font-family="'IBM Plex Mono',monospace" font-size="15" fill="#1d9aaa">BC</text>
+    <line x1="392" y1="58" x2="409" y2="58" stroke="#1d9aaa" stroke-width="1.3"/><path d="M404 55 L410 58 L404 61" fill="none" stroke="#1d9aaa" stroke-width="1.3" stroke-linejoin="round"/>
+    <text x="341" y="156" font-family="'IBM Plex Mono',monospace" font-size="15" fill="#d6402b">AC</text>
+    <line x1="341" y1="142" x2="358" y2="142" stroke="#d6402b" stroke-width="1.3"/><path d="M353 139 L359 142 L353 145" fill="none" stroke="#d6402b" stroke-width="1.3" stroke-linejoin="round"/>
+    </svg>
+    <figcaption>À gauche, le vecteur <span class="vec">AB</span>. À droite, la relation de Chasles : <span class="vec">AB</span> puis <span class="vec">BC</span> mènent au même point que <span class="vec">AC</span>.</figcaption>
+  </figure>
+  <p><strong>Attention, le mot « origine » a deux sens.</strong> L'origine du <em>repère</em>, c'est le point O. Pour un <em>vecteur</em>, on parlera de <strong>point de départ</strong>, pour ne pas confondre.</p>
+</div>
+
+<div class="videos">
+  <a class="video-chip" href="../outils/quiz/index.html?salle=MVTVC5">🎵 S'entraîner sur les vecteurs — Diapason →</a>
+</div>
+
+<p>Le <strong>vecteur position</strong> d'un système en mouvement dépend de l'origine du repère choisi.</p>
 
 <div class="notation">
-  <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Remarque — notation</div>
   <p>Le vecteur position du point M<sub>i</sub> par rapport à O se note ici <span class="vec">OM<sub>i</sub></span>.</p>
 </div>
@@ -465,14 +600,13 @@ footer{border-top:1px solid #d8cfba;}
   </details>
 </div>
 
-<p class="aparte">Si le vecteur position dépend de l'origine, que reste-t-il qui ne dépende que du mouvement ?</p>
+<p class="transition">Si le vecteur position dépend de l'origine, que reste-t-il qui ne dépende que du mouvement ?</p>
 
 <h3 class="sous-partie">C — Vecteur déplacement</h3>
 
 <div class="encart propriete">
-  <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Propriété — Vecteur déplacement</div>
-  <p>Le <strong>vecteur déplacement</strong> de ce système entre deux positions est la soustraction des vecteurs positions et ne dépend donc pas de l'origine du repère choisi.</p>
+  <p>Le <strong>vecteur déplacement</strong> de ce système entre deux positions est la différence des vecteurs position et ne dépend donc pas de l'origine du repère choisi.</p>
 </div>
 
 <div class="formule-bloc">
@@ -481,8 +615,17 @@ footer{border-top:1px solid #d8cfba;}
   <div class="grandeurs">
     <span class="titre">Grandeurs</span>
     <b><span class="vec">M<sub>i</sub>M<sub>j</sub></span></b> est le vecteur déplacement du point M<sub>i</sub> vers le point M<sub>j</sub>.<br>
-    <b><span class="vec">OM<sub>i</sub></span></b> et <b><span class="vec">OM<sub>j</sub></span></b> sont respectivement les vecteurs positions menant aux positions M<sub>i</sub> et M<sub>j</sub>.
+    <b><span class="vec">OM<sub>i</sub></span></b> et <b><span class="vec">OM<sub>j</sub></span></b> sont respectivement les vecteurs position menant aux positions M<sub>i</sub> et M<sub>j</sub>.
   </div>
+</div>
+
+<div class="encart demo">
+  <div class="etq">D'où vient cette formule ? — la démonstration</div>
+  <p>Pour aller de M<sub>i</sub> à M<sub>j</sub>, on passe par O, comme par une gare de correspondance (relation de Chasles) :</p>
+  <p class="eq-ligne"><span class="vec">M<sub>i</sub>M<sub>j</sub></span> = <span class="vec">M<sub>i</sub>O</span> + <span class="vec">OM<sub>j</sub></span></p>
+  <p>Or <span class="vec">M<sub>i</sub>O</span> est l'opposé de <span class="vec">OM<sub>i</sub></span> : <span class="vec">M<sub>i</sub>O</span> = −<span class="vec">OM<sub>i</sub></span>. Donc :</p>
+  <p class="eq-ligne"><span class="vec">M<sub>i</sub>M<sub>j</sub></span> = −<span class="vec">OM<sub>i</sub></span> + <span class="vec">OM<sub>j</sub></span> = <span class="vec">OM<sub>j</sub></span> − <span class="vec">OM<sub>i</sub></span></p>
+  <p>C'est exactement la construction de l'image 11 bis, ci-dessous.</p>
 </div>
 
 <figure style="max-width:420px; margin-left:auto; margin-right:auto;">
@@ -672,12 +815,11 @@ footer{border-top:1px solid #d8cfba;}
 <summary><h2 id="ancre-3"><span class="num">03</span> Vitesse d'un système</h2></summary>
 <div class="partie-corps">
 
-<p class="aparte">Un déplacement ne dit pas en combien de temps il a été fait : divisons par la durée.</p>
+<p class="transition">Le déplacement dit où l'on va, pas en combien de temps. Divisons par la durée.</p>
 
 <h3 class="sous-partie">A — Vitesse moyenne</h3>
 
 <div class="encart propriete">
-  <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Propriété — Vecteur vitesse moyenne</div>
   <p>Le vecteur vitesse moyenne d'un système entre deux positions M<sub>i</sub> et M<sub>j</sub> se note <span class="vec">v<sub>i→j</sub></span> et s'obtient par la relation :</p>
 </div>
@@ -687,7 +829,7 @@ footer{border-top:1px solid #d8cfba;}
   <div class="eq"><span class="eq-corps"><span class="vec">v<sub>i→j</sub></span> = <span class="frac"><span class="haut"><span class="vec">M<sub>i</sub>M<sub>j</sub></span></span><span class="bas">Δt<sub>i→j</sub></span></span></span></div>
   <div class="grandeurs">
     <span class="titre">Grandeurs</span>
-    <b>Δt<sub>i→j</sub></b> est le temps séparant les positions M<sub>i</sub> et M<sub>j</sub>.
+    <b>Δt<sub>i→j</sub></b> est la durée séparant les positions M<sub>i</sub> et M<sub>j</sub>.
   </div>
 </div>
 
@@ -736,13 +878,16 @@ footer{border-top:1px solid #d8cfba;}
   <figcaption><b class="fig-num">Image 12</b> — Différents vecteurs vitesse entre points d'une trajectoire.</figcaption>
 </figure>
 
-<p><strong>Caractéristiques du vecteur vitesse moyenne <span class="vec">v<sub>i→j</sub></span> :</strong></p>
-<ul class="cours">
-  <li><strong>direction</strong> : colinéaire (parallèle) au vecteur déplacement <span class="vec">M<sub>i</sub>M<sub>j</sub></span> ;</li>
-  <li><strong>sens</strong> : celui du mouvement ;</li>
-  <li><strong>norme</strong> : en <span class="nb">m·s<sup>−1</sup></span> avec pour valeur :</li>
-</ul>
-<p class="eq-ligne">v<sub>i→j</sub> = <span class="frac"><span class="haut">M<sub>i</sub>M<sub>j</sub></span><span class="bas">Δt<sub>i→j</sub></span></span> = <span class="frac"><span class="haut">M<sub>i</sub>M<sub>j</sub></span><span class="bas">t<sub>j</sub> − t<sub>i</sub></span></span></p>
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété — Caractéristiques du vecteur vitesse moyenne <span class="vec">v<sub>i→j</sub></span></div>
+  <ul class="cours">
+    <li><strong>direction</strong> : colinéaire (parallèle) au vecteur déplacement <span class="vec">M<sub>i</sub>M<sub>j</sub></span> ;</li>
+    <li><strong>sens</strong> : celui du mouvement ;</li>
+    <li><strong>norme</strong> : en <span class="nb">m·s<sup>−1</sup></span>, avec pour valeur :</li>
+  </ul>
+  <p class="eq-ligne">v<sub>i→j</sub> = <span class="frac"><span class="haut">M<sub>i</sub>M<sub>j</sub></span><span class="bas">Δt<sub>i→j</sub></span></span> = <span class="frac"><span class="haut">M<sub>i</sub>M<sub>j</sub></span><span class="bas">t<sub>j</sub> − t<sub>i</sub></span></span></p>
+</div>
 
 <div class="exercice">
   <div class="etiquette">Exercice 4 — Vecteur vitesse moyenne</div>
@@ -799,14 +944,17 @@ footer{border-top:1px solid #d8cfba;}
   </details>
 </div>
 
-<p class="aparte">Et si l'on rapproche les deux positions au plus près ? On obtient la vitesse en un point.</p>
+<div class="videos">
+  <a class="video-chip" href="../outils/quiz/index.html?salle=MVTUN3">🎵 Unités, grandeurs et conversions — Diapason →</a>
+</div>
+
+<p class="transition">Et si l'on rapproche les deux positions au plus près ? On obtient la vitesse en un point.</p>
 
 <h3 class="sous-partie">B — Vitesse instantanée</h3>
 
 <div class="encart propriete">
-  <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Propriété — Vecteur vitesse instantanée</div>
-  <p>Le <strong>vecteur vitesse (vitesse instantanée)</strong> d'un système en un point M<sub>i</sub>, noté <span class="vec">v<sub>i</sub></span>, est approché par le vecteur vitesse moyenne entre deux positions infiniment proches : M<sub>i</sub> et M<sub>i+1</sub> ; M<sub>i+1</sub> étant la position succédant à M<sub>i</sub>.</p>
+  <p>Le <strong>vecteur vitesse (vitesse instantanée)</strong> d'un système en un point M<sub>i</sub>, noté <span class="vec">v<sub>i</sub></span>, est approché par le vecteur vitesse moyenne entre deux positions très proches, séparées d'une petite durée : M<sub>i</sub> et M<sub>i+1</sub>, M<sub>i+1</sub> étant la position qui suit M<sub>i</sub>.</p>
 </div>
 
 <div class="formule-bloc">
@@ -814,23 +962,34 @@ footer{border-top:1px solid #d8cfba;}
   <div class="eq"><span class="eq-corps"><span class="vec">v<sub>i</sub></span> = <span class="frac"><span class="haut"><span class="vec">M<sub>i</sub>M<sub>i+1</sub></span></span><span class="bas">t<sub>i+1</sub> − t<sub>i</sub></span></span></span></div>
   <div class="grandeurs">
     <span class="titre">Grandeurs</span>
-    <b>M<sub>i+1</sub></b> la position succédant à M<sub>i</sub><br>
+    <b>M<sub>i+1</sub></b> la position qui suit M<sub>i</sub> (notée M′ dans le programme)<br>
     <b>t<sub>i+1</sub> − t<sub>i</sub></b> la durée qui les sépare
   </div>
 </div>
 
-<p><strong>Caractéristiques du vecteur vitesse instantanée <span class="vec">v<sub>i</sub></span> :</strong></p>
-<ul class="cours">
-  <li><strong>direction</strong> : colinéaire (parallèle) au vecteur déplacement <span class="vec">M<sub>i</sub>M<sub>i+1</sub></span> ;</li>
-  <li><strong>sens</strong> : celui du mouvement ;</li>
-  <li><strong>norme</strong> : en <span class="nb">m·s<sup>−1</sup></span> avec pour valeur :</li>
-</ul>
-<p class="eq-ligne">v<sub>i</sub> = <span class="frac"><span class="haut">M<sub>i</sub>M<sub>i+1</sub></span><span class="bas">t<sub>i+1</sub> − t<sub>i</sub></span></span></p>
+<div class="encart propriete">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
+  <div class="etq">Propriété — Caractéristiques du vecteur vitesse instantanée <span class="vec">v<sub>i</sub></span></div>
+  <ul class="cours">
+    <li><strong>direction</strong> : colinéaire (parallèle) au vecteur déplacement <span class="vec">M<sub>i</sub>M<sub>i+1</sub></span> ;</li>
+    <li><strong>sens</strong> : celui du mouvement ;</li>
+    <li><strong>norme</strong> : en <span class="nb">m·s<sup>−1</sup></span>, avec pour valeur :</li>
+  </ul>
+  <p class="eq-ligne">v<sub>i</sub> = <span class="frac"><span class="haut">M<sub>i</sub>M<sub>i+1</sub></span><span class="bas">t<sub>i+1</sub> − t<sub>i</sub></span></span></p>
+</div>
+
+<div class="notation">
+  <div class="etq">Remarque — une autre méthode</div>
+  <p>Certains livres, et certains professeurs, utilisent la position <strong>précédente</strong> et la position <strong>suivante</strong> : <span class="vec">v<sub>i</sub></span> = <span class="frac"><span class="haut"><span class="vec">M<sub>i−1</sub>M<sub>i+1</sub></span></span><span class="bas">t<sub>i+1</sub> − t<sub>i−1</sub></span></span>. C'est une autre approximation, valable elle aussi. Dans ce cours et en DS, on suit celle du programme : la position <strong>en cours</strong> et la position <strong>suivante</strong>.</p>
+</div>
 
 <figure style="max-width:420px; margin-left:auto; margin-right:auto;">
   <svg viewBox="0 0 420 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t2c1-tan-t t2c1-tan-d" class="fig-svg">
   <title id="t2c1-tan-t">Vecteur vitesse dans un mouvement circulaire</title>
-  <desc id="t2c1-tan-d">Même repère et même trajectoire en arc de cercle que pour le vecteur position. Au point M(t3), une droite verte en pointillés est tangente à la trajectoire. Le vecteur vitesse, en bleu, part de M(t3) et suit cette tangente, dans le sens du mouvement : il est perpendiculaire au vecteur position OM(t3), qui est ici un rayon du cercle.</desc>
+  <desc id="t2c1-tan-d">Même repère et même trajectoire en arc de cercle, de centre O, que pour le vecteur position. Au point M(t3), une droite verte en pointillés est tangente à la trajectoire. Un segment gris en pointillés joint M(t3) à la position suivante M(t4). Le vecteur vitesse calculé, en bleu, part de M(t3) et suit ce segment, dans le sens du mouvement : il fait un petit angle avec la tangente, qu'il rejoindrait si les deux positions étaient plus proches.</desc>
+  <!-- AUDIT 25/11/2026 · la flèche bleue suivait la tangente (parallèle à M2M4 : méthode « précédente-suivante »),
+       alors que le cours définit vi = MiMi+1 / (ti+1 − ti), comme le programme. Elle suit désormais M3M4
+       (environ 9,5° sous la tangente) ; la tangente reste tracée, comme limite quand Δt diminue. -->
   <rect x="0" y="0" width="420" height="350" rx="8" fill="#fff" stroke="#e8e4d8"/>
   <line x1="60" y1="300" x2="391" y2="300" stroke="#6b6f7a" stroke-width="1.4" stroke-linecap="round"/><path d="M400 300 L390 303.5 L390 296.5 z" fill="#6b6f7a"/>
   <line x1="60" y1="300" x2="60" y2="31" stroke="#6b6f7a" stroke-width="1.4" stroke-linecap="round"/><path d="M60 22 L63.5 32 L56.5 32 z" fill="#6b6f7a"/>
@@ -845,8 +1004,9 @@ footer{border-top:1px solid #d8cfba;}
   <line x1="60" y1="300" x2="214.9" y2="145.1" stroke="#d6402b" stroke-width="2.2" stroke-linecap="round"/><path d="M222.6 137.4 L217 148.7 L211.3 143 z" fill="#d6402b"/>
   <line x1="71" y1="181.3" x2="123.5" y2="181.3" stroke="#fff" stroke-width="4"/><line x1="71" y1="181.3" x2="122.5" y2="181.3" stroke="#d6402b" stroke-width="1.4"/><path d="M117.5 178.1 L123.5 181.3 L117.5 184.5" fill="none" stroke="#d6402b" stroke-width="1.4" stroke-linejoin="round"/><text x="70" y="196" font-family="'IBM Plex Mono',monospace" font-size="16" fill="#d6402b" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round"><tspan font-size="16" dy="0">OM(t</tspan><tspan font-size="10.9" dy="4.5">3</tspan><tspan font-size="16" dy="-4.5">)</tspan></text>
   <line x1="137.8" y1="52.5" x2="328.7" y2="243.4" stroke="#4c8a58" stroke-width="1.8" stroke-dasharray="6 5"/>
-  <line x1="222.6" y1="137.4" x2="264.4" y2="179.1" stroke="#1d9aaa" stroke-width="2.8" stroke-linecap="round"/><path d="M272.1 186.9 L260.8 181.2 L266.5 175.5 z" fill="#1d9aaa"/>
-  <line x1="273.6" y1="134.8" x2="317.4" y2="134.8" stroke="#fff" stroke-width="4"/><line x1="273.6" y1="134.8" x2="316.4" y2="134.8" stroke="#1d9aaa" stroke-width="1.4"/><path d="M311.4 131.6 L317.4 134.8 L311.4 138" fill="none" stroke="#1d9aaa" stroke-width="1.4" stroke-linejoin="round"/><text x="272.6" y="151.4" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#1d9aaa" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round"><tspan font-size="18" dy="0">v</tspan><tspan font-size="12.2" dy="5">M(t</tspan><tspan font-size="9.4" dy="3.2">3</tspan><tspan font-size="12.2" dy="-3.2">)</tspan></text>
+  <line x1="222.6" y1="137.4" x2="266.7" y2="199.2" stroke="#6b6f7a" stroke-width="1.4" stroke-dasharray="3 4"/>
+  <line x1="222.6" y1="137.4" x2="251.1" y2="177.2" stroke="#1d9aaa" stroke-width="2.8" stroke-linecap="round"/><path d="M257.5 186.2 L254.8 174.6 L247.4 179.8 z" fill="#1d9aaa"/>
+  <line x1="180" y1="183" x2="223.8" y2="183" stroke="#fff" stroke-width="4"/><line x1="180" y1="183" x2="222.8" y2="183" stroke="#1d9aaa" stroke-width="1.4"/><path d="M217.8 179.8 L223.8 183 L217.8 186.2" fill="none" stroke="#1d9aaa" stroke-width="1.4" stroke-linejoin="round"/><text x="179" y="199.6" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#1d9aaa" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round"><tspan font-size="18" dy="0">v</tspan><tspan font-size="12.2" dy="5">M(t</tspan><tspan font-size="9.4" dy="3.2">3</tspan><tspan font-size="12.2" dy="-3.2">)</tspan></text>
   <text x="410" y="34" font-family="'IBM Plex Mono',monospace" font-size="14" fill="#4c8a58" text-anchor="end"><tspan font-size="14" dy="0">Tangente à la trajectoire</tspan></text>
   <text x="410" y="54" font-family="'IBM Plex Mono',monospace" font-size="14" fill="#4c8a58" text-anchor="end"><tspan font-size="14" dy="0">au point M(t</tspan><tspan font-size="9.5" dy="3.9">3</tspan><tspan font-size="14" dy="-3.9">)</tspan></text>
   <circle cx="92" cy="72.2" r="5" fill="#141a26"/>
@@ -859,7 +1019,7 @@ footer{border-top:1px solid #d8cfba;}
   <text x="280.7" y="199.2" font-family="'IBM Plex Mono',monospace" font-size="15" fill="#141a26" text-anchor="start" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round"><tspan font-size="15" dy="0">M(t</tspan><tspan font-size="10.2" dy="4.2">4</tspan><tspan font-size="15" dy="-4.2">)</tspan></text>
   <circle cx="287.8" cy="268" r="5" fill="#141a26"/>
 </svg>
-  <figcaption><b class="fig-num">Image 13</b> — Cas d'un mouvement circulaire, la vitesse est tangente à la trajectoire, donc perpendiculaire au rayon du cercle.</figcaption>
+  <figcaption><b class="fig-num">Image 13</b> — Cas d'un mouvement circulaire. Le vecteur vitesse calculé en M(t<sub>3</sub>) est porté par le déplacement vers la position suivante M(t<sub>4</sub>) (en pointillés gris). Plus la durée entre deux positions est petite, plus il se rapproche de la tangente à la trajectoire (en vert) : la vitesse instantanée est tangente à la trajectoire, donc perpendiculaire au rayon du cercle.</figcaption>
 </figure>
 
 <div class="videos">
@@ -933,14 +1093,13 @@ footer{border-top:1px solid #d8cfba;}
   </details>
 </div>
 
-<p class="aparte">La vitesse est un vecteur : sa norme et sa direction disent, ensemble, la nature du mouvement.</p>
+<p class="transition">La vitesse est un vecteur : sa norme et sa direction disent, ensemble, la nature du mouvement.</p>
 
-<h3 class="sous-partie">C — Relativité et nature du mouvement</h3>
+<h3 class="sous-partie">C — Nature et relativité du mouvement</h3>
 
 <p>Le vecteur vitesse peut varier en norme (valeur), en direction, ou les deux.</p>
 
 <div class="encart propriete">
-  <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="etq">Propriété</div>
   <p>Un <span class="terme">mouvement uniforme</span> correspond à une norme du vecteur vitesse constante.</p>
   <p><em>Remarque :</em> si la norme augmente avec le temps, le mouvement est <span class="terme">accéléré</span> ; si elle diminue, il est <span class="terme">décéléré</span> (ralenti).</p>
@@ -950,7 +1109,7 @@ footer{border-top:1px solid #d8cfba;}
 <figure style="max-width:380px; margin-left:auto; margin-right:auto;">
   <svg viewBox="0 0 580 577" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t2c1-mcu-t t2c1-mcu-d" class="fig-svg">
   <title id="t2c1-mcu-t">Mouvement circulaire uniforme</title>
-  <desc id="t2c1-mcu-d">Un cercle portant douze positions régulièrement espacées, marquées par des croix ; M1 est en haut, M2 juste à sa droite, le mouvement tourne dans le sens des aiguilles d'une montre. En M2 et aux trois positions suivantes, un vecteur vitesse v de même longueur est tracé, tangent au cercle : sa norme ne change pas, sa direction tourne. Depuis M2, un vecteur a en pointillés est dirigé vers le centre du cercle.</desc>
+  <desc id="t2c1-mcu-d">Un cercle portant douze positions régulièrement espacées, marquées par des croix ; M1 est en haut, M2 juste à sa droite, le mouvement tourne dans le sens des aiguilles d\'une montre. En M2 et aux trois positions suivantes, un vecteur vitesse de même longueur est tangent au cercle : sa norme ne change pas, sa direction tourne avec le point.</desc>
   <rect x="0" y="0" width="580" height="577" rx="10" fill="#fff" stroke="#e8e4d8"/>
   <line x1="10" y1="287" x2="570" y2="287" stroke="#2f6fb5" stroke-width="1.2" stroke-dasharray="5 5"/>
   <line x1="290" y1="8" x2="290" y2="570" stroke="#2f6fb5" stroke-width="1.2" stroke-dasharray="5 5"/>
@@ -971,17 +1130,15 @@ footer{border-top:1px solid #d8cfba;}
   <path d="M66 287 H90 M78 275 V299" stroke="#d6402b" stroke-width="2"/>
   <path d="M94.4 181 H118.4 M106.4 169 V193" stroke="#d6402b" stroke-width="2"/>
   <path d="M172 103.4 H196 M184 91.4 V115.4" stroke="#d6402b" stroke-width="2"/>
-  <line x1="396" y1="103.4" x2="357" y2="171" stroke="#9a8fd6" stroke-width="2.2" stroke-linecap="round"/><path d="M351.5 180.5 L354 168.1 L360.9 172.1 z" fill="#9a8fd6"/>
-  <line x1="396" y1="103.4" x2="290" y2="287" stroke="#9a8fd6" stroke-width="1.6" stroke-dasharray="6 5"/>
   <text x="304" y="60" font-family="'IBM Plex Mono',monospace" font-size="26" fill="#d6402b" text-anchor="start" font-weight="600" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round"><tspan font-size="26" dy="0">M</tspan><tspan font-size="17.7" dy="7.3">1</tspan></text>
   <text x="406" y="92" font-family="'IBM Plex Mono',monospace" font-size="26" fill="#d6402b" text-anchor="start" font-weight="600" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round"><tspan font-size="26" dy="0">M</tspan><tspan font-size="17.7" dy="7.3">2</tspan></text>
   <line x1="471" y1="116.1" x2="484.6" y2="116.1" stroke="#fff" stroke-width="4"/><line x1="471" y1="116.1" x2="483.6" y2="116.1" stroke="#2f6fb5" stroke-width="1.4"/><path d="M478.6 112.9 L484.6 116.1 L478.6 119.3" fill="none" stroke="#2f6fb5" stroke-width="1.4" stroke-linejoin="round"/><text x="470" y="140" font-family="'IBM Plex Mono',monospace" font-size="26" fill="#2f6fb5" font-weight="600" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round"><tspan font-size="26" dy="0">v</tspan></text>
-  <line x1="363" y1="186.1" x2="376.6" y2="186.1" stroke="#fff" stroke-width="4"/><line x1="363" y1="186.1" x2="375.6" y2="186.1" stroke="#7d70c4" stroke-width="1.4"/><path d="M370.6 182.9 L376.6 186.1 L370.6 189.3" fill="none" stroke="#7d70c4" stroke-width="1.4" stroke-linejoin="round"/><text x="362" y="210" font-family="'IBM Plex Mono',monospace" font-size="26" fill="#7d70c4" font-weight="600" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round"><tspan font-size="26" dy="0">a</tspan></text>
 </svg>
   <figcaption><b class="fig-num">Image 14</b> — Mouvement circulaire uniforme. La norme du vecteur vitesse ne varie pas mais sa direction oui.</figcaption>
 </figure>
 
 <figure class="memo" style="max-width:640px; margin-left:auto; margin-right:auto;">
+  <span class="a-noter" title="À compléter sur la fiche">✎</span>
   <div class="memo-titre">Les variations de la vitesse</div>
   <div class="memo-ligne">
     <svg viewBox="0 0 228 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t2c1-memo-con-t t2c1-memo-con-d" class="memo-svg">
@@ -1031,6 +1188,24 @@ footer{border-top:1px solid #d8cfba;}
   <figcaption><b class="fig-num">Image 15</b> — Fiche mémo pour aider à caractériser un mouvement. Retranscrite d'après la <a href="https://www.youtube.com/watch?v=Zzt6HpCXvnM&t=95s" target="_blank" rel="noopener">fiche de Paul Olivier ↗</a> (chaîne YouTube de Paul Olivier) ; les rangées de points reprennent les espacements de l'original.</figcaption>
 </figure>
 
+<!-- Audit du 25/11/2026 : programme — « expliquer, dans le cas de la translation, l'influence du
+     choix du référentiel sur la description du mouvement ». En texte seul, à la demande de Loïc :
+     une image du bateau de Galilée viendra plus tard, de sa main. -->
+<p class="transition">Uniforme, rectiligne… mais vu d'où ? Toute cette description dépend du référentiel.</p>
+
+<div class="encart exemple">
+  <div class="etq">Exemple — la relativité du mouvement</div>
+  <p>Un voyageur est assis dans un train qui roule en ligne droite à <span class="nb">30 m·s<sup>−1</sup></span>. Dans le <strong>référentiel du train</strong>, il est immobile : sa vitesse est nulle. Dans le <strong>référentiel terrestre</strong>, il se déplace à <span class="nb">30 m·s<sup>−1</sup></span>.</p>
+  <p>Il lâche une balle. Pour lui, elle tombe <strong>verticalement</strong>, à ses pieds : trajectoire rectiligne. Pour une personne restée sur le quai, la balle avance avec le train tout en tombant : sa trajectoire est une <strong>courbe</strong>.</p>
+  <p>Même balle, même chute : deux trajectoires et deux vitesses différentes, selon le référentiel choisi.</p>
+</div>
+
+<div class="histoire">
+  <div class="etq">Histoire des sciences</div>
+  <h4>Le bateau de Galilée (1632)</h4>
+  <p>Galilée imaginait déjà cette expérience avec une pierre lâchée du haut du mât d'un navire : que le navire soit à quai ou qu'il avance, la pierre tombe au pied du mât. Enfermé dans la cabine, aucune expérience ne permettrait de savoir si le bateau avance en ligne droite à vitesse constante. C'était un argument de poids pour défendre une idée alors très contestée : la Terre peut tourner sans que nous le sentions.</p>
+</div>
+
 <div class="videos">
   <a class="video-chip" href="https://www.youtube.com/watch?v=Zzt6HpCXvnM&t=95s" target="_blank" rel="noopener">🎬 Fiche mémo — P. Olivier ↗</a><span class="video-chaine">chaîne <a href="https://www.youtube.com/@ProfPaulOlivier" target="_blank" rel="noopener">Paul Olivier</a></span>
   <a class="video-chip" href="https://www.youtube.com/watch?v=dDsi-HmyDl8" target="_blank" rel="noopener">▶ S'exercer en vidéo ↗</a><span class="video-chaine">chaîne <a href="https://www.youtube.com/@eprofs" target="_blank" rel="noopener">e-profs - Physique Chimie</a></span>
@@ -1056,7 +1231,7 @@ footer{border-top:1px solid #d8cfba;}
     <li><input type="checkbox" id="ds6"><label for="ds6">Reconnaître un mouvement uniforme ou non uniforme.</label><span class="refs"><a href="#ancre-3">03</a> · man. 15 p.211 · 23 p.214</span></li>
   </ol>
   <div class="videos" style="margin:1rem 0 0;">
-    <a class="video-chip" href="https://create.kahoot.it/share/bilan-decrire-un-mouvement/2777fd45-3128-4333-a0a2-64b1cb500171" target="_blank" rel="noopener">🎯 Kahoot bilan du chapitre ↗</a>
+    <a class="video-chip" href="../outils/quiz/index.html?salle=MVTBN6">🎵 Bilan du chapitre — Diapason →</a>
     <a class="video-chip" href="../assets/pdf/pc/ds/ds5-t2c1-t1c5.pdf">📄 DS5 — Thème 2 ch. 1 et Thème 1 ch. 5 (sujet) →</a>
   </div>
 </section>
